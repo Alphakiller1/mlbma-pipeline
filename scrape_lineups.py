@@ -37,6 +37,10 @@ def scrape_lineups():
                 continue
             away_abbr = abbrs[0].text.strip()
             home_abbr = abbrs[1].text.strip()
+            # Normalize to our standard abbreviations
+            abbr_fix = {"TB":"TBR","WSH":"WSN","KC":"KCR","CWS":"CHW","SD":"SDP","SF":"SFG"}
+            away_abbr = abbr_fix.get(away_abbr, away_abbr)
+            home_abbr = abbr_fix.get(home_abbr, home_abbr)
 
             # Get game time
             time_el = div.find("div", class_="lineup__time")
