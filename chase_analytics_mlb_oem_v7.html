@@ -918,6 +918,116 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   padding: 40px 20px;
   grid-column: 1 / -1;
 }
+
+/* Projected lineups (matchup cards) */
+.matchup-lineup-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+.matchup-lineup-toggle {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--bg-4);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.matchup-lineup-toggle:hover {
+  border-color: rgba(192, 132, 252, 0.4);
+  color: var(--text);
+}
+.matchup-lineup-panel {
+  display: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.matchup-lineup-panel.is-open {
+  display: block;
+}
+.matchup-lineup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+}
+@media (max-width: 520px) {
+  .matchup-lineup-grid { grid-template-columns: 1fr; }
+}
+.matchup-lineup-col-head {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+.matchup-lineup-col-head .lineup-opp-hand {
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.06em;
+}
+.lineup-row {
+  display: grid;
+  grid-template-columns: 14px 22px 1fr auto;
+  gap: 4px 6px;
+  align-items: center;
+  min-height: 20px;
+  padding: 1px 0;
+  font-size: 11px;
+  line-height: 1.25;
+}
+.lineup-bo {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-align: right;
+}
+.lineup-pos {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+.lineup-name {
+  font-weight: 650;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lineup-row--platoon-l .lineup-name {
+  color: var(--blue);
+}
+.lineup-row--platoon-r .lineup-name {
+  color: var(--orange);
+}
+.bats-pill {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-4);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+.matchup-lineup-empty {
+  font-size: 11px;
+  color: var(--text-3);
+  padding: 8px 0;
+  line-height: 1.45;
+  grid-column: 1 / -1;
+}
 .story-stat {
   background:linear-gradient(180deg, rgba(192,132,252,.07), rgba(255,255,255,.015));
   border:1px solid var(--border); border-radius:12px; padding:14px 16px;
@@ -1366,7 +1476,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
    ============================================================ */
 var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
-var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], rhp: null, lhp: null };
+var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], rhp: null, lhp: null };
 
 function sheetCsvUrl(tabName) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -1400,7 +1510,7 @@ function fetchMatchups() {
 }
 
 function fetchLiveData() {
-  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'PALS', 'Today_Matchups', 'Last_Updated'];
+  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'PALS', 'Today_Matchups', 'Today_Lineups', 'Today_Games', 'Last_Updated'];
   var fetches = tabs.map(function(tab) {
     return fetch(sheetCsvUrl(tab)).then(function(r) { return r.text(); }).then(function(t) {
       return { tab: tab, data: tab === 'Last_Updated' ? t : parseCSV(t) };
@@ -1414,6 +1524,8 @@ function fetchLiveData() {
       if (r.tab === 'Pitching_Score') LIVE_DATA.pitching = r.data;
       if (r.tab === 'PALS') LIVE_DATA.pals = parsePalsRows(r.data);
       if (r.tab === 'Today_Matchups') LIVE_DATA.matchups = parseMatchupRows(r.data);
+      if (r.tab === 'Today_Lineups') LIVE_DATA.lineups = parseLineupRows(r.data);
+      if (r.tab === 'Today_Games') LIVE_DATA.todayGames = parseTodayGamesRows(r.data);
       if (r.tab === 'Last_Updated') {
         LIVE_DATA.lastUpdated = parseLastUpdatedFromText(r.data);
         if (LIVE_DATA.lastUpdated) {
@@ -1750,6 +1862,161 @@ function parseMatchupRows(rows) {
   }).filter(Boolean);
 }
 
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function normalizeGameKey(raw) {
+  return String(raw || '')
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/\u0040/g, '@');
+}
+
+function matchupGameKey(m) {
+  if (!m || !m.away || !m.home) return '';
+  return String(m.away).trim().toUpperCase() + '@' + String(m.home).trim().toUpperCase();
+}
+
+function parseLineupRows(rows) {
+  if (!rows || !rows.length) return [];
+  return rows.map(function(row) {
+    var game = String(matchupCol(row, 'Game')).trim();
+    var team = String(matchupCol(row, 'Team')).trim().toUpperCase();
+    if (!team) return null;
+    var side = String(matchupCol(row, 'Side')).trim().toUpperCase();
+    var boRaw = matchupCol(row, 'Bat_Order');
+    if (boRaw === '' || boRaw === undefined) boRaw = row.Bat_Order;
+    var batOrder = parseInt(boRaw, 10);
+    if (isNaN(batOrder)) batOrder = 99;
+    var position = String(matchupCol(row, 'Position')).trim() || '—';
+    var player = String(matchupCol(row, 'Player')).trim() || 'TBD';
+    var bats = String(matchupCol(row, 'Bats')).trim() || '?';
+    return {
+      game: game,
+      team: team,
+      side: side,
+      batOrder: batOrder,
+      position: position,
+      player: player,
+      bats: bats
+    };
+  }).filter(Boolean);
+}
+
+function parseTodayGamesRows(rows) {
+  if (!rows || !rows.length) return [];
+  return rows.map(function(row) {
+    var away = String(matchupCol(row, 'Away')).trim().toUpperCase();
+    var home = String(matchupCol(row, 'Home')).trim().toUpperCase();
+    if (!away || !home) return null;
+    return {
+      away: away,
+      home: home,
+      time: String(matchupCol(row, 'Time')).trim(),
+      awaySP: String(matchupCol(row, 'Away_SP')).trim(),
+      homeSP: String(matchupCol(row, 'Home_SP')).trim(),
+      gameKey: away + '@' + home
+    };
+  }).filter(Boolean);
+}
+
+function normalizeBatsHand(bats) {
+  var c = String(bats || '?').trim().toUpperCase().charAt(0);
+  if (c === 'L' || c === 'R' || c === 'S' || c === 'B') return c === 'B' ? 'S' : c;
+  return '?';
+}
+
+function platoonHighlightClass(batsNorm, oppPitcherHand) {
+  var o = String(oppPitcherHand || '').trim().toUpperCase().charAt(0);
+  if (o !== 'L' && o !== 'R') return '';
+  var b = batsNorm;
+  if (o === 'R' && (b === 'L' || b === 'S')) return 'lineup-row--platoon-l';
+  if (o === 'L' && (b === 'R' || b === 'S')) return 'lineup-row--platoon-r';
+  return '';
+}
+
+function lineupRowsForTeam(lineups, gameKey, teamAbbr, sideAwayHome) {
+  if (!lineups || !lineups.length || !gameKey || !teamAbbr) return [];
+  var gk = normalizeGameKey(gameKey);
+  var team = String(teamAbbr).toUpperCase();
+  var want = String(sideAwayHome || '').toUpperCase();
+  function sideOk(sd) {
+    sd = String(sd || '').toUpperCase();
+    if (want === 'AWAY') return sd === 'AWAY' || sd === 'A' || sd === '0';
+    if (want === 'HOME') return sd === 'HOME' || sd === 'H' || sd === '1';
+    return true;
+  }
+  var primary = lineups.filter(function(r) {
+    return normalizeGameKey(r.game) === gk && String(r.team || '').toUpperCase() === team && sideOk(r.side);
+  });
+  if (primary.length) return primary.slice().sort(function(a, b) { return a.batOrder - b.batOrder; });
+  return lineups.filter(function(r) {
+    return normalizeGameKey(r.game) === gk && String(r.team || '').toUpperCase() === team;
+  }).slice().sort(function(a, b) { return a.batOrder - b.batOrder; });
+}
+
+function buildLineupColHtml(teamLabel, rows, oppHand) {
+  var head = '<div class="matchup-lineup-col-head">' + escHtml(teamLabel)
+    + ' <span class="lineup-opp-hand">vs ' + (oppHand === 'L' || oppHand === 'R' ? escHtml(oppHand + 'HP') : '?HP') + '</span></div>';
+  if (!rows.length) {
+    return '<div class="matchup-lineup-col">' + head + '<div class="matchup-lineup-empty">No rows</div></div>';
+  }
+  var body = rows.slice(0, 9).map(function(r) {
+    var bn = normalizeBatsHand(r.bats);
+    var plat = platoonHighlightClass(bn, oppHand);
+    var bp = escHtml(bn === '?' ? '?' : bn);
+    return '<div class="lineup-row ' + plat + '">'
+      + '<span class="lineup-bo">' + (r.batOrder <= 9 ? r.batOrder : '—') + '</span>'
+      + '<span class="lineup-pos">' + escHtml(r.position) + '</span>'
+      + '<span class="lineup-name">' + escHtml(r.player) + '</span>'
+      + '<span class="bats-pill">' + bp + '</span>'
+      + '</div>';
+  }).join('');
+  return '<div class="matchup-lineup-col">' + head + body + '</div>';
+}
+
+function buildMatchupLineupBlock(m) {
+  var gk = matchupGameKey(m);
+  var lu = LIVE_DATA.lineups || [];
+  var awayRows = lineupRowsForTeam(lu, gk, m.away, 'AWAY');
+  var homeRows = lineupRowsForTeam(lu, gk, m.home, 'HOME');
+  var awayFaces = (m.homeHand === 'L' || m.homeHand === 'R') ? m.homeHand : '?';
+  var homeFaces = (m.awayHand === 'L' || m.awayHand === 'R') ? m.awayHand : '?';
+  var inner;
+  if (!awayRows.length && !homeRows.length) {
+    inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + escHtml(gk) + '</span>. Expected Game column format: AWY@HOM (e.g. ATL@PHI).</div>';
+  } else {
+    inner = '<div class="matchup-lineup-grid">'
+      + buildLineupColHtml(m.away + ' (away)', awayRows, awayFaces)
+      + buildLineupColHtml(m.home + ' (home)', homeRows, homeFaces)
+      + '</div>';
+  }
+  return '<div class="matchup-lineup-actions">'
+    + '<button type="button" class="matchup-lineup-toggle" aria-expanded="false">Show Lineup</button>'
+    + '</div>'
+    + '<div class="matchup-lineup-panel" aria-hidden="true">'
+    + inner
+    + '</div>';
+}
+
+function toggleMatchupLineup(btn) {
+  var card = btn.closest('.matchup-card');
+  if (!card) return;
+  var panel = card.querySelector('.matchup-lineup-panel');
+  if (!panel) return;
+  var open = !panel.classList.contains('is-open');
+  panel.classList.toggle('is-open', open);
+  panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  btn.textContent = open ? 'Hide Lineup' : 'Show Lineup';
+}
+
 function osiGradeColor(v) {
   if (v === null || v === undefined || isNaN(v)) return 'var(--text-3)';
   if (v >= 65) return 'var(--green)';
@@ -1850,6 +2117,7 @@ function renderMatchups() {
       + '<span class="matchup-osi-team tr">' + m.home + '</span>'
       + '</div>'
       + edgeHtml
+      + buildMatchupLineupBlock(m)
       + '</article>';
   }).join('');
 }
@@ -1920,10 +2188,13 @@ function loadLiveData() {
     fetchSheetTab('OOR'),
     fetchSheetTab('Pitching_Score'),
     fetchSheetTab('PALS'),
+    fetchSheetTab('Today_Lineups'),
+    fetchSheetTab('Today_Games'),
     fetchSheetText('Last_Updated')
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
-        pitchingRows = results[3], palsRows = results[4], tsText = results[5];
+        pitchingRows = results[3], palsRows = results[4],
+        lineupsRows = results[5], gamesRows = results[6], tsText = results[7];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -1932,6 +2203,8 @@ function loadLiveData() {
     LIVE_DATA.oor = parseOorRows(oorRows);
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
     LIVE_DATA.pals = parsePalsRows(palsRows);
+    LIVE_DATA.lineups = parseLineupRows(lineupsRows);
+    LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
@@ -3977,6 +4250,16 @@ function hideLoadingScreen() {
 function init(){
   fetchLiveData();
   urlDecodeState();
+  var mg = document.getElementById('matchupsGrid');
+  if (mg && !mg.dataset.lineupToggleBound) {
+    mg.dataset.lineupToggleBound = '1';
+    mg.addEventListener('click', function(e) {
+      var btn = e.target.closest('.matchup-lineup-toggle');
+      if (!btn) return;
+      e.preventDefault();
+      toggleMatchupLineup(btn);
+    });
+  }
   document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
     x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
   });
