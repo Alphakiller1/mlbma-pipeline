@@ -900,6 +900,20 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   background: linear-gradient(90deg, var(--green-d), var(--green));
   box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
 }
+.matchup-platoon-row {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-2);
+  line-height: 1.45;
+  margin: 2px 0 10px;
+  text-align: center;
+  padding: 0 4px;
+}
+.matchup-platoon-sep {
+  color: var(--text-3);
+  margin: 0 8px;
+  font-weight: 500;
+}
 .matchup-edge {
   font-size: 11px;
   font-weight: 600;
@@ -1941,6 +1955,32 @@ function platoonHighlightClass(batsNorm, oppPitcherHand) {
   return '';
 }
 
+function computePlatoonPct(rows, oppPitcherHand) {
+  if (!rows || !rows.length) return null;
+  var o = String(oppPitcherHand || '').trim().toUpperCase().charAt(0);
+  if (o !== 'L' && o !== 'R') return null;
+  var slice = rows.slice(0, 9);
+  var n = slice.length;
+  if (!n) return null;
+  var adv = 0;
+  for (var i = 0; i < n; i++) {
+    if (platoonHighlightClass(normalizeBatsHand(slice[i].bats), oppPitcherHand)) adv++;
+  }
+  return (adv / n) * 100;
+}
+
+function platoonScoreColor(pct) {
+  if (pct === null || pct === undefined || isNaN(pct)) return 'var(--text-3)';
+  if (pct >= 70) return 'var(--green)';
+  if (pct >= 55) return 'var(--gold)';
+  return 'var(--text-2)';
+}
+
+function spHandLabel(h) {
+  if (h === 'L' || h === 'R') return h + 'HP';
+  return '?HP';
+}
+
 function lineupRowsForTeam(lineups, gameKey, teamAbbr, sideAwayHome) {
   if (!lineups || !lineups.length || !gameKey || !teamAbbr) return [];
   var gk = normalizeGameKey(gameKey);
@@ -2074,6 +2114,25 @@ function renderMatchups() {
       ? '<div class="matchup-edge">Lineup edge: ' + m.lineupEdge + '</div>'
       : '';
 
+    var gkPlat = matchupGameKey(m);
+    var luPlat = LIVE_DATA.lineups || [];
+    var awayLuPlat = lineupRowsForTeam(luPlat, gkPlat, m.away, 'AWAY');
+    var homeLuPlat = lineupRowsForTeam(luPlat, gkPlat, m.home, 'HOME');
+    var awayPlatPct = computePlatoonPct(awayLuPlat, homeHand);
+    var homePlatPct = computePlatoonPct(homeLuPlat, awayHand);
+    function platoonPctSpan(pct) {
+      if (pct === null || pct === undefined || isNaN(pct)) {
+        return '<span style="color:var(--text-3);font-weight:600">—</span>';
+      }
+      var v = Math.round(pct);
+      return '<span style="color:' + platoonScoreColor(pct) + ';font-weight:600">' + v + '%</span>';
+    }
+    var platoonRowHtml = '<div class="matchup-platoon-row">'
+      + 'Away platoon vs ' + spHandLabel(homeHand) + ': ' + platoonPctSpan(awayPlatPct)
+      + '<span class="matchup-platoon-sep">|</span>'
+      + 'Home platoon vs ' + spHandLabel(awayHand) + ': ' + platoonPctSpan(homePlatPct)
+      + '</div>';
+
     return '<article class="' + cardCls + '">'
       + '<div class="matchup-time">' + (m.time || 'TBD') + '</div>'
       + '<div class="matchup-headline">'
@@ -2116,6 +2175,7 @@ function renderMatchups() {
       + '<span class="matchup-osi-val tr" style="color:' + osiGradeColor(m.homeOSI) + '">' + fmtMatchupStat(m.homeOSI) + '</span>'
       + '<span class="matchup-osi-team tr">' + m.home + '</span>'
       + '</div>'
+      + platoonRowHtml
       + edgeHtml
       + buildMatchupLineupBlock(m)
       + '</article>';
