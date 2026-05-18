@@ -15,3 +15,5 @@ crawl_env/
 # VS Code
 .vscode/
 google_credentials.json
+
+pipeline_log.txt
