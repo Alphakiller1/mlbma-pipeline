@@ -378,6 +378,17 @@ tbody tr:last-child td { border-bottom: none; }
   font-size: 12px; color: var(--text-3); letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+.last-updated {
+  font-size: 11px; color: var(--text-3); margin-top: 6px;
+  font-family: var(--mono);
+}
+.last-updated.live { color: var(--green); }
+.data-error-banner {
+  display: none; margin-top: 10px; padding: 10px 14px;
+  background: var(--red-dim); border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 8px; font-size: 12px; color: var(--red-l); line-height: 1.5;
+}
+.data-error-banner.show { display: block; }
 
 .method-note {
   background: var(--bg-3); border: 1px solid var(--border);
@@ -751,7 +762,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
 
 <div class="loading" id="loadingScreen">
   <div class="spinner"></div>
-  <div class="loading-text">Loading OEM Framework v4</div>
+  <div class="loading-text" id="loadingText">Loading live data from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -767,10 +778,11 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   </div>
   <div class="brand-row">
     <span class="brand-tag">Official Chase Analytics Tool</span>
-    <span class="brand-pill">v4 · OOR + PALS · Updated Formulas · 30 Teams</span>
+    <span class="brand-pill" id="brandPill">Loading…</span>
   </div>
   <h1>Chase Analytics • MLB Offensive Extrapolation Model</h1>
   <div class="subtitle">A cleaner daily view of MLB offense: choose a split, scan the league context, then use the table and chart for deeper team research.</div>
+  <div class="data-error-banner" id="dataErrorBanner"></div>
 </div>
 
 <!-- Welcome / Help -->
@@ -1143,6 +1155,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
         <button class="btn" data-metric="velocity" onclick="setModalMetric('velocity')">Trend Velocity</button>
         <button class="btn" data-metric="sus" onclick="setModalMetric('sus')">Sustainability</button>
         <button class="btn" data-metric="reg" onclick="setModalMetric('reg')">Regression Gap</button>
+        <button class="btn" data-metric="pitchScore" onclick="setModalMetric('pitchScore')">Pitching Score</button>
       </div>
       <div id="modalContent"></div>
     </div>
@@ -1151,10 +1164,417 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
 
 <script>
 /* ============================================================
+   GOOGLE SHEETS — public CSV export (no API key)
+   ============================================================ */
+var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
+var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], rhp: null, lhp: null };
+
+function sheetCsvUrl(tabName) {
+  return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName);
+}
+
+function parseCSV(text) {
+  var lines = text.trim().split('\n');
+  var headers = lines[0].split(',').map(function(h){ return h.replace(/"/g,'').trim(); });
+  return lines.slice(1).map(function(line){
+    var vals = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+    var obj = {};
+    headers.forEach(function(h,i){
+      var v = vals[i] ? vals[i].replace(/"/g,'').trim() : '';
+      obj[h] = isNaN(v) || v==='' ? v : parseFloat(v);
+    });
+    return obj;
+  });
+}
+
+function fetchLiveData() {
+  var tabs = ['vs_RHP','vs_LHP','OOR','Pitching_Score','Last_Updated'];
+  var fetches = tabs.map(function(tab){
+    return fetch(sheetCsvUrl(tab)).then(function(r){ return r.text(); }).then(function(t){ return {tab:tab, data:parseCSV(t)}; });
+  });
+  Promise.all(fetches).then(function(results){
+    results.forEach(function(r){
+      if(r.tab==='vs_RHP') LIVE_DATA.rhp = r.data;
+      if(r.tab==='vs_LHP') LIVE_DATA.lhp = r.data;
+      if(r.tab==='OOR') LIVE_DATA.oor = r.data;
+      if(r.tab==='Pitching_Score') LIVE_DATA.pitching = r.data;
+      if(r.tab==='Last_Updated'){
+        var ts = r.data[0] && r.data[0]['Last Updated'];
+        if(ts){ LIVE_DATA.lastUpdated = ts; var el=document.getElementById('brandPill'); if(el) el.textContent='Updated: '+ts; }
+      }
+    });
+    /* scYtdR/scYtdL + display refresh handled by loadLiveData() → applyLiveData() */
+  }).catch(function(e){
+    console.error('Live data fetch failed:', e);
+    var el=document.getElementById('brandPill'); if(el) el.textContent='Data load failed — using cached';
+  });
+}
+
+/** Ensure ppGap/dfGap/reg and related fields exist on a pre-scored live row */
+function prepLiveScoreRow(d) {
+  var r = Object.assign({}, d);
+  var reg = r.reg != null ? r.reg : r.reg_signal;
+  r.reg = reg;
+  r.reg_signal = reg;
+  r.ppGap = (r.ppGap != null && !isNaN(r.ppGap)) ? r.ppGap : (r.abq - r.rcv);
+  r.dfGap = (r.dfGap != null && !isNaN(r.dfGap)) ? r.dfGap : (r.rcv - r.obr);
+  if (r.projOSI == null || isNaN(r.projOSI)) r.projOSI = r.osi;
+  if (r.regAdj == null && reg != null) r.regAdj = Math.max(-8, Math.min(8, reg * 450));
+  if (r.regSup == null) r.regSup = reg != null ? Math.max(0, Math.min(100, 50 + (reg * 1000) * 2.5)) : 50;
+  if (r.qc == null) r.qc = 50;
+  if (r.disc == null) r.disc = 50;
+  if (r.contStab == null) r.contStab = 50;
+  return r;
+}
+
+function ensureHardcodedTimeframes() {
+  SCO_L30_B = buildScores('L30', 'b');
+  SCO_L14_B = buildScores('L14', 'b');
+  SCO_L7_B = buildScores('L7', 'b');
+  M_L30 = toMap(SCO_L30_B);
+  M_L14 = toMap(SCO_L14_B);
+  M_L7 = toMap(SCO_L7_B);
+}
+
+function applyLiveData() {
+  if (!LIVE_DATA.scYtdR || !LIVE_DATA.scYtdL) return;
+  if (!LIVE_DATA.scYtdR.length || !LIVE_DATA.scYtdL.length) return;
+
+  LIVE_DATA.loaded = true;
+  LIVE_DATA.scYtdR = LIVE_DATA.scYtdR.map(prepLiveScoreRow);
+  LIVE_DATA.scYtdL = LIVE_DATA.scYtdL.map(prepLiveScoreRow);
+
+  /* Pre-scored 0–100 from pipeline — bypass scoreRows(), assign directly */
+  SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
+  SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
+  SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
+
+  M_YTD_R = toMap(SCO_YTD_R);
+  M_YTD_L = toMap(SCO_YTD_L);
+  ensureHardcodedTimeframes();
+  enrichYtdMaster();
+
+  SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
+  SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
+
+  renderOOR();
+  renderPitchingScore();
+  renderAll();
+}
+
+function parseCSVLine(line) {
+  var out = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line.charAt(i);
+    if (c === '"') {
+      if (inQ && line.charAt(i + 1) === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function pickCol(row, names) {
+  for (var i = 0; i < names.length; i++) {
+    if (row[names[i]] !== undefined && row[names[i]] !== '') return row[names[i]];
+  }
+  return '';
+}
+
+function fetchSheetTab(tabName) {
+  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' }).then(function(res) {
+    if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
+    return res.text();
+  }).then(function(text) {
+    return parseCSV(text);
+  });
+}
+
+function fetchSheetText(tabName) {
+  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' }).then(function(res) {
+    if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
+    return res.text();
+  });
+}
+
+function numOrNull(v) {
+  if (v === null || v === undefined || v === '') return null;
+  var n = parseFloat(String(v).replace(/%/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+function scoreRowFromSheet(row) {
+  var t = pickCol(row, ['Tm', 'tm', 'Team']).toUpperCase();
+  if (!t) return null;
+  var abq = numOrNull(pickCol(row, ['ABQ', 'abq']));
+  var rcv = numOrNull(pickCol(row, ['RCV', 'rcv']));
+  var obr = numOrNull(pickCol(row, ['OBR', 'obr']));
+  var osi = numOrNull(pickCol(row, ['OSI', 'osi']));
+  var projOSI = numOrNull(pickCol(row, ['projOSI', 'ProjOSI', 'proj_osi']));
+  var reg = numOrNull(pickCol(row, ['reg_signal', 'reg_signal', 'Reg_signal']));
+  if (abq === null || rcv === null || obr === null || osi === null) return null;
+  if (projOSI === null) projOSI = osi;
+  var regAdj = reg !== null ? Math.max(-8, Math.min(8, reg * 450)) : 0;
+  var ppGap = abq - rcv;
+  var dfGap = rcv - obr;
+  var regSup = reg !== null ? Math.max(0, Math.min(100, 50 + (reg * 1000) * 2.5)) : 50;
+  return {
+    t: t, abq: abq, rcv: rcv, obr: obr, osi: osi, projOSI: projOSI,
+    reg: reg, reg_signal: reg, regAdj: regAdj, ppGap: ppGap, dfGap: dfGap,
+    regSup: regSup, qc: 50, disc: 50, contStab: 50, osiZ: 0,
+    pa: null, w: null, x: null, wrc: null,
+    raw: { sheet: true, live: true }
+  };
+}
+
+/** Map pipeline score row → split object stored on YTD team entry */
+function splitFromScoreRow(sc) {
+  if (!sc) return null;
+  return {
+    abq: sc.abq, rcv: sc.rcv, obr: sc.obr, osi: sc.osi,
+    projOSI: sc.projOSI, reg_signal: sc.reg_signal != null ? sc.reg_signal : sc.reg
+  };
+}
+
+/** Build YTD team list from live vs_RHP / vs_LHP (bypasses scoreRows) */
+function buildYtdFromLive(scR, scL) {
+  var rMap = {}, lMap = {};
+  scR.forEach(function(r) { rMap[r.t] = r; });
+  scL.forEach(function(l) { lMap[l.t] = l; });
+  var teams = {};
+  scR.forEach(function(r) { teams[r.t] = true; });
+  scL.forEach(function(l) { teams[l.t] = true; });
+  return Object.keys(teams).sort().map(function(t) {
+    var fb = FALLBACK_YTD.find(function(d) { return d.t === t; });
+    var rSc = rMap[t], lSc = lMap[t];
+    var r = splitFromScoreRow(rSc);
+    var l = splitFromScoreRow(lSc);
+    if (fb) {
+      if (r && fb.r) { r.pa = fb.r.pa; r.pp = fb.r.pp; }
+      if (l && fb.l) { l.pa = fb.l.pa; l.pp = fb.l.pp; }
+    }
+    var b = null;
+    if (rSc && lSc) {
+      var w = getPaWeights(t), wR = w.wR, wL = w.wL;
+      function blend(k) { return wR * rSc[k] + wL * lSc[k]; }
+      var regB = (rSc.reg != null && lSc.reg != null) ? wR * rSc.reg + wL * lSc.reg : (rSc.reg != null ? rSc.reg : lSc.reg);
+      b = {
+        abq: blend('abq'), rcv: blend('rcv'), obr: blend('obr'),
+        osi: blend('osi'), projOSI: blend('projOSI'), reg_signal: regB
+      };
+      if (fb && fb.b) { b.pa = (fb.r && fb.l) ? (fb.r.pa || 0) + (fb.l.pa || 0) : fb.b.pa; }
+    } else if (rSc) {
+      b = splitFromScoreRow(rSc);
+    } else if (lSc) {
+      b = splitFromScoreRow(lSc);
+    }
+    return { t: t, r: r, l: l, b: b };
+  });
+}
+
+function saveLiveCache(payload) {
+  try { sessionStorage.setItem(LIVE_CACHE_KEY, JSON.stringify(payload)); } catch (e) {}
+}
+
+function loadLiveCache() {
+  try {
+    var raw = sessionStorage.getItem(LIVE_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+
+function applyLiveCache(cache) {
+  LIVE_DATA.oor = cache.oor || [];
+  LIVE_DATA.pitching = cache.pitching || [];
+  LIVE_DATA.lastUpdated = cache.lastUpdated || null;
+  LIVE_DATA.scYtdR = cache.scYtdR || [];
+  LIVE_DATA.scYtdL = cache.scYtdL || [];
+  LIVE_DATA.error = null;
+  YTD = cache.ytd || buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
+  applyLiveData();
+}
+
+function getPaWeights(team) {
+  var fb = FALLBACK_YTD.find(function(d) { return d.t === team; });
+  var paR = fb && fb.r && fb.r.pa ? fb.r.pa : null;
+  var paL = fb && fb.l && fb.l.pa ? fb.l.pa : null;
+  if (paR && paL && paR + paL > 0) {
+    return { wR: paR / (paR + paL), wL: paL / (paR + paL) };
+  }
+  return { wR: 0.5, wL: 0.5 };
+}
+
+function buildYtdBothFromSplits(scR, scL) {
+  var byTeam = {};
+  scR.forEach(function(r) { byTeam[r.t] = { r: r }; });
+  scL.forEach(function(l) {
+    if (!byTeam[l.t]) byTeam[l.t] = {};
+    byTeam[l.t].l = l;
+  });
+  return Object.keys(byTeam).sort().map(function(t) {
+    var pack = byTeam[t], r = pack.r, l = pack.l;
+    if (!r && l) return JSON.parse(JSON.stringify(l));
+    if (r && !l) return JSON.parse(JSON.stringify(r));
+    var w = getPaWeights(t);
+    var wR = w.wR, wL = w.wL;
+    function blend(k) { return wR * r[k] + wL * l[k]; }
+    var reg = (r.reg !== null && l.reg !== null) ? wR * r.reg + wL * l.reg : (r.reg != null ? r.reg : l.reg);
+    var row = {
+      t: t,
+      abq: blend('abq'), rcv: blend('rcv'), obr: blend('obr'),
+      osi: blend('osi'), projOSI: blend('projOSI'),
+      reg: reg,
+      regAdj: reg !== null ? Math.max(-8, Math.min(8, reg * 450)) : 0,
+      ppGap: blend('abq') - blend('rcv'),
+      dfGap: blend('rcv') - blend('obr'),
+      regSup: reg !== null ? Math.max(0, Math.min(100, 50 + (reg * 1000) * 2.5)) : 50,
+      qc: 50, disc: 50, contStab: 50, osiZ: 0,
+      pa: null, w: null, x: null, wrc: null,
+      raw: { sheet: true, blended: true }
+    };
+    return row;
+  });
+}
+
+
+
+function parsePitchingRows(rows) {
+  return rows.map(function(row) {
+    var t = pickCol(row, ['Tm', 'tm', 'Team']).toUpperCase();
+    if (!t) return null;
+    var keys = Object.keys(row);
+    var kKey = keys.find(function(k) { return /^k%$/i.test(k); });
+    var bbKey = keys.find(function(k) { return /^bb%$/i.test(k); });
+    var hrKey = keys.find(function(k) { return /hr\/9/i.test(k); });
+    return {
+      t: t,
+      kPct: numOrNull(kKey ? row[kKey] : ''),
+      bbPct: numOrNull(bbKey ? row[bbKey] : ''),
+      hr9: numOrNull(hrKey ? row[hrKey] : ''),
+      pitchScore: numOrNull(pickCol(row, ['PitchScore', 'Pitchscore']))
+    };
+  }).filter(Boolean);
+}
+
+function parseOorRows(rows) {
+  return rows.map(function(row) {
+    var t = pickCol(row, ['Tm', 'tm']).toUpperCase();
+    if (!t) return null;
+    return {
+      t: t,
+      hvP: numOrNull(pickCol(row, ['HvP', 'hvP', 'HVP'])),
+      hvL: numOrNull(pickCol(row, ['HvL', 'hvL', 'HVL'])),
+      hvR: numOrNull(pickCol(row, ['HvR', 'hvR', 'HVR'])),
+      vPpct: pickCol(row, ['vP_pct', 'vP_pct', 'VP_pct']),
+      vPRank: parseInt(pickCol(row, ['vP_Rank', 'vP_Rank']), 10) || null,
+      vLRank: parseInt(pickCol(row, ['vL_Rank', 'vL_Rank']), 10) || null,
+      vRRank: parseInt(pickCol(row, ['vR_Rank', 'vR_Rank']), 10) || null
+    };
+  }).filter(Boolean);
+}
+
+function parseLastUpdatedFromText(text) {
+  var lines = (text || '').replace(/^\ufeff/, '').trim().split(/\r?\n/);
+  if (!lines.length) return null;
+  var first = parseCSVLine(lines[0]);
+  if (first.length >= 2 && /last\s*updated/i.test(first[0])) {
+    return first[1].replace(/^"|"$/g, '').trim();
+  }
+  if (lines.length >= 2) {
+    var a2 = parseCSVLine(lines[1]);
+    var cell = (a2[0] || '').replace(/^"|"$/g, '').trim();
+    if (cell && /\d{4}/.test(cell) && !/^(season|source)/i.test(cell)) return cell;
+  }
+  return null;
+}
+
+function updateBrandPill() {
+  var pill = document.getElementById('brandPill');
+  if (!pill) return;
+  if (LIVE_DATA.loaded && LIVE_DATA.lastUpdated) {
+    pill.textContent = 'Last updated: ' + LIVE_DATA.lastUpdated;
+    pill.style.background = 'var(--green-dim)';
+    pill.style.color = 'var(--green)';
+    pill.style.borderColor = 'rgba(74, 222, 128, 0.35)';
+  } else if (LIVE_DATA.error) {
+    pill.textContent = 'Last updated: unavailable';
+    pill.style.background = 'var(--red-dim)';
+    pill.style.color = 'var(--red-l)';
+    pill.style.borderColor = 'rgba(248, 113, 113, 0.35)';
+  } else {
+    pill.textContent = 'Loading…';
+  }
+}
+
+function showDataError(msg) {
+  var el = document.getElementById('dataErrorBanner');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function loadLiveData() {
+  var loadingText = document.getElementById('loadingText');
+  if (loadingText) loadingText.textContent = 'Loading live data from Google Sheets…';
+  return Promise.all([
+    fetchSheetTab('vs_RHP'),
+    fetchSheetTab('vs_LHP'),
+    fetchSheetTab('OOR'),
+    fetchSheetTab('Pitching_Score'),
+    fetchSheetText('Last_Updated')
+  ]).then(function(results) {
+    var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
+        pitchingRows = results[3], tsText = results[4];
+    var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
+    var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
+    if (scR.length < 10 || scL.length < 10) {
+      throw new Error('Sheet returned too few teams (expected ~30). Check that tabs are published.');
+    }
+    LIVE_DATA.oor = parseOorRows(oorRows);
+    LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
+    LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
+    LIVE_DATA.loaded = true;
+    LIVE_DATA.error = null;
+    LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
+    LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });
+    YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
+    applyLiveData();
+    saveLiveCache({
+      lastUpdated: LIVE_DATA.lastUpdated,
+      oor: LIVE_DATA.oor,
+      pitching: LIVE_DATA.pitching,
+      scYtdR: LIVE_DATA.scYtdR,
+      scYtdL: LIVE_DATA.scYtdL,
+      ytd: YTD
+    });
+  }).catch(function(err) {
+    LIVE_DATA.loaded = false;
+    LIVE_DATA.error = err && err.message ? err.message : String(err);
+    var cached = loadLiveCache();
+    if (cached && cached.scYtdR && cached.scYtdR.length) {
+      applyLiveCache(cached);
+      showDataError(
+        'Could not refresh live data. Showing last known sheet data. (' + LIVE_DATA.error + ')'
+      );
+    } else {
+      YTD = FALLBACK_YTD.map(function(d) { return JSON.parse(JSON.stringify(d)); });
+      recomputeAllScores();
+      showDataError(
+        'Could not load live Google Sheets data. Showing embedded fallback. (' + LIVE_DATA.error + ')'
+      );
+    }
+  });
+}
+
+/* ============================================================
    DATA - YTD, L30, L14, L7 (real 2026 season parsed)
    ============================================================ */
 
-var YTD=[
+var FALLBACK_YTD=[
  {t:'ARI',b:{o:.306,bb:8.1,k:21.4,sw:10.3,ch:35.8,zc:87.8,hh:33.7,br:7.1,w:.306,x:.305,iso:.153,wrc:92,avg:.234},l:{o:.318,bb:7.4,k:18.3,sw:10.9,ch:34.3,zc:85.3,hh:40.4,br:7.0,x:.318,iso:.113,pa:487,pp:3.91},r:{o:.299,bb:8.3,k:22.8,sw:11.6,ch:33.1,zc:85.0,hh:36.3,br:7.3,x:.299,iso:.118,pa:1051,pp:3.99}},
  {t:'ATH',b:{o:.327,bb:9.7,k:22.5,sw:11.8,ch:32.7,zc:85.2,hh:34.4,br:9.0,w:.327,x:.326,iso:.154,wrc:103,avg:.252},l:{o:.289,bb:8.5,k:25.1,sw:14.2,ch:33.1,zc:78.5,hh:38.4,br:7.2,x:.289,iso:.085,pa:506,pp:3.84},r:{o:.342,bb:9.5,k:21.5,sw:12.1,ch:29.1,zc:84.8,hh:43.3,br:9.7,x:.342,iso:.119,pa:1144,pp:3.87}},
  {t:'ATL',b:{o:.344,bb:7.9,k:20.8,sw:11.4,ch:36.3,zc:86.0,hh:36.8,br:10.1,w:.344,x:.339,iso:.177,wrc:119,avg:.27},l:{o:.313,bb:6.7,k:19.9,sw:13.0,ch:34.5,zc:81.7,hh:37.8,br:6.7,x:.313,iso:.127,pa:582,pp:3.77},r:{o:.353,bb:8.2,k:21.4,sw:12.5,ch:33.7,zc:83.6,hh:43.3,br:12.0,x:.353,iso:.14,pa:1086,pp:3.95}},
@@ -1186,6 +1606,7 @@ var YTD=[
  {t:'TOR',b:{o:.307,bb:8.0,k:18.2,sw:10.2,ch:36.8,zc:87.5,hh:32.5,br:6.5,w:.307,x:.31,iso:.129,wrc:93,avg:.246},l:{o:.312,bb:9.7,k:18.3,sw:10.6,ch:31.4,zc:87.1,hh:38.9,br:6.1,x:.312,iso:.078,pa:443,pp:3.82},r:{o:.309,bb:6.9,k:18.3,sw:11.5,ch:35.4,zc:84.7,hh:36.3,br:6.7,x:.309,iso:.098,pa:1166,pp:3.74}},
  {t:'WSH',b:{o:.325,bb:9.5,k:22.1,sw:11.0,ch:31.9,zc:86.6,hh:31.8,br:8.7,w:.325,x:.326,iso:.166,wrc:107,avg:.242},l:{o:.333,bb:10.1,k:24.8,sw:13.3,ch:31.8,zc:81.2,hh:35.3,br:9.0,x:.333,iso:.107,pa:505,pp:3.88},r:{o:.324,bb:8.5,k:21.2,sw:11.4,ch:29.6,zc:84.1,hh:40.3,br:8.6,x:.324,iso:.126,pa:1195,pp:3.84}}
 ];
+var YTD = FALLBACK_YTD.map(function(d) { return JSON.parse(JSON.stringify(d)); });
 
 var L30=[
  {t:'ARI',b:{o:.31,bb:8.8,k:19.8,sw:9.6,ch:36.2,zc:88.1,hh:33.4,br:7.4,w:.31,x:.308,iso:.154,wrc:95},l:{o:.312,bb:8.3,k:17.6,sw:11.1,ch:35.2,zc:83.7,hh:40.0,br:7.3,x:.312,iso:.124,pa:278,pp:3.94},r:{o:.306,bb:8.9,k:20.8,sw:10.8,ch:32.6,zc:85.3,hh:37.2,br:7.5,x:.306,iso:.112,pa:615,pp:3.9}},
@@ -1450,21 +1871,12 @@ function buildScores(timeframe, splitTab) {
    FULL DATA COMPUTE - YTD baseline for splits/sustainability
    ============================================================ */
 
-var SCO_YTD_B = buildScores('YTD','b');
-var SCO_YTD_R = buildScores('YTD','r');
-var SCO_YTD_L = buildScores('YTD','l');
-var SCO_L30_B = buildScores('L30','b');
-var SCO_L14_B = buildScores('L14','b');
-var SCO_L7_B = buildScores('L7','b');
+var SCO_YTD_B, SCO_YTD_R, SCO_YTD_L, SCO_L30_B, SCO_L14_B, SCO_L7_B;
+var M_YTD_R, M_YTD_L, M_L30, M_L14, M_L7;
 
 function toMap(arr){var m={};arr.forEach(function(r){m[r.t]=r;});return m;}
-var M_YTD_R = toMap(SCO_YTD_R);
-var M_YTD_L = toMap(SCO_YTD_L);
-var M_L30 = toMap(SCO_L30_B);
-var M_L14 = toMap(SCO_L14_B);
-var M_L7 = toMap(SCO_L7_B);
 
-// Enrich YTD master with platoon, sustainability, trend
+function enrichYtdMaster() {
 SCO_YTD_B.forEach(function(d){
   var l30 = M_L30[d.t] ? M_L30[d.t].osi : null;
   var l14 = M_L14[d.t] ? M_L14[d.t].osi : null;
@@ -1521,9 +1933,37 @@ SCO_YTD_B.forEach(function(d){
   else d.trend='Stable';
 });
 
-// Enrich split tables with PA for badges
 SCO_YTD_R.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'r');});
 SCO_YTD_L.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'l');});
+}
+
+function recomputeAllScores() {
+  /* Live sheet scores are pre-normalized 0–100 by the Python pipeline — skip scoreRows() */
+  if (LIVE_DATA.loaded && LIVE_DATA.scYtdR && LIVE_DATA.scYtdL) {
+    SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
+    SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
+    SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
+  } else {
+    SCO_YTD_B = buildScores('YTD', 'b');
+    SCO_YTD_R = buildScores('YTD', 'r');
+    SCO_YTD_L = buildScores('YTD', 'l');
+  }
+  if (LIVE_DATA.loaded) {
+    SCO_L30_B = SCO_YTD_B.map(function(d) { return Object.assign({}, d); });
+    SCO_L14_B = SCO_YTD_B.map(function(d) { return Object.assign({}, d); });
+    SCO_L7_B = SCO_YTD_B.map(function(d) { return Object.assign({}, d); });
+  } else {
+    SCO_L30_B = buildScores('L30', 'b');
+    SCO_L14_B = buildScores('L14', 'b');
+    SCO_L7_B = buildScores('L7', 'b');
+  }
+  M_YTD_R = toMap(SCO_YTD_R);
+  M_YTD_L = toMap(SCO_YTD_L);
+  M_L30 = toMap(SCO_L30_B);
+  M_L14 = toMap(SCO_L14_B);
+  M_L7 = toMap(SCO_L7_B);
+  enrichYtdMaster();
+}
 
 /* ============================================================
    FORMATTING HELPERS
@@ -1651,6 +2091,12 @@ function urlDecodeState() {
 }
 
 function currentRows(){
+  /* Live sheet scores only for YTD — L30/L14/L7 keep hardcoded timeframe data */
+  if (LIVE_DATA.loaded && STATE.time === 'YTD') {
+    if (STATE.split === 'b') return SCO_YTD_B;
+    if (STATE.split === 'r') return SCO_YTD_R;
+    return SCO_YTD_L;
+  }
   if(STATE.time==='YTD'){
     if(STATE.split==='b') return SCO_YTD_B;
     if(STATE.split==='r') return SCO_YTD_R;
@@ -2410,9 +2856,10 @@ function setModalMetric(m){
     b.classList.toggle('btn-primary', b.getAttribute('data-metric')===m);
   });
 
-  // currentFormOSI lives only on YTD-enriched rows (needs L30/L14/L7 cross-data)
   var rows;
-  if(m==='currentFormOSI' || m==='ppGap' || m==='dfGap' || m==='projOSI' || m==='sus' || m==='splitEdge' || m==='velocity') {
+  if (m === 'pitchScore') {
+    rows = (LIVE_DATA.pitching || []).map(function(p) { return { t: p.t, pitchScore: p.pitchScore }; });
+  } else if(m==='currentFormOSI' || m==='ppGap' || m==='dfGap' || m==='projOSI' || m==='sus' || m==='splitEdge' || m==='velocity') {
     rows = SCO_YTD_B;
   } else {
     rows = STATE.time==='YTD' && STATE.split==='b' ? SCO_YTD_B : currentRows();
@@ -2421,6 +2868,8 @@ function setModalMetric(m){
   var sorted;
   if(m==='reg'){
     sorted = rows.filter(function(d){return d.reg!==null;}).sort(function(a,b){return b.reg-a.reg;});
+  } else if(m==='pitchScore') {
+    sorted = rows.slice().sort(function(a,b){return (b.pitchScore||0)-(a.pitchScore||0);});
   } else if(m==='ppGap' || m==='dfGap' || m==='velocity') {
     sorted = rows.slice().sort(function(a,b){return b[m]-a[m];});
   } else {
@@ -2438,7 +2887,8 @@ function setModalMetric(m){
     'dfGap':'Damage-Floor Gap (RCV − OBR)',
     'velocity':'Trend Velocity (OSI change per timeframe step)',
     'sus':'Sustainability Score',
-    'reg':'Regression Gap (xwOBA−wOBA, ×1000)'
+    'reg':'Regression Gap (xwOBA−wOBA, ×1000)',
+    'pitchScore':'Pitching Score (staff composite)'
   };
   document.getElementById('modalTitle').textContent = 'Full Rankings — '+(labels[m]||m);
 
@@ -2448,7 +2898,8 @@ function setModalMetric(m){
     'currentFormOSI':'Recency-weighted OSI blending all four timeframes. Best single number for current state.',
     'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = process exceeds output → buy-low candidate. <span style="color:#FBBF24;">Negative (gold)</span> = output exceeds process → sell-high / fade risk.',
     'dfGap':'<span style="color:#FB923C;">Positive (orange)</span> = damage-heavy power offense (boom/bust). <span style="color:#86EFAC;">Negative (green)</span> = on-base/grind floor offense.',
-    'reg':'5-tier signal: <span style="color:#4ADE80;">↑↑ ≥+20</span> Strong Positive · <span style="color:#86EFAC;">↑ +10/+19</span> Mild Positive · <span style="color:#71717A;">→ ±9</span> Stable · <span style="color:#FCA5A5;">↓ −10/−19</span> Mild Negative · <span style="color:#F87171;">↓↓ ≤−20</span> Strong Negative.'
+    'reg':'5-tier signal: <span style="color:#4ADE80;">↑↑ ≥+20</span> Strong Positive · <span style="color:#86EFAC;">↑ +10/+19</span> Mild Positive · <span style="color:#71717A;">→ ±9</span> Stable · <span style="color:#FCA5A5;">↓ −10/−19</span> Mild Negative · <span style="color:#F87171;">↓↓ ≤−20</span> Strong Negative.',
+    'pitchScore':'Composite staff score from K%, BB%, and HR/9. Higher PitchScore = stronger pitching profile.'
   };
   var guideHtml = guides[m] ? '<div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11.5px;color:var(--text-2);line-height:1.5;">'+guides[m]+'</div>' : '';
 
@@ -2477,6 +2928,10 @@ function setModalMetric(m){
       displayV = (v>0?'+':'')+v.toFixed(2);
       pct = Math.min(100, (Math.abs(v)/12)*100);
       c = v>1.5 ? '#4ADE80' : v<-1.5 ? '#F87171' : '#A1A1AA';
+    } else if(m==='pitchScore') {
+      displayV = v.toFixed(1);
+      pct = Math.min(100, Math.max(0, v));
+      c = tcol(v);
     } else {
       displayV = v.toFixed(1);
       pct = Math.min(100, Math.max(0, v));
@@ -2975,55 +3430,105 @@ function renderAll(){
   renderComparePane();
   renderMatchupOutput();
   renderOOR();
+  renderPitchingScore();
   urlEncodeState();
 }
 
 /* ============================================================
    OOR — Opponent Offensive Rating
    ============================================================ */
-function renderOOR(){
-  var sc = buildScores('YTD','b');
-  var scR = buildScores('YTD','r');
-  var scL = buildScores('YTD','l');
-  var mR = toMap(scR); var mL = toMap(scL);
 
-  var rows = sc.map(function(d){
-    var hvR = mR[d.t] ? mR[d.t].osi : null;
-    var hvL = mL[d.t] ? mL[d.t].osi : null;
-    var hvP = (hvR!==null && hvL!==null) ? (0.55*hvR + 0.45*hvL) : (hvR || hvL || 0);
-    return {t:d.t, hvR:hvR, hvL:hvL, hvP:hvP};
-  });
-
-  var mean = rows.reduce(function(a,b){return a+b.hvP;},0)/rows.length;
-  rows.forEach(function(r){
-    r.vPpct = ((r.hvP - mean)/mean*100).toFixed(1)+'%';
-  });
-  rows.sort(function(a,b){return b.hvP - a.hvP;});
-
-  var el = document.getElementById('oorTableBody');
-  if(!el) return;
-  el.innerHTML = rows.map(function(r,i){
-    var oor = r.hvP;
-    var cl = oor >= 65 ? 'var(--red)' : oor >= 50 ? 'var(--gold)' : oor >= 35 ? 'var(--text-2)' : 'var(--green)';
-    var vPpctNum = parseFloat(r.vPpct);
-    var pctCl = vPpctNum > 10 ? 'var(--red)' : vPpctNum < -10 ? 'var(--green)' : 'var(--text-2)';
-    return '<tr>'
-      +'<td class="rank-cell">'+(i+1)+'</td>'
-      +'<td class="team-cell" style="color:var(--purple)">'+r.t+'</td>'
-      +'<td class="num" style="color:'+cl+'">'+r.hvP.toFixed(1)+'</td>'
-      +'<td class="num">'+(r.hvL!==null?r.hvL.toFixed(1):'—')+'</td>'
-      +'<td class="num">'+(r.hvR!==null?r.hvR.toFixed(1):'—')+'</td>'
-      +'<td class="num" style="color:'+pctCl+'">'+r.vPpct+'</td>'
-      +'<td class="num">'+rows.filter(function(x){return x.hvP>=r.hvP;}).length+'</td>'
-      +'<td class="num">'+rows.filter(function(x){return (x.hvL||0)>=(r.hvL||0);}).length+'</td>'
-      +'<td class="num">'+rows.filter(function(x){return (x.hvR||0)>=(r.hvR||0);}).length+'</td>'
-      +'</tr>';
+function renderPitchingScore() {
+  var el = document.getElementById('pitchingTableBody');
+  if (!el) return;
+  if (LIVE_DATA.error && !LIVE_DATA.pitching.length) {
+    el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--red-l);padding:20px;">Pitching data unavailable.</td></tr>';
+    return;
+  }
+  var rows = LIVE_DATA.pitching.slice();
+  if (!rows.length) {
+    el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">No pitching data loaded.</td></tr>';
+    return;
+  }
+  rows.sort(function(a, b) { return (b.pitchScore || 0) - (a.pitchScore || 0); });
+  el.innerHTML = rows.map(function(r, i) {
+    var ps = r.pitchScore;
+    var cl = ps >= 65 ? 'var(--green)' : ps >= 50 ? 'var(--purple-2)' : ps >= 35 ? 'var(--gold)' : 'var(--red-l)';
+    return '<tr><td class="rank-cell">' + (i + 1) + '</td>'
+      + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
+      + '<td class="num">' + (r.kPct != null ? r.kPct.toFixed(1) : '—') + '</td>'
+      + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : '—') + '</td>'
+      + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : '—') + '</td>'
+      + '<td class="num" style="color:' + cl + ';font-weight:600;">' + (ps != null ? ps.toFixed(1) : '—') + '</td></tr>';
   }).join('');
 }
 
+function renderOOR(){
+  var el = document.getElementById('oorTableBody');
+  if(!el) return;
+
+  var rows;
+  if (LIVE_DATA.loaded && LIVE_DATA.oor.length) {
+    rows = LIVE_DATA.oor.slice();
+    rows.sort(function(a,b){ return (b.hvP || 0) - (a.hvP || 0); });
+  } else if (LIVE_DATA.error && !LIVE_DATA.loaded) {
+    el.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--red-l);padding:20px;">'
+      + 'OOR data unavailable — ' + LIVE_DATA.error + '</td></tr>';
+    return;
+  } else {
+    var scR = SCO_YTD_R || buildScores('YTD', 'r');
+    var scL = SCO_YTD_L || buildScores('YTD', 'l');
+    var mR = toMap(scR), mL = toMap(scL);
+    var teams = {};
+    scR.forEach(function(d){ teams[d.t] = true; });
+    scL.forEach(function(d){ teams[d.t] = true; });
+    rows = Object.keys(teams).map(function(t){
+      var hvR = mR[t] ? mR[t].osi : null;
+      var hvL = mL[t] ? mL[t].osi : null;
+      var hvP = (hvR !== null && hvL !== null) ? (0.55 * hvR + 0.45 * hvL) : (hvR || hvL || 0);
+      return { t: t, hvR: hvR, hvL: hvL, hvP: hvP };
+    });
+    var mean = rows.reduce(function(a,b){ return a + b.hvP; }, 0) / Math.max(1, rows.length);
+    rows.forEach(function(r){
+      r.vPpct = ((r.hvP - mean) / mean * 100).toFixed(1) + '%';
+    });
+    rows.sort(function(a,b){ return b.hvP - a.hvP; });
+  }
+
+  el.innerHTML = rows.map(function(r, i){
+    var oor = r.hvP;
+    if (oor === null || oor === undefined) return '';
+    var cl = oor >= 65 ? 'var(--red)' : oor >= 50 ? 'var(--gold)' : oor >= 35 ? 'var(--text-2)' : 'var(--green)';
+    var vPpct = r.vPpct || '—';
+    var vPpctNum = parseFloat(vPpct);
+    var pctCl = !isNaN(vPpctNum) && vPpctNum > 10 ? 'var(--red)' : !isNaN(vPpctNum) && vPpctNum < -10 ? 'var(--green)' : 'var(--text-2)';
+    var vPRank = r.vPRank != null ? r.vPRank : (i + 1);
+    var rankL = r.vLRank != null ? r.vLRank : rows.filter(function(x){ return (x.hvL || 0) >= (r.hvL || 0); }).length;
+    var rankR = r.vRRank != null ? r.vRRank : rows.filter(function(x){ return (x.hvR || 0) >= (r.hvR || 0); }).length;
+    return '<tr>'
+      + '<td class="rank-cell">' + (i + 1) + '</td>'
+      + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
+      + '<td class="num" style="color:' + cl + '">' + r.hvP.toFixed(1) + '</td>'
+      + '<td class="num">' + (r.hvL !== null ? r.hvL.toFixed(1) : '—') + '</td>'
+      + '<td class="num">' + (r.hvR !== null ? r.hvR.toFixed(1) : '—') + '</td>'
+      + '<td class="num" style="color:' + pctCl + '">' + vPpct + '</td>'
+      + '<td class="num">' + vPRank + '</td>'
+      + '<td class="num">' + rankL + '</td>'
+      + '<td class="num">' + rankR + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+function hideLoadingScreen() {
+  var screen = document.getElementById('loadingScreen');
+  if (!screen) return;
+  screen.classList.add('hide');
+  setTimeout(function(){ screen.style.display = 'none'; }, 400);
+}
+
 function init(){
+  fetchLiveData();
   urlDecodeState();
-  // Restore UI control states from decoded URL state
   document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
     x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
   });
@@ -3037,17 +3542,16 @@ function init(){
   if(si) si.value = STATE.searchQuery;
   if(STATE.time==='L7') document.getElementById('warnBanner').classList.add('show');
 
-  populateMatchupSelectors();
-
-  renderAll();
-  renderSplitBars();
-  renderTrendHeatmap();
-  renderStrats();
-
-  setTimeout(function(){
-    document.getElementById('loadingScreen').classList.add('hide');
-    setTimeout(function(){document.getElementById('loadingScreen').style.display='none';}, 400);
-  }, 350);
+  loadLiveData().finally(function(){
+    updateBrandPill();
+    populateMatchupSelectors();
+    renderAll();
+    renderSplitBars();
+    renderTrendHeatmap();
+    renderStrats();
+    renderPitchingScore();
+    hideLoadingScreen();
+  });
 }
 
 // re-render quadrant on resize
@@ -3057,7 +3561,11 @@ window.addEventListener('resize', function(){
   resizeTimer = setTimeout(function(){renderQuadrant(); renderSplitBars(); renderTrendHeatmap();}, 150);
 });
 
-init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 
 <div class="toast" id="toast"></div>
@@ -3102,36 +3610,30 @@ init();
   </div>
 </div>
 
-<!-- PALS Placeholder Section -->
-<div class="section" style="margin-bottom:40px;">
+<!-- Pitching Score Section -->
+<div class="section" id="pitchingSection" style="margin-bottom:40px;">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Coming Soon</div>
-      <div class="section-title">PALS — Pitching-Adjusted Lineup Score</div>
-      <div class="section-subtitle">OSI adjusted for the quality of pitching the lineup has actually faced this season.</div>
+      <div class="section-eyebrow">Pitching Context</div>
+      <div class="section-title">Pitching Score</div>
+      <div class="section-subtitle">Team pitching quality: K%, BB%, HR/9 blended into PitchScore. Higher = stronger staff.</div>
     </div>
-    <span class="pill" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,0.3);">In Development</span>
+    <button class="btn" onclick="openModal('pitchScore')">Full Rankings</button>
   </div>
-  <div class="onboarding-grid">
-    <div class="education-card">
-      <strong>What PALS measures</strong><br>
-      Whether a lineup's OSI is genuine or inflated by weak pitching. A team with OSI 65 that faced elite pitching all season is more impressive than one that faced bottom-tier arms.
-    </div>
-    <div class="education-card">
-      <strong>Formula</strong><br>
-      PALS = (BA++ + PTF+) ÷ 2<br>
-      BA++ = team's normalized OSI<br>
-      PTF+ = normalized avg SIERA of opposing starters faced
-    </div>
-    <div class="education-card">
-      <strong>Data needed</strong><br>
-      Requires linking each team's game log to the starting pitcher they faced, pulling that pitcher's SIERA, and building a schedule-weighted average. SP leaderboard is already pulling — game log integration in progress.
-    </div>
-    <div class="education-card">
-      <strong>Betting application</strong><br>
-      PALS will be the primary input for matchup-level OSI adjustments — telling you whether tonight's lineup is being over- or under-valued based on who they've faced vs. who they're facing.
-    </div>
+  <div class="table-wrap sticky-team">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Team</th><th>K%</th><th>BB%</th><th>HR/9</th><th>PitchScore</th>
+        </tr>
+      </thead>
+      <tbody id="pitchingTableBody">
+        <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">Loading pitching data…</td></tr>
+      </tbody>
+    </table>
   </div>
+</div>
+
 </div>
 </div>
 
