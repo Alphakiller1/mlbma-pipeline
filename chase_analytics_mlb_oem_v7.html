@@ -720,6 +720,204 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   padding:14px 16px; color:var(--text-2); font-size:12px; line-height:1.55;
 }
 .education-card strong { color:var(--text); font-weight:650; }
+
+/* Today's Matchups */
+.matchups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (max-width: 900px) {
+  .matchups-grid { grid-template-columns: 1fr; }
+}
+.matchup-card {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-3) 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.matchup-card:hover {
+  border-color: rgba(192, 132, 252, 0.35);
+  box-shadow: 0 6px 24px var(--purple-glow);
+}
+.matchup-card.favored-away { border-left: 3px solid var(--green); }
+.matchup-card.favored-home { border-left: 3px solid var(--green); }
+.matchup-time {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+}
+.matchup-headline {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  padding-right: 72px;
+}
+.matchup-headline .at {
+  color: var(--text-3);
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0 8px;
+}
+.matchup-headline .tm {
+  color: var(--purple);
+}
+.matchup-headline .tm.favored {
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.25);
+}
+.matchup-sp-block {
+  background: var(--bg-4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.matchup-sp-block:last-of-type { margin-bottom: 14px; }
+.matchup-sp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.matchup-sp-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  min-width: 36px;
+}
+.matchup-sp-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 120px;
+}
+.hand-pill {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.06em;
+}
+.hand-pill.hand-l {
+  background: var(--blue-dim);
+  color: var(--blue-l);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+}
+.hand-pill.hand-r {
+  background: rgba(192, 132, 252, 0.15);
+  color: var(--purple);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+}
+.matchup-sp-stats {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-2);
+}
+.matchup-sp-stats span strong {
+  color: var(--text-3);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+}
+.matchup-osi-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+.matchup-osi-compare {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.matchup-osi-team {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--text-3);
+  width: 32px;
+  flex-shrink: 0;
+}
+.matchup-osi-team.tr {
+  text-align: right;
+}
+.matchup-osi-val {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  width: 36px;
+  flex-shrink: 0;
+}
+.matchup-osi-val.tr { text-align: right; }
+.matchup-osi-bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-4);
+  border-radius: 99px;
+  overflow: hidden;
+  display: flex;
+  border: 1px solid var(--border);
+}
+.matchup-osi-seg {
+  height: 100%;
+  min-width: 2px;
+  transition: width 0.35s ease;
+}
+.matchup-osi-seg.seg-away {
+  background: linear-gradient(90deg, var(--purple-3), var(--purple));
+}
+.matchup-osi-seg.seg-home {
+  background: linear-gradient(90deg, var(--purple-2), var(--blue));
+}
+.matchup-osi-seg.seg-away.favored {
+  background: linear-gradient(90deg, var(--green-d), var(--green));
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+}
+.matchup-osi-seg.seg-home.favored {
+  background: linear-gradient(90deg, var(--green-d), var(--green));
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+}
+.matchup-edge {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--green);
+  text-align: center;
+  padding: 6px 10px;
+  background: var(--green-dim);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 8px;
+}
+.matchups-empty {
+  color: var(--text-3);
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 20px;
+  grid-column: 1 / -1;
+}
 .story-stat {
   background:linear-gradient(180deg, rgba(192,132,252,.07), rgba(255,255,255,.015));
   border:1px solid var(--border); border-radius:12px; padding:14px 16px;
@@ -1168,7 +1366,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
    ============================================================ */
 var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
-var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], rhp: null, lhp: null };
+var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], matchups: [], rhp: null, lhp: null };
 
 function sheetCsvUrl(tabName) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -1189,26 +1387,46 @@ function parseCSV(text) {
   });
 }
 
+function fetchMatchups() {
+  return fetch(sheetCsvUrl('Today_Matchups'), { cache: 'no-store' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('Today_Matchups HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(text) {
+      LIVE_DATA.matchups = parseMatchupRows(parseCSV(text));
+      return LIVE_DATA.matchups;
+    });
+}
+
 function fetchLiveData() {
-  var tabs = ['vs_RHP','vs_LHP','OOR','Pitching_Score','Last_Updated'];
-  var fetches = tabs.map(function(tab){
-    return fetch(sheetCsvUrl(tab)).then(function(r){ return r.text(); }).then(function(t){ return {tab:tab, data:parseCSV(t)}; });
+  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'Today_Matchups', 'Last_Updated'];
+  var fetches = tabs.map(function(tab) {
+    return fetch(sheetCsvUrl(tab)).then(function(r) { return r.text(); }).then(function(t) {
+      return { tab: tab, data: tab === 'Last_Updated' ? t : parseCSV(t) };
+    });
   });
-  Promise.all(fetches).then(function(results){
-    results.forEach(function(r){
-      if(r.tab==='vs_RHP') LIVE_DATA.rhp = r.data;
-      if(r.tab==='vs_LHP') LIVE_DATA.lhp = r.data;
-      if(r.tab==='OOR') LIVE_DATA.oor = r.data;
-      if(r.tab==='Pitching_Score') LIVE_DATA.pitching = r.data;
-      if(r.tab==='Last_Updated'){
-        var ts = r.data[0] && r.data[0]['Last Updated'];
-        if(ts){ LIVE_DATA.lastUpdated = ts; var el=document.getElementById('brandPill'); if(el) el.textContent='Updated: '+ts; }
+  return Promise.all(fetches).then(function(results) {
+    results.forEach(function(r) {
+      if (r.tab === 'vs_RHP') LIVE_DATA.rhp = r.data;
+      if (r.tab === 'vs_LHP') LIVE_DATA.lhp = r.data;
+      if (r.tab === 'OOR') LIVE_DATA.oor = r.data;
+      if (r.tab === 'Pitching_Score') LIVE_DATA.pitching = r.data;
+      if (r.tab === 'Today_Matchups') LIVE_DATA.matchups = parseMatchupRows(r.data);
+      if (r.tab === 'Last_Updated') {
+        LIVE_DATA.lastUpdated = parseLastUpdatedFromText(r.data);
+        if (LIVE_DATA.lastUpdated) {
+          var el = document.getElementById('brandPill');
+          if (el) el.textContent = 'Updated: ' + LIVE_DATA.lastUpdated;
+        }
       }
     });
+    renderMatchups();
     /* scYtdR/scYtdL + display refresh handled by loadLiveData() → applyLiveData() */
-  }).catch(function(e){
+  }).catch(function(e) {
     console.error('Live data fetch failed:', e);
-    var el=document.getElementById('brandPill'); if(el) el.textContent='Data load failed — using cached';
+    var el = document.getElementById('brandPill');
+    if (el) el.textContent = 'Data load failed — using cached';
   });
 }
 
@@ -1458,6 +1676,149 @@ function parsePitchingRows(rows) {
       pitchScore: numOrNull(pickCol(row, ['PitchScore', 'Pitchscore']))
     };
   }).filter(Boolean);
+}
+
+function matchupCol(row, label) {
+  if (row[label] !== undefined && row[label] !== '') return row[label];
+  var norm = label.toLowerCase().replace(/[^a-z0-9]/g, '');
+  var keys = Object.keys(row);
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].toLowerCase().replace(/[^a-z0-9]/g, '') === norm) return row[keys[i]];
+  }
+  return '';
+}
+
+function parseMatchupRows(rows) {
+  if (!rows || !rows.length) return [];
+  return rows.map(function(row) {
+    var away = String(matchupCol(row, 'Away')).trim().toUpperCase();
+    var home = String(matchupCol(row, 'Home')).trim().toUpperCase();
+    if (!away && !home) return null;
+    return {
+      time: String(matchupCol(row, 'Time')).trim(),
+      away: away,
+      home: home,
+      awaySP: String(matchupCol(row, 'Away_SP')).trim(),
+      awayHand: String(matchupCol(row, 'Away_Hand')).trim().toUpperCase(),
+      awayK: numOrNull(matchupCol(row, 'Away_K%')),
+      awayBB: numOrNull(matchupCol(row, 'Away_BB%')),
+      awayHR9: numOrNull(matchupCol(row, 'Away_HR9')),
+      awayFIP: numOrNull(matchupCol(row, 'Away_FIP')),
+      homeSP: String(matchupCol(row, 'Home_SP')).trim(),
+      homeHand: String(matchupCol(row, 'Home_Hand')).trim().toUpperCase(),
+      homeK: numOrNull(matchupCol(row, 'Home_K%')),
+      homeBB: numOrNull(matchupCol(row, 'Home_BB%')),
+      homeHR9: numOrNull(matchupCol(row, 'Home_HR9')),
+      homeFIP: numOrNull(matchupCol(row, 'Home_FIP')),
+      awayOSI: numOrNull(matchupCol(row, 'Away_OSI')),
+      homeOSI: numOrNull(matchupCol(row, 'Home_OSI')),
+      lineupEdge: String(matchupCol(row, 'Lineup_Edge')).trim()
+    };
+  }).filter(Boolean);
+}
+
+function osiGradeColor(v) {
+  if (v === null || v === undefined || isNaN(v)) return 'var(--text-3)';
+  if (v >= 65) return 'var(--green)';
+  if (v >= 50) return 'var(--gold)';
+  if (v >= 35) return 'var(--text-2)';
+  return 'var(--red-l)';
+}
+
+function matchupFavoredSide(m) {
+  var edge = String(m.lineupEdge || '').trim().toUpperCase();
+  if (!edge) return null;
+  if (edge === m.away || edge === 'AWAY') return 'away';
+  if (edge === m.home || edge === 'HOME') return 'home';
+  if (m.away && edge.indexOf(m.away) >= 0) return 'away';
+  if (m.home && edge.indexOf(m.home) >= 0) return 'home';
+  return null;
+}
+
+function fmtMatchupStat(v, dec) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return v.toFixed(dec != null ? dec : 1);
+}
+
+function renderMatchups() {
+  var grid = document.getElementById('matchupsGrid');
+  if (!grid) return;
+
+  var games = LIVE_DATA.matchups || [];
+  if (!games.length) {
+    grid.innerHTML = '<div class="matchups-empty">No matchups loaded for today. Check the Today_Matchups tab in Google Sheets.</div>';
+    return;
+  }
+
+  grid.innerHTML = games.map(function(m) {
+    var fav = matchupFavoredSide(m);
+    var cardCls = 'matchup-card' + (fav === 'away' ? ' favored-away' : fav === 'home' ? ' favored-home' : '');
+    var awayTmCls = 'tm' + (fav === 'away' ? ' favored' : '');
+    var homeTmCls = 'tm' + (fav === 'home' ? ' favored' : '');
+
+    var awayHand = (m.awayHand === 'L' || m.awayHand === 'R') ? m.awayHand : '?';
+    var homeHand = (m.homeHand === 'L' || m.homeHand === 'R') ? m.homeHand : '?';
+    var awayHandCls = 'hand-pill hand-' + awayHand.toLowerCase();
+    var homeHandCls = 'hand-pill hand-' + homeHand.toLowerCase();
+
+    var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
+    var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
+    var total = awayOSI + homeOSI || 1;
+    var awayPct = Math.max(4, (awayOSI / total) * 100);
+    var homePct = Math.max(4, (homeOSI / total) * 100);
+
+    var awaySegCls = 'matchup-osi-seg seg-away' + (fav === 'away' ? ' favored' : '');
+    var homeSegCls = 'matchup-osi-seg seg-home' + (fav === 'home' ? ' favored' : '');
+
+    var edgeHtml = m.lineupEdge
+      ? '<div class="matchup-edge">Lineup edge: ' + m.lineupEdge + '</div>'
+      : '';
+
+    return '<article class="' + cardCls + '">'
+      + '<div class="matchup-time">' + (m.time || 'TBD') + '</div>'
+      + '<div class="matchup-headline">'
+      + '<span class="' + awayTmCls + '">' + m.away + '</span>'
+      + '<span class="at">@</span>'
+      + '<span class="' + homeTmCls + '">' + m.home + '</span>'
+      + '</div>'
+      + '<div class="matchup-sp-block">'
+      + '<div class="matchup-sp-row">'
+      + '<span class="matchup-sp-label">Away</span>'
+      + '<span class="matchup-sp-name">' + (m.awaySP || 'TBD') + '</span>'
+      + '<span class="' + awayHandCls + '">' + awayHand + '</span>'
+      + '</div>'
+      + '<div class="matchup-sp-stats">'
+      + '<span><strong>K%</strong>' + fmtMatchupStat(m.awayK) + '</span>'
+      + '<span><strong>BB%</strong>' + fmtMatchupStat(m.awayBB) + '</span>'
+      + '<span><strong>FIP</strong>' + fmtMatchupStat(m.awayFIP, 2) + '</span>'
+      + '</div>'
+      + '</div>'
+      + '<div class="matchup-sp-block">'
+      + '<div class="matchup-sp-row">'
+      + '<span class="matchup-sp-label">Home</span>'
+      + '<span class="matchup-sp-name">' + (m.homeSP || 'TBD') + '</span>'
+      + '<span class="' + homeHandCls + '">' + homeHand + '</span>'
+      + '</div>'
+      + '<div class="matchup-sp-stats">'
+      + '<span><strong>K%</strong>' + fmtMatchupStat(m.homeK) + '</span>'
+      + '<span><strong>BB%</strong>' + fmtMatchupStat(m.homeBB) + '</span>'
+      + '<span><strong>FIP</strong>' + fmtMatchupStat(m.homeFIP, 2) + '</span>'
+      + '</div>'
+      + '</div>'
+      + '<div class="matchup-osi-label">Lineup OSI vs opposing starter handedness</div>'
+      + '<div class="matchup-osi-compare">'
+      + '<span class="matchup-osi-team">' + m.away + '</span>'
+      + '<span class="matchup-osi-val" style="color:' + osiGradeColor(m.awayOSI) + '">' + fmtMatchupStat(m.awayOSI) + '</span>'
+      + '<div class="matchup-osi-bar-wrap">'
+      + '<div class="' + awaySegCls + '" style="width:' + awayPct + '%"></div>'
+      + '<div class="' + homeSegCls + '" style="width:' + homePct + '%"></div>'
+      + '</div>'
+      + '<span class="matchup-osi-val tr" style="color:' + osiGradeColor(m.homeOSI) + '">' + fmtMatchupStat(m.homeOSI) + '</span>'
+      + '<span class="matchup-osi-team tr">' + m.home + '</span>'
+      + '</div>'
+      + edgeHtml
+      + '</article>';
+  }).join('');
 }
 
 function parseOorRows(rows) {
@@ -3450,7 +3811,7 @@ function renderPitchingScore() {
     el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">No pitching data loaded.</td></tr>';
     return;
   }
-  rows.sort(function(a, b) { return (b.pitchScore || 0) - (a.pitchScore || 0); });
+  LIVE_DATA.pitching=LIVE_DATA.pitching.map(function(r){if(r.pitchScore!==undefined)return r;return{t:r.Tm,pitchScore:parseFloat(r.PitchScore),kPct:parseFloat(r["K%"]),bbPct:parseFloat(r["BB%"]),hr9:parseFloat(r["HR/9"])};});rows=LIVE_DATA.pitching.slice();rows.sort(function(a,b){return(b.pitchScore||0)-(a.pitchScore||0);});
   el.innerHTML = rows.map(function(r, i) {
     var ps = r.pitchScore;
     var cl = ps >= 65 ? 'var(--green)' : ps >= 50 ? 'var(--purple-2)' : ps >= 35 ? 'var(--gold)' : 'var(--red-l)';
@@ -3468,7 +3829,7 @@ function renderOOR(){
   if(!el) return;
 
   var rows;
-  if (LIVE_DATA.loaded && LIVE_DATA.oor.length) {
+  if (LIVE_DATA.loaded && LIVE_DATA.oor.length) {LIVE_DATA.oor = LIVE_DATA.oor.map(function(r){if(r.hvP!==undefined) return r;return {t:r.Tm,hvP:parseFloat(r.HvP),hvL:parseFloat(r.HvL),hvR:parseFloat(r.HvR),vPpct:r.vP_pct,vPRank:r.vP_Rank,vLRank:r.vL_Rank,vRRank:r.vR_Rank};});
     rows = LIVE_DATA.oor.slice();
     rows.sort(function(a,b){ return (b.hvP || 0) - (a.hvP || 0); });
   } else if (LIVE_DATA.error && !LIVE_DATA.loaded) {
@@ -3637,5 +3998,5 @@ if (document.readyState === 'loading') {
 </div>
 </div>
 
-</body>
+<div class="section" id="matchupsSection" style="margin-top:20px;"><div class="section-header"><div><div class="section-eyebrow">Daily Slate</div><div class="section-title">Today's Projected Matchups</div><div class="section-subtitle">Lineup OSI vs opposing starter handedness - Updated daily</div></div></div><div id="matchupsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px;"></div></div></body>
 </html>
