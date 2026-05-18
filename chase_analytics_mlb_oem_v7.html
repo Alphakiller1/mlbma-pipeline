@@ -1,0 +1,3139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Analytics • MLB Offensive Extrapolation Model v4</title>
+<style>
+:root {
+  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
+  --border: #28282f; --border-2: #34343d;
+  --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
+  --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
+  --purple-glow: rgba(192, 132, 252, 0.25);
+  /* 3-shade semantic system */
+  --green-l: #86EFAC; --green: #4ADE80; --green-d: #16A34A;
+  --green-dim: rgba(74, 222, 128, 0.15);
+  --red-l: #FCA5A5; --red: #F87171; --red-d: #DC2626;
+  --red-dim: rgba(248, 113, 113, 0.15);
+  --gold-l: #FCD34D; --gold: #FBBF24; --gold-d: #B45309;
+  --gold-dim: rgba(251, 191, 36, 0.15);
+  --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
+  --blue-dim: rgba(96, 165, 250, 0.15);
+  --orange-l: #FDBA74; --orange: #FB923C; --orange-d: #C2410C;
+  --font: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", system-ui, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Monaco, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  font-variant-numeric: tabular-nums;
+}
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(192, 132, 252, 0.08), transparent),
+    var(--bg);
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--purple-3); }
+
+.container { max-width: 1480px; margin: 0 auto; padding: 32px 24px 60px; }
+
+/* Header */
+.header { margin-bottom: 24px; }
+.brand-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.brand-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple);
+}
+.brand-pill {
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+  padding: 3px 8px; border-radius: 99px;
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+h1 {
+  font-size: 28px; font-weight: 600; letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle { color: var(--text-2); font-size: 13px; }
+
+/* Control bar */
+.control-bar {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
+}
+.control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.control-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.toggle-group { display: flex; gap: 2px; background: var(--bg-3); padding: 3px; border-radius: 8px; }
+.toggle-btn {
+  background: transparent; border: none; color: var(--text-2);
+  padding: 7px 14px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border-radius: 6px;
+  transition: all 0.15s ease; font-family: var(--font);
+}
+.toggle-btn:hover { color: var(--text); }
+.toggle-btn.active {
+  background: var(--purple-3); color: #fff;
+  box-shadow: 0 0 0 1px var(--purple-3), 0 0 12px var(--purple-glow);
+}
+.toggle-btn.warn { color: var(--gold); }
+.toggle-btn.warn.active { background: var(--gold); color: #000; box-shadow: 0 0 0 1px var(--gold); }
+
+/* Metric cards */
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px; margin-bottom: 22px;
+}
+@media (max-width: 1100px) { .metric-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) { .metric-row { grid-template-columns: repeat(2, 1fr); } }
+
+.metric-card {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-3) 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  cursor: pointer; position: relative;
+  transition: all 0.2s ease; overflow: hidden;
+}
+.metric-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(192, 132, 252, 0.35);
+  box-shadow: 0 6px 24px var(--purple-glow);
+}
+.metric-card:hover::before { opacity: 1; }
+.metric-card.active {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 1px var(--purple), 0 6px 28px var(--purple-glow);
+  background: linear-gradient(180deg, rgba(192, 132, 252, 0.08) 0%, var(--bg-3) 100%);
+}
+.metric-card.active::before { opacity: 1; }
+.metric-card .m-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 8px;
+}
+.metric-card .m-leader {
+  font-size: 22px; font-weight: 600; color: var(--text);
+  font-family: var(--mono); margin-bottom: 4px; letter-spacing: -0.01em;
+}
+.metric-card .m-value {
+  font-size: 11px; color: var(--purple-2); font-weight: 500;
+  font-family: var(--mono);
+}
+.metric-card .m-desc {
+  font-size: 10.5px; color: var(--text-3); margin-top: 6px;
+}
+
+/* Section cards */
+.section {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 24px; margin-bottom: 20px;
+}
+.section-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.section-title {
+  font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.01em;
+}
+.section-subtitle { font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+.section-eyebrow {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
+}
+
+.btn {
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text); padding: 8px 14px; font-size: 11.5px;
+  font-weight: 500; border-radius: 8px; cursor: pointer;
+  font-family: var(--font); transition: all 0.15s ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover {
+  background: var(--purple-3); border-color: var(--purple-3); color: #fff;
+  box-shadow: 0 0 16px var(--purple-glow);
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple-3), var(--purple-2));
+  border-color: transparent; color: #fff;
+  box-shadow: 0 2px 12px var(--purple-glow);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--purple-2), var(--purple));
+  box-shadow: 0 4px 20px var(--purple-glow);
+}
+
+/* Exec summary grid */
+.exec-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.exec-cell {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  transition: all 0.15s ease;
+}
+.exec-cell:hover { border-color: rgba(192, 132, 252, 0.3); }
+.exec-cell .ec-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 5px;
+}
+.exec-cell .ec-team {
+  font-size: 22px; font-weight: 600; font-family: var(--mono);
+  line-height: 1; letter-spacing: -0.01em;
+}
+.exec-cell .ec-stat {
+  font-size: 10px; color: var(--text-3); margin-top: 4px;
+  font-family: var(--mono);
+}
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 0 -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th {
+  padding: 9px 8px; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-3); border-bottom: 1px solid var(--border-2);
+  text-align: left; white-space: nowrap; cursor: pointer;
+  user-select: none; position: sticky; top: 0; background: var(--bg-2);
+  transition: color 0.15s ease;
+}
+thead th:hover { color: var(--purple); }
+thead th.sorted { color: var(--purple); }
+thead th .sort-ind { font-size: 9px; margin-left: 3px; opacity: 0.7; }
+tbody td {
+  padding: 8px 8px; border-bottom: 1px solid var(--border);
+  color: var(--text); white-space: nowrap; vertical-align: middle;
+}
+tbody tr { transition: background 0.12s ease; }
+tbody tr:hover { background: rgba(192, 132, 252, 0.045); }
+tbody tr.highlighted { background: rgba(192, 132, 252, 0.08); }
+tbody tr:last-child td { border-bottom: none; }
+.team-cell {
+  font-family: var(--mono); font-weight: 600; font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.rank-cell { color: var(--text-3); font-size: 11px; font-family: var(--mono); width: 28px; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+
+.pill {
+  display: inline-flex; align-items: center;
+  font-size: 9.5px; font-weight: 600; padding: 2.5px 7px;
+  border-radius: 99px; letter-spacing: 0.02em; white-space: nowrap;
+}
+.grade-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); min-width: 24px; text-align: center;
+}
+.trend-pill {
+  font-size: 10px; font-weight: 500; padding: 2.5px 7px;
+  border-radius: 5px; display: inline-block;
+}
+
+/* Quadrant chart */
+.chart-wrap { width: 100%; position: relative; }
+.legend-row {
+  display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px;
+  font-size: 10.5px; color: var(--text-2);
+}
+.legend-dot {
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.legend-dot .dot {
+  width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+}
+
+/* Quadrant tooltip */
+.tooltip {
+  position: absolute; background: var(--bg-4);
+  border: 1px solid var(--purple); border-radius: 10px;
+  padding: 10px 12px; pointer-events: none;
+  font-size: 11px; min-width: 220px; max-width: 260px; z-index: 100;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 16px var(--purple-glow);
+  opacity: 0; transition: opacity 0.1s; display: none;
+}
+.tooltip.show { display: block; opacity: 1; }
+.tt-team { font-size: 14px; font-weight: 700; font-family: var(--mono); color: var(--purple); margin-bottom: 6px; }
+.tt-row { display: flex; justify-content: space-between; gap: 12px; font-size: 10.5px; padding: 1px 0; }
+.tt-row .lab { color: var(--text-3); }
+.tt-row .val { color: var(--text); font-family: var(--mono); font-weight: 500; }
+.tt-sep { border-top: 1px solid var(--border); margin: 5px 0; }
+
+/* Tabs (secondary) */
+.subtabs {
+  display: flex; gap: 4px; border-bottom: 1px solid var(--border);
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+.subtab {
+  background: transparent; border: none; color: var(--text-2);
+  padding: 9px 16px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; font-family: var(--font);
+  transition: all 0.15s ease;
+}
+.subtab:hover { color: var(--text); }
+.subtab.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+}
+.modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--bg-2); border: 1px solid var(--purple-3);
+  border-radius: 16px; max-width: 900px; width: 100%;
+  max-height: 88vh; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px var(--purple-glow);
+}
+.modal-head {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-title {
+  font-size: 16px; font-weight: 600; color: var(--text);
+}
+.modal-close {
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text); width: 30px; height: 30px;
+  border-radius: 8px; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+}
+.modal-close:hover { background: var(--red); border-color: var(--red); }
+.modal-body { padding: 18px 22px; overflow-y: auto; }
+.modal-selector { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+
+/* Strategic recommendation cards */
+.strat-card {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+  border-left: 3px solid;
+  transition: all 0.15s ease;
+}
+.strat-card:hover { transform: translateX(2px); border-color: rgba(192, 132, 252, 0.3); }
+.strat-tag {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.strat-teams {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  font-family: var(--mono); margin-bottom: 4px;
+}
+.strat-desc {
+  font-size: 11.5px; color: var(--text-2); line-height: 1.5;
+}
+
+/* Warning banner */
+.warn-banner {
+  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+  font-size: 11.5px; color: var(--gold);
+  display: none;
+}
+.warn-banner.show { display: block; }
+
+.empty-msg { color: var(--text-3); font-size: 12px; text-align: center; padding: 30px; }
+
+/* Loading */
+.loading {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px; z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+.loading.hide { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 40px; height: 40px; border: 2px solid var(--border);
+  border-top-color: var(--purple); border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-size: 12px; color: var(--text-3); letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.method-note {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-left: 3px solid var(--purple); border-radius: 10px;
+  padding: 14px 18px; font-size: 11.5px; color: var(--text-2);
+  line-height: 1.65; margin-top: 24px;
+}
+.method-note strong { color: var(--text); }
+
+/* Mini bars in modal */
+.mini-bar {
+  display: inline-block; height: 6px; background: var(--bg-4);
+  border-radius: 3px; overflow: hidden; vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-fill { height: 100%; border-radius: 3px; }
+
+@media (max-width: 700px) {
+  .container { padding: 18px 12px 40px; }
+  h1 { font-size: 22px; }
+  .section { padding: 16px 14px; }
+}
+
+
+
+/* ===== Learning / walkthrough section ===== */
+.learning-section {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(192,132,252,.075), transparent 34%),
+    var(--bg-2);
+}
+.walkthrough-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.walkthrough-card {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.walkthrough-card strong { color: var(--text); }
+.walkthrough-card .step-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  background: rgba(192,132,252,.12);
+  border: 1px solid rgba(192,132,252,.28);
+  color: var(--purple);
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.metric-section-note {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.simple-help-row {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.simple-help-row .btn { font-size: 11px; padding: 7px 10px; }
+
+/* ===== Sticky team column ===== */
+.table-wrap.sticky-team thead th:nth-child(2),
+.table-wrap.sticky-team tbody td:nth-child(2) {
+  position: sticky; left: 0; z-index: 5; background: var(--bg-2);
+}
+.table-wrap.sticky-team tbody tr:hover td:nth-child(2) { background: var(--bg-3); }
+.table-wrap.sticky-team tbody tr.highlighted td:nth-child(2) { background: #1e1929; }
+.table-wrap.sticky-team tbody tr.pinned td:nth-child(2) { background: #1c1827; }
+
+
+.signal-summary-section .callout-grid { margin-bottom:0; }
+.signal-summary-section .callout { padding:11px 13px; }
+
+/* ===== Watchlist bar ===== */
+.watchlist-bar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(10px);
+  border: 1px solid var(--border-2); border-radius: 10px;
+  padding: 8px 14px; margin-bottom: 18px;
+  display: none; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.watchlist-bar.show { display: flex; }
+.watchlist-bar .wl-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--purple); margin-right: 4px;
+}
+.watchlist-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--bg-3); border: 1px solid var(--purple-3);
+  color: var(--purple); padding: 4px 9px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; font-family: var(--mono);
+  cursor: pointer; transition: all 0.15s ease;
+}
+.watchlist-pill:hover { background: var(--purple-3); color: #fff; }
+.watchlist-pill .x { font-size: 10px; opacity: 0.6; margin-left: 2px; }
+.pin-btn {
+  background: transparent; border: none; color: var(--text-3);
+  cursor: pointer; font-size: 13px; padding: 2px 4px;
+  transition: all 0.15s ease; vertical-align: middle; margin-right: 3px;
+}
+.pin-btn:hover { color: var(--purple); }
+.pin-btn.pinned { color: var(--purple); }
+tr.pinned td { background: rgba(192, 132, 252, 0.05); }
+
+/* ===== Search bar ===== */
+.search-bar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.search-input {
+  flex: 1; min-width: 200px; max-width: 360px;
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  border-radius: 8px; padding: 8px 12px;
+  color: var(--text); font-size: 12px; font-family: var(--font);
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+.search-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-glow); }
+.search-input::placeholder { color: var(--text-3); }
+.filter-help { font-size: 10px; color: var(--text-3); font-family: var(--mono); }
+.filter-help code { color: var(--purple); background: var(--bg-3); padding: 1px 5px; border-radius: 3px; }
+
+/* ===== Notable movers callouts ===== */
+.callout-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px; margin-bottom: 22px;
+}
+.callout {
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+  border: 1px solid var(--border-2); border-left: 3px solid;
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 12px; line-height: 1.5; color: var(--text-2);
+}
+.callout strong { color: var(--text); font-weight: 600; }
+.callout .team-tag {
+  display: inline-block; font-family: var(--mono); font-weight: 700;
+  color: var(--purple); margin-right: 2px;
+}
+.callout .callout-eyebrow {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 5px;
+}
+
+/* ===== Team detail expand row ===== */
+tr.detail-row td {
+  background: var(--bg) !important;
+  padding: 0 !important; border-bottom: 1px solid var(--purple-3) !important;
+}
+.detail-panel {
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(192,132,252,.03), transparent);
+  display: grid; grid-template-columns: 220px 1fr 1fr; gap: 18px;
+}
+@media (max-width: 900px) { .detail-panel { grid-template-columns: 1fr; } }
+.detail-title {
+  font-size: 22px; font-weight: 700; font-family: var(--mono);
+  color: var(--purple); letter-spacing: -0.01em;
+}
+.detail-subtitle { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.detail-tf-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  margin-top: 10px;
+}
+.detail-tf { background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; text-align: center; }
+.detail-tf-label { font-size: 9px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+.detail-tf-val { font-size: 14px; font-weight: 700; font-family: var(--mono); margin-top: 3px; }
+.detail-tf-pa { font-size: 8.5px; color: var(--text-3); margin-top: 1px; font-family: var(--mono); }
+.detail-metric-row {
+  display: flex; justify-content: space-between; padding: 4px 0;
+  border-bottom: 1px solid var(--border); font-size: 11.5px;
+}
+.detail-metric-row:last-child { border-bottom: none; }
+.detail-metric-row .lab { color: var(--text-3); }
+.detail-metric-row .val { font-family: var(--mono); font-weight: 600; }
+.sparkline { display: inline-block; vertical-align: middle; margin-left: 6px; }
+
+/* ===== Comparison radar ===== */
+.compare-bar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+}
+.compare-team-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--bg-4); border: 1px solid;
+  padding: 4px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; font-family: var(--mono);
+}
+.compare-team-pill .x { font-size: 9px; opacity: 0.6; cursor: pointer; }
+
+/* ===== Matchup builder ===== */
+.matchup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 900px) { .matchup-grid { grid-template-columns: 1fr; } }
+.matchup-card { background: var(--bg-3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.matchup-input-grid {
+  display: grid; grid-template-columns: 1fr 1fr auto;
+  gap: 10px; align-items: end; margin-bottom: 16px;
+}
+@media (max-width: 700px) { .matchup-input-grid { grid-template-columns: 1fr; } }
+.matchup-select-label {
+  display: block; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 5px;
+}
+.matchup-select {
+  width: 100%; background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text); padding: 8px 10px; border-radius: 8px;
+  font-size: 12px; font-family: var(--font);
+}
+.matchup-select:focus { outline: none; border-color: var(--purple); }
+
+/* ===== Sample size badges ===== */
+.pa-badge {
+  display: inline-block; font-size: 8.5px; font-weight: 600;
+  padding: 1px 5px; border-radius: 4px; font-family: var(--mono);
+  vertical-align: middle; margin-left: 4px;
+}
+.pa-badge.low { background: rgba(251, 191, 36, 0.12); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.3); }
+.pa-badge.ok { color: var(--text-3); }
+
+/* ===== Skeleton loaders ===== */
+.skel {
+  background: linear-gradient(90deg, var(--bg-3) 25%, var(--bg-4) 50%, var(--bg-3) 75%);
+  background-size: 200% 100%;
+  animation: skel-pulse 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+@keyframes skel-pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ===== Mobile cards ===== */
+.mobile-cards { display: none; }
+@media (max-width: 760px) {
+  .table-wrap.has-mobile-fallback { display: none; }
+  .mobile-cards { display: block; }
+}
+.mobile-card { background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+.mobile-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.mobile-card-team { font-family: var(--mono); font-weight: 700; font-size: 16px; color: var(--purple); }
+.mobile-card-osi { font-family: var(--mono); font-weight: 700; font-size: 16px; }
+.mobile-card-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 10px; }
+.mobile-card-metric { background: var(--bg-4); padding: 5px 6px; border-radius: 5px; text-align: center; }
+.mobile-card-metric .lab { color: var(--text-3); font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+.mobile-card-metric .val { font-family: var(--mono); font-weight: 600; font-size: 11.5px; margin-top: 2px; }
+
+/* ===== Icon buttons ===== */
+.icon-btn {
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text-2); width: 34px; height: 34px;
+  border-radius: 8px; cursor: pointer; font-size: 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+}
+.icon-btn:hover { color: var(--purple); border-color: var(--purple); }
+.icon-btn.active { background: var(--purple-3); color: #fff; border-color: var(--purple-3); }
+
+tr.compare-selected td { background: rgba(192, 132, 252, 0.08); }
+tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple); margin-right: 4px; font-weight: 700; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--bg-4); border: 1px solid var(--purple);
+  color: var(--text); padding: 10px 16px; border-radius: 8px;
+  font-size: 12px; z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 16px var(--purple-glow);
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ===== Print stylesheet ===== */
+@media print {
+  :root {
+    --bg: #FFF; --bg-2: #FFF; --bg-3: #FFF; --bg-4: #FFF;
+    --text: #000; --text-2: #333; --text-3: #666;
+    --border: #DDD; --border-2: #BBB;
+    --purple: #7C3AED; --purple-2: #6D28D9; --purple-3: #5B21B6;
+    --purple-glow: transparent;
+  }
+  body { background: #FFF !important; }
+  .container { max-width: 100%; padding: 12px; }
+  .loading, .toast, .control-bar, .watchlist-bar, .search-bar,
+  .icon-btn, .modal-overlay, .subtab, .toggle-btn, .btn {
+    display: none !important;
+  }
+  .section { break-inside: avoid; box-shadow: none; border: 1px solid #DDD; }
+  .metric-card, .exec-cell { break-inside: avoid; box-shadow: none; }
+  h1 { -webkit-text-fill-color: #000 !important; background: none !important; color: #000 !important; }
+  .pill, .grade-badge, .trend-pill { background: transparent !important; border: 1px solid currentColor; }
+}
+
+/* ===== Chase Analytics official education layer ===== */
+.ca-brand-shell {
+  display:flex; align-items:center; justify-content:space-between; gap:18px;
+  margin-bottom:18px; padding:18px 20px;
+  background:linear-gradient(135deg, rgba(192,132,252,.12), rgba(192,132,252,.025));
+  border:1px solid rgba(192,132,252,.22); border-radius:16px;
+}
+.ca-brand-name { font-size:24px; font-weight:800; letter-spacing:-.03em; color:var(--text); }
+.ca-brand-name span { color:var(--purple); }
+.ca-brand-tagline { color:var(--text-2); font-size:12px; margin-top:2px; }
+.ca-brand-meta { text-align:right; color:var(--text-3); font-size:10px; letter-spacing:.12em; text-transform:uppercase; }
+.onboarding-grid, .story-grid, .glossary-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px;
+}
+.education-card {
+  background:var(--bg-3); border:1px solid var(--border); border-radius:12px;
+  padding:14px 16px; color:var(--text-2); font-size:12px; line-height:1.55;
+}
+.education-card strong { color:var(--text); font-weight:650; }
+.story-stat {
+  background:linear-gradient(180deg, rgba(192,132,252,.07), rgba(255,255,255,.015));
+  border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+}
+.story-stat .ss-label {
+  font-size:9.5px; color:var(--text-3); text-transform:uppercase; letter-spacing:.12em; font-weight:700;
+}
+.story-stat .ss-value { font-family:var(--mono); font-size:24px; color:var(--text); margin-top:4px; }
+.story-stat .ss-copy { color:var(--text-2); font-size:11px; margin-top:4px; line-height:1.45; }
+.glossary-tools { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+.glossary-search {
+  flex:1; min-width:220px; background:var(--bg-3); border:1px solid var(--border-2);
+  color:var(--text); border-radius:8px; padding:8px 12px; font-size:12px;
+}
+.glossary-term { min-height:120px; }
+.glossary-term .term {
+  display:flex; align-items:center; gap:6px; color:var(--purple); font-weight:750;
+  font-size:12px; letter-spacing:.04em; text-transform:uppercase; margin-bottom:6px;
+}
+.info-dot {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:15px; height:15px; border-radius:999px;
+  border:1px solid rgba(192,132,252,.55); color:var(--purple);
+  font-size:10px; font-weight:800; cursor:help; vertical-align:middle;
+}
+.ca-footer {
+  margin-top:24px; padding:18px 0 0; border-top:1px solid var(--border);
+  color:var(--text-3); font-size:12px; text-align:center;
+}
+.metric-card .m-context { font-size:10px; color:var(--text-3); margin-top:5px; font-family:var(--mono); }
+.metric-card .m-label .info-dot { margin-left:5px; }
+@media(max-width:700px){
+  .ca-brand-shell{align-items:flex-start; flex-direction:column;}
+  .ca-brand-meta{text-align:left;}
+}
+
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading OEM Framework v4</div>
+</div>
+
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div class="ca-brand-shell">
+    <div>
+      <div class="ca-brand-name">Chase <span>Analytics</span></div>
+      <div class="ca-brand-tagline">Data-driven offensive intelligence for daily MLB research.</div>
+    </div>
+    <div class="ca-brand-meta">MLB Offensive Extrapolation Model v4 · 2026</div>
+  </div>
+  <div class="brand-row">
+    <span class="brand-tag">Official Chase Analytics Tool</span>
+    <span class="brand-pill">v4 · OOR + PALS · Updated Formulas · 30 Teams</span>
+  </div>
+  <h1>Chase Analytics • MLB Offensive Extrapolation Model</h1>
+  <div class="subtitle">A cleaner daily view of MLB offense: choose a split, scan the league context, then use the table and chart for deeper team research.</div>
+</div>
+
+<!-- Welcome / Help -->
+<div class="section" id="welcomeSection">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Quick Start</div>
+      <div class="section-title">Start simple, then go deeper</div>
+      <div class="section-subtitle">The opening view is meant for a fast read. Detailed definitions and walkthroughs now live in their own learning section below the main table.</div>
+      <div class="simple-help-row">
+        <button class="btn" onclick="document.getElementById('metricBreakdownSection').scrollIntoView({behavior:'smooth'});">📘 Metric Walkthroughs</button>
+        <button class="btn" onclick="document.getElementById('masterTable').scrollIntoView({behavior:'smooth'});">↧ Go to Table</button>
+      </div>
+    </div>
+  </div>
+  <div class="onboarding-grid">
+    <div class="education-card"><strong>1. Pick the view.</strong><br>Select the timeframe and pitcher-handedness split that match your research question.</div>
+    <div class="education-card"><strong>2. Read the league snapshot.</strong><br>Use the summary cards to see whether the current view is balanced, spread out, improving, or unstable.</div>
+    <div class="education-card"><strong>3. Choose one lens.</strong><br>Click one metric card at a time so the dashboard highlights the related column and sort direction.</div>
+    <div class="education-card"><strong>4. Use team detail last.</strong><br>Once the broad picture is clear, use the table, chart, compare mode, and matchup builder for specific teams.</div>
+  </div>
+</div>
+
+<!-- League-wide story -->
+<div class="section" id="leagueStorySection">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">What the Data Is Telling Us</div>
+      <div class="section-title">Current league-wide offensive picture</div>
+      <div class="section-subtitle">A concise, team-neutral read of how the current view is behaving across the league.</div>
+    </div>
+  </div>
+  <div class="story-grid" id="leagueStoryGrid"></div>
+</div>
+
+<!-- Control bar -->
+<!-- Watchlist sticky bar -->
+<div class="watchlist-bar" id="watchlistBar">
+  <span class="wl-label">📌 Watchlist</span>
+  <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+  <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
+</div>
+
+<!-- Concise metric signal summary -->
+<div class="section signal-summary-section" style="padding:16px 18px;margin-bottom:16px;">
+  <div class="section-header" style="margin-bottom:10px;">
+    <div>
+      <div class="section-eyebrow">League Signal Summary</div>
+      <div class="section-title">Concise metric context</div>
+      <div class="section-subtitle">Summarizes the current view by distribution, count, and signal type without repeating stat leaders.</div>
+    </div>
+  </div>
+  <div class="callout-grid" id="moversGrid"></div>
+</div>
+
+<div class="control-bar">
+  <div class="control-group">
+    <span class="control-label">Split</span>
+    <div class="toggle-group" id="splitToggle">
+      <button class="toggle-btn active" data-split="b">Both</button>
+      <button class="toggle-btn" data-split="r">vs RHP</button>
+      <button class="toggle-btn" data-split="l">vs LHP</button>
+    </div>
+  </div>
+  <div class="control-group">
+    <span class="control-label">Timeframe</span>
+    <div class="toggle-group" id="timeToggle">
+      <button class="toggle-btn active" data-time="YTD">YTD</button>
+      <button class="toggle-btn" data-time="L30">L30</button>
+      <button class="toggle-btn" data-time="L14">L14</button>
+      <button class="toggle-btn warn" data-time="L7">L7</button>
+    </div>
+  </div>
+  <div class="control-group">
+    <span class="control-label">Chart</span>
+    <div class="toggle-group" id="quadrantToggle">
+      <button class="toggle-btn active" data-quad="reg">RCV vs Reg</button>
+      <button class="toggle-btn" data-quad="rcv-abq">RCV vs ABQ</button>
+    </div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+    <button class="icon-btn" title="Compare mode — click rows to add up to 4 teams" id="compareToggleBtn" onclick="toggleCompareMode()">⚖</button>
+    <button class="icon-btn" title="Pin mode — click ☆ next to rank to add to watchlist" id="pinToggleBtn" onclick="togglePinMode()">📌</button>
+    <button class="icon-btn" title="Export filtered view as CSV" onclick="exportCSV()">⬇</button>
+    <button class="icon-btn" title="Print / save as PDF" onclick="window.print()">🖨</button>
+    <button class="btn btn-primary" onclick="openModal('osi')">📊 Full Breakdown</button>
+  </div>
+</div>
+
+<!-- Search/Filter bar -->
+<div class="search-bar">
+  <input type="text" class="search-input" id="searchInput" placeholder="Filter: nyy, abq>60, trend:rising, k<22..." autocomplete="off">
+  <span class="filter-help">Try: <code>abq&gt;60 reg&gt;10</code> or <code>trend:rising</code> or just <code>nyy bos atl</code></span>
+</div>
+
+<div class="warn-banner" id="warnBanner">
+  ⚠️ <strong>L7 Note:</strong> Last 7 days is a momentum flag, not a standalone predictor. Treat as noisy. L7 LHP/RHP splits not available — showing Both only.
+</div>
+
+<!-- Metric cards -->
+<div class="metric-row" id="metricRow"></div>
+
+<!-- Executive summary -->
+<div class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Snapshot</div>
+      <div class="section-title" id="execTitle">Metric distribution summary</div>
+    </div>
+  </div>
+  <div class="exec-grid" id="execGrid"></div>
+</div>
+
+<!-- Main visual -->
+<div class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Metric Map</div>
+      <div class="section-title" id="chartTitle">Run creation vs expected-quality pressure</div>
+      <div class="section-subtitle">Each dot = one team. Use this as a visual scan, then use the table for exact values.</div>
+    </div>
+  </div>
+  <div class="legend-row">
+    <span class="legend-dot"><span class="dot" style="background: var(--green);"></span> Elite &amp; Undervalued</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--gold);"></span> Strong But Cooling Risk</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--blue);"></span> Buy-Low Offense</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--red);"></span> Weak &amp; Concerning</span>
+  </div>
+  <div class="chart-wrap">
+    <div id="mainChart"></div>
+    <div class="tooltip" id="chartTip"></div>
+  </div>
+</div>
+
+<!-- Master ranking table -->
+<div class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Master Rankings</div>
+      <div class="section-title" id="tableTitle">All 30 Teams — Click any header to sort</div>
+      <div class="section-subtitle">Sorted by <span id="sortLabel" style="color: var(--purple); font-weight: 600;">OSI</span> (desc)</div>
+    </div>
+    <button class="btn" onclick="resetSort()">↻ Reset</button>
+  </div>
+  <div class="table-wrap sticky-team has-mobile-fallback">
+    <table id="masterTable">
+      <thead>
+        <tr>
+          <th data-sort="rank" style="width:30px;">#</th>
+          <th data-sort="t" style="width:50px;">Team</th>
+          <th data-sort="abq" title="At-Bat Quality: repeatable process from discipline, contact, chase, pitch pressure, and K avoidance.">ABQ <span class="info-dot">i</span> <span class="sort-ind"></span></th>
+          <th data-sort="rcv" title="Run Creation Value: offensive damage from wRC+, barrel rate, ISO, and hard-hit quality.">RCV <span class="info-dot">i</span> <span class="sort-ind"></span></th>
+          <th data-sort="obr" title="On-Base Reliability: offensive floor from OBP, walks, K avoidance, and contact.">OBR <span class="info-dot">i</span> <span class="sort-ind"></span></th>
+          <th data-sort="osi" class="sorted" title="Offensive Status Index: composite blend of RCV, ABQ, and OBR.">OSI <span class="info-dot">i</span> <span class="sort-ind">↓</span></th>
+          <th data-sort="projOSI" title="Projected OSI: OSI plus a capped regression adjustment from expected offensive quality.">Proj <span class="info-dot">i</span> <span class="sort-ind"></span></th>
+          <th data-sort="currentFormOSI" title="50% YTD + 25% L30 + 15% L14 + 10% L7 (L7 dampened by PA)">Form <span class="sort-ind"></span></th>
+          <th data-sort="velocity" title="Linear slope across YTD→L30→L14→L7">Vel <span class="sort-ind"></span></th>
+          <th data-sort="ppGap" title="Process-Production Gap: ABQ minus RCV; positive means process is ahead of production.">PP <span class="info-dot">i</span> <span class="sort-ind"></span></th>
+          <th data-sort="dfGap" title="Damage-Floor Gap: RCV minus OBR; higher values indicate more power-driven volatility.">DF <span class="info-dot">i</span> <span class="sort-ind"></span></th>
+          <th data-sort="sus" title="Sustainability Grade: how well the offensive profile is supported across process, floor, damage, and regression.">Sus <span class="info-dot">i</span></th>
+          <th data-sort="reg" title="Regression Signal: expected quality minus actual production direction.">Reg <span class="info-dot">i</span></th>
+          <th data-sort="rhpOSI">vRHP</th>
+          <th data-sort="lhpOSI">vLHP</th>
+          <th data-sort="splitEdge">Edge</th>
+          <th data-sort="trend" title="Trend label: directional change across recent timeframes.">Trend <span class="info-dot">i</span></th>
+          <th>Tier</th>
+          <th>Takeaway</th>
+        </tr>
+      </thead>
+      <tbody id="masterBody"></tbody>
+    </table>
+  </div>
+  <div class="mobile-cards" id="mobileCards"></div>
+</div>
+
+
+<!-- Metric Breakdowns & Walkthroughs -->
+<div class="section learning-section" id="metricBreakdownSection">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Metric Breakdowns &amp; Walkthroughs</div>
+      <div class="section-title">Learn the model without crowding the opening page</div>
+      <div class="section-subtitle">Use this section when you want definitions, reading steps, and plain-English interpretation. The main dashboard stays focused on fast scanning.</div>
+    </div>
+    <button class="btn" onclick="openModal(STATE && STATE.activeMetric ? STATE.activeMetric : 'osi')">Open detailed metric table</button>
+  </div>
+  <div class="metric-section-note">
+    <strong>Recommended reading order:</strong> OSI tells you the overall offensive profile. ABQ explains the quality of the at-bats. RCV explains damage and scoring pressure. OBR explains the floor. The gap metrics explain whether the profile looks stable, overextended, or due for a change.
+  </div>
+  <div class="walkthrough-grid">
+    <div class="walkthrough-card"><div class="step-label">01</div><strong>Start with OSI.</strong><br>Use OSI as the broad offensive score. It combines damage, process, and floor so you can quickly see the overall shape of a lineup.</div>
+    <div class="walkthrough-card"><div class="step-label">02</div><strong>Check the three ingredients.</strong><br>ABQ shows whether the at-bats are strong. RCV shows whether contact is turning into scoring damage. OBR shows whether the lineup has a reliable base.</div>
+    <div class="walkthrough-card"><div class="step-label">03</div><strong>Use the gap metrics.</strong><br>PP-Gap compares process to production. DF-Gap compares damage to floor. These help separate stable profiles from volatile ones.</div>
+    <div class="walkthrough-card"><div class="step-label">04</div><strong>Confirm with context.</strong><br>Regression, trend, sample size, handedness split, park, pitcher quality, weather, and lineup news should all be checked before using the signal.</div>
+  </div>
+  <div class="section-header" style="margin-top:6px;">
+    <div>
+      <div class="section-eyebrow">Glossary</div>
+      <div class="section-title">Plain-language metric definitions</div>
+      <div class="section-subtitle">Search any term below. These definitions intentionally avoid formula-heavy language.</div>
+    </div>
+  </div>
+  <div class="glossary-tools">
+    <input id="glossarySearch" class="glossary-search" placeholder="Search glossary: OSI, regression, PP-Gap, trend..." oninput="filterGlossary()">
+    <span class="filter-help">Tip: hover info icons throughout the dashboard for one-sentence definitions.</span>
+  </div>
+  <div class="glossary-grid" id="glossaryGrid">
+    <div class="education-card glossary-term" data-term="abq at bat quality process discipline contact chase zone"><div class="term">ABQ <span class="info-dot" title="At-Bat Quality measures the repeatable process of an offense.">i</span></div>At-Bat Quality. A process score: 30% Discipline (BB%×0.55 + Chase%_inv×0.45) + 35% Contact Quality (ZCon%×0.55 + OCon%×0.45) + 20% Pitch Pressure (SwStr%_inv) + 15% K Avoidance. Pure process — no results.</div>
+    <div class="education-card glossary-term" data-term="rcv run creation value damage barrel iso hard hit wrc park"><div class="term">RCV <span class="info-dot" title="Run Creation Value measures offensive damage.">i</span></div>Run Creation Value. Park-adjusted damage: 35% wRC+ + 32% Barrel%÷park + 20% ISO÷park + 13% HardHit%÷park. All inputs divided by park factor before normalization.</div>
+    <div class="education-card glossary-term" data-term="obr on base reliability floor xwoba walk expected"><div class="term">OBR <span class="info-dot" title="On-Base Reliability measures the offensive floor.">i</span></div>On-Base Reliability. Pure floor: 65% xwOBA + 35% BB%. Uses expected wOBA instead of actual to strip luck from the floor calculation.</div>
+    <div class="education-card glossary-term" data-term="osi offensive status index composite"><div class="term">OSI <span class="info-dot" title="OSI combines damage, process, and floor into one composite score.">i</span></div>Offensive Status Index. Final composite: 43% RCV + 37% ABQ + 20% OBR. All three sub-scores min-max normalized within the 30-team sample before blending.</div>
+    <div class="education-card glossary-term" data-term="oor opponent offensive rating hvr hvl hvp handedness"><div class="term">OOR <span class="info-dot" title="Opponent Offensive Rating measures the offensive threat a pitcher faces.">i</span></div>Opponent Offensive Rating. Measures the offensive quality a pitcher faces by handedness. HvR = opposing lineup's OSI vs RHP. HvL = vs LHP. HvP = composite (55% HvR + 45% HvL). Ranks show how tough each team's lineup is to face.</div>
+    <div class="education-card glossary-term" data-term="pals pitching adjusted lineup score schedule ptf"><div class="term">PALS <span class="info-dot" title="Pitching-Adjusted Lineup Score — coming soon.">i</span></div>Pitching-Adjusted Lineup Score. OSI adjusted for the quality of pitching the lineup has faced. Separates genuine offensive quality from schedule inflation. Requires SP schedule data — coming soon.</div>
+    <div class="education-card glossary-term" data-term="pp gap process production abq rcv buy low sell high"><div class="term">Process-Production Gap</div>ABQ minus RCV. Positive values suggest process is ahead of production; negative values suggest production is ahead of process.</div>
+    <div class="education-card glossary-term" data-term="df gap damage floor rcv obr volatility"><div class="term">Damage-Floor Gap</div>RCV minus OBR. Higher values indicate more power/variance; lower values indicate a steadier on-base or contact profile.</div>
+    <div class="education-card glossary-term" data-term="projected osi regression adjusted xwoba"><div class="term">Projected OSI</div>OSI + clip((xwOBA−wOBA)×450, −8, +8). Positive reg signal = team underperforming expected output (upside). Negative = regression likely. Capped at ±8 points.</div>
+    <div class="education-card glossary-term" data-term="regression signal xwoba woba positive negative"><div class="term">Regression Signal</div>The gap between expected and actual offensive quality. Positive values imply better underlying contact than results; negative values imply results may be ahead of quality.</div>
+    <div class="education-card glossary-term" data-term="sustainability grade stable repeatable balanced"><div class="term">Sustainability Grade</div>A stability label that checks whether OSI is supported by process, floor, damage, and regression context.</div>
+    <div class="education-card glossary-term" data-term="trend labels rising cooling volatile stable"><div class="term">Trend Labels</div>Directional labels comparing longer-term baseline to recent form. They are context flags, not standalone predictions.</div>
+    <div class="education-card glossary-term" data-term="platoon edge split rhp lhp handedness"><div class="term">Platoon Edge</div>The difference between a lineup’s OSI against right-handed and left-handed pitching.</div>
+    <div class="education-card glossary-term" data-term="current form osi ytd l30 l14 l7"><div class="term">Current Form OSI</div>A blended recent-form score using YTD, L30, L14, and L7 data with short-window sample-size dampening.</div>
+  </div>
+
+</div>
+
+<!-- Secondary sections (tabs) -->
+<div class="section">
+  <div class="subtabs">
+    <button class="subtab active" data-pane="splits">Split Rankings</button>
+    <button class="subtab" data-pane="trends">Trend Heatmap</button>
+    <button class="subtab" data-pane="compare">Compare ⚖</button>
+    <button class="subtab" data-pane="matchup">Matchup Builder</button>
+    <button class="subtab" data-pane="strat">Strategic Recs</button>
+  </div>
+
+  <!-- Splits pane -->
+  <div id="pane-splits">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Platoon Splits</div>
+        <div class="section-title">vs RHP and vs LHP · OSI distribution view</div>
+        <div class="section-subtitle">YTD data · click bars to view team detail</div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;" class="split-grid">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
+        <div id="rhpBars"></div>
+      </div>
+      <div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 8px;">vs LHP — OSI view</div>
+        <div id="lhpBars"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trends pane -->
+  <div id="pane-trends" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Recent Trends</div>
+        <div class="section-title">OSI Heatmap with directional arrows · YTD → L30 → L14 → L7</div>
+        <div class="section-subtitle">Arrows show direction from prior timeframe · color = tier band · sorted by YTD OSI</div>
+      </div>
+    </div>
+    <div id="trendMap"></div>
+    <div style="margin-top: 20px;">
+      <div class="section-title" style="margin-bottom: 10px; font-size: 13px;">Trend Classifications &amp; Velocity</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="width:30px;">#</th><th style="width:50px;">Team</th>
+            <th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
+            <th>Δ L30</th><th>Δ L14</th><th>Vel.</th>
+            <th>Trend</th><th>Interpretation</th>
+          </tr></thead>
+          <tbody id="trendBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare pane -->
+  <div id="pane-compare" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Compare Mode</div>
+        <div class="section-title">Side-by-side radar &amp; metrics — pick 2–4 teams</div>
+        <div class="section-subtitle">Enable Compare mode in the toolbar (⚖), then click rows in the master table to select teams.</div>
+      </div>
+    </div>
+    <div class="compare-bar" id="compareBar">
+      <span class="control-label">Selected</span>
+      <div id="compareTeamsPills" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span style="color:var(--text-3);font-size:11px;">No teams selected — toggle ⚖ Compare in toolbar, then click rows.</span>
+      </div>
+      <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearCompare()">Clear</button>
+    </div>
+    <div id="compareChart" style="margin-top:14px;"></div>
+    <div id="compareTable" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- Matchup Builder pane -->
+  <div id="pane-matchup" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Daily Matchup Builder</div>
+        <div class="section-title">Pick two lineups + opposing pitcher hand for offensive snapshot</div>
+        <div class="section-subtitle">Auto-selects the correct platoon split per pitcher handedness · highlights matchup weaknesses</div>
+      </div>
+    </div>
+    <div class="matchup-input-grid">
+      <div>
+        <label class="matchup-select-label">Away Team</label>
+        <select class="matchup-select" id="matchupAway"></select>
+      </div>
+      <div>
+        <label class="matchup-select-label">Home Team</label>
+        <select class="matchup-select" id="matchupHome"></select>
+      </div>
+      <div>
+        <label class="matchup-select-label">Opposing SP Hand</label>
+        <div class="toggle-group" style="margin-top:0;">
+          <button class="toggle-btn active" data-hand="R" onclick="setMatchupHand('R')">RHP</button>
+          <button class="toggle-btn" data-hand="L" onclick="setMatchupHand('L')">LHP</button>
+        </div>
+      </div>
+    </div>
+    <div class="matchup-grid" id="matchupOutput"></div>
+  </div>
+
+  <!-- Strategic pane -->
+  <div id="pane-strat" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Strategic Recommendations</div>
+        <div class="section-title">Actionable categories from v3 model signals</div>
+        <div class="section-subtitle">YTD baseline · cross-referenced with L30/L14 trends, sustainability, and PP/DF gaps</div>
+      </div>
+    </div>
+    <div id="strats"></div>
+  </div>
+</div>
+
+<div class="method-note">
+  <strong>Advanced formula note:</strong> The model separates offensive evaluation into process (ABQ), damage (RCV), floor (OBR), composite quality (OSI), opponent context (OOR), and pitching-adjusted score (PALS). Formula-level detail is intentionally placed here instead of the opening page so the dashboard remains easy to scan.
+  <br><br>
+  <strong>Core weights (v4):</strong> ABQ = 30% Discipline (BB%×0.55 + Chase%_inv×0.45) + 35% Contact Quality (ZCon%×0.55 + OCon%×0.45) + 20% Pitch Pressure (SwStr%_inv) + 15% K Avoidance. RCV = 35% wRC+ + 32% Barrel%÷park + 20% ISO÷park + 13% HardHit%÷park. OBR = 65% xwOBA + 35% BB%. OSI = 43% RCV + 37% ABQ + 20% OBR. projOSI = OSI + clip((xwOBA−wOBA)×450, −8, +8). OOR = 55% HvR + 45% HvL. PALS = schedule-adjusted composite — coming soon.
+</div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Full Metric Breakdown</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-selector">
+        <button class="btn" data-metric="osi" onclick="setModalMetric('osi')">OSI</button>
+        <button class="btn" data-metric="projOSI" onclick="setModalMetric('projOSI')">Projected OSI</button>
+        <button class="btn" data-metric="currentFormOSI" onclick="setModalMetric('currentFormOSI')">Current Form OSI</button>
+        <button class="btn" data-metric="rcv" onclick="setModalMetric('rcv')">RCV</button>
+        <button class="btn" data-metric="abq" onclick="setModalMetric('abq')">ABQ</button>
+        <button class="btn" data-metric="obr" onclick="setModalMetric('obr')">OBR</button>
+        <button class="btn" data-metric="ppGap" onclick="setModalMetric('ppGap')">Process-Production Gap</button>
+        <button class="btn" data-metric="dfGap" onclick="setModalMetric('dfGap')">Damage-Floor Gap</button>
+        <button class="btn" data-metric="velocity" onclick="setModalMetric('velocity')">Trend Velocity</button>
+        <button class="btn" data-metric="sus" onclick="setModalMetric('sus')">Sustainability</button>
+        <button class="btn" data-metric="reg" onclick="setModalMetric('reg')">Regression Gap</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA - YTD, L30, L14, L7 (real 2026 season parsed)
+   ============================================================ */
+
+var YTD=[
+ {t:'ARI',b:{o:.306,bb:8.1,k:21.4,sw:10.3,ch:35.8,zc:87.8,hh:33.7,br:7.1,w:.306,x:.305,iso:.153,wrc:92,avg:.234},l:{o:.318,bb:7.4,k:18.3,sw:10.9,ch:34.3,zc:85.3,hh:40.4,br:7.0,x:.318,iso:.113,pa:487,pp:3.91},r:{o:.299,bb:8.3,k:22.8,sw:11.6,ch:33.1,zc:85.0,hh:36.3,br:7.3,x:.299,iso:.118,pa:1051,pp:3.99}},
+ {t:'ATH',b:{o:.327,bb:9.7,k:22.5,sw:11.8,ch:32.7,zc:85.2,hh:34.4,br:9.0,w:.327,x:.326,iso:.154,wrc:103,avg:.252},l:{o:.289,bb:8.5,k:25.1,sw:14.2,ch:33.1,zc:78.5,hh:38.4,br:7.2,x:.289,iso:.085,pa:506,pp:3.84},r:{o:.342,bb:9.5,k:21.5,sw:12.1,ch:29.1,zc:84.8,hh:43.3,br:9.7,x:.342,iso:.119,pa:1144,pp:3.87}},
+ {t:'ATL',b:{o:.344,bb:7.9,k:20.8,sw:11.4,ch:36.3,zc:86.0,hh:36.8,br:10.1,w:.344,x:.339,iso:.177,wrc:119,avg:.27},l:{o:.313,bb:6.7,k:19.9,sw:13.0,ch:34.5,zc:81.7,hh:37.8,br:6.7,x:.313,iso:.127,pa:582,pp:3.77},r:{o:.353,bb:8.2,k:21.4,sw:12.5,ch:33.7,zc:83.6,hh:43.3,br:12.0,x:.353,iso:.14,pa:1086,pp:3.95}},
+ {t:'BAL',b:{o:.313,bb:10.6,k:24.5,sw:11.3,ch:30.1,zc:85.5,hh:33.7,br:7.3,w:.313,x:.313,iso:.148,wrc:98,avg:.231},l:{o:.304,bb:10.5,k:25.2,sw:11.5,ch:27.6,zc:85.9,hh:39.9,br:7.1,x:.304,iso:.096,pa:465,pp:4.03},r:{o:.316,bb:10.5,k:24.3,sw:12.6,ch:27.7,zc:81.2,hh:42.3,br:7.3,x:.316,iso:.105,pa:1181,pp:4.01}},
+ {t:'BOS',b:{o:.303,bb:8.4,k:22.5,sw:11.1,ch:34.2,zc:86.2,hh:32.3,br:7.3,w:.303,x:.307,iso:.119,wrc:85,avg:.235},l:{o:.321,bb:7.0,k:21.1,sw:11.2,ch:31.0,zc:84.4,hh:44.0,br:7.8,x:.321,iso:.099,pa:402,pp:3.86},r:{o:.303,bb:8.7,k:23.1,sw:12.3,ch:32.0,zc:84.4,hh:39.2,br:7.1,x:.303,iso:.074,pa:1206,pp:3.79}},
+ {t:'CHC',b:{o:.333,bb:11.8,k:20.7,sw:10.0,ch:30.4,zc:86.8,hh:33.6,br:8.3,w:.333,x:.331,iso:.159,wrc:114,avg:.244},l:{o:.327,bb:11.1,k:22.3,sw:10.8,ch:28.4,zc:84.9,hh:37.6,br:7.6,x:.327,iso:.094,pa:521,pp:3.92},r:{o:.333,bb:11.5,k:20.2,sw:10.9,ch:28.2,zc:84.5,hh:41.4,br:8.6,x:.333,iso:.109,pa:1196,pp:4.0}},
+ {t:'CHW',b:{o:.323,bb:10.2,k:24.4,sw:12.1,ch:30.3,zc:83.6,hh:33.8,br:10.0,w:.323,x:.331,iso:.163,wrc:102,avg:.233},l:{o:.343,bb:9.4,k:24.4,sw:13.1,ch:29.0,zc:80.0,hh:39.1,br:9.4,x:.343,iso:.137,pa:468,pp:3.84},r:{o:.327,bb:9.8,k:24.7,sw:13.4,ch:27.9,zc:79.8,hh:42.4,br:10.3,x:.327,iso:.1,pa:1159,pp:3.96}},
+ {t:'CIN',b:{o:.314,bb:10.4,k:24.3,sw:10.6,ch:29.0,zc:85.3,hh:32.5,br:11.2,w:.314,x:.328,iso:.165,wrc:94,avg:.224},l:{o:.34,bb:11.3,k:26.6,sw:11.5,ch:27.0,zc:82.8,hh:36.4,br:14.5,x:.34,iso:.135,pa:372,pp:4.0},r:{o:.325,bb:10.0,k:23.6,sw:11.7,ch:25.5,zc:81.6,hh:39.0,br:10.4,x:.325,iso:.115,pa:1295,pp:3.9}},
+ {t:'CLE',b:{o:.311,bb:11.2,k:19.9,sw:9.0,ch:30.3,zc:88.2,hh:31.4,br:6.5,w:.311,x:.316,iso:.136,wrc:96,avg:.228},l:{o:.318,bb:9.3,k:19.0,sw:10.0,ch:29.2,zc:84.9,hh:33.5,br:5.7,x:.318,iso:.098,pa:494,pp:4.06},r:{o:.315,bb:11.5,k:20.4,sw:10.0,ch:27.6,zc:86.5,hh:35.7,br:7.0,x:.315,iso:.086,pa:1188,pp:4.16}},
+ {t:'COL',b:{o:.32,bb:7.9,k:25.5,sw:13.0,ch:37.8,zc:85.9,hh:33.4,br:6.7,w:.32,x:.305,iso:.15,wrc:89,avg:.248},l:{o:.277,bb:5.7,k:30.4,sw:15.9,ch:39.5,zc:82.4,hh:36.2,br:5.5,x:.277,iso:.088,pa:405,pp:3.87},r:{o:.313,bb:8.6,k:24.0,sw:13.6,ch:34.1,zc:83.5,hh:38.5,br:7.1,x:.313,iso:.117,pa:1251,pp:3.77}},
+ {t:'DET',b:{o:.321,bb:10.1,k:22.3,sw:9.3,ch:28.2,zc:87.6,hh:31.9,br:9.6,w:.321,x:.336,iso:.148,wrc:102,avg:.242},l:{o:.347,bb:13.3,k:22.6,sw:10.0,ch:24.5,zc:83.8,hh:39.6,br:10.4,x:.347,iso:.082,pa:443,pp:4.16},r:{o:.332,bb:9.0,k:22.3,sw:10.3,ch:26.7,zc:85.9,hh:40.1,br:9.3,x:.332,iso:.109,pa:1217,pp:3.94}},
+ {t:'HOU',b:{o:.332,bb:9.2,k:20.8,sw:10.9,ch:34.0,zc:86.8,hh:34.2,br:8.7,w:.332,x:.331,iso:.163,wrc:110,avg:.255},l:{o:.338,bb:7.3,k:19.2,sw:11.3,ch:32.3,zc:85.1,hh:36.6,br:9.4,x:.338,iso:.122,pa:490,pp:3.98},r:{o:.328,bb:9.2,k:21.6,sw:12.2,ch:30.8,zc:84.2,hh:38.3,br:8.3,x:.328,iso:.116,pa:1227,pp:3.89}},
+ {t:'KC',b:{o:.317,bb:9.5,k:21.8,sw:9.8,ch:31.8,zc:87.1,hh:33.9,br:9.3,w:.317,x:.318,iso:.149,wrc:96,avg:.24},l:{o:.31,bb:9.0,k:21.2,sw:9.9,ch:28.6,zc:85.0,hh:41.0,br:7.6,x:.31,iso:.093,pa:467,pp:3.97},r:{o:.321,bb:9.4,k:22.1,sw:11.3,ch:30.1,zc:83.7,hh:42.8,br:10.1,x:.321,iso:.107,pa:1179,pp:3.85}},
+ {t:'LAA',b:{o:.317,bb:9.9,k:25.8,sw:12.2,ch:33.0,zc:85.4,hh:32.4,br:9.1,w:.317,x:.314,iso:.154,wrc:98,avg:.232},l:{o:.318,bb:10.3,k:24.7,sw:13.0,ch:29.0,zc:81.2,hh:40.1,br:10.3,x:.318,iso:.11,pa:506,pp:3.92},r:{o:.312,bb:9.3,k:26.4,sw:13.7,ch:30.7,zc:83.0,hh:38.1,br:8.5,x:.312,iso:.103,pa:1162,pp:4.08}},
+ {t:'LAD',b:{o:.344,bb:10.2,k:20.6,sw:9.8,ch:29.9,zc:87.3,hh:37.6,br:9.9,w:.344,x:.349,iso:.169,wrc:119,avg:.263},l:{o:.34,bb:9.6,k:19.9,sw:11.0,ch:29.9,zc:84.3,hh:38.6,br:7.5,x:.34,iso:.118,pa:427,pp:4.01},r:{o:.352,bb:9.7,k:21.0,sw:10.9,ch:27.2,zc:84.8,hh:43.3,br:10.8,x:.352,iso:.119,pa:1244,pp:3.98}},
+ {t:'MIA',b:{o:.313,bb:9.1,k:21.7,sw:10.1,ch:30.5,zc:87.3,hh:32.0,br:6.4,w:.313,x:.303,iso:.127,wrc:97,avg:.243},l:{o:.293,bb:9.2,k:22.9,sw:11.6,ch:29.9,zc:82.8,hh:37.1,br:7.0,x:.293,iso:.079,pa:458,pp:3.97},r:{o:.307,bb:8.9,k:21.2,sw:10.7,ch:27.3,zc:85.4,hh:40.2,br:6.2,x:.307,iso:.087,pa:1182,pp:3.82}},
+ {t:'MIL',b:{o:.315,bb:11.6,k:20.7,sw:8.9,ch:28.0,zc:88.3,hh:29.9,br:6.5,w:.315,x:.311,iso:.114,wrc:100,avg:.245},l:{o:.289,bb:11.6,k:21.4,sw:10.4,ch:28.0,zc:86.9,hh:33.9,br:4.1,x:.289,iso:.041,pa:482,pp:3.95},r:{o:.321,bb:10.6,k:20.6,sw:9.6,ch:24.8,zc:84.8,hh:38.7,br:7.6,x:.321,iso:.08,pa:1099,pp:4.08}},
+ {t:'MIN',b:{o:.32,bb:10.3,k:23.0,sw:11.4,ch:31.3,zc:85.2,hh:30.6,br:9.6,w:.32,x:.315,iso:.15,wrc:101,avg:.236},l:{o:.336,bb:11.6,k:21.2,sw:10.8,ch:26.4,zc:84.1,hh:36.5,br:10.7,x:.336,iso:.075,pa:560,pp:3.89},r:{o:.305,bb:9.3,k:23.9,sw:13.3,ch:29.7,zc:82.6,hh:37.0,br:9.1,x:.305,iso:.114,pa:1125,pp:4.03}},
+ {t:'NYM',b:{o:.289,bb:8.2,k:20.8,sw:10.7,ch:33.7,zc:87.0,hh:34.6,br:8.7,w:.289,x:.316,iso:.123,wrc:85,avg:.226},l:{o:.319,bb:7.6,k:21.1,sw:11.9,ch:33.8,zc:85.9,hh:37.7,br:8.9,x:.319,iso:.085,pa:432,pp:3.8},r:{o:.315,bb:8.1,k:20.7,sw:11.6,ch:30.5,zc:84.5,hh:43.3,br:8.7,x:.315,iso:.09,pa:1160,pp:3.89}},
+ {t:'NYY',b:{o:.338,bb:12.1,k:23.3,sw:11.1,ch:29.7,zc:84.2,hh:36.2,br:11.7,w:.338,x:.344,iso:.199,wrc:114,avg:.234},l:{o:.341,bb:11.6,k:23.6,sw:12.2,ch:27.1,zc:81.2,hh:43.7,br:10.7,x:.341,iso:.162,pa:551,pp:4.05},r:{o:.345,bb:11.6,k:23.4,sw:12.1,ch:26.5,zc:81.3,hh:46.0,br:12.2,x:.345,iso:.132,pa:1096,pp:4.06}},
+ {t:'PHI',b:{o:.307,bb:7.7,k:21.6,sw:10.8,ch:35.1,zc:88.2,hh:33.6,br:7.2,w:.307,x:.313,iso:.156,wrc:92,avg:.233},l:{o:.312,bb:8.6,k:23.1,sw:11.9,ch:32.0,zc:85.8,hh:38.4,br:7.3,x:.312,iso:.107,pa:511,pp:4.06},r:{o:.313,bb:7.2,k:21.0,sw:11.7,ch:33.9,zc:86.1,hh:41.8,br:7.2,x:.313,iso:.124,pa:1143,pp:3.73}},
+ {t:'PIT',b:{o:.328,bb:10.5,k:22.9,sw:11.6,ch:32.6,zc:86.6,hh:33.5,br:7.5,w:.328,x:.325,iso:.142,wrc:106,avg:.25},l:{o:.319,bb:9.5,k:25.9,sw:13.7,ch:33.3,zc:81.4,hh:42.6,br:6.4,x:.319,iso:.078,pa:483,pp:4.07},r:{o:.328,bb:10.3,k:21.8,sw:12.1,ch:29.0,zc:84.7,hh:39.8,br:7.9,x:.328,iso:.1,pa:1251,pp:3.95}},
+ {t:'SD',b:{o:.295,bb:8.7,k:23.4,sw:12.0,ch:34.9,zc:86.5,hh:35.4,br:8.4,w:.295,x:.313,iso:.143,wrc:90,avg:.222},l:{o:.276,bb:7.1,k:24.3,sw:12.3,ch:32.3,zc:82.3,hh:35.1,br:5.9,x:.276,iso:.072,pa:325,pp:4.04},r:{o:.323,bb:8.8,k:23.2,sw:13.5,ch:32.2,zc:83.2,hh:44.4,br:9.1,x:.323,iso:.114,pa:1249,pp:3.93}},
+ {t:'SEA',b:{o:.319,bb:10.3,k:23.8,sw:11.9,ch:32.9,zc:82.3,hh:32.9,br:8.9,w:.319,x:.328,iso:.154,wrc:107,avg:.232},l:{o:.299,bb:9.8,k:23.8,sw:12.2,ch:30.3,zc:81.0,hh:33.8,br:6.9,x:.299,iso:.088,pa:488,pp:4.04},r:{o:.34,bb:10.3,k:23.9,sw:13.4,ch:30.5,zc:79.4,hh:41.8,br:9.8,x:.34,iso:.112,pa:1219,pp:3.98}},
+ {t:'SF',b:{o:.289,bb:5.7,k:21.8,sw:10.8,ch:35.7,zc:87.1,hh:30.7,br:6.3,w:.289,x:.289,iso:.122,wrc:84,avg:.24},l:{o:.285,bb:5.8,k:22.7,sw:13.1,ch:34.2,zc:83.4,hh:34.0,br:7.5,x:.285,iso:.076,pa:450,pp:3.8},r:{o:.29,bb:5.1,k:21.7,sw:11.6,ch:32.7,zc:84.6,hh:37.3,br:5.8,x:.29,iso:.106,pa:1150,pp:3.9}},
+ {t:'STL',b:{o:.318,bb:9.1,k:21.5,sw:11.3,ch:32.8,zc:85.0,hh:32.8,br:8.1,w:.318,x:.324,iso:.15,wrc:104,avg:.24},l:{o:.336,bb:9.7,k:17.9,sw:9.8,ch:28.8,zc:86.1,hh:40.4,br:6.6,x:.336,iso:.079,pa:452,pp:3.93},r:{o:.319,bb:8.2,k:23.0,sw:13.0,ch:30.9,zc:80.1,hh:39.4,br:8.8,x:.319,iso:.11,pa:1197,pp:3.9}},
+ {t:'TB',b:{o:.318,bb:8.7,k:18.8,sw:8.0,ch:32.4,zc:89.5,hh:29.9,br:4.3,w:.318,x:.304,iso:.118,wrc:98,avg:.257},l:{o:.286,bb:7.4,k:17.9,sw:8.3,ch:30.6,zc:88.1,hh:32.6,br:2.6,x:.286,iso:.064,pa:524,pp:3.85},r:{o:.312,bb:8.8,k:19.3,sw:9.2,ch:29.2,zc:86.4,hh:32.7,br:5.1,x:.312,iso:.081,pa:1074,pp:3.87}},
+ {t:'TEX',b:{o:.308,bb:9.5,k:23.6,sw:11.9,ch:32.1,zc:85.1,hh:35.6,br:7.9,w:.308,x:.312,iso:.136,wrc:94,avg:.234},l:{o:.255,bb:10.0,k:27.9,sw:13.8,ch:25.9,zc:77.9,hh:33.9,br:3.6,x:.255,iso:.047,pa:359,pp:3.97},r:{o:.328,bb:9.1,k:22.4,sw:13.0,ch:30.7,zc:83.7,hh:45.1,br:9.0,x:.328,iso:.107,pa:1237,pp:3.88}},
+ {t:'TOR',b:{o:.307,bb:8.0,k:18.2,sw:10.2,ch:36.8,zc:87.5,hh:32.5,br:6.5,w:.307,x:.31,iso:.129,wrc:93,avg:.246},l:{o:.312,bb:9.7,k:18.3,sw:10.6,ch:31.4,zc:87.1,hh:38.9,br:6.1,x:.312,iso:.078,pa:443,pp:3.82},r:{o:.309,bb:6.9,k:18.3,sw:11.5,ch:35.4,zc:84.7,hh:36.3,br:6.7,x:.309,iso:.098,pa:1166,pp:3.74}},
+ {t:'WSH',b:{o:.325,bb:9.5,k:22.1,sw:11.0,ch:31.9,zc:86.6,hh:31.8,br:8.7,w:.325,x:.326,iso:.166,wrc:107,avg:.242},l:{o:.333,bb:10.1,k:24.8,sw:13.3,ch:31.8,zc:81.2,hh:35.3,br:9.0,x:.333,iso:.107,pa:505,pp:3.88},r:{o:.324,bb:8.5,k:21.2,sw:11.4,ch:29.6,zc:84.1,hh:40.3,br:8.6,x:.324,iso:.126,pa:1195,pp:3.84}}
+];
+
+var L30=[
+ {t:'ARI',b:{o:.31,bb:8.8,k:19.8,sw:9.6,ch:36.2,zc:88.1,hh:33.4,br:7.4,w:.31,x:.308,iso:.154,wrc:95},l:{o:.312,bb:8.3,k:17.6,sw:11.1,ch:35.2,zc:83.7,hh:40.0,br:7.3,x:.312,iso:.124,pa:278,pp:3.94},r:{o:.306,bb:8.9,k:20.8,sw:10.8,ch:32.6,zc:85.3,hh:37.2,br:7.5,x:.306,iso:.112,pa:615,pp:3.9}},
+ {t:'ATH',b:{o:.347,bb:9.9,k:19.5,sw:10.9,ch:32.4,zc:86.4,hh:33.5,br:9.7,w:.347,x:.335,iso:.173,wrc:116},l:{o:.289,bb:8.0,k:22.9,sw:14.4,ch:32.9,zc:78.5,hh:36.4,br:6.5,x:.289,iso:.088,pa:314,pp:3.81},r:{o:.355,bb:9.8,k:18.2,sw:10.8,ch:28.3,zc:86.5,hh:42.2,br:11.0,x:.355,iso:.136,pa:704,pp:3.91}},
+ {t:'ATL',b:{o:.342,bb:7.1,k:21.6,sw:12.0,ch:37.7,zc:86.1,hh:37.4,br:9.9,w:.342,x:.336,iso:.186,wrc:117},l:{o:.325,bb:5.1,k:20.8,sw:13.9,ch:37.0,zc:82.9,hh:42.6,br:7.4,x:.325,iso:.141,pa:370,pp:3.71},r:{o:.344,bb:7.9,k:22.3,sw:12.6,ch:34.3,zc:84.0,hh:43.3,br:11.4,x:.344,iso:.148,pa:611,pp:3.93}},
+ {t:'BAL',b:{o:.302,bb:10.2,k:24.9,sw:11.1,ch:29.7,zc:86.2,hh:34.2,br:8.0,w:.302,x:.31,iso:.147,wrc:90},l:{o:.308,bb:10.0,k:25.3,sw:11.1,ch:27.1,zc:86.2,hh:42.2,br:8.2,x:.308,iso:.108,pa:360,pp:4.07},r:{o:.312,bb:10.4,k:24.7,sw:12.7,ch:27.3,zc:81.6,hh:42.4,br:7.9,x:.312,iso:.104,pa:645,pp:4.03}},
+ {t:'BOS',b:{o:.305,bb:8.0,k:21.7,sw:10.4,ch:34.6,zc:88.0,hh:31.8,br:6.6,w:.305,x:.308,iso:.122,wrc:86},l:{o:.331,bb:5.9,k:23.9,sw:12.5,ch:34.3,zc:83.8,hh:46.2,br:8.1,x:.331,iso:.108,pa:272,pp:3.88},r:{o:.299,bb:8.8,k:20.8,sw:11.0,ch:31.7,zc:86.6,hh:36.6,br:6.1,x:.299,iso:.076,pa:696,pp:3.79}},
+ {t:'CHC',b:{o:.342,bb:11.5,k:19.5,sw:10.1,ch:30.4,zc:86.8,hh:33.1,br:8.4,w:.342,x:.339,iso:.176,wrc:120},l:{o:.337,bb:9.1,k:19.4,sw:10.2,ch:28.5,zc:84.8,hh:35.0,br:6.7,x:.337,iso:.1,pa:320,pp:3.86},r:{o:.339,bb:11.8,k:19.7,sw:11.2,ch:27.9,zc:84.3,hh:40.5,br:9.2,x:.339,iso:.129,pa:727,pp:4.01}},
+ {t:'CHW',b:{o:.355,bb:10.4,k:22.9,sw:11.7,ch:29.3,zc:84.2,hh:36.8,br:12.0,w:.355,x:.362,iso:.192,wrc:124},l:{o:.378,bb:9.4,k:21.8,sw:12.7,ch:27.4,zc:80.7,hh:39.9,br:10.6,x:.378,iso:.144,pa:298,pp:3.85},r:{o:.356,bb:10.0,k:23.6,sw:13.0,ch:26.9,zc:81.0,hh:44.8,br:12.6,x:.356,iso:.121,pa:717,pp:3.95}},
+ {t:'CIN',b:{o:.331,bb:9.7,k:24.3,sw:10.5,ch:28.6,zc:85.1,hh:32.9,br:12.3,w:.331,x:.341,iso:.189,wrc:105},l:{o:.357,bb:13.0,k:25.9,sw:11.5,ch:27.0,zc:81.7,hh:37.9,br:14.7,x:.357,iso:.119,pa:193,pp:4.08},r:{o:.338,bb:8.7,k:24.0,sw:11.6,ch:25.1,zc:80.7,hh:41.4,br:11.9,x:.338,iso:.146,pa:839,pp:3.88}},
+ {t:'CLE',b:{o:.308,bb:12.0,k:19.7,sw:8.6,ch:29.7,zc:88.1,hh:30.0,br:4.5,w:.308,x:.304,iso:.123,wrc:94},l:{o:.313,bb:9.7,k:20.8,sw:9.8,ch:28.2,zc:86.2,hh:31.6,br:4.7,x:.313,iso:.091,pa:279,pp:4.08},r:{o:.3,bb:12.1,k:19.5,sw:9.6,ch:27.8,zc:86.0,hh:32.9,br:4.6,x:.3,iso:.07,pa:735,pp:4.1}},
+ {t:'COL',b:{o:.325,bb:8.3,k:24.4,sw:12.5,ch:37.7,zc:86.6,hh:33.5,br:6.7,w:.325,x:.305,iso:.151,wrc:92},l:{o:.268,bb:5.8,k:30.1,sw:14.8,ch:39.3,zc:83.1,hh:36.8,br:6.3,x:.268,iso:.095,pa:276,pp:3.87},r:{o:.318,bb:9.3,k:22.3,sw:13.2,ch:33.9,zc:83.7,hh:37.8,br:6.8,x:.318,iso:.113,pa:744,pp:3.75}},
+ {t:'DET',b:{o:.326,bb:10.0,k:22.4,sw:9.0,ch:28.4,zc:88.1,hh:31.8,br:10.1,w:.326,x:.337,iso:.16,wrc:105},l:{o:.344,bb:13.2,k:24.2,sw:10.8,ch:25.4,zc:83.2,hh:40.6,br:11.9,x:.344,iso:.105,pa:356,pp:4.15},r:{o:.333,bb:8.2,k:21.4,sw:9.5,ch:26.8,zc:87.2,hh:38.5,br:9.2,x:.333,iso:.12,pa:668,pp:3.87}},
+ {t:'HOU',b:{o:.315,bb:7.9,k:21.7,sw:10.6,ch:34.7,zc:87.5,hh:33.5,br:8.3,w:.315,x:.32,iso:.16,wrc:99},l:{o:.349,bb:7.5,k:16.4,sw:10.8,ch:33.0,zc:86.0,hh:35.9,br:10.5,x:.349,iso:.108,pa:280,pp:3.91},r:{o:.309,bb:7.7,k:23.8,sw:12.0,ch:31.9,zc:84.9,hh:36.9,br:7.3,x:.309,iso:.124,pa:730,pp:3.88}},
+ {t:'KC',b:{o:.332,bb:9.1,k:21.2,sw:9.7,ch:32.9,zc:88.1,hh:33.7,br:9.0,w:.332,x:.325,iso:.169,wrc:106},l:{o:.332,bb:9.7,k:17.8,sw:9.6,ch:29.0,zc:85.8,hh:39.3,br:7.1,x:.332,iso:.118,pa:259,pp:3.91},r:{o:.323,bb:8.9,k:22.3,sw:11.5,ch:31.1,zc:83.9,hh:42.9,br:9.7,x:.323,iso:.119,pa:776,pp:3.8}},
+ {t:'LAA',b:{o:.31,bb:8.2,k:26.1,sw:12.4,ch:35.3,zc:85.1,hh:31.9,br:8.4,w:.31,x:.308,iso:.145,wrc:93},l:{o:.312,bb:8.7,k:23.9,sw:13.4,ch:28.3,zc:81.1,hh:41.8,br:10.3,x:.312,iso:.121,pa:322,pp:3.85},r:{o:.307,bb:7.5,k:27.3,sw:13.9,ch:33.9,zc:82.7,hh:37.5,br:7.4,x:.307,iso:.095,pa:644,pp:4.09}},
+ {t:'LAD',b:{o:.328,bb:9.7,k:19.1,sw:9.7,ch:29.6,zc:88.1,hh:35.3,br:8.9,w:.328,x:.339,iso:.152,wrc:109},l:{o:.326,bb:7.2,k:17.4,sw:11.7,ch:31.8,zc:84.3,hh:36.2,br:6.9,x:.326,iso:.108,pa:235,pp:3.92},r:{o:.343,bb:10.0,k:19.7,sw:10.5,ch:27.3,zc:85.9,hh:41.2,br:9.5,x:.343,iso:.106,pa:787,pp:3.96}},
+ {t:'MIA',b:{o:.303,bb:9.6,k:22.4,sw:10.6,ch:32.1,zc:87.6,hh:31.2,br:5.6,w:.303,x:.301,iso:.119,wrc:90},l:{o:.297,bb:10.2,k:26.0,sw:12.5,ch:31.3,zc:80.4,hh:39.1,br:6.8,x:.297,iso:.107,pa:215,pp:4.06},r:{o:.301,bb:9.2,k:21.4,sw:11.4,ch:29.0,zc:85.5,hh:39.3,br:5.3,x:.301,iso:.071,pa:752,pp:3.8}},
+ {t:'MIL',b:{o:.305,bb:10.6,k:19.8,sw:8.4,ch:27.1,zc:88.3,hh:29.0,br:5.7,w:.305,x:.307,iso:.09,wrc:93},l:{o:.287,bb:10.7,k:19.6,sw:9.5,ch:27.1,zc:89.0,hh:32.6,br:3.7,x:.287,iso:.037,pa:271,pp:3.8},r:{o:.315,bb:10.0,k:19.9,sw:9.4,ch:24.0,zc:84.7,hh:37.1,br:6.5,x:.315,iso:.053,pa:687,pp:4.02}},
+ {t:'MIN',b:{o:.313,bb:9.5,k:22.2,sw:11.7,ch:32.8,zc:84.4,hh:30.2,br:9.5,w:.313,x:.307,iso:.139,wrc:95},l:{o:.331,bb:11.4,k:19.9,sw:10.2,ch:26.8,zc:82.8,hh:35.2,br:10.9,x:.331,iso:.062,pa:246,pp:3.99},r:{o:.3,bb:8.6,k:23.0,sw:13.5,ch:31.4,zc:82.7,hh:34.4,br:9.1,x:.3,iso:.107,pa:756,pp:3.94}},
+ {t:'NYM',b:{o:.294,bb:8.1,k:20.7,sw:10.3,ch:33.2,zc:87.1,hh:36.1,br:10.2,w:.294,x:.322,iso:.13,wrc:88},l:{o:.298,bb:6.7,k:20.5,sw:11.2,ch:34.5,zc:86.0,hh:37.8,br:7.6,x:.298,iso:.056,pa:239,pp:3.68},r:{o:.33,bb:8.3,k:20.8,sw:11.1,ch:29.3,zc:85.0,hh:46.1,br:11.2,x:.33,iso:.108,pa:673,pp:3.91}},
+ {t:'NYY',b:{o:.356,bb:12.0,k:21.7,sw:10.7,ch:29.6,zc:85.2,hh:37.5,br:10.9,w:.356,x:.351,iso:.223,wrc:127},l:{o:.361,bb:12.8,k:21.5,sw:11.5,ch:25.6,zc:82.1,hh:47.2,br:10.2,x:.361,iso:.199,pa:376,pp:3.98},r:{o:.346,bb:10.7,k:22.0,sw:11.9,ch:26.7,zc:82.3,hh:43.7,br:11.4,x:.346,iso:.14,pa:633,pp:4.01}},
+ {t:'PHI',b:{o:.301,bb:6.9,k:21.1,sw:10.9,ch:36.6,zc:88.4,hh:34.6,br:6.9,w:.301,x:.307,iso:.161,wrc:89},l:{o:.318,bb:7.4,k:23.2,sw:12.1,ch:35.1,zc:86.1,hh:41.8,br:7.3,x:.318,iso:.141,pa:340,pp:4.02},r:{o:.301,bb:6.4,k:20.1,sw:11.6,ch:34.5,zc:86.6,hh:41.0,br:6.8,x:.301,iso:.12,pa:667,pp:3.74}},
+ {t:'PIT',b:{o:.327,bb:10.1,k:22.8,sw:11.6,ch:32.9,zc:86.5,hh:34.8,br:7.5,w:.327,x:.328,iso:.138,wrc:105},l:{o:.305,bb:8.7,k:27.6,sw:14.5,ch:34.1,zc:81.4,hh:40.6,br:6.9,x:.305,iso:.083,pa:275,pp:4.05},r:{o:.336,bb:10.0,k:21.2,sw:11.8,ch:29.0,zc:85.0,hh:40.3,br:7.8,x:.336,iso:.098,pa:787,pp:3.9}},
+ {t:'SD',b:{o:.285,bb:8.2,k:26.0,sw:12.3,ch:35.7,zc:86.4,hh:36.2,br:7.7,w:.285,x:.292,iso:.135,wrc:83},l:{o:.263,bb:6.6,k:26.4,sw:11.8,ch:32.2,zc:82.6,hh:35.1,br:5.3,x:.263,iso:.08,pa:197,pp:4.16},r:{o:.299,bb:8.3,k:25.9,sw:13.8,ch:33.1,zc:83.3,hh:40.6,br:8.3,x:.299,iso:.106,pa:745,pp:3.97}},
+ {t:'SEA',b:{o:.334,bb:9.4,k:23.2,sw:11.1,ch:32.7,zc:83.7,hh:34.4,br:9.7,w:.334,x:.336,iso:.171,wrc:117},l:{o:.318,bb:9.2,k:22.3,sw:11.6,ch:29.8,zc:82.3,hh:37.2,br:8.7,x:.318,iso:.121,pa:305,pp:3.94},r:{o:.344,bb:9.5,k:23.5,sw:12.4,ch:30.1,zc:81.7,hh:45.0,br:10.1,x:.344,iso:.123,pa:727,pp:3.99}},
+ {t:'SF',b:{o:.291,bb:5.8,k:22.3,sw:11.4,ch:37.0,zc:86.8,hh:29.6,br:6.5,w:.291,x:.29,iso:.127,wrc:86},l:{o:.266,bb:5.9,k:23.3,sw:14.2,ch:36.7,zc:82.4,hh:31.9,br:6.3,x:.266,iso:.067,pa:270,pp:3.72},r:{o:.299,bb:5.0,k:22.1,sw:12.1,ch:33.8,zc:84.4,hh:37.2,br:6.6,x:.299,iso:.115,pa:725,pp:3.89}},
+ {t:'STL',b:{o:.324,bb:7.9,k:22.1,sw:11.6,ch:34.3,zc:84.8,hh:32.8,br:8.1,w:.324,x:.319,iso:.154,wrc:108},l:{o:.314,bb:8.7,k:16.2,sw:10.2,ch:32.0,zc:87.7,hh:34.3,br:4.6,x:.314,iso:.053,pa:241,pp:3.85},r:{o:.32,bb:7.2,k:24.1,sw:13.4,ch:31.7,zc:79.6,hh:39.9,br:9.3,x:.32,iso:.126,pa:759,pp:3.9}},
+ {t:'TB',b:{o:.313,bb:8.9,k:19.1,sw:7.6,ch:32.2,zc:90.3,hh:28.7,br:4.3,w:.313,x:.301,iso:.116,wrc:95},l:{o:.28,bb:7.2,k:17.6,sw:8.1,ch:31.5,zc:88.9,hh:32.6,br:3.0,x:.28,iso:.066,pa:319,pp:4.03},r:{o:.311,bb:9.2,k:19.9,sw:8.9,ch:28.5,zc:86.9,hh:31.6,br:5.1,x:.311,iso:.078,pa:653,pp:3.89}},
+ {t:'TEX',b:{o:.31,bb:9.9,k:22.1,sw:11.2,ch:31.8,zc:86.2,hh:34.1,br:7.6,w:.31,x:.317,iso:.126,wrc:96},l:{o:.266,bb:12.6,k:24.2,sw:12.8,ch:25.3,zc:77.3,hh:33.9,br:1.7,x:.266,iso:.021,pa:190,pp:3.95},r:{o:.329,bb:9.1,k:21.6,sw:12.5,ch:29.7,zc:85.0,hh:43.4,br:9.0,x:.329,iso:.094,pa:779,pp:3.84}},
+ {t:'TOR',b:{o:.302,bb:7.4,k:18.3,sw:10.6,ch:37.1,zc:86.4,hh:33.9,br:6.4,w:.302,x:.303,iso:.122,wrc:89},l:{o:.287,bb:8.7,k:22.1,sw:11.8,ch:33.7,zc:85.6,hh:37.6,br:6.7,x:.287,iso:.1,pa:289,pp:3.82},r:{o:.31,bb:6.6,k:16.8,sw:11.8,ch:35.2,zc:83.7,hh:36.4,br:6.3,x:.31,iso:.081,pa:708,pp:3.65}},
+ {t:'WSH',b:{o:.313,bb:9.9,k:23.5,sw:11.4,ch:32.0,zc:85.8,hh:33.4,br:9.3,w:.313,x:.32,iso:.172,wrc:98},l:{o:.309,bb:9.9,k:26.4,sw:13.2,ch:31.3,zc:79.7,hh:31.7,br:9.3,x:.309,iso:.113,pa:292,pp:3.9},r:{o:.324,bb:8.9,k:22.6,sw:12.1,ch:29.4,zc:83.2,hh:42.8,br:9.3,x:.324,iso:.132,pa:738,pp:3.83}}
+];
+
+var L14=[
+ {t:'ARI',b:{o:.266,bb:9.8,k:20.3,sw:9.3,ch:36.2,zc:88.8,hh:35.1,br:7.6,w:.266,x:.299,iso:.114,wrc:65},l:{o:.296,bb:7.5,k:17.6,sw:10.3,ch:35.6,zc:86.1,hh:44.5,br:5.9,x:.296,iso:.103,pa:159,pp:3.8},r:{o:.301,bb:10.8,k:21.9,sw:10.7,ch:32.2,zc:83.9,hh:41.0,br:8.7,x:.301,iso:.064,pa:278,pp:4.01}},
+ {t:'ATH',b:{o:.345,bb:9.4,k:21.4,sw:11.8,ch:30.5,zc:84.7,hh:35.4,br:9.1,w:.345,x:.327,iso:.172,wrc:116},l:{o:.297,bb:6.4,k:25.7,sw:16.5,ch:33.5,zc:74.7,hh:41.5,br:8.5,x:.297,iso:.118,pa:140,pp:3.68},r:{o:.34,bb:10.4,k:19.6,sw:11.0,ch:25.8,zc:87.0,hh:37.8,br:9.3,x:.34,iso:.124,pa:326,pp:3.78}},
+ {t:'ATL',b:{o:.335,bb:7.0,k:23.8,sw:13.1,ch:38.4,zc:85.2,hh:36.3,br:9.8,w:.335,x:.329,iso:.176,wrc:113},l:{o:.315,bb:4.3,k:23.0,sw:15.2,ch:39.0,zc:81.6,hh:37.4,br:7.8,x:.315,iso:.153,pa:161,pp:3.69},r:{o:.337,bb:8.1,k:24.3,sw:13.5,ch:34.7,zc:83.5,hh:43.5,br:11.0,x:.337,iso:.131,pa:284,pp:3.98}},
+ {t:'BAL',b:{o:.284,bb:10.2,k:25.4,sw:10.7,ch:30.1,zc:88.1,hh:29.7,br:6.3,w:.284,x:.286,iso:.11,wrc:78},l:{o:.291,bb:9.9,k:25.9,sw:10.6,ch:26.6,zc:88.3,hh:38.5,br:6.7,x:.291,iso:.083,pa:162,pp:4.18},r:{o:.284,bb:10.3,k:25.2,sw:12.0,ch:28.4,zc:83.7,hh:36.2,br:6.0,x:.284,iso:.069,pa:310,pp:4.07}},
+ {t:'BOS',b:{o:.31,bb:7.4,k:23.5,sw:10.9,ch:35.4,zc:88.0,hh:33.1,br:6.1,w:.31,x:.312,iso:.116,wrc:90},l:{o:.346,bb:4.0,k:21.8,sw:11.7,ch:35.8,zc:86.3,hh:40.8,br:7.0,x:.346,iso:.117,pa:101,pp:3.73},r:{o:.302,bb:8.1,k:24.1,sw:11.9,ch:32.9,zc:85.1,hh:34.7,br:5.8,x:.302,iso:.064,pa:345,pp:3.81}},
+ {t:'CHC',b:{o:.294,bb:13.0,k:20.6,sw:10.4,ch:30.4,zc:88.6,hh:35.6,br:7.8,w:.294,x:.334,iso:.14,wrc:87},l:{o:.263,bb:8.8,k:25.3,sw:11.6,ch:23.7,zc:83.2,hh:33.3,br:.0,x:.263,iso:-.016,pa:91,pp:3.79},r:{o:.35,bb:13.1,k:19.7,sw:11.3,ch:28.5,zc:85.1,hh:43.5,br:9.6,x:.35,iso:.118,pa:390,pp:4.11}},
+ {t:'CHW',b:{o:.345,bb:9.8,k:24.6,sw:12.3,ch:28.9,zc:85.1,hh:39.0,br:13.9,w:.345,x:.368,iso:.184,wrc:118},l:{o:.382,bb:8.1,k:21.1,sw:13.0,ch:27.5,zc:81.5,hh:41.7,br:8.3,x:.382,iso:.102,pa:123,pp:3.93},r:{o:.363,bb:10.2,k:25.9,sw:13.6,ch:26.4,zc:81.2,hh:43.3,br:16.3,x:.363,iso:.134,pa:324,pp:3.95}},
+ {t:'CIN',b:{o:.314,bb:9.2,k:23.8,sw:10.1,ch:29.6,zc:86.1,hh:31.3,br:10.3,w:.314,x:.338,iso:.16,wrc:94},l:{o:.33,bb:12.1,k:31.3,sw:13.1,ch:26.2,zc:75.2,hh:32.7,br:14.5,x:.33,iso:.103,pa:99,pp:4.0},r:{o:.34,bb:8.5,k:22.0,sw:11.2,ch:25.3,zc:82.3,hh:40.1,br:9.5,x:.34,iso:.121,pa:400,pp:3.85}},
+ {t:'CLE',b:{o:.316,bb:13.4,k:17.4,sw:7.2,ch:26.1,zc:89.7,hh:35.8,br:4.9,w:.316,x:.317,iso:.12,wrc:100},l:{o:.301,bb:11.0,k:21.3,sw:10.1,ch:24.4,zc:85.1,hh:36.4,br:4.7,x:.301,iso:.076,pa:164,pp:4.05},r:{o:.325,bb:14.1,k:15.5,sw:7.4,ch:24.6,zc:89.0,hh:37.6,br:5.1,x:.325,iso:.059,pa:341,pp:4.1}},
+ {t:'COL',b:{o:.307,bb:7.6,k:26.6,sw:13.6,ch:38.4,zc:85.0,hh:33.3,br:6.6,w:.307,x:.293,iso:.156,wrc:80},l:{o:.254,bb:4.9,k:35.9,sw:17.9,ch:41.4,zc:81.0,hh:40.2,br:7.3,x:.254,iso:.091,pa:142,pp:4.01},r:{o:.31,bb:8.9,k:22.3,sw:13.0,ch:34.6,zc:84.4,hh:37.4,br:6.3,x:.31,iso:.131,pa:305,pp:3.88}},
+ {t:'DET',b:{o:.289,bb:9.6,k:24.4,sw:8.9,ch:29.6,zc:87.8,hh:29.0,br:6.6,w:.289,x:.299,iso:.113,wrc:80},l:{o:.295,bb:11.1,k:24.3,sw:10.0,ch:26.0,zc:86.9,hh:34.8,br:6.5,x:.295,iso:.072,pa:144,pp:4.15},r:{o:.301,bb:8.9,k:24.5,sw:9.9,ch:28.3,zc:85.1,hh:34.8,br:6.6,x:.301,iso:.08,pa:302,pp:3.88}},
+ {t:'HOU',b:{o:.296,bb:7.0,k:23.6,sw:11.4,ch:37.1,zc:87.0,hh:33.6,br:8.6,w:.296,x:.312,iso:.14,wrc:86},l:{o:.348,bb:7.3,k:17.3,sw:10.9,ch:33.7,zc:84.3,hh:39.6,br:12.6,x:.348,iso:.105,pa:150,pp:3.87},r:{o:.295,bb:6.5,k:26.6,sw:13.1,ch:33.4,zc:84.4,hh:37.6,br:6.6,x:.295,iso:.106,pa:323,pp:3.87}},
+ {t:'KC',b:{o:.312,bb:8.6,k:21.3,sw:9.3,ch:32.2,zc:88.8,hh:33.8,br:10.3,w:.312,x:.322,iso:.151,wrc:93},l:{o:.314,bb:12.0,k:14.4,sw:8.0,ch:27.8,zc:88.4,hh:34.8,br:4.5,x:.314,iso:.02,pa:125,pp:3.69},r:{o:.325,bb:7.3,k:23.7,sw:11.6,ch:30.5,zc:84.1,hh:47.5,br:12.4,x:.325,iso:.138,pa:354,pp:3.71}},
+ {t:'LAA',b:{o:.284,bb:7.0,k:27.7,sw:14.4,ch:38.1,zc:83.6,hh:33.0,br:7.0,w:.284,x:.293,iso:.131,wrc:76},l:{o:.308,bb:10.4,k:27.2,sw:16.0,ch:30.3,zc:75.8,hh:47.4,br:10.3,x:.308,iso:.166,pa:125,pp:3.94},r:{o:.286,bb:5.3,k:28.0,sw:15.0,ch:37.2,zc:83.0,hh:37.9,br:5.6,x:.286,iso:.074,pa:300,pp:3.99}},
+ {t:'LAD',b:{o:.319,bb:10.1,k:20.0,sw:10.2,ch:29.6,zc:88.0,hh:30.7,br:6.9,w:.319,x:.328,iso:.146,wrc:103},l:{o:.322,bb:6.7,k:18.5,sw:11.7,ch:31.0,zc:84.2,hh:38.4,br:5.1,x:.322,iso:.095,pa:135,pp:3.99},r:{o:.33,bb:11.2,k:20.7,sw:11.2,ch:27.8,zc:86.1,hh:39.9,br:7.7,x:.33,iso:.102,pa:348,pp:4.03}},
+ {t:'MIA',b:{o:.293,bb:8.0,k:22.2,sw:10.4,ch:32.8,zc:85.9,hh:31.3,br:6.2,w:.293,x:.295,iso:.12,wrc:83},l:{o:.295,bb:7.5,k:27.1,sw:12.6,ch:33.7,zc:78.2,hh:40.0,br:8.2,x:.295,iso:.15,pa:133,pp:3.82},r:{o:.295,bb:8.2,k:20.2,sw:11.2,ch:30.0,zc:84.3,hh:35.7,br:5.5,x:.295,iso:.059,pa:341,pp:3.82}},
+ {t:'MIL',b:{o:.307,bb:9.9,k:20.2,sw:7.9,ch:28.3,zc:89.0,hh:28.5,br:5.4,w:.307,x:.302,iso:.091,wrc:95},l:{o:.265,bb:11.2,k:18.9,sw:9.2,ch:26.1,zc:89.5,hh:25.3,br:2.0,x:.265,iso:.017,pa:143,pp:3.74},r:{o:.32,bb:8.9,k:20.9,sw:8.9,ch:25.4,zc:86.3,hh:38.8,br:7.1,x:.32,iso:.069,pa:282,pp:3.95}},
+ {t:'MIN',b:{o:.32,bb:8.6,k:23.9,sw:12.7,ch:33.6,zc:83.8,hh:32.9,br:11.0,w:.32,x:.304,iso:.153,wrc:101},l:{o:.328,bb:9.4,k:21.7,sw:10.1,ch:27.5,zc:84.6,hh:38.0,br:12.7,x:.328,iso:.096,pa:106,pp:3.84},r:{o:.296,bb:7.8,k:24.7,sw:14.9,ch:31.7,zc:80.1,hh:36.1,br:10.4,x:.296,iso:.115,pa:348,pp:3.89}},
+ {t:'NYM',b:{o:.299,bb:8.9,k:19.6,sw:9.7,ch:32.0,zc:85.8,hh:36.1,br:11.0,w:.299,x:.331,iso:.14,wrc:91},l:{o:.282,bb:5.6,k:20.3,sw:11.4,ch:33.7,zc:83.4,hh:30.8,br:4.8,x:.282,iso:.047,pa:143,pp:3.43},r:{o:.354,bb:9.9,k:19.4,sw:10.1,ch:28.4,zc:86.0,hh:48.6,br:14.2,x:.354,iso:.127,pa:304,pp:3.84}},
+ {t:'NYY',b:{o:.351,bb:12.8,k:22.0,sw:11.5,ch:32.1,zc:85.6,hh:39.2,br:10.1,w:.351,x:.338,iso:.207,wrc:124},l:{o:.335,bb:12.8,k:20.7,sw:11.9,ch:27.9,zc:82.7,hh:46.2,br:8.4,x:.335,iso:.182,pa:179,pp:4.03},r:{o:.34,bb:11.6,k:23.1,sw:12.7,ch:28.1,zc:82.2,hh:43.7,br:11.2,x:.34,iso:.129,pa:303,pp:4.06}},
+ {t:'PHI',b:{o:.311,bb:5.6,k:22.7,sw:11.1,ch:38.2,zc:90.0,hh:33.9,br:9.1,w:.311,x:.317,iso:.172,wrc:96},l:{o:.379,bb:5.4,k:23.2,sw:10.7,ch:36.6,zc:89.8,hh:41.8,br:11.4,x:.379,iso:.208,pa:112,pp:3.69},r:{o:.298,bb:5.4,k:22.6,sw:12.6,ch:35.7,zc:86.9,hh:41.1,br:8.4,x:.298,iso:.124,pa:367,pp:3.86}},
+ {t:'PIT',b:{o:.357,bb:12.7,k:19.1,sw:9.8,ch:30.1,zc:88.3,hh:36.0,br:7.1,w:.357,x:.345,iso:.164,wrc:126},l:{o:.316,bb:12.3,k:21.3,sw:13.2,ch:29.1,zc:80.6,hh:33.3,br:3.7,x:.316,iso:.051,pa:122,pp:3.97},r:{o:.354,bb:12.5,k:18.4,sw:10.1,ch:26.5,zc:87.5,hh:41.4,br:8.2,x:.354,iso:.123,pa:359,pp:3.91}},
+ {t:'SD',b:{o:.26,bb:7.9,k:26.5,sw:13.2,ch:36.6,zc:84.4,hh:33.0,br:6.4,w:.26,x:.287,iso:.128,wrc:66},l:{o:.258,bb:7.1,k:26.8,sw:13.0,ch:33.7,zc:80.9,hh:34.5,br:4.8,x:.258,iso:.08,pa:127,pp:4.24},r:{o:.298,bb:7.9,k:26.5,sw:14.9,ch:34.7,zc:81.1,hh:37.6,br:7.0,x:.298,iso:.108,pa:328,pp:3.81}},
+ {t:'SEA',b:{o:.322,bb:10.3,k:24.1,sw:12.0,ch:33.1,zc:81.8,hh:31.5,br:6.9,w:.322,x:.311,iso:.171,wrc:109},l:{o:.271,bb:9.0,k:27.1,sw:14.0,ch:32.7,zc:76.9,hh:31.6,br:4.1,x:.271,iso:.096,pa:155,pp:3.92},r:{o:.329,bb:10.9,k:22.7,sw:12.6,ch:29.9,zc:80.4,hh:47.5,br:8.2,x:.329,iso:.134,pa:339,pp:3.97}},
+ {t:'SF',b:{o:.28,bb:5.5,k:21.6,sw:12.7,ch:40.8,zc:85.9,hh:27.9,br:5.3,w:.28,x:.278,iso:.136,wrc:78},l:{o:.236,bb:4.8,k:21.9,sw:16.2,ch:39.8,zc:77.9,hh:27.3,br:2.6,x:.236,iso:.048,pa:105,pp:3.76},r:{o:.29,bb:4.4,k:21.9,sw:13.2,ch:38.1,zc:83.5,hh:36.9,br:6.1,x:.29,iso:.132,pa:366,pp:3.78}},
+ {t:'STL',b:{o:.303,bb:7.3,k:20.3,sw:11.7,ch:34.2,zc:83.9,hh:33.0,br:6.6,w:.303,x:.319,iso:.119,wrc:93},l:{o:.328,bb:9.5,k:14.6,sw:10.4,ch:35.3,zc:88.2,hh:33.0,br:4.9,x:.328,iso:.039,pa:137,pp:3.66},r:{o:.315,bb:6.1,k:22.8,sw:13.5,ch:30.3,zc:78.9,hh:38.1,br:7.4,x:.315,iso:.103,pa:311,pp:4.09}},
+ {t:'TB',b:{o:.318,bb:8.1,k:18.0,sw:7.6,ch:34.8,zc:92.5,hh:29.3,br:3.7,w:.318,x:.297,iso:.092,wrc:99},l:{o:.283,bb:5.3,k:14.2,sw:8.7,ch:34.8,zc:88.5,hh:36.4,br:3.3,x:.283,iso:.069,pa:190,pp:3.83},r:{o:.308,bb:9.5,k:21.0,sw:8.9,ch:31.1,zc:89.0,hh:29.5,br:4.0,x:.308,iso:.036,pa:252,pp:4.06}},
+ {t:'TEX',b:{o:.303,bb:9.1,k:21.5,sw:10.7,ch:33.8,zc:87.4,hh:37.8,br:7.8,w:.303,x:.324,iso:.125,wrc:91},l:{o:.272,bb:10.5,k:24.6,sw:13.9,ch:28.4,zc:77.1,hh:41.7,br:.0,x:.272,iso:-.022,pa:57,pp:3.53},r:{o:.332,bb:8.9,k:21.0,sw:12.3,ch:30.5,zc:84.1,hh:43.8,br:8.8,x:.332,iso:.097,pa:381,pp:3.89}},
+ {t:'TOR',b:{o:.309,bb:8.8,k:18.1,sw:9.4,ch:36.6,zc:88.4,hh:33.3,br:7.5,w:.309,x:.324,iso:.131,wrc:94},l:{o:.313,bb:9.9,k:21.9,sw:11.0,ch:34.7,zc:86.9,hh:42.4,br:8.1,x:.313,iso:.131,pa:151,pp:3.87},r:{o:.33,bb:8.0,k:16.3,sw:10.9,ch:34.3,zc:84.0,hh:34.6,br:7.3,x:.33,iso:.071,pa:312,pp:3.76}},
+ {t:'WSH',b:{o:.339,bb:9.4,k:22.1,sw:11.5,ch:32.0,zc:85.1,hh:34.1,br:9.9,w:.339,x:.326,iso:.212,wrc:115},l:{o:.308,bb:10.8,k:20.8,sw:12.8,ch:28.9,zc:82.6,hh:27.6,br:5.7,x:.308,iso:.089,pa:130,pp:3.85},r:{o:.334,bb:8.8,k:22.6,sw:12.6,ch:29.4,zc:82.6,hh:41.9,br:11.6,x:.334,iso:.188,pa:318,pp:3.88}}
+];
+
+var L7_MAP = {};
+[['ARI',.263,11.2,19.7,7.6,33.8,92.3,39.9,7.8,.263,.108,64,.186],['ATH',.327,8.8,23.2,12.1,30.4,87.0,36.8,9.2,.327,.144,103,.257],['ATL',.312,5.1,25.0,13.2,41.5,86.6,33.6,8.7,.312,.118,97,.266],['BAL',.272,9.5,26.7,9.7,30.3,86.2,27.6,4.5,.272,.112,70,.203],['BOS',.293,4.6,23.1,11.7,40.0,87.5,33.1,6.8,.293,.135,78,.224],['CHC',.228,11.7,25.7,11.8,34.3,86.2,30.6,4.5,.228,.079,43,.148],['CHW',.369,8.8,24.4,12.0,30.4,87.2,42.1,15.7,.369,.242,134,.263],['CIN',.331,10.0,21.3,8.9,28.5,88.5,31.8,9.0,.331,.153,105,.248],['CLE',.291,14.7,16.9,7.2,24.5,89.3,31.8,5.2,.291,.074,84,.207],['COL',.28,5.0,26.8,14.1,39.3,83.4,27.9,6.1,.28,.137,62,.22],['DET',.311,10.7,23.2,8.3,28.3,89.5,27.2,6.6,.311,.142,95,.225],['HOU',.289,7.8,22.7,10.4,37.3,90.0,31.3,6.8,.289,.138,81,.22],['KC',.308,8.3,17.9,7.8,30.0,92.9,31.2,9.6,.308,.145,90,.233],['LAA',.291,6.9,28.2,14.7,37.4,80.8,36.2,7.2,.291,.142,80,.223],['LAD',.29,9.3,21.1,10.8,30.1,87.1,30.5,7.7,.29,.152,83,.203],['MIA',.283,7.4,20.9,10.1,31.9,85.6,33.1,6.6,.283,.139,77,.211],['MIL',.31,9.8,24.1,10.0,30.7,84.9,26.5,3.4,.31,.102,97,.254],['MIN',.321,9.6,28.8,14.2,33.4,82.1,34.5,10.8,.321,.157,103,.24],['NYM',.281,9.0,19.7,8.1,33.5,88.3,36.7,12.7,.281,.129,79,.209],['NYY',.26,13.1,29.1,13.5,31.7,83.5,38.2,8.1,.26,.114,63,.168],['PHI',.316,6.6,23.9,11.8,35.7,88.1,32.1,7.7,.316,.188,98,.24],['PIT',.352,12.5,19.0,9.5,29.6,88.6,31.4,4.1,.352,.145,124,.276],['SD',.227,8.6,32.9,16.7,38.4,79.6,34.1,6.5,.227,.099,43,.162],['SEA',.343,10.0,20.0,11.3,33.2,82.6,31.6,8.4,.343,.185,123,.247],['SF',.315,7.2,20.9,12.6,39.7,86.6,31.1,5.2,.315,.147,102,.247],['STL',.294,6.0,20.2,11.1,34.8,84.9,33.3,4.8,.294,.09,88,.251],['TB',.309,8.1,22.3,8.4,34.7,90.0,26.9,6.0,.309,.092,92,.259],['TEX',.293,7.3,22.0,10.9,37.3,88.3,36.9,6.4,.293,.13,84,.222],['TOR',.301,10.7,19.3,9.2,34.0,89.7,33.8,5.6,.301,.115,89,.23],['WSH',.349,9.8,20.9,12.8,32.1,83.8,35.8,11.9,.349,.239,122,.239]].forEach(function(r){ L7_MAP[r[0]]={o:r[1],bb:r[2],k:r[3],sw:r[4],ch:r[5],zc:r[6],hh:r[7],br:r[8],w:r[9],iso:r[10],wrc:r[11],avg:r[12],x:null}; });
+
+/* ============================================================
+   SCORING - v2 framework
+   ============================================================ */
+
+function getDatasetTeam(timeframe, teamObj) {
+  if(timeframe==='YTD') return teamObj;
+  var src = timeframe==='L30' ? L30 : (timeframe==='L14' ? L14 : null);
+  if(src){
+    var m = src.find(function(d){return d.t===teamObj.t;});
+    return m || teamObj;
+  }
+  var l7 = L7_MAP[teamObj.t];
+  if(!l7) return teamObj;
+  return {t: teamObj.t, b: l7, l: null, r: null};
+}
+
+/* ============================================================
+   PARK FACTORS — 3-yr Statcast averages, ratio vs league avg 1.00
+   Applied to barrel/iso/hh BEFORE league normalization
+   ============================================================ */
+var PARK = {
+  COL:{r:1.18,br:1.12,iso:1.18,hh:1.04}, BOS:{r:1.06,br:1.04,iso:1.06,hh:1.02},
+  CIN:{r:1.08,br:1.10,iso:1.09,hh:1.02}, CHC:{r:1.04,br:1.02,iso:1.03,hh:1.00},
+  PHI:{r:1.06,br:1.06,iso:1.06,hh:1.02}, MIL:{r:1.03,br:1.05,iso:1.03,hh:1.00},
+  HOU:{r:1.03,br:1.04,iso:1.04,hh:1.01}, TOR:{r:1.04,br:1.03,iso:1.04,hh:1.01},
+  NYY:{r:1.02,br:1.05,iso:1.05,hh:1.01}, BAL:{r:1.02,br:1.04,iso:1.03,hh:1.00},
+  ATL:{r:1.00,br:0.99,iso:0.99,hh:1.00}, ARI:{r:1.02,br:1.01,iso:1.02,hh:1.00},
+  KC:{r:0.99,br:0.96,iso:0.95,hh:0.99},  TEX:{r:1.01,br:1.02,iso:1.01,hh:1.00},
+  WSH:{r:0.99,br:0.98,iso:0.99,hh:0.99}, MIN:{r:0.99,br:0.97,iso:0.97,hh:0.99},
+  CHW:{r:1.01,br:1.02,iso:1.02,hh:1.00}, LAA:{r:0.99,br:0.99,iso:0.99,hh:0.99},
+  STL:{r:0.98,br:0.97,iso:0.96,hh:0.99}, NYM:{r:0.97,br:0.96,iso:0.96,hh:0.99},
+  ATH:{r:0.96,br:0.94,iso:0.94,hh:0.98}, TB:{r:0.97,br:0.95,iso:0.96,hh:0.99},
+  PIT:{r:0.96,br:0.94,iso:0.93,hh:0.99}, CLE:{r:0.97,br:0.95,iso:0.96,hh:0.99},
+  DET:{r:0.96,br:0.93,iso:0.94,hh:0.99}, LAD:{r:0.97,br:0.96,iso:0.97,hh:1.00},
+  MIA:{r:0.93,br:0.92,iso:0.91,hh:0.98}, SEA:{r:0.94,br:0.93,iso:0.92,hh:0.99},
+  SD:{r:0.91,br:0.89,iso:0.90,hh:0.98},  SF:{r:0.91,br:0.88,iso:0.88,hh:0.98}
+};
+function pf(team, k){ return (PARK[team] && PARK[team][k]) ? PARK[team][k] : 1.00; }
+
+/* Schedule-strength placeholder — neutral 1.00 until populated with opponent context */
+var SOS = {};
+
+/* Track PA per team/timeframe/split for sample-size guardrails */
+function getPA(team, timeframe, splitTab) {
+  var src = timeframe==='YTD' ? YTD :
+            timeframe==='L30' ? L30 :
+            timeframe==='L14' ? L14 : null;
+  if(timeframe==='L7') return splitTab==='b' ? 270 : null; // L7 estimate
+  if(!src) return null;
+  var m = src.find(function(d){return d.t===team;});
+  if(!m) return null;
+  if(splitTab==='b') return (m.l && m.r) ? (m.l.pa||0)+(m.r.pa||0) : null;
+  if(splitTab==='l') return m.l ? m.l.pa : null;
+  if(splitTab==='r') return m.r ? m.r.pa : null;
+  return null;
+}
+
+function buildOne(d, splitTab, timeframe) {
+  if(!d) return null;
+  var s;
+  if(splitTab==='b') s = d.b;
+  else if(splitTab==='l') s = d.l;
+  else s = d.r;
+  if(!s) return null;
+
+  var pp;
+  if(splitTab==='b'){
+    if(d.l && d.r && d.l.pa && d.r.pa) pp = (d.l.pp*d.l.pa + d.r.pp*d.r.pa)/(d.l.pa + d.r.pa);
+    else pp = s.pp || 3.85;
+  } else {
+    pp = s.pp || 3.85;
+  }
+  var woba = (splitTab==='b' && s.w !== undefined) ? s.w : (s.x !== undefined ? s.x : null);
+  var xwoba = s.x !== undefined ? s.x : null;
+
+  // Regression signal — synthesize split wOBA proxy when not directly available
+  var reg = null;
+  if(splitTab==='b' && s.w !== undefined && s.x !== undefined && s.x !== null) {
+    reg = s.x - s.w;
+  } else if(s.x !== undefined && s.x !== null && (s.o !== undefined || s.iso !== undefined)) {
+    // Synthetic wOBA proxy ≈ 0.55*OBP + 0.45*(OBP + ISO*0.55); calibrated against Both split
+    var synthWoba = 0.55*(s.o||0) + 0.45*((s.o||0) + (s.iso||0)*0.55);
+    if(synthWoba > 0.150 && synthWoba < 0.500) reg = s.x - synthWoba;
+  }
+
+  var wrc = s.wrc !== undefined ? s.wrc : null;
+  var avg = (d.b && d.b.avg) || null;
+
+  // Park-adjusted damage inputs (divide raw by park factor)
+  var brAdj  = s.br  !== undefined && s.br  !== null ? s.br  / pf(d.t, 'br')  : null;
+  var isoAdj = s.iso !== undefined && s.iso !== null ? s.iso / pf(d.t, 'iso') : null;
+  var hhAdj  = s.hh  !== undefined && s.hh  !== null ? s.hh  / pf(d.t, 'hh')  : null;
+
+  var pa = timeframe ? getPA(d.t, timeframe, splitTab) : null;
+
+  return {t:d.t, o:s.o, bb:s.bb, k:s.k, sw:s.sw, ch:s.ch, zc:s.zc,
+          hh:s.hh, br:s.br, iso:s.iso,
+          hhAdj:hhAdj, brAdj:brAdj, isoAdj:isoAdj,
+          w:woba, x:xwoba, pp:pp, reg:reg, wrc:wrc, avg:avg, pa:pa};
+}
+
+/* v4 FORMULAS — Updated Model
+   ABQ = 30% Discipline + 35% Contact Quality + 20% Pitch Pressure + 15% K avoidance  (pure process)
+     Discipline      = BB%×0.55 + Chase%_inv×0.45
+     Contact Quality = ZCon%×0.55 + OCon%×0.45
+     Pitch Pressure  = P/PA (proxy: SwStr%_inv)
+     K Avoidance     = K%_inv
+
+   RCV = 35% wRC+ + 32% Barrel% ÷ park + 20% ISO ÷ park + 13% HardHit% ÷ park  (pure damage, park-adjusted)
+
+   OBR = 65% xwOBA + 35% BB%  (pure floor, expected quality)
+
+   OSI = 43% RCV + 37% ABQ + 20% OBR  (final composite)
+   projOSI = OSI + clip((xwOBA−wOBA)×450, −8, +8)  (regression-adjusted)
+
+   OOR = 55% HvR + 45% HvL  (opponent offensive threat by handedness)
+   PALS = (OSI + schedule-adjusted PTF+) ÷ 2  (pitching-adjusted lineup score — coming soon)
+*/
+function scoreRows(rows) {
+  function mm(k){
+    var v=rows.map(function(r){return r[k];}).filter(function(x){return x!==null && x!==undefined && !isNaN(x);});
+    if(v.length===0) return {mn:0,mx:1,mean:0,sd:1};
+    var mn = Math.min.apply(null,v), mx = Math.max.apply(null,v);
+    var mean = v.reduce(function(a,b){return a+b;},0)/v.length;
+    var variance = v.reduce(function(a,b){return a + (b-mean)*(b-mean);},0)/v.length;
+    var sd = Math.sqrt(variance) || 1;
+    return {mn:mn, mx:mx, mean:mean, sd:sd};
+  }
+  var R={};
+  ['o','bb','k','sw','ch','zc','hh','br','iso','w','pp','wrc','avg','hhAdj','brAdj','isoAdj'].forEach(function(k){R[k]=mm(k);});
+
+  function nm(v,k){if(v===null||v===undefined||isNaN(v))return 50;var r=R[k];if(r.mx===r.mn)return 50;return Math.max(0,Math.min(100,(v-r.mn)/(r.mx-r.mn)*100));}
+  function iv(v,k){if(v===null||v===undefined||isNaN(v))return 50;var r=R[k];if(r.mx===r.mn)return 50;return Math.max(0,Math.min(100,(r.mx-v)/(r.mx-r.mn)*100));}
+  function zs(v,k){if(v===null||v===undefined||isNaN(v))return 0;var r=R[k];return (v-r.mean)/r.sd;}
+
+  return rows.map(function(d){
+    // ABQ — pure process (v4)
+    // Discipline = BB%×0.55 + Chase%_inv×0.45
+    var discipline = 0.55*nm(d.bb,'bb') + 0.45*iv(d.ch,'ch');
+    // Contact Quality = ZCon%×0.55 + OCon%×0.45 (OCon% fallback to ZCon% if unavailable)
+    var oc = (d.oc !== null && d.oc !== undefined) ? nm(d.oc,'zc') : nm(d.zc,'zc');
+    var contactQuality = 0.55*nm(d.zc,'zc') + 0.45*oc;
+    // Pitch Pressure = P/PA proxy via SwStr%_inv
+    var pitchPressure = iv(d.sw,'sw');
+    var kAvoid = iv(d.k,'k');
+    var abq = 0.30*discipline + 0.35*contactQuality + 0.20*pitchPressure + 0.15*kAvoid;
+
+    // RCV — pure damage, park-adjusted (v4)
+    var wrcN = d.wrc !== null && d.wrc !== undefined ? nm(d.wrc,'wrc') : nm(d.w,'w');
+    var brUse  = d.brAdj  !== null && d.brAdj  !== undefined ? nm(d.brAdj,'brAdj')   : nm(d.br,'br');
+    var isoUse = d.isoAdj !== null && d.isoAdj !== undefined ? nm(d.isoAdj,'isoAdj') : nm(d.iso,'iso');
+    var hhUse  = d.hhAdj  !== null && d.hhAdj  !== undefined ? nm(d.hhAdj,'hhAdj')   : nm(d.hh,'hh');
+    var rcv = 0.35*wrcN + 0.32*brUse + 0.20*isoUse + 0.13*hhUse;
+
+    // OBR — pure floor (v4): xwOBA×0.65 + BB%×0.35
+    var xwobaN = (d.x !== null && d.x !== undefined) ? nm(d.x,'w') : nm(d.o,'o');
+    var obr = 0.65*xwobaN + 0.35*nm(d.bb,'bb');
+
+    var osi = 0.43*rcv + 0.37*abq + 0.20*obr;
+    var ppGap = abq - rcv;
+    var dfGap = rcv - obr;
+
+    var regAdjRaw = d.reg !== null && d.reg !== undefined ? d.reg * 450 : 0;
+    var regAdj = Math.max(-8, Math.min(8, regAdjRaw));
+    var projOSI = osi + regAdj;
+
+    // League z-score for OSI (relative to mean; cross-sample comparability)
+    var osiZ = zs(d.wrc !== null ? d.wrc : d.w, d.wrc !== null ? 'wrc' : 'w');
+
+    var regSup = d.reg !== null && d.reg !== undefined ? Math.max(0, Math.min(100, 50 + (d.reg*1000)*2.5)) : 50;
+    var qc = 0.50*nm(d.br,'br') + 0.50*nm(d.hh,'hh');
+    var disc = discipline;
+    var contStab = 0.50*iv(d.k,'k') + 0.50*nm(d.zc,'zc');
+
+    return {t:d.t, abq:abq, rcv:rcv, obr:obr, osi:osi, reg:d.reg, x:d.x, w:d.w, wrc:d.wrc,
+            ppGap:ppGap, dfGap:dfGap, projOSI:projOSI, regAdj:regAdj,
+            regSup:regSup, qc:qc, disc:disc, contStab:contStab,
+            osiZ:osiZ, pa:d.pa,
+            raw:d};
+  });
+}
+
+function buildScores(timeframe, splitTab) {
+  var rows = YTD.map(function(team){
+    var src = getDatasetTeam(timeframe, team);
+    return buildOne(src, splitTab, timeframe);
+  }).filter(function(x){return x !== null;});
+  return scoreRows(rows);
+}
+
+/* ============================================================
+   FULL DATA COMPUTE - YTD baseline for splits/sustainability
+   ============================================================ */
+
+var SCO_YTD_B = buildScores('YTD','b');
+var SCO_YTD_R = buildScores('YTD','r');
+var SCO_YTD_L = buildScores('YTD','l');
+var SCO_L30_B = buildScores('L30','b');
+var SCO_L14_B = buildScores('L14','b');
+var SCO_L7_B = buildScores('L7','b');
+
+function toMap(arr){var m={};arr.forEach(function(r){m[r.t]=r;});return m;}
+var M_YTD_R = toMap(SCO_YTD_R);
+var M_YTD_L = toMap(SCO_YTD_L);
+var M_L30 = toMap(SCO_L30_B);
+var M_L14 = toMap(SCO_L14_B);
+var M_L7 = toMap(SCO_L7_B);
+
+// Enrich YTD master with platoon, sustainability, trend
+SCO_YTD_B.forEach(function(d){
+  var l30 = M_L30[d.t] ? M_L30[d.t].osi : null;
+  var l14 = M_L14[d.t] ? M_L14[d.t].osi : null;
+  var l7 = M_L7[d.t] ? M_L7[d.t].osi : null;
+  var ytdOSI = d.osi;
+  var osis=[ytdOSI,l30,l14,l7].filter(function(v){return v!==null;});
+  var trendStab = osis.length>1 ? Math.max(0, 100 - (Math.max.apply(null,osis)-Math.min.apply(null,osis))*1.8) : 50;
+  d.sus = 0.30*d.regSup + 0.25*d.qc + 0.20*d.disc + 0.15*d.contStab + 0.10*trendStab;
+  d.rhpOSI = M_YTD_R[d.t] ? M_YTD_R[d.t].osi : null;
+  d.lhpOSI = M_YTD_L[d.t] ? M_YTD_L[d.t].osi : null;
+  d.splitEdge = (d.lhpOSI!==null && d.rhpOSI!==null) ? (d.lhpOSI - d.rhpOSI) : 0;
+  d.balance = 100 - Math.abs(d.splitEdge);
+  d.exploit = Math.abs(d.splitEdge);
+  d.ytdOSI = ytdOSI; d.l30OSI=l30; d.l14OSI=l14; d.l7OSI=l7;
+  d.dL30 = l30!==null ? l30-ytdOSI : 0;
+  d.dL14 = (l14!==null && l30!==null) ? l14-l30 : 0;
+  d.dL7  = (l7!==null && l14!==null) ? l7-l14 : 0;
+
+  // PA tracking per timeframe
+  d.paYTD = getPA(d.t, 'YTD', 'b');
+  d.paL30 = getPA(d.t, 'L30', 'b');
+  d.paL14 = getPA(d.t, 'L14', 'b');
+  d.paL7  = getPA(d.t, 'L7',  'b');
+
+  // Current Form OSI — L7 weight dampened when PA < 250 (small sample)
+  var W = {ytd:0.50, l30:0.25, l14:0.15, l7:0.10};
+  var l7DampedW = (d.paL7 !== null && d.paL7 < 250) ? W.l7 * (d.paL7/250) : W.l7;
+  var tfVals = [
+    {v:ytdOSI, w:W.ytd}, {v:l30, w:W.l30}, {v:l14, w:W.l14}, {v:l7, w:l7DampedW}
+  ].filter(function(x){return x.v!==null && x.v!==undefined;});
+  var wSum = tfVals.reduce(function(a,b){return a+b.w;}, 0);
+  d.currentFormOSI = wSum>0 ? tfVals.reduce(function(a,b){return a + b.v*b.w;}, 0) / wSum : ytdOSI;
+
+  // Trend Velocity — linear slope across OSI series (older→newer)
+  (function(){
+    var ys = [ytdOSI, l30, l14, l7].filter(function(v){return v!==null && v!==undefined;});
+    if(ys.length < 2) { d.velocity = 0; return; }
+    var xs = ys.map(function(_,i){return i;});
+    var n = xs.length;
+    var sx = xs.reduce(function(a,b){return a+b;}, 0);
+    var sy = ys.reduce(function(a,b){return a+b;}, 0);
+    var sxy = xs.reduce(function(a,b,i){return a + b*ys[i];}, 0);
+    var sxx = xs.reduce(function(a,b){return a + b*b;}, 0);
+    d.velocity = (n*sxy - sx*sy) / (n*sxx - sx*sx);
+  })();
+
+  if(l30!==null && l14!==null && l30 > ytdOSI && l14 > l30) d.trend='Rising';
+  else if(l30!==null && l14!==null && l30 < ytdOSI && l14 < l30) d.trend='Cooling';
+  else if(l7!==null && l30!==null && (l7-l30)>8 && d.abq<55) d.trend='Fake Hot';
+  else if(d.abq>d.rcv+10 && d.reg!==null && d.reg>0.010) d.trend='Buy-Low';
+  else if(d.rcv>d.abq+10 && d.reg!==null && d.reg<-0.010 && d.sus<55) d.trend='Reg. Risk';
+  else if(osis.length>1 && (Math.max.apply(null,osis)-Math.min.apply(null,osis))>15) d.trend='Volatile';
+  else if(ytdOSI>=75 && (!l30||l30>=70) && (!l14||l14>=70)) d.trend='Stable Elite';
+  else d.trend='Stable';
+});
+
+// Enrich split tables with PA for badges
+SCO_YTD_R.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'r');});
+SCO_YTD_L.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'l');});
+
+/* ============================================================
+   FORMATTING HELPERS
+   ============================================================ */
+
+function tcol(v){if(v===null||v===undefined)return'#71717A';if(v>=85)return'#4ADE80';if(v>=75)return'#86EFAC';if(v>=65)return'#C084FC';if(v>=50)return'#FBBF24';return'#F87171';}
+
+function tier(v){
+  if(v>=85)return{l:'Complete Elite',bg:'rgba(74,222,128,.15)',c:'#4ADE80'};
+  if(v>=75)return{l:'High-Level',bg:'rgba(134,239,172,.13)',c:'#86EFAC'};
+  if(v>=65)return{l:'Dangerous',bg:'rgba(192,132,252,.15)',c:'#C084FC'};
+  if(v>=50)return{l:'Inconsistent',bg:'rgba(251,191,36,.15)',c:'#FBBF24'};
+  return{l:'Weak',bg:'rgba(248,113,113,.15)',c:'#F87171'};
+}
+
+function susGrade(v){
+  if(v>=90)return{l:'A+',c:'#4ADE80',bg:'rgba(74,222,128,.2)'};
+  if(v>=80)return{l:'A',c:'#4ADE80',bg:'rgba(74,222,128,.15)'};
+  if(v>=70)return{l:'B',c:'#86EFAC',bg:'rgba(134,239,172,.15)'};
+  if(v>=60)return{l:'C',c:'#FBBF24',bg:'rgba(251,191,36,.15)'};
+  if(v>=50)return{l:'D',c:'#FB923C',bg:'rgba(251,146,60,.15)'};
+  return{l:'F',c:'#F87171',bg:'rgba(248,113,113,.15)'};
+}
+
+function regFmt(v){
+  if(v===null||v===undefined)return['—','#71717A','Stable'];
+  if(v >= 0.020)  return ['↑↑ '+Math.round(v*1000), '#4ADE80', 'Strong Positive'];
+  if(v >= 0.010)  return ['↑ '+Math.round(v*1000),  '#86EFAC', 'Mild Positive'];
+  if(v <= -0.020) return ['↓↓ '+Math.round(v*1000), '#F87171', 'Strong Negative'];
+  if(v <= -0.010) return ['↓ '+Math.round(v*1000),  '#FCA5A5', 'Mild Negative'];
+  return ['→ '+(v>0?'+':'')+Math.round(v*1000), '#71717A', 'Stable'];
+}
+
+function trendCol(t){
+  if(t==='Stable Elite')return'#4ADE80';
+  if(t==='Rising')return'#86EFAC';
+  if(t==='Buy-Low')return'#60A5FA';
+  if(t==='Stable')return'#A1A1AA';
+  if(t==='Volatile')return'#C084FC';
+  if(t==='Cooling')return'#FBBF24';
+  if(t==='Fake Hot')return'#FB923C';
+  if(t==='Reg. Risk')return'#F87171';
+  return'#71717A';
+}
+
+function qcol(d){
+  var hi = d.rcv > 50, pos = d.reg && d.reg>0;
+  if(hi && pos) return '#4ADE80';
+  if(hi && !pos) return '#FBBF24';
+  if(!hi && pos) return '#60A5FA';
+  return '#F87171';
+}
+
+function takeaway(d){
+  var sg=susGrade(d.sus).l;
+  if(d.osi>=85) return 'Complete elite offense, sustainability grade '+sg;
+  if(d.osi>=75){
+    if(d.trend==='Cooling') return 'High-level output, but recent cooling trend';
+    if(d.trend==='Rising') return 'High-level, momentum building further';
+    return 'Reliable high-level offense, '+sg+' sustainability';
+  }
+  if(d.osi>=65){
+    if(d.trend==='Buy-Low') return 'Above-avg process, results lag expected';
+    if(d.exploit>12) return 'Dangerous overall but highly platoon-dependent';
+    return 'Dangerous unit, capable of strong stretches';
+  }
+  if(d.osi>=50){
+    if(d.trend==='Reg. Risk') return 'Output inflated vs expected, fade candidate';
+    if(d.trend==='Fake Hot') return 'Hot streak unsupported by process';
+    return 'Inconsistent middle-tier offense';
+  }
+  return 'Weak across the board, '+sg+' sustainability';
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+var STATE = {
+  split: 'b',
+  time: 'YTD',
+  sortKey: 'osi',
+  sortDir: 'desc',
+  activeMetric: 'osi',
+  highlightTeam: null,
+  watchlist: [],
+  compareTeams: [],
+  expandedTeam: null,
+  searchQuery: '',
+  compareMode: false,
+  pinMode: false,
+  quadrantMode: 'reg',     // 'reg' = RCV vs regression; 'rcv-abq' = RCV vs ABQ
+  matchupAway: '',
+  matchupHome: '',
+  matchupHandedness: 'R',
+};
+
+/* URL state — bookmarkable views */
+function urlEncodeState() {
+  try {
+    var p = new URLSearchParams();
+    if(STATE.split !== 'b') p.set('split', STATE.split);
+    if(STATE.time !== 'YTD') p.set('time', STATE.time);
+    if(STATE.sortKey !== 'osi') p.set('sort', STATE.sortKey);
+    if(STATE.sortDir !== 'desc') p.set('dir', STATE.sortDir);
+    if(STATE.watchlist.length) p.set('pin', STATE.watchlist.join(','));
+    if(STATE.searchQuery) p.set('q', STATE.searchQuery);
+    if(STATE.quadrantMode !== 'reg') p.set('q2', STATE.quadrantMode);
+    var s = p.toString();
+    if(window.history && window.history.replaceState)
+      window.history.replaceState(null, '', window.location.pathname + (s ? '?' + s : ''));
+  } catch(e){}
+}
+function urlDecodeState() {
+  try {
+    var p = new URLSearchParams(window.location.search);
+    if(p.get('split')) STATE.split = p.get('split');
+    if(p.get('time')) STATE.time = p.get('time');
+    if(p.get('sort')) STATE.sortKey = p.get('sort');
+    if(p.get('dir')) STATE.sortDir = p.get('dir');
+    if(p.get('pin')) STATE.watchlist = p.get('pin').split(',').filter(Boolean);
+    if(p.get('q')) STATE.searchQuery = p.get('q');
+    if(p.get('q2')) STATE.quadrantMode = p.get('q2');
+  } catch(e){}
+}
+
+function currentRows(){
+  if(STATE.time==='YTD'){
+    if(STATE.split==='b') return SCO_YTD_B;
+    if(STATE.split==='r') return SCO_YTD_R;
+    return SCO_YTD_L;
+  }
+  if(STATE.time==='L7') return SCO_L7_B;
+  if(STATE.time==='L30'){
+    if(STATE.split==='b') return SCO_L30_B;
+    return buildScores('L30', STATE.split);
+  }
+  if(STATE.time==='L14'){
+    if(STATE.split==='b') return SCO_L14_B;
+    return buildScores('L14', STATE.split);
+  }
+  return SCO_YTD_B;
+}
+
+/* ============================================================
+   SEARCH / FILTER PARSER
+   Examples: "nyy bos", "abq>60", "trend:rising", "k<22"
+   ============================================================ */
+function applyFilter(rows) {
+  if(!STATE.searchQuery) return rows;
+  var tokens = STATE.searchQuery.toLowerCase().trim().split(/\s+/);
+  // Separate team-abbrev tokens (treat as OR set) from operator/property tokens (AND)
+  var teamTokens = tokens.filter(function(t){return !/^[a-z]+(>=|<=|>|<|=).+|^[a-z]+:[a-z0-9-]+$/.test(t);});
+  var condTokens = tokens.filter(function(t){return /^[a-z]+(>=|<=|>|<|=).+|^[a-z]+:[a-z0-9-]+$/.test(t);});
+  return rows.filter(function(d){
+    // Team-token OR group: if any team tokens specified, match at least one
+    if(teamTokens.length > 0) {
+      var anyTeam = teamTokens.some(function(tok){return d.t.toLowerCase().indexOf(tok) >= 0;});
+      if(!anyTeam) return false;
+    }
+    // Condition AND group: all must pass
+    return condTokens.every(function(tok){
+      var cm = tok.match(/^([a-z]+)(>=|<=|>|<|=)(-?\d+\.?\d*)$/);
+      if(cm){
+        var key = cm[1], op = cm[2], val = parseFloat(cm[3]);
+        var keyMap = {
+          'abq':'abq','rcv':'rcv','obr':'obr','osi':'osi','proj':'projOSI','projosi':'projOSI',
+          'sus':'sus','reg':'reg','edge':'splitEdge','ppgap':'ppGap','dfgap':'dfGap',
+          'vrhp':'rhpOSI','vlhp':'lhpOSI','velocity':'velocity','vel':'velocity','form':'currentFormOSI'
+        };
+        var k = keyMap[key];
+        if(!k) {
+          var raw = d.raw || {};
+          if(key==='bb') return cmpOp(raw.bb*100, op, val);
+          if(key==='k')  return cmpOp(raw.k*100, op, val);
+          if(key==='hh') return cmpOp(raw.hh*100, op, val);
+          if(key==='br') return cmpOp(raw.br*100, op, val);
+          return true;
+        }
+        var v = d[k];
+        if(k==='reg') v = v !== null ? v*1000 : null;
+        return cmpOp(v, op, val);
+      }
+      var pm = tok.match(/^([a-z]+):([a-z0-9-]+)$/);
+      if(pm){
+        var prop = pm[1], val = pm[2];
+        if(prop==='trend') return d.trend && d.trend.toLowerCase().replace(/[\s.]/g,'').indexOf(val.replace(/-/g,''))>=0;
+        if(prop==='tier'){
+          var ti = tier(d.osi).l.toLowerCase().replace(/[\s-]/g,'');
+          return ti.indexOf(val.replace(/-/g,''))>=0;
+        }
+        return true;
+      }
+      return true;
+    });
+  });
+}
+function cmpOp(v, op, target){
+  if(v===null || v===undefined || isNaN(v)) return false;
+  if(op==='>')  return v > target;
+  if(op==='<')  return v < target;
+  if(op==='>=') return v >= target;
+  if(op==='<=') return v <= target;
+  if(op==='=')  return Math.abs(v - target) < 0.5;
+  return false;
+}
+
+/* ============================================================
+   NOTABLE MOVERS — auto-callout generator
+   ============================================================ */
+function generateMovers() {
+  var rows = currentRows();
+  function vals(k){
+    return rows.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);}).sort(function(a,b){return a-b;});
+  }
+  function mean(k){ var v=vals(k); return v.reduce(function(a,b){return a+b;},0)/Math.max(1,v.length); }
+  function med(k){ var v=vals(k); if(!v.length) return 0; var mid=Math.floor(v.length/2); return v.length%2?v[mid]:(v[mid-1]+v[mid])/2; }
+  function span(k){ var v=vals(k); return v.length ? v[v.length-1]-v[0] : 0; }
+  function count(fn){ return rows.filter(fn).length; }
+  function pct(n){ return rows.length ? Math.round((n/rows.length)*100) : 0; }
+
+  var highProcess = count(function(d){return d.ppGap!==undefined && d.ppGap > 4;});
+  var productionAhead = count(function(d){return d.ppGap!==undefined && d.ppGap < -4;});
+  var highVol = count(function(d){return d.dfGap!==undefined && d.dfGap > 8;});
+  var floorBased = count(function(d){return d.dfGap!==undefined && d.dfGap < -4;});
+  var posReg = count(function(d){return d.reg!==null && d.reg!==undefined && d.reg > 0.010;});
+  var negReg = count(function(d){return d.reg!==null && d.reg!==undefined && d.reg < -0.010;});
+  var stable = count(function(d){return d.sus!==undefined && d.sus >= 70;});
+  var unstable = count(function(d){return d.sus!==undefined && d.sus < 55;});
+  var rising = count(function(d){return d.velocity!==undefined && d.velocity > 1.5;});
+  var cooling = count(function(d){return d.velocity!==undefined && d.velocity < -1.5;});
+
+  return [
+    {
+      eyebrow:'Composite Level', color:'var(--purple)',
+      html:'Current <strong>OSI average is '+mean('osi').toFixed(1)+'</strong> with a <strong>'+span('osi').toFixed(1)+'</strong>-point league spread. Use this to judge whether separation is meaningful before focusing on individual rows.'
+    },
+    {
+      eyebrow:'Process vs Production', color:'var(--blue)',
+      html:'<strong>'+highProcess+' teams</strong> ('+pct(highProcess)+'%) show process ahead of production; <strong>'+productionAhead+' teams</strong> ('+pct(productionAhead)+'%) show production ahead of process. This is the main PP-Gap lens.'
+    },
+    {
+      eyebrow:'Damage vs Floor', color:'var(--gold)',
+      html:'<strong>'+highVol+' teams</strong> carry elevated damage-floor volatility, while <strong>'+floorBased+' teams</strong> profile more floor-based. DF-Gap helps separate power-driven output from steadier traffic creation.'
+    },
+    {
+      eyebrow:'Regression + Stability', color:'var(--green)',
+      html:'Regression is positive for <strong>'+posReg+' teams</strong> and negative for <strong>'+negReg+' teams</strong>. Sustainability grades show <strong>'+stable+' stable</strong> profiles and <strong>'+unstable+' lower-support</strong> profiles in the current view.'
+    },
+    {
+      eyebrow:'Recent Direction', color:'var(--orange)',
+      html:'Trend velocity flags <strong>'+rising+' rising</strong> profiles and <strong>'+cooling+' cooling</strong> profiles. Treat this as context, not a replacement for the YTD baseline or sample-size checks.'
+    }
+  ];
+}
+
+/* CSV export */
+function exportCSV() {
+  var rows = applyFilter(currentRows().slice()).sort(function(a,b){return b.osi-a.osi;});
+  var header = ['Team','ABQ','RCV','OBR','OSI','ProjOSI','PPGap','DFGap','Sustainability','RegGap','vRHP','vLHP','SplitEdge','Trend','Velocity','CurrentForm','PA'];
+  var lines = [header.join(',')];
+  rows.forEach(function(d){
+    lines.push([
+      d.t, d.abq.toFixed(2), d.rcv.toFixed(2), d.obr.toFixed(2), d.osi.toFixed(2),
+      d.projOSI!==undefined?d.projOSI.toFixed(2):'',
+      d.ppGap!==undefined?d.ppGap.toFixed(2):'',
+      d.dfGap!==undefined?d.dfGap.toFixed(2):'',
+      d.sus!==undefined?d.sus.toFixed(2):'',
+      d.reg!==null && d.reg!==undefined ? (d.reg*1000).toFixed(1) : '',
+      d.rhpOSI!==null && d.rhpOSI!==undefined?d.rhpOSI.toFixed(2):'',
+      d.lhpOSI!==null && d.lhpOSI!==undefined?d.lhpOSI.toFixed(2):'',
+      d.splitEdge!==undefined?d.splitEdge.toFixed(2):'',
+      d.trend||'',
+      d.velocity!==undefined?d.velocity.toFixed(2):'',
+      d.currentFormOSI!==undefined?d.currentFormOSI.toFixed(2):'',
+      d.pa||''
+    ].join(','));
+  });
+  var blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'mlb_oem_'+STATE.time+'_'+STATE.split+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported '+rows.length+' rows to CSV');
+}
+
+function showToast(msg, dur) {
+  var t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(function(){t.classList.remove('show');}, dur||2200);
+}
+
+/* ============================================================
+   RENDERERS
+   ============================================================ */
+
+function renderMetricCards(){
+  var rows = currentRows();
+  var defs = [
+    {k:'osi', label:'OSI', desc:'Composite offensive quality', tip:'OSI combines damage, process, and floor into one score.'},
+    {k:'rcv', label:'RCV', desc:'Run-creation damage', tip:'RCV measures impact, power, and run creation.'},
+    {k:'abq', label:'ABQ', desc:'At-bat process quality', tip:'ABQ measures discipline, contact stability, and swing decisions.'},
+    {k:'obr', label:'OBR', desc:'Offensive floor', tip:'OBR measures on-base reliability and contact base.'},
+    {k:'sus', label:'SUS', desc:'Signal stability grade', tip:'Sustainability checks how well the composite is supported.'},
+  ];
+
+  function avg(arr,k){
+    var vals = arr.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);});
+    return vals.reduce(function(a,b){return a+b;},0) / Math.max(1, vals.length);
+  }
+  function spread(arr,k){
+    var vals = arr.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);}).sort(function(a,b){return a-b;});
+    if(!vals.length) return 0;
+    return vals[vals.length-1] - vals[0];
+  }
+
+  var html = '';
+  defs.forEach(function(m){
+    var metricRows = (m.k==='sus' && STATE.time==='YTD' && STATE.split==='b') ? SCO_YTD_B : rows;
+    var mean = avg(metricRows,m.k);
+    var s = spread(metricRows,m.k);
+    var active = STATE.activeMetric===m.k ? ' active' : '';
+    var val = m.k==='sus' ? (mean.toFixed(1)+' avg') : mean.toFixed(1)+' avg';
+    html += '<div class="metric-card'+active+'" onclick="setActiveMetric(\''+m.k+'\')" title="'+m.tip+'">'+
+      '<div class="m-label">'+m.label+' <span class="info-dot" title="'+m.tip+'">i</span></div>'+
+      '<div class="m-leader">'+val+'</div>'+
+      '<div class="m-value">Range '+s.toFixed(1)+'</div>'+
+      '<div class="m-desc">'+m.desc+'</div>'+
+      '<div class="m-context">Click to sort + highlight</div>'+
+    '</div>';
+  });
+  document.getElementById('metricRow').innerHTML = html;
+}
+
+function renderExecSummary(){
+  var rows = currentRows();
+  function vals(k){
+    return rows.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);}).sort(function(a,b){return a-b;});
+  }
+  function mean(k){ var v=vals(k); return v.reduce(function(a,b){return a+b;},0)/Math.max(1,v.length); }
+  function min(k){ var v=vals(k); return v.length?v[0]:0; }
+  function max(k){ var v=vals(k); return v.length?v[v.length-1]:0; }
+  function count(fn){ return rows.filter(fn).length; }
+
+  var items = [
+    {l:'League Avg OSI', v:mean('osi').toFixed(1), s:'Composite offensive level', c:'var(--purple)'},
+    {l:'OSI Spread', v:(max('osi')-min('osi')).toFixed(1), s:'Separation from low to high', c:'var(--purple-2)'},
+    {l:'Avg ABQ', v:mean('abq').toFixed(1), s:'Process-quality baseline', c:'var(--blue)'},
+    {l:'Avg RCV', v:mean('rcv').toFixed(1), s:'Damage-production baseline', c:'var(--green)'},
+    {l:'Positive Regression', v:count(function(d){return d.reg!==null && d.reg>0.010;}).toString(), s:'Teams with expected quality above results', c:'var(--blue-l)'},
+    {l:'High Volatility', v:count(function(d){return d.dfGap!==undefined && d.dfGap>8;}).toString(), s:'Teams with damage above floor', c:'var(--orange)'},
+    {l:'Process Ahead', v:count(function(d){return d.ppGap!==undefined && d.ppGap>4;}).toString(), s:'Teams where ABQ exceeds RCV', c:'var(--cyan, #22d3ee)'},
+    {l:'Stable Signals', v:count(function(d){return d.sus!==undefined && d.sus>=70;}).toString(), s:'Profiles with stronger support', c:'var(--green)'}
+  ];
+
+  var html = '';
+  items.forEach(function(e){
+    html += '<div class="exec-cell">'+
+      '<div class="ec-label" style="color:'+e.c+';">'+e.l+'</div>'+
+      '<div class="ec-team" style="color:'+e.c+';">'+e.v+'</div>'+
+      '<div class="ec-stat">'+e.s+'</div>'+
+    '</div>';
+  });
+  document.getElementById('execGrid').innerHTML = html;
+
+  var label = STATE.split==='b'?'Both pitching':(STATE.split==='r'?'vs RHP':'vs LHP');
+  document.getElementById('execTitle').textContent = 'Metric distribution · '+STATE.time+' · '+label;
+}
+
+function renderMasterTable(){
+  var rows = applyFilter(currentRows().slice());
+  var key = STATE.sortKey;
+  var dir = STATE.sortDir==='desc' ? -1 : 1;
+
+  if(key==='t' || key==='trend'){
+    rows.sort(function(a,b){return (a[key]||'').toString().localeCompare((b[key]||'').toString())*dir*-1;});
+  } else if(key==='rank'){
+    rows.sort(function(a,b){return (b.osi-a.osi);});
+  } else {
+    rows.sort(function(a,b){
+      var av = a[key], bv = b[key];
+      if(av===null||av===undefined) av = -999;
+      if(bv===null||bv===undefined) bv = -999;
+      return (bv-av)*(dir===-1?1:-1);
+    });
+  }
+
+  // Pinned teams float to top
+  rows.sort(function(a,b){
+    var ap = STATE.watchlist.indexOf(a.t)>=0 ? 0 : 1;
+    var bp = STATE.watchlist.indexOf(b.t)>=0 ? 0 : 1;
+    return ap - bp;
+  });
+
+  var paThresh = STATE.time==='L7' ? 200 : (STATE.time==='L14' ? 80 : 200);
+
+  var html = '';
+  var mobileHtml = '';
+  rows.forEach(function(d, i){
+    var ti = tier(d.osi);
+    var rf = regFmt(d.reg);
+    var sg = d.sus !== undefined ? susGrade(d.sus) : null;
+    var tc = d.trend ? trendCol(d.trend) : '#71717A';
+    var edge = d.splitEdge !== undefined ? d.splitEdge : 0;
+    var edgeStr = (edge>0?'+':'')+edge.toFixed(1);
+    var edgeC = edge>5?'#C084FC':edge<-5?'#60A5FA':'#71717A';
+    var highlightCls = (STATE.highlightTeam === d.t) ? ' highlighted' : '';
+    var pinnedCls = (STATE.watchlist.indexOf(d.t)>=0) ? ' pinned' : '';
+    var compareCls = (STATE.compareTeams.indexOf(d.t)>=0) ? ' compare-selected' : '';
+
+    var activeColStyle = function(k){
+      return STATE.activeMetric===k ? 'background: rgba(192,132,252,.06); border-left: 1px solid rgba(192,132,252,.3); border-right: 1px solid rgba(192,132,252,.3);' : '';
+    };
+
+    var projDelta = (d.projOSI !== undefined && d.osi !== undefined) ? (d.projOSI - d.osi) : 0;
+    var projC = projDelta > 1.5 ? 'var(--green)' : projDelta < -1.5 ? 'var(--red)' : 'var(--text-2)';
+    var projStr = d.projOSI !== undefined ? d.projOSI.toFixed(1) : '—';
+
+    var ppC = d.ppGap > 4 ? 'var(--blue)' : d.ppGap < -4 ? 'var(--gold)' : 'var(--text-2)';
+    var ppStr = d.ppGap !== undefined ? ((d.ppGap>0?'+':'') + d.ppGap.toFixed(1)) : '—';
+
+    var dfC = d.dfGap > 8 ? 'var(--orange)' : d.dfGap < -4 ? 'var(--green-l)' : 'var(--text-2)';
+    var dfStr = d.dfGap !== undefined ? ((d.dfGap>0?'+':'') + d.dfGap.toFixed(1)) : '—';
+
+    // Form OSI (only enriched on YTD master)
+    var formStr = (d.currentFormOSI !== undefined && !isNaN(d.currentFormOSI)) ? d.currentFormOSI.toFixed(1) : '—';
+    var formC = (d.currentFormOSI !== undefined) ? tcol(d.currentFormOSI) : 'var(--text-3)';
+
+    // Velocity
+    var velStr, velC;
+    if(d.velocity !== undefined && !isNaN(d.velocity)) {
+      velStr = (d.velocity>0?'+':'') + d.velocity.toFixed(1);
+      velC = d.velocity > 1.5 ? 'var(--green)' : d.velocity < -1.5 ? 'var(--red)' : 'var(--text-2)';
+    } else {
+      velStr = '—'; velC = 'var(--text-3)';
+    }
+
+    var pinBtn = STATE.pinMode ? '<button class="pin-btn'+(pinnedCls?' pinned':'')+'" onclick="event.stopPropagation();togglePin(\''+d.t+'\')">'+(pinnedCls?'★':'☆')+'</button>' : '';
+
+    var paBadge = '';
+    if(d.pa !== null && d.pa !== undefined) {
+      var paCls = d.pa < paThresh ? 'low' : 'ok';
+      paBadge = '<span class="pa-badge '+paCls+'" title="Sample: '+d.pa+' PA">'+d.pa+'</span>';
+    }
+
+    html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
+      '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
+      '<td class="team-cell" style="color: var(--purple);">'+d.t+paBadge+'</td>'+
+      '<td class="num" style="'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+'</td>'+
+      '<td class="num" style="'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+'</td>'+
+      '<td class="num" style="'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+'</td>'+
+      '<td class="num" style="color:'+tcol(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+'</td>'+
+      '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+'</td>'+
+      '<td class="num" style="color:'+formC+';'+activeColStyle('currentFormOSI')+'">'+formStr+'</td>'+
+      '<td class="num" style="color:'+velC+';'+activeColStyle('velocity')+'">'+velStr+'</td>'+
+      '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+'</td>'+
+      '<td class="num" style="color:'+dfC+';'+activeColStyle('dfGap')+'">'+dfStr+'</td>'+
+      '<td style="'+activeColStyle('sus')+'">'+(sg?'<span class="grade-badge" style="background:'+sg.bg+';color:'+sg.c+';">'+sg.l+'</span>':'—')+'</td>'+
+      '<td class="num" style="color:'+rf[1]+';font-weight:500;">'+rf[0]+'</td>'+
+      '<td class="num" style="color:'+tcol(d.rhpOSI||0)+';">'+(d.rhpOSI!==null && d.rhpOSI!==undefined?d.rhpOSI.toFixed(1):'—')+'</td>'+
+      '<td class="num" style="color:'+tcol(d.lhpOSI||0)+';">'+(d.lhpOSI!==null && d.lhpOSI!==undefined?d.lhpOSI.toFixed(1):'—')+'</td>'+
+      '<td class="num" style="color:'+edgeC+';font-weight:500;">'+(d.splitEdge!==undefined?edgeStr:'—')+'</td>'+
+      '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'—')+'</td>'+
+      '<td><span class="pill" style="background:'+ti.bg+';color:'+ti.c+';">'+ti.l+'</span></td>'+
+      '<td style="color:var(--text-2);font-size:11px;max-width:240px;white-space:normal;">'+(d.trend?takeaway(d):'')+'</td>'+
+    '</tr>';
+
+    // Expanded detail row
+    if(STATE.expandedTeam === d.t) {
+      html += '<tr class="detail-row"><td colspan="19">'+renderTeamDetail(d.t)+'</td></tr>';
+    }
+
+    // Mobile card
+    mobileHtml += '<div class="mobile-card">'+
+      '<div class="mobile-card-head">'+
+        '<span class="mobile-card-team">'+d.t+'</span>'+
+        '<span class="mobile-card-osi" style="color:'+tcol(d.osi)+';">OSI '+d.osi.toFixed(1)+'</span>'+
+      '</div>'+
+      '<div class="mobile-card-metrics">'+
+        '<div class="mobile-card-metric"><div class="lab">ABQ</div><div class="val">'+d.abq.toFixed(1)+'</div></div>'+
+        '<div class="mobile-card-metric"><div class="lab">RCV</div><div class="val">'+d.rcv.toFixed(1)+'</div></div>'+
+        '<div class="mobile-card-metric"><div class="lab">OBR</div><div class="val">'+d.obr.toFixed(1)+'</div></div>'+
+        '<div class="mobile-card-metric"><div class="lab">Proj</div><div class="val" style="color:'+projC+';">'+projStr+'</div></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:6px;margin-top:8px;font-size:10px;align-items:center;flex-wrap:wrap;">'+
+        (sg?'<span class="grade-badge" style="background:'+sg.bg+';color:'+sg.c+';">'+sg.l+'</span>':'')+
+        '<span style="color:'+rf[1]+';">'+rf[0]+'</span>'+
+        (d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'')+
+      '</div>'+
+    '</div>';
+  });
+
+  if(rows.length === 0) {
+    html = '<tr><td colspan="19" style="text-align:center;padding:30px;color:var(--text-3);">No teams match filter: <code style="color:var(--purple);">'+STATE.searchQuery+'</code></td></tr>';
+    mobileHtml = '<div style="text-align:center;padding:30px;color:var(--text-3);">No teams match filter.</div>';
+  }
+
+  document.getElementById('masterBody').innerHTML = html;
+  document.getElementById('mobileCards').innerHTML = mobileHtml;
+
+  document.querySelectorAll('#masterTable th').forEach(function(th){
+    th.classList.remove('sorted');
+    var ind = th.querySelector('.sort-ind');
+    if(ind) ind.textContent='';
+  });
+  var activeTh = document.querySelector('#masterTable th[data-sort="'+key+'"]');
+  if(activeTh){
+    activeTh.classList.add('sorted');
+    var ind = activeTh.querySelector('.sort-ind');
+    if(ind) ind.textContent = STATE.sortDir==='desc' ? '↓' : '↑';
+  }
+
+  var keyLabel = {'osi':'OSI','abq':'ABQ','rcv':'RCV','obr':'OBR','sus':'Sustainability','reg':'Regression','rhpOSI':'vs RHP OSI','lhpOSI':'vs LHP OSI','splitEdge':'Split Edge','t':'Team','trend':'Trend','projOSI':'Projected OSI','ppGap':'Process-Production Gap','dfGap':'Damage-Floor Gap','currentFormOSI':'Current Form OSI','velocity':'Trend Velocity'};
+  var sortInfo = (keyLabel[key]||key) + ' ('+STATE.sortDir+')';
+  if(STATE.watchlist.length) sortInfo += ' · '+STATE.watchlist.length+' pinned';
+  if(STATE.searchQuery) sortInfo += ' · filter active ('+rows.length+' shown)';
+  document.getElementById('sortLabel').textContent = sortInfo;
+
+  var splitLabel = STATE.split==='b'?'Both':(STATE.split==='r'?'vs RHP':'vs LHP');
+  document.getElementById('tableTitle').textContent = 'All 30 Teams · '+STATE.time+' · '+splitLabel+' — Click any header to sort, click any row to expand';
+}
+
+function onRowClick(e, team){
+  if(e.target.closest('button, a, .pin-btn')) return;
+  if(STATE.compareMode) { toggleCompare(team); return; }
+  STATE.expandedTeam = STATE.expandedTeam === team ? null : team;
+  renderMasterTable();
+}
+function togglePin(team){
+  var i = STATE.watchlist.indexOf(team);
+  if(i>=0) STATE.watchlist.splice(i,1);
+  else STATE.watchlist.push(team);
+  renderWatchlistBar(); renderMasterTable(); urlEncodeState();
+}
+function clearWatchlist(){
+  STATE.watchlist = [];
+  renderWatchlistBar(); renderMasterTable(); urlEncodeState();
+}
+function renderWatchlistBar(){
+  var bar = document.getElementById('watchlistBar');
+  var pills = document.getElementById('watchlistPills');
+  if(!bar) return;
+  if(STATE.watchlist.length === 0){ bar.classList.remove('show'); pills.innerHTML=''; return; }
+  bar.classList.add('show');
+  pills.innerHTML = STATE.watchlist.map(function(t){
+    return '<span class="watchlist-pill" onclick="togglePin(\''+t+'\')">'+t+' <span class="x">✕</span></span>';
+  }).join('');
+}
+function togglePinMode(){
+  STATE.pinMode = !STATE.pinMode;
+  document.getElementById('pinToggleBtn').classList.toggle('active', STATE.pinMode);
+  renderMasterTable();
+  if(STATE.pinMode) showToast('Pin mode on — click ☆ next to rank to add to watchlist');
+}
+function toggleCompareMode(){
+  STATE.compareMode = !STATE.compareMode;
+  document.getElementById('compareToggleBtn').classList.toggle('active', STATE.compareMode);
+  if(STATE.compareMode) showToast('Compare mode on — click rows to add up to 4 teams');
+  renderMasterTable();
+}
+function toggleCompare(team){
+  var i = STATE.compareTeams.indexOf(team);
+  if(i>=0) STATE.compareTeams.splice(i,1);
+  else {
+    if(STATE.compareTeams.length >= 4){ showToast('Max 4 teams in comparison'); return; }
+    STATE.compareTeams.push(team);
+  }
+  renderMasterTable(); renderComparePane();
+}
+function clearCompare(){ STATE.compareTeams = []; renderMasterTable(); renderComparePane(); }
+
+function highlightTeam(t){
+  STATE.highlightTeam = t;
+  document.querySelectorAll('#masterBody tr').forEach(function(tr){
+    tr.classList.remove('highlighted');
+    if(t && tr.cells[1] && tr.cells[1].textContent===t){
+      tr.classList.add('highlighted');
+    }
+  });
+}
+
+function setActiveMetric(k){
+  STATE.activeMetric = k;
+  STATE.sortKey = k;
+  STATE.sortDir = 'desc';
+  renderMetricCards();
+  renderMasterTable();
+}
+
+function resetSort(){
+  STATE.sortKey = 'osi';
+  STATE.sortDir = 'desc';
+  STATE.activeMetric = 'osi';
+  renderMetricCards();
+  renderMasterTable();
+}
+
+/* Chart: Quadrant with rich tooltips */
+function renderQuadrant(){
+  var rows = STATE.time==='YTD' && STATE.split==='b' ? SCO_YTD_B :
+             STATE.time==='L30' && STATE.split==='b' ? SCO_L30_B :
+             STATE.time==='L14' && STATE.split==='b' ? SCO_L14_B :
+             STATE.time==='L7' ? SCO_L7_B :
+             currentRows();
+  var W = Math.min(1200, document.getElementById('mainChart').clientWidth || 1100);
+  var H = 460;
+  if(W<700) H=400;
+  var ml=42, mr=20, mt=30, mb=44;
+  var cw = W-ml-mr, ch = H-mt-mb;
+
+  // Mode A (reg): RCV (x) vs xwOBA-wOBA regression gap × 1000 (y) — Both only
+  // Mode B (rcv-abq): RCV (x) vs ABQ (y) — works for all splits
+  var useABQMode = STATE.quadrantMode === 'rcv-abq';
+  var hasReg = rows.some(function(d){return d.reg!==null;});
+  if(!useABQMode && !hasReg) useABQMode = true; // auto-fallback when reg unavailable
+
+  var yMn = useABQMode ? 0   : -22;
+  var yMx = useABQMode ? 100 : 30;
+  var yRng = yMx - yMn;
+
+  function xs(v){return ml + v/100*cw;}
+  function ys(v){return mt + (1-(v-yMn)/yRng)*ch;}
+  var mx = xs(50), my = ys(useABQMode ? 50 : 0);
+
+  var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;cursor:crosshair;" id="quadSvg">';
+
+  // Quadrant tint backgrounds
+  s += '<rect x="'+mx+'" y="'+mt+'" width="'+(W-mr-mx)+'" height="'+(my-mt)+'" fill="rgba(74,222,128,.06)"/>';
+  s += '<rect x="'+mx+'" y="'+my+'" width="'+(W-mr-mx)+'" height="'+(H-mb-my)+'" fill="rgba(251,191,36,.06)"/>';
+  s += '<rect x="'+ml+'" y="'+mt+'" width="'+(mx-ml)+'" height="'+(my-mt)+'" fill="rgba(96,165,250,.06)"/>';
+  s += '<rect x="'+ml+'" y="'+my+'" width="'+(mx-ml)+'" height="'+(H-mb-my)+'" fill="rgba(248,113,113,.06)"/>';
+
+  // Grid
+  [0,25,50,75,100].forEach(function(v){
+    var gx = xs(v);
+    s += '<line x1="'+gx+'" y1="'+mt+'" x2="'+gx+'" y2="'+(H-mb)+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
+    s += '<text x="'+gx+'" y="'+(H-mb+16)+'" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">'+v+'</text>';
+  });
+  var yTicks = useABQMode ? [0,25,50,75,100] : [-20,-10,0,10,20];
+  yTicks.forEach(function(v){
+    var gy = ys(v);
+    s += '<line x1="'+ml+'" y1="'+gy+'" x2="'+(W-mr)+'" y2="'+gy+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
+    s += '<text x="'+(ml-5)+'" y="'+(gy+4)+'" text-anchor="end" fill="#71717A" font-size="10" font-family="var(--mono)">'+(useABQMode?v:(v>0?'+':'')+v)+'</text>';
+  });
+
+  // Axis crosshairs
+  s += '<line x1="'+mx+'" y1="'+mt+'" x2="'+mx+'" y2="'+(H-mb)+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
+  s += '<line x1="'+ml+'" y1="'+my+'" x2="'+(W-mr)+'" y2="'+my+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
+
+  // Quadrant labels (different per mode)
+  if(useABQMode) {
+    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600" letter-spacing="1">ELITE — HIGH DAMAGE + HIGH PROCESS</text>';
+    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-7)+'" text-anchor="end" fill="rgba(251,191,36,.85)" font-size="9.5" font-weight="600" letter-spacing="1">HEAT-BASED — STRONG OUTPUT, WEAK PROCESS</text>';
+    s += '<text x="'+(ml+8)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.85)" font-size="9.5" font-weight="600" letter-spacing="1">PROCESS-LED — BUY-LOW CANDIDATE</text>';
+    s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600" letter-spacing="1">WEAK — LOW DAMAGE + LOW PROCESS</text>';
+  } else {
+    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600" letter-spacing="1">ELITE &amp; UNDERVALUED</text>';
+    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-7)+'" text-anchor="end" fill="rgba(251,191,36,.85)" font-size="9.5" font-weight="600" letter-spacing="1">STRONG BUT COOLING</text>';
+    s += '<text x="'+(ml+8)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.85)" font-size="9.5" font-weight="600" letter-spacing="1">BUY-LOW OFFENSE</text>';
+    s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600" letter-spacing="1">WEAK &amp; CONCERNING</text>';
+  }
+
+  // Dots
+  rows.forEach(function(d){
+    var yVal = useABQMode ? d.abq : (d.reg !== null ? d.reg*1000 : null);
+    if(yVal === null) return;
+    var cx = xs(d.rcv), cy = ys(yVal);
+    var cl = qcol(d);
+    s += '<g class="qd-dot" data-team="'+d.t+'" style="cursor:pointer;">'+
+      '<circle cx="'+cx+'" cy="'+cy+'" r="16" fill="'+cl+'" fill-opacity=".15"/>'+
+      '<circle cx="'+cx+'" cy="'+cy+'" r="13" fill="'+cl+'" stroke="rgba(0,0,0,.4)" stroke-width="1.5"/>'+
+      '<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">'+d.t+'</text>'+
+    '</g>';
+  });
+
+  // Axis labels
+  s += '<text x="'+(W/2)+'" y="'+(H-6)+'" text-anchor="middle" fill="#A1A1AA" font-size="11" font-weight="500">RCV Score (0–100)</text>';
+  s += '<text x="'+(ml-2)+'" y="'+(mt-12)+'" fill="#A1A1AA" font-size="10" font-weight="500">'+(useABQMode?'ABQ Score (0–100)':'xwOBA − wOBA gap (×1000)')+'</text>';
+  s += '</svg>';
+
+  document.getElementById('mainChart').innerHTML = s;
+
+  // Tooltip handlers
+  var tip = document.getElementById('chartTip');
+  document.querySelectorAll('.qd-dot').forEach(function(g){
+    g.addEventListener('mouseenter', function(e){
+      var t = g.getAttribute('data-team');
+      var d = rows.find(function(r){return r.t===t;});
+      var master = SCO_YTD_B.find(function(r){return r.t===t;});
+      if(!d) return;
+      var sg = master && master.sus !== undefined ? susGrade(master.sus) : null;
+      var rf = regFmt(d.reg);
+      var html = '<div class="tt-team">'+d.t+'</div>'+
+        '<div class="tt-row"><span class="lab">OSI</span><span class="val" style="color:'+tcol(d.osi)+';">'+d.osi.toFixed(1)+'</span></div>'+
+        (d.projOSI !== undefined ? '<div class="tt-row"><span class="lab">Projected OSI</span><span class="val" style="color:'+tcol(d.projOSI)+';">'+d.projOSI.toFixed(1)+' <span style="font-size:9px;color:var(--text-3);">('+(d.regAdj>=0?'+':'')+d.regAdj.toFixed(1)+')</span></span></div>' : '')+
+        (master && master.currentFormOSI !== undefined ? '<div class="tt-row"><span class="lab">Current Form</span><span class="val" style="color:'+tcol(master.currentFormOSI)+';">'+master.currentFormOSI.toFixed(1)+'</span></div>' : '')+
+        '<div class="tt-sep"></div>'+
+        '<div class="tt-row"><span class="lab">RCV</span><span class="val">'+d.rcv.toFixed(1)+'</span></div>'+
+        '<div class="tt-row"><span class="lab">ABQ</span><span class="val">'+d.abq.toFixed(1)+'</span></div>'+
+        '<div class="tt-row"><span class="lab">OBR</span><span class="val">'+d.obr.toFixed(1)+'</span></div>'+
+        '<div class="tt-sep"></div>'+
+        (d.ppGap !== undefined ? '<div class="tt-row"><span class="lab">PP Gap (ABQ−RCV)</span><span class="val" style="color:'+(d.ppGap>4?'#60A5FA':d.ppGap<-4?'#FBBF24':'#A1A1AA')+';">'+(d.ppGap>0?'+':'')+d.ppGap.toFixed(1)+'</span></div>' : '')+
+        (d.dfGap !== undefined ? '<div class="tt-row"><span class="lab">DF Gap (RCV−OBR)</span><span class="val" style="color:'+(d.dfGap>8?'#FB923C':d.dfGap<-4?'#86EFAC':'#A1A1AA')+';">'+(d.dfGap>0?'+':'')+d.dfGap.toFixed(1)+'</span></div>' : '')+
+        '<div class="tt-sep"></div>'+
+        (sg?'<div class="tt-row"><span class="lab">Sustainability</span><span class="val" style="color:'+sg.c+';">'+sg.l+' ('+master.sus.toFixed(1)+')</span></div>':'')+
+        '<div class="tt-row"><span class="lab">Regression</span><span class="val" style="color:'+rf[1]+';">'+rf[0]+'</span></div>'+
+        (master && master.trend ? '<div class="tt-row"><span class="lab">Trend</span><span class="val" style="color:'+trendCol(master.trend)+';">'+master.trend+'</span></div>' : '')+
+        (master && master.splitEdge !== undefined ? '<div class="tt-row"><span class="lab">Split Edge</span><span class="val">'+(master.splitEdge>0?'+':'')+master.splitEdge.toFixed(1)+'</span></div>' : '');
+      tip.innerHTML = html;
+      tip.classList.add('show');
+      highlightTeam(t);
+    });
+    g.addEventListener('mousemove', function(e){
+      var wrap = document.querySelector('.chart-wrap');
+      var rect = wrap.getBoundingClientRect();
+      var x = e.clientX - rect.left + 14;
+      var y = e.clientY - rect.top + 14;
+      if(x+200 > rect.width) x = e.clientX - rect.left - 210;
+      tip.style.left = x+'px'; tip.style.top = y+'px';
+    });
+    g.addEventListener('mouseleave', function(){
+      tip.classList.remove('show'); highlightTeam(null);
+    });
+  });
+
+  var splitLabel = STATE.split==='b' ? 'Both Pitching' : (STATE.split==='r' ? 'vs RHP' : 'vs LHP');
+  var modeLabel = useABQMode ? 'Run Creation vs Plate Approach' : 'Run Creation vs Regression Signal';
+  document.getElementById('chartTitle').textContent = modeLabel + ' · '+STATE.time+' · '+splitLabel;
+}
+
+function renderSplitBar(rows){
+  var sorted = rows.slice().sort(function(a,b){return b.osi-a.osi;});
+  var W = Math.min(1200, document.getElementById('mainChart').clientWidth || 1100);
+  var H = 540;
+  var lp=45, rp=55, tp=14, bp=30;
+  var bh=14, gap=2.5;
+  var ch = sorted.length*(bh+gap);
+  H = tp+ch+bp;
+  var cw = W-lp-rp;
+
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
+  [0,25,50,75,100].forEach(function(v){
+    var gx=lp+v/100*cw;
+    s+='<line x1="'+gx+'" y1="'+tp+'" x2="'+gx+'" y2="'+(H-bp)+'" stroke="rgba(255,255,255,.05)"/>';
+    s+='<text x="'+gx+'" y="'+(H-bp+16)+'" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">'+v+'</text>';
+  });
+  sorted.forEach(function(d,i){
+    var y=tp+i*(bh+gap);
+    var bw=Math.max(2,d.osi/100*cw);
+    s+='<text x="'+(lp-6)+'" y="'+(y+bh/2+3.5)+'" text-anchor="end" fill="#A1A1AA" font-size="10" font-family="var(--mono)" font-weight="600">'+d.t+'</text>';
+    s+='<rect x="'+lp+'" y="'+y+'" width="'+bw+'" height="'+bh+'" fill="'+tcol(d.osi)+'" rx="2"/>';
+    s+='<text x="'+(lp+bw+5)+'" y="'+(y+bh/2+3.5)+'" fill="#A1A1AA" font-size="10" font-family="var(--mono)">'+d.osi.toFixed(1)+'</text>';
+  });
+  s+='</svg>';
+  document.getElementById('mainChart').innerHTML=s;
+
+  var splitLabel = STATE.split==='r'?'vs RHP':'vs LHP';
+  document.getElementById('chartTitle').textContent = 'OSI Rankings · '+STATE.time+' · '+splitLabel;
+}
+
+/* Split bars (always RHP+LHP YTD) */
+function renderSplitBars(){
+  function bars(rows, color, elId){
+    var sorted = rows.slice().sort(function(a,b){return b.osi-a.osi;}).slice(0,15);
+    var W=560,H=350,lp=40,rp=45,tp=8,bp=22;
+    var bh=15,gap=3;
+    H = tp+sorted.length*(bh+gap)+bp;
+    var cw=W-lp-rp;
+    var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
+    [0,25,50,75,100].forEach(function(v){var gx=lp+v/100*cw;s+='<line x1="'+gx+'" y1="'+tp+'" x2="'+gx+'" y2="'+(H-bp)+'" stroke="rgba(255,255,255,.04)"/><text x="'+gx+'" y="'+(H-bp+14)+'" text-anchor="middle" fill="#71717A" font-size="9" font-family="var(--mono)">'+v+'</text>';});
+    sorted.forEach(function(d,i){var y=tp+i*(bh+gap);var bw=Math.max(2,d.osi/100*cw);s+='<text x="'+(lp-5)+'" y="'+(y+bh/2+3.5)+'" text-anchor="end" fill="#A1A1AA" font-size="10" font-family="var(--mono)" font-weight="500">'+d.t+'</text><rect x="'+lp+'" y="'+y+'" width="'+bw+'" height="'+bh+'" fill="'+tcol(d.osi)+'" rx="2"/><text x="'+(lp+bw+4)+'" y="'+(y+bh/2+3.5)+'" fill="#A1A1AA" font-size="9.5" font-family="var(--mono)">'+d.osi.toFixed(1)+'</text>';});
+    s+='</svg>';
+    document.getElementById(elId).innerHTML=s;
+  }
+  bars(SCO_YTD_R,'#60A5FA','rhpBars');
+  bars(SCO_YTD_L,'#C084FC','lhpBars');
+}
+
+/* Trend heatmap with directional arrows */
+function renderTrendHeatmap(){
+  var sorted = SCO_YTD_B.slice().sort(function(a,b){return b.osi-a.osi;});
+  function hcol(v){
+    if(v===null||v===undefined) return 'rgba(60,60,72,.4)';
+    if(v>=85) return 'rgba(74,222,128,.85)';
+    if(v>=75) return 'rgba(74,222,128,.55)';
+    if(v>=65) return 'rgba(192,132,252,.55)';
+    if(v>=55) return 'rgba(168,85,247,.45)';
+    if(v>=45) return 'rgba(251,191,36,.55)';
+    if(v>=35) return 'rgba(251,146,60,.55)';
+    return 'rgba(248,113,113,.65)';
+  }
+  var W=1100,rh=22,cw=110,gap=2,lp=50,tp=30;
+  var H=tp+sorted.length*(rh+gap)+12;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
+  ['YTD','L30','L14','L7'].forEach(function(tf,i){s+='<text x="'+(lp+i*cw+cw/2)+'" y="20" text-anchor="middle" fill="#A1A1AA" font-size="11" font-weight="600" letter-spacing="1">'+tf+'</text>';});
+  s+='<text x="'+(lp+4*cw+12)+'" y="20" text-anchor="start" fill="#A1A1AA" font-size="11" font-weight="600" letter-spacing="1">Trend</text>';
+  sorted.forEach(function(d,i){
+    var y=tp+i*(rh+gap);
+    s+='<text x="'+(lp-6)+'" y="'+(y+rh/2+4)+'" text-anchor="end" fill="#A1A1AA" font-size="10" font-family="var(--mono)" font-weight="600">'+d.t+'</text>';
+    var vals=[d.ytdOSI,d.l30OSI,d.l14OSI,d.l7OSI];
+    vals.forEach(function(v,ci){
+      var x=lp+ci*cw;
+      s+='<rect x="'+x+'" y="'+y+'" width="'+(cw-gap)+'" height="'+rh+'" fill="'+hcol(v)+'" rx="3"/>';
+      if(v!==null && v!==undefined) {
+        // Directional arrow vs prior timeframe
+        var arrow = '';
+        if(ci > 0 && vals[ci-1] !== null && vals[ci-1] !== undefined) {
+          var diff = v - vals[ci-1];
+          if(diff > 3) arrow = ' ▲';
+          else if(diff < -3) arrow = ' ▼';
+        }
+        s+='<text x="'+(x+(cw-gap)/2)+'" y="'+(y+rh/2+4)+'" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700" font-family="var(--mono)">'+v.toFixed(1)+arrow+'</text>';
+      }
+    });
+    var tc=trendCol(d.trend);
+    s+='<rect x="'+(lp+4*cw+4)+'" y="'+(y+2)+'" width="'+(cw-12)+'" height="'+(rh-4)+'" fill="'+tc+'22" stroke="'+tc+'66" rx="4"/>';
+    s+='<text x="'+(lp+4*cw+4+(cw-12)/2)+'" y="'+(y+rh/2+4)+'" text-anchor="middle" fill="'+tc+'" font-size="10" font-weight="600">'+d.trend+'</text>';
+  });
+  s+='</svg>';
+  document.getElementById('trendMap').innerHTML=s;
+
+  // Trend table with velocity column
+  var html='';
+  sorted.forEach(function(d,i){
+    var tc=trendCol(d.trend);
+    var interp = d.trend==='Stable Elite'?'Consistent elite, low variance':d.trend==='Rising'?'L30>YTD, L14>L30 — momentum building':d.trend==='Cooling'?'L30<YTD, L14<L30 — output declining':d.trend==='Volatile'?'Wide OSI swing between samples':d.trend==='Buy-Low'?'Process strong, xStats above results':d.trend==='Fake Hot'?'Recent spike unsupported by ABQ':d.trend==='Reg. Risk'?'High RCV unsupported by xStats':'OSI consistent across samples';
+    var dL30Str = (d.dL30>0?'+':'')+d.dL30.toFixed(1);
+    var dL14Str = (d.dL14>0?'+':'')+d.dL14.toFixed(1);
+    var velStr = d.velocity!==undefined ? (d.velocity>0?'+':'')+d.velocity.toFixed(1) : '—';
+    var velC = d.velocity>1.5?'var(--green)':d.velocity<-1.5?'var(--red)':'var(--text-3)';
+    html+='<tr><td class="rank-cell">'+(i+1)+'</td>'+
+      '<td class="team-cell" style="color:var(--purple);">'+d.t+'</td>'+
+      '<td class="num" style="color:'+tcol(d.ytdOSI||0)+';">'+(d.ytdOSI?d.ytdOSI.toFixed(1):'—')+'</td>'+
+      '<td class="num" style="color:'+tcol(d.l30OSI||0)+';">'+(d.l30OSI?d.l30OSI.toFixed(1):'—')+'</td>'+
+      '<td class="num" style="color:'+tcol(d.l14OSI||0)+';">'+(d.l14OSI?d.l14OSI.toFixed(1):'—')+'</td>'+
+      '<td class="num" style="color:'+tcol(d.l7OSI||0)+';">'+(d.l7OSI?d.l7OSI.toFixed(1):'—')+'</td>'+
+      '<td class="num" style="color:'+(d.dL30>2?'#4ADE80':d.dL30<-2?'#F87171':'#71717A')+';">'+dL30Str+'</td>'+
+      '<td class="num" style="color:'+(d.dL14>2?'#4ADE80':d.dL14<-2?'#F87171':'#71717A')+';">'+dL14Str+'</td>'+
+      '<td class="num" style="color:'+velC+';font-weight:500;">'+velStr+'</td>'+
+      '<td><span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span></td>'+
+      '<td style="color:var(--text-2);font-size:11px;">'+interp+'</td></tr>';
+  });
+  document.getElementById('trendBody').innerHTML=html;
+}
+
+/* Strategic recommendations */
+function renderStrats(){
+  function count(filt){ return SCO_YTD_B.filter(filt).length; }
+  var blocks=[
+    {tag:'Stable Composite Profiles', bc:'#4ADE80', n:count(function(d){return d.osi>=70 && d.sus>=70 && d.ppGap>-5;}), d:'Count of profiles with high OSI, strong sustainability, and no major process-production weakness. This category indicates broader offensive support rather than a single hot metric.'},
+    {tag:'Positive Regression Pressure', bc:'#60A5FA', n:count(function(d){return d.ppGap>=3 && d.reg!==null && d.reg>=0.010;}), d:'Count of profiles where process exceeds production and expected quality is above actual results. This is a buy-low style signal, not a guarantee.'},
+    {tag:'Negative Regression Pressure', bc:'#F87171', n:count(function(d){return d.ppGap<=-3 && d.reg!==null && d.reg<=-0.010 && d.sus<65;}), d:'Count of profiles where production exceeds process while expected quality is weaker. This is a cooling-risk signal that should be validated with matchup context.'},
+    {tag:'Major Platoon Separation', bc:'#C084FC', n:count(function(d){return d.exploit>=10;}), d:'Count of profiles with large handedness splits. These lineups are more sensitive to opposing starter hand and matchup construction.'},
+    {tag:'Moderate Platoon Dependence', bc:'#FBBF24', n:count(function(d){return d.exploit>=7 && d.exploit<12;}), d:'Count of profiles with noticeable but not extreme split bias. These are context-dependent signals rather than blanket ratings.'},
+    {tag:'Power / Variance Profiles', bc:'#A78BFA', n:count(function(d){return d.dfGap>=10 && d.projOSI>=65;}), d:'Count of profiles where damage is materially ahead of floor. These offenses can create scoring bursts but may be less stable inning to inning.'},
+    {tag:'Low-Support Profiles', bc:'#FB923C', n:count(function(d){return d.osi<55 && d.sus<55;}), d:'Count of profiles with weaker composite output and weaker sustainability support. Treat these as caution flags until matchup or price context changes.'},
+  ];
+  var html='';
+  blocks.forEach(function(b){
+    html += '<div class="strat-card" style="border-left-color:'+b.bc+';">'+
+      '<div class="strat-tag" style="color:'+b.bc+';">'+b.tag+'</div>'+
+      '<div class="strat-teams">'+b.n+' teams meet criteria</div>'+
+      '<div class="strat-desc">'+b.d+'</div>'+
+    '</div>';
+  });
+  document.getElementById('strats').innerHTML=html;
+}
+
+/* Modal */
+function openModal(metric){
+  document.getElementById('modal').classList.add('show');
+  setModalMetric(metric || 'osi');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+function setModalMetric(m){
+  document.querySelectorAll('.modal-selector .btn').forEach(function(b){
+    b.classList.toggle('btn-primary', b.getAttribute('data-metric')===m);
+  });
+
+  // currentFormOSI lives only on YTD-enriched rows (needs L30/L14/L7 cross-data)
+  var rows;
+  if(m==='currentFormOSI' || m==='ppGap' || m==='dfGap' || m==='projOSI' || m==='sus' || m==='splitEdge' || m==='velocity') {
+    rows = SCO_YTD_B;
+  } else {
+    rows = STATE.time==='YTD' && STATE.split==='b' ? SCO_YTD_B : currentRows();
+  }
+
+  var sorted;
+  if(m==='reg'){
+    sorted = rows.filter(function(d){return d.reg!==null;}).sort(function(a,b){return b.reg-a.reg;});
+  } else if(m==='ppGap' || m==='dfGap' || m==='velocity') {
+    sorted = rows.slice().sort(function(a,b){return b[m]-a[m];});
+  } else {
+    sorted = rows.slice().sort(function(a,b){return (b[m]||0)-(a[m]||0);});
+  }
+
+  var labels = {
+    'osi':'OSI Score',
+    'projOSI':'Projected OSI (OSI + Capped Regression)',
+    'currentFormOSI':'Current Form OSI (50% YTD + 25% L30 + 15% L14 + 10% L7)',
+    'rcv':'RCV Score',
+    'abq':'ABQ Score',
+    'obr':'OBR Score',
+    'ppGap':'Process-Production Gap (ABQ − RCV)',
+    'dfGap':'Damage-Floor Gap (RCV − OBR)',
+    'velocity':'Trend Velocity (OSI change per timeframe step)',
+    'sus':'Sustainability Score',
+    'reg':'Regression Gap (xwOBA−wOBA, ×1000)'
+  };
+  document.getElementById('modalTitle').textContent = 'Full Rankings — '+(labels[m]||m);
+
+  // Subtitle/interpretation guide per metric
+  var guides = {
+    'projOSI':'Adds capped (±8) regression adjustment to base OSI. Values <em>higher</em> than base OSI indicate xStat support; <em>lower</em> indicate inflated current output.',
+    'currentFormOSI':'Recency-weighted OSI blending all four timeframes. Best single number for current state.',
+    'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = process exceeds output → buy-low candidate. <span style="color:#FBBF24;">Negative (gold)</span> = output exceeds process → sell-high / fade risk.',
+    'dfGap':'<span style="color:#FB923C;">Positive (orange)</span> = damage-heavy power offense (boom/bust). <span style="color:#86EFAC;">Negative (green)</span> = on-base/grind floor offense.',
+    'reg':'5-tier signal: <span style="color:#4ADE80;">↑↑ ≥+20</span> Strong Positive · <span style="color:#86EFAC;">↑ +10/+19</span> Mild Positive · <span style="color:#71717A;">→ ±9</span> Stable · <span style="color:#FCA5A5;">↓ −10/−19</span> Mild Negative · <span style="color:#F87171;">↓↓ ≤−20</span> Strong Negative.'
+  };
+  var guideHtml = guides[m] ? '<div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11.5px;color:var(--text-2);line-height:1.5;">'+guides[m]+'</div>' : '';
+
+  var html = guideHtml + '<div class="table-wrap"><table><thead><tr><th style="width:32px;">#</th><th style="width:55px;">Team</th><th>Value</th><th style="width:55%;">Visualization</th></tr></thead><tbody>';
+  sorted.forEach(function(d,i){
+    var v;
+    if(m==='reg') v = d.reg!==null && d.reg!==undefined ? d.reg*1000 : null;
+    else v = d[m];
+    if(v===null||v===undefined) return;
+
+    var displayV, pct, c, grade='';
+
+    if(m==='reg') {
+      displayV = (v>0?'+':'')+v.toFixed(1);
+      pct = Math.min(100, (Math.abs(v)/30)*100);
+      c = v>=20 ? '#4ADE80' : v>=10 ? '#86EFAC' : v<=-20 ? '#F87171' : v<=-10 ? '#FCA5A5' : '#71717A';
+    } else if(m==='ppGap') {
+      displayV = (v>0?'+':'')+v.toFixed(1);
+      pct = Math.min(100, (Math.abs(v)/20)*100);
+      c = v>4 ? '#60A5FA' : v<-4 ? '#FBBF24' : '#A1A1AA';
+    } else if(m==='dfGap') {
+      displayV = (v>0?'+':'')+v.toFixed(1);
+      pct = Math.min(100, (Math.abs(v)/25)*100);
+      c = v>8 ? '#FB923C' : v<-4 ? '#86EFAC' : '#A1A1AA';
+    } else if(m==='velocity') {
+      displayV = (v>0?'+':'')+v.toFixed(2);
+      pct = Math.min(100, (Math.abs(v)/12)*100);
+      c = v>1.5 ? '#4ADE80' : v<-1.5 ? '#F87171' : '#A1A1AA';
+    } else {
+      displayV = v.toFixed(1);
+      pct = Math.min(100, Math.max(0, v));
+      c = tcol(v);
+      if(m==='sus') grade = ' <span class="grade-badge" style="background:'+susGrade(v).bg+';color:'+susGrade(v).c+';">'+susGrade(v).l+'</span>';
+      if(m==='projOSI'){
+        var delta = d.regAdj !== undefined ? d.regAdj : 0;
+        var ds = delta>0?'+':'';
+        grade = ' <span style="font-size:9.5px;color:'+(delta>0?'#4ADE80':delta<0?'#F87171':'#71717A')+';font-weight:500;">('+ds+delta.toFixed(1)+' reg adj)</span>';
+      }
+    }
+
+    // For gap metrics, show bar centered around zero with directional fill
+    var barHtml;
+    if(m==='ppGap' || m==='dfGap' || m==='reg' || m==='velocity') {
+      var center = 50;
+      var direction = v >= 0 ? 'right' : 'left';
+      var half = pct/2;
+      var leftPct = direction==='right' ? center : center - half;
+      var widthPct = half;
+      barHtml = '<div class="mini-bar" style="width:100%;max-width:300px;position:relative;background:var(--bg-4);height:8px;">'+
+        '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.2);"></div>'+
+        '<div class="mini-bar-fill" style="position:absolute;left:'+leftPct+'%;width:'+widthPct+'%;background:'+c+';height:100%;"></div>'+
+      '</div>';
+    } else {
+      barHtml = '<div class="mini-bar" style="width:100%;max-width:300px;"><div class="mini-bar-fill" style="width:'+pct+'%;background:'+c+';"></div></div>';
+    }
+
+    html += '<tr>'+
+      '<td class="rank-cell">'+(i+1)+'</td>'+
+      '<td class="team-cell" style="color:var(--purple);">'+d.t+'</td>'+
+      '<td class="num" style="color:'+c+';font-weight:600;">'+displayV+grade+'</td>'+
+      '<td>'+barHtml+'</td>'+
+    '</tr>';
+  });
+  html += '</tbody></table></div>';
+  document.getElementById('modalContent').innerHTML = html;
+}
+
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target.id==='modal') closeModal();
+});
+
+/* ============================================================
+   EVENT HANDLERS
+   ============================================================ */
+
+document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(b){
+  b.addEventListener('click', function(){
+    if(STATE.time==='L7' && b.getAttribute('data-split')!=='b') return;
+    document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    STATE.split = b.getAttribute('data-split');
+    renderAll();
+    urlEncodeState();
+  });
+});
+
+document.querySelectorAll('#timeToggle .toggle-btn').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('#timeToggle .toggle-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    STATE.time = b.getAttribute('data-time');
+    if(STATE.time==='L7'){
+      STATE.split = 'b';
+      document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
+        x.classList.toggle('active', x.getAttribute('data-split')==='b');
+      });
+      document.getElementById('warnBanner').classList.add('show');
+    } else {
+      document.getElementById('warnBanner').classList.remove('show');
+    }
+    renderAll();
+    urlEncodeState();
+  });
+});
+
+// Quadrant mode toggle (RCV vs Reg, RCV vs ABQ)
+document.querySelectorAll('#quadrantToggle .toggle-btn').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('#quadrantToggle .toggle-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    STATE.quadrantMode = b.getAttribute('data-quad');
+    renderQuadrant();
+    urlEncodeState();
+  });
+});
+
+// Search input — debounced
+(function(){
+  var debounce;
+  var si = document.getElementById('searchInput');
+  if(si) {
+    si.addEventListener('input', function(e){
+      clearTimeout(debounce);
+      debounce = setTimeout(function(){
+        STATE.searchQuery = e.target.value.trim();
+        renderMasterTable();
+        urlEncodeState();
+      }, 180);
+    });
+    // Escape clears the search box
+    si.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') {
+        si.value = '';
+        STATE.searchQuery = '';
+        renderMasterTable();
+        urlEncodeState();
+      }
+    });
+  }
+})();
+
+// Keyboard navigation: Esc closes modal/expanded row
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') {
+    var m = document.getElementById('modal');
+    if(m && m.classList.contains('show')) { m.classList.remove('show'); return; }
+    if(STATE.expandedTeam) { STATE.expandedTeam = null; renderMasterTable(); }
+  }
+});
+
+document.querySelectorAll('#masterTable th[data-sort]').forEach(function(th){
+  th.addEventListener('click', function(){
+    var k = th.getAttribute('data-sort');
+    if(k==='rank') return;
+    if(STATE.sortKey===k){
+      STATE.sortDir = STATE.sortDir==='desc' ? 'asc' : 'desc';
+    } else {
+      STATE.sortKey = k;
+      STATE.sortDir = 'desc';
+    }
+    renderMasterTable();
+    urlEncodeState();
+  });
+});
+
+document.querySelectorAll('.subtab').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.subtab').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    var pane = b.getAttribute('data-pane');
+    document.querySelectorAll('[id^=pane-]').forEach(function(p){p.style.display='none';});
+    var target = document.getElementById('pane-'+pane);
+    if(target) target.style.display='block';
+  });
+});
+
+/* ============================================================
+   NEW RENDERERS — v8
+   ============================================================ */
+
+// Concise league signal callouts
+function renderMovers(){
+  var movers = generateMovers();
+  var html = movers.map(function(m){
+    return '<div class="callout" style="border-left-color:'+m.color+';">'+
+      '<div class="callout-eyebrow" style="color:'+m.color+';">'+m.eyebrow+'</div>'+
+      '<div>'+m.html+'</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('moversGrid').innerHTML = html;
+}
+
+// Team detail expandable panel
+function renderTeamDetail(team){
+  var master = SCO_YTD_B.find(function(d){return d.t===team;});
+  if(!master) return '<div class="empty-msg">No data for '+team+'.</div>';
+  var ti = tier(master.osi);
+  var sg = susGrade(master.sus);
+  var rf = regFmt(master.reg);
+
+  // Inline sparkline: 4-point line across YTD→L30→L14→L7
+  function spark(team, metric){
+    var vals = ['YTD','L30','L14','L7'].map(function(tf){
+      var src = tf==='YTD'?SCO_YTD_B:tf==='L30'?SCO_L30_B:tf==='L14'?SCO_L14_B:SCO_L7_B;
+      var m = src.find(function(d){return d.t===team;});
+      return m ? m[metric] : null;
+    });
+    var ok = vals.filter(function(v){return v!==null && v!==undefined;});
+    if(ok.length<2) return '';
+    var mn=Math.min.apply(null,ok), mx=Math.max.apply(null,ok);
+    var w=80, h=22;
+    var pts = vals.map(function(v,i){
+      if(v===null||v===undefined) return null;
+      var x = (i/3)*w;
+      var y = mx===mn ? h/2 : h - ((v-mn)/(mx-mn))*h;
+      return [x,y];
+    });
+    var validPts = pts.filter(Boolean);
+    var path = validPts.map(function(p,i){return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
+    var last = validPts[validPts.length-1];
+    var first = validPts[0];
+    var trendCol = last[1] < first[1] ? 'var(--green)' : last[1] > first[1] ? 'var(--red)' : 'var(--text-3)';
+    return '<svg class="sparkline" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">'+
+      '<path d="'+path+'" stroke="'+trendCol+'" stroke-width="1.5" fill="none"/>'+
+      '<circle cx="'+last[0]+'" cy="'+last[1]+'" r="2" fill="'+trendCol+'"/>'+
+    '</svg>';
+  }
+
+  function tfBox(tf){
+    var src = tf==='YTD'?SCO_YTD_B:tf==='L30'?SCO_L30_B:tf==='L14'?SCO_L14_B:SCO_L7_B;
+    var d = src.find(function(x){return x.t===team;});
+    if(!d) return '<div class="detail-tf"><div class="detail-tf-label">'+tf+'</div><div class="detail-tf-val">—</div></div>';
+    var pa = master['pa'+tf];
+    return '<div class="detail-tf">'+
+      '<div class="detail-tf-label">'+tf+'</div>'+
+      '<div class="detail-tf-val" style="color:'+tcol(d.osi)+';">'+d.osi.toFixed(1)+'</div>'+
+      (pa!==null && pa!==undefined ? '<div class="detail-tf-pa">'+pa+' PA</div>' : '')+
+    '</div>';
+  }
+
+  return '<div class="detail-panel">'+
+    '<div>'+
+      '<div class="detail-title">'+team+'</div>'+
+      '<div class="detail-subtitle">'+ti.l+' · '+sg.l+' sustainability</div>'+
+      '<div class="detail-tf-grid">'+tfBox('YTD')+tfBox('L30')+tfBox('L14')+tfBox('L7')+'</div>'+
+      '<div style="margin-top:10px;font-size:11px;color:var(--text-3);">Park factor: HR <strong style="color:var(--text-2);">'+pf(team,'r').toFixed(2)+'×</strong> · ISO <strong style="color:var(--text-2);">'+pf(team,'iso').toFixed(2)+'×</strong></div>'+
+    '</div>'+
+    '<div>'+
+      '<div class="detail-metric-row"><span class="lab">ABQ '+spark(team,'abq')+'</span><span class="val">'+master.abq.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">RCV '+spark(team,'rcv')+'</span><span class="val">'+master.rcv.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">OBR '+spark(team,'obr')+'</span><span class="val">'+master.obr.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">OSI '+spark(team,'osi')+'</span><span class="val" style="color:'+tcol(master.osi)+';">'+master.osi.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Projected OSI</span><span class="val" style="color:'+tcol(master.projOSI)+';">'+master.projOSI.toFixed(1)+' <span style="color:var(--text-3);font-size:10px;">('+(master.regAdj>=0?'+':'')+master.regAdj.toFixed(1)+')</span></span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Current Form OSI</span><span class="val" style="color:'+tcol(master.currentFormOSI)+';">'+master.currentFormOSI.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Velocity</span><span class="val" style="color:'+(master.velocity>0.5?'var(--green)':master.velocity<-0.5?'var(--red)':'var(--text-2)')+';">'+(master.velocity>0?'+':'')+master.velocity.toFixed(2)+'</span></div>'+
+    '</div>'+
+    '<div>'+
+      '<div class="detail-metric-row"><span class="lab">PP-Gap (ABQ−RCV)</span><span class="val" style="color:'+(master.ppGap>4?'var(--blue)':master.ppGap<-4?'var(--gold)':'var(--text-2)')+';">'+(master.ppGap>0?'+':'')+master.ppGap.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">DF-Gap (RCV−OBR)</span><span class="val" style="color:'+(master.dfGap>8?'var(--orange)':master.dfGap<-4?'var(--green-l)':'var(--text-2)')+';">'+(master.dfGap>0?'+':'')+master.dfGap.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">vs RHP OSI</span><span class="val" style="color:'+tcol(master.rhpOSI||0)+';">'+(master.rhpOSI?master.rhpOSI.toFixed(1):'—')+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">vs LHP OSI</span><span class="val" style="color:'+tcol(master.lhpOSI||0)+';">'+(master.lhpOSI?master.lhpOSI.toFixed(1):'—')+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Split Edge</span><span class="val">'+(master.splitEdge>0?'+':'')+master.splitEdge.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Regression</span><span class="val" style="color:'+rf[1]+';">'+rf[0]+' · '+rf[2]+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Trend</span><span class="val" style="color:'+trendCol(master.trend)+';">'+master.trend+'</span></div>'+
+      '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">'+
+        '<button class="icon-btn" style="width:auto;padding:4px 10px;font-size:10.5px;" onclick="togglePin(\''+team+'\')">'+(STATE.watchlist.indexOf(team)>=0?'★ Unpin':'☆ Pin to watchlist')+'</button> '+
+        '<button class="icon-btn" style="width:auto;padding:4px 10px;font-size:10.5px;" onclick="toggleCompare(\''+team+'\')">⚖ '+(STATE.compareTeams.indexOf(team)>=0?'Remove from':'Add to')+' compare</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+// Comparison radar
+function renderComparePane(){
+  var bar = document.getElementById('compareTeamsPills');
+  if(!bar) return;
+  if(STATE.compareTeams.length === 0) {
+    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected — toggle ⚖ Compare in toolbar, then click rows.</span>';
+    document.getElementById('compareChart').innerHTML = '<div class="empty-msg">Pick teams to see radar comparison.</div>';
+    document.getElementById('compareTable').innerHTML = '';
+    return;
+  }
+  var colors = ['#C084FC','#60A5FA','#4ADE80','#FB923C'];
+  bar.innerHTML = STATE.compareTeams.map(function(t,i){
+    return '<span class="compare-team-pill" style="border-color:'+colors[i]+';color:'+colors[i]+';">'+t+' <span class="x" onclick="toggleCompare(\''+t+'\')">✕</span></span>';
+  }).join('');
+
+  // Radar with 6 axes
+  var axes = [
+    {k:'abq', label:'ABQ'}, {k:'rcv', label:'RCV'}, {k:'obr', label:'OBR'},
+    {k:'sus', label:'Sustain'}, {k:'projOSI', label:'Proj OSI'}, {k:'bestSplit', label:'Best Split'}
+  ];
+  var W=560, H=400, cx=W/2, cy=H/2, R=140;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
+  [25,50,75,100].forEach(function(v){
+    var r = R*(v/100);
+    var pts = axes.map(function(_,i){
+      var ang = -Math.PI/2 + i*2*Math.PI/axes.length;
+      return (cx+r*Math.cos(ang)).toFixed(1)+','+(cy+r*Math.sin(ang)).toFixed(1);
+    }).join(' ');
+    s += '<polygon points="'+pts+'" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>';
+    if(v===100) s += '<text x="'+(cx+r+8)+'" y="'+cy+'" fill="var(--text-3)" font-size="9" font-family="var(--mono)">100</text>';
+  });
+  axes.forEach(function(ax,i){
+    var ang = -Math.PI/2 + i*2*Math.PI/axes.length;
+    var x = cx + R*Math.cos(ang), y = cy + R*Math.sin(ang);
+    s += '<line x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="rgba(255,255,255,.08)"/>';
+    var lx = cx + (R+22)*Math.cos(ang), ly = cy + (R+22)*Math.sin(ang) + 4;
+    s += '<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="middle" fill="var(--text-2)" font-size="10" font-weight="600">'+ax.label+'</text>';
+  });
+  STATE.compareTeams.forEach(function(t, ti){
+    var m = SCO_YTD_B.find(function(d){return d.t===t;});
+    if(!m) return;
+    var c = colors[ti];
+    var pts = axes.map(function(ax,i){
+      var v;
+      if(ax.k==='bestSplit') v = Math.max(m.rhpOSI||0, m.lhpOSI||0);
+      else v = m[ax.k] || 0;
+      v = Math.max(0, Math.min(100, v));
+      var ang = -Math.PI/2 + i*2*Math.PI/axes.length;
+      var r = R*(v/100);
+      return (cx+r*Math.cos(ang)).toFixed(1)+','+(cy+r*Math.sin(ang)).toFixed(1);
+    }).join(' ');
+    s += '<polygon points="'+pts+'" fill="'+c+'" fill-opacity="0.12" stroke="'+c+'" stroke-width="2"/>';
+    pts.split(' ').forEach(function(p){
+      var pp = p.split(',');
+      s += '<circle cx="'+pp[0]+'" cy="'+pp[1]+'" r="3" fill="'+c+'"/>';
+    });
+  });
+  STATE.compareTeams.forEach(function(t,i){
+    var c = colors[i];
+    s += '<g transform="translate('+(20 + i*100)+',20)">'+
+      '<rect width="12" height="12" fill="'+c+'" rx="2"/>'+
+      '<text x="18" y="10" fill="var(--text)" font-size="11" font-weight="600" font-family="var(--mono)">'+t+'</text>'+
+    '</g>';
+  });
+  s += '</svg>';
+  document.getElementById('compareChart').innerHTML = s;
+
+  // Comparison table with best-value highlighting
+  var rows = STATE.compareTeams.map(function(t){return SCO_YTD_B.find(function(d){return d.t===t;});}).filter(Boolean);
+  var keys = [
+    ['osi','OSI'],['projOSI','Proj OSI'],['currentFormOSI','Form'],['velocity','Vel'],
+    ['abq','ABQ'],['rcv','RCV'],['obr','OBR'],
+    ['ppGap','PP-Gap'],['dfGap','DF-Gap'],
+    ['sus','Sustain'],['rhpOSI','vRHP'],['lhpOSI','vLHP'],['splitEdge','Edge']
+  ];
+  var th = '<thead><tr><th>Metric</th>' + rows.map(function(r,i){return '<th style="color:'+colors[i]+';">'+r.t+'</th>';}).join('') + '</tr></thead>';
+  var tb = '<tbody>' + keys.map(function(k){
+    var label=k[1], key=k[0];
+    var values = rows.map(function(r){return r[key];});
+    var validVals = values.filter(function(v){return v!==null && v!==undefined;});
+    var best = validVals.length ? Math.max.apply(null, validVals) : null;
+    return '<tr><td style="color:var(--text-3);">'+label+'</td>'+
+      rows.map(function(r){
+        var v = r[key];
+        if(v===null || v===undefined) return '<td>—</td>';
+        var isBest = (v === best);
+        return '<td class="num" style="'+(isBest?'color:var(--purple);font-weight:700;':'')+'">'+(v>0&&(key==='ppGap'||key==='dfGap'||key==='splitEdge'||key==='velocity')?'+':'')+v.toFixed(1)+'</td>';
+      }).join('') + '</tr>';
+  }).join('') + '</tbody>';
+  document.getElementById('compareTable').innerHTML = '<div class="table-wrap"><table>'+th+tb+'</table></div>';
+}
+
+// Matchup builder
+function populateMatchupSelectors(){
+  var teams = SCO_YTD_B.map(function(d){return d.t;}).sort();
+  var optsHtml = '<option value="">— select —</option>' + teams.map(function(t){return '<option value="'+t+'">'+t+'</option>';}).join('');
+  var aw = document.getElementById('matchupAway'), hm = document.getElementById('matchupHome');
+  aw.innerHTML = optsHtml; hm.innerHTML = optsHtml;
+  aw.addEventListener('change', function(e){STATE.matchupAway=e.target.value;renderMatchupOutput();});
+  hm.addEventListener('change', function(e){STATE.matchupHome=e.target.value;renderMatchupOutput();});
+}
+function setMatchupHand(h){
+  STATE.matchupHandedness = h;
+  document.querySelectorAll('#pane-matchup .toggle-btn[data-hand]').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-hand')===h);
+  });
+  renderMatchupOutput();
+}
+function renderMatchupOutput(){
+  var el = document.getElementById('matchupOutput');
+  if(!el) return;
+  if(!STATE.matchupAway || !STATE.matchupHome) {
+    el.innerHTML = '<div class="empty-msg" style="grid-column: 1 / -1;">Pick two teams above to generate a matchup snapshot.</div>';
+    return;
+  }
+  var splitTab = STATE.matchupHandedness==='R' ? 'r' : 'l';
+  var splitLabel = STATE.matchupHandedness==='R' ? 'vs RHP' : 'vs LHP';
+  var srcMap = splitTab==='r' ? toMap(SCO_YTD_R) : toMap(SCO_YTD_L);
+  var teams = [
+    {t:STATE.matchupAway, role:'AWAY', master:SCO_YTD_B.find(function(d){return d.t===STATE.matchupAway;}), split:srcMap[STATE.matchupAway]},
+    {t:STATE.matchupHome, role:'HOME', master:SCO_YTD_B.find(function(d){return d.t===STATE.matchupHome;}), split:srcMap[STATE.matchupHome]}
+  ];
+  var html = '';
+  teams.forEach(function(team){
+    if(!team.master) return;
+    var m = team.master, sp = team.split;
+    var splitDelta = sp ? (sp.osi - m.osi) : 0;
+    var splitColor = splitDelta > 3 ? 'var(--green)' : splitDelta < -3 ? 'var(--red)' : 'var(--text-2)';
+    var sg = susGrade(m.sus);
+    var rf = regFmt(m.reg);
+    html += '<div class="matchup-card">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'+
+        '<div>'+
+          '<div style="font-size:9.5px;color:var(--text-3);letter-spacing:0.1em;text-transform:uppercase;">'+team.role+'</div>'+
+          '<div style="font-size:28px;font-weight:700;font-family:var(--mono);color:var(--purple);line-height:1;">'+team.t+'</div>'+
+        '</div>'+
+        '<div style="text-align:right;">'+
+          '<div style="font-size:9.5px;color:var(--text-3);letter-spacing:0.1em;text-transform:uppercase;">OSI '+splitLabel+'</div>'+
+          '<div style="font-size:24px;font-weight:700;font-family:var(--mono);color:'+tcol(sp?sp.osi:m.osi)+';line-height:1;">'+(sp?sp.osi.toFixed(1):m.osi.toFixed(1))+'</div>'+
+          '<div style="font-size:10px;color:'+splitColor+';">'+(splitDelta>0?'+':'')+splitDelta.toFixed(1)+' vs season OSI</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="detail-metric-row"><span class="lab">Season OSI</span><span class="val" style="color:'+tcol(m.osi)+';">'+m.osi.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">'+splitLabel+' OSI</span><span class="val" style="color:'+tcol(sp?sp.osi:0)+';">'+(sp?sp.osi.toFixed(1):'—')+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">'+splitLabel+' ABQ / RCV</span><span class="val">'+(sp?sp.abq.toFixed(1):'—')+' / '+(sp?sp.rcv.toFixed(1):'—')+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Current Form OSI</span><span class="val" style="color:'+tcol(m.currentFormOSI)+';">'+m.currentFormOSI.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Trend / Sustain</span><span class="val"><span class="trend-pill" style="background:'+trendCol(m.trend)+'22;color:'+trendCol(m.trend)+';">'+m.trend+'</span> <span class="grade-badge" style="background:'+sg.bg+';color:'+sg.c+';">'+sg.l+'</span></span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Regression</span><span class="val" style="color:'+rf[1]+';">'+rf[0]+'</span></div>'+
+      '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text-2);">'+
+        matchupTakeaway(m, sp, splitLabel)+
+      '</div>'+
+    '</div>';
+  });
+
+  // Verdict card spanning the grid
+  if(teams[0].split && teams[1].split) {
+    var awayOsi = teams[0].split.osi, homeOsi = teams[1].split.osi;
+    var winner = awayOsi > homeOsi ? teams[0] : teams[1];
+    var diff = Math.abs(awayOsi - homeOsi);
+    var edge = diff > 12 ? 'large' : diff > 6 ? 'moderate' : diff > 2 ? 'slight' : 'minimal';
+    var edgeColor = diff > 12 ? 'var(--green)' : diff > 6 ? 'var(--blue)' : 'var(--text-2)';
+    html += '<div class="matchup-card" style="grid-column: 1 / -1; border:1px solid var(--purple-3);background:linear-gradient(135deg,rgba(192,132,252,.06),var(--bg-3));">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">'+
+        '<div><div style="font-size:9.5px;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">Matchup Verdict — '+splitLabel+'</div>'+
+        '<div style="font-size:14px;font-weight:600;color:var(--text);margin-top:4px;">'+winner.t+' has a <span style="color:'+edgeColor+';">'+edge+'</span> offensive edge (+'+diff.toFixed(1)+' OSI '+splitLabel+')</div></div>'+
+        '<div style="font-size:11px;color:var(--text-2);max-width:400px;text-align:right;">'+verdictReason(teams[0], teams[1], splitTab)+'</div>'+
+      '</div>'+
+    '</div>';
+  }
+  el.innerHTML = html;
+}
+function matchupTakeaway(master, split, splitLabel){
+  if(!split) return 'No '+splitLabel+' split data available.';
+  var delta = split.osi - master.osi;
+  if(delta > 5) return 'Performs significantly better '+splitLabel+' than overall — exploit this matchup.';
+  if(delta < -5) return 'Performs significantly worse '+splitLabel+' than overall — fade in this matchup.';
+  if(master.trend === 'Rising') return 'Trending up; lean into recent form.';
+  if(master.trend === 'Cooling') return 'Trending down; results may not match season profile.';
+  if(master.ppGap > 5) return 'Process exceeds output — possible buy-low.';
+  if(master.ppGap < -5) return 'Output exceeds process — possible sell-high.';
+  return 'Neutral matchup profile.';
+}
+function verdictReason(away, home, splitTab){
+  if(!away.split || !home.split) return '';
+  var aw = away.split, hm = home.split;
+  var reasons = [];
+  if(Math.abs(aw.rcv - hm.rcv) > 12) {
+    var rwin = aw.rcv > hm.rcv ? away.t : home.t;
+    reasons.push(rwin+' wins damage by '+Math.abs(aw.rcv-hm.rcv).toFixed(0)+' RCV pts');
+  }
+  if(Math.abs(aw.abq - hm.abq) > 10) {
+    var awin = aw.abq > hm.abq ? away.t : home.t;
+    reasons.push(awin+' wins process by '+Math.abs(aw.abq-hm.abq).toFixed(0)+' ABQ pts');
+  }
+  if(Math.abs(aw.obr - hm.obr) > 10) {
+    var owin = aw.obr > hm.obr ? away.t : home.t;
+    reasons.push(owin+' wins on-base by '+Math.abs(aw.obr-hm.obr).toFixed(0)+' OBR pts');
+  }
+  return reasons.length ? reasons.join(' · ') : 'Components close across the board.';
+}
+
+/* ============================================================
+   RENDER ALL & INIT — v8
+   ============================================================ */
+
+
+function renderLeagueOverview(){
+  var rows = currentRows();
+  if(!rows || !rows.length) return;
+  function vals(k){
+    return rows.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);}).sort(function(a,b){return a-b;});
+  }
+  function mean(k){ var v=vals(k); return v.reduce(function(a,b){return a+b;},0)/Math.max(1,v.length); }
+  function spread(k){ var v=vals(k); return v.length ? v[v.length-1]-v[0] : 0; }
+  function count(fn){ return rows.filter(fn).length; }
+  var avgOsi = mean('osi'), avgAbq = mean('abq'), avgRcv = mean('rcv'), avgObr = mean('obr');
+  var ppAhead = count(function(d){return d.ppGap!==undefined && d.ppGap>4;});
+  var ppBehind = count(function(d){return d.ppGap!==undefined && d.ppGap<-4;});
+  var posReg = count(function(d){return d.reg!==null && d.reg>0.010;});
+  var negReg = count(function(d){return d.reg!==null && d.reg<-0.010;});
+  var volatile = count(function(d){return d.dfGap!==undefined && d.dfGap>8;});
+  var stable = count(function(d){return d.sus!==undefined && d.sus>=70;});
+  var label = STATE.split==='b'?'both pitching splits':(STATE.split==='r'?'right-handed pitching':'left-handed pitching');
+  var html = '';
+  html += '<div class="story-stat"><div class="ss-label">Composite Baseline</div><div class="ss-value">'+avgOsi.toFixed(1)+'</div><div class="ss-copy">Average OSI for '+STATE.time+' against '+label+'. This is the current offensive-quality reference point.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">League Separation</div><div class="ss-value">'+spread('osi').toFixed(1)+'</div><div class="ss-copy">Range between low and high OSI scores. Wider separation means team-level offensive profiles are less compressed.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Process vs Damage</div><div class="ss-value">'+avgAbq.toFixed(1)+' / '+avgRcv.toFixed(1)+'</div><div class="ss-copy">Average ABQ compared with average RCV. This helps show whether process quality and run creation are moving together.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Floor Baseline</div><div class="ss-value">'+avgObr.toFixed(1)+'</div><div class="ss-copy">Average OBR. This indicates the league-wide on-base/contact floor for the selected view.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Process Gaps</div><div class="ss-value">'+ppAhead+' / '+ppBehind+'</div><div class="ss-copy">Teams with process materially ahead of production versus teams with production materially ahead of process.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Regression Balance</div><div class="ss-value">'+posReg+' / '+negReg+'</div><div class="ss-copy">Positive versus negative regression-pressure counts. This frames expected-contact direction without naming individual teams.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Volatility Profiles</div><div class="ss-value">'+volatile+'</div><div class="ss-copy">Teams with a high Damage-Floor Gap, meaning run creation depends more heavily on impact than offensive floor.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Stable Profiles</div><div class="ss-value">'+stable+'</div><div class="ss-copy">Teams with stronger sustainability support across process, floor, production, and regression context.</div></div>';
+  var el = document.getElementById('leagueStoryGrid');
+  if(el) el.innerHTML = html;
+}
+function filterGlossary(){
+  var q = (document.getElementById('glossarySearch').value || '').toLowerCase().trim();
+  document.querySelectorAll('.glossary-term').forEach(function(card){
+    var hay = (card.getAttribute('data-term') + ' ' + card.textContent).toLowerCase();
+    card.style.display = !q || hay.indexOf(q)>=0 ? '' : 'none';
+  });
+}
+
+function renderAll(){
+  renderMetricCards();
+  renderExecSummary();
+  renderMasterTable();
+  renderQuadrant();
+  renderMovers();
+  renderLeagueOverview();
+  renderWatchlistBar();
+  renderComparePane();
+  renderMatchupOutput();
+  renderOOR();
+  urlEncodeState();
+}
+
+/* ============================================================
+   OOR — Opponent Offensive Rating
+   ============================================================ */
+function renderOOR(){
+  var sc = buildScores('YTD','b');
+  var scR = buildScores('YTD','r');
+  var scL = buildScores('YTD','l');
+  var mR = toMap(scR); var mL = toMap(scL);
+
+  var rows = sc.map(function(d){
+    var hvR = mR[d.t] ? mR[d.t].osi : null;
+    var hvL = mL[d.t] ? mL[d.t].osi : null;
+    var hvP = (hvR!==null && hvL!==null) ? (0.55*hvR + 0.45*hvL) : (hvR || hvL || 0);
+    return {t:d.t, hvR:hvR, hvL:hvL, hvP:hvP};
+  });
+
+  var mean = rows.reduce(function(a,b){return a+b.hvP;},0)/rows.length;
+  rows.forEach(function(r){
+    r.vPpct = ((r.hvP - mean)/mean*100).toFixed(1)+'%';
+  });
+  rows.sort(function(a,b){return b.hvP - a.hvP;});
+
+  var el = document.getElementById('oorTableBody');
+  if(!el) return;
+  el.innerHTML = rows.map(function(r,i){
+    var oor = r.hvP;
+    var cl = oor >= 65 ? 'var(--red)' : oor >= 50 ? 'var(--gold)' : oor >= 35 ? 'var(--text-2)' : 'var(--green)';
+    var vPpctNum = parseFloat(r.vPpct);
+    var pctCl = vPpctNum > 10 ? 'var(--red)' : vPpctNum < -10 ? 'var(--green)' : 'var(--text-2)';
+    return '<tr>'
+      +'<td class="rank-cell">'+(i+1)+'</td>'
+      +'<td class="team-cell" style="color:var(--purple)">'+r.t+'</td>'
+      +'<td class="num" style="color:'+cl+'">'+r.hvP.toFixed(1)+'</td>'
+      +'<td class="num">'+(r.hvL!==null?r.hvL.toFixed(1):'—')+'</td>'
+      +'<td class="num">'+(r.hvR!==null?r.hvR.toFixed(1):'—')+'</td>'
+      +'<td class="num" style="color:'+pctCl+'">'+r.vPpct+'</td>'
+      +'<td class="num">'+rows.filter(function(x){return x.hvP>=r.hvP;}).length+'</td>'
+      +'<td class="num">'+rows.filter(function(x){return (x.hvL||0)>=(r.hvL||0);}).length+'</td>'
+      +'<td class="num">'+rows.filter(function(x){return (x.hvR||0)>=(r.hvR||0);}).length+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+function init(){
+  urlDecodeState();
+  // Restore UI control states from decoded URL state
+  document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
+    x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
+  });
+  document.querySelectorAll('#timeToggle .toggle-btn').forEach(function(x){
+    x.classList.toggle('active', x.getAttribute('data-time')===STATE.time);
+  });
+  document.querySelectorAll('#quadrantToggle .toggle-btn').forEach(function(x){
+    x.classList.toggle('active', x.getAttribute('data-quad')===STATE.quadrantMode);
+  });
+  var si = document.getElementById('searchInput');
+  if(si) si.value = STATE.searchQuery;
+  if(STATE.time==='L7') document.getElementById('warnBanner').classList.add('show');
+
+  populateMatchupSelectors();
+
+  renderAll();
+  renderSplitBars();
+  renderTrendHeatmap();
+  renderStrats();
+
+  setTimeout(function(){
+    document.getElementById('loadingScreen').classList.add('hide');
+    setTimeout(function(){document.getElementById('loadingScreen').style.display='none';}, 400);
+  }, 350);
+}
+
+// re-render quadrant on resize
+var resizeTimer;
+window.addEventListener('resize', function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function(){renderQuadrant(); renderSplitBars(); renderTrendHeatmap();}, 150);
+});
+
+init();
+</script>
+
+<div class="toast" id="toast"></div>
+
+<!-- OOR Section -->
+<div class="container" style="padding-top:0;">
+<div class="section" id="oorSection" style="margin-top:0;">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Opponent Context</div>
+      <div class="section-title">OOR — Opponent Offensive Rating</div>
+      <div class="section-subtitle">How dangerous is the offense each team's pitching staff faces? Sorted by HvP (composite threat). Red = toughest to face, Green = softest schedule.</div>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);max-width:260px;text-align:right;line-height:1.5;">
+      OOR = 55% HvR + 45% HvL<br>
+      HvP = composite opponent threat<br>
+      vP% = vs league average
+    </div>
+  </div>
+  <div class="table-wrap sticky-team">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Team</th>
+          <th title="Composite opponent threat: 55% HvR + 45% HvL">HvP</th>
+          <th title="How the opposing lineup hits vs LHP">HvL</th>
+          <th title="How the opposing lineup hits vs RHP">HvR</th>
+          <th title="% above or below league average opponent quality">vP%</th>
+          <th title="Rank by overall opponent threat">vP Rank</th>
+          <th title="Rank by LHP opponent threat">vL Rank</th>
+          <th title="Rank by RHP opponent threat">vR Rank</th>
+        </tr>
+      </thead>
+      <tbody id="oorTableBody">
+        <tr><td colspan="9" style="text-align:center;color:var(--text-3);padding:20px;">Loading OOR data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="method-note" style="margin-top:16px;">
+    <strong>How to use OOR:</strong> Teams at the top face the toughest offenses — their pitching stats may be suppressed by schedule. Teams at the bottom face the softest lineups — their ERAs may be inflated by weak competition. Cross-reference with Pitching Score for a complete picture of pitching value vs. schedule context.
+  </div>
+</div>
+
+<!-- PALS Placeholder Section -->
+<div class="section" style="margin-bottom:40px;">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Coming Soon</div>
+      <div class="section-title">PALS — Pitching-Adjusted Lineup Score</div>
+      <div class="section-subtitle">OSI adjusted for the quality of pitching the lineup has actually faced this season.</div>
+    </div>
+    <span class="pill" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,0.3);">In Development</span>
+  </div>
+  <div class="onboarding-grid">
+    <div class="education-card">
+      <strong>What PALS measures</strong><br>
+      Whether a lineup's OSI is genuine or inflated by weak pitching. A team with OSI 65 that faced elite pitching all season is more impressive than one that faced bottom-tier arms.
+    </div>
+    <div class="education-card">
+      <strong>Formula</strong><br>
+      PALS = (BA++ + PTF+) ÷ 2<br>
+      BA++ = team's normalized OSI<br>
+      PTF+ = normalized avg SIERA of opposing starters faced
+    </div>
+    <div class="education-card">
+      <strong>Data needed</strong><br>
+      Requires linking each team's game log to the starting pitcher they faced, pulling that pitcher's SIERA, and building a schedule-weighted average. SP leaderboard is already pulling — game log integration in progress.
+    </div>
+    <div class="education-card">
+      <strong>Betting application</strong><br>
+      PALS will be the primary input for matchup-level OSI adjustments — telling you whether tonight's lineup is being over- or under-valued based on who they've faced vs. who they're facing.
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>
