@@ -28,8 +28,8 @@ if not run_script("compute.py"):
 if not run_script("push_sheets.py"):
     sys.exit(1)
 
-    if not run_script("scrape_matchups.py"):
-    print("WARNING: Matchup scrape failed - continuing")
-
+    if not run_script("scrape_pals.py"):
+    print("WARNING: PALS scrape failed - continuing")
+    
 print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 print("All metrics pushed to Google Sheets")
