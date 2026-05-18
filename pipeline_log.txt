@@ -1,0 +1,510 @@
+Fetching player-team map...
+  Mapped 1470 players
+Fetching Savant leaderboard...
+  Status: 200
+  Players: 537
+  Teams: 30 | Cols: ['Tm', 'xba', 'xslg', 'xwOBA', 'Barrel%', 'HardHit%', 'SwStr%', 'Chase%', 'ZCon%', 'OCon%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_team_leaderboard.csv
+Fetching splits vs_RHP...
+  Status: 200 | Rows: 25000
+  Teams: 30 | Cols: ['Tm', 'xwOBA', 'exit_velo', 'launch_angle']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_vs_RHP.csv
+Fetching splits vs_LHP...
+  Status: 200 | Rows: 25000
+  Teams: 30 | Cols: ['Tm', 'xwOBA', 'exit_velo', 'launch_angle']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_vs_LHP.csv
+Savant scrape complete.
+Script started
+Logging in...
+Login URL: https://blogs.fangraphs.com/wp-admin/profile.php
+Login successful!
+=== vs_RHP ===
+  Loading vs_RHP traditional...
+Traceback (most recent call last):
+  File "C:\Users\chase\mlbma_pipeline\scrape_fangraphs.py", line 106, in <module>
+    scrape_one(driver, split_label, split_code, sg_name, sg_num)
+  File "C:\Users\chase\mlbma_pipeline\scrape_fangraphs.py", line 70, in scrape_one
+    print(f"  \u2713 {len(df)} rows | Cols: {list(df.columns)}")
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 2: character maps to <undefined>
+Exception ignored in: <function Chrome.__del__ at 0x000001F389C88AE0>
+Traceback (most recent call last):
+  File "C:\Users\chase\crawl_env\Lib\site-packages\undetected_chromedriver\__init__.py", line 843, in __del__
+  File "C:\Users\chase\crawl_env\Lib\site-packages\undetected_chromedriver\__init__.py", line 798, in quit
+OSError: [WinError 6] The handle is invalid
+MLBMA Pipeline starting at 2026-05-17 23:43:58
+
+==================================================
+Running scrape_savant.py...
+==================================================
+
+==================================================
+Running scrape_fangraphs.py...
+==================================================
+ERROR: scrape_fangraphs.py failed
+Fetching player-team map...
+  Mapped 1470 players
+Fetching Savant leaderboard...
+  Status: 200
+  Players: 537
+  Teams: 30 | Cols: ['Tm', 'xba', 'xslg', 'xwOBA', 'Barrel%', 'HardHit%', 'SwStr%', 'Chase%', 'ZCon%', 'OCon%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_team_leaderboard.csv
+Fetching splits vs_RHP...
+  Status: 200 | Rows: 25000
+  Teams: 30 | Cols: ['Tm', 'xwOBA', 'exit_velo', 'launch_angle']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_vs_RHP.csv
+Fetching splits vs_LHP...
+  Status: 200 | Rows: 25000
+  Teams: 30 | Cols: ['Tm', 'xwOBA', 'exit_velo', 'launch_angle']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_vs_LHP.csv
+Savant scrape complete.
+Script started
+Logging in...
+Login URL: https://blogs.fangraphs.com/wp-login.php
+Login successful!
+=== vs_RHP ===
+  Loading vs_RHP traditional...
+  OK 30 rows | Cols: ['Season', 'Tm', 'G', 'PA', 'AB', 'H', '1B', '2B', '3B', 'HR', 'R', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS', 'AVG']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_RHP_traditional.csv
+  Loading vs_RHP standard...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'BB%', 'K%', 'BB/K', 'AVG', 'OBP', 'SLG', 'OPS', 'ISO', 'BABIP', 'wRC', 'wRAA', 'wOBA', 'wRC+']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_RHP_standard.csv
+  Loading vs_RHP batted_ball...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'GB/FB', 'LD%', 'GB%', 'FB%', 'IFFB%', 'HR/FB', 'IFH%', 'BUH%', 'Pull%', 'Cent%', 'Oppo%', 'Soft%', 'Med%', 'Hard%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_RHP_batted_ball.csv
+Cooling down 45s...
+=== vs_LHP ===
+  Loading vs_LHP traditional...
+  OK 30 rows | Cols: ['Season', 'Tm', 'G', 'PA', 'AB', 'H', '1B', '2B', '3B', 'HR', 'R', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS', 'AVG']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_LHP_traditional.csv
+  Loading vs_LHP standard...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'BB%', 'K%', 'BB/K', 'AVG', 'OBP', 'SLG', 'OPS', 'ISO', 'BABIP', 'wRC', 'wRAA', 'wOBA', 'wRC+']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_LHP_standard.csv
+  Loading vs_LHP batted_ball...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'GB/FB', 'LD%', 'GB%', 'FB%', 'IFFB%', 'HR/FB', 'IFH%', 'BUH%', 'Pull%', 'Cent%', 'Oppo%', 'Soft%', 'Med%', 'Hard%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_LHP_batted_ball.csv
+Cooling down 45s...
+=== SP Leaderboard ===
+  Loading SP standard...
+  OK 603 pitchers | Cols: ['Season', 'Name', 'Tm', 'IP', 'TBF', 'K/9', 'BB/9', 'K/BB', 'HR/9', 'K%', 'BB%', 'K-BB%', 'AVG', 'WHIP', 'BABIP', 'LOB%', 'FIP', 'xFIP', 'playerId']
+  Saved: C:\Users\chase\mlbma_pipeline\data\sp_standard.csv
+  Loading SP advanced...
+  OK 603 pitchers | Cols: ['Season', 'Name', 'Tm', 'IP', 'TBF', 'GB/FB', 'LD%', 'GB%', 'FB%', 'IFFB%', 'HR/FB', 'IFH%', 'BUH%', 'Pull%', 'Cent%', 'Oppo%', 'Soft%', 'Med%', 'Hard%', 'playerId']
+  Saved: C:\Users\chase\mlbma_pipeline\data\sp_advanced.csv
+All done.
+Exception ignored in: <function Chrome.__del__ at 0x000001ED4B5CCAE0>
+Traceback (most recent call last):
+  File "C:\Users\chase\crawl_env\Lib\site-packages\undetected_chromedriver\__init__.py", line 843, in __del__
+  File "C:\Users\chase\crawl_env\Lib\site-packages\undetected_chromedriver\__init__.py", line 798, in quit
+OSError: [WinError 6] The handle is invalid
+Loading data...
+  Loaded vs_RHP_standard.csv: 30 rows
+  Loaded vs_RHP_batted_ball.csv: 30 rows
+  Loaded vs_LHP_standard.csv: 30 rows
+  Loaded vs_LHP_batted_ball.csv: 30 rows
+  Loaded savant_team_leaderboard.csv: 30 rows
+  Loaded savant_vs_RHP.csv: 30 rows
+  Loaded savant_vs_LHP.csv: 30 rows
+  Loaded sp_standard.csv: 603 rows
+
+Results vs_RHP
+     Tm   ABQ   RCV   OBR   OSI  projOSI  reg_signal
+1   NYY  61.5  92.3  98.9  82.2     81.7        -0.5
+2   LAD  63.0  72.5  74.7  69.4     61.4        -8.0
+3   CHC  71.9  57.8  84.8  68.4     64.8        -3.6
+4   ATL  57.1  72.3  50.3  62.2     54.2        -8.0
+5   SEA  49.3  62.4  67.9  58.7     50.7        -8.0
+6   PIT  54.2  58.6  57.4  56.8     48.8        -8.0
+7   HOU  43.9  61.7  57.7  54.3     46.3        -8.0
+8   DET  53.8  48.0  62.1  53.0     49.6        -3.4
+9   MIL  69.8  30.4  65.1  51.9     43.9        -8.0
+10  MIA  53.0  44.6  61.9  51.2     50.2        -1.0
+11  ATH  45.4  55.0  43.2  49.1     41.1        -8.0
+12  KCR  59.7  35.3  57.7  48.8     43.0        -5.8
+13  WSN  49.7  46.2  51.8  48.6     43.1        -5.5
+14  TEX  54.7  40.9  53.6  48.6     42.2        -6.4
+15  PHI  44.6  47.2  57.9  48.4     50.3         1.9
+16  TOR  66.7  23.5  56.8  46.1     52.2         6.1
+17  CIN  54.7  37.0  47.5  45.6     37.8        -7.9
+18  BAL  33.0  53.1  50.6  45.2     37.2        -8.0
+19  STL  56.0  36.5  42.5  44.9     36.9        -8.0
+20  NYM  52.6  30.6  60.9  44.8     52.8         8.0
+21  MIN  51.1  37.0  38.5  42.5     34.5        -8.0
+22  CHW  45.7  43.4  34.0  42.4     34.4        -8.0
+23  SDP  49.9  25.7  56.9  40.9     44.0         3.1
+24  TBR  47.8  33.4  38.9  39.9     31.9        -8.0
+25  BOS  51.9  21.9  54.5  39.5     46.2         6.6
+26  ARI  47.8  25.3  41.1  36.8     36.3        -0.5
+27  LAA  25.7  41.3  38.7  35.0     27.0        -8.0
+28  CLE  48.6  19.5  35.0  33.3     25.3        -8.0
+29  SFG  40.3  22.3  27.9  30.1     31.3         1.2
+30  COL  29.8  24.5  16.4  24.8     16.8        -8.0
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_vs_RHP.csv
+
+Results vs_LHP
+     Tm   ABQ   RCV   OBR   OSI  projOSI  reg_signal
+1   NYY  61.8  97.3  94.9  83.7     77.9        -5.8
+2   CHC  70.1  61.0  81.7  68.5     60.5        -8.0
+3   LAD  62.2  65.1  68.1  64.6     56.6        -8.0
+4   DET  63.5  47.2  78.4  59.5     60.4         1.0
+5   TOR  72.6  32.0  70.1  54.7     62.7         8.0
+6   WSN  48.8  58.7  56.8  54.6     46.6        -8.0
+7   CIN  56.7  48.1  53.5  52.4     44.4        -8.0
+8   MIA  50.9  49.7  60.7  52.4     56.5         4.2
+9   MIN  62.1  45.5  48.2  52.2     44.2        -8.0
+10  ATL  54.5  54.8  39.1  51.6     43.6        -8.0
+11  BOS  50.0  53.2  42.9  49.9     41.9        -8.0
+12  HOU  43.1  57.4  46.4  49.9     42.1        -7.8
+13  PHI  45.5  46.8  62.6  49.5     56.6         7.2
+14  CHW  47.5  59.6  30.9  49.4     41.4        -8.0
+15  NYM  50.6  41.0  56.8  47.7     55.7         8.0
+16  STL  66.8  30.0  47.1  47.0     41.0        -6.0
+17  KCR  60.3  31.3  54.6  46.7     49.6         2.9
+18  ARI  52.1  45.1  35.7  45.8     37.8        -8.0
+19  SEA  49.5  33.7  62.5  45.3     53.3         8.0
+20  BAL  34.0  53.4  48.1  45.2     41.3        -3.9
+21  LAA  31.9  57.5  38.4  44.2     36.2        -8.0
+22  MIL  68.3  12.6  63.3  43.3     51.3         8.0
+23  PIT  43.3  38.9  45.9  41.9     44.1         2.2
+24  CLE  44.9  37.9  22.0  37.3     29.3        -8.0
+25  ATH  39.5  35.5  36.6  37.2     32.6        -4.6
+26  TEX  48.4  14.1  51.5  34.3     42.3         8.0
+27  TBR  43.5  24.1  26.9  31.8     29.6        -2.2
+28  SDP  45.1  11.2  45.8  30.7     38.7         8.0
+29  SFG  40.7  22.4  28.4  30.3     37.1         6.7
+30  COL  17.9  13.6   1.8  12.8      4.8        -8.0
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_vs_LHP.csv
+
+Pitching Score
+     Tm    K%   BB%  HR/9  PitchScore
+1   MIL  26.5   9.4  0.78   83.858219
+2   LAD  25.2   7.7  0.91   82.136516
+3   PHI  25.0   7.2  1.02   80.155507
+4   NYY  24.3   8.2  0.80   79.335095
+5   NYM  25.5   9.1  0.85   77.667298
+6   SEA  23.0   6.6  1.07   72.302991
+7   TOR  24.3   8.3  0.98   72.192424
+8   SDP  23.7   8.7  0.83   72.050578
+9   PIT  23.3   9.2  0.79   68.703292
+10  ATL  24.3   8.9  1.03   66.495161
+11  CLE  25.0   9.1  1.19   63.004059
+12  DET  22.3   9.0  0.90   60.938506
+13  MIA  22.6  10.0  0.79   60.516682
+14  TBR  21.2   8.1  0.97   58.336815
+15  TEX  23.0   8.6  1.15   57.620033
+16  MIN  20.6   9.3  0.85   52.741067
+17  BOS  22.0   8.4  1.19   52.716157
+18  CHC  22.4   7.9  1.38   50.375124
+19  CHW  21.2  10.1  0.99   45.643067
+20  SFG  21.2  10.0  1.04   45.034110
+21  ARI  19.9   8.2  1.16   44.534530
+22  KCR  22.5  11.2  1.11   41.576513
+23  BAL  21.4   9.6  1.22   41.387277
+24  LAA  22.1  11.5  1.00   41.352296
+25  STL  18.4   9.5  1.06   32.639992
+26  ATH  20.3  10.4  1.25   30.711511
+27  COL  19.1   8.7  1.35   30.682629
+28  WSN  19.4   9.4  1.48   24.005054
+29  HOU  22.0  12.6  1.33   23.047547
+30  CIN  19.9  11.8  1.26   19.788887
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_pitching_score.csv
+
+OOR - Opponent Offensive Rating
+     Tm    HvP        HvL        HvR   vP_pct  vP_Rank  vL_Rank  vR_Rank
+1   NYY  82.96  83.721504  82.200643   74.15%        1        1        1
+2   CHC  68.47  68.524141  68.423507   43.74%        2        2        3
+3   LAD  67.04  64.642074  69.434548   40.73%        3        3        2
+4   ATL  56.91  51.575101  62.246573   19.47%        4       10        4
+5   DET  56.23  59.462896  52.990131   18.04%        5        4        8
+6   HOU  52.11  49.911237  54.318610    9.39%        6       12        7
+7   SEA  51.99  45.318234  58.663234    9.14%        7       19        5
+8   MIA  51.77  52.362902  51.180331    8.68%        8        8       10
+9   WSN  51.64  54.647052  48.632299    8.41%        9        6       13
+10  TOR  50.40  54.653392  46.146301     5.8%       10        5       16
+11  PIT  49.34  41.930163  56.755722    3.58%       11       23        6
+12  CIN  49.02  52.392851  45.648061    2.91%       12        7       17
+13  PHI  48.93  49.483839  48.383632    2.72%       13       13       15
+14  KCR  47.76  46.695528  48.827907    0.26%       14       17       12
+15  MIL  47.64  43.329215  51.943798    0.01%       15       22        9
+16  MIN  47.35  52.195347  42.495399    -0.6%       16        9       21
+17  NYM  46.28  47.736630  44.828812   -2.85%       17       15       20
+18  STL  45.97  47.031411  44.914954    -3.5%       18       16       19
+19  CHW  45.86  49.364716  42.365212   -3.73%       19       14       22
+20  BAL  45.17  45.175149  45.157537   -5.18%       20       20       18
+21  BOS  44.74  49.947213  39.541351   -6.08%       21       11       25
+22  ATH  43.16  37.202988  49.122629    -9.4%       22       25       11
+23  TEX  41.41  34.258806  48.560810  -13.07%       23       26       14
+24  ARI  41.32  45.828149  36.817237  -13.26%       24       18       26
+25  LAA  39.63  44.231060  35.029514  -16.81%       25       21       27
+26  TBR  35.84  31.820302  39.852939  -24.76%       26       27       24
+27  SDP  35.78  30.650128  40.913134  -24.89%       27       28       23
+28  CLE  35.33  37.317913  33.344278  -25.83%       28       24       28
+29  SFG  30.21  30.348887  30.073575  -36.58%       29       29       29
+30  COL  18.82  12.810706  24.833631  -60.49%       30       30       30
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_oor.csv
+
+All metrics computed.
+Connecting to Google Sheets...
+Connected.
+
+  Pushed vs_RHP: 30 rows
+  Pushed vs_LHP: 30 rows
+  Pushed OOR: 30 rows
+  Pushed Pitching_Score: 30 rows
+  Pushed Last_Updated timestamp
+
+Google Sheets push complete.
+MLBMA Pipeline starting at 2026-05-17 23:47:14
+
+==================================================
+Running scrape_savant.py...
+==================================================
+
+==================================================
+Running scrape_fangraphs.py...
+==================================================
+
+==================================================
+Running compute.py...
+==================================================
+
+==================================================
+Running push_sheets.py...
+==================================================
+
+Pipeline complete at 2026-05-17 23:54:18
+All metrics pushed to Google Sheets
+Fetching player-team map...
+  Mapped 1470 players
+Fetching Savant leaderboard...
+  Status: 200
+  Players: 537
+  Teams: 30 | Cols: ['Tm', 'xba', 'xslg', 'xwOBA', 'Barrel%', 'HardHit%', 'SwStr%', 'Chase%', 'ZCon%', 'OCon%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_team_leaderboard.csv
+Fetching splits vs_RHP...
+  Status: 200 | Rows: 25000
+  Teams: 30 | Cols: ['Tm', 'xwOBA', 'exit_velo', 'launch_angle']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_vs_RHP.csv
+Fetching splits vs_LHP...
+  Status: 200 | Rows: 25000
+  Teams: 30 | Cols: ['Tm', 'xwOBA', 'exit_velo', 'launch_angle']
+  Saved: C:\Users\chase\mlbma_pipeline\data\savant_vs_LHP.csv
+Savant scrape complete.
+Script started
+Logging in...
+Login URL: https://blogs.fangraphs.com/wp-admin/profile.php
+Login successful!
+=== vs_RHP ===
+  Loading vs_RHP traditional...
+  OK 30 rows | Cols: ['Season', 'Tm', 'G', 'PA', 'AB', 'H', '1B', '2B', '3B', 'HR', 'R', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS', 'AVG']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_RHP_traditional.csv
+  Loading vs_RHP standard...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'BB%', 'K%', 'BB/K', 'AVG', 'OBP', 'SLG', 'OPS', 'ISO', 'BABIP', 'wRC', 'wRAA', 'wOBA', 'wRC+']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_RHP_standard.csv
+  Loading vs_RHP batted_ball...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'GB/FB', 'LD%', 'GB%', 'FB%', 'IFFB%', 'HR/FB', 'IFH%', 'BUH%', 'Pull%', 'Cent%', 'Oppo%', 'Soft%', 'Med%', 'Hard%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_RHP_batted_ball.csv
+Cooling down 45s...
+=== vs_LHP ===
+  Loading vs_LHP traditional...
+  OK 30 rows | Cols: ['Season', 'Tm', 'G', 'PA', 'AB', 'H', '1B', '2B', '3B', 'HR', 'R', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS', 'AVG']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_LHP_traditional.csv
+  Loading vs_LHP standard...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'BB%', 'K%', 'BB/K', 'AVG', 'OBP', 'SLG', 'OPS', 'ISO', 'BABIP', 'wRC', 'wRAA', 'wOBA', 'wRC+']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_LHP_standard.csv
+  Loading vs_LHP batted_ball...
+  OK 30 rows | Cols: ['Season', 'Tm', 'PA', 'GB/FB', 'LD%', 'GB%', 'FB%', 'IFFB%', 'HR/FB', 'IFH%', 'BUH%', 'Pull%', 'Cent%', 'Oppo%', 'Soft%', 'Med%', 'Hard%']
+  Saved: C:\Users\chase\mlbma_pipeline\data\vs_LHP_batted_ball.csv
+Cooling down 45s...
+=== SP Leaderboard ===
+  Loading SP standard...
+  OK 603 pitchers | Cols: ['Season', 'Name', 'Tm', 'IP', 'TBF', 'K/9', 'BB/9', 'K/BB', 'HR/9', 'K%', 'BB%', 'K-BB%', 'AVG', 'WHIP', 'BABIP', 'LOB%', 'FIP', 'xFIP', 'playerId']
+  Saved: C:\Users\chase\mlbma_pipeline\data\sp_standard.csv
+  Loading SP advanced...
+  OK 603 pitchers | Cols: ['Season', 'Name', 'Tm', 'IP', 'TBF', 'GB/FB', 'LD%', 'GB%', 'FB%', 'IFFB%', 'HR/FB', 'IFH%', 'BUH%', 'Pull%', 'Cent%', 'Oppo%', 'Soft%', 'Med%', 'Hard%', 'playerId']
+  Saved: C:\Users\chase\mlbma_pipeline\data\sp_advanced.csv
+All done.
+Exception ignored in: <function Chrome.__del__ at 0x0000023C1B298AE0>
+Traceback (most recent call last):
+  File "C:\Users\chase\crawl_env\Lib\site-packages\undetected_chromedriver\__init__.py", line 843, in __del__
+  File "C:\Users\chase\crawl_env\Lib\site-packages\undetected_chromedriver\__init__.py", line 798, in quit
+OSError: [WinError 6] The handle is invalid
+Loading data...
+  Loaded vs_RHP_standard.csv: 30 rows
+  Loaded vs_RHP_batted_ball.csv: 30 rows
+  Loaded vs_LHP_standard.csv: 30 rows
+  Loaded vs_LHP_batted_ball.csv: 30 rows
+  Loaded savant_team_leaderboard.csv: 30 rows
+  Loaded savant_vs_RHP.csv: 30 rows
+  Loaded savant_vs_LHP.csv: 30 rows
+  Loaded sp_standard.csv: 603 rows
+
+Results vs_RHP
+     Tm   ABQ   RCV   OBR   OSI  projOSI  reg_signal
+1   NYY  61.5  92.3  98.9  82.2     81.7        -0.5
+2   LAD  63.0  72.5  74.7  69.4     61.4        -8.0
+3   CHC  71.9  57.8  84.8  68.4     64.8        -3.6
+4   ATL  57.1  72.3  50.3  62.2     54.2        -8.0
+5   SEA  49.3  62.4  67.9  58.7     50.7        -8.0
+6   PIT  54.2  58.6  57.4  56.8     48.8        -8.0
+7   HOU  43.9  61.7  57.7  54.3     46.3        -8.0
+8   DET  53.8  48.0  62.1  53.0     49.6        -3.4
+9   MIL  69.8  30.4  65.1  51.9     43.9        -8.0
+10  MIA  53.0  44.6  61.9  51.2     50.2        -1.0
+11  ATH  45.4  55.0  43.2  49.1     41.1        -8.0
+12  KCR  59.7  35.3  57.7  48.8     43.0        -5.8
+13  WSN  49.7  46.2  51.8  48.6     43.1        -5.5
+14  TEX  54.7  40.9  53.6  48.6     42.2        -6.4
+15  PHI  44.6  47.2  57.9  48.4     50.3         1.9
+16  TOR  66.7  23.5  56.8  46.1     52.2         6.1
+17  CIN  54.7  37.0  47.5  45.6     37.8        -7.9
+18  BAL  33.0  53.1  50.6  45.2     37.2        -8.0
+19  STL  56.0  36.5  42.5  44.9     36.9        -8.0
+20  NYM  52.6  30.6  60.9  44.8     52.8         8.0
+21  MIN  51.1  37.0  38.5  42.5     34.5        -8.0
+22  CHW  45.7  43.4  34.0  42.4     34.4        -8.0
+23  SDP  49.9  25.7  56.9  40.9     44.0         3.1
+24  TBR  47.8  33.4  38.9  39.9     31.9        -8.0
+25  BOS  51.9  21.9  54.5  39.5     46.2         6.6
+26  ARI  47.8  25.3  41.1  36.8     36.3        -0.5
+27  LAA  25.7  41.3  38.7  35.0     27.0        -8.0
+28  CLE  48.6  19.5  35.0  33.3     25.3        -8.0
+29  SFG  40.3  22.3  27.9  30.1     31.3         1.2
+30  COL  29.8  24.5  16.4  24.8     16.8        -8.0
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_vs_RHP.csv
+
+Results vs_LHP
+     Tm   ABQ   RCV   OBR   OSI  projOSI  reg_signal
+1   NYY  61.8  97.3  94.9  83.7     77.9        -5.8
+2   CHC  70.1  61.0  81.7  68.5     60.5        -8.0
+3   LAD  62.2  65.1  68.1  64.6     56.6        -8.0
+4   DET  63.5  47.2  78.4  59.5     60.4         1.0
+5   TOR  72.6  32.0  70.1  54.7     62.7         8.0
+6   WSN  48.8  58.7  56.8  54.6     46.6        -8.0
+7   CIN  56.7  48.1  53.5  52.4     44.4        -8.0
+8   MIA  50.9  49.7  60.7  52.4     56.5         4.2
+9   MIN  62.1  45.5  48.2  52.2     44.2        -8.0
+10  ATL  54.5  54.8  39.1  51.6     43.6        -8.0
+11  BOS  50.0  53.2  42.9  49.9     41.9        -8.0
+12  HOU  43.1  57.4  46.4  49.9     42.1        -7.8
+13  PHI  45.5  46.8  62.6  49.5     56.6         7.2
+14  CHW  47.5  59.6  30.9  49.4     41.4        -8.0
+15  NYM  50.6  41.0  56.8  47.7     55.7         8.0
+16  STL  66.8  30.0  47.1  47.0     41.0        -6.0
+17  KCR  60.3  31.3  54.6  46.7     49.6         2.9
+18  ARI  52.1  45.1  35.7  45.8     37.8        -8.0
+19  SEA  49.5  33.7  62.5  45.3     53.3         8.0
+20  BAL  34.0  53.4  48.1  45.2     41.3        -3.9
+21  LAA  31.9  57.5  38.4  44.2     36.2        -8.0
+22  MIL  68.3  12.6  63.3  43.3     51.3         8.0
+23  PIT  43.3  38.9  45.9  41.9     44.1         2.2
+24  CLE  44.9  37.9  22.0  37.3     29.3        -8.0
+25  ATH  39.5  35.5  36.6  37.2     32.6        -4.6
+26  TEX  48.4  14.1  51.5  34.3     42.3         8.0
+27  TBR  43.5  24.1  26.9  31.8     29.6        -2.2
+28  SDP  45.1  11.2  45.8  30.7     38.7         8.0
+29  SFG  40.7  22.4  28.4  30.3     37.1         6.7
+30  COL  17.9  13.6   1.8  12.8      4.8        -8.0
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_vs_LHP.csv
+
+Pitching Score
+     Tm    K%   BB%  HR/9  PitchScore
+1   MIL  26.5   9.4  0.78   83.858219
+2   LAD  25.2   7.7  0.91   82.136516
+3   PHI  25.0   7.2  1.02   80.155507
+4   NYY  24.3   8.2  0.80   79.335095
+5   NYM  25.5   9.1  0.85   77.667298
+6   SEA  23.0   6.6  1.07   72.302991
+7   TOR  24.3   8.3  0.98   72.192424
+8   SDP  23.7   8.7  0.83   72.050578
+9   PIT  23.3   9.2  0.79   68.703292
+10  ATL  24.3   8.9  1.03   66.495161
+11  CLE  25.0   9.1  1.19   63.004059
+12  DET  22.3   9.0  0.90   60.938506
+13  MIA  22.6  10.0  0.79   60.516682
+14  TBR  21.2   8.1  0.97   58.336815
+15  TEX  23.0   8.6  1.15   57.620033
+16  MIN  20.6   9.3  0.85   52.741067
+17  BOS  22.0   8.4  1.19   52.716157
+18  CHC  22.4   7.9  1.38   50.375124
+19  CHW  21.2  10.1  0.99   45.643067
+20  SFG  21.2  10.0  1.04   45.034110
+21  ARI  19.9   8.2  1.16   44.534530
+22  KCR  22.5  11.2  1.11   41.576513
+23  BAL  21.4   9.6  1.22   41.387277
+24  LAA  22.1  11.5  1.00   41.352296
+25  STL  18.4   9.5  1.06   32.639992
+26  ATH  20.3  10.4  1.25   30.711511
+27  COL  19.1   8.7  1.35   30.682629
+28  WSN  19.4   9.4  1.48   24.005054
+29  HOU  22.0  12.6  1.33   23.047547
+30  CIN  19.9  11.8  1.26   19.788887
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_pitching_score.csv
+
+OOR - Opponent Offensive Rating
+     Tm    HvP        HvL        HvR   vP_pct  vP_Rank  vL_Rank  vR_Rank
+1   NYY  82.96  83.721504  82.200643   74.15%        1        1        1
+2   CHC  68.47  68.524141  68.423507   43.74%        2        2        3
+3   LAD  67.04  64.642074  69.434548   40.73%        3        3        2
+4   ATL  56.91  51.575101  62.246573   19.47%        4       10        4
+5   DET  56.23  59.462896  52.990131   18.04%        5        4        8
+6   HOU  52.11  49.911237  54.318610    9.39%        6       12        7
+7   SEA  51.99  45.318234  58.663234    9.14%        7       19        5
+8   MIA  51.77  52.362902  51.180331    8.68%        8        8       10
+9   WSN  51.64  54.647052  48.632299    8.41%        9        6       13
+10  TOR  50.40  54.653392  46.146301     5.8%       10        5       16
+11  PIT  49.34  41.930163  56.755722    3.58%       11       23        6
+12  CIN  49.02  52.392851  45.648061    2.91%       12        7       17
+13  PHI  48.93  49.483839  48.383632    2.72%       13       13       15
+14  KCR  47.76  46.695528  48.827907    0.26%       14       17       12
+15  MIL  47.64  43.329215  51.943798    0.01%       15       22        9
+16  MIN  47.35  52.195347  42.495399    -0.6%       16        9       21
+17  NYM  46.28  47.736630  44.828812   -2.85%       17       15       20
+18  STL  45.97  47.031411  44.914954    -3.5%       18       16       19
+19  CHW  45.86  49.364716  42.365212   -3.73%       19       14       22
+20  BAL  45.17  45.175149  45.157537   -5.18%       20       20       18
+21  BOS  44.74  49.947213  39.541351   -6.08%       21       11       25
+22  ATH  43.16  37.202988  49.122629    -9.4%       22       25       11
+23  TEX  41.41  34.258806  48.560810  -13.07%       23       26       14
+24  ARI  41.32  45.828149  36.817237  -13.26%       24       18       26
+25  LAA  39.63  44.231060  35.029514  -16.81%       25       21       27
+26  TBR  35.84  31.820302  39.852939  -24.76%       26       27       24
+27  SDP  35.78  30.650128  40.913134  -24.89%       27       28       23
+28  CLE  35.33  37.317913  33.344278  -25.83%       28       24       28
+29  SFG  30.21  30.348887  30.073575  -36.58%       29       29       29
+30  COL  18.82  12.810706  24.833631  -60.49%       30       30       30
+Saved: C:\Users\chase\mlbma_pipeline\data\metrics_oor.csv
+
+All metrics computed.
+Connecting to Google Sheets...
+Connected.
+
+  Pushed vs_RHP: 30 rows
+  Pushed vs_LHP: 30 rows
+  Pushed OOR: 30 rows
+  Pushed Pitching_Score: 30 rows
+  Pushed Last_Updated timestamp
+
+Google Sheets push complete.
+MLBMA Pipeline starting at 2026-05-17 23:55:08
+
+==================================================
+Running scrape_savant.py...
+==================================================
+
+==================================================
+Running scrape_fangraphs.py...
+==================================================
+
+==================================================
+Running compute.py...
+==================================================
+
+==================================================
+Running push_sheets.py...
+==================================================
+
+Pipeline complete at 2026-05-18 00:02:04
+All metrics pushed to Google Sheets

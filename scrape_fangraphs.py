@@ -67,12 +67,12 @@ def scrape_one(driver, split_label, split_code, sg_name, sg_num):
     time.sleep(20)
     df = get_export_csv(driver)
     if df is not None:
-        print(f"  ✓ {len(df)} rows | Cols: {list(df.columns)}")
+        print(f"  OK {len(df)} rows | Cols: {list(df.columns)}")
         fname = os.path.join(DATA_DIR, f"{split_label}_{sg_name}.csv")
         df.to_csv(fname, index=False)
         print(f"  Saved: {fname}")
     else:
-        print(f"  ✗ No data found")
+        print(f"  FAIL No data found")
     time.sleep(15)
     return df
 
@@ -83,7 +83,7 @@ def scrape_sp(driver, sg_name, sg_num):
     time.sleep(20)
     df = get_export_csv(driver)
     if df is not None:
-        print(f"  ✓ {len(df)} pitchers | Cols: {list(df.columns)}")
+        print(f"  OK {len(df)} pitchers | Cols: {list(df.columns)}")
         fname = os.path.join(DATA_DIR, f'sp_{sg_name}.csv')
         df.to_csv(fname, index=False)
         print(f'  Saved: {fname}')
