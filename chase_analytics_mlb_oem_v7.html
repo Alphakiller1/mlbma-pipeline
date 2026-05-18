@@ -1193,7 +1193,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
     <div class="education-card glossary-term" data-term="obr on base reliability floor xwoba walk expected"><div class="term">OBR <span class="info-dot" title="On-Base Reliability measures the offensive floor.">i</span></div>On-Base Reliability. Pure floor: 65% xwOBA + 35% BB%. Uses expected wOBA instead of actual to strip luck from the floor calculation.</div>
     <div class="education-card glossary-term" data-term="osi offensive status index composite"><div class="term">OSI <span class="info-dot" title="OSI combines damage, process, and floor into one composite score.">i</span></div>Offensive Status Index. Final composite: 43% RCV + 37% ABQ + 20% OBR. All three sub-scores min-max normalized within the 30-team sample before blending.</div>
     <div class="education-card glossary-term" data-term="oor opponent offensive rating hvr hvl hvp handedness"><div class="term">OOR <span class="info-dot" title="Opponent Offensive Rating measures the offensive threat a pitcher faces.">i</span></div>Opponent Offensive Rating. Measures the offensive quality a pitcher faces by handedness. HvR = opposing lineup's OSI vs RHP. HvL = vs LHP. HvP = composite (55% HvR + 45% HvL). Ranks show how tough each team's lineup is to face.</div>
-    <div class="education-card glossary-term" data-term="pals pitching adjusted lineup score schedule ptf"><div class="term">PALS <span class="info-dot" title="Pitching-Adjusted Lineup Score — coming soon.">i</span></div>Pitching-Adjusted Lineup Score. OSI adjusted for the quality of pitching the lineup has faced. Separates genuine offensive quality from schedule inflation. Requires SP schedule data — coming soon.</div>
+    <div class="education-card glossary-term" data-term="pals pitching adjusted lineup score schedule ptf"><div class="term">PALS <span class="info-dot" title="Pitching-Adjusted Lineup Score: OSI blended with normalized opposing SP xFIP faced.">i</span></div>Pitching-Adjusted Lineup Score. OSI adjusted for the quality of starting pitching the lineup has faced (BA++ and inverted xFIP schedule as PTF+). See the PALS table below for live rankings.</div>
     <div class="education-card glossary-term" data-term="pp gap process production abq rcv buy low sell high"><div class="term">Process-Production Gap</div>ABQ minus RCV. Positive values suggest process is ahead of production; negative values suggest production is ahead of process.</div>
     <div class="education-card glossary-term" data-term="df gap damage floor rcv obr volatility"><div class="term">Damage-Floor Gap</div>RCV minus OBR. Higher values indicate more power/variance; lower values indicate a steadier on-base or contact profile.</div>
     <div class="education-card glossary-term" data-term="projected osi regression adjusted xwoba"><div class="term">Projected OSI</div>OSI + clip((xwOBA−wOBA)×450, −8, +8). Positive reg signal = team underperforming expected output (upside). Negative = regression likely. Capped at ±8 points.</div>
@@ -1366,7 +1366,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
    ============================================================ */
 var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
-var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], matchups: [], rhp: null, lhp: null };
+var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], rhp: null, lhp: null };
 
 function sheetCsvUrl(tabName) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -1400,7 +1400,7 @@ function fetchMatchups() {
 }
 
 function fetchLiveData() {
-  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'Today_Matchups', 'Last_Updated'];
+  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'PALS', 'Today_Matchups', 'Last_Updated'];
   var fetches = tabs.map(function(tab) {
     return fetch(sheetCsvUrl(tab)).then(function(r) { return r.text(); }).then(function(t) {
       return { tab: tab, data: tab === 'Last_Updated' ? t : parseCSV(t) };
@@ -1412,6 +1412,7 @@ function fetchLiveData() {
       if (r.tab === 'vs_LHP') LIVE_DATA.lhp = r.data;
       if (r.tab === 'OOR') LIVE_DATA.oor = r.data;
       if (r.tab === 'Pitching_Score') LIVE_DATA.pitching = r.data;
+      if (r.tab === 'PALS') LIVE_DATA.pals = parsePalsRows(r.data);
       if (r.tab === 'Today_Matchups') LIVE_DATA.matchups = parseMatchupRows(r.data);
       if (r.tab === 'Last_Updated') {
         LIVE_DATA.lastUpdated = parseLastUpdatedFromText(r.data);
@@ -1422,6 +1423,7 @@ function fetchLiveData() {
       }
     });
     renderMatchups();
+    renderPALS();
     /* scYtdR/scYtdL + display refresh handled by loadLiveData() → applyLiveData() */
   }).catch(function(e) {
     console.error('Live data fetch failed:', e);
@@ -1477,8 +1479,6 @@ function applyLiveData() {
   SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
   SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
 
-  renderOOR();
-  renderPitchingScore();
   renderAll();
 }
 
@@ -1608,6 +1608,7 @@ function loadLiveCache() {
 function applyLiveCache(cache) {
   LIVE_DATA.oor = cache.oor || [];
   LIVE_DATA.pitching = cache.pitching || [];
+  LIVE_DATA.pals = cache.pals || [];
   LIVE_DATA.lastUpdated = cache.lastUpdated || null;
   LIVE_DATA.scYtdR = cache.scYtdR || [];
   LIVE_DATA.scYtdL = cache.scYtdL || [];
@@ -1675,6 +1676,38 @@ function parsePitchingRows(rows) {
       hr9: numOrNull(hrKey ? row[hrKey] : ''),
       pitchScore: numOrNull(pickCol(row, ['PitchScore', 'Pitchscore']))
     };
+  }).filter(Boolean);
+}
+
+function palsNum(v) {
+  if (v === null || v === undefined || v === '') return null;
+  if (typeof v === 'number' && !isNaN(v)) return v;
+  return numOrNull(String(v));
+}
+
+function parsePalsRows(rows) {
+  if (!rows || !rows.length) return [];
+  return rows.map(function(row) {
+    var t = pickCol(row, ['Tm', 'tm', 'Team']);
+    if (!t) return null;
+    t = String(t).trim().toUpperCase();
+    if (!t) return null;
+    var osi = palsNum(pickCol(row, ['OSI', 'osi']));
+    var xfip = palsNum(pickCol(row, ['avg_xFIP_faced', 'Avg xFIP Faced']));
+    if (xfip == null) {
+      var keys = Object.keys(row);
+      for (var i = 0; i < keys.length; i++) {
+        if (/xfip/i.test(keys[i]) && /avg|faced/i.test(keys[i])) {
+          xfip = palsNum(row[keys[i]]);
+          break;
+        }
+      }
+    }
+    var baPlus = palsNum(pickCol(row, ['BA_plus', 'BA++', 'BA_Plus']));
+    var ptfPlus = palsNum(pickCol(row, ['PTF_plus', 'PTF+', 'PTF_Plus']));
+    var pals = palsNum(pickCol(row, ['PALS', 'pals']));
+    if (osi == null && baPlus == null && pals == null) return null;
+    return { t: t, osi: osi, avg_xFIP_faced: xfip, BA_plus: baPlus, PTF_plus: ptfPlus, PALS: pals };
   }).filter(Boolean);
 }
 
@@ -1886,10 +1919,11 @@ function loadLiveData() {
     fetchSheetTab('vs_LHP'),
     fetchSheetTab('OOR'),
     fetchSheetTab('Pitching_Score'),
+    fetchSheetTab('PALS'),
     fetchSheetText('Last_Updated')
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
-        pitchingRows = results[3], tsText = results[4];
+        pitchingRows = results[3], palsRows = results[4], tsText = results[5];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -1897,6 +1931,7 @@ function loadLiveData() {
     }
     LIVE_DATA.oor = parseOorRows(oorRows);
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
+    LIVE_DATA.pals = parsePalsRows(palsRows);
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
@@ -1908,6 +1943,7 @@ function loadLiveData() {
       lastUpdated: LIVE_DATA.lastUpdated,
       oor: LIVE_DATA.oor,
       pitching: LIVE_DATA.pitching,
+      pals: LIVE_DATA.pals,
       scYtdR: LIVE_DATA.scYtdR,
       scYtdL: LIVE_DATA.scYtdL,
       ytd: YTD
@@ -3792,6 +3828,8 @@ function renderAll(){
   renderMatchupOutput();
   renderOOR();
   renderPitchingScore();
+  renderPALS();
+  renderMatchups();
   urlEncodeState();
 }
 
@@ -3821,6 +3859,55 @@ function renderPitchingScore() {
       + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : '—') + '</td>'
       + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : '—') + '</td>'
       + '<td class="num" style="color:' + cl + ';font-weight:600;">' + (ps != null ? ps.toFixed(1) : '—') + '</td></tr>';
+  }).join('');
+}
+
+function renderPALS() {
+  var el = document.getElementById('palsTableBody');
+  if (!el) return;
+  var rows = (LIVE_DATA.pals || []).slice();
+  if (LIVE_DATA.error && !rows.length) {
+    el.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--red-l);padding:20px;">PALS data unavailable.</td></tr>';
+    return;
+  }
+  if (!rows.length) {
+    el.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:20px;">No PALS data loaded.</td></tr>';
+    return;
+  }
+  rows.sort(function(a, b) {
+    var pa = a.PALS != null ? a.PALS : -999;
+    var pb = b.PALS != null ? b.PALS : -999;
+    return pb - pa;
+  });
+  function palsColor(v) {
+    if (v == null || isNaN(v)) return 'var(--text-3)';
+    if (v >= 70) return 'var(--green)';
+    if (v >= 55) return 'var(--gold)';
+    if (v >= 40) return 'var(--text-2)';
+    return 'var(--red-l)';
+  }
+  function xfipFacedColor(x) {
+    if (x == null || isNaN(x)) return 'var(--text-3)';
+    if (x > 4.05) return 'var(--green)';
+    if (x < 3.95) return 'var(--red-l)';
+    return 'var(--text-2)';
+  }
+  function fmt1(v) {
+    return v != null && !isNaN(v) ? v.toFixed(1) : '—';
+  }
+  function fmt2(v) {
+    return v != null && !isNaN(v) ? v.toFixed(2) : '—';
+  }
+  el.innerHTML = rows.map(function(r, i) {
+    var pals = r.PALS;
+    var xfip = r.avg_xFIP_faced;
+    return '<tr><td class="rank-cell">' + (i + 1) + '</td>'
+      + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
+      + '<td class="num">' + fmt1(r.osi) + '</td>'
+      + '<td class="num" style="color:' + xfipFacedColor(xfip) + ';font-weight:600;">' + fmt2(xfip) + '</td>'
+      + '<td class="num">' + fmt1(r.BA_plus) + '</td>'
+      + '<td class="num">' + fmt1(r.PTF_plus) + '</td>'
+      + '<td class="num" style="color:' + palsColor(pals) + ';font-weight:600;">' + fmt1(pals) + '</td></tr>';
   }).join('');
 }
 
@@ -3992,6 +4079,38 @@ if (document.readyState === 'loading') {
         <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">Loading pitching data…</td></tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- PALS Section -->
+<div class="section" id="palsSection" style="margin-bottom:40px;">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">PITCHING-ADJUSTED</div>
+      <div class="section-title">PALS — Pitching-Adjusted Lineup Score</div>
+      <div class="section-subtitle">OSI adjusted for opposing SP quality faced this season. Higher = genuinely strong offense.</div>
+    </div>
+  </div>
+  <div class="table-wrap sticky-team">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Team</th>
+          <th title="Unadjusted composite lineup quality (0–100 scale)">OSI</th>
+          <th title="Average xFIP of opposing starters faced — lower = tougher schedule">Avg xFIP Faced</th>
+          <th title="Normalized OSI (BA++)">BA++</th>
+          <th title="Normalized, inverted avg xFIP faced — higher = easier SP schedule">PTF+</th>
+          <th title="Pitching-Adjusted Lineup Score">PALS</th>
+        </tr>
+      </thead>
+      <tbody id="palsTableBody">
+        <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:20px;">Loading PALS data…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="method-note" style="margin-top:16px;">
+    <strong>Method:</strong> <strong>BA++</strong> = normalized OSI. <strong>PTF+</strong> = normalized average xFIP of opposing starters faced (inverted — higher values mean an easier SP schedule). <strong>PALS</strong> = average of BA++ and PTF+. <strong>Avg xFIP faced</strong> coloring: green above 4.05 (softer pitching mix), red below 3.95 (tougher); lower raw xFIP = harder schedule. <strong>PALS</strong> coloring: 70+ elite (green), 55–69 strong (gold), 40–54 neutral (text), under 40 weak (red).
   </div>
 </div>
 
