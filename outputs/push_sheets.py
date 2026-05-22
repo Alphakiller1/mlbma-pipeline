@@ -19,6 +19,16 @@ def get_client():
     creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     return gspread.authorize(creds)
 
+
+def sanitize_df_for_sheets(df: pd.DataFrame) -> pd.DataFrame:
+    """Replace NaN with empty strings so gspread JSON serialization succeeds."""
+    if df.empty:
+        return df
+    out = df.copy()
+    out = out.where(pd.notnull(out), None)
+    return out.fillna("")
+
+
 def push_df(sheet, tab_name, df):
     nrows = max(int(len(df)) + 10, 50)
     ncols = max(int(len(df.columns)) + 2, 20)
@@ -29,6 +39,7 @@ def push_df(sheet, tab_name, df):
         worksheet = sheet.add_worksheet(title=tab_name, rows=nrows, cols=ncols)
 
     df = df.round(2)
+    df = sanitize_df_for_sheets(df)
     data = [df.columns.tolist()] + df.values.tolist()
     worksheet.update(data)
     print(f"  Pushed {tab_name}: {len(df)} rows")

@@ -5,7 +5,7 @@ import os
 import pandas as pd
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, check_google_credentials
-from outputs.push_sheets import get_client, push_df
+from outputs.push_sheets import get_client, push_df, sanitize_df_for_sheets
 
 
 def run():
@@ -28,6 +28,7 @@ def run():
         path = os.path.join(DATA_DIR, filename)
         if os.path.exists(path):
             df = pd.read_csv(path)
+            df = sanitize_df_for_sheets(df)
             push_df(sheet, tab_name, df)
         else:
             print(f"  WARNING: {filename} not found")

@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 from core.config import CHROME_PATH, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
+from scrapers.fangraphs_session import safe_quit_driver
 
 load_dotenv(ENV_FILE)
 
@@ -155,10 +156,7 @@ def run():
         time.sleep(45)
         scrape_sp_window(driver, L14_START, L14_END, "sp_l14", "L14")
     finally:
-        try:
-            driver.quit()
-        except Exception:
-            pass
+        safe_quit_driver(driver)
     print("All done.")
 
 

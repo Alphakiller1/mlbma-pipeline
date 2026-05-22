@@ -31,6 +31,16 @@ def get_driver():
     return uc.Chrome(options=options, browser_executable_path=CHROME_PATH)
 
 
+def safe_quit_driver(driver) -> None:
+    """Quit Chrome without raising on Windows undetected-chromedriver cleanup bugs."""
+    if driver is None:
+        return
+    try:
+        driver.quit()
+    except Exception:
+        pass
+
+
 def login(driver) -> bool:
     print("Logging in to FanGraphs...")
     driver.get("https://blogs.fangraphs.com/wp-login.php")

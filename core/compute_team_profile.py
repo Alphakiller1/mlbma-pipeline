@@ -452,10 +452,14 @@ def run():
     top_b, ha, trend_adj = batter_aggregates(batter, registry)
     windows = window_trend(offense, trend_adj)
 
-    all_teams = set(offense["team"].tolist()) if not offense.empty else []
+    all_teams: set = (
+        set(offense["team"].dropna().astype(str).tolist())
+        if not offense.empty and "team" in offense.columns
+        else set()
+    )
     for df in (rotation, bullpen, top_b, ha):
         if not df.empty and "team" in df.columns:
-            all_teams |= set(df["team"].tolist())
+            all_teams |= set(df["team"].dropna().astype(str).tolist())
 
     if not all_teams:
         print("  No team data available -- writing empty team_profiles.csv")
@@ -471,6 +475,7 @@ def run():
             profile[col] = None
 
     profile = profile[PROFILE_COLUMNS]
+    profile = profile.where(pd.notnull(profile), None).fillna("")
     out_path = DATA_DIR / "team_profiles.csv"
     profile.to_csv(out_path, index=False)
     print(f"  Saved {len(profile)} team profiles -> {out_path}")

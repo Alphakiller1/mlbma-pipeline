@@ -170,10 +170,16 @@ def run():
         unit = build_team_unit(gamelog)
         individual = build_individual(gamelog)
 
+    def _sanitize_for_export(frame: pd.DataFrame) -> pd.DataFrame:
+        if frame.empty:
+            return frame
+        out = frame.where(pd.notnull(frame), None)
+        return out.fillna("")
+
     unit_path = DATA_DIR / "bullpen_unit.csv"
     ind_path = DATA_DIR / "bullpen_individual.csv"
-    unit.to_csv(unit_path, index=False)
-    individual.to_csv(ind_path, index=False)
+    _sanitize_for_export(unit).to_csv(unit_path, index=False)
+    _sanitize_for_export(individual).to_csv(ind_path, index=False)
     print(f"  Saved {len(unit)} team rows -> {unit_path}")
     print(f"  Saved {len(individual)} reliever rows -> {ind_path}")
 

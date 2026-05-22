@@ -18,7 +18,7 @@ from core.config import (
     SEASON_END,
     SEASON_START,
 )
-from scrapers.fangraphs_session import get_driver, get_export_csv, login
+from scrapers.fangraphs_session import get_driver, get_export_csv, login, safe_quit_driver
 
 PAGE_DELAY = 20
 COOLDOWN = 15
@@ -199,10 +199,7 @@ def run():
             "batter_splits_recent.csv",
         )
     finally:
-        try:
-            driver.quit()
-        except Exception:
-            pass
+        safe_quit_driver(driver)
 
     print("Batter splits scrape complete.")
 
