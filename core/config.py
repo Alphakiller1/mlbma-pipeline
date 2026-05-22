@@ -203,6 +203,8 @@ SHEET_TABS = {
     "sp_metric_splits": "SP_Metric_Splits",
     "sp_profiles": "SP_Profiles",
     "sp_game_log": "SP_Game_Log",
+    "bullpen_unit": "Bullpen_Unit",
+    "bullpen_individual": "Bullpen_Individual",
 }
 
 TEAM_MAP = {

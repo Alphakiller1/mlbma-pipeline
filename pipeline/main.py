@@ -74,6 +74,8 @@ def run():
 
     run_sp_gamelog()
     run_sp_splits()
+    run_reliever_gamelog()
+    run_bullpen_profiles()
 
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("All metrics pushed to Google Sheets")
@@ -106,6 +108,35 @@ def run_sp_splits():
         run_push_sp_splits()
     except Exception as exc:
         print(f"WARNING: SP splits step failed - continuing ({exc})")
+
+
+def run_reliever_gamelog():
+    """Step 12: reliever game logs from MLB Stats API; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 12: scrapers.scrape_reliever_gamelog...")
+    print(f"{'='*50}")
+    try:
+        from scrapers.scrape_reliever_gamelog import run as run_reliever_gamelog_module
+
+        run_reliever_gamelog_module()
+    except Exception as exc:
+        print(f"WARNING: scrape_reliever_gamelog failed - continuing ({exc})")
+
+
+def run_bullpen_profiles():
+    """Step 13: bullpen profiles + Sheets push; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 13: compute_bullpen_profile + push_bullpen...")
+    print(f"{'='*50}")
+    try:
+        from core.compute_bullpen_profile import run as run_compute_bullpen
+
+        run_compute_bullpen()
+        from outputs.push_bullpen import run as run_push_bullpen
+
+        run_push_bullpen()
+    except Exception as exc:
+        print(f"WARNING: bullpen profile step failed - continuing ({exc})")
 
 
 if __name__ == "__main__":

@@ -29,6 +29,9 @@ MODULES = [
     "scrapers.scrape_sp_gamelog",
     "core.compute_sp_splits",
     "outputs.push_sp_splits",
+    "scrapers.scrape_reliever_gamelog",
+    "core.compute_bullpen_profile",
+    "outputs.push_bullpen",
     "core.dashboard_terminal",
 ]
 
