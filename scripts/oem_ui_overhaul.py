@@ -145,7 +145,6 @@ JS_BLOCK = """
 /* ============================================================
    OEM MODE TABS · DAILY SUMMARY · FRESHNESS · DECISION LABELS
    ============================================================ */
-STATE.oemMode = STATE.oemMode || 'daily';
 
 function parseFreshnessDate(raw) {
   if (!raw) return null;
@@ -184,6 +183,8 @@ function syncFreshnessIndicator(ts) {
 }
 
 function setOemMode(mode) {
+  if (!stateReady()) return;
+  mode = mode || STATE.oemMode || 'daily';
   STATE.oemMode = mode;
   document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
     var on = btn.getAttribute('data-oem-mode') === mode;

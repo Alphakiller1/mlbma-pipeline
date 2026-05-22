@@ -2641,142 +2641,6 @@ function parseLastUpdatedFromText(text) {
 }
 
 
-/* ============================================================
-   OEM MODE TABS · DAILY SUMMARY · FRESHNESS · DECISION LABELS
-   (oemMode default lives on STATE below)
-   ============================================================ */
-
-function parseFreshnessDate(raw) {
-  if (!raw) return null;
-  var d = new Date(String(raw).trim());
-  if (!isNaN(d.getTime())) return d;
-  return null;
-}
-
-function syncFreshnessIndicator(ts) {
-  var label = document.getElementById('freshnessLabel');
-  var dot = document.getElementById('freshnessDot');
-  var meta = document.getElementById('freshnessMeta');
-  var hu = document.getElementById('headerUpdated');
-  var text = ts || '—';
-  if (hu) hu.textContent = text;
-  if (label) label.textContent = text;
-  var d = parseFreshnessDate(ts);
-  var stale = false;
-  if (d) {
-    stale = (Date.now() - d.getTime()) / (1000 * 60 * 60) > 24;
-    text = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
-      d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    if (label) label.textContent = text;
-  }
-  if (dot) {
-    dot.classList.toggle('stale', stale);
-    dot.classList.toggle('fresh', !stale);
-  }
-  if (meta) {
-    meta.textContent = stale ? 'Data may be stale (>24h) — re-run pipeline' : 'Fresh pipeline sync';
-  }
-  if (window.ChaseNav) {
-    ChaseNav.setLastUpdated(text);
-    ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
-  }
-}
-
-function setOemMode(mode) {
-  STATE.oemMode = mode;
-  document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
-    var on = btn.getAttribute('data-oem-mode') === mode;
-    btn.classList.toggle('active', on);
-    btn.setAttribute('aria-selected', on ? 'true' : 'false');
-  });
-  document.querySelectorAll('.oem-mode-pane').forEach(function(pane) {
-    pane.classList.toggle('active', pane.getAttribute('data-oem-pane') === mode);
-  });
-  urlEncodeState();
-  if (mode === 'daily') renderDailySummary();
-}
-
-function metricDecision(key, d) {
-  if (!d) return '';
-  var v = d[key];
-  if (v === null || v === undefined || isNaN(v)) return '';
-  if (key === 'osi') {
-    if (v >= 75) return '<span class="metric-decision elite">Elite</span>';
-    if (v < 50) return '<span class="metric-decision fade">Weak</span>';
-    return '';
-  }
-  if (key === 'projOSI') {
-    var delta = (d.projOSI != null && d.osi != null) ? d.projOSI - d.osi : 0;
-    if (delta > 1.5) return '<span class="metric-decision buy">Up</span>';
-    if (delta < -1.5) return '<span class="metric-decision fade">Down</span>';
-    return '';
-  }
-  if (key === 'ppGap') {
-    if (v > 4) return '<span class="metric-decision buy">Buy</span>';
-    if (v < -4) return '<span class="metric-decision fade">Fade</span>';
-    return '';
-  }
-  if (key === 'dfGap') {
-    if (v > 8) return '<span class="metric-decision vol">Power</span>';
-    if (v < -4) return '<span class="metric-decision buy">Floor</span>';
-    return '';
-  }
-  if (key === 'obr') {
-    if (v >= 60) return '<span class="metric-decision buy">Traffic</span>';
-    if (v < 45) return '<span class="metric-decision fade">Thin</span>';
-    return '';
-  }
-  if (key === 'abq' || key === 'rcv') {
-    if (v >= 65) return '<span class="metric-decision elite">Strong</span>';
-    if (v < 45) return '<span class="metric-decision fade">Weak</span>';
-    return '';
-  }
-  return '';
-}
-
-function renderDailySummary() {
-  var el = document.getElementById('dailySummaryGrid');
-  if (!el) return;
-  var rows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B.slice() : [];
-  if (!rows.length) {
-    el.innerHTML = '<div class="daily-summary-card"><div class="ds-body">Loading summary…</div></div>';
-    return;
-  }
-  function top(sortFn, filterFn) {
-    var pool = rows.filter(filterFn || function() { return true; }).sort(sortFn);
-    return pool[0];
-  }
-  var buyLow = top(function(a, b) { return b.ppGap - a.ppGap; }, function(d) { return d.ppGap > 4; });
-  var fade = top(function(a, b) { return a.ppGap - b.ppGap; }, function(d) { return d.ppGap < -4 || d.trend === 'Cooling'; });
-  var power = top(function(a, b) { return b.dfGap - a.dfGap; }, function(d) { return d.dfGap > 8; });
-  var elite = top(function(a, b) { return b.osi - a.osi; }, function(d) { return d.osi >= 75; });
-  var nMatch = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? LIVE_DATA.matchups.length : 0;
-  var cards = [
-    { e: 'Top edge', t: buyLow ? buyLow.t + ' · Buy-low process' : '—', b: buyLow ? 'PP-Gap +' + buyLow.ppGap.toFixed(1) + ' — process ahead of box-score output.' : 'No buy-low standouts.' },
-    { e: 'Fade watch', t: fade ? fade.t + ' · ' + (fade.trend || 'Cooling') : '—', b: fade ? 'Production ahead of process or negative momentum.' : 'No major fade flags.' },
-    { e: 'Power skew', t: power ? power.t + ' · Power-Floor +' + power.dfGap.toFixed(1) : '—', b: 'Boom/bust run paths — team totals volatility.' },
-    { e: 'Elite anchor', t: elite ? elite.t + ' · OSI ' + elite.osi.toFixed(1) : '—', b: 'Stable offensive floor for ML / team-total backs.' },
-    { e: 'Slate', t: nMatch + ' games', b: nMatch ? 'Matchup cards below use lineup OSI vs SP hand.' : 'Matchups load after sheet sync.' }
-  ];
-  el.innerHTML = cards.map(function(c) {
-    return '<div class="daily-summary-card"><div class="ds-eyebrow">' + c.e + '</div><div class="ds-title">' + c.t + '</div><div class="ds-body">' + c.b + '</div></div>';
-  }).join('');
-}
-
-function stratConfidence(n) {
-  if (n >= 6) return { label: 'High', cls: 'conf-high' };
-  if (n >= 3) return { label: 'Med', cls: 'conf-med' };
-  return { label: 'Low', cls: 'conf-low' };
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      setOemMode(btn.getAttribute('data-oem-mode'));
-    });
-  });
-});
-
 function updateBrandPill() {
   var pill = document.getElementById('brandPill');
   if (!pill) return;
@@ -3418,6 +3282,148 @@ var STATE = {
   pitchScoreMode: 'sp',
   oemMode: 'daily',
 };
+/* ============================================================
+   OEM MODE TABS · DAILY SUMMARY · FRESHNESS · DECISION LABELS
+   ============================================================ */
+
+function parseFreshnessDate(raw) {
+  if (!raw) return null;
+  var d = new Date(String(raw).trim());
+  if (!isNaN(d.getTime())) return d;
+  return null;
+}
+
+function syncFreshnessIndicator(ts) {
+  var label = document.getElementById('freshnessLabel');
+  var dot = document.getElementById('freshnessDot');
+  var meta = document.getElementById('freshnessMeta');
+  var hu = document.getElementById('headerUpdated');
+  var text = ts || '—';
+  if (hu) hu.textContent = text;
+  if (label) label.textContent = text;
+  var d = parseFreshnessDate(ts);
+  var stale = false;
+  if (d) {
+    stale = (Date.now() - d.getTime()) / (1000 * 60 * 60) > 24;
+    text = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+      d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    if (label) label.textContent = text;
+  }
+  if (dot) {
+    dot.classList.toggle('stale', stale);
+    dot.classList.toggle('fresh', !stale);
+  }
+  if (meta) {
+    meta.textContent = stale ? 'Data may be stale (>24h) — re-run pipeline' : 'Fresh pipeline sync';
+  }
+  if (window.ChaseNav) {
+    ChaseNav.setLastUpdated(text);
+    ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
+  }
+}
+
+function stateReady() {
+  return typeof STATE !== 'undefined' && STATE;
+}
+
+function setOemMode(mode) {
+  if (!stateReady()) return;
+  mode = mode || STATE.oemMode || 'daily';
+  STATE.oemMode = mode;
+  document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
+    var on = btn.getAttribute('data-oem-mode') === mode;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('.oem-mode-pane').forEach(function(pane) {
+    pane.classList.toggle('active', pane.getAttribute('data-oem-pane') === mode);
+  });
+  if (typeof urlEncodeState === 'function') urlEncodeState();
+  if (mode === 'daily' && typeof renderDailySummary === 'function') renderDailySummary();
+}
+
+function metricDecision(key, d) {
+  if (!d) return '';
+  var v = d[key];
+  if (v === null || v === undefined || isNaN(v)) return '';
+  if (key === 'osi') {
+    if (v >= 75) return '<span class="metric-decision elite">Elite</span>';
+    if (v < 50) return '<span class="metric-decision fade">Weak</span>';
+    return '';
+  }
+  if (key === 'projOSI') {
+    var delta = (d.projOSI != null && d.osi != null) ? d.projOSI - d.osi : 0;
+    if (delta > 1.5) return '<span class="metric-decision buy">Up</span>';
+    if (delta < -1.5) return '<span class="metric-decision fade">Down</span>';
+    return '';
+  }
+  if (key === 'ppGap') {
+    if (v > 4) return '<span class="metric-decision buy">Buy</span>';
+    if (v < -4) return '<span class="metric-decision fade">Fade</span>';
+    return '';
+  }
+  if (key === 'dfGap') {
+    if (v > 8) return '<span class="metric-decision vol">Power</span>';
+    if (v < -4) return '<span class="metric-decision buy">Floor</span>';
+    return '';
+  }
+  if (key === 'obr') {
+    if (v >= 60) return '<span class="metric-decision buy">Traffic</span>';
+    if (v < 45) return '<span class="metric-decision fade">Thin</span>';
+    return '';
+  }
+  if (key === 'abq' || key === 'rcv') {
+    if (v >= 65) return '<span class="metric-decision elite">Strong</span>';
+    if (v < 45) return '<span class="metric-decision fade">Weak</span>';
+    return '';
+  }
+  return '';
+}
+
+function renderDailySummary() {
+  var el = document.getElementById('dailySummaryGrid');
+  if (!el) return;
+  var rows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B.slice() : [];
+  if (!rows.length) {
+    el.innerHTML = '<div class="daily-summary-card"><div class="ds-body">Loading summary…</div></div>';
+    return;
+  }
+  function top(sortFn, filterFn) {
+    var pool = rows.filter(filterFn || function() { return true; }).sort(sortFn);
+    return pool[0];
+  }
+  var buyLow = top(function(a, b) { return b.ppGap - a.ppGap; }, function(d) { return d.ppGap > 4; });
+  var fade = top(function(a, b) { return a.ppGap - b.ppGap; }, function(d) { return d.ppGap < -4 || d.trend === 'Cooling'; });
+  var power = top(function(a, b) { return b.dfGap - a.dfGap; }, function(d) { return d.dfGap > 8; });
+  var elite = top(function(a, b) { return b.osi - a.osi; }, function(d) { return d.osi >= 75; });
+  var nMatch = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? LIVE_DATA.matchups.length : 0;
+  var cards = [
+    { e: 'Top edge', t: buyLow ? buyLow.t + ' · Buy-low process' : '—', b: buyLow ? 'PP-Gap +' + buyLow.ppGap.toFixed(1) + ' — process ahead of box-score output.' : 'No buy-low standouts.' },
+    { e: 'Fade watch', t: fade ? fade.t + ' · ' + (fade.trend || 'Cooling') : '—', b: fade ? 'Production ahead of process or negative momentum.' : 'No major fade flags.' },
+    { e: 'Power skew', t: power ? power.t + ' · Power-Floor +' + power.dfGap.toFixed(1) : '—', b: 'Boom/bust run paths — team totals volatility.' },
+    { e: 'Elite anchor', t: elite ? elite.t + ' · OSI ' + elite.osi.toFixed(1) : '—', b: 'Stable offensive floor for ML / team-total backs.' },
+    { e: 'Slate', t: nMatch + ' games', b: nMatch ? 'Matchup cards below use lineup OSI vs SP hand.' : 'Matchups load after sheet sync.' }
+  ];
+  el.innerHTML = cards.map(function(c) {
+    return '<div class="daily-summary-card"><div class="ds-eyebrow">' + c.e + '</div><div class="ds-title">' + c.t + '</div><div class="ds-body">' + c.b + '</div></div>';
+  }).join('');
+}
+
+function stratConfidence(n) {
+  if (n >= 6) return { label: 'High', cls: 'conf-high' };
+  if (n >= 3) return { label: 'Med', cls: 'conf-med' };
+  return { label: 'Low', cls: 'conf-low' };
+}
+
+function bindOemModeTabs() {
+  document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
+    if (btn.dataset.oemBound) return;
+    btn.dataset.oemBound = '1';
+    btn.addEventListener('click', function() {
+      setOemMode(btn.getAttribute('data-oem-mode'));
+    });
+  });
+}
 
 /* URL state — bookmarkable views */
 function urlEncodeState() {
@@ -3430,7 +3436,7 @@ function urlEncodeState() {
     if(STATE.watchlist.length) p.set('pin', STATE.watchlist.join(','));
     if(STATE.searchQuery) p.set('q', STATE.searchQuery);
     if(STATE.quadrantMode !== 'reg') p.set('q2', STATE.quadrantMode);
-    if(STATE.oemMode && STATE.oemMode !== 'daily') p.set('mode', STATE.oemMode);
+    if(stateReady() && STATE.oemMode && STATE.oemMode !== 'daily') p.set('mode', STATE.oemMode);
     var s = p.toString();
     if(window.history && window.history.replaceState)
       window.history.replaceState(null, '', window.location.pathname + (s ? '?' + s : ''));
@@ -3446,7 +3452,7 @@ function urlDecodeState() {
     if(p.get('pin')) STATE.watchlist = p.get('pin').split(',').filter(Boolean);
     if(p.get('q')) STATE.searchQuery = p.get('q');
     if(p.get('q2')) STATE.quadrantMode = p.get('q2');
-    if(p.get('mode')) STATE.oemMode = p.get('mode');
+    if(p.get('mode') && stateReady()) STATE.oemMode = p.get('mode');
   } catch(e){}
 }
 
@@ -5069,7 +5075,8 @@ function hideLoadingScreen() {
 function init(){
   fetchLiveData();
   urlDecodeState();
-  if (STATE.oemMode && STATE.oemMode !== 'daily') setOemMode(STATE.oemMode);
+  bindOemModeTabs();
+  if (stateReady() && STATE.oemMode && STATE.oemMode !== 'daily') setOemMode(STATE.oemMode);
   var mg = document.getElementById('matchupsGrid');
   if (mg && !mg.dataset.lineupToggleBound) {
     mg.dataset.lineupToggleBound = '1';
