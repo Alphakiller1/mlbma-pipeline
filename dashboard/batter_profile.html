@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Analytics • Batter Profile</title>
+<style>
+:root {
+  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
+  --border: #28282f; --border-2: #34343d;
+  --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
+  --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
+  --purple-glow: rgba(192, 132, 252, 0.25);
+  --green-l: #86EFAC; --green: #4ADE80; --green-d: #16A34A;
+  --green-dim: rgba(74, 222, 128, 0.15);
+  --red-l: #FCA5A5; --red: #F87171; --red-d: #DC2626;
+  --red-dim: rgba(248, 113, 113, 0.15);
+  --gold-l: #FCD34D; --gold: #FBBF24; --gold-d: #B45309;
+  --gold-dim: rgba(251, 191, 36, 0.15);
+  --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
+  --blue-dim: rgba(96, 165, 250, 0.15);
+  --font: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", system-ui, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Monaco, Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  font-size: 14px; line-height: 1.5; min-height: 100vh;
+  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+}
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(192, 132, 252, 0.08), transparent),
+    var(--bg);
+}
+.container { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
+.loading {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 2000; gap: 16px;
+}
+.loading.hide { display: none; }
+.spinner {
+  width: 36px; height: 36px; border: 2px solid var(--border);
+  border-top-color: var(--purple); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--text-2); font-size: 13px; }
+.header { margin-bottom: 22px; }
+.brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.brand-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple);
+}
+.brand-pill {
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+  padding: 3px 8px; border-radius: 99px;
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+.brand-pill.warn {
+  background: var(--gold-dim); color: var(--gold);
+  border-color: rgba(251, 191, 36, 0.35);
+}
+h1 {
+  font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle { color: var(--text-2); font-size: 13px; max-width: 720px; }
+.nav-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.nav-link {
+  font-size: 11.5px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg-2);
+  transition: all 0.15s ease;
+}
+.nav-link:hover {
+  color: var(--text); border-color: var(--purple-3);
+  box-shadow: 0 0 12px var(--purple-glow);
+}
+.data-banner {
+  display: none; margin-top: 12px; padding: 10px 14px;
+  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 10px; font-size: 12px; color: var(--gold-l);
+}
+.data-banner.show { display: block; }
+.selector-bar {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
+}
+.selector-group { flex: 1; min-width: 160px; }
+.selector-group.wide { min-width: 220px; flex: 2; }
+.selector-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; display: block;
+}
+.selector-input, .selector-select {
+  width: 100%; background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text); padding: 10px 12px; border-radius: 8px;
+  font-size: 13px; font-family: var(--font);
+}
+.selector-input:focus, .selector-select:focus {
+  outline: none; border-color: var(--purple);
+  box-shadow: 0 0 0 2px var(--purple-glow);
+}
+.window-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.window-pill {
+  font-size: 11px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid var(--border-2); background: var(--bg-3); color: var(--text-2);
+  cursor: pointer; transition: all 0.15s;
+}
+.window-pill:hover { border-color: var(--purple-3); color: var(--text); }
+.window-pill.active {
+  background: rgba(139, 92, 246, 0.2); border-color: var(--purple);
+  color: var(--purple-2);
+}
+.player-header {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.player-name-lg { font-size: 24px; font-weight: 600; font-family: var(--mono); letter-spacing: -0.02em; }
+.team-badge {
+  font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px;
+  background: var(--bg-3); border: 1px solid var(--border-2); color: var(--purple-2);
+  font-family: var(--mono);
+}
+.pill {
+  display: inline-flex; align-items: center;
+  font-size: 9.5px; font-weight: 600; padding: 3px 8px;
+  border-radius: 99px; letter-spacing: 0.02em;
+}
+.pill-lineup {
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+}
+.pill-pos {
+  background: var(--bg-4); color: var(--text-2);
+  border: 1px solid var(--border-2);
+}
+.pill-bats-l { background: var(--gold-dim); color: var(--gold-l); border: 1px solid rgba(251,191,36,0.35); }
+.pill-bats-r { background: var(--blue-dim); color: var(--blue-l); border: 1px solid rgba(96,165,250,0.35); }
+.pill-bats-s { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(192,132,252,0.35); }
+.lineup-meta { font-size: 12px; color: var(--text-2); margin-top: 6px; width: 100%; }
+.section {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 22px; margin-bottom: 18px;
+}
+.section-eyebrow {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
+}
+.section-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.section-subtitle { font-size: 11.5px; color: var(--text-2); margin-bottom: 14px; }
+.stat-bar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 10px;
+}
+.stat-cell {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+}
+.stat-cell .s-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
+}
+.stat-cell .s-val { font-size: 18px; font-weight: 600; font-family: var(--mono); }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 900px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+.metric-card {
+  background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg-4) 100%);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.metric-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.metric-card.tier-elite::before { background: var(--green); }
+.metric-card.tier-good::before { background: var(--blue); }
+.metric-card.tier-mid::before { background: var(--gold); }
+.metric-card.tier-low::before { background: var(--red); }
+.metric-card .m-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
+}
+.metric-card .m-val {
+  font-size: 28px; font-weight: 600; font-family: var(--mono); margin-bottom: 4px;
+}
+.metric-card .m-pct {
+  font-size: 10px; color: var(--text-3); margin-bottom: 6px;
+}
+.metric-card .m-note { font-size: 11px; color: var(--text-2); line-height: 1.45; }
+.split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 700px) { .split-grid { grid-template-columns: 1fr; } }
+.split-panel {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.split-panel.flag-gold { border-color: rgba(251, 191, 36, 0.5); box-shadow: 0 0 0 1px var(--gold-dim); }
+.split-panel h4 {
+  font-size: 12px; font-weight: 600; color: var(--purple-2);
+  margin-bottom: 12px; letter-spacing: 0.04em;
+}
+.split-panel .dominant { font-size: 11px; color: var(--gold-l); margin-top: 10px; font-weight: 600; }
+.mini-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.mini-stat { text-align: center; }
+.mini-stat .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
+.mini-stat .ms-val { font-size: 15px; font-family: var(--mono); font-weight: 600; margin-top: 2px; }
+.table-wrap { overflow-x: auto; margin: 0 -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th {
+  padding: 9px 8px; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-3); border-bottom: 1px solid var(--border-2);
+  text-align: left; white-space: nowrap;
+}
+tbody td {
+  padding: 8px; border-bottom: 1px solid var(--border);
+  white-space: nowrap; vertical-align: middle;
+}
+tbody tr:hover { background: rgba(192, 132, 252, 0.05); }
+tbody tr.hot-row { background: rgba(74, 222, 128, 0.08); }
+tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
+.num { font-family: var(--mono); }
+.trend-up { color: var(--green); }
+.trend-down { color: var(--red-l); }
+.trend-flat { color: var(--text-3); }
+.insight-line {
+  margin-top: 12px; padding: 12px 14px;
+  background: var(--bg-3); border-left: 3px solid var(--purple);
+  border-radius: 0 10px 10px 0; font-size: 12.5px; color: var(--text-2);
+  line-height: 1.55;
+}
+.comparable-list { display: flex; flex-direction: column; gap: 10px; }
+.comp-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 14px; background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.comp-row a { color: var(--purple-2); text-decoration: none; font-weight: 600; }
+.comp-row a:hover { text-decoration: underline; }
+.betting-panel {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-3) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 12px; padding: 18px 20px;
+  font-size: 13.5px; line-height: 1.65; color: var(--text-2);
+}
+.betting-panel strong { color: var(--purple-2); }
+.empty-state { text-align: center; padding: 24px; color: var(--text-3); font-size: 13px; }
+#profileContent { display: none; }
+#profileContent.ready { display: block; }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets…</div>
+</div>
+
+<div class="container">
+  <header class="header">
+    <div class="brand-row">
+      <span class="brand-tag">Chase Analytics</span>
+      <span class="brand-pill" id="brandPill">Loading…</span>
+    </div>
+    <h1>Batter Profile</h1>
+    <p class="subtitle">Player deep dive — created metrics, platoon and location splits, window trends, and auto-generated betting context. Live from the MLBMA pipeline sheet.</p>
+    <nav class="nav-links">
+      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
+      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
+      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Team Profile</a>
+      <a class="nav-link" href="#playerSearch">Player Search</a>
+      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
+    </nav>
+    <div class="data-banner" id="dataBanner"></div>
+  </header>
+
+  <div class="selector-bar" id="playerSearch">
+    <div class="selector-group wide">
+      <label class="selector-label" for="playerSearchInput">Search player or team</label>
+      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, NYY, Soto…" autocomplete="off">
+      <datalist id="playerList"></datalist>
+    </div>
+    <div class="selector-group">
+      <label class="selector-label" for="teamFilter">Team</label>
+      <select class="selector-select" id="teamFilter">
+        <option value="">All teams</option>
+      </select>
+    </div>
+    <div class="selector-group">
+      <label class="selector-label" for="playerSelect">Roster</label>
+      <select class="selector-select" id="playerSelect">
+        <option value="">— Select batter —</option>
+      </select>
+    </div>
+    <div class="selector-group">
+      <label class="selector-label">Window</label>
+      <div class="window-pills" id="windowPills">
+        <button type="button" class="window-pill active" data-window="YTD">YTD</button>
+        <button type="button" class="window-pill" data-window="L30">L30</button>
+        <button type="button" class="window-pill" data-window="L14">L14</button>
+        <button type="button" class="window-pill" data-window="L7">L7</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="profileContent">
+    <div class="player-header" id="playerHeader"></div>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 1</div>
+      <div class="section-title">Player Header</div>
+      <div id="headerBlock"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 2</div>
+      <div class="section-title">Season Snapshot</div>
+      <div class="section-subtitle" id="snapshotSubtitle">Rate line for selected window</div>
+      <div class="stat-bar" id="seasonBar"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 3</div>
+      <div class="section-title">Created Metric Profile</div>
+      <div class="section-subtitle">ABQ / RCV / OBR / OSI — percentile vs qualified batter pool (season vs RHP baseline)</div>
+      <div class="metric-grid" id="metricCards"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 4</div>
+      <div class="section-title">Window Trend Table</div>
+      <div class="section-subtitle">Created metrics across windows — hot/cold if L7 is ±8+ vs YTD</div>
+      <div class="table-wrap" id="windowTableWrap"></div>
+      <div class="insight-line" id="windowInsight"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 5</div>
+      <div class="section-title">Handedness Splits</div>
+      <div class="section-subtitle">vs RHP and vs LHP — gold flag if ABQ platoon gap exceeds 8 points</div>
+      <div class="split-grid" id="handGrid"></div>
+      <div class="insight-line" id="handInsight"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 6</div>
+      <div class="section-title">Home / Away Splits</div>
+      <div class="section-subtitle">Location context — flagged if home/away OSI gap exceeds 10 points</div>
+      <div class="split-grid" id="locGrid"></div>
+      <div class="insight-line" id="locInsight"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 7</div>
+      <div class="section-title">vs SP / vs RP Splits</div>
+      <div class="section-subtitle">Starter vs reliever exposure — full-game value flag when OSI vs RP exceeds OSI vs SP by 10+</div>
+      <div class="split-grid" id="spRpGrid"></div>
+      <div class="insight-line" id="spRpInsight"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 8</div>
+      <div class="section-title">Comparable Players</div>
+      <div class="section-subtitle">Nearest ABQ/RCV archetype matches on the board</div>
+      <div class="comparable-list" id="comparableList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-eyebrow">Section 9</div>
+      <div class="section-title">Betting Context Panel</div>
+      <div class="section-subtitle">Synthesized angles from the strongest patterns in this profile</div>
+      <div class="betting-panel" id="bettingPanel"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+
+var DATA = {
+  loaded: false,
+  error: null,
+  profiles: [],
+  registry: [],
+  lineups: [],
+  matchups: [],
+  rawStats: {},
+  pool: { vs_RHP: [] }
+};
+
+var STATE = { playerKey: null, window: 'YTD' };
+
+var WINDOWS = ['YTD', 'L30', 'L14', 'L7'];
+var HOT_COLD_GAP = 8;
+var PLATOON_ABQ_GAP = 8;
+var LOC_OSI_GAP = 10;
+var SP_RP_OSI_GAP = 10;
+
+var METRIC_NOTES = {
+  ABQ: 'Plate discipline and contact quality — higher means tougher out.',
+  RCV: 'Damage and run-creation pressure — power and quality of contact.',
+  OBR: 'On-base engine — walks and expected on-base skill.',
+  OSI: 'Overall offensive strength — composite of ABQ, RCV, and OBR.'
+};
+
+var OPTIONAL_RAW_TABS = [
+  ['Batter_Splits_Overall', 'overall'],
+  ['Batter_Splits_Recent', 'recent'],
+  ['Batter_Splits_RHP', 'vs_RHP'],
+  ['Batter_Splits_LHP', 'vs_LHP'],
+  ['Batter_Splits_Home', 'home'],
+  ['Batter_Splits_Away', 'away']
+];
+
+function sheetCsvUrl(tabName) {
+  return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName);
+}
+
+function parseCSVLine(line) {
+  var out = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line.charAt(i);
+    if (c === '"') {
+      if (inQ && line.charAt(i + 1) === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseCSV(text) {
+  var lines = (text || '').replace(/^\ufeff/, '').trim().split(/\r?\n/);
+  if (!lines.length) return [];
+  var headers = parseCSVLine(lines[0]).map(function(h) {
+    return h.replace(/^"|"$/g, '').trim();
+  });
+  return lines.slice(1).filter(function(l) { return l.trim(); }).map(function(line) {
+    var vals = parseCSVLine(line);
+    var obj = {};
+    headers.forEach(function(h, i) {
+      obj[h] = (vals[i] || '').replace(/^"|"$/g, '').trim();
+    });
+    return obj;
+  });
+}
+
+function fetchSheetTab(tabName) {
+  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' })
+    .then(function(res) {
+      if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
+      return res.text();
+    })
+    .then(parseCSV);
+}
+
+function fetchSheetTabOptional(tabName) {
+  return fetchSheetTab(tabName).catch(function() { return []; });
+}
+
+function pickCol(row, names) {
+  for (var i = 0; i < names.length; i++) {
+    if (row[names[i]] !== undefined && row[names[i]] !== '') return row[names[i]];
+  }
+  var keys = Object.keys(row);
+  for (var j = 0; j < names.length; j++) {
+    var target = names[j].toLowerCase();
+    for (var k = 0; k < keys.length; k++) {
+      if (keys[k].toLowerCase() === target && row[keys[k]] !== '') return row[keys[k]];
+    }
+  }
+  return '';
+}
+
+function numOrNull(v) {
+  if (v === null || v === undefined || v === '' || v === '—') return null;
+  var n = parseFloat(String(v).replace(/%/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+function fmt(v, dec) {
+  if (v === null || v === undefined || v === '' || isNaN(v)) return '—';
+  dec = dec === undefined ? 1 : dec;
+  return Number(v).toFixed(dec);
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  var x = Number(v);
+  if (x <= 1.5 && x >= 0) x *= 100;
+  return fmt(x, 1) + '%';
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function normalizeName(n) {
+  return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+}
+
+function playerKey(row) {
+  var id = pickCol(row, ['player_id', 'playerId']);
+  if (id) return 'id:' + id;
+  return 'name:' + normalizeName(pickCol(row, ['player_name', 'playerName', 'Name']));
+}
+
+function playerDisplayName(key) {
+  var reg = getRegistry(key);
+  if (reg) return pickCol(reg, ['full_name', 'fullName']) || key.replace(/^name:|^id:/, '');
+  var row = DATA.profiles.find(function(p) { return playerKey(p) === key; });
+  return pickCol(row || {}, ['player_name']) || key;
+}
+
+function getRegistry(key) {
+  return DATA.registry.find(function(r) { return playerKey(r) === key; });
+}
+
+function getProfileRows(key) {
+  return DATA.profiles.filter(function(p) { return playerKey(p) === key; });
+}
+
+function getSplitRow(key, splitType) {
+  var rows = getProfileRows(key);
+  for (var i = 0; i < rows.length; i++) {
+    if (String(pickCol(rows[i], ['split_type', 'splitType'])).toLowerCase() === splitType.toLowerCase()) {
+      return rows[i];
+    }
+  }
+  return null;
+}
+
+function metricColor(score) {
+  if (score === null || isNaN(score)) return 'var(--text-3)';
+  if (score >= 75) return 'var(--green)';
+  if (score >= 60) return 'var(--blue-l)';
+  if (score >= 50) return 'var(--gold)';
+  return 'var(--red-l)';
+}
+
+function metricTierClass(score) {
+  if (score === null || isNaN(score)) return 'tier-mid';
+  if (score >= 75) return 'tier-elite';
+  if (score >= 60) return 'tier-good';
+  if (score >= 50) return 'tier-mid';
+  return 'tier-low';
+}
+
+function percentile(pool, value) {
+  if (value === null || isNaN(value)) return null;
+  var valid = pool.filter(function(x) { return x !== null && !isNaN(x); }).sort(function(a, b) { return a - b; });
+  if (!valid.length) return null;
+  var below = valid.filter(function(x) { return x <= value; }).length;
+  return Math.round(100 * below / valid.length);
+}
+
+function buildPool() {
+  DATA.pool.vs_RHP = DATA.profiles.filter(function(p) {
+    return String(pickCol(p, ['split_type'])).toLowerCase() === 'vs_rhp';
+  });
+}
+
+function indexRawStats() {
+  DATA.rawStats = {};
+  OPTIONAL_RAW_TABS.forEach(function(pair) {
+    var rows = DATA['_raw_' + pair[1]] || [];
+    rows.forEach(function(row) {
+      var name = pickCol(row, ['Name', 'player_name', 'full_name']);
+      if (!name) return;
+      var nk = normalizeName(name);
+      if (!DATA.rawStats[nk]) DATA.rawStats[nk] = {};
+      DATA.rawStats[nk][pair[1]] = row;
+    });
+  });
+}
+
+function getRawForPlayer(key, windowKey) {
+  var name = normalizeName(playerDisplayName(key));
+  var raw = DATA.rawStats[name] || {};
+  if (windowKey === 'YTD') return raw.overall || raw.vs_RHP || {};
+  if (windowKey === 'L7' || windowKey === 'L14' || windowKey === 'L30') return raw.recent || raw.overall || {};
+  return raw.overall || {};
+}
+
+function opsFromRow(row) {
+  var obp = numOrNull(pickCol(row, ['OBP']));
+  var slg = numOrNull(pickCol(row, ['SLG']));
+  if (obp === null || slg === null) return null;
+  return obp + slg;
+}
+
+function archetypeKey(rcv, obr) {
+  function tier(v) {
+    if (v === null || isNaN(v)) return 'Mid';
+    if (v >= 72) return 'High';
+    if (v >= 58) return 'Mid';
+    return 'Low';
+  }
+  return tier(rcv) + '/' + tier(obr);
+}
+
+function findLineupContext(key) {
+  var reg = getRegistry(key);
+  var team = String(pickCol(reg || {}, ['team_abbr', 'team'])).toUpperCase();
+  var pname = normalizeName(playerDisplayName(key));
+  var slot = null;
+  DATA.lineups.forEach(function(row) {
+    var player = normalizeName(pickCol(row, ['Player', 'player']));
+    var t = String(pickCol(row, ['Team', 'team'])).toUpperCase();
+    if (player === pname && (!team || t === team)) slot = row;
+  });
+  if (!slot) return null;
+
+  var side = String(pickCol(slot, ['Side', 'side'])).toUpperCase();
+  var order = pickCol(slot, ['Bat_Order', 'Bat Order', 'bat_order']);
+  var game = pickCol(slot, ['Game', 'game']);
+  var oppSp = 'TBD';
+  var oppHand = 'R';
+
+  DATA.matchups.forEach(function(g) {
+    var away = String(pickCol(g, ['Away', 'away'])).toUpperCase();
+    var home = String(pickCol(g, ['Home', 'home'])).toUpperCase();
+    if (side === 'AWAY' && away === team) {
+      oppSp = pickCol(g, ['Home_SP', 'Home SP', 'home_sp']) || oppSp;
+      oppHand = pickCol(g, ['Home_Hand', 'Home_SP_Hand', 'home_hand']) || oppHand;
+    }
+    if (side === 'HOME' && home === team) {
+      oppSp = pickCol(g, ['Away_SP', 'Away SP', 'away_sp']) || oppSp;
+      oppHand = pickCol(g, ['Away_Hand', 'Away_SP_Hand', 'away_hand']) || oppHand;
+    }
+    if (game && game.indexOf(away) >= 0 && game.indexOf(home) >= 0) {
+      if (away === team) {
+        oppSp = pickCol(g, ['Home_SP', 'Home SP']) || oppSp;
+        oppHand = pickCol(g, ['Home_Hand', 'Home_SP_Hand']) || 'R';
+      }
+      if (home === team) {
+        oppSp = pickCol(g, ['Away_SP', 'Away SP']) || oppSp;
+        oppHand = pickCol(g, ['Away_Hand', 'Away_SP_Hand']) || 'R';
+      }
+    }
+  });
+
+  return {
+    inLineup: true,
+    batOrder: order,
+    side: side,
+    oppSp: oppSp,
+    oppHand: String(oppHand).toUpperCase().charAt(0) || 'R',
+    game: game
+  };
+}
+
+function windowMetricEstimate(baseRow, window, trend) {
+  if (!baseRow) return { ABQ: null, RCV: null, OBR: null, OSI: null };
+  var osi = numOrNull(pickCol(baseRow, ['OSI']));
+  var abq = numOrNull(pickCol(baseRow, ['ABQ']));
+  var rcv = numOrNull(pickCol(baseRow, ['RCV']));
+  var obr = numOrNull(pickCol(baseRow, ['OBR']));
+  if (window === 'YTD') return { ABQ: abq, RCV: rcv, OBR: obr, OSI: osi };
+
+  var shift = 0;
+  if (trend === 'rising') {
+    if (window === 'L7') shift = 6;
+    else if (window === 'L14') shift = 4;
+    else if (window === 'L30') shift = 2;
+  } else if (trend === 'falling') {
+    if (window === 'L7') shift = -6;
+    else if (window === 'L14') shift = -4;
+    else if (window === 'L30') shift = -2;
+  }
+  return {
+    ABQ: abq !== null ? abq + shift * 0.6 : null,
+    RCV: rcv !== null ? rcv + shift * 0.7 : null,
+    OBR: obr !== null ? obr + shift * 0.5 : null,
+    OSI: osi !== null ? osi + shift : null
+  };
+}
+
+function statCell(label, val, color) {
+  var style = color ? ' style="color:' + color + '"' : '';
+  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val"' + style + '>' +
+    (typeof val === 'number' ? fmt(val, label === 'AVG' || label === 'OBP' || label === 'SLG' || label === 'wOBA' || label === 'xwOBA' || label === 'OPS' ? 3 : 1) : escHtml(val)) +
+    '</div></div>';
+}
+
+function renderHeader(key) {
+  var reg = getRegistry(key);
+  var name = playerDisplayName(key);
+  var team = pickCol(reg || {}, ['team_abbr', 'team']) || pickCol(getSplitRow(key, 'vs_RHP') || {}, ['team']);
+  var pos = pickCol(reg || {}, ['position_type', 'position']) || '—';
+  var bats = pickCol(reg || {}, ['bats']) || 'R';
+  var jersey = pickCol(reg || {}, ['jersey_number', 'jersey']) || '—';
+  var lineup = findLineupContext(key);
+
+  var batsCls = bats === 'L' ? 'pill-bats-l' : bats === 'S' ? 'pill-bats-s' : 'pill-bats-r';
+  var html = '<div class="player-name-lg">' + escHtml(name) + '</div>' +
+    '<span class="team-badge">' + escHtml(team) + '</span>' +
+    '<span class="pill pill-pos">' + escHtml(pos) + '</span>' +
+    '<span class="pill ' + batsCls + '">' + escHtml(bats) + 'HB</span>' +
+    '<span class="pill pill-pos">#' + escHtml(jersey) + '</span>';
+
+  if (lineup && lineup.inLineup) {
+    html += '<span class="pill pill-lineup">Today\'s Lineup</span>';
+    html += '<div class="lineup-meta">Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' +
+      escHtml(lineup.side) + ') — vs <strong>' + escHtml(lineup.oppSp) + '</strong> (' +
+      escHtml(lineup.oppHand) + 'HP)</div>';
+  }
+
+  document.getElementById('headerBlock').innerHTML = html;
+  document.getElementById('playerHeader').innerHTML = html;
+}
+
+function renderSeasonBar(key) {
+  var raw = getRawForPlayer(key, STATE.window);
+  var base = getSplitRow(key, 'vs_RHP') || getProfileRows(key)[0];
+  var sub = document.getElementById('snapshotSubtitle');
+  var hasRaw = raw && Object.keys(raw).length;
+  sub.textContent = hasRaw
+    ? 'Rate line for ' + STATE.window + ' (from split export tabs when published)'
+    : 'Rate line for ' + STATE.window + ' — metric scores from Batter_Profiles; publish Batter_Splits_* tabs for full rate stats';
+
+  var cells = [
+    statCell('wRC+', numOrNull(pickCol(raw, ['wRC+'])) || '—'),
+    statCell('OPS', opsFromRow(raw) !== null ? opsFromRow(raw) : '—'),
+    statCell('AVG', numOrNull(pickCol(raw, ['AVG'])) || '—'),
+    statCell('OBP', numOrNull(pickCol(raw, ['OBP'])) || '—'),
+    statCell('SLG', numOrNull(pickCol(raw, ['SLG'])) || '—'),
+    statCell('BB%', pickCol(raw, ['BB%']) ? fmtPct(numOrNull(pickCol(raw, ['BB%']))) : '—'),
+    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '—'),
+    statCell('wOBA', numOrNull(pickCol(raw, ['wOBA'])) || '—'),
+    statCell('xwOBA', numOrNull(pickCol(raw, ['xwOBA'])) || '—'),
+    statCell('Chase%', pickCol(raw, ['Chase%']) ? fmtPct(numOrNull(pickCol(raw, ['Chase%']))) : '—'),
+    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '—'),
+    statCell('PA', numOrNull(pickCol(raw, ['PA'])) || numOrNull(pickCol(base || {}, ['PA'])) || '—'),
+    statCell('OSI', numOrNull(pickCol(base || {}, ['OSI'])), metricColor(numOrNull(pickCol(base || {}, ['OSI']))))
+  ];
+  document.getElementById('seasonBar').innerHTML = cells.join('');
+}
+
+function renderMetricCards(key) {
+  var row = getSplitRow(key, 'vs_RHP') || getProfileRows(key)[0];
+  if (!row) {
+    document.getElementById('metricCards').innerHTML = '<div class="empty-state">No profile metrics in sheet.</div>';
+    return;
+  }
+  var pool = DATA.pool.vs_RHP;
+  var metrics = [
+    ['ABQ', 'ABQ'],
+    ['RCV', 'RCV'],
+    ['OBR', 'OBR'],
+    ['OSI', 'OSI']
+  ];
+  var html = '';
+  metrics.forEach(function(m) {
+    var val = numOrNull(pickCol(row, [m[1]]));
+    var pctPool = pool.map(function(p) { return numOrNull(pickCol(p, [m[1]])); });
+    var pct = percentile(pctPool, val);
+    html += '<div class="metric-card ' + metricTierClass(val) + '">' +
+      '<div class="m-label">' + m[0] + '</div>' +
+      '<div class="m-val" style="color:' + metricColor(val) + '">' + fmt(val, 1) + '</div>' +
+      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile' : '—') + '</div>' +
+      '<div class="m-note">' + METRIC_NOTES[m[0]] + '</div></div>';
+  });
+  document.getElementById('metricCards').innerHTML = html;
+}
+
+function renderWindowTable(key) {
+  var base = getSplitRow(key, 'vs_RHP') || getProfileRows(key)[0];
+  var trend = pickCol(base || {}, ['trend']) || 'stable';
+  var ytd = windowMetricEstimate(base, 'YTD', trend);
+  var rows = [];
+  var prevOsi = null;
+
+  WINDOWS.forEach(function(w) {
+    var m = windowMetricEstimate(base, w, trend);
+    var arrow = '—';
+    var arrowCls = 'trend-flat';
+    if (prevOsi !== null && m.OSI !== null) {
+      var d = m.OSI - prevOsi;
+      if (d > 1) { arrow = '▲'; arrowCls = 'trend-up'; }
+      else if (d < -1) { arrow = '▼'; arrowCls = 'trend-down'; }
+    }
+    prevOsi = m.OSI;
+    rows.push({ window: w, m: m, arrow: arrow, arrowCls: arrowCls });
+  });
+
+  var l7 = rows.find(function(r) { return r.window === 'L7'; });
+  var ytdRow = rows.find(function(r) { return r.window === 'YTD'; });
+  var hotCold = '';
+  if (l7 && ytdRow && l7.m.OSI !== null && ytdRow.m.OSI !== null) {
+    var gap = l7.m.OSI - ytdRow.m.OSI;
+    if (gap >= HOT_COLD_GAP) hotCold = 'hot';
+    else if (gap <= -HOT_COLD_GAP) hotCold = 'cold';
+  }
+
+  var tbody = rows.map(function(r) {
+    var trCls = r.window === 'L7' && hotCold === 'hot' ? 'hot-row' : r.window === 'L7' && hotCold === 'cold' ? 'cold-row' : '';
+    return '<tr class="' + trCls + '">' +
+      '<td><strong>' + r.window + '</strong></td>' +
+      '<td class="num">' + fmt(r.m.OSI, 1) + '</td>' +
+      '<td class="num">' + fmt(r.m.ABQ, 1) + '</td>' +
+      '<td class="num">' + fmt(r.m.RCV, 1) + '</td>' +
+      '<td class="num">' + fmt(r.m.OBR, 1) + '</td>' +
+      '<td class="' + r.arrowCls + '">' + r.arrow + '</td></tr>';
+  }).join('');
+
+  document.getElementById('windowTableWrap').innerHTML =
+    '<table><thead><tr><th>Window</th><th>OSI</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>Trend</th></tr></thead><tbody>' +
+    tbody + '</tbody></table>';
+
+  var insight = '';
+  if (hotCold === 'hot') insight = '<strong>Hot flag:</strong> L7 OSI is ' + fmt(l7.m.OSI - ytdRow.m.OSI, 1) + ' points above YTD — recent form elevated.';
+  else if (hotCold === 'cold') insight = '<strong>Cold flag:</strong> L7 OSI is ' + fmt(ytdRow.m.OSI - l7.m.OSI, 1) + ' points below YTD — recent slump.';
+  else insight = 'L7 within ±' + HOT_COLD_GAP + ' of YTD — no extreme hot/cold signal.';
+  if (!DATA.rawStats[normalizeName(playerDisplayName(key))] || !DATA.rawStats[normalizeName(playerDisplayName(key))].recent) {
+    insight += ' Window columns use season metrics adjusted by pipeline trend until Batter_Splits_Recent is published.';
+  }
+  document.getElementById('windowInsight').textContent = insight;
+}
+
+function splitPanelHtml(title, row, raw, extraCls) {
+  if (!row && (!raw || !Object.keys(raw).length)) {
+    return '<div class="split-panel"><h4>' + escHtml(title) + '</h4><div class="empty-state">No data</div></div>';
+  }
+  var abq = numOrNull(pickCol(row || {}, ['ABQ']));
+  var rcv = numOrNull(pickCol(row || {}, ['RCV']));
+  var obr = numOrNull(pickCol(row || {}, ['OBR']));
+  var osi = numOrNull(pickCol(row || {}, ['OSI']));
+  var wrc = numOrNull(pickCol(raw || {}, ['wRC+']));
+  var kk = numOrNull(pickCol(raw || {}, ['K%']));
+  var bb = numOrNull(pickCol(raw || {}, ['BB%']));
+  var chase = numOrNull(pickCol(raw || {}, ['Chase%']));
+  var barrel = numOrNull(pickCol(raw || {}, ['Barrel%']));
+
+  return '<div class="split-panel' + (extraCls || '') + '">' +
+    '<h4>' + escHtml(title) + '</h4>' +
+    '<div class="mini-grid">' +
+    mini('ABQ', abq) + mini('RCV', rcv) + mini('OBR', obr) +
+    '</div><div class="mini-grid" style="margin-top:8px;">' +
+    mini('OSI', osi) + mini('wRC+', wrc) + mini('K%', kk !== null ? fmtPct(kk) : '—') +
+    '</div><div class="mini-grid" style="margin-top:8px;">' +
+    mini('BB%', bb !== null ? fmtPct(bb) : '—') + mini('Chase%', chase !== null ? fmtPct(chase) : '—') +
+    mini('Barrel%', barrel !== null ? fmtPct(barrel) : '—') +
+    '</div></div>';
+}
+
+function mini(label, val) {
+  return '<div class="mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' +
+    (typeof val === 'string' ? val : fmt(val, 1)) + '</div></div>';
+}
+
+function renderHandSplits(key) {
+  var rhp = getSplitRow(key, 'vs_RHP');
+  var lhp = getSplitRow(key, 'vs_LHP');
+  var rawR = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).vs_RHP || {};
+  var rawL = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).vs_LHP || {};
+  var abqGap = (numOrNull(pickCol(rhp || {}, ['ABQ'])) !== null && numOrNull(pickCol(lhp || {}, ['ABQ'])) !== null)
+    ? Math.abs(numOrNull(pickCol(rhp, ['ABQ'])) - numOrNull(pickCol(lhp, ['ABQ']))) : 0;
+  var flagR = abqGap >= PLATOON_ABQ_GAP ? ' flag-gold' : '';
+  var flagL = flagR;
+
+  var dom = '';
+  if (rhp && lhp) {
+    var osiR = numOrNull(pickCol(rhp, ['OSI'])) || 0;
+    var osiL = numOrNull(pickCol(lhp, ['OSI'])) || 0;
+    dom = osiR >= osiL ? 'Dominant vs RHP' : 'Dominant vs LHP';
+  }
+
+  document.getElementById('handGrid').innerHTML =
+    splitPanelHtml('vs RHP', rhp, rawR, flagR) +
+    splitPanelHtml('vs LHP', lhp, rawL, flagL);
+
+  var ins = abqGap >= PLATOON_ABQ_GAP
+    ? 'Platoon alert: ABQ gap of ' + fmt(abqGap, 1) + ' points — significant handedness split.'
+    : 'Platoon gap manageable (ABQ delta ' + fmt(abqGap, 1) + ').';
+  if (dom) ins += ' ' + dom + '.';
+  document.getElementById('handInsight').textContent = ins;
+}
+
+function renderLocSplits(key) {
+  var home = getSplitRow(key, 'home');
+  var away = getSplitRow(key, 'away');
+  var rawH = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).home || {};
+  var rawA = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).away || {};
+  var osiH = numOrNull(pickCol(home || {}, ['OSI']));
+  var osiA = numOrNull(pickCol(away || {}, ['OSI']));
+  var gap = (osiH !== null && osiA !== null) ? Math.abs(osiH - osiA) : 0;
+  var flagH = gap >= LOC_OSI_GAP && osiH > osiA ? ' flag-gold' : '';
+  var flagA = gap >= LOC_OSI_GAP && osiA > osiH ? ' flag-gold' : '';
+
+  document.getElementById('locGrid').innerHTML =
+    splitPanelHtml('Home', home, rawH, flagH) +
+    splitPanelHtml('Away', away, rawA, flagA);
+
+  document.getElementById('locInsight').textContent = gap >= LOC_OSI_GAP
+    ? 'Location split: OSI gap of ' + fmt(gap, 1) + ' between home and away.'
+    : 'Home/away OSI gap ' + fmt(gap, 1) + ' — within normal range.';
+}
+
+function renderSpRpSplits(key) {
+  var sp = getSplitRow(key, 'vs_SP');
+  var rp = getSplitRow(key, 'vs_RP');
+  var html = '';
+  if (!sp && !rp) {
+    html = '<div class="split-panel" style="grid-column:1/-1;"><h4>vs SP / vs RP</h4>' +
+      '<p style="font-size:12px;color:var(--text-2);line-height:1.55;">' +
+      'Starter/reliever split rows are not in <strong>Batter_Profiles</strong> yet. ' +
+      'When pipeline adds <code>split_type</code> of <code>vs_SP</code> and <code>vs_RP</code>, this section will populate automatically. ' +
+      'Use handedness and PP_Gap (projOSI − OSI) for interim game-shape reads.</p></div>';
+    var base = getSplitRow(key, 'vs_RHP');
+    var pp = numOrNull(pickCol(base || {}, ['PP_Gap']));
+    document.getElementById('spRpInsight').textContent = pp !== null && pp > 3
+      ? 'Positive PP_Gap (' + fmt(pp, 1) + ') suggests underlying process may outperform recent box-score OSI.'
+      : 'Awaiting vs SP / vs RP exports from the pipeline.';
+  } else {
+    var osiSp = numOrNull(pickCol(sp || {}, ['OSI']));
+    var osiRp = numOrNull(pickCol(rp || {}, ['OSI']));
+    var flag = (osiSp !== null && osiRp !== null && osiRp - osiSp >= SP_RP_OSI_GAP) ? ' flag-gold' : '';
+    html = splitPanelHtml('vs SP', sp, {}) + splitPanelHtml('vs RP', rp, {}, flag);
+    document.getElementById('spRpInsight').textContent = (osiRp !== null && osiSp !== null && osiRp - osiSp >= SP_RP_OSI_GAP)
+      ? 'Full-game value signal: OSI vs RP ' + fmt(osiRp, 1) + ' vs OSI vs SP ' + fmt(osiSp, 1) + ' (+' + fmt(osiRp - osiSp, 1) + ').'
+      : 'No major SP vs RP OSI separation flagged.';
+  }
+  document.getElementById('spRpGrid').innerHTML = html;
+}
+
+function renderComparables(key) {
+  var row = getSplitRow(key, 'vs_RHP');
+  if (!row) {
+    document.getElementById('comparableList').innerHTML = '<div class="empty-state">Need vs RHP profile row.</div>';
+    return;
+  }
+  var abq = numOrNull(pickCol(row, ['ABQ']));
+  var rcv = numOrNull(pickCol(row, ['RCV']));
+  var arch = archetypeKey(rcv, numOrNull(pickCol(row, ['OBR'])));
+  var pool = DATA.pool.vs_RHP.filter(function(p) { return playerKey(p) !== key; });
+
+  var scored = pool.map(function(p) {
+    var pa = numOrNull(pickCol(p, ['ABQ']));
+    var pr = numOrNull(pickCol(p, ['RCV']));
+    var dist = Math.sqrt(Math.pow((pa || 50) - (abq || 50), 2) + Math.pow((pr || 50) - (rcv || 50), 2));
+    return {
+      key: playerKey(p),
+      name: pickCol(p, ['player_name']),
+      osi: numOrNull(pickCol(p, ['OSI'])),
+      arch: archetypeKey(pr, numOrNull(pickCol(p, ['OBR']))),
+      dist: dist
+    };
+  }).sort(function(a, b) { return a.dist - b.dist; });
+
+  var top = scored.slice(0, 3);
+  if (!top.length) {
+    document.getElementById('comparableList').innerHTML = '<div class="empty-state">No comparables in pool.</div>';
+    return;
+  }
+
+  document.getElementById('comparableList').innerHTML = top.map(function(c) {
+    return '<div class="comp-row"><div><a href="batter_profile.html?player=' +
+      encodeURIComponent(c.name) + '">' + escHtml(c.name) + '</a> · ' + escHtml(c.arch) + '</div>' +
+      '<div class="num" style="color:' + metricColor(c.osi) + '">OSI ' + fmt(c.osi, 1) + '</div></div>';
+  }).join('') + '<div class="insight-line" style="margin-top:10px;">Your archetype: <strong>' + arch + '</strong></div>';
+}
+
+function buildBettingSummary(key) {
+  var name = playerDisplayName(key);
+  var parts = [];
+  var rhp = getSplitRow(key, 'vs_RHP');
+  var lhp = getSplitRow(key, 'vs_LHP');
+  var home = getSplitRow(key, 'home');
+  var away = getSplitRow(key, 'away');
+  var base = rhp || getProfileRows(key)[0];
+  var trend = pickCol(base || {}, ['trend']) || 'stable';
+  var lineup = findLineupContext(key);
+
+  if (rhp) {
+    var osiR = numOrNull(pickCol(rhp, ['OSI']));
+    parts.push(name + ' profiles at <strong>OSI ' + fmt(osiR, 1) + ' vs RHP</strong>');
+  }
+  if (rhp && lhp) {
+    var abqGap = Math.abs(numOrNull(pickCol(rhp, ['ABQ'])) - numOrNull(pickCol(lhp, ['ABQ'])));
+    if (abqGap >= PLATOON_ABQ_GAP) {
+      var better = numOrNull(pickCol(rhp, ['OSI'])) >= numOrNull(pickCol(lhp, ['OSI'])) ? 'RHP' : 'LHP';
+      parts.push('<strong>' + fmt(abqGap, 1) + '-point platoon gap</strong> — lean vs ' + (better === 'LHP' ? 'southpaws' : 'righties'));
+    }
+  }
+  if (home && away) {
+    var g = Math.abs(numOrNull(pickCol(home, ['OSI'])) - numOrNull(pickCol(away, ['OSI'])));
+    if (g >= LOC_OSI_GAP) {
+      var loc = numOrNull(pickCol(home, ['OSI'])) > numOrNull(pickCol(away, ['OSI'])) ? 'home' : 'road';
+      parts.push('significant <strong>' + loc + ' park split</strong> (OSI gap ' + fmt(g, 1) + ')');
+    }
+  }
+  if (trend === 'rising') parts.push('currently <strong>trending up</strong> — recent OSI above season baseline');
+  if (trend === 'falling') parts.push('<strong>slumping</strong> — recent OSI below season baseline');
+  if (lineup && lineup.inLineup) {
+    parts.push('in <strong>today\'s lineup</strong> (' + lineup.batOrder + ') vs ' + lineup.oppSp + ' (' + lineup.oppHand + 'HP)');
+  }
+
+  if (!parts.length) return name + ' — profile loaded; no extreme flags. Review splits above for edges.';
+  return parts.join('. ') + '.';
+}
+
+function renderProfile(key) {
+  if (!key) return;
+  STATE.playerKey = key;
+  document.getElementById('profileContent').classList.add('ready');
+  renderHeader(key);
+  renderSeasonBar(key);
+  renderMetricCards(key);
+  renderWindowTable(key);
+  renderHandSplits(key);
+  renderLocSplits(key);
+  renderSpRpSplits(key);
+  renderComparables(key);
+  document.getElementById('bettingPanel').innerHTML = buildBettingSummary(key);
+}
+
+function populateSelectors() {
+  var batters = DATA.registry.filter(function(r) {
+    var pt = String(pickCol(r, ['position_type', 'positionType'])).toUpperCase();
+    return pt !== 'SP' && pt !== 'RP';
+  });
+  if (!batters.length) {
+    batters = DATA.profiles.map(function(p) {
+      return { full_name: pickCol(p, ['player_name']), team_abbr: pickCol(p, ['team']), player_id: '' };
+    });
+  }
+
+  var teams = {};
+  batters.forEach(function(b) {
+    var t = String(pickCol(b, ['team_abbr', 'team'])).toUpperCase();
+    if (t) teams[t] = true;
+  });
+
+  var teamSel = document.getElementById('teamFilter');
+  teamSel.innerHTML = '<option value="">All teams</option>';
+  Object.keys(teams).sort().forEach(function(t) {
+    var o = document.createElement('option');
+    o.value = t;
+    o.textContent = t;
+    teamSel.appendChild(o);
+  });
+
+  var datalist = document.getElementById('playerList');
+  datalist.innerHTML = '';
+  var playerSel = document.getElementById('playerSelect');
+  playerSel.innerHTML = '<option value="">— Select batter —</option>';
+
+  batters.sort(function(a, b) {
+    var ta = pickCol(a, ['team_abbr']);
+    var tb = pickCol(b, ['team_abbr']);
+    if (ta !== tb) return ta.localeCompare(tb);
+    return pickCol(a, ['full_name']).localeCompare(pickCol(b, ['full_name']));
+  }).forEach(function(b) {
+    var key = playerKey(b);
+    var name = pickCol(b, ['full_name']);
+    var team = pickCol(b, ['team_abbr', 'team']);
+    var o = document.createElement('option');
+    o.value = key;
+    o.textContent = team + ' — ' + name;
+    o.dataset.team = team;
+    playerSel.appendChild(o);
+
+    var d1 = document.createElement('option');
+    d1.value = name;
+    datalist.appendChild(d1);
+    var d2 = document.createElement('option');
+    d2.value = team;
+    datalist.appendChild(d2);
+  });
+}
+
+function refreshPlayerSelect() {
+  var team = document.getElementById('teamFilter').value;
+  var sel = document.getElementById('playerSelect');
+  Array.prototype.forEach.call(sel.options, function(o, idx) {
+    if (idx === 0) return;
+    var show = !team || o.dataset.team === team;
+    o.style.display = show ? '' : 'none';
+  });
+}
+
+function resolveSearchToKey(q) {
+  if (!q) return null;
+  if (q.indexOf('id:') === 0) return q;
+  var nq = normalizeName(q);
+  for (var i = 0; i < DATA.registry.length; i++) {
+    var r = DATA.registry[i];
+    var pt = String(pickCol(r, ['position_type'])).toUpperCase();
+    if (pt === 'SP' || pt === 'RP') continue;
+    var name = normalizeName(pickCol(r, ['full_name']));
+    var team = normalizeName(pickCol(r, ['team_abbr']));
+    if (name.indexOf(nq) >= 0 || team.indexOf(nq) >= 0 || nq.indexOf(name) >= 0) return playerKey(r);
+  }
+  for (var j = 0; j < DATA.profiles.length; j++) {
+    var p = DATA.profiles[j];
+    var name = normalizeName(pickCol(p, ['player_name']));
+    if (name.indexOf(nq) >= 0) return playerKey(p);
+  }
+  return null;
+}
+
+function bindUi() {
+  document.getElementById('playerSelect').addEventListener('change', function() {
+    if (this.value) renderProfile(this.value);
+  });
+  document.getElementById('teamFilter').addEventListener('change', refreshPlayerSelect);
+  document.getElementById('playerSearchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var key = resolveSearchToKey(this.value);
+      if (key) {
+        document.getElementById('playerSelect').value = key;
+        renderProfile(key);
+      }
+    }
+  });
+  document.getElementById('playerSearchInput').addEventListener('input', function() {
+    var key = resolveSearchToKey(this.value);
+    if (key) {
+      document.getElementById('playerSelect').value = key;
+      renderProfile(key);
+    }
+  });
+  document.querySelectorAll('.window-pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.window-pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      STATE.window = btn.getAttribute('data-window');
+      if (STATE.playerKey) renderProfile(STATE.playerKey);
+    });
+  });
+}
+
+function loadAll() {
+  var fetches = [
+    fetchSheetTab('Batter_Profiles'),
+    fetchSheetTab('Player_Registry'),
+    fetchSheetTab('Today_Lineups'),
+    fetchSheetTab('Today_Matchups')
+  ];
+  OPTIONAL_RAW_TABS.forEach(function(pair) {
+    fetches.push(fetchSheetTabOptional(pair[0]).then(function(rows) {
+      DATA['_raw_' + pair[1]] = rows;
+      return rows;
+    }));
+  });
+
+  return Promise.all(fetches).then(function(results) {
+    DATA.profiles = results[0] || [];
+    DATA.registry = results[1] || [];
+    DATA.lineups = results[2] || [];
+    DATA.matchups = results[3] || [];
+    DATA.loaded = true;
+    indexRawStats();
+    buildPool();
+    populateSelectors();
+    bindUi();
+
+    var pill = document.getElementById('brandPill');
+    if (pill) { pill.textContent = 'Live'; pill.classList.remove('warn'); }
+
+    if (!DATA.profiles.length) {
+      var banner = document.getElementById('dataBanner');
+      banner.textContent = 'Batter_Profiles is empty — run pipeline steps 14–17 after FanGraphs batter splits.';
+      banner.classList.add('show');
+      if (pill) { pill.textContent = 'No data'; pill.classList.add('warn'); }
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var startKey = null;
+    if (params.get('player_id')) startKey = 'id:' + params.get('player_id');
+    if (!startKey && params.get('player')) startKey = resolveSearchToKey(params.get('player'));
+    if (!startKey && DATA.registry.length) {
+      var first = DATA.registry.find(function(r) {
+        return String(pickCol(r, ['position_type'])).toUpperCase() !== 'SP' &&
+          String(pickCol(r, ['position_type'])).toUpperCase() !== 'RP';
+      });
+      if (first) startKey = playerKey(first);
+    }
+    if (!startKey && DATA.profiles.length) startKey = playerKey(DATA.profiles[0]);
+
+    if (startKey) {
+      document.getElementById('playerSelect').value = startKey;
+      if (params.get('player')) document.getElementById('playerSearchInput').value = params.get('player');
+      renderProfile(startKey);
+    }
+  }).catch(function(err) {
+    DATA.error = String(err);
+    var banner = document.getElementById('dataBanner');
+    banner.textContent = 'Could not load Google Sheets: ' + DATA.error;
+    banner.classList.add('show');
+    document.getElementById('brandPill').textContent = 'Load failed';
+    document.getElementById('brandPill').classList.add('warn');
+  }).finally(function() {
+    document.getElementById('loadingScreen').classList.add('hide');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadAll);
+</script>
+</body>
+</html>
