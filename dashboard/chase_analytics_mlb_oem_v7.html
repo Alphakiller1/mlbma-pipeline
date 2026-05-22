@@ -1078,6 +1078,105 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   .ca-brand-meta{text-align:left;}
 }
 
+/* Layer structure */
+.layer-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--purple); margin: 28px 0 12px;
+}
+.layer-main { margin-bottom: 8px; }
+.layer-advanced { margin-top: 8px; }
+.layer-glossary { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+/* At-a-glance cards — no raw metrics */
+.glance-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px;
+}
+@media (max-width: 1100px) { .glance-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .glance-grid { grid-template-columns: 1fr; } }
+.glance-card {
+  background: linear-gradient(165deg, var(--bg-2) 0%, var(--bg-3) 100%);
+  border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px;
+  position: relative; overflow: hidden;
+}
+.glance-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent, var(--purple));
+}
+.glance-card.gc-green { --accent: var(--green); }
+.glance-card.gc-blue { --accent: var(--blue); }
+.glance-card.gc-gold { --accent: var(--gold); }
+.glance-card.gc-red { --accent: var(--red); }
+.glance-eyebrow {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 10px;
+}
+.glance-team {
+  font-size: 26px; font-weight: 700; font-family: var(--mono);
+  letter-spacing: -0.02em; margin-bottom: 6px;
+}
+.glance-status {
+  font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px;
+}
+.glance-tier {
+  display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px;
+  border-radius: 6px; margin-bottom: 8px;
+}
+.glance-trend {
+  font-size: 13px; font-weight: 600; margin-right: 6px;
+}
+.glance-copy {
+  font-size: 11.5px; color: var(--text-2); line-height: 1.45; margin-top: 6px;
+}
+
+/* Status map */
+.status-map-wrap { position: relative; }
+.status-map-wrap .chart-wrap { min-height: 480px; }
+.quad-label-sm {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; fill: currentColor;
+}
+
+/* Simplified rankings */
+.rank-status-pill {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+}
+.rank-profile { font-size: 11px; color: var(--purple-2); font-weight: 500; }
+.rank-takeaway { font-size: 11px; color: var(--text-2); max-width: 280px; }
+.advanced-cols { display: none; }
+body.show-advanced-metrics .advanced-cols { display: table-cell; }
+body.show-advanced-metrics .status-only-cols { display: none; }
+
+.reading-steps {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px; margin-bottom: 18px;
+}
+.reading-step {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px; font-size: 12px; color: var(--text-2);
+}
+.reading-step strong { color: var(--text); display: block; margin-bottom: 4px; }
+.formula-block {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 12px;
+  font-family: var(--mono); font-size: 11px; color: var(--text-2); line-height: 1.6;
+}
+.formula-block strong { color: var(--purple-2); font-family: var(--font); font-size: 11px; }
+.tier-ref-table { width: 100%; font-size: 11px; margin-top: 8px; }
+.tier-ref-table th, .tier-ref-table td {
+  padding: 6px 10px; border-bottom: 1px solid var(--border); text-align: left;
+}
+.tier-ref-table th { color: var(--text-3); font-weight: 600; }
+
+.header-clean h1 { font-size: 24px; margin-bottom: 6px; }
+.header-clean .subtitle { max-width: 520px; }
+.header-meta {
+  font-size: 11px; color: var(--text-3); margin-top: 8px;
+}
+.header-meta span { color: var(--green); font-weight: 500; }
+
+#pane-reference { display: none; }
+
 </style>
 </head>
 <body>
@@ -1089,55 +1188,17 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
 
 <div class="container">
 
-<!-- Header -->
-<div class="header">
-  <div class="ca-brand-shell">
-    <div>
-      <div class="ca-brand-name">Chase <span>Analytics</span></div>
-      <div class="ca-brand-tagline">Data-driven offensive intelligence for daily MLB research.</div>
-    </div>
-    <div class="ca-brand-meta">MLB Offensive Extrapolation Model v4 · 2026</div>
-  </div>
+<!-- LAYER 1 — Main Dashboard -->
+<div class="layer-main" id="layerMain">
+<div class="header header-clean">
   <div class="brand-row">
-    <span class="brand-tag">Official Chase Analytics Tool</span>
+    <span class="brand-tag">Chase Analytics</span>
     <span class="brand-pill" id="brandPill">Loading…</span>
   </div>
-  <h1>Chase Analytics • MLB Offensive Extrapolation Model</h1>
-  <div class="subtitle">A cleaner daily view of MLB offense: choose a split, scan the league context, then use the table and chart for deeper team research.</div>
+  <h1>MLB Offensive Extrapolation Model</h1>
+  <div class="subtitle">Daily offensive intelligence — scan status and matchups first, drill into tools and definitions below when you need depth.</div>
+  <div class="header-meta">Last updated: <span id="headerUpdated">—</span></div>
   <div class="data-error-banner" id="dataErrorBanner"></div>
-</div>
-
-<!-- Welcome / Help -->
-<div class="section" id="welcomeSection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Quick Start</div>
-      <div class="section-title">Start simple, then go deeper</div>
-      <div class="section-subtitle">The opening view is meant for a fast read. Detailed definitions and walkthroughs now live in their own learning section below the main table.</div>
-      <div class="simple-help-row">
-        <button class="btn" onclick="document.getElementById('metricBreakdownSection').scrollIntoView({behavior:'smooth'});">📘 Metric Walkthroughs</button>
-        <button class="btn" onclick="document.getElementById('masterTable').scrollIntoView({behavior:'smooth'});">↧ Go to Table</button>
-      </div>
-    </div>
-  </div>
-  <div class="onboarding-grid">
-    <div class="education-card"><strong>1. Pick the view.</strong><br>Select the timeframe and pitcher-handedness split that match your research question.</div>
-    <div class="education-card"><strong>2. Read the league snapshot.</strong><br>Use the summary cards to see whether the current view is balanced, spread out, improving, or unstable.</div>
-    <div class="education-card"><strong>3. Choose one lens.</strong><br>Click one metric card at a time so the dashboard highlights the related column and sort direction.</div>
-    <div class="education-card"><strong>4. Use team detail last.</strong><br>Once the broad picture is clear, use the table, chart, compare mode, and matchup builder for specific teams.</div>
-  </div>
-</div>
-
-<!-- League-wide story -->
-<div class="section" id="leagueStorySection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">What the Data Is Telling Us</div>
-      <div class="section-title">Current league-wide offensive picture</div>
-      <div class="section-subtitle">A concise, team-neutral read of how the current view is behaving across the league.</div>
-    </div>
-  </div>
-  <div class="story-grid" id="leagueStoryGrid"></div>
 </div>
 
 <!-- Control bar -->
@@ -1146,18 +1207,6 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   <span class="wl-label">📌 Watchlist</span>
   <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
   <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
-</div>
-
-<!-- Concise metric signal summary -->
-<div class="section signal-summary-section" style="padding:16px 18px;margin-bottom:16px;">
-  <div class="section-header" style="margin-bottom:10px;">
-    <div>
-      <div class="section-eyebrow">League Signal Summary</div>
-      <div class="section-title">Concise metric context</div>
-      <div class="section-subtitle">Summarizes the current view by distribution, count, and signal type without repeating stat leaders.</div>
-    </div>
-  </div>
-  <div class="callout-grid" id="moversGrid"></div>
 </div>
 
 <div class="control-bar">
@@ -1181,7 +1230,7 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   <div class="control-group">
     <span class="control-label">Chart</span>
     <div class="toggle-group" id="quadrantToggle">
-      <button class="toggle-btn active" data-quad="reg">RCV vs Reg</button>
+      <button class="toggle-btn active" data-quad="status">Status Map</button>
       <button class="toggle-btn" data-quad="rcv-abq">RCV vs ABQ</button>
     </div>
   </div>
@@ -1204,33 +1253,22 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   ⚠️ <strong>L7 Note:</strong> Last 7 days is a momentum flag, not a standalone predictor. Treat as noisy. L7 LHP/RHP splits not available — showing Both only.
 </div>
 
-<!-- Metric cards -->
-<div class="metric-row" id="metricRow"></div>
+<!-- At-a-glance cards -->
+<div class="glance-grid" id="glanceGrid"></div>
 
-<!-- Executive summary -->
-<div class="section">
+<!-- Offensive Status Map -->
+<div class="section status-map-wrap">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Snapshot</div>
-      <div class="section-title" id="execTitle">Metric distribution summary</div>
-    </div>
-  </div>
-  <div class="exec-grid" id="execGrid"></div>
-</div>
-
-<!-- Main visual -->
-<div class="section">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Metric Map</div>
-      <div class="section-title" id="chartTitle">Run creation vs expected-quality pressure</div>
-      <div class="section-subtitle">Each dot = one team. Use this as a visual scan, then use the table for exact values.</div>
+      <div class="section-eyebrow">Offensive Status Map</div>
+      <div class="section-title" id="chartTitle">OSI vs process-production gap</div>
+      <div class="section-subtitle">Quadrant view — hover a team for status and takeaway. No formulas on this layer.</div>
     </div>
   </div>
   <div class="legend-row">
-    <span class="legend-dot"><span class="dot" style="background: var(--green);"></span> Elite &amp; Undervalued</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--gold);"></span> Strong But Cooling Risk</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--green);"></span> Elite &amp; Still Undervalued</span>
     <span class="legend-dot"><span class="dot" style="background: var(--blue);"></span> Buy-Low Offense</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--gold);"></span> Strong But Cooling</span>
     <span class="legend-dot"><span class="dot" style="background: var(--red);"></span> Weak &amp; Concerning</span>
   </div>
   <div class="chart-wrap">
@@ -1239,39 +1277,40 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   </div>
 </div>
 
-<!-- Master ranking table -->
+<!-- Rankings table -->
 <div class="section">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Master Rankings</div>
-      <div class="section-title" id="tableTitle">All 30 Teams — Click any header to sort</div>
-      <div class="section-subtitle">Sorted by <span id="sortLabel" style="color: var(--purple); font-weight: 600;">OSI</span> (desc)</div>
+      <div class="section-eyebrow">Rankings</div>
+      <div class="section-title" id="tableTitle">Offensive status by team</div>
+      <div class="section-subtitle">Sorted by <span id="sortLabel" style="color: var(--purple); font-weight: 600;">status priority</span> · click headers to sort</div>
     </div>
-    <button class="btn" onclick="resetSort()">↻ Reset</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn" id="toggleAdvancedBtn" onclick="toggleAdvancedMetrics()">Show ABQ / RCV / OBR</button>
+      <button class="btn" onclick="resetSort()">↻ Reset</button>
+    </div>
   </div>
   <div class="table-wrap sticky-team has-mobile-fallback">
     <table id="masterTable">
       <thead>
         <tr>
-          <th data-sort="rank" style="width:30px;">#</th>
+          <th data-sort="rank" class="status-only-cols" style="width:30px;">#</th>
           <th data-sort="t" style="width:50px;">Team</th>
-          <th data-sort="abq" title="At-Bat Quality: repeatable process from discipline, contact, chase, pitch pressure, and K avoidance.">ABQ <span class="info-dot">i</span> <span class="sort-ind"></span></th>
-          <th data-sort="rcv" title="Run Creation Value: offensive damage from wRC+, barrel rate, ISO, and hard-hit quality.">RCV <span class="info-dot">i</span> <span class="sort-ind"></span></th>
-          <th data-sort="obr" title="On-Base Reliability: offensive floor from OBP, walks, K avoidance, and contact.">OBR <span class="info-dot">i</span> <span class="sort-ind"></span></th>
-          <th data-sort="osi" class="sorted" title="Offensive Status Index: composite blend of RCV, ABQ, and OBR.">OSI <span class="info-dot">i</span> <span class="sort-ind">↓</span></th>
-          <th data-sort="projOSI" title="Projected OSI: OSI plus a capped regression adjustment from expected offensive quality.">Proj <span class="info-dot">i</span> <span class="sort-ind"></span></th>
-          <th data-sort="currentFormOSI" title="50% YTD + 25% L30 + 15% L14 + 10% L7 (L7 dampened by PA)">Form <span class="sort-ind"></span></th>
-          <th data-sort="velocity" title="Linear slope across YTD→L30→L14→L7">Vel <span class="sort-ind"></span></th>
-          <th data-sort="ppGap" title="Process-Production Gap: ABQ minus RCV; positive means process is ahead of production.">PP <span class="info-dot">i</span> <span class="sort-ind"></span></th>
-          <th data-sort="dfGap" title="Damage-Floor Gap: RCV minus OBR; higher values indicate more power-driven volatility.">DF <span class="info-dot">i</span> <span class="sort-ind"></span></th>
-          <th data-sort="sus" title="Sustainability Grade: how well the offensive profile is supported across process, floor, damage, and regression.">Sus <span class="info-dot">i</span></th>
-          <th data-sort="reg" title="Regression Signal: expected quality minus actual production direction.">Reg <span class="info-dot">i</span></th>
-          <th data-sort="rhpOSI">vRHP</th>
-          <th data-sort="lhpOSI">vLHP</th>
-          <th data-sort="splitEdge">Edge</th>
-          <th data-sort="trend" title="Trend label: directional change across recent timeframes.">Trend <span class="info-dot">i</span></th>
-          <th>Tier</th>
-          <th>Takeaway</th>
+          <th data-sort="statusLabel" class="status-only-cols">Status</th>
+          <th data-sort="osi" class="status-only-cols sorted">Tier <span class="sort-ind">↓</span></th>
+          <th data-sort="trend" class="status-only-cols">Trend</th>
+          <th data-sort="profileLabel" class="status-only-cols">Profile</th>
+          <th class="status-only-cols">Takeaway</th>
+          <th data-sort="abq" class="advanced-cols">ABQ <span class="sort-ind"></span></th>
+          <th data-sort="rcv" class="advanced-cols">RCV <span class="sort-ind"></span></th>
+          <th data-sort="obr" class="advanced-cols">OBR <span class="sort-ind"></span></th>
+          <th data-sort="osi" class="advanced-cols">OSI <span class="sort-ind"></span></th>
+          <th data-sort="projOSI" class="advanced-cols">Proj <span class="sort-ind"></span></th>
+          <th data-sort="ppGap" class="advanced-cols">PP-Gap <span class="sort-ind"></span></th>
+          <th data-sort="dfGap" class="advanced-cols">DF-Gap <span class="sort-ind"></span></th>
+          <th data-sort="trend" class="advanced-cols">Trend</th>
+          <th data-sort="rhpOSI" class="advanced-cols">vRHP</th>
+          <th data-sort="lhpOSI" class="advanced-cols">vLHP</th>
         </tr>
       </thead>
       <tbody id="masterBody"></tbody>
@@ -1280,64 +1319,23 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   <div class="mobile-cards" id="mobileCards"></div>
 </div>
 
+</div><!-- /layer-main -->
 
-<!-- Metric Breakdowns & Walkthroughs -->
-<div class="section learning-section" id="metricBreakdownSection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Metric Breakdowns &amp; Walkthroughs</div>
-      <div class="section-title">Learn the model without crowding the opening page</div>
-      <div class="section-subtitle">Use this section when you want definitions, reading steps, and plain-English interpretation. The main dashboard stays focused on fast scanning.</div>
-    </div>
-    <button class="btn" onclick="openModal(STATE && STATE.activeMetric ? STATE.activeMetric : 'osi')">Open detailed metric table</button>
-  </div>
-  <div class="metric-section-note">
-    <strong>Recommended reading order:</strong> OSI tells you the overall offensive profile. ABQ explains the quality of the at-bats. RCV explains damage and scoring pressure. OBR explains the floor. The gap metrics explain whether the profile looks stable, overextended, or due for a change.
-  </div>
-  <div class="walkthrough-grid">
-    <div class="walkthrough-card"><div class="step-label">01</div><strong>Start with OSI.</strong><br>Use OSI as the broad offensive score. It combines damage, process, and floor so you can quickly see the overall shape of a lineup.</div>
-    <div class="walkthrough-card"><div class="step-label">02</div><strong>Check the three ingredients.</strong><br>ABQ shows whether the at-bats are strong. RCV shows whether contact is turning into scoring damage. OBR shows whether the lineup has a reliable base.</div>
-    <div class="walkthrough-card"><div class="step-label">03</div><strong>Use the gap metrics.</strong><br>PP-Gap compares process to production. DF-Gap compares damage to floor. These help separate stable profiles from volatile ones.</div>
-    <div class="walkthrough-card"><div class="step-label">04</div><strong>Confirm with context.</strong><br>Regression, trend, sample size, handedness split, park, pitcher quality, weather, and lineup news should all be checked before using the signal.</div>
-  </div>
-  <div class="section-header" style="margin-top:6px;">
-    <div>
-      <div class="section-eyebrow">Glossary</div>
-      <div class="section-title">Plain-language metric definitions</div>
-      <div class="section-subtitle">Search any term below. These definitions intentionally avoid formula-heavy language.</div>
-    </div>
-  </div>
-  <div class="glossary-tools">
-    <input id="glossarySearch" class="glossary-search" placeholder="Search glossary: OSI, regression, PP-Gap, trend..." oninput="filterGlossary()">
-    <span class="filter-help">Tip: hover info icons throughout the dashboard for one-sentence definitions.</span>
-  </div>
-  <div class="glossary-grid" id="glossaryGrid">
-    <div class="education-card glossary-term" data-term="abq at bat quality process discipline contact chase zone"><div class="term">ABQ <span class="info-dot" title="At-Bat Quality measures the repeatable process of an offense.">i</span></div>At-Bat Quality. A process score: 30% Discipline (BB%×0.55 + Chase%_inv×0.45) + 35% Contact Quality (ZCon%×0.55 + OCon%×0.45) + 20% Pitch Pressure (SwStr%_inv) + 15% K Avoidance. Pure process — no results.</div>
-    <div class="education-card glossary-term" data-term="rcv run creation value damage barrel iso hard hit wrc park"><div class="term">RCV <span class="info-dot" title="Run Creation Value measures offensive damage.">i</span></div>Run Creation Value. Park-adjusted damage: 35% wRC+ + 32% Barrel%÷park + 20% ISO÷park + 13% HardHit%÷park. All inputs divided by park factor before normalization.</div>
-    <div class="education-card glossary-term" data-term="obr on base reliability floor xwoba walk expected"><div class="term">OBR <span class="info-dot" title="On-Base Reliability measures the offensive floor.">i</span></div>On-Base Reliability. Pure floor: 65% xwOBA + 35% BB%. Uses expected wOBA instead of actual to strip luck from the floor calculation.</div>
-    <div class="education-card glossary-term" data-term="osi offensive status index composite"><div class="term">OSI <span class="info-dot" title="OSI combines damage, process, and floor into one composite score.">i</span></div>Offensive Status Index. Final composite: 43% RCV + 37% ABQ + 20% OBR. All three sub-scores min-max normalized within the 30-team sample before blending.</div>
-    <div class="education-card glossary-term" data-term="oor opponent offensive rating hvr hvl hvp handedness"><div class="term">OOR <span class="info-dot" title="Opponent Offensive Rating measures the offensive threat a pitcher faces.">i</span></div>Opponent Offensive Rating. Measures the offensive quality a pitcher faces by handedness. HvR = opposing lineup's OSI vs RHP. HvL = vs LHP. HvP = composite (55% HvR + 45% HvL). Ranks show how tough each team's lineup is to face.</div>
-    <div class="education-card glossary-term" data-term="pals pitching adjusted lineup score schedule ptf"><div class="term">PALS <span class="info-dot" title="Pitching-Adjusted Lineup Score: OSI blended with normalized opposing SP xFIP faced.">i</span></div>Pitching-Adjusted Lineup Score. OSI adjusted for the quality of starting pitching the lineup has faced (BA++ and inverted xFIP schedule as PTF+). See the PALS table below for live rankings.</div>
-    <div class="education-card glossary-term" data-term="pp gap process production abq rcv buy low sell high"><div class="term">Process-Production Gap</div>ABQ minus RCV. Positive values suggest process is ahead of production; negative values suggest production is ahead of process.</div>
-    <div class="education-card glossary-term" data-term="df gap damage floor rcv obr volatility"><div class="term">Damage-Floor Gap</div>RCV minus OBR. Higher values indicate more power/variance; lower values indicate a steadier on-base or contact profile.</div>
-    <div class="education-card glossary-term" data-term="projected osi regression adjusted xwoba"><div class="term">Projected OSI</div>OSI + clip((xwOBA−wOBA)×450, −8, +8). Positive reg signal = team underperforming expected output (upside). Negative = regression likely. Capped at ±8 points.</div>
-    <div class="education-card glossary-term" data-term="regression signal xwoba woba positive negative"><div class="term">Regression Signal</div>The gap between expected and actual offensive quality. Positive values imply better underlying contact than results; negative values imply results may be ahead of quality.</div>
-    <div class="education-card glossary-term" data-term="sustainability grade stable repeatable balanced"><div class="term">Sustainability Grade</div>A stability label that checks whether OSI is supported by process, floor, damage, and regression context.</div>
-    <div class="education-card glossary-term" data-term="trend labels rising cooling volatile stable"><div class="term">Trend Labels</div>Directional labels comparing longer-term baseline to recent form. They are context flags, not standalone predictions.</div>
-    <div class="education-card glossary-term" data-term="platoon edge split rhp lhp handedness"><div class="term">Platoon Edge</div>The difference between a lineup’s OSI against right-handed and left-handed pitching.</div>
-    <div class="education-card glossary-term" data-term="current form osi ytd l30 l14 l7"><div class="term">Current Form OSI</div>A blended recent-form score using YTD, L30, L14, and L7 data with short-window sample-size dampening.</div>
-  </div>
+<!-- LAYER 2 — Advanced Tools -->
+<div class="layer-label">Advanced Tools</div>
+<div class="layer-advanced" id="layerAdvanced">
 
-</div>
+<!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
+<div id="metricBreakdownSection" style="display:none;"></div>
 
-<!-- Secondary sections (tabs) -->
 <div class="section">
   <div class="subtabs">
-    <button class="subtab active" data-pane="splits">Split Rankings</button>
-    <button class="subtab" data-pane="trends">Trend Heatmap</button>
-    <button class="subtab" data-pane="compare">Compare ⚖</button>
+    <button class="subtab active" data-pane="splits">Splits</button>
+    <button class="subtab" data-pane="trends">Trends</button>
+    <button class="subtab" data-pane="compare">Compare</button>
     <button class="subtab" data-pane="matchup">Matchup Builder</button>
-    <button class="subtab" data-pane="strat">Strategic Recs</button>
+    <button class="subtab" data-pane="strat">Strategic Signals</button>
+    <button class="subtab" data-pane="reference">Reference Tables</button>
   </div>
 
   <!-- Splits pane -->
@@ -1436,25 +1434,102 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
     <div class="matchup-grid" id="matchupOutput"></div>
   </div>
 
-  <!-- Strategic pane -->
+  <!-- Strategic Signals pane -->
   <div id="pane-strat" style="display:none;">
     <div class="section-header">
       <div>
-        <div class="section-eyebrow">Strategic Recommendations</div>
-        <div class="section-title">Actionable categories from v3 model signals</div>
-        <div class="section-subtitle">YTD baseline · cross-referenced with L30/L14 trends, sustainability, and PP/DF gaps</div>
+        <div class="section-eyebrow">Strategic Signals</div>
+        <div class="section-title">Teams grouped by actionable profile</div>
+        <div class="section-subtitle">Elite confirmed · Buy-low · Cooling risk · Volatile power · Process-forward · Weak unsupported · Platoon sensitive</div>
       </div>
     </div>
     <div id="strats"></div>
   </div>
+
+  <!-- Reference: OOR / Pitching / PALS / Matchups -->
+  <div id="pane-reference" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Live Sheet Data</div>
+        <div class="section-title">OOR · Pitching Score · PALS · Today&apos;s Matchups</div>
+        <div class="section-subtitle">Pulled from the same Google Sheet as the main model</div>
+      </div>
+    </div>
+    <div id="referenceTablesMount"></div>
+  </div>
 </div>
 
-<div class="method-note">
-  <strong>Advanced formula note:</strong> The model separates offensive evaluation into process (ABQ), damage (RCV), floor (OBR), composite quality (OSI), opponent context (OOR), and pitching-adjusted score (PALS). Formula-level detail is intentionally placed here instead of the opening page so the dashboard remains easy to scan.
-  <br><br>
-  <strong>Core weights (v4):</strong> ABQ = 30% Discipline (BB%×0.55 + Chase%_inv×0.45) + 35% Contact Quality (ZCon%×0.55 + OCon%×0.45) + 20% Pitch Pressure (SwStr%_inv) + 15% K Avoidance. RCV = 35% wRC+ + 32% Barrel%÷park + 20% ISO÷park + 13% HardHit%÷park. OBR = 65% xwOBA + 35% BB%. OSI = 43% RCV + 37% ABQ + 20% OBR. projOSI = OSI + clip((xwOBA−wOBA)×450, −8, +8). OOR = 55% HvR + 45% HvL. PALS = schedule-adjusted composite — coming soon.
-</div>
+</div><!-- /layer-advanced -->
 
+<!-- LAYER 3 — Glossary & Methodology -->
+<div class="layer-label">Metric Breakdown &amp; Glossary</div>
+<div class="section learning-section layer-glossary" id="glossaryLayer">
+  <div class="section-header">
+    <div>
+      <div class="section-title">How to read the model</div>
+      <div class="section-subtitle">All formulas and methodology live here — not on the main dashboard.</div>
+    </div>
+    <button class="btn" onclick="openModal('osi')">Full metric breakdown</button>
+  </div>
+  <div class="reading-steps">
+    <div class="reading-step"><strong>1. Status map</strong>Scan quadrants for undervalued vs cooling offenses without reading raw stats.</div>
+    <div class="reading-step"><strong>2. OSI + PALS</strong>Pair composite strength with schedule-adjusted confirmation before betting offense.</div>
+    <div class="reading-step"><strong>3. Archetype profile</strong>Read ABQ/RCV shape as a profile label — not isolated numbers.</div>
+    <div class="reading-step"><strong>4. PP-Gap + projOSI</strong>Use process gap with projected OSI for market lean (buy-low / fade).</div>
+    <div class="reading-step"><strong>5. Context</strong>Confirm trend, platoon, pitcher hand, and sample size in Advanced Tools.</div>
+  </div>
+  <div class="section-header" style="margin-top:8px;">
+    <div class="section-title" style="font-size:14px;">Core metrics (plain English)</div>
+  </div>
+  <div class="glossary-grid" id="glossaryGridPlain">
+    <div class="education-card glossary-term" data-term="abq process discipline contact"><div class="term">ABQ</div>At-bat quality — how good the process looks before results. Discipline, contact, chase, and swing decisions.</div>
+    <div class="education-card glossary-term" data-term="rcv damage power barrel"><div class="term">RCV</div>Run creation value — how much damage and scoring pressure the offense generates.</div>
+    <div class="education-card glossary-term" data-term="obr floor on base xwoba"><div class="term">OBR</div>On-base rating — the offensive floor from expected quality and walk environment.</div>
+    <div class="education-card glossary-term" data-term="osi composite offensive"><div class="term">OSI</div>Offensive strength index — the headline composite blending damage, process, and floor.</div>
+    <div class="education-card glossary-term" data-term="projosi projected regression market"><div class="term">projOSI</div>Projected OSI — where the model expects results to move based on expected vs actual contact.</div>
+    <div class="education-card glossary-term" data-term="pals pitching adjusted schedule"><div class="term">PALS</div>Pitching-adjusted lineup score — OSI adjusted for the quality of starting pitching faced.</div>
+    <div class="education-card glossary-term" data-term="oor opponent hvr hvl"><div class="term">OOR</div>Opponent offensive rating — how dangerous the offenses a staff has faced are, by handedness.</div>
+    <div class="education-card glossary-term" data-term="pp gap process production"><div class="term">PP-Gap</div>Process-production gap — ABQ minus RCV. Positive = process ahead of box-score production.</div>
+  </div>
+  <div class="section-header" style="margin-top:18px;">
+    <div class="section-title" style="font-size:14px;">Numerical interpretation</div>
+  </div>
+  <table class="tier-ref-table">
+    <thead><tr><th>OSI tier</th><th>Range</th><th>Read</th></tr></thead>
+    <tbody>
+      <tr><td>Elite</td><td>85+</td><td>Complete offensive weapon</td></tr>
+      <tr><td>High Level</td><td>75–84</td><td>Reliable top-tier unit</td></tr>
+      <tr><td>Dangerous</td><td>65–74</td><td>Can run hot in stretches</td></tr>
+      <tr><td>Inconsistent</td><td>50–64</td><td>Middle tier, matchup-dependent</td></tr>
+      <tr><td>Weak</td><td>&lt;50</td><td>Limited paths to runs</td></tr>
+    </tbody>
+  </table>
+  <table class="tier-ref-table" style="margin-top:12px;">
+    <thead><tr><th>Signal</th><th>Typical range</th><th>Read</th></tr></thead>
+    <tbody>
+      <tr><td>PP-Gap</td><td>+4 or more</td><td>Buy-low / process edge</td></tr>
+      <tr><td>PP-Gap</td><td>−4 or less</td><td>Regression / cooling risk</td></tr>
+      <tr><td>DF-Gap</td><td>+8 or more</td><td>Power-heavy volatility</td></tr>
+    </tbody>
+  </table>
+  <div class="section-header" style="margin-top:18px;">
+    <div class="section-title" style="font-size:14px;">Formula &amp; methodology (v4)</div>
+  </div>
+  <div class="formula-block"><strong>ABQ</strong> = 30% Discipline (BB%×0.55 + Chase%_inv×0.45) + 35% Contact (ZCon%×0.55 + OCon%×0.45) + 20% Pitch Pressure (SwStr%_inv) + 15% K Avoidance</div>
+  <div class="formula-block"><strong>RCV</strong> = 35% wRC+ + 32% Barrel%÷park + 20% ISO÷park + 13% HardHit%÷park</div>
+  <div class="formula-block"><strong>OBR</strong> = 65% xwOBA + 35% BB%</div>
+  <div class="formula-block"><strong>OSI</strong> = 43% RCV + 37% ABQ + 20% OBR · <strong>projOSI</strong> = OSI + clip((xwOBA−wOBA)×450, −8, +8)</div>
+  <div class="formula-block"><strong>OOR</strong> = 55% HvR + 45% HvL · <strong>PALS</strong> = (BA+ + PTF+) / 2</div>
+  <div class="glossary-tools" style="margin-top:16px;">
+    <input id="glossarySearch" class="glossary-search" placeholder="Search glossary…" oninput="filterGlossary()">
+  </div>
+  <div class="glossary-grid" id="glossaryGrid" style="margin-top:12px;">
+    <div class="education-card glossary-term" data-term="regression signal xwoba woba"><div class="term">Regression Signal</div>Expected contact quality minus actual production direction.</div>
+    <div class="education-card glossary-term" data-term="sustainability grade"><div class="term">Sustainability</div>How well OSI is supported across process, floor, damage, and regression.</div>
+    <div class="education-card glossary-term" data-term="trend rising cooling"><div class="term">Trend</div>Directional change across YTD → L30 → L14 → L7 windows.</div>
+    <div class="education-card glossary-term" data-term="platoon edge split"><div class="term">Platoon Edge</div>Difference in offensive quality vs RHP vs LHP.</div>
+    <div class="education-card glossary-term" data-term="df gap damage floor"><div class="term">DF-Gap</div>RCV minus OBR — power vs floor separation.</div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -1544,7 +1619,9 @@ function fetchLiveData() {
         LIVE_DATA.lastUpdated = parseLastUpdatedFromText(r.data);
         if (LIVE_DATA.lastUpdated) {
           var el = document.getElementById('brandPill');
-          if (el) el.textContent = 'Updated: ' + LIVE_DATA.lastUpdated;
+          if (el) el.textContent = 'Live';
+          var hu = document.getElementById('headerUpdated');
+          if (hu) hu.textContent = LIVE_DATA.lastUpdated;
         }
       }
     });
@@ -1741,6 +1818,7 @@ function applyLiveCache(cache) {
   LIVE_DATA.error = null;
   YTD = cache.ytd || buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
   applyLiveData();
+  attachPalsToScores();
 }
 
 function getPaWeights(team) {
@@ -2218,7 +2296,9 @@ function updateBrandPill() {
   var pill = document.getElementById('brandPill');
   if (!pill) return;
   if (LIVE_DATA.loaded && LIVE_DATA.lastUpdated) {
-    pill.textContent = 'Last updated: ' + LIVE_DATA.lastUpdated;
+    pill.textContent = 'Live';
+    var hu = document.getElementById('headerUpdated');
+    if (hu) hu.textContent = LIVE_DATA.lastUpdated;
     pill.style.background = 'var(--green-dim)';
     pill.style.color = 'var(--green)';
     pill.style.borderColor = 'rgba(74, 222, 128, 0.35)';
@@ -2665,6 +2745,7 @@ SCO_YTD_B.forEach(function(d){
 
 SCO_YTD_R.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'r');});
 SCO_YTD_L.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'l');});
+  attachPalsToScores();
 }
 
 function recomputeAllScores() {
@@ -2740,11 +2821,66 @@ function trendCol(t){
 }
 
 function qcol(d){
-  var hi = d.rcv > 50, pos = d.reg && d.reg>0;
-  if(hi && pos) return '#4ADE80';
-  if(hi && !pos) return '#FBBF24';
-  if(!hi && pos) return '#60A5FA';
+  var hiOsi = (d.osi || 0) >= 50;
+  var hiPp = (d.ppGap || 0) > 0;
+  if(hiOsi && hiPp) return '#4ADE80';
+  if(!hiOsi && hiPp) return '#60A5FA';
+  if(hiOsi && !hiPp) return '#FBBF24';
   return '#F87171';
+}
+
+function statusLabel(d){
+  var ti = tier(d.osi);
+  if(d.ppGap > 4 && d.pals != null && Math.abs((d.osi||0) - d.pals) < 4) return 'Undervalued';
+  if(d.ppGap < -4) return 'Regression Risk';
+  if(ti.l === 'Elite' || ti.l === 'High Level') return 'Strong';
+  if(ti.l === 'Weak') return 'Weak';
+  return 'Mixed';
+}
+
+function profileLabel(d){
+  var r = d.rcv >= 58 ? 'High' : (d.rcv < 42 ? 'Low' : 'Mid');
+  var o = d.obr >= 58 ? 'High' : (d.obr < 42 ? 'Low' : 'Mid');
+  var map = {
+    'High/High':'Elite Engine','High/Mid':'Power Leverage','High/Low':'Boom-or-Bust',
+    'Mid/High':'Table Setter+','Mid/Mid':'Balanced','Mid/Low':'Contact Floor',
+    'Low/High':'OBP First','Low/Mid':'Glove Line','Low/Low':'Cold Profile'
+  };
+  return map[r+'/'+o] || (r+'/'+o);
+}
+
+function trendArrow(d){
+  if(d.trend === 'Rising' || d.trend === 'Stable Elite' || (d.velocity && d.velocity > 1.5)) return '↑';
+  if(d.trend === 'Cooling' || d.trend === 'Reg. Risk' || d.trend === 'Fake Hot' || (d.velocity && d.velocity < -1.5)) return '↓';
+  if(d.trend === 'Volatile') return '↕';
+  return '→';
+}
+
+function oneLineTakeaway(d){
+  var s = statusLabel(d);
+  if(s === 'Undervalued') return 'Process and PALS confirm — market may lag true strength.';
+  if(s === 'Regression Risk') return 'Production ahead of process — fade lean without matchup proof.';
+  if(s === 'Strong') return tier(d.osi).l + ' offense with ' + (d.trend || 'stable') + ' trend context.';
+  if(s === 'Weak') return 'Limited offensive ceiling in current view.';
+  return takeaway(d).split(',')[0].slice(0, 72);
+}
+
+function attachPalsToScores(){
+  var pmap = {};
+  (LIVE_DATA.pals || []).forEach(function(p){
+    var t = (p.t || p.Tm || '').toString().toUpperCase();
+    if(t) pmap[t] = p.PALS != null ? p.PALS : p.pals;
+  });
+  function apply(arr){
+    if(!arr) return;
+    arr.forEach(function(d){
+      if(pmap[d.t] != null) d.pals = pmap[d.t];
+      d.statusLabel = statusLabel(d);
+      d.profileLabel = profileLabel(d);
+    });
+  }
+  apply(SCO_YTD_B); apply(SCO_YTD_R); apply(SCO_YTD_L);
+  apply(SCO_L30_B); apply(SCO_L14_B); apply(SCO_L7_B);
 }
 
 function takeaway(d){
@@ -2785,7 +2921,8 @@ var STATE = {
   searchQuery: '',
   compareMode: false,
   pinMode: false,
-  quadrantMode: 'reg',     // 'reg' = RCV vs regression; 'rcv-abq' = RCV vs ABQ
+  quadrantMode: 'status',  // 'status' = OSI vs PP-Gap; 'rcv-abq' = legacy RCV vs ABQ
+  showAdvancedMetrics: false,
   matchupAway: '',
   matchupHome: '',
   matchupHandedness: 'R',
@@ -3001,6 +3138,39 @@ function showToast(msg, dur) {
    RENDERERS
    ============================================================ */
 
+function toggleAdvancedMetrics(){
+  STATE.showAdvancedMetrics = !STATE.showAdvancedMetrics;
+  document.body.classList.toggle('show-advanced-metrics', STATE.showAdvancedMetrics);
+  var btn = document.getElementById('toggleAdvancedBtn');
+  if(btn) btn.textContent = STATE.showAdvancedMetrics ? 'Hide ABQ / RCV / OBR' : 'Show ABQ / RCV / OBR';
+  renderMasterTable();
+}
+
+function renderGlanceCards(){
+  var rows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B.slice() : currentRows().slice();
+  if(!rows.length){ document.getElementById('glanceGrid').innerHTML = ''; return; }
+  function pick(sortFn, filterFn, eyebrow, accent){
+    var pool = rows.filter(filterFn).sort(sortFn);
+    var d = pool[0] || rows.sort(sortFn)[0];
+    var ti = tier(d.osi);
+    return '<div class="glance-card '+accent+'">'+
+      '<div class="glance-eyebrow">'+eyebrow+'</div>'+
+      '<div class="glance-team">'+d.t+'</div>'+
+      '<div class="glance-status">'+statusLabel(d)+'</div>'+
+      '<span class="glance-tier" style="background:'+ti.bg+';color:'+ti.c+';">'+ti.l+'</span> '+
+      '<span class="glance-trend" style="color:'+trendCol(d.trend)+';">'+trendArrow(d)+'</span>'+
+      '<div class="glance-copy">'+oneLineTakeaway(d)+'</div></div>';
+  }
+  var html = '';
+  html += pick(function(a,b){return b.osi-a.osi;}, function(){return true;}, 'Strongest Offense', 'gc-green');
+  html += pick(function(a,b){return b.ppGap-a.ppGap;}, function(d){
+    return d.ppGap > 3 && d.pals != null && Math.abs(d.osi - d.pals) < 4;
+  }, 'Most Undervalued', 'gc-blue');
+  html += pick(function(a,b){return a.ppGap-b.ppGap;}, function(d){return d.ppGap < -3;}, 'Highest Regression Risk', 'gc-gold');
+  html += pick(function(a,b){return a.osi-b.osi;}, function(){return true;}, 'Weakest Offense', 'gc-red');
+  document.getElementById('glanceGrid').innerHTML = html;
+}
+
 function renderMetricCards(){
   var rows = currentRows();
   var defs = [
@@ -3079,10 +3249,14 @@ function renderMasterTable(){
   var key = STATE.sortKey;
   var dir = STATE.sortDir==='desc' ? -1 : 1;
 
-  if(key==='t' || key==='trend'){
-    rows.sort(function(a,b){return (a[key]||'').toString().localeCompare((b[key]||'').toString())*dir*-1;});
-  } else if(key==='rank'){
+  if(key==='rank' || (!STATE.showAdvancedMetrics && key==='osi')){
     rows.sort(function(a,b){return (b.osi-a.osi);});
+  } else if(key==='statusLabel'){
+    rows.sort(function(a,b){return (a.statusLabel||'').localeCompare(b.statusLabel||'') * (dir===-1?-1:1);});
+  } else if(key==='profileLabel'){
+    rows.sort(function(a,b){return (a.profileLabel||'').localeCompare(b.profileLabel||'') * (dir===-1?-1:1);});
+  } else if(key==='t' || key==='trend'){
+    rows.sort(function(a,b){return (a[key]||'').toString().localeCompare((b[key]||'').toString())*dir*-1;});
   } else {
     rows.sort(function(a,b){
       var av = a[key], bv = b[key];
@@ -3150,6 +3324,30 @@ function renderMasterTable(){
       paBadge = '<span class="pa-badge '+paCls+'" title="Sample: '+d.pa+' PA">'+d.pa+'</span>';
     }
 
+    if(!STATE.showAdvancedMetrics) {
+      var st = d.statusLabel || statusLabel(d);
+      var prof = d.profileLabel || profileLabel(d);
+      var stColor = st==='Undervalued'?'var(--blue)':st==='Regression Risk'?'var(--gold)':st==='Strong'?'var(--green)':st==='Weak'?'var(--red)':'var(--text-2)';
+      html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
+        '<td class="rank-cell status-only-cols">'+pinBtn+(i+1)+'</td>'+
+        '<td class="team-cell" style="color:var(--purple);">'+d.t+paBadge+'</td>'+
+        '<td class="status-only-cols"><span class="rank-status-pill" style="background:'+stColor+'22;color:'+stColor+';">'+st+'</span></td>'+
+        '<td class="status-only-cols"><span class="pill" style="background:'+ti.bg+';color:'+ti.c+';">'+ti.l+'</span></td>'+
+        '<td class="status-only-cols"><span style="color:'+tc+';font-weight:600;">'+trendArrow(d)+'</span> <span class="trend-pill" style="background:'+tc+'22;color:'+tc+';font-size:10px;">'+(d.trend||'Stable')+'</span></td>'+
+        '<td class="status-only-cols rank-profile">'+prof+'</td>'+
+        '<td class="status-only-cols rank-takeaway">'+oneLineTakeaway(d)+'</td>'+
+        '<td class="advanced-cols num">'+d.abq.toFixed(1)+'</td>'+
+        '<td class="advanced-cols num">'+d.rcv.toFixed(1)+'</td>'+
+        '<td class="advanced-cols num">'+d.obr.toFixed(1)+'</td>'+
+        '<td class="advanced-cols num" style="color:'+tcol(d.osi)+';font-weight:600;">'+d.osi.toFixed(1)+'</td>'+
+        '<td class="advanced-cols num">'+projStr+'</td>'+
+        '<td class="advanced-cols num">'+ppStr+'</td>'+
+        '<td class="advanced-cols num">'+dfStr+'</td>'+
+        '<td class="advanced-cols">'+(d.trend||'—')+'</td>'+
+        '<td class="advanced-cols num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'—')+'</td>'+
+        '<td class="advanced-cols num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'—')+'</td>'+
+      '</tr>';
+    } else {
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
       '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
       '<td class="team-cell" style="color: var(--purple);">'+d.t+paBadge+'</td>'+
@@ -3158,23 +3356,17 @@ function renderMasterTable(){
       '<td class="num" style="'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+'</td>'+
       '<td class="num" style="color:'+tcol(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+'</td>'+
       '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+'</td>'+
-      '<td class="num" style="color:'+formC+';'+activeColStyle('currentFormOSI')+'">'+formStr+'</td>'+
-      '<td class="num" style="color:'+velC+';'+activeColStyle('velocity')+'">'+velStr+'</td>'+
       '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+'</td>'+
       '<td class="num" style="color:'+dfC+';'+activeColStyle('dfGap')+'">'+dfStr+'</td>'+
-      '<td style="'+activeColStyle('sus')+'">'+(sg?'<span class="grade-badge" style="background:'+sg.bg+';color:'+sg.c+';">'+sg.l+'</span>':'—')+'</td>'+
-      '<td class="num" style="color:'+rf[1]+';font-weight:500;">'+rf[0]+'</td>'+
-      '<td class="num" style="color:'+tcol(d.rhpOSI||0)+';">'+(d.rhpOSI!==null && d.rhpOSI!==undefined?d.rhpOSI.toFixed(1):'—')+'</td>'+
-      '<td class="num" style="color:'+tcol(d.lhpOSI||0)+';">'+(d.lhpOSI!==null && d.lhpOSI!==undefined?d.lhpOSI.toFixed(1):'—')+'</td>'+
-      '<td class="num" style="color:'+edgeC+';font-weight:500;">'+(d.splitEdge!==undefined?edgeStr:'—')+'</td>'+
       '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'—')+'</td>'+
-      '<td><span class="pill" style="background:'+ti.bg+';color:'+ti.c+';">'+ti.l+'</span></td>'+
-      '<td style="color:var(--text-2);font-size:11px;max-width:240px;white-space:normal;">'+(d.trend?takeaway(d):'')+'</td>'+
+      '<td class="num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'—')+'</td>'+
+      '<td class="num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'—')+'</td>'+
     '</tr>';
+    }
 
-    // Expanded detail row
     if(STATE.expandedTeam === d.t) {
-      html += '<tr class="detail-row"><td colspan="19">'+renderTeamDetail(d.t)+'</td></tr>';
+      var colSpan = STATE.showAdvancedMetrics ? 14 : 8;
+      html += '<tr class="detail-row"><td colspan="'+colSpan+'">'+renderTeamDetail(d.t)+'</td></tr>';
     }
 
     // Mobile card
@@ -3302,7 +3494,7 @@ function resetSort(){
   renderMasterTable();
 }
 
-/* Chart: Quadrant with rich tooltips */
+/* Chart: Offensive Status Map (OSI × PP-Gap) or legacy RCV × ABQ */
 function renderQuadrant(){
   var rows = STATE.time==='YTD' && STATE.split==='b' ? SCO_YTD_B :
              STATE.time==='L30' && STATE.split==='b' ? SCO_L30_B :
@@ -3310,24 +3502,25 @@ function renderQuadrant(){
              STATE.time==='L7' ? SCO_L7_B :
              currentRows();
   var W = Math.min(1200, document.getElementById('mainChart').clientWidth || 1100);
-  var H = 460;
+  var H = 480;
   if(W<700) H=400;
-  var ml=42, mr=20, mt=30, mb=44;
+  var ml=48, mr=24, mt=32, mb=48;
   var cw = W-ml-mr, ch = H-mt-mb;
 
-  // Mode A (reg): RCV (x) vs xwOBA-wOBA regression gap × 1000 (y) — Both only
-  // Mode B (rcv-abq): RCV (x) vs ABQ (y) — works for all splits
-  var useABQMode = STATE.quadrantMode === 'rcv-abq';
-  var hasReg = rows.some(function(d){return d.reg!==null;});
-  if(!useABQMode && !hasReg) useABQMode = true; // auto-fallback when reg unavailable
+  var useStatusMap = STATE.quadrantMode !== 'rcv-abq';
+  var useABQMode = !useStatusMap;
 
-  var yMn = useABQMode ? 0   : -22;
-  var yMx = useABQMode ? 100 : 30;
+  var xMn = useStatusMap ? 35 : 0;
+  var xMx = useStatusMap ? 75 : 100;
+  var yMn = useStatusMap ? -12 : (useABQMode ? 0 : -22);
+  var yMx = useStatusMap ? 12 : (useABQMode ? 100 : 30);
+  var xRng = xMx - xMn;
   var yRng = yMx - yMn;
 
-  function xs(v){return ml + v/100*cw;}
+  function xs(v){return ml + ((v-xMn)/xRng)*cw;}
   function ys(v){return mt + (1-(v-yMn)/yRng)*ch;}
-  var mx = xs(50), my = ys(useABQMode ? 50 : 0);
+  var mx = xs(useStatusMap ? 55 : 50);
+  var my = ys(useStatusMap ? 0 : (useABQMode ? 50 : 0));
 
   var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;cursor:crosshair;" id="quadSvg">';
 
@@ -3338,12 +3531,13 @@ function renderQuadrant(){
   s += '<rect x="'+ml+'" y="'+my+'" width="'+(mx-ml)+'" height="'+(H-mb-my)+'" fill="rgba(248,113,113,.06)"/>';
 
   // Grid
-  [0,25,50,75,100].forEach(function(v){
+  var xTicks = useStatusMap ? [40,50,60,70] : [0,25,50,75,100];
+  xTicks.forEach(function(v){
     var gx = xs(v);
     s += '<line x1="'+gx+'" y1="'+mt+'" x2="'+gx+'" y2="'+(H-mb)+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
     s += '<text x="'+gx+'" y="'+(H-mb+16)+'" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">'+v+'</text>';
   });
-  var yTicks = useABQMode ? [0,25,50,75,100] : [-20,-10,0,10,20];
+  var yTicks = useStatusMap ? [-10,-5,0,5,10] : (useABQMode ? [0,25,50,75,100] : [-20,-10,0,10,20]);
   yTicks.forEach(function(v){
     var gy = ys(v);
     s += '<line x1="'+ml+'" y1="'+gy+'" x2="'+(W-mr)+'" y2="'+gy+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
@@ -3354,24 +3548,21 @@ function renderQuadrant(){
   s += '<line x1="'+mx+'" y1="'+mt+'" x2="'+mx+'" y2="'+(H-mb)+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
   s += '<line x1="'+ml+'" y1="'+my+'" x2="'+(W-mr)+'" y2="'+my+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
 
-  // Quadrant labels (different per mode)
-  if(useABQMode) {
-    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600" letter-spacing="1">ELITE — HIGH DAMAGE + HIGH PROCESS</text>';
-    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-7)+'" text-anchor="end" fill="rgba(251,191,36,.85)" font-size="9.5" font-weight="600" letter-spacing="1">HEAT-BASED — STRONG OUTPUT, WEAK PROCESS</text>';
-    s += '<text x="'+(ml+8)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.85)" font-size="9.5" font-weight="600" letter-spacing="1">PROCESS-LED — BUY-LOW CANDIDATE</text>';
-    s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600" letter-spacing="1">WEAK — LOW DAMAGE + LOW PROCESS</text>';
-  } else {
-    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600" letter-spacing="1">ELITE &amp; UNDERVALUED</text>';
-    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-7)+'" text-anchor="end" fill="rgba(251,191,36,.85)" font-size="9.5" font-weight="600" letter-spacing="1">STRONG BUT COOLING</text>';
-    s += '<text x="'+(ml+8)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.85)" font-size="9.5" font-weight="600" letter-spacing="1">BUY-LOW OFFENSE</text>';
-    s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600" letter-spacing="1">WEAK &amp; CONCERNING</text>';
+  if(useStatusMap) {
+    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.9)" class="quad-label-sm">ELITE &amp; STILL UNDERVALUED</text>';
+    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-8)+'" text-anchor="end" fill="rgba(251,191,36,.9)" class="quad-label-sm">STRONG BUT COOLING</text>';
+    s += '<text x="'+(ml+10)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.9)" class="quad-label-sm">BUY-LOW OFFENSE</text>';
+    s += '<text x="'+(ml+10)+'" y="'+(H-mb-8)+'" text-anchor="start" fill="rgba(248,113,113,.9)" class="quad-label-sm">WEAK &amp; CONCERNING</text>';
+  } else if(useABQMode) {
+    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600">ELITE — HIGH DAMAGE + HIGH PROCESS</text>';
+    s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600">WEAK</text>';
   }
 
-  // Dots
   rows.forEach(function(d){
-    var yVal = useABQMode ? d.abq : (d.reg !== null ? d.reg*1000 : null);
-    if(yVal === null) return;
-    var cx = xs(d.rcv), cy = ys(yVal);
+    var xVal = useStatusMap ? d.osi : d.rcv;
+    var yVal = useStatusMap ? d.ppGap : (useABQMode ? d.abq : (d.reg !== null ? d.reg*1000 : null));
+    if(xVal === null || yVal === null || isNaN(xVal) || isNaN(yVal)) return;
+    var cx = xs(xVal), cy = ys(yVal);
     var cl = qcol(d);
     s += '<g class="qd-dot" data-team="'+d.t+'" style="cursor:pointer;">'+
       '<circle cx="'+cx+'" cy="'+cy+'" r="16" fill="'+cl+'" fill-opacity=".15"/>'+
@@ -3380,9 +3571,8 @@ function renderQuadrant(){
     '</g>';
   });
 
-  // Axis labels
-  s += '<text x="'+(W/2)+'" y="'+(H-6)+'" text-anchor="middle" fill="#A1A1AA" font-size="11" font-weight="500">RCV Score (0–100)</text>';
-  s += '<text x="'+(ml-2)+'" y="'+(mt-12)+'" fill="#A1A1AA" font-size="10" font-weight="500">'+(useABQMode?'ABQ Score (0–100)':'xwOBA − wOBA gap (×1000)')+'</text>';
+  s += '<text x="'+(W/2)+'" y="'+(H-8)+'" text-anchor="middle" fill="#A1A1AA" font-size="11" font-weight="500">'+(useStatusMap?'OSI (composite strength)':'RCV Score')+'</text>';
+  s += '<text transform="rotate(-90 '+ml+' '+(H/2)+')" x="'+ml+'" y="'+(H/2)+'" text-anchor="middle" fill="#A1A1AA" font-size="10" font-weight="500">'+(useStatusMap?'PP-Gap (process − production)':(useABQMode?'ABQ':'Reg gap'))+'</text>';
   s += '</svg>';
 
   document.getElementById('mainChart').innerHTML = s;
@@ -3398,21 +3588,12 @@ function renderQuadrant(){
       var sg = master && master.sus !== undefined ? susGrade(master.sus) : null;
       var rf = regFmt(d.reg);
       var html = '<div class="tt-team">'+d.t+'</div>'+
-        '<div class="tt-row"><span class="lab">OSI</span><span class="val" style="color:'+tcol(d.osi)+';">'+d.osi.toFixed(1)+'</span></div>'+
-        (d.projOSI !== undefined ? '<div class="tt-row"><span class="lab">Projected OSI</span><span class="val" style="color:'+tcol(d.projOSI)+';">'+d.projOSI.toFixed(1)+' <span style="font-size:9px;color:var(--text-3);">('+(d.regAdj>=0?'+':'')+d.regAdj.toFixed(1)+')</span></span></div>' : '')+
-        (master && master.currentFormOSI !== undefined ? '<div class="tt-row"><span class="lab">Current Form</span><span class="val" style="color:'+tcol(master.currentFormOSI)+';">'+master.currentFormOSI.toFixed(1)+'</span></div>' : '')+
+        '<div class="tt-row"><span class="lab">Status</span><span class="val">'+(d.statusLabel||statusLabel(d))+'</span></div>'+
+        '<div class="tt-row"><span class="lab">Tier</span><span class="val" style="color:'+tcol(d.osi)+';">'+tier(d.osi).l+'</span></div>'+
+        '<div class="tt-row"><span class="lab">Trend</span><span class="val" style="color:'+trendCol(d.trend)+';">'+trendArrow(d)+' '+(d.trend||'Stable')+'</span></div>'+
+        '<div class="tt-row"><span class="lab">Profile</span><span class="val">'+profileLabel(d)+'</span></div>'+
         '<div class="tt-sep"></div>'+
-        '<div class="tt-row"><span class="lab">RCV</span><span class="val">'+d.rcv.toFixed(1)+'</span></div>'+
-        '<div class="tt-row"><span class="lab">ABQ</span><span class="val">'+d.abq.toFixed(1)+'</span></div>'+
-        '<div class="tt-row"><span class="lab">OBR</span><span class="val">'+d.obr.toFixed(1)+'</span></div>'+
-        '<div class="tt-sep"></div>'+
-        (d.ppGap !== undefined ? '<div class="tt-row"><span class="lab">PP Gap (ABQ−RCV)</span><span class="val" style="color:'+(d.ppGap>4?'#60A5FA':d.ppGap<-4?'#FBBF24':'#A1A1AA')+';">'+(d.ppGap>0?'+':'')+d.ppGap.toFixed(1)+'</span></div>' : '')+
-        (d.dfGap !== undefined ? '<div class="tt-row"><span class="lab">DF Gap (RCV−OBR)</span><span class="val" style="color:'+(d.dfGap>8?'#FB923C':d.dfGap<-4?'#86EFAC':'#A1A1AA')+';">'+(d.dfGap>0?'+':'')+d.dfGap.toFixed(1)+'</span></div>' : '')+
-        '<div class="tt-sep"></div>'+
-        (sg?'<div class="tt-row"><span class="lab">Sustainability</span><span class="val" style="color:'+sg.c+';">'+sg.l+' ('+master.sus.toFixed(1)+')</span></div>':'')+
-        '<div class="tt-row"><span class="lab">Regression</span><span class="val" style="color:'+rf[1]+';">'+rf[0]+'</span></div>'+
-        (master && master.trend ? '<div class="tt-row"><span class="lab">Trend</span><span class="val" style="color:'+trendCol(master.trend)+';">'+master.trend+'</span></div>' : '')+
-        (master && master.splitEdge !== undefined ? '<div class="tt-row"><span class="lab">Split Edge</span><span class="val">'+(master.splitEdge>0?'+':'')+master.splitEdge.toFixed(1)+'</span></div>' : '');
+        '<div style="font-size:11px;color:var(--text-2);line-height:1.4;">'+oneLineTakeaway(d)+'</div>';
       tip.innerHTML = html;
       tip.classList.add('show');
       highlightTeam(t);
@@ -3430,9 +3611,8 @@ function renderQuadrant(){
     });
   });
 
-  var splitLabel = STATE.split==='b' ? 'Both Pitching' : (STATE.split==='r' ? 'vs RHP' : 'vs LHP');
-  var modeLabel = useABQMode ? 'Run Creation vs Plate Approach' : 'Run Creation vs Regression Signal';
-  document.getElementById('chartTitle').textContent = modeLabel + ' · '+STATE.time+' · '+splitLabel;
+  var splitLabel = STATE.split==='b' ? 'Both' : (STATE.split==='r' ? 'vs RHP' : 'vs LHP');
+  document.getElementById('chartTitle').textContent = (useStatusMap ? 'OSI vs PP-Gap · offensive status map' : 'RCV vs ABQ') + ' · '+STATE.time+' · '+splitLabel;
 }
 
 function renderSplitBar(rows){
@@ -3554,13 +3734,13 @@ function renderTrendHeatmap(){
 function renderStrats(){
   function count(filt){ return SCO_YTD_B.filter(filt).length; }
   var blocks=[
-    {tag:'Stable Composite Profiles', bc:'#4ADE80', n:count(function(d){return d.osi>=70 && d.sus>=70 && d.ppGap>-5;}), d:'Count of profiles with high OSI, strong sustainability, and no major process-production weakness. This category indicates broader offensive support rather than a single hot metric.'},
-    {tag:'Positive Regression Pressure', bc:'#60A5FA', n:count(function(d){return d.ppGap>=3 && d.reg!==null && d.reg>=0.010;}), d:'Count of profiles where process exceeds production and expected quality is above actual results. This is a buy-low style signal, not a guarantee.'},
-    {tag:'Negative Regression Pressure', bc:'#F87171', n:count(function(d){return d.ppGap<=-3 && d.reg!==null && d.reg<=-0.010 && d.sus<65;}), d:'Count of profiles where production exceeds process while expected quality is weaker. This is a cooling-risk signal that should be validated with matchup context.'},
-    {tag:'Major Platoon Separation', bc:'#C084FC', n:count(function(d){return d.exploit>=10;}), d:'Count of profiles with large handedness splits. These lineups are more sensitive to opposing starter hand and matchup construction.'},
-    {tag:'Moderate Platoon Dependence', bc:'#FBBF24', n:count(function(d){return d.exploit>=7 && d.exploit<12;}), d:'Count of profiles with noticeable but not extreme split bias. These are context-dependent signals rather than blanket ratings.'},
-    {tag:'Power / Variance Profiles', bc:'#A78BFA', n:count(function(d){return d.dfGap>=10 && d.projOSI>=65;}), d:'Count of profiles where damage is materially ahead of floor. These offenses can create scoring bursts but may be less stable inning to inning.'},
-    {tag:'Low-Support Profiles', bc:'#FB923C', n:count(function(d){return d.osi<55 && d.sus<55;}), d:'Count of profiles with weaker composite output and weaker sustainability support. Treat these as caution flags until matchup or price context changes.'},
+    {tag:'Elite Confirmed', bc:'#4ADE80', n:count(function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}), d:'High OSI with PALS confirmation — stable elite profiles.'},
+    {tag:'Buy-Low', bc:'#60A5FA', n:count(function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}), d:'Process ahead of production with PALS aligned — undervalued lean.'},
+    {tag:'Cooling Risk', bc:'#F87171', n:count(function(d){return d.ppGap<=-4 || d.trend==='Cooling' || d.trend==='Reg. Risk';}), d:'Production ahead of process or negative recent trend.'},
+    {tag:'Volatile Power', bc:'#A78BFA', n:count(function(d){return d.dfGap>=10;}), d:'Damage materially ahead of floor — boom/bust scoring paths.'},
+    {tag:'Process-Forward', bc:'#22d3ee', n:count(function(d){return d.ppGap>=6 && d.abq>=60;}), d:'Strong process without matching RCV yet.'},
+    {tag:'Weak Unsupported', bc:'#FB923C', n:count(function(d){return d.osi<50 && (d.sus==null || d.sus<55);}), d:'Low composite with weak sustainability support.'},
+    {tag:'Platoon Sensitive', bc:'#C084FC', n:count(function(d){return d.exploit>=10;}), d:'Large RHP/LHP split — lineup construction matters.'},
   ];
   var html='';
   blocks.forEach(function(b){
@@ -3921,11 +4101,15 @@ function renderComparePane(){
     return '<span class="compare-team-pill" style="border-color:'+colors[i]+';color:'+colors[i]+';">'+t+' <span class="x" onclick="toggleCompare(\''+t+'\')">✕</span></span>';
   }).join('');
 
-  // Radar with 6 axes
   var axes = [
     {k:'abq', label:'ABQ'}, {k:'rcv', label:'RCV'}, {k:'obr', label:'OBR'},
-    {k:'sus', label:'Sustain'}, {k:'projOSI', label:'Proj OSI'}, {k:'bestSplit', label:'Best Split'}
+    {k:'osi', label:'OSI'}, {k:'pals', label:'PALS'}, {k:'ppGap', label:'PP-Gap', norm:true}
   ];
+  function radarVal(m, ax){
+    if(ax.k==='ppGap') return Math.max(0, Math.min(100, ((m.ppGap||0)+12)/24*100));
+    if(ax.k==='pals') return m.pals != null ? m.pals : m.osi;
+    return m[ax.k] || 0;
+  }
   var W=560, H=400, cx=W/2, cy=H/2, R=140;
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
   [25,50,75,100].forEach(function(v){
@@ -3949,9 +4133,7 @@ function renderComparePane(){
     if(!m) return;
     var c = colors[ti];
     var pts = axes.map(function(ax,i){
-      var v;
-      if(ax.k==='bestSplit') v = Math.max(m.rhpOSI||0, m.lhpOSI||0);
-      else v = m[ax.k] || 0;
+      var v = radarVal(m, ax);
       v = Math.max(0, Math.min(100, v));
       var ang = -Math.PI/2 + i*2*Math.PI/axes.length;
       var r = R*(v/100);
@@ -4143,26 +4325,44 @@ function renderLeagueOverview(){
 }
 function filterGlossary(){
   var q = (document.getElementById('glossarySearch').value || '').toLowerCase().trim();
-  document.querySelectorAll('.glossary-term').forEach(function(card){
+  document.querySelectorAll('#glossaryGrid .glossary-term, #glossaryGridPlain .glossary-term').forEach(function(card){
     var hay = (card.getAttribute('data-term') + ' ' + card.textContent).toLowerCase();
     card.style.display = !q || hay.indexOf(q)>=0 ? '' : 'none';
   });
 }
 
+function mountReferenceTables(){
+  var mount = document.getElementById('referenceTablesMount');
+  if(!mount) return;
+  var oor = document.getElementById('oorSection');
+  var pitch = document.getElementById('pitchingSection');
+  var pals = document.getElementById('palsSection');
+  var match = document.getElementById('matchupsSection');
+  if(oor && oor.parentNode !== mount){ mount.appendChild(oor); }
+  if(pitch && pitch.parentNode !== mount){ mount.appendChild(pitch); }
+  if(pals && pals.parentNode !== mount){ mount.appendChild(pals); }
+  if(match && match.parentNode !== mount){ mount.appendChild(match); }
+  [oor,pitch,pals,match].forEach(function(el){
+    if(el){ el.style.marginBottom = '20px'; var mn = el.querySelector('.method-note'); if(mn) mn.style.display='none'; }
+  });
+}
+
 function renderAll(){
-  renderMetricCards();
-  renderExecSummary();
+  attachPalsToScores();
+  renderGlanceCards();
   renderMasterTable();
   renderQuadrant();
-  renderMovers();
-  renderLeagueOverview();
   renderWatchlistBar();
   renderComparePane();
   renderMatchupOutput();
+  renderSplitBars();
+  renderTrendHeatmap();
+  renderStrats();
   renderOOR();
   renderPitchingScore();
   renderPALS();
   renderMatchups();
+  mountReferenceTables();
   urlEncodeState();
 }
 
@@ -4457,8 +4657,17 @@ if (document.readyState === 'loading') {
   </div>
 </div>
 
-</div>
+<div class="section" id="matchupsSection" style="margin-top:20px;">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Daily Slate</div>
+      <div class="section-title">Today&apos;s Projected Matchups</div>
+      <div class="section-subtitle">Lineup OSI vs opposing starter handedness — updated daily</div>
+    </div>
+  </div>
+  <div id="matchupsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px;"></div>
 </div>
 
-<div class="section" id="matchupsSection" style="margin-top:20px;"><div class="section-header"><div><div class="section-eyebrow">Daily Slate</div><div class="section-title">Today's Projected Matchups</div><div class="section-subtitle">Lineup OSI vs opposing starter handedness - Updated daily</div></div></div><div id="matchupsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px;"></div></div></body>
+</div><!-- /.container -->
+</body>
 </html>
