@@ -6,11 +6,12 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from core.config import DATA_DIR
+from core.config import DATA_DIR, FIP_CONSTANT
 from core.metrics_utils import parse_ip
 
 METRIC_FIELDS = [
     "ERA",
+    "FIP",
     "WHIP",
     "K_pct",
     "BB_pct",
@@ -21,6 +22,12 @@ METRIC_FIELDS = [
     "OBR_allowed",
     "OSI_allowed",
 ]
+
+
+def _calc_fip(hr: float, bb: float, k: float, ip: float) -> Optional[float]:
+    if ip <= 0:
+        return None
+    return round(((13 * hr) + (3 * bb) - (2 * k)) / ip + FIP_CONSTANT, 2)
 
 SPLIT_PREFIXES = [
     ("overall", None),
@@ -60,9 +67,12 @@ def _agg_block(df: pd.DataFrame) -> Dict[str, Optional[float]]:
 
     ir = df["inherited_runners"].sum() if "inherited_runners" in df.columns else 0
     irs = df["inherited_scored"].sum() if "inherited_scored" in df.columns else 0
+    total_hr = df["HR"].sum()
+    total_k = df["K"].sum()
 
     return {
         "ERA": round(total_er / total_ip * 9, 2) if total_ip > 0 else None,
+        "FIP": _calc_fip(total_hr, total_bb, total_k, total_ip),
         "WHIP": round((total_h + total_bb) / total_ip, 2) if total_ip > 0 else None,
         "K_pct": round(df["K"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "BB_pct": round(df["BB"].sum() / total_bf * 100, 1) if total_bf > 0 else None,

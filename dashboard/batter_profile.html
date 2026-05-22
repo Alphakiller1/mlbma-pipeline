@@ -413,12 +413,20 @@ var METRIC_NOTES = {
 
 var OPTIONAL_RAW_TABS = [
   ['Batter_Splits_Overall', 'overall'],
-  ['Batter_Splits_Recent', 'recent'],
   ['Batter_Splits_RHP', 'vs_RHP'],
   ['Batter_Splits_LHP', 'vs_LHP'],
   ['Batter_Splits_Home', 'home'],
-  ['Batter_Splits_Away', 'away']
+  ['Batter_Splits_Away', 'away'],
+  ['Batter_Splits_vsSP', 'vs_SP'],
+  ['Batter_Splits_vsRP', 'vs_RP']
 ];
+
+var WINDOW_RAW_SPLIT = {
+  YTD: 'overall',
+  L30: 'overall',
+  L14: 'overall',
+  L7: 'overall'
+};
 
 function sheetCsvUrl(tabName) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -587,9 +595,8 @@ function indexRawStats() {
 function getRawForPlayer(key, windowKey) {
   var name = normalizeName(playerDisplayName(key));
   var raw = DATA.rawStats[name] || {};
-  if (windowKey === 'YTD') return raw.overall || raw.vs_RHP || {};
-  if (windowKey === 'L7' || windowKey === 'L14' || windowKey === 'L30') return raw.recent || raw.overall || {};
-  return raw.overall || {};
+  var splitKey = WINDOW_RAW_SPLIT[windowKey] || 'overall';
+  return raw[splitKey] || raw.overall || raw.vs_RHP || {};
 }
 
 function opsFromRow(row) {
@@ -726,8 +733,8 @@ function renderSeasonBar(key) {
   var sub = document.getElementById('snapshotSubtitle');
   var hasRaw = raw && Object.keys(raw).length;
   sub.textContent = hasRaw
-    ? 'Rate line for ' + STATE.window + ' (from split export tabs when published)'
-    : 'Rate line for ' + STATE.window + ' — metric scores from Batter_Profiles; publish Batter_Splits_* tabs for full rate stats';
+    ? 'Rate line for ' + STATE.window + ' from Batter_Splits_Overall (live sheet)'
+    : 'Rate line for ' + STATE.window + ' — run batter splits pipeline and push to Batter_Splits_Overall';
 
   var cells = [
     statCell('wRC+', numOrNull(pickCol(raw, ['wRC+'])) || '—'),
@@ -822,8 +829,8 @@ function renderWindowTable(key) {
   if (hotCold === 'hot') insight = '<strong>Hot flag:</strong> L7 OSI is ' + fmt(l7.m.OSI - ytdRow.m.OSI, 1) + ' points above YTD — recent form elevated.';
   else if (hotCold === 'cold') insight = '<strong>Cold flag:</strong> L7 OSI is ' + fmt(ytdRow.m.OSI - l7.m.OSI, 1) + ' points below YTD — recent slump.';
   else insight = 'L7 within ±' + HOT_COLD_GAP + ' of YTD — no extreme hot/cold signal.';
-  if (!DATA.rawStats[normalizeName(playerDisplayName(key))] || !DATA.rawStats[normalizeName(playerDisplayName(key))].recent) {
-    insight += ' Window columns use season metrics adjusted by pipeline trend until Batter_Splits_Recent is published.';
+  if (!getRawForPlayer(key, 'YTD') || !Object.keys(getRawForPlayer(key, 'YTD')).length) {
+    insight += ' Window rate columns use Batter_Profiles trend adjustment when Batter_Splits_Overall is unavailable.';
   }
   document.getElementById('windowInsight').textContent = insight;
 }
@@ -910,26 +917,23 @@ function renderLocSplits(key) {
 function renderSpRpSplits(key) {
   var sp = getSplitRow(key, 'vs_SP');
   var rp = getSplitRow(key, 'vs_RP');
+  var pname = normalizeName(playerDisplayName(key));
+  var rawSp = (DATA.rawStats[pname] || {}).vs_SP || {};
+  var rawRp = (DATA.rawStats[pname] || {}).vs_RP || {};
   var html = '';
   if (!sp && !rp) {
     html = '<div class="split-panel" style="grid-column:1/-1;"><h4>vs SP / vs RP</h4>' +
       '<p style="font-size:12px;color:var(--text-2);line-height:1.55;">' +
-      'Starter/reliever split rows are not in <strong>Batter_Profiles</strong> yet. ' +
-      'When pipeline adds <code>split_type</code> of <code>vs_SP</code> and <code>vs_RP</code>, this section will populate automatically. ' +
-      'Use handedness and PP_Gap (projOSI − OSI) for interim game-shape reads.</p></div>';
-    var base = getSplitRow(key, 'vs_RHP');
-    var pp = numOrNull(pickCol(base || {}, ['PP_Gap']));
-    document.getElementById('spRpInsight').textContent = pp !== null && pp > 3
-      ? 'Positive PP_Gap (' + fmt(pp, 1) + ') suggests underlying process may outperform recent box-score OSI.'
-      : 'Awaiting vs SP / vs RP exports from the pipeline.';
+      'No vs_SP / vs_RP rows in <strong>Batter_Profiles</strong>. Run FanGraphs batter splits (splitArr 24/25) and pipeline step 16.</p></div>';
+    document.getElementById('spRpInsight').textContent = 'Awaiting vs SP / vs RP pipeline exports.';
   } else {
     var osiSp = numOrNull(pickCol(sp || {}, ['OSI']));
     var osiRp = numOrNull(pickCol(rp || {}, ['OSI']));
     var flag = (osiSp !== null && osiRp !== null && osiRp - osiSp >= SP_RP_OSI_GAP) ? ' flag-gold' : '';
-    html = splitPanelHtml('vs SP', sp, {}) + splitPanelHtml('vs RP', rp, {}, flag);
+    html = splitPanelHtml('vs SP', sp, rawSp, flag) + splitPanelHtml('vs RP', rp, rawRp, flag);
     document.getElementById('spRpInsight').textContent = (osiRp !== null && osiSp !== null && osiRp - osiSp >= SP_RP_OSI_GAP)
-      ? 'Full-game value signal: OSI vs RP ' + fmt(osiRp, 1) + ' vs OSI vs SP ' + fmt(osiSp, 1) + ' (+' + fmt(osiRp - osiSp, 1) + ').'
-      : 'No major SP vs RP OSI separation flagged.';
+      ? 'Full game value over F5 - this batter significantly outperforms vs relief pitching.'
+      : 'OSI vs SP ' + fmt(osiSp, 1) + ' · OSI vs RP ' + fmt(osiRp, 1) + ' — no full-game value flag.';
   }
   document.getElementById('spRpGrid').innerHTML = html;
 }

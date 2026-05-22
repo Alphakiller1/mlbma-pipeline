@@ -92,7 +92,13 @@ BATTER_SPLIT_ARR = {
     "vs_LHP": "1",
     "home": "5",
     "away": "6",
+    "vs_SP": "24",
+    "vs_RP": "25",
 }
+
+# Reliever FIP (2026 season constant)
+FIP_CONSTANT = 3.10
+FIP_FORMULA = "((13 x HR) + (3 x BB) - (2 x K)) / IP + FIP_constant"
 
 BATTER_STAT_GROUPS = {
     "standard": 2,
@@ -328,6 +334,13 @@ SHEET_TABS = {
     "signals_convergence": "Signals_Convergence",
     "player_registry": "Player_Registry",
     "batter_profiles": "Batter_Profiles",
+    "batter_splits_overall": "Batter_Splits_Overall",
+    "batter_splits_rhp": "Batter_Splits_RHP",
+    "batter_splits_lhp": "Batter_Splits_LHP",
+    "batter_splits_home": "Batter_Splits_Home",
+    "batter_splits_away": "Batter_Splits_Away",
+    "batter_splits_vs_sp": "Batter_Splits_vsSP",
+    "batter_splits_vs_rp": "Batter_Splits_vsRP",
     "team_profiles": "Team_Profiles",
 }
 

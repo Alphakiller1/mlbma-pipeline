@@ -342,6 +342,7 @@ var DATA = {
 var STATE = { playerKey: null, window: 'YTD' };
 var WINDOWS = ['YTD', 'L30', 'L14', 'L7'];
 var WINDOW_N_APPS = { YTD: 999, L30: 30, L14: 14, L7: 7 };
+var FIP_CONSTANT = 3.10;
 
 function sheetCsvUrl(tab) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -469,7 +470,11 @@ function aggFromApps(apps) {
   return {
     apps: apps.length,
     ip: ip,
+    hr: hr,
+    bb: bb,
+    k: k,
     era: ip > 0 ? er / ip * 9 : null,
+    fip: calcFip(ip, hr, bb, k),
     whip: ip > 0 ? (h + bb) / ip : null,
     k_pct: bf > 0 ? k / bf * 100 : null,
     bb_pct: bf > 0 ? bb / bf * 100 : null,
@@ -515,6 +520,11 @@ function inheritedSplit(key) {
     else clean.push(g);
   });
   return { clean: aggFromApps(clean), inherited: aggFromApps(inh), ir_pct: num(pickCol(getIndividual(key) || {}, ['overall_inherited_runners_scored_pct'])) };
+}
+
+function calcFip(ip, hr, bb, k) {
+  if (!ip || ip <= 0) return null;
+  return ((13 * hr) + (3 * bb) - (2 * k)) / ip + FIP_CONSTANT;
 }
 
 function eraColor(era) {
@@ -608,9 +618,13 @@ function renderSeasonBar(key) {
   document.getElementById('seasonSubtitle').textContent =
     STATE.window + ' — ' + agg.apps + ' appearances, ' + fmt(agg.ip, 1) + ' IP';
 
+  var ind = getIndividual(key);
+  var sheetFip = ind ? colVal(ind, 'overall', 'FIP') : null;
+  var fipVal = (STATE.window === 'YTD' && sheetFip !== null) ? sheetFip : agg.fip;
+
   document.getElementById('seasonBar').innerHTML =
     statCell('ERA', agg.era, eraColor(agg.era)) +
-    statCell('FIP', null) +
+    statCell('FIP', fipVal, eraColor(fipVal)) +
     statCell('K%', agg.k_pct, null, true) +
     statCell('BB%', agg.bb_pct, null, true) +
     statCell('HR/9', agg.hr9, eraColor(agg.hr9)) +

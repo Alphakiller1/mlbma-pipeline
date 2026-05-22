@@ -43,6 +43,8 @@ SPLIT_FILES = {
     "vs_LHP": "batter_splits_lhp.csv",
     "home": "batter_splits_home.csv",
     "away": "batter_splits_away.csv",
+    "vs_SP": "batter_splits_vsSP.csv",
+    "vs_RP": "batter_splits_vsRP.csv",
 }
 
 
