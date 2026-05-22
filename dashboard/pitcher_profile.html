@@ -978,10 +978,18 @@ function loadAll() {
       if (pill) { pill.textContent = 'No SP data'; pill.classList.add('warn'); }
     }
 
-    var firstKey = DATA.profiles.length ? pitcherKey(DATA.profiles[0]) : null;
-    if (firstKey) {
-      document.getElementById('pitcherSelect').value = firstKey;
-      renderProfile(firstKey);
+    var urlPitcher = new URLSearchParams(window.location.search).get('pitcher');
+    var startKey = null;
+    if (urlPitcher) {
+      startKey = resolveSearchToKey(urlPitcher);
+      if (urlPitcher) document.getElementById('pitcherSearch').value = urlPitcher;
+    }
+    if (!startKey && DATA.profiles.length) {
+      startKey = pitcherKey(DATA.profiles[0]);
+    }
+    if (startKey) {
+      document.getElementById('pitcherSelect').value = startKey;
+      renderProfile(startKey);
     }
   }).catch(function(err) {
     DATA.error = String(err);
