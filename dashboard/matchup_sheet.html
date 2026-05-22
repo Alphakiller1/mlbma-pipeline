@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Daily Matchup Sheet</title>
+<title>Chase Analytics · Daily Matchups</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -272,12 +272,13 @@ h1 {
 }
 .footer-note a { color: var(--purple); text-decoration: none; }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="matchup_sheet.html"></script>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <div class="loading-text" id="loadingText">Loading matchup data from Google Sheets…</div>
+<div class="loading-text" id="loadingText">Loading matchup data from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -287,16 +288,12 @@ h1 {
       <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Daily Matchup Sheet</h1>
-    <p class="subtitle">Live slate view — matchups, weather, platoon edges, opposing offense (OOR), PALS, pitching and bullpen intelligence. Data refreshes from Google Sheets after each pipeline run.</p>
-    <nav style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-      <a href="chase_analytics_mlb_oem_v7.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Main Dashboard</a>
-      <a href="player_search.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Player Search</a>
-      <a href="batter_profile.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Batter Profile</a>
-      <a href="pitcher_profile.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Pitcher Profile</a>
-      <a href="reliever_profile.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Reliever Profile</a>
-      <a href="bullpen_report.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Bullpen Report</a>
-      <a href="team_profile.html" style="font-size:11px;color:var(--text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:8px;">Team Profile</a>
-    </nav>
+    <p class="subtitle">Daily game cards with OSI edges and weather.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;">
+      <span id="gameCountLabel" style="font-size:12px;color:var(--text-2);">0 games today</span>
+      <button type="button" class="filter-pill active" id="sortEdgeBtn" style="cursor:pointer;">Sort by OSI Edge</button>
+    </div>
   </header>
 
   <div class="error-banner" id="errorBanner"></div>
@@ -304,10 +301,11 @@ h1 {
   <p class="footer-note">Powered by MLBMA Pipeline · <a href="chase_analytics_mlb_oem_v7.html">Full OEM Dashboard</a></p>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
+
+var MATCHUP_STATE = { sortByEdge: false };
 
 var DATA = {
   loaded: false,
@@ -761,13 +759,27 @@ function buildLineupBlock(m) {
     + '</div><div class="matchup-lineup-panel" aria-hidden="true">' + inner + '</div>';
 }
 
+function edgeMagnitude(m) {
+  var away = parseFloat(m.awayOSI);
+  var home = parseFloat(m.homeOSI);
+  if (!isNaN(away) && !isNaN(home)) return Math.abs(away - home);
+  var edge = (m.lineupEdge || '').toString();
+  var match = edge.match(/\+?\s*([\d.]+)/);
+  return match ? parseFloat(match[1]) : 0;
+}
+
 function renderMatchups() {
   var grid = document.getElementById('matchupsGrid');
   if (!grid) return;
-  var games = DATA.matchups || [];
+  var games = (DATA.matchups || []).slice();
+  var countEl = document.getElementById('gameCountLabel');
+  if (countEl) countEl.textContent = games.length + ' game' + (games.length === 1 ? '' : 's') + ' today';
   if (!games.length) {
     grid.innerHTML = '<div class="matchups-empty">No games in <strong>Today_Matchups</strong>. Run the pipeline after lineups are posted.</div>';
     return;
+  }
+  if (MATCHUP_STATE.sortByEdge) {
+    games.sort(function(a, b) { return edgeMagnitude(b) - edgeMagnitude(a); });
   }
 
   grid.innerHTML = games.map(function(m) {
@@ -880,6 +892,17 @@ document.getElementById('matchupsGrid').addEventListener('click', function(e) {
   if (btn) toggleLineup(btn);
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+  var sortBtn = document.getElementById('sortEdgeBtn');
+  if (sortBtn) {
+    sortBtn.addEventListener('click', function() {
+      MATCHUP_STATE.sortByEdge = !MATCHUP_STATE.sortByEdge;
+      sortBtn.classList.toggle('active', MATCHUP_STATE.sortByEdge);
+      renderMatchups();
+    });
+  }
+});
+
 function updateBrandPill() {
   var pill = document.getElementById('brandPill');
   if (!pill) return;
@@ -893,7 +916,9 @@ function updateBrandPill() {
 }
 
 function hideLoading() {
-  document.getElementById('loadingOverlay').classList.add('hidden');
+  var ov = document.getElementById('loadingOverlay');
+  if (ov) ov.classList.add('hidden');
+  if (window.MLBMA_UI) MLBMA_UI.finishLoading();
 }
 
 function loadData() {

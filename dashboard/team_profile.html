@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Team Profile</title>
+<title>Chase Analytics · Team Profile</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -244,11 +244,12 @@ h1 {
 }
 .matchup-panel a.cta:hover { background: var(--purple-glow); }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="team_profile.html"></script>
 </head>
 <body>
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-text">Loading team intelligence...</div>
+<div class="loading-text">Loading team intelligence...</div>
 </div>
 <div class="container">
   <div class="header">
@@ -257,17 +258,8 @@ h1 {
       <span class="brand-pill">Team Profile System</span>
     </div>
     <h1>Team Organizational View</h1>
-    <p class="subtitle">Unified offense, rotation, bullpen, and matchup context — aggregated from pipeline metrics and player profiles.</p>
-    <div class="nav-links">
-      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
-      <a class="nav-link" href="player_search.html">Player Search</a>
-      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
-      <a class="nav-link" href="batter_profile.html">Batter Profile</a>
-      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
-      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
-      <a class="nav-link" href="bullpen_report.html">Bullpen Report</a>
-      <a class="nav-link active" href="team_profile.html">Team Profile</a>
-    </div>
+    <p class="subtitle">Full organizational offensive and pitching view.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
     <div class="data-banner" id="dataBanner"></div>
   </div>
 
@@ -281,7 +273,6 @@ h1 {
   <div id="app"></div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -770,10 +761,10 @@ function loadAll() {
 document.addEventListener('DOMContentLoaded', function() {
   initSelector();
   loadAll().then(function() {
-    document.getElementById('loading').classList.add('hide');
+    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     renderTeam(STATE.team);
   }).catch(function(err) {
-    document.getElementById('loading').classList.add('hide');
+    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
     document.getElementById('dataBanner').classList.add('show');
   });

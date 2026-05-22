@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Reliever Profile</title>
+<title>Chase Analytics · Reliever Profile</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -190,12 +190,13 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
 #profileContent { display: none; }
 #profileContent.ready { display: block; }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="reliever_profile.html"></script>
 </head>
 <body>
 
-<div class="loading" id="loadingScreen">
-  <div class="spinner"></div>
-  <div class="loading-text">Loading reliever intelligence from Google Sheets…</div>
+<div class="loading-text">Loading reliever intelligence from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -205,16 +206,8 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
       <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Reliever Profile</h1>
-    <p class="subtitle">Individual relief deep dive — leverage, inherited runners, platoon exposure, and recent outing log. Metrics from Bullpen_Individual and Reliever_Log.</p>
-    <nav class="nav-links">
-      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
-      <a class="nav-link" href="player_search.html">Player Search</a>
-      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
-      <a class="nav-link" href="batter_profile.html">Batter Profile</a>
-      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
-      <a class="nav-link" href="bullpen_report.html">Bullpen Report</a>
-      <a class="nav-link" href="team_profile.html">Team Profile</a>
-    </nav>
+    <p class="subtitle">Reliever splits, leverage, and betting context.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
@@ -247,27 +240,23 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     <div class="player-header" id="playerHeader"></div>
 
     <section class="section">
-      <div class="section-eyebrow">Section 1</div>
       <div class="section-title">Player Header</div>
       <div id="headerBlock"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 2</div>
       <div class="section-title">Season Line</div>
       <div class="section-subtitle" id="seasonSubtitle">YTD aggregate from appearance log</div>
       <div class="stat-bar" id="seasonBar"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 3</div>
       <div class="section-title">Metric Allowed Profile</div>
       <div class="section-subtitle">Lower is better — percentile among qualified relievers</div>
       <div class="metric-grid" id="allowedCards"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 4</div>
       <div class="section-title">Window Trend</div>
       <div class="section-subtitle">OSI allowed by window — hot = pitching better recently (lower allowed)</div>
       <div class="table-wrap" id="windowTableWrap"></div>
@@ -275,7 +264,6 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 5</div>
       <div class="section-title">Leverage Splits</div>
       <div class="section-subtitle">High vs low leverage — flag if high-lev ERA is 1.5+ runs worse</div>
       <div class="split-grid" id="levGrid"></div>
@@ -283,7 +271,6 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 6</div>
       <div class="section-title">Handedness Splits</div>
       <div class="section-subtitle">vs LHH and vs RHH — platoon flag if OSI allowed gap exceeds 8</div>
       <div class="split-grid" id="handGrid"></div>
@@ -291,7 +278,6 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 7</div>
       <div class="section-title">Inherited Runners</div>
       <div class="section-subtitle">Clean entry vs inherited entry — warn if inherited scored above 35%</div>
       <div class="split-grid" id="inheritGrid"></div>
@@ -299,28 +285,24 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 8</div>
       <div class="section-title">Home / Away Splits</div>
       <div class="split-grid" id="locGrid"></div>
       <div class="insight-line" id="locInsight"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 9</div>
       <div class="section-title">Recent Appearances</div>
       <div class="section-subtitle">Last 10 outings from Reliever_Log</div>
       <div class="table-wrap" id="logTableWrap"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 10</div>
       <div class="section-title">Betting Context Panel</div>
       <div class="betting-panel" id="bettingPanel"></div>
     </section>
   </div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 /* Thresholds mirror core/config.py RELIEVER_* constants */
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -1022,7 +1004,7 @@ function loadAll() {
     document.getElementById('brandPill').textContent = 'Load failed';
     document.getElementById('brandPill').classList.add('warn');
   }).finally(function() {
-    document.getElementById('loadingScreen').classList.add('hide');
+    document.getElementById('loadingScreen').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
   });
 }
 

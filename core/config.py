@@ -534,4 +534,10 @@ DASHBOARD_PAGES = {
         "url": "team_profile.html",
         "params": ("team",),
     },
+    "glossary": {
+        "file": "glossary.html",
+        "label": "Glossary",
+        "url": "glossary.html",
+        "params": None,
+    },
 }

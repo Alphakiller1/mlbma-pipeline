@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • MLB Offensive Extrapolation Model v4</title>
+<title>Chase Analytics · Offensive Dashboard</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -1225,12 +1225,13 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 #pane-reference { display: none; }
 
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
 </head>
 <body>
 
-<div class="loading" id="loadingScreen">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Loading live data from Google Sheets…</div>
+<div class="loading-text" id="loadingText">Loading live data from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -1243,24 +1244,16 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     <span class="brand-pill" id="brandPill">Loading…</span>
   </div>
   <h1>MLB Offensive Extrapolation Model</h1>
-  <div class="subtitle">Daily offensive intelligence — scan status and matchups first, drill into tools and definitions below when you need depth.</div>
+  <p class="subtitle">Daily offensive intelligence for MLB betting research.</p>
   <div class="header-meta">Last updated: <span id="headerUpdated">—</span></div>
-  <nav class="nav-links" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
-    <a class="nav-link" href="player_search.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Player Search</a>
-    <a class="nav-link" href="matchup_sheet.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Matchup Sheet</a>
-    <a class="nav-link" href="batter_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Batter Profile</a>
-    <a class="nav-link" href="pitcher_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Pitcher Profile</a>
-    <a class="nav-link" href="reliever_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Reliever Profile</a>
-    <a class="nav-link" href="bullpen_report.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Bullpen Report</a>
-    <a class="nav-link" href="team_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Team Profile</a>
-  </nav>
+  <div class="mlbma-nav-wrap" data-mlbma-nav></div>
   <div class="data-error-banner" id="dataErrorBanner"></div>
 </div>
 
 <!-- Control bar -->
 <!-- Watchlist sticky bar -->
 <div class="watchlist-bar" id="watchlistBar">
-  <span class="wl-label">📌 Watchlist</span>
+  <span class="wl-label">Pin Watchlist</span>
   <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
   <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
 </div>
@@ -1280,7 +1273,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
       <button class="toggle-btn active" data-time="YTD">YTD</button>
       <button class="toggle-btn" data-time="L30">L30</button>
       <button class="toggle-btn" data-time="L14">L14</button>
-      <button class="toggle-btn warn" data-time="L7">L7</button>
+      <span class="l7-note-wrap"><button class="toggle-btn warn" data-time="L7" id="l7ToggleBtn">L7</button><button type="button" class="l7-info-btn" id="l7InfoBtn" aria-label="L7 note">i</button><div class="l7-note-panel" id="l7NotePanel">L7 is a momentum flag only — noisy sample. LHP/RHP splits unavailable; Both split shown.</div></span>
     </div>
   </div>
   <div class="control-group">
@@ -1291,11 +1284,11 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     </div>
   </div>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-    <button class="icon-btn" title="Compare mode — click rows to add up to 4 teams" id="compareToggleBtn" onclick="toggleCompareMode()">⚖</button>
-    <button class="icon-btn" title="Pin mode — click ☆ next to rank to add to watchlist" id="pinToggleBtn" onclick="togglePinMode()">📌</button>
-    <button class="icon-btn" title="Export filtered view as CSV" onclick="exportCSV()">⬇</button>
-    <button class="icon-btn" title="Print / save as PDF" onclick="window.print()">🖨</button>
-    <button class="btn btn-primary" onclick="openModal('osi')">📊 Full Breakdown</button>
+    <button class="icon-btn" title="Compare mode" class="icon-btn icon-label-btn" id="compareToggleBtn" onclick="toggleCompareMode()">Compare</button>
+    <button class="icon-btn" title="Pin mode" class="icon-btn icon-label-btn" id="pinToggleBtn" onclick="togglePinMode()">Pin</button>
+    <button class="icon-btn" title="Export filtered view as CSV" onclick="exportCSV()" class="icon-btn icon-label-btn">Export</button>
+    <button class="icon-btn" title="Print / save as PDF" onclick="window.print()" class="icon-btn icon-label-btn">Print</button>
+    <button class="btn btn-primary" onclick="openModal('osi')">Breakdown</button>
   </div>
 </div>
 
@@ -1305,9 +1298,6 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <span class="filter-help">Try: <code>abq&gt;60 reg&gt;10</code> or <code>trend:rising</code> or just <code>nyy bos atl</code></span>
 </div>
 
-<div class="warn-banner" id="warnBanner">
-  ⚠️ <strong>L7 Note:</strong> Last 7 days is a momentum flag, not a standalone predictor. Treat as noisy. L7 LHP/RHP splits not available — showing Both only.
-</div>
 
 <!-- At-a-glance cards -->
 <div class="glance-grid" id="glanceGrid"></div>
@@ -1328,6 +1318,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     <span class="legend-dot"><span class="dot" style="background: var(--red);"></span> Weak &amp; Concerning</span>
   </div>
   <div class="chart-wrap">
+    <div class="chart-placeholder" id="chartPlaceholder">Loading status map...</div>
     <div id="mainChart"></div>
     <div class="tooltip" id="chartTip"></div>
   </div>
@@ -1342,8 +1333,8 @@ body.show-advanced-metrics .status-only-cols { display: none; }
       <div class="section-subtitle">Sorted by <span id="sortLabel" style="color: var(--purple); font-weight: 600;">status priority</span> · click headers to sort</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn" id="toggleAdvancedBtn" onclick="toggleAdvancedMetrics()">Show ABQ / RCV / OBR</button>
-      <button class="btn" onclick="resetSort()">↻ Reset</button>
+      <button class="btn" id="toggleAdvancedBtn" onclick="toggleAdvancedMetrics()">Advanced Columns</button>
+      <button class="btn" onclick="resetSort()">Reset</button>
     </div>
   </div>
   <div class="table-wrap sticky-team has-mobile-fallback">
@@ -1369,6 +1360,18 @@ body.show-advanced-metrics .status-only-cols { display: none; }
           <th data-sort="lhpOSI" class="advanced-cols">vLHP</th>
         </tr>
       </thead>
+      <tbody id="rankSkeleton">
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
+      </tbody>
       <tbody id="masterBody"></tbody>
     </table>
   </div>
@@ -1386,11 +1389,11 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 
 <div class="section">
   <div class="subtabs">
-    <button class="subtab active" data-pane="splits">Splits</button>
+    <button class="subtab active" data-pane="strat">Strategic Signals</button>
+    <button class="subtab" data-pane="splits">Splits</button>
     <button class="subtab" data-pane="trends">Trends</button>
     <button class="subtab" data-pane="compare">Compare</button>
     <button class="subtab" data-pane="matchup">Matchup Builder</button>
-    <button class="subtab" data-pane="strat">Strategic Signals</button>
     <button class="subtab" data-pane="reference">Reference Tables</button>
   </div>
 
@@ -1447,13 +1450,13 @@ body.show-advanced-metrics .status-only-cols { display: none; }
       <div>
         <div class="section-eyebrow">Compare Mode</div>
         <div class="section-title">Side-by-side radar &amp; metrics — pick 2–4 teams</div>
-        <div class="section-subtitle">Enable Compare mode in the toolbar (⚖), then click rows in the master table to select teams.</div>
+        <div class="section-subtitle">Enable Compare mode in the toolbar (Compare), then click rows in the master table to select teams.</div>
       </div>
     </div>
     <div class="compare-bar" id="compareBar">
       <span class="control-label">Selected</span>
       <div id="compareTeamsPills" style="display:flex;gap:6px;flex-wrap:wrap;">
-        <span style="color:var(--text-3);font-size:11px;">No teams selected — toggle ⚖ Compare in toolbar, then click rows.</span>
+        <span style="color:var(--text-3);font-size:11px;">No teams selected — toggle Compare in toolbar, then click rows.</span>
       </div>
       <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearCompare()">Clear</button>
     </div>
@@ -1491,7 +1494,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
 
   <!-- Strategic Signals pane -->
-  <div id="pane-strat" style="display:none;">
+  <div id="pane-strat">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Strategic Signals</div>
@@ -1517,83 +1520,12 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 
 </div><!-- /layer-advanced -->
 
-<!-- LAYER 3 — Glossary & Methodology -->
-<div class="layer-label">Metric Breakdown &amp; Glossary</div>
-<div class="section learning-section layer-glossary" id="glossaryLayer">
-  <div class="section-header">
-    <div>
-      <div class="section-title">How to read the model</div>
-      <div class="section-subtitle">All formulas and methodology live here — not on the main dashboard.</div>
-    </div>
-    <button class="btn" onclick="openModal('osi')">Full metric breakdown</button>
-  </div>
-  <div class="reading-steps">
-    <div class="reading-step"><strong>1. Status map</strong>Scan quadrants for undervalued vs cooling offenses without reading raw stats.</div>
-    <div class="reading-step"><strong>2. OSI + PALS</strong>Pair composite strength with schedule-adjusted confirmation before betting offense.</div>
-    <div class="reading-step"><strong>3. Archetype profile</strong>Read ABQ/RCV shape as a profile label — not isolated numbers.</div>
-    <div class="reading-step"><strong>4. PP-Gap + projOSI</strong>Use process gap with projected OSI for market lean (buy-low / fade).</div>
-    <div class="reading-step"><strong>5. Context</strong>Confirm trend, platoon, pitcher hand, and sample size in Advanced Tools.</div>
-  </div>
-  <div class="section-header" style="margin-top:8px;">
-    <div class="section-title" style="font-size:14px;">Core metrics (plain English)</div>
-  </div>
-  <div class="glossary-grid" id="glossaryGridPlain">
-    <div class="education-card glossary-term" data-term="abq process discipline contact"><div class="term">ABQ</div>At-bat quality — how good the process looks before results. Discipline, contact, chase, and swing decisions.</div>
-    <div class="education-card glossary-term" data-term="rcv damage power barrel"><div class="term">RCV</div>Run creation value — how much damage and scoring pressure the offense generates.</div>
-    <div class="education-card glossary-term" data-term="obr floor on base xwoba"><div class="term">OBR</div>On-base rating — the offensive floor from expected quality and walk environment.</div>
-    <div class="education-card glossary-term" data-term="osi composite offensive"><div class="term">OSI</div>Offensive strength index — the headline composite blending damage, process, and floor.</div>
-    <div class="education-card glossary-term" data-term="projosi projected regression market"><div class="term">projOSI</div>Projected OSI — where the model expects results to move based on expected vs actual contact.</div>
-    <div class="education-card glossary-term" data-term="pals pitching adjusted schedule"><div class="term">PALS</div>Pitching-adjusted lineup score — OSI adjusted for the quality of starting pitching faced.</div>
-    <div class="education-card glossary-term" data-term="oor opponent hvr hvl"><div class="term">OOR</div>Opponent offensive rating — how dangerous the offenses a staff has faced are, by handedness.</div>
-    <div class="education-card glossary-term" data-term="pp gap process production"><div class="term">PP-Gap</div>Process-production gap — ABQ minus RCV. Positive = process ahead of box-score production.</div>
-  </div>
-  <div class="section-header" style="margin-top:18px;">
-    <div class="section-title" style="font-size:14px;">Numerical interpretation</div>
-  </div>
-  <table class="tier-ref-table">
-    <thead><tr><th>OSI tier</th><th>Range</th><th>Read</th></tr></thead>
-    <tbody>
-      <tr><td>Elite</td><td>85+</td><td>Complete offensive weapon</td></tr>
-      <tr><td>High Level</td><td>75–84</td><td>Reliable top-tier unit</td></tr>
-      <tr><td>Dangerous</td><td>65–74</td><td>Can run hot in stretches</td></tr>
-      <tr><td>Inconsistent</td><td>50–64</td><td>Middle tier, matchup-dependent</td></tr>
-      <tr><td>Weak</td><td>&lt;50</td><td>Limited paths to runs</td></tr>
-    </tbody>
-  </table>
-  <table class="tier-ref-table" style="margin-top:12px;">
-    <thead><tr><th>Signal</th><th>Typical range</th><th>Read</th></tr></thead>
-    <tbody>
-      <tr><td>PP-Gap</td><td>+4 or more</td><td>Buy-low / process edge</td></tr>
-      <tr><td>PP-Gap</td><td>−4 or less</td><td>Regression / cooling risk</td></tr>
-      <tr><td>DF-Gap</td><td>+8 or more</td><td>Power-heavy volatility</td></tr>
-    </tbody>
-  </table>
-  <div class="section-header" style="margin-top:18px;">
-    <div class="section-title" style="font-size:14px;">Formula &amp; methodology (v4)</div>
-  </div>
-  <div class="formula-block"><strong>ABQ</strong> = 30% Discipline (BB%×0.55 + Chase%_inv×0.45) + 35% Contact (ZCon%×0.55 + OCon%×0.45) + 20% Pitch Pressure (SwStr%_inv) + 15% K Avoidance</div>
-  <div class="formula-block"><strong>RCV</strong> = 35% wRC+ + 32% Barrel%÷park + 20% ISO÷park + 13% HardHit%÷park</div>
-  <div class="formula-block"><strong>OBR</strong> = 65% xwOBA + 35% BB%</div>
-  <div class="formula-block"><strong>OSI</strong> = 43% RCV + 37% ABQ + 20% OBR · <strong>projOSI</strong> = OSI + clip((xwOBA−wOBA)×450, −8, +8)</div>
-  <div class="formula-block"><strong>OOR</strong> = 55% HvR + 45% HvL · <strong>PALS</strong> = (BA+ + PTF+) / 2</div>
-  <div class="glossary-tools" style="margin-top:16px;">
-    <input id="glossarySearch" class="glossary-search" placeholder="Search glossary…" oninput="filterGlossary()">
-  </div>
-  <div class="glossary-grid" id="glossaryGrid" style="margin-top:12px;">
-    <div class="education-card glossary-term" data-term="regression signal xwoba woba"><div class="term">Regression Signal</div>Expected contact quality minus actual production direction.</div>
-    <div class="education-card glossary-term" data-term="sustainability grade"><div class="term">Sustainability</div>How well OSI is supported across process, floor, damage, and regression.</div>
-    <div class="education-card glossary-term" data-term="trend rising cooling"><div class="term">Trend</div>Directional change across YTD → L30 → L14 → L7 windows.</div>
-    <div class="education-card glossary-term" data-term="platoon edge split"><div class="term">Platoon Edge</div>Difference in offensive quality vs RHP vs LHP.</div>
-    <div class="education-card glossary-term" data-term="df gap damage floor"><div class="term">DF-Gap</div>RCV minus OBR — power vs floor separation.</div>
-  </div>
-</div>
-
-<!-- Modal -->
+<!-- Modal --><!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-head">
       <div class="modal-title" id="modalTitle">Full Metric Breakdown</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()">Close</button>
     </div>
     <div class="modal-body">
       <div class="modal-selector">
@@ -1615,7 +1547,6 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 /* ============================================================
    GOOGLE SHEETS — public CSV export (no API key)
@@ -3347,7 +3278,7 @@ function toggleAdvancedMetrics(){
   STATE.showAdvancedMetrics = !STATE.showAdvancedMetrics;
   document.body.classList.toggle('show-advanced-metrics', STATE.showAdvancedMetrics);
   var btn = document.getElementById('toggleAdvancedBtn');
-  if(btn) btn.textContent = STATE.showAdvancedMetrics ? 'Hide ABQ / RCV / OBR' : 'Show ABQ / RCV / OBR';
+  if(btn) btn.textContent = STATE.showAdvancedMetrics ? 'Hide Advanced Columns' : 'Advanced Columns';
   renderMasterTable();
 }
 
@@ -4296,7 +4227,7 @@ function renderComparePane(){
   var bar = document.getElementById('compareTeamsPills');
   if(!bar) return;
   if(STATE.compareTeams.length === 0) {
-    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected — toggle ⚖ Compare in toolbar, then click rows.</span>';
+    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected — toggle Compare in toolbar, then click rows.</span>';
     document.getElementById('compareChart').innerHTML = '<div class="empty-msg">Pick teams to see radar comparison.</div>';
     document.getElementById('compareTable').innerHTML = '';
     return;
@@ -4557,6 +4488,8 @@ function mountReferenceTables(){
 
 function renderAll(){
   attachPalsToScores();
+  if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
+  if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   renderGlanceCards();
   renderMasterTable();
   renderQuadrant();
@@ -4762,10 +4695,14 @@ function renderOOR(){
 }
 
 function hideLoadingScreen() {
+  if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+  if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
+  if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   var screen = document.getElementById('loadingScreen');
-  if (!screen) return;
-  screen.classList.add('hide');
-  setTimeout(function(){ screen.style.display = 'none'; }, 400);
+  if (screen) {
+    screen.classList.add('hide');
+    setTimeout(function(){ screen.style.display = 'none'; }, 400);
+  }
 }
 
 function init(){
@@ -4792,8 +4729,6 @@ function init(){
   });
   var si = document.getElementById('searchInput');
   if(si) si.value = STATE.searchQuery;
-  if(STATE.time==='L7') document.getElementById('warnBanner').classList.add('show');
-
   loadLiveData().finally(function(){
     updateBrandPill();
     populateMatchupSelectors();
@@ -4812,6 +4747,23 @@ window.addEventListener('resize', function(){
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(function(){renderQuadrant(); renderSplitBars(); renderTrendHeatmap();}, 150);
 });
+
+function hideChartPlaceholder() {
+  var p = document.getElementById('chartPlaceholder');
+  if (p) p.classList.add('hide');
+}
+function hideRankSkeleton() {
+  var s = document.getElementById('rankSkeleton');
+  if (s) s.style.display = 'none';
+}
+(function() {
+  var btn = document.getElementById('l7InfoBtn');
+  var panel = document.getElementById('l7NotePanel');
+  if (btn && panel) {
+    btn.addEventListener('click', function(e) { e.stopPropagation(); panel.classList.toggle('open'); });
+    document.addEventListener('click', function() { panel.classList.remove('open'); });
+  }
+})();
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);

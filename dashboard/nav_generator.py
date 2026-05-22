@@ -16,8 +16,9 @@ OUT = Path(__file__).resolve().parent / "nav_snippet.html"
 # Order for nav display (matches standard dashboard header)
 NAV_ORDER = [
     "main",
-    "player_search",
     "matchup_sheet",
+    "player_search",
+    "glossary",
     "batter_profile",
     "pitcher_profile",
     "reliever_profile",

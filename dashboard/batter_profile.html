@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Batter Profile</title>
+<title>Chase Analytics · Batter Profile</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -254,12 +254,13 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 #profileContent { display: none; }
 #profileContent.ready { display: block; }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="batter_profile.html"></script>
 </head>
 <body>
 
-<div class="loading" id="loadingScreen">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets…</div>
+<div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -269,16 +270,8 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
       <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Batter Profile</h1>
-    <p class="subtitle">Player deep dive — created metrics, platoon and location splits, window trends, and auto-generated betting context. Live from the MLBMA pipeline sheet.</p>
-    <nav class="nav-links">
-      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
-      <a class="nav-link" href="player_search.html">Player Search</a>
-      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
-      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
-      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
-      <a class="nav-link" href="bullpen_report.html">Bullpen Report</a>
-      <a class="nav-link" href="team_profile.html">Team Profile</a>
-    </nav>
+    <p class="subtitle">Batter splits, trends, and betting context.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
@@ -315,27 +308,23 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     <div class="player-header" id="playerHeader"></div>
 
     <section class="section">
-      <div class="section-eyebrow">Section 1</div>
       <div class="section-title">Player Header</div>
       <div id="headerBlock"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 2</div>
       <div class="section-title">Season Snapshot</div>
       <div class="section-subtitle" id="snapshotSubtitle">Rate line for selected window</div>
       <div class="stat-bar" id="seasonBar"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 3</div>
       <div class="section-title">Created Metric Profile</div>
       <div class="section-subtitle">ABQ / RCV / OBR / OSI — percentile vs qualified batter pool (season vs RHP baseline)</div>
       <div class="metric-grid" id="metricCards"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 4</div>
       <div class="section-title">Window Trend Table</div>
       <div class="section-subtitle">Created metrics across windows — hot/cold if L7 is ±8+ vs YTD</div>
       <div class="table-wrap" id="windowTableWrap"></div>
@@ -343,7 +332,6 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 5</div>
       <div class="section-title">Handedness Splits</div>
       <div class="section-subtitle">vs RHP and vs LHP — gold flag if ABQ platoon gap exceeds 8 points</div>
       <div class="split-grid" id="handGrid"></div>
@@ -351,7 +339,6 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 6</div>
       <div class="section-title">Home / Away Splits</div>
       <div class="section-subtitle">Location context — flagged if home/away OSI gap exceeds 10 points</div>
       <div class="split-grid" id="locGrid"></div>
@@ -359,7 +346,6 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 7</div>
       <div class="section-title">vs SP / vs RP Splits</div>
       <div class="section-subtitle">Starter vs reliever exposure — full-game value flag when OSI vs RP exceeds OSI vs SP by 10+</div>
       <div class="split-grid" id="spRpGrid"></div>
@@ -367,14 +353,12 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 8</div>
       <div class="section-title">Comparable Players</div>
       <div class="section-subtitle">Nearest ABQ/RCV archetype matches on the board</div>
       <div class="comparable-list" id="comparableList"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 9</div>
       <div class="section-title">Betting Context Panel</div>
       <div class="section-subtitle">Synthesized angles from the strongest patterns in this profile</div>
       <div class="betting-panel" id="bettingPanel"></div>
@@ -382,7 +366,6 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   </div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -1209,7 +1192,7 @@ function loadAll() {
     document.getElementById('brandPill').textContent = 'Load failed';
     document.getElementById('brandPill').classList.add('warn');
   }).finally(function() {
-    document.getElementById('loadingScreen').classList.add('hide');
+    document.getElementById('loadingScreen').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
   });
 }
 

@@ -1,0 +1,123 @@
+/* MLBMA shared UI — nav, loading, footer */
+.mlbma-load-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 10001;
+  background: rgba(139, 92, 246, 0.15); overflow: hidden;
+}
+.mlbma-load-progress::after {
+  content: ''; position: absolute; left: -40%; top: 0; height: 100%; width: 40%;
+  background: linear-gradient(90deg, transparent, #C084FC, #8B5CF6, transparent);
+  animation: mlbma-progress 1.2s ease-in-out infinite;
+}
+.mlbma-load-progress.done { opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+@keyframes mlbma-progress {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+
+.mlbma-loading {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(6px);
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+.mlbma-loading.hide {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+.mlbma-load-logo {
+  font-size: 22px; font-weight: 600; letter-spacing: 0.06em;
+  background: linear-gradient(135deg, #fff 0%, #C084FC 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 10px;
+}
+.mlbma-load-sub { color: #A1A1AA; font-size: 13px; }
+
+.mlbma-nav-wrap {
+  display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap;
+}
+.mlbma-nav-toggle {
+  display: none; background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f);
+  color: var(--text, #F4F4F7); border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  font-size: 18px; line-height: 1;
+}
+.mlbma-nav {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1;
+}
+.mlbma-nav-group {
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+}
+.mlbma-nav-sep {
+  width: 1px; height: 20px; background: var(--border, #28282f); margin: 0 6px;
+}
+.mlbma-nav-pill {
+  font-size: 11.5px; font-weight: 500; color: var(--text-2, #A1A1AA);
+  text-decoration: none; padding: 7px 12px; border-radius: 99px;
+  border: 1px solid var(--border, #28282f); background: var(--bg-2, #111114);
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.mlbma-nav-pill:hover {
+  color: var(--text, #F4F4F7); border-color: var(--purple-3, #8B5CF6);
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.2);
+}
+.mlbma-nav-pill.active {
+  color: #fff; background: var(--purple-3, #8B5CF6);
+  border-color: var(--purple, #C084FC);
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.35);
+}
+
+@media (max-width: 900px) {
+  .mlbma-nav-toggle { display: block; }
+  .mlbma-nav {
+    display: none; width: 100%; flex-direction: column; align-items: stretch;
+    padding: 10px 0; border-top: 1px solid var(--border, #28282f); margin-top: 8px;
+  }
+  .mlbma-nav.open { display: flex; }
+  .mlbma-nav-group { flex-direction: column; align-items: stretch; }
+  .mlbma-nav-sep { width: 100%; height: 1px; margin: 6px 0; }
+  .mlbma-nav-pill { border-radius: 8px; text-align: center; }
+}
+
+.mlbma-footer {
+  margin-top: 48px; padding: 18px 24px; border-top: 1px solid var(--border, #28282f);
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center;
+  font-size: 11.5px; color: var(--text-3, #71717A);
+}
+.mlbma-footer-center { text-align: center; }
+.mlbma-footer-right { text-align: right; }
+@media (max-width: 700px) {
+  .mlbma-footer { grid-template-columns: 1fr; text-align: center; }
+  .mlbma-footer-right { text-align: center; }
+}
+
+.icon-label-btn {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 6px 10px; min-width: auto;
+}
+.l7-note-wrap { display: inline-flex; align-items: center; gap: 4px; position: relative; }
+.l7-info-btn {
+  width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--gold, #FBBF24);
+  background: transparent; color: var(--gold, #FBBF24); font-size: 10px; cursor: pointer;
+  line-height: 16px; padding: 0;
+}
+.l7-note-panel {
+  display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; z-index: 50;
+  min-width: 280px; padding: 10px 12px; font-size: 11px; color: var(--text-2, #A1A1AA);
+  background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f); border-radius: 8px;
+}
+.l7-note-panel.open { display: block; }
+
+.skeleton-row td { padding: 10px 8px; }
+.skeleton-bar {
+  height: 12px; border-radius: 4px;
+  background: linear-gradient(90deg, #1f1f25 25%, #2a2a32 50%, #1f1f25 75%);
+  background-size: 200% 100%; animation: shimmer 1.2s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.chart-placeholder {
+  min-height: 320px; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-3, #18181c); border: 1px dashed var(--border, #28282f);
+  border-radius: 12px; color: var(--text-3, #71717A); font-size: 13px;
+}
+.chart-placeholder.hide { display: none; }

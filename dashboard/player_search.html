@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Player Search</title>
+<title>Chase Analytics · Player Search</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -181,49 +181,40 @@ h1 {
 }
 .data-banner.show { display: block; }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="player_search.html"></script>
 </head>
 <body>
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-  <div style="color:var(--text-2);font-size:13px;">Indexing players and teams…</div>
+<div style="color:var(--text-2);font-size:13px;">Indexing players and teams…</div>
 </div>
 <div class="container">
   <header class="header">
     <span class="brand-tag">Chase Analytics</span>
     <h1>Player Search</h1>
-    <p class="subtitle">Search every batter, starter, reliever, and team profile in the pipeline. Results filter instantly as you type.</p>
-    <nav class="nav-links">
-      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
-      <a class="nav-link active" href="player_search.html">Player Search</a>
-      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
-      <a class="nav-link" href="batter_profile.html">Batter Profile</a>
-      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
-      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
-      <a class="nav-link" href="bullpen_report.html">Bullpen Report</a>
-      <a class="nav-link" href="team_profile.html">Team Profile</a>
-    </nav>
+    <p class="subtitle">Search all players and teams in the pipeline.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
   <div class="search-zone">
     <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="search" class="search-input" id="searchInput" placeholder="Search player name or team (e.g. Judge, NYY)…" autocomplete="off">
+      <input type="search" class="search-input" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
     <div class="filter-pills" id="filterPills">
       <button type="button" class="filter-pill active" data-filter="all">All</button>
       <button type="button" class="filter-pill" data-filter="batter">Batters</button>
-      <button type="button" class="filter-pill" data-filter="sp">Starting Pitchers</button>
+      <button type="button" class="filter-pill" data-filter="sp">SPs</button>
       <button type="button" class="filter-pill" data-filter="reliever">Relievers</button>
       <button type="button" class="filter-pill" data-filter="team">Teams</button>
     </div>
   </div>
 
   <div id="featured" class="featured"></div>
+  <div id="resultCount" class="results-header" style="display:none;"></div>
   <div id="resultsArea"></div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -484,16 +475,21 @@ function filteredResults() {
 function renderResults() {
   var list = filteredResults();
   var area = document.getElementById('resultsArea');
+  var countEl = document.getElementById('resultCount');
   if (!STATE.query && STATE.filter === 'all') {
+    if (countEl) countEl.style.display = 'none';
     area.innerHTML = '';
     return;
   }
+  if (countEl) {
+    countEl.style.display = 'block';
+    countEl.textContent = 'Showing ' + list.length + ' player' + (list.length === 1 ? '' : 's');
+  }
   if (!list.length) {
-    area.innerHTML = '<div class="empty-msg">No matches for “' + esc(STATE.query) + '”</div>';
+    area.innerHTML = '<div class="empty-msg">No matches for "' + esc(STATE.query) + '"</div>';
     return;
   }
-  area.innerHTML = '<div class="results-header">' + list.length + ' result' + (list.length === 1 ? '' : 's') + '</div>' +
-    '<div class="results-grid">' + list.map(renderCard).join('') + '</div>';
+  area.innerHTML = '<div class="results-grid">' + list.map(renderCard).join('') + '</div>';
 }
 
 function renderFeatured() {
@@ -618,11 +614,11 @@ document.addEventListener('DOMContentLoaded', function() {
   if (q) document.getElementById('searchInput').value = q;
 
   loadAll().then(function() {
-    document.getElementById('loading').classList.add('hide');
+    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     if (q) { STATE.query = q; onSearchInput(); }
-    else { renderFeatured(); }
+    else { renderFeatured(); renderResults(); }
   }).catch(function(err) {
-    document.getElementById('loading').classList.add('hide');
+    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
     document.getElementById('dataBanner').classList.add('show');
   });

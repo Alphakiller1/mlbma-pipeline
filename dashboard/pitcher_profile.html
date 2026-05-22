@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Pitcher Intelligence Profile</title>
+<title>Chase Analytics · Pitcher Profile</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -255,12 +255,13 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 #profileContent { display: none; }
 #profileContent.ready { display: block; }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
 </head>
 <body>
 
-<div class="loading" id="loadingScreen">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets…</div>
+<div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -270,16 +271,8 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
       <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Pitcher Intelligence Profile</h1>
-    <p class="subtitle">Starting-pitcher deep dive — season line, lineup-quality splits, platoon tendencies, and betting context. Live from the MLBMA pipeline sheet.</p>
-    <nav class="nav-links">
-      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
-      <a class="nav-link" href="player_search.html">Player Search</a>
-      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
-      <a class="nav-link" href="batter_profile.html">Batter Profile</a>
-      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
-      <a class="nav-link" href="bullpen_report.html">Bullpen Report</a>
-      <a class="nav-link" href="team_profile.html">Team Profile</a>
-    </nav>
+    <p class="subtitle">SP deep dive — splits, trends, betting context.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
     <div class="header-meta">Sheet: <span id="headerUpdated">—</span></div>
     <div class="data-banner" id="dataBanner"></div>
   </header>
@@ -302,21 +295,18 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     <div class="pitcher-title-row" id="pitcherHeader"></div>
 
     <section class="section" id="secSeason">
-      <div class="section-eyebrow">Section 1</div>
       <div class="section-title">Season Line</div>
       <div class="section-subtitle">YTD standard line and team pitching environment</div>
       <div class="stat-bar" id="seasonBar"></div>
     </section>
 
     <section class="section" id="secAllowed">
-      <div class="section-eyebrow">Section 2</div>
       <div class="section-title">Metric Allowed Profile</div>
       <div class="section-subtitle">Average opponent offensive quality faced — lower is better for the pitcher</div>
       <div class="metric-grid" id="allowedCards"></div>
     </section>
 
     <section class="section" id="secOsi">
-      <div class="section-eyebrow">Section 3</div>
       <div class="section-title">Performance vs Lineup Quality (OSI Tier)</div>
       <div class="section-subtitle">How workload and results shift vs High / Mid / Low OSI offenses</div>
       <div class="table-wrap" id="osiTableWrap"></div>
@@ -324,7 +314,6 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     </section>
 
     <section class="section" id="secAbq">
-      <div class="section-eyebrow">Section 4</div>
       <div class="section-title">ABQ Split</div>
       <div class="section-subtitle">Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups</div>
       <div class="table-wrap" id="abqTableWrap"></div>
@@ -332,28 +321,24 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     </section>
 
     <section class="section" id="secHand">
-      <div class="section-eyebrow">Section 5</div>
       <div class="section-title">Handedness Splits</div>
       <div class="section-subtitle">vs LHH and vs RHH — from sheet platoon rows when available</div>
       <div class="hand-grid" id="handGrid"></div>
     </section>
 
     <section class="section" id="secLoc">
-      <div class="section-eyebrow">Section 6</div>
       <div class="section-title">Home / Away Splits</div>
       <div class="section-subtitle">Park and road context</div>
       <div class="loc-grid" id="locGrid"></div>
     </section>
 
     <section class="section" id="secLog">
-      <div class="section-eyebrow">Section 7</div>
       <div class="section-title">Recent Start Log</div>
       <div class="section-subtitle">Last 10 starts with opponent lineup quality</div>
       <div class="table-wrap" id="logTableWrap"></div>
     </section>
 
     <section class="section" id="secF5">
-      <div class="section-eyebrow">Section 8</div>
       <div class="section-title">F5 Profile</div>
       <div class="section-subtitle">First-five ERA by opponent OSI tier (team runs through 5 innings)</div>
       <div class="table-wrap" id="f5TableWrap"></div>
@@ -361,7 +346,6 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     </section>
 
     <section class="section" id="secBetting">
-      <div class="section-eyebrow">Section 9</div>
       <div class="section-title">Betting Context Panel</div>
       <div class="section-subtitle">Auto-synthesized angles from the strongest patterns in this profile</div>
       <div class="betting-panel" id="bettingPanel"></div>
@@ -369,7 +353,6 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   </div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -1008,7 +991,7 @@ function loadAll() {
     banner.classList.add('show');
     if (loadingText) loadingText.textContent = 'Load failed — check sheet tabs';
   }).finally(function() {
-    document.getElementById('loadingScreen').classList.add('hide');
+    document.getElementById('loadingScreen').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
   });
 }
 

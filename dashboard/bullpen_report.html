@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics • Bullpen Intelligence Report</title>
+<title>Chase Analytics · Bullpen Report</title>
 <style>
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
@@ -178,12 +178,13 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 #reportContent { display: none; }
 #reportContent.ready { display: block; }
 </style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_ui.js" data-page="bullpen_report.html"></script>
 </head>
 <body>
 
-<div class="loading" id="loadingScreen">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Loading bullpen intelligence from Google Sheets…</div>
+<div class="loading-text" id="loadingText">Loading bullpen intelligence from Google Sheets…</div>
 </div>
 
 <div class="container">
@@ -193,16 +194,8 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
       <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Bullpen Intelligence Report</h1>
-    <p class="subtitle">Team-level relief unit analysis — leverage splits, lineup-quality performance, individual arms, and today's matchup edges. Live from the MLBMA pipeline sheet.</p>
-    <nav class="nav-links">
-      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
-      <a class="nav-link" href="player_search.html">Player Search</a>
-      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
-      <a class="nav-link" href="batter_profile.html">Batter Profile</a>
-      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
-      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
-      <a class="nav-link" href="team_profile.html">Team Profile</a>
-    </nav>
+    <p class="subtitle">Team bullpen intelligence and matchup context.</p>
+    <div class="mlbma-nav-wrap" data-mlbma-nav></div>
     <div class="header-meta">Sheet: <span id="headerMeta"></span></div>
     <div class="data-banner" id="dataBanner"></div>
   </header>
@@ -220,14 +213,12 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
     <div class="team-title-row" id="teamHeader"></div>
 
     <section class="section">
-      <div class="section-eyebrow">Section 1</div>
       <div class="section-title">Team Bullpen Overview</div>
       <div class="section-subtitle">Headline relief quality indicators</div>
       <div class="metric-grid" id="overviewCards"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 2</div>
       <div class="section-title">Bullpen Metric Allowed Profile</div>
       <div class="section-subtitle">Average opponent offensive quality faced — lower is better for the bullpen</div>
       <div class="metric-grid" id="allowedCards"></div>
@@ -235,7 +226,6 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 3</div>
       <div class="section-title">Performance vs Lineup Quality</div>
       <div class="section-subtitle">Results vs High / Mid / Low OSI offenses</div>
       <div class="table-wrap" id="osiTableWrap"></div>
@@ -243,7 +233,6 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 4</div>
       <div class="section-title">Leverage Splits</div>
       <div class="section-subtitle">High-leverage vs low-leverage execution</div>
       <div class="split-grid" id="levGrid"></div>
@@ -251,34 +240,29 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 5</div>
       <div class="section-title">Handedness Splits</div>
       <div class="section-subtitle">vs RHH and vs LHH</div>
       <div class="split-grid" id="handGrid"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 6</div>
       <div class="section-title">Home / Away Splits</div>
       <div class="loc-grid" id="locGrid"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 7</div>
       <div class="section-title">Individual Relievers</div>
       <div class="section-subtitle">Click a row to expand last 10 appearances</div>
       <div class="table-wrap" id="relieverTableWrap"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 8</div>
       <div class="section-title">Today's Matchup Context</div>
       <div class="section-subtitle">Opponent OSI vs this bullpen's historical tier performance</div>
       <div id="matchupContext"></div>
     </section>
 
     <section class="section">
-      <div class="section-eyebrow">Section 9</div>
       <div class="section-title">Bullpen Betting Context Panel</div>
       <div class="section-subtitle">Auto-synthesized angles from the strongest patterns</div>
       <div class="betting-panel" id="bettingPanel"></div>
@@ -286,7 +270,6 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   </div>
 </div>
 
-<script src="mlbma_config.js"></script>
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -865,7 +848,7 @@ function loadAll() {
     document.getElementById('dataBanner').textContent = 'Could not load sheets: ' + err;
     document.getElementById('dataBanner').classList.add('show');
   }).finally(function() {
-    document.getElementById('loadingScreen').classList.add('hide');
+    document.getElementById('loadingScreen').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
   });
 }
 
