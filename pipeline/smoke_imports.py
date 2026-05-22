@@ -17,6 +17,7 @@ MODULES = [
     "core.compute_pitching",
     "core.compute_oor",
     "core.compute_pals",
+    "core.compute_signals",
     "core.compute",
     "scrapers.scrape_savant",
     "scrapers.scrape_fangraphs",
@@ -28,7 +29,6 @@ MODULES = [
 ]
 
 EMPTY_PLACEHOLDERS = [
-    "core.compute_signals",
     "outputs.push_matchups",
 ]
 

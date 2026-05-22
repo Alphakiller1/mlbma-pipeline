@@ -72,3 +72,49 @@ CHROME_PATH = _resolve_chrome_path()
 PAGE_DELAY   = 20
 TAB_DELAY    = 10
 COOLDOWN     = 45
+
+# ── Cross-metric signal thresholds (compute_signals.py) ─────────────────────
+
+# Signal 1 — K% vs OBR
+SIGNAL_1_PITCHER_K_PCT_MAX = 20.0
+SIGNAL_1_LINEUP_OBR_MIN = 65.0
+
+# Signal 2 — BB% vs ABQ
+SIGNAL_2_PITCHER_BB_PCT_HIGH = 8.5
+SIGNAL_2_PITCHER_BB_PCT_LOW = 6.0
+SIGNAL_2_LINEUP_ABQ_WALK_GAME_MIN = 70.0
+SIGNAL_2_LINEUP_ABQ_CHESS_MIN = 72.0
+
+# Signal 3 — HR/9 vs RCV
+SIGNAL_3_PITCHER_HR9_MIN = 1.25
+SIGNAL_3_LINEUP_RCV_MIN = 72.0
+
+# Signal 4 — OSI vs Pitching Score
+SIGNAL_4_OSI_PITCH_GAP_MIN = 10.0
+
+# Signal 5 — PALS + projOSI (also gates PP-Gap convergence weight)
+SIGNAL_5_OSI_PALS_GAP_MAX = 4.0
+SIGNAL_5_PP_GAP_MIN = 3.0
+
+# Signal 6 — OBR + BB%
+SIGNAL_6_OBR_HIGH_MIN = 68.0
+SIGNAL_6_OBR_LOW_MAX = 55.0
+SIGNAL_6_BB_PITCHER_HIGH_MIN = 8.5
+SIGNAL_6_BB_PITCHER_LOW_MAX = 6.0
+
+# Signal 7 — ABQ platoon gap + handedness
+SIGNAL_7_ABQ_PLATOON_GAP_MIN = 8.0
+
+# Signal 8 — RCV archetype tiers (High / Mid / Low on RCV × OBR grid)
+SIGNAL_8_RCV_HIGH = 58.0
+SIGNAL_8_RCV_LOW = 42.0
+SIGNAL_8_OBR_HIGH = 58.0
+SIGNAL_8_OBR_LOW = 42.0
+
+# Signal 9 — Schedule context (opponent OOR vs season HvP baseline)
+SIGNAL_9_OOR_DELTA_MIN = 5.0
+
+# Convergence
+CONVERGENCE_PLAY_MIN_WEIGHT = 4
+CONVERGENCE_PP_GAP_WEIGHT = 2
+CONVERGENCE_DEFAULT_WEIGHT = 1
