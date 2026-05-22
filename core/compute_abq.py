@@ -10,19 +10,18 @@ ABQ = 0.30 x discipline + 0.35 x contact_quality + 0.20 x pitch_pressure + 0.15 
 
 import pandas as pd
 
+from core.config import ABQ_CONTACT_WEIGHTS, ABQ_DISCIPLINE_WEIGHTS, ABQ_WEIGHTS
 from core.metrics_utils import clean_pct, invert, normalize
 
-# Component weights (top-level ABQ blend)
-W_DISCIPLINE = 0.30
-W_CONTACT = 0.35
-W_PITCH_PRESSURE = 0.20
-W_K_AVOIDANCE = 0.15
+W_DISCIPLINE = ABQ_WEIGHTS["discipline"]
+W_CONTACT = ABQ_WEIGHTS["contact_quality"]
+W_PITCH_PRESSURE = ABQ_WEIGHTS["pitch_pressure"]
+W_K_AVOIDANCE = ABQ_WEIGHTS["k_avoidance"]
 
-# Sub-component weights within discipline / contact_quality
-W_BB_DISCIPLINE = 0.55
-W_CHASE_DISCIPLINE = 0.45
-W_ZCON_CONTACT = 0.55
-W_OCON_CONTACT = 0.45
+W_BB_DISCIPLINE = ABQ_DISCIPLINE_WEIGHTS["bb_pct"]
+W_CHASE_DISCIPLINE = ABQ_DISCIPLINE_WEIGHTS["chase_inv"]
+W_ZCON_CONTACT = ABQ_CONTACT_WEIGHTS["zcon"]
+W_OCON_CONTACT = ABQ_CONTACT_WEIGHTS["ocon"]
 
 
 def calc_abq(std, savant):

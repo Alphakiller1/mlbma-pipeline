@@ -9,11 +9,11 @@ import os
 
 import pandas as pd
 
-from core.config import DATA_DIR
+from core.config import DATA_DIR, OOR_WEIGHTS
 from core.metrics_utils import normalize
 
-W_HVR = 0.55
-W_HVL = 0.45
+W_HVR = OOR_WEIGHTS["hvr"]
+W_HVL = OOR_WEIGHTS["hvl"]
 
 
 def calc_oor(osi_rhp, osi_lhp):

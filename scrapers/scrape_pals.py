@@ -7,32 +7,14 @@ import requests
 from google.oauth2.service_account import Credentials
 
 from core.compute_pals import calc_pals, load_osi_for_pals, load_sp_xfip
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID
-
-TEAM_MAP = {
-    "Arizona Diamondbacks": "ARI", "Atlanta Braves": "ATL",
-    "Baltimore Orioles": "BAL", "Boston Red Sox": "BOS",
-    "Chicago Cubs": "CHC", "Chicago White Sox": "CHW",
-    "Cincinnati Reds": "CIN", "Cleveland Guardians": "CLE",
-    "Colorado Rockies": "COL", "Detroit Tigers": "DET",
-    "Houston Astros": "HOU", "Kansas City Royals": "KCR",
-    "Los Angeles Angels": "LAA", "Los Angeles Dodgers": "LAD",
-    "Miami Marlins": "MIA", "Milwaukee Brewers": "MIL",
-    "Minnesota Twins": "MIN", "New York Mets": "NYM",
-    "New York Yankees": "NYY", "Athletics": "ATH",
-    "Philadelphia Phillies": "PHI", "Pittsburgh Pirates": "PIT",
-    "San Diego Padres": "SDP", "San Francisco Giants": "SFG",
-    "Seattle Mariners": "SEA", "St. Louis Cardinals": "STL",
-    "Tampa Bay Rays": "TBR", "Texas Rangers": "TEX",
-    "Toronto Blue Jays": "TOR", "Washington Nationals": "WSN",
-}
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SEASON_START, SHEET_ID, TEAM_MAP
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
 def get_season_games():
     """Pull all completed games this season with starting pitchers."""
-    season_start = "2025-03-01"
+    season_start = SEASON_START
     today = datetime.now().strftime("%Y-%m-%d")
 
     print(f"Fetching game log from {season_start} to {today}...")

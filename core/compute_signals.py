@@ -14,8 +14,9 @@ from typing import Any
 import pandas as pd
 
 from core.config import (
+    ARCHETYPE_NAMES,
     CONVERGENCE_DEFAULT_WEIGHT,
-    CONVERGENCE_PLAY_MIN_WEIGHT,
+    CONVERGENCE_THRESHOLD,
     CONVERGENCE_PP_GAP_WEIGHT,
     DATA_DIR,
     SIGNAL_1_LINEUP_OBR_MIN,
@@ -90,7 +91,7 @@ def metric_tier(value: float | None, high: float, low: float) -> str:
         return "Mid"
     if value >= high:
         return "High"
-    if value <= low:
+    if value < low:
         return "Low"
     return "Mid"
 
@@ -453,16 +454,21 @@ def signal_7_abq_platoon(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
 def signal_8_rcv_archetype(offense: TeamMetrics) -> dict:
     arch = rcv_archetype(offense.rcv, offense.obr)
     fired = arch != "Mid/Mid"
+    info = ARCHETYPE_NAMES.get(arch, {})
+    label = info.get("label", arch)
+    desc = info.get("description", "")
     return _signal_result(
         "RCV archetype",
         fired,
         "profile",
         1.0 if fired else 0.0,
-        "Specialized offensive profile",
+        label,
         (
-            f"Non-neutral archetype {arch} — RCV/OBR shape is not balanced Mid/Mid."
-            if fired
+            f"{label} ({arch}) — {desc}"
+            if fired and desc
             else f"Balanced Mid/Mid archetype ({arch})."
+            if not fired
+            else f"Non-neutral archetype {arch}."
         ),
     )
 
@@ -588,7 +594,7 @@ def compute_convergence(signals: list[dict]) -> dict:
     return {
         "convergence_count": weighted,
         "convergence_direction": convergence_direction,
-        "is_convergence_play": weighted >= CONVERGENCE_PLAY_MIN_WEIGHT,
+        "is_convergence_play": weighted >= CONVERGENCE_THRESHOLD,
         "signals_fired": len(fired),
     }
 

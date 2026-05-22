@@ -4,7 +4,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID
+from core.config import CREDS_FILE, CURRENT_SEASON, DATA_DIR, SCOPES, SHEET_ID
 
 def get_client():
     creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
@@ -52,7 +52,7 @@ def run():
 
     ts_sheet.update([
         ["Last Updated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
-        ["Season", "2025"],
+        ["Season", str(CURRENT_SEASON)],
         ["Source", "FanGraphs + Baseball Savant"],
     ])
     print("  Pushed Last_Updated timestamp")

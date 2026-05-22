@@ -10,7 +10,7 @@ import os
 
 import pandas as pd
 
-from core.config import DATA_DIR
+from core.config import DATA_DIR, PALS_WEIGHTS
 from core.metrics_utils import load
 
 
@@ -66,7 +66,10 @@ def calc_pals(games, sp_df, osi_df):
 
     df["BA_plus"] = normalize_optional(df["OSI"])
     df["PTF_plus"] = normalize_optional(df["avg_xFIP_faced"], invert=True)
-    df["PALS"] = (df["BA_plus"] + df["PTF_plus"]) / 2
+    df["PALS"] = (
+        PALS_WEIGHTS["ba_plus"] * df["BA_plus"]
+        + PALS_WEIGHTS["ptf_plus"] * df["PTF_plus"]
+    )
 
     df = df.sort_values("PALS", ascending=False).reset_index(drop=True)
     df.index += 1

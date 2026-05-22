@@ -9,12 +9,12 @@ import os
 import numpy as np
 import pandas as pd
 
-from core.config import DATA_DIR
+from core.config import DATA_DIR, PITCHING_WEIGHTS
 from core.metrics_utils import clean_pct, invert, normalize
 
-W_K = 0.40
-W_BB = 0.35
-W_HR9 = 0.25
+W_K = PITCHING_WEIGHTS["k_pct"]
+W_BB = PITCHING_WEIGHTS["inv_bb_pct"]
+W_HR9 = PITCHING_WEIGHTS["inv_hr9"]
 
 
 def calc_pitching_score(sp_std):

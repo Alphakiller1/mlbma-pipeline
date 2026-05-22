@@ -7,11 +7,13 @@ projOSI = OSI + clip((xwOBA - wOBA) x 450, -8, +8)
 
 import pandas as pd
 
-W_RCV = 0.43
-W_ABQ = 0.37
-W_OBR = 0.20
-REG_CLIP = 8
-REG_SCALE = 450
+from core.config import OSI_WEIGHTS, PROJ_OSI_REG_CLIP, PROJ_OSI_REG_SCALE
+
+W_RCV = OSI_WEIGHTS["rcv"]
+W_ABQ = OSI_WEIGHTS["abq"]
+W_OBR = OSI_WEIGHTS["obr"]
+REG_CLIP = PROJ_OSI_REG_CLIP
+REG_SCALE = PROJ_OSI_REG_SCALE
 
 
 def calc_osi(abq, rcv, obr):

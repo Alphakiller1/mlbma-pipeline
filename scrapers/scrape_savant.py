@@ -3,26 +3,17 @@ import pandas as pd
 from io import StringIO
 import os
 
-from core.config import DATA_DIR
+from core.config import CURRENT_SEASON, DATA_DIR, TEAM_MAP_BY_ID
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
-}
-
-TEAM_MAP = {
-    133: "ATH", 134: "PIT", 135: "SDP", 136: "SEA", 137: "SFG",
-    138: "STL", 139: "TBR", 140: "TEX", 141: "TOR", 142: "MIN",
-    143: "PHI", 144: "ATL", 145: "CHW", 146: "MIA", 147: "NYY",
-    158: "MIL", 108: "LAA", 109: "ARI", 110: "BAL", 111: "BOS",
-    112: "CHC", 113: "CIN", 114: "CLE", 115: "COL", 116: "DET",
-    117: "HOU", 118: "KCR", 119: "LAD", 120: "WSN", 121: "NYM",
 }
 
 def fetch_player_team_map():
     print("Fetching player-team map...")
     r = requests.get(
         "https://statsapi.mlb.com/api/v1/sports/1/players",
-        params={"season": "2025", "gameType": "R"},
+        params={"season": str(CURRENT_SEASON), "gameType": "R"},
         headers=HEADERS
     )
     players = r.json()["people"]
@@ -31,14 +22,14 @@ def fetch_player_team_map():
         pid = p.get("id")
         team_id = p.get("currentTeam", {}).get("id")
         if pid and team_id:
-            lookup[pid] = TEAM_MAP.get(team_id, f"T{team_id}")
+            lookup[pid] = TEAM_MAP_BY_ID.get(team_id, f"T{team_id}")
     print(f"  Mapped {len(lookup)} players")
     return lookup
 
 def fetch_savant_leaderboard(player_team_map):
     url = "https://baseballsavant.mlb.com/leaderboard/custom"
     params = {
-        "year": "2025",
+        "year": str(CURRENT_SEASON),
         "type": "batter",
         "filter": "",
         "min": "50",
@@ -83,7 +74,7 @@ def fetch_savant_splits(pitcher_hand=None):
     url = "https://baseballsavant.mlb.com/statcast_search/csv"
     params = {
         "all": "true",
-        "hfSea": "2025|",
+        "hfSea": f"{CURRENT_SEASON}|",
         "hfGT": "R|",
         "player_type": "batter",
         "group_by": "name",

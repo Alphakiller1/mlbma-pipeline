@@ -7,12 +7,13 @@ Park factor placeholder = 1.0 until park data is added.
 
 import pandas as pd
 
+from core.config import PARK_FACTOR_DEFAULT, RCV_WEIGHTS
 from core.metrics_utils import normalize
 
-W_WRC = 0.35
-W_BARREL = 0.32
-W_ISO = 0.20
-W_HARD_HIT = 0.13
+W_WRC = RCV_WEIGHTS["wrc_plus"]
+W_BARREL = RCV_WEIGHTS["barrel_pct"]
+W_ISO = RCV_WEIGHTS["iso"]
+W_HARD_HIT = RCV_WEIGHTS["hard_hit"]
 
 
 def calc_rcv(std, bb, savant):
@@ -24,7 +25,7 @@ def calc_rcv(std, bb, savant):
     sav = savant[["Tm", "Barrel%", "HardHit%", "xwOBA"]].copy()
     df = df.merge(sav, on="Tm", how="left")
 
-    df["park"] = 1.0
+    df["park"] = PARK_FACTOR_DEFAULT
 
     df["barrel_adj"] = pd.to_numeric(df["Barrel%"], errors="coerce").fillna(8.0) / df["park"]
     df["iso_adj"] = df["ISO"] / df["park"]

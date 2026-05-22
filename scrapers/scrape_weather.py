@@ -11,28 +11,10 @@ import pandas as pd
 import requests
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, TEAM_MAP
 
 HEADERS = {
     "User-Agent": "curl/8.0 (compatible; MLBMA-Pipeline/1.0)",
-}
-
-TEAM_MAP = {
-    "Arizona Diamondbacks": "ARI", "Atlanta Braves": "ATL",
-    "Baltimore Orioles": "BAL", "Boston Red Sox": "BOS",
-    "Chicago Cubs": "CHC", "Chicago White Sox": "CHW",
-    "Cincinnati Reds": "CIN", "Cleveland Guardians": "CLE",
-    "Colorado Rockies": "COL", "Detroit Tigers": "DET",
-    "Houston Astros": "HOU", "Kansas City Royals": "KCR",
-    "Los Angeles Angels": "LAA", "Los Angeles Dodgers": "LAD",
-    "Miami Marlins": "MIA", "Milwaukee Brewers": "MIL",
-    "Minnesota Twins": "MIN", "New York Mets": "NYM",
-    "New York Yankees": "NYY", "Athletics": "ATH",
-    "Philadelphia Phillies": "PHI", "Pittsburgh Pirates": "PIT",
-    "San Diego Padres": "SDP", "San Francisco Giants": "SFG",
-    "Seattle Mariners": "SEA", "St. Louis Cardinals": "STL",
-    "Tampa Bay Rays": "TBR", "Texas Rangers": "TEX",
-    "Toronto Blue Jays": "TOR", "Washington Nationals": "WSN",
 }
 
 # Fixed or primary indoor venues (schedule venue feed often lacks roofType)

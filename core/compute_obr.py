@@ -6,10 +6,11 @@ OBR = 0.65 x xwOBA + 0.35 x BB%
 
 import pandas as pd
 
+from core.config import OBR_WEIGHTS
 from core.metrics_utils import clean_pct, normalize
 
-W_XWOBA = 0.65
-W_BB = 0.35
+W_XWOBA = OBR_WEIGHTS["xwoba"]
+W_BB = OBR_WEIGHTS["bb_pct"]
 
 
 def calc_obr(std, savant):
