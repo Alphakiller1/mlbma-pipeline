@@ -35,6 +35,14 @@ def normalize(series):
     return ((series - mn) / (mx - mn)) * 100
 
 
+def normalize_pool(series: pd.Series) -> pd.Series:
+    """Pool-normalize a series to 0-100 (used by batter profile metrics)."""
+    mn, mx = series.min(), series.max()
+    if pd.isna(mn) or pd.isna(mx) or mx == mn:
+        return pd.Series(50.0, index=series.index)
+    return normalize(series)
+
+
 def invert(series):
     return 100 - normalize(series)
 

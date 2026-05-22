@@ -33,7 +33,7 @@ def run_script(module: str) -> bool:
 
 def run():
     print(f"MLBMA Smoke Pipeline starting at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("(Savant + compute + push — no FanGraphs)\n")
+    print("(Savant + compute + push -- no FanGraphs)\n")
 
     for script in SCRIPTS:
         if not run_script(script):

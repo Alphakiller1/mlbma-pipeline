@@ -369,8 +369,10 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   </div>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 
 var DATA = {
   loaded: false,
@@ -955,11 +957,11 @@ function bindSelectors() {
 function loadAll() {
   var loadingText = document.getElementById('loadingText');
   return Promise.all([
-    fetchSheetTab('SP_Profiles'),
-    fetchSheetTab('SP_Metric_Splits'),
-    fetchSheetTab('SP_Game_Log'),
-    fetchSheetTab('Pitching_Score'),
-    fetchSheetTab('Today_Matchups')
+    fetchSheetTab(TABS.sp_profiles),
+    fetchSheetTab(TABS.sp_metric_splits),
+    fetchSheetTab(TABS.sp_game_log),
+    fetchSheetTab(TABS.pitching_score),
+    fetchSheetTab(TABS.today_matchups)
   ]).then(function(results) {
     DATA.profiles = results[0] || [];
     DATA.splits = results[1] || [];

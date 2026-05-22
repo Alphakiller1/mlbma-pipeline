@@ -1615,11 +1615,13 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
 /* ============================================================
    GOOGLE SHEETS — public CSV export (no API key)
    ============================================================ */
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
 var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], bullpenUnits: {}, rhp: null, lhp: null };
 var SP_WEIGHT = 0.70;
@@ -1645,7 +1647,7 @@ function parseCSV(text) {
 }
 
 function fetchMatchups() {
-  return fetch(sheetCsvUrl('Today_Matchups'), { cache: 'no-store' })
+  return fetch(sheetCsvUrl(TABS.today_matchups), { cache: 'no-store' })
     .then(function(r) {
       if (!r.ok) throw new Error('Today_Matchups HTTP ' + r.status);
       return r.text();
@@ -2522,14 +2524,14 @@ function loadLiveData() {
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading live data from Google Sheets…';
   return Promise.all([
-    fetchSheetTab('vs_RHP'),
-    fetchSheetTab('vs_LHP'),
-    fetchSheetTab('OOR'),
-    fetchSheetTab('Pitching_Score'),
-    fetchSheetTab('PALS'),
-    fetchSheetTab('Bullpen_Unit'),
-    fetchSheetTab('Today_Lineups'),
-    fetchSheetTab('Today_Games'),
+    fetchSheetTab(TABS.vs_rhp),
+    fetchSheetTab(TABS.vs_lhp),
+    fetchSheetTab(TABS.oor),
+    fetchSheetTab(TABS.pitching_score),
+    fetchSheetTab(TABS.pals),
+    fetchSheetTab(TABS.bullpen_unit),
+    fetchSheetTab(TABS.today_lineups),
+    fetchSheetTab(TABS.today_games),
     fetchSheetText('Last_Updated')
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],

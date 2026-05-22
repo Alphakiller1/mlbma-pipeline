@@ -77,23 +77,23 @@ def load_osi():
     rhp_path = os.path.join(DATA_DIR, "metrics_vs_RHP.csv")
     lhp_path = os.path.join(DATA_DIR, "metrics_vs_LHP.csv")
     if not os.path.exists(rhp_path) or not os.path.exists(lhp_path):
-        print("  WARNING: metrics_vs_RHP/LHP not found — lineup OSI columns will be empty")
+        print("  WARNING: metrics_vs_RHP/LHP not found -- lineup OSI columns will be empty")
         return pd.DataFrame(), pd.DataFrame()
     return pd.read_csv(rhp_path), pd.read_csv(lhp_path)
 
 def get_sp_stats(sp_name, sp_df):
     if sp_df.empty or sp_name == "TBD":
-        return {"K%": "—", "BB%": "—", "HR/9": "—", "FIP": "—", "IP": "—"}
+        return {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
     match = sp_df[sp_df["Name"].str.contains(sp_name.split()[-1], case=False, na=False)]
     if match.empty:
-        return {"K%": "—", "BB%": "—", "HR/9": "—", "FIP": "—", "IP": "—"}
+        return {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
     row = match.iloc[0]
     return {
-        "K%": row.get("K%", "—"),
-        "BB%": row.get("BB%", "—"),
-        "HR/9": row.get("HR/9", "—"),
-        "FIP": row.get("FIP", "—"),
-        "IP": row.get("IP", "—"),
+        "K%": row.get("K%", "--"),
+        "BB%": row.get("BB%", "--"),
+        "HR/9": row.get("HR/9", "--"),
+        "FIP": row.get("FIP", "--"),
+        "IP": row.get("IP", "--"),
     }
 
 def get_team_osi(team, hand, rhp_df, lhp_df):
@@ -131,7 +131,7 @@ def build_matchups():
             edge_gap = abs((away_lineup_osi or 0) - (home_lineup_osi or 0))
             edge = f"{edge_team} +{edge_gap:.1f}"
         else:
-            edge = "—"
+            edge = "--"
 
         rows.append({
             "Time": g["Game_Time"],
@@ -180,7 +180,7 @@ def push_to_sheets(df):
     except gspread.exceptions.WorksheetNotFound:
         ws = sheet.add_worksheet(title=tab, rows=50, cols=25)
 
-    df = df.fillna("—")
+    df = df.fillna("--")
     data = [df.columns.tolist()] + df.values.tolist()
     ws.update(data)
     print(f"  Pushed {tab}: {len(df)} games")

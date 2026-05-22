@@ -22,7 +22,7 @@ from core.config import (
     PROJ_OSI_REG_SCALE,
     RCV_WEIGHTS,
 )
-from core.metrics_utils import clean_pct
+from core.metrics_utils import clean_pct, normalize_pool
 
 PROFILE_COLUMNS = [
     "player_name",
@@ -46,13 +46,6 @@ SPLIT_FILES = {
     "vs_SP": "batter_splits_vsSP.csv",
     "vs_RP": "batter_splits_vsRP.csv",
 }
-
-
-def normalize_pool(series: pd.Series) -> pd.Series:
-    mn, mx = series.min(), series.max()
-    if pd.isna(mn) or pd.isna(mx) or mx == mn:
-        return pd.Series(50.0, index=series.index)
-    return (series - mn) / (mx - mn) * 100
 
 
 def _num(series: pd.Series) -> pd.Series:
@@ -228,7 +221,7 @@ def run():
     out_path = DATA_DIR / "batter_profiles.csv"
     if not all_rows:
         pd.DataFrame(columns=PROFILE_COLUMNS).to_csv(out_path, index=False)
-        print(f"  No batter profiles computed — empty file at {out_path}")
+        print(f"  No batter profiles computed -- empty file at {out_path}")
         return
 
     profiles = pd.DataFrame(all_rows)[PROFILE_COLUMNS]

@@ -1,5 +1,5 @@
 """
-Pitching Score — IP-weighted team pitching composite from starter stats.
+Pitching Score -- IP-weighted team pitching composite from starter stats.
 
 Pitching Score = 0.40 x K% + 0.35 x inv(BB%) + 0.25 x inv(HR/9)
 
@@ -87,9 +87,9 @@ def evaluate_pitcher_staleness(
 
     if l14_row is None or l14_starts < PITCHER_MIN_L14_STARTS:
         note = (
-            f"Fewer than {PITCHER_MIN_L14_STARTS} L14 starts ({l14_starts}) — using season data."
+            f"Fewer than {PITCHER_MIN_L14_STARTS} L14 starts ({l14_starts}) -- using season data."
             if l14_row is not None
-            else "L14 file or pitcher row missing — using season data."
+            else "L14 file or pitcher row missing -- using season data."
         )
         return {
             "stale": False,

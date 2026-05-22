@@ -67,7 +67,7 @@ def _signal_result(
 
 def pct_value(raw) -> float | None:
     """Normalize K%/BB% to percentage points (e.g. 22.5 or 0.225 → 22.5)."""
-    if raw is None or raw == "" or raw == "—":
+    if raw is None or raw == "" or raw == "--":
         return None
     if isinstance(raw, str):
         raw = raw.replace("%", "").strip()
@@ -81,7 +81,7 @@ def pct_value(raw) -> float | None:
 
 
 def num_value(raw) -> float | None:
-    if raw is None or raw == "" or raw == "—":
+    if raw is None or raw == "" or raw == "--":
         return None
     try:
         return float(raw)
@@ -244,7 +244,7 @@ def signal_1_k_vs_obr(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
         mag,
         "Over offense / team total",
         (
-            f"Soft K% arm ({k:.1f}%) vs elite floor (OBR {obr:.1f}) — contact & baserunners likely."
+            f"Soft K% arm ({k:.1f}%) vs elite floor (OBR {obr:.1f}) -- contact & baserunners likely."
             if fired
             else "No K%/OBR mismatch."
         ),
@@ -271,18 +271,18 @@ def signal_2_bb_vs_abq(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
         direction, angle, verdict = (
             "high",
             "Over / walks",
-            f"Walk game: SP BB% {bb:.1f}% with lineup ABQ {abq:.1f} — patience tax on pitcher.",
+            f"Walk game: SP BB% {bb:.1f}% with lineup ABQ {abq:.1f} -- patience tax on pitcher.",
         )
         mag = abq - SIGNAL_2_LINEUP_ABQ_WALK_GAME_MIN
     elif chess:
         direction, angle, verdict = (
             "low",
             "Under walks / pitcher outs",
-            f"Chess match: SP BB% {bb:.1f}% vs elite ABQ {abq:.1f} — strike-thrower edge.",
+            f"Chess match: SP BB% {bb:.1f}% vs elite ABQ {abq:.1f} -- strike-thrower edge.",
         )
         mag = abq - SIGNAL_2_LINEUP_ABQ_CHESS_MIN
     else:
-        direction, angle, verdict, mag = "neutral", "—", "BB%/ABQ neutral.", 0.0
+        direction, angle, verdict, mag = "neutral", "--", "BB%/ABQ neutral.", 0.0
     return _signal_result("BB% vs ABQ", fired, direction, mag, angle, verdict)
 
 
@@ -303,7 +303,7 @@ def signal_3_hr9_vs_rcv(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
         mag,
         "Over HR / power",
         (
-            f"Barrel lane open: HR/9 {hr9:.2f} vs RCV {rcv:.1f} — damage upside vs flyball risk arm."
+            f"Barrel lane open: HR/9 {hr9:.2f} vs RCV {rcv:.1f} -- damage upside vs flyball risk arm."
             if fired
             else "HR/9 vs RCV not aligned."
         ),
@@ -318,7 +318,7 @@ def signal_4_osi_vs_pitching(offense: TeamMetrics, opponent_pitch_score: float |
             False,
             "neutral",
             0.0,
-            "—",
+            "--",
             "Missing OSI or opponent Pitching Score.",
         )
     gap = osi - opponent_pitch_score
@@ -331,10 +331,10 @@ def signal_4_osi_vs_pitching(offense: TeamMetrics, opponent_pitch_score: float |
         abs(gap),
         "Fade weak pitching / back strong offense" if gap > 0 else "Back pitching / fade offense",
         (
-            f"OSI {osi:.1f} vs opp Pitch {opponent_pitch_score:.1f} (gap {gap:+.1f}) — "
+            f"OSI {osi:.1f} vs opp Pitch {opponent_pitch_score:.1f} (gap {gap:+.1f}) -- "
             f"{'offensive edge' if gap > 0 else 'pitching edge'}."
             if fired
-            else f"OSI–Pitch gap {gap:+.1f} within noise."
+            else f"OSI-Pitch gap {gap:+.1f} within noise."
         ),
     )
 
@@ -349,7 +349,7 @@ def signal_5_pals_projosi(offense: TeamMetrics) -> dict:
             False,
             "neutral",
             0.0,
-            "—",
+            "--",
             "Missing OSI, PALS, or PP-Gap.",
         )
     osi_pals_gap = abs(osi - pals)
@@ -361,7 +361,7 @@ def signal_5_pals_projosi(offense: TeamMetrics) -> dict:
         pp,
         "Buy-low offense / process catching up",
         (
-            f"OSI≈PALS (Δ{osi_pals_gap:.1f}) with PP-Gap +{pp:.1f} — stable profile, process ahead of box score."
+            f"OSI≈PALS (Δ{osi_pals_gap:.1f}) with PP-Gap +{pp:.1f} -- stable profile, process ahead of box score."
             if fired
             else "PALS/projOSI/PP-Gap not converging."
         ),
@@ -379,7 +379,7 @@ def signal_pp_gap(offense: TeamMetrics) -> dict:
         pp or 0.0,
         "Process > production",
         (
-            f"PP-Gap +{pp:.1f} (ABQ ahead of RCV) — buy-low process signal."
+            f"PP-Gap +{pp:.1f} (ABQ ahead of RCV) -- buy-low process signal."
             if fired
             else "PP-Gap not elevated."
         ),
@@ -406,18 +406,18 @@ def signal_6_obr_bb(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
         direction, angle, verdict = (
             "high",
             "Over / baserunners",
-            f"Run environment: OBR {obr:.1f} + SP BB% {bb:.1f}% — table-setters & traffic.",
+            f"Run environment: OBR {obr:.1f} + SP BB% {bb:.1f}% -- table-setters & traffic.",
         )
         mag = obr - SIGNAL_6_OBR_HIGH_MIN
     elif low_run:
         direction, angle, verdict = (
             "low",
             "Under / pitcher control",
-            f"Stall risk: OBR {obr:.1f} + SP BB% {bb:.1f}% — limited free passes.",
+            f"Stall risk: OBR {obr:.1f} + SP BB% {bb:.1f}% -- limited free passes.",
         )
         mag = SIGNAL_6_OBR_LOW_MAX - obr
     else:
-        direction, angle, verdict, mag = "neutral", "—", "OBR/BB% neutral.", 0.0
+        direction, angle, verdict, mag = "neutral", "--", "OBR/BB% neutral.", 0.0
     return _signal_result("OBR + BB%", fired, direction, mag, angle, verdict)
 
 
@@ -431,7 +431,7 @@ def signal_7_abq_platoon(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
             False,
             "neutral",
             0.0,
-            "—",
+            "--",
             "Missing ABQ platoon splits.",
         )
     gap = abs(rhp - lhp)
@@ -447,7 +447,7 @@ def signal_7_abq_platoon(offense: TeamMetrics, pitcher: PitcherMetrics) -> dict:
         gap,
         f"Target {dom} hitters vs {hand}HP",
         (
-            f"Platoon edge: ABQ gap {gap:.1f} ({dom} side) vs {hand}HP — handedness aligned."
+            f"Platoon edge: ABQ gap {gap:.1f} ({dom} side) vs {hand}HP -- handedness aligned."
             if fired
             else f"ABQ gap {gap:.1f} or handedness mismatch vs {hand}HP."
         ),
@@ -467,7 +467,7 @@ def signal_8_rcv_archetype(offense: TeamMetrics) -> dict:
         1.0 if fired else 0.0,
         label,
         (
-            f"{label} ({arch}) — {desc}"
+            f"{label} ({arch}) -- {desc}"
             if fired and desc
             else f"Balanced Mid/Mid archetype ({arch})."
             if not fired
@@ -489,7 +489,7 @@ def signal_9_schedule_context(opponent: TeamMetrics) -> dict:
             False,
             "neutral",
             0.0,
-            "—",
+            "--",
             "Missing opponent OOR or HvP.",
         )
     delta = today_oor - season_hvp
@@ -502,7 +502,7 @@ def signal_9_schedule_context(opponent: TeamMetrics) -> dict:
         abs(delta),
         "Adjust expectations vs season norm",
         (
-            f"Opponent OOR {today_oor:.1f} vs HvP baseline {season_hvp:.1f} (Δ{delta:+.1f}) — "
+            f"Opponent OOR {today_oor:.1f} vs HvP baseline {season_hvp:.1f} (Δ{delta:+.1f}) -- "
             f"{'hotter than season profile' if delta > 0 else 'cooler than season profile'}."
             if fired
             else "Opponent offensive context in line with season baseline."
@@ -737,7 +737,7 @@ def push_signals_to_sheets() -> None:
         client = get_client()
         sheet = client.open_by_key(SHEET_ID)
     except Exception as exc:
-        print(f"  WARNING: Signals Google Sheets push failed — skipping ({exc})")
+        print(f"  WARNING: Signals Google Sheets push failed -- skipping ({exc})")
         return
 
     for tab_name, filename in files.items():
@@ -746,7 +746,7 @@ def push_signals_to_sheets() -> None:
             df = pd.read_csv(path)
             push_df(sheet, tab_name, df)
         else:
-            print(f"  WARNING: {filename} not found — skipped {tab_name}")
+            print(f"  WARNING: {filename} not found -- skipped {tab_name}")
 
     print("  Signals Google Sheets push complete.")
 

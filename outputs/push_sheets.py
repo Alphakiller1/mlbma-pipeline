@@ -43,12 +43,12 @@ def run():
     sheet = client.open_by_key(SHEET_ID)
     print("Connected.\n")
 
+    # PALS is pushed by scrapers/scrape_pals.py after computing the metric - do not add here.
     files = {
         SHEET_TABS["vs_rhp"]: "metrics_vs_RHP.csv",
         SHEET_TABS["vs_lhp"]: "metrics_vs_LHP.csv",
         SHEET_TABS["oor"]: "metrics_oor.csv",
         SHEET_TABS["pitching_score"]: "metrics_pitching_score.csv",
-        SHEET_TABS["pals"]: "metrics_pals.csv",
     }
 
     for tab_name, filename in files.items():

@@ -1,5 +1,5 @@
 """
-MLBMA research terminal — data loading, metric assembly, and rendering helpers.
+MLBMA research terminal -- data loading, metric assembly, and rendering helpers.
 Used by dashboard.py CLI.
 """
 
@@ -70,13 +70,13 @@ def subsection(title: str) -> None:
 
 def fmt(v: float | None, digits: int = 1, suffix: str = "") -> str:
     if v is None:
-        return "—"
+        return "--"
     return f"{v:.{digits}f}{suffix}"
 
 
 def tier_label(score: float | None, tiers: tuple) -> str:
     if score is None:
-        return "—"
+        return "--"
     for floor, label in tiers:
         if score >= floor:
             return label
@@ -556,7 +556,7 @@ class DataStore:
     ) -> PitcherSnapshot:
         sp = self.sp_ytd()
         if sp is None or sp.empty:
-            raise FileNotFoundError("sp_standard.csv not found — run FanGraphs scrape first.")
+            raise FileNotFoundError("sp_standard.csv not found -- run FanGraphs scrape first.")
         matched = match_pitcher_name(name, sp["Name"])
         if not matched:
             raise ValueError(f"Pitcher not found: {name}")
@@ -877,20 +877,20 @@ def primary_score(snap: TeamSnapshot, projected: bool) -> float | None:
 
 def market_implication(snap: TeamSnapshot) -> str:
     if snap.proj_osi is None or snap.osi is None:
-        return "projOSI unavailable — market lean indeterminate."
+        return "projOSI unavailable -- market lean indeterminate."
     delta = snap.proj_osi - snap.osi
     if delta >= 3:
         return (
-            f"projOSI {fmt(snap.proj_osi)} runs {delta:+.1f} above OSI {fmt(snap.osi)} — "
+            f"projOSI {fmt(snap.proj_osi)} runs {delta:+.1f} above OSI {fmt(snap.osi)} -- "
             "process/xStats ahead of box score; market may be slow to price improvement (buy-low lean)."
         )
     if delta <= -3:
         return (
-            f"projOSI {fmt(snap.proj_osi)} runs {delta:+.1f} below OSI {fmt(snap.osi)} — "
+            f"projOSI {fmt(snap.proj_osi)} runs {delta:+.1f} below OSI {fmt(snap.osi)} -- "
             "results ahead of underlying process; regression risk to the under on totals."
         )
     return (
-        f"projOSI {fmt(snap.proj_osi)} aligned with OSI {fmt(snap.osi)} — "
+        f"projOSI {fmt(snap.proj_osi)} aligned with OSI {fmt(snap.osi)} -- "
         "market and process largely in sync."
     )
 
@@ -933,7 +933,7 @@ def bet_angle_matrix(
             matrix["ML"]["note"] = "OSI/PALS stack favors offensive side."
         elif headline < (pals or 0) - 2:
             matrix["ML"]["lean"] = "caution on offense"
-            matrix["ML"]["note"] = "PALS ahead of OSI — production may lag process."
+            matrix["ML"]["note"] = "PALS ahead of OSI -- production may lag process."
 
     for s in fired:
         angle = (s.get("bet_angle") or "").lower()
@@ -984,7 +984,7 @@ def build_verdict(
     fired = [s for s in signals if s.get("fired")]
     head = primary_score(snap, opts.projected) if snap else None
     pals = snap.pals if snap else None
-    arch = snap.archetype_label if snap else "—"
+    arch = snap.archetype_label if snap else "--"
     osi = snap.osi if snap else None
     proj = snap.proj_osi if snap else None
 
@@ -996,7 +996,7 @@ def build_verdict(
         )
     if snap and head is not None and pals is not None:
         v0_parts.append(
-            f"{snap.team} OSI {fmt(osi)} / PALS {fmt(pals)} with {arch} archetype — "
+            f"{snap.team} OSI {fmt(osi)} / PALS {fmt(pals)} with {arch} archetype -- "
             f"{len(fired)} active signals."
         )
     else:
@@ -1006,7 +1006,7 @@ def build_verdict(
     v1 = []
     if conv.get("is_convergence_play"):
         v1.append(
-            f"**CONVERGENCE PLAY** — weighted count {conv['convergence_count']} "
+            f"**CONVERGENCE PLAY** -- weighted count {conv['convergence_count']} "
             f"(threshold {conv['threshold']}), direction `{conv['convergence_direction']}`."
         )
     if snap:
@@ -1017,7 +1017,7 @@ def build_verdict(
         )
         v1.append(market_implication(snap))
         v1.append(
-            f"Offensive shape reads as **{arch}** ({snap.archetype_key}) — "
+            f"Offensive shape reads as **{arch}** ({snap.archetype_key}) -- "
             f"not isolated ABQ/RCV prints."
         )
         if snap.pp_gap is not None:
@@ -1026,7 +1026,7 @@ def build_verdict(
         v1.append(f"• {s['signal_name']}: {s['verdict_text']}")
     if snap and snap.reliability != "high":
         v1.append(
-            f"Sample-size caveat: {snap.window} data reliability `{snap.reliability}` — "
+            f"Sample-size caveat: {snap.window} data reliability `{snap.reliability}` -- "
             "confirm before sizing."
         )
     if extra:
@@ -1059,7 +1059,7 @@ def build_verdict(
 # ── Render sections ───────────────────────────────────────────────────────────
 
 def render_pitcher_staleness(ps: PitcherSnapshot) -> None:
-    """Section 1 — L14 vs season staleness for pitcher mode."""
+    """Section 1 -- L14 vs season staleness for pitcher mode."""
     subsection("1. Staleness Check (L14 vs season)")
     source_lbl = ps.data_source.upper() if ps.data_source else "SEASON"
     print(f"  Operative data source: {source_lbl} ({ps.l14_starts} L14 starts)")
@@ -1072,7 +1072,7 @@ def render_pitcher_staleness(ps: PitcherSnapshot) -> None:
         delta = (recent - season) if season is not None and recent is not None else None
         print(
             f"  {label:<8} {fmt(season):>10} {fmt(recent):>10} "
-            f"{fmt(delta, 2) if delta is not None else '—':>8}"
+            f"{fmt(delta, 2) if delta is not None else '--':>8}"
         )
     if ps.stale:
         print()
@@ -1116,7 +1116,7 @@ def render_platoon(snap: TeamSnapshot, opts: DashboardOptions, opp_hand: str | N
     if snap.abq_vs_rhp is not None and snap.abq_vs_lhp is not None:
         gap = abs(snap.abq_vs_rhp - snap.abq_vs_lhp)
         dom = "RHP" if snap.abq_vs_rhp > snap.abq_vs_lhp else "LHP"
-        align = "—"
+        align = "--"
         if opp_hand:
             oh = pitcher_hand_code(opp_hand)
             align = (
@@ -1167,7 +1167,7 @@ def render_archetype(snap: TeamSnapshot) -> None:
     if "OBP" in snap.archetype_label or "Table" in snap.archetype_label:
         bet_hints.append("Run-line / ML lean when paired with high walk environments.")
     if snap.archetype_key == "Mid/Mid":
-        bet_hints.append("Neutral archetype — lean on convergence signals, not shape alone.")
+        bet_hints.append("Neutral archetype -- lean on convergence signals, not shape alone.")
     if bet_hints:
         print("  Bet angle:")
         for h in bet_hints:
@@ -1183,7 +1183,7 @@ def render_window_compare(store: DataStore, team: str, hand: str) -> None:
         print(
             f"  {w:<8} {fmt(row['osi']):>8} {fmt(row['pals']):>8} "
             f"{fmt(row['proj_osi']):>8} {fmt(row['headline']):>8}  "
-            f"{row.get('source', '—')}{flag}"
+            f"{row.get('source', '--')}{flag}"
         )
 
 
@@ -1204,7 +1204,7 @@ def render_signals(signals: list[dict], verbose: int) -> None:
 
 def render_convergence(conv: dict) -> None:
     subsection("Convergence Panel")
-    flag = "✓ CONVERGENCE PLAY" if conv["is_convergence_play"] else "— below threshold"
+    flag = "✓ CONVERGENCE PLAY" if conv["is_convergence_play"] else "-- below threshold"
     print(f"  Weighted count: {conv['convergence_count']} / threshold {conv['threshold']}  {flag}")
     print(f"  Direction: {conv['convergence_direction']}  |  Raw signals fired: {conv['signals_fired']}")
     print(f"  (PP-Gap counts as {CONVERGENCE_PP_GAP_WEIGHT}x weight when fired)")

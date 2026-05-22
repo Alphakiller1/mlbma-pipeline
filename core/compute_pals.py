@@ -1,9 +1,9 @@
 """
-PALS (Pitcher-Adjusted Lineup Strength) — offensive strength adjusted for SP quality faced.
+PALS (Pitcher-Adjusted Lineup Strength) -- offensive strength adjusted for SP quality faced.
 
 PALS = (BA+ + PTF+) / 2
   BA+  = normalized OSI
-  PTF+ = normalized avg opposing SP xFIP (inverted — easier schedule scores higher)
+  PTF+ = normalized avg opposing SP xFIP (inverted -- easier schedule scores higher)
 """
 
 import os
@@ -15,7 +15,7 @@ from core.metrics_utils import load
 
 
 def normalize_optional(series, invert=False):
-    """Normalize to 0–100; invert when lower raw values should score higher."""
+    """Normalize to 0-100; invert when lower raw values should score higher."""
     mn, mx = series.min(), series.max()
     if mx == mn:
         return pd.Series([50.0] * len(series), index=series.index)
@@ -36,7 +36,7 @@ def match_sp(sp_name, sp_df):
 def load_sp_xfip():
     df = load("sp_standard.csv")
     if df is None:
-        raise FileNotFoundError("sp_standard.csv not found — run FanGraphs scrape first")
+        raise FileNotFoundError("sp_standard.csv not found -- run FanGraphs scrape first")
     df = df[df["IP"].apply(pd.to_numeric, errors="coerce") >= 10]
     df["xFIP"] = pd.to_numeric(df["xFIP"], errors="coerce")
     df = df.dropna(subset=["xFIP"])
@@ -48,7 +48,7 @@ def load_sp_xfip():
 def load_osi_for_pals():
     path = os.path.join(DATA_DIR, "metrics_vs_RHP.csv")
     if not os.path.exists(path):
-        raise FileNotFoundError("metrics_vs_RHP.csv not found — run compute first")
+        raise FileNotFoundError("metrics_vs_RHP.csv not found -- run compute first")
     return pd.read_csv(path)[["Tm", "OSI"]]
 
 

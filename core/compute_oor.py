@@ -1,5 +1,5 @@
 """
-OOR (Opponent Offensive Rating) — split offensive strength vs RHP/LHP.
+OOR (Opponent Offensive Rating) -- split offensive strength vs RHP/LHP.
 
 OOR = 0.55 x HvR + 0.45 x HvL
 HvP = average of OSI vs RHP and OSI vs LHP

@@ -78,7 +78,7 @@ def load_team_metrics(pitcher_hand: str) -> pd.DataFrame:
     split = "metrics_vs_RHP.csv" if pitcher_hand == "R" else "metrics_vs_LHP.csv"
     path = DATA_DIR / split
     if not path.exists():
-        print(f"  WARNING: {split} not found — opponent metrics will be blank")
+        print(f"  WARNING: {split} not found -- opponent metrics will be blank")
         return pd.DataFrame(columns=["Tm", "OSI", "ABQ", "RCV", "OBR"])
     return pd.read_csv(path)
 
@@ -134,7 +134,7 @@ def resolve_player_id(name: str, index: Dict[str, int]) -> Optional[int]:
 def load_sp_pitchers() -> pd.DataFrame:
     path = DATA_DIR / "sp_standard.csv"
     if not path.exists():
-        raise FileNotFoundError("sp_standard.csv not found — run FanGraphs scrape first")
+        raise FileNotFoundError("sp_standard.csv not found -- run FanGraphs scrape first")
     df = pd.read_csv(path)
     df = df[~df["Tm"].astype(str).str.contains("Tms", na=False)]
     hand_col = next((c for c in ("Hand", "Throws", "hand") if c in df.columns), None)
@@ -320,7 +320,7 @@ def run():
     out_path = DATA_DIR / "sp_gamelog.csv"
     df = pd.DataFrame(rows)
     if df.empty:
-        print("  No starts found — writing empty gamelog")
+        print("  No starts found -- writing empty gamelog")
         df = pd.DataFrame(columns=GAMELOG_COLUMNS)
     else:
         public_cols = [c for c in GAMELOG_COLUMNS if c in df.columns]

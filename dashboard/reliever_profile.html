@@ -320,9 +320,11 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
   </div>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
 /* Thresholds mirror core/config.py RELIEVER_* constants */
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 var RELIEVER_WINDOW_HOT_COLD_GAP = 8;
 var RELIEVER_LEVERAGE_ERA_GAP = 1.5;
 var RELIEVER_PLATOON_OSI_GAP = 8;
@@ -342,7 +344,7 @@ var DATA = {
 var STATE = { playerKey: null, window: 'YTD' };
 var WINDOWS = ['YTD', 'L30', 'L14', 'L7'];
 var WINDOW_N_APPS = { YTD: 999, L30: 30, L14: 14, L7: 7 };
-var FIP_CONSTANT = (typeof window !== 'undefined' && window.MLBMA_FIP_CONSTANT) || 3.10;
+var FIP_CONSTANT = MLBMA_CONFIG.FIP_CONSTANT;
 
 function sheetCsvUrl(tab) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -979,11 +981,11 @@ function bindUi() {
 
 function loadAll() {
   return Promise.all([
-    fetchSheetTab('Bullpen_Individual'),
-    fetchSheetTab('Bullpen_Unit'),
-    fetchSheetTab('Reliever_Log'),
-    fetchSheetTab('Player_Registry'),
-    fetchSheetTab('Today_Matchups')
+    fetchSheetTab(TABS.bullpen_individual),
+    fetchSheetTab(TABS.bullpen_unit),
+    fetchSheetTab(TABS.reliever_log),
+    fetchSheetTab(TABS.player_registry),
+    fetchSheetTab(TABS.today_matchups)
   ]).then(function(results) {
     DATA.individuals = results[0] || [];
     DATA.units = results[1] || [];

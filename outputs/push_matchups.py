@@ -2,7 +2,7 @@
 
 
 def run():
-    print("push_matchups: no-op — matchups are pushed by scrapers.scrape_matchups")
+    print("push_matchups: no-op -- matchups are pushed by scrapers.scrape_matchups")
 
 
 if __name__ == "__main__":

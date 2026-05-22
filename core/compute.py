@@ -1,4 +1,4 @@
-"""Metric coordinator — loads data and runs all team-level computations."""
+"""Metric coordinator -- loads data and runs all team-level computations."""
 
 import os
 
@@ -50,7 +50,7 @@ def run():
         missing.append("savant_team_leaderboard (Savant)")
 
     if missing:
-        print("WARNING: Missing inputs — skipping team offense metrics:")
+        print("WARNING: Missing inputs -- skipping team offense metrics:")
         for name in missing:
             print(f"  - {name}")
         print("  Run scrapers.scrape_savant and scrapers.scrape_fangraphs for full metrics.")
@@ -62,7 +62,7 @@ def run():
     if sp_std is not None:
         calc_pitching_score(sp_std)
     else:
-        print("  WARNING: sp_standard.csv missing — skipping Pitching Score")
+        print("  WARNING: sp_standard.csv missing -- skipping Pitching Score")
 
     calc_oor(osi_rhp, osi_lhp)
 

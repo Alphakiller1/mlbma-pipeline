@@ -1,5 +1,5 @@
 """
-RCV (Run Creation Value) — damage and scoring pressure composite.
+RCV (Run Creation Value) -- damage and scoring pressure composite.
 
 RCV = 0.35 x wRC+ + 0.32 x Barrel% + 0.20 x ISO + 0.13 x HardHit%
 Barrel%, ISO, and HardHit% are park-adjusted via PARK_FACTORS (wRC+ is already park-adjusted).

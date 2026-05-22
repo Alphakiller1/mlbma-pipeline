@@ -304,8 +304,10 @@ h1 {
   <p class="footer-note">Powered by MLBMA Pipeline · <a href="chase_analytics_mlb_oem_v7.html">Full OEM Dashboard</a></p>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 
 var DATA = {
   loaded: false,
@@ -899,13 +901,13 @@ function loadData() {
   if (loadingText) loadingText.textContent = 'Loading matchup data from Google Sheets…';
 
   return Promise.all([
-    fetchSheetTab('Today_Matchups'),
-    fetchSheetTab('Today_Lineups'),
-    fetchSheetTab('Weather'),
-    fetchSheetTab('OOR'),
-    fetchSheetTab('PALS'),
-    fetchSheetTab('Pitching_Score'),
-    fetchSheetTab('Bullpen_Unit'),
+    fetchSheetTab(TABS.today_matchups),
+    fetchSheetTab(TABS.today_lineups),
+    fetchSheetTab(TABS.weather),
+    fetchSheetTab(TABS.oor),
+    fetchSheetTab(TABS.pals),
+    fetchSheetTab(TABS.pitching_score),
+    fetchSheetTab(TABS.bullpen_unit),
     fetchSheetText('Last_Updated')
   ]).then(function(results) {
     DATA.matchups = parseMatchupRows(results[0]);

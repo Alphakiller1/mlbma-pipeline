@@ -39,6 +39,7 @@ SPLIT_RATE_FILES = {
     "batter_splits_away": "batter_splits_away.csv",
     "batter_splits_vs_sp": "batter_splits_vsSP.csv",
     "batter_splits_vs_rp": "batter_splits_vsRP.csv",
+    "batter_splits_recent": "batter_splits_recent.csv",
 }
 
 
@@ -111,7 +112,7 @@ def run():
                 push_df(sheet, tab_name, rate_df)
                 print(f"  Pushed {len(rate_df)} rows -> {tab_name}")
             else:
-                print(f"  WARNING: {filename} not found — skipping {tab_name}")
+                print(f"  WARNING: {filename} not found -- skipping {tab_name}")
 
         print("\nBatter profiles Google Sheets push complete.")
     except Exception as exc:

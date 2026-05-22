@@ -70,7 +70,7 @@ def push_to_sheets(df):
         ws.clear()
     except gspread.exceptions.WorksheetNotFound:
         ws = sheet.add_worksheet(title=tab, rows=40, cols=10)
-    df_out = df.fillna("—")
+    df_out = df.fillna("--")
     data = [df_out.columns.tolist()] + df_out.values.tolist()
     ws.update(data)
     print("Pushed PALS to Google Sheets")
@@ -79,7 +79,7 @@ def push_to_sheets(df):
 def run():
     games = get_season_games()
     if games.empty:
-        print("  No completed games for PALS — skipping")
+        print("  No completed games for PALS -- skipping")
         return
     try:
         sp_df = load_sp_xfip()

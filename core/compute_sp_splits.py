@@ -194,7 +194,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
 def run():
     path = DATA_DIR / "sp_gamelog.csv"
     if not path.exists():
-        print("  WARNING: sp_gamelog.csv not found — writing empty split files")
+        print("  WARNING: sp_gamelog.csv not found -- writing empty split files")
         splits = pd.DataFrame(columns=METRIC_SPLIT_COLUMNS)
         profiles = pd.DataFrame(columns=PROFILE_COLUMNS)
         splits.to_csv(DATA_DIR / "sp_metric_splits.csv", index=False)
@@ -204,7 +204,7 @@ def run():
     print("Computing SP split profiles...")
     gamelog = pd.read_csv(path)
     if gamelog.empty:
-        print("  Empty gamelog — writing empty split files")
+        print("  Empty gamelog -- writing empty split files")
         splits = pd.DataFrame(columns=METRIC_SPLIT_COLUMNS)
         profiles = pd.DataFrame(columns=PROFILE_COLUMNS)
     else:

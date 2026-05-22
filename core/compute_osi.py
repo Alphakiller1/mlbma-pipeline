@@ -1,5 +1,5 @@
 """
-OSI (Offensive Strength Index) — overall offensive composite with regression projection.
+OSI (Offensive Strength Index) -- overall offensive composite with regression projection.
 
 OSI = 0.43 x RCV + 0.37 x ABQ + 0.20 x OBR
 projOSI = OSI + clip((xwOBA - wOBA) x 450, -8, +8)

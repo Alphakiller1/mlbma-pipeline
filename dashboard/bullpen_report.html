@@ -203,7 +203,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
       <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
       <a class="nav-link" href="team_profile.html">Team Profile</a>
     </nav>
-    <div class="header-meta">Sheet: <span id="headerMeta">1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk</span></div>
+    <div class="header-meta">Sheet: <span id="headerMeta"></span></div>
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
@@ -286,8 +286,11 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   </div>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
+(function(){ var el = document.getElementById('headerMeta'); if (el) el.textContent = SHEET_ID; })();
 
 var DATA = {
   units: [],
@@ -821,11 +824,11 @@ function populateTeams() {
 
 function loadAll() {
   return Promise.all([
-    fetchSheetTab('Bullpen_Unit'),
-    fetchSheetTab('Bullpen_Individual'),
-    fetchSheetTab('Reliever_Log'),
-    fetchSheetTab('Today_Matchups'),
-    fetchSheetTab('Pitching_Score')
+    fetchSheetTab(TABS.bullpen_unit),
+    fetchSheetTab(TABS.bullpen_individual),
+    fetchSheetTab(TABS.reliever_log),
+    fetchSheetTab(TABS.today_matchups),
+    fetchSheetTab(TABS.pitching_score)
   ]).then(function(res) {
     DATA.units = res[0] || [];
     DATA.individuals = res[1] || [];

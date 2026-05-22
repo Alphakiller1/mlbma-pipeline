@@ -458,13 +458,13 @@ def run():
             all_teams |= set(df["team"].tolist())
 
     if not all_teams:
-        print("  No team data available — writing empty team_profiles.csv")
+        print("  No team data available -- writing empty team_profiles.csv")
         pd.DataFrame(columns=PROFILE_COLUMNS).to_csv(DATA_DIR / "team_profiles.csv", index=False)
         return
 
     profile = offense
     profile = _merge_team(profile, rotation, bullpen, top_b, ha, windows)
-    profile["record_placeholder"] = "—"
+    profile["record_placeholder"] = "--"
 
     for col in PROFILE_COLUMNS:
         if col not in profile.columns:

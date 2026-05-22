@@ -376,7 +376,7 @@ def run():
     out_path = DATA_DIR / "reliever_gamelog.csv"
     df = pd.DataFrame(rows)
     if df.empty:
-        print("  No relief appearances found — writing empty file")
+        print("  No relief appearances found -- writing empty file")
         df = pd.DataFrame(columns=GAMELOG_COLUMNS)
     else:
         cols = [c for c in GAMELOG_COLUMNS if c in df.columns]

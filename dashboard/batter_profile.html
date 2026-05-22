@@ -382,8 +382,10 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   </div>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 
 var DATA = {
   loaded: false,
@@ -412,13 +414,14 @@ var METRIC_NOTES = {
 };
 
 var OPTIONAL_RAW_TABS = [
-  ['Batter_Splits_Overall', 'overall'],
-  ['Batter_Splits_RHP', 'vs_RHP'],
-  ['Batter_Splits_LHP', 'vs_LHP'],
-  ['Batter_Splits_Home', 'home'],
-  ['Batter_Splits_Away', 'away'],
-  ['Batter_Splits_vsSP', 'vs_SP'],
-  ['Batter_Splits_vsRP', 'vs_RP']
+  [TABS.batter_splits_overall, 'overall'],
+  [TABS.batter_splits_rhp, 'vs_RHP'],
+  [TABS.batter_splits_lhp, 'vs_LHP'],
+  [TABS.batter_splits_home, 'home'],
+  [TABS.batter_splits_away, 'away'],
+  [TABS.batter_splits_vs_sp, 'vs_SP'],
+  [TABS.batter_splits_vs_rp, 'vs_RP'],
+  [TABS.batter_splits_recent, 'recent']
 ];
 
 var WINDOW_RAW_SPLIT = {
@@ -1147,10 +1150,10 @@ function bindUi() {
 
 function loadAll() {
   var fetches = [
-    fetchSheetTab('Batter_Profiles'),
-    fetchSheetTab('Player_Registry'),
-    fetchSheetTab('Today_Lineups'),
-    fetchSheetTab('Today_Matchups')
+    fetchSheetTab(TABS.batter_profiles),
+    fetchSheetTab(TABS.player_registry),
+    fetchSheetTab(TABS.today_lineups),
+    fetchSheetTab(TABS.today_matchups)
   ];
   OPTIONAL_RAW_TABS.forEach(function(pair) {
     fetches.push(fetchSheetTabOptional(pair[0]).then(function(rows) {

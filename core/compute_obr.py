@@ -1,5 +1,5 @@
 """
-OBR (On-Base Rating) — on-base profile floor.
+OBR (On-Base Rating) -- on-base profile floor.
 
 OBR = 0.65 x xwOBA + 0.35 x BB%
 """

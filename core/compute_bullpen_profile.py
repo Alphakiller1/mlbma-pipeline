@@ -146,7 +146,7 @@ def build_individual(gamelog: pd.DataFrame) -> pd.DataFrame:
 def run():
     path = DATA_DIR / "reliever_gamelog.csv"
     if not path.exists():
-        print("  WARNING: reliever_gamelog.csv not found — writing empty bullpen files")
+        print("  WARNING: reliever_gamelog.csv not found -- writing empty bullpen files")
         pd.DataFrame().to_csv(DATA_DIR / "bullpen_unit.csv", index=False)
         pd.DataFrame().to_csv(DATA_DIR / "bullpen_individual.csv", index=False)
         return
@@ -154,7 +154,7 @@ def run():
     print("Computing bullpen profiles...")
     gamelog = pd.read_csv(path)
     if gamelog.empty:
-        print("  Empty reliever gamelog — writing empty profile files")
+        print("  Empty reliever gamelog -- writing empty profile files")
         unit = pd.DataFrame()
         individual = pd.DataFrame()
     else:

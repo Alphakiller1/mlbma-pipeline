@@ -153,7 +153,7 @@ def save_split(df: pd.DataFrame | None, filename: str) -> int:
 def run():
     registry_path = DATA_DIR / "player_registry.csv"
     if not registry_path.exists():
-        print("  WARNING: player_registry.csv not found — run scrapers.scrape_player_registry first")
+        print("  WARNING: player_registry.csv not found -- run scrapers.scrape_player_registry first")
         return
     registry = pd.read_csv(registry_path)
     batter_count = len(registry[~registry["position_type"].isin(["SP", "RP"])])

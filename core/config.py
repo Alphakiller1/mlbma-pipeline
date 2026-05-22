@@ -180,7 +180,7 @@ PITCHING_WEIGHTS = {
     "inv_hr9": 0.25,
 }
 
-# Combined staff pitching score (dashboard — SP + bullpen)
+# Combined staff pitching score (dashboard -- SP + bullpen)
 SP_WEIGHT = 0.70
 BULLPEN_WEIGHT = 0.30
 COMBINED_PITCHING_WEIGHTS = {
@@ -245,39 +245,39 @@ ARCHETYPE_LOW_MAX = ARCHETYPE_TIER_CUTOFFS["low_max"]
 ARCHETYPE_NAMES = {
     "High/High": {
         "label": "Elite Engine",
-        "description": "Top-tier run creation with a strong on-base floor — complete offensive profile.",
+        "description": "Top-tier run creation with a strong on-base floor -- complete offensive profile.",
     },
     "High/Mid": {
         "label": "Power Leverage",
-        "description": "Big damage output with average table-setting — slug-first lineup shape.",
+        "description": "Big damage output with average table-setting -- slug-first lineup shape.",
     },
     "High/Low": {
         "label": "Boom-or-Bust",
-        "description": "High damage ceiling but thin on-base support — volatile run-scoring bursts.",
+        "description": "High damage ceiling but thin on-base support -- volatile run-scoring bursts.",
     },
     "Mid/High": {
         "label": "Table Setter Plus",
-        "description": "Strong on-base process with moderate power — grind-and-advance profile.",
+        "description": "Strong on-base process with moderate power -- grind-and-advance profile.",
     },
     "Mid/Mid": {
         "label": "Balanced",
-        "description": "No extreme tilt on RCV or OBR — league-average offensive shape.",
+        "description": "No extreme tilt on RCV or OBR -- league-average offensive shape.",
     },
     "Mid/Low": {
         "label": "Contact Floor",
-        "description": "Modest contact quality with weak on-base — limited run-scoring paths.",
+        "description": "Modest contact quality with weak on-base -- limited run-scoring paths.",
     },
     "Low/High": {
         "label": "OBP First",
-        "description": "Gets on base without big damage — small-ball and walk-heavy lean.",
+        "description": "Gets on base without big damage -- small-ball and walk-heavy lean.",
     },
     "Low/Mid": {
         "label": "Glove Line",
-        "description": "Below-average damage and average OB — defensive-value lineup profile.",
+        "description": "Below-average damage and average OB -- defensive-value lineup profile.",
     },
     "Low/Low": {
         "label": "Cold Profile",
-        "description": "Weak damage and weak on-base — lowest offensive ceiling archetype.",
+        "description": "Weak damage and weak on-base -- lowest offensive ceiling archetype.",
     },
 }
 
@@ -301,9 +301,9 @@ CONVERGENCE_PLAY_MIN_WEIGHT = CONVERGENCE_THRESHOLD
 CONVERGENCE_PP_GAP_WEIGHT = 2
 CONVERGENCE_DEFAULT_WEIGHT = 1
 
-# Opponent lineup quality tiers (Pitcher Intelligence — game logs / splits)
+# Opponent lineup quality tiers (Pitcher Intelligence -- game logs / splits)
 OPPONENT_TIER_HIGH_MIN = 65.0   # High if strictly above
-OPPONENT_TIER_MID_MIN = 50.0    # Mid if 50–65 inclusive
+OPPONENT_TIER_MID_MIN = 50.0    # Mid if 50-65 inclusive
 OPPONENT_TIER_MID_MAX = 65.0
 
 OPPONENT_TIER_CUTOFFS = {
@@ -341,6 +341,7 @@ SHEET_TABS = {
     "batter_splits_away": "Batter_Splits_Away",
     "batter_splits_vs_sp": "Batter_Splits_vsSP",
     "batter_splits_vs_rp": "Batter_Splits_vsRP",
+    "batter_splits_recent": "Batter_Splits_Recent",
     "team_profiles": "Team_Profiles",
 }
 
@@ -476,7 +477,7 @@ SIGNAL_8_OBR_LOW = ARCHETYPE_LOW_MAX
 
 SIGNAL_9_OOR_DELTA_MIN = 5.0
 
-# Dashboard pages — canonical nav labels and URL patterns (8 pages)
+# Dashboard pages -- canonical nav labels and URL patterns (8 pages)
 DASHBOARD_PAGES = {
     "main": {
         "file": "chase_analytics_mlb_oem_v7.html",

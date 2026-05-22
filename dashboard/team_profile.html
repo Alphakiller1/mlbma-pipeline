@@ -281,8 +281,10 @@ h1 {
   <div id="app"></div>
 </div>
 
+<script src="mlbma_config.js"></script>
 <script>
-var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var TABS = MLBMA_CONFIG.SHEET_TABS;
+var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 var PLATOON_GAP = 8;
 var HOME_AWAY_GAP = 10;
 var WINDOW_GAP = 8;
@@ -740,14 +742,14 @@ function initSelector() {
 
 function loadAll() {
   return Promise.all([
-    fetchSheetTab('Team_Profiles').catch(function() { return []; }),
-    fetchSheetTab('Batter_Profiles').catch(function() { return []; }),
-    fetchSheetTab('SP_Profiles').catch(function() { return []; }),
-    fetchSheetTab('Bullpen_Individual').catch(function() { return []; }),
-    fetchSheetTab('Player_Registry').catch(function() { return []; }),
-    fetchSheetTab('Today_Matchups').catch(function() { return []; }),
-    fetchSheetTab('Pitching_Score').catch(function() { return []; }),
-    fetchSheetTab('Reliever_Log').catch(function() { return []; })
+    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.sp_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.bullpen_individual).catch(function() { return []; }),
+    fetchSheetTab(TABS.player_registry).catch(function() { return []; }),
+    fetchSheetTab(TABS.today_matchups).catch(function() { return []; }),
+    fetchSheetTab(TABS.pitching_score).catch(function() { return []; }),
+    fetchSheetTab(TABS.reliever_log).catch(function() { return []; })
   ]).then(function(res) {
     DATA.profiles = res[0];
     DATA.batters = res[1];

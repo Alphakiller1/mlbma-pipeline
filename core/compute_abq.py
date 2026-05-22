@@ -1,5 +1,5 @@
 """
-ABQ (At-Bat Quality) — plate discipline and contact quality composite.
+ABQ (At-Bat Quality) -- plate discipline and contact quality composite.
 
 ABQ = 0.30 x discipline + 0.35 x contact_quality + 0.20 x pitch_pressure + 0.15 x k_avoidance
   discipline      = BB% x 0.55 + Chase%_inv x 0.45

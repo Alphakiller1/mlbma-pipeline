@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """
-MLBMA Research Terminal — lineup, pitcher, and matchup analysis modes.
+MLBMA Research Terminal -- user-facing CLI entry point.
+
+This module is the supported command-line interface for terminal-based analysis.
+It delegates data loading, metric assembly, and rendering to core/dashboard_terminal.py.
+Do not duplicate metric formulas here; all weights and thresholds live in core/config.py.
+
+Deprecation note:
+  New features should be added in core/dashboard_terminal.py (or core modules).
+  This file should remain a thin argparse wrapper around those helpers.
 
 Examples:
   python dashboard.py lineup NYY --hand RHP --window L14 --verbose 2
@@ -211,7 +219,7 @@ def cmd_pitcher(name: str, args: argparse.Namespace) -> int:
         return 1
 
     section("PITCHER MODE")
-    print(f"  {ps.name}  |  {ps.team or '—'}  |  {ps.hand}HP  |  IP {fmt(ps.ip)}")
+    print(f"  {ps.name}  |  {ps.team or '--'}  |  {ps.hand}HP  |  IP {fmt(ps.ip)}")
 
     render_pitcher_staleness(ps)
 
@@ -231,7 +239,7 @@ def cmd_pitcher(name: str, args: argparse.Namespace) -> int:
         f"{fmt(ps.vs_rhh.get('BB%')):>8} {fmt(ps.vs_rhh.get('HR/9')):>8}"
     )
     if ps.vs_lhh == ps.vs_rhh:
-        print("  Note: dedicated LHH/RHH export not in pipeline — season line shown for both.")
+        print("  Note: dedicated LHH/RHH export not in pipeline -- season line shown for both.")
 
     subsection("Schedule Context")
     if team:
@@ -284,7 +292,7 @@ def cmd_pitcher(name: str, args: argparse.Namespace) -> int:
         conv,
         signals,
         opts,
-        extra=f"Pitcher framing: {ps.name} {ps.hand}HP — signals evaluated vs listed opponent offense.",
+        extra=f"Pitcher framing: {ps.name} {ps.hand}HP -- signals evaluated vs listed opponent offense.",
     )
 
     render_signals(signals, opts.verbose)
@@ -371,10 +379,10 @@ def cmd_matchup(away: str, home: str, args: argparse.Namespace) -> int:
 
     subsection("Convergence")
     print(f"  {away}: {away_conv['convergence_count']}/{away_conv['threshold']} "
-          f"{'CONVERGENCE PLAY' if away_conv['is_convergence_play'] else '—'} "
+          f"{'CONVERGENCE PLAY' if away_conv['is_convergence_play'] else '--'} "
           f"({away_conv['convergence_direction']})")
     print(f"  {home}: {home_conv['convergence_count']}/{home_conv['threshold']} "
-          f"{'CONVERGENCE PLAY' if home_conv['is_convergence_play'] else '—'} "
+          f"{'CONVERGENCE PLAY' if home_conv['is_convergence_play'] else '--'} "
           f"({home_conv['convergence_direction']})")
 
     render_bet_matrix(bet_angle_matrix(away_sigs, away_conv, away_snap, away), f"{away} Bet Angles")
@@ -408,7 +416,7 @@ def _signal_match(sig: dict, canonical: str, idx: int) -> bool:
 
 def _side_cell(sig: dict | None, team: str) -> str:
     if not sig or not sig.get("fired"):
-        return "—"
+        return "--"
     d = sig.get("direction", "")
     if d in ("lineup", "high", "profile", "hot"):
         return team[:3]
@@ -427,7 +435,7 @@ def _pick_ml(a_snap, h_snap, a_conv, h_conv, away, home) -> str:
         return f"{away} ML lean (OSI/PALS edge)"
     if ho > ao + 3:
         return f"{home} ML lean (OSI/PALS edge)"
-    return "No strong ML lean — pass or reduce size"
+    return "No strong ML lean -- pass or reduce size"
 
 
 def _pick_rl(a_sigs, h_sigs, away, home) -> str:

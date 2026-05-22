@@ -167,7 +167,7 @@ def build_weather_rows(games: list) -> pd.DataFrame:
         }
 
         if dome:
-            print(f"  {g['away_team']}@{g['home_team']}: {stadium} (dome — skipping outdoor weather)")
+            print(f"  {g['away_team']}@{g['home_team']}: {stadium} (dome -- skipping outdoor weather)")
             rows.append(row)
             continue
 
@@ -212,7 +212,7 @@ def push_to_sheets(df: pd.DataFrame):
     except gspread.exceptions.WorksheetNotFound:
         ws = sheet.add_worksheet(title=tab, rows=50, cols=15)
 
-    df_out = df.fillna("—")
+    df_out = df.fillna("--")
     data = [df_out.columns.tolist()] + df_out.values.tolist()
     ws.update(data)
     print(f"  Pushed {tab}: {len(df)} games")
@@ -221,7 +221,7 @@ def push_to_sheets(df: pd.DataFrame):
 def run():
     games = get_today_games()
     if not games:
-        print("No games today — skipping weather scrape")
+        print("No games today -- skipping weather scrape")
         return
 
     print("Building weather data...")
