@@ -462,3 +462,55 @@ SIGNAL_8_OBR_HIGH = ARCHETYPE_HIGH_MIN
 SIGNAL_8_OBR_LOW = ARCHETYPE_LOW_MAX
 
 SIGNAL_9_OOR_DELTA_MIN = 5.0
+
+# Dashboard pages — canonical nav labels and URL patterns (8 pages)
+DASHBOARD_PAGES = {
+    "main": {
+        "file": "chase_analytics_mlb_oem_v7.html",
+        "label": "Main Dashboard",
+        "url": "chase_analytics_mlb_oem_v7.html",
+        "params": None,
+    },
+    "player_search": {
+        "file": "player_search.html",
+        "label": "Player Search",
+        "url": "player_search.html",
+        "params": None,
+    },
+    "matchup_sheet": {
+        "file": "matchup_sheet.html",
+        "label": "Matchup Sheet",
+        "url": "matchup_sheet.html",
+        "params": None,
+    },
+    "batter_profile": {
+        "file": "batter_profile.html",
+        "label": "Batter Profile",
+        "url": "batter_profile.html",
+        "params": ("player",),
+    },
+    "pitcher_profile": {
+        "file": "pitcher_profile.html",
+        "label": "Pitcher Profile",
+        "url": "pitcher_profile.html",
+        "params": ("pitcher",),
+    },
+    "reliever_profile": {
+        "file": "reliever_profile.html",
+        "label": "Reliever Profile",
+        "url": "reliever_profile.html",
+        "params": ("player",),
+    },
+    "bullpen_report": {
+        "file": "bullpen_report.html",
+        "label": "Bullpen Report",
+        "url": "bullpen_report.html",
+        "params": None,
+    },
+    "team_profile": {
+        "file": "team_profile.html",
+        "label": "Team Profile",
+        "url": "team_profile.html",
+        "params": ("team",),
+    },
+}

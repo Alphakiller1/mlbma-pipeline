@@ -1056,6 +1056,14 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.lineup-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+.lineup-name-link:hover {
+  color: var(--purple-2);
+  text-decoration: underline;
+}
 .lineup-row--platoon-l .lineup-name {
   color: var(--blue);
 }
@@ -1238,11 +1246,12 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <div class="subtitle">Daily offensive intelligence — scan status and matchups first, drill into tools and definitions below when you need depth.</div>
   <div class="header-meta">Last updated: <span id="headerUpdated">—</span></div>
   <nav class="nav-links" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
-    <a class="nav-link" href="pitcher_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Pitcher Profile</a>
+    <a class="nav-link" href="player_search.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Player Search</a>
+    <a class="nav-link" href="matchup_sheet.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Matchup Sheet</a>
     <a class="nav-link" href="batter_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Batter Profile</a>
+    <a class="nav-link" href="pitcher_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Pitcher Profile</a>
     <a class="nav-link" href="reliever_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Reliever Profile</a>
     <a class="nav-link" href="bullpen_report.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Bullpen Report</a>
-    <a class="nav-link" href="matchup_sheet.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Matchup Sheet</a>
     <a class="nav-link" href="team_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Team Profile</a>
   </nav>
   <div class="data-error-banner" id="dataErrorBanner"></div>
@@ -2260,6 +2269,11 @@ function lineupRowsForTeam(lineups, gameKey, teamAbbr, sideAwayHome) {
   }).slice().sort(function(a, b) { return a.batOrder - b.batOrder; });
 }
 
+function batterProfileLink(name) {
+  if (!name) return '—';
+  return '<a href="batter_profile.html?player=' + encodeURIComponent(name) + '" class="lineup-name-link">' + escHtml(name) + '</a>';
+}
+
 function buildLineupColHtml(teamLabel, rows, oppHand) {
   var head = '<div class="matchup-lineup-col-head">' + escHtml(teamLabel)
     + ' <span class="lineup-opp-hand">vs ' + (oppHand === 'L' || oppHand === 'R' ? escHtml(oppHand + 'HP') : '?HP') + '</span></div>';
@@ -2273,7 +2287,7 @@ function buildLineupColHtml(teamLabel, rows, oppHand) {
     return '<div class="lineup-row ' + plat + '">'
       + '<span class="lineup-bo">' + (r.batOrder <= 9 ? r.batOrder : '—') + '</span>'
       + '<span class="lineup-pos">' + escHtml(r.position) + '</span>'
-      + '<span class="lineup-name">' + escHtml(r.player) + '</span>'
+      + '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>'
       + '<span class="bats-pill">' + bp + '</span>'
       + '</div>';
   }).join('');
