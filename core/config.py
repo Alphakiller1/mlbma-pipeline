@@ -178,6 +178,17 @@ CONVERGENCE_PLAY_MIN_WEIGHT = CONVERGENCE_THRESHOLD
 CONVERGENCE_PP_GAP_WEIGHT = 2
 CONVERGENCE_DEFAULT_WEIGHT = 1
 
+# Opponent lineup quality tiers (Pitcher Intelligence — game logs / splits)
+OPPONENT_TIER_HIGH_MIN = 65.0   # High if strictly above
+OPPONENT_TIER_MID_MIN = 50.0    # Mid if 50–65 inclusive
+OPPONENT_TIER_MID_MAX = 65.0
+
+OPPONENT_TIER_CUTOFFS = {
+    "high_min": OPPONENT_TIER_HIGH_MIN,
+    "mid_min": OPPONENT_TIER_MID_MIN,
+    "mid_max": OPPONENT_TIER_MID_MAX,
+}
+
 SHEET_TABS = {
     "vs_rhp": "vs_RHP",
     "vs_lhp": "vs_LHP",
@@ -189,6 +200,8 @@ SHEET_TABS = {
     "today_games": "Today_Games",
     "weather": "Weather",
     "last_updated": "Last_Updated",
+    "sp_metric_splits": "SP_Metric_Splits",
+    "sp_profiles": "SP_Profiles",
 }
 
 TEAM_MAP = {

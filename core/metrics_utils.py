@@ -7,6 +7,21 @@ import pandas as pd
 from core.config import DATA_DIR
 
 
+def parse_ip(ip_val) -> float:
+    """Convert MLB innings-pitched string (e.g. 6.1) to decimal innings."""
+    if ip_val is None or (isinstance(ip_val, float) and pd.isna(ip_val)):
+        return 0.0
+    text = str(ip_val).strip()
+    if not text:
+        return 0.0
+    if "." in text:
+        whole, frac = text.split(".", 1)
+        outs = int(whole) * 3 + int(frac[:1] or 0)
+    else:
+        outs = int(float(text)) * 3
+    return outs / 3.0
+
+
 def clean_pct(series):
     if series.dtype == object:
         return series.str.replace("%", "").astype(float) / 100

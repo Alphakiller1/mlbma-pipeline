@@ -72,8 +72,40 @@ def run():
 
     run_signals()
 
+    run_sp_gamelog()
+    run_sp_splits()
+
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("All metrics pushed to Google Sheets")
+
+
+def run_sp_gamelog():
+    """Step 10: SP game logs from MLB Stats API; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 10: scrapers.scrape_sp_gamelog...")
+    print(f"{'='*50}")
+    try:
+        from scrapers.scrape_sp_gamelog import run as run_sp_gamelog_module
+
+        run_sp_gamelog_module()
+    except Exception as exc:
+        print(f"WARNING: scrape_sp_gamelog failed - continuing ({exc})")
+
+
+def run_sp_splits():
+    """Step 11: SP split profiles + Sheets push; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 11: compute_sp_splits + push_sp_splits...")
+    print(f"{'='*50}")
+    try:
+        from core.compute_sp_splits import run as run_compute_sp_splits
+
+        run_compute_sp_splits()
+        from outputs.push_sp_splits import run as run_push_sp_splits
+
+        run_push_sp_splits()
+    except Exception as exc:
+        print(f"WARNING: SP splits step failed - continuing ({exc})")
 
 
 if __name__ == "__main__":
