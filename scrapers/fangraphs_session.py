@@ -42,7 +42,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 
-from core.config import CHROME_PATH, ENV_FILE
+from core.config import CHROME_PATH, CHROME_VERSION, ENV_FILE
 
 load_dotenv(ENV_FILE)
 
@@ -62,7 +62,11 @@ def get_driver():
         )
     options = uc.ChromeOptions()
     options.add_argument("--start-maximized")
-    return uc.Chrome(options=options, browser_executable_path=CHROME_PATH)
+    return uc.Chrome(
+        options=options,
+        browser_executable_path=CHROME_PATH,
+        version_main=CHROME_VERSION,
+    )
 
 
 def safe_quit_driver(driver) -> None:

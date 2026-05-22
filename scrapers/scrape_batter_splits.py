@@ -13,6 +13,7 @@ from core.config import (
     BATTER_RECENT_DAYS,
     BATTER_SPLIT_ARR,
     BATTER_STAT_GROUPS,
+    CHROME_VERSION,
     CURRENT_SEASON,
     DATA_DIR,
     SEASON_END,
@@ -162,6 +163,7 @@ def run():
     recent_start = (datetime.now() - timedelta(days=BATTER_RECENT_DAYS)).strftime("%Y-%m-%d")
     recent_end = datetime.now().strftime("%Y-%m-%d")
 
+    print(f"Batter splits scrape (Chrome version_main={CHROME_VERSION})")
     driver = get_driver()
     try:
         if not login(driver):

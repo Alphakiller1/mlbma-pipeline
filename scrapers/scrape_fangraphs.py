@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-from core.config import DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
+from core.config import CHROME_VERSION, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
 from scrapers.fangraphs_session import get_driver, safe_quit_driver
 
 load_dotenv(ENV_FILE)
@@ -125,6 +125,7 @@ def scrape_sp_window(driver, start_date: str, end_date: str, out_basename: str, 
 
 
 def run():
+    print(f"FanGraphs scrape (Chrome version_main={CHROME_VERSION})")
     driver = get_driver()
     try:
         if not login(driver):
