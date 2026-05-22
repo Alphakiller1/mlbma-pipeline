@@ -5,7 +5,7 @@ import os
 import gspread
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
@@ -13,7 +13,12 @@ HEADERS = {
 
 def scrape_lineups():
     print("Fetching Rotowire lineups...")
-    r = requests.get("https://www.rotowire.com/baseball/daily-lineups.php", headers=HEADERS)
+    r = requests.get(
+        "https://www.rotowire.com/baseball/daily-lineups.php",
+        headers=HEADERS,
+        timeout=30,
+    )
+    r.raise_for_status()
     print(f"  Status: {r.status_code}")
     soup = BeautifulSoup(r.text, "html.parser")
     lineup_divs = soup.find_all("div", class_="lineup")
@@ -31,7 +36,17 @@ def scrape_lineups():
             away_abbr = abbrs[0].text.strip()
             home_abbr = abbrs[1].text.strip()
             # Normalize to our standard abbreviations
-            abbr_fix = {"TB":"TBR","WSH":"WSN","KC":"KCR","CWS":"CHW","SD":"SDP","SF":"SFG"}
+            abbr_fix = {
+                "TB": "TBR",
+                "WSH": "WSN",
+                "KC": "KCR",
+                "CWS": "CHW",
+                "SD": "SDP",
+                "SF": "SFG",
+                "OAK": "ATH",
+                "AZ": "ARI",
+                "FLA": "MIA",
+            }
             away_abbr = abbr_fix.get(away_abbr, away_abbr)
             home_abbr = abbr_fix.get(home_abbr, home_abbr)
 
@@ -104,7 +119,10 @@ def push_to_sheets(lineup_df, games_df):
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 
-    for tab_name, df in [("Today_Lineups", lineup_df), ("Today_Games", games_df)]:
+    for tab_name, df in [
+        (SHEET_TABS["today_lineups"], lineup_df),
+        (SHEET_TABS["today_games"], games_df),
+    ]:
         if df is None or df.empty:
             continue
         try:
@@ -117,7 +135,11 @@ def push_to_sheets(lineup_df, games_df):
         print(f"  Pushed {tab_name}: {len(df)} rows")
 
 def run():
-    lineup_df, games_df = scrape_lineups()
+    try:
+        lineup_df, games_df = scrape_lineups()
+    except requests.RequestException as e:
+        print(f"WARNING: scrape_lineups failed - continuing ({e})")
+        return
 
     if not lineup_df.empty:
         lineup_df.to_csv(os.path.join(DATA_DIR, "today_lineups.csv"), index=False)

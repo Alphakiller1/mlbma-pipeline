@@ -5,7 +5,7 @@ import os
 import gspread
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, TEAM_MAP
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS, TEAM_MAP
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0"
@@ -15,7 +15,8 @@ def get_today_schedule():
     today = datetime.now().strftime("%Y-%m-%d")
     url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=probablePitcher,lineups,team"
     print(f"Fetching schedule for {today}...")
-    r = requests.get(url, headers=HEADERS)
+    r = requests.get(url, headers=HEADERS, timeout=30)
+    r.raise_for_status()
     data = r.json()
 
     games = []
@@ -73,9 +74,12 @@ def load_pitching_scores():
     return pd.read_csv(path)
 
 def load_osi():
-    rhp = pd.read_csv(os.path.join(DATA_DIR, "metrics_vs_RHP.csv"))
-    lhp = pd.read_csv(os.path.join(DATA_DIR, "metrics_vs_LHP.csv"))
-    return rhp, lhp
+    rhp_path = os.path.join(DATA_DIR, "metrics_vs_RHP.csv")
+    lhp_path = os.path.join(DATA_DIR, "metrics_vs_LHP.csv")
+    if not os.path.exists(rhp_path) or not os.path.exists(lhp_path):
+        print("  WARNING: metrics_vs_RHP/LHP not found — lineup OSI columns will be empty")
+        return pd.DataFrame(), pd.DataFrame()
+    return pd.read_csv(rhp_path), pd.read_csv(lhp_path)
 
 def get_sp_stats(sp_name, sp_df):
     if sp_df.empty or sp_name == "TBD":
@@ -94,6 +98,8 @@ def get_sp_stats(sp_name, sp_df):
 
 def get_team_osi(team, hand, rhp_df, lhp_df):
     df = rhp_df if hand == "R" else lhp_df
+    if df.empty or "Tm" not in df.columns:
+        return None
     match = df[df["Tm"] == team]
     if match.empty:
         return None
@@ -161,16 +167,17 @@ def push_to_sheets(df):
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 
+    tab = SHEET_TABS["today_matchups"]
     try:
-        ws = sheet.worksheet("Today_Matchups")
+        ws = sheet.worksheet(tab)
         ws.clear()
     except gspread.exceptions.WorksheetNotFound:
-        ws = sheet.add_worksheet(title="Today_Matchups", rows=50, cols=25)
+        ws = sheet.add_worksheet(title=tab, rows=50, cols=25)
 
     df = df.fillna("—")
     data = [df.columns.tolist()] + df.values.tolist()
     ws.update(data)
-    print(f"  Pushed Today_Matchups: {len(df)} games")
+    print(f"  Pushed {tab}: {len(df)} games")
 
 def run():
     df = build_matchups()

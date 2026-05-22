@@ -78,7 +78,8 @@ def load_team_metrics(pitcher_hand: str) -> pd.DataFrame:
     split = "metrics_vs_RHP.csv" if pitcher_hand == "R" else "metrics_vs_LHP.csv"
     path = DATA_DIR / split
     if not path.exists():
-        raise FileNotFoundError(f"{split} not found — run compute step first")
+        print(f"  WARNING: {split} not found — opponent metrics will be blank")
+        return pd.DataFrame(columns=["Tm", "OSI", "ABQ", "RCV", "OBR"])
     return pd.read_csv(path)
 
 

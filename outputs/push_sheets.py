@@ -4,7 +4,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-from core.config import CREDS_FILE, CURRENT_SEASON, DATA_DIR, SCOPES, SHEET_ID
+from core.config import CREDS_FILE, CURRENT_SEASON, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS
 
 def get_client():
     creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
@@ -29,10 +29,10 @@ def run():
     print("Connected.\n")
 
     files = {
-        "vs_RHP":         "metrics_vs_RHP.csv",
-        "vs_LHP":         "metrics_vs_LHP.csv",
-        "OOR":            "metrics_oor.csv",
-        "Pitching_Score": "metrics_pitching_score.csv",
+        SHEET_TABS["vs_rhp"]: "metrics_vs_RHP.csv",
+        SHEET_TABS["vs_lhp"]: "metrics_vs_LHP.csv",
+        SHEET_TABS["oor"]: "metrics_oor.csv",
+        SHEET_TABS["pitching_score"]: "metrics_pitching_score.csv",
     }
 
     for tab_name, filename in files.items():
@@ -44,11 +44,12 @@ def run():
             print(f"  WARNING: {filename} not found")
 
     # Add last updated timestamp tab
+    tab_ts = SHEET_TABS["last_updated"]
     try:
-        ts_sheet = sheet.worksheet("Last_Updated")
+        ts_sheet = sheet.worksheet(tab_ts)
         ts_sheet.clear()
     except gspread.exceptions.WorksheetNotFound:
-        ts_sheet = sheet.add_worksheet(title="Last_Updated", rows=5, cols=2)
+        ts_sheet = sheet.add_worksheet(title=tab_ts, rows=5, cols=2)
 
     ts_sheet.update([
         ["Last Updated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],

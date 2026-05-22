@@ -7,7 +7,7 @@ import requests
 from google.oauth2.service_account import Credentials
 
 from core.compute_pals import calc_pals, load_osi_for_pals, load_sp_xfip
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SEASON_START, SHEET_ID, TEAM_MAP
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SEASON_START, SHEET_ID, SHEET_TABS, TEAM_MAP
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -23,8 +23,13 @@ def get_season_games():
         f"&startDate={season_start}&endDate={today}"
         f"&hydrate=probablePitcher,team&gameType=R"
     )
-    r = requests.get(url, headers=HEADERS)
-    data = r.json()
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=60)
+        r.raise_for_status()
+        data = r.json()
+    except requests.RequestException as e:
+        print(f"  WARNING: PALS schedule fetch failed: {e}")
+        return pd.DataFrame()
 
     records = []
     for date in data.get("dates", []):
@@ -52,11 +57,12 @@ def push_to_sheets(df):
     creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
+    tab = SHEET_TABS["pals"]
     try:
-        ws = sheet.worksheet("PALS")
+        ws = sheet.worksheet(tab)
         ws.clear()
     except gspread.exceptions.WorksheetNotFound:
-        ws = sheet.add_worksheet(title="PALS", rows=40, cols=10)
+        ws = sheet.add_worksheet(title=tab, rows=40, cols=10)
     df_out = df.fillna("—")
     data = [df_out.columns.tolist()] + df_out.values.tolist()
     ws.update(data)
@@ -65,8 +71,15 @@ def push_to_sheets(df):
 
 def run():
     games = get_season_games()
-    sp_df = load_sp_xfip()
-    osi_df = load_osi_for_pals()
+    if games.empty:
+        print("  No completed games for PALS — skipping")
+        return
+    try:
+        sp_df = load_sp_xfip()
+        osi_df = load_osi_for_pals()
+    except FileNotFoundError as e:
+        print(f"  WARNING: PALS prerequisites missing: {e}")
+        return
     df = calc_pals(games, sp_df, osi_df)
     fname = os.path.join(DATA_DIR, "metrics_pals.csv")
     df.to_csv(fname, index=False)

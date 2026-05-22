@@ -24,7 +24,10 @@ def calc_oor(osi_rhp, osi_lhp):
     df = rhp.merge(lhp, on="Tm", how="inner")
     df["HvP"] = ((df["HvR"] + df["HvL"]) / 2).round(2)
     league_avg = df["HvP"].mean()
-    df["vP_pct"] = ((df["HvP"] - league_avg) / league_avg * 100).round(2).astype(str) + "%"
+    if league_avg and league_avg != 0:
+        df["vP_pct"] = ((df["HvP"] - league_avg) / league_avg * 100).round(2).astype(str) + "%"
+    else:
+        df["vP_pct"] = "0%"
     df["vP_Rank"] = df["HvP"].rank(ascending=False).astype(int)
     df["vL_Rank"] = df["HvL"].rank(ascending=False).astype(int)
     df["vR_Rank"] = df["HvR"].rank(ascending=False).astype(int)

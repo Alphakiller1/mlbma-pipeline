@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, TEAM_MAP
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS, TEAM_MAP
 
 HEADERS = {
     "User-Agent": "curl/8.0 (compatible; MLBMA-Pipeline/1.0)",
@@ -57,9 +57,13 @@ def get_today_games():
         f"&hydrate=team,venue"
     )
     print(f"Fetching schedule for {today}...")
-    r = requests.get(url, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    data = r.json()
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+        data = r.json()
+    except requests.RequestException as e:
+        print(f"  WARNING: schedule fetch failed: {e}")
+        return []
 
     games = []
     for date_block in data.get("dates", []):
@@ -87,9 +91,13 @@ def fetch_venue_detail(game_id: int, cache: dict) -> dict:
     if game_id in cache:
         return cache[game_id]
     url = f"https://statsapi.mlb.com/api/v1.1/game/{game_id}/feed/live"
-    r = requests.get(url, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    venue = r.json().get("gameData", {}).get("venue", {})
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+        venue = r.json().get("gameData", {}).get("venue", {}) or {}
+    except requests.RequestException as e:
+        print(f"  WARNING: venue feed failed for game {game_id}: {e}")
+        venue = {}
     cache[game_id] = venue
     return venue
 
@@ -106,8 +114,11 @@ def venue_city_query(venue: dict) -> str:
 def fetch_weather(city_query: str) -> dict:
     loc = city_query.replace(",", " ").replace(" ", "+")
     url = f"https://wttr.in/{loc}?format=j1"
-    r = requests.get(url, headers=HEADERS, timeout=20)
-    r.raise_for_status()
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=20)
+        r.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"wttr.in request failed for {city_query}: {e}") from e
     data = r.json()
     current = (data.get("current_condition") or [{}])[0]
     desc = ""
@@ -133,10 +144,14 @@ def build_weather_rows(games: list) -> pd.DataFrame:
 
     for g in games:
         game_id = g["game_id"]
-        venue = fetch_venue_detail(game_id, venue_cache)
-        city = venue_city_query(venue)
+        try:
+            venue = fetch_venue_detail(game_id, venue_cache)
+        except Exception as e:
+            print(f"  WARNING: skipping venue for {g['away_team']}@{g['home_team']}: {e}")
+            venue = {}
+        city = venue_city_query(venue) or g.get("stadium_name", "Unknown")
         stadium = venue.get("name") or g["stadium_name"]
-        dome = is_dome_venue(venue)
+        dome = is_dome_venue(venue) if venue else False
 
         row = {
             "game_id": game_id,
@@ -184,16 +199,17 @@ def push_to_sheets(df: pd.DataFrame):
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 
+    tab = SHEET_TABS["weather"]
     try:
-        ws = sheet.worksheet("Weather")
+        ws = sheet.worksheet(tab)
         ws.clear()
     except gspread.exceptions.WorksheetNotFound:
-        ws = sheet.add_worksheet(title="Weather", rows=50, cols=15)
+        ws = sheet.add_worksheet(title=tab, rows=50, cols=15)
 
     df_out = df.fillna("—")
     data = [df_out.columns.tolist()] + df_out.values.tolist()
     ws.update(data)
-    print(f"  Pushed Weather: {len(df)} games")
+    print(f"  Pushed {tab}: {len(df)} games")
 
 
 def run():

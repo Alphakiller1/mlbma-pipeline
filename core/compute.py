@@ -1,6 +1,7 @@
 """Metric coordinator — loads data and runs all team-level computations."""
 
 import os
+import sys
 
 from core.compute_abq import calc_abq
 from core.compute_obr import calc_obr
@@ -38,8 +39,8 @@ def run():
     sp_std = data.get("sp_standard")
 
     if any(d is None for d in [std_rhp, bb_rhp, std_lhp, bb_lhp, savant]):
-        print("Missing required data files")
-        return
+        print("ERROR: Missing required data files — run scrape_savant and scrape_fangraphs first")
+        sys.exit(1)
 
     osi_rhp = compute_split(std_rhp, bb_rhp, savant, "vs_RHP")
     osi_lhp = compute_split(std_lhp, bb_lhp, savant, "vs_LHP")
