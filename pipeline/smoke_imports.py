@@ -26,6 +26,7 @@ MODULES = [
     "scrapers.scrape_pals",
     "scrapers.scrape_weather",
     "outputs.push_sheets",
+    "core.dashboard_terminal",
 ]
 
 EMPTY_PLACEHOLDERS = [
