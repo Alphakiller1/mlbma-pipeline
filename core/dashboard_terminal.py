@@ -168,6 +168,7 @@ def resolve_metrics_df(window: str, split_label: str) -> tuple[pd.DataFrame | No
 def resolve_sp_df(window: str) -> tuple[pd.DataFrame | None, str]:
     w = window.upper()
     for fname in (
+        "sp_l14.csv" if w == "L14" else "",
         f"sp_standard_{w}.csv",
         f"sp_standard_{w.lower()}.csv",
         f"{w}_sp_standard.csv",
@@ -250,7 +251,11 @@ class PitcherSnapshot:
     hr9_l14: float | None = None
     vs_lhh: dict[str, float | None] = field(default_factory=dict)
     vs_rhh: dict[str, float | None] = field(default_factory=dict)
+    stale: bool = False
     staleness: str = ""
+    staleness_warning: str = ""
+    data_source: str = "season"
+    l14_starts: int = 0
     reliability: str = "high"
 
 
@@ -567,6 +572,8 @@ class DataStore:
         fip = num_value(row.get("FIP"))
         ip = num_value(row.get("IP"))
 
+        from core.compute_pitching import evaluate_pitcher_staleness
+
         sp14 = self.sp_l14()
         l14_row = None
         if sp14 is not None:
@@ -574,11 +581,11 @@ class DataStore:
             if m14:
                 l14_row = sp14[sp14["Name"] == m14].iloc[0]
 
-        k14 = pct_value(l14_row.get("K%")) if l14_row is not None else None
-        bb14 = pct_value(l14_row.get("BB%")) if l14_row is not None else None
-        hr14 = num_value(l14_row.get("HR/9")) if l14_row is not None else None
-
-        staleness = _staleness_verdict(k, k14, bb, bb14, hr9, hr14)
+        st = evaluate_pitcher_staleness(row, l14_row)
+        k14 = st["k_pct_l14"]
+        bb14 = st["bb_pct_l14"]
+        hr14 = st["hr9_l14"]
+        staleness = st["staleness_warning"]
 
         ps = None
         if tm:
@@ -608,8 +615,12 @@ class DataStore:
             hr9_l14=hr14,
             vs_lhh=vs_lhh,
             vs_rhh=vs_rhh,
+            stale=st["stale"],
             staleness=staleness,
-            reliability=rel if l14_row is not None else "medium",
+            staleness_warning=st["staleness_warning"],
+            data_source=st["data_source"],
+            l14_starts=st["l14_starts"],
+            reliability=rel if st["data_source"] == "L14" else "medium",
         )
 
     def team_metrics_from_snapshot(self, snap: TeamSnapshot, for_platoon: bool = False) -> TeamMetrics:
@@ -748,29 +759,6 @@ def _merge_snap_into_metrics(tm: TeamMetrics, snap: TeamSnapshot) -> None:
         tm.osi = snap.osi
     if tm.proj_osi is None:
         tm.proj_osi = snap.proj_osi
-
-
-def _staleness_verdict(
-    k, k14, bb, bb14, hr9, hr14,
-) -> str:
-    if k14 is None and bb14 is None and hr14 is None:
-        return "L14 sample unavailable — using season rates only."
-    parts = []
-    for label, season, recent in (
-        ("K%", k, k14),
-        ("BB%", bb, bb14),
-        ("HR/9", hr9, hr14),
-    ):
-        if season is None or recent is None:
-            continue
-        delta = recent - season
-        if abs(delta) < 1.0 if label != "HR/9" else abs(delta) < 0.15:
-            parts.append(f"{label} stable")
-        elif delta > 0:
-            parts.append(f"{label} up L14 ({season:.1f}→{recent:.1f})")
-        else:
-            parts.append(f"{label} down L14 ({season:.1f}→{recent:.1f})")
-    return "; ".join(parts) if parts else "Stable profile across samples."
 
 
 def _pitcher_individual_score(sp: pd.DataFrame, name: str) -> float | None:
@@ -1069,6 +1057,30 @@ def build_verdict(
 
 
 # ── Render sections ───────────────────────────────────────────────────────────
+
+def render_pitcher_staleness(ps: PitcherSnapshot) -> None:
+    """Section 1 — L14 vs season staleness for pitcher mode."""
+    subsection("1. Staleness Check (L14 vs season)")
+    source_lbl = ps.data_source.upper() if ps.data_source else "SEASON"
+    print(f"  Operative data source: {source_lbl} ({ps.l14_starts} L14 starts)")
+    print(f"  {'Stat':<8} {'Season':>10} {'L14':>10} {'Δ':>8}")
+    for label, season, recent in (
+        ("K%", ps.k_pct, ps.k_pct_l14),
+        ("BB%", ps.bb_pct, ps.bb_pct_l14),
+        ("HR/9", ps.hr9, ps.hr9_l14),
+    ):
+        delta = (recent - season) if season is not None and recent is not None else None
+        print(
+            f"  {label:<8} {fmt(season):>10} {fmt(recent):>10} "
+            f"{fmt(delta, 2) if delta is not None else '—':>8}"
+        )
+    if ps.stale:
+        print()
+        print("  *** STALE DATA WARNING ***")
+        print(f"  {ps.staleness_warning}")
+    else:
+        print(f"  Status: {ps.staleness_warning or 'Within drift thresholds.'}")
+
 
 def render_header_lineup(snap: TeamSnapshot, opts: DashboardOptions) -> None:
     section("LINEUP MODE")

@@ -5,6 +5,7 @@ from io import StringIO
 import pandas as pd
 import time
 import os
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 from core.config import CHROME_PATH, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
@@ -25,6 +26,10 @@ SPLITS = {
     "vs_LHP": "1",
 }
 
+L14_START = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
+L14_END = datetime.now().strftime("%Y-%m-%d")
+
+
 def get_driver():
     if not os.path.isfile(CHROME_PATH):
         raise FileNotFoundError(
@@ -34,6 +39,7 @@ def get_driver():
     options = uc.ChromeOptions()
     options.add_argument("--start-maximized")
     return uc.Chrome(options=options, browser_executable_path=CHROME_PATH)
+
 
 def login(driver):
     print("Logging in...")
@@ -45,6 +51,7 @@ def login(driver):
     time.sleep(10)
     print(f"Login URL: {driver.current_url}")
     return "wp-admin" in driver.current_url or "fangraphs.com" in driver.current_url
+
 
 def get_export_csv(driver):
     try:
@@ -60,8 +67,14 @@ def get_export_csv(driver):
         print(f"  Export error: {e}")
         return None
 
+
 def scrape_one(driver, split_label, split_code, sg_name, sg_num):
-    url = f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_code}&splitArrPitcher=&position=B&autoPt=false&byTeam=true&start={SEASON_START}&end={SEASON_END}&statType=team&statgroup={sg_num}&minPAf=0&pageSize=30"
+    url = (
+        f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_code}"
+        f"&splitArrPitcher=&position=B&autoPt=false&byTeam=true"
+        f"&start={SEASON_START}&end={SEASON_END}&statType=team&statgroup={sg_num}"
+        f"&minPAf=0&pageSize=30"
+    )
     print(f"  Loading {split_label} {sg_name}...")
     driver.get(url)
     time.sleep(20)
@@ -76,21 +89,51 @@ def scrape_one(driver, split_label, split_code, sg_name, sg_num):
     time.sleep(15)
     return df
 
-def scrape_sp(driver, sg_name, sg_num):
-    url = f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=&splitArrPitcher=&position=P&autoPt=false&byTeam=false&start={SEASON_START}&end={SEASON_END}&statType=player&statgroup={sg_num}&minPAf=&pageSize=100"
-    print(f"  Loading SP {sg_name}...")
+
+def _merge_sp_standard_advanced(standard_df: pd.DataFrame, advanced_df: pd.DataFrame | None) -> pd.DataFrame:
+    if advanced_df is None or advanced_df.empty:
+        return standard_df
+    key = "Name" if "Name" in standard_df.columns else standard_df.columns[0]
+    adv_cols = [c for c in advanced_df.columns if c not in standard_df.columns or c == key]
+    if key not in advanced_df.columns:
+        return standard_df
+    return standard_df.merge(advanced_df[adv_cols], on=key, how="left", suffixes=("", "_adv"))
+
+
+def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basename: str):
+    url = (
+        f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=&splitArrPitcher="
+        f"&position=P&autoPt=false&byTeam=false"
+        f"&start={start_date}&end={end_date}"
+        f"&statType=player&statgroup={sg_num}&minPAf=&pageSize=100"
+    )
+    print(f"  Loading SP {sg_name} ({start_date} to {end_date})...")
     driver.get(url)
     time.sleep(20)
     df = get_export_csv(driver)
     if df is not None:
         print(f"  OK {len(df)} pitchers | Cols: {list(df.columns)}")
-        fname = os.path.join(DATA_DIR, f'sp_{sg_name}.csv')
+        fname = os.path.join(DATA_DIR, f"{out_basename}_{sg_name}.csv")
         df.to_csv(fname, index=False)
-        print(f'  Saved: {fname}')
+        print(f"  Saved: {fname}")
     else:
-        print(f'  No data found')
+        print(f"  No data found")
     time.sleep(15)
     return df
+
+
+def scrape_sp_window(driver, start_date: str, end_date: str, out_basename: str, label: str):
+    """Scrape SP standard + advanced for a date window; write merged {out_basename}.csv."""
+    print(f"=== SP Leaderboard ({label}: {start_date} to {end_date}) ===")
+    std = scrape_sp(driver, "standard", 2, start_date, end_date, out_basename)
+    adv = scrape_sp(driver, "advanced", 3, start_date, end_date, out_basename)
+    if std is not None:
+        merged = _merge_sp_standard_advanced(std, adv)
+        out_path = os.path.join(DATA_DIR, f"{out_basename}.csv")
+        merged.to_csv(out_path, index=False)
+        print(f"  Merged -> {out_path} ({len(merged)} rows)")
+    return std
+
 
 def run():
     driver = get_driver()
@@ -107,9 +150,10 @@ def run():
             print("Cooling down 45s...")
             time.sleep(45)
 
-        print("=== SP Leaderboard ===")
-        for sg_name, sg_num in [("standard", 2), ("advanced", 3)]:
-            scrape_sp(driver, sg_name, sg_num)
+        scrape_sp_window(driver, SEASON_START, SEASON_END, "sp_standard", "season")
+        print("Cooling down 45s...")
+        time.sleep(45)
+        scrape_sp_window(driver, L14_START, L14_END, "sp_l14", "L14")
     finally:
         try:
             driver.quit()

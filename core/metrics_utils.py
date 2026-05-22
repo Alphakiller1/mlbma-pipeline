@@ -59,6 +59,7 @@ def load_all():
         "savant_vs_RHP.csv",
         "savant_vs_LHP.csv",
         "sp_standard.csv",
+        "sp_l14.csv",
     ]
     for f in files:
         key = f.replace(".csv", "")

@@ -39,7 +39,56 @@ SCOPES = [
 ]
 
 CURRENT_SEASON = 2026
-PARK_FACTOR_DEFAULT = 1.0
+
+# 2026 park factors (offense environment; 1.0 = neutral)
+PARK_FACTORS = {
+    "COL": 1.38,
+    "BOS": 1.12,
+    "CIN": 1.10,
+    "TEX": 1.08,
+    "PHI": 1.07,
+    "NYY": 1.06,
+    "CHC": 1.05,
+    "MIL": 1.04,
+    "ATL": 1.03,
+    "HOU": 1.02,
+    "LAD": 1.01,
+    "NYM": 1.00,
+    "STL": 1.00,
+    "MIN": 0.99,
+    "DET": 0.99,
+    "TOR": 0.98,
+    "BAL": 0.98,
+    "ARI": 0.97,
+    "SFG": 0.97,
+    "SEA": 0.96,
+    "CLE": 0.96,
+    "PIT": 0.95,
+    "WSN": 0.95,
+    "KCR": 0.95,
+    "MIA": 0.94,
+    "TBR": 0.94,
+    "LAA": 0.93,
+    "SDP": 0.92,
+    "CHW": 0.91,
+    "ATH": 0.90,
+}
+
+PITCHER_K_DRIFT_THRESHOLD = 4.0
+PITCHER_BB_DRIFT_THRESHOLD = 2.0
+PITCHER_HR_DRIFT_THRESHOLD = 0.30
+PITCHER_MIN_L14_STARTS = 2
+PITCHER_DEFAULT_WINDOW = "L14"
+
+
+def park_factor_for_team(team: str) -> float:
+    """Return park factor for team abbreviation; warn and use 1.0 if unknown."""
+    key = str(team).strip().upper()
+    pf = PARK_FACTORS.get(key)
+    if pf is None:
+        print(f"WARNING: Park factor not found for {key}, using 1.0")
+        return 1.0
+    return pf
 
 # ── Metric formula weights (single source of truth) ───────────────────────────
 
@@ -235,6 +284,7 @@ SHEET_TABS = {
     "sp_metric_splits": "SP_Metric_Splits",
     "sp_profiles": "SP_Profiles",
     "sp_game_log": "SP_Game_Log",
+    "sp_l14": "SP_L14",
     "bullpen_unit": "Bullpen_Unit",
     "bullpen_individual": "Bullpen_Individual",
     "reliever_log": "Reliever_Log",

@@ -28,6 +28,7 @@ from core.dashboard_terminal import (
     render_convergence,
     render_header_lineup,
     render_osi_dashboard,
+    render_pitcher_staleness,
     render_platoon,
     render_signals,
     render_submetrics,
@@ -212,19 +213,7 @@ def cmd_pitcher(name: str, args: argparse.Namespace) -> int:
     section("PITCHER MODE")
     print(f"  {ps.name}  |  {ps.team or '—'}  |  {ps.hand}HP  |  IP {fmt(ps.ip)}")
 
-    subsection("Staleness Check (L14 vs season)")
-    print(f"  {'Stat':<8} {'Season':>10} {'L14':>10} {'Δ':>8}")
-    for label, season, recent in (
-        ("K%", ps.k_pct, ps.k_pct_l14),
-        ("BB%", ps.bb_pct, ps.bb_pct_l14),
-        ("HR/9", ps.hr9, ps.hr9_l14),
-    ):
-        delta = (recent - season) if season is not None and recent is not None else None
-        print(
-            f"  {label:<8} {fmt(season):>10} {fmt(recent):>10} "
-            f"{fmt(delta, 2) if delta is not None else '—':>8}"
-        )
-    print(f"  Verdict: {ps.staleness}")
+    render_pitcher_staleness(ps)
 
     subsection("Pitching Score")
     tier = tier_label(ps.pitch_score, PITCHING_TIERS)

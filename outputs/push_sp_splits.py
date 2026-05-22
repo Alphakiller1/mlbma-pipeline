@@ -22,6 +22,7 @@ def run():
         SHEET_TABS["sp_metric_splits"]: "sp_metric_splits.csv",
         SHEET_TABS["sp_profiles"]: "sp_profiles.csv",
         SHEET_TABS["sp_game_log"]: "sp_gamelog.csv",
+        SHEET_TABS["sp_l14"]: "sp_l14.csv",
     }
 
     for tab_name, filename in files.items():

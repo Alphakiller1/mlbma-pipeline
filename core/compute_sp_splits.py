@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from core.config import DATA_DIR
+from core.compute_pitching import build_pitcher_staleness_df, park_adjust_allowed_value
 from core.metrics_utils import parse_ip
 
 SPLIT_DIMENSIONS = (
@@ -58,12 +59,33 @@ PROFILE_COLUMNS = [
     "low_osi_ERA",
     "home_ERA",
     "away_ERA",
+    "stale",
+    "staleness_warning",
+    "data_source",
+    "l14_starts",
 ]
+
+
+def _park_adjust_gamelog(df: pd.DataFrame) -> pd.DataFrame:
+    """Apply home-park adjustment to opponent allowed metrics per start."""
+    out = df.copy()
+    for col in ("opponent_ABQ", "opponent_RCV", "opponent_OBR", "opponent_OSI"):
+        if col not in out.columns:
+            continue
+        out[col] = out.apply(
+            lambda r: park_adjust_allowed_value(
+                r[col], r.get("pitcher_team", ""), r.get("home_away", "")
+            ),
+            axis=1,
+        )
+    return out
 
 
 def _agg_block(df: pd.DataFrame) -> Optional[dict]:
     if df.empty:
         return None
+
+    df = _park_adjust_gamelog(df)
 
     ip_vals = df["IP"].apply(parse_ip)
     total_ip = ip_vals.sum()
@@ -84,10 +106,10 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
         "BB_pct": round(df["BB"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "HR9": round(df["HR"].sum() / total_ip * 9, 2) if total_ip > 0 else None,
         "avg_pitches": round(df["pitches"].mean(), 1) if "pitches" in df.columns else None,
-        "ABQ_allowed": round(df["opponent_ABQ"].mean(), 1),
-        "RCV_allowed": round(df["opponent_RCV"].mean(), 1),
-        "OBR_allowed": round(df["opponent_OBR"].mean(), 1),
-        "OSI_allowed": round(df["opponent_OSI"].mean(), 1),
+        "ABQ_allowed": round(pd.to_numeric(df["opponent_ABQ"], errors="coerce").mean(), 1),
+        "RCV_allowed": round(pd.to_numeric(df["opponent_RCV"], errors="coerce").mean(), 1),
+        "OBR_allowed": round(pd.to_numeric(df["opponent_OBR"], errors="coerce").mean(), 1),
+        "OSI_allowed": round(pd.to_numeric(df["opponent_OSI"], errors="coerce").mean(), 1),
         "F5_ERA": round(f5_er / f5_starts / 5 * 9, 2)
         if f5_er is not None and f5_starts > 0
         else None,
@@ -132,6 +154,12 @@ def _split_era(pdf: pd.DataFrame, col: str, value: str) -> Optional[float]:
 
 def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
     rows: List[dict] = []
+    staleness_df = build_pitcher_staleness_df()
+    stale_lookup = (
+        staleness_df.set_index("pitcher_name").to_dict("index")
+        if not staleness_df.empty and "pitcher_name" in staleness_df.columns
+        else {}
+    )
 
     for (pid, pname, pteam, phand), pdf in gamelog.groupby(
         ["pitcher_id", "pitcher_name", "pitcher_team", "pitcher_hand"], dropna=False
@@ -139,6 +167,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
         block = _agg_block(pdf)
         if not block:
             continue
+        st = stale_lookup.get(str(pname), {})
         rows.append(
             {
                 "pitcher_id": pid,
@@ -150,6 +179,10 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
                 "low_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "Low"),
                 "home_ERA": _split_era(pdf, "home_away", "home"),
                 "away_ERA": _split_era(pdf, "home_away", "away"),
+                "stale": st.get("stale", False),
+                "staleness_warning": st.get("staleness_warning", ""),
+                "data_source": st.get("data_source", "season"),
+                "l14_starts": st.get("l14_starts", 0),
             }
         )
 
