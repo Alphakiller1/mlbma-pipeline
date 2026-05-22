@@ -202,6 +202,7 @@ SHEET_TABS = {
     "last_updated": "Last_Updated",
     "sp_metric_splits": "SP_Metric_Splits",
     "sp_profiles": "SP_Profiles",
+    "sp_game_log": "SP_Game_Log",
 }
 
 TEAM_MAP = {

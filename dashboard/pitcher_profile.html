@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Analytics • Pitcher Intelligence Profile</title>
+<style>
+:root {
+  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
+  --border: #28282f; --border-2: #34343d;
+  --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
+  --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
+  --purple-glow: rgba(192, 132, 252, 0.25);
+  --green-l: #86EFAC; --green: #4ADE80; --green-d: #16A34A;
+  --green-dim: rgba(74, 222, 128, 0.15);
+  --red-l: #FCA5A5; --red: #F87171; --red-d: #DC2626;
+  --red-dim: rgba(248, 113, 113, 0.15);
+  --gold-l: #FCD34D; --gold: #FBBF24; --gold-d: #B45309;
+  --gold-dim: rgba(251, 191, 36, 0.15);
+  --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
+  --blue-dim: rgba(96, 165, 250, 0.15);
+  --font: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", system-ui, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Monaco, Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  font-size: 14px; line-height: 1.5; min-height: 100vh;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(192, 132, 252, 0.08), transparent),
+    var(--bg);
+}
+.container { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
+
+.loading {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 2000; gap: 16px;
+}
+.loading.hide { display: none; }
+.spinner {
+  width: 36px; height: 36px; border: 2px solid var(--border);
+  border-top-color: var(--purple); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--text-2); font-size: 13px; }
+
+.header { margin-bottom: 22px; }
+.brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.brand-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple);
+}
+.brand-pill {
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+  padding: 3px 8px; border-radius: 99px;
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+.brand-pill.warn {
+  background: var(--gold-dim); color: var(--gold);
+  border-color: rgba(251, 191, 36, 0.35);
+}
+h1 {
+  font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle { color: var(--text-2); font-size: 13px; max-width: 640px; }
+.nav-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.nav-link {
+  font-size: 11.5px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg-2);
+  transition: all 0.15s ease;
+}
+.nav-link:hover {
+  color: var(--text); border-color: var(--purple-3);
+  box-shadow: 0 0 12px var(--purple-glow);
+}
+.header-meta { font-size: 11px; color: var(--text-3); margin-top: 10px; }
+.data-banner {
+  display: none; margin-top: 12px; padding: 10px 14px;
+  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 10px; font-size: 12px; color: var(--gold-l);
+}
+.data-banner.show { display: block; }
+
+.selector-bar {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
+}
+.selector-group { flex: 1; min-width: 220px; }
+.selector-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; display: block;
+}
+.selector-input, .selector-select {
+  width: 100%; background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text); padding: 10px 12px; border-radius: 8px;
+  font-size: 13px; font-family: var(--font);
+}
+.selector-input:focus, .selector-select:focus {
+  outline: none; border-color: var(--purple);
+  box-shadow: 0 0 0 2px var(--purple-glow);
+}
+.pitcher-title-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.pitcher-name-lg {
+  font-size: 22px; font-weight: 600; font-family: var(--mono);
+  letter-spacing: -0.02em;
+}
+.pill {
+  display: inline-flex; align-items: center;
+  font-size: 9.5px; font-weight: 600; padding: 3px 8px;
+  border-radius: 99px; letter-spacing: 0.02em;
+}
+.pill-today {
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+}
+.hand-pill-r {
+  background: var(--blue-dim); color: var(--blue-l);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+}
+.hand-pill-l {
+  background: var(--gold-dim); color: var(--gold-l);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+.tier-pill {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  padding: 4px 10px; border-radius: 6px;
+}
+.tier-ace { background: rgba(74, 222, 128, 0.18); color: var(--green); }
+.tier-solid { background: rgba(96, 165, 250, 0.18); color: var(--blue-l); }
+.tier-avg { background: rgba(251, 191, 36, 0.18); color: var(--gold); }
+.tier-vol { background: rgba(248, 113, 113, 0.18); color: var(--red-l); }
+
+.section {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 22px; margin-bottom: 18px;
+}
+.section-eyebrow {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
+}
+.section-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.section-subtitle { font-size: 11.5px; color: var(--text-2); margin-bottom: 14px; }
+
+.stat-bar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+.stat-cell {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+}
+.stat-cell .s-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
+}
+.stat-cell .s-val {
+  font-size: 20px; font-weight: 600; font-family: var(--mono);
+}
+
+.metric-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+@media (max-width: 900px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+.metric-card {
+  background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg-4) 100%);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.metric-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+}
+.metric-card .m-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
+}
+.metric-card .m-val {
+  font-size: 28px; font-weight: 600; font-family: var(--mono);
+  margin-bottom: 6px;
+}
+.metric-card .m-note { font-size: 11px; color: var(--text-2); line-height: 1.45; }
+
+.hand-grid, .loc-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+@media (max-width: 700px) { .hand-grid, .loc-grid { grid-template-columns: 1fr; } }
+.hand-panel, .loc-panel {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.hand-panel h4, .loc-panel h4 {
+  font-size: 12px; font-weight: 600; color: var(--purple-2);
+  margin-bottom: 12px; letter-spacing: 0.04em;
+}
+.mini-stat-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.mini-stat { text-align: center; }
+.mini-stat .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
+.mini-stat .ms-val { font-size: 16px; font-family: var(--mono); font-weight: 600; margin-top: 2px; }
+
+.table-wrap { overflow-x: auto; margin: 0 -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th {
+  padding: 9px 8px; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-3); border-bottom: 1px solid var(--border-2);
+  text-align: left; white-space: nowrap;
+}
+tbody td {
+  padding: 8px; border-bottom: 1px solid var(--border);
+  white-space: nowrap; vertical-align: middle;
+}
+tbody tr:hover { background: rgba(192, 132, 252, 0.05); }
+tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
+.num { font-family: var(--mono); }
+.tier-high { color: var(--red-l); font-weight: 600; }
+.tier-mid { color: var(--gold); font-weight: 600; }
+.tier-low { color: var(--green-l); font-weight: 600; }
+
+.insight-line {
+  margin-top: 12px; padding: 12px 14px;
+  background: var(--bg-3); border-left: 3px solid var(--purple);
+  border-radius: 0 10px 10px 0; font-size: 12.5px; color: var(--text-2);
+  line-height: 1.55;
+}
+.insight-line strong { color: var(--text); }
+
+.betting-panel {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-3) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 12px; padding: 18px 20px;
+  font-size: 13.5px; line-height: 1.6; color: var(--text-2);
+}
+.betting-panel strong { color: var(--purple-2); }
+
+.empty-state {
+  text-align: center; padding: 28px; color: var(--text-3); font-size: 13px;
+}
+#profileContent { display: none; }
+#profileContent.ready { display: block; }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets…</div>
+</div>
+
+<div class="container">
+  <header class="header">
+    <div class="brand-row">
+      <span class="brand-tag">Chase Analytics</span>
+      <span class="brand-pill" id="brandPill">Loading…</span>
+    </div>
+    <h1>Pitcher Intelligence Profile</h1>
+    <p class="subtitle">Starting-pitcher deep dive — season line, lineup-quality splits, platoon tendencies, and betting context. Live from the MLBMA pipeline sheet.</p>
+    <nav class="nav-links">
+      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">← Main Dashboard</a>
+      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
+    </nav>
+    <div class="header-meta">Sheet: <span id="headerUpdated">—</span></div>
+    <div class="data-banner" id="dataBanner"></div>
+  </header>
+
+  <div class="selector-bar">
+    <div class="selector-group">
+      <label class="selector-label" for="pitcherSearch">Search pitcher or team</label>
+      <input type="text" class="selector-input" id="pitcherSearch" list="pitcherList" placeholder="e.g. Cole, NYY, Burnes…" autocomplete="off">
+      <datalist id="pitcherList"></datalist>
+    </div>
+    <div class="selector-group" style="max-width:320px;">
+      <label class="selector-label" for="pitcherSelect">Select pitcher</label>
+      <select class="selector-select" id="pitcherSelect">
+        <option value="">— Choose a starter —</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="profileContent">
+    <div class="pitcher-title-row" id="pitcherHeader"></div>
+
+    <section class="section" id="secSeason">
+      <div class="section-eyebrow">Section 1</div>
+      <div class="section-title">Season Line</div>
+      <div class="section-subtitle">YTD standard line and team pitching environment</div>
+      <div class="stat-bar" id="seasonBar"></div>
+    </section>
+
+    <section class="section" id="secAllowed">
+      <div class="section-eyebrow">Section 2</div>
+      <div class="section-title">Metric Allowed Profile</div>
+      <div class="section-subtitle">Average opponent offensive quality faced — lower is better for the pitcher</div>
+      <div class="metric-grid" id="allowedCards"></div>
+    </section>
+
+    <section class="section" id="secOsi">
+      <div class="section-eyebrow">Section 3</div>
+      <div class="section-title">Performance vs Lineup Quality (OSI Tier)</div>
+      <div class="section-subtitle">How workload and results shift vs High / Mid / Low OSI offenses</div>
+      <div class="table-wrap" id="osiTableWrap"></div>
+      <div class="insight-line" id="osiInsight"></div>
+    </section>
+
+    <section class="section" id="secAbq">
+      <div class="section-eyebrow">Section 4</div>
+      <div class="section-title">ABQ Split</div>
+      <div class="section-subtitle">Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups</div>
+      <div class="table-wrap" id="abqTableWrap"></div>
+      <div class="insight-line" id="abqInsight"></div>
+    </section>
+
+    <section class="section" id="secHand">
+      <div class="section-eyebrow">Section 5</div>
+      <div class="section-title">Handedness Splits</div>
+      <div class="section-subtitle">vs LHH and vs RHH — from sheet platoon rows when available</div>
+      <div class="hand-grid" id="handGrid"></div>
+    </section>
+
+    <section class="section" id="secLoc">
+      <div class="section-eyebrow">Section 6</div>
+      <div class="section-title">Home / Away Splits</div>
+      <div class="section-subtitle">Park and road context</div>
+      <div class="loc-grid" id="locGrid"></div>
+    </section>
+
+    <section class="section" id="secLog">
+      <div class="section-eyebrow">Section 7</div>
+      <div class="section-title">Recent Start Log</div>
+      <div class="section-subtitle">Last 10 starts with opponent lineup quality</div>
+      <div class="table-wrap" id="logTableWrap"></div>
+    </section>
+
+    <section class="section" id="secF5">
+      <div class="section-eyebrow">Section 8</div>
+      <div class="section-title">F5 Profile</div>
+      <div class="section-subtitle">First-five ERA by opponent OSI tier (team runs through 5 innings)</div>
+      <div class="table-wrap" id="f5TableWrap"></div>
+      <div class="insight-line" id="f5Insight"></div>
+    </section>
+
+    <section class="section" id="secBetting">
+      <div class="section-eyebrow">Section 9</div>
+      <div class="section-title">Betting Context Panel</div>
+      <div class="section-subtitle">Auto-synthesized angles from the strongest patterns in this profile</div>
+      <div class="betting-panel" id="bettingPanel"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+
+var DATA = {
+  loaded: false,
+  error: null,
+  profiles: [],
+  splits: [],
+  gameLog: [],
+  pitching: [],
+  matchups: [],
+  todayStarters: new Set(),
+  lastUpdated: null
+};
+
+var STATE = { pitcherKey: null };
+
+var OSI_TIER_ORDER = ['High', 'Mid', 'Low'];
+var ABQ_TIER_ORDER = ['High', 'Mid', 'Low'];
+
+var PITCHING_TIERS = [
+  [85, 'Ace', 'tier-ace'],
+  [70, 'Solid', 'tier-solid'],
+  [55, 'Average', 'tier-avg'],
+  [0, 'Volatile', 'tier-vol']
+];
+
+function sheetCsvUrl(tabName) {
+  return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName);
+}
+
+function parseCSVLine(line) {
+  var out = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line.charAt(i);
+    if (c === '"') {
+      if (inQ && line.charAt(i + 1) === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseCSV(text) {
+  var lines = (text || '').replace(/^\ufeff/, '').trim().split(/\r?\n/);
+  if (!lines.length) return [];
+  var headers = parseCSVLine(lines[0]).map(function(h) {
+    return h.replace(/^"|"$/g, '').trim();
+  });
+  return lines.slice(1).filter(function(l) { return l.trim(); }).map(function(line) {
+    var vals = parseCSVLine(line);
+    var obj = {};
+    headers.forEach(function(h, i) {
+      var v = (vals[i] || '').replace(/^"|"$/g, '').trim();
+      obj[h] = v;
+    });
+    return obj;
+  });
+}
+
+function fetchSheetTab(tabName) {
+  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' })
+    .then(function(res) {
+      if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
+      return res.text();
+    })
+    .then(parseCSV);
+}
+
+function pickCol(row, names) {
+  for (var i = 0; i < names.length; i++) {
+    if (row[names[i]] !== undefined && row[names[i]] !== '') return row[names[i]];
+  }
+  var keys = Object.keys(row);
+  for (var j = 0; j < names.length; j++) {
+    var target = names[j].toLowerCase();
+    for (var k = 0; k < keys.length; k++) {
+      if (keys[k].toLowerCase() === target && row[keys[k]] !== '') return row[keys[k]];
+    }
+  }
+  return '';
+}
+
+function numOrNull(v) {
+  if (v === null || v === undefined || v === '' || v === '—') return null;
+  var n = parseFloat(String(v).replace(/%/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+function fmt(v, dec) {
+  if (v === null || v === undefined || v === '' || isNaN(v)) return '—';
+  dec = dec === undefined ? 1 : dec;
+  return Number(v).toFixed(dec);
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return fmt(v, 1) + '%';
+}
+
+function normalizeName(n) {
+  return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+}
+
+function parseIP(ip) {
+  if (!ip && ip !== 0) return 0;
+  var s = String(ip).trim();
+  if (!s) return 0;
+  if (s.indexOf('.') >= 0) {
+    var p = s.split('.');
+    return parseInt(p[0], 10) + (parseInt(p[1], 10) || 0) / 3;
+  }
+  return parseFloat(s) || 0;
+}
+
+function pitcherKey(row) {
+  var id = pickCol(row, ['pitcher_id', 'pitcherId']);
+  if (id) return 'id:' + id;
+  return 'name:' + normalizeName(pickCol(row, ['pitcher_name', 'pitcherName', 'Name']));
+}
+
+function metricAllowedColor(val) {
+  if (val === null || isNaN(val)) return 'var(--text-3)';
+  if (val <= 52) return 'var(--green)';
+  if (val <= 62) return 'var(--gold)';
+  return 'var(--red-l)';
+}
+
+function pitchingTier(score) {
+  if (score === null || isNaN(score)) return { label: '—', cls: 'tier-avg' };
+  for (var i = 0; i < PITCHING_TIERS.length; i++) {
+    if (score >= PITCHING_TIERS[i][0]) {
+      return { label: PITCHING_TIERS[i][1], cls: PITCHING_TIERS[i][2] };
+    }
+  }
+  return { label: 'Volatile', cls: 'tier-vol' };
+}
+
+function tierClass(tier) {
+  if (tier === 'High') return 'tier-high';
+  if (tier === 'Mid') return 'tier-mid';
+  if (tier === 'Low') return 'tier-low';
+  return '';
+}
+
+function buildTodayStarters() {
+  var set = new Set();
+  DATA.matchups.forEach(function(g) {
+    var away = pickCol(g, ['Away_SP', 'Away SP', 'away_sp']);
+    var home = pickCol(g, ['Home_SP', 'Home SP', 'home_sp']);
+    if (away && away !== 'TBD') set.add(normalizeName(away));
+    if (home && home !== 'TBD') set.add(normalizeName(home));
+  });
+  DATA.todayStarters = set;
+}
+
+function getProfile(key) {
+  return DATA.profiles.find(function(p) { return pitcherKey(p) === key; });
+}
+
+function getSplits(key) {
+  return DATA.splits.filter(function(s) { return pitcherKey(s) === key; });
+}
+
+function getGameLog(key) {
+  return DATA.gameLog.filter(function(g) { return pitcherKey(g) === key; });
+}
+
+function findSplit(splits, dimension, value) {
+  value = String(value);
+  var aliases = {
+    LHH: ['LHH', 'L', 'vs LHH', 'vs L', 'Left', 'left'],
+    RHH: ['RHH', 'R', 'vs RHH', 'vs R', 'Right', 'right'],
+    home: ['home', 'Home'],
+    away: ['away', 'Away']
+  };
+  var vals = aliases[value] || [value];
+  for (var i = 0; i < splits.length; i++) {
+    var s = splits[i];
+    var dim = pickCol(s, ['split_dimension', 'splitDimension']);
+    var sv = pickCol(s, ['split_value', 'splitValue']);
+    if (dim !== dimension) continue;
+    for (var j = 0; j < vals.length; j++) {
+      if (String(sv).toLowerCase() === String(vals[j]).toLowerCase()) return s;
+    }
+  }
+  return null;
+}
+
+function splitRowToCells(s, emptyMsg) {
+  if (!s) {
+    return '<div class="empty-state" style="padding:12px;">' + (emptyMsg || 'No split data') + '</div>';
+  }
+  return '<div class="mini-stat-row">' +
+    statMini('K%', numOrNull(pickCol(s, ['K_pct', 'K%']))) +
+    statMini('BB%', numOrNull(pickCol(s, ['BB_pct', 'BB%']))) +
+    statMini('HR/9', numOrNull(pickCol(s, ['HR9', 'HR/9']))) +
+    '</div><div class="mini-stat-row" style="margin-top:10px;">' +
+    statMini('ABQ', numOrNull(pickCol(s, ['ABQ_allowed', 'ABQ allowed']))) +
+    statMini('RCV', numOrNull(pickCol(s, ['RCV_allowed', 'RCV allowed']))) +
+    statMini('OSI', numOrNull(pickCol(s, ['OSI_allowed', 'OSI allowed']))) +
+    '</div>';
+}
+
+function statMini(label, val) {
+  return '<div class="mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' + fmt(val, 1) + '</div></div>';
+}
+
+function computeWHIP(log) {
+  var h = 0, bb = 0, ip = 0;
+  log.forEach(function(g) {
+    h += numOrNull(pickCol(g, ['H'])) || 0;
+    bb += numOrNull(pickCol(g, ['BB'])) || 0;
+    ip += parseIP(pickCol(g, ['IP']));
+  });
+  return ip > 0 ? (h + bb) / ip : null;
+}
+
+function teamPitchScore(team) {
+  var t = String(team || '').toUpperCase();
+  var row = DATA.pitching.find(function(p) {
+    return String(pickCol(p, ['Tm', 'tm', 'Team'])).toUpperCase() === t;
+  });
+  return numOrNull(pickCol(row || {}, ['PitchScore', 'Pitching Score', 'pitchscore']));
+}
+
+function buildTierTable(splits, dimension, tierOrder) {
+  var ipHigh = null, ipLow = null;
+  if (dimension === 'osi_tier') {
+    var h = findSplit(splits, dimension, 'High');
+    var l = findSplit(splits, dimension, 'Low');
+    ipHigh = h ? numOrNull(pickCol(h, ['avg_IP', 'avg IP'])) : null;
+    ipLow = l ? numOrNull(pickCol(l, ['avg_IP', 'avg IP'])) : null;
+  }
+  var rows = tierOrder.map(function(tier) {
+    var s = findSplit(splits, dimension, tier);
+    if (!s) {
+      return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td>' +
+        '<td colspan="8" style="color:var(--text-3)">—</td></tr>';
+    }
+    var starts = numOrNull(pickCol(s, ['starts', 'Starts']));
+    var avgIp = numOrNull(pickCol(s, ['avg_IP', 'avg IP']));
+    var era = numOrNull(pickCol(s, ['ERA', 'era']));
+    var k = numOrNull(pickCol(s, ['K_pct', 'K%']));
+    var bb = numOrNull(pickCol(s, ['BB_pct', 'BB%']));
+    var pitches = numOrNull(pickCol(s, ['avg_pitches', 'avg pitches']));
+    var abq = numOrNull(pickCol(s, ['ABQ_allowed']));
+    var rcv = numOrNull(pickCol(s, ['RCV_allowed']));
+    var flag = (dimension === 'osi_tier' && tier === 'High' && ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) ? 'flag-row' : '';
+    return '<tr class="' + flag + '">' +
+      '<td class="' + tierClass(tier) + '">' + tier + '</td>' +
+      '<td class="num">' + (starts != null ? starts : '—') + '</td>' +
+      '<td class="num">' + fmt(avgIp, 1) + '</td>' +
+      '<td class="num">' + fmt(era, 2) + '</td>' +
+      '<td class="num">' + fmtPct(k) + '</td>' +
+      '<td class="num">' + fmtPct(bb) + '</td>' +
+      '<td class="num">' + fmt(pitches, 0) + '</td>' +
+      '<td class="num">' + fmt(abq, 1) + '</td>' +
+      '<td class="num">' + fmt(rcv, 1) + '</td>' +
+      '</tr>';
+  }).join('');
+  return '<table><thead><tr>' +
+    '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>K%</th><th>BB%</th><th>Pitches/Start</th><th>ABQ Allowed</th><th>RCV Allowed</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function insightOsiTier(splits) {
+  var high = findSplit(splits, 'osi_tier', 'High');
+  var low = findSplit(splits, 'osi_tier', 'Low');
+  if (!high || !low) return 'Insufficient OSI-tier sample to auto-flag workload patterns.';
+  var ipHigh = numOrNull(pickCol(high, ['avg_IP']));
+  var ipLow = numOrNull(pickCol(low, ['avg_IP']));
+  var eraHigh = numOrNull(pickCol(high, ['ERA']));
+  var eraLow = numOrNull(pickCol(low, ['ERA']));
+  var parts = [];
+  if (ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) {
+    parts.push(
+      '<strong>F5 flag:</strong> IP/Start drops materially vs High OSI lineups (' +
+      fmt(ipHigh, 1) + ' vs ' + fmt(ipLow, 1) + ' vs Low OSI) — shorter leash vs process-heavy offenses.'
+    );
+  } else if (ipHigh != null && ipLow != null && ipHigh > ipLow + 0.8) {
+    parts.push(
+      'Works deeper vs elite OSI (' + fmt(ipHigh, 1) + ' IP) than vs weak OSI (' + fmt(ipLow, 1) + ' IP) — unusual workload profile.'
+    );
+  }
+  if (eraHigh != null && eraLow != null && eraHigh > eraLow + 1.2) {
+    parts.push('ERA balloons vs High OSI (' + fmt(eraHigh, 2) + ' vs ' + fmt(eraLow, 2) + ') despite opponent quality context.');
+  } else if (eraHigh != null && eraLow != null && eraHigh < eraLow - 0.8) {
+    parts.push('Suppresses runs vs High OSI better than expected — possible fade candidate if market overweights opponent tier.');
+  }
+  return parts.length ? parts.join(' ') : 'OSI-tier workload and ERA are relatively stable across opponent quality buckets.';
+}
+
+function insightAbqTier(splits) {
+  var high = findSplit(splits, 'abq_tier', 'High');
+  var low = findSplit(splits, 'abq_tier', 'Low');
+  if (!high || !low) return 'ABQ-tier splits need more starts to isolate command vs patience.';
+  var bbHigh = numOrNull(pickCol(high, ['BB_pct']));
+  var bbLow = numOrNull(pickCol(low, ['BB_pct']));
+  var kHigh = numOrNull(pickCol(high, ['K_pct']));
+  var kLow = numOrNull(pickCol(low, ['K_pct']));
+  var parts = [];
+  if (bbHigh != null && bbLow != null && bbHigh > bbLow + 2) {
+    parts.push('Walk rate rises vs High ABQ (' + fmtPct(bbHigh) + ' vs ' + fmtPct(bbLow) + ') — patience tax in chess-match spots.');
+  }
+  if (kHigh != null && kLow != null && kHigh > kLow + 4) {
+    parts.push('Strikeout spike vs High ABQ (' + fmtPct(kHigh) + ' vs ' + fmtPct(kLow) + ') — swing-and-miss plays through discipline.');
+  }
+  return parts.length ? parts.join(' ') : 'Pitch efficiency (K%/BB%) is consistent across ABQ tiers — run prevention drives outcomes more than command splits.';
+}
+
+function buildBettingSummary(profile, splits, log, name, hand) {
+  var bullets = [];
+  var high = findSplit(splits, 'osi_tier', 'High');
+  var low = findSplit(splits, 'osi_tier', 'Low');
+  var ipHigh = high ? numOrNull(pickCol(high, ['avg_IP'])) : null;
+  var ipLow = low ? numOrNull(pickCol(low, ['avg_IP'])) : null;
+  var era = numOrNull(pickCol(profile, ['ERA']));
+  var eraHigh = high ? numOrNull(pickCol(high, ['ERA'])) : null;
+
+  if (ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) {
+    bullets.push(
+      name + ' pitches significantly fewer innings vs High OSI lineups (' +
+      fmt(ipHigh, 1) + ' IP avg vs ' + fmt(ipLow, 1) + ' IP avg vs Low OSI), suggesting <strong>F5 fade</strong> vs process-heavy lineups' +
+      (era != null && eraHigh != null && eraHigh <= era + 0.5 ? ' despite a clean headline ERA.' : '.')
+    );
+  }
+
+  var lhh = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'vs_lhh', 'LHH');
+  var rhh = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'vs_rhh', 'RHH');
+  if (!lhh && !rhh) {
+    lhh = findSplit(splits, 'batter_hand', 'L');
+    rhh = findSplit(splits, 'batter_hand', 'R');
+  }
+  if (lhh && rhh) {
+    var kL = numOrNull(pickCol(lhh, ['K_pct']));
+    var kR = numOrNull(pickCol(rhh, ['K_pct']));
+    var hrR = numOrNull(pickCol(rhh, ['HR9']));
+    if (kL != null && kR != null && kL > kR + 3) {
+      bullets.push('Strong vs LHH (K% ' + fmtPct(kL) + ')');
+    }
+    if (hrR != null && hrR >= 1.25) {
+      bullets.push('vulnerable to RHH power (HR/9 ' + fmt(hrR, 2) + ' vs RHH)');
+    }
+  } else if (hand === 'R' || hand === 'L') {
+    bullets.push('Platoon batter splits not in sheet — using full-season pool; check back after pipeline platoon export.');
+  }
+
+  var home = findSplit(splits, 'location', 'home');
+  var away = findSplit(splits, 'location', 'away');
+  if (home && away) {
+    var eH = numOrNull(pickCol(home, ['ERA']));
+    var eA = numOrNull(pickCol(away, ['ERA']));
+    if (eH != null && eA != null && eA > eH + 1.0) {
+      bullets.push('Road ERA (' + fmt(eA, 2) + ') worse than home (' + fmt(eH, 2) + ') — park/help factor on home side.');
+    } else if (eH != null && eA != null && eH > eA + 1.0) {
+      bullets.push('Better on the road (' + fmt(eA, 2) + ' ERA away vs ' + fmt(eH, 2) + ' home) — possible undervaluation away.');
+    }
+  }
+
+  var abqHi = findSplit(splits, 'abq_tier', 'High');
+  if (abqHi) {
+    var bb = numOrNull(pickCol(abqHi, ['BB_pct']));
+    if (bb != null && bb >= 9) {
+      bullets.push('Elevated walks vs High ABQ (' + fmtPct(bb) + ') — tighten F5 unders when facing patient lineups.');
+    }
+  }
+
+  if (!bullets.length) {
+    var osi = numOrNull(pickCol(profile, ['OSI_allowed']));
+    return '<strong>' + name + '</strong>: Profile is balanced across tiers in the current sample' +
+      (osi != null ? ' (avg opponent OSI ' + fmt(osi, 1) + ').' : '.') +
+      ' Re-check after more 2026 starts populate the game log.';
+  }
+  return bullets.join(' ');
+}
+
+function startResult(g) {
+  var er = numOrNull(pickCol(g, ['ER']));
+  var ip = parseIP(pickCol(g, ['IP']));
+  if (er === null) return '—';
+  if (er <= 2 && ip >= 6) return 'Sharp';
+  if (er <= 3) return 'Quality';
+  if (er <= 5) return 'Mixed';
+  return 'Struggled';
+}
+
+function renderProfile(key) {
+  if (!key) return;
+  var profile = getProfile(key);
+  if (!profile) return;
+
+  STATE.pitcherKey = key;
+  var splits = getSplits(key);
+  var log = getGameLog(key);
+  var name = pickCol(profile, ['pitcher_name', 'pitcherName', 'Name']);
+  var team = pickCol(profile, ['pitcher_team', 'pitcherTeam', 'Tm']);
+  var hand = String(pickCol(profile, ['pitcher_hand', 'pitcherHand', 'Hand']) || 'R').toUpperCase().slice(0, 1);
+  var isToday = DATA.todayStarters.has(normalizeName(name));
+  var ps = teamPitchScore(team);
+  var pt = pitchingTier(ps);
+  var whip = computeWHIP(log);
+  var totalIp = log.reduce(function(sum, g) { return sum + parseIP(pickCol(g, ['IP'])); }, 0);
+  var displayIp = totalIp > 0 ? totalIp : (numOrNull(pickCol(profile, ['avg_IP'])) || 0) * (numOrNull(pickCol(profile, ['starts'])) || 0);
+
+  document.getElementById('profileContent').classList.add('ready');
+
+  document.getElementById('pitcherHeader').innerHTML =
+    '<span class="pitcher-name-lg">' + name + '</span>' +
+    '<span class="pill" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text-2);">' + team + '</span>' +
+    (isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '') +
+    '<span class="pill ' + (hand === 'L' ? 'hand-pill-l' : 'hand-pill-r') + '">' + (hand === 'L' ? 'LHP' : 'RHP') + '</span>' +
+    '<span class="tier-pill ' + pt.cls + '">' + pt.label + ' Staff</span>';
+
+  document.getElementById('seasonBar').innerHTML =
+    statCell('ERA', fmt(numOrNull(pickCol(profile, ['ERA'])), 2)) +
+    statCell('IP', fmt(displayIp, 1)) +
+    statCell('K%', fmtPct(numOrNull(pickCol(profile, ['K_pct', 'K%'])))) +
+    statCell('BB%', fmtPct(numOrNull(pickCol(profile, ['BB_pct', 'BB%'])))) +
+    statCell('HR/9', fmt(numOrNull(pickCol(profile, ['HR9', 'HR/9'])), 2)) +
+    statCell('WHIP', fmt(whip, 2)) +
+    statCell('Pitch Score', fmt(ps, 0)) +
+    '<div class="stat-cell"><div class="s-label">Tier</div><div class="s-val"><span class="tier-pill ' + pt.cls + '">' + pt.label + '</span></div></div>';
+
+  var abqA = numOrNull(pickCol(profile, ['ABQ_allowed']));
+  var rcvA = numOrNull(pickCol(profile, ['RCV_allowed']));
+  var obrA = numOrNull(pickCol(profile, ['OBR_allowed']));
+  var osiA = numOrNull(pickCol(profile, ['OSI_allowed']));
+
+  document.getElementById('allowedCards').innerHTML =
+    allowedCard('ABQ Allowed', abqA, 'Average opponent plate-discipline quality faced. Lower = easier command matchups and fewer walk-game traps.') +
+    allowedCard('RCV Allowed', rcvA, 'Average opponent contact quality faced. Lower = fewer barrel-heavy lineups and HR blow-up risk.') +
+    allowedCard('OBR Allowed', obrA, 'Average opponent floor (xwOBA/BB) faced. Lower = less baserunner traffic and run-spring potential.') +
+    allowedCard('OSI Allowed', osiA, 'Composite offensive strength faced. Lower = softer schedule context; High OSI clusters = tougher F5 environments.');
+
+  document.getElementById('osiTableWrap').innerHTML = buildTierTable(splits, 'osi_tier', OSI_TIER_ORDER);
+  document.getElementById('osiInsight').innerHTML = insightOsiTier(splits);
+
+  document.getElementById('abqTableWrap').innerHTML = buildTierTable(splits, 'abq_tier', ABQ_TIER_ORDER);
+  document.getElementById('abqInsight').innerHTML = insightAbqTier(splits);
+
+  var lhh = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
+  var rhh = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
+  var handNote = (!lhh && !rhh) ? '<p style="font-size:11px;color:var(--text-3);margin-top:10px;">Platoon rows not in SP_Metric_Splits yet — showing season pool in primary hand panel.</p>' : '';
+  var seasonPool = findSplit(splits, 'hand', hand) || profile;
+  document.getElementById('handGrid').innerHTML =
+    '<div class="hand-panel"><h4>vs LHH</h4>' + splitRowToCells(lhh || seasonPool, 'No LHH split') + '</div>' +
+    '<div class="hand-panel"><h4>vs RHH</h4>' + splitRowToCells(rhh || seasonPool, 'No RHH split') + '</div>' + handNote;
+
+  var homeS = findSplit(splits, 'location', 'home');
+  var awayS = findSplit(splits, 'location', 'away');
+  document.getElementById('locGrid').innerHTML =
+    '<div class="loc-panel"><h4>Home</h4>' + splitRowToCells(homeS, 'No home starts') + '</div>' +
+    '<div class="loc-panel"><h4>Away</h4>' + splitRowToCells(awayS, 'No away starts') + '</div>';
+
+  var sortedLog = log.slice().sort(function(a, b) {
+    return String(pickCol(b, ['date'])).localeCompare(String(pickCol(a, ['date'])));
+  }).slice(0, 10);
+
+  var logHtml = sortedLog.length ? '<table><thead><tr>' +
+    '<th>Date</th><th>Opp</th><th>Opp OSI</th><th>Tier</th><th>IP</th><th>ER</th><th>Pitches</th><th>K</th><th>BB</th><th>HR</th><th>Result</th>' +
+    '</tr></thead><tbody>' + sortedLog.map(function(g) {
+      var tier = pickCol(g, ['opponent_OSI_tier', 'opponent OSI tier']);
+      return '<tr><td>' + pickCol(g, ['date']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['opponent_team', 'opponent team']) + '</td>' +
+        '<td class="num">' + fmt(numOrNull(pickCol(g, ['opponent_OSI'])), 1) + '</td>' +
+        '<td class="' + tierClass(tier) + '">' + (tier || '—') + '</td>' +
+        '<td class="num">' + pickCol(g, ['IP']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['ER']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['pitches']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['K']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['BB']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['HR']) + '</td>' +
+        '<td>' + startResult(g) + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
+  document.getElementById('logTableWrap').innerHTML = logHtml;
+
+  var f5Rows = OSI_TIER_ORDER.map(function(tier) {
+    var s = findSplit(splits, 'osi_tier', tier);
+    var f5 = s ? numOrNull(pickCol(s, ['F5_ERA', 'F5 ERA'])) : null;
+    return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td><td class="num">' + fmt(f5, 2) + '</td></tr>';
+  }).join('');
+  document.getElementById('f5TableWrap').innerHTML = '<table><thead><tr><th>OSI Tier</th><th>F5 ERA</th></tr></thead><tbody>' + f5Rows + '</tbody></table>';
+
+  var f5High = findSplit(splits, 'osi_tier', 'High');
+  var f5Low = findSplit(splits, 'osi_tier', 'Low');
+  var f5Note = 'F5 ERA uses team runs allowed through five innings when a full five-inning line is available.';
+  if (f5High && f5Low) {
+    var f5h = numOrNull(pickCol(f5High, ['F5_ERA']));
+    var f5l = numOrNull(pickCol(f5Low, ['F5_ERA']));
+    if (f5h != null && f5l != null && f5h > f5l + 1.5) {
+      f5Note = '<strong>Betting note:</strong> F5 ERA worse vs High OSI (' + fmt(f5h, 2) + ') than Low OSI (' + fmt(f5l, 2) + ') — lean Under/F5 fade when tier is High even if full-game ERA looks fine.';
+    }
+  }
+  document.getElementById('f5Insight').innerHTML = f5Note;
+
+  document.getElementById('bettingPanel').innerHTML = buildBettingSummary(profile, splits, log, name, hand);
+}
+
+function statCell(label, val) {
+  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + (val || '—') + '</div></div>';
+}
+
+function allowedCard(label, val, note) {
+  var col = metricAllowedColor(val);
+  return '<div class="metric-card"><div class="m-label">' + label + '</div>' +
+    '<div class="m-val" style="color:' + col + '">' + fmt(val, 1) + '</div>' +
+    '<div class="m-note">' + note + '</div></div>';
+}
+
+function populateSelectors() {
+  var select = document.getElementById('pitcherSelect');
+  var datalist = document.getElementById('pitcherList');
+  select.innerHTML = '<option value="">— Choose a starter —</option>';
+  datalist.innerHTML = '';
+
+  var sorted = DATA.profiles.slice().sort(function(a, b) {
+    return String(pickCol(a, ['pitcher_name'])).localeCompare(String(pickCol(b, ['pitcher_name'])));
+  });
+
+  sorted.forEach(function(p) {
+    var key = pitcherKey(p);
+    var name = pickCol(p, ['pitcher_name']);
+    var team = pickCol(p, ['pitcher_team']);
+    var label = name + ' (' + team + ')';
+    var opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = label;
+    select.appendChild(opt);
+
+    var dl = document.createElement('option');
+    dl.value = name;
+    datalist.appendChild(dl);
+    var dl2 = document.createElement('option');
+    dl2.value = team;
+    datalist.appendChild(dl2);
+  });
+}
+
+function resolveSearchToKey(q) {
+  q = normalizeName(q);
+  if (!q) return null;
+  for (var i = 0; i < DATA.profiles.length; i++) {
+    var p = DATA.profiles[i];
+    var name = normalizeName(pickCol(p, ['pitcher_name']));
+    var team = normalizeName(pickCol(p, ['pitcher_team']));
+    if (name.indexOf(q) >= 0 || team.indexOf(q) >= 0 || q.indexOf(name) >= 0) {
+      return pitcherKey(p);
+    }
+  }
+  return null;
+}
+
+function bindSelectors() {
+  var select = document.getElementById('pitcherSelect');
+  var search = document.getElementById('pitcherSearch');
+
+  select.addEventListener('change', function() {
+    if (select.value) renderProfile(select.value);
+  });
+
+  search.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var key = resolveSearchToKey(search.value);
+      if (key) {
+        select.value = key;
+        renderProfile(key);
+      }
+    }
+  });
+
+  search.addEventListener('input', function() {
+    var key = resolveSearchToKey(search.value);
+    if (key) {
+      select.value = key;
+      renderProfile(key);
+    }
+  });
+}
+
+function loadAll() {
+  var loadingText = document.getElementById('loadingText');
+  return Promise.all([
+    fetchSheetTab('SP_Profiles'),
+    fetchSheetTab('SP_Metric_Splits'),
+    fetchSheetTab('SP_Game_Log'),
+    fetchSheetTab('Pitching_Score'),
+    fetchSheetTab('Today_Matchups')
+  ]).then(function(results) {
+    DATA.profiles = results[0] || [];
+    DATA.splits = results[1] || [];
+    DATA.gameLog = results[2] || [];
+    DATA.pitching = results[3] || [];
+    DATA.matchups = results[4] || [];
+    DATA.loaded = true;
+    buildTodayStarters();
+    populateSelectors();
+    bindSelectors();
+
+    var pill = document.getElementById('brandPill');
+    if (pill) {
+      pill.textContent = 'Live';
+      pill.classList.remove('warn');
+    }
+    if (!DATA.profiles.length) {
+      var banner = document.getElementById('dataBanner');
+      banner.textContent = 'SP_Profiles is empty — run pipeline steps 10–11 after metrics are built.';
+      banner.classList.add('show');
+      if (pill) { pill.textContent = 'No SP data'; pill.classList.add('warn'); }
+    }
+
+    var firstKey = DATA.profiles.length ? pitcherKey(DATA.profiles[0]) : null;
+    if (firstKey) {
+      document.getElementById('pitcherSelect').value = firstKey;
+      renderProfile(firstKey);
+    }
+  }).catch(function(err) {
+    DATA.error = String(err);
+    console.error(err);
+    var pill = document.getElementById('brandPill');
+    if (pill) { pill.textContent = 'Load failed'; pill.classList.add('warn'); }
+    var banner = document.getElementById('dataBanner');
+    banner.textContent = 'Could not load Google Sheets: ' + DATA.error + '. Ensure tabs are published and named correctly.';
+    banner.classList.add('show');
+    if (loadingText) loadingText.textContent = 'Load failed — check sheet tabs';
+  }).finally(function() {
+    document.getElementById('loadingScreen').classList.add('hide');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadAll);
+</script>
+</body>
+</html>
