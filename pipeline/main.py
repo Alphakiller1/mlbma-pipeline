@@ -77,6 +77,10 @@ def run():
     run_reliever_gamelog()
     run_bullpen_profiles()
 
+    run_player_registry()
+    run_batter_splits()
+    run_batter_profiles()
+
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("All metrics pushed to Google Sheets")
 
@@ -137,6 +141,48 @@ def run_bullpen_profiles():
         run_push_bullpen()
     except Exception as exc:
         print(f"WARNING: bullpen profile step failed - continuing ({exc})")
+
+
+def run_player_registry():
+    """Step 14: MLB player registry + Sheets push; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 14: scrapers.scrape_player_registry...")
+    print(f"{'='*50}")
+    try:
+        from scrapers.scrape_player_registry import run as run_registry
+
+        run_registry()
+    except Exception as exc:
+        print(f"WARNING: scrape_player_registry failed - continuing ({exc})")
+
+
+def run_batter_splits():
+    """Step 15: FanGraphs batter splits; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 15: scrapers.scrape_batter_splits...")
+    print(f"{'='*50}")
+    try:
+        from scrapers.scrape_batter_splits import run as run_batter_splits_module
+
+        run_batter_splits_module()
+    except Exception as exc:
+        print(f"WARNING: scrape_batter_splits failed - continuing ({exc})")
+
+
+def run_batter_profiles():
+    """Step 16-17: batter metrics + Sheets push; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 16-17: compute_batter_profile + push_batter_profiles...")
+    print(f"{'='*50}")
+    try:
+        from core.compute_batter_profile import run as run_compute_batter
+
+        run_compute_batter()
+        from outputs.push_batter_profiles import run as run_push_batter
+
+        run_push_batter()
+    except Exception as exc:
+        print(f"WARNING: batter profile step failed - continuing ({exc})")
 
 
 if __name__ == "__main__":

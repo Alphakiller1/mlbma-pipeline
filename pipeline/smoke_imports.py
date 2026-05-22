@@ -33,6 +33,11 @@ MODULES = [
     "core.compute_bullpen_profile",
     "outputs.push_bullpen",
     "core.dashboard_terminal",
+    "scrapers.scrape_player_registry",
+    "scrapers.scrape_batter_splits",
+    "scrapers.fangraphs_session",
+    "core.compute_batter_profile",
+    "outputs.push_batter_profiles",
 ]
 
 EMPTY_PLACEHOLDERS = [

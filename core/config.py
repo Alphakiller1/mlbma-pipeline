@@ -80,6 +80,27 @@ PITCHER_HR_DRIFT_THRESHOLD = 0.30
 PITCHER_MIN_L14_STARTS = 2
 PITCHER_DEFAULT_WINDOW = "L14"
 
+# Batter profile system
+BATTER_MIN_PA = 50
+BATTER_RECENT_DAYS = 30
+BATTER_TREND_RISING_MIN = 3.0
+BATTER_TREND_FALLING_MAX = -3.0
+
+# FanGraphs splits-leaderboard splitArr codes (batters)
+BATTER_SPLIT_ARR = {
+    "vs_RHP": "2",
+    "vs_LHP": "1",
+    "home": "5",
+    "away": "6",
+}
+
+BATTER_STAT_GROUPS = {
+    "standard": 2,
+    "advanced": 3,
+    "plate_disc": 4,
+    "batted_ball": 5,
+}
+
 
 def park_factor_for_team(team: str) -> float:
     """Return park factor for team abbreviation; warn and use 1.0 if unknown."""
@@ -290,6 +311,8 @@ SHEET_TABS = {
     "reliever_log": "Reliever_Log",
     "signals_today": "Signals_Today",
     "signals_convergence": "Signals_Convergence",
+    "player_registry": "Player_Registry",
+    "batter_profiles": "Batter_Profiles",
 }
 
 TEAM_MAP = {
