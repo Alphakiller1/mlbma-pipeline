@@ -199,6 +199,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
       <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
       <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
       <a class="nav-link" href="batter_profile.html">Batter Profile</a>
+      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
     </nav>
     <div class="header-meta">Sheet: <span id="headerMeta">1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk</span></div>
     <div class="data-banner" id="dataBanner"></div>
@@ -612,7 +613,7 @@ function buildRelieverTable(team) {
     var ip = relieverIP(pid, name);
     var exp = STATE.expandedPid === String(pid);
     html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + pid + '" data-name="' + name.replace(/"/g, '') + '">' +
-      '<td><strong>' + name + '</strong></td>' +
+      '<td><strong><a href="reliever_profile.html?player=' + encodeURIComponent(name) + '" style="color:var(--purple-2);text-decoration:none;">' + name + '</a></strong></td>' +
       '<td class="' + role.cls + '">' + role.label + '</td>' +
       '<td class="num">' + fmt(ip, 1) + '</td>' +
       '<td class="num">' + fmt(colVal(r, 'overall', 'ERA'), 2) + '</td>' +

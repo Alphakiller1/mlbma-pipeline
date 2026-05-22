@@ -101,6 +101,14 @@ BATTER_STAT_GROUPS = {
     "batted_ball": 5,
 }
 
+# Reliever profile dashboard thresholds
+RELIEVER_WINDOW_HOT_COLD_GAP = 8.0
+RELIEVER_LEVERAGE_ERA_GAP = 1.5
+RELIEVER_PLATOON_OSI_GAP = 8.0
+RELIEVER_INHERITED_SCORED_PCT_WARN = 35.0
+RELIEVER_HOME_AWAY_OSI_GAP = 10.0
+RELIEVER_RECENT_APPS = 10
+
 
 def park_factor_for_team(team: str) -> float:
     """Return park factor for team abbreviation; warn and use 1.0 if unknown."""
