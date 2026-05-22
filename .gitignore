@@ -17,3 +17,5 @@ crawl_env/
 google_credentials.json
 
 pipeline_log.txt
+pipeline_smoke_log.txt
+cursor

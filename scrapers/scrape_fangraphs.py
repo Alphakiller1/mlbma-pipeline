@@ -7,14 +7,12 @@ import time
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+from core.config import CHROME_PATH, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
+
+load_dotenv(ENV_FILE)
 
 EMAIL = os.getenv("FANGRAPHS_EMAIL")
 PASSWORD = os.getenv("FANGRAPHS_PASSWORD")
-CHROME_PATH = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-DATA_DIR = r"C:\Users\chase\mlbma_pipeline\data"
-SEASON_START = "2025-03-01"
-SEASON_END = "2025-11-01"
 
 STAT_GROUPS = {
     "traditional": 1,
@@ -27,13 +25,15 @@ SPLITS = {
     "vs_LHP": "1",
 }
 
-print("Script started")
-
 def get_driver():
+    if not os.path.isfile(CHROME_PATH):
+        raise FileNotFoundError(
+            f"Chrome not found at {CHROME_PATH}. "
+            "Install Google Chrome or set CHROME_PATH in .env to your chrome.exe path."
+        )
     options = uc.ChromeOptions()
     options.add_argument("--start-maximized")
-    options.binary_location = CHROME_PATH
-    return uc.Chrome(options=options)
+    return uc.Chrome(options=options, browser_executable_path=CHROME_PATH)
 
 def login(driver):
     print("Logging in...")
@@ -92,30 +92,31 @@ def scrape_sp(driver, sg_name, sg_num):
     time.sleep(15)
     return df
 
-driver = get_driver()
-
-try:
-    if not login(driver):
-        print('Login failed')
-    else:
-        print('Login successful!')
+def run():
+    driver = get_driver()
+    try:
+        if not login(driver):
+            print("Login failed")
+            return
+        print("Login successful!")
 
         for split_label, split_code in SPLITS.items():
-            print(f'=== {split_label} ===')
+            print(f"=== {split_label} ===")
             for sg_name, sg_num in STAT_GROUPS.items():
                 scrape_one(driver, split_label, split_code, sg_name, sg_num)
-            print('Cooling down 45s...')
-            import time as t
-            t.sleep(45)
+            print("Cooling down 45s...")
+            time.sleep(45)
 
-        print('=== SP Leaderboard ===')
-        for sg_name, sg_num in [('standard', 2), ('advanced', 3)]:
+        print("=== SP Leaderboard ===")
+        for sg_name, sg_num in [("standard", 2), ("advanced", 3)]:
             scrape_sp(driver, sg_name, sg_num)
+    finally:
+        try:
+            driver.quit()
+        except Exception:
+            pass
+    print("All done.")
 
-finally:
-    try:
-        driver.quit()
-    except:
-        pass
 
-print('All done.')
+if __name__ == "__main__":
+    run()

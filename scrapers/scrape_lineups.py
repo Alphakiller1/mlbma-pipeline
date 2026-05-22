@@ -5,14 +5,7 @@ import os
 import gspread
 from google.oauth2.service_account import Credentials
 
-DATA_DIR = r"C:\Users\chase\mlbma_pipeline\data"
-SHEET_ID = "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk"
-CREDS_FILE = r"C:\Users\chase\mlbma_pipeline\google_credentials.json"
-
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"

@@ -3,7 +3,7 @@ import pandas as pd
 from io import StringIO
 import os
 
-DATA_DIR = r"C:\Users\chase\mlbma_pipeline\data"
+from core.config import DATA_DIR
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"

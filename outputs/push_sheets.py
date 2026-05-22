@@ -4,14 +4,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-DATA_DIR = r"C:\Users\chase\mlbma_pipeline\data"
-SHEET_ID = "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk"
-CREDS_FILE = r"C:\Users\chase\mlbma_pipeline\google_credentials.json"
-
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
+from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID
 
 def get_client():
     creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
