@@ -246,18 +246,21 @@ def cmd_pitcher(name: str, args: argparse.Namespace) -> int:
 
     subsection("Schedule Context")
     if team:
-        try:
-            opp_snap = store.team_snapshot(team, opts)
-            if opp_snap.oor is not None and opp_snap.hvp is not None:
-                delta = opp_snap.oor - opp_snap.hvp
-                print(
-                    f"  Team {team} OOR {fmt(opp_snap.oor)} vs HvP baseline {fmt(opp_snap.hvp)} "
-                    f"(Δ {delta:+.1f})"
-                )
-            else:
-                print(f"  Team {team} offensive context loaded from OOR sheet.")
-        except (FileNotFoundError, ValueError):
-            print("  Opponent team metrics unavailable for schedule context.")
+        if store.oor_df() is None:
+            print("  Schedule context unavailable - run full pipeline first")
+        else:
+            try:
+                opp_snap = store.team_snapshot(team, opts)
+                if opp_snap.oor is not None and opp_snap.hvp is not None:
+                    delta = opp_snap.oor - opp_snap.hvp
+                    print(
+                        f"  Team {team} OOR {fmt(opp_snap.oor)} vs HvP baseline {fmt(opp_snap.hvp)} "
+                        f"(Δ {delta:+.1f})"
+                    )
+                else:
+                    print(f"  Team {team} offensive context loaded from OOR sheet.")
+            except (FileNotFoundError, ValueError):
+                print("  Opponent team metrics unavailable for schedule context.")
     else:
         print("  Pass --team for opponent OOR context.")
 

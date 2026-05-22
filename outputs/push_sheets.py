@@ -4,10 +4,19 @@ import pandas as pd
 import os
 from datetime import datetime
 
-from core.config import CREDS_FILE, CURRENT_SEASON, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS
+from core.config import (
+    CREDS_FILE,
+    CURRENT_SEASON,
+    DATA_DIR,
+    SCOPES,
+    SHEET_ID,
+    SHEET_TABS,
+    check_google_credentials,
+)
+
 
 def get_client():
-    creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
+    creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     return gspread.authorize(creds)
 
 def push_df(sheet, tab_name, df):
@@ -23,6 +32,10 @@ def push_df(sheet, tab_name, df):
     print(f"  Pushed {tab_name}: {len(df)} rows")
 
 def run():
+    if not check_google_credentials():
+        print("  Skipping Google Sheets push (credentials unavailable).")
+        return
+
     print("Connecting to Google Sheets...")
     client = get_client()
     sheet = client.open_by_key(SHEET_ID)
@@ -33,6 +46,7 @@ def run():
         SHEET_TABS["vs_lhp"]: "metrics_vs_LHP.csv",
         SHEET_TABS["oor"]: "metrics_oor.csv",
         SHEET_TABS["pitching_score"]: "metrics_pitching_score.csv",
+        SHEET_TABS["pals"]: "metrics_pals.csv",
     }
 
     for tab_name, filename in files.items():

@@ -4,11 +4,15 @@ import os
 
 import pandas as pd
 
-from core.config import DATA_DIR, SHEET_ID, SHEET_TABS
+from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, check_google_credentials
 from outputs.push_sheets import get_client, push_df
 
 
 def run():
+    if not check_google_credentials():
+        print("  Skipping bullpen Google Sheets push (credentials unavailable).")
+        return
+
     print("Connecting to Google Sheets (bullpen)...")
     client = get_client()
     sheet = client.open_by_key(SHEET_ID)

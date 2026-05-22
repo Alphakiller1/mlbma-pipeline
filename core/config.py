@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -8,6 +9,27 @@ DATA_DIR = PROJECT_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 CREDS_FILE = PROJECT_ROOT / "google_credentials.json"
 ENV_FILE = PROJECT_ROOT / ".env"
+
+CREDS_ERROR_MESSAGE = (
+    "ERROR: google_credentials.json not found at {path}. "
+    "Copy from your secure storage to the project root before running the pipeline."
+)
+
+
+def check_google_credentials() -> bool:
+    """Return True if google_credentials.json exists and contains valid JSON."""
+    if not CREDS_FILE.is_file():
+        print(CREDS_ERROR_MESSAGE.format(path=CREDS_FILE))
+        return False
+    try:
+        with CREDS_FILE.open(encoding="utf-8") as fh:
+            json.load(fh)
+    except json.JSONDecodeError as exc:
+        print(
+            f"ERROR: google_credentials.json at {CREDS_FILE} is not valid JSON: {exc}"
+        )
+        return False
+    return True
 
 SHEET_ID = "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk"
 
@@ -216,6 +238,8 @@ SHEET_TABS = {
     "bullpen_unit": "Bullpen_Unit",
     "bullpen_individual": "Bullpen_Individual",
     "reliever_log": "Reliever_Log",
+    "signals_today": "Signals_Today",
+    "signals_convergence": "Signals_Convergence",
 }
 
 TEAM_MAP = {

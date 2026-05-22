@@ -280,15 +280,35 @@ class DataStore:
         self._sp_ytd: pd.DataFrame | None = None
         self._sp_l14: pd.DataFrame | None = None
         self._raw_cache: dict[str, pd.DataFrame | None] = {}
+        self._pals_warned = False
+        self._oor_warned = False
 
     def pals_df(self) -> pd.DataFrame | None:
         if self._pals is None:
-            self._pals = load("metrics_pals.csv")
+            path = DATA_DIR / "metrics_pals.csv"
+            if path.is_file():
+                self._pals = pd.read_csv(path)
+            else:
+                if not self._pals_warned:
+                    print(
+                        "WARNING: metrics_pals.csv not found - PALS data unavailable. "
+                        "Run full pipeline first."
+                    )
+                    self._pals_warned = True
         return self._pals
 
     def oor_df(self) -> pd.DataFrame | None:
         if self._oor is None:
-            self._oor = load("metrics_oor.csv")
+            path = DATA_DIR / "metrics_oor.csv"
+            if path.is_file():
+                self._oor = pd.read_csv(path)
+            else:
+                if not self._oor_warned:
+                    print(
+                        "WARNING: metrics_oor.csv not found - OOR data unavailable. "
+                        "Run full pipeline first."
+                    )
+                    self._oor_warned = True
         return self._oor
 
     def pitch_df(self) -> pd.DataFrame | None:
@@ -1067,7 +1087,8 @@ def render_osi_dashboard(snap: TeamSnapshot, opts: DashboardOptions) -> None:
     tier = tier_label(head, OSI_TIERS)
     pp_dir = "process > production" if (snap.pp_gap or 0) > 0 else "production > process"
     print(f"  {label}: {fmt(head)}  ({tier})")
-    print(f"  OSI: {fmt(snap.osi)}  |  PALS: {fmt(snap.pals)}  |  projOSI: {fmt(snap.proj_osi)}")
+    pals_display = fmt(snap.pals) if snap.pals is not None else "awaiting pipeline run"
+    print(f"  OSI: {fmt(snap.osi)}  |  PALS: {pals_display}  |  projOSI: {fmt(snap.proj_osi)}")
     print(f"  PP-Gap: {fmt(snap.pp_gap, 1, '')} ({pp_dir})")
     print(f"  {market_implication(snap)}")
 

@@ -19,6 +19,9 @@ from core.config import (
     CONVERGENCE_THRESHOLD,
     CONVERGENCE_PP_GAP_WEIGHT,
     DATA_DIR,
+    SHEET_ID,
+    SHEET_TABS,
+    check_google_credentials,
     SIGNAL_1_LINEUP_OBR_MIN,
     SIGNAL_1_PITCHER_K_PCT_MAX,
     SIGNAL_2_LINEUP_ABQ_CHESS_MIN,
@@ -712,6 +715,40 @@ def run():
 
     plays = [r for r in summary_rows if r["is_convergence_play"]]
     print(f"  Convergence plays: {len(plays)} side(s)")
+
+    push_signals_to_sheets()
+
+
+def push_signals_to_sheets() -> None:
+    """Push signal CSV outputs to Google Sheets (non-fatal if credentials missing)."""
+    if not check_google_credentials():
+        print("  Skipping Signals Google Sheets push (credentials unavailable).")
+        return
+
+    from outputs.push_sheets import get_client, push_df
+
+    files = {
+        SHEET_TABS["signals_today"]: "signals_today.csv",
+        SHEET_TABS["signals_convergence"]: "signals_convergence.csv",
+    }
+
+    print("Pushing signals to Google Sheets...")
+    try:
+        client = get_client()
+        sheet = client.open_by_key(SHEET_ID)
+    except Exception as exc:
+        print(f"  WARNING: Signals Google Sheets push failed — skipping ({exc})")
+        return
+
+    for tab_name, filename in files.items():
+        path = os.path.join(DATA_DIR, filename)
+        if os.path.exists(path):
+            df = pd.read_csv(path)
+            push_df(sheet, tab_name, df)
+        else:
+            print(f"  WARNING: {filename} not found — skipped {tab_name}")
+
+    print("  Signals Google Sheets push complete.")
 
 
 if __name__ == "__main__":
