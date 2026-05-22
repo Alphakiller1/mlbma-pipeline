@@ -925,6 +925,45 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
   border: 1px solid rgba(74, 222, 128, 0.25);
   border-radius: 8px;
 }
+.nav-link:hover { color: var(--text) !important; border-color: var(--purple-3) !important; box-shadow: 0 0 12px var(--purple-glow); }
+.bullpen-quality-block {
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-2); line-height: 1.5;
+}
+.bullpen-quality-block .bq-title {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 8px;
+}
+.bullpen-quality-block .bq-row { display: flex; justify-content: space-between; gap: 8px; margin: 3px 0; }
+.bullpen-quality-block .bq-val { font-family: var(--mono); color: var(--text); font-weight: 600; }
+.bullpen-tier-flag {
+  display: inline-block; margin-top: 6px; padding: 3px 8px; border-radius: 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.bullpen-tier-flag.warn { background: var(--gold-dim); color: var(--gold-l); border: 1px solid rgba(251, 191, 36, 0.35); }
+.bullpen-report-link {
+  display: inline-block; margin-top: 8px; font-size: 10px; font-weight: 600;
+  color: var(--purple-2); text-decoration: none;
+}
+.bullpen-report-link:hover { color: var(--purple); }
+.bullpen-indicator-bar {
+  margin-top: 12px; padding: 10px 12px; background: var(--bg-4);
+  border: 1px solid var(--border); border-radius: 8px; font-size: 10.5px;
+}
+.bullpen-ind-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px; margin: 4px 0; flex-wrap: wrap;
+}
+.bull-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.bull-badge-good { background: var(--green-dim); color: var(--green); border: 1px solid rgba(74, 222, 128, 0.35); }
+.bull-badge-mid { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border); }
+.bull-badge-bad { background: var(--red-dim); color: var(--red-l); border: 1px solid rgba(248, 113, 113, 0.35); }
+.pitch-mode-toggle { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+.pitch-mode-toggle .toggle-btn { font-size: 11px; padding: 6px 12px; }
+
 .matchups-empty {
   color: var(--text-3);
   font-size: 13px;
@@ -1198,6 +1237,11 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <h1>MLB Offensive Extrapolation Model</h1>
   <div class="subtitle">Daily offensive intelligence — scan status and matchups first, drill into tools and definitions below when you need depth.</div>
   <div class="header-meta">Last updated: <span id="headerUpdated">—</span></div>
+  <nav class="nav-links" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+    <a class="nav-link" href="pitcher_profile.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Pitcher Profile</a>
+    <a class="nav-link" href="bullpen_report.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Bullpen Report</a>
+    <a class="nav-link" href="matchup_sheet.html" style="font-size:11.5px;font-weight:500;color:var(--text-2);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);">Matchup Sheet</a>
+  </nav>
   <div class="data-error-banner" id="dataErrorBanner"></div>
 </div>
 
@@ -1565,7 +1609,9 @@ body.show-advanced-metrics .status-only-cols { display: none; }
    ============================================================ */
 var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
-var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], rhp: null, lhp: null };
+var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], bullpenUnits: {}, rhp: null, lhp: null };
+var SP_WEIGHT = 0.70;
+var BULLPEN_WEIGHT = 0.30;
 
 function sheetCsvUrl(tabName) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -1599,7 +1645,7 @@ function fetchMatchups() {
 }
 
 function fetchLiveData() {
-  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'PALS', 'Today_Matchups', 'Today_Lineups', 'Today_Games', 'Last_Updated'];
+  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'PALS', 'Bullpen_Unit', 'Today_Matchups', 'Today_Lineups', 'Today_Games', 'Last_Updated'];
   var fetches = tabs.map(function(tab) {
     return fetch(sheetCsvUrl(tab)).then(function(r) { return r.text(); }).then(function(t) {
       return { tab: tab, data: tab === 'Last_Updated' ? t : parseCSV(t) };
@@ -1612,6 +1658,7 @@ function fetchLiveData() {
       if (r.tab === 'OOR') LIVE_DATA.oor = r.data;
       if (r.tab === 'Pitching_Score') LIVE_DATA.pitching = r.data;
       if (r.tab === 'PALS') LIVE_DATA.pals = parsePalsRows(r.data);
+      if (r.tab === 'Bullpen_Unit') LIVE_DATA.bullpenUnits = parseBullpenUnitRows(r.data);
       if (r.tab === 'Today_Matchups') LIVE_DATA.matchups = parseMatchupRows(r.data);
       if (r.tab === 'Today_Lineups') LIVE_DATA.lineups = parseLineupRows(r.data);
       if (r.tab === 'Today_Games') LIVE_DATA.todayGames = parseTodayGamesRows(r.data);
@@ -1811,6 +1858,7 @@ function loadLiveCache() {
 function applyLiveCache(cache) {
   LIVE_DATA.oor = cache.oor || [];
   LIVE_DATA.pitching = cache.pitching || [];
+  LIVE_DATA.bullpenUnits = cache.bullpenUnits || {};
   LIVE_DATA.pals = cache.pals || [];
   LIVE_DATA.lastUpdated = cache.lastUpdated || null;
   LIVE_DATA.scYtdR = cache.scYtdR || [];
@@ -1864,6 +1912,136 @@ function buildYtdBothFromSplits(scR, scL) {
 }
 
 
+
+function parseBullpenUnitRows(rows) {
+  var map = {};
+  (rows || []).forEach(function(row) {
+    var t = String(pickCol(row, ['team', 'Tm', 'Team'])).trim().toUpperCase();
+    if (!t) return;
+    map[t] = {
+      t: t,
+      osiAllowed: numOrNull(pickCol(row, ['overall_OSI_allowed'])),
+      abqAllowed: numOrNull(pickCol(row, ['overall_ABQ_allowed'])),
+      rcvAllowed: numOrNull(pickCol(row, ['overall_RCV_allowed'])),
+      obrAllowed: numOrNull(pickCol(row, ['overall_OBR_allowed'])),
+      hiLevEra: numOrNull(pickCol(row, ['high_leverage_ERA'])),
+      loLevEra: numOrNull(pickCol(row, ['low_leverage_ERA'])),
+      eraOverall: numOrNull(pickCol(row, ['overall_ERA'])),
+      vsHighOsiEra: numOrNull(pickCol(row, ['vs_high_osi_ERA'])),
+      vsMidOsiEra: numOrNull(pickCol(row, ['vs_mid_osi_ERA'])),
+      vsLowOsiEra: numOrNull(pickCol(row, ['vs_low_osi_ERA'])),
+      irScoredPct: numOrNull(pickCol(row, ['overall_inherited_runners_scored_pct']))
+    };
+  });
+  return map;
+}
+
+function getBullpenUnit(team) {
+  return LIVE_DATA.bullpenUnits[teamKey(team)] || null;
+}
+
+function teamKey(t) {
+  return String(t || '').trim().toUpperCase();
+}
+
+function osiTierFromValue(osi) {
+  if (osi === null || isNaN(osi)) return '';
+  if (osi > 65) return 'High';
+  if (osi >= 50) return 'Mid';
+  return 'Low';
+}
+
+function bullpenPitchScore(unit) {
+  if (!unit || unit.osiAllowed === null || isNaN(unit.osiAllowed)) return null;
+  return Math.max(0, Math.min(100, 100 - unit.osiAllowed));
+}
+
+function getSpPitchScore(team) {
+  var row = (LIVE_DATA.pitching || []).find(function(p) { return teamKey(p.t) === teamKey(team); });
+  return row ? row.pitchScore : null;
+}
+
+function getCombinedPitchScore(team) {
+  var sp = getSpPitchScore(team);
+  var bp = bullpenPitchScore(getBullpenUnit(team));
+  if (sp === null && bp === null) return null;
+  if (sp === null) return bp;
+  if (bp === null) return sp;
+  return SP_WEIGHT * sp + BULLPEN_WEIGHT * bp;
+}
+
+function bullpenTierEra(unit, tier) {
+  if (!unit) return null;
+  if (tier === 'High') return unit.vsHighOsiEra;
+  if (tier === 'Mid') return unit.vsMidOsiEra;
+  return unit.vsLowOsiEra;
+}
+
+function bullpenStrugglesVsTier(unit, tier) {
+  var era = bullpenTierEra(unit, tier);
+  var lo = unit.vsLowOsiEra;
+  if (era === null) return false;
+  if (tier === 'High' && era >= 5.0) return true;
+  if (lo !== null && era > lo + 1.2) return true;
+  return false;
+}
+
+function bullpenVsLineupBadge(defenseTeam, oppLineupOsi) {
+  var u = getBullpenUnit(defenseTeam);
+  if (!u || oppLineupOsi === null || isNaN(oppLineupOsi)) {
+    return { label: '—', cls: 'bull-badge-mid' };
+  }
+  var tier = osiTierFromValue(oppLineupOsi);
+  var tierEra = bullpenTierEra(u, tier);
+  if (bullpenStrugglesVsTier(u, tier)) {
+    return { label: 'Unfavorable', cls: 'bull-badge-bad' };
+  }
+  if (tierEra !== null && tierEra <= 4.0 && u.osiAllowed !== null && u.osiAllowed <= 55) {
+    return { label: 'Favorable', cls: 'bull-badge-good' };
+  }
+  return { label: 'Neutral', cls: 'bull-badge-mid' };
+}
+
+function buildBullpenQualityHtml(team, oppOsi) {
+  var u = getBullpenUnit(team);
+  if (!u) {
+    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit data — run pipeline steps 12–13.</div>';
+  }
+  var tier = osiTierFromValue(oppOsi);
+  var tierEra = bullpenTierEra(u, tier);
+  var flag = bullpenStrugglesVsTier(u, tier);
+  var note = '';
+  if (flag && tier) {
+    note = 'Flag: bullpen has struggled vs ' + tier + ' OSI lineups (ERA ' + (tierEra != null ? tierEra.toFixed(2) : '—') + ').';
+  } else if (u.hiLevEra != null && u.loLevEra != null && u.hiLevEra > u.loLevEra + 1.5) {
+    note = 'High-leverage ERA (' + u.hiLevEra.toFixed(2) + ') worse than low-leverage — late-inning fade risk.';
+  } else if (u.osiAllowed !== null && u.osiAllowed <= 52) {
+    note = 'Strong bullpen profile vs average opponent quality — supports unders in close games.';
+  } else {
+    note = 'Neutral bullpen read vs tonight\'s opponent OSI tier.';
+  }
+  var flagHtml = flag && tier
+    ? '<span class="bullpen-tier-flag warn">Struggles vs ' + tier + ' OSI</span>' : '';
+  return '<div class="bullpen-quality-block">' +
+    '<div class="bq-title">Bullpen Quality</div>' +
+    '<div class="bq-row"><span>OSI Allowed</span><span class="bq-val" style="color:' + osiGradeColor(u.osiAllowed) + '">' + (u.osiAllowed != null ? u.osiAllowed.toFixed(1) : '—') + '</span></div>' +
+    '<div class="bq-row"><span>High Lev ERA</span><span class="bq-val">' + (u.hiLevEra != null ? u.hiLevEra.toFixed(2) : '—') + '</span></div>' +
+    '<div class="bq-row"><span>vs ' + (tier || '—') + ' OSI tier</span><span class="bq-val">' + (tierEra != null ? tierEra.toFixed(2) + ' ERA' : '—') + '</span></div>' +
+    flagHtml +
+    '<div style="margin-top:8px;font-size:10.5px;color:var(--text-2);">' + note + '</div>' +
+    '<a class="bullpen-report-link" href="bullpen_report.html">Full Bullpen Report →</a>' +
+    '</div>';
+}
+
+function buildBullpenIndicatorBar(defenseTeam, offenseTeam, offenseOsi) {
+  var u = getBullpenUnit(defenseTeam);
+  var badge = bullpenVsLineupBadge(defenseTeam, offenseOsi);
+  var osiStr = u && u.osiAllowed != null ? u.osiAllowed.toFixed(1) : '—';
+  var offStr = offenseOsi != null && !isNaN(offenseOsi) ? offenseOsi.toFixed(1) : '—';
+  return '<div class="bullpen-ind-row">' +
+    '<span><strong>' + defenseTeam + '</strong> pen OSI ' + osiStr + ' vs ' + offenseTeam + ' lineup ' + offStr + '</span>' +
+    '<span class="bull-badge ' + badge.cls + '">' + badge.label + '</span></div>';
+}
 
 function parsePitchingRows(rows) {
   return rows.map(function(row) {
@@ -2255,6 +2433,10 @@ function renderMatchups() {
       + '</div>'
       + platoonRowHtml
       + edgeHtml
+      + '<div class="bullpen-indicator-bar">'
+      + buildBullpenIndicatorBar(m.away, m.home, homeOSI)
+      + buildBullpenIndicatorBar(m.home, m.away, awayOSI)
+      + '</div>'
       + buildMatchupLineupBlock(m)
       + '</article>';
   }).join('');
@@ -2328,13 +2510,14 @@ function loadLiveData() {
     fetchSheetTab('OOR'),
     fetchSheetTab('Pitching_Score'),
     fetchSheetTab('PALS'),
+    fetchSheetTab('Bullpen_Unit'),
     fetchSheetTab('Today_Lineups'),
     fetchSheetTab('Today_Games'),
     fetchSheetText('Last_Updated')
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
-        pitchingRows = results[3], palsRows = results[4],
-        lineupsRows = results[5], gamesRows = results[6], tsText = results[7];
+        pitchingRows = results[3], palsRows = results[4], bullpenRows = results[5],
+        lineupsRows = results[6], gamesRows = results[7], tsText = results[8];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -2343,6 +2526,7 @@ function loadLiveData() {
     LIVE_DATA.oor = parseOorRows(oorRows);
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
     LIVE_DATA.pals = parsePalsRows(palsRows);
+    LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
@@ -2356,6 +2540,7 @@ function loadLiveData() {
       lastUpdated: LIVE_DATA.lastUpdated,
       oor: LIVE_DATA.oor,
       pitching: LIVE_DATA.pitching,
+      bullpenUnits: LIVE_DATA.bullpenUnits,
       pals: LIVE_DATA.pals,
       scYtdR: LIVE_DATA.scYtdR,
       scYtdL: LIVE_DATA.scYtdL,
@@ -2926,6 +3111,7 @@ var STATE = {
   matchupAway: '',
   matchupHome: '',
   matchupHandedness: 'R',
+  pitchScoreMode: 'sp',
 };
 
 /* URL state — bookmarkable views */
@@ -3768,7 +3954,7 @@ function setModalMetric(m){
 
   var rows;
   if (m === 'pitchScore') {
-    rows = (LIVE_DATA.pitching || []).map(function(p) { return { t: p.t, pitchScore: p.pitchScore }; });
+    rows = getPitchingDisplayRows().map(function(p) { return { t: p.t, pitchScore: p.pitchScore }; });
   } else if(m==='currentFormOSI' || m==='ppGap' || m==='dfGap' || m==='projOSI' || m==='sus' || m==='splitEdge' || m==='velocity') {
     rows = SCO_YTD_B;
   } else {
@@ -4239,6 +4425,9 @@ function renderMatchupOutput(){
       '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text-2);">'+
         matchupTakeaway(m, sp, splitLabel)+
       '</div>'+
+      buildBullpenQualityHtml(team.t, team.role === 'AWAY'
+        ? (teams[1] && teams[1].split ? teams[1].split.osi : teams[1] && teams[1].master ? teams[1].master.osi : null)
+        : (teams[0] && teams[0].split ? teams[0].split.osi : teams[0] && teams[0].master ? teams[0].master.osi : null)) +
     '</div>';
   });
 
@@ -4370,19 +4559,72 @@ function renderAll(){
    OOR — Opponent Offensive Rating
    ============================================================ */
 
+function setPitchScoreMode(mode) {
+  STATE.pitchScoreMode = mode;
+  document.querySelectorAll('#pitchModeToggle .toggle-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-pmode') === mode);
+  });
+  var sub = document.getElementById('pitchScoreSubtitle');
+  if (sub) {
+    if (mode === 'bullpen') {
+      sub.textContent = 'Bullpen quality from inverted OSI Allowed (100 − OSI allowed). Higher = stronger relief unit.';
+    } else if (mode === 'combined') {
+      sub.textContent = 'Combined staff score: ' + (SP_WEIGHT * 100) + '% SP PitchScore + ' + (BULLPEN_WEIGHT * 100) + '% bullpen (inverted OSI allowed).';
+    } else {
+      sub.textContent = 'Team SP pitching quality: K%, BB%, HR/9 blended into PitchScore. Higher = stronger rotation.';
+    }
+  }
+  renderPitchingScore();
+}
+
+function getPitchingDisplayRows() {
+  var mode = STATE.pitchScoreMode || 'sp';
+  var teamSet = {};
+  (LIVE_DATA.pitching || []).forEach(function(p) { teamSet[p.t] = true; });
+  Object.keys(LIVE_DATA.bullpenUnits || {}).forEach(function(t) { teamSet[t] = true; });
+  LIVE_DATA.pitching = (LIVE_DATA.pitching || []).map(function(r) {
+    if (r.pitchScore !== undefined) return r;
+    return {
+      t: r.Tm || r.t,
+      pitchScore: parseFloat(r.PitchScore),
+      kPct: parseFloat(r['K%']),
+      bbPct: parseFloat(r['BB%']),
+      hr9: parseFloat(r['HR/9'])
+    };
+  });
+  return Object.keys(teamSet).map(function(t) {
+    var spRow = (LIVE_DATA.pitching || []).find(function(p) { return teamKey(p.t) === teamKey(t); });
+    var score = mode === 'sp' ? getSpPitchScore(t)
+      : mode === 'bullpen' ? bullpenPitchScore(getBullpenUnit(t))
+      : getCombinedPitchScore(t);
+    return {
+      t: t,
+      kPct: spRow ? spRow.kPct : null,
+      bbPct: spRow ? spRow.bbPct : null,
+      hr9: spRow ? spRow.hr9 : null,
+      pitchScore: score
+    };
+  }).filter(function(r) { return r.pitchScore != null || mode === 'sp'; });
+}
+
 function renderPitchingScore() {
   var el = document.getElementById('pitchingTableBody');
   if (!el) return;
-  if (LIVE_DATA.error && !LIVE_DATA.pitching.length) {
+  if (LIVE_DATA.error && !LIVE_DATA.pitching.length && !Object.keys(LIVE_DATA.bullpenUnits || {}).length) {
     el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--red-l);padding:20px;">Pitching data unavailable.</td></tr>';
     return;
   }
-  var rows = LIVE_DATA.pitching.slice();
+  var rows = getPitchingDisplayRows();
   if (!rows.length) {
     el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">No pitching data loaded.</td></tr>';
     return;
   }
-  LIVE_DATA.pitching=LIVE_DATA.pitching.map(function(r){if(r.pitchScore!==undefined)return r;return{t:r.Tm,pitchScore:parseFloat(r.PitchScore),kPct:parseFloat(r["K%"]),bbPct:parseFloat(r["BB%"]),hr9:parseFloat(r["HR/9"])};});rows=LIVE_DATA.pitching.slice();rows.sort(function(a,b){return(b.pitchScore||0)-(a.pitchScore||0);});
+  rows.sort(function(a, b) { return (b.pitchScore || 0) - (a.pitchScore || 0); });
+  var scoreHeader = STATE.pitchScoreMode === 'bullpen' ? 'Bullpen Score' : STATE.pitchScoreMode === 'combined' ? 'Combined' : 'PitchScore';
+  var th = document.querySelector('#pitchingSection thead tr');
+  if (th) {
+    th.innerHTML = '<th>#</th><th>Team</th><th>K%</th><th>BB%</th><th>HR/9</th><th>' + scoreHeader + '</th>';
+  }
   el.innerHTML = rows.map(function(r, i) {
     var ps = r.pitchScore;
     var cl = ps >= 65 ? 'var(--green)' : ps >= 50 ? 'var(--purple-2)' : ps >= 35 ? 'var(--gold)' : 'var(--red-l)';
@@ -4607,9 +4849,14 @@ if (document.readyState === 'loading') {
     <div>
       <div class="section-eyebrow">Pitching Context</div>
       <div class="section-title">Pitching Score</div>
-      <div class="section-subtitle">Team pitching quality: K%, BB%, HR/9 blended into PitchScore. Higher = stronger staff.</div>
+      <div class="section-subtitle" id="pitchScoreSubtitle">Team SP pitching quality: K%, BB%, HR/9 blended into PitchScore. Higher = stronger staff.</div>
     </div>
     <button class="btn" onclick="openModal('pitchScore')">Full Rankings</button>
+  </div>
+  <div class="pitch-mode-toggle toggle-group" id="pitchModeToggle">
+    <button type="button" class="toggle-btn active" data-pmode="sp" onclick="setPitchScoreMode('sp')">SP Only</button>
+    <button type="button" class="toggle-btn" data-pmode="bullpen" onclick="setPitchScoreMode('bullpen')">Bullpen Only</button>
+    <button type="button" class="toggle-btn" data-pmode="combined" onclick="setPitchScoreMode('combined')">Combined</button>
   </div>
   <div class="table-wrap sticky-team">
     <table>

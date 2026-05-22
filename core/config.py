@@ -65,6 +65,14 @@ PITCHING_WEIGHTS = {
     "inv_hr9": 0.25,
 }
 
+# Combined staff pitching score (dashboard — SP + bullpen)
+SP_WEIGHT = 0.70
+BULLPEN_WEIGHT = 0.30
+COMBINED_PITCHING_WEIGHTS = {
+    "sp": SP_WEIGHT,
+    "bullpen": BULLPEN_WEIGHT,
+}
+
 OOR_WEIGHTS = {
     "hvr": 0.55,
     "hvl": 0.45,
