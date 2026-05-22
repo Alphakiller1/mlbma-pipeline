@@ -7,7 +7,7 @@ import requests
 from google.oauth2.service_account import Credentials
 
 from core.compute_pals import calc_pals, load_osi_for_pals, load_sp_xfip
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SEASON_START, SHEET_ID, SHEET_TABS, TEAM_MAP
+from core.config import DATA_DIR, SEASON_START, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -54,6 +54,13 @@ def get_season_games():
 
 
 def push_to_sheets(df):
+    if not check_google_credentials():
+        print("  Skipping PALS push (credentials unavailable).")
+        return
+
+    from core.config import CREDS_FILE, SCOPES
+    from google.oauth2.service_account import Credentials
+
     creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)

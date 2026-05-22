@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS, TEAM_MAP
+from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 
 HEADERS = {
     "User-Agent": "curl/8.0 (compatible; MLBMA-Pipeline/1.0)",
@@ -194,6 +194,12 @@ def push_to_sheets(df: pd.DataFrame):
     if df.empty:
         print("No weather data to push")
         return
+    if not check_google_credentials():
+        print("  Skipping Weather push (credentials unavailable).")
+        return
+
+    from core.config import CREDS_FILE, SCOPES
+    from google.oauth2.service_account import Credentials
 
     creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     client = gspread.authorize(creds)

@@ -6,8 +6,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PYTHON = ROOT / "crawl_env" / "Scripts" / "python.exe"
 
-SCRIPTS = [
+# Required: Savant is the minimum data source for the pipeline to proceed.
+SCRIPTS_REQUIRED = [
     "scrapers.scrape_savant",
+]
+
+# Optional: failures log WARNING and execution continues (FanGraphs-free / partial runs).
+SCRIPTS_OPTIONAL = [
     "scrapers.scrape_fangraphs",
     "core.compute",
     "outputs.push_sheets",
@@ -16,7 +21,7 @@ SCRIPTS = [
 ]
 
 
-def run_script(module: str) -> bool:
+def run_script(module: str, required: bool = True) -> bool:
     print(f"\n{'='*50}")
     print(f"Running {module}...")
     print(f"{'='*50}")
@@ -25,7 +30,10 @@ def run_script(module: str) -> bool:
         cwd=str(ROOT),
     )
     if result.returncode != 0:
-        print(f"ERROR: {module} failed")
+        if required:
+            print(f"ERROR: {module} failed")
+        else:
+            print(f"WARNING: {module} failed - continuing")
         return False
     return True
 
@@ -59,13 +67,35 @@ def run_lineups():
 
 
 def run():
+    """
+    Pipeline order (19 logical steps):
+      1 scrape_savant (required)
+      2 scrape_fangraphs (optional)
+      3 core.compute (optional, needs Savant + FanGraphs)
+      4 push_sheets core metrics (optional)
+      5 scrape_matchups + 6 scrape_lineups (optional / lineups after matchups)
+      7 scrape_weather (optional)
+      8 scrape_pals (optional)
+      9 compute_signals (optional)
+     10 scrape_sp_gamelog (optional)
+     11 compute_sp_splits + push (optional)
+     12 scrape_reliever_gamelog (optional)
+     13 bullpen compute + push (optional)
+     14 scrape_player_registry (optional)
+     15 scrape_batter_splits (optional)
+     16-17 batter compute + push (optional)
+     18-19 team compute + push (optional)
+    """
     print(f"MLBMA Pipeline starting at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    for script in SCRIPTS:
-        if not run_script(script):
+    for script in SCRIPTS_REQUIRED:
+        if not run_script(script, required=True):
             sys.exit(1)
-        if script == "scrapers.scrape_matchups":
-            run_lineups()
+
+    for script in SCRIPTS_OPTIONAL:
+        run_script(script, required=False)
+
+    run_lineups()
 
     if not run_script("scrapers.scrape_pals"):
         print("WARNING: PALS scrape failed - continuing")

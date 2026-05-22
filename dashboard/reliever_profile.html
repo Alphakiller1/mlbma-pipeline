@@ -342,7 +342,7 @@ var DATA = {
 var STATE = { playerKey: null, window: 'YTD' };
 var WINDOWS = ['YTD', 'L30', 'L14', 'L7'];
 var WINDOW_N_APPS = { YTD: 999, L30: 30, L14: 14, L7: 7 };
-var FIP_CONSTANT = 3.10;
+var FIP_CONSTANT = (typeof window !== 'undefined' && window.MLBMA_FIP_CONSTANT) || 3.10;
 
 function sheetCsvUrl(tab) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -620,7 +620,7 @@ function renderSeasonBar(key) {
 
   var ind = getIndividual(key);
   var sheetFip = ind ? colVal(ind, 'overall', 'FIP') : null;
-  var fipVal = (STATE.window === 'YTD' && sheetFip !== null) ? sheetFip : agg.fip;
+  var fipVal = sheetFip !== null ? sheetFip : agg.fip;
 
   document.getElementById('seasonBar').innerHTML =
     statCell('ERA', agg.era, eraColor(agg.era)) +

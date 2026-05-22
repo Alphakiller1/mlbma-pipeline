@@ -40,7 +40,7 @@ def run():
             sys.exit(1)
 
     print(f"\nSmoke pipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("Note: compute needs FanGraphs CSVs for full metrics; Savant-only data will skip compute output.")
+    print("Note: without FanGraphs, core.compute skips team metrics but exits successfully.")
 
 
 if __name__ == "__main__":

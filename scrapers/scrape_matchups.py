@@ -5,7 +5,7 @@ import os
 import gspread
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS, TEAM_MAP
+from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0"
@@ -162,8 +162,14 @@ def push_to_sheets(df):
     if df.empty:
         print("No data to push")
         return
+    if not check_google_credentials():
+        print("  Skipping Today_Matchups push (credentials unavailable).")
+        return
 
-    creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
+    from core.config import CREDS_FILE, SCOPES
+    from google.oauth2.service_account import Credentials
+
+    creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 

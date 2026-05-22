@@ -20,11 +20,13 @@ def get_client():
     return gspread.authorize(creds)
 
 def push_df(sheet, tab_name, df):
+    nrows = max(int(len(df)) + 10, 50)
+    ncols = max(int(len(df.columns)) + 2, 20)
     try:
         worksheet = sheet.worksheet(tab_name)
         worksheet.clear()
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sheet.add_worksheet(title=tab_name, rows=50, cols=20)
+        worksheet = sheet.add_worksheet(title=tab_name, rows=nrows, cols=ncols)
 
     df = df.round(2)
     data = [df.columns.tolist()] + df.values.tolist()

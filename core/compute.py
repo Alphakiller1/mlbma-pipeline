@@ -1,7 +1,6 @@
 """Metric coordinator — loads data and runs all team-level computations."""
 
 import os
-import sys
 
 from core.compute_abq import calc_abq
 from core.compute_obr import calc_obr
@@ -38,15 +37,32 @@ def run():
     savant = data.get("savant_team_leaderboard")
     sp_std = data.get("sp_standard")
 
-    if any(d is None for d in [std_rhp, bb_rhp, std_lhp, bb_lhp, savant]):
-        print("ERROR: Missing required data files — run scrape_savant and scrape_fangraphs first")
-        sys.exit(1)
+    missing = []
+    if std_rhp is None:
+        missing.append("vs_RHP_standard (FanGraphs)")
+    if bb_rhp is None:
+        missing.append("vs_RHP_batted_ball (FanGraphs)")
+    if std_lhp is None:
+        missing.append("vs_LHP_standard (FanGraphs)")
+    if bb_lhp is None:
+        missing.append("vs_LHP_batted_ball (FanGraphs)")
+    if savant is None:
+        missing.append("savant_team_leaderboard (Savant)")
+
+    if missing:
+        print("WARNING: Missing inputs — skipping team offense metrics:")
+        for name in missing:
+            print(f"  - {name}")
+        print("  Run scrapers.scrape_savant and scrapers.scrape_fangraphs for full metrics.")
+        return
 
     osi_rhp = compute_split(std_rhp, bb_rhp, savant, "vs_RHP")
     osi_lhp = compute_split(std_lhp, bb_lhp, savant, "vs_LHP")
 
     if sp_std is not None:
         calc_pitching_score(sp_std)
+    else:
+        print("  WARNING: sp_standard.csv missing — skipping Pitching Score")
 
     calc_oor(osi_rhp, osi_lhp)
 

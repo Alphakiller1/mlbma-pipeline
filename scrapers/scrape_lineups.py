@@ -5,7 +5,7 @@ import os
 import gspread
 from google.oauth2.service_account import Credentials
 
-from core.config import CREDS_FILE, DATA_DIR, SCOPES, SHEET_ID, SHEET_TABS
+from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, check_google_credentials
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
@@ -115,7 +115,14 @@ def scrape_lineups():
     return lineup_df, games_df
 
 def push_to_sheets(lineup_df, games_df):
-    creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
+    if not check_google_credentials():
+        print("  Skipping lineup/games Sheets push (credentials unavailable).")
+        return
+
+    from core.config import CREDS_FILE, SCOPES
+    from google.oauth2.service_account import Credentials
+
+    creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 
