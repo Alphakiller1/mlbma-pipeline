@@ -56,9 +56,11 @@
 
   function injectShell() {
     var page = currentPage();
-    document.querySelectorAll('[data-mlbma-nav]').forEach(function (el) {
-      renderNav(el, page);
-    });
+    if (!document.getElementById('chaseHeader')) {
+      document.querySelectorAll('[data-mlbma-nav]').forEach(function (el) {
+        renderNav(el, page);
+      });
+    }
     if (!document.getElementById('mlbmaLoadProgress')) {
       var bar = document.createElement('div');
       bar.className = 'mlbma-load-progress';
