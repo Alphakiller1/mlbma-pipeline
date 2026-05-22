@@ -17,6 +17,7 @@ def run():
     files = {
         SHEET_TABS["bullpen_unit"]: "bullpen_unit.csv",
         SHEET_TABS["bullpen_individual"]: "bullpen_individual.csv",
+        SHEET_TABS["reliever_log"]: "reliever_gamelog.csv",
     }
 
     for tab_name, filename in files.items():

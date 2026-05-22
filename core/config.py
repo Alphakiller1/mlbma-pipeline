@@ -205,6 +205,7 @@ SHEET_TABS = {
     "sp_game_log": "SP_Game_Log",
     "bullpen_unit": "Bullpen_Unit",
     "bullpen_individual": "Bullpen_Individual",
+    "reliever_log": "Reliever_Log",
 }
 
 TEAM_MAP = {
