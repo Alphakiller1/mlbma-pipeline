@@ -2,13 +2,43 @@
 
 from __future__ import annotations
 
+import atexit
+import contextlib
+import io
 import os
+import sys
 import time
 from io import StringIO
 from urllib.parse import unquote
 
+
+def _suppress_chrome_cleanup_errors():
+    import ctypes
+
+    try:
+        if sys.platform == "win32":
+            ctypes.windll.kernel32.SetErrorMode(0x8007)
+    except Exception:
+        pass
+    try:
+        sys.stderr = open(os.devnull, "w")
+    except Exception:
+        pass
+
+
+atexit.register(_suppress_chrome_cleanup_errors)
+
+uc = None
+_uc_import_err: Exception | None = None
+_import_stderr = io.StringIO()
+try:
+    with contextlib.redirect_stderr(_import_stderr):
+        import undetected_chromedriver as uc
+except Exception as exc:
+    uc = None
+    _uc_import_err = exc
+
 import pandas as pd
-import undetected_chromedriver as uc
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 
@@ -21,6 +51,10 @@ PASSWORD = os.getenv("FANGRAPHS_PASSWORD")
 
 
 def get_driver():
+    if uc is None:
+        raise ImportError(
+            "undetected-chromedriver failed to import"
+        ) from _uc_import_err
     if not os.path.isfile(CHROME_PATH):
         raise FileNotFoundError(
             f"Chrome not found at {CHROME_PATH}. "

@@ -1,4 +1,3 @@
-import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from urllib.parse import unquote
 from io import StringIO
@@ -8,8 +7,8 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-from core.config import CHROME_PATH, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
-from scrapers.fangraphs_session import safe_quit_driver
+from core.config import DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
+from scrapers.fangraphs_session import get_driver, safe_quit_driver
 
 load_dotenv(ENV_FILE)
 
@@ -29,17 +28,6 @@ SPLITS = {
 
 L14_START = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
 L14_END = datetime.now().strftime("%Y-%m-%d")
-
-
-def get_driver():
-    if not os.path.isfile(CHROME_PATH):
-        raise FileNotFoundError(
-            f"Chrome not found at {CHROME_PATH}. "
-            "Install Google Chrome or set CHROME_PATH in .env to your chrome.exe path."
-        )
-    options = uc.ChromeOptions()
-    options.add_argument("--start-maximized")
-    return uc.Chrome(options=options, browser_executable_path=CHROME_PATH)
 
 
 def login(driver):
