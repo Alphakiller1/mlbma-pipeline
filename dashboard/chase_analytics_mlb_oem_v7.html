@@ -252,6 +252,77 @@ tbody tr:last-child td { border-bottom: none; }
   border-radius: 5px; display: inline-block;
 }
 
+
+/* OEM mode tabs, daily summary, freshness, decision labels */
+.freshness-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px; margin-bottom: 14px;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px;
+  font-size: 12px; color: var(--text-2);
+}
+.freshness-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
+.freshness-dot.stale { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+.freshness-meta { margin-left: auto; font-size: 11px; color: var(--text-3); }
+.oem-mode-tabs {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px;
+  padding: 4px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px;
+}
+.oem-mode-tab {
+  flex: 1; min-width: 120px; padding: 10px 16px; border: none; border-radius: 8px;
+  background: transparent; color: var(--text-2); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); transition: all 0.15s ease;
+}
+.oem-mode-tab:hover { color: var(--text); background: var(--bg-3); }
+.oem-mode-tab.active {
+  background: var(--purple-3); color: #fff;
+  box-shadow: 0 0 12px var(--purple-glow);
+}
+.oem-mode-pane { display: none; }
+.oem-mode-pane.active { display: block; }
+.daily-summary-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;
+}
+.daily-summary-card {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; border-left: 3px solid var(--purple);
+}
+.daily-summary-card .ds-eyebrow {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--purple); margin-bottom: 6px;
+}
+.daily-summary-card .ds-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.daily-summary-card .ds-body { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+.metric-decision {
+  display: inline-block; margin-left: 6px; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3);
+  vertical-align: middle;
+}
+.metric-decision.buy { color: var(--blue); }
+.metric-decision.fade { color: var(--red-l); }
+.metric-decision.elite { color: var(--green); }
+.metric-decision.vol { color: var(--orange); }
+.rank-expand-hint { font-size: 9px; color: var(--text-3); margin-left: 4px; }
+tr.rank-row-expanded { background: rgba(192, 132, 252, 0.06); }
+.strat-confidence {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 4px; margin-left: 8px;
+}
+.strat-confidence.conf-high { background: var(--green-dim); color: var(--green); }
+.strat-confidence.conf-med { background: var(--gold-dim); color: var(--gold); }
+.strat-confidence.conf-low { background: var(--bg-4); color: var(--text-3); }
+.methodology-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;
+}
+.methodology-card {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+}
+.methodology-card h3 { font-size: 15px; margin-bottom: 8px; color: var(--purple-2); }
+.methodology-card p { font-size: 12px; color: var(--text-2); line-height: 1.55; margin-bottom: 10px; }
+.methodology-card a { color: var(--purple); font-weight: 600; font-size: 13px; }
+
 /* Quadrant chart */
 .chart-wrap { width: 100%; position: relative; }
 .legend-row {
@@ -1337,6 +1408,30 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <div class="data-error-banner" id="dataErrorBanner"></div>
 </div>
 
+<div class="freshness-bar" id="freshnessBar">
+  <span class="freshness-dot fresh" id="freshnessDot"></span>
+  <span class="freshness-text">Data: <strong id="freshnessLabel">Loading…</strong></span>
+  <span class="freshness-meta" id="freshnessMeta">Sheets pipeline · syncs with nav timestamp</span>
+</div>
+<nav class="oem-mode-tabs" role="tablist" aria-label="Dashboard mode">
+  <button type="button" class="oem-mode-tab active" data-oem-mode="daily" role="tab" aria-selected="true">Daily Read</button>
+  <button type="button" class="oem-mode-tab" data-oem-mode="research" role="tab">Research Lab</button>
+  <button type="button" class="oem-mode-tab" data-oem-mode="methodology" role="tab">Methodology</button>
+</nav>
+
+<div class="oem-mode-pane active" id="pane-oem-daily" data-oem-pane="daily">
+<section class="daily-summary section" id="dailySummarySection">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Daily Read</div>
+      <div class="section-title">Daily Summary</div>
+      <div class="section-subtitle">Top actionable reads for today&apos;s slate — edges, movers, and matchup context.</div>
+    </div>
+  </div>
+  <div class="daily-summary-grid" id="dailySummaryGrid"></div>
+</section>
+<div id="dailyMatchupsMount"></div>
+
 <!-- Control bar -->
 <!-- Watchlist sticky bar -->
 <div class="watchlist-bar" id="watchlistBar">
@@ -1366,7 +1461,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <div class="control-group">
     <span class="control-label">Chart</span>
     <div class="toggle-group" id="quadrantToggle">
-      <button class="toggle-btn active" data-quad="status">Status Map</button>
+      <button class="toggle-btn active" data-quad="status">Market Map</button>
       <button class="toggle-btn" data-quad="rcv-abq">RCV vs ABQ</button>
     </div>
   </div>
@@ -1389,20 +1484,20 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 <!-- At-a-glance cards -->
 <div class="glance-grid" id="glanceGrid"></div>
 
-<!-- Offensive Status Map -->
+<!-- Offensive Market Status Map -->
 <div class="section status-map-wrap">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Offensive Status Map</div>
+      <div class="section-eyebrow">Offensive Market Status Map</div>
       <div class="section-title" id="chartTitle">OSI vs process-production gap</div>
-      <div class="section-subtitle">Quadrant view — hover a team for status and takeaway. No formulas on this layer.</div>
+      <div class="section-subtitle">Market quadrant — hover a team for status and takeaway. No formulas on this layer.</div>
     </div>
   </div>
   <div class="legend-row">
-    <span class="legend-dot"><span class="dot" style="background: var(--green);"></span> Elite &amp; Still Undervalued</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--blue);"></span> Buy-Low Offense</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--gold);"></span> Strong But Cooling</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--red);"></span> Weak &amp; Concerning</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--green);"></span> Back Team Totals</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--blue);"></span> Buy Low Offense</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--gold);"></span> Fade Momentum</span>
+    <span class="legend-dot"><span class="dot" style="background: var(--red);"></span> Fade / Under Lean</span>
   </div>
   <div class="chart-wrap">
     <div class="chart-placeholder" id="chartPlaceholder">Loading status map...</div>
@@ -1439,9 +1534,9 @@ body.show-advanced-metrics .status-only-cols { display: none; }
           <th data-sort="rcv" class="advanced-cols">RCV <span class="sort-ind"></span></th>
           <th data-sort="obr" class="advanced-cols">OBR <span class="sort-ind"></span></th>
           <th data-sort="osi" class="advanced-cols">OSI <span class="sort-ind"></span></th>
-          <th data-sort="projOSI" class="advanced-cols">Proj <span class="sort-ind"></span></th>
+          <th data-sort="projOSI" class="advanced-cols">ProjOSI <span class="sort-ind"></span></th>
           <th data-sort="ppGap" class="advanced-cols">PP-Gap <span class="sort-ind"></span></th>
-          <th data-sort="dfGap" class="advanced-cols">DF-Gap <span class="sort-ind"></span></th>
+          <th data-sort="dfGap" class="advanced-cols">Power-Floor Gap <span class="sort-ind"></span></th>
           <th data-sort="trend" class="advanced-cols">Trend</th>
           <th data-sort="rhpOSI" class="advanced-cols">vRHP</th>
           <th data-sort="lhpOSI" class="advanced-cols">vLHP</th>
@@ -1466,9 +1561,11 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 </div>
 
 </div><!-- /layer-main -->
+</div><!-- /pane-oem-daily -->
 
 <!-- LAYER 2 — Advanced Tools -->
-<div class="layer-label">Advanced Tools</div>
+<div class="oem-mode-pane" id="pane-oem-research" data-oem-pane="research">
+<div class="layer-label">Research Lab</div>
 <div class="layer-advanced" id="layerAdvanced">
 
 <!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
@@ -1597,7 +1694,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Live Sheet Data</div>
-        <div class="section-title">OOR · Pitching Score · PALS · Today&apos;s Matchups</div>
+        <div class="section-title">OOR · Pitching Score · PALS</div>
         <div class="section-subtitle">Pulled from the same Google Sheet as the main model</div>
       </div>
     </div>
@@ -1606,6 +1703,39 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 </div>
 
 </div><!-- /layer-advanced -->
+</div><!-- /pane-oem-research -->
+
+<div class="oem-mode-pane" id="pane-oem-methodology" data-oem-pane="methodology">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Methodology</div>
+        <div class="section-title">Model framework &amp; definitions</div>
+        <div class="section-subtitle">Full glossary, formulas, signals, and tier bands live on the standalone glossary page.</div>
+      </div>
+    </div>
+    <div class="methodology-grid">
+      <div class="methodology-card">
+        <h3>Metric Glossary</h3>
+        <p>ABQ, RCV, OBR, OSI, projOSI, PP-Gap, Power-Floor Gap, PALS, signals, and betting archetypes — searchable reference.</p>
+        <a href="glossary.html">Open full glossary →</a>
+      </div>
+      <div class="methodology-card">
+        <h3>Core composites</h3>
+        <p><strong>OBR</strong> = 65% xwOBA + 35% BB% (on-base floor). <strong>OSI</strong> = 43% RCV + 37% ABQ + 20% OBR. <strong>projOSI</strong> = OSI + capped regression adjustment.</p>
+      </div>
+      <div class="methodology-card">
+        <h3>Gap metrics</h3>
+        <p><strong>PP-Gap</strong> = ABQ − RCV (process vs production). <strong>Power-Floor Gap</strong> = RCV − OBR (damage vs on-base floor).</p>
+      </div>
+      <div class="methodology-card">
+        <h3>Market status map</h3>
+        <p>OSI × PP-Gap quadrants label betting posture: back team totals, buy low, fade momentum, or fade / under lean.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Modal --><!-- Modal -->
 <div class="modal-overlay" id="modal">
@@ -1623,7 +1753,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
         <button class="btn" data-metric="abq" onclick="setModalMetric('abq')">ABQ</button>
         <button class="btn" data-metric="obr" onclick="setModalMetric('obr')">OBR</button>
         <button class="btn" data-metric="ppGap" onclick="setModalMetric('ppGap')">Process-Production Gap</button>
-        <button class="btn" data-metric="dfGap" onclick="setModalMetric('dfGap')">Damage-Floor Gap</button>
+        <button class="btn" data-metric="dfGap" onclick="setModalMetric('dfGap')">Power-Floor Gap</button>
         <button class="btn" data-metric="velocity" onclick="setModalMetric('velocity')">Trend Velocity</button>
         <button class="btn" data-metric="sus" onclick="setModalMetric('sus')">Sustainability</button>
         <button class="btn" data-metric="reg" onclick="setModalMetric('reg')">Regression Gap</button>
@@ -1697,10 +1827,9 @@ function fetchLiveData() {
       if (r.tab === 'Last_Updated') {
         LIVE_DATA.lastUpdated = parseLastUpdatedFromText(r.data);
         if (LIVE_DATA.lastUpdated) {
+          syncFreshnessIndicator(LIVE_DATA.lastUpdated);
           var el = document.getElementById('brandPill');
           if (el) el.textContent = 'Live';
-          var hu = document.getElementById('headerUpdated');
-          if (hu) hu.textContent = LIVE_DATA.lastUpdated;
         }
       }
     });
@@ -2511,13 +2640,149 @@ function parseLastUpdatedFromText(text) {
   return null;
 }
 
+
+/* ============================================================
+   OEM MODE TABS · DAILY SUMMARY · FRESHNESS · DECISION LABELS
+   ============================================================ */
+STATE.oemMode = STATE.oemMode || 'daily';
+
+function parseFreshnessDate(raw) {
+  if (!raw) return null;
+  var d = new Date(String(raw).trim());
+  if (!isNaN(d.getTime())) return d;
+  return null;
+}
+
+function syncFreshnessIndicator(ts) {
+  var label = document.getElementById('freshnessLabel');
+  var dot = document.getElementById('freshnessDot');
+  var meta = document.getElementById('freshnessMeta');
+  var hu = document.getElementById('headerUpdated');
+  var text = ts || '—';
+  if (hu) hu.textContent = text;
+  if (label) label.textContent = text;
+  var d = parseFreshnessDate(ts);
+  var stale = false;
+  if (d) {
+    stale = (Date.now() - d.getTime()) / (1000 * 60 * 60) > 24;
+    text = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+      d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    if (label) label.textContent = text;
+  }
+  if (dot) {
+    dot.classList.toggle('stale', stale);
+    dot.classList.toggle('fresh', !stale);
+  }
+  if (meta) {
+    meta.textContent = stale ? 'Data may be stale (>24h) — re-run pipeline' : 'Fresh pipeline sync';
+  }
+  if (window.ChaseNav) {
+    ChaseNav.setLastUpdated(text);
+    ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
+  }
+}
+
+function setOemMode(mode) {
+  STATE.oemMode = mode;
+  document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
+    var on = btn.getAttribute('data-oem-mode') === mode;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('.oem-mode-pane').forEach(function(pane) {
+    pane.classList.toggle('active', pane.getAttribute('data-oem-pane') === mode);
+  });
+  urlEncodeState();
+  if (mode === 'daily') renderDailySummary();
+}
+
+function metricDecision(key, d) {
+  if (!d) return '';
+  var v = d[key];
+  if (v === null || v === undefined || isNaN(v)) return '';
+  if (key === 'osi') {
+    if (v >= 75) return '<span class="metric-decision elite">Elite</span>';
+    if (v < 50) return '<span class="metric-decision fade">Weak</span>';
+    return '';
+  }
+  if (key === 'projOSI') {
+    var delta = (d.projOSI != null && d.osi != null) ? d.projOSI - d.osi : 0;
+    if (delta > 1.5) return '<span class="metric-decision buy">Up</span>';
+    if (delta < -1.5) return '<span class="metric-decision fade">Down</span>';
+    return '';
+  }
+  if (key === 'ppGap') {
+    if (v > 4) return '<span class="metric-decision buy">Buy</span>';
+    if (v < -4) return '<span class="metric-decision fade">Fade</span>';
+    return '';
+  }
+  if (key === 'dfGap') {
+    if (v > 8) return '<span class="metric-decision vol">Power</span>';
+    if (v < -4) return '<span class="metric-decision buy">Floor</span>';
+    return '';
+  }
+  if (key === 'obr') {
+    if (v >= 60) return '<span class="metric-decision buy">Traffic</span>';
+    if (v < 45) return '<span class="metric-decision fade">Thin</span>';
+    return '';
+  }
+  if (key === 'abq' || key === 'rcv') {
+    if (v >= 65) return '<span class="metric-decision elite">Strong</span>';
+    if (v < 45) return '<span class="metric-decision fade">Weak</span>';
+    return '';
+  }
+  return '';
+}
+
+function renderDailySummary() {
+  var el = document.getElementById('dailySummaryGrid');
+  if (!el) return;
+  var rows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B.slice() : [];
+  if (!rows.length) {
+    el.innerHTML = '<div class="daily-summary-card"><div class="ds-body">Loading summary…</div></div>';
+    return;
+  }
+  function top(sortFn, filterFn) {
+    var pool = rows.filter(filterFn || function() { return true; }).sort(sortFn);
+    return pool[0];
+  }
+  var buyLow = top(function(a, b) { return b.ppGap - a.ppGap; }, function(d) { return d.ppGap > 4; });
+  var fade = top(function(a, b) { return a.ppGap - b.ppGap; }, function(d) { return d.ppGap < -4 || d.trend === 'Cooling'; });
+  var power = top(function(a, b) { return b.dfGap - a.dfGap; }, function(d) { return d.dfGap > 8; });
+  var elite = top(function(a, b) { return b.osi - a.osi; }, function(d) { return d.osi >= 75; });
+  var nMatch = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? LIVE_DATA.matchups.length : 0;
+  var cards = [
+    { e: 'Top edge', t: buyLow ? buyLow.t + ' · Buy-low process' : '—', b: buyLow ? 'PP-Gap +' + buyLow.ppGap.toFixed(1) + ' — process ahead of box-score output.' : 'No buy-low standouts.' },
+    { e: 'Fade watch', t: fade ? fade.t + ' · ' + (fade.trend || 'Cooling') : '—', b: fade ? 'Production ahead of process or negative momentum.' : 'No major fade flags.' },
+    { e: 'Power skew', t: power ? power.t + ' · Power-Floor +' + power.dfGap.toFixed(1) : '—', b: 'Boom/bust run paths — team totals volatility.' },
+    { e: 'Elite anchor', t: elite ? elite.t + ' · OSI ' + elite.osi.toFixed(1) : '—', b: 'Stable offensive floor for ML / team-total backs.' },
+    { e: 'Slate', t: nMatch + ' games', b: nMatch ? 'Matchup cards below use lineup OSI vs SP hand.' : 'Matchups load after sheet sync.' }
+  ];
+  el.innerHTML = cards.map(function(c) {
+    return '<div class="daily-summary-card"><div class="ds-eyebrow">' + c.e + '</div><div class="ds-title">' + c.t + '</div><div class="ds-body">' + c.b + '</div></div>';
+  }).join('');
+}
+
+function stratConfidence(n) {
+  if (n >= 6) return { label: 'High', cls: 'conf-high' };
+  if (n >= 3) return { label: 'Med', cls: 'conf-med' };
+  return { label: 'Low', cls: 'conf-low' };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.oem-mode-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setOemMode(btn.getAttribute('data-oem-mode'));
+    });
+  });
+});
+
 function updateBrandPill() {
   var pill = document.getElementById('brandPill');
   if (!pill) return;
   if (LIVE_DATA.loaded && LIVE_DATA.lastUpdated) {
-    pill.textContent = 'Live';
-    var hu = document.getElementById('headerUpdated');
-    if (hu) hu.textContent = LIVE_DATA.lastUpdated;
+    syncFreshnessIndicator(LIVE_DATA.lastUpdated);
+    pill.textContent = document.getElementById('freshnessDot') && document.getElementById('freshnessDot').classList.contains('stale') ? 'Stale' : 'Live';
     pill.style.background = 'var(--green-dim)';
     pill.style.color = 'var(--green)';
     pill.style.borderColor = 'rgba(74, 222, 128, 0.35)';
@@ -2550,11 +2815,12 @@ function loadLiveData() {
     fetchSheetTab(TABS.bullpen_unit),
     fetchSheetTab(TABS.today_lineups),
     fetchSheetTab(TABS.today_games),
+    fetchSheetTab(TABS.today_matchups),
     fetchSheetText('Last_Updated')
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
         pitchingRows = results[3], palsRows = results[4], bullpenRows = results[5],
-        lineupsRows = results[6], gamesRows = results[7], tsText = results[8];
+        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8], tsText = results[9];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -2566,6 +2832,7 @@ function loadLiveData() {
     LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
+    LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
@@ -3149,6 +3416,7 @@ var STATE = {
   matchupHome: '',
   matchupHandedness: 'R',
   pitchScoreMode: 'sp',
+  oemMode: 'daily',
 };
 
 /* URL state — bookmarkable views */
@@ -3162,6 +3430,7 @@ function urlEncodeState() {
     if(STATE.watchlist.length) p.set('pin', STATE.watchlist.join(','));
     if(STATE.searchQuery) p.set('q', STATE.searchQuery);
     if(STATE.quadrantMode !== 'reg') p.set('q2', STATE.quadrantMode);
+    if(STATE.oemMode && STATE.oemMode !== 'daily') p.set('mode', STATE.oemMode);
     var s = p.toString();
     if(window.history && window.history.replaceState)
       window.history.replaceState(null, '', window.location.pathname + (s ? '?' + s : ''));
@@ -3177,6 +3446,7 @@ function urlDecodeState() {
     if(p.get('pin')) STATE.watchlist = p.get('pin').split(',').filter(Boolean);
     if(p.get('q')) STATE.searchQuery = p.get('q');
     if(p.get('q2')) STATE.quadrantMode = p.get('q2');
+    if(p.get('mode')) STATE.oemMode = p.get('mode');
   } catch(e){}
 }
 
@@ -3303,7 +3573,7 @@ function generateMovers() {
     },
     {
       eyebrow:'Damage vs Floor', color:'var(--gold)',
-      html:'<strong>'+highVol+' teams</strong> carry elevated damage-floor volatility, while <strong>'+floorBased+' teams</strong> profile more floor-based. DF-Gap helps separate power-driven output from steadier traffic creation.'
+      html:'<strong>'+highVol+' teams</strong> carry elevated damage-floor volatility, while <strong>'+floorBased+' teams</strong> profile more floor-based. Power-Floor Gap helps separate power-driven output from steadier traffic creation.'
     },
     {
       eyebrow:'Regression + Stability', color:'var(--green)',
@@ -3551,21 +3821,21 @@ function renderMasterTable(){
       var st = d.statusLabel || statusLabel(d);
       var prof = d.profileLabel || profileLabel(d);
       var stColor = st==='Undervalued'?'var(--blue)':st==='Regression Risk'?'var(--gold)':st==='Strong'?'var(--green)':st==='Weak'?'var(--red)':'var(--text-2)';
-      html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
-        '<td class="rank-cell status-only-cols">'+pinBtn+(i+1)+'</td>'+
+      html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
+        '<td class="rank-cell status-only-cols">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ▾':' ▸')+'<span class="rank-expand-hint">expand</span></td>'+
         '<td class="team-cell" style="color:var(--purple);">'+d.t+paBadge+'</td>'+
         '<td class="status-only-cols"><span class="rank-status-pill" style="background:'+stColor+'22;color:'+stColor+';">'+st+'</span></td>'+
         '<td class="status-only-cols"><span class="pill" style="background:'+ti.bg+';color:'+ti.c+';">'+ti.l+'</span></td>'+
         '<td class="status-only-cols"><span style="color:'+tc+';font-weight:600;">'+trendArrow(d)+'</span> <span class="trend-pill" style="background:'+tc+'22;color:'+tc+';font-size:10px;">'+(d.trend||'Stable')+'</span></td>'+
         '<td class="status-only-cols rank-profile">'+prof+'</td>'+
         '<td class="status-only-cols rank-takeaway">'+oneLineTakeaway(d)+'</td>'+
-        '<td class="advanced-cols num">'+d.abq.toFixed(1)+'</td>'+
-        '<td class="advanced-cols num">'+d.rcv.toFixed(1)+'</td>'+
-        '<td class="advanced-cols num">'+d.obr.toFixed(1)+'</td>'+
-        '<td class="advanced-cols num" style="color:'+tcol(d.osi)+';font-weight:600;">'+d.osi.toFixed(1)+'</td>'+
-        '<td class="advanced-cols num">'+projStr+'</td>'+
-        '<td class="advanced-cols num">'+ppStr+'</td>'+
-        '<td class="advanced-cols num">'+dfStr+'</td>'+
+        '<td class="advanced-cols num">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
+        '<td class="advanced-cols num">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
+        '<td class="advanced-cols num">'+d.obr.toFixed(1)+metricDecision('obr',d)+'</td>'+
+        '<td class="advanced-cols num" style="color:'+tcol(d.osi)+';font-weight:600;">'+d.osi.toFixed(1)+metricDecision('osi',d)+'</td>'+
+        '<td class="advanced-cols num">'+projStr+metricDecision('projOSI',d)+'</td>'+
+        '<td class="advanced-cols num">'+ppStr+metricDecision('ppGap',d)+'</td>'+
+        '<td class="advanced-cols num">'+dfStr+metricDecision('dfGap',d)+'</td>'+
         '<td class="advanced-cols">'+(d.trend||'—')+'</td>'+
         '<td class="advanced-cols num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'—')+'</td>'+
         '<td class="advanced-cols num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'—')+'</td>'+
@@ -3574,13 +3844,13 @@ function renderMasterTable(){
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
       '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
       '<td class="team-cell" style="color: var(--purple);">'+d.t+paBadge+'</td>'+
-      '<td class="num" style="'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+'</td>'+
-      '<td class="num" style="'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+'</td>'+
-      '<td class="num" style="'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+'</td>'+
-      '<td class="num" style="color:'+tcol(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+'</td>'+
-      '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+'</td>'+
-      '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+'</td>'+
-      '<td class="num" style="color:'+dfC+';'+activeColStyle('dfGap')+'">'+dfStr+'</td>'+
+      '<td class="num" style="'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+metricDecision('obr',d)+'</td>'+
+      '<td class="num" style="color:'+tcol(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+metricDecision('osi',d)+'</td>'+
+      '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+metricDecision('projOSI',d)+'</td>'+
+      '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
+      '<td class="num" style="color:'+dfC+';'+activeColStyle('dfGap')+'">'+dfStr+metricDecision('dfGap',d)+'</td>'+
       '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'—')+'</td>'+
       '<td class="num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'—')+'</td>'+
       '<td class="num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'—')+'</td>'+
@@ -3602,7 +3872,7 @@ function renderMasterTable(){
         '<div class="mobile-card-metric"><div class="lab">ABQ</div><div class="val">'+d.abq.toFixed(1)+'</div></div>'+
         '<div class="mobile-card-metric"><div class="lab">RCV</div><div class="val">'+d.rcv.toFixed(1)+'</div></div>'+
         '<div class="mobile-card-metric"><div class="lab">OBR</div><div class="val">'+d.obr.toFixed(1)+'</div></div>'+
-        '<div class="mobile-card-metric"><div class="lab">Proj</div><div class="val" style="color:'+projC+';">'+projStr+'</div></div>'+
+        '<div class="mobile-card-metric"><div class="lab">ProjOSI</div><div class="val" style="color:'+projC+';">'+projStr+'</div></div>'+
       '</div>'+
       '<div style="display:flex;gap:6px;margin-top:8px;font-size:10px;align-items:center;flex-wrap:wrap;">'+
         (sg?'<span class="grade-badge" style="background:'+sg.bg+';color:'+sg.c+';">'+sg.l+'</span>':'')+
@@ -3632,7 +3902,7 @@ function renderMasterTable(){
     if(ind) ind.textContent = STATE.sortDir==='desc' ? '↓' : '↑';
   }
 
-  var keyLabel = {'osi':'OSI','abq':'ABQ','rcv':'RCV','obr':'OBR','sus':'Sustainability','reg':'Regression','rhpOSI':'vs RHP OSI','lhpOSI':'vs LHP OSI','splitEdge':'Split Edge','t':'Team','trend':'Trend','projOSI':'Projected OSI','ppGap':'Process-Production Gap','dfGap':'Damage-Floor Gap','currentFormOSI':'Current Form OSI','velocity':'Trend Velocity'};
+  var keyLabel = {'osi':'OSI','abq':'ABQ','rcv':'RCV','obr':'OBR','sus':'Sustainability','reg':'Regression','rhpOSI':'vs RHP OSI','lhpOSI':'vs LHP OSI','splitEdge':'Split Edge','t':'Team','trend':'Trend','projOSI':'Projected OSI','ppGap':'Process-Production Gap','dfGap':'Power-Floor Gap','currentFormOSI':'Current Form OSI','velocity':'Trend Velocity'};
   var sortInfo = (keyLabel[key]||key) + ' ('+STATE.sortDir+')';
   if(STATE.watchlist.length) sortInfo += ' · '+STATE.watchlist.length+' pinned';
   if(STATE.searchQuery) sortInfo += ' · filter active ('+rows.length+' shown)';
@@ -3717,7 +3987,7 @@ function resetSort(){
   renderMasterTable();
 }
 
-/* Chart: Offensive Status Map (OSI × PP-Gap) or legacy RCV × ABQ */
+/* Chart: Offensive Market Status Map (OSI × PP-Gap) or legacy RCV × ABQ */
 function renderQuadrant(){
   var rows = STATE.time==='YTD' && STATE.split==='b' ? SCO_YTD_B :
              STATE.time==='L30' && STATE.split==='b' ? SCO_L30_B :
@@ -3772,10 +4042,10 @@ function renderQuadrant(){
   s += '<line x1="'+ml+'" y1="'+my+'" x2="'+(W-mr)+'" y2="'+my+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
 
   if(useStatusMap) {
-    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.9)" class="quad-label-sm">ELITE &amp; STILL UNDERVALUED</text>';
-    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-8)+'" text-anchor="end" fill="rgba(251,191,36,.9)" class="quad-label-sm">STRONG BUT COOLING</text>';
-    s += '<text x="'+(ml+10)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.9)" class="quad-label-sm">BUY-LOW OFFENSE</text>';
-    s += '<text x="'+(ml+10)+'" y="'+(H-mb-8)+'" text-anchor="start" fill="rgba(248,113,113,.9)" class="quad-label-sm">WEAK &amp; CONCERNING</text>';
+    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.9)" class="quad-label-sm">BACK TEAM TOTALS</text>';
+    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-8)+'" text-anchor="end" fill="rgba(251,191,36,.9)" class="quad-label-sm">FADE MOMENTUM</text>';
+    s += '<text x="'+(ml+10)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.9)" class="quad-label-sm">BUY LOW OFFENSE</text>';
+    s += '<text x="'+(ml+10)+'" y="'+(H-mb-8)+'" text-anchor="start" fill="rgba(248,113,113,.9)" class="quad-label-sm">FADE / UNDER LEAN</text>';
   } else if(useABQMode) {
     s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600">ELITE — HIGH DAMAGE + HIGH PROCESS</text>';
     s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600">WEAK</text>';
@@ -3967,8 +4237,10 @@ function renderStrats(){
   ];
   var html='';
   blocks.forEach(function(b){
+    var conf = stratConfidence(b.n);
     html += '<div class="strat-card" style="border-left-color:'+b.bc+';">'+
-      '<div class="strat-tag" style="color:'+b.bc+';">'+b.tag+'</div>'+
+      '<div class="strat-tag" style="color:'+b.bc+';">'+b.tag+
+      '<span class="strat-confidence '+conf.cls+'">'+conf.label+' conf</span></div>'+
       '<div class="strat-teams">'+b.n+' teams meet criteria</div>'+
       '<div class="strat-desc">'+b.d+'</div>'+
     '</div>';
@@ -4017,7 +4289,7 @@ function setModalMetric(m){
     'abq':'ABQ Score',
     'obr':'OBR Score',
     'ppGap':'Process-Production Gap (ABQ − RCV)',
-    'dfGap':'Damage-Floor Gap (RCV − OBR)',
+    'dfGap':'Power-Floor Gap (RCV − OBR)',
     'velocity':'Trend Velocity (OSI change per timeframe step)',
     'sus':'Sustainability Score',
     'reg':'Regression Gap (xwOBA−wOBA, ×1000)',
@@ -4295,7 +4567,7 @@ function renderTeamDetail(team){
     '</div>'+
     '<div>'+
       '<div class="detail-metric-row"><span class="lab">PP-Gap (ABQ−RCV)</span><span class="val" style="color:'+(master.ppGap>4?'var(--blue)':master.ppGap<-4?'var(--gold)':'var(--text-2)')+';">'+(master.ppGap>0?'+':'')+master.ppGap.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">DF-Gap (RCV−OBR)</span><span class="val" style="color:'+(master.dfGap>8?'var(--orange)':master.dfGap<-4?'var(--green-l)':'var(--text-2)')+';">'+(master.dfGap>0?'+':'')+master.dfGap.toFixed(1)+'</span></div>'+
+      '<div class="detail-metric-row"><span class="lab">Power-Floor Gap (RCV−OBR)</span><span class="val" style="color:'+(master.dfGap>8?'var(--orange)':master.dfGap<-4?'var(--green-l)':'var(--text-2)')+';">'+(master.dfGap>0?'+':'')+master.dfGap.toFixed(1)+'</span></div>'+
       '<div class="detail-metric-row"><span class="lab">vs RHP OSI</span><span class="val" style="color:'+tcol(master.rhpOSI||0)+';">'+(master.rhpOSI?master.rhpOSI.toFixed(1):'—')+'</span></div>'+
       '<div class="detail-metric-row"><span class="lab">vs LHP OSI</span><span class="val" style="color:'+tcol(master.lhpOSI||0)+';">'+(master.lhpOSI?master.lhpOSI.toFixed(1):'—')+'</span></div>'+
       '<div class="detail-metric-row"><span class="lab">Split Edge</span><span class="val">'+(master.splitEdge>0?'+':'')+master.splitEdge.toFixed(1)+'</span></div>'+
@@ -4383,7 +4655,7 @@ function renderComparePane(){
   var keys = [
     ['osi','OSI'],['projOSI','Proj OSI'],['currentFormOSI','Form'],['velocity','Vel'],
     ['abq','ABQ'],['rcv','RCV'],['obr','OBR'],
-    ['ppGap','PP-Gap'],['dfGap','DF-Gap'],
+    ['ppGap','PP-Gap'],['dfGap','Power-Floor Gap'],
     ['sus','Sustain'],['rhpOSI','vRHP'],['lhpOSI','vLHP'],['splitEdge','Edge']
   ];
   var th = '<thead><tr><th>Metric</th>' + rows.map(function(r,i){return '<th style="color:'+colors[i]+';">'+r.t+'</th>';}).join('') + '</tr></thead>';
@@ -4544,7 +4816,7 @@ function renderLeagueOverview(){
   html += '<div class="story-stat"><div class="ss-label">Floor Baseline</div><div class="ss-value">'+avgObr.toFixed(1)+'</div><div class="ss-copy">Average OBR. This indicates the league-wide on-base/contact floor for the selected view.</div></div>';
   html += '<div class="story-stat"><div class="ss-label">Process Gaps</div><div class="ss-value">'+ppAhead+' / '+ppBehind+'</div><div class="ss-copy">Teams with process materially ahead of production versus teams with production materially ahead of process.</div></div>';
   html += '<div class="story-stat"><div class="ss-label">Regression Balance</div><div class="ss-value">'+posReg+' / '+negReg+'</div><div class="ss-copy">Positive versus negative regression-pressure counts. This frames expected-contact direction without naming individual teams.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Volatility Profiles</div><div class="ss-value">'+volatile+'</div><div class="ss-copy">Teams with a high Damage-Floor Gap, meaning run creation depends more heavily on impact than offensive floor.</div></div>';
+  html += '<div class="story-stat"><div class="ss-label">Volatility Profiles</div><div class="ss-value">'+volatile+'</div><div class="ss-copy">Teams with a high Power-Floor Gap, meaning run creation depends more heavily on impact than offensive floor.</div></div>';
   html += '<div class="story-stat"><div class="ss-label">Stable Profiles</div><div class="ss-value">'+stable+'</div><div class="ss-copy">Teams with stronger sustainability support across process, floor, production, and regression context.</div></div>';
   var el = document.getElementById('leagueStoryGrid');
   if(el) el.innerHTML = html;
@@ -4567,14 +4839,16 @@ function mountReferenceTables(){
   if(oor && oor.parentNode !== mount){ mount.appendChild(oor); }
   if(pitch && pitch.parentNode !== mount){ mount.appendChild(pitch); }
   if(pals && pals.parentNode !== mount){ mount.appendChild(pals); }
-  if(match && match.parentNode !== mount){ mount.appendChild(match); }
-  [oor,pitch,pals,match].forEach(function(el){
+  var dailyMount = document.getElementById('dailyMatchupsMount');
+  if(match && dailyMount && match.parentNode !== dailyMount){ dailyMount.appendChild(match); }
+  [oor,pitch,pals].forEach(function(el){
     if(el){ el.style.marginBottom = '20px'; var mn = el.querySelector('.method-note'); if(mn) mn.style.display='none'; }
   });
 }
 
 function renderAll(){
   attachPalsToScores();
+  renderDailySummary();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   renderGlanceCards();
@@ -4795,6 +5069,7 @@ function hideLoadingScreen() {
 function init(){
   fetchLiveData();
   urlDecodeState();
+  if (STATE.oemMode && STATE.oemMode !== 'daily') setOemMode(STATE.oemMode);
   var mg = document.getElementById('matchupsGrid');
   if (mg && !mg.dataset.lineupToggleBound) {
     mg.dataset.lineupToggleBound = '1';
