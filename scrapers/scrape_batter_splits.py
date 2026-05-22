@@ -24,6 +24,9 @@ from scrapers.fangraphs_session import get_driver, get_export_csv, login, safe_q
 
 PAGE_DELAY = 20
 COOLDOWN = 15
+SPLIT_COOLDOWN = 45
+GROUP_COOLDOWN = 60
+MAX_SESSION_RECONNECTS = 3
 
 COLUMN_ALIASES = {
     "O-Swing%": "Chase%",
@@ -39,6 +42,18 @@ OUTPUT_STATS = [
     "PA", "AVG", "OBP", "SLG", "BB%", "K%", "wOBA", "xwOBA", "wRC+",
     "ISO", "BABIP", "Chase%", "ZCon%", "OCon%", "SwStr%", "Barrel%", "HardHit%",
 ]
+
+# Cooldown between these split groups (seconds)
+SPLIT_GROUPS = [
+    ["vs_RHP", "vs_LHP"],
+    ["home", "away"],
+    ["vs_SP", "vs_RP"],
+    ["overall", "recent"],
+]
+
+
+class SessionGiveUp(Exception):
+    """Raised when Chrome reconnect limit is exceeded for one split."""
 
 
 def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -106,9 +121,17 @@ def reconnect_driver(driver):
     return new_driver
 
 
-def ensure_session(driver):
+def ensure_session(driver, reconnect_state: dict):
+    """Return driver; reconnect up to MAX_SESSION_RECONNECTS times per split."""
     if session_alive(driver):
         return driver
+    attempts = reconnect_state.get("count", 0)
+    if attempts >= MAX_SESSION_RECONNECTS:
+        raise SessionGiveUp(
+            f"Chrome session reconnect limit ({MAX_SESSION_RECONNECTS}) reached"
+        )
+    reconnect_state["count"] = attempts + 1
+    print(f"  Reconnect attempt {reconnect_state['count']}/{MAX_SESSION_RECONNECTS}")
     return reconnect_driver(driver)
 
 
@@ -118,30 +141,6 @@ def _split_arr_candidates(split_key: str, primary_arr: str) -> list[str]:
     return [c for c in codes if c]
 
 
-def scrape_batter_split_resilient(
-    driver,
-    split_key: str,
-    split_arr: str,
-    start_date: str,
-    end_date: str,
-    min_pa: int,
-):
-    """Scrape a split; retry alternate splitArr codes for home/away if export is empty."""
-    driver = ensure_session(driver)
-    candidates = _split_arr_candidates(split_key, split_arr)
-    last_raw = None
-    for arr_code in candidates:
-        if arr_code != split_arr:
-            print(f"  Retrying {split_key} with alternate splitArr={arr_code}...")
-        driver = ensure_session(driver)
-        raw = scrape_batter_split(driver, split_key, arr_code, start_date, end_date, min_pa)
-        driver = ensure_session(driver)
-        if raw is not None and not raw.empty:
-            return driver, raw
-        last_raw = raw
-    return driver, last_raw
-
-
 def scrape_batter_split(
     driver,
     split_key: str,
@@ -149,12 +148,16 @@ def scrape_batter_split(
     start_date: str,
     end_date: str,
     min_pa: int,
+    reconnect_state: dict,
 ) -> pd.DataFrame | None:
     print(f"  Scraping batter split {split_key} ({start_date} to {end_date})...")
     frames = []
     for sg_name, sg_num in BATTER_STAT_GROUPS.items():
         url = _leaderboard_url(split_arr, sg_num, start_date, end_date, min_pa)
+        if split_key in ("home", "away"):
+            print(f"    [{split_key}] URL ({sg_name}): {url}")
         print(f"    Loading {split_key} / {sg_name}...")
+        driver = ensure_session(driver, reconnect_state)
         driver.get(url)
         time.sleep(PAGE_DELAY)
         df = get_export_csv(driver)
@@ -170,6 +173,43 @@ def scrape_batter_split(
         return None
     merged["split_type"] = split_key
     return merged
+
+
+def scrape_batter_split_resilient(
+    driver,
+    split_key: str,
+    split_arr: str,
+    start_date: str,
+    end_date: str,
+    min_pa: int,
+    reconnect_state: dict,
+):
+    """Scrape a split; retry alternate splitArr codes for home/away if export is empty."""
+    reconnect_state["count"] = 0
+    try:
+        driver = ensure_session(driver, reconnect_state)
+    except SessionGiveUp as exc:
+        print(f"  WARNING: {split_key} skipped -- {exc}")
+        return driver, None
+
+    candidates = _split_arr_candidates(split_key, split_arr)
+    last_raw = None
+    for arr_code in candidates:
+        if arr_code != split_arr:
+            print(f"  Retrying {split_key} with alternate splitArr={arr_code}...")
+        try:
+            driver = ensure_session(driver, reconnect_state)
+            raw = scrape_batter_split(
+                driver, split_key, arr_code, start_date, end_date, min_pa, reconnect_state
+            )
+            driver = ensure_session(driver, reconnect_state)
+        except SessionGiveUp as exc:
+            print(f"  WARNING: {split_key} abandoned -- {exc}")
+            return driver, None
+        if raw is not None and not raw.empty:
+            return driver, raw
+        last_raw = raw
+    return driver, last_raw
 
 
 def filter_registry_batters(df: pd.DataFrame, registry: pd.DataFrame) -> pd.DataFrame:
@@ -218,6 +258,19 @@ def run():
     recent_start = (datetime.now() - timedelta(days=BATTER_RECENT_DAYS)).strftime("%Y-%m-%d")
     recent_end = datetime.now().strftime("%Y-%m-%d")
 
+    outputs = {
+        "batter_splits_rhp.csv": ("vs_RHP", BATTER_SPLIT_ARR["vs_RHP"], SEASON_START, SEASON_END),
+        "batter_splits_lhp.csv": ("vs_LHP", BATTER_SPLIT_ARR["vs_LHP"], SEASON_START, SEASON_END),
+        "batter_splits_home.csv": ("home", BATTER_SPLIT_ARR["home"], SEASON_START, SEASON_END),
+        "batter_splits_away.csv": ("away", BATTER_SPLIT_ARR["away"], SEASON_START, SEASON_END),
+        "batter_splits_vsSP.csv": ("vs_SP", BATTER_SPLIT_ARR["vs_SP"], SEASON_START, SEASON_END),
+        "batter_splits_vsRP.csv": ("vs_RP", BATTER_SPLIT_ARR["vs_RP"], SEASON_START, SEASON_END),
+        "batter_splits_overall.csv": ("overall", "", SEASON_START, SEASON_END),
+        "batter_splits_recent.csv": ("recent", "", recent_start, recent_end),
+    }
+
+    key_to_output = {v[0]: fname for fname, v in outputs.items()}
+
     print(f"Batter splits scrape (Chrome version_main={CHROME_VERSION})")
     driver = get_driver()
     try:
@@ -226,44 +279,24 @@ def run():
             return
         print("FanGraphs login successful.")
 
-        outputs = {
-            "batter_splits_rhp.csv": ("vs_RHP", BATTER_SPLIT_ARR["vs_RHP"], SEASON_START, SEASON_END),
-            "batter_splits_lhp.csv": ("vs_LHP", BATTER_SPLIT_ARR["vs_LHP"], SEASON_START, SEASON_END),
-            "batter_splits_home.csv": ("home", BATTER_SPLIT_ARR["home"], SEASON_START, SEASON_END),
-            "batter_splits_away.csv": ("away", BATTER_SPLIT_ARR["away"], SEASON_START, SEASON_END),
-            "batter_splits_vsSP.csv": ("vs_SP", BATTER_SPLIT_ARR["vs_SP"], SEASON_START, SEASON_END),
-            "batter_splits_vsRP.csv": ("vs_RP", BATTER_SPLIT_ARR["vs_RP"], SEASON_START, SEASON_END),
-        }
+        for group_idx, group_keys in enumerate(SPLIT_GROUPS):
+            for split_key in group_keys:
+                fname = key_to_output.get(split_key)
+                if not fname:
+                    continue
+                key, arr, start, end = outputs[fname]
+                reconnect_state: dict = {"count": 0}
+                driver, raw = scrape_batter_split_resilient(
+                    driver, key, arr, start, end, BATTER_MIN_PA, reconnect_state
+                )
+                filtered = filter_registry_batters(raw, registry) if raw is not None else None
+                save_split(filtered, fname)
+                print(f"  Cooling down {SPLIT_COOLDOWN}s before next split...")
+                time.sleep(SPLIT_COOLDOWN)
 
-        for fname, (key, arr, start, end) in outputs.items():
-            driver = ensure_session(driver)
-            driver, raw = scrape_batter_split_resilient(
-                driver, key, arr, start, end, BATTER_MIN_PA
-            )
-            filtered = filter_registry_batters(raw, registry) if raw is not None else None
-            save_split(filtered, fname)
-            print("  Cooling down 30s...")
-            time.sleep(30)
-
-        # Overall + recent windows for trend comparison (used by compute_batter_profile)
-        driver = ensure_session(driver)
-        driver, overall = scrape_batter_split_resilient(
-            driver, "overall", "", SEASON_START, SEASON_END, BATTER_MIN_PA
-        )
-        save_split(
-            filter_registry_batters(overall, registry) if overall is not None else None,
-            "batter_splits_overall.csv",
-        )
-        time.sleep(30)
-
-        driver = ensure_session(driver)
-        driver, recent = scrape_batter_split_resilient(
-            driver, "recent", "", recent_start, recent_end, BATTER_MIN_PA
-        )
-        save_split(
-            filter_registry_batters(recent, registry) if recent is not None else None,
-            "batter_splits_recent.csv",
-        )
+            if group_idx < len(SPLIT_GROUPS) - 1:
+                print(f"  Group cooldown {GROUP_COOLDOWN}s...")
+                time.sleep(GROUP_COOLDOWN)
     finally:
         safe_quit_driver(driver)
 

@@ -98,8 +98,8 @@ BATTER_SPLIT_ARR = {
 
 # Alternate splitArr codes if primary home/away export is empty
 BATTER_SPLIT_ARR_FALLBACK = {
-    "home": ["5", "54", "59"],
-    "away": ["6", "55", "72"],
+    "home": ["5", "54", "59", "52", "60", "4"],
+    "away": ["6", "55", "72", "53", "61", "3"],
 }
 
 # Reliever FIP (2026 season constant)

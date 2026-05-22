@@ -44,6 +44,20 @@ def push_df(sheet, tab_name, df):
     worksheet.update(data)
     print(f"  Pushed {tab_name}: {len(df)} rows")
 
+def verify_sheet_tabs(sheet) -> None:
+    """Pre-flight: warn if expected SHEET_TABS worksheets are missing."""
+    existing = {ws.title for ws in sheet.worksheets()}
+    expected = sorted(set(SHEET_TABS.values()))
+    missing = [tab for tab in expected if tab not in existing]
+    print(f"  Sheet tabs present: {len(existing)} | expected from config: {len(expected)}")
+    if missing:
+        print("  WARNING: Expected tabs missing (will be created on first push):")
+        for tab in missing:
+            print(f"    - {tab}")
+    else:
+        print("  All expected SHEET_TABS are present.")
+
+
 def run():
     if not check_google_credentials():
         print("  Skipping Google Sheets push (credentials unavailable).")
@@ -53,6 +67,9 @@ def run():
     client = get_client()
     sheet = client.open_by_key(SHEET_ID)
     print("Connected.\n")
+    print("Pre-flight: verifying Google Sheet tabs...")
+    verify_sheet_tabs(sheet)
+    print()
 
     # PALS is pushed by scrapers/scrape_pals.py after computing the metric - do not add here.
     files = {

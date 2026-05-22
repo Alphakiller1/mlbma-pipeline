@@ -35,16 +35,41 @@ def normalize(series):
     return ((series - mn) / (mx - mn)) * 100
 
 
-def normalize_pool(series: pd.Series) -> pd.Series:
-    """Pool-normalize a series to 0-100 (used by batter profile metrics)."""
+def _zero_series_like(series: pd.Series) -> pd.Series:
+    return pd.Series(0.0, index=series.index, dtype=float)
+
+
+def normalize_pool(series) -> pd.Series:
+    """Pool-normalize a series to 0-100; invalid inputs return zeros (no raise)."""
+    if series is None:
+        return pd.Series([0.0])
+
+    if isinstance(series, (list, tuple)):
+        if len(series) == 0:
+            return pd.Series([0.0])
+        series = pd.Series(series, dtype=float)
+
+    if isinstance(series, (int, float)) and not isinstance(series, bool):
+        return pd.Series([0.0])
+
     if not isinstance(series, pd.Series):
-        if isinstance(series, (int, float)) and not isinstance(series, bool):
-            return pd.Series([50.0])
-        series = pd.Series(series)
-    mn, mx = series.min(), series.max()
+        try:
+            series = pd.Series(series, dtype=float)
+        except Exception:
+            return pd.Series([0.0])
+
+    if len(series) == 0:
+        return pd.Series(dtype=float)
+
+    numeric = pd.to_numeric(series, errors="coerce")
+    if numeric.isna().all():
+        return _zero_series_like(numeric)
+
+    mn, mx = numeric.min(), numeric.max()
     if pd.isna(mn) or pd.isna(mx) or mx == mn:
-        return pd.Series(50.0, index=series.index)
-    return normalize(series)
+        return _zero_series_like(numeric)
+
+    return normalize(numeric)
 
 
 def invert(series):

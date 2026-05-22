@@ -683,11 +683,44 @@ def load_matchup_contexts() -> list[MatchupContext]:
     return contexts
 
 
+def validate_matchup_context_preflight(contexts: list[MatchupContext]) -> bool:
+    """Print type/fields for first context so bad builds are obvious before full run."""
+    if not contexts:
+        print("  Pre-flight: no matchup contexts loaded")
+        return False
+
+    ctx = contexts[0]
+    print("  Pre-flight: first MatchupContext")
+    print(f"    type: {type(ctx).__name__}")
+    print(f"    away={ctx.away} home={ctx.home} game_id={ctx.game_id}")
+    for label, tm in (
+        ("away_lineup", ctx.away_lineup),
+        ("home_lineup", ctx.home_lineup),
+        ("away_team", ctx.away_team),
+        ("home_team", ctx.home_team),
+    ):
+        print(f"    {label}: type={type(tm).__name__}")
+        if not isinstance(tm, TeamMetrics):
+            print(f"      ERROR: expected TeamMetrics, got {type(tm)}")
+            return False
+        print(
+            f"      team={tm.team} abq={tm.abq} osi={tm.osi} "
+            f"abq_vs_rhp={tm.abq_vs_rhp} abq_vs_lhp={tm.abq_vs_lhp} pals={tm.pals}"
+        )
+    for label, pm in (("away_pitcher", ctx.away_pitcher), ("home_pitcher", ctx.home_pitcher)):
+        print(f"    {label}: type={type(pm).__name__} name={pm.name} hand={pm.hand}")
+    return True
+
+
 def run():
     print("Computing cross-metric signals...")
     contexts = load_matchup_contexts()
     if not contexts:
         print("  No matchups to evaluate")
+        return
+
+    if not validate_matchup_context_preflight(contexts):
+        print("  WARNING: matchup context pre-flight failed -- aborting signals")
         return
 
     all_rows = []
@@ -718,6 +751,16 @@ def run():
 
     plays = [r for r in summary_rows if r["is_convergence_play"]]
     print(f"  Convergence plays: {len(plays)} side(s)")
+
+    fired = [r for r in all_rows if r.get("fired")]
+    print(f"  Signals fired today: {len(fired)} / {len(all_rows)} total signal rows")
+    for ctx in contexts:
+        game_sigs = [r for r in all_rows if r.get("away") == ctx.away and r.get("home") == ctx.home]
+        fired_game = [r for r in game_sigs if r.get("fired")]
+        print(
+            f"    {ctx.away} @ {ctx.home}: {len(fired_game)} fired "
+            f"({len(game_sigs)} evaluated)"
+        )
 
     push_signals_to_sheets()
 
