@@ -80,6 +80,7 @@ def run():
     run_player_registry()
     run_batter_splits()
     run_batter_profiles()
+    run_team_profiles()
 
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("All metrics pushed to Google Sheets")
@@ -183,6 +184,22 @@ def run_batter_profiles():
         run_push_batter()
     except Exception as exc:
         print(f"WARNING: batter profile step failed - continuing ({exc})")
+
+
+def run_team_profiles():
+    """Step 18-19: team profiles + Sheets push; non-fatal on failure."""
+    print(f"\n{'='*50}")
+    print("Step 18-19: compute_team_profile + push_team_profiles...")
+    print(f"{'='*50}")
+    try:
+        from core.compute_team_profile import run as run_compute_team
+
+        run_compute_team()
+        from outputs.push_team_profiles import run as run_push_team
+
+        run_push_team()
+    except Exception as exc:
+        print(f"WARNING: team profile step failed - continuing ({exc})")
 
 
 if __name__ == "__main__":

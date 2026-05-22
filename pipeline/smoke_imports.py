@@ -38,6 +38,8 @@ MODULES = [
     "scrapers.fangraphs_session",
     "core.compute_batter_profile",
     "outputs.push_batter_profiles",
+    "core.compute_team_profile",
+    "outputs.push_team_profiles",
 ]
 
 EMPTY_PLACEHOLDERS = [

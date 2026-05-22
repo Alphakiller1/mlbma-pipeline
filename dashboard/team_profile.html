@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Analytics • Team Profile</title>
+<style>
+:root {
+  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
+  --border: #28282f; --border-2: #34343d;
+  --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
+  --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
+  --purple-glow: rgba(192, 132, 252, 0.25);
+  --green-l: #86EFAC; --green: #4ADE80; --green-d: #16A34A;
+  --green-dim: rgba(74, 222, 128, 0.15);
+  --red-l: #FCA5A5; --red: #F87171; --red-d: #DC2626;
+  --red-dim: rgba(248, 113, 113, 0.15);
+  --gold-l: #FCD34D; --gold: #FBBF24; --gold-d: #B45309;
+  --gold-dim: rgba(251, 191, 36, 0.15);
+  --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
+  --blue-dim: rgba(96, 165, 250, 0.15);
+  --font: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", system-ui, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Monaco, Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  font-size: 14px; line-height: 1.5; min-height: 100vh;
+  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+}
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(192, 132, 252, 0.08), transparent),
+    var(--bg);
+}
+.container { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
+.loading {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 2000; gap: 16px;
+}
+.loading.hide { display: none; }
+.spinner {
+  width: 36px; height: 36px; border: 2px solid var(--border);
+  border-top-color: var(--purple); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--text-2); font-size: 13px; }
+.header { margin-bottom: 22px; }
+.brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.brand-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple);
+}
+.brand-pill {
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+  padding: 3px 8px; border-radius: 99px;
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+.brand-pill.warn {
+  background: var(--gold-dim); color: var(--gold);
+  border-color: rgba(251, 191, 36, 0.35);
+}
+h1 {
+  font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle { color: var(--text-2); font-size: 13px; max-width: 720px; }
+.nav-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.nav-link {
+  font-size: 11.5px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg-2);
+  transition: all 0.15s ease;
+}
+.nav-link:hover {
+  color: var(--text); border-color: var(--purple-3);
+  box-shadow: 0 0 12px var(--purple-glow);
+}
+.nav-link.active { color: var(--purple-2); border-color: var(--purple); }
+.data-banner {
+  display: none; margin-top: 12px; padding: 10px 14px;
+  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 10px; font-size: 12px; color: var(--gold-l);
+}
+.data-banner.show { display: block; }
+.selector-bar {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
+}
+.selector-group { flex: 1; min-width: 200px; }
+.selector-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; display: block;
+}
+.selector-select {
+  width: 100%; background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--text); padding: 10px 12px; border-radius: 8px;
+  font-size: 13px; font-family: var(--font);
+}
+.selector-select:focus {
+  outline: none; border-color: var(--purple);
+  box-shadow: 0 0 0 2px var(--purple-glow);
+}
+.team-header {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.team-name-lg { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.team-abbr {
+  font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 8px;
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  color: var(--purple-2); font-family: var(--mono);
+}
+.pill-tonight {
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  font-size: 10px; font-weight: 600; padding: 5px 10px; border-radius: 99px;
+}
+.pill-platoon {
+  background: var(--gold-dim); color: var(--gold-l);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  font-size: 10px; font-weight: 600; padding: 5px 10px; border-radius: 99px;
+}
+.pill-hot { background: var(--red-dim); color: var(--red-l); border: 1px solid rgba(248,113,113,0.35); }
+.pill-cold { background: var(--blue-dim); color: var(--blue-l); border: 1px solid rgba(96,165,250,0.35); }
+.header-meta { font-size: 12px; color: var(--text-2); width: 100%; margin-top: 4px; }
+.section {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 22px; margin-bottom: 18px;
+}
+.section-eyebrow {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
+}
+.section-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.section-subtitle { font-size: 11.5px; color: var(--text-2); margin-bottom: 14px; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 900px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+.metric-card {
+  background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg-4) 100%);
+  border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+}
+.metric-card .m-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
+}
+.metric-card .m-val {
+  font-size: 26px; font-weight: 600; font-family: var(--mono);
+}
+.quadrant-wrap {
+  display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;
+  margin-top: 14px;
+}
+.quadrant-chart {
+  width: 200px; height: 200px; background: var(--bg-3);
+  border: 1px solid var(--border); border-radius: 12px;
+  position: relative; flex-shrink: 0;
+}
+.quadrant-chart::before, .quadrant-chart::after {
+  content: ''; position: absolute; background: var(--border-2);
+}
+.quadrant-chart::before { left: 50%; top: 8px; bottom: 8px; width: 1px; }
+.quadrant-chart::after { top: 50%; left: 8px; right: 8px; height: 1px; }
+.quadrant-dot {
+  position: absolute; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--purple); box-shadow: 0 0 12px var(--purple-glow);
+  transform: translate(-50%, -50%); border: 2px solid #fff;
+}
+.quadrant-legend { font-size: 11px; color: var(--text-2); line-height: 1.6; flex: 1; min-width: 180px; }
+.split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 700px) { .split-grid { grid-template-columns: 1fr; } }
+.split-panel {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.split-panel h4 { font-size: 12px; color: var(--text-2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+.mini-stat-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.mini-stat {
+  flex: 1; min-width: 70px; background: var(--bg-4);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+}
+.mini-stat .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
+.mini-stat .ms-val { font-size: 16px; font-weight: 600; font-family: var(--mono); }
+.platoon-bar {
+  height: 8px; border-radius: 4px; background: var(--bg-4);
+  margin-top: 10px; overflow: hidden; display: flex;
+}
+.platoon-bar .rhp { background: var(--blue); }
+.platoon-bar .lhp { background: var(--gold); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.data-table th {
+  text-align: left; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3);
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12px;
+}
+.data-table tr:hover td { background: var(--bg-3); }
+.data-table a { color: var(--purple-2); text-decoration: none; }
+.data-table a:hover { color: var(--purple); text-decoration: underline; }
+.tier-badge {
+  font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 4px;
+  display: inline-block;
+}
+.tier-ace { background: var(--green-dim); color: var(--green); }
+.tier-solid { background: var(--blue-dim); color: var(--blue); }
+.tier-avg { background: var(--gold-dim); color: var(--gold); }
+.tier-vol { background: var(--red-dim); color: var(--red-l); }
+.role-badge {
+  font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 4px;
+}
+.role-closer { background: var(--purple-glow); color: var(--purple); }
+.role-setup { background: var(--blue-dim); color: var(--blue-l); }
+.trend-up { color: var(--green); }
+.trend-down { color: var(--red-l); }
+.trend-flat { color: var(--text-3); }
+.window-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+@media (max-width: 700px) { .window-row { grid-template-columns: repeat(2, 1fr); } }
+.window-cell {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; text-align: center;
+}
+.window-cell .w-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; margin-bottom: 6px; }
+.window-cell .w-val { font-size: 22px; font-weight: 600; font-family: var(--mono); }
+.empty-state { padding: 24px; text-align: center; color: var(--text-3); font-size: 13px; }
+.matchup-panel {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px;
+}
+.matchup-panel a.cta {
+  display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 600;
+  color: var(--purple-2); text-decoration: none; padding: 8px 14px;
+  border: 1px solid var(--purple-3); border-radius: 8px;
+}
+.matchup-panel a.cta:hover { background: var(--purple-glow); }
+</style>
+</head>
+<body>
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading team intelligence...</div>
+</div>
+<div class="container">
+  <div class="header">
+    <div class="brand-row">
+      <span class="brand-tag">Chase Analytics</span>
+      <span class="brand-pill">Team Profile System</span>
+    </div>
+    <h1>Team Organizational View</h1>
+    <p class="subtitle">Unified offense, rotation, bullpen, and matchup context — aggregated from pipeline metrics and player profiles.</p>
+    <div class="nav-links">
+      <a class="nav-link" href="chase_analytics_mlb_oem_v7.html">Main Dashboard</a>
+      <a class="nav-link" href="matchup_sheet.html">Matchup Sheet</a>
+      <a class="nav-link" href="batter_profile.html">Batter Profile</a>
+      <a class="nav-link" href="pitcher_profile.html">Pitcher Profile</a>
+      <a class="nav-link" href="reliever_profile.html">Reliever Profile</a>
+      <a class="nav-link" href="bullpen_report.html">Bullpen Report</a>
+      <a class="nav-link active" href="team_profile.html">Team Profile</a>
+    </div>
+    <div class="data-banner" id="dataBanner"></div>
+  </div>
+
+  <div class="selector-bar">
+    <div class="selector-group">
+      <label class="selector-label" for="teamSelect">Team</label>
+      <select class="selector-select" id="teamSelect"></select>
+    </div>
+  </div>
+
+  <div id="app"></div>
+</div>
+
+<script>
+var SHEET_ID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+var PLATOON_GAP = 8;
+var HOME_AWAY_GAP = 10;
+var WINDOW_GAP = 8;
+
+var ALL_TEAMS = [
+  'ARI','ATH','ATL','BAL','BOS','CHC','CHW','CIN','CLE','COL','DET','HOU','KCR','LAA','LAD',
+  'MIA','MIL','MIN','NYM','NYY','PHI','PIT','SDP','SEA','SFG','STL','TBR','TEX','TOR','WSN'
+];
+
+var TEAM_NAMES = {
+  ARI:'Arizona Diamondbacks', ATH:'Athletics', ATL:'Atlanta Braves', BAL:'Baltimore Orioles',
+  BOS:'Boston Red Sox', CHC:'Chicago Cubs', CHW:'Chicago White Sox', CIN:'Cincinnati Reds',
+  CLE:'Cleveland Guardians', COL:'Colorado Rockies', DET:'Detroit Tigers', HOU:'Houston Astros',
+  KCR:'Kansas City Royals', KC:'Kansas City Royals', LAA:'Los Angeles Angels', LAD:'Los Angeles Dodgers',
+  MIA:'Miami Marlins', MIL:'Milwaukee Brewers', MIN:'Minnesota Twins', NYM:'New York Mets',
+  NYY:'New York Yankees', PHI:'Philadelphia Phillies', PIT:'Pittsburgh Pirates', SDP:'San Diego Padres',
+  SEA:'Seattle Mariners', SFG:'San Francisco Giants', STL:'St. Louis Cardinals', TBR:'Tampa Bay Rays',
+  TEX:'Texas Rangers', TOR:'Toronto Blue Jays', WSN:'Washington Nationals'
+};
+
+var OSI_TIERS = [[85,'Elite'],[75,'High'],[65,'Dangerous'],[50,'Inconsistent'],[0,'Weak']];
+var PITCH_TIERS = [[85,'Ace'],[70,'Solid'],[55,'Average'],[0,'Volatile']];
+
+var DATA = { profiles: [], batters: [], sps: [], bullpen: [], registry: [], matchups: [], weather: [], pitchTeams: [] };
+var STATE = { team: 'NYY' };
+
+function gvizUrl(tab) {
+  return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tab);
+}
+
+function parseCSVLine(line) {
+  var out = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (c === ',' && !inQ) { out.push(cur); cur = ''; continue; }
+    cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseCSV(text) {
+  var lines = text.trim().split('\n');
+  if (!lines.length) return [];
+  var headers = parseCSVLine(lines[0]).map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
+  return lines.slice(1).map(function(line) {
+    var vals = parseCSVLine(line);
+    var row = {};
+    headers.forEach(function(h, i) { row[h] = (vals[i] || '').replace(/^"|"$/g, '').trim(); });
+    return row;
+  });
+}
+
+function fetchSheetTab(tab) {
+  return fetch(gvizUrl(tab)).then(function(r) { return r.text(); }).then(parseCSV);
+}
+
+function pickCol(row, names) {
+  for (var i = 0; i < names.length; i++) {
+    if (row[names[i]] !== undefined && row[names[i]] !== '') return row[names[i]];
+  }
+  return '';
+}
+
+function num(v) {
+  if (v === null || v === undefined || v === '' || v === '—') return null;
+  var n = parseFloat(String(v).replace('%',''));
+  return isNaN(n) ? null : n;
+}
+
+function fmt(v, d) {
+  if (v === null || isNaN(v)) return '—';
+  return Number(v).toFixed(d === undefined ? 1 : d);
+}
+
+function teamKey(t) {
+  var k = String(t || '').trim().toUpperCase();
+  if (k === 'KC') return 'KCR';
+  if (k === 'AZ') return 'ARI';
+  if (k === 'WSH' || k === 'WAS') return 'WSN';
+  if (k === 'TB') return 'TBR';
+  if (k === 'SF') return 'SFG';
+  if (k === 'SD') return 'SDP';
+  if (k === 'CWS') return 'CHW';
+  return k;
+}
+
+function tierLabel(val, tiers) {
+  if (val === null) return { label: '—', cls: '' };
+  for (var i = 0; i < tiers.length; i++) {
+    if (val >= tiers[i][0]) return { label: tiers[i][1], cls: 'tier-' + tiers[i][1].toLowerCase().replace(/\s/g,'') };
+  }
+  return { label: '—', cls: '' };
+}
+
+function osiColor(v) {
+  if (v === null) return 'var(--text-3)';
+  if (v >= 75) return 'var(--green)';
+  if (v >= 60) return 'var(--gold)';
+  return 'var(--red-l)';
+}
+
+function trendArrow(t) {
+  if (t === 'rising') return '<span class="trend-up">▲</span>';
+  if (t === 'falling') return '<span class="trend-down">▼</span>';
+  return '<span class="trend-flat">—</span>';
+}
+
+function profileRow(team) {
+  return DATA.profiles.find(function(p) { return teamKey(pickCol(p, ['team'])) === teamKey(team); });
+}
+
+function pitchTeamRow(team) {
+  return DATA.pitchTeams.find(function(p) {
+    return teamKey(pickCol(p, ['Tm', 'team'])) === teamKey(team);
+  });
+}
+
+function encodePlayer(name) {
+  return encodeURIComponent(name || '');
+}
+
+function poolPitchScore(sp) {
+  var k = num(pickCol(sp, ['K_pct']));
+  var bb = num(pickCol(sp, ['BB_pct']));
+  var hr = num(pickCol(sp, ['HR9']));
+  if (k === null || bb === null || hr === null) return null;
+  return Math.min(100, Math.max(0, k * 0.4 + (100 - bb) * 0.35 + (100 - Math.min(hr * 12, 100)) * 0.25));
+}
+
+function inferRoleFromLog(pid, name) {
+  var apps = (DATA.log || []).filter(function(g) {
+    return String(pickCol(g, ['pitcher_id'])) === String(pid) || pickCol(g, ['pitcher_name']) === name;
+  });
+  var saves = 0, holds = 0;
+  apps.forEach(function(g) {
+    var r = pickCol(g, ['result']);
+    if (r === 'save') saves++;
+    if (r === 'hold') holds++;
+  });
+  if (saves >= 2) return { label: 'Closer', cls: 'role-closer' };
+  if (holds >= 3) return { label: 'Setup', cls: 'role-setup' };
+  return { label: 'Middle', cls: '' };
+}
+
+function tonightGame(team) {
+  return DATA.matchups.find(function(g) {
+    var away = teamKey(pickCol(g, ['Away', 'away_team', 'Away_Team']));
+    var home = teamKey(pickCol(g, ['Home', 'home_team', 'Home_Team']));
+    return away === teamKey(team) || home === teamKey(team);
+  });
+}
+
+function quadrantPosition(team, prof) {
+  var osi = num(pickCol(prof, ['osi', 'OSI']));
+  var gap = num(pickCol(prof, ['pp_gap', 'PP_Gap']));
+  if (osi === null || gap === null) return { x: 50, y: 50 };
+  var osis = DATA.profiles.map(function(p) { return num(pickCol(p, ['osi'])); }).filter(function(v) { return v !== null; });
+  var gaps = DATA.profiles.map(function(p) { return num(pickCol(p, ['pp_gap'])); }).filter(function(v) { return v !== null; });
+  var minO = Math.min.apply(null, osis), maxO = Math.max.apply(null, osis);
+  var minG = Math.min.apply(null, gaps), maxG = Math.max.apply(null, gaps);
+  var x = maxO > minO ? ((osi - minO) / (maxO - minO)) * 100 : 50;
+  var y = maxG > minG ? (1 - (gap - minG) / (maxG - minG)) * 100 : 50;
+  return { x: x, y: y };
+}
+
+function renderTeam(team) {
+  STATE.team = teamKey(team);
+  var prof = profileRow(STATE.team) || {};
+  var game = tonightGame(STATE.team);
+  var name = TEAM_NAMES[STATE.team] || STATE.team;
+  var rec = pickCol(prof, ['record_placeholder']) || '—';
+  var osi = num(pickCol(prof, ['osi']));
+  var ppGap = num(pickCol(prof, ['pp_gap']));
+  var platoonSens = pickCol(prof, ['platoon_sensitive']) === 'True' || pickCol(prof, ['platoon_sensitive']) === 'true';
+  var platoonGap = num(pickCol(prof, ['platoon_gap']));
+  var q = quadrantPosition(STATE.team, prof);
+
+  var tonightHtml = '';
+  if (game) {
+    var away = teamKey(pickCol(game, ['Away', 'away_team']));
+    var home = teamKey(pickCol(game, ['Home', 'home_team']));
+    var opp = away === STATE.team ? home : away;
+    var time = pickCol(game, ['Game_Time', 'game_time']) || 'TBD';
+    var isHome = home === STATE.team;
+    tonightHtml = '<span class="pill-tonight">Tonight vs ' + (TEAM_NAMES[opp] || opp) + ' · ' +
+      (isHome ? 'Home' : 'Away') + ' · ' + time + '</span>';
+  }
+
+  var html = '';
+  html += '<div class="team-header">';
+  html += '<div class="team-name-lg">' + name + '</div>';
+  html += '<span class="team-abbr">' + STATE.team + '</span>';
+  html += '<span style="font-size:12px;color:var(--text-3);">Record ' + rec + '</span>';
+  if (tonightHtml) html += tonightHtml;
+  if (platoonSens) html += '<span class="pill-platoon">Platoon Sensitive (gap ' + fmt(platoonGap, 1) + ')</span>';
+  html += '<div class="header-meta" id="headerMeta"></div></div>';
+
+  /* Section 2 — Offense */
+  html += '<div class="section"><div class="section-eyebrow">Offense</div>';
+  html += '<div class="section-title">Offensive Overview</div>';
+  html += '<div class="section-subtitle">Created metrics + PALS / OOR context</div>';
+  html += '<div class="metric-grid">';
+  ['osi','abq','rcv','obr','proj_osi','pals','oor'].forEach(function(k) {
+    var labels = { osi:'OSI', abq:'ABQ', rcv:'RCV', obr:'OBR', proj_osi:'projOSI', pals:'PALS', oor:'OOR' };
+    var v = num(pickCol(prof, [k]));
+    html += '<div class="metric-card"><div class="m-label">' + labels[k] + '</div>';
+    html += '<div class="m-val" style="color:' + osiColor(v) + '">' + fmt(v, 1) + '</div></div>';
+  });
+  html += '</div>';
+  html += '<div class="quadrant-wrap"><div class="quadrant-chart">';
+  html += '<div class="quadrant-dot" style="left:' + q.x + '%;top:' + q.y + '%;"></div></div>';
+  html += '<div class="quadrant-legend"><strong>OSI × PP-Gap quadrant</strong><br>';
+  html += 'Position shows team relative to league on offensive quality (OSI, horizontal) and projection gap (PP-Gap, vertical).<br>';
+  html += 'PP-Gap: <span style="font-family:var(--mono);">' + fmt(ppGap, 1) + '</span>';
+  if (platoonSens) html += '<br><span style="color:var(--gold-l);">⚠ Platoon gap exceeds ' + PLATOON_GAP + ' OSI points</span>';
+  html += '</div></div></div>';
+
+  /* Section 3 — Rotation */
+  html += '<div class="section"><div class="section-eyebrow">Rotation</div>';
+  html += '<div class="section-title">Starting Rotation</div>';
+  html += '<div class="metric-grid" style="margin-bottom:14px;">';
+  var avgPs = num(pickCol(prof, ['avg_pitching_score']));
+  html += '<div class="metric-card"><div class="m-label">Pitching Score</div><div class="m-val">' + fmt(avgPs, 1) + '</div></div>';
+  html += '<div class="metric-card"><div class="m-label">Avg IP/Start</div><div class="m-val">' + fmt(num(pickCol(prof, ['avg_ip_per_start'])), 2) + '</div></div>';
+  html += '<div class="metric-card"><div class="m-label">Team K%</div><div class="m-val">' + fmt(num(pickCol(prof, ['team_k_pct'])), 1) + '</div></div>';
+  html += '<div class="metric-card"><div class="m-label">Team BB%</div><div class="m-val">' + fmt(num(pickCol(prof, ['team_bb_pct'])), 1) + '</div></div>';
+  html += '<div class="metric-card"><div class="m-label">Team ERA</div><div class="m-val">' + fmt(num(pickCol(prof, ['team_era'])), 2) + '</div></div>';
+  html += '</div>';
+  html += '<table class="data-table"><thead><tr><th>Name</th><th>Tier</th><th>K%</th><th>BB%</th><th>OSI Allowed</th><th>Stale</th></tr></thead><tbody>';
+  var teamSps = DATA.sps.filter(function(s) {
+    return teamKey(pickCol(s, ['pitcher_team', 'pitcher team'])) === STATE.team;
+  }).sort(function(a, b) {
+    return (num(pickCol(b, ['PitchScore'])) || 0) - (num(pickCol(a, ['PitchScore'])) || 0);
+  });
+  if (!teamSps.length) {
+    html += '<tr><td colspan="6" class="empty-state">No SP profiles for this team</td></tr>';
+  } else {
+    teamSps.forEach(function(sp) {
+      var pname = pickCol(sp, ['pitcher_name']);
+      var ps = num(pickCol(sp, ['PitchScore'])) || poolPitchScore(sp);
+      var tier = tierLabel(ps, PITCH_TIERS);
+      var stale = pickCol(sp, ['stale']) === 'True' || pickCol(sp, ['stale']) === 'true';
+      html += '<tr><td><a href="pitcher_profile.html?pitcher=' + encodePlayer(pname) + '">' + pname + '</a></td>';
+      html += '<td><span class="tier-badge ' + tier.cls + '">' + tier.label + '</span></td>';
+      html += '<td>' + fmt(num(pickCol(sp, ['K_pct'])), 1) + '</td>';
+      html += '<td>' + fmt(num(pickCol(sp, ['BB_pct'])), 1) + '</td>';
+      html += '<td>' + fmt(num(pickCol(sp, ['OSI_allowed'])), 1) + '</td>';
+      html += '<td>' + (stale ? '<span style="color:var(--gold-l);">⚠</span>' : '—') + '</td></tr>';
+    });
+  }
+  html += '</tbody></table></div>';
+
+  /* Section 4 — Bullpen */
+  html += '<div class="section"><div class="section-eyebrow">Bullpen</div>';
+  html += '<div class="section-title">Bullpen Overview</div>';
+  html += '<div class="metric-grid" style="margin-bottom:14px;">';
+  [['bullpen_era','ERA'], ['bullpen_osi_allowed','OSI Allowed'], ['bullpen_high_lev_era','High-Lev ERA'], ['bullpen_ir_scored_pct','IR Scored%']].forEach(function(pair) {
+    var v = num(pickCol(prof, pair));
+    html += '<div class="metric-card"><div class="m-label">' + pair[1] + '</div><div class="m-val">' + fmt(v, pair[0].indexOf('pct') >= 0 ? 1 : 2) + '</div></div>';
+  });
+  html += '</div>';
+  var closer = pickCol(prof, ['closer_name']);
+  var setup = pickCol(prof, ['primary_setup']);
+  if (closer) html += '<p style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Closer: <strong>' + closer + '</strong>';
+  if (setup) html += ' · Setup: ' + setup.split(';').join(', ');
+  if (closer) html += '</p>';
+  html += '<table class="data-table"><thead><tr><th>Name</th><th>Role</th><th>ERA</th><th>OSI Allowed</th><th>Hand</th></tr></thead><tbody>';
+  var relievers = DATA.bullpen.filter(function(r) {
+    return teamKey(pickCol(r, ['pitcher_team'])) === STATE.team;
+  });
+  if (!relievers.length) {
+    html += '<tr><td colspan="5" class="empty-state">No bullpen individual data</td></tr>';
+  } else {
+    relievers.forEach(function(r) {
+      var pname = pickCol(r, ['pitcher_name']);
+      var pid = pickCol(r, ['pitcher_id']);
+      var role = inferRoleFromLog(pid, pname);
+      var era = num(pickCol(r, ['overall_ERA']));
+      var osiA = num(pickCol(r, ['overall_OSI_allowed']));
+      var hand = pickCol(r, ['pitcher_hand']);
+      var rhh = num(pickCol(r, ['vs_rhh_OSI_allowed']));
+      var lhh = num(pickCol(r, ['vs_lhh_OSI_allowed']));
+      var handAdv = '';
+      if (rhh !== null && lhh !== null) {
+        handAdv = rhh < lhh ? 'vs RHH' : (lhh < rhh ? 'vs LHH' : 'even');
+      }
+      html += '<tr><td><a href="reliever_profile.html?player=' + encodePlayer(pname) + '">' + pname + '</a></td>';
+      html += '<td><span class="role-badge ' + role.cls + '">' + role.label + '</span></td>';
+      html += '<td>' + fmt(era, 2) + '</td><td>' + fmt(osiA, 1) + '</td>';
+      html += '<td>' + hand + (handAdv ? ' · ' + handAdv : '') + '</td></tr>';
+    });
+  }
+  html += '</tbody></table></div>';
+
+  /* Section 5 — Batters */
+  html += '<div class="section"><div class="section-eyebrow">Roster</div>';
+  html += '<div class="section-title">Qualified Batters (50+ PA)</div>';
+  html += '<table class="data-table"><thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>vs RHP</th><th>vs LHP</th><th>Trend</th></tr></thead><tbody>';
+  var batters = DATA.batters.filter(function(b) {
+    return teamKey(pickCol(b, ['team'])) === STATE.team && num(pickCol(b, ['PA'])) >= 50;
+  });
+  var byName = {};
+  batters.forEach(function(b) {
+    var n = pickCol(b, ['player_name']);
+    if (!byName[n]) byName[n] = {};
+    var st = pickCol(b, ['split_type']);
+    byName[n][st] = b;
+    if (st === 'vs_RHP' || !byName[n].main) byName[n].main = b;
+  });
+  var rosterList = Object.keys(byName).map(function(n) {
+    var main = byName[n].main || byName[n]['vs_RHP'] || {};
+    var reg = DATA.registry.find(function(r) {
+      return pickCol(r, ['full_name']) === n && teamKey(pickCol(r, ['team_abbr', 'team'])) === STATE.team;
+    });
+    return {
+      name: n,
+      pos: reg ? pickCol(reg, ['position']) : '',
+      bats: reg ? pickCol(reg, ['bats']) : '',
+      abq: num(pickCol(main, ['ABQ'])),
+      rcv: num(pickCol(main, ['RCV'])),
+      obr: num(pickCol(main, ['OBR'])),
+      osi: num(pickCol(main, ['OSI'])),
+      rhp: byName[n]['vs_RHP'] ? num(pickCol(byName[n]['vs_RHP'], ['OSI'])) : null,
+      lhp: byName[n]['vs_LHP'] ? num(pickCol(byName[n]['vs_LHP'], ['OSI'])) : null,
+      trend: pickCol(main, ['trend'])
+    };
+  }).sort(function(a, b) { return (b.osi || 0) - (a.osi || 0); });
+
+  if (!rosterList.length) {
+    html += '<tr><td colspan="10" class="empty-state">No qualified batters (run batter profile pipeline)</td></tr>';
+  } else {
+    rosterList.forEach(function(b) {
+      html += '<tr><td><a href="batter_profile.html?player=' + encodePlayer(b.name) + '">' + b.name + '</a></td>';
+      html += '<td>' + (b.pos || '—') + '</td><td>' + (b.bats || '—') + '</td>';
+      html += '<td>' + fmt(b.abq, 1) + '</td><td>' + fmt(b.rcv, 1) + '</td><td>' + fmt(b.obr, 1) + '</td>';
+      html += '<td style="color:' + osiColor(b.osi) + '">' + fmt(b.osi, 1) + '</td>';
+      html += '<td>' + fmt(b.rhp, 1) + '</td><td>' + fmt(b.lhp, 1) + '</td>';
+      html += '<td>' + trendArrow(b.trend) + '</td></tr>';
+    });
+  }
+  html += '</tbody></table></div>';
+
+  /* Section 6 — Window trend */
+  var ytd = num(pickCol(prof, ['osi_ytd']));
+  var l30 = num(pickCol(prof, ['osi_l30']));
+  var l14 = num(pickCol(prof, ['osi_l14']));
+  var l7 = num(pickCol(prof, ['osi_l7']));
+  var dir = pickCol(prof, ['window_direction']) || 'stable';
+  var hotCold = '';
+  if (l7 !== null && ytd !== null) {
+    if (l7 - ytd >= WINDOW_GAP) hotCold = '<span class="pill-hot" style="margin-left:8px;">Hot</span>';
+    else if (l7 - ytd <= -WINDOW_GAP) hotCold = '<span class="pill-cold" style="margin-left:8px;">Cold</span>';
+  }
+  html += '<div class="section"><div class="section-eyebrow">Momentum</div>';
+  html += '<div class="section-title">Team Window Trend' + hotCold + '</div>';
+  html += '<div class="section-subtitle">ABQ / RCV / OBR components from season baseline · ' + dir + '</div>';
+  html += '<div class="window-row">';
+  [['YTD', ytd], ['L30', l30], ['L14', l14], ['L7', l7]].forEach(function(w) {
+    html += '<div class="window-cell"><div class="w-label">' + w[0] + '</div>';
+    html += '<div class="w-val" style="color:' + osiColor(w[1]) + '">' + fmt(w[1], 1) + '</div>';
+    html += '<div style="font-size:10px;color:var(--text-3);margin-top:6px;">ABQ ' + fmt(num(pickCol(prof, ['abq'])),1) +
+      ' · RCV ' + fmt(num(pickCol(prof, ['rcv'])),1) + ' · OBR ' + fmt(num(pickCol(prof, ['obr'])),1) + '</div></div>';
+  });
+  html += '</div></div>';
+
+  /* Section 7 — Handedness */
+  html += '<div class="section"><div class="section-eyebrow">Platoon</div>';
+  html += '<div class="section-title">Handedness Profile</div>';
+  html += '<div class="split-grid">';
+  html += '<div class="split-panel"><h4>vs RHP</h4><div class="mini-stat-row">';
+  html += miniStat('OSI', num(pickCol(prof, ['osi_vs_rhp'])));
+  html += miniStat('ABQ', num(pickCol(prof, ['abq_vs_rhp'])));
+  html += miniStat('RCV', num(pickCol(prof, ['rcv_vs_rhp'])));
+  html += miniStat('OBR', num(pickCol(prof, ['obr_vs_rhp'])));
+  html += '</div></div>';
+  html += '<div class="split-panel"><h4>vs LHP</h4><div class="mini-stat-row">';
+  html += miniStat('OSI', num(pickCol(prof, ['osi_vs_lhp'])));
+  html += miniStat('ABQ', num(pickCol(prof, ['abq_vs_lhp'])));
+  html += miniStat('RCV', num(pickCol(prof, ['rcv_vs_lhp'])));
+  html += miniStat('OBR', num(pickCol(prof, ['obr_vs_lhp'])));
+  html += '</div></div></div>';
+  if (platoonGap !== null) {
+    var pctR = 50 + platoonGap / 2;
+    html += '<div class="platoon-bar" title="Platoon gap ' + fmt(platoonGap, 1) + '"><div class="rhp" style="width:' + pctR + '%"></div><div class="lhp" style="width:' + (100 - pctR) + '%"></div></div>';
+    html += '<p style="font-size:11px;color:var(--text-3);margin-top:6px;">Platoon gap (RHP OSI − LHP OSI): ' + fmt(platoonGap, 1) + '</p>';
+  }
+  html += '</div>';
+
+  /* Section 8 — Home/Away */
+  var hOsi = num(pickCol(prof, ['home_osi']));
+  var aOsi = num(pickCol(prof, ['away_osi']));
+  var haGap = num(pickCol(prof, ['home_away_osi_gap']));
+  html += '<div class="section"><div class="section-eyebrow">Splits</div>';
+  html += '<div class="section-title">Home / Away Profile</div>';
+  html += '<div class="split-grid">';
+  html += '<div class="split-panel"><h4>Home</h4>' + miniStat('OSI', hOsi) + '</div>';
+  html += '<div class="split-panel"><h4>Away</h4>' + miniStat('OSI', aOsi) + '</div></div>';
+  if (haGap !== null && Math.abs(haGap) >= HOME_AWAY_GAP) {
+    html += '<p style="font-size:12px;color:var(--gold-l);margin-top:10px;">Notable home/away OSI gap: ' + fmt(haGap, 1) + '</p>';
+  }
+  html += '</div>';
+
+  /* Section 9 — Tonight */
+  html += '<div class="section"><div class="section-eyebrow">Tonight</div>';
+  html += '<div class="section-title">Matchup Context</div>';
+  if (!game) {
+    html += '<div class="empty-state">No game scheduled today for ' + STATE.team + '</div>';
+  } else {
+    var away = teamKey(pickCol(game, ['Away', 'away_team']));
+    var home = teamKey(pickCol(game, ['Home', 'home_team']));
+    var opp = away === STATE.team ? home : away;
+    var oppProf = profileRow(opp) || {};
+    var oppOsi = num(pickCol(oppProf, ['osi']));
+    var spName = away === STATE.team ? pickCol(game, ['Home_SP', 'home_sp', 'Home SP']) : pickCol(game, ['Away_SP', 'away_sp', 'Away SP']);
+    var oppPitch = pitchTeamRow(opp);
+    var oppPs = oppPitch ? num(pickCol(oppPitch, ['PitchScore'])) : null;
+    var edge = (osi !== null && oppPs !== null) ? osi - oppPs : null;
+    html += '<div class="matchup-panel">';
+    html += '<p><strong>Opponent:</strong> ' + (TEAM_NAMES[opp] || opp) + ' · OSI ' + fmt(oppOsi, 1) + '</p>';
+    html += '<p><strong>Opposing SP:</strong> ' + (spName || 'TBD') + (oppPs !== null ? ' · Pitch Score ' + fmt(oppPs, 1) : '') + '</p>';
+    if (edge !== null) {
+      html += '<p><strong>Lineup edge (OSI − opp Pitch):</strong> <span style="color:' +
+        (edge > 0 ? 'var(--green)' : 'var(--red-l)') + '">' + (edge >= 0 ? '+' : '') + fmt(edge, 1) + '</span></p>';
+    }
+    if (platoonSens) html += '<p style="color:var(--gold-l);font-size:12px;">Platoon-sensitive offense — check handedness vs opposing SP</p>';
+    html += '<a class="cta" href="matchup_sheet.html">Full matchup sheet →</a></div>';
+  }
+  html += '</div>';
+
+  document.getElementById('app').innerHTML = html;
+  history.replaceState(null, '', '?team=' + STATE.team);
+}
+
+function miniStat(label, val) {
+  return '<div class="mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' + fmt(val, 1) + '</div></div>';
+}
+
+function initSelector() {
+  var sel = document.getElementById('teamSelect');
+  ALL_TEAMS.forEach(function(t) {
+    var opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t + ' — ' + (TEAM_NAMES[t] || t);
+    sel.appendChild(opt);
+  });
+  var params = new URLSearchParams(window.location.search);
+  var fromUrl = teamKey(params.get('team') || 'NYY');
+  sel.value = ALL_TEAMS.indexOf(fromUrl) >= 0 ? fromUrl : 'NYY';
+  STATE.team = sel.value;
+  sel.addEventListener('change', function() { renderTeam(sel.value); });
+}
+
+function loadAll() {
+  return Promise.all([
+    fetchSheetTab('Team_Profiles').catch(function() { return []; }),
+    fetchSheetTab('Batter_Profiles').catch(function() { return []; }),
+    fetchSheetTab('SP_Profiles').catch(function() { return []; }),
+    fetchSheetTab('Bullpen_Individual').catch(function() { return []; }),
+    fetchSheetTab('Player_Registry').catch(function() { return []; }),
+    fetchSheetTab('Today_Matchups').catch(function() { return []; }),
+    fetchSheetTab('Pitching_Score').catch(function() { return []; }),
+    fetchSheetTab('Reliever_Log').catch(function() { return []; })
+  ]).then(function(res) {
+    DATA.profiles = res[0];
+    DATA.batters = res[1];
+    DATA.sps = res[2];
+    DATA.bullpen = res[3];
+    DATA.registry = res[4];
+    DATA.matchups = res[5];
+    DATA.pitchTeams = res[6];
+    DATA.log = res[7];
+    var banner = document.getElementById('dataBanner');
+    if (!DATA.profiles.length) {
+      banner.textContent = 'Team_Profiles tab empty — run pipeline steps 18–19 (compute_team_profile + push).';
+      banner.classList.add('show');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  initSelector();
+  loadAll().then(function() {
+    document.getElementById('loading').classList.add('hide');
+    renderTeam(STATE.team);
+  }).catch(function(err) {
+    document.getElementById('loading').classList.add('hide');
+    document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
+    document.getElementById('dataBanner').classList.add('show');
+  });
+});
+</script>
+</body>
+</html>

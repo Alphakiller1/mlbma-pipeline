@@ -109,6 +109,13 @@ RELIEVER_INHERITED_SCORED_PCT_WARN = 35.0
 RELIEVER_HOME_AWAY_OSI_GAP = 10.0
 RELIEVER_RECENT_APPS = 10
 
+# Team profile dashboard
+TEAM_PLATOON_OSI_GAP = 8.0
+TEAM_HOME_AWAY_OSI_GAP = 10.0
+TEAM_WINDOW_HOT_COLD_GAP = 8.0
+TEAM_TOP_BATTERS_N = 5
+TEAM_TOP_SP_N = 3
+
 
 def park_factor_for_team(team: str) -> float:
     """Return park factor for team abbreviation; warn and use 1.0 if unknown."""
@@ -321,6 +328,7 @@ SHEET_TABS = {
     "signals_convergence": "Signals_Convergence",
     "player_registry": "Player_Registry",
     "batter_profiles": "Batter_Profiles",
+    "team_profiles": "Team_Profiles",
 }
 
 TEAM_MAP = {
