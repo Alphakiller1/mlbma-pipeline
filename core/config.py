@@ -96,6 +96,12 @@ BATTER_SPLIT_ARR = {
     "vs_RP": "25",
 }
 
+# Alternate splitArr codes if primary home/away export is empty
+BATTER_SPLIT_ARR_FALLBACK = {
+    "home": ["5", "54", "59"],
+    "away": ["6", "55", "72"],
+}
+
 # Reliever FIP (2026 season constant)
 FIP_CONSTANT = 3.10
 FIP_FORMULA = "((13 x HR) + (3 x BB) - (2 x K)) / IP + FIP_constant"

@@ -37,6 +37,10 @@ def normalize(series):
 
 def normalize_pool(series: pd.Series) -> pd.Series:
     """Pool-normalize a series to 0-100 (used by batter profile metrics)."""
+    if not isinstance(series, pd.Series):
+        if isinstance(series, (int, float)) and not isinstance(series, bool):
+            return pd.Series([50.0])
+        series = pd.Series(series)
     mn, mx = series.min(), series.max()
     if pd.isna(mn) or pd.isna(mx) or mx == mn:
         return pd.Series(50.0, index=series.index)

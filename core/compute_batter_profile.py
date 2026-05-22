@@ -52,11 +52,25 @@ def _num(series: pd.Series) -> pd.Series:
     return pd.to_numeric(series, errors="coerce")
 
 
+def _series_or_default(
+    df: pd.DataFrame, column: str, default: float, index: pd.Index
+) -> pd.Series:
+    """Return a DataFrame column as Series, never a scalar."""
+    if column in df.columns:
+        return _num(df[column])
+    return pd.Series(default, index=index, dtype=float)
+
+
 def _prep_frame(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     name_col = "Name" if "Name" in out.columns else out.columns[0]
     out["player_name"] = out[name_col].astype(str).str.strip()
-    out["team"] = out.get("Tm", out.get("team_abbr", "")).astype(str).str.strip().str.upper()
+    if "Tm" in out.columns:
+        out["team"] = out["Tm"].astype(str).str.strip().str.upper()
+    elif "team_abbr" in out.columns:
+        out["team"] = out["team_abbr"].astype(str).str.strip().str.upper()
+    else:
+        out["team"] = ""
     out["PA"] = _num(out["PA"]) if "PA" in out.columns else 0
 
     for col in ("K%", "BB%"):
@@ -82,12 +96,21 @@ def compute_metrics_pool(df: pd.DataFrame) -> pd.DataFrame:
     if d.empty:
         return d
 
-    k = d["K%"] if "K%" in d.columns else pd.Series(0.25, index=d.index)
-    bb = d["BB%"] if "BB%" in d.columns else pd.Series(0.08, index=d.index)
-    chase = d["Chase%"].fillna(k * 100) if "Chase%" in d.columns else k * 100
-    zcon = d["ZCon%"].fillna(80.0) if "ZCon%" in d.columns else 80.0
-    ocon = d["OCon%"].fillna(60.0) if "OCon%" in d.columns else 60.0
-    swstr = d["SwStr%"].fillna(k * 100) if "SwStr%" in d.columns else k * 100
+    idx = d.index
+    k = _series_or_default(d, "K%", 0.25, idx)
+    bb = _series_or_default(d, "BB%", 0.08, idx)
+    chase = (
+        _num(d["Chase%"]).fillna(k * 100)
+        if "Chase%" in d.columns
+        else pd.Series(50.0, index=idx)
+    )
+    zcon = _series_or_default(d, "ZCon%", 80.0, idx).fillna(80.0)
+    ocon = _series_or_default(d, "OCon%", 60.0, idx).fillna(60.0)
+    swstr = (
+        _num(d["SwStr%"]).fillna(k * 100)
+        if "SwStr%" in d.columns
+        else pd.Series(25.0, index=idx)
+    )
 
     bb_norm = normalize_pool(bb)
     chase_inv = 100 - normalize_pool(chase)
@@ -110,10 +133,10 @@ def compute_metrics_pool(df: pd.DataFrame) -> pd.DataFrame:
         + ABQ_WEIGHTS["k_avoidance"] * d["k_avoidance"]
     )
 
-    wrc = d["wRC+"].fillna(100.0) if "wRC+" in d.columns else pd.Series(100.0, index=d.index)
-    iso = d["ISO"].fillna(0.14) if "ISO" in d.columns else pd.Series(0.14, index=d.index)
-    barrel = d["Barrel%"].fillna(8.0) if "Barrel%" in d.columns else pd.Series(8.0, index=d.index)
-    hard = d["HardHit%"].fillna(38.0) if "HardHit%" in d.columns else pd.Series(38.0, index=d.index)
+    wrc = _series_or_default(d, "wRC+", 100.0, idx).fillna(100.0)
+    iso = _series_or_default(d, "ISO", 0.14, idx).fillna(0.14)
+    barrel = _series_or_default(d, "Barrel%", 8.0, idx).fillna(8.0)
+    hard = _series_or_default(d, "HardHit%", 38.0, idx).fillna(38.0)
 
     park = d["team"].map(lambda t: PARK_FACTORS.get(str(t).upper(), 1.0))
     d["barrel_adj"] = barrel / park
@@ -127,8 +150,16 @@ def compute_metrics_pool(df: pd.DataFrame) -> pd.DataFrame:
         + RCV_WEIGHTS["hard_hit"] * normalize_pool(d["hard_adj"])
     )
 
-    xwoba = d["xwOBA"].fillna(d["wOBA"]) if "xwOBA" in d.columns else d.get("wOBA", 0.32)
-    woba = d["wOBA"].fillna(0.32) if "wOBA" in d.columns else pd.Series(0.32, index=d.index)
+    if "xwOBA" in d.columns:
+        xwoba = _num(d["xwOBA"])
+        if "wOBA" in d.columns:
+            xwoba = xwoba.fillna(_num(d["wOBA"]))
+        xwoba = xwoba.fillna(0.32)
+    elif "wOBA" in d.columns:
+        xwoba = _num(d["wOBA"]).fillna(0.32)
+    else:
+        xwoba = pd.Series(0.32, index=idx)
+    woba = _series_or_default(d, "wOBA", 0.32, idx).fillna(0.32)
     d["OBR"] = (
         OBR_WEIGHTS["xwoba"] * normalize_pool(xwoba)
         + OBR_WEIGHTS["bb_pct"] * normalize_pool(bb)
@@ -170,6 +201,15 @@ def load_split_file(filename: str) -> pd.DataFrame:
 
 
 def build_trend_lookup() -> Dict[str, str]:
+    overall_path = DATA_DIR / "batter_splits_overall.csv"
+    recent_path = DATA_DIR / "batter_splits_recent.csv"
+    if not overall_path.exists() or not recent_path.exists():
+        print(
+            "  WARNING: batter_splits_overall.csv or batter_splits_recent.csv "
+            "missing -- trend labels default to stable"
+        )
+        return {}
+
     overall = load_split_file("batter_splits_overall.csv")
     recent = load_split_file("batter_splits_recent.csv")
     if overall.empty or recent.empty:

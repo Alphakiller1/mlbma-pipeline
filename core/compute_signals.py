@@ -636,19 +636,22 @@ def load_matchup_contexts() -> list[MatchupContext]:
         away_lineup = team_metrics_for_hand(away, home_hand, rhp, lhp)
         home_lineup = team_metrics_for_hand(home, away_hand, rhp, lhp)
 
-        for tm, full in ((away, away_full), (home, home_full)):
-            if tm.abq_vs_rhp is None:
-                tm.abq_vs_rhp = full.abq_vs_rhp
-            if tm.abq_vs_lhp is None:
-                tm.abq_vs_lhp = full.abq_vs_lhp
-            if tm.pals is None:
-                tm.pals = full.pals
-            if tm.pitch_score is None:
-                tm.pitch_score = full.pitch_score
-            if tm.oor is None:
-                tm.oor = full.oor
-            if tm.hvp is None:
-                tm.hvp = full.hvp
+        for lineup_tm, full_tm in ((away_lineup, away_full), (home_lineup, home_full)):
+            if not isinstance(lineup_tm, TeamMetrics) or not isinstance(full_tm, TeamMetrics):
+                print("  WARNING: invalid team metrics type in matchup context; skipping merge")
+                continue
+            if lineup_tm.abq_vs_rhp is None:
+                lineup_tm.abq_vs_rhp = full_tm.abq_vs_rhp
+            if lineup_tm.abq_vs_lhp is None:
+                lineup_tm.abq_vs_lhp = full_tm.abq_vs_lhp
+            if lineup_tm.pals is None:
+                lineup_tm.pals = full_tm.pals
+            if lineup_tm.pitch_score is None:
+                lineup_tm.pitch_score = full_tm.pitch_score
+            if lineup_tm.oor is None:
+                lineup_tm.oor = full_tm.oor
+            if lineup_tm.hvp is None:
+                lineup_tm.hvp = full_tm.hvp
 
         contexts.append(
             MatchupContext(
