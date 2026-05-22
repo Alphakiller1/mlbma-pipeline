@@ -2643,8 +2643,8 @@ function parseLastUpdatedFromText(text) {
 
 /* ============================================================
    OEM MODE TABS · DAILY SUMMARY · FRESHNESS · DECISION LABELS
+   (oemMode default lives on STATE below)
    ============================================================ */
-STATE.oemMode = STATE.oemMode || 'daily';
 
 function parseFreshnessDate(raw) {
   if (!raw) return null;
