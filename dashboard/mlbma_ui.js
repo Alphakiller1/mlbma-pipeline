@@ -81,9 +81,8 @@
         ? MLBMAAssets.BRAND.iconFilled
         : 'assets/chase-icon-filled.png';
       ov.innerHTML =
-        '<img class="ca-icon-loading mlbma-load-icon" src="' + iconSrc + '" alt="" width="72" height="72" '
+        '<img class="chase-loading-icon ca-icon-loading mlbma-load-icon" src="' + iconSrc + '" alt="" width="80" height="80" '
         + 'onerror="this.style.display=\'none\'">' +
-        '<div class="mlbma-load-logo">Chase Analytics</div>' +
         '<div class="mlbma-load-sub">Loading live data...</div>';
       document.body.insertBefore(ov, document.body.firstChild);
     }

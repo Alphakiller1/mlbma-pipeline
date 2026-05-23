@@ -5,11 +5,18 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,700&display=swap');
 
 :root {
+  --ca-purple: #7C3AED;
+  --ca-purple-dark: #5B21B6;
+  --ca-purple-light: #A78BFA;
+  --ca-white: #FFFFFF;
+  --ca-gray-brand: #9CA3AF;
+  --ca-black: #0A0A0A;
   --ca-brand: #7C3AED;
   --ca-brand-dim: rgba(124, 58, 237, 0.18);
   --ca-brand-glow: rgba(124, 58, 237, 0.35);
 
-  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-primary: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font: var(--font-primary);
   --font-display: 'DM Sans', system-ui, sans-serif;
   --mono: 'DM Sans', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
 
@@ -87,11 +94,32 @@ body {
 }
 
 /* Brand assets */
+.chase-nav-logo,
 .ca-logo-nav {
   height: 32px;
   width: auto;
+  max-width: 200px;
   display: block;
   object-fit: contain;
+}
+
+.chase-nav-logo-fallback {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ca-white, #fff);
+  letter-spacing: -0.02em;
+}
+
+.ca-logo-stacked {
+  height: 100px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto 12px;
+}
+
+.ca-logo-stacked--lg {
+  height: 140px;
 }
 
 .ca-logo-hero {
@@ -101,11 +129,62 @@ body {
   object-fit: contain;
 }
 
+.chase-loading-icon,
 .ca-icon-loading {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   margin-bottom: 16px;
+}
+
+.ca-page-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0 8px;
+  border-bottom: 1px solid var(--border, #28282f);
+  margin-bottom: 16px;
+}
+
+.ca-page-identity-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.4;
+}
+
+.ca-page-identity-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2, #A1A1AA);
+  letter-spacing: 0.02em;
+}
+
+.ca-page-identity-ts {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-3, #71717A);
+}
+
+.ca-section-brand-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.5;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.ca-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ca-title-with-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
 /* Metric color legend */

@@ -8,6 +8,7 @@ DASH = ROOT / "dashboard"
 NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
 
 PAGES = [
+    "index.html",
     "chase_analytics_mlb_oem_v7.html",
     "model_report.html",
     "matchup_compare.html",
@@ -23,6 +24,7 @@ PAGES = [
 
 CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css">'
 DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css">'
+RESEARCH_CSS = '<link rel="stylesheet" href="research_lab.css">'
 FAVICON = '<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">'
 CHASE_JS = '<script src="chase_nav.js"></script>'
 ASSETS_JS = '<script src="mlbma_assets.js"></script>'

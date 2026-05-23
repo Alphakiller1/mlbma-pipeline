@@ -1540,11 +1540,15 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
 <link rel="stylesheet" href="landing_dashboard.css">
+<link rel="stylesheet" href="research_lab.css">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js"></script>
+<script src="matchup_shared.js"></script>
+<script src="mlbma_controls.js"></script>
 <script src="platform_dashboard.js"></script>
+<script src="research_lab.js"></script>
 </head>
 <body>
 
@@ -1552,14 +1556,14 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="ca-logo-nav chase-brand-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="32" width="auto"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
-      <span class="chase-logo-fallback" style="display:none;" aria-hidden="true">
-        <span class="chase-logo-icon">CA</span>
-      </span>
+      <img class="chase-nav-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="32" style="object-fit:contain"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
@@ -1600,11 +1604,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo">
-      <img class="ca-logo-nav chase-brand-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="28" width="auto"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
-      <span class="chase-logo-fallback" style="display:none;" aria-hidden="true">
-        <span class="chase-logo-icon">CA</span>
-      </span>
+      <img class="chase-nav-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="28" style="object-fit:contain"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
     <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1636,8 +1638,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </div>
 </div>
 </div>
+</div>
+</div>
 
 <div class="container">
+
+<div class="ca-page-identity" id="pageIdentityStrip">
+  <img class="ca-page-identity-icon" src="assets/chase-icon-outline.png" alt="" onerror="this.style.display='none'">
+  <span class="ca-page-identity-title">MLB Offensive Dashboard</span>
+  <span class="ca-page-identity-ts">Last updated: <span id="pageIdentityUpdated">—</span></span>
+</div>
 
 <!-- LAYER 1 — Main Dashboard -->
 <div class="layer-main" id="layerMain">
@@ -1696,7 +1706,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 <!-- LAYER 2 — Research Lab (lazy-init) -->
 <div class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research">
-<div class="layer-label">Research Lab</div>
+<div id="researchLabHeader"></div>
 <div class="layer-advanced" id="layerAdvanced">
 
 <!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
@@ -1719,6 +1729,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <div class="section-subtitle">Split OSI bars plus full metric table with window toggles.</div>
       </div>
     </div>
+    <div id="rlSplitsControlMount"></div>
     <div class="research-lab-controls" id="mainResearchControls">
 <div class="watchlist-bar" id="watchlistBar">
   <span class="wl-label">Pin Watchlist</span>
@@ -1757,39 +1768,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <div id="windowDataBanner" class="window-data-banner"></div>
 <div class="glance-grid" id="glanceGrid"></div>
 </div>
-    <div class="section" id="researchRankingsBlock" style="margin-top:20px;">
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">League Table</div>
-          <div class="section-title">Team Offensive Rankings</div>
-        </div>
-      </div>
-      <div class="rankings-controls">
-        <div class="control-group">
-          <span class="control-label">Window</span>
-          <div class="toggle-group" id="dashTimeToggle">
-            <button class="toggle-btn active" data-time="YTD">YTD</button>
-            <button class="toggle-btn" data-time="L30">L30</button>
-            <button class="toggle-btn" data-time="L14">L14</button>
-            <button class="toggle-btn warn" data-time="L7">L7</button>
-          </div>
-        </div>
-        <div class="control-group">
-          <span class="control-label">Split</span>
-          <div class="toggle-group" id="dashSplitToggle">
-            <button class="toggle-btn active" data-split="b">Both</button>
-            <button class="toggle-btn" data-split="r">vs RHP</button>
-            <button class="toggle-btn" data-split="l">vs LHP</button>
-            <button class="toggle-btn" data-split="f5">F5</button>
-          </div>
-        </div>
-        <div class="search-bar" style="flex:1;min-width:200px;margin:0;">
-          <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams…" autocomplete="off">
-        </div>
-      </div>
-      <div id="dashWindowDataBanner" class="window-data-banner"></div>
-      <div id="dashboardRankingsMount"></div>
-    </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
       <div>
         <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
@@ -1800,6 +1778,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <div id="lhpBars"></div>
       </div>
     </div>
+    <div id="masterTableAnchor"></div>
     <div class="section" id="masterTableSection">
   <div class="section-header">
     <div>
@@ -1884,23 +1863,71 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div id="pane-compare" style="display:none;">
     <div class="section-header">
       <div>
-        <div class="section-eyebrow">Compare Mode</div>
-        <div class="section-title">Team Compare</div>
-        <div class="section-subtitle">Enable Compare in the Splits &amp; Trends toolbar, then click rows in the master table to select teams.</div>
+        <div class="section-eyebrow">Compare</div>
+        <div class="section-title">Entity Comparison</div>
+        <div class="section-subtitle">Select entities in-pane — no need to leave this tab.</div>
       </div>
     </div>
-    <div class="compare-bar" id="compareBar">
-      <span class="control-label">Selected</span>
-      <div id="compareTeamsPills" style="display:flex;gap:6px;flex-wrap:wrap;">
-        <span style="color:var(--text-3);font-size:11px;">No teams selected — toggle Compare in toolbar, then click rows.</span>
-      </div>
-      <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearCompare()">Clear</button>
-    </div>
-    <div id="compareChart" style="margin-top:14px;"></div>
-    <div id="compareTable" style="margin-top:14px;"></div>
+    <div id="rlCompareRoot"></div>
   </div>
 
-  <!-- Matchup Builder pane -->
+  <div id="pane-pitching-vs-lineup" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Pitching vs Lineup</div>
+        <div class="section-title">Matchup Research Tool</div>
+        <div class="section-subtitle">Lineup split vs opposing SP and bullpen context.</div>
+      </div>
+    </div>
+    <div id="rlPvlRoot"></div>
+  </div>
+
+  <div id="pane-leaderboards" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Leaderboards</div>
+        <div class="section-title">Team Offensive Rankings</div>
+        <div class="section-subtitle">YTD from vs RHP / vs LHP · shorter windows require pipeline run.</div>
+      </div>
+    </div>
+    <div class="rankings-controls">
+      <div class="control-group">
+        <span class="control-label">Window</span>
+        <div class="toggle-group" id="dashTimeToggle">
+          <button class="toggle-btn active" data-time="YTD">YTD</button>
+          <button class="toggle-btn" data-time="L30">L30</button>
+          <button class="toggle-btn" data-time="L14">L14</button>
+          <button class="toggle-btn warn" data-time="L7">L7</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="control-label">Split</span>
+        <div class="toggle-group" id="dashSplitToggle">
+          <button class="toggle-btn active" data-split="b">Both</button>
+          <button class="toggle-btn" data-split="r">vs RHP</button>
+          <button class="toggle-btn" data-split="l">vs LHP</button>
+        </div>
+      </div>
+      <div class="search-bar" style="flex:1;min-width:200px;margin:0;">
+        <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams…" autocomplete="off">
+      </div>
+    </div>
+    <div id="dashWindowDataBanner" class="window-data-banner"></div>
+    <div id="leaderboardsRankingsMount"></div>
+  </div>
+
+  <div id="pane-model-links" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Model Links</div>
+        <div class="section-title">Reports &amp; Tools</div>
+        <div class="section-subtitle">Jump to model outputs — signals live in Model Report only.</div>
+      </div>
+    </div>
+    <div id="rlModelLinksRoot"></div>
+  </div>
+
+  <!-- Matchup Builder pane (legacy hidden) -->
   <div id="pane-matchup" style="display:none;">
     <div class="section-header">
       <div>
@@ -2433,7 +2460,7 @@ function windowDataMessage(timeframe) {
   if (avail[timeframe]) {
     return 'Window OSI from Team_Profiles · other metrics shown as YTD baseline.';
   }
-  return 'YTD data shown — window data requires full pipeline run (Team_Profiles osi_l30/l14/l7).';
+  return 'Window data requires full pipeline run — showing YTD.';
 }
 
 function updateWindowDataBanners() {
@@ -3766,8 +3793,10 @@ function syncFreshnessIndicator(ts) {
   var dot = document.getElementById('freshnessDot');
   var meta = document.getElementById('freshnessMeta');
   var hu = document.getElementById('headerUpdated');
+  var pid = document.getElementById('pageIdentityUpdated');
   var text = ts || '—';
   if (hu) hu.textContent = text;
+  if (pid) pid.textContent = text;
   if (label) label.textContent = text;
   var d = parseFreshnessDate(ts);
   var stale = false;
@@ -3982,7 +4011,7 @@ function bindFilterHelp() {
   });
 }
 
-var RESEARCH_SUBTABS = ['splits-trends', 'compare', 'pitching', 'signals'];
+var RESEARCH_SUBTABS = ['splits-trends', 'compare', 'pitching-vs-lineup', 'pitching', 'leaderboards', 'model-links'];
 
 function showResearchSubtab(name) {
   name = name || 'splits-trends';
@@ -4001,16 +4030,16 @@ function showResearchSubtab(name) {
 
 function onResearchSubtabShown(name) {
   mountResearchTables();
-  if (name === 'splits-trends') { renderSplitBars(); renderMasterTable(); renderTrendHeatmap(); }
-  else if (name === 'compare') initCompare();
-  else if (name === 'pitching') { renderPitchingScore(); renderOOR(); }
-  else if (name === 'signals') {
-    if (window.MLBMASignals) MLBMASignals.renderExplorer();
-    else {
-      if (window.OEMOverhaul) OEMOverhaul.renderConvergence();
-      renderStrats();
-    }
-  }
+  if (name === 'splits-trends') {
+    if (window.ResearchLab && ResearchLab.initSplitsControls) ResearchLab.initSplitsControls();
+    renderSplitBars(); renderMasterTable(); renderTrendHeatmap();
+  } else if (name === 'compare') initCompare();
+  else if (name === 'pitching') { renderPitchingScore(); hideTeamOorInPitching(); }
+  if (window.ResearchLab && ResearchLab.onSubtab) ResearchLab.onSubtab(name);
+}
+function hideTeamOorInPitching() {
+  var oor = document.getElementById('oorSection');
+  if (oor) oor.style.display = 'none';
 }
 
 function initCompare() {
@@ -4208,7 +4237,10 @@ function currentRows(){
     var avail = LIVE_DATA.windowDataAvailable || {};
     if (!avail[STATE.time]) {
       updateWindowDataBanners();
-      return [];
+      if (STATE.split === 'b') rows = SCO_YTD_B;
+      else if (STATE.split === 'r') rows = SCO_YTD_R;
+      else rows = SCO_YTD_L;
+      return rows && rows.length ? rows : [];
     }
     if (STATE.split === 'b') {
       rows = STATE.time === 'L30' ? SCO_L30_B : (STATE.time === 'L14' ? SCO_L14_B : SCO_L7_B);
@@ -4491,11 +4523,7 @@ function renderExecSummary(){
 }
 
 function renderMasterTable(){
-  if (STATE.time !== 'YTD' && !(LIVE_DATA.windowDataAvailable && LIVE_DATA.windowDataAvailable[STATE.time])) {
-    var body = document.getElementById('masterBody');
-    if (body) body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">' + windowDataMessage(STATE.time) + '</td></tr>';
-    return;
-  }
+  if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
 
   var body = document.getElementById('masterBody');
   var mobile = document.getElementById('mobileCards');
@@ -4505,6 +4533,11 @@ function renderMasterTable(){
   var mColor = (window.MLBMAAssets && MLBMAAssets.metricColor) ? MLBMAAssets.metricColor.bind(MLBMAAssets) : tcol;
   var logoFn = (window.MLBMAAssets && MLBMAAssets.teamLogoImg) ? function(t) { return MLBMAAssets.teamLogoImg(t, 24, 'rank-logo'); } : function() { return ''; };
   var rows = applyFilter(currentRows().slice());
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">No team data for this view — run the full pipeline or switch to YTD.</td></tr>';
+    if (mobile) mobile.innerHTML = '';
+    return;
+  }
   var key = STATE.sortKey;
   var dir = STATE.sortDir==='desc' ? -1 : 1;
 
@@ -5667,16 +5700,11 @@ function mountDashboardRankings() {
 }
 
 function mountResearchTables() {
-  var dashMount = document.getElementById('dashboardRankingsMount');
+  var lbMount = document.getElementById('leaderboardsRankingsMount');
   var rankSection = document.querySelector('#masterTable');
-  if (dashMount && rankSection && dashMount.contains(rankSection.closest('.section'))) {
-    /* keep rankings on main dashboard */
-  } else {
-  var splitsMount = document.getElementById('splitsTableMount');
-  if (splitsMount && rankSection) {
+  if (lbMount && rankSection) {
     var section = rankSection.closest('.section');
-    if (section && !splitsMount.contains(section)) splitsMount.appendChild(section);
-  }
+    if (section && section.parentNode !== lbMount) lbMount.appendChild(section);
   }
   var pitchMount = document.getElementById('pitchingResearchMount');
   var pitchSec = document.getElementById('pitchingSection');
@@ -5727,6 +5755,7 @@ function initResearchLab() {
   if (_researchLabInitialized) return;
   _researchLabInitialized = true;
   console.log('[MLBMA] initResearchLab');
+  if (window.ResearchLab) ResearchLab.init();
   bindResearchSubtabs();
   bindDashRankingsControls();
   renderResearchLab();

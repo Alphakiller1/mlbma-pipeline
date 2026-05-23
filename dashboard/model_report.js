@@ -163,7 +163,7 @@
       : '';
     el.innerHTML = staleHtml
       + '<div class="mr-hero-top">'
-      + '<div><h1 class="mr-title">Model Report</h1>'
+      + '<div><div class="ca-title-with-icon"><img src="assets/chase-icon-filled.png" alt="" width="48" height="48" onerror="this.style.display=\'none\'"><h1 class="mr-title">Model Report</h1></div>'
       + '<p class="mr-subtitle">Daily predictive signal board, convergence plays, and game-context reads for tonight\'s slate.</p></div>'
       + '</div>'
       + '<div class="mr-stats">'
