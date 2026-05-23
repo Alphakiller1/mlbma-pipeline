@@ -177,11 +177,64 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 .empty-state { text-align: center; padding: 24px; color: var(--text-3); font-size: 13px; }
 #reportContent { display: none; }
 #reportContent.ready { display: block; }
+.bullpen-snapshot {
+  display: flex; gap: 20px; align-items: flex-start;
+  margin-bottom: 20px; padding: 20px; background: var(--bg-3);
+  border: 1px solid var(--border); border-radius: 14px;
+}
+.ps-photo img, .ps-photo .team-logo-fallback { width: 56px; height: 56px; border-radius: 8px; }
+.ps-name-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.ps-name { font-size: 24px; font-weight: 700; font-family: var(--mono); margin: 0; }
+.ps-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.ps-stat-bar { display: flex; flex-wrap: wrap; gap: 10px; }
+.ps-stat { background: var(--bg-4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; min-width: 72px; }
+.ps-stat-label { display: block; font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
+.ps-stat-val { font-family: var(--mono); font-size: 16px; font-weight: 600; }
+.ps-tonight { margin-top: 10px; }
+.global-control-bar {
+  display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+  margin-bottom: 18px; padding: 14px 16px; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.global-control-bar .control-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-right: 6px;
+}
+.global-control-bar .control-group { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.toggle-group { display: flex; flex-wrap: wrap; gap: 4px; }
+.toggle-btn {
+  font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
+}
+.toggle-btn.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.15); }
+.allowed-grid .allowed-card .m-pctile {
+  font-size: 10px; font-weight: 600; color: var(--purple-2); margin-bottom: 6px;
+}
+.allowed-grid .m-compare {
+  display: flex; gap: 12px; font-size: 10px; font-family: var(--mono); color: var(--text-3); margin-bottom: 6px;
+}
+.oor-panel { margin-top: 4px; }
+.oor-hero { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 16px; }
+.oor-score { font-size: 42px; font-weight: 700; font-family: var(--mono); line-height: 1; }
+.oor-label { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+.oor-tonight { font-size: 12px; color: var(--text-3); margin-top: 8px; }
+.oor-splits { margin-bottom: 14px; }
+.ma-split-table { width: 100%; font-size: 12px; }
+.ma-split-table td { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.oor-spark { display: flex; align-items: flex-end; gap: 4px; height: 36px; margin-top: 8px; }
+.oor-bar { width: 10px; border-radius: 2px 2px 0 0; min-height: 4px; }
+.oor-trend-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
+.profile-deep-sections { margin-top: 8px; }
+.pill-tonight {
+  font-size: 11px; padding: 6px 10px; border-radius: 8px;
+  background: rgba(192,132,252,.12); border: 1px solid rgba(192,132,252,.35); color: var(--purple-2);
+}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="bullpen_profile_dashboard.js"></script>
 <script src="mlbma_ui.js" data-page="bullpen_report.html"></script>
 </head>
 <body>
@@ -298,27 +351,41 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   </div>
 
   <div id="reportContent">
-    <div class="team-title-row" id="teamHeader"></div>
+    <div id="bullpenSnapshot"></div>
 
-    <section class="section">
-      <div class="section-title">Team Bullpen Overview</div>
-      <div class="section-subtitle">Headline relief quality indicators</div>
-      <div class="metric-grid" id="overviewCards"></div>
+    <div class="global-control-bar" id="bullpenControlBar">
+      <div class="control-group">
+        <span class="control-label">Split</span>
+        <div class="toggle-group" id="bullpenSplitToggle">
+          <button type="button" class="toggle-btn active" data-bsplit="overall">Season</button>
+          <button type="button" class="toggle-btn" data-bsplit="lhh">vs LHH</button>
+          <button type="button" class="toggle-btn" data-bsplit="rhh">vs RHH</button>
+          <button type="button" class="toggle-btn" data-bsplit="home">Home</button>
+          <button type="button" class="toggle-btn" data-bsplit="away">Away</button>
+          <button type="button" class="toggle-btn" data-bsplit="hilev">Hi Lev</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="control-label">Window</span>
+        <div class="toggle-group" id="bullpenWindowToggle">
+          <button type="button" class="toggle-btn active" data-bwindow="YTD">YTD</button>
+          <button type="button" class="toggle-btn" data-bwindow="L30">L30</button>
+          <button type="button" class="toggle-btn" data-bwindow="L14">L14</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="section" id="secAllowed">
+      <div id="allowedDashboard"></div>
     </section>
 
-    <section class="section">
-      <div class="section-title">Bullpen Metric Allowed Profile</div>
-      <div class="section-subtitle">Average opponent offensive quality faced — lower is better for the bullpen</div>
-      <div class="metric-grid" id="allowedCards"></div>
-      <div class="insight-line" id="allowedNote"></div>
+    <section class="section" id="secOOR">
+      <div class="section-title">Bullpen OOR — Competition Strength</div>
+      <div class="section-subtitle">Average offensive quality of lineups faced · context for ERA validation</div>
+      <div id="oorPanel"></div>
     </section>
 
-    <section class="section">
-      <div class="section-title">Bullpen OOR Context</div>
-      <div class="section-subtitle">Avg OSI of lineups faced by this bullpen unit</div>
-      <div id="oorUnitPanel" class="insight-line"></div>
-    </section>
-
+    <div class="profile-deep-sections">
     <section class="section">
       <div class="section-title">Performance vs Lineup Quality</div>
       <div class="section-subtitle">Results vs High / Mid / Low OSI offenses</div>
@@ -361,6 +428,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
       <div class="section-subtitle">Auto-synthesized angles from the strongest patterns</div>
       <div class="betting-panel" id="bettingPanel"></div>
     </section>
+    </div>
   </div>
 </div>
 
@@ -379,7 +447,7 @@ var DATA = {
   todayTeams: new Set()
 };
 
-var STATE = { team: null, expandedPid: null };
+var STATE = { team: null, expandedPid: null, split: 'overall', window: 'YTD' };
 
 var OSI_TIERS = ['High', 'Mid', 'Low'];
 
@@ -565,29 +633,7 @@ function buildTodayBar() {
   });
 }
 
-function overviewCard(label, val, color, note, leagueKey, isPct) {
-  var vs = '';
-  if (leagueKey && DATA.leagueAvg[leagueKey] != null && val != null) {
-    var d = val - DATA.leagueAvg[leagueKey];
-    vs = '<div class="m-vs">League avg ' + (isPct ? fmtPct(DATA.leagueAvg[leagueKey]) : fmt(DATA.leagueAvg[leagueKey], 2)) +
-      ' (' + (d >= 0 ? '+' : '') + (isPct ? fmt(d, 1) + '%' : fmt(d, 2)) + ')</div>';
-  }
-  return '<div class="metric-card"><div class="m-label">' + label + '</div>' +
-    '<div class="m-val" style="color:' + color + '">' + (isPct ? fmtPct(val) : fmt(val, 2)) + '</div>' +
-    '<div class="m-note">' + note + '</div>' + vs + '</div>';
-}
 
-function allowedCard(label, val, note, leagueKey) {
-  var vs = '';
-  if (leagueKey && DATA.leagueAvg[leagueKey] != null && val != null) {
-    var d = val - DATA.leagueAvg[leagueKey];
-    var better = d < 0 ? 'better' : 'worse';
-    vs = '<div class="m-vs">vs league ' + (d >= 0 ? '+' : '') + fmt(d, 1) + ' (' + better + ')</div>';
-  }
-  return '<div class="metric-card"><div class="m-label">' + label + '</div>' +
-    '<div class="m-val" style="color:' + osiAllowedColor(val) + '">' + fmt(val, 1) + '</div>' +
-    '<div class="m-note">' + note + '</div>' + vs + '</div>';
-}
 
 function splitPanel(title, row, prefix) {
   if (!row) return '<div class="split-panel"><h4>' + title + '</h4><div class="empty-state" style="padding:12px;">No data</div></div>';
@@ -605,6 +651,94 @@ function splitPanel(title, row, prefix) {
 function statMini(lbl, v) {
   return '<div class="mini-stat"><div class="ms-label">' + lbl + '</div><div class="ms-val">' +
     (lbl.indexOf('%') >= 0 ? fmtPct(v) : fmt(v, lbl === 'ERA' || lbl === 'HR/9' ? 2 : 1)) + '</div></div>';
+}
+
+function splitLabel(split) {
+  var labels = {
+    overall: 'Season', lhh: 'vs LHH', rhh: 'vs RHH',
+    home: 'Home', away: 'Away', hilev: 'High leverage', lolev: 'Low leverage'
+  };
+  return labels[split] || split;
+}
+
+function buildTonightContext(team) {
+  var games = DATA.matchups.filter(function(g) {
+    var away = teamKey(pickCol(g, ['Away', 'away']));
+    var home = teamKey(pickCol(g, ['Home', 'home']));
+    return away === teamKey(team) || home === teamKey(team);
+  });
+  if (!games.length) return null;
+  var g = games[0];
+  var isHome = teamKey(pickCol(g, ['Home', 'home'])) === teamKey(team);
+  var opp = isHome ? pickCol(g, ['Away', 'away']) : pickCol(g, ['Home', 'home']);
+  var oppOsi = num(isHome ? pickCol(g, ['Away_OSI', 'Away OSI']) : pickCol(g, ['Home_OSI', 'Home OSI']));
+  var time = pickCol(g, ['Time', 'Game_Time', 'game_time']) || 'TBD';
+  return {
+    html: '<span class="pill-tonight">Tonight vs ' + teamKey(opp) + ' · ' + (isHome ? 'Home' : 'Away') + ' · ' + time + '</span>',
+    oppOsi: oppOsi
+  };
+}
+
+function buildDashboardCtx(team, unit) {
+  var log = teamLog(team);
+  var totalApps = OSI_TIERS.reduce(function(sum, tier) { return sum + tierAppearances(team, tier); }, 0);
+  var tonight = buildTonightContext(team);
+  var ps = DATA.pitching.find(function(p) { return teamKey(pickCol(p, ['Tm', 'tm'])) === teamKey(team); });
+  return {
+    pickCol: pickCol,
+    team: team,
+    split: STATE.split,
+    window: STATE.window,
+    splitLabel: splitLabel(STATE.split),
+    teamLog: log,
+    allUnits: DATA.units,
+    isToday: DATA.todayTeams.has(teamKey(team)),
+    pitchScore: num(pickCol(ps || {}, ['PitchScore', 'Pitching Score'])),
+    totalApps: totalApps,
+    tonightHtml: tonight ? tonight.html : '',
+    tonightOsi: tonight ? tonight.oppOsi : null,
+    allowedNote: allowedNote(unit),
+    expandedPid: STATE.expandedPid,
+    inferRole: inferRole,
+    relieverIP: relieverIP,
+    appearanceDetail: appearanceDetail
+  };
+}
+
+function renderPlatformSections(team, unit) {
+  if (!window.BullpenProfileDashboard) return;
+  var ctx = buildDashboardCtx(team, unit);
+  var snap = document.getElementById('bullpenSnapshot');
+  var allowed = document.getElementById('allowedDashboard');
+  var oorEl = document.getElementById('oorPanel');
+  if (snap) snap.innerHTML = BullpenProfileDashboard.renderSnapshot(team, unit, ctx);
+  if (allowed) allowed.innerHTML = BullpenProfileDashboard.renderAllowedDashboard(unit, ctx);
+  if (oorEl) oorEl.innerHTML = BullpenProfileDashboard.renderOORPanel(unit, ctx);
+}
+
+function bindBullpenControls() {
+  document.querySelectorAll('#bullpenSplitToggle [data-bsplit]').forEach(function(btn) {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', function() {
+      STATE.split = btn.getAttribute('data-bsplit');
+      document.querySelectorAll('#bullpenSplitToggle [data-bsplit]').forEach(function(b) {
+        b.classList.toggle('active', b === btn);
+      });
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  });
+  document.querySelectorAll('#bullpenWindowToggle [data-bwindow]').forEach(function(btn) {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', function() {
+      STATE.window = btn.getAttribute('data-bwindow');
+      document.querySelectorAll('#bullpenWindowToggle [data-bwindow]').forEach(function(b) {
+        b.classList.toggle('active', b === btn);
+      });
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  });
 }
 
 function buildOsiTable(unit, team) {
@@ -672,47 +806,6 @@ function allowedNote(unit) {
   return 'Metric-allowed profile is balanced — outcomes likely driven by leverage and inherited runners more than opponent archetype.';
 }
 
-function buildRelieverTable(team) {
-  var rels = DATA.individuals.filter(function(r) {
-    return teamKey(pickCol(r, ['pitcher_team', 'pitcher team'])) === teamKey(team);
-  });
-  rels.sort(function(a, b) {
-    var ipA = relieverIP(pickCol(a, ['pitcher_id']), pickCol(a, ['pitcher_name']));
-    var ipB = relieverIP(pickCol(b, ['pitcher_id']), pickCol(b, ['pitcher_name']));
-    return ipB - ipA;
-  });
-  if (!rels.length) return '<div class="empty-state">No individual reliever rows for this team.</div>';
-
-  var html = '<table><thead><tr>' +
-    '<th>Name</th><th>Role</th><th>IP</th><th>ERA</th><th>K%</th><th>BB%</th><th>HR/9</th>' +
-    '<th>OSI All.</th><th>vs RHH OSI</th><th>vs LHH OSI</th><th>IR Scored%</th><th>Hi Lev ERA</th>' +
-    '</tr></thead><tbody>';
-
-  rels.forEach(function(r) {
-    var pid = pickCol(r, ['pitcher_id']);
-    var name = pickCol(r, ['pitcher_name']);
-    var role = inferRole(pid, name);
-    var ip = relieverIP(pid, name);
-    var exp = STATE.expandedPid === String(pid);
-    html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + pid + '" data-name="' + name.replace(/"/g, '') + '">' +
-      '<td><strong><a href="reliever_profile.html?player=' + encodeURIComponent(name) + '" style="color:var(--purple-2);text-decoration:none;">' + name + '</a></strong></td>' +
-      '<td class="' + role.cls + '">' + role.label + '</td>' +
-      '<td class="num">' + fmt(ip, 1) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'overall', 'ERA'), 2) + '</td>' +
-      '<td class="num">' + fmtPct(colVal(r, 'overall', 'K_pct')) + '</td>' +
-      '<td class="num">' + fmtPct(colVal(r, 'overall', 'BB_pct')) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'overall', 'HR9'), 2) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'overall', 'OSI_allowed'), 1) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'overall', 'ABQ_allowed'), 1) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'overall', 'avg_opponent_OSI'), 1) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'vs_rhh', 'OSI_allowed'), 1) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'vs_lhh', 'OSI_allowed'), 1) + '</td>' +
-      '<td class="num">' + fmtPct(colVal(r, 'overall', 'inherited_runners_scored_pct')) + '</td>' +
-      '<td class="num">' + fmt(colVal(r, 'high_leverage', 'ERA'), 2) + '</td></tr>';
-    if (exp) html += '<tr class="detail-row"><td colspan="14">' + appearanceDetail(pid, name) + '</td></tr>';
-  });
-  return html + '</tbody></table>';
-}
 
 function appearanceDetail(pid, name) {
   var apps = DATA.log.filter(function(g) {
@@ -822,42 +915,8 @@ function renderTeam(team) {
   document.getElementById('dataBanner').classList.remove('show');
   document.getElementById('reportContent').classList.add('ready');
 
-  var isToday = DATA.todayTeams.has(teamKey(team));
-  var ps = DATA.pitching.find(function(p) { return teamKey(pickCol(p, ['Tm', 'tm'])) === teamKey(team); });
-  var pitchScore = num(pickCol(ps || {}, ['PitchScore', 'Pitching Score']));
+  renderPlatformSections(team, unit);
 
-  document.getElementById('teamHeader').innerHTML =
-    '<span class="team-name-lg">' + team + '</span>' +
-    (isToday ? '<span class="pill pill-today">Playing Today</span>' : '') +
-    (pitchScore != null ? '<span class="pill pill-score">Staff Pitch Score ' + fmt(pitchScore, 0) + '</span>' : '') +
-    '<span class="pill" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text-2);">' +
-    (num(pickCol(unit, ['appearances'])) || tierAppearances(team, 'High') + tierAppearances(team, 'Mid') + tierAppearances(team, 'Low')) + ' apps</span>';
-
-  var era = colVal(unit, 'overall', 'ERA');
-  var osi = colVal(unit, 'overall', 'OSI_allowed');
-  var irp = colVal(unit, 'overall', 'inherited_runners_scored_pct');
-  var hiEra = colVal(unit, 'high_leverage', 'ERA');
-
-  document.getElementById('overviewCards').innerHTML =
-    overviewCard('ERA', era, eraColor(era), 'Season bullpen earned-run rate — sub-3.50 is elite relief environment.', 'overall_ERA') +
-    overviewCard('OSI Allowed', osi, osiAllowedColor(osi), 'Average opponent offensive strength faced — lower means softer matchups.', 'overall_OSI_allowed') +
-    overviewCard('IR Scored %', irp, irColor(irp), 'Share of inherited runners that score — critical for late-game chaos.', 'overall_inherited_runners_scored_pct', true) +
-    overviewCard('High Lev ERA', hiEra, eraColor(hiEra), 'Performance in high-leverage spots (8th+ or tight games).', 'high_leverage_ERA');
-
-
-  var oorEl = document.getElementById('oorUnitPanel');
-  if (oorEl && unit) {
-    var avgOsi = colVal(unit, 'overall', 'avg_opponent_OSI') || colVal(unit, 'overall', 'OSI_allowed');
-    oorEl.innerHTML = 'Avg lineup OSI faced: <strong>' + fmt(avgOsi, 1) + '</strong> · splits vs LHH/RHH and leverage in metric tables below.';
-  }
-
-  document.getElementById('allowedCards').innerHTML =
-    allowedCard('ABQ Allowed', colVal(unit, 'overall', 'ABQ_allowed'), 'Plate discipline quality faced — high = walk-game risk.', 'overall_ABQ_allowed') +
-    allowedCard('RCV Allowed', colVal(unit, 'overall', 'RCV_allowed'), 'Contact quality faced — high = barrel/HR risk.', 'overall_RCV_allowed') +
-    allowedCard('OBR Allowed', colVal(unit, 'overall', 'OBR_allowed'), 'Floor offense faced — traffic and xwOBA pressure.', 'overall_OBR_allowed') +
-    allowedCard('OSI Allowed', colVal(unit, 'overall', 'OSI_allowed'), 'Composite offensive strength faced.', 'overall_OSI_allowed');
-
-  document.getElementById('allowedNote').textContent = allowedNote(unit);
   document.getElementById('osiTableWrap').innerHTML = buildOsiTable(unit, team);
   document.getElementById('osiInsight').innerHTML = osiInsight(unit, team);
 
@@ -874,7 +933,18 @@ function renderTeam(team) {
     splitPanel('Home', unit, 'home') +
     splitPanel('Away', unit, 'away');
 
-  document.getElementById('relieverTableWrap').innerHTML = buildRelieverTable(team);
+  var rels = DATA.individuals.filter(function(r) {
+    return teamKey(pickCol(r, ['pitcher_team', 'pitcher team'])) === teamKey(team);
+  });
+  rels.sort(function(a, b) {
+    var ipA = relieverIP(pickCol(a, ['pitcher_id']), pickCol(a, ['pitcher_name']));
+    var ipB = relieverIP(pickCol(b, ['pitcher_id']), pickCol(b, ['pitcher_name']));
+    return ipB - ipA;
+  });
+  var ctx = buildDashboardCtx(team, unit);
+  document.getElementById('relieverTableWrap').innerHTML = window.BullpenProfileDashboard
+    ? BullpenProfileDashboard.buildRelieverTable(rels, ctx)
+    : '<div class="empty-state">Dashboard module not loaded.</div>';
   bindRelieverClicks();
 
   document.getElementById('matchupContext').innerHTML = buildMatchupContext(team, unit);
@@ -971,6 +1041,7 @@ document.addEventListener('DOMContentLoaded', function() {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
   console.log('[MLBMA] bullpen_report loadAll start');
+  bindBullpenControls();
   loadAll();
 });
 </script>

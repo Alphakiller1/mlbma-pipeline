@@ -1520,7 +1520,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mbc-fill { height: 100%; border-radius: 3px; }
 .mbc-val { text-align: right; font-family: var(--mono); font-weight: 600; }
 .f5-variance-note { font-size: 10px; color: var(--text-3); margin-top: 6px; }
-#pane-matchup, #pane-strat, #pane-reference, #pane-matchup-builder { display: none !important; }
+#pane-matchup, #pane-strat, #pane-reference, #pane-matchup-builder, #pane-trends { display: none !important; }
 .research-lab-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
 
 </style>
@@ -1724,11 +1724,10 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 <div class="section">
   <div class="subtabs">
-    <button class="subtab active" data-pane="splits">Lineup Splits</button>
-    <button class="subtab" data-pane="trends">Trends</button>
+    <button class="subtab active" data-pane="splits-trends">Splits &amp; Trends</button>
     <button class="subtab" data-pane="compare">Compare</button>
     <button class="subtab" data-pane="pitching">Pitching Context</button>
-    <button class="subtab" data-pane="signals">Signals Today</button>
+    <button class="subtab" data-pane="signals">Signal Explorer</button>
   </div>
 
   <!-- Splits pane -->
@@ -1838,41 +1837,42 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
   <div class="mobile-cards" id="mobileCards"></div>
 </div>
+    <div class="section" style="margin-top:24px;">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Recent Trends</div>
+          <div class="section-title">Trend Heatmap &amp; Velocity</div>
+          <div class="section-subtitle">Direction from prior timeframe · color = tier band · sorted by YTD OSI</div>
+        </div>
+      </div>
+      <div id="trendMap"></div>
+      <div style="margin-top: 20px;">
+        <div class="section-title" style="margin-bottom: 10px; font-size: 13px;">Trend Classifications &amp; Velocity</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th style="width:30px;">#</th><th style="width:50px;">Team</th>
+              <th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
+              <th>Δ L30</th><th>Δ L14</th><th>Vel.</th>
+              <th>Trend</th><th>Reliability</th><th>Interpretation</th>
+            </tr></thead>
+            <tbody id="trendBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Trends pane -->
-  <div id="pane-trends" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Recent Trends</div>
-        <div class="section-title">Is This Trend Real Or Noise?</div>
-        <div class="section-subtitle">Arrows show direction from prior timeframe · color = tier band · sorted by YTD OSI</div>
-      </div>
-    </div>
-    <div id="trendMap"></div>
-    <div style="margin-top: 20px;">
-      <div class="section-title" style="margin-bottom: 10px; font-size: 13px;">Trend Classifications &amp; Velocity</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th style="width:30px;">#</th><th style="width:50px;">Team</th>
-            <th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
-            <th>Δ L30</th><th>Δ L14</th><th>Vel.</th>
-            <th>Trend</th><th>Reliability</th><th>Interpretation</th>
-          </tr></thead>
-          <tbody id="trendBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  <!-- Trends pane (legacy — content in splits-trends) -->
+  <div id="pane-trends" style="display:none;" aria-hidden="true"></div>
 
   <!-- Compare pane -->
   <div id="pane-compare" style="display:none;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Compare Mode</div>
-        <div class="section-title">How Do Two Teams Compare?</div>
-        <div class="section-subtitle">Enable Compare mode in the toolbar (Compare), then click rows in the master table to select teams.</div>
+        <div class="section-title">Team Compare</div>
+        <div class="section-subtitle">Enable Compare in the Splits &amp; Trends toolbar, then click rows in the master table to select teams.</div>
       </div>
     </div>
     <div class="compare-bar" id="compareBar">
@@ -1930,8 +1930,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Research Lab</div>
-        <div class="section-title">What Have Signals Fired On Today?</div>
-        <div class="section-subtitle">Convergence signal matrix per game.</div>
+        <div class="section-title">Signal Explorer</div>
+        <div class="section-subtitle">Convergence signal matrix and actionable profile groupings for today's slate.</div>
       </div>
     </div>
     <div id="convergenceGrid"></div>
@@ -3847,7 +3847,7 @@ function onResearchSubtabShown(name) {
   else if (name === 'pitching') { renderPitchingScore(); renderOOR(); }
   else if (name === 'signals') {
     if (window.OEMOverhaul) OEMOverhaul.renderConvergence();
-    else renderStrats();
+    renderStrats();
   }
 }
 
@@ -3869,14 +3869,8 @@ function renderDailyRead() {
 
 function renderResearchLab(activeSubtab) {
   console.log('[MLBMA] renderResearchLab', activeSubtab || '');
-  renderSplitBars();
-  renderTrendHeatmap();
-  populateMatchupSelectors();
-  renderStrats();
-  initCompare();
-  renderMatchupOutput();
-  mountReferenceTables();
-  renderReferenceTables();
+  bindResearchSubtabs();
+  mountResearchTables();
   showResearchSubtab(activeSubtab || (function() {
     var active = document.querySelector('#layerAdvanced .subtab.active');
     return active ? active.getAttribute('data-pane') : 'splits-trends';
