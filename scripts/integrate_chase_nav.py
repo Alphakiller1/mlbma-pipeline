@@ -127,13 +127,51 @@ def strip_trailing_nav_divs(html: str) -> str:
     return TRAILING_NAV_DIV_RE.sub("", html, count=1)
 
 
+def ensure_mobile_nav_complete(html: str) -> str:
+    """Repair nav when mobile drawer was truncated (missing links + closing divs)."""
+    if 'id="chaseHeader"' not in html or 'class="chase-mobile-nav"' in html:
+        return html
+    broken = re.compile(
+        r'(<div class="chase-mobile-brand"[\s\S]*?</div>\s*)\n(<div class="container")',
+        re.MULTILINE,
+    )
+    if broken.search(html):
+        insert = (
+            "  <div class=\"chase-mobile-nav\">\n"
+            "    <a href=\"chase_analytics_mlb_oem_v7.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
+            "    <a href=\"chase_analytics_mlb_oem_v7.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
+            "    <a href=\"chase_analytics_mlb_oem_v7.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
+            "    <div class=\"chase-mobile-section\">Profiles</div>\n"
+            "    <a href=\"team_profile.html\" class=\"chase-mobile-link\">Team Profile</a>\n"
+            "    <a href=\"pitcher_profile.html\" class=\"chase-mobile-link\">Pitcher Profile</a>\n"
+            "    <a href=\"bullpen_report.html\" class=\"chase-mobile-link\">Bullpen Report</a>\n"
+            "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
+            "    <a href=\"reliever_profile.html\" class=\"chase-mobile-link\">Reliever Profile</a>\n"
+            "    <a href=\"player_search.html\" class=\"chase-mobile-link\">Player Search</a>\n"
+            "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
+            "    <a href=\"model_report.html\" class=\"chase-mobile-link\" data-nav=\"model-report\">Model Report</a>\n"
+            "  </div>\n"
+            "  <div class=\"chase-mobile-status\">\n"
+            "    <div class=\"chase-timestamp\">\n"
+            "      <span class=\"chase-pipeline-dot\" title=\"Pipeline: Fresh\"></span>\n"
+            "      <span id=\"mobileLastUpdated\">syncing…</span>\n"
+            "    </div>\n"
+            "  </div>\n"
+            "</div>\n\n"
+        )
+        html = broken.sub(r"\1\n" + insert + r"\2", html, count=1)
+    return html
+
+
 def sync_nav_block(html: str) -> str:
     if 'id="chaseHeader"' not in html:
         return html
     html = dedupe_nav_comments(html)
     html = strip_orphan_mobile_nav(html)
-    html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
+    if NAV_BLOCK_RE.search(html):
+        html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
     html = strip_orphan_mobile_nav(html)
+    html = ensure_mobile_nav_complete(html)
     return dedupe_nav_comments(html)
 
 
