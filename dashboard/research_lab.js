@@ -24,8 +24,15 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function mColor(v, invert) {
-    return A && A.metricColor ? A.metricColor(v, 'osi', !!invert) : '#71717A';
+  function mColor(v, invert, ctx) {
+    if (!A || !A.metricColor) return '#71717A';
+    if (ctx === 'oor' || ctx === 'OOR') return A.contextualOorColor ? A.contextualOorColor(v) : '#71717A';
+    if (ctx === 'ppGap') return A.ppGapColor ? A.ppGapColor(v) : '#71717A';
+    return A.metricColor(v, ctx || 'osi', !!invert);
+  }
+
+  function metricCell(opts) {
+    return A && A.metricCell ? A.metricCell(opts) : '';
   }
 
   function teamList() {
@@ -72,13 +79,15 @@
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Validate model signals with splits, trends, comparisons, and pitching context.</p>'
+      + '<p class="rl-workspace-subtitle">Validate model signals with splits, trends, comparisons, pitcher context, and lineup-vs-pitcher research.</p>'
       + '<div class="rl-workflow-strip">'
-      + '<span class="rl-workflow-step">1 · Select</span>'
-      + '<span class="rl-workflow-step">2 · Split / Window</span>'
-      + '<span class="rl-workflow-step">3 · Compare</span>'
-      + '<span class="rl-workflow-step">4 · Deep Dive</span>'
-      + '</div></div>';
+      + '<span class="rl-workflow-step">1 · Select Path</span>'
+      + '<span class="rl-workflow-step">2 · Apply Split/Window</span>'
+      + '<span class="rl-workflow-step">3 · Validate Signal</span>'
+      + '<span class="rl-workflow-step">4 · Open Deep Profile</span>'
+      + '</div>'
+      + (A && A.researchLabLegendHtml ? A.researchLabLegendHtml() : '')
+      + '</div>';
   }
 
   function patchSubtabs() {
@@ -89,11 +98,11 @@
     if (tabBar && !tabBar.classList.contains('rl-segment-tabs')) {
       tabBar.classList.add('rl-segment-tabs');
       tabBar.innerHTML = ''
-        + '<button type="button" class="subtab" data-pane="research-home">Research Home</button>'
-        + '<button type="button" class="subtab active" data-pane="splits-trends">Splits &amp; Trends</button>'
+        + '<button type="button" class="subtab active" data-pane="research-home">Research Home</button>'
+        + '<button type="button" class="subtab" data-pane="splits-trends">Splits &amp; Trends</button>'
         + '<button type="button" class="subtab" data-pane="compare">Compare</button>'
-        + '<button type="button" class="subtab" data-pane="pitching-vs-lineup">Pitching vs Lineup</button>'
-        + '<button type="button" class="subtab" data-pane="pitching">Pitching Context</button>'
+        + '<button type="button" class="subtab" data-pane="pitching-vs-lineup">Lineup vs Pitcher</button>'
+        + '<button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>'
         + '<button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>'
         + '<button type="button" class="subtab" data-pane="model-links">Model Links</button>';
     }
@@ -109,7 +118,10 @@
   function mountLeaderboards() {
     var mount = document.getElementById('leaderboardsRankingsMount');
     var table = document.getElementById('masterTable');
-    if (!mount || !table) return;
+    if (!mount || !table) {
+      if (mount) mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Team rankings unavailable — load sheet data first.</p></div>';
+      return;
+    }
     var section = document.getElementById('masterTableSection');
     if (section && section.parentNode !== mount) mount.appendChild(section);
     if (!table.dataset.platformHeaders) {
@@ -126,6 +138,107 @@
     }
     if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
     if (typeof renderMasterTable === 'function') renderMasterTable();
+    mountExtraLeaderboards();
+  }
+
+  function mountExtraLeaderboards() {
+    var root = document.getElementById('rlExtraLeaderboards');
+    if (!root) return;
+    fetchSpProfiles().then(function() {
+      var rows = RL.spProfiles || [];
+      if (!rows.length) {
+        root.innerHTML = '<div class="rl-pane-card" style="margin-top:20px;"><p class="ca-helper">Pitcher and bullpen leaderboards require SP_Profiles and Bullpen_Unit sheet data.</p></div>';
+        return;
+      }
+      var pitchRows = rows.slice().sort(function(a, b) {
+        var ma = S.spProfileMetrics(a);
+        var mb = S.spProfileMetrics(b);
+        return (mb.pitchScore || 0) - (ma.pitchScore || 0);
+      }).slice(0, 15);
+      var pitchHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Starting Pitcher Rankings (top 15)</h4>'
+        + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
+        + '<th>Pitcher</th><th>Team</th><th>Pitch Score</th><th>OSI Allowed</th><th>Pitcher OOR</th></tr></thead><tbody>'
+        + pitchRows.map(function(row) {
+          var n = S.pickCol(row, 'pitcher_name', 'Name');
+          var t = S.pickCol(row, 'pitcher_team', 'Team');
+          var m = S.spProfileMetrics(row);
+          var ps = m.pitchScore != null ? m.pitchScore : (m.osiAllowed != null ? 100 - m.osiAllowed : null);
+          return '<tr class="pl-rank-row" onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
+            + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td>'
+            + '<td style="color:' + mColor(ps, false, 'pitching') + '">' + fmt(ps) + '</td>'
+            + '<td style="color:' + mColor(m.osiAllowed, true) + '">' + fmt(m.osiAllowed) + '</td>'
+            + '<td style="color:' + mColor(m.oor, false, 'oor') + '">' + fmt(m.oor) + '</td></tr>';
+        }).join('') + '</tbody></table></div></div>';
+
+      var units = global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits) : [];
+      var bpRows = units.map(function(tk) {
+        var u = LIVE_DATA.bullpenUnits[tk];
+        return { t: tk, u: u, score: u.osiAllowed != null ? 100 - u.osiAllowed : null };
+      }).sort(function(a, b) { return (b.score || 0) - (a.score || 0); }).slice(0, 15);
+
+      var bpHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Bullpen Unit Rankings</h4>'
+        + (bpRows.length ? '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
+        + '<th>Team</th><th>Bullpen Score</th><th>OSI Allowed</th><th>Unit OOR</th></tr></thead><tbody>'
+        + bpRows.map(function(r) {
+          return '<tr onclick="location.href=\'bullpen_report.html?team=' + encodeURIComponent(r.t) + '\'">'
+            + '<td>' + (A ? A.teamLogoImg(r.t, 20) : '') + ' ' + esc(r.t) + '</td>'
+            + '<td style="color:' + mColor(r.score, false, 'pitching') + '">' + fmt(r.score) + '</td>'
+            + '<td style="color:' + mColor(r.u.osiAllowed, true) + '">' + fmt(r.u.osiAllowed) + '</td>'
+            + '<td style="color:' + mColor(r.u.oor, false, 'oor') + '">' + fmt(r.u.oor) + '</td></tr>';
+        }).join('') + '</tbody></table></div>'
+        : '<p class="ca-helper">Bullpen_Unit data not loaded.</p>') + '</div>';
+
+      root.innerHTML = pitchHtml + bpHtml;
+      console.log('[MLBMA] extra leaderboards pitchers=' + pitchRows.length + ' bullpens=' + bpRows.length);
+    });
+  }
+
+  function renderSplitSummary() {
+    var mount = document.getElementById('rlSplitSummaryMount');
+    if (!mount) {
+      var splitsPane = document.getElementById('pane-splits-trends');
+      if (!splitsPane || splitsPane.querySelector('#rlSplitSummaryMount')) return;
+      mount = document.createElement('div');
+      mount.id = 'rlSplitSummaryMount';
+      mount.className = 'rl-split-summary-grid';
+      var anchor = splitsPane.querySelector('#rlSplitsControlMount');
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(mount, anchor.nextSibling);
+      else splitsPane.insertBefore(mount, splitsPane.firstChild);
+    }
+    var r = global.SCO_YTD_R || [];
+    var l = global.SCO_YTD_L || [];
+    if (!r.length && !l.length) {
+      mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Split summary cards populate after team offense data loads.</p></div>';
+      return;
+    }
+    function best(arr) {
+      if (!arr.length) return null;
+      return arr.slice().sort(function(a, b) { return b.osi - a.osi; })[0];
+    }
+    function biggestSplit() {
+      var hit = null, gap = 0;
+      r.forEach(function(row) {
+        var lrow = l.find(function(x) { return x.t === row.t; });
+        if (!lrow) return;
+        var g = Math.abs(row.osi - lrow.osi);
+        if (g > gap) { gap = g; hit = { t: row.t, gap: g }; }
+      });
+      return hit;
+    }
+    var cards = [
+      { title: 'Best vs RHP', val: best(r), metric: 'osi' },
+      { title: 'Best vs LHP', val: best(l), metric: 'osi' },
+      { title: 'Biggest Split Edge', val: biggestSplit(), metric: 'gap' },
+      { title: 'YTD Leader', val: best(global.SCO_YTD_B || []), metric: 'osi' }
+    ];
+    mount.innerHTML = cards.map(function(c) {
+      var body = '—';
+      if (c.val) {
+        body = c.metric === 'gap' ? c.val.t + ' · ' + c.val.gap.toFixed(1) + ' pt gap'
+          : c.val.t + ' · OSI ' + c.val.osi.toFixed(1);
+      }
+      return '<div class="rl-summary-card"><div class="rl-summary-label">' + esc(c.title) + '</div><div class="rl-summary-val">' + esc(body) + '</div></div>';
+    }).join('');
   }
 
   function renderComparePane() {
@@ -260,8 +373,9 @@
       return;
     }
     var keys = [
-      ['osi', 'OSI', false], ['abq', 'ABQ', false], ['rcv', 'RCV', false], ['obr', 'OBR', false],
-      ['projOSI', 'ProjOSI', false], ['ppGap', 'PP-Gap', false]
+      ['osi', 'OSI', false], ['projOSI', 'ProjOSI', false], ['abq', 'ABQ', false], ['rcv', 'RCV', false], ['obr', 'OBR', false],
+      ['ppGap', 'PP-Gap', false, true], ['dfGap', 'Power-Floor Gap', false, true], ['pals', 'PALS', false],
+      ['rhpOSI', 'vRHP', false], ['lhpOSI', 'vLHP', false], ['trend', 'Trend', false, false, true]
     ];
     var edge = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : 'Even');
     out.innerHTML = scorecardsHtml(a, b, 'Team') + edgeCard(edge, 'OSI edge based on composite offensive strength.')
@@ -298,8 +412,11 @@
       + '</div>' + edgeCard(edge, 'Lower OSI allowed = stronger pitcher profile.')
       + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(RL.compareA) + '</th><th>' + esc(RL.compareB) + '</th></tr></thead><tbody>'
       + row3('K%', ma.kPct, mb.kPct, true) + row3('BB%', ma.bbPct, mb.bbPct, true)
-      + row3('OSI Allowed', ma.osiAllowed, mb.osiAllowed, true, true)
-      + row3('OOR', ma.oor, mb.oor, true)
+      + row3('OSI Allowed', ma.osiAllowed, mb.osiAllowed, false, true)
+      + row3('ABQ Allowed', ma.abqAllowed, mb.abqAllowed, false, true)
+      + row3('RCV Allowed', ma.rcvAllowed, mb.rcvAllowed, false, true)
+      + row3('OBR Allowed', ma.obrAllowed, mb.obrAllowed, false, true)
+      + row3('Pitcher OOR', ma.oor, mb.oor, false, false, 'oor')
       + '</tbody></table></div>'
       + profileLinks(null, null, RL.compareA, RL.compareB);
   }
@@ -322,7 +439,7 @@
       + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(RL.compareA) + '</th><th>' + esc(RL.compareB) + '</th></tr></thead><tbody>'
       + row3('OSI Allowed', ua && ua.osiAllowed, ub && ub.osiAllowed, true, true)
       + row3('ABQ Allowed', ua && ua.abqAllowed, ub && ub.abqAllowed, true, true)
-      + row3('OOR', ua && ua.oor, ub && ub.oor, true)
+      + row3('Bullpen Unit OOR', ua && ua.oor, ub && ub.oor, false, false, 'oor')
       + '</tbody></table></div>'
       + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">' + esc(RL.compareA) + ' report →</a> · '
       + '<a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareB) + '">' + esc(RL.compareB) + ' report →</a></p>';
@@ -373,19 +490,31 @@
 
   function metricTable(keys, a, b) {
     return '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(a.t) + '</th><th>' + esc(b.t) + '</th></tr></thead><tbody>'
-      + keys.map(function(k) { return row3(k[1], a[k[0]], b[k[0]], k[2], k[2]); }).join('')
+      + keys.map(function(k) {
+        if (k[0] === 'trend') return row3(k[1], a.trend, b.trend, false, false, 'trend');
+        if (k[0] === 'ppGap' || k[0] === 'dfGap') return row3(k[1], a[k[0]], b[k[0]], false, false, k[0]);
+        return row3(k[1], a[k[0]], b[k[0]], k[2], k[3]);
+      }).join('')
       + '</tbody></table></div>';
   }
 
-  function row3(label, va, vb, higherBetter, invert) {
-    var best = '—';
-    if (va != null && vb != null) {
-      if (higherBetter) best = va > vb ? 'A' : (vb > va ? 'B' : '—');
-      else best = va < vb ? 'A' : (vb < va ? 'B' : '—');
+  function row3(label, va, vb, higherBetter, invert, ctx) {
+    if (ctx === 'oor') {
+      return '<tr><td>' + esc(label) + '</td>'
+        + '<td style="color:' + mColor(va, false, 'oor') + '">' + fmt(va) + '</td>'
+        + '<td style="color:' + mColor(vb, false, 'oor') + '">' + fmt(vb) + '</td></tr>';
+    }
+    if (label === 'PP-Gap' || label === 'Power-Floor Gap') {
+      var ca = label === 'PP-Gap' ? mColor(va, false, 'ppGap') : mColor(va, false, 'dfGap');
+      var cb = label === 'PP-Gap' ? mColor(vb, false, 'ppGap') : mColor(vb, false, 'dfGap');
+      return '<tr><td>' + esc(label) + '</td><td style="color:' + ca + '">' + fmt(va) + '</td><td style="color:' + cb + '">' + fmt(vb) + '</td></tr>';
+    }
+    if (label === 'Trend') {
+      return '<tr><td>' + esc(label) + '</td><td style="color:' + mColor(va, false, null) + '">' + esc(va || '—') + '</td><td style="color:' + mColor(vb, false, null) + '">' + esc(vb || '—') + '</td></tr>';
     }
     return '<tr><td>' + esc(label) + '</td>'
-      + '<td style="color:' + mColor(va, invert) + '">' + fmt(va) + '</td>'
-      + '<td style="color:' + mColor(vb, invert) + '">' + fmt(vb) + '</td></tr>';
+      + '<td style="color:' + mColor(va, invert, invert ? 'osi' : 'osi') + '">' + fmt(va) + '</td>'
+      + '<td style="color:' + mColor(vb, invert, invert ? 'osi' : 'osi') + '">' + fmt(vb) + '</td></tr>';
   }
 
   function fmt(v) { return v != null && !isNaN(v) ? Number(v).toFixed(1) : '—'; }
@@ -394,27 +523,22 @@
     var root = document.getElementById('rlResearchHomeRoot');
     if (!root) return;
     var cards = [
-      { pane: 'splits-trends', title: 'Team Offense', desc: 'Splits, trends, heatmaps, and master metric table', icon: '◆' },
-      { pane: 'pitching', title: 'Pitcher Lab', desc: 'SP metrics allowed, rankings, and staleness', icon: '◎' },
-      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', desc: 'Lineup edge vs SP and bullpen context', icon: '⚡' },
-      { pane: 'compare', title: 'Compare', desc: 'Team, pitcher, bullpen, and lineup comparisons', icon: '⇄' },
-      { pane: 'leaderboards', title: 'Leaderboards', desc: 'Offensive, pitching, and bullpen rankings', icon: '▤' },
-      { pane: 'model-links', title: 'Model Links', desc: 'Signals, matchups, and report shortcuts', icon: '→' }
+      { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: '◆' },
+      { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: '◎' },
+      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: '⚡' },
+      { pane: 'compare', title: 'Compare', use: 'Team vs team, pitcher vs pitcher, bullpen vs bullpen, lineup vs pitcher', cta: 'Open Compare', icon: '⇄' },
+      { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: '▤' }
     ];
     root.innerHTML = '<div class="rl-home-header"><h2 class="rl-workspace-title">Research Home</h2>'
-      + '<p class="rl-workspace-subtitle">Choose a research path — all tools run in-pane.</p></div>'
+      + '<p class="rl-workspace-subtitle">Choose a research path — no giant tables on this screen.</p></div>'
       + '<div class="rl-home-grid">' + cards.map(function(c) {
         return '<button type="button" class="rl-home-card" data-rl-pane="' + c.pane + '">'
           + '<span class="rl-home-icon">' + c.icon + '</span>'
           + '<strong>' + esc(c.title) + '</strong>'
-          + '<span>' + esc(c.desc) + '</span>'
-          + '<em>Open →</em></button>';
+          + '<span class="rl-home-use">Use for: ' + esc(c.use) + '</span>'
+          + '<em>' + esc(c.cta) + ' →</em></button>';
       }).join('') + '</div>'
-      + '<div class="rl-metric-legend"><span class="rl-legend-title">Metric colors</span>'
-      + '<span class="rl-legend-item"><i style="background:#4ADE80"></i> Higher = better (OSI, ABQ…)</span>'
-      + '<span class="rl-legend-item"><i style="background:#F87171"></i> Lower = better (allowed)</span>'
-      + '<span class="rl-legend-item"><i style="background:#22D3EE"></i> OOR contextual</span>'
-      + '<span class="rl-legend-item"><i style="background:#FBBF24"></i> PP-Gap negative</span></div>';
+      + (A && A.researchLabLegendHtml ? A.researchLabLegendHtml() : '');
 
     root.querySelectorAll('[data-rl-pane]').forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -506,12 +630,12 @@
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'model_report.html', title: 'Daily Signal Board', desc: 'All fired signals and verdicts for tonight.' },
-      { href: 'model_report.html#section-convergence', title: 'Convergence Explorer', desc: 'Weighted plays by game side.' },
-      { href: 'chase_analytics_mlb_oem_v7.html#section-matchups-hero', title: 'Today\'s Matchups', desc: 'Slate cards with lineups and edges.' },
-      { href: 'model_report.html?fired=1', title: 'Fired Signals Only', desc: 'Filter to actionable fired rows.' },
-      { href: 'glossary.html', title: 'Metric Glossary', desc: 'Definitions and methodology reference.' },
-      { href: 'player_search.html', title: 'Player Search', desc: 'Find batter and pitcher profiles.' }
+      { href: 'model_report.html', title: 'Daily Predictive Signal Board', desc: 'All fired signals and verdicts for tonight.' },
+      { href: 'model_report.html#section-convergence', title: 'Signal Explorer', desc: 'Convergence matrix and weighted plays.' },
+      { href: 'model_report.html?fired=1', title: 'Highest Confidence Signals', desc: 'Filter to actionable fired rows.' },
+      { href: 'model_report.html#section-risks', title: 'Context Risks', desc: 'Schedule, platoon, and volatility flags.' },
+      { href: 'model_report.html#section-f5', title: 'F5 Model Signals', desc: 'First-five specific model outputs.' },
+      { href: 'model_report.html#section-regression', title: 'Regression / Buy-Low Signals', desc: 'Process vs production divergence plays.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {
       return '<a class="rl-model-link-card" href="' + c.href + '"><h4>' + esc(c.title) + '</h4><p>' + esc(c.desc) + '</p></a>';
@@ -538,7 +662,10 @@
 
   function onSubtab(name) {
     if (name === 'research-home') renderResearchHome();
-    if (name === 'splits-trends') restoreSplitsTable();
+    if (name === 'splits-trends') {
+      restoreSplitsTable();
+      renderSplitSummary();
+    }
     if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
     } else if (name === 'pitching-vs-lineup') {
@@ -608,7 +735,9 @@
     initSplitsControls: initSplitsControls,
     onSubtab: onSubtab,
     mountLeaderboards: mountLeaderboards,
-    renderComparePane: renderComparePane
+    renderComparePane: renderComparePane,
+    renderSplitSummary: renderSplitSummary,
+    metricCell: metricCell
   };
 
 })(typeof window !== 'undefined' ? window : this);

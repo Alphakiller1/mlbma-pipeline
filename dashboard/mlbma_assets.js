@@ -382,6 +382,80 @@
     return '<div class="f5-variance-note">F5 (Inn. 1–5) · <em>Higher variance — smaller sample</em></div>';
   }
 
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function contextualOorColor(value) {
+    if (value == null || isNaN(value)) return GRADE_COLORS.average;
+    if (value >= 55) return '#60A5FA';
+    if (value <= 45) return '#A78BFA';
+    return '#71717A';
+  }
+
+  function ppGapColor(gap) {
+    if (gap == null || isNaN(gap)) return GRADE_COLORS.average;
+    if (gap > 4) return '#60A5FA';
+    if (gap < -4) return '#FBBF24';
+    return GRADE_COLORS.average;
+  }
+
+  function dfGapColor(gap) {
+    if (gap == null || isNaN(gap)) return GRADE_COLORS.average;
+    if (gap >= 8) return '#FB923C';
+    if (gap <= -4) return GRADE_COLORS.strong;
+    return GRADE_COLORS.average;
+  }
+
+  function stalenessColor(label) {
+    var s = String(label || '').toLowerCase();
+    if (s.indexOf('fresh') >= 0 || s.indexOf('stable') >= 0) return GRADE_COLORS.strong;
+    if (s.indexOf('moderate') >= 0 || s.indexOf('volatile') >= 0) return '#FBBF24';
+    if (s.indexOf('stale') >= 0 || s.indexOf('declin') >= 0) return GRADE_COLORS.weak;
+    return GRADE_COLORS.average;
+  }
+
+  /**
+   * Standard metric display cell for Research Lab / profiles.
+   * @param {object} opts - { label, value, context, invert, mode, tier, hint, decimals, trend, staleness }
+   */
+  function metricCell(opts) {
+    opts = opts || {};
+    var v = opts.value;
+    var color;
+    if (opts.mode === 'contextual' || opts.context === 'OOR' || opts.context === 'oor') {
+      color = contextualOorColor(v);
+    } else if (opts.context === 'ppGap' || opts.context === 'PP_GAP') {
+      color = ppGapColor(v);
+    } else if (opts.context === 'dfGap' || opts.context === 'POWER_FLOOR') {
+      color = dfGapColor(v);
+    } else if (opts.trend) {
+      color = trendColor(opts.trend);
+    } else if (opts.staleness) {
+      color = stalenessColor(opts.staleness);
+    } else {
+      color = metricColor(v, opts.context || 'osi', !!opts.invert);
+    }
+    var d = opts.decimals != null ? opts.decimals : 1;
+    var display = (v != null && !isNaN(v)) ? Number(v).toFixed(d) : '—';
+    return '<div class="mc-metric-cell">'
+      + '<span class="mc-label">' + escHtml(opts.label || '') + '</span>'
+      + '<span class="mc-value" style="color:' + color + '">' + display + '</span>'
+      + (opts.tier ? '<span class="mc-tier">' + escHtml(opts.tier) + '</span>' : '')
+      + (opts.hint ? '<span class="mc-hint">' + escHtml(opts.hint) + '</span>' : '')
+      + '</div>';
+  }
+
+  function researchLabLegendHtml() {
+    return '<div class="rl-metric-legend rl-metric-legend--global" role="note">'
+      + '<span class="rl-legend-title">Metric colors</span>'
+      + '<span class="rl-legend-item"><i style="background:#4ADE80"></i> Higher = better (OSI, ABQ, RCV…)</span>'
+      + '<span class="rl-legend-item"><i style="background:#F87171"></i> Allowed metrics inverted (lower = better)</span>'
+      + '<span class="rl-legend-item"><i style="background:#60A5FA"></i> OOR = competition difficulty (contextual)</span>'
+      + '<span class="rl-legend-item"><i style="background:#FBBF24"></i> PP-Gap negative = regression risk</span>'
+      + '</div>';
+  }
+
   global.MLBMAAssets = {
     BRAND: BRAND,
     espnAbbr: espnAbbr,
@@ -409,6 +483,12 @@
     hcol: hcol,
     trendCol: trendCol,
     f5WarningHtml: f5WarningHtml,
+    metricCell: metricCell,
+    contextualOorColor: contextualOorColor,
+    ppGapColor: ppGapColor,
+    dfGapColor: dfGapColor,
+    stalenessColor: stalenessColor,
+    researchLabLegendHtml: researchLabLegendHtml,
     GRADE_COLORS: GRADE_COLORS,
     get registry() { return REGISTRY; },
     get leaguePools() { return LEAGUE_POOLS; }
