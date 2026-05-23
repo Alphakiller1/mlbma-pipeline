@@ -17,9 +17,15 @@
 
 .layer-main { margin-bottom: 0; max-width: 1200px; margin-left: auto; margin-right: auto; }
 body.opening-dashboard #metricLegendGlobal { margin-bottom: 12px; }
+html.view-opening #section-research-lab,
 body.view-opening #section-research-lab { display: none !important; }
+html.view-research #opening-dashboard,
 body.view-research #opening-dashboard { display: none !important; }
+html.view-research #section-research-lab,
+body.view-research #section-research-lab { display: block !important; }
+html.view-research .ca-page-identity,
 body.view-research .ca-page-identity { display: none; }
+#dashboard-data-templates { display: none !important; }
 .hmc-row.hmc-teams {
   display: flex;
   flex-wrap: wrap;

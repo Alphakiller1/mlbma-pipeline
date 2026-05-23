@@ -1438,7 +1438,8 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 .oem-mode-tabs, #pane-oem-methodology, #pane-oem-daily,
 .dash-section-nav, #dailySummarySection, #section-market-map,
 #section-market-edge, #section-game-script, #section-validate,
-.question-section { display: none !important; }
+.question-section,
+#pane-signals, #pane-strat, #pane-reference, #pane-matchup { display: none !important; }
 /* Opening vs Research Lab — mutually exclusive views */
 body.platform-dashboard #opening-dashboard { display: block; }
 body.platform-dashboard #section-research-lab,
@@ -1547,23 +1548,32 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .window-data-banner.show { display: block; }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css">
-<link rel="stylesheet" href="mlbma_design_system.css">
-<link rel="stylesheet" href="chase_nav.css">
-<link rel="stylesheet" href="landing_dashboard.css">
-<link rel="stylesheet" href="research_lab.css">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260522a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
+<link rel="stylesheet" href="chase_nav.css?v=20260522a">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260522a">
+<link rel="stylesheet" href="research_lab.css?v=20260522a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_config.js"></script>
-<script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js"></script>
-<script src="matchup_shared.js"></script>
-<script src="mlbma_controls.js"></script>
-<script src="platform_dashboard.js"></script>
-<script src="research_lab.js"></script>
+<script src="mlbma_build.js?v=20260522a"></script>
+<script>document.documentElement.classList.add('view-opening','view-pending');</script>
+<style id="critical-dashboard-css">
+  .loading-text,#loadingText{display:none!important}
+  #pane-oem-methodology,#dashboard-data-templates{display:none!important}
+  #section-research-lab{display:none!important}
+  html.view-opening #opening-dashboard{display:block}
+  html.view-research #opening-dashboard{display:none!important}
+  html.view-research #section-research-lab{display:block!important}
+</style>
+<script src="mlbma_config.js?v=20260522a"></script>
+<script src="mlbma_ui.js?v=20260522a" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260522a"></script>
+<script src="matchup_shared.js?v=20260522a"></script>
+<script src="mlbma_controls.js?v=20260522a"></script>
+<script src="platform_dashboard.js?v=20260522a"></script>
+<script src="research_lab.js?v=20260522a"></script>
+  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
-<body>
-
-<div class="loading-text" id="loadingText">Loading live data from Google Sheets…</div>
+<body class="view-pending view-opening">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -1643,12 +1653,27 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </div>
   </div>
 </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
+    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
+    <a href="player_search.html" class="chase-mobile-link">Player Search</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+  </div>
+  <div class="chase-mobile-status">
+    <div class="chase-timestamp">
+      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
+      <span id="mobileLastUpdated">--</span>
+    </div>
+  </div>
+  </div>
 </div>
 
 <div class="container">
@@ -1742,11 +1767,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <div id="metricBreakdownSection" style="display:none;"></div>
 
 <div class="section">
-  <div class="subtabs">
-    <button class="subtab active" data-pane="splits-trends">Splits &amp; Trends</button>
-    <button class="subtab" data-pane="compare">Compare</button>
-    <button class="subtab" data-pane="pitching">Pitching Context</button>
-    <button class="subtab" data-pane="signals">Signal Explorer</button>
+  <div class="subtabs rl-segment-tabs">
+    <button type="button" class="subtab active" data-pane="splits-trends">Splits &amp; Trends</button>
+    <button type="button" class="subtab" data-pane="compare">Compare</button>
+    <button type="button" class="subtab" data-pane="pitching-vs-lineup">Pitching vs Lineup</button>
+    <button type="button" class="subtab" data-pane="pitching">Pitching Context</button>
+    <button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>
+    <button type="button" class="subtab" data-pane="model-links">Model Links</button>
   </div>
 
   <!-- Splits pane -->
@@ -2036,38 +2063,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </div><!-- /pane-oem-research -->
 </section><!-- /section-research-lab -->
 
-<div class="oem-mode-pane" id="pane-oem-methodology" data-oem-pane="methodology">
-  <div class="section">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Methodology</div>
-        <div class="section-title">Model framework &amp; definitions</div>
-        <div class="section-subtitle">Full glossary, formulas, signals, and tier bands live on the standalone glossary page.</div>
-      </div>
-    </div>
-    <div class="methodology-grid">
-      <div class="methodology-card">
-        <h3>Metric Glossary</h3>
-        <p>ABQ, RCV, OBR, OSI, projOSI, PP-Gap, Power-Floor Gap, PALS, signals, and betting archetypes — searchable reference.</p>
-        <a href="glossary.html">Open full glossary →</a>
-      </div>
-      <div class="methodology-card">
-        <h3>Core composites</h3>
-        <p><strong>OBR</strong> = 65% xwOBA + 35% BB% (on-base floor). <strong>OSI</strong> = 43% RCV + 37% ABQ + 20% OBR. <strong>projOSI</strong> = OSI + capped regression adjustment.</p>
-      </div>
-      <div class="methodology-card">
-        <h3>Gap metrics</h3>
-        <p><strong>PP-Gap</strong> = ABQ − RCV (process vs production). <strong>Power-Floor Gap</strong> = RCV − OBR (damage vs on-base floor).</p>
-      </div>
-      <div class="methodology-card">
-        <h3>Market status map</h3>
-        <p>OSI × PP-Gap quadrants label betting posture: back team totals, buy low, fade momentum, or fade / under lean.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <!-- Modal --><!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -2166,7 +2161,6 @@ function fetchLiveData() {
         }
       }
     });
-    renderMatchups();
     renderPALS();
     /* scYtdR/scYtdL + display refresh handled by loadLiveData() → applyLiveData() */
   }).catch(function(e) {
@@ -5819,7 +5813,10 @@ function initResearchLab() {
 function syncDashboardView() {
   var hash = (location.hash || '').replace(/^#/, '');
   var body = document.body;
+  var root = document.documentElement;
   body.classList.remove('view-opening', 'view-research', 'view-model-report', 'research-lab-active');
+  root.classList.remove('view-opening', 'view-research', 'view-model-report');
+  root.classList.remove('view-pending');
 
   if (hash === 'section-model-report') {
     window.location.replace('model_report.html');
@@ -5828,6 +5825,7 @@ function syncDashboardView() {
 
   if (hash === 'section-research-lab') {
     body.classList.add('view-research', 'research-lab-active');
+    root.classList.add('view-research');
     var rl = document.getElementById('section-research-lab');
     if (rl) rl.setAttribute('aria-hidden', 'false');
     initResearchLab();
@@ -5838,6 +5836,7 @@ function syncDashboardView() {
   }
 
   body.classList.add('view-opening');
+  root.classList.add('view-opening');
   var rlHide = document.getElementById('section-research-lab');
   if (rlHide) rlHide.setAttribute('aria-hidden', 'true');
 
@@ -6232,7 +6231,8 @@ if (document.readyState === 'loading') {
 
 <div class="toast" id="toast"></div>
 
-<!-- OOR Section -->
+<!-- Sheet table templates — mounted into Research Lab only (never visible on Opening) -->
+<div id="dashboard-data-templates" hidden aria-hidden="true" style="display:none!important">
 <div class="container" style="padding-top:0;">
 <div class="section" id="oorSection" style="margin-top:0;">
   <div class="section-header">
@@ -6334,9 +6334,15 @@ if (document.readyState === 'loading') {
 </div>
 
 </div><!-- /.container -->
-  <script src="oem_overhaul.js"></script>
-  <script src="mlbma_standings.js"></script>
-  <script src="mlbma_signals.js"></script>
-  <script src="chase_nav.js"></script>
+</div><!-- /#dashboard-data-templates -->
+
+<footer class="ca-platform-footer" style="text-align:center;padding:24px;color:var(--text-3);font-size:12px;border-top:1px solid var(--border);margin-top:32px;">
+  <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
+  Chase Analytics · MLB Offensive Intelligence
+</footer>
+  <script src="oem_overhaul.js?v=20260522a"></script>
+  <script src="mlbma_standings.js?v=20260522a"></script>
+  <script src="mlbma_signals.js?v=20260522a"></script>
+  <script src="chase_nav.js?v=20260522a"></script>
 </body>
 </html>

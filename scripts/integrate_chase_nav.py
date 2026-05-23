@@ -30,8 +30,9 @@ CHASE_JS = '<script src="chase_nav.js"></script>'
 ASSETS_JS = '<script src="mlbma_assets.js"></script>'
 
 NAV_BLOCK_RE = re.compile(
+    r'(?:<!-- Chase Analytics navigation[^\n]*\n)?'
     r'<header class="chase-header" id="chaseHeader">[\s\S]*?'
-    r'<div class="chase-mobile-status">[\s\S]*?</div>\s*</div>\s*',
+    r'<div class="chase-mobile-menu" id="mobileMenu"[\s\S]*?</div>\s*\n',
     re.MULTILINE,
 )
 
