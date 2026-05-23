@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function() {
+  var p = new URLSearchParams(location.search);
+  var away = p.get('away');
+  var home = p.get('home');
+  if (away && home) {
+    location.replace('matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home));
+  } else {
+    location.replace('chase_analytics_mlb_oem_v7.html');
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics · Daily Matchups</title>
@@ -285,6 +297,7 @@ h1 {
 <div class="loading-text" id="loadingText">Loading matchup data from Google Sheets…</div>
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
@@ -296,6 +309,7 @@ h1 {
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
@@ -347,6 +361,7 @@ h1 {
   </div>
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
@@ -364,6 +379,7 @@ h1 {
       <span id="mobileLastUpdated">--</span>
     </div>
   </div>
+</div>
 </div>
 </div>
 </div>

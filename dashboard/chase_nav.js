@@ -107,7 +107,8 @@
   if (page === 'chase_analytics_mlb_oem_v7.html' || page === '') {
       if (hash === 'section-model-report') return 'model-report';
       if (hash === 'section-research-lab') return 'research';
-      if (!hash || hash === 'section-matchups-hero') return 'opening';
+      if (hash === 'section-matchups-hero') return 'matchups';
+      if (!hash) return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'model_report.html') return 'model-report';
@@ -121,11 +122,12 @@
     if (page === 'chase_analytics_mlb_oem_v7.html') {
       if (hash === 'section-model-report') return 'model-report';
       if (hash === 'section-research-lab') return 'research';
+      if (hash === 'section-matchups-hero') return 'matchups';
       return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'model_report.html') return 'model-report';
-    if (page === 'matchup_compare.html') return 'opening';
+    if (page === 'matchup_compare.html') return 'matchups';
     return page;
   }
 

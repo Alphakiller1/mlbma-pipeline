@@ -8,27 +8,18 @@
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
 <link rel="stylesheet" href="landing_dashboard.css">
+<link rel="stylesheet" href="matchup_compare.css">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
 <script src="mlbma_standings.js"></script>
+<script src="matchup_shared.js"></script>
 <style>
 body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 100vh; }
-.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 64px; }
-.compare-header { margin-bottom: 28px; }
-.back-link { font-size: 12px; color: var(--text-2); text-decoration: none; display: inline-block; margin-bottom: 12px; }
-.back-link:hover { color: #7C3AED; }
-.compare-teams { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 28px; font-weight: 700; }
-.compare-at { color: var(--text-3); font-size: 18px; }
-.compare-meta { margin-top: 8px; color: var(--text-2); font-size: 13px; }
-.compare-section { margin-bottom: 28px; padding: 18px; background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f); border-radius: 12px; }
-.compare-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 700px) { .compare-pitchers { grid-template-columns: 1fr; } }
-.compare-pitcher-card { display: flex; gap: 14px; align-items: flex-start; }
-.compare-pitcher-photo .headshot-wrap { width: 64px; height: 64px; }
 </style>
 </head>
 <body>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -41,6 +32,7 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
@@ -92,6 +84,7 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
   </div>
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
@@ -110,11 +103,12 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
     </div>
   </div>
 </div>
+</div>
 
 <script src="mlbma_ui.js" data-page="matchup_compare.html"></script>
 
-<div class="container" id="compareRoot">
-  <p class="ca-helper">Loading matchup…</p>
+<div id="compareRoot">
+  <div class="compare-page"><p class="ca-helper">Loading matchup…</p></div>
 </div>
 
 <script src="matchup_compare.js"></script>
