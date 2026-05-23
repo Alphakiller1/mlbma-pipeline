@@ -134,7 +134,6 @@ def sync_nav_block(html: str) -> str:
     html = strip_orphan_mobile_nav(html)
     html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
     html = strip_orphan_mobile_nav(html)
-    html = strip_trailing_nav_divs(html)
     return dedupe_nav_comments(html)
 
 
@@ -170,7 +169,6 @@ def main() -> None:
         text = strip_orphan_mobile_nav(text)
         text = sync_nav_block(text)
         text = strip_orphan_mobile_nav(text)
-        text = strip_trailing_nav_divs(text)
         text = insert_nav_at_body(text)
         text = ensure_body_script(text)
         if text != orig:

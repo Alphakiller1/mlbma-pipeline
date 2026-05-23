@@ -127,6 +127,51 @@
     return 'near';
   }
 
+  function norm100(v, invert, maxVal) {
+    if (v == null || isNaN(v)) return 50;
+    var n = Number(v);
+    if (n > 0 && n <= 1 && maxVal == null) n *= 100;
+    if (maxVal != null) n = Math.min(100, (n / maxVal) * 100);
+    n = Math.max(0, Math.min(100, n));
+    return invert ? 100 - n : n;
+  }
+
+  function pitcherRadarValues(met, pitchScore, m, side) {
+    var stats = side === 'away'
+      ? { k: m.awayK, bb: m.awayBB, hr9: m.awayHR9 }
+      : { k: m.homeK, bb: m.homeBB, hr9: m.homeHR9 };
+    if (met.kPct != null) stats.k = met.kPct;
+    if (met.bbPct != null) stats.bb = met.bbPct;
+    if (met.hr9 != null) stats.hr9 = met.hr9;
+    var k = stats.k != null ? (stats.k > 1 ? stats.k : stats.k * 100) : 50;
+    var bb = stats.bb != null ? (stats.bb > 1 ? stats.bb : stats.bb * 100) : 50;
+    var hr9 = stats.hr9 != null ? Number(stats.hr9) : 1.2;
+    var osiAllow = met.osiAllowed != null ? met.osiAllowed : 50;
+    var oor = met.oor != null ? met.oor : 50;
+    return [
+      norm100(pitchScore, false),
+      norm100(k, false),
+      norm100(bb, true),
+      norm100(hr9, true, 2.5),
+      norm100(osiAllow, true),
+      norm100(oor, false)
+    ];
+  }
+
+  function renderPitcherRadar(m, awayMet, homeMet, awayPs, homePs) {
+    if (!global.MLBMACharts) return '';
+    var metrics = ['Pitch Score', 'K%', 'BB%', 'HR/9', 'OSI Alw', 'OOR'];
+    var teams = [
+      { abbr: m.away, values: pitcherRadarValues(awayMet, awayPs, m, 'away') },
+      { abbr: m.home, values: pitcherRadarValues(homeMet, homePs, m, 'home') }
+    ];
+    var id = 'mcPitcherRadar';
+    setTimeout(function() {
+      MLBMACharts.buildRadarChart(id, teams, metrics, ['#7C3AED', '#0891B2'], { size: 280 });
+    }, 0);
+    return '<div id="' + id + '" class="mc-radar-mount"></div>';
+  }
+
   function lineupEdgeRead(m) {
     var a = m.awayOSI != null ? m.awayOSI : 0;
     var h = m.homeOSI != null ? m.homeOSI : 0;
@@ -249,7 +294,7 @@
   }
 
   function teamBlock(team, side) {
-    var logo = S.teamLogo(team, 48);
+    var logo = S.teamLogo(team, 56);
     var rec = S.recordHtml(team);
     return '<a href="' + teamProfileUrl(team) + '" class="mc-team-block">'
       + logo
@@ -294,7 +339,7 @@
     var oorCtx = oorContextLabel(oor);
     var xfipStr = stats.xfip != null ? stats.xfip.toFixed(2) : (stats.fip != null ? stats.fip.toFixed(2) : '—');
     return '<div class="mc-sp-card">'
-      + '<div class="mc-sp-top">' + S.headshot(pname, 64, { eager: true })
+      + '<div class="mc-sp-top">' + S.headshot(pname, 72, { eager: true })
       + '<div><div class="ca-metric-label">' + esc(side) + ' SP · ' + esc(team) + '</div>'
       + '<div class="mc-sp-name">' + nameHtml + ' <span class="hand-pill">' + esc((hand || '?').charAt(0)) + '</span>'
       + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'
@@ -319,6 +364,7 @@
       + '<div class="mc-sp-vs">VS</div>'
       + spCard('Home', m.homeSP, m.homeHand, m.home, m, homeMet, homePs, spL14)
       + '</div>'
+      + renderPitcherRadar(m, awayMet, homeMet, awayPs, homePs)
       + '<div class="mc-h2h"><strong>Pitching edge: ' + esc(h2h.edgeLabel) + '</strong> — ' + esc(h2h.why) + '</div>'
       + '</section>';
   }

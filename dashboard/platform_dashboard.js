@@ -99,21 +99,43 @@
 
   function weatherHtml(m) {
     var gk = m.away + '@' + m.home;
-    var w = (LIVE_DATA.weather || {})[gk];
-    var text = weatherText(w);
-    if (!text) return '';
-    var s = String(text).toUpperCase();
-    if (s.indexOf('DOME') >= 0 || s.indexOf('ROOF') >= 0) return '<span class="weather-badge dome">DOME</span>';
-    return '<span class="weather-badge">' + esc(text) + '</span>';
+    var w = (global.LIVE_DATA && LIVE_DATA.weather || {})[gk] || m.weather;
+    if (!w) return '';
+    if (typeof w === 'string') {
+      var su = w.toUpperCase();
+      if (su.indexOf('DOME') >= 0 || su.indexOf('ROOF') >= 0) return '<span class="weather-badge dome">DOME</span>';
+      return '<span class="weather-badge">' + esc(w) + '</span>';
+    }
+    if (w.dome) return '<span class="weather-badge dome">DOME</span>';
+    var bits = [];
+    if (w.temp != null) bits.push(w.temp + '°');
+    if (w.wind != null) bits.push(w.wind + ' mph' + (w.windDir ? ' ' + w.windDir : ''));
+    var cond = w.cond || w.conditions || w.weather || w.raw || '';
+    if (cond && String(cond).toUpperCase().indexOf('DOME') >= 0) return '<span class="weather-badge dome">DOME</span>';
+    if (cond) bits.push(cond);
+    if (!bits.length) return '';
+    return '<span class="weather-badge">' + esc(bits.join(' · ')) + '</span>';
+  }
+
+  function teamOsiSparkline(team, spHand) {
+    var row = teamRow(team, spHand);
+    if (!row || !global.MLBMACharts) return '';
+    var vals = [
+      row.ytdOSI != null ? row.ytdOSI : row.osi,
+      row.l30OSI,
+      row.l14OSI,
+      row.l7OSI
+    ];
+    return MLBMACharts.buildSparkline(vals, 50, 20);
   }
 
   function gameMetaHtml(m) {
     var parts = [];
-    if (m.time) parts.push('<span class="hmc-time">' + esc(m.time) + '</span>');
-    if (m.stadium) parts.push('<span class="hmc-venue">' + esc(m.stadium) + '</span>');
+    if (m.time) parts.push('<span class="hmc-time chip">' + esc(m.time) + '</span>');
+    if (m.stadium) parts.push('<span class="hmc-stadium chip">' + esc(m.stadium) + '</span>');
     var wh = weatherHtml(m);
     if (wh) parts.push(wh);
-    if (!parts.length) return '<div class="hmc-meta">TBD</div>';
+    if (!parts.length) return '<div class="hmc-meta"><span class="chip">TBD</span></div>';
     return '<div class="hmc-meta">' + parts.join('') + '</div>';
   }
 
@@ -313,6 +335,10 @@
         + '<span class="hmc-osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
         + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
         + '<span class="hmc-osi-val tr' + homeEdgeCls + '">' + esc(m.home) + ' <strong>' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
+        + '</div>'
+        + '<div class="hmc-osi-sparklines" aria-hidden="true">'
+        + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'
+        + '<span class="hmc-spark">' + teamOsiSparkline(m.home, m.awayHand) + '</span>'
         + '</div>'
         + '<div class="hmc-badges">'
         + '<span class="script-badge ' + script.cls + '">' + esc(script.label) + '</span>'

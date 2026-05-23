@@ -1552,28 +1552,37 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
 <link rel="stylesheet" href="chase_nav.css?v=20260523a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260523a">
-<link rel="stylesheet" href="research_lab.css?v=20260523a">
+<link rel="stylesheet" href="research_lab.css?v=20260523b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260522a"></script>
+<script src="mlbma_build.js?v=20260523b"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
-  #pane-oem-methodology,#dashboard-data-templates{display:none!important}
-  #section-research-lab{display:none!important}
-  html.view-opening #opening-dashboard{display:block}
+  .oem-mode-tabs,#pane-oem-methodology,#pane-oem-daily{display:none!important}
+  #dashboard-data-templates,#oorSection{display:none!important}
+  html.view-opening #section-research-lab,
+  html.view-opening #layerAdvanced,
+  html.view-opening #masterTableSection,
+  html.view-opening #pane-matchup,
+  html.view-opening #pane-signals,
+  html.view-opening #pane-strat,
+  html.view-opening #pane-reference{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important}
+  html.view-opening #opening-dashboard{display:block!important}
+  html.view-opening .ca-page-identity{display:none!important}
   html.view-research #opening-dashboard{display:none!important}
-  html.view-research #section-research-lab{display:block!important}
+  html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260522a"></script>
-<script src="mlbma_ui.js?v=20260522a" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260522a"></script>
-<script src="matchup_shared.js?v=20260522a"></script>
-<script src="mlbma_controls.js?v=20260522a"></script>
-<script src="platform_dashboard.js?v=20260523a"></script>
-<script src="research_lab.js?v=20260523a"></script>
+<script src="mlbma_config.js?v=20260523b"></script>
+<script src="mlbma_ui.js?v=20260523b" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260523b"></script>
+<script src="matchup_shared.js?v=20260523b"></script>
+<script src="mlbma_controls.js?v=20260523b"></script>
+<script src="mlbma_charts.js?v=20260523b"></script>
+<script src="platform_dashboard.js?v=20260523b"></script>
+<script src="research_lab.js?v=20260523b"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
-<body class="view-pending view-opening">
+<body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -1585,7 +1594,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
-      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
@@ -1605,6 +1613,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp">
@@ -1634,7 +1643,30 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-  <div class="container">
+  </div>
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
+    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
+    <a href="player_search.html" class="chase-mobile-link">Player Search</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+  </div>
+  <div class="chase-mobile-status">
+    <div class="chase-timestamp">
+      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
+      <span id="mobileLastUpdated">syncing…</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
 
 <div class="ca-page-identity" id="pageIdentityStrip">
   <img class="ca-page-identity-icon" src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'">
@@ -1666,9 +1698,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       </div>
     </div>
     <div class="opening-hero-right">
-      <a class="opening-hero-pill" href="model_report.html">Model Report →</a>
       <a class="opening-hero-pill" href="chase_analytics_mlb_oem_v7.html#section-research-lab">Research Lab →</a>
       <a class="opening-hero-pill" href="glossary.html">Glossary →</a>
+      <a class="opening-hero-pill" href="model_report.html">Model Report →</a>
     </div>
   </div>
 </section>
@@ -4535,6 +4567,12 @@ function renderExecSummary(){
   if (execTitle) execTitle.textContent = 'Metric distribution · '+STATE.time+' · '+label;
 }
 
+function rowOsiSparkline(d) {
+  if (!window.MLBMACharts || !d) return '';
+  var vals = [d.ytdOSI != null ? d.ytdOSI : d.osi, d.l30OSI, d.l14OSI, d.l7OSI];
+  return MLBMACharts.buildSparkline(vals, 60, 24);
+}
+
 function renderMasterTable(){
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
 
@@ -4668,7 +4706,7 @@ function renderMasterTable(){
       '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+projArrow+metricDecision('projOSI',d)+'</td>'+
       '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
       '<td class="num">'+palsHtml+'</td>'+
-      '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'—')+'</td>'+
+      '<td><span class="rl-trend-cell">' + rowOsiSparkline(d) + ' ' + (d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'—') + '</span></td>'+
     '</tr>';
     } else {
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
@@ -6170,7 +6208,6 @@ function init(){
   try {
     fetchLiveData();
     urlDecodeState();
-    bindOemModeTabs();
     bindDashRankingsControls();
     document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
       x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
