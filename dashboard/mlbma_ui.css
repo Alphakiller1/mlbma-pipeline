@@ -31,6 +31,12 @@
 }
 .mlbma-load-sub { color: #A1A1AA; font-size: 13px; }
 
+/* Hide inline loading text when full-viewport overlay is active */
+body.mlbma-page-loading .loading-text,
+body.mlbma-shell-ready .loading-text {
+  display: none !important;
+}
+
 .mlbma-nav-wrap {
   display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap;
 }

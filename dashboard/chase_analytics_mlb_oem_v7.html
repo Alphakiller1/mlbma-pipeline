@@ -449,6 +449,12 @@ tr.rank-row-expanded { background: rgba(192, 132, 252, 0.06); }
   font-size: 12px; color: var(--text-3); letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+.chart-placeholder.hide { display: none !important; }
+.chart-placeholder {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--text-3); font-size: 13px; pointer-events: none; z-index: 2;
+}
+.chart-wrap { position: relative; min-height: 200px; }
 .last-updated {
   font-size: 11px; color: var(--text-3); margin-top: 6px;
   font-family: var(--mono);
@@ -1560,6 +1566,18 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <div class="mobile-cards" id="mobileCards"></div>
 </div>
 
+<!-- Strategic Signal Cards (Daily Read) -->
+<div class="section" id="dailyStratsSection">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Daily Read</div>
+      <div class="section-title">Strategic Signal Cards</div>
+      <div class="section-subtitle">Teams grouped by actionable profile — elite confirmed, buy-low, cooling risk, and more.</div>
+    </div>
+  </div>
+  <div id="stratsDaily"></div>
+</div>
+
 </div><!-- /layer-main -->
 </div><!-- /pane-oem-daily -->
 
@@ -1872,27 +1890,41 @@ function ensureHardcodedTimeframes() {
 
 function applyLiveData() {
   console.log('[MLBMA] applyLiveData start');
-  if (!LIVE_DATA.scYtdR || !LIVE_DATA.scYtdL) return;
-  if (!LIVE_DATA.scYtdR.length || !LIVE_DATA.scYtdL.length) return;
+  try {
+    if (!LIVE_DATA.scYtdR || !LIVE_DATA.scYtdL || !LIVE_DATA.scYtdR.length || !LIVE_DATA.scYtdL.length) {
+      console.warn('[MLBMA] applyLiveData skipped — missing vs_RHP / vs_LHP scores');
+      return false;
+    }
 
-  LIVE_DATA.loaded = true;
-  LIVE_DATA.scYtdR = LIVE_DATA.scYtdR.map(prepLiveScoreRow);
-  LIVE_DATA.scYtdL = LIVE_DATA.scYtdL.map(prepLiveScoreRow);
+    LIVE_DATA.loaded = true;
+    LIVE_DATA.scYtdR = LIVE_DATA.scYtdR.map(prepLiveScoreRow);
+    LIVE_DATA.scYtdL = LIVE_DATA.scYtdL.map(prepLiveScoreRow);
 
-  /* Pre-scored 0–100 from pipeline — bypass scoreRows(), assign directly */
-  SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
-  SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
-  SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
+    /* Pre-scored 0–100 from pipeline — bypass scoreRows(), assign directly */
+    SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
+    SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
+    SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
 
-  M_YTD_R = toMap(SCO_YTD_R);
-  M_YTD_L = toMap(SCO_YTD_L);
-  ensureHardcodedTimeframes();
-  enrichYtdMaster();
+    M_YTD_R = toMap(SCO_YTD_R);
+    M_YTD_L = toMap(SCO_YTD_L);
+    ensureHardcodedTimeframes();
+    enrichYtdMaster();
 
-  SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
-  SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
+    SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
+    SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
 
-  renderAll();
+    if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
+
+    renderAll();
+    renderReferenceTables();
+    hideLoadingOverlay();
+    return true;
+  } catch (err) {
+    console.error('[MLBMA] applyLiveData error:', err);
+    showDataError('applyLiveData: ' + (err && err.message ? err.message : String(err)));
+    hideLoadingOverlay();
+    return false;
+  }
 }
 
 function parseCSVLine(line) {
@@ -2701,6 +2733,7 @@ function loadLiveData() {
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
+    if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
@@ -4256,8 +4289,8 @@ function renderTrendHeatmap(){
 
 /* Strategic recommendations */
 function renderStrats(){
-  var stratEl = document.getElementById('strats');
-  if (!stratEl) return;
+  var targets = [document.getElementById('stratsDaily'), document.getElementById('strats')].filter(Boolean);
+  if (!targets.length) return;
   function count(filt){ return (SCO_YTD_B || []).filter(filt).length; }
   var blocks=[
     {tag:'Elite Confirmed', bc:'#4ADE80', n:count(function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}), d:'High OSI with PALS confirmation — stable elite profiles.'},
@@ -4278,7 +4311,7 @@ function renderStrats(){
       '<div class="strat-desc">'+b.d+'</div>'+
     '</div>';
   });
-  stratEl.innerHTML=html;
+  targets.forEach(function(el) { el.innerHTML = html; });
 }
 
 /* Modal */
@@ -4885,7 +4918,15 @@ function mountReferenceTables(){
   });
 }
 
+function renderReferenceTables() {
+  renderOOR();
+  renderPitchingScore();
+  renderPALS();
+  renderMatchups();
+}
+
 function renderAll(){
+  console.log('[MLBMA] renderAll start');
   attachPalsToScores();
   renderDailySummary();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
@@ -4899,11 +4940,8 @@ function renderAll(){
   renderSplitBars();
   renderTrendHeatmap();
   renderStrats();
-  renderOOR();
-  renderPitchingScore();
-  renderPALS();
-  renderMatchups();
   mountReferenceTables();
+  renderReferenceTables();
   urlEncodeState();
 }
 
@@ -5094,9 +5132,10 @@ function renderOOR(){
   }).join('');
 }
 
-function hideLoadingScreen() {
-  console.log('[MLBMA] hideLoadingScreen');
-  if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+function hideLoadingOverlay() {
+  console.log('[MLBMA] hideLoadingOverlay');
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   var screen = document.getElementById('loadingScreen');
@@ -5106,6 +5145,19 @@ function hideLoadingScreen() {
   }
   var lt = document.getElementById('loadingText');
   if (lt) lt.style.display = 'none';
+}
+var hideLoadingScreen = hideLoadingOverlay;
+
+function showDelayedLoadBanner() {
+  if (LIVE_DATA.loaded) return;
+  console.warn('[MLBMA] load watchdog — showing delayed banner');
+  showDataError('Data load delayed — retrying… Showing cached or fallback data where available.');
+  try {
+    if (!SCO_YTD_B || !SCO_YTD_B.length) recomputeAllScores();
+    runPostLoadUI();
+  } catch (e) {
+    console.error('[MLBMA] watchdog fallback scores failed:', e);
+  }
 }
 
 function runPostLoadUI() {
@@ -5117,20 +5169,25 @@ function runPostLoadUI() {
     renderSplitBars();
     renderTrendHeatmap();
     renderStrats();
-    renderPitchingScore();
+    renderReferenceTables();
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
     showDataError('Dashboard render error: ' + (err && err.message ? err.message : String(err)));
   }
 }
 
+var _loadWatchdogDone = null;
+
 function init(){
   console.log('[MLBMA] init start');
+  if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
+    _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
+  }
   try {
     fetchLiveData();
     urlDecodeState();
     bindOemModeTabs();
-    if (stateReady() && STATE.oemMode && STATE.oemMode !== 'daily') setOemMode(STATE.oemMode);
+    setOemMode(stateReady() && STATE.oemMode ? STATE.oemMode : 'daily');
     var mg = document.getElementById('matchupsGrid');
     if (mg && !mg.dataset.lineupToggleBound) {
       mg.dataset.lineupToggleBound = '1';
@@ -5158,12 +5215,14 @@ function init(){
       .catch(function(e) { console.error('[MLBMA] loadLiveData rejected', e); })
       .finally(function() {
         runPostLoadUI();
-        hideLoadingScreen();
+        hideLoadingOverlay();
+        if (_loadWatchdogDone) _loadWatchdogDone();
       });
   } catch (err) {
     console.error('[MLBMA] init error:', err);
     runPostLoadUI();
-    hideLoadingScreen();
+    hideLoadingOverlay();
+    if (_loadWatchdogDone) _loadWatchdogDone();
   }
 }
 
@@ -5184,11 +5243,17 @@ window.addEventListener('resize', function(){
 
 function hideChartPlaceholder() {
   var p = document.getElementById('chartPlaceholder');
-  if (p) p.classList.add('hide');
+  if (p) {
+    p.classList.add('hide');
+    p.style.display = 'none';
+  }
 }
 function hideRankSkeleton() {
   var s = document.getElementById('rankSkeleton');
-  if (s) s.style.display = 'none';
+  if (s) {
+    s.style.display = 'none';
+    s.innerHTML = '';
+  }
 }
 (function() {
   var btn = document.getElementById('l7InfoBtn');

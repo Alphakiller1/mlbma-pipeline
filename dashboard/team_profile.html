@@ -846,15 +846,33 @@ function loadAll() {
   });
 }
 
+var _profileWatchdogDone = null;
+function showDelayedLoadBanner() {
+  var banner = document.getElementById('dataBanner');
+  if (banner) {
+    banner.textContent = 'Data load delayed — retrying…';
+    banner.classList.add('show');
+  }
+}
+function dismissLoading() {
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
+    _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
+  }
+  console.log('[MLBMA] team_profile loadAll start');
   initSelector();
   loadAll().then(function() {
-    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     renderTeam(STATE.team);
   }).catch(function(err) {
-    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
     document.getElementById('dataBanner').classList.add('show');
+  }).finally(function() {
+    dismissLoading();
+    if (_profileWatchdogDone) _profileWatchdogDone();
   });
 });
 </script>

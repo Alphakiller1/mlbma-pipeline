@@ -1003,12 +1003,23 @@ function updateBrandPill() {
 }
 
 function hideLoading() {
-  var ov = document.getElementById('loadingOverlay');
-  if (ov) ov.classList.add('hidden');
-  if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+  console.log('[MLBMA] hideLoadingOverlay (matchup_sheet)');
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+  var lt = document.getElementById('loadingText');
+  if (lt) lt.style.display = 'none';
+}
+
+function showDelayedLoadBanner() {
+  var banner = document.getElementById('errorBanner');
+  if (banner) {
+    banner.textContent = 'Data load delayed — retrying… Check sheet permissions if this persists.';
+    banner.classList.add('show');
+  }
 }
 
 function loadData() {
+  console.log('[MLBMA] loadData start (matchup_sheet)');
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading matchup data from Google Sheets…';
 
@@ -1020,7 +1031,7 @@ function loadData() {
     fetchSheetTab(TABS.pals),
     fetchSheetTab(TABS.pitching_score),
     fetchSheetTab(TABS.bullpen_unit),
-    fetchSheetText('Last_Updated')
+    fetchSheetText(TABS.last_updated)
   ]).then(function(results) {
     DATA.matchups = parseMatchupRows(results[0]);
     DATA.lineups = parseLineupRows(results[1]);
@@ -1048,7 +1059,23 @@ function loadData() {
   }).finally(hideLoading);
 }
 
-loadData();
+var _matchupWatchdogDone = null;
+
+function startMatchupInit() {
+  if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
+    _matchupWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
+  }
+  loadData().finally(function() {
+    hideLoading();
+    if (_matchupWatchdogDone) _matchupWatchdogDone();
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startMatchupInit);
+} else {
+  startMatchupInit();
+}
 </script>
   <script src="chase_nav.js"></script>
 </body>

@@ -312,6 +312,19 @@
   margin-top: 1rem;
 }
 
+@media (min-width: 769px) {
+  .chase-mobile-overlay,
+  .chase-mobile-menu {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .chase-hamburger {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .chase-nav-links,
   .chase-status .chase-timestamp {

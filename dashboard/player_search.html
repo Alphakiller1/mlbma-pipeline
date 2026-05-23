@@ -702,14 +702,23 @@ document.addEventListener('DOMContentLoaded', function() {
   var q = params.get('q') || params.get('search');
   if (q) document.getElementById('searchInput').value = q;
 
+  var watchdogDone = null;
+  if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
+    watchdogDone = MLBMA_UI.startLoadWatchdog(10000, function() {
+      var b = document.getElementById('dataBanner');
+      if (b) { b.textContent = 'Data load delayed — retrying…'; b.classList.add('show'); }
+    });
+  }
   loadAll().then(function() {
-    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     if (q) { STATE.query = q; onSearchInput(); }
     else { renderFeatured(); renderResults(); }
   }).catch(function(err) {
-    document.getElementById('loading').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
     document.getElementById('dataBanner').classList.add('show');
+  }).finally(function() {
+    if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+    else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+    if (watchdogDone) watchdogDone();
   });
 });
 </script>

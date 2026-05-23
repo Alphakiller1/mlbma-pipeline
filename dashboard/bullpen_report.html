@@ -935,11 +935,28 @@ function loadAll() {
     document.getElementById('dataBanner').textContent = 'Could not load sheets: ' + err;
     document.getElementById('dataBanner').classList.add('show');
   }).finally(function() {
-    document.getElementById('loadingScreen').classList.add('hide'); if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+    if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+    else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+    if (_profileWatchdogDone) _profileWatchdogDone();
   });
 }
 
-document.addEventListener('DOMContentLoaded', loadAll);
+var _profileWatchdogDone = null;
+function showDelayedLoadBanner() {
+  var banner = document.getElementById('dataBanner');
+  if (banner) {
+    banner.textContent = 'Data load delayed — retrying…';
+    banner.classList.add('show');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
+    _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
+  }
+  console.log('[MLBMA] bullpen_report loadAll start');
+  loadAll();
+});
 </script>
   <script src="chase_nav.js"></script>
 </body>

@@ -54,6 +54,12 @@
     }
   }
 
+  function hideInlineLoadingText() {
+    document.querySelectorAll('.loading-text, #loadingText').forEach(function (el) {
+      el.style.display = 'none';
+    });
+  }
+
   function injectShell() {
     var page = currentPage();
     if (!document.getElementById('chaseHeader')) {
@@ -76,10 +82,12 @@
         '<div class="mlbma-load-sub">Loading live data...</div>';
       document.body.insertBefore(ov, document.body.firstChild);
     }
-    document.querySelectorAll('.loading, #loadingScreen, #loading').forEach(function (el) {
+    hideInlineLoadingText();
+    document.querySelectorAll('.loading, #loadingScreen, #loading, #loadingOverlay').forEach(function (el) {
       el.classList.add('hide');
       el.style.display = 'none';
     });
+    document.body.classList.add('mlbma-shell-ready');
   }
 
   function finishLoading() {
@@ -87,9 +95,36 @@
     var bar = document.getElementById('mlbmaLoadProgress');
     if (ov) ov.classList.add('hide');
     if (bar) bar.classList.add('done');
-    document.querySelectorAll('.loading, #loadingScreen, #loading').forEach(function (el) {
+    hideInlineLoadingText();
+    document.querySelectorAll('.loading, #loadingScreen, #loading, #loadingOverlay').forEach(function (el) {
       el.classList.add('hide');
+      el.style.display = 'none';
     });
+    document.body.classList.remove('mlbma-page-loading');
+  }
+
+  /** Dismiss full-viewport loading overlay (alias used by dashboards). */
+  function hideLoadingOverlay() {
+    finishLoading();
+  }
+
+  /**
+   * Auto-dismiss overlay after ms; call returned function when load completes.
+   * @param {number} ms
+   * @param {function} onTimeout
+   * @returns {function} complete
+   */
+  function startLoadWatchdog(ms, onTimeout) {
+    var done = false;
+    var timer = setTimeout(function () {
+      if (done) return;
+      if (typeof onTimeout === 'function') onTimeout();
+      hideLoadingOverlay();
+    }, ms || 10000);
+    return function complete() {
+      done = true;
+      clearTimeout(timer);
+    };
   }
 
   function sheetCsvUrl(tab) {
@@ -137,6 +172,7 @@
   }
 
   function init() {
+    document.body.classList.add('mlbma-page-loading');
     injectShell();
     injectFooter();
   }
@@ -149,8 +185,11 @@
 
   global.MLBMA_UI = {
     finishLoading: finishLoading,
+    hideLoadingOverlay: hideLoadingOverlay,
+    startLoadWatchdog: startLoadWatchdog,
     renderNav: renderNav,
     loadFooterTimestamp: loadFooterTimestamp,
     currentPage: currentPage,
+    injectShell: injectShell,
   };
 })(window);
