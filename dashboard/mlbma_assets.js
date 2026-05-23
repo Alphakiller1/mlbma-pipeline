@@ -395,8 +395,8 @@
 
   function ppGapColor(gap) {
     if (gap == null || isNaN(gap)) return GRADE_COLORS.average;
-    if (gap > 4) return '#60A5FA';
-    if (gap < -4) return '#FBBF24';
+    if (gap > 0) return '#4ADE80';
+    if (gap < 0) return '#F87171';
     return GRADE_COLORS.average;
   }
 

@@ -233,6 +233,51 @@
     }
   }
 
+  function renderTrendClassifications(vsRhpRows, profileRows) {
+    var body = document.getElementById('mrTrendBody');
+    if (!body || !S) return;
+    var profMap = {};
+    (profileRows || []).forEach(function(row) {
+      var t = S.teamKey(S.pickCol(row, ['team', 'Tm', 'Team']));
+      if (!t) return;
+      profMap[t] = {
+        l30: parseFloat(S.pickCol(row, ['osi_l30', 'OSI_L30'])) || null,
+        l14: parseFloat(S.pickCol(row, ['osi_l14', 'OSI_L14'])) || null,
+        l7: parseFloat(S.pickCol(row, ['osi_l7', 'OSI_L7'])) || null
+      };
+    });
+    var rows = (vsRhpRows || []).map(S.scoreRowFromSheet).filter(Boolean)
+      .sort(function(a, b) { return b.osi - a.osi; });
+    body.innerHTML = rows.map(function(d, i) {
+      var p = profMap[d.t] || {};
+      var ytd = d.osi;
+      var l30 = p.l30, l14 = p.l14, l7 = p.l7;
+      var dL30 = l30 != null ? l30 - ytd : null;
+      var dL14 = l14 != null ? l14 - ytd : null;
+      var vel = l7 != null && l14 != null ? l7 - l14 : null;
+      var trend = d.trend || 'Stable';
+      var rel = 'Mixed';
+      if (l7 != null && l14 != null && ytd != null) {
+        if (l7 > ytd + 5 && l14 > ytd + 3) rel = 'Sustained Rise';
+        else if (l7 > ytd + 5) rel = 'Short Spike';
+        else if (l7 < ytd - 5 && l14 < ytd - 3) rel = 'Cooling Risk';
+        else if (l7 < ytd - 5) rel = 'Noisy L7 Drop';
+        else if (Math.abs(l7 - ytd) <= 3 && Math.abs(l14 - ytd) <= 3) rel = 'Stable';
+      }
+      var interp = trend === 'Rising' ? 'Momentum building across windows' : trend === 'Cooling' ? 'Output declining' : 'Consistent across samples';
+      function c(v) {
+        if (v == null || isNaN(v)) return '—';
+        return Number(v).toFixed(1);
+      }
+      return '<tr><td>' + (i + 1) + '</td><td>' + esc(d.t) + '</td>'
+        + '<td>' + c(ytd) + '</td><td>' + c(l30) + '</td><td>' + c(l14) + '</td><td>' + c(l7) + '</td>'
+        + '<td>' + (dL30 != null ? (dL30 > 0 ? '+' : '') + dL30.toFixed(1) : '—') + '</td>'
+        + '<td>' + (dL14 != null ? (dL14 > 0 ? '+' : '') + dL14.toFixed(1) : '—') + '</td>'
+        + '<td>' + (vel != null ? (vel > 0 ? '+' : '') + vel.toFixed(1) : '—') + '</td>'
+        + '<td>' + esc(trend) + '</td><td>' + esc(rel) + '</td><td>' + esc(interp) + '</td></tr>';
+    }).join('');
+  }
+
   function load() {
     applyUrlFilters();
     global.LIVE_DATA = global.LIVE_DATA || {};
@@ -247,7 +292,8 @@
       fetchTab(T.vs_lhp).catch(function() { return []; }),
       fetchTab(T.pitching_score).catch(function() { return []; }),
       fetchTab(T.bullpen_unit).catch(function() { return []; }),
-      fetchTab(T.pals).catch(function() { return []; })
+      fetchTab(T.pals).catch(function() { return []; }),
+      fetchTab(T.team_profiles).catch(function() { return []; })
     ]).then(function(res) {
       LIVE_DATA.signalsToday = res[0] || [];
       LIVE_DATA.signalsConvergence = res[1] || [];
@@ -281,6 +327,7 @@
       STATE.pitching = S ? S.parsePitchingRows(res[7]) : {};
       STATE.bullpen = S ? S.parseBullpenUnitRows(res[8]) : {};
       global.SCO_YTD_B = buildYtdForStrats(res[5], res[9]);
+      renderTrendClassifications(res[5], res[10]);
 
       renderHero(LIVE_DATA);
       bindFilters();

@@ -1,5 +1,5 @@
 /**
- * Research Lab — Pitcher Lab tab (SP profiles, allowed metrics, rankings).
+ * Research Lab — Pitcher Lab tab
  */
 (function(global) {
   'use strict';
@@ -9,16 +9,11 @@
   var TABS = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
   var CACHE = {
     profiles: null, sortKey: 'pitchScore', sortDir: -1, selected: '',
-    teamFilter: '', handFilter: 'all', searchQ: ''
+    searchQ: '', dropdownOpen: false
   };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  function num(v) {
-    if (v == null || v === '' || isNaN(v)) return null;
-    return Number(v);
   }
 
   function fmt(v, d) {
@@ -37,72 +32,36 @@
   function mColor(v, invert, ctx) {
     if (!A) return '#71717A';
     if (ctx === 'oor') return A.contextualOorColor ? A.contextualOorColor(v) : '#71717A';
-    return A.metricColor(v, ctx || 'pitching', !!invert);
-  }
-
-  function cell(opts) {
-    return A && A.metricCell ? A.metricCell(opts) : '';
-  }
-
-  function trendLabel(row) {
-    if (isStale(row)) return 'Stale Sample';
-    return 'YTD only — L14 requires pipeline data';
+    return A.metricColor(v, ctx || 'osi', !!invert);
   }
 
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
-    if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
+    if (score >= 70) return { label: 'Ace', cls: 'tier-elite' };
     if (score >= 55) return { label: 'Solid', cls: 'tier-solid' };
-    if (score >= 40) return { label: 'Avg', cls: 'tier-mid' };
+    if (score >= 40) return { label: 'Average', cls: 'tier-mid' };
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
   function profileMetrics(row) {
-    if (!row) return {};
-    return (S && S.spProfileMetrics) ? S.spProfileMetrics(row) : {};
-  }
-
-  function percentileRank(value, values, lowerIsBetter) {
-    var nums = values.filter(function(v) { return v != null && !isNaN(v); });
-    if (value == null || isNaN(value) || !nums.length) return null;
-    var better = nums.filter(function(v) { return lowerIsBetter ? v >= value : v <= value; }).length;
-    return Math.round((better / nums.length) * 100);
+    return (row && S && S.spProfileMetrics) ? S.spProfileMetrics(row) : {};
   }
 
   function isStale(row) {
-    var m = profileMetrics(row);
-    return !!(m && m.stale);
+    return !!(profileMetrics(row).stale);
   }
 
-  function l14Form(row) {
-    if (isStale(row)) return 'Stale';
-    return '—';
-  }
-
-  function fmtFip(met) {
-    if (met.fip != null) return fmt(met.fip, 2);
-    if (met.era != null) return fmt(met.era, 2) + ' (ERA)';
-    return 'FIP N/A';
-  }
-
-  function oorLabel(oor) {
-    if (oor == null || isNaN(oor)) return '';
-    if (oor >= 55) return 'Above avg competition';
-    if (oor <= 45) return 'Below avg competition';
-    return 'Near avg competition';
+  function oorCompLabel(oor) {
+    if (oor == null || isNaN(oor)) return 'Near';
+    if (oor >= 55) return 'Above';
+    if (oor <= 45) return 'Below';
+    return 'Near';
   }
 
   function loadProfiles() {
     if (CACHE.profiles && CACHE.profiles.length) return Promise.resolve(CACHE.profiles);
-    var fromBridge = global.ResearchLab && ResearchLab.getResearchPitcherData
-      ? ResearchLab.getResearchPitcherData() : [];
-    if (fromBridge && fromBridge.length) {
-      CACHE.profiles = fromBridge;
-      return Promise.resolve(CACHE.profiles);
-    }
-    var ld = global.LIVE_DATA && LIVE_DATA.spProfiles;
-    if (ld && ld.length) {
-      CACHE.profiles = ld;
+    if (global.ResearchLab && global.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length) {
+      CACHE.profiles = LIVE_DATA.spProfiles;
       return Promise.resolve(CACHE.profiles);
     }
     if (!S || !TABS) return Promise.resolve([]);
@@ -112,7 +71,6 @@
         ? S.buildOorByTeam(LIVE_DATA.oor) : {};
       if (S.enrichSpProfiles) S.enrichSpProfiles(CACHE.profiles, oorMap);
       if (global.LIVE_DATA) LIVE_DATA.spProfiles = CACHE.profiles;
-      console.log('[FETCH] SP_Profiles loaded:', CACHE.profiles.length);
       return CACHE.profiles;
     }).catch(function() { CACHE.profiles = []; return []; });
   }
@@ -120,114 +78,74 @@
   function findProfile(keyOrName) {
     var key = normName(keyOrName);
     return (CACHE.profiles || []).find(function(row) {
-      return normName(pickCol(row, ['pitcher_name', 'Name', 'Pitcher'])) === key
-        || normName(pickCol(row, ['pitcher_key', 'key'])) === key;
+      return normName(pickCol(row, ['pitcher_name', 'Name', 'Pitcher'])) === key;
     }) || null;
   }
 
-  function teamOptions() {
-    var set = {};
-    (CACHE.profiles || []).forEach(function(row) {
-      var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-      if (t) set[t] = true;
-    });
-    return Object.keys(set).sort();
-  }
-
-  function filteredProfiles() {
+  function searchMatches(q) {
+    q = String(q || '').toLowerCase().trim();
+    if (!q) return [];
     return (CACHE.profiles || []).filter(function(row) {
-      var name = pickCol(row, ['pitcher_name', 'Name']);
-      var team = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-      var hand = String(pickCol(row, ['pitcher_hand', 'Hand']) || 'R').charAt(0).toUpperCase();
-      if (CACHE.teamFilter && team !== CACHE.teamFilter) return false;
-      if (CACHE.handFilter === 'R' && hand !== 'R') return false;
-      if (CACHE.handFilter === 'L' && hand !== 'L') return false;
-      if (CACHE.searchQ) {
-        var q = CACHE.searchQ.toLowerCase();
-        if (name.toLowerCase().indexOf(q) < 0 && team.toLowerCase().indexOf(q) < 0) return false;
-      }
-      return true;
-    });
+      var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']).toLowerCase();
+      var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']).toLowerCase();
+      return n.indexOf(q) >= 0 || t.indexOf(q) >= 0;
+    }).slice(0, 12);
   }
 
-  function renderSearchMount(root) {
-    var teams = teamOptions();
-    root.innerHTML = '<div class="pl-controls-row">'
-      + '<div class="pl-control-group"><label for="plPitcherSearch">Pitcher Search</label>'
-      + '<input type="search" id="plPitcherSearch" class="pl-search" placeholder="Name or team…" list="plPitcherList"></div>'
-      + '<div class="pl-control-group"><label for="plTeamFilter">Team</label>'
-      + '<select id="plTeamFilter"><option value="">All teams</option>'
-      + teams.map(function(t) { return '<option value="' + esc(t) + '">' + esc(t) + '</option>'; }).join('')
-      + '</select></div>'
-      + '<div class="pl-control-group"><label for="plHandFilter">Hand</label>'
-      + '<select id="plHandFilter"><option value="all">All</option><option value="R">RHP</option><option value="L">LHP</option></select></div>'
-      + '</div><datalist id="plPitcherList"></datalist>'
-      + '<div id="plSnapshotMount"></div>'
-      + '<div id="plAllowedMount"></div>'
-      + '<div id="plOorMount"></div>'
-      + '<div id="plTrendMount"></div>'
-      + '<div id="plRankingsMount"></div>';
-
-    var dl = document.getElementById('plPitcherList');
-    if (dl) {
-      dl.innerHTML = (CACHE.profiles || []).map(function(row) {
-        var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-        var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-        return '<option value="' + esc(n) + ' (' + esc(t) + ')"></option>';
-      }).join('');
-    }
-
-    var inp = document.getElementById('plPitcherSearch');
-    if (inp) {
-      inp.addEventListener('change', function() { selectPitcherFromSearch(inp.value); });
-      inp.addEventListener('input', function() { CACHE.searchQ = inp.value; renderRankings(); });
-      inp.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') selectPitcherFromSearch(inp.value);
-      });
-    }
-    var tf = document.getElementById('plTeamFilter');
-    if (tf) tf.addEventListener('change', function() { CACHE.teamFilter = tf.value; renderRankings(); });
-    var hf = document.getElementById('plHandFilter');
-    if (hf) hf.addEventListener('change', function() { CACHE.handFilter = hf.value; renderRankings(); });
-  }
-
-  function selectPitcherFromSearch(val) {
-    val = String(val || '').trim();
-    if (!val) return;
-    var hit = (CACHE.profiles || []).find(function(row) {
+  function renderDropdown(items) {
+    var dd = document.getElementById('plSearchDropdown');
+    if (!dd) return;
+    if (!items.length) { dd.innerHTML = ''; dd.style.display = 'none'; return; }
+    dd.style.display = 'block';
+    dd.innerHTML = items.map(function(row) {
       var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
       var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-      return val === n || val.indexOf(n) === 0 || val.toUpperCase() === String(t).toUpperCase();
+      var hand = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || 'R').charAt(0);
+      var m = profileMetrics(row);
+      var av = A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-dd-av' }) : '';
+      return '<button type="button" class="pl-dd-item" data-name="' + esc(n) + '">'
+        + av + '<span class="pl-dd-name">' + esc(n) + '</span>'
+        + '<span class="pl-dd-meta">' + esc(t) + ' · ' + esc(hand) + 'HP · PS ' + fmt(m.pitchScore, 0) + '</span></button>';
+    }).join('');
+    dd.querySelectorAll('.pl-dd-item').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        selectPitcher(btn.getAttribute('data-name'));
+        dd.style.display = 'none';
+      });
     });
-    if (hit) {
-      CACHE.selected = pickCol(hit, ['pitcher_name', 'Name', 'Pitcher']);
-      renderSnapshot();
-      renderAllowedCards();
-      renderOorPanel();
-      renderTrendPanel();
-    }
   }
 
-  function allowedSparklineBlock(met) {
-    var C = global.MLBMACharts;
-    if (!C || !C.buildSparklineRow || !met) return '';
-    var defs = [
-      { label: 'ABQ Allowed trend', key: 'abqAllowed' },
-      { label: 'RCV Allowed trend', key: 'rcvAllowed' },
-      { label: 'OBR Allowed trend', key: 'obrAllowed' },
-      { label: 'OSI Allowed trend', key: 'osiAllowed' }
-    ];
-    var has = defs.some(function(d) { return met[d.key] != null && !isNaN(met[d.key]); });
-    if (!has) return '';
-    var rows = defs.map(function(d) {
-      var ytd = met[d.key];
-      if (ytd == null || isNaN(ytd)) return '';
-      return C.buildSparklineRow(d.label, [ytd, null, null, null], 140, 28, {
-        labels: ['YTD', 'L30', 'L14', 'L7']
-      });
-    }).filter(Boolean).join('');
-    return '<div class="pl-allowed-sparks" style="margin:12px 0">' + rows
-      + '<p class="ca-helper">Limited data — YTD only</p></div>';
+  function selectPitcher(name) {
+    CACHE.selected = name;
+    var inp = document.getElementById('plPitcherSearch');
+    if (inp) inp.value = name;
+    renderSnapshot();
+    renderRankings();
+  }
+
+  function bettingContext(row, met) {
+    var name = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
+    var ps = met.pitchScore;
+    var tier = pitchTier(ps);
+    var allow = met.osiAllowed;
+    var oor = met.oor;
+    var comp = oorCompLabel(oor);
+    var allowNote = allow != null && allow < 50 ? 'below' : (allow > 55 ? 'above' : 'near');
+    var stale = isStale(row);
+    var uses = [];
+    if (ps >= 65) uses.push('F5 unders', 'pitcher K props');
+    if (allow != null && allow > 58) uses.push('opposing team overs');
+    if (met.kPct >= 24) uses.push('strikeout props');
+    if (stale) uses.push('verify recent starts before betting');
+    if (!uses.length) uses.push('matchup-specific totals', 'first-inning props');
+    return '<div class="pl-betting-context">'
+      + '<p><strong>' + esc(name) + '</strong> has a Pitching Score of <strong style="color:' + mColor(ps, false, 'pitching') + '">'
+      + fmt(ps, 0) + '</strong> (' + esc(tier.label) + '). Opposing lineups have generated an OSI Allowed of '
+      + '<strong style="color:' + mColor(allow, true) + '">' + fmt(allow) + '</strong> against him — '
+      + allowNote + ' league average. He has faced <strong>' + comp.toLowerCase() + '</strong> average competition (OOR '
+      + fmt(oor, 0) + ').'
+      + (stale ? ' <em class="pl-stale-warn">⚠ Stale sample — refresh pipeline before betting.</em>' : '')
+      + '</p><p class="pl-best-bets"><strong>Best bet uses:</strong> ' + esc(uses.join(', ')) + '.</p></div>';
   }
 
   function renderSnapshot() {
@@ -235,126 +153,90 @@
     if (!mount) return;
     var row = findProfile(CACHE.selected);
     if (!row) {
-      mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Search and select a pitcher to view snapshot metrics.</p></div>';
+      mount.innerHTML = '';
       return;
     }
     var name = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
     var team = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-    var hand = String(pickCol(row, ['pitcher_hand', 'Hand', 'hand']) || 'R').charAt(0);
+    var hand = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || 'R').charAt(0);
     var met = profileMetrics(row);
-    var ps = met.pitchScore;
-    var tier = pitchTier(ps);
-    var stale = isStale(row);
+    var tier = pitchTier(met.pitchScore);
     var avatar = A ? A.pitcherAvatar(name, { crop: 'profile', className: 'pl-snap-avatar', eager: true }) : '';
-    var logo = A ? A.teamLogoImg(team, 24) : '';
-
-    mount.innerHTML = '<div class="rl-pane-card pl-snapshot-card">'
-      + '<div class="pl-snap-top">' + avatar
-      + '<div><h3 class="pl-snap-name"><a href="pitcher_profile.html?pitcher=' + encodeURIComponent(name) + '">' + esc(name) + '</a></h3>'
-      + '<div class="pl-snap-meta">' + logo + ' <span>' + esc(team) + '</span>'
-      + ' <span class="hand-pill hand-' + hand.toLowerCase() + '">' + esc(hand) + 'HP</span>'
-      + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'
-      + '<div class="pl-snap-ps">Pitching Score <strong style="color:' + mColor(ps, false) + '">' + fmt(ps, 0) + '</strong></div>'
-      + '</div></div>'
-      + '<div class="pl-stat-row">'
-      + '<span>K% <strong>' + fmt(met.kPct, 1) + '</strong></span>'
+    var logo = A ? A.teamLogoImg(team, 28) : '';
+    mount.innerHTML = '<div class="pl-snapshot-card">'
+      + '<div class="pl-snap-row1">' + avatar
+      + '<div><h3 class="pl-snap-name">' + esc(name) + '</h3>'
+      + '<div class="pl-snap-meta">' + logo + ' <span class="hand-pill hand-' + hand.toLowerCase() + '">' + esc(hand) + 'HP</span>'
+      + ' <span class="tier-badge ' + tier.cls + '">Pitch Score ' + fmt(met.pitchScore, 0) + ' · ' + esc(tier.label) + '</span></div></div></div>'
+      + '<div class="pl-snap-row2"><span>K% <strong>' + fmt(met.kPct, 1) + '</strong></span>'
       + '<span>BB% <strong>' + fmt(met.bbPct, 1) + '</strong></span>'
       + '<span>HR/9 <strong>' + fmt(met.hr9, 2) + '</strong></span>'
-      + '<span>FIP <strong>' + esc(fmtFip(met)) + '</strong></span>'
-      + '<span>xFIP <strong>—</strong></span>'
+      + '<span>FIP/ERA <strong>' + fmt(met.fip != null ? met.fip : met.era, 2) + '</strong></span>'
+      + '<span>IP <strong>' + fmt(pickCol(row, ['IP', 'ip']), 1) + '</strong></span></div>'
+      + '<div class="pl-allowed-row">'
+      + allowedCard('OSI Allowed', met.osiAllowed)
+      + allowedCard('ABQ Allowed', met.abqAllowed)
+      + allowedCard('RCV Allowed', met.rcvAllowed)
+      + allowedCard('OBR Allowed', met.obrAllowed)
       + '</div>'
-      + allowedSparklineBlock(met)
-      + '<div class="pl-stat-row">OSI Allowed <strong style="color:' + mColor(met.osiAllowed, true) + '">' + fmt(met.osiAllowed) + '</strong>'
-      + (met.oor != null ? ' · Pitcher OOR <strong style="color:' + mColor(met.oor, false, 'oor') + '">' + fmt(met.oor) + '</strong> <span class="ca-helper">(' + esc(oorLabel(met.oor)) + ')</span>' : '')
+      + '<div class="pl-oor-line">Competition: <strong>' + esc(oorCompLabel(met.oor)) + ' average</strong> (OOR '
+      + '<span style="color:' + mColor(met.oor, false, 'oor') + '">' + fmt(met.oor, 0) + '</span>)'
+      + (isStale(row) ? ' · <span class="pl-stale-pill">Stale sample</span>' : ' · <span class="pl-fresh-pill">Fresh</span>')
       + '</div>'
-      + '<p class="ca-helper" style="margin-top:10px;">' + esc(pickCol(row, ['current_read', 'read', 'model_read']) || 'Starter profile from SP_Profiles — validate allowed metrics vs tonight\'s lineup.') + '</p>'
-      + (stale ? '<div class="pl-stale-banner">⚠ Stale sample — refresh pipeline for updated starts</div>' : '')
+      + bettingContext(row, met)
+      + '<p class="rl-profile-link"><a href="pitcher_profile.html?pitcher=' + encodeURIComponent(name) + '">Full pitcher profile →</a></p>'
       + '</div>';
-    renderOorPanel();
-    renderTrendPanel();
   }
 
-  function renderOorPanel() {
-    var mount = document.getElementById('plOorMount');
-    if (!mount) return;
-    var row = findProfile(CACHE.selected);
-    if (!row) { mount.innerHTML = ''; return; }
-    var met = profileMetrics(row);
-    var avgOsi = num(pickCol(row, ['avg_opponent_osi', 'avg_opponent_OSI', 'Avg_Opponent_OSI']));
-    mount.innerHTML = '<div class="pl-oor-panel"><h4>Pitcher OOR — Competition Strength</h4>'
-      + '<p class="ca-helper">Quality of opposing lineups faced (individual pitcher). Not team OOR.</p>'
-      + '<div class="pl-trend-grid">'
-      + cell({ label: 'Pitcher OOR', value: met.oor, mode: 'contextual' })
-      + cell({ label: 'Competition', value: null, hint: oorLabel(met.oor) })
-      + cell({ label: 'Avg Opp OSI', value: avgOsi, context: 'osi', invert: false })
-      + '</div></div>';
+  function allowedCard(label, v) {
+    return '<div class="pl-allowed-card"><div class="ca-metric-label">' + esc(label) + '</div>'
+      + '<div class="pl-allowed-val" style="color:' + mColor(v, true, 'osi') + '">' + fmt(v) + '</div></div>';
   }
 
-  function renderTrendPanel() {
-    var mount = document.getElementById('plTrendMount');
-    if (!mount) return;
-    var row = findProfile(CACHE.selected);
-    if (!row) { mount.innerHTML = ''; return; }
-    var met = profileMetrics(row);
-    var ytd = met.osiAllowed;
-    var lbl = trendLabel(row);
-    mount.innerHTML = '<div class="rl-pane-card"><h4>Trend / Staleness</h4>'
-      + '<div class="pl-trend-grid">'
-      + cell({ label: 'YTD OSI Allowed', value: ytd, context: 'osi', invert: true })
-      + cell({ label: 'L30', value: null, hint: 'requires pipeline data' })
-      + cell({ label: 'L14', value: null, hint: 'requires pipeline data' })
-      + cell({ label: 'Form', value: null, staleness: lbl, hint: l14Form(row) })
-      + '</div><p class="ca-helper">Label: <strong style="color:' + (A.stalenessColor ? A.stalenessColor(lbl) : '#71717A') + '">' + esc(lbl) + '</strong></p></div>';
+  function renderSearchMount(root) {
+    root.innerHTML = '<div class="pl-search-block">'
+      + '<label for="plPitcherSearch" class="pl-search-label">Search by pitcher name or team…</label>'
+      + '<div class="pl-search-wrap">'
+      + '<input type="search" id="plPitcherSearch" class="pl-search-input" placeholder="Search by pitcher name or team…" autocomplete="off">'
+      + '<div id="plSearchDropdown" class="pl-search-dropdown"></div></div></div>'
+      + '<div id="plSnapshotMount"></div>'
+      + '<div id="plRankingsMount"></div>';
+
+    var inp = document.getElementById('plPitcherSearch');
+    if (inp) {
+      inp.addEventListener('input', function() {
+        CACHE.searchQ = inp.value;
+        renderDropdown(searchMatches(inp.value));
+        renderRankings();
+      });
+      inp.addEventListener('focus', function() {
+        renderDropdown(searchMatches(inp.value));
+      });
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.pl-search-wrap')) {
+        var dd = document.getElementById('plSearchDropdown');
+        if (dd) dd.style.display = 'none';
+      }
+    });
   }
 
-  function renderAllowedCards() {
-    var mount = document.getElementById('plAllowedMount');
-    if (!mount) return;
-    var row = findProfile(CACHE.selected);
-    if (!row) { mount.innerHTML = ''; return; }
-    var met = profileMetrics(row);
-    var all = (CACHE.profiles || []).map(function(r) { return profileMetrics(r); });
-    var cards = [
-      { key: 'abqAllowed', label: 'ABQ Allowed' },
-      { key: 'rcvAllowed', label: 'RCV Allowed' },
-      { key: 'obrAllowed', label: 'OBR Allowed' },
-      { key: 'osiAllowed', label: 'OSI Allowed' }
-    ];
-    mount.innerHTML = '<div class="pl-section-head"><h4>Metrics Allowed</h4><p class="ca-helper">Lower is better for pitcher</p></div>'
-      + '<div class="pl-allowed-grid">' + cards.map(function(c) {
-        var v = met[c.key];
-        var vals = all.map(function(m) { return m[c.key]; });
-        var pct = percentileRank(v, vals, true);
-        return '<div class="pl-allowed-card">'
-          + '<div class="ca-metric-label">' + esc(c.label) + '</div>'
-          + '<div class="pl-allowed-val" style="color:' + mColor(v, true) + '">' + fmt(v) + '</div>'
-          + '<div class="pl-allowed-pct">' + (pct != null ? pct + 'th pct (lower=better)' : '') + '</div>'
-          + '<div class="pl-allowed-note">Lower is better</div></div>';
-      }).join('') + '</div>';
+  function filteredProfiles() {
+    var q = CACHE.searchQ.toLowerCase().trim();
+    return (CACHE.profiles || []).filter(function(row) {
+      if (!q) return true;
+      var n = pickCol(row, ['pitcher_name', 'Name']).toLowerCase();
+      var t = pickCol(row, ['pitcher_team', 'Team']).toLowerCase();
+      return n.indexOf(q) >= 0 || t.indexOf(q) >= 0;
+    });
   }
 
   function sortProfiles(rows) {
-    var key = CACHE.sortKey;
-    var dir = CACHE.sortDir;
+    var key = CACHE.sortKey, dir = CACHE.sortDir;
     return rows.slice().sort(function(a, b) {
-      var ma = profileMetrics(a);
-      var mb = profileMetrics(b);
-      var av, bv;
-      if (key === 'name') {
-        av = pickCol(a, ['pitcher_name']); bv = pickCol(b, ['pitcher_name']);
-        return dir * String(av).localeCompare(String(bv));
-      }
-      if (key === 'team') {
-        av = pickCol(a, ['pitcher_team']); bv = pickCol(b, ['pitcher_team']);
-        return dir * String(av).localeCompare(String(bv));
-      }
-      if (key === 'hand') {
-        av = pickCol(a, ['pitcher_hand']); bv = pickCol(b, ['pitcher_hand']);
-        return dir * String(av).localeCompare(String(bv));
-      }
-      if (key === 'stale') return dir * (isStale(a) === isStale(b) ? 0 : isStale(a) ? -1 : 1);
-      av = ma[key] != null ? ma[key] : (key === 'pitchScore' ? ma.pitchScore : ma.osiAllowed);
-      bv = mb[key] != null ? mb[key] : (key === 'pitchScore' ? mb.pitchScore : mb.osiAllowed);
+      var ma = profileMetrics(a), mb = profileMetrics(b);
+      var av = ma[key], bv = mb[key];
+      if (key === 'name') return dir * String(pickCol(a, ['pitcher_name'])).localeCompare(String(pickCol(b, ['pitcher_name'])));
       if (av == null) av = -999;
       if (bv == null) bv = -999;
       return dir * (av - bv);
@@ -365,65 +247,38 @@
     var mount = document.getElementById('plRankingsMount');
     if (!mount) return;
     var rows = sortProfiles(filteredProfiles());
-    console.log('[MLBMA] PitcherLab rankings rows=' + rows.length);
     if (!rows.length) {
-      mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">No pitchers match filters — check SP_Profiles sheet or clear filters.</p></div>';
+      mount.innerHTML = '<p class="rl-empty">No pitchers match — load SP_Profiles or clear search.</p>';
       return;
     }
-
-    function th(key, label, active) {
-      var arrow = active ? (CACHE.sortDir < 0 ? ' ↓' : ' ↑') : '';
-      return '<th data-plsort="' + key + '" class="pl-sort-th' + (active ? ' sorted' : '') + '">' + esc(label) + arrow + '</th>';
+    function th(k, label) {
+      return '<th class="pl-sort-th' + (CACHE.sortKey === k ? ' sorted' : '') + '" data-plsort="' + k + '">' + esc(label) + '</th>';
     }
-
-    var sk = CACHE.sortKey;
-    mount.innerHTML = '<div class="pl-section-head"><h4>Pitcher Rankings</h4></div>'
-      + '<div class="rl-table-wrap pl-rank-wrap"><table class="rl-table-premium pl-rank-table"><thead><tr>'
-      + '<th>#</th>'
-      + th('name', 'Pitcher', sk === 'name')
-      + th('team', 'Team', sk === 'team')
-      + th('hand', 'Hand', sk === 'hand')
-      + th('pitchScore', 'Pitch Score', sk === 'pitchScore')
-      + th('kPct', 'K%', sk === 'kPct')
-      + th('bbPct', 'BB%', sk === 'bbPct')
-      + th('hr9', 'HR/9', sk === 'hr9')
-      + th('fip', 'FIP', sk === 'fip')
-      + th('osiAllowed', 'OSI Allowed', sk === 'osiAllowed')
-      + th('abqAllowed', 'ABQ Allowed', sk === 'abqAllowed')
-      + th('rcvAllowed', 'RCV Allowed', sk === 'rcvAllowed')
-      + th('obrAllowed', 'OBR Allowed', sk === 'obrAllowed')
-      + th('oor', 'Pitcher OOR', sk === 'oor')
-      + th('l14', 'L14 Form', sk === 'l14')
-      + th('stale', 'Stale', sk === 'stale')
+    mount.innerHTML = '<div class="rl-table-wrap pl-rank-wrap"><table class="rl-table-premium pl-rank-table"><thead><tr>'
+      + '<th>#</th>' + th('name', 'Pitcher') + th('team', 'Team') + th('hand', 'Hand')
+      + th('pitchScore', 'Pitch Score') + th('kPct', 'K%') + th('bbPct', 'BB%') + th('hr9', 'HR/9')
+      + th('osiAllowed', 'OSI Allowed') + th('abqAllowed', 'ABQ Allowed') + th('oor', 'OOR') + th('stale', 'Stale')
       + '</tr></thead><tbody>'
       + rows.map(function(row, i) {
-        var name = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-        var team = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-        var hand = String(pickCol(row, ['pitcher_hand', 'Hand']) || '?').charAt(0);
-        var met = profileMetrics(row);
-        var av = A ? A.pitcherAvatar(name, { crop: 'compare', className: 'pl-rank-av' }) : '';
-        var logo = A ? A.teamLogoImg(team, 20) : '';
-        var stale = isStale(row);
-        return '<tr class="pl-rank-row" data-pitcher="' + esc(name) + '">'
+        var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
+        var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
+        var hand = String(pickCol(row, ['hand', 'Hand']) || '?').charAt(0);
+        var m = profileMetrics(row);
+        var sel = CACHE.selected === n ? ' pl-rank-row--selected' : '';
+        return '<tr class="pl-rank-row' + sel + '" data-pitcher="' + esc(n) + '">'
           + '<td>' + (i + 1) + '</td>'
-          + '<td class="pl-rank-name">' + av + '<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(name) + '">' + esc(name) + '</a></td>'
-          + '<td>' + logo + ' ' + esc(team) + '</td>'
-          + '<td><span class="hand-pill">' + esc(hand) + '</span></td>'
-          + '<td class="num" style="color:' + mColor(met.pitchScore, false) + '">' + fmt(met.pitchScore, 0) + '</td>'
-          + '<td class="num">' + fmt(met.kPct, 1) + '</td>'
-          + '<td class="num">' + fmt(met.bbPct, 1) + '</td>'
-          + '<td class="num">' + fmt(met.hr9, 2) + '</td>'
-          + '<td class="num">' + esc(fmtFip(met)) + '</td>'
-          + '<td class="num" style="color:' + mColor(met.osiAllowed, true) + '">' + fmt(met.osiAllowed) + '</td>'
-          + '<td class="num" style="color:' + mColor(met.abqAllowed, true) + '">' + fmt(met.abqAllowed) + '</td>'
-          + '<td class="num" style="color:' + mColor(met.rcvAllowed, true) + '">' + fmt(met.rcvAllowed) + '</td>'
-          + '<td class="num" style="color:' + mColor(met.obrAllowed, true) + '">' + fmt(met.obrAllowed) + '</td>'
-          + '<td class="num" style="color:' + mColor(met.oor, false, 'oor') + '">' + fmt(met.oor) + '</td>'
-          + '<td class="num">' + l14Form(row) + '</td>'
-          + '<td>' + (stale ? '<span class="pl-stale-pill">Stale</span>' : '—') + '</td>'
-          + '</tr>';
-      }).join('')
-      + '</tbody></table></div>';
+          + '<td>' + (A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-rank-av' }) : '') + esc(n) + '</td>'
+          + '<td>' + (A ? A.teamLogoImg(t, 20) : '') + ' ' + esc(t) + '</td>'
+          + '<td>' + esc(hand) + '</td>'
+          + '<td class="num" style="color:' + mColor(m.pitchScore, false, 'pitching') + '">' + fmt(m.pitchScore, 0) + '</td>'
+          + '<td class="num">' + fmt(m.kPct, 1) + '</td>'
+          + '<td class="num">' + fmt(m.bbPct, 1) + '</td>'
+          + '<td class="num">' + fmt(m.hr9, 2) + '</td>'
+          + '<td class="num" style="color:' + mColor(m.osiAllowed, true) + '">' + fmt(m.osiAllowed) + '</td>'
+          + '<td class="num" style="color:' + mColor(m.abqAllowed, true) + '">' + fmt(m.abqAllowed) + '</td>'
+          + '<td class="num" style="color:' + mColor(m.oor, false, 'oor') + '">' + fmt(m.oor) + '</td>'
+          + '<td>' + (isStale(row) ? '<span class="pl-stale-pill">Stale</span>' : '—') + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
 
     mount.querySelectorAll('[data-plsort]').forEach(function(th) {
       th.addEventListener('click', function() {
@@ -434,16 +289,8 @@
       });
     });
     mount.querySelectorAll('.pl-rank-row').forEach(function(tr) {
-      tr.addEventListener('click', function(e) {
-        if (e.target.closest('a')) return;
-        var name = tr.getAttribute('data-pitcher');
-        CACHE.selected = name;
-        var inp = document.getElementById('plPitcherSearch');
-        if (inp) inp.value = name;
-        renderSnapshot();
-        renderAllowedCards();
-        renderOorPanel();
-        renderTrendPanel();
+      tr.addEventListener('click', function() {
+        selectPitcher(tr.getAttribute('data-pitcher'));
       });
     });
   }
@@ -451,24 +298,16 @@
   function mount(rootId) {
     var root = document.getElementById(rootId || 'rlPitcherLabRoot');
     if (!root) return;
-    root.innerHTML = '<div class="pl-loading ca-helper">Loading pitcher profiles…</div>';
-    console.log('[MLBMA] PitcherLab mount start');
-    if (A && A.loadRegistry && global.LIVE_DATA) {
-      A.loadRegistry(function() { return Promise.resolve([]); });
-    }
+    root.innerHTML = '<p class="rl-loading">Loading pitcher profiles…</p>';
     loadProfiles().then(function(rows) {
-      console.log('[MLBMA] PitcherLab loaded profiles=' + rows.length);
       renderSearchMount(root);
       renderRankings();
-      if (CACHE.profiles.length && !CACHE.selected) {
-        CACHE.selected = pickCol(CACHE.profiles[0], ['pitcher_name', 'Name', 'Pitcher']);
+      if (rows.length && !CACHE.selected) {
+        CACHE.selected = pickCol(rows[0], ['pitcher_name', 'Name', 'Pitcher']);
         renderSnapshot();
-        renderAllowedCards();
-        renderOorPanel();
-        renderTrendPanel();
       }
     }).catch(function(err) {
-      root.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Error loading SP_Profiles: ' + esc(String(err)) + '</p></div>';
+      root.innerHTML = '<p class="rl-empty">Error loading SP_Profiles: ' + esc(String(err)) + '</p>';
     });
   }
 

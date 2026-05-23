@@ -192,14 +192,7 @@
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Trends, splits, head-to-head compare, and pitcher research — four focused tools.</p>'
-      + '<div class="rl-workflow-strip">'
-      + '<span class="rl-workflow-step">1 · Select Path</span>'
-      + '<span class="rl-workflow-step">2 · Apply Split/Window</span>'
-      + '<span class="rl-workflow-step">3 · Validate Signal</span>'
-      + '<span class="rl-workflow-step">4 · Open Deep Profile</span>'
-      + '</div>'
-      + (A && A.researchLabLegendHtml ? A.researchLabLegendHtml() : '')
+      + '<p class="rl-workspace-subtitle">Four focused tools — trends, splits, compare, and pitcher research.</p>'
       + '</div>';
   }
 
@@ -417,7 +410,6 @@
 
   function patchSubtabs() {
     mountWorkspaceHeader();
-    mountGlobalControlBar();
     var layer = document.getElementById('layerAdvanced');
     if (!layer) return;
     var tabBar = layer.querySelector('.subtabs');
@@ -569,7 +561,7 @@
     var teams = teamList();
     var pitchers = pitcherOptions();
 
-    root.innerHTML = '<div class="rl-compare-modes">'
+    root.innerHTML = '<div class="rl-compare-modes rl-compare-modes--large">'
       + ['team', 'lineup-pitcher', 'pitcher', 'bullpen-lineup', 'bullpen'].map(function(m) {
         var lbl = {
           team: 'Lineup vs Lineup',
@@ -680,21 +672,17 @@
     var out = document.getElementById('rlCompareOutput');
     if (!out) return;
     if (!RL.compareA || !RL.compareB) {
-      out.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Select two entities above to generate a side-by-side comparison.</p></div>';
+      out.innerHTML = '<div class="rl-pane-card"><p class="rl-empty">Select entities and click Compare to generate output.</p></div>';
       return;
     }
-
-    if (RL.compareMode === 'team') {
-      renderTeamCompare(out);
-    } else if (RL.compareMode === 'pitcher') {
-      renderPitcherCompare(out);
-    } else if (RL.compareMode === 'bullpen') {
-      renderBullpenCompare(out);
-    } else if (RL.compareMode === 'bullpen-lineup') {
-      renderBullpenLineupCompare(out);
-    } else {
-      renderLineupPitcherCompare(out);
-    }
+    out.innerHTML = '<div class="rl-loading">Computing comparison…</div>';
+    setTimeout(function() {
+      if (RL.compareMode === 'team') renderTeamCompare(out);
+      else if (RL.compareMode === 'pitcher') renderPitcherCompare(out);
+      else if (RL.compareMode === 'bullpen') renderBullpenCompare(out);
+      else if (RL.compareMode === 'bullpen-lineup') renderBullpenLineupCompare(out);
+      else renderLineupPitcherCompare(out);
+    }, 50);
   }
 
 
@@ -704,7 +692,7 @@
 
   function teamIdentityCard(row) {
     if (!row) return '';
-    var logo = A ? A.teamLogoImg(row.t, 48) : '';
+    var logo = A ? A.teamLogoImg(row.t, 40) : '';
     var tier = row.osi >= 75 ? 'Elite' : row.osi >= 60 ? 'Solid' : row.osi >= 45 ? 'Avg' : 'Weak';
     var tierCls = row.osi >= 75 ? 'tier-elite' : row.osi >= 60 ? 'tier-solid' : 'tier-mid';
     return '<div class="rl-compare-identity">' + logo
@@ -755,6 +743,12 @@
       ['rhpOSI', 'vRHP', false], ['lhpOSI', 'vLHP', false], ['trend', 'Trend', false, false, true]
     ];
     var edge = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : 'Even');
+    var bet = '';
+    if (a.osi > b.osi + 4) bet = a.t + ' offensive edge — run line and team total lean.';
+    else if (b.osi > a.osi + 4) bet = b.t + ' offensive edge — fade ' + a.t + ' unders.';
+    else if (a.ppGap > 6 && a.ppGap > b.ppGap) bet = a.t + ' buy-low process signal (PP-Gap +' + a.ppGap.toFixed(0) + ').';
+    else if (b.ppGap > 6 && b.ppGap > a.ppGap) bet = b.t + ' buy-low process signal (PP-Gap +' + b.ppGap.toFixed(0) + ').';
+    else bet = 'Tight matchup — lean totals over only with park/weather confirmation.';
     var rA = splitRowForTeam(a.t, 'r') || a;
     var lA = splitRowForTeam(a.t, 'l') || a;
     var rB = splitRowForTeam(b.t, 'r') || b;
@@ -763,6 +757,7 @@
       + '<div id="rlTeamRadar" class="mc-radar-mount" style="margin:8px auto 16px;"></div>'
       + '<div class="rl-compare-summary"><strong>Summary:</strong> ' + esc(compareSummaryRead(a, b)) + '</div>'
       + edgeCard(edge, 'OSI edge based on composite offensive strength.')
+      + '<div class="rl-betting-angle"><strong>Betting angle:</strong> ' + esc(bet) + '</div>'
       + metricTable(keys, a, b)
       + profileLinks(a.t, b.t, null, null);
     if (global.STATE) global.STATE.compareTeams = [a.t, b.t];
@@ -858,11 +853,16 @@
     var splitRow = split.find(function(d) { return d.t === RL.compareA; });
     var lineupOsi = splitRow ? splitRow.osi : (team ? team.osi : null);
     var allow = sm.osiAllowed;
-    var edge = lineupOsi != null && allow != null && lineupOsi > (100 - allow) + 5 ? 'Lineup' : 'Pitcher';
+    var edge = lineupOsi != null && allow != null && lineupOsi > (100 - allow) + 5 ? 'Lineup' : (allow != null && lineupOsi != null && (100 - allow) > lineupOsi + 5 ? 'Pitcher' : 'Even');
+    var bet = edge === 'Lineup'
+      ? RL.compareA + ' lineup (OSI ' + fmt(lineupOsi) + ' vs ' + hand + 'HP) faces ' + RL.compareB + ' (OSI Allowed ' + fmt(allow) + ') — lineup edge, over lean.'
+      : edge === 'Pitcher' ? RL.compareB + ' suppresses ' + RL.compareA + ' — under/F5 lean.'
+      : 'Even matchup — verify bullpen before full-game total.';
     out.innerHTML = '<div class="rl-scorecards">'
       + scorecardOne(RL.compareA + ' vs ' + hand + 'HP', 'Lineup OSI', lineupOsi, false)
       + scorecardOne(RL.compareB, 'OSI Allowed', allow, true)
       + '</div>' + edgeCard(edge, 'Lineup split OSI vs pitcher allowed profile.')
+      + '<div class="rl-betting-angle"><strong>Betting angle:</strong> ' + esc(bet) + '</div>'
       + profileLinks(RL.compareA, null, RL.compareB, null);
   }
 
@@ -941,8 +941,7 @@
           + '<strong>' + esc(c.title) + '</strong>'
           + '<span class="rl-home-use">Use for: ' + esc(c.use) + '</span>'
           + '<em>' + esc(c.cta) + ' →</em></button>';
-      }).join('') + '</div>'
-      + (A && A.researchLabLegendHtml ? A.researchLabLegendHtml() : '');
+      }).join('') + '</div>';
 
     root.querySelectorAll('[data-rl-pane]').forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -1051,21 +1050,7 @@
   }
 
   function onSubtab(name) {
-    mountGlobalControlBar();
-    if (name === 'trends') {
-      resetResearchLabFilters();
-      syncResearchGlobalsFromLiveData();
-      mountTrendControls();
-      renderTrendSummary();
-      if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
-    } else if (name === 'splits') {
-      resetResearchLabFilters();
-      syncResearchGlobalsFromLiveData();
-      initSplitsControls();
-      renderSplitSummary();
-      if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
-      renderSplitsTable();
-    } else if (name === 'compare') {
+    if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
     } else if (name === 'pitching') {
       var mountPl = function() {
