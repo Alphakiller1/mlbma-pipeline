@@ -1600,7 +1600,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
 
   <!-- Splits pane -->
-  <div id="pane-splits">
+  <div id="pane-splits" style="display:none;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Platoon Splits</div>
@@ -3362,6 +3362,81 @@ function stateReady() {
   return typeof STATE !== 'undefined' && STATE;
 }
 
+var RESEARCH_SUBTABS = ['strat', 'splits', 'trends', 'compare', 'matchup', 'reference'];
+
+function showResearchSubtab(name) {
+  name = name || 'strat';
+  RESEARCH_SUBTABS.forEach(function(id) {
+    var el = document.getElementById('pane-' + id);
+    if (el) el.style.display = (id === name) ? 'block' : 'none';
+  });
+  var layer = document.getElementById('layerAdvanced');
+  if (layer) {
+    layer.querySelectorAll('.subtab').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-pane') === name);
+    });
+  }
+  onResearchSubtabShown(name);
+}
+
+function onResearchSubtabShown(name) {
+  if (name === 'splits') renderSplitBars();
+  else if (name === 'trends') renderTrendHeatmap();
+  else if (name === 'compare') initCompare();
+  else if (name === 'matchup') {
+    populateMatchupSelectors();
+    renderMatchupOutput();
+  } else if (name === 'strat') renderStrats();
+  else if (name === 'reference') {
+    mountReferenceTables();
+    renderReferenceTables();
+  }
+}
+
+function initCompare() {
+  var cmpBtn = document.getElementById('compareToggleBtn');
+  if (cmpBtn) cmpBtn.classList.toggle('active', !!STATE.compareMode);
+  renderComparePane();
+}
+
+function renderDailyRead() {
+  renderDailySummary();
+  renderQuadrant();
+  renderMasterTable();
+  mountReferenceTables();
+  renderMatchups();
+}
+
+function renderResearchLab(activeSubtab) {
+  console.log('[MLBMA] renderResearchLab', activeSubtab || '');
+  renderSplitBars();
+  renderTrendHeatmap();
+  populateMatchupSelectors();
+  renderStrats();
+  initCompare();
+  renderMatchupOutput();
+  mountReferenceTables();
+  renderReferenceTables();
+  showResearchSubtab(activeSubtab || (function() {
+    var active = document.querySelector('#layerAdvanced .subtab.active');
+    return active ? active.getAttribute('data-pane') : 'strat';
+  })());
+}
+
+function bindResearchSubtabs() {
+  var layer = document.getElementById('layerAdvanced');
+  if (!layer || layer.dataset.subtabsBound) return;
+  layer.dataset.subtabsBound = '1';
+  layer.querySelectorAll('.subtab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pane = btn.getAttribute('data-pane');
+      if (!pane) return;
+      showResearchSubtab(pane);
+      if (typeof urlEncodeState === 'function') urlEncodeState();
+    });
+  });
+}
+
 function setOemMode(mode) {
   if (!stateReady()) return;
   mode = mode || STATE.oemMode || 'daily';
@@ -3375,7 +3450,8 @@ function setOemMode(mode) {
     pane.classList.toggle('active', pane.getAttribute('data-oem-pane') === mode);
   });
   if (typeof urlEncodeState === 'function') urlEncodeState();
-  if (mode === 'daily' && typeof renderDailySummary === 'function') renderDailySummary();
+  if (mode === 'daily') renderDailyRead();
+  else if (mode === 'research') renderResearchLab();
 }
 
 function metricDecision(key, d) {
@@ -3459,6 +3535,7 @@ function bindOemModeTabs() {
       setOemMode(btn.getAttribute('data-oem-mode'));
     });
   });
+  bindResearchSubtabs();
 }
 
 /* URL state — bookmarkable views */
@@ -4001,6 +4078,7 @@ function toggleCompareMode(){
   if (cmpBtn) cmpBtn.classList.toggle('active', STATE.compareMode);
   if(STATE.compareMode) showToast('Compare mode on — click rows to add up to 4 teams');
   renderMasterTable();
+  if (STATE.oemMode === 'research') initCompare();
 }
 function toggleCompare(team){
   var i = STATE.compareTeams.indexOf(team);
@@ -4009,9 +4087,16 @@ function toggleCompare(team){
     if(STATE.compareTeams.length >= 4){ showToast('Max 4 teams in comparison'); return; }
     STATE.compareTeams.push(team);
   }
-  renderMasterTable(); renderComparePane();
+  renderMasterTable();
+  renderComparePane();
+  if (STATE.oemMode === 'research') showResearchSubtab('compare');
 }
-function clearCompare(){ STATE.compareTeams = []; renderMasterTable(); renderComparePane(); }
+function clearCompare(){
+  STATE.compareTeams = [];
+  renderMasterTable();
+  renderComparePane();
+  if (STATE.oemMode === 'research') showResearchSubtab('compare');
+}
 
 function highlightTeam(t){
   STATE.highlightTeam = t;
@@ -4195,7 +4280,9 @@ function renderSplitBar(rows){
 
 /* Split bars (always RHP+LHP YTD) */
 function renderSplitBars(){
-  if (!SCO_YTD_R || !SCO_YTD_L) return;
+  var scR = (SCO_YTD_R && SCO_YTD_R.length) ? SCO_YTD_R : (LIVE_DATA.scYtdR || []);
+  var scL = (SCO_YTD_L && SCO_YTD_L.length) ? SCO_YTD_L : (LIVE_DATA.scYtdL || []);
+  if (!scR.length || !scL.length) return;
   function bars(rows, color, elId){
     if (!rows || !rows.length) return;
     var host = document.getElementById(elId);
@@ -4211,8 +4298,8 @@ function renderSplitBars(){
     s+='</svg>';
     host.innerHTML=s;
   }
-  bars(SCO_YTD_R,'#60A5FA','rhpBars');
-  bars(SCO_YTD_L,'#C084FC','lhpBars');
+  bars(scR,'#60A5FA','rhpBars');
+  bars(scL,'#C084FC','lhpBars');
 }
 
 /* Trend heatmap with directional arrows */
@@ -4542,16 +4629,7 @@ document.querySelectorAll('#masterTable th[data-sort]').forEach(function(th){
   });
 });
 
-document.querySelectorAll('.subtab').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('.subtab').forEach(function(x){x.classList.remove('active');});
-    b.classList.add('active');
-    var pane = b.getAttribute('data-pane');
-    document.querySelectorAll('[id^=pane-]').forEach(function(p){p.style.display='none';});
-    var target = document.getElementById('pane-'+pane);
-    if(target) target.style.display='block';
-  });
-});
+/* Research subtabs bound in bindResearchSubtabs() — do not use [id^=pane-] (hides oem mode panes) */
 
 /* ============================================================
    NEW RENDERERS — v8
@@ -4652,11 +4730,13 @@ function renderTeamDetail(team){
 // Comparison radar
 function renderComparePane(){
   var bar = document.getElementById('compareTeamsPills');
-  if(!bar) return;
+  var chartEl = document.getElementById('compareChart');
+  var tableEl = document.getElementById('compareTable');
+  if (!bar || !chartEl || !tableEl) return;
   if(STATE.compareTeams.length === 0) {
-    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected — toggle Compare in toolbar, then click rows.</span>';
-    document.getElementById('compareChart').innerHTML = '<div class="empty-msg">Pick teams to see radar comparison.</div>';
-    document.getElementById('compareTable').innerHTML = '';
+    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected — toggle Compare in the toolbar, then click rows in the Rankings table (Daily Read).</span>';
+    chartEl.innerHTML = '<div class="empty-msg">Pick 2–4 teams to see radar comparison. Enable Compare mode, then select teams from the master rankings table.</div>';
+    tableEl.innerHTML = '';
     return;
   }
   var colors = ['#C084FC','#60A5FA','#4ADE80','#FB923C'];
@@ -4716,7 +4796,7 @@ function renderComparePane(){
     '</g>';
   });
   s += '</svg>';
-  document.getElementById('compareChart').innerHTML = s;
+  chartEl.innerHTML = s;
 
   // Comparison table with best-value highlighting
   var rows = STATE.compareTeams.map(function(t){return SCO_YTD_B.find(function(d){return d.t===t;});}).filter(Boolean);
@@ -4740,7 +4820,7 @@ function renderComparePane(){
         return '<td class="num" style="'+(isBest?'color:var(--purple);font-weight:700;':'')+'">'+(v>0&&(key==='ppGap'||key==='dfGap'||key==='splitEdge'||key==='velocity')?'+':'')+v.toFixed(1)+'</td>';
       }).join('') + '</tr>';
   }).join('') + '</tbody>';
-  document.getElementById('compareTable').innerHTML = '<div class="table-wrap"><table>'+th+tb+'</table></div>';
+  tableEl.innerHTML = '<div class="table-wrap"><table>'+th+tb+'</table></div>';
 }
 
 // Matchup builder
