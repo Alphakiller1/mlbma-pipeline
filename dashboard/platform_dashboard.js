@@ -1,5 +1,5 @@
 /**
- * MLBMA Platform Dashboard — matchup hero, signal chips, rankings.
+ * MLBMA Platform Dashboard — landing matchup hub, signal teaser.
  */
 (function(global) {
   'use strict';
@@ -10,6 +10,18 @@
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function compareUrl(away, home) {
+    return 'matchup_compare.html?away=' + encodeURIComponent(away || '') + '&home=' + encodeURIComponent(home || '');
+  }
+
+  function teamProfileUrl(team) {
+    return 'team_profile.html?team=' + encodeURIComponent(team || '');
+  }
+
+  function pitcherProfileUrl(name) {
+    return 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
   }
 
   function gameCardId(m) {
@@ -36,6 +48,19 @@
 
   function spPitchScore(team) {
     return typeof getSpPitchScore === 'function' ? getSpPitchScore(team) : null;
+  }
+
+  function f5EdgeScore(m) {
+    var awayPs = spPitchScore(m.home) || 50;
+    var homePs = spPitchScore(m.away) || 50;
+    var awayBp = bullpenOsiAllowed(m.home);
+    var homeBp = bullpenOsiAllowed(m.away);
+    var minBp = Math.min(awayBp != null ? awayBp : 55, homeBp != null ? homeBp : 55);
+    var maxPs = Math.max(awayPs, homePs);
+    var awayRow = teamRow(m.away, m.homeHand);
+    var homeRow = teamRow(m.home, m.awayHand);
+    var lineupEdge = Math.abs((m.awayOSI || 0) - (m.homeOSI || 0));
+    return maxPs + (100 - minBp) * 0.3 + lineupEdge;
   }
 
   function gameScriptBadge(m) {
@@ -85,14 +110,18 @@
 
   function spRow(label, name, hand, team, stats) {
     var pid = A ? A.lookupMlbId(name) : null;
-    var hs = A ? A.headshotImg(pid, 36, 'mc-headshot') : '';
+    var hs = A ? A.headshotImg(pid, 48, 'mc-headshot') : '<span class="headshot-wrap" style="width:48px;height:48px"></span>';
     var pt = pitchTier(spPitchScore(team));
+    var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
+    var nameHtml = pname === 'TBD'
+      ? '<strong>TBD</strong>'
+      : '<a href="' + pitcherProfileUrl(pname) + '" class="pitcher-link" onclick="event.stopPropagation()"><strong>' + esc(pname) + '</strong></a>';
     stats = stats || {};
-    return '<div class="mc-sp-block">'
+    return '<div class="mc-sp-block" onclick="event.stopPropagation()">'
       + '<div class="mc-sp-photo">' + hs + '</div>'
       + '<div class="mc-sp-info">'
       + '<span class="mc-sp-side">' + label + '</span> '
-      + '<strong>' + esc(name || 'TBD') + '</strong> '
+      + nameHtml + ' '
       + '<span class="hand-pill hand-' + (hand || '?').toLowerCase() + '">' + esc(hand || '?') + '</span> '
       + '<span class="pitch-tier ' + pt.cls + '">' + pt.label + '</span>'
       + '<div class="mc-sp-stats">'
@@ -105,8 +134,7 @@
   function passesFilter(m, script, f5) {
     if (FILTER === 'all') return true;
     if (FILTER === 'edge') {
-      var edge = Math.abs((m.awayOSI || 0) - (m.homeOSI || 0));
-      return edge >= 5;
+      return Math.abs((m.awayOSI || 0) - (m.homeOSI || 0)) >= 5;
     }
     if (FILTER === 'duel') return script.label === 'Pitching Duel';
     if (FILTER === 'power') return script.label === 'Power Showdown';
@@ -123,11 +151,44 @@
         var bPs = Math.max(spPitchScore(b.home) || 0, spPitchScore(b.away) || 0);
         return bPs - aPs;
       }
+      if (SORT === 'f5') return f5EdgeScore(b) - f5EdgeScore(a);
       var aEdge = Math.abs((a.awayOSI || 0) - (a.homeOSI || 0));
       var bEdge = Math.abs((b.awayOSI || 0) - (b.homeOSI || 0));
       return bEdge - aEdge;
     });
     return list;
+  }
+
+  function bindCardNavigation() {
+    var grid = document.getElementById('matchupsHeroGrid');
+    if (!grid || grid.dataset.navBound) return;
+    grid.dataset.navBound = '1';
+    grid.addEventListener('click', function(e) {
+      if (e.target.closest('a, button, .hmc-lineup-toggle')) return;
+      var card = e.target.closest('.hero-matchup-card');
+      if (!card) return;
+      var away = card.getAttribute('data-away');
+      var home = card.getAttribute('data-home');
+      if (away && home) global.location.href = compareUrl(away, home);
+    });
+    grid.addEventListener('click', function(e) {
+      var btn = e.target.closest('.hmc-lineup-toggle');
+      if (!btn) return;
+      e.stopPropagation();
+      var wrap = btn.closest('.hmc-lineups');
+      if (!wrap) return;
+      var open = wrap.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? 'Hide Lineups ▴' : 'Show Lineups ▾';
+    });
+  }
+
+  function teamLinkHtml(team, logoFn, extraCls) {
+    return '<a href="' + teamProfileUrl(team) + '" class="team-link' + (extraCls || '') + '" onclick="event.stopPropagation()">'
+      + logoFn(team, 40)
+      + '<span class="hmc-abbr">' + esc(team)
+      + (global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '')
+      + '</span></a>';
   }
 
   function renderHeroMatchups() {
@@ -149,8 +210,6 @@
     var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
 
     grid.innerHTML = sorted.map(function(m) {
-      var cardId = gameCardId(m);
-      var panelId = 'hero_' + cardId;
       var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
       var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
       var total = awayOSI + homeOSI || 1;
@@ -162,14 +221,13 @@
       var awayHandLabel = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
       var awayEdgeCls = fav === m.away ? ' edge-team' : '';
       var homeEdgeCls = fav === m.home ? ' edge-team' : '';
+      var lineupHtml = typeof buildMatchupLineupBlock === 'function' ? buildMatchupLineupBlock(m, { expanded: true }) : '';
 
-      return '<article class="hero-matchup-card" id="' + cardId + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
+      return '<article class="hero-matchup-card" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
         + '<div class="hmc-row hmc-teams">'
-        + '<div class="hmc-team' + awayEdgeCls + '">' + logo(m.away, 40) + '<span class="hmc-abbr">' + esc(m.away) +
-          (global.MLBMAStandings ? MLBMAStandings.recordHtml(m.away) : '') + '</span></div>'
+        + '<div class="hmc-team' + awayEdgeCls + '">' + teamLinkHtml(m.away, logo, '') + '</div>'
         + '<span class="hmc-at">@</span>'
-        + '<div class="hmc-team' + homeEdgeCls + '">' + logo(m.home, 40) + '<span class="hmc-abbr">' + esc(m.home) +
-          (global.MLBMAStandings ? MLBMAStandings.recordHtml(m.home) : '') + '</span></div>'
+        + '<div class="hmc-team' + homeEdgeCls + '">' + teamLinkHtml(m.home, logo, '') + '</div>'
         + '<div class="hmc-time">' + esc(m.time || 'TBD') + '</div>'
         + weatherHtml(m)
         + '</div>'
@@ -177,7 +235,7 @@
         + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP })
         + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP })
         + '</div>'
-        + '<div class="hmc-row hmc-edge-label">Tonight&apos;s Lineup Edge (vs ' + handLabel + ' / ' + awayHandLabel + ')</div>'
+        + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
         + '<div class="hmc-osi-bar">'
         + '<span class="hmc-osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
         + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
@@ -187,100 +245,118 @@
         + '<span class="script-badge ' + script.cls + '">' + esc(script.label) + '</span>'
         + '<span class="f5-badge ' + f5.cls + '">' + esc(f5.label) + '</span>'
         + '</div>'
-        + '<button type="button" class="metrics-toggle" onclick="toggleMetricsPanel(\'' + panelId + '\', this)">Show Lineup ▾</button>'
-        + '<div class="metrics-panel" id="' + panelId + '">'
-        + (typeof buildMatchupLineupBlock === 'function' ? buildMatchupLineupBlock(m) : '')
-        + '</div></article>';
+        + lineupHtml
+        + '<span class="hmc-view-full">View Full Matchup →</span>'
+        + '</article>';
     }).join('').replace(/<\/?motion>/g, '');
+
+    bindCardNavigation();
+    grid.querySelectorAll('.hero-matchup-card').forEach(function(card) {
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          var away = card.getAttribute('data-away');
+          var home = card.getAttribute('data-home');
+          if (away && home) global.location.href = compareUrl(away, home);
+        }
+      });
+    });
+  }
+
+  function signalConfClass(conf) {
+    var s = String(conf || '').toLowerCase();
+    if (s.indexOf('high') >= 0 || s.indexOf('elite') >= 0) return 'high';
+    if (s.indexOf('med') >= 0) return 'mid';
+    return 'low';
+  }
+
+  function parseSignalsToday() {
+    var rows = (global.LIVE_DATA && LIVE_DATA.signalsToday) || [];
+    if (!rows.length) return [];
+    return rows.map(function(row, i) {
+      var keys = Object.keys(row);
+      function col() {
+        for (var k = 0; k < arguments.length; k++) {
+          var want = arguments[k];
+          var hit = keys.find(function(key) {
+            return String(key).toLowerCase().replace(/\s+/g, '_') === want.toLowerCase();
+          });
+          if (hit && row[hit] != null && row[hit] !== '') return String(row[hit]).trim();
+        }
+        return '';
+      }
+      return {
+        type: col('signal_type', 'signal', 'type') || 'Model Signal',
+        game: col('game', 'matchup', 'teams') || col('team') || '—',
+        confidence: col('confidence', 'conf') || 'Medium',
+        idx: i
+      };
+    }).filter(function(s) { return s.game !== '—' || s.type; });
   }
 
   function renderSignalChips() {
     var el = document.getElementById('signalChips');
     if (!el) return;
-    var games = LIVE_DATA.matchups || [];
-    var rows = typeof SCO_YTD_B !== 'undefined' ? SCO_YTD_B : [];
     var chips = [];
+    var sheetSignals = parseSignalsToday();
 
-    if (games.length) {
-      var bestLineup = null, bestOsi = -1;
-      games.forEach(function(m) {
-        [['away', m.awayOSI, m.homeHand], ['home', m.homeOSI, m.awayHand]].forEach(function(x) {
-          if (x[1] != null && x[1] > bestOsi) { bestOsi = x[1]; bestLineup = { team: m[x[0]], osi: x[1], cardId: gameCardId(m) }; }
+    if (sheetSignals.length) {
+      sheetSignals.slice(0, 3).forEach(function(s) {
+        chips.push({
+          label: s.type,
+          val: s.game,
+          conf: s.confidence,
+          href: 'model_report.html#signal-' + s.idx
         });
       });
-      if (bestLineup) chips.push({ cls: 'chip-green', label: 'Best Lineup Edge', val: bestLineup.team + ' ' + bestLineup.osi.toFixed(1), scroll: bestLineup.cardId });
-
-      var bestF5 = null, bestF5Score = -1;
-      games.forEach(function(m) {
-        var awayRow = teamRow(m.away, m.homeHand);
-        var abq = awayRow ? awayRow.abq : 50;
-        var ps = spPitchScore(m.home) || 50;
-        var s = abq + (100 - ps);
-        if (s > bestF5Score) { bestF5Score = s; bestF5 = { game: m.away + '@' + m.home, cardId: gameCardId(m) }; }
-      });
-      if (bestF5) chips.push({ cls: 'chip-amber', label: 'Strongest F5 Angle', val: bestF5.game, scroll: bestF5.cardId });
-
-      var bestPs = null, psSum = -1;
-      games.forEach(function(m) {
-        var s = (spPitchScore(m.home) || 0) + (spPitchScore(m.away) || 0);
-        if (s > psSum) { psSum = s; bestPs = { game: m.away + '@' + m.home, cardId: gameCardId(m) }; }
-      });
-      if (bestPs) chips.push({ cls: 'chip-gray', label: 'Pitching Duel', val: bestPs.game, scroll: bestPs.cardId });
-
-      var bestPower = null, powerScore = -1;
-      games.forEach(function(m) {
-        var awayRow = teamRow(m.away, m.homeHand);
-        var homeRow = teamRow(m.home, m.awayHand);
-        var rcv = Math.max(awayRow ? awayRow.rcv : 0, homeRow ? homeRow.rcv : 0);
-        var hr9 = Math.max(m.homeHR9 || 0, m.awayHR9 || 0);
-        var s = rcv + hr9 * 20;
-        if (s > powerScore) { powerScore = s; bestPower = { game: m.away + '@' + m.home, cardId: gameCardId(m) }; }
-      });
-      if (bestPower) chips.push({ cls: 'chip-orange', label: 'Power Matchup', val: bestPower.game, scroll: bestPower.cardId });
     }
 
-    if (rows.length) {
-      var buy = rows.filter(function(d) { return d.ppGap >= 4; }).sort(function(a, b) { return b.ppGap - a.ppGap; })[0];
-      if (buy) chips.push({ cls: 'chip-teal', label: 'Buy-Low Offense', val: buy.t + ' +' + buy.ppGap.toFixed(1), href: 'team_profile.html?team=' + buy.t });
-      var fade = rows.filter(function(d) { return d.ppGap <= -4; }).sort(function(a, b) { return a.ppGap - b.ppGap; })[0];
-      if (fade) chips.push({ cls: 'chip-red', label: 'Fade Risk', val: fade.t + ' ' + fade.ppGap.toFixed(1), href: 'team_profile.html?team=' + fade.t });
+    if (!chips.length) {
+      var games = LIVE_DATA.matchups || [];
+      var rows = typeof SCO_YTD_B !== 'undefined' ? SCO_YTD_B : [];
+      if (games.length) {
+        var bestLineup = null, bestOsi = -1;
+        games.forEach(function(m) {
+          [['away', m.awayOSI, m.away], ['home', m.homeOSI, m.home]].forEach(function(x) {
+            if (x[1] != null && x[1] > bestOsi) {
+              bestOsi = x[1];
+              bestLineup = { team: x[2], game: m.away + '@' + m.home, osi: x[1] };
+            }
+          });
+        });
+        if (bestLineup) {
+          chips.push({ label: 'Top Lineup Edge', val: bestLineup.game + ' · ' + bestLineup.team, conf: 'High', href: 'model_report.html' });
+        }
+      }
+      if (rows.length) {
+        var buy = rows.filter(function(d) { return d.ppGap >= 4; }).sort(function(a, b) { return b.ppGap - a.ppGap; })[0];
+        if (buy && chips.length < 3) {
+          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'model_report.html' });
+        }
+      }
     }
 
-    chips = chips.slice(0, 6);
+    chips = chips.slice(0, 3);
+    if (!chips.length) {
+      el.innerHTML = '<p class="ca-helper" style="margin:0;">No model signals yet — run the daily pipeline or open the full report.</p>';
+      return;
+    }
+
     el.innerHTML = chips.map(function(c) {
-      var click = c.href ? 'onclick="location.href=\'' + c.href + '\'"'
-        : 'onclick="var el=document.getElementById(\'' + c.scroll + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});"';
-      return '<button type="button" class="signal-chip ' + c.cls + '" ' + click + '>'
+      return '<button type="button" class="signal-chip" onclick="location.href=\'' + esc(c.href) + '\'">'
         + '<span class="chip-label">' + esc(c.label) + '</span>'
-        + '<span class="chip-val">' + esc(c.val) + '</span></button>';
+        + '<span class="chip-val">' + esc(c.val) + '</span>'
+        + '<span class="chip-conf"><span class="conf-dot ' + signalConfClass(c.conf) + '"></span>' + esc(c.conf) + '</span>'
+        + '</button>';
     }).join('');
-  }
-
-  function renderMetricBarChart(metric) {
-    var el = document.getElementById('metricBarChart');
-    if (!el || !metric) { if (el) el.innerHTML = ''; return; }
-    var rows = (typeof currentRows === 'function' ? currentRows() : (SCO_YTD_B || [])).slice()
-      .sort(function(a, b) { return (b[metric] || 0) - (a[metric] || 0); });
-    var max = rows[0] ? rows[0][metric] : 100;
-    if (!max) max = 100;
-    var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
-    var colorFn = A ? A.metricColor.bind(A) : function(v) { return 'var(--purple)'; };
-    el.innerHTML = '<div class="metric-bar-chart-title">' + metric.toUpperCase() + ' league ranking</div>'
-      + rows.map(function(d) {
-        var w = Math.max(4, ((d[metric] || 0) / max) * 100);
-        return '<div class="mbc-row">'
-          + logo(d.t, 20, 'mbc-logo')
-          + '<span class="mbc-team">' + esc(d.t) + '</span>'
-          + '<div class="mbc-track"><div class="mbc-fill" style="width:' + w + '%;background:' + colorFn(d[metric]) + '"></div></div>'
-          + '<span class="mbc-val" style="color:' + colorFn(d[metric]) + '">' + (d[metric] != null ? d[metric].toFixed(1) : '—') + '</span></div>';
-      }).join('').replace(/<\/?motion>/g, '');
   }
 
   function bindHeroControls() {
     document.querySelectorAll('[data-match-sort]').forEach(function(btn) {
       if (btn.dataset.bound) return;
       btn.dataset.bound = '1';
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
         SORT = btn.getAttribute('data-match-sort');
         document.querySelectorAll('[data-match-sort]').forEach(function(b) {
           b.classList.toggle('active', b === btn);
@@ -291,7 +367,8 @@
     document.querySelectorAll('[data-match-filter]').forEach(function(btn) {
       if (btn.dataset.bound) return;
       btn.dataset.bound = '1';
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
         FILTER = btn.getAttribute('data-match-filter');
         document.querySelectorAll('[data-match-filter]').forEach(function(b) {
           b.classList.toggle('active', b === btn);
@@ -299,22 +376,11 @@
         renderHeroMatchups();
       });
     });
-    var toggle = document.getElementById('signalSummaryToggle');
-    var body = document.getElementById('signalSummaryBody');
-    if (toggle && body && !toggle.dataset.bound) {
-      toggle.dataset.bound = '1';
-      toggle.addEventListener('click', function() {
-        body.classList.toggle('collapsed');
-        toggle.textContent = body.classList.contains('collapsed') ? 'Show ▾' : 'Hide ▴';
-      });
-    }
   }
 
   function renderDashboard() {
     renderHeroMatchups();
     renderSignalChips();
-    if (typeof renderMasterTable === 'function') renderMasterTable();
-    if (STATE && STATE.activeMetric) renderMetricBarChart(STATE.activeMetric);
     bindHeroControls();
   }
 
@@ -337,7 +403,6 @@
     renderDashboard: renderDashboard,
     renderHeroMatchups: renderHeroMatchups,
     renderSignalChips: renderSignalChips,
-    renderMetricBarChart: renderMetricBarChart,
     initRegistry: initRegistry,
     bindHeroControls: bindHeroControls
   };

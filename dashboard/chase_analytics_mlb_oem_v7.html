@@ -1539,6 +1539,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
+<link rel="stylesheet" href="landing_dashboard.css">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
@@ -1548,6 +1549,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <body>
 
 <div class="loading-text" id="loadingText">Loading live data from Google Sheets…</div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -1560,7 +1562,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
-      <a href="chase_analytics_mlb_oem_v7.html#section-model-report" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
@@ -1611,7 +1613,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-model-report" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
@@ -1629,18 +1631,20 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </div>
   </div>
 </div>
+</div>
 
 <div class="container">
 
 <!-- LAYER 1 — Main Dashboard -->
 <div class="layer-main" id="layerMain">
-<div class="header header-clean">
+<div class="header header-clean landing-hero-brand">
+  <img class="ca-logo-hero" src="assets/chase-logo-horizontal.png" alt="Chase Analytics"
+    onerror="this.style.display='none'">
   <div class="brand-row">
-    <span class="brand-tag">Chase Analytics</span>
+    <span class="brand-tag">Opening Dashboard</span>
     <span class="brand-pill" id="brandPill">Loading…</span>
   </div>
-  <h1>MLB Offensive Extrapolation Model</h1>
-  <p class="subtitle">Daily offensive intelligence for MLB betting research.</p>
+  <p class="landing-tagline">Today&apos;s slate — projected lineups, pitchers, and model edges at a glance.</p>
   <div class="header-meta">Last updated: <span id="headerUpdated">—</span></div>
   <div class="data-error-banner" id="dataErrorBanner"></div>
 </div>
@@ -1657,69 +1661,37 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <h2 class="platform-title">Today's Projected Matchups</h2>
   <div class="matchups-hero-header">
     <div class="matchups-hero-meta" id="matchupsHeroMeta">Loading…</div>
-    <div class="sort-controls">
-      <span style="font-size:10px;color:var(--text-3);font-weight:600;">Sort:</span>
-      <button type="button" class="active" data-match-sort="edge">OSI Edge</button>
-      <button type="button" data-match-sort="time">Game Time</button>
-      <button type="button" data-match-sort="pitch">Pitching Score</button>
+    <div class="ca-pill-bar">
+      <span class="ca-pill-label">Sort</span>
+      <button type="button" class="ca-pill-btn active" data-match-sort="edge">OSI Edge</button>
+      <button type="button" class="ca-pill-btn" data-match-sort="time">Game Time</button>
+      <button type="button" class="ca-pill-btn" data-match-sort="pitch">Pitching Score</button>
+      <button type="button" class="ca-pill-btn" data-match-sort="f5">F5 Edge</button>
     </div>
-    <div class="filter-pills">
-      <button type="button" class="active" data-match-filter="all">All</button>
-      <button type="button" data-match-filter="edge">Best Edge</button>
-      <button type="button" data-match-filter="duel">Pitching Duels</button>
-      <button type="button" data-match-filter="power">Power Matchups</button>
-      <button type="button" data-match-filter="f5">F5 Plays</button>
+    <div class="ca-pill-bar">
+      <span class="ca-pill-label">Filter</span>
+      <button type="button" class="ca-pill-btn active" data-match-filter="all">All Games</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="edge">Best Edge</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="duel">Pitching Duels</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="power">Power Matchups</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="f5">F5 Angles</button>
     </div>
   </div>
   <div id="matchupsHeroGrid"></div>
 </section>
 
-<section class="platform-section" id="section-model-report">
-  <div class="signal-summary-header">
-    <div>
-      <div class="platform-eyebrow">Predictive Signals</div>
-      <h2 class="platform-title" style="font-size:16px;margin:0;">Daily Predictive Signal Board</h2>
-    </div>
-    <button type="button" class="btn" id="signalSummaryToggle" style="font-size:11px;">Hide ▴</button>
+<section class="platform-section" id="section-signal-teaser">
+  <div class="signal-teaser-header">
+    <h2 class="platform-title" style="font-size:16px;margin:0;">Today&apos;s Top Model Reads</h2>
+    <a href="model_report.html" class="signal-teaser-cta">View Full Report →</a>
   </div>
-  <div id="signalSummaryBody">
-    <div id="signalChips"></div>
-  </div>
+  <div id="signalChips"></div>
 </section>
 
-<section class="platform-section" id="section-rankings">
-  <div class="platform-eyebrow">League Table</div>
-  <h2 class="platform-title">Team Offensive Rankings</h2>
-  <div class="rankings-controls">
-    <div class="control-group">
-      <span class="control-label">Window</span>
-      <div class="toggle-group" id="dashTimeToggle">
-        <button class="toggle-btn active" data-time="YTD">YTD</button>
-        <button class="toggle-btn" data-time="L30">L30</button>
-        <button class="toggle-btn" data-time="L14">L14</button>
-        <button class="toggle-btn warn" data-time="L7">L7</button>
-      </div>
-    </div>
-    <div class="control-group">
-      <span class="control-label">Split</span>
-      <div class="toggle-group" id="dashSplitToggle">
-        <button class="toggle-btn active" data-split="b">Both</button>
-        <button class="toggle-btn" data-split="r">vs RHP</button>
-        <button class="toggle-btn" data-split="l">vs LHP</button>
-        <button class="toggle-btn" data-split="f5">F5</button>
-      </div>
-    </div>
-    <div class="search-bar" style="flex:1;min-width:200px;margin:0;">
-      <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams…" autocomplete="off">
-    </div>
-  </div>
-  <div id="dashWindowDataBanner" class="window-data-banner"></div>
-  <div id="dashboardRankingsMount"></div>
-  <div id="metricBarChart"></div>
-</section>
+</div><!-- /layerMain -->
 
-<!-- LAYER 2 — Advanced Tools -->
-<div class="oem-mode-pane" id="section-research-lab" data-oem-pane="research">
+<!-- LAYER 2 — Research Lab (lazy-init) -->
+<div class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research">
 <div class="layer-label">Research Lab</div>
 <div class="layer-advanced" id="layerAdvanced">
 
@@ -1781,6 +1753,39 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <div id="windowDataBanner" class="window-data-banner"></div>
 <div class="glance-grid" id="glanceGrid"></div>
 </div>
+    <div class="section" id="researchRankingsBlock" style="margin-top:20px;">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">League Table</div>
+          <div class="section-title">Team Offensive Rankings</div>
+        </div>
+      </div>
+      <div class="rankings-controls">
+        <div class="control-group">
+          <span class="control-label">Window</span>
+          <div class="toggle-group" id="dashTimeToggle">
+            <button class="toggle-btn active" data-time="YTD">YTD</button>
+            <button class="toggle-btn" data-time="L30">L30</button>
+            <button class="toggle-btn" data-time="L14">L14</button>
+            <button class="toggle-btn warn" data-time="L7">L7</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Split</span>
+          <div class="toggle-group" id="dashSplitToggle">
+            <button class="toggle-btn active" data-split="b">Both</button>
+            <button class="toggle-btn" data-split="r">vs RHP</button>
+            <button class="toggle-btn" data-split="l">vs LHP</button>
+            <button class="toggle-btn" data-split="f5">F5</button>
+          </div>
+        </div>
+        <div class="search-bar" style="flex:1;min-width:200px;margin:0;">
+          <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams…" autocomplete="off">
+        </div>
+      </div>
+      <div id="dashWindowDataBanner" class="window-data-banner"></div>
+      <div id="dashboardRankingsMount"></div>
+    </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
       <div>
         <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
@@ -1791,7 +1796,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <div id="lhpBars"></div>
       </div>
     </div>
-    <div class="section">
+    <div class="section" id="masterTableSection">
   <div class="section-header">
     <div>
       <div class="section-eyebrow">Full Metric Table</div>
@@ -2162,9 +2167,7 @@ function applyLiveData() {
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
 
     var afterLoad = function() {
-      renderAll();
-      renderReferenceTables();
-      if (window.OEMOverhaul && OEMOverhaul.renderConvergence) OEMOverhaul.renderConvergence();
+      renderLanding();
       hideLoadingOverlay();
     };
     if (window.MLBMAStandings) MLBMAStandings.load().then(afterLoad).catch(afterLoad);
@@ -2825,7 +2828,9 @@ function buildLineupColHtml(teamLabel, rows, oppHand) {
   return '<div class="matchup-lineup-col">' + head + body + '</div>';
 }
 
-function buildMatchupLineupBlock(m) {
+function buildMatchupLineupBlock(m, opts) {
+  opts = opts || {};
+  var expanded = opts.expanded !== false;
   var gk = matchupGameKey(m);
   var lu = LIVE_DATA.lineups || [];
   var awayRows = lineupRowsForTeam(lu, gk, m.away, 'AWAY');
@@ -2834,19 +2839,19 @@ function buildMatchupLineupBlock(m) {
   var homeFaces = (m.awayHand === 'L' || m.awayHand === 'R') ? m.awayHand : '?';
   var inner;
   if (!awayRows.length && !homeRows.length) {
-    inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + escHtml(gk) + '</span>. Expected Game column format: AWY@HOM (e.g. ATL@PHI).</div>';
+    inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + escHtml(gk) + '</span>.</div>';
   } else {
     inner = '<div class="matchup-lineup-grid">'
       + buildLineupColHtml(m.away + ' (away)', awayRows, awayFaces)
       + buildLineupColHtml(m.home + ' (home)', homeRows, homeFaces)
       + '</div>';
   }
-  return '<div class="matchup-lineup-actions">'
-    + '<button type="button" class="matchup-lineup-toggle" aria-expanded="false">Show Lineup</button>'
-    + '</div>'
-    + '<div class="matchup-lineup-panel" aria-hidden="true">'
+  return '<div class="hmc-lineups is-open" onclick="event.stopPropagation()">'
+    + '<button type="button" class="hmc-lineup-toggle" aria-expanded="' + (expanded ? 'true' : 'false') + '">'
+    + (expanded ? 'Hide Lineups ▴' : 'Show Lineups ▾') + '</button>'
+    + '<div class="matchup-lineup-panel">'
     + inner
-    + '</div>';
+    + '</div></div>';
 }
 
 function toggleMatchupLineup(btn) {
@@ -3060,47 +3065,38 @@ function parseRegistrySheet(rows) {
   }).filter(function(r) { return r.player_id && r.full_name; });
 }
 
-function loadLiveData() {
-  console.log('[MLBMA] loadLiveData start');
+var _researchBundleLoaded = false;
+var _researchLabInitialized = false;
+
+function loadLandingData() {
+  console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
-  if (loadingText) loadingText.textContent = 'Loading live data from Google Sheets…';
+  if (loadingText) loadingText.textContent = 'Loading today\'s matchups…';
   return Promise.all([
+    fetchSheetTab(TABS.today_matchups),
+    fetchSheetTab(TABS.today_lineups),
+    fetchSheetTab(TABS.weather),
+    fetchSheetTab(TABS.pitching_score),
+    fetchSheetTab(TABS.bullpen_unit),
+    fetchSheetTab(TABS.player_registry),
+    fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
     fetchSheetTab(TABS.vs_rhp),
     fetchSheetTab(TABS.vs_lhp),
-    fetchSheetTab(TABS.oor),
-    fetchSheetTab(TABS.pitching_score),
-    fetchSheetTab(TABS.pals),
-    fetchSheetTab(TABS.bullpen_unit),
-    fetchSheetTab(TABS.today_lineups),
-    fetchSheetTab(TABS.today_games),
-    fetchSheetTab(TABS.today_matchups),
-    fetchSheetTab(TABS.signals_convergence),
-    fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
-    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
-    fetchSheetTab(TABS.weather),
-    fetchSheetTab(TABS.player_registry),
     fetchSheetText(TABS.last_updated)
   ]).then(function(results) {
-    var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
-        pitchingRows = results[3], palsRows = results[4], bullpenRows = results[5],
-        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8],
-        signalsConvRows = results[9], signalsTodayRows = results[10], teamProfRows = results[11],
-        weatherRows = results[12], registryRows = results[13], tsText = results[14];
+    var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
+        pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
+        signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
-      throw new Error('Sheet returned too few teams (expected ~30). Check that tabs are published.');
+      throw new Error('Sheet returned too few teams for lineup context.');
     }
-    LIVE_DATA.oor = parseOorRows(oorRows);
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
-    LIVE_DATA.pals = parsePalsRows(palsRows);
     LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
-    LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
-    LIVE_DATA.signalsConvergence = signalsConvRows || [];
     LIVE_DATA.signalsToday = signalsTodayRows || [];
-    LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(teamProfRows);
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
     LIVE_DATA.playerRegistry = registryRows || [];
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
@@ -3108,12 +3104,34 @@ function loadLiveData() {
     }
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
-    LIVE_DATA.loaded = true;
-    LIVE_DATA.error = null;
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });
+    LIVE_DATA.loaded = true;
+    LIVE_DATA.error = null;
     YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
     applyLiveData();
+    return window.MLBMAStandings ? MLBMAStandings.load() : Promise.resolve();
+  });
+}
+
+function loadResearchData() {
+  if (_researchBundleLoaded) return Promise.resolve();
+  console.log('[MLBMA] loadResearchData start');
+  return Promise.all([
+    fetchSheetTab(TABS.oor),
+    fetchSheetTab(TABS.pals),
+    fetchSheetTab(TABS.signals_convergence),
+    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.today_games)
+  ]).then(function(results) {
+    LIVE_DATA.oor = parseOorRows(results[0]);
+    LIVE_DATA.pals = parsePalsRows(results[1]);
+    LIVE_DATA.signalsConvergence = results[2] || [];
+    LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(results[3]);
+    LIVE_DATA.todayGames = parseTodayGamesRows(results[4]);
+    syncWindowScoresFromProfiles();
+    attachPalsToScores();
+    _researchBundleLoaded = true;
     saveLiveCache({
       lastUpdated: LIVE_DATA.lastUpdated,
       oor: LIVE_DATA.oor,
@@ -3124,23 +3142,36 @@ function loadLiveData() {
       scYtdL: LIVE_DATA.scYtdL,
       ytd: YTD
     });
+    if (_researchLabInitialized) renderResearchLab();
+    return true;
   }).catch(function(err) {
-    LIVE_DATA.loaded = false;
-    LIVE_DATA.error = err && err.message ? err.message : String(err);
-    var cached = loadLiveCache();
-    if (cached && cached.scYtdR && cached.scYtdR.length) {
-      applyLiveCache(cached);
-      showDataError(
-        'Could not refresh live data. Showing last known sheet data. (' + LIVE_DATA.error + ')'
-      );
-    } else {
+    console.warn('[MLBMA] research bundle load failed', err);
+    return false;
+  });
+}
+
+function loadLiveData() {
+  console.log('[MLBMA] loadLiveData start');
+  return loadLandingData()
+    .then(function() { return loadResearchData(); })
+    .catch(function(err) {
+      LIVE_DATA.loaded = false;
+      LIVE_DATA.error = err && err.message ? err.message : String(err);
+      var cached = loadLiveCache();
+      if (cached && cached.scYtdR && cached.scYtdR.length) {
+        applyLiveCache(cached);
+        showDataError(
+          'Could not refresh live data. Showing last known sheet data. (' + LIVE_DATA.error + ')'
+        );
+        return loadResearchData();
+      }
       YTD = FALLBACK_YTD.map(function(d) { return JSON.parse(JSON.stringify(d)); });
       recomputeAllScores();
       showDataError(
         'Could not load live Google Sheets data. Showing embedded fallback. (' + LIVE_DATA.error + ')'
       );
-    }
-  });
+      throw err;
+    });
 }
 
 /* ============================================================
@@ -5659,12 +5690,9 @@ function mountReferenceTables(){
   var oor = document.getElementById('oorSection');
   var pitch = document.getElementById('pitchingSection');
   var pals = document.getElementById('palsSection');
-  var match = document.getElementById('matchupsSection');
   if(oor && oor.parentNode !== mount){ mount.appendChild(oor); }
   if(pitch && pitch.parentNode !== mount){ mount.appendChild(pitch); }
   if(pals && pals.parentNode !== mount){ mount.appendChild(pals); }
-  var dailyMount = document.getElementById('dailyMatchupsMount');
-  if(match && dailyMount && match.parentNode !== dailyMount){ dailyMount.appendChild(match); }
   [oor,pitch,pals].forEach(function(el){
     if(el){ el.style.marginBottom = '20px'; var mn = el.querySelector('.method-note'); if(mn) mn.style.display='none'; }
   });
@@ -5673,32 +5701,76 @@ function mountReferenceTables(){
 function renderReferenceTables() {
   renderOOR();
   renderPitchingScore();
-  if (window.OEMOverhaul && document.getElementById('dailyMatchupsMount')) {
-    OEMOverhaul.renderSection1Matchups();
-  } else {
-    renderMatchups();
+}
+
+function renderLanding() {
+  console.log('[MLBMA] renderLanding');
+  if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
+  registerMetricPools();
+  if (window.PlatformDashboard) {
+    PlatformDashboard.initRegistry().then(function() {
+      PlatformDashboard.renderDashboard();
+    });
+  }
+  if (window.MLBMAStandings) {
+    MLBMAStandings.load().then(function() {
+      if (window.PlatformDashboard) PlatformDashboard.renderHeroMatchups();
+    });
   }
 }
 
-function renderAll(){
-  console.log('[MLBMA] renderAll start');
+function initResearchLab() {
+  if (_researchLabInitialized) return;
+  _researchLabInitialized = true;
+  console.log('[MLBMA] initResearchLab');
+  bindResearchSubtabs();
+  bindDashRankingsControls();
+  renderResearchLab();
+  loadResearchData();
+}
+
+function setupResearchLazyInit() {
+  var el = document.getElementById('section-research-lab');
+  if (!el) return;
+  function trigger() {
+    if (location.hash === '#section-research-lab' || location.hash === '#section-model-report') {
+      initResearchLab();
+    }
+  }
+  trigger();
+  window.addEventListener('hashchange', trigger);
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) initResearchLab();
+      });
+    }, { rootMargin: '120px' });
+    io.observe(el);
+  } else {
+    setTimeout(initResearchLab, 3000);
+  }
+}
+
+function renderResearchLab() {
+  console.log('[MLBMA] renderResearchLab');
   attachPalsToScores();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   mountDashboardRankings();
-  if (window.PlatformDashboard) {
-    PlatformDashboard.initRegistry().then(function() { PlatformDashboard.renderDashboard(); });
-  } else {
-    renderMasterTable();
-  }
+  renderMasterTable();
   renderWatchlistBar();
   renderComparePane();
   renderSplitBars();
   renderTrendHeatmap();
   mountResearchTables();
   mountReferenceTables();
-  if (STATE.oemMode === 'research') renderReferenceTables();
+  renderReferenceTables();
   urlEncodeState();
+}
+
+function renderAll(){
+  renderLanding();
+  if (_researchLabInitialized) renderResearchLab();
 }
 
 /* ============================================================
@@ -5921,9 +5993,9 @@ function runPostLoadUI() {
   try {
     updateBrandPill();
     populateMatchupSelectors();
-    renderAll();
-    renderSplitBars();
-    renderTrendHeatmap();
+    renderLanding();
+    setupResearchLazyInit();
+    loadResearchData();
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
     showDataError('Dashboard render error: ' + (err && err.message ? err.message : String(err)));
@@ -5981,16 +6053,6 @@ function init(){
     urlDecodeState();
     bindOemModeTabs();
     bindDashRankingsControls();
-    var mg = document.getElementById('matchupsGrid');
-    if (mg && !mg.dataset.lineupToggleBound) {
-      mg.dataset.lineupToggleBound = '1';
-      mg.addEventListener('click', function(e) {
-        var btn = e.target.closest('.matchup-lineup-toggle');
-        if (!btn) return;
-        e.preventDefault();
-        toggleMatchupLineup(btn);
-      });
-    }
     document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
       x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
     });
@@ -6165,17 +6227,6 @@ if (document.readyState === 'loading') {
   <div class="method-note" style="margin-top:16px;">
     <strong>Method:</strong> <strong>BA++</strong> = normalized OSI. <strong>PTF+</strong> = normalized average xFIP of opposing starters faced (inverted — higher values mean an easier SP schedule). <strong>PALS</strong> = average of BA++ and PTF+. <strong>Avg xFIP faced</strong> coloring: green above 4.05 (softer pitching mix), red below 3.95 (tougher); lower raw xFIP = harder schedule. <strong>PALS</strong> coloring: 70+ elite (green), 55–69 strong (gold), 40–54 neutral (text), under 40 weak (red).
   </div>
-</div>
-
-<div class="section" id="matchupsSection" style="margin-top:20px;">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Daily Slate</div>
-      <div class="section-title">Today&apos;s Projected Matchups</div>
-      <div class="section-subtitle">Lineup OSI vs opposing starter handedness — updated daily</div>
-    </div>
-  </div>
-  <div id="matchupsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px;"></div>
 </div>
 
 </div><!-- /.container -->

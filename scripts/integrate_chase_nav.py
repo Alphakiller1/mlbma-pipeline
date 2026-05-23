@@ -9,6 +9,8 @@ NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
 
 PAGES = [
     "chase_analytics_mlb_oem_v7.html",
+    "model_report.html",
+    "matchup_compare.html",
     "matchup_sheet.html",
     "pitcher_profile.html",
     "batter_profile.html",

@@ -110,6 +110,8 @@
       if (!hash || hash === 'section-matchups-hero') return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
+    if (page === 'model_report.html') return 'model-report';
+    if (page === 'matchup_compare.html') return 'opening';
     return page;
   }
 
@@ -122,6 +124,8 @@
       return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
+    if (page === 'model_report.html') return 'model-report';
+    if (page === 'matchup_compare.html') return 'opening';
     return page;
   }
 

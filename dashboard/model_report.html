@@ -1,3 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Analytics · Model Report</title>
+<link rel="stylesheet" href="mlbma_ui.css">
+<link rel="stylesheet" href="mlbma_design_system.css">
+<link rel="stylesheet" href="chase_nav.css">
+<link rel="stylesheet" href="landing_dashboard.css">
+<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+<script src="mlbma_config.js"></script>
+<script src="mlbma_assets.js"></script>
+<style>
+body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 100vh; }
+.container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 64px; }
+.section-card {
+  background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f);
+  border-radius: 12px; padding: 20px; margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -79,3 +102,77 @@
     </div>
   </div>
 </div>
+
+<script src="mlbma_ui.js" data-page="model_report.html"></script>
+
+<div class="container">
+  <div class="ca-page-title" style="margin-bottom:8px;">Model Report</div>
+  <p class="ca-helper" style="margin-bottom:24px;">Daily predictive signal board and convergence explorer.</p>
+
+  <div class="section-card">
+    <h2 class="ca-section-title" style="font-size:18px;margin-bottom:12px;">Daily Predictive Signal Board</h2>
+    <div id="signalsTodayPanel"></div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="ca-section-title" style="font-size:18px;margin-bottom:12px;">Signal Explorer</h2>
+    <div id="convergenceGrid"></div>
+    <div id="stratsSignals" style="margin-top:20px;"></div>
+  </div>
+
+  <div id="metricLegendMount"></div>
+</div>
+
+<script src="mlbma_signals.js"></script>
+<script src="oem_overhaul.js"></script>
+<script src="chase_nav.js"></script>
+<script>
+(function() {
+  'use strict';
+  var TABS = MLBMA_CONFIG.SHEET_TABS;
+
+  function fetchSheetTab(name) {
+    var sid = MLBMA_CONFIG.SHEET_ID;
+    var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(name);
+    return fetch(url, { cache: 'no-store' }).then(function(r) {
+      if (!r.ok) throw new Error('fetch ' + name);
+      return r.text();
+    }).then(function(text) {
+      var lines = text.trim().split('\n');
+      if (lines.length < 2) return [];
+      var headers = lines[0].split(',').map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
+      return lines.slice(1).map(function(line) {
+        var cols = line.match(/("([^"]|"")*"|[^,]*)/g) || [];
+        var row = {};
+        headers.forEach(function(h, i) {
+          var v = (cols[i] || '').replace(/^"|"$/g, '').replace(/""/g, '"').trim();
+          row[h] = v;
+        });
+        return row;
+      });
+    });
+  }
+
+  window.LIVE_DATA = { signalsToday: [], signalsConvergence: [] };
+
+  Promise.all([
+    fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
+    fetchSheetTab(TABS.signals_convergence).catch(function() { return []; })
+  ]).then(function(res) {
+    LIVE_DATA.signalsToday = res[0] || [];
+    LIVE_DATA.signalsConvergence = res[1] || [];
+    if (window.MLBMASignals) MLBMASignals.renderExplorer();
+    var leg = document.getElementById('metricLegendMount');
+    if (leg && MLBMAAssets && MLBMAAssets.metricLegendHtml) {
+      leg.innerHTML = MLBMAAssets.metricLegendHtml();
+    }
+    if (window.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+  }).catch(function() {
+    var leg = document.getElementById('metricLegendMount');
+    if (leg) leg.innerHTML = '<p class="ca-helper">Could not load signals — check sheet publish status.</p>';
+    if (window.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+  });
+})();
+</script>
+</body>
+</html>

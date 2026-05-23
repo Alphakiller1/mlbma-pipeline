@@ -84,24 +84,24 @@
       + initials + '</span>';
   }
 
+  var GENERIC_HEADSHOT =
+    'https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/0/headshot/67/current';
+
   function headshotUrl(mlbId) {
-    if (!mlbId) return '';
+    if (!mlbId) return GENERIC_HEADSHOT;
     return 'https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/'
       + mlbId + '/headshot/67/current';
   }
 
   function headshotImg(mlbId, px, cls) {
-    px = px || 40;
+    px = px || 48;
     cls = cls || 'pitcher-headshot';
     var url = headshotUrl(mlbId);
-    if (!url) {
-      return '<span class="' + cls + '-fallback pitcher-silhouette" style="width:' + px + 'px;height:' + px + 'px;" aria-hidden="true"></span>';
-    }
-    return '<img class="' + cls + '" src="' + url + '" width="' + px + '" height="' + px + '" '
-      + 'alt="" loading="lazy" '
-      + 'onerror="this.onerror=null;this.style.display=\'none\';'
-      + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');">'
-      + '<span class="' + cls + '-fallback pitcher-silhouette" style="display:none;width:' + px + 'px;height:' + px + 'px;" aria-hidden="true"></span>';
+    var generic = GENERIC_HEADSHOT;
+    return '<span class="headshot-wrap ' + cls + '-wrap" style="width:' + px + 'px;height:' + px + 'px" role="img" aria-label="Pitcher">'
+      + '<img class="' + cls + '" src="' + url + '" alt="" loading="lazy" '
+      + 'onerror="this.onerror=null;this.src=\'' + generic + '\';">'
+      + '</span>';
   }
 
   function parseRegistryRows(rows) {
