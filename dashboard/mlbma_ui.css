@@ -23,9 +23,16 @@
 .mlbma-loading.hide {
   opacity: 0; visibility: hidden; pointer-events: none;
 }
+.mlbma-load-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
 .mlbma-load-logo {
-  font-size: 22px; font-weight: 600; letter-spacing: 0.06em;
-  background: linear-gradient(135deg, #fff 0%, #C084FC 100%);
+  font-family: var(--font, 'DM Sans', system-ui, sans-serif);
+  font-size: 22px; font-weight: 700; letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #fff 0%, #7C3AED 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; margin-bottom: 10px;
 }

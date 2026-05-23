@@ -1,0 +1,176 @@
+/**
+ * Chase Analytics design system — typography, brand, metric grading.
+ * Load after page :root overrides; sets --font to DM Sans globally.
+ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,700&display=swap');
+
+:root {
+  --ca-brand: #7C3AED;
+  --ca-brand-dim: rgba(124, 58, 237, 0.18);
+  --ca-brand-glow: rgba(124, 58, 237, 0.35);
+
+  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --mono: 'DM Sans', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
+
+  /* 7-step metric gradient (league-relative) */
+  --metric-very-weak: #EF4444;
+  --metric-weak: #F97316;
+  --metric-below: #FBBF24;
+  --metric-neutral: #71717A;
+  --metric-above: #86EFAC;
+  --metric-strong: #4ADE80;
+  --metric-elite: #22C55E;
+
+  /* Semantic accents (signals — not primary grade) */
+  --accent-buy: #22d3ee;
+  --accent-risk: #FBBF24;
+
+  --text-title: clamp(1.75rem, 3vw, 2.25rem);
+  --text-section: clamp(1.125rem, 2vw, 1.5rem);
+  --text-card: 1rem;
+  --text-label: 0.6875rem;
+  --text-helper: 0.8125rem;
+}
+
+html {
+  font-family: var(--font);
+}
+
+body {
+  font-family: var(--font);
+}
+
+/* Typography scale */
+.ca-page-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.ca-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-section);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.ca-card-title {
+  font-size: var(--text-card);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ca-metric-label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+}
+
+.ca-metric-value {
+  font-family: var(--mono);
+  font-size: clamp(1.375rem, 2.5vw, 2rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.ca-helper {
+  font-size: var(--text-helper);
+  color: var(--text-2, #A1A1AA);
+  line-height: 1.45;
+}
+
+/* Brand assets */
+.ca-logo-nav {
+  height: 32px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.ca-logo-hero {
+  height: 120px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.ca-icon-loading {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+/* Metric color legend */
+.ca-metric-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--bg-3, #18181c);
+  border: 1px solid var(--border, #28282f);
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--text-2, #A1A1AA);
+}
+
+.ca-metric-legend-title {
+  font-weight: 600;
+  color: var(--text, #F4F4F7);
+  margin-right: 4px;
+}
+
+.ca-metric-legend-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+.ca-metric-legend-step {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Cell backgrounds (optional table tint) */
+.ca-grade-bg-very-weak { background: rgba(239, 68, 68, 0.12); }
+.ca-grade-bg-weak { background: rgba(249, 115, 22, 0.1); }
+.ca-grade-bg-below { background: rgba(251, 191, 36, 0.08); }
+.ca-grade-bg-neutral { background: transparent; }
+.ca-grade-bg-above { background: rgba(134, 239, 172, 0.08); }
+.ca-grade-bg-strong { background: rgba(74, 222, 128, 0.1); }
+.ca-grade-bg-elite { background: rgba(34, 197, 94, 0.14); }
+
+/* Pitcher headshot fallback (Phase 2+ cards) */
+.pitcher-silhouette,
+.pitcher-headshot-fallback.pitcher-silhouette {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-4, #1f1f25);
+  border: 1px solid var(--border, #28282f);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.pitcher-silhouette::after {
+  content: '';
+  width: 55%;
+  height: 55%;
+  background: var(--text-3, #71717A);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3.3 0-6 1.3-6 3v1h12v-1c0-1.7-2.7-3-6-3z'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3.3 0-6 1.3-6 3v1h12v-1c0-1.7-2.7-3-6-3z'/%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: 0.65;
+}

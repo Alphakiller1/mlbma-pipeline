@@ -1,5 +1,5 @@
 /**
- * MLBMA shared assets — team logos, pitcher headshots, player registry lookup.
+ * MLBMA shared assets — logos, headshots, registry, centralized metric grading.
  */
 (function(global) {
   'use strict';
@@ -13,7 +13,47 @@
     WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', AZ: 'ari', CHA: 'cws', KCA: 'kc', TBA: 'tb'
   };
 
+  var BRAND = {
+    logoNav: 'assets/chase-logo-transparent.png',
+    logoHero: 'assets/chase-logo-horizontal.png',
+    iconFilled: 'assets/chase-icon-filled.png',
+    iconOutline: 'assets/chase-icon-outline.png'
+  };
+
   var REGISTRY = { byName: {}, byId: {}, loaded: false, promise: null };
+
+  /** @type {Object<string, {mean:number, std:number, n:number}>} */
+  var LEAGUE_POOLS = {};
+
+  var CONTEXT_DEFAULTS = {
+    osi: { mean: 50, std: 12 },
+    abq: { mean: 50, std: 12 },
+    rcv: { mean: 50, std: 12 },
+    obr: { mean: 50, std: 12 },
+    pitching: { mean: 50, std: 12 },
+    rate: { mean: 50, std: 10 },
+    default: { mean: 50, std: 12 }
+  };
+
+  var GRADE_COLORS = {
+    veryWeak: 'var(--metric-very-weak, #EF4444)',
+    weak: 'var(--metric-weak, #F97316)',
+    belowAvg: 'var(--metric-below, #FBBF24)',
+    average: 'var(--metric-neutral, #71717A)',
+    aboveAvg: 'var(--metric-above, #86EFAC)',
+    strong: 'var(--metric-strong, #4ADE80)',
+    elite: 'var(--metric-elite, #22C55E)'
+  };
+
+  var HEAT_RGBA = {
+    veryWeak: 'rgba(239, 68, 68, 0.85)',
+    weak: 'rgba(249, 115, 22, 0.8)',
+    belowAvg: 'rgba(251, 191, 36, 0.75)',
+    average: 'rgba(113, 113, 122, 0.45)',
+    aboveAvg: 'rgba(134, 239, 172, 0.65)',
+    strong: 'rgba(74, 222, 128, 0.8)',
+    elite: 'rgba(34, 197, 94, 0.9)'
+  };
 
   function normName(s) {
     return String(s || '').toLowerCase()
@@ -55,13 +95,13 @@
     cls = cls || 'pitcher-headshot';
     var url = headshotUrl(mlbId);
     if (!url) {
-      return '<span class="' + cls + '-fallback" style="width:' + px + 'px;height:' + px + 'px;">SP</span>';
+      return '<span class="' + cls + '-fallback pitcher-silhouette" style="width:' + px + 'px;height:' + px + 'px;" aria-hidden="true"></span>';
     }
     return '<img class="' + cls + '" src="' + url + '" width="' + px + '" height="' + px + '" '
-      + 'alt="" loading="lazy" style="border-radius:50%;object-fit:cover;" '
+      + 'alt="" loading="lazy" '
       + 'onerror="this.onerror=null;this.style.display=\'none\';'
       + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');">'
-      + '<span class="' + cls + '-fallback" style="display:none;width:' + px + 'px;height:' + px + 'px;">SP</span>';
+      + '<span class="' + cls + '-fallback pitcher-silhouette" style="display:none;width:' + px + 'px;height:' + px + 'px;" aria-hidden="true"></span>';
   }
 
   function parseRegistryRows(rows) {
@@ -116,19 +156,130 @@
     return p ? p.id : null;
   }
 
-  function metricColor(v, invert) {
-    if (v == null || isNaN(v)) return 'var(--text-3)';
-    if (invert) {
-      if (v <= 45) return 'var(--green)';
-      if (v <= 55) return 'var(--text-2)';
-      if (v <= 65) return 'var(--gold)';
-      return 'var(--red)';
+  function poolStats(values) {
+    var nums = (values || []).filter(function(v) {
+      return v != null && !isNaN(v) && isFinite(v);
+    });
+    if (!nums.length) return null;
+    var mean = nums.reduce(function(a, b) { return a + b; }, 0) / nums.length;
+    var variance = nums.reduce(function(a, b) {
+      var d = b - mean;
+      return a + d * d;
+    }, 0) / nums.length;
+    var std = Math.sqrt(variance);
+    if (std < 1e-6) std = CONTEXT_DEFAULTS.default.std;
+    return { mean: mean, std: std, n: nums.length };
+  }
+
+  /**
+   * Register league values for a metric context (e.g. 'osi', 'abq').
+   * @param {string} context
+   * @param {number[]} values
+   */
+  function registerLeaguePool(context, values) {
+    var stats = poolStats(values);
+    if (stats) LEAGUE_POOLS[context] = stats;
+    return stats;
+  }
+
+  function zScore(value, context) {
+    var cfg = CONTEXT_DEFAULTS[context] || CONTEXT_DEFAULTS.default;
+    var pool = LEAGUE_POOLS[context];
+    var mean = pool && pool.mean != null ? pool.mean : cfg.mean;
+    var std = pool && pool.std != null ? pool.std : cfg.std;
+    return (value - mean) / std;
+  }
+
+  function gradeKeyFromZ(z, invert) {
+    if (invert) z = -z;
+    if (z <= -2) return 'veryWeak';
+    if (z <= -1) return 'weak';
+    if (z <= -0.35) return 'belowAvg';
+    if (z <= 0.35) return 'average';
+    if (z <= 1) return 'aboveAvg';
+    if (z <= 2) return 'strong';
+    return 'elite';
+  }
+
+  /**
+   * Central metric color — 7-step red→green vs league average.
+   * @param {number} value
+   * @param {string|boolean} [context] - metric context or legacy invert flag
+   * @param {boolean} [invert] - lower is better (e.g. ERA allowed)
+   */
+  function metricColor(value, context, invert) {
+    if (value == null || isNaN(value)) return GRADE_COLORS.average;
+    if (typeof context === 'boolean') {
+      invert = context;
+      context = 'osi';
     }
-    if (v >= 75) return 'var(--green)';
-    if (v >= 65) return 'var(--purple-2)';
-    if (v >= 55) return 'var(--text)';
-    if (v >= 45) return 'var(--gold)';
-    return 'var(--red)';
+    context = context || 'osi';
+    var z = zScore(value, context);
+    return GRADE_COLORS[gradeKeyFromZ(z, invert)];
+  }
+
+  /** @deprecated Use metricColor — alias for legacy call sites */
+  function tcol(v, context, invert) {
+    return metricColor(v, context, invert);
+  }
+
+  /** Heatmap / chart fill — same grading as metricColor */
+  function heatColor(value, context, invert) {
+    if (value == null || isNaN(value)) return HEAT_RGBA.average;
+    if (typeof context === 'boolean') {
+      invert = context;
+      context = 'osi';
+    }
+    context = context || 'osi';
+    var z = zScore(value, context);
+    return HEAT_RGBA[gradeKeyFromZ(z, invert)] || HEAT_RGBA.average;
+  }
+
+  /** @deprecated Use heatColor */
+  function hcol(v, context, invert) {
+    return heatColor(v, context, invert);
+  }
+
+  /** Trend label accent (classification, not raw metric) */
+  function trendColor(trend) {
+    if (!trend) return GRADE_COLORS.average;
+    var s = String(trend).toLowerCase();
+    if (s.indexOf('rising') >= 0 || s.indexOf('hot') >= 0 || s.indexOf('surge') >= 0) {
+      return GRADE_COLORS.strong;
+    }
+    if (s.indexOf('cooling') >= 0 || s.indexOf('reg') >= 0 || s.indexOf('fade') >= 0) {
+      return GRADE_COLORS.weak;
+    }
+    if (s.indexOf('stable') >= 0 || s.indexOf('steady') >= 0) {
+      return GRADE_COLORS.aboveAvg;
+    }
+    if (s.indexOf('volatile') >= 0) return 'var(--accent-risk, #FBBF24)';
+    return GRADE_COLORS.average;
+  }
+
+  /** @deprecated Use trendColor */
+  function trendCol(t) {
+    return trendColor(t);
+  }
+
+  function metricLegendHtml(opts) {
+    opts = opts || {};
+    var title = opts.title || 'Colors graded relative to league average';
+    return '<div class="ca-metric-legend" role="note">'
+      + '<span class="ca-metric-legend-title">' + title + '</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#EF4444"></span>Very weak</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#F97316"></span>Weak</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#FBBF24"></span>Below avg</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#71717A"></span>Average</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#86EFAC"></span>Above avg</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#4ADE80"></span>Strong</span>'
+      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#22C55E"></span>Elite</span>'
+      + '</div>';
+  }
+
+  function brandLogoNavHtml() {
+    return '<img class="ca-logo-nav chase-brand-logo" src="' + BRAND.logoNav + '" alt="Chase Analytics" height="32" loading="eager" '
+      + 'onerror="this.style.display=\'none\';this.nextElementSibling&&(this.nextElementSibling.style.display=\'flex\');">';
   }
 
   function f5WarningHtml() {
@@ -136,6 +287,7 @@
   }
 
   global.MLBMAAssets = {
+    BRAND: BRAND,
     espnAbbr: espnAbbr,
     teamLogoUrl: teamLogoUrl,
     teamLogoImg: teamLogoImg,
@@ -146,8 +298,18 @@
     lookupPlayer: lookupPlayer,
     lookupMlbId: lookupMlbId,
     normName: normName,
+    registerLeaguePool: registerLeaguePool,
     metricColor: metricColor,
+    heatColor: heatColor,
+    trendColor: trendColor,
+    metricLegendHtml: metricLegendHtml,
+    brandLogoNavHtml: brandLogoNavHtml,
+    tcol: tcol,
+    hcol: hcol,
+    trendCol: trendCol,
     f5WarningHtml: f5WarningHtml,
-    get registry() { return REGISTRY; }
+    GRADE_COLORS: GRADE_COLORS,
+    get registry() { return REGISTRY; },
+    get leaguePools() { return LEAGUE_POOLS; }
   };
 })(typeof window !== 'undefined' ? window : this);
