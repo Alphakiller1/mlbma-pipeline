@@ -1620,6 +1620,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="platform_dashboard.js?v=20260523"></script>
 <script src="research_lab.js?v=20260523"></script>
 <script src="pitcher_lab.js?v=20260523"></script>
+  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -1633,6 +1634,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="matchup_sheet.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
@@ -1683,28 +1685,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
   </div>
-  <div class="chase-mobile-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
-    <div class="chase-mobile-section">Profiles</div>
-    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
-    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
-    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
-    <a href="player_search.html" class="chase-mobile-link">Player Search</a>
-    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
-  </div>
-  <div class="chase-mobile-status">
-    <div class="chase-timestamp">
-      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncing…</span>
-    </div>
-  </div>
-</div>
-
 <div class="container">
 
 <div class="ca-page-identity" id="pageIdentityStrip">
@@ -1987,6 +1967,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <div class="section-subtitle">Select entities in-pane — no need to leave this tab.</div>
       </div>
     </div>
+    <div id="rlTeamRadar" class="mc-radar-mount" style="width:100%;max-width:400px;margin:8px auto 16px;display:none"></div>
     <div id="rlCompareRoot"></div>
   </div>
 
@@ -2032,7 +2013,28 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       </div>
     </div>
     <div id="dashWindowDataBanner" class="window-data-banner"></div>
-    <div id="leaderboardsRankingsMount"></div>
+    <div class="section" id="leaderboardTableSection">
+      <div class="table-wrap sticky-team has-mobile-fallback">
+        <table id="leaderboardTable" data-platform-headers="1">
+          <thead>
+            <tr>
+              <th style="width:30px;">#</th>
+              <th data-sort="t">Team</th>
+              <th data-sort="abq">ABQ</th>
+              <th data-sort="rcv">RCV</th>
+              <th data-sort="obr">OBR</th>
+              <th data-sort="osi" class="sorted">OSI</th>
+              <th data-sort="projOSI">ProjOSI</th>
+              <th data-sort="ppGap">PP-Gap</th>
+              <th>PALS</th>
+              <th data-sort="trend">Trend</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+      <div class="mobile-cards" id="leaderboardMobileCards"></div>
+    </div>
     <div id="rlExtraLeaderboards"></div>
   </div>
 
@@ -4041,13 +4043,33 @@ function showResearchSubtab(name) {
   onResearchSubtabShown(name);
 }
 
+function prepareTableRender() {
+  if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
+    ResearchLab.syncResearchGlobalsFromLiveData();
+  }
+  STATE.searchQuery = '';
+  ['searchInput', 'dashSearchInput', 'masterSearch'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+window.prepareTableRender = prepareTableRender;
+
 function onResearchSubtabShown(name) {
-  mountResearchTables();
+  hidePitchingResearchSections();
+  if (name === 'leaderboards' && window.ResearchLab && ResearchLab.resetResearchLabFilters) {
+    ResearchLab.resetResearchLabFilters();
+  }
   if (name === 'splits-trends') {
     if (window.ResearchLab && ResearchLab.initSplitsControls) ResearchLab.initSplitsControls();
+    prepareTableRender();
     renderSplitBars(); renderMasterTable(); renderTrendHeatmap();
   } else if (name === 'compare') initCompare();
   else if (name === 'pitching') { hideTeamOorInPitching(); }
+  else if (name === 'leaderboards') {
+    prepareTableRender();
+    renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
+  }
   if (window.ResearchLab && ResearchLab.onSubtab) ResearchLab.onSubtab(name);
 }
 function hideTeamOorInPitching() {
@@ -4215,6 +4237,7 @@ function currentRows(){
     rows = SCO_YTD_B;
   }
   updateWindowDataBanners();
+  console.log('[TABLE] currentRows returning', SCO_YTD_B ? SCO_YTD_B.length : 0, 'rows, split=', STATE.split, 'time=', STATE.time);
   return rows && rows.length ? rows : [];
 }
 
@@ -4428,14 +4451,16 @@ function rowOsiSparkline(d) {
   return MLBMACharts.buildSparkline(vals, 60, 24);
 }
 
-function renderMasterTable(){
-  if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
+function renderMasterTable(target){
+  target = target || {};
+  if (typeof hideRankSkeleton === 'function' && !target.bodyId) hideRankSkeleton();
 
-  var body = document.getElementById('masterBody');
-  var mobile = document.getElementById('mobileCards');
+  var body = document.getElementById(target.bodyId || 'masterBody');
+  var mobile = document.getElementById(target.mobileId || 'mobileCards');
   if (!body || !mobile) return;
-  var masterTable = document.getElementById('masterTable');
-  var platformTable = masterTable && masterTable.dataset.platformHeaders;
+  var tableId = target.tableId || 'masterTable';
+  var masterTable = document.getElementById(tableId);
+  var platformTable = target.forcePlatform || (masterTable && masterTable.dataset.platformHeaders);
   var mColor = (window.MLBMAAssets && MLBMAAssets.metricColor) ? MLBMAAssets.metricColor.bind(MLBMAAssets) : tcol;
   var logoFn = (window.MLBMAAssets && MLBMAAssets.teamLogoImg) ? function(t) { return MLBMAAssets.teamLogoImg(t, 24, 'rank-logo'); } : function() { return ''; };
   var baseRows = currentRows();
@@ -4484,6 +4509,7 @@ function renderMasterTable(){
 
   var html = '';
   var mobileHtml = '';
+  console.log('[TABLE] rendering', rows.length, 'rows into', target.bodyId || 'masterBody');
   rows.forEach(function(d, i){
     var ti = tier(d.osi);
     var rf = regFmt(d.reg);
@@ -4621,12 +4647,12 @@ function renderMasterTable(){
   body.innerHTML = html;
   mobile.innerHTML = mobileHtml;
 
-  document.querySelectorAll('#masterTable th').forEach(function(th){
+  document.querySelectorAll('#' + tableId + ' th').forEach(function(th){
     th.classList.remove('sorted');
     var ind = th.querySelector('.sort-ind');
     if(ind) ind.textContent='';
   });
-  var activeTh = document.querySelector('#masterTable th[data-sort="'+key+'"]');
+  var activeTh = document.querySelector('#' + tableId + ' th[data-sort="'+key+'"]');
   if(activeTh){
     activeTh.classList.add('sorted');
     var ind = activeTh.querySelector('.sort-ind');
@@ -4650,6 +4676,10 @@ function onRowClick(e, team){
   if(STATE.compareMode) { toggleCompare(team); return; }
   STATE.expandedTeam = STATE.expandedTeam === team ? null : team;
   renderMasterTable();
+  var lbPane = document.getElementById('pane-leaderboards');
+  if (lbPane && lbPane.style.display !== 'none' && document.getElementById('leaderboardBody')) {
+    renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
+  }
 }
 function togglePin(team){
   var i = STATE.watchlist.indexOf(team);
@@ -5154,7 +5184,26 @@ function bindMasterTableSort() {
         STATE.sortDir = 'desc';
       }
       renderMasterTable();
+      if (document.getElementById('leaderboardBody')) {
+        renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
+      }
       if (window.PlatformDashboard && STATE.activeMetric) PlatformDashboard.renderMetricBarChart(STATE.activeMetric);
+      urlEncodeState();
+    });
+  });
+  document.querySelectorAll('#leaderboardTable th[data-sort]').forEach(function(th) {
+    if (th.dataset.sortBound) return;
+    th.dataset.sortBound = '1';
+    th.addEventListener('click', function() {
+      var k = th.getAttribute('data-sort');
+      if (!k || k === 'rank') return;
+      if (STATE.sortKey === k) {
+        STATE.sortDir = STATE.sortDir === 'desc' ? 'asc' : 'desc';
+      } else {
+        STATE.sortKey = k;
+        STATE.sortDir = 'desc';
+      }
+      renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
       urlEncodeState();
     });
   });
@@ -5474,13 +5523,7 @@ function mountDashboardRankings() {
   }
 }
 
-function mountResearchTables() {
-  var lbMount = document.getElementById('leaderboardsRankingsMount');
-  var rankSection = document.querySelector('#masterTable');
-  if (lbMount && rankSection) {
-    var section = rankSection.closest('.section');
-    if (section && section.parentNode !== lbMount) lbMount.appendChild(section);
-  }
+function hidePitchingResearchSections() {
   var pitchMount = document.getElementById('pitchingResearchMount');
   var pitchSec = document.getElementById('pitchingSection');
   if (pitchMount && pitchSec && !pitchMount.contains(pitchSec)) pitchMount.appendChild(pitchSec);
@@ -5653,7 +5696,7 @@ function renderResearchLab() {
   }, 'renderResearchLab tables');
   renderWatchlistBar();
   if (typeof renderComparePane === 'function') renderComparePane();
-  mountResearchTables();
+  hidePitchingResearchSections();
   if (window.ResearchLab && ResearchLab.renderSplitSummary) ResearchLab.renderSplitSummary();
   scheduleMarketMapRender();
   urlEncodeState();

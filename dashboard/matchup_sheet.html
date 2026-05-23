@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 (function() {
   var p = new URLSearchParams(location.search);
@@ -9,14 +10,332 @@
   var home = p.get('home');
   if (away && home) {
     location.replace('matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home));
-  } else {
-    location.replace('chase_analytics_mlb_oem_v7.html');
   }
 })();
 </script>
-<title>Redirecting…</title>
+<title>Chase Analytics · Team Intelligence Hub</title>
+<style>
+:root {
+  --bg:#0A0A0A; --bg-2:#111114; --bg-3:#18181c; --border:#28282f;
+  --text:#F4F4F7; --text-2:#A1A1AA; --text-3:#71717A;
+  --purple:#C084FC; --green:#4ADE80; --red:#F87171; --gold:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;font-size:14px;line-height:1.5;
+  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(192,132,252,.08),transparent),var(--bg)}
+.container{max-width:1280px;margin:0 auto;padding:28px 24px 72px}
+.brand-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
+h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(135deg,#fff,var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--text-2);font-size:13px;max-width:720px}
+.section{margin-top:32px}
+.section h2{font-size:18px;margin-bottom:8px}
+.section .sec-sub{color:var(--text-2);font-size:12px;margin-bottom:14px}
+.hub-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0}
+.hub-controls input,.hub-controls select{padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg-2);color:var(--text);font-size:13px}
+.hub-controls label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em}
+.hub-ctrl{display:flex;flex-direction:column;gap:4px}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--bg-2)}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);cursor:pointer;user-select:none}
+th.sorted{color:var(--purple)}
+tr.hub-row{cursor:pointer}
+tr.hub-row:hover{background:rgba(192,132,252,.06)}
+tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
+.hub-sparks{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}
+#hubMarketQuadrant{margin:12px auto}
+.hub-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.hub-link-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;
+  background:var(--bg-2);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);
+  font-size:11px;font-weight:600;transition:border-color .15s}
+.hub-link-card:hover{border-color:var(--purple)}
+.hub-link-card img{width:36px;height:36px;object-fit:contain}
+.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+.loading.hide{display:none}
+</style>
+<link rel="stylesheet" href="mlbma_ui.css">
+<link rel="stylesheet" href="mlbma_design_system.css">
+<link rel="stylesheet" href="chase_nav.css">
+<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+<script src="mlbma_config.js?v=20260523"></script>
+<script src="mlbma_assets.js?v=20260523"></script>
+<script src="matchup_shared.js?v=20260523"></script>
+<script src="mlbma_charts.js?v=20260523"></script>
+<script src="profile_controls.js?v=20260523"></script>
+<script src="chase_nav.js"></script>
 </head>
 <body>
-<p>Redirecting to <a href="chase_analytics_mlb_oem_v7.html">Chase Analytics</a>…</p>
+<div class="loading" id="hubLoading"><span class="subtitle">Loading league offense data…</span></div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<header class="chase-header" id="chaseHeader">
+  <nav class="chase-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
+    </a>
+    <div class="chase-nav-links">
+      <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="matchup_sheet.html" class="chase-nav-link active" data-nav="team-rankings">Team Rankings</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
+      <div class="chase-dropdown">
+        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">Profiles
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="chase-dropdown-menu">
+          <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
+          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
+          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
+        </div>
+      </div>
+      <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
+    </div>
+    <div class="chase-status">
+      <div class="chase-timestamp"><span class="chase-pipeline-dot"></span><span id="lastUpdated">syncing…</span></div>
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+<div class="chase-mobile-overlay" id="mobileOverlay"></div>
+<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link">Matchups</a>
+    <a href="matchup_sheet.html" class="chase-mobile-link active">Team Rankings</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link">Research Lab</a>
+  </div>
+</div>
+
+<main class="container">
+  <p class="brand-tag">Chase Analytics</p>
+  <h1>Team Intelligence Hub</h1>
+  <p class="subtitle">Full league offensive rankings and team profiles — sortable 30-team board with regression map and quick profile links.</p>
+
+  <section class="section" id="section-global-table">
+    <h2>Global Team Metrics</h2>
+    <p class="sec-sub">YTD composite scores from vs_RHP / vs_LHP sheets. Click a row for sparklines; click team name for full profile.</p>
+    <div class="hub-controls">
+      <div class="hub-ctrl"><label for="hubWindow">Window</label>
+        <select id="hubWindow"><option value="YTD" selected>YTD</option><option value="L30">L30</option><option value="L14">L14</option><option value="L7">L7</option></select></div>
+      <div class="hub-ctrl"><label for="hubSplit">Split</label>
+        <select id="hubSplit"><option value="both" selected>Both</option><option value="r">vs RHP</option><option value="l">vs LHP</option></select></div>
+      <div class="hub-ctrl" style="flex:1;min-width:200px"><label for="hubSearch">Search</label>
+        <input type="search" id="hubSearch" placeholder="Filter teams…" autocomplete="off"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="hubTable">
+        <thead>
+          <tr>
+            <th>#</th><th data-sort="t">Team</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th>
+            <th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th>
+            <th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>
+          </tr>
+        </thead>
+        <tbody id="hubTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Offensive Market Map — RCV vs Regression Signal</h2>
+    <p class="sec-sub">Quadrant view of contact value vs process-performance gap (buy-low / sell-high signal).</p>
+    <div id="hubMarketQuadrant" style="width:100%;max-width:700px;margin:20px auto"></div>
+    <div id="hubMarketQuadrantTip"></div>
+  </section>
+
+  <section class="section">
+    <h2>Quick Links</h2>
+    <p class="sec-sub">Jump to any team profile.</p>
+    <div class="hub-links" id="hubTeamLinks"></div>
+  </section>
+</main>
+
+<script>
+(function() {
+  var A = window.MLBMAAssets;
+  var S = window.MLBMASharedMatchup;
+  var HUB = { rows: [], scR: [], scL: [], split: 'both', window: 'YTD', search: '', sortKey: 'osi', sortDir: -1, expanded: null };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function fmt(v) { return v == null || isNaN(v) ? '—' : Number(v).toFixed(1); }
+  function mc(v, ctx) { return A && A.metricColor ? A.metricColor(v, ctx || 'osi') : '#71717A'; }
+  function ppColor(v) { return A && A.ppGapColor ? A.ppGapColor(v) : mc(v, 'osi'); }
+
+  function mergeBoth(scR, scL) {
+    if (window.MLBMAProfileControls && MLBMAProfileControls.buildTeamScoresFromLive) {
+      window.SCO_YTD_R = scR; window.SCO_YTD_L = scL;
+      window.LIVE_DATA = { scYtdR: scR, scYtdL: scL };
+      return MLBMAProfileControls.buildTeamScoresFromLive();
+    }
+    var by = {};
+    scR.forEach(function(r) { by[r.t] = { r: r }; });
+    scL.forEach(function(l) { if (!by[l.t]) by[l.t] = {}; by[l.t].l = l; });
+    return Object.keys(by).sort().map(function(t) {
+      var pack = by[t], r = pack.r, l = pack.l;
+      if (!r && l) return Object.assign({}, l);
+      if (r && !l) return Object.assign({}, r);
+      function b(k) { return 0.5 * r[k] + 0.5 * l[k]; }
+      return { t: t, abq: b('abq'), rcv: b('rcv'), obr: b('obr'), osi: b('osi'), projOSI: b('projOSI'), ppGap: b('abq') - b('rcv'), reg: r.reg };
+    });
+  }
+
+  function activeRows() {
+    if (HUB.split === 'r') return HUB.scR.slice();
+    if (HUB.split === 'l') return HUB.scL.slice();
+    return HUB.rows.slice();
+  }
+
+  function filteredRows() {
+    var q = HUB.search.trim().toUpperCase();
+    var rows = activeRows().filter(function(d) { return !q || String(d.t).toUpperCase().indexOf(q) >= 0; });
+    var k = HUB.sortKey, dir = HUB.sortDir;
+    rows.sort(function(a, b) {
+      var av = a[k], bv = b[k];
+      if (k === 't') { av = a.t; bv = b.t; }
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return (av < bv ? -1 : av > bv ? 1 : 0) * dir;
+    });
+    return rows;
+  }
+
+  function teamRead(d) {
+    if (!d) return '';
+    if (d.osi >= 75) return 'Elite offensive profile — top-tier process and production.';
+    if (d.ppGap > 8) return 'Process ahead of results — potential buy-low offense.';
+    if (d.ppGap < -8) return 'Results ahead of process — regression risk on the board.';
+    if (d.osi < 45) return 'Below-average offensive foundation — platoon and matchup sensitive.';
+    return 'Solid middle-tier offense — monitor split and window trends.';
+  }
+
+  function sparkExpand(d) {
+    var C = window.MLBMACharts;
+    if (!C || !C.buildSparklineRow) return '';
+    function row(label, vals) {
+      return C.buildSparklineRow(label, vals, 120, 28, { labels: ['YTD', 'L30', 'L14', 'L7'] });
+    }
+    var vals = function(m) {
+      if (m === 'osi') return [d.osi, d.l30OSI, d.l14OSI, d.l7OSI];
+      if (m === 'abq') return [d.abq, d.l30ABQ, d.l14ABQ, d.l7ABQ];
+      if (m === 'rcv') return [d.rcv, d.l30RCV, d.l14RCV, d.l7RCV];
+      if (m === 'obr') return [d.obr, d.l30OBR, d.l14OBR, d.l7OBR];
+      return [d[m], null, null, null];
+    };
+    return '<div class="hub-sparks">'
+      + row('ABQ', vals('abq')) + row('RCV', vals('rcv')) + row('OBR', vals('obr')) + row('OSI', vals('osi'))
+      + '</div><p>' + esc(teamRead(d)) + '</p>';
+  }
+
+  function renderTable() {
+    var body = document.getElementById('hubTableBody');
+    if (!body) return;
+    var rows = filteredRows();
+    var html = '';
+    rows.forEach(function(d, i) {
+      var logo = A ? A.teamLogoImg(d.t, 28) : esc(d.t);
+      var exp = HUB.expanded === d.t;
+      html += '<tr class="hub-row" data-team="' + esc(d.t) + '">'
+        + '<td>' + (i + 1) + '</td>'
+        + '<td><a href="team_profile.html?team=' + encodeURIComponent(d.t) + '" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px" onclick="event.stopPropagation()">'
+        + logo + ' <strong>' + esc(d.t) + '</strong></a></td>'
+        + '<td style="color:' + mc(d.osi, 'osi') + '">' + fmt(d.osi) + '</td>'
+        + '<td style="color:' + mc(d.projOSI, 'osi') + '">' + fmt(d.projOSI) + '</td>'
+        + '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>'
+        + '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>'
+        + '<td style="color:' + mc(d.obr, 'obr') + '">' + fmt(d.obr) + '</td>'
+        + '<td style="color:' + ppColor(d.ppGap) + '">' + fmt(d.ppGap) + '</td>'
+        + '<td>—</td>'
+        + '<td>' + (d.reg != null ? (d.reg > 0 ? '↑' : d.reg < 0 ? '↓' : '—') : '—') + '</td>'
+        + '</tr>';
+      if (exp) {
+        html += '<tr class="hub-expand"><td colspan="10">' + sparkExpand(d) + '</td></tr>';
+      }
+    });
+    body.innerHTML = html || '<tr><td colspan="10">No teams match filter.</td></tr>';
+    body.querySelectorAll('.hub-row').forEach(function(tr) {
+      tr.addEventListener('click', function() {
+        var t = tr.getAttribute('data-team');
+        HUB.expanded = HUB.expanded === t ? null : t;
+        renderTable();
+      });
+    });
+  }
+
+  function renderLinks() {
+    var root = document.getElementById('hubTeamLinks');
+    if (!root) return;
+    root.innerHTML = HUB.rows.map(function(d) {
+      var logo = A ? A.teamLogoImg(d.t, 36) : '';
+      return '<a class="hub-link-card" href="team_profile.html?team=' + encodeURIComponent(d.t) + '">'
+        + logo + '<span>' + esc(d.t) + '</span></a>';
+    }).join('');
+  }
+
+  function renderQuadrant() {
+    if (!window.MLBMACharts || !MLBMACharts.renderMarketQuadrant) return;
+    MLBMACharts.renderMarketQuadrant('hubMarketQuadrant', HUB.scR.length ? HUB.scR : HUB.rows, { tipId: 'hubMarketQuadrantTip' });
+  }
+
+  function bindControls() {
+    document.getElementById('hubWindow').addEventListener('change', function(e) {
+      HUB.window = e.target.value;
+      renderTable();
+    });
+    document.getElementById('hubSplit').addEventListener('change', function(e) {
+      HUB.split = e.target.value;
+      renderTable();
+    });
+    document.getElementById('hubSearch').addEventListener('input', function(e) {
+      HUB.search = e.target.value;
+      renderTable();
+    });
+    document.querySelectorAll('#hubTable th[data-sort]').forEach(function(th) {
+      th.addEventListener('click', function() {
+        var k = th.getAttribute('data-sort');
+        if (HUB.sortKey === k) HUB.sortDir *= -1;
+        else { HUB.sortKey = k; HUB.sortDir = -1; }
+        document.querySelectorAll('#hubTable th').forEach(function(h) { h.classList.remove('sorted'); });
+        th.classList.add('sorted');
+        renderTable();
+      });
+    });
+  }
+
+  function loadData() {
+    if (!S || !S.fetchSheetTab || !S.scoreRowFromSheet) {
+      document.getElementById('hubTableBody').innerHTML = '<tr><td colspan="10">Shared data module unavailable.</td></tr>';
+      return Promise.resolve();
+    }
+    return Promise.all([
+      S.fetchSheetTab('vs_RHP'),
+      S.fetchSheetTab('vs_LHP')
+    ]).then(function(res) {
+      HUB.scR = (res[0] || []).map(S.scoreRowFromSheet).filter(Boolean);
+      HUB.scL = (res[1] || []).map(S.scoreRowFromSheet).filter(Boolean);
+      HUB.rows = mergeBoth(HUB.scR, HUB.scL);
+      window.SCO_YTD_B = HUB.rows;
+      window.SCO_YTD_R = HUB.scR;
+      window.SCO_YTD_L = HUB.scL;
+      renderTable();
+      renderQuadrant();
+      renderLinks();
+      var ts = document.getElementById('lastUpdated');
+      if (ts) ts.textContent = 'Updated ' + new Date().toLocaleString();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    bindControls();
+    loadData().finally(function() {
+      var el = document.getElementById('hubLoading');
+      if (el) el.classList.add('hide');
+    });
+  });
+})();
+</script>
 </body>
 </html>

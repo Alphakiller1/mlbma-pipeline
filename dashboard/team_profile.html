@@ -354,6 +354,7 @@ h1 {
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="matchup_sheet.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
@@ -999,6 +1000,16 @@ function loadAll() {
     DATA.log = res[7];
     DATA.metricsR = res[8] || [];
     DATA.metricsL = res[9] || [];
+    if (window.MLBMASharedMatchup && MLBMASharedMatchup.scoreRowFromSheet) {
+      global.SCO_YTD_R = (DATA.metricsR || []).map(MLBMASharedMatchup.scoreRowFromSheet).filter(Boolean);
+      global.SCO_YTD_L = (DATA.metricsL || []).map(MLBMASharedMatchup.scoreRowFromSheet).filter(Boolean);
+      global.LIVE_DATA = global.LIVE_DATA || {};
+      LIVE_DATA.scYtdR = global.SCO_YTD_R;
+      LIVE_DATA.scYtdL = global.SCO_YTD_L;
+    }
+    if (window.MLBMAProfileControls && MLBMAProfileControls.buildTeamScores) {
+      return MLBMAProfileControls.buildTeamScores();
+    }
     var banner = document.getElementById('dataBanner');
     if (!DATA.profiles.length) {
       banner.textContent = 'Team_Profiles tab empty — run pipeline steps 18–19 (compute_team_profile + push).';

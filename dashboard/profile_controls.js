@@ -78,9 +78,80 @@
       + '</div></div>';
   }
 
+  var _profileTeamScores = null;
+  var _profileTeamScoresPromise = null;
+
+  function mergeSplitScores(scR, scL) {
+    if (typeof global.buildYtdBothFromSplits === 'function' && scR.length && scL.length) {
+      return global.buildYtdBothFromSplits(scR, scL);
+    }
+    var by = {};
+    scR.forEach(function(r) { by[r.t] = { r: r }; });
+    scL.forEach(function(l) {
+      if (!by[l.t]) by[l.t] = {};
+      by[l.t].l = l;
+    });
+    return Object.keys(by).sort().map(function(t) {
+      var pack = by[t], r = pack.r, l = pack.l;
+      if (!r && l) return Object.assign({}, l);
+      if (r && !l) return Object.assign({}, r);
+      function blend(k) { return 0.5 * r[k] + 0.5 * l[k]; }
+      return {
+        t: t, abq: blend('abq'), rcv: blend('rcv'), obr: blend('obr'), osi: blend('osi'),
+        projOSI: blend('projOSI'), ppGap: blend('abq') - blend('rcv'), reg: r.reg
+      };
+    });
+  }
+
+  function buildTeamScoresFromLive() {
+    if (global.SCO_YTD_B && global.SCO_YTD_B.length >= 10) {
+      _profileTeamScores = global.SCO_YTD_B;
+      return _profileTeamScores;
+    }
+    if (_profileTeamScores && _profileTeamScores.length >= 10) return _profileTeamScores;
+    var scR = [], scL = [];
+    if (global.LIVE_DATA) {
+      if (LIVE_DATA.scYtdR && LIVE_DATA.scYtdR.length) scR = LIVE_DATA.scYtdR;
+      if (LIVE_DATA.scYtdL && LIVE_DATA.scYtdL.length) scL = LIVE_DATA.scYtdL;
+    }
+    if (!scR.length && global.SCO_YTD_R && global.SCO_YTD_R.length) scR = global.SCO_YTD_R;
+    if (!scL.length && global.SCO_YTD_L && global.SCO_YTD_L.length) scL = global.SCO_YTD_L;
+    if (scR.length && scL.length) {
+      _profileTeamScores = mergeSplitScores(scR, scL);
+      global.SCO_YTD_B = _profileTeamScores;
+      return _profileTeamScores;
+    }
+    if (scR.length >= 10) {
+      _profileTeamScores = scR;
+      return _profileTeamScores;
+    }
+    return _profileTeamScores || [];
+  }
+
+  function buildTeamScores() {
+    var sync = buildTeamScoresFromLive();
+    if (sync.length >= 10) return Promise.resolve(sync);
+    if (_profileTeamScoresPromise) return _profileTeamScoresPromise;
+    var S = global.MLBMASharedMatchup;
+    if (!S || !S.fetchSheetTab || !S.scoreRowFromSheet) return Promise.resolve(sync);
+    _profileTeamScoresPromise = Promise.all([
+      S.fetchSheetTab('vs_RHP'),
+      S.fetchSheetTab('vs_LHP')
+    ]).then(function(res) {
+      var scR = (res[0] || []).map(S.scoreRowFromSheet).filter(Boolean);
+      var scL = (res[1] || []).map(S.scoreRowFromSheet).filter(Boolean);
+      _profileTeamScores = mergeSplitScores(scR, scL);
+      if (_profileTeamScores.length) global.SCO_YTD_B = _profileTeamScores;
+      return _profileTeamScores;
+    }).catch(function() { return sync; });
+    return _profileTeamScoresPromise;
+  }
+
   function teamMetricTrend(team, metric) {
-    if (!team || !global.SCO_YTD_B) return [null, null, null, null];
-    var row = global.SCO_YTD_B.find(function(d) { return d.t === team; });
+    if (!team) return [null, null, null, null];
+    var scores = buildTeamScoresFromLive();
+    if (!scores.length) return [null, null, null, null];
+    var row = scores.find(function(d) { return d.t === team; });
     if (!row) return [null, null, null, null];
     var m = metric.toLowerCase();
     if (m === 'osi') return [row.ytdOSI != null ? row.ytdOSI : row.osi, row.l30OSI, row.l14OSI, row.l7OSI];
@@ -153,7 +224,7 @@
     function teamSnapshotStrip(st) {
       var t = st.team || opts.teamName;
       if (!t) return '';
-      var row = (global.SCO_YTD_B || []).find(function(d) { return d.t === t; });
+      var row = buildTeamScoresFromLive().find(function(d) { return d.t === t; });
       if (!row && global.ResearchLab && ResearchLab.teamRow) row = ResearchLab.teamRow(t);
       if (!row) return '';
       var logo = A ? A.teamLogoImg(t, 32) : '';
@@ -334,6 +405,8 @@
     renderTeam: renderTeam,
     renderPitcher: renderPitcher,
     renderBullpen: renderBullpen,
+    buildTeamScores: buildTeamScores,
+    buildTeamScoresFromLive: buildTeamScoresFromLive,
     teamMetricTrend: teamMetricTrend,
     pitcherPitchTrend: pitcherPitchTrend,
     pitcherOsiAllowTrend: pitcherOsiAllowTrend

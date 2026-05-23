@@ -208,6 +208,28 @@
     }
   }
 
+  function allowedSparklineBlock(met) {
+    var C = global.MLBMACharts;
+    if (!C || !C.buildSparklineRow || !met) return '';
+    var defs = [
+      { label: 'ABQ Allowed trend', key: 'abqAllowed' },
+      { label: 'RCV Allowed trend', key: 'rcvAllowed' },
+      { label: 'OBR Allowed trend', key: 'obrAllowed' },
+      { label: 'OSI Allowed trend', key: 'osiAllowed' }
+    ];
+    var has = defs.some(function(d) { return met[d.key] != null && !isNaN(met[d.key]); });
+    if (!has) return '';
+    var rows = defs.map(function(d) {
+      var ytd = met[d.key];
+      if (ytd == null || isNaN(ytd)) return '';
+      return C.buildSparklineRow(d.label, [ytd, null, null, null], 140, 28, {
+        labels: ['YTD', 'L30', 'L14', 'L7']
+      });
+    }).filter(Boolean).join('');
+    return '<div class="pl-allowed-sparks" style="margin:12px 0">' + rows
+      + '<p class="ca-helper">Limited data — YTD only</p></div>';
+  }
+
   function renderSnapshot() {
     var mount = document.getElementById('plSnapshotMount');
     if (!mount) return;
@@ -241,6 +263,7 @@
       + '<span>FIP <strong>' + esc(fmtFip(met)) + '</strong></span>'
       + '<span>xFIP <strong>—</strong></span>'
       + '</div>'
+      + allowedSparklineBlock(met)
       + '<div class="pl-stat-row">OSI Allowed <strong style="color:' + mColor(met.osiAllowed, true) + '">' + fmt(met.osiAllowed) + '</strong>'
       + (met.oor != null ? ' · Pitcher OOR <strong style="color:' + mColor(met.oor, false, 'oor') + '">' + fmt(met.oor) + '</strong> <span class="ca-helper">(' + esc(oorLabel(met.oor)) + ')</span>' : '')
       + '</div>'

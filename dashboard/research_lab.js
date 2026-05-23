@@ -88,7 +88,7 @@
 
   function resetResearchLabFilters() {
     if (global.STATE) global.STATE.searchQuery = '';
-    ['searchInput', 'dashSearchInput'].forEach(function(id) {
+    ['searchInput', 'dashSearchInput', 'masterSearch'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -218,37 +218,24 @@
     global.RESEARCH_SUBTABS = SUBTABS;
   }
 
-  function restoreSplitsTable() {
-    var anchor = document.getElementById('masterTableAnchor');
-    var section = document.getElementById('masterTableSection');
-    if (anchor && section && section.parentNode !== anchor) anchor.appendChild(section);
-  }
-
   function mountLeaderboards() {
-    var mount = document.getElementById('leaderboardsRankingsMount');
-    var table = document.getElementById('masterTable');
-    if (!mount || !table) {
-      if (mount) mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Team rankings unavailable — load sheet data first.</p></div>';
-      return;
-    }
-    var section = document.getElementById('masterTableSection');
-    if (section && section.parentNode !== mount) mount.appendChild(section);
-    if (!table.dataset.platformHeaders) {
-      table.dataset.platformHeaders = '1';
-      if (global.STATE) {
-        global.STATE.showAdvancedMetrics = true;
-        document.body.classList.add('show-advanced-metrics');
-      }
-      var thead = table.querySelector('thead tr');
-      if (thead) {
-        thead.innerHTML = '<th style="width:30px;">#</th><th data-sort="t">Team</th><th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th><th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>';
-        if (typeof bindMasterTableSort === 'function') bindMasterTableSort();
-      }
-    }
+    var lbBody = document.getElementById('leaderboardBody');
+    if (!lbBody) return;
     if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
+    resetResearchLabFilters();
     syncResearchGlobalsFromLiveData();
+    if (global.STATE) global.STATE.searchQuery = '';
     var renderLb = function() {
-      if (typeof renderMasterTable === 'function') renderMasterTable();
+      syncResearchGlobalsFromLiveData();
+      if (global.STATE) global.STATE.searchQuery = '';
+      if (typeof renderMasterTable === 'function') {
+        renderMasterTable({
+          bodyId: 'leaderboardBody',
+          mobileId: 'leaderboardMobileCards',
+          tableId: 'leaderboardTable',
+          forcePlatform: true
+        });
+      }
       mountExtraLeaderboards();
     };
     if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
@@ -837,7 +824,6 @@
     if (name === 'research-home') renderResearchHome();
     if (name === 'splits-trends') {
       resetResearchLabFilters();
-      restoreSplitsTable();
       syncResearchGlobalsFromLiveData();
       renderSplitSummary();
       if (typeof global.renderMasterTable === 'function') global.renderMasterTable();
@@ -857,8 +843,8 @@
       var mountPl = function() {
         if (global.PitcherLab && PitcherLab.mount) {
           PitcherLab.mount('rlPitcherLabRoot');
-        } else if (typeof mountResearchTables === 'function') {
-          mountResearchTables();
+        } else if (typeof hidePitchingResearchSections === 'function') {
+          hidePitchingResearchSections();
           if (typeof renderPitchingScore === 'function') renderPitchingScore();
         }
       };
@@ -910,7 +896,6 @@
   function init() {
     patchSubtabs();
     hookShowResearchSubtab();
-    restoreSplitsTable();
     initSplitsControls();
     fetchSpProfiles();
     hideTeamOorSections();
