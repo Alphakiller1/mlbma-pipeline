@@ -140,6 +140,7 @@ def ensure_mobile_nav_complete(html: str) -> str:
             "  <div class=\"chase-mobile-nav\">\n"
             "    <a href=\"chase_analytics_mlb_oem_v7.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
             "    <a href=\"chase_analytics_mlb_oem_v7.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
+            "    <a href=\"matchup_sheet.html\" class=\"chase-mobile-link\" data-nav=\"team-rankings\">Team Rankings</a>\n"
             "    <a href=\"chase_analytics_mlb_oem_v7.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
             "    <div class=\"chase-mobile-section\">Profiles</div>\n"
             "    <a href=\"team_profile.html\" class=\"chase-mobile-link\">Team Profile</a>\n"
@@ -206,7 +207,6 @@ def main() -> None:
         text = replace_nav_wrap(text)
         text = strip_orphan_mobile_nav(text)
         text = sync_nav_block(text)
-        text = strip_orphan_mobile_nav(text)
         text = insert_nav_at_body(text)
         text = ensure_body_script(text)
         if text != orig:
