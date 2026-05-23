@@ -330,12 +330,9 @@
       console.warn('[PD] matchupsHeroGrid not found');
       return;
     }
-    if (document.documentElement.classList.contains('view-research')) return;
-    var opening = document.getElementById('opening-dashboard');
-    if (!opening || opening.style.display === 'none') return;
-    var heroSection = document.getElementById('section-matchups-hero');
-    if (!heroSection || heroSection.closest('#opening-dashboard') !== opening) return;
-    if (grid.closest('#opening-dashboard') !== opening) return;
+    if (!document.documentElement.classList.contains('view-matchups')) return;
+    var matchupsSection = document.getElementById('section-matchups-hero');
+    if (!matchupsSection || matchupsSection.closest('#opening-dashboard')) return;
     grid.innerHTML = '';
     renderOpeningHero();
     var games = LIVE_DATA.matchups || [];

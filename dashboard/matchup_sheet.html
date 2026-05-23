@@ -10,6 +10,10 @@
   var home = p.get('home');
   if (away && home) {
     location.replace('matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home));
+    return;
+  }
+  if (p.get('view') === 'matchups' || p.get('section') === 'matchups') {
+    location.replace('chase_analytics_mlb_oem_v7.html#section-matchups-hero');
   }
 })();
 </script>

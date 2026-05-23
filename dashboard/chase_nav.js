@@ -1,4 +1,4 @@
-// v20260523c
+// v20260523d — three-view nav: opening / matchups / research
 /**
  * Chase Analytics navigation — dropdowns, mobile menu, active page, pipeline timestamp.
  */

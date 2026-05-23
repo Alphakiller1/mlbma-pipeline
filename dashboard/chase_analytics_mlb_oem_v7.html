@@ -1485,13 +1485,23 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 #pane-signals, #pane-strat, #pane-reference, #pane-matchup { display: none !important; }
 /* Opening vs Research Lab — mutually exclusive views */
 body.platform-dashboard #opening-dashboard { display: block; }
+body.platform-dashboard #section-matchups-hero { display: none !important; }
 body.platform-dashboard #section-research-lab,
 body.platform-dashboard #pane-oem-methodology { display: none !important; }
 body.platform-dashboard.view-research #opening-dashboard,
 html.view-research #opening-dashboard { display: none !important; }
 body.platform-dashboard.view-research #section-research-lab,
 html.view-research #section-research-lab { display: block !important; }
+body.platform-dashboard.view-matchups #opening-dashboard,
+html.view-matchups #opening-dashboard { display: none !important; }
+body.platform-dashboard.view-matchups #section-matchups-hero,
+html.view-matchups #section-matchups-hero { display: block !important; }
+body.platform-dashboard.view-matchups #section-research-lab,
+html.view-matchups #section-research-lab { display: none !important; }
 body.platform-dashboard.view-opening #section-research-lab,
+html.view-opening #section-research-lab { display: none !important; }
+body.platform-dashboard.view-opening #section-matchups-hero,
+html.view-opening #section-matchups-hero { display: none !important; }
 body.platform-dashboard.view-opening #section-research-lab.active,
 body.platform-dashboard:not(.view-research) #section-research-lab,
 body.platform-dashboard:not(.view-research) #section-research-lab.active,
@@ -1511,8 +1521,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hero-lineup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
 .hero-lineup-grid .lineup-row.platoon-adv { background: rgba(74,222,128,.08); border-radius: 4px; }
 .hero-lineup-grid .lineup-row.platoon-disadv { opacity: 0.55; }
-#dashboardRankingsMount .section-header { display: none; }
-#dashboardRankingsMount .research-controls { display: none; }
+#teamRankingsTableMount .section-header .section-eyebrow,
+#teamRankingsTableMount .section-header .section-title,
+#teamRankingsTableMount .section-header .section-subtitle { display: block; }
 .platform-section { margin-bottom: 40px; scroll-margin-top: 88px; }
 .platform-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--purple-2); margin-bottom: 4px; }
 .platform-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; letter-spacing: -.02em; }
@@ -1614,19 +1625,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   .oem-mode-tabs,#pane-oem-methodology,#pane-oem-daily{display:none!important}
   #dashboard-data-templates,#oorSection{display:none!important}
   html.view-opening #section-research-lab,
-  html.view-opening #layerAdvanced,
-  html.view-opening #masterTableSection,
-  html.view-opening #pane-matchup,
-  html.view-opening #pane-signals,
-  html.view-opening #pane-strat,
-  html.view-opening #pane-reference{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important}
+  html.view-opening #section-matchups-hero{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+  html.view-matchups #opening-dashboard{display:none!important}
+  html.view-matchups #section-research-lab{display:none!important}
+  html.view-matchups #section-matchups-hero{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
   html.view-opening #opening-dashboard{display:block!important}
-  html.view-opening .ca-page-identity{display:none!important}
-  html.view-opening #section-research-lab,html.view-opening #section-research-lab.active{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
-  html.view-opening #modal{display:none!important}
   html.view-research #opening-dashboard{display:none!important}
   html.view-research #section-matchups-hero{display:none!important}
-  html.view-research #matchupsHeroGrid{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
 <script src="mlbma_config.js?v=20260523c"></script>
@@ -1764,124 +1769,22 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </div>
   </div>
 
-  <div class="ca-hero-actions">
-    <a href="model_report.html" class="ca-action-card">
-      <strong>Model Report</strong>
-      <span>Predictive signals &amp; confidence reads</span>
-      <em>Open →</em>
-    </a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="ca-action-card">
-      <strong>Research Lab</strong>
-      <span>Splits, compare tools &amp; pitching context</span>
-      <em>Open →</em>
-    </a>
-    <a href="glossary.html" class="ca-action-card">
-      <strong>Glossary</strong>
-      <span>Metric definitions &amp; methodology</span>
-      <em>Open →</em>
-    </a>
-  </div>
 </section>
 
-<div id="metricLegendGlobal"></div>
-
-<section class="platform-section" id="section-matchups-hero">
+<section class="platform-section" id="section-team-rankings">
   <header class="matchups-section-head">
-    <h2 class="matchups-section-title">Today&apos;s Projected Matchups</h2>
-    <p class="matchups-section-sub">Split-specific lineup edges, starters, weather, and full analysis links</p>
+    <div class="platform-eyebrow">League Overview</div>
+    <h2 class="platform-title">Team Offensive Rankings</h2>
+    <p class="platform-subtitle">Sortable league-wide offensive metrics — click any team for full profile</p>
   </header>
-  <div class="matchups-slate-controls matchups-hero-header">
-    <div class="ca-pill-bar">
-      <span class="ca-pill-label">Sort</span>
-      <button type="button" class="ca-pill-btn active" data-match-sort="edge">OSI Edge</button>
-      <button type="button" class="ca-pill-btn" data-match-sort="time">Game Time</button>
-      <button type="button" class="ca-pill-btn" data-match-sort="pitch">Pitching Score</button>
-      <button type="button" class="ca-pill-btn" data-match-sort="f5">F5 Edge</button>
-    </div>
-    <div class="ca-pill-bar">
-      <span class="ca-pill-label">Filter</span>
-      <button type="button" class="ca-pill-btn active" data-match-filter="all">All Games</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="edge">Best Edge</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="duel">Pitching Duels</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="power">Power Matchups</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="f5">F5 Angles</button>
-    </div>
-  </div>
-  <div id="matchupsHeroGrid"></div>
-</section>
-
-<section class="platform-section market-map-section" id="section-market-map">
-  <div class="market-map-toggle-row">
-    <button type="button" class="market-map-toggle" id="marketMapToggle" aria-expanded="false" aria-controls="marketMapPanel">
-      Market Map
-    </button>
-    <span class="ca-helper">RCV vs xwOBA−wOBA gap — undervalued vs cooling offenses</span>
-  </div>
-  <div class="market-map-panel is-collapsed" id="marketMapPanel">
-    <div id="landingMarketQuadrant"></div>
-  </div>
-</section>
-
-<section class="platform-section" id="section-opening-model-teaser">
-  <div class="signal-teaser-header">
-    <h2 class="platform-title" style="font-size:16px;margin:0;">Today&apos;s Top Model Reads</h2>
-    <a href="model_report.html" class="signal-teaser-cta">View Full Report →</a>
-  </div>
-  <div id="signalChips"></div>
-</section>
-
-</main><!-- /opening-dashboard -->
-
-<!-- Research Lab workspace — loads only when #section-research-lab is active -->
-<section class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research" aria-hidden="true">
-<div id="researchLabHeader"></div>
-<div class="layer-advanced" id="layerAdvanced">
-
-<!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
-<div id="metricBreakdownSection" style="display:none;"></div>
-
-<div class="section">
-  <div class="subtabs rl-segment-tabs">
-    <button type="button" class="subtab active" data-pane="research-home">Research Home</button>
-    <button type="button" class="subtab" data-pane="splits-trends">Splits &amp; Trends</button>
-    <button type="button" class="subtab" data-pane="compare">Compare</button>
-    <button type="button" class="subtab" data-pane="pitching-vs-lineup">Lineup vs Pitcher</button>
-    <button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>
-    <button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>
-    <button type="button" class="subtab" data-pane="model-links">Model Links</button>
-  </div>
-
-  <div id="pane-research-home" style="display:block;">
-    <div id="rlResearchHomeRoot"></div>
-  </div>
-
-  <!-- Splits pane -->
-  <div id="pane-splits-trends" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Research Lab</div>
-        <div class="section-title">Splits &amp; Trends</div>
-        <div class="section-subtitle">Split OSI bars, trend heatmap, and team offense table. <em>L7 is a momentum flag, not a standalone predictor.</em></div>
-      </div>
-    </div>
-    <div id="rlSplitsControlMount"></div>
-    <div class="section status-map-wrap" id="rlMarketQuadrantSection" style="margin-top:16px;">
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Market Map</div>
-          <div class="section-title">RCV vs Regression Gap</div>
-          <div class="section-subtitle">Elite &amp; undervalued (top-right) vs weak &amp; concerning (bottom-left). Click a team bubble for profile.</div>
-        </div>
-      </div>
-      <div id="rlMarketQuadrant"></div>
-    </div>
-    <div class="research-lab-controls" id="mainResearchControls">
+  <div id="metricLegendGlobal"></div>
+  <div id="teamRankingsControlsMount" class="opening-rankings-controls">
 <div class="watchlist-bar" id="watchlistBar">
   <span class="wl-label">Pin Watchlist</span>
   <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
   <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
 </div>
-<div class="control-bar research-controls">
+<div class="control-bar research-controls opening-table-controls">
   <div class="control-group">
     <span class="control-label">Split</span>
     <div class="toggle-group" id="splitToggle">
@@ -1911,24 +1814,14 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div class="filter-help-panel" id="filterHelpPanel">Try: <code>abq&gt;60</code>, <code>trend:rising</code></div>
 </div>
 <div id="windowDataBanner" class="window-data-banner"></div>
-</div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
-      <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
-        <div id="rhpBars"></div>
-      </div>
-      <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 8px;">vs LHP — OSI view</div>
-        <div id="lhpBars"></div>
-      </div>
-    </div>
-    <div id="masterTableAnchor"></div>
+  </div>
+  <div id="teamRankingsTableMount">
     <div class="section" id="masterTableSection">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Full Metric Table</div>
-      <div class="section-title" id="tableTitle">Split &amp; window research table</div>
-      <div class="section-subtitle">Use split/time toggles above · click headers to sort</div>
+      <div class="section-eyebrow">30 Teams</div>
+      <div class="section-title" id="tableTitle">YTD offensive metrics</div>
+      <div class="section-subtitle">Use split/time toggles above · click headers to sort · expand rows for sparklines</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn" id="toggleAdvancedBtn" onclick="toggleAdvancedMetrics()">Advanced Columns</button>
@@ -1974,6 +1867,129 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
   <div class="mobile-cards" id="mobileCards"></div>
 </div>
+  </div>
+  <div class="opening-market-quadrant section" style="margin-top:28px;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Market Map</div>
+        <div class="section-title">RCV vs Process-Production Gap</div>
+        <div class="section-subtitle">Undervalued offenses (top-right) vs cooling production (bottom-left)</div>
+      </div>
+    </div>
+    <div id="landingMarketQuadrant"></div>
+    <div id="landingMarketQuadrantTip" class="sr-only" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="platform-section" id="section-opening-model-teaser">
+  <div class="signal-teaser-header">
+    <h2 class="platform-title" style="font-size:16px;margin:0;">Today&apos;s Top Model Reads</h2>
+    <a href="model_report.html" class="signal-teaser-cta">View Full Report →</a>
+  </div>
+  <div id="signalChips"></div>
+</section>
+
+<section class="platform-section" id="section-opening-links">
+  <div class="ca-hero-actions">
+    <a href="model_report.html" class="ca-action-card">
+      <strong>Model Report</strong>
+      <span>Predictive signals &amp; confidence reads</span>
+      <em>Open →</em>
+    </a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="ca-action-card">
+      <strong>Research Lab</strong>
+      <span>Splits, compare tools &amp; pitching context</span>
+      <em>Open →</em>
+    </a>
+    <a href="glossary.html" class="ca-action-card">
+      <strong>Glossary</strong>
+      <span>Metric definitions &amp; methodology</span>
+      <em>Open →</em>
+    </a>
+  </div>
+</section>
+
+</main><!-- /opening-dashboard -->
+
+<section class="platform-section layer-main" id="section-matchups-hero" aria-label="Today's matchups">
+  <header class="matchups-section-head">
+    <h2 class="matchups-section-title">Today&apos;s Projected Matchups</h2>
+    <p class="matchups-section-sub">Split-specific lineup edges, starters, weather, and full analysis links</p>
+  </header>
+  <div class="matchups-slate-controls matchups-hero-header">
+    <div class="ca-pill-bar">
+      <span class="ca-pill-label">Sort</span>
+      <button type="button" class="ca-pill-btn active" data-match-sort="edge">OSI Edge</button>
+      <button type="button" class="ca-pill-btn" data-match-sort="time">Game Time</button>
+      <button type="button" class="ca-pill-btn" data-match-sort="pitch">Pitching Score</button>
+      <button type="button" class="ca-pill-btn" data-match-sort="f5">F5 Edge</button>
+    </div>
+    <div class="ca-pill-bar">
+      <span class="ca-pill-label">Filter</span>
+      <button type="button" class="ca-pill-btn active" data-match-filter="all">All Games</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="edge">Best Edge</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="duel">Pitching Duels</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="power">Power Matchups</button>
+      <button type="button" class="ca-pill-btn" data-match-filter="f5">F5 Angles</button>
+    </div>
+  </div>
+  <div id="matchupsHeroGrid"></div>
+</section>
+
+<!-- Research Lab workspace — loads only when #section-research-lab is active -->
+<section class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research" aria-hidden="true">
+<div id="researchLabHeader"></div>
+<div class="layer-advanced" id="layerAdvanced">
+
+<!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
+<div id="metricBreakdownSection" style="display:none;"></div>
+
+<div class="section">
+  <div class="subtabs rl-segment-tabs">
+    <button type="button" class="subtab active" data-pane="research-home">Research Home</button>
+    <button type="button" class="subtab" data-pane="splits-trends">Splits &amp; Trends</button>
+    <button type="button" class="subtab" data-pane="compare">Compare</button>
+    <button type="button" class="subtab" data-pane="pitching-vs-lineup">Lineup vs Pitcher</button>
+    <button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>
+    <button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>
+    <button type="button" class="subtab" data-pane="model-links">Model Links</button>
+  </div>
+
+  <div id="pane-research-home" style="display:block;">
+    <div id="rlResearchHomeRoot"></div>
+  </div>
+
+  <!-- Splits pane -->
+  <div id="pane-splits-trends" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Research Lab</div>
+        <div class="section-title">Splits &amp; Trends</div>
+        <div class="section-subtitle">Split OSI bars, trend heatmap, and team offense table. <em>L7 is a momentum flag, not a standalone predictor.</em></div>
+      </div>
+    </div>
+    <div id="rlSplitsControlMount"></div>
+    <div class="section status-map-wrap" id="rlMarketQuadrantSection" style="margin-top:16px;">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Market Map</div>
+          <div class="section-title">RCV vs Regression Gap</div>
+          <div class="section-subtitle">Elite &amp; undervalued (top-right) vs weak &amp; concerning (bottom-left). Click a team bubble for profile.</div>
+        </div>
+      </div>
+      <div id="rlMarketQuadrant"></div>
+    </div>
+    <p class="ca-helper" style="margin:12px 0 16px;">Full 30-team metrics table lives on the <a href="chase_analytics_mlb_oem_v7.html">Opening Dashboard</a> — use split/time toggles there or below for bars &amp; trends.</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
+        <div id="rhpBars"></div>
+      </div>
+      <div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 8px;">vs LHP — OSI view</div>
+        <div id="lhpBars"></div>
+      </div>
+    </div>
     <div class="section" style="margin-top:24px;">
       <div class="section-header">
         <div>
@@ -2254,6 +2270,8 @@ function applyLiveData() {
     var afterLoad = function() {
       if (document.body.classList.contains('view-research')) {
         renderResearchLabWhenReady();
+      } else if (document.documentElement.classList.contains('view-matchups')) {
+        initMatchupsView();
       } else {
         _landingRendered = false;
         renderLanding();
@@ -4819,8 +4837,9 @@ function scheduleMarketMapRender() {
   MLBMACharts.renderOnDataReady(function() {
     return MLBMACharts.getQuadrantRows().length >= 20;
   }, function() {
-    var panel = document.getElementById('marketMapPanel');
-    if (panel && !panel.classList.contains('is-collapsed')) renderMarketMapCharts();
+    if (document.documentElement.classList.contains('view-opening')) {
+      renderMarketMapCharts();
+    }
     if (document.body.classList.contains('view-research')) renderMarketMapCharts();
   });
 }
@@ -5541,10 +5560,10 @@ function filterGlossary(){
 
 
 function mountDashboardRankings() {
-  var mount = document.getElementById('dashboardRankingsMount');
+  var mount = document.getElementById('teamRankingsTableMount');
   var table = document.querySelector('#masterTable');
   if (!mount || !table) return;
-  var section = table.closest('.section');
+  var section = document.getElementById('masterTableSection') || table.closest('.section');
   if (section && !mount.contains(section)) mount.appendChild(section);
   if (!table.dataset.platformHeaders) {
     table.dataset.platformHeaders = '1';
@@ -5562,10 +5581,46 @@ function mountReferenceTables(){
   /* Team OOR / PALS / Pitching Score tables removed from Research Lab — Model Report & profiles only */
 }
 
+function shouldRenderMatchupsView() {
+  return document.documentElement.classList.contains('view-matchups');
+}
+
 function shouldRenderOpeningMatchups() {
-  return document.documentElement.classList.contains('view-opening')
-    && !document.documentElement.classList.contains('view-research')
-    && !document.body.classList.contains('view-research');
+  return shouldRenderMatchupsView();
+}
+
+function initMatchupsView() {
+  if (!shouldRenderMatchupsView()) return;
+  if (window.PlatformDashboard) {
+    if (PlatformDashboard.bindHeroControls) PlatformDashboard.bindHeroControls();
+    PlatformDashboard.initRegistry().then(function() {
+      PlatformDashboard.renderHeroMatchups();
+    });
+  }
+}
+
+function renderOpeningDashboard() {
+  mountDashboardRankings();
+  registerMetricPools();
+  document.body.classList.add('show-advanced-metrics');
+  if (!document.getElementById('masterTable').dataset.platformHeaders) {
+    var table = document.getElementById('masterTable');
+    if (table) {
+      table.dataset.platformHeaders = '1';
+      STATE.showAdvancedMetrics = true;
+      var thead = table.querySelector('thead tr');
+      if (thead) {
+        thead.innerHTML = '<th style="width:30px;">#</th><th data-sort="t">Team</th><th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th><th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>';
+        bindMasterTableSort();
+      }
+    }
+  }
+  bindFilterHelp();
+  whenLiveDataReady(function() {
+    renderMasterTable();
+    if (typeof renderMarketMapCharts === 'function') renderMarketMapCharts();
+  }, 'opening rankings');
+  if (typeof scheduleMarketMapRender === 'function') scheduleMarketMapRender();
 }
 
 function renderLanding() {
@@ -5574,19 +5629,16 @@ function renderLanding() {
   console.log('[MLBMA] renderLanding');
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   syncDashboardView();
-  if (!shouldRenderOpeningMatchups()) return;
-  registerMetricPools();
-  if (window.PlatformDashboard && PlatformDashboard.renderOpeningHero) {
-    PlatformDashboard.renderOpeningHero();
+  if (document.documentElement.classList.contains('view-opening')) {
+    renderOpeningDashboard();
   }
-  if (window.PlatformDashboard) {
+  if (window.PlatformDashboard && document.documentElement.classList.contains('view-opening')) {
+    PlatformDashboard.renderOpeningHero();
     PlatformDashboard.initRegistry().then(function() {
       PlatformDashboard.renderDashboard();
-      if (shouldRenderOpeningMatchups()) {
-        PlatformDashboard.renderHeroMatchups();
-      }
     });
   }
+  if (shouldRenderMatchupsView()) initMatchupsView();
 }
 
 function renderResearchLabWhenReady() {
@@ -5670,8 +5722,8 @@ function syncDashboardView() {
   hash = hash.replace(/^#/, '');
   var body = document.body;
   var root = document.documentElement;
-  body.classList.remove('view-opening', 'view-research', 'view-model-report', 'research-lab-active');
-  root.classList.remove('view-opening', 'view-research', 'view-model-report');
+  body.classList.remove('view-opening', 'view-research', 'view-matchups', 'view-model-report', 'research-lab-active');
+  root.classList.remove('view-opening', 'view-research', 'view-matchups', 'view-model-report');
   root.classList.remove('view-pending');
 
   if (hash === 'section-model-report') {
@@ -5697,6 +5749,22 @@ function syncDashboardView() {
     return;
   }
 
+  if (hash === 'section-matchups-hero') {
+    body.classList.add('view-matchups');
+    root.classList.add('view-matchups');
+    var rlM = document.getElementById('section-research-lab');
+    if (rlM) {
+      rlM.setAttribute('aria-hidden', 'true');
+      rlM.classList.remove('active');
+    }
+    initMatchupsView();
+    setTimeout(function() {
+      var target = document.getElementById('section-matchups-hero');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+    return;
+  }
+
   body.classList.add('view-opening');
   root.classList.add('view-opening');
   var rlHide = document.getElementById('section-research-lab');
@@ -5705,12 +5773,15 @@ function syncDashboardView() {
     rlHide.classList.remove('active');
   }
   document.querySelectorAll('.oem-mode-pane').forEach(function(p) { p.classList.remove('active'); });
+  whenLiveDataReady(function() {
+    renderOpeningDashboard();
+  }, 'opening view sync');
 
-  var scrollId = hash || 'section-matchups-hero';
+  var scrollId = hash || 'section-team-rankings';
   if (scrollId === 'section-opening-model-teaser' || scrollId === 'section-signal-teaser'
-      || scrollId === 'section-matchups-hero' || scrollId === 'section-opening-links') {
+      || scrollId === 'section-team-rankings' || scrollId === 'section-opening-links' || scrollId === 'opening') {
     setTimeout(function() {
-      var target = document.getElementById(scrollId === 'section-signal-teaser' ? 'section-opening-model-teaser' : scrollId);
+      var target = document.getElementById(scrollId === 'section-signal-teaser' ? 'section-opening-model-teaser' : scrollId === 'opening' ? 'section-opening-hero' : scrollId);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 40);
   }

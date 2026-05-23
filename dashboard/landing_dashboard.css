@@ -284,6 +284,14 @@ body.opening-dashboard .freshness-bar {
 body.opening-dashboard #metricLegendGlobal { margin-bottom: 12px; }
 html.view-opening #section-research-lab,
 body.view-opening #section-research-lab { display: none !important; }
+html.view-opening #section-matchups-hero,
+body.view-opening #section-matchups-hero { display: none !important; }
+html.view-matchups #opening-dashboard,
+body.view-matchups #opening-dashboard { display: none !important; }
+html.view-matchups #section-research-lab,
+body.view-matchups #section-research-lab { display: none !important; }
+html.view-matchups #section-matchups-hero,
+body.view-matchups #section-matchups-hero { display: block !important; }
 html.view-research #opening-dashboard,
 body.view-research #opening-dashboard { display: none !important; }
 html.view-research #section-research-lab,
