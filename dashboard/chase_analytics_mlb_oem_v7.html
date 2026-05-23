@@ -1439,7 +1439,12 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 .dash-section-nav, #dailySummarySection, #section-market-map,
 #section-market-edge, #section-game-script, #section-validate,
 .question-section { display: none !important; }
-#section-research-lab { display: block !important; }
+body.platform-dashboard #section-research-lab,
+body.platform-dashboard #pane-oem-methodology { display: none !important; }
+body.platform-dashboard.research-lab-active #section-research-lab { display: block !important; }
+body.platform-dashboard:not(.research-lab-active) #oorSection,
+body.platform-dashboard:not(.research-lab-active) #pitchingSection,
+body.platform-dashboard:not(.research-lab-active) #palsSection { display: none !important; }
 body.platform-dashboard .show-advanced-metrics .status-only-cols { display: none !important; }
 body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-cell !important; }
 .rank-logo { vertical-align: middle; margin-right: 6px; border-radius: 2px; }
@@ -2193,6 +2198,7 @@ function applyLiveData() {
     SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
 
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
+    enrichMatchupCards();
 
     var afterLoad = function() {
       renderLanding();
@@ -2672,7 +2678,11 @@ function parseWeatherMap(rows) {
     var home = String(matchupCol(row, 'Home')).trim().toUpperCase();
     if (!away || !home) return;
     var cond = String(matchupCol(row, 'Conditions') || matchupCol(row, 'Weather') || '').trim();
-    if (cond) map[away + '@' + home] = cond;
+    var stadium = String(matchupCol(row, 'Stadium', 'Venue', 'Ballpark')).trim();
+    var key = away + '@' + home;
+    if (cond || stadium) {
+      map[key] = { cond: cond, stadium: stadium };
+    }
   });
   return map;
 }
@@ -2701,9 +2711,22 @@ function parseMatchupRows(rows) {
       homeFIP: numOrNull(matchupCol(row, 'Home_FIP')),
       awayOSI: numOrNull(matchupCol(row, 'Away_OSI')),
       homeOSI: numOrNull(matchupCol(row, 'Home_OSI')),
-      lineupEdge: String(matchupCol(row, 'Lineup_Edge')).trim()
+      lineupEdge: String(matchupCol(row, 'Lineup_Edge')).trim(),
+      stadium: String(matchupCol(row, 'Stadium', 'Venue', 'Ballpark')).trim()
     };
   }).filter(Boolean);
+}
+
+function enrichMatchupCards() {
+  (LIVE_DATA.matchups || []).forEach(function(m) {
+    if (m.stadium) return;
+    var gk = m.away + '@' + m.home;
+    var w = LIVE_DATA.weather && LIVE_DATA.weather[gk];
+    if (w && typeof w === 'object' && w.stadium) m.stadium = w.stadium;
+    (LIVE_DATA.todayGames || []).forEach(function(g) {
+      if (g.away === m.away && g.home === m.home && g.stadium) m.stadium = g.stadium;
+    });
+  });
 }
 
 function escHtml(s) {
@@ -2859,6 +2882,7 @@ function buildLineupColHtml(teamLabel, rows, oppHand) {
 function buildMatchupLineupBlock(m, opts) {
   opts = opts || {};
   var expanded = opts.expanded !== false;
+  var hideToggle = !!opts.hideToggle;
   var gk = matchupGameKey(m);
   var lu = LIVE_DATA.lineups || [];
   var awayRows = lineupRowsForTeam(lu, gk, m.away, 'AWAY');
@@ -2874,7 +2898,12 @@ function buildMatchupLineupBlock(m, opts) {
       + buildLineupColHtml(m.home + ' (home)', homeRows, homeFaces)
       + '</div>';
   }
-  return '<div class="hmc-lineups is-open" onclick="event.stopPropagation()">'
+  if (hideToggle) {
+    return '<div class="hmc-lineups is-open hmc-lineups--always" onclick="event.stopPropagation()">'
+      + '<div class="hmc-lineups-label">Projected lineups</div>'
+      + '<div class="matchup-lineup-panel is-open">' + inner + '</div></div>';
+  }
+  return '<div class="hmc-lineups' + (expanded ? ' is-open' : '') + '" onclick="event.stopPropagation()">'
     + '<button type="button" class="hmc-lineup-toggle" aria-expanded="' + (expanded ? 'true' : 'false') + '">'
     + (expanded ? 'Hide Lineups ▴' : 'Show Lineups ▾') + '</button>'
     + '<div class="matchup-lineup-panel">'
@@ -3126,6 +3155,7 @@ function loadLandingData() {
     LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
     LIVE_DATA.signalsToday = signalsTodayRows || [];
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
+    enrichMatchupCards();
     LIVE_DATA.playerRegistry = registryRows || [];
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(parseRegistrySheet(registryRows));
@@ -5763,22 +5793,21 @@ function setupResearchLazyInit() {
   var el = document.getElementById('section-research-lab');
   if (!el) return;
   function trigger() {
-    if (location.hash === '#section-research-lab' || location.hash === '#section-model-report') {
+    var open = location.hash === '#section-research-lab'
+      || location.hash.indexOf('section-research-lab') >= 0;
+    if (open) {
+      document.body.classList.add('research-lab-active');
       initResearchLab();
+      setTimeout(function() {
+        var target = document.getElementById('section-research-lab');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    } else {
+      document.body.classList.remove('research-lab-active');
     }
   }
   trigger();
   window.addEventListener('hashchange', trigger);
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) initResearchLab();
-      });
-    }, { rootMargin: '120px' });
-    io.observe(el);
-  } else {
-    setTimeout(initResearchLab, 3000);
-  }
 }
 
 function renderResearchLab() {
@@ -6025,7 +6054,6 @@ function runPostLoadUI() {
     populateMatchupSelectors();
     renderLanding();
     setupResearchLazyInit();
-    loadResearchData();
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
     showDataError('Dashboard render error: ' + (err && err.message ? err.message : String(err)));
@@ -6073,7 +6101,7 @@ function bindDashRankingsControls(){
 }
 
 function init(){
-  document.body.classList.add('platform-dashboard');
+  document.body.classList.add('platform-dashboard', 'opening-dashboard');
   console.log('[MLBMA] init start');
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);

@@ -1,0 +1,66 @@
+---
+description: Chase Analytics brand assets, nav sync, and pitcher avatar standards (commit 1a794d2+)
+globs: dashboard/**,scripts/integrate_chase_nav.py
+alwaysApply: true
+---
+
+# Chase Analytics — Brand & Images
+
+Baseline commit: `1a794d2` — do not undo this integration.
+
+## Brand assets
+
+| Context | Asset | Notes |
+|---------|--------|--------|
+| Dark nav / platform header | `chase-logo-horizontal.png` | ~28–36px height; primary brand placement |
+| Favicon, loading, mobile nav, compact accents | `chase-icon-filled.png` | Icon-only purple curve |
+| Light/grey surfaces | `chase-logo-horizontal-light.png` or `chase-logo-stacked-light.png` | Inside `.ca-brand-badge-light` only |
+| Stacked wordmark | `chase-logo-stacked-light.png` | Splash, empty states, glossary, exports — not nav or dense UI |
+
+Placeholders exist for light PNGs until final art is uploaded.
+
+## Brand usage rules
+
+1. **Dark UI** — dark horizontal wordmark in nav only. Never place black-text logos on dark backgrounds.
+2. **Light surfaces** — black-text logos only inside soft grey badge (`.ca-brand-badge-light`: `#E5E7EB` / `#D1D5DB`, padding `10px 16px`, radius `12px`, subtle border).
+3. **Compact** — icon for favicon, loading, mobile nav, small accents, empty states.
+4. **Stacked** — large brand moments only; not in matchup cards, tables, or repeated modules.
+5. **Restraint** — nav carries the wordmark; use icon sparingly. Opening Dashboard has no duplicate hero wordmark; index hub uses icon on dark.
+
+Helpers in `mlbma_assets.js`: `brandLogoNavHtml()`, `brandLogoLightBadgeHtml()`, `brandIconHtml()`, `BRAND` paths.
+
+## Nav sync
+
+After editing `dashboard/chase_nav.html`, run before commit:
+
+```bash
+python scripts/integrate_chase_nav.py
+```
+
+## Opening Dashboard (`chase_analytics_mlb_oem_v7.html`)
+
+- Matchup-first landing: `layerMain` only by default (`body.opening-dashboard`).
+- Research Lab hidden until `#section-research-lab` hash (`body.research-lab-active`).
+- Use `pitcherAvatar('matchup')`, auto lineups (`hideToggle: true`), stadium/time/weather meta, Pitching Score on SP rows.
+- Do not auto-load Research Lab on scroll; full tables/signals live in Research Lab or `model_report.html`.
+
+## Pitcher avatars (`pitcherAvatar()` in `mlbma_assets.js`)
+
+| Context | Size | Preset key |
+|---------|------|------------|
+| Matchup cards (Opening Dashboard) | 48px | `matchup` |
+| Compare (matchup page, Research Lab) | 64px | `compare` |
+| Profile header | 112px | `profile` |
+
+- `object-fit: cover`, `object-position: center top`, scale `1.06`–`1.08`
+- Fallback: MLB headshot → generic MLB → silhouette (no broken images, fixed dimensions)
+- Eager load first 3 matchup cards; lazy elsewhere
+- **Always use `pitcherAvatar()`** — no hand-written pitcher `img` tags or page-specific size overrides (old 36px override was removed)
+- Extend `pitcherAvatar()` options for new sizes; do not one-off CSS
+
+## Page-specific
+
+- **Opening Dashboard matchups**: 48px avatars with name/hand/stats; restrained team logos; lineups below team/pitcher row; photos must not dominate cards.
+- **Research Lab pitcher compare**: 64px avatars beside scorecards; small team logo badges OK; no large headshots in tables.
+- **Pitcher profile**: 112px header avatar once; pair with name, team logo, handedness, Pitching Score, K%, BB%, HR/9, FIP/xFIP, OSI Allowed, OOR.
+- **Team profile**: team logo in header only; no Chase wordmark in content.

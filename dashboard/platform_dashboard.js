@@ -91,13 +91,30 @@
     return { label: 'Lineup Edge', cls: 'f5-muted' };
   }
 
+  function weatherText(w) {
+    if (!w) return '';
+    if (typeof w === 'string') return w;
+    return w.cond || w.conditions || w.weather || '';
+  }
+
   function weatherHtml(m) {
     var gk = m.away + '@' + m.home;
     var w = (LIVE_DATA.weather || {})[gk];
-    if (!w) return '';
-    var s = String(w).toUpperCase();
+    var text = weatherText(w);
+    if (!text) return '';
+    var s = String(text).toUpperCase();
     if (s.indexOf('DOME') >= 0 || s.indexOf('ROOF') >= 0) return '<span class="weather-badge dome">DOME</span>';
-    return '<span class="weather-badge">' + esc(w) + '</span>';
+    return '<span class="weather-badge">' + esc(text) + '</span>';
+  }
+
+  function gameMetaHtml(m) {
+    var parts = [];
+    if (m.time) parts.push('<span class="hmc-time">' + esc(m.time) + '</span>');
+    if (m.stadium) parts.push('<span class="hmc-venue">' + esc(m.stadium) + '</span>');
+    var wh = weatherHtml(m);
+    if (wh) parts.push(wh);
+    if (!parts.length) return '<div class="hmc-meta">TBD</div>';
+    return '<div class="hmc-meta">' + parts.join('') + '</div>';
   }
 
   function pitchTier(score) {
@@ -112,7 +129,9 @@
     opts = opts || {};
     var pid = A ? A.lookupMlbId(name) : null;
     var hs = A ? A.pitcherAvatar(pid, 'matchup', { cls: 'mc-headshot', eager: !!opts.eager }) : '<span class="ca-pitcher-avatar ca-pitcher-avatar--48"></span>';
-    var pt = pitchTier(spPitchScore(team));
+    var ps = spPitchScore(team);
+    var pt = pitchTier(ps);
+    var psColor = A && ps != null ? A.metricColor(ps, true) : 'var(--text-2)';
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var nameHtml = pname === 'TBD'
       ? '<strong>TBD</strong>'
@@ -125,6 +144,7 @@
       + nameHtml + ' '
       + '<span class="hand-pill hand-' + (hand || '?').toLowerCase() + '">' + esc(hand || '?') + '</span> '
       + '<span class="pitch-tier ' + pt.cls + '">' + pt.label + '</span>'
+      + (ps != null ? ' <span class="mc-sp-ps">PS <strong style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong></span>' : '')
       + '<div class="mc-sp-stats">'
       + 'K% ' + esc(stats.k != null ? Number(stats.k).toFixed(1) : '—') + ' · '
       + 'BB% ' + esc(stats.bb != null ? Number(stats.bb).toFixed(1) : '—') + ' · '
@@ -222,15 +242,15 @@
       var awayHandLabel = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
       var awayEdgeCls = fav === m.away ? ' edge-team' : '';
       var homeEdgeCls = fav === m.home ? ' edge-team' : '';
-      var lineupHtml = typeof buildMatchupLineupBlock === 'function' ? buildMatchupLineupBlock(m, { expanded: true }) : '';
+      var lineupHtml = typeof buildMatchupLineupBlock === 'function'
+        ? buildMatchupLineupBlock(m, { expanded: true, hideToggle: true }) : '';
 
       return '<article class="hero-matchup-card" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
         + '<div class="hmc-row hmc-teams">'
         + '<div class="hmc-team' + awayEdgeCls + '">' + teamLinkHtml(m.away, logo, '') + '</div>'
         + '<span class="hmc-at">@</span>'
         + '<div class="hmc-team' + homeEdgeCls + '">' + teamLinkHtml(m.home, logo, '') + '</div>'
-        + '<div class="hmc-time">' + esc(m.time || 'TBD') + '</div>'
-        + weatherHtml(m)
+        + gameMetaHtml(m)
         + '</div>'
         + '<div class="hmc-row hmc-pitchers">'
         + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP }, { eager: cardIdx < 3 })

@@ -89,7 +89,9 @@
     var gk = m.away + '@' + m.home;
     var w = (LIVE_DATA.weather || {})[gk];
     if (!w) return '';
-    return '<span class="weather-badge">' + esc(w) + '</span>';
+    var text = typeof w === 'string' ? w : (w.cond || w.conditions || '');
+    if (!text) return '';
+    return '<span class="weather-badge">' + esc(text) + '</span>';
   }
 
   function projArrow(d) {
