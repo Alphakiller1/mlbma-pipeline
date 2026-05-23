@@ -548,8 +548,12 @@
     } else if (name === 'model-links') {
       renderModelLinks();
     } else if (name === 'pitching') {
-      if (typeof mountResearchTables === 'function') mountResearchTables();
-      if (typeof renderPitchingScore === 'function') renderPitchingScore();
+      if (global.PitcherLab && PitcherLab.mount) {
+        PitcherLab.mount('rlPitcherLabRoot');
+      } else if (typeof mountResearchTables === 'function') {
+        mountResearchTables();
+        if (typeof renderPitchingScore === 'function') renderPitchingScore();
+      }
       hideTeamOorSections();
     }
   }

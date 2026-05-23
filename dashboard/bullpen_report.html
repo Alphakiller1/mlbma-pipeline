@@ -236,7 +236,10 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
 <script src="bullpen_profile_dashboard.js"></script>
+<script src="mlbma_charts.js?v=20260523d"></script>
+<script src="profile_controls.js?v=20260523d"></script>
 <script src="mlbma_ui.js" data-page="bullpen_report.html"></script>
+<link rel="stylesheet" href="research_lab.css?v=20260523d">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
@@ -302,7 +305,25 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   </div>
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-  <div class="container">
+  </div>
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
+    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+  </div>
+  <div class="chase-mobile-status">
+    <div class="chase-timestamp">
+      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
+      <span id="mobileLastUpdated">syncing…</span>
+    </div>
+  </div>
+</div>
+<div class="container">
   <header class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
@@ -316,37 +337,14 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 
   <div class="today-games-bar" id="todayBar"></div>
 
-  <div class="selector-bar">
-    <label class="selector-label" for="teamSelect">Select team bullpen</label>
-    <select class="selector-select" id="teamSelect">
-      <option value="">— Choose a team —</option>
-    </select>
-  </div>
+  <select class="selector-select" id="teamSelect" style="display:none" aria-hidden="true">
+    <option value="">— Choose a team —</option>
+  </select>
+
+  <div id="bullpenControlBar"></div>
 
   <div id="reportContent">
     <div id="bullpenSnapshot"></div>
-
-    <div class="global-control-bar" id="bullpenControlBar">
-      <div class="control-group">
-        <span class="control-label">Split</span>
-        <div class="toggle-group" id="bullpenSplitToggle">
-          <button type="button" class="toggle-btn active" data-bsplit="overall">Season</button>
-          <button type="button" class="toggle-btn" data-bsplit="lhh">vs LHH</button>
-          <button type="button" class="toggle-btn" data-bsplit="rhh">vs RHH</button>
-          <button type="button" class="toggle-btn" data-bsplit="home">Home</button>
-          <button type="button" class="toggle-btn" data-bsplit="away">Away</button>
-          <button type="button" class="toggle-btn" data-bsplit="hilev">Hi Lev</button>
-        </div>
-      </div>
-      <div class="control-group">
-        <span class="control-label">Window</span>
-        <div class="toggle-group" id="bullpenWindowToggle">
-          <button type="button" class="toggle-btn active" data-bwindow="YTD">YTD</button>
-          <button type="button" class="toggle-btn" data-bwindow="L30">L30</button>
-          <button type="button" class="toggle-btn" data-bwindow="L14">L14</button>
-        </div>
-      </div>
-    </div>
 
     <section class="section" id="secAllowed">
       <div id="allowedDashboard"></div>
@@ -416,7 +414,13 @@ var DATA = {
   todayTeams: new Set()
 };
 
-var STATE = { team: null, expandedPid: null, split: 'overall', window: 'YTD' };
+var STATE = { team: null, expandedPid: null, split: 'overall', window: 'YTD', view: 'summary' };
+
+var ALL_MLB_TEAMS = [
+  'ARI', 'ATL', 'BAL', 'BOS', 'CHC', 'CHW', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KC',
+  'LAA', 'LAD', 'MIA', 'MIL', 'MIN', 'NYM', 'NYY', 'PHI', 'PIT', 'SD', 'SEA', 'SF',
+  'STL', 'TB', 'TEX', 'TOR', 'WSH', 'ATH'
+];
 
 var OSI_TIERS = ['High', 'Mid', 'Low'];
 
@@ -685,28 +689,31 @@ function renderPlatformSections(team, unit) {
   if (oorEl) oorEl.innerHTML = BullpenProfileDashboard.renderOORPanel(unit, ctx);
 }
 
-function bindBullpenControls() {
-  document.querySelectorAll('#bullpenSplitToggle [data-bsplit]').forEach(function(btn) {
-    if (btn.dataset.bound) return;
-    btn.dataset.bound = '1';
-    btn.addEventListener('click', function() {
-      STATE.split = btn.getAttribute('data-bsplit');
-      document.querySelectorAll('#bullpenSplitToggle [data-bsplit]').forEach(function(b) {
-        b.classList.toggle('active', b === btn);
-      });
+function bindBullpenProfileControls() {
+  if (!window.MLBMAProfileControls) return;
+  MLBMAProfileControls.renderBullpen('bullpenControlBar', {
+    teams: ALL_MLB_TEAMS,
+    pitchingRows: DATA.pitching,
+    team: STATE.team,
+    getUnit: getUnit,
+    state: {
+      split: STATE.split === 'hilev' ? 'hlev' : STATE.split,
+      window: STATE.window,
+      view: STATE.view,
+      team: STATE.team
+    },
+    onTeamChange: function(team) {
+      STATE.team = teamKey(team);
+      var sel = document.getElementById('teamSelect');
+      if (sel) sel.value = STATE.team;
       if (STATE.team) renderTeam(STATE.team);
-    });
-  });
-  document.querySelectorAll('#bullpenWindowToggle [data-bwindow]').forEach(function(btn) {
-    if (btn.dataset.bound) return;
-    btn.dataset.bound = '1';
-    btn.addEventListener('click', function() {
-      STATE.window = btn.getAttribute('data-bwindow');
-      document.querySelectorAll('#bullpenWindowToggle [data-bwindow]').forEach(function(b) {
-        b.classList.toggle('active', b === btn);
-      });
+    },
+    onChange: function(st) {
+      STATE.split = st.split === 'hlev' ? 'hilev' : st.split === 'llev' ? 'llev' : st.split;
+      STATE.window = st.window;
+      STATE.view = st.view;
       if (STATE.team) renderTeam(STATE.team);
-    });
+    }
   });
 }
 
@@ -923,6 +930,7 @@ function renderTeam(team) {
     c.classList.toggle('active', c.textContent === teamKey(team));
     c.classList.toggle('playing', DATA.todayTeams.has(c.textContent));
   });
+  bindBullpenProfileControls();
 }
 
 function bindRelieverClicks() {
@@ -963,6 +971,7 @@ function loadAll() {
     computeLeagueAvg();
     populateTeams();
     buildTodayBar();
+    bindBullpenProfileControls();
 
     var pill = document.getElementById('brandPill');
     if (pill) { pill.textContent = 'Live'; pill.classList.remove('warn'); }
@@ -1010,7 +1019,6 @@ document.addEventListener('DOMContentLoaded', function() {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
   console.log('[MLBMA] bullpen_report loadAll start');
-  bindBullpenControls();
   loadAll();
 });
 </script>

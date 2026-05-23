@@ -315,7 +315,10 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
 <script src="pitcher_profile_dashboard.js"></script>
+<script src="mlbma_charts.js?v=20260523d"></script>
+<script src="profile_controls.js?v=20260523d"></script>
 <script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
+<link rel="stylesheet" href="research_lab.css?v=20260523d">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
@@ -381,7 +384,26 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   </div>
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-  <div class="container">
+  </div>
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
+    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+  </div>
+  <div class="chase-mobile-status">
+    <div class="chase-timestamp">
+      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
+      <span id="mobileLastUpdated">syncing…</span>
+    </div>
+  </div>
+</div>
+<div class="container">
   <header class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
@@ -393,44 +415,15 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
-  <div class="selector-bar">
-    <div class="selector-group">
-      <label class="selector-label" for="pitcherSearch">Search pitcher or team</label>
-      <input type="text" class="selector-input" id="pitcherSearch" list="pitcherList" placeholder="e.g. Cole, NYY, Burnes…" autocomplete="off">
-      <datalist id="pitcherList"></datalist>
-    </div>
-    <div class="selector-group" style="max-width:320px;">
-      <label class="selector-label" for="pitcherSelect">Select pitcher</label>
-      <select class="selector-select" id="pitcherSelect">
-        <option value="">— Choose a starter —</option>
-      </select>
-    </div>
-  </div>
+  <select class="selector-select" id="pitcherSelect" style="display:none" aria-hidden="true">
+    <option value="">— Choose a starter —</option>
+  </select>
+  <datalist id="pitcherList"></datalist>
+
+  <div id="pitcherControlBar"></div>
 
   <div id="profileContent">
     <div id="pitcherSnapshot"></div>
-
-    <div class="global-control-bar" id="pitcherControlBar">
-      <div class="control-group">
-        <span class="control-label">Split</span>
-        <div class="toggle-group" id="pitcherSplitToggle">
-          <button type="button" class="toggle-btn active" data-psplit="ytd">Season</button>
-          <button type="button" class="toggle-btn" data-psplit="lhh">vs LHH</button>
-          <button type="button" class="toggle-btn" data-psplit="rhh">vs RHH</button>
-          <button type="button" class="toggle-btn" data-psplit="home">Home</button>
-          <button type="button" class="toggle-btn" data-psplit="away">Away</button>
-          <button type="button" class="toggle-btn" data-psplit="f5">F5</button>
-        </div>
-      </div>
-      <div class="control-group">
-        <span class="control-label">Window</span>
-        <div class="toggle-group" id="pitcherWindowToggle">
-          <button type="button" class="toggle-btn active" data-pwindow="YTD">YTD</button>
-          <button type="button" class="toggle-btn" data-pwindow="L30">L30</button>
-          <button type="button" class="toggle-btn" data-pwindow="L14">L14</button>
-        </div>
-      </div>
-    </div>
 
     <section class="section" id="secAllowed">
       <div id="allowedDashboard"></div>
@@ -511,7 +504,7 @@ var DATA = {
   teamProfiles: []
 };
 
-var STATE = { pitcherKey: null, split: 'ytd', window: 'YTD' };
+var STATE = { pitcherKey: null, pitcherName: '', split: 'overall', window: 'YTD', view: 'summary' };
 
 var OSI_TIER_ORDER = ['High', 'Mid', 'Low'];
 var ABQ_TIER_ORDER = ['High', 'Mid', 'Low'];
@@ -730,8 +723,50 @@ function buildOorMap(rows) {
 }
 
 function splitLabel(split) {
-  var labels = { ytd: 'Season', lhh: 'vs LHH', rhh: 'vs RHH', home: 'Home', away: 'Away', f5: 'F5 only' };
+  var labels = { overall: 'Overall', ytd: 'Overall', lhh: 'vs LHH', rhh: 'vs RHH', home: 'Home', away: 'Away', f5: 'F5' };
   return labels[split] || split;
+}
+
+function ctrlSplitToState(s) {
+  return s === 'overall' ? 'overall' : s;
+}
+
+function bindPitcherProfileControls() {
+  if (!window.MLBMAProfileControls) return;
+  var pitchers = DATA.profiles.map(function(p) {
+    var key = pitcherKey(p);
+    var name = pickCol(p, ['pitcher_name', 'Name', 'Pitcher']);
+    var team = pickCol(p, ['pitcher_team', 'Team', 'Tm']);
+    return { key: key, label: name + ' (' + team + ')', name: name, team: team };
+  });
+  var prof = STATE.pitcherKey ? getProfile(STATE.pitcherKey) : null;
+  MLBMAProfileControls.renderPitcher('pitcherControlBar', {
+    pitchers: pitchers,
+    pitchingRows: DATA.pitching,
+    state: {
+      split: STATE.split,
+      window: STATE.window,
+      view: STATE.view,
+      pitcherKey: STATE.pitcherKey,
+      pitcherName: STATE.pitcherName || (prof ? pickCol(prof, ['pitcher_name']) : ''),
+      profile: prof,
+      team: prof ? pickCol(prof, ['pitcher_team', 'Tm']) : ''
+    },
+    getProfile: getProfile,
+    onPitcherSelect: function(key, label) {
+      STATE.pitcherName = label ? label.replace(/\s*\([^)]+\)\s*$/, '').trim() : '';
+      var sel = document.getElementById('pitcherSelect');
+      if (sel) sel.value = key;
+      renderProfile(key);
+      bindPitcherProfileControls();
+    },
+    onChange: function(st) {
+      STATE.split = ctrlSplitToState(st.split);
+      STATE.window = st.window;
+      STATE.view = st.view;
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+    }
+  });
 }
 
 function buildPitcherTonightContext(name, team) {
@@ -789,30 +824,6 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, ctx);
 }
 
-function bindPitcherControls() {
-  document.querySelectorAll('#pitcherSplitToggle [data-psplit]').forEach(function(btn) {
-    if (btn.dataset.bound) return;
-    btn.dataset.bound = '1';
-    btn.addEventListener('click', function() {
-      STATE.split = btn.getAttribute('data-psplit');
-      document.querySelectorAll('#pitcherSplitToggle [data-psplit]').forEach(function(b) {
-        b.classList.toggle('active', b === btn);
-      });
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
-    });
-  });
-  document.querySelectorAll('#pitcherWindowToggle [data-pwindow]').forEach(function(btn) {
-    if (btn.dataset.bound) return;
-    btn.dataset.bound = '1';
-    btn.addEventListener('click', function() {
-      STATE.window = btn.getAttribute('data-pwindow');
-      document.querySelectorAll('#pitcherWindowToggle [data-pwindow]').forEach(function(b) {
-        b.classList.toggle('active', b === btn);
-      });
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
-    });
-  });
-}
 
 function buildTierTable(splits, dimension, tierOrder) {
   var ipHigh = null, ipLow = null;
@@ -984,6 +995,7 @@ function renderProfile(key) {
   var splits = getSplits(key);
   var log = getGameLog(key);
   var name = pickCol(profile, ['pitcher_name', 'pitcherName', 'Name']);
+  STATE.pitcherName = name;
   var team = pickCol(profile, ['pitcher_team', 'pitcherTeam', 'Tm']);
   var hand = String(pickCol(profile, ['pitcher_hand', 'pitcherHand', 'Hand']) || 'R').toUpperCase().slice(0, 1);
   var isToday = DATA.todayStarters.has(normalizeName(name));
@@ -1069,6 +1081,7 @@ function renderProfile(key) {
   document.getElementById('f5Insight').innerHTML = f5Note;
 
   document.getElementById('bettingPanel').innerHTML = buildBettingSummary(profile, splits, log, name, hand);
+  bindPitcherProfileControls();
 }
 
 function statCell(label, val) {
@@ -1121,29 +1134,11 @@ function resolveSearchToKey(q) {
 
 function bindSelectors() {
   var select = document.getElementById('pitcherSelect');
-  var search = document.getElementById('pitcherSearch');
-
-  select.addEventListener('change', function() {
-    if (select.value) renderProfile(select.value);
-  });
-
-  search.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      var key = resolveSearchToKey(search.value);
-      if (key) {
-        select.value = key;
-        renderProfile(key);
-      }
-    }
-  });
-
-  search.addEventListener('input', function() {
-    var key = resolveSearchToKey(search.value);
-    if (key) {
-      select.value = key;
-      renderProfile(key);
-    }
-  });
+  if (select) {
+    select.addEventListener('change', function() {
+      if (select.value) renderProfile(select.value);
+    });
+  }
 }
 
 function loadAll() {
@@ -1172,6 +1167,7 @@ function loadAll() {
     buildTodayStarters();
     populateSelectors();
     bindSelectors();
+    bindPitcherProfileControls();
 
     var pill = document.getElementById('brandPill');
     if (pill) {
@@ -1189,7 +1185,6 @@ function loadAll() {
     var startKey = null;
     if (urlPitcher) {
       startKey = resolveSearchToKey(urlPitcher);
-      if (urlPitcher) document.getElementById('pitcherSearch').value = urlPitcher;
     }
     if (!startKey && DATA.profiles.length) {
       startKey = pitcherKey(DATA.profiles[0]);
@@ -1228,7 +1223,6 @@ document.addEventListener('DOMContentLoaded', function() {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
   console.log('[MLBMA] pitcher_profile loadAll start');
-  bindPitcherControls();
   loadAll();
 });
 </script>

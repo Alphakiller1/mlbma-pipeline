@@ -1552,9 +1552,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
 <link rel="stylesheet" href="chase_nav.css?v=20260523a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260523a">
-<link rel="stylesheet" href="research_lab.css?v=20260523c">
+<link rel="stylesheet" href="research_lab.css?v=20260523d">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260523c"></script>
+<script src="mlbma_build.js?v=20260523d"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
@@ -1572,15 +1572,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   html.view-research #opening-dashboard{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260523c"></script>
-<script src="mlbma_ui.js?v=20260523c" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260523c"></script>
-<script src="matchup_shared.js?v=20260523c"></script>
-<script src="mlbma_controls.js?v=20260523c"></script>
-<script src="mlbma_charts.js?v=20260523c"></script>
-<script src="profile_controls.js?v=20260523c"></script>
-<script src="platform_dashboard.js?v=20260523c"></script>
-<script src="research_lab.js?v=20260523c"></script>
+<script src="mlbma_config.js?v=20260523d"></script>
+<script src="mlbma_ui.js?v=20260523d" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260523d"></script>
+<script src="matchup_shared.js?v=20260523d"></script>
+<script src="mlbma_controls.js?v=20260523d"></script>
+<script src="mlbma_charts.js?v=20260523d"></script>
+<script src="profile_controls.js?v=20260523d"></script>
+<script src="platform_dashboard.js?v=20260523d"></script>
+<script src="research_lab.js?v=20260523d"></script>
+<script src="pitcher_lab.js?v=20260523d"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -2021,12 +2022,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Research Lab</div>
-        <div class="section-title">What Does The Pitching Context Say?</div>
-        <div class="section-subtitle">Pitching Score context for F5 vs full-game validation.</div>
+        <div class="section-title">Pitcher Lab</div>
+        <div class="section-subtitle">SP profiles, metrics allowed, and pitcher rankings from SP_Profiles.</div>
       </div>
     </div>
-    <div id="pitchingResearchMount"></div>
-    <div id="oorResearchMount"></div>
+    <div id="rlPitcherLabRoot"></div>
   </div>
   <div id="pane-signals" style="display:none;">
     <div class="section-header">
@@ -4698,8 +4698,8 @@ function renderMasterTable(){
       palsHtml = '<span class="pals-badge ' + (palsGap < 4 ? 'ok' : 'warn') + '">' + d.pals.toFixed(1) + '</span>';
     }
     var projArrow = projDelta > 1.5 ? ' ↑' : projDelta < -1.5 ? ' ↓' : '';
-    html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
-      '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
+    html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
+      '<td class="rank-cell">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ▾':' ▸')+'</td>'+
       '<td class="team-cell" style="color:var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
       '<td class="num" style="color:'+mColor(d.abq)+';'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
       '<td class="num" style="color:'+mColor(d.rcv)+';'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
@@ -4711,8 +4711,8 @@ function renderMasterTable(){
       '<td><span class="rl-trend-cell">' + rowOsiSparkline(d) + ' ' + (d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'—') + '</span></td>'+
     '</tr>';
     } else {
-    html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
-      '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
+    html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
+      '<td class="rank-cell">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ▾':' ▸')+'</td>'+
       '<td class="team-cell" style="color: var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
       '<td class="num" style="'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
       '<td class="num" style="'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
@@ -5411,85 +5411,74 @@ function renderMovers(){
   document.getElementById('moversGrid').innerHTML = html;
 }
 
-// Team detail expandable panel
-function renderTeamDetail(team){
-  var master = SCO_YTD_B.find(function(d){return d.t===team;});
-  if(!master) return '<div class="empty-msg">No data for '+team+'.</div>';
-  var ti = tier(master.osi);
-  var sg = susGrade(master.sus);
-  var rf = regFmt(master.reg);
-
-  // Inline sparkline: 4-point line across YTD→L30→L14→L7
-  function spark(team, metric){
-    var vals = ['YTD','L30','L14','L7'].map(function(tf){
-      var src = tf==='YTD'?SCO_YTD_B:tf==='L30'?SCO_L30_B:tf==='L14'?SCO_L14_B:SCO_L7_B;
-      var m = src.find(function(d){return d.t===team;});
-      return m ? m[metric] : null;
-    });
-    var ok = vals.filter(function(v){return v!==null && v!==undefined;});
-    if(ok.length<2) return '';
-    var mn=Math.min.apply(null,ok), mx=Math.max.apply(null,ok);
-    var w=80, h=22;
-    var pts = vals.map(function(v,i){
-      if(v===null||v===undefined) return null;
-      var x = (i/3)*w;
-      var y = mx===mn ? h/2 : h - ((v-mn)/(mx-mn))*h;
-      return [x,y];
-    });
-    var validPts = pts.filter(Boolean);
-    var path = validPts.map(function(p,i){return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
-    var last = validPts[validPts.length-1];
-    var first = validPts[0];
-    var trendCol = last[1] < first[1] ? 'var(--green)' : last[1] > first[1] ? 'var(--red)' : 'var(--text-3)';
-    return '<svg class="sparkline" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">'+
-      '<path d="'+path+'" stroke="'+trendCol+'" stroke-width="1.5" fill="none"/>'+
-      '<circle cx="'+last[0]+'" cy="'+last[1]+'" r="2" fill="'+trendCol+'"/>'+
-    '</svg>';
+function detailMetricTrend(team, metric) {
+  if (window.MLBMAProfileControls && MLBMAProfileControls.teamMetricTrend) {
+    return MLBMAProfileControls.teamMetricTrend(team, metric);
   }
+  var row = SCO_YTD_B.find(function(d) { return d.t === team; });
+  if (!row) return [null, null, null, null];
+  var m = String(metric || '').toLowerCase();
+  if (m === 'osi') return [row.ytdOSI != null ? row.ytdOSI : row.osi, row.l30OSI, row.l14OSI, row.l7OSI];
+  if (m === 'abq') return [row.abq, row.l30ABQ, row.l14ABQ, row.l7ABQ];
+  if (m === 'rcv') return [row.rcv, row.l30RCV, row.l14RCV, row.l7RCV];
+  if (m === 'obr') return [row.obr, row.l30OBR, row.l14OBR, row.l7OBR];
+  return [null, null, null, null];
+}
 
-  function tfBox(tf){
-    var src = tf==='YTD'?SCO_YTD_B:tf==='L30'?SCO_L30_B:tf==='L14'?SCO_L14_B:SCO_L7_B;
-    var d = src.find(function(x){return x.t===team;});
-    if(!d) return '<div class="detail-tf"><div class="detail-tf-label">'+tf+'</div><div class="detail-tf-val">—</div></div>';
-    var pa = master['pa'+tf];
-    return '<div class="detail-tf">'+
-      '<div class="detail-tf-label">'+tf+'</div>'+
-      '<div class="detail-tf-val" style="color:'+tcol(d.osi)+';">'+d.osi.toFixed(1)+'</div>'+
-      (pa!==null && pa!==undefined ? '<div class="detail-tf-pa">'+pa+' PA</div>' : '')+
-    '</div>';
-  }
+function detailSparkline(team, metric, label) {
+  if (!window.MLBMACharts) return '';
+  return '<div class="rank-detail-spark">'
+    + MLBMACharts.buildSparkline(detailMetricTrend(team, metric), 80, 28)
+    + '<span class="pc-spark-label">' + (label || String(metric).toUpperCase()) + '</span></div>';
+}
 
-  return '<div class="detail-panel">'+
-    '<div style="grid-column:1/-1;margin-bottom:12px;">'+renderReadBlock(master, 'detail_'+team)+'</div>'+
-    '<div>'+
-      '<div class="detail-title">'+team+'</div>'+
-      '<div class="detail-subtitle">'+ti.l+' · '+sg.l+' sustainability</div>'+
-      '<div class="detail-tf-grid">'+tfBox('YTD')+tfBox('L30')+tfBox('L14')+tfBox('L7')+'</div>'+
-      '<div style="margin-top:10px;font-size:11px;color:var(--text-3);">Park factor: HR <strong style="color:var(--text-2);">'+pf(team,'r').toFixed(2)+'×</strong> · ISO <strong style="color:var(--text-2);">'+pf(team,'iso').toFixed(2)+'×</strong></div>'+
-    '</div>'+
-    '<div>'+
-      '<div class="detail-metric-row"><span class="lab">ABQ '+spark(team,'abq')+'</span><span class="val">'+master.abq.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">RCV '+spark(team,'rcv')+'</span><span class="val">'+master.rcv.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">OBR '+spark(team,'obr')+'</span><span class="val">'+master.obr.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">OSI '+spark(team,'osi')+'</span><span class="val" style="color:'+tcol(master.osi)+';">'+master.osi.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Projected OSI</span><span class="val" style="color:'+tcol(master.projOSI)+';">'+master.projOSI.toFixed(1)+' <span style="color:var(--text-3);font-size:10px;">('+(master.regAdj>=0?'+':'')+master.regAdj.toFixed(1)+')</span></span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Current Form OSI</span><span class="val" style="color:'+tcol(master.currentFormOSI)+';">'+master.currentFormOSI.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Velocity</span><span class="val" style="color:'+(master.velocity>0.5?'var(--green)':master.velocity<-0.5?'var(--red)':'var(--text-2)')+';">'+(master.velocity>0?'+':'')+master.velocity.toFixed(2)+'</span></div>'+
-    '</div>'+
-    '<div>'+
-      '<div class="detail-metric-row"><span class="lab">PP-Gap (ABQ−RCV)</span><span class="val" style="color:'+(master.ppGap>4?'var(--blue)':master.ppGap<-4?'var(--gold)':'var(--text-2)')+';">'+(master.ppGap>0?'+':'')+master.ppGap.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Power-Floor Gap (RCV−OBR)</span><span class="val" style="color:'+(master.dfGap>8?'var(--orange)':master.dfGap<-4?'var(--green-l)':'var(--text-2)')+';">'+(master.dfGap>0?'+':'')+master.dfGap.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">vs RHP OSI</span><span class="val" style="color:'+tcol(master.rhpOSI||0)+';">'+(master.rhpOSI?master.rhpOSI.toFixed(1):'—')+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">vs LHP OSI</span><span class="val" style="color:'+tcol(master.lhpOSI||0)+';">'+(master.lhpOSI?master.lhpOSI.toFixed(1):'—')+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Split Edge</span><span class="val">'+(master.splitEdge>0?'+':'')+master.splitEdge.toFixed(1)+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Regression</span><span class="val" style="color:'+rf[1]+';">'+rf[0]+' · '+rf[2]+'</span></div>'+
-      '<div class="detail-metric-row"><span class="lab">Trend</span><span class="val" style="color:'+trendCol(master.trend)+';">'+master.trend+'</span></div>'+
-      '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">'+
-        '<button class="icon-btn" style="width:auto;padding:4px 10px;font-size:10.5px;" onclick="togglePin(\''+team+'\')">'+(STATE.watchlist.indexOf(team)>=0?'★ Unpin':'☆ Pin to watchlist')+'</button> '+
-        '<button class="icon-btn" style="width:auto;padding:4px 10px;font-size:10.5px;" onclick="toggleCompare(\''+team+'\')">⚖ '+(STATE.compareTeams.indexOf(team)>=0?'Remove from':'Add to')+' compare</button>'+
-      '</div>'+
-    '</div>'+
-  '</div>';
+function dfGapInterpretLabel(gap) {
+  if (gap == null || isNaN(gap)) return 'Unavailable';
+  if (gap >= 8) return 'Power-heavy · volatile floor';
+  if (gap <= -4) return 'Floor-driven · limited ceiling';
+  return 'Balanced power/floor mix';
+}
+
+function rankSplitCell(label, val, naNote) {
+  var display = (val != null && !isNaN(val))
+    ? '<span class="val" style="color:' + tcol(val) + ';">' + val.toFixed(1) + '</span>'
+    : '<span class="val rank-split-na">— <em>' + (naNote || 'YTD N/A') + '</em></span>';
+  return '<div class="rank-split-cell"><span class="lab">' + label + '</span>' + display + '</div>';
+}
+
+// Team detail expandable panel (Leaderboards offensive rankings)
+function renderTeamDetail(team) {
+  var master = SCO_YTD_B.find(function(d) { return d.t === team; });
+  if (!master) return '<div class="empty-msg">No data for ' + team + '.</div>';
+
+  var reliability = (window.OEMOverhaul && OEMOverhaul.trendReliabilityLabel)
+    ? OEMOverhaul.trendReliabilityLabel(master) : 'Noisy';
+  var modelRead = summaryInterpretation(master);
+  var dfInterp = dfGapInterpretLabel(master.dfGap);
+  var dfStr = master.dfGap != null ? ((master.dfGap > 0 ? '+' : '') + master.dfGap.toFixed(1)) : '—';
+  var dfColor = master.dfGap > 8 ? 'var(--orange)' : master.dfGap < -4 ? 'var(--green-l)' : 'var(--text-2)';
+
+  return '<div class="rank-detail-expand">'
+    + '<div class="rank-detail-sparks">'
+    + detailSparkline(team, 'abq', 'ABQ trend')
+    + detailSparkline(team, 'rcv', 'RCV trend')
+    + detailSparkline(team, 'obr', 'OBR trend')
+    + detailSparkline(team, 'osi', 'OSI trend')
+    + '</div>'
+    + '<div class="rank-detail-splits">'
+    + rankSplitCell('vRHP', master.rhpOSI)
+    + rankSplitCell('vLHP', master.lhpOSI)
+    + rankSplitCell('Home', master.homeOSI, 'split N/A')
+    + rankSplitCell('Away', master.awayOSI, 'split N/A')
+    + rankSplitCell('F5', master.f5OSI, 'split N/A')
+    + '</div>'
+    + '<div class="rank-detail-meta">'
+    + '<div><span class="lab">Power-Floor Gap</span> <strong style="color:' + dfColor + ';">' + dfStr + '</strong>'
+    + ' <span class="rank-gap-label">' + dfInterp + '</span></div>'
+    + '<div><span class="lab">Trend reliability</span> <strong>' + reliability + '</strong></div>'
+    + '</div>'
+    + '<p class="rank-detail-read">' + modelRead + '</p>'
+    + '</div>';
 }
 
 // Comparison radar

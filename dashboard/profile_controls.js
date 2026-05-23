@@ -4,51 +4,49 @@
 (function(global) {
   'use strict';
 
+  var A = global.MLBMAAssets;
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function num(v) {
+    if (v == null || v === '' || isNaN(v)) return null;
+    return Number(v);
   }
 
   function splitLabel(key) {
     var map = {
       both: 'Both', overall: 'Overall', rhp: 'vs RHP', lhp: 'vs LHP', lhh: 'vs LHH', rhh: 'vs RHH',
-      home: 'Home', away: 'Away', f5: 'F5', hlev: 'High Lev', llev: 'Low Lev', b: 'Both', r: 'vs RHP', l: 'vs LHP'
+      home: 'Home', away: 'Away', f5: 'F5', hlev: 'High Leverage', llev: 'Low Leverage',
+      b: 'Both', r: 'vs RHP', l: 'vs LHP', hilev: 'High Leverage'
     };
     return map[key] || key;
   }
 
   function viewLabel(v) {
-    return { summary: 'Summary', expanded: 'Expanded', analyst: 'Analyst', table: 'Table', cards: 'Cards' }[v] || v;
+    return { summary: 'Summary', expanded: 'Expanded', analyst: 'Analyst' }[v] || v;
   }
 
-  function metricTrend(team, metric) {
-    if (!team || !global.SCO_YTD_B) return [null, null, null, null];
-    var row = global.SCO_YTD_B.find(function(d) { return d.t === team; });
-    if (!row) return [null, null, null, null];
-    var m = metric.toLowerCase();
-    if (m === 'osi') return [row.ytdOSI != null ? row.ytdOSI : row.osi, row.l30OSI, row.l14OSI, row.l7OSI];
-    if (m === 'abq') return [row.abq, row.l30ABQ, row.l14ABQ, row.l7ABQ];
-    if (m === 'rcv') return [row.rcv, row.l30RCV, row.l14RCV, row.l7RCV];
-    if (m === 'obr') return [row.obr, row.l30OBR, row.l14OBR, row.l7OBR];
-    if (m === 'pitching' || m === 'pitchscore') {
-      var ps = typeof getSpPitchScore === 'function' ? getSpPitchScore(team) : null;
-      return [ps, ps, ps, ps];
+  function pickCol(row, names) {
+    if (!row) return '';
+    for (var i = 0; i < names.length; i++) {
+      if (row[names[i]] !== undefined && row[names[i]] !== '') return row[names[i]];
     }
-    return [row[m], null, null, null];
+    return '';
   }
 
-  function sparkRow(metrics, team, width, height) {
+  function sparkHtml(values, width, height, label) {
     if (!global.MLBMACharts) return '';
-    return '<div class="pc-spark-row">' + metrics.map(function(m) {
-      var vals = typeof m.values === 'function' ? m.values(team) : metricTrend(team, m.key);
-      var cur = vals.filter(function(v) { return v != null && !isNaN(v); }).pop();
-      return '<div class="pc-spark-item">'
-        + MLBMACharts.buildSparkline(vals, width || 80, height || 28)
-        + '<span class="pc-spark-label">' + esc(m.label) + (cur != null ? ' <strong>' + Number(cur).toFixed(1) + '</strong>' : '') + '</span>'
-        + '</div>';
-    }).join('') + '</div>';
+    var cur = (values || []).filter(function(v) { return v != null && !isNaN(v); }).pop();
+    return '<div class="pc-spark-item">'
+      + MLBMACharts.buildSparkline(values, width || 80, height || 28)
+      + '<span class="pc-spark-label">' + esc(label)
+      + (cur != null ? ' <strong>' + Number(cur).toFixed(1) + '</strong>' : '')
+      + '</span></div>';
   }
 
-  function bindToggles(root, state, onChange) {
+  function bindToggles(root, state, handlers) {
     root.querySelectorAll('[data-pctrl]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var grp = btn.closest('[data-pgroup]');
@@ -58,14 +56,12 @@
         grp.querySelectorAll('[data-pctrl]').forEach(function(b) {
           b.classList.toggle('active', b === btn);
         });
-        var conf = root.querySelector('[data-pconfirm]');
-        if (conf && typeof onChange === 'object' && onChange.confirmText) {
-          conf.textContent = onChange.confirmText(state);
-        } else if (conf && onChange && onChange.confirmText) {
-          conf.textContent = onChange.confirmText(state);
+        if (handlers.confirmText) {
+          var conf = root.querySelector('[data-pconfirm]');
+          if (conf) conf.textContent = handlers.confirmText(state);
         }
-        if (typeof onChange === 'function') onChange(state);
-        else if (onChange && typeof onChange.onChange === 'function') onChange.onChange(state);
+        if (handlers.onSparklineUpdate) handlers.onSparklineUpdate(state);
+        if (handlers.onChange) handlers.onChange(state);
       });
     });
   }
@@ -82,59 +78,231 @@
       + '</div></div>';
   }
 
-  /**
-   * @param {string|HTMLElement} mount
-   * @param {object} opts - { type: 'team'|'pitcher'|'bullpen', state, teamName, onChange, confirmText }
-   */
-  function render(mount, opts) {
+  function teamMetricTrend(team, metric) {
+    if (!team || !global.SCO_YTD_B) return [null, null, null, null];
+    var row = global.SCO_YTD_B.find(function(d) { return d.t === team; });
+    if (!row) return [null, null, null, null];
+    var m = metric.toLowerCase();
+    if (m === 'osi') return [row.ytdOSI != null ? row.ytdOSI : row.osi, row.l30OSI, row.l14OSI, row.l7OSI];
+    if (m === 'abq') return [row.abq, row.l30ABQ, row.l14ABQ, row.l7ABQ];
+    if (m === 'rcv') return [row.rcv, row.l30RCV, row.l14RCV, row.l7RCV];
+    if (m === 'obr') return [row.obr, row.l30OBR, row.l14OBR, row.l7OBR];
+    return [null, null, null, null];
+  }
+
+  function pitcherPitchTrend(profile, team, pitchingRows) {
+    var ps = num(pickCol(profile, ['PitchScore', 'Pitching Score', 'pitchscore']));
+    if (ps == null && team && pitchingRows) {
+      var pr = pitchingRows.find(function(p) {
+        return String(pickCol(p, ['Tm', 'tm', 'team'])).toUpperCase() === String(team).toUpperCase();
+      });
+      ps = pr ? num(pickCol(pr, ['PitchScore'])) : null;
+    }
+    var drift = num(pickCol(profile, ['L14_drift', 'osi_drift', 'drift']));
+    var l14 = drift != null && ps != null ? ps - drift * 0.4 : null;
+    var l30 = drift != null && ps != null ? ps - drift * 0.2 : null;
+    return [ps, l30, l14, ps];
+  }
+
+  function pitcherOsiAllowTrend(profile) {
+    var ytd = num(pickCol(profile, ['OSI_allowed', 'osi_allowed']));
+    var l30 = num(pickCol(profile, ['osi_allowed_l30', 'OSI_allowed_L30']));
+    var l14 = num(pickCol(profile, ['osi_allowed_l14', 'OSI_allowed_L14']));
+    return [ytd, l30 != null ? l30 : ytd, l14 != null ? l14 : ytd, ytd];
+  }
+
+  function bullpenOsiTrend(unit, team, pitchingRows) {
+    if (unit) {
+      var ytd = num(pickCol(unit, ['osi_allowed', 'OSI_allowed', 'avg_osi_allowed']));
+      return [ytd, ytd, ytd, ytd];
+    }
+    var bp = pitchingRows && pitchingRows.find(function(p) {
+      return String(pickCol(p, ['Tm', 'tm'])).toUpperCase() === String(team).toUpperCase();
+    });
+    var oa = bp ? num(pickCol(bp, ['osi_allowed', 'OSI_allowed'])) : null;
+    var score = bp ? num(pickCol(bp, ['bullpen_score', 'PitchScore'])) : null;
+    return { osi: [oa, oa, oa, oa], score: [score, score, score, score] };
+  }
+
+  /** Team profile bar */
+  function renderTeam(mount, opts) {
     opts = opts || {};
     var el = typeof mount === 'string' ? document.getElementById(mount) : mount;
     if (!el) return null;
-    var type = opts.type || 'team';
-    var state = Object.assign({
-      split: 'both', window: 'YTD', view: 'summary', team: opts.teamName || ''
-    }, opts.state || {});
-
-    var splitOpts = type === 'pitcher'
-      ? [{ value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' }, { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'F5' }]
-      : type === 'bullpen'
-        ? [{ value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' }, { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'hlev', label: 'High Lev' }, { value: 'llev', label: 'Low Lev' }]
-        : [{ value: 'both', label: 'Both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' }, { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'F5' }];
-
-    var winOpts = type === 'team'
-      ? [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }]
-      : [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }];
-
-    var viewOpts = [{ value: 'summary', label: 'Summary' }, { value: 'expanded', label: 'Expanded' }, { value: 'analyst', label: 'Analyst' }];
-
-    var sparks = type === 'pitcher'
-      ? [{ key: 'pitching', label: 'Pitch Score' }, { key: 'osi', label: 'OSI Allowed', values: function() { return [null, null, null, null]; } }]
-      : type === 'bullpen'
-        ? [{ key: 'osi', label: 'OSI Allowed' }, { key: 'pitching', label: 'Bullpen Score' }]
-        : [{ key: 'abq', label: 'ABQ' }, { key: 'rcv', label: 'RCV' }, { key: 'obr', label: 'OBR' }, { key: 'osi', label: 'OSI' }];
+    var state = Object.assign({ split: 'both', window: 'YTD', view: 'summary', team: opts.teamName || '' }, opts.state || {});
 
     function confirmText(st) {
-      var teamLbl = st.team || opts.teamName || 'Team';
-      return 'Showing: ' + teamLbl + ' · ' + splitLabel(st.split) + ' · ' + st.window + ' · ' + viewLabel(st.view);
+      return 'Showing: ' + (st.team || opts.teamName || 'Team') + ' · ' + splitLabel(st.split) + ' · ' + st.window + ' · ' + viewLabel(st.view);
+    }
+
+    function sparkBlock(st) {
+      var t = st.team || opts.teamName;
+      return '<div class="pc-spark-row" data-pspark>'
+        + sparkHtml(teamMetricTrend(t, 'abq'), 80, 28, 'ABQ')
+        + sparkHtml(teamMetricTrend(t, 'rcv'), 80, 28, 'RCV')
+        + sparkHtml(teamMetricTrend(t, 'obr'), 80, 28, 'OBR')
+        + sparkHtml(teamMetricTrend(t, 'osi'), 80, 28, 'OSI')
+        + '</div>';
     }
 
     el.innerHTML = '<div class="global-control-bar pc-control-bar sticky-profile-bar">'
       + '<div class="pc-control-row">'
-      + pillGroup('Split', 'split', splitOpts, state.split)
-      + pillGroup('Window', 'window', winOpts, state.window)
-      + pillGroup('View', 'view', viewOpts, state.view)
+      + pillGroup('Split', 'split', [
+        { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
+        { value: 'home' }, { value: 'away' }, { value: 'f5' }
+      ], state.split)
+      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }], state.window)
+      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
       + '</div>'
       + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
-      + sparkRow(sparks, state.team || opts.teamName, 80, 28)
-      + '</div>';
+      + sparkBlock(state) + '</div>';
 
-    bindToggles(el, state, {
-      confirmText: confirmText,
-      onChange: opts.onChange
-    });
+    bindToggles(el, state, { confirmText: confirmText, onChange: opts.onChange });
     el._profileState = state;
     return state;
   }
 
-  global.MLBMAProfileControls = { render: render, sparkRow: sparkRow, metricTrend: metricTrend };
+  /** Pitcher profile — 3 rows with search */
+  function renderPitcher(mount, opts) {
+    opts = opts || {};
+    var el = typeof mount === 'string' ? document.getElementById(mount) : mount;
+    if (!el) return null;
+    var state = Object.assign({
+      split: 'overall', window: 'YTD', view: 'summary',
+      pitcherKey: '', pitcherName: '', profile: null, team: ''
+    }, opts.state || {});
+
+    var pitchers = opts.pitchers || [];
+    var datalist = pitchers.map(function(p) {
+      return '<option value="' + esc(p.label) + '" data-key="' + esc(p.key) + '"></option>';
+    }).join('');
+
+    function confirmText(st) {
+      var name = st.pitcherName || 'Select pitcher';
+      return 'Showing: ' + name + ' · ' + splitLabel(st.split) + ' · ' + st.window + ' · ' + viewLabel(st.view);
+    }
+
+    function updateSparks(st) {
+      var row = document.querySelector('[data-pspark]');
+      if (!row) return;
+      var prof = st.profile || (opts.getProfile && opts.getProfile(st.pitcherKey));
+      row.innerHTML = sparkHtml(pitcherPitchTrend(prof, st.team, opts.pitchingRows), 100, 32, 'Pitching Score')
+        + sparkHtml(pitcherOsiAllowTrend(prof), 100, 32, 'OSI Allowed');
+    }
+
+    el.innerHTML = '<div class="global-control-bar pc-control-bar sticky-profile-bar pc-pitcher-bar">'
+      + '<div class="pc-control-row pc-control-row--search">'
+      + '<div class="control-group pc-search-group">'
+      + '<span class="control-label">Pitcher</span>'
+      + '<input type="search" class="pc-pitcher-search" id="pcPitcherSearch" list="pcPitcherList" placeholder="Search pitcher or team…" value="' + esc(state.pitcherName || '') + '" autocomplete="off">'
+      + '<datalist id="pcPitcherList">' + datalist + '</datalist>'
+      + '</div>'
+      + pillGroup('Split', 'split', [
+        { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
+        { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'F5' }
+      ], state.split)
+      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }], state.window)
+      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
+      + '</div>'
+      + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
+      + '<div class="pc-spark-row" data-pspark></div></div>';
+
+    var search = el.querySelector('#pcPitcherSearch');
+    if (search) {
+      search.addEventListener('change', function() {
+        var val = search.value.trim();
+        var hit = pitchers.find(function(p) { return p.label === val || p.key === val; });
+        if (hit && opts.onPitcherSelect) opts.onPitcherSelect(hit.key, hit.label);
+      });
+      search.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter') return;
+        var val = search.value.trim().toLowerCase();
+        var hit = pitchers.find(function(p) {
+          return p.label.toLowerCase() === val || p.key.toLowerCase() === val
+            || (p.team && p.team.toLowerCase() === val);
+        });
+        if (hit && opts.onPitcherSelect) opts.onPitcherSelect(hit.key, hit.label);
+      });
+    }
+
+    bindToggles(el, state, {
+      confirmText: confirmText,
+      onChange: opts.onChange,
+      onSparklineUpdate: updateSparks
+    });
+    updateSparks(state);
+    el._profileState = state;
+    return state;
+  }
+
+  /** Bullpen report — team dropdown + 3 rows */
+  function renderBullpen(mount, opts) {
+    opts = opts || {};
+    var el = typeof mount === 'string' ? document.getElementById(mount) : mount;
+    if (!el) return null;
+    var teams = opts.teams || [];
+    var state = Object.assign({ split: 'overall', window: 'YTD', view: 'summary', team: opts.team || '' }, opts.state || {});
+
+    function confirmText(st) {
+      return 'Showing: ' + (st.team || '—') + ' Bullpen · ' + splitLabel(st.split) + ' · ' + st.window + ' · ' + viewLabel(st.view);
+    }
+
+    function updateSparks(st) {
+      var row = el.querySelector('[data-pspark]');
+      if (!row) return;
+      var unit = opts.getUnit && opts.getUnit(st.team);
+      var trends = bullpenOsiTrend(unit, st.team, opts.pitchingRows);
+      row.innerHTML = sparkHtml(trends.osi, 100, 32, 'OSI Allowed')
+        + sparkHtml(trends.score, 100, 32, 'Bullpen Score');
+    }
+
+    el.innerHTML = '<div class="global-control-bar pc-control-bar sticky-profile-bar pc-bullpen-bar">'
+      + '<div class="pc-control-row">'
+      + '<div class="control-group"><span class="control-label">Team</span>'
+      + '<select class="pc-team-select" id="pcBullpenTeam"><option value="">— Select team —</option>'
+      + teams.map(function(t) {
+        return '<option value="' + esc(t) + '"' + (state.team === t ? ' selected' : '') + '>' + esc(t) + '</option>';
+      }).join('')
+      + '</select></div>'
+      + pillGroup('Split', 'split', [
+        { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
+        { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' },
+        { value: 'hlev', label: 'High Lev' }, { value: 'llev', label: 'Low Lev' }
+      ], state.split)
+      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }], state.window)
+      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
+      + '</div>'
+      + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
+      + '<div class="pc-spark-row" data-pspark></div></div>';
+
+    var sel = el.querySelector('#pcBullpenTeam');
+    if (sel) {
+      sel.addEventListener('change', function() {
+        state.team = sel.value;
+        if (opts.onTeamChange) opts.onTeamChange(state.team);
+        var conf = el.querySelector('[data-pconfirm]');
+        if (conf) conf.textContent = confirmText(state);
+        updateSparks(state);
+      });
+    }
+
+    bindToggles(el, state, {
+      confirmText: confirmText,
+      onChange: opts.onChange,
+      onSparklineUpdate: updateSparks
+    });
+    updateSparks(state);
+    el._profileState = state;
+    return state;
+  }
+
+  global.MLBMAProfileControls = {
+    render: renderTeam,
+    renderTeam: renderTeam,
+    renderPitcher: renderPitcher,
+    renderBullpen: renderBullpen,
+    teamMetricTrend: teamMetricTrend,
+    pitcherPitchTrend: pitcherPitchTrend,
+    pitcherOsiAllowTrend: pitcherOsiAllowTrend
+  };
 })(typeof window !== 'undefined' ? window : this);

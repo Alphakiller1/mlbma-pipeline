@@ -165,6 +165,10 @@
       rcvR: pf(['rcv_vs_rhp']), rcvL: pf(['rcv_vs_lhp']),
       obrR: pf(['obr_vs_rhp']), obrL: pf(['obr_vs_lhp']),
       osiYtd: pf(['osi_ytd', 'osi']), osiL30: pf(['osi_l30']), osiL14: pf(['osi_l14']), osiL7: pf(['osi_l7']),
+      abqYtd: pf(['abq_ytd', 'abq']), abqL30: pf(['abq_l30']), abqL14: pf(['abq_l14']), abqL7: pf(['abq_l7']),
+      rcvYtd: pf(['rcv_ytd', 'rcv']), rcvL30: pf(['rcv_l30']), rcvL14: pf(['rcv_l14']), rcvL7: pf(['rcv_l7']),
+      obrYtd: pf(['obr_ytd', 'obr']), obrL30: pf(['obr_l30']), obrL14: pf(['obr_l14']), obrL7: pf(['obr_l7']),
+      palsYtd: pf(['pals_ytd', 'pals']), palsL30: pf(['pals_l30']), palsL14: pf(['pals_l14']), palsL7: pf(['pals_l7']),
       split: split, window: window, isF5: split === 'f5'
     };
   }
@@ -176,14 +180,23 @@
       + '<div class="ma-body">' + bodyHtml + '</div></details>';
   }
 
-  function sparkline(vals, labels) {
-    labels = labels || ['YTD', 'L30', 'L14', 'L7'];
-    var nums = vals.filter(function(v) { return v != null && !isNaN(v); });
-    var max = Math.max.apply(null, nums.concat([1]));
-    return '<div class="sparkline">' + vals.map(function(v, i) {
-      var h = v != null ? Math.max(4, (v / max) * 28) : 4;
-      return '<div class="spark-bar" title="' + labels[i] + ': ' + (v != null ? v.toFixed(1) : '—') + '" style="height:' + h + 'px;background:' + metricColor(v) + '"></div>';
-    }).join('') + '</div>';
+  function trendLabel(vals) {
+    var pts = (vals || []).filter(function(v) { return v != null && !isNaN(v); });
+    if (pts.length < 2) return 'Trend: YTD → L7';
+    var first = pts[0];
+    var last = pts[pts.length - 1];
+    if (last > first + 2) return 'Trend: YTD → L7 · rising';
+    if (last < first - 2) return 'Trend: YTD → L7 · cooling';
+    return 'Trend: YTD → L7 · flat';
+  }
+
+  function metricSparkline(vals, width, height) {
+    width = width || 120;
+    height = height || 40;
+    if (!global.MLBMACharts) return '';
+    return '<div class="ma-trend-spark">'
+      + MLBMACharts.buildSparkline(vals, width, height, { labels: ['YTD', 'L30', 'L14', 'L7'] })
+      + '<span class="ma-trend-label">' + esc(trendLabel(vals)) + '</span></div>';
   }
 
   function componentBars(items) {
@@ -247,6 +260,7 @@
       + '</div>'
       + (tonight ? '<div class="snapshot-tonight">' + tonight + '</div>' : '')
       + '<div class="snapshot-context">' + esc(ctx.splitLabel || '') + ' · ' + esc(ctx.windowLabel || 'YTD') + '</div>'
+      + '<div id="teamSnapshotRadar" class="snapshot-radar-slot"></div>'
       + '</div></div>';
   }
 
@@ -272,7 +286,7 @@
       + '</div>'
       + '<p class="ma-read"><strong>Sustainability:</strong> ProjOSI ' + (m.proj != null ? m.proj.toFixed(1) : '—')
       + ' vs OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—') + ' · ' + esc(ppRead) + '</p>'
-      + sparkline([m.osiYtd, m.osiL30, m.osiL14, m.osiL7])
+      + metricSparkline([m.osiYtd, m.osiL30, m.osiL14, m.osiL7])
       + '<p class="ma-reliability">Trend reliability: <strong>' + esc(trendReliability(prof)) + '</strong></p>'
       + f5;
 
@@ -292,7 +306,7 @@
       + statBox('Avg K% faced', ctx.spFx && ctx.spFx.k != null ? ctx.spFx.k.toFixed(1) + '%' : '—')
       + statBox('Pitches / start', ctx.spFx && ctx.spFx.pitch != null ? ctx.spFx.pitch.toFixed(0) : '—')
       + '</div><p class="ma-muted">vs league average when available · sourced from SP profiles</p></div>'
-      + sparkline([m.abq, m.abq, m.abq, m.abq], ['YTD', 'L30', 'L14', 'L7'])
+      + metricSparkline([m.abqYtd != null ? m.abqYtd : m.abq, m.abqL30, m.abqL14, m.abqL7])
       + f5;
 
     var rcvInterp = m.rcv >= 62 ? 'Cluster scorer' : m.rcv >= 50 ? 'Balanced' : 'Limited damage';
@@ -307,6 +321,7 @@
       + '<p class="ma-read">OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—') + ' vs PALS ' + (m.pals != null ? m.pals.toFixed(1) : '—') + '</p>'
       + palsBadge(m.osi, m.pals) + '</div>'
       + splitTable([['vs RHP', m.osiR], ['vs LHP', m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
+      + metricSparkline([m.rcvYtd != null ? m.rcvYtd : m.rcv, m.rcvL30, m.rcvL14, m.rcvL7])
       + f5;
 
     var obrInterp = m.obr >= 62 ? 'Reliable table-setters' : m.obr >= 50 ? 'Moderate' : 'Thin baserunner paths';
@@ -323,6 +338,7 @@
       + '<div class="ma-panel"><div class="ma-panel-title">Effect on opposing pitchers</div>'
       + '<p class="ma-read">High OBR lineups force pitchers to work harder in the zone.</p></div>'
       + splitTable([['vs RHP', m.obrR || m.osiR], ['vs LHP', m.obrL || m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
+      + metricSparkline([m.obrYtd != null ? m.obrYtd : m.obr, m.obrL30, m.obrL14, m.obrL7])
       + f5;
 
     var tonightPals = ctx.tonightSpHand ? 'Tonight vs ' + ctx.tonightSpHand + 'HP — PALS context for SP-only schedule' : '';
@@ -335,6 +351,7 @@
       + '<p class="ma-read">' + esc(palsInterpretation(m.osi, m.pals)) + '</p>'
       + splitTable([['vs RHP SPs', m.osiR], ['vs LHP SPs', m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
       + (tonightPals ? '<p class="ma-read ma-tonight">' + esc(tonightPals) + '</p>' : '')
+      + metricSparkline([m.palsYtd != null ? m.palsYtd : m.pals, m.palsL30, m.palsL14, m.palsL7])
       + f5;
 
     return '<div class="mini-dashboards">'

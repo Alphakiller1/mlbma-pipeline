@@ -228,10 +228,74 @@
     return invert ? 100 - n : n;
   }
 
+  /**
+   * Snapshot mini radar — team vs league midpoint, dot legend, no axis labels.
+   */
+  function buildSnapshotRadar(containerId, teamValues, metricNames, opts) {
+    opts = opts || {};
+    var size = opts.size || 160;
+    var el = opts.el || document.getElementById(containerId);
+    if (!el) return null;
+    var n = metricNames.length;
+    var cx = size / 2;
+    var cy = size / 2;
+    var maxR = size * 0.34;
+    var start = -Math.PI / 2;
+    var teamCol = opts.teamColor || '#7C3AED';
+    var refVals = metricNames.map(function() { return 50; });
+    var svg = '<svg class="mlbma-radar mlbma-snapshot-radar" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">';
+
+    [20, 40, 60, 80, 100].forEach(function(pct) {
+      var r = (pct / 100) * maxR;
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var ang = start + (i / n) * Math.PI * 2;
+        var p = polar(cx, cy, r, ang);
+        pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1));
+      }
+      svg += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+    });
+
+    var refPoly = [];
+    for (var ri = 0; ri < n; ri++) {
+      var angR = start + (ri / n) * Math.PI * 2;
+      var rr = (refVals[ri] / 100) * maxR;
+      var ptR = polar(cx, cy, rr, angR);
+      refPoly.push(ptR.x.toFixed(1) + ',' + ptR.y.toFixed(1));
+    }
+    svg += '<polygon points="' + refPoly.join(' ') + '" fill="none" stroke="#71717A" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.85"/>';
+
+    var vals = (teamValues || []).map(function(v) {
+      var x = num(v);
+      return x == null ? 50 : Math.max(0, Math.min(100, x));
+    });
+    while (vals.length < n) vals.push(50);
+    var poly = [];
+    for (var j = 0; j < n; j++) {
+      var ang2 = start + (j / n) * Math.PI * 2;
+      var rr2 = (vals[j] / 100) * maxR;
+      var dot = polar(cx, cy, rr2, ang2);
+      poly.push(dot.x.toFixed(1) + ',' + dot.y.toFixed(1));
+    }
+    svg += '<polygon points="' + poly.join(' ') + '" fill="' + teamCol + '" fill-opacity="0.2" stroke="' + teamCol + '" stroke-width="2"/>';
+    svg += '</svg>';
+
+    var legend = '<div class="mlbma-snapshot-radar-legend">';
+    metricNames.forEach(function(name, i) {
+      legend += '<span class="mlbma-sr-leg-item"><i style="background:' + teamCol + '"></i>' + esc(name) + '</span>';
+    });
+    legend += '<span class="mlbma-sr-leg-item mlbma-sr-leg-ref"><i style="background:transparent;border:1px dashed #71717A"></i>League avg</span>';
+    legend += '</div>';
+
+    el.innerHTML = '<div class="mlbma-snapshot-radar-wrap">' + svg + legend + '</div>';
+    return el;
+  }
+
   global.MLBMACharts = {
     buildSparkline: buildSparkline,
     buildRadarChart: buildRadarChart,
     buildMiniQuadrant: buildMiniQuadrant,
+    buildSnapshotRadar: buildSnapshotRadar,
     teamRadarValues: teamRadarValues,
     teamOsiTrend: teamOsiTrend
   };
