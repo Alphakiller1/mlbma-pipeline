@@ -219,7 +219,7 @@
 
   function teamLinkHtml(team, logoFn, extraCls) {
     return '<a href="' + teamProfileUrl(team) + '" class="team-link' + (extraCls || '') + '" onclick="event.stopPropagation()">'
-      + logoFn(team, 40)
+      + logoFn(team, 48)
       + '<span class="hmc-abbr">' + esc(team)
       + (global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '')
       + '</span></a>';
@@ -319,7 +319,7 @@
         + '<span class="f5-badge ' + f5.cls + '">' + esc(f5.label) + '</span>'
         + '</div>'
         + lineupHtml
-        + '<span class="hmc-view-full">View Full Matchup →</span>'
+        + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
         + '</article>';
     }).join('').replace(/<\/?motion>/g, '');
 

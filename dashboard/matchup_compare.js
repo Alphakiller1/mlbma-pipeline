@@ -106,15 +106,46 @@
     if (homeOsi != null && awayAllow != null) homeScore += (homeOsi - (100 - awayAllow));
     if (awayPs != null && homePs != null) awayScore += (awayPs - homePs) * 0.15;
     var edge = 'Even';
+    var edgeLabel = 'Even';
     var why = 'Starter and lineup metrics are closely matched.';
     if (awayScore > homeScore + 4) {
       edge = m.away;
+      edgeLabel = 'Away SP';
       why = (m.awaySP || 'Away SP') + ' profiles better against ' + m.home + '\'s lineup split than the reverse.';
     } else if (homeScore > awayScore + 4) {
       edge = m.home;
+      edgeLabel = 'Home SP';
       why = (m.homeSP || 'Home SP') + ' has the cleaner matchup profile vs ' + m.away + '\'s order.';
     }
-    return { edge: edge, why: why };
+    return { edge: edge, edgeLabel: edgeLabel, why: why };
+  }
+
+  function oorContextLabel(oor) {
+    if (oor == null || isNaN(oor)) return '';
+    if (oor >= 55) return 'above';
+    if (oor <= 45) return 'below';
+    return 'near';
+  }
+
+  function lineupEdgeRead(m) {
+    var a = m.awayOSI != null ? m.awayOSI : 0;
+    var h = m.homeOSI != null ? m.homeOSI : 0;
+    if (a > h + 4) return 'Away lineup advantage';
+    if (h > a + 4) return 'Home lineup advantage';
+    return 'Even lineup advantage';
+  }
+
+  function lineupEdgeBarHtml(m) {
+    var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
+    var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
+    var total = awayOSI + homeOSI || 1;
+    var awayPct = Math.max(8, (awayOSI / total) * 100);
+    return '<div class="mc-lineup-bar-wrap">'
+      + '<div class="mc-lineup-bar-labels"><span>' + esc(m.away) + ' <strong>' + fmt(awayOSI) + '</strong></span>'
+      + '<span>' + esc(m.home) + ' <strong>' + fmt(homeOSI) + '</strong></span></div>'
+      + '<div class="mc-lineup-bar-track"><div class="mc-lineup-bar-away" style="width:' + awayPct + '%"></div>'
+      + '<div class="mc-lineup-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
+      + '<div class="mc-lineup-edge-read">' + esc(lineupEdgeRead(m)) + '</div></div>';
   }
 
   function confidenceLevel(m, lineups, pals, profiles) {
@@ -209,16 +240,16 @@
 
     root.innerHTML = ''
       + sectionHeader(m, weather, script, f5, stadium)
-      + sectionSP(m, awayMet, homeMet, awayProf, homeProf, awayPs, homePs, h2h, data.spL14)
       + sectionLineupEdge(m, awayRow, homeRow, awayMet, homeMet, pals)
+      + sectionSP(m, awayMet, homeMet, awayProf, homeProf, awayPs, homePs, h2h, data.spL14)
       + sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk)
-      + sectionBullpen(m, awayBp, homeBp, pitching)
+      + sectionBullpen(m, awayBp, homeBp)
       + sectionGameScript(m, f5, script, awayPs, homePs, awayBp, homeBp, weather, park, parkLbl)
       + sectionModel(m, script, f5, h2h, conf, awayRow, homeRow, awayBp, homeBp, awayPs, homePs);
   }
 
   function teamBlock(team, side) {
-    var logo = S.teamLogo(team, 44);
+    var logo = S.teamLogo(team, 48);
     var rec = S.recordHtml(team);
     return '<a href="' + teamProfileUrl(team) + '" class="mc-team-block">'
       + logo
@@ -260,6 +291,7 @@
     var osiAllow = met.osiAllowed;
     var stale = spL14Stale(spL14, pname, team) || (met.staleness && /stale|true|1/i.test(String(met.staleness)));
     var oor = met.oor;
+    var oorCtx = oorContextLabel(oor);
     var xfipStr = stats.xfip != null ? stats.xfip.toFixed(2) : (stats.fip != null ? stats.fip.toFixed(2) : '—');
     return '<div class="mc-sp-card">'
       + '<div class="mc-sp-top">' + S.headshot(pname, 64, { eager: true })
@@ -275,7 +307,7 @@
       + '<span>HR/9 <strong>' + (stats.hr9 != null ? stats.hr9.toFixed(2) : '—') + '</strong></span>'
       + '<span>OSI Allowed <strong style="color:' + S.metricColor(osiAllow, true) + '">' + fmt(osiAllow) + '</strong></span>'
       + '</div>'
-      + (oor != null ? '<div class="mc-sp-note">Has faced <strong>' + fmt(oor, 1) + '</strong> avg competition (OOR) this season</div>' : '')
+      + (oorCtx ? '<div class="mc-sp-note">Has faced <strong>' + oorCtx + '</strong> average competition this season (Pitcher OOR ' + fmt(oor, 1) + ')</div>' : '')
       + (stale ? '<div class="mc-sp-note mc-stale">⚠ L14 form drift detected — metrics may be stale</div>' : '')
       + '</div>';
   }
@@ -287,7 +319,7 @@
       + '<div class="mc-sp-vs">VS</div>'
       + spCard('Home', m.homeSP, m.homeHand, m.home, m, homeMet, homePs, spL14)
       + '</div>'
-      + '<div class="mc-h2h"><strong>Edge: ' + esc(h2h.edge) + '</strong> — ' + esc(h2h.why) + '</div>'
+      + '<div class="mc-h2h"><strong>Pitching edge: ' + esc(h2h.edgeLabel) + '</strong> — ' + esc(h2h.why) + '</div>'
       + '</section>';
   }
 
@@ -314,20 +346,23 @@
   function sectionLineupEdge(m, awayRow, homeRow, awayMet, homeMet, pals) {
     var homeHandLbl = (m.homeHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP';
     var awayHandLbl = (m.awayHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP';
-    return '<section class="mc-section"><h2 class="mc-section-title">How Each Lineup Matches Up Tonight</h2>'
-      + '<div class="mc-grid-2">'
-      + edgePanel('Away Lineup vs ' + homeHandLbl, awayRow, m.homeHand, m.awayOSI, homeMet.osiAllowed, pals[m.away])
-      + edgePanel('Home Lineup vs ' + awayHandLbl, homeRow, m.awayHand, m.homeOSI, awayMet.osiAllowed, pals[m.home])
+    return '<section class="mc-section"><h2 class="mc-section-title">Tonight\'s Lineup Edge</h2>'
+      + lineupEdgeBarHtml(m)
+      + '<div class="mc-grid-2" style="margin-top:16px;">'
+      + edgePanel('Away lineup vs ' + homeHandLbl, awayRow, m.homeHand, m.awayOSI, homeMet.osiAllowed, pals[m.away])
+      + edgePanel('Home lineup vs ' + awayHandLbl, homeRow, m.awayHand, m.homeOSI, awayMet.osiAllowed, pals[m.home])
       + '</div></section>';
   }
 
   function sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk) {
     var banner = lineupOk ? '' : '<div class="lineup-banner">Lineup not yet confirmed</div>';
+    var awayHead = S.teamLogo(m.away, 20) + ' <span>Projected Lineup</span>';
+    var homeHead = S.teamLogo(m.home, 20) + ' <span>Projected Lineup</span>';
     return '<section class="mc-section"><h2 class="mc-section-title">Projected Lineups</h2>'
       + banner
       + '<div class="mc-grid-2">'
-      + '<div class="mc-card mc-lineup-col"><h3>' + esc(m.away) + ' (Away)</h3>' + S.buildLineupTable(awayLineup, m.homeHand) + '</div>'
-      + '<div class="mc-card mc-lineup-col"><h3>' + esc(m.home) + ' (Home)</h3>' + S.buildLineupTable(homeLineup, m.awayHand) + '</div>'
+      + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">' + awayHead + '</h3>' + S.buildLineupTable(awayLineup, m.homeHand) + '</div>'
+      + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">' + homeHead + '</h3>' + S.buildLineupTable(homeLineup, m.awayHand) + '</div>'
       + '</div></section>';
   }
 
@@ -389,7 +424,7 @@
     if (awayBp && S.bullpenRisk(awayBp).label === 'Volatile') risk = m.away + ' bullpen volatility is the main invalidation risk.';
     else if (homeBp && S.bullpenRisk(homeBp).label === 'Volatile') risk = m.home + ' bullpen volatility is the main invalidation risk';
 
-    return '<section class="mc-section"><h2 class="mc-section-title">Model Read</h2>'
+    return '<section class="mc-section"><h2 class="mc-section-title">Model Summary</h2>'
       + '<div class="mc-card mc-model-card">'
       + '<div class="mc-model-script ' + esc(script.cls.replace('script-badge ', '')) + '">' + esc(script.label) + '</div>'
       + '<p class="mc-model-read">' + esc(primaryRead(m, script, f5, h2h)) + '</p>'
@@ -401,9 +436,9 @@
       + '<div class="mc-lean"><div class="mc-lean-label">Full Game Lean</div><div class="mc-lean-value">' + esc(fullGameLean(m, awayBp, homeBp)) + '</div></div>'
       + '</div>'
       + '<div class="mc-model-links">'
-      + '<a href="' + teamProfileUrl(m.away) + '">View ' + esc(m.away) + ' Team Profile →</a>'
-      + '<a href="' + teamProfileUrl(m.home) + '">View ' + esc(m.home) + ' Team Profile →</a>'
-      + '<a href="model_report.html">View Full Signal Report →</a>'
+      + '<a href="' + teamProfileUrl(m.away) + '">View Away Team Profile →</a>'
+      + '<a href="' + teamProfileUrl(m.home) + '">View Home Team Profile →</a>'
+      + '<a href="model_report.html">View Full Model Report →</a>'
       + '</div></div></section></div>';
   }
 

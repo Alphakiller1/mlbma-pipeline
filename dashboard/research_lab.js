@@ -72,12 +72,12 @@
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Premium workspace for splits, comparisons, pitching context, and leaderboards — built for nightly betting research.</p>'
+      + '<p class="rl-workspace-subtitle">Validate model signals with splits, trends, comparisons, and pitching context.</p>'
       + '<div class="rl-workflow-strip">'
-      + '<span class="rl-workflow-step">1 · Select entity</span>'
-      + '<span class="rl-workflow-step">2 · Set split &amp; window</span>'
-      + '<span class="rl-workflow-step">3 · Compare or rank</span>'
-      + '<span class="rl-workflow-step">4 · Drill to profiles</span>'
+      + '<span class="rl-workflow-step">1 · Select</span>'
+      + '<span class="rl-workflow-step">2 · Split / Window</span>'
+      + '<span class="rl-workflow-step">3 · Compare</span>'
+      + '<span class="rl-workflow-step">4 · Deep Dive</span>'
       + '</div></div>';
   }
 
@@ -160,47 +160,63 @@
     renderCompareOutput();
   }
 
+  function searchSelectHtml(id, label, options, val, placeholder) {
+    var listId = id + 'List';
+    return '<div><label for="' + id + '">' + label + '</label>'
+      + '<div class="rl-search-wrap">'
+      + '<input type="search" id="' + id + '" list="' + listId + '" value="' + esc(val || '') + '" placeholder="' + esc(placeholder || 'Search…') + '" autocomplete="off">'
+      + '<datalist id="' + listId + '">'
+      + options.map(function(o) {
+        var v = typeof o === 'string' ? o : o.value;
+        var t = typeof o === 'string' ? o : o.label;
+        return '<option value="' + esc(v) + '">' + esc(t) + '</option>';
+      }).join('')
+      + '</datalist></div></div>';
+  }
+
+  function bindSearchInput(id, onPick) {
+    var inp = document.getElementById(id);
+    if (!inp) return;
+    inp.addEventListener('change', function() { onPick(inp.value); });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); onPick(inp.value); }
+    });
+  }
+
   function renderCompareSelectors() {
     var el = document.getElementById('rlCompareSelectors');
     if (!el) return;
     var teams = teamList();
+    var pitchers = pitcherOptions();
     var mode = RL.compareMode;
-
-    function selectHtml(id, label, options, val) {
-      return '<div><label for="' + id + '">' + label + '</label><select id="' + id + '">'
-        + '<option value="">— Select —</option>'
-        + options.map(function(o) {
-          var v = typeof o === 'string' ? o : o.value;
-          var t = typeof o === 'string' ? o : o.label;
-          return '<option value="' + esc(v) + '"' + (v === val ? ' selected' : '') + '>' + esc(t) + '</option>';
-        }).join('')
-        + '</select></div>';
-    }
 
     var html = '';
     if (mode === 'team' || mode === 'bullpen') {
-      html = selectHtml('rlCmpA', mode === 'bullpen' ? 'Bullpen A' : 'Team A', teams, RL.compareA)
-        + selectHtml('rlCmpB', mode === 'bullpen' ? 'Bullpen B' : 'Team B', teams, RL.compareB);
+      html = searchSelectHtml('rlCmpA', mode === 'bullpen' ? 'Bullpen A' : 'Team A', teams, RL.compareA, 'Search teams…')
+        + searchSelectHtml('rlCmpB', mode === 'bullpen' ? 'Bullpen B' : 'Team B', teams, RL.compareB, 'Search teams…');
     } else if (mode === 'pitcher') {
       var popts = pitchers.map(function(p) { return { value: p.name, label: p.name + ' (' + p.team + ')' }; });
-      html = selectHtml('rlCmpA', 'Pitcher A', popts, RL.compareA) + selectHtml('rlCmpB', 'Pitcher B', popts, RL.compareB);
+      html = searchSelectHtml('rlCmpA', 'Pitcher A', popts, RL.compareA, 'Search pitchers…')
+        + searchSelectHtml('rlCmpB', 'Pitcher B', popts, RL.compareB, 'Search pitchers…');
     } else {
-      html = selectHtml('rlCmpA', 'Lineup Team', teams, RL.compareA)
-        + selectHtml('rlCmpB', 'Opposing SP', pitchers.map(function(p) { return { value: p.name, label: p.name }; }), RL.compareB);
+      html = searchSelectHtml('rlCmpA', 'Lineup Team', teams, RL.compareA, 'Search teams…')
+        + searchSelectHtml('rlCmpB', 'Opposing SP', pitchers.map(function(p) { return { value: p.name, label: p.name }; }), RL.compareB, 'Search SP…');
     }
     html += '<div class="rl-compare-actions">'
+      + '<button type="button" class="rl-compare-run" id="rlCmpRun">Compare</button>'
       + '<button type="button" id="rlCmpSwap">Swap</button>'
       + '<button type="button" id="rlCmpClear">Clear</button></div>';
     el.innerHTML = html;
 
-    ['rlCmpA', 'rlCmpB'].forEach(function(id) {
-      var sel = document.getElementById(id);
-      if (!sel) return;
-      sel.addEventListener('change', function() {
-        if (id === 'rlCmpA') RL.compareA = sel.value;
-        else RL.compareB = sel.value;
-        renderCompareOutput();
-      });
+    bindSearchInput('rlCmpA', function(v) { RL.compareA = v; });
+    bindSearchInput('rlCmpB', function(v) { RL.compareB = v; });
+    var run = document.getElementById('rlCmpRun');
+    if (run) run.addEventListener('click', function() {
+      var a = document.getElementById('rlCmpA');
+      var b = document.getElementById('rlCmpB');
+      if (a) RL.compareA = a.value;
+      if (b) RL.compareB = b.value;
+      renderCompareOutput();
     });
     var swap = document.getElementById('rlCmpSwap');
     var clr = document.getElementById('rlCmpClear');

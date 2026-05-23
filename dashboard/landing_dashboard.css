@@ -38,9 +38,9 @@ body.opening-dashboard .freshness-bar {
 }
 
 .opening-hero-brand img {
-  height: 48px;
+  height: 64px;
   width: auto;
-  max-width: 240px;
+  max-width: 320px;
   object-fit: contain;
   display: block;
 }
@@ -49,7 +49,7 @@ body.opening-dashboard .freshness-bar {
   display: none;
   align-items: baseline;
   gap: 0.35rem;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #fff;
@@ -160,7 +160,25 @@ body.opening-dashboard .freshness-bar {
   margin-bottom: 16px;
 }
 
+.hmc-view-full {
+  display: block;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  font-weight: 600;
+  color: #c084fc;
+  text-align: center;
+  text-decoration: none;
+}
+.hmc-view-full:hover { color: #e9d5ff; }
+
 @media (max-width: 768px) {
+  .opening-hero-brand img {
+    height: 48px;
+    max-width: 260px;
+  }
+
   #section-opening-hero.opening-hero {
     min-height: 0;
     padding: 16px;

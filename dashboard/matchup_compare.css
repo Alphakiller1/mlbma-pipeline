@@ -66,6 +66,16 @@
 .mc-stale { color: #FB923C; font-weight: 600; }
 .mc-h2h { margin-top: 14px; padding: 12px 14px; background: rgba(124, 58, 237, 0.08); border: 1px solid rgba(124, 58, 237, 0.25); border-radius: 8px; font-size: 13px; }
 
+/* Lineup edge bar */
+.mc-lineup-bar-wrap { margin-bottom: 4px; padding: 14px 16px; background: var(--bg-4, #1f1f25); border-radius: 10px; border: 1px solid var(--border); }
+.mc-lineup-bar-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); margin-bottom: 8px; }
+.mc-lineup-bar-labels strong { color: var(--text); font-family: var(--mono); }
+.mc-lineup-bar-track { display: flex; height: 10px; border-radius: 99px; overflow: hidden; background: rgba(255,255,255,0.06); }
+.mc-lineup-bar-away { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.mc-lineup-bar-home { background: linear-gradient(90deg, #60a5fa, #93c5fd); }
+.mc-lineup-edge-read { margin-top: 10px; font-size: 13px; font-weight: 600; color: #c084fc; text-align: center; }
+.mc-lineup-col-head { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0 0 12px; }
+
 /* Lineup edge panels */
 .mc-edge-panel { padding: 16px; }
 .mc-edge-label { font-size: 12px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }

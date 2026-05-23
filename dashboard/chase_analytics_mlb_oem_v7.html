@@ -1550,9 +1550,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260522a">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
-<link rel="stylesheet" href="chase_nav.css?v=20260522c">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260522c">
-<link rel="stylesheet" href="research_lab.css?v=20260522a">
+<link rel="stylesheet" href="chase_nav.css?v=20260523a">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260523a">
+<link rel="stylesheet" href="research_lab.css?v=20260523a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260522a"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -1569,8 +1569,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_assets.js?v=20260522a"></script>
 <script src="matchup_shared.js?v=20260522a"></script>
 <script src="mlbma_controls.js?v=20260522a"></script>
-<script src="platform_dashboard.js?v=20260522c"></script>
-<script src="research_lab.js?v=20260522a"></script>
+<script src="platform_dashboard.js?v=20260523a"></script>
+<script src="research_lab.js?v=20260523a"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening">
@@ -1634,8 +1634,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-  </div></div>
-<div class="container">
+  <div class="container">
 
 <div class="ca-page-identity" id="pageIdentityStrip">
   <img class="ca-page-identity-icon" src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'">
@@ -1651,7 +1650,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div class="opening-hero-inner">
     <div class="opening-hero-left">
       <div class="opening-hero-brand">
-        <img src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="48" style="object-fit:contain"
+        <img src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="64" style="object-fit:contain"
           onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
         <div class="opening-hero-logo-fallback" aria-hidden="true">
           <span>CHASE</span> <span class="accent">ANALYTICS</span>
@@ -1989,7 +1988,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       <div>
         <div class="section-eyebrow">Research Lab</div>
         <div class="section-title">What Does The Pitching Context Say?</div>
-        <div class="section-subtitle">Pitching Score + OOR SP context for F5 vs full-game validation.</div>
+        <div class="section-subtitle">Pitching Score context for F5 vs full-game validation.</div>
       </div>
     </div>
     <div id="pitchingResearchMount"></div>
@@ -2057,12 +2056,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <button class="btn" data-metric="reg" onclick="setModalMetric('reg')">Regression Gap</button>
         <button class="btn" data-metric="pitchScore" onclick="setModalMetric('pitchScore')">Pitching Score</button>
       </div>
-      <div id="modalContent"></div>
-    </div>
-  </div>
-</div>
-
-<script>
+      <div id="modalContent"><script>
 /* ============================================================
    GOOGLE SHEETS — public CSV export (no API key)
    ============================================================ */
@@ -2195,6 +2189,9 @@ function applyLiveData() {
 
     var afterLoad = function() {
       renderLanding();
+      if (_researchLabInitialized || document.body.classList.contains('view-research')) {
+        renderResearchLabWhenReady();
+      }
       hideLoadingOverlay();
     };
     if (window.MLBMAStandings) MLBMAStandings.load().then(afterLoad).catch(afterLoad);
@@ -3193,7 +3190,7 @@ function loadResearchData() {
       scYtdL: LIVE_DATA.scYtdL,
       ytd: YTD
     });
-    if (_researchLabInitialized) renderResearchLab();
+    if (_researchLabInitialized) renderResearchLabWhenReady();
     return true;
   }).catch(function(err) {
     console.warn('[MLBMA] research bundle load failed', err);
@@ -4082,16 +4079,6 @@ function renderDailyRead() {
     renderMasterTable();
   }
   bindFilterHelp();
-}
-
-function renderResearchLab(activeSubtab) {
-  console.log('[MLBMA] renderResearchLab', activeSubtab || '');
-  bindResearchSubtabs();
-  mountResearchTables();
-  showResearchSubtab(activeSubtab || (function() {
-    var active = document.querySelector('#layerAdvanced .subtab.active');
-    return active ? active.getAttribute('data-pane') : 'splits-trends';
-  })());
 }
 
 function bindResearchSubtabs() {
@@ -5005,7 +4992,13 @@ function renderSplitBar(rows){
 function renderSplitBars(){
   var scR = (SCO_YTD_R && SCO_YTD_R.length) ? SCO_YTD_R : (LIVE_DATA.scYtdR || []);
   var scL = (SCO_YTD_L && SCO_YTD_L.length) ? SCO_YTD_L : (LIVE_DATA.scYtdL || []);
-  if (!scR.length || !scL.length) return;
+  if (!scR.length || !scL.length) {
+    ['rhpBars', 'lhpBars'].forEach(function(id) {
+      var host = document.getElementById(id);
+      if (host) host.innerHTML = '<p class="ca-helper" style="padding:12px;">Loading YTD split data from vs_RHP / vs_LHP…</p>';
+    });
+    return;
+  }
   function bars(rows, color, elId){
     if (!rows || !rows.length) return;
     var host = document.getElementById(elId);
@@ -5734,10 +5727,9 @@ function mountResearchTables() {
   }
   var pitchMount = document.getElementById('pitchingResearchMount');
   var pitchSec = document.getElementById('pitchingSection');
-  var oorMount = document.getElementById('oorResearchMount');
-  var oorSec = document.getElementById('oorSection');
   if (pitchMount && pitchSec && !pitchMount.contains(pitchSec)) pitchMount.appendChild(pitchSec);
-  if (oorMount && oorSec && !oorMount.contains(oorSec)) oorMount.appendChild(oorSec);
+  var oorSec = document.getElementById('oorSection');
+  if (oorSec) oorSec.style.display = 'none';
   var palsSec = document.getElementById('palsSection');
   if (palsSec) palsSec.style.display = 'none';
 }
@@ -5757,7 +5749,6 @@ function mountReferenceTables(){
 }
 
 function renderReferenceTables() {
-  renderOOR();
   renderPitchingScore();
 }
 
@@ -5779,15 +5770,60 @@ function renderLanding() {
   }
 }
 
-function initResearchLab() {
-  if (_researchLabInitialized) return;
-  _researchLabInitialized = true;
-  console.log('[MLBMA] initResearchLab');
-  if (window.ResearchLab) ResearchLab.init();
-  bindResearchSubtabs();
-  bindDashRankingsControls();
+function renderResearchLabWhenReady() {
+  var rl = document.getElementById('section-research-lab');
+  if (!rl || !document.body.classList.contains('view-research')) return;
+  var banner = document.getElementById('rlDataLoadingBanner');
+  var hasScores = LIVE_DATA.scYtdR && LIVE_DATA.scYtdR.length && LIVE_DATA.scYtdL && LIVE_DATA.scYtdL.length;
+  if (!LIVE_DATA.loaded || !hasScores) {
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'rlDataLoadingBanner';
+      banner.className = 'rl-loading-banner';
+      banner.textContent = 'Loading research data…';
+      var header = document.getElementById('researchLabHeader');
+      if (header && header.parentNode) header.parentNode.insertBefore(banner, header.nextSibling);
+      else rl.insertBefore(banner, rl.firstChild);
+    }
+    if (typeof loadLiveData === 'function') {
+      loadLiveData().then(function() {
+        if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
+        renderResearchLab();
+      }).catch(function() {
+        if (banner) banner.textContent = 'Research data failed to load — retrying when sheets refresh…';
+      });
+    }
+    return;
+  }
+  if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
   renderResearchLab();
-  loadResearchData();
+}
+
+function setupResearchVisibilityObserver() {
+  if (window._rlVisibilityObserver) return;
+  var target = document.getElementById('section-research-lab');
+  if (!target || !window.IntersectionObserver) return;
+  window._rlVisibilityObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && document.body.classList.contains('view-research')) {
+        renderResearchLabWhenReady();
+      }
+    });
+  }, { threshold: 0.08 });
+  window._rlVisibilityObserver.observe(target);
+}
+
+function initResearchLab() {
+  if (!_researchLabInitialized) {
+    _researchLabInitialized = true;
+    console.log('[MLBMA] initResearchLab');
+    if (window.ResearchLab) ResearchLab.init();
+    bindResearchSubtabs();
+    bindDashRankingsControls();
+    setupResearchVisibilityObserver();
+    loadResearchData();
+  }
+  renderResearchLabWhenReady();
 }
 
 function syncDashboardView() {
@@ -6323,6 +6359,6 @@ if (document.readyState === 'loading') {
   <script src="oem_overhaul.js?v=20260522a"></script>
   <script src="mlbma_standings.js?v=20260522a"></script>
   <script src="mlbma_signals.js?v=20260522a"></script>
-  <script src="chase_nav.js?v=20260522c"></script>
+  <script src="chase_nav.js?v=20260523a"></script>
 </body>
 </html>
