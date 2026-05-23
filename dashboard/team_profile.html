@@ -317,6 +317,7 @@ h1 {
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="mlbma_standings.js"></script>
 <script src="team_profile_mini.js"></script>
 <script src="mlbma_ui.js" data-page="team_profile.html"></script>
 </head>
@@ -672,12 +673,13 @@ function computeSpFx(team) {
 }
 
 function buildMiniCtx(prof, name, tonight) {
-  return {
+    return {
     pickCol: pickCol,
     teamName: name,
     team: STATE.team,
     split: STATE.split,
     window: STATE.window,
+    recordWl: window.MLBMAStandings ? MLBMAStandings.formatRecord(STATE.team) : '',
     metricsR: DATA.metricsR,
     metricsL: DATA.metricsL,
     tonightHtml: tonight ? tonight.html : '',
@@ -1045,7 +1047,8 @@ document.addEventListener('DOMContentLoaded', function() {
   initSelector();
   bindProfileControls();
   loadAll().then(function() {
-    renderTeam(STATE.team);
+    if (window.MLBMAStandings) MLBMAStandings.load().then(function() { renderTeam(STATE.team); });
+    else renderTeam(STATE.team);
   }).catch(function(err) {
     document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
     document.getElementById('dataBanner').classList.add('show');

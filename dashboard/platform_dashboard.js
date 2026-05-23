@@ -23,10 +23,13 @@
       || (typeof SCO_YTD_B !== 'undefined' ? SCO_YTD_B.find(function(d) { return d.t === team; }) : null);
   }
 
+  function teamKey(t) {
+    return String(t || '').trim().toUpperCase();
+  }
+
   function bullpenOsiAllowed(team) {
-    var u = (LIVE_DATA.bullpen || []).find(function(b) {
-      return (b.t || b.team || b.Team) === team;
-    });
+    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
+    var u = units[teamKey(team)];
     if (!u) return null;
     return u.osiAllowed != null ? u.osiAllowed : (u.osi_allowed != null ? u.osi_allowed : u.OSI_allowed);
   }
@@ -162,9 +165,11 @@
 
       return '<article class="hero-matchup-card" id="' + cardId + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
         + '<div class="hmc-row hmc-teams">'
-        + '<div class="hmc-team' + awayEdgeCls + '">' + logo(m.away, 40) + '<span class="hmc-abbr">' + esc(m.away) + '</span></div>'
+        + '<div class="hmc-team' + awayEdgeCls + '">' + logo(m.away, 40) + '<span class="hmc-abbr">' + esc(m.away) +
+          (global.MLBMAStandings ? MLBMAStandings.recordHtml(m.away) : '') + '</span></div>'
         + '<span class="hmc-at">@</span>'
-        + '<div class="hmc-team' + homeEdgeCls + '">' + logo(m.home, 40) + '<span class="hmc-abbr">' + esc(m.home) + '</span></div>'
+        + '<div class="hmc-team' + homeEdgeCls + '">' + logo(m.home, 40) + '<span class="hmc-abbr">' + esc(m.home) +
+          (global.MLBMAStandings ? MLBMAStandings.recordHtml(m.home) : '') + '</span></div>'
         + '<div class="hmc-time">' + esc(m.time || 'TBD') + '</div>'
         + weatherHtml(m)
         + '</div>'

@@ -232,7 +232,8 @@
     return '<div class="team-snapshot">'
       + logo
       + '<div class="snapshot-main">'
-      + '<h1 class="snapshot-name">' + esc(name) + ' <span class="team-abbr-inline">' + esc(team) + '</span></h1>'
+      + '<h1 class="snapshot-name">' + esc(name) + ' <span class="team-abbr-inline">' + esc(team) + '</span>'
+      + (ctx.recordWl ? ' <span class="team-record-pill">' + esc(ctx.recordWl) + '</span>' : '') + '</h1>'
       + '<div class="snapshot-badges">'
       + '<span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span>'
       + '<span class="summary-badge" style="color:' + summaryColor(summary) + ';border-color:currentColor;">' + esc(summary) + '</span>'

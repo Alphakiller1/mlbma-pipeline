@@ -1523,6 +1523,18 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 #pane-matchup, #pane-strat, #pane-reference, #pane-matchup-builder, #pane-trends { display: none !important; }
 .research-lab-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
 
+
+.team-record-pill, .hmc-record {
+  font-size: 10px; font-weight: 600; font-family: var(--mono);
+  color: var(--text-3); margin-left: 6px;
+}
+.window-data-banner {
+  display: none; margin: 0 0 14px; padding: 10px 14px;
+  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 10px; font-size: 12px; color: var(--gold-l); line-height: 1.45;
+}
+.window-data-banner.show { display: block; }
+
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
@@ -1710,6 +1722,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams…" autocomplete="off">
     </div>
   </div>
+  <div id="dashWindowDataBanner" class="window-data-banner"></div>
   <div id="dashboardRankingsMount"></div>
   <div id="metricBarChart"></div>
 </section>
@@ -1774,6 +1787,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <button type="button" class="filter-help-btn" id="filterHelpBtn" title="Search syntax help">?</button>
   <div class="filter-help-panel" id="filterHelpPanel">Try: <code>abq&gt;60</code>, <code>trend:rising</code></div>
 </div>
+<div id="windowDataBanner" class="window-data-banner"></div>
 <div class="glance-grid" id="glanceGrid"></div>
 </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
@@ -1934,7 +1948,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <div class="section-subtitle">Convergence signal matrix and actionable profile groupings for today's slate.</div>
       </div>
     </div>
-    <div id="convergenceGrid"></div>
+    <div id="signalsTodayPanel"></div>
+    <div id="convergenceGrid" style="margin-top:20px;"></div>
+    <div id="stratsSignals" style="margin-top:24px;"></div>
   </div>
   <div id="pane-strat" style="display:none;">
     <div class="section-header">
@@ -2030,7 +2046,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
-var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], bullpenUnits: {}, rhp: null, lhp: null };
+var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], bullpenUnits: {}, teamProfilesByTeam: {}, signalsToday: [], signalsConvergence: [],
+  windowDataAvailable: { L30: false, L14: false, L7: false }, rhp: null, lhp: null };
 var SP_WEIGHT = 0.70;
 var BULLPEN_WEIGHT = 0.30;
 
@@ -2121,12 +2138,8 @@ function prepLiveScoreRow(d) {
 }
 
 function ensureHardcodedTimeframes() {
-  SCO_L30_B = buildScores('L30', 'b');
-  SCO_L14_B = buildScores('L14', 'b');
-  SCO_L7_B = buildScores('L7', 'b');
-  M_L30 = toMap(SCO_L30_B);
-  M_L14 = toMap(SCO_L14_B);
-  M_L7 = toMap(SCO_L7_B);
+  /* legacy — use syncWindowScoresFromProfiles() after live load */
+  syncWindowScoresFromProfiles();
 }
 
 function applyLiveData() {
@@ -2148,7 +2161,7 @@ function applyLiveData() {
 
     M_YTD_R = toMap(SCO_YTD_R);
     M_YTD_L = toMap(SCO_YTD_L);
-    ensureHardcodedTimeframes();
+    syncWindowScoresFromProfiles();
     enrichYtdMaster();
 
     SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
@@ -2156,9 +2169,14 @@ function applyLiveData() {
 
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
 
-    renderAll();
-    renderReferenceTables();
-    hideLoadingOverlay();
+    var afterLoad = function() {
+      renderAll();
+      renderReferenceTables();
+      if (window.OEMOverhaul && OEMOverhaul.renderConvergence) OEMOverhaul.renderConvergence();
+      hideLoadingOverlay();
+    };
+    if (window.MLBMAStandings) MLBMAStandings.load().then(afterLoad).catch(afterLoad);
+    else afterLoad();
     return true;
   } catch (err) {
     console.error('[MLBMA] applyLiveData error:', err);
@@ -2347,6 +2365,91 @@ function buildYtdBothFromSplits(scR, scL) {
   });
 }
 
+
+
+
+function parseTeamProfileRows(rows) {
+  var map = {};
+  (rows || []).forEach(function(row) {
+    var t = teamKey(pickCol(row, ['team', 'Tm', 'Team']));
+    if (!t) return;
+    map[t] = {
+      osi_ytd: numOrNull(pickCol(row, ['osi', 'OSI'])),
+      osi_l30: numOrNull(pickCol(row, ['osi_l30', 'OSI_L30'])),
+      osi_l14: numOrNull(pickCol(row, ['osi_l14', 'OSI_L14'])),
+      osi_l7: numOrNull(pickCol(row, ['osi_l7', 'OSI_L7']))
+    };
+  });
+  return map;
+}
+
+function windowOsiField(timeframe) {
+  if (timeframe === 'L30') return 'osi_l30';
+  if (timeframe === 'L14') return 'osi_l14';
+  if (timeframe === 'L7') return 'osi_l7';
+  return null;
+}
+
+function buildWindowRowsFromProfiles(timeframe, splitTab) {
+  var field = windowOsiField(timeframe);
+  if (!field) return [];
+  var profs = LIVE_DATA.teamProfilesByTeam || {};
+  var base = splitTab === 'r' ? SCO_YTD_R : (splitTab === 'l' ? SCO_YTD_L : SCO_YTD_B);
+  if (!base || !base.length) return [];
+  return base.map(function(d) {
+    var p = profs[d.t];
+    if (!p || p[field] == null || isNaN(p[field])) return null;
+    var row = Object.assign({}, d);
+    row.osi = p[field];
+    row.windowPartial = true;
+    row.windowNote = 'OSI from Team_Profiles; ABQ/RCV/OBR remain YTD until window metric sheets ship.';
+    return row;
+  }).filter(Boolean);
+}
+
+function syncWindowScoresFromProfiles() {
+  var avail = { L30: false, L14: false, L7: false };
+  ['L30', 'L14', 'L7'].forEach(function(tf) {
+    var rows = buildWindowRowsFromProfiles(tf, 'b');
+    if (rows.length >= 20) {
+      avail[tf] = true;
+      if (tf === 'L30') SCO_L30_B = rows;
+      else if (tf === 'L14') SCO_L14_B = rows;
+      else SCO_L7_B = rows;
+    } else {
+      if (tf === 'L30') SCO_L30_B = [];
+      else if (tf === 'L14') SCO_L14_B = [];
+      else SCO_L7_B = [];
+    }
+  });
+  LIVE_DATA.windowDataAvailable = avail;
+  M_L30 = toMap(SCO_L30_B);
+  M_L14 = toMap(SCO_L14_B);
+  M_L7 = toMap(SCO_L7_B);
+}
+
+function windowDataMessage(timeframe) {
+  if (timeframe === 'YTD') return '';
+  var avail = LIVE_DATA.windowDataAvailable || {};
+  if (avail[timeframe]) {
+    return 'Window OSI from Team_Profiles · other metrics shown as YTD baseline.';
+  }
+  return 'YTD data shown — window data requires full pipeline run (Team_Profiles osi_l30/l14/l7).';
+}
+
+function updateWindowDataBanners() {
+  var msg = windowDataMessage(STATE.time);
+  ['windowDataBanner', 'dashWindowDataBanner'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (msg) {
+      el.textContent = msg;
+      el.classList.add('show');
+    } else {
+      el.classList.remove('show');
+    }
+  });
+}
 
 
 function parseBullpenUnitRows(rows) {
@@ -2980,13 +3083,17 @@ function loadLiveData() {
     fetchSheetTab(TABS.today_games),
     fetchSheetTab(TABS.today_matchups),
     fetchSheetTab(TABS.signals_convergence),
+    fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
+    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
     fetchSheetTab(TABS.weather),
     fetchSheetTab(TABS.player_registry),
     fetchSheetText(TABS.last_updated)
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
         pitchingRows = results[3], palsRows = results[4], bullpenRows = results[5],
-        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8], signalsRows = results[9], weatherRows = results[10], registryRows = results[11], tsText = results[12];
+        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8],
+        signalsConvRows = results[9], signalsTodayRows = results[10], teamProfRows = results[11],
+        weatherRows = results[12], registryRows = results[13], tsText = results[14];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -2999,7 +3106,9 @@ function loadLiveData() {
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
-    LIVE_DATA.signalsConvergence = signalsRows || [];
+    LIVE_DATA.signalsConvergence = signalsConvRows || [];
+    LIVE_DATA.signalsToday = signalsTodayRows || [];
+    LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(teamProfRows);
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
     LIVE_DATA.playerRegistry = registryRows || [];
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
@@ -3422,13 +3531,12 @@ function recomputeAllScores() {
     SCO_YTD_L = buildScores('YTD', 'l');
   }
   if (LIVE_DATA.loaded) {
-    SCO_L30_B = SCO_YTD_B.map(function(d) { return Object.assign({}, d); });
-    SCO_L14_B = SCO_YTD_B.map(function(d) { return Object.assign({}, d); });
-    SCO_L7_B = SCO_YTD_B.map(function(d) { return Object.assign({}, d); });
+    syncWindowScoresFromProfiles();
   } else {
-    SCO_L30_B = buildScores('L30', 'b');
-    SCO_L14_B = buildScores('L14', 'b');
-    SCO_L7_B = buildScores('L7', 'b');
+    SCO_L30_B = [];
+    SCO_L14_B = [];
+    SCO_L7_B = [];
+    LIVE_DATA.windowDataAvailable = { L30: false, L14: false, L7: false };
   }
   M_YTD_R = toMap(SCO_YTD_R);
   M_YTD_L = toMap(SCO_YTD_L);
@@ -3846,8 +3954,11 @@ function onResearchSubtabShown(name) {
   else if (name === 'compare') initCompare();
   else if (name === 'pitching') { renderPitchingScore(); renderOOR(); }
   else if (name === 'signals') {
-    if (window.OEMOverhaul) OEMOverhaul.renderConvergence();
-    renderStrats();
+    if (window.MLBMASignals) MLBMASignals.renderExplorer();
+    else {
+      if (window.OEMOverhaul) OEMOverhaul.renderConvergence();
+      renderStrats();
+    }
   }
 }
 
@@ -4038,23 +4149,25 @@ function urlDecodeState() {
 
 function currentRows(){
   var rows;
-  /* Live sheet scores only for YTD — L30/L14/L7 keep hardcoded timeframe data */
-  if (LIVE_DATA.loaded && STATE.time === 'YTD') {
+  if (STATE.time === 'YTD') {
     if (STATE.split === 'b') rows = SCO_YTD_B;
     else if (STATE.split === 'r') rows = SCO_YTD_R;
     else rows = SCO_YTD_L;
-  } else if(STATE.time==='YTD'){
-    if(STATE.split==='b') rows = SCO_YTD_B;
-    else if(STATE.split==='r') rows = SCO_YTD_R;
-    else rows = SCO_YTD_L;
-  } else if(STATE.time==='L7') rows = SCO_L7_B;
-  else if(STATE.time==='L30'){
-    rows = (STATE.split==='b') ? SCO_L30_B : buildScores('L30', STATE.split);
-  } else if(STATE.time==='L14'){
-    rows = (STATE.split==='b') ? SCO_L14_B : buildScores('L14', STATE.split);
+  } else if (STATE.time === 'L30' || STATE.time === 'L14' || STATE.time === 'L7') {
+    var avail = LIVE_DATA.windowDataAvailable || {};
+    if (!avail[STATE.time]) {
+      updateWindowDataBanners();
+      return [];
+    }
+    if (STATE.split === 'b') {
+      rows = STATE.time === 'L30' ? SCO_L30_B : (STATE.time === 'L14' ? SCO_L14_B : SCO_L7_B);
+    } else {
+      rows = buildWindowRowsFromProfiles(STATE.time, STATE.split);
+    }
   } else {
     rows = SCO_YTD_B;
   }
+  updateWindowDataBanners();
   return rows && rows.length ? rows : [];
 }
 
@@ -4327,6 +4440,12 @@ function renderExecSummary(){
 }
 
 function renderMasterTable(){
+  if (STATE.time !== 'YTD' && !(LIVE_DATA.windowDataAvailable && LIVE_DATA.windowDataAvailable[STATE.time])) {
+    var body = document.getElementById('masterBody');
+    if (body) body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">' + windowDataMessage(STATE.time) + '</td></tr>';
+    return;
+  }
+
   var body = document.getElementById('masterBody');
   var mobile = document.getElementById('mobileCards');
   if (!body || !mobile) return;
@@ -4873,7 +4992,7 @@ function renderTrendHeatmap(){
 
 /* Strategic recommendations */
 function renderStrats(){
-  var targets = [document.getElementById('stratsDaily'), document.getElementById('strats')].filter(Boolean);
+  var targets = [document.getElementById('stratsDaily'), document.getElementById('strats'), document.getElementById('stratsSignals')].filter(Boolean);
   if (!targets.length) return;
   function count(filt){ return (SCO_YTD_B || []).filter(filt).length; }
   var blocks=[
@@ -6054,6 +6173,9 @@ if (document.readyState === 'loading') {
 </div>
 
 </div><!-- /.container -->
+  <script src="oem_overhaul.js"></script>
+  <script src="mlbma_standings.js"></script>
+  <script src="mlbma_signals.js"></script>
   <script src="chase_nav.js"></script>
 </body>
 </html>
