@@ -224,12 +224,18 @@
   }
 
   function renderTrendSummary() {
-    var mount = document.getElementById('rlTrendSummaryMount');
-    if (!mount) return;
+    var html = trendSummaryHtml();
+    ['rlTrendSummaryMount', 'homeTrendSummaryMount'].forEach(function(id) {
+      var mount = document.getElementById(id);
+      if (mount) mount.innerHTML = html;
+    });
+  }
+
+  function trendSummaryHtml() {
     ensureTrendState();
     var metric = global.STATE.rlTrendMetric;
     var rows = RL.getResearchTeamData('both');
-    if (!rows.length) { mount.innerHTML = ''; return; }
+    if (!rows.length) return '';
     var enriched = rows.map(function(d) {
       var ytd = windowVal(d, metric, 'YTD');
       var l14 = windowVal(d, metric, 'L14');
@@ -242,20 +248,41 @@
       .sort(function(a, b) { return a.d14 - b.d14; }).slice(0, 3);
     var hotL7 = enriched.filter(function(x) {
       return x.l7 != null && x.ytd != null && x.l7 > x.ytd + 6;
-    }).slice(0, 3);
+    }).sort(function(a, b) { return (b.l7 - b.ytd) - (a.l7 - a.ytd); }).slice(0, 3);
     var stable = enriched.filter(function(x) {
       if (x.ytd == null || x.l14 == null || x.l7 == null) return false;
       return Math.abs(x.l7 - x.ytd) <= 3 && Math.abs(x.l14 - x.ytd) <= 3;
     }).slice(0, 3);
-    mount.innerHTML = card('Biggest Risers', risers, function(x) { return x.t + ' +' + x.d14.toFixed(1); })
-      + card('Biggest Fallers', fallers, function(x) { return x.t + ' ' + x.d14.toFixed(1); })
-      + card('Hot L7 Spike', hotL7, function(x) { return x.t + ' L7 +' + (x.l7 - x.ytd).toFixed(1) + ' (noisy)'; })
-      + card('Most Stable', stable, function(x) { return x.t + ' · all windows ±3'; });
+    return trendCard('Biggest Risers', risers, function(x) { return '+' + x.d14.toFixed(1); })
+      + trendCard('Biggest Fallers', fallers, function(x) { return x.d14.toFixed(1); })
+      + trendCard('Hot L7 Spike', hotL7, function(x) { return 'L7 +' + (x.l7 - x.ytd).toFixed(1); })
+      + trendCard('Most Stable', stable, function() { return '±3'; });
   }
 
-  function card(title, items, fn) {
-    return '<div class="rl-summary-card"><div class="rl-summary-label">' + esc(title) + '</div><div class="rl-summary-val">'
-      + (items.length ? items.map(fn).join('<br>') : '—') + '</div></div>';
+  function trendCard(title, items, valueFn) {
+    var meta = {
+      'Biggest Risers': { variant: 'risers', subtitle: 'L14 improvement vs YTD baseline' },
+      'Biggest Fallers': { variant: 'fallers', subtitle: 'L14 decline vs YTD baseline' },
+      'Hot L7 Spike': { variant: 'hot', subtitle: 'Recent L7 surge — may be noisy' },
+      'Most Stable': { variant: 'stable', subtitle: 'All windows within ±3 of YTD' }
+    }[title] || { variant: 'stable', subtitle: '' };
+    var body = '';
+    if (items.length) {
+      body = '<div class="rl-summary-chips">' + items.map(function(x) {
+        var logo = A && A.teamLogoImg ? A.teamLogoImg(x.t, 16, 'rl-summary-team-logo') : '';
+        return '<span class="rl-summary-chip">' + logo
+          + '<span class="rl-summary-chip-abbr">' + esc(x.t) + '</span>'
+          + '<span class="rl-summary-chip-val">' + esc(valueFn(x)) + '</span></span>';
+      }).join('') + '</div>';
+    } else {
+      body = '<div class="rl-summary-empty"><span class="rl-summary-empty-icon" aria-hidden="true"></span>'
+        + '<span>No signal yet — waiting for pipeline data</span></div>';
+    }
+    return '<div class="rl-summary-card rl-summary-card--' + meta.variant + '">'
+      + '<div class="rl-summary-head"><span class="rl-summary-icon" aria-hidden="true"></span>'
+      + '<div><div class="rl-summary-label">' + esc(title) + '</div>'
+      + '<div class="rl-summary-sub">' + esc(meta.subtitle) + '</div></div></div>'
+      + body + '</div>';
   }
 
   function mountSplitsControls() {
@@ -414,8 +441,22 @@
     if (!el || el.dataset.uixPatched) return;
     el.dataset.uixPatched = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
-      + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Four focused tools — trends, splits, compare, and pitcher research.</p></div>';
+      + '<div class="rl-workspace-eyebrow"><img src="assets/chase-icon-outline.png" alt="" width="20" height="20" onerror="this.style.display=\'none\'"> Research Lab</div>'
+      + '<h2 class="rl-workspace-title">Research Lab</h2>'
+      + '<p class="rl-workspace-subtitle">Four focused tools for validating offensive and pitching model signals.</p>'
+      + '<div class="rl-header-pills">'
+      + ['trends', 'splits', 'compare', 'pitching'].map(function(tab) {
+        var label = { trends: 'Trends', splits: 'Splits', compare: 'Compare', pitching: 'Pitcher Lab' }[tab];
+        return '<button type="button" class="rl-header-pill" data-rl-goto="' + tab + '">' + label + '</button>';
+      }).join('')
+      + '</div></div>';
+    el.querySelectorAll('[data-rl-goto]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var pane = btn.getAttribute('data-rl-goto');
+        var subtab = document.querySelector('.rl-segment-tabs .subtab[data-pane="' + pane + '"]');
+        if (subtab) subtab.click();
+      });
+    });
   }
 
   global.renderTrendHeatmap = renderTrendHeatmap;

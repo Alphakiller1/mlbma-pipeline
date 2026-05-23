@@ -364,10 +364,10 @@
     var logoUrl = teamEspnLogoUrl(d.t);
     var gid = 'qb_' + String(d.t).replace(/[^a-z0-9]/gi, '');
     return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + '">'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="16" fill="' + meta.color + '" fill-opacity=".18"/>'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="12" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
-      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="10"/></clipPath>'
-      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 10) + '" y="' + (cy - 10) + '" width="20" height="20" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="26" fill="' + meta.color + '" fill-opacity=".18"/>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="20" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
+      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="18"/></clipPath>'
+      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 18) + '" y="' + (cy - 18) + '" width="36" height="36" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
       + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="8" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
       + '<title>' + esc(d.t) + ' · RCV ' + d.rcv.toFixed(1) + ' · Gap ' + quadYValue(d).toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + meta.label + '</title>'
       + '</g>';
@@ -406,18 +406,18 @@
     var tipId = opts.tipId || (containerId + 'Tip');
 
     var legend = '<div class="mlbma-quad-legend">'
-      + [{ c: '#4ADE80', l: 'Elite & Undervalued' }, { c: '#2DD4BF', l: 'Buy-Low Offense' },
-         { c: '#FBBF24', l: 'Strong But Cooling' }, { c: '#F87171', l: 'Weak & Concerning' }]
+      + [{ c: '#22C55E', l: 'Elite & Undervalued' }, { c: '#2DD4BF', l: 'Buy-Low Offense' },
+         { c: '#F59E0B', l: 'Strong But Cooling' }, { c: '#FB7185', l: 'Weak & Concerning' }]
         .map(function(q) {
           return '<span class="mlbma-quad-leg-item"><i style="background:' + q.c + '"></i>' + esc(q.l) + '</span>';
         }).join('') + '</div>';
 
     var svg = '<svg class="mlbma-market-quad" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="RCV vs regression gap market map">'
       + '<rect x="' + ml + '" y="' + mt + '" width="' + cw + '" height="' + ch + '" fill="#0f0f12" rx="8"/>'
-      + '<rect x="' + mx + '" y="' + mt + '" width="' + (W - mr - mx) + '" height="' + (my - mt) + '" fill="rgba(74,222,128,.07)"/>'
-      + '<rect x="' + ml + '" y="' + mt + '" width="' + (mx - ml) + '" height="' + (my - mt) + '" fill="rgba(45,212,191,.07)"/>'
-      + '<rect x="' + mx + '" y="' + my + '" width="' + (W - mr - mx) + '" height="' + (H - mb - my) + '" fill="rgba(251,191,36,.07)"/>'
-      + '<rect x="' + ml + '" y="' + my + '" width="' + (mx - ml) + '" height="' + (H - mb - my) + '" fill="rgba(248,113,113,.07)"/>';
+      + '<rect x="' + mx + '" y="' + mt + '" width="' + (W - mr - mx) + '" height="' + (my - mt) + '" fill="rgba(34,197,94,.08)"/>'
+      + '<rect x="' + ml + '" y="' + mt + '" width="' + (mx - ml) + '" height="' + (my - mt) + '" fill="rgba(45,212,191,.08)"/>'
+      + '<rect x="' + mx + '" y="' + my + '" width="' + (W - mr - mx) + '" height="' + (H - mb - my) + '" fill="rgba(245,158,11,.08)"/>'
+      + '<rect x="' + ml + '" y="' + my + '" width="' + (mx - ml) + '" height="' + (H - mb - my) + '" fill="rgba(251,113,133,.08)"/>';
 
     [25, 50, 75].forEach(function(v) {
       var gx = xs(v);
@@ -434,10 +434,10 @@
     svg += '<line x1="' + mx + '" y1="' + mt + '" x2="' + mx + '" y2="' + (H - mb) + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
     svg += '<line x1="' + ml + '" y1="' + my + '" x2="' + (W - mr) + '" y2="' + my + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
 
-    svg += '<text x="' + (W - mr - 6) + '" y="' + (mt + 12) + '" text-anchor="end" fill="rgba(74,222,128,.92)" font-size="9" font-weight="600">ELITE &amp; UNDERVALUED</text>';
-    svg += '<text x="' + (ml + 6) + '" y="' + (mt + 12) + '" text-anchor="start" fill="rgba(45,212,191,.92)" font-size="9" font-weight="600">BUY-LOW OFFENSE</text>';
-    svg += '<text x="' + (W - mr - 6) + '" y="' + (H - mb - 6) + '" text-anchor="end" fill="rgba(251,191,36,.92)" font-size="9" font-weight="600">STRONG BUT COOLING</text>';
-    svg += '<text x="' + (ml + 6) + '" y="' + (H - mb - 6) + '" text-anchor="start" fill="rgba(248,113,113,.92)" font-size="9" font-weight="600">WEAK &amp; CONCERNING</text>';
+    svg += '<text x="' + (W - mr - 6) + '" y="' + (mt + 12) + '" text-anchor="end" fill="rgba(34,197,94,.95)" font-size="9" font-weight="700">ELITE &amp; UNDERVALUED</text>';
+    svg += '<text x="' + (ml + 6) + '" y="' + (mt + 12) + '" text-anchor="start" fill="rgba(45,212,191,.95)" font-size="9" font-weight="700">BUY-LOW OFFENSE</text>';
+    svg += '<text x="' + (W - mr - 6) + '" y="' + (H - mb - 6) + '" text-anchor="end" fill="rgba(245,158,11,.95)" font-size="9" font-weight="700">STRONG BUT COOLING</text>';
+    svg += '<text x="' + (ml + 6) + '" y="' + (H - mb - 6) + '" text-anchor="start" fill="rgba(251,113,133,.95)" font-size="9" font-weight="700">WEAK &amp; CONCERNING</text>';
 
     data.forEach(function(d) {
       var xVal = d.rcv;

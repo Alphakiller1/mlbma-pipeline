@@ -9,7 +9,7 @@
 <title>Chase Analytics · Offensive Dashboard</title>
 <style>
 :root {
-  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
+  --bg: #050509; --bg-2: #0a0a10; --bg-3: rgba(255,255,255,0.04); --bg-4: rgba(255,255,255,0.06);
   --border: #28282f; --border-2: #34343d;
   --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
   --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
@@ -1613,10 +1613,10 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260524">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260524">
-<link rel="stylesheet" href="chase_nav.css?v=20260524">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260524">
-<link rel="stylesheet" href="research_lab.css?v=20260524">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260523d">
+<link rel="stylesheet" href="chase_nav.css?v=20260523d">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260523d">
+<link rel="stylesheet" href="research_lab.css?v=20260523d">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260524"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -1639,11 +1639,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_assets.js?v=20260524"></script>
 <script src="matchup_shared.js?v=20260524"></script>
 <script src="mlbma_controls.js?v=20260524"></script>
-<script src="mlbma_charts.js?v=20260524"></script>
+<script src="mlbma_charts.js?v=20260523d"></script>
 <script src="profile_controls.js?v=20260524"></script>
 <script src="platform_dashboard.js?v=20260524"></script>
 <script src="research_lab.js?v=20260524"></script>
-<script src="rl_tab_uix.js?v=20260524"></script>
+<script src="rl_tab_uix.js?v=20260523d"></script>
 <script src="pitcher_lab.js?v=20260524"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
@@ -1653,8 +1653,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="36" style="height:36px;max-height:36px;width:auto;object-fit:contain"
+        onerror="this.onerror=null;this.src='assets/chase-logo-horizontal.png';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
@@ -1750,13 +1750,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <section id="section-opening-hero" class="ca-opening-hero" aria-label="Chase Analytics Opening Dashboard">
   <div class="ca-hero-brand">
     <div class="ca-hero-logo-wrap">
-      <img class="ca-hero-logo" src="assets/chase-logo-horizontal.png" alt="Chase Analytics"
-        onerror="this.style.display='none';var f=this.parentElement.querySelector('.ca-hero-logo-fallback');if(f)f.style.display='block';">
+      <img class="ca-hero-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics"
+        onerror="this.onerror=null;this.src='assets/chase-logo-horizontal.png';">
       <div class="ca-hero-logo-fallback" aria-hidden="true">CHASE <span>ANALYTICS</span></div>
     </div>
     <div class="ca-hero-copy">
       <div class="ca-kicker">Opening Dashboard</div>
-      <h1>MLB Intelligence Platform</h1>
+      <h1>MLB <span class="ca-hero-gradient">Intelligence</span> Platform</h1>
       <p>Market map, matchup intelligence, and research tools for MLB offensive and pitching edges.</p>
     </div>
   </div>
@@ -1774,21 +1774,32 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 <section class="platform-section" id="section-opening-market-map">
   <header class="matchups-section-head">
-    <div class="platform-eyebrow">Market Map</div>
-    <h2 class="platform-title">RCV vs Process-Production Gap</h2>
-    <p class="platform-subtitle">Team logos on the quadrant — undervalued offenses vs cooling production. Toggle split below.</p>
+    <div class="platform-eyebrow">Offensive Market</div>
+    <h2 class="platform-title">Market Intelligence Map</h2>
+    <p class="platform-subtitle">RCV Score vs xwOBA gap — identifies buy-low, elite, cooling, and weak offensive profiles</p>
   </header>
-  <div id="homeMarketQuadrant"></div>
-  <div id="homeMarketQuadrantTip" class="chart-tip mlbma-quad-tip"></div>
+  <div class="ca-market-map-card">
+    <div id="homeMarketQuadrant"></div>
+    <div id="homeMarketQuadrantTip" class="chart-tip mlbma-quad-tip"></div>
+  </div>
 </section>
 
 <section class="platform-section" id="section-opening-research-cards">
   <header class="matchups-section-head">
-    <div class="platform-eyebrow">Research Lab</div>
-    <h2 class="platform-title">Research Tools</h2>
+    <div class="platform-eyebrow">Research Tools</div>
+    <h2 class="platform-title">Deep-Dive Research</h2>
     <p class="platform-subtitle">Deep-dive tools — each card opens the matching Research Lab tab.</p>
   </header>
   <div class="rl-home-cards-grid" id="rlHomeCardsGrid"></div>
+</section>
+
+<section class="platform-section" id="section-opening-trend-insights">
+  <header class="matchups-section-head">
+    <div class="platform-eyebrow">Trend Signals</div>
+    <h2 class="platform-title">Offensive Movement</h2>
+    <p class="platform-subtitle">Biggest risers, fallers, L7 spikes, and stable profiles across the league.</p>
+  </header>
+  <div id="homeTrendSummaryMount" class="rl-split-summary-grid ca-trend-insight-grid"></div>
 </section>
 
 </main><!-- /opening-dashboard -->
@@ -5363,6 +5374,10 @@ function renderHomePage() {
       renderMarketMapCharts();
     }
   }, 'home market map');
+  whenLiveDataReady(function() {
+    if (window.ResearchLab && ResearchLab.renderTrendSummary) ResearchLab.renderTrendSummary();
+    else if (typeof renderTrendSummary === 'function') renderTrendSummary();
+  }, 'home trend insights');
   if (typeof scheduleMarketMapRender === 'function') scheduleMarketMapRender();
 }
 
@@ -5370,17 +5385,17 @@ function renderHomeResearchCards() {
   var root = document.getElementById('rlHomeCardsGrid');
   if (!root) return;
   var cards = [
-    { tab: 'trends', icon: '📈', title: 'Trends', uses: ['Identifying hot/cold offenses', 'Finding sustained risers vs noisy L7 spikes', 'Validating before betting totals'] },
-    { tab: 'splits', icon: '⚾', title: 'Splits', uses: ['Platoon edges', 'Home/away advantages', 'F5 vs full game context', 'Player prop research'] },
-    { tab: 'compare', icon: '⚖️', title: 'Compare', uses: ['Lineup vs Lineup, Lineup vs Pitcher, Pitcher vs Pitcher', 'Bullpen vs Bullpen, Bullpen vs Lineup', 'Fantasy lineup decisions, over/under edges, run line value'] },
-    { tab: 'pitching', icon: '🎯', title: 'Pitcher Lab', uses: ['Validating ERA vs competition faced', 'Finding vulnerable starters for over bets', 'Pitcher prop research, SP vs bullpen F5 decisions'] }
+    { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends →' },
+    { tab: 'splits', title: 'Splits', uses: ['Platoon edges by pitcher handedness', 'Home/away advantages and F5 context', 'Player prop and lineup research angles'], cta: 'Open Splits →' },
+    { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare →' },
+    { tab: 'pitching', title: 'Pitcher Lab', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Lab →' }
   ];
   root.innerHTML = cards.map(function(c) {
     return '<button type="button" class="rl-home-card" data-rl-tab="' + c.tab + '">'
-      + '<span class="rl-home-card-icon" aria-hidden="true">' + c.icon + '</span>'
+      + '<span class="rl-home-card-icon" aria-hidden="true"></span>'
       + '<strong class="rl-home-card-title">' + c.title + '</strong>'
       + '<ul class="rl-home-card-uses">' + c.uses.map(function(u) { return '<li>' + u + '</li>'; }).join('') + '</ul>'
-      + '<span class="rl-home-card-cta">Open in Research Lab →</span></button>';
+      + '<span class="rl-home-card-cta">' + c.cta + '</span></button>';
   }).join('');
   root.querySelectorAll('[data-rl-tab]').forEach(function(btn) {
     btn.addEventListener('click', function() {

@@ -5,22 +5,34 @@ body.opening-dashboard .freshness-bar {
   display: none !important;
 }
 
-/* Premium Opening hero */
+/* Premium Opening hero — command center */
 .ca-opening-hero {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-  gap: 28px;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  padding: 28px 32px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  justify-content: space-between;
+  gap: 32px;
+  padding: 40px 48px;
+  margin: 16px 0 48px;
+  border-radius: 20px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
   background:
-    radial-gradient(circle at 8% 18%, rgba(124, 58, 237, 0.24), transparent 32%),
-    linear-gradient(135deg, #080910 0%, #111322 52%, #07070b 100%);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+    radial-gradient(ellipse at 30% 50%, rgba(124, 58, 237, 0.2), transparent 60%),
+    linear-gradient(135deg, #0d0d1a 0%, #12082a 40%, #0a0a14 100%);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  margin-bottom: 28px;
+}
+
+.ca-opening-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.015) 40px, rgba(255, 255, 255, 0.015) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 41px);
+  opacity: 0.5;
 }
 
 .ca-opening-hero::after {
@@ -28,31 +40,29 @@ body.opening-dashboard .freshness-bar {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.15;
+  background-image: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.05;
 }
 
 .ca-hero-brand,
-.ca-hero-slate,
-.ca-hero-actions {
+.ca-hero-slate {
   position: relative;
   z-index: 1;
 }
 
 .ca-hero-logo-wrap {
   display: inline-block;
+  margin-bottom: 12px;
 }
 
 .ca-hero-logo {
-  height: 72px;
+  height: 48px;
   width: auto;
-  max-width: min(420px, 100%);
-  min-width: 200px;
+  max-width: min(360px, 100%);
   object-fit: contain;
   display: block;
+  filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.6));
 }
 
 .ca-hero-logo-fallback {
@@ -68,48 +78,60 @@ body.opening-dashboard .freshness-bar {
 }
 
 .ca-kicker {
-  margin-top: 14px;
-  color: #a78bfa;
+  margin: 0 0 8px;
+  color: #A78BFA;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: 12px;
-  font-weight: 800;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .ca-hero-copy h1 {
-  margin: 8px 0 8px;
-  font-size: clamp(28px, 3vw, 40px);
-  line-height: 1.05;
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  font-size: clamp(32px, 4vw, 42px);
+  line-height: 1.08;
+  font-weight: 800;
+  color: #F9FAFB;
+  letter-spacing: -0.03em;
+}
+
+.ca-hero-gradient {
+  background: linear-gradient(90deg, #7C3AED, #A78BFA);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .ca-hero-copy p {
-  max-width: 620px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
-  line-height: 1.45;
+  max-width: 480px;
+  color: #9CA3AF;
+  font-size: 14px;
+  line-height: 1.55;
   margin: 0;
+  font-weight: 400;
 }
 
 .ca-hero-slate {
-  justify-self: end;
-  text-align: right;
+  flex: 0 1 320px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .ca-slate-date {
-  font-size: clamp(20px, 2.2vw, 26px);
-  font-weight: 900;
-  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  color: #F9FAFB;
   margin-bottom: 14px;
   letter-spacing: -0.02em;
 }
 
 .ca-slate-chips {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
 }
 
@@ -117,28 +139,50 @@ body.opening-dashboard .freshness-bar {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 38px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.78);
-  font-weight: 700;
-  font-size: 13px;
+  min-height: auto;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9CA3AF;
+  font-weight: 600;
+  font-size: 12px;
 }
 
-.ca-chip-purple {
-  background: rgba(124, 58, 237, 0.18);
-  border-color: rgba(124, 58, 237, 0.38);
-  color: #fff;
+.ca-chip-purple,
+#openingHeroSlate {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #22C55E;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+#openingHeroSynced {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #6B7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ca-chip-live {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #22C55E;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .ca-chip-live .ca-dot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #22c55e;
-  box-shadow: 0 0 14px rgba(34, 197, 94, 0.7);
+  background: #22C55E;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
 }
 
 .ca-chip-warn .ca-dot {
@@ -280,8 +324,10 @@ body.opening-dashboard .freshness-bar {
   max-width: 520px;
 }
 
-.layer-main { margin-bottom: 0; max-width: 1200px; margin-left: auto; margin-right: auto; }
-body.opening-dashboard #metricLegendGlobal { margin-bottom: 12px; }
+.layer-main { margin-bottom: 0; max-width: 1400px; margin-left: auto; margin-right: auto; padding: 0 24px; }
+body.opening-dashboard #metricLegendGlobal,
+body.opening-dashboard .ca-metric-legend,
+body.opening-dashboard .rl-metric-legend--global { display: none !important; }
 html.view-opening #section-research-lab,
 body.view-opening #section-research-lab { display: none !important; }
 html.view-opening #section-matchups-hero,
@@ -682,3 +728,155 @@ body.view-research .ca-page-identity { display: none; }
 .mlbma-radar-legend-item { display: inline-flex; align-items: center; gap: 6px; }
 .mlbma-radar-legend-item i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 .mc-radar-mount { min-height: 300px; }
+
+/* Platform sections — opening dashboard rhythm */
+.platform-section {
+  margin-bottom: 48px;
+  scroll-margin-top: 76px;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.platform-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #A78BFA;
+  margin-bottom: 8px;
+}
+
+.platform-title {
+  font-size: clamp(22px, 2.5vw, 28px);
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+  color: #F9FAFB;
+}
+
+.platform-subtitle {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin: 0 0 24px;
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+/* Market Intelligence Map framing */
+#section-opening-market-map .ca-market-map-card {
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.mlbma-quad-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mlbma-quad-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+}
+
+.mlbma-quad-leg-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.mlbma-quad-leg-item i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.mlbma-quad-chart-wrap {
+  position: relative;
+  min-height: 420px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mlbma-market-quad .mlbma-quad-dot {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+  cursor: pointer;
+}
+
+.mlbma-split-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mlbma-split-toggle-row .ca-pill-control {
+  margin-left: auto;
+}
+
+/* Trend insight cards — home page */
+#section-opening-trend-insights {
+  margin-bottom: 48px;
+}
+
+.ca-trend-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .ca-trend-insight-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .ca-trend-insight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-section {
+    padding: 20px 16px;
+  }
+
+  .ca-opening-hero {
+    padding: 28px 20px;
+    margin: 8px 0 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ca-opening-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ca-hero-slate {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}
+

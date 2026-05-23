@@ -1,10 +1,12 @@
-/* Chase Analytics navigation (v0 component) */
+/* Chase Analytics navigation — premium terminal */
 .chase-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #0F0F13;
-  border-bottom: 1px solid #27272A;
+  background: rgba(5, 5, 9, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .chase-nav {
@@ -13,19 +15,16 @@
   justify-content: space-between;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
-  height: 56px;
+  padding: 0 24px;
+  height: 60px;
+  gap: 16px;
 }
 
 .chase-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   text-decoration: none;
-  color: #E5E5E5;
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: -0.025em;
+  color: #F9FAFB;
   flex-shrink: 0;
 }
 
@@ -33,73 +32,64 @@
 
 .chase-brand-logo,
 .ca-logo-nav,
+.chase-nav-logo,
 .chase-nav-logo--dark {
-  height: 32px;
+  height: 36px;
   max-height: 36px;
   width: auto;
-  max-width: 200px;
+  max-width: 240px;
   object-fit: contain;
   display: block;
+  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.5));
 }
 
 .chase-nav-logo--compact {
-  width: 28px;
-  height: 28px;
-  max-width: 28px;
-  max-height: 28px;
-  object-fit: contain;
+  width: 32px;
+  height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.4));
 }
 
-.chase-logo-fallback {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.chase-logo-icon {
-  width: 28px;
-  height: 28px;
-  background: #7C3AED;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.chase-nav-logo-fallback {
   font-weight: 700;
-  font-size: 14px;
-  color: #fff;
+  font-size: 15px;
+  color: #F9FAFB;
+  letter-spacing: -0.02em;
 }
 
 .chase-nav-links {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
 }
 
 .chase-nav-link {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
   font-weight: 500;
-  color: #71717A;
+  color: #9CA3AF;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: color 150ms ease, background 150ms ease;
   cursor: pointer;
   background: transparent;
   border: none;
-  font-family: inherit;
 }
 
 .chase-nav-link:hover {
-  color: #E5E5E5;
-  background: #18181B;
+  color: #F9FAFB;
 }
 
 .chase-nav-link.active {
-  color: #E5E5E5;
-  background: #18181B;
+  color: #F9FAFB;
+  background: rgba(124, 58, 237, 0.2);
 }
 
 .chase-nav-link svg {
@@ -116,18 +106,18 @@
 
 .chase-dropdown-menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   left: 0;
-  min-width: 200px;
-  background: #18181B;
-  border: 1px solid #27272A;
-  border-radius: 8px;
-  padding: 0.375rem;
+  min-width: 220px;
+  background: rgba(10, 10, 16, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
-  transition: all 0.15s ease;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  transition: all 150ms ease;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   z-index: 1001;
 }
 
@@ -141,54 +131,59 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #E5E5E5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #F9FAFB;
   text-decoration: none;
-  transition: background 0.1s ease;
+  transition: background 150ms ease;
 }
 
 .chase-dropdown-item:hover {
-  background: rgba(124, 58, 237, 0.1);
+  background: rgba(124, 58, 237, 0.12);
 }
 
 .chase-dropdown-item.disabled {
-  color: #71717A;
+  color: #6B7280;
   pointer-events: none;
 }
 
 .chase-dropdown-badge {
-  font-size: 0.625rem;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.125rem 0.375rem;
-  border-radius: 4px;
-  background: #27272A;
-  color: #71717A;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #6B7280;
 }
 
 .chase-dropdown-divider {
   height: 1px;
-  background: #27272A;
-  margin: 0.375rem 0;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 6px 0;
 }
 
 .chase-status {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 12px;
   flex-shrink: 0;
 }
 
 .chase-timestamp {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: #71717A;
-  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  font-family: 'DM Sans', ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9CA3AF;
 }
 
 .chase-pipeline-dot {
@@ -196,18 +191,19 @@
   height: 8px;
   border-radius: 50%;
   background: #22C55E;
-  box-shadow: 0 0 8px #22C55E;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  flex-shrink: 0;
   animation: chase-pulse 2s ease-in-out infinite;
 }
 
 .chase-pipeline-dot.stale {
-  background: #EAB308;
-  box-shadow: 0 0 8px #EAB308;
+  background: #F59E0B;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
 }
 
 @keyframes chase-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.55; }
 }
 
 .chase-hamburger {
@@ -220,18 +216,18 @@
   padding: 8px;
   background: transparent;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 150ms ease;
 }
 
-.chase-hamburger:hover { background: #18181B; }
+.chase-hamburger:hover { background: rgba(255, 255, 255, 0.06); }
 
 .chase-hamburger span {
   display: block;
   width: 100%;
   height: 2px;
-  background: #E5E5E5;
+  background: #F9FAFB;
   border-radius: 1px;
   transition: all 0.2s ease;
 }
@@ -250,7 +246,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   z-index: 998;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -263,10 +259,10 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 280px;
+  width: 300px;
   height: 100vh;
-  background: #18181B;
-  border-left: 1px solid #27272A;
+  background: #0a0a10;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 999;
   transform: translateX(100%);
   transition: transform 0.25s ease;
@@ -279,8 +275,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #27272A;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .chase-mobile-close {
@@ -291,69 +287,64 @@
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 6px;
-  color: #71717A;
+  border-radius: 8px;
+  color: #6B7280;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 150ms ease;
 }
 
 .chase-mobile-close:hover {
-  background: #27272A;
-  color: #E5E5E5;
+  background: rgba(255, 255, 255, 0.06);
+  color: #F9FAFB;
 }
 
 .chase-mobile-brand {
-  display: flex;
-  justify-content: center;
-  padding: 12px 1rem 4px;
-}
-
-.chase-mobile-brand-icon {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  display: block;
+  display: none !important;
 }
 
 .chase-mobile-nav {
-  padding: 8px 12px 16px;
+  padding: 12px 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .chase-mobile-link {
   display: block;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
   font-size: 15px;
-  line-height: 1.35;
   font-weight: 500;
-  color: #E5E5E5;
+  color: #F9FAFB;
   text-decoration: none;
-  transition: background 0.1s ease;
+  transition: background 150ms ease;
 }
 
-.chase-mobile-link:hover { background: rgba(124, 58, 237, 0.1); }
+.chase-mobile-link:hover { background: rgba(124, 58, 237, 0.12); }
 
 .chase-mobile-link.active {
-  background: rgba(124, 58, 237, 0.15);
-  color: #7C3AED;
+  background: rgba(124, 58, 237, 0.2);
+  color: #A78BFA;
 }
 
 .chase-mobile-section {
-  padding: 0 12px;
+  padding: 12px 12px 4px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #71717A;
+  color: #6B7280;
 }
 
 .chase-mobile-status {
-  padding: 1rem;
-  border-top: 1px solid #27272A;
-  margin-top: 1rem;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: auto;
+}
+
+.chase-mobile-status .chase-timestamp {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (min-width: 769px) {
@@ -383,5 +374,9 @@
 
   .chase-mobile-menu {
     display: block;
+  }
+
+  .chase-nav {
+    padding: 0 16px;
   }
 }
