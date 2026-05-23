@@ -265,7 +265,8 @@ function filterGlossary() {
   });
 }
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
 });
 </script>
   <script src="chase_nav.js"></script>
