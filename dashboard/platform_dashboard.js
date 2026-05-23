@@ -286,6 +286,7 @@
   }
 
   function renderOpeningHero() {
+    if (!document.getElementById('opening-dashboard')) return;
     var dateEl = document.getElementById('openingHeroDate');
     var slateEl = document.getElementById('openingHeroSlate');
     if (dateEl) dateEl.textContent = formatOpeningHeroDate(new Date());
@@ -550,6 +551,7 @@
   }
 
   function renderDashboard() {
+    if (!document.getElementById('matchupsHeroGrid')) return;
     if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
       MLBMACharts.renderOnLiveDataReady(renderSignalChips, 'signal chips');
     } else {

@@ -179,6 +179,36 @@
   setActivePage();
   window.addEventListener('hashchange', setActivePage);
 
+  function syncDashboardViewFromNav(hash) {
+    if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
+    if (hash && window.location.hash !== hash) {
+      window.location.hash = hash;
+    }
+    var sync = window.syncDashboardView;
+    if (typeof sync === 'function') sync();
+  }
+
+  function bindDashboardHashNav() {
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest('a[href*="chase_analytics_mlb_oem_v7.html"]');
+      if (!link || link.tagName !== 'A') return;
+      var href = link.getAttribute('href') || '';
+      var hashIdx = href.indexOf('#');
+      if (hashIdx < 0) return;
+      var hash = href.slice(hashIdx);
+      var pathPart = href.slice(0, hashIdx);
+      var targetPage = pathPart.split('/').pop() || 'chase_analytics_mlb_oem_v7.html';
+      if (targetPage !== 'chase_analytics_mlb_oem_v7.html') return;
+      if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
+      setTimeout(function () {
+        syncDashboardViewFromNav(hash);
+        setActivePage();
+      }, 0);
+    });
+  }
+
+  bindDashboardHashNav();
+
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');
     var mobile = document.getElementById('mobileLastUpdated');
