@@ -1584,13 +1584,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .window-data-banner.show { display: block; }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260522a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
-<link rel="stylesheet" href="chase_nav.css?v=20260523a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260523a">
-<link rel="stylesheet" href="research_lab.css?v=20260524a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260523">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260523">
+<link rel="stylesheet" href="chase_nav.css?v=20260523">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260523">
+<link rel="stylesheet" href="research_lab.css?v=20260523">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260524a"></script>
+<script src="mlbma_build.js?v=20260523"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
@@ -1610,17 +1610,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   html.view-research #opening-dashboard{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260524a"></script>
-<script src="mlbma_ui.js?v=20260524a" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260524a"></script>
-<script src="matchup_shared.js?v=20260524a"></script>
-<script src="mlbma_controls.js?v=20260524a"></script>
-<script src="mlbma_charts.js?v=20260524c"></script>
-<script src="profile_controls.js?v=20260524c"></script>
-<script src="platform_dashboard.js?v=20260524a"></script>
-<script src="research_lab.js?v=20260524c"></script>
-<script src="pitcher_lab.js?v=20260524c"></script>
-  <link rel="stylesheet" href="mlbma_design_system.css">
+<script src="mlbma_config.js?v=20260523"></script>
+<script src="mlbma_ui.js?v=20260523" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260523"></script>
+<script src="matchup_shared.js?v=20260523"></script>
+<script src="mlbma_controls.js?v=20260523"></script>
+<script src="mlbma_charts.js?v=20260523"></script>
+<script src="profile_controls.js?v=20260523"></script>
+<script src="platform_dashboard.js?v=20260523"></script>
+<script src="research_lab.js?v=20260523"></script>
+<script src="pitcher_lab.js?v=20260523"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -1888,7 +1887,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div class="filter-help-panel" id="filterHelpPanel">Try: <code>abq&gt;60</code>, <code>trend:rising</code></div>
 </div>
 <div id="windowDataBanner" class="window-data-banner"></div>
-<div class="glance-grid" id="glanceGrid"></div>
 </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
       <div>
@@ -1979,7 +1977,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
 
   <!-- Trends pane (legacy — content in splits-trends) -->
-  <div id="pane-trends" style="display:none;" aria-hidden="true"></div>
 
   <!-- Compare pane -->
   <div id="pane-compare" style="display:none;">
@@ -2051,10 +2048,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
 
   <!-- Matchup Builder pane (legacy hidden) -->
-  <div id="pane-matchup" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Daily Matchup Builder</div>
         <div class="section-title">Pick two lineups + opposing pitcher hand for offensive snapshot</div>
         <div class="section-subtitle">Auto-selects the correct platoon split per pitcher handedness · highlights matchup weaknesses</div>
       </div>
@@ -2089,10 +2082,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </div>
     <div id="rlPitcherLabRoot"></div>
   </div>
-  <div id="pane-signals" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Research Lab</div>
         <div class="section-title">Signal Explorer</div>
         <div class="section-subtitle">Convergence signal matrix and actionable profile groupings for today's slate.</div>
       </div>
@@ -2101,10 +2090,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div id="convergenceGrid" style="margin-top:20px;"></div>
     <div id="stratsSignals" style="margin-top:24px;"></div>
   </div>
-  <div id="pane-strat" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Strategic Signals</div>
         <div class="section-title">Teams grouped by actionable profile</div>
         <div class="section-subtitle">Elite confirmed · Buy-low · Cooling risk · Volatile power · Process-forward · Weak unsupported · Platoon sensitive</div>
       </div>
@@ -2113,10 +2098,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
 
   <!-- Reference: OOR / Pitching / PALS / Matchups -->
-  <div id="pane-reference" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Live Sheet Data</div>
         <div class="section-title">OOR · Pitching Score · PALS</div>
         <div class="section-subtitle">Pulled from the same Google Sheet as the main model</div>
       </div>
@@ -2194,43 +2175,6 @@ function fetchMatchups() {
     });
 }
 
-function fetchLiveData() {
-  console.log('[MLBMA] fetchLiveData start');
-  var tabs = ['vs_RHP', 'vs_LHP', 'OOR', 'Pitching_Score', 'PALS', 'Bullpen_Unit', 'Today_Matchups', 'Today_Lineups', 'Today_Games', 'Last_Updated'];
-  var fetches = tabs.map(function(tab) {
-    return fetch(sheetCsvUrl(tab)).then(function(r) { return r.text(); }).then(function(t) {
-      return { tab: tab, data: tab === 'Last_Updated' ? t : parseCSV(t) };
-    });
-  });
-  return Promise.all(fetches).then(function(results) {
-    results.forEach(function(r) {
-      if (r.tab === 'vs_RHP') LIVE_DATA.rhp = r.data;
-      if (r.tab === 'vs_LHP') LIVE_DATA.lhp = r.data;
-      if (r.tab === 'OOR') LIVE_DATA.oor = r.data;
-      if (r.tab === 'Pitching_Score') LIVE_DATA.pitching = r.data;
-      if (r.tab === 'PALS') LIVE_DATA.pals = parsePalsRows(r.data);
-      if (r.tab === 'Bullpen_Unit') LIVE_DATA.bullpenUnits = parseBullpenUnitRows(r.data);
-      if (r.tab === 'Today_Matchups') LIVE_DATA.matchups = parseMatchupRows(r.data);
-      if (r.tab === 'Today_Lineups') LIVE_DATA.lineups = parseLineupRows(r.data);
-      if (r.tab === 'Today_Games') LIVE_DATA.todayGames = parseTodayGamesRows(r.data);
-      if (r.tab === 'Last_Updated') {
-        LIVE_DATA.lastUpdated = parseLastUpdatedFromText(r.data);
-        if (LIVE_DATA.lastUpdated) {
-          syncFreshnessIndicator(LIVE_DATA.lastUpdated);
-          var el = document.getElementById('brandPill');
-          if (el) el.textContent = 'Live';
-        }
-      }
-    });
-    renderPALS();
-    /* scYtdR/scYtdL + display refresh handled by loadLiveData() → applyLiveData() */
-  }).catch(function(e) {
-    console.error('Live data fetch failed:', e);
-    var el = document.getElementById('brandPill');
-    if (el) el.textContent = 'Data load failed — using cached';
-  });
-}
-
 /** Ensure ppGap/dfGap/reg and related fields exist on a pre-scored live row */
 function prepLiveScoreRow(d) {
   var r = Object.assign({}, d);
@@ -2275,6 +2219,10 @@ function applyLiveData() {
     syncWindowScoresFromProfiles();
     enrichYtdMaster();
     registerMetricPools();
+
+    if (window.MLBMACharts && MLBMACharts.flushLiveDataReadyQueue) {
+      MLBMACharts.flushLiveDataReadyQueue();
+    }
 
     SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
     SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
@@ -2575,9 +2523,11 @@ function parseBullpenUnitRows(rows) {
   (rows || []).forEach(function(row) {
     var t = String(pickCol(row, ['team', 'Tm', 'Team'])).trim().toUpperCase();
     if (!t) return;
+    var osiAllowed = numOrNull(pickCol(row, ['overall_OSI_allowed']));
     map[t] = {
       t: t,
-      osiAllowed: numOrNull(pickCol(row, ['overall_OSI_allowed'])),
+      osiAllowed: osiAllowed,
+      bullpenScore: osiAllowed != null ? Math.max(0, Math.min(100, 100 - osiAllowed)) : null,
       abqAllowed: numOrNull(pickCol(row, ['overall_ABQ_allowed'])),
       rcvAllowed: numOrNull(pickCol(row, ['overall_RCV_allowed'])),
       obrAllowed: numOrNull(pickCol(row, ['overall_OBR_allowed'])),
@@ -2750,28 +2700,39 @@ function parsePalsRows(rows) {
   }).filter(Boolean);
 }
 
-function matchupCol(row, label) {
-  if (row[label] !== undefined && row[label] !== '') return row[label];
-  var norm = label.toLowerCase().replace(/[^a-z0-9]/g, '');
-  var keys = Object.keys(row);
-  for (var i = 0; i < keys.length; i++) {
-    if (keys[i].toLowerCase().replace(/[^a-z0-9]/g, '') === norm) return row[keys[i]];
+function matchupCol(row) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  for (var i = 0; i < args.length; i++) {
+    var label = args[i];
+    if (row[label] !== undefined && row[label] !== '') return row[label];
+    var norm = String(label).toLowerCase().replace(/[^a-z0-9]/g, '');
+    var keys = Object.keys(row);
+    for (var k = 0; k < keys.length; k++) {
+      if (keys[k].toLowerCase().replace(/[^a-z0-9]/g, '') === norm) return row[keys[k]];
+    }
   }
   return '';
 }
 
 function parseWeatherMap(rows) {
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.parseWeatherMap) {
+    return MLBMASharedMatchup.parseWeatherMap(rows);
+  }
   var map = {};
   (rows || []).forEach(function(row) {
-    var away = String(matchupCol(row, 'Away')).trim().toUpperCase();
-    var home = String(matchupCol(row, 'Home')).trim().toUpperCase();
+    var away = String(matchupCol(row, 'away_team', 'Away')).trim().toUpperCase();
+    var home = String(matchupCol(row, 'home_team', 'Home')).trim().toUpperCase();
     if (!away || !home) return;
-    var cond = String(matchupCol(row, 'Conditions') || matchupCol(row, 'Weather') || '').trim();
-    var stadium = String(matchupCol(row, 'Stadium', 'Venue', 'Ballpark')).trim();
-    var key = away + '@' + home;
-    if (cond || stadium) {
-      map[key] = { cond: cond, stadium: stadium };
-    }
+    var cond = String(matchupCol(row, 'conditions', 'Conditions', 'Weather') || '').trim();
+    var stadium = String(matchupCol(row, 'stadium_name', 'Stadium', 'Venue', 'Ballpark')).trim();
+    var temp = numOrNull(matchupCol(row, 'temperature_f', 'Temp', 'Temperature'));
+    var wind = numOrNull(matchupCol(row, 'wind_speed_mph', 'Wind'));
+    var windDir = String(matchupCol(row, 'wind_direction', 'Wind_Dir') || '').trim();
+    map[away + '@' + home] = {
+      cond: cond, conditions: cond, stadium: stadium,
+      temp: temp, wind: wind, windDir: windDir || null,
+      raw: cond || stadium || '—'
+    };
   });
   return map;
 }
@@ -2808,10 +2769,12 @@ function parseMatchupRows(rows) {
 
 function enrichMatchupCards() {
   (LIVE_DATA.matchups || []).forEach(function(m) {
-    if (m.stadium) return;
     var gk = m.away + '@' + m.home;
     var w = LIVE_DATA.weather && LIVE_DATA.weather[gk];
-    if (w && typeof w === 'object' && w.stadium) m.stadium = w.stadium;
+    if (w && typeof w === 'object') {
+      m.weather = w;
+      if (!m.stadium && w.stadium) m.stadium = w.stadium;
+    }
     (LIVE_DATA.todayGames || []).forEach(function(g) {
       if (g.away === m.away && g.home === m.home && g.stadium) m.stadium = g.stadium;
     });
@@ -3035,127 +2998,34 @@ function fmtMatchupStat(v, dec) {
   return v.toFixed(dec != null ? dec : 1);
 }
 
-function renderMatchups() {
-  var grid = document.getElementById('matchupsGrid');
-  if (!grid) return;
-
-  var games = LIVE_DATA.matchups || [];
-  if (!games.length) {
-    grid.innerHTML = '<div class="matchups-empty">No matchups loaded for today. Check the Today_Matchups tab in Google Sheets.</div>';
-    return;
-  }
-
-  grid.innerHTML = games.map(function(m) {
-    var fav = matchupFavoredSide(m);
-    var cardCls = 'matchup-card' + (fav === 'away' ? ' favored-away' : fav === 'home' ? ' favored-home' : '');
-    var awayTmCls = 'tm' + (fav === 'away' ? ' favored' : '');
-    var homeTmCls = 'tm' + (fav === 'home' ? ' favored' : '');
-
-    var awayHand = (m.awayHand === 'L' || m.awayHand === 'R') ? m.awayHand : '?';
-    var homeHand = (m.homeHand === 'L' || m.homeHand === 'R') ? m.homeHand : '?';
-    var awayHandCls = 'hand-pill hand-' + awayHand.toLowerCase();
-    var homeHandCls = 'hand-pill hand-' + homeHand.toLowerCase();
-
-    var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
-    var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
-    var total = awayOSI + homeOSI || 1;
-    var awayPct = Math.max(4, (awayOSI / total) * 100);
-    var homePct = Math.max(4, (homeOSI / total) * 100);
-
-    var awaySegCls = 'matchup-osi-seg seg-away' + (fav === 'away' ? ' favored' : '');
-    var homeSegCls = 'matchup-osi-seg seg-home' + (fav === 'home' ? ' favored' : '');
-
-    var edgeHtml = m.lineupEdge
-      ? '<div class="matchup-edge">Lineup edge: ' + m.lineupEdge + '</div>'
-      : '';
-
-    var gkPlat = matchupGameKey(m);
-    var luPlat = LIVE_DATA.lineups || [];
-    var awayLuPlat = lineupRowsForTeam(luPlat, gkPlat, m.away, 'AWAY');
-    var homeLuPlat = lineupRowsForTeam(luPlat, gkPlat, m.home, 'HOME');
-    var awayPlatPct = computePlatoonPct(awayLuPlat, homeHand);
-    var homePlatPct = computePlatoonPct(homeLuPlat, awayHand);
-    function platoonPctSpan(pct) {
-      if (pct === null || pct === undefined || isNaN(pct)) {
-        return '<span style="color:var(--text-3);font-weight:600">—</span>';
-      }
-      var v = Math.round(pct);
-      return '<span style="color:' + platoonScoreColor(pct) + ';font-weight:600">' + v + '%</span>';
-    }
-    var platoonRowHtml = '<div class="matchup-platoon-row">'
-      + 'Away platoon vs ' + spHandLabel(homeHand) + ': ' + platoonPctSpan(awayPlatPct)
-      + '<span class="matchup-platoon-sep">|</span>'
-      + 'Home platoon vs ' + spHandLabel(awayHand) + ': ' + platoonPctSpan(homePlatPct)
-      + '</div>';
-
-    return '<article class="' + cardCls + '">'
-      + '<div class="matchup-time">' + (m.time || 'TBD') + '</div>'
-      + '<div class="matchup-headline">'
-      + '<span class="' + awayTmCls + '">' + m.away + '</span>'
-      + '<span class="at">@</span>'
-      + '<span class="' + homeTmCls + '">' + m.home + '</span>'
-      + '</div>'
-      + '<div class="matchup-sp-block">'
-      + '<div class="matchup-sp-row">'
-      + '<span class="matchup-sp-label">Away</span>'
-      + '<span class="matchup-sp-name">' + (m.awaySP || 'TBD') + '</span>'
-      + '<span class="' + awayHandCls + '">' + awayHand + '</span>'
-      + '</div>'
-      + '<div class="matchup-sp-stats">'
-      + '<span><strong>K%</strong>' + fmtMatchupStat(m.awayK * 100, 1) + '</span>'
-      + '<span><strong>BB%</strong>' + fmtMatchupStat(m.awayBB * 100, 1) + '</span>'
-      + '<span><strong>FIP</strong>' + fmtMatchupStat(m.awayFIP, 2) + '</span>'
-      + '</div>'
-      + '</div>'
-      + '<div class="matchup-sp-block">'
-      + '<div class="matchup-sp-row">'
-      + '<span class="matchup-sp-label">Home</span>'
-      + '<span class="matchup-sp-name">' + (m.homeSP || 'TBD') + '</span>'
-      + '<span class="' + homeHandCls + '">' + homeHand + '</span>'
-      + '</div>'
-      + '<div class="matchup-sp-stats">'
-      + '<span><strong>K%</strong>' + fmtMatchupStat(m.homeK * 100, 1) + '</span>'
-      + '<span><strong>BB%</strong>' + fmtMatchupStat(m.homeBB * 100, 1) + '</span>'
-      + '<span><strong>FIP</strong>' + fmtMatchupStat(m.homeFIP, 2) + '</span>'
-      + '</div>'
-      + '</div>'
-      + '<div class="matchup-osi-label">Lineup OSI vs opposing starter handedness</div>'
-      + '<div class="matchup-osi-compare">'
-      + '<span class="matchup-osi-team">' + m.away + '</span>'
-      + '<span class="matchup-osi-val" style="color:' + osiGradeColor(m.awayOSI) + '">' + fmtMatchupStat(m.awayOSI) + '</span>'
-      + '<div class="matchup-osi-bar-wrap">'
-      + '<div class="' + awaySegCls + '" style="width:' + awayPct + '%"></div>'
-      + '<div class="' + homeSegCls + '" style="width:' + homePct + '%"></div>'
-      + '</div>'
-      + '<span class="matchup-osi-val tr" style="color:' + osiGradeColor(m.homeOSI) + '">' + fmtMatchupStat(m.homeOSI) + '</span>'
-      + '<span class="matchup-osi-team tr">' + m.home + '</span>'
-      + '</div>'
-      + platoonRowHtml
-      + edgeHtml
-      + '<div class="bullpen-indicator-bar">'
-      + buildBullpenIndicatorBar(m.away, m.home, homeOSI)
-      + buildBullpenIndicatorBar(m.home, m.away, awayOSI)
-      + '</div>'
-      + buildMatchupLineupBlock(m)
-      + '</article>';
-  }).join('');
-}
-
 function parseOorRows(rows) {
   return rows.map(function(row) {
     var t = pickCol(row, ['Tm', 'tm']).toUpperCase();
     if (!t) return null;
+    var hvR = numOrNull(pickCol(row, ['HvR', 'hvR', 'HVR']));
+    var hvL = numOrNull(pickCol(row, ['HvL', 'hvL', 'HVL']));
+    var hvP = numOrNull(pickCol(row, ['HvP', 'hvP', 'HVP']));
+    var oor = numOrNull(pickCol(row, ['OOR', 'oor']));
+    if (oor == null && hvR != null && hvL != null) oor = hvR * 0.55 + hvL * 0.45;
     return {
       t: t,
-      hvP: numOrNull(pickCol(row, ['HvP', 'hvP', 'HVP'])),
-      hvL: numOrNull(pickCol(row, ['HvL', 'hvL', 'HVL'])),
-      hvR: numOrNull(pickCol(row, ['HvR', 'hvR', 'HVR'])),
+      hvP: hvP,
+      hvL: hvL,
+      hvR: hvR,
+      oor: oor,
       vPpct: pickCol(row, ['vP_pct', 'vP_pct', 'VP_pct']),
       vPRank: parseInt(pickCol(row, ['vP_Rank', 'vP_Rank']), 10) || null,
       vLRank: parseInt(pickCol(row, ['vL_Rank', 'vL_Rank']), 10) || null,
       vRRank: parseInt(pickCol(row, ['vR_Rank', 'vR_Rank']), 10) || null
     };
   }).filter(Boolean);
+}
+
+function enrichSpProfilesFromLive() {
+  var S = window.MLBMASharedMatchup;
+  if (!S || !S.enrichSpProfiles || !LIVE_DATA.spProfiles) return;
+  var oorMap = S.buildOorByTeam ? S.buildOorByTeam(LIVE_DATA.oor || []) : {};
+  S.enrichSpProfiles(LIVE_DATA.spProfiles, oorMap);
 }
 
 function parseLastUpdatedFromText(text) {
@@ -3214,22 +3084,35 @@ function parseRegistrySheet(rows) {
 var _researchBundleLoaded = false;
 var _researchLabInitialized = false;
 
+function fetchTabSafe(tabName, fallback) {
+  if (tabName === TABS.last_updated || tabName === 'Last_Updated') {
+    return fetchSheetText(tabName).catch(function(e) {
+      console.error('[FETCH ERROR]', tabName + ':', e && e.message ? e.message : e);
+      return '';
+    });
+  }
+  return fetchSheetTab(tabName).catch(function(e) {
+    console.error('[FETCH ERROR]', tabName + ':', e && e.message ? e.message : e);
+    return fallback !== undefined ? fallback : [];
+  });
+}
+
 function loadLandingData() {
   console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading today\'s matchups…';
   return Promise.all([
-    fetchSheetTab(TABS.today_matchups),
-    fetchSheetTab(TABS.today_lineups),
-    fetchSheetTab(TABS.weather),
-    fetchSheetTab(TABS.pitching_score),
-    fetchSheetTab(TABS.bullpen_unit),
-    fetchSheetTab(TABS.player_registry),
-    fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
-    fetchSheetTab(TABS.vs_rhp),
-    fetchSheetTab(TABS.vs_lhp),
-    fetchSheetText(TABS.last_updated),
-    fetchSheetTab(TABS.sp_profiles).catch(function() { return []; })
+    fetchTabSafe(TABS.today_matchups),
+    fetchTabSafe(TABS.today_lineups),
+    fetchTabSafe(TABS.weather),
+    fetchTabSafe(TABS.pitching_score),
+    fetchTabSafe(TABS.bullpen_unit),
+    fetchTabSafe(TABS.player_registry),
+    fetchTabSafe(TABS.signals_today, []),
+    fetchTabSafe(TABS.vs_rhp),
+    fetchTabSafe(TABS.vs_lhp),
+    fetchTabSafe(TABS.last_updated, ''),
+    fetchTabSafe(TABS.sp_profiles, [])
   ]).then(function(results) {
     var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
@@ -3256,6 +3139,7 @@ function loadLandingData() {
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.spProfiles = spProfileRows || [];
+    enrichSpProfilesFromLive();
     console.log('[FETCH] SP_Profiles loaded:', LIVE_DATA.spProfiles.length);
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
@@ -3280,6 +3164,7 @@ function loadResearchData() {
     LIVE_DATA.signalsConvergence = results[2] || [];
     LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(results[3]);
     LIVE_DATA.todayGames = parseTodayGamesRows(results[4]);
+    enrichSpProfilesFromLive();
     syncWindowScoresFromProfiles();
     attachPalsToScores();
     _researchBundleLoaded = true;
@@ -4255,48 +4140,6 @@ function metricDecision(key, d) {
   return '';
 }
 
-function renderDailySummary() {
-  var el = document.getElementById('dailySummaryGrid');
-  if (!el) return;
-  var rows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B.slice() : [];
-  if (!rows.length) {
-    el.innerHTML = '<div class="daily-summary-card"><div class="ds-body">Loading summary…</div></div>';
-    return;
-  }
-  function top(sortFn, filterFn) {
-    var pool = rows.filter(filterFn || function() { return true; }).sort(sortFn);
-    return pool[0];
-  }
-  var buyLow = top(function(a, b) { return b.ppGap - a.ppGap; }, function(d) { return d.ppGap > 4; });
-  var fade = top(function(a, b) { return a.ppGap - b.ppGap; }, function(d) { return d.ppGap < -4 || d.trend === 'Cooling'; });
-  var power = top(function(a, b) { return b.dfGap - a.dfGap; }, function(d) { return d.dfGap > 8; });
-  var elite = top(function(a, b) { return b.osi - a.osi; }, function(d) { return d.osi >= 75; });
-  var nMatch = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? LIVE_DATA.matchups.length : 0;
-  function cardHtml(eyebrow, d, fallbackTitle, fallbackBody) {
-    if (!d) {
-      return '<div class="daily-summary-card"><div class="ds-eyebrow">' + eyebrow + '</div><div class="ds-title">' + fallbackTitle + '</div><div class="ds-body">' + fallbackBody + '</div></div>';
-    }
-    var uid = 'ds_' + d.t + '_' + eyebrow.replace(/\W+/g, '').slice(0, 8);
-    var sum = getSummaryLabel(d.osi, d.ppGap, d.abq, d.rcv, d.obr, d);
-    var color = summaryLabelColor(sum.label);
-    return '<div class="daily-summary-card">' +
-      '<div class="ds-eyebrow">' + eyebrow + '</div>' +
-      '<div class="ds-title">' + d.t + '</div>' +
-      '<div class="read-headline" style="color:' + color + ';margin:6px 0 4px;">' + sum.label + '</div>' +
-      '<div class="read-interp">' + summaryInterpretation(d) + '</div>' +
-      confidenceRiskHtml(d) +
-      '<button type="button" class="metrics-toggle" onclick="toggleMetricsPanel(\'' + uid + '\', this)">Show metrics ▾</button>' +
-      '<div class="metrics-panel" id="' + uid + '">' + metricsPanelRows(d) + '</div></div>';
-  }
-  el.innerHTML = [
-    cardHtml('Top edge', buyLow, '—', 'No buy-low standouts.'),
-    cardHtml('Fade watch', fade, '—', 'No major fade flags.'),
-    cardHtml('Power skew', power, '—', 'No power-skew standouts.'),
-    cardHtml('Elite anchor', elite, '—', 'No elite anchors flagged.'),
-    '<div class="daily-summary-card"><div class="ds-eyebrow">Slate</div><div class="ds-title">' + nMatch + ' games</div><div class="ds-body">' + (nMatch ? 'Matchup cards below use lineup OSI vs SP hand.' : 'Matchups load after sheet sync.') + '</div></div>'
-  ].join('');
-}
-
 function stratConfidence(n) {
   if (n >= 6) return { label: 'High', cls: 'conf-high' };
   if (n >= 3) return { label: 'Med', cls: 'conf-med' };
@@ -4540,33 +4383,6 @@ function toggleAdvancedMetrics(){
   renderMasterTable();
 }
 
-function renderGlanceCards(){
-  var rows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B.slice() : currentRows().slice();
-  var grid = document.getElementById('glanceGrid');
-  if (!grid) return;
-  if(!rows.length){ grid.innerHTML = ''; return; }
-  function pick(sortFn, filterFn, eyebrow, accent){
-    var pool = rows.filter(filterFn).sort(sortFn);
-    var d = pool[0] || rows.sort(sortFn)[0];
-    var ti = tier(d.osi);
-    return '<div class="glance-card '+accent+'">'+
-      '<div class="glance-eyebrow">'+eyebrow+'</div>'+
-      '<div class="glance-team">'+d.t+'</div>'+
-      '<div class="glance-status">'+statusLabel(d)+'</div>'+
-      '<span class="glance-tier" style="background:'+ti.bg+';color:'+ti.c+';">'+ti.l+'</span> '+
-      '<span class="glance-trend" style="color:'+trendCol(d.trend)+';">'+trendArrow(d)+'</span>'+
-      '<div class="glance-copy">'+oneLineTakeaway(d)+'</div></div>';
-  }
-  var html = '';
-  html += pick(function(a,b){return b.osi-a.osi;}, function(){return true;}, 'Strongest Offense', 'gc-green');
-  html += pick(function(a,b){return b.ppGap-a.ppGap;}, function(d){
-    return d.ppGap > 3 && d.pals != null && Math.abs(d.osi - d.pals) < 4;
-  }, 'Most Undervalued', 'gc-blue');
-  html += pick(function(a,b){return a.ppGap-b.ppGap;}, function(d){return d.ppGap < -3;}, 'Highest Regression Risk', 'gc-gold');
-  html += pick(function(a,b){return a.osi-b.osi;}, function(){return true;}, 'Weakest Offense', 'gc-red');
-  grid.innerHTML = html;
-}
-
 function renderMetricCards(){
   var rows = currentRows();
   var defs = [
@@ -4604,43 +4420,6 @@ function renderMetricCards(){
   });
   var rowEl = document.getElementById('metricRow');
   if (rowEl) rowEl.innerHTML = html;
-}
-
-function renderExecSummary(){
-  var rows = currentRows();
-  function vals(k){
-    return rows.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);}).sort(function(a,b){return a-b;});
-  }
-  function mean(k){ var v=vals(k); return v.reduce(function(a,b){return a+b;},0)/Math.max(1,v.length); }
-  function min(k){ var v=vals(k); return v.length?v[0]:0; }
-  function max(k){ var v=vals(k); return v.length?v[v.length-1]:0; }
-  function count(fn){ return rows.filter(fn).length; }
-
-  var items = [
-    {l:'League Avg OSI', v:mean('osi').toFixed(1), s:'Composite offensive level', c:'var(--purple)'},
-    {l:'OSI Spread', v:(max('osi')-min('osi')).toFixed(1), s:'Separation from low to high', c:'var(--purple-2)'},
-    {l:'Avg ABQ', v:mean('abq').toFixed(1), s:'Process-quality baseline', c:'var(--blue)'},
-    {l:'Avg RCV', v:mean('rcv').toFixed(1), s:'Damage-production baseline', c:'var(--green)'},
-    {l:'Positive Regression', v:count(function(d){return d.reg!==null && d.reg>0.010;}).toString(), s:'Teams with expected quality above results', c:'var(--blue-l)'},
-    {l:'High Volatility', v:count(function(d){return d.dfGap!==undefined && d.dfGap>8;}).toString(), s:'Teams with damage above floor', c:'var(--orange)'},
-    {l:'Process Ahead', v:count(function(d){return d.ppGap!==undefined && d.ppGap>4;}).toString(), s:'Teams where ABQ exceeds RCV', c:'var(--cyan, #22d3ee)'},
-    {l:'Stable Signals', v:count(function(d){return d.sus!==undefined && d.sus>=70;}).toString(), s:'Profiles with stronger support', c:'var(--green)'}
-  ];
-
-  var html = '';
-  items.forEach(function(e){
-    html += '<div class="exec-cell">'+
-      '<div class="ec-label" style="color:'+e.c+';">'+e.l+'</div>'+
-      '<div class="ec-team" style="color:'+e.c+';">'+e.v+'</div>'+
-      '<div class="ec-stat">'+e.s+'</div>'+
-    '</div>';
-  });
-  var execGrid = document.getElementById('execGrid');
-  if (execGrid) execGrid.innerHTML = html;
-
-  var label = STATE.split==='b'?'Both pitching':(STATE.split==='r'?'vs RHP':'vs LHP');
-  var execTitle = document.getElementById('execTitle');
-  if (execTitle) execTitle.textContent = 'Metric distribution · '+STATE.time+' · '+label;
 }
 
 function rowOsiSparkline(d) {
@@ -4988,135 +4767,6 @@ window.scheduleMarketMapRender = scheduleMarketMapRender;
 window.renderMarketMapCharts = renderMarketMapCharts;
 
 /* Chart: Offensive Market Status Map (OSI × PP-Gap) or legacy RCV × ABQ */
-function renderQuadrant(){
-  var chartEl = document.getElementById('mainChart');
-  if (!chartEl) return;
-  var rows = STATE.time==='YTD' && STATE.split==='b' ? SCO_YTD_B :
-             STATE.time==='L30' && STATE.split==='b' ? SCO_L30_B :
-             STATE.time==='L14' && STATE.split==='b' ? SCO_L14_B :
-             STATE.time==='L7' ? SCO_L7_B :
-             currentRows();
-  if (!rows || !rows.length) return;
-  var W = Math.min(1200, chartEl.clientWidth || 1100);
-  var H = 480;
-  if(W<700) H=400;
-  var ml=48, mr=24, mt=32, mb=48;
-  var cw = W-ml-mr, ch = H-mt-mb;
-
-  var useStatusMap = STATE.quadrantMode !== 'rcv-abq';
-  var useABQMode = !useStatusMap;
-
-  var xMn = useStatusMap ? 35 : 0;
-  var xMx = useStatusMap ? 75 : 100;
-  var yMn = useStatusMap ? -12 : (useABQMode ? 0 : -22);
-  var yMx = useStatusMap ? 12 : (useABQMode ? 100 : 30);
-  var xRng = xMx - xMn;
-  var yRng = yMx - yMn;
-
-  function xs(v){return ml + ((v-xMn)/xRng)*cw;}
-  function ys(v){return mt + (1-(v-yMn)/yRng)*ch;}
-  var mx = xs(useStatusMap ? 55 : 50);
-  var my = ys(useStatusMap ? 0 : (useABQMode ? 50 : 0));
-
-  var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;cursor:crosshair;" id="quadSvg">';
-
-  // Quadrant tint backgrounds
-  s += '<rect x="'+mx+'" y="'+mt+'" width="'+(W-mr-mx)+'" height="'+(my-mt)+'" fill="rgba(74,222,128,.06)"/>';
-  s += '<rect x="'+mx+'" y="'+my+'" width="'+(W-mr-mx)+'" height="'+(H-mb-my)+'" fill="rgba(251,191,36,.06)"/>';
-  s += '<rect x="'+ml+'" y="'+mt+'" width="'+(mx-ml)+'" height="'+(my-mt)+'" fill="rgba(96,165,250,.06)"/>';
-  s += '<rect x="'+ml+'" y="'+my+'" width="'+(mx-ml)+'" height="'+(H-mb-my)+'" fill="rgba(248,113,113,.06)"/>';
-
-  // Grid
-  var xTicks = useStatusMap ? [40,50,60,70] : [0,25,50,75,100];
-  xTicks.forEach(function(v){
-    var gx = xs(v);
-    s += '<line x1="'+gx+'" y1="'+mt+'" x2="'+gx+'" y2="'+(H-mb)+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
-    s += '<text x="'+gx+'" y="'+(H-mb+16)+'" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">'+v+'</text>';
-  });
-  var yTicks = useStatusMap ? [-10,-5,0,5,10] : (useABQMode ? [0,25,50,75,100] : [-20,-10,0,10,20]);
-  yTicks.forEach(function(v){
-    var gy = ys(v);
-    s += '<line x1="'+ml+'" y1="'+gy+'" x2="'+(W-mr)+'" y2="'+gy+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
-    s += '<text x="'+(ml-5)+'" y="'+(gy+4)+'" text-anchor="end" fill="#71717A" font-size="10" font-family="var(--mono)">'+(useABQMode?v:(v>0?'+':'')+v)+'</text>';
-  });
-
-  // Axis crosshairs
-  s += '<line x1="'+mx+'" y1="'+mt+'" x2="'+mx+'" y2="'+(H-mb)+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
-  s += '<line x1="'+ml+'" y1="'+my+'" x2="'+(W-mr)+'" y2="'+my+'" stroke="rgba(192,132,252,.3)" stroke-dasharray="5,4" stroke-width="1"/>';
-
-  if(useStatusMap) {
-    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.9)" class="quad-label-sm">BACK TEAM TOTALS</text>';
-    s += '<text x="'+(W-mr-8)+'" y="'+(H-mb-8)+'" text-anchor="end" fill="rgba(251,191,36,.9)" class="quad-label-sm">FADE MOMENTUM</text>';
-    s += '<text x="'+(ml+10)+'" y="'+(mt+14)+'" text-anchor="start" fill="rgba(96,165,250,.9)" class="quad-label-sm">BUY LOW OFFENSE</text>';
-    s += '<text x="'+(ml+10)+'" y="'+(H-mb-8)+'" text-anchor="start" fill="rgba(248,113,113,.9)" class="quad-label-sm">FADE / UNDER LEAN</text>';
-  } else if(useABQMode) {
-    s += '<text x="'+(W-mr-8)+'" y="'+(mt+14)+'" text-anchor="end" fill="rgba(74,222,128,.85)" font-size="9.5" font-weight="600">ELITE — HIGH DAMAGE + HIGH PROCESS</text>';
-    s += '<text x="'+(ml+8)+'" y="'+(H-mb-7)+'" text-anchor="start" fill="rgba(248,113,113,.85)" font-size="9.5" font-weight="600">WEAK</text>';
-  }
-
-  rows.forEach(function(d){
-    var xVal = useStatusMap ? d.osi : d.rcv;
-    var yVal = useStatusMap ? d.ppGap : (useABQMode ? d.abq : (d.reg !== null ? d.reg*1000 : null));
-    if(xVal === null || yVal === null || isNaN(xVal) || isNaN(yVal)) return;
-    var cx = xs(xVal), cy = ys(yVal);
-    var cl = qcol(d);
-    s += '<g class="qd-dot" data-team="'+d.t+'" style="cursor:pointer;">'+
-      '<circle cx="'+cx+'" cy="'+cy+'" r="16" fill="'+cl+'" fill-opacity=".15"/>'+
-      '<circle cx="'+cx+'" cy="'+cy+'" r="13" fill="'+cl+'" stroke="rgba(0,0,0,.4)" stroke-width="1.5"/>'+
-      '<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">'+d.t+'</text>'+
-    '</g>';
-  });
-
-  s += '<text x="'+(W/2)+'" y="'+(H-8)+'" text-anchor="middle" fill="#A1A1AA" font-size="11" font-weight="500">'+(useStatusMap?'OSI (composite strength)':'RCV Score')+'</text>';
-  s += '<text transform="rotate(-90 '+ml+' '+(H/2)+')" x="'+ml+'" y="'+(H/2)+'" text-anchor="middle" fill="#A1A1AA" font-size="10" font-weight="500">'+(useStatusMap?'PP-Gap (process − production)':(useABQMode?'ABQ':'Reg gap'))+'</text>';
-  s += '</svg>';
-
-  document.getElementById('mainChart').innerHTML = s;
-
-  // Tooltip handlers
-  var tip = document.getElementById('chartTip');
-  document.querySelectorAll('.qd-dot').forEach(function(g){
-    g.addEventListener('mouseenter', function(e){
-      var t = g.getAttribute('data-team');
-      var d = rows.find(function(r){return r.t===t;});
-      var master = SCO_YTD_B.find(function(r){return r.t===t;});
-      if(!d) return;
-      var sg = master && master.sus !== undefined ? susGrade(master.sus) : null;
-      var rf = regFmt(d.reg);
-      var m = master || d;
-      var sum = getSummaryLabel(m.osi, m.ppGap, m.abq, m.rcv, m.obr, m);
-      var sumColor = summaryLabelColor(sum.label);
-      var wm = getWhatThisMeans(m);
-      var tipUid = 'tip_' + d.t;
-      var html = '<div class="tt-team">'+d.t+'</div>'+
-        '<div class="tt-summary" style="color:'+sumColor+';">'+sum.label+'</div>'+
-        '<div class="read-interp">'+summaryInterpretation(m)+'</div>'+
-        (wm ? '<div class="what-means">'+wm+'</div>' : '')+
-        confidenceRiskHtml(m)+
-        '<div class="osi-secondary"><strong>Offensive Strength</strong> '+m.osi.toFixed(1)+'</div>'+
-        '<button type="button" class="metrics-toggle" onclick="toggleMetricsPanel(\''+tipUid+'\', this)">Show metrics ▾</button>'+
-        '<div class="metrics-panel" id="'+tipUid+'">'+metricsPanelRows(m)+'</div>';
-      tip.innerHTML = html;
-      tip.classList.add('show');
-      highlightTeam(t);
-    });
-    g.addEventListener('mousemove', function(e){
-      var wrap = document.querySelector('.chart-wrap');
-      var rect = wrap.getBoundingClientRect();
-      var x = e.clientX - rect.left + 14;
-      var y = e.clientY - rect.top + 14;
-      if(x+200 > rect.width) x = e.clientX - rect.left - 210;
-      tip.style.left = x+'px'; tip.style.top = y+'px';
-    });
-    g.addEventListener('mouseleave', function(){
-      tip.classList.remove('show'); highlightTeam(null);
-    });
-  });
-
-  var splitLabel = STATE.split==='b' ? 'Both' : (STATE.split==='r' ? 'vs RHP' : 'vs LHP');
-  document.getElementById('chartTitle').textContent = (useStatusMap ? 'OSI vs PP-Gap · offensive status map' : 'RCV vs ABQ') + ' · '+STATE.time+' · '+splitLabel;
-}
-
 function renderSplitBar(rows){
   var sorted = rows.slice().sort(function(a,b){return b.osi-a.osi;});
   var W = Math.min(1200, document.getElementById('mainChart').clientWidth || 1100);
@@ -5449,27 +5099,12 @@ document.querySelectorAll('#timeToggle .toggle-btn').forEach(function(b){
       document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
         x.classList.toggle('active', x.getAttribute('data-split')==='b');
       });
-      var warn = document.getElementById('warnBanner');
-      if (warn) warn.classList.add('show');
-    } else {
-      var warnOff = document.getElementById('warnBanner');
-      if (warnOff) warnOff.classList.remove('show');
     }
     renderAll();
     urlEncodeState();
   });
 });
 
-// Quadrant mode toggle (RCV vs Reg, RCV vs ABQ)
-document.querySelectorAll('#quadrantToggle .toggle-btn').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('#quadrantToggle .toggle-btn').forEach(function(x){x.classList.remove('active');});
-    b.classList.add('active');
-    STATE.quadrantMode = b.getAttribute('data-quad');
-    renderQuadrant();
-    urlEncodeState();
-  });
-});
 
 // Search input — debounced
 (function(){
@@ -5533,17 +5168,6 @@ bindMasterTableSort();
    ============================================================ */
 
 // Concise league signal callouts
-function renderMovers(){
-  var movers = generateMovers();
-  var html = movers.map(function(m){
-    return '<div class="callout" style="border-left-color:'+m.color+';">'+
-      '<div class="callout-eyebrow" style="color:'+m.color+';">'+m.eyebrow+'</div>'+
-      '<div>'+m.html+'</div>'+
-    '</div>';
-  }).join('');
-  document.getElementById('moversGrid').innerHTML = html;
-}
-
 function detailMetricTrend(team, metric) {
   if (window.MLBMAProfileControls && MLBMAProfileControls.teamMetricTrend) {
     return MLBMAProfileControls.teamMetricTrend(team, metric);
@@ -5823,35 +5447,6 @@ function verdictReason(away, home, splitTab){
    ============================================================ */
 
 
-function renderLeagueOverview(){
-  var rows = currentRows();
-  if(!rows || !rows.length) return;
-  function vals(k){
-    return rows.map(function(d){return d[k];}).filter(function(v){return v!==null && v!==undefined && !isNaN(v);}).sort(function(a,b){return a-b;});
-  }
-  function mean(k){ var v=vals(k); return v.reduce(function(a,b){return a+b;},0)/Math.max(1,v.length); }
-  function spread(k){ var v=vals(k); return v.length ? v[v.length-1]-v[0] : 0; }
-  function count(fn){ return rows.filter(fn).length; }
-  var avgOsi = mean('osi'), avgAbq = mean('abq'), avgRcv = mean('rcv'), avgObr = mean('obr');
-  var ppAhead = count(function(d){return d.ppGap!==undefined && d.ppGap>4;});
-  var ppBehind = count(function(d){return d.ppGap!==undefined && d.ppGap<-4;});
-  var posReg = count(function(d){return d.reg!==null && d.reg>0.010;});
-  var negReg = count(function(d){return d.reg!==null && d.reg<-0.010;});
-  var volatile = count(function(d){return d.dfGap!==undefined && d.dfGap>8;});
-  var stable = count(function(d){return d.sus!==undefined && d.sus>=70;});
-  var label = STATE.split==='b'?'both pitching splits':(STATE.split==='r'?'right-handed pitching':'left-handed pitching');
-  var html = '';
-  html += '<div class="story-stat"><div class="ss-label">Composite Baseline</div><div class="ss-value">'+avgOsi.toFixed(1)+'</div><div class="ss-copy">Average OSI for '+STATE.time+' against '+label+'. This is the current offensive-quality reference point.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">League Separation</div><div class="ss-value">'+spread('osi').toFixed(1)+'</div><div class="ss-copy">Range between low and high OSI scores. Wider separation means team-level offensive profiles are less compressed.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Process vs Damage</div><div class="ss-value">'+avgAbq.toFixed(1)+' / '+avgRcv.toFixed(1)+'</div><div class="ss-copy">Average ABQ compared with average RCV. This helps show whether process quality and run creation are moving together.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Floor Baseline</div><div class="ss-value">'+avgObr.toFixed(1)+'</div><div class="ss-copy">Average OBR. This indicates the league-wide on-base/contact floor for the selected view.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Process Gaps</div><div class="ss-value">'+ppAhead+' / '+ppBehind+'</div><div class="ss-copy">Teams with process materially ahead of production versus teams with production materially ahead of process.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Regression Balance</div><div class="ss-value">'+posReg+' / '+negReg+'</div><div class="ss-copy">Positive versus negative regression-pressure counts. This frames expected-contact direction without naming individual teams.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Volatility Profiles</div><div class="ss-value">'+volatile+'</div><div class="ss-copy">Teams with a high Power-Floor Gap, meaning run creation depends more heavily on impact than offensive floor.</div></div>';
-  html += '<div class="story-stat"><div class="ss-label">Stable Profiles</div><div class="ss-value">'+stable+'</div><div class="ss-copy">Teams with stronger sustainability support across process, floor, production, and regression context.</div></div>';
-  var el = document.getElementById('leagueStoryGrid');
-  if(el) el.innerHTML = html;
-}
 function filterGlossary(){
   var q = (document.getElementById('glossarySearch').value || '').toLowerCase().trim();
   document.querySelectorAll('#glossaryGrid .glossary-term, #glossaryGridPlain .glossary-term').forEach(function(card){
@@ -5897,10 +5492,6 @@ function mountResearchTables() {
 
 function mountReferenceTables(){
   /* Team OOR / PALS / Pitching Score tables removed from Research Lab — Model Report & profiles only */
-}
-
-function renderReferenceTables() {
-  renderPitchingScore();
 }
 
 function renderLanding() {
@@ -6042,6 +5633,12 @@ function setupResearchLazyInit() {
   window.addEventListener('hashchange', syncDashboardView);
 }
 
+function whenLiveDataReady(fn, label) {
+  if (window.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+    MLBMACharts.renderOnLiveDataReady(fn, label);
+  } else if (fn) fn();
+}
+
 function renderResearchLab() {
   if (!document.body.classList.contains('view-research')) return;
   console.log('[MLBMA] renderResearchLab');
@@ -6049,11 +5646,13 @@ function renderResearchLab() {
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   mountDashboardRankings();
-  renderMasterTable();
+  whenLiveDataReady(function() {
+    renderMasterTable();
+    renderSplitBars();
+    renderTrendHeatmap();
+  }, 'renderResearchLab tables');
   renderWatchlistBar();
   if (typeof renderComparePane === 'function') renderComparePane();
-  renderSplitBars();
-  renderTrendHeatmap();
   mountResearchTables();
   if (window.ResearchLab && ResearchLab.renderSplitSummary) ResearchLab.renderSplitSummary();
   scheduleMarketMapRender();
@@ -6196,62 +5795,6 @@ function renderPALS() {
   }).join('');
 }
 
-function renderOOR(){
-  var el = document.getElementById('oorTableBody');
-  if(!el) return;
-
-  var rows;
-  if (LIVE_DATA.loaded && LIVE_DATA.oor.length) {LIVE_DATA.oor = LIVE_DATA.oor.map(function(r){if(r.hvP!==undefined) return r;return {t:r.Tm,hvP:parseFloat(r.HvP),hvL:parseFloat(r.HvL),hvR:parseFloat(r.HvR),vPpct:r.vP_pct,vPRank:r.vP_Rank,vLRank:r.vL_Rank,vRRank:r.vR_Rank};});
-    rows = LIVE_DATA.oor.slice();
-    rows.sort(function(a,b){ return (b.hvP || 0) - (a.hvP || 0); });
-  } else if (LIVE_DATA.error && !LIVE_DATA.loaded) {
-    el.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--red-l);padding:20px;">'
-      + 'OOR data unavailable — ' + LIVE_DATA.error + '</td></tr>';
-    return;
-  } else {
-    var scR = SCO_YTD_R || buildScores('YTD', 'r');
-    var scL = SCO_YTD_L || buildScores('YTD', 'l');
-    var mR = toMap(scR), mL = toMap(scL);
-    var teams = {};
-    scR.forEach(function(d){ teams[d.t] = true; });
-    scL.forEach(function(d){ teams[d.t] = true; });
-    rows = Object.keys(teams).map(function(t){
-      var hvR = mR[t] ? mR[t].osi : null;
-      var hvL = mL[t] ? mL[t].osi : null;
-      var hvP = (hvR !== null && hvL !== null) ? (0.55 * hvR + 0.45 * hvL) : (hvR || hvL || 0);
-      return { t: t, hvR: hvR, hvL: hvL, hvP: hvP };
-    });
-    var mean = rows.reduce(function(a,b){ return a + b.hvP; }, 0) / Math.max(1, rows.length);
-    rows.forEach(function(r){
-      r.vPpct = ((r.hvP - mean) / mean * 100).toFixed(1) + '%';
-    });
-    rows.sort(function(a,b){ return b.hvP - a.hvP; });
-  }
-
-  el.innerHTML = rows.map(function(r, i){
-    var oor = r.hvP;
-    if (oor === null || oor === undefined) return '';
-    var cl = oor >= 65 ? 'var(--red)' : oor >= 50 ? 'var(--gold)' : oor >= 35 ? 'var(--text-2)' : 'var(--green)';
-    var vPpct = r.vPpct || '—';
-    var vPpctNum = parseFloat(vPpct);
-    var pctCl = !isNaN(vPpctNum) && vPpctNum > 10 ? 'var(--red)' : !isNaN(vPpctNum) && vPpctNum < -10 ? 'var(--green)' : 'var(--text-2)';
-    var vPRank = r.vPRank != null ? r.vPRank : (i + 1);
-    var rankL = r.vLRank != null ? r.vLRank : rows.filter(function(x){ return (x.hvL || 0) >= (r.hvL || 0); }).length;
-    var rankR = r.vRRank != null ? r.vRRank : rows.filter(function(x){ return (x.hvR || 0) >= (r.hvR || 0); }).length;
-    return '<tr>'
-      + '<td class="rank-cell">' + (i + 1) + '</td>'
-      + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
-      + '<td class="num" style="color:' + cl + '">' + r.hvP.toFixed(1) + '</td>'
-      + '<td class="num">' + (r.hvL !== null ? r.hvL.toFixed(1) : '—') + '</td>'
-      + '<td class="num">' + (r.hvR !== null ? r.hvR.toFixed(1) : '—') + '</td>'
-      + '<td class="num" style="color:' + pctCl + '">' + vPpct + '</td>'
-      + '<td class="num">' + vPRank + '</td>'
-      + '<td class="num">' + rankL + '</td>'
-      + '<td class="num">' + rankR + '</td>'
-      + '</tr>';
-  }).join('');
-}
-
 function hideLoadingOverlay() {
   console.log('[MLBMA] hideLoadingOverlay');
   if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
@@ -6340,7 +5883,6 @@ function init(){
     _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
   try {
-    fetchLiveData();
     urlDecodeState();
     bindDashRankingsControls();
     initMarketMapToggle();
@@ -6349,9 +5891,6 @@ function init(){
     });
     document.querySelectorAll('#timeToggle .toggle-btn').forEach(function(x){
       x.classList.toggle('active', x.getAttribute('data-time')===STATE.time);
-    });
-    document.querySelectorAll('#quadrantToggle .toggle-btn').forEach(function(x){
-      x.classList.toggle('active', x.getAttribute('data-quad')===STATE.quadrantMode);
     });
     var si = document.getElementById('searchInput');
     if(si) si.value = STATE.searchQuery;
@@ -6384,7 +5923,7 @@ try {
 var resizeTimer;
 window.addEventListener('resize', function(){
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(function(){renderQuadrant(); renderSplitBars(); renderTrendHeatmap();}, 150);
+  resizeTimer = setTimeout(function(){renderSplitBars(); renderTrendHeatmap();}, 150);
 });
 
 function hideChartPlaceholder() {
@@ -6401,14 +5940,6 @@ function hideRankSkeleton() {
     s.innerHTML = '';
   }
 }
-(function() {
-  var btn = document.getElementById('l7InfoBtn');
-  var panel = document.getElementById('l7NotePanel');
-  if (btn && panel) {
-    btn.addEventListener('click', function(e) { e.stopPropagation(); panel.classList.toggle('open'); });
-    document.addEventListener('click', function() { panel.classList.remove('open'); });
-  }
-})();
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
@@ -6528,9 +6059,9 @@ if (document.readyState === 'loading') {
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
   Chase Analytics · MLB Offensive Intelligence
 </footer>
-  <script src="oem_overhaul.js?v=20260522a"></script>
-  <script src="mlbma_standings.js?v=20260522a"></script>
-  <script src="mlbma_signals.js?v=20260522a"></script>
-  <script src="chase_nav.js?v=20260523a"></script>
+  <script src="oem_overhaul.js?v=20260523"></script>
+  <script src="mlbma_standings.js?v=20260523"></script>
+  <script src="mlbma_signals.js?v=20260523"></script>
+  <script src="chase_nav.js?v=20260523"></script>
 </body>
 </html>

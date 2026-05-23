@@ -153,6 +153,9 @@
     if (!S || !TABS) return Promise.resolve([]);
     return S.fetchSheetTab(TABS.sp_profiles).then(function(rows) {
       RL.spProfiles = rows || [];
+      var oorMap = S.buildOorByTeam && global.LIVE_DATA && LIVE_DATA.oor
+        ? S.buildOorByTeam(LIVE_DATA.oor) : {};
+      if (S.enrichSpProfiles) S.enrichSpProfiles(RL.spProfiles, oorMap);
       if (global.LIVE_DATA) LIVE_DATA.spProfiles = RL.spProfiles;
       console.log('[FETCH] SP_Profiles loaded:', RL.spProfiles.length);
       return RL.spProfiles;
@@ -244,8 +247,15 @@
     }
     if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
     syncResearchGlobalsFromLiveData();
-    if (typeof renderMasterTable === 'function') renderMasterTable();
-    mountExtraLeaderboards();
+    var renderLb = function() {
+      if (typeof renderMasterTable === 'function') renderMasterTable();
+      mountExtraLeaderboards();
+    };
+    if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+      MLBMACharts.renderOnLiveDataReady(renderLb, 'mountLeaderboards');
+    } else {
+      renderLb();
+    }
   }
 
   function mountExtraLeaderboards() {
@@ -269,7 +279,7 @@
           var n = S.pickCol(row, 'pitcher_name', 'Name');
           var t = S.pickCol(row, 'pitcher_team', 'Team');
           var m = S.spProfileMetrics(row);
-          var ps = m.pitchScore != null ? m.pitchScore : (m.osiAllowed != null ? 100 - m.osiAllowed : null);
+          var ps = m.pitchScore;
           return '<tr class="pl-rank-row" onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
             + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td>'
             + '<td style="color:' + mColor(ps, false, 'pitching') + '">' + fmt(ps) + '</td>'
@@ -280,7 +290,7 @@
       var units = global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits) : [];
       var bpRows = units.map(function(tk) {
         var u = LIVE_DATA.bullpenUnits[tk];
-        return { t: tk, u: u, score: u.osiAllowed != null ? 100 - u.osiAllowed : null };
+        return { t: tk, u: u, score: S.bullpenPitchScore ? S.bullpenPitchScore(u) : (u.bullpenScore != null ? u.bullpenScore : null) };
       }).sort(function(a, b) { return (b.score || 0) - (a.score || 0); }).slice(0, 15);
 
       var bpHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Bullpen Unit Rankings</h4>'
@@ -542,10 +552,17 @@
       + profileLinks(a.t, b.t, null, null);
     if (global.STATE) global.STATE.compareTeams = [a.t, b.t];
     setTimeout(function() {
-      if (!global.MLBMACharts) return;
-      MLBMACharts.renderRadarChart('rlTeamRadar',
-        MLBMACharts.teamRadarComparePayload(a, rA, lA),
-        MLBMACharts.teamRadarComparePayload(b, rB, lB), a.t, b.t, { size: 340 });
+      var drawRadar = function() {
+        if (!global.MLBMACharts) return;
+        MLBMACharts.renderRadarChart('rlTeamRadar',
+          MLBMACharts.teamRadarComparePayload(a, rA, lA),
+          MLBMACharts.teamRadarComparePayload(b, rB, lB), a.t, b.t, { size: 340 });
+      };
+      if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+        MLBMACharts.renderOnLiveDataReady(drawRadar, 'compare radar');
+      } else {
+        drawRadar();
+      }
     }, 0);
   }
 
@@ -837,11 +854,18 @@
     } else if (name === 'model-links') {
       renderModelLinks();
     } else if (name === 'pitching') {
-      if (global.PitcherLab && PitcherLab.mount) {
-        PitcherLab.mount('rlPitcherLabRoot');
-      } else if (typeof mountResearchTables === 'function') {
-        mountResearchTables();
-        if (typeof renderPitchingScore === 'function') renderPitchingScore();
+      var mountPl = function() {
+        if (global.PitcherLab && PitcherLab.mount) {
+          PitcherLab.mount('rlPitcherLabRoot');
+        } else if (typeof mountResearchTables === 'function') {
+          mountResearchTables();
+          if (typeof renderPitchingScore === 'function') renderPitchingScore();
+        }
+      };
+      if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+        MLBMACharts.renderOnLiveDataReady(mountPl, 'PitcherLab');
+      } else {
+        mountPl();
       }
       hideTeamOorSections();
     }

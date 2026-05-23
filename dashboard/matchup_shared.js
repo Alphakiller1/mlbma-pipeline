@@ -184,14 +184,34 @@
 
   function parseWeatherRow(row) {
     if (!row) return parseWeatherString('');
+    var cond = pickCol(row, 'conditions', 'Conditions', 'Weather', 'Summary') || '—';
+    var windSpd = numOrNull(pickCol(row, 'wind_speed_mph', 'Wind', 'Wind_Speed', 'wind_mph'));
+    var windDir = pickCol(row, 'wind_direction', 'Wind_Dir', 'Wind Direction', 'wind_dir') || null;
+    var windStr = windSpd != null
+      ? 'Wind ' + windSpd + 'mph' + (windDir ? ' ' + windDir : '')
+      : null;
     return {
-      raw: pickCol(row, 'Conditions', 'Weather', 'Summary') || '—',
-      temp: numOrNull(pickCol(row, 'Temp', 'Temperature', 'temp_f')),
-      wind: numOrNull(pickCol(row, 'Wind', 'Wind_Speed', 'wind_mph')),
-      windDir: pickCol(row, 'Wind_Dir', 'Wind Direction', 'wind_dir') || null,
-      conditions: pickCol(row, 'Conditions', 'Weather') || '—',
-      dome: /dome|roof|indoor/i.test(String(pickCol(row, 'Conditions', 'Weather', 'Roof')))
+      raw: cond,
+      temp: numOrNull(pickCol(row, 'temperature_f', 'Temp', 'Temperature', 'temp_f')),
+      wind: windSpd,
+      windDir: windDir,
+      conditions: cond,
+      stadium: pickCol(row, 'stadium_name', 'Stadium', 'Venue', 'Ballpark') || '',
+      dome: /dome|roof|indoor/i.test(String(cond))
+        || String(pickCol(row, 'is_dome', 'Is_Dome', 'Roof')).toLowerCase() === 'true'
     };
+  }
+
+  function parseWeatherMap(rows) {
+    var map = {};
+    (rows || []).forEach(function(row) {
+      var away = teamKey(pickCol(row, 'away_team', 'Away'));
+      var home = teamKey(pickCol(row, 'home_team', 'Home'));
+      if (!away || !home) return;
+      var w = parseWeatherRow(row);
+      map[away + '@' + home] = w;
+    });
+    return map;
   }
 
   function weatherBadge(weatherData) {
@@ -247,6 +267,125 @@
     return { label: 'Lineup Edge', cls: 'f5-badge f5-muted' };
   }
 
+  function pctDecimal(v) {
+    if (v === null || v === undefined || v === '') return null;
+    var n = parseFloat(String(v).replace(/%/g, ''));
+    if (isNaN(n)) return null;
+    return n > 1.5 ? n / 100 : n;
+  }
+
+  function normalizePool(values) {
+    var nums = values.filter(function(v) { return v != null && !isNaN(v); });
+    if (!nums.length) return values.map(function() { return 50; });
+    var mn = Math.min.apply(null, nums);
+    var mx = Math.max.apply(null, nums);
+    if (mx === mn) return values.map(function() { return 50; });
+    return values.map(function(v) {
+      if (v == null || isNaN(v)) return null;
+      return ((v - mn) / (mx - mn)) * 100;
+    });
+  }
+
+  function invertPool(normValues) {
+    return normValues.map(function(v) {
+      return v == null || isNaN(v) ? null : 100 - v;
+    });
+  }
+
+  /** Client-side PitchScore — mirrors Python pool normalize (0.40 K + 0.35 inv BB + 0.25 inv HR/9). */
+  function computePitchScoreFromRates(kPct, bbPct, hr9, pool) {
+    var k = pctDecimal(kPct);
+    var bb = pctDecimal(bbPct);
+    var hr = hr9 != null && !isNaN(hr9) ? Number(hr9) : null;
+    if (k == null || bb == null || hr == null) return null;
+    if (pool && pool.length) {
+      var kArr = pool.map(function(p) { return pctDecimal(p.k); });
+      var bbArr = pool.map(function(p) { return pctDecimal(p.bb); });
+      var hrArr = pool.map(function(p) { return p.hr; });
+      var nk = normalizePool(kArr);
+      var nbb = invertPool(normalizePool(bbArr));
+      var nhr = invertPool(normalizePool(hrArr));
+      var idx = pool.findIndex(function(p) {
+        return pctDecimal(p.k) === k && pctDecimal(p.bb) === bb && p.hr === hr;
+      });
+      if (idx < 0) {
+        var allK = kArr.concat([k]);
+        var allBB = bbArr.concat([bb]);
+        var allHR = hrArr.concat([hr]);
+        nk = normalizePool(allK);
+        nbb = invertPool(normalizePool(allBB));
+        nhr = invertPool(normalizePool(allHR));
+        idx = allK.length - 1;
+      }
+      return Math.round((0.4 * (nk[idx] || 50) + 0.35 * (nbb[idx] || 50) + 0.25 * (nhr[idx] || 50)) * 10) / 10;
+    }
+    var bbInv = (1 - bb) * 100;
+    var hrInv = (1 - Math.min(hr / 3, 1)) * 100;
+    var raw = k * 0.4 + bbInv * 0.35 + hrInv * 0.25;
+    return Math.max(0, Math.min(100, Math.round(raw * 10) / 10));
+  }
+
+  function pitcherOorFromTeamHand(team, hand, oorByTeam) {
+    if (!oorByTeam || !team) return null;
+    var row = oorByTeam[teamKey(team)];
+    if (!row) return null;
+    var h = String(hand || 'R').trim().toUpperCase().charAt(0);
+    if (h === 'L' && row.hvL != null) return row.hvL;
+    if (h === 'R' && row.hvR != null) return row.hvR;
+    if (row.hvP != null) return row.hvP;
+    if (row.hvR != null && row.hvL != null) return row.hvR * 0.55 + row.hvL * 0.45;
+    return row.oor != null ? row.oor : null;
+  }
+
+  function buildOorByTeam(oorRows) {
+    var map = {};
+    (oorRows || []).forEach(function(row) {
+      var t = teamKey(pickCol(row, 'Tm', 'tm', 'team', 't'));
+      if (!t) return;
+      map[t] = {
+        t: t,
+        hvP: numOrNull(pickCol(row, 'HvP', 'hvP')),
+        hvL: numOrNull(pickCol(row, 'HvL', 'hvL')),
+        hvR: numOrNull(pickCol(row, 'HvR', 'hvR')),
+        oor: numOrNull(pickCol(row, 'OOR', 'oor'))
+      };
+    });
+    return map;
+  }
+
+  /** Enrich SP_Profiles rows with PitchScore, OOR proxy, FIP fallback — mutates rows in place. */
+  function enrichSpProfiles(rows, oorByTeam) {
+    if (!rows || !rows.length) return rows;
+    var pool = rows.map(function(row) {
+      return {
+        k: pickCol(row, 'K_pct', 'K%', 'k_pct'),
+        bb: pickCol(row, 'BB_pct', 'BB%', 'bb_pct'),
+        hr: numOrNull(pickCol(row, 'HR9', 'HR/9', 'hr9'))
+      };
+    });
+    rows.forEach(function(row, i) {
+      var kPct = pickCol(row, 'K_pct', 'K%', 'k_pct');
+      var bbPct = pickCol(row, 'BB_pct', 'BB%', 'bb_pct');
+      var hr9 = numOrNull(pickCol(row, 'HR9', 'HR/9', 'hr9'));
+      var ps = computePitchScoreFromRates(kPct, bbPct, hr9, pool);
+      if (ps != null) row.PitchScore = ps;
+      var era = numOrNull(pickCol(row, 'ERA', 'era'));
+      var fip = numOrNull(pickCol(row, 'FIP', 'fip'));
+      row.FIP = fip != null ? fip : era;
+      row.FIP_na = fip == null && era == null;
+      row.xFIP = null;
+      var team = pickCol(row, 'pitcher_team', 'Team', 'Tm');
+      var hand = pickCol(row, 'pitcher_hand', 'Hand', 'hand');
+      var oor = pitcherOorFromTeamHand(team, hand, oorByTeam);
+      if (oor != null) row.OOR = oor;
+      var staleRaw = pickCol(row, 'stale', 'staleness_flag', 'Staleness');
+      row.stale = staleRaw === true || staleRaw === 'True' || staleRaw === 'true' || staleRaw === '1';
+      row.staleness_flag = row.stale;
+      row.L14_drift = row.stale ? 'Stale' : null;
+    });
+    return rows;
+  }
+
   function scoreRowFromSheet(row) {
     var t = teamKey(pickCol(row, 'Tm', 'Team', 'tm'));
     if (!t) return null;
@@ -254,8 +393,16 @@
     var rcv = numOrNull(pickCol(row, 'RCV', 'rcv'));
     var obr = numOrNull(pickCol(row, 'OBR', 'obr'));
     var osi = numOrNull(pickCol(row, 'OSI', 'osi'));
+    var projOSI = numOrNull(pickCol(row, 'projOSI', 'ProjOSI', 'proj_osi'));
+    var reg = numOrNull(pickCol(row, 'reg_signal', 'reg', 'Reg_signal'));
+    var ppGap = numOrNull(pickCol(row, 'PP-Gap', 'ppGap', 'PP_Gap'));
     if (abq === null || rcv === null || obr === null || osi === null) return null;
-    return { t: t, abq: abq, rcv: rcv, obr: obr, osi: osi };
+    if (projOSI == null) projOSI = osi;
+    if (ppGap == null && abq != null && rcv != null) ppGap = abq - rcv;
+    return {
+      t: t, abq: abq, rcv: rcv, obr: obr, osi: osi,
+      projOSI: projOSI, reg_signal: reg, reg: reg, ppGap: ppGap
+    };
   }
 
   function splitOSI(teamData, spHand) {
@@ -302,15 +449,20 @@
     (rows || []).forEach(function(row) {
       var t = teamKey(pickCol(row, 'team', 'Tm', 'Team'));
       if (!t) return;
+      var osiAllowed = numOrNull(pickCol(row, 'overall_OSI_allowed', 'OSI_allowed'));
+      var bullpenScore = osiAllowed != null
+        ? Math.max(0, Math.min(100, 100 - osiAllowed))
+        : null;
       map[t] = {
         t: t,
-        osiAllowed: numOrNull(pickCol(row, 'overall_OSI_allowed', 'OSI_allowed')),
+        osiAllowed: osiAllowed,
+        bullpenScore: bullpenScore,
         abqAllowed: numOrNull(pickCol(row, 'overall_ABQ_allowed')),
         rcvAllowed: numOrNull(pickCol(row, 'overall_RCV_allowed')),
         obrAllowed: numOrNull(pickCol(row, 'overall_OBR_allowed')),
         hiLevEra: numOrNull(pickCol(row, 'high_leverage_ERA', 'High Leverage ERA')),
         loLevEra: numOrNull(pickCol(row, 'low_leverage_ERA')),
-        oor: numOrNull(pickCol(row, 'OOR', 'avg_opponent_OOR', 'Avg_Opponent_OOR'))
+        oor: osiAllowed
       };
     });
     return map;
@@ -362,19 +514,37 @@
 
   function spProfileMetrics(profile) {
     if (!profile) return null;
+    var kPct = numOrNull(pickCol(profile, 'K_pct', 'K%', 'k_pct'));
+    var bbPct = numOrNull(pickCol(profile, 'BB_pct', 'BB%', 'bb_pct'));
+    var hr9 = numOrNull(pickCol(profile, 'HR9', 'HR/9', 'hr9'));
+    var pitchScore = numOrNull(profile.PitchScore);
+    if (pitchScore == null) {
+      pitchScore = computePitchScoreFromRates(kPct, bbPct, hr9, null);
+    }
+    var era = numOrNull(pickCol(profile, 'ERA', 'era'));
+    var fip = numOrNull(pickCol(profile, 'FIP', 'fip'));
+    if (fip == null) fip = era;
+    var staleRaw = pickCol(profile, 'stale', 'staleness_flag', 'Staleness');
+    var stale = staleRaw === true || staleRaw === 'True' || staleRaw === 'true' || staleRaw === '1';
     return {
-      kPct: numOrNull(pickCol(profile, 'K_pct', 'K%', 'k_pct')),
-      bbPct: numOrNull(pickCol(profile, 'BB_pct', 'BB%', 'bb_pct')),
-      hr9: numOrNull(pickCol(profile, 'HR9', 'HR/9')),
-      fip: numOrNull(pickCol(profile, 'FIP', 'fip')),
-      xfip: numOrNull(pickCol(profile, 'xFIP', 'xfip')),
-      osiAllowed: numOrNull(pickCol(profile, 'OSI_allowed', 'OSI Allowed')),
+      kPct: kPct,
+      bbPct: bbPct,
+      hr9: hr9,
+      fip: fip,
+      fipNa: profile.FIP_na === true,
+      xfip: null,
+      era: era,
+      osiAllowed: numOrNull(pickCol(profile, 'OSI_allowed', 'OSI Allowed', 'osi_allowed')),
+      osiAllowedL30: null,
+      osiAllowedL14: null,
       abqAllowed: numOrNull(pickCol(profile, 'ABQ_allowed', 'ABQ Allowed')),
-      rcvAllowed: numOrNull(pickCol(profile, 'RCV_allowed')),
-      obrAllowed: numOrNull(pickCol(profile, 'OBR_allowed')),
-      oor: numOrNull(pickCol(profile, 'OOR', 'avg_opponent_OOR', 'Avg_Opponent_OOR')),
-      staleness: pickCol(profile, 'staleness_flag', 'Staleness', 'staleness'),
-      l14Drift: numOrNull(pickCol(profile, 'L14_drift', 'l14_drift'))
+      rcvAllowed: numOrNull(pickCol(profile, 'RCV_allowed', 'RCV Allowed')),
+      obrAllowed: numOrNull(pickCol(profile, 'OBR_allowed', 'OBR Allowed')),
+      pitchScore: pitchScore,
+      oor: numOrNull(pickCol(profile, 'OOR', 'oor')),
+      stale: stale,
+      l14Drift: stale ? 'Stale' : null,
+      l14Note: 'L14 requires pipeline data'
     };
   }
 
@@ -419,7 +589,9 @@
   }
 
   function bullpenPitchScore(unit) {
-    if (!unit || unit.osiAllowed == null) return null;
+    if (!unit) return null;
+    if (unit.bullpenScore != null) return unit.bullpenScore;
+    if (unit.osiAllowed == null) return null;
     return Math.max(0, Math.min(100, 100 - unit.osiAllowed));
   }
 
@@ -467,7 +639,13 @@
     buildLineupTable: buildLineupTable,
     parseWeatherString: parseWeatherString,
     parseWeatherRow: parseWeatherRow,
+    parseWeatherMap: parseWeatherMap,
     weatherBadge: weatherBadge,
+    pctDecimal: pctDecimal,
+    computePitchScoreFromRates: computePitchScoreFromRates,
+    enrichSpProfiles: enrichSpProfiles,
+    buildOorByTeam: buildOorByTeam,
+    pitcherOorFromTeamHand: pitcherOorFromTeamHand,
     gamescriptBadge: gamescriptBadge,
     f5Badge: f5Badge,
     splitOSI: splitOSI,

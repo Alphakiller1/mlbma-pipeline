@@ -186,6 +186,7 @@ h1 {
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="matchup_shared.js?v=20260523"></script>
 <script src="mlbma_ui.js" data-page="player_search.html"></script>
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -312,8 +313,8 @@ function parseCSV(text) {
   });
 }
 
-function fetchSheetTab(tab) {
-  return fetch(gvizUrl(tab)).then(function(r) { return r.text(); }).then(parseCSV);
+function fetchSheetTab(tabName) {
+  return MLBMASharedMatchup.fetchSheetTab(tabName);
 }
 
 function pickCol(row, names) {
@@ -346,11 +347,15 @@ function teamKey(t) {
 }
 
 function poolPitchScore(sp) {
-  var k = num(pickCol(sp, ['K_pct', 'K%']));
-  var bb = num(pickCol(sp, ['BB_pct', 'BB%']));
-  var hr = num(pickCol(sp, ['HR9', 'HR/9']));
-  if (k === null || bb === null || hr === null) return null;
-  return Math.round(Math.min(100, Math.max(0, k * 0.4 + (100 - bb) * 0.35 + (100 - Math.min(hr * 12, 100)) * 0.25)));
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.computePitchScoreFromRates) {
+    return MLBMASharedMatchup.computePitchScoreFromRates(
+      pickCol(sp, ['K_pct', 'K%']),
+      pickCol(sp, ['BB_pct', 'BB%']),
+      num(pickCol(sp, ['HR9', 'HR/9'])),
+      null
+    );
+  }
+  return null;
 }
 
 function buildIndexes() {
@@ -490,9 +495,11 @@ function findRegistry(name, team) {
 }
 
 function metricColor(type, val) {
-  if (val === null) return 'var(--text-3)';
-  if (type === 'reliever') return val <= 55 ? 'var(--green)' : val >= 65 ? 'var(--red-l)' : 'var(--gold)';
-  return val >= 75 ? 'var(--green)' : val >= 55 ? 'var(--gold)' : 'var(--red-l)';
+  if (window.MLBMAAssets && MLBMAAssets.metricColor) {
+    var invert = type === 'reliever' || type === 'osi_allowed';
+    return MLBMAAssets.metricColor(val, type === 'reliever' ? 'osi' : (type || 'osi'), invert);
+  }
+  return 'var(--text-3)';
 }
 
 function typeBadge(type) {

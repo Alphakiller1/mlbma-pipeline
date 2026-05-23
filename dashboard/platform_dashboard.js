@@ -541,7 +541,11 @@
 
   function renderDashboard() {
     renderHeroMatchups();
-    renderSignalChips();
+    if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+      MLBMACharts.renderOnLiveDataReady(renderSignalChips, 'signal chips');
+    } else {
+      renderSignalChips();
+    }
     bindHeroControls();
   }
 

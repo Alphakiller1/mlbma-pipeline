@@ -259,6 +259,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="matchup_shared.js?v=20260523"></script>
 <script src="mlbma_ui.js" data-page="batter_profile.html"></script>
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -508,12 +509,7 @@ function parseCSV(text) {
 }
 
 function fetchSheetTab(tabName) {
-  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' })
-    .then(function(res) {
-      if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
-      return res.text();
-    })
-    .then(parseCSV);
+  return MLBMASharedMatchup.fetchSheetTab(tabName);
 }
 
 function fetchSheetTabOptional(tabName) {
@@ -593,11 +589,10 @@ function getSplitRow(key, splitType) {
 }
 
 function metricColor(score) {
-  if (score === null || isNaN(score)) return 'var(--text-3)';
-  if (score >= 75) return 'var(--green)';
-  if (score >= 60) return 'var(--blue-l)';
-  if (score >= 50) return 'var(--gold)';
-  return 'var(--red-l)';
+  if (window.MLBMAAssets && MLBMAAssets.metricColor) {
+    return MLBMAAssets.metricColor(score, 'osi', false);
+  }
+  return 'var(--text-3)';
 }
 
 function metricTierClass(score) {

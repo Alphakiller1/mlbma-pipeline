@@ -314,6 +314,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="matchup_shared.js?v=20260523"></script>
 <script src="pitcher_profile_dashboard.js"></script>
 <script src="mlbma_charts.js?v=20260524c"></script>
 <script src="profile_controls.js?v=20260524c"></script>
@@ -535,12 +536,7 @@ function parseCSV(text) {
 }
 
 function fetchSheetTab(tabName) {
-  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' })
-    .then(function(res) {
-      if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
-      return res.text();
-    })
-    .then(parseCSV);
+  return MLBMASharedMatchup.fetchSheetTab(tabName);
 }
 
 function pickCol(row, names) {

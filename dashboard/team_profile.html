@@ -332,6 +332,7 @@ h1 {
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="matchup_shared.js?v=20260523"></script>
 <script src="mlbma_standings.js"></script>
 <script src="team_profile_mini.js"></script>
 <script src="mlbma_charts.js?v=20260524c"></script>
@@ -486,8 +487,8 @@ function parseCSV(text) {
   });
 }
 
-function fetchSheetTab(tab) {
-  return fetch(gvizUrl(tab)).then(function(r) { return r.text(); }).then(parseCSV);
+function fetchSheetTab(tabName) {
+  return MLBMASharedMatchup.fetchSheetTab(tabName);
 }
 
 function pickCol(row, names) {

@@ -291,6 +291,30 @@
     return el;
   }
 
+  function liveDataReady() {
+    return global.LIVE_DATA && global.LIVE_DATA.scYtdR && global.LIVE_DATA.scYtdR.length >= 28;
+  }
+
+  function renderOnLiveDataReady(fn, label) {
+    if (liveDataReady()) {
+      if (fn) fn();
+      return;
+    }
+    console.log('[RL] waiting for data...' + (label ? ' ' + label : ''));
+    if (!global._mlbmaLiveDataQueue) global._mlbmaLiveDataQueue = [];
+    global._mlbmaLiveDataQueue.push(fn);
+    renderOnDataReady(liveDataReady, fn, { interval: 300, maxTries: 120 });
+  }
+
+  function flushLiveDataReadyQueue() {
+    if (!liveDataReady() || !global._mlbmaLiveDataQueue || !global._mlbmaLiveDataQueue.length) return;
+    var q = global._mlbmaLiveDataQueue.slice();
+    global._mlbmaLiveDataQueue = [];
+    q.forEach(function(fn) {
+      try { if (fn) fn(); } catch (e) { console.error('[MLBMACharts] live data queue fn error', e); }
+    });
+  }
+
   function renderOnDataReady(checkFn, renderFn, opts) {
     opts = opts || {};
     var interval = opts.interval || 300;
@@ -551,6 +575,9 @@
     teamRadarComparePayload: teamRadarComparePayload,
     teamOsiTrend: teamOsiTrend,
     renderOnDataReady: renderOnDataReady,
+    renderOnLiveDataReady: renderOnLiveDataReady,
+    flushLiveDataReadyQueue: flushLiveDataReadyQueue,
+    liveDataReady: liveDataReady,
     renderMarketQuadrant: renderMarketQuadrant,
     renderSparkline: renderSparkline,
     renderRadarChart: renderRadarChart,

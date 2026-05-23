@@ -45,13 +45,8 @@
   }
 
   function trendLabel(row) {
-    var drift = num(pickCol(row, ['L14_drift', 'osi_drift', 'drift']));
     if (isStale(row)) return 'Stale Sample';
-    if (drift == null) return 'No recent data';
-    if (drift <= -4) return 'Improving';
-    if (drift >= 4) return 'Declining';
-    if (Math.abs(drift) >= 2) return 'Volatile';
-    return 'Stable';
+    return 'YTD only — L14 requires pipeline data';
   }
 
   function pitchTier(score) {
@@ -64,14 +59,7 @@
 
   function profileMetrics(row) {
     if (!row) return {};
-    var base = (S && S.spProfileMetrics) ? S.spProfileMetrics(row) : {};
-    return Object.assign({
-      kPct: null, bbPct: null, hr9: null, fip: null, xfip: null,
-      osiAllowed: null, abqAllowed: null, rcvAllowed: null, obrAllowed: null,
-      oor: null, pitchScore: null
-    }, base, {
-      pitchScore: num(pickCol(row, ['PitchScore', 'Pitching Score', 'pitch_score', 'pitchscore']))
-    });
+    return (S && S.spProfileMetrics) ? S.spProfileMetrics(row) : {};
   }
 
   function percentileRank(value, values, lowerIsBetter) {
@@ -82,16 +70,19 @@
   }
 
   function isStale(row) {
-    var flag = String(pickCol(row, ['staleness_flag', 'staleness', 'stale'])).toLowerCase();
-    var drift = num(pickCol(row, ['L14_drift', 'osi_drift', 'drift']));
-    return flag === 'true' || flag === '1' || flag === 'stale' || flag === 'yes'
-      || (drift != null && Math.abs(drift) >= 5);
+    var m = profileMetrics(row);
+    return !!(m && m.stale);
   }
 
   function l14Form(row) {
-    var drift = num(pickCol(row, ['L14_drift', 'osi_drift', 'drift']));
-    if (drift == null) return '—';
-    return (drift > 0 ? '+' : '') + drift.toFixed(1);
+    if (isStale(row)) return 'Stale';
+    return '—';
+  }
+
+  function fmtFip(met) {
+    if (met.fip != null) return fmt(met.fip, 2);
+    if (met.era != null) return fmt(met.era, 2) + ' (ERA)';
+    return 'FIP N/A';
   }
 
   function oorLabel(oor) {
@@ -117,6 +108,9 @@
     if (!S || !TABS) return Promise.resolve([]);
     return S.fetchSheetTab(TABS.sp_profiles).then(function(rows) {
       CACHE.profiles = rows || [];
+      var oorMap = S.buildOorByTeam && global.LIVE_DATA && LIVE_DATA.oor
+        ? S.buildOorByTeam(LIVE_DATA.oor) : {};
+      if (S.enrichSpProfiles) S.enrichSpProfiles(CACHE.profiles, oorMap);
       if (global.LIVE_DATA) LIVE_DATA.spProfiles = CACHE.profiles;
       console.log('[FETCH] SP_Profiles loaded:', CACHE.profiles.length);
       return CACHE.profiles;
@@ -244,13 +238,14 @@
       + '<span>K% <strong>' + fmt(met.kPct, 1) + '</strong></span>'
       + '<span>BB% <strong>' + fmt(met.bbPct, 1) + '</strong></span>'
       + '<span>HR/9 <strong>' + fmt(met.hr9, 2) + '</strong></span>'
-      + '<span>FIP/xFIP <strong>' + fmt(met.fip, 2) + ' / ' + fmt(met.xfip != null ? met.xfip : met.fip, 2) + '</strong></span>'
+      + '<span>FIP <strong>' + esc(fmtFip(met)) + '</strong></span>'
+      + '<span>xFIP <strong>—</strong></span>'
       + '</div>'
       + '<div class="pl-stat-row">OSI Allowed <strong style="color:' + mColor(met.osiAllowed, true) + '">' + fmt(met.osiAllowed) + '</strong>'
       + (met.oor != null ? ' · Pitcher OOR <strong style="color:' + mColor(met.oor, false, 'oor') + '">' + fmt(met.oor) + '</strong> <span class="ca-helper">(' + esc(oorLabel(met.oor)) + ')</span>' : '')
       + '</div>'
       + '<p class="ca-helper" style="margin-top:10px;">' + esc(pickCol(row, ['current_read', 'read', 'model_read']) || 'Starter profile from SP_Profiles — validate allowed metrics vs tonight\'s lineup.') + '</p>'
-      + (stale ? '<div class="pl-stale-banner">⚠ L14 form drift — metrics may be stale</div>' : '')
+      + (stale ? '<div class="pl-stale-banner">⚠ Stale sample — refresh pipeline for updated starts</div>' : '')
       + '</div>';
     renderOorPanel();
     renderTrendPanel();
@@ -277,15 +272,14 @@
     if (!mount) return;
     var row = findProfile(CACHE.selected);
     if (!row) { mount.innerHTML = ''; return; }
-    var ytd = num(pickCol(row, ['osi_allowed', 'OSI_allowed']));
-    var l30 = num(pickCol(row, ['osi_allowed_l30', 'OSI_allowed_L30']));
-    var l14 = num(pickCol(row, ['osi_allowed_l14', 'OSI_allowed_L14']));
+    var met = profileMetrics(row);
+    var ytd = met.osiAllowed;
     var lbl = trendLabel(row);
     mount.innerHTML = '<div class="rl-pane-card"><h4>Trend / Staleness</h4>'
       + '<div class="pl-trend-grid">'
       + cell({ label: 'YTD OSI Allowed', value: ytd, context: 'osi', invert: true })
-      + cell({ label: 'L30', value: l30, context: 'osi', invert: true })
-      + cell({ label: 'L14', value: l14, context: 'osi', invert: true })
+      + cell({ label: 'L30', value: null, hint: 'requires pipeline data' })
+      + cell({ label: 'L14', value: null, hint: 'requires pipeline data' })
       + cell({ label: 'Form', value: null, staleness: lbl, hint: l14Form(row) })
       + '</div><p class="ca-helper">Label: <strong style="color:' + (A.stalenessColor ? A.stalenessColor(lbl) : '#71717A') + '">' + esc(lbl) + '</strong></p></div>';
   }
@@ -396,7 +390,7 @@
           + '<td class="num">' + fmt(met.kPct, 1) + '</td>'
           + '<td class="num">' + fmt(met.bbPct, 1) + '</td>'
           + '<td class="num">' + fmt(met.hr9, 2) + '</td>'
-          + '<td class="num">' + fmt(met.fip, 2) + '</td>'
+          + '<td class="num">' + esc(fmtFip(met)) + '</td>'
           + '<td class="num" style="color:' + mColor(met.osiAllowed, true) + '">' + fmt(met.osiAllowed) + '</td>'
           + '<td class="num" style="color:' + mColor(met.abqAllowed, true) + '">' + fmt(met.abqAllowed) + '</td>'
           + '<td class="num" style="color:' + mColor(met.rcvAllowed, true) + '">' + fmt(met.rcvAllowed) + '</td>'

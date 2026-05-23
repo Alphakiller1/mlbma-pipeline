@@ -182,6 +182,9 @@
     var pt = pitchingTier(ps, ctx.pitchTiers || []);
     var stale = pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true';
     var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
+    var fipVal = num(pick(profile, ['FIP', 'fip']));
+    var eraVal = num(pick(profile, ['ERA']));
+    var fipLabel = fipVal != null ? fmt(fipVal, 2) : (eraVal != null ? fmt(eraVal, 2) + ' (ERA)' : 'FIP N/A');
 
     return '<div class="pitcher-snapshot">'
       + '<div class="ps-photo">' + hs + '</div>'
@@ -198,8 +201,8 @@
       + statPill('Pitch Score', fmt(ps, 0))
       + statPill('K%', fmt(num(pick(profile, ['K_pct', 'K%'])), 1) + (num(pick(profile, ['K_pct'])) != null ? '%' : ''))
       + statPill('BB%', fmt(num(pick(profile, ['BB_pct', 'BB%'])), 1) + (num(pick(profile, ['BB_pct'])) != null ? '%' : ''))
-      + statPill('FIP', fmt(num(pick(profile, ['FIP', 'fip'])), 2))
-      + statPill('xFIP', fmt(num(pick(profile, ['xFIP', 'xfip'])), 2))
+      + statPill('FIP', fipLabel)
+      + statPill('xFIP', '—')
       + statPill('ERA', fmt(num(pick(profile, ['ERA'])), 2))
       + '</div>'
       + (staleWarn ? '<p class="ps-stale-note">' + esc(staleWarn) + '</p>' : '')

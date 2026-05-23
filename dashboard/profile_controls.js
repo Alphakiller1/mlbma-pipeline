@@ -91,36 +91,38 @@
   }
 
   function pitcherPitchTrend(profile, team, pitchingRows) {
-    var ps = num(pickCol(profile, ['PitchScore', 'Pitching Score', 'pitchscore']));
+    var ps = profile && profile.PitchScore != null ? num(profile.PitchScore) : null;
+    if (ps == null && global.MLBMASharedMatchup && profile) {
+      var m = MLBMASharedMatchup.spProfileMetrics(profile);
+      ps = m ? m.pitchScore : null;
+    }
     if (ps == null && team && pitchingRows) {
       var pr = pitchingRows.find(function(p) {
         return String(pickCol(p, ['Tm', 'tm', 'team'])).toUpperCase() === String(team).toUpperCase();
       });
       ps = pr ? num(pickCol(pr, ['PitchScore'])) : null;
     }
-    var drift = num(pickCol(profile, ['L14_drift', 'osi_drift', 'drift']));
-    var l14 = drift != null && ps != null ? ps - drift * 0.4 : null;
-    var l30 = drift != null && ps != null ? ps - drift * 0.2 : null;
-    return [ps, l30, l14, ps];
+    return [ps, ps, ps, ps];
   }
 
   function pitcherOsiAllowTrend(profile) {
     var ytd = num(pickCol(profile, ['OSI_allowed', 'osi_allowed']));
-    var l30 = num(pickCol(profile, ['osi_allowed_l30', 'OSI_allowed_L30']));
-    var l14 = num(pickCol(profile, ['osi_allowed_l14', 'OSI_allowed_L14']));
-    return [ytd, l30 != null ? l30 : ytd, l14 != null ? l14 : ytd, ytd];
+    return [ytd, null, null, ytd];
   }
 
   function bullpenOsiTrend(unit, team, pitchingRows) {
     if (unit) {
-      var ytd = num(pickCol(unit, ['osi_allowed', 'OSI_allowed', 'avg_osi_allowed']));
-      return [ytd, ytd, ytd, ytd];
+      var ytd = unit.osiAllowed != null ? unit.osiAllowed
+        : num(pickCol(unit, ['overall_OSI_allowed', 'osi_allowed']));
+      var score = unit.bullpenScore != null ? unit.bullpenScore
+        : (ytd != null ? Math.max(0, Math.min(100, 100 - ytd)) : null);
+      return { osi: [ytd, ytd, ytd, ytd], score: [score, score, score, score] };
     }
     var bp = pitchingRows && pitchingRows.find(function(p) {
       return String(pickCol(p, ['Tm', 'tm'])).toUpperCase() === String(team).toUpperCase();
     });
     var oa = bp ? num(pickCol(bp, ['osi_allowed', 'OSI_allowed'])) : null;
-    var score = bp ? num(pickCol(bp, ['bullpen_score', 'PitchScore'])) : null;
+    var score = bp ? num(pickCol(bp, ['PitchScore'])) : null;
     return { osi: [oa, oa, oa, oa], score: [score, score, score, score] };
   }
 
