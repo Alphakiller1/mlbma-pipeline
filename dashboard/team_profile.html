@@ -123,10 +123,63 @@ h1 {
 .team-snapshot { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; padding: 20px; background: var(--bg-3); border-radius: 12px; border: 1px solid var(--border); }
 .snapshot-name { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .snapshot-metrics { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--text-2); }
-.profile-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; padding: 12px; background: var(--bg-2); border-radius: 8px; }
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-  margin-bottom: 18px;
+.global-control-bar {
+  display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+  margin-bottom: 20px; padding: 14px 16px; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: 12px;
 }
+.global-control-bar .control-label {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3); margin-right: 6px;
+}
+.global-control-bar .control-group { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.toggle-group { display: flex; flex-wrap: wrap; gap: 4px; }
+.toggle-btn {
+  font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
+}
+.toggle-btn.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.15); }
+.toggle-btn.warn.active { border-color: var(--gold); color: var(--gold-l); }
+.team-abbr-inline { font-size: 14px; color: var(--text-3); font-family: var(--mono); }
+.snapshot-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.summary-badge, .signal-badge {
+  font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; border: 1px solid;
+}
+.signal-badge { background: var(--blue-dim); color: var(--blue-l); border-color: rgba(96,165,250,.35); }
+.snapshot-tonight { margin-top: 10px; }
+.snapshot-context { font-size: 11px; color: var(--text-3); margin-top: 8px; font-family: var(--mono); }
+.tier-muted { background: var(--bg-4); color: var(--text-3); }
+.tier-elite, .tier-high { background: var(--green-dim); color: var(--green); }
+.tier-dangerous { background: var(--purple-glow); color: var(--purple); }
+.tier-inconsistent { background: var(--gold-dim); color: var(--gold); }
+.tier-weak { background: var(--red-dim); color: var(--red-l); }
+.component-bars { margin: 12px 0; }
+.cb-row { display: grid; grid-template-columns: 1fr 120px 48px; gap: 8px; align-items: center; margin-bottom: 6px; font-size: 11px; }
+.cb-track { height: 6px; background: var(--bg-4); border-radius: 3px; overflow: hidden; }
+.cb-fill { height: 100%; border-radius: 3px; }
+.cb-val { font-family: var(--mono); font-size: 10px; color: var(--text-3); text-align: right; }
+.ma-panel { margin-top: 12px; padding: 12px; background: var(--bg-4); border-radius: 8px; border: 1px solid var(--border); }
+.ma-panel-title { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.ma-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 700px) { .ma-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+.ma-stat-box { background: var(--bg-3); padding: 8px; border-radius: 6px; text-align: center; }
+.ma-stat-box .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
+.ma-stat-box .ms-val { font-family: var(--mono); font-size: 14px; font-weight: 600; }
+.ma-muted { font-size: 10px; color: var(--text-3); margin-top: 6px; }
+.ma-split-table { width: 100%; font-size: 11px; margin-top: 8px; }
+.ma-split-table td { padding: 4px 0; border-bottom: 1px solid var(--border); }
+.pals-compare { display: flex; align-items: center; gap: 16px; margin: 10px 0; }
+.pals-num { font-size: 22px; font-weight: 700; font-family: var(--mono); display: block; }
+.pals-lbl { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
+.pals-gap { font-family: var(--mono); font-size: 14px; color: var(--text-2); }
+.pals-status { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+.pals-ok { background: var(--green-dim); color: var(--green); }
+.pals-warn { background: var(--gold-dim); color: var(--gold); }
+.pals-neutral { background: var(--bg-4); color: var(--text-2); }
+.ma-headline { margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.ma-read { margin: 6px 0; line-height: 1.5; }
+.ma-reliability { margin-top: 8px; }
+.profile-offense-block { margin-bottom: 28px; }
 .team-name-lg { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
 .team-abbr {
   font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 8px;
@@ -376,7 +429,35 @@ h1 {
     </div>
   </div>
 
-  <div id="app"></div>
+  <div class="global-control-bar" id="profileControlBar">
+    <div class="control-group">
+      <span class="control-label">Split</span>
+      <div class="toggle-group" id="profileSplitToggle">
+        <button type="button" class="toggle-btn active" data-psplit="both">Both</button>
+        <button type="button" class="toggle-btn" data-psplit="rhp">vs RHP</button>
+        <button type="button" class="toggle-btn" data-psplit="lhp">vs LHP</button>
+        <button type="button" class="toggle-btn" data-psplit="home">Home</button>
+        <button type="button" class="toggle-btn" data-psplit="away">Away</button>
+        <button type="button" class="toggle-btn" data-psplit="f5">F5</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <span class="control-label">Window</span>
+      <div class="toggle-group" id="profileWindowToggle">
+        <button type="button" class="toggle-btn active" data-pwindow="YTD">YTD</button>
+        <button type="button" class="toggle-btn" data-pwindow="L30">L30</button>
+        <button type="button" class="toggle-btn" data-pwindow="L14">L14</button>
+        <button type="button" class="toggle-btn warn" data-pwindow="L7">L7</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-offense-block">
+    <div id="profileSnapshot"></div>
+    <div id="profileMiniDashboards"></div>
+  </div>
+
+  <div id="profileOrgSections"></div>
 </div>
 
 <script>
@@ -405,8 +486,8 @@ var TEAM_NAMES = {
 var OSI_TIERS = [[85,'Elite'],[75,'High'],[65,'Dangerous'],[50,'Inconsistent'],[0,'Weak']];
 var PITCH_TIERS = [[85,'Ace'],[70,'Solid'],[55,'Average'],[0,'Volatile']];
 
-var DATA = { profiles: [], batters: [], sps: [], bullpen: [], registry: [], matchups: [], weather: [], pitchTeams: [] };
-var STATE = { team: 'NYY' };
+var DATA = { profiles: [], batters: [], sps: [], bullpen: [], registry: [], matchups: [], weather: [], pitchTeams: [], metricsR: [], metricsL: [] };
+var STATE = { team: 'NYY', split: 'both', window: 'YTD' };
 
 function gvizUrl(tab) {
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
@@ -550,44 +631,111 @@ function quadrantPosition(team, prof) {
   return { x: x, y: y };
 }
 
+function buildTonightHtml(game) {
+  if (!game) return '';
+  var away = teamKey(pickCol(game, ['Away', 'away_team']));
+  var home = teamKey(pickCol(game, ['Home', 'home_team']));
+  var opp = away === STATE.team ? home : away;
+  var time = pickCol(game, ['Game_Time', 'game_time']) || 'TBD';
+  var isHome = home === STATE.team;
+  var spHand = away === STATE.team
+    ? pickCol(game, ['Home_Hand', 'home_hand', 'homeHand'])
+    : pickCol(game, ['Away_Hand', 'away_hand', 'awayHand']);
+  var spName = away === STATE.team
+    ? pickCol(game, ['Home_SP', 'home_sp', 'Home SP'])
+    : pickCol(game, ['Away_SP', 'away_sp', 'Away SP']);
+  return {
+    html: '<span class="pill-tonight">Tonight vs ' + (TEAM_NAMES[opp] || opp) + ' · ' +
+      (isHome ? 'Home' : 'Away') + ' · ' + time +
+      (spName ? ' · SP ' + spName + (spHand ? ' (' + spHand + 'HP)' : '') : '') + '</span>',
+    opp: opp,
+    spHand: spHand
+  };
+}
+
+function computeSpFx(team) {
+  var sps = DATA.sps.filter(function(s) {
+    return teamKey(pickCol(s, ['pitcher_team', 'pitcher team'])) === teamKey(team);
+  });
+  if (!sps.length) return null;
+  var k = 0, bb = 0, er = 0, n = 0;
+  sps.forEach(function(sp) {
+    var kv = num(pickCol(sp, ['K_pct']));
+    var bv = num(pickCol(sp, ['BB_pct']));
+    var ev = num(pickCol(sp, ['ERA']));
+    if (kv != null) { k += kv; n++; }
+    if (bv != null) bb += bv;
+    if (ev != null) er += ev;
+  });
+  if (!n) return null;
+  return { k: k / n, bb: bb / sps.length, er: er / sps.length, pitch: null };
+}
+
+function buildMiniCtx(prof, name, tonight) {
+  return {
+    pickCol: pickCol,
+    teamName: name,
+    team: STATE.team,
+    split: STATE.split,
+    window: STATE.window,
+    metricsR: DATA.metricsR,
+    metricsL: DATA.metricsL,
+    tonightHtml: tonight ? tonight.html : '',
+    tonightSpHand: tonight ? tonight.spHand : '',
+    spFx: computeSpFx(STATE.team)
+  };
+}
+
+function renderOffenseBlock(prof, name, tonight) {
+  var snap = document.getElementById('profileSnapshot');
+  var mini = document.getElementById('profileMiniDashboards');
+  if (!snap || !mini || !window.TeamProfileMini) return;
+  var ctx = buildMiniCtx(prof, name, tonight);
+  snap.innerHTML = TeamProfileMini.renderSnapshot(prof, STATE.team, ctx);
+  mini.innerHTML = TeamProfileMini.render(prof, STATE.team, ctx);
+}
+
+function bindProfileControls() {
+  document.querySelectorAll('#profileSplitToggle [data-psplit]').forEach(function(btn) {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', function() {
+      STATE.split = btn.getAttribute('data-psplit');
+      document.querySelectorAll('#profileSplitToggle [data-psplit]').forEach(function(b) {
+        b.classList.toggle('active', b === btn);
+      });
+      renderTeam(STATE.team);
+    });
+  });
+  document.querySelectorAll('#profileWindowToggle [data-pwindow]').forEach(function(btn) {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', function() {
+      STATE.window = btn.getAttribute('data-pwindow');
+      document.querySelectorAll('#profileWindowToggle [data-pwindow]').forEach(function(b) {
+        b.classList.toggle('active', b === btn);
+      });
+      renderTeam(STATE.team);
+    });
+  });
+}
+
 function renderTeam(team) {
   STATE.team = teamKey(team);
   var prof = profileRow(STATE.team) || {};
   var game = tonightGame(STATE.team);
   var name = TEAM_NAMES[STATE.team] || STATE.team;
-  var rec = pickCol(prof, ['record_placeholder']) || '—';
-  var osi = num(pickCol(prof, ['osi']));
-  var ppGap = num(pickCol(prof, ['pp_gap']));
   var platoonSens = pickCol(prof, ['platoon_sensitive']) === 'True' || pickCol(prof, ['platoon_sensitive']) === 'true';
   var platoonGap = num(pickCol(prof, ['platoon_gap']));
+  var ppGap = num(pickCol(prof, ['pp_gap']));
   var q = quadrantPosition(STATE.team, prof);
+  var tonight = buildTonightHtml(game);
 
-  var tonightHtml = '';
-  if (game) {
-    var away = teamKey(pickCol(game, ['Away', 'away_team']));
-    var home = teamKey(pickCol(game, ['Home', 'home_team']));
-    var opp = away === STATE.team ? home : away;
-    var time = pickCol(game, ['Game_Time', 'game_time']) || 'TBD';
-    var isHome = home === STATE.team;
-    tonightHtml = '<span class="pill-tonight">Tonight vs ' + (TEAM_NAMES[opp] || opp) + ' · ' +
-      (isHome ? 'Home' : 'Away') + ' · ' + time + '</span>';
-  }
+  renderOffenseBlock(prof, name, tonight);
 
   var html = '';
-  html += '<div class="team-header">';
-  html += '<div class="team-name-lg">' + name + '</div>';
-  html += '<span class="team-abbr">' + STATE.team + '</span>';
-  html += '<span style="font-size:12px;color:var(--text-3);">Record ' + rec + '</span>';
-  if (tonightHtml) html += tonightHtml;
-  if (platoonSens) html += '<span class="pill-platoon">Platoon Sensitive (gap ' + fmt(platoonGap, 1) + ')</span>';
-  html += '<div class="header-meta" id="headerMeta"></div></div>';
-
-  /* Section 2 — Offense */
-  html += '<div class="profile-controls"><span class="control-label">Split</span> Both / vs RHP / vs LHP / Home / Away / F5 · <span class="control-label">Window</span> YTD / L30 / L14 / L7</div>';
-  if (window.TeamProfileMini) {
-    html += TeamProfileMini.renderSnapshot(prof, STATE.team, { pickCol: pickCol, teamName: name });
-    if (tonightHtml) html += '<div style="margin-bottom:16px;">' + tonightHtml + '</div>';
-    html += TeamProfileMini.render(prof, STATE.team, { pickCol: pickCol });
+  if (platoonSens) {
+    html += '<div style="margin-bottom:12px;"><span class="pill-platoon">Platoon Sensitive (gap ' + fmt(platoonGap, 1) + ')</span></div>';
   }
 
   html += '<div class="section" style="display:none;"><div class="section-eyebrow">Offense</div>';
@@ -821,7 +969,8 @@ function renderTeam(team) {
   }
   html += '</div>';
 
-  document.getElementById('app').innerHTML = html;
+  var org = document.getElementById('profileOrgSections');
+  if (org) org.innerHTML = html;
   history.replaceState(null, '', '?team=' + STATE.team);
 }
 
@@ -853,7 +1002,9 @@ function loadAll() {
     fetchSheetTab(TABS.player_registry).catch(function() { return []; }),
     fetchSheetTab(TABS.today_matchups).catch(function() { return []; }),
     fetchSheetTab(TABS.pitching_score).catch(function() { return []; }),
-    fetchSheetTab(TABS.reliever_log).catch(function() { return []; })
+    fetchSheetTab(TABS.reliever_log).catch(function() { return []; }),
+    fetchSheetTab(TABS.vs_rhp).catch(function() { return []; }),
+    fetchSheetTab(TABS.vs_lhp).catch(function() { return []; })
   ]).then(function(res) {
     DATA.profiles = res[0];
     DATA.batters = res[1];
@@ -863,6 +1014,8 @@ function loadAll() {
     DATA.matchups = res[5];
     DATA.pitchTeams = res[6];
     DATA.log = res[7];
+    DATA.metricsR = res[8] || [];
+    DATA.metricsL = res[9] || [];
     var banner = document.getElementById('dataBanner');
     if (!DATA.profiles.length) {
       banner.textContent = 'Team_Profiles tab empty — run pipeline steps 18–19 (compute_team_profile + push).';
@@ -890,6 +1043,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   console.log('[MLBMA] team_profile loadAll start');
   initSelector();
+  bindProfileControls();
   loadAll().then(function() {
     renderTeam(STATE.team);
   }).catch(function(err) {
