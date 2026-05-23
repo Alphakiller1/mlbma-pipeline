@@ -1435,11 +1435,20 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 
 
 /* Platform rebuild */
-.oem-mode-tabs, #pane-oem-methodology, .dash-section-nav,
-#dailySummarySection, #section-market-map, #section-market-edge,
-#section-game-script, #section-validate, .question-section { display: none !important; }
-#pane-oem-daily, #pane-oem-research { display: block !important; }
-#pane-oem-daily.active, #pane-oem-research.active { display: block !important; }
+.oem-mode-tabs, #pane-oem-methodology, #pane-oem-daily,
+.dash-section-nav, #dailySummarySection, #section-market-map,
+#section-market-edge, #section-game-script, #section-validate,
+.question-section { display: none !important; }
+#section-research-lab { display: block !important; }
+body.platform-dashboard .show-advanced-metrics .status-only-cols { display: none !important; }
+body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-cell !important; }
+.rank-logo { vertical-align: middle; margin-right: 6px; border-radius: 2px; }
+.mc-sp-photo img, .mc-sp-photo .pitcher-headshot-fallback { width: 36px; height: 36px; flex-shrink: 0; }
+.hero-lineup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.hero-lineup-grid .lineup-row.platoon-adv { background: rgba(74,222,128,.08); border-radius: 4px; }
+.hero-lineup-grid .lineup-row.platoon-disadv { opacity: 0.55; }
+#dashboardRankingsMount .section-header { display: none; }
+#dashboardRankingsMount .research-controls { display: none; }
 .platform-section { margin-bottom: 40px; scroll-margin-top: 88px; }
 .platform-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--purple-2); margin-bottom: 4px; }
 .platform-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; letter-spacing: -.02em; }
@@ -1521,7 +1530,6 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 <script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js"></script>
 <script src="platform_dashboard.js"></script>
-<script src="oem_overhaul.js"></script>
 </head>
 <body>
 
@@ -1534,6 +1542,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     </a>
     <div class="chase-nav-links">
       <a href="#section-matchups-hero" class="chase-nav-link">Matchups</a>
+      <a href="#section-signal-board" class="chase-nav-link">Signals</a>
       <a href="#section-rankings" class="chase-nav-link">Rankings</a>
       <a href="#section-research-lab" class="chase-nav-link">Research</a>
       <a href="glossary.html" class="chase-nav-link">Glossary</a>
@@ -1598,6 +1607,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
   <div class="chase-mobile-nav">
     <a href="#section-matchups-hero" class="chase-mobile-link">Matchups</a>
+    <a href="#section-signal-board" class="chase-mobile-link">Signals</a>
     <a href="#section-rankings" class="chase-mobile-link">Rankings</a>
     <a href="#section-research-lab" class="chase-mobile-link">Research</a>
     <div class="chase-mobile-section">Profiles</div>
@@ -1661,11 +1671,11 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <div id="matchupsHeroGrid"></div>
 </section>
 
-<section class="platform-section" id="section-signal-summary">
+<section class="platform-section" id="section-signal-board">
   <div class="signal-summary-header">
     <div>
-      <div class="platform-eyebrow">Model Reads</div>
-      <h2 class="platform-title" style="font-size:16px;margin:0;">Today's Model Reads</h2>
+      <div class="platform-eyebrow">Predictive Signals</div>
+      <h2 class="platform-title" style="font-size:16px;margin:0;">Daily Predictive Signal Board</h2>
     </div>
     <button type="button" class="btn" id="signalSummaryToggle" style="font-size:11px;">Hide ▴</button>
   </div>
@@ -1704,78 +1714,8 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <div id="metricBarChart"></div>
 </section>
 
-<div class="oem-mode-pane active" id="pane-oem-daily" data-oem-pane="daily">
-<div class="layer-main" id="layerMain">
-
-<section class="daily-summary section" id="dailySummarySection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Daily Read</div>
-      <div class="section-title">Five Questions for Tonight</div>
-      <div class="section-subtitle">Quick answers before matchups, market edge, game script, and validation.</div>
-    </div>
-  </div>
-  <div class="daily-summary-grid" id="dailySummaryGrid"></div>
-</section>
-
-<nav class="dash-section-nav" aria-label="Dashboard sections">
-  <a href="#section-lineup-edge" data-dash-section="section-lineup-edge">Tonight&apos;s Games</a>
-  <a href="#section-market-edge" data-dash-section="section-market-edge">Market Edge</a>
-  <a href="#section-game-script" data-dash-section="section-game-script">Game Script</a>
-  <a href="#section-validate" data-dash-section="section-validate">Validate</a>
-</nav>
-
-<section class="question-section" id="section-lineup-edge">
-  <h2 class="question-title">Who Has The Offensive Edge Tonight?</h2>
-  <p class="question-subtitle">Split-specific lineup OSI vs tonight&apos;s SP handedness. Expand any game for lineup detail.</p>
-  <div id="dailyMatchupsMount"></div>
-</section>
-
-<div class="section status-map-wrap" id="section-market-map">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Visual Anchor</div>
-      <div class="section-title" id="chartTitle">Offensive Market Status Map</div>
-      <div class="section-subtitle">OSI vs PP-Gap — buy-low vs fade quadrants.</div>
-    </div>
-  </div>
-  <div class="legend-row">
-    <span class="legend-dot"><span class="dot" style="background: var(--green);"></span> Back Team Totals</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--blue);"></span> Buy Low Offense</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--gold);"></span> Fade Momentum</span>
-    <span class="legend-dot"><span class="dot" style="background: var(--red);"></span> Fade / Under Lean</span>
-  </div>
-  <div class="chart-wrap">
-    <div class="chart-placeholder" id="chartPlaceholder">Loading status map...</div>
-    <div id="mainChart"></div>
-    <div class="tooltip" id="chartTip"></div>
-  </div>
-</div>
-
-<section class="question-section" id="section-market-edge">
-  <h2 class="question-title">Which Offenses Are Priced Wrong?</h2>
-  <p class="question-subtitle">Top buy-low and fade candidates by process-production gap with PALS confirmation.</p>
-  <div id="marketEdgeBoard"></div>
-</section>
-
-<section class="question-section" id="section-game-script">
-  <h2 class="question-title">How Will This Game Be Played?</h2>
-  <p class="question-subtitle">ABQ vs Pitching Score game script with F5 vs full-game badge.</p>
-  <div id="gameScriptGrid"></div>
-</section>
-
-<section class="question-section" id="section-validate">
-  <h2 class="question-title">Can I Trust This Number?</h2>
-  <p class="question-subtitle">PALS schedule confirmation for offenses · OOR ERA validation for tonight&apos;s SPs.</p>
-  <div id="validationGrid"></div>
-</section>
-
-
-</div><!-- /layer-main -->
-</div><!-- /pane-oem-daily -->
-
 <!-- LAYER 2 — Advanced Tools -->
-<div class="oem-mode-pane" id="pane-oem-research" data-oem-pane="research">
+<div class="oem-mode-pane" id="section-research-lab" data-oem-pane="research">
 <div class="layer-label">Research Lab</div>
 <div class="layer-advanced" id="layerAdvanced">
 
@@ -3014,6 +2954,17 @@ function showDataError(msg) {
   el.classList.add('show');
 }
 
+function parseRegistrySheet(rows) {
+  if (!rows || !rows.length) return [];
+  return rows.map(function(r) {
+    return {
+      player_id: r.player_id || r.playerId || r.Player_ID,
+      full_name: r.full_name || r.fullName || r.Full_Name || r.name,
+      team_abbr: r.team_abbr || r.team || r.Tm
+    };
+  }).filter(function(r) { return r.player_id && r.full_name; });
+}
+
 function loadLiveData() {
   console.log('[MLBMA] loadLiveData start');
   var loadingText = document.getElementById('loadingText');
@@ -3030,11 +2981,12 @@ function loadLiveData() {
     fetchSheetTab(TABS.today_matchups),
     fetchSheetTab(TABS.signals_convergence),
     fetchSheetTab(TABS.weather),
+    fetchSheetTab(TABS.player_registry),
     fetchSheetText(TABS.last_updated)
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
         pitchingRows = results[3], palsRows = results[4], bullpenRows = results[5],
-        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8], signalsRows = results[9], weatherRows = results[10], tsText = results[11];
+        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8], signalsRows = results[9], weatherRows = results[10], registryRows = results[11], tsText = results[12];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -3049,6 +3001,10 @@ function loadLiveData() {
     LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
     LIVE_DATA.signalsConvergence = signalsRows || [];
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
+    LIVE_DATA.playerRegistry = registryRows || [];
+    if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
+      MLBMAAssets.parseRegistryRows(parseRegistrySheet(registryRows));
+    }
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     LIVE_DATA.loaded = true;
@@ -3902,15 +3858,12 @@ function initCompare() {
 }
 
 function renderDailyRead() {
-  if (window.OEMOverhaul) {
-    OEMOverhaul.renderQuestionDashboard();
-    OEMOverhaul.bindDashboardNav();
+  mountDashboardRankings();
+  if (window.PlatformDashboard) {
+    PlatformDashboard.initRegistry().then(function() { PlatformDashboard.renderDashboard(); });
   } else {
-    renderDailySummary();
-    renderQuadrant();
-    renderMatchups();
+    renderMasterTable();
   }
-  mountReferenceTables();
   bindFilterHelp();
 }
 
@@ -4383,6 +4336,10 @@ function renderMasterTable(){
   var body = document.getElementById('masterBody');
   var mobile = document.getElementById('mobileCards');
   if (!body || !mobile) return;
+  var masterTable = document.getElementById('masterTable');
+  var platformTable = masterTable && masterTable.dataset.platformHeaders;
+  var mColor = (window.MLBMAAssets && MLBMAAssets.metricColor) ? MLBMAAssets.metricColor.bind(MLBMAAssets) : tcol;
+  var logoFn = (window.MLBMAAssets && MLBMAAssets.teamLogoImg) ? function(t) { return MLBMAAssets.teamLogoImg(t, 24, 'rank-logo'); } : function() { return ''; };
   var rows = applyFilter(currentRows().slice());
   var key = STATE.sortKey;
   var dir = STATE.sortDir==='desc' ? -1 : 1;
@@ -4484,10 +4441,29 @@ function renderMasterTable(){
         '<td class="advanced-cols num num-neutral">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'—')+'</td>'+
         '<td class="advanced-cols num num-neutral">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'—')+'</td>'+
       '</tr>';
+    } else if (platformTable) {
+    var palsHtml = '—';
+    if (d.pals != null && !isNaN(d.pals)) {
+      var palsGap = Math.abs(d.osi - d.pals);
+      palsHtml = '<span class="pals-badge ' + (palsGap < 4 ? 'ok' : 'warn') + '">' + d.pals.toFixed(1) + '</span>';
+    }
+    var projArrow = projDelta > 1.5 ? ' ↑' : projDelta < -1.5 ? ' ↓' : '';
+    html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
+      '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
+      '<td class="team-cell" style="color:var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
+      '<td class="num" style="color:'+mColor(d.abq)+';'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
+      '<td class="num" style="color:'+mColor(d.rcv)+';'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
+      '<td class="num" style="color:'+mColor(d.obr)+';'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+metricDecision('obr',d)+'</td>'+
+      '<td class="num" style="color:'+mColor(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+metricDecision('osi',d)+'</td>'+
+      '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+projArrow+metricDecision('projOSI',d)+'</td>'+
+      '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
+      '<td class="num">'+palsHtml+'</td>'+
+      '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'—')+'</td>'+
+    '</tr>';
     } else {
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
       '<td class="rank-cell">'+pinBtn+(i+1)+'</td>'+
-      '<td class="team-cell" style="color: var(--purple);">'+d.t+paBadge+'</td>'+
+      '<td class="team-cell" style="color: var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
       '<td class="num" style="'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
       '<td class="num" style="'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
       '<td class="num" style="'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+metricDecision('obr',d)+'</td>'+
@@ -4502,7 +4478,7 @@ function renderMasterTable(){
     }
 
     if(STATE.expandedTeam === d.t) {
-      var colSpan = STATE.showAdvancedMetrics ? 14 : 6;
+      var colSpan = platformTable ? 11 : (STATE.showAdvancedMetrics ? 14 : 6);
       html += '<tr class="detail-row"><td colspan="'+colSpan+'">'+renderTeamDetail(d.t)+'</td></tr>';
     }
 
@@ -4526,7 +4502,7 @@ function renderMasterTable(){
   });
 
   if(rows.length === 0) {
-    html = '<tr><td colspan="19" style="text-align:center;padding:30px;color:var(--text-3);">No teams match filter: <code style="color:var(--purple);">'+STATE.searchQuery+'</code></td></tr>';
+    html = '<tr><td colspan="'+(platformTable ? 11 : 19)+'" style="text-align:center;padding:30px;color:var(--text-3);">No teams match filter: <code style="color:var(--purple);">'+STATE.searchQuery+'</code></td></tr>';
     mobileHtml = '<div style="text-align:center;padding:30px;color:var(--text-3);">No teams match filter.</div>';
   }
 
@@ -5150,20 +5126,26 @@ document.addEventListener('keydown', function(e){
   }
 });
 
-document.querySelectorAll('#masterTable th[data-sort]').forEach(function(th){
-  th.addEventListener('click', function(){
-    var k = th.getAttribute('data-sort');
-    if(k==='rank') return;
-    if(STATE.sortKey===k){
-      STATE.sortDir = STATE.sortDir==='desc' ? 'asc' : 'desc';
-    } else {
-      STATE.sortKey = k;
-      STATE.sortDir = 'desc';
-    }
-    renderMasterTable();
-    urlEncodeState();
+function bindMasterTableSort() {
+  document.querySelectorAll('#masterTable th[data-sort]').forEach(function(th) {
+    if (th.dataset.sortBound) return;
+    th.dataset.sortBound = '1';
+    th.addEventListener('click', function() {
+      var k = th.getAttribute('data-sort');
+      if (k === 'rank') return;
+      if (STATE.sortKey === k) {
+        STATE.sortDir = STATE.sortDir === 'desc' ? 'asc' : 'desc';
+      } else {
+        STATE.sortKey = k;
+        STATE.sortDir = 'desc';
+      }
+      renderMasterTable();
+      if (window.PlatformDashboard && STATE.activeMetric) PlatformDashboard.renderMetricBarChart(STATE.activeMetric);
+      urlEncodeState();
+    });
   });
-});
+}
+bindMasterTableSort();
 
 /* Research subtabs bound in bindResearchSubtabs() — do not use [id^=pane-] (hides oem mode panes) */
 
@@ -5524,17 +5506,23 @@ function mountDashboardRankings() {
     document.body.classList.add('show-advanced-metrics');
     var thead = table.querySelector('thead tr');
     if (thead) {
-      thead.innerHTML = '<th style="width:30px;">#</th><th>Team</th><th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th><th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>';
+      thead.innerHTML = '<th style="width:30px;">#</th><th data-sort="t">Team</th><th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th><th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>';
+      bindMasterTableSort();
     }
   }
 }
 
 function mountResearchTables() {
-  var splitsMount = document.getElementById('splitsTableMount');
+  var dashMount = document.getElementById('dashboardRankingsMount');
   var rankSection = document.querySelector('#masterTable');
+  if (dashMount && rankSection && dashMount.contains(rankSection.closest('.section'))) {
+    /* keep rankings on main dashboard */
+  } else {
+  var splitsMount = document.getElementById('splitsTableMount');
   if (splitsMount && rankSection) {
     var section = rankSection.closest('.section');
     if (section && !splitsMount.contains(section)) splitsMount.appendChild(section);
+  }
   }
   var pitchMount = document.getElementById('pitchingResearchMount');
   var pitchSec = document.getElementById('pitchingSection');
@@ -5581,14 +5569,8 @@ function renderAll(){
   mountDashboardRankings();
   if (window.PlatformDashboard) {
     PlatformDashboard.initRegistry().then(function() { PlatformDashboard.renderDashboard(); });
-  } else if (STATE.oemMode === 'daily' && window.OEMOverhaul) {
-    OEMOverhaul.renderQuestionDashboard();
-    OEMOverhaul.bindDashboardNav();
   } else {
-    renderDailySummary();
-    renderGlanceCards();
     renderMasterTable();
-    renderQuadrant();
   }
   renderWatchlistBar();
   renderComparePane();
@@ -5823,7 +5805,6 @@ function runPostLoadUI() {
     renderAll();
     renderSplitBars();
     renderTrendHeatmap();
-    renderReferenceTables();
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
     showDataError('Dashboard render error: ' + (err && err.message ? err.message : String(err)));
@@ -5871,6 +5852,7 @@ function bindDashRankingsControls(){
 }
 
 function init(){
+  document.body.classList.add('platform-dashboard');
   console.log('[MLBMA] init start');
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);

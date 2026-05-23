@@ -12,6 +12,10 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  function gameCardId(m) {
+    return 'game-card-' + String(m.away || '') + '-' + String(m.home || '');
+  }
+
   function teamRow(team, hand) {
     var arr = hand === 'L' ? (typeof SCO_YTD_L !== 'undefined' ? SCO_YTD_L : [])
       : (typeof SCO_YTD_R !== 'undefined' ? SCO_YTD_R : []);
@@ -139,8 +143,11 @@
     var sorted = sortGames(games).filter(function(m) {
       return passesFilter(m, gameScriptBadge(m), f5Badge(m));
     });
-    grid.innerHTML = sorted.map(function(m, gi) {
-      var uid = 'hero_' + gi;
+    var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
+
+    grid.innerHTML = sorted.map(function(m) {
+      var cardId = gameCardId(m);
+      var panelId = 'hero_' + cardId;
       var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
       var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
       var total = awayOSI + homeOSI || 1;
@@ -152,21 +159,20 @@
       var awayHandLabel = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
       var awayEdgeCls = fav === m.away ? ' edge-team' : '';
       var homeEdgeCls = fav === m.home ? ' edge-team' : '';
-      var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
 
-      return '<article class="hero-matchup-card" id="game-card-' + gi + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
+      return '<article class="hero-matchup-card" id="' + cardId + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
         + '<div class="hmc-row hmc-teams">'
         + '<div class="hmc-team' + awayEdgeCls + '">' + logo(m.away, 40) + '<span class="hmc-abbr">' + esc(m.away) + '</span></div>'
         + '<span class="hmc-at">@</span>'
         + '<div class="hmc-team' + homeEdgeCls + '">' + logo(m.home, 40) + '<span class="hmc-abbr">' + esc(m.home) + '</span></div>'
-        + '<div class="hmc-time">' + esc(m.time || 'TBD') + '</div>'.replace(/<\/?motion>/g, '')
+        + '<div class="hmc-time">' + esc(m.time || 'TBD') + '</div>'
         + weatherHtml(m)
         + '</div>'
         + '<div class="hmc-row hmc-pitchers">'
         + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP })
         + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP })
         + '</div>'
-        + '<div class="hmc-row hmc-edge-label">Tonight&apos;s Lineup Edge (vs ' + handLabel + ' / ' + awayHandLabel + ')</div>'.replace(/<\/?motion>/g, '')
+        + '<div class="hmc-row hmc-edge-label">Tonight&apos;s Lineup Edge (vs ' + handLabel + ' / ' + awayHandLabel + ')</div>'
         + '<div class="hmc-osi-bar">'
         + '<span class="hmc-osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
         + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
@@ -176,8 +182,8 @@
         + '<span class="script-badge ' + script.cls + '">' + esc(script.label) + '</span>'
         + '<span class="f5-badge ' + f5.cls + '">' + esc(f5.label) + '</span>'
         + '</div>'
-        + '<button type="button" class="metrics-toggle" onclick="toggleMetricsPanel(\'' + uid + '\', this)">Show Lineup ▾</button>'
-        + '<div class="metrics-panel" id="' + uid + '">'
+        + '<button type="button" class="metrics-toggle" onclick="toggleMetricsPanel(\'' + panelId + '\', this)">Show Lineup ▾</button>'
+        + '<div class="metrics-panel" id="' + panelId + '">'
         + (typeof buildMatchupLineupBlock === 'function' ? buildMatchupLineupBlock(m) : '')
         + '</div></article>';
     }).join('').replace(/<\/?motion>/g, '');
@@ -194,38 +200,38 @@
       var bestLineup = null, bestOsi = -1;
       games.forEach(function(m) {
         [['away', m.awayOSI, m.homeHand], ['home', m.homeOSI, m.awayHand]].forEach(function(x) {
-          if (x[1] != null && x[1] > bestOsi) { bestOsi = x[1]; bestLineup = { team: m[x[0]], osi: x[1], game: m.away + '@' + m.home }; }
+          if (x[1] != null && x[1] > bestOsi) { bestOsi = x[1]; bestLineup = { team: m[x[0]], osi: x[1], cardId: gameCardId(m) }; }
         });
       });
-      if (bestLineup) chips.push({ cls: 'chip-green', label: 'Best Lineup Edge', val: bestLineup.team + ' ' + bestLineup.osi.toFixed(1), scroll: 'game-card-0' });
+      if (bestLineup) chips.push({ cls: 'chip-green', label: 'Best Lineup Edge', val: bestLineup.team + ' ' + bestLineup.osi.toFixed(1), scroll: bestLineup.cardId });
 
       var bestF5 = null, bestF5Score = -1;
-      games.forEach(function(m, i) {
+      games.forEach(function(m) {
         var awayRow = teamRow(m.away, m.homeHand);
         var abq = awayRow ? awayRow.abq : 50;
         var ps = spPitchScore(m.home) || 50;
         var s = abq + (100 - ps);
-        if (s > bestF5Score) { bestF5Score = s; bestF5 = { game: m.away + '@' + m.home, idx: i }; }
+        if (s > bestF5Score) { bestF5Score = s; bestF5 = { game: m.away + '@' + m.home, cardId: gameCardId(m) }; }
       });
-      if (bestF5) chips.push({ cls: 'chip-amber', label: 'Strongest F5 Angle', val: bestF5.game, scroll: 'game-card-' + bestF5.idx });
+      if (bestF5) chips.push({ cls: 'chip-amber', label: 'Strongest F5 Angle', val: bestF5.game, scroll: bestF5.cardId });
 
       var bestPs = null, psSum = -1;
-      games.forEach(function(m, i) {
+      games.forEach(function(m) {
         var s = (spPitchScore(m.home) || 0) + (spPitchScore(m.away) || 0);
-        if (s > psSum) { psSum = s; bestPs = { game: m.away + '@' + m.home, idx: i }; }
+        if (s > psSum) { psSum = s; bestPs = { game: m.away + '@' + m.home, cardId: gameCardId(m) }; }
       });
-      if (bestPs) chips.push({ cls: 'chip-gray', label: 'Pitching Duel', val: bestPs.game, scroll: 'game-card-' + bestPs.idx });
+      if (bestPs) chips.push({ cls: 'chip-gray', label: 'Pitching Duel', val: bestPs.game, scroll: bestPs.cardId });
 
       var bestPower = null, powerScore = -1;
-      games.forEach(function(m, i) {
+      games.forEach(function(m) {
         var awayRow = teamRow(m.away, m.homeHand);
         var homeRow = teamRow(m.home, m.awayHand);
         var rcv = Math.max(awayRow ? awayRow.rcv : 0, homeRow ? homeRow.rcv : 0);
         var hr9 = Math.max(m.homeHR9 || 0, m.awayHR9 || 0);
         var s = rcv + hr9 * 20;
-        if (s > powerScore) { powerScore = s; bestPower = { game: m.away + '@' + m.home, idx: i }; }
+        if (s > powerScore) { powerScore = s; bestPower = { game: m.away + '@' + m.home, cardId: gameCardId(m) }; }
       });
-      if (bestPower) chips.push({ cls: 'chip-orange', label: 'Power Matchup', val: bestPower.game, scroll: 'game-card-' + bestPower.idx });
+      if (bestPower) chips.push({ cls: 'chip-orange', label: 'Power Matchup', val: bestPower.game, scroll: bestPower.cardId });
     }
 
     if (rows.length) {
@@ -238,7 +244,7 @@
     chips = chips.slice(0, 6);
     el.innerHTML = chips.map(function(c) {
       var click = c.href ? 'onclick="location.href=\'' + c.href + '\'"'
-        : 'onclick="document.getElementById(\'' + c.scroll + '\').scrollIntoView({behavior:\'smooth\'})"';
+        : 'onclick="var el=document.getElementById(\'' + c.scroll + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});"';
       return '<button type="button" class="signal-chip ' + c.cls + '" ' + click + '>'
         + '<span class="chip-label">' + esc(c.label) + '</span>'
         + '<span class="chip-val">' + esc(c.val) + '</span></button>';
@@ -308,9 +314,17 @@
   }
 
   function initRegistry() {
-    if (!A || !global.fetchSheetTab || !global.TABS) return Promise.resolve();
+    if (!A) return Promise.resolve();
+    if (A.registry && A.registry.loaded) return Promise.resolve();
+    if (LIVE_DATA && LIVE_DATA.playerRegistry && LIVE_DATA.playerRegistry.length && A.parseRegistryRows) {
+      A.parseRegistryRows(typeof parseRegistrySheet === 'function' ? parseRegistrySheet(LIVE_DATA.playerRegistry) : LIVE_DATA.playerRegistry);
+      return Promise.resolve();
+    }
+    if (!global.fetchSheetTab || !global.TABS) return Promise.resolve();
     return A.loadRegistry(function() {
-      return fetchSheetTab(TABS.player_registry).then(function(rows) { return rows || []; });
+      return fetchSheetTab(TABS.player_registry).then(function(rows) {
+        return typeof parseRegistrySheet === 'function' ? parseRegistrySheet(rows || []) : (rows || []);
+      });
     });
   }
 
