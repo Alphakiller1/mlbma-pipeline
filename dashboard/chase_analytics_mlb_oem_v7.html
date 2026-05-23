@@ -2142,6 +2142,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </div>
 
 <script>
+var _initialHash = window.location.hash;
+console.log('[BOOT] initial hash:', _initialHash);
 /* ============================================================
    GOOGLE SHEETS — public CSV export (no API key)
    ============================================================ */
@@ -4215,8 +4217,9 @@ function urlEncodeState() {
     if(STATE.quadrantMode !== 'reg') p.set('q2', STATE.quadrantMode);
     if(stateReady() && STATE.oemMode && STATE.oemMode !== 'daily') p.set('mode', STATE.oemMode);
     var s = p.toString();
+    var hash = window.location.hash || _initialHash || '';
     if(window.history && window.history.replaceState)
-      window.history.replaceState(null, '', window.location.pathname + (s ? '?' + s : ''));
+      window.history.replaceState(null, '', window.location.pathname + (s ? '?' + s : '') + hash);
   } catch(e){}
 }
 function urlDecodeState() {
@@ -5651,8 +5654,16 @@ function initResearchLab() {
 }
 
 function syncDashboardView() {
-  console.log('[SYNC] hash=', window.location.hash, 'class=', document.documentElement.className);
-  var hash = (location.hash || '').replace(/^#/, '');
+  var hash = window.location.hash || _initialHash || '';
+  console.log('[SYNC] called with hash:', hash);
+  if (!window.location.hash && _initialHash) {
+    try {
+      history.replaceState(null, '', window.location.pathname + window.location.search + _initialHash);
+      hash = _initialHash;
+    } catch (e) { /* ignore */ }
+  }
+  console.log('[SYNC] hash=', hash, 'class=', document.documentElement.className);
+  hash = hash.replace(/^#/, '');
   var body = document.body;
   var root = document.documentElement;
   body.classList.remove('view-opening', 'view-research', 'view-model-report', 'research-lab-active');
@@ -5967,13 +5978,13 @@ function bindDashRankingsControls(){
 function init(){
   document.body.classList.add('platform-dashboard', 'opening-dashboard');
   document.documentElement.classList.remove('view-pending');
-  if (typeof syncDashboardView === 'function') syncDashboardView();
   console.log('[MLBMA] init start');
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
   try {
     urlDecodeState();
+    if (typeof syncDashboardView === 'function') syncDashboardView();
     bindDashRankingsControls();
     initMarketMapToggle();
     document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){

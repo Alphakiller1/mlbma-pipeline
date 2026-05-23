@@ -181,9 +181,7 @@
 
   function syncDashboardViewFromNav(hash) {
     if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
-    if (hash && window.location.hash !== hash) {
-      window.location.hash = hash;
-    }
+    if (hash) window.location.hash = hash;
     var sync = window.syncDashboardView;
     if (typeof sync === 'function') sync();
   }
@@ -200,10 +198,11 @@
       var targetPage = pathPart.split('/').pop() || 'chase_analytics_mlb_oem_v7.html';
       if (targetPage !== 'chase_analytics_mlb_oem_v7.html') return;
       if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
-      setTimeout(function () {
-        syncDashboardViewFromNav(hash);
-        setActivePage();
-      }, 0);
+      e.preventDefault();
+      window.location.hash = hash;
+      syncDashboardViewFromNav(hash);
+      setActivePage();
+      closeMobileMenu();
     });
   }
 
