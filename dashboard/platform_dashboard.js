@@ -273,6 +273,21 @@
   function parseSignalsToday() {
     var rows = (global.LIVE_DATA && LIVE_DATA.signalsToday) || [];
     if (!rows.length) return [];
+    if (global.MLBMASignals && MLBMASignals.normalizeSignalRow) {
+      return rows.map(function(row, i) {
+        var r = MLBMASignals.normalizeSignalRow(row, i);
+        if (!r.fired) return null;
+        return {
+          type: r.signalName || 'Model Signal',
+          game: r.gameLabel,
+          gameKey: r.gameKey,
+          away: r.away,
+          home: r.home,
+          confidence: r.fired ? 'High' : 'Medium',
+          idx: i
+        };
+      }).filter(Boolean);
+    }
     return rows.map(function(row, i) {
       var keys = Object.keys(row);
       function col() {
@@ -294,6 +309,15 @@
     }).filter(function(s) { return s.game !== '—' || s.type; });
   }
 
+  function modelReportHref(s) {
+    var base = 'model_report.html';
+    if (s.gameKey) return base + '?game=' + encodeURIComponent(s.gameKey) + '#signal-' + s.idx;
+    if (s.away && s.home) {
+      return base + '?game=' + encodeURIComponent(s.away + '@' + s.home) + '#signal-' + s.idx;
+    }
+    return base + '#signal-' + s.idx;
+  }
+
   function renderSignalChips() {
     var el = document.getElementById('signalChips');
     if (!el) return;
@@ -306,7 +330,7 @@
           label: s.type,
           val: s.game,
           conf: s.confidence,
-          href: 'model_report.html#signal-' + s.idx
+          href: modelReportHref(s)
         });
       });
     }
@@ -325,13 +349,18 @@
           });
         });
         if (bestLineup) {
-          chips.push({ label: 'Top Lineup Edge', val: bestLineup.game + ' · ' + bestLineup.team, conf: 'High', href: 'model_report.html' });
+          chips.push({
+            label: 'Top Lineup Edge',
+            val: bestLineup.game + ' · ' + bestLineup.team,
+            conf: 'High',
+            href: 'model_report.html?game=' + encodeURIComponent(bestLineup.game)
+          });
         }
       }
       if (rows.length) {
         var buy = rows.filter(function(d) { return d.ppGap >= 4; }).sort(function(a, b) { return b.ppGap - a.ppGap; })[0];
         if (buy && chips.length < 3) {
-          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'model_report.html' });
+          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'model_report.html?fired=1' });
         }
       }
     }

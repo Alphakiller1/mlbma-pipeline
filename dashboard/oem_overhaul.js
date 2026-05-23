@@ -348,6 +348,8 @@
   function renderConvergence() {
     var el = document.getElementById('convergenceGrid');
     if (!el) return;
+    /* Model Report page owns convergence UI via MLBMASignals */
+    if ((global.location.pathname || '').indexOf('model_report.html') >= 0) return;
     var rows = LIVE_DATA.signalsConvergence || [];
     if (!rows.length) {
       el.innerHTML = '<div class="empty-msg">Convergence signals load from Signals_Convergence sheet tab.</div>';

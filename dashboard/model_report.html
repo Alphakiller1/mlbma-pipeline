@@ -8,17 +8,11 @@
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
 <link rel="stylesheet" href="landing_dashboard.css">
+<link rel="stylesheet" href="model_report.css">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
-<style>
-body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 100vh; }
-.container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 64px; }
-.section-card {
-  background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f);
-  border-radius: 12px; padding: 20px; margin-bottom: 20px;
-}
-</style>
+<script src="matchup_shared.js"></script>
 </head>
 <body>
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -109,74 +103,49 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
 
 <script src="mlbma_ui.js" data-page="model_report.html"></script>
 
-<div class="container">
-  <div class="ca-page-title" style="margin-bottom:8px;">Model Report</div>
-  <p class="ca-helper" style="margin-bottom:24px;">Daily predictive signal board and convergence explorer.</p>
+<div class="mr-page">
+  <nav class="mr-breadcrumb" aria-label="Breadcrumb">
+    <a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>
+    <span>Model Report</span>
+  </nav>
 
-  <div class="section-card">
-    <h2 class="ca-section-title" style="font-size:18px;margin-bottom:12px;">Daily Predictive Signal Board</h2>
+  <div class="mr-hero" id="mrHero">
+    <p class="ca-helper">Loading model report…</p>
+  </div>
+
+  <section class="mr-section" id="section-signal-board">
+    <div class="mr-section-head">
+      <h2 class="mr-section-title">Daily Predictive Signal Board</h2>
+      <div class="mr-filters">
+        <button type="button" class="mr-pill" data-mr-filter="fired">Fired only</button>
+        <button type="button" class="mr-pill" data-mr-filter="f5">F5 angles</button>
+        <button type="button" class="mr-pill" data-mr-filter="side-away">Away</button>
+        <button type="button" class="mr-pill" data-mr-filter="side-home">Home</button>
+        <button type="button" class="mr-pill" id="mrGameFilterPill" data-mr-filter="clear-game" style="display:none;">Clear game</button>
+      </div>
+    </div>
     <div id="signalsTodayPanel"></div>
-  </div>
+  </section>
 
-  <div class="section-card">
-    <h2 class="ca-section-title" style="font-size:18px;margin-bottom:12px;">Signal Explorer</h2>
+  <section class="mr-section" id="section-convergence">
+    <div class="mr-section-head">
+      <h2 class="mr-section-title">Signal Explorer · Convergence</h2>
+      <p class="ca-helper" style="margin:0;font-size:12px;">Click a game card to filter the signal board</p>
+    </div>
+    <div id="convergenceCards"></div>
     <div id="convergenceGrid"></div>
-    <div id="stratsSignals" style="margin-top:20px;"></div>
-  </div>
+  </section>
+
+  <section class="mr-section" id="section-strats">
+    <h2 class="mr-section-title" style="margin-bottom:14px;">Offensive Strategy Signals</h2>
+    <div id="stratsSignals"></div>
+  </section>
 
   <div id="metricLegendMount"></div>
 </div>
 
 <script src="mlbma_signals.js"></script>
-<script src="oem_overhaul.js"></script>
+<script src="model_report.js"></script>
 <script src="chase_nav.js"></script>
-<script>
-(function() {
-  'use strict';
-  var TABS = MLBMA_CONFIG.SHEET_TABS;
-
-  function fetchSheetTab(name) {
-    var sid = MLBMA_CONFIG.SHEET_ID;
-    var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(name);
-    return fetch(url, { cache: 'no-store' }).then(function(r) {
-      if (!r.ok) throw new Error('fetch ' + name);
-      return r.text();
-    }).then(function(text) {
-      var lines = text.trim().split('\n');
-      if (lines.length < 2) return [];
-      var headers = lines[0].split(',').map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
-      return lines.slice(1).map(function(line) {
-        var cols = line.match(/("([^"]|"")*"|[^,]*)/g) || [];
-        var row = {};
-        headers.forEach(function(h, i) {
-          var v = (cols[i] || '').replace(/^"|"$/g, '').replace(/""/g, '"').trim();
-          row[h] = v;
-        });
-        return row;
-      });
-    });
-  }
-
-  window.LIVE_DATA = { signalsToday: [], signalsConvergence: [] };
-
-  Promise.all([
-    fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
-    fetchSheetTab(TABS.signals_convergence).catch(function() { return []; })
-  ]).then(function(res) {
-    LIVE_DATA.signalsToday = res[0] || [];
-    LIVE_DATA.signalsConvergence = res[1] || [];
-    if (window.MLBMASignals) MLBMASignals.renderExplorer();
-    var leg = document.getElementById('metricLegendMount');
-    if (leg && MLBMAAssets && MLBMAAssets.metricLegendHtml) {
-      leg.innerHTML = MLBMAAssets.metricLegendHtml();
-    }
-    if (window.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
-  }).catch(function() {
-    var leg = document.getElementById('metricLegendMount');
-    if (leg) leg.innerHTML = '<p class="ca-helper">Could not load signals — check sheet publish status.</p>';
-    if (window.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
-  });
-})();
-</script>
 </body>
 </html>
