@@ -40,12 +40,26 @@
     return String(t || '').trim().toUpperCase();
   }
 
+  function parseCSVLine(line) {
+    var out = [], cur = '', inQ = false;
+    for (var i = 0; i < line.length; i++) {
+      var c = line.charAt(i);
+      if (c === '"') {
+        if (inQ && line.charAt(i + 1) === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (c === ',' && !inQ) { out.push(cur); cur = ''; }
+      else cur += c;
+    }
+    out.push(cur);
+    return out;
+  }
+
   function parseCsvText(text) {
     var lines = String(text || '').trim().split('\n');
     if (lines.length < 2) return [];
-    var headers = lines[0].split(',').map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
-    return lines.slice(1).map(function(line) {
-      var cols = line.match(/("([^"]|"")*"|[^,]*)/g) || [];
+    var headers = parseCSVLine(lines[0]).map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
+    return lines.slice(1).filter(function(line) { return line.trim(); }).map(function(line) {
+      var cols = parseCSVLine(line);
       var row = {};
       headers.forEach(function(h, i) {
         row[h] = (cols[i] || '').replace(/^"|"$/g, '').replace(/""/g, '"').trim();

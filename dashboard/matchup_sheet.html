@@ -226,7 +226,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 
 <script src="mlbma_config.js?v=20260525"></script>
 <script src="mlbma_assets.js?v=20260525"></script>
-<script src="matchup_shared.js?v=20260525"></script>
+<script src="matchup_shared.js?v=20260526"></script>
 <script src="mlbma_charts.js?v=20260525"></script>
 <script src="chase_nav.js"></script>
 <script>
@@ -650,26 +650,50 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   }
 
   function hubLoadData() {
-    console.log('[HUB] starting data load');
-    console.log('[HUB] SHEET_ID:', typeof MLBMA_CONFIG !== 'undefined' ? MLBMA_CONFIG.SHEET_ID : 'MLBMA_CONFIG missing');
+    console.log('[HUB] fetch starting');
+    console.log('[HUB] MLBMA_CONFIG available:', typeof MLBMA_CONFIG !== 'undefined');
+    console.log('[HUB] SHEET_ID:', typeof MLBMA_CONFIG !== 'undefined' ? MLBMA_CONFIG.SHEET_ID : 'MISSING');
     console.log('[HUB] MatchupShared available:', typeof MatchupShared !== 'undefined');
+    console.log('[HUB] fetchSheetTab available:', typeof MatchupShared !== 'undefined' && typeof MatchupShared.fetchSheetTab === 'function');
+    console.log('[HUB] scoreRowFromSheet:', typeof MatchupShared !== 'undefined' ? typeof MatchupShared.scoreRowFromSheet : 'MISSING');
 
-    if (!S || !S.fetchSheetTab || !S.scoreRowFromSheet || !TABS) {
+    var MS = window.MatchupShared || window.MLBMASharedMatchup;
+    if (!MS || !MS.fetchSheetTab || !TABS) {
       console.warn('[HUB] shared fetch unavailable — check script load order');
       var body = document.getElementById('hubTableBody');
       if (body) body.innerHTML = '<tr><td colspan="14">Shared data module unavailable. Ensure mlbma_config.js and matchup_shared.js load before hubLoadData().</td></tr>';
       return Promise.resolve();
     }
 
-    return Promise.all([
-      S.fetchSheetTab(TABS.vs_rhp),
-      S.fetchSheetTab(TABS.vs_lhp),
-      S.fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
-      S.fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }),
-      S.fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; })
-    ]).then(function(res) {
-      HUB.scR = (res[0] || []).map(S.scoreRowFromSheet).filter(Boolean);
-      HUB.scL = (res[1] || []).map(S.scoreRowFromSheet).filter(Boolean);
+    var scoreFn = MS.scoreRowFromSheet || window.scoreRowFromSheet;
+    if (typeof scoreFn !== 'function') {
+      console.warn('[HUB] scoreRowFromSheet missing — will use raw rows');
+    }
+
+    var sid = MLBMA_CONFIG.SHEET_ID;
+    var rhpTab = TABS.vs_rhp;
+    var rhpUrl = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(rhpTab);
+    console.log('[HUB] fetching URL:', rhpUrl);
+
+    return MS.fetchSheetTab(rhpTab).then(function(rows) {
+      console.log('[HUB] vs_RHP rows fetched:', rows ? rows.length : 'null');
+      console.log('[HUB] first row sample:', rows && rows.length ? JSON.stringify(rows[0]) : 'none');
+      var scored = scoreFn ? (rows || []).map(scoreFn).filter(Boolean) : (rows || []).slice();
+      console.log('[HUB] scored rows:', scored ? scored.length : 'null');
+      HUB.scR = scored;
+      return Promise.all([
+        Promise.resolve(rows),
+        MS.fetchSheetTab(TABS.vs_lhp),
+        MS.fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
+        MS.fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }),
+        MS.fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; })
+      ]);
+    }).then(function(res) {
+      if (!HUB.scR.length && res[0] && res[0].length) {
+        HUB.scR = scoreFn ? res[0].map(scoreFn).filter(Boolean) : res[0].slice();
+      }
+      HUB.scL = scoreFn ? (res[1] || []).map(scoreFn).filter(Boolean) : (res[1] || []).slice();
+      console.log('[HUB] scored rows LHP:', HUB.scL.length);
       HUB.teamProfiles = parseTeamProfiles(res[2] || []);
       HUB.locationAvail.home = Object.keys(HUB.teamProfiles).some(function(t) { return HUB.teamProfiles[t].home_osi != null; })
         || (res[3] && res[3].length > 10);
@@ -688,6 +712,9 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       window.SCO_YTD_L = HUB.scL;
       window.SCO_YTD_B = HUB.scBoth;
       HUB.loaded = true;
+      var hubRows = sortedRows();
+      console.log('[HUB] rendering', hubRows.length, 'rows into hubTableBody');
+      console.log('[HUB] hubTableBody element:', document.getElementById('hubTableBody'));
       console.log('[HUB] fetched rows — RHP:', HUB.scR.length, 'LHP:', HUB.scL.length, 'Both:', HUB.scBoth.length);
       updateBanners();
       renderTable();
