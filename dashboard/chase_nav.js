@@ -1,3 +1,4 @@
+// v20260523c
 /**
  * Chase Analytics navigation — dropdowns, mobile menu, active page, pipeline timestamp.
  */
