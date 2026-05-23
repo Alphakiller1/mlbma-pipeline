@@ -18,6 +18,104 @@
     pvlBpTeam: ''
   };
 
+  var _rlReadyPoll = null;
+
+  function getResearchTeamData(split) {
+    var LD = global.LIVE_DATA || {};
+    var rhp = LD.scYtdR || global.SCO_YTD_R || LD.vsRhp || LD.rhpScores || (global.RL_DATA && RL_DATA.rhp) || [];
+    var lhp = LD.scYtdL || global.SCO_YTD_L || LD.vsLhp || LD.lhpScores || (global.RL_DATA && RL_DATA.lhp) || [];
+    var both = (global.SCO_YTD_B && global.SCO_YTD_B.length) ? global.SCO_YTD_B : (LD.scores || LD.teamScores);
+    if (!both || !both.length) {
+      if (rhp.length && lhp.length && typeof global.buildYtdBothFromSplits === 'function') {
+        both = global.buildYtdBothFromSplits(rhp, lhp);
+      } else {
+        both = rhp;
+      }
+    }
+    console.log('[RL] getResearchTeamData:', { split: split, rhpLen: rhp.length, lhpLen: lhp.length, bothLen: both && both.length });
+    if (split === 'r' || split === 'vs_rhp') return rhp || [];
+    if (split === 'l' || split === 'vs_lhp') return lhp || [];
+    return both || rhp || [];
+  }
+
+  function getResearchPitcherData() {
+    var LD = global.LIVE_DATA || {};
+    var pitchers = LD.spProfiles || RL.spProfiles || LD.pitchers || LD.spData || (global.RL_DATA && RL_DATA.pitchers) || [];
+    console.log('[RL] getResearchPitcherData:', pitchers.length);
+    return pitchers || [];
+  }
+
+  function getResearchBullpenData() {
+    var LD = global.LIVE_DATA || {};
+    var bullpen = LD.bullpenUnit || LD.bullpen || LD.bullpenData;
+    if (!bullpen && LD.bullpenUnits) {
+      bullpen = Object.keys(LD.bullpenUnits).map(function(tk) {
+        var u = LD.bullpenUnits[tk];
+        return Object.assign({ t: tk }, u);
+      });
+    }
+    if (global.RL_DATA && RL_DATA.bullpen && !bullpen) bullpen = RL_DATA.bullpen;
+    console.log('[RL] getResearchBullpenData:', Array.isArray(bullpen) ? bullpen.length : (bullpen ? 1 : 0));
+    return bullpen || [];
+  }
+
+  function syncResearchGlobalsFromLiveData() {
+    var r = (global.LIVE_DATA && LIVE_DATA.scYtdR) || [];
+    var l = (global.LIVE_DATA && LIVE_DATA.scYtdL) || [];
+    if (r.length >= 10 && l.length >= 10) {
+      global.SCO_YTD_R = r.map(function(d) { return Object.assign({}, d); });
+      global.SCO_YTD_L = l.map(function(d) { return Object.assign({}, d); });
+      if (typeof global.buildYtdBothFromSplits === 'function') {
+        global.SCO_YTD_B = global.buildYtdBothFromSplits(global.SCO_YTD_R, global.SCO_YTD_L);
+      }
+      if (typeof global.toMap === 'function') {
+        global.M_YTD_R = global.toMap(global.SCO_YTD_R);
+        global.M_YTD_L = global.toMap(global.SCO_YTD_L);
+      }
+      if (typeof global.enrichYtdMaster === 'function') global.enrichYtdMaster();
+      else if (typeof global.attachPalsToScores === 'function') global.attachPalsToScores();
+      return true;
+    }
+    if (global.SCO_YTD_R && global.SCO_YTD_R.length >= 10 && global.SCO_YTD_L && global.SCO_YTD_L.length >= 10) {
+      if ((!global.SCO_YTD_B || global.SCO_YTD_B.length < 10) && typeof global.buildYtdBothFromSplits === 'function') {
+        global.SCO_YTD_B = global.buildYtdBothFromSplits(global.SCO_YTD_R, global.SCO_YTD_L);
+        if (typeof global.enrichYtdMaster === 'function') global.enrichYtdMaster();
+      }
+      return !!(global.SCO_YTD_B && global.SCO_YTD_B.length >= 10);
+    }
+    return false;
+  }
+
+  function resetResearchLabFilters() {
+    if (global.STATE) global.STATE.searchQuery = '';
+    ['searchInput', 'dashSearchInput'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
+
+  function renderResearchLabContent() {
+    syncResearchGlobalsFromLiveData();
+    if (typeof global.renderResearchLab === 'function') global.renderResearchLab();
+  }
+
+  function initResearchLabWhenReady() {
+    function tick() {
+      syncResearchGlobalsFromLiveData();
+      var data = getResearchTeamData('both');
+      if (data && data.length > 0) {
+        console.log('[RL] Data ready, rendering Research Lab with', data.length, 'teams');
+        if (_rlReadyPoll) { clearTimeout(_rlReadyPoll); _rlReadyPoll = null; }
+        renderResearchLabContent();
+      } else {
+        console.log('[RL] Waiting for data...');
+        _rlReadyPoll = setTimeout(tick, 300);
+      }
+    }
+    if (_rlReadyPoll) clearTimeout(_rlReadyPoll);
+    tick();
+  }
+
   var SUBTABS = ['research-home', 'splits-trends', 'compare', 'pitching-vs-lineup', 'pitching', 'leaderboards', 'model-links'];
 
   function esc(s) {
@@ -36,19 +134,27 @@
   }
 
   function teamList() {
-    var rows = global.SCO_YTD_B || [];
+    var rows = getResearchTeamData('both');
     return rows.map(function(d) { return d.t; }).filter(Boolean).sort();
   }
 
   function teamRow(t) {
-    return (global.SCO_YTD_B || []).find(function(d) { return d.t === t; });
+    return getResearchTeamData('both').find(function(d) { return d.t === t; });
   }
 
   function fetchSpProfiles() {
-    if (RL.spProfiles) return Promise.resolve(RL.spProfiles);
+    if (RL.spProfiles && RL.spProfiles.length) return Promise.resolve(RL.spProfiles);
+    var cached = getResearchPitcherData();
+    if (cached && cached.length) {
+      RL.spProfiles = cached;
+      if (global.LIVE_DATA) LIVE_DATA.spProfiles = cached;
+      return Promise.resolve(RL.spProfiles);
+    }
     if (!S || !TABS) return Promise.resolve([]);
     return S.fetchSheetTab(TABS.sp_profiles).then(function(rows) {
       RL.spProfiles = rows || [];
+      if (global.LIVE_DATA) LIVE_DATA.spProfiles = RL.spProfiles;
+      console.log('[FETCH] SP_Profiles loaded:', RL.spProfiles.length);
       return RL.spProfiles;
     }).catch(function() { return []; });
   }
@@ -137,6 +243,7 @@
       }
     }
     if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
+    syncResearchGlobalsFromLiveData();
     if (typeof renderMasterTable === 'function') renderMasterTable();
     mountExtraLeaderboards();
   }
@@ -154,8 +261,8 @@
         var ma = S.spProfileMetrics(a);
         var mb = S.spProfileMetrics(b);
         return (mb.pitchScore || 0) - (ma.pitchScore || 0);
-      }).slice(0, 15);
-      var pitchHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Starting Pitcher Rankings (top 15)</h4>'
+      });
+      var pitchHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Starting Pitcher Rankings (' + pitchRows.length + ')</h4>'
         + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
         + '<th>Pitcher</th><th>Team</th><th>Pitch Score</th><th>OSI Allowed</th><th>Pitcher OOR</th></tr></thead><tbody>'
         + pitchRows.map(function(row) {
@@ -205,8 +312,8 @@
       if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(mount, anchor.nextSibling);
       else splitsPane.insertBefore(mount, splitsPane.firstChild);
     }
-    var r = global.SCO_YTD_R || [];
-    var l = global.SCO_YTD_L || [];
+    var r = getResearchTeamData('r');
+    var l = getResearchTeamData('l');
     if (!r.length && !l.length) {
       mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Split summary cards populate after team offense data loads.</p></div>';
       return;
@@ -229,7 +336,7 @@
       { title: 'Best vs RHP', val: best(r), metric: 'osi' },
       { title: 'Best vs LHP', val: best(l), metric: 'osi' },
       { title: 'Biggest Split Edge', val: biggestSplit(), metric: 'gap' },
-      { title: 'YTD Leader', val: best(global.SCO_YTD_B || []), metric: 'osi' }
+      { title: 'YTD Leader', val: best(getResearchTeamData('both')), metric: 'osi' }
     ];
     mount.innerHTML = cards.map(function(c) {
       var body = '—';
@@ -450,7 +557,7 @@
     var sp = findSpProfile(RL.compareB);
     var sm = sp && S ? S.spProfileMetrics(sp) : {};
     var hand = sp ? String(S.pickCol(sp, 'hand', 'Hand', 'throws') || 'R').charAt(0) : 'R';
-    var split = hand === 'L' ? (global.SCO_YTD_L || []) : (global.SCO_YTD_R || []);
+    var split = getResearchTeamData(hand === 'L' ? 'l' : 'r');
     var splitRow = split.find(function(d) { return d.t === RL.compareA; });
     var lineupOsi = splitRow ? splitRow.osi : (team ? team.osi : null);
     var allow = sm.osiAllowed;
@@ -601,7 +708,7 @@
     var sp = findSpProfile(RL.pvlPitcher);
     var sm = sp && S ? S.spProfileMetrics(sp) : {};
     var hand = sp ? String(S.pickCol(sp, 'hand', 'Hand') || 'R').charAt(0) : 'R';
-    var splitRow = (hand === 'L' ? global.SCO_YTD_L : global.SCO_YTD_R || []).find(function(d) { return d.t === RL.pvlTeam; });
+    var splitRow = getResearchTeamData(hand === 'L' ? 'l' : 'r').find(function(d) { return d.t === RL.pvlTeam; });
     var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
     var bp = units[RL.pvlBpTeam] || {};
     var bpScore = bp.osiAllowed != null ? 100 - bp.osiAllowed : null;
@@ -663,8 +770,13 @@
   function onSubtab(name) {
     if (name === 'research-home') renderResearchHome();
     if (name === 'splits-trends') {
+      resetResearchLabFilters();
       restoreSplitsTable();
+      syncResearchGlobalsFromLiveData();
       renderSplitSummary();
+      if (typeof global.renderMasterTable === 'function') global.renderMasterTable();
+      if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
+      if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
     }
     if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
@@ -737,7 +849,14 @@
     mountLeaderboards: mountLeaderboards,
     renderComparePane: renderComparePane,
     renderSplitSummary: renderSplitSummary,
-    metricCell: metricCell
+    metricCell: metricCell,
+    getResearchTeamData: getResearchTeamData,
+    getResearchPitcherData: getResearchPitcherData,
+    getResearchBullpenData: getResearchBullpenData,
+    syncResearchGlobalsFromLiveData: syncResearchGlobalsFromLiveData,
+    resetResearchLabFilters: resetResearchLabFilters,
+    initResearchLabWhenReady: initResearchLabWhenReady,
+    renderResearchLabContent: renderResearchLabContent
   };
 
 })(typeof window !== 'undefined' ? window : this);

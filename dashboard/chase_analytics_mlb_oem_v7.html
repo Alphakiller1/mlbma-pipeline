@@ -1590,8 +1590,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_charts.js?v=20260524a"></script>
 <script src="profile_controls.js?v=20260524a"></script>
 <script src="platform_dashboard.js?v=20260524a"></script>
-<script src="research_lab.js?v=20260524a"></script>
-<script src="pitcher_lab.js?v=20260524a"></script>
+<script src="research_lab.js?v=20260524b"></script>
+<script src="pitcher_lab.js?v=20260524b"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -2229,6 +2229,10 @@ function applyLiveData() {
     SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
     SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
 
+    if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
+      ResearchLab.syncResearchGlobalsFromLiveData();
+    }
+
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     enrichMatchupCards();
 
@@ -2428,8 +2432,7 @@ function buildYtdBothFromSplits(scR, scL) {
     return row;
   });
 }
-
-
+window.buildYtdBothFromSplits = buildYtdBothFromSplits;
 
 
 function parseTeamProfileRows(rows) {
@@ -3174,11 +3177,13 @@ function loadLandingData() {
     fetchSheetTab(TABS.signals_today).catch(function() { return []; }),
     fetchSheetTab(TABS.vs_rhp),
     fetchSheetTab(TABS.vs_lhp),
-    fetchSheetText(TABS.last_updated)
+    fetchSheetText(TABS.last_updated),
+    fetchSheetTab(TABS.sp_profiles).catch(function() { return []; })
   ]).then(function(results) {
     var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
-        signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9];
+        signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9],
+        spProfileRows = results[10];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -3199,6 +3204,8 @@ function loadLandingData() {
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });
+    LIVE_DATA.spProfiles = spProfileRows || [];
+    console.log('[FETCH] SP_Profiles loaded:', LIVE_DATA.spProfiles.length);
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
     YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
@@ -3634,6 +3641,8 @@ SCO_YTD_R.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'r');});
 SCO_YTD_L.forEach(function(d){d.pa = getPA(d.t, 'YTD', 'l');});
   attachPalsToScores();
 }
+window.enrichYtdMaster = enrichYtdMaster;
+window.toMap = toMap;
 
 function recomputeAllScores() {
   /* Live sheet scores are pre-normalized 0–100 by the Python pipeline — skip scoreRows() */
@@ -4286,6 +4295,9 @@ function urlDecodeState() {
 }
 
 function currentRows(){
+  if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
+    ResearchLab.syncResearchGlobalsFromLiveData();
+  }
   var rows;
   if (STATE.time === 'YTD') {
     if (STATE.split === 'b') rows = SCO_YTD_B;
@@ -4596,9 +4608,18 @@ function renderMasterTable(){
   var platformTable = masterTable && masterTable.dataset.platformHeaders;
   var mColor = (window.MLBMAAssets && MLBMAAssets.metricColor) ? MLBMAAssets.metricColor.bind(MLBMAAssets) : tcol;
   var logoFn = (window.MLBMAAssets && MLBMAAssets.teamLogoImg) ? function(t) { return MLBMAAssets.teamLogoImg(t, 24, 'rank-logo'); } : function() { return ''; };
-  var rows = applyFilter(currentRows().slice());
+  var baseRows = currentRows();
+  var rows = applyFilter((baseRows && baseRows.length) ? baseRows.slice() : []);
+  if (!baseRows || !baseRows.length) {
+    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">Pipeline data not loaded — ensure Google Sheets is accessible</td></tr>';
+    if (mobile) mobile.innerHTML = '';
+    return;
+  }
   if (!rows.length) {
-    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">No team data for this view — run the full pipeline or switch to YTD.</td></tr>';
+    var filterMsg = STATE.searchQuery
+      ? 'No teams match filter: <code style="color:var(--purple);">' + STATE.searchQuery + '</code>'
+      : 'No team data for this view — switch to YTD · Both splits.';
+    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">' + filterMsg + '</td></tr>';
     if (mobile) mobile.innerHTML = '';
     return;
   }
@@ -5071,8 +5092,14 @@ function renderSplitBars(){
 
 /* Trend heatmap with directional arrows */
 function renderTrendHeatmap(){
-  if (!SCO_YTD_B || !SCO_YTD_B.length) return;
-  var sorted = SCO_YTD_B.slice().sort(function(a,b){return b.osi-a.osi;});
+  if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
+    ResearchLab.syncResearchGlobalsFromLiveData();
+  }
+  var heatRows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B
+    : (window.ResearchLab && ResearchLab.getResearchTeamData ? ResearchLab.getResearchTeamData('both') : []);
+  if (!heatRows || !heatRows.length) return;
+  var winAvail = (LIVE_DATA && LIVE_DATA.windowDataAvailable) || {};
+  var sorted = heatRows.slice().sort(function(a,b){return b.osi-a.osi;});
   var W=1100,rh=22,cw=110,gap=2,lp=50,tp=30;
   var H=tp+sorted.length*(rh+gap)+12;
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
@@ -5081,12 +5108,20 @@ function renderTrendHeatmap(){
   sorted.forEach(function(d,i){
     var y=tp+i*(rh+gap);
     s+='<text x="'+(lp-6)+'" y="'+(y+rh/2+4)+'" text-anchor="end" fill="#A1A1AA" font-size="10" font-family="var(--mono)" font-weight="600">'+d.t+'</text>';
-    var vals=[d.ytdOSI,d.l30OSI,d.l14OSI,d.l7OSI];
+    var tfKeys = ['ytdOSI','l30OSI','l14OSI','l7OSI'];
+    var tfAvail = [true, !!winAvail.L30, !!winAvail.L14, !!winAvail.L7];
+    var vals = tfKeys.map(function(k, i) {
+      if (i === 0) return d.ytdOSI != null ? d.ytdOSI : d.osi;
+      if (!tfAvail[i]) return null;
+      return d[tfKeys[i]];
+    });
     vals.forEach(function(v,ci){
       var x=lp+ci*cw;
-      s+='<rect x="'+x+'" y="'+y+'" width="'+(cw-gap)+'" height="'+rh+'" fill="'+hcol(v)+'" rx="3"/>';
-      if(v!==null && v!==undefined) {
-        // Directional arrow vs prior timeframe
+      var na = (ci > 0 && !tfAvail[ci]);
+      s+='<rect x="'+x+'" y="'+y+'" width="'+(cw-gap)+'" height="'+rh+'" fill="'+(na ? '#27272A' : hcol(v))+'" rx="3"/>';
+      if(na) {
+        s+='<text x="'+(x+(cw-gap)/2)+'" y="'+(y+rh/2+4)+'" text-anchor="middle" fill="#71717A" font-size="9" font-weight="600" font-family="var(--mono)">N/A</text>';
+      } else if(v!==null && v!==undefined) {
         var arrow = '';
         if(ci > 0 && vals[ci-1] !== null && vals[ci-1] !== undefined) {
           var diff = v - vals[ci-1];
@@ -5818,7 +5853,11 @@ function renderResearchLabWhenReady() {
     if (typeof loadLiveData === 'function') {
       loadLiveData().then(function() {
         if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
-        renderResearchLab();
+        if (window.ResearchLab && ResearchLab.initResearchLabWhenReady) {
+          ResearchLab.initResearchLabWhenReady();
+        } else {
+          renderResearchLab();
+        }
       }).catch(function() {
         if (banner) banner.textContent = 'Research data failed to load — retrying when sheets refresh…';
       });
@@ -5826,7 +5865,11 @@ function renderResearchLabWhenReady() {
     return;
   }
   if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
-  renderResearchLab();
+  if (window.ResearchLab && ResearchLab.initResearchLabWhenReady) {
+    ResearchLab.initResearchLabWhenReady();
+  } else {
+    renderResearchLab();
+  }
 }
 
 function setupResearchVisibilityObserver() {
@@ -5852,6 +5895,9 @@ function initResearchLab() {
     bindDashRankingsControls();
     setupResearchVisibilityObserver();
     loadResearchData();
+  }
+  if (window.ResearchLab && ResearchLab.resetResearchLabFilters) {
+    ResearchLab.resetResearchLabFilters();
   }
   if (typeof showResearchSubtab === 'function') showResearchSubtab('research-home');
   renderResearchLabWhenReady();

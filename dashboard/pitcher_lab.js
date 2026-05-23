@@ -102,10 +102,23 @@
   }
 
   function loadProfiles() {
-    if (CACHE.profiles) return Promise.resolve(CACHE.profiles);
+    if (CACHE.profiles && CACHE.profiles.length) return Promise.resolve(CACHE.profiles);
+    var fromBridge = global.ResearchLab && ResearchLab.getResearchPitcherData
+      ? ResearchLab.getResearchPitcherData() : [];
+    if (fromBridge && fromBridge.length) {
+      CACHE.profiles = fromBridge;
+      return Promise.resolve(CACHE.profiles);
+    }
+    var ld = global.LIVE_DATA && LIVE_DATA.spProfiles;
+    if (ld && ld.length) {
+      CACHE.profiles = ld;
+      return Promise.resolve(CACHE.profiles);
+    }
     if (!S || !TABS) return Promise.resolve([]);
     return S.fetchSheetTab(TABS.sp_profiles).then(function(rows) {
       CACHE.profiles = rows || [];
+      if (global.LIVE_DATA) LIVE_DATA.spProfiles = CACHE.profiles;
+      console.log('[FETCH] SP_Profiles loaded:', CACHE.profiles.length);
       return CACHE.profiles;
     }).catch(function() { CACHE.profiles = []; return []; });
   }
