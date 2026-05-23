@@ -1356,11 +1356,89 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 
 #pane-reference { display: none; }
 
+/* Question-driven dashboard */
+.question-section { margin-bottom: 36px; scroll-margin-top: 88px; }
+.question-title { font-size: 20px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; }
+.question-subtitle { font-size: 12px; color: var(--text-2); margin-bottom: 16px; max-width: 640px; line-height: 1.5; }
+.research-lab-controls { margin-bottom: 18px; }
+#dailyMatchupsMount #matchupsSection > .section-header { display: none; }
+.dash-section-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 20px; }
+.dash-section-nav a {
+  font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 6px;
+  border: 1px solid var(--border); color: var(--text-2); text-decoration: none;
+}
+.dash-section-nav a:hover { border-color: var(--purple-3); color: var(--text); }
+.question-card .ds-eyebrow { color: var(--purple-2); font-weight: 600; }
+.matchup-card-v2 {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; transition: border-color 0.15s;
+}
+.matchup-card-v2:hover { border-color: var(--purple-3); }
+.mc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.mc-time { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+.weather-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--bg-4); color: var(--text-2); }
+.mc-matchup { font-size: 18px; font-weight: 700; font-family: var(--mono); margin-bottom: 12px; }
+.mc-sp-row { font-size: 11px; color: var(--text-2); margin-bottom: 10px; line-height: 1.7; }
+.mc-sp-label { color: var(--text-3); font-weight: 600; text-transform: uppercase; font-size: 9px; }
+.pitch-tier { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 4px; }
+.pitch-tier-elite { background: var(--green-dim); color: var(--green); }
+.pitch-tier-solid { background: rgba(96,165,250,.15); color: var(--blue); }
+.pitch-tier-mid { background: var(--bg-4); color: var(--text-2); }
+.pitch-tier-vol { background: var(--gold-dim); color: var(--gold); }
+.mc-osi-label { font-size: 10px; color: var(--text-3); margin-bottom: 6px; }
+.mc-osi-bar { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 8px; align-items: center; margin-bottom: 8px; }
+.mc-bar-track { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--bg-4); }
+.mc-bar-away { background: var(--blue); opacity: 0.85; }
+.mc-bar-home { background: var(--purple); opacity: 0.85; }
+.mc-meta { font-size: 11px; color: var(--text-2); margin-bottom: 8px; }
+.mc-script-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.edge-columns, .val-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 768px) { .edge-columns, .val-columns { grid-template-columns: 1fr; } }
+.edge-col-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.edge-col-title.buy { color: var(--blue); }
+.edge-col-title.fade { color: var(--gold); }
+.edge-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; flex-wrap: wrap; }
+.edge-row:hover { border-color: var(--purple-3); }
+.edge-team { font-weight: 700; font-family: var(--mono); min-width: 36px; }
+.edge-pp { font-family: var(--mono); font-weight: 600; }
+.edge-pp.pos { color: var(--blue); }
+.edge-pp.neg { color: var(--gold); }
+.pals-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+.pals-badge.ok { background: var(--green-dim); color: var(--green); }
+.pals-badge.warn { background: var(--gold-dim); color: var(--gold); }
+.proj-arrow { font-size: 12px; font-weight: 700; }
+.proj-arrow.up { color: var(--green); }
+.proj-arrow.down { color: var(--red-l); }
+.proj-arrow.flat { color: var(--text-3); }
+.script-card { background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.script-game { font-size: 12px; font-weight: 600; font-family: var(--mono); margin-bottom: 6px; }
+.script-label { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.script-duel { color: var(--blue); }
+.script-grind { color: var(--green); }
+.script-power { color: var(--purple); }
+.script-sloppy { color: var(--gold); }
+.script-quick { color: var(--text-2); }
+.script-neutral { color: var(--text-2); }
+.f5-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: var(--bg-4); color: var(--text-2); margin-bottom: 6px; }
+.script-detail { font-size: 11px; color: var(--text-3); }
+.val-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.val-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+.val-confirmed { background: var(--green-dim); color: var(--green); }
+.val-inflated { background: rgba(248,113,113,.15); color: var(--red-l); }
+.val-deflated { background: rgba(96,165,250,.15); color: var(--blue); }
+.val-neutral { background: var(--bg-4); color: var(--text-3); }
+.val-col h3 { font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 10px; }
+#gameScriptGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.metrics-toggle.sm { padding: 2px 8px; font-size: 10px; margin: 0; }
+.research-controls { margin-bottom: 16px; }
+
+
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="oem_overhaul.js"></script>
 </head>
 <body>
 
@@ -1372,11 +1450,15 @@ body.show-advanced-metrics .status-only-cols { display: none; }
       <span>Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
-      <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link">Dashboard</a>
-      <a href="matchup_sheet.html" class="chase-nav-link">Matchups</a>
+      <a href="#section-lineup-edge" class="chase-nav-link" data-dash-section="section-lineup-edge">Tonight&apos;s Games</a>
+      <a href="#section-market-edge" class="chase-nav-link" data-dash-section="section-market-edge">Market Edge</a>
+      <a href="#section-game-script" class="chase-nav-link" data-dash-section="section-game-script">Game Script</a>
+      <a href="#section-validate" class="chase-nav-link" data-dash-section="section-validate">Validate</a>
+      <a href="#" class="chase-nav-link" data-oem-research="1">Research</a>
+      <a href="glossary.html" class="chase-nav-link">Glossary</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-          Players
+          Profiles
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
           </svg>
@@ -1434,9 +1516,12 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     </button>
   </div>
   <div class="chase-mobile-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link">Dashboard</a>
-    <a href="matchup_sheet.html" class="chase-mobile-link">Matchups</a>
-    <div class="chase-mobile-section">Players</div>
+    <a href="#section-lineup-edge" class="chase-mobile-link" data-dash-section="section-lineup-edge">Tonight&apos;s Games</a>
+    <a href="#section-market-edge" class="chase-mobile-link" data-dash-section="section-market-edge">Market Edge</a>
+    <a href="#section-game-script" class="chase-mobile-link" data-dash-section="section-game-script">Game Script</a>
+    <a href="#section-validate" class="chase-mobile-link" data-dash-section="section-validate">Validate</a>
+    <a href="#" class="chase-mobile-link" data-oem-research="1">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
     <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
@@ -1481,76 +1566,38 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 </nav>
 
 <div class="oem-mode-pane active" id="pane-oem-daily" data-oem-pane="daily">
+<div class="layer-main" id="layerMain">
+
 <section class="daily-summary section" id="dailySummarySection">
   <div class="section-header">
     <div>
       <div class="section-eyebrow">Daily Read</div>
-      <div class="section-title">Today's Model Summary</div>
-      <div class="section-subtitle">Top actionable reads for today&apos;s slate — edges, movers, and matchup context.</div>
+      <div class="section-title">Five Questions for Tonight</div>
+      <div class="section-subtitle">Quick answers before matchups, market edge, game script, and validation.</div>
     </div>
   </div>
   <div class="daily-summary-grid" id="dailySummaryGrid"></div>
 </section>
-<!-- Control bar -->
-<!-- Watchlist sticky bar -->
-<div class="watchlist-bar" id="watchlistBar">
-  <span class="wl-label">Pin Watchlist</span>
-  <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-  <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
-</div>
 
-<div class="control-bar">
-  <div class="control-group">
-    <span class="control-label">Split</span>
-    <div class="toggle-group" id="splitToggle">
-      <button class="toggle-btn active" data-split="b">Both</button>
-      <button class="toggle-btn" data-split="r">vs RHP</button>
-      <button class="toggle-btn" data-split="l">vs LHP</button>
-    </div>
-  </div>
-  <div class="control-group">
-    <span class="control-label">Timeframe</span>
-    <div class="toggle-group" id="timeToggle">
-      <button class="toggle-btn active" data-time="YTD">YTD</button>
-      <button class="toggle-btn" data-time="L30">L30</button>
-      <button class="toggle-btn" data-time="L14">L14</button>
-      <span class="l7-note-wrap"><button class="toggle-btn warn" data-time="L7" id="l7ToggleBtn">L7</button><button type="button" class="l7-info-btn" id="l7InfoBtn" aria-label="L7 note">i</button><div class="l7-note-panel" id="l7NotePanel">L7 is a momentum flag only — noisy sample. LHP/RHP splits unavailable; Both split shown.</div></span>
-    </div>
-  </div>
-  <div class="control-group">
-    <span class="control-label">Chart</span>
-    <div class="toggle-group" id="quadrantToggle">
-      <button class="toggle-btn active" data-quad="status">Market Map</button>
-      <button class="toggle-btn" data-quad="rcv-abq">RCV vs ABQ</button>
-    </div>
-  </div>
-  <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-    <button class="icon-btn" title="Compare mode" class="icon-btn icon-label-btn" id="compareToggleBtn" onclick="toggleCompareMode()">Compare</button>
-    <button class="icon-btn" title="Pin mode" class="icon-btn icon-label-btn" id="pinToggleBtn" onclick="togglePinMode()">Pin</button>
-    <button class="icon-btn" title="Export filtered view as CSV" onclick="exportCSV()" class="icon-btn icon-label-btn">Export</button>
-    <button class="icon-btn" title="Print / save as PDF" onclick="window.print()" class="icon-btn icon-label-btn">Print</button>
-    <button class="btn btn-primary" onclick="openModal('osi')">Breakdown</button>
-  </div>
-</div>
+<nav class="dash-section-nav" aria-label="Dashboard sections">
+  <a href="#section-lineup-edge" data-dash-section="section-lineup-edge">Tonight&apos;s Games</a>
+  <a href="#section-market-edge" data-dash-section="section-market-edge">Market Edge</a>
+  <a href="#section-game-script" data-dash-section="section-game-script">Game Script</a>
+  <a href="#section-validate" data-dash-section="section-validate">Validate</a>
+</nav>
 
-<!-- Search/Filter bar -->
-<div class="search-bar">
-  <input type="text" class="search-input" id="searchInput" placeholder="Filter teams…" autocomplete="off">
-  <button type="button" class="filter-help-btn" id="filterHelpBtn" title="Search syntax help" aria-expanded="false">?</button>
-  <div class="filter-help-panel" id="filterHelpPanel">Try: <code>abq&gt;60 reg&gt;10</code>, <code>trend:rising</code>, or team codes like <code>nyy bos atl</code></div>
-</div>
+<section class="question-section" id="section-lineup-edge">
+  <h2 class="question-title">Who Has The Offensive Edge Tonight?</h2>
+  <p class="question-subtitle">Split-specific lineup OSI vs tonight&apos;s SP handedness. Expand any game for lineup detail.</p>
+  <div id="dailyMatchupsMount"></div>
+</section>
 
-
-<!-- At-a-glance cards (Research Lab only) -->
-<div class="glance-grid daily-read-only-hidden" id="glanceGrid"></div>
-
-<!-- Offensive Market Status Map -->
-<div class="section status-map-wrap">
+<div class="section status-map-wrap" id="section-market-map">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Offensive Market Status Map</div>
-      <div class="section-title" id="chartTitle">OSI vs process-production gap</div>
-      <div class="section-subtitle">Market quadrant — hover a team for status and takeaway. No formulas on this layer.</div>
+      <div class="section-eyebrow">Visual Anchor</div>
+      <div class="section-title" id="chartTitle">Offensive Market Status Map</div>
+      <div class="section-subtitle">OSI vs PP-Gap — buy-low vs fade quadrants.</div>
     </div>
   </div>
   <div class="legend-row">
@@ -1566,25 +1613,107 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
 </div>
 
-<!-- Strategic Signal Cards (Daily Read) -->
-<div class="section" id="dailyStratsSection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Daily Read</div>
-      <div class="section-title">Strategic Signal Cards</div>
-      <div class="section-subtitle">Teams grouped by actionable profile — elite confirmed, buy-low, cooling risk, and more.</div>
+<section class="question-section" id="section-market-edge">
+  <h2 class="question-title">Which Offenses Are Priced Wrong?</h2>
+  <p class="question-subtitle">Top buy-low and fade candidates by process-production gap with PALS confirmation.</p>
+  <div id="marketEdgeBoard"></div>
+</section>
+
+<section class="question-section" id="section-game-script">
+  <h2 class="question-title">How Will This Game Be Played?</h2>
+  <p class="question-subtitle">ABQ vs Pitching Score game script with F5 vs full-game badge.</p>
+  <div id="gameScriptGrid"></div>
+</section>
+
+<section class="question-section" id="section-validate">
+  <h2 class="question-title">Can I Trust This Number?</h2>
+  <p class="question-subtitle">PALS schedule confirmation for offenses · OOR ERA validation for tonight&apos;s SPs.</p>
+  <div id="validationGrid"></div>
+</section>
+
+
+</div><!-- /layer-main -->
+</div><!-- /pane-oem-daily -->
+
+<!-- LAYER 2 — Advanced Tools -->
+<div class="oem-mode-pane" id="pane-oem-research" data-oem-pane="research">
+<div class="layer-label">Research Lab</div>
+<div class="layer-advanced" id="layerAdvanced">
+
+<!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
+<div id="metricBreakdownSection" style="display:none;"></div>
+
+<div class="section">
+  <div class="subtabs">
+    <button class="subtab active" data-pane="splits">Lineup Splits</button>
+    <button class="subtab" data-pane="trends">Trends</button>
+    <button class="subtab" data-pane="compare">Compare</button>
+    <button class="subtab" data-pane="pitching">Pitching Context</button>
+    <button class="subtab" data-pane="signals">Signals Today</button>
+  </div>
+
+  <!-- Splits pane -->
+  <div id="pane-splits" style="display:block;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Research Lab</div>
+        <div class="section-title">Which Lineup Splits Matter Tonight?</div>
+        <div class="section-subtitle">Split OSI bars plus full metric table with window toggles.</div>
+      </div>
+    </div>
+    <div class="research-lab-controls" id="mainResearchControls">
+<div class="watchlist-bar" id="watchlistBar">
+  <span class="wl-label">Pin Watchlist</span>
+  <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+  <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
+</div>
+<div class="control-bar research-controls">
+  <div class="control-group">
+    <span class="control-label">Split</span>
+    <div class="toggle-group" id="splitToggle">
+      <button class="toggle-btn active" data-split="b">Both</button>
+      <button class="toggle-btn" data-split="r">vs RHP</button>
+      <button class="toggle-btn" data-split="l">vs LHP</button>
     </div>
   </div>
-  <div id="stratsDaily"></div>
+  <div class="control-group">
+    <span class="control-label">Timeframe</span>
+    <div class="toggle-group" id="timeToggle">
+      <button class="toggle-btn active" data-time="YTD">YTD</button>
+      <button class="toggle-btn" data-time="L30">L30</button>
+      <button class="toggle-btn" data-time="L14">L14</button>
+      <button class="toggle-btn warn" data-time="L7" id="l7ToggleBtn">L7</button>
+    </div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+    <button class="icon-btn icon-label-btn" id="compareToggleBtn" onclick="toggleCompareMode()">Compare</button>
+    <button class="icon-btn icon-label-btn" id="pinToggleBtn" onclick="togglePinMode()">Pin</button>
+    <button class="icon-btn icon-label-btn" onclick="exportCSV()">Export</button>
+  </div>
 </div>
-
-<!-- Rankings table -->
-<div class="section">
+<div class="search-bar">
+  <input type="text" class="search-input" id="searchInput" placeholder="Filter teams…" autocomplete="off">
+  <button type="button" class="filter-help-btn" id="filterHelpBtn" title="Search syntax help">?</button>
+  <div class="filter-help-panel" id="filterHelpPanel">Try: <code>abq&gt;60</code>, <code>trend:rising</code></div>
+</div>
+<div class="glance-grid" id="glanceGrid"></div>
+</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
+        <div id="rhpBars"></div>
+      </div>
+      <div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 8px;">vs LHP — OSI view</div>
+        <div id="lhpBars"></div>
+      </div>
+    </div>
+    <div class="section">
   <div class="section-header">
     <div>
-      <div class="section-eyebrow">Rankings</div>
-      <div class="section-title" id="tableTitle">Offensive status by team</div>
-      <div class="section-subtitle">Sorted by <span id="sortLabel" style="color: var(--purple); font-weight: 600;">status priority</span> · click headers to sort</div>
+      <div class="section-eyebrow">Full Metric Table</div>
+      <div class="section-title" id="tableTitle">Split &amp; window research table</div>
+      <div class="section-subtitle">Use split/time toggles above · click headers to sort</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn" id="toggleAdvancedBtn" onclick="toggleAdvancedMetrics()">Advanced Columns</button>
@@ -1630,61 +1759,6 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
   <div class="mobile-cards" id="mobileCards"></div>
 </div>
-
-<!-- Strategic Signal Cards (Daily Read) -->
-<div class="section" id="dailyStratsSection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">Daily Read</div>
-      <div class="section-title">Strategic Signal Cards</div>
-      <div class="section-subtitle">Teams grouped by actionable profile — elite confirmed, buy-low, cooling risk, and more.</div>
-    </div>
-  </div>
-  <div id="stratsDaily"></div>
-</div>
-
-</div><!-- /layer-main -->
-<div id="dailyMatchupsMount"></div>
-
-</div><!-- /pane-oem-daily -->
-
-<!-- LAYER 2 — Advanced Tools -->
-<div class="oem-mode-pane" id="pane-oem-research" data-oem-pane="research">
-<div class="layer-label">Research Lab</div>
-<div class="layer-advanced" id="layerAdvanced">
-
-<!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
-<div id="metricBreakdownSection" style="display:none;"></div>
-
-<div class="section">
-  <div class="subtabs">
-    <button class="subtab active" data-pane="strat">Strategic Signals</button>
-    <button class="subtab" data-pane="splits">Splits</button>
-    <button class="subtab" data-pane="trends">Trends</button>
-    <button class="subtab" data-pane="compare">Compare</button>
-    <button class="subtab" data-pane="matchup">Matchup Builder</button>
-    <button class="subtab" data-pane="reference">Reference Tables</button>
-  </div>
-
-  <!-- Splits pane -->
-  <div id="pane-splits" style="display:none;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Platoon Splits</div>
-        <div class="section-title">vs RHP and vs LHP · OSI distribution view</div>
-        <div class="section-subtitle">YTD data · click bars to view team detail</div>
-      </div>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;" class="split-grid">
-      <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
-        <div id="rhpBars"></div>
-      </div>
-      <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 8px;">vs LHP — OSI view</div>
-        <div id="lhpBars"></div>
-      </div>
-    </div>
   </div>
 
   <!-- Trends pane -->
@@ -1692,7 +1766,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Recent Trends</div>
-        <div class="section-title">OSI Heatmap with directional arrows · YTD → L30 → L14 → L7</div>
+        <div class="section-title">Is This Trend Real Or Noise?</div>
         <div class="section-subtitle">Arrows show direction from prior timeframe · color = tier band · sorted by YTD OSI</div>
       </div>
     </div>
@@ -1705,7 +1779,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
             <th style="width:30px;">#</th><th style="width:50px;">Team</th>
             <th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
             <th>Δ L30</th><th>Δ L14</th><th>Vel.</th>
-            <th>Trend</th><th>Interpretation</th>
+            <th>Trend</th><th>Reliability</th><th>Interpretation</th>
           </tr></thead>
           <tbody id="trendBody"></tbody>
         </table>
@@ -1718,7 +1792,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Compare Mode</div>
-        <div class="section-title">Side-by-side radar &amp; metrics — pick 2–4 teams</div>
+        <div class="section-title">How Do Two Teams Compare?</div>
         <div class="section-subtitle">Enable Compare mode in the toolbar (Compare), then click rows in the master table to select teams.</div>
       </div>
     </div>
@@ -1762,8 +1836,28 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     <div class="matchup-grid" id="matchupOutput"></div>
   </div>
 
-  <!-- Strategic Signals pane -->
-  <div id="pane-strat">
+  <div id="pane-pitching" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Research Lab</div>
+        <div class="section-title">What Does The Pitching Context Say?</div>
+        <div class="section-subtitle">Pitching Score + OOR SP context for F5 vs full-game validation.</div>
+      </div>
+    </div>
+    <div id="pitchingResearchMount"></div>
+    <div id="oorResearchMount"></div>
+  </div>
+  <div id="pane-signals" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Research Lab</div>
+        <div class="section-title">What Have Signals Fired On Today?</div>
+        <div class="section-subtitle">Convergence signal matrix per game.</div>
+      </div>
+    </div>
+    <div id="convergenceGrid"></div>
+  </div>
+  <div id="pane-strat" style="display:none;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Strategic Signals</div>
@@ -2365,6 +2459,18 @@ function matchupCol(row, label) {
   return '';
 }
 
+function parseWeatherMap(rows) {
+  var map = {};
+  (rows || []).forEach(function(row) {
+    var away = String(matchupCol(row, 'Away')).trim().toUpperCase();
+    var home = String(matchupCol(row, 'Home')).trim().toUpperCase();
+    if (!away || !home) return;
+    var cond = String(matchupCol(row, 'Conditions') || matchupCol(row, 'Weather') || '').trim();
+    if (cond) map[away + '@' + home] = cond;
+  });
+  return map;
+}
+
 function parseMatchupRows(rows) {
   if (!rows || !rows.length) return [];
   return rows.map(function(row) {
@@ -2782,11 +2888,13 @@ function loadLiveData() {
     fetchSheetTab(TABS.today_lineups),
     fetchSheetTab(TABS.today_games),
     fetchSheetTab(TABS.today_matchups),
+    fetchSheetTab(TABS.signals_convergence),
+    fetchSheetTab(TABS.weather),
     fetchSheetText(TABS.last_updated)
   ]).then(function(results) {
     var vsRhpRows = results[0], vsLhpRows = results[1], oorRows = results[2],
         pitchingRows = results[3], palsRows = results[4], bullpenRows = results[5],
-        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8], tsText = results[9];
+        lineupsRows = results[6], gamesRows = results[7], matchupsRows = results[8], signalsRows = results[9], weatherRows = results[10], tsText = results[11];
     var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
     var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
     if (scR.length < 10 || scL.length < 10) {
@@ -2799,6 +2907,8 @@ function loadLiveData() {
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
+    LIVE_DATA.signalsConvergence = signalsRows || [];
+    LIVE_DATA.weather = parseWeatherMap(weatherRows);
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     LIVE_DATA.loaded = true;
@@ -3617,10 +3727,10 @@ function bindFilterHelp() {
   });
 }
 
-var RESEARCH_SUBTABS = ['strat', 'splits', 'trends', 'compare', 'matchup', 'reference'];
+var RESEARCH_SUBTABS = ['splits', 'trends', 'compare', 'pitching', 'signals'];
 
 function showResearchSubtab(name) {
-  name = name || 'strat';
+  name = name || 'splits';
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
     if (el) el.style.display = (id === name) ? 'block' : 'none';
@@ -3635,17 +3745,12 @@ function showResearchSubtab(name) {
 }
 
 function onResearchSubtabShown(name) {
-  if (name === 'splits') renderSplitBars();
+  mountResearchTables();
+  if (name === 'splits') { renderSplitBars(); renderMasterTable(); }
   else if (name === 'trends') renderTrendHeatmap();
   else if (name === 'compare') initCompare();
-  else if (name === 'matchup') {
-    populateMatchupSelectors();
-    renderMatchupOutput();
-  } else if (name === 'strat') renderStrats();
-  else if (name === 'reference') {
-    mountReferenceTables();
-    renderReferenceTables();
-  }
+  else if (name === 'pitching') { renderPitchingScore(); renderOOR(); }
+  else if (name === 'signals' && window.OEMOverhaul) OEMOverhaul.renderConvergence();
 }
 
 function initCompare() {
@@ -3655,12 +3760,15 @@ function initCompare() {
 }
 
 function renderDailyRead() {
-  renderDailySummary();
-  renderQuadrant();
-  renderMasterTable();
+  if (window.OEMOverhaul) {
+    OEMOverhaul.renderQuestionDashboard();
+    OEMOverhaul.bindDashboardNav();
+  } else {
+    renderDailySummary();
+    renderQuadrant();
+    renderMatchups();
+  }
   mountReferenceTables();
-  renderMatchups();
-  renderStrats();
   bindFilterHelp();
 }
 
@@ -3676,7 +3784,7 @@ function renderResearchLab(activeSubtab) {
   renderReferenceTables();
   showResearchSubtab(activeSubtab || (function() {
     var active = document.querySelector('#layerAdvanced .subtab.active');
-    return active ? active.getAttribute('data-pane') : 'strat';
+    return active ? active.getAttribute('data-pane') : 'splits';
   })());
 }
 
@@ -4633,6 +4741,8 @@ function renderTrendHeatmap(){
     var dL14Str = (d.dL14>0?'+':'')+d.dL14.toFixed(1);
     var velStr = d.velocity!==undefined ? (d.velocity>0?'+':'')+d.velocity.toFixed(1) : '—';
     var velC = d.velocity>1.5?'var(--green)':d.velocity<-1.5?'var(--red)':'var(--text-3)';
+    var reliability = (window.OEMOverhaul && OEMOverhaul.trendReliabilityLabel)
+      ? OEMOverhaul.trendReliabilityLabel(d) : 'Noisy';
     html+='<tr><td class="rank-cell">'+(i+1)+'</td>'+
       '<td class="team-cell" style="color:var(--purple);">'+d.t+'</td>'+
       '<td class="num" style="color:'+tcol(d.ytdOSI||0)+';">'+(d.ytdOSI?d.ytdOSI.toFixed(1):'—')+'</td>'+
@@ -4643,6 +4753,7 @@ function renderTrendHeatmap(){
       '<td class="num" style="color:'+(d.dL14>2?'#4ADE80':d.dL14<-2?'#F87171':'#71717A')+';">'+dL14Str+'</td>'+
       '<td class="num" style="color:'+velC+';font-weight:500;">'+velStr+'</td>'+
       '<td><span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span></td>'+
+      '<td style="font-size:11px;color:var(--text-2);">'+reliability+'</td>'+
       '<td style="color:var(--text-2);font-size:11px;">'+interp+'</td></tr>';
   });
   trendBody.innerHTML=html;
@@ -5258,6 +5369,23 @@ function filterGlossary(){
   });
 }
 
+function mountResearchTables() {
+  var splitsMount = document.getElementById('splitsTableMount');
+  var rankSection = document.querySelector('#masterTable');
+  if (splitsMount && rankSection) {
+    var section = rankSection.closest('.section');
+    if (section && !splitsMount.contains(section)) splitsMount.appendChild(section);
+  }
+  var pitchMount = document.getElementById('pitchingResearchMount');
+  var pitchSec = document.getElementById('pitchingSection');
+  var oorMount = document.getElementById('oorResearchMount');
+  var oorSec = document.getElementById('oorSection');
+  if (pitchMount && pitchSec && !pitchMount.contains(pitchSec)) pitchMount.appendChild(pitchSec);
+  if (oorMount && oorSec && !oorMount.contains(oorSec)) oorMount.appendChild(oorSec);
+  var palsSec = document.getElementById('palsSection');
+  if (palsSec) palsSec.style.display = 'none';
+}
+
 function mountReferenceTables(){
   var mount = document.getElementById('referenceTablesMount');
   if(!mount) return;
@@ -5278,27 +5406,34 @@ function mountReferenceTables(){
 function renderReferenceTables() {
   renderOOR();
   renderPitchingScore();
-  renderPALS();
-  renderMatchups();
+  if (window.OEMOverhaul && document.getElementById('dailyMatchupsMount')) {
+    OEMOverhaul.renderSection1Matchups();
+  } else {
+    renderMatchups();
+  }
 }
 
 function renderAll(){
   console.log('[MLBMA] renderAll start');
   attachPalsToScores();
-  renderDailySummary();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
-  renderGlanceCards();
-  renderMasterTable();
-  renderQuadrant();
+  if (STATE.oemMode === 'daily' && window.OEMOverhaul) {
+    OEMOverhaul.renderQuestionDashboard();
+    OEMOverhaul.bindDashboardNav();
+  } else {
+    renderDailySummary();
+    renderGlanceCards();
+    renderMasterTable();
+    renderQuadrant();
+  }
   renderWatchlistBar();
   renderComparePane();
-  renderMatchupOutput();
   renderSplitBars();
   renderTrendHeatmap();
-  renderStrats();
+  mountResearchTables();
   mountReferenceTables();
-  renderReferenceTables();
+  if (STATE.oemMode === 'research') renderReferenceTables();
   urlEncodeState();
 }
 
