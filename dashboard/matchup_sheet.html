@@ -68,6 +68,9 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 .hub-table tbody tr.hub-row:hover{background:rgba(192,132,252,.06)}
 .hub-table tbody tr.hub-row.expanded{background:rgba(192,132,252,.04)}
 .hub-table tbody tr.hub-expand-row td{background:var(--bg-3);padding:0;border-bottom:1px solid var(--border)}
+.hub-expand-panel{max-height:0;overflow:hidden;transition:max-height 250ms ease}
+.hub-expand-panel.is-open{max-height:720px}
+.hub-row .hub-expand-cell{color:var(--purple);font-size:11px;white-space:nowrap;width:40px}
 .hub-expand-inner{display:grid;grid-template-columns:minmax(240px,1fr) minmax(320px,1.2fr);gap:20px;padding:18px 16px}
 @media(max-width:900px){.hub-expand-inner{grid-template-columns:1fr}}
 .hub-expand-left{display:flex;flex-direction:column;gap:12px}
@@ -557,44 +560,80 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       + spark + '<span class="hub-spark-val" style="color:' + mc(last, ctx) + '">' + fmt(last) + '</span></div>';
   }
 
+  function expandMetric(label, val, ctx, extra) {
+    var col = ctx ? mc(val, ctx) : 'var(--text-2)';
+    var shown = val != null && !isNaN(val) ? fmt(val) : (val != null ? String(val) : '\u2014');
+    return '<div class="hub-expand-metric"><div class="lab">' + esc(label) + '</div>'
+      + '<div class="val" style="color:' + col + '">' + esc(shown) + (extra || '') + '</div></div>';
+  }
+
   function renderExpand(d) {
-    var winMetric = function(win) {
-      var prof = HUB.teamProfiles[d.t] || {};
-      var val = win === 'YTD' ? d.ytdOSI : windowOsi(prof, win);
-      if (HUB.metric !== 'osi' && win !== 'YTD') val = null;
-      else if (HUB.metric !== 'osi' && win === 'YTD') val = metricVal(d, HUB.metric);
-      return val;
-    };
+    var prof = HUB.teamProfiles[d.t] || {};
     var pills = ['YTD', 'L30', 'L14', 'L7'].map(function(w) {
-      var v = winMetric(w);
-      return '<div class="hub-win-pill"><span>' + w + '</span><span class="hub-win-val" style="color:' + mc(v, HUB.metric === 'ppGap' ? 'ppGap' : HUB.metric) + '">' + fmt(v) + '</span></div>';
+      var v = w === 'YTD' ? d.ytdOSI : windowOsi(prof, w);
+      return '<div class="hub-win-pill"><span>' + w + '</span><span class="hub-win-val" style="color:' + mc(v, 'osi') + '">' + fmt(v) + '</span></div>';
     }).join('');
-    var metrics = [
-      ['ABQ', d.abq, 'abq'], ['RCV', d.rcv, 'rcv'], ['OBR', d.obr, 'obr'], ['OSI', d.osi, 'osi'],
-      ['ProjOSI', d.projOSI, 'projOSI'], ['PP-Gap', d.ppGap, 'ppGap'],
-      ['vRHP', d.vrhp, 'osi'], ['vLHP', d.vlhp, 'osi'],
-      ['Split Edge', d.edge, 'ppGap'], ['Trend', d.trend, null], ['Tier', d.tier.label, null]
-    ];
-    var right = metrics.map(function(m) {
-      var col = m[2] ? mc(m[1], m[2]) : 'var(--text-2)';
-      return '<div class="hub-expand-metric"><div class="lab">' + esc(m[0]) + '</div><div class="val" style="color:' + col + '">' + esc(String(m[1] != null ? (typeof m[1] === 'number' ? fmt(m[1]) : m[1]) : '—')) + '</div></div>';
-    }).join('');
+    var projDelta = (d.projOSI != null && d.osi != null) ? d.projOSI - d.osi : null;
+    var projExtra = projDelta != null
+      ? ' <span style="font-size:11px;color:' + (projDelta >= 0 ? '#4ADE80' : '#F87171') + '">('
+      + (projDelta >= 0 ? '+' : '') + projDelta.toFixed(1) + ')</span>' : '';
+    var splitEdge = d.edge != null ? Math.abs(d.edge) : null;
+    var splitStyle = splitEdge != null && splitEdge > 10 ? 'color:#FBBF24;font-weight:700' : mc(d.edge, 'osi');
     var susCol = susBadgeColor(d.susLetter);
-    return '<div class="hub-expand-inner"><div class="hub-expand-left">'
+    var right = expandMetric('ABQ', d.abq, 'abq')
+      + expandMetric('RCV', d.rcv, 'rcv')
+      + expandMetric('OBR', d.obr, 'obr')
+      + expandMetric('OSI', d.osi, 'osi')
+      + expandMetric('ProjOSI', d.projOSI, 'projOSI', projExtra)
+      + expandMetric('PP-Gap', d.ppGap, 'ppGap')
+      + expandMetric('vs RHP OSI', d.vrhp, 'osi')
+      + expandMetric('vs LHP OSI', d.vlhp, 'osi')
+      + '<div class="hub-expand-metric"><div class="lab">Split Edge</div><div class="val" style="' + splitStyle + '">'
+      + esc(splitEdge != null ? splitEdge.toFixed(1) : '\u2014') + '</div></div>'
+      + '<div class="hub-expand-metric"><div class="lab">Trend</div><div class="val" style="color:' + trendColor(d.trend) + '">' + esc(d.trend || '\u2014') + '</div></div>';
+    return '<div class="hub-expand-panel" data-hub-expand-panel><div class="hub-expand-inner"><div class="hub-expand-left">'
       + '<div class="hub-expand-abbr">' + esc(d.t) + '</div>'
       + '<div class="hub-expand-meta"><span class="tier-badge ' + d.tier.cls + '">' + esc(d.tier.label) + '</span>'
-      + '<span class="sus-badge" style="background:' + susCol + '22;color:' + susCol + '">Sus ' + esc(d.susLetter) + '</span></div>'
+      + ' <span class="sus-badge" style="background:' + susCol + '22;color:' + susCol + '">Sustainability ' + esc(d.susLetter) + '</span></div>'
       + '<div class="hub-window-pills">' + pills + '</div>'
       + '<div class="hub-spark-stack">'
       + sparkRow('ABQ', [d.abq, d.l30OSI != null ? d.abq : null, d.l14OSI != null ? d.abq : null, d.l7OSI != null ? d.abq : null], 'abq')
-      + sparkRow('RCV', [d.rcv, d.rcv, d.rcv, d.rcv], 'rcv')
-      + sparkRow('OBR', [d.obr, d.obr, d.obr, d.obr], 'obr')
+      + sparkRow('RCV', [d.rcv, d.l30OSI != null ? d.rcv : null, d.l14OSI != null ? d.rcv : null, d.l7OSI != null ? d.rcv : null], 'rcv')
+      + sparkRow('OBR', [d.obr, d.l30OSI != null ? d.obr : null, d.l14OSI != null ? d.obr : null, d.l7OSI != null ? d.obr : null], 'obr')
       + sparkRow('OSI', [d.ytdOSI, d.l30OSI, d.l14OSI, d.l7OSI], 'osi')
       + '</div>'
-      + '<a class="hub-profile-link" href="team_profile.html?team=' + encodeURIComponent(d.t) + '">Full team profile →</a>'
-      + '</div><div class="hub-expand-right">' + right + '</div></div>';
+      + '<a class="hub-profile-link" href="team_profile.html?team=' + encodeURIComponent(d.t) + '">Open Full Team Profile \u2192</a>'
+      + '</div><div class="hub-expand-right">' + right + '</div></div></div>';
   }
 
+  var _hubRowClickBound = false;
+  function bindHubRowClicks() {
+    if (_hubRowClickBound) return;
+    var body = document.getElementById('hubTableBody');
+    if (!body) return;
+    _hubRowClickBound = true;
+    body.addEventListener('click', function(e) {
+      var tr = e.target.closest('tr.hub-row');
+      if (!tr || !body.contains(tr)) return;
+      if (e.target.closest('a')) return;
+      var t = tr.getAttribute('data-team');
+      if (!t) return;
+      HUB.expandedTeam = HUB.expandedTeam === t ? null : t;
+      renderTable();
+    });
+    body.addEventListener('dblclick', function(e) {
+      var tr = e.target.closest('tr.hub-row');
+      if (!tr || !body.contains(tr) || e.target.closest('a')) return;
+      var t = tr.getAttribute('data-team');
+      if (t) window.location.href = 'team_profile.html?team=' + encodeURIComponent(t);
+    });
+  }
+
+  function openExpandPanel() {
+    var panel = document.querySelector('[data-hub-expand-panel]');
+    if (!panel) return;
+    requestAnimationFrame(function() { panel.classList.add('is-open'); });
+  }
   function renderTable() {
     updateHead();
     var body = document.getElementById('hubTableBody');
@@ -612,7 +651,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       var ppCtx = m === 'ppGap' ? 'ppGap' : m;
       var expanded = HUB.expandedTeam === d.t;
       html += '<tr class="hub-row' + (expanded ? ' expanded' : '') + '" data-team="' + esc(d.t) + '">'
-        + '<td>' + (i + 1) + (expanded ? ' ▾' : ' ▸') + '</td>'
+        + '<td class="hub-expand-cell">' + (expanded ? '▼' : '▶') + ' ' + (i + 1) + '</td>'
         + '<td><div class="hub-team-cell">' + logo + '<div><strong>' + esc(d.t) + '</strong>'
         + '<a class="hub-profile-link" href="team_profile.html?team=' + encodeURIComponent(d.t) + '" onclick="event.stopPropagation()">Profile</a>'
         + '<span class="hub-team-pa">Lineup offense</span></div></div></td>'
@@ -634,19 +673,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       }
     });
     body.innerHTML = html || '<tr><td colspan="14" style="text-align:center;padding:24px">No team data loaded.</td></tr>';
-    body.querySelectorAll('.hub-row').forEach(function(tr) {
-      tr.addEventListener('click', function(e) {
-        if (e.target.closest('a')) return;
-        var t = tr.getAttribute('data-team');
-        HUB.expandedTeam = HUB.expandedTeam === t ? null : t;
-        renderTable();
-      });
-      tr.addEventListener('dblclick', function(e) {
-        if (e.target.closest('a')) return;
-        var t = tr.getAttribute('data-team');
-        if (t) window.location.href = 'team_profile.html?team=' + encodeURIComponent(t);
-      });
-    });
+    openExpandPanel();
   }
 
   function hubLoadData() {
@@ -728,6 +755,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   }
 
   function init() {
+    bindHubRowClicks();
     renderControls();
     updateBanners();
     document.getElementById('hubAdvCols').addEventListener('change', function(e) {

@@ -64,9 +64,13 @@
   }
 
   function loadProfiles() {
-    if (CACHE.profiles && CACHE.profiles.length) return Promise.resolve(CACHE.profiles);
-    if (global.ResearchLab && global.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length) {
+    if (CACHE.profiles && CACHE.profiles.length) {
+      console.log('[PITCHER LAB] profiles available:', CACHE.profiles.length);
+      return Promise.resolve(CACHE.profiles);
+    }
+    if (global.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length) {
       CACHE.profiles = LIVE_DATA.spProfiles;
+      console.log('[PITCHER LAB] profiles available:', CACHE.profiles.length);
       return Promise.resolve(CACHE.profiles);
     }
     if (!S || !TABS) return Promise.resolve([]);
@@ -76,6 +80,7 @@
         ? S.buildOorByTeam(LIVE_DATA.oor) : {};
       if (S.enrichSpProfiles) S.enrichSpProfiles(CACHE.profiles, oorMap);
       if (global.LIVE_DATA) LIVE_DATA.spProfiles = CACHE.profiles;
+      console.log('[PITCHER LAB] profiles available:', CACHE.profiles.length);
       return CACHE.profiles;
     }).catch(function() { CACHE.profiles = []; return []; });
   }
@@ -94,7 +99,7 @@
       var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']).toLowerCase();
       var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']).toLowerCase();
       return n.indexOf(q) >= 0 || t.indexOf(q) >= 0;
-    }).slice(0, 12);
+    }).slice(0, 8);
   }
 
   function renderDropdown(items) {
@@ -167,7 +172,8 @@
     var met = profileMetrics(row);
     var f5Era = numOrNull(pickCol(row, ['F5_ERA', 'F5 ERA']));
     var tier = pitchTier(met.pitchScore);
-    var avatar = A ? A.pitcherAvatar(name, { crop: 'profile', className: 'pl-snap-avatar', eager: true }) : '';
+    var pid = pickCol(row, ['pitcher_id', 'playerId', 'mlb_id']);
+    var avatar = A ? A.pitcherAvatar(pid || name, { crop: 'profile', className: 'pl-snap-avatar', size: 64, eager: true }) : '';
     var logo = A ? A.teamLogoImg(team, 28) : '';
     mount.innerHTML = '<div class="pl-snapshot-card">'
       + '<div class="pl-snap-row1">' + avatar
@@ -177,7 +183,7 @@
       + '<div class="pl-snap-row2"><span>K% <strong>' + fmt(met.kPct, 1) + '</strong></span>'
       + '<span>BB% <strong>' + fmt(met.bbPct, 1) + '</strong></span>'
       + '<span>HR/9 <strong>' + fmt(met.hr9, 2) + '</strong></span>'
-      + '<span>FIP/ERA <strong>' + fmt(met.fip != null ? met.fip : met.era, 2) + '</strong></span>'
+      + '<span>ERA <strong>' + fmt(met.era, 2) + '</strong></span>'
       + '<span>F5 ERA: <strong>' + (f5Era != null ? fmt(f5Era, 2) : '—') + '</strong></span>'
       + '<span>IP <strong>' + fmt(pickCol(row, ['IP', 'ip']), 1) + '</strong></span></div>'
       + '<div class="pl-allowed-row">'
@@ -318,5 +324,13 @@
     });
   }
 
-  global.PitcherLab = { mount: mount, loadProfiles: loadProfiles };
+  function renderPitcherSnapshot(pitcher) {
+    if (typeof pitcher === 'string') selectPitcher(pitcher);
+    else if (pitcher) {
+      CACHE.selected = pickCol(pitcher, ['pitcher_name', 'Name', 'Pitcher']);
+      renderSnapshot();
+    }
+  }
+
+  global.PitcherLab = { mount: mount, loadProfiles: loadProfiles, renderPitcherSnapshot: renderPitcherSnapshot, selectPitcher: selectPitcher };
 })(typeof window !== 'undefined' ? window : this);

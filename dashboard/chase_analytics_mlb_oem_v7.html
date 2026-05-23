@@ -3021,6 +3021,8 @@ function loadResearchData() {
     LIVE_DATA.oor = parseOorRows(results[0]);
     LIVE_DATA.pals = parsePalsRows(results[1]);
     LIVE_DATA.signalsConvergence = results[2] || [];
+    LIVE_DATA.teamProfiles = results[3] || [];
+    console.log('[TRENDS] teamProfiles[0]:', JSON.stringify((LIVE_DATA.teamProfiles[0]) || null));
     LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(results[3]);
     LIVE_DATA.todayGames = parseTodayGamesRows(results[4]);
     enrichSpProfilesFromLive();

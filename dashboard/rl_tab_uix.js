@@ -64,12 +64,12 @@
 
   function reliabilityLabel(ytd, l14, l7) {
     if (ytd == null || l14 == null || l7 == null) return { label: 'Mixed', cls: 'rl-badge-gray' };
-    var near = function(a, b) { return Math.abs(a - b) <= 3; };
-    if (l7 > ytd + 5 && l14 > ytd + 3) return { label: 'Sustained Rise', cls: 'rl-badge-green' };
+    var near = function(a, b) { return Math.abs(a - b) <= 2; };
+    if (l14 > ytd + 3 && l7 > ytd + 3) return { label: 'Sustained Rise', cls: 'rl-badge-green' };
     if (l7 > ytd + 5 && near(l14, ytd)) return { label: 'Short Spike', cls: 'rl-badge-amber' };
-    if (l7 < ytd - 5 && l14 < ytd - 3) return { label: 'Cooling Risk', cls: 'rl-badge-red' };
+    if (l14 < ytd - 3) return { label: 'Cooling Risk', cls: 'rl-badge-red' };
     if (l7 < ytd - 5 && near(l14, ytd)) return { label: 'Noisy L7 Drop', cls: 'rl-badge-amber' };
-    if (Math.abs(l7 - ytd) <= 3 && Math.abs(l14 - ytd) <= 3 && Math.abs(l14 - l7) <= 3) {
+    if (Math.abs(l7 - ytd) <= 3 && Math.abs(l14 - ytd) <= 3) {
       return { label: 'Stable', cls: 'rl-badge-gray' };
     }
     return { label: 'Mixed', cls: 'rl-badge-gray' };
@@ -169,6 +169,9 @@
     var mount = document.getElementById('trendMap');
     if (!mount) return;
     RL.syncResearchGlobalsFromLiveData();
+    console.log('[TRENDS] L30 data available:', global.SCO_L30_B ? global.SCO_L30_B.length : 'missing');
+    console.log('[TRENDS] L14 data available:', global.SCO_L14_B ? global.SCO_L14_B.length : 'missing');
+    console.log('[TRENDS] L7 data available:', global.SCO_L7_B ? global.SCO_L7_B.length : 'missing');
     ensureTrendState();
     var metric = global.STATE.rlTrendMetric;
     var split = global.STATE.rlTrendSplit || 'b';
@@ -181,7 +184,7 @@
       return (windowVal(b, metric, 'YTD') || 0) - (windowVal(a, metric, 'YTD') || 0);
     });
     var html = '<table class="rl-table-premium rl-trend-table"><thead><tr>'
-      + '<th>Team</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th><th>Δ L14</th><th>Δ L7</th><th>Reliability</th>'
+      + '<th>Team</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th><th>Δ L14</th><th>Δ L7</th><th>Velocity</th><th>Reliability</th>'
       + '</tr></thead><tbody>';
     sorted.forEach(function(d) {
       var ytd = windowVal(d, metric, 'YTD');
@@ -190,6 +193,7 @@
       var l7 = windowVal(d, metric, 'L7');
       var d14 = (l14 != null && ytd != null) ? l14 - ytd : null;
       var d7 = (l7 != null && ytd != null) ? l7 - ytd : null;
+      var velocity = (d7 != null && d14 != null) ? d7 - d14 : null;
       var rel = reliabilityLabel(ytd, l14, l7);
       var logo = A ? A.teamLogoImg(d.t, 22) : '';
       html += '<tr class="rl-row-click" data-team="' + esc(d.t) + '">'
@@ -200,6 +204,7 @@
         + cell(l7, metric, false)
         + deltaCell(d14)
         + deltaCell(d7)
+        + deltaCell(velocity)
         + '<td><span class="rl-reliability-badge ' + rel.cls + '">' + esc(rel.label) + '</span></td></tr>';
     });
     html += '</tbody></table>';
