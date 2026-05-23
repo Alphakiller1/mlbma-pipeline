@@ -263,7 +263,7 @@
 
   function pitcherAvatarHtml(name, sizeKey) {
     if (!A || !name) return '';
-    return A.pitcherAvatar(name, sizeKey || 'compare', { cls: 'rl-compare-avatar' });
+    return A.pitcherAvatar(name, { crop: sizeKey === 'matchup' ? 'matchup' : 'compare', className: 'rl-compare-avatar' });
   }
 
   function renderPitcherCompare(out) {

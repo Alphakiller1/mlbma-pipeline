@@ -117,6 +117,13 @@
     return '<div class="hmc-meta">' + parts.join('') + '</div>';
   }
 
+  function fmtRatePct(v) {
+    if (v == null || v === '' || isNaN(v)) return '—';
+    var n = Number(v);
+    if (n > 0 && n <= 1) return Math.round(n * 100) + '%';
+    return Math.round(n) + '%';
+  }
+
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
     if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
@@ -128,7 +135,8 @@
   function spRow(label, name, hand, team, stats, opts) {
     opts = opts || {};
     var pid = A ? A.lookupMlbId(name) : null;
-    var hs = A ? A.pitcherAvatar(pid, 'matchup', { cls: 'mc-headshot', eager: !!opts.eager }) : '<span class="ca-pitcher-avatar ca-pitcher-avatar--48"></span>';
+    var hs = A ? A.pitcherAvatar(pid, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
+      : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
     var ps = spPitchScore(team);
     var pt = pitchTier(ps);
     var psColor = A && ps != null ? A.metricColor(ps, true) : 'var(--text-2)';
@@ -137,17 +145,22 @@
       ? '<strong>TBD</strong>'
       : '<a href="' + pitcherProfileUrl(pname) + '" class="pitcher-link" onclick="event.stopPropagation()"><strong>' + esc(pname) + '</strong></a>';
     stats = stats || {};
+    var psBadge = ps != null
+      ? '<span class="mc-ps-badge">Pitching Score <strong style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong></span>'
+      : '';
     return '<div class="mc-sp-block" onclick="event.stopPropagation()">'
       + '<div class="mc-sp-photo">' + hs + '</div>'
       + '<div class="mc-sp-info">'
+      + '<div class="mc-sp-name-row">'
       + '<span class="mc-sp-side">' + label + '</span> '
-      + nameHtml + ' '
-      + '<span class="hand-pill hand-' + (hand || '?').toLowerCase() + '">' + esc(hand || '?') + '</span> '
+      + '<span class="mc-sp-name">' + nameHtml + '</span>'
+      + '<span class="hand-pill hand-' + (hand || '?').toLowerCase() + '">' + esc(hand || '?') + '</span>'
       + '<span class="pitch-tier ' + pt.cls + '">' + pt.label + '</span>'
-      + (ps != null ? ' <span class="mc-sp-ps">PS <strong style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong></span>' : '')
+      + '</div>'
+      + psBadge
       + '<div class="mc-sp-stats">'
-      + 'K% ' + esc(stats.k != null ? Number(stats.k).toFixed(1) : '—') + ' · '
-      + 'BB% ' + esc(stats.bb != null ? Number(stats.bb).toFixed(1) : '—') + ' · '
+      + 'K ' + esc(fmtRatePct(stats.k)) + ' · '
+      + 'BB ' + esc(fmtRatePct(stats.bb)) + ' · '
       + 'FIP ' + esc(stats.fip != null ? Number(stats.fip).toFixed(2) : '—')
       + '</div></div></div>';
   }

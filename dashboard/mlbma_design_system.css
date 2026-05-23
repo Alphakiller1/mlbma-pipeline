@@ -256,7 +256,7 @@ body {
   display: block;
 }
 
-/* Pitcher avatar — circular crop, no stretch */
+/* Pitcher avatar — circular crop, size-specific positioning in CSS only */
 .ca-pitcher-avatar,
 .headshot-wrap.ca-pitcher-avatar {
   display: inline-flex;
@@ -264,10 +264,11 @@ body {
   justify-content: center;
   border-radius: 999px;
   overflow: hidden;
-  flex-shrink: 0;
+  flex: 0 0 auto;
   box-sizing: border-box;
-  background: var(--bg-4, #1f1f25);
-  border: 1px solid var(--border, #28282f);
+  aspect-ratio: 1 / 1;
+  background: var(--ca-surface-2, #111827);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   position: relative;
 }
 .ca-pitcher-avatar-img,
@@ -275,10 +276,9 @@ body {
 .headshot-wrap.ca-pitcher-avatar > img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
   display: block;
-  border-radius: 999px;
+  object-fit: cover;
+  object-position: 50% 28%;
   transform-origin: center top;
 }
 .ca-pitcher-avatar-fallback {
@@ -289,6 +289,37 @@ body {
   justify-content: center;
   border-radius: 999px;
 }
+.ca-pitcher-avatar--matchup {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+}
+.ca-pitcher-avatar--matchup img {
+  object-position: 50% 28%;
+  transform: scale(1.02);
+}
+.ca-pitcher-avatar--compare {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+}
+.ca-pitcher-avatar--compare img {
+  object-position: 50% 28%;
+  transform: scale(1.04);
+}
+.ca-pitcher-avatar--profile {
+  width: 112px;
+  height: 112px;
+  min-width: 112px;
+  min-height: 112px;
+}
+.ca-pitcher-avatar--profile img {
+  object-position: 50% 25%;
+  transform: scale(1.06);
+}
+/* Legacy pixel class aliases */
 .ca-pitcher-avatar--48 { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
 .ca-pitcher-avatar--64 { width: 64px; height: 64px; min-width: 64px; min-height: 64px; }
 .ca-pitcher-avatar--112 { width: 112px; height: 112px; min-width: 112px; min-height: 112px; }

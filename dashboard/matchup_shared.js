@@ -447,7 +447,9 @@
 
   function headshot(name, px, opts) {
     if (!A) return '';
-    return A.pitcherAvatar(name, px || 64, Object.assign({ cls: 'compare-headshot' }, opts || {}));
+    var o = Object.assign({ crop: 'compare', className: 'compare-headshot' }, opts || {});
+    if (px) o.size = px;
+    return A.pitcherAvatar(name, o);
   }
 
   global.MLBMASharedMatchup = {

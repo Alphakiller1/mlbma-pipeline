@@ -176,7 +176,7 @@
     var team = pick(profile, ['pitcher_team', 'pitcherTeam', 'Tm']);
     var hand = String(pick(profile, ['pitcher_hand', 'pitcherHand', 'Hand']) || 'R').toUpperCase().slice(0, 1);
     var pid = lookupMlbId(profile, pick);
-    var hs = A ? A.pitcherAvatar(pid, 'profile', { cls: 'pitcher-headshot-lg', eager: true }) : '';
+    var hs = A ? A.pitcherAvatar(pid, { crop: 'profile', className: 'pitcher-headshot-lg', eager: true }) : '';
     var logo = A ? A.teamLogoImg(team, 40, 'snapshot-logo') : '';
     var ps = ctx.pitchScore;
     var pt = pitchingTier(ps, ctx.pitchTiers || []);

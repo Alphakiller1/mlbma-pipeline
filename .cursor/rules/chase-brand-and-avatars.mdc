@@ -39,8 +39,9 @@ python scripts/integrate_chase_nav.py
 
 ## Opening Dashboard (`chase_analytics_mlb_oem_v7.html`)
 
-- Matchup-first landing: `layerMain` only by default (`body.opening-dashboard`).
-- Research Lab hidden until `#section-research-lab` hash (`body.research-lab-active`).
+- Matchup-first landing: `#opening-dashboard` only (`body.view-opening`).
+- Research Lab hidden until `#section-research-lab` hash (`body.view-research`); opening hidden in that view.
+- Avatar crop via CSS classes `ca-pitcher-avatar--matchup|compare|profile` — no inline transform scale in JS.
 - Use `pitcherAvatar('matchup')`, auto lineups (`hideToggle: true`), stadium/time/weather meta, Pitching Score on SP rows.
 - Do not auto-load Research Lab on scroll; full tables/signals live in Research Lab or `model_report.html`.
 

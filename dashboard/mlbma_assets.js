@@ -32,6 +32,12 @@
     compact: 40
   };
 
+  var AVATAR_CROP = {
+    matchup: { px: 48, mod: 'matchup' },
+    compare: { px: 64, mod: 'compare' },
+    profile: { px: 112, mod: 'profile' }
+  };
+
   var REGISTRY = { byName: {}, byId: {}, loaded: false, promise: null };
 
   /** @type {Object<string, {mean:number, std:number, n:number}>} */
@@ -111,38 +117,64 @@
     return lookupMlbId(idOrName);
   }
 
+  function normalizeAvatarOpts(sizeKeyOrOpts, maybeOpts) {
+    var opts = {};
+    if (sizeKeyOrOpts && typeof sizeKeyOrOpts === 'object' && !Array.isArray(sizeKeyOrOpts)) {
+      opts = Object.assign({}, sizeKeyOrOpts);
+    } else {
+      opts = Object.assign({}, maybeOpts || {});
+      if (sizeKeyOrOpts != null) {
+        if (typeof sizeKeyOrOpts === 'number') opts.size = sizeKeyOrOpts;
+        else opts.crop = opts.crop || sizeKeyOrOpts;
+      }
+    }
+    return opts;
+  }
+
+  function resolveAvatarCrop(opts) {
+    var crop = opts.crop || 'matchup';
+    if (AVATAR_CROP[crop]) return AVATAR_CROP[crop];
+    if (typeof opts.size === 'number') {
+      if (opts.size >= 96) return AVATAR_CROP.profile;
+      if (opts.size >= 56) return AVATAR_CROP.compare;
+      return AVATAR_CROP.matchup;
+    }
+    return AVATAR_CROP.matchup;
+  }
+
   /**
    * Standard circular pitcher avatar — matchup (48), compare (64), profile (112).
    * @param {string|number|null} idOrName - MLB ID or player name
-   * @param {string|number} sizeKey - preset key or pixel size
-   * @param {object} [opts] - { cls, eager, lazy }
+   * @param {string|number|object} [sizeKeyOrOpts] - preset, px, or opts object
+   * @param {object} [maybeOpts] - { size, crop, cls, className, eager, lazy, fallback }
    */
-  function pitcherAvatar(idOrName, sizeKey, opts) {
-    opts = opts || {};
-    var px = typeof sizeKey === 'number' ? sizeKey : (AVATAR_SIZES[sizeKey] || AVATAR_SIZES.matchup);
+  function pitcherAvatar(idOrName, sizeKeyOrOpts, maybeOpts) {
+    var opts = normalizeAvatarOpts(sizeKeyOrOpts, maybeOpts);
+    var cropCfg = resolveAvatarCrop(opts);
+    var px = opts.size || cropCfg.px;
+    var mod = cropCfg.mod;
     var mlbId = resolveMlbId(idOrName);
-    return headshotImg(mlbId, px, opts.cls || 'pitcher-headshot', opts);
+    var cls = opts.className || opts.cls || 'pitcher-headshot';
+    return headshotImg(mlbId, px, cls, Object.assign({}, opts, { cropMod: mod }));
   }
 
   function headshotImg(mlbId, px, cls, opts) {
     opts = opts || {};
     px = px || 48;
     cls = cls || 'pitcher-headshot';
+    var mod = opts.cropMod || (px >= 96 ? 'profile' : px >= 56 ? 'compare' : 'matchup');
     var url = headshotUrl(mlbId);
     var generic = GENERIC_HEADSHOT;
-    var scale = px >= 96 ? 1.08 : 1.06;
-    var sizeClass = 'ca-pitcher-avatar--' + px;
+    var modClass = 'ca-pitcher-avatar--' + mod;
     var loading = opts.eager ? 'eager' : (opts.lazy === false ? 'eager' : 'lazy');
     var fetchPri = opts.eager ? ' fetchpriority="high"' : '';
     var err = 'var i=this,w=i.closest(\'.ca-pitcher-avatar\');if(!w)return;'
       + 'if(i.dataset.fallback!==\'1\'){i.dataset.fallback=\'1\';i.src=\'' + generic + '\';}'
       + 'else{i.style.display=\'none\';var f=w.querySelector(\'.ca-pitcher-avatar-fallback\');if(f)f.style.display=\'flex\';}';
-    return '<span class="ca-pitcher-avatar headshot-wrap ' + cls + '-wrap ' + sizeClass + '" '
-      + 'style="width:' + px + 'px;height:' + px + 'px;min-width:' + px + 'px;min-height:' + px + 'px;" '
+    return '<span class="ca-pitcher-avatar headshot-wrap ' + cls + '-wrap ' + modClass + '" '
       + 'role="img" aria-label="Pitcher photo">'
       + '<img class="ca-pitcher-avatar-img ' + cls + '" src="' + url + '" alt="" width="' + px + '" height="' + px + '" '
-      + 'loading="' + loading + '"' + fetchPri + ' '
-      + 'style="transform:scale(' + scale + ');" onerror="' + err + '">'
+      + 'loading="' + loading + '"' + fetchPri + ' onerror="' + err + '">'
       + '<span class="ca-pitcher-avatar-fallback pitcher-silhouette" aria-hidden="true"></span>'
       + '</span>';
   }

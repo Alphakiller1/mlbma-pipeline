@@ -17,7 +17,15 @@
 
 .layer-main { margin-bottom: 0; max-width: 1200px; margin-left: auto; margin-right: auto; }
 body.opening-dashboard #metricLegendGlobal { margin-bottom: 12px; }
-body.opening-dashboard:not(.research-lab-active) #section-research-lab { display: none !important; }
+body.view-opening #section-research-lab { display: none !important; }
+body.view-research #opening-dashboard { display: none !important; }
+body.view-research .ca-page-identity { display: none; }
+.hmc-row.hmc-teams {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
 #section-research-lab.layer-research-wrap {
   margin-top: 48px;
   padding-top: 32px;
@@ -121,12 +129,88 @@ body.opening-dashboard:not(.research-lab-active) #section-research-lab { display
   color: var(--text-3);
   margin-bottom: 8px;
 }
-.mc-sp-ps {
+.hmc-pitchers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.mc-sp-block {
+  min-width: 0;
+}
+.mc-sp-name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.mc-sp-name {
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-sp-name a { color: inherit; text-decoration: none; }
+.mc-sp-name a:hover { color: var(--ca-brand, #7C3AED); }
+.mc-ps-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-4);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  margin: 2px 0 6px;
+}
+.mc-ps-badge strong {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.mc-sp-stats {
+  font-family: var(--mono);
   font-size: 10px;
   color: var(--text-3);
-  margin-left: 4px;
+  line-height: 1.4;
 }
-.mc-sp-ps strong { font-family: var(--mono); font-size: 11px; }
+.mc-sp-photo {
+  margin-right: 4px;
+}
+.opening-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.opening-link-card {
+  display: block;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+.opening-link-card:hover {
+  border-color: var(--ca-brand, #7C3AED);
+}
+.opening-link-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #C084FC;
+  margin-bottom: 4px;
+}
+.opening-link-desc {
+  display: block;
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
 
 .hero-matchup-card .hmc-team a.team-link {
   display: inline-flex;

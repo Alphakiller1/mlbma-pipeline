@@ -1439,12 +1439,17 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 .dash-section-nav, #dailySummarySection, #section-market-map,
 #section-market-edge, #section-game-script, #section-validate,
 .question-section { display: none !important; }
+/* Opening vs Research Lab — mutually exclusive views */
+body.platform-dashboard #opening-dashboard { display: block; }
 body.platform-dashboard #section-research-lab,
 body.platform-dashboard #pane-oem-methodology { display: none !important; }
-body.platform-dashboard.research-lab-active #section-research-lab { display: block !important; }
-body.platform-dashboard:not(.research-lab-active) #oorSection,
-body.platform-dashboard:not(.research-lab-active) #pitchingSection,
-body.platform-dashboard:not(.research-lab-active) #palsSection { display: none !important; }
+body.platform-dashboard.view-research #opening-dashboard { display: none !important; }
+body.platform-dashboard.view-research #section-research-lab { display: block !important; }
+body.platform-dashboard.view-opening #section-research-lab,
+body.platform-dashboard.view-opening #pane-oem-methodology { display: none !important; }
+body.platform-dashboard:not(.view-research) #oorSection,
+body.platform-dashboard:not(.view-research) #pitchingSection,
+body.platform-dashboard:not(.view-research) #palsSection { display: none !important; }
 body.platform-dashboard .show-advanced-metrics .status-only-cols { display: none !important; }
 body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-cell !important; }
 .rank-logo { vertical-align: middle; margin-right: 6px; border-radius: 2px; }
@@ -1476,7 +1481,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hmc-team.edge-team .hmc-abbr { color: var(--green); }
 .hmc-at { color: var(--text-3); font-size: 12px; }
 .hmc-time { margin-left: auto; font-size: 11px; color: var(--text-3); font-family: var(--mono); }
-.hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.hmc-row.hmc-teams { flex-wrap: wrap; align-items: center; gap: 8px; }
 .mc-sp-block { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; }
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 10px; margin-top: 2px; }
 .hmc-edge-label { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
@@ -1653,8 +1659,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <span class="ca-page-identity-ts">Last updated: <span id="pageIdentityUpdated">—</span></span>
 </div>
 
-<!-- LAYER 1 — Main Dashboard -->
-<div class="layer-main" id="layerMain">
+<!-- Opening Dashboard — matchup hub only (not Research Lab) -->
+<main id="opening-dashboard" class="layer-main opening-layer">
 <div class="header header-clean landing-hero-brand">
   <div class="brand-row">
     <span class="brand-tag">Opening Dashboard</span>
@@ -1696,7 +1702,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div id="matchupsHeroGrid"></div>
 </section>
 
-<section class="platform-section" id="section-signal-teaser">
+<section class="platform-section" id="section-opening-model-teaser">
   <div class="signal-teaser-header">
     <h2 class="platform-title" style="font-size:16px;margin:0;">Today&apos;s Top Model Reads</h2>
     <a href="model_report.html" class="signal-teaser-cta">View Full Report →</a>
@@ -1704,10 +1710,31 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div id="signalChips"></div>
 </section>
 
-</div><!-- /layerMain -->
+<section class="platform-section" id="section-opening-links">
+  <div class="opening-links-grid">
+    <a class="opening-link-card" href="model_report.html">
+      <span class="opening-link-title">Model Report</span>
+      <span class="opening-link-desc">Daily signals, convergence, and signal explorer</span>
+    </a>
+    <a class="opening-link-card" href="chase_analytics_mlb_oem_v7.html#section-research-lab">
+      <span class="opening-link-title">Research Lab</span>
+      <span class="opening-link-desc">Splits, compare, leaderboards, pitching context</span>
+    </a>
+    <a class="opening-link-card" href="player_search.html">
+      <span class="opening-link-title">Profiles</span>
+      <span class="opening-link-desc">Team, pitcher, batter, and bullpen profiles</span>
+    </a>
+    <a class="opening-link-card" href="glossary.html">
+      <span class="opening-link-title">Glossary</span>
+      <span class="opening-link-desc">Formulas, methodology, and metric definitions</span>
+    </a>
+  </div>
+</section>
 
-<!-- LAYER 2 — Research Lab (lazy-init) -->
-<div class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research">
+</main><!-- /opening-dashboard -->
+
+<!-- Research Lab workspace — loads only when #section-research-lab is active -->
+<section class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research" aria-hidden="true">
 <div id="researchLabHeader"></div>
 <div class="layer-advanced" id="layerAdvanced">
 
@@ -5789,25 +5816,44 @@ function initResearchLab() {
   loadResearchData();
 }
 
-function setupResearchLazyInit() {
-  var el = document.getElementById('section-research-lab');
-  if (!el) return;
-  function trigger() {
-    var open = location.hash === '#section-research-lab'
-      || location.hash.indexOf('section-research-lab') >= 0;
-    if (open) {
-      document.body.classList.add('research-lab-active');
-      initResearchLab();
-      setTimeout(function() {
-        var target = document.getElementById('section-research-lab');
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 80);
-    } else {
-      document.body.classList.remove('research-lab-active');
-    }
+function syncDashboardView() {
+  var hash = (location.hash || '').replace(/^#/, '');
+  var body = document.body;
+  body.classList.remove('view-opening', 'view-research', 'view-model-report', 'research-lab-active');
+
+  if (hash === 'section-model-report') {
+    window.location.replace('model_report.html');
+    return;
   }
-  trigger();
-  window.addEventListener('hashchange', trigger);
+
+  if (hash === 'section-research-lab') {
+    body.classList.add('view-research', 'research-lab-active');
+    var rl = document.getElementById('section-research-lab');
+    if (rl) rl.setAttribute('aria-hidden', 'false');
+    initResearchLab();
+    setTimeout(function() {
+      if (rl) rl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+    return;
+  }
+
+  body.classList.add('view-opening');
+  var rlHide = document.getElementById('section-research-lab');
+  if (rlHide) rlHide.setAttribute('aria-hidden', 'true');
+
+  var scrollId = hash || 'section-matchups-hero';
+  if (scrollId === 'section-opening-model-teaser' || scrollId === 'section-signal-teaser'
+      || scrollId === 'section-matchups-hero' || scrollId === 'section-opening-links') {
+    setTimeout(function() {
+      var target = document.getElementById(scrollId === 'section-signal-teaser' ? 'section-opening-model-teaser' : scrollId);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 40);
+  }
+}
+
+function setupResearchLazyInit() {
+  syncDashboardView();
+  window.addEventListener('hashchange', syncDashboardView);
 }
 
 function renderResearchLab() {
@@ -6101,7 +6147,7 @@ function bindDashRankingsControls(){
 }
 
 function init(){
-  document.body.classList.add('platform-dashboard', 'opening-dashboard');
+  document.body.classList.add('platform-dashboard', 'opening-dashboard', 'view-opening');
   console.log('[MLBMA] init start');
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
