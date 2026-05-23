@@ -258,6 +258,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
+<script src="mlbma_assets.js"></script>
 <script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
 </head>
 <body>
@@ -388,9 +389,15 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     </section>
 
     <section class="section" id="secAllowed">
-      <div class="section-title">Metric Allowed Profile</div>
+      <div class="section-title" id="allowedTitle">What Lineups Do Against This Pitcher</div>
       <div class="section-subtitle">Average opponent offensive quality faced — lower is better for the pitcher</div>
       <div class="metric-grid" id="allowedCards"></div>
+    </section>
+
+    <section class="section" id="secOOR">
+      <div class="section-title">Quality of Lineups Faced This Season</div>
+      <div class="section-subtitle">OOR — competition strength context for ERA validation</div>
+      <div id="oorPanel"></div>
     </section>
 
     <section class="section" id="secOsi">
@@ -851,8 +858,9 @@ function renderProfile(key) {
 
   document.getElementById('profileContent').classList.add('ready');
 
+  var _hs = window.MLBMAAssets ? MLBMAAssets.headshotImg(pickCol(profile, ['pitcher_id', 'pitcherId']), 72, 'pitcher-headshot-lg') : '';
   document.getElementById('pitcherHeader').innerHTML =
-    '<span class="pitcher-name-lg">' + name + '</span>' +
+    _hs + '<span class="pitcher-name-lg">' + name + '</span>' +
     '<a href="team_profile.html?team=' + encodeURIComponent(String(team || '').toUpperCase()) + '" class="pill" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text-2);text-decoration:none;">' + team + '</a>' +
     (isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '') +
     '<span class="pill ' + (hand === 'L' ? 'hand-pill-l' : 'hand-pill-r') + '">' + (hand === 'L' ? 'LHP' : 'RHP') + '</span>' +
@@ -872,6 +880,32 @@ function renderProfile(key) {
   var rcvA = numOrNull(pickCol(profile, ['RCV_allowed']));
   var obrA = numOrNull(pickCol(profile, ['OBR_allowed']));
   var osiA = numOrNull(pickCol(profile, ['OSI_allowed']));
+
+
+  var oorPanel = document.getElementById('oorPanel');
+  if (oorPanel) {
+    var avgOor = numOrNull(pickCol(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
+    var tonightOsi = null;
+    var mToday = DATA.matchups.find(function(m) {
+      return normalizeName(pickCol(m, ['Away_SP', 'away_sp'])) === normalizeName(name) ||
+        normalizeName(pickCol(m, ['Home_SP', 'home_sp'])) === normalizeName(name);
+    });
+    if (mToday) {
+      var opp = normalizeName(pickCol(mToday, ['Away_SP'])) === normalizeName(name)
+        ? pickCol(mToday, ['Home', 'home']) : pickCol(mToday, ['Away', 'away']);
+      tonightOsi = numOrNull(pickCol(mToday, ['Away_OSI', 'away_osi']));
+    }
+    var oorLabel = avgOor == null ? 'OOR data pending' : avgOor >= 55 ? 'Above-average offensive competition faced' : avgOor <= 45 ? 'Soft schedule — ERA may be inflated' : 'Near-average competition faced';
+    var oorColor = avgOor >= 55 ? 'var(--red)' : avgOor <= 45 ? 'var(--green)' : 'var(--text-2)';
+    var hs = window.MLBMAAssets ? MLBMAAssets.headshotImg(pickCol(profile, ['pitcher_id', 'pitcherId']), 80) : '';
+    oorPanel.innerHTML = '<div style="display:flex;gap:16px;align-items:flex-start;">' + hs +
+      '<div><div class="s-val" style="color:' + oorColor + ';font-size:24px;">' + (avgOor != null ? avgOor.toFixed(0) : '—') + '</div>' +
+      '<p style="font-size:12px;color:var(--text-2);margin-top:6px;">' + oorLabel + '</p>' +
+      (tonightOsi != null ? '<p style="font-size:11px;color:var(--text-3);margin-top:8px;">Tonight\'s lineup OSI ' + tonightOsi.toFixed(1) + ' vs season avg OOR ' + (avgOor != null ? avgOor.toFixed(0) : '—') + '</p>' : '') +
+      '</div></div>';
+  }
+
+  document.getElementById('allowedTitle').textContent = 'What Lineups Do Against ' + name;
 
   document.getElementById('allowedCards').innerHTML =
     allowedCard('ABQ Allowed', abqA, 'Average opponent plate-discipline quality faced. Lower = easier command matchups and fewer walk-game traps.') +

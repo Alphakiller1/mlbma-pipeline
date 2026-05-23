@@ -181,6 +181,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
+<script src="mlbma_assets.js"></script>
 <script src="mlbma_ui.js" data-page="bullpen_report.html"></script>
 </head>
 <body>
@@ -310,6 +311,12 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
       <div class="section-subtitle">Average opponent offensive quality faced — lower is better for the bullpen</div>
       <div class="metric-grid" id="allowedCards"></div>
       <div class="insight-line" id="allowedNote"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Bullpen OOR Context</div>
+      <div class="section-subtitle">Avg OSI of lineups faced by this bullpen unit</div>
+      <div id="oorUnitPanel" class="insight-line"></div>
     </section>
 
     <section class="section">
@@ -696,11 +703,13 @@ function buildRelieverTable(team) {
       '<td class="num">' + fmtPct(colVal(r, 'overall', 'BB_pct')) + '</td>' +
       '<td class="num">' + fmt(colVal(r, 'overall', 'HR9'), 2) + '</td>' +
       '<td class="num">' + fmt(colVal(r, 'overall', 'OSI_allowed'), 1) + '</td>' +
+      '<td class="num">' + fmt(colVal(r, 'overall', 'ABQ_allowed'), 1) + '</td>' +
+      '<td class="num">' + fmt(colVal(r, 'overall', 'avg_opponent_OSI'), 1) + '</td>' +
       '<td class="num">' + fmt(colVal(r, 'vs_rhh', 'OSI_allowed'), 1) + '</td>' +
       '<td class="num">' + fmt(colVal(r, 'vs_lhh', 'OSI_allowed'), 1) + '</td>' +
       '<td class="num">' + fmtPct(colVal(r, 'overall', 'inherited_runners_scored_pct')) + '</td>' +
       '<td class="num">' + fmt(colVal(r, 'high_leverage', 'ERA'), 2) + '</td></tr>';
-    if (exp) html += '<tr class="detail-row"><td colspan="12">' + appearanceDetail(pid, name) + '</td></tr>';
+    if (exp) html += '<tr class="detail-row"><td colspan="14">' + appearanceDetail(pid, name) + '</td></tr>';
   });
   return html + '</tbody></table>';
 }
@@ -834,6 +843,13 @@ function renderTeam(team) {
     overviewCard('OSI Allowed', osi, osiAllowedColor(osi), 'Average opponent offensive strength faced — lower means softer matchups.', 'overall_OSI_allowed') +
     overviewCard('IR Scored %', irp, irColor(irp), 'Share of inherited runners that score — critical for late-game chaos.', 'overall_inherited_runners_scored_pct', true) +
     overviewCard('High Lev ERA', hiEra, eraColor(hiEra), 'Performance in high-leverage spots (8th+ or tight games).', 'high_leverage_ERA');
+
+
+  var oorEl = document.getElementById('oorUnitPanel');
+  if (oorEl && unit) {
+    var avgOsi = colVal(unit, 'overall', 'avg_opponent_OSI') || colVal(unit, 'overall', 'OSI_allowed');
+    oorEl.innerHTML = 'Avg lineup OSI faced: <strong>' + fmt(avgOsi, 1) + '</strong> · splits vs LHH/RHH and leverage in metric tables below.';
+  }
 
   document.getElementById('allowedCards').innerHTML =
     allowedCard('ABQ Allowed', colVal(unit, 'overall', 'ABQ_allowed'), 'Plate discipline quality faced — high = walk-game risk.', 'overall_ABQ_allowed') +

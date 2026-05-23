@@ -1433,11 +1433,94 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 .research-controls { margin-bottom: 16px; }
 
 
+
+/* Platform rebuild */
+.oem-mode-tabs, #pane-oem-methodology, .dash-section-nav,
+#dailySummarySection, #section-market-map, #section-market-edge,
+#section-game-script, #section-validate, .question-section { display: none !important; }
+#pane-oem-daily, #pane-oem-research { display: block !important; }
+#pane-oem-daily.active, #pane-oem-research.active { display: block !important; }
+.platform-section { margin-bottom: 40px; scroll-margin-top: 88px; }
+.platform-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--purple-2); margin-bottom: 4px; }
+.platform-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; letter-spacing: -.02em; }
+.platform-subtitle { font-size: 12px; color: var(--text-2); margin-bottom: 16px; }
+.matchups-hero-header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
+.matchups-hero-meta { font-size: 13px; color: var(--text-2); font-family: var(--mono); margin-right: auto; }
+.sort-controls, .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.sort-controls button, .filter-pills button {
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
+}
+.sort-controls button.active, .filter-pills button.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.12); }
+#matchupsHeroGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+.hero-matchup-card {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+}
+.hmc-row { margin-bottom: 12px; }
+.hmc-teams { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.hmc-team { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-weight: 700; font-size: 18px; }
+.hmc-team.edge-team .hmc-abbr { color: var(--green); }
+.hmc-at { color: var(--text-3); font-size: 12px; }
+.hmc-time { margin-left: auto; font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+.hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mc-sp-block { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; }
+.mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 10px; margin-top: 2px; }
+.hmc-edge-label { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
+.hmc-osi-bar { display: grid; grid-template-columns: 72px 1fr 72px; gap: 8px; align-items: center; margin-bottom: 10px; }
+.hmc-osi-val { font-size: 11px; color: var(--text-2); }
+.hmc-osi-val.edge-team strong { color: var(--green); }
+.hmc-osi-val.tr { text-align: right; }
+.hmc-bar-track { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: var(--bg-4); }
+.hmc-bar-away { background: var(--blue); height: 100%; }
+.hmc-bar-home { background: var(--purple); height: 100%; }
+.hmc-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.script-badge, .f5-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+.script-gray { background: rgba(161,161,170,.15); color: var(--text-2); }
+.script-amber { background: rgba(251,191,36,.15); color: var(--gold); }
+.script-orange { background: rgba(251,146,60,.15); color: var(--orange); }
+.script-blue { background: rgba(96,165,250,.15); color: var(--blue); }
+.script-muted { background: var(--bg-4); color: var(--text-3); }
+.f5-green { background: rgba(74,222,128,.15); color: var(--green); }
+.f5-amber { background: rgba(251,191,36,.15); color: var(--gold); }
+.f5-blue { background: rgba(96,165,250,.15); color: var(--blue); }
+.f5-muted { background: var(--bg-4); color: var(--text-3); }
+.team-logo-fallback, .pitcher-headshot-fallback, .mc-headshot-fallback {
+  display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: var(--bg-4); color: var(--text-3); font-size: 9px; font-weight: 700;
+}
+.signal-summary-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+#signalChips { display: flex; flex-wrap: wrap; gap: 8px; }
+.signal-chip {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer;
+  background: var(--bg-3); min-width: 120px;
+}
+.chip-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; opacity: .85; }
+.chip-val { font-size: 12px; font-weight: 600; font-family: var(--mono); }
+.chip-green { border-color: rgba(74,222,128,.35); }
+.chip-amber { border-color: rgba(251,191,36,.35); }
+.chip-teal { border-color: rgba(45,212,191,.35); }
+.chip-red { border-color: rgba(248,113,113,.35); }
+.chip-gray { border-color: rgba(161,161,170,.35); }
+.chip-orange { border-color: rgba(251,146,60,.35); }
+#signalSummaryBody.collapsed { display: none; }
+.rankings-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; align-items: center; }
+.metric-bar-chart-title { font-size: 12px; font-weight: 600; margin: 16px 0 8px; color: var(--text-2); }
+.mbc-row { display: grid; grid-template-columns: 28px 36px 1fr 48px; gap: 8px; align-items: center; margin-bottom: 4px; font-size: 11px; }
+.mbc-track { height: 6px; background: var(--bg-4); border-radius: 3px; overflow: hidden; }
+.mbc-fill { height: 100%; border-radius: 3px; }
+.mbc-val { text-align: right; font-family: var(--mono); font-weight: 600; }
+.f5-variance-note { font-size: 10px; color: var(--text-3); margin-top: 6px; }
+#pane-matchup, #pane-strat, #pane-reference, #pane-matchup-builder { display: none !important; }
+.research-lab-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js"></script>
+<script src="platform_dashboard.js"></script>
 <script src="oem_overhaul.js"></script>
 </head>
 <body>
@@ -1450,11 +1533,9 @@ body.show-advanced-metrics .status-only-cols { display: none; }
       <span>Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
-      <a href="#section-lineup-edge" class="chase-nav-link" data-dash-section="section-lineup-edge">Tonight&apos;s Games</a>
-      <a href="#section-market-edge" class="chase-nav-link" data-dash-section="section-market-edge">Market Edge</a>
-      <a href="#section-game-script" class="chase-nav-link" data-dash-section="section-game-script">Game Script</a>
-      <a href="#section-validate" class="chase-nav-link" data-dash-section="section-validate">Validate</a>
-      <a href="#" class="chase-nav-link" data-oem-research="1">Research</a>
+      <a href="#section-matchups-hero" class="chase-nav-link">Matchups</a>
+      <a href="#section-rankings" class="chase-nav-link">Rankings</a>
+      <a href="#section-research-lab" class="chase-nav-link">Research</a>
       <a href="glossary.html" class="chase-nav-link">Glossary</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
@@ -1516,11 +1597,9 @@ body.show-advanced-metrics .status-only-cols { display: none; }
     </button>
   </div>
   <div class="chase-mobile-nav">
-    <a href="#section-lineup-edge" class="chase-mobile-link" data-dash-section="section-lineup-edge">Tonight&apos;s Games</a>
-    <a href="#section-market-edge" class="chase-mobile-link" data-dash-section="section-market-edge">Market Edge</a>
-    <a href="#section-game-script" class="chase-mobile-link" data-dash-section="section-game-script">Game Script</a>
-    <a href="#section-validate" class="chase-mobile-link" data-dash-section="section-validate">Validate</a>
-    <a href="#" class="chase-mobile-link" data-oem-research="1">Research Lab</a>
+    <a href="#section-matchups-hero" class="chase-mobile-link">Matchups</a>
+    <a href="#section-rankings" class="chase-mobile-link">Rankings</a>
+    <a href="#section-research-lab" class="chase-mobile-link">Research</a>
     <div class="chase-mobile-section">Profiles</div>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
@@ -1559,11 +1638,71 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   <span class="freshness-text">Data: <strong id="freshnessLabel">Loading…</strong></span>
   <span class="freshness-meta" id="freshnessMeta">Sheets pipeline · syncs with nav timestamp</span>
 </div>
-<nav class="oem-mode-tabs" role="tablist" aria-label="Dashboard mode">
-  <button type="button" class="oem-mode-tab active" data-oem-mode="daily" role="tab" aria-selected="true">Daily Read</button>
-  <button type="button" class="oem-mode-tab" data-oem-mode="research" role="tab">Research Lab</button>
-  <button type="button" class="oem-mode-tab" data-oem-mode="methodology" role="tab">Methodology</button>
-</nav>
+
+<section class="platform-section" id="section-matchups-hero">
+  <div class="platform-eyebrow">Today's Slate</div>
+  <h2 class="platform-title">Today's Projected Matchups</h2>
+  <div class="matchups-hero-header">
+    <div class="matchups-hero-meta" id="matchupsHeroMeta">Loading…</div>
+    <div class="sort-controls">
+      <span style="font-size:10px;color:var(--text-3);font-weight:600;">Sort:</span>
+      <button type="button" class="active" data-match-sort="edge">OSI Edge</button>
+      <button type="button" data-match-sort="time">Game Time</button>
+      <button type="button" data-match-sort="pitch">Pitching Score</button>
+    </div>
+    <div class="filter-pills">
+      <button type="button" class="active" data-match-filter="all">All</button>
+      <button type="button" data-match-filter="edge">Best Edge</button>
+      <button type="button" data-match-filter="duel">Pitching Duels</button>
+      <button type="button" data-match-filter="power">Power Matchups</button>
+      <button type="button" data-match-filter="f5">F5 Plays</button>
+    </div>
+  </div>
+  <div id="matchupsHeroGrid"></div>
+</section>
+
+<section class="platform-section" id="section-signal-summary">
+  <div class="signal-summary-header">
+    <div>
+      <div class="platform-eyebrow">Model Reads</div>
+      <h2 class="platform-title" style="font-size:16px;margin:0;">Today's Model Reads</h2>
+    </div>
+    <button type="button" class="btn" id="signalSummaryToggle" style="font-size:11px;">Hide ▴</button>
+  </div>
+  <div id="signalSummaryBody">
+    <div id="signalChips"></div>
+  </div>
+</section>
+
+<section class="platform-section" id="section-rankings">
+  <div class="platform-eyebrow">League Table</div>
+  <h2 class="platform-title">Team Offensive Rankings</h2>
+  <div class="rankings-controls">
+    <div class="control-group">
+      <span class="control-label">Window</span>
+      <div class="toggle-group" id="dashTimeToggle">
+        <button class="toggle-btn active" data-time="YTD">YTD</button>
+        <button class="toggle-btn" data-time="L30">L30</button>
+        <button class="toggle-btn" data-time="L14">L14</button>
+        <button class="toggle-btn warn" data-time="L7">L7</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <span class="control-label">Split</span>
+      <div class="toggle-group" id="dashSplitToggle">
+        <button class="toggle-btn active" data-split="b">Both</button>
+        <button class="toggle-btn" data-split="r">vs RHP</button>
+        <button class="toggle-btn" data-split="l">vs LHP</button>
+        <button class="toggle-btn" data-split="f5">F5</button>
+      </div>
+    </div>
+    <div class="search-bar" style="flex:1;min-width:200px;margin:0;">
+      <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams…" autocomplete="off">
+    </div>
+  </div>
+  <div id="dashboardRankingsMount"></div>
+  <div id="metricBarChart"></div>
+</section>
 
 <div class="oem-mode-pane active" id="pane-oem-daily" data-oem-pane="daily">
 <div class="layer-main" id="layerMain">
@@ -1653,11 +1792,11 @@ body.show-advanced-metrics .status-only-cols { display: none; }
   </div>
 
   <!-- Splits pane -->
-  <div id="pane-splits" style="display:block;">
+  <div id="pane-splits-trends" style="display:block;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Research Lab</div>
-        <div class="section-title">Which Lineup Splits Matter Tonight?</div>
+        <div class="section-title">Splits &amp; Trends</div>
         <div class="section-subtitle">Split OSI bars plus full metric table with window toggles.</div>
       </div>
     </div>
@@ -1883,6 +2022,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 
 </div><!-- /layer-advanced -->
 </div><!-- /pane-oem-research -->
+</section><!-- /section-research-lab -->
 
 <div class="oem-mode-pane" id="pane-oem-methodology" data-oem-pane="methodology">
   <div class="section">
@@ -3727,10 +3867,10 @@ function bindFilterHelp() {
   });
 }
 
-var RESEARCH_SUBTABS = ['splits', 'trends', 'compare', 'pitching', 'signals'];
+var RESEARCH_SUBTABS = ['splits-trends', 'compare', 'pitching', 'signals'];
 
 function showResearchSubtab(name) {
-  name = name || 'splits';
+  name = name || 'splits-trends';
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
     if (el) el.style.display = (id === name) ? 'block' : 'none';
@@ -3746,11 +3886,13 @@ function showResearchSubtab(name) {
 
 function onResearchSubtabShown(name) {
   mountResearchTables();
-  if (name === 'splits') { renderSplitBars(); renderMasterTable(); }
-  else if (name === 'trends') renderTrendHeatmap();
+  if (name === 'splits-trends') { renderSplitBars(); renderMasterTable(); renderTrendHeatmap(); }
   else if (name === 'compare') initCompare();
   else if (name === 'pitching') { renderPitchingScore(); renderOOR(); }
-  else if (name === 'signals' && window.OEMOverhaul) OEMOverhaul.renderConvergence();
+  else if (name === 'signals') {
+    if (window.OEMOverhaul) OEMOverhaul.renderConvergence();
+    else renderStrats();
+  }
 }
 
 function initCompare() {
@@ -3784,7 +3926,7 @@ function renderResearchLab(activeSubtab) {
   renderReferenceTables();
   showResearchSubtab(activeSubtab || (function() {
     var active = document.querySelector('#layerAdvanced .subtab.active');
-    return active ? active.getAttribute('data-pane') : 'splits';
+    return active ? active.getAttribute('data-pane') : 'splits-trends';
   })());
 }
 
@@ -4326,7 +4468,7 @@ function renderMasterTable(){
       var interp = summaryInterpretation(d);
       html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
         '<td class="rank-cell status-only-cols">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ▾':' ▸')+'<span class="rank-expand-hint">expand</span></td>'+
-        '<td class="team-cell" style="color:var(--purple);">'+d.t+paBadge+'</td>'+
+        '<td class="team-cell" style="color:var(--purple);">' + ((window.MLBMAAssets)?MLBMAAssets.teamLogoImg(d.t,24,'rank-logo'):'') + d.t+paBadge+'</td>'+
         '<td class="status-only-cols"><span class="rank-status-pill" style="background:'+sumColor+'22;color:'+sumColor+';">'+sum.label+'</span></td>'+
         '<td class="status-only-cols rank-takeaway" style="font-size:11px;color:var(--text-2);max-width:220px;">'+interp+'</td>'+
         '<td class="status-only-cols num-neutral" style="font-size:12px;color:var(--text-2);">'+d.osi.toFixed(1)+'</td>'+
@@ -5369,6 +5511,24 @@ function filterGlossary(){
   });
 }
 
+
+function mountDashboardRankings() {
+  var mount = document.getElementById('dashboardRankingsMount');
+  var table = document.querySelector('#masterTable');
+  if (!mount || !table) return;
+  var section = table.closest('.section');
+  if (section && !mount.contains(section)) mount.appendChild(section);
+  if (!table.dataset.platformHeaders) {
+    table.dataset.platformHeaders = '1';
+    STATE.showAdvancedMetrics = true;
+    document.body.classList.add('show-advanced-metrics');
+    var thead = table.querySelector('thead tr');
+    if (thead) {
+      thead.innerHTML = '<th style="width:30px;">#</th><th>Team</th><th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th><th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>';
+    }
+  }
+}
+
 function mountResearchTables() {
   var splitsMount = document.getElementById('splitsTableMount');
   var rankSection = document.querySelector('#masterTable');
@@ -5418,7 +5578,10 @@ function renderAll(){
   attachPalsToScores();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
-  if (STATE.oemMode === 'daily' && window.OEMOverhaul) {
+  mountDashboardRankings();
+  if (window.PlatformDashboard) {
+    PlatformDashboard.initRegistry().then(function() { PlatformDashboard.renderDashboard(); });
+  } else if (STATE.oemMode === 'daily' && window.OEMOverhaul) {
     OEMOverhaul.renderQuestionDashboard();
     OEMOverhaul.bindDashboardNav();
   } else {
@@ -5660,7 +5823,6 @@ function runPostLoadUI() {
     renderAll();
     renderSplitBars();
     renderTrendHeatmap();
-    renderStrats();
     renderReferenceTables();
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
@@ -5669,6 +5831,44 @@ function runPostLoadUI() {
 }
 
 var _loadWatchdogDone = null;
+
+
+function bindDashRankingsControls(){
+  var dt = document.getElementById('dashTimeToggle');
+  var ds = document.getElementById('dashSplitToggle');
+  var si = document.getElementById('dashSearchInput');
+  if(dt && !dt.dataset.bound){
+    dt.dataset.bound='1';
+    dt.querySelectorAll('.toggle-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var t = btn.getAttribute('data-time');
+        STATE.time = t;
+        dt.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+        var main = document.getElementById('timeToggle');
+        if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-time')===t); });
+        recomputeAllScores(); renderMasterTable();
+        if(window.PlatformDashboard && STATE.activeMetric) PlatformDashboard.renderMetricBarChart(STATE.activeMetric);
+      });
+    });
+  }
+  if(ds && !ds.dataset.bound){
+    ds.dataset.bound='1';
+    ds.querySelectorAll('.toggle-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var s = btn.getAttribute('data-split');
+        STATE.split = s === 'f5' ? 'b' : s;
+        ds.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+        var main = document.getElementById('splitToggle');
+        if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-split')===(s==='f5'?'b':s)); });
+        recomputeAllScores(); renderMasterTable();
+      });
+    });
+  }
+  if(si && !si.dataset.bound){
+    si.dataset.bound='1';
+    si.addEventListener('input', function(){ STATE.searchQuery = si.value; renderMasterTable(); });
+  }
+}
 
 function init(){
   console.log('[MLBMA] init start');
@@ -5679,7 +5879,7 @@ function init(){
     fetchLiveData();
     urlDecodeState();
     bindOemModeTabs();
-    setOemMode(stateReady() && STATE.oemMode ? STATE.oemMode : 'daily');
+    bindDashRankingsControls();
     var mg = document.getElementById('matchupsGrid');
     if (mg && !mg.dataset.lineupToggleBound) {
       mg.dataset.lineupToggleBound = '1';

@@ -47,6 +47,11 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { color: var(--text-2); font-size: 13px; }
+.metric-accordion { background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
+.metric-accordion summary { cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; list-style: none; }
+.ma-body { padding: 0 16px 16px; font-size: 12px; color: var(--text-2); }
+.team-snapshot { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; padding: 20px; background: var(--bg-3); border-radius: 12px; border: 1px solid var(--border); }
+.profile-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; padding: 12px; background: var(--bg-2); border-radius: 8px; }
 .header { margin-bottom: 22px; }
 .brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .brand-tag {
@@ -107,7 +112,18 @@ h1 {
   outline: none; border-color: var(--purple);
   box-shadow: 0 0 0 2px var(--purple-glow);
 }
-.team-header {
+.metric-accordion { background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
+.metric-accordion summary { cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+.metric-accordion summary::-webkit-details-marker { display: none; }
+.ma-score { font-family: var(--mono); font-weight: 700; font-size: 18px; }
+.ma-body { padding: 0 16px 16px; font-size: 12px; color: var(--text-2); }
+.ma-split-pill { display: inline-block; padding: 3px 8px; margin: 2px; border-radius: 4px; background: var(--bg-4); font-family: var(--mono); font-size: 10px; }
+.sparkline { display: flex; align-items: flex-end; gap: 6px; height: 32px; margin: 10px 0; }
+.spark-bar { width: 12px; background: var(--purple); border-radius: 2px 2px 0 0; min-height: 4px; }
+.team-snapshot { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; padding: 20px; background: var(--bg-3); border-radius: 12px; border: 1px solid var(--border); }
+.snapshot-name { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.snapshot-metrics { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--text-2); }
+.profile-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; padding: 12px; background: var(--bg-2); border-radius: 8px; }
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
   margin-bottom: 18px;
 }
@@ -247,6 +263,8 @@ h1 {
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="chase_nav.css">
 <script src="mlbma_config.js"></script>
+<script src="mlbma_assets.js"></script>
+<script src="team_profile_mini.js"></script>
 <script src="mlbma_ui.js" data-page="team_profile.html"></script>
 </head>
 <body>
@@ -565,7 +583,14 @@ function renderTeam(team) {
   html += '<div class="header-meta" id="headerMeta"></div></div>';
 
   /* Section 2 — Offense */
-  html += '<div class="section"><div class="section-eyebrow">Offense</div>';
+  html += '<div class="profile-controls"><span class="control-label">Split</span> Both / vs RHP / vs LHP / Home / Away / F5 · <span class="control-label">Window</span> YTD / L30 / L14 / L7</div>';
+  if (window.TeamProfileMini) {
+    html += TeamProfileMini.renderSnapshot(prof, STATE.team, { pickCol: pickCol, teamName: name });
+    if (tonightHtml) html += '<div style="margin-bottom:16px;">' + tonightHtml + '</div>';
+    html += TeamProfileMini.render(prof, STATE.team, { pickCol: pickCol });
+  }
+
+  html += '<div class="section" style="display:none;"><div class="section-eyebrow">Offense</div>';
   html += '<div class="section-title">Offensive Overview</div>';
   html += '<div class="section-subtitle">Created metrics + PALS / OOR context</div>';
   html += '<div class="metric-grid">';
