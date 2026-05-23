@@ -13,11 +13,23 @@
     WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', AZ: 'ari', CHA: 'cws', KCA: 'kc', TBA: 'tb'
   };
 
+  /** @see dashboard/assets/.gitkeep — four brand styles */
   var BRAND = {
-    logoNav: 'assets/chase-logo-transparent.png',
-    logoHero: 'assets/chase-logo-horizontal.png',
+    icon: 'assets/chase-icon-filled.png',
+    logoNavDark: 'assets/chase-logo-horizontal.png',
+    logoHorizontalLight: 'assets/chase-logo-horizontal-light.png',
+    logoStackedLight: 'assets/chase-logo-stacked-light.png',
+    iconOutline: 'assets/chase-icon-outline.png',
     iconFilled: 'assets/chase-icon-filled.png',
-    iconOutline: 'assets/chase-icon-outline.png'
+    logoNav: 'assets/chase-logo-horizontal.png',
+    logoHero: 'assets/chase-logo-horizontal.png'
+  };
+
+  var AVATAR_SIZES = {
+    matchup: 48,
+    compare: 64,
+    profile: 112,
+    compact: 40
   };
 
   var REGISTRY = { byName: {}, byId: {}, loaded: false, promise: null };
@@ -93,15 +105,72 @@
       + mlbId + '/headshot/67/current';
   }
 
-  function headshotImg(mlbId, px, cls) {
+  function resolveMlbId(idOrName) {
+    if (idOrName == null || idOrName === '') return null;
+    if (/^\d+$/.test(String(idOrName))) return String(idOrName);
+    return lookupMlbId(idOrName);
+  }
+
+  /**
+   * Standard circular pitcher avatar — matchup (48), compare (64), profile (112).
+   * @param {string|number|null} idOrName - MLB ID or player name
+   * @param {string|number} sizeKey - preset key or pixel size
+   * @param {object} [opts] - { cls, eager, lazy }
+   */
+  function pitcherAvatar(idOrName, sizeKey, opts) {
+    opts = opts || {};
+    var px = typeof sizeKey === 'number' ? sizeKey : (AVATAR_SIZES[sizeKey] || AVATAR_SIZES.matchup);
+    var mlbId = resolveMlbId(idOrName);
+    return headshotImg(mlbId, px, opts.cls || 'pitcher-headshot', opts);
+  }
+
+  function headshotImg(mlbId, px, cls, opts) {
+    opts = opts || {};
     px = px || 48;
     cls = cls || 'pitcher-headshot';
     var url = headshotUrl(mlbId);
     var generic = GENERIC_HEADSHOT;
-    return '<span class="headshot-wrap ' + cls + '-wrap" style="width:' + px + 'px;height:' + px + 'px" role="img" aria-label="Pitcher">'
-      + '<img class="' + cls + '" src="' + url + '" alt="" loading="lazy" '
-      + 'onerror="this.onerror=null;this.src=\'' + generic + '\';">'
+    var scale = px >= 96 ? 1.08 : 1.06;
+    var sizeClass = 'ca-pitcher-avatar--' + px;
+    var loading = opts.eager ? 'eager' : (opts.lazy === false ? 'eager' : 'lazy');
+    var fetchPri = opts.eager ? ' fetchpriority="high"' : '';
+    var err = 'var i=this,w=i.closest(\'.ca-pitcher-avatar\');if(!w)return;'
+      + 'if(i.dataset.fallback!==\'1\'){i.dataset.fallback=\'1\';i.src=\'' + generic + '\';}'
+      + 'else{i.style.display=\'none\';var f=w.querySelector(\'.ca-pitcher-avatar-fallback\');if(f)f.style.display=\'flex\';}';
+    return '<span class="ca-pitcher-avatar headshot-wrap ' + cls + '-wrap ' + sizeClass + '" '
+      + 'style="width:' + px + 'px;height:' + px + 'px;min-width:' + px + 'px;min-height:' + px + 'px;" '
+      + 'role="img" aria-label="Pitcher photo">'
+      + '<img class="ca-pitcher-avatar-img ' + cls + '" src="' + url + '" alt="" width="' + px + '" height="' + px + '" '
+      + 'loading="' + loading + '"' + fetchPri + ' '
+      + 'style="transform:scale(' + scale + ');" onerror="' + err + '">'
+      + '<span class="ca-pitcher-avatar-fallback pitcher-silhouette" aria-hidden="true"></span>'
       + '</span>';
+  }
+
+  function brandLogoNavHtml(heightPx) {
+    heightPx = heightPx || 32;
+    return '<img class="chase-nav-logo ca-logo-nav chase-brand-logo--dark" src="' + BRAND.logoNavDark + '" '
+      + 'alt="Chase Analytics" height="' + heightPx + '" style="height:' + heightPx + 'px;width:auto;max-height:36px;object-fit:contain" loading="eager" '
+      + 'onerror="this.style.display=\'none\';var f=this.nextElementSibling;if(f)f.style.display=\'inline\';">'
+      + '<span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>';
+  }
+
+  function brandLogoLightBadgeHtml(kind, heightPx) {
+    kind = kind || 'horizontal';
+    heightPx = heightPx || (kind === 'stacked' ? 100 : 36);
+    var src = kind === 'stacked' ? BRAND.logoStackedLight : BRAND.logoHorizontalLight;
+    return '<div class="ca-brand-badge-light" role="img" aria-label="Chase Analytics">'
+      + '<img class="ca-brand-logo-light ca-brand-logo-light--' + kind + '" src="' + src + '" alt="Chase Analytics" '
+      + 'style="height:' + heightPx + 'px;width:auto;object-fit:contain" loading="lazy" '
+      + 'onerror="this.onerror=null;this.src=\'' + BRAND.logoNavDark + '\';"></div>';
+  }
+
+  function brandIconHtml(px, cls) {
+    px = px || 48;
+    cls = cls || 'ca-brand-icon';
+    return '<img class="' + cls + '" src="' + BRAND.icon + '" alt="" width="' + px + '" height="' + px + '" '
+      + 'style="width:' + px + 'px;height:' + px + 'px;object-fit:contain" loading="lazy" '
+      + 'onerror="this.style.display=\'none\'">';
   }
 
   function parseRegistryRows(rows) {
@@ -277,11 +346,6 @@
       + '</div>';
   }
 
-  function brandLogoNavHtml() {
-    return '<img class="ca-logo-nav chase-brand-logo" src="' + BRAND.logoNav + '" alt="Chase Analytics" height="32" loading="eager" '
-      + 'onerror="this.style.display=\'none\';this.nextElementSibling&&(this.nextElementSibling.style.display=\'flex\');">';
-  }
-
   function f5WarningHtml() {
     return '<div class="f5-variance-note">F5 (Inn. 1–5) · <em>Higher variance — smaller sample</em></div>';
   }
@@ -293,6 +357,11 @@
     teamLogoImg: teamLogoImg,
     headshotUrl: headshotUrl,
     headshotImg: headshotImg,
+    pitcherAvatar: pitcherAvatar,
+    resolveMlbId: resolveMlbId,
+    AVATAR_SIZES: AVATAR_SIZES,
+    brandLogoLightBadgeHtml: brandLogoLightBadgeHtml,
+    brandIconHtml: brandIconHtml,
     loadRegistry: loadRegistry,
     parseRegistryRows: parseRegistryRows,
     lookupPlayer: lookupPlayer,

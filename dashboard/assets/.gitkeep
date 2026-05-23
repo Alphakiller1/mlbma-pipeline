@@ -1,6 +1,8 @@
-# Chase Analytics brand assets (upload manually):
-# - chase-logo-horizontal.png
-# - chase-logo-transparent.png
-# - chase-icon-filled.png
-# - chase-icon-outline.png
-# - chase-logo-stacked.png
+# Chase Analytics brand assets (four styles)
+#
+# 1. chase-icon-filled.png — icon-only purple curve (favicon, loading, compact accents)
+# 2. chase-logo-horizontal.png — dark-theme horizontal wordmark (PRIMARY NAV / dark headers)
+# 3. chase-logo-horizontal-light.png — light-bg horizontal wordmark (use inside .ca-brand-badge-light)
+# 4. chase-logo-stacked-light.png — light-bg stacked wordmark (splash, reports, empty states — NOT nav)
+#
+# Legacy aliases (optional): chase-logo-transparent.png, chase-icon-outline.png

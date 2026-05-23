@@ -86,10 +86,25 @@ def replace_nav_wrap(html: str) -> str:
     return html
 
 
+NAV_COMMENT = "<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->\n"
+NAV_COMMENT_RE = re.compile(
+    r"(?:<!-- Chase Analytics navigation[^\n]*\n)+",
+    re.MULTILINE,
+)
+
+
+def dedupe_nav_comments(html: str) -> str:
+    if 'id="chaseHeader"' not in html:
+        return html
+    return NAV_COMMENT_RE.sub(NAV_COMMENT, html, count=1)
+
+
 def sync_nav_block(html: str) -> str:
     if 'id="chaseHeader"' not in html:
         return html
-    return NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
+    html = dedupe_nav_comments(html)
+    html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
+    return dedupe_nav_comments(html)
 
 
 def insert_nav_at_body(html: str) -> str:

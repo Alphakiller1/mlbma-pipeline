@@ -108,9 +108,10 @@
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
-  function spRow(label, name, hand, team, stats) {
+  function spRow(label, name, hand, team, stats, opts) {
+    opts = opts || {};
     var pid = A ? A.lookupMlbId(name) : null;
-    var hs = A ? A.headshotImg(pid, 48, 'mc-headshot') : '<span class="headshot-wrap" style="width:48px;height:48px"></span>';
+    var hs = A ? A.pitcherAvatar(pid, 'matchup', { cls: 'mc-headshot', eager: !!opts.eager }) : '<span class="ca-pitcher-avatar ca-pitcher-avatar--48"></span>';
     var pt = pitchTier(spPitchScore(team));
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var nameHtml = pname === 'TBD'
@@ -209,7 +210,7 @@
     });
     var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
 
-    grid.innerHTML = sorted.map(function(m) {
+    grid.innerHTML = sorted.map(function(m, cardIdx) {
       var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
       var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
       var total = awayOSI + homeOSI || 1;
@@ -232,8 +233,8 @@
         + weatherHtml(m)
         + '</div>'
         + '<div class="hmc-row hmc-pitchers">'
-        + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP })
-        + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP })
+        + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP }, { eager: cardIdx < 3 })
+        + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP }, { eager: cardIdx < 3 })
         + '</div>'
         + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
         + '<div class="hmc-osi-bar">'

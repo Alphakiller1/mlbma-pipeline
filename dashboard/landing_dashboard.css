@@ -110,23 +110,11 @@
   text-decoration: underline;
 }
 
-.mc-sp-photo,
-.headshot-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
+.mc-sp-photo {
   flex-shrink: 0;
-  background: var(--bg-4);
-  border: 1px solid var(--border);
 }
-.mc-sp-photo img,
-.headshot-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.mc-sp-photo .ca-pitcher-avatar {
   display: block;
-  border-radius: 50%;
 }
 .mc-sp-block {
   display: flex;

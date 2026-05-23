@@ -262,7 +262,7 @@
     var oor = met.oor;
     var xfipStr = stats.xfip != null ? stats.xfip.toFixed(2) : (stats.fip != null ? stats.fip.toFixed(2) : '—');
     return '<div class="mc-sp-card">'
-      + '<div class="mc-sp-top">' + S.headshot(pname, 64)
+      + '<div class="mc-sp-top">' + S.headshot(pname, 64, { eager: true })
       + '<div><div class="ca-metric-label">' + esc(side) + ' SP · ' + esc(team) + '</div>'
       + '<div class="mc-sp-name">' + nameHtml + ' <span class="hand-pill">' + esc((hand || '?').charAt(0)) + '</span>'
       + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'

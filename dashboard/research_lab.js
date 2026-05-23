@@ -71,7 +71,7 @@
     if (!el || el.dataset.mounted) return;
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
-      + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-outline.png" alt="" onerror="this.style.display=\'none\'">Research Lab</h2>'
+      + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
       + '<p class="rl-workspace-subtitle">Premium workspace for splits, comparisons, pitching context, and leaderboards — built for nightly betting research.</p>'
       + '<div class="rl-workflow-strip">'
       + '<span class="rl-workflow-step">1 · Select entity</span>'
@@ -261,6 +261,11 @@
     }
   }
 
+  function pitcherAvatarHtml(name, sizeKey) {
+    if (!A || !name) return '';
+    return A.pitcherAvatar(name, sizeKey || 'compare', { cls: 'rl-compare-avatar' });
+  }
+
   function renderPitcherCompare(out) {
     var pa = findSpProfile(RL.compareA);
     var pb = findSpProfile(RL.compareB);
@@ -269,9 +274,9 @@
     var psA = ma.osiAllowed != null ? 100 - ma.osiAllowed : null;
     var psB = mb.osiAllowed != null ? 100 - mb.osiAllowed : null;
     var edge = (psA || 0) > (psB || 0) + 5 ? RL.compareA : ((psB || 0) > (psA || 0) + 5 ? RL.compareB : 'Even');
-    out.innerHTML = '<div class="rl-scorecards">'
-      + scorecardOne(RL.compareA, 'Pitching Score', psA, false)
-      + scorecardOne(RL.compareB, 'Pitching Score', psB, false)
+    out.innerHTML = '<div class="rl-scorecards rl-scorecards--pitchers">'
+      + pitcherScorecard(RL.compareA, 'Pitching Score', psA, false)
+      + pitcherScorecard(RL.compareB, 'Pitching Score', psB, false)
       + '</div>' + edgeCard(edge, 'Lower OSI allowed = stronger pitcher profile.')
       + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(RL.compareA) + '</th><th>' + esc(RL.compareB) + '</th></tr></thead><tbody>'
       + row3('K%', ma.kPct, mb.kPct, true) + row3('BB%', ma.bbPct, mb.bbPct, true)
@@ -326,6 +331,14 @@
     return '<div class="rl-scorecard"><h4>' + esc(title) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
       + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</div></div>';
+  }
+
+  function pitcherScorecard(name, label, val, invert) {
+    return '<div class="rl-scorecard rl-scorecard--pitcher">'
+      + pitcherAvatarHtml(name, 'compare')
+      + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
+      + '<div class="ca-metric-label">' + esc(label) + '</div>'
+      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</div></div></div>';
   }
 
   function scorecardsHtml(a, b, kind) {

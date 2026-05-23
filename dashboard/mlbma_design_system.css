@@ -232,19 +232,82 @@ body {
 .ca-grade-bg-strong { background: rgba(74, 222, 128, 0.1); }
 .ca-grade-bg-elite { background: rgba(34, 197, 94, 0.14); }
 
-/* Pitcher headshot fallback (Phase 2+ cards) */
-.pitcher-silhouette,
-.pitcher-headshot-fallback.pitcher-silhouette {
+/* Light-surface brand badge (black-text logos) */
+.ca-brand-badge-light {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #E5E7EB;
+  border: 1px solid #D1D5DB;
+  box-sizing: border-box;
+}
+.ca-brand-logo-light { display: block; max-width: 100%; }
+
+/* Nav — dark wordmark only */
+.chase-nav-logo--dark,
+.chase-nav-logo.ca-logo-nav {
+  height: 32px;
+  max-height: 36px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Pitcher avatar — circular crop, no stretch */
+.ca-pitcher-avatar,
+.headshot-wrap.ca-pitcher-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background: var(--bg-4, #1f1f25);
+  border: 1px solid var(--border, #28282f);
+  position: relative;
+}
+.ca-pitcher-avatar-img,
+.ca-pitcher-avatar img,
+.headshot-wrap.ca-pitcher-avatar > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  border-radius: 999px;
+  transform-origin: center top;
+}
+.ca-pitcher-avatar-fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+.ca-pitcher-avatar--48 { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
+.ca-pitcher-avatar--64 { width: 64px; height: 64px; min-width: 64px; min-height: 64px; }
+.ca-pitcher-avatar--112 { width: 112px; height: 112px; min-width: 112px; min-height: 112px; }
+
+.pitcher-silhouette,
+.ca-pitcher-avatar-fallback.pitcher-silhouette {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
   background: var(--bg-4, #1f1f25);
   border: 1px solid var(--border, #28282f);
   flex-shrink: 0;
   box-sizing: border-box;
+  width: 100%;
+  height: 100%;
 }
-.pitcher-silhouette::after {
+.pitcher-silhouette::after,
+.ca-pitcher-avatar-fallback.pitcher-silhouette::after {
   content: '';
   width: 55%;
   height: 55%;

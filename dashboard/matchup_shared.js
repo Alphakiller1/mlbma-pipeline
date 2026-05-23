@@ -445,9 +445,9 @@
     return A ? A.teamLogoImg(team, px || 40) : '';
   }
 
-  function headshot(name, px) {
-    var pid = A ? A.lookupMlbId(name) : null;
-    return A ? A.headshotImg(pid, px || 64, 'compare-headshot') : '';
+  function headshot(name, px, opts) {
+    if (!A) return '';
+    return A.pitcherAvatar(name, px || 64, Object.assign({ cls: 'compare-headshot' }, opts || {}));
   }
 
   global.MLBMASharedMatchup = {
