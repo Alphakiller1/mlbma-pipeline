@@ -59,6 +59,9 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
 .loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
 .hub-window-banner{margin:12px 0;padding:10px 14px;border-radius:8px;border:1px solid var(--gold);background:rgba(251,191,36,.08);color:var(--gold);font-size:12px;display:none}
 .hub-window-banner.show{display:block}
+.hub-f5-banner{margin:12px 0;padding:10px 14px;border-radius:8px;border:1px solid var(--purple);background:rgba(192,132,252,.08);color:var(--purple);font-size:12px;display:none}
+.hub-f5-banner.show{display:block}
+.f5-est{font-size:10px;font-style:italic;color:var(--text-3);margin-left:2px}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="mlbma_design_system.css">
@@ -170,11 +173,12 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
     <h2>Global Team Metrics</h2>
     <p class="sec-sub">Sortable board with color-graded OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, and trend.</p>
     <div id="hubWindowBanner" class="hub-window-banner">L30 / L14 / L7 windows require pipeline run — showing YTD only.</div>
+    <div id="hubF5Banner" class="hub-f5-banner">F5 values estimated from process metrics (ABQ/OBR weighted)</div>
     <div class="hub-controls">
       <div class="hub-ctrl"><label for="hubWindow">Window</label>
         <select id="hubWindow"><option value="YTD" selected>YTD</option><option value="L30">L30</option><option value="L14">L14</option><option value="L7">L7</option></select></div>
       <div class="hub-ctrl"><label for="hubSplit">Split</label>
-        <select id="hubSplit"><option value="both" selected>Both</option><option value="r">vs RHP</option><option value="l">vs LHP</option></select></div>
+        <select id="hubSplit"><option value="both" selected>Both</option><option value="r">vs RHP</option><option value="l">vs LHP</option><option value="f5">F5</option></select></div>
       <div class="hub-ctrl" style="flex:1;min-width:200px"><label for="hubSearch">Search</label>
         <input type="search" id="hubSearch" placeholder="Filter teams…" autocomplete="off"></div>
     </div>
@@ -245,9 +249,20 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
     });
   }
 
+  function f5OsiProxy(row) {
+    if (!row || row.abq == null || row.obr == null || row.rcv == null) return null;
+    return row.abq * 0.45 + row.obr * 0.35 + row.rcv * 0.20;
+  }
+
   function activeRows() {
     if (HUB.split === 'r') return HUB.scR.slice();
     if (HUB.split === 'l') return HUB.scL.slice();
+    if (HUB.split === 'f5') {
+      return HUB.rows.slice().map(function(d) {
+        var proxy = f5OsiProxy(d);
+        return Object.assign({}, d, { osi: proxy });
+      });
+    }
     return HUB.rows.slice();
   }
 
@@ -270,7 +285,10 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
     if (!body) return;
     var banner = document.getElementById('hubWindowBanner');
     if (banner) banner.classList.toggle('show', HUB.window !== 'YTD');
+    var f5Banner = document.getElementById('hubF5Banner');
+    if (f5Banner) f5Banner.classList.toggle('show', HUB.split === 'f5');
     var rows = filteredRows();
+    var osiEst = HUB.split === 'f5' ? ' <em class="f5-est">est.</em>' : '';
     var html = '';
     rows.forEach(function(d, i) {
       var logo = A ? A.teamLogoImg(d.t, 24) : esc(d.t);
@@ -280,7 +298,7 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
         + '<td>' + (i + 1) + '</td>'
         + '<td>' + logo + '</td>'
         + '<td><strong>' + esc(d.t) + '</strong></td>'
-        + '<td style="color:' + mc(d.osi, 'osi') + '">' + fmt(d.osi) + '</td>'
+        + '<td style="color:' + mc(d.osi, 'osi') + '">' + fmt(d.osi) + osiEst + '</td>'
         + '<td style="color:' + mc(d.projOSI, 'osi') + '">' + fmt(d.projOSI) + '</td>'
         + '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>'
         + '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>'

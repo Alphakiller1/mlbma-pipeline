@@ -21,6 +21,11 @@
     return Number(v).toFixed(d == null ? 1 : d);
   }
 
+  function numOrNull(v) {
+    if (v == null || v === '' || isNaN(v)) return null;
+    return Number(v);
+  }
+
   function pickCol(row, names) {
     return S ? S.pickCol(row, names) : '';
   }
@@ -160,6 +165,7 @@
     var team = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
     var hand = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || 'R').charAt(0);
     var met = profileMetrics(row);
+    var f5Era = numOrNull(pickCol(row, ['F5_ERA', 'F5 ERA']));
     var tier = pitchTier(met.pitchScore);
     var avatar = A ? A.pitcherAvatar(name, { crop: 'profile', className: 'pl-snap-avatar', eager: true }) : '';
     var logo = A ? A.teamLogoImg(team, 28) : '';
@@ -172,6 +178,7 @@
       + '<span>BB% <strong>' + fmt(met.bbPct, 1) + '</strong></span>'
       + '<span>HR/9 <strong>' + fmt(met.hr9, 2) + '</strong></span>'
       + '<span>FIP/ERA <strong>' + fmt(met.fip != null ? met.fip : met.era, 2) + '</strong></span>'
+      + '<span>F5 ERA: <strong>' + (f5Era != null ? fmt(f5Era, 2) : '—') + '</strong></span>'
       + '<span>IP <strong>' + fmt(pickCol(row, ['IP', 'ip']), 1) + '</strong></span></div>'
       + '<div class="pl-allowed-row">'
       + allowedCard('OSI Allowed', met.osiAllowed)

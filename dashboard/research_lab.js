@@ -858,10 +858,18 @@
       ? RL.compareA + ' lineup (OSI ' + fmt(lineupOsi) + ' vs ' + hand + 'HP) faces ' + RL.compareB + ' (OSI Allowed ' + fmt(allow) + ') — lineup edge, over lean.'
       : edge === 'Pitcher' ? RL.compareB + ' suppresses ' + RL.compareA + ' — under/F5 lean.'
       : 'Even matchup — verify bullpen before full-game total.';
+    var pitcherPs = sm.pitchScore != null ? sm.pitchScore : 50;
+    var pTeam = String(S.pickCol(sp, 'pitcher_team', 'Team', 'Tm') || '').toUpperCase();
+    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
+    var pBp = units[pTeam];
+    var pBpAllow = pBp ? (pBp.osiAllowed != null ? pBp.osiAllowed : pBp.osi_allowed) : null;
+    var f5 = S && S.f5Badge ? S.f5Badge(pitcherPs, 50, pBpAllow, 55) : { label: 'Lineup Edge', cls: 'f5-badge f5-muted' };
+    var f5Cls = f5.cls.indexOf('f5-badge') >= 0 ? f5.cls : 'f5-badge ' + f5.cls;
     out.innerHTML = '<div class="rl-scorecards">'
       + scorecardOne(RL.compareA + ' vs ' + hand + 'HP', 'Lineup OSI', lineupOsi, false)
       + scorecardOne(RL.compareB, 'OSI Allowed', allow, true)
       + '</div>' + edgeCard(edge, 'Lineup split OSI vs pitcher allowed profile.')
+      + '<div class="rl-f5-badge-row"><span class="' + esc(f5Cls) + '">' + esc(f5.label) + '</span></div>'
       + '<div class="rl-betting-angle"><strong>Betting angle:</strong> ' + esc(bet) + '</div>'
       + profileLinks(RL.compareA, null, RL.compareB, null);
   }

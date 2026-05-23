@@ -7,6 +7,8 @@
   var A = global.MLBMAAssets;
   var S = global.MLBMASharedMatchup;
   var RL = global.ResearchLab;
+  var TABS = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SHEET_TABS;
+  var _teamF5OsiMap = null;
 
   if (!RL) return;
 
@@ -87,6 +89,36 @@
     if (a > 15) return 'color:#F87171;font-weight:700';
     if (a > 10) return 'color:#FBBF24;font-weight:700';
     return 'color:' + mColor(edge, false, 'ppGap') + ';font-weight:600';
+  }
+
+  function numOrNull(v) {
+    if (v == null || v === '' || isNaN(v)) return null;
+    return Number(v);
+  }
+
+  function loadTeamF5OsiMap() {
+    if (_teamF5OsiMap) return Promise.resolve(_teamF5OsiMap);
+    if (!S || !TABS || !TABS.team_profiles) return Promise.resolve({});
+    return S.fetchSheetTab(TABS.team_profiles).then(function(rows) {
+      var map = {};
+      (rows || []).forEach(function(row) {
+        var t = String(S.pickCol(row, 'team', 'Tm', 'Team') || '').toUpperCase();
+        if (!t) return;
+        map[t] = numOrNull(S.pickCol(row, ['osi_f5', 'OSI_F5', 'osi_F5']));
+      });
+      _teamF5OsiMap = map;
+      return map;
+    }).catch(function() {
+      _teamF5OsiMap = {};
+      return _teamF5OsiMap;
+    });
+  }
+
+  function f5OsiForTeam(team) {
+    var t = String(team || '').toUpperCase();
+    var map = _teamF5OsiMap;
+    if (map && map[t] != null) return map[t];
+    return null;
   }
 
   function ensureTrendState() {
@@ -274,27 +306,36 @@
     if (entity === 'team') {
       var r = RL.getResearchTeamData('r');
       var l = RL.getResearchTeamData('l');
-      var rows = r.map(function(row) {
-        var lrow = l.find(function(x) { return x.t === row.t; }) || {};
-        var rv = row[metric];
-        var lv = lrow[metric];
-        return { t: row.t, rv: rv, lv: lv, edge: (rv != null && lv != null) ? rv - lv : null };
-      }).sort(function(a, b) {
-        return Math.abs(b.edge || 0) - Math.abs(a.edge || 0);
+      loadTeamF5OsiMap().then(function() {
+        var rows = r.map(function(row) {
+          var lrow = l.find(function(x) { return x.t === row.t; }) || {};
+          var rv = row[metric];
+          var lv = lrow[metric];
+          return {
+            t: row.t, rv: rv, lv: lv,
+            f5: f5OsiForTeam(row.t),
+            edge: (rv != null && lv != null) ? rv - lv : null
+          };
+        }).sort(function(a, b) {
+          return Math.abs(b.edge || 0) - Math.abs(a.edge || 0);
+        });
+        var f5Tip = ' title="F5 estimate — ABQ/OBR weighted"';
+        mount.innerHTML = '<table class="rl-table-premium"><thead><tr>'
+          + '<th></th><th>Team</th><th>vs RHP</th><th>vs LHP</th><th>Split Edge</th>'
+          + '<th' + f5Tip + '>F5 OSI</th><th>Platoon Label</th>'
+          + '</tr></thead><tbody>'
+          + rows.map(function(row) {
+            var logo = A ? A.teamLogoImg(row.t, 24) : '';
+            return '<tr class="rl-row-click" data-team="' + esc(row.t) + '">'
+              + '<td>' + logo + '</td><td><strong>' + esc(row.t) + '</strong></td>'
+              + '<td class="num" style="color:' + mColor(row.rv, false, metric) + '">' + fmt(row.rv) + '</td>'
+              + '<td class="num" style="color:' + mColor(row.lv, false, metric) + '">' + fmt(row.lv) + '</td>'
+              + '<td class="num" style="' + splitEdgeStyle(row.edge) + '">' + fmt(row.edge) + '</td>'
+              + '<td class="num" style="color:' + mColor(row.f5, false, 'osi') + '">' + fmt(row.f5) + '</td>'
+              + '<td>' + esc(platoonLabel(row.rv, row.lv)) + '</td></tr>';
+          }).join('') + '</tbody></table>';
+        bindRowClicks(mount, 'team');
       });
-      mount.innerHTML = '<table class="rl-table-premium"><thead><tr>'
-        + '<th></th><th>Team</th><th>vs RHP</th><th>vs LHP</th><th>Split Edge</th><th>Platoon Label</th>'
-        + '</tr></thead><tbody>'
-        + rows.map(function(row) {
-          var logo = A ? A.teamLogoImg(row.t, 24) : '';
-          return '<tr class="rl-row-click" data-team="' + esc(row.t) + '">'
-            + '<td>' + logo + '</td><td><strong>' + esc(row.t) + '</strong></td>'
-            + '<td class="num" style="color:' + mColor(row.rv, false, metric) + '">' + fmt(row.rv) + '</td>'
-            + '<td class="num" style="color:' + mColor(row.lv, false, metric) + '">' + fmt(row.lv) + '</td>'
-            + '<td class="num" style="' + splitEdgeStyle(row.edge) + '">' + fmt(row.edge) + '</td>'
-            + '<td>' + esc(platoonLabel(row.rv, row.lv)) + '</td></tr>';
-        }).join('') + '</tbody></table>';
-      bindRowClicks(mount, 'team');
       return;
     }
     if (entity === 'sp') {

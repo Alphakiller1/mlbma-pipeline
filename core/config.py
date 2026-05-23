@@ -80,6 +80,10 @@ PITCHER_HR_DRIFT_THRESHOLD = 0.30
 PITCHER_MIN_L14_STARTS = 2
 PITCHER_DEFAULT_WINDOW = "L14"
 
+# F5 proxy weights - process metrics weighted higher since F5 is starter-driven.
+# Replace with true F5 splits when pipeline provides direct F5 data.
+F5_OSI_WEIGHTS = {"ABQ": 0.45, "OBR": 0.35, "RCV": 0.20}
+
 # Batter profile system
 BATTER_MIN_PA = 50
 BATTER_RECENT_DAYS = 30

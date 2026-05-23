@@ -3379,6 +3379,7 @@ SCO_YTD_B.forEach(function(d){
   d.balance = 100 - Math.abs(d.splitEdge);
   d.exploit = Math.abs(d.splitEdge);
   d.ytdOSI = ytdOSI; d.l30OSI=l30; d.l14OSI=l14; d.l7OSI=l7;
+  d.f5OSI = (d.abq * 0.45) + (d.obr * 0.35) + (d.rcv * 0.20);
   d.dL30 = l30!==null ? l30-ytdOSI : 0;
   d.dL14 = (l14!==null && l30!==null) ? l14-l30 : 0;
   d.dL7  = (l7!==null && l14!==null) ? l7-l14 : 0;
@@ -5080,7 +5081,7 @@ function renderTeamDetail(team) {
     + rankSplitCell('vLHP', master.lhpOSI)
     + rankSplitCell('Home', master.homeOSI, 'split N/A')
     + rankSplitCell('Away', master.awayOSI, 'split N/A')
-    + rankSplitCell('F5', master.f5OSI, 'split N/A')
+    + rankSplitCell('F5 OSI (est.)', master.f5OSI, 'est.')
     + '</div>'
     + '<div class="rank-detail-meta">'
     + '<div><span class="lab">Power-Floor Gap</span> <strong style="color:' + dfColor + ';">' + dfStr + '</strong>'
