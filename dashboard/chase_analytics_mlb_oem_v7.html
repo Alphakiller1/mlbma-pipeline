@@ -1596,7 +1596,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mbc-fill { height: 100%; border-radius: 3px; }
 .mbc-val { text-align: right; font-family: var(--mono); font-weight: 600; }
 .f5-variance-note { font-size: 10px; color: var(--text-3); margin-top: 6px; }
-#pane-matchup, #pane-strat, #pane-reference, #pane-matchup-builder, #pane-trends { display: none !important; }
+#pane-matchup, #pane-strat, #pane-reference, #pane-matchup-builder { display: none !important; }
 .research-lab-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
 
 
@@ -1612,13 +1612,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .window-data-banner.show { display: block; }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260523c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260523c">
-<link rel="stylesheet" href="chase_nav.css?v=20260523c">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260523c">
-<link rel="stylesheet" href="research_lab.css?v=20260523c">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260523d">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260523d">
+<link rel="stylesheet" href="chase_nav.css?v=20260523d">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260523d">
+<link rel="stylesheet" href="research_lab.css?v=20260523d">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260523c"></script>
+<script src="mlbma_build.js?v=20260523d"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
@@ -1634,16 +1634,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   html.view-research #section-matchups-hero{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260523c"></script>
-<script src="mlbma_ui.js?v=20260523c" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260523c"></script>
-<script src="matchup_shared.js?v=20260523c"></script>
-<script src="mlbma_controls.js?v=20260523c"></script>
-<script src="mlbma_charts.js?v=20260523c"></script>
-<script src="profile_controls.js?v=20260523c"></script>
-<script src="platform_dashboard.js?v=20260523c"></script>
-<script src="research_lab.js?v=20260523c"></script>
-<script src="pitcher_lab.js?v=20260523c"></script>
+<script src="mlbma_config.js?v=20260523d"></script>
+<script src="mlbma_ui.js?v=20260523d" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260523d"></script>
+<script src="matchup_shared.js?v=20260523d"></script>
+<script src="mlbma_controls.js?v=20260523d"></script>
+<script src="mlbma_charts.js?v=20260523d"></script>
+<script src="profile_controls.js?v=20260523d"></script>
+<script src="platform_dashboard.js?v=20260523d"></script>
+<script src="research_lab.js?v=20260523d"></script>
+<script src="pitcher_lab.js?v=20260523d"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -1755,8 +1755,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </div>
     <div class="ca-hero-copy">
       <div class="ca-kicker">Opening Dashboard</div>
-      <h1>MLB Offensive Intelligence Platform</h1>
-      <p>Today&apos;s slate, projected lineups, starting pitchers, weather, and Chase Analytics matchup reads.</p>
+      <h1>MLB Intelligence Platform</h1>
+      <p>Market map, matchup intelligence, and research tools for MLB offensive and pitching edges.</p>
     </div>
   </div>
 
@@ -1771,142 +1771,23 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 </section>
 
-<section class="platform-section" id="section-team-rankings">
+<section class="platform-section" id="section-opening-market-map">
   <header class="matchups-section-head">
-    <div class="platform-eyebrow">League Overview</div>
-    <h2 class="platform-title">Team Offensive Rankings</h2>
-    <p class="platform-subtitle">Sortable league-wide offensive metrics — click any team for full profile</p>
+    <div class="platform-eyebrow">Market Map</div>
+    <h2 class="platform-title">RCV vs Process-Production Gap</h2>
+    <p class="platform-subtitle">Team logos on the quadrant — undervalued offenses vs cooling production. Toggle split below.</p>
   </header>
-  <div id="metricLegendGlobal"></div>
-  <div id="teamRankingsControlsMount" class="opening-rankings-controls">
-<div class="watchlist-bar" id="watchlistBar">
-  <span class="wl-label">Pin Watchlist</span>
-  <div id="watchlistPills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-  <button class="icon-btn" style="margin-left:auto;font-size:11px;width:auto;padding:4px 10px;" onclick="clearWatchlist()">Clear</button>
-</div>
-<div class="control-bar research-controls opening-table-controls">
-  <div class="control-group">
-    <span class="control-label">Split</span>
-    <div class="toggle-group" id="splitToggle">
-      <button class="toggle-btn active" data-split="b">Both</button>
-      <button class="toggle-btn" data-split="r">vs RHP</button>
-      <button class="toggle-btn" data-split="l">vs LHP</button>
-    </div>
-  </div>
-  <div class="control-group">
-    <span class="control-label">Timeframe</span>
-    <div class="toggle-group" id="timeToggle">
-      <button class="toggle-btn active" data-time="YTD">YTD</button>
-      <button class="toggle-btn" data-time="L30">L30</button>
-      <button class="toggle-btn" data-time="L14">L14</button>
-      <button class="toggle-btn warn" data-time="L7" id="l7ToggleBtn">L7</button>
-    </div>
-  </div>
-  <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-    <button class="icon-btn icon-label-btn" id="compareToggleBtn" onclick="toggleCompareMode()">Compare</button>
-    <button class="icon-btn icon-label-btn" id="pinToggleBtn" onclick="togglePinMode()">Pin</button>
-    <button class="icon-btn icon-label-btn" onclick="exportCSV()">Export</button>
-  </div>
-</div>
-<div class="search-bar">
-  <input type="text" class="search-input" id="searchInput" placeholder="Filter teams…" autocomplete="off">
-  <button type="button" class="filter-help-btn" id="filterHelpBtn" title="Search syntax help">?</button>
-  <div class="filter-help-panel" id="filterHelpPanel">Try: <code>abq&gt;60</code>, <code>trend:rising</code></div>
-</div>
-<div id="windowDataBanner" class="window-data-banner"></div>
-  </div>
-  <div id="teamRankingsTableMount">
-    <div class="section" id="masterTableSection">
-  <div class="section-header">
-    <div>
-      <div class="section-eyebrow">30 Teams</div>
-      <div class="section-title" id="tableTitle">YTD offensive metrics</div>
-      <div class="section-subtitle">Use split/time toggles above · click headers to sort · expand rows for sparklines</div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn" id="toggleAdvancedBtn" onclick="toggleAdvancedMetrics()">Advanced Columns</button>
-      <button class="btn" onclick="resetSort()">Reset</button>
-    </div>
-  </div>
-  <div class="table-wrap sticky-team has-mobile-fallback">
-    <table id="masterTable">
-      <thead>
-        <tr>
-          <th data-sort="rank" class="status-only-cols" style="width:30px;">#</th>
-          <th data-sort="t" style="width:50px;">Team</th>
-          <th data-sort="statusLabel" class="status-only-cols">Summary</th>
-          <th class="status-only-cols">Read</th>
-          <th data-sort="osi" class="status-only-cols sorted">Strength <span class="sort-ind">↓</span></th>
-          <th data-sort="trend" class="status-only-cols">Trend</th>
-          <th data-sort="abq" class="advanced-cols">Process Quality <span class="metric-acronym">(ABQ)</span> <span class="sort-ind"></span></th>
-          <th data-sort="rcv" class="advanced-cols">Run Creation <span class="metric-acronym">(RCV)</span> <span class="sort-ind"></span></th>
-          <th data-sort="obr" class="advanced-cols">On-Base Floor <span class="metric-acronym">(OBR)</span> <span class="sort-ind"></span></th>
-          <th data-sort="osi" class="advanced-cols">Offensive Strength <span class="metric-acronym">(OSI)</span> <span class="sort-ind"></span></th>
-          <th data-sort="projOSI" class="advanced-cols">Projected OSI <span class="metric-acronym">(ProjOSI)</span> <span class="sort-ind"></span></th>
-          <th data-sort="ppGap" class="advanced-cols">Process-Production Gap <span class="metric-acronym">(PP-Gap)</span> <span class="sort-ind"></span></th>
-          <th data-sort="dfGap" class="advanced-cols">Power-Floor Gap <span class="sort-ind"></span></th>
-          <th data-sort="trend" class="advanced-cols">Trend</th>
-          <th data-sort="rhpOSI" class="advanced-cols">vRHP</th>
-          <th data-sort="lhpOSI" class="advanced-cols">vLHP</th>
-        </tr>
-      </thead>
-      <tbody id="rankSkeleton">
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-        <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:80%"></div></td><td><div class="skeleton-bar" style="width:90%"></div></td></tr>
-      </tbody>
-      <tbody id="masterBody"></tbody>
-    </table>
-  </div>
-  <div class="mobile-cards" id="mobileCards"></div>
-</div>
-  </div>
-  <div class="opening-market-quadrant section" style="margin-top:28px;">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Market Map</div>
-        <div class="section-title">RCV vs Process-Production Gap</div>
-        <div class="section-subtitle">Undervalued offenses (top-right) vs cooling production (bottom-left)</div>
-      </div>
-    </div>
-    <div id="landingMarketQuadrant"></div>
-    <div id="landingMarketQuadrantTip" class="sr-only" aria-live="polite"></div>
-  </div>
+  <div id="homeMarketQuadrant"></div>
+  <div id="homeMarketQuadrantTip" class="chart-tip mlbma-quad-tip"></div>
 </section>
 
-<section class="platform-section" id="section-opening-model-teaser">
-  <div class="signal-teaser-header">
-    <h2 class="platform-title" style="font-size:16px;margin:0;">Today&apos;s Top Model Reads</h2>
-    <a href="model_report.html" class="signal-teaser-cta">View Full Report →</a>
-  </div>
-  <div id="signalChips"></div>
-</section>
-
-<section class="platform-section" id="section-opening-links">
-  <div class="ca-hero-actions">
-    <a href="model_report.html" class="ca-action-card">
-      <strong>Model Report</strong>
-      <span>Predictive signals &amp; confidence reads</span>
-      <em>Open →</em>
-    </a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="ca-action-card">
-      <strong>Research Lab</strong>
-      <span>Splits, compare tools &amp; pitching context</span>
-      <em>Open →</em>
-    </a>
-    <a href="glossary.html" class="ca-action-card">
-      <strong>Glossary</strong>
-      <span>Metric definitions &amp; methodology</span>
-      <em>Open →</em>
-    </a>
-  </div>
+<section class="platform-section" id="section-opening-research-cards">
+  <header class="matchups-section-head">
+    <div class="platform-eyebrow">Research Lab</div>
+    <h2 class="platform-title">Research Tools</h2>
+    <p class="platform-subtitle">Deep-dive tools — each card opens the matching Research Lab tab.</p>
+  </header>
+  <div class="rl-home-cards-grid" id="rlHomeCardsGrid"></div>
 </section>
 
 </main><!-- /opening-dashboard -->
@@ -1946,77 +1827,62 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 <div class="section">
   <div class="subtabs rl-segment-tabs">
-    <button type="button" class="subtab active" data-pane="research-home">Research Home</button>
-    <button type="button" class="subtab" data-pane="splits-trends">Splits &amp; Trends</button>
+    <button type="button" class="subtab active" data-pane="trends">Trends</button>
+    <button type="button" class="subtab" data-pane="splits">Splits</button>
     <button type="button" class="subtab" data-pane="compare">Compare</button>
-    <button type="button" class="subtab" data-pane="pitching-vs-lineup">Lineup vs Pitcher</button>
     <button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>
-    <button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>
-    <button type="button" class="subtab" data-pane="model-links">Model Links</button>
   </div>
+  <div id="rlGlobalControlBar" class="rl-global-control-bar"></div>
 
-  <div id="pane-research-home" style="display:block;">
-    <div id="rlResearchHomeRoot"></div>
-  </div>
-
-  <!-- Splits pane -->
-  <div id="pane-splits-trends" style="display:none;">
+  <div id="pane-trends" style="display:block;">
     <div class="section-header">
       <div>
-        <div class="section-eyebrow">Research Lab</div>
-        <div class="section-title">Splits &amp; Trends</div>
-        <div class="section-subtitle">Split OSI bars, trend heatmap, and team offense table. <em>L7 is a momentum flag, not a standalone predictor.</em></div>
+        <div class="section-eyebrow">Trends</div>
+        <div class="section-title">Metric Trend Heatmap</div>
+        <div class="section-subtitle">Heat maps for created metrics — OSI default. L30/L14/L7 require pipeline run.</div>
+      </div>
+    </div>
+    <div id="rlTrendControlsMount"></div>
+    <div id="rlTrendSummaryMount" class="rl-split-summary-grid"></div>
+    <div id="trendMap"></div>
+    <div style="margin-top:20px;">
+      <div class="section-title" style="margin-bottom:10px;font-size:13px;">Trend Classifications &amp; Velocity</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="width:30px;">#</th><th style="width:50px;">Team</th>
+            <th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
+            <th>Δ L30</th><th>Δ L14</th><th>Vel.</th>
+            <th>Trend</th><th>Reliability</th><th>Interpretation</th>
+          </tr></thead>
+          <tbody id="trendBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-splits" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Splits</div>
+        <div class="section-title">Handedness &amp; Location Splits</div>
+        <div class="section-subtitle">Platoon edges, home/away context, and pitcher split research.</div>
       </div>
     </div>
     <div id="rlSplitsControlMount"></div>
-    <div class="section status-map-wrap" id="rlMarketQuadrantSection" style="margin-top:16px;">
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Market Map</div>
-          <div class="section-title">RCV vs Regression Gap</div>
-          <div class="section-subtitle">Elite &amp; undervalued (top-right) vs weak &amp; concerning (bottom-left). Click a team bubble for profile.</div>
-        </div>
-      </div>
-      <div id="rlMarketQuadrant"></div>
-    </div>
-    <p class="ca-helper" style="margin:12px 0 16px;">Full 30-team metrics table lives on the <a href="chase_analytics_mlb_oem_v7.html">Opening Dashboard</a> — use split/time toggles there or below for bars &amp; trends.</p>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;" class="split-grid">
+    <div id="rlSplitSummaryMount" class="rl-split-summary-grid"></div>
+    <div id="rlSplitsTableMount"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px;" class="split-grid">
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px;">vs RHP — OSI view</div>
+        <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:8px;">vs RHP — OSI view</div>
         <div id="rhpBars"></div>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 8px;">vs LHP — OSI view</div>
+        <div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:8px;">vs LHP — OSI view</div>
         <div id="lhpBars"></div>
       </div>
     </div>
-    <div class="section" style="margin-top:24px;">
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Recent Trends</div>
-          <div class="section-title">Trend Heatmap &amp; Velocity</div>
-          <div class="section-subtitle">Direction from prior timeframe · color = tier band · sorted by YTD OSI</div>
-        </div>
-      </div>
-      <div id="trendMap"></div>
-      <div style="margin-top: 20px;">
-        <div class="section-title" style="margin-bottom: 10px; font-size: 13px;">Trend Classifications &amp; Velocity</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th style="width:30px;">#</th><th style="width:50px;">Team</th>
-              <th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
-              <th>Δ L30</th><th>Δ L14</th><th>Vel.</th>
-              <th>Trend</th><th>Reliability</th><th>Interpretation</th>
-            </tr></thead>
-            <tbody id="trendBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
   </div>
-
-  <!-- Trends pane (legacy — content in splits-trends) -->
 
   <!-- Compare pane -->
   <div id="pane-compare" style="display:none;">
@@ -2031,7 +1897,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div id="rlCompareRoot"></div>
   </div>
 
-  <div id="pane-pitching-vs-lineup" style="display:none;">
+  <div id="pane-pitching-vs-lineup" hidden style="display:none!important;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Pitching vs Lineup</div>
@@ -2042,7 +1908,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div id="rlPvlRoot"></div>
   </div>
 
-  <div id="pane-leaderboards" style="display:none;">
+  <div id="pane-leaderboards" hidden style="display:none!important;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Leaderboards</div>
@@ -2098,7 +1964,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div id="rlExtraLeaderboards"></div>
   </div>
 
-  <div id="pane-model-links" style="display:none;">
+  <div id="pane-model-links" hidden style="display:none!important;">
     <div class="section-header">
       <div>
         <div class="section-eyebrow">Model Links</div>
@@ -2120,13 +1986,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div id="rlPitcherLabRoot"></div>
   </div>
 
-  <!-- Reference: OOR / Pitching / PALS / Matchups -->
-        <div class="section-title">OOR · Pitching Score · PALS</div>
-        <div class="section-subtitle">Pulled from the same Google Sheet as the main model</div>
-      </div>
-    </div>
-    <div id="referenceTablesMount"></div>
-  </div>
+  <div id="referenceTablesMount" style="display:none;"></div>
 </div>
 
 </div><!-- /layer-advanced -->
@@ -4060,10 +3920,25 @@ function bindFilterHelp() {
   });
 }
 
-var RESEARCH_SUBTABS = ['research-home', 'splits-trends', 'compare', 'pitching-vs-lineup', 'pitching', 'leaderboards', 'model-links'];
+var RESEARCH_SUBTABS = ['trends', 'splits', 'compare', 'pitching'];
+
+function getInitialRlTab() {
+  try {
+    var t = sessionStorage.getItem('rlTab');
+    if (t && RESEARCH_SUBTABS.indexOf(t) >= 0) {
+      sessionStorage.removeItem('rlTab');
+      return t;
+    }
+  } catch (e) { /* ignore */ }
+  return 'trends';
+}
 
 function showResearchSubtab(name) {
-  name = name || 'research-home';
+  name = name || 'trends';
+  if (name === 'research-home') name = 'trends';
+  if (name === 'splits-trends') name = 'splits';
+  if (name === 'pitching-vs-lineup') name = 'compare';
+  if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'trends';
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
     if (el) el.style.display = (id === name) ? 'block' : 'none';
@@ -4102,20 +3977,21 @@ window.hidePitchingResearchSections = hidePitchingResearchSections;
 
 function onResearchSubtabShown(name) {
   hidePitchingResearchSections();
-  if (name === 'leaderboards' && window.ResearchLab && ResearchLab.resetResearchLabFilters) {
-    ResearchLab.resetResearchLabFilters();
-  }
-  if (name === 'splits-trends') {
+  if (name === 'trends') {
+    prepareTableRender();
+    if (window.ResearchLab && ResearchLab.mountTrendControls) ResearchLab.mountTrendControls();
+    if (window.ResearchLab && ResearchLab.renderTrendSummary) ResearchLab.renderTrendSummary();
+    renderTrendHeatmap();
+  } else if (name === 'splits') {
     if (window.ResearchLab && ResearchLab.initSplitsControls) ResearchLab.initSplitsControls();
     prepareTableRender();
-    renderSplitBars(); renderMasterTable(); renderTrendHeatmap();
+    renderSplitBars();
+    if (window.ResearchLab && ResearchLab.renderSplitsTable) ResearchLab.renderSplitsTable();
+    if (window.ResearchLab && ResearchLab.renderSplitSummary) ResearchLab.renderSplitSummary();
   } else if (name === 'compare') initCompare();
   else if (name === 'pitching') { hideTeamOorInPitching(); }
-  else if (name === 'leaderboards') {
-    prepareTableRender();
-    renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
-  }
   if (window.ResearchLab && ResearchLab.onSubtab) ResearchLab.onSubtab(name);
+  if (window.ResearchLab && ResearchLab.mountGlobalControlBar) ResearchLab.mountGlobalControlBar();
 }
 function hideTeamOorInPitching() {
   var oor = document.getElementById('oorSection');
@@ -4814,9 +4690,15 @@ function renderMarketMapCharts() {
   if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
     ResearchLab.syncResearchGlobalsFromLiveData();
   }
-  var rows = MLBMACharts.getQuadrantRows();
-  MLBMACharts.renderMarketQuadrant('landingMarketQuadrant', rows, { tipId: 'landingMarketQuadrantTip' });
-  MLBMACharts.renderMarketQuadrant('rlMarketQuadrant', rows, { tipId: 'rlMarketQuadrantTip' });
+  if (document.getElementById('homeMarketQuadrant') && MLBMACharts.renderMarketMapWithToggle) {
+    MLBMACharts.renderMarketMapWithToggle('homeMarketQuadrant', function(split) {
+      return MLBMACharts.getQuadrantRows(split === 'lhp' ? 'lhp' : 'rhp');
+    }, { tipId: 'homeMarketQuadrantTip', defaultSplit: 'rhp' });
+  }
+  var rlRows = MLBMACharts.getQuadrantRows('rhp');
+  if (document.getElementById('rlMarketQuadrant')) {
+    MLBMACharts.renderMarketQuadrant('rlMarketQuadrant', rlRows, { tipId: 'rlMarketQuadrantTip' });
+  }
 }
 
 function initMarketMapToggle() {
@@ -4912,11 +4794,19 @@ function renderTrendHeatmap(){
   if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
     ResearchLab.syncResearchGlobalsFromLiveData();
   }
-  var heatRows = (SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B
-    : (window.ResearchLab && ResearchLab.getResearchTeamData ? ResearchLab.getResearchTeamData('both') : []);
+  var metric = (STATE && STATE.rlTrendMetric) || 'osi';
+  var metricUp = metric.charAt(0).toUpperCase() + metric.slice(1);
+  var split = STATE && STATE.split ? STATE.split : 'b';
+  var heatRows = (window.ResearchLab && ResearchLab.getResearchTeamData)
+    ? ResearchLab.getResearchTeamData(split === 'r' ? 'r' : split === 'l' ? 'l' : 'both')
+    : ((SCO_YTD_B && SCO_YTD_B.length) ? SCO_YTD_B : []);
   if (!heatRows || !heatRows.length) return;
   var winAvail = (LIVE_DATA && LIVE_DATA.windowDataAvailable) || {};
-  var sorted = heatRows.slice().sort(function(a,b){return b.osi-a.osi;});
+  var ytdKey = metric;
+  var l30Key = 'l30' + metricUp;
+  var l14Key = 'l14' + metricUp;
+  var l7Key = 'l7' + metricUp;
+  var sorted = heatRows.slice().sort(function(a,b){return (b[ytdKey]||b.osi||0)-(a[ytdKey]||a.osi||0);});
   var W=1100,rh=22,cw=110,gap=2,lp=50,tp=30;
   var H=tp+sorted.length*(rh+gap)+12;
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';
@@ -4925,19 +4815,20 @@ function renderTrendHeatmap(){
   sorted.forEach(function(d,i){
     var y=tp+i*(rh+gap);
     s+='<text x="'+(lp-6)+'" y="'+(y+rh/2+4)+'" text-anchor="end" fill="#A1A1AA" font-size="10" font-family="var(--mono)" font-weight="600">'+d.t+'</text>';
-    var tfKeys = ['ytdOSI','l30OSI','l14OSI','l7OSI'];
     var tfAvail = [true, !!winAvail.L30, !!winAvail.L14, !!winAvail.L7];
-    var vals = tfKeys.map(function(k, i) {
-      if (i === 0) return d.ytdOSI != null ? d.ytdOSI : d.osi;
-      if (!tfAvail[i]) return null;
-      return d[tfKeys[i]];
-    });
+    var vals = [
+      d[ytdKey] != null ? d[ytdKey] : d.osi,
+      tfAvail[1] ? d[l30Key] : null,
+      tfAvail[2] ? d[l14Key] : null,
+      tfAvail[3] ? d[l7Key] : null
+    ];
     vals.forEach(function(v,ci){
       var x=lp+ci*cw;
       var na = (ci > 0 && !tfAvail[ci]);
-      s+='<rect x="'+x+'" y="'+y+'" width="'+(cw-gap)+'" height="'+rh+'" fill="'+(na ? '#27272A' : hcol(v))+'" rx="3"/>';
+      s+='<rect x="'+x+'" y="'+y+'" width="'+(cw-gap)+'" height="'+rh+'" fill="'+(na ? '#27272A' : hcol(v, metric))+'" rx="3"/>';
       if(na) {
-        s+='<text x="'+(x+(cw-gap)/2)+'" y="'+(y+rh/2+4)+'" text-anchor="middle" fill="#71717A" font-size="9" font-weight="600" font-family="var(--mono)">N/A</text>';
+        s+='<title>requires pipeline run</title>';
+        s+='<text x="'+(x+(cw-gap)/2)+'" y="'+(y+rh/2+4)+'" text-anchor="middle" fill="#71717A" font-size="9" font-weight="600" font-family="var(--mono)">—</text>';
       } else if(v!==null && v!==undefined) {
         var arrow = '';
         if(ci > 0 && vals[ci-1] !== null && vals[ci-1] !== undefined) {
@@ -4960,6 +4851,7 @@ function renderTrendHeatmap(){
   // Trend table with velocity column
   var trendBody = document.getElementById('trendBody');
   if (!trendBody) return;
+  var pipeTip = ' title="requires pipeline run"';
   var html='';
   sorted.forEach(function(d,i){
     var tc=trendCol(d.trend);
@@ -4970,12 +4862,16 @@ function renderTrendHeatmap(){
     var velC = d.velocity>1.5?'var(--green)':d.velocity<-1.5?'var(--red)':'var(--text-3)';
     var reliability = (window.OEMOverhaul && OEMOverhaul.trendReliabilityLabel)
       ? OEMOverhaul.trendReliabilityLabel(d) : 'Noisy';
+    function cellVal(v, avail) {
+      if (!avail && v == null) return '<td class="num" style="color:#71717A"' + pipeTip + '>—</td>';
+      return '<td class="num" style="color:'+tcol(v||0)+';">'+(v!=null?v.toFixed(1):'—')+'</td>';
+    }
     html+='<tr><td class="rank-cell">'+(i+1)+'</td>'+
       '<td class="team-cell" style="color:var(--purple);">'+d.t+'</td>'+
-      '<td class="num" style="color:'+tcol(d.ytdOSI||0)+';">'+(d.ytdOSI?d.ytdOSI.toFixed(1):'—')+'</td>'+
-      '<td class="num" style="color:'+tcol(d.l30OSI||0)+';">'+(d.l30OSI?d.l30OSI.toFixed(1):'—')+'</td>'+
-      '<td class="num" style="color:'+tcol(d.l14OSI||0)+';">'+(d.l14OSI?d.l14OSI.toFixed(1):'—')+'</td>'+
-      '<td class="num" style="color:'+tcol(d.l7OSI||0)+';">'+(d.l7OSI?d.l7OSI.toFixed(1):'—')+'</td>'+
+      cellVal(d[ytdKey] != null ? d[ytdKey] : d.osi, true)+
+      cellVal(d[l30Key], winAvail.L30)+
+      cellVal(d[l14Key], winAvail.L14)+
+      cellVal(d[l7Key], winAvail.L7)+
       '<td class="num" style="color:'+(d.dL30>2?'#4ADE80':d.dL30<-2?'#F87171':'#71717A')+';">'+dL30Str+'</td>'+
       '<td class="num" style="color:'+(d.dL14>2?'#4ADE80':d.dL14<-2?'#F87171':'#71717A')+';">'+dL14Str+'</td>'+
       '<td class="num" style="color:'+velC+';font-weight:500;">'+velStr+'</td>'+
@@ -5599,44 +5495,57 @@ function initMatchupsView() {
   }
 }
 
-function renderOpeningDashboard() {
-  mountDashboardRankings();
+function renderHomePage() {
   registerMetricPools();
-  document.body.classList.add('show-advanced-metrics');
-  if (!document.getElementById('masterTable').dataset.platformHeaders) {
-    var table = document.getElementById('masterTable');
-    if (table) {
-      table.dataset.platformHeaders = '1';
-      STATE.showAdvancedMetrics = true;
-      var thead = table.querySelector('thead tr');
-      if (thead) {
-        thead.innerHTML = '<th style="width:30px;">#</th><th data-sort="t">Team</th><th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th><th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>';
-        bindMasterTableSort();
-      }
-    }
-  }
-  bindFilterHelp();
+  renderHomeResearchCards();
   whenLiveDataReady(function() {
-    renderMasterTable();
-    if (typeof renderMarketMapCharts === 'function') renderMarketMapCharts();
-  }, 'opening rankings');
+    if (window.MLBMACharts && MLBMACharts.renderMarketMapWithToggle) {
+      MLBMACharts.renderMarketMapWithToggle('homeMarketQuadrant', function(split) {
+        return MLBMACharts.getQuadrantRows(split === 'lhp' ? 'lhp' : 'rhp');
+      }, { tipId: 'homeMarketQuadrantTip', defaultSplit: 'rhp' });
+    } else if (typeof renderMarketMapCharts === 'function') {
+      renderMarketMapCharts();
+    }
+  }, 'home market map');
   if (typeof scheduleMarketMapRender === 'function') scheduleMarketMapRender();
+}
+
+function renderHomeResearchCards() {
+  var root = document.getElementById('rlHomeCardsGrid');
+  if (!root) return;
+  var cards = [
+    { tab: 'trends', icon: '📈', title: 'Trends', uses: ['Identifying hot/cold offenses', 'Finding sustained risers vs noisy L7 spikes', 'Validating before betting totals'] },
+    { tab: 'splits', icon: '⚾', title: 'Splits', uses: ['Platoon edges', 'Home/away advantages', 'F5 vs full game context', 'Player prop research'] },
+    { tab: 'compare', icon: '⚖️', title: 'Compare', uses: ['Lineup vs Lineup, Lineup vs Pitcher, Pitcher vs Pitcher', 'Bullpen vs Bullpen, Bullpen vs Lineup', 'Fantasy lineup decisions, over/under edges, run line value'] },
+    { tab: 'pitching', icon: '🎯', title: 'Pitcher Lab', uses: ['Validating ERA vs competition faced', 'Finding vulnerable starters for over bets', 'Pitcher prop research, SP vs bullpen F5 decisions'] }
+  ];
+  root.innerHTML = cards.map(function(c) {
+    return '<button type="button" class="rl-home-card" data-rl-tab="' + c.tab + '">'
+      + '<span class="rl-home-card-icon" aria-hidden="true">' + c.icon + '</span>'
+      + '<strong class="rl-home-card-title">' + c.title + '</strong>'
+      + '<ul class="rl-home-card-uses">' + c.uses.map(function(u) { return '<li>' + u + '</li>'; }).join('') + '</ul>'
+      + '<span class="rl-home-card-cta">Open in Research Lab →</span></button>';
+  }).join('');
+  root.querySelectorAll('[data-rl-tab]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tab = btn.getAttribute('data-rl-tab');
+      try { sessionStorage.setItem('rlTab', tab); } catch (e) { /* ignore */ }
+      window.location.hash = '#section-research-lab';
+      if (typeof syncDashboardView === 'function') syncDashboardView();
+    });
+  });
 }
 
 function renderLanding() {
   if (_landingRendered) return;
   _landingRendered = true;
   console.log('[MLBMA] renderLanding');
-  if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   syncDashboardView();
   if (document.documentElement.classList.contains('view-opening')) {
-    renderOpeningDashboard();
+    renderHomePage();
   }
   if (window.PlatformDashboard && document.documentElement.classList.contains('view-opening')) {
     PlatformDashboard.renderOpeningHero();
-    PlatformDashboard.initRegistry().then(function() {
-      PlatformDashboard.renderDashboard();
-    });
   }
   if (shouldRenderMatchupsView()) initMatchupsView();
 }
@@ -5705,7 +5614,7 @@ function initResearchLab() {
   if (window.ResearchLab && ResearchLab.resetResearchLabFilters) {
     ResearchLab.resetResearchLabFilters();
   }
-  if (typeof showResearchSubtab === 'function') showResearchSubtab('research-home');
+  if (typeof showResearchSubtab === 'function') showResearchSubtab(getInitialRlTab());
   renderResearchLabWhenReady();
 }
 
@@ -5742,7 +5651,7 @@ function syncDashboardView() {
       rl.classList.add('active');
     }
     initResearchLab();
-    if (typeof showResearchSubtab === 'function') showResearchSubtab('research-home');
+    if (typeof showResearchSubtab === 'function') showResearchSubtab(getInitialRlTab());
     setTimeout(function() {
       if (rl) rl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 60);
@@ -5774,14 +5683,13 @@ function syncDashboardView() {
   }
   document.querySelectorAll('.oem-mode-pane').forEach(function(p) { p.classList.remove('active'); });
   whenLiveDataReady(function() {
-    renderOpeningDashboard();
+    renderHomePage();
   }, 'opening view sync');
 
-  var scrollId = hash || 'section-team-rankings';
-  if (scrollId === 'section-opening-model-teaser' || scrollId === 'section-signal-teaser'
-      || scrollId === 'section-team-rankings' || scrollId === 'section-opening-links' || scrollId === 'opening') {
+  var scrollId = hash || 'section-opening-market-map';
+  if (scrollId === 'section-opening-research-cards' || scrollId === 'section-opening-market-map' || scrollId === 'opening') {
     setTimeout(function() {
-      var target = document.getElementById(scrollId === 'section-signal-teaser' ? 'section-opening-model-teaser' : scrollId === 'opening' ? 'section-opening-hero' : scrollId);
+      var target = document.getElementById(scrollId === 'opening' ? 'section-opening-hero' : scrollId);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 40);
   }
@@ -6235,9 +6143,9 @@ if (document.readyState === 'loading') {
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
   Chase Analytics · MLB Offensive Intelligence
 </footer>
-  <script src="oem_overhaul.js?v=20260523c"></script>
-  <script src="mlbma_standings.js?v=20260523c"></script>
-  <script src="mlbma_signals.js?v=20260523c"></script>
-  <script src="chase_nav.js?v=20260523c"></script>
+  <script src="oem_overhaul.js?v=20260523d"></script>
+  <script src="mlbma_standings.js?v=20260523d"></script>
+  <script src="mlbma_signals.js?v=20260523d"></script>
+  <script src="chase_nav.js?v=20260523d"></script>
 </body>
 </html>

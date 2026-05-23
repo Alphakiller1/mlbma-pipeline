@@ -353,6 +353,26 @@
     return { color: '#F87171', label: 'Weak & Concerning' };
   }
 
+  function teamEspnLogoUrl(t) {
+    var map = { ARI: 'ari', AZ: 'ari', ATH: 'ath', OAK: 'ath', SF: 'sf', SFG: 'sf', TB: 'tb', TBR: 'tb', WSH: 'wsh', WAS: 'wsh', CHW: 'chw', CWS: 'chw', KCR: 'kc', KC: 'kc', SDP: 'sd', SD: 'sd' };
+    var key = String(t || '').trim().toUpperCase();
+    var slug = map[key] || key.toLowerCase();
+    return 'https://a.espncdn.com/i/teamlogos/mlb/500/' + slug + '.png';
+  }
+
+  function quadrantBubbleMarkup(d, cx, cy, meta) {
+    var logoUrl = teamEspnLogoUrl(d.t);
+    var gid = 'qb_' + String(d.t).replace(/[^a-z0-9]/gi, '');
+    return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + '">'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="16" fill="' + meta.color + '" fill-opacity=".18"/>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="12" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
+      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="10"/></clipPath>'
+      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 10) + '" y="' + (cy - 10) + '" width="20" height="20" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
+      + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="8" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
+      + '<title>' + esc(d.t) + ' · RCV ' + d.rcv.toFixed(1) + ' · Gap ' + quadYValue(d).toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + meta.label + '</title>'
+      + '</g>';
+  }
+
   /**
    * RCV (x) vs reg_signal / PP-Gap (y) market quadrant — pure SVG.
    */
@@ -423,14 +443,7 @@
       var xVal = d.rcv;
       var yVal = quadYValue(d);
       var meta = marketQuadrantMeta(xVal, yVal);
-      var cx = xs(xVal);
-      var cy = ys(yVal);
-      svg += '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + '">'
-        + '<circle cx="' + cx + '" cy="' + cy + '" r="16" fill="' + meta.color + '" fill-opacity=".18"/>'
-        + '<circle cx="' + cx + '" cy="' + cy + '" r="13" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
-        + '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
-        + '<title>' + esc(d.t) + ' · RCV ' + xVal.toFixed(1) + ' · Gap ' + yVal.toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + meta.label + '</title>'
-        + '</g>';
+      svg += quadrantBubbleMarkup(d, xs(xVal), ys(yVal), meta);
     });
 
     svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">RCV Score</text>';
@@ -448,6 +461,14 @@
         var t = g.getAttribute('data-team');
         if (t) global.location.href = 'team_profile.html?team=' + encodeURIComponent(t);
       });
+      var img = g.querySelector('.mlbma-quad-logo');
+      var abbr = g.querySelector('.mlbma-quad-abbr');
+      if (img && abbr) {
+        img.addEventListener('error', function() {
+          img.style.display = 'none';
+          abbr.style.display = 'block';
+        });
+      }
       g.addEventListener('mouseenter', function(e) {
         var t = g.getAttribute('data-team');
         var d = data.find(function(r) { return r.t === t; });
@@ -559,8 +580,39 @@
   return buildRadarChart(containerId, teams, metrics, colors, opts);
   }
 
-  function getQuadrantRows() {
+  function renderMarketMapWithToggle(containerId, getRowsForSplit, opts) {
+    opts = opts || {};
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    var split = opts.defaultSplit || 'rhp';
+    var tipId = opts.tipId || (containerId + 'Tip');
+
+    function renderSplit(nextSplit) {
+      split = nextSplit;
+      var rows = typeof getRowsForSplit === 'function' ? getRowsForSplit(split) : [];
+      var toggleHtml = '<div class="mlbma-map-split-toggle ca-pill-bar" style="margin-bottom:12px">'
+        + '<span class="ca-pill-label">Split</span>'
+        + '<button type="button" class="ca-pill-btn' + (split === 'rhp' ? ' active' : '') + '" data-map-split="rhp">vs RHP</button>'
+        + '<button type="button" class="ca-pill-btn' + (split === 'lhp' ? ' active' : '') + '" data-map-split="lhp">vs LHP</button>'
+        + '</div>';
+      el.innerHTML = toggleHtml + '<div id="' + containerId + 'Chart"></div><div id="' + tipId + '" class="chart-tip mlbma-quad-tip"></div>';
+      renderMarketQuadrant(containerId + 'Chart', rows, { tipId: tipId, width: opts.width, height: opts.height });
+      el.querySelectorAll('[data-map-split]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          renderSplit(btn.getAttribute('data-map-split'));
+        });
+      });
+    }
+    renderSplit(split);
+  }
+
+  function getQuadrantRows(split) {
     var ld = global.LIVE_DATA || {};
+    if (split === 'lhp' || split === 'l') {
+      if (ld.scYtdL && ld.scYtdL.length >= 20) return ld.scYtdL;
+      if (typeof global.SCO_YTD_L !== 'undefined' && global.SCO_YTD_L.length) return global.SCO_YTD_L;
+      return [];
+    }
     if (ld.scYtdR && ld.scYtdR.length >= 20) return ld.scYtdR;
     if (typeof global.SCO_YTD_R !== 'undefined' && global.SCO_YTD_R.length) return global.SCO_YTD_R;
     return [];
@@ -580,6 +632,8 @@
     flushLiveDataReadyQueue: flushLiveDataReadyQueue,
     liveDataReady: liveDataReady,
     renderMarketQuadrant: renderMarketQuadrant,
+    renderMarketMapWithToggle: renderMarketMapWithToggle,
+    teamEspnLogoUrl: teamEspnLogoUrl,
     renderSparkline: renderSparkline,
     renderRadarChart: renderRadarChart,
     quadYValue: quadYValue,

@@ -15,7 +15,11 @@
     spProfiles: null,
     pvlTeam: '',
     pvlPitcher: '',
-    pvlBpTeam: ''
+    pvlBpTeam: '',
+    splitEntity: 'team',
+    splitMetric: 'osi',
+    rlTrendMetric: 'osi',
+    rlWindowCmp: 'L14'
   };
 
   var _rlReadyPoll = null;
@@ -116,7 +120,7 @@
     tick();
   }
 
-  var SUBTABS = ['research-home', 'splits-trends', 'compare', 'pitching-vs-lineup', 'pitching', 'leaderboards', 'model-links'];
+  var SUBTABS = ['trends', 'splits', 'compare', 'pitching'];
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -188,7 +192,7 @@
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Validate model signals with splits, trends, comparisons, pitcher context, and lineup-vs-pitcher research.</p>'
+      + '<p class="rl-workspace-subtitle">Trends, splits, head-to-head compare, and pitcher research — four focused tools.</p>'
       + '<div class="rl-workflow-strip">'
       + '<span class="rl-workflow-step">1 · Select Path</span>'
       + '<span class="rl-workflow-step">2 · Apply Split/Window</span>'
@@ -199,23 +203,236 @@
       + '</div>';
   }
 
+
+  function getActiveRlTab() {
+    var active = document.querySelector('#layerAdvanced .subtab.active');
+    return active ? active.getAttribute('data-pane') : 'trends';
+  }
+
+  function refreshActiveRlTab() {
+    var tab = getActiveRlTab();
+    if (tab === 'trends') {
+      if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
+      renderTrendSummary();
+    } else if (tab === 'splits') {
+      if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
+      renderSplitsTable();
+      renderSplitSummary();
+    }
+    mountGlobalControlBar();
+  }
+
+  function mountGlobalControlBar() {
+    var el = document.getElementById('rlGlobalControlBar');
+    if (!el) return;
+    var st = global.STATE || {};
+    if (!st.split) st.split = 'b';
+    if (!st.time) st.time = 'YTD';
+    var tab = getActiveRlTab();
+    var tabLabel = { trends: 'Trends', splits: 'Splits', compare: 'Compare', pitching: 'Pitcher Lab' }[tab] || tab;
+    var splitLabel = { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away' }[st.split] || 'Both';
+    el.innerHTML = '<div class="rl-global-bar-inner">'
+      + '<span class="rl-global-bar-title">Research Lab · <strong>' + esc(tabLabel) + '</strong> · '
+      + esc(splitLabel) + ' · ' + esc(st.time) + '</span>'
+      + '<div class="rl-global-bar-controls">'
+      + '<span class="rl-global-bar-label">Split</span>'
+      + ['b', 'r', 'l', 'home', 'away'].map(function(sp) {
+        var lbl = { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away' }[sp];
+        return '<button type="button" class="rl-global-btn' + (st.split === sp ? ' active' : '') + '" data-rl-split="' + sp + '">' + lbl + '</button>';
+      }).join('')
+      + '<span class="rl-global-bar-label">Window</span>'
+      + ['YTD', 'L30', 'L14', 'L7'].map(function(w) {
+        return '<button type="button" class="rl-global-btn' + (st.time === w ? ' active' : '') + '" data-rl-window="' + w + '">' + w + '</button>';
+      }).join('')
+      + '</div></div>';
+    el.querySelectorAll('[data-rl-split]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        st.split = btn.getAttribute('data-rl-split');
+        refreshActiveRlTab();
+      });
+    });
+    el.querySelectorAll('[data-rl-window]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        st.time = btn.getAttribute('data-rl-window');
+        refreshActiveRlTab();
+      });
+    });
+  }
+
+  function mountTrendControls() {
+    var mount = document.getElementById('rlTrendControlsMount');
+    if (!mount) return;
+    if (!global.STATE) global.STATE = {};
+    if (!global.STATE.rlTrendMetric) global.STATE.rlTrendMetric = 'osi';
+    var metric = global.STATE.rlTrendMetric;
+    mount.innerHTML = '<div class="rl-trend-controls ca-pill-bar">'
+      + '<span class="ca-pill-label">Metric</span>'
+      + ['osi', 'abq', 'rcv', 'obr'].map(function(m) {
+        return '<button type="button" class="ca-pill-btn' + (metric === m ? ' active' : '') + '" data-trend-metric="' + m + '">' + m.toUpperCase() + '</button>';
+      }).join('')
+      + '<span class="ca-pill-label">Compare</span>'
+      + ['L30', 'L14', 'L7'].map(function(w) {
+        return '<button type="button" class="ca-pill-btn' + (RL.rlWindowCmp === w ? ' active' : '') + '" data-trend-cmp="' + w + '">YTD→' + w + '</button>';
+      }).join('')
+      + '</div>';
+    mount.querySelectorAll('[data-trend-metric]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        global.STATE.rlTrendMetric = btn.getAttribute('data-trend-metric');
+        RL.rlTrendMetric = global.STATE.rlTrendMetric;
+        mountTrendControls();
+        if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
+      });
+    });
+    mount.querySelectorAll('[data-trend-cmp]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        RL.rlWindowCmp = btn.getAttribute('data-trend-cmp');
+        mountTrendControls();
+        renderTrendSummary();
+      });
+    });
+  }
+
+  function renderTrendSummary() {
+    var mount = document.getElementById('rlTrendSummaryMount');
+    if (!mount) return;
+    syncResearchGlobalsFromLiveData();
+    var rows = getResearchTeamData('both');
+    if (!rows.length) { mount.innerHTML = ''; return; }
+    var cmpKey = 'd' + RL.rlWindowCmp;
+    var risers = rows.filter(function(d) { return d[cmpKey] > 2; }).sort(function(a, b) { return b[cmpKey] - a[cmpKey]; }).slice(0, 3);
+    var fallers = rows.filter(function(d) { return d[cmpKey] < -2; }).sort(function(a, b) { return a[cmpKey] - b[cmpKey]; }).slice(0, 3);
+    var volatile = rows.slice().sort(function(a, b) {
+      var va = Math.abs((a.l7OSI || 0) - (a.ytdOSI || a.osi || 0));
+      var vb = Math.abs((b.l7OSI || 0) - (b.ytdOSI || b.osi || 0));
+      return vb - va;
+    }).slice(0, 3);
+    var stable = rows.filter(function(d) { return d.trend === 'Stable Elite' || d.trend === 'Stable'; }).slice(0, 3);
+    function card(title, items, fmtFn) {
+      return '<div class="rl-summary-card"><div class="rl-summary-label">' + esc(title) + '</div><div class="rl-summary-val">'
+        + (items.length ? items.map(fmtFn).join('<br>') : '—') + '</div></div>';
+    }
+    mount.innerHTML = card('Biggest risers', risers, function(d) { return d.t + ' +' + (d[cmpKey] || 0).toFixed(1); })
+      + card('Biggest fallers', fallers, function(d) { return d.t + ' ' + (d[cmpKey] || 0).toFixed(1); })
+      + card('Most volatile', volatile, function(d) { return d.t + ' L7 Δ ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
+      + card('Most stable', stable, function(d) { return d.t + ' · ' + (d.trend || 'Stable'); });
+  }
+
+  function mountSplitsEntityControls() {
+    var mount = document.getElementById('rlSplitsControlMount');
+    if (!mount) return;
+    var entity = RL.splitEntity || 'team';
+    var metric = RL.splitMetric || 'osi';
+    mount.innerHTML = '<div class="rl-splits-controls ca-pill-bar" style="margin-bottom:14px">'
+      + '<span class="ca-pill-label">Entity</span>'
+      + [{ id: 'team', label: 'Team Offense' }, { id: 'sp', label: 'Starting Pitcher' }, { id: 'bp', label: 'Bullpen' }].map(function(e) {
+        return '<button type="button" class="ca-pill-btn' + (entity === e.id ? ' active' : '') + '" data-split-entity="' + e.id + '">' + e.label + '</button>';
+      }).join('')
+      + '<span class="ca-pill-label">Metric</span>'
+      + ['osi', 'abq', 'rcv', 'obr'].map(function(m) {
+        return '<button type="button" class="ca-pill-btn' + (metric === m ? ' active' : '') + '" data-split-metric="' + m + '">' + m.toUpperCase() + '</button>';
+      }).join('')
+      + '</div>';
+    mount.querySelectorAll('[data-split-entity]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        RL.splitEntity = btn.getAttribute('data-split-entity');
+        mountSplitsEntityControls();
+        renderSplitsTable();
+      });
+    });
+    mount.querySelectorAll('[data-split-metric]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        RL.splitMetric = btn.getAttribute('data-split-metric');
+        mountSplitsEntityControls();
+        renderSplitsTable();
+      });
+    });
+  }
+
+  function renderSplitsTable() {
+    var mount = document.getElementById('rlSplitsTableMount');
+    if (!mount) return;
+    syncResearchGlobalsFromLiveData();
+    var entity = RL.splitEntity || 'team';
+    var metric = RL.splitMetric || 'osi';
+    var r = getResearchTeamData('r');
+    var l = getResearchTeamData('l');
+    if (entity === 'team') {
+      var rows = r.map(function(row) {
+        var lrow = l.find(function(x) { return x.t === row.t; }) || {};
+        var edge = (row[metric] || 0) - (lrow[metric] || 0);
+        return { t: row.t, r: row[metric], l: lrow[metric], edge: edge };
+      }).sort(function(a, b) { return Math.abs(b.edge) - Math.abs(a.edge); });
+      mount.innerHTML = '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
+        + '<th></th><th>Team</th><th>vs RHP</th><th>vs LHP</th><th>Split Edge</th><th>Home</th><th>Away</th><th>F5</th></tr></thead><tbody>'
+        + rows.map(function(row) {
+          var gold = Math.abs(row.edge) >= 8 ? ' rl-split-gold' : '';
+          var logo = A ? A.teamLogoImg(row.t, 24) : '';
+          return '<tr class="hub-row' + gold + '" onclick="location.href=\'team_profile.html?team=' + encodeURIComponent(row.t) + '\'">'
+            + '<td>' + logo + '</td><td>' + esc(row.t) + '</td>'
+            + '<td style="color:' + mColor(row.r, false, metric) + '">' + fmt(row.r) + '</td>'
+            + '<td style="color:' + mColor(row.l, false, metric) + '">' + fmt(row.l) + '</td>'
+            + '<td style="color:' + mColor(row.edge, false, 'ppGap') + ';font-weight:700">' + fmt(row.edge) + '</td>'
+            + '<td title="requires pipeline run">—</td><td title="requires pipeline run">—</td><td title="requires pipeline run">—</td></tr>';
+        }).join('') + '</tbody></table></div>';
+      return;
+    }
+    if (entity === 'sp') {
+      fetchSpProfiles().then(function() {
+        var rows = (RL.spProfiles || []).slice();
+        mount.innerHTML = '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
+          + '<th>Pitcher</th><th>Team</th><th>Hand</th><th>vs LHH</th><th>vs RHH</th><th>Split Edge</th><th>Home</th><th>Away</th></tr></thead><tbody>'
+          + rows.slice(0, 80).map(function(row) {
+            var n = S.pickCol(row, 'pitcher_name', 'Name');
+            var t = S.pickCol(row, 'pitcher_team', 'Team');
+            var hand = S.pickCol(row, 'hand', 'Hand') || 'R';
+            var m = S.spProfileMetrics(row);
+            var lhh = m.osiAllowedLhh != null ? m.osiAllowedLhh : m.osiAllowed;
+            var rhh = m.osiAllowedRhh != null ? m.osiAllowedRhh : m.osiAllowed;
+            var edge = (lhh != null && rhh != null) ? rhh - lhh : null;
+            return '<tr onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
+              + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td><td>' + esc(hand) + '</td>'
+              + '<td style="color:' + mColor(lhh, true) + '">' + fmt(lhh) + '</td>'
+              + '<td style="color:' + mColor(rhh, true) + '">' + fmt(rhh) + '</td>'
+              + '<td style="color:' + mColor(edge, false, 'ppGap') + '">' + fmt(edge) + '</td>'
+              + '<td title="requires pipeline run">—</td><td title="requires pipeline run">—</td></tr>';
+          }).join('') + '</tbody></table></div>';
+      });
+      return;
+    }
+    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
+    var bpRows = Object.keys(units).map(function(tk) {
+      var u = units[tk];
+      return { t: tk, osi: u.osiAllowed, abq: u.abqAllowed, score: S.bullpenPitchScore ? S.bullpenPitchScore(u) : u.bullpenScore };
+    }).sort(function(a, b) { return (a.osi || 0) - (b.osi || 0); });
+    mount.innerHTML = '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
+      + '<th>Team</th><th>OSI Allowed</th><th>ABQ Allowed</th><th>Bullpen Score</th></tr></thead><tbody>'
+      + bpRows.map(function(row) {
+        return '<tr onclick="location.href=\'bullpen_report.html?team=' + encodeURIComponent(row.t) + '\'">'
+          + '<td>' + (A ? A.teamLogoImg(row.t, 24) : '') + ' ' + esc(row.t) + '</td>'
+          + '<td style="color:' + mColor(row.osi, true) + '">' + fmt(row.osi) + '</td>'
+          + '<td style="color:' + mColor(row.abq, true) + '">' + fmt(row.abq) + '</td>'
+          + '<td style="color:' + mColor(row.score, false, 'pitching') + '">' + fmt(row.score) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+
   function patchSubtabs() {
     mountWorkspaceHeader();
+    mountGlobalControlBar();
     var layer = document.getElementById('layerAdvanced');
     if (!layer) return;
     var tabBar = layer.querySelector('.subtabs');
-    if (tabBar && !tabBar.classList.contains('rl-segment-tabs')) {
+    if (tabBar) {
       tabBar.classList.add('rl-segment-tabs');
-      tabBar.innerHTML = ''
-        + '<button type="button" class="subtab active" data-pane="research-home">Research Home</button>'
-        + '<button type="button" class="subtab" data-pane="splits-trends">Splits &amp; Trends</button>'
-        + '<button type="button" class="subtab" data-pane="compare">Compare</button>'
-        + '<button type="button" class="subtab" data-pane="pitching-vs-lineup">Lineup vs Pitcher</button>'
-        + '<button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>'
-        + '<button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>'
-        + '<button type="button" class="subtab" data-pane="model-links">Model Links</button>';
+      var panes = tabBar.querySelectorAll('[data-pane]');
+      if (panes.length !== 4 || !tabBar.querySelector('[data-pane="trends"]')) {
+        tabBar.innerHTML = ''
+          + '<button type="button" class="subtab active" data-pane="trends">Trends</button>'
+          + '<button type="button" class="subtab" data-pane="splits">Splits</button>'
+          + '<button type="button" class="subtab" data-pane="compare">Compare</button>'
+          + '<button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>';
+      }
     }
-    global.RESEARCH_SUBTABS = SUBTABS;
+    global.RESEARCH_SUBTABS = SUBTABS.slice();
   }
 
   function mountLeaderboards() {
@@ -300,7 +517,7 @@
   function renderSplitSummary() {
     var mount = document.getElementById('rlSplitSummaryMount');
     if (!mount) {
-      var splitsPane = document.getElementById('pane-splits-trends');
+      var splitsPane = document.getElementById('pane-splits');
       if (!splitsPane || splitsPane.querySelector('#rlSplitSummaryMount')) return;
       mount = document.createElement('div');
       mount.id = 'rlSplitSummaryMount';
@@ -353,8 +570,14 @@
     var pitchers = pitcherOptions();
 
     root.innerHTML = '<div class="rl-compare-modes">'
-      + ['team', 'pitcher', 'bullpen', 'lineup-pitcher'].map(function(m) {
-        var lbl = { team: 'Team vs Team', pitcher: 'Pitcher vs Pitcher', bullpen: 'Bullpen vs Bullpen', 'lineup-pitcher': 'Lineup vs Pitcher' }[m];
+      + ['team', 'lineup-pitcher', 'pitcher', 'bullpen-lineup', 'bullpen'].map(function(m) {
+        var lbl = {
+          team: 'Lineup vs Lineup',
+          'lineup-pitcher': 'Lineup vs Pitcher',
+          pitcher: 'Pitcher vs Pitcher',
+          'bullpen-lineup': 'Bullpen vs Lineup',
+          bullpen: 'Bullpen vs Bullpen'
+        }[m];
         return '<button type="button" class="rl-compare-mode-btn' + (RL.compareMode === m ? ' active' : '') + '" data-cmode="' + m + '">' + lbl + '</button>';
       }).join('')
       + '</div>'
@@ -412,6 +635,9 @@
     if (mode === 'team' || mode === 'bullpen') {
       html = searchSelectHtml('rlCmpA', mode === 'bullpen' ? 'Bullpen A' : 'Team A', teams, RL.compareA, 'Search teams…')
         + searchSelectHtml('rlCmpB', mode === 'bullpen' ? 'Bullpen B' : 'Team B', teams, RL.compareB, 'Search teams…');
+    } else if (mode === 'bullpen-lineup') {
+      html = searchSelectHtml('rlCmpA', 'Bullpen Team', teams, RL.compareA, 'Search bullpen…')
+        + searchSelectHtml('rlCmpB', 'Opposing Lineup', teams, RL.compareB, 'Search lineup…');
     } else if (mode === 'pitcher') {
       var popts = pitchers.map(function(p) { return { value: p.name, label: p.name + ' (' + p.team + ')' }; });
       html = searchSelectHtml('rlCmpA', 'Pitcher A', popts, RL.compareA, 'Search pitchers…')
@@ -464,6 +690,8 @@
       renderPitcherCompare(out);
     } else if (RL.compareMode === 'bullpen') {
       renderBullpenCompare(out);
+    } else if (RL.compareMode === 'bullpen-lineup') {
+      renderBullpenLineupCompare(out);
     } else {
       renderLineupPitcherCompare(out);
     }
@@ -603,6 +831,22 @@
       + '</tbody></table></div>'
       + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">' + esc(RL.compareA) + ' report →</a> · '
       + '<a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareB) + '">' + esc(RL.compareB) + ' report →</a></p>';
+  }
+
+  function renderBullpenLineupCompare(out) {
+    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
+    var ua = units[RL.compareA] || units[(RL.compareA || '').toUpperCase()];
+    var lineup = teamRow(RL.compareB);
+    var bpAllow = ua && ua.osiAllowed;
+    var lineupOsi = lineup ? lineup.osi : null;
+    var edge = lineupOsi != null && bpAllow != null && lineupOsi > bpAllow + 5 ? 'Lineup'
+      : (bpAllow != null && lineupOsi != null && bpAllow < lineupOsi - 5 ? 'Bullpen' : 'Even');
+    out.innerHTML = '<div class="rl-scorecards">'
+      + scorecardOne(RL.compareB, 'Lineup OSI', lineupOsi, false)
+      + scorecardOne(RL.compareA + ' BP', 'OSI Allowed', bpAllow, true)
+      + '</div>' + edgeCard(edge, 'Bullpen OSI allowed vs opposing lineup composite — high leverage context.')
+      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">Bullpen report →</a> · '
+      + '<a href="team_profile.html?team=' + encodeURIComponent(RL.compareB) + '">Lineup profile →</a></p>';
   }
 
   function renderLineupPitcherCompare(out) {
@@ -803,49 +1047,33 @@
   }
 
   function initSplitsControls() {
-    var mount = document.getElementById('rlSplitsControlMount');
-    if (!mount || !global.MLBMAControls) return;
-    MLBMAControls.renderBar(mount, {
-      state: { entity: 'team', split: global.STATE ? global.STATE.split === 'r' ? 'r' : global.STATE.split === 'l' ? 'l' : 'b' : 'b', window: global.STATE ? global.STATE.time : 'YTD', view: 'table' },
-      onChange: function(st) {
-        if (!global.STATE) return;
-        if (st.split === 'r') global.STATE.split = 'r';
-        else if (st.split === 'l') global.STATE.split = 'l';
-        else global.STATE.split = 'b';
-        global.STATE.time = st.window;
-        if (typeof renderMasterTable === 'function') renderMasterTable();
-        if (typeof renderSplitBars === 'function') renderSplitBars();
-        if (typeof renderTrendHeatmap === 'function') renderTrendHeatmap();
-      }
-    });
+    mountSplitsEntityControls();
   }
 
   function onSubtab(name) {
-    if (name === 'research-home') renderResearchHome();
-    if (name === 'splits-trends') {
+    mountGlobalControlBar();
+    if (name === 'trends') {
       resetResearchLabFilters();
       syncResearchGlobalsFromLiveData();
-      renderSplitSummary();
-      if (typeof global.renderMasterTable === 'function') global.renderMasterTable();
-      if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
+      mountTrendControls();
+      renderTrendSummary();
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
-      mountMarketQuadrant();
-    }
-    if (name === 'compare') {
+    } else if (name === 'splits') {
+      resetResearchLabFilters();
+      syncResearchGlobalsFromLiveData();
+      initSplitsControls();
+      renderSplitSummary();
+      if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
+      renderSplitsTable();
+    } else if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
-    } else if (name === 'pitching-vs-lineup') {
-      fetchSpProfiles().then(function() { renderPitchingVsLineup(); });
-    } else if (name === 'leaderboards') {
-      mountLeaderboards();
-    } else if (name === 'model-links') {
-      renderModelLinks();
     } else if (name === 'pitching') {
       var mountPl = function() {
         if (global.PitcherLab && PitcherLab.mount) {
           PitcherLab.mount('rlPitcherLabRoot');
         } else if (typeof hidePitchingResearchSections === 'function') {
           hidePitchingResearchSections();
-          if (typeof renderPitchingScore === 'function') renderPitchingScore();
+          if (typeof global.renderPitchingScore === 'function') global.renderPitchingScore();
         }
       };
       if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
@@ -896,7 +1124,6 @@
   function init() {
     patchSubtabs();
     hookShowResearchSubtab();
-    initSplitsControls();
     fetchSpProfiles();
     hideTeamOorSections();
   }
@@ -905,7 +1132,10 @@
     init: init,
     initSplitsControls: initSplitsControls,
     onSubtab: onSubtab,
-    mountLeaderboards: mountLeaderboards,
+    mountGlobalControlBar: mountGlobalControlBar,
+    mountTrendControls: mountTrendControls,
+    renderTrendSummary: renderTrendSummary,
+    renderSplitsTable: renderSplitsTable,
     renderComparePane: renderComparePane,
     renderSplitSummary: renderSplitSummary,
     metricCell: metricCell,
@@ -915,8 +1145,7 @@
     syncResearchGlobalsFromLiveData: syncResearchGlobalsFromLiveData,
     resetResearchLabFilters: resetResearchLabFilters,
     initResearchLabWhenReady: initResearchLabWhenReady,
-    renderResearchLabContent: renderResearchLabContent,
-    mountMarketQuadrant: mountMarketQuadrant
+    renderResearchLabContent: renderResearchLabContent
   };
 
 })(typeof window !== 'undefined' ? window : this);

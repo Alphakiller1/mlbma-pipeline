@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Chase Analytics · Team Intelligence Hub</title>
+<title>Chase Analytics · Team Rankings</title>
 <style>
 :root {
   --bg:#0A0A0A; --bg-2:#111114; --bg-3:#18181c; --border:#28282f;
@@ -57,17 +57,18 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
 .hub-link-card:hover{border-color:var(--purple)}
 .hub-link-card img{width:36px;height:36px;object-fit:contain}
 .loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
-.loading.hide{display:none}
+.hub-window-banner{margin:12px 0;padding:10px 14px;border-radius:8px;border:1px solid var(--gold);background:rgba(251,191,36,.08);color:var(--gold);font-size:12px;display:none}
+.hub-window-banner.show{display:block}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_config.js?v=20260523"></script>
-<script src="mlbma_assets.js?v=20260523"></script>
-<script src="matchup_shared.js?v=20260523"></script>
-<script src="mlbma_charts.js?v=20260523"></script>
-<script src="profile_controls.js?v=20260523"></script>
+<script src="mlbma_config.js?v=20260523d"></script>
+<script src="mlbma_assets.js?v=20260523d"></script>
+<script src="matchup_shared.js?v=20260523d"></script>
+<script src="mlbma_charts.js?v=20260523d"></script>
+<script src="profile_controls.js?v=20260523d"></script>
 <script src="chase_nav.js"></script>
 </head>
 <body>
@@ -162,12 +163,13 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
 
 <main class="container">
   <p class="brand-tag">Chase Analytics</p>
-  <h1>Team Intelligence Hub</h1>
-  <p class="subtitle">Full league offensive rankings and team profiles — sortable 30-team board with regression map and quick profile links.</p>
+  <h1>Team Rankings</h1>
+  <p class="subtitle">Global 30-team offensive metrics — YTD from vs_RHP / vs_LHP sheets. Click a row for team profile.</p>
 
   <section class="section" id="section-global-table">
     <h2>Global Team Metrics</h2>
-    <p class="sec-sub">YTD composite scores from vs_RHP / vs_LHP sheets. Click a row for sparklines; click team name for full profile.</p>
+    <p class="sec-sub">Sortable board with color-graded OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, and trend.</p>
+    <div id="hubWindowBanner" class="hub-window-banner">L30 / L14 / L7 windows require pipeline run — showing YTD only.</div>
     <div class="hub-controls">
       <div class="hub-ctrl"><label for="hubWindow">Window</label>
         <select id="hubWindow"><option value="YTD" selected>YTD</option><option value="L30">L30</option><option value="L14">L14</option><option value="L7">L7</option></select></div>
@@ -180,7 +182,7 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
       <table id="hubTable">
         <thead>
           <tr>
-            <th>#</th><th data-sort="t">Team</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th>
+            <th>#</th><th></th><th data-sort="t">Team</th><th data-sort="osi" class="sorted">OSI</th><th data-sort="projOSI">ProjOSI</th>
             <th data-sort="abq">ABQ</th><th data-sort="rcv">RCV</th><th data-sort="obr">OBR</th>
             <th data-sort="ppGap">PP-Gap</th><th>PALS</th><th data-sort="trend">Trend</th>
           </tr>
@@ -208,17 +210,27 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
 (function() {
   var A = window.MLBMAAssets;
   var S = window.MLBMASharedMatchup;
-  var HUB = { rows: [], scR: [], scL: [], split: 'both', window: 'YTD', search: '', sortKey: 'osi', sortDir: -1, expanded: null };
+  var TABS = window.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
+  var HUB = { rows: [], scR: [], scL: [], pals: {}, split: 'both', window: 'YTD', search: '', sortKey: 'osi', sortDir: -1 };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function fmt(v) { return v == null || isNaN(v) ? '—' : Number(v).toFixed(1); }
   function mc(v, ctx) { return A && A.metricColor ? A.metricColor(v, ctx || 'osi') : '#71717A'; }
   function ppColor(v) { return A && A.ppGapColor ? A.ppGapColor(v) : mc(v, 'osi'); }
 
+  function attachPals(rows) {
+    rows.forEach(function(d) {
+      var p = HUB.pals[d.t];
+      if (p && p.pals != null) d.pals = p.pals;
+    });
+    return rows;
+  }
+
   function mergeBoth(scR, scL) {
     if (window.MLBMAProfileControls && MLBMAProfileControls.buildTeamScoresFromLive) {
       window.SCO_YTD_R = scR; window.SCO_YTD_L = scL;
-      window.LIVE_DATA = { scYtdR: scR, scYtdL: scL };
+      window.LIVE_DATA = window.LIVE_DATA || {};
+      window.LIVE_DATA.scYtdR = scR; window.LIVE_DATA.scYtdL = scL;
       return MLBMAProfileControls.buildTeamScoresFromLive();
     }
     var by = {};
@@ -229,7 +241,7 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
       if (!r && l) return Object.assign({}, l);
       if (r && !l) return Object.assign({}, r);
       function b(k) { return 0.5 * r[k] + 0.5 * l[k]; }
-      return { t: t, abq: b('abq'), rcv: b('rcv'), obr: b('obr'), osi: b('osi'), projOSI: b('projOSI'), ppGap: b('abq') - b('rcv'), reg: r.reg };
+      return { t: t, abq: b('abq'), rcv: b('rcv'), obr: b('obr'), osi: b('osi'), projOSI: b('projOSI'), ppGap: b('ppGap') != null ? b('ppGap') : b('abq') - b('rcv'), reg: r.reg };
     });
   }
 
@@ -253,91 +265,63 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
     return rows;
   }
 
-  function teamRead(d) {
-    if (!d) return '';
-    if (d.osi >= 75) return 'Elite offensive profile — top-tier process and production.';
-    if (d.ppGap > 8) return 'Process ahead of results — potential buy-low offense.';
-    if (d.ppGap < -8) return 'Results ahead of process — regression risk on the board.';
-    if (d.osi < 45) return 'Below-average offensive foundation — platoon and matchup sensitive.';
-    return 'Solid middle-tier offense — monitor split and window trends.';
-  }
-
-  function sparkExpand(d) {
-    var C = window.MLBMACharts;
-    if (!C || !C.buildSparklineRow) return '';
-    function row(label, vals) {
-      return C.buildSparklineRow(label, vals, 120, 28, { labels: ['YTD', 'L30', 'L14', 'L7'] });
-    }
-    var vals = function(m) {
-      if (m === 'osi') return [d.osi, d.l30OSI, d.l14OSI, d.l7OSI];
-      if (m === 'abq') return [d.abq, d.l30ABQ, d.l14ABQ, d.l7ABQ];
-      if (m === 'rcv') return [d.rcv, d.l30RCV, d.l14RCV, d.l7RCV];
-      if (m === 'obr') return [d.obr, d.l30OBR, d.l14OBR, d.l7OBR];
-      return [d[m], null, null, null];
-    };
-    return '<div class="hub-sparks">'
-      + row('ABQ', vals('abq')) + row('RCV', vals('rcv')) + row('OBR', vals('obr')) + row('OSI', vals('osi'))
-      + '</div><p>' + esc(teamRead(d)) + '</p>';
-  }
-
   function renderTable() {
     var body = document.getElementById('hubTableBody');
     if (!body) return;
+    var banner = document.getElementById('hubWindowBanner');
+    if (banner) banner.classList.toggle('show', HUB.window !== 'YTD');
     var rows = filteredRows();
     var html = '';
     rows.forEach(function(d, i) {
-      var logo = A ? A.teamLogoImg(d.t, 28) : esc(d.t);
-      var exp = HUB.expanded === d.t;
-      html += '<tr class="hub-row" data-team="' + esc(d.t) + '">'
+      var logo = A ? A.teamLogoImg(d.t, 24) : esc(d.t);
+      var palsVal = d.pals != null ? fmt(d.pals) : '—';
+      var palsCol = d.pals != null ? mc(d.pals, 'osi') : '#71717A';
+      html += '<tr class="hub-row" data-team="' + esc(d.t) + '" role="link" tabindex="0">'
         + '<td>' + (i + 1) + '</td>'
-        + '<td><a href="team_profile.html?team=' + encodeURIComponent(d.t) + '" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px" onclick="event.stopPropagation()">'
-        + logo + ' <strong>' + esc(d.t) + '</strong></a></td>'
+        + '<td>' + logo + '</td>'
+        + '<td><strong>' + esc(d.t) + '</strong></td>'
         + '<td style="color:' + mc(d.osi, 'osi') + '">' + fmt(d.osi) + '</td>'
         + '<td style="color:' + mc(d.projOSI, 'osi') + '">' + fmt(d.projOSI) + '</td>'
         + '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>'
         + '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>'
         + '<td style="color:' + mc(d.obr, 'obr') + '">' + fmt(d.obr) + '</td>'
         + '<td style="color:' + ppColor(d.ppGap) + '">' + fmt(d.ppGap) + '</td>'
-        + '<td>—</td>'
+        + '<td style="color:' + palsCol + '">' + palsVal + '</td>'
         + '<td>' + (d.reg != null ? (d.reg > 0 ? '↑' : d.reg < 0 ? '↓' : '—') : '—') + '</td>'
         + '</tr>';
-      if (exp) {
-        html += '<tr class="hub-expand"><td colspan="10">' + sparkExpand(d) + '</td></tr>';
-      }
     });
-    body.innerHTML = html || '<tr><td colspan="10">No teams match filter.</td></tr>';
+    body.innerHTML = html || '<tr><td colspan="11">No teams match filter.</td></tr>';
     body.querySelectorAll('.hub-row').forEach(function(tr) {
-      tr.addEventListener('click', function() {
+      function go() {
         var t = tr.getAttribute('data-team');
-        HUB.expanded = HUB.expanded === t ? null : t;
-        renderTable();
-      });
+        if (t) window.location.href = 'team_profile.html?team=' + encodeURIComponent(t);
+      }
+      tr.addEventListener('click', go);
+      tr.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
     });
-  }
-
-  function renderLinks() {
-    var root = document.getElementById('hubTeamLinks');
-    if (!root) return;
-    root.innerHTML = HUB.rows.map(function(d) {
-      var logo = A ? A.teamLogoImg(d.t, 36) : '';
-      return '<a class="hub-link-card" href="team_profile.html?team=' + encodeURIComponent(d.t) + '">'
-        + logo + '<span>' + esc(d.t) + '</span></a>';
-    }).join('');
   }
 
   function renderQuadrant() {
-    if (!window.MLBMACharts || !MLBMACharts.renderMarketQuadrant) return;
-    MLBMACharts.renderMarketQuadrant('hubMarketQuadrant', HUB.scR.length ? HUB.scR : HUB.rows, { tipId: 'hubMarketQuadrantTip' });
+    if (!window.MLBMACharts || !MLBMACharts.renderMarketMapWithToggle) return;
+    window.LIVE_DATA = window.LIVE_DATA || {};
+    window.LIVE_DATA.scYtdR = HUB.scR;
+    window.LIVE_DATA.scYtdL = HUB.scL;
+    MLBMACharts.renderMarketMapWithToggle('hubMarketQuadrant', function(split) {
+      return split === 'lhp' ? HUB.scL : HUB.scR;
+    }, { tipId: 'hubMarketQuadrantTip', defaultSplit: 'rhp' });
   }
 
   function bindControls() {
     document.getElementById('hubWindow').addEventListener('change', function(e) {
       HUB.window = e.target.value;
+      if (HUB.window !== 'YTD') HUB.window = 'YTD';
+      e.target.value = 'YTD';
       renderTable();
     });
     document.getElementById('hubSplit').addEventListener('change', function(e) {
       HUB.split = e.target.value;
       renderTable();
+      renderQuadrant();
     });
     document.getElementById('hubSearch').addEventListener('input', function(e) {
       HUB.search = e.target.value;
@@ -357,49 +341,41 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
 
   function loadData() {
     console.log('[HUB] loading team data');
-    if (!S || !S.fetchSheetTab || !S.scoreRowFromSheet) {
-      console.warn('[HUB] MLBMASharedMatchup.fetchSheetTab or scoreRowFromSheet unavailable', S);
+    if (!S || !S.fetchSheetTab || !S.scoreRowFromSheet || !TABS) {
+      console.warn('[HUB] shared fetch unavailable');
       var body = document.getElementById('hubTableBody');
-      if (body) body.innerHTML = '<tr><td colspan="10">Shared data module unavailable.</td></tr>';
+      if (body) body.innerHTML = '<tr><td colspan="11">Shared data module unavailable.</td></tr>';
       return Promise.resolve();
     }
     return Promise.all([
-      S.fetchSheetTab('vs_RHP'),
-      S.fetchSheetTab('vs_LHP')
+      S.fetchSheetTab(TABS.vs_rhp),
+      S.fetchSheetTab(TABS.vs_lhp),
+      S.fetchSheetTab(TABS.pals).catch(function() { return []; })
     ]).then(function(res) {
       HUB.scR = (res[0] || []).map(S.scoreRowFromSheet).filter(Boolean);
       HUB.scL = (res[1] || []).map(S.scoreRowFromSheet).filter(Boolean);
-      HUB.rows = mergeBoth(HUB.scR, HUB.scL);
-      console.log('[HUB] vs_RHP rows:', HUB.scR.length);
-      console.log('[HUB] vs_LHP rows:', HUB.scL.length);
-      console.log('[HUB] hubTableBody:', document.getElementById('hubTableBody'));
+      console.log('[HUB] fetched RHP rows:', HUB.scR.length);
+      console.log('[HUB] fetched LHP rows:', HUB.scL.length);
+      if (S.parsePalsRows) HUB.pals = S.parsePalsRows(res[2] || []);
+      HUB.rows = attachPals(mergeBoth(HUB.scR, HUB.scL));
       window.SCO_YTD_B = HUB.rows;
       window.SCO_YTD_R = HUB.scR;
       window.SCO_YTD_L = HUB.scL;
+      window.LIVE_DATA = window.LIVE_DATA || {};
+      window.LIVE_DATA.scYtdR = HUB.scR;
+      window.LIVE_DATA.scYtdL = HUB.scL;
       renderTable();
       renderQuadrant();
-      renderLinks();
       var ts = document.getElementById('lastUpdated');
       if (ts) ts.textContent = 'Updated ' + new Date().toLocaleString();
+    }).catch(function(err) {
+      console.error('[HUB] load failed', err);
+      var body = document.getElementById('hubTableBody');
+      if (body) body.innerHTML = '<tr><td colspan="11">Failed to load team data.</td></tr>';
     });
   }
 
-  function clearStaleUrlSearch() {
-    var params = new URLSearchParams(window.location.search);
-    if (!params.get('q')) return;
-    params.delete('q');
-    var qs = params.toString();
-    var next = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
-    if (window.history && window.history.replaceState) {
-      window.history.replaceState(null, '', next);
-    }
-    HUB.search = '';
-    var searchEl = document.getElementById('hubSearch');
-    if (searchEl) searchEl.value = '';
-  }
-
   document.addEventListener('DOMContentLoaded', function() {
-    clearStaleUrlSearch();
     bindControls();
     loadData().finally(function() {
       var el = document.getElementById('hubLoading');
