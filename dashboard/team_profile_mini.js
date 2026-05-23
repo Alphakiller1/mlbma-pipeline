@@ -191,8 +191,8 @@
   }
 
   function metricSparkline(vals, width, height) {
-    width = width || 120;
-    height = height || 40;
+    width = width || 140;
+    height = height || 32;
     if (!global.MLBMACharts) return '';
     return '<div class="ma-trend-spark">'
       + MLBMACharts.buildSparkline(vals, width, height, { labels: ['YTD', 'L30', 'L14', 'L7'] })

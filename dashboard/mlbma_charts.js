@@ -291,12 +291,271 @@
     return el;
   }
 
+  function renderOnDataReady(checkFn, renderFn, opts) {
+    opts = opts || {};
+    var interval = opts.interval || 300;
+    var maxTries = opts.maxTries || 120;
+    var tries = 0;
+    function tick() {
+      tries += 1;
+      try {
+        if (checkFn && checkFn()) {
+          if (renderFn) renderFn();
+          return;
+        }
+      } catch (e) {
+        console.warn('[MLBMACharts] renderOnDataReady check error', e);
+      }
+      if (tries < maxTries) setTimeout(tick, interval);
+      else if (opts.onTimeout) opts.onTimeout();
+    }
+    tick();
+  }
+
+  function quadYValue(d) {
+    if (!d) return null;
+    if (d.reg_signal != null && !isNaN(d.reg_signal)) return Number(d.reg_signal) * 450;
+    if (d.reg != null && !isNaN(d.reg)) return Number(d.reg) * 450;
+    if (d.ppGap != null && !isNaN(d.ppGap)) return Number(d.ppGap);
+    return null;
+  }
+
+  function marketQuadrantMeta(rcv, yVal) {
+    var hiRcv = (rcv || 0) >= 50;
+    var posY = (yVal || 0) > 0;
+    if (hiRcv && posY) return { color: '#4ADE80', label: 'Elite & Undervalued' };
+    if (!hiRcv && posY) return { color: '#2DD4BF', label: 'Buy-Low Offense' };
+    if (hiRcv && !posY) return { color: '#FBBF24', label: 'Strong But Cooling' };
+    return { color: '#F87171', label: 'Weak & Concerning' };
+  }
+
+  /**
+   * RCV (x) vs reg_signal / PP-Gap (y) market quadrant — pure SVG.
+   */
+  function renderMarketQuadrant(containerId, rows, opts) {
+    opts = opts || {};
+    var el = opts.el || document.getElementById(containerId);
+    if (!el) return null;
+    var data = (rows || []).filter(function(d) {
+      return d && d.rcv != null && !isNaN(d.rcv) && quadYValue(d) != null;
+    });
+    if (!data.length) {
+      el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map loads when team offense data is available (vs_RHP scores).</p></div>';
+      return el;
+    }
+    var W = opts.width || Math.min(1200, el.clientWidth || 900);
+    var H = opts.height || (W < 700 ? 400 : 480);
+    var ml = 52, mr = 28, mt = 56, mb = 48;
+    var cw = W - ml - mr;
+    var ch = H - mt - mb;
+    var xMn = 0, xMx = 100;
+    var yVals = data.map(quadYValue);
+    var yMn = Math.min(-12, Math.min.apply(null, yVals.concat([-12])));
+    var yMx = Math.max(12, Math.max.apply(null, yVals.concat([12])));
+    var xRng = xMx - xMn;
+    var yRng = yMx - yMn;
+    function xs(v) { return ml + ((v - xMn) / xRng) * cw; }
+    function ys(v) { return mt + (1 - (v - yMn) / yRng) * ch; }
+    var mx = xs(50);
+    var my = ys(0);
+    var tipId = opts.tipId || (containerId + 'Tip');
+
+    var legend = '<div class="mlbma-quad-legend">'
+      + [{ c: '#4ADE80', l: 'Elite & Undervalued' }, { c: '#2DD4BF', l: 'Buy-Low Offense' },
+         { c: '#FBBF24', l: 'Strong But Cooling' }, { c: '#F87171', l: 'Weak & Concerning' }]
+        .map(function(q) {
+          return '<span class="mlbma-quad-leg-item"><i style="background:' + q.c + '"></i>' + esc(q.l) + '</span>';
+        }).join('') + '</div>';
+
+    var svg = '<svg class="mlbma-market-quad" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="RCV vs regression gap market map">'
+      + '<rect x="' + ml + '" y="' + mt + '" width="' + cw + '" height="' + ch + '" fill="#0f0f12" rx="8"/>'
+      + '<rect x="' + mx + '" y="' + mt + '" width="' + (W - mr - mx) + '" height="' + (my - mt) + '" fill="rgba(74,222,128,.07)"/>'
+      + '<rect x="' + ml + '" y="' + mt + '" width="' + (mx - ml) + '" height="' + (my - mt) + '" fill="rgba(45,212,191,.07)"/>'
+      + '<rect x="' + mx + '" y="' + my + '" width="' + (W - mr - mx) + '" height="' + (H - mb - my) + '" fill="rgba(251,191,36,.07)"/>'
+      + '<rect x="' + ml + '" y="' + my + '" width="' + (mx - ml) + '" height="' + (H - mb - my) + '" fill="rgba(248,113,113,.07)"/>';
+
+    [25, 50, 75].forEach(function(v) {
+      var gx = xs(v);
+      svg += '<line x1="' + gx + '" y1="' + mt + '" x2="' + gx + '" y2="' + (H - mb) + '" stroke="rgba(255,255,255,.05)"/>';
+      svg += '<text x="' + gx + '" y="' + (H - mb + 16) + '" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">' + v + '</text>';
+    });
+    [-10, -5, 0, 5, 10].forEach(function(v) {
+      if (v < yMn || v > yMx) return;
+      var gy = ys(v);
+      svg += '<line x1="' + ml + '" y1="' + gy + '" x2="' + (W - mr) + '" y2="' + gy + '" stroke="rgba(255,255,255,.05)"/>';
+      svg += '<text x="' + (ml - 6) + '" y="' + (gy + 4) + '" text-anchor="end" fill="#71717A" font-size="10" font-family="var(--mono)">' + (v > 0 ? '+' : '') + v + '</text>';
+    });
+
+    svg += '<line x1="' + mx + '" y1="' + mt + '" x2="' + mx + '" y2="' + (H - mb) + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
+    svg += '<line x1="' + ml + '" y1="' + my + '" x2="' + (W - mr) + '" y2="' + my + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
+
+    svg += '<text x="' + (W - mr - 6) + '" y="' + (mt + 12) + '" text-anchor="end" fill="rgba(74,222,128,.92)" font-size="9" font-weight="600">ELITE &amp; UNDERVALUED</text>';
+    svg += '<text x="' + (ml + 6) + '" y="' + (mt + 12) + '" text-anchor="start" fill="rgba(45,212,191,.92)" font-size="9" font-weight="600">BUY-LOW OFFENSE</text>';
+    svg += '<text x="' + (W - mr - 6) + '" y="' + (H - mb - 6) + '" text-anchor="end" fill="rgba(251,191,36,.92)" font-size="9" font-weight="600">STRONG BUT COOLING</text>';
+    svg += '<text x="' + (ml + 6) + '" y="' + (H - mb - 6) + '" text-anchor="start" fill="rgba(248,113,113,.92)" font-size="9" font-weight="600">WEAK &amp; CONCERNING</text>';
+
+    data.forEach(function(d) {
+      var xVal = d.rcv;
+      var yVal = quadYValue(d);
+      var meta = marketQuadrantMeta(xVal, yVal);
+      var cx = xs(xVal);
+      var cy = ys(yVal);
+      svg += '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + '">'
+        + '<circle cx="' + cx + '" cy="' + cy + '" r="16" fill="' + meta.color + '" fill-opacity=".18"/>'
+        + '<circle cx="' + cx + '" cy="' + cy + '" r="13" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
+        + '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
+        + '<title>' + esc(d.t) + ' · RCV ' + xVal.toFixed(1) + ' · Gap ' + yVal.toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + meta.label + '</title>'
+        + '</g>';
+    });
+
+    svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">RCV Score</text>';
+    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">xwOBA − wOBA Gap</text>';
+    svg += '</svg>';
+
+    el.innerHTML = '<div class="mlbma-quad-wrap">' + legend
+      + '<div class="mlbma-quad-chart-wrap chart-wrap">' + svg
+      + '<div id="' + esc(tipId) + '" class="chart-tip mlbma-quad-tip"></div></div></div>';
+
+    var tip = document.getElementById(tipId);
+    var wrap = el.querySelector('.mlbma-quad-chart-wrap');
+    el.querySelectorAll('.mlbma-quad-dot').forEach(function(g) {
+      g.addEventListener('click', function() {
+        var t = g.getAttribute('data-team');
+        if (t) global.location.href = 'team_profile.html?team=' + encodeURIComponent(t);
+      });
+      g.addEventListener('mouseenter', function(e) {
+        var t = g.getAttribute('data-team');
+        var d = data.find(function(r) { return r.t === t; });
+        if (!d || !tip) return;
+        var yVal = quadYValue(d);
+        var meta = marketQuadrantMeta(d.rcv, yVal);
+        var pp = d.ppGap != null ? d.ppGap.toFixed(1) : '—';
+        tip.innerHTML = '<div class="tt-team">' + esc(d.t) + '</div>'
+          + '<div>RCV <strong>' + d.rcv.toFixed(1) + '</strong> · Gap <strong>' + yVal.toFixed(1) + '</strong></div>'
+          + '<div>PP-Gap <strong>' + pp + '</strong> · OSI <strong>' + (d.osi != null ? d.osi.toFixed(1) : '—') + '</strong></div>'
+          + '<div class="tt-quad" style="color:' + meta.color + '">' + esc(meta.label) + '</div>';
+        tip.classList.add('show');
+      });
+      g.addEventListener('mousemove', function(e) {
+        if (!tip || !wrap) return;
+        var rect = wrap.getBoundingClientRect();
+        var x = e.clientX - rect.left + 12;
+        var y = e.clientY - rect.top + 12;
+        if (x + 200 > rect.width) x = e.clientX - rect.left - 210;
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+      });
+      g.addEventListener('mouseleave', function() {
+        if (tip) tip.classList.remove('show');
+      });
+    });
+    return el;
+  }
+
+  function renderSparkline(containerId, values, options) {
+    options = options || {};
+    var el = options.el || document.getElementById(containerId);
+    if (!el) return null;
+    var w = options.width || 140;
+    var h = options.height || 32;
+    var label = options.label || '';
+    var pts = (values || []).filter(function(v) { return v != null && !isNaN(v); });
+    if (pts.length < 2) {
+      el.innerHTML = '<div class="mlbma-sparkline-row mlbma-sparkline-limited">'
+        + (label ? '<span class="mlbma-spark-label">' + esc(label) + '</span>' : '')
+        + '<span class="mlbma-spark-note">Limited data</span></div>';
+      return el;
+    }
+    el.innerHTML = '<div class="mlbma-sparkline-row">'
+      + (label ? '<span class="mlbma-spark-label">' + esc(label) + '</span>' : '')
+      + buildSparkline(values, w, h, options) + '</div>';
+    return el;
+  }
+
+  function buildSparklineRow(label, values, width, height, opts) {
+    opts = opts || {};
+    width = width || 140;
+    height = height || 32;
+    var pts = (values || []).filter(function(v) { return v != null && !isNaN(v); });
+    if (pts.length < 2) {
+      return '<div class="mlbma-sparkline-row mlbma-sparkline-limited">'
+        + '<span class="mlbma-spark-label">' + esc(label) + '</span>'
+        + '<span class="mlbma-spark-note">Limited data</span></div>';
+    }
+    return '<div class="mlbma-sparkline-row">'
+      + '<span class="mlbma-spark-label">' + esc(label) + '</span>'
+      + buildSparkline(values, width, height, opts) + '</div>';
+  }
+
+  function teamRadarComparePayload(bothRow, rhpRow, lhpRow) {
+    if (!bothRow) return null;
+    var rhpOsi = rhpRow && rhpRow.osi != null ? rhpRow.osi : null;
+    var lhpOsi = lhpRow && lhpRow.osi != null ? lhpRow.osi : null;
+    var bestSplit = rhpOsi != null && lhpOsi != null ? Math.max(rhpOsi, lhpOsi)
+      : (rhpOsi != null ? rhpOsi : lhpOsi);
+    return {
+      abq: bothRow.abq,
+      rcv: bothRow.rcv,
+      obr: bothRow.obr,
+      projOSI: bothRow.projOSI != null ? bothRow.projOSI : bothRow.osi,
+      sustain: bothRow.obr,
+      bestSplit: bestSplit
+    };
+  }
+
+  function radarPayloadValues(payload) {
+    if (!payload) return [50, 50, 50, 50, 50, 50];
+    return [
+      norm100(payload.abq, false),
+      norm100(payload.rcv, false),
+      norm100(payload.obr, false),
+      norm100(payload.projOSI, false),
+      norm100(payload.sustain, false),
+      norm100(payload.bestSplit, false)
+    ];
+  }
+
+  /**
+   * Two-team hex radar — ABQ, RCV, OBR, ProjOSI, Sustain, Best Split.
+   */
+  function renderRadarChart(containerId, teamAData, teamBData, labelA, labelB, opts) {
+    opts = opts || {};
+    var metrics = ['ABQ', 'RCV', 'OBR', 'ProjOSI', 'Sustain', 'Best Split'];
+    var teams = [];
+    var colors = [];
+    if (teamAData) {
+      teams.push({ abbr: labelA || 'A', values: radarPayloadValues(teamAData) });
+      colors.push('#7C3AED');
+    }
+    if (teamBData) {
+      teams.push({ abbr: labelB || 'B', values: radarPayloadValues(teamBData) });
+      colors.push('#22D3EE');
+    }
+  return buildRadarChart(containerId, teams, metrics, colors, opts);
+  }
+
+  function getQuadrantRows() {
+    var ld = global.LIVE_DATA || {};
+    if (ld.scYtdR && ld.scYtdR.length >= 20) return ld.scYtdR;
+    if (typeof global.SCO_YTD_R !== 'undefined' && global.SCO_YTD_R.length) return global.SCO_YTD_R;
+    return [];
+  }
+
   global.MLBMACharts = {
     buildSparkline: buildSparkline,
+    buildSparklineRow: buildSparklineRow,
     buildRadarChart: buildRadarChart,
     buildMiniQuadrant: buildMiniQuadrant,
     buildSnapshotRadar: buildSnapshotRadar,
     teamRadarValues: teamRadarValues,
-    teamOsiTrend: teamOsiTrend
+    teamRadarComparePayload: teamRadarComparePayload,
+    teamOsiTrend: teamOsiTrend,
+    renderOnDataReady: renderOnDataReady,
+    renderMarketQuadrant: renderMarketQuadrant,
+    renderSparkline: renderSparkline,
+    renderRadarChart: renderRadarChart,
+    quadYValue: quadYValue,
+    marketQuadrantMeta: marketQuadrantMeta,
+    getQuadrantRows: getQuadrantRows
   };
 })(typeof window !== 'undefined' ? window : this);

@@ -472,6 +472,51 @@
     }
   }
 
+
+  function splitRowForTeam(t, split) {
+    return getResearchTeamData(split === 'l' ? 'l' : 'r').find(function(d) { return d.t === t; });
+  }
+
+  function teamIdentityCard(row) {
+    if (!row) return '';
+    var logo = A ? A.teamLogoImg(row.t, 48) : '';
+    var tier = row.osi >= 75 ? 'Elite' : row.osi >= 60 ? 'Solid' : row.osi >= 45 ? 'Avg' : 'Weak';
+    var tierCls = row.osi >= 75 ? 'tier-elite' : row.osi >= 60 ? 'tier-solid' : 'tier-mid';
+    return '<div class="rl-compare-identity">' + logo
+      + '<div><div style="font-weight:700;font-size:16px;">' + esc(row.t) + '</div>'
+      + '<div class="ca-helper">OSI <strong style="color:' + mColor(row.osi, false) + '">' + fmt(row.osi) + '</strong>'
+      + ' <span class="tier-badge ' + tierCls + '">' + esc(tier) + '</span></div></div>';
+  }
+
+  function compareSummaryRead(a, b) {
+    var parts = [];
+    [['rcv', 'RCV'], ['obr', 'OBR'], ['osi', 'OSI'], ['abq', 'ABQ']].forEach(function(pair) {
+      var k = pair[0], label = pair[1];
+      if (a[k] == null || b[k] == null || Math.abs(a[k] - b[k]) < 2) return;
+      var lead = a[k] > b[k] ? a.t : b.t;
+      var trail = a[k] > b[k] ? b.t : a.t;
+      parts.push(lead + ' leads ' + trail + ' in ' + label + ' (' + Math.max(a[k], b[k]).toFixed(0) + ' vs ' + Math.min(a[k], b[k]).toFixed(0) + ')');
+    });
+    if (!parts.length) return a.t + ' and ' + b.t + ' profile as evenly matched across core metrics.';
+    var leader = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : null);
+    var tail = leader ? ' — clear offensive edge to ' + leader : ' — mixed offensive profile.';
+    return parts.slice(0, 2).join(' and ') + tail;
+  }
+
+  function mountMarketQuadrant() {
+    if (!global.MLBMACharts) return;
+    syncResearchGlobalsFromLiveData();
+    if (typeof global.scheduleMarketMapRender === 'function') {
+      global.scheduleMarketMapRender();
+      return;
+    }
+    MLBMACharts.renderOnDataReady(function() {
+      return MLBMACharts.getQuadrantRows().length >= 20;
+    }, function() {
+      MLBMACharts.renderMarketQuadrant('rlMarketQuadrant', MLBMACharts.getQuadrantRows(), { tipId: 'rlMarketQuadrantTip' });
+    });
+  }
+
   function renderTeamCompare(out) {
     var a = teamRow(RL.compareA);
     var b = teamRow(RL.compareB);
@@ -485,18 +530,22 @@
       ['rhpOSI', 'vRHP', false], ['lhpOSI', 'vLHP', false], ['trend', 'Trend', false, false, true]
     ];
     var edge = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : 'Even');
-    out.innerHTML = scorecardsHtml(a, b, 'Team') + edgeCard(edge, 'OSI edge based on composite offensive strength.')
+    var rA = splitRowForTeam(a.t, 'r') || a;
+    var lA = splitRowForTeam(a.t, 'l') || a;
+    var rB = splitRowForTeam(b.t, 'r') || b;
+    var lB = splitRowForTeam(b.t, 'l') || b;
+    out.innerHTML = '<div class="rl-compare-identities">' + teamIdentityCard(a) + teamIdentityCard(b) + '</div>'
+      + '<div id="rlTeamRadar" class="mc-radar-mount" style="margin:8px auto 16px;"></div>'
+      + '<div class="rl-compare-summary"><strong>Summary:</strong> ' + esc(compareSummaryRead(a, b)) + '</div>'
+      + edgeCard(edge, 'OSI edge based on composite offensive strength.')
       + metricTable(keys, a, b)
-      + '<div id="rlTeamRadar" class="mc-radar-mount" style="margin:16px auto;"></div>'
       + profileLinks(a.t, b.t, null, null);
     if (global.STATE) global.STATE.compareTeams = [a.t, b.t];
     setTimeout(function() {
       if (!global.MLBMACharts) return;
-      var metrics = ['ABQ', 'RCV', 'OBR', 'ProjOSI', 'Sustain', 'Split Edge'];
-      MLBMACharts.buildRadarChart('rlTeamRadar', [
-        { abbr: a.t, values: MLBMACharts.teamRadarValues(a) },
-        { abbr: b.t, values: MLBMACharts.teamRadarValues(b) }
-      ], metrics, ['#7C3AED', '#0891B2'], { size: 320 });
+      MLBMACharts.renderRadarChart('rlTeamRadar',
+        MLBMACharts.teamRadarComparePayload(a, rA, lA),
+        MLBMACharts.teamRadarComparePayload(b, rB, lB), a.t, b.t, { size: 340 });
     }, 0);
   }
 
@@ -777,6 +826,7 @@
       if (typeof global.renderMasterTable === 'function') global.renderMasterTable();
       if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
+      mountMarketQuadrant();
     }
     if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
@@ -856,7 +906,8 @@
     syncResearchGlobalsFromLiveData: syncResearchGlobalsFromLiveData,
     resetResearchLabFilters: resetResearchLabFilters,
     initResearchLabWhenReady: initResearchLabWhenReady,
-    renderResearchLabContent: renderResearchLabContent
+    renderResearchLabContent: renderResearchLabContent,
+    mountMarketQuadrant: mountMarketQuadrant
   };
 
 })(typeof window !== 'undefined' ? window : this);

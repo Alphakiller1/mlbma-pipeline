@@ -172,6 +172,32 @@
     return '<div id="' + id + '" class="mc-radar-mount"></div>';
   }
 
+
+  function renderTeamCompareRadar(m, awayRow, homeRow, scR, scL) {
+    if (!global.MLBMACharts) return '';
+    var id = 'mcTeamRadar';
+    setTimeout(function() {
+      var rA = scR[m.away] || awayRow;
+      var lA = scL[m.away] || awayRow;
+      var rB = scR[m.home] || homeRow;
+      var lB = scL[m.home] || homeRow;
+      MLBMACharts.renderRadarChart(id,
+        MLBMACharts.teamRadarComparePayload(awayRow, rA, lA),
+        MLBMACharts.teamRadarComparePayload(homeRow, rB, lB),
+        m.away, m.home, { size: 360 });
+    }, 0);
+    return '<section class="mc-section mc-radar-anchor"><h2 class="mc-section-title">Team Profile Radar</h2><div id="' + id + '" class="mc-radar-mount"></div></section>';
+  }
+
+  function lineupSparkStrip(row, team) {
+    if (!global.MLBMACharts || !global.MLBMAProfileControls || !row) return '';
+    var t = team;
+    function rowHtml(label, metric) {
+      return MLBMACharts.buildSparklineRow(label, MLBMAProfileControls.teamMetricTrend(t, metric), 120, 28, { labels: ['YTD', 'L30', 'L14', 'L7'] });
+    }
+    return '<div class="mc-spark-strip">' + rowHtml('ABQ', 'abq') + rowHtml('RCV', 'rcv') + rowHtml('OBR', 'obr') + rowHtml('OSI', 'osi') + '</div>';
+  }
+
   function lineupEdgeRead(m) {
     var a = m.awayOSI != null ? m.awayOSI : 0;
     var h = m.homeOSI != null ? m.homeOSI : 0;
@@ -285,6 +311,7 @@
 
     root.innerHTML = ''
       + sectionHeader(m, weather, script, f5, stadium)
+      + renderTeamCompareRadar(m, awayRow, homeRow, scR, scL)
       + sectionLineupEdge(m, awayRow, homeRow, awayMet, homeMet, pals)
       + sectionSP(m, awayMet, homeMet, awayProf, homeProf, awayPs, homePs, h2h, data.spL14)
       + sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk)
@@ -369,7 +396,7 @@
       + '</section>';
   }
 
-  function edgePanel(label, row, spHand, lineupOsi, pitcherAllowed, palsTeam) {
+  function edgePanel(label, row, spHand, lineupOsi, pitcherAllowed, palsTeam, teamKey) {
     var osi = lineupOsi != null ? lineupOsi : (row ? row.osi : null);
     var palsRow = palsTeam || {};
     var ps = S.palsStatus(palsRow.osi || osi, palsRow.pals);
@@ -386,6 +413,7 @@
       + '<span>OBR <strong>' + fmt(row ? row.obr : null) + '</strong></span>'
       + '</div>'
       + '<div class="' + edge.cls + '">' + esc(edge.label) + '</div>'
+      + lineupSparkStrip(row, teamKey || (row && row.t) || '')
       + '</div>';
   }
 
@@ -395,8 +423,8 @@
     return '<section class="mc-section"><h2 class="mc-section-title">Tonight\'s Lineup Edge</h2>'
       + lineupEdgeBarHtml(m)
       + '<div class="mc-grid-2" style="margin-top:16px;">'
-      + edgePanel('Away lineup vs ' + homeHandLbl, awayRow, m.homeHand, m.awayOSI, homeMet.osiAllowed, pals[m.away])
-      + edgePanel('Home lineup vs ' + awayHandLbl, homeRow, m.awayHand, m.homeOSI, awayMet.osiAllowed, pals[m.home])
+      + edgePanel('Away lineup vs ' + homeHandLbl, awayRow, m.homeHand, m.awayOSI, homeMet.osiAllowed, pals[m.away], m.away)
+      + edgePanel('Home lineup vs ' + awayHandLbl, homeRow, m.awayHand, m.homeOSI, awayMet.osiAllowed, pals[m.home], m.home)
       + '</div></section>';
   }
 

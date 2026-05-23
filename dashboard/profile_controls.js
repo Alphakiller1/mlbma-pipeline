@@ -137,11 +137,42 @@
 
     function sparkBlock(st) {
       var t = st.team || opts.teamName;
-      return '<div class="pc-spark-row" data-pspark>'
-        + sparkHtml(teamMetricTrend(t, 'abq'), 80, 28, 'ABQ')
-        + sparkHtml(teamMetricTrend(t, 'rcv'), 80, 28, 'RCV')
-        + sparkHtml(teamMetricTrend(t, 'obr'), 80, 28, 'OBR')
-        + sparkHtml(teamMetricTrend(t, 'osi'), 80, 28, 'OSI')
+      var C = global.MLBMACharts;
+      function row(label, metric) {
+        var vals = teamMetricTrend(t, metric);
+        if (C && C.buildSparklineRow) return C.buildSparklineRow(label, vals, 120, 28, { labels: ['YTD', 'L30', 'L14', 'L7'] });
+        return sparkHtml(vals, 120, 28, label);
+      }
+      return '<div class="pc-spark-strip" data-pspark>'
+        + row('ABQ', 'abq') + row('RCV', 'rcv') + row('OBR', 'obr') + row('OSI', 'osi')
+        + '</div>';
+    }
+
+    function teamSnapshotStrip(st) {
+      var t = st.team || opts.teamName;
+      if (!t) return '';
+      var row = (global.SCO_YTD_B || []).find(function(d) { return d.t === t; });
+      if (!row && global.ResearchLab && ResearchLab.teamRow) row = ResearchLab.teamRow(t);
+      if (!row) return '';
+      var logo = A ? A.teamLogoImg(t, 32) : '';
+      var tier = row.osi >= 75 ? 'Elite' : row.osi >= 60 ? 'Solid' : row.osi >= 45 ? 'Avg' : 'Weak';
+      var tierCls = row.osi >= 75 ? 'tier-elite' : row.osi >= 60 ? 'tier-solid' : 'tier-mid';
+      var rhp = row.rhpOSI != null ? row.rhpOSI : null;
+      var lhp = row.lhpOSI != null ? row.lhpOSI : null;
+      var mc = A && A.metricColor ? A.metricColor.bind(A) : function() { return '#71717A'; };
+      var tonight = '';
+      (global.LIVE_DATA && LIVE_DATA.matchups || []).forEach(function(m) {
+        if (m.away === t) tonight = 'vs ' + m.home + ' · ' + (m.homeSP || 'TBD') + ' · ' + (m.time || 'TBD');
+        if (m.home === t) tonight = 'vs ' + m.away + ' · ' + (m.awaySP || 'TBD') + ' · ' + (m.time || 'TBD');
+      });
+      return '<div class="pc-team-snapshot">'
+        + '<div class="pc-team-snapshot-meta">' + logo
+        + '<div><strong>' + esc(t) + '</strong> · OSI <strong style="color:' + mc(row.osi, 'osi') + '">' + (row.osi != null ? row.osi.toFixed(1) : '—') + '</strong>'
+        + ' <span class="tier-badge ' + tierCls + '">' + esc(tier) + '</span></div></div>'
+        + sparkBlock(st)
+        + '<div class="pc-split-compare"><span>vRHP <strong style="color:' + mc(rhp, 'osi') + '">' + (rhp != null ? rhp.toFixed(1) : '—') + '</strong></span>'
+        + '<span>vLHP <strong style="color:' + mc(lhp, 'osi') + '">' + (lhp != null ? lhp.toFixed(1) : '—') + '</strong></span></div>'
+        + (tonight ? '<span class="pc-tonight-chip">' + esc(tonight) + '</span>' : '')
         + '</div>';
     }
 
@@ -155,7 +186,7 @@
       + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
       + '</div>'
       + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
-      + sparkBlock(state) + '</div>';
+      + teamSnapshotStrip(state) + '</div>';
 
     bindToggles(el, state, { confirmText: confirmText, onChange: opts.onChange });
     el._profileState = state;

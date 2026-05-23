@@ -1310,6 +1310,34 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
 /* Status map */
 .status-map-wrap { position: relative; }
 .status-map-wrap .chart-wrap { min-height: 480px; }
+.market-map-section { margin-top: 8px; }
+.market-map-toggle-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.market-map-toggle {
+  background: var(--bg-3); border: 1px solid var(--purple-3); color: var(--text);
+  padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
+}
+.market-map-toggle:hover { border-color: var(--purple); color: #fff; }
+.market-map-panel { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.market-map-panel.is-collapsed { display: none; }
+.mlbma-quad-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; font-size: 11px; color: var(--text-2); }
+.mlbma-quad-leg-item { display: inline-flex; align-items: center; gap: 6px; }
+.mlbma-quad-leg-item i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.mlbma-quad-chart-wrap { position: relative; min-height: 400px; }
+.mlbma-quad-tip { position: absolute; z-index: 20; pointer-events: none; min-width: 160px; }
+.mlbma-sparkline-row { display: flex; align-items: center; gap: 8px; }
+.mlbma-spark-label { font-size: 10px; font-weight: 700; color: var(--text-2); min-width: 32px; letter-spacing: 0.04em; }
+.mlbma-spark-note { font-size: 10px; color: var(--text-3); font-style: italic; }
+.pc-team-snapshot { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 10px 0 6px; border-top: 1px solid var(--border); margin-top: 8px; }
+.pc-team-snapshot-meta { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
+.pc-team-snapshot-os i { font-style: normal; font-size: 11px; color: var(--text-3); margin-right: 4px; }
+.pc-split-compare { display: flex; gap: 10px; font-size: 12px; font-family: var(--mono); }
+.pc-tonight-chip { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: rgba(124,58,237,.15); border: 1px solid rgba(124,58,237,.35); color: #c4b5fd; }
+.pc-spark-strip { display: flex; flex-wrap: wrap; gap: 10px; }
+.rl-compare-identities { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.rl-compare-identity { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; }
+.rl-compare-summary { margin: 12px 0; padding: 12px 14px; background: rgba(124,58,237,.08); border-left: 3px solid var(--purple); border-radius: 0 8px 8px 0; font-size: 13px; color: var(--text-2); }
+.rl-metric-edge-win { color: #4ADE80; font-weight: 700; }
+.mc-spark-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .quad-label-sm {
   font-size: 9px; font-weight: 600; letter-spacing: 0.08em;
   text-transform: uppercase; fill: currentColor;
@@ -1587,11 +1615,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_assets.js?v=20260524a"></script>
 <script src="matchup_shared.js?v=20260524a"></script>
 <script src="mlbma_controls.js?v=20260524a"></script>
-<script src="mlbma_charts.js?v=20260524a"></script>
-<script src="profile_controls.js?v=20260524a"></script>
+<script src="mlbma_charts.js?v=20260524c"></script>
+<script src="profile_controls.js?v=20260524c"></script>
 <script src="platform_dashboard.js?v=20260524a"></script>
-<script src="research_lab.js?v=20260524b"></script>
-<script src="pitcher_lab.js?v=20260524b"></script>
+<script src="research_lab.js?v=20260524c"></script>
+<script src="pitcher_lab.js?v=20260524c"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -1759,6 +1787,18 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div id="matchupsHeroGrid"></div>
 </section>
 
+<section class="platform-section market-map-section" id="section-market-map">
+  <div class="market-map-toggle-row">
+    <button type="button" class="market-map-toggle" id="marketMapToggle" aria-expanded="false" aria-controls="marketMapPanel">
+      Market Map
+    </button>
+    <span class="ca-helper">RCV vs xwOBA−wOBA gap — undervalued vs cooling offenses</span>
+  </div>
+  <div class="market-map-panel is-collapsed" id="marketMapPanel">
+    <div id="landingMarketQuadrant"></div>
+  </div>
+</section>
+
 <section class="platform-section" id="section-opening-model-teaser">
   <div class="signal-teaser-header">
     <h2 class="platform-title" style="font-size:16px;margin:0;">Today&apos;s Top Model Reads</h2>
@@ -1802,6 +1842,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       </div>
     </div>
     <div id="rlSplitsControlMount"></div>
+    <div class="section status-map-wrap" id="rlMarketQuadrantSection" style="margin-top:16px;">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Market Map</div>
+          <div class="section-title">RCV vs Regression Gap</div>
+          <div class="section-subtitle">Elite &amp; undervalued (top-right) vs weak &amp; concerning (bottom-left). Click a team bubble for profile.</div>
+        </div>
+      </div>
+      <div id="rlMarketQuadrant"></div>
+    </div>
     <div class="research-lab-controls" id="mainResearchControls">
 <div class="watchlist-bar" id="watchlistBar">
   <span class="wl-label">Pin Watchlist</span>
@@ -2232,6 +2282,7 @@ function applyLiveData() {
     if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
       ResearchLab.syncResearchGlobalsFromLiveData();
     }
+    scheduleMarketMapRender();
 
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     enrichMatchupCards();
@@ -4900,6 +4951,42 @@ function resetSort(){
   renderMasterTable();
 }
 
+function renderMarketMapCharts() {
+  if (!window.MLBMACharts) return;
+  if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
+    ResearchLab.syncResearchGlobalsFromLiveData();
+  }
+  var rows = MLBMACharts.getQuadrantRows();
+  MLBMACharts.renderMarketQuadrant('landingMarketQuadrant', rows, { tipId: 'landingMarketQuadrantTip' });
+  MLBMACharts.renderMarketQuadrant('rlMarketQuadrant', rows, { tipId: 'rlMarketQuadrantTip' });
+}
+
+function initMarketMapToggle() {
+  var btn = document.getElementById('marketMapToggle');
+  var panel = document.getElementById('marketMapPanel');
+  if (!btn || !panel || btn.dataset.bound) return;
+  btn.dataset.bound = '1';
+  btn.addEventListener('click', function() {
+    panel.classList.toggle('is-collapsed');
+    var hidden = panel.classList.contains('is-collapsed');
+    btn.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+    if (!hidden) renderMarketMapCharts();
+  });
+}
+
+function scheduleMarketMapRender() {
+  if (!window.MLBMACharts || !MLBMACharts.renderOnDataReady) return;
+  MLBMACharts.renderOnDataReady(function() {
+    return MLBMACharts.getQuadrantRows().length >= 20;
+  }, function() {
+    var panel = document.getElementById('marketMapPanel');
+    if (panel && !panel.classList.contains('is-collapsed')) renderMarketMapCharts();
+    if (document.body.classList.contains('view-research')) renderMarketMapCharts();
+  });
+}
+window.scheduleMarketMapRender = scheduleMarketMapRender;
+window.renderMarketMapCharts = renderMarketMapCharts;
+
 /* Chart: Offensive Market Status Map (OSI × PP-Gap) or legacy RCV × ABQ */
 function renderQuadrant(){
   var chartEl = document.getElementById('mainChart');
@@ -5473,9 +5560,8 @@ function detailMetricTrend(team, metric) {
 
 function detailSparkline(team, metric, label) {
   if (!window.MLBMACharts) return '';
-  return '<div class="rank-detail-spark">'
-    + MLBMACharts.buildSparkline(detailMetricTrend(team, metric), 80, 28)
-    + '<span class="pc-spark-label">' + (label || String(metric).toUpperCase()) + '</span></div>';
+  var vals = detailMetricTrend(team, metric);
+  return MLBMACharts.buildSparklineRow(label || String(metric).toUpperCase(), vals, 140, 32, { labels: ['YTD', 'L30', 'L14', 'L7'] });
 }
 
 function dfGapInterpretLabel(gap) {
@@ -5970,6 +6056,7 @@ function renderResearchLab() {
   renderTrendHeatmap();
   mountResearchTables();
   if (window.ResearchLab && ResearchLab.renderSplitSummary) ResearchLab.renderSplitSummary();
+  scheduleMarketMapRender();
   urlEncodeState();
 }
 
@@ -6256,6 +6343,7 @@ function init(){
     fetchLiveData();
     urlDecodeState();
     bindDashRankingsControls();
+    initMarketMapToggle();
     document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
       x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
     });
