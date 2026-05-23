@@ -94,25 +94,60 @@
     return parts.length ? parts[parts.length - 1] : 'index.html';
   }
 
+  function navTargetKey(href) {
+    if (!href) return '';
+    var hash = '';
+    var pathPart = href;
+    var hi = href.indexOf('#');
+    if (hi >= 0) {
+      hash = href.slice(hi + 1);
+      pathPart = href.slice(0, hi);
+    }
+    var page = pathPart.split('/').pop() || '';
+  if (page === 'chase_analytics_mlb_oem_v7.html' || page === '') {
+      if (hash === 'section-model-report') return 'model-report';
+      if (hash === 'section-research-lab') return 'research';
+      if (!hash || hash === 'section-matchups-hero') return 'opening';
+    }
+    if (page === 'glossary.html') return 'glossary';
+    return page;
+  }
+
+  function currentNavKey() {
+    var page = currentPageName();
+    var hash = (window.location.hash || '').replace(/^#/, '');
+    if (page === 'chase_analytics_mlb_oem_v7.html') {
+      if (hash === 'section-model-report') return 'model-report';
+      if (hash === 'section-research-lab') return 'research';
+      return 'opening';
+    }
+    if (page === 'glossary.html') return 'glossary';
+    return page;
+  }
+
   function setActivePage() {
-    var currentPage = currentPageName();
+    var currentKey = currentNavKey();
 
     document.querySelectorAll('.chase-nav-link').forEach(function (link) {
       if (link.tagName !== 'A') return;
       var href = link.getAttribute('href');
-      if (href && href.split('/').pop() === currentPage) {
+      var dataNav = link.getAttribute('data-nav');
+      var key = dataNav || navTargetKey(href);
+      if (key && key === currentKey) {
         link.classList.add('active');
       } else {
         link.classList.remove('active');
       }
     });
 
+    var profilePage = currentPageName();
+
     document.querySelectorAll('.chase-dropdown-item').forEach(function (link) {
       if (link.tagName !== 'A') return;
       var href = link.getAttribute('href');
       link.style.background = '';
       link.style.color = '';
-      if (href && href.split('/').pop() === currentPage) {
+      if (href && href.split('/').pop().split('?')[0] === profilePage) {
         link.style.background = 'rgba(124, 58, 237, 0.15)';
         link.style.color = '#7C3AED';
         var dropdown = link.closest('.chase-dropdown');
@@ -125,7 +160,9 @@
 
     document.querySelectorAll('.chase-mobile-link').forEach(function (link) {
       var href = link.getAttribute('href');
-      if (href && href.split('/').pop() === currentPage) {
+      var dataNav = link.getAttribute('data-nav');
+      var key = dataNav || navTargetKey(href);
+      if (key && key === currentKey) {
         link.classList.add('active');
       } else {
         link.classList.remove('active');
@@ -134,6 +171,7 @@
   }
 
   setActivePage();
+  window.addEventListener('hashchange', setActivePage);
 
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');

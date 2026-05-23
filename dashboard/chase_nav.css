@@ -31,6 +31,21 @@
 
 .chase-logo:hover { color: #fff; }
 
+.chase-brand-logo,
+.ca-logo-nav {
+  height: 32px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  display: block;
+}
+
+.chase-logo-fallback {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .chase-logo-icon {
   width: 28px;
   height: 28px;

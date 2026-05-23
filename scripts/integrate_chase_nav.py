@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replace mlbma-nav-wrap with Chase v0 navigation in dashboard HTML files."""
+"""Sync Chase navigation + design system links across dashboard HTML files."""
 import re
 from pathlib import Path
 
@@ -20,12 +20,32 @@ PAGES = [
 ]
 
 CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css">'
+DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css">'
+FAVICON = '<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">'
 CHASE_JS = '<script src="chase_nav.js"></script>'
+ASSETS_JS = '<script src="mlbma_assets.js"></script>'
+
+NAV_BLOCK_RE = re.compile(
+    r'<header class="chase-header" id="chaseHeader">[\s\S]*?'
+    r'<div class="chase-mobile-status">[\s\S]*?</div>\s*</div>\s*',
+    re.MULTILINE,
+)
 
 
 def ensure_head_links(html: str) -> str:
-    if "chase_nav.css" not in html:
+    if DESIGN_CSS not in html:
         if '<link rel="stylesheet" href="mlbma_ui.css">' in html:
+            html = html.replace(
+                '<link rel="stylesheet" href="mlbma_ui.css">',
+                '<link rel="stylesheet" href="mlbma_ui.css">\n' + DESIGN_CSS,
+                1,
+            )
+        elif "</head>" in html:
+            html = html.replace("</head>", f"  {DESIGN_CSS}\n</head>", 1)
+    if "chase_nav.css" not in html:
+        if DESIGN_CSS in html:
+            html = html.replace(DESIGN_CSS, DESIGN_CSS + "\n" + CHASE_CSS, 1)
+        elif '<link rel="stylesheet" href="mlbma_ui.css">' in html:
             html = html.replace(
                 '<link rel="stylesheet" href="mlbma_ui.css">',
                 '<link rel="stylesheet" href="mlbma_ui.css">\n' + CHASE_CSS,
@@ -33,6 +53,14 @@ def ensure_head_links(html: str) -> str:
             )
         elif "</head>" in html:
             html = html.replace("</head>", f"  {CHASE_CSS}\n</head>", 1)
+    if FAVICON not in html and "</head>" in html:
+        html = html.replace("</head>", f"  {FAVICON}\n</head>", 1)
+    if ASSETS_JS not in html and "mlbma_config.js" in html:
+        html = html.replace(
+            '<script src="mlbma_config.js"></script>',
+            '<script src="mlbma_config.js"></script>\n' + ASSETS_JS,
+            1,
+        )
     return html
 
 
@@ -45,7 +73,6 @@ def ensure_body_script(html: str) -> str:
 
 
 def replace_nav_wrap(html: str) -> str:
-    """Remove legacy nav placeholder; nav is inserted at top of body."""
     for old in (
         '  <div class="mlbma-nav-wrap" data-mlbma-nav></div>\n',
         '    <div class="mlbma-nav-wrap" data-mlbma-nav></div>\n',
@@ -53,6 +80,12 @@ def replace_nav_wrap(html: str) -> str:
         if old in html:
             html = html.replace(old, "", 1)
     return html
+
+
+def sync_nav_block(html: str) -> str:
+    if 'id="chaseHeader"' not in html:
+        return html
+    return NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
 
 
 def insert_nav_at_body(html: str) -> str:
@@ -84,6 +117,7 @@ def main() -> None:
         orig = text
         text = ensure_head_links(text)
         text = replace_nav_wrap(text)
+        text = sync_nav_block(text)
         text = insert_nav_at_body(text)
         text = ensure_body_script(text)
         if text != orig:

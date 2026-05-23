@@ -1537,7 +1537,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
+<link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
+<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_ui.js" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js"></script>
@@ -1546,18 +1548,20 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <body>
 
 <div class="loading-text" id="loadingText">Loading live data from Google Sheets…</div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo">
-      <span class="chase-logo-icon">CA</span>
-      <span>Chase Analytics</span>
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
+      <img class="ca-logo-nav chase-brand-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="32" width="auto"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
+      <span class="chase-logo-fallback" style="display:none;" aria-hidden="true">
+        <span class="chase-logo-icon">CA</span>
+      </span>
     </a>
     <div class="chase-nav-links">
-      <a href="#section-matchups-hero" class="chase-nav-link">Matchups</a>
-      <a href="#section-signal-board" class="chase-nav-link">Signals</a>
-      <a href="#section-rankings" class="chase-nav-link">Rankings</a>
-      <a href="#section-research-lab" class="chase-nav-link">Research</a>
-      <a href="glossary.html" class="chase-nav-link">Glossary</a>
+      <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-model-report" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
           Profiles
@@ -1566,31 +1570,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
           </svg>
         </button>
         <div class="chase-dropdown-menu">
-          <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
-          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-          <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
-          <div class="chase-dropdown-divider"></div>
-          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
+          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
+          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
           <div class="chase-dropdown-divider"></div>
+          <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
+          <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
           <a href="player_search.html" class="chase-dropdown-item">Player Search</a>
         </div>
       </div>
-      <div class="chase-dropdown">
-        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-          Research
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <div class="chase-dropdown-menu">
-          <a href="glossary.html" class="chase-dropdown-item">Glossary</a>
-          <span class="chase-dropdown-item disabled">
-            Signal Log
-            <span class="chase-dropdown-badge">Soon</span>
-          </span>
-        </div>
-      </div>
+      <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp">
@@ -1607,8 +1596,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo">
-      <span class="chase-logo-icon">CA</span>
-      <span>Chase Analytics</span>
+      <img class="ca-logo-nav chase-brand-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="28" width="auto"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
+      <span class="chase-logo-fallback" style="display:none;" aria-hidden="true">
+        <span class="chase-logo-icon">CA</span>
+      </span>
     </a>
     <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1618,19 +1610,17 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     </button>
   </div>
   <div class="chase-mobile-nav">
-    <a href="#section-matchups-hero" class="chase-mobile-link">Matchups</a>
-    <a href="#section-signal-board" class="chase-mobile-link">Signals</a>
-    <a href="#section-rankings" class="chase-mobile-link">Rankings</a>
-    <a href="#section-research-lab" class="chase-mobile-link">Research</a>
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-model-report" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
-    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="player_search.html" class="chase-mobile-link">Player Search</a>
-    <div class="chase-mobile-section">Research</div>
-    <a href="glossary.html" class="chase-mobile-link">Glossary</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
@@ -1660,6 +1650,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <span class="freshness-text">Data: <strong id="freshnessLabel">Loading…</strong></span>
   <span class="freshness-meta" id="freshnessMeta">Sheets pipeline · syncs with nav timestamp</span>
 </div>
+<div id="metricLegendGlobal"></div>
 
 <section class="platform-section" id="section-matchups-hero">
   <div class="platform-eyebrow">Today's Slate</div>
@@ -1683,7 +1674,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div id="matchupsHeroGrid"></div>
 </section>
 
-<section class="platform-section" id="section-signal-board">
+<section class="platform-section" id="section-model-report">
   <div class="signal-summary-header">
     <div>
       <div class="platform-eyebrow">Predictive Signals</div>
@@ -2163,6 +2154,7 @@ function applyLiveData() {
     M_YTD_L = toMap(SCO_YTD_L);
     syncWindowScoresFromProfiles();
     enrichYtdMaster();
+    registerMetricPools();
 
     SCO_YTD_R.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'r'); });
     SCO_YTD_L.forEach(function(d) { d.pa = getPA(d.t, 'YTD', 'l'); });
@@ -3544,13 +3536,21 @@ function recomputeAllScores() {
   M_L14 = toMap(SCO_L14_B);
   M_L7 = toMap(SCO_L7_B);
   enrichYtdMaster();
+  registerMetricPools();
 }
 
 /* ============================================================
    FORMATTING HELPERS
    ============================================================ */
 
-function tcol(v){if(v===null||v===undefined)return'#71717A';if(v>=85)return'#4ADE80';if(v>=75)return'#86EFAC';if(v>=65)return'#C084FC';if(v>=50)return'#FBBF24';return'#F87171';}
+/** @deprecated Use MLBMAAssets.metricColor — league-relative 7-step grade */
+function tcol(v, context, invert) {
+  if (window.MLBMAAssets && MLBMAAssets.metricColor) {
+    return MLBMAAssets.metricColor(v, context || 'osi', invert);
+  }
+  if (v === null || v === undefined) return '#71717A';
+  return '#71717A';
+}
 
 function tier(v){
   if(v>=85)return{l:'Complete Elite',bg:'rgba(74,222,128,.15)',c:'#4ADE80'};
@@ -3578,16 +3578,32 @@ function regFmt(v){
   return ['→ '+(v>0?'+':'')+Math.round(v*1000), '#71717A', 'Stable'];
 }
 
-function trendCol(t){
-  if(t==='Stable Elite')return'#4ADE80';
-  if(t==='Rising')return'#86EFAC';
-  if(t==='Buy-Low')return'#60A5FA';
-  if(t==='Stable')return'#A1A1AA';
-  if(t==='Volatile')return'#C084FC';
-  if(t==='Cooling')return'#FBBF24';
-  if(t==='Fake Hot')return'#FB923C';
-  if(t==='Reg. Risk')return'#F87171';
-  return'#71717A';
+/** @deprecated Use MLBMAAssets.trendColor */
+function trendCol(t) {
+  if (window.MLBMAAssets && MLBMAAssets.trendColor) return MLBMAAssets.trendColor(t);
+  return '#71717A';
+}
+
+/** @deprecated Use MLBMAAssets.heatColor */
+function hcol(v, context, invert) {
+  if (window.MLBMAAssets && MLBMAAssets.heatColor) {
+    return MLBMAAssets.heatColor(v, context || 'osi', invert);
+  }
+  return 'rgba(113, 113, 122, 0.45)';
+}
+
+function registerMetricPools() {
+  if (!window.MLBMAAssets || !MLBMAAssets.registerLeaguePool) return;
+  var rows = (typeof SCO_YTD_B !== 'undefined' && SCO_YTD_B.length) ? SCO_YTD_B : [];
+  if (!rows.length) return;
+  ['osi', 'abq', 'rcv', 'obr', 'projOSI', 'ppGap', 'dfGap'].forEach(function(k) {
+    MLBMAAssets.registerLeaguePool(k, rows.map(function(d) { return d[k]; }));
+  });
+  var legendEl = document.getElementById('metricLegendGlobal');
+  if (legendEl && MLBMAAssets.metricLegendHtml && !legendEl.dataset.filled) {
+    legendEl.innerHTML = MLBMAAssets.metricLegendHtml();
+    legendEl.dataset.filled = '1';
+  }
 }
 
 function qcol(d){
@@ -4919,16 +4935,6 @@ function renderSplitBars(){
 function renderTrendHeatmap(){
   if (!SCO_YTD_B || !SCO_YTD_B.length) return;
   var sorted = SCO_YTD_B.slice().sort(function(a,b){return b.osi-a.osi;});
-  function hcol(v){
-    if(v===null||v===undefined) return 'rgba(60,60,72,.4)';
-    if(v>=85) return 'rgba(74,222,128,.85)';
-    if(v>=75) return 'rgba(74,222,128,.55)';
-    if(v>=65) return 'rgba(192,132,252,.55)';
-    if(v>=55) return 'rgba(168,85,247,.45)';
-    if(v>=45) return 'rgba(251,191,36,.55)';
-    if(v>=35) return 'rgba(251,146,60,.55)';
-    return 'rgba(248,113,113,.65)';
-  }
   var W=1100,rh=22,cw=110,gap=2,lp=50,tp=30;
   var H=tp+sorted.length*(rh+gap)+12;
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;">';

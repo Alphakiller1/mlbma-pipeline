@@ -1,16 +1,17 @@
-<!-- Chase Analytics navigation — include once per page (see integrate_chase_nav.py) -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo">
-      <span class="chase-logo-icon">CA</span>
-      <span>Chase Analytics</span>
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
+      <img class="ca-logo-nav chase-brand-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="32" width="auto"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
+      <span class="chase-logo-fallback" style="display:none;" aria-hidden="true">
+        <span class="chase-logo-icon">CA</span>
+      </span>
     </a>
     <div class="chase-nav-links">
-      <a href="#section-matchups-hero" class="chase-nav-link">Matchups</a>
-      <a href="#section-signal-board" class="chase-nav-link">Signals</a>
-      <a href="#section-rankings" class="chase-nav-link">Rankings</a>
-      <a href="#section-research-lab" class="chase-nav-link">Research</a>
-      <a href="glossary.html" class="chase-nav-link">Glossary</a>
+      <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-model-report" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
           Profiles
@@ -19,31 +20,16 @@
           </svg>
         </button>
         <div class="chase-dropdown-menu">
-          <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
-          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-          <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
-          <div class="chase-dropdown-divider"></div>
-          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
+          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
+          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
           <div class="chase-dropdown-divider"></div>
+          <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
+          <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
           <a href="player_search.html" class="chase-dropdown-item">Player Search</a>
         </div>
       </div>
-      <div class="chase-dropdown">
-        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-          Research
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <div class="chase-dropdown-menu">
-          <a href="glossary.html" class="chase-dropdown-item">Glossary</a>
-          <span class="chase-dropdown-item disabled">
-            Signal Log
-            <span class="chase-dropdown-badge">Soon</span>
-          </span>
-        </div>
-      </div>
+      <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp">
@@ -60,8 +46,11 @@
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo">
-      <span class="chase-logo-icon">CA</span>
-      <span>Chase Analytics</span>
+      <img class="ca-logo-nav chase-brand-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="28" width="auto"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
+      <span class="chase-logo-fallback" style="display:none;" aria-hidden="true">
+        <span class="chase-logo-icon">CA</span>
+      </span>
     </a>
     <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -71,19 +60,17 @@
     </button>
   </div>
   <div class="chase-mobile-nav">
-    <a href="#section-matchups-hero" class="chase-mobile-link">Matchups</a>
-    <a href="#section-signal-board" class="chase-mobile-link">Signals</a>
-    <a href="#section-rankings" class="chase-mobile-link">Rankings</a>
-    <a href="#section-research-lab" class="chase-mobile-link">Research</a>
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-model-report" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
-    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="player_search.html" class="chase-mobile-link">Player Search</a>
-    <div class="chase-mobile-section">Research</div>
-    <a href="glossary.html" class="chase-mobile-link">Glossary</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
