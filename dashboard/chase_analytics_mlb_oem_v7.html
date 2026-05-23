@@ -1552,9 +1552,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
 <link rel="stylesheet" href="chase_nav.css?v=20260523a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260523a">
-<link rel="stylesheet" href="research_lab.css?v=20260523b">
+<link rel="stylesheet" href="research_lab.css?v=20260523c">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260523b"></script>
+<script src="mlbma_build.js?v=20260523c"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
@@ -1572,14 +1572,15 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   html.view-research #opening-dashboard{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260523b"></script>
-<script src="mlbma_ui.js?v=20260523b" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260523b"></script>
-<script src="matchup_shared.js?v=20260523b"></script>
-<script src="mlbma_controls.js?v=20260523b"></script>
-<script src="mlbma_charts.js?v=20260523b"></script>
-<script src="platform_dashboard.js?v=20260523b"></script>
-<script src="research_lab.js?v=20260523b"></script>
+<script src="mlbma_config.js?v=20260523c"></script>
+<script src="mlbma_ui.js?v=20260523c" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260523c"></script>
+<script src="matchup_shared.js?v=20260523c"></script>
+<script src="mlbma_controls.js?v=20260523c"></script>
+<script src="mlbma_charts.js?v=20260523c"></script>
+<script src="profile_controls.js?v=20260523c"></script>
+<script src="platform_dashboard.js?v=20260523c"></script>
+<script src="research_lab.js?v=20260523c"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -1644,28 +1645,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
   </div>
-  <div class="chase-mobile-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
-    <div class="chase-mobile-section">Profiles</div>
-    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
-    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
-    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
-    <a href="player_search.html" class="chase-mobile-link">Player Search</a>
-    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
-  </div>
-  <div class="chase-mobile-status">
-    <div class="chase-timestamp">
-      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncing…</span>
-    </div>
-  </div>
-</div>
-
 <div class="container">
 
 <div class="ca-page-identity" id="pageIdentityStrip">
@@ -1678,38 +1657,55 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <main id="opening-dashboard" class="layer-main opening-layer">
 <div class="data-error-banner" id="dataErrorBanner" style="display:none"></div>
 
-<section id="section-opening-hero" class="opening-hero" aria-label="Chase Analytics">
-  <div class="opening-hero-inner">
-    <div class="opening-hero-left">
-      <div class="opening-hero-brand">
-        <img src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="64" style="object-fit:contain"
-          onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
-        <div class="opening-hero-logo-fallback" aria-hidden="true">
-          <span>CHASE</span> <span class="accent">ANALYTICS</span>
-        </div>
-        <p class="opening-hero-tagline">MLB Offensive Intelligence Platform</p>
-      </div>
+<section id="section-opening-hero" class="ca-opening-hero" aria-label="Chase Analytics Opening Dashboard">
+  <div class="ca-hero-brand">
+    <div class="ca-hero-logo-wrap">
+      <img class="ca-hero-logo" src="assets/chase-logo-horizontal.png" alt="Chase Analytics"
+        onerror="this.style.display='none';var f=this.parentElement.querySelector('.ca-hero-logo-fallback');if(f)f.style.display='block';">
+      <div class="ca-hero-logo-fallback" aria-hidden="true">CHASE <span>ANALYTICS</span></div>
     </div>
-    <div class="opening-hero-center">
-      <p class="opening-hero-date" id="openingHeroDate">—</p>
-      <div class="opening-hero-chips">
-        <span class="opening-hero-chip opening-hero-chip--slate" id="openingHeroSlate">Loading slate…</span>
-        <span class="opening-hero-chip opening-hero-chip--sync" id="openingHeroSynced">Last synced: syncing…</span>
-      </div>
-    </div>
-    <div class="opening-hero-right">
-      <a class="opening-hero-pill" href="chase_analytics_mlb_oem_v7.html#section-research-lab">Research Lab →</a>
-      <a class="opening-hero-pill" href="glossary.html">Glossary →</a>
-      <a class="opening-hero-pill" href="model_report.html">Model Report →</a>
+    <div class="ca-hero-copy">
+      <div class="ca-kicker">Opening Dashboard</div>
+      <h1>MLB Offensive Intelligence Platform</h1>
+      <p>Today&apos;s slate, projected lineups, starting pitchers, weather, and Chase Analytics matchup reads.</p>
     </div>
   </div>
-</section>
 
-<hr class="opening-hero-divider" aria-hidden="true">
+  <div class="ca-hero-slate">
+    <div class="ca-slate-date" id="openingHeroDate">—</div>
+    <div class="ca-slate-chips">
+      <span class="ca-chip ca-chip-purple" id="openingHeroSlate">Loading slate…</span>
+      <span class="ca-chip" id="openingHeroSynced">Syncing…</span>
+      <span class="ca-chip ca-chip-live" id="openingHeroLive"><span class="ca-dot"></span> Synced</span>
+    </div>
+  </div>
+
+  <div class="ca-hero-actions">
+    <a href="model_report.html" class="ca-action-card">
+      <strong>Model Report</strong>
+      <span>Predictive signals &amp; confidence reads</span>
+      <em>Open →</em>
+    </a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="ca-action-card">
+      <strong>Research Lab</strong>
+      <span>Splits, compare tools &amp; pitching context</span>
+      <em>Open →</em>
+    </a>
+    <a href="glossary.html" class="ca-action-card">
+      <strong>Glossary</strong>
+      <span>Metric definitions &amp; methodology</span>
+      <em>Open →</em>
+    </a>
+  </div>
+</section>
 
 <div id="metricLegendGlobal"></div>
 
 <section class="platform-section" id="section-matchups-hero">
+  <header class="matchups-section-head">
+    <h2 class="matchups-section-title">Today&apos;s Projected Matchups</h2>
+    <p class="matchups-section-sub">Split-specific lineup edges, starters, weather, and full analysis links</p>
+  </header>
   <div class="matchups-slate-controls matchups-hero-header">
     <div class="ca-pill-bar">
       <span class="ca-pill-label">Sort</span>
@@ -1738,27 +1734,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   <div id="signalChips"></div>
 </section>
 
-<section class="platform-section" id="section-opening-links">
-  <div class="opening-links-grid">
-    <a class="opening-link-card" href="model_report.html">
-      <span class="opening-link-title">Model Report</span>
-      <span class="opening-link-desc">Daily signals, convergence, and signal explorer</span>
-    </a>
-    <a class="opening-link-card" href="chase_analytics_mlb_oem_v7.html#section-research-lab">
-      <span class="opening-link-title">Research Lab</span>
-      <span class="opening-link-desc">Splits, compare, leaderboards, pitching context</span>
-    </a>
-    <a class="opening-link-card" href="player_search.html">
-      <span class="opening-link-title">Profiles</span>
-      <span class="opening-link-desc">Team, pitcher, batter, and bullpen profiles</span>
-    </a>
-    <a class="opening-link-card" href="glossary.html">
-      <span class="opening-link-title">Glossary</span>
-      <span class="opening-link-desc">Formulas, methodology, and metric definitions</span>
-    </a>
-  </div>
-</section>
-
 </main><!-- /opening-dashboard -->
 
 <!-- Research Lab workspace — loads only when #section-research-lab is active -->
@@ -1771,12 +1746,17 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 <div class="section">
   <div class="subtabs rl-segment-tabs">
+    <button type="button" class="subtab" data-pane="research-home">Research Home</button>
     <button type="button" class="subtab active" data-pane="splits-trends">Splits &amp; Trends</button>
     <button type="button" class="subtab" data-pane="compare">Compare</button>
     <button type="button" class="subtab" data-pane="pitching-vs-lineup">Pitching vs Lineup</button>
     <button type="button" class="subtab" data-pane="pitching">Pitching Context</button>
     <button type="button" class="subtab" data-pane="leaderboards">Leaderboards</button>
     <button type="button" class="subtab" data-pane="model-links">Model Links</button>
+  </div>
+
+  <div id="pane-research-home" style="display:none;">
+    <div id="rlResearchHomeRoot"></div>
   </div>
 
   <!-- Splits pane -->

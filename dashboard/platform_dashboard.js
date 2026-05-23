@@ -256,11 +256,33 @@
     return n + ' games today';
   }
 
+  function setHeroLiveChip(synced, warn) {
+    var live = document.getElementById('openingHeroLive');
+    if (!live) return;
+    live.classList.remove('is-pending', 'ca-chip-warn', 'ca-chip-live');
+    if (synced) {
+      live.classList.add('ca-chip-live');
+      live.innerHTML = '<span class="ca-dot"></span> Synced';
+    } else if (warn) {
+      live.classList.add('ca-chip-warn');
+      live.innerHTML = '<span class="ca-dot"></span> Timestamp unavailable';
+    } else {
+      live.classList.add('is-pending', 'ca-chip-live');
+      live.innerHTML = '<span class="ca-dot"></span> Syncing…';
+    }
+  }
+
   function setOpeningHeroSync(text) {
     var el = document.getElementById('openingHeroSynced');
     if (!el) return;
-    var display = (!text || text === '--' || text === '—') ? 'syncing…' : text;
+    var display = (!text || text === '--' || text === '—') ? null : text;
+    if (!display) {
+      el.textContent = 'Awaiting sync…';
+      setHeroLiveChip(false, false);
+      return;
+    }
     el.textContent = 'Last synced: ' + display;
+    setHeroLiveChip(true, false);
   }
 
   function renderOpeningHero() {
@@ -276,17 +298,28 @@
         slateEl.textContent = slateCountLabel(games.length);
       }
     }
+    var synced = false;
     if (global.LIVE_DATA && LIVE_DATA.lastUpdated) {
       var ts = LIVE_DATA.lastUpdated;
       var d = new Date(String(ts).trim());
       if (!isNaN(d.getTime())) {
+        synced = true;
         setOpeningHeroSync(
-          d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+          d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' +
           d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
         );
-      } else if (ts && ts !== '—') {
+      } else if (ts && ts !== '—' && ts !== '--') {
+        synced = true;
         setOpeningHeroSync(ts);
       }
+    }
+    if (!synced) {
+      var syncEl = document.getElementById('openingHeroSynced');
+      if (syncEl && !loaded) syncEl.textContent = 'Awaiting sync…';
+      else if (syncEl && loaded) {
+        syncEl.textContent = 'Last synced: just now';
+        setHeroLiveChip(true, false);
+      } else setHeroLiveChip(false, loaded);
     }
   }
 

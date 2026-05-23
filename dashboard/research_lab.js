@@ -18,7 +18,7 @@
     pvlBpTeam: ''
   };
 
-  var SUBTABS = ['splits-trends', 'compare', 'pitching-vs-lineup', 'pitching', 'leaderboards', 'model-links'];
+  var SUBTABS = ['research-home', 'splits-trends', 'compare', 'pitching-vs-lineup', 'pitching', 'leaderboards', 'model-links'];
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -89,6 +89,7 @@
     if (tabBar && !tabBar.classList.contains('rl-segment-tabs')) {
       tabBar.classList.add('rl-segment-tabs');
       tabBar.innerHTML = ''
+        + '<button type="button" class="subtab" data-pane="research-home">Research Home</button>'
         + '<button type="button" class="subtab active" data-pane="splits-trends">Splits &amp; Trends</button>'
         + '<button type="button" class="subtab" data-pane="compare">Compare</button>'
         + '<button type="button" class="subtab" data-pane="pitching-vs-lineup">Pitching vs Lineup</button>'
@@ -265,16 +266,17 @@
     var edge = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : 'Even');
     out.innerHTML = scorecardsHtml(a, b, 'Team') + edgeCard(edge, 'OSI edge based on composite offensive strength.')
       + metricTable(keys, a, b)
-      + (RL.compareMode === 'team' ? radarMount() : '')
+      + '<div id="rlTeamRadar" class="mc-radar-mount" style="margin:16px auto;"></div>'
       + profileLinks(a.t, b.t, null, null);
-    if (typeof renderComparePane === 'function' && global.STATE) {
-      global.STATE.compareTeams = [a.t, b.t];
-      var chart = document.getElementById('compareChart');
-      if (!chart) {
-        out.innerHTML += '<div id="compareChart" style="margin-top:14px;"></div><div id="compareTable" style="display:none;"></div>';
-      }
-      renderComparePane();
-    }
+    if (global.STATE) global.STATE.compareTeams = [a.t, b.t];
+    setTimeout(function() {
+      if (!global.MLBMACharts) return;
+      var metrics = ['ABQ', 'RCV', 'OBR', 'ProjOSI', 'Sustain', 'Split Edge'];
+      MLBMACharts.buildRadarChart('rlTeamRadar', [
+        { abbr: a.t, values: MLBMACharts.teamRadarValues(a) },
+        { abbr: b.t, values: MLBMACharts.teamRadarValues(b) }
+      ], metrics, ['#7C3AED', '#0891B2'], { size: 320 });
+    }, 0);
   }
 
   function pitcherAvatarHtml(name, sizeKey) {
@@ -388,8 +390,38 @@
 
   function fmt(v) { return v != null && !isNaN(v) ? Number(v).toFixed(1) : '—'; }
 
-  function radarMount() {
-    return '<div id="compareChart" style="margin-top:14px;"></div>';
+  function renderResearchHome() {
+    var root = document.getElementById('rlResearchHomeRoot');
+    if (!root) return;
+    var cards = [
+      { pane: 'splits-trends', title: 'Team Offense', desc: 'Splits, trends, heatmaps, and master metric table', icon: '◆' },
+      { pane: 'pitching', title: 'Pitcher Lab', desc: 'SP metrics allowed, rankings, and staleness', icon: '◎' },
+      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', desc: 'Lineup edge vs SP and bullpen context', icon: '⚡' },
+      { pane: 'compare', title: 'Compare', desc: 'Team, pitcher, bullpen, and lineup comparisons', icon: '⇄' },
+      { pane: 'leaderboards', title: 'Leaderboards', desc: 'Offensive, pitching, and bullpen rankings', icon: '▤' },
+      { pane: 'model-links', title: 'Model Links', desc: 'Signals, matchups, and report shortcuts', icon: '→' }
+    ];
+    root.innerHTML = '<div class="rl-home-header"><h2 class="rl-workspace-title">Research Home</h2>'
+      + '<p class="rl-workspace-subtitle">Choose a research path — all tools run in-pane.</p></div>'
+      + '<div class="rl-home-grid">' + cards.map(function(c) {
+        return '<button type="button" class="rl-home-card" data-rl-pane="' + c.pane + '">'
+          + '<span class="rl-home-icon">' + c.icon + '</span>'
+          + '<strong>' + esc(c.title) + '</strong>'
+          + '<span>' + esc(c.desc) + '</span>'
+          + '<em>Open →</em></button>';
+      }).join('') + '</div>'
+      + '<div class="rl-metric-legend"><span class="rl-legend-title">Metric colors</span>'
+      + '<span class="rl-legend-item"><i style="background:#4ADE80"></i> Higher = better (OSI, ABQ…)</span>'
+      + '<span class="rl-legend-item"><i style="background:#F87171"></i> Lower = better (allowed)</span>'
+      + '<span class="rl-legend-item"><i style="background:#22D3EE"></i> OOR contextual</span>'
+      + '<span class="rl-legend-item"><i style="background:#FBBF24"></i> PP-Gap negative</span></div>';
+
+    root.querySelectorAll('[data-rl-pane]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var pane = btn.getAttribute('data-rl-pane');
+        if (typeof global.showResearchSubtab === 'function') global.showResearchSubtab(pane);
+      });
+    });
   }
 
   function profileLinks(teamA, teamB, pitcherA, pitcherB) {
@@ -505,6 +537,7 @@
   }
 
   function onSubtab(name) {
+    if (name === 'research-home') renderResearchHome();
     if (name === 'splits-trends') restoreSplitsTable();
     if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });

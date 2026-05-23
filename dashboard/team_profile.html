@@ -312,6 +312,8 @@ h1 {
   border: 1px solid var(--purple-3); border-radius: 8px;
 }
 .matchup-panel a.cta:hover { background: var(--purple-glow); }
+.snapshot-mini-quad { margin-top: 16px; display: flex; justify-content: flex-start; }
+.team-snapshot { flex-wrap: wrap; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="mlbma_design_system.css">
@@ -320,7 +322,10 @@ h1 {
 <script src="mlbma_assets.js"></script>
 <script src="mlbma_standings.js"></script>
 <script src="team_profile_mini.js"></script>
+<script src="mlbma_charts.js?v=20260523c"></script>
+<script src="profile_controls.js?v=20260523c"></script>
 <script src="mlbma_ui.js" data-page="team_profile.html"></script>
+<link rel="stylesheet" href="research_lab.css">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
@@ -385,7 +390,8 @@ h1 {
   </div>
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-  <div class="container">
+  </div>
+<div class="container">
   <div class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
@@ -403,28 +409,7 @@ h1 {
     </div>
   </div>
 
-  <div class="global-control-bar" id="profileControlBar">
-    <div class="control-group">
-      <span class="control-label">Split</span>
-      <div class="toggle-group" id="profileSplitToggle">
-        <button type="button" class="toggle-btn active" data-psplit="both">Both</button>
-        <button type="button" class="toggle-btn" data-psplit="rhp">vs RHP</button>
-        <button type="button" class="toggle-btn" data-psplit="lhp">vs LHP</button>
-        <button type="button" class="toggle-btn" data-psplit="home">Home</button>
-        <button type="button" class="toggle-btn" data-psplit="away">Away</button>
-        <button type="button" class="toggle-btn" data-psplit="f5">F5</button>
-      </div>
-    </div>
-    <div class="control-group">
-      <span class="control-label">Window</span>
-      <div class="toggle-group" id="profileWindowToggle">
-        <button type="button" class="toggle-btn active" data-pwindow="YTD">YTD</button>
-        <button type="button" class="toggle-btn" data-pwindow="L30">L30</button>
-        <button type="button" class="toggle-btn" data-pwindow="L14">L14</button>
-        <button type="button" class="toggle-btn warn" data-pwindow="L7">L7</button>
-      </div>
-    </div>
-  </div>
+  <div id="profileControlBar"></div>
 
   <div class="profile-offense-block">
     <div id="profileSnapshot"></div>
@@ -663,8 +648,15 @@ function renderOffenseBlock(prof, name, tonight) {
   var mini = document.getElementById('profileMiniDashboards');
   if (!snap || !mini || !window.TeamProfileMini) return;
   var ctx = buildMiniCtx(prof, name, tonight);
-  snap.innerHTML = TeamProfileMini.renderSnapshot(prof, STATE.team, ctx);
+  snap.innerHTML = TeamProfileMini.renderSnapshot(prof, STATE.team, ctx)
+    + '<div id="teamMiniQuad" class="snapshot-mini-quad"></div>';
   mini.innerHTML = TeamProfileMini.render(prof, STATE.team, ctx);
+  if (window.MLBMACharts) {
+    setTimeout(function() {
+      MLBMACharts.buildMiniQuadrant('teamMiniQuad', leagueQuadRows(), STATE.team, { size: 200 });
+    }, 0);
+  }
+  bindProfileControls();
 }
 
 function bindProfileControls() {

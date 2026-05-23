@@ -168,9 +168,71 @@
     return [row.ytdOSI != null ? row.ytdOSI : row.osi, row.l30OSI, row.l14OSI, row.l7OSI];
   }
 
+  /**
+   * Mini quadrant scatter (200×200) — highlights one team vs league.
+   */
+  function buildMiniQuadrant(containerId, rows, highlightTeam, opts) {
+    opts = opts || {};
+    var el = opts.el || document.getElementById(containerId);
+    if (!el || !rows || !rows.length) return null;
+    var size = opts.size || 200;
+    var pad = 28;
+    var W = size;
+    var H = size;
+    var cw = W - pad * 2;
+    var ch = H - pad * 2;
+    var xMn = 35, xMx = 75, yMn = -12, yMx = 12;
+    var xRng = xMx - xMn;
+    var yRng = yMx - yMn;
+    function xs(v) { return pad + ((v - xMn) / xRng) * cw; }
+    function ys(v) { return pad + (1 - (v - yMn) / yRng) * ch; }
+    var mx = xs(55);
+    var my = ys(0);
+    var svg = '<svg class="mlbma-mini-quad" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">';
+    svg += '<rect x="' + mx + '" y="' + pad + '" width="' + (W - pad - mx) + '" height="' + (my - pad) + '" fill="rgba(74,222,128,.08)"/>';
+    svg += '<rect x="' + pad + '" y="' + my + '" width="' + (mx - pad) + '" height="' + (H - pad - my) + '" fill="rgba(248,113,113,.08)"/>';
+    svg += '<line x1="' + mx + '" y1="' + pad + '" x2="' + mx + '" y2="' + (H - pad) + '" stroke="rgba(192,132,252,.25)" stroke-dasharray="3,3"/>';
+    svg += '<line x1="' + pad + '" y1="' + my + '" x2="' + (W - pad) + '" y2="' + my + '" stroke="rgba(192,132,252,.25)" stroke-dasharray="3,3"/>';
+    rows.forEach(function(d) {
+      if (d.osi == null || d.ppGap == null) return;
+      var cx = xs(d.osi);
+      var cy = ys(d.ppGap);
+      var hi = d.t === highlightTeam;
+      var r = hi ? 9 : 5;
+      var col = hi ? '#7C3AED' : 'rgba(161,161,170,.55)';
+      svg += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + col + '" stroke="' + (hi ? '#fff' : 'none') + '" stroke-width="1.5"/>';
+      if (hi) svg += '<text x="' + cx.toFixed(1) + '" y="' + (cy - 12).toFixed(1) + '" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">' + esc(d.t) + '</text>';
+    });
+    svg += '</svg>';
+    el.innerHTML = '<div class="mlbma-mini-quad-wrap">' + svg + '<div class="mlbma-mini-quad-caption">OSI × PP-Gap · league position</div></div>';
+    return el;
+  }
+
+  function teamRadarValues(row) {
+    if (!row) return [50, 50, 50, 50, 50, 50];
+    var sus = row.sus != null ? Math.min(100, Math.max(0, row.sus)) : 50;
+    var edge = row.splitEdge != null ? Math.min(100, Math.max(0, 50 + row.splitEdge * 2)) : 50;
+    return [
+      norm100(row.abq, false),
+      norm100(row.rcv, false),
+      norm100(row.obr, false),
+      norm100(row.projOSI != null ? row.projOSI : row.osi, false),
+      norm100(sus, false),
+      norm100(edge, false)
+    ];
+  }
+
+  function norm100(v, invert) {
+    if (v == null || isNaN(v)) return 50;
+    var n = Math.max(0, Math.min(100, Number(v)));
+    return invert ? 100 - n : n;
+  }
+
   global.MLBMACharts = {
     buildSparkline: buildSparkline,
     buildRadarChart: buildRadarChart,
+    buildMiniQuadrant: buildMiniQuadrant,
+    teamRadarValues: teamRadarValues,
     teamOsiTrend: teamOsiTrend
   };
 })(typeof window !== 'undefined' ? window : this);
