@@ -225,15 +225,54 @@
       + '</span></a>';
   }
 
+  function formatOpeningHeroDate(d) {
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  function slateCountLabel(n) {
+    if (n === 1) return '1 game today';
+    return n + ' games today';
+  }
+
+  function setOpeningHeroSync(text) {
+    var el = document.getElementById('openingHeroSynced');
+    if (!el) return;
+    var display = (!text || text === '--' || text === '—') ? 'syncing…' : text;
+    el.textContent = 'Last synced: ' + display;
+  }
+
+  function renderOpeningHero() {
+    var dateEl = document.getElementById('openingHeroDate');
+    var slateEl = document.getElementById('openingHeroSlate');
+    if (dateEl) dateEl.textContent = formatOpeningHeroDate(new Date());
+    var games = (global.LIVE_DATA && LIVE_DATA.matchups) || [];
+    var loaded = global.LIVE_DATA && LIVE_DATA.loaded;
+    if (slateEl) {
+      if (!loaded && !games.length) {
+        slateEl.textContent = 'Loading slate…';
+      } else {
+        slateEl.textContent = slateCountLabel(games.length);
+      }
+    }
+    if (global.LIVE_DATA && LIVE_DATA.lastUpdated) {
+      var ts = LIVE_DATA.lastUpdated;
+      var d = new Date(String(ts).trim());
+      if (!isNaN(d.getTime())) {
+        setOpeningHeroSync(
+          d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+          d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+        );
+      } else if (ts && ts !== '—') {
+        setOpeningHeroSync(ts);
+      }
+    }
+  }
+
   function renderHeroMatchups() {
+    renderOpeningHero();
     var grid = document.getElementById('matchupsHeroGrid');
-    var meta = document.getElementById('matchupsHeroMeta');
     if (!grid) return;
     var games = LIVE_DATA.matchups || [];
-    if (meta) {
-      var d = new Date();
-      meta.textContent = games.length + ' games today · ' + d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-    }
     if (!games.length) {
       grid.innerHTML = '<div class="empty-msg">No matchups loaded for today.</div>';
       return;
@@ -464,8 +503,10 @@
 
   global.PlatformDashboard = {
     renderDashboard: renderDashboard,
+    renderOpeningHero: renderOpeningHero,
     renderHeroMatchups: renderHeroMatchups,
     renderSignalChips: renderSignalChips,
+    setOpeningHeroSync: setOpeningHeroSync,
     initRegistry: initRegistry,
     bindHeroControls: bindHeroControls
   };

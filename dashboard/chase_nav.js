@@ -182,8 +182,12 @@
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');
     var mobile = document.getElementById('mobileLastUpdated');
-    if (el) el.textContent = text;
-    if (mobile) mobile.textContent = text;
+    var display = (!text || text === '--' || text === '—') ? 'syncing…' : text;
+    if (el) el.textContent = display;
+    if (mobile) mobile.textContent = display;
+    if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
+      PlatformDashboard.setOpeningHeroSync(display);
+    }
   }
 
   function formatClock() {

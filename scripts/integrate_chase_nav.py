@@ -32,7 +32,14 @@ ASSETS_JS = '<script src="mlbma_assets.js"></script>'
 NAV_BLOCK_RE = re.compile(
     r'(?:<!-- Chase Analytics navigation[^\n]*\n)?'
     r'<header class="chase-header" id="chaseHeader">[\s\S]*?'
-    r'<div class="chase-mobile-menu" id="mobileMenu"[\s\S]*?</div>\s*\n',
+    r'<span id="mobileLastUpdated">[^<]*</span>\s*</div>\s*</div>\s*</div>\s*\n',
+    re.MULTILINE,
+)
+
+# Leftover fragment when an older regex stopped at the first </div> inside the drawer.
+ORPHAN_MOBILE_NAV_RE = re.compile(
+    r'\n\s*<div class="chase-mobile-nav">[\s\S]*?'
+    r'<span id="mobileLastUpdated">[^<]*</span>\s*</div>\s*</div>\s*</div>\s*\n',
     re.MULTILINE,
 )
 
@@ -100,11 +107,21 @@ def dedupe_nav_comments(html: str) -> str:
     return NAV_COMMENT_RE.sub(NAV_COMMENT, html, count=1)
 
 
+def strip_orphan_mobile_nav(html: str) -> str:
+    prev = None
+    while prev != html:
+        prev = html
+        html = ORPHAN_MOBILE_NAV_RE.sub("\n", html)
+    return html
+
+
 def sync_nav_block(html: str) -> str:
     if 'id="chaseHeader"' not in html:
         return html
     html = dedupe_nav_comments(html)
+    html = strip_orphan_mobile_nav(html)
     html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
+    html = strip_orphan_mobile_nav(html)
     return dedupe_nav_comments(html)
 
 
@@ -137,7 +154,9 @@ def main() -> None:
         orig = text
         text = ensure_head_links(text)
         text = replace_nav_wrap(text)
+        text = strip_orphan_mobile_nav(text)
         text = sync_nav_block(text)
+        text = strip_orphan_mobile_nav(text)
         text = insert_nav_at_body(text)
         text = ensure_body_script(text)
         if text != orig:

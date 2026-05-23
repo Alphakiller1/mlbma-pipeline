@@ -1550,8 +1550,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260522a">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260522a">
-<link rel="stylesheet" href="chase_nav.css?v=20260522a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260522a">
+<link rel="stylesheet" href="chase_nav.css?v=20260522c">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260522c">
 <link rel="stylesheet" href="research_lab.css?v=20260522a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260522a"></script>
@@ -1569,8 +1569,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_assets.js?v=20260522a"></script>
 <script src="matchup_shared.js?v=20260522a"></script>
 <script src="mlbma_controls.js?v=20260522a"></script>
-<script src="platform_dashboard.js?v=20260522a"></script>
+<script src="platform_dashboard.js?v=20260522c"></script>
 <script src="research_lab.js?v=20260522a"></script>
+  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -1608,7 +1609,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">--</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -1631,28 +1632,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       </svg>
     </button>
   </div>
-  <div class="chase-mobile-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
-    <div class="chase-mobile-section">Profiles</div>
-    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
-    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
-    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
-    <a href="player_search.html" class="chase-mobile-link">Player Search</a>
-    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-  </div>
-  <div class="chase-mobile-status">
-    <div class="chase-timestamp">
-      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">--</span>
-    </div>
-  </div>
-</div>
-
+  <div class="chase-mobile-brand" aria-hidden="true">
+    <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
+  </div></div>
 <div class="container">
 
 <div class="ca-page-identity" id="pageIdentityStrip">
@@ -1663,28 +1645,41 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 <!-- Opening Dashboard — matchup hub only (not Research Lab) -->
 <main id="opening-dashboard" class="layer-main opening-layer">
-<div class="header header-clean landing-hero-brand">
-  <div class="brand-row">
-    <span class="brand-tag">Opening Dashboard</span>
-    <span class="brand-pill" id="brandPill">Loading…</span>
-  </div>
-  <p class="landing-tagline">Today&apos;s slate — projected lineups, pitchers, and model edges at a glance.</p>
-  <div class="header-meta">Last updated: <span id="headerUpdated">—</span></div>
-  <div class="data-error-banner" id="dataErrorBanner"></div>
-</div>
+<div class="data-error-banner" id="dataErrorBanner" style="display:none"></div>
 
-<div class="freshness-bar" id="freshnessBar">
-  <span class="freshness-dot fresh" id="freshnessDot"></span>
-  <span class="freshness-text">Data: <strong id="freshnessLabel">Loading…</strong></span>
-  <span class="freshness-meta" id="freshnessMeta">Sheets pipeline · syncs with nav timestamp</span>
-</div>
+<section id="section-opening-hero" class="opening-hero" aria-label="Chase Analytics">
+  <div class="opening-hero-inner">
+    <div class="opening-hero-left">
+      <div class="opening-hero-brand">
+        <img src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="48" style="object-fit:contain"
+          onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='flex';">
+        <div class="opening-hero-logo-fallback" aria-hidden="true">
+          <span>CHASE</span> <span class="accent">ANALYTICS</span>
+        </div>
+        <p class="opening-hero-tagline">MLB Offensive Intelligence Platform</p>
+      </div>
+    </div>
+    <div class="opening-hero-center">
+      <p class="opening-hero-date" id="openingHeroDate">—</p>
+      <div class="opening-hero-chips">
+        <span class="opening-hero-chip opening-hero-chip--slate" id="openingHeroSlate">Loading slate…</span>
+        <span class="opening-hero-chip opening-hero-chip--sync" id="openingHeroSynced">Last synced: syncing…</span>
+      </div>
+    </div>
+    <div class="opening-hero-right">
+      <a class="opening-hero-pill" href="model_report.html">Model Report →</a>
+      <a class="opening-hero-pill" href="chase_analytics_mlb_oem_v7.html#section-research-lab">Research Lab →</a>
+      <a class="opening-hero-pill" href="glossary.html">Glossary →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="opening-hero-divider" aria-hidden="true">
+
 <div id="metricLegendGlobal"></div>
 
 <section class="platform-section" id="section-matchups-hero">
-  <div class="platform-eyebrow">Today's Slate</div>
-  <h2 class="platform-title">Today's Projected Matchups</h2>
-  <div class="matchups-hero-header">
-    <div class="matchups-hero-meta" id="matchupsHeroMeta">Loading…</div>
+  <div class="matchups-slate-controls matchups-hero-header">
     <div class="ca-pill-bar">
       <span class="ca-pill-label">Sort</span>
       <button type="button" class="ca-pill-btn active" data-match-sort="edge">OSI Edge</button>
@@ -3825,11 +3820,14 @@ function syncFreshnessIndicator(ts) {
   if (label) label.textContent = text;
   var d = parseFreshnessDate(ts);
   var stale = false;
+  var displayTs = text;
   if (d) {
     stale = (Date.now() - d.getTime()) / (1000 * 60 * 60) > 24;
-    text = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+    displayTs = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
       d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    if (label) label.textContent = text;
+    if (label) label.textContent = displayTs;
+  } else if (ts && ts !== '—') {
+    displayTs = ts;
   }
   if (dot) {
     dot.classList.toggle('stale', stale);
@@ -3838,8 +3836,11 @@ function syncFreshnessIndicator(ts) {
   if (meta) {
     meta.textContent = stale ? 'Data may be stale (>24h) — re-run pipeline' : 'Fresh pipeline sync';
   }
+  if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
+    PlatformDashboard.setOpeningHeroSync(displayTs === '—' ? 'syncing…' : displayTs);
+  }
   if (window.ChaseNav) {
-    ChaseNav.setLastUpdated(text);
+    ChaseNav.setLastUpdated(displayTs === '—' ? 'syncing…' : displayTs);
     ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
   }
 }
@@ -5764,6 +5765,7 @@ function renderLanding() {
   console.log('[MLBMA] renderLanding');
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   syncDashboardView();
+  if (window.PlatformDashboard && PlatformDashboard.renderOpeningHero) PlatformDashboard.renderOpeningHero();
   registerMetricPools();
   if (window.PlatformDashboard) {
     PlatformDashboard.initRegistry().then(function() {
@@ -6321,6 +6323,6 @@ if (document.readyState === 'loading') {
   <script src="oem_overhaul.js?v=20260522a"></script>
   <script src="mlbma_standings.js?v=20260522a"></script>
   <script src="mlbma_signals.js?v=20260522a"></script>
-  <script src="chase_nav.js?v=20260522a"></script>
+  <script src="chase_nav.js?v=20260522c"></script>
 </body>
 </html>
