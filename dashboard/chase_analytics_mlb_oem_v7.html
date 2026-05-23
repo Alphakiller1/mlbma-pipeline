@@ -1608,6 +1608,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   html.view-opening #section-research-lab,html.view-opening #section-research-lab.active{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
   html.view-opening #modal{display:none!important}
   html.view-research #opening-dashboard{display:none!important}
+  html.view-research #section-matchups-hero{display:none!important}
+  html.view-research #matchupsHeroGrid{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
 <script src="mlbma_config.js?v=20260523"></script>
@@ -2074,31 +2076,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <div id="rlModelLinksRoot"></div>
   </div>
 
-  <!-- Matchup Builder pane (legacy hidden) -->
-        <div class="section-title">Pick two lineups + opposing pitcher hand for offensive snapshot</div>
-        <div class="section-subtitle">Auto-selects the correct platoon split per pitcher handedness · highlights matchup weaknesses</div>
-      </div>
-    </div>
-    <div class="matchup-input-grid">
-      <div>
-        <label class="matchup-select-label">Away Team</label>
-        <select class="matchup-select" id="matchupAway"></select>
-      </div>
-      <div>
-        <label class="matchup-select-label">Home Team</label>
-        <select class="matchup-select" id="matchupHome"></select>
-      </div>
-      <div>
-        <label class="matchup-select-label">Opposing SP Hand</label>
-        <div class="toggle-group" style="margin-top:0;">
-          <button class="toggle-btn active" data-hand="R" onclick="setMatchupHand('R')">RHP</button>
-          <button class="toggle-btn" data-hand="L" onclick="setMatchupHand('L')">LHP</button>
-        </div>
-      </div>
-    </div>
-    <div class="matchup-grid" id="matchupOutput"></div>
-  </div>
-
   <div id="pane-pitching" style="display:none;">
     <div class="section-header">
       <div>
@@ -2108,20 +2085,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       </div>
     </div>
     <div id="rlPitcherLabRoot"></div>
-  </div>
-        <div class="section-title">Signal Explorer</div>
-        <div class="section-subtitle">Convergence signal matrix and actionable profile groupings for today's slate.</div>
-      </div>
-    </div>
-    <div id="signalsTodayPanel"></div>
-    <div id="convergenceGrid" style="margin-top:20px;"></div>
-    <div id="stratsSignals" style="margin-top:24px;"></div>
-  </div>
-        <div class="section-title">Teams grouped by actionable profile</div>
-        <div class="section-subtitle">Elite confirmed · Buy-low · Cooling risk · Volatile power · Process-forward · Weak unsupported · Platoon sensitive</div>
-      </div>
-    </div>
-    <div id="strats"></div>
   </div>
 
   <!-- Reference: OOR / Pitching / PALS / Matchups -->
@@ -2263,9 +2226,10 @@ function applyLiveData() {
     enrichMatchupCards();
 
     var afterLoad = function() {
-      renderLanding();
-      if (_researchLabInitialized || document.body.classList.contains('view-research')) {
+      if (document.body.classList.contains('view-research')) {
         renderResearchLabWhenReady();
+      } else {
+        renderLanding();
       }
       hideLoadingOverlay();
     };
@@ -4122,7 +4086,9 @@ function initCompare() {
 function renderDailyRead() {
   mountDashboardRankings();
   if (window.PlatformDashboard) {
-    PlatformDashboard.initRegistry().then(function() { PlatformDashboard.renderDashboard(); });
+    PlatformDashboard.initRegistry().then(function() {
+      PlatformDashboard.renderDashboard();
+    });
   } else {
     renderMasterTable();
   }
@@ -5568,20 +5534,27 @@ function mountReferenceTables(){
   /* Team OOR / PALS / Pitching Score tables removed from Research Lab — Model Report & profiles only */
 }
 
+function shouldRenderOpeningMatchups() {
+  return document.documentElement.classList.contains('view-opening')
+    && !document.documentElement.classList.contains('view-research')
+    && !document.body.classList.contains('view-research');
+}
+
 function renderLanding() {
   console.log('[MLBMA] renderLanding');
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   syncDashboardView();
-  if (window.PlatformDashboard && PlatformDashboard.renderOpeningHero) PlatformDashboard.renderOpeningHero();
+  if (!shouldRenderOpeningMatchups()) return;
   registerMetricPools();
+  if (window.PlatformDashboard && PlatformDashboard.renderOpeningHero) {
+    PlatformDashboard.renderOpeningHero();
+  }
   if (window.PlatformDashboard) {
     PlatformDashboard.initRegistry().then(function() {
       PlatformDashboard.renderDashboard();
-    });
-  }
-  if (window.MLBMAStandings) {
-    MLBMAStandings.load().then(function() {
-      if (window.PlatformDashboard) PlatformDashboard.renderHeroMatchups();
+      if (shouldRenderOpeningMatchups()) {
+        PlatformDashboard.renderHeroMatchups();
+      }
     });
   }
 }
@@ -5670,6 +5643,8 @@ function syncDashboardView() {
   if (hash === 'section-research-lab') {
     body.classList.add('view-research', 'research-lab-active');
     root.classList.add('view-research');
+    var heroGrid = document.getElementById('matchupsHeroGrid');
+    if (heroGrid) heroGrid.innerHTML = '';
     var rl = document.getElementById('section-research-lab');
     if (rl) {
       rl.setAttribute('aria-hidden', 'false');
@@ -5734,8 +5709,11 @@ function renderResearchLab() {
 }
 
 function renderAll(){
-  renderLanding();
-  if (_researchLabInitialized && document.body.classList.contains('view-research')) renderResearchLab();
+  if (document.body.classList.contains('view-research')) {
+    renderResearchLab();
+  } else {
+    renderLanding();
+  }
 }
 
 /* ============================================================
@@ -5901,9 +5879,13 @@ function runPostLoadUI() {
   console.log('[MLBMA] runPostLoadUI');
   try {
     updateBrandPill();
-    populateMatchupSelectors();
-    renderLanding();
     setupResearchLazyInit();
+    if (document.body.classList.contains('view-research')) {
+      renderResearchLabWhenReady();
+    } else {
+      populateMatchupSelectors();
+      renderLanding();
+    }
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
     showDataError('Dashboard render error: ' + (err && err.message ? err.message : String(err)));
