@@ -352,8 +352,11 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
   }
 
   function loadData() {
+    console.log('[HUB] loading team data');
     if (!S || !S.fetchSheetTab || !S.scoreRowFromSheet) {
-      document.getElementById('hubTableBody').innerHTML = '<tr><td colspan="10">Shared data module unavailable.</td></tr>';
+      console.warn('[HUB] MLBMASharedMatchup.fetchSheetTab or scoreRowFromSheet unavailable', S);
+      var body = document.getElementById('hubTableBody');
+      if (body) body.innerHTML = '<tr><td colspan="10">Shared data module unavailable.</td></tr>';
       return Promise.resolve();
     }
     return Promise.all([
@@ -363,6 +366,9 @@ tr.hub-expand td{background:var(--bg-3);font-size:12px;color:var(--text-2)}
       HUB.scR = (res[0] || []).map(S.scoreRowFromSheet).filter(Boolean);
       HUB.scL = (res[1] || []).map(S.scoreRowFromSheet).filter(Boolean);
       HUB.rows = mergeBoth(HUB.scR, HUB.scL);
+      console.log('[HUB] vs_RHP rows:', HUB.scR.length);
+      console.log('[HUB] vs_LHP rows:', HUB.scL.length);
+      console.log('[HUB] hubTableBody:', document.getElementById('hubTableBody'));
       window.SCO_YTD_B = HUB.rows;
       window.SCO_YTD_R = HUB.scR;
       window.SCO_YTD_L = HUB.scL;

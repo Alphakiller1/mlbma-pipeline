@@ -324,14 +324,19 @@
   }
 
   function renderHeroMatchups() {
+    var grid = document.getElementById('matchupsHeroGrid');
+    if (!grid) {
+      console.warn('[PD] matchupsHeroGrid not found');
+      return;
+    }
     if (document.documentElement.classList.contains('view-research')) return;
     var opening = document.getElementById('opening-dashboard');
     if (!opening || opening.style.display === 'none') return;
     var heroSection = document.getElementById('section-matchups-hero');
     if (!heroSection || heroSection.closest('#opening-dashboard') !== opening) return;
+    if (grid.closest('#opening-dashboard') !== opening) return;
+    grid.innerHTML = '';
     renderOpeningHero();
-    var grid = document.getElementById('matchupsHeroGrid');
-    if (!grid || grid.closest('#opening-dashboard') !== opening) return;
     var games = LIVE_DATA.matchups || [];
     if (!games.length) {
       grid.innerHTML = '<div class="empty-msg">No matchups loaded for today.</div>';

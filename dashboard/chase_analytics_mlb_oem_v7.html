@@ -426,10 +426,22 @@ tr.rank-row-expanded { background: rgba(192, 132, 252, 0.06); }
 .modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
-  display: none; align-items: center; justify-content: center;
+  display: none !important; align-items: center; justify-content: center;
   z-index: 1000; padding: 20px;
+  visibility: hidden; pointer-events: none;
 }
-.modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+.modal-overlay.show {
+  display: flex !important; animation: fadeIn 0.2s ease;
+  visibility: visible; pointer-events: auto;
+}
+.modal-overlay:not(.show),
+.modal-overlay:not(.show) * {
+  visibility: hidden;
+}
+.modal-overlay.show .modal,
+.modal-overlay.show .modal * {
+  visibility: visible;
+}
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal {
   background: var(--bg-2); border: 1px solid var(--purple-3);
@@ -2122,10 +2134,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
         <button class="btn" data-metric="reg" onclick="setModalMetric('reg')">Regression Gap</button>
         <button class="btn" data-metric="pitchScore" onclick="setModalMetric('pitchScore')">Pitching Score</button>
       </div>
-      <div id="modalContent"><script>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
 /* ============================================================
    GOOGLE SHEETS — public CSV export (no API key)
    ============================================================ */
+var _landingRendered = false;
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
@@ -2229,6 +2247,7 @@ function applyLiveData() {
       if (document.body.classList.contains('view-research')) {
         renderResearchLabWhenReady();
       } else {
+        _landingRendered = false;
         renderLanding();
       }
       hideLoadingOverlay();
@@ -5541,6 +5560,8 @@ function shouldRenderOpeningMatchups() {
 }
 
 function renderLanding() {
+  if (_landingRendered) return;
+  _landingRendered = true;
   console.log('[MLBMA] renderLanding');
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
   syncDashboardView();
@@ -5712,6 +5733,7 @@ function renderAll(){
   if (document.body.classList.contains('view-research')) {
     renderResearchLab();
   } else {
+    _landingRendered = false;
     renderLanding();
   }
 }
@@ -5884,7 +5906,6 @@ function runPostLoadUI() {
       renderResearchLabWhenReady();
     } else {
       populateMatchupSelectors();
-      renderLanding();
     }
   } catch (err) {
     console.error('[MLBMA] post-load render error:', err);
