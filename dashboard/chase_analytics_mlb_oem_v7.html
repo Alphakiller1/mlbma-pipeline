@@ -1325,20 +1325,6 @@ tr.compare-selected td:first-child::before { content: '✓'; color: var(--purple
 /* Status map */
 .status-map-wrap { position: relative; }
 .status-map-wrap .chart-wrap { min-height: 480px; }
-.market-map-section { margin-top: 8px; }
-.market-map-toggle-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-.market-map-toggle {
-  background: var(--bg-3); border: 1px solid var(--purple-3); color: var(--text);
-  padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
-}
-.market-map-toggle:hover { border-color: var(--purple); color: #fff; }
-.market-map-panel { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-.market-map-panel.is-collapsed { display: none; }
-.mlbma-quad-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; font-size: 11px; color: var(--text-2); }
-.mlbma-quad-leg-item { display: inline-flex; align-items: center; gap: 6px; }
-.mlbma-quad-leg-item i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.mlbma-quad-chart-wrap { position: relative; min-height: 400px; }
-.mlbma-quad-tip { position: absolute; z-index: 20; pointer-events: none; min-width: 160px; }
 .mlbma-sparkline-row { display: flex; align-items: center; gap: 8px; }
 .mlbma-spark-label { font-size: 10px; font-weight: 700; color: var(--text-2); min-width: 32px; letter-spacing: 0.04em; }
 .mlbma-spark-note { font-size: 10px; color: var(--text-3); font-style: italic; }
@@ -1808,6 +1794,185 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   .ca-btn { width: 100%; justify-content: center; }
 }
 
+/* ====== MARKET MAP ====== */
+.ca-market {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 50% at 80% 10%, rgba(124,58,237,0.10), transparent 60%),
+    linear-gradient(180deg, #050509 0%, #0a0612 100%);
+  color: #f5f3ff;
+  font-family: "DM Sans", system-ui, sans-serif;
+  padding: clamp(64px, 8vw, 120px) clamp(20px, 5vw, 64px);
+  border-bottom: 1px solid rgba(124,58,237,0.10);
+}
+
+.ca-market__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ca-market__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.ca-market__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7C3AED;
+  margin-bottom: 8px;
+}
+
+.ca-market__title {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ca-market__toggle-group {
+  display: inline-flex;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(124,58,237,0.18);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.ca-toggle {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: rgba(245,243,255,0.55);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ca-toggle:hover {
+  color: rgba(245,243,255,0.85);
+}
+
+.ca-toggle--active {
+  background: linear-gradient(135deg, #7C3AED, #5b21b6);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+}
+
+.ca-market__card {
+  position: relative;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(124,58,237,0.08), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(124,58,237,0.18);
+  border-radius: 20px;
+  padding: 8px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 20px 60px rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px);
+}
+
+.ca-market__chart {
+  position: relative;
+  min-height: 480px;
+  background: linear-gradient(180deg, rgba(10,6,18,0.7) 0%, #050509 100%);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ca-market__chart .mlbma-quad-legend { display: none; }
+.ca-market__chart .mlbma-quad-chart-wrap { min-height: 460px; }
+.ca-market__chart .mlbma-quad-dot {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+  cursor: pointer;
+}
+.ca-market__chart .mlbma-quad-tip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  min-width: 160px;
+}
+
+.ca-market__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.ca-legend__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(245,243,255,0.75);
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.ca-legend__pill:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.14);
+}
+
+.ca-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.opening-layer .ca-market {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+@media (max-width: 640px) {
+  .ca-market__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .ca-market__toggle-group {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .ca-toggle {
+    flex: 1;
+    text-align: center;
+  }
+  .ca-market__chart {
+    min-height: 320px;
+  }
+}
+
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260524">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260523d">
@@ -2026,15 +2191,48 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
 </section>
 
-<section class="platform-section" id="section-opening-market-map">
-  <header class="matchups-section-head">
-    <div class="platform-eyebrow">Offensive Market</div>
-    <h2 class="platform-title">Market Map</h2>
-    <p class="platform-subtitle">RCV Score vs xwOBA gap — identifies buy-low, elite, cooling, and weak offensive profiles</p>
-  </header>
-  <div class="ca-market-map-card">
-    <div id="homeMarketQuadrant"></div>
-    <div id="homeMarketQuadrantTip" class="chart-tip mlbma-quad-tip"></div>
+<section class="ca-market" id="section-opening-market-map">
+  <div class="ca-market__inner">
+
+    <div class="ca-market__header">
+      <div class="ca-market__title-wrap">
+        <div class="ca-market__eyebrow">VISUAL MATRIX</div>
+        <h2 class="ca-market__title">Market Map</h2>
+      </div>
+
+      <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
+        <button type="button" id="marketToggleRHP" class="ca-toggle ca-toggle--active" aria-pressed="true">
+          RHP
+        </button>
+        <button type="button" id="marketToggleLHP" class="ca-toggle" aria-pressed="false">
+          LHP
+        </button>
+      </div>
+    </div>
+
+    <div class="ca-market__card">
+      <div class="ca-market__chart" id="landingMarketQuadrant"></div>
+    </div>
+
+    <div class="ca-market__legend">
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot" style="background:#22c55e;"></span>
+        <span class="ca-legend__label">Elite &amp; Undervalued</span>
+      </div>
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot" style="background:#2DD4BF;"></span>
+        <span class="ca-legend__label">Buy-Low Offense</span>
+      </div>
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot" style="background:#F59E0B;"></span>
+        <span class="ca-legend__label">Strong But Cooling</span>
+      </div>
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot" style="background:#ef4444;"></span>
+        <span class="ca-legend__label">Weak &amp; Concerning</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -4949,15 +5147,64 @@ function resetSort(){
   renderMasterTable();
 }
 
+function renderLandingMarketQuadrant(split) {
+  var el = document.getElementById('landingMarketQuadrant');
+  if (!el) return;
+  var rows = [];
+  if (window.MLBMACharts && MLBMACharts.getQuadrantRows) {
+    rows = MLBMACharts.getQuadrantRows(split === 'lhp' ? 'lhp' : 'rhp');
+  } else if (split === 'lhp' && LIVE_DATA.scYtdL) {
+    rows = LIVE_DATA.scYtdL;
+  } else if (LIVE_DATA.scYtdR) {
+    rows = LIVE_DATA.scYtdR;
+  }
+  var renderFn = (window.MLBMACharts && MLBMACharts.renderMarketQuadrant) || (typeof renderMarketQuadrant === 'function' ? renderMarketQuadrant : null);
+  if (renderFn) {
+    renderFn('landingMarketQuadrant', rows, { tipId: 'landingMarketQuadrantTip' });
+  }
+}
+
+function initLandingMarketMapToggle() {
+  var rhp = document.getElementById('marketToggleRHP');
+  var lhp = document.getElementById('marketToggleLHP');
+  if (!rhp || !lhp || rhp.dataset.bound) return;
+  rhp.dataset.bound = '1';
+  lhp.dataset.bound = '1';
+  rhp.addEventListener('click', function() {
+    rhp.classList.add('ca-toggle--active');
+    rhp.setAttribute('aria-pressed', 'true');
+    lhp.classList.remove('ca-toggle--active');
+    lhp.setAttribute('aria-pressed', 'false');
+    renderLandingMarketQuadrant('rhp');
+  });
+  lhp.addEventListener('click', function() {
+    lhp.classList.add('ca-toggle--active');
+    lhp.setAttribute('aria-pressed', 'true');
+    rhp.classList.remove('ca-toggle--active');
+    rhp.setAttribute('aria-pressed', 'false');
+    renderLandingMarketQuadrant('lhp');
+  });
+}
+
+function scheduleLandingMarketMapFallback() {
+  setTimeout(function() {
+    var el = document.getElementById('landingMarketQuadrant');
+    if (!el) return;
+    var hasChart = el.querySelector('svg') || el.querySelector('.mlbma-quad-wrap');
+    if (!hasChart && !el.textContent.trim()) {
+      el.innerHTML = '<p class="ca-helper" style="padding:48px;text-align:center;color:#9CA3AF;">Loading market data…</p>';
+    }
+  }, 3000);
+}
+
 function renderMarketMapCharts() {
   if (!window.MLBMACharts) return;
   if (window.ResearchLab && ResearchLab.syncResearchGlobalsFromLiveData) {
     ResearchLab.syncResearchGlobalsFromLiveData();
   }
-  if (document.getElementById('homeMarketQuadrant') && MLBMACharts.renderMarketMapWithToggle) {
-    MLBMACharts.renderMarketMapWithToggle('homeMarketQuadrant', function(split) {
-      return MLBMACharts.getQuadrantRows(split === 'lhp' ? 'lhp' : 'rhp');
-    }, { tipId: 'homeMarketQuadrantTip', defaultSplit: 'rhp' });
+  if (document.getElementById('landingMarketQuadrant')) {
+    var lhpActive = document.getElementById('marketToggleLHP') && document.getElementById('marketToggleLHP').classList.contains('ca-toggle--active');
+    renderLandingMarketQuadrant(lhpActive ? 'lhp' : 'rhp');
   }
   var rlRows = MLBMACharts.getQuadrantRows('rhp');
   if (document.getElementById('rlMarketQuadrant')) {
@@ -5701,13 +5948,9 @@ function renderHomePage() {
   renderHomeResearchCards();
   whenLiveDataReady(syncHeroStats, 'hero stats');
   whenLiveDataReady(function() {
-    if (window.MLBMACharts && MLBMACharts.renderMarketMapWithToggle) {
-      MLBMACharts.renderMarketMapWithToggle('homeMarketQuadrant', function(split) {
-        return MLBMACharts.getQuadrantRows(split === 'lhp' ? 'lhp' : 'rhp');
-      }, { tipId: 'homeMarketQuadrantTip', defaultSplit: 'rhp' });
-    } else if (typeof renderMarketMapCharts === 'function') {
-      renderMarketMapCharts();
-    }
+    renderLandingMarketQuadrant(
+      document.getElementById('marketToggleLHP') && document.getElementById('marketToggleLHP').classList.contains('ca-toggle--active') ? 'lhp' : 'rhp'
+    );
   }, 'home market map');
   whenLiveDataReady(function() {
     if (window.ResearchLab && ResearchLab.renderTrendSummary) ResearchLab.renderTrendSummary();
@@ -6175,6 +6418,8 @@ function init(){
     if (typeof syncDashboardView === 'function') syncDashboardView();
     bindDashRankingsControls();
     initMarketMapToggle();
+    initLandingMarketMapToggle();
+    scheduleLandingMarketMapFallback();
     document.querySelectorAll('#splitToggle .toggle-btn').forEach(function(x){
       x.classList.toggle('active', x.getAttribute('data-split')===STATE.split);
     });
@@ -6212,7 +6457,11 @@ try {
 var resizeTimer;
 window.addEventListener('resize', function(){
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(function(){renderSplitBars(); renderTrendHeatmap();}, 150);
+  resizeTimer = setTimeout(function(){
+    renderSplitBars();
+    renderTrendHeatmap();
+    if (typeof renderMarketMapCharts === 'function') renderMarketMapCharts();
+  }, 150);
 });
 
 function hideChartPlaceholder() {
