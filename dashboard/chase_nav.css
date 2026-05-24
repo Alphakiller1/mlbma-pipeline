@@ -34,13 +34,14 @@
 .ca-logo-nav,
 .chase-nav-logo,
 .chase-nav-logo--dark {
-  height: 36px;
-  max-height: 36px;
+  height: 40px;
+  max-height: 40px;
+  min-width: 160px;
   width: auto;
-  max-width: 240px;
+  max-width: 280px;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.5));
+  filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.5));
 }
 
 .chase-nav-logo--compact {

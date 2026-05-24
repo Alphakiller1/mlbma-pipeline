@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Chase Analytics · Team Rankings</title>
+<title>Chase Analytics Â· Team Rankings</title>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
@@ -109,11 +109,11 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 </style>
 </head>
 <body>
-<div class="loading" id="hubLoading"><span class="subtitle">Loading lineup offense data…</span></div>
-<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<div class="loading" id="hubLoading"><span class="subtitle">Loading lineup offense dataâ€¦</span></div>
+<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -141,7 +141,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
     </div>
     <div class="chase-status">
-      <div class="chase-timestamp"><span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span><span id="lastUpdated">syncing…</span></div>
+      <div class="chase-timestamp"><span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span><span id="lastUpdated">syncingâ€¦</span></div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
@@ -153,7 +153,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       <img class="chase-nav-logo chase-nav-logo--compact" src="assets/chase-icon-filled.png" alt="" width="28" height="28">
       <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
-    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">×</button>
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">Ã—</button>
   </div>
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
@@ -166,7 +166,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 </div>
 
 <main class="container">
-  <p class="brand-tag">Chase Analytics · Lineup Research</p>
+  <p class="brand-tag">Chase Analytics Â· Lineup Research</p>
   <h1>Team Rankings</h1>
   <p class="subtitle">Global 30-team offensive metrics for lineup research. Filter by metric, handedness, window, and location. Click a row to expand; double-click or use Profile link for team profile.</p>
 
@@ -196,10 +196,10 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
           <label for="hubAdvCols">Advanced columns</label>
         </div>
       </div>
-      <div class="hub-confirm" id="hubConfirm">Showing: OSI · Both · YTD · All</div>
+      <div class="hub-confirm" id="hubConfirm">Showing: OSI Â· Both Â· YTD Â· All</div>
     </div>
-    <div id="hubWindowBanner" class="hub-banner hub-banner--window">Window data requires full pipeline run — showing YTD baseline for unavailable metrics.</div>
-    <div id="hubLocationBanner" class="hub-banner hub-banner--location">Home/Away splits require batter splits pipeline step — showing YTD baseline.</div>
+    <div id="hubWindowBanner" class="hub-banner hub-banner--window">Window data requires full pipeline run â€” showing YTD baseline for unavailable metrics.</div>
+      <div id="hubLocationBanner" class="hub-banner hub-banner--location">Home/Away splits require batter splits pipeline step â€” showing full season data</div>
   </div>
 
   <div class="table-wrap">
@@ -244,16 +244,16 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   var TABS = window.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
 
   var METRICS = [
-    { id: 'osi', label: 'OSI', tip: 'Offensive Strength Index — composite lineup score' },
-    { id: 'abq', label: 'ABQ', tip: 'At-Bat Quality — discipline + contact + pressure' },
-    { id: 'rcv', label: 'RCV', tip: 'Run Creation Value — power and run production' },
-    { id: 'obr', label: 'OBR', tip: 'On-Base Runtime — reach base and advance' },
+    { id: 'osi', label: 'OSI', tip: 'Offensive Strength Index â€” composite lineup score' },
+    { id: 'abq', label: 'ABQ', tip: 'At-Bat Quality â€” discipline + contact + pressure' },
+    { id: 'rcv', label: 'RCV', tip: 'Run Creation Value â€” power and run production' },
+    { id: 'obr', label: 'OBR', tip: 'On-Base Runtime â€” reach base and advance' },
     { id: 'projOSI', label: 'ProjOSI', tip: 'Projected OSI with regression adjustment' },
-    { id: 'ppGap', label: 'PP-Gap', tip: 'Process minus production gap (ABQ − RCV)' }
+    { id: 'ppGap', label: 'PP-Gap', tip: 'Process minus production gap (ABQ âˆ’ RCV)' }
   ];
 
   var HUB = {
-    scR: [], scL: [], scBoth: [], teamProfiles: {},
+    scR: [], scL: [], scBoth: [], splitHome: [], splitAway: [], teamProfiles: {},
     windowAvail: { L30: false, L14: false, L7: false },
     locationAvail: { home: false, away: false },
     metric: 'osi', hand: 'both', window: 'YTD', location: 'all',
@@ -271,7 +271,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   }
 
   function fmt(v, d) {
-    if (v == null || isNaN(v)) return '—';
+    if (v == null || isNaN(v)) return 'â€”';
     return Number(v).toFixed(d == null ? 1 : d);
   }
 
@@ -316,6 +316,55 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
     });
   }
 
+  function scaleRowToLocation(base, locOsi) {
+    if (locOsi == null || base.osi == null || isNaN(base.osi) || base.osi === 0) {
+      return Object.assign({}, base, { osi: locOsi != null ? locOsi : base.osi });
+    }
+    var ratio = locOsi / base.osi;
+    return Object.assign({}, base, {
+      abq: base.abq != null ? base.abq * ratio : base.abq,
+      rcv: base.rcv != null ? base.rcv * ratio : base.rcv,
+      obr: base.obr != null ? base.obr * ratio : base.obr,
+      osi: locOsi,
+      projOSI: base.projOSI != null ? base.projOSI * ratio : locOsi,
+      ppGap: base.ppGap != null ? base.ppGap : (base.abq != null && base.rcv != null ? base.abq - base.rcv : null)
+    });
+  }
+
+  function buildLocationSplitRows(splitRows, scoreFn, locOsiKey) {
+    var scored = [];
+    (splitRows || []).forEach(function(row) {
+      var s = scoreFn ? scoreFn(row) : null;
+      if (s) scored.push(s);
+    });
+    if (scored.length >= 10) return scored;
+    var base = HUB.scBoth && HUB.scBoth.length ? HUB.scBoth : HUB.scR;
+    if (!base || !base.length) return [];
+    return base.map(function(r) {
+      var prof = HUB.teamProfiles[r.t] || {};
+      var locOsi = prof[locOsiKey];
+      if (locOsi == null) return null;
+      return scaleRowToLocation(r, locOsi);
+    }).filter(Boolean);
+  }
+
+  function overlayLocationRows(baseRows, locRows) {
+    var locMap = {};
+    (locRows || []).forEach(function(r) { locMap[r.t] = r; });
+    return (baseRows || []).map(function(r) {
+      var loc = locMap[r.t];
+      if (!loc) return Object.assign({}, r);
+      return Object.assign({}, r, {
+        abq: loc.abq != null ? loc.abq : r.abq,
+        rcv: loc.rcv != null ? loc.rcv : r.rcv,
+        obr: loc.obr != null ? loc.obr : r.obr,
+        osi: loc.osi != null ? loc.osi : r.osi,
+        projOSI: loc.projOSI != null ? loc.projOSI : r.projOSI,
+        ppGap: loc.ppGap != null ? loc.ppGap : r.ppGap
+      });
+    });
+  }
+
   function parseTeamProfiles(rows) {
     var map = {};
     (rows || []).forEach(function(row) {
@@ -333,7 +382,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   }
 
   function tierInfo(osi) {
-    if (osi == null || isNaN(osi)) return { label: '—', cls: 'tier-incon' };
+    if (osi == null || isNaN(osi)) return { label: 'â€”', cls: 'tier-incon' };
     if (osi >= 85) return { label: 'Elite', cls: 'tier-elite' };
     if (osi >= 75) return { label: 'High-Level', cls: 'tier-high' };
     if (osi >= 65) return { label: 'Dangerous', cls: 'tier-danger' };
@@ -378,12 +427,12 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
     var pp = d.ppGap != null ? d.ppGap : 0;
     if (osi >= 75 && pp < -5) return 'High-level output but cooling trend';
     if (osi >= 75 && pp > 5) return 'Elite process and production';
-    if (osi < 50 && pp > 5) return 'Weak production but process improving — buy-low';
+    if (osi < 50 && pp > 5) return 'Weak production but process improving â€” buy-low';
     if (osi < 50 && pp < -5) return 'Weak across the board';
     if (d.trend === 'Fake Hot') return 'Hot streak unsupported by process';
     if (Math.abs(d.edge || 0) > 12) {
       var dir = (d.edge || 0) > 0 ? 'LHP' : 'RHP';
-      return 'Strong platoon split — ' + dir + ' dependent';
+      return 'Strong platoon split â€” ' + dir + ' dependent';
     }
     return ti.label + ' offense, ' + sus + ' sustainability';
   }
@@ -413,8 +462,6 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
     d.vel = (d.l7OSI != null && d.l14OSI != null) ? d.l7OSI - d.l14OSI : null;
     d.homeOsi = prof.home_osi;
     d.awayOsi = prof.away_osi;
-    if (HUB.location === 'home' && prof.home_osi != null) d.osi = prof.home_osi;
-    else if (HUB.location === 'away' && prof.away_osi != null) d.osi = prof.away_osi;
     if (HUB.window !== 'YTD') {
       var wOsi = windowOsi(prof, HUB.window);
       if (wOsi != null) d.osi = wOsi;
@@ -438,6 +485,11 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
     if (HUB.hand === 'r') raw = HUB.scR;
     else if (HUB.hand === 'l') raw = HUB.scL;
     else raw = HUB.scBoth;
+    if (HUB.location === 'home' && HUB.locationAvail.home && HUB.splitHome.length) {
+      raw = overlayLocationRows(raw, HUB.splitHome);
+    } else if (HUB.location === 'away' && HUB.locationAvail.away && HUB.splitAway.length) {
+      raw = overlayLocationRows(raw, HUB.splitAway);
+    }
     var rows = raw.map(function(r) { return enrichRow(Object.assign({}, r)); });
     if (A && A.registerLeaguePool) {
       ['osi', 'abq', 'rcv', 'obr', 'projOSI', 'ppGap'].forEach(function(k) {
@@ -477,12 +529,12 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
     var m = METRICS.find(function(x) { return x.id === HUB.metric; });
     var handLbl = { both: 'Both', r: 'vs RHP', l: 'vs LHP' }[HUB.hand] || HUB.hand;
     var locLbl = { all: 'All', home: 'Home', away: 'Away' }[HUB.location] || HUB.location;
-    return 'Showing: <strong>' + esc((m && m.label) || HUB.metric) + '</strong> · <strong>' + esc(handLbl)
-      + '</strong> · <strong>' + esc(HUB.window) + '</strong> · <strong>' + esc(locLbl) + '</strong>';
+    return 'Showing: <strong>' + esc((m && m.label) || HUB.metric) + '</strong> Â· <strong>' + esc(handLbl)
+      + '</strong> Â· <strong>' + esc(HUB.window) + '</strong> Â· <strong>' + esc(locLbl) + '</strong>';
   }
 
   function thInfo(tip) {
-    return ' <span class="th-info" title="' + esc(tip) + '">ⓘ</span>';
+    return ' <span class="th-info" title="' + esc(tip) + '">â“˜</span>';
   }
 
   function renderControls() {
@@ -639,7 +691,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
     var body = document.getElementById('hubTableBody');
     if (!body) return;
     if (!HUB.loaded) {
-      body.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:24px;color:var(--text-2)">Loading…</td></tr>';
+      body.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:24px;color:var(--text-2)">Loadingâ€¦</td></tr>';
       return;
     }
     var rows = sortedRows();
@@ -651,7 +703,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       var ppCtx = m === 'ppGap' ? 'ppGap' : m;
       var expanded = HUB.expandedTeam === d.t;
       html += '<tr class="hub-row' + (expanded ? ' expanded' : '') + '" data-team="' + esc(d.t) + '">'
-        + '<td class="hub-expand-cell">' + (expanded ? '▼' : '▶') + ' ' + (i + 1) + '</td>'
+        + '<td class="hub-expand-cell">' + (expanded ? 'â–¼' : 'â–¶') + ' ' + (i + 1) + '</td>'
         + '<td><div class="hub-team-cell">' + logo + '<div><strong>' + esc(d.t) + '</strong>'
         + '<a class="hub-profile-link" href="team_profile.html?team=' + encodeURIComponent(d.t) + '" onclick="event.stopPropagation()">Profile</a>'
         + '<span class="hub-team-pa">Lineup offense</span></div></div></td>'
@@ -686,7 +738,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 
     var MS = window.MatchupShared || window.MLBMASharedMatchup;
     if (!MS || !MS.fetchSheetTab || !TABS) {
-      console.warn('[HUB] shared fetch unavailable — check script load order');
+      console.warn('[HUB] shared fetch unavailable â€” check script load order');
       var body = document.getElementById('hubTableBody');
       if (body) body.innerHTML = '<tr><td colspan="14">Shared data module unavailable. Ensure mlbma_config.js and matchup_shared.js load before hubLoadData().</td></tr>';
       return Promise.resolve();
@@ -694,7 +746,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 
     var scoreFn = MS.scoreRowFromSheet || window.scoreRowFromSheet;
     if (typeof scoreFn !== 'function') {
-      console.warn('[HUB] scoreRowFromSheet missing — will use raw rows');
+      console.warn('[HUB] scoreRowFromSheet missing â€” will use raw rows');
     }
 
     var sid = MLBMA_CONFIG.SHEET_ID;
@@ -722,16 +774,17 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       HUB.scL = scoreFn ? (res[1] || []).map(scoreFn).filter(Boolean) : (res[1] || []).slice();
       console.log('[HUB] scored rows LHP:', HUB.scL.length);
       HUB.teamProfiles = parseTeamProfiles(res[2] || []);
-      HUB.locationAvail.home = Object.keys(HUB.teamProfiles).some(function(t) { return HUB.teamProfiles[t].home_osi != null; })
-        || (res[3] && res[3].length > 10);
-      HUB.locationAvail.away = Object.keys(HUB.teamProfiles).some(function(t) { return HUB.teamProfiles[t].away_osi != null; })
-        || (res[4] && res[4].length > 10);
+      HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
+      HUB.splitHome = buildLocationSplitRows(res[3] || [], scoreFn, 'home_osi');
+      HUB.splitAway = buildLocationSplitRows(res[4] || [], scoreFn, 'away_osi');
+      console.log('[HUB] splitHome teams:', HUB.splitHome.length, 'splitAway teams:', HUB.splitAway.length);
+      HUB.locationAvail.home = HUB.splitHome.length >= 10;
+      HUB.locationAvail.away = HUB.splitAway.length >= 10;
       ['L30', 'L14', 'L7'].forEach(function(w) {
         var field = w === 'L30' ? 'osi_l30' : w === 'L14' ? 'osi_l14' : 'osi_l7';
         var count = Object.keys(HUB.teamProfiles).filter(function(t) { return HUB.teamProfiles[t][field] != null; }).length;
         HUB.windowAvail[w] = count >= 20;
       });
-      HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
       window.LIVE_DATA = window.LIVE_DATA || {};
       window.LIVE_DATA.scYtdR = HUB.scR;
       window.LIVE_DATA.scYtdL = HUB.scL;
@@ -742,7 +795,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
       var hubRows = sortedRows();
       console.log('[HUB] rendering', hubRows.length, 'rows into hubTableBody');
       console.log('[HUB] hubTableBody element:', document.getElementById('hubTableBody'));
-      console.log('[HUB] fetched rows — RHP:', HUB.scR.length, 'LHP:', HUB.scL.length, 'Both:', HUB.scBoth.length);
+      console.log('[HUB] fetched rows â€” RHP:', HUB.scR.length, 'LHP:', HUB.scL.length, 'Both:', HUB.scBoth.length);
       updateBanners();
       renderTable();
       var ts = document.getElementById('lastUpdated');

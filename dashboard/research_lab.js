@@ -1,5 +1,5 @@
-/**
- * Research Lab UIX — compare in-pane, leaderboards, pitching vs lineup, model links.
+﻿/**
+ * Research Lab UIX â€” compare in-pane, leaderboards, pitching vs lineup, model links.
  */
 (function(global) {
   'use strict';
@@ -278,6 +278,9 @@
         console.log('[TRENDS] teamProfiles first row:', JSON.stringify(LIVE_DATA.teamProfiles[0]));
       }
       LIVE_DATA.teamProfilesByTeam = parseTeamProfilesMap(rows);
+      if (typeof global.detectWindowMetricsFromProfiles === 'function') {
+        LIVE_DATA.windowMetricsAvailable = global.detectWindowMetricsFromProfiles(LIVE_DATA.teamProfilesByTeam);
+      }
       syncResearchGlobalsFromLiveData();
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
       if (typeof global.ResearchLab !== 'undefined' && ResearchLab.renderTrendSummary) ResearchLab.renderTrendSummary();
@@ -311,7 +314,7 @@
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Four focused tools — trends, splits, compare, and pitcher research.</p>'
+      + '<p class="rl-workspace-subtitle">Four focused tools â€” trends, splits, compare, and pitcher research.</p>'
       + '</div>';
   }
 
@@ -329,7 +332,6 @@
     } else if (tab === 'splits') {
       if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
       renderSplitsTable();
-      renderSplitSummary();
     }
     mountGlobalControlBar();
   }
@@ -344,8 +346,8 @@
     var tabLabel = { trends: 'Trends', splits: 'Splits', compare: 'Compare', pitching: 'Pitcher Lab' }[tab] || tab;
     var splitLabel = { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away' }[st.split] || 'Both';
     el.innerHTML = '<div class="rl-global-bar-inner">'
-      + '<span class="rl-global-bar-title">Research Lab · <strong>' + esc(tabLabel) + '</strong> · '
-      + esc(splitLabel) + ' · ' + esc(st.time) + '</span>'
+      + '<span class="rl-global-bar-title">Research Lab Â· <strong>' + esc(tabLabel) + '</strong> Â· '
+      + esc(splitLabel) + ' Â· ' + esc(st.time) + '</span>'
       + '<div class="rl-global-bar-controls">'
       + '<span class="rl-global-bar-label">Split</span>'
       + ['b', 'r', 'l', 'home', 'away'].map(function(sp) {
@@ -384,7 +386,7 @@
       }).join('')
       + '<span class="ca-pill-label">Compare</span>'
       + ['L30', 'L14', 'L7'].map(function(w) {
-        return '<button type="button" class="ca-pill-btn' + (RL.rlWindowCmp === w ? ' active' : '') + '" data-trend-cmp="' + w + '">YTD→' + w + '</button>';
+        return '<button type="button" class="ca-pill-btn' + (RL.rlWindowCmp === w ? ' active' : '') + '" data-trend-cmp="' + w + '">YTDâ†’' + w + '</button>';
       }).join('')
       + '</div>';
     mount.querySelectorAll('[data-trend-metric]').forEach(function(btn) {
@@ -421,12 +423,12 @@
     var stable = rows.filter(function(d) { return d.trend === 'Stable Elite' || d.trend === 'Stable'; }).slice(0, 3);
     function card(title, items, fmtFn) {
       return '<div class="rl-summary-card"><div class="rl-summary-label">' + esc(title) + '</div><div class="rl-summary-val">'
-        + (items.length ? items.map(fmtFn).join('<br>') : '—') + '</div></div>';
+        + (items.length ? items.map(fmtFn).join('<br>') : 'â€”') + '</div></div>';
     }
     mount.innerHTML = card('Biggest risers', risers, function(d) { return d.t + ' +' + (d[cmpKey] || 0).toFixed(1); })
       + card('Biggest fallers', fallers, function(d) { return d.t + ' ' + (d[cmpKey] || 0).toFixed(1); })
-      + card('Most volatile', volatile, function(d) { return d.t + ' L7 Δ ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
-      + card('Most stable', stable, function(d) { return d.t + ' · ' + (d.trend || 'Stable'); });
+      + card('Most volatile', volatile, function(d) { return d.t + ' L7 Î” ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
+      + card('Most stable', stable, function(d) { return d.t + ' Â· ' + (d.trend || 'Stable'); });
   }
 
   function mountSplitsEntityControls() {
@@ -484,7 +486,7 @@
             + '<td style="color:' + mColor(row.r, false, metric) + '">' + fmt(row.r) + '</td>'
             + '<td style="color:' + mColor(row.l, false, metric) + '">' + fmt(row.l) + '</td>'
             + '<td style="color:' + mColor(row.edge, false, 'ppGap') + ';font-weight:700">' + fmt(row.edge) + '</td>'
-            + '<td title="requires pipeline run">—</td><td title="requires pipeline run">—</td><td title="requires pipeline run">—</td></tr>';
+            + '<td title="requires pipeline run">â€”</td><td title="requires pipeline run">â€”</td><td title="requires pipeline run">â€”</td></tr>';
         }).join('') + '</tbody></table></div>';
       return;
     }
@@ -506,7 +508,7 @@
               + '<td style="color:' + mColor(lhh, true) + '">' + fmt(lhh) + '</td>'
               + '<td style="color:' + mColor(rhh, true) + '">' + fmt(rhh) + '</td>'
               + '<td style="color:' + mColor(edge, false, 'ppGap') + '">' + fmt(edge) + '</td>'
-              + '<td title="requires pipeline run">—</td><td title="requires pipeline run">—</td></tr>';
+              + '<td title="requires pipeline run">â€”</td><td title="requires pipeline run">â€”</td></tr>';
           }).join('') + '</tbody></table></div>';
       });
       return;
@@ -627,50 +629,7 @@
 
   function renderSplitSummary() {
     var mount = document.getElementById('rlSplitSummaryMount');
-    if (!mount) {
-      var splitsPane = document.getElementById('pane-splits');
-      if (!splitsPane || splitsPane.querySelector('#rlSplitSummaryMount')) return;
-      mount = document.createElement('div');
-      mount.id = 'rlSplitSummaryMount';
-      mount.className = 'rl-split-summary-grid';
-      var anchor = splitsPane.querySelector('#rlSplitsControlMount');
-      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(mount, anchor.nextSibling);
-      else splitsPane.insertBefore(mount, splitsPane.firstChild);
-    }
-    var r = getResearchTeamData('r');
-    var l = getResearchTeamData('l');
-    if (!r.length && !l.length) {
-      mount.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Split summary cards populate after team offense data loads.</p></div>';
-      return;
-    }
-    function best(arr) {
-      if (!arr.length) return null;
-      return arr.slice().sort(function(a, b) { return b.osi - a.osi; })[0];
-    }
-    function biggestSplit() {
-      var hit = null, gap = 0;
-      r.forEach(function(row) {
-        var lrow = l.find(function(x) { return x.t === row.t; });
-        if (!lrow) return;
-        var g = Math.abs(row.osi - lrow.osi);
-        if (g > gap) { gap = g; hit = { t: row.t, gap: g }; }
-      });
-      return hit;
-    }
-    var cards = [
-      { title: 'Best vs RHP', val: best(r), metric: 'osi' },
-      { title: 'Best vs LHP', val: best(l), metric: 'osi' },
-      { title: 'Biggest Split Edge', val: biggestSplit(), metric: 'gap' },
-      { title: 'YTD Leader', val: best(getResearchTeamData('both')), metric: 'osi' }
-    ];
-    mount.innerHTML = cards.map(function(c) {
-      var body = '—';
-      if (c.val) {
-        body = c.metric === 'gap' ? c.val.t + ' · ' + c.val.gap.toFixed(1) + ' pt gap'
-          : c.val.t + ' · OSI ' + c.val.osi.toFixed(1);
-      }
-      return '<div class="rl-summary-card"><div class="rl-summary-label">' + esc(c.title) + '</div><div class="rl-summary-val">' + esc(body) + '</div></div>';
-    }).join('');
+    if (mount) mount.remove();
   }
 
   function renderComparePane() {
@@ -721,7 +680,7 @@
   function teamSelectHtml(id, label, teams, val) {
     return '<div><label for="' + id + '">' + label + '</label>'
       + '<select id="' + id + '" class="rl-compare-select search-input" style="width:100%;margin-top:6px;">'
-      + '<option value="">Select team…</option>'
+      + '<option value="">Select teamâ€¦</option>'
       + teams.map(function(t) {
         return '<option value="' + esc(t) + '"' + (t === val ? ' selected' : '') + '>' + esc(t) + '</option>';
       }).join('')
@@ -741,7 +700,7 @@
   function pitcherSearchHtml(id, label, val) {
     return '<div><label for="' + id + '">' + label + '</label>'
       + '<div class="rl-search-wrap pl-search-wrap" style="position:relative;margin-top:6px;">'
-      + '<input type="search" id="' + id + '" class="search-input" style="width:100%;" value="' + esc(val || '') + '" placeholder="Search pitcher name or team…" autocomplete="off">'
+      + '<input type="search" id="' + id + '" class="search-input" style="width:100%;" value="' + esc(val || '') + '" placeholder="Search pitcher name or teamâ€¦" autocomplete="off">'
       + '<div id="' + id + 'Drop" class="pl-search-dropdown rl-compare-pitcher-dd" style="display:none;"></div></div></div>';
   }
 
@@ -761,8 +720,8 @@
         var av = A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-dd-av' }) : '';
         return '<button type="button" class="pl-dd-item" data-name="' + esc(n) + '">' + av
           + '<span class="pl-dd-name">' + esc(n) + '</span>'
-          + '<span class="pl-dd-meta">' + esc(tm) + ' · ' + esc(hand) + 'HP · PS '
-          + (met && met.pitchScore != null ? met.pitchScore.toFixed(0) : '—') + '</span></button>';
+          + '<span class="pl-dd-meta">' + esc(tm) + ' Â· ' + esc(hand) + 'HP Â· PS '
+          + (met && met.pitchScore != null ? met.pitchScore.toFixed(0) : 'â€”') + '</span></button>';
       }).join('');
       dd.querySelectorAll('.pl-dd-item').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -865,7 +824,7 @@
       out.innerHTML = '<div class="rl-pane-card"><p class="rl-empty">Select entities and click Compare to generate output.</p></div>';
       return;
     }
-    out.innerHTML = '<div class="rl-loading">Computing comparison…</div>';
+    out.innerHTML = '<div class="rl-loading">Computing comparisonâ€¦</div>';
     setTimeout(function() {
       if (RL.compareMode === 'team') renderTeamCompare(out);
       else if (RL.compareMode === 'pitcher') renderPitcherCompare(out);
@@ -902,7 +861,7 @@
     });
     if (!parts.length) return a.t + ' and ' + b.t + ' profile as evenly matched across core metrics.';
     var leader = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : null);
-    var tail = leader ? ' — clear offensive edge to ' + leader : ' — mixed offensive profile.';
+    var tail = leader ? ' â€” clear offensive edge to ' + leader : ' â€” mixed offensive profile.';
     return parts.slice(0, 2).join(' and ') + tail;
   }
 
@@ -934,11 +893,11 @@
     ];
     var edge = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : 'Even');
     var bet = '';
-    if (a.osi > b.osi + 4) bet = a.t + ' offensive edge — run line and team total lean.';
-    else if (b.osi > a.osi + 4) bet = b.t + ' offensive edge — fade ' + a.t + ' unders.';
+    if (a.osi > b.osi + 4) bet = a.t + ' offensive edge â€” run line and team total lean.';
+    else if (b.osi > a.osi + 4) bet = b.t + ' offensive edge â€” fade ' + a.t + ' unders.';
     else if (a.ppGap > 6 && a.ppGap > b.ppGap) bet = a.t + ' buy-low process signal (PP-Gap +' + a.ppGap.toFixed(0) + ').';
     else if (b.ppGap > 6 && b.ppGap > a.ppGap) bet = b.t + ' buy-low process signal (PP-Gap +' + b.ppGap.toFixed(0) + ').';
-    else bet = 'Tight matchup — lean totals over only with park/weather confirmation.';
+    else bet = 'Tight matchup â€” lean totals over only with park/weather confirmation.';
     var rA = splitRowForTeam(a.t, 'r') || a;
     var lA = splitRowForTeam(a.t, 'l') || a;
     var rB = splitRowForTeam(b.t, 'r') || b;
@@ -1014,8 +973,8 @@
       + row3('ABQ Allowed', ua && ua.abqAllowed, ub && ub.abqAllowed, true, true)
       + row3('Bullpen Unit OOR', ua && ua.oor, ub && ub.oor, false, false, 'oor')
       + '</tbody></table></div>'
-      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">' + esc(RL.compareA) + ' report →</a> · '
-      + '<a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareB) + '">' + esc(RL.compareB) + ' report →</a></p>';
+      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">' + esc(RL.compareA) + ' report â†’</a> Â· '
+      + '<a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareB) + '">' + esc(RL.compareB) + ' report â†’</a></p>';
   }
 
   function renderBullpenLineupCompare(out) {
@@ -1029,9 +988,9 @@
     out.innerHTML = '<div class="rl-scorecards">'
       + scorecardOne(RL.compareB, 'Lineup OSI', lineupOsi, false)
       + scorecardOne(RL.compareA + ' BP', 'OSI Allowed', bpAllow, true)
-      + '</div>' + edgeCard(edge, 'Bullpen OSI allowed vs opposing lineup composite — high leverage context.')
-      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">Bullpen report →</a> · '
-      + '<a href="team_profile.html?team=' + encodeURIComponent(RL.compareB) + '">Lineup profile →</a></p>';
+      + '</div>' + edgeCard(edge, 'Bullpen OSI allowed vs opposing lineup composite â€” high leverage context.')
+      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">Bullpen report â†’</a> Â· '
+      + '<a href="team_profile.html?team=' + encodeURIComponent(RL.compareB) + '">Lineup profile â†’</a></p>';
   }
 
   function renderLineupPitcherCompare(out) {
@@ -1045,9 +1004,9 @@
     var allow = sm.osiAllowed;
     var edge = lineupOsi != null && allow != null && lineupOsi > (100 - allow) + 5 ? 'Lineup' : (allow != null && lineupOsi != null && (100 - allow) > lineupOsi + 5 ? 'Pitcher' : 'Even');
     var bet = edge === 'Lineup'
-      ? RL.compareA + ' lineup (OSI ' + fmt(lineupOsi) + ' vs ' + hand + 'HP) faces ' + RL.compareB + ' (OSI Allowed ' + fmt(allow) + ') — lineup edge, over lean.'
-      : edge === 'Pitcher' ? RL.compareB + ' suppresses ' + RL.compareA + ' — under/F5 lean.'
-      : 'Even matchup — verify bullpen before full-game total.';
+      ? RL.compareA + ' lineup (OSI ' + fmt(lineupOsi) + ' vs ' + hand + 'HP) faces ' + RL.compareB + ' (OSI Allowed ' + fmt(allow) + ') â€” lineup edge, over lean.'
+      : edge === 'Pitcher' ? RL.compareB + ' suppresses ' + RL.compareA + ' â€” under/F5 lean.'
+      : 'Even matchup â€” verify bullpen before full-game total.';
     var pitcherPs = sm.pitchScore != null ? sm.pitchScore : 50;
     var pTeam = String(S.pickCol(sp, 'pitcher_team', 'Team', 'Tm') || '').toUpperCase();
     var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
@@ -1067,7 +1026,7 @@
   function scorecardOne(title, label, val, invert) {
     return '<div class="rl-scorecard"><h4>' + esc(title) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</div></div>';
+      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : 'â€”') + '</div></div>';
   }
 
   function pitcherScorecard(name, label, val, invert) {
@@ -1075,7 +1034,7 @@
       + pitcherAvatarHtml(name, 'compare')
       + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</div></div></div>';
+      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : 'â€”') + '</div></div></div>';
   }
 
   function scorecardsHtml(a, b, kind) {
@@ -1086,8 +1045,8 @@
   }
 
   function edgeCard(edge, why) {
-    return '<div class="rl-edge-card"><strong>Edge: ' + esc(edge) + '</strong> — ' + esc(why)
-      + '<div style="margin-top:8px;font-size:12px;color:var(--text-3);">Confidence: Medium · Risk: bullpen volatility / lineup changes</div></div>';
+    return '<div class="rl-edge-card"><strong>Edge: ' + esc(edge) + '</strong> â€” ' + esc(why)
+      + '<div style="margin-top:8px;font-size:12px;color:var(--text-3);">Confidence: Medium Â· Risk: bullpen volatility / lineup changes</div></div>';
   }
 
   function metricTable(keys, a, b) {
@@ -1112,33 +1071,33 @@
       return '<tr><td>' + esc(label) + '</td><td style="color:' + ca + '">' + fmt(va) + '</td><td style="color:' + cb + '">' + fmt(vb) + '</td></tr>';
     }
     if (label === 'Trend') {
-      return '<tr><td>' + esc(label) + '</td><td style="color:' + mColor(va, false, null) + '">' + esc(va || '—') + '</td><td style="color:' + mColor(vb, false, null) + '">' + esc(vb || '—') + '</td></tr>';
+      return '<tr><td>' + esc(label) + '</td><td style="color:' + mColor(va, false, null) + '">' + esc(va || 'â€”') + '</td><td style="color:' + mColor(vb, false, null) + '">' + esc(vb || 'â€”') + '</td></tr>';
     }
     return '<tr><td>' + esc(label) + '</td>'
       + '<td style="color:' + mColor(va, invert, invert ? 'osi' : 'osi') + '">' + fmt(va) + '</td>'
       + '<td style="color:' + mColor(vb, invert, invert ? 'osi' : 'osi') + '">' + fmt(vb) + '</td></tr>';
   }
 
-  function fmt(v) { return v != null && !isNaN(v) ? Number(v).toFixed(1) : '—'; }
+  function fmt(v) { return v != null && !isNaN(v) ? Number(v).toFixed(1) : 'â€”'; }
 
   function renderResearchHome() {
     var root = document.getElementById('rlResearchHomeRoot');
     if (!root) return;
     var cards = [
-      { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: '◆' },
-      { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: '◎' },
-      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: '⚡' },
-      { pane: 'compare', title: 'Compare', use: 'Team vs team, pitcher vs pitcher, bullpen vs bullpen, lineup vs pitcher', cta: 'Open Compare', icon: '⇄' },
-      { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: '▤' }
+      { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: 'â—†' },
+      { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: 'â—Ž' },
+      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: 'âš¡' },
+      { pane: 'compare', title: 'Compare', use: 'Team vs team, pitcher vs pitcher, bullpen vs bullpen, lineup vs pitcher', cta: 'Open Compare', icon: 'â‡„' },
+      { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: 'â–¤' }
     ];
     root.innerHTML = '<div class="rl-home-header"><h2 class="rl-workspace-title">Research Home</h2>'
-      + '<p class="rl-workspace-subtitle">Choose a research path — no giant tables on this screen.</p></div>'
+      + '<p class="rl-workspace-subtitle">Choose a research path â€” no giant tables on this screen.</p></div>'
       + '<div class="rl-home-grid">' + cards.map(function(c) {
         return '<button type="button" class="rl-home-card" data-rl-pane="' + c.pane + '">'
           + '<span class="rl-home-icon">' + c.icon + '</span>'
           + '<strong>' + esc(c.title) + '</strong>'
           + '<span class="rl-home-use">Use for: ' + esc(c.use) + '</span>'
-          + '<em>' + esc(c.cta) + ' →</em></button>';
+          + '<em>' + esc(c.cta) + ' â†’</em></button>';
       }).join('') + '</div>';
 
     root.querySelectorAll('[data-rl-pane]').forEach(function(btn) {
@@ -1151,11 +1110,11 @@
 
   function profileLinks(teamA, teamB, pitcherA, pitcherB) {
     var p = [];
-    if (teamA) p.push('<a href="team_profile.html?team=' + encodeURIComponent(teamA) + '">' + esc(teamA) + ' profile →</a>');
-    if (teamB) p.push('<a href="team_profile.html?team=' + encodeURIComponent(teamB) + '">' + esc(teamB) + ' profile →</a>');
-    if (pitcherA) p.push('<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(pitcherA) + '">' + esc(pitcherA) + ' →</a>');
-    if (pitcherB) p.push('<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(pitcherB) + '">' + esc(pitcherB) + ' →</a>');
-    return '<p class="ca-helper" style="margin-top:12px;">' + p.join(' · ') + '</p>';
+    if (teamA) p.push('<a href="team_profile.html?team=' + encodeURIComponent(teamA) + '">' + esc(teamA) + ' profile â†’</a>');
+    if (teamB) p.push('<a href="team_profile.html?team=' + encodeURIComponent(teamB) + '">' + esc(teamB) + ' profile â†’</a>');
+    if (pitcherA) p.push('<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(pitcherA) + '">' + esc(pitcherA) + ' â†’</a>');
+    if (pitcherB) p.push('<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(pitcherB) + '">' + esc(pitcherB) + ' â†’</a>');
+    return '<p class="ca-helper" style="margin-top:12px;">' + p.join(' Â· ') + '</p>';
   }
 
   function renderPitchingVsLineup() {
@@ -1166,15 +1125,15 @@
     root.innerHTML = '<div class="rl-pane-card">'
       + '<div class="rl-pvl-grid">'
       + '<div><label class="ca-metric-label">Lineup Team</label><select id="rlPvlTeam" class="search-input" style="width:100%;margin-top:6px;">'
-      + '<option value="">—</option>' + teams.map(function(t) {
+      + '<option value="">â€”</option>' + teams.map(function(t) {
         return '<option value="' + t + '"' + (t === RL.pvlTeam ? ' selected' : '') + '>' + t + '</option>';
       }).join('') + '</select></div>'
       + '<div><label class="ca-metric-label">Opposing SP</label><select id="rlPvlSp" style="width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-4);color:var(--text);">'
-      + '<option value="">—</option>' + pitchers.map(function(p) {
+      + '<option value="">â€”</option>' + pitchers.map(function(p) {
         return '<option value="' + esc(p.name) + '"' + (p.name === RL.pvlPitcher ? ' selected' : '') + '>' + esc(p.name) + '</option>';
       }).join('') + '</select></div>'
       + '<div><label class="ca-metric-label">Opposing Bullpen</label><select id="rlPvlBp" style="width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-4);color:var(--text);">'
-      + '<option value="">—</option>' + teams.map(function(t) {
+      + '<option value="">â€”</option>' + teams.map(function(t) {
         return '<option value="' + t + '"' + (t === RL.pvlBpTeam ? ' selected' : '') + '>' + t + '</option>';
       }).join('') + '</select></div>'
       + '</div><div id="rlPvlOutput"></div></div>';
@@ -1209,16 +1168,16 @@
     var ps = sm.osiAllowed != null ? 100 - sm.osiAllowed : null;
     out.innerHTML = '<div class="rl-pvl-grid" style="margin-top:16px;">'
       + snap('Lineup Snapshot', RL.pvlTeam, 'OSI vs ' + hand + 'HP', splitRow ? splitRow.osi : team.osi, false)
-      + snap('SP Snapshot', RL.pvlPitcher || '—', 'Pitching Score', ps, false)
-      + snap('Bullpen Snapshot', RL.pvlBpTeam || '—', 'Bullpen Score', bpScore, false)
+      + snap('SP Snapshot', RL.pvlPitcher || 'â€”', 'Pitching Score', ps, false)
+      + snap('Bullpen Snapshot', RL.pvlBpTeam || 'â€”', 'Bullpen Score', bpScore, false)
       + '</div>'
-      + '<div class="rl-edge-card" style="margin-top:14px;"><strong>Edge Read</strong> — '
+      + '<div class="rl-edge-card" style="margin-top:14px;"><strong>Edge Read</strong> â€” '
       + (splitRow && sm.osiAllowed && splitRow.osi > 100 - sm.osiAllowed ? 'Lineup carries platoon split edge vs SP.' : 'Pitching profile suppresses lineup split.')
       + '</div>'
       + '<div class="rl-pane-card" style="margin-top:12px;"><div class="ca-metric-label">F5 vs Full Game</div>'
       + '<p style="font-size:13px;color:var(--text-2);margin:8px 0 0;">F5 lean tracks SP vs lineup split. Full game adds bullpen score '
       + (bpScore != null ? '(' + bpScore.toFixed(1) + ')' : '') + ' after starter.</p>'
-      + '<a href="matchup_compare.html?away=' + encodeURIComponent(RL.pvlTeam) + '&home=' + encodeURIComponent(RL.pvlBpTeam || RL.pvlTeam) + '" class="ca-helper">Open full matchup compare →</a></div>';
+      + '<a href="matchup_compare.html?away=' + encodeURIComponent(RL.pvlTeam) + '&home=' + encodeURIComponent(RL.pvlBpTeam || RL.pvlTeam) + '" class="ca-helper">Open full matchup compare â†’</a></div>';
   }
 
   function snap(title, name, metric, val, inv) {

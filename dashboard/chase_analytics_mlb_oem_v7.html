@@ -1614,8 +1614,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260524">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260523d">
-<link rel="stylesheet" href="chase_nav.css?v=20260523d">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260523d">
+<link rel="stylesheet" href="chase_nav.css?v=20260528">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260528">
 <link rel="stylesheet" href="research_lab.css?v=20260523d">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260524"></script>
@@ -1642,8 +1642,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_charts.js?v=20260523d"></script>
 <script src="profile_controls.js?v=20260524"></script>
 <script src="platform_dashboard.js?v=20260524"></script>
-<script src="research_lab.js?v=20260527"></script>
-<script src="rl_tab_uix.js?v=20260527"></script>
+<script src="research_lab.js?v=20260528"></script>
+<script src="rl_tab_uix.js?v=20260528"></script>
 <script src="pitcher_lab.js?v=20260524"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
@@ -1653,7 +1653,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="36" style="height:36px;max-height:36px;width:auto;object-fit:contain"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="40" style="height:40px;max-height:40px;min-width:160px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
@@ -1758,6 +1758,10 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
       <div class="ca-kicker">Opening Dashboard</div>
       <h1>MLB <span class="ca-hero-gradient">Intelligence</span> Platform</h1>
       <p>Market map, matchup intelligence, and research tools for MLB offensive and pitching edges.</p>
+      <div class="ca-hero-cta-row">
+        <button type="button" class="ca-hero-cta-primary" id="heroCtaMatchups">View Today's Matchups →</button>
+        <a href="#section-research-lab" class="ca-hero-cta-secondary" id="heroCtaResearch">Explore Research Lab →</a>
+      </div>
     </div>
   </div>
 
@@ -1775,7 +1779,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <section class="platform-section" id="section-opening-market-map">
   <header class="matchups-section-head">
     <div class="platform-eyebrow">Offensive Market</div>
-    <h2 class="platform-title">Market Intelligence Map</h2>
+    <h2 class="platform-title">Market Map</h2>
     <p class="platform-subtitle">RCV Score vs xwOBA gap — identifies buy-low, elite, cooling, and weak offensive profiles</p>
   </header>
   <div class="ca-market-map-card">
@@ -2294,13 +2298,36 @@ window.buildYtdBothFromSplits = buildYtdBothFromSplits;
 
 
 function profileWindowFieldsFromRow(row) {
-  return {
+  var fields = {
     osi_ytd: numOrNull(pickCol(row, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI'])),
     osi_l30: numOrNull(pickCol(row, ['osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI'])),
     osi_l14: numOrNull(pickCol(row, ['osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI'])),
-    osi_l7: numOrNull(pickCol(row, ['osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI']))
+    osi_l7: numOrNull(pickCol(row, ['osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI'])),
+    home_osi: numOrNull(pickCol(row, ['home_osi', 'Home_OSI'])),
+    away_osi: numOrNull(pickCol(row, ['away_osi', 'Away_OSI']))
   };
+  ['abq', 'rcv', 'obr'].forEach(function(m) {
+    ['l30', 'l14', 'l7'].forEach(function(w) {
+      fields[m + '_' + w] = numOrNull(pickCol(row, [m + '_' + w, m.toUpperCase() + '_' + w.toUpperCase(), w + '_' + m]));
+    });
+  });
+  return fields;
 }
+
+function detectWindowMetricsFromProfiles(profs) {
+  var avail = { osi: false, abq: false, rcv: false, obr: false };
+  var keys = Object.keys(profs || {});
+  ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
+    var field = m === 'osi' ? 'osi_l30' : m + '_l30';
+    var n = keys.filter(function(t) {
+      var p = profs[t];
+      return p && p[field] != null && !isNaN(p[field]);
+    }).length;
+    avail[m] = n >= 10;
+  });
+  return avail;
+}
+window.detectWindowMetricsFromProfiles = detectWindowMetricsFromProfiles;
 
 function parseTeamProfileRows(rows) {
   var map = {};
@@ -3039,6 +3066,7 @@ function loadResearchData() {
       console.log('[TRENDS] teamProfiles first row:', JSON.stringify(LIVE_DATA.teamProfiles[0]));
     }
     LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(results[3]);
+    LIVE_DATA.windowMetricsAvailable = detectWindowMetricsFromProfiles(LIVE_DATA.teamProfilesByTeam);
     LIVE_DATA.todayGames = parseTodayGamesRows(results[4]);
     enrichSpProfilesFromLive();
     syncWindowScoresFromProfiles();
@@ -5379,7 +5407,28 @@ function initMatchupsView() {
   }
 }
 
+function bindHeroCtas() {
+  var matchupsBtn = document.getElementById('heroCtaMatchups');
+  if (matchupsBtn && !matchupsBtn.dataset.bound) {
+    matchupsBtn.dataset.bound = '1';
+    matchupsBtn.addEventListener('click', function() {
+      window.location.hash = '#section-matchups-hero';
+      if (typeof syncDashboardView === 'function') syncDashboardView();
+    });
+  }
+  var researchLink = document.getElementById('heroCtaResearch');
+  if (researchLink && !researchLink.dataset.bound) {
+    researchLink.dataset.bound = '1';
+    researchLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.hash = '#section-research-lab';
+      if (typeof syncDashboardView === 'function') syncDashboardView();
+    });
+  }
+}
+
 function renderHomePage() {
+  bindHeroCtas();
   registerMetricPools();
   renderHomeResearchCards();
   whenLiveDataReady(function() {
@@ -5617,7 +5666,6 @@ function renderResearchLab() {
   renderWatchlistBar();
   if (typeof renderComparePane === 'function') renderComparePane();
   hidePitchingResearchSections();
-  if (window.ResearchLab && ResearchLab.renderSplitSummary) ResearchLab.renderSplitSummary();
   scheduleMarketMapRender();
   urlEncodeState();
 }
