@@ -9,9 +9,8 @@
   var TABS = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
 
   var RL = {
-    compareMode: 'team',
-    compareA: '',
-    compareB: '',
+    compareSideA: { entity: 'lineup', split: 'b', key: '' },
+    compareSideB: { entity: 'lineup', split: 'b', key: '' },
     spProfiles: null,
     pvlTeam: '',
     pvlPitcher: '',
@@ -23,6 +22,7 @@
   };
 
   var _rlReadyPoll = null;
+  var _rlReadyTries = 0;
 
   function getResearchTeamData(split) {
     var LD = global.LIVE_DATA || {};
@@ -184,19 +184,26 @@
     if (typeof global.renderResearchLab === 'function') global.renderResearchLab();
   }
 
+
   function initResearchLabWhenReady() {
     function tick() {
+      _rlReadyTries++;
       syncResearchGlobalsFromLiveData();
       var data = getResearchTeamData('both');
-      var profilesReady = global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam && Object.keys(LIVE_DATA.teamProfilesByTeam).length >= 20;
+      var profileCount = global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam
+        ? Object.keys(LIVE_DATA.teamProfilesByTeam).length : 0;
+      var profilesReady = profileCount >= 20 || _rlReadyTries >= 40;
       if (data && data.length > 0 && profilesReady) {
         console.log('[RL] Data ready, rendering Research Lab with', data.length, 'teams');
         if (_rlReadyPoll) { clearTimeout(_rlReadyPoll); _rlReadyPoll = null; }
         renderResearchLabContent();
-      } else if (data && data.length > 0 && !profilesReady) {
+      } else if (data && data.length > 0 && !profilesReady && _rlReadyTries < 40) {
         fetchTeamProfiles().finally(function() {
           _rlReadyPoll = setTimeout(tick, 100);
         });
+      } else if (_rlReadyTries >= 60) {
+        console.warn('[RL] Proceeding with partial data after timeout');
+        renderResearchLabContent();
       } else {
         console.log('[RL] Waiting for data...');
         _rlReadyPoll = setTimeout(tick, 300);
@@ -374,36 +381,8 @@
   }
 
   function mountTrendControls() {
-    var mount = document.getElementById('rlTrendControlsMount');
-    if (!mount) return;
-    if (!global.STATE) global.STATE = {};
-    if (!global.STATE.rlTrendMetric) global.STATE.rlTrendMetric = 'osi';
-    var metric = global.STATE.rlTrendMetric;
-    mount.innerHTML = '<div class="rl-trend-controls ca-pill-bar">'
-      + '<span class="ca-pill-label">Metric</span>'
-      + ['osi', 'abq', 'rcv', 'obr'].map(function(m) {
-        return '<button type="button" class="ca-pill-btn' + (metric === m ? ' active' : '') + '" data-trend-metric="' + m + '">' + m.toUpperCase() + '</button>';
-      }).join('')
-      + '<span class="ca-pill-label">Compare</span>'
-      + ['L30', 'L14', 'L7'].map(function(w) {
-        return '<button type="button" class="ca-pill-btn' + (RL.rlWindowCmp === w ? ' active' : '') + '" data-trend-cmp="' + w + '">YTDâ†’' + w + '</button>';
-      }).join('')
-      + '</div>';
-    mount.querySelectorAll('[data-trend-metric]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        global.STATE.rlTrendMetric = btn.getAttribute('data-trend-metric');
-        RL.rlTrendMetric = global.STATE.rlTrendMetric;
-        mountTrendControls();
-        if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
-      });
-    });
-    mount.querySelectorAll('[data-trend-cmp]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        RL.rlWindowCmp = btn.getAttribute('data-trend-cmp');
-        mountTrendControls();
-        renderTrendSummary();
-      });
-    });
+    var ext = global.ResearchLab && ResearchLab.mountTrendControls;
+    if (ext && ext !== mountTrendControls) return ext();
   }
 
   function renderTrendSummary() {
@@ -542,7 +521,7 @@
           + '<button type="button" class="subtab active" data-pane="trends">Trends</button>'
           + '<button type="button" class="subtab" data-pane="splits">Splits</button>'
           + '<button type="button" class="subtab" data-pane="compare">Compare</button>'
-          + '<button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>';
+          + '<button type="button" class="subtab" data-pane="pitching">Pitcher Intelligence</button>';
       }
     }
     global.RESEARCH_SUBTABS = SUBTABS.slice();
@@ -643,38 +622,192 @@
     });
   }
 
+  function defaultCompareSide() {
+    return { entity: 'lineup', split: 'b', key: '' };
+  }
+
+  function ensureCompareSides() {
+    if (!RL.compareSideA) RL.compareSideA = defaultCompareSide();
+    if (!RL.compareSideB) RL.compareSideB = defaultCompareSide();
+  }
+
+  function compareSideRef(sideKey) {
+    return sideKey === 'B' ? RL.compareSideB : RL.compareSideA;
+  }
+
+  function deriveComparePair(sideA, sideB) {
+    var ea = sideA.entity;
+    var eb = sideB.entity;
+    if (ea === 'lineup' && eb === 'lineup') return 'lineup-lineup';
+    if (ea === 'pitcher' && eb === 'pitcher') return 'pitcher-pitcher';
+    if (ea === 'bullpen' && eb === 'bullpen') return 'bullpen-bullpen';
+    if ((ea === 'lineup' && eb === 'pitcher') || (ea === 'pitcher' && eb === 'lineup')) return 'lineup-pitcher';
+    if ((ea === 'bullpen' && eb === 'lineup') || (ea === 'lineup' && eb === 'bullpen')) return 'bullpen-lineup';
+    if ((ea === 'bullpen' && eb === 'pitcher') || (ea === 'pitcher' && eb === 'bullpen')) return 'pitcher-bullpen';
+    return 'mixed';
+  }
+
+  function findTeamProfileRaw(t) {
+    var rows = (global.LIVE_DATA && LIVE_DATA.teamProfiles) || [];
+    t = String(t || '').toUpperCase();
+    return rows.find(function(row) {
+      var tk = S ? S.teamKey(S.pickCol(row, 'team', 'Tm', 'Team')) : String(row.team || '').trim().toUpperCase();
+      return tk === t;
+    }) || null;
+  }
+
+  function estimateF5Osi(row) {
+    if (!row) return null;
+    var abq = row.abq;
+    var obr = row.obr;
+    var rcv = row.rcv;
+    if (abq == null || obr == null || rcv == null || isNaN(abq) || isNaN(obr) || isNaN(rcv)) return null;
+    return (abq * 0.45) + (obr * 0.35) + (rcv * 0.20);
+  }
+
+  function teamRowForCompare(team, split) {
+    if (!team) return null;
+    team = String(team).toUpperCase();
+    if (split === 'r' || split === 'l' || split === 'b') {
+      var dataSplit = split === 'b' ? 'both' : split;
+      return getResearchTeamData(dataSplit).find(function(d) { return d.t === team; });
+    }
+    var base = teamRow(team);
+    if (!base) return null;
+    var prof = findTeamProfileRaw(team);
+    if (split === 'home') {
+      var ho = prof ? numOrNull(S.pickCol(prof, 'home_osi', 'Home_OSI')) : null;
+      return ho != null ? Object.assign({}, base, { osi: ho }) : base;
+    }
+    if (split === 'away') {
+      var ao = prof ? numOrNull(S.pickCol(prof, 'away_osi', 'Away_OSI')) : null;
+      return ao != null ? Object.assign({}, base, { osi: ao }) : base;
+    }
+    if (split === 'f5') {
+      var f5 = prof ? numOrNull(S.pickCol(prof, 'osi_f5', 'OSI_F5')) : null;
+      if (f5 == null) f5 = estimateF5Osi(base);
+      return f5 != null ? Object.assign({}, base, { osi: f5 }) : base;
+    }
+    return base;
+  }
+
+  function splitLabelForCompare(split) {
+    return { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away', f5: 'F5' }[split] || 'Both';
+  }
+
   function renderComparePaneInner(root) {
+    ensureCompareSides();
+    syncResearchGlobalsFromLiveData();
+    var teams = (global.SCO_YTD_B || []).map(function(r) { return r.t; }).filter(Boolean).sort();
+    if (!teams.length) teams = teamList();
 
-    root.innerHTML = '<div class="rl-compare-modes rl-compare-modes--large">'
-      + ['team', 'lineup-pitcher', 'pitcher', 'bullpen-lineup', 'bullpen'].map(function(m) {
-        var lbl = {
-          team: 'Lineup vs Lineup',
-          'lineup-pitcher': 'Lineup vs Pitcher',
-          pitcher: 'Pitcher vs Pitcher',
-          'bullpen-lineup': 'Bullpen vs Lineup',
-          bullpen: 'Bullpen vs Bullpen'
-        }[m];
-        return '<button type="button" class="rl-compare-mode-btn' + (RL.compareMode === m ? ' active' : '') + '" data-cmode="' + m + '">' + lbl + '</button>';
-      }).join('')
+    root.innerHTML = '<div class="rl-compare-h2h">'
+      + '<div class="rl-compare-h2h-header">'
+      + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
+      + '<p class="rl-compare-h2h-subtitle">Select any two entities. Compare the data. Find the edge.</p>'
       + '</div>'
-      + '<div class="rl-compare-selectors" id="rlCompareSelectors"></div>'
-      + '<div id="rlCompareOutput"></div>';
+      + '<div class="rl-compare-panels">'
+      + renderCompareSidePanelHtml('SIDE A', 'A', RL.compareSideA, teams)
+      + renderCompareSidePanelHtml('SIDE B', 'B', RL.compareSideB, teams)
+      + '</div>'
+      + '<div class="rl-compare-run-wrap">'
+      + '<button type="button" class="rl-compare-run" id="rlCmpRun">Compare</button>'
+      + '</div>'
+      + '<div id="rlCompareOutput"></div>'
+      + '</div>';
 
-    root.querySelectorAll('[data-cmode]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        RL.compareMode = btn.getAttribute('data-cmode');
-        RL.compareA = '';
-        RL.compareB = '';
-        renderCompareSelectors();
-        renderCompareOutput();
-        root.querySelectorAll('[data-cmode]').forEach(function(b) {
-          b.classList.toggle('active', b.getAttribute('data-cmode') === RL.compareMode);
-        });
-      });
+    bindCompareSidePanel('A', teams);
+    bindCompareSidePanel('B', teams);
+
+    var run = document.getElementById('rlCmpRun');
+    if (run) run.addEventListener('click', function() {
+      syncCompareSideKeysFromInputs('A');
+      syncCompareSideKeysFromInputs('B');
+      renderCompareOutput();
     });
 
-    renderCompareSelectors();
     renderCompareOutput();
+  }
+
+  function renderCompareSidePanelHtml(label, sideKey, side, teams) {
+    var entities = [
+      { id: 'lineup', lbl: 'Lineup' },
+      { id: 'pitcher', lbl: 'Pitcher' },
+      { id: 'bullpen', lbl: 'Bullpen' }
+    ];
+    var splits = ['b', 'r', 'l', 'home', 'away', 'f5'];
+    var selectorHtml = '';
+    if (side.entity === 'pitcher') {
+      selectorHtml = pitcherSearchHtml('rlCmp' + sideKey + 'Key', 'Select pitcher', side.key);
+    } else {
+      selectorHtml = teamSelectHtml('rlCmp' + sideKey + 'Key', side.entity === 'bullpen' ? 'Select bullpen team' : 'Select team', teams, side.key);
+    }
+    return '<div class="rl-compare-panel" data-side="' + sideKey + '">'
+      + '<div class="rl-compare-panel-label">' + esc(label) + '</div>'
+      + '<div class="rl-compare-pill-row ca-pill-bar">'
+      + entities.map(function(e) {
+        return '<button type="button" class="ca-pill-btn' + (side.entity === e.id ? ' active' : '') + '" data-cmp-entity="' + e.id + '" data-side="' + sideKey + '">' + e.lbl + '</button>';
+      }).join('')
+      + '</div>'
+      + '<div class="rl-compare-pill-row ca-pill-bar rl-compare-split-row">'
+      + splits.map(function(sp) {
+        return '<button type="button" class="ca-pill-btn' + (side.split === sp ? ' active' : '') + '" data-cmp-split="' + sp + '" data-side="' + sideKey + '">' + splitLabelForCompare(sp) + '</button>';
+      }).join('')
+      + '</div>'
+      + '<div class="rl-compare-panel-select">' + selectorHtml + '</div>'
+      + '<button type="button" class="rl-compare-clear" data-cmp-clear="' + sideKey + '">Clear</button>'
+      + '</div>';
+  }
+
+  function bindCompareSidePanel(sideKey, teams) {
+    var side = compareSideRef(sideKey);
+    document.querySelectorAll('[data-cmp-entity][data-side="' + sideKey + '"]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        side.entity = btn.getAttribute('data-cmp-entity');
+        side.key = '';
+        rerenderComparePanels(teams);
+      });
+    });
+    document.querySelectorAll('[data-cmp-split][data-side="' + sideKey + '"]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        side.split = btn.getAttribute('data-cmp-split');
+        rerenderComparePanels(teams);
+      });
+    });
+    var sel = document.getElementById('rlCmp' + sideKey + 'Key');
+    if (sel && sel.tagName === 'SELECT') {
+      sel.addEventListener('change', function() { side.key = sel.value; });
+    }
+    if (side.entity === 'pitcher') {
+      bindComparePitcherSearch('rlCmp' + sideKey + 'Key', sideKey);
+    }
+    var clr = document.querySelector('[data-cmp-clear="' + sideKey + '"]');
+    if (clr) {
+      clr.addEventListener('click', function() {
+        side.key = '';
+        rerenderComparePanels(teams);
+        renderCompareOutput();
+      });
+    }
+  }
+
+  function syncCompareSideKeysFromInputs(sideKey) {
+    var side = compareSideRef(sideKey);
+    var el = document.getElementById('rlCmp' + sideKey + 'Key');
+    if (el) side.key = el.value || '';
+  }
+
+  function rerenderComparePanels(teams) {
+    var panels = document.querySelector('.rl-compare-panels');
+    if (!panels) return;
+    if (!teams) {
+      teams = (global.SCO_YTD_B || []).map(function(r) { return r.t; }).filter(Boolean).sort();
+      if (!teams.length) teams = teamList();
+    }
+    panels.innerHTML = renderCompareSidePanelHtml('SIDE A', 'A', RL.compareSideA, teams)
+      + renderCompareSidePanelHtml('SIDE B', 'B', RL.compareSideB, teams);
+    bindCompareSidePanel('A', teams);
+    bindCompareSidePanel('B', teams);
   }
 
   function teamSelectHtml(id, label, teams, val) {
@@ -704,10 +837,11 @@
       + '<div id="' + id + 'Drop" class="pl-search-dropdown rl-compare-pitcher-dd" style="display:none;"></div></div></div>';
   }
 
-  function bindComparePitcherSearch(id, slotKey) {
+  function bindComparePitcherSearch(id, sideKey) {
     var inp = document.getElementById(id);
     var dd = document.getElementById(id + 'Drop');
     if (!inp || !dd) return;
+    var side = compareSideRef(sideKey);
     function renderDd() {
       var matches = comparePitcherMatches(inp.value);
       if (!matches.length) { dd.style.display = 'none'; dd.innerHTML = ''; return; }
@@ -720,13 +854,13 @@
         var av = A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-dd-av' }) : '';
         return '<button type="button" class="pl-dd-item" data-name="' + esc(n) + '">' + av
           + '<span class="pl-dd-name">' + esc(n) + '</span>'
-          + '<span class="pl-dd-meta">' + esc(tm) + ' Â· ' + esc(hand) + 'HP Â· PS '
-          + (met && met.pitchScore != null ? met.pitchScore.toFixed(0) : 'â€”') + '</span></button>';
+          + '<span class="pl-dd-meta">' + esc(tm) + ' · ' + esc(hand) + 'HP · PS '
+          + (met && met.pitchScore != null ? met.pitchScore.toFixed(0) : '—') + '</span></button>';
       }).join('');
       dd.querySelectorAll('.pl-dd-item').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var name = btn.getAttribute('data-name');
-          RL[slotKey] = name;
+          side.key = name;
           inp.value = name;
           dd.style.display = 'none';
         });
@@ -734,135 +868,368 @@
     }
     inp.addEventListener('input', renderDd);
     inp.addEventListener('focus', renderDd);
-    inp.addEventListener('change', function() { RL[slotKey] = inp.value; });
+    inp.addEventListener('change', function() { side.key = inp.value; });
   }
 
   var _compareDdCloseBound = false;
 
-  function renderCompareSelectors() {
-    syncResearchGlobalsFromLiveData();
-    var el = document.getElementById('rlCompareSelectors');
-    if (!el) return;
-    var teams = (global.SCO_YTD_B || []).map(function(r) { return r.t; }).filter(Boolean).sort();
-    if (!teams.length) teams = teamList();
-    var mode = RL.compareMode;
-    console.log('[COMPARE] teams available:', global.SCO_YTD_B ? global.SCO_YTD_B.length : 'missing');
-    console.log('[COMPARE] pitchers available:', global.LIVE_DATA && LIVE_DATA.spProfiles ? LIVE_DATA.spProfiles.length : 'missing');
-
-    var html = '';
-    if (mode === 'team' || mode === 'bullpen') {
-      html = teamSelectHtml('rlCmpA', mode === 'bullpen' ? 'Bullpen A' : 'Team A', teams, RL.compareA)
-        + teamSelectHtml('rlCmpB', mode === 'bullpen' ? 'Bullpen B' : 'Team B', teams, RL.compareB);
-    } else if (mode === 'bullpen-lineup') {
-      html = teamSelectHtml('rlCmpA', 'Bullpen Team', teams, RL.compareA)
-        + teamSelectHtml('rlCmpB', 'Opposing Lineup', teams, RL.compareB);
-    } else if (mode === 'pitcher') {
-      html = pitcherSearchHtml('rlCmpA', 'Pitcher A', RL.compareA)
-        + pitcherSearchHtml('rlCmpB', 'Pitcher B', RL.compareB);
-    } else {
-      html = teamSelectHtml('rlCmpA', 'Lineup Team', teams, RL.compareA)
-        + pitcherSearchHtml('rlCmpB', 'Opposing SP', RL.compareB);
-    }
-    html += '<div class="rl-compare-actions">'
-      + '<button type="button" class="rl-compare-run" id="rlCmpRun">Compare</button>'
-      + '<button type="button" id="rlCmpSwap">Swap</button>'
-      + '<button type="button" id="rlCmpClear">Clear</button></div>';
-    el.innerHTML = html;
-
-    ['rlCmpA', 'rlCmpB'].forEach(function(id) {
-      var sel = document.getElementById(id);
-      if (sel && sel.tagName === 'SELECT') {
-        sel.addEventListener('change', function() {
-          if (id === 'rlCmpA') RL.compareA = sel.value;
-          else RL.compareB = sel.value;
+  function bindCompareDropdownClose() {
+    if (_compareDdCloseBound) return;
+    _compareDdCloseBound = true;
+    document.addEventListener('click', function cmpDdClose(e) {
+      if (!e.target.closest('.rl-search-wrap')) {
+        ['A', 'B'].forEach(function(sideKey) {
+          var dd = document.getElementById('rlCmp' + sideKey + 'KeyDrop');
+          if (dd) dd.style.display = 'none';
         });
       }
     });
-    if (mode === 'pitcher') {
-      bindComparePitcherSearch('rlCmpA', 'compareA');
-      bindComparePitcherSearch('rlCmpB', 'compareB');
-    } else if (mode === 'lineup-pitcher') {
-      bindComparePitcherSearch('rlCmpB', 'compareB');
-    }
-    var run = document.getElementById('rlCmpRun');
-    if (run) run.addEventListener('click', function() {
-      var a = document.getElementById('rlCmpA');
-      var b = document.getElementById('rlCmpB');
-      if (a) RL.compareA = a.value;
-      if (b) RL.compareB = b.value;
-      renderCompareOutput();
-    });
-    var swap = document.getElementById('rlCmpSwap');
-    var clr = document.getElementById('rlCmpClear');
-    if (swap) swap.addEventListener('click', function() {
-      var t = RL.compareA; RL.compareA = RL.compareB; RL.compareB = t;
-      renderCompareSelectors();
-      renderCompareOutput();
-    });
-    if (clr) clr.addEventListener('click', function() {
-      RL.compareA = ''; RL.compareB = '';
-      renderCompareSelectors();
-      renderCompareOutput();
-    });
-    if (!_compareDdCloseBound) {
-      _compareDdCloseBound = true;
-      document.addEventListener('click', function cmpDdClose(e) {
-        if (!e.target.closest('.rl-search-wrap')) {
-          ['rlCmpA', 'rlCmpB'].forEach(function(id) {
-            var dd = document.getElementById(id + 'Drop');
-            if (dd) dd.style.display = 'none';
-          });
-        }
-      });
-    }
   }
 
-  function renderCompareOutput() {
-    var out = document.getElementById('rlCompareOutput');
-    if (!out) return;
-    if (!RL.compareA || !RL.compareB) {
-      out.innerHTML = '<div class="rl-pane-card"><p class="rl-empty">Select entities and click Compare to generate output.</p></div>';
-      return;
+  function pitcherAvatarHtml(name, sizeKey) {
+    if (!A || !name) return '';
+    return A.pitcherAvatar(name, { crop: sizeKey === 'matchup' ? 'matchup' : 'compare', className: 'rl-compare-avatar' });
+  }
+
+  function pitcherScorecard(name, label, val, invert) {
+    return '<div class="rl-scorecard rl-scorecard--pitcher">'
+      + pitcherAvatarHtml(name, 'compare')
+      + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
+      + '<div class="ca-metric-label">' + esc(label) + '</div>'
+      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</div></div></div>';
+  }
+
+  function bpScore(u) {
+    return u && u.osiAllowed != null ? Math.max(0, 100 - u.osiAllowed) : null;
+  }
+
+  function getSideCompareData(side) {
+    var entity = side.entity;
+    var key = side.key;
+    var split = side.split || 'b';
+    if (!key) return null;
+
+    if (entity === 'lineup') {
+      var row = teamRowForCompare(key, split);
+      if (!row) return null;
+      return {
+        entity: 'lineup',
+        label: row.t,
+        splitLabel: splitLabelForCompare(split),
+        row: row,
+        primary: row.osi,
+        primaryLabel: 'OSI',
+        primaryInvert: false,
+        identityHtml: teamIdentityCard(row, splitLabelForCompare(split)),
+        metrics: [
+          ['osi', 'OSI', false], ['projOSI', 'ProjOSI', false], ['abq', 'ABQ', false],
+          ['rcv', 'RCV', false], ['obr', 'OBR', false], ['ppGap', 'PP-Gap', false, false, 'ppGap'],
+          ['rhpOSI', 'vRHP', false], ['lhpOSI', 'vLHP', false]
+        ]
+      };
     }
-    out.innerHTML = '<div class="rl-loading">Computing comparisonâ€¦</div>';
-    setTimeout(function() {
-      if (RL.compareMode === 'team') renderTeamCompare(out);
-      else if (RL.compareMode === 'pitcher') renderPitcherCompare(out);
-      else if (RL.compareMode === 'bullpen') renderBullpenCompare(out);
-      else if (RL.compareMode === 'bullpen-lineup') renderBullpenLineupCompare(out);
-      else renderLineupPitcherCompare(out);
-    }, 50);
+
+    if (entity === 'pitcher') {
+      var sp = findSpProfile(key);
+      if (!sp) return null;
+      var m = S ? S.spProfileMetrics(sp) : {};
+      var ps = m.pitchScore != null ? m.pitchScore : (m.osiAllowed != null ? 100 - m.osiAllowed : null);
+      var lhh = numOrNull(S.pickCol(sp, 'osi_allowed_vs_lhh', 'OSI_allowed_LHH')) || m.osiAllowed;
+      var rhh = numOrNull(S.pickCol(sp, 'osi_allowed_vs_rhh', 'OSI_allowed_RHH')) || m.osiAllowed;
+      var splitVal = split === 'l' ? lhh : (split === 'r' ? rhh : m.osiAllowed);
+      return {
+        entity: 'pitcher',
+        label: key,
+        splitLabel: splitLabelForCompare(split),
+        row: sp,
+        metricsObj: m,
+        splitOsiAllowed: splitVal,
+        primary: ps,
+        primaryLabel: 'Pitching Score',
+        primaryInvert: false,
+        identityHtml: pitcherScorecard(key, 'Pitching Score', ps, false),
+        metrics: [
+          ['kPct', 'K%', true], ['bbPct', 'BB%', true, true],
+          ['osiAllowed', 'OSI Allowed', false, true],
+          ['abqAllowed', 'ABQ Allowed', false, true],
+          ['rcvAllowed', 'RCV Allowed', false, true],
+          ['oor', 'Pitcher OOR', false, false, 'oor']
+        ]
+      };
+    }
+
+    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
+    var u = units[key] || units[String(key).toUpperCase()];
+    if (!u) return null;
+    var unitScore = bpScore(u);
+    return {
+      entity: 'bullpen',
+      label: key,
+      splitLabel: splitLabelForCompare(split),
+      row: u,
+      primary: unitScore,
+      primaryLabel: 'Bullpen Score',
+      primaryInvert: false,
+      identityHtml: bullpenIdentityCard(key, unitScore, u),
+      metrics: [
+        ['osiAllowed', 'OSI Allowed', u.osiAllowed, false, true],
+        ['abqAllowed', 'ABQ Allowed', u.abqAllowed, false, true],
+        ['oor', 'Unit OOR', u.oor, false, false, 'oor']
+      ]
+    };
   }
 
-
-  function splitRowForTeam(t, split) {
-    return getResearchTeamData(split === 'l' ? 'l' : 'r').find(function(d) { return d.t === t; });
+  function bullpenIdentityCard(team, score, unit) {
+    var logo = A ? A.teamLogoImg(team, 40) : '';
+    return '<div class="rl-compare-identity">' + logo
+      + '<div><div style="font-weight:700;font-size:16px;">' + esc(team) + ' Bullpen</div>'
+      + '<div class="ca-helper">Bullpen Score <strong style="color:' + mColor(score, false, 'pitching') + '">' + fmt(score) + '</strong>'
+      + ' · OSI Allowed <strong style="color:' + mColor(unit && unit.osiAllowed, true) + '">' + fmt(unit && unit.osiAllowed) + '</strong></div></div></div>';
   }
 
-  function teamIdentityCard(row) {
+  function teamIdentityCard(row, splitNote) {
     if (!row) return '';
     var logo = A ? A.teamLogoImg(row.t, 40) : '';
     var tier = row.osi >= 75 ? 'Elite' : row.osi >= 60 ? 'Solid' : row.osi >= 45 ? 'Avg' : 'Weak';
     var tierCls = row.osi >= 75 ? 'tier-elite' : row.osi >= 60 ? 'tier-solid' : 'tier-mid';
+    var splitTag = splitNote ? ' <span class="rl-compare-split-tag">' + esc(splitNote) + '</span>' : '';
     return '<div class="rl-compare-identity">' + logo
-      + '<div><div style="font-weight:700;font-size:16px;">' + esc(row.t) + '</div>'
+      + '<div><div style="font-weight:700;font-size:16px;">' + esc(row.t) + splitTag + '</div>'
       + '<div class="ca-helper">OSI <strong style="color:' + mColor(row.osi, false) + '">' + fmt(row.osi) + '</strong>'
-      + ' <span class="tier-badge ' + tierCls + '">' + esc(tier) + '</span></div></div>';
+      + ' <span class="tier-badge ' + tierCls + '">' + esc(tier) + '</span></div></div></div>';
   }
 
-  function compareSummaryRead(a, b) {
-    var parts = [];
-    [['rcv', 'RCV'], ['obr', 'OBR'], ['osi', 'OSI'], ['abq', 'ABQ']].forEach(function(pair) {
-      var k = pair[0], label = pair[1];
-      if (a[k] == null || b[k] == null || Math.abs(a[k] - b[k]) < 2) return;
-      var lead = a[k] > b[k] ? a.t : b.t;
-      var trail = a[k] > b[k] ? b.t : a.t;
-      parts.push(lead + ' leads ' + trail + ' in ' + label + ' (' + Math.max(a[k], b[k]).toFixed(0) + ' vs ' + Math.min(a[k], b[k]).toFixed(0) + ')');
+  function metricValFromSide(data, spec) {
+    if (!data) return null;
+    if (data.entity === 'pitcher' && data.metricsObj && typeof spec[0] === 'string') {
+      if (spec[0] === 'osiAllowed') {
+        return data.splitOsiAllowed != null ? data.splitOsiAllowed : data.metricsObj.osiAllowed;
+      }
+      if (spec[0] === 'kPct' || spec[0] === 'bbPct' || spec[0] === 'abqAllowed' || spec[0] === 'rcvAllowed' || spec[0] === 'oor') {
+        return data.metricsObj[spec[0]];
+      }
+    }
+    if (data.entity === 'bullpen' && data.row) {
+      return data.row[spec[0]];
+    }
+    if (data.row) return data.row[spec[0]];
+    return null;
+  }
+
+  function buildCompareMetricRows(dataA, dataB, pair) {
+    if (pair === 'lineup-lineup' || pair === 'pitcher-pitcher' || pair === 'bullpen-bullpen') {
+      return dataA.metrics.map(function(spec) {
+        return {
+          label: spec[1],
+          valA: metricValFromSide(dataA, spec),
+          valB: metricValFromSide(dataB, spec),
+          higherBetter: spec[2] !== false,
+          invertA: !!spec[3],
+          invertB: !!spec[3],
+          ctx: spec[4] || (spec[0] === 'ppGap' ? 'ppGap' : (spec[3] ? 'osi' : 'osi'))
+        };
+      });
+    }
+    if (pair === 'lineup-pitcher') {
+      var lineup = dataA.entity === 'lineup' ? dataA : dataB;
+      var pitcher = dataA.entity === 'pitcher' ? dataA : dataB;
+      var allow = pitcher.splitOsiAllowed != null ? pitcher.splitOsiAllowed : pitcher.metricsObj.osiAllowed;
+      var aFirst = dataA.entity === 'lineup';
+      return [
+        { label: 'OSI vs Allowed', valA: aFirst ? lineup.primary : allow, valB: aFirst ? allow : lineup.primary, higherBetter: true, invertA: !aFirst, invertB: aFirst, ctx: 'osi' },
+        { label: 'ABQ vs ABQ Allowed', valA: aFirst ? lineup.row.abq : pitcher.metricsObj.abqAllowed, valB: aFirst ? pitcher.metricsObj.abqAllowed : lineup.row.abq, higherBetter: true, invertA: !aFirst, invertB: aFirst, ctx: 'osi' },
+        { label: 'RCV vs RCV Allowed', valA: aFirst ? lineup.row.rcv : pitcher.metricsObj.rcvAllowed, valB: aFirst ? pitcher.metricsObj.rcvAllowed : lineup.row.rcv, higherBetter: true, invertA: !aFirst, invertB: aFirst, ctx: 'osi' }
+      ];
+    }
+    if (pair === 'bullpen-lineup') {
+      var bp = dataA.entity === 'bullpen' ? dataA : dataB;
+      var lu = dataA.entity === 'lineup' ? dataA : dataB;
+      var aFirstBp = dataA.entity === 'bullpen';
+      return [
+        { label: 'Lineup OSI vs BP Allowed', valA: aFirstBp ? bp.row.osiAllowed : lu.primary, valB: aFirstBp ? lu.primary : bp.row.osiAllowed, higherBetter: true, invertA: aFirstBp, invertB: !aFirstBp, ctx: 'osi' },
+        { label: 'ABQ vs ABQ Allowed', valA: aFirstBp ? bp.row.abqAllowed : lu.row.abq, valB: aFirstBp ? lu.row.abq : bp.row.abqAllowed, higherBetter: true, invertA: aFirstBp, invertB: !aFirstBp, ctx: 'osi' }
+      ];
+    }
+    if (pair === 'pitcher-bullpen') {
+      return [
+        { label: 'Pitching Score', valA: dataA.primary, valB: dataB.primary, higherBetter: true, invertA: false, invertB: false, ctx: 'pitching' },
+        { label: 'OSI Allowed', valA: dataA.splitOsiAllowed || (dataA.metricsObj && dataA.metricsObj.osiAllowed) || (dataA.row && dataA.row.osiAllowed), valB: dataB.splitOsiAllowed || (dataB.metricsObj && dataB.metricsObj.osiAllowed) || (dataB.row && dataB.row.osiAllowed), higherBetter: false, invertA: true, invertB: true, ctx: 'osi' }
+      ];
+    }
+    return [
+      { label: dataA.primaryLabel, valA: dataA.primary, valB: dataB.primary, higherBetter: true, invertA: !!dataA.primaryInvert, invertB: !!dataB.primaryInvert, ctx: 'osi' }
+    ];
+  }
+
+  function compareMetricRowsHtml(rows) {
+    return rows.map(function(row) {
+      var va = row.valA;
+      var vb = row.valB;
+      var winner = 'none';
+      if (va != null && vb != null && !isNaN(va) && !isNaN(vb) && Math.abs(va - vb) >= 0.5) {
+        var aWins = row.higherBetter ? va > vb : va < vb;
+        winner = aWins ? 'a' : 'b';
+      }
+      return '<div class="rl-compare-metric-row">'
+        + '<span class="rl-compare-metric-val rl-compare-metric-val--a' + (winner === 'a' ? ' rl-compare-metric-val--win' : '') + '" style="color:' + mColor(va, row.invertA, row.ctx) + '">' + fmt(va) + '</span>'
+        + '<span class="rl-compare-metric-label">' + esc(row.label) + '</span>'
+        + '<span class="rl-compare-metric-val rl-compare-metric-val--b' + (winner === 'b' ? ' rl-compare-metric-val--win' : '') + '" style="color:' + mColor(vb, row.invertB, row.ctx) + '">' + fmt(vb) + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
+  function compareBarChartHtml(dataA, dataB, bars) {
+    if (!bars.length) return '';
+    var html = '<div class="rl-compare-bar-chart">';
+    bars.forEach(function(bar) {
+      var va = bar.valA;
+      var vb = bar.valB;
+      var max = Math.max(va || 0, vb || 0, 1);
+      var wa = va != null ? Math.max(4, (va / max) * 100) : 0;
+      var wb = vb != null ? Math.max(4, (vb / max) * 100) : 0;
+      html += '<div class="rl-compare-bar-row">'
+        + '<span class="rl-compare-bar-side">' + esc(dataA.label) + '</span>'
+        + '<div class="rl-compare-bar-track">'
+        + '<div class="rl-compare-bar-fill rl-compare-bar-fill--a" style="width:' + wa + '%;background:' + mColor(va, bar.invert, bar.ctx) + '"></div>'
+        + '</div>'
+        + '<span class="rl-compare-bar-metric">' + esc(bar.label) + '</span>'
+        + '<div class="rl-compare-bar-track">'
+        + '<div class="rl-compare-bar-fill rl-compare-bar-fill--b" style="width:' + wb + '%;background:' + mColor(vb, bar.invert, bar.ctx) + '"></div>'
+        + '</div>'
+        + '<span class="rl-compare-bar-side">' + esc(dataB.label) + '</span>'
+        + '</div>';
     });
-    if (!parts.length) return a.t + ' and ' + b.t + ' profile as evenly matched across core metrics.';
-    var leader = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : null);
-    var tail = leader ? ' â€” clear offensive edge to ' + leader : ' â€” mixed offensive profile.';
-    return parts.slice(0, 2).join(' and ') + tail;
+    html += '</div>';
+    return html;
+  }
+
+  function compareEdgeChips(dataA, dataB, metricRows) {
+    var diffs = [];
+    metricRows.forEach(function(row) {
+      if (row.valA == null || row.valB == null || isNaN(row.valA) || isNaN(row.valB)) return;
+      var delta = row.higherBetter ? row.valA - row.valB : row.valB - row.valA;
+      diffs.push({ label: row.label, delta: delta, abs: Math.abs(delta) });
+    });
+    diffs.sort(function(a, b) { return b.abs - a.abs; });
+    return diffs.slice(0, 3);
+  }
+
+  function compareEdgeSummaryHtml(dataA, dataB, pair, metricRows) {
+    var edgeLabel = 'EVEN';
+    var edgeCls = 'rl-compare-edge-even';
+    var pa = dataA.primary;
+    var pb = dataB.primary;
+    if (pa != null && pb != null && !isNaN(pa) && !isNaN(pb)) {
+      if (pa > pb + 2) { edgeLabel = 'SIDE A EDGE'; edgeCls = 'rl-compare-edge-a'; }
+      else if (pb > pa + 2) { edgeLabel = 'SIDE B EDGE'; edgeCls = 'rl-compare-edge-b'; }
+    }
+    if (pair === 'lineup-pitcher' && pa != null && pb != null) {
+      var lineupSide = dataA.entity === 'lineup' ? dataA : dataB;
+      var pitchSide = dataA.entity === 'pitcher' ? dataA : dataB;
+      var lo = lineupSide.primary;
+      var po = pitchSide.metricsObj && pitchSide.metricsObj.osiAllowed;
+      if (lo != null && po != null) {
+        if (lo > 100 - po + 5) { edgeLabel = dataA.entity === 'lineup' ? 'SIDE A EDGE' : 'SIDE B EDGE'; edgeCls = dataA.entity === 'lineup' ? 'rl-compare-edge-a' : 'rl-compare-edge-b'; }
+        else if (100 - po > lo + 5) { edgeLabel = dataA.entity === 'pitcher' ? 'SIDE A EDGE' : 'SIDE B EDGE'; edgeCls = dataA.entity === 'pitcher' ? 'rl-compare-edge-a' : 'rl-compare-edge-b'; }
+        else { edgeLabel = 'EVEN'; edgeCls = 'rl-compare-edge-even'; }
+      }
+    }
+    var chips = compareEdgeChips(dataA, dataB, metricRows);
+    return '<div class="rl-compare-edge-summary">'
+      + '<div class="rl-compare-edge-badge ' + edgeCls + '">' + esc(edgeLabel) + '</div>'
+      + '<div class="rl-compare-edge-chips">'
+      + chips.map(function(c) {
+        var sign = c.delta >= 0 ? '+' : '';
+        return '<span class="rl-compare-edge-chip">' + esc(c.label) + ' ' + sign + c.delta.toFixed(1) + '</span>';
+      }).join('')
+      + '</div></div>';
+  }
+
+  function renderCompareOutput() {
+    ensureCompareSides();
+    bindCompareDropdownClose();
+    var out = document.getElementById('rlCompareOutput');
+    if (!out) return;
+    if (!RL.compareSideA.key || !RL.compareSideB.key) {
+      out.innerHTML = '<div class="rl-pane-card"><p class="rl-empty">Select entities on both sides and click Compare to generate output.</p></div>';
+      return;
+    }
+    out.innerHTML = '<div class="rl-loading">Computing comparison…</div>';
+    setTimeout(function() {
+      var sideA = RL.compareSideA;
+      var sideB = RL.compareSideB;
+      var pair = deriveComparePair(sideA, sideB);
+      var dataA = getSideCompareData(sideA);
+      var dataB = getSideCompareData(sideB);
+      if (!dataA || !dataB) {
+        out.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Data not available for one or both selections.</p></div>';
+        return;
+      }
+
+      var metricRows = buildCompareMetricRows(dataA, dataB, pair);
+
+      var chartHtml = '';
+      if (pair === 'lineup-lineup') {
+        chartHtml = '<div id="rlTeamRadar" class="rl-compare-chart mc-radar-mount"></div>';
+      } else {
+        var barMetrics = metricRows.slice(0, 5).map(function(row) {
+          return {
+            label: row.label,
+            valA: row.valA,
+            valB: row.valB,
+            invert: row.invertA,
+            ctx: row.ctx
+          };
+        });
+        chartHtml = compareBarChartHtml(dataA, dataB, barMetrics);
+      }
+
+      out.innerHTML = '<div class="rl-compare-output">'
+        + '<div class="rl-compare-identities">' + dataA.identityHtml + dataB.identityHtml + '</div>'
+        + '<div class="rl-compare-metrics">' + compareMetricRowsHtml(metricRows) + '</div>'
+        + chartHtml
+        + compareEdgeSummaryHtml(dataA, dataB, pair, metricRows)
+        + compareProfileLinks(dataA, dataB, pair)
+        + '</div>';
+
+      if (pair === 'lineup-lineup' && dataA.row && dataB.row) {
+        if (global.STATE) global.STATE.compareTeams = [dataA.row.t, dataB.row.t];
+        setTimeout(function() {
+          var drawRadar = function() {
+            if (!global.MLBMACharts) return;
+            var rA = splitRowForTeam(dataA.row.t, 'r') || dataA.row;
+            var lA = splitRowForTeam(dataA.row.t, 'l') || dataA.row;
+            var rB = splitRowForTeam(dataB.row.t, 'r') || dataB.row;
+            var lB = splitRowForTeam(dataB.row.t, 'l') || dataB.row;
+            MLBMACharts.renderRadarChart('rlTeamRadar',
+              MLBMACharts.teamRadarComparePayload(dataA.row, rA, lA),
+              MLBMACharts.teamRadarComparePayload(dataB.row, rB, lB),
+              dataA.row.t, dataB.row.t, { size: 340 });
+          };
+          if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+            MLBMACharts.renderOnLiveDataReady(drawRadar, 'compare radar');
+          } else {
+            drawRadar();
+          }
+        }, 0);
+      }
+    }, 50);
+  }
+
+  function compareProfileLinks(dataA, dataB, pair) {
+    var teamA = dataA.entity === 'lineup' || dataA.entity === 'bullpen' ? dataA.label : null;
+    var teamB = dataB.entity === 'lineup' || dataB.entity === 'bullpen' ? dataB.label : null;
+    var pitcherA = dataA.entity === 'pitcher' ? dataA.label : null;
+    var pitcherB = dataB.entity === 'pitcher' ? dataB.label : null;
+    if (pair === 'bullpen-bullpen') {
+      return '<p class="ca-helper rl-compare-links"><a href="bullpen_report.html?team=' + encodeURIComponent(dataA.label) + '">' + esc(dataA.label) + ' report →</a> · '
+        + '<a href="bullpen_report.html?team=' + encodeURIComponent(dataB.label) + '">' + esc(dataB.label) + ' report →</a></p>';
+    }
+    return profileLinks(teamA, teamB, pitcherA, pitcherB);
+  }
+
+  function splitRowForTeam(t, split) {
+    return getResearchTeamData(split === 'l' ? 'l' : 'r').find(function(d) { return d.t === t; });
   }
 
   function mountMarketQuadrant() {
@@ -879,206 +1246,7 @@
     });
   }
 
-  function renderTeamCompare(out) {
-    var a = teamRow(RL.compareA);
-    var b = teamRow(RL.compareB);
-    if (!a || !b) {
-      out.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Team data not available for selection.</p></div>';
-      return;
-    }
-    var keys = [
-      ['osi', 'OSI', false], ['projOSI', 'ProjOSI', false], ['abq', 'ABQ', false], ['rcv', 'RCV', false], ['obr', 'OBR', false],
-      ['ppGap', 'PP-Gap', false, true], ['dfGap', 'Power-Floor Gap', false, true], ['pals', 'PALS', false],
-      ['rhpOSI', 'vRHP', false], ['lhpOSI', 'vLHP', false], ['trend', 'Trend', false, false, true]
-    ];
-    var edge = a.osi > b.osi + 2 ? a.t : (b.osi > a.osi + 2 ? b.t : 'Even');
-    var bet = '';
-    if (a.osi > b.osi + 4) bet = a.t + ' offensive edge â€” run line and team total lean.';
-    else if (b.osi > a.osi + 4) bet = b.t + ' offensive edge â€” fade ' + a.t + ' unders.';
-    else if (a.ppGap > 6 && a.ppGap > b.ppGap) bet = a.t + ' buy-low process signal (PP-Gap +' + a.ppGap.toFixed(0) + ').';
-    else if (b.ppGap > 6 && b.ppGap > a.ppGap) bet = b.t + ' buy-low process signal (PP-Gap +' + b.ppGap.toFixed(0) + ').';
-    else bet = 'Tight matchup â€” lean totals over only with park/weather confirmation.';
-    var rA = splitRowForTeam(a.t, 'r') || a;
-    var lA = splitRowForTeam(a.t, 'l') || a;
-    var rB = splitRowForTeam(b.t, 'r') || b;
-    var lB = splitRowForTeam(b.t, 'l') || b;
-    out.innerHTML = '<div class="rl-compare-identities">' + teamIdentityCard(a) + teamIdentityCard(b) + '</div>'
-      + '<div id="rlTeamRadar" class="mc-radar-mount" style="margin:8px auto 16px;"></div>'
-      + '<div class="rl-compare-summary"><strong>Summary:</strong> ' + esc(compareSummaryRead(a, b)) + '</div>'
-      + edgeCard(edge, 'OSI edge based on composite offensive strength.')
-      + '<div class="rl-betting-angle"><strong>Betting angle:</strong> ' + esc(bet) + '</div>'
-      + metricTable(keys, a, b)
-      + profileLinks(a.t, b.t, null, null);
-    if (global.STATE) global.STATE.compareTeams = [a.t, b.t];
-    setTimeout(function() {
-      var drawRadar = function() {
-        if (!global.MLBMACharts) return;
-        MLBMACharts.renderRadarChart('rlTeamRadar',
-          MLBMACharts.teamRadarComparePayload(a, rA, lA),
-          MLBMACharts.teamRadarComparePayload(b, rB, lB), a.t, b.t, { size: 340 });
-      };
-      if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
-        MLBMACharts.renderOnLiveDataReady(drawRadar, 'compare radar');
-      } else {
-        drawRadar();
-      }
-    }, 0);
-  }
-
-  function pitcherAvatarHtml(name, sizeKey) {
-    if (!A || !name) return '';
-    return A.pitcherAvatar(name, { crop: sizeKey === 'matchup' ? 'matchup' : 'compare', className: 'rl-compare-avatar' });
-  }
-
-  function renderPitcherCompare(out) {
-    var pa = findSpProfile(RL.compareA);
-    var pb = findSpProfile(RL.compareB);
-    var ma = pa && S ? S.spProfileMetrics(pa) : {};
-    var mb = pb && S ? S.spProfileMetrics(pb) : {};
-    var psA = ma.osiAllowed != null ? 100 - ma.osiAllowed : null;
-    var psB = mb.osiAllowed != null ? 100 - mb.osiAllowed : null;
-    var edge = (psA || 0) > (psB || 0) + 5 ? RL.compareA : ((psB || 0) > (psA || 0) + 5 ? RL.compareB : 'Even');
-    out.innerHTML = '<div class="rl-scorecards rl-scorecards--pitchers">'
-      + pitcherScorecard(RL.compareA, 'Pitching Score', psA, false)
-      + pitcherScorecard(RL.compareB, 'Pitching Score', psB, false)
-      + '</div>' + edgeCard(edge, 'Lower OSI allowed = stronger pitcher profile.')
-      + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(RL.compareA) + '</th><th>' + esc(RL.compareB) + '</th></tr></thead><tbody>'
-      + row3('K%', ma.kPct, mb.kPct, true) + row3('BB%', ma.bbPct, mb.bbPct, true)
-      + row3('OSI Allowed', ma.osiAllowed, mb.osiAllowed, false, true)
-      + row3('ABQ Allowed', ma.abqAllowed, mb.abqAllowed, false, true)
-      + row3('RCV Allowed', ma.rcvAllowed, mb.rcvAllowed, false, true)
-      + row3('OBR Allowed', ma.obrAllowed, mb.obrAllowed, false, true)
-      + row3('Pitcher OOR', ma.oor, mb.oor, false, false, 'oor')
-      + '</tbody></table></div>'
-      + profileLinks(null, null, RL.compareA, RL.compareB);
-  }
-
-  function bpScore(u) {
-    return u && u.osiAllowed != null ? Math.max(0, 100 - u.osiAllowed) : null;
-  }
-
-  function renderBullpenCompare(out) {
-    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
-    var ua = units[RL.compareA] || units[(RL.compareA || '').toUpperCase()];
-    var ub = units[RL.compareB] || units[(RL.compareB || '').toUpperCase()];
-    var sa = bpScore(ua);
-    var sb = bpScore(ub);
-    var edge = (sa || 0) > (sb || 0) + 5 ? RL.compareA : ((sb || 0) > (sa || 0) + 5 ? RL.compareB : 'Even');
-    out.innerHTML = '<div class="rl-scorecards">'
-      + scorecardOne(RL.compareA, 'Bullpen Score', sa, false)
-      + scorecardOne(RL.compareB, 'Bullpen Score', sb, false)
-      + '</div>' + edgeCard(edge, 'Bullpen edge from composite OSI allowed.')
-      + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(RL.compareA) + '</th><th>' + esc(RL.compareB) + '</th></tr></thead><tbody>'
-      + row3('OSI Allowed', ua && ua.osiAllowed, ub && ub.osiAllowed, true, true)
-      + row3('ABQ Allowed', ua && ua.abqAllowed, ub && ub.abqAllowed, true, true)
-      + row3('Bullpen Unit OOR', ua && ua.oor, ub && ub.oor, false, false, 'oor')
-      + '</tbody></table></div>'
-      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">' + esc(RL.compareA) + ' report â†’</a> Â· '
-      + '<a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareB) + '">' + esc(RL.compareB) + ' report â†’</a></p>';
-  }
-
-  function renderBullpenLineupCompare(out) {
-    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
-    var ua = units[RL.compareA] || units[(RL.compareA || '').toUpperCase()];
-    var lineup = teamRow(RL.compareB);
-    var bpAllow = ua && ua.osiAllowed;
-    var lineupOsi = lineup ? lineup.osi : null;
-    var edge = lineupOsi != null && bpAllow != null && lineupOsi > bpAllow + 5 ? 'Lineup'
-      : (bpAllow != null && lineupOsi != null && bpAllow < lineupOsi - 5 ? 'Bullpen' : 'Even');
-    out.innerHTML = '<div class="rl-scorecards">'
-      + scorecardOne(RL.compareB, 'Lineup OSI', lineupOsi, false)
-      + scorecardOne(RL.compareA + ' BP', 'OSI Allowed', bpAllow, true)
-      + '</div>' + edgeCard(edge, 'Bullpen OSI allowed vs opposing lineup composite â€” high leverage context.')
-      + '<p class="ca-helper"><a href="bullpen_report.html?team=' + encodeURIComponent(RL.compareA) + '">Bullpen report â†’</a> Â· '
-      + '<a href="team_profile.html?team=' + encodeURIComponent(RL.compareB) + '">Lineup profile â†’</a></p>';
-  }
-
-  function renderLineupPitcherCompare(out) {
-    var team = teamRow(RL.compareA);
-    var sp = findSpProfile(RL.compareB);
-    var sm = sp && S ? S.spProfileMetrics(sp) : {};
-    var hand = sp ? String(S.pickCol(sp, 'hand', 'Hand', 'throws') || 'R').charAt(0) : 'R';
-    var split = getResearchTeamData(hand === 'L' ? 'l' : 'r');
-    var splitRow = split.find(function(d) { return d.t === RL.compareA; });
-    var lineupOsi = splitRow ? splitRow.osi : (team ? team.osi : null);
-    var allow = sm.osiAllowed;
-    var edge = lineupOsi != null && allow != null && lineupOsi > (100 - allow) + 5 ? 'Lineup' : (allow != null && lineupOsi != null && (100 - allow) > lineupOsi + 5 ? 'Pitcher' : 'Even');
-    var bet = edge === 'Lineup'
-      ? RL.compareA + ' lineup (OSI ' + fmt(lineupOsi) + ' vs ' + hand + 'HP) faces ' + RL.compareB + ' (OSI Allowed ' + fmt(allow) + ') â€” lineup edge, over lean.'
-      : edge === 'Pitcher' ? RL.compareB + ' suppresses ' + RL.compareA + ' â€” under/F5 lean.'
-      : 'Even matchup â€” verify bullpen before full-game total.';
-    var pitcherPs = sm.pitchScore != null ? sm.pitchScore : 50;
-    var pTeam = String(S.pickCol(sp, 'pitcher_team', 'Team', 'Tm') || '').toUpperCase();
-    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
-    var pBp = units[pTeam];
-    var pBpAllow = pBp ? (pBp.osiAllowed != null ? pBp.osiAllowed : pBp.osi_allowed) : null;
-    var f5 = S && S.f5Badge ? S.f5Badge(pitcherPs, 50, pBpAllow, 55) : { label: 'Lineup Edge', cls: 'f5-badge f5-muted' };
-    var f5Cls = f5.cls.indexOf('f5-badge') >= 0 ? f5.cls : 'f5-badge ' + f5.cls;
-    out.innerHTML = '<div class="rl-scorecards">'
-      + scorecardOne(RL.compareA + ' vs ' + hand + 'HP', 'Lineup OSI', lineupOsi, false)
-      + scorecardOne(RL.compareB, 'OSI Allowed', allow, true)
-      + '</div>' + edgeCard(edge, 'Lineup split OSI vs pitcher allowed profile.')
-      + '<div class="rl-f5-badge-row"><span class="' + esc(f5Cls) + '">' + esc(f5.label) + '</span></div>'
-      + '<div class="rl-betting-angle"><strong>Betting angle:</strong> ' + esc(bet) + '</div>'
-      + profileLinks(RL.compareA, null, RL.compareB, null);
-  }
-
-  function scorecardOne(title, label, val, invert) {
-    return '<div class="rl-scorecard"><h4>' + esc(title) + '</h4>'
-      + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : 'â€”') + '</div></div>';
-  }
-
-  function pitcherScorecard(name, label, val, invert) {
-    return '<div class="rl-scorecard rl-scorecard--pitcher">'
-      + pitcherAvatarHtml(name, 'compare')
-      + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
-      + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : 'â€”') + '</div></div></div>';
-  }
-
-  function scorecardsHtml(a, b, kind) {
-    return '<div class="rl-scorecards">'
-      + scorecardOne(a.t, 'OSI', a.osi, false)
-      + scorecardOne(b.t, 'OSI', b.osi, false)
-      + '</div>';
-  }
-
-  function edgeCard(edge, why) {
-    return '<div class="rl-edge-card"><strong>Edge: ' + esc(edge) + '</strong> â€” ' + esc(why)
-      + '<div style="margin-top:8px;font-size:12px;color:var(--text-3);">Confidence: Medium Â· Risk: bullpen volatility / lineup changes</div></div>';
-  }
-
-  function metricTable(keys, a, b) {
-    return '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr><th>Metric</th><th>' + esc(a.t) + '</th><th>' + esc(b.t) + '</th></tr></thead><tbody>'
-      + keys.map(function(k) {
-        if (k[0] === 'trend') return row3(k[1], a.trend, b.trend, false, false, 'trend');
-        if (k[0] === 'ppGap' || k[0] === 'dfGap') return row3(k[1], a[k[0]], b[k[0]], false, false, k[0]);
-        return row3(k[1], a[k[0]], b[k[0]], k[2], k[3]);
-      }).join('')
-      + '</tbody></table></div>';
-  }
-
-  function row3(label, va, vb, higherBetter, invert, ctx) {
-    if (ctx === 'oor') {
-      return '<tr><td>' + esc(label) + '</td>'
-        + '<td style="color:' + mColor(va, false, 'oor') + '">' + fmt(va) + '</td>'
-        + '<td style="color:' + mColor(vb, false, 'oor') + '">' + fmt(vb) + '</td></tr>';
-    }
-    if (label === 'PP-Gap' || label === 'Power-Floor Gap') {
-      var ca = label === 'PP-Gap' ? mColor(va, false, 'ppGap') : mColor(va, false, 'dfGap');
-      var cb = label === 'PP-Gap' ? mColor(vb, false, 'ppGap') : mColor(vb, false, 'dfGap');
-      return '<tr><td>' + esc(label) + '</td><td style="color:' + ca + '">' + fmt(va) + '</td><td style="color:' + cb + '">' + fmt(vb) + '</td></tr>';
-    }
-    if (label === 'Trend') {
-      return '<tr><td>' + esc(label) + '</td><td style="color:' + mColor(va, false, null) + '">' + esc(va || 'â€”') + '</td><td style="color:' + mColor(vb, false, null) + '">' + esc(vb || 'â€”') + '</td></tr>';
-    }
-    return '<tr><td>' + esc(label) + '</td>'
-      + '<td style="color:' + mColor(va, invert, invert ? 'osi' : 'osi') + '">' + fmt(va) + '</td>'
-      + '<td style="color:' + mColor(vb, invert, invert ? 'osi' : 'osi') + '">' + fmt(vb) + '</td></tr>';
-  }
-
-  function fmt(v) { return v != null && !isNaN(v) ? Number(v).toFixed(1) : 'â€”'; }
+  function fmt(v) { return v != null && !isNaN(v) ? Number(v).toFixed(1) : '—'; }
 
   function renderResearchHome() {
     var root = document.getElementById('rlResearchHomeRoot');

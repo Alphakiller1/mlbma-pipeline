@@ -33,23 +33,19 @@
 .chase-brand-logo,
 .ca-logo-nav,
 .chase-nav-logo,
-.chase-nav-logo--dark {
-  height: 40px;
-  max-height: 40px;
-  min-width: 160px;
+.chase-nav-logo--wordmark {
+  height: 36px;
+  max-height: 36px;
+  min-width: 120px;
   width: auto;
-  max-width: 280px;
+  max-width: 220px;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.5));
+  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.5));
 }
 
 .chase-nav-logo--compact {
-  width: 32px;
-  height: 32px;
-  max-width: 32px;
-  max-height: 32px;
-  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.4));
+  display: none !important;
 }
 
 .chase-nav-logo-fallback {

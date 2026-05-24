@@ -80,10 +80,14 @@
     var sid = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_ID;
     if (!sid) return Promise.reject(new Error('no sheet id'));
     var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName);
-    return fetch(url, { cache: 'no-store' }).then(function(r) {
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
+    return fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {
       if (!r.ok) throw new Error('fetch ' + tabName);
       return r.text();
-    }).then(parseCsvText);
+    }).then(parseCsvText).finally(function() {
+      if (timer) clearTimeout(timer);
+    });
   }
 
   function normalizeGameKey(raw) {

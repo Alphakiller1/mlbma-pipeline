@@ -296,14 +296,14 @@
   }
 
   function renderOnLiveDataReady(fn, label) {
+    if (!fn) return;
     if (liveDataReady()) {
-      if (fn) fn();
+      fn();
       return;
     }
-    console.log('[RL] waiting for data...' + (label ? ' ' + label : ''));
     if (!global._mlbmaLiveDataQueue) global._mlbmaLiveDataQueue = [];
-    global._mlbmaLiveDataQueue.push(fn);
-    renderOnDataReady(liveDataReady, fn, { interval: 300, maxTries: 120 });
+    var queued = global._mlbmaLiveDataQueue.indexOf(fn) >= 0;
+    if (!queued) global._mlbmaLiveDataQueue.push(fn);
   }
 
   function flushLiveDataReadyQueue() {
@@ -364,11 +364,11 @@
     var logoUrl = teamEspnLogoUrl(d.t);
     var gid = 'qb_' + String(d.t).replace(/[^a-z0-9]/gi, '');
     return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + '">'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="26" fill="' + meta.color + '" fill-opacity=".18"/>'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="20" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
-      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="18"/></clipPath>'
-      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 18) + '" y="' + (cy - 18) + '" width="36" height="36" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
-      + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="8" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" fill-opacity=".18"/>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
+      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="22"/></clipPath>'
+      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 11) + '" y="' + (cy - 11) + '" width="22" height="22" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
+      + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
       + '<title>' + esc(d.t) + ' · RCV ' + d.rcv.toFixed(1) + ' · Gap ' + quadYValue(d).toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + meta.label + '</title>'
       + '</g>';
   }
@@ -389,8 +389,8 @@
       return el;
     }
     var W = opts.width || Math.min(1200, el.clientWidth || 900);
-    var H = opts.height || (W < 700 ? 400 : 480);
-    var ml = 52, mr = 28, mt = 56, mb = 48;
+    var H = opts.height || Math.max(520, W < 700 ? 520 : 560);
+    var ml = 80, mr = 60, mt = 60, mb = 70;
     var cw = W - ml - mr;
     var ch = H - mt - mb;
     var xMn = 0, xMx = 100;

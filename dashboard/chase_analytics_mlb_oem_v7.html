@@ -1645,7 +1645,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="research_lab.js?v=20260528"></script>
 <script src="rl_tab_uix.js?v=20260528"></script>
 <script src="pitcher_lab.js?v=20260524"></script>
-  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -1653,7 +1652,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="40" style="height:40px;max-height:40px;min-width:160px;width:auto;object-fit:contain"
+      <img class="chase-nav-logo chase-nav-logo--wordmark" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="36"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
@@ -1747,33 +1746,34 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <main id="opening-dashboard" class="layer-main opening-layer">
 <div class="data-error-banner" id="dataErrorBanner" style="display:none"></div>
 
-<section id="section-opening-hero" class="ca-opening-hero" aria-label="Chase Analytics Opening Dashboard">
-  <div class="ca-hero-brand">
-    <div class="ca-hero-logo-wrap">
-      <img class="ca-hero-logo" src="assets/chase-logo-horizontal.png" alt="Chase Analytics"
-        onerror="this.style.display='none';">
-      <div class="ca-hero-logo-fallback" aria-hidden="true">CHASE <span>ANALYTICS</span></div>
-    </div>
-    <div class="ca-hero-copy">
-      <div class="ca-kicker">Opening Dashboard</div>
-      <h1>MLB <span class="ca-hero-gradient">Intelligence</span> Platform</h1>
-      <p>Market map, matchup intelligence, and research tools for MLB offensive and pitching edges.</p>
-      <div class="ca-hero-cta-row">
-        <button type="button" class="ca-hero-cta-primary" id="heroCtaMatchups">View Today's Matchups →</button>
-        <a href="#section-research-lab" class="ca-hero-cta-secondary" id="heroCtaResearch">Explore Research Lab →</a>
+<section id="section-opening-hero" class="hero-fullbleed" aria-label="Chase Analytics Opening Dashboard">
+  <div class="hero-bg-layer"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-eyebrow">CHASE ANALYTICS · MLB INTELLIGENCE</div>
+      <h1 class="hero-title">
+        <span class="hero-title-white">The Edge You</span>
+        <span class="hero-title-gradient">Need to Win.</span>
+      </h1>
+      <p class="hero-subtitle">Market map, matchup intelligence, and research tools for MLB offensive and pitching edges. Built on proprietary metrics. Updated daily.</p>
+      <div class="hero-cta-row">
+        <button type="button" class="hero-cta-primary" id="heroCtaMatchups">View Today's Matchups →</button>
+        <button type="button" class="hero-cta-secondary" id="heroCtaResearch">Open Research Lab</button>
+      </div>
+      <div class="hero-stats-row">
+        <div class="hero-stat"><span class="hero-stat-value" id="heroGameCount">—</span><span class="hero-stat-label">Games Today</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><span class="hero-stat-value">30</span><span class="hero-stat-label">Teams Tracked</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><span class="hero-stat-value">9</span><span class="hero-stat-label">Proprietary Metrics</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><span class="hero-stat-value" id="heroSyncTime">—</span><span class="hero-stat-label">Last Synced</span></div>
       </div>
     </div>
-  </div>
-
-  <div class="ca-hero-slate">
-    <div class="ca-slate-date" id="openingHeroDate">—</div>
-    <div class="ca-slate-chips">
-      <span class="ca-chip ca-chip-purple" id="openingHeroSlate">Loading slate…</span>
-      <span class="ca-chip" id="openingHeroSynced">Syncing…</span>
-      <span class="ca-chip ca-chip-live" id="openingHeroLive"><span class="ca-dot"></span> Synced</span>
+    <div class="hero-right">
+      <img src="assets/chase-logo-stacked.png" alt="" class="hero-logo-large" aria-hidden="true" onerror="this.style.display='none'">
     </div>
   </div>
-
 </section>
 
 <section class="platform-section" id="section-opening-market-map">
@@ -1846,7 +1846,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     <button type="button" class="subtab active" data-pane="trends">Trends</button>
     <button type="button" class="subtab" data-pane="splits">Splits</button>
     <button type="button" class="subtab" data-pane="compare">Compare</button>
-    <button type="button" class="subtab" data-pane="pitching">Pitcher Lab</button>
+    <button type="button" class="subtab" data-pane="pitching">Pitcher Intelligence</button>
   </div>
   <div id="rlGlobalControlBar" class="rl-global-control-bar" style="display:none;" aria-hidden="true"></div>
 
@@ -2138,11 +2138,15 @@ function pickCol(row, names) {
 }
 
 function fetchSheetTab(tabName) {
-  return fetch(sheetCsvUrl(tabName), { cache: 'no-store' }).then(function(res) {
+  var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
+  return fetch(sheetCsvUrl(tabName), { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(res) {
     if (!res.ok) throw new Error(tabName + ' HTTP ' + res.status);
     return res.text();
   }).then(function(text) {
     return parseCSV(text);
+  }).finally(function() {
+    if (timer) clearTimeout(timer);
   });
 }
 
@@ -3061,9 +3065,10 @@ function loadResearchData() {
     LIVE_DATA.signalsConvergence = results[2] || [];
     LIVE_DATA.teamProfiles = results[3] || [];
     console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
-    if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length) {
-      console.log('[TRENDS] teamProfiles first row keys:', Object.keys(LIVE_DATA.teamProfiles[0]));
-      console.log('[TRENDS] teamProfiles first row:', JSON.stringify(LIVE_DATA.teamProfiles[0]));
+    console.log('[TRENDS] teamProfiles rows:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 0);
+    if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length > 0) {
+      console.log('[TRENDS] first row keys:', Object.keys(LIVE_DATA.teamProfiles[0]));
+      console.log('[TRENDS] osi_l30 sample:', LIVE_DATA.teamProfiles[0].osi_l30, LIVE_DATA.teamProfiles[0]['osi_l30']);
     }
     LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(results[3]);
     LIVE_DATA.windowMetricsAvailable = detectWindowMetricsFromProfiles(LIVE_DATA.teamProfilesByTeam);
@@ -5045,7 +5050,7 @@ function bindMasterTableSort() {
       if (document.getElementById('leaderboardBody')) {
         renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
       }
-      if (window.PlatformDashboard && STATE.activeMetric) PlatformDashboard.renderMetricBarChart(STATE.activeMetric);
+      /* metric bar chart removed — legacy PlatformDashboard.renderMetricBarChart unavailable */
       urlEncodeState();
     });
   });
@@ -5419,8 +5424,7 @@ function bindHeroCtas() {
   var researchLink = document.getElementById('heroCtaResearch');
   if (researchLink && !researchLink.dataset.bound) {
     researchLink.dataset.bound = '1';
-    researchLink.addEventListener('click', function(e) {
-      e.preventDefault();
+    researchLink.addEventListener('click', function() {
       window.location.hash = '#section-research-lab';
       if (typeof syncDashboardView === 'function') syncDashboardView();
     });
@@ -5431,6 +5435,12 @@ function renderHomePage() {
   bindHeroCtas();
   registerMetricPools();
   renderHomeResearchCards();
+  whenLiveDataReady(function() {
+    var gc = document.getElementById('heroGameCount');
+    var st = document.getElementById('heroSyncTime');
+    if (gc && LIVE_DATA.matchups) gc.textContent = String(LIVE_DATA.matchups.length);
+    if (st && LIVE_DATA.lastUpdated) st.textContent = LIVE_DATA.lastUpdated;
+  }, 'hero stats');
   whenLiveDataReady(function() {
     if (window.MLBMACharts && MLBMACharts.renderMarketMapWithToggle) {
       MLBMACharts.renderMarketMapWithToggle('homeMarketQuadrant', function(split) {
@@ -5454,7 +5464,7 @@ function renderHomeResearchCards() {
     { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends →' },
     { tab: 'splits', title: 'Splits', uses: ['Platoon edges by pitcher handedness', 'Home/away advantages and F5 context', 'Player prop and lineup research angles'], cta: 'Open Splits →' },
     { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare →' },
-    { tab: 'pitching', title: 'Pitcher Lab', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Lab →' }
+    { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Intelligence →' }
   ];
   root.innerHTML = cards.map(function(c) {
     return '<button type="button" class="rl-home-card" data-rl-tab="' + c.tab + '">'
@@ -5664,7 +5674,7 @@ function renderResearchLab() {
     renderTrendHeatmap();
   }, 'renderResearchLab tables');
   renderWatchlistBar();
-  if (typeof renderComparePane === 'function') renderComparePane();
+  if (window.ResearchLab && ResearchLab.renderComparePane) ResearchLab.renderComparePane();
   hidePitchingResearchSections();
   scheduleMarketMapRender();
   urlEncodeState();
@@ -5871,7 +5881,7 @@ function bindDashRankingsControls(){
         var main = document.getElementById('timeToggle');
         if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-time')===t); });
         recomputeAllScores(); renderMasterTable();
-        if(window.PlatformDashboard && STATE.activeMetric) PlatformDashboard.renderMetricBarChart(STATE.activeMetric);
+        /* metric bar chart removed — legacy PlatformDashboard.renderMetricBarChart unavailable */
       });
     });
   }

@@ -113,7 +113,8 @@
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'model_report.html') return 'model-report';
-    if (page === 'matchup_compare.html') return 'opening';
+    if (page === 'matchup_compare.html') return 'matchups';
+    if (page === 'matchup_sheet.html') return 'team-rankings';
     return page;
   }
 
@@ -129,6 +130,7 @@
     if (page === 'glossary.html') return 'glossary';
     if (page === 'model_report.html') return 'model-report';
     if (page === 'matchup_compare.html') return 'matchups';
+    if (page === 'matchup_sheet.html') return 'team-rankings';
     return page;
   }
 
