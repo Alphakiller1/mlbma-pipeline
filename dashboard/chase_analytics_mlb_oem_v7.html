@@ -1637,13 +1637,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <script src="mlbma_config.js?v=20260524"></script>
 <script src="mlbma_ui.js?v=20260524" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260524"></script>
-<script src="matchup_shared.js?v=20260524"></script>
+<script src="matchup_shared.js?v=20260527"></script>
 <script src="mlbma_controls.js?v=20260524"></script>
 <script src="mlbma_charts.js?v=20260523d"></script>
 <script src="profile_controls.js?v=20260524"></script>
 <script src="platform_dashboard.js?v=20260524"></script>
-<script src="research_lab.js?v=20260524"></script>
-<script src="rl_tab_uix.js?v=20260523d"></script>
+<script src="research_lab.js?v=20260527"></script>
+<script src="rl_tab_uix.js?v=20260527"></script>
 <script src="pitcher_lab.js?v=20260524"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
@@ -1653,8 +1653,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="36" style="height:36px;max-height:36px;width:auto;object-fit:contain"
-        onerror="this.onerror=null;this.src='assets/chase-logo-horizontal.png';">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="36" style="height:36px;max-height:36px;width:auto;object-fit:contain"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
@@ -1750,8 +1750,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 <section id="section-opening-hero" class="ca-opening-hero" aria-label="Chase Analytics Opening Dashboard">
   <div class="ca-hero-brand">
     <div class="ca-hero-logo-wrap">
-      <img class="ca-hero-logo" src="assets/chase-logo-transparent.png" alt="Chase Analytics"
-        onerror="this.onerror=null;this.src='assets/chase-logo-horizontal.png';">
+      <img class="ca-hero-logo" src="assets/chase-logo-horizontal.png" alt="Chase Analytics"
+        onerror="this.style.display='none';">
       <div class="ca-hero-logo-fallback" aria-hidden="true">CHASE <span>ANALYTICS</span></div>
     </div>
     <div class="ca-hero-copy">
@@ -2293,17 +2293,21 @@ function buildYtdBothFromSplits(scR, scL) {
 window.buildYtdBothFromSplits = buildYtdBothFromSplits;
 
 
+function profileWindowFieldsFromRow(row) {
+  return {
+    osi_ytd: numOrNull(pickCol(row, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI'])),
+    osi_l30: numOrNull(pickCol(row, ['osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI'])),
+    osi_l14: numOrNull(pickCol(row, ['osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI'])),
+    osi_l7: numOrNull(pickCol(row, ['osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI']))
+  };
+}
+
 function parseTeamProfileRows(rows) {
   var map = {};
   (rows || []).forEach(function(row) {
     var t = teamKey(pickCol(row, ['team', 'Tm', 'Team']));
     if (!t) return;
-    map[t] = {
-      osi_ytd: numOrNull(pickCol(row, ['osi', 'OSI'])),
-      osi_l30: numOrNull(pickCol(row, ['osi_l30', 'OSI_L30'])),
-      osi_l14: numOrNull(pickCol(row, ['osi_l14', 'OSI_L14'])),
-      osi_l7: numOrNull(pickCol(row, ['osi_l7', 'OSI_L7']))
-    };
+    map[t] = profileWindowFieldsFromRow(row);
   });
   return map;
 }
@@ -2336,7 +2340,7 @@ function syncWindowScoresFromProfiles() {
   var avail = { L30: false, L14: false, L7: false };
   ['L30', 'L14', 'L7'].forEach(function(tf) {
     var rows = buildWindowRowsFromProfiles(tf, 'b');
-    if (rows.length >= 20) {
+    if (rows.length >= 10) {
       avail[tf] = true;
       if (tf === 'L30') SCO_L30_B = rows;
       else if (tf === 'L14') SCO_L14_B = rows;
@@ -2351,6 +2355,9 @@ function syncWindowScoresFromProfiles() {
   M_L30 = toMap(SCO_L30_B);
   M_L14 = toMap(SCO_L14_B);
   M_L7 = toMap(SCO_L7_B);
+  console.log('[TRENDS] SCO_L30_B built:', SCO_L30_B.length, 'teams');
+  console.log('[TRENDS] SCO_L14_B built:', SCO_L14_B.length, 'teams');
+  console.log('[TRENDS] SCO_L7_B built:', SCO_L7_B.length, 'teams');
 }
 
 function windowDataMessage(timeframe) {
@@ -3011,18 +3018,26 @@ function loadLandingData() {
 function loadResearchData() {
   if (_researchBundleLoaded) return Promise.resolve();
   console.log('[MLBMA] loadResearchData start');
+  console.log('[TRENDS] fetching Team_Profiles tab key:', TABS.team_profiles);
   return Promise.all([
     fetchSheetTab(TABS.oor),
     fetchSheetTab(TABS.pals),
     fetchSheetTab(TABS.signals_convergence),
-    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.team_profiles).catch(function(err) {
+      console.warn('[TRENDS] Team_Profiles fetch failed:', err);
+      return [];
+    }),
     fetchSheetTab(TABS.today_games)
   ]).then(function(results) {
     LIVE_DATA.oor = parseOorRows(results[0]);
     LIVE_DATA.pals = parsePalsRows(results[1]);
     LIVE_DATA.signalsConvergence = results[2] || [];
     LIVE_DATA.teamProfiles = results[3] || [];
-    console.log('[TRENDS] teamProfiles[0]:', JSON.stringify((LIVE_DATA.teamProfiles[0]) || null));
+    console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
+    if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length) {
+      console.log('[TRENDS] teamProfiles first row keys:', Object.keys(LIVE_DATA.teamProfiles[0]));
+      console.log('[TRENDS] teamProfiles first row:', JSON.stringify(LIVE_DATA.teamProfiles[0]));
+    }
     LIVE_DATA.teamProfilesByTeam = parseTeamProfileRows(results[3]);
     LIVE_DATA.todayGames = parseTodayGamesRows(results[4]);
     enrichSpProfilesFromLive();

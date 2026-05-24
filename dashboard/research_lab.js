@@ -68,20 +68,24 @@
     return Number(v);
   }
 
+  function profileWindowFieldsFromRow(row) {
+    return {
+      osi_ytd: numOrNull(S ? S.pickCol(row, 'osi_ytd', 'OSI_YTD', 'osi', 'OSI') : row.osi_ytd || row.osi),
+      osi_l30: numOrNull(S ? S.pickCol(row, 'osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI') : row.osi_l30),
+      osi_l14: numOrNull(S ? S.pickCol(row, 'osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI') : row.osi_l14),
+      osi_l7: numOrNull(S ? S.pickCol(row, 'osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI') : row.osi_l7)
+    };
+  }
+
   function parseTeamProfilesMap(rows) {
     if (typeof global.parseTeamProfileRows === 'function') {
       return global.parseTeamProfileRows(rows);
     }
     var map = {};
     (rows || []).forEach(function(row) {
-      var t = S ? S.teamKey(S.pickCol(row, ['team', 'Tm', 'Team'])) : String(row.team || '').trim().toUpperCase();
+      var t = S ? S.teamKey(S.pickCol(row, 'team', 'Tm', 'Team')) : String(row.team || '').trim().toUpperCase();
       if (!t) return;
-      map[t] = {
-        osi_ytd: numOrNull(S ? S.pickCol(row, ['osi', 'osi_ytd', 'OSI']) : row.osi),
-        osi_l30: numOrNull(S ? S.pickCol(row, ['osi_l30', 'OSI_L30']) : row.osi_l30),
-        osi_l14: numOrNull(S ? S.pickCol(row, ['osi_l14', 'OSI_L14']) : row.osi_l14),
-        osi_l7: numOrNull(S ? S.pickCol(row, ['osi_l7', 'OSI_L7']) : row.osi_l7)
-      };
+      map[t] = profileWindowFieldsFromRow(row);
     });
     return map;
   }
@@ -129,6 +133,9 @@
       global.M_L7 = global.toMap(global.SCO_L7_B);
     }
     console.log('[TRENDS] built L30:', global.SCO_L30_B.length, 'L14:', global.SCO_L14_B.length, 'L7:', global.SCO_L7_B.length);
+    console.log('[TRENDS] SCO_L30_B built:', global.SCO_L30_B.length, 'teams');
+    console.log('[TRENDS] SCO_L14_B built:', global.SCO_L14_B.length, 'teams');
+    console.log('[TRENDS] SCO_L7_B built:', global.SCO_L7_B.length, 'teams');
   }
 
   function syncResearchGlobalsFromLiveData() {
@@ -246,16 +253,30 @@
     }).catch(function() { return []; });
   }
 
+  function profilesHaveWindowOsi(profs) {
+    var n = 0;
+    Object.keys(profs || {}).forEach(function(t) {
+      var p = profs[t];
+      if (p && p.osi_l30 != null && !isNaN(p.osi_l30)) n++;
+    });
+    return n >= 10;
+  }
+
   function fetchTeamProfiles() {
     var profs = global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam;
-    if (profs && Object.keys(profs).length >= 20) {
+    if (profs && Object.keys(profs).length >= 20 && profilesHaveWindowOsi(profs)) {
       return Promise.resolve(profs);
     }
     if (!S || !TABS || !TABS.team_profiles) return Promise.resolve({});
+    console.log('[TRENDS] fetching Team_Profiles tab key:', TABS.team_profiles);
     return S.fetchSheetTab(TABS.team_profiles).then(function(rows) {
       if (!global.LIVE_DATA) global.LIVE_DATA = {};
       LIVE_DATA.teamProfiles = rows || [];
-      console.log('[TRENDS] teamProfiles[0]:', JSON.stringify((rows && rows[0]) || null));
+      console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
+      if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length) {
+        console.log('[TRENDS] teamProfiles first row keys:', Object.keys(LIVE_DATA.teamProfiles[0]));
+        console.log('[TRENDS] teamProfiles first row:', JSON.stringify(LIVE_DATA.teamProfiles[0]));
+      }
       LIVE_DATA.teamProfilesByTeam = parseTeamProfilesMap(rows);
       syncResearchGlobalsFromLiveData();
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();

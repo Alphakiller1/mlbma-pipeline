@@ -44,6 +44,13 @@
     return k.charAt(0).toUpperCase() + k.slice(1);
   }
 
+  function profileWindowOsi(p, win) {
+    if (!p) return null;
+    var v = win === 'L30' ? p.osi_l30 : win === 'L14' ? p.osi_l14 : win === 'L7' ? p.osi_l7 : null;
+    if (v == null || v === '' || isNaN(v)) return null;
+    return Number(v);
+  }
+
   function windowVal(d, metric, win) {
     var k = metricKey(metric);
     var cap = metricCap(metric);
@@ -51,15 +58,20 @@
     if (metric !== 'osi') return null;
     var profs = global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam;
     var p = profs && profs[d.t];
-    if (p) {
-      if (win === 'L30' && p.osi_l30 != null) return p.osi_l30;
-      if (win === 'L14' && p.osi_l14 != null) return p.osi_l14;
-      if (win === 'L7' && p.osi_l7 != null) return p.osi_l7;
-    }
+    var fromProf = profileWindowOsi(p, win);
+    if (fromProf != null) return fromProf;
     if (win === 'L30') return d['l30' + cap] != null ? d['l30' + cap] : d.l30OSI;
     if (win === 'L14') return d['l14' + cap] != null ? d['l14' + cap] : d.l14OSI;
     if (win === 'L7') return d['l7' + cap] != null ? d['l7' + cap] : d.l7OSI;
     return null;
+  }
+
+  function trendsWindowBannerHtml() {
+    var avail = global.LIVE_DATA && LIVE_DATA.windowDataAvailable;
+    var ok = avail && avail.L30 && avail.L14 && avail.L7;
+    if (ok) return '';
+    return '<div class="rl-window-banner hub-banner hub-banner--window show" style="display:block;margin:0 0 12px">'
+      + 'Pipeline run required for window data — L30/L14/L7 columns show YTD or unavailable until Team_Profiles window OSI is synced.</div>';
   }
 
   function reliabilityLabel(ytd, l14, l7) {
@@ -183,7 +195,8 @@
     var sorted = rows.slice().sort(function(a, b) {
       return (windowVal(b, metric, 'YTD') || 0) - (windowVal(a, metric, 'YTD') || 0);
     });
-    var html = '<table class="rl-table-premium rl-trend-table"><thead><tr>'
+    var html = trendsWindowBannerHtml()
+      + '<table class="rl-table-premium rl-trend-table"><thead><tr>'
       + '<th>Team</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th><th>Δ L14</th><th>Δ L7</th><th>Velocity</th><th>Reliability</th>'
       + '</tr></thead><tbody>';
     sorted.forEach(function(d) {
@@ -446,7 +459,7 @@
     if (!el || el.dataset.uixPatched) return;
     el.dataset.uixPatched = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
-      + '<div class="rl-workspace-eyebrow"><img src="assets/chase-icon-outline.png" alt="" width="20" height="20" onerror="this.style.display=\'none\'"> Research Lab</div>'
+      + '<div class="rl-workspace-eyebrow"><img src="assets/chase-icon-filled.png" alt="" width="20" height="20" onerror="this.style.display=\'none\'"> Research Lab</div>'
       + '<h2 class="rl-workspace-title">Research Lab</h2>'
       + '<p class="rl-workspace-subtitle">Four focused tools for validating offensive and pitching model signals.</p>'
       + '<div class="rl-header-pills">'

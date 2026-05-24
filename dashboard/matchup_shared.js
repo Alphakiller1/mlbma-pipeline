@@ -18,9 +18,17 @@
 
   function pickCol(row) {
     var keys = Object.keys(row || {});
-    var args = Array.prototype.slice.call(arguments, 1);
-    for (var i = 0; i < args.length; i++) {
-      var label = args[i];
+    var rawArgs = Array.prototype.slice.call(arguments, 1);
+    var names = [];
+    rawArgs.forEach(function(arg) {
+      if (Array.isArray(arg)) {
+        arg.forEach(function(n) { names.push(n); });
+      } else {
+        names.push(arg);
+      }
+    });
+    for (var i = 0; i < names.length; i++) {
+      var label = names[i];
       if (row[label] !== undefined && row[label] !== '') return row[label];
       var norm = String(label).toLowerCase().replace(/[^a-z0-9]/g, '');
       for (var k = 0; k < keys.length; k++) {
