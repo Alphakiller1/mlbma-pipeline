@@ -316,6 +316,7 @@
   }
 
   function mountWorkspaceHeader() {
+    if (document.querySelector('.ca-lab__header')) return;
     var el = document.getElementById('researchLabHeader');
     if (!el || el.dataset.mounted) return;
     el.dataset.mounted = '1';
@@ -327,8 +328,10 @@
 
 
   function getActiveRlTab() {
-    var active = document.querySelector('#layerAdvanced .subtab.active');
-    return active ? active.getAttribute('data-pane') : 'trends';
+    var active = document.querySelector('.ca-lab__tab.ca-lab__tab--active') || document.querySelector('#layerAdvanced .subtab.active');
+    var pane = active ? active.getAttribute('data-pane') : 'trends';
+    if (pane === 'pitcher') pane = 'pitching';
+    return pane;
   }
 
   function refreshActiveRlTab() {
@@ -509,6 +512,10 @@
   }
 
   function patchSubtabs() {
+    if (document.querySelector('.ca-lab__tabs')) {
+      global.RESEARCH_SUBTABS = SUBTABS.slice();
+      return;
+    }
     mountWorkspaceHeader();
     var layer = document.getElementById('layerAdvanced');
     if (!layer) return;

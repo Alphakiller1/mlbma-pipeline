@@ -591,6 +591,7 @@
   }
 
   function patchWorkspaceHeader() {
+    if (document.querySelector('.ca-lab__header')) return;
     var el = document.getElementById('researchLabHeader');
     if (!el || el.dataset.uixPatched) return;
     el.dataset.uixPatched = '1';

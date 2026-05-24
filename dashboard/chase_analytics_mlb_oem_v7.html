@@ -1973,6 +1973,205 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   }
 }
 
+/* ====== RESEARCH LAB (ca-lab) ====== */
+.ca-lab {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(124,58,237,0.12), transparent 55%),
+    linear-gradient(180deg, #0a0612 0%, #050509 100%);
+  color: #f5f3ff;
+  font-family: "DM Sans", system-ui, sans-serif;
+  padding: clamp(48px, 6vw, 80px) clamp(20px, 5vw, 48px) clamp(64px, 8vw, 96px);
+  min-height: 100vh;
+}
+.ca-lab__inner { max-width: 1320px; margin: 0 auto; }
+.ca-lab__header { margin-bottom: 32px; }
+.ca-lab__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7C3AED;
+  margin-bottom: 10px;
+}
+.ca-lab__title {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ca-lab__subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #9CA3AF;
+  max-width: 640px;
+  margin: 0;
+}
+.ca-lab__tabs-wrap { margin-bottom: 28px; }
+.ca-lab__tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(124,58,237,0.2);
+}
+.ca-lab__tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: rgba(245,243,255,0.55);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 12px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.ca-lab__tab:hover { color: rgba(245,243,255,0.9); }
+.ca-lab__tab--active {
+  background: linear-gradient(135deg, #7C3AED, #5b21b6);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+}
+.ca-lab__panes { margin-top: 8px; }
+body.view-research .ca-lab { display: block; }
+
+@media (max-width: 640px) {
+  .ca-lab__tabs {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .ca-lab__tab {
+    flex: 1 0 auto;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+/* ====== RESEARCH TOOLS (ca-tools) ====== */
+.ca-tools {
+  padding: clamp(64px, 8vw, 100px) clamp(20px, 5vw, 64px);
+  background: #050509;
+}
+.ca-tools__inner { max-width: 1320px; margin: 0 auto; }
+.ca-tools__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7C3AED;
+  margin-bottom: 10px;
+}
+.ca-tools__title {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 40px;
+  letter-spacing: -0.02em;
+}
+.ca-tools__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.ca-tool-card {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 28px 24px 24px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+.ca-tool-card:hover { transform: translateY(-4px); }
+.ca-tool-card--green:hover { border-color: rgba(34,197,94,0.4); box-shadow: 0 12px 40px rgba(34,197,94,0.15); }
+.ca-tool-card--teal:hover { border-color: rgba(20,184,166,0.4); box-shadow: 0 12px 40px rgba(20,184,166,0.15); }
+.ca-tool-card--purple:hover { border-color: rgba(124,58,237,0.4); box-shadow: 0 12px 40px rgba(124,58,237,0.15); }
+.ca-tool-card--amber:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 12px 40px rgba(245,158,11,0.15); }
+.ca-tool-card__accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 20px 20px 0 0;
+}
+.ca-tool-card--green .ca-tool-card__accent { background: linear-gradient(90deg, #22c55e, #16a34a); }
+.ca-tool-card--teal .ca-tool-card__accent { background: linear-gradient(90deg, #14b8a6, #0d9488); }
+.ca-tool-card--purple .ca-tool-card__accent { background: linear-gradient(90deg, #7C3AED, #5b21b6); }
+.ca-tool-card--amber .ca-tool-card__accent { background: linear-gradient(90deg, #f59e0b, #d97706); }
+.ca-tool-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+.ca-tool-card--green .ca-tool-card__icon { background: rgba(34,197,94,0.12); color: #22c55e; }
+.ca-tool-card--teal .ca-tool-card__icon { background: rgba(20,184,166,0.12); color: #14b8a6; }
+.ca-tool-card--purple .ca-tool-card__icon { background: rgba(124,58,237,0.12); color: #a78bfa; }
+.ca-tool-card--amber .ca-tool-card__icon { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.ca-tool-card__title { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 14px; }
+.ca-tool-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ca-tool-card__list li {
+  font-size: 13px;
+  color: #9CA3AF;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.4;
+}
+.ca-tool-card__list li::before { content: '·'; position: absolute; left: 0; color: #6B7280; }
+.ca-tool-card__cta {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap 0.2s ease;
+}
+.ca-tool-card--green .ca-tool-card__cta { color: #22c55e; }
+.ca-tool-card--teal .ca-tool-card__cta { color: #14b8a6; }
+.ca-tool-card--purple .ca-tool-card__cta { color: #a78bfa; }
+.ca-tool-card--amber .ca-tool-card__cta { color: #f59e0b; }
+.ca-tool-card:hover .ca-tool-card__cta { gap: 10px; }
+
+.opening-layer .ca-tools {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+@media (max-width: 1024px) { .ca-tools__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
+
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260524">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260523d">
@@ -2236,14 +2435,67 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
 </section>
 
-<section class="platform-section" id="section-opening-research-cards">
-  <header class="matchups-section-head">
-    <div class="platform-eyebrow">Research Tools</div>
-    <h2 class="platform-title">Deep-Dive Research</h2>
-    <p class="platform-subtitle">Deep-dive tools — each card opens the matching Research Lab tab.</p>
-  </header>
-  <div class="rl-home-cards-grid" id="rlHomeCardsGrid"></div>
+<section class="ca-tools" id="section-opening-research-cards">
+  <div class="ca-tools__inner">
+    <div class="ca-tools__eyebrow">RESEARCH TOOLS</div>
+    <h2 class="ca-tools__title">Four Tools. One Edge.</h2>
+    <div class="ca-tools__grid">
+      <div class="ca-tool-card ca-tool-card--green" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('trends');},300);">
+        <div class="ca-tool-card__accent"></div>
+        <div class="ca-tool-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M3 17l4-8 4 4 4-6 4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 class="ca-tool-card__title">Trends</h3>
+        <ul class="ca-tool-card__list">
+          <li>Hot and cold offense movement</li>
+          <li>L7/L14 form vs YTD validation</li>
+          <li>Total market timing signals</li>
+        </ul>
+        <div class="ca-tool-card__cta">Open Trends <span>→</span></div>
+      </div>
+      <div class="ca-tool-card ca-tool-card--teal" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('splits');},300);">
+        <div class="ca-tool-card__accent"></div>
+        <div class="ca-tool-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="ca-tool-card__title">Splits</h3>
+        <ul class="ca-tool-card__list">
+          <li>Platoon edges by handedness</li>
+          <li>Home/away and F5 context</li>
+          <li>Player prop research angles</li>
+        </ul>
+        <div class="ca-tool-card__cta">Open Splits <span>→</span></div>
+      </div>
+      <div class="ca-tool-card ca-tool-card--purple" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('compare');},300);">
+        <div class="ca-tool-card__accent"></div>
+        <div class="ca-tool-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="ca-tool-card__title">Compare</h3>
+        <ul class="ca-tool-card__list">
+          <li>Lineup vs Lineup and vs Pitcher</li>
+          <li>Bullpen vs Bullpen matchups</li>
+          <li>Run line and over/under edges</li>
+        </ul>
+        <div class="ca-tool-card__cta">Open Compare <span>→</span></div>
+      </div>
+      <div class="ca-tool-card ca-tool-card--amber" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('pitcher');},300);">
+        <div class="ca-tool-card__accent"></div>
+        <div class="ca-tool-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="ca-tool-card__title">Pitcher Intelligence</h3>
+        <ul class="ca-tool-card__list">
+          <li>ERA validation vs competition</li>
+          <li>Vulnerable starter identification</li>
+          <li>SP prop and F5 decisions</li>
+        </ul>
+        <div class="ca-tool-card__cta">Open Pitcher Lab <span>→</span></div>
+      </div>
+    </div>
+  </div>
 </section>
+
 
 <section class="platform-section" id="section-opening-trend-insights">
   <header class="matchups-section-head">
@@ -2282,22 +2534,30 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 </section>
 
 <!-- Research Lab workspace — loads only when #section-research-lab is active -->
-<section class="oem-mode-pane layer-research-wrap" id="section-research-lab" data-oem-pane="research" aria-hidden="true">
-<div id="researchLabHeader"></div>
+<section class="oem-mode-pane layer-research-wrap ca-lab" id="section-research-lab" data-oem-pane="research" aria-hidden="true">
+<div class="ca-lab__inner">
+<header class="ca-lab__header" id="researchLabHeader">
+  <div class="ca-lab__eyebrow">RESEARCH LAB</div>
+  <h2 class="ca-lab__title">Offensive &amp; Pitching Intelligence</h2>
+  <p class="ca-lab__subtitle">Four focused tools for validating model signals before you bet.</p>
+</header>
+<div class="ca-lab__tabs-wrap">
+  <div class="ca-lab__tabs" role="tablist" aria-label="Research Lab tabs">
+    <button type="button" class="ca-lab__tab ca-lab__tab--active" data-pane="trends" role="tab" aria-selected="true">Trends</button>
+    <button type="button" class="ca-lab__tab" data-pane="splits" role="tab" aria-selected="false">Splits</button>
+    <button type="button" class="ca-lab__tab" data-pane="compare" role="tab" aria-selected="false">Compare</button>
+    <button type="button" class="ca-lab__tab" data-pane="pitcher" role="tab" aria-selected="false">Pitcher Intelligence</button>
+  </div>
+</div>
 <div class="layer-advanced" id="layerAdvanced">
 
 <!-- Metric Breakdowns moved to Layer 3 — placeholder anchor -->
 <div id="metricBreakdownSection" style="display:none;"></div>
 
 <div class="section">
-  <div class="subtabs rl-segment-tabs">
-    <button type="button" class="subtab active" data-pane="trends">Trends</button>
-    <button type="button" class="subtab" data-pane="splits">Splits</button>
-    <button type="button" class="subtab" data-pane="compare">Compare</button>
-    <button type="button" class="subtab" data-pane="pitching">Pitcher Intelligence</button>
-  </div>
   <div id="rlGlobalControlBar" class="rl-global-control-bar" style="display:none;" aria-hidden="true"></div>
 
+  <div class="ca-lab__panes">
   <div id="pane-trends" style="display:block;">
     <p class="rl-tab-purpose">Track how team offensive metrics move across time windows. Use for: identifying hot or cold offenses before betting totals, validating L7 momentum vs sustained trends, finding regression candidates.</p>
     <div id="rlTrendControlsMount"></div>
@@ -2402,10 +2662,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   </div>
 
   <div id="referenceTablesMount" style="display:none;"></div>
+  </div><!-- /ca-lab__panes -->
 </div>
 
 </div><!-- /layer-advanced -->
-</div><!-- /pane-oem-research -->
+</div><!-- /ca-lab__inner -->
 </section><!-- /section-research-lab -->
 
 <!-- Modal --><!-- Modal -->
@@ -4399,6 +4660,7 @@ var RESEARCH_SUBTABS = ['trends', 'splits', 'compare', 'pitching'];
 function getInitialRlTab() {
   try {
     var t = sessionStorage.getItem('rlTab');
+    if (t === 'pitcher') t = 'pitching';
     if (t && RESEARCH_SUBTABS.indexOf(t) >= 0) {
       sessionStorage.removeItem('rlTab');
       return t;
@@ -4407,22 +4669,29 @@ function getInitialRlTab() {
   return 'trends';
 }
 
+function syncCaLabTabs(name) {
+  var root = document.getElementById('section-research-lab');
+  if (!root) return;
+  root.querySelectorAll('.ca-lab__tab').forEach(function(tab) {
+    var pane = tab.getAttribute('data-pane');
+    var match = (pane === 'pitcher' && name === 'pitching') || pane === name;
+    tab.classList.toggle('ca-lab__tab--active', match);
+    tab.setAttribute('aria-selected', match ? 'true' : 'false');
+  });
+}
+
 function showResearchSubtab(name) {
   name = name || 'trends';
   if (name === 'research-home') name = 'trends';
   if (name === 'splits-trends') name = 'splits';
   if (name === 'pitching-vs-lineup') name = 'compare';
+  if (name === 'pitcher') name = 'pitching';
   if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'trends';
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
     if (el) el.style.display = (id === name) ? 'block' : 'none';
   });
-  var layer = document.getElementById('layerAdvanced');
-  if (layer) {
-    layer.querySelectorAll('.subtab').forEach(function(btn) {
-      btn.classList.toggle('active', btn.getAttribute('data-pane') === name);
-    });
-  }
+  syncCaLabTabs(name);
   onResearchSubtabShown(name);
 }
 
@@ -4479,14 +4748,20 @@ function renderDailyRead() {
 }
 
 function bindResearchSubtabs() {
-  var layer = document.getElementById('layerAdvanced');
-  if (!layer || layer.dataset.subtabsBound) return;
-  layer.dataset.subtabsBound = '1';
-  layer.querySelectorAll('.subtab').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var pane = btn.getAttribute('data-pane');
-      if (!pane) return;
-      showResearchSubtab(pane);
+  var root = document.getElementById('section-research-lab');
+  if (!root || root.dataset.subtabsBound) return;
+  root.dataset.subtabsBound = '1';
+  root.querySelectorAll('.ca-lab__tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var paneId = tab.getAttribute('data-pane');
+      if (!paneId) return;
+      root.querySelectorAll('.ca-lab__tab').forEach(function(t) {
+        t.classList.remove('ca-lab__tab--active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('ca-lab__tab--active');
+      tab.setAttribute('aria-selected', 'true');
+      showResearchSubtab(paneId);
       if (typeof urlEncodeState === 'function') urlEncodeState();
     });
   });
@@ -5960,6 +6235,7 @@ function renderHomePage() {
 }
 
 function renderHomeResearchCards() {
+  if (document.querySelector('.ca-tools__grid')) return;
   var root = document.getElementById('rlHomeCardsGrid');
   if (!root) return;
   var cards = [

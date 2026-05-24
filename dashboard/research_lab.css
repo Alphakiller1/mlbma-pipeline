@@ -3,89 +3,12 @@
 body.view-research #oorSection,
 html.view-research #oorSection { display: none !important; }
 
-.rl-workspace-header {
-  padding: 32px 40px;
-  margin-bottom: 24px;
-  border-radius: 16px;
-  border: 1px solid rgba(124, 58, 237, 0.2);
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(5, 5, 9, 0));
-}
-.rl-workspace-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #A78BFA;
-  margin-bottom: 10px;
-}
-.rl-workspace-eyebrow img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  opacity: 0.9;
-}
-.rl-workspace-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 0 0 8px;
-  color: #F9FAFB;
-}
-.rl-workspace-title img { display: none; }
-.rl-workspace-subtitle { font-size: 14px; color: #9CA3AF; margin: 0 0 20px; max-width: 720px; line-height: 1.55; }
-.rl-header-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.rl-header-pill {
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: #9CA3AF;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-.rl-header-pill:hover {
-  color: #F9FAFB;
-  border-color: rgba(124, 58, 237, 0.4);
-  background: rgba(124, 58, 237, 0.12);
-}
 .rl-workflow-strip {
   display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; color: var(--text-3);
 }
 .rl-workflow-step {
   padding: 4px 10px; border-radius: 6px; background: var(--bg-4, #1f1f25);
   border: 1px solid var(--border);
-}
-
-.rl-segment-tabs {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  margin-bottom: 24px;
-}
-.rl-segment-tabs .subtab {
-  border: none; background: transparent; color: #6B7280;
-  padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: color 150ms ease, background 150ms ease, box-shadow 150ms ease;
-}
-.rl-segment-tabs .subtab:hover { color: #F9FAFB; }
-.rl-segment-tabs .subtab.active {
-  background: #7C3AED; color: #fff;
-  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.4);
 }
 
 .rl-loading-banner {
