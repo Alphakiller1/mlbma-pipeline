@@ -194,14 +194,15 @@ function fixSplitColumns(rows) {
 }
 
 function parseTeamProfiles(rows) {
+  rows = fixSplitColumns(rows || []);
   var map = {};
   (rows || []).forEach(function(row) {
     var t = teamKey(pick(row, ['team', 'Tm', 'Team']));
     if (!t) return;
     map[t] = {
-      osi_l30: num(pick(row, ['osi_l30', 'OSI_L30', 'OSI L30', 'L30_OSI'])),
-      osi_l14: num(pick(row, ['osi_l14', 'OSI_L14', 'OSI L14', 'L14_OSI'])),
-      osi_l7: num(pick(row, ['osi_l7', 'OSI_L7', 'OSI L7', 'L7_OSI'])),
+      osi_l30: extractWindowOSI(pick(row, ['osi_l30', 'OSI_L30', 'OSI L30', 'L30_OSI'])),
+      osi_l14: extractWindowOSI(pick(row, ['osi_l14', 'OSI_L14', 'OSI L14', 'L14_OSI'])),
+      osi_l7: extractWindowOSI(pick(row, ['osi_l7', 'OSI_L7', 'OSI L7', 'L7_OSI'])),
       home_osi: num(pick(row, ['home_osi', 'Home_OSI'])),
       away_osi: num(pick(row, ['away_osi', 'Away_OSI']))
     };
