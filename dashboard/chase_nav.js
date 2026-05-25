@@ -1,4 +1,4 @@
-// v20260523d — three-view nav: opening / matchups / research
+﻿// v20260523d — three-view nav: opening / matchups / research
 /**
  * Chase Analytics navigation — dropdowns, mobile menu, active page, pipeline timestamp.
  */
@@ -114,7 +114,7 @@
     if (page === 'glossary.html') return 'glossary';
     if (page === 'model_report.html') return 'model-report';
     if (page === 'matchup_compare.html') return 'matchups';
-    if (page === 'matchup_sheet.html') return 'team-rankings';
+    if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'team-rankings';
     return page;
   }
 
@@ -130,7 +130,7 @@
     if (page === 'glossary.html') return 'glossary';
     if (page === 'model_report.html') return 'model-report';
     if (page === 'matchup_compare.html') return 'matchups';
-    if (page === 'matchup_sheet.html') return 'team-rankings';
+    if (page === 'team_rankings.html') return 'team-rankings';
     return page;
   }
 

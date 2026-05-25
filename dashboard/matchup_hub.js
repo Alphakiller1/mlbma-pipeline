@@ -1,4 +1,4 @@
-console.log('[HUB] matchup_hub.js starting to parse');
+﻿console.log('[HUB] matchup_hub.js starting to parse');
 window.matchupHubLoaded = false;
 
 try {
@@ -6,7 +6,7 @@ try {
   'use strict';
 
   /**
-   * Team Rankings hub table — matchup_sheet.html
+   * Team Rankings hub table — team_rankings.html
    */
   window.MatchupShared = window.MLBMASharedMatchup;
   var A = window.MLBMAAssets;
