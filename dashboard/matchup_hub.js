@@ -286,28 +286,63 @@ function applyF5Proxy(row) {
   return out;
 }
 
-function ensureScBoth() {
-  if (!HUB.scBoth || !HUB.scBoth.length) {
-    if ((HUB.scR || []).length && (HUB.scL || []).length) {
-      HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
-    }
-    if (!HUB.scBoth || !HUB.scBoth.length) {
-      HUB.scBoth = buildBlended(HUB.scR || [], HUB.scL || []);
-    }
-  }
+function buildScBothFromHandedness() {
+  if (!HUB.scR || !HUB.scR.length || !HUB.scL || !HUB.scL.length) return;
+  var lMap = {};
+  HUB.scL.forEach(function(r) { lMap[r.t] = r; });
+  HUB.scBoth = HUB.scR.map(function(r) {
+    var l = lMap[r.t] || r;
+    return Object.assign({}, r, {
+      osi: (r.osi + (l.osi || r.osi)) / 2,
+      abq: (r.abq + (l.abq || r.abq)) / 2,
+      rcv: (r.rcv + (l.rcv || r.rcv)) / 2,
+      obr: (r.obr + (l.obr || r.obr)) / 2,
+      woba: ((r.woba || 0) + (l.woba || r.woba || 0)) / 2,
+      xwoba: ((r.xwoba || 0) + (l.xwoba || r.xwoba || 0)) / 2,
+      wrc: ((r.wrc || 0) + (l.wrc || r.wrc || 0)) / 2,
+      slg: ((r.slg || 0) + (l.slg || r.slg || 0)) / 2
+    });
+  });
+  console.log('[HUB] scBoth built:', HUB.scBoth.length, 'teams');
 }
 
 function rebuildMasterRows() {
-  ensureScBoth();
-  var raw;
-  if (HUB.hand === 'r') raw = HUB.scR || [];
-  else if (HUB.hand === 'l') raw = HUB.scL || [];
-  else if (HUB.hand === 'f5') raw = (HUB.scBoth || []).map(applyF5Proxy);
-  else raw = HUB.scBoth || [];
-  HUB.activeSplit = HUB.hand;
-  if (HUB.location === 'home' && HUB.locationAvail.home) raw = overlayLocationRows(raw, HUB.splitHome);
-  else if (HUB.location === 'away' && HUB.locationAvail.away) raw = overlayLocationRows(raw, HUB.splitAway);
-  var rows = raw.map(function(r) { return enrichRow(Object.assign({}, r)); });
+  var hand = HUB.hand || 'both';
+  var base;
+
+  console.log('[HUB] rebuildMasterRows hand:', hand, 'scR:', HUB.scR ? HUB.scR.length : 0, 'scL:', HUB.scL ? HUB.scL.length : 0, 'scBoth:', HUB.scBoth ? HUB.scBoth.length : 0);
+
+  if (hand === 'r') {
+    base = HUB.scR && HUB.scR.length ? HUB.scR.slice() : null;
+  } else if (hand === 'l') {
+    base = HUB.scL && HUB.scL.length ? HUB.scL.slice() : null;
+  } else if (hand === 'f5') {
+    var src = (HUB.scBoth && HUB.scBoth.length) ? HUB.scBoth : HUB.scR;
+    base = (src || []).map(function(r) {
+      return Object.assign({}, r, {
+        osi: (r.abq * 0.45) + (r.obr * 0.35) + (r.rcv * 0.20)
+      });
+    });
+  } else {
+    base = (HUB.scBoth && HUB.scBoth.length) ? HUB.scBoth.slice() : (HUB.scR ? HUB.scR.slice() : null);
+  }
+
+  if (!base || !base.length) {
+    console.warn('[HUB] rebuildMasterRows: no rows for hand=' + hand + ', falling back to scR');
+    base = (HUB.scR || []).slice();
+  }
+
+  var location = HUB.location || 'all';
+  if (location === 'home' && HUB.splitHome && HUB.splitHome.length) {
+    base = overlayLocationRows(base, HUB.splitHome);
+  } else if (location === 'away' && HUB.splitAway && HUB.splitAway.length) {
+    base = overlayLocationRows(base, HUB.splitAway);
+  }
+
+  HUB.activeSplit = hand;
+  var rows = (base || []).map(function(r) {
+    return enrichRow(Object.assign({}, r));
+  });
   if (hubA && hubA.registerLeaguePool) {
     ['osi', 'abq', 'rcv', 'obr', 'projOSI', 'ppGap', 'wrc', 'xwoba', 'slg'].forEach(function(k) {
       hubA.registerLeaguePool(k, rows.map(function(d) { return d[k]; }));
@@ -316,20 +351,22 @@ function rebuildMasterRows() {
   return rows;
 }
 
-function sortedRows() {
-  var rows = rebuildMasterRows().slice();
+function sortRows(rows) {
   var k = HUB.sortKey;
   var dir = HUB.sortDir;
-  rows.sort(function(a, b) {
+  return (rows || []).slice().sort(function(a, b) {
     var av = a[k], bv = b[k];
     if (k === 'rank') {
       av = a.osi; bv = b.osi;
     }
-    if (av == null) return 1;
-    if (bv == null) return -1;
+    if (av == null || isNaN(av)) return 1;
+    if (bv == null || isNaN(bv)) return -1;
     return (av < bv ? -1 : av > bv ? 1 : 0) * dir;
   });
-  return rows;
+}
+
+function sortedRows() {
+  return sortRows(rebuildMasterRows());
 }
 
 function confirmLine() {
@@ -446,7 +483,10 @@ function renderHubTable() {
     body.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--text-2)">Loading...</td></tr>';
     return;
   }
-  var rows = sortedRows();
+  console.log('[HUB] renderHubTable state:', HUB.hand, HUB.window, HUB.location);
+  var built = rebuildMasterRows();
+  console.log('[HUB] rebuildMasterRows returned:', built ? built.length : 0, 'rows');
+  var rows = sortRows(built);
   console.log('[HUB] renderHubTable called, rows:', rows.length, 'window:', HUB.window, 'hand:', HUB.hand);
   console.log('[HUB] windowAvail:', JSON.stringify(HUB.windowAvail));
   hideHubLoading();
@@ -523,6 +563,10 @@ function hubLoadData() {
     HUB.scL = (res[0] || []).map(scoreRaw).filter(Boolean);
     HUB.teamProfiles = parseTeamProfiles(res[1] || []);
     HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
+    if ((!HUB.scBoth || !HUB.scBoth.length) && HUB.scR.length && HUB.scL.length) {
+      buildScBothFromHandedness();
+    }
+    console.log('[HUB] after load: scR:', HUB.scR.length, 'scL:', HUB.scL.length, 'scBoth:', HUB.scBoth ? HUB.scBoth.length : 0);
     HUB.splitHome = buildLocationSplitRows(res[2] || [], scoreFn, 'home_osi');
     HUB.splitAway = buildLocationSplitRows(res[3] || [], scoreFn, 'away_osi');
     HUB.locationAvail.home = HUB.splitHome.length >= 10;
