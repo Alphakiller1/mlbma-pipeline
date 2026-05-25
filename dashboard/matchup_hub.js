@@ -97,6 +97,29 @@ function pick(row, keys) {
   return hubS ? hubS.pickCol(row, keys) : (row && row[keys[0]]);
 }
 
+function buildBlended(scR, scL) {
+  var lMap = {};
+  (scL || []).forEach(function(r) { lMap[r.t] = r; });
+  return (scR || []).map(function(r) {
+    var l = lMap[r.t] || r;
+    function avg(a, b) {
+      var av = a != null && !isNaN(a) ? a : 0;
+      var bv = b != null && !isNaN(b) ? b : av;
+      return (av + bv) / 2;
+    }
+    return Object.assign({}, r, {
+      osi: avg(r.osi, l.osi),
+      abq: avg(r.abq, l.abq),
+      rcv: avg(r.rcv, l.rcv),
+      obr: avg(r.obr, l.obr),
+      woba: avg(r.woba, l.woba),
+      wrc: avg(r.wrc, l.wrc),
+      xwoba: avg(r.xwoba, l.xwoba),
+      slg: avg(r.slg, l.slg)
+    });
+  });
+}
+
 function mergeBoth(scR, scL) {
   var by = {};
   scR.forEach(function(r) { by[r.t] = { r: r }; });
@@ -263,12 +286,24 @@ function applyF5Proxy(row) {
   return out;
 }
 
+function ensureScBoth() {
+  if (!HUB.scBoth || !HUB.scBoth.length) {
+    if ((HUB.scR || []).length && (HUB.scL || []).length) {
+      HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
+    }
+    if (!HUB.scBoth || !HUB.scBoth.length) {
+      HUB.scBoth = buildBlended(HUB.scR || [], HUB.scL || []);
+    }
+  }
+}
+
 function rebuildMasterRows() {
+  ensureScBoth();
   var raw;
-  if (HUB.hand === 'r') raw = HUB.scR;
-  else if (HUB.hand === 'l') raw = HUB.scL;
+  if (HUB.hand === 'r') raw = HUB.scR || [];
+  else if (HUB.hand === 'l') raw = HUB.scL || [];
   else if (HUB.hand === 'f5') raw = (HUB.scBoth || []).map(applyF5Proxy);
-  else raw = HUB.scBoth;
+  else raw = HUB.scBoth || [];
   HUB.activeSplit = HUB.hand;
   if (HUB.location === 'home' && HUB.locationAvail.home) raw = overlayLocationRows(raw, HUB.splitHome);
   else if (HUB.location === 'away' && HUB.locationAvail.away) raw = overlayLocationRows(raw, HUB.splitAway);
@@ -327,6 +362,12 @@ function renderControls() {
         if (key === 'window') setWindow(v);
         else {
           HUB[key] = v;
+          if (key === 'hand') {
+            console.log('[HUB] hand changed to:', HUB.hand, 'scR:', (HUB.scR || []).length, 'scL:', (HUB.scL || []).length, 'scBoth:', (HUB.scBoth || []).length);
+          }
+          if (key === 'location') {
+            console.log('[HUB] location set to:', HUB.location, 'splitHome length:', (HUB.splitHome || []).length, 'splitAway length:', (HUB.splitAway || []).length);
+          }
           renderControls();
           updateBanners();
         }
@@ -346,15 +387,23 @@ function renderControls() {
 function updateBanners() {
   var wBan = document.getElementById('hubWindowBanner');
   if (wBan) {
-    var show = HUB.window !== 'YTD' && !HUB.windowAvail[HUB.window];
-    wBan.classList.toggle('show', show);
-    if (show) wBan.textContent = HUB.window + ' data requires pipeline time-window enhancement \u2014 showing YTD';
+    var showWin = HUB.window !== 'YTD' && !HUB.windowAvail[HUB.window];
+    wBan.classList.toggle('show', showWin);
+    if (showWin) {
+      wBan.textContent = 'L30/L14/L7 window data requires pipeline enhancement \u2014 showing YTD baseline';
+    }
   }
   var lBan = document.getElementById('hubLocationBanner');
   if (lBan) {
     var needLoc = HUB.location === 'home' || HUB.location === 'away';
-    var ok = HUB.location === 'home' ? HUB.locationAvail.home : HUB.locationAvail.away;
-    lBan.classList.toggle('show', needLoc && !ok);
+    var homeEmpty = !(HUB.splitHome && HUB.splitHome.length);
+    var awayEmpty = !(HUB.splitAway && HUB.splitAway.length);
+    var locMissing = HUB.location === 'home' ? homeEmpty : (HUB.location === 'away' ? awayEmpty : false);
+    var showLoc = needLoc && (locMissing || !(HUB.location === 'home' ? HUB.locationAvail.home : HUB.locationAvail.away));
+    lBan.classList.toggle('show', showLoc);
+    if (showLoc) {
+      lBan.textContent = 'Home/Away splits require batter_splits_home/away pipeline data';
+    }
   }
 }
 
@@ -399,6 +448,7 @@ function renderHubTable() {
   }
   var rows = sortedRows();
   console.log('[HUB] renderHubTable called, rows:', rows.length, 'window:', HUB.window, 'hand:', HUB.hand);
+  console.log('[HUB] windowAvail:', JSON.stringify(HUB.windowAvail));
   hideHubLoading();
   var html = '';
   var colSpan = 13;
@@ -431,8 +481,7 @@ function hideHubLoading() {
   var l = document.getElementById('hubLoading');
   if (l) {
     l.classList.add('hide');
-    l.style.display = 'none';
-    l.style.visibility = 'hidden';
+    l.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
     l.setAttribute('aria-hidden', 'true');
   }
 }

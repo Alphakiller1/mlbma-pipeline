@@ -116,6 +116,12 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 .hub-takeaway{font-size:11px;color:var(--text-2);max-width:220px;line-height:1.35}
 .loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
 .loading.hide{display:none}
+#hubLoading.hide {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 </style>
 </head>
 <body>
@@ -128,7 +134,7 @@ setTimeout(function() {
   var l = document.getElementById('hubLoading');
   if (l) { l.style.display = 'none'; }
   console.log('[EMERGENCY] Loading timeout fired - hub may have crashed');
-}, 8000);
+}, 2000);
 </script>
 <!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
@@ -243,7 +249,7 @@ window.onerror = function(msg, src, line, col, err) {
 };
 </script>
 <!-- Team Rankings hub — required; load before chase_nav.js -->
-<script src="matchup_hub.js?v=20260526h"></script>
+<script src="matchup_hub.js?v=20260526i"></script>
 <script src="chase_nav.js?v=20260526c"></script>
 </body>
 </html>
