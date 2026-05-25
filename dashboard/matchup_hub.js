@@ -389,16 +389,17 @@ function updateHead() {
 }
 
 function renderHubTable() {
-  console.log('[HUB] renderHubTable called, rows:', HUB.loaded ? sortedRows().length : 0, 'window:', HUB.window, 'hand:', HUB.hand);
-  if (HUB.loaded) hideHubLoading();
   updateHead();
   var body = document.getElementById('hubTableBody');
   if (!body) return;
   if (!HUB.loaded) {
+    console.log('[HUB] renderHubTable called, rows: 0 (not loaded yet)');
     body.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--text-2)">Loading...</td></tr>';
     return;
   }
   var rows = sortedRows();
+  console.log('[HUB] renderHubTable called, rows:', rows.length, 'window:', HUB.window, 'hand:', HUB.hand);
+  hideHubLoading();
   var html = '';
   var colSpan = 13;
   rows.forEach(function(d, i) {
