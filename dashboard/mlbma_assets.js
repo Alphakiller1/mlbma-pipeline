@@ -111,10 +111,27 @@
       + mlbId + '/headshot/67/current';
   }
 
+  var KNOWN_PITCHER_IDS = {
+    'Max Scherzer': 453286,
+    'Justin Verlander': 434378,
+    'Gerrit Cole': 543037,
+    'Jacob deGrom': 594798,
+    'Zack Wheeler': 554430,
+    'Shane Bieber': 669456,
+    'Sandy Alcantara': 645261,
+    'Corbin Burnes': 669203,
+    'Spencer Strider': 675911,
+    'Freddy Peralta': 642547
+  };
+
   function resolveMlbId(idOrName) {
     if (idOrName == null || idOrName === '') return null;
     if (/^\d+$/.test(String(idOrName))) return String(idOrName);
-    return lookupMlbId(idOrName);
+    var id = lookupMlbId(idOrName);
+    if (id) return id;
+    var key = String(idOrName).trim();
+    if (KNOWN_PITCHER_IDS[key]) return String(KNOWN_PITCHER_IDS[key]);
+    return null;
   }
 
   function normalizeAvatarOpts(sizeKeyOrOpts, maybeOpts) {

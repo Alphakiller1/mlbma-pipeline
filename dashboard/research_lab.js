@@ -356,8 +356,8 @@
     var tabLabel = { trends: 'Trends', splits: 'Splits', compare: 'Compare', pitching: 'Pitcher Lab' }[tab] || tab;
     var splitLabel = { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away' }[st.split] || 'Both';
     el.innerHTML = '<div class="rl-global-bar-inner">'
-      + '<span class="rl-global-bar-title">Research Lab Â· <strong>' + esc(tabLabel) + '</strong> Â· '
-      + esc(splitLabel) + ' Â· ' + esc(st.time) + '</span>'
+      + '<span class="rl-global-bar-title">Research Lab \u00B7 <strong>' + esc(tabLabel) + '</strong> \u00B7 '
+      + esc(splitLabel) + ' \u00B7 ' + esc(st.time) + '</span>'
       + '<div class="rl-global-bar-controls">'
       + '<span class="rl-global-bar-label">Split</span>'
       + ['b', 'r', 'l', 'home', 'away'].map(function(sp) {
@@ -410,7 +410,7 @@
     mount.innerHTML = card('Biggest risers', risers, function(d) { return d.t + ' +' + (d[cmpKey] || 0).toFixed(1); })
       + card('Biggest fallers', fallers, function(d) { return d.t + ' ' + (d[cmpKey] || 0).toFixed(1); })
       + card('Most volatile', volatile, function(d) { return d.t + ' L7 Î” ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
-      + card('Most stable', stable, function(d) { return d.t + ' Â· ' + (d.trend || 'Stable'); });
+      + card('Most stable', stable, function(d) { return d.t + ' \u00B7 ' + (d.trend || 'Stable'); });
   }
 
   function mountSplitsEntityControls() {
@@ -1289,7 +1289,7 @@
     if (teamB) p.push('<a href="team_profile.html?team=' + encodeURIComponent(teamB) + '">' + esc(teamB) + ' profile â†’</a>');
     if (pitcherA) p.push('<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(pitcherA) + '">' + esc(pitcherA) + ' â†’</a>');
     if (pitcherB) p.push('<a href="pitcher_profile.html?pitcher=' + encodeURIComponent(pitcherB) + '">' + esc(pitcherB) + ' â†’</a>');
-    return '<p class="ca-helper" style="margin-top:12px;">' + p.join(' Â· ') + '</p>';
+    return '<p class="ca-helper" style="margin-top:12px;">' + p.join(' \u00B7 ') + '</p>';
   }
 
   function renderPitchingVsLineup() {

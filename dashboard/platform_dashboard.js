@@ -7,6 +7,7 @@
   var A = global.MLBMAAssets;
   var SORT = 'edge';
   var FILTER = 'all';
+  var MATCH_DAY = 'today';
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -324,6 +325,67 @@
     }
   }
 
+  function fetchTomorrowMatchups() {
+    if (global.LIVE_DATA && LIVE_DATA.tomorrowMatchups && LIVE_DATA.tomorrowMatchups.length) {
+      return Promise.resolve(LIVE_DATA.tomorrowMatchups);
+    }
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var tomorrowStr = tomorrow.toISOString().split('T')[0];
+    var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + tomorrowStr + '&hydrate=probablePitcher,team';
+    return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+      var games = [];
+      (data.dates || []).forEach(function(d) {
+        (d.games || []).forEach(function(g) {
+          var away = g.teams && g.teams.away && g.teams.away.team;
+          var home = g.teams && g.teams.home && g.teams.home.team;
+          if (!away || !home) return;
+          var awaySp = g.teams.away.probablePitcher || {};
+          var homeSp = g.teams.home.probablePitcher || {};
+          games.push({
+            time: g.gameDate ? new Date(g.gameDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '',
+            away: teamKey(away.abbreviation || away.teamName),
+            home: teamKey(home.abbreviation || home.teamName),
+            stadium: (g.venue && g.venue.name) || '',
+            awaySP: awaySp.fullName || 'TBD',
+            awayHand: (awaySp.pitchHand && awaySp.pitchHand.code) || 'R',
+            homeSP: homeSp.fullName || 'TBD',
+            homeHand: (homeSp.pitchHand && homeSp.pitchHand.code) || 'R',
+            isTomorrow: true
+          });
+        });
+      });
+      global.LIVE_DATA = global.LIVE_DATA || {};
+      global.LIVE_DATA.tomorrowMatchups = games;
+      return games;
+    }).catch(function(err) {
+      console.warn('[PD] tomorrow schedule fetch failed', err);
+      return [];
+    });
+  }
+
+  function renderTomorrowCard(m, cardIdx) {
+    var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
+    var awayPs = spPitchScore(m.home);
+    var homePs = spPitchScore(m.away);
+    var handLabel = m.homeHand === 'L' ? 'LHP' : 'RHP';
+    var awayHandLabel = m.awayHand === 'L' ? 'LHP' : 'RHP';
+    return '<article class="hero-matchup-card hero-matchup-card--tomorrow" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
+      + '<div class="hmc-row hmc-teams">'
+      + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '') + '</div>'
+      + '<span class="hmc-at">@</span>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '') + '</div>'
+      + '<span class="hmc-meta">' + esc(m.time) + (m.stadium ? ' \u00B7 ' + esc(m.stadium) : '') + '</span>'
+      + '</div>'
+      + '<div class="hmc-row hmc-pitchers">'
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3 })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, fip: homePs }, { eager: cardIdx < 3 })
+      + '</div>'
+      + '<p class="hmc-lineup-placeholder" style="font-size:12px;color:#9CA3AF;margin:8px 0">Lineups TBD</p>'
+      + '<p class="hmc-tomorrow-note">Projected lineups and full analysis available day-of</p>'
+      + '</article>';
+  }
+
   function renderHeroMatchups() {
     var grid = document.getElementById('matchupsHeroGrid');
     if (!grid) {
@@ -335,6 +397,18 @@
     if (!matchupsSection || matchupsSection.closest('#opening-dashboard')) return;
     grid.innerHTML = '';
     renderOpeningHero();
+
+    if (MATCH_DAY === 'tomorrow') {
+      fetchTomorrowMatchups().then(function(games) {
+        if (!games.length) {
+          grid.innerHTML = '<div class="empty-msg">No games scheduled for tomorrow.</div>';
+          return;
+        }
+        grid.innerHTML = games.map(function(m, i) { return renderTomorrowCard(m, i); }).join('');
+      });
+      return;
+    }
+
     var games = LIVE_DATA.matchups || [];
     if (!games.length) {
       grid.innerHTML = '<div class="empty-msg">No matchups loaded for today.</div>';
@@ -520,7 +594,24 @@
     }).join('');
   }
 
+  function bindDayTabs() {
+    document.querySelectorAll('.matchup-day-tab').forEach(function(btn) {
+      if (btn.dataset.dayBound) return;
+      btn.dataset.dayBound = '1';
+      btn.addEventListener('click', function() {
+        MATCH_DAY = btn.getAttribute('data-day') || 'today';
+        document.querySelectorAll('.matchup-day-tab').forEach(function(b) {
+          b.classList.toggle('active', b.getAttribute('data-day') === MATCH_DAY);
+        });
+        var controls = document.querySelector('.matchups-slate-controls');
+        if (controls) controls.style.display = MATCH_DAY === 'today' ? '' : 'none';
+        renderHeroMatchups();
+      });
+    });
+  }
+
   function bindHeroControls() {
+    bindDayTabs();
     document.querySelectorAll('[data-match-sort]').forEach(function(btn) {
       if (btn.dataset.bound) return;
       btn.dataset.bound = '1';
@@ -572,6 +663,10 @@
     });
   }
 
+  function prefetchTomorrow() {
+    if (global.LIVE_DATA && global.LIVE_DATA.loaded) fetchTomorrowMatchups();
+  }
+
   global.PlatformDashboard = {
     renderDashboard: renderDashboard,
     renderOpeningHero: renderOpeningHero,
@@ -579,6 +674,8 @@
     renderSignalChips: renderSignalChips,
     setOpeningHeroSync: setOpeningHeroSync,
     initRegistry: initRegistry,
-    bindHeroControls: bindHeroControls
+    bindHeroControls: bindHeroControls,
+    prefetchTomorrow: prefetchTomorrow,
+    fetchTomorrowMatchups: fetchTomorrowMatchups
   };
 })(typeof window !== 'undefined' ? window : this);

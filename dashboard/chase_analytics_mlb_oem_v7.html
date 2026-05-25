@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
+
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -1522,6 +1525,23 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
 }
 .sort-controls button.active, .filter-pills button.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.12); }
+.matchup-day-tabs {
+  display: inline-flex; gap: 8px; margin-bottom: 16px; padding: 4px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(124,58,237,0.2); border-radius: 12px;
+}
+.matchup-day-tab {
+  appearance: none; border: none; background: transparent; color: rgba(245,243,255,0.55);
+  font-size: 14px; font-weight: 600; padding: 10px 22px; border-radius: 8px; cursor: pointer;
+}
+.matchup-day-tab.active {
+  background: linear-gradient(135deg, #7C3AED, #5b21b6); color: #fff;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+}
+.hero-matchup-card--tomorrow { opacity: 0.88; border-color: rgba(255,255,255,0.1); }
+.hero-matchup-card--tomorrow .hmc-osi-bar,
+.hero-matchup-card--tomorrow .hmc-badges,
+.hero-matchup-card--tomorrow .hmc-lineups { display: none !important; }
+.hmc-tomorrow-note { font-size: 12px; color: #9CA3AF; margin-top: 12px; font-style: italic; }
 #matchupsHeroGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
 .hero-matchup-card {
   background: var(--bg-3); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
@@ -2513,6 +2533,10 @@ body.view-research .ca-lab { display: block; }
     <h2 class="matchups-section-title">Today&apos;s Projected Matchups</h2>
     <p class="matchups-section-sub">Split-specific lineup edges, starters, weather, and full analysis links</p>
   </header>
+  <div class="matchup-day-tabs">
+    <button type="button" class="matchup-day-tab active" data-day="today">Today</button>
+    <button type="button" class="matchup-day-tab" data-day="tomorrow">Tomorrow</button>
+  </div>
   <div class="matchups-slate-controls matchups-hero-header">
     <div class="ca-pill-bar">
       <span class="ca-pill-label">Sort</span>
@@ -2814,6 +2838,7 @@ function applyLiveData() {
     if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
     enrichMatchupCards();
     syncHeroStats();
+    if (window.PlatformDashboard && PlatformDashboard.prefetchTomorrow) PlatformDashboard.prefetchTomorrow();
 
     var afterLoad = function() {
       if (document.body.classList.contains('view-research')) {

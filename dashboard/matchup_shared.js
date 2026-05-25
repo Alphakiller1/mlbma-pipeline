@@ -425,9 +425,15 @@
     if (abq === null || rcv === null || obr === null || osi === null) return null;
     if (projOSI == null) projOSI = osi;
     if (ppGap == null && abq != null && rcv != null) ppGap = abq - rcv;
+    var wrc = numOrNull(pickCol(row, 'wRC+', 'wRC', 'wrc_plus', 'wrc'));
+    var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
+    var woba = numOrNull(pickCol(row, 'wOBA', 'woba'));
+    var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
+    if (xwoba == null && woba != null) xwoba = woba;
     return {
       t: t, abq: abq, rcv: rcv, obr: obr, osi: osi,
-      projOSI: projOSI, reg_signal: reg, reg: reg, ppGap: ppGap
+      projOSI: projOSI, reg_signal: reg, reg: reg, ppGap: ppGap,
+      wrc: wrc, xwoba: xwoba, slg: slg
     };
   }
 
