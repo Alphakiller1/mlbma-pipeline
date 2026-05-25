@@ -5,6 +5,7 @@
   'use strict';
 
   var A = global.MLBMAAssets;
+  var S = global.MLBMASharedMatchup || global.MatchupShared;
   var SORT = 'edge';
   var FILTER = 'all';
   var MATCH_DAY = 'today';
@@ -155,12 +156,22 @@
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
+  function spPitchScoreFromProfile(pitcherName, team) {
+    var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
+    if (!profiles.length || !S || !S.findSpProfile) return null;
+    var p = S.findSpProfile(profiles, pitcherName, team);
+    if (!p || !S.spProfileMetrics) return null;
+    var m = S.spProfileMetrics(p);
+    return m && m.pitchScore != null ? m.pitchScore : null;
+  }
+
   function spRow(label, name, hand, team, stats, opts) {
     opts = opts || {};
     var pid = A ? A.lookupMlbId(name) : null;
     var hs = A ? A.pitcherAvatar(pid, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
       : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
-    var ps = spPitchScore(team);
+    var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team);
+    if (ps == null) ps = spPitchScore(team);
     var pt = pitchTier(ps);
     var psColor = A && ps != null ? A.metricColor(ps, true) : 'var(--text-2)';
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
@@ -329,10 +340,14 @@
     if (global.LIVE_DATA && LIVE_DATA.tomorrowMatchups && LIVE_DATA.tomorrowMatchups.length) {
       return Promise.resolve(LIVE_DATA.tomorrowMatchups);
     }
-    var tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    var tomorrowStr = tomorrow.toISOString().split('T')[0];
-    var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + tomorrowStr + '&hydrate=probablePitcher,team';
+    var now = new Date();
+    var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    var tomorrowStr = tomorrow.getFullYear() + '-'
+      + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-'
+      + String(tomorrow.getDate()).padStart(2, '0');
+    var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + tomorrowStr + '&hydrate=probablePitcher,team,venue';
+    console.log('[TOMORROW] fetching date:', tomorrowStr);
+    console.log('[TOMORROW] URL:', url);
     return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
       var games = [];
       (data.dates || []).forEach(function(d) {
@@ -357,6 +372,8 @@
       });
       global.LIVE_DATA = global.LIVE_DATA || {};
       global.LIVE_DATA.tomorrowMatchups = games;
+      console.log('[TOMORROW] API response games:', games.length);
+      if (games.length > 0) console.log('[TOMORROW] sample game:', JSON.stringify(games[0]).substring(0, 200));
       return games;
     }).catch(function(err) {
       console.warn('[PD] tomorrow schedule fetch failed', err);
@@ -366,10 +383,8 @@
 
   function renderTomorrowCard(m, cardIdx) {
     var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
-    var awayPs = spPitchScore(m.home);
-    var homePs = spPitchScore(m.away);
-    var handLabel = m.homeHand === 'L' ? 'LHP' : 'RHP';
-    var awayHandLabel = m.awayHand === 'L' ? 'LHP' : 'RHP';
+    var awayPs = spPitchScoreFromProfile(m.awaySP, m.away);
+    var homePs = spPitchScoreFromProfile(m.homeSP, m.home);
     return '<article class="hero-matchup-card hero-matchup-card--tomorrow" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
       + '<div class="hmc-row hmc-teams">'
       + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '') + '</div>'
@@ -378,8 +393,8 @@
       + '<span class="hmc-meta">' + esc(m.time) + (m.stadium ? ' \u00B7 ' + esc(m.stadium) : '') + '</span>'
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3 })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, fip: homePs }, { eager: cardIdx < 3 })
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3, pitchScore: awayPs })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, fip: homePs }, { eager: cardIdx < 3, pitchScore: homePs })
       + '</div>'
       + '<p class="hmc-lineup-placeholder" style="font-size:12px;color:#9CA3AF;margin:8px 0">Lineups TBD</p>'
       + '<p class="hmc-tomorrow-note">Projected lineups and full analysis available day-of</p>'
@@ -387,6 +402,7 @@
   }
 
   function renderHeroMatchups() {
+    bindDayTabs();
     var grid = document.getElementById('matchupsHeroGrid');
     if (!grid) {
       console.warn('[PD] matchupsHeroGrid not found');
@@ -595,6 +611,7 @@
   }
 
   function bindDayTabs() {
+    if (!document.querySelectorAll('.matchup-day-tab').length) return;
     document.querySelectorAll('.matchup-day-tab').forEach(function(btn) {
       if (btn.dataset.dayBound) return;
       btn.dataset.dayBound = '1';
@@ -646,6 +663,12 @@
       renderSignalChips();
     }
     bindHeroControls();
+  }
+
+  if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', function() {
+      if (document.querySelectorAll('.matchup-day-tab').length) bindDayTabs();
+    });
   }
 
   function initRegistry() {

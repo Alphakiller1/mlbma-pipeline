@@ -12,7 +12,7 @@
     profiles: null, splits: null, relievers: null, oorByTeam: null,
     sortKey: 'pitchScore', sortDir: -1, selected: '',
     searchQ: '', dropdownOpen: false,
-    viewMode: 'pitcher', bpTeam: ''
+    viewMode: 'pitcher', bpTeam: '', snapSplit: 'overall'
   };
 
   function esc(s) {
@@ -114,12 +114,39 @@
   }
 
   function loadSplits() {
-    if (CACHE.splits) return Promise.resolve(CACHE.splits);
+    if (CACHE.splits && CACHE.splits.length) return Promise.resolve(CACHE.splits);
+    if (global.LIVE_DATA && LIVE_DATA.spMetricSplits && LIVE_DATA.spMetricSplits.length) {
+      CACHE.splits = LIVE_DATA.spMetricSplits;
+      return Promise.resolve(CACHE.splits);
+    }
     if (!S || !TABS || !TABS.sp_metric_splits) return Promise.resolve([]);
     return S.fetchSheetTab(TABS.sp_metric_splits).then(function(rows) {
       CACHE.splits = rows || [];
+      if (global.LIVE_DATA) LIVE_DATA.spMetricSplits = CACHE.splits;
       return CACHE.splits;
     }).catch(function() { CACHE.splits = []; return []; });
+  }
+
+  var SNAP_SPLIT_TYPES = {
+    overall: ['overall'],
+    rhh: ['vs_rhh', 'rhh'],
+    lhh: ['vs_lhh', 'lhh'],
+    home: ['home'],
+    away: ['away']
+  };
+
+  function findMetricSplitRow(name, splitView) {
+    var key = normName(name);
+    var types = SNAP_SPLIT_TYPES[splitView || 'overall'] || ['overall'];
+    var rows = (global.LIVE_DATA && LIVE_DATA.spMetricSplits) || CACHE.splits || [];
+    return rows.find(function(r) {
+      if (normName(pickCol(r, ['pitcher_name', 'Name', 'Pitcher'])) !== key) return false;
+      var st = String(pickCol(r, ['split_type', 'splitType', 'split', 'Split'])).toLowerCase().replace(/\s+/g, '_');
+      for (var i = 0; i < types.length; i++) {
+        if (st === types[i] || st.indexOf(types[i]) >= 0) return true;
+      }
+      return false;
+    }) || null;
   }
 
   function loadRelievers() {
@@ -286,12 +313,35 @@
     var name = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
     var team = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
     var hand = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || 'R').charAt(0);
+    var snapSplit = CACHE.snapSplit || 'overall';
     var met = profileMetrics(row);
+    var splitRow = snapSplit !== 'overall' ? findMetricSplitRow(name, snapSplit) : null;
     var stats = extendedStats(row, met);
+    if (splitRow) {
+      stats.era = numOrNull(pickCol(splitRow, ['ERA', 'era'])) != null ? numOrNull(pickCol(splitRow, ['ERA', 'era'])) : stats.era;
+      stats.kPct = numOrNull(pickCol(splitRow, ['K_pct', 'K%'])) != null ? numOrNull(pickCol(splitRow, ['K_pct', 'K%'])) : stats.kPct;
+      stats.bbPct = numOrNull(pickCol(splitRow, ['BB_pct', 'BB%'])) != null ? numOrNull(pickCol(splitRow, ['BB_pct', 'BB%'])) : stats.bbPct;
+    }
     var role = pitcherRole(row);
     var pid = pickCol(row, ['pitcher_id', 'playerId', 'mlb_id']);
     var avatar = A ? A.pitcherAvatar(pid || name, { crop: 'profile', className: 'pl-snap-avatar pl-snap-avatar--intel', size: 80, eager: true }) : '';
     var logo = A ? A.teamLogoImg(team, 28) : '';
+    var splitPills = '<div class="rl-pill-row" style="margin:12px 0 8px">'
+      + ['overall', 'rhh', 'lhh', 'home', 'away'].map(function(s) {
+        var lbl = { overall: 'Overall', rhh: 'vs RHH', lhh: 'vs LHH', home: 'Home', away: 'Away' }[s];
+        return '<button type="button" class="ca-pill-btn' + (snapSplit === s ? ' active' : '') + '" data-pl-snap-split="' + s + '">' + lbl + '</button>';
+      }).join('') + '</div>';
+    var allowedNote = snapSplit !== 'overall'
+      ? '<p class="pl-section-sub" style="margin:0 0 8px">Allowed metrics are overall only; rates below from SP_Metric_Splits (' + esc(snapSplit) + ').</p>'
+      : '';
+    function allowedCard(label, val, ctx) {
+      if (snapSplit !== 'overall') {
+        return '<div class="pl-created-metric" title="Split-specific allowed metrics require pipeline enhancement">'
+          + '<div class="ca-metric-label">' + esc(label) + '</div>'
+          + '<div class="pl-created-val" style="color:#71717A">—</div></div>';
+      }
+      return createdMetricCard(label, val, true, ctx);
+    }
 
     mount.innerHTML = '<div class="pl-snapshot-card pl-intel-snapshot">'
       + '<div class="pl-snap-eyebrow">Pitcher Snapshot</div>'
@@ -314,17 +364,25 @@
       + statAnchorCell('xFIP', stats.xfip, 2)
       + statAnchorCell('wOBA', stats.woba, 3)
       + '</div>'
+      + splitPills
+      + allowedNote
       + '<div class="pl-created-row">'
       + createdMetricCard('Pitching Score', met.pitchScore, false, 'pitching')
-      + createdMetricCard('OSI Allowed', met.osiAllowed, true)
-      + createdMetricCard('ABQ Allowed', met.abqAllowed, true)
-      + createdMetricCard('RCV Allowed', met.rcvAllowed, true)
-      + createdMetricCard('OBR Allowed', met.obrAllowed, true)
+      + allowedCard('OSI Allowed', met.osiAllowed, 'osi')
+      + allowedCard('ABQ Allowed', met.abqAllowed, 'osi')
+      + allowedCard('RCV Allowed', met.rcvAllowed, 'osi')
+      + allowedCard('OBR Allowed', met.obrAllowed, 'osi')
       + '</div>'
       + renderOorSection(row, met)
       + renderOpponentTable(name)
       + '<p class="rl-profile-link"><a href="pitcher_profile.html?pitcher=' + encodeURIComponent(name) + '">Full pitcher profile →</a></p>'
       + '</div>';
+    mount.querySelectorAll('[data-pl-snap-split]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        CACHE.snapSplit = btn.getAttribute('data-pl-snap-split');
+        renderSnapshot();
+      });
+    });
   }
 
   function bullpenTeams() {

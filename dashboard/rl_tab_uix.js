@@ -51,10 +51,60 @@
   }
 
   function pitchScoreFaced(team) {
+    var map = pitchingScoreFacedByTeam();
+    if (map[team] != null) return map[team];
     var palsMap = palsByTeam();
     var v = palsMap[team];
     if (v != null) return 100 - v;
     return null;
+  }
+
+  function pitchingScoreFacedByTeam() {
+    var map = {};
+    var raw = global.LIVE_DATA && LIVE_DATA.pals;
+    if (!raw || !raw.length) return map;
+    var rows = (S && S.parsePalsRows) ? S.parsePalsRows(raw) : raw;
+    (rows || []).forEach(function(p) {
+      var t = p.t || String(S.pickCol(p, 'team', 'Tm', 'Team') || '').trim().toUpperCase();
+      if (!t) return;
+      var xfip = num(S.pickCol(p, 'avg_xFIP_faced', 'Avg xFIP Faced', 'avg_xfip_faced'));
+      if (xfip == null && p.avg_xFIP_faced != null) xfip = num(p.avg_xFIP_faced);
+      if (xfip != null && !isNaN(xfip)) {
+        map[t] = Math.max(0, Math.min(100, 100 - (xfip - 3.0) * 25));
+        return;
+      }
+      var pals = p.pals != null ? p.pals : num(S.pickCol(p, 'PALS', 'pals'));
+      if (pals != null) map[t] = 100 - pals;
+    });
+    return map;
+  }
+
+  function renderOnLiveDataReady(fn, label) {
+    if (global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+      MLBMACharts.renderOnLiveDataReady(fn, label || 'rl');
+    } else if (global.LIVE_DATA && LIVE_DATA.loaded) {
+      fn();
+    } else {
+      setTimeout(fn, 1000);
+    }
+  }
+
+  function activeTrendWindow() {
+    var st = global.STATE || {};
+    var w = String(st.time || 'YTD').toUpperCase();
+    if (w === 'L30' || w === 'L14' || w === 'L7') return w;
+    return 'YTD';
+  }
+
+  function trendColHighlight(win) {
+    return activeTrendWindow() === win ? ' rl-trend-col--highlight' : '';
+  }
+
+  function ytdMetricVal(d, metric) {
+    var k = metricKey(metric);
+    if (metric === 'pals') return palsByTeam()[d.t];
+    if (metric === 'pitchfaced') return pitchScoreFaced(d.t);
+    return d[k] != null ? d[k] : (k === 'osi' ? d.osi : null);
   }
 
   function metricCap(metric) {
@@ -121,7 +171,8 @@
     return windowValAt - ytd;
   }
 
-  function reliabilityForRow(d) {
+  function reliabilityForRow(d, metric) {
+    if (metric === 'pals' || metric === 'pitchfaced') return { label: 'YTD Only', cls: 'rl-badge-gray' };
     if (!metricHasWindowColumns('osi')) return { label: 'YTD Only', cls: 'rl-badge-gray' };
     var profs = global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam;
     var p = profs && profs[d.t];
@@ -201,7 +252,7 @@
     (rawRows || []).forEach(function(row) {
       var t = S.teamKey ? S.teamKey(S.pickCol(row, 'team', 'Tm', 'Team')) : String(S.pickCol(row, 'team', 'Tm', 'Team') || '').trim().toUpperCase();
       if (!t) return;
-      if (!buckets[t]) buckets[t] = { t: t, w: 0, sum: 0 };
+      if (!buckets[t]) buckets[t] = { t: t, w: 0, sums: {} };
       var pa = num(S.pickCol(row, 'PA', 'pa')) || 1;
       var sc = S.scoreRowFromSheet ? S.scoreRowFromSheet(row) : null;
       var val = null;
@@ -215,38 +266,69 @@
       }
       if (val == null || isNaN(val)) return;
       buckets[t].w += pa;
-      buckets[t].sum += val * pa;
+      if (!buckets[t].sums[mk]) buckets[t].sums[mk] = 0;
+      buckets[t].sums[mk] += val * pa;
+      if (sc) {
+        ['abq', 'rcv', 'obr', 'osi'].forEach(function(k) {
+          if (sc[k] == null || isNaN(sc[k])) return;
+          if (!buckets[t].sums[k]) buckets[t].sums[k] = 0;
+          buckets[t].sums[k] += sc[k] * pa;
+        });
+      }
     });
     return Object.keys(buckets).map(function(tk) {
       var b = buckets[tk];
-      var avg = b.w ? b.sum / b.w : null;
+      var w = b.w || 1;
       var o = { t: tk, pa: b.w };
-      o[mk] = avg;
-      if (mk !== 'pals' && mk !== 'pitchfaced') {
-        o.abq = avg;
-        o.rcv = avg;
-        o.obr = avg;
-        o.osi = avg;
-      }
+      Object.keys(b.sums).forEach(function(k) {
+        o[k] = b.sums[k] / w;
+      });
+      if (o.osi == null && o[mk] != null) o.osi = o[mk];
       return o;
     });
+  }
+
+  var SP_SPLIT_TYPES = {
+    overall: ['overall'],
+    rhh: ['vs_rhh', 'rhh'],
+    lhh: ['vs_lhh', 'lhh'],
+    home: ['home'],
+    away: ['away'],
+    f5: ['f5'],
+    full: ['full', 'full_outing']
+  };
+
+  function findSpMetricSplitRow(pitcherName, splitView) {
+    var key = String(pitcherName || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+    var types = SP_SPLIT_TYPES[splitView || 'overall'] || ['overall'];
+    var rows = (global.LIVE_DATA && LIVE_DATA.spMetricSplits) || [];
+    return rows.find(function(r) {
+      var n = String(S.pickCol(r, 'pitcher_name', 'Name', 'Pitcher') || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+      if (n !== key) return false;
+      var st = String(S.pickCol(r, 'split_type', 'splitType', 'split', 'Split')).toLowerCase().replace(/\s+/g, '_');
+      for (var i = 0; i < types.length; i++) {
+        if (st === types[i] || st.indexOf(types[i]) >= 0) return true;
+      }
+      return false;
+    }) || null;
   }
 
   function spMetricFromProfile(row, metricKey, splitKey) {
     var m = S.spProfileMetrics ? S.spProfileMetrics(row) : null;
     if (!m) return null;
     var sk = splitKey || global._rlSpSplitView || 'overall';
-    if (sk === 'f5') {
-      var f5 = num(S.pickCol(row, 'F5_ERA', 'F5 ERA', 'f5_era'));
-      return f5 != null ? Math.max(0, Math.min(100, 100 - f5 * 8)) : m.pitchScore;
+    var mk = metricKey || global._rlSpSplitMetric || 'osiAllowed';
+    var allowedKeys = ['osiAllowed', 'abqAllowed', 'rcvAllowed', 'obrAllowed'];
+    if (allowedKeys.indexOf(mk) >= 0 && sk !== 'overall') {
+      return null;
     }
-    if (sk === 'home') {
-      var he = num(S.pickCol(row, 'home_ERA', 'Home ERA'));
-      return he != null ? Math.max(0, Math.min(100, 100 - he * 8)) : m.osiAllowed;
-    }
-    if (sk === 'away') {
-      var ae = num(S.pickCol(row, 'away_ERA', 'Away ERA'));
-      return ae != null ? Math.max(0, Math.min(100, 100 - ae * 8)) : m.osiAllowed;
+    if (mk === 'pitchScore') {
+      var splitRow = findSpMetricSplitRow(S.pickCol(row, 'pitcher_name', 'Name', 'Pitcher'), sk);
+      if (splitRow && S.spProfileMetrics) {
+        var sm = S.spProfileMetrics(Object.assign({}, row, splitRow));
+        if (sm && sm.pitchScore != null) return sm.pitchScore;
+      }
+      return m.pitchScore;
     }
     var map = {
       pitchScore: m.pitchScore,
@@ -255,7 +337,7 @@
       rcvAllowed: m.rcvAllowed,
       obrAllowed: m.obrAllowed
     };
-    return map[metricKey || global._rlSpSplitMetric || 'osiAllowed'];
+    return map[mk];
   }
 
   function f5OsiForTeam(team, splitRows) {
@@ -275,6 +357,8 @@
     if (!global._rlSplitHand) global._rlSplitHand = 'both';
     if (global._rlSpSearchQuery == null) global._rlSpSearchQuery = '';
     if (global._rlBpTeam == null) global._rlBpTeam = '';
+    if (!global._rlBpMetric) global._rlBpMetric = 'score';
+    if (!global._rlBpSearch) global._rlBpSearch = '';
   }
 
   function filterPitcherProfiles(profiles, query) {
@@ -293,9 +377,13 @@
     var metric = global._rlSpSplitMetric || 'osiAllowed';
     var split = global._rlSpSplitView || 'overall';
     var simple = !!global._rlSpSimpleView;
+    var allowedMetric = ['osiAllowed', 'abqAllowed', 'rcvAllowed', 'obrAllowed'].indexOf(metric) >= 0;
+    var splitNote = (allowedMetric && split !== 'overall')
+      ? '<p class="rl-note" style="margin:0 0 10px;font-size:12px;color:var(--text-2)">Split-specific allowed metrics require pipeline enhancement \u2014 showing overall values or standard rates from SP_Metric_Splits.</p>'
+      : '';
     var metricLbl = { osiAllowed: 'OSI Allowed', abqAllowed: 'ABQ Allowed', rcvAllowed: 'RCV Allowed', obrAllowed: 'OBR Allowed', pitchScore: 'Pitching Score' }[metric] || 'Metric';
     var splitLbl = { overall: 'Overall', rhh: 'vs RHH', lhh: 'vs LHH', home: 'Home', away: 'Away', f5: 'F5', full: 'Full Outing' }[split] || split;
-    mount.innerHTML = '<div class="rl-splits-search" style="margin:0 0 12px">'
+    mount.innerHTML = splitNote + '<div class="rl-splits-search" style="margin:0 0 12px">'
       + '<input type="search" id="rlSpSplitSearch" class="search-input" style="width:100%;max-width:420px;" '
       + 'placeholder="Search pitcher by name or team..." value="' + esc(q) + '" autocomplete="off"></div>'
       + '<div class="rl-table-wrap rl-splits-scroll"><table class="rl-table-premium"><thead><tr>'
@@ -308,12 +396,22 @@
         var hand = String(S.pickCol(row, 'hand', 'Hand', 'pitcher_hand') || 'R').charAt(0);
         var m = S.spProfileMetrics(row);
         var mv = spMetricFromProfile(row, metric, split);
+        var splitRow = findSpMetricSplitRow(n, split);
+        if (mv == null && splitRow && metric === 'pitchScore' && S.spProfileMetrics) {
+          var sm = S.spProfileMetrics(Object.assign({}, row, splitRow));
+          mv = sm ? sm.pitchScore : null;
+        }
+        if (mv == null && splitRow && !allowedMetric) {
+          mv = num(S.pickCol(splitRow, 'ERA'));
+        }
         var av = A ? A.pitcherAvatar(row, { crop: 'compare', className: 'rl-av-28' }) : '';
         var logo = A ? A.teamLogoImg(t, 20) : '';
         var inv = metric !== 'pitchScore';
+        var naTitle = (mv == null && allowedMetric && split !== 'overall')
+          ? ' title="Split-specific allowed metrics require pipeline enhancement"' : '';
         return '<tr class="rl-row-click" data-pitcher="' + esc(n) + '">'
           + '<td>' + av + '</td><td>' + esc(n) + '</td><td>' + logo + ' ' + esc(t) + '</td><td>' + esc(hand) + '</td>'
-          + '<td class="num" style="color:' + mColor(mv, inv, metric === 'pitchScore' ? 'pitching' : 'osi') + '">' + fmt(mv) + '</td>'
+          + '<td class="num"' + naTitle + ' style="color:' + mColor(mv, inv, metric === 'pitchScore' ? 'pitching' : 'osi') + '">' + fmt(mv) + '</td>'
           + (simple ? '' : '<td class="num">' + fmt(m.kPct) + '</td><td class="num">' + fmt(m.bbPct) + '</td>'
           + '<td class="num">' + fmt(m.hr9) + '</td><td class="num">' + fmt(m.era) + '</td>'
           + '<td class="num" style="color:' + mColor(m.abqAllowed, true, 'osi') + '">' + fmt(m.abqAllowed) + '</td>'
@@ -334,47 +432,43 @@
   function renderBullpenSplitsTable(mount, bpRows) {
     var split = global._rlBpSplit || 'overall';
     var win = global._rlBpWindow || 'YTD';
-    var teams = bpRows.map(function(r) { return r.t; }).sort();
-    var selected = global._rlBpTeam || '';
-    var ordered = bpRows.slice();
-    if (selected) {
-      ordered.sort(function(a, b) {
-        if (a.t === selected) return -1;
-        if (b.t === selected) return 1;
-        return Math.abs(b.edge || 0) - Math.abs(a.edge || 0);
-      });
+    var metric = global._rlBpMetric || 'score';
+    var search = String(global._rlBpSearch || '').toLowerCase().trim();
+    if (!global._bullpenFieldsLogged && bpRows.length) {
+      global._bullpenFieldsLogged = true;
+      console.log('[BULLPEN] first unit fields:', Object.keys(bpRows[0] || {}));
     }
+    var filtered = bpRows.filter(function(row) {
+      return !search || row.t.toLowerCase().indexOf(search) >= 0;
+    });
+    var metricHdr = { score: 'Avg Pitching Score', woba: 'wOBA', rcv: 'RCV Allowed', obr: 'OBR Allowed', hi: 'High Lev ERA', med: 'Med Lev ERA' }[metric] || 'Metric';
     mount.innerHTML = '<div class="rl-splits-search" style="margin:0 0 12px">'
-      + '<label for="rlBpTeamSelect" style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">Select team bullpen...</label>'
-      + '<select id="rlBpTeamSelect" class="search-input" style="width:100%;max-width:280px;">'
-      + '<option value="">All teams</option>'
-      + teams.map(function(t) {
-        return '<option value="' + esc(t) + '"' + (t === selected ? ' selected' : '') + '>' + esc(t) + '</option>';
-      }).join('')
-      + '</select></div>'
+      + '<input type="search" id="rlBpSplitSearch" class="search-input" placeholder="Search team..." '
+      + 'value="' + esc(global._rlBpSearch || '') + '" style="width:100%;max-width:320px;"></div>'
       + (win !== 'YTD' ? '<p class="rl-note" style="margin:0 0 10px;font-size:12px;color:var(--text-2)">Bullpen window splits use YTD until pipeline adds L30/L14/L7 bullpen columns.</p>' : '')
       + '<div class="rl-table-wrap rl-splits-scroll"><table class="rl-table-premium"><thead><tr>'
-      + '<th></th><th>Team</th><th>Avg Pitching Score</th><th>wOBA</th><th>RCV Allowed</th><th>OBR Allowed</th>'
-      + '<th>High Lev ERA</th><th>Med Lev ERA</th>'
+      + '<th></th><th>Team</th><th>' + esc(metricHdr) + '</th>'
       + '</tr></thead><tbody>'
-      + ordered.map(function(row) {
-        var highlight = selected && row.t === selected ? ' rl-split-gold' : '';
+      + (filtered.length ? filtered.map(function(row) {
         var osi = split === 'lhh' ? (row.lhh != null ? row.lhh : row.osi)
           : split === 'rhh' ? (row.rhh != null ? row.rhh : row.osi) : row.osi;
         var score = row.score != null ? row.score : (osi != null ? Math.max(0, Math.min(100, 100 - osi)) : null);
-        return '<tr class="rl-row-click' + highlight + '" data-team="' + esc(row.t) + '">'
+        var val = metric === 'score' ? score
+          : metric === 'woba' ? row.woba
+          : metric === 'rcv' ? (row.rcv != null ? row.rcv : row.abq)
+          : metric === 'obr' ? row.obr
+          : metric === 'hi' ? row.hi
+          : row.med;
+        var inv = metric === 'score' ? false : (metric !== 'woba');
+        return '<tr class="rl-row-click" data-team="' + esc(row.t) + '">'
           + '<td>' + (A ? A.teamLogoImg(row.t, 24) : '') + '</td><td><strong>' + esc(row.t) + '</strong></td>'
-          + '<td class="num" style="color:' + mColor(score, false, 'pitching') + '">' + fmt(score) + '</td>'
-          + '<td class="num">' + fmt(row.woba) + '</td>'
-          + '<td class="num" style="color:' + mColor(row.rcv, true, 'osi') + '">' + fmt(row.rcv != null ? row.rcv : row.abq) + '</td>'
-          + '<td class="num" style="color:' + mColor(row.obr, true, 'osi') + '">' + fmt(row.obr) + '</td>'
-          + '<td class="num">' + fmt(row.hi) + '</td>'
-          + '<td class="num">' + fmt(row.med) + '</td></tr>';
-      }).join('') + '</tbody></table></div>';
-    var sel = document.getElementById('rlBpTeamSelect');
-    if (sel) {
-      sel.addEventListener('change', function() {
-        global._rlBpTeam = sel.value;
+          + '<td class="num" style="color:' + mColor(val, inv, metric === 'score' ? 'pitching' : 'osi') + '">' + (metric === 'woba' && val != null ? Number(val).toFixed(3) : fmt(val)) + '</td></tr>';
+      }).join('') : '<tr><td colspan="3">No teams match your search.</td></tr>')
+      + '</tbody></table></div>';
+    var searchEl = document.getElementById('rlBpSplitSearch');
+    if (searchEl) {
+      searchEl.addEventListener('input', function() {
+        global._rlBpSearch = searchEl.value;
         renderBullpenSplitsTable(mount, bpRows);
       });
     }
@@ -409,6 +503,9 @@
     mount.querySelectorAll('[data-trend-metric]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         global.STATE.rlTrendMetric = btn.getAttribute('data-trend-metric');
+        console.log('[TRENDS] metric changed to:', global.STATE.rlTrendMetric);
+        console.log('[TRENDS] SCO_YTD_B length:', global.SCO_YTD_B ? global.SCO_YTD_B.length : 0);
+        console.log('[TRENDS] LIVE_DATA.pals length:', global.LIVE_DATA && LIVE_DATA.pals ? LIVE_DATA.pals.length : 0);
         mountTrendControls();
         renderTrendHeatmap();
         renderTrendSummary();
@@ -417,6 +514,7 @@
     mount.querySelectorAll('[data-trend-split]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         global.STATE.rlTrendSplit = btn.getAttribute('data-trend-split');
+        global.STATE.rlHandedness = global.STATE.rlTrendSplit;
         mountTrendControls();
         renderTrendHeatmap();
         renderTrendSummary();
@@ -435,45 +533,63 @@
     var mount = document.getElementById('trendMap');
     if (!mount) return;
     RL.syncResearchGlobalsFromLiveData();
-    console.log('[TRENDS] L30 data available:', global.SCO_L30_B ? global.SCO_L30_B.length : 'missing');
-    console.log('[TRENDS] L14 data available:', global.SCO_L14_B ? global.SCO_L14_B.length : 'missing');
-    console.log('[TRENDS] L7 data available:', global.SCO_L7_B ? global.SCO_L7_B.length : 'missing');
     ensureTrendState();
-    var metric = global.STATE.rlTrendMetric;
-    var split = global.STATE.rlTrendSplit || 'b';
-    var rows = RL.getResearchTeamData(split === 'r' ? 'r' : split === 'l' ? 'l' : 'both');
-    if (!rows.length) {
-      mount.innerHTML = '<p class="rl-empty">Team offense data is loading — check vs_RHP / vs_LHP sheets.</p>';
+    var metric = global.STATE.rlTrendMetric || 'osi';
+    var split = global.STATE.rlHandedness || global.STATE.rlTrendSplit || 'b';
+    global.STATE.rlHandedness = split;
+
+    if (metric === 'pals' && global.LIVE_DATA && !global.LIVE_DATA.researchLoaded) {
+      mount.innerHTML = '<p class="rl-empty">Loading PALS data\u2026</p>';
+      setTimeout(function() { renderTrendHeatmap(); }, 1000);
       return;
     }
-    var sorted = rows.slice().sort(function(a, b) {
-      return (windowVal(b, metric, 'L30') || windowVal(b, metric, 'YTD') || 0) - (windowVal(a, metric, 'L30') || windowVal(a, metric, 'YTD') || 0);
-    });
-    var profs = global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam;
-    if (profs && Object.keys(profs).length && global.LIVE_DATA.teamProfiles && global.LIVE_DATA.teamProfiles[0]) {
-      console.log('[TRENDS] teamProfiles column keys:', Object.keys(global.LIVE_DATA.teamProfiles[0]));
+
+    var handKey = split === 'r' ? 'r' : split === 'l' ? 'l' : 'both';
+    var rows = RL.getResearchTeamData(handKey);
+    console.log('[TRENDS] rendering with', rows.length, 'rows, metric:', metric, 'hand:', handKey);
+    if (!rows.length) {
+      if (RL.syncResearchGlobalsFromLiveData) RL.syncResearchGlobalsFromLiveData();
+      rows = RL.getResearchTeamData(handKey);
     }
+    if (!rows.length) {
+      mount.innerHTML = '<p class="rl-empty">Loading team data\u2026</p>';
+      renderOnLiveDataReady(function() { renderTrendHeatmap(); }, 'trendHeatmap');
+      return;
+    }
+
+    var hiWin = activeTrendWindow();
+    console.log('[TRENDS] window highlight:', hiWin, 'L30 available:', global.SCO_L30_B ? global.SCO_L30_B.length : 0);
+
+    var sorted = rows.slice().sort(function(a, b) {
+      var bv = ytdMetricVal(b, metric) || 0;
+      var av = ytdMetricVal(a, metric) || 0;
+      return bv - av;
+    });
+
     var html = trendsWindowBannerHtml() + trendsComponentBannerHtml(metric) + trendsSplitBannerHtml()
-      + ((metric === 'pals' || metric === 'pitchfaced') ? '<div class="rl-window-banner hub-banner hub-banner--window show" style="display:block;margin:0 0 12px">PALS window data unavailable \u2014 YTD only for PALS / Pitch Score Faced.</div>' : '')
+      + ((metric === 'pals' || metric === 'pitchfaced') ? '<div class="rl-window-banner hub-banner hub-banner--window show" style="display:block;margin:0 0 12px">PALS / Pitch Score Faced: YTD column only. L30/L14/L7 unavailable for this metric.</div>' : '')
       + '<table class="rl-table-premium rl-trend-table"><thead><tr>'
-      + '<th>Team</th><th>L30</th><th>L14</th><th>L7</th><th>Reliability</th>'
+      + '<th>Team</th><th class="' + trendColHighlight('YTD').trim() + '">YTD</th>'
+      + '<th class="' + trendColHighlight('L30').trim() + '">L30</th>'
+      + '<th class="' + trendColHighlight('L14').trim() + '">L14</th>'
+      + '<th class="' + trendColHighlight('L7').trim() + '">L7</th>'
+      + '<th>Reliability</th>'
       + '</tr></thead><tbody>';
     sorted.forEach(function(d) {
+      var ytd = ytdMetricVal(d, metric);
       var l30 = windowVal(d, metric, 'L30');
       var l14 = windowVal(d, metric, 'L14');
       var l7 = windowVal(d, metric, 'L7');
-      if ((metric === 'abq' || metric === 'rcv' || metric === 'obr') && l30 == null) {
-        l30 = windowVal(d, metric, 'YTD');
-        l14 = windowVal(d, metric, 'YTD');
-        l7 = windowVal(d, metric, 'YTD');
-      }
-      var rel = reliabilityForRow(d);
+      var compFb = (metric === 'abq' || metric === 'rcv' || metric === 'obr');
+      if (compFb && l30 == null && ytd != null) { l30 = ytd; l14 = ytd; l7 = ytd; }
+      var rel = reliabilityForRow(d, metric);
       var logo = A ? A.teamLogoImg(d.t, 22) : '';
       html += '<tr class="rl-row-click" data-team="' + esc(d.t) + '">'
         + '<td class="rl-team-cell">' + logo + ' <strong>' + esc(d.t) + '</strong></td>'
-        + cell(l30, metric, false)
-        + cell(l14, metric, false)
-        + cell(l7, metric, false)
+        + trendCell(ytd, metric, false, 'YTD', false)
+        + trendCell(l30, metric, false, 'L30', compFb && windowVal(d, metric, 'L30') == null)
+        + trendCell(l14, metric, false, 'L14', compFb && windowVal(d, metric, 'L14') == null)
+        + trendCell(l7, metric, false, 'L7', compFb && windowVal(d, metric, 'L7') == null)
         + '<td><span class="rl-reliability-badge ' + rel.cls + '">' + esc(rel.label) + '</span></td></tr>';
     });
     html += '</tbody></table>';
@@ -486,9 +602,26 @@
     });
   }
 
+  function trendCell(v, metric, inv, win, useYtdFallback) {
+    var cls = 'num' + trendColHighlight(win);
+    if (metric === 'pals' && win !== 'YTD') {
+      return '<td class="' + cls + ' rl-na" title="PALS window data unavailable">—</td>';
+    }
+    if (metric === 'pitchfaced' && win !== 'YTD') {
+      return '<td class="' + cls + ' rl-na" title="Pitch Score Faced window data unavailable">—</td>';
+    }
+    if (v == null || isNaN(v)) {
+      if (useYtdFallback) {
+        return '<td class="' + cls + ' rl-na-muted" title="Window uses OSI trend — component metrics show YTD">—</td>';
+      }
+      return '<td class="' + cls + ' rl-na" title="requires pipeline run">—</td>';
+    }
+    var suffix = useYtdFallback ? ' <span class="rl-ytd-tag">(YTD)</span>' : '';
+    return '<td class="' + cls + '" style="color:' + mColor(v, inv, metricKey(metric)) + '">' + fmt(v) + suffix + '</td>';
+  }
+
   function cell(v, metric, inv) {
-    if (v == null || isNaN(v)) return '<td class="num rl-na" title="requires pipeline run">—</td>';
-    return '<td class="num" style="color:' + mColor(v, inv, metricKey(metric)) + '">' + fmt(v) + '</td>';
+    return trendCell(v, metric, inv, 'YTD', false);
   }
 
   function deltaCell(v) {
@@ -571,26 +704,21 @@
       }).join('')
       + '</div>'
       + (entity === 'team' ? '<div class="rl-pill-row rl-pill-row--secondary">'
-        + '<span class="ca-pill-label">Metric</span>'
-        + ['osi', 'obr', 'rcv', 'abq', 'pals', 'pitchfaced'].map(function(m) {
-          var lbl = m === 'pitchfaced' ? 'Pitch Score Faced' : m.toUpperCase();
-          return '<button type="button" class="ca-pill-btn' + (metric === m ? ' active' : '') + '" data-split-metric="' + m + '">' + lbl + '</button>';
-        }).join('')
-        + '</div><div class="rl-pill-row rl-pill-row--secondary">'
-        + '<span class="ca-pill-label">Facing</span>'
-        + [{ id: 'all', l: 'All' }, { id: 'sp', l: 'Starting Pitchers' }, { id: 'rp', l: 'Relievers' }].map(function(f) {
-          var cur = global._rlSplitFacing || 'all';
-          return '<button type="button" class="ca-pill-btn' + (cur === f.id ? ' active' : '') + '" data-split-facing="' + f.id + '">' + f.l + '</button>';
-        }).join('')
-        + '<span class="ca-pill-label" style="margin-left:12px">Context</span>'
+        + '<span class="ca-pill-label">Context</span>'
         + [{ id: 'both', l: 'Full Game' }, { id: 'f5', l: 'F5' }].map(function(c) {
           var cur = global._rlSplitContext || 'both';
           return '<button type="button" class="ca-pill-btn' + (cur === c.id ? ' active' : '') + '" data-split-context="' + c.id + '">' + c.l + '</button>';
         }).join('')
-        + '<span class="ca-pill-label" style="margin-left:12px">Handedness</span>'
-        + [{ id: 'both', l: 'Both' }, { id: 'r', l: 'vs RHP' }, { id: 'l', l: 'vs LHP' }].map(function(h) {
-          var cur = global._rlSplitHand || 'both';
-          return '<button type="button" class="ca-pill-btn' + (cur === h.id ? ' active' : '') + '" data-split-hand="' + h.id + '">' + h.l + '</button>';
+        + '</div><div class="rl-pill-row rl-pill-row--secondary">'
+        + '<span class="ca-pill-label">Facing</span>'
+        + [{ id: 'all', l: 'All' }, { id: 'sp', l: 'vs SP' }, { id: 'rp', l: 'vs Reliever' }].map(function(f) {
+          var cur = global._rlSplitFacing || 'all';
+          return '<button type="button" class="ca-pill-btn' + (cur === f.id ? ' active' : '') + '" data-split-facing="' + f.id + '">' + f.l + '</button>';
+        }).join('')
+        + '</div><div class="rl-pill-row rl-pill-row--secondary">'
+        + '<span class="ca-pill-label">Metric</span>'
+        + ['osi', 'obr', 'rcv', 'abq', 'pals'].map(function(m) {
+          return '<button type="button" class="ca-pill-btn' + (metric === m ? ' active' : '') + '" data-split-metric="' + m + '">' + m.toUpperCase() + '</button>';
         }).join('')
         + '</div>'
         : entity === 'sp' ? '<div class="rl-pill-row rl-pill-row--secondary">'
@@ -608,7 +736,12 @@
         }).join('')
         + '<button type="button" class="ca-pill-btn' + (global._rlSpSimpleView ? ' active' : '') + '" data-sp-simple-view="1">Simplified</button>'
         + '</div>'
-        : entity === 'bp' ? '<div class="rl-pill-row rl-pill-row--secondary"><span class="ca-pill-label">Split</span>'
+        : entity === 'bp' ? '<div class="rl-pill-row rl-pill-row--secondary"><span class="ca-pill-label">Metric</span>'
+        + [{ id: 'score', l: 'Avg Pitching Score' }, { id: 'woba', l: 'wOBA' }, { id: 'rcv', l: 'RCV Allowed' }, { id: 'obr', l: 'OBR Allowed' }, { id: 'hi', l: 'High Lev ERA' }, { id: 'med', l: 'Med Lev ERA' }].map(function(m) {
+          var cur = global._rlBpMetric || 'score';
+          return '<button type="button" class="ca-pill-btn' + (cur === m.id ? ' active' : '') + '" data-bp-metric="' + m.id + '">' + m.l + '</button>';
+        }).join('')
+        + '</div><div class="rl-pill-row rl-pill-row--secondary"><span class="ca-pill-label">Split</span>'
         + ['overall', 'rhh', 'lhh', 'home', 'away'].map(function(s) {
           var cur = global._rlBpSplit || 'overall';
           var lbl = { overall: 'Overall', rhh: 'vs RHH', lhh: 'vs LHH', home: 'Home', away: 'Away' }[s];
@@ -695,49 +828,61 @@
         renderSplitsTable();
       });
     });
+    mount.querySelectorAll('[data-bp-metric]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        global._rlBpMetric = btn.getAttribute('data-bp-metric');
+        mountSplitsControls();
+        renderSplitsTable();
+      });
+    });
   }
 
   function renderSplitsTable() {
     var mount = document.getElementById('rlSplitsTableMount');
     if (!mount) return;
-    console.log('[SPLITS] initializing, LIVE_DATA.scYtdR:', global.LIVE_DATA && LIVE_DATA.scYtdR ? LIVE_DATA.scYtdR.length : 0);
+    var LD = global.LIVE_DATA || {};
+    console.log('[SPLITS] rendering team offense, SCO_YTD_R:', LD.scYtdR ? LD.scYtdR.length : 0, 'SCO_YTD_L:', LD.scYtdL ? LD.scYtdL.length : 0);
     RL.syncResearchGlobalsFromLiveData();
     ensureTrendState();
     var entity = global._rlSplitEntity || 'team';
     var metric = global._rlSplitMetric || 'osi';
-    if (entity === 'team' && !RL.getResearchTeamData('r').length && global.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {
+    if (entity === 'team' && !(LD.scYtdR && LD.scYtdR.length) && !(LD.scYtdL && LD.scYtdL.length)) {
       mount.innerHTML = '<p class="rl-loading">Loading team offense data\u2026</p>';
-      MLBMACharts.renderOnLiveDataReady(function() {
-        RL.syncResearchGlobalsFromLiveData();
-        renderSplitsTable();
-      }, 'rlSplitsTable');
+      renderOnLiveDataReady(function() { renderSplitsTable(); }, 'rlSplitsTable');
       return;
     }
     mount.innerHTML = '<p class="rl-loading">Loading split data\u2026</p>';
     if (entity === 'team') {
-      var metricKey = metric === 'pitchfaced' ? 'pitchfaced' : metric;
+      var mk = metricKey(metric);
       var useF5 = global._rlSplitContext === 'f5';
       var facing = global._rlSplitFacing || 'all';
       function valFor(row, m) {
         if (!row) return null;
         if (m === 'pals') return palsByTeam()[row.t];
-        if (m === 'pitchfaced') return pitchScoreFaced(row.t);
-        if (useF5 && m !== 'pals' && m !== 'pitchfaced') return estimateF5Osi(row);
-        return row[m];
+        if (useF5 && m !== 'pals') return estimateF5Osi(row);
+        return row[m] != null ? row[m] : row.osi;
       }
-      function renderTeamTable(r, l, homeMap, awayMap) {
-        var mLabel = metricKey === 'pitchfaced' ? 'Pitch Score Faced' : metricKey.toUpperCase();
+      function homeAwayMaps(homeRows, awayRows) {
+        var h = {}, a = {};
+        var aggH = aggregateBatterSplitsByTeam(homeRows || [], mk);
+        var aggA = aggregateBatterSplitsByTeam(awayRows || [], mk);
+        aggH.forEach(function(s) { h[s.t] = valFor(s, mk); });
+        aggA.forEach(function(s) { a[s.t] = valFor(s, mk); });
+        return { h: h, a: a };
+      }
+      function renderTeamTable(r, l, homeMap, awayMap, banner) {
+        var mLabel = mk.toUpperCase();
         var rows = r.map(function(row) {
           var lrow = l.find(function(x) { return x.t === row.t; }) || {};
           return {
             t: row.t,
-            rv: valFor(row, metricKey),
-            lv: valFor(lrow, metricKey),
+            rv: valFor(row, mk),
+            lv: valFor(lrow, mk),
             home: homeMap[row.t],
             away: awayMap[row.t]
           };
         }).sort(function(a, b) { return (b.rv || 0) - (a.rv || 0); });
-        mount.innerHTML = '<div class="rl-table-wrap rl-splits-scroll"><table class="rl-table-premium"><thead><tr>'
+        mount.innerHTML = (banner || '') + '<div class="rl-table-wrap rl-splits-scroll"><table class="rl-table-premium"><thead><tr>'
           + '<th></th><th>Team</th><th>vs RHP ' + esc(mLabel) + '</th><th>vs LHP ' + esc(mLabel) + '</th>'
           + '<th>Home ' + esc(mLabel) + '</th><th>Away ' + esc(mLabel) + '</th><th>PALS</th>'
           + '</tr></thead><tbody>'
@@ -746,61 +891,34 @@
             var palsV = palsByTeam()[row.t];
             return '<tr class="rl-row-click" data-team="' + esc(row.t) + '">'
               + '<td>' + logo + '</td><td><strong>' + esc(row.t) + '</strong></td>'
-              + '<td class="num" style="color:' + mColor(row.rv, false, metricKey) + '">' + fmt(row.rv) + '</td>'
-              + '<td class="num" style="color:' + mColor(row.lv, false, metricKey) + '">' + fmt(row.lv) + '</td>'
-              + '<td class="num" style="color:' + mColor(row.home, false, metricKey) + '">' + fmt(row.home) + '</td>'
-              + '<td class="num" style="color:' + mColor(row.away, false, metricKey) + '">' + fmt(row.away) + '</td>'
+              + '<td class="num" style="color:' + mColor(row.rv, false, mk) + '">' + fmt(row.rv) + '</td>'
+              + '<td class="num" style="color:' + mColor(row.lv, false, mk) + '">' + fmt(row.lv) + '</td>'
+              + '<td class="num" style="color:' + mColor(row.home, false, mk) + '">' + fmt(row.home) + '</td>'
+              + '<td class="num" style="color:' + mColor(row.away, false, mk) + '">' + fmt(row.away) + '</td>'
               + '<td class="num" style="color:' + mColor(palsV, false, 'osi') + '">' + fmt(palsV) + '</td></tr>';
           }).join('') + '</tbody></table></div>';
         bindRowClicks(mount, 'team');
       }
-      function homeAwayMaps(homeRows, awayRows) {
-        var h = {}, a = {};
-        (homeRows || []).forEach(function(row) {
-          var s = S.scoreRowFromSheet ? S.scoreRowFromSheet(row) : null;
-          if (s) h[s.t] = valFor(s, metricKey);
-        });
-        (awayRows || []).forEach(function(row) {
-          var s = S.scoreRowFromSheet ? S.scoreRowFromSheet(row) : null;
-          if (s) a[s.t] = valFor(s, metricKey);
-        });
-        return { h: h, a: a };
-      }
-      var loadFacing = Promise.resolve();
-      if (facing === 'sp' && !(global.LIVE_DATA && LIVE_DATA.batterSplitsVsSP && LIVE_DATA.batterSplitsVsSP.length) && TABS && S.fetchSheetTab) {
-        loadFacing = S.fetchSheetTab(TABS.batter_splits_vs_sp).catch(function() { return []; }).then(function(rows) {
-          if (global.LIVE_DATA) LIVE_DATA.batterSplitsVsSP = rows || [];
-        });
-      } else if (facing === 'rp' && !(global.LIVE_DATA && LIVE_DATA.batterSplitsVsRP && LIVE_DATA.batterSplitsVsRP.length) && TABS && S.fetchSheetTab) {
-        loadFacing = S.fetchSheetTab(TABS.batter_splits_vs_rp).catch(function() { return []; }).then(function(rows) {
-          if (global.LIVE_DATA) LIVE_DATA.batterSplitsVsRP = rows || [];
-        });
-      }
-      loadFacing.then(function() {
-        var r, l;
-        var LD = global.LIVE_DATA || {};
-        if (facing === 'sp') {
-          r = aggregateBatterSplitsByTeam(LD.batterSplitsVsSP || [], metric);
-          l = r.slice();
-        } else if (facing === 'rp') {
-          r = aggregateBatterSplitsByTeam(LD.batterSplitsVsRP || [], metric);
+      var r = (LD.scYtdR && LD.scYtdR.length) ? LD.scYtdR.map(function(d) { return Object.assign({}, d); }) : RL.getResearchTeamData('r');
+      var l = (LD.scYtdL && LD.scYtdL.length) ? LD.scYtdL.map(function(d) { return Object.assign({}, d); }) : RL.getResearchTeamData('l');
+      var banner = '';
+      if (facing === 'sp') {
+        if (LD.batterSplitsVsSP && LD.batterSplitsVsSP.length) {
+          r = aggregateBatterSplitsByTeam(LD.batterSplitsVsSP, metric);
           l = r.slice();
         } else {
-          r = RL.getResearchTeamData('r');
-          l = RL.getResearchTeamData('l');
+          banner = '<p class="rl-note" style="margin:0 0 10px">VS SP splits require pipeline run \u2014 showing All (vs RHP/LHP) data.</p>';
         }
-        var hand = global._rlSplitHand || 'both';
-        if (hand === 'r') l = r.map(function(x) { return Object.assign({}, x); });
-        else if (hand === 'l') r = l.map(function(x) { return Object.assign({}, x); });
-        var locP = Promise.all([
-          (TABS && S.fetchSheetTab) ? S.fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }) : [],
-          (TABS && S.fetchSheetTab) ? S.fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; }) : []
-        ]);
-        locP.then(function(locRes) {
-          var maps = homeAwayMaps(locRes[0], locRes[1]);
-          renderTeamTable(r, l, maps.h, maps.a);
-        });
-      });
+      } else if (facing === 'rp') {
+        if (LD.batterSplitsVsRP && LD.batterSplitsVsRP.length) {
+          r = aggregateBatterSplitsByTeam(LD.batterSplitsVsRP, metric);
+          l = r.slice();
+        } else {
+          banner = '<p class="rl-note" style="margin:0 0 10px">VS Reliever splits require pipeline run \u2014 showing All data.</p>';
+        }
+      }
+      var maps = homeAwayMaps(LD.batterSplitsHome, LD.batterSplitsAway);
+      renderTeamTable(r, l, maps.h, maps.a, banner);
       return;
     }
     if (entity === 'sp') {

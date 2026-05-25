@@ -195,6 +195,11 @@
       var profilesReady = profileCount >= 20 || _rlReadyTries >= 40;
       if (data && data.length > 0 && profilesReady) {
         console.log('[RL] Data ready, rendering Research Lab with', data.length, 'teams');
+        console.log('[RL OPEN] SCO_YTD_B:', typeof global.SCO_YTD_B !== 'undefined' ? global.SCO_YTD_B.length : 'undefined');
+        console.log('[RL OPEN] pals:', global.LIVE_DATA && LIVE_DATA.pals ? LIVE_DATA.pals.length : 0);
+        console.log('[RL OPEN] spProfiles:', global.LIVE_DATA && LIVE_DATA.spProfiles ? LIVE_DATA.spProfiles.length : 0);
+        console.log('[RL OPEN] bullpenUnits:', global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits).length : 'missing');
+        console.log('[RL OPEN] batterSplitsVsSP:', global.LIVE_DATA && LIVE_DATA.batterSplitsVsSP ? LIVE_DATA.batterSplitsVsSP.length : 0);
         if (_rlReadyPoll) { clearTimeout(_rlReadyPoll); _rlReadyPoll = null; }
         renderResearchLabContent();
       } else if (data && data.length > 0 && !profilesReady && _rlReadyTries < 40) {
@@ -378,6 +383,7 @@
     el.querySelectorAll('[data-rl-window]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         st.time = btn.getAttribute('data-rl-window');
+        console.log('[TRENDS] window changed to:', st.time, 'L30 available:', global.SCO_L30_B ? global.SCO_L30_B.length : 0);
         refreshActiveRlTab();
       });
     });
@@ -1460,7 +1466,8 @@
     fetchTeamProfiles: fetchTeamProfiles,
     resetResearchLabFilters: resetResearchLabFilters,
     initResearchLabWhenReady: initResearchLabWhenReady,
-    renderResearchLabContent: renderResearchLabContent
+    renderResearchLabContent: renderResearchLabContent,
+    refreshActiveRlTab: refreshActiveRlTab
   };
 
 })(typeof window !== 'undefined' ? window : this);

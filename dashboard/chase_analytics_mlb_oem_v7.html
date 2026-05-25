@@ -3789,6 +3789,7 @@ function loadLandingData() {
 
 function loadResearchData() {
   if (_researchBundleLoaded) return Promise.resolve();
+  LIVE_DATA.researchLoaded = false;
   console.log('[MLBMA] loadResearchData start');
   console.log('[TRENDS] fetching Team_Profiles tab key:', TABS.team_profiles);
   return Promise.all([
@@ -3801,7 +3802,10 @@ function loadResearchData() {
     }),
     fetchSheetTab(TABS.today_games),
     fetchTabSafe(TABS.batter_splits_vs_sp, []),
-    fetchTabSafe(TABS.batter_splits_vs_rp, [])
+    fetchTabSafe(TABS.batter_splits_vs_rp, []),
+    fetchTabSafe(TABS.batter_splits_home, []),
+    fetchTabSafe(TABS.batter_splits_away, []),
+    fetchTabSafe(TABS.sp_metric_splits, [])
   ]).then(function(results) {
     LIVE_DATA.oor = parseOorRows(results[0]);
     LIVE_DATA.pals = parsePalsRows(results[1]);
@@ -3809,6 +3813,10 @@ function loadResearchData() {
     LIVE_DATA.teamProfiles = results[3] || [];
     LIVE_DATA.batterSplitsVsSP = results[5] || [];
     LIVE_DATA.batterSplitsVsRP = results[6] || [];
+    LIVE_DATA.batterSplitsHome = results[7] || [];
+    LIVE_DATA.batterSplitsAway = results[8] || [];
+    LIVE_DATA.spMetricSplits = results[9] || [];
+    console.log('[DATA] spMetricSplits loaded:', LIVE_DATA.spMetricSplits ? LIVE_DATA.spMetricSplits.length : 0, 'rows');
     console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
     console.log('[TRENDS] teamProfiles rows:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 0);
     if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length > 0) {
@@ -3822,6 +3830,11 @@ function loadResearchData() {
     syncWindowScoresFromProfiles();
     attachPalsToScores();
     _researchBundleLoaded = true;
+    LIVE_DATA.researchLoaded = true;
+    if (window.ResearchLab && ResearchLab.refreshActiveRlTab) {
+      ResearchLab.refreshActiveRlTab();
+    }
+    console.log('[DATA] loadResearchData complete — refreshing active RL tab');
     saveLiveCache({
       lastUpdated: LIVE_DATA.lastUpdated,
       oor: LIVE_DATA.oor,
@@ -6212,6 +6225,9 @@ function shouldRenderOpeningMatchups() {
 
 function initMatchupsView() {
   if (!shouldRenderMatchupsView()) return;
+  if (window.PlatformDashboard && PlatformDashboard.bindHeroControls) {
+    PlatformDashboard.bindHeroControls();
+  }
   if (window.PlatformDashboard) {
     if (PlatformDashboard.bindHeroControls) PlatformDashboard.bindHeroControls();
     PlatformDashboard.initRegistry().then(function() {

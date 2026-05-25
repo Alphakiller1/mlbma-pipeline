@@ -691,6 +691,14 @@ html.view-research #oorSection { display: none !important; }
 .rl-row-click { cursor: pointer; }
 .rl-row-click:hover { background: rgba(192, 132, 252, 0.06); }
 .rl-trend-table thead th { position: sticky; top: 0; z-index: 2; background: var(--bg-2); }
+.rl-trend-col--highlight,
+.rl-trend-table td.rl-trend-col--highlight,
+.rl-trend-table th.rl-trend-col--highlight {
+  background: rgba(139, 92, 246, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(167, 139, 250, 0.55);
+}
+.rl-ytd-tag { font-size: 10px; color: var(--text-3, #9CA3AF); margin-left: 4px; }
+.rl-na-muted { color: var(--text-3, #6B7280); }
 .rl-sticky-table .rl-table-premium thead th { position: sticky; top: 0; z-index: 2; background: var(--bg-2); }
 .rl-compare-modes--large .rl-compare-mode-btn { padding: 10px 14px; font-size: 12px; font-weight: 700; }
 .rl-betting-angle {
