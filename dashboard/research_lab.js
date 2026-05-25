@@ -277,7 +277,17 @@ function profileWindowFieldsFromRow(row) {
     if (!S || !TABS || !TABS.team_profiles) return Promise.resolve({});
     return S.fetchSheetTab(TABS.team_profiles).then(function(rows) {
       if (!global.LIVE_DATA) global.LIVE_DATA = {};
-      LIVE_DATA.teamProfiles = rows || [];
+      rows = (typeof fixSplitColumns === 'function') ? fixSplitColumns(rows || []) : (rows || []);
+      rows = rows.map(function(row) {
+        ['osi_l30','osi_l14','osi_l7'].forEach(function(k) {
+          if (typeof row[k] === 'string' && row[k].indexOf('{') !== -1) {
+            var m = row[k].match(/OSI[\s":]+([0-9.]+)/i);
+            row[k] = m ? parseFloat(m[1]) : null;
+          }
+        });
+        return row;
+      });
+      LIVE_DATA.teamProfiles = rows;
       LIVE_DATA.teamProfilesByTeam = parseTeamProfilesMap(rows);
       if (typeof global.detectWindowMetricsFromProfiles === 'function') {
         LIVE_DATA.windowMetricsAvailable = global.detectWindowMetricsFromProfiles(LIVE_DATA.teamProfilesByTeam);
