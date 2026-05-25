@@ -34,6 +34,18 @@ window.TRENDS_STATE = TRENDS_STATE;
     return Number(v).toFixed(d == null ? 1 : d);
   }
 
+  function showRlResearchPane(activeId) {
+    ['trends', 'splits', 'compare', 'pitching'].forEach(function(id) {
+      var el = document.getElementById('pane-' + id);
+      if (!el) return;
+      var on = id === activeId;
+      el.style.display = on ? 'block' : 'none';
+      el.hidden = !on;
+      if (on) el.removeAttribute('hidden');
+    });
+    console.log('[SPLITS] showRlResearchPane:', activeId, 'pane-splits display:', document.getElementById('pane-splits') && document.getElementById('pane-splits').style.display);
+  }
+
   function getSplitsTeamScores() {
     var LD = global.LIVE_DATA || {};
     var rhp = LD.scYtdR || global.SCO_YTD_R || LD.vsRhp || LD.rhpScores || (global.RL_DATA && global.RL_DATA.rhp) || [];
@@ -554,6 +566,9 @@ window.TRENDS_STATE = TRENDS_STATE;
     console.log('[RL UIX] wrapping RL.onSubtab, prevOnSubtab:', typeof prevOnSubtab);
     RL.onSubtab = function(name) {
       if (name === 'splits') {
+        showRlResearchPane('splits');
+        var splitsPane = document.getElementById('pane-splits');
+        if (splitsPane) splitsPane.style.display = 'block';
         console.log('[SPLITS] tab clicked');
         console.log('[SPLITS] controlMount:', document.getElementById('rlSplitsControlMount'));
         console.log('[SPLITS] tableMount:', document.getElementById('rlSplitsTableMount'));
@@ -562,7 +577,14 @@ window.TRENDS_STATE = TRENDS_STATE;
         console.log('[SPLITS] scYtdR:', LD.scYtdR ? LD.scYtdR.length : 0, 'SCO_YTD_R:', global.SCO_YTD_R ? global.SCO_YTD_R.length : 0);
         console.log('[SPLITS] initSplitsTab called from onSubtab wrap');
         initSplitsTab();
-      } else if (name === 'trends') initTrendsTab();
+      } else if (name === 'trends') {
+        showRlResearchPane('trends');
+        initTrendsTab();
+      } else if (name === 'compare') {
+        showRlResearchPane('compare');
+      } else if (name === 'pitching') {
+        showRlResearchPane('pitching');
+      }
       else if (prevOnSubtab) prevOnSubtab(name);
     };
 

@@ -2204,7 +2204,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260525b">
 <link rel="stylesheet" href="chase_nav.css?v=20260525b">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260525b">
-<link rel="stylesheet" href="research_lab.css?v=20260525e">
+<link rel="stylesheet" href="research_lab.css?v=20260526n">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260526k"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -2231,7 +2231,7 @@ body.view-research .ca-lab { display: block; }
 <script src="profile_controls.js?v=20260526k"></script>
 <script src="platform_dashboard.js?v=20260526k"></script>
 <script src="research_lab.js?v=20260526k"></script>
-<script src="rl_tab_uix.js?v=20260526m"></script>
+<script src="rl_tab_uix.js?v=20260526n"></script>
 <script src="pitcher_lab.js?v=20260526k"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -4749,7 +4749,11 @@ function showResearchSubtab(name) {
   if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'trends';
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
-    if (el) el.style.display = (id === name) ? 'block' : 'none';
+    if (!el) return;
+    var show = id === name;
+    el.style.display = show ? 'block' : 'none';
+    el.hidden = !show;
+    if (show) el.removeAttribute('hidden');
   });
   syncCaLabTabs(name);
   onResearchSubtabShown(name);
