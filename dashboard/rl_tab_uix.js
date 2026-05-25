@@ -38,12 +38,17 @@ window.TRENDS_STATE = TRENDS_STATE;
     ['trends', 'splits', 'compare', 'pitching'].forEach(function(id) {
       var el = document.getElementById('pane-' + id);
       if (!el) return;
-      var on = id === activeId;
-      el.style.display = on ? 'block' : 'none';
-      el.hidden = !on;
-      if (on) el.removeAttribute('hidden');
+      if (id === activeId) {
+        el.style.cssText = 'display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important;';
+        el.hidden = false;
+        el.removeAttribute('hidden');
+      } else {
+        el.style.cssText = 'display:none!important;';
+        el.hidden = true;
+      }
     });
-    console.log('[SPLITS] showRlResearchPane:', activeId, 'pane-splits display:', document.getElementById('pane-splits') && document.getElementById('pane-splits').style.display);
+    var ps = document.getElementById('pane-splits');
+    console.log('[SPLITS] showRlResearchPane:', activeId, 'pane-splits display:', ps && ps.style.display, 'offsetHeight:', ps && ps.offsetHeight);
   }
 
   function getSplitsTeamScores() {
