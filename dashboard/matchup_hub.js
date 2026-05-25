@@ -156,6 +156,43 @@ function overlayLocationRows(baseRows, locRows) {
   });
 }
 
+function extractWindowOSI(val) {
+  if (val == null || val === '') return null;
+  var n = parseFloat(val);
+  if (!isNaN(n)) return n;
+  if (typeof val === 'string') {
+    var m = val.match(/OSI[\s":]+([0-9.]+)/i);
+    if (m) return parseFloat(m[1]);
+  }
+  return null;
+}
+
+function fixSplitColumns(rows) {
+  var fixed = [];
+  for (var i = 0; i < rows.length; i++) {
+    var row = Object.assign({}, rows[i]);
+    var keys = Object.keys(row);
+    keys.forEach(function(col, colIdx) {
+      var val = row[col];
+      if (typeof val !== 'string') return;
+      if (val.charAt(0) !== '[' && val.charAt(0) !== '{') return;
+      var combined = val;
+      var k = colIdx + 1;
+      while (k < keys.length) {
+        var opens = (combined.match(/\{/g) || []).length;
+        var closes = (combined.match(/\}/g) || []).length;
+        if (opens === closes && opens > 0) break;
+        combined += ', ' + (row[keys[k]] || '');
+        row[keys[k]] = '__consumed__';
+        k++;
+      }
+      row[col] = combined;
+    });
+    fixed.push(row);
+  }
+  return fixed;
+}
+
 function parseTeamProfiles(rows) {
   var map = {};
   (rows || []).forEach(function(row) {
