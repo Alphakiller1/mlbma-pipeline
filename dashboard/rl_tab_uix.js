@@ -4,6 +4,8 @@
 var SPLITS_STATE = {
   section: 'lineup',
   entity: 'sp',
+  lineupSplit: 'b',
+  lineupMetric: 'osi',
   split: 'b',
   metric: 'osi',
   statGroup: 'standard',
@@ -244,14 +246,16 @@ window.TRENDS_STATE = TRENDS_STATE;
 
       if (btn.dataset.splitsSplit) {
         SPLITS_STATE.section = 'lineup';
-        SPLITS_STATE.split = btn.dataset.splitsSplit;
+        SPLITS_STATE.lineupSplit = btn.dataset.splitsSplit;
+        SPLITS_STATE.split = SPLITS_STATE.lineupSplit;
         activatePill(btn, '[data-splits-split]', root);
         renderSplitsTable();
         return;
       }
       if (btn.dataset.splitsMetric) {
         SPLITS_STATE.section = 'lineup';
-        SPLITS_STATE.metric = btn.dataset.splitsMetric;
+        SPLITS_STATE.lineupMetric = btn.dataset.splitsMetric;
+        SPLITS_STATE.metric = SPLITS_STATE.lineupMetric;
         SPLITS_STATE.sortKey = btn.dataset.splitsMetric === 'standard' ? 'wrc' : btn.dataset.splitsMetric;
         activatePill(btn, '[data-splits-metric]', root);
         renderSplitsTable();
@@ -267,7 +271,14 @@ window.TRENDS_STATE = TRENDS_STATE;
       if (btn.dataset.splitsEntity) {
         SPLITS_STATE.section = 'pitching';
         SPLITS_STATE.entity = btn.dataset.splitsEntity;
-        if (SPLITS_STATE.entity === 'bullpen') SPLITS_STATE.statGroup = 'standard';
+        if (SPLITS_STATE.entity === 'bullpen') {
+          SPLITS_STATE.statGroup = 'standard';
+          SPLITS_STATE.sortKey = 'eraOverall';
+          SPLITS_STATE.sortDir = 'asc';
+        } else {
+          SPLITS_STATE.sortKey = 'ERA';
+          SPLITS_STATE.sortDir = 'asc';
+        }
         var cm = document.getElementById('rlSplitsControlMount');
         if (cm) delete cm.dataset.built;
         initSplitsTab();
@@ -276,6 +287,10 @@ window.TRENDS_STATE = TRENDS_STATE;
       if (btn.dataset.splitsStatgroup) {
         SPLITS_STATE.section = 'pitching';
         SPLITS_STATE.statGroup = btn.dataset.splitsStatgroup;
+        if (SPLITS_STATE.entity === 'bullpen') {
+          SPLITS_STATE.sortKey = btn.dataset.splitsStatgroup === 'allowed' ? 'osiAllowed' : 'eraOverall';
+          SPLITS_STATE.sortDir = 'asc';
+        }
         activatePill(btn, '[data-splits-statgroup]', root);
         renderSplitsTable();
       }
@@ -305,12 +320,37 @@ window.TRENDS_STATE = TRENDS_STATE;
         confirm.textContent = 'Lineup: ' + SPLITS_STATE.split + ' \u00B7 ' + SPLITS_STATE.metric + ' \u00B7 ' + SPLITS_STATE.window;
       }
     }
-    if (SPLITS_STATE.section === 'pitching') {
-      if (SPLITS_STATE.entity === 'bullpen') renderBullpenSplits(mount);
-      else renderSpSplits(mount);
-    } else {
+    if (SPLITS_STATE.section === 'lineup') {
       renderTeamSplits(mount);
+    } else {
+      renderPitchingSplits(mount);
     }
+  }
+
+  function renderPitchingSplits(mount) {
+    if (SPLITS_STATE.entity === 'bullpen') renderBullpenSplits(mount);
+    else renderSpSplits(mount);
+  }
+
+  function attachTableSort(mount) {
+    if (!mount) return;
+    mount.querySelectorAll('[data-sort-key]').forEach(function(th) {
+      th.addEventListener('click', function() {
+        var key = th.getAttribute('data-sort-key');
+        if (SPLITS_STATE.sortKey === key) {
+          SPLITS_STATE.sortDir = SPLITS_STATE.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          SPLITS_STATE.sortKey = key;
+          if (SPLITS_STATE.section === 'pitching' && SPLITS_STATE.entity === 'bullpen'
+            && (key === 'eraOverall' || key === 'osiAllowed' || key === 'hiLevEra' || key === 'loLevEra' || key.indexOf('Allowed') >= 0)) {
+            SPLITS_STATE.sortDir = 'asc';
+          } else {
+            SPLITS_STATE.sortDir = 'desc';
+          }
+        }
+        renderSplitsTable();
+      });
+    });
   }
 
   function applyLineupWindow(rows) {
@@ -440,18 +480,7 @@ window.TRENDS_STATE = TRENDS_STATE;
       }
 
       mount.innerHTML = buildTable(rows, columns);
-      mount.querySelectorAll('[data-sort-key]').forEach(function(th) {
-        th.addEventListener('click', function() {
-          var key = th.getAttribute('data-sort-key');
-          if (SPLITS_STATE.sortKey === key) {
-            SPLITS_STATE.sortDir = SPLITS_STATE.sortDir === 'asc' ? 'desc' : 'asc';
-          } else {
-            SPLITS_STATE.sortKey = key;
-            SPLITS_STATE.sortDir = 'desc';
-          }
-          renderSplitsTable();
-        });
-      });
+      attachTableSort(mount);
     } catch (err) {
       console.error('[SPLITS TEAM] crashed:', err.message, err.stack);
       mount.innerHTML = '<div style="color:red;padding:20px;">Splits render error: ' + esc(err.message) + '</div>';
@@ -506,44 +535,65 @@ window.TRENDS_STATE = TRENDS_STATE;
         { key: 'HR9', label: 'HR/9', color: true, invert: true }
       ];
     mount.innerHTML = buildTable(rows, columns);
+    attachTableSort(mount);
   }
 
   function renderBullpenSplits(mount) {
-    var units = liveData().bullpenUnits || {};
-    var rows = Object.keys(units).map(function(tk) {
-      var u = units[tk] || {};
+    var bpRows = Object.entries(liveData().bullpenUnits || {}).map(function(entry) {
+      var team = entry[0];
+      var unit = entry[1] || {};
       return {
-        t: tk,
-        bullpenScore: u.bullpenScore,
-        osiAllowed: u.osiAllowed,
-        abqAllowed: u.abqAllowed,
-        rcvAllowed: u.rcvAllowed,
-        obrAllowed: u.obrAllowed,
-        hiLevEra: u.hiLevEra,
-        loLevEra: u.loLevEra
+        t: team,
+        bullpenScore: parseFloat(unit.bullpenScore) || null,
+        osiAllowed: parseFloat(unit.osiAllowed) || null,
+        abqAllowed: parseFloat(unit.abqAllowed) || null,
+        rcvAllowed: parseFloat(unit.rcvAllowed) || null,
+        obrAllowed: parseFloat(unit.obrAllowed) || null,
+        hiLevEra: parseFloat(unit.hiLevEra) || null,
+        loLevEra: parseFloat(unit.loLevEra) || null,
+        eraOverall: parseFloat(unit.eraOverall) || null
       };
     });
-    if (!rows.length) {
+    if (!bpRows.length) {
       mount.innerHTML = '<div class="splits-empty">Loading bullpen data\u2026</div>';
       return;
     }
     if (SPLITS_STATE.search) {
-      rows = rows.filter(function(r) {
+      bpRows = bpRows.filter(function(r) {
         return String(r.t || '').toLowerCase().indexOf(SPLITS_STATE.search) >= 0;
       });
     }
-    rows.sort(function(a, b) { return (b.bullpenScore || 0) - (a.bullpenScore || 0); });
-    var columns = [
-      { key: 't', label: 'Team', type: 'team' },
-      { key: 'bullpenScore', label: 'BP Score', color: true },
-      { key: 'osiAllowed', label: 'OSI Allowed', color: true, invert: true },
-      { key: 'abqAllowed', label: 'ABQ Allowed', color: true, invert: true },
-      { key: 'rcvAllowed', label: 'RCV Allowed', color: true, invert: true },
-      { key: 'obrAllowed', label: 'OBR Allowed', color: true, invert: true },
-      { key: 'hiLevEra', label: 'Hi Lev ERA', color: true, invert: true },
-      { key: 'loLevEra', label: 'Lo Lev ERA', color: true, invert: true }
-    ];
-    mount.innerHTML = buildTable(rows, columns);
+
+    var isAllowed = SPLITS_STATE.statGroup === 'allowed';
+    var sortKey = SPLITS_STATE.sortKey || (isAllowed ? 'osiAllowed' : 'eraOverall');
+    var sortDir = SPLITS_STATE.sortDir || 'asc';
+    bpRows.sort(function(a, b) {
+      var av = a[sortKey];
+      var bv = b[sortKey];
+      if (av == null || isNaN(av)) return 1;
+      if (bv == null || isNaN(bv)) return -1;
+      return sortDir === 'asc' ? av - bv : bv - av;
+    });
+
+    var columns = isAllowed
+      ? [
+        { key: 't', label: 'Team', type: 'team' },
+        { key: 'bullpenScore', label: 'Bullpen Score', color: true, ctx: 'osi' },
+        { key: 'osiAllowed', label: 'OSI Allowed', color: true, invert: true },
+        { key: 'abqAllowed', label: 'ABQ Allowed', color: true, invert: true },
+        { key: 'rcvAllowed', label: 'RCV Allowed', color: true, invert: true },
+        { key: 'obrAllowed', label: 'OBR Allowed', color: true, invert: true }
+      ]
+      : [
+        { key: 't', label: 'Team', type: 'team' },
+        { key: 'eraOverall', label: 'ERA', color: true, invert: true },
+        { key: 'hiLevEra', label: 'Hi Lev ERA', color: true, invert: true },
+        { key: 'loLevEra', label: 'Lo Lev ERA', color: true, invert: true },
+        { key: 'bullpenScore', label: 'Bullpen Score', color: true, ctx: 'osi' }
+      ];
+
+    mount.innerHTML = buildTable(bpRows, columns);
+    attachTableSort(mount);
   }
 
   function initTrendsTab() {
@@ -745,7 +795,7 @@ window.TRENDS_STATE = TRENDS_STATE;
   function cellColor(val, col) {
     if (val == null || val === '' || isNaN(val)) return '#374151';
     if (!col.color || !A || !A.metricColor) return '#F9FAFB';
-    if (col.key === 'ERA' || col.key === 'hiLevEra' || col.key === 'loLevEra') {
+    if (col.key === 'ERA' || col.key === 'eraOverall' || col.key === 'hiLevEra' || col.key === 'loLevEra') {
       var era = Number(val);
       if (era < 3.5) return '#4ADE80';
       if (era <= 4.5) return '#FBBF24';
@@ -757,7 +807,14 @@ window.TRENDS_STATE = TRENDS_STATE;
       if (w >= 90) return '#FBBF24';
       return '#F87171';
     }
-    return A.metricColor(val, col.ctx || col.key, !!col.invert);
+    if (col.key === 'bullpenScore') {
+      return A.metricColor(val, 'osi', false);
+    }
+    var metricKey = col.ctx || col.key;
+    if (col.key === 'osiAllowed' || col.key === 'abqAllowed' || col.key === 'rcvAllowed' || col.key === 'obrAllowed') {
+      metricKey = col.key.replace('Allowed', '').toLowerCase();
+    }
+    return A.metricColor(val, metricKey, !!col.invert);
   }
 
   function buildTable(rows, columns) {
@@ -790,7 +847,7 @@ window.TRENDS_STATE = TRENDS_STATE;
         if (val == null || val === '' || isNaN(val)) val = null;
         var display = '\u2014';
         if (val != null) {
-          display = col.key === 'ERA' || col.key === 'hiLevEra' || col.key === 'loLevEra'
+          display = col.key === 'ERA' || col.key === 'eraOverall' || col.key === 'hiLevEra' || col.key === 'loLevEra'
             ? Number(val).toFixed(2)
             : (col.key === 'woba' || col.key === 'slg' ? Number(val).toFixed(3) : fmt(val));
           if (col.suffix) display += col.suffix;
@@ -819,6 +876,7 @@ window.TRENDS_STATE = TRENDS_STATE;
     }
     if (global.SPLITS_STATE) {
       if (sp === 'home' || sp === 'away' || sp === 'f5' || sp === 'r' || sp === 'l' || sp === 'b') {
+        global.SPLITS_STATE.lineupSplit = sp;
         global.SPLITS_STATE.split = sp;
         global.SPLITS_STATE.section = 'lineup';
       }
