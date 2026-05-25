@@ -1,5 +1,4 @@
 ﻿// matchup_hub.js
-console.log('[HUB] parsing start');
 window.matchupHubLoaded = false;
 
 var hubA = null;
@@ -12,8 +11,6 @@ try {
 } catch (e) {
   console.error('[HUB] globals crash:', e.message, e.stack);
 }
-console.log('[HUB] section 1: globals defined');
-
 function bindHubGlobals() {
   window.MatchupShared = window.MLBMASharedMatchup;
   hubA = window.MLBMAAssets || null;
@@ -34,8 +31,6 @@ try {
   console.error('[HUB] HUB object crash:', e.message, e.stack);
   HUB = { scR: [], scL: [], scBoth: [], loaded: false };
 }
-console.log('[HUB] section 2: HUB object created');
-
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -95,29 +90,6 @@ function teamKey(t) {
 
 function pick(row, keys) {
   return hubS ? hubS.pickCol(row, keys) : (row && row[keys[0]]);
-}
-
-function buildBlended(scR, scL) {
-  var lMap = {};
-  (scL || []).forEach(function(r) { lMap[r.t] = r; });
-  return (scR || []).map(function(r) {
-    var l = lMap[r.t] || r;
-    function avg(a, b) {
-      var av = a != null && !isNaN(a) ? a : 0;
-      var bv = b != null && !isNaN(b) ? b : av;
-      return (av + bv) / 2;
-    }
-    return Object.assign({}, r, {
-      osi: avg(r.osi, l.osi),
-      abq: avg(r.abq, l.abq),
-      rcv: avg(r.rcv, l.rcv),
-      obr: avg(r.obr, l.obr),
-      woba: avg(r.woba, l.woba),
-      wrc: avg(r.wrc, l.wrc),
-      xwoba: avg(r.xwoba, l.xwoba),
-      slg: avg(r.slg, l.slg)
-    });
-  });
 }
 
 function mergeBoth(scR, scL) {
@@ -278,14 +250,6 @@ function enrichRow(base) {
   return applyWindowToRow(d);
 }
 
-function applyF5Proxy(row) {
-  var out = Object.assign({}, row);
-  out.f5OSI = (row.abq * 0.45) + (row.obr * 0.35) + (row.rcv * 0.20);
-  out.osi = out.f5OSI;
-  if (out.projOSI != null) out.projOSI = out.f5OSI;
-  return out;
-}
-
 function buildScBothFromHandedness() {
   if (!HUB.scR || !HUB.scR.length || !HUB.scL || !HUB.scL.length) return;
   var lMap = {};
@@ -303,14 +267,11 @@ function buildScBothFromHandedness() {
       slg: ((r.slg || 0) + (l.slg || r.slg || 0)) / 2
     });
   });
-  console.log('[HUB] scBoth built:', HUB.scBoth.length, 'teams');
 }
 
 function rebuildMasterRows() {
   var hand = HUB.hand || 'both';
   var base;
-
-  console.log('[HUB] rebuildMasterRows hand:', hand, 'scR:', HUB.scR ? HUB.scR.length : 0, 'scL:', HUB.scL ? HUB.scL.length : 0, 'scBoth:', HUB.scBoth ? HUB.scBoth.length : 0);
 
   if (hand === 'r') {
     base = HUB.scR && HUB.scR.length ? HUB.scR.slice() : null;
@@ -365,10 +326,6 @@ function sortRows(rows) {
   });
 }
 
-function sortedRows() {
-  return sortRows(rebuildMasterRows());
-}
-
 function confirmLine() {
   var handLbl = { both: 'Both', r: 'vs RHP', l: 'vs LHP', f5: 'F5' }[HUB.hand] || HUB.hand;
   var locLbl = { all: 'All', home: 'Home', away: 'Away' }[HUB.location] || HUB.location;
@@ -377,7 +334,6 @@ function confirmLine() {
 }
 
 function setWindow(win) {
-  console.log('[HUB] pill clicked: window', win);
   HUB.window = win;
   HUB.activeWindow = win === 'YTD' ? 'ytd' : win.toLowerCase();
   renderControls();
@@ -395,16 +351,9 @@ function renderControls() {
     el.querySelectorAll('.hub-pill').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var v = btn.getAttribute('data-val');
-        console.log('[HUB] pill clicked:', key, v);
         if (key === 'window') setWindow(v);
         else {
           HUB[key] = v;
-          if (key === 'hand') {
-            console.log('[HUB] hand changed to:', HUB.hand, 'scR:', (HUB.scR || []).length, 'scL:', (HUB.scL || []).length, 'scBoth:', (HUB.scBoth || []).length);
-          }
-          if (key === 'location') {
-            console.log('[HUB] location set to:', HUB.location, 'splitHome length:', (HUB.splitHome || []).length, 'splitAway length:', (HUB.splitAway || []).length);
-          }
           renderControls();
           updateBanners();
         }
@@ -466,7 +415,6 @@ function updateHead() {
   head.querySelectorAll('th[data-sort]').forEach(function(th) {
     th.addEventListener('click', function() {
       var k = th.getAttribute('data-sort');
-      console.log('[HUB] pill clicked: sort', k);
       if (HUB.sortKey === k) HUB.sortDir *= -1;
       else { HUB.sortKey = k; HUB.sortDir = -1; }
       renderHubTable();
@@ -479,16 +427,10 @@ function renderHubTable() {
   var body = document.getElementById('hubTableBody');
   if (!body) return;
   if (!HUB.loaded) {
-    console.log('[HUB] renderHubTable called, rows: 0 (not loaded yet)');
     body.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--text-2)">Loading...</td></tr>';
     return;
   }
-  console.log('[HUB] renderHubTable state:', HUB.hand, HUB.window, HUB.location);
-  var built = rebuildMasterRows();
-  console.log('[HUB] rebuildMasterRows returned:', built ? built.length : 0, 'rows');
-  var rows = sortRows(built);
-  console.log('[HUB] renderHubTable called, rows:', rows.length, 'window:', HUB.window, 'hand:', HUB.hand);
-  console.log('[HUB] windowAvail:', JSON.stringify(HUB.windowAvail));
+  var rows = sortRows(rebuildMasterRows());
   hideHubLoading();
   var html = '';
   var colSpan = 13;
@@ -517,7 +459,6 @@ function renderHubTable() {
 }
 
 function hideHubLoading() {
-  console.log('[HUB] hideHubLoading called');
   var l = document.getElementById('hubLoading');
   if (l) {
     l.classList.add('hide');
@@ -532,23 +473,16 @@ function hubLoadData() {
   if (!MS || !MS.fetchSheetTab || !TABS) {
     var body = document.getElementById('hubTableBody');
     if (body) body.innerHTML = '<tr><td colspan="13">Shared data module unavailable.</td></tr>';
-    console.log('[HUB] hubLoadData complete (no shared module)');
     hideHubLoading();
     return Promise.resolve();
   }
   var scoreFn = window.scoreRowFromSheet || (window.MatchupShared && window.MatchupShared.scoreRowFromSheet) || MS.scoreRowFromSheet;
   if (!scoreFn) {
     console.error('[HUB] scoreRowFromSheet not found');
-    console.log('[HUB] hubLoadData complete (no score fn)');
     hideHubLoading();
     return Promise.resolve();
   }
-  var loggedCols = false;
   function scoreRaw(row) {
-    if (!loggedCols && row && typeof row === 'object') {
-      loggedCols = true;
-      console.log('[SCORE] extracting row, available columns:', Object.keys(row));
-    }
     return scoreFn(row);
   }
   return MS.fetchSheetTab(TABS.vs_rhp).then(function(rows) {
@@ -566,7 +500,6 @@ function hubLoadData() {
     if ((!HUB.scBoth || !HUB.scBoth.length) && HUB.scR.length && HUB.scL.length) {
       buildScBothFromHandedness();
     }
-    console.log('[HUB] after load: scR:', HUB.scR.length, 'scL:', HUB.scL.length, 'scBoth:', HUB.scBoth ? HUB.scBoth.length : 0);
     HUB.splitHome = buildLocationSplitRows(res[2] || [], scoreFn, 'home_osi');
     HUB.splitAway = buildLocationSplitRows(res[3] || [], scoreFn, 'away_osi');
     HUB.locationAvail.home = HUB.splitHome.length >= 10;
@@ -578,8 +511,6 @@ function hubLoadData() {
       }).length >= 20;
     });
     HUB.loaded = true;
-    console.log('[HUB] first scR row fields:', Object.keys(HUB.scR && HUB.scR[0] || {}));
-    console.log('[HUB] first scR row woba:', HUB.scR && HUB.scR[0] && HUB.scR[0].woba, 'xwoba:', HUB.scR && HUB.scR[0] && HUB.scR[0].xwoba, 'wrc:', HUB.scR && HUB.scR[0] && HUB.scR[0].wrc);
     updateBanners();
     renderHubTable();
     console.log('[HUB] hubLoadData complete');
@@ -588,7 +519,6 @@ function hubLoadData() {
     console.error('[HUB] load failed', err);
     HUB.loaded = true;
     renderHubTable();
-    console.log('[HUB] hubLoadData complete (error)');
     hideHubLoading();
   });
 }
@@ -608,7 +538,6 @@ function bindHubRowClicks() {
 }
 
 function initHub() {
-  console.log('[HUB] initHub starting');
   var TABS = bindHubGlobals();
   if (!TABS) {
     console.error('[HUB] MLBMA_CONFIG not loaded yet, retry in 500ms');
@@ -622,7 +551,6 @@ function initHub() {
   var advEl = document.getElementById('hubAdvCols');
   if (advEl) {
     advEl.addEventListener('change', function(e) {
-      console.log('[HUB] pill clicked: advCols', e.target.checked);
       HUB.showAdvanced = e.target.checked;
       renderHubTable();
     });
@@ -635,8 +563,6 @@ function initHub() {
   });
 }
 
-console.log('[HUB] section 3: functions defined');
-
 try {
   window.HUB = HUB;
   window.renderHubTable = renderHubTable;
@@ -645,8 +571,6 @@ try {
 } catch (e) {
   console.error('[HUB] exports crash:', e.message, e.stack);
 }
-console.log('[HUB] section 4: exports complete');
-
 try {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -668,8 +592,4 @@ try {
 } catch (e) {
   console.error('[HUB] DOM listener crash:', e.message, e.stack);
 }
-console.log('[HUB] section 5: event listener bound');
-
-console.log('[HUB] section 6: about to set matchupHubLoaded');
 window.matchupHubLoaded = true;
-console.log('[HUB] parsing complete');

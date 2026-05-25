@@ -37,7 +37,6 @@
         both = rhp;
       }
     }
-    console.log('[RL] getResearchTeamData:', { split: split, rhpLen: rhp.length, lhpLen: lhp.length, bothLen: both && both.length });
     if (split === 'r' || split === 'vs_rhp') return withProfileWindows(rhp || []);
     if (split === 'l' || split === 'vs_lhp') return withProfileWindows(lhp || []);
     return withProfileWindows(both || rhp || []);
@@ -46,7 +45,6 @@
   function getResearchPitcherData() {
     var LD = global.LIVE_DATA || {};
     var pitchers = LD.spProfiles || RL.spProfiles || LD.pitchers || LD.spData || (global.RL_DATA && RL_DATA.pitchers) || [];
-    console.log('[RL] getResearchPitcherData:', pitchers.length);
     return pitchers || [];
   }
 
@@ -60,7 +58,6 @@
       });
     }
     if (global.RL_DATA && RL_DATA.bullpen && !bullpen) bullpen = RL_DATA.bullpen;
-    console.log('[RL] getResearchBullpenData:', Array.isArray(bullpen) ? bullpen.length : (bullpen ? 1 : 0));
     return bullpen || [];
   }
 
@@ -133,10 +130,6 @@
       global.M_L14 = global.toMap(global.SCO_L14_B);
       global.M_L7 = global.toMap(global.SCO_L7_B);
     }
-    console.log('[TRENDS] built L30:', global.SCO_L30_B.length, 'L14:', global.SCO_L14_B.length, 'L7:', global.SCO_L7_B.length);
-    console.log('[TRENDS] SCO_L30_B built:', global.SCO_L30_B.length, 'teams');
-    console.log('[TRENDS] SCO_L14_B built:', global.SCO_L14_B.length, 'teams');
-    console.log('[TRENDS] SCO_L7_B built:', global.SCO_L7_B.length, 'teams');
   }
 
   function syncResearchGlobalsFromLiveData() {
@@ -166,9 +159,6 @@
     if (global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam && Object.keys(LIVE_DATA.teamProfilesByTeam).length) {
       buildWindowScoresFromProfiles();
     }
-    console.log('[TRENDS] L30 data available:', global.SCO_L30_B ? global.SCO_L30_B.length : 'missing');
-    console.log('[TRENDS] L14 data available:', global.SCO_L14_B ? global.SCO_L14_B.length : 'missing');
-    console.log('[TRENDS] L7 data available:', global.SCO_L7_B ? global.SCO_L7_B.length : 'missing');
     return synced;
   }
 
@@ -195,12 +185,6 @@
         ? Object.keys(LIVE_DATA.teamProfilesByTeam).length : 0;
       var profilesReady = profileCount >= 20 || _rlReadyTries >= 40;
       if (data && data.length > 0 && profilesReady) {
-        console.log('[RL] Data ready, rendering Research Lab with', data.length, 'teams');
-        console.log('[RL OPEN] SCO_YTD_B:', typeof global.SCO_YTD_B !== 'undefined' ? global.SCO_YTD_B.length : 'undefined');
-        console.log('[RL OPEN] pals:', global.LIVE_DATA && LIVE_DATA.pals ? LIVE_DATA.pals.length : 0);
-        console.log('[RL OPEN] spProfiles:', global.LIVE_DATA && LIVE_DATA.spProfiles ? LIVE_DATA.spProfiles.length : 0);
-        console.log('[RL OPEN] bullpenUnits:', global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits).length : 'missing');
-        console.log('[RL OPEN] batterSplitsVsSP:', global.LIVE_DATA && LIVE_DATA.batterSplitsVsSP ? LIVE_DATA.batterSplitsVsSP.length : 0);
         if (_rlReadyPoll) { clearTimeout(_rlReadyPoll); _rlReadyPoll = null; }
         renderResearchLabContent();
       } else if (data && data.length > 0 && !profilesReady && _rlReadyTries < 40) {
@@ -211,7 +195,6 @@
         console.warn('[RL] Proceeding with partial data after timeout');
         renderResearchLabContent();
       } else {
-        console.log('[RL] Waiting for data...');
         _rlReadyPoll = setTimeout(tick, 300);
       }
     }
@@ -281,15 +264,9 @@
       return Promise.resolve(profs);
     }
     if (!S || !TABS || !TABS.team_profiles) return Promise.resolve({});
-    console.log('[TRENDS] fetching Team_Profiles tab key:', TABS.team_profiles);
     return S.fetchSheetTab(TABS.team_profiles).then(function(rows) {
       if (!global.LIVE_DATA) global.LIVE_DATA = {};
       LIVE_DATA.teamProfiles = rows || [];
-      console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
-      if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length) {
-        console.log('[TRENDS] teamProfiles first row keys:', Object.keys(LIVE_DATA.teamProfiles[0]));
-        console.log('[TRENDS] teamProfiles first row:', JSON.stringify(LIVE_DATA.teamProfiles[0]));
-      }
       LIVE_DATA.teamProfilesByTeam = parseTeamProfilesMap(rows);
       if (typeof global.detectWindowMetricsFromProfiles === 'function') {
         LIVE_DATA.windowMetricsAvailable = global.detectWindowMetricsFromProfiles(LIVE_DATA.teamProfilesByTeam);
@@ -357,12 +334,7 @@
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
       renderTrendSummary();
     } else if (tab === 'splits') {
-      if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
-      if (typeof global.renderSplitsTable === 'function') {
-        global.renderSplitsTable();
-      } else if (typeof global.renderTeamOffenseSplits === 'function') {
-        global.renderTeamOffenseSplits();
-      }
+      if (typeof global.renderSplitsTable === 'function') global.renderSplitsTable();
     }
     mountGlobalControlBar();
   }
@@ -393,21 +365,17 @@
     el.querySelectorAll('[data-rl-split]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         st.split = btn.getAttribute('data-rl-split');
+        if (typeof global.syncGlobalBarToUix === 'function') global.syncGlobalBarToUix();
         refreshActiveRlTab();
       });
     });
     el.querySelectorAll('[data-rl-window]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         st.time = btn.getAttribute('data-rl-window');
-        console.log('[TRENDS] window changed to:', st.time, 'L30 available:', global.SCO_L30_B ? global.SCO_L30_B.length : 0);
+        if (typeof global.syncGlobalBarToUix === 'function') global.syncGlobalBarToUix();
         refreshActiveRlTab();
       });
     });
-  }
-
-  function mountTrendControls() {
-    var ext = global.ResearchLab && ResearchLab.mountTrendControls;
-    if (ext && ext !== mountTrendControls) return ext();
   }
 
   function renderTrendSummary() {
@@ -433,104 +401,6 @@
       + card('Biggest fallers', fallers, function(d) { return d.t + ' ' + (d[cmpKey] || 0).toFixed(1); })
       + card('Most volatile', volatile, function(d) { return d.t + ' L7 \u0394 ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
       + card('Most stable', stable, function(d) { return d.t + ' \u00B7 ' + (d.trend || 'Stable'); });
-  }
-
-  function mountSplitsEntityControls() {
-    var mount = document.getElementById('rlSplitsControlMount');
-    if (!mount) return;
-    var entity = RL.splitEntity || 'team';
-    var metric = RL.splitMetric || 'osi';
-    mount.innerHTML = '<div class="rl-splits-controls ca-pill-bar" style="margin-bottom:14px">'
-      + '<span class="ca-pill-label">Entity</span>'
-      + [{ id: 'team', label: 'Team Offense' }, { id: 'sp', label: 'Starting Pitcher' }, { id: 'bp', label: 'Bullpen' }].map(function(e) {
-        return '<button type="button" class="ca-pill-btn' + (entity === e.id ? ' active' : '') + '" data-split-entity="' + e.id + '">' + e.label + '</button>';
-      }).join('')
-      + '<span class="ca-pill-label">Metric</span>'
-      + ['osi', 'abq', 'rcv', 'obr'].map(function(m) {
-        return '<button type="button" class="ca-pill-btn' + (metric === m ? ' active' : '') + '" data-split-metric="' + m + '">' + m.toUpperCase() + '</button>';
-      }).join('')
-      + '</div>';
-    mount.querySelectorAll('[data-split-entity]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        RL.splitEntity = btn.getAttribute('data-split-entity');
-        mountSplitsEntityControls();
-        _legacyRenderSplitsTable();
-      });
-    });
-    mount.querySelectorAll('[data-split-metric]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        RL.splitMetric = btn.getAttribute('data-split-metric');
-        mountSplitsEntityControls();
-        _legacyRenderSplitsTable();
-      });
-    });
-  }
-
-  function _legacyRenderSplitsTable() {
-    var mount = document.getElementById('rlSplitsTableMount');
-    if (!mount) return;
-    syncResearchGlobalsFromLiveData();
-    var entity = RL.splitEntity || 'team';
-    var metric = RL.splitMetric || 'osi';
-    var r = getResearchTeamData('r');
-    var l = getResearchTeamData('l');
-    if (entity === 'team') {
-      var rows = r.map(function(row) {
-        var lrow = l.find(function(x) { return x.t === row.t; }) || {};
-        var edge = (row[metric] || 0) - (lrow[metric] || 0);
-        return { t: row.t, r: row[metric], l: lrow[metric], edge: edge };
-      }).sort(function(a, b) { return Math.abs(b.edge) - Math.abs(a.edge); });
-      mount.innerHTML = '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
-        + '<th></th><th>Team</th><th>vs RHP</th><th>vs LHP</th><th>Split Edge</th><th>Home</th><th>Away</th><th>F5</th></tr></thead><tbody>'
-        + rows.map(function(row) {
-          var gold = Math.abs(row.edge) >= 8 ? ' rl-split-gold' : '';
-          var logo = A ? A.teamLogoImg(row.t, 24) : '';
-          return '<tr class="hub-row' + gold + '" onclick="location.href=\'team_profile.html?team=' + encodeURIComponent(row.t) + '\'">'
-            + '<td>' + logo + '</td><td>' + esc(row.t) + '</td>'
-            + '<td style="color:' + mColor(row.r, false, metric) + '">' + fmt(row.r) + '</td>'
-            + '<td style="color:' + mColor(row.l, false, metric) + '">' + fmt(row.l) + '</td>'
-            + '<td style="color:' + mColor(row.edge, false, 'ppGap') + ';font-weight:700">' + fmt(row.edge) + '</td>'
-            + '<td title="requires pipeline run">\u2014</td><td title="requires pipeline run">\u2014</td><td title="requires pipeline run">\u2014</td></tr>';
-        }).join('') + '</tbody></table></div>';
-      return;
-    }
-    if (entity === 'sp') {
-      fetchSpProfiles().then(function() {
-        var rows = (RL.spProfiles || []).slice();
-        mount.innerHTML = '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
-          + '<th>Pitcher</th><th>Team</th><th>Hand</th><th>vs LHH</th><th>vs RHH</th><th>Split Edge</th><th>Home</th><th>Away</th></tr></thead><tbody>'
-          + rows.slice(0, 80).map(function(row) {
-            var n = S.pickCol(row, 'pitcher_name', 'Name');
-            var t = S.pickCol(row, 'pitcher_team', 'Team');
-            var hand = S.pickCol(row, 'hand', 'Hand') || 'R';
-            var m = S.spProfileMetrics(row);
-            var lhh = m.osiAllowedLhh != null ? m.osiAllowedLhh : m.osiAllowed;
-            var rhh = m.osiAllowedRhh != null ? m.osiAllowedRhh : m.osiAllowed;
-            var edge = (lhh != null && rhh != null) ? rhh - lhh : null;
-            return '<tr onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
-              + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td><td>' + esc(hand) + '</td>'
-              + '<td style="color:' + mColor(lhh, true) + '">' + fmt(lhh) + '</td>'
-              + '<td style="color:' + mColor(rhh, true) + '">' + fmt(rhh) + '</td>'
-              + '<td style="color:' + mColor(edge, false, 'ppGap') + '">' + fmt(edge) + '</td>'
-              + '<td title="requires pipeline run">\u2014</td><td title="requires pipeline run">\u2014</td></tr>';
-          }).join('') + '</tbody></table></div>';
-      });
-      return;
-    }
-    var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
-    var bpRows = Object.keys(units).map(function(tk) {
-      var u = units[tk];
-      return { t: tk, osi: u.osiAllowed, abq: u.abqAllowed, score: S.bullpenPitchScore ? S.bullpenPitchScore(u) : u.bullpenScore };
-    }).sort(function(a, b) { return (a.osi || 0) - (b.osi || 0); });
-    mount.innerHTML = '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
-      + '<th>Team</th><th>OSI Allowed</th><th>ABQ Allowed</th><th>Bullpen Score</th></tr></thead><tbody>'
-      + bpRows.map(function(row) {
-        return '<tr onclick="location.href=\'bullpen_report.html?team=' + encodeURIComponent(row.t) + '\'">'
-          + '<td>' + (A ? A.teamLogoImg(row.t, 24) : '') + ' ' + esc(row.t) + '</td>'
-          + '<td style="color:' + mColor(row.osi, true) + '">' + fmt(row.osi) + '</td>'
-          + '<td style="color:' + mColor(row.abq, true) + '">' + fmt(row.abq) + '</td>'
-          + '<td style="color:' + mColor(row.score, false, 'pitching') + '">' + fmt(row.score) + '</td></tr>';
-      }).join('') + '</tbody></table></div>';
   }
 
   function patchSubtabs() {
@@ -1399,18 +1269,6 @@
     }).join('') + '</div>';
   }
 
-  function initSplitsControls() {
-    if (typeof global.initSplitsTab === 'function') {
-      global.initSplitsTab();
-      return;
-    }
-    if (RL && typeof RL.initSplitsTab === 'function') {
-      RL.initSplitsTab();
-      return;
-    }
-    mountSplitsEntityControls();
-  }
-
   function onSubtab(name) {
     if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
@@ -1474,12 +1332,9 @@
 
   global.ResearchLab = {
     init: init,
-    initSplitsControls: initSplitsControls,
     onSubtab: onSubtab,
     mountGlobalControlBar: mountGlobalControlBar,
-    mountTrendControls: mountTrendControls,
     renderTrendSummary: renderTrendSummary,
-    _legacyRenderSplitsTable: _legacyRenderSplitsTable,
     renderComparePane: renderComparePane,
     renderSplitSummary: renderSplitSummary,
     metricCell: metricCell,
