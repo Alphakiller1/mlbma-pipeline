@@ -400,6 +400,49 @@
     return numOrNull(pickCol(row, [prefix + '_' + metric, prefix + ' ' + metric]));
   }
 
+  function bullpenUsageForTeam(team) {
+    var tk = teamKey(team);
+    var unit = bullpenUnit(team);
+    var usage = [];
+    if (unit && unit.relievers && unit.relievers.length) {
+      usage = unit.relievers.map(function(r) {
+        return {
+          name: r.name || r.pitcher_name || pickCol(r, ['pitcher_name', 'Name']),
+          days: numOrNull(r.days_last_5) != null ? numOrNull(r.days_last_5) : (numOrNull(r.appearances_last_5) || 0)
+        };
+      });
+    }
+    if (!usage.length) {
+      var counts = {};
+      (CACHE.relievers || []).forEach(function(r) {
+        if (teamKey(pickCol(r, ['pitcher_team', 'team', 'Team', 'Tm'])) !== tk) return;
+        var n = pickCol(r, ['pitcher_name', 'Name']);
+        if (!n) return;
+        counts[n] = (counts[n] || 0) + 1;
+      });
+      usage = Object.keys(counts).map(function(n) { return { name: n, days: counts[n] }; });
+    }
+    return usage.sort(function(a, b) { return b.days - a.days; }).slice(0, 8);
+  }
+
+  function bullpenUsageChartSvg(usage) {
+    if (!usage.length) return '<p class="rl-empty">No reliever usage data for this team.</p>';
+    var w = 520, h = 140, pad = 8, barW = Math.max(28, Math.floor((w - pad * 2) / usage.length) - 6);
+    var maxD = Math.max.apply(null, usage.map(function(u) { return u.days; }).concat([1]));
+    var bars = usage.map(function(u, i) {
+      var bh = Math.round((u.days / maxD) * 90) || 4;
+      var x = pad + i * (barW + 6);
+      var col = u.days <= 1 ? '#4ADE80' : u.days === 2 ? '#FBBF24' : '#F87171';
+      var label = String(u.name || '').split(' ').pop() || u.name;
+      return '<rect x="' + x + '" y="' + (h - 28 - bh) + '" width="' + barW + '" height="' + bh + '" fill="' + col + '" rx="3"/>'
+        + '<text x="' + (x + barW / 2) + '" y="' + (h - 10) + '" fill="#9CA3AF" font-size="9" text-anchor="middle">' + esc(label) + '</text>'
+        + '<text x="' + (x + barW / 2) + '" y="' + (h - 32 - bh) + '" fill="#E4E4E7" font-size="10" text-anchor="middle">' + u.days + '</text>';
+    }).join('');
+    return '<div class="pl-bp-usage"><h4 class="pl-section-title">Last 5 Days Usage</h4>'
+      + '<svg class="pl-bp-usage-svg" viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">' + bars + '</svg>'
+      + '<p class="rl-note" style="font-size:11px;margin-top:6px">Green = 0\u20131 days \u00B7 Amber = 2 \u00B7 Red = 3+</p></div>';
+  }
+
   function renderBullpenView() {
     var mount = document.getElementById('plBullpenMount');
     if (!mount) return;
@@ -412,46 +455,29 @@
     var team = CACHE.bpTeam;
     var unit = bullpenUnit(team);
     var bpScore = S && S.bullpenPitchScore ? S.bullpenPitchScore(unit) : (unit && unit.bullpenScore);
+    var woba = unit && (unit.woba != null ? unit.woba : numOrNull(pickCol(unit, ['overall_wOBA', 'wOBA'])));
+    var rcv = unit && (unit.rcvAllowed != null ? unit.rcvAllowed : numOrNull(pickCol(unit, ['overall_RCV_allowed', 'RCV_allowed'])));
+    var obr = unit && (unit.obrAllowed != null ? unit.obrAllowed : numOrNull(pickCol(unit, ['overall_OBR_allowed', 'OBR_allowed'])));
+    var hiEra = unit && (unit.hiLevEra != null ? unit.hiLevEra : colVal(unit, 'high_leverage', 'ERA'));
+    var medEra = unit && (unit.medLevEra != null ? unit.medLevEra : colVal(unit, 'medium_leverage', 'ERA'));
 
     var teamOpts = teams.map(function(t) {
       return '<option value="' + esc(t) + '"' + (t === team ? ' selected' : '') + '>' + esc(t) + '</option>';
     }).join('');
 
-    var era = numOrNull(pickCol(unit, ['overall_ERA', 'ERA'])) || numOrNull(unit.eraOverall);
-    var hiEra = unit.hiLevEra != null ? unit.hiLevEra : colVal(unit, 'high_leverage', 'ERA');
     var snapshot = unit
-      ? '<div class="pl-bp-snapshot">'
-        + (A ? A.teamLogoImg(team, 44) : '')
-        + '<div><h3 class="pl-bp-name">' + esc(team) + ' Bullpen</h3>'
+      ? '<div class="pl-bp-snapshot pl-bp-snapshot--unit">'
+        + (A ? A.teamLogoImg(team, 48) : '')
+        + '<div><h3 class="pl-bp-name">' + esc(team) + ' Bullpen Unit</h3>'
+        + '<span class="pl-bp-score-badge" style="color:' + mColor(bpScore, false, 'pitching') + '">Score ' + fmt(bpScore, 0) + '</span>'
         + '<div class="pl-bp-stats">'
-        + '<span>Bullpen Score <strong style="color:' + mColor(bpScore, false, 'pitching') + '">' + fmt(bpScore, 0) + '</strong></span>'
-        + '<span>OSI Allowed <strong style="color:' + mColor(unit.osiAllowed, true) + '">' + fmt(unit.osiAllowed) + '</strong></span>'
-        + '<span>ERA <strong>' + fmt(era, 2) + '</strong></span>'
+        + '<span>wOBA <strong>' + (woba != null ? Number(woba).toFixed(3) : '\u2014') + '</strong></span>'
+        + '<span>RCV Allowed <strong style="color:' + mColor(rcv, true) + '">' + fmt(rcv) + '</strong></span>'
+        + '<span>OBR Allowed <strong style="color:' + mColor(obr, true) + '">' + fmt(obr) + '</strong></span>'
         + '<span>Hi Lev ERA <strong>' + fmt(hiEra, 2) + '</strong></span>'
+        + '<span>Med Lev ERA <strong>' + fmt(medEra, 2) + '</strong></span>'
         + '</div></div></div>'
-      : '<p class="rl-empty">Bullpen unit data not loaded — run pipeline steps 12–13.</p>';
-
-    var relievers = (CACHE.relievers || []).filter(function(r) {
-      return teamKey(pickCol(r, ['pitcher_team', 'team', 'Team', 'Tm'])) === teamKey(team);
-    });
-
-    var relBody = relievers.length ? relievers.map(function(r) {
-      var n = pickCol(r, ['pitcher_name', 'Name']);
-      var pid = pickCol(r, ['pitcher_id']);
-      var av = A ? A.pitcherAvatar(pid || n, { crop: 'compare', className: 'pl-rank-av' }) : '';
-      var osi = colVal(r, 'overall', 'OSI_allowed');
-      var abq = colVal(r, 'overall', 'ABQ_allowed');
-      return '<tr class="pl-rank-row" data-reliever="' + esc(n) + '">'
-        + '<td>' + av + esc(n) + '</td>'
-        + '<td class="num">' + fmt(colVal(r, 'overall', 'ERA'), 2) + '</td>'
-        + '<td class="num">' + fmtPct(colVal(r, 'overall', 'K_pct')) + '</td>'
-        + '<td class="num">' + fmtPct(colVal(r, 'overall', 'BB_pct')) + '</td>'
-        + '<td class="num" style="color:' + mColor(osi, true) + '">' + fmt(osi) + '</td>'
-        + '<td class="num" style="color:' + mColor(abq, true) + '">' + fmt(abq) + '</td>'
-        + '<td class="num">' + fmt(colVal(r, 'vs_rhh', 'OSI_allowed')) + '</td>'
-        + '<td class="num">' + fmt(colVal(r, 'vs_lhh', 'OSI_allowed')) + '</td>'
-        + '</tr>';
-    }).join('') : '<tr><td colspan="8">No reliever rows for ' + esc(team) + '.</td></tr>';
+      : '<p class="rl-empty">Bullpen unit data not loaded \u2014 run pipeline steps 12\u201313.</p>';
 
     mount.innerHTML = '<div class="pl-bp-panel">'
       + '<div class="pl-bp-controls">'
@@ -459,11 +485,8 @@
       + '<select id="plBpTeamSelect" class="pl-bp-select">' + teamOpts + '</select>'
       + '</div>'
       + snapshot
-      + '<h4 class="pl-section-title">Reliever Table</h4>'
-      + '<div class="rl-table-wrap pl-rank-wrap"><table class="rl-table-premium pl-rank-table">'
-      + '<thead><tr><th>Pitcher</th><th>ERA</th><th>K%</th><th>BB%</th><th>OSI All.</th><th>ABQ All.</th><th>vs RHH</th><th>vs LHH</th></tr></thead>'
-      + '<tbody>' + relBody + '</tbody></table></div>'
-      + '<p class="rl-profile-link"><a href="bullpen_report.html?team=' + encodeURIComponent(team || '') + '">Full bullpen report →</a></p>'
+      + bullpenUsageChartSvg(bullpenUsageForTeam(team))
+      + '<p class="rl-profile-link"><a href="bullpen_report.html?team=' + encodeURIComponent(team || '') + '">Full bullpen report \u2192</a></p>'
       + '</div>';
 
     var sel = document.getElementById('plBpTeamSelect');
@@ -473,12 +496,6 @@
         renderBullpenView();
       });
     }
-    mount.querySelectorAll('[data-reliever]').forEach(function(tr) {
-      tr.addEventListener('click', function() {
-        var n = tr.getAttribute('data-reliever');
-        if (n) global.location.href = 'reliever_profile.html?player=' + encodeURIComponent(n);
-      });
-    });
   }
 
   function syncViewChrome() {

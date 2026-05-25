@@ -328,7 +328,7 @@
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Four focused tools â€” trends, splits, compare, and pitcher research.</p>'
+      + '<p class="rl-workspace-subtitle">Four focused tools \u2014 trends, splits, compare, and pitcher research.</p>'
       + '</div>';
   }
 
@@ -343,11 +343,26 @@
   function refreshActiveRlTab() {
     var tab = getActiveRlTab();
     if (tab === 'trends') {
+      if (global.STATE) {
+        var sp = global.STATE.split;
+        if (sp === 'home' || sp === 'away') {
+          global.STATE.rlTrendLoc = sp;
+          global.STATE.rlTrendSplit = 'b';
+          global.STATE.rlHandedness = 'b';
+        } else if (sp === 'r' || sp === 'l' || sp === 'b') {
+          global.STATE.rlTrendSplit = sp;
+          global.STATE.rlHandedness = sp;
+        }
+      }
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
       renderTrendSummary();
     } else if (tab === 'splits') {
       if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
-      renderSplitsTable();
+      if (typeof global.renderTeamOffenseSplits === 'function' && (global._rlSplitEntity || 'team') === 'team') {
+        global.renderTeamOffenseSplits(document.getElementById('rlSplitsTableMount'));
+      } else {
+        renderSplitsTable();
+      }
     }
     mountGlobalControlBar();
   }
@@ -412,11 +427,11 @@
     var stable = rows.filter(function(d) { return d.trend === 'Stable Elite' || d.trend === 'Stable'; }).slice(0, 3);
     function card(title, items, fmtFn) {
       return '<div class="rl-summary-card"><div class="rl-summary-label">' + esc(title) + '</div><div class="rl-summary-val">'
-        + (items.length ? items.map(fmtFn).join('<br>') : 'â€”') + '</div></div>';
+        + (items.length ? items.map(fmtFn).join('<br>') : '\u2014') + '</div></div>';
     }
     mount.innerHTML = card('Biggest risers', risers, function(d) { return d.t + ' +' + (d[cmpKey] || 0).toFixed(1); })
       + card('Biggest fallers', fallers, function(d) { return d.t + ' ' + (d[cmpKey] || 0).toFixed(1); })
-      + card('Most volatile', volatile, function(d) { return d.t + ' L7 Î” ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
+      + card('Most volatile', volatile, function(d) { return d.t + ' L7 \u0394 ' + Math.abs((d.l7OSI || 0) - (d.ytdOSI || d.osi || 0)).toFixed(1); })
       + card('Most stable', stable, function(d) { return d.t + ' \u00B7 ' + (d.trend || 'Stable'); });
   }
 
@@ -475,7 +490,7 @@
             + '<td style="color:' + mColor(row.r, false, metric) + '">' + fmt(row.r) + '</td>'
             + '<td style="color:' + mColor(row.l, false, metric) + '">' + fmt(row.l) + '</td>'
             + '<td style="color:' + mColor(row.edge, false, 'ppGap') + ';font-weight:700">' + fmt(row.edge) + '</td>'
-            + '<td title="requires pipeline run">â€”</td><td title="requires pipeline run">â€”</td><td title="requires pipeline run">â€”</td></tr>';
+            + '<td title="requires pipeline run">\u2014</td><td title="requires pipeline run">\u2014</td><td title="requires pipeline run">\u2014</td></tr>';
         }).join('') + '</tbody></table></div>';
       return;
     }
@@ -497,7 +512,7 @@
               + '<td style="color:' + mColor(lhh, true) + '">' + fmt(lhh) + '</td>'
               + '<td style="color:' + mColor(rhh, true) + '">' + fmt(rhh) + '</td>'
               + '<td style="color:' + mColor(edge, false, 'ppGap') + '">' + fmt(edge) + '</td>'
-              + '<td title="requires pipeline run">â€”</td><td title="requires pipeline run">â€”</td></tr>';
+              + '<td title="requires pipeline run">\u2014</td><td title="requires pipeline run">\u2014</td></tr>';
           }).join('') + '</tbody></table></div>';
       });
       return;
@@ -827,7 +842,7 @@
   function teamSelectHtml(id, label, teams, val) {
     return '<div><label for="' + id + '">' + label + '</label>'
       + '<select id="' + id + '" class="rl-compare-select search-input" style="width:100%;margin-top:6px;">'
-      + '<option value="">Select teamâ€¦</option>'
+      + '<option value="">Select team\u2026</option>'
       + teams.map(function(t) {
         return '<option value="' + esc(t) + '"' + (t === val ? ' selected' : '') + '>' + esc(t) + '</option>';
       }).join('')
@@ -847,7 +862,7 @@
   function pitcherSearchHtml(id, label, val) {
     return '<div><label for="' + id + '">' + label + '</label>'
       + '<div class="rl-search-wrap pl-search-wrap" style="position:relative;margin-top:6px;">'
-      + '<input type="search" id="' + id + '" class="search-input" style="width:100%;" value="' + esc(val || '') + '" placeholder="Search pitcher name or teamâ€¦" autocomplete="off">'
+      + '<input type="search" id="' + id + '" class="search-input" style="width:100%;" value="' + esc(val || '') + '" placeholder="Search pitcher name or team\u2026" autocomplete="off">'
       + '<div id="' + id + 'Drop" class="pl-search-dropdown rl-compare-pitcher-dd" style="display:none;"></div></div></div>';
   }
 

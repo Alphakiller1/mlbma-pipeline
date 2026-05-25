@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>console.log('[VERSION] build 20260525a');</script>
+<script>console.log('[VERSION] build 20260525b');</script>
 <meta charset="UTF-8">
 
 
@@ -1778,7 +1778,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 32px; text-align: center;
 }
-.ca-hero__curve { width: 70%; height: auto; margin-bottom: 18px; }
+.ca-hero__mark-logo {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(124,58,237,0.8)) drop-shadow(0 0 40px rgba(124,58,237,0.4));
+  margin-bottom: 20px;
+}
 .ca-hero__mark-title {
   font-size: clamp(32px, 4vw, 54px); font-weight: 800;
   letter-spacing: -0.02em; color: #fff; line-height: 1;
@@ -2194,13 +2200,13 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260525a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260525a">
-<link rel="stylesheet" href="chase_nav.css?v=20260525a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260525a">
-<link rel="stylesheet" href="research_lab.css?v=20260525a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260525b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260525b">
+<link rel="stylesheet" href="chase_nav.css?v=20260525b">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260525b">
+<link rel="stylesheet" href="research_lab.css?v=20260525b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260525a"></script>
+<script src="mlbma_build.js?v=20260525b"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
@@ -2216,17 +2222,17 @@ body.view-research .ca-lab { display: block; }
   html.view-research #section-matchups-hero{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260525a"></script>
-<script src="mlbma_ui.js?v=20260525a" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260525a"></script>
-<script src="matchup_shared.js?v=20260525a"></script>
-<script src="mlbma_controls.js?v=20260525a"></script>
-<script src="mlbma_charts.js?v=20260525a"></script>
-<script src="profile_controls.js?v=20260525a"></script>
-<script src="platform_dashboard.js?v=20260525a"></script>
-<script src="research_lab.js?v=20260525a"></script>
-<script src="rl_tab_uix.js?v=20260525a"></script>
-<script src="pitcher_lab.js?v=20260525a"></script>
+<script src="mlbma_config.js?v=20260525b"></script>
+<script src="mlbma_ui.js?v=20260525b" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260525b"></script>
+<script src="matchup_shared.js?v=20260525b"></script>
+<script src="mlbma_controls.js?v=20260525b"></script>
+<script src="mlbma_charts.js?v=20260525b"></script>
+<script src="profile_controls.js?v=20260525b"></script>
+<script src="platform_dashboard.js?v=20260525b"></script>
+<script src="research_lab.js?v=20260525b"></script>
+<script src="rl_tab_uix.js?v=20260525b"></script>
+<script src="pitcher_lab.js?v=20260525b"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -2391,16 +2397,8 @@ body.view-research .ca-lab { display: block; }
       <div class="ca-hero__mark-ring"></div>
       <div class="ca-hero__mark-ring ca-hero__mark-ring--2"></div>
       <div class="ca-hero__mark-card">
-        <svg class="ca-hero__curve" viewBox="0 0 220 80" fill="none">
-          <path d="M5 70 Q 110 -30 215 70" stroke="url(#caCurve)" stroke-width="3" stroke-linecap="round"/>
-          <defs>
-            <linearGradient id="caCurve" x1="0" y1="0" x2="220" y2="0">
-              <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.2"/>
-              <stop offset="50%" stop-color="#A78BFA"/>
-              <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.2"/>
-            </linearGradient>
-          </defs>
-        </svg>
+        <img src="assets/chase-icon-filled.png" alt="Chase Analytics" class="ca-hero__mark-logo"
+          onerror="this.style.display='none'">
         <div class="ca-hero__mark-title">CHASE</div>
         <div class="ca-hero__mark-sub">ANALYTICS</div>
         <div class="ca-hero__mark-meta">
@@ -6938,9 +6936,9 @@ if (document.readyState === 'loading') {
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
   Chase Analytics · MLB Offensive Intelligence
 </footer>
-  <script src="oem_overhaul.js?v=20260525a"></script>
-  <script src="mlbma_standings.js?v=20260525a"></script>
-  <script src="mlbma_signals.js?v=20260525a"></script>
-  <script src="chase_nav.js?v=20260525a"></script>
+  <script src="oem_overhaul.js?v=20260525b"></script>
+  <script src="mlbma_standings.js?v=20260525b"></script>
+  <script src="mlbma_signals.js?v=20260525b"></script>
+  <script src="chase_nav.js?v=20260525b"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@
     scR: [], scL: [], scBoth: [], splitHome: [], splitAway: [], teamProfiles: {},
     windowAvail: { L30: false, L14: false, L7: false },
     locationAvail: { home: false, away: false },
-    hand: 'both', window: 'YTD', activeWindow: 'ytd', location: 'all',
+    hand: 'both', activeSplit: 'both', window: 'YTD', activeWindow: 'ytd', location: 'all',
     showAdvanced: false, sortKey: 'osi', sortDir: -1,
     expandedTeam: null, loaded: false
   };
@@ -45,6 +45,16 @@
     }
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
+
+  function rateScaleColor(v, min, max) {
+    if (v == null || isNaN(v) || !A) return '#71717A';
+    var t = (v - min) / (max - min);
+    return A.metricColor(Math.max(0, Math.min(100, t * 100)), 'osi', false);
+  }
+
+  function wobaColor(v) { return rateScaleColor(v, 0.28, 0.38); }
+  function slgColor(v) { return rateScaleColor(v, 0.35, 0.55); }
+  function wrcColor(v) { return rateScaleColor(v, 70, 130); }
 
   function projColor(proj, osi) {
     if (proj == null || osi == null || isNaN(proj) || isNaN(osi)) return '#71717A';
@@ -85,7 +95,7 @@
         t: t,
         abq: b('abq'), rcv: b('rcv'), obr: b('obr'), osi: b('osi'),
         projOSI: b('projOSI'), reg: r.reg, ppGap: r.ppGap,
-        wrc: b('wrc'), xwoba: b('xwoba'), slg: b('slg')
+        wrc: b('wrc'), woba: b('woba'), xwoba: b('xwoba'), slg: b('slg')
       };
       row.ppGap = row.abq - row.rcv;
       return row;
@@ -218,14 +228,32 @@
     d.trend = computeTrend(d.ytdOSI, d.l14OSI, d.l7OSI);
     d.tier = tierInfo(d.osi);
     d.takeaway = computeTakeaway(d);
+    if (d.pals == null && window.LIVE_DATA && LIVE_DATA.pals && window.MLBMASharedMatchup) {
+      var pmap = {};
+      (LIVE_DATA.pals || []).forEach(function(p) {
+        var tk = teamKey(S.pickCol(p, 'team', 'Tm', 'Team'));
+        if (tk) pmap[tk] = num(S.pickCol(p, 'PALS', 'pals'));
+      });
+      d.pals = pmap[t];
+    }
     return applyWindowToRow(d);
+  }
+
+  function applyF5Proxy(row) {
+    var out = Object.assign({}, row);
+    out.f5OSI = (row.abq * 0.45) + (row.obr * 0.35) + (row.rcv * 0.20);
+    out.osi = out.f5OSI;
+    if (out.projOSI != null) out.projOSI = out.f5OSI;
+    return out;
   }
 
   function rebuildMasterRows() {
     var raw;
     if (HUB.hand === 'r') raw = HUB.scR;
     else if (HUB.hand === 'l') raw = HUB.scL;
+    else if (HUB.hand === 'f5') raw = (HUB.scBoth || []).map(applyF5Proxy);
     else raw = HUB.scBoth;
+    HUB.activeSplit = HUB.hand;
     if (HUB.location === 'home' && HUB.locationAvail.home) raw = overlayLocationRows(raw, HUB.splitHome);
     else if (HUB.location === 'away' && HUB.locationAvail.away) raw = overlayLocationRows(raw, HUB.splitAway);
     var rows = raw.map(function(r) { return enrichRow(Object.assign({}, r)); });
@@ -254,7 +282,7 @@
   }
 
   function confirmLine() {
-    var handLbl = { both: 'Both', r: 'vs RHP', l: 'vs LHP' }[HUB.hand] || HUB.hand;
+    var handLbl = { both: 'Both', r: 'vs RHP', l: 'vs LHP', f5: 'F5' }[HUB.hand] || HUB.hand;
     var locLbl = { all: 'All', home: 'Home', away: 'Away' }[HUB.location] || HUB.location;
     return 'Showing: <strong>OSI</strong> \u00B7 <strong>' + esc(handLbl)
       + '</strong> \u00B7 <strong>' + esc(HUB.window) + '</strong> \u00B7 <strong>' + esc(locLbl) + '</strong>';
@@ -291,7 +319,7 @@
         });
       });
     }
-    pills('hubHandPills', [{ id: 'both', label: 'Both' }, { id: 'r', label: 'vs RHP' }, { id: 'l', label: 'vs LHP' }], 'hand');
+    pills('hubHandPills', [{ id: 'both', label: 'Both' }, { id: 'r', label: 'vs RHP' }, { id: 'l', label: 'vs LHP' }, { id: 'f5', label: 'F5' }], 'hand');
     pills('hubWindowPills', [{ id: 'YTD', label: 'YTD' }, { id: 'L30', label: 'L30' }, { id: 'L14', label: 'L14' }, { id: 'L7', label: 'L7' }], 'window');
     pills('hubLocationPills', [{ id: 'all', label: 'All' }, { id: 'home', label: 'Home' }, { id: 'away', label: 'Away' }], 'location');
     var conf = document.getElementById('hubConfirm');
@@ -327,13 +355,13 @@
       + '<th data-sort="rcv">RCV' + sortArrow('rcv') + '</th>'
       + '<th data-sort="abq">ABQ' + sortArrow('abq') + '</th>'
       + '<th data-sort="wrc">wRC+' + sortArrow('wrc') + '</th>'
+      + '<th data-sort="woba">wOBA' + sortArrow('woba') + '</th>'
       + '<th data-sort="xwoba">xwOBA' + sortArrow('xwoba') + '</th>'
       + '<th data-sort="slg">SLG' + sortArrow('slg') + '</th>'
       + '<th data-sort="trend">TREND' + sortArrow('trend') + '</th>'
       + '<th data-sort="ppGap" class="col-adv' + adv + '">PP-Gap' + sortArrow('ppGap') + '</th>'
       + '<th data-sort="projOSI" class="col-adv' + adv + '">ProjOSI' + sortArrow('projOSI') + '</th>'
-      + '<th class="col-adv' + adv + '">Takeaway</th>'
-      + '<th data-sort="tier" class="col-adv' + adv + '">Tier' + sortArrow('tier') + '</th>';
+      + '<th data-sort="pals" class="col-adv' + adv + '">PALS' + sortArrow('pals') + '</th>';
     head.querySelectorAll('th[data-sort]').forEach(function(th) {
       th.addEventListener('click', function() {
         var k = th.getAttribute('data-sort');
@@ -349,12 +377,12 @@
     var body = document.getElementById('hubTableBody');
     if (!body) return;
     if (!HUB.loaded) {
-      body.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:24px;color:var(--text-2)">Loading...</td></tr>';
+      body.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--text-2)">Loading...</td></tr>';
       return;
     }
     var rows = sortedRows();
     var html = '';
-    var colSpan = 14;
+    var colSpan = 13;
     rows.forEach(function(d, i) {
       var logo = A ? A.teamLogoImg(d.t, 28) : '';
       var expanded = HUB.expandedTeam === d.t;
@@ -366,14 +394,14 @@
         + '<td style="color:' + mc(d.obr, 'obr') + '">' + fmt(d.obr) + '</td>'
         + '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>'
         + '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>'
-        + '<td style="color:' + mc(d.wrc, 'wrc') + '">' + fmt(d.wrc, 0) + '</td>'
-        + '<td style="color:' + mc(d.xwoba, 'obr') + '">' + (d.xwoba != null ? Number(d.xwoba).toFixed(3) : '\u2014') + '</td>'
-        + '<td style="color:' + mc(d.slg, 'rcv') + '">' + (d.slg != null ? Number(d.slg).toFixed(3) : '\u2014') + '</td>'
+        + '<td style="color:' + wrcColor(d.wrc) + '">' + fmt(d.wrc, 0) + '</td>'
+        + '<td style="color:' + wobaColor(d.woba != null ? d.woba : d.xwoba) + '">' + (d.woba != null ? Number(d.woba).toFixed(3) : '\u2014') + '</td>'
+        + '<td style="color:' + wobaColor(d.xwoba) + '">' + (d.xwoba != null ? Number(d.xwoba).toFixed(3) : '\u2014') + '</td>'
+        + '<td style="color:' + slgColor(d.slg) + '">' + (d.slg != null ? Number(d.slg).toFixed(3) : '\u2014') + '</td>'
         + '<td><span class="trend-badge" style="background:' + trendColor(d.trend) + '22;color:' + trendColor(d.trend) + '">' + esc(d.trend) + '</span></td>'
         + '<td class="col-adv' + (HUB.showAdvanced ? ' show' : '') + '" style="color:' + mc(d.ppGap, 'ppGap') + '">' + fmt(d.ppGap) + '</td>'
         + '<td class="col-adv' + (HUB.showAdvanced ? ' show' : '') + '" style="color:' + projColor(d.projOSI, d.osi) + '">' + fmt(d.projOSI) + '</td>'
-        + '<td class="col-adv hub-takeaway' + (HUB.showAdvanced ? ' show' : '') + '">' + esc(d.takeaway) + '</td>'
-        + '<td class="col-adv' + (HUB.showAdvanced ? ' show' : '') + '"><span class="tier-badge ' + d.tier.cls + '">' + esc(d.tier.label) + '</span></td>'
+        + '<td class="col-adv' + (HUB.showAdvanced ? ' show' : '') + '">' + fmt(d.pals) + '</td>'
         + '</tr>';
     });
     body.innerHTML = html || '<tr><td colspan="' + colSpan + '">No team data loaded.</td></tr>';
@@ -383,7 +411,7 @@
     var MS = window.MatchupShared || window.MLBMASharedMatchup;
     if (!MS || !MS.fetchSheetTab || !TABS) {
       var body = document.getElementById('hubTableBody');
-      if (body) body.innerHTML = '<tr><td colspan="14">Shared data module unavailable.</td></tr>';
+      if (body) body.innerHTML = '<tr><td colspan="13">Shared data module unavailable.</td></tr>';
       return Promise.resolve();
     }
     var scoreFn = MS.scoreRowFromSheet;
