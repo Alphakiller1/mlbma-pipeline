@@ -1,8 +1,227 @@
 ﻿<!DOCTYPE html>
-<html>
+<!-- BUILD: 20260526c - matchup_hub.js required -->
+<html lang="en">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>console.log('[VERSION] build 20260526c');</script>
 <meta charset="UTF-8">
-<script>window.location.replace('team_rankings.html' + window.location.search);</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function() {
+  var p = new URLSearchParams(location.search);
+  var away = p.get('away');
+  var home = p.get('home');
+  if (away && home) {
+    location.replace('matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home));
+    return;
+  }
+  if (p.get('view') === 'matchups' || p.get('section') === 'matchups') {
+    location.replace('chase_analytics_mlb_oem_v7.html#section-matchups-hero');
+  }
+})();
+</script>
+<title>Chase Analytics - Team Rankings v20260526</title>
+<link rel="stylesheet" href="mlbma_ui.css">
+<link rel="stylesheet" href="mlbma_design_system.css">
+<link rel="stylesheet" href="chase_nav.css">
+<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+<style>
+:root {
+  --bg:#0A0A0A; --bg-2:#111114; --bg-3:#18181c; --border:#28282f;
+  --text:#F4F4F7; --text-2:#A1A1AA; --text-3:#71717A;
+  --purple:#C084FC; --green:#4ADE80; --red:#F87171; --gold:#FBBF24;
+  --amber:#FBBF24; --blue:#60A5FA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;font-size:14px;line-height:1.5;
+  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(192,132,252,.08),transparent),var(--bg)}
+.container{max-width:1400px;margin:0 auto;padding:20px 24px 72px}
+.brand-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
+h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(135deg,#fff,var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--text-2);font-size:13px;max-width:760px;margin-bottom:8px}
+.hub-sticky-wrap{position:sticky;top:56px;z-index:40;background:linear-gradient(var(--bg) 70%,transparent);padding:12px 0 8px;margin:0 -4px}
+.hub-control-bar{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.hub-control-row{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-start;margin-bottom:10px}
+.hub-control-row:last-child{margin-bottom:0}
+.hub-ctrl-group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hub-ctrl-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3)}
+.hub-pill-row{display:flex;flex-wrap:wrap;gap:6px}
+.hub-pill{border:1px solid var(--border);background:var(--bg-3);color:var(--text-2);font-size:11px;font-weight:600;
+  padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.hub-pill:hover{border-color:rgba(192,132,252,.4);color:var(--text)}
+.hub-pill.active{background:rgba(192,132,252,.18);border-color:var(--purple);color:var(--purple);box-shadow:0 0 0 1px rgba(192,132,252,.25)}
+.hub-confirm{font-size:12px;color:var(--text-2);padding-top:4px;border-top:1px solid var(--border);margin-top:10px}
+.hub-confirm strong{color:var(--text)}
+.hub-adv-toggle{margin-left:auto;display:flex;align-items:center;gap:8px}
+.hub-adv-toggle label{font-size:11px;color:var(--text-2);cursor:pointer;user-select:none}
+.hub-banner{margin:10px 0 0;padding:10px 14px;border-radius:8px;font-size:12px;display:none}
+.hub-banner.show{display:block}
+.hub-banner--window{border:1px solid var(--gold);background:rgba(251,191,36,.08);color:var(--gold)}
+.hub-banner--location{border:1px solid var(--purple);background:rgba(192,132,252,.08);color:var(--purple)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);margin-top:16px}
+.hub-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.hub-table thead th{position:sticky;top:0;z-index:2;background:var(--bg-3);font-size:10px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text-3);padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;
+  white-space:nowrap;cursor:pointer;user-select:none}
+.hub-table thead th.sorted{color:var(--purple)}
+.hub-table thead th.col-primary{background:rgba(192,132,252,.1);color:var(--purple)}
+.hub-table tbody td{padding:9px 10px;border-bottom:1px solid rgba(40,40,47,.8);vertical-align:middle}
+.hub-table tbody tr.hub-row{cursor:pointer;transition:background .12s}
+.hub-table tbody tr.hub-row:hover{background:rgba(192,132,252,.06)}
+.hub-table tbody tr.hub-row.expanded{background:rgba(192,132,252,.04)}
+.hub-table tbody tr.hub-expand-row td{background:var(--bg-3);padding:0;border-bottom:1px solid var(--border)}
+.hub-expand-panel{max-height:0;overflow:hidden;transition:max-height 250ms ease}
+.hub-expand-panel.is-open{max-height:720px}
+.hub-rank{white-space:nowrap;width:52px}
+.hub-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:6px;border:1px solid var(--border);border-radius:4px;background:var(--bg-3);color:var(--purple);font-size:14px;font-weight:700;cursor:pointer;line-height:1;padding:0}
+.hub-rank-num{font-weight:700;color:var(--text-2);font-variant-numeric:tabular-nums}
+.hub-expand-inner{display:grid;grid-template-columns:minmax(240px,1fr) minmax(320px,1.2fr);gap:20px;padding:18px 16px}
+@media(max-width:900px){.hub-expand-inner{grid-template-columns:1fr}}
+.hub-expand-left{display:flex;flex-direction:column;gap:12px}
+.hub-expand-abbr{font-size:32px;font-weight:800;color:var(--purple);letter-spacing:.04em;line-height:1}
+.hub-expand-meta{font-size:12px;color:var(--text-2)}
+.hub-window-pills{display:flex;flex-wrap:wrap;gap:6px}
+.hub-win-pill{font-size:10px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-2)}
+.hub-win-pill .hub-win-val{font-size:13px;font-weight:700;display:block;margin-top:2px}
+.hub-win-pill .hub-win-pa{font-size:9px;color:var(--text-3);font-weight:400}
+.hub-spark-stack{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.hub-spark-line{display:flex;align-items:center;gap:10px;font-size:11px}
+.hub-spark-line .hub-spark-label{min-width:36px;color:var(--text-3);font-weight:600;text-transform:uppercase;font-size:10px}
+.hub-spark-line .hub-spark-val{min-width:36px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.hub-expand-right{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;align-content:start}
+.hub-expand-metric{background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.hub-expand-metric .lab{font-size:9px;text-transform:uppercase;color:var(--text-3);letter-spacing:.06em}
+.hub-expand-metric .val{font-size:15px;font-weight:700;margin-top:2px}
+.hub-team-cell{display:flex;align-items:center;gap:8px}
+.hub-team-cell strong{color:var(--text);font-size:13px}
+.hub-team-pa{font-size:10px;color:var(--text-3);display:block;margin-top:1px}
+.hub-profile-link{font-size:11px;color:var(--purple);text-decoration:none;margin-left:6px}
+.hub-profile-link:hover{text-decoration:underline}
+.tier-badge,.trend-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.tier-elite{background:rgba(74,222,128,.18);color:#4ADE80}
+.tier-high{background:rgba(134,239,172,.15);color:#86EFAC}
+.tier-danger{background:rgba(251,191,36,.15);color:#FBBF24}
+.tier-incon{background:rgba(113,113,122,.2);color:#A1A1AA}
+.tier-weak{background:rgba(248,113,113,.15);color:#F87171}
+.sus-badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;margin-left:6px}
+.col-adv{display:none}
+.col-adv.show{display:table-cell}
+.th-info{margin-left:4px;opacity:.55;font-size:9px;cursor:help}
+.hub-takeaway{font-size:11px;color:var(--text-2);max-width:220px;line-height:1.35}
+.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+.loading.hide{display:none}
+</style>
 </head>
-<body></body>
+<body>
+<div class="loading" id="hubLoading"><span class="subtitle">Loading lineup offense data\u2026</span></div>
+<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<header class="chase-header" id="chaseHeader">
+  <nav class="chase-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics \u2014 Opening Dashboard">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
+    </a>
+    <div class="chase-nav-links">
+      <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="team_rankings.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
+      <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
+      <div class="chase-dropdown">
+        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">Profiles
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="chase-dropdown-menu">
+          <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
+          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
+          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
+          <div class="chase-dropdown-divider"></div>
+          <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
+          <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
+          <a href="player_search.html" class="chase-dropdown-item">Player Search</a>
+        </div>
+      </div>
+      <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
+    </div>
+    <div class="chase-status">
+      <div class="chase-timestamp"><span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span><span id="lastUpdated">syncing\u2026</span></div>
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+<div class="chase-mobile-overlay" id="mobileOverlay"></div>
+<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="chase-mobile-header">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
+      <img class="chase-nav-logo chase-nav-logo--compact" src="assets/chase-icon-filled.png" alt="" width="28" height="28">
+      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
+    </a>
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">\u00D7</button>
+  </div>
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="matchup_sheet.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+  </div>
+</div>
+
+<main class="container">
+  <p class="brand-tag">Chase Analytics &middot; Lineup Research</p>
+  <h1>Team Rankings</h1>
+  <p class="subtitle">Global 30-team offensive metrics for lineup research. Filter by metric, handedness, window, and location. Click a row to expand; double-click or use Profile link for team profile.</p>
+
+  <div class="hub-sticky-wrap">
+    <div class="hub-control-bar" id="hubControlBar">
+      <div class="hub-control-row">
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Handedness</span>
+          <div class="hub-pill-row" id="hubHandPills"></div>
+        </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Time Window</span>
+          <div class="hub-pill-row" id="hubWindowPills"></div>
+        </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Location</span>
+          <div class="hub-pill-row" id="hubLocationPills"></div>
+        </div>
+        <div class="hub-adv-toggle">
+          <input type="checkbox" id="hubAdvCols" />
+          <label for="hubAdvCols">Advanced columns</label>
+        </div>
+      </div>
+      <div class="hub-confirm" id="hubConfirm">Showing: OSI &middot; Both &middot; YTD &middot; All</div>
+    </div>
+    <div id="hubWindowBanner" class="hub-banner hub-banner--window" style="display:none"></div>
+      <div id="hubLocationBanner" class="hub-banner hub-banner--location">Home/Away splits require batter splits pipeline step \u2014 showing full season data</div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="hub-table" id="hubTable">
+      <thead>
+        <tr id="hubTableHead"></tr>
+      </thead>
+      <tbody id="hubTableBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<script src="mlbma_config.js?v=20260526c"></script>
+<script src="mlbma_assets.js?v=20260526c"></script>
+<script src="matchup_shared.js?v=20260526c"></script>
+<script src="mlbma_charts.js?v=20260526c"></script>
+<!-- Team Rankings hub — required; load before chase_nav.js -->
+<script src="matchup_hub.js?v=20260526c"></script>
+<script src="chase_nav.js?v=20260526c"></script>
+</body>
 </html>
