@@ -4,6 +4,15 @@ window.matchupHubLoaded = false;
 
 var hubA = null;
 var hubS = null;
+var HUB;
+
+try {
+  hubA = null;
+  hubS = null;
+} catch (e) {
+  console.error('[HUB] globals crash:', e.message, e.stack);
+}
+console.log('[HUB] section 1: globals defined');
 
 function bindHubGlobals() {
   window.MatchupShared = window.MLBMASharedMatchup;
@@ -12,15 +21,20 @@ function bindHubGlobals() {
   return window.MLBMA_CONFIG && window.MLBMA_CONFIG.SHEET_TABS;
 }
 
-var HUB = {
-  scR: [], scL: [], scBoth: [], splitHome: [], splitAway: [], teamProfiles: {},
-  windowAvail: { L30: false, L14: false, L7: false },
-  locationAvail: { home: false, away: false },
-  hand: 'both', activeSplit: 'both', window: 'YTD', activeWindow: 'ytd', location: 'all',
-  showAdvanced: false, sortKey: 'osi', sortDir: -1,
-  expandedTeam: null, loaded: false
-};
-window.HUB = HUB;
+try {
+  HUB = {
+    scR: [], scL: [], scBoth: [], splitHome: [], splitAway: [], teamProfiles: {},
+    windowAvail: { L30: false, L14: false, L7: false },
+    locationAvail: { home: false, away: false },
+    hand: 'both', activeSplit: 'both', window: 'YTD', activeWindow: 'ytd', location: 'all',
+    showAdvanced: false, sortKey: 'osi', sortDir: -1,
+    expandedTeam: null, loaded: false
+  };
+} catch (e) {
+  console.error('[HUB] HUB object crash:', e.message, e.stack);
+  HUB = { scR: [], scL: [], scBoth: [], loaded: false };
+}
+console.log('[HUB] section 2: HUB object created');
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
