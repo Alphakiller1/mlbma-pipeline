@@ -34,6 +34,13 @@ window.TRENDS_STATE = TRENDS_STATE;
     return Number(v).toFixed(d == null ? 1 : d);
   }
 
+  function getSplitsTeamScores() {
+    var LD = global.LIVE_DATA || {};
+    var rhp = LD.scYtdR || global.SCO_YTD_R || LD.vsRhp || LD.rhpScores || (global.RL_DATA && global.RL_DATA.rhp) || [];
+    var lhp = LD.scYtdL || global.SCO_YTD_L || LD.vsLhp || LD.lhpScores || (global.RL_DATA && global.RL_DATA.lhp) || [];
+    return { rhp: rhp, lhp: lhp };
+  }
+
   function activatePill(btn, selector, root) {
     (root || document).querySelectorAll(selector).forEach(function(p) {
       p.classList.remove('splits-pill-active', 'trends-pill-active');
@@ -155,10 +162,10 @@ window.TRENDS_STATE = TRENDS_STATE;
 
   /* FUNCTION 4 */
   function renderTeamSplits(mount) {
-    var LD = global.LIVE_DATA || {};
-    var rhp = LD.scYtdR || [];
-    var lhp = LD.scYtdL || [];
-    console.log('[SPLITS TEAM] scYtdR:', rhp.length, 'split:', SPLITS_STATE.split);
+    var scores = getSplitsTeamScores();
+    var rhp = scores.rhp;
+    var lhp = scores.lhp;
+    console.log('[SPLITS TEAM] scYtdR:', rhp.length, 'scYtdL:', lhp.length, 'split:', SPLITS_STATE.split);
 
     if (!rhp.length) {
       mount.innerHTML = '<div class="splits-empty">Loading team data\u2026 (scYtdR: 0 rows)</div>';
@@ -524,10 +531,21 @@ window.TRENDS_STATE = TRENDS_STATE;
     console.log('[RL UIX] wrapping RL.onSubtab, prevOnSubtab:', typeof prevOnSubtab);
     RL.onSubtab = function(name) {
       if (name === 'splits') {
+        console.log('[SPLITS] tab clicked');
+        console.log('[SPLITS] controlMount:', document.getElementById('rlSplitsControlMount'));
+        console.log('[SPLITS] tableMount:', document.getElementById('rlSplitsTableMount'));
+        console.log('[SPLITS] SPLITS_STATE:', JSON.stringify(SPLITS_STATE));
+        var LD = global.LIVE_DATA || {};
+        console.log('[SPLITS] scYtdR:', LD.scYtdR ? LD.scYtdR.length : 0, 'SCO_YTD_R:', global.SCO_YTD_R ? global.SCO_YTD_R.length : 0);
         console.log('[SPLITS] initSplitsTab called from onSubtab wrap');
         initSplitsTab();
       } else if (name === 'trends') initTrendsTab();
       else if (prevOnSubtab) prevOnSubtab(name);
+    };
+
+    global.refreshSplitsIfVisible = function() {
+      var pane = document.getElementById('pane-splits');
+      if (pane && pane.style.display !== 'none') renderSplitsTable();
     };
   }
 })(typeof window !== 'undefined' ? window : this);

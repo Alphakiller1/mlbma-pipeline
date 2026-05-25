@@ -2231,7 +2231,7 @@ body.view-research .ca-lab { display: block; }
 <script src="profile_controls.js?v=20260526k"></script>
 <script src="platform_dashboard.js?v=20260526k"></script>
 <script src="research_lab.js?v=20260526k"></script>
-<script src="rl_tab_uix.js?v=20260526k"></script>
+<script src="rl_tab_uix.js?v=20260526l"></script>
 <script src="pitcher_lab.js?v=20260526k"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -2840,6 +2840,7 @@ function applyLiveData() {
     if (window.PlatformDashboard && PlatformDashboard.prefetchTomorrow) PlatformDashboard.prefetchTomorrow();
 
     var afterLoad = function() {
+      if (typeof window.refreshSplitsIfVisible === 'function') window.refreshSplitsIfVisible();
       if (document.body.classList.contains('view-research')) {
         renderResearchLabWhenReady();
       } else if (document.documentElement.classList.contains('view-matchups')) {
