@@ -2910,27 +2910,22 @@ function numOrNull(v) {
 }
 
 function scoreRowFromSheet(row) {
-  var t = pickCol(row, ['Tm', 'tm', 'Team']).toUpperCase();
-  if (!t) return null;
-  var abq = numOrNull(pickCol(row, ['ABQ', 'abq']));
-  var rcv = numOrNull(pickCol(row, ['RCV', 'rcv']));
-  var obr = numOrNull(pickCol(row, ['OBR', 'obr']));
-  var osi = numOrNull(pickCol(row, ['OSI', 'osi']));
-  var projOSI = numOrNull(pickCol(row, ['projOSI', 'ProjOSI', 'proj_osi']));
-  var reg = numOrNull(pickCol(row, ['reg_signal', 'reg_signal', 'Reg_signal']));
-  if (abq === null || rcv === null || obr === null || osi === null) return null;
-  if (projOSI === null) projOSI = osi;
-  var regAdj = reg !== null ? Math.max(-8, Math.min(8, reg * 450)) : 0;
-  var ppGap = abq - rcv;
-  var dfGap = rcv - obr;
-  var regSup = reg !== null ? Math.max(0, Math.min(100, 50 + (reg * 1000) * 2.5)) : 50;
-  return {
-    t: t, abq: abq, rcv: rcv, obr: obr, osi: osi, projOSI: projOSI,
-    reg: reg, reg_signal: reg, regAdj: regAdj, ppGap: ppGap, dfGap: dfGap,
-    regSup: regSup, qc: 50, disc: 50, contStab: 50, osiZ: 0,
-    pa: null, w: null, x: null, wrc: null,
-    raw: { sheet: true, live: true }
-  };
+  if (window.MatchupShared && MatchupShared.scoreRowFromSheet) {
+    var sc = MatchupShared.scoreRowFromSheet(row);
+    if (!sc) return null;
+    var reg = sc.reg != null ? sc.reg : sc.reg_signal;
+    return Object.assign({}, sc, {
+      reg: reg, reg_signal: reg,
+      ppGap: sc.ppGap != null ? sc.ppGap : (sc.abq - sc.rcv),
+      dfGap: sc.dfGap != null ? sc.dfGap : (sc.rcv - sc.obr),
+      regAdj: sc.regAdj != null ? sc.regAdj : (reg != null ? Math.max(-8, Math.min(8, reg * 450)) : 0),
+      regSup: sc.regSup != null ? sc.regSup : 50,
+      qc: sc.qc != null ? sc.qc : 50,
+      disc: sc.disc != null ? sc.disc : 50,
+      contStab: sc.contStab != null ? sc.contStab : 50
+    });
+  }
+  return null;
 }
 
 /** Map pipeline score row → split object stored on YTD team entry */
@@ -3804,12 +3799,16 @@ function loadResearchData() {
       console.warn('[TRENDS] Team_Profiles fetch failed:', err);
       return [];
     }),
-    fetchSheetTab(TABS.today_games)
+    fetchSheetTab(TABS.today_games),
+    fetchTabSafe(TABS.batter_splits_vs_sp, []),
+    fetchTabSafe(TABS.batter_splits_vs_rp, [])
   ]).then(function(results) {
     LIVE_DATA.oor = parseOorRows(results[0]);
     LIVE_DATA.pals = parsePalsRows(results[1]);
     LIVE_DATA.signalsConvergence = results[2] || [];
     LIVE_DATA.teamProfiles = results[3] || [];
+    LIVE_DATA.batterSplitsVsSP = results[5] || [];
+    LIVE_DATA.batterSplitsVsRP = results[6] || [];
     console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
     console.log('[TRENDS] teamProfiles rows:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 0);
     if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length > 0) {

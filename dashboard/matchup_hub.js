@@ -188,6 +188,7 @@
 
   function applyWindowToRow(d) {
     if (HUB.window === 'YTD') return d;
+    if (!HUB.windowAvail[HUB.window]) return d;
     var prof = HUB.teamProfiles[d.t] || {};
     var wOsi = windowOsi(prof, HUB.window);
     if (wOsi == null) return d;
@@ -386,8 +387,16 @@
       return Promise.resolve();
     }
     var scoreFn = MS.scoreRowFromSheet;
+    var loggedCols = false;
+    function scoreRaw(row) {
+      if (!loggedCols && row && typeof row === 'object') {
+        loggedCols = true;
+        console.log('[SCORE] extracting row, available columns:', Object.keys(row));
+      }
+      return scoreFn(row);
+    }
     return MS.fetchSheetTab(TABS.vs_rhp).then(function(rows) {
-      HUB.scR = (rows || []).map(scoreFn).filter(Boolean);
+      HUB.scR = (rows || []).map(scoreRaw).filter(Boolean);
       return Promise.all([
         MS.fetchSheetTab(TABS.vs_lhp),
         MS.fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
@@ -395,7 +404,7 @@
         MS.fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; })
       ]);
     }).then(function(res) {
-      HUB.scL = (res[0] || []).map(scoreFn).filter(Boolean);
+      HUB.scL = (res[0] || []).map(scoreRaw).filter(Boolean);
       HUB.teamProfiles = parseTeamProfiles(res[1] || []);
       HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
       HUB.splitHome = buildLocationSplitRows(res[2] || [], scoreFn, 'home_osi');

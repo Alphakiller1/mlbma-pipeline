@@ -121,7 +121,24 @@
     'Sandy Alcantara': 645261,
     'Corbin Burnes': 669203,
     'Spencer Strider': 675911,
-    'Freddy Peralta': 642547
+    'Freddy Peralta': 642547,
+    'Dylan Cease': 656302,
+    'Kevin Gausman': 592332,
+    'Logan Webb': 657277,
+    'Sonny Gray': 543243,
+    'Joe Ryan': 669185,
+    'Pablo Lopez': 641154,
+    'Tyler Glasnow': 607192,
+    'Yoshinobu Yamamoto': 808967,
+    'Shota Imanaga': 810517,
+    'Paul Skenes': 694973,
+    'Tarik Skubal': 669373,
+    'Chris Sale': 519242,
+    'Zac Gallen': 668678,
+    'George Kirby': 669923,
+    'Hunter Brown': 680694,
+    'Framber Valdez': 664285,
+    'Roki Sasaki': 838982
   };
 
   function resolveMlbId(idOrName) {
@@ -166,11 +183,22 @@
    * @param {object} [maybeOpts] - { size, crop, cls, className, eager, lazy, fallback }
    */
   function pitcherAvatar(idOrName, sizeKeyOrOpts, maybeOpts) {
+    if (idOrName && typeof idOrName === 'object') {
+      var p = idOrName;
+      var directId = p.mlbId || p.playerId || p.pitcher_id;
+      if (directId != null && /^\d+$/.test(String(directId))) {
+        idOrName = directId;
+      } else {
+        var nm = p.pitcher_name || p.name || p.Pitcher || p.fullName;
+        idOrName = KNOWN_PITCHER_IDS[nm] || nm;
+      }
+    }
     var opts = normalizeAvatarOpts(sizeKeyOrOpts, maybeOpts);
     var cropCfg = resolveAvatarCrop(opts);
     var px = opts.size || cropCfg.px;
     var mod = cropCfg.mod;
     var mlbId = resolveMlbId(idOrName);
+    if (!mlbId) return headshotImg(null, px, opts.className || opts.cls || 'pitcher-headshot', Object.assign({}, opts, { cropMod: mod }));
     var cls = opts.className || opts.cls || 'pitcher-headshot';
     return headshotImg(mlbId, px, cls, Object.assign({}, opts, { cropMod: mod }));
   }

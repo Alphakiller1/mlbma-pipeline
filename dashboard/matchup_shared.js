@@ -412,7 +412,13 @@
     return rows;
   }
 
+  var _scoreRowLogged = false;
+
   function scoreRowFromSheet(row) {
+    if (!_scoreRowLogged && row && typeof row === 'object') {
+      _scoreRowLogged = true;
+      console.log('[SCORE] extracting row, available columns:', Object.keys(row));
+    }
     var t = teamKey(pickCol(row, 'Tm', 'Team', 'tm'));
     if (!t) return null;
     var abq = numOrNull(pickCol(row, 'ABQ', 'abq'));
@@ -493,7 +499,11 @@
         rcvAllowed: numOrNull(pickCol(row, 'overall_RCV_allowed')),
         obrAllowed: numOrNull(pickCol(row, 'overall_OBR_allowed')),
         hiLevEra: numOrNull(pickCol(row, 'high_leverage_ERA', 'High Leverage ERA')),
+        medLevEra: numOrNull(pickCol(row, 'medium_leverage_ERA', 'Medium Leverage ERA')),
         loLevEra: numOrNull(pickCol(row, 'low_leverage_ERA')),
+        woba: numOrNull(pickCol(row, 'overall_wOBA', 'wOBA')),
+        vsRhhOsi: numOrNull(pickCol(row, 'vs_RHH_OSI_allowed', 'osi_allowed_vs_rhh')),
+        vsLhhOsi: numOrNull(pickCol(row, 'vs_LHH_OSI_allowed', 'osi_allowed_vs_lhh')),
         oor: osiAllowed
       };
     });

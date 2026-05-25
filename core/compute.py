@@ -17,11 +17,22 @@ def compute_split(std, bb, savant, label):
     rcv = calc_rcv(std, bb, savant)
     obr = calc_obr(std, savant)
     osi = calc_osi(abq, rcv, obr)
-    osi_sorted = osi.sort_values("OSI", ascending=False).reset_index(drop=True)
+    rate_cols = ["Tm", "wRC+", "SLG"]
+    for col in rate_cols:
+        if col in std.columns and col not in osi.columns:
+            osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
+    if "wOBA" in rcv.columns:
+        osi = osi.merge(rcv[["Tm", "wOBA", "xwOBA"]], on="Tm", how="left")
+    export_cols = [
+        "Tm", "ABQ", "RCV", "OBR", "OSI", "projOSI", "reg_signal",
+        "wRC+", "wOBA", "xwOBA", "SLG",
+    ]
+    export_cols = [c for c in export_cols if c in osi.columns]
+    osi_sorted = osi[export_cols].sort_values("OSI", ascending=False).reset_index(drop=True)
     osi_sorted.index += 1
     print()
     print(f"Results {label}")
-    print(osi_sorted[["Tm", "ABQ", "RCV", "OBR", "OSI", "projOSI", "reg_signal"]].round(1).to_string())
+    print(osi_sorted.round(1).to_string())
     out = os.path.join(DATA_DIR, f"metrics_{label.replace(' ', '_')}.csv")
     osi_sorted.to_csv(out, index=False)
     print("Saved:", out)
