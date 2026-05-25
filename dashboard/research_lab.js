@@ -66,12 +66,23 @@
     return Number(v);
   }
 
-  function profileWindowFieldsFromRow(row) {
+  function extractWindowOSI(val) {
+  if (val == null || val === '') return null;
+  var n = parseFloat(val);
+  if (!isNaN(n)) return n;
+  if (typeof val === 'string') {
+    var m = val.match(/OSI[\s":]+([0-9.]+)/i);
+    if (m) return parseFloat(m[1]);
+  }
+  return null;
+}
+
+function profileWindowFieldsFromRow(row) {
     return {
       osi_ytd: numOrNull(S ? S.pickCol(row, 'osi_ytd', 'OSI_YTD', 'osi', 'OSI') : row.osi_ytd || row.osi),
-      osi_l30: numOrNull(S ? S.pickCol(row, 'osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI') : row.osi_l30),
-      osi_l14: numOrNull(S ? S.pickCol(row, 'osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI') : row.osi_l14),
-      osi_l7: numOrNull(S ? S.pickCol(row, 'osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI') : row.osi_l7)
+      osi_l30: extractWindowOSI(S ? S.pickCol(row, 'osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI') : row.osi_l30),
+      osi_l14: extractWindowOSI(S ? S.pickCol(row, 'osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI') : row.osi_l14),
+      osi_l7:  extractWindowOSI(S ? S.pickCol(row, 'osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI') : row.osi_l7)
     };
   }
 
