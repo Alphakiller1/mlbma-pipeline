@@ -190,7 +190,11 @@
         idOrName = directId;
       } else {
         var nm = p.pitcher_name || p.name || p.Pitcher || p.fullName;
-        idOrName = KNOWN_PITCHER_IDS[nm] || nm;
+        var fromMap = KNOWN_PITCHER_IDS[nm] || KNOWN_PITCHER_IDS[p.name] || KNOWN_PITCHER_IDS[p.full_name];
+        if (!fromMap && !directId) {
+          console.warn('[AVATAR] no ID for pitcher:', p.pitcher_name || p.name || p.Pitcher);
+        }
+        idOrName = fromMap || nm;
       }
     }
     var opts = normalizeAvatarOpts(sizeKeyOrOpts, maybeOpts);

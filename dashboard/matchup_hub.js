@@ -197,6 +197,10 @@
   }
 
   function applyWindowToRow(d) {
+    if (HUB.window !== 'YTD') {
+      console.log('[HUB] applyWindowToRow window:', HUB.window, 'team:', d.t);
+      console.log('[HUB] teamProfiles for team:', HUB.teamProfiles && HUB.teamProfiles[d.t]);
+    }
     if (HUB.window === 'YTD') return d;
     if (!HUB.windowAvail[HUB.window]) return d;
     var prof = HUB.teamProfiles[d.t] || {};
@@ -414,7 +418,12 @@
       if (body) body.innerHTML = '<tr><td colspan="13">Shared data module unavailable.</td></tr>';
       return Promise.resolve();
     }
-    var scoreFn = MS.scoreRowFromSheet;
+    var scoreFn = window.scoreRowFromSheet || (window.MatchupShared && MatchupShared.scoreRowFromSheet) || MS.scoreRowFromSheet;
+    console.log('[HUB] scoreRowFromSheet available:', typeof window.scoreRowFromSheet, typeof (window.MatchupShared && MatchupShared.scoreRowFromSheet), typeof MS.scoreRowFromSheet);
+    if (!scoreFn) {
+      console.error('[HUB] scoreRowFromSheet not found');
+      return Promise.resolve();
+    }
     var loggedCols = false;
     function scoreRaw(row) {
       if (!loggedCols && row && typeof row === 'object') {
@@ -425,6 +434,7 @@
     }
     return MS.fetchSheetTab(TABS.vs_rhp).then(function(rows) {
       HUB.scR = (rows || []).map(scoreRaw).filter(Boolean);
+      console.log('[HUB] scR length:', HUB.scR ? HUB.scR.length : 0);
       return Promise.all([
         MS.fetchSheetTab(TABS.vs_lhp),
         MS.fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
@@ -433,7 +443,14 @@
       ]);
     }).then(function(res) {
       HUB.scL = (res[0] || []).map(scoreRaw).filter(Boolean);
+      console.log('[HUB] scL length:', HUB.scL ? HUB.scL.length : 0);
       HUB.teamProfiles = parseTeamProfiles(res[1] || []);
+      var profFirst = Object.values(HUB.teamProfiles || {})[0];
+      console.log('[HUB] teamProfiles first row:', JSON.stringify(profFirst));
+      if (res[1] && res[1][0]) {
+        console.log('[HUB] Team_Profiles raw first row keys:', Object.keys(res[1][0]));
+        console.log('[HUB] Team_Profiles raw first row sample:', JSON.stringify(res[1][0]));
+      }
       HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
       HUB.splitHome = buildLocationSplitRows(res[2] || [], scoreFn, 'home_osi');
       HUB.splitAway = buildLocationSplitRows(res[3] || [], scoreFn, 'away_osi');

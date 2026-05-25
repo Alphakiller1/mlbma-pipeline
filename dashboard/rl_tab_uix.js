@@ -1,4 +1,4 @@
-// v20260525b
+// v20260525c-diag
 /**
  * Research Lab tab UIX — trends heatmap, splits tables, compare enhancements.
  */
@@ -527,6 +527,8 @@
         return '<button type="button" class="ca-pill-btn' + (loc === s.id ? ' active' : '') + '" data-trend-loc="' + s.id + '" data-trend-location="' + s.id + '">' + s.l + '</button>';
       }).join('')
       + '</div></div>';
+    console.log('[TRENDS] mountTrendControls handedness pill HTML:', mount.querySelector('[data-trend-split]') ? mount.querySelector('[data-trend-split]').outerHTML : 'none');
+    console.log('[TRENDS] mountTrendControls reads data-trend-split and data-trend-hand on click');
     mount.querySelectorAll('[data-trend-metric]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         global.STATE.rlTrendMetric = btn.getAttribute('data-trend-metric');
@@ -581,11 +583,23 @@
     }
 
     var handKey = split === 'r' ? 'r' : split === 'l' ? 'l' : 'both';
+    console.log('[TRENDS] handedness state:', global.STATE.rlHandedness, global.STATE.rlTrendSplit, 'mapped to handKey:', handKey);
+    console.log('[TRENDS] location:', global.STATE.rlTrendLoc, 'batterSplitsHome:', LD.batterSplitsHome ? LD.batterSplitsHome.length : 0, 'batterSplitsAway:', LD.batterSplitsAway ? LD.batterSplitsAway.length : 0);
     var rows = RL.getResearchTeamData(handKey);
     if (loc === 'home' && LD.batterSplitsHome && LD.batterSplitsHome.length) {
       rows = aggregateBatterSplitsByTeam(LD.batterSplitsHome, metric);
+      console.log('[TRENDS] home aggregated first row:', JSON.stringify(rows[0]));
     } else if (loc === 'away' && LD.batterSplitsAway && LD.batterSplitsAway.length) {
       rows = aggregateBatterSplitsByTeam(LD.batterSplitsAway, metric);
+      console.log('[TRENDS] away aggregated first row:', JSON.stringify(rows[0]));
+    } else if (loc === 'home' || loc === 'away') {
+      console.log('[TRENDS] location', loc, '- batter splits empty, using handedness rows only');
+    }
+    if (metric === 'pals' || metric === 'pitchfaced') {
+      var palsMap = palsByTeam();
+      console.log('[TRENDS] PALS metric selected, palsByTeam sample:', JSON.stringify(palsMap).substring(0, 200));
+      console.log('[TRENDS] LIVE_DATA.pals:', LD.pals ? LD.pals.length : 0, 'researchLoaded:', LD.researchLoaded);
+      if (LD.pals && LD.pals[0]) console.log('[TRENDS] pals first row:', JSON.stringify(LD.pals[0]));
     }
     console.log('[TRENDS] rendering with', rows.length, 'rows, metric:', metric, 'hand:', handKey, 'loc:', loc);
     if (!rows.length) {
@@ -893,11 +907,17 @@
   }
 
   function renderTeamOffenseSplits(mount) {
-    console.log('[SPLITS] renderTeamOffenseSplits called');
+    console.log('[SPLITS TEAM] called');
+    console.log('[SPLITS TEAM] mount element:', document.getElementById('rlSplitsTableMount'));
     if (!mount) mount = document.getElementById('rlSplitsTableMount');
-    if (!mount) return;
+    if (!mount) {
+      console.warn('[SPLITS TEAM] mount is null - table will not render');
+      return;
+    }
     var LD = global.LIVE_DATA || {};
-    console.log('[SPLITS] scYtdR:', LD.scYtdR ? LD.scYtdR.length : 0, 'scYtdL:', LD.scYtdL ? LD.scYtdL.length : 0);
+    console.log('[SPLITS TEAM] LIVE_DATA.scYtdR:', LD.scYtdR ? LD.scYtdR.length : 0);
+    console.log('[SPLITS TEAM] LIVE_DATA.scYtdL:', LD.scYtdL ? LD.scYtdL.length : 0);
+    console.log('[SPLITS TEAM] RL.getResearchTeamData(r):', RL.getResearchTeamData ? RL.getResearchTeamData('r').length : 'n/a');
     RL.syncResearchGlobalsFromLiveData();
     ensureTrendState();
     var metric = global._rlSplitMetric || global.STATE.rlSplitMetric || 'osi';
@@ -998,6 +1018,7 @@
       return;
     }
     var units = (global.LIVE_DATA && LIVE_DATA.bullpenUnits) || {};
+    console.log('[BULLPEN SPLITS] bullpenUnits type:', Array.isArray(units) ? 'array' : 'object', 'keys:', Array.isArray(units) ? units.length : Object.keys(units).length);
     var bpRows = Object.keys(units).map(function(tk) {
       var u = units[tk];
       var lhh = u.vsLhhOsi != null ? u.vsLhhOsi : num(S.pickCol(u, 'osi_allowed_vs_lhh', 'vs_LHH_OSI_allowed'));
@@ -1011,6 +1032,7 @@
         hi: u.hiLevEra, med: u.medLevEra, lo: u.loLevEra
       };
     }).sort(function(a, b) { return (b.score || 0) - (a.score || 0); });
+    console.log('[BULLPEN SPLITS] bpRows length:', bpRows ? bpRows.length : 0, 'first row:', JSON.stringify(bpRows && bpRows[0]));
     renderBullpenSplitsTable(mount, bpRows);
   }
 
