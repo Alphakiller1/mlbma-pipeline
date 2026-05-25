@@ -4,6 +4,7 @@ window.matchupHubLoaded = false;
 try {
 (function() {
   'use strict';
+  console.log('[HUB] IIFE starting');
 
   /**
    * Team Rankings hub table — team_rankings.html
@@ -409,16 +410,25 @@ try {
     body.innerHTML = html || '<tr><td colspan="' + colSpan + '">No team data loaded.</td></tr>';
   }
 
+  function hideHubLoading() {
+    var l = document.getElementById('hubLoading');
+    if (l) l.classList.add('hide');
+  }
+
   function hubLoadData() {
     var MS = window.MatchupShared || window.MLBMASharedMatchup;
     if (!MS || !MS.fetchSheetTab || !TABS) {
       var body = document.getElementById('hubTableBody');
       if (body) body.innerHTML = '<tr><td colspan="13">Shared data module unavailable.</td></tr>';
+      console.log('[HUB] hubLoadData complete (no shared module)');
+      hideHubLoading();
       return Promise.resolve();
     }
     var scoreFn = window.scoreRowFromSheet || (window.MatchupShared && window.MatchupShared.scoreRowFromSheet) || MS.scoreRowFromSheet;
     if (!scoreFn) {
       console.error('[HUB] scoreRowFromSheet not found');
+      console.log('[HUB] hubLoadData complete (no score fn)');
+      hideHubLoading();
       return Promise.resolve();
     }
     var loggedCols = false;
@@ -456,8 +466,14 @@ try {
       console.log('[HUB] first scR row woba:', HUB.scR && HUB.scR[0] && HUB.scR[0].woba, HUB.scR && HUB.scR[0] && HUB.scR[0].wOBA);
       updateBanners();
       renderHubTable();
+      console.log('[HUB] hubLoadData complete');
+      hideHubLoading();
     }).catch(function(err) {
       console.error('[HUB] load failed', err);
+      HUB.loaded = true;
+      renderHubTable();
+      console.log('[HUB] hubLoadData complete (error)');
+      hideHubLoading();
     });
   }
 
@@ -492,8 +508,7 @@ try {
     }
     renderHubTable();
     hubLoadData().finally(function() {
-      var el = document.getElementById('hubLoading');
-      if (el) el.classList.add('hide');
+      hideHubLoading();
     });
   }
 

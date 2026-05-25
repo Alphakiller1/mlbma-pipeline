@@ -120,6 +120,12 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 </head>
 <body>
 <div class="loading" id="hubLoading"><span class="subtitle">Loading lineup offense data\u2026</span></div>
+<script>
+setTimeout(function() {
+  var l = document.getElementById('hubLoading');
+  if (l) l.classList.add('hide');
+}, 10000);
+</script>
 <!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -168,7 +174,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="matchup_sheet.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
+    <a href="team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
     <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
