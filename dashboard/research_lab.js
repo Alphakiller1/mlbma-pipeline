@@ -1,5 +1,6 @@
-﻿/**
- * Research Lab UIX â€” compare in-pane, leaderboards, pitching vs lineup, model links.
+﻿// v20260525a
+/**
+ * Research Lab UIX — compare in-pane, leaderboards, pitching vs lineup, model links.
  */
 (function(global) {
   'use strict';

@@ -1,3 +1,4 @@
+// v20260525a
 /**
  * MLBMA Platform Dashboard — landing matchup hub, signal teaser.
  */

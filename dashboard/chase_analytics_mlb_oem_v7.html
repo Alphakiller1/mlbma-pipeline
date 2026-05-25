@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>console.log('[VERSION] build 20260525a');</script>
 <meta charset="UTF-8">
 
 
@@ -2193,13 +2194,13 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260524">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260523d">
-<link rel="stylesheet" href="chase_nav.css?v=20260528">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260528">
-<link rel="stylesheet" href="research_lab.css?v=20260523d">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260525a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260525a">
+<link rel="stylesheet" href="chase_nav.css?v=20260525a">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260525a">
+<link rel="stylesheet" href="research_lab.css?v=20260525a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_build.js?v=20260524"></script>
+<script src="mlbma_build.js?v=20260525a"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
 <style id="critical-dashboard-css">
   .loading-text,#loadingText{display:none!important}
@@ -2215,17 +2216,17 @@ body.view-research .ca-lab { display: block; }
   html.view-research #section-matchups-hero{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
 </style>
-<script src="mlbma_config.js?v=20260524"></script>
-<script src="mlbma_ui.js?v=20260524" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260524"></script>
-<script src="matchup_shared.js?v=20260527"></script>
-<script src="mlbma_controls.js?v=20260524"></script>
-<script src="mlbma_charts.js?v=20260523d"></script>
-<script src="profile_controls.js?v=20260524"></script>
-<script src="platform_dashboard.js?v=20260524"></script>
-<script src="research_lab.js?v=20260528"></script>
-<script src="rl_tab_uix.js?v=20260528"></script>
-<script src="pitcher_lab.js?v=20260524"></script>
+<script src="mlbma_config.js?v=20260525a"></script>
+<script src="mlbma_ui.js?v=20260525a" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260525a"></script>
+<script src="matchup_shared.js?v=20260525a"></script>
+<script src="mlbma_controls.js?v=20260525a"></script>
+<script src="mlbma_charts.js?v=20260525a"></script>
+<script src="profile_controls.js?v=20260525a"></script>
+<script src="platform_dashboard.js?v=20260525a"></script>
+<script src="research_lab.js?v=20260525a"></script>
+<script src="rl_tab_uix.js?v=20260525a"></script>
+<script src="pitcher_lab.js?v=20260525a"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -2801,6 +2802,7 @@ function syncHeroStats() {
 }
 
 function applyLiveData() {
+  console.log('[BOOT] applyLiveData called, scYtdR:', LIVE_DATA.scYtdR && LIVE_DATA.scYtdR.length);
   console.log('[MLBMA] applyLiveData start');
   try {
     if (!LIVE_DATA.scYtdR || !LIVE_DATA.scYtdL || !LIVE_DATA.scYtdR.length || !LIVE_DATA.scYtdL.length) {
@@ -3736,6 +3738,7 @@ function fetchTabSafe(tabName, fallback) {
 }
 
 function loadLandingData() {
+  console.log('[BOOT] loadLandingData starting');
   console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading today\'s matchups…';
@@ -3790,6 +3793,7 @@ function loadLandingData() {
 function loadResearchData() {
   if (_researchBundleLoaded) return Promise.resolve();
   LIVE_DATA.researchLoaded = false;
+  console.log('[BOOT] loadResearchData starting');
   console.log('[MLBMA] loadResearchData start');
   console.log('[TRENDS] fetching Team_Profiles tab key:', TABS.team_profiles);
   return Promise.all([
@@ -3834,6 +3838,7 @@ function loadResearchData() {
     if (window.ResearchLab && ResearchLab.refreshActiveRlTab) {
       ResearchLab.refreshActiveRlTab();
     }
+    console.log('[BOOT] loadResearchData complete, pals:', LIVE_DATA.pals && LIVE_DATA.pals.length, 'researchLoaded:', LIVE_DATA.researchLoaded);
     console.log('[DATA] loadResearchData complete — refreshing active RL tab');
     saveLiveCache({
       lastUpdated: LIVE_DATA.lastUpdated,
@@ -6913,9 +6918,9 @@ if (document.readyState === 'loading') {
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
   Chase Analytics · MLB Offensive Intelligence
 </footer>
-  <script src="oem_overhaul.js?v=20260524"></script>
-  <script src="mlbma_standings.js?v=20260524"></script>
-  <script src="mlbma_signals.js?v=20260524"></script>
-  <script src="chase_nav.js?v=20260524"></script>
+  <script src="oem_overhaul.js?v=20260525a"></script>
+  <script src="mlbma_standings.js?v=20260525a"></script>
+  <script src="mlbma_signals.js?v=20260525a"></script>
+  <script src="chase_nav.js?v=20260525a"></script>
 </body>
 </html>

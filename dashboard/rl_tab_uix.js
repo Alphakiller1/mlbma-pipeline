@@ -1,3 +1,4 @@
+// v20260525a
 /**
  * Research Lab tab UIX — trends heatmap, splits tables, compare enhancements.
  */
