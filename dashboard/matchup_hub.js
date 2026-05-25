@@ -290,9 +290,9 @@
   }
 
   function setWindow(win) {
+    console.log('[HUB] pill clicked: window', win);
     HUB.window = win;
     HUB.activeWindow = win === 'YTD' ? 'ytd' : win.toLowerCase();
-    console.log('[HUB] window toggle clicked:', HUB.activeWindow);
     updateBanners();
     renderHubTable();
   }
@@ -307,16 +307,14 @@
       el.querySelectorAll('.hub-pill').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var v = btn.getAttribute('data-val');
+          console.log('[HUB] pill clicked:', key, v);
           if (key === 'window') setWindow(v);
           else {
             HUB[key] = v;
-            if (key === 'hand' || key === 'location') {
-              console.log('[HUB]', key, 'toggle:', v);
-            }
             renderControls();
             updateBanners();
-            renderHubTable();
           }
+          renderHubTable();
         });
       });
     }
@@ -366,6 +364,7 @@
     head.querySelectorAll('th[data-sort]').forEach(function(th) {
       th.addEventListener('click', function() {
         var k = th.getAttribute('data-sort');
+        console.log('[HUB] pill clicked: sort', k);
         if (HUB.sortKey === k) HUB.sortDir *= -1;
         else { HUB.sortKey = k; HUB.sortDir = -1; }
         renderHubTable();
@@ -451,6 +450,8 @@
         }).length >= 20;
       });
       HUB.loaded = true;
+      console.log('[HUB] first scR row fields:', Object.keys(HUB.scR && HUB.scR[0] || {}));
+      console.log('[HUB] first scR row woba:', HUB.scR && HUB.scR[0] && HUB.scR[0].woba, HUB.scR && HUB.scR[0] && HUB.scR[0].wOBA);
       updateBanners();
       renderHubTable();
     }).catch(function(err) {
@@ -477,6 +478,7 @@
     renderControls();
     updateBanners();
     document.getElementById('hubAdvCols').addEventListener('change', function(e) {
+      console.log('[HUB] pill clicked: advCols', e.target.checked);
       HUB.showAdvanced = e.target.checked;
       renderHubTable();
     });

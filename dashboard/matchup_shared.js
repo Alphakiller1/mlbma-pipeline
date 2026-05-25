@@ -431,15 +431,19 @@
     if (abq === null || rcv === null || obr === null || osi === null) return null;
     if (projOSI == null) projOSI = osi;
     if (ppGap == null && abq != null && rcv != null) ppGap = abq - rcv;
-    var wrc = numOrNull(pickCol(row, 'wRC+', 'wRC', 'wrc_plus', 'wrc'));
-    var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
-    var woba = numOrNull(pickCol(row, 'wOBA', 'woba'));
-    var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
+    var woba = parseFloat(row['wOBA'] || row['woba'] || row['woba_rhp'] || 0) || null;
+    var xwoba = parseFloat(row['xwOBA'] || row['xwoba'] || 0) || null;
+    var slg = parseFloat(row['SLG'] || row['slg'] || 0) || null;
+    var wrc = parseFloat(row['wRC+'] || row['wrc_plus'] || row['wRC'] || 0) || null;
+    if (woba === 0) woba = null;
+    if (xwoba === 0) xwoba = null;
+    if (slg === 0) slg = null;
+    if (wrc === 0) wrc = null;
     if (xwoba == null && woba != null) xwoba = woba;
     return {
       t: t, abq: abq, rcv: rcv, obr: obr, osi: osi,
       projOSI: projOSI, reg_signal: reg, reg: reg, ppGap: ppGap,
-      wrc: wrc, xwoba: xwoba, slg: slg
+      wrc: wrc, woba: woba, xwoba: xwoba, slg: slg
     };
   }
 
