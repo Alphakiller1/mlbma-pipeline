@@ -2912,8 +2912,9 @@ function numOrNull(v) {
 }
 
 function scoreRowFromSheet(row) {
-  if (window.MatchupShared && MatchupShared.scoreRowFromSheet) {
-    var sc = MatchupShared.scoreRowFromSheet(row);
+  var MS = window.MLBMASharedMatchup || window.MatchupShared;
+  if (MS && MS.scoreRowFromSheet) {
+    var sc = MS.scoreRowFromSheet(row);
     if (!sc) return null;
     var reg = sc.reg != null ? sc.reg : sc.reg_signal;
     return Object.assign({}, sc, {
@@ -3759,10 +3760,29 @@ function loadLandingData() {
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
         signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9],
         spProfileRows = results[10];
-    var scR = vsRhpRows.map(scoreRowFromSheet).filter(Boolean);
-    var scL = vsLhpRows.map(scoreRowFromSheet).filter(Boolean);
-    if (scR.length < 10 || scL.length < 10) {
-      throw new Error('Sheet returned too few teams for lineup context.');
+    var scR = [];
+    var scL = [];
+    try {
+      scR = (vsRhpRows || []).map(scoreRowFromSheet).filter(Boolean);
+      scL = (vsLhpRows || []).map(scoreRowFromSheet).filter(Boolean);
+      console.log('[BOOT] vs_RHP scored rows:', scR.length, 'raw rows:', (vsRhpRows || []).length);
+      console.log('[BOOT] vs_LHP scored rows:', scL.length, 'raw rows:', (vsLhpRows || []).length);
+      if (vsRhpRows && vsRhpRows.length && !scR.length) {
+        console.warn('[MLBMA] scoreRowFromSheet returned null for all vs_RHP rows; keys:', Object.keys(vsRhpRows[0]));
+      }
+      if (scL.length < 5) {
+        console.warn('[MLBMA] very few teams scored (vs_LHP):', scL.length, '- continuing with available data');
+      }
+      if (scR.length < 5) {
+        console.warn('[MLBMA] very few teams scored (vs_RHP):', scR.length, '- continuing with available data');
+      }
+      if (scR.length < 10 || scL.length < 10) {
+        console.warn('[MLBMA] Warning: fewer teams than expected — vs_RHP:', scR.length, 'vs_LHP:', scL.length, '- continuing with available data');
+      }
+    } catch (err) {
+      console.error('[MLBMA] scoreRowFromSheet error:', err, 'raw row sample:', vsRhpRows && vsRhpRows[0] ? JSON.stringify(vsRhpRows[0]) : 'none');
+      scR = [];
+      scL = [];
     }
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
     LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
