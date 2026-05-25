@@ -48,6 +48,39 @@ window.TRENDS_STATE = TRENDS_STATE;
     btn.classList.add(btn.hasAttribute('data-splits-entity') || btn.hasAttribute('data-splits-statgroup') || btn.hasAttribute('data-splits-split') || btn.hasAttribute('data-splits-window') ? 'splits-pill-active' : 'trends-pill-active');
   }
 
+  function buildSplitsControlsHTML() {
+    return ''
+      + '<div class="splits-controls" id="splitsControlsRoot">'
+      + '<div class="splits-control-row"><span class="splits-control-label">VIEW</span><div class="splits-pill-group">'
+      + '<button type="button" class="splits-pill splits-pill-active" data-splits-entity="team">Team Offense</button>'
+      + '<button type="button" class="splits-pill" data-splits-entity="sp">Starting Pitchers</button>'
+      + '<button type="button" class="splits-pill" data-splits-entity="bullpen">Bullpen</button>'
+      + '</div></div>'
+      + '<div class="splits-control-row"><span class="splits-control-label">STATS</span><div class="splits-pill-group" id="splitsStatPills">'
+      + '<button type="button" class="splits-pill splits-pill-active" data-splits-statgroup="created" data-for-entity="team">Created</button>'
+      + '<button type="button" class="splits-pill" data-splits-statgroup="standard" data-for-entity="team">Standard</button>'
+      + '<button type="button" class="splits-pill" data-splits-statgroup="allowed" data-for-entity="sp">Allowed</button>'
+      + '<button type="button" class="splits-pill" data-splits-statgroup="standard" data-for-entity="sp">SP Standard</button>'
+      + '<button type="button" class="splits-pill" data-splits-statgroup="standard" data-for-entity="bullpen">BP Standard</button>'
+      + '</div></div>'
+      + '<div class="splits-control-row"><span class="splits-control-label">SPLIT</span><div class="splits-pill-group" id="splitsSplitPills">'
+      + '<button type="button" class="splits-pill splits-pill-active" data-splits-split="b" data-for-entity="team">Both</button>'
+      + '<button type="button" class="splits-pill" data-splits-split="r" data-for-entity="team">vs RHP</button>'
+      + '<button type="button" class="splits-pill" data-splits-split="l" data-for-entity="team">vs LHP</button>'
+      + '<button type="button" class="splits-pill" data-splits-split="overall" data-for-entity="sp,bullpen">Overall</button>'
+      + '</div></div>'
+      + '<div class="splits-control-row"><span class="splits-control-label">WINDOW</span><div class="splits-pill-group">'
+      + '<button type="button" class="splits-pill splits-pill-active" data-splits-window="ytd">YTD</button>'
+      + '<button type="button" class="splits-pill" data-splits-window="l30">L30</button>'
+      + '<button type="button" class="splits-pill" data-splits-window="l14">L14</button>'
+      + '<button type="button" class="splits-pill" data-splits-window="l7">L7</button>'
+      + '</div></div>'
+      + '<div class="splits-control-row"><span class="splits-control-label">FILTER</span>'
+      + '<input type="search" id="splitsSearch" class="splits-search" placeholder="Search team or pitcher...">'
+      + '</div><div class="splits-confirm" id="splitsConfirmLine"></div>'
+      + '</div>';
+  }
+
   /* FUNCTION 1 */
   function initSplitsTab() {
     var controlMount = document.getElementById('rlSplitsControlMount');
@@ -57,38 +90,15 @@ window.TRENDS_STATE = TRENDS_STATE;
       return;
     }
     if (!controlMount.dataset.built) {
-      controlMount.innerHTML = ''
-        + '<div class="splits-controls" id="splitsControlsRoot">'
-        + '<div class="splits-control-row"><span class="splits-control-label">VIEW</span><div class="splits-pill-group">'
-        + '<button type="button" class="splits-pill splits-pill-active" data-splits-entity="team">Team Offense</button>'
-        + '<button type="button" class="splits-pill" data-splits-entity="sp">Starting Pitchers</button>'
-        + '<button type="button" class="splits-pill" data-splits-entity="bullpen">Bullpen</button>'
-        + '</div></div>'
-        + '<div class="splits-control-row"><span class="splits-control-label">STATS</span><div class="splits-pill-group" id="splitsStatPills">'
-        + '<button type="button" class="splits-pill splits-pill-active" data-splits-statgroup="created" data-for-entity="team">Created</button>'
-        + '<button type="button" class="splits-pill" data-splits-statgroup="standard" data-for-entity="team">Standard</button>'
-        + '<button type="button" class="splits-pill" data-splits-statgroup="allowed" data-for-entity="sp">Allowed</button>'
-        + '<button type="button" class="splits-pill" data-splits-statgroup="standard" data-for-entity="sp">SP Standard</button>'
-        + '<button type="button" class="splits-pill" data-splits-statgroup="standard" data-for-entity="bullpen">BP Standard</button>'
-        + '</div></div>'
-        + '<div class="splits-control-row"><span class="splits-control-label">SPLIT</span><div class="splits-pill-group" id="splitsSplitPills">'
-        + '<button type="button" class="splits-pill splits-pill-active" data-splits-split="b" data-for-entity="team">Both</button>'
-        + '<button type="button" class="splits-pill" data-splits-split="r" data-for-entity="team">vs RHP</button>'
-        + '<button type="button" class="splits-pill" data-splits-split="l" data-for-entity="team">vs LHP</button>'
-        + '<button type="button" class="splits-pill" data-splits-split="overall" data-for-entity="sp,bullpen">Overall</button>'
-        + '</div></div>'
-        + '<div class="splits-control-row"><span class="splits-control-label">WINDOW</span><div class="splits-pill-group">'
-        + '<button type="button" class="splits-pill splits-pill-active" data-splits-window="ytd">YTD</button>'
-        + '<button type="button" class="splits-pill" data-splits-window="l30">L30</button>'
-        + '<button type="button" class="splits-pill" data-splits-window="l14">L14</button>'
-        + '<button type="button" class="splits-pill" data-splits-window="l7">L7</button>'
-        + '</div></div>'
-        + '<div class="splits-control-row"><span class="splits-control-label">FILTER</span>'
-        + '<input type="search" id="splitsSearch" class="splits-search" placeholder="Search team or pitcher...">'
-        + '</div><div class="splits-confirm" id="splitsConfirmLine"></div>'
-        + '</div>';
+      var controlsHtml = buildSplitsControlsHTML();
+      console.log('[SPLITS] controls HTML length:', controlsHtml ? controlsHtml.length : 0);
+      controlMount.innerHTML = controlsHtml;
       controlMount.dataset.built = '1';
-      bindSplitsControls();
+      try {
+        bindSplitsControls();
+      } catch (err) {
+        console.error('[SPLITS] bindSplitsControls crashed:', err.message, err.stack);
+      }
     }
     var searchEl = document.getElementById('splitsSearch');
     if (searchEl) searchEl.value = SPLITS_STATE.search || '';
@@ -162,86 +172,99 @@ window.TRENDS_STATE = TRENDS_STATE;
 
   /* FUNCTION 4 */
   function renderTeamSplits(mount) {
-    var scores = getSplitsTeamScores();
-    var rhp = scores.rhp;
-    var lhp = scores.lhp;
-    console.log('[SPLITS TEAM] scYtdR:', rhp.length, 'scYtdL:', lhp.length, 'split:', SPLITS_STATE.split);
+    try {
+      console.log('[SPLITS TEAM] starting render');
+      var scores = getSplitsTeamScores();
+      var rhpRows = scores.rhp;
+      var lhpRows = scores.lhp;
+      console.log('[SPLITS TEAM] rhpRows:', rhpRows ? rhpRows.length : 0, 'lhpRows:', lhpRows ? lhpRows.length : 0);
 
-    if (!rhp.length) {
-      mount.innerHTML = '<div class="splits-empty">Loading team data\u2026 (scYtdR: 0 rows)</div>';
-      return;
-    }
+      if (!rhpRows.length) {
+        mount.innerHTML = '<div class="splits-empty">Loading team data\u2026 (scYtdR: 0 rows)</div>';
+        return;
+      }
 
-    var rows;
-    if (SPLITS_STATE.split === 'r') rows = rhp.slice();
-    else if (SPLITS_STATE.split === 'l') rows = lhp.length ? lhp.slice() : rhp.slice();
-    else {
-      var lm = {};
-      lhp.forEach(function(r) { lm[r.t] = r; });
-      rows = rhp.map(function(r) {
-        var l = lm[r.t] || r;
-        return {
-          t: r.t,
-          osi: ((parseFloat(r.osi) || 0) + (parseFloat(l.osi) || 0)) / 2,
-          obr: ((parseFloat(r.obr) || 0) + (parseFloat(l.obr) || 0)) / 2,
-          rcv: ((parseFloat(r.rcv) || 0) + (parseFloat(l.rcv) || 0)) / 2,
-          abq: ((parseFloat(r.abq) || 0) + (parseFloat(l.abq) || 0)) / 2,
-          woba: r.woba != null ? r.woba : r.wOBA,
-          wrc: r.wrc,
-          slg: r.slg
-        };
+      var rows;
+      if (SPLITS_STATE.split === 'r') rows = rhpRows.slice();
+      else if (SPLITS_STATE.split === 'l') rows = lhpRows.length ? lhpRows.slice() : rhpRows.slice();
+      else {
+        var lm = {};
+        lhpRows.forEach(function(r) { lm[r.t] = r; });
+        rows = rhpRows.map(function(r) {
+          var l = lm[r.t] || r;
+          return {
+            t: r.t,
+            osi: ((parseFloat(r.osi) || 0) + (parseFloat(l.osi) || 0)) / 2,
+            obr: ((parseFloat(r.obr) || 0) + (parseFloat(l.obr) || 0)) / 2,
+            rcv: ((parseFloat(r.rcv) || 0) + (parseFloat(l.rcv) || 0)) / 2,
+            abq: ((parseFloat(r.abq) || 0) + (parseFloat(l.abq) || 0)) / 2,
+            woba: r.woba != null ? r.woba : r.wOBA,
+            wrc: r.wrc,
+            slg: r.slg
+          };
+        });
+      }
+
+      var palsMap = palsByTeam();
+      console.log('[SPLITS TEAM] palsMap keys:', Object.keys(palsMap).length);
+      rows = rows.map(function(r) {
+        return Object.assign({}, r, { pals: palsMap[r.t] });
       });
-    }
+      console.log('[SPLITS TEAM] rows built:', rows ? rows.length : 0, 'first row:', rows && rows[0] ? JSON.stringify(rows[0]) : 'none');
 
-    var palsMap = palsByTeam();
-    rows = rows.map(function(r) {
-      return Object.assign({}, r, { pals: palsMap[r.t] });
-    });
+      if (SPLITS_STATE.search) {
+        rows = rows.filter(function(r) {
+          return String(r.t || '').toLowerCase().indexOf(SPLITS_STATE.search) >= 0;
+        });
+      }
 
-    if (SPLITS_STATE.search) {
-      rows = rows.filter(function(r) {
-        return String(r.t || '').toLowerCase().indexOf(SPLITS_STATE.search) >= 0;
-      });
-    }
+      if (SPLITS_STATE.sortKey) {
+        rows.sort(function(a, b) {
+          var av = parseFloat(a[SPLITS_STATE.sortKey]) || -999;
+          var bv = parseFloat(b[SPLITS_STATE.sortKey]) || -999;
+          return SPLITS_STATE.sortDir === 'asc' ? av - bv : bv - av;
+        });
+      }
 
-    if (SPLITS_STATE.sortKey) {
-      rows.sort(function(a, b) {
-        var av = parseFloat(a[SPLITS_STATE.sortKey]) || -999;
-        var bv = parseFloat(b[SPLITS_STATE.sortKey]) || -999;
-        return SPLITS_STATE.sortDir === 'asc' ? av - bv : bv - av;
-      });
-    }
-
-    var columns = [
-      { key: 't', label: 'Team', type: 'team' },
-      { key: 'osi', label: 'OSI', color: true },
-      { key: 'obr', label: 'OBR', color: true },
-      { key: 'rcv', label: 'RCV', color: true },
-      { key: 'abq', label: 'ABQ', color: true },
-      { key: 'pals', label: 'PALS', color: true }
-    ];
-    if (SPLITS_STATE.statGroup === 'standard') {
-      columns = [
+      var columns = [
         { key: 't', label: 'Team', type: 'team' },
-        { key: 'wrc', label: 'wRC+', color: true, leagueAvg: 100 },
-        { key: 'woba', label: 'wOBA', color: true, ctx: 'woba' },
-        { key: 'slg', label: 'SLG', color: true, ctx: 'slg' }
+        { key: 'osi', label: 'OSI', color: true },
+        { key: 'obr', label: 'OBR', color: true },
+        { key: 'rcv', label: 'RCV', color: true },
+        { key: 'abq', label: 'ABQ', color: true },
+        { key: 'pals', label: 'PALS', color: true }
       ];
-    }
+      if (SPLITS_STATE.statGroup === 'standard') {
+        columns = [
+          { key: 't', label: 'Team', type: 'team' },
+          { key: 'wrc', label: 'wRC+', color: true, leagueAvg: 100 },
+          { key: 'woba', label: 'wOBA', color: true, ctx: 'woba' },
+          { key: 'slg', label: 'SLG', color: true, ctx: 'slg' }
+        ];
+      }
+      console.log('[SPLITS TEAM] columns:', columns ? columns.length : 0);
 
-    mount.innerHTML = buildTable(rows, columns);
-    mount.querySelectorAll('[data-sort-key]').forEach(function(th) {
-      th.addEventListener('click', function() {
-        var key = th.getAttribute('data-sort-key');
-        if (SPLITS_STATE.sortKey === key) {
-          SPLITS_STATE.sortDir = SPLITS_STATE.sortDir === 'asc' ? 'desc' : 'asc';
-        } else {
-          SPLITS_STATE.sortKey = key;
-          SPLITS_STATE.sortDir = 'desc';
-        }
-        renderSplitsTable();
+      var tableHtml = buildTable(rows, columns);
+      console.log('[SPLITS TEAM] table HTML length:', tableHtml ? tableHtml.length : 0);
+      mount.innerHTML = tableHtml;
+      console.log('[SPLITS TEAM] mount innerHTML set, length:', mount ? mount.innerHTML.length : 0);
+
+      mount.querySelectorAll('[data-sort-key]').forEach(function(th) {
+        th.addEventListener('click', function() {
+          var key = th.getAttribute('data-sort-key');
+          if (SPLITS_STATE.sortKey === key) {
+            SPLITS_STATE.sortDir = SPLITS_STATE.sortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            SPLITS_STATE.sortKey = key;
+            SPLITS_STATE.sortDir = 'desc';
+          }
+          renderSplitsTable();
+        });
       });
-    });
+    } catch (err) {
+      console.error('[SPLITS TEAM] crashed:', err.message, err.stack);
+      mount.innerHTML = '<div style="color:red;padding:20px;">Splits render error: ' + esc(err.message) + '</div>';
+    }
   }
 
   /* FUNCTION 5 */
