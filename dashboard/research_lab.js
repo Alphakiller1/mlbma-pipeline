@@ -358,10 +358,10 @@
       renderTrendSummary();
     } else if (tab === 'splits') {
       if (typeof global.renderSplitBars === 'function') global.renderSplitBars();
-      if (typeof global.renderTeamOffenseSplits === 'function' && (global._rlSplitEntity || 'team') === 'team') {
-        global.renderTeamOffenseSplits(document.getElementById('rlSplitsTableMount'));
-      } else {
-        renderSplitsTable();
+      if (typeof global.renderSplitsTable === 'function') {
+        global.renderSplitsTable();
+      } else if (typeof global.renderTeamOffenseSplits === 'function') {
+        global.renderTeamOffenseSplits();
       }
     }
     mountGlobalControlBar();
@@ -454,19 +454,19 @@
       btn.addEventListener('click', function() {
         RL.splitEntity = btn.getAttribute('data-split-entity');
         mountSplitsEntityControls();
-        renderSplitsTable();
+        _legacyRenderSplitsTable();
       });
     });
     mount.querySelectorAll('[data-split-metric]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         RL.splitMetric = btn.getAttribute('data-split-metric');
         mountSplitsEntityControls();
-        renderSplitsTable();
+        _legacyRenderSplitsTable();
       });
     });
   }
 
-  function renderSplitsTable() {
+  function _legacyRenderSplitsTable() {
     var mount = document.getElementById('rlSplitsTableMount');
     if (!mount) return;
     syncResearchGlobalsFromLiveData();
@@ -1479,7 +1479,7 @@
     mountGlobalControlBar: mountGlobalControlBar,
     mountTrendControls: mountTrendControls,
     renderTrendSummary: renderTrendSummary,
-    renderSplitsTable: renderSplitsTable,
+    _legacyRenderSplitsTable: _legacyRenderSplitsTable,
     renderComparePane: renderComparePane,
     renderSplitSummary: renderSplitSummary,
     metricCell: metricCell,

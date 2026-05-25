@@ -521,9 +521,12 @@ window.TRENDS_STATE = TRENDS_STATE;
     global.renderTeamOffenseSplits = function() { SPLITS_STATE.entity = 'team'; renderSplitsTable(); };
 
     var prevOnSubtab = RL.onSubtab;
+    console.log('[RL UIX] wrapping RL.onSubtab, prevOnSubtab:', typeof prevOnSubtab);
     RL.onSubtab = function(name) {
-      if (name === 'splits') initSplitsTab();
-      else if (name === 'trends') initTrendsTab();
+      if (name === 'splits') {
+        console.log('[SPLITS] initSplitsTab called from onSubtab wrap');
+        initSplitsTab();
+      } else if (name === 'trends') initTrendsTab();
       else if (prevOnSubtab) prevOnSubtab(name);
     };
   }
