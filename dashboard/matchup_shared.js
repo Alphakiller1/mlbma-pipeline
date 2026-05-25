@@ -62,11 +62,32 @@
     return out;
   }
 
+  function repairCsvRow(line) {
+    // Rejoin cells that were split by commas inside unquoted JSON/array values
+    var cells = [];
+    var cur = '';
+    var depth = 0;
+    for (var i = 0; i < line.length; i++) {
+      var c = line.charAt(i);
+      if (c === '{' || c === '[') depth++;
+      else if (c === '}' || c === ']') depth--;
+      if (c === ',' && depth === 0) {
+        cells.push(cur);
+        cur = '';
+      } else {
+        cur += c;
+      }
+    }
+    cells.push(cur);
+    return cells.join(',');
+  }
+
   function parseCsvText(text) {
     var lines = String(text || '').trim().split('\n');
     if (lines.length < 2) return [];
     var headers = parseCSVLine(lines[0]).map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
     return lines.slice(1).filter(function(line) { return line.trim(); }).map(function(line) {
+      line = repairCsvRow(line);
       var cols = parseCSVLine(line);
       var row = {};
       headers.forEach(function(h, i) {
