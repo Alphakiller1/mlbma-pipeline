@@ -2204,7 +2204,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260525b">
 <link rel="stylesheet" href="chase_nav.css?v=20260525b">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260525b">
-<link rel="stylesheet" href="research_lab.css?v=20260526o">
+<link rel="stylesheet" href="research_lab.css?v=20260526p">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260526k"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -2230,8 +2230,8 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_charts.js?v=20260526k"></script>
 <script src="profile_controls.js?v=20260526k"></script>
 <script src="platform_dashboard.js?v=20260526k"></script>
-<script src="research_lab.js?v=20260526k"></script>
-<script src="rl_tab_uix.js?v=20260526o"></script>
+<script src="research_lab.js?v=20260526p"></script>
+<script src="rl_tab_uix.js?v=20260526p"></script>
 <script src="pitcher_lab.js?v=20260526k"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -4747,7 +4747,6 @@ function showResearchSubtab(name) {
   if (name === 'pitching-vs-lineup') name = 'compare';
   if (name === 'pitcher') name = 'pitching';
   if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'trends';
-  console.log('[SUBTAB] showing:', name, 'pane-splits el:', document.getElementById('pane-splits'), 'display set to:', (name === 'splits' ? 'block' : 'none'));
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
     if (el) {
