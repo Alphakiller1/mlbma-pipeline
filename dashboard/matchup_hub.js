@@ -247,8 +247,8 @@ function enrichRow(base) {
   if (d.pals == null && window.LIVE_DATA && window.LIVE_DATA.pals && window.MLBMASharedMatchup) {
     var pmap = {};
     (window.LIVE_DATA.pals || []).forEach(function(p) {
-      var tk = teamKey(hubS.pickCol(p, 'team', 'Tm', 'Team'));
-      if (tk) pmap[tk] = num(hubS.pickCol(p, 'PALS', 'pals'));
+      var tk = hubS && hubS.pickCol ? teamKey(hubS.pickCol(p, 'team', 'Tm', 'Team')) : null;
+      if (tk) pmap[tk] = hubS && hubS.pickCol ? num(hubS.pickCol(p, 'PALS', 'pals')) : null;
     });
     d.pals = pmap[t];
   }
@@ -308,6 +308,7 @@ function setWindow(win) {
   console.log('[HUB] pill clicked: window', win);
   HUB.window = win;
   HUB.activeWindow = win === 'YTD' ? 'ytd' : win.toLowerCase();
+  renderControls();
   updateBanners();
   renderHubTable();
 }
@@ -388,6 +389,8 @@ function updateHead() {
 }
 
 function renderHubTable() {
+  console.log('[HUB] renderHubTable called, rows:', HUB.loaded ? sortedRows().length : 0, 'window:', HUB.window, 'hand:', HUB.hand);
+  if (HUB.loaded) hideHubLoading();
   updateHead();
   var body = document.getElementById('hubTableBody');
   if (!body) return;
@@ -410,7 +413,7 @@ function renderHubTable() {
       + '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>'
       + '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>'
       + '<td style="color:' + wrcColor(d.wrc) + '">' + fmt(d.wrc, 0) + '</td>'
-      + '<td style="color:' + wobaColor(d.woba != null ? d.woba : d.xwoba) + '">' + (d.woba != null ? Number(d.woba).toFixed(3) : '\u2014') + '</td>'
+      + '<td style="color:' + wobaColor(d.woba) + '">' + (d.woba != null && !isNaN(d.woba) ? Number(d.woba).toFixed(3) : '\u2014') + '</td>'
       + '<td style="color:' + wobaColor(d.xwoba) + '">' + (d.xwoba != null ? Number(d.xwoba).toFixed(3) : '\u2014') + '</td>'
       + '<td style="color:' + slgColor(d.slg) + '">' + (d.slg != null ? Number(d.slg).toFixed(3) : '\u2014') + '</td>'
       + '<td><span class="trend-badge" style="background:' + trendColor(d.trend) + '22;color:' + trendColor(d.trend) + '">' + esc(d.trend) + '</span></td>'
@@ -423,8 +426,14 @@ function renderHubTable() {
 }
 
 function hideHubLoading() {
+  console.log('[HUB] hideHubLoading called');
   var l = document.getElementById('hubLoading');
-  if (l) l.classList.add('hide');
+  if (l) {
+    l.classList.add('hide');
+    l.style.display = 'none';
+    l.style.visibility = 'hidden';
+    l.setAttribute('aria-hidden', 'true');
+  }
 }
 
 function hubLoadData() {
@@ -476,7 +485,7 @@ function hubLoadData() {
     });
     HUB.loaded = true;
     console.log('[HUB] first scR row fields:', Object.keys(HUB.scR && HUB.scR[0] || {}));
-    console.log('[HUB] first scR row woba:', HUB.scR && HUB.scR[0] && HUB.scR[0].woba, HUB.scR && HUB.scR[0] && HUB.scR[0].wOBA);
+    console.log('[HUB] first scR row woba:', HUB.scR && HUB.scR[0] && HUB.scR[0].woba, 'xwoba:', HUB.scR && HUB.scR[0] && HUB.scR[0].xwoba, 'wrc:', HUB.scR && HUB.scR[0] && HUB.scR[0].wrc);
     updateBanners();
     renderHubTable();
     console.log('[HUB] hubLoadData complete');
@@ -531,16 +540,42 @@ function initHub() {
     hideHubLoading();
   });
 }
-window.renderHubTable = renderHubTable;
-window.hubLoadData = hubLoadData;
-window.initHub = initHub;
-window.HUB = HUB;
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initHub);
-} else {
-  initHub();
+console.log('[HUB] section 3: functions defined');
+
+try {
+  window.HUB = HUB;
+  window.renderHubTable = renderHubTable;
+  window.hubLoadData = hubLoadData;
+  window.initHub = initHub;
+} catch (e) {
+  console.error('[HUB] exports crash:', e.message, e.stack);
 }
+console.log('[HUB] section 4: exports complete');
 
+try {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        initHub();
+      } catch (e) {
+        console.error('[HUB] initHub crash (DOMContentLoaded):', e.message, e.stack);
+        hideHubLoading();
+      }
+    });
+  } else {
+    try {
+      initHub();
+    } catch (e) {
+      console.error('[HUB] initHub crash (immediate):', e.message, e.stack);
+      hideHubLoading();
+    }
+  }
+} catch (e) {
+  console.error('[HUB] DOM listener crash:', e.message, e.stack);
+}
+console.log('[HUB] section 5: event listener bound');
+
+console.log('[HUB] section 6: about to set matchupHubLoaded');
 window.matchupHubLoaded = true;
 console.log('[HUB] parsing complete');
