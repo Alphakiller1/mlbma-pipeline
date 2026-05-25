@@ -4,14 +4,20 @@
 (function(global) {
   'use strict';
 
-  var ESPN_ABBR = {
-    ARI: 'ari', ATL: 'atl', BAL: 'bal', BOS: 'bos', CHC: 'chc', CHW: 'cws', CWS: 'cws',
+  var ESPN_ABBR_MAP = {
+    ARI: 'ari', ATL: 'atl', BAL: 'bal', BOS: 'bos', CHC: 'chc', CHW: 'chw', CWS: 'chw',
     CIN: 'cin', CLE: 'cle', COL: 'col', DET: 'det', HOU: 'hou', KC: 'kc', KCR: 'kc',
     LAA: 'laa', LAD: 'lad', MIA: 'mia', MIL: 'mil', MIN: 'min', NYM: 'nym', NYY: 'nyy',
-    ATH: 'ath', OAK: 'ath', PHI: 'phi', PIT: 'pit', SD: 'sd', SDP: 'sd', SF: 'sf',
+    ATH: 'oak', OAK: 'oak', PHI: 'phi', PIT: 'pit', SD: 'sd', SDP: 'sd', SF: 'sf',
     SFG: 'sf', SEA: 'sea', STL: 'stl', TB: 'tb', TBR: 'tb', TEX: 'tex', TOR: 'tor',
-    WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', AZ: 'ari', CHA: 'cws', KCA: 'kc', TBA: 'tb'
+    WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', AZ: 'ari', CHA: 'chw', KCA: 'kc', TBA: 'tb'
   };
+
+  function getEspnAbbr(abbr) {
+    if (!abbr) return 'mlb';
+    var upper = String(abbr).toUpperCase();
+    return (ESPN_ABBR_MAP[upper] || upper).toLowerCase();
+  }
 
   /** @see dashboard/assets/.gitkeep — four brand styles */
   var BRAND = {
@@ -79,14 +85,9 @@
       .replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
   }
 
-  function espnAbbr(team) {
-    var t = String(team || '').toUpperCase();
-    return ESPN_ABBR[t] || t.toLowerCase();
-  }
-
   function teamLogoUrl(team, size) {
     size = size || 500;
-    return 'https://a.espncdn.com/i/teamlogos/mlb/' + size + '/' + espnAbbr(team) + '.png';
+    return 'https://a.espncdn.com/i/teamlogos/mlb/' + size + '/' + getEspnAbbr(team) + '.png';
   }
 
   function teamLogoImg(team, px, cls) {
@@ -126,6 +127,7 @@
     'Kevin Gausman': 592332,
     'Logan Webb': 657277,
     'Sonny Gray': 543243,
+    'Blake Snell': 543243,
     'Joe Ryan': 669185,
     'Pablo Lopez': 641154,
     'Tyler Glasnow': 607192,
@@ -507,7 +509,8 @@
 
   global.MLBMAAssets = {
     BRAND: BRAND,
-    espnAbbr: espnAbbr,
+    getEspnAbbr: getEspnAbbr,
+    espnAbbr: getEspnAbbr,
     teamLogoUrl: teamLogoUrl,
     teamLogoImg: teamLogoImg,
     headshotUrl: headshotUrl,

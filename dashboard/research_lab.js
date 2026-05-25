@@ -842,7 +842,7 @@
   function teamSelectHtml(id, label, teams, val) {
     return '<div><label for="' + id + '">' + label + '</label>'
       + '<select id="' + id + '" class="rl-compare-select search-input" style="width:100%;margin-top:6px;">'
-      + '<option value="">Select team\u2026</option>'
+      + '<option value="">Select team...</option>'
       + teams.map(function(t) {
         return '<option value="' + esc(t) + '"' + (t === val ? ' selected' : '') + '>' + esc(t) + '</option>';
       }).join('')

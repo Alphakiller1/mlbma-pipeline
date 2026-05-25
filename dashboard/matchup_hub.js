@@ -17,6 +17,7 @@
     showAdvanced: false, sortKey: 'osi', sortDir: -1,
     expandedTeam: null, loaded: false
   };
+  window.HUB = HUB;
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -149,9 +150,9 @@
       var t = teamKey(pick(row, ['team', 'Tm', 'Team']));
       if (!t) return;
       map[t] = {
-        osi_l30: num(pick(row, ['osi_l30', 'OSI_L30'])),
-        osi_l14: num(pick(row, ['osi_l14', 'OSI_L14'])),
-        osi_l7: num(pick(row, ['osi_l7', 'OSI_L7'])),
+        osi_l30: num(pick(row, ['osi_l30', 'OSI_L30', 'OSI L30', 'L30_OSI'])),
+        osi_l14: num(pick(row, ['osi_l14', 'OSI_L14', 'OSI L14', 'L14_OSI'])),
+        osi_l7: num(pick(row, ['osi_l7', 'OSI_L7', 'OSI L7', 'L7_OSI'])),
         home_osi: num(pick(row, ['home_osi', 'Home_OSI'])),
         away_osi: num(pick(row, ['away_osi', 'Away_OSI']))
       };
@@ -197,15 +198,11 @@
   }
 
   function applyWindowToRow(d) {
-    if (HUB.window !== 'YTD') {
-      console.log('[HUB] applyWindowToRow window:', HUB.window, 'team:', d.t);
-      console.log('[HUB] teamProfiles for team:', HUB.teamProfiles && HUB.teamProfiles[d.t]);
-    }
     if (HUB.window === 'YTD') return d;
+    var prof = HUB.teamProfiles[d.t] || HUB.teamProfiles[teamKey(d.t)] || {};
     if (!HUB.windowAvail[HUB.window]) return d;
-    var prof = HUB.teamProfiles[d.t] || {};
     var wOsi = windowOsi(prof, HUB.window);
-    if (wOsi == null) return d;
+    if (wOsi == null || isNaN(wOsi)) return d;
     var ratio = d.ytdOSI ? wOsi / d.ytdOSI : 1;
     var out = Object.assign({}, d, { osi: wOsi });
     ['abq', 'rcv', 'obr', 'projOSI', 'wrc', 'xwoba', 'slg'].forEach(function(k) {
@@ -337,7 +334,7 @@
     if (wBan) {
       var show = HUB.window !== 'YTD' && !HUB.windowAvail[HUB.window];
       wBan.classList.toggle('show', show);
-      if (show) wBan.textContent = HUB.window + ' requires full pipeline run \u2014 showing YTD data';
+      if (show) wBan.textContent = HUB.window + ' data requires pipeline time-window enhancement \u2014 showing YTD';
     }
     var lBan = document.getElementById('hubLocationBanner');
     if (lBan) {
@@ -419,7 +416,6 @@
       return Promise.resolve();
     }
     var scoreFn = window.scoreRowFromSheet || (window.MatchupShared && MatchupShared.scoreRowFromSheet) || MS.scoreRowFromSheet;
-    console.log('[HUB] scoreRowFromSheet available:', typeof window.scoreRowFromSheet, typeof (window.MatchupShared && MatchupShared.scoreRowFromSheet), typeof MS.scoreRowFromSheet);
     if (!scoreFn) {
       console.error('[HUB] scoreRowFromSheet not found');
       return Promise.resolve();
@@ -434,7 +430,6 @@
     }
     return MS.fetchSheetTab(TABS.vs_rhp).then(function(rows) {
       HUB.scR = (rows || []).map(scoreRaw).filter(Boolean);
-      console.log('[HUB] scR length:', HUB.scR ? HUB.scR.length : 0);
       return Promise.all([
         MS.fetchSheetTab(TABS.vs_lhp),
         MS.fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
@@ -443,14 +438,7 @@
       ]);
     }).then(function(res) {
       HUB.scL = (res[0] || []).map(scoreRaw).filter(Boolean);
-      console.log('[HUB] scL length:', HUB.scL ? HUB.scL.length : 0);
       HUB.teamProfiles = parseTeamProfiles(res[1] || []);
-      var profFirst = Object.values(HUB.teamProfiles || {})[0];
-      console.log('[HUB] teamProfiles first row:', JSON.stringify(profFirst));
-      if (res[1] && res[1][0]) {
-        console.log('[HUB] Team_Profiles raw first row keys:', Object.keys(res[1][0]));
-        console.log('[HUB] Team_Profiles raw first row sample:', JSON.stringify(res[1][0]));
-      }
       HUB.scBoth = mergeBoth(HUB.scR, HUB.scL);
       HUB.splitHome = buildLocationSplitRows(res[2] || [], scoreFn, 'home_osi');
       HUB.splitAway = buildLocationSplitRows(res[3] || [], scoreFn, 'away_osi');
