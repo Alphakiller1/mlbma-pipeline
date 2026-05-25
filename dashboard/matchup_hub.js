@@ -1,13 +1,17 @@
-/**
- * Team Rankings hub table — matchup_sheet.html
- */
+console.log('[HUB] matchup_hub.js starting to parse');
+window.matchupHubLoaded = false;
+
+try {
 (function() {
   'use strict';
 
+  /**
+   * Team Rankings hub table — matchup_sheet.html
+   */
   window.MatchupShared = window.MLBMASharedMatchup;
   var A = window.MLBMAAssets;
   var S = window.MLBMASharedMatchup;
-  var TABS = window.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
+  var TABS = window.MLBMA_CONFIG && window.MLBMA_CONFIG.SHEET_TABS;
 
   var HUB = {
     scR: [], scL: [], scBoth: [], splitHome: [], splitAway: [], teamProfiles: {},
@@ -218,8 +222,6 @@
   function enrichRow(base) {
     var t = base.t;
     var prof = HUB.teamProfiles[t] || {};
-    var rRow = HUB.scR.find(function(x) { return x.t === t; });
-    var lRow = HUB.scL.find(function(x) { return x.t === t; });
     var d = Object.assign({}, base);
     if (d.ppGap == null && d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
     d.ytdOSI = base.osi;
@@ -229,9 +231,9 @@
     d.trend = computeTrend(d.ytdOSI, d.l14OSI, d.l7OSI);
     d.tier = tierInfo(d.osi);
     d.takeaway = computeTakeaway(d);
-    if (d.pals == null && window.LIVE_DATA && LIVE_DATA.pals && window.MLBMASharedMatchup) {
+    if (d.pals == null && window.LIVE_DATA && window.LIVE_DATA.pals && window.MLBMASharedMatchup) {
       var pmap = {};
-      (LIVE_DATA.pals || []).forEach(function(p) {
+      (window.LIVE_DATA.pals || []).forEach(function(p) {
         var tk = teamKey(S.pickCol(p, 'team', 'Tm', 'Team'));
         if (tk) pmap[tk] = num(S.pickCol(p, 'PALS', 'pals'));
       });
@@ -298,7 +300,7 @@
   }
 
   function renderControls() {
-    function pills(mountId, opts, key, onChange) {
+    function pills(mountId, opts, key) {
       var el = document.getElementById(mountId);
       if (!el) return;
       el.innerHTML = opts.map(function(o) {
@@ -414,7 +416,7 @@
       if (body) body.innerHTML = '<tr><td colspan="13">Shared data module unavailable.</td></tr>';
       return Promise.resolve();
     }
-    var scoreFn = window.scoreRowFromSheet || (window.MatchupShared && MatchupShared.scoreRowFromSheet) || MS.scoreRowFromSheet;
+    var scoreFn = window.scoreRowFromSheet || (window.MatchupShared && window.MatchupShared.scoreRowFromSheet) || MS.scoreRowFromSheet;
     if (!scoreFn) {
       console.error('[HUB] scoreRowFromSheet not found');
       return Promise.resolve();
@@ -474,14 +476,20 @@
   }
 
   function initHub() {
+    console.log('[HUB] initHub starting');
     bindHubRowClicks();
     renderControls();
     updateBanners();
-    document.getElementById('hubAdvCols').addEventListener('change', function(e) {
-      console.log('[HUB] pill clicked: advCols', e.target.checked);
-      HUB.showAdvanced = e.target.checked;
-      renderHubTable();
-    });
+    var advEl = document.getElementById('hubAdvCols');
+    if (advEl) {
+      advEl.addEventListener('change', function(e) {
+        console.log('[HUB] pill clicked: advCols', e.target.checked);
+        HUB.showAdvanced = e.target.checked;
+        renderHubTable();
+      });
+    } else {
+      console.warn('[HUB] hubAdvCols element not found');
+    }
     renderHubTable();
     hubLoadData().finally(function() {
       var el = document.getElementById('hubLoading');
@@ -490,6 +498,8 @@
   }
 
   window.renderHubTable = renderHubTable;
+  window.hubLoadData = hubLoadData;
+  window.initHub = initHub;
   window.HUB = HUB;
 
   if (document.readyState === 'loading') {
@@ -498,3 +508,9 @@
     initHub();
   }
 })();
+} catch (err) {
+  console.error('[HUB] matchup_hub.js crashed:', err.message, err.stack);
+}
+
+window.matchupHubLoaded = true;
+console.log('[HUB] matchup_hub.js fully parsed');
