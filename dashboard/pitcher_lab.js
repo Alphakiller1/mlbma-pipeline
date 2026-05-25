@@ -546,9 +546,11 @@
     var inp = document.getElementById('plPitcherSearch');
     if (inp) {
       inp.addEventListener('input', function() {
+        // RULE: Every state change must trigger a render
         CACHE.searchQ = inp.value;
         renderDropdown(searchMatches(inp.value));
         renderRankings();
+        if (CACHE.selected) renderPitcherSnapshot(CACHE.selected);
       });
       inp.addEventListener('focus', function() {
         renderDropdown(searchMatches(inp.value));

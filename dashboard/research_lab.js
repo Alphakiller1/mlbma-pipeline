@@ -1400,6 +1400,14 @@
   }
 
   function initSplitsControls() {
+    if (typeof global.initSplitsTab === 'function') {
+      global.initSplitsTab();
+      return;
+    }
+    if (RL && typeof RL.initSplitsTab === 'function') {
+      RL.initSplitsTab();
+      return;
+    }
     mountSplitsEntityControls();
   }
 
