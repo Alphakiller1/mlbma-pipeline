@@ -388,36 +388,66 @@ def batter_aggregates(
 
 
 def window_trend(offense_df: pd.DataFrame, trend_adj_df: pd.DataFrame) -> pd.DataFrame:
+    """Compute rolling window OSI using daily history snapshots."""
+    from datetime import datetime, timedelta
+
     if offense_df.empty:
         return pd.DataFrame(columns=["team", "osi_ytd", "osi_l30", "osi_l14", "osi_l7", "window_direction"])
 
     ytd = offense_df.set_index("team")["osi"].to_dict()
-    adj = trend_adj_df.set_index("team")["trend_adj"].to_dict() if not trend_adj_df.empty else {}
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    history_path = DATA_DIR / "osi_history.csv"
+
+    # Load or create history
+    if history_path.exists():
+        hist = pd.read_csv(history_path, parse_dates=["date"])
+    else:
+        hist = pd.DataFrame(columns=["date", "team", "osi"])
+
+    # Append today's snapshot (overwrite today if already present)
+    today_rows = [{"date": today, "team": tm, "osi": _num(osi)} for tm, osi in ytd.items() if _num(osi) is not None]
+    today_df = pd.DataFrame(today_rows)
+    today_df["date"] = pd.to_datetime(today_df["date"])
+    hist = hist[hist["date"].dt.strftime("%Y-%m-%d") != today]
+    hist = pd.concat([hist, today_df], ignore_index=True)
+    hist.to_csv(history_path, index=False)
+
+    # Compute rolling windows
+    cutoffs = {
+        "l7":  pd.Timestamp(today) - timedelta(days=7),
+        "l14": pd.Timestamp(today) - timedelta(days=14),
+        "l30": pd.Timestamp(today) - timedelta(days=30),
+    }
 
     rows = []
     for tm in offense_df["team"].unique():
         base = _num(ytd.get(tm))
         if base is None:
             continue
-        a = _num(adj.get(tm, 0)) or 0
-        l7 = round(base + a, 1)
-        l14 = round(base + a * 0.7, 1)
-        l30 = round(base + a * 0.4, 1)
+        tm_hist = hist[hist["team"] == tm].copy()
+
+        def win_avg(cutoff):
+            sub = tm_hist[tm_hist["date"] >= cutoff]["osi"].dropna()
+            return round(sub.mean(), 1) if len(sub) >= 1 else base
+
+        l30 = win_avg(cutoffs["l30"])
+        l14 = win_avg(cutoffs["l14"])
+        l7  = win_avg(cutoffs["l7"])
+
         direction = "stable"
         if l7 - base >= TEAM_WINDOW_HOT_COLD_GAP:
             direction = "rising"
         elif l7 - base <= -TEAM_WINDOW_HOT_COLD_GAP:
             direction = "falling"
-        rows.append(
-            {
-                "team": tm,
-                "osi_ytd": base,
-                "osi_l30": l30,
-                "osi_l14": l14,
-                "osi_l7": l7,
-                "window_direction": direction,
-            }
-        )
+
+        rows.append({
+            "team": tm,
+            "osi_ytd": base,
+            "osi_l30": l30,
+            "osi_l14": l14,
+            "osi_l7": l7,
+            "window_direction": direction,
+        })
     return pd.DataFrame(rows)
 
 
