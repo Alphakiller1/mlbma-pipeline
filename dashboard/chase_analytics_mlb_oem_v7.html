@@ -2230,8 +2230,8 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_charts.js?v=20260527s"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
-<script src="research_lab.js?v=20260528f"></script>
-<script src="rl_tab_uix.js?v=20260528f"></script>
+<script src="research_lab.js?v=20260529a"></script>
+<script src="rl_tab_uix.js?v=20260529a"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -3112,6 +3112,10 @@ function profileWindowFieldsFromRow(row) {
     osi_l30: numOrNull(pickCol(row, ['osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI'])),
     osi_l14: numOrNull(pickCol(row, ['osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI'])),
     osi_l7: numOrNull(pickCol(row, ['osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI'])),
+    abq: numOrNull(pickCol(row, ['abq', 'ABQ'])),
+    rcv: numOrNull(pickCol(row, ['rcv', 'RCV'])),
+    obr: numOrNull(pickCol(row, ['obr', 'OBR'])),
+    pals: numOrNull(pickCol(row, ['pals', 'PALS'])),
     home_osi: numOrNull(pickCol(row, ['home_osi', 'Home_OSI'])),
     away_osi: numOrNull(pickCol(row, ['away_osi', 'Away_OSI']))
   };

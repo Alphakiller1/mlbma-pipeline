@@ -14,11 +14,12 @@ var SPLITS_STATE = {
 };
 
 var TRENDS_STATE = {
-  metric: 'osi'
+  metric: 'osi',
+  location: 'b'
 };
 
 /** Bump when trends markup/behavior changes (forces control strip rebuild). */
-var TRENDS_UI_VERSION = '20260528f';
+var TRENDS_UI_VERSION = '20260529a';
 
 window.SPLITS_STATE = SPLITS_STATE;
 window.TRENDS_STATE = TRENDS_STATE;
@@ -134,17 +135,36 @@ window.TRENDS_STATE = TRENDS_STATE;
     }).filter(Boolean);
   }
 
+  function normalizeTrendProfile(row) {
+    if (!row) return {};
+    if (typeof global.profileWindowFieldsFromRow === 'function' && (row.team || row.Team || row.Tm || row.osi != null || row.osi_l30 != null)) {
+      return global.profileWindowFieldsFromRow(row);
+    }
+    return {
+      osi_ytd: pickProfField(row, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI']),
+      osi_l30: pickProfField(row, ['osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI']),
+      osi_l14: pickProfField(row, ['osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI']),
+      osi_l7: pickProfField(row, ['osi_l7', 'OSI_L7', 'l7_osi', 'L7_OSI']),
+      abq: pickProfField(row, ['abq', 'ABQ']),
+      rcv: pickProfField(row, ['rcv', 'RCV']),
+      obr: pickProfField(row, ['obr', 'OBR']),
+      pals: pickProfField(row, ['pals', 'PALS']),
+      home_osi: pickProfField(row, ['home_osi', 'Home_OSI']),
+      away_osi: pickProfField(row, ['away_osi', 'Away_OSI'])
+    };
+  }
+
   function profileMapFromTeamProfiles() {
     var LD = liveData();
-    var map = LD.teamProfilesByTeam || {};
+    var map = {};
+    (LD.teamProfiles || []).forEach(function(p) {
+      var t = String(p.team || p.Team || p.Tm || '').trim().toUpperCase();
+      if (t) map[t] = normalizeTrendProfile(p);
+    });
     if (Object.keys(map).length) return map;
-    if (typeof global.parseTeamProfileRows === 'function' && (LD.teamProfiles || []).length) {
-      return global.parseTeamProfileRows(LD.teamProfiles);
-    }
-    map = {};
-    (LD.teamProfiles || []).length && (LD.teamProfiles || []).forEach(function(p) {
-      var t = String(p.team || '').trim().toUpperCase();
-      if (t) map[t] = p;
+    var cached = LD.teamProfilesByTeam || {};
+    Object.keys(cached).forEach(function(t) {
+      map[t] = normalizeTrendProfile(cached[t]);
     });
     return map;
   }
@@ -161,13 +181,42 @@ window.TRENDS_STATE = TRENDS_STATE;
     return null;
   }
 
+  function ensureTrendWindowScores() {
+    if (typeof global.syncWindowScoresFromProfiles === 'function') {
+      if (!global.SCO_L30_B || !global.SCO_L30_B.length) global.syncWindowScoresFromProfiles();
+    }
+  }
+
+  function trendWindowRowMap(timeframe) {
+    ensureTrendWindowScores();
+    var rows = timeframe === 'L30' ? (global.SCO_L30_B || [])
+      : timeframe === 'L14' ? (global.SCO_L14_B || [])
+        : (global.SCO_L7_B || []);
+    if (!rows.length && typeof global.buildWindowRowsFromProfiles === 'function') {
+      rows = global.buildWindowRowsFromProfiles(timeframe, 'b') || [];
+    }
+    return rowMapByTeam(rows);
+  }
+
+  function locationMetricMap(location) {
+    var LD = liveData();
+    if (location === 'home') return rowMapByTeam(aggregateByTeam(LD.batterSplitsHome));
+    if (location === 'away') return rowMapByTeam(aggregateByTeam(LD.batterSplitsAway));
+    return {};
+  }
+
   function profileYtd(prof, mk) {
     if (!prof) return null;
-    if (mk === 'pals') return null;
+    if (mk === 'pals') return pickProfField(prof, ['pals', 'PALS']);
     if (mk === 'osi') {
       return pickProfField(prof, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI']);
     }
-    return pickProfField(prof, [mk + '_ytd', mk.toUpperCase() + '_YTD', mk, mk.toUpperCase()]);
+    return pickProfField(prof, [mk, mk.toUpperCase(), mk + '_ytd', mk.toUpperCase() + '_YTD']);
+  }
+
+  function profileWindowOsi(prof, winKey) {
+    if (!prof) return null;
+    return pickProfField(prof, ['osi_' + winKey, 'OSI_' + winKey.toUpperCase()]);
   }
 
   function getWindowRows(window, split) {
@@ -754,6 +803,11 @@ window.TRENDS_STATE = TRENDS_STATE;
         + ['osi', 'abq', 'rcv', 'obr', 'pals'].map(function(m) {
           return '<button type="button" class="splits-pill trends-pill' + (TRENDS_STATE.metric === m ? ' trends-pill-active splits-pill-active' : '') + '" data-trends-metric="' + m + '">' + m.toUpperCase() + '</button>';
         }).join('')
+        + '</div></div>'
+        + '<div class="splits-control-row"><span class="splits-control-label">LOC</span><div class="splits-pill-group">'
+        + [{ v: 'b', l: 'Both' }, { v: 'home', l: 'Home' }, { v: 'away', l: 'Away' }].map(function(o) {
+          return '<button type="button" class="splits-pill trends-pill' + (TRENDS_STATE.location === o.v ? ' trends-pill-active splits-pill-active' : '') + '" data-trends-location="' + o.v + '">' + o.l + '</button>';
+        }).join('')
         + '</div></div></div>'
         + '<p id="trendsContextLine" class="splits-banner" style="margin:8px 0 0;font-size:12px;opacity:0.85;border:none;background:transparent;padding:0;"></p>'
         + '<div id="rlTrendTableMount" class="splits-table-wrap"></div>';
@@ -769,11 +823,19 @@ window.TRENDS_STATE = TRENDS_STATE;
     root.dataset.bound = '1';
 
     root.addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-trends-metric]');
-      if (!btn || !btn.dataset.trendsMetric) return;
-      TRENDS_STATE.metric = btn.dataset.trendsMetric;
-      activatePill(btn, '[data-trends-metric]', root);
-      renderTrendHeatmap();
+      var btn = e.target.closest('[data-trends-metric], [data-trends-location]');
+      if (!btn) return;
+      if (btn.dataset.trendsMetric) {
+        TRENDS_STATE.metric = btn.dataset.trendsMetric;
+        activatePill(btn, '[data-trends-metric]', root);
+        renderTrendHeatmap();
+        return;
+      }
+      if (btn.dataset.trendsLocation) {
+        TRENDS_STATE.location = btn.dataset.trendsLocation;
+        activatePill(btn, '[data-trends-location]', root);
+        renderTrendHeatmap();
+      }
     });
   }
 
@@ -812,25 +874,47 @@ window.TRENDS_STATE = TRENDS_STATE;
       + logo + '<span style="font-weight:700;color:#F9FAFB;">' + esc(t) + '</span></td>';
   }
 
-  function profileMetric(prof, mk, winKey) {
-    if (!prof) return null;
+  function trendCellValue(team, mk, timeframe, prof, winRowMap, locRowMap, palsMap) {
+    var loc = TRENDS_STATE.location || 'b';
+    var winRow = winRowMap[team];
+    var locRow = locRowMap[team];
+
     if (mk === 'pals') {
-      return pickProfField(prof, ['PALS', 'pals']);
+      var pals = (winRow && winRow.pals != null) ? num(winRow.pals) : pickProfField(prof, ['pals', 'PALS']);
+      if (pals == null) pals = palsMap[team];
+      return { v: pals, fb: true };
     }
-    var w = winKey;
-    return pickProfField(prof, [
-      mk + '_' + w,
-      mk.toUpperCase() + '_' + w.toUpperCase(),
-      w + '_' + mk,
-      w.toUpperCase() + '_' + mk.toUpperCase()
-    ]);
+
+    if (mk === 'osi') {
+      var osiWin = profileWindowOsi(prof, timeframe === 'L30' ? 'l30' : timeframe === 'L14' ? 'l14' : 'l7');
+      if (osiWin == null && winRow) osiWin = num(winRow.osi);
+      if (loc === 'home' && osiWin == null) osiWin = pickProfField(prof, ['home_osi', 'Home_OSI']);
+      if (loc === 'away' && osiWin == null) osiWin = pickProfField(prof, ['away_osi', 'Away_OSI']);
+      if (osiWin != null) return { v: osiWin, fb: false };
+      var osiYtd = profileYtd(prof, 'osi');
+      return { v: osiYtd, fb: osiYtd != null };
+    }
+
+    if (locRow && locRow[mk] != null) {
+      return { v: num(locRow[mk]), fb: true };
+    }
+    if (winRow && winRow[mk] != null) {
+      return { v: num(winRow[mk]), fb: timeframe !== 'L30' };
+    }
+    var ytd = profileYtd(prof, mk);
+    return { v: ytd, fb: ytd != null };
   }
 
   function updateTrendsContextLine() {
     var el = document.getElementById('trendsContextLine');
     if (!el) return;
     var mk = (TRENDS_STATE.metric || 'osi').toUpperCase();
-    el.textContent = mk + ' \u00b7 Rolling windows L30 / L14 / L7 (Team Profiles)';
+    var loc = TRENDS_STATE.location || 'b';
+    var locLbl = loc === 'home' ? 'Home' : loc === 'away' ? 'Away' : 'Both';
+    var note = mk === 'OSI'
+      ? 'OSI L30/L14/L7 from Team Profiles'
+      : 'ABQ/RCV/OBR: window rows use YTD splits until metric windows ship';
+    el.textContent = mk + ' \u00b7 ' + locLbl + ' \u00b7 ' + note;
   }
 
   function renderTrendHeatmap() {
@@ -838,7 +922,15 @@ window.TRENDS_STATE = TRENDS_STATE;
     if (!mount) return;
 
     var mk = TRENDS_STATE.metric || 'osi';
+    var loc = TRENDS_STATE.location || 'b';
     hideTrendsBanner();
+    if (loc !== 'b' && mk !== 'osi' && mk !== 'pals') {
+      var LD = liveData();
+      var locRows = loc === 'home' ? (LD.batterSplitsHome || []) : (LD.batterSplitsAway || []);
+      if (!locRows.length) {
+        showTrendsBanner((loc === 'home' ? 'Home' : 'Away') + ' split data not loaded \u2014 run batter splits pipeline.');
+      }
+    }
 
     var profMap = profileMapFromTeamProfiles();
     if (!Object.keys(profMap).length) {
@@ -846,30 +938,23 @@ window.TRENDS_STATE = TRENDS_STATE;
       return;
     }
 
+    ensureTrendWindowScores();
+    var l30Map = trendWindowRowMap('L30');
+    var l14Map = trendWindowRowMap('L14');
+    var l7Map = trendWindowRowMap('L7');
+    var locMap = locationMetricMap(loc);
     var palsMap = palsByTeam();
     var teams = Object.keys(profMap).sort();
 
     var tableRows = teams.map(function(t) {
       var prof = profMap[t] || {};
-      var ytd = profileYtd(prof, mk);
-      if ((ytd == null || isNaN(ytd)) && mk === 'pals') ytd = palsMap[t];
-
-      var l30 = profileMetric(prof, mk, 'l30');
-      var l14 = profileMetric(prof, mk, 'l14');
-      var l7 = profileMetric(prof, mk, 'l7');
-      var l30Fb = l30 == null;
-      var l14Fb = l14 == null;
-      var l7Fb = l7 == null;
-      if (ytd != null && !isNaN(ytd)) {
-        if (l30 == null) { l30 = ytd; l30Fb = true; }
-        if (l14 == null) { l14 = ytd; l14Fb = true; }
-        if (l7 == null) { l7 = ytd; l7Fb = true; }
-      }
-
+      var c30 = trendCellValue(t, mk, 'L30', prof, l30Map, locMap, palsMap);
+      var c14 = trendCellValue(t, mk, 'L14', prof, l14Map, locMap, palsMap);
+      var c7 = trendCellValue(t, mk, 'L7', prof, l7Map, locMap, palsMap);
       return {
         t: t,
-        l30: l30, l14: l14, l7: l7,
-        l30Fb: l30Fb, l14Fb: l14Fb, l7Fb: l7Fb
+        l30: c30.v, l14: c14.v, l7: c7.v,
+        l30Fb: c30.fb, l14Fb: c14.fb, l7Fb: c7.fb
       };
     });
 
