@@ -861,32 +861,49 @@ window.TRENDS_STATE = TRENDS_STATE;
     var palsMap = palsByTeam();
     var profMap = profileMapFromTeamProfiles();
 
+    var splitMode = (hand !== 'b' || location !== 'b');
     var tableRows = rows.map(function(r) {
       var prof = profMap[r.t] || {};
       var ytd = metricFromRow(r, mk, palsMap);
       if (ytd == null || isNaN(ytd)) ytd = 0;
-      var l30 = profileMetric(prof, mk, 'l30');
-      var l14 = profileMetric(prof, mk, 'l14');
-      var l7 = profileMetric(prof, mk, 'l7');
+      var l30, l14, l7, l30Fb, l14Fb, l7Fb;
+      if (splitMode) {
+        // For hand/location splits show split-specific value
+        // (no time-window data available per split)
+        l30 = ytd; l14 = ytd; l7 = ytd;
+        l30Fb = false; l14Fb = false; l7Fb = false;
+      } else {
+        l30 = profileMetric(prof, mk, 'l30');
+        l14 = profileMetric(prof, mk, 'l14');
+        l7  = profileMetric(prof, mk, 'l7');
+        l30Fb = l30 == null;
+        l14Fb = l14 == null;
+        l7Fb  = l7  == null;
+        l30 = l30 != null ? l30 : ytd;
+        l14 = l14 != null ? l14 : ytd;
+        l7  = l7  != null ? l7  : ytd;
+      }
       return {
         t: r.t,
         ytd: ytd,
-        l30: l30 != null ? l30 : ytd,
-        l14: l14 != null ? l14 : ytd,
-        l7: l7 != null ? l7 : ytd,
-        l30Fb: l30 == null,
-        l14Fb: l14 == null,
-        l7Fb: l7 == null
+        l30: l30, l14: l14, l7: l7,
+        l30Fb: l30Fb, l14Fb: l14Fb, l7Fb: l7Fb
       };
     });
 
     tableRows.sort(function(a, b) { return (b.l30 || 0) - (a.l30 || 0); });
 
+    var splitLabel = hand === 'r' ? 'vs RHP' : hand === 'l' ? 'vs LHP'
+      : location === 'home' ? 'Home' : location === 'away' ? 'Away' : null;
     var header = '<thead><tr>'
       + '<th class="splits-th splits-th-name">Team</th>'
-      + '<th class="splits-th splits-th-metric">L30</th>'
-      + '<th class="splits-th splits-th-metric">L14</th>'
-      + '<th class="splits-th splits-th-metric">L7</th>'
+      + (splitLabel
+        ? '<th class="splits-th splits-th-metric">' + splitLabel + '</th>'
+          + '<th class="splits-th splits-th-metric">' + splitLabel + '</th>'
+          + '<th class="splits-th splits-th-metric">' + splitLabel + '</th>'
+        : '<th class="splits-th splits-th-metric">L30</th>'
+          + '<th class="splits-th splits-th-metric">L14</th>'
+          + '<th class="splits-th splits-th-metric">L7</th>')
       + '</tr></thead>';
     var body = tableRows.map(function(row) {
       return '<tr class="splits-tr">'
