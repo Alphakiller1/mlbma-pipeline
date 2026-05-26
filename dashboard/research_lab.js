@@ -21,6 +21,7 @@
     rlTrendMetric: 'osi',
     rlWindowCmp: 'L14'
   };
+  global.ResearchLab = RL;
 
   var _rlReadyPoll = null;
   var _rlReadyTries = 0;
