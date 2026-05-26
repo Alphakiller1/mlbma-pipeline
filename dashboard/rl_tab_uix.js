@@ -564,12 +564,14 @@ window.TRENDS_STATE = TRENDS_STATE;
 
   function renderSpSplits(mount) {
     console.error('[SPLITS SP] statGroup:', SPLITS_STATE.pitchStatGroup);
-    var LD2 = liveData();
-    var profiles = (LD2.spProfiles && LD2.spProfiles.length ? LD2.spProfiles : null)
-      || (global.RL && RL.spProfiles && RL.spProfiles.length ? RL.spProfiles : null)
-      || [];
+    var profiles = liveData().spProfiles || [];
     if (!profiles.length) {
-      mount.innerHTML = '<div class="splits-empty">No pitcher data — try switching to Trends tab first.</div>';
+      mount.innerHTML = '<div class="splits-empty">Loading…</div>';
+      setTimeout(function() {
+        var p2 = liveData().spProfiles || [];
+        if (p2.length) renderSpSplits(mount);
+        else mount.innerHTML = '<div class="splits-empty">No pitcher data available.</div>';
+      }, 1500);
       return;
     }
     var rows = profiles.map(function(p) {
