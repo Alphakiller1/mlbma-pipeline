@@ -14,10 +14,11 @@ var SPLITS_STATE = {
 };
 
 var TRENDS_STATE = {
-  metric: 'osi',
-  hand: 'b',
-  location: 'b'
+  metric: 'osi'
 };
+
+/** Bump when trends markup/behavior changes (forces control strip rebuild). */
+var TRENDS_UI_VERSION = '20260528f';
 
 window.SPLITS_STATE = SPLITS_STATE;
 window.TRENDS_STATE = TRENDS_STATE;
@@ -136,13 +137,37 @@ window.TRENDS_STATE = TRENDS_STATE;
   function profileMapFromTeamProfiles() {
     var LD = liveData();
     var map = LD.teamProfilesByTeam || {};
-    if (!Object.keys(map).length && (LD.teamProfiles || []).length) {
-      (LD.teamProfiles || []).forEach(function(p) {
-        var t = String(p.team || '').trim().toUpperCase();
-        if (t) map[t] = p;
-      });
+    if (Object.keys(map).length) return map;
+    if (typeof global.parseTeamProfileRows === 'function' && (LD.teamProfiles || []).length) {
+      return global.parseTeamProfileRows(LD.teamProfiles);
     }
+    map = {};
+    (LD.teamProfiles || []).length && (LD.teamProfiles || []).forEach(function(p) {
+      var t = String(p.team || '').trim().toUpperCase();
+      if (t) map[t] = p;
+    });
     return map;
+  }
+
+  function pickProfField(prof, candidates) {
+    if (!prof) return null;
+    if (typeof global.pickCol === 'function') {
+      return num(global.pickCol(prof, candidates));
+    }
+    for (var i = 0; i < candidates.length; i++) {
+      var v = num(prof[candidates[i]]);
+      if (v != null) return v;
+    }
+    return null;
+  }
+
+  function profileYtd(prof, mk) {
+    if (!prof) return null;
+    if (mk === 'pals') return null;
+    if (mk === 'osi') {
+      return pickProfField(prof, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI']);
+    }
+    return pickProfField(prof, [mk + '_ytd', mk.toUpperCase() + '_YTD', mk, mk.toUpperCase()]);
   }
 
   function getWindowRows(window, split) {
@@ -715,8 +740,12 @@ window.TRENDS_STATE = TRENDS_STATE;
   function initTrendsTab() {
     var mount = document.getElementById('rlTrendControlsMount');
     if (!mount) {
-      
       return;
+    }
+    if (mount.dataset.trendsUiVersion !== TRENDS_UI_VERSION) {
+      mount.dataset.built = '';
+      mount.innerHTML = '';
+      mount.dataset.trendsUiVersion = TRENDS_UI_VERSION;
     }
     if (!mount.dataset.built) {
       mount.innerHTML = ''
@@ -725,17 +754,8 @@ window.TRENDS_STATE = TRENDS_STATE;
         + ['osi', 'abq', 'rcv', 'obr', 'pals'].map(function(m) {
           return '<button type="button" class="splits-pill trends-pill' + (TRENDS_STATE.metric === m ? ' trends-pill-active splits-pill-active' : '') + '" data-trends-metric="' + m + '">' + m.toUpperCase() + '</button>';
         }).join('')
-        + '</div></div>'
-        + '<div class="splits-control-row"><span class="splits-control-label">HAND</span><div class="splits-pill-group">'
-        + [{ v: 'b', l: 'Both' }, { v: 'r', l: 'vs RHP' }, { v: 'l', l: 'vs LHP' }].map(function(o) {
-          return '<button type="button" class="splits-pill trends-pill' + (TRENDS_STATE.hand === o.v ? ' trends-pill-active splits-pill-active' : '') + '" data-trends-hand="' + o.v + '">' + o.l + '</button>';
-        }).join('')
-        + '</div></div>'
-        + '<div class="splits-control-row"><span class="splits-control-label">LOC</span><div class="splits-pill-group">'
-        + [{ v: 'b', l: 'Both' }, { v: 'home', l: 'Home' }, { v: 'away', l: 'Away' }].map(function(o) {
-          return '<button type="button" class="splits-pill trends-pill' + (TRENDS_STATE.location === o.v ? ' trends-pill-active splits-pill-active' : '') + '" data-trends-location="' + o.v + '">' + o.l + '</button>';
-        }).join('')
         + '</div></div></div>'
+        + '<p id="trendsContextLine" class="splits-banner" style="margin:8px 0 0;font-size:12px;opacity:0.85;border:none;background:transparent;padding:0;"></p>'
         + '<div id="rlTrendTableMount" class="splits-table-wrap"></div>';
       mount.dataset.built = '1';
       bindTrendsControls();
@@ -749,25 +769,11 @@ window.TRENDS_STATE = TRENDS_STATE;
     root.dataset.bound = '1';
 
     root.addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-trends-metric], [data-trends-hand], [data-trends-location]');
-      if (!btn) return;
-      if (btn.dataset.trendsMetric) {
-        TRENDS_STATE.metric = btn.dataset.trendsMetric;
-        activatePill(btn, '[data-trends-metric]', root);
-        renderTrendHeatmap();
-        return;
-      }
-      if (btn.dataset.trendsHand) {
-        TRENDS_STATE.hand = btn.dataset.trendsHand;
-        activatePill(btn, '[data-trends-hand]', root);
-        renderTrendHeatmap();
-        return;
-      }
-      if (btn.dataset.trendsLocation) {
-        TRENDS_STATE.location = btn.dataset.trendsLocation;
-        activatePill(btn, '[data-trends-location]', root);
-        renderTrendHeatmap();
-      }
+      var btn = e.target.closest('[data-trends-metric]');
+      if (!btn || !btn.dataset.trendsMetric) return;
+      TRENDS_STATE.metric = btn.dataset.trendsMetric;
+      activatePill(btn, '[data-trends-metric]', root);
+      renderTrendHeatmap();
     });
   }
 
@@ -808,97 +814,74 @@ window.TRENDS_STATE = TRENDS_STATE;
 
   function profileMetric(prof, mk, winKey) {
     if (!prof) return null;
-    if (mk === 'pals') return null;
-    if (mk === 'osi') return num(prof['osi_' + winKey]);
-    if (mk === 'abq') return num(prof['abq_' + winKey]);
-    if (mk === 'rcv') return num(prof['rcv_' + winKey]);
-    if (mk === 'obr') return num(prof['obr_' + winKey]);
-    return num(prof['osi_' + winKey]);
+    if (mk === 'pals') {
+      return pickProfField(prof, ['PALS', 'pals']);
+    }
+    var w = winKey;
+    return pickProfField(prof, [
+      mk + '_' + w,
+      mk.toUpperCase() + '_' + w.toUpperCase(),
+      w + '_' + mk,
+      w.toUpperCase() + '_' + mk.toUpperCase()
+    ]);
+  }
+
+  function updateTrendsContextLine() {
+    var el = document.getElementById('trendsContextLine');
+    if (!el) return;
+    var mk = (TRENDS_STATE.metric || 'osi').toUpperCase();
+    el.textContent = mk + ' \u00b7 Rolling windows L30 / L14 / L7 (Team Profiles)';
   }
 
   function renderTrendHeatmap() {
     var mount = document.getElementById('rlTrendTableMount');
     if (!mount) return;
 
-    var LD = liveData();
-    console.error('[TRENDS] batterSplitsHome first row:', JSON.stringify((LD.batterSplitsHome || [])[0]));
-
-    var location = TRENDS_STATE.location || 'b';
-    var hand = TRENDS_STATE.hand || 'b';
     var mk = TRENDS_STATE.metric || 'osi';
-    console.error('[TRENDS] render location:', location, 'hand:', hand, 'metric:', mk);
+    hideTrendsBanner();
 
-    var rows;
-    if (location === 'home') {
-      rows = aggregateByTeam(LD.batterSplitsHome);
-      if (!rows.length) {
-        showTrendsBanner('Home splits require batter_splits_home pipeline data');
-        rows = getBlendedRows();
-      } else hideTrendsBanner();
-    } else if (location === 'away') {
-      rows = aggregateByTeam(LD.batterSplitsAway);
-      if (!rows.length) {
-        showTrendsBanner('Away splits require batter_splits_away pipeline data');
-        rows = getBlendedRows();
-      } else hideTrendsBanner();
-    } else {
-      rows = getHandRows(hand);
-      hideTrendsBanner();
-    }
-
-    console.error('[TRENDS] base rows:', rows.length);
-
-    if (!rows.length) {
+    var profMap = profileMapFromTeamProfiles();
+    if (!Object.keys(profMap).length) {
       mount.innerHTML = '<div class="splits-empty">Loading trends data\u2026</div>';
       return;
     }
 
     var palsMap = palsByTeam();
-    var profMap = profileMapFromTeamProfiles();
+    var teams = Object.keys(profMap).sort();
 
-    var splitMode = (hand !== 'b' || location !== 'b');
-    var tableRows = rows.map(function(r) {
-      var prof = profMap[r.t] || {};
-      var ytd = metricFromRow(r, mk, palsMap);
-      if (ytd == null || isNaN(ytd)) ytd = 0;
-      var l30, l14, l7, l30Fb, l14Fb, l7Fb;
-      if (splitMode) {
-        // For hand/location splits show split-specific value
-        // (no time-window data available per split)
-        l30 = ytd; l14 = ytd; l7 = ytd;
-        l30Fb = false; l14Fb = false; l7Fb = false;
-      } else {
-        l30 = profileMetric(prof, mk, 'l30');
-        l14 = profileMetric(prof, mk, 'l14');
-        l7  = profileMetric(prof, mk, 'l7');
-        l30Fb = l30 == null;
-        l14Fb = l14 == null;
-        l7Fb  = l7  == null;
-        l30 = l30 != null ? l30 : ytd;
-        l14 = l14 != null ? l14 : ytd;
-        l7  = l7  != null ? l7  : ytd;
+    var tableRows = teams.map(function(t) {
+      var prof = profMap[t] || {};
+      var ytd = profileYtd(prof, mk);
+      if ((ytd == null || isNaN(ytd)) && mk === 'pals') ytd = palsMap[t];
+
+      var l30 = profileMetric(prof, mk, 'l30');
+      var l14 = profileMetric(prof, mk, 'l14');
+      var l7 = profileMetric(prof, mk, 'l7');
+      var l30Fb = l30 == null;
+      var l14Fb = l14 == null;
+      var l7Fb = l7 == null;
+      if (ytd != null && !isNaN(ytd)) {
+        if (l30 == null) { l30 = ytd; l30Fb = true; }
+        if (l14 == null) { l14 = ytd; l14Fb = true; }
+        if (l7 == null) { l7 = ytd; l7Fb = true; }
       }
+
       return {
-        t: r.t,
-        ytd: ytd,
+        t: t,
         l30: l30, l14: l14, l7: l7,
         l30Fb: l30Fb, l14Fb: l14Fb, l7Fb: l7Fb
       };
     });
 
     tableRows.sort(function(a, b) { return (b.l30 || 0) - (a.l30 || 0); });
+    updateTrendsContextLine();
 
-    var splitLabel = hand === 'r' ? 'vs RHP' : hand === 'l' ? 'vs LHP'
-      : location === 'home' ? 'Home' : location === 'away' ? 'Away' : null;
+    var winHeaders = ['L30', 'L14', 'L7'];
     var header = '<thead><tr>'
       + '<th class="splits-th splits-th-name">Team</th>'
-      + (splitLabel
-        ? '<th class="splits-th splits-th-metric">' + splitLabel + '</th>'
-          + '<th class="splits-th splits-th-metric">' + splitLabel + '</th>'
-          + '<th class="splits-th splits-th-metric">' + splitLabel + '</th>'
-        : '<th class="splits-th splits-th-metric">L30</th>'
-          + '<th class="splits-th splits-th-metric">L14</th>'
-          + '<th class="splits-th splits-th-metric">L7</th>')
+      + winHeaders.map(function(w) {
+        return '<th class="splits-th splits-th-metric">' + w + '</th>';
+      }).join('')
       + '</tr></thead>';
     var body = tableRows.map(function(row) {
       return '<tr class="splits-tr">'
@@ -1012,15 +995,6 @@ window.TRENDS_STATE = TRENDS_STATE;
     var st = global.STATE;
     if (!st) return;
     var sp = st.split || 'b';
-    if (global.TRENDS_STATE) {
-      if (sp === 'home' || sp === 'away') {
-        global.TRENDS_STATE.location = sp;
-        global.TRENDS_STATE.hand = 'b';
-      } else {
-        global.TRENDS_STATE.location = 'b';
-        global.TRENDS_STATE.hand = sp;
-      }
-    }
     if (global.SPLITS_STATE) {
       if (sp === 'home' || sp === 'away' || sp === 'f5' || sp === 'r' || sp === 'l' || sp === 'b') {
         global.SPLITS_STATE.lineupSplit = sp;

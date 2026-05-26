@@ -342,17 +342,6 @@ function profileWindowFieldsFromRow(row) {
   function refreshActiveRlTab() {
     var tab = getActiveRlTab();
     if (tab === 'trends') {
-      if (global.STATE) {
-        var sp = global.STATE.split;
-        if (sp === 'home' || sp === 'away') {
-          global.STATE.rlTrendLoc = sp;
-          global.STATE.rlTrendSplit = 'b';
-          global.STATE.rlHandedness = 'b';
-        } else if (sp === 'r' || sp === 'l' || sp === 'b') {
-          global.STATE.rlTrendSplit = sp;
-          global.STATE.rlHandedness = sp;
-        }
-      }
       if (typeof global.renderTrendHeatmap === 'function') global.renderTrendHeatmap();
       renderTrendSummary();
     } else if (tab === 'splits') {
@@ -369,6 +358,12 @@ function profileWindowFieldsFromRow(row) {
     if (!st.time) st.time = 'YTD';
     var tab = getActiveRlTab();
     var tabLabel = { trends: 'Trends', splits: 'Splits', compare: 'Compare', pitching: 'Pitcher Lab' }[tab] || tab;
+    if (tab === 'trends') {
+      el.innerHTML = '<div class="rl-global-bar-inner">'
+        + '<span class="rl-global-bar-title">Research Lab \u00B7 <strong>Trends</strong> \u00B7 '
+        + 'Rolling windows L30 / L14 / L7 (use metric pills below)</span></div>';
+      return;
+    }
     var splitLabel = { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away' }[st.split] || 'Both';
     el.innerHTML = '<div class="rl-global-bar-inner">'
       + '<span class="rl-global-bar-title">Research Lab \u00B7 <strong>' + esc(tabLabel) + '</strong> \u00B7 '
