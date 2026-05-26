@@ -149,9 +149,15 @@ window.TRENDS_STATE = TRENDS_STATE;
     var win = (window || 'ytd').toLowerCase();
     if (win === 'ytd') return null;
     var field = 'osi_' + win;
-    var profiles = liveData().teamProfiles || [];
-    
-    if (!profiles.length) return null;
+    var LD2 = liveData();
+    var profByTeam = LD2.teamProfilesByTeam || {};
+    if (!Object.keys(profByTeam).length) {
+      (LD2.teamProfiles || []).forEach(function(p) {
+        var t = String(p.team || '').trim().toUpperCase();
+        if (t) profByTeam[t] = p;
+      });
+    }
+    if (!Object.keys(profByTeam).length) return null;
 
     var scores = getSplitsTeamScores();
     var baseRows = split === 'r' ? scores.rhp.slice()
@@ -159,9 +165,7 @@ window.TRENDS_STATE = TRENDS_STATE;
         : buildBlendedRows(scores.rhp, scores.lhp);
 
     return baseRows.map(function(row) {
-      var profile = profiles.find(function(p) {
-        return String(p.team || '').toUpperCase() === String(row.t || '').toUpperCase();
-      });
+      var profile = profByTeam[String(row.t || '').toUpperCase()];
       if (!profile) return row;
       var windowOsi = parseFloat(profile[field]);
       if (!isNaN(windowOsi)) {
