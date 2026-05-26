@@ -150,7 +150,7 @@ window.TRENDS_STATE = TRENDS_STATE;
     if (win === 'ytd') return null;
     var field = 'osi_' + win;
     var profiles = liveData().teamProfiles || [];
-    console.error('[SPLITS WINDOW] field:', field, 'profiles:', profiles.length);
+    
     if (!profiles.length) return null;
 
     var scores = getSplitsTeamScores();
@@ -285,7 +285,7 @@ window.TRENDS_STATE = TRENDS_STATE;
     var controlMount = document.getElementById('rlSplitsControlMount');
     var tableMount = document.getElementById('rlSplitsTableMount');
     if (!controlMount || !tableMount) {
-      console.error('[SPLITS] mount missing');
+      
       return;
     }
     if (!controlMount.dataset.built) {
@@ -379,7 +379,7 @@ window.TRENDS_STATE = TRENDS_STATE;
   function renderSplitsTable() {
     var mount = document.getElementById('rlSplitsTableMount');
     if (!mount) {
-      console.error('[SPLITS] mount not found');
+      
       return;
     }
     var confirm = document.getElementById('splitsConfirmLine');
@@ -495,10 +495,10 @@ window.TRENDS_STATE = TRENDS_STATE;
   }
 
   function renderLineupSplits(mount) {
-    console.error('[SPLITS LINEUP] metric:', SPLITS_STATE.lineupMetric, 'window:', SPLITS_STATE.window);
+    
     try {
       var rows = buildLineupMatrixRows();
-      console.error('[SPLITS LINEUP] rows:', rows.length);
+      
 
       if (!rows.length) {
         mount.innerHTML = '<div class="splits-empty">Loading team data\u2026 Run pipeline to load scYtdR/scYtdL.</div>';
@@ -554,7 +554,7 @@ window.TRENDS_STATE = TRENDS_STATE;
   }
 
   function renderSpSplits(mount) {
-    console.error('[SPLITS SP] statGroup:', SPLITS_STATE.pitchStatGroup);
+    
     var profiles = liveData().spProfiles || [];
     if (!profiles.length) {
       mount.innerHTML = '<div class="splits-empty">Loading…</div>';
@@ -585,7 +585,7 @@ window.TRENDS_STATE = TRENDS_STATE;
         osi_rhh: num(p.osi_allowed_vs_rhh) || num(p.OSI_allowed_RHH)
       };
     });
-    console.error('[SPLITS SP] rows:', rows.length);
+    
 
     if (SPLITS_STATE.search) {
       rows = rows.filter(function(r) {
@@ -711,7 +711,7 @@ window.TRENDS_STATE = TRENDS_STATE;
   function initTrendsTab() {
     var mount = document.getElementById('rlTrendControlsMount');
     if (!mount) {
-      console.error('[TRENDS] rlTrendControlsMount missing');
+      
       return;
     }
     if (!mount.dataset.built) {
