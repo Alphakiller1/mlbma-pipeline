@@ -541,7 +541,6 @@ window.TRENDS_STATE = TRENDS_STATE;
           { key: 'home', label: 'Home', color: true, ctx: metricCtx },
           { key: 'away', label: 'Away', color: true, ctx: metricCtx },
           { key: 'f5', label: 'F5', color: true, ctx: metricCtx },
-          { key: 'trend', label: 'Trend', color: true, ctx: metricCtx, signed: true }
         ];
       }
 
@@ -864,12 +863,6 @@ window.TRENDS_STATE = TRENDS_STATE;
       var l30 = profileMetric(prof, mk, 'l30');
       var l14 = profileMetric(prof, mk, 'l14');
       var l7 = profileMetric(prof, mk, 'l7');
-      var reliability = 100;
-      if (l30 == null) reliability -= 25;
-      if (l14 == null) reliability -= 15;
-      if (l7 == null) reliability -= 10;
-      if (location !== 'b' && !(LD.batterSplitsHome || []).length && location === 'home') reliability = 40;
-      if (location !== 'b' && !(LD.batterSplitsAway || []).length && location === 'away') reliability = 40;
       return {
         t: r.t,
         ytd: ytd,
@@ -878,8 +871,7 @@ window.TRENDS_STATE = TRENDS_STATE;
         l7: l7 != null ? l7 : ytd,
         l30Fb: l30 == null,
         l14Fb: l14 == null,
-        l7Fb: l7 == null,
-        reliability: reliability
+        l7Fb: l7 == null
       };
     });
 
@@ -887,7 +879,6 @@ window.TRENDS_STATE = TRENDS_STATE;
 
     var header = '<thead><tr>'
       + '<th class="splits-th splits-th-name">Team</th>'
-      + '<th class="splits-th splits-th-metric">Reliability</th>'
       + '<th class="splits-th splits-th-metric">L30</th>'
       + '<th class="splits-th splits-th-metric">L14</th>'
       + '<th class="splits-th splits-th-metric">L7</th>'
@@ -895,7 +886,6 @@ window.TRENDS_STATE = TRENDS_STATE;
     var body = tableRows.map(function(row) {
       return '<tr class="splits-tr">'
         + teamCellHtml(row.t)
-        + reliabilityCellHtml(row.reliability)
         + metricCellHtml(row.l30, mk, row.l30Fb)
         + metricCellHtml(row.l14, mk, row.l14Fb)
         + metricCellHtml(row.l7, mk, row.l7Fb)
