@@ -48,7 +48,7 @@ SPLIT_GROUPS = [
     ["vs_RHP", "vs_LHP"],
     ["home", "away"],
     ["vs_SP", "vs_RP"],
-    ["overall", "recent"],
+    ["overall", "recent", "l14", "l7"],
 ]
 
 
@@ -255,8 +255,11 @@ def run():
     batter_count = len(registry[~registry["position_type"].isin(["SP", "RP"])])
     print(f"  Registry batters to cover: {batter_count}")
 
-    recent_start = (datetime.now() - timedelta(days=BATTER_RECENT_DAYS)).strftime("%Y-%m-%d")
-    recent_end = datetime.now().strftime("%Y-%m-%d")
+    now = datetime.now()
+    recent_end = now.strftime("%Y-%m-%d")
+    recent_start = (now - timedelta(days=BATTER_RECENT_DAYS)).strftime("%Y-%m-%d")
+    l14_start = (now - timedelta(days=14)).strftime("%Y-%m-%d")
+    l7_start = (now - timedelta(days=7)).strftime("%Y-%m-%d")
 
     outputs = {
         "batter_splits_rhp.csv": ("vs_RHP", BATTER_SPLIT_ARR["vs_RHP"], SEASON_START, SEASON_END),
@@ -267,6 +270,8 @@ def run():
         "batter_splits_vsRP.csv": ("vs_RP", BATTER_SPLIT_ARR["vs_RP"], SEASON_START, SEASON_END),
         "batter_splits_overall.csv": ("overall", "", SEASON_START, SEASON_END),
         "batter_splits_recent.csv": ("recent", "", recent_start, recent_end),
+        "batter_splits_l14.csv": ("l14", "", l14_start, recent_end),
+        "batter_splits_l7.csv": ("l7", "", l7_start, recent_end),
     }
 
     key_to_output = {v[0]: fname for fname, v in outputs.items()}

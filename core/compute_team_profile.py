@@ -58,8 +58,26 @@ PROFILE_COLUMNS = [
     "osi_l30",
     "osi_l14",
     "osi_l7",
+    "abq_l30",
+    "abq_l14",
+    "abq_l7",
+    "rcv_l30",
+    "rcv_l14",
+    "rcv_l7",
+    "obr_l30",
+    "obr_l14",
+    "obr_l7",
     "window_direction",
 ]
+
+METRIC_HISTORY_FILE = "team_metric_history.csv"
+LEGACY_HISTORY_FILE = "osi_history.csv"
+WINDOW_SPLIT_FILES = {
+    "l30": "batter_splits_recent.csv",
+    "l14": "batter_splits_l14.csv",
+    "l7": "batter_splits_l7.csv",
+}
+METRIC_KEYS = ("osi", "abq", "rcv", "obr")
 
 
 def _load(name: str) -> Optional[pd.DataFrame]:
@@ -387,65 +405,236 @@ def batter_aggregates(
     )
 
 
-def window_trend(offense_df: pd.DataFrame, trend_adj_df: pd.DataFrame) -> pd.DataFrame:
-    """Compute rolling window OSI using daily history snapshots."""
-    from datetime import datetime, timedelta
+def _team_series(scored: pd.DataFrame) -> pd.Series:
+    if "team" in scored.columns:
+        return scored["team"].astype(str).str.strip().str.upper()
+    if "Tm" in scored.columns:
+        return scored["Tm"].astype(str).str.strip().str.upper()
+    return pd.Series(dtype=str)
 
-    if offense_df.empty:
-        return pd.DataFrame(columns=["team", "osi_ytd", "osi_l30", "osi_l14", "osi_l7", "window_direction"])
 
-    ytd = offense_df.set_index("team")["osi"].to_dict()
-    today = datetime.utcnow().strftime("%Y-%m-%d")
-    history_path = DATA_DIR / "osi_history.csv"
+def team_offense_from_batter_csv(filename: str) -> Dict[str, Dict[str, float]]:
+    """PA-weighted team ABQ/RCV/OBR/OSI from a dated batter split export."""
+    from core.compute_batter_profile import compute_metrics_pool
 
-    # Load or create history
-    if history_path.exists():
-        hist = pd.read_csv(history_path, parse_dates=["date"])
+    df = _load(filename)
+    if df is None or df.empty:
+        return {}
+    scored = compute_metrics_pool(df)
+    if scored.empty:
+        return {}
+    scored = scored.copy()
+    scored["_team"] = _team_series(scored)
+    out: Dict[str, Dict[str, float]] = {}
+    for tm, pdf in scored.groupby("_team"):
+        tm = str(tm).strip().upper()
+        if not tm or tm == "NAN":
+            continue
+        pa = pd.to_numeric(pdf.get("PA"), errors="coerce").fillna(0)
+        total_pa = float(pa.sum())
+        if total_pa < 1:
+            continue
+        weights = pa / total_pa
+
+        def wmean(col: str) -> Optional[float]:
+            if col not in pdf.columns:
+                return None
+            vals = pd.to_numeric(pdf[col], errors="coerce")
+            mask = vals.notna()
+            if not mask.any():
+                return None
+            w = weights[mask]
+            w = w / w.sum()
+            return round(float((vals[mask] * w).sum()), 1)
+
+        metrics = {k: wmean(k.upper()) for k in METRIC_KEYS}
+        if metrics.get("osi") is None:
+            continue
+        out[tm] = metrics
+    return out
+
+
+def _load_metric_history() -> pd.DataFrame:
+    path = DATA_DIR / METRIC_HISTORY_FILE
+    legacy = DATA_DIR / LEGACY_HISTORY_FILE
+    if path.exists():
+        hist = pd.read_csv(path)
+    elif legacy.exists():
+        hist = pd.read_csv(legacy)
     else:
-        hist = pd.DataFrame(columns=["date", "team", "osi"])
+        hist = pd.DataFrame(columns=["date", "team", *METRIC_KEYS])
+    for col in ("date", "team", *METRIC_KEYS):
+        if col not in hist.columns:
+            hist[col] = None
+    if not hist.empty:
+        hist["date"] = pd.to_datetime(hist["date"], errors="coerce")
+    hist["team"] = hist["team"].astype(str).str.strip().str.upper()
+    return hist
 
-    # Append today's snapshot (overwrite today if already present)
-    today_rows = [{"date": today, "team": tm, "osi": _num(osi)} for tm, osi in ytd.items() if _num(osi) is not None]
+
+def _append_metric_history(offense_df: pd.DataFrame, today: str) -> pd.DataFrame:
+    hist = _load_metric_history()
+    today_rows = []
+    for _, row in offense_df.iterrows():
+        tm = str(row.get("team", "")).strip().upper()
+        if not tm:
+            continue
+        rec = {"date": today, "team": tm}
+        for metric in METRIC_KEYS:
+            rec[metric] = _num(row.get(metric))
+        if rec.get("osi") is None:
+            continue
+        today_rows.append(rec)
+    if not today_rows:
+        return hist
     today_df = pd.DataFrame(today_rows)
     today_df["date"] = pd.to_datetime(today_df["date"])
-    hist = hist[hist["date"].dt.strftime("%Y-%m-%d") != today]
+    if not hist.empty and hist["date"].notna().any():
+        hist = hist[hist["date"].dt.strftime("%Y-%m-%d") != today]
     hist = pd.concat([hist, today_df], ignore_index=True)
-    hist.to_csv(history_path, index=False)
+    hist.to_csv(DATA_DIR / METRIC_HISTORY_FILE, index=False)
+    return hist
 
-    # Compute rolling windows
+
+def _history_window_avg(
+    hist: pd.DataFrame,
+    team: str,
+    metric: str,
+    cutoff: pd.Timestamp,
+    fallback: Optional[float],
+    min_obs: int = 2,
+) -> Optional[float]:
+    sub = hist[(hist["team"] == team) & (hist["date"] >= cutoff)][metric].dropna()
+    if len(sub) >= min_obs:
+        return round(float(sub.mean()), 1)
+    if len(sub) == 1:
+        return round(float(sub.iloc[0]), 1)
+    return fallback
+
+
+def _blend_metric(
+    ytd: Optional[float],
+    l30: Optional[float],
+    l14: Optional[float],
+    l7: Optional[float],
+) -> tuple[Optional[float], Optional[float], Optional[float]]:
+    """Fill missing L14/L7 using available window splits."""
+    if l14 is None and l7 is not None and l30 is not None:
+        l14 = round(0.5 * l7 + 0.5 * l30, 1)
+    if l7 is None and l14 is not None and l30 is not None:
+        l7 = round(0.65 * l14 + 0.35 * l30, 1)
+    if l30 is None and l14 is not None:
+        l30 = l14
+    if l14 is None and l30 is not None:
+        l14 = l30
+    if l7 is None and l14 is not None:
+        l7 = l14
+    if l7 is None and l30 is not None:
+        l7 = l30
+    if l30 is None and ytd is not None:
+        l30 = ytd
+    if l14 is None and ytd is not None:
+        l14 = ytd
+    if l7 is None and ytd is not None:
+        l7 = ytd
+    return l30, l14, l7
+
+
+def window_trend(offense_df: pd.DataFrame, trend_adj_df: pd.DataFrame) -> pd.DataFrame:
+    """Rolling L30/L14/L7 team metrics from dated batter splits + daily history."""
+    from datetime import datetime, timedelta
+
+    base_cols = [
+        "team", "osi_ytd", "osi_l30", "osi_l14", "osi_l7",
+        "abq_l30", "abq_l14", "abq_l7",
+        "rcv_l30", "rcv_l14", "rcv_l7",
+        "obr_l30", "obr_l14", "obr_l7",
+        "window_direction",
+    ]
+    if offense_df.empty:
+        return pd.DataFrame(columns=base_cols)
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    hist = _append_metric_history(offense_df, today)
     cutoffs = {
-        "l7":  pd.Timestamp(today) - timedelta(days=7),
+        "l7": pd.Timestamp(today) - timedelta(days=7),
         "l14": pd.Timestamp(today) - timedelta(days=14),
         "l30": pd.Timestamp(today) - timedelta(days=30),
     }
 
+    split_windows = {}
+    for key, fname in WINDOW_SPLIT_FILES.items():
+        fpath = DATA_DIR / fname
+        if not fpath.exists():
+            print(f"  WARNING: {fname} missing -- {key} windows use history/YTD fallback")
+        split_windows[key] = team_offense_from_batter_csv(fname)
+
     rows = []
-    for tm in offense_df["team"].unique():
-        base = _num(ytd.get(tm))
-        if base is None:
+    for _, off in offense_df.iterrows():
+        tm = str(off.get("team", "")).strip().upper()
+        if not tm:
             continue
-        tm_hist = hist[hist["team"] == tm].copy()
+        ytd = {m: _num(off.get(m)) for m in METRIC_KEYS}
+        if ytd.get("osi") is None:
+            continue
 
-        def win_avg(cutoff):
-            sub = tm_hist[tm_hist["date"] >= cutoff]["osi"].dropna()
-            return round(sub.mean(), 1) if len(sub) >= 1 else base
+        window_vals: Dict[str, Dict[str, Optional[float]]] = {k: {} for k in ("l30", "l14", "l7")}
+        for win_key in ("l30", "l14", "l7"):
+            split_team = split_windows.get(win_key, {}).get(tm, {})
+            for metric in METRIC_KEYS:
+                val = _num(split_team.get(metric))
+                if val is None:
+                    val = _history_window_avg(hist, tm, metric, cutoffs[win_key], ytd.get(metric))
+                window_vals[win_key][metric] = val
 
-        l30 = win_avg(cutoffs["l30"])
-        l14 = win_avg(cutoffs["l14"])
-        l7  = win_avg(cutoffs["l7"])
+        osi_l30, osi_l14, osi_l7 = _blend_metric(
+            ytd.get("osi"),
+            window_vals["l30"].get("osi"),
+            window_vals["l14"].get("osi"),
+            window_vals["l7"].get("osi"),
+        )
+        abq_l30, abq_l14, abq_l7 = _blend_metric(
+            ytd.get("abq"),
+            window_vals["l30"].get("abq"),
+            window_vals["l14"].get("abq"),
+            window_vals["l7"].get("abq"),
+        )
+        rcv_l30, rcv_l14, rcv_l7 = _blend_metric(
+            ytd.get("rcv"),
+            window_vals["l30"].get("rcv"),
+            window_vals["l14"].get("rcv"),
+            window_vals["l7"].get("rcv"),
+        )
+        obr_l30, obr_l14, obr_l7 = _blend_metric(
+            ytd.get("obr"),
+            window_vals["l30"].get("obr"),
+            window_vals["l14"].get("obr"),
+            window_vals["l7"].get("obr"),
+        )
 
+        base_osi = ytd.get("osi")
         direction = "stable"
-        if l7 - base >= TEAM_WINDOW_HOT_COLD_GAP:
-            direction = "rising"
-        elif l7 - base <= -TEAM_WINDOW_HOT_COLD_GAP:
-            direction = "falling"
+        if osi_l7 is not None and base_osi is not None:
+            if osi_l7 - base_osi >= TEAM_WINDOW_HOT_COLD_GAP:
+                direction = "rising"
+            elif osi_l7 - base_osi <= -TEAM_WINDOW_HOT_COLD_GAP:
+                direction = "falling"
 
         rows.append({
             "team": tm,
-            "osi_ytd": base,
-            "osi_l30": l30,
-            "osi_l14": l14,
-            "osi_l7": l7,
+            "osi_ytd": base_osi,
+            "osi_l30": osi_l30,
+            "osi_l14": osi_l14,
+            "osi_l7": osi_l7,
+            "abq_l30": abq_l30,
+            "abq_l14": abq_l14,
+            "abq_l7": abq_l7,
+            "rcv_l30": rcv_l30,
+            "rcv_l14": rcv_l14,
+            "rcv_l7": rcv_l7,
+            "obr_l30": obr_l30,
+            "obr_l14": obr_l14,
+            "obr_l7": obr_l7,
             "window_direction": direction,
         })
     return pd.DataFrame(rows)

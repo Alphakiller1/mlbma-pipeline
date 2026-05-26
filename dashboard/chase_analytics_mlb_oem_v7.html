@@ -2231,7 +2231,7 @@ body.view-research .ca-lab { display: block; }
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
 <script src="research_lab.js?v=20260529a"></script>
-<script src="rl_tab_uix.js?v=20260529a"></script>
+<script src="rl_tab_uix.js?v=20260529b"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -3121,7 +3121,12 @@ function profileWindowFieldsFromRow(row) {
   };
   ['abq', 'rcv', 'obr'].forEach(function(m) {
     ['l30', 'l14', 'l7'].forEach(function(w) {
-      fields[m + '_' + w] = numOrNull(pickCol(row, [m + '_' + w, m.toUpperCase() + '_' + w.toUpperCase(), w + '_' + m]));
+      fields[m + '_' + w] = numOrNull(pickCol(row, [
+        m + '_' + w,
+        m.toUpperCase() + '_' + w.toUpperCase(),
+        w + '_' + m,
+        w.toUpperCase() + '_' + m.toUpperCase()
+      ]));
     });
   });
   return fields;

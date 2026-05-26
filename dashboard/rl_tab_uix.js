@@ -19,7 +19,7 @@ var TRENDS_STATE = {
 };
 
 /** Bump when trends markup/behavior changes (forces control strip rebuild). */
-var TRENDS_UI_VERSION = '20260529a';
+var TRENDS_UI_VERSION = '20260529b';
 
 window.SPLITS_STATE = SPLITS_STATE;
 window.TRENDS_STATE = TRENDS_STATE;
@@ -878,28 +878,29 @@ window.TRENDS_STATE = TRENDS_STATE;
     var loc = TRENDS_STATE.location || 'b';
     var winRow = winRowMap[team];
     var locRow = locRowMap[team];
+    var winKey = timeframe === 'L30' ? 'l30' : timeframe === 'L14' ? 'l14' : 'l7';
 
     if (mk === 'pals') {
-      var pals = (winRow && winRow.pals != null) ? num(winRow.pals) : pickProfField(prof, ['pals', 'PALS']);
+      var pals = pickProfField(prof, ['pals', 'PALS']);
       if (pals == null) pals = palsMap[team];
       return { v: pals, fb: true };
     }
 
-    if (mk === 'osi') {
-      var osiWin = profileWindowOsi(prof, timeframe === 'L30' ? 'l30' : timeframe === 'L14' ? 'l14' : 'l7');
-      if (osiWin == null && winRow) osiWin = num(winRow.osi);
-      if (loc === 'home' && osiWin == null) osiWin = pickProfField(prof, ['home_osi', 'Home_OSI']);
-      if (loc === 'away' && osiWin == null) osiWin = pickProfField(prof, ['away_osi', 'Away_OSI']);
-      if (osiWin != null) return { v: osiWin, fb: false };
-      var osiYtd = profileYtd(prof, 'osi');
-      return { v: osiYtd, fb: osiYtd != null };
-    }
+    var metricWin = pickProfField(prof, [mk + '_' + winKey, mk.toUpperCase() + '_' + winKey.toUpperCase()]);
+    if (metricWin == null && winRow) metricWin = num(winRow[mk]);
+    if (metricWin == null && mk === 'osi') metricWin = profileWindowOsi(prof, winKey);
+    if (metricWin != null) return { v: metricWin, fb: false };
 
     if (locRow && locRow[mk] != null) {
       return { v: num(locRow[mk]), fb: true };
     }
-    if (winRow && winRow[mk] != null) {
-      return { v: num(winRow[mk]), fb: timeframe !== 'L30' };
+    if (mk === 'osi' && loc === 'home') {
+      var h = pickProfField(prof, ['home_osi', 'Home_OSI']);
+      if (h != null) return { v: h, fb: true };
+    }
+    if (mk === 'osi' && loc === 'away') {
+      var a = pickProfField(prof, ['away_osi', 'Away_OSI']);
+      if (a != null) return { v: a, fb: true };
     }
     var ytd = profileYtd(prof, mk);
     return { v: ytd, fb: ytd != null };
@@ -911,9 +912,7 @@ window.TRENDS_STATE = TRENDS_STATE;
     var mk = (TRENDS_STATE.metric || 'osi').toUpperCase();
     var loc = TRENDS_STATE.location || 'b';
     var locLbl = loc === 'home' ? 'Home' : loc === 'away' ? 'Away' : 'Both';
-    var note = mk === 'OSI'
-      ? 'OSI L30/L14/L7 from Team Profiles'
-      : 'ABQ/RCV/OBR: window rows use YTD splits until metric windows ship';
+    var note = 'L30 / L14 / L7 from Team Profiles (dated batter splits)';
     el.textContent = mk + ' \u00b7 ' + locLbl + ' \u00b7 ' + note;
   }
 
