@@ -158,6 +158,15 @@ def run():
         print(games_df.to_string())
 
     push_to_sheets(lineup_df, games_df)
+
+    # Keep Today_Matchups on the same slate as lineups (avoids stale MLB-only schedule on dashboard).
+    try:
+        from scrapers import scrape_matchups
+        print("\nRefreshing Today_Matchups to match lineup slate...")
+        scrape_matchups.run()
+    except Exception as e:
+        print(f"  WARNING: Today_Matchups refresh after lineups failed: {e}")
+
     print("\nDone.")
 
 if __name__ == "__main__":
