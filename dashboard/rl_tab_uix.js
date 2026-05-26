@@ -255,13 +255,6 @@ window.TRENDS_STATE = TRENDS_STATE;
     return ''
       + '<div class="splits-controls" id="splitsControlsRoot">'
       + '<div class="splits-section-head">LINEUP SPLITS</div>'
-      + '<div class="splits-control-row"><span class="splits-control-label">SPLIT</span><div class="splits-pill-group">'
-      + pill(st.lineupSplit === 'r', 'data-splits-split="r" data-splits-section="lineup"', 'vs RHP')
-      + pill(st.lineupSplit === 'l', 'data-splits-split="l" data-splits-section="lineup"', 'vs LHP')
-      + pill(st.lineupSplit === 'home', 'data-splits-split="home" data-splits-section="lineup"', 'Home')
-      + pill(st.lineupSplit === 'away', 'data-splits-split="away" data-splits-section="lineup"', 'Away')
-      + pill(st.lineupSplit === 'f5', 'data-splits-split="f5" data-splits-section="lineup"', 'F5')
-      + '</div></div>'
       + '<div class="splits-control-row"><span class="splits-control-label">METRIC</span><div class="splits-pill-group">'
       + ['osi', 'abq', 'rcv', 'obr', 'pals', 'standard'].map(function(m) {
         return pill(st.lineupMetric === m, 'data-splits-metric="' + m + '" data-splits-section="lineup"', m === 'standard' ? 'Standard Stats' : m.toUpperCase());
