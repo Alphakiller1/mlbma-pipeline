@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Chase Analytics ù Offensive Dashboard</title>
+<title>Chase Analytics ? Offensive Dashboard</title>
 <style>
 :root {
   --bg: #050509; --bg-2: #0a0a10; --bg-3: rgba(255,255,255,0.04); --bg-4: rgba(255,255,255,0.06);
@@ -360,7 +360,7 @@ tr.rank-row-expanded { background: rgba(192, 132, 252, 0.06); }
 .tt-sep { border-top: 1px solid var(--border); margin: 5px 0; }
 
 
-/* Progressive disclosure ù read first, math deeper */
+/* Progressive disclosure ? read first, math deeper */
 .read-block { padding: 4px 0; }
 .read-headline { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 4px; }
 .read-interp { font-size: 12px; color: var(--text-2); line-height: 1.5; margin-bottom: 6px; }
@@ -1285,7 +1285,7 @@ tr.compare-selected td:first-child::before { content: '?'; color: var(--purple);
 .layer-advanced { margin-top: 8px; }
 .layer-glossary { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
 
-/* At-a-glance cards ù no raw metrics */
+/* At-a-glance cards ? no raw metrics */
 .glance-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px;
 }
@@ -1473,7 +1473,7 @@ body.show-advanced-metrics .status-only-cols { display: none; }
 #section-market-edge, #section-game-script, #section-validate,
 .question-section,
 #pane-signals, #pane-strat, #pane-reference, #pane-matchup { display: none !important; }
-/* Opening vs Research Lab ù mutually exclusive views */
+/* Opening vs Research Lab ? mutually exclusive views */
 body.platform-dashboard #opening-dashboard { display: block; }
 body.platform-dashboard #section-matchups-hero { display: none !important; }
 body.platform-dashboard #section-research-lab,
@@ -2172,7 +2172,7 @@ body.view-research .ca-lab { display: block; }
   position: relative;
   line-height: 1.4;
 }
-.ca-tool-card__list li::before { content: 'ù'; position: absolute; left: 0; color: #6B7280; }
+.ca-tool-card__list li::before { content: '?'; position: absolute; left: 0; color: #6B7280; }
 .ca-tool-card__cta {
   margin-top: 24px;
   padding-top: 16px;
@@ -2235,11 +2235,11 @@ body.view-research .ca-lab { display: block; }
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
-<!-- Chase Analytics navigation ù synced via scripts/integrate_chase_nav.py -->
-<!-- Chase Analytics navigation ù synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation ? synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation ? synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics ù Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics ? Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--wordmark" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="36"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -2272,7 +2272,7 @@ body.view-research .ca-lab { display: block; }
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingù</span>
+        <span id="lastUpdated">syncing?</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -2316,7 +2316,7 @@ body.view-research .ca-lab { display: block; }
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingù</span>
+      <span id="mobileLastUpdated">syncing?</span>
     </div>
   </div>
 </div>
@@ -2327,10 +2327,10 @@ body.view-research .ca-lab { display: block; }
 <div class="ca-page-identity" id="pageIdentityStrip">
   <img class="ca-page-identity-icon" src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'">
   <span class="ca-page-identity-title">MLB Offensive Dashboard</span>
-  <span class="ca-page-identity-ts">Last updated: <span id="pageIdentityUpdated">ù</span></span>
+  <span class="ca-page-identity-ts">Last updated: <span id="pageIdentityUpdated">?</span></span>
 </div>
 
-<!-- Opening Dashboard ù matchup hub only (not Research Lab) -->
+<!-- Opening Dashboard ? matchup hub only (not Research Lab) -->
 <main id="opening-dashboard" class="layer-main opening-layer">
 <div class="data-error-banner" id="dataErrorBanner" style="display:none"></div>
 
@@ -2345,7 +2345,7 @@ body.view-research .ca-lab { display: block; }
     <div class="ca-hero__content">
       <div class="ca-hero__eyebrow">
         <span class="ca-hero__pulse"></span>
-        CHASE ANALYTICS ù MLB INTELLIGENCE
+        CHASE ANALYTICS ? MLB INTELLIGENCE
       </div>
 
       <h1 class="ca-hero__title">
@@ -2375,7 +2375,7 @@ body.view-research .ca-lab { display: block; }
 
       <div class="ca-hero__stats">
         <div class="ca-stat">
-          <div class="ca-stat__value" id="games-today">ù</div>
+          <div class="ca-stat__value" id="games-today">?</div>
           <div class="ca-stat__label">Games Today</div>
         </div>
         <div class="ca-stat">
@@ -2387,7 +2387,7 @@ body.view-research .ca-lab { display: block; }
           <div class="ca-stat__label">Proprietary Metrics</div>
         </div>
         <div class="ca-stat ca-stat--wide">
-          <div class="ca-stat__value ca-stat__value--small" id="last-synced">ù</div>
+          <div class="ca-stat__value ca-stat__value--small" id="last-synced">?</div>
           <div class="ca-stat__label">Last Synced</div>
         </div>
       </div>
@@ -2402,7 +2402,7 @@ body.view-research .ca-lab { display: block; }
         <div class="ca-hero__mark-title">CHASE</div>
         <div class="ca-hero__mark-sub">ANALYTICS</div>
         <div class="ca-hero__mark-meta">
-          <span>s</span><span>ù</span><span>xwOBA</span><span>RCV</span>
+          <span>s</span><span>?</span><span>xwOBA</span><span>RCV</span>
         </div>
       </div>
     </div>
@@ -2556,7 +2556,7 @@ body.view-research .ca-lab { display: block; }
   <div id="matchupsHeroGrid"></div>
 </section>
 
-<!-- Research Lab workspace ù loads only when #section-research-lab is active -->
+<!-- Research Lab workspace ? loads only when #section-research-lab is active -->
 <section class="oem-mode-pane layer-research-wrap ca-lab" id="section-research-lab" data-oem-pane="research" aria-hidden="true">
 <div class="ca-lab__inner">
 <header class="ca-lab__header" id="researchLabHeader">
@@ -2574,7 +2574,7 @@ body.view-research .ca-lab { display: block; }
 </div>
 <div class="layer-advanced" id="layerAdvanced">
 
-<!-- Metric Breakdowns moved to Layer 3 ù placeholder anchor -->
+<!-- Metric Breakdowns moved to Layer 3 ? placeholder anchor -->
 <div id="metricBreakdownSection" style="display:none;"></div>
 
 <div class="section">
@@ -2616,7 +2616,7 @@ body.view-research .ca-lab { display: block; }
       <div>
         <div class="section-eyebrow">Leaderboards</div>
         <div class="section-title">Team Offensive Rankings</div>
-        <div class="section-subtitle">YTD from vs RHP / vs LHP ù shorter windows require pipeline run.</div>
+        <div class="section-subtitle">YTD from vs RHP / vs LHP ? shorter windows require pipeline run.</div>
       </div>
     </div>
     <div class="rankings-controls">
@@ -2638,7 +2638,7 @@ body.view-research .ca-lab { display: block; }
         </div>
       </div>
       <div class="search-bar" style="flex:1;min-width:200px;margin:0;">
-        <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teamsù" autocomplete="off">
+        <input type="text" class="search-input" id="dashSearchInput" placeholder="Filter teams?" autocomplete="off">
       </div>
     </div>
     <div id="dashWindowDataBanner" class="window-data-banner"></div>
@@ -2672,7 +2672,7 @@ body.view-research .ca-lab { display: block; }
       <div>
         <div class="section-eyebrow">Model Links</div>
         <div class="section-title">Reports &amp; Tools</div>
-        <div class="section-subtitle">Jump to model outputs ù signals live in Model Report only.</div>
+        <div class="section-subtitle">Jump to model outputs ? signals live in Model Report only.</div>
       </div>
     </div>
     <div id="rlModelLinksRoot"></div>
@@ -2723,7 +2723,7 @@ console.log('[VERSION] OEM v20260523c loaded');
 var _initialHash = window.location.hash;
 console.log('[BOOT] initial hash:', _initialHash);
 /* ============================================================
-   GOOGLE SHEETS ù public CSV export (no API key)
+   GOOGLE SHEETS ? public CSV export (no API key)
    ============================================================ */
 var _landingRendered = false;
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -2838,7 +2838,7 @@ function prepLiveScoreRow(d) {
 }
 
 function ensureHardcodedTimeframes() {
-  /* legacy ù use syncWindowScoresFromProfiles() after live load */
+  /* legacy ? use syncWindowScoresFromProfiles() after live load */
   syncWindowScoresFromProfiles();
 }
 
@@ -2846,10 +2846,10 @@ function syncHeroStats() {
   var gc = document.getElementById('games-today');
   var st = document.getElementById('last-synced');
   if (gc) {
-    gc.textContent = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? String(LIVE_DATA.matchups.length) : 'ù';
+    gc.textContent = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? String(LIVE_DATA.matchups.length) : '?';
   }
   if (st) {
-    st.textContent = LIVE_DATA.lastUpdated || 'ù';
+    st.textContent = LIVE_DATA.lastUpdated || '?';
   }
 }
 
@@ -2858,7 +2858,7 @@ function applyLiveData() {
   console.log('[MLBMA] applyLiveData start');
   try {
     if (!LIVE_DATA.scYtdR || !LIVE_DATA.scYtdL || !LIVE_DATA.scYtdR.length || !LIVE_DATA.scYtdL.length) {
-      console.warn('[MLBMA] applyLiveData skipped ù missing vs_RHP / vs_LHP scores');
+      console.warn('[MLBMA] applyLiveData skipped ? missing vs_RHP / vs_LHP scores');
       return false;
     }
 
@@ -2866,7 +2866,7 @@ function applyLiveData() {
     LIVE_DATA.scYtdR = LIVE_DATA.scYtdR.map(prepLiveScoreRow);
     LIVE_DATA.scYtdL = LIVE_DATA.scYtdL.map(prepLiveScoreRow);
 
-    /* Pre-scored 0ù100 from pipeline ù bypass scoreRows(), assign directly */
+    /* Pre-scored 0?100 from pipeline ? bypass scoreRows(), assign directly */
     SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
     SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
     SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
@@ -3136,7 +3136,7 @@ function detectWindowMetricsFromProfiles(profs) {
   var avail = { osi: false, abq: false, rcv: false, obr: false };
   var keys = Object.keys(profs || {});
   ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
-    var field = m === 'osi' ? 'osi_l30' : m + '_l30';
+    var field = m + '_l30';
     var n = keys.filter(function(t) {
       var p = profs[t];
       return p && p[field] != null && !isNaN(p[field]);
@@ -3165,18 +3165,26 @@ function windowOsiField(timeframe) {
 }
 
 function buildWindowRowsFromProfiles(timeframe, splitTab) {
-  var field = windowOsiField(timeframe);
-  if (!field) return [];
+  var suf = timeframe === 'L30' ? 'l30' : (timeframe === 'L14' ? 'l14' : (timeframe === 'L7' ? 'l7' : null));
+  if (!suf) return [];
   var profs = LIVE_DATA.teamProfilesByTeam || {};
   var base = splitTab === 'r' ? SCO_YTD_R : (splitTab === 'l' ? SCO_YTD_L : SCO_YTD_B);
   if (!base || !base.length) return [];
   return base.map(function(d) {
     var p = profs[d.t];
-    if (!p || p[field] == null || isNaN(p[field])) return null;
+    if (!p) return null;
     var row = Object.assign({}, d);
-    row.osi = p[field];
-    row.windowPartial = true;
-    row.windowNote = 'OSI from Team_Profiles; ABQ/RCV/OBR remain YTD until window metric sheets ship.';
+    var applied = false;
+    ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
+      var wv = p[m + '_' + suf];
+      if (wv != null && !isNaN(wv)) {
+        row[m] = wv;
+        applied = true;
+      }
+    });
+    if (!applied) return null;
+    if (row.abq != null && row.rcv != null) row.ppGap = row.abq - row.rcv;
+    row.windowPartial = false;
     return row;
   }).filter(Boolean);
 }
@@ -3209,9 +3217,9 @@ function windowDataMessage(timeframe) {
   if (timeframe === 'YTD') return '';
   var avail = LIVE_DATA.windowDataAvailable || {};
   if (avail[timeframe]) {
-    return 'Window OSI from Team_Profiles ù other metrics shown as YTD baseline.';
+    return 'L30/L14/L7 from Team_Profiles (OSI, ABQ, RCV, OBR when pipeline has run).';
   }
-  return 'Window data requires full pipeline run ù showing YTD.';
+  return 'Window data requires compute_team_profile + push ? showing YTD.';
 }
 
 function updateWindowDataBanners() {
@@ -3307,7 +3315,7 @@ function bullpenStrugglesVsTier(unit, tier) {
 function bullpenVsLineupBadge(defenseTeam, oppLineupOsi) {
   var u = getBullpenUnit(defenseTeam);
   if (!u || oppLineupOsi === null || isNaN(oppLineupOsi)) {
-    return { label: 'ù', cls: 'bull-badge-mid' };
+    return { label: '?', cls: 'bull-badge-mid' };
   }
   var tier = osiTierFromValue(oppLineupOsi);
   var tierEra = bullpenTierEra(u, tier);
@@ -3323,18 +3331,18 @@ function bullpenVsLineupBadge(defenseTeam, oppLineupOsi) {
 function buildBullpenQualityHtml(team, oppOsi) {
   var u = getBullpenUnit(team);
   if (!u) {
-    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit data ù run pipeline steps 12ù13.</div>';
+    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit data ? run pipeline steps 12?13.</div>';
   }
   var tier = osiTierFromValue(oppOsi);
   var tierEra = bullpenTierEra(u, tier);
   var flag = bullpenStrugglesVsTier(u, tier);
   var note = '';
   if (flag && tier) {
-    note = 'Flag: bullpen has struggled vs ' + tier + ' OSI lineups (ERA ' + (tierEra != null ? tierEra.toFixed(2) : 'ù') + ').';
+    note = 'Flag: bullpen has struggled vs ' + tier + ' OSI lineups (ERA ' + (tierEra != null ? tierEra.toFixed(2) : '?') + ').';
   } else if (u.hiLevEra != null && u.loLevEra != null && u.hiLevEra > u.loLevEra + 1.5) {
-    note = 'High-leverage ERA (' + u.hiLevEra.toFixed(2) + ') worse than low-leverage ù late-inning fade risk.';
+    note = 'High-leverage ERA (' + u.hiLevEra.toFixed(2) + ') worse than low-leverage ? late-inning fade risk.';
   } else if (u.osiAllowed !== null && u.osiAllowed <= 52) {
-    note = 'Strong bullpen profile vs average opponent quality ù supports unders in close games.';
+    note = 'Strong bullpen profile vs average opponent quality ? supports unders in close games.';
   } else {
     note = 'Neutral bullpen read vs tonight\'s opponent OSI tier.';
   }
@@ -3342,9 +3350,9 @@ function buildBullpenQualityHtml(team, oppOsi) {
     ? '<span class="bullpen-tier-flag warn">Struggles vs ' + tier + ' OSI</span>' : '';
   return '<div class="bullpen-quality-block">' +
     '<div class="bq-title">Bullpen Quality</div>' +
-    '<div class="bq-row"><span>OSI Allowed</span><span class="bq-val" style="color:' + osiGradeColor(u.osiAllowed) + '">' + (u.osiAllowed != null ? u.osiAllowed.toFixed(1) : 'ù') + '</span></div>' +
-    '<div class="bq-row"><span>High Lev ERA</span><span class="bq-val">' + (u.hiLevEra != null ? u.hiLevEra.toFixed(2) : 'ù') + '</span></div>' +
-    '<div class="bq-row"><span>vs ' + (tier || 'ù') + ' OSI tier</span><span class="bq-val">' + (tierEra != null ? tierEra.toFixed(2) + ' ERA' : 'ù') + '</span></div>' +
+    '<div class="bq-row"><span>OSI Allowed</span><span class="bq-val" style="color:' + osiGradeColor(u.osiAllowed) + '">' + (u.osiAllowed != null ? u.osiAllowed.toFixed(1) : '?') + '</span></div>' +
+    '<div class="bq-row"><span>High Lev ERA</span><span class="bq-val">' + (u.hiLevEra != null ? u.hiLevEra.toFixed(2) : '?') + '</span></div>' +
+    '<div class="bq-row"><span>vs ' + (tier || '?') + ' OSI tier</span><span class="bq-val">' + (tierEra != null ? tierEra.toFixed(2) + ' ERA' : '?') + '</span></div>' +
     flagHtml +
     '<div style="margin-top:8px;font-size:10.5px;color:var(--text-2);">' + note + '</div>' +
     '<a class="bullpen-report-link" href="bullpen_report.html">Full Bullpen Report ?</a>' +
@@ -3354,8 +3362,8 @@ function buildBullpenQualityHtml(team, oppOsi) {
 function buildBullpenIndicatorBar(defenseTeam, offenseTeam, offenseOsi) {
   var u = getBullpenUnit(defenseTeam);
   var badge = bullpenVsLineupBadge(defenseTeam, offenseOsi);
-  var osiStr = u && u.osiAllowed != null ? u.osiAllowed.toFixed(1) : 'ù';
-  var offStr = offenseOsi != null && !isNaN(offenseOsi) ? offenseOsi.toFixed(1) : 'ù';
+  var osiStr = u && u.osiAllowed != null ? u.osiAllowed.toFixed(1) : '?';
+  var offStr = offenseOsi != null && !isNaN(offenseOsi) ? offenseOsi.toFixed(1) : '?';
   return '<div class="bullpen-ind-row">' +
     '<span><strong>' + defenseTeam + '</strong> pen OSI ' + osiStr + ' vs ' + offenseTeam + ' lineup ' + offStr + '</span>' +
     '<span class="bull-badge ' + badge.cls + '">' + badge.label + '</span></div>';
@@ -3442,7 +3450,7 @@ function parseWeatherMap(rows) {
     map[away + '@' + home] = {
       cond: cond, conditions: cond, stadium: stadium,
       temp: temp, wind: wind, windDir: windDir || null,
-      raw: cond || stadium || 'ù'
+      raw: cond || stadium || '?'
     };
   });
   return map;
@@ -3698,7 +3706,7 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL)
     }).filter(Boolean);
   }
 
-  console.warn('[MATCHUPS] No lineups/games ù fallback Today_Matchups (may be stale)');
+  console.warn('[MATCHUPS] No lineups/games ? fallback Today_Matchups (may be stale)');
   return parseMatchupRows(matchupsRows || []);
 }
 
@@ -3764,7 +3772,7 @@ function lineupRowsForTeam(lineups, gameKey, teamAbbr, sideAwayHome) {
 }
 
 function batterProfileLink(name) {
-  if (!name) return 'ù';
+  if (!name) return '?';
   return '<a href="batter_profile.html?player=' + encodeURIComponent(name) + '" class="lineup-name-link">' + escHtml(name) + '</a>';
 }
 
@@ -3851,7 +3859,7 @@ function matchupFavoredSide(m) {
 }
 
 function fmtMatchupStat(v, dec) {
-  if (v === null || v === undefined || isNaN(v)) return 'ù';
+  if (v === null || v === undefined || isNaN(v)) return '?';
   return v.toFixed(dec != null ? dec : 1);
 }
 
@@ -3916,7 +3924,7 @@ function updateBrandPill() {
     pill.style.color = 'var(--red-l)';
     pill.style.borderColor = 'rgba(248, 113, 113, 0.35)';
   } else {
-    pill.textContent = 'Loadingù';
+    pill.textContent = 'Loading?';
   }
 }
 
@@ -3958,7 +3966,7 @@ function loadLandingData() {
   console.log('[BOOT] loadLandingData starting');
   console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
-  if (loadingText) loadingText.textContent = 'Loading today\'s matchupsù';
+  if (loadingText) loadingText.textContent = 'Loading today\'s matchups?';
   return Promise.all([
     fetchTabSafe(TABS.today_matchups),
     fetchTabSafe(TABS.today_lineups),
@@ -3994,7 +4002,7 @@ function loadLandingData() {
         console.warn('[MLBMA] very few teams scored (vs_RHP):', scR.length, '- continuing with available data');
       }
       if (scR.length < 10 || scL.length < 10) {
-        console.warn('[MLBMA] Warning: fewer teams than expected ù vs_RHP:', scR.length, 'vs_LHP:', scL.length, '- continuing with available data');
+        console.warn('[MLBMA] Warning: fewer teams than expected ? vs_RHP:', scR.length, 'vs_LHP:', scL.length, '- continuing with available data');
       }
     } catch (err) {
       console.error('[MLBMA] scoreRowFromSheet error:', err, 'raw row sample:', vsRhpRows && vsRhpRows[0] ? JSON.stringify(vsRhpRows[0]) : 'none');
@@ -4027,7 +4035,7 @@ function loadLandingData() {
       scL
     );
     enrichMatchupCards();
-    console.error('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games ù',
+    console.error('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games ?',
       LIVE_DATA.matchups.slice(0, 4).map(function(m) { return m.away + '@' + m.home; }).join(', '));
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
@@ -4086,7 +4094,7 @@ function loadResearchData() {
       ResearchLab.refreshActiveRlTab();
     }
     console.log('[BOOT] loadResearchData complete, pals:', LIVE_DATA.pals && LIVE_DATA.pals.length, 'researchLoaded:', LIVE_DATA.researchLoaded);
-    console.log('[DATA] loadResearchData complete ù refreshing active RL tab');
+    console.log('[DATA] loadResearchData complete ? refreshing active RL tab');
     saveLiveCache({
       lastUpdated: LIVE_DATA.lastUpdated,
       oor: LIVE_DATA.oor,
@@ -4254,7 +4262,7 @@ function getDatasetTeam(timeframe, teamObj) {
 }
 
 /* ============================================================
-   PARK FACTORS ù 3-yr Statcast averages, ratio vs league avg 1.00
+   PARK FACTORS ? 3-yr Statcast averages, ratio vs league avg 1.00
    Applied to barrel/iso/hh BEFORE league normalization
    ============================================================ */
 var PARK = {
@@ -4276,7 +4284,7 @@ var PARK = {
 };
 function pf(team, k){ return (PARK[team] && PARK[team][k]) ? PARK[team][k] : 1.00; }
 
-/* Schedule-strength placeholder ù neutral 1.00 until populated with opponent context */
+/* Schedule-strength placeholder ? neutral 1.00 until populated with opponent context */
 var SOS = {};
 
 /* Track PA per team/timeframe/split for sample-size guardrails */
@@ -4312,12 +4320,12 @@ function buildOne(d, splitTab, timeframe) {
   var woba = (splitTab==='b' && s.w !== undefined) ? s.w : (s.x !== undefined ? s.x : null);
   var xwoba = s.x !== undefined ? s.x : null;
 
-  // Regression signal ù synthesize split wOBA proxy when not directly available
+  // Regression signal ? synthesize split wOBA proxy when not directly available
   var reg = null;
   if(splitTab==='b' && s.w !== undefined && s.x !== undefined && s.x !== null) {
     reg = s.x - s.w;
   } else if(s.x !== undefined && s.x !== null && (s.o !== undefined || s.iso !== undefined)) {
-    // Synthetic wOBA proxy ù 0.55*OBP + 0.45*(OBP + ISO*0.55); calibrated against Both split
+    // Synthetic wOBA proxy ? 0.55*OBP + 0.45*(OBP + ISO*0.55); calibrated against Both split
     var synthWoba = 0.55*(s.o||0) + 0.45*((s.o||0) + (s.iso||0)*0.55);
     if(synthWoba > 0.150 && synthWoba < 0.500) reg = s.x - synthWoba;
   }
@@ -4338,22 +4346,22 @@ function buildOne(d, splitTab, timeframe) {
           w:woba, x:xwoba, pp:pp, reg:reg, wrc:wrc, avg:avg, pa:pa};
 }
 
-/* v4 FORMULAS ù Updated Model
+/* v4 FORMULAS ? Updated Model
    ABQ = 30% Discipline + 35% Contact Quality + 20% Pitch Pressure + 15% K avoidance  (pure process)
-     Discipline      = BB%ù0.55 + Chase%_invù0.45
-     Contact Quality = ZCon%ù0.55 + OCon%ù0.45
+     Discipline      = BB%?0.55 + Chase%_inv?0.45
+     Contact Quality = ZCon%?0.55 + OCon%?0.45
      Pitch Pressure  = P/PA (proxy: SwStr%_inv)
      K Avoidance     = K%_inv
 
-   RCV = 35% wRC+ + 32% Barrel% ù park + 20% ISO ù park + 13% HardHit% ù park  (pure damage, park-adjusted)
+   RCV = 35% wRC+ + 32% Barrel% ? park + 20% ISO ? park + 13% HardHit% ? park  (pure damage, park-adjusted)
 
    OBR = 65% xwOBA + 35% BB%  (pure floor, expected quality)
 
    OSI = 43% RCV + 37% ABQ + 20% OBR  (final composite)
-   projOSI = OSI + clip((xwOBA-wOBA)ù450, -8, +8)  (regression-adjusted)
+   projOSI = OSI + clip((xwOBA-wOBA)?450, -8, +8)  (regression-adjusted)
 
    OOR = 55% HvR + 45% HvL  (opponent offensive threat by handedness)
-   PALS = (OSI + schedule-adjusted PTF+) ù 2  (pitching-adjusted lineup score ù coming soon)
+   PALS = (OSI + schedule-adjusted PTF+) ? 2  (pitching-adjusted lineup score ? coming soon)
 */
 function scoreRows(rows) {
   function mm(k){
@@ -4373,10 +4381,10 @@ function scoreRows(rows) {
   function zs(v,k){if(v===null||v===undefined||isNaN(v))return 0;var r=R[k];return (v-r.mean)/r.sd;}
 
   return rows.map(function(d){
-    // ABQ ù pure process (v4)
-    // Discipline = BB%ù0.55 + Chase%_invù0.45
+    // ABQ ? pure process (v4)
+    // Discipline = BB%?0.55 + Chase%_inv?0.45
     var discipline = 0.55*nm(d.bb,'bb') + 0.45*iv(d.ch,'ch');
-    // Contact Quality = ZCon%ù0.55 + OCon%ù0.45 (OCon% fallback to ZCon% if unavailable)
+    // Contact Quality = ZCon%?0.55 + OCon%?0.45 (OCon% fallback to ZCon% if unavailable)
     var oc = (d.oc !== null && d.oc !== undefined) ? nm(d.oc,'zc') : nm(d.zc,'zc');
     var contactQuality = 0.55*nm(d.zc,'zc') + 0.45*oc;
     // Pitch Pressure = P/PA proxy via SwStr%_inv
@@ -4384,14 +4392,14 @@ function scoreRows(rows) {
     var kAvoid = iv(d.k,'k');
     var abq = 0.30*discipline + 0.35*contactQuality + 0.20*pitchPressure + 0.15*kAvoid;
 
-    // RCV ù pure damage, park-adjusted (v4)
+    // RCV ? pure damage, park-adjusted (v4)
     var wrcN = d.wrc !== null && d.wrc !== undefined ? nm(d.wrc,'wrc') : nm(d.w,'w');
     var brUse  = d.brAdj  !== null && d.brAdj  !== undefined ? nm(d.brAdj,'brAdj')   : nm(d.br,'br');
     var isoUse = d.isoAdj !== null && d.isoAdj !== undefined ? nm(d.isoAdj,'isoAdj') : nm(d.iso,'iso');
     var hhUse  = d.hhAdj  !== null && d.hhAdj  !== undefined ? nm(d.hhAdj,'hhAdj')   : nm(d.hh,'hh');
     var rcv = 0.35*wrcN + 0.32*brUse + 0.20*isoUse + 0.13*hhUse;
 
-    // OBR ù pure floor (v4): xwOBAù0.65 + BB%ù0.35
+    // OBR ? pure floor (v4): xwOBA?0.65 + BB%?0.35
     var xwobaN = (d.x !== null && d.x !== undefined) ? nm(d.x,'w') : nm(d.o,'o');
     var obr = 0.65*xwobaN + 0.35*nm(d.bb,'bb');
 
@@ -4462,7 +4470,7 @@ SCO_YTD_B.forEach(function(d){
   d.paL14 = getPA(d.t, 'L14', 'b');
   d.paL7  = getPA(d.t, 'L7',  'b');
 
-  // Current Form OSI ù L7 weight dampened when PA < 250 (small sample)
+  // Current Form OSI ? L7 weight dampened when PA < 250 (small sample)
   var W = {ytd:0.50, l30:0.25, l14:0.15, l7:0.10};
   var l7DampedW = (d.paL7 !== null && d.paL7 < 250) ? W.l7 * (d.paL7/250) : W.l7;
   var tfVals = [
@@ -4471,7 +4479,7 @@ SCO_YTD_B.forEach(function(d){
   var wSum = tfVals.reduce(function(a,b){return a+b.w;}, 0);
   d.currentFormOSI = wSum>0 ? tfVals.reduce(function(a,b){return a + b.v*b.w;}, 0) / wSum : ytdOSI;
 
-  // Trend Velocity ù linear slope across OSI series (older?newer)
+  // Trend Velocity ? linear slope across OSI series (older?newer)
   (function(){
     var ys = [ytdOSI, l30, l14, l7].filter(function(v){return v!==null && v!==undefined;});
     if(ys.length < 2) { d.velocity = 0; return; }
@@ -4502,7 +4510,7 @@ window.enrichYtdMaster = enrichYtdMaster;
 window.toMap = toMap;
 
 function recomputeAllScores() {
-  /* Live sheet scores are pre-normalized 0ù100 by the Python pipeline ù skip scoreRows() */
+  /* Live sheet scores are pre-normalized 0?100 by the Python pipeline ? skip scoreRows() */
   if (LIVE_DATA.loaded && LIVE_DATA.scYtdR && LIVE_DATA.scYtdL) {
     SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
     SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
@@ -4533,7 +4541,7 @@ function recomputeAllScores() {
    FORMATTING HELPERS
    ============================================================ */
 
-/** @deprecated Use MLBMAAssets.metricColor ù league-relative 7-step grade */
+/** @deprecated Use MLBMAAssets.metricColor ? league-relative 7-step grade */
 function tcol(v, context, invert) {
   if (window.MLBMAAssets && MLBMAAssets.metricColor) {
     return MLBMAAssets.metricColor(v, context || 'osi', invert);
@@ -4560,7 +4568,7 @@ function susGrade(v){
 }
 
 function regFmt(v){
-  if(v===null||v===undefined)return['ù','#71717A','Stable'];
+  if(v===null||v===undefined)return['?','#71717A','Stable'];
   if(v >= 0.020)  return ['?? '+Math.round(v*1000), '#4ADE80', 'Strong Positive'];
   if(v >= 0.010)  return ['? '+Math.round(v*1000),  '#86EFAC', 'Mild Positive'];
   if(v <= -0.020) return ['?? '+Math.round(v*1000), '#F87171', 'Strong Negative'];
@@ -4634,8 +4642,8 @@ function trendArrow(d){
 
 function oneLineTakeaway(d){
   var s = statusLabel(d);
-  if(s === 'Undervalued') return 'Process and PALS confirm ù market may lag true strength.';
-  if(s === 'Regression Risk') return 'Production ahead of process ù fade lean without matchup proof.';
+  if(s === 'Undervalued') return 'Process and PALS confirm ? market may lag true strength.';
+  if(s === 'Regression Risk') return 'Production ahead of process ? fade lean without matchup proof.';
   if(s === 'Strong') return tier(d.osi).l + ' offense with ' + (d.trend || 'stable') + ' trend context.';
   if(s === 'Weak') return 'Limited offensive ceiling in current view.';
   return takeaway(d).split(',')[0].slice(0, 72);
@@ -4706,7 +4714,7 @@ var STATE = {
   oemMode: 'daily',
 };
 /* ============================================================
-   OEM MODE TABS ù DAILY SUMMARY ù FRESHNESS ù DECISION LABELS
+   OEM MODE TABS ? DAILY SUMMARY ? FRESHNESS ? DECISION LABELS
    ============================================================ */
 
 function parseFreshnessDate(raw) {
@@ -4722,7 +4730,7 @@ function syncFreshnessIndicator(ts) {
   var meta = document.getElementById('freshnessMeta');
   var hu = document.getElementById('headerUpdated');
   var pid = document.getElementById('pageIdentityUpdated');
-  var text = ts || 'ù';
+  var text = ts || '?';
   if (hu) hu.textContent = text;
   if (pid) pid.textContent = text;
   if (label) label.textContent = text;
@@ -4734,7 +4742,7 @@ function syncFreshnessIndicator(ts) {
     displayTs = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
       d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     if (label) label.textContent = displayTs;
-  } else if (ts && ts !== 'ù') {
+  } else if (ts && ts !== '?') {
     displayTs = ts;
   }
   if (dot) {
@@ -4742,13 +4750,13 @@ function syncFreshnessIndicator(ts) {
     dot.classList.toggle('fresh', !stale);
   }
   if (meta) {
-    meta.textContent = stale ? 'Data may be stale (>24h) ù re-run pipeline' : 'Fresh pipeline sync';
+    meta.textContent = stale ? 'Data may be stale (>24h) ? re-run pipeline' : 'Fresh pipeline sync';
   }
   if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
-    PlatformDashboard.setOpeningHeroSync(displayTs === 'ù' ? 'syncingù' : displayTs);
+    PlatformDashboard.setOpeningHeroSync(displayTs === '?' ? 'syncing?' : displayTs);
   }
   if (window.ChaseNav) {
-    ChaseNav.setLastUpdated(displayTs === 'ù' ? 'syncingù' : displayTs);
+    ChaseNav.setLastUpdated(displayTs === '?' ? 'syncing?' : displayTs);
     ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
   }
 }
@@ -4759,7 +4767,7 @@ function stateReady() {
 
 
 /* ============================================================
-   PROGRESSIVE DISCLOSURE ù SUMMARY LABELS ù CONFIDENCE
+   PROGRESSIVE DISCLOSURE ? SUMMARY LABELS ? CONFIDENCE
    ============================================================ */
 
 var METRIC_NAMES = {
@@ -4814,17 +4822,17 @@ function summaryLabelColor(label) {
 function summaryInterpretation(d) {
   var s = getSummaryLabel(d.osi, d.ppGap, d.abq, d.rcv, d.obr, d);
   if (s.label === 'Buy-Low Candidate') return 'Process is stronger than production. Projection points upward.';
-  if (s.label === 'Strong + Supported') return 'Elite output backed by process ù sustainable lean.';
-  if (s.label === 'Cooling / Fade Risk') return 'High output but process lagging ù fade momentum without proof.';
+  if (s.label === 'Strong + Supported') return 'Elite output backed by process ? sustainable lean.';
+  if (s.label === 'Cooling / Fade Risk') return 'High output but process lagging ? fade momentum without proof.';
   if (s.label === 'Monitor Closely') return 'Production may be running ahead of underlying process.';
-  if (s.label === 'Speculative Upside') return 'Process ahead of box score ù upside if results catch up.';
+  if (s.label === 'Speculative Upside') return 'Process ahead of box score ? upside if results catch up.';
   if (s.label === 'Avoid / Under Lean') return 'Weak composite with production not supported by process.';
   return takeaway(d).split('.')[0] + '.';
 }
 
 function getWhatThisMeans(d) {
-  if (d.ppGap != null && d.ppGap >= 4) return 'What this means: Process is ahead of production ù potential buy-low.';
-  if (d.ppGap != null && d.ppGap <= -4) return 'What this means: Production running ahead of process ù monitor for cooling.';
+  if (d.ppGap != null && d.ppGap >= 4) return 'What this means: Process is ahead of production ? potential buy-low.';
+  if (d.ppGap != null && d.ppGap <= -4) return 'What this means: Production running ahead of process ? monitor for cooling.';
   if (d.dfGap != null && d.dfGap >= 8) return 'What this means: Power upside but inning-to-inning volatility risk.';
   return '';
 }
@@ -4865,7 +4873,7 @@ function confidenceRiskHtml(d) {
 }
 
 function fmtMetricVal(v, signed) {
-  if (v === null || v === undefined || isNaN(v)) return 'ù';
+  if (v === null || v === undefined || isNaN(v)) return '?';
   if (signed) return (v > 0 ? '+' : '') + v.toFixed(1);
   return v.toFixed(1);
 }
@@ -5138,7 +5146,7 @@ function bindOemModeTabs() {
   bindResearchSubtabs();
 }
 
-/* URL state ù bookmarkable views */
+/* URL state ? bookmarkable views */
 function urlEncodeState() {
   try {
     var p = new URLSearchParams();
@@ -5266,7 +5274,7 @@ function cmpOp(v, op, target){
 }
 
 /* ============================================================
-   NOTABLE MOVERS ù auto-callout generator
+   NOTABLE MOVERS ? auto-callout generator
    ============================================================ */
 function generateMovers() {
   var rows = currentRows();
@@ -5427,14 +5435,14 @@ function renderMasterTable(target){
   var baseRows = currentRows();
   var rows = applyFilter((baseRows && baseRows.length) ? baseRows.slice() : []);
   if (!baseRows || !baseRows.length) {
-    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">Pipeline data not loaded ù ensure Google Sheets is accessible</td></tr>';
+    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">Pipeline data not loaded ? ensure Google Sheets is accessible</td></tr>';
     if (mobile) mobile.innerHTML = '';
     return;
   }
   if (!rows.length) {
     var filterMsg = STATE.searchQuery
       ? 'No teams match filter: <code style="color:var(--purple);">' + STATE.searchQuery + '</code>'
-      : 'No team data for this view ù switch to YTD ù Both splits.';
+      : 'No team data for this view ? switch to YTD ? Both splits.';
     body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">' + filterMsg + '</td></tr>';
     if (mobile) mobile.innerHTML = '';
     return;
@@ -5489,16 +5497,16 @@ function renderMasterTable(target){
 
     var projDelta = (d.projOSI !== undefined && d.osi !== undefined) ? (d.projOSI - d.osi) : 0;
     var projC = projDelta > 1.5 ? 'var(--green)' : projDelta < -1.5 ? 'var(--red)' : 'var(--text-2)';
-    var projStr = d.projOSI !== undefined ? d.projOSI.toFixed(1) : 'ù';
+    var projStr = d.projOSI !== undefined ? d.projOSI.toFixed(1) : '?';
 
     var ppC = d.ppGap > 4 ? 'var(--blue)' : d.ppGap < -4 ? 'var(--gold)' : 'var(--text-2)';
-    var ppStr = d.ppGap !== undefined ? ((d.ppGap>0?'+':'') + d.ppGap.toFixed(1)) : 'ù';
+    var ppStr = d.ppGap !== undefined ? ((d.ppGap>0?'+':'') + d.ppGap.toFixed(1)) : '?';
 
     var dfC = d.dfGap > 8 ? 'var(--orange)' : d.dfGap < -4 ? 'var(--green-l)' : 'var(--text-2)';
-    var dfStr = d.dfGap !== undefined ? ((d.dfGap>0?'+':'') + d.dfGap.toFixed(1)) : 'ù';
+    var dfStr = d.dfGap !== undefined ? ((d.dfGap>0?'+':'') + d.dfGap.toFixed(1)) : '?';
 
     // Form OSI (only enriched on YTD master)
-    var formStr = (d.currentFormOSI !== undefined && !isNaN(d.currentFormOSI)) ? d.currentFormOSI.toFixed(1) : 'ù';
+    var formStr = (d.currentFormOSI !== undefined && !isNaN(d.currentFormOSI)) ? d.currentFormOSI.toFixed(1) : '?';
     var formC = (d.currentFormOSI !== undefined) ? tcol(d.currentFormOSI) : 'var(--text-3)';
 
     // Velocity
@@ -5507,7 +5515,7 @@ function renderMasterTable(target){
       velStr = (d.velocity>0?'+':'') + d.velocity.toFixed(1);
       velC = d.velocity > 1.5 ? 'var(--green)' : d.velocity < -1.5 ? 'var(--red)' : 'var(--text-2)';
     } else {
-      velStr = 'ù'; velC = 'var(--text-3)';
+      velStr = '?'; velC = 'var(--text-3)';
     }
 
     var pinBtn = STATE.pinMode ? '<button class="pin-btn'+(pinnedCls?' pinned':'')+'" onclick="event.stopPropagation();togglePin(\''+d.t+'\')">'+(pinnedCls?'?':'?')+'</button>' : '';
@@ -5536,12 +5544,12 @@ function renderMasterTable(target){
         '<td class="advanced-cols num num-neutral">'+projStr+metricDecision('projOSI',d)+'</td>'+
         '<td class="advanced-cols num num-neutral">'+ppStr+metricDecision('ppGap',d)+'</td>'+
         '<td class="advanced-cols num num-neutral">'+dfStr+metricDecision('dfGap',d)+'</td>'+
-        '<td class="advanced-cols">'+(d.trend||'ù')+'</td>'+
-        '<td class="advanced-cols num num-neutral">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'ù')+'</td>'+
-        '<td class="advanced-cols num num-neutral">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'ù')+'</td>'+
+        '<td class="advanced-cols">'+(d.trend||'?')+'</td>'+
+        '<td class="advanced-cols num num-neutral">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'?')+'</td>'+
+        '<td class="advanced-cols num num-neutral">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'?')+'</td>'+
       '</tr>';
     } else if (platformTable) {
-    var palsHtml = 'ù';
+    var palsHtml = '?';
     if (d.pals != null && !isNaN(d.pals)) {
       var palsGap = Math.abs(d.osi - d.pals);
       palsHtml = '<span class="pals-badge ' + (palsGap < 4 ? 'ok' : 'warn') + '">' + d.pals.toFixed(1) + '</span>';
@@ -5557,7 +5565,7 @@ function renderMasterTable(target){
       '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+projArrow+metricDecision('projOSI',d)+'</td>'+
       '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
       '<td class="num">'+palsHtml+'</td>'+
-      '<td><span class="rl-trend-cell">' + rowOsiSparkline(d) + ' ' + (d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'ù') + '</span></td>'+
+      '<td><span class="rl-trend-cell">' + rowOsiSparkline(d) + ' ' + (d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'?') + '</span></td>'+
     '</tr>';
     } else {
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
@@ -5570,9 +5578,9 @@ function renderMasterTable(target){
       '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+metricDecision('projOSI',d)+'</td>'+
       '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
       '<td class="num" style="color:'+dfC+';'+activeColStyle('dfGap')+'">'+dfStr+metricDecision('dfGap',d)+'</td>'+
-      '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'ù')+'</td>'+
-      '<td class="num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'ù')+'</td>'+
-      '<td class="num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'ù')+'</td>'+
+      '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'?')+'</td>'+
+      '<td class="num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'?')+'</td>'+
+      '<td class="num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'?')+'</td>'+
     '</tr>';
     }
 
@@ -5581,7 +5589,7 @@ function renderMasterTable(target){
       html += '<tr class="detail-row"><td colspan="'+colSpan+'">'+renderTeamDetail(d.t)+'</td></tr>';
     }
 
-    // Mobile card ù read first
+    // Mobile card ? read first
     var mSum = getSummaryLabel(d.osi, d.ppGap, d.abq, d.rcv, d.obr, d);
     var mColor = summaryLabelColor(mSum.label);
     var mUid = 'mob_' + d.t;
@@ -5622,14 +5630,14 @@ function renderMasterTable(target){
 
   var keyLabel = {'osi':'OSI','abq':'ABQ','rcv':'RCV','obr':'OBR','sus':'Sustainability','reg':'Regression','rhpOSI':'vs RHP OSI','lhpOSI':'vs LHP OSI','splitEdge':'Split Edge','t':'Team','trend':'Trend','projOSI':'Projected OSI','ppGap':'Process-Production Gap','dfGap':'Power-Floor Gap','currentFormOSI':'Current Form OSI','velocity':'Trend Velocity'};
   var sortInfo = (keyLabel[key]||key) + ' ('+STATE.sortDir+')';
-  if(STATE.watchlist.length) sortInfo += ' ù '+STATE.watchlist.length+' pinned';
-  if(STATE.searchQuery) sortInfo += ' ù filter active ('+rows.length+' shown)';
+  if(STATE.watchlist.length) sortInfo += ' ? '+STATE.watchlist.length+' pinned';
+  if(STATE.searchQuery) sortInfo += ' ? filter active ('+rows.length+' shown)';
   var sortLabel = document.getElementById('sortLabel');
   if (sortLabel) sortLabel.textContent = sortInfo;
 
   var splitLabel = STATE.split==='b'?'Both':(STATE.split==='r'?'vs RHP':'vs LHP');
   var tableTitle = document.getElementById('tableTitle');
-  if (tableTitle) tableTitle.textContent = 'All 30 Teams ù '+STATE.time+' ù '+splitLabel+' ù Click any header to sort, click any row to expand';
+  if (tableTitle) tableTitle.textContent = 'All 30 Teams ? '+STATE.time+' ? '+splitLabel+' ? Click any header to sort, click any row to expand';
 }
 
 function onRowClick(e, team){
@@ -5667,13 +5675,13 @@ function togglePinMode(){
   var pinBtn = document.getElementById('pinToggleBtn');
   if (pinBtn) pinBtn.classList.toggle('active', STATE.pinMode);
   renderMasterTable();
-  if(STATE.pinMode) showToast('Pin mode on ù click ? next to rank to add to watchlist');
+  if(STATE.pinMode) showToast('Pin mode on ? click ? next to rank to add to watchlist');
 }
 function toggleCompareMode(){
   STATE.compareMode = !STATE.compareMode;
   var cmpBtn = document.getElementById('compareToggleBtn');
   if (cmpBtn) cmpBtn.classList.toggle('active', STATE.compareMode);
-  if(STATE.compareMode) showToast('Compare mode on ù click rows to add up to 4 teams');
+  if(STATE.compareMode) showToast('Compare mode on ? click rows to add up to 4 teams');
   renderMasterTable();
   if (STATE.oemMode === 'research') initCompare();
 }
@@ -5766,7 +5774,7 @@ function scheduleLandingMarketMapFallback() {
     if (!el) return;
     var hasChart = el.querySelector('svg') || el.querySelector('.mlbma-quad-wrap');
     if (!hasChart && !el.textContent.trim()) {
-      el.innerHTML = '<p class="ca-helper" style="padding:48px;text-align:center;color:#9CA3AF;">Loading market dataù</p>';
+      el.innerHTML = '<p class="ca-helper" style="padding:48px;text-align:center;color:#9CA3AF;">Loading market data?</p>';
     }
   }, 3000);
 }
@@ -5813,7 +5821,7 @@ function scheduleMarketMapRender() {
 window.scheduleMarketMapRender = scheduleMarketMapRender;
 window.renderMarketMapCharts = renderMarketMapCharts;
 
-/* Chart: Offensive Market Status Map (OSI ù PP-Gap) or legacy RCV ù ABQ */
+/* Chart: Offensive Market Status Map (OSI ? PP-Gap) or legacy RCV ? ABQ */
 function renderSplitBar(rows){
   var sorted = rows.slice().sort(function(a,b){return b.osi-a.osi;});
   var W = Math.min(1200, document.getElementById('mainChart').clientWidth || 1100);
@@ -5841,7 +5849,7 @@ function renderSplitBar(rows){
   document.getElementById('mainChart').innerHTML=s;
 
   var splitLabel = STATE.split==='r'?'vs RHP':'vs LHP';
-  document.getElementById('chartTitle').textContent = 'OSI Rankings ù '+STATE.time+' ù '+splitLabel;
+  document.getElementById('chartTitle').textContent = 'OSI Rankings ? '+STATE.time+' ? '+splitLabel;
 }
 
 /* Split bars (always RHP+LHP YTD) */
@@ -5851,7 +5859,7 @@ function renderSplitBars(){
   if (!scR.length || !scL.length) {
     ['rhpBars', 'lhpBars'].forEach(function(id) {
       var host = document.getElementById(id);
-      if (host) host.innerHTML = '<p class="ca-helper" style="padding:12px;">Loading YTD split data from vs_RHP / vs_LHPù</p>';
+      if (host) host.innerHTML = '<p class="ca-helper" style="padding:12px;">Loading YTD split data from vs_RHP / vs_LHP?</p>';
     });
     return;
   }
@@ -5874,7 +5882,7 @@ function renderSplitBars(){
   bars(scL,'#C084FC','lhpBars');
 }
 
-/* Trend heatmap ù delegated to Research Lab UIX module */
+/* Trend heatmap ? delegated to Research Lab UIX module */
 function renderTrendHeatmap() {
   if (window.ResearchLab && ResearchLab.renderTrendHeatmap) {
     ResearchLab.renderTrendHeatmap();
@@ -5888,13 +5896,13 @@ function renderStrats(){
   if (!targets.length) return;
   function count(filt){ return (SCO_YTD_B || []).filter(filt).length; }
   var blocks=[
-    {tag:'Elite Confirmed', bc:'#4ADE80', filterFn:function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}, n:count(function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}), d:'High OSI with PALS confirmation ù stable elite profiles.'},
-    {tag:'Buy-Low', bc:'#60A5FA', filterFn:function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}, n:count(function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}), d:'Process ahead of production with PALS aligned ù undervalued lean.'},
+    {tag:'Elite Confirmed', bc:'#4ADE80', filterFn:function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}, n:count(function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}), d:'High OSI with PALS confirmation ? stable elite profiles.'},
+    {tag:'Buy-Low', bc:'#60A5FA', filterFn:function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}, n:count(function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}), d:'Process ahead of production with PALS aligned ? undervalued lean.'},
     {tag:'Cooling Risk', bc:'#F87171', filterFn:function(d){return d.ppGap<=-4 || d.trend==='Cooling' || d.trend==='Reg. Risk';}, n:count(function(d){return d.ppGap<=-4 || d.trend==='Cooling' || d.trend==='Reg. Risk';}), d:'Production ahead of process or negative recent trend.'},
-    {tag:'Volatile Power', bc:'#A78BFA', filterFn:function(d){return d.dfGap>=10;}, n:count(function(d){return d.dfGap>=10;}), d:'Damage materially ahead of floor ù boom/bust scoring paths.'},
+    {tag:'Volatile Power', bc:'#A78BFA', filterFn:function(d){return d.dfGap>=10;}, n:count(function(d){return d.dfGap>=10;}), d:'Damage materially ahead of floor ? boom/bust scoring paths.'},
     {tag:'Process-Forward', bc:'#22d3ee', filterFn:function(d){return d.ppGap>=6 && d.abq>=60;}, n:count(function(d){return d.ppGap>=6 && d.abq>=60;}), d:'Strong process without matching RCV yet.'},
     {tag:'Weak Unsupported', bc:'#FB923C', filterFn:function(d){return d.osi<50 && (d.sus==null || d.sus<55);}, n:count(function(d){return d.osi<50 && (d.sus==null || d.sus<55);}), d:'Low composite with weak sustainability support.'},
-    {tag:'Platoon Sensitive', bc:'#C084FC', filterFn:function(d){return d.exploit>=10;}, n:count(function(d){return d.exploit>=10;}), d:'Large RHP/LHP split ù lineup construction matters.'},
+    {tag:'Platoon Sensitive', bc:'#C084FC', filterFn:function(d){return d.exploit>=10;}, n:count(function(d){return d.exploit>=10;}), d:'Large RHP/LHP split ? lineup construction matters.'},
   ];
   var html='';
   blocks.forEach(function(b, bi){
@@ -5962,18 +5970,18 @@ function setModalMetric(m){
     'dfGap':'Power-Floor Gap (RCV - OBR)',
     'velocity':'Trend Velocity (OSI change per timeframe step)',
     'sus':'Sustainability Score',
-    'reg':'Regression Gap (xwOBA-wOBA, ù1000)',
+    'reg':'Regression Gap (xwOBA-wOBA, ?1000)',
     'pitchScore':'Pitching Score (staff composite)'
   };
-  document.getElementById('modalTitle').textContent = 'Full Rankings ù '+(labels[m]||m);
+  document.getElementById('modalTitle').textContent = 'Full Rankings ? '+(labels[m]||m);
 
   // Subtitle/interpretation guide per metric
   var guides = {
-    'projOSI':'Adds capped (ù8) regression adjustment to base OSI. Values <em>higher</em> than base OSI indicate xStat support; <em>lower</em> indicate inflated current output.',
+    'projOSI':'Adds capped (?8) regression adjustment to base OSI. Values <em>higher</em> than base OSI indicate xStat support; <em>lower</em> indicate inflated current output.',
     'currentFormOSI':'Recency-weighted OSI blending all four timeframes. Best single number for current state.',
     'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = process exceeds output ? buy-low candidate. <span style="color:#FBBF24;">Negative (gold)</span> = output exceeds process ? sell-high / fade risk.',
     'dfGap':'<span style="color:#FB923C;">Positive (orange)</span> = damage-heavy power offense (boom/bust). <span style="color:#86EFAC;">Negative (green)</span> = on-base/grind floor offense.',
-    'reg':'5-tier signal: <span style="color:#4ADE80;">?? =+20</span> Strong Positive ù <span style="color:#86EFAC;">? +10/+19</span> Mild Positive ù <span style="color:#71717A;">? ù9</span> Stable ù <span style="color:#FCA5A5;">? -10/-19</span> Mild Negative ù <span style="color:#F87171;">?? =-20</span> Strong Negative.',
+    'reg':'5-tier signal: <span style="color:#4ADE80;">?? =+20</span> Strong Positive ? <span style="color:#86EFAC;">? +10/+19</span> Mild Positive ? <span style="color:#71717A;">? ?9</span> Stable ? <span style="color:#FCA5A5;">? -10/-19</span> Mild Negative ? <span style="color:#F87171;">?? =-20</span> Strong Negative.',
     'pitchScore':'Composite staff score from K%, BB%, and HR/9. Higher PitchScore = stronger pitching profile.'
   };
   var guideHtml = guides[m] ? '<div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11.5px;color:var(--text-2);line-height:1.5;">'+guides[m]+'</div>' : '';
@@ -6082,7 +6090,7 @@ document.querySelectorAll('#timeToggle .toggle-btn').forEach(function(b){
 });
 
 
-// Search input ù debounced
+// Search input ? debounced
 (function(){
   var debounce;
   var si = document.getElementById('searchInput');
@@ -6133,7 +6141,7 @@ function bindMasterTableSort() {
       if (document.getElementById('leaderboardBody')) {
         renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
       }
-      /* metric bar chart removed ù legacy PlatformDashboard.renderMetricBarChart unavailable */
+      /* metric bar chart removed ? legacy PlatformDashboard.renderMetricBarChart unavailable */
       urlEncodeState();
     });
   });
@@ -6160,10 +6168,10 @@ try {
   console.error('[MLBMA] bindMasterTableSort failed:', sortBindErr);
 }
 
-/* Research subtabs bound in bindResearchSubtabs() ù do not use [id^=pane-] (hides oem mode panes) */
+/* Research subtabs bound in bindResearchSubtabs() ? do not use [id^=pane-] (hides oem mode panes) */
 
 /* ============================================================
-   NEW RENDERERS ù v8
+   NEW RENDERERS ? v8
    ============================================================ */
 
 // Concise league signal callouts
@@ -6189,15 +6197,15 @@ function detailSparkline(team, metric, label) {
 
 function dfGapInterpretLabel(gap) {
   if (gap == null || isNaN(gap)) return 'Unavailable';
-  if (gap >= 8) return 'Power-heavy ù volatile floor';
-  if (gap <= -4) return 'Floor-driven ù limited ceiling';
+  if (gap >= 8) return 'Power-heavy ? volatile floor';
+  if (gap <= -4) return 'Floor-driven ? limited ceiling';
   return 'Balanced power/floor mix';
 }
 
 function rankSplitCell(label, val, naNote) {
   var display = (val != null && !isNaN(val))
     ? '<span class="val" style="color:' + tcol(val) + ';">' + val.toFixed(1) + '</span>'
-    : '<span class="val rank-split-na">ù <em>' + (naNote || 'YTD N/A') + '</em></span>';
+    : '<span class="val rank-split-na">? <em>' + (naNote || 'YTD N/A') + '</em></span>';
   return '<div class="rank-split-cell"><span class="lab">' + label + '</span>' + display + '</div>';
 }
 
@@ -6210,7 +6218,7 @@ function renderTeamDetail(team) {
     ? OEMOverhaul.trendReliabilityLabel(master) : 'Noisy';
   var modelRead = summaryInterpretation(master);
   var dfInterp = dfGapInterpretLabel(master.dfGap);
-  var dfStr = master.dfGap != null ? ((master.dfGap > 0 ? '+' : '') + master.dfGap.toFixed(1)) : 'ù';
+  var dfStr = master.dfGap != null ? ((master.dfGap > 0 ? '+' : '') + master.dfGap.toFixed(1)) : '?';
   var dfColor = master.dfGap > 8 ? 'var(--orange)' : master.dfGap < -4 ? 'var(--green-l)' : 'var(--text-2)';
 
   return '<div class="rank-detail-expand">'
@@ -6243,8 +6251,8 @@ function renderComparePane(){
   var tableEl = document.getElementById('compareTable');
   if (!bar || !chartEl || !tableEl) return;
   if(STATE.compareTeams.length === 0) {
-    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected ù toggle Compare in the toolbar, then click rows in the Rankings table (Daily Read).</span>';
-    chartEl.innerHTML = '<div class="empty-msg">Pick 2ù4 teams to see radar comparison. Enable Compare mode, then select teams from the master rankings table.</div>';
+    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected ? toggle Compare in the toolbar, then click rows in the Rankings table (Daily Read).</span>';
+    chartEl.innerHTML = '<div class="empty-msg">Pick 2?4 teams to see radar comparison. Enable Compare mode, then select teams from the master rankings table.</div>';
     tableEl.innerHTML = '';
     return;
   }
@@ -6324,7 +6332,7 @@ function renderComparePane(){
     return '<tr><td style="color:var(--text-3);">'+label+'</td>'+
       rows.map(function(r){
         var v = r[key];
-        if(v===null || v===undefined) return '<td>ù</td>';
+        if(v===null || v===undefined) return '<td>?</td>';
         var isBest = (v === best);
         return '<td class="num" style="'+(isBest?'color:var(--purple);font-weight:700;':'')+'">'+(v>0&&(key==='ppGap'||key==='dfGap'||key==='splitEdge'||key==='velocity')?'+':'')+v.toFixed(1)+'</td>';
       }).join('') + '</tr>';
@@ -6337,7 +6345,7 @@ function populateMatchupSelectors(){
   var aw = document.getElementById('matchupAway'), hm = document.getElementById('matchupHome');
   if (!aw || !hm || !SCO_YTD_B || !SCO_YTD_B.length) return;
   var teams = SCO_YTD_B.map(function(d){return d.t;}).sort();
-  var optsHtml = '<option value="">ù select ù</option>' + teams.map(function(t){return '<option value="'+t+'">'+t+'</option>';}).join('');
+  var optsHtml = '<option value="">? select ?</option>' + teams.map(function(t){return '<option value="'+t+'">'+t+'</option>';}).join('');
   aw.innerHTML = optsHtml; hm.innerHTML = optsHtml;
   if (!aw.dataset.matchupBound) {
     aw.dataset.matchupBound = '1';
@@ -6403,7 +6411,7 @@ function renderMatchupOutput(){
     var edgeColor = diff > 12 ? 'var(--green)' : diff > 6 ? 'var(--blue)' : 'var(--text-2)';
     html += '<div class="matchup-card" style="grid-column: 1 / -1; border:1px solid var(--purple-3);background:linear-gradient(135deg,rgba(192,132,252,.06),var(--bg-3));">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">'+
-        '<div><div style="font-size:9.5px;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">Matchup Verdict ù '+splitLabel+'</div>'+
+        '<div><div style="font-size:9.5px;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">Matchup Verdict ? '+splitLabel+'</div>'+
         '<div style="font-size:14px;font-weight:600;color:var(--text);margin-top:4px;">'+winner.t+' has a <span style="color:'+edgeColor+';">'+edge+'</span> offensive edge (+'+diff.toFixed(1)+' OSI '+splitLabel+')</div></div>'+
         '<div style="font-size:11px;color:var(--text-2);max-width:400px;text-align:right;">'+verdictReason(teams[0], teams[1], splitTab)+'</div>'+
       '</div>'+
@@ -6414,12 +6422,12 @@ function renderMatchupOutput(){
 function matchupTakeaway(master, split, splitLabel){
   if(!split) return 'No '+splitLabel+' split data available.';
   var delta = split.osi - master.osi;
-  if(delta > 5) return 'Performs significantly better '+splitLabel+' than overall ù exploit this matchup.';
-  if(delta < -5) return 'Performs significantly worse '+splitLabel+' than overall ù fade in this matchup.';
+  if(delta > 5) return 'Performs significantly better '+splitLabel+' than overall ? exploit this matchup.';
+  if(delta < -5) return 'Performs significantly worse '+splitLabel+' than overall ? fade in this matchup.';
   if(master.trend === 'Rising') return 'Trending up; lean into recent form.';
   if(master.trend === 'Cooling') return 'Trending down; results may not match season profile.';
-  if(master.ppGap > 5) return 'Process exceeds output ù possible buy-low.';
-  if(master.ppGap < -5) return 'Output exceeds process ù possible sell-high.';
+  if(master.ppGap > 5) return 'Process exceeds output ? possible buy-low.';
+  if(master.ppGap < -5) return 'Output exceeds process ? possible sell-high.';
   return 'Neutral matchup profile.';
 }
 function verdictReason(away, home, splitTab){
@@ -6438,11 +6446,11 @@ function verdictReason(away, home, splitTab){
     var owin = aw.obr > hm.obr ? away.t : home.t;
     reasons.push(owin+' wins on-base by '+Math.abs(aw.obr-hm.obr).toFixed(0)+' OBR pts');
   }
-  return reasons.length ? reasons.join(' ù ') : 'Components close across the board.';
+  return reasons.length ? reasons.join(' ? ') : 'Components close across the board.';
 }
 
 /* ============================================================
-   RENDER ALL & INIT ù v8
+   RENDER ALL & INIT ? v8
    ============================================================ */
 
 
@@ -6474,7 +6482,7 @@ function mountDashboardRankings() {
 }
 
 function mountReferenceTables(){
-  /* Team OOR / PALS / Pitching Score tables removed from Research Lab ù Model Report & profiles only */
+  /* Team OOR / PALS / Pitching Score tables removed from Research Lab ? Model Report & profiles only */
 }
 
 function shouldRenderMatchupsView() {
@@ -6588,7 +6596,7 @@ function renderResearchLabWhenReady() {
       banner = document.createElement('div');
       banner.id = 'rlDataLoadingBanner';
       banner.className = 'rl-loading-banner';
-      banner.textContent = 'Loading research dataù';
+      banner.textContent = 'Loading research data?';
       var header = document.getElementById('researchLabHeader');
       if (header && header.parentNode) header.parentNode.insertBefore(banner, header.nextSibling);
       else rl.insertBefore(banner, rl.firstChild);
@@ -6602,7 +6610,7 @@ function renderResearchLabWhenReady() {
           renderResearchLab();
         }
       }).catch(function() {
-        if (banner) banner.textContent = 'Research data failed to load ù retrying when sheets refreshù';
+        if (banner) banner.textContent = 'Research data failed to load ? retrying when sheets refresh?';
       });
     }
     return;
@@ -6771,7 +6779,7 @@ function renderAll(){
 }
 
 /* ============================================================
-   OOR ù Opponent Offensive Rating
+   OOR ? Opponent Offensive Rating
    ============================================================ */
 
 function setPitchScoreMode(mode) {
@@ -6845,10 +6853,10 @@ function renderPitchingScore() {
     var cl = ps >= 65 ? 'var(--green)' : ps >= 50 ? 'var(--purple-2)' : ps >= 35 ? 'var(--gold)' : 'var(--red-l)';
     return '<tr><td class="rank-cell">' + (i + 1) + '</td>'
       + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
-      + '<td class="num">' + (r.kPct != null ? r.kPct.toFixed(1) : 'ù') + '</td>'
-      + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : 'ù') + '</td>'
-      + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : 'ù') + '</td>'
-      + '<td class="num" style="color:' + cl + ';font-weight:600;">' + (ps != null ? ps.toFixed(1) : 'ù') + '</td></tr>';
+      + '<td class="num">' + (r.kPct != null ? r.kPct.toFixed(1) : '?') + '</td>'
+      + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : '?') + '</td>'
+      + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : '?') + '</td>'
+      + '<td class="num" style="color:' + cl + ';font-weight:600;">' + (ps != null ? ps.toFixed(1) : '?') + '</td></tr>';
   }).join('');
 }
 
@@ -6883,10 +6891,10 @@ function renderPALS() {
     return 'var(--text-2)';
   }
   function fmt1(v) {
-    return v != null && !isNaN(v) ? v.toFixed(1) : 'ù';
+    return v != null && !isNaN(v) ? v.toFixed(1) : '?';
   }
   function fmt2(v) {
-    return v != null && !isNaN(v) ? v.toFixed(2) : 'ù';
+    return v != null && !isNaN(v) ? v.toFixed(2) : '?';
   }
   el.innerHTML = rows.map(function(r, i) {
     var pals = r.PALS;
@@ -6919,8 +6927,8 @@ var hideLoadingScreen = hideLoadingOverlay;
 
 function showDelayedLoadBanner() {
   if (LIVE_DATA.loaded) return;
-  console.warn('[MLBMA] load watchdog ù showing delayed banner');
-  showDataError('Data load delayed ù retryingù Showing cached or fallback data where available.');
+  console.warn('[MLBMA] load watchdog ? showing delayed banner');
+  showDataError('Data load delayed ? retrying? Showing cached or fallback data where available.');
   try {
     if (!SCO_YTD_B || !SCO_YTD_B.length) recomputeAllScores();
     runPostLoadUI();
@@ -6961,8 +6969,12 @@ function bindDashRankingsControls(){
         dt.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
         var main = document.getElementById('timeToggle');
         if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-time')===t); });
-        recomputeAllScores(); renderMasterTable();
-        /* metric bar chart removed ù legacy PlatformDashboard.renderMetricBarChart unavailable */
+        if (typeof syncWindowScoresFromProfiles === 'function') syncWindowScoresFromProfiles();
+        recomputeAllScores();
+        renderMasterTable();
+        if (document.getElementById('leaderboardBody')) {
+          renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
+        }
       });
     });
   }
@@ -6975,7 +6987,12 @@ function bindDashRankingsControls(){
         ds.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
         var main = document.getElementById('splitToggle');
         if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-split')===(s==='f5'?'b':s)); });
-        recomputeAllScores(); renderMasterTable();
+        if (typeof syncWindowScoresFromProfiles === 'function') syncWindowScoresFromProfiles();
+        recomputeAllScores();
+        renderMasterTable();
+        if (document.getElementById('leaderboardBody')) {
+          renderMasterTable({ bodyId: 'leaderboardBody', mobileId: 'leaderboardMobileCards', tableId: 'leaderboardTable', forcePlatform: true });
+        }
       });
     });
   }
@@ -7067,14 +7084,14 @@ if (document.readyState === 'loading') {
 
 <div class="toast" id="toast"></div>
 
-<!-- Sheet table templates ù mounted into Research Lab only (never visible on Opening) -->
+<!-- Sheet table templates ? mounted into Research Lab only (never visible on Opening) -->
 <div id="dashboard-data-templates" hidden aria-hidden="true" style="display:none!important">
 <div class="container" style="padding-top:0;">
 <div class="section" id="oorSection" style="margin-top:0;">
   <div class="section-header">
     <div>
       <div class="section-eyebrow">Opponent Context</div>
-      <div class="section-title">OOR ù Opponent Offensive Rating</div>
+      <div class="section-title">OOR ? Opponent Offensive Rating</div>
       <div class="section-subtitle">How dangerous is the offense each team's pitching staff faces? Sorted by HvP (composite threat). Red = toughest to face, Green = softest schedule.</div>
     </div>
     <div style="font-size:11px;color:var(--text-3);max-width:260px;text-align:right;line-height:1.5;">
@@ -7104,7 +7121,7 @@ if (document.readyState === 'loading') {
     </table>
   </div>
   <div class="method-note" style="margin-top:16px;">
-    <strong>How to use OOR:</strong> Teams at the top face the toughest offenses ù their pitching stats may be suppressed by schedule. Teams at the bottom face the softest lineups ù their ERAs may be inflated by weak competition. Cross-reference with Pitching Score for a complete picture of pitching value vs. schedule context.
+    <strong>How to use OOR:</strong> Teams at the top face the toughest offenses ? their pitching stats may be suppressed by schedule. Teams at the bottom face the softest lineups ? their ERAs may be inflated by weak competition. Cross-reference with Pitching Score for a complete picture of pitching value vs. schedule context.
   </div>
 </div>
 
@@ -7131,7 +7148,7 @@ if (document.readyState === 'loading') {
         </tr>
       </thead>
       <tbody id="pitchingTableBody">
-        <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">Loading pitching dataù</td></tr>
+        <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;">Loading pitching data?</td></tr>
       </tbody>
     </table>
   </div>
@@ -7142,7 +7159,7 @@ if (document.readyState === 'loading') {
   <div class="section-header">
     <div>
       <div class="section-eyebrow">PITCHING-ADJUSTED</div>
-      <div class="section-title">PALS ù Pitching-Adjusted Lineup Score</div>
+      <div class="section-title">PALS ? Pitching-Adjusted Lineup Score</div>
       <div class="section-subtitle">OSI adjusted for opposing SP quality faced this season. Higher = genuinely strong offense.</div>
     </div>
   </div>
@@ -7152,20 +7169,20 @@ if (document.readyState === 'loading') {
         <tr>
           <th>#</th>
           <th>Team</th>
-          <th title="Unadjusted composite lineup quality (0ù100 scale)">OSI</th>
-          <th title="Average xFIP of opposing starters faced ù lower = tougher schedule">Avg xFIP Faced</th>
+          <th title="Unadjusted composite lineup quality (0?100 scale)">OSI</th>
+          <th title="Average xFIP of opposing starters faced ? lower = tougher schedule">Avg xFIP Faced</th>
           <th title="Normalized OSI (BA++)">BA++</th>
-          <th title="Normalized, inverted avg xFIP faced ù higher = easier SP schedule">PTF+</th>
+          <th title="Normalized, inverted avg xFIP faced ? higher = easier SP schedule">PTF+</th>
           <th title="Pitching-Adjusted Lineup Score">PALS</th>
         </tr>
       </thead>
       <tbody id="palsTableBody">
-        <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:20px;">Loading PALS dataù</td></tr>
+        <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:20px;">Loading PALS data?</td></tr>
       </tbody>
     </table>
   </div>
   <div class="method-note" style="margin-top:16px;">
-    <strong>Method:</strong> <strong>BA++</strong> = normalized OSI. <strong>PTF+</strong> = normalized average xFIP of opposing starters faced (inverted ù higher values mean an easier SP schedule). <strong>PALS</strong> = average of BA++ and PTF+. <strong>Avg xFIP faced</strong> coloring: green above 4.05 (softer pitching mix), red below 3.95 (tougher); lower raw xFIP = harder schedule. <strong>PALS</strong> coloring: 70+ elite (green), 55ù69 strong (gold), 40ù54 neutral (text), under 40 weak (red).
+    <strong>Method:</strong> <strong>BA++</strong> = normalized OSI. <strong>PTF+</strong> = normalized average xFIP of opposing starters faced (inverted ? higher values mean an easier SP schedule). <strong>PALS</strong> = average of BA++ and PTF+. <strong>Avg xFIP faced</strong> coloring: green above 4.05 (softer pitching mix), red below 3.95 (tougher); lower raw xFIP = harder schedule. <strong>PALS</strong> coloring: 70+ elite (green), 55?69 strong (gold), 40?54 neutral (text), under 40 weak (red).
   </div>
 </div>
 
@@ -7174,7 +7191,7 @@ if (document.readyState === 'loading') {
 
 <footer class="ca-platform-footer" style="text-align:center;padding:24px;color:var(--text-3);font-size:12px;border-top:1px solid var(--border);margin-top:32px;">
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
-  Chase Analytics ù MLB Offensive Intelligence
+  Chase Analytics ? MLB Offensive Intelligence
 </footer>
   <script src="oem_overhaul.js?v=20260528b"></script>
   <script src="mlbma_standings.js?v=20260527s"></script>

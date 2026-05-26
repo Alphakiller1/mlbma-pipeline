@@ -199,13 +199,23 @@ function parseTeamProfiles(rows) {
   (rows || []).forEach(function(row) {
     var t = teamKey(pick(row, ['team', 'Tm', 'Team']));
     if (!t) return;
-    map[t] = {
+    var prof = {
       osi_l30: extractWindowOSI(pick(row, ['osi_l30', 'OSI_L30', 'OSI L30', 'L30_OSI'])),
       osi_l14: extractWindowOSI(pick(row, ['osi_l14', 'OSI_L14', 'OSI L14', 'L14_OSI'])),
       osi_l7: extractWindowOSI(pick(row, ['osi_l7', 'OSI_L7', 'OSI L7', 'L7_OSI'])),
       home_osi: num(pick(row, ['home_osi', 'Home_OSI'])),
       away_osi: num(pick(row, ['away_osi', 'Away_OSI']))
     };
+    ['abq', 'rcv', 'obr'].forEach(function(m) {
+      ['l30', 'l14', 'l7'].forEach(function(w) {
+        prof[m + '_' + w] = num(pick(row, [
+          m + '_' + w,
+          m.toUpperCase() + '_' + w.toUpperCase(),
+          w + '_' + m
+        ]));
+      });
+    });
+    map[t] = prof;
   });
   return map;
 }
@@ -247,22 +257,60 @@ function windowOsi(prof, win) {
   return null;
 }
 
+function windowSuffix(win) {
+  if (win === 'L30') return 'l30';
+  if (win === 'L14') return 'l14';
+  if (win === 'L7') return 'l7';
+  return null;
+}
+
 function applyWindowToRow(d) {
   if (HUB.window === 'YTD') return d;
   var prof = HUB.teamProfiles[d.t] || HUB.teamProfiles[teamKey(d.t)] || {};
   if (!HUB.windowAvail[HUB.window]) return d;
-  var wOsi = windowOsi(prof, HUB.window);
-  if (wOsi == null || isNaN(wOsi)) return d;
-  var ratio = d.ytdOSI ? wOsi / d.ytdOSI : 1;
-  var out = Object.assign({}, d, { osi: wOsi });
-  ['abq', 'rcv', 'obr', 'projOSI', 'wrc', 'xwoba', 'slg'].forEach(function(k) {
-    if (out[k] != null && !isNaN(out[k])) out[k] = out[k] * ratio;
+  var suf = windowSuffix(HUB.window);
+  if (!suf) return d;
+  var out = Object.assign({}, d);
+  var applied = false;
+  ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
+    var wv = prof[m + '_' + suf];
+    if (wv != null && !isNaN(wv)) {
+      out[m] = wv;
+      applied = true;
+    }
   });
-  if (out.ppGap == null && out.abq != null && out.rcv != null) out.ppGap = out.abq - out.rcv;
+  if (!applied) return d;
+  if (out.projOSI != null && d.ytdOSI) {
+    out.projOSI = d.ytdOSI ? out.osi + (out.projOSI - d.ytdOSI) : out.projOSI;
+  }
+  if (out.wrc != null && d.ytdOSI && out.osi) out.wrc = out.wrc * (out.osi / d.ytdOSI);
+  if (out.woba != null && d.ytdOSI && out.osi) out.woba = out.woba * (out.osi / d.ytdOSI);
+  if (out.xwoba != null && d.ytdOSI && out.osi) out.xwoba = out.xwoba * (out.osi / d.ytdOSI);
+  if (out.slg != null && d.ytdOSI && out.osi) out.slg = out.slg * (out.osi / d.ytdOSI);
+  if (out.abq != null && out.rcv != null) out.ppGap = out.abq - out.rcv;
   out.tier = tierInfo(out.osi);
   out.trend = computeTrend(d.ytdOSI, d.l14OSI, d.l7OSI);
   out.takeaway = computeTakeaway(out);
   return out;
+}
+
+function applyLocationFromProfile(rows, location) {
+  if (location !== 'home' && location !== 'away') return rows;
+  var locKey = location === 'home' ? 'home_osi' : 'away_osi';
+  return (rows || []).map(function(r) {
+    var prof = HUB.teamProfiles[r.t] || HUB.teamProfiles[teamKey(r.t)] || {};
+    var locOsi = prof[locKey];
+    if (locOsi == null || isNaN(locOsi) || r.osi == null || !r.osi) return Object.assign({}, r);
+    var ratio = locOsi / r.osi;
+    return Object.assign({}, r, {
+      osi: locOsi,
+      abq: r.abq != null ? r.abq * ratio : r.abq,
+      rcv: r.rcv != null ? r.rcv * ratio : r.rcv,
+      obr: r.obr != null ? r.obr * ratio : r.obr,
+      projOSI: r.projOSI != null ? r.projOSI * ratio : locOsi,
+      ppGap: r.abq != null && r.rcv != null ? (r.abq * ratio) - (r.rcv * ratio) : r.ppGap
+    });
+  });
 }
 
 function enrichRow(base) {
@@ -332,10 +380,12 @@ function rebuildMasterRows() {
   }
 
   var location = HUB.location || 'all';
-  if (location === 'home' && HUB.splitHome && HUB.splitHome.length) {
+  if (location === 'home' && HUB.splitHome && HUB.splitHome.length >= 10) {
     base = overlayLocationRows(base, HUB.splitHome);
-  } else if (location === 'away' && HUB.splitAway && HUB.splitAway.length) {
+  } else if (location === 'away' && HUB.splitAway && HUB.splitAway.length >= 10) {
     base = overlayLocationRows(base, HUB.splitAway);
+  } else if (location === 'home' || location === 'away') {
+    base = applyLocationFromProfile(base, location);
   }
 
   HUB.activeSplit = hand;
@@ -384,20 +434,8 @@ function renderControls() {
     var el = document.getElementById(mountId);
     if (!el) return;
     el.innerHTML = opts.map(function(o) {
-      return '<button type="button" class="hub-pill' + (HUB[key] === o.id ? ' active' : '') + '" data-val="' + o.id + '">' + esc(o.label) + '</button>';
+      return '<button type="button" class="hub-pill' + (HUB[key] === o.id ? ' active' : '') + '" data-hub-key="' + key + '" data-val="' + o.id + '">' + esc(o.label) + '</button>';
     }).join('');
-    el.querySelectorAll('.hub-pill').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var v = btn.getAttribute('data-val');
-        if (key === 'window') setWindow(v);
-        else {
-          HUB[key] = v;
-          renderControls();
-          updateBanners();
-        }
-        renderHubTable();
-      });
-    });
   }
   pills('hubHandPills', [{ id: 'both', label: 'Both' }, { id: 'r', label: 'vs RHP' }, { id: 'l', label: 'vs LHP' }, { id: 'f5', label: 'F5' }], 'hand');
   pills('hubWindowPills', [{ id: 'YTD', label: 'YTD' }, { id: 'L30', label: 'L30' }, { id: 'L14', label: 'L14' }, { id: 'L7', label: 'L7' }], 'window');
@@ -408,13 +446,33 @@ function renderControls() {
   if (adv) adv.checked = HUB.showAdvanced;
 }
 
+function bindHubControlDelegation() {
+  var bar = document.getElementById('hubControlBar');
+  if (!bar || bar.dataset.hubDelegated === '1') return;
+  bar.dataset.hubDelegated = '1';
+  bar.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-hub-key]');
+    if (!btn) return;
+    var key = btn.getAttribute('data-hub-key');
+    var val = btn.getAttribute('data-val');
+    if (key === 'window') {
+      setWindow(val);
+      return;
+    }
+    HUB[key] = val;
+    renderControls();
+    updateBanners();
+    renderHubTable();
+  });
+}
+
 function updateBanners() {
   var wBan = document.getElementById('hubWindowBanner');
   if (wBan) {
     var showWin = HUB.window !== 'YTD' && !HUB.windowAvail[HUB.window];
     wBan.classList.toggle('show', showWin);
     if (showWin) {
-      wBan.textContent = 'L30/L14/L7 window data requires pipeline enhancement \u2014 showing YTD baseline';
+      wBan.textContent = 'L30/L14/L7 requires Team_Profiles window columns \u2014 run compute_team_profile + push, then hard refresh';
     }
   }
   var lBan = document.getElementById('hubLocationBanner');
@@ -422,11 +480,10 @@ function updateBanners() {
     var needLoc = HUB.location === 'home' || HUB.location === 'away';
     var homeEmpty = !(HUB.splitHome && HUB.splitHome.length);
     var awayEmpty = !(HUB.splitAway && HUB.splitAway.length);
-    var locMissing = HUB.location === 'home' ? homeEmpty : (HUB.location === 'away' ? awayEmpty : false);
-    var showLoc = needLoc && (locMissing || !(HUB.location === 'home' ? HUB.locationAvail.home : HUB.locationAvail.away));
+    var showLoc = needLoc && !(HUB.location === 'home' ? HUB.locationAvail.home : HUB.locationAvail.away);
     lBan.classList.toggle('show', showLoc);
     if (showLoc) {
-      lBan.textContent = 'Home/Away splits require batter_splits_home/away pipeline data';
+      lBan.textContent = 'Home/Away uses Team_Profiles home_osi/away_osi when split sheets unavailable';
     }
   }
 }
@@ -540,8 +597,14 @@ function hubLoadData() {
     }
     HUB.splitHome = buildLocationSplitRows(res[2] || [], scoreFn, 'home_osi');
     HUB.splitAway = buildLocationSplitRows(res[3] || [], scoreFn, 'away_osi');
-    HUB.locationAvail.home = HUB.splitHome.length >= 10;
-    HUB.locationAvail.away = HUB.splitAway.length >= 10;
+    var homeProfN = Object.keys(HUB.teamProfiles).filter(function(t) {
+      return HUB.teamProfiles[t].home_osi != null;
+    }).length;
+    var awayProfN = Object.keys(HUB.teamProfiles).filter(function(t) {
+      return HUB.teamProfiles[t].away_osi != null;
+    }).length;
+    HUB.locationAvail.home = HUB.splitHome.length >= 10 || homeProfN >= 10;
+    HUB.locationAvail.away = HUB.splitAway.length >= 10 || awayProfN >= 10;
     ['L30', 'L14', 'L7'].forEach(function(w) {
       var field = w === 'L30' ? 'osi_l30' : w === 'L14' ? 'osi_l14' : 'osi_l7';
       HUB.windowAvail[w] = Object.keys(HUB.teamProfiles).filter(function(t) {
@@ -584,6 +647,7 @@ function initHub() {
   }
   HUB._tabs = TABS;
   bindHubRowClicks();
+  bindHubControlDelegation();
   renderControls();
   updateBanners();
   var advEl = document.getElementById('hubAdvCols');
