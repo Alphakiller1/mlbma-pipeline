@@ -121,29 +121,65 @@
     return '';
   }
 
+  var TEAM_ABBR_ALIASES = {
+    TB: 'TBR', WSH: 'WSN', KC: 'KCR', CWS: 'CHW', SD: 'SDP', SF: 'SFG',
+    OAK: 'ATH', AZ: 'ARI', FLA: 'MIA'
+  };
+
+  function normalizeTeamAbbrShared(t) {
+    var u = teamKey(t);
+    return TEAM_ABBR_ALIASES[u] || u;
+  }
+
+  function normalizePitcherHandShared(h) {
+    var s = String(h || '').trim().toUpperCase();
+    if (!s) return '?';
+    if (s === 'L' || s === 'LHP' || s.indexOf('LEFT') === 0) return 'L';
+    if (s === 'R' || s === 'RHP' || s.indexOf('RIGHT') === 0) return 'R';
+    if (s.charAt(0) === 'L') return 'L';
+    if (s.charAt(0) === 'R') return 'R';
+    return '?';
+  }
+
+  function parseBatOrderShared(row) {
+    var boRaw = pickCol(row, 'Bat_Order', 'Bat Order', 'bat_order', 'Order', '#', 'BO');
+    if (boRaw === '' || boRaw === undefined) {
+      if (row.Bat_Order !== undefined && row.Bat_Order !== '') boRaw = row.Bat_Order;
+      else if (row['Bat Order'] !== undefined) boRaw = row['Bat Order'];
+    }
+    if (typeof boRaw === 'number' && !isNaN(boRaw)) return Math.round(boRaw);
+    var bo = parseInt(boRaw, 10);
+    return isNaN(bo) ? 99 : bo;
+  }
+
+  function normalizeLineupGameKeyShared(raw) {
+    var gk = normalizeGameKey(raw);
+    var at = gk.indexOf('@');
+    if (at < 0) return gk;
+    return normalizeTeamAbbrShared(gk.slice(0, at)) + '@' + normalizeTeamAbbrShared(gk.slice(at + 1));
+  }
+
   function parseLineupRows(rows) {
     return (rows || []).map(function(row) {
-      var game = String(pickCol(row, 'Game')).trim();
-      var team = teamKey(pickCol(row, 'Team'));
+      var game = normalizeLineupGameKeyShared(pickCol(row, 'Game', 'game_key', 'GameKey'));
+      var team = normalizeTeamAbbrShared(pickCol(row, 'Team', 'team', 'Tm'));
       if (!team) return null;
-      var bo = parseInt(pickCol(row, 'Bat_Order', 'Bat Order'), 10);
-      if (isNaN(bo)) bo = 99;
       return {
         game: game,
         team: team,
-        side: String(pickCol(row, 'Side')).trim().toUpperCase(),
-        batOrder: bo,
-        position: String(pickCol(row, 'Position')).trim() || '—',
-        player: String(pickCol(row, 'Player')).trim() || 'TBD',
-        bats: String(pickCol(row, 'Bats')).trim() || '?'
+        side: String(pickCol(row, 'Side', 'side', 'Home_Away')).trim().toUpperCase(),
+        batOrder: parseBatOrderShared(row),
+        position: String(pickCol(row, 'Position', 'Pos', 'position')).trim() || '\u2014',
+        player: String(pickCol(row, 'Player', 'Name', 'player_name')).trim() || 'TBD',
+        bats: String(pickCol(row, 'Bats', 'Bats Hand', 'Hand', 'bat_hand')).trim() || '?'
       };
     }).filter(Boolean);
   }
 
   /** @param {Array} lineups - parsed lineup rows @param {string} gameKey @param {string} team @param {string} [side] */
   function parseLineup(lineups, gameKey, team, side) {
-    var gk = normalizeGameKey(gameKey);
-    var tm = teamKey(team);
+    var gk = normalizeLineupGameKeyShared(gameKey);
+    var tm = normalizeTeamAbbrShared(team);
     var want = String(side || '').toUpperCase();
     function sideOk(sd) {
       sd = String(sd || '').toUpperCase();
@@ -152,10 +188,10 @@
       return true;
     }
     var primary = (lineups || []).filter(function(r) {
-      return normalizeGameKey(r.game) === gk && r.team === tm && sideOk(r.side);
+      return normalizeLineupGameKeyShared(r.game) === gk && normalizeTeamAbbrShared(r.team) === tm && sideOk(r.side);
     });
     var rows = primary.length ? primary : (lineups || []).filter(function(r) {
-      return normalizeGameKey(r.game) === gk && r.team === tm;
+      return normalizeLineupGameKeyShared(r.game) === gk && normalizeTeamAbbrShared(r.team) === tm;
     });
     return rows.slice().sort(function(a, b) { return a.batOrder - b.batOrder; }).slice(0, 9);
   }
@@ -478,22 +514,22 @@
 
   function parseMatchupRows(rows) {
     return (rows || []).map(function(row) {
-      var away = teamKey(pickCol(row, 'Away'));
-      var home = teamKey(pickCol(row, 'Home'));
+      var away = normalizeTeamAbbrShared(pickCol(row, 'Away'));
+      var home = normalizeTeamAbbrShared(pickCol(row, 'Home'));
       if (!away && !home) return null;
       return {
         time: String(pickCol(row, 'Time', 'Game_Time')).trim(),
         away: away,
         home: home,
         awaySP: String(pickCol(row, 'Away_SP', 'Away SP')).trim(),
-        awayHand: String(pickCol(row, 'Away_Hand', 'Away Hand')).trim().toUpperCase(),
+        awayHand: normalizePitcherHandShared(pickCol(row, 'Away_Hand', 'Away Hand', 'Away_SP_Hand')),
         awayK: numOrNull(pickCol(row, 'Away_K%', 'Away K%')),
         awayBB: numOrNull(pickCol(row, 'Away_BB%', 'Away BB%')),
         awayHR9: numOrNull(pickCol(row, 'Away_HR9', 'Away HR/9')),
         awayFIP: numOrNull(pickCol(row, 'Away_FIP', 'Away FIP')),
         awayXFIP: numOrNull(pickCol(row, 'Away_xFIP', 'Away xFIP')),
         homeSP: String(pickCol(row, 'Home_SP', 'Home SP')).trim(),
-        homeHand: String(pickCol(row, 'Home_Hand', 'Home Hand')).trim().toUpperCase(),
+        homeHand: normalizePitcherHandShared(pickCol(row, 'Home_Hand', 'Home Hand', 'Home_SP_Hand')),
         homeK: numOrNull(pickCol(row, 'Home_K%', 'Home K%')),
         homeBB: numOrNull(pickCol(row, 'Home_BB%', 'Home BB%')),
         homeHR9: numOrNull(pickCol(row, 'Home_HR9', 'Home HR/9')),

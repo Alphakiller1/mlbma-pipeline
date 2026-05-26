@@ -103,6 +103,7 @@
   }
 
   function mListHand(h) {
+    if (typeof normalizePitcherHand === 'function') return normalizePitcherHand(h);
     return (h === 'L' || h === 'R') ? h : '?';
   }
 

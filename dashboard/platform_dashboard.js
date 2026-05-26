@@ -166,6 +166,14 @@
     return m && m.pitchScore != null ? m.pitchScore : null;
   }
 
+  function normalizePitchHand(h) {
+    if (typeof global.normalizePitcherHand === 'function') return global.normalizePitcherHand(h);
+    var s = String(h || '').trim().toUpperCase();
+    if (s === 'L' || s === 'LHP' || s.charAt(0) === 'L') return 'L';
+    if (s === 'R' || s === 'RHP' || s.charAt(0) === 'R') return 'R';
+    return '?';
+  }
+
   function spRow(label, name, hand, team, stats, opts) {
     opts = opts || {};
     var pid = A ? A.lookupMlbId(name) : null;
@@ -189,7 +197,8 @@
       + '<div class="mc-sp-name-row">'
       + '<span class="mc-sp-side">' + label + '</span> '
       + '<span class="mc-sp-name">' + nameHtml + '</span>'
-      + '<span class="hand-pill hand-' + (hand || '?').toLowerCase() + '">' + esc(hand || '?') + '</span>'
+      + '<span class="hand-pill hand-' + normalizePitchHand(hand).toLowerCase() + '">'
+      + esc(normalizePitchHand(hand) === 'L' ? 'LHP' : normalizePitchHand(hand) === 'R' ? 'RHP' : '?') + '</span>'
       + '<span class="pitch-tier ' + pt.cls + '">' + pt.label + '</span>'
       + '</div>'
       + psBadge
