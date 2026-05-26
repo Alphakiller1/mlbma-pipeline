@@ -105,9 +105,71 @@ def get_team_osi(team, hand, rhp_df, lhp_df):
         return None
     return round(match.iloc[0]["OSI"], 1)
 
+def load_games_from_rotowire_exports():
+    """Schedule from scrape_lineups (Today_Games / today_lineups) — must match lineup cards."""
+    games_path = os.path.join(DATA_DIR, "today_games.csv")
+    if os.path.exists(games_path):
+        gdf = pd.read_csv(games_path)
+        if not gdf.empty and "Away" in gdf.columns and "Home" in gdf.columns:
+            records = []
+            for _, row in gdf.iterrows():
+                records.append({
+                    "Away_Team": str(row.get("Away", "")).strip(),
+                    "Home_Team": str(row.get("Home", "")).strip(),
+                    "Game_Time": str(row.get("Time", "TBD")).strip(),
+                    "Away_SP": str(row.get("Away_SP", "TBD")).strip(),
+                    "Home_SP": str(row.get("Home_SP", "TBD")).strip(),
+                    "Away_SP_Hand": "R",
+                    "Home_SP_Hand": "R",
+                })
+            return pd.DataFrame(records)
+
+    lineup_path = os.path.join(DATA_DIR, "today_lineups.csv")
+    if not os.path.exists(lineup_path):
+        return pd.DataFrame()
+    lu = pd.read_csv(lineup_path)
+    if lu.empty or "Game" not in lu.columns:
+        return pd.DataFrame()
+    records = []
+    for game, grp in lu.groupby("Game"):
+        parts = str(game).split("@")
+        if len(parts) != 2:
+            continue
+        records.append({
+            "Away_Team": parts[0].strip(),
+            "Home_Team": parts[1].strip(),
+            "Game_Time": grp["Time"].iloc[0] if "Time" in grp.columns else "TBD",
+            "Away_SP": "TBD",
+            "Home_SP": "TBD",
+            "Away_SP_Hand": "R",
+            "Home_SP_Hand": "R",
+        })
+    return pd.DataFrame(records)
+
+
+def schedule_game_keys(games_df):
+    if games_df is None or games_df.empty:
+        return set()
+    return {
+        f"{row['Away_Team']}@{row['Home_Team']}"
+        for _, row in games_df.iterrows()
+    }
+
+
 def build_matchups():
     print("Building matchup sheet...")
     games = get_today_schedule()
+    rotowire = load_games_from_rotowire_exports()
+    if not rotowire.empty:
+        api_keys = schedule_game_keys(games)
+        rw_keys = schedule_game_keys(rotowire)
+        overlap = len(api_keys & rw_keys)
+        if games.empty or overlap < max(1, len(rw_keys) // 2):
+            print(
+                f"  Using Rotowire schedule ({len(rotowire)} games; "
+                f"MLB API overlap={overlap})"
+            )
+            games = rotowire
     if games.empty:
         print("No games today")
         return pd.DataFrame()

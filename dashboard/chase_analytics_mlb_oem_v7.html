@@ -2225,11 +2225,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260527s"></script>
-<script src="matchup_shared.js?v=20260528a"></script>
+<script src="matchup_shared.js?v=20260528b"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260527s"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260528a"></script>
+<script src="platform_dashboard.js?v=20260528b"></script>
 <script src="research_lab.js?v=20260527s"></script>
 <script src="rl_tab_uix.js?v=20260527s"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
@@ -3533,18 +3533,111 @@ function parseLineupRows(rows) {
 function parseTodayGamesRows(rows) {
   if (!rows || !rows.length) return [];
   return rows.map(function(row) {
-    var away = String(matchupCol(row, 'Away')).trim().toUpperCase();
-    var home = String(matchupCol(row, 'Home')).trim().toUpperCase();
+    var away = normalizeTeamAbbr(matchupCol(row, 'Away'));
+    var home = normalizeTeamAbbr(matchupCol(row, 'Home'));
     if (!away || !home) return null;
     return {
       away: away,
       home: home,
-      time: String(matchupCol(row, 'Time')).trim(),
-      awaySP: String(matchupCol(row, 'Away_SP')).trim(),
-      homeSP: String(matchupCol(row, 'Home_SP')).trim(),
+      time: String(matchupCol(row, 'Time', 'Game_Time')).trim(),
+      awaySP: String(matchupCol(row, 'Away_SP', 'Away SP')).trim(),
+      homeSP: String(matchupCol(row, 'Home_SP', 'Home SP')).trim(),
       gameKey: away + '@' + home
     };
   }).filter(Boolean);
+}
+
+function lineupGameKeySet(lineups) {
+  var keys = {};
+  (lineups || []).forEach(function(r) {
+    if (r && r.game) keys[normalizeLineupGameKey(r.game)] = true;
+  });
+  return keys;
+}
+
+function teamOsiVsPitcherHand(team, pitcherHand, scR, scL) {
+  var t = normalizeTeamAbbr(team);
+  var h = normalizePitcherHand(pitcherHand);
+  var row = h === 'L' ? (toMap(scL || [])[t]) : (toMap(scR || [])[t]);
+  return row && row.osi != null ? row.osi : null;
+}
+
+/** When Today_Matchups (MLB API) and Today_Lineups (Rotowire) disagree, rebuild cards from Today_Games. */
+function reconcileTodayMatchups(lineups, gamesRows, parsedMatchups, scR, scL) {
+  var luKeys = lineupGameKeySet(lineups);
+  var lineupKeys = Object.keys(luKeys);
+  if (!lineupKeys.length) return parsedMatchups || [];
+
+  var muKeys = (parsedMatchups || []).map(function(m) { return matchupGameKey(m); });
+  var overlap = lineupKeys.filter(function(k) { return muKeys.indexOf(k) >= 0; });
+
+  if (overlap.length >= Math.max(1, Math.floor(lineupKeys.length * 0.5))) {
+    return parsedMatchups || [];
+  }
+
+  console.warn('[MATCHUPS] Today_Matchups out of sync with lineups (' + overlap.length + '/' + lineupKeys.length
+    + ' overlap). Rebuilding from Today_Games + lineups.');
+
+  var byKey = {};
+  (parsedMatchups || []).forEach(function(m) {
+    byKey[matchupGameKey(m)] = m;
+  });
+
+  var games = parseTodayGamesRows(gamesRows || []);
+  if (!games.length) {
+    games = lineupKeys.map(function(k) {
+      var p = k.split('@');
+      return { away: p[0], home: p[1], time: '', awaySP: '', homeSP: '', gameKey: k };
+    });
+  }
+
+  function buildMatchupFromGame(g) {
+    var away = normalizeTeamAbbr(g.away);
+    var home = normalizeTeamAbbr(g.home);
+    var key = away + '@' + home;
+    if (!luKeys[key]) return null;
+    var ex = byKey[key];
+    var awayHand = ex && ex.awayHand && ex.awayHand !== '?'
+      ? normalizePitcherHand(ex.awayHand)
+      : (pitcherHandFromProfiles(g.awaySP, away) || '?');
+    var homeHand = ex && ex.homeHand && ex.homeHand !== '?'
+      ? normalizePitcherHand(ex.homeHand)
+      : (pitcherHandFromProfiles(g.homeSP, home) || '?');
+    if (awayHand === '?') awayHand = 'R';
+    if (homeHand === '?') homeHand = 'R';
+    var awayOSI = ex && ex.awayOSI != null ? ex.awayOSI : teamOsiVsPitcherHand(away, homeHand, scR, scL);
+    var homeOSI = ex && ex.homeOSI != null ? ex.homeOSI : teamOsiVsPitcherHand(home, awayHand, scR, scL);
+    return {
+      time: g.time || (ex && ex.time) || '',
+      away: away,
+      home: home,
+      awaySP: g.awaySP || (ex && ex.awaySP) || 'TBD',
+      homeSP: g.homeSP || (ex && ex.homeSP) || 'TBD',
+      awayHand: awayHand,
+      homeHand: homeHand,
+      awayK: ex ? ex.awayK : null,
+      awayBB: ex ? ex.awayBB : null,
+      awayHR9: ex ? ex.awayHR9 : null,
+      awayFIP: ex ? ex.awayFIP : null,
+      homeK: ex ? ex.homeK : null,
+      homeBB: ex ? ex.homeBB : null,
+      homeHR9: ex ? ex.homeHR9 : null,
+      homeFIP: ex ? ex.homeFIP : null,
+      awayOSI: awayOSI,
+      homeOSI: homeOSI,
+      lineupEdge: ex && ex.lineupEdge ? ex.lineupEdge : '',
+      stadium: ex && ex.stadium ? ex.stadium : ''
+    };
+  }
+
+  var rebuilt = games.map(buildMatchupFromGame).filter(Boolean);
+  if (!rebuilt.length) {
+    rebuilt = lineupKeys.map(function(k) {
+      var p = k.split('@');
+      return buildMatchupFromGame({ away: p[0], home: p[1], time: '', awaySP: '', homeSP: '', gameKey: k });
+    }).filter(Boolean);
+  }
+  return rebuilt.length ? rebuilt : (parsedMatchups || []);
 }
 
 function normalizeBatsHand(bats) {
@@ -3815,12 +3908,13 @@ function loadLandingData() {
     fetchTabSafe(TABS.vs_rhp),
     fetchTabSafe(TABS.vs_lhp),
     fetchTabSafe(TABS.last_updated, ''),
-    fetchTabSafe(TABS.sp_profiles, [])
+    fetchTabSafe(TABS.sp_profiles, []),
+    fetchTabSafe(TABS.today_games, [])
   ]).then(function(results) {
     var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
         signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9],
-        spProfileRows = results[10];
+        spProfileRows = results[10], gamesRows = results[11];
     var scR = [];
     var scL = [];
     try {
@@ -3848,10 +3942,9 @@ function loadLandingData() {
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
     LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
-    LIVE_DATA.matchups = parseMatchupRows(matchupsRows);
+    console.error('[LINEUPS] parsed', LIVE_DATA.lineups.length, 'rows from', (lineupsRows || []).length, 'sheet rows');
     LIVE_DATA.signalsToday = signalsTodayRows || [];
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
-    enrichMatchupCards();
     LIVE_DATA.playerRegistry = registryRows || [];
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(parseRegistrySheet(registryRows));
@@ -3863,6 +3956,16 @@ function loadLandingData() {
     LIVE_DATA.spProfiles = spProfileRows || [];
     enrichSpProfilesFromLive();
     console.log('[FETCH] SP_Profiles loaded:', LIVE_DATA.spProfiles.length);
+    LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
+    LIVE_DATA.matchups = reconcileTodayMatchups(
+      LIVE_DATA.lineups,
+      gamesRows,
+      parseMatchupRows(matchupsRows),
+      scR,
+      scL
+    );
+    enrichMatchupCards();
+    console.error('[MATCHUPS] showing', LIVE_DATA.matchups.length, 'games after reconcile');
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
     YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
@@ -7008,7 +7111,7 @@ if (document.readyState === 'loading') {
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
   Chase Analytics ù MLB Offensive Intelligence
 </footer>
-  <script src="oem_overhaul.js?v=20260527s"></script>
+  <script src="oem_overhaul.js?v=20260528b"></script>
   <script src="mlbma_standings.js?v=20260527s"></script>
   <script src="mlbma_signals.js?v=20260527s"></script>
   <script src="chase_nav.js?v=20260527s"></script>
