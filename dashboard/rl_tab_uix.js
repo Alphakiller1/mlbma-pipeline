@@ -110,29 +110,27 @@ window.TRENDS_STATE = TRENDS_STATE;
       var team = row.team || row.Team || row.Tm || row.team_abbr || row.t;
       if (!team) return;
       team = String(team).trim().toUpperCase();
-      if (!map[team]) map[team] = { t: team, osiSum: 0, abqSum: 0, rcvSum: 0, obrSum: 0, count: 0 };
-      var osi = parseFloat(row.osi || row.OSI || 0);
-      var abq = parseFloat(row.abq || row.ABQ || 0);
-      var rcv = parseFloat(row.rcv || row.RCV || 0);
-      var obr = parseFloat(row.obr || row.OBR || 0);
-      if (!isNaN(osi) && osi > 0) {
-        map[team].osiSum += osi;
-        map[team].abqSum += abq;
-        map[team].rcvSum += rcv;
-        map[team].obrSum += obr;
-        map[team].count++;
-      }
+      if (!map[team]) map[team] = { t: team, osiSum: 0, abqSum: 0, rcvSum: 0, obrSum: 0, wrcSum: 0, wobaSum: 0, isoSum: 0, paSum: 0, count: 0, paCount: 0 };
+      var d = map[team];
+      var osi = parseFloat(row.osi || row.OSI);
+      var abq = parseFloat(row.abq || row.ABQ);
+      var rcv = parseFloat(row.rcv || row.RCV);
+      var obr = parseFloat(row.obr || row.OBR);
+      var wrc = parseFloat(row["wRC+"] || row.wrc || 0);
+      var woba = parseFloat(row.wOBA || row.woba || 0);
+      var iso = parseFloat(row.ISO || row.iso || 0);
+      var pa = parseFloat(row.PA || row.pa || 1);
+      if (!isNaN(wrc) && pa > 0) { d.wrcSum += wrc * pa; d.wobaSum += woba * pa; d.isoSum += iso * pa; d.paSum += pa; d.paCount++; }
+      if (!isNaN(osi) && osi > 0) { d.osiSum += osi; d.abqSum += abq || 0; d.rcvSum += rcv || 0; d.obrSum += obr || 0; d.count++; }
     });
     return Object.keys(map).sort().map(function(t) {
       var d = map[t];
-      return {
-        t: d.t,
-        osi: d.count ? d.osiSum / d.count : 0,
-        abq: d.count ? d.abqSum / d.count : 0,
-        rcv: d.count ? d.rcvSum / d.count : 0,
-        obr: d.count ? d.obrSum / d.count : 0
-      };
-    });
+      var osi, abq, rcv, obr;
+      if (d.count > 0) { osi = d.osiSum/d.count; abq = d.abqSum/d.count; rcv = d.rcvSum/d.count; obr = d.obrSum/d.count; }
+      else if (d.paCount > 0) { var wa = d.wrcSum/d.paSum; osi = Math.min(100,Math.max(0,(wa/100)*50)); abq = Math.min(100,Math.max(0,(d.wobaSum/d.paSum/0.32)*50)); rcv = Math.min(100,Math.max(0,(d.isoSum/d.paSum/0.16)*50)); obr = osi; }
+      else return null;
+      return { t: d.t, osi: osi, abq: abq, rcv: rcv, obr: obr };
+    }).filter(Boolean);
   }
 
   function profileMapFromTeamProfiles() {
