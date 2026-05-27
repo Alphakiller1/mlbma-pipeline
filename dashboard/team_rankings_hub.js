@@ -1,7 +1,7 @@
-﻿// matchup_hub.js — Team Rankings hub (single load, filter in memory)
+﻿// team_rankings_hub.js — Team Rankings hub (static pill onclick)
 'use strict';
 
-window.HUB_BUILD = '20260604c';
+window.HUB_BUILD = '20260605a';
 console.log('[HUB] script build', window.HUB_BUILD);
 
 window.matchupHubLoaded = false;
@@ -646,13 +646,23 @@ function syncControlPills() {
 }
 
 function applyFilterChange() {
-  syncControlPills();
-  try {
-    updateBanners(false);
-  } catch (bannerErr) {
-    console.warn('[HUB] banner update failed', bannerErr);
-  }
-  renderHubTableNow();
+  _hubRenderTicket++;
+  var ticket = _hubRenderTicket;
+  if (_hubRenderRaf) return;
+  _hubRenderRaf = requestAnimationFrame(function() {
+    _hubRenderRaf = 0;
+    if (ticket !== _hubRenderTicket) {
+      applyFilterChange();
+      return;
+    }
+    syncControlPills();
+    try {
+      updateBanners(false);
+    } catch (bannerErr) {
+      console.warn('[HUB] banner update failed', bannerErr);
+    }
+    renderHubTableNow();
+  });
 }
 
 function setFilter(key, val) {
@@ -684,6 +694,12 @@ function scheduleRenderHubTable() {
 /** Called from static pill onclick in team_rankings.html — always hits latest filter state. */
 function hubPick(key, val) {
   setFilter(key, val);
+  if (window.__HUB_DEBUG && HUB && HUB.scR && HUB.scR.length) {
+    var sample = (HUB.scR[0] && HUB.scR[0].t) || 'ARI';
+    var rows = rowsForCurrentFilter();
+    var row = rows.filter(function(r) { return r.t === sample; })[0];
+    console.log('[HUB] filter', currentFilterKey(), sample, row ? { osi: row.osi, abq: row.abq } : '—');
+  }
 }
 
 function setHand(h) { setFilter('hand', h); }
@@ -978,6 +994,10 @@ function hubLoadData(forceRefresh) {
   _hubLoadPromise = fetchTabRetry(MS, TABS.vs_rhp, 1).then(function(rows) {
     if (gen !== _hubLoadGen) return null;
     var scR = (rows || []).map(scoreFn).filter(Boolean);
+    console.log('[HUB] vs_RHP rows parsed:', scR.length);
+    if (!scR.length) {
+      throw new Error('vs_RHP returned 0 teams — check vs_RHP tab in Google Sheets');
+    }
     return Promise.all([
       fetchTabRetry(MS, TABS.vs_lhp, 1),
       fetchTabRetry(MS, TABS.team_profiles, 2).catch(function(err) {
@@ -1050,7 +1070,20 @@ function initHub() {
     });
   }
   scheduleRenderHubTable();
-  hubLoadData();
+  hubLoadData().catch(function(err) {
+    console.error('[HUB] init load failed', err);
+  });
+  setTimeout(function() {
+    if (HUB.loaded) return;
+    HUB.dataIssue = 'Sheet load timed out — click Retry or run hubLoadData(true) in console.';
+    var body = document.getElementById('hubTableBody');
+    if (body) {
+      body.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:#F87171">'
+        + esc(HUB.dataIssue)
+        + ' <button type="button" class="hub-pill" onclick="hubLoadData(true)" style="margin-left:8px">Retry</button></td></tr>';
+    }
+    hideHubLoading();
+  }, 25000);
 }
 
 try {
@@ -1060,7 +1093,6 @@ try {
     return hubLoadData(!!force);
   };
   window.initHub = initHub;
-  window.hubPick = hubPick;
   window.hubSetFilter = setFilter;
   window.hubResetFilters = function() {
     HUB.hand = 'both';
@@ -1078,4 +1110,7 @@ if (document.readyState === 'loading') {
 } else {
   initHub();
 }
+try {
+  window.__HUB_DEBUG = new URLSearchParams(location.search).get('hubdebug') === '1';
+} catch (e) { window.__HUB_DEBUG = false; }
 window.matchupHubLoaded = true;

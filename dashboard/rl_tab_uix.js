@@ -19,7 +19,9 @@ var TRENDS_STATE = {
 };
 
 /** Bump when trends markup/behavior changes (forces control strip rebuild). */
-var TRENDS_UI_VERSION = '20260529b';
+var TRENDS_UI_VERSION = '20260605a';
+var _trendRenderTicket = 0;
+var _trendRenderRaf = 0;
 
 window.SPLITS_STATE = SPLITS_STATE;
 window.TRENDS_STATE = TRENDS_STATE;
@@ -140,7 +142,7 @@ window.TRENDS_STATE = TRENDS_STATE;
     if (typeof global.profileWindowFieldsFromRow === 'function' && (row.team || row.Team || row.Tm || row.osi != null || row.osi_l30 != null)) {
       return global.profileWindowFieldsFromRow(row);
     }
-    return {
+    var out = {
       osi_ytd: pickProfField(row, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI']),
       osi_l30: pickProfField(row, ['osi_l30', 'OSI_L30', 'l30_osi', 'L30_OSI']),
       osi_l14: pickProfField(row, ['osi_l14', 'OSI_L14', 'l14_osi', 'L14_OSI']),
@@ -148,10 +150,19 @@ window.TRENDS_STATE = TRENDS_STATE;
       abq: pickProfField(row, ['abq', 'ABQ']),
       rcv: pickProfField(row, ['rcv', 'RCV']),
       obr: pickProfField(row, ['obr', 'OBR']),
-      pals: pickProfField(row, ['pals', 'PALS']),
-      home_osi: pickProfField(row, ['home_osi', 'Home_OSI']),
-      away_osi: pickProfField(row, ['away_osi', 'Away_OSI'])
+      pals: pickProfField(row, ['pals', 'PALS'])
     };
+    ['home', 'away'].forEach(function(loc) {
+      ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
+        out[loc + '_' + m] = pickProfField(row, [loc + '_' + m, loc + '_' + m.toUpperCase()]);
+      });
+    });
+    ['abq', 'rcv', 'obr'].forEach(function(m) {
+      ['l30', 'l14', 'l7'].forEach(function(w) {
+        out[m + '_' + w] = pickProfField(row, [m + '_' + w, m.toUpperCase() + '_' + w.toUpperCase()]);
+      });
+    });
+    return out;
   }
 
   function profileMapFromTeamProfiles() {
@@ -212,6 +223,18 @@ window.TRENDS_STATE = TRENDS_STATE;
       return pickProfField(prof, ['osi_ytd', 'OSI_YTD', 'osi', 'OSI']);
     }
     return pickProfField(prof, [mk, mk.toUpperCase(), mk + '_ytd', mk.toUpperCase() + '_YTD']);
+  }
+
+  /** Home/Away vs YTD anchor from Team_Profiles (Batter_Splits tabs lack ABQ/RCV/OBR). */
+  function profileLocationRatio(prof, loc, mk) {
+    if (!prof || loc === 'b' || (loc !== 'home' && loc !== 'away')) return null;
+    if (mk === 'pals') return null;
+    var locVal = pickProfField(prof, [loc + '_' + mk, loc + '_' + mk.toUpperCase()]);
+    var ytdVal = profileYtd(prof, mk);
+    if (locVal == null || isNaN(locVal) || ytdVal == null || isNaN(ytdVal) || Math.abs(ytdVal) < 0.0001) {
+      return null;
+    }
+    return locVal / ytdVal;
   }
 
   function profileWindowOsi(prof, winKey) {
@@ -817,6 +840,26 @@ window.TRENDS_STATE = TRENDS_STATE;
     renderTrendHeatmap();
   }
 
+  function scheduleTrendRender() {
+    _trendRenderTicket++;
+    var ticket = _trendRenderTicket;
+    if (_trendRenderRaf) return;
+    _trendRenderRaf = requestAnimationFrame(function() {
+      _trendRenderRaf = 0;
+      if (ticket !== _trendRenderTicket) {
+        scheduleTrendRender();
+        return;
+      }
+      try {
+        renderTrendHeatmap();
+      } catch (err) {
+        console.error('[TRENDS] renderTrendHeatmap failed', err);
+        var m = document.getElementById('rlTrendTableMount');
+        if (m) m.innerHTML = '<div class="splits-empty" style="color:#F87171">Trend render error: ' + (err && err.message ? err.message : String(err)) + '</div>';
+      }
+    });
+  }
+
   function bindTrendsControls() {
     var root = document.getElementById('trendsControlsRoot');
     if (!root || root.dataset.bound === '1') return;
@@ -828,13 +871,13 @@ window.TRENDS_STATE = TRENDS_STATE;
       if (btn.dataset.trendsMetric) {
         TRENDS_STATE.metric = btn.dataset.trendsMetric;
         activatePill(btn, '[data-trends-metric]', root);
-        renderTrendHeatmap();
+        scheduleTrendRender();
         return;
       }
       if (btn.dataset.trendsLocation) {
         TRENDS_STATE.location = btn.dataset.trendsLocation;
         activatePill(btn, '[data-trends-location]', root);
-        renderTrendHeatmap();
+        scheduleTrendRender();
       }
     });
   }
@@ -889,8 +932,24 @@ window.TRENDS_STATE = TRENDS_STATE;
     var metricWin = pickProfField(prof, [mk + '_' + winKey, mk.toUpperCase() + '_' + winKey.toUpperCase()]);
     if (metricWin == null && winRow) metricWin = num(winRow[mk]);
     if (metricWin == null && mk === 'osi') metricWin = profileWindowOsi(prof, winKey);
-    if (metricWin != null) return { v: metricWin, fb: false };
+    if (metricWin != null) {
+      if (loc !== 'b' && (mk === 'osi' || mk === 'abq' || mk === 'rcv' || mk === 'obr')) {
+        var ratio = profileLocationRatio(prof, loc, mk);
+        if (ratio == null && locRow && locRow[mk] != null) {
+          var ytdAnchor = profileYtd(prof, mk);
+          if (ytdAnchor != null && Math.abs(ytdAnchor) > 0.0001) {
+            ratio = num(locRow[mk]) / ytdAnchor;
+          }
+        }
+        if (ratio != null && !isNaN(ratio)) metricWin = metricWin * ratio;
+      }
+      return { v: metricWin, fb: false };
+    }
 
+    if (loc !== 'b') {
+      var locDirect = pickProfField(prof, [loc + '_' + mk, loc + '_' + mk.toUpperCase()]);
+      if (locDirect != null) return { v: locDirect, fb: true };
+    }
     if (locRow && locRow[mk] != null) {
       return { v: num(locRow[mk]), fb: true };
     }
@@ -959,6 +1018,10 @@ window.TRENDS_STATE = TRENDS_STATE;
 
     tableRows.sort(function(a, b) { return (b.l30 || 0) - (a.l30 || 0); });
     updateTrendsContextLine();
+    if (global.__TREND_DEBUG && tableRows.length) {
+      var sample = tableRows[0];
+      console.log('[TRENDS] render', mk, loc, 'sample', sample.t, sample.l30, sample.l14, sample.l7);
+    }
 
     var winHeaders = ['L30', 'L14', 'L7'];
     var header = '<thead><tr>'
@@ -1090,6 +1153,10 @@ window.TRENDS_STATE = TRENDS_STATE;
       }
     }
   }
+
+  try {
+    global.__TREND_DEBUG = new URLSearchParams(global.location.search).get('trenddebug') === '1';
+  } catch (e) { global.__TREND_DEBUG = false; }
 
   if (RL) {
     RL.initSplitsTab = initSplitsTab;

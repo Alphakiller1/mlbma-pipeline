@@ -97,18 +97,42 @@
     });
   }
 
-  function fetchSheetTab(tabName) {
+  var _sheetTabCache = {};
+  var _sheetTabInflight = {};
+
+  function fetchSheetTab(tabName, options) {
+    options = options || {};
     var sid = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_ID;
     if (!sid) return Promise.reject(new Error('no sheet id'));
+    var key = String(tabName);
+    if (!options.forceRefresh && _sheetTabCache[key]) {
+      return Promise.resolve(_sheetTabCache[key].slice());
+    }
+    if (_sheetTabInflight[key]) {
+      return _sheetTabInflight[key].then(function(rows) { return rows.slice(); });
+    }
     var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName);
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
-    return fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {
+    _sheetTabInflight[key] = fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {
       if (!r.ok) throw new Error('fetch ' + tabName);
       return r.text();
-    }).then(parseCsvText).finally(function() {
+    }).then(parseCsvText).then(function(rows) {
+      _sheetTabCache[key] = rows;
+      return rows;
+    }).finally(function() {
       if (timer) clearTimeout(timer);
+      delete _sheetTabInflight[key];
     });
+    return _sheetTabInflight[key].then(function(rows) { return rows.slice(); });
+  }
+
+  function clearSheetTabCache(tabName) {
+    if (tabName) delete _sheetTabCache[String(tabName)];
+    else {
+      _sheetTabCache = {};
+      _sheetTabInflight = {};
+    }
   }
 
   function normalizeGameKey(raw) {
@@ -504,6 +528,119 @@
     };
   }
 
+  function findScoreRow(rows, team) {
+    var tk = teamKey(team);
+    if (!tk || !rows || !rows.length) return null;
+    for (var i = 0; i < rows.length; i++) {
+      if (teamKey(rows[i].t) === tk) return rows[i];
+    }
+    return null;
+  }
+
+  /** vs RHP / vs LHP YTD ratios vs blended Both — scales Team_Profiles window fields by platoon. */
+  function handMetricRatios(hand, team, scR, scL, scBoth) {
+    if (!hand || hand === 'both') return null;
+    var both = findScoreRow(scBoth, team);
+    var handRow = findScoreRow(hand === 'r' ? scR : scL, team);
+    if (!both || !handRow) return null;
+    var ratios = {};
+    ['osi', 'abq', 'rcv', 'obr', 'projOSI'].forEach(function(m) {
+      var b = both[m], h = handRow[m];
+      if (b != null && h != null && !isNaN(b) && !isNaN(h) && Math.abs(b) > 0.01) {
+        ratios[m] = h / b;
+      }
+    });
+    return Object.keys(ratios).length ? ratios : null;
+  }
+
+  /** PA-weighted team ABQ/RCV/OBR/OSI (+ wRC+/wOBA/SLG) from Batter_Splits_Home/Away rows. */
+  function aggregateTeamOffenseFromBatterRows(rows) {
+    var map = {};
+    (rows || []).forEach(function(row) {
+      var team = teamKey(pickCol(row, 'Tm', 'Team', 'team', 'team_abbr', 't'));
+      if (!team) return;
+      if (!map[team]) {
+        map[team] = {
+          t: team, paSum: 0,
+          osi: 0, abq: 0, rcv: 0, obr: 0,
+          wrc: 0, woba: 0, xwoba: 0, slg: 0,
+          hasOsi: false, hasRate: false
+        };
+      }
+      var d = map[team];
+      var pa = parseFloat(pickCol(row, 'PA', 'pa')) || 0;
+      if (pa < 1) pa = 1;
+      var osi = numOrNull(pickCol(row, 'OSI', 'osi'));
+      var abq = numOrNull(pickCol(row, 'ABQ', 'abq'));
+      var rcv = numOrNull(pickCol(row, 'RCV', 'rcv'));
+      var obr = numOrNull(pickCol(row, 'OBR', 'obr'));
+      if (osi != null && abq != null && rcv != null && obr != null) {
+        d.osi += osi * pa;
+        d.abq += abq * pa;
+        d.rcv += rcv * pa;
+        d.obr += obr * pa;
+        d.hasOsi = true;
+        d.paSum += pa;
+      }
+      var wrc = numOrNull(pickCol(row, 'wRC+', 'wrc', 'wRC'));
+      var woba = numOrNull(pickCol(row, 'wOBA', 'woba'));
+      var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
+      var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
+      if (wrc != null) {
+        d.wrc += wrc * pa;
+        d.woba += (woba != null ? woba : 0) * pa;
+        d.xwoba += (xwoba != null ? xwoba : woba != null ? woba : 0) * pa;
+        d.slg += (slg != null ? slg : 0) * pa;
+        d.hasRate = true;
+        if (!d.hasOsi) d.paSum += pa;
+      }
+    });
+    return Object.keys(map).sort().map(function(t) {
+      var d = map[t];
+      var pa = d.paSum > 0 ? d.paSum : 1;
+      var out = { t: d.t };
+      if (d.hasOsi) {
+        out.osi = Math.round(d.osi / pa * 10) / 10;
+        out.abq = Math.round(d.abq / pa * 10) / 10;
+        out.rcv = Math.round(d.rcv / pa * 10) / 10;
+        out.obr = Math.round(d.obr / pa * 10) / 10;
+        out.ppGap = out.abq - out.rcv;
+        out.projOSI = out.osi;
+      }
+      if (d.hasRate) {
+        var ratePa = d.paSum > 0 ? d.paSum : pa;
+        out.wrc = Math.round(d.wrc / ratePa * 10) / 10;
+        out.woba = Math.round(d.woba / ratePa * 1000) / 1000;
+        out.xwoba = Math.round(d.xwoba / ratePa * 1000) / 1000;
+        out.slg = Math.round(d.slg / ratePa * 1000) / 1000;
+      }
+      if (out.osi == null) return null;
+      return out;
+    }).filter(Boolean);
+  }
+
+  function applyHandMetricRatios(row, ratios) {
+    if (!row || !ratios) return row;
+    var out = Object.assign({}, row);
+    Object.keys(ratios).forEach(function(m) {
+      if (out[m] != null && !isNaN(out[m]) && ratios[m] != null && ratios[m] !== 1) {
+        out[m] = out[m] * ratios[m];
+      }
+    });
+    if (out.abq != null && out.rcv != null) out.ppGap = out.abq - out.rcv;
+    return out;
+  }
+
+  function scaleRowMetrics(row, ratio) {
+    var out = Object.assign({}, row);
+    if (ratio == null || isNaN(ratio) || ratio === 1) return out;
+    ['osi', 'abq', 'rcv', 'obr', 'projOSI', 'wrc', 'woba', 'xwoba', 'slg'].forEach(function(k) {
+      if (out[k] != null && !isNaN(out[k])) out[k] = out[k] * ratio;
+    });
+    if (out.abq != null && out.rcv != null) out.ppGap = out.abq - out.rcv;
+    return out;
+  }
+
   function splitOSI(teamData, spHand) {
     if (!teamData) return null;
     var h = String(spHand || '').trim().toUpperCase().charAt(0);
@@ -734,6 +871,7 @@
     teamKey: teamKey,
     normName: normName,
     fetchSheetTab: fetchSheetTab,
+    clearSheetTabCache: clearSheetTabCache,
     parseCsvText: parseCsvText,
     parseLineupRows: parseLineupRows,
     parseLineup: parseLineup,
@@ -753,6 +891,11 @@
     f5Badge: f5Badge,
     splitOSI: splitOSI,
     scoreRowFromSheet: scoreRowFromSheet,
+    findScoreRow: findScoreRow,
+    handMetricRatios: handMetricRatios,
+    applyHandMetricRatios: applyHandMetricRatios,
+    aggregateTeamOffenseFromBatterRows: aggregateTeamOffenseFromBatterRows,
+    scaleRowMetrics: scaleRowMetrics,
     parseMatchupRows: parseMatchupRows,
     parseBullpenUnitRows: parseBullpenUnitRows,
     parsePalsRows: parsePalsRows,

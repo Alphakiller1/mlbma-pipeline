@@ -53,6 +53,18 @@ PROFILE_COLUMNS = [
     "top_batters",
     "home_osi",
     "away_osi",
+    "home_abq",
+    "home_rcv",
+    "home_obr",
+    "away_abq",
+    "away_rcv",
+    "away_obr",
+    "home_wrc",
+    "home_woba",
+    "home_slg",
+    "away_wrc",
+    "away_woba",
+    "away_slg",
     "home_away_osi_gap",
     "osi_ytd",
     "osi_l30",
@@ -78,6 +90,12 @@ WINDOW_SPLIT_FILES = {
     "l7": "batter_splits_l7.csv",
 }
 METRIC_KEYS = ("osi", "abq", "rcv", "obr")
+RATE_COL_MAP = {
+    "wrc": "wRC+",
+    "woba": "wOBA",
+    "xwoba": "xwOBA",
+    "slg": "SLG",
+}
 
 
 def _load(name: str) -> Optional[pd.DataFrame]:
@@ -111,6 +129,7 @@ def _row_metric(row: pd.Series, col: str) -> Optional[float]:
 
 
 def _pp_gap(row: pd.Series) -> Optional[float]:
+    """Regression gap (projOSI - OSI). Dashboard 'process gap' is ABQ - RCV — see docs/ECOSYSTEM.md."""
     osi = _row_metric(row, "OSI")
     proj = _row_metric(row, "projOSI")
     if osi is None or proj is None:
@@ -448,10 +467,41 @@ def team_offense_from_batter_csv(filename: str) -> Dict[str, Dict[str, float]]:
             return round(float((vals[mask] * w).sum()), 1)
 
         metrics = {k: wmean(k.upper()) for k in METRIC_KEYS}
+        for rate_key, col in RATE_COL_MAP.items():
+            val = wmean(col)
+            if val is not None:
+                if rate_key == "wrc":
+                    metrics[rate_key] = round(val, 1)
+                elif rate_key in ("woba", "xwoba", "slg"):
+                    metrics[rate_key] = round(val, 3)
+                else:
+                    metrics[rate_key] = val
         if metrics.get("osi") is None:
             continue
         out[tm] = metrics
     return out
+
+
+def location_offense_frame() -> pd.DataFrame:
+    """PA-weighted home/away team offense from batter split exports."""
+    home = team_offense_from_batter_csv("batter_splits_home.csv")
+    away = team_offense_from_batter_csv("batter_splits_away.csv")
+    teams = sorted(set(home.keys()) | set(away.keys()))
+    rows = []
+    for tm in teams:
+        h = home.get(tm, {})
+        a = away.get(tm, {})
+        rec: dict = {"team": tm}
+        for prefix, pack in (("home", h), ("away", a)):
+            for key in (*METRIC_KEYS, *RATE_COL_MAP.keys()):
+                val = pack.get(key)
+                if val is not None:
+                    rec[f"{prefix}_{key}"] = val
+        h_osi, a_osi = h.get("osi"), a.get("osi")
+        if h_osi is not None and a_osi is not None:
+            rec["home_away_osi_gap"] = round(h_osi - a_osi, 1)
+        rows.append(rec)
+    return pd.DataFrame(rows)
 
 
 def _load_metric_history() -> pd.DataFrame:
@@ -669,6 +719,12 @@ def run():
     rotation = rotation_summary(pitch, sp_profiles, sp_std)
     bullpen = bullpen_summary(unit, ind, log)
     top_b, ha, trend_adj = batter_aggregates(batter, registry)
+    loc_offense = location_offense_frame()
+    if not ha.empty:
+        ha = ha.drop(
+            columns=[c for c in ("home_osi", "away_osi", "home_away_osi_gap") if c in ha.columns],
+            errors="ignore",
+        )
     windows = window_trend(offense, trend_adj)
 
     all_teams: set = (
@@ -686,7 +742,7 @@ def run():
         return
 
     profile = offense
-    profile = _merge_team(profile, rotation, bullpen, top_b, ha, windows)
+    profile = _merge_team(profile, rotation, bullpen, top_b, ha, loc_offense, windows)
     profile["record_placeholder"] = "--"
 
     for col in PROFILE_COLUMNS:

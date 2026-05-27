@@ -2225,13 +2225,13 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260527s"></script>
-<script src="matchup_shared.js?v=20260528c"></script>
+<script src="matchup_shared.js?v=20260530d"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260527s"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
 <script src="research_lab.js?v=20260529a"></script>
-<script src="rl_tab_uix.js?v=20260529b"></script>
+<script src="rl_tab_uix.js?v=20260605a"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -3119,6 +3119,12 @@ function profileWindowFieldsFromRow(row) {
     home_osi: numOrNull(pickCol(row, ['home_osi', 'Home_OSI'])),
     away_osi: numOrNull(pickCol(row, ['away_osi', 'Away_OSI']))
   };
+  ['home', 'away'].forEach(function(loc) {
+    ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
+      var key = loc + '_' + m;
+      fields[key] = numOrNull(pickCol(row, [key, key.toUpperCase()]));
+    });
+  });
   ['abq', 'rcv', 'obr'].forEach(function(m) {
     ['l30', 'l14', 'l7'].forEach(function(w) {
       fields[m + '_' + w] = numOrNull(pickCol(row, [
@@ -3183,6 +3189,16 @@ function buildWindowRowsFromProfiles(timeframe, splitTab) {
       }
     });
     if (!applied) return null;
+    var MS = window.MLBMASharedMatchup || window.MatchupShared;
+    if (MS && MS.handMetricRatios && splitTab !== 'b') {
+      var ratios = MS.handMetricRatios(
+        splitTab, d.t,
+        LIVE_DATA.scYtdR || SCO_YTD_R,
+        LIVE_DATA.scYtdL || SCO_YTD_L,
+        SCO_YTD_B
+      );
+      if (ratios) row = MS.applyHandMetricRatios(row, ratios);
+    }
     if (row.abq != null && row.rcv != null) row.ppGap = row.abq - row.rcv;
     row.windowPartial = false;
     return row;
@@ -3192,17 +3208,11 @@ function buildWindowRowsFromProfiles(timeframe, splitTab) {
 function syncWindowScoresFromProfiles() {
   var avail = { L30: false, L14: false, L7: false };
   ['L30', 'L14', 'L7'].forEach(function(tf) {
-    var rows = buildWindowRowsFromProfiles(tf, 'b');
-    if (rows.length >= 10) {
-      avail[tf] = true;
-      if (tf === 'L30') SCO_L30_B = rows;
-      else if (tf === 'L14') SCO_L14_B = rows;
-      else SCO_L7_B = rows;
-    } else {
-      if (tf === 'L30') SCO_L30_B = [];
-      else if (tf === 'L14') SCO_L14_B = [];
-      else SCO_L7_B = [];
-    }
+    var rows = buildWindowRowsFromProfiles(tf, 'b') || [];
+    if (tf === 'L30') SCO_L30_B = rows;
+    else if (tf === 'L14') SCO_L14_B = rows;
+    else SCO_L7_B = rows;
+    avail[tf] = rows.length >= 10;
   });
   LIVE_DATA.windowDataAvailable = avail;
   M_L30 = toMap(SCO_L30_B);
@@ -4113,10 +4123,18 @@ function loadResearchData() {
   });
 }
 
+var _liveLoadGen = 0;
+var _liveLoadPromise = null;
+
 function loadLiveData() {
-  console.log('[MLBMA] loadLiveData start');
+  if (_liveLoadPromise) {
+    console.log('[MLBMA] loadLiveData reuse in-flight');
+    return _liveLoadPromise;
+  }
+  var gen = ++_liveLoadGen;
+  console.log('[MLBMA] loadLiveData start gen=' + gen);
   ensureCacheForToday();
-  return loadLandingData()
+  _liveLoadPromise = loadLandingData()
     .then(function() { return loadResearchData(); })
     .catch(function(err) {
       LIVE_DATA.loaded = false;
@@ -4135,7 +4153,11 @@ function loadLiveData() {
         'Could not load live Google Sheets data. Showing embedded fallback. (' + LIVE_DATA.error + ')'
       );
       throw err;
+    })
+    .finally(function() {
+      if (gen === _liveLoadGen) _liveLoadPromise = null;
     });
+  return _liveLoadPromise;
 }
 
 /* ============================================================
@@ -5188,18 +5210,15 @@ function currentRows(){
     else if (STATE.split === 'r') rows = SCO_YTD_R;
     else rows = SCO_YTD_L;
   } else if (STATE.time === 'L30' || STATE.time === 'L14' || STATE.time === 'L7') {
-    var avail = LIVE_DATA.windowDataAvailable || {};
-    if (!avail[STATE.time]) {
-      updateWindowDataBanners();
-      if (STATE.split === 'b') rows = SCO_YTD_B;
-      else if (STATE.split === 'r') rows = SCO_YTD_R;
-      else rows = SCO_YTD_L;
-      return rows && rows.length ? rows : [];
-    }
+    if (typeof syncWindowScoresFromProfiles === 'function') syncWindowScoresFromProfiles();
     if (STATE.split === 'b') {
       rows = STATE.time === 'L30' ? SCO_L30_B : (STATE.time === 'L14' ? SCO_L14_B : SCO_L7_B);
+      if (!rows || !rows.length) rows = buildWindowRowsFromProfiles(STATE.time, 'b');
     } else {
       rows = buildWindowRowsFromProfiles(STATE.time, STATE.split);
+    }
+    if (!rows || !rows.length) {
+      rows = STATE.split === 'r' ? SCO_YTD_R : (STATE.split === 'l' ? SCO_YTD_L : SCO_YTD_B);
     }
   } else {
     rows = SCO_YTD_B;

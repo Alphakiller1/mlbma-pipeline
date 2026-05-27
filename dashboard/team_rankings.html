@@ -1,11 +1,14 @@
 ﻿<!DOCTYPE html>
-<!-- BUILD: 20260526c - matchup_hub.js required -->
+<!-- BUILD: 20260605a - location from Team_Profiles -->
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<script>console.log('[VERSION] build 20260526c');</script>
+<script>
+window.__MLBMA_EXPECT_HUB_BUILD = '20260605a';
+console.log('[VERSION] team_rankings build 20260605a — team_rankings_hub.js ONLY (not matchup_hub.js)');
+</script>
 <meta charset="UTF-8">
 
 
@@ -25,7 +28,7 @@
   }
 })();
 </script>
-<title>Chase Analytics - Team Rankings v20260526</title>
+<title>Chase Analytics - Team Rankings v20260604</title>
 <link rel="stylesheet" href="mlbma_ui.css">
 <link rel="stylesheet" href="mlbma_design_system.css">
 <link rel="stylesheet" href="chase_nav.css">
@@ -129,12 +132,13 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   <span class="subtitle">Loading lineup offense data...</span>
 </div>
 <script>
-// Emergency timeout - runs before any other script
+/* Only dismiss loading overlay if hub never finishes (network/sheet failure) */
 setTimeout(function() {
+  if (window.HUB && window.HUB.loaded) return;
   var l = document.getElementById('hubLoading');
-  if (l) { l.style.display = 'none'; }
-  console.log('[EMERGENCY] Loading timeout fired - hub may have crashed');
-}, 2000);
+  if (l) l.classList.add('hide');
+  console.warn('[HUB] still loading after 20s — run hubLoadData(true) in console or hard refresh');
+}, 20000);
 </script>
 <!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
@@ -194,29 +198,50 @@ setTimeout(function() {
 <main class="container">
   <p class="brand-tag">Chase Analytics &middot; Lineup Research</p>
   <h1>Team Rankings</h1>
-  <p class="subtitle">Global 30-team offensive metrics for lineup research. Filter by metric, handedness, window, and location. Click a row to expand; double-click or use Profile link for team profile.</p>
+  <p class="subtitle">Global 30-team offensive metrics for lineup research. Filter by metric, handedness, window, and location. Click a row to expand; double-click or use Profile link for team profile. If filters stick, serve locally: double-click <code>scripts\serve_team_rankings.bat</code> (or run <code>python -m http.server 8765</code> from the <code>dashboard</code> folder).</p>
 
   <div class="hub-sticky-wrap">
     <div class="hub-control-bar" id="hubControlBar">
       <div class="hub-control-row">
         <div class="hub-ctrl-group">
           <span class="hub-ctrl-label">Handedness</span>
-          <div class="hub-pill-row" id="hubHandPills"></div>
+          <div class="hub-pill-row" id="hubHandPills">
+            <button type="button" class="hub-pill active" data-hub-key="hand" data-val="both" onclick="hubPick('hand','both')">Both</button>
+            <button type="button" class="hub-pill" data-hub-key="hand" data-val="r" onclick="hubPick('hand','r')">vs RHP</button>
+            <button type="button" class="hub-pill" data-hub-key="hand" data-val="l" onclick="hubPick('hand','l')">vs LHP</button>
+          </div>
+        </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Lineup Scope</span>
+          <div class="hub-pill-row" id="hubLineupPills">
+            <button type="button" class="hub-pill active" data-hub-key="lineup" data-val="full" onclick="hubPick('lineup','full')">Full Game</button>
+            <button type="button" class="hub-pill" data-hub-key="lineup" data-val="f5" onclick="hubPick('lineup','f5')">F5</button>
+          </div>
         </div>
         <div class="hub-ctrl-group">
           <span class="hub-ctrl-label">Time Window</span>
-          <div class="hub-pill-row" id="hubWindowPills"></div>
+          <div class="hub-pill-row" id="hubWindowPills">
+            <button type="button" class="hub-pill active" data-hub-key="window" data-val="YTD" onclick="hubPick('window','YTD')">YTD</button>
+            <button type="button" class="hub-pill" data-hub-key="window" data-val="L30" onclick="hubPick('window','L30')">L30</button>
+            <button type="button" class="hub-pill" data-hub-key="window" data-val="L14" onclick="hubPick('window','L14')">L14</button>
+            <button type="button" class="hub-pill" data-hub-key="window" data-val="L7" onclick="hubPick('window','L7')">L7</button>
+          </div>
         </div>
         <div class="hub-ctrl-group">
           <span class="hub-ctrl-label">Location</span>
-          <div class="hub-pill-row" id="hubLocationPills"></div>
+          <div class="hub-pill-row" id="hubLocationPills">
+            <button type="button" class="hub-pill active" data-hub-key="location" data-val="all" onclick="hubPick('location','all')">All</button>
+            <button type="button" class="hub-pill" data-hub-key="location" data-val="home" onclick="hubPick('location','home')">Home</button>
+            <button type="button" class="hub-pill" data-hub-key="location" data-val="away" onclick="hubPick('location','away')">Away</button>
+          </div>
         </div>
         <div class="hub-adv-toggle">
           <input type="checkbox" id="hubAdvCols" />
           <label for="hubAdvCols">Advanced columns</label>
         </div>
       </div>
-      <div class="hub-confirm" id="hubConfirm">Showing: OSI &middot; Both &middot; YTD &middot; All</div>
+      <div class="hub-confirm" id="hubConfirm">Showing: OSI &middot; Both &middot; YTD &middot; All &middot; Full lineup</div>
+      <div id="hubBuildBadge" style="font-size:10px;color:var(--text-3);margin-top:6px"></div>
     </div>
     <div id="hubWindowBanner" class="hub-banner hub-banner--window" style="display:none"></div>
       <div id="hubLocationBanner" class="hub-banner hub-banner--location" style="display:none"></div>
@@ -232,16 +257,15 @@ setTimeout(function() {
   </div>
 </main>
 
-<script src="mlbma_config.js?v=20260527b"></script>
-<script src="mlbma_assets.js?v=20260527b"></script>
-<script src="matchup_shared.js?v=20260527b"></script>
-<script src="mlbma_charts.js?v=20260527b"></script>
+<script src="mlbma_config.js?v=20260605a"></script>
+<script src="mlbma_assets.js?v=20260605a"></script>
+<script src="matchup_shared.js?v=20260605a"></script>
+<script src="mlbma_charts.js?v=20260605a"></script>
 <script>
-console.log('[DEBUG] About to load matchup_hub.js');
 window.onerror = function(msg, src, line, col, err) {
   console.error('[GLOBAL ERROR]', msg, 'at', src, line + ':' + col);
   var hubL = document.getElementById('hubLoading');
-  if (hubL) hubL.style.display = 'none';
+  if (hubL) hubL.classList.add('hide');
   document.body.insertAdjacentHTML('afterbegin',
     '<div style="color:red;padding:20px;font-size:14px;position:fixed;top:60px;left:20px;z-index:9999;background:#1a0000;border:1px solid red;border-radius:8px;max-width:600px">' +
     '<strong>JS Error:</strong> ' + msg + '<br>at ' + src + ' ' + line + ':' + col +
@@ -249,7 +273,21 @@ window.onerror = function(msg, src, line, col, err) {
 };
 </script>
 <!-- Team Rankings hub — required; load before chase_nav.js -->
-<script src="matchup_hub.js?v=20260529c"></script>
-<script src="chase_nav.js?v=20260527b"></script>
+<script src="team_rankings_hub.js?v=20260605a"></script>
+<script>
+(function() {
+  var ok = window.HUB_BUILD === window.__MLBMA_EXPECT_HUB_BUILD;
+  console.log('[VERSION] hub check:', window.HUB_BUILD, ok ? 'OK' : 'STALE — hard refresh');
+  var badge = document.getElementById('hubBuildBadge');
+  if (badge) badge.textContent = 'Hub build: ' + (window.HUB_BUILD || 'missing');
+  if (!ok) {
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div id="hubStaleBanner" style="position:fixed;top:56px;left:0;right:0;z-index:200;background:#7f1d1d;color:#fff;padding:10px 16px;font-size:13px;text-align:center">' +
+      'Wrong hub script loaded. Hard refresh (Ctrl+Shift+R). Need build <strong>' + (window.__MLBMA_EXPECT_HUB_BUILD || '20260604i') + '</strong>.' +
+      '</div>');
+  }
+})();
+</script>
+<script src="chase_nav.js?v=20260605a"></script>
 </body>
 </html>

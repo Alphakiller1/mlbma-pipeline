@@ -86,6 +86,13 @@ F5_OSI_WEIGHTS = {"ABQ": 0.45, "OBR": 0.35, "RCV": 0.20}
 
 # Batter profile system
 BATTER_MIN_PA = 50
+# Date-window leaderboards: lower PA floor (7-day windows rarely reach 50 PA)
+BATTER_WINDOW_MIN_PA = {
+    "overall": 50,
+    "recent": 25,
+    "l14": 15,
+    "l7": 8,
+}
 BATTER_RECENT_DAYS = 30
 BATTER_TREND_RISING_MIN = 3.0
 BATTER_TREND_FALLING_MAX = -3.0
