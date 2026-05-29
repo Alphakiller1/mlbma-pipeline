@@ -4967,14 +4967,18 @@ function bindFilterHelp() {
 }
 
 var RESEARCH_SUBTABS = ['lineup', 'compare', 'pitching'];
+var CURRENT_RL_SUBTAB = 'lineup';
 
 function getInitialRlTab() {
+  if (CURRENT_RL_SUBTAB && RESEARCH_SUBTABS.indexOf(CURRENT_RL_SUBTAB) >= 0) {
+    return CURRENT_RL_SUBTAB;
+  }
   try {
     var t = sessionStorage.getItem('rlTab');
     if (t === 'trends' || t === 'splits' || t === 'splits-trends') t = 'lineup';
     if (t === 'pitcher') t = 'pitching';
     if (t && RESEARCH_SUBTABS.indexOf(t) >= 0) {
-      sessionStorage.removeItem('rlTab');
+      CURRENT_RL_SUBTAB = t;
       return t;
     }
   } catch (e) { /* ignore */ }
@@ -4999,6 +5003,8 @@ function showResearchSubtab(name) {
   if (name === 'pitching-vs-lineup') name = 'compare';
   if (name === 'pitcher') name = 'pitching';
   if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'lineup';
+  CURRENT_RL_SUBTAB = name;
+  try { sessionStorage.setItem('rlTab', name); } catch (e) { /* ignore */ }
   RESEARCH_SUBTABS.forEach(function(id) {
     var el = document.getElementById('pane-' + id);
     if (el) {

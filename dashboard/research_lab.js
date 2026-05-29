@@ -215,7 +215,7 @@ function profileWindowFieldsFromRow(row) {
     tick();
   }
 
-  var SUBTABS = ['trends', 'splits', 'compare', 'pitching'];
+  var SUBTABS = ['lineup', 'compare', 'pitching'];
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1313,16 +1313,41 @@ function profileWindowFieldsFromRow(row) {
     global._rlSubtabHooked = true;
     var orig = global.showResearchSubtab;
     global.showResearchSubtab = function(name) {
+      if (name === 'research-home' || name === 'trends' || name === 'splits' || name === 'splits-trends') name = 'lineup';
+      if (name === 'pitcher') name = 'pitching';
+      if (name === 'pitching-vs-lineup') name = 'compare';
+      if (SUBTABS.indexOf(name) < 0) name = 'lineup';
       if (typeof orig === 'function') orig(name);
       else {
         SUBTABS.forEach(function(id) {
           var el = document.getElementById('pane-' + id);
-          if (el) el.style.display = (id === name) ? 'block' : 'none';
+          if (!el) return;
+          if (id === name) {
+            el.style.cssText = 'display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important;';
+            el.hidden = false;
+            el.removeAttribute('hidden');
+          } else {
+            el.style.cssText = 'display:none!important;';
+            el.hidden = true;
+          }
         });
         var layer = document.getElementById('layerAdvanced');
         if (layer) {
           layer.querySelectorAll('.subtab').forEach(function(btn) {
-            btn.classList.toggle('active', btn.getAttribute('data-pane') === name);
+            var pane = btn.getAttribute('data-pane');
+            if (pane === 'trends' || pane === 'splits' || pane === 'splits-trends') pane = 'lineup';
+            if (pane === 'pitcher') pane = 'pitching';
+            btn.classList.toggle('active', pane === name);
+          });
+        }
+        var root = document.getElementById('section-research-lab');
+        if (root) {
+          root.querySelectorAll('.ca-lab__tab').forEach(function(tab) {
+            var pane = tab.getAttribute('data-pane');
+            if (pane === 'pitcher') pane = 'pitching';
+            var active = pane === name;
+            tab.classList.toggle('ca-lab__tab--active', active);
+            tab.setAttribute('aria-selected', active ? 'true' : 'false');
           });
         }
         onSubtab(name);
