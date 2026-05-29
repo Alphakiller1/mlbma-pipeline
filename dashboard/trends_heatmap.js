@@ -185,7 +185,7 @@
   function metricPill(metric, state) {
     var on = state.metric === metric.key;
     return '<button class="thm-pill' + (on ? ' active' : '') + (metric.phase ? ' is-phase1' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.phase ? ' title="Proxy metric until Phase 1 feed"' : '') + '>'
-      + esc(metric.label) + (metric.phase ? '<span class="thm-phase">Phase 1</span>' : '') + '</button>';
+      + esc(metric.label) + '</button>';
   }
   function choicePill(group, key, val, label, state) {
     var on = state[key] === val;
