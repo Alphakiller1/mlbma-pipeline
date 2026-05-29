@@ -1089,9 +1089,7 @@ function initHub() {
 try {
   window.HUB = HUB;
   window.renderHubTable = renderHubTable;
-  window.hubLoadData = function(force) {
-    return hubLoadData(!!force);
-  };
+window.hubLoadData = hubLoadData;
   window.initHub = initHub;
   window.hubSetFilter = setFilter;
   window.hubResetFilters = function() {
