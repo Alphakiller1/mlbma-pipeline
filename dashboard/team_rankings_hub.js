@@ -21,6 +21,7 @@ var _hubStore = null;
 var _hubRowCache = null;
 var _hubRenderTicket = 0;
 var _hubRenderRaf = 0;
+var _hubFallbackWarned = false;
 
 var HUB_HANDS = ['both', 'r', 'l'];
 var HUB_WINDOWS = ['YTD', 'L30', 'L14', 'L7'];
@@ -61,15 +62,33 @@ function bindHubGlobals() {
 }
 
 try {
+  var cfgDefaults = (window.MLBMA_CONFIG && window.MLBMA_CONFIG.FILTER_DEFAULTS) || {};
+  var scopeDefaults = (window.MLBMA_CONFIG && window.MLBMA_CONFIG.SCOPE_DEFAULTS) || {};
+  var defaultFilter = (window.MLBMASharedMatchup && window.MLBMASharedMatchup.createFilterState)
+    ? window.MLBMASharedMatchup.createFilterState(cfgDefaults)
+    : {
+        hand: 'both',
+        location: 'all',
+        pitcher: 'both',
+        batSide: 'both',
+        segment: 'full',
+        window: 'YTD'
+      };
+  var defaultScope = (window.MLBMASharedMatchup && window.MLBMASharedMatchup.createScopeState)
+    ? window.MLBMASharedMatchup.createScopeState(scopeDefaults)
+    : { mode: 'all', team: null };
   HUB = {
     scR: [], scL: [], scBoth: [], scHome: [], scAway: [],
     teamProfiles: {},
     windowAvail: { L30: false, L14: false, L7: false },
     locationAvail: { home: false, away: false },
-    hand: 'both',
-    lineup: 'full',
-    window: 'YTD',
-    location: 'all',
+    filter: defaultFilter,
+    scope: defaultScope,
+    family: 'summary',
+    hand: defaultFilter.hand,
+    lineup: defaultFilter.segment,
+    window: defaultFilter.window,
+    location: defaultFilter.location,
     showAdvanced: false,
     sortKey: 'osi',
     sortDir: -1,
@@ -80,6 +99,83 @@ try {
 } catch (e) {
   console.error('[HUB] HUB object crash:', e.message, e.stack);
   HUB = { scR: [], scL: [], scBoth: [], loaded: false };
+}
+
+function syncLegacyFilterFields() {
+  if (!HUB.filter) return;
+  HUB.hand = HUB.filter.hand;
+  HUB.location = HUB.filter.location;
+  HUB.lineup = HUB.filter.segment;
+  HUB.window = HUB.filter.window;
+}
+
+function normalizeHubState() {
+  if (hubS && hubS.createFilterState) HUB.filter = hubS.createFilterState(HUB.filter || {});
+  if (!HUB.filter) {
+    HUB.filter = { hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' };
+  }
+  if (hubS && hubS.createScopeState) HUB.scope = hubS.createScopeState(HUB.scope || {});
+  if (!HUB.scope) HUB.scope = { mode: 'all', team: null };
+  if (!HUB.family) HUB.family = 'summary';
+  syncLegacyFilterFields();
+}
+
+function isAllowedValue(value, allowed) {
+  return allowed.indexOf(String(value || '').toLowerCase()) >= 0;
+}
+
+function applyUrlState() {
+  try {
+    var p = new URLSearchParams(location.search);
+    normalizeHubState();
+    var f = Object.assign({}, HUB.filter || {});
+    var hand = (p.get('hand') || '').toLowerCase();
+    var loc = (p.get('loc') || '').toLowerCase();
+    var pitch = (p.get('pitch') || '').toLowerCase();
+    var side = (p.get('side') || '').toLowerCase();
+    var seg = (p.get('seg') || '').toLowerCase();
+    var win = (p.get('window') || '').toUpperCase();
+    if (isAllowedValue(hand, ['both', 'r', 'l'])) f.hand = hand;
+    if (isAllowedValue(loc, ['all', 'home', 'away'])) f.location = loc;
+    if (isAllowedValue(pitch, ['both', 'sp', 'rp'])) f.pitcher = pitch;
+    if (isAllowedValue(side, ['both', 'rhb', 'lhb'])) f.batSide = side;
+    if (isAllowedValue(seg, ['full', 'f5'])) f.segment = seg;
+    if (isAllowedValue(win, ['YTD', 'L30', 'L14', 'L7'])) f.window = win;
+    HUB.filter = hubS && hubS.createFilterState ? hubS.createFilterState(f) : f;
+
+    var scope = (p.get('scope') || '').toLowerCase();
+    if (isAllowedValue(scope, ['all', 'team'])) HUB.scope.mode = scope;
+    var team = (p.get('team') || '').toUpperCase();
+    HUB.scope.team = HUB.scope.mode === 'team' && team ? teamKey(team) : null;
+    var family = (p.get('family') || '').toLowerCase();
+    if (isAllowedValue(family, ['summary', 'surface', 'scoring', 'difficulty'])) HUB.family = family;
+  } catch (e) {
+    console.warn('[HUB] failed to parse URL state', e);
+  }
+  syncLegacyFilterFields();
+}
+
+function persistUrlState() {
+  try {
+    normalizeHubState();
+    var f = HUB.filter || {};
+    var s = HUB.scope || { mode: 'all', team: null };
+    var p = new URLSearchParams(location.search);
+    p.set('hand', f.hand);
+    p.set('loc', f.location);
+    p.set('pitch', f.pitcher);
+    p.set('side', f.batSide);
+    p.set('seg', f.segment);
+    p.set('window', f.window);
+    p.set('scope', s.mode || 'all');
+    p.set('family', HUB.family || 'summary');
+    if (s.mode === 'team' && s.team) p.set('team', teamKey(s.team));
+    else p.delete('team');
+    var next = location.pathname + '?' + p.toString() + location.hash;
+    history.replaceState(null, '', next);
+  } catch (e) {
+    console.warn('[HUB] failed to persist URL state', e);
+  }
 }
 
 function esc(s) {
@@ -133,6 +229,102 @@ function trendColor(t) {
   return '#9CA3AF';
 }
 
+function ordinal(n) {
+  n = Number(n) || 0;
+  var mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 13) return n + 'th';
+  if (n % 10 === 1) return n + 'st';
+  if (n % 10 === 2) return n + 'nd';
+  if (n % 10 === 3) return n + 'rd';
+  return n + 'th';
+}
+
+function familyMetricDefs() {
+  var fam = HUB.family || 'summary';
+  if (fam === 'scoring') {
+    return [
+      { key: 'wrc', label: 'wRC+', d: 0, color: function(v) { return wrcColor(v); } },
+      { key: 'woba', label: 'wOBA', d: 3, color: function(v) { return wobaColor(v); } },
+      { key: 'osi', label: 'OSI', d: 1, color: function(v) { return mc(v, 'osi'); } },
+      { key: 'rcv', label: 'RCV', d: 1, color: function(v) { return mc(v, 'rcv'); } }
+    ];
+  }
+  if (fam === 'difficulty') {
+    return [
+      { key: 'abq', label: 'ABQ', d: 1, color: function(v) { return mc(v, 'abq'); } },
+      { key: 'obr', label: 'OBR', d: 1, color: function(v) { return mc(v, 'obr'); } },
+      { key: 'ppGap', label: 'PP-Gap', d: 1, color: function(v) { return mc(v, 'ppGap'); } },
+      { key: 'osi', label: 'OSI', d: 1, color: function(v) { return mc(v, 'osi'); } }
+    ];
+  }
+  if (fam === 'surface') {
+    return [
+      { key: 'osi', label: 'OSI', d: 1, color: function(v) { return mc(v, 'osi'); } },
+      { key: 'projOSI', label: 'ProjOSI', d: 1, color: function(v) { return mc(v, 'osi'); } },
+      { key: 'pals', label: 'PALS', d: 1, color: function(v) { return mc(v, 'osi'); } },
+      { key: 'trend', label: 'Trend', d: null, color: function() { return '#A1A1AA'; }, trend: true }
+    ];
+  }
+  return [
+    { key: 'osi', label: 'OSI', d: 1, color: function(v) { return mc(v, 'osi'); } },
+    { key: 'wrc', label: 'wRC+', d: 0, color: function(v) { return wrcColor(v); } },
+    { key: 'abq', label: 'ABQ', d: 1, color: function(v) { return mc(v, 'abq'); } },
+    { key: 'trend', label: 'Trend', d: null, color: function() { return '#A1A1AA'; }, trend: true }
+  ];
+}
+
+function rankInfo(rows, key, team) {
+  var pool = (rows || []).filter(function(r) { return r && r[key] != null && !isNaN(r[key]); })
+    .slice()
+    .sort(function(a, b) { return b[key] - a[key]; });
+  if (!pool.length) return null;
+  var idx = pool.findIndex(function(r) { return r.t === team; });
+  if (idx < 0) return null;
+  var rank = idx + 1;
+  var pct = pool.length > 1 ? Math.round(((pool.length - rank) / (pool.length - 1)) * 100) : 100;
+  return { rank: rank, total: pool.length, pct: pct };
+}
+
+var TEAM_HELP_DEFAULT = 'Aliases supported: SF, TB, KC, SD, WSH, OAK, AZ';
+
+function setTeamInputStatus(msg, isError) {
+  var status = document.getElementById('hubTeamStatus');
+  var input = document.getElementById('hubTeamSelect');
+  if (status) {
+    status.textContent = msg || TEAM_HELP_DEFAULT;
+    status.classList.toggle('is-error', !!isError);
+  }
+  if (input) input.classList.toggle('is-invalid', !!isError);
+}
+
+function renderTeamCards(target, allRows) {
+  var cards = document.getElementById('hubTeamCards');
+  var tableWrap = document.getElementById('hubTableWrap');
+  if (!cards || !tableWrap || !target) return false;
+  var defs = familyMetricDefs();
+  var intro = (HUB.family || 'summary') + ' · ' + (HUB.filter && HUB.filter.window ? HUB.filter.window : 'YTD');
+  var body = '<div class="hub-team-title">' + hubTeamLogo(target.t) + '<h2>' + esc(target.t) + '</h2></div>'
+    + '<div class="hub-team-sub">' + esc(intro) + '</div><div class="hub-kpi-grid">';
+  defs.forEach(function(def) {
+    var v = target[def.key];
+    var val = def.trend
+      ? '<span class="trend-badge" style="background:' + trendColor(v) + '22;color:' + trendColor(v) + '">' + esc(v || 'Stable') + '</span>'
+      : fmt(v, def.d);
+    var ri = def.trend ? null : rankInfo(allRows, def.key, target.t);
+    var meter = ri ? '<div class="hub-kpi-meter"><span style="width:' + ri.pct + '%"></span></div>' : '';
+    var meta = ri ? ('<span>' + ordinal(ri.rank) + ' of ' + ri.total + '</span><span>' + ordinal(ri.pct) + ' pct</span>') : '<span>—</span><span>—</span>';
+    var valClass = def.trend ? 'hub-kpi-val hub-kpi-val--tag' : 'hub-kpi-val';
+    body += '<article class="hub-kpi-card"><div class="hub-kpi-lab">' + esc(def.label) + '</div>'
+      + '<div class="' + valClass + '" style="color:' + (def.color ? def.color(v) : '#F4F4F7') + '">' + val + '</div>'
+      + '<div class="hub-kpi-meta">' + meta + '</div>' + meter + '</article>';
+  });
+  body += '</div>';
+  cards.innerHTML = body;
+  cards.classList.add('show');
+  tableWrap.style.display = 'none';
+  return true;
+}
+
 function teamKey(t) {
   return hubS && hubS.teamKey ? hubS.teamKey(t) : String(t || '').trim().toUpperCase();
 }
@@ -147,6 +339,7 @@ function pick(row, keys) {
 }
 
 function mergeBoth(scR, scL) {
+  if (hubS && hubS.blendSplits) return hubS.blendSplits(scR, scL);
   var by = {};
   scR.forEach(function(r) { by[r.t] = { r: r }; });
   scL.forEach(function(l) {
@@ -312,106 +505,6 @@ function buildLocationScoresFromProfiles() {
   rebuildLocationMaps();
 }
 
-function windowSuffix(win) {
-  if (win === 'L30') return 'l30';
-  if (win === 'L14') return 'l14';
-  if (win === 'L7') return 'l7';
-  return null;
-}
-
-function tierInfo(osi) {
-  if (osi == null || isNaN(osi)) return { label: '\u2014', cls: 'tier-incon' };
-  if (osi >= 85) return { label: 'Elite', cls: 'tier-elite' };
-  if (osi >= 75) return { label: 'High-Level', cls: 'tier-high' };
-  if (osi >= 65) return { label: 'Dangerous', cls: 'tier-danger' };
-  if (osi >= 50) return { label: 'Inconsistent', cls: 'tier-incon' };
-  return { label: 'Weak', cls: 'tier-weak' };
-}
-
-function computeTrend(ytd, l14, l7) {
-  ytd = num(ytd); l14 = num(l14); l7 = num(l7);
-  if (ytd == null) return 'Stable';
-  if (l14 != null && l7 != null && l14 > ytd + 3 && l7 > ytd + 3) return 'Rising';
-  if ((l14 != null && l14 < ytd - 3) || (l7 != null && l7 < ytd - 5)) return 'Cooling';
-  if (l7 != null && l7 > ytd + 5 && l14 != null && Math.abs(l14 - ytd) <= 2) return 'Fake Hot';
-  return 'Stable';
-}
-
-function computeTakeaway(d) {
-  var ti = tierInfo(d.osi);
-  var pp = d.ppGap != null ? d.ppGap : 0;
-  var osi = d.osi != null ? d.osi : 0;
-  if (osi >= 75 && pp < -5) return 'High-level output but cooling trend';
-  if (osi >= 75 && pp > 5) return 'Elite process and production';
-  if (osi < 50 && pp > 5) return 'Weak production but process improving';
-  if (d.trend === 'Fake Hot') return 'Hot streak unsupported by process';
-  return ti.label + ' offense';
-}
-
-function scaleRowMetrics(row, ratio) {
-  if (hubS && hubS.scaleRowMetrics) return hubS.scaleRowMetrics(row, ratio);
-  return row;
-}
-
-function handRatiosForTeam(team) {
-  if (!hubS || !hubS.handMetricRatios) return null;
-  var store = hubData();
-  return hubS.handMetricRatios(HUB.hand, team, store.scR, store.scL, store.scBoth);
-}
-
-function applyHandPlatoonToRow(d) {
-  if (HUB.hand === 'both' || !hubS || !hubS.applyHandMetricRatios) return d;
-  var ratios = handRatiosForTeam(d.t);
-  return ratios ? hubS.applyHandMetricRatios(d, ratios) : d;
-}
-
-function applyLineupScopeToRow(d) {
-  if (HUB.lineup !== 'f5') return d;
-  var out = Object.assign({}, d);
-  if (out.abq != null && out.obr != null && out.rcv != null) {
-    out.osi = (out.abq * 0.45) + (out.obr * 0.35) + (out.rcv * 0.20);
-  }
-  if (out.abq != null && out.rcv != null) out.ppGap = out.abq - out.rcv;
-  return out;
-}
-
-function profileYtdMetric(prof, m) {
-  if (m === 'osi') return prof.osi_ytd != null ? prof.osi_ytd : prof.osi;
-  return prof[m];
-}
-
-function locationMetricRatio(prof, loc, m) {
-  var locVal = prof[loc + '_' + m];
-  var ytdVal = profileYtdMetric(prof, m);
-  if (locVal == null || isNaN(locVal) || ytdVal == null || isNaN(ytdVal) || Math.abs(ytdVal) < 0.01) {
-    return null;
-  }
-  return locVal / ytdVal;
-}
-
-function applyWindowToRow(d) {
-  if (HUB.window === 'YTD') return Object.assign({}, d);
-  var prof = hubProfile(d.t);
-  var suf = windowSuffix(HUB.window);
-  if (!suf) return d;
-  var out = Object.assign({}, d);
-  var applied = false;
-  ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
-    var wv = prof[m + '_' + suf];
-    if (wv != null && !isNaN(wv)) {
-      out[m] = wv;
-      applied = true;
-    }
-  });
-  if (!applied) return d;
-  /* Team_Profiles windows are overall — scale by vs RHP/LHP YTD platoon split */
-  out = applyHandPlatoonToRow(out);
-  if (out.projOSI != null && d.ytdOSI) {
-    out.projOSI = d.ytdOSI ? out.osi + (d.projOSI - d.ytdOSI) : out.projOSI;
-  }
-  return out;
-}
-
 function rebuildLocationMaps() {
   _hubLocHomeMap = {};
   _hubLocAwayMap = {};
@@ -426,93 +519,6 @@ function rebuildLocationMaps() {
   });
 }
 
-function locationRowForTeam(team) {
-  var loc = HUB.location;
-  if (loc !== 'home' && loc !== 'away') return null;
-  var tk = teamKey(team);
-  if (!tk) return null;
-  var map = loc === 'home' ? _hubLocHomeMap : _hubLocAwayMap;
-  return map && map[tk] ? map[tk] : null;
-}
-
-function overlayLocationRateStats(out, prof, loc, locRow) {
-  ['wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
-    var v = prof[loc + '_' + m];
-    if ((v == null || isNaN(v)) && locRow) v = locRow[m];
-    if (v != null && !isNaN(v)) out[m] = v;
-  });
-  return out;
-}
-
-function locationAlreadyInBaseRows() {
-  var store = hubData();
-  return HUB.window === 'YTD' && HUB.hand === 'both'
-    && (HUB.location === 'home' || HUB.location === 'away')
-    && ((HUB.location === 'home' && (store.scHome || []).length >= 10)
-      || (HUB.location === 'away' && (store.scAway || []).length >= 10));
-}
-
-/** Platoon + rolling windows: scale hand row by home/away vs YTD team anchors in Team_Profiles. */
-function applyLocationToRow(d) {
-  if (HUB.location !== 'home' && HUB.location !== 'away') return d;
-  if (locationAlreadyInBaseRows()) return d;
-
-  var loc = HUB.location;
-  var prof = hubProfile(d.t);
-  var locRow = locationRowForTeam(d.t);
-  var out = Object.assign({}, d);
-  var scaled = false;
-
-  ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
-    var ratio = locationMetricRatio(prof, loc, m);
-    if (ratio == null || isNaN(ratio)) return;
-    if (d[m] != null && !isNaN(d[m])) {
-      out[m] = d[m] * ratio;
-      scaled = true;
-    }
-  });
-
-  if (!scaled) return d;
-
-  out = overlayLocationRateStats(out, prof, loc, locRow);
-  if (out.abq != null && out.rcv != null) out.ppGap = out.abq - out.rcv;
-  if (d.projOSI != null && d.osi != null && out.osi != null) {
-    out.projOSI = d.projOSI + (out.osi - d.osi);
-  } else if (out.projOSI == null && out.osi != null) {
-    out.projOSI = out.osi;
-  }
-  return out;
-}
-
-function filterBaseRows() {
-  return handBaseRows();
-}
-
-function hubProfile(team) {
-  var tk = teamKey(team);
-  var profs = hubData().teamProfiles || {};
-  return profs[tk] || profs[team] || {};
-}
-
-function enrichRow(base) {
-  var t = base.t;
-  var prof = hubProfile(t);
-  var d = Object.assign({}, base);
-  if (d.ppGap == null && d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
-  d.ytdOSI = prof.osi_ytd != null ? prof.osi_ytd : base.osi;
-  d.l30OSI = prof.osi_l30;
-  d.l14OSI = prof.osi_l14;
-  d.l7OSI = prof.osi_l7;
-  d = applyWindowToRow(d);
-  d = applyLocationToRow(d);
-  d = applyLineupScopeToRow(d);
-  d.trend = computeTrend(d.ytdOSI, d.l14OSI, d.l7OSI);
-  d.tier = tierInfo(d.osi);
-  d.takeaway = computeTakeaway(d);
-  if (d.pals == null && _hubPalsMap) d.pals = _hubPalsMap[t];
-  return d;
-}
-
 function buildPalsMap() {
   _hubPalsMap = {};
   if (!window.LIVE_DATA || !window.LIVE_DATA.pals || !hubS) return;
@@ -522,38 +528,11 @@ function buildPalsMap() {
   });
 }
 
-function resolveHandRowSource() {
-  var store = hubData();
-  var hand = HUB.hand || 'both';
-  var loc = HUB.location || 'all';
-  var win = HUB.window || 'YTD';
-
-  if (win === 'YTD') {
-    if (loc === 'home' && hand === 'both' && (store.scHome || []).length >= 10) {
-      return store.scHome;
-    }
-    if (loc === 'away' && hand === 'both' && (store.scAway || []).length >= 10) {
-      return store.scAway;
-    }
-    if (hand === 'r') return store.scR || [];
-    if (hand === 'l') return store.scL || [];
-    return (store.scBoth && store.scBoth.length) ? store.scBoth : (store.scR || []);
-  }
-
-  if (hand === 'r') return store.scR || [];
-  if (hand === 'l') return store.scL || [];
-  return (store.scBoth && store.scBoth.length) ? store.scBoth : (store.scR || []);
-}
-
-function handBaseRows() {
-  return (resolveHandRowSource() || []).map(function(r) {
-    return Object.assign({}, r);
-  });
-}
-
 function currentFilterKey(state) {
   var s = state || HUB;
-  return [s.hand, s.window, s.location, s.lineup].join('|');
+  var f = s.filter || {};
+  if (hubS && hubS.filterKey) return hubS.filterKey(f);
+  return [f.hand, f.location, f.pitcher, f.batSide, f.segment, f.window].join('|');
 }
 
 function cloneEnrichedRows(rows) {
@@ -563,7 +542,15 @@ function cloneEnrichedRows(rows) {
 }
 
 function rebuildMasterRows() {
-  return filterBaseRows().map(function(r) { return enrichRow(r); });
+  normalizeHubState();
+  if (hubS && hubS.resolveLineupRows) {
+    return hubS.resolveLineupRows(hubData(), HUB.filter || {});
+  }
+  if (!_hubFallbackWarned) {
+    _hubFallbackWarned = true;
+    console.warn('[HUB] shared resolver missing; returning empty rows to avoid divergent local resolver path');
+  }
+  return [];
 }
 
 function registerPoolsForRows(rows) {
@@ -576,29 +563,32 @@ function registerPoolsForRows(rows) {
 function precomputeHubRowCache() {
   _hubRowCache = {};
   if (!_hubStore || !HUB.scR.length) return;
+  normalizeHubState();
   var saved = {
-    hand: HUB.hand,
-    window: HUB.window,
-    location: HUB.location,
-    lineup: HUB.lineup
+    hand: HUB.filter.hand,
+    window: HUB.filter.window,
+    location: HUB.filter.location,
+    segment: HUB.filter.segment
   };
   HUB_HANDS.forEach(function(hand) {
     HUB_WINDOWS.forEach(function(win) {
       HUB_LOCS.forEach(function(loc) {
         HUB_LINEUPS.forEach(function(lineup) {
-          HUB.hand = hand;
-          HUB.window = win;
-          HUB.location = loc;
-          HUB.lineup = lineup;
+          HUB.filter.hand = hand;
+          HUB.filter.window = win;
+          HUB.filter.location = loc;
+          HUB.filter.segment = lineup;
+          syncLegacyFilterFields();
           _hubRowCache[currentFilterKey()] = cloneEnrichedRows(rebuildMasterRows());
         });
       });
     });
   });
-  HUB.hand = saved.hand;
-  HUB.window = saved.window;
-  HUB.location = saved.location;
-  HUB.lineup = saved.lineup;
+  HUB.filter.hand = saved.hand;
+  HUB.filter.window = saved.window;
+  HUB.filter.location = saved.location;
+  HUB.filter.segment = saved.segment;
+  syncLegacyFilterFields();
   console.log('[HUB] precomputed ' + Object.keys(_hubRowCache).length + ' table views');
 }
 
@@ -623,26 +613,42 @@ function sortRows(rows) {
 }
 
 function confirmLine() {
-  var handLbl = { both: 'Both', r: 'vs RHP', l: 'vs LHP' }[HUB.hand] || HUB.hand;
-  var locLbl = { all: 'All', home: 'Home', away: 'Away' }[HUB.location] || HUB.location;
-  var lineupLbl = HUB.lineup === 'f5' ? 'F5 lineup' : 'Full lineup';
-  return 'Showing: <strong>OSI</strong> \u00B7 <strong>' + esc(handLbl)
-    + '</strong> \u00B7 <strong>' + esc(HUB.window) + '</strong> \u00B7 <strong>' + esc(locLbl)
-    + '</strong> \u00B7 <strong>' + esc(lineupLbl) + '</strong>';
+  var f = HUB.filter || {};
+  var scopeLbl = HUB.scope && HUB.scope.mode === 'team' ? 'One team' : 'All teams';
+  var familyLbl = HUB.family || 'summary';
+  var handLbl = { both: 'both', r: 'vs RHP', l: 'vs LHP' }[f.hand] || f.hand;
+  var locLbl = { all: 'all', home: 'home', away: 'away' }[f.location] || f.location;
+  var pitchLbl = { both: 'both', sp: 'vs SP', rp: 'vs RP' }[f.pitcher] || f.pitcher;
+  var sideLbl = { both: 'both', rhb: 'as RHB', lhb: 'as LHB' }[f.batSide] || f.batSide;
+  var segLbl = f.segment === 'f5' ? 'F5' : 'full game';
+  var winLbl = f.window || 'YTD';
+  return esc(scopeLbl) + ' \u00B7 ' + esc(familyLbl) + ' \u00B7 ' + esc(handLbl)
+    + ' \u00B7 ' + esc(locLbl) + ' \u00B7 ' + esc(pitchLbl)
+    + ' \u00B7 ' + esc(sideLbl) + ' \u00B7 ' + esc(segLbl) + ' \u00B7 ' + esc(winLbl);
 }
 
 function syncControlPills() {
+  normalizeHubState();
   var bar = document.getElementById('hubControlBar');
   if (!bar) return;
   bar.querySelectorAll('[data-hub-key]').forEach(function(btn) {
     var key = btn.getAttribute('data-hub-key');
     var val = btn.getAttribute('data-val');
-    btn.classList.toggle('active', HUB[key] === val);
+    btn.classList.toggle('active', HUB.filter && HUB.filter[key] === val);
+  });
+  bar.querySelectorAll('[data-hub-scope]').forEach(function(btn) {
+    var mode = btn.getAttribute('data-hub-scope');
+    btn.classList.toggle('active', HUB.scope && HUB.scope.mode === mode);
+  });
+  document.querySelectorAll('[data-hub-family]').forEach(function(btn) {
+    var fam = btn.getAttribute('data-hub-family');
+    btn.classList.toggle('active', (HUB.family || 'summary') === fam);
   });
   var conf = document.getElementById('hubConfirm');
-  if (conf) conf.innerHTML = confirmLine();
+  if (conf) conf.textContent = confirmLine();
   var adv = document.getElementById('hubAdvCols');
   if (adv) adv.checked = HUB.showAdvanced;
+  syncTeamSelector();
 }
 
 function applyFilterChange() {
@@ -662,16 +668,51 @@ function applyFilterChange() {
       console.warn('[HUB] banner update failed', bannerErr);
     }
     renderHubTableNow();
+    persistUrlState();
   });
 }
 
 function setFilter(key, val) {
+  normalizeHubState();
   if (!HUB || val == null || !key) return;
-  if (HUB[key] === val) {
+  if (key === 'lineup') key = 'segment';
+  var next = String(val);
+  if (HUB.filter && HUB.filter[key] === next) {
     applyFilterChange();
     return;
   }
-  HUB[key] = val;
+  if (HUB.filter && Object.prototype.hasOwnProperty.call(HUB.filter, key)) {
+    HUB.filter[key] = next;
+    if (hubS && hubS.createFilterState) HUB.filter = hubS.createFilterState(HUB.filter);
+    syncLegacyFilterFields();
+  } else {
+    HUB[key] = next;
+  }
+  applyFilterChange();
+}
+
+function setScopeMode(mode) {
+  normalizeHubState();
+  var next = String(mode || 'all').toLowerCase();
+  if (next !== 'team') next = 'all';
+  if (HUB.scope.mode === next) {
+    applyFilterChange();
+    return;
+  }
+  HUB.scope.mode = next;
+  if (next === 'all') HUB.scope.team = null;
+  applyFilterChange();
+}
+
+function setFamily(mode) {
+  normalizeHubState();
+  var next = String(mode || 'summary').toLowerCase();
+  if (!isAllowedValue(next, ['summary', 'surface', 'scoring', 'difficulty'])) next = 'summary';
+  if (HUB.family === next) {
+    applyFilterChange();
+    return;
+  }
+  HUB.family = next;
   applyFilterChange();
 }
 
@@ -702,10 +743,122 @@ function hubPick(key, val) {
   }
 }
 
+function hubScopePick(mode) {
+  setScopeMode(mode);
+}
+
+function hubFamilyPick(mode) {
+  setFamily(mode);
+}
+
+var TEAM_INPUT_ALIASES = {
+  TB: 'TBR',
+  WSH: 'WSN',
+  WS: 'WSN',
+  KC: 'KCR',
+  CWS: 'CHW',
+  CHISOX: 'CHW',
+  SD: 'SDP',
+  SF: 'SFG',
+  OAK: 'ATH',
+  AZ: 'ARI',
+  ARZ: 'ARI'
+};
+
+function resolveTeamInput(raw, teams) {
+  var input = teamKey(raw).replace(/[^A-Z]/g, '');
+  if (!input) return null;
+  var allowed = {};
+  (teams || []).forEach(function(t) { allowed[teamKey(t)] = true; });
+  if (allowed[input]) return input;
+  var aliased = TEAM_INPUT_ALIASES[input];
+  if (aliased && allowed[aliased]) return aliased;
+  var starts = (teams || []).filter(function(t) { return teamKey(t).indexOf(input) === 0; });
+  if (starts.length === 1) return teamKey(starts[0]);
+  return null;
+}
+
+function hubSelectTeam(team) {
+  normalizeHubState();
+  var teams = allTeamsForSelector();
+  var t = resolveTeamInput(team, teams);
+  if (!t) {
+    setTeamInputStatus('Team not found. Try a 3-letter team code or alias (e.g. SFG or SF).', true);
+    return;
+  }
+  HUB.scope.mode = 'team';
+  HUB.scope.team = t;
+  setTeamInputStatus('', false);
+  applyFilterChange();
+}
+
+function hubApplyTeamInput() {
+  var input = document.getElementById('hubTeamSelect');
+  if (!input) return;
+  hubSelectTeam(input.value);
+}
+
+function hubTeamInputKeydown(e) {
+  var ev = e || window.event;
+  var key = ev && (ev.key || ev.code);
+  if (key === 'Enter' || key === 'NumpadEnter') {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    hubApplyTeamInput();
+  }
+}
+
 function setHand(h) { setFilter('hand', h); }
 function setWindow(win) { setFilter('window', win); }
 function setLocation(loc) { setFilter('location', loc); }
-function setLineup(mode) { setFilter('lineup', mode); }
+function setLineup(mode) { setFilter('segment', mode); }
+
+function allTeamsForSelector() {
+  var seen = {};
+  var out = [];
+  [HUB.scBoth || [], HUB.scR || [], HUB.scL || []].forEach(function(rows) {
+    (rows || []).forEach(function(r) {
+      var t = teamKey(r && r.t);
+      if (!t || seen[t]) return;
+      seen[t] = true;
+      out.push(t);
+    });
+  });
+  return out.sort();
+}
+
+function syncTeamSelector() {
+  var wrap = document.getElementById('hubTeamSelectWrap');
+  var input = document.getElementById('hubTeamSelect');
+  var list = document.getElementById('hubTeamOptions');
+  if (!wrap || !input || !list) return;
+  var show = HUB.scope && HUB.scope.mode === 'team';
+  wrap.classList.toggle('show', !!show);
+  if (!show) {
+    setTeamInputStatus('', false);
+    return;
+  }
+  var teams = allTeamsForSelector();
+  var current = HUB.scope.team ? teamKey(HUB.scope.team) : '';
+  if (!current && teams.length) {
+    current = teams[0];
+    HUB.scope.team = current;
+  }
+  var sig = teams.join('|');
+  if (input.dataset.teamSig !== sig) {
+    input.dataset.teamSig = sig;
+    var html = '';
+    teams.forEach(function(t) {
+      html += '<option value="' + esc(t) + '">' + esc(t) + '</option>';
+    });
+    Object.keys(TEAM_INPUT_ALIASES).sort().forEach(function(a) {
+      var canonical = TEAM_INPUT_ALIASES[a];
+      if (teams.indexOf(canonical) >= 0) html += '<option value="' + esc(a) + '">' + esc(a) + ' \u2192 ' + esc(canonical) + '</option>';
+    });
+    list.innerHTML = html;
+  }
+  if (input.value !== (current || '')) input.value = current || '';
+  setTeamInputStatus('', false);
+}
 
 function renderControls() {
   /* Pills are static in team_rankings.html with onclick="hubPick(...)" — do not replace innerHTML */
@@ -728,7 +881,22 @@ function bindHubTableSort() {
 }
 
 function hubHeadStateKey() {
-  return [HUB.sortKey, HUB.sortDir, HUB.showAdvanced ? '1' : '0'].join('|');
+  return [HUB.sortKey, HUB.sortDir, HUB.showAdvanced ? '1' : '0', HUB.family || 'summary'].join('|');
+}
+
+function familyVisibleColumns() {
+  var fam = HUB.family || 'summary';
+  if (fam === 'scoring') return { osi: true, rcv: true, wrc: true, woba: true, xwoba: true, slg: true, trend: true };
+  if (fam === 'difficulty') return { osi: true, abq: true, obr: true, ppGap: true, trend: true };
+  if (fam === 'surface') return { osi: true, projOSI: true, pals: true, trend: true };
+  return { osi: true, wrc: true, abq: true, trend: true };
+}
+
+function showAdvCol(col, advEnabled, visibleSet) {
+  if (!visibleSet[col]) return false;
+  if (col === 'projOSI' || col === 'pals') return (HUB.family || 'summary') === 'surface' || advEnabled;
+  if (col === 'ppGap') return advEnabled || (HUB.family || 'summary') === 'difficulty';
+  return true;
 }
 
 function updateHead() {
@@ -737,22 +905,25 @@ function updateHead() {
   var stateKey = hubHeadStateKey();
   if (stateKey === _hubHeadState) return;
   _hubHeadState = stateKey;
-  var adv = HUB.showAdvanced ? ' show' : '';
+  var adv = HUB.showAdvanced;
+  var visible = familyVisibleColumns();
+  function thIf(col, html) { return visible[col] ? html : ''; }
+  function thAdvIf(col, html) { return showAdvCol(col, adv, visible) ? html : ''; }
   head.innerHTML = ''
     + '<th data-sort="rank">#' + sortArrow('rank') + '</th>'
     + '<th data-sort="t">Team' + sortArrow('t') + '</th>'
-    + '<th data-sort="osi" class="col-primary' + (HUB.sortKey === 'osi' ? ' sorted' : '') + '">OSI' + sortArrow('osi') + '</th>'
-    + '<th data-sort="obr">OBR' + sortArrow('obr') + '</th>'
-    + '<th data-sort="rcv">RCV' + sortArrow('rcv') + '</th>'
-    + '<th data-sort="abq">ABQ' + sortArrow('abq') + '</th>'
-    + '<th data-sort="wrc">wRC+' + sortArrow('wrc') + '</th>'
-    + '<th data-sort="woba">wOBA' + sortArrow('woba') + '</th>'
-    + '<th data-sort="xwoba">xwOBA' + sortArrow('xwoba') + '</th>'
-    + '<th data-sort="slg">SLG' + sortArrow('slg') + '</th>'
-    + '<th data-sort="trend">TREND' + sortArrow('trend') + '</th>'
-    + '<th data-sort="ppGap" class="col-adv' + adv + '">PP-Gap' + sortArrow('ppGap') + '</th>'
-    + '<th data-sort="projOSI" class="col-adv' + adv + '">ProjOSI' + sortArrow('projOSI') + '</th>'
-    + '<th data-sort="pals" class="col-adv' + adv + '">PALS' + sortArrow('pals') + '</th>';
+    + thIf('osi', '<th data-sort="osi" class="col-primary' + (HUB.sortKey === 'osi' ? ' sorted' : '') + '">OSI' + sortArrow('osi') + '</th>')
+    + thIf('obr', '<th data-sort="obr">OBR' + sortArrow('obr') + '</th>')
+    + thIf('rcv', '<th data-sort="rcv">RCV' + sortArrow('rcv') + '</th>')
+    + thIf('abq', '<th data-sort="abq">ABQ' + sortArrow('abq') + '</th>')
+    + thIf('wrc', '<th data-sort="wrc">wRC+' + sortArrow('wrc') + '</th>')
+    + thIf('woba', '<th data-sort="woba">wOBA' + sortArrow('woba') + '</th>')
+    + thIf('xwoba', '<th data-sort="xwoba">xwOBA' + sortArrow('xwoba') + '</th>')
+    + thIf('slg', '<th data-sort="slg">SLG' + sortArrow('slg') + '</th>')
+    + thIf('trend', '<th data-sort="trend">TREND' + sortArrow('trend') + '</th>')
+    + thAdvIf('ppGap', '<th data-sort="ppGap">PP-Gap' + sortArrow('ppGap') + '</th>')
+    + thAdvIf('projOSI', '<th data-sort="projOSI">ProjOSI' + sortArrow('projOSI') + '</th>')
+    + thAdvIf('pals', '<th data-sort="pals">PALS' + sortArrow('pals') + '</th>');
 }
 
 function hubTeamLogo(t) {
@@ -766,7 +937,11 @@ function hubTeamLogo(t) {
 function renderHubTable() {
   updateHead();
   var body = document.getElementById('hubTableBody');
+  var cards = document.getElementById('hubTeamCards');
+  var tableWrap = document.getElementById('hubTableWrap');
   if (!body) return;
+  if (cards) cards.classList.remove('show');
+  if (tableWrap) tableWrap.style.display = '';
   if (!HUB.loaded) {
     body.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--text-2)">Loading team data from Google Sheets\u2026</td></tr>';
     return;
@@ -776,10 +951,27 @@ function renderHubTable() {
     return;
   }
   var rows;
+  var allRows;
   var filterKey = currentFilterKey();
   try {
-    rows = sortRows(rowsForCurrentFilter());
-    registerPoolsForRows(rows);
+    allRows = sortRows(rowsForCurrentFilter());
+    rows = allRows.slice();
+    if (HUB.scope && HUB.scope.mode === 'team') {
+      var target = HUB.scope.team || HUB.expandedTeam || (rows[0] && rows[0].t) || null;
+      rows = target ? rows.filter(function(r) { return r.t === target; }) : rows;
+      if (!rows.length && allRows.length) {
+        target = allRows[0].t;
+        rows = [allRows[0]];
+      }
+      HUB.scope.team = target;
+      if (rows.length && renderTeamCards(rows[0], allRows)) {
+        body.innerHTML = '';
+        body.setAttribute('data-hub-filter', filterKey);
+        hideHubLoading();
+        return;
+      }
+    }
+    registerPoolsForRows(allRows);
   } catch (err) {
     console.error('[HUB] rebuild rows failed', err);
     body.innerHTML = '<tr><td colspan="13" style="color:#F87171;padding:16px">Filter error — hard refresh. ' + esc(err.message || String(err)) + '</td></tr>';
@@ -787,6 +979,9 @@ function renderHubTable() {
   }
   hideHubLoading();
   var advShow = HUB.showAdvanced;
+  var visible = familyVisibleColumns();
+  function tdIf(col, html) { return visible[col] ? html : ''; }
+  function tdAdvIf(col, html) { return showAdvCol(col, advShow, visible) ? html : ''; }
   var html = '';
   rows.forEach(function(d, i) {
     var wobaStr = d.woba != null && !isNaN(d.woba) ? Number(d.woba).toFixed(3) : '\u2014';
@@ -797,18 +992,18 @@ function renderHubTable() {
       + '<td class="hub-rank"><button type="button" class="hub-expand-btn" aria-label="Expand">' + (HUB.expandedTeam === d.t ? '\u2212' : '+') + '</button><span class="hub-rank-num">' + (i + 1) + '</span></td>'
       + '<td><div class="hub-team-cell">' + hubTeamLogo(d.t) + '<div><strong>' + esc(d.t) + '</strong>'
       + '<a class="hub-profile-link" href="team_profile.html?team=' + encodeURIComponent(d.t) + '" onclick="event.stopPropagation()">Profile</a></div></div></td>'
-      + '<td class="col-primary" style="color:' + mc(d.osi, 'osi') + ';font-weight:700">' + fmt(d.osi) + '</td>'
-      + '<td style="color:' + mc(d.obr, 'obr') + '">' + fmt(d.obr) + '</td>'
-      + '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>'
-      + '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>'
-      + '<td style="color:' + wrcColor(d.wrc) + '">' + fmt(d.wrc, 0) + '</td>'
-      + '<td style="color:' + wobaColor(d.woba) + '">' + wobaStr + '</td>'
-      + '<td style="color:' + wobaColor(d.xwoba) + '">' + xwobaStr + '</td>'
-      + '<td style="color:' + slgColor(d.slg) + '">' + slgStr + '</td>'
-      + '<td><span class="trend-badge" style="background:' + tc + '22;color:' + tc + '">' + esc(d.trend) + '</span></td>'
-      + '<td class="col-adv' + (advShow ? ' show' : '') + '" style="color:' + mc(d.ppGap, 'ppGap') + '">' + fmt(d.ppGap) + '</td>'
-      + '<td class="col-adv' + (advShow ? ' show' : '') + '" style="color:' + projColor(d.projOSI, d.osi) + '">' + fmt(d.projOSI) + '</td>'
-      + '<td class="col-adv' + (advShow ? ' show' : '') + '">' + fmt(d.pals) + '</td>'
+      + tdIf('osi', '<td class="col-primary" style="color:' + mc(d.osi, 'osi') + ';font-weight:700">' + fmt(d.osi) + '</td>')
+      + tdIf('obr', '<td style="color:' + mc(d.obr, 'obr') + '">' + fmt(d.obr) + '</td>')
+      + tdIf('rcv', '<td style="color:' + mc(d.rcv, 'rcv') + '">' + fmt(d.rcv) + '</td>')
+      + tdIf('abq', '<td style="color:' + mc(d.abq, 'abq') + '">' + fmt(d.abq) + '</td>')
+      + tdIf('wrc', '<td style="color:' + wrcColor(d.wrc) + '">' + fmt(d.wrc, 0) + '</td>')
+      + tdIf('woba', '<td style="color:' + wobaColor(d.woba) + '">' + wobaStr + '</td>')
+      + tdIf('xwoba', '<td style="color:' + wobaColor(d.xwoba) + '">' + xwobaStr + '</td>')
+      + tdIf('slg', '<td style="color:' + slgColor(d.slg) + '">' + slgStr + '</td>')
+      + tdIf('trend', '<td><span class="trend-badge" style="background:' + tc + '22;color:' + tc + '">' + esc(d.trend) + '</span></td>')
+      + tdAdvIf('ppGap', '<td style="color:' + mc(d.ppGap, 'ppGap') + '">' + fmt(d.ppGap) + '</td>')
+      + tdAdvIf('projOSI', '<td style="color:' + projColor(d.projOSI, d.osi) + '">' + fmt(d.projOSI) + '</td>')
+      + tdAdvIf('pals', '<td>' + fmt(d.pals) + '</td>')
       + '</tr>';
   });
   body.innerHTML = rows.length ? html : '<tr><td colspan="13">No team data loaded.</td></tr>';
@@ -816,19 +1011,20 @@ function renderHubTable() {
 }
 
 function updateBanners(runDetect) {
+  var f = HUB.filter || {};
   var msg = HUB.dataIssue || '';
   var wBan = document.getElementById('hubWindowBanner');
   if (wBan) {
     if (runDetect && !msg && detectFlatHandData()) {
       msg = 'vs_RHP and vs_LHP show identical OSI/ABQ in Google Sheets \u2014 re-run compute + push_sheets so handedness toggles work on YTD.';
-    } else if (!msg && (HUB.location === 'home' || HUB.location === 'away')) {
-      var locN = HUB.location === 'home' ? (HUB.scHome || []).length : (HUB.scAway || []).length;
+    } else if (!msg && (f.location === 'home' || f.location === 'away')) {
+      var locN = f.location === 'home' ? (HUB.scHome || []).length : (HUB.scAway || []).length;
       if (locN < 10) {
         msg = 'Home/Away split data sparse \u2014 run scrape_batter_splits (home/away) then compute_team_profile + push_team_profiles.';
       }
-    } else if (runDetect && !msg && HUB.window !== 'YTD' && detectFlatWindowData()) {
+    } else if (runDetect && !msg && f.window !== 'YTD' && detectFlatWindowData()) {
       msg = 'L30 / L14 / L7 show the same values in Team_Profiles (pipeline needs dated batter splits). Home/Away still works.';
-    } else if (!msg && HUB.window !== 'YTD' && !HUB.windowAvail[HUB.window]) {
+    } else if (!msg && f.window !== 'YTD' && !HUB.windowAvail[f.window]) {
       msg = 'Window columns sparse in Team_Profiles \u2014 showing YTD for teams missing window fields.';
     }
     var showWin = !!msg;
@@ -839,8 +1035,8 @@ function updateBanners(runDetect) {
   var lBan = document.getElementById('hubLocationBanner');
   if (lBan) {
     var locMsg = '';
-    if (!msg && (HUB.location === 'home' || HUB.location === 'away')) {
-      var locN = HUB.location === 'home' ? (HUB.scHome || []).length : (HUB.scAway || []).length;
+    if (!msg && (f.location === 'home' || f.location === 'away')) {
+      var locN = f.location === 'home' ? (HUB.scHome || []).length : (HUB.scAway || []).length;
       if (locN < 10) locMsg = 'Home/Away: using Team_Profiles fallback \u2014 re-run batter splits for full ABQ/RCV/OBR.';
     }
     var showLoc = !!locMsg;
@@ -857,25 +1053,6 @@ function hideHubLoading() {
     l.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
     l.setAttribute('aria-hidden', 'true');
   }
-}
-
-function buildScBothFromHandedness() {
-  if (!HUB.scR.length || !HUB.scL.length) return;
-  var lMap = {};
-  HUB.scL.forEach(function(r) { lMap[r.t] = r; });
-  HUB.scBoth = HUB.scR.map(function(r) {
-    var l = lMap[r.t] || r;
-    return Object.assign({}, r, {
-      osi: (r.osi + (l.osi || r.osi)) / 2,
-      abq: (r.abq + (l.abq || r.abq)) / 2,
-      rcv: (r.rcv + (l.rcv || r.rcv)) / 2,
-      obr: (r.obr + (l.obr || r.obr)) / 2,
-      woba: ((r.woba || 0) + (l.woba || r.woba || 0)) / 2,
-      xwoba: ((r.xwoba || 0) + (l.xwoba || r.xwoba || 0)) / 2,
-      wrc: ((r.wrc || 0) + (l.wrc || r.wrc || 0)) / 2,
-      slg: ((r.slg || 0) + (l.slg || r.slg || 0)) / 2
-    });
-  });
 }
 
 function fetchTabRetry(MS, tabName, triesLeft) {
@@ -1040,6 +1217,7 @@ function bindHubRowClicks() {
     var tr = e.target.closest('tr.hub-row');
     if (!tr) return;
     var t = tr.getAttribute('data-team');
+    if (HUB.scope && HUB.scope.mode === 'team') HUB.scope.team = t;
     HUB.expandedTeam = HUB.expandedTeam === t ? null : t;
     scheduleRenderHubTable();
   });
@@ -1056,6 +1234,8 @@ function initHub() {
     return;
   }
   HUB._tabs = TABS;
+  normalizeHubState();
+  applyUrlState();
   bindHubRowClicks();
   bindHubTableSort();
   renderControls();
@@ -1089,14 +1269,22 @@ function initHub() {
 try {
   window.HUB = HUB;
   window.renderHubTable = renderHubTable;
-window.hubLoadData = hubLoadData;
+  window.hubLoadData = hubLoadData;
   window.initHub = initHub;
   window.hubSetFilter = setFilter;
+  window.hubScopePick = hubScopePick;
+  window.hubFamilyPick = hubFamilyPick;
+  window.hubSelectTeam = hubSelectTeam;
+  window.hubApplyTeamInput = hubApplyTeamInput;
+  window.hubTeamInputKeydown = hubTeamInputKeydown;
   window.hubResetFilters = function() {
-    HUB.hand = 'both';
-    HUB.lineup = 'full';
-    HUB.window = 'YTD';
-    HUB.location = 'all';
+    normalizeHubState();
+    HUB.filter = hubS && hubS.createFilterState
+      ? hubS.createFilterState()
+      : { hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' };
+    HUB.scope = hubS && hubS.createScopeState ? hubS.createScopeState() : { mode: 'all', team: null };
+    HUB.family = 'summary';
+    syncLegacyFilterFields();
     applyFilterChange();
   };
 } catch (e) {

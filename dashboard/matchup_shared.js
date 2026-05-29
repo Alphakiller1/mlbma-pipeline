@@ -48,6 +48,47 @@
     return String(t || '').trim().toUpperCase();
   }
 
+  function cloneObject(obj) {
+    return Object.assign({}, obj || {});
+  }
+
+  function createFilterState(seed) {
+    var defaults = (global.MLBMA_CONFIG && MLBMA_CONFIG.FILTER_DEFAULTS) || {
+      hand: 'both',
+      location: 'all',
+      pitcher: 'both',
+      batSide: 'both',
+      segment: 'full',
+      window: 'YTD'
+    };
+    return normalizeFilter(Object.assign({}, defaults, seed || {}));
+  }
+
+  function normalizeFilter(filter) {
+    var f = cloneObject(filter);
+    f.hand = String(f.hand || 'both').toLowerCase();
+    f.location = String(f.location || 'all').toLowerCase();
+    f.pitcher = String(f.pitcher || 'both').toLowerCase();
+    f.batSide = String(f.batSide || 'both').toLowerCase();
+    f.segment = String(f.segment || 'full').toLowerCase();
+    f.window = String(f.window || 'YTD').toUpperCase();
+    return f;
+  }
+
+  function filterKey(filter) {
+    var f = normalizeFilter(filter || {});
+    return [f.hand, f.location, f.pitcher, f.batSide, f.segment, f.window].join('|');
+  }
+
+  function createScopeState(seed) {
+    var defaults = (global.MLBMA_CONFIG && MLBMA_CONFIG.SCOPE_DEFAULTS) || { mode: 'all', team: null };
+    var scope = Object.assign({}, defaults, seed || {});
+    scope.mode = String(scope.mode || 'all').toLowerCase();
+    scope.team = scope.team ? teamKey(scope.team) : null;
+    if (scope.mode !== 'team') scope.mode = 'all';
+    return scope;
+  }
+
   function parseCSVLine(line) {
     var out = [], cur = '', inQ = false;
     for (var i = 0; i < line.length; i++) {
@@ -641,6 +682,181 @@
     return out;
   }
 
+  function blendSplits(scR, scL) {
+    var by = {};
+    (scR || []).forEach(function(r) { if (r && r.t) by[r.t] = { r: r }; });
+    (scL || []).forEach(function(l) {
+      if (!l || !l.t) return;
+      if (!by[l.t]) by[l.t] = {};
+      by[l.t].l = l;
+    });
+    return Object.keys(by).sort().map(function(t) {
+      var pack = by[t], r = pack.r, l = pack.l;
+      if (!r && l) return Object.assign({}, l);
+      if (r && !l) return Object.assign({}, r);
+      function b(k) { return 0.5 * (r[k] || 0) + 0.5 * (l[k] || 0); }
+      var row = {
+        t: t,
+        abq: b('abq'),
+        rcv: b('rcv'),
+        obr: b('obr'),
+        osi: b('osi'),
+        projOSI: b('projOSI'),
+        reg: r.reg != null ? r.reg : l.reg,
+        ppGap: null,
+        wrc: b('wrc'),
+        woba: b('woba'),
+        xwoba: b('xwoba'),
+        slg: b('slg')
+      };
+      if (row.abq != null && row.rcv != null) row.ppGap = row.abq - row.rcv;
+      return row;
+    });
+  }
+
+  function normalizeHubFilter(filter) {
+    return normalizeFilter(filter || {});
+  }
+
+  function _windowSuffix(windowKey) {
+    if (windowKey === 'L30') return 'l30';
+    if (windowKey === 'L14') return 'l14';
+    if (windowKey === 'L7') return 'l7';
+    return null;
+  }
+
+  function _num(v) {
+    return v == null || v === '' || isNaN(v) ? null : Number(v);
+  }
+
+  function _profileForTeam(teamProfiles, team) {
+    var tk = teamKey(team);
+    return (teamProfiles && (teamProfiles[tk] || teamProfiles[team])) || {};
+  }
+
+  function _trend(ytd, l14, l7) {
+    ytd = _num(ytd); l14 = _num(l14); l7 = _num(l7);
+    if (ytd == null) return 'Stable';
+    if (l14 != null && l7 != null && l14 > ytd + 3 && l7 > ytd + 3) return 'Rising';
+    if ((l14 != null && l14 < ytd - 3) || (l7 != null && l7 < ytd - 5)) return 'Cooling';
+    if (l7 != null && l7 > ytd + 5 && l14 != null && Math.abs(l14 - ytd) <= 2) return 'Fake Hot';
+    return 'Stable';
+  }
+
+  function _tier(osi) {
+    osi = _num(osi);
+    if (osi == null) return { label: '—', cls: 'tier-incon' };
+    if (osi >= 85) return { label: 'Elite', cls: 'tier-elite' };
+    if (osi >= 75) return { label: 'High-Level', cls: 'tier-high' };
+    if (osi >= 65) return { label: 'Dangerous', cls: 'tier-danger' };
+    if (osi >= 50) return { label: 'Inconsistent', cls: 'tier-incon' };
+    return { label: 'Weak', cls: 'tier-weak' };
+  }
+
+  function resolveLineupRows(store, filter, options) {
+    var f = normalizeHubFilter(filter);
+    var data = store || {};
+    var scR = data.scR || [];
+    var scL = data.scL || [];
+    var scBoth = (data.scBoth && data.scBoth.length) ? data.scBoth : blendSplits(scR, scL);
+    var scHome = data.scHome || [];
+    var scAway = data.scAway || [];
+    var teamProfiles = data.teamProfiles || {};
+    var opts = options || {};
+
+    var source = scBoth;
+    if (f.window === 'YTD') {
+      if (f.location === 'home' && f.hand === 'both' && scHome.length >= 10) source = scHome;
+      else if (f.location === 'away' && f.hand === 'both' && scAway.length >= 10) source = scAway;
+      else if (f.hand === 'r') source = scR;
+      else if (f.hand === 'l') source = scL;
+    } else {
+      if (f.hand === 'r') source = scR;
+      else if (f.hand === 'l') source = scL;
+    }
+
+    var homeMap = {};
+    var awayMap = {};
+    scHome.forEach(function(r) { if (r && r.t) homeMap[teamKey(r.t)] = r; });
+    scAway.forEach(function(r) { if (r && r.t) awayMap[teamKey(r.t)] = r; });
+
+    var rows = (source || []).map(function(base) {
+      var d = Object.assign({}, base);
+      var t = d.t;
+      var prof = _profileForTeam(teamProfiles, t);
+      if (d.ppGap == null && d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
+      d.ytdOSI = prof.osi_ytd != null ? _num(prof.osi_ytd) : _num(d.osi);
+      d.l30OSI = _num(prof.osi_l30);
+      d.l14OSI = _num(prof.osi_l14);
+      d.l7OSI = _num(prof.osi_l7);
+
+      if (f.window !== 'YTD') {
+        var suf = _windowSuffix(f.window);
+        var applied = false;
+        ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
+          var wv = _num(prof[m + '_' + suf]);
+          if (wv != null) {
+            d[m] = wv;
+            applied = true;
+          }
+        });
+        if (applied && f.hand !== 'both') {
+          var ratios = handMetricRatios(f.hand, t, scR, scL, scBoth);
+          if (ratios) d = applyHandMetricRatios(d, ratios);
+        }
+      }
+
+      if (f.location === 'home' || f.location === 'away') {
+        var loc = f.location;
+        var alreadyScoped = f.window === 'YTD' && f.hand === 'both'
+          && ((loc === 'home' && scHome.length >= 10) || (loc === 'away' && scAway.length >= 10));
+        if (!alreadyScoped) {
+          var locRow = loc === 'home' ? homeMap[teamKey(t)] : awayMap[teamKey(t)];
+          var scaled = false;
+          ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
+            var locVal = _num(prof[loc + '_' + m]);
+            var ytdVal = m === 'osi' ? (_num(prof.osi_ytd) != null ? _num(prof.osi_ytd) : _num(prof.osi)) : _num(prof[m]);
+            if (locVal == null || ytdVal == null || Math.abs(ytdVal) < 0.01) return;
+            if (_num(d[m]) != null) {
+              d[m] = d[m] * (locVal / ytdVal);
+              scaled = true;
+            }
+          });
+          if (scaled) {
+            ['wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
+              var v = _num(prof[loc + '_' + m]);
+              if (v == null && locRow) v = _num(locRow[m]);
+              if (v != null) d[m] = v;
+            });
+            if (d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
+          }
+        }
+      }
+
+      if (f.segment === 'f5') {
+        if (_num(d.abq) != null && _num(d.obr) != null && _num(d.rcv) != null) {
+          d.osi = (d.abq * 0.45) + (d.obr * 0.35) + (d.rcv * 0.20);
+        }
+        if (_num(d.abq) != null && _num(d.rcv) != null) d.ppGap = d.abq - d.rcv;
+      }
+
+      d.trend = _trend(d.ytdOSI, d.l14OSI, d.l7OSI);
+      d.tier = _tier(d.osi);
+      return d;
+    }).filter(Boolean);
+
+    if (opts.includeMeta) {
+      return {
+        rows: rows,
+        meta: {
+          approxWindow: f.window !== 'YTD',
+          approxLocation: (f.location === 'home' || f.location === 'away') && f.hand !== 'both'
+        }
+      };
+    }
+    return rows;
+  }
+
   function splitOSI(teamData, spHand) {
     if (!teamData) return null;
     var h = String(spHand || '').trim().toUpperCase().charAt(0);
@@ -869,6 +1085,10 @@
     numOrNull: numOrNull,
     pickCol: pickCol,
     teamKey: teamKey,
+    createFilterState: createFilterState,
+    normalizeFilter: normalizeFilter,
+    filterKey: filterKey,
+    createScopeState: createScopeState,
     normName: normName,
     fetchSheetTab: fetchSheetTab,
     clearSheetTabCache: clearSheetTabCache,
@@ -896,6 +1116,8 @@
     applyHandMetricRatios: applyHandMetricRatios,
     aggregateTeamOffenseFromBatterRows: aggregateTeamOffenseFromBatterRows,
     scaleRowMetrics: scaleRowMetrics,
+    blendSplits: blendSplits,
+    resolveLineupRows: resolveLineupRows,
     parseMatchupRows: parseMatchupRows,
     parseBullpenUnitRows: parseBullpenUnitRows,
     parsePalsRows: parsePalsRows,

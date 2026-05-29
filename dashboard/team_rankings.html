@@ -55,6 +55,16 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 .hub-ctrl-group{display:flex;flex-direction:column;gap:6px;min-width:0}
 .hub-ctrl-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3)}
 .hub-pill-row{display:flex;flex-wrap:wrap;gap:6px}
+.hub-team-select-wrap{display:none}
+.hub-team-select-wrap.show{display:flex}
+.hub-team-select{
+  border:1px solid var(--border);background:var(--bg-3);color:var(--text);
+  font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;min-width:150px
+}
+.hub-team-select.is-invalid{border-color:var(--red);box-shadow:0 0 0 1px rgba(248,113,113,.25)}
+.hub-team-input-row{display:flex;align-items:center;gap:6px}
+.hub-team-help{font-size:10px;color:var(--text-3);line-height:1.2}
+.hub-team-help.is-error{color:var(--red)}
 .hub-pill{border:1px solid var(--border);background:var(--bg-3);color:var(--text-2);font-size:11px;font-weight:600;
   padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .hub-pill:hover{border-color:rgba(192,132,252,.4);color:var(--text)}
@@ -68,6 +78,19 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 .hub-banner--window{border:1px solid var(--gold);background:rgba(251,191,36,.08);color:var(--gold)}
 .hub-banner--location{border:1px solid var(--purple);background:rgba(192,132,252,.08);color:var(--purple)}
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);margin-top:16px}
+.hub-team-cards{display:none;margin-top:16px}
+.hub-team-cards.show{display:block}
+.hub-team-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.hub-team-title h2{font-size:28px;line-height:1;color:var(--text);font-weight:700}
+.hub-team-sub{font-size:14px;color:var(--text-2);margin-bottom:14px}
+.hub-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.hub-kpi-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;min-height:170px}
+.hub-kpi-lab{font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em}
+.hub-kpi-val{font-size:40px;line-height:1.02;font-weight:800;margin:8px 0 10px;color:var(--text)}
+.hub-kpi-val--tag{font-size:18px;line-height:1.2;margin:10px 0 12px}
+.hub-kpi-meta{display:flex;justify-content:space-between;gap:8px;color:var(--text-2);font-size:12px;margin-top:auto}
+.hub-kpi-meter{height:6px;border-radius:999px;background:rgba(113,113,122,.22);overflow:hidden;margin-top:8px}
+.hub-kpi-meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#A78BFA)}
 .hub-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
 .hub-table thead th{position:sticky;top:0;z-index:2;background:var(--bg-3);font-size:10px;text-transform:uppercase;
   letter-spacing:.06em;color:var(--text-3);padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;
@@ -124,6 +147,15 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+@media(max-width:760px){
+  .container{padding:16px 14px 56px}
+  .hub-control-bar{padding:12px}
+  .hub-control-row{gap:10px 12px}
+  .hub-team-input-row{width:100%}
+  .hub-team-select{min-width:0;flex:1}
+  .hub-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hub-kpi-val{font-size:32px}
 }
 </style>
 </head>
@@ -204,27 +236,29 @@ setTimeout(function() {
     <div class="hub-control-bar" id="hubControlBar">
       <div class="hub-control-row">
         <div class="hub-ctrl-group">
-          <span class="hub-ctrl-label">Handedness</span>
+          <span class="hub-ctrl-label">Scope</span>
+          <div class="hub-pill-row" id="hubScopePills">
+            <button type="button" class="hub-pill active" data-hub-scope="all" onclick="hubScopePick('all')">All teams</button>
+            <button type="button" class="hub-pill" data-hub-scope="team" onclick="hubScopePick('team')">One team</button>
+          </div>
+        </div>
+        <div class="hub-ctrl-group hub-team-select-wrap" id="hubTeamSelectWrap">
+          <span class="hub-ctrl-label">Team</span>
+          <div class="hub-team-input-row">
+            <input id="hubTeamSelect" class="hub-team-select" list="hubTeamOptions" placeholder="Type team (e.g. SF, TB, KC)..." onchange="hubSelectTeam(this.value)" onkeydown="hubTeamInputKeydown(event)" />
+            <button type="button" class="hub-pill" onclick="hubApplyTeamInput()">Apply</button>
+          </div>
+          <datalist id="hubTeamOptions"></datalist>
+          <span id="hubTeamStatus" class="hub-team-help">Aliases supported: SF, TB, KC, SD, WSH, OAK, AZ</span>
+        </div>
+      </div>
+      <div class="hub-control-row">
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Hand</span>
           <div class="hub-pill-row" id="hubHandPills">
             <button type="button" class="hub-pill active" data-hub-key="hand" data-val="both" onclick="hubPick('hand','both')">Both</button>
             <button type="button" class="hub-pill" data-hub-key="hand" data-val="r" onclick="hubPick('hand','r')">vs RHP</button>
             <button type="button" class="hub-pill" data-hub-key="hand" data-val="l" onclick="hubPick('hand','l')">vs LHP</button>
-          </div>
-        </div>
-        <div class="hub-ctrl-group">
-          <span class="hub-ctrl-label">Lineup Scope</span>
-          <div class="hub-pill-row" id="hubLineupPills">
-            <button type="button" class="hub-pill active" data-hub-key="lineup" data-val="full" onclick="hubPick('lineup','full')">Full Game</button>
-            <button type="button" class="hub-pill" data-hub-key="lineup" data-val="f5" onclick="hubPick('lineup','f5')">F5</button>
-          </div>
-        </div>
-        <div class="hub-ctrl-group">
-          <span class="hub-ctrl-label">Time Window</span>
-          <div class="hub-pill-row" id="hubWindowPills">
-            <button type="button" class="hub-pill active" data-hub-key="window" data-val="YTD" onclick="hubPick('window','YTD')">YTD</button>
-            <button type="button" class="hub-pill" data-hub-key="window" data-val="L30" onclick="hubPick('window','L30')">L30</button>
-            <button type="button" class="hub-pill" data-hub-key="window" data-val="L14" onclick="hubPick('window','L14')">L14</button>
-            <button type="button" class="hub-pill" data-hub-key="window" data-val="L7" onclick="hubPick('window','L7')">L7</button>
           </div>
         </div>
         <div class="hub-ctrl-group">
@@ -235,19 +269,64 @@ setTimeout(function() {
             <button type="button" class="hub-pill" data-hub-key="location" data-val="away" onclick="hubPick('location','away')">Away</button>
           </div>
         </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Pitch</span>
+          <div class="hub-pill-row" id="hubPitchPills">
+            <button type="button" class="hub-pill active" data-hub-key="pitcher" data-val="both" onclick="hubPick('pitcher','both')">Both</button>
+            <button type="button" class="hub-pill" data-hub-key="pitcher" data-val="sp" onclick="hubPick('pitcher','sp')">SP</button>
+            <button type="button" class="hub-pill" data-hub-key="pitcher" data-val="rp" onclick="hubPick('pitcher','rp')">RP</button>
+          </div>
+        </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Side</span>
+          <div class="hub-pill-row" id="hubSidePills">
+            <button type="button" class="hub-pill active" data-hub-key="batSide" data-val="both" onclick="hubPick('batSide','both')">Both</button>
+            <button type="button" class="hub-pill" data-hub-key="batSide" data-val="rhb" onclick="hubPick('batSide','rhb')">RHB</button>
+            <button type="button" class="hub-pill" data-hub-key="batSide" data-val="lhb" onclick="hubPick('batSide','lhb')">LHB</button>
+          </div>
+        </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Seg</span>
+          <div class="hub-pill-row" id="hubLineupPills">
+            <button type="button" class="hub-pill active" data-hub-key="segment" data-val="full" onclick="hubPick('segment','full')">Full</button>
+            <button type="button" class="hub-pill" data-hub-key="segment" data-val="f5" onclick="hubPick('segment','f5')">F5</button>
+          </div>
+        </div>
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Window</span>
+          <div class="hub-pill-row" id="hubWindowPills">
+            <button type="button" class="hub-pill active" data-hub-key="window" data-val="YTD" onclick="hubPick('window','YTD')">YTD</button>
+            <button type="button" class="hub-pill" data-hub-key="window" data-val="L30" onclick="hubPick('window','L30')">L30</button>
+            <button type="button" class="hub-pill" data-hub-key="window" data-val="L14" onclick="hubPick('window','L14')">L14</button>
+            <button type="button" class="hub-pill" data-hub-key="window" data-val="L7" onclick="hubPick('window','L7')">L7</button>
+          </div>
+        </div>
         <div class="hub-adv-toggle">
           <input type="checkbox" id="hubAdvCols" />
           <label for="hubAdvCols">Advanced columns</label>
         </div>
       </div>
-      <div class="hub-confirm" id="hubConfirm">Showing: OSI &middot; Both &middot; YTD &middot; All &middot; Full lineup</div>
+      <div class="hub-confirm" id="hubConfirm">All teams &middot; summary &middot; both &middot; all &middot; both &middot; both &middot; full game &middot; YTD</div>
       <div id="hubBuildBadge" style="font-size:10px;color:var(--text-3);margin-top:6px"></div>
+    </div>
+    <div class="hub-control-bar" style="margin-top:8px">
+      <div class="hub-control-row" style="margin-bottom:0">
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Family</span>
+          <div class="hub-pill-row" id="hubFamilyPills">
+            <button type="button" class="hub-pill active" data-hub-family="summary" onclick="hubFamilyPick('summary')">Summary</button>
+            <button type="button" class="hub-pill" data-hub-family="surface" onclick="hubFamilyPick('surface')">Surface wins</button>
+            <button type="button" class="hub-pill" data-hub-family="scoring" onclick="hubFamilyPick('scoring')">Scoring</button>
+            <button type="button" class="hub-pill" data-hub-family="difficulty" onclick="hubFamilyPick('difficulty')">Difficulty</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="hubWindowBanner" class="hub-banner hub-banner--window" style="display:none"></div>
       <div id="hubLocationBanner" class="hub-banner hub-banner--location" style="display:none"></div>
   </div>
 
-  <div class="table-wrap">
+  <div class="table-wrap" id="hubTableWrap">
     <table class="hub-table" id="hubTable">
       <thead>
         <tr id="hubTableHead"></tr>
@@ -255,6 +334,7 @@ setTimeout(function() {
       <tbody id="hubTableBody"></tbody>
     </table>
   </div>
+  <section id="hubTeamCards" class="hub-team-cards"></section>
 </main>
 
 <script src="mlbma_config.js?v=20260605a"></script>
@@ -262,15 +342,35 @@ setTimeout(function() {
 <script src="matchup_shared.js?v=20260605a"></script>
 <script src="mlbma_charts.js?v=20260605a"></script>
 <script>
-window.onerror = function(msg, src, line, col, err) {
-  console.error('[GLOBAL ERROR]', msg, 'at', src, line + ':' + col);
-  var hubL = document.getElementById('hubLoading');
-  if (hubL) hubL.classList.add('hide');
-  document.body.insertAdjacentHTML('afterbegin',
-    '<div style="color:red;padding:20px;font-size:14px;position:fixed;top:60px;left:20px;z-index:9999;background:#1a0000;border:1px solid red;border-radius:8px;max-width:600px">' +
-    '<strong>JS Error:</strong> ' + msg + '<br>at ' + src + ' ' + line + ':' + col +
-    '</div>');
-};
+(function() {
+  var _globalErrorHandling = false;
+  var _globalErrorShown = false;
+  window.onerror = function(msg, src, line, col) {
+    if (_globalErrorHandling) return false;
+    _globalErrorHandling = true;
+    try {
+      var hubL = document.getElementById('hubLoading');
+      if (hubL) hubL.classList.add('hide');
+      if (!_globalErrorShown && document.body) {
+        _globalErrorShown = true;
+        var safeMsg = String(msg || 'Unknown error')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        var safeSrc = String(src || '')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        document.body.insertAdjacentHTML('afterbegin',
+          '<div style="color:red;padding:20px;font-size:14px;position:fixed;top:60px;left:20px;z-index:9999;background:#1a0000;border:1px solid red;border-radius:8px;max-width:600px">' +
+          '<strong>JS Error:</strong> ' + safeMsg + '<br>at ' + safeSrc + ' ' + line + ':' + col +
+          '</div>');
+      }
+      if (window.console && typeof window.console.warn === 'function') {
+        window.console.warn('[GLOBAL ERROR]', msg, 'at', src, line + ':' + col);
+      }
+    } finally {
+      _globalErrorHandling = false;
+    }
+    return false;
+  };
+})();
 </script>
 <!-- Team Rankings hub — required; load before chase_nav.js -->
 <script src="team_rankings_hub.js?v=20260605a"></script>

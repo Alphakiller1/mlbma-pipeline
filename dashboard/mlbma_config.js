@@ -4,6 +4,18 @@
  */
 window.MLBMA_CONFIG = {
   SHEET_ID: "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk",
+  FILTER_DEFAULTS: {
+    hand: "both",
+    location: "all",
+    pitcher: "both",
+    batSide: "both",
+    segment: "full",
+    window: "YTD"
+  },
+  SCOPE_DEFAULTS: {
+    mode: "all",
+    team: null
+  },
   SHEET_TABS: {
   "vs_rhp": "vs_RHP",
   "vs_lhp": "vs_LHP",
