@@ -71,10 +71,13 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
             check("LineupModel initialized", False, "model did not initialize")
 
         try:
-            page.wait_for_selector(".lv-table tbody tr.lv-row-team", timeout=timeout_ms)
-            check("table loaded", True)
+            page.wait_for_function(
+                "() => !!document.querySelector('.lv-table tbody tr.lv-row-team') || !!document.querySelector('.lv-card')",
+                timeout=timeout_ms,
+            )
+            check("table/cards loaded", True)
         except PWTimeout:
-            check("table loaded", False, "table rows missing")
+            check("table/cards loaded", False, "no lineup rows or cards rendered")
 
         # Scope+team URL persistence
         click('[data-a="scope"][data-v="team"]')
