@@ -6,8 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-window.__MLBMA_EXPECT_HUB_BUILD = '20260605a';
-console.log('[VERSION] team_rankings build 20260605a — team_rankings_hub.js ONLY (not matchup_hub.js)');
+window.__MLBMA_EXPECT_HUB_BUILD = '20260606a';
+console.log('[VERSION] team_rankings build 20260606a — lineup_view.js');
 </script>
 <meta charset="UTF-8">
 
@@ -164,12 +164,12 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
   <span class="subtitle">Loading lineup offense data...</span>
 </div>
 <script>
-/* Only dismiss loading overlay if hub never finishes (network/sheet failure) */
+/* Dismiss loading overlay if lineup view never finishes (network/sheet failure) */
 setTimeout(function() {
-  if (window.HUB && window.HUB.loaded) return;
+  if (window.LineupView) return;
   var l = document.getElementById('hubLoading');
   if (l) l.classList.add('hide');
-  console.warn('[HUB] still loading after 20s — run hubLoadData(true) in console or hard refresh');
+  console.warn('[LINEUP VIEW] still loading after 20s — hard refresh and verify shared scripts');
 }, 20000);
 </script>
 <!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
