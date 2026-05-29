@@ -121,7 +121,10 @@ function normalizeHubState() {
 }
 
 function isAllowedValue(value, allowed) {
-  return allowed.indexOf(String(value || '').toLowerCase()) >= 0;
+  var needle = String(value == null ? '' : value).toLowerCase();
+  return (allowed || []).some(function(v) {
+    return String(v == null ? '' : v).toLowerCase() === needle;
+  });
 }
 
 function applyUrlState() {
