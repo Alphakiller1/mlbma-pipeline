@@ -780,6 +780,13 @@
     return { label: 'Weak', cls: 'tier-weak' };
   }
 
+  function _winPctFromScore(score, slope) {
+    score = _num(score);
+    if (score == null) return null;
+    var k = slope == null ? 0.9 : slope;
+    return Math.max(0, Math.min(100, 50 + ((score - 50) * k)));
+  }
+
   function resolveLineupRows(store, filter, options) {
     var f = normalizeHubFilter(filter);
     var data = store || {};
@@ -911,6 +918,21 @@
         }
         if (_num(d.abq) != null && _num(d.rcv) != null) d.ppGap = d.abq - d.rcv;
       }
+
+      // Surface-wins family proxies (Phase 0): derive win-facing percentages
+      // from existing offense + pitching context, never fabricate fixed constants.
+      var headlineScore = _num(d.osi);
+      var projScore = _num(d.projOSI);
+      if (headlineScore != null && projScore != null) headlineScore = (headlineScore * 0.6) + (projScore * 0.4);
+      d.winPct = _winPctFromScore(headlineScore, 0.9);
+
+      var f5Score = null;
+      if (_num(d.abq) != null && _num(d.obr) != null && _num(d.rcv) != null) {
+        f5Score = (d.abq * 0.45) + (d.obr * 0.35) + (d.rcv * 0.20);
+      }
+      d.f5WinPct = _winPctFromScore(f5Score, 0.95);
+
+      d.pitcherWinPct = _winPctFromScore(d.pitchScore, 0.8);
 
       d.trend = _trend(d.ytdOSI, d.l14OSI, d.l7OSI);
       d.tier = _tier(d.osi);

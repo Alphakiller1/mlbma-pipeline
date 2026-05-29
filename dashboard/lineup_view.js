@@ -31,9 +31,9 @@
       { key: 'trend', label: 'TREND', trend: true, phase: 0 }
     ],
     surface: [
-      { key: 'winPct', label: 'Win%', digits: 1, phase: 1, placeholder: true },
-      { key: 'f5WinPct', label: 'F5 Win%', digits: 1, phase: 1, placeholder: true },
-      { key: 'pitcherWinPct', label: 'Pitcher Win%', digits: 1, phase: 1, placeholder: true },
+      { key: 'winPct', label: 'Win%', digits: 1, phase: 0, sanity: [0, 100] },
+      { key: 'f5WinPct', label: 'F5 Win%', digits: 1, phase: 0, sanity: [0, 100] },
+      { key: 'pitcherWinPct', label: 'Pitcher Win%', digits: 1, phase: 0, sanity: [0, 100] },
       { key: 'trend', label: 'TREND', trend: true, phase: 0 }
     ]
   };
