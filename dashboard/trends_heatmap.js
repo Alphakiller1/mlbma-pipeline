@@ -63,7 +63,7 @@
       + '.thm-pill{border:1px solid #3a3a44;background:#23232b;color:#a1a1aa;font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;line-height:1.1}'
       + '.thm-pill:hover{border-color:#666678;color:#e5e7eb}'
       + '.thm-pill.active{background:#27436a;border-color:#27436a;color:#93c5fd}'
-      + '.thm-pill[disabled]{opacity:.55;cursor:not-allowed;color:#71717a;background:#1f1f25}'
+      + '.thm-pill.is-phase1{opacity:.78;color:#9ca3af;background:#1f1f25;border-color:#3a3a44}'
       + '.thm-pill .thm-phase{margin-left:4px;color:#71717a;font-size:10px}'
       + '.thm-note{font-size:13px;color:#a1a1aa;margin-top:6px;padding-top:0;border-top:0;line-height:1.25}'
       + '.thm-note.warn{color:#fbbf24}'
@@ -183,7 +183,7 @@
 
   function metricPill(metric, state) {
     var on = state.metric === metric.key;
-    return '<button class="thm-pill' + (on ? ' active' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.disabled ? ' disabled title="Phase 1 metric"' : '') + '>'
+    return '<button class="thm-pill' + (on ? ' active' : '') + (metric.disabled ? ' is-phase1' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.disabled ? ' title="Phase 1 metric"' : '') + '>'
       + esc(metric.label) + (metric.disabled ? '<span class="thm-phase">Phase 1</span>' : '') + '</button>';
   }
   function choicePill(group, key, val, label, state) {
@@ -196,6 +196,8 @@
       root.innerHTML = '<div class="thm-note">LineupModel unavailable.</div>';
       return;
     }
+    var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || null;
+    var phase1Mode = !!(metricDef && metricDef.disabled);
     var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
     root.innerHTML = '<div class="thm-wrap"><h3 class="thm-title">Trends Heat Map</h3><div class="thm-bar">'
       + '<div class="thm-row">'
@@ -213,13 +215,19 @@
       + '<div class="thm-row" style="margin-top:8px"><div class="thm-group"><span class="thm-label">Metric</span><div class="thm-pills">'
       + METRICS.map(function(m) { return metricPill(m, state); }).join('')
       + '</div></div></div>'
-      + '<div class="thm-note' + (splitWarn ? ' warn' : '') + '">'
+      + '<div class="thm-note' + ((splitWarn || phase1Mode) ? ' warn' : '') + '">'
       + esc((state.metric.toUpperCase() + ' trend · ' + state.hand.toUpperCase() + ' · ' + state.location + ' locations · color = value · read left→right for movement'))
       + (splitWarn ? ' · windowed split columns unavailable; using all-context window values with split fallback.' : '')
+      + (phase1Mode ? ' · Phase 1 metric: windowed data feed not connected yet.' : '')
       + '</div>'
       + '</div><div class="thm-table-wrap"><div class="thm-note">Loading trends heat map...</div></div></div>';
 
     buildRows(state).then(function(rows) {
+      if (phase1Mode) {
+        rows = (rows || []).map(function(r) {
+          return { t: r.t, ytd: null, l30: null, l14: null, l7: null, delta: null };
+        });
+      }
       var sorted = sortedRows(rows, state);
       var valueRange = minMax([].concat(
         sorted.map(function(r) { return r.ytd; }),
@@ -266,7 +274,7 @@
         var v = btn.getAttribute('data-v');
         if (a === 'metric') {
           var def = METRICS.find(function(m) { return m.key === v; });
-          if (!def || def.disabled) return;
+          if (!def) return;
           state.metric = v;
           state.sortKey = 'delta';
           state.sortDir = 'desc';
