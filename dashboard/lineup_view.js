@@ -52,37 +52,37 @@
     style.id = 'lineupViewStyles';
     style.textContent = ''
       + '.lv-wrap{margin-top:12px}'
-      + '.lv-bar{background:#111114;border:1px solid #28282f;border-radius:12px;padding:12px 14px;margin-bottom:10px}'
+      + '.lv-bar{background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:var(--r-md,12px);padding:12px 14px;margin-bottom:10px;box-shadow:var(--e-1,none)}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
-      + '.lv-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#71717a;font-weight:600}'
+      + '.lv-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:600}'
       + '.lv-pills{display:flex;flex-wrap:wrap;gap:6px}'
-      + '.lv-pill{border:1px solid #28282f;background:#18181c;color:#a1a1aa;font-size:11px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}'
-      + '.lv-pill:hover{border-color:rgba(192,132,252,.4);color:#f4f4f7}'
-      + '.lv-pill.active{background:rgba(192,132,252,.18);border-color:#c084fc;color:#c084fc}'
+      + '.lv-pill{border:0.5px solid var(--border,#26262f);background:var(--surface-2,#14141e);color:var(--text-2,#a1a1aa);font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-pill,999px);cursor:pointer}'
+      + '.lv-pill:hover{border-color:var(--border-2,#34343d);color:var(--text,#f4f4f7)}'
+      + '.lv-pill.active{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
       + '.lv-pill[disabled],.lv-disabled .lv-pill{opacity:.45;cursor:not-allowed}'
-      + '.lv-query{font-size:12px;color:#a1a1aa;margin-top:8px;padding-top:8px;border-top:1px solid #28282f}'
+      + '.lv-query{font-size:12px;color:var(--text-2,#a1a1aa);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border,#26262f)}'
       + '.lv-team-wrap{display:none}.lv-team-wrap.show{display:flex}'
-      + '.lv-input{border:1px solid #28282f;background:#18181c;color:#f4f4f7;padding:7px 10px;border-radius:8px;min-width:160px;font-size:12px;font-weight:600}'
+      + '.lv-input{border:0.5px solid var(--border,#26262f);background:var(--surface-2,#14141e);color:var(--text,#f4f4f7);padding:7px 10px;border-radius:var(--r-sm,8px);min-width:160px;font-size:12px;font-weight:600}'
       + '.lv-input-row{display:flex;gap:6px;align-items:center}'
-      + '.lv-help{font-size:10px;color:#71717a}.lv-help.error{color:#f87171}'
-      + '.lv-table-wrap{overflow:auto;border:1px solid #28282f;border-radius:12px;background:#111114}'
+      + '.lv-help{font-size:10px;color:var(--text-3,#6b6b76)}.lv-help.error{color:var(--neg,#f87171)}'
+      + '.lv-table-wrap{overflow:auto;border:0.5px solid var(--border,#26262f);border-radius:var(--r-md,12px);background:var(--surface-1,#0c0c14)}'
       + '.lv-table{width:100%;border-collapse:collapse;font-size:13px}'
-      + '.lv-table th{position:sticky;top:0;background:#18181c;color:#71717a;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:10px;border-bottom:1px solid #28282f;text-align:left}'
+      + '.lv-table th{position:sticky;top:0;background:var(--surface-2,#14141e);color:var(--text-3,#6b6b76);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:10px;border-bottom:0.5px solid var(--border-2,#34343d);text-align:left}'
       + '.lv-table th.lv-sortable{cursor:pointer;user-select:none}'
-      + '.lv-table td{padding:9px 10px;border-bottom:1px solid rgba(40,40,47,.8)}'
-      + '.lv-row-team{cursor:pointer}.lv-row-team:hover{background:rgba(192,132,252,.06)}'
+      + '.lv-table td{padding:9px 10px;border-bottom:0.5px solid color-mix(in srgb, var(--border,#26262f) 85%, transparent)}'
+      + '.lv-row-team{cursor:pointer}.lv-row-team:hover{background:var(--surface-2,#14141e)}'
       + '.lv-team-cell{display:flex;align-items:center;gap:8px}'
-      + '.lv-team-logo{width:22px;height:22px;border-radius:50%;object-fit:contain;background:#0a0a0a;border:1px solid #28282f}'
+      + '.lv-team-logo{width:22px;height:22px;border-radius:50%;object-fit:contain;background:var(--surface-2,#14141e);border:0.5px solid var(--border,#26262f)}'
       + '.lv-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:12px}'
-      + '.lv-card{background:#111114;border:1px solid #28282f;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;min-height:140px}'
-      + '.lv-card-lab{font-size:11px;color:#a1a1aa;letter-spacing:.06em;text-transform:uppercase}'
-      + '.lv-card-val{font-size:36px;line-height:1.05;font-weight:800;color:#f4f4f7;margin:8px 0}'
-      + '.lv-card-meta{display:flex;justify-content:space-between;font-size:12px;color:#a1a1aa;margin-top:auto}'
-      + '.lv-meter{height:6px;border-radius:999px;background:rgba(113,113,122,.22);overflow:hidden;margin-top:8px}'
-      + '.lv-meter>span{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#a78bfa)}'
-      + '.lv-phase{font-size:10px;color:#fbbf24;margin-left:6px}'
-      + '.lv-note{font-size:12px;color:#a1a1aa;padding:14px}';
+      + '.lv-card{background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:var(--r-sm,8px);padding:12px 14px;display:flex;flex-direction:column;min-height:140px;box-shadow:var(--e-1,none)}'
+      + '.lv-card-lab{font-size:11px;color:var(--text-2,#a1a1aa);letter-spacing:.06em;text-transform:uppercase}'
+      + '.lv-card-val{font-size:36px;line-height:1.05;font-weight:800;color:var(--text,#f4f4f7);margin:8px 0}'
+      + '.lv-card-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2,#a1a1aa);margin-top:auto}'
+      + '.lv-meter{height:6px;border-radius:var(--r-pill,999px);background:color-mix(in srgb, var(--text-3,#6b6b76) 22%, transparent);overflow:hidden;margin-top:8px}'
+      + '.lv-meter>span{display:block;height:100%;background:var(--accent)}'
+      + '.lv-phase{font-size:10px;color:var(--warn,#fbbf24);margin-left:6px}'
+      + '.lv-note{font-size:12px;color:var(--text-2,#a1a1aa);padding:14px}';
     document.head.appendChild(style);
   }
 
@@ -176,7 +176,7 @@
   }
 
   function colorMetric(key, value) {
-    if (!A || !A.metricColor) return '#f4f4f7';
+    if (!A || !A.metricColor) return 'var(--text,#f4f4f7)';
     if (key === 'wrc') return A.metricColor(value, 'wrc', false);
     if (key === 'woba') return A.metricColor(value, 'woba', false);
     return A.metricColor(value, key, false);
@@ -191,7 +191,7 @@
   }
   function rangeColor(value, range, key) {
     var n = num(value);
-    if (n == null) return '#a1a1aa';
+    if (n == null) return 'var(--text-2,#a1a1aa)';
     if (!range) return colorMetric(key || 'osi', n);
     var t = (n - range.min) / (range.max - range.min);
     if (!isFinite(t)) t = 0.5;
@@ -427,7 +427,7 @@
       }));
     }).catch(function(err) {
       console.error('[LineupView] render failed', err);
-      root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:#f87171">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
+      root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
     });
   }
 
