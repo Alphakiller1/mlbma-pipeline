@@ -11,7 +11,9 @@
     filter: (CFG.FILTER_DEFAULTS || { hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' }),
     scope: (CFG.SCOPE_DEFAULTS || { mode: 'all', team: null }),
     family: 'scoring',
-    trend: false
+    trend: false,
+    sortKey: 'osi',
+    sortDir: 'desc'
   };
 
   var FAMILY_DEFS = {
@@ -71,6 +73,10 @@
       + '.lv-table-wrap{overflow:auto;border:1px solid #28282f;border-radius:12px;background:#111114}'
       + '.lv-table{width:100%;border-collapse:collapse;font-size:13px}'
       + '.lv-table th{position:sticky;top:0;background:#18181c;color:#71717a;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:10px;border-bottom:1px solid #28282f;text-align:left}'
+      + '.lv-table th.lv-sortable{cursor:pointer;user-select:none}'
+      + '.lv-table th.lv-sortable:hover{color:#d4d4d8}'
+      + '.lv-table th.lv-sort-active{color:#f4f4f7}'
+      + '.lv-sort-ind{margin-left:6px;font-size:11px;color:#a1a1aa}'
       + '.lv-table td{padding:9px 10px;border-bottom:1px solid rgba(40,40,47,.8)}'
       + '.lv-row-team{cursor:pointer}.lv-row-team:hover{background:rgba(192,132,252,.06)}'
       + '.lv-team-cell{display:flex;align-items:center;gap:8px}'
@@ -98,6 +104,20 @@
   function familyDefs(family) {
     return FAMILY_DEFS[family] || FAMILY_DEFS.scoring;
   }
+  function defaultSortKeyForFamily(family) {
+    var defs = familyDefs(family);
+    var d = defs.find(function(x) { return !x.trend && !x.placeholder; });
+    return d ? d.key : DEFAULTS.sortKey;
+  }
+  function normalizeSortState(state) {
+    var defs = familyDefs(state.family);
+    var allowed = {};
+    defs.forEach(function(d) {
+      if (!d.trend && !d.placeholder) allowed[d.key] = true;
+    });
+    if (!allowed[state.sortKey]) state.sortKey = defaultSortKeyForFamily(state.family);
+    if (state.sortDir !== 'asc' && state.sortDir !== 'desc') state.sortDir = 'desc';
+  }
 
   function stateFromUrl() {
     var p = new URLSearchParams(location.search);
@@ -115,7 +135,16 @@
     });
     var family = String(p.get('family') || DEFAULTS.family).toLowerCase();
     if (!FAMILY_DEFS[family]) family = DEFAULTS.family;
-    return { filter: f, scope: scope, family: family, trend: p.get('trend') === '1' };
+    var st = {
+      filter: f,
+      scope: scope,
+      family: family,
+      trend: p.get('trend') === '1',
+      sortKey: String(p.get('sort') || defaultSortKeyForFamily(family)),
+      sortDir: String(p.get('dir') || DEFAULTS.sortDir).toLowerCase()
+    };
+    normalizeSortState(st);
+    return st;
   }
 
   function writeUrl(state) {
@@ -124,6 +153,7 @@
     p.set('hand', f.hand); p.set('loc', f.location); p.set('pitch', f.pitcher); p.set('side', f.batSide);
     p.set('seg', f.segment); p.set('window', f.window);
     p.set('scope', state.scope.mode); p.set('family', state.family);
+    p.set('sort', state.sortKey); p.set('dir', state.sortDir);
     if (state.scope.mode === 'team' && state.scope.team) p.set('team', teamKey(state.scope.team)); else p.delete('team');
     if (state.trend) p.set('trend', '1'); else p.delete('trend');
     history.replaceState(null, '', location.pathname + '?' + p.toString() + location.hash);
@@ -284,10 +314,27 @@
       return;
     }
 
+    var sortedRows = (rows || []).slice();
+    var sortKey = state.sortKey;
+    var sortDir = state.sortDir === 'asc' ? 'asc' : 'desc';
+    sortedRows.sort(function(a, b) {
+      var av = num(a[sortKey]);
+      var bv = num(b[sortKey]);
+      if (av == null && bv == null) return teamKey(a.t).localeCompare(teamKey(b.t));
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (av === bv) return teamKey(a.t).localeCompare(teamKey(b.t));
+      return sortDir === 'asc' ? (av - bv) : (bv - av);
+    });
+
     var head = '<tr><th>#</th><th>Team</th>' + defs.map(function(def) {
-      return '<th>' + esc(def.label) + (def.placeholder ? ' <span class="lv-phase">Phase 1</span>' : '') + '</th>';
+      if (def.placeholder) return '<th>' + esc(def.label) + ' <span class="lv-phase">Phase 1</span></th>';
+      if (def.trend) return '<th>' + esc(def.label) + '</th>';
+      var active = def.key === sortKey;
+      var ind = active ? (sortDir === 'asc' ? '▲' : '▼') : '↕';
+      return '<th class="lv-sortable' + (active ? ' lv-sort-active' : '') + '" data-a="sort" data-k="' + def.key + '">' + esc(def.label) + '<span class="lv-sort-ind">' + ind + '</span></th>';
     }).join('') + '</tr>';
-    var body = (rows || []).map(function(r, idx) {
+    var body = sortedRows.map(function(r, idx) {
       var cols = defs.map(function(def) {
         if (def.placeholder) return '<td>— <span class="lv-phase">Phase 1</span></td>';
         if (def.trend) return '<td>' + trendBadge(deltaMap[r.t + '|osi']) + '</td>';
@@ -304,6 +351,16 @@
 
   function bind(root, ctx) {
     root.addEventListener('click', function(e) {
+      var sortTh = e.target.closest('th[data-a="sort"]');
+      if (sortTh) {
+        var sk = sortTh.getAttribute('data-k');
+        if (sk) {
+          if (ctx.state.sortKey === sk) ctx.state.sortDir = ctx.state.sortDir === 'desc' ? 'asc' : 'desc';
+          else { ctx.state.sortKey = sk; ctx.state.sortDir = 'desc'; }
+          rerender(root, ctx);
+        }
+        return;
+      }
       var btn = e.target.closest('button');
       if (btn) {
         var a = btn.dataset.a;
@@ -318,6 +375,7 @@
         } else if (a === 'family') {
           ctx.state.family = btn.dataset.v;
           if (ctx.state.family === 'surface') ctx.state.filter.batSide = 'both';
+          normalizeSortState(ctx.state);
           rerender(root, ctx);
         } else if (a === 'trend') {
           ctx.state.trend = !ctx.state.trend;
@@ -398,6 +456,7 @@
     var state = stateFromUrl();
     state.filter = normalizeFilter(state.filter);
     state.scope = normalizeScope(state.scope);
+    normalizeSortState(state);
     var shell = document.createElement('div');
     shell.className = 'lv-wrap';
     shell.innerHTML = '<div class="lv-bar"><div class="lv-controls"></div></div><div class="lv-body"></div>';
