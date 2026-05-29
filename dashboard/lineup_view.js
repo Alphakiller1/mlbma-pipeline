@@ -74,9 +74,6 @@
       + '.lv-table{width:100%;border-collapse:collapse;font-size:13px}'
       + '.lv-table th{position:sticky;top:0;background:#18181c;color:#71717a;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:10px;border-bottom:1px solid #28282f;text-align:left}'
       + '.lv-table th.lv-sortable{cursor:pointer;user-select:none}'
-      + '.lv-table th.lv-sortable:hover{color:#d4d4d8}'
-      + '.lv-table th.lv-sort-active{color:#f4f4f7}'
-      + '.lv-sort-ind{margin-left:6px;font-size:11px;color:#a1a1aa}'
       + '.lv-table td{padding:9px 10px;border-bottom:1px solid rgba(40,40,47,.8)}'
       + '.lv-row-team{cursor:pointer}.lv-row-team:hover{background:rgba(192,132,252,.06)}'
       + '.lv-team-cell{display:flex;align-items:center;gap:8px}'
@@ -330,9 +327,7 @@
     var head = '<tr><th>#</th><th>Team</th>' + defs.map(function(def) {
       if (def.placeholder) return '<th>' + esc(def.label) + ' <span class="lv-phase">Phase 1</span></th>';
       if (def.trend) return '<th>' + esc(def.label) + '</th>';
-      var active = def.key === sortKey;
-      var ind = active ? (sortDir === 'asc' ? '▲' : '▼') : '↕';
-      return '<th class="lv-sortable' + (active ? ' lv-sort-active' : '') + '" data-a="sort" data-k="' + def.key + '">' + esc(def.label) + '<span class="lv-sort-ind">' + ind + '</span></th>';
+      return '<th class="lv-sortable" data-a="sort" data-k="' + def.key + '" title="Click to sort">' + esc(def.label) + '</th>';
     }).join('') + '</tr>';
     var body = sortedRows.map(function(r, idx) {
       var cols = defs.map(function(def) {
