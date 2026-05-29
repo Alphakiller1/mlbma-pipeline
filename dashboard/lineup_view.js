@@ -73,6 +73,8 @@
       + '.lv-table th{position:sticky;top:0;background:#18181c;color:#71717a;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:10px;border-bottom:1px solid #28282f;text-align:left}'
       + '.lv-table td{padding:9px 10px;border-bottom:1px solid rgba(40,40,47,.8)}'
       + '.lv-row-team{cursor:pointer}.lv-row-team:hover{background:rgba(192,132,252,.06)}'
+      + '.lv-team-cell{display:flex;align-items:center;gap:8px}'
+      + '.lv-team-logo{width:22px;height:22px;border-radius:50%;object-fit:contain;background:#0a0a0a;border:1px solid #28282f}'
       + '.lv-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:12px}'
       + '.lv-card{background:#111114;border:1px solid #28282f;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;min-height:140px}'
       + '.lv-card-lab{font-size:11px;color:#a1a1aa;letter-spacing:.06em;text-transform:uppercase}'
@@ -177,6 +179,12 @@
     return n + 'th';
   }
 
+  function teamLogoHtml(team, px) {
+    if (MS && MS.teamLogo) return MS.teamLogo(team, px || 22);
+    if (A && A.teamLogoImg) return A.teamLogoImg(team, px || 22, 'lv-team-logo');
+    return '';
+  }
+
   function renderControls(root, state, teams) {
     var surfaceMode = state.family === 'surface';
     var rows = ''
@@ -270,7 +278,9 @@
           + '<div class="lv-card-val" style="color:' + colorMetric(def.key, row[def.key]) + '">' + valHtml + '</div>'
           + '<div class="lv-card-meta">' + meta + '</div>' + meter + '</article>';
       }).join('');
-      mount.innerHTML = '<div class="lv-card-grid">' + cards + '</div>';
+      mount.innerHTML = '<div class="lv-note" style="padding:0 0 10px 0"><span class="lv-team-cell">'
+        + teamLogoHtml(row.t, 28) + '<strong style="font-size:18px">' + esc(row.t) + '</strong></span></div>'
+        + '<div class="lv-card-grid">' + cards + '</div>';
       return;
     }
 
@@ -286,7 +296,8 @@
         if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, r.t, raw);
         return '<td style="color:' + colorMetric(def.key, safe) + '">' + (safe == null ? '—' : fmt(safe, def.digits)) + '</td>';
       }).join('');
-      return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><strong>' + esc(r.t) + '</strong></td>' + cols + '</tr>';
+      return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><span class="lv-team-cell">'
+        + teamLogoHtml(r.t, 22) + '<strong>' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
     }).join('');
     mount.innerHTML = '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
   }
