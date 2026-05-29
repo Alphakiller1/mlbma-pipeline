@@ -215,7 +215,7 @@ function profileWindowFieldsFromRow(row) {
     tick();
   }
 
-  var SUBTABS = ['lineup', 'compare', 'pitching'];
+  var SUBTABS = ['trends', 'compare', 'pitching'];
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1287,7 +1287,9 @@ function profileWindowFieldsFromRow(row) {
   }
 
   function onSubtab(name) {
-    if (name === 'compare') {
+    if (name === 'trends') {
+      if (global.TrendsHeatmap && TrendsHeatmap.rerender) TrendsHeatmap.rerender();
+    } else if (name === 'compare') {
       fetchSpProfiles().then(function() { renderComparePane(); });
     } else if (name === 'pitching') {
       var mountPl = function() {
@@ -1313,10 +1315,10 @@ function profileWindowFieldsFromRow(row) {
     global._rlSubtabHooked = true;
     var orig = global.showResearchSubtab;
     global.showResearchSubtab = function(name) {
-      if (name === 'research-home' || name === 'trends' || name === 'splits' || name === 'splits-trends') name = 'lineup';
+      if (name === 'research-home' || name === 'lineup' || name === 'splits' || name === 'splits-trends') name = 'trends';
       if (name === 'pitcher') name = 'pitching';
       if (name === 'pitching-vs-lineup') name = 'compare';
-      if (SUBTABS.indexOf(name) < 0) name = 'lineup';
+      if (SUBTABS.indexOf(name) < 0) name = 'trends';
       if (typeof orig === 'function') orig(name);
       else {
         SUBTABS.forEach(function(id) {
@@ -1335,7 +1337,7 @@ function profileWindowFieldsFromRow(row) {
         if (layer) {
           layer.querySelectorAll('.subtab').forEach(function(btn) {
             var pane = btn.getAttribute('data-pane');
-            if (pane === 'trends' || pane === 'splits' || pane === 'splits-trends') pane = 'lineup';
+            if (pane === 'lineup' || pane === 'splits' || pane === 'splits-trends') pane = 'trends';
             if (pane === 'pitcher') pane = 'pitching';
             btn.classList.toggle('active', pane === name);
           });

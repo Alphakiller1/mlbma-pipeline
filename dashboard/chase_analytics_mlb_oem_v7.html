@@ -2230,8 +2230,9 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_charts.js?v=20260527s"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
-<script src="research_lab.js?v=20260529a"></script>
-<script src="lineup_view.js?v=20260606c"></script>
+<script src="research_lab.js?v=20260607a"></script>
+<script src="lineup_view.js?v=20260607a"></script>
+<script src="trends_heatmap.js?v=20260607a"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
@@ -2472,18 +2473,18 @@ body.view-research .ca-lab { display: block; }
         </ul>
         <div class="ca-tool-card__cta">Open Trends <span>?</span></div>
       </div>
-      <div class="ca-tool-card ca-tool-card--teal" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('splits');},300);">
+      <div class="ca-tool-card ca-tool-card--teal" onclick="window.location.href='team_rankings.html';">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
           <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
-        <h3 class="ca-tool-card__title">Splits</h3>
+        <h3 class="ca-tool-card__title">Team Rankings</h3>
         <ul class="ca-tool-card__list">
           <li>Platoon edges by handedness</li>
           <li>Home/away and F5 context</li>
           <li>Player prop research angles</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Splits <span>?</span></div>
+        <div class="ca-tool-card__cta">Open Team Rankings <span>?</span></div>
       </div>
       <div class="ca-tool-card ca-tool-card--purple" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('compare');},300);">
         <div class="ca-tool-card__accent"></div>
@@ -2566,7 +2567,7 @@ body.view-research .ca-lab { display: block; }
 </header>
 <div class="ca-lab__tabs-wrap">
   <div class="ca-lab__tabs" role="tablist" aria-label="Research Lab tabs">
-    <button type="button" class="ca-lab__tab ca-lab__tab--active" data-pane="lineup" role="tab" aria-selected="true">Lineup Lens</button>
+    <button type="button" class="ca-lab__tab ca-lab__tab--active" data-pane="trends" role="tab" aria-selected="true">Trends</button>
     <button type="button" class="ca-lab__tab" data-pane="compare" role="tab" aria-selected="false">Compare</button>
     <button type="button" class="ca-lab__tab" data-pane="pitcher" role="tab" aria-selected="false">Pitcher Intelligence</button>
   </div>
@@ -2580,9 +2581,9 @@ body.view-research .ca-lab { display: block; }
   <div id="rlGlobalControlBar" class="rl-global-control-bar" style="display:none;" aria-hidden="true"></div>
 
   <div class="ca-lab__panes">
-  <div id="pane-lineup" style="display:block;">
-    <p class="rl-tab-purpose">Unified lineup context view for scoring, difficulty, and surface wins.</p>
-    <div id="rlLineupLensMount"></div>
+  <div id="pane-trends" style="display:block;">
+    <p class="rl-tab-purpose">Color-coded team trajectory across YTD/L30/L14/L7 with handedness and location context.</p>
+    <div id="rlTrendsHeatmapMount"></div>
   </div>
 
   <!-- Compare pane -->
@@ -4966,8 +4967,8 @@ function bindFilterHelp() {
   });
 }
 
-var RESEARCH_SUBTABS = ['lineup', 'compare', 'pitching'];
-var CURRENT_RL_SUBTAB = 'lineup';
+var RESEARCH_SUBTABS = ['trends', 'compare', 'pitching'];
+var CURRENT_RL_SUBTAB = 'trends';
 
 function getInitialRlTab() {
   if (CURRENT_RL_SUBTAB && RESEARCH_SUBTABS.indexOf(CURRENT_RL_SUBTAB) >= 0) {
@@ -4975,14 +4976,14 @@ function getInitialRlTab() {
   }
   try {
     var t = sessionStorage.getItem('rlTab');
-    if (t === 'trends' || t === 'splits' || t === 'splits-trends') t = 'lineup';
+    if (t === 'lineup' || t === 'splits' || t === 'splits-trends') t = 'trends';
     if (t === 'pitcher') t = 'pitching';
     if (t && RESEARCH_SUBTABS.indexOf(t) >= 0) {
       CURRENT_RL_SUBTAB = t;
       return t;
     }
   } catch (e) { /* ignore */ }
-  return 'lineup';
+  return 'trends';
 }
 
 function syncCaLabTabs(name) {
@@ -4997,12 +4998,12 @@ function syncCaLabTabs(name) {
 }
 
 function showResearchSubtab(name) {
-  name = name || 'lineup';
-  if (name === 'research-home') name = 'lineup';
-  if (name === 'splits-trends' || name === 'trends' || name === 'splits') name = 'lineup';
+  name = name || 'trends';
+  if (name === 'research-home') name = 'trends';
+  if (name === 'splits-trends' || name === 'lineup' || name === 'splits') name = 'trends';
   if (name === 'pitching-vs-lineup') name = 'compare';
   if (name === 'pitcher') name = 'pitching';
-  if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'lineup';
+  if (RESEARCH_SUBTABS.indexOf(name) < 0) name = 'trends';
   CURRENT_RL_SUBTAB = name;
   try { sessionStorage.setItem('rlTab', name); } catch (e) { /* ignore */ }
   RESEARCH_SUBTABS.forEach(function(id) {
@@ -5049,8 +5050,11 @@ function onResearchSubtabShown(name) {
   hidePitchingResearchSections();
   if (name === 'compare') initCompare();
   else if (name === 'pitching') { hideTeamOorInPitching(); }
+  else if (name === 'trends' && window.TrendsHeatmap && TrendsHeatmap.rerender) {
+    TrendsHeatmap.rerender();
+  }
   if (window.ResearchLab && ResearchLab.onSubtab) {
-    ResearchLab.onSubtab(name === 'lineup' ? 'trends' : name);
+    ResearchLab.onSubtab(name);
   }
 }
 function hideTeamOorInPitching() {
@@ -6570,7 +6574,7 @@ function renderHomeResearchCards() {
   if (!root) return;
   var cards = [
     { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends ?' },
-    { tab: 'splits', title: 'Splits', uses: ['Platoon edges by pitcher handedness', 'Home/away advantages and F5 context', 'Player prop and lineup research angles'], cta: 'Open Splits ?' },
+    { tab: 'team-rankings', title: 'Team Rankings', uses: ['Sortable 30-team table by metric family', 'Platoon and location context for ranking', 'One-team scope for focused reads'], cta: 'Open Team Rankings ?' },
     { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare ?' },
     { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Intelligence ?' }
   ];
@@ -6584,6 +6588,10 @@ function renderHomeResearchCards() {
   root.querySelectorAll('[data-rl-tab]').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var tab = btn.getAttribute('data-rl-tab');
+      if (tab === 'team-rankings') {
+        window.location.href = 'team_rankings.html';
+        return;
+      }
       try { sessionStorage.setItem('rlTab', tab); } catch (e) { /* ignore */ }
       window.location.hash = '#section-research-lab';
       if (typeof syncDashboardView === 'function') syncDashboardView();
@@ -6775,10 +6783,10 @@ function renderResearchLab() {
   attachPalsToScores();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
   if (typeof hideRankSkeleton === 'function') hideRankSkeleton();
-  if (window.LineupView && LineupView.mount && !window.__rlLineupMounted) {
-    window.__rlLineupMounted = LineupView.mount({ mountId: 'rlLineupLensMount' });
-  } else if (window.__rlLineupMounted && window.__rlLineupMounted.rerender) {
-    window.__rlLineupMounted.rerender();
+  if (window.TrendsHeatmap && TrendsHeatmap.mount && !window.__rlTrendsMounted) {
+    window.__rlTrendsMounted = TrendsHeatmap.mount({ mountId: 'rlTrendsHeatmapMount' });
+  } else if (window.__rlTrendsMounted && window.__rlTrendsMounted.rerender) {
+    window.__rlTrendsMounted.rerender();
   }
   renderWatchlistBar();
   if (window.ResearchLab && ResearchLab.renderComparePane) ResearchLab.renderComparePane();
