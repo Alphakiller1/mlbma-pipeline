@@ -15,7 +15,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  runtime-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt playwright
+          python -m playwright install --with-deps chromium
+      - name: Run dashboard deep-link runtime smoke
+        run: |
+          python -m http.server 8765 >/tmp/mlbma-http.log 2>&1 &
+          sleep 2
+          python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
+
   deploy:
+    needs: runtime-smoke
     runs-on: ubuntu-latest
     environment:
       name: github-pages
