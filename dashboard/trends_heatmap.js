@@ -54,29 +54,31 @@
     var style = document.createElement('style');
     style.id = 'trendsHeatmapStyles';
     style.textContent = ''
-      + '.thm-wrap{margin-top:12px}'
-      + '.thm-bar{background:#111114;border:1px solid #28282f;border-radius:12px;padding:12px 14px;margin-bottom:10px}'
-      + '.thm-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
+      + '.thm-wrap{margin-top:8px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:14px;padding:16px}'
+      + '.thm-title{font-size:44px;line-height:1;font-weight:800;letter-spacing:-.02em;color:rgba(17,24,39,.08);margin:0 0 10px}'
+      + '.thm-bar{background:transparent;border:0;border-radius:0;padding:0;margin-bottom:8px}'
+      + '.thm-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}'
       + '.thm-group{display:flex;flex-direction:column;gap:6px}'
-      + '.thm-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#71717a;font-weight:600}'
+      + '.thm-label{font-size:13px;letter-spacing:0;color:#6b7280;font-weight:500;line-height:1}'
       + '.thm-pills{display:flex;flex-wrap:wrap;gap:6px}'
-      + '.thm-pill{border:1px solid #28282f;background:#18181c;color:#a1a1aa;font-size:11px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}'
-      + '.thm-pill:hover{border-color:rgba(192,132,252,.4);color:#f4f4f7}'
-      + '.thm-pill.active{background:rgba(192,132,252,.18);border-color:#c084fc;color:#c084fc}'
-      + '.thm-pill[disabled]{opacity:.45;cursor:not-allowed}'
-      + '.thm-pill .thm-phase{margin-left:6px;color:#fbbf24;font-size:10px}'
-      + '.thm-note{font-size:12px;color:#a1a1aa;margin-top:8px;padding-top:8px;border-top:1px solid #28282f}'
-      + '.thm-note.warn{color:#fbbf24}'
-      + '.thm-table-wrap{overflow:auto;border:1px solid #28282f;border-radius:12px;background:#111114}'
-      + '.thm-table{width:100%;border-collapse:separate;border-spacing:4px;font-size:13px}'
-      + '.thm-table thead th{background:#18181c;color:#a1a1aa;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border-radius:8px;text-align:left;white-space:nowrap}'
+      + '.thm-pill{border:1px solid #d1d5db;background:#f8fafc;color:#9ca3af;font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;line-height:1.1}'
+      + '.thm-pill:hover{border-color:#94a3b8;color:#64748b}'
+      + '.thm-pill.active{background:#27436a;border-color:#27436a;color:#93c5fd}'
+      + '.thm-pill[disabled]{opacity:.55;cursor:not-allowed;color:#d1d5db;background:#f3f4f6}'
+      + '.thm-pill .thm-phase{margin-left:4px;color:#d1d5db;font-size:10px}'
+      + '.thm-note{font-size:13px;color:#6b7280;margin-top:6px;padding-top:0;border-top:0;line-height:1.25}'
+      + '.thm-note.warn{color:#9ca3af}'
+      + '.thm-table-wrap{overflow:auto;border:0;border-radius:0;background:transparent}'
+      + '.thm-table{width:100%;border-collapse:separate;border-spacing:8px 6px;font-size:14px}'
+      + '.thm-table thead th{background:transparent;color:#6b7280;font-size:13px;text-transform:none;letter-spacing:0;padding:6px 6px;border-radius:0;text-align:left;white-space:nowrap;font-weight:700}'
       + '.thm-table thead th.sortable{cursor:pointer;user-select:none}'
-      + '.thm-cell{padding:10px 10px;border-radius:8px;font-weight:700;color:#050506;min-width:84px;text-align:center}'
-      + '.thm-cell.no-data{background:repeating-linear-gradient(45deg,rgba(113,113,122,.18),rgba(113,113,122,.18) 8px,rgba(113,113,122,.08) 8px,rgba(113,113,122,.08) 16px);color:#a1a1aa}'
-      + '.thm-team{display:flex;align-items:center;gap:8px;padding:0 6px;min-width:108px}'
-      + '.thm-team-logo{width:20px;height:20px;border-radius:50%;object-fit:contain;background:#0a0a0a;border:1px solid #28282f}'
-      + '.thm-delta{font-weight:700;text-align:right;padding-right:8px;white-space:nowrap}'
-      + '.thm-delta-up{color:#84cc16}.thm-delta-down{color:#f87171}.thm-delta-flat{color:#a1a1aa}';
+      + '.thm-cell{padding:12px 12px;border-radius:10px;font-weight:700;color:#0b0f14;min-width:120px;text-align:center;font-size:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02)}'
+      + '.thm-cell.no-data{background:repeating-linear-gradient(45deg,rgba(148,163,184,.24),rgba(148,163,184,.24) 8px,rgba(148,163,184,.1) 8px,rgba(148,163,184,.1) 16px);color:#64748b}'
+      + '.thm-team{display:flex;align-items:center;gap:8px;padding:0 6px;min-width:120px;color:#111827}'
+      + '.thm-team strong{font-size:13px}'
+      + '.thm-team-logo{width:24px;height:24px;border-radius:50%;object-fit:contain;background:#f8fafc;border:1px solid #cbd5e1}'
+      + '.thm-delta{font-weight:800;text-align:right;padding-right:8px;white-space:nowrap;font-size:13px}'
+      + '.thm-delta-up{color:#84cc16}.thm-delta-down{color:#f87171}.thm-delta-flat{color:#94a3b8}';
     document.head.appendChild(style);
   }
 
@@ -191,7 +193,7 @@
       return;
     }
     var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
-    root.innerHTML = '<div class="thm-wrap"><div class="thm-bar">'
+    root.innerHTML = '<div class="thm-wrap"><h3 class="thm-title">Trends Heat Map</h3><div class="thm-bar">'
       + '<div class="thm-row">'
       + '<div class="thm-group"><span class="thm-label">Hand</span><div class="thm-pills">'
       + choicePill('hand', 'hand', 'rhp', 'RHP', state)
