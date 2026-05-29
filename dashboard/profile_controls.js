@@ -82,8 +82,8 @@
   var _profileTeamScoresPromise = null;
 
   function mergeSplitScores(scR, scL) {
-    if (typeof global.buildYtdBothFromSplits === 'function' && scR.length && scL.length) {
-      return global.buildYtdBothFromSplits(scR, scL);
+    if (typeof global.buildYtdBothRows === 'function' && scR.length && scL.length) {
+      return global.buildYtdBothRows(scR, scL);
     }
     var by = {};
     scR.forEach(function(r) { by[r.t] = { r: r }; });

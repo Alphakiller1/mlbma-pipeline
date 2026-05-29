@@ -32,8 +32,8 @@
     var lhp = LD.scYtdL || global.SCO_YTD_L || LD.vsLhp || LD.lhpScores || (global.RL_DATA && RL_DATA.lhp) || [];
     var both = (global.SCO_YTD_B && global.SCO_YTD_B.length) ? global.SCO_YTD_B : (LD.scores || LD.teamScores);
     if (!both || !both.length) {
-      if (rhp.length && lhp.length && typeof global.buildYtdBothFromSplits === 'function') {
-        both = global.buildYtdBothFromSplits(rhp, lhp);
+      if (rhp.length && lhp.length && typeof global.buildYtdBothRows === 'function') {
+        both = global.buildYtdBothRows(rhp, lhp);
       } else {
         both = rhp;
       }
@@ -113,9 +113,9 @@ function profileWindowFieldsFromRow(row) {
     });
   }
 
-  function buildWindowScoresFromProfiles() {
-    if (typeof global.syncWindowScoresFromProfiles === 'function') {
-      global.syncWindowScoresFromProfiles();
+  function refreshWindowProfileScores() {
+    if (typeof global.syncWindowProfileScores === 'function') {
+      global.syncWindowProfileScores();
       return;
     }
     var profs = (global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam) || {};
@@ -151,8 +151,8 @@ function profileWindowFieldsFromRow(row) {
     if (r.length >= 10 && l.length >= 10) {
       global.SCO_YTD_R = r.map(function(d) { return Object.assign({}, d); });
       global.SCO_YTD_L = l.map(function(d) { return Object.assign({}, d); });
-      if (typeof global.buildYtdBothFromSplits === 'function') {
-        global.SCO_YTD_B = global.buildYtdBothFromSplits(global.SCO_YTD_R, global.SCO_YTD_L);
+      if (typeof global.buildYtdBothRows === 'function') {
+        global.SCO_YTD_B = global.buildYtdBothRows(global.SCO_YTD_R, global.SCO_YTD_L);
       }
       if (typeof global.toMap === 'function') {
         global.M_YTD_R = global.toMap(global.SCO_YTD_R);
@@ -162,14 +162,14 @@ function profileWindowFieldsFromRow(row) {
       else if (typeof global.attachPalsToScores === 'function') global.attachPalsToScores();
       synced = true;
     } else if (global.SCO_YTD_R && global.SCO_YTD_R.length >= 10 && global.SCO_YTD_L && global.SCO_YTD_L.length >= 10) {
-      if ((!global.SCO_YTD_B || global.SCO_YTD_B.length < 10) && typeof global.buildYtdBothFromSplits === 'function') {
-        global.SCO_YTD_B = global.buildYtdBothFromSplits(global.SCO_YTD_R, global.SCO_YTD_L);
+      if ((!global.SCO_YTD_B || global.SCO_YTD_B.length < 10) && typeof global.buildYtdBothRows === 'function') {
+        global.SCO_YTD_B = global.buildYtdBothRows(global.SCO_YTD_R, global.SCO_YTD_L);
         if (typeof global.enrichYtdMaster === 'function') global.enrichYtdMaster();
       }
       synced = !!(global.SCO_YTD_B && global.SCO_YTD_B.length >= 10);
     }
     if (global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam && Object.keys(LIVE_DATA.teamProfilesByTeam).length) {
-      buildWindowScoresFromProfiles();
+      refreshWindowProfileScores();
     }
     return synced;
   }

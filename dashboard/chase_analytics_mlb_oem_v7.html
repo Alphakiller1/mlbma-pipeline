@@ -2829,8 +2829,8 @@ function prepLiveScoreRow(d) {
 }
 
 function ensureHardcodedTimeframes() {
-  /* legacy ? use syncWindowScoresFromProfiles() after live load */
-  syncWindowScoresFromProfiles();
+  /* legacy ? use syncWindowProfileScores() after live load */
+  syncWindowProfileScores();
 }
 
 function syncHeroStats() {
@@ -2860,11 +2860,11 @@ function applyLiveData() {
     /* Pre-scored 0?100 from pipeline ? bypass scoreRows(), assign directly */
     SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
     SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
-    SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
+    SCO_YTD_B = buildYtdBothRows(SCO_YTD_R, SCO_YTD_L);
 
     M_YTD_R = toMap(SCO_YTD_R);
     M_YTD_L = toMap(SCO_YTD_L);
-    syncWindowScoresFromProfiles();
+    syncWindowProfileScores();
     enrichYtdMaster();
     registerMetricPools();
 
@@ -3063,7 +3063,7 @@ function getPaWeights(team) {
   return { wR: 0.5, wL: 0.5 };
 }
 
-function buildYtdBothFromSplits(scR, scL) {
+function buildYtdBothRows(scR, scL) {
   var byTeam = {};
   scR.forEach(function(r) { byTeam[r.t] = { r: r }; });
   scL.forEach(function(l) {
@@ -3094,7 +3094,7 @@ function buildYtdBothFromSplits(scR, scL) {
     return row;
   });
 }
-window.buildYtdBothFromSplits = buildYtdBothFromSplits;
+window.buildYtdBothRows = buildYtdBothRows;
 
 
 function profileWindowFieldsFromRow(row) {
@@ -3196,7 +3196,7 @@ function buildWindowRowsFromProfiles(timeframe, splitTab) {
   }).filter(Boolean);
 }
 
-function syncWindowScoresFromProfiles() {
+function syncWindowProfileScores() {
   var avail = { L30: false, L14: false, L7: false };
   ['L30', 'L14', 'L7'].forEach(function(tf) {
     var rows = buildWindowRowsFromProfiles(tf, 'b') || [];
@@ -4087,7 +4087,7 @@ function loadResearchData() {
     LIVE_DATA.windowMetricsAvailable = detectWindowMetricsFromProfiles(LIVE_DATA.teamProfilesByTeam);
     LIVE_DATA.todayGames = parseTodayGamesRows(results[4]);
     enrichSpProfilesFromLive();
-    syncWindowScoresFromProfiles();
+    syncWindowProfileScores();
     attachPalsToScores();
     _researchBundleLoaded = true;
     LIVE_DATA.researchLoaded = true;
@@ -4527,14 +4527,14 @@ function recomputeAllScores() {
   if (LIVE_DATA.loaded && LIVE_DATA.scYtdR && LIVE_DATA.scYtdL) {
     SCO_YTD_R = LIVE_DATA.scYtdR.map(function(d) { return Object.assign({}, d); });
     SCO_YTD_L = LIVE_DATA.scYtdL.map(function(d) { return Object.assign({}, d); });
-    SCO_YTD_B = buildYtdBothFromSplits(SCO_YTD_R, SCO_YTD_L);
+    SCO_YTD_B = buildYtdBothRows(SCO_YTD_R, SCO_YTD_L);
   } else {
     SCO_YTD_B = buildScores('YTD', 'b');
     SCO_YTD_R = buildScores('YTD', 'r');
     SCO_YTD_L = buildScores('YTD', 'l');
   }
   if (LIVE_DATA.loaded) {
-    syncWindowScoresFromProfiles();
+    syncWindowProfileScores();
   } else {
     SCO_L30_B = [];
     SCO_L14_B = [];
@@ -5204,7 +5204,7 @@ function currentRows(){
     else if (STATE.split === 'r') rows = SCO_YTD_R;
     else rows = SCO_YTD_L;
   } else if (STATE.time === 'L30' || STATE.time === 'L14' || STATE.time === 'L7') {
-    if (typeof syncWindowScoresFromProfiles === 'function') syncWindowScoresFromProfiles();
+    if (typeof syncWindowProfileScores === 'function') syncWindowProfileScores();
     if (STATE.split === 'b') {
       rows = STATE.time === 'L30' ? SCO_L30_B : (STATE.time === 'L14' ? SCO_L14_B : SCO_L7_B);
       if (!rows || !rows.length) rows = buildWindowRowsFromProfiles(STATE.time, 'b');
@@ -6981,7 +6981,7 @@ function bindDashRankingsControls(){
         dt.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
         var main = document.getElementById('timeToggle');
         if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-time')===t); });
-        if (typeof syncWindowScoresFromProfiles === 'function') syncWindowScoresFromProfiles();
+        if (typeof syncWindowProfileScores === 'function') syncWindowProfileScores();
         recomputeAllScores();
         renderMasterTable();
         if (document.getElementById('leaderboardBody')) {
@@ -6999,7 +6999,7 @@ function bindDashRankingsControls(){
         ds.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
         var main = document.getElementById('splitToggle');
         if(main) main.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-split')===(s==='f5'?'b':s)); });
-        if (typeof syncWindowScoresFromProfiles === 'function') syncWindowScoresFromProfiles();
+        if (typeof syncWindowProfileScores === 'function') syncWindowProfileScores();
         recomputeAllScores();
         renderMasterTable();
         if (document.getElementById('leaderboardBody')) {
