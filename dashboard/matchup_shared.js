@@ -826,6 +826,13 @@
       d.l30OSI = _num(prof.osi_l30);
       d.l14OSI = _num(prof.osi_l14);
       d.l7OSI = _num(prof.osi_l7);
+      d.pitchScore = _num(prof.avg_pitching_score);
+      var ipNorm = _num(prof.avg_ip_per_start);
+      var ipPerStart = ipNorm != null ? (ipNorm > 0 && ipNorm < 1.5 ? ipNorm * 9 : ipNorm) : null;
+      d.pitchInn = ipPerStart != null && ipPerStart > 0 ? (92 / ipPerStart) : null; // proxy pitches per inning faced
+      var qsRaw = _num(prof.qs_against_pct != null ? prof.qs_against_pct : prof.qs_against);
+      if (qsRaw != null) d.qs = qsRaw;
+      else if (ipPerStart != null) d.qs = Math.max(0, Math.min(100, ((ipPerStart - 4.0) / 2.5) * 100)); // IP/start -> QS% proxy
 
       if (f.window !== 'YTD') {
         var suf = _windowSuffix(f.window);
@@ -1169,7 +1176,9 @@
         osi: extractWindowOSI(pickCol(row, 'osi', 'OSI', 'osi_ytd', 'OSI_YTD')),
         abq: numOrNull(pickCol(row, 'abq', 'ABQ')),
         rcv: numOrNull(pickCol(row, 'rcv', 'RCV')),
-        obr: numOrNull(pickCol(row, 'obr', 'OBR'))
+        obr: numOrNull(pickCol(row, 'obr', 'OBR')),
+        avg_pitching_score: numOrNull(pickCol(row, 'avg_pitching_score', 'avg pitching score', 'avg_pitchscore')),
+        avg_ip_per_start: numOrNull(pickCol(row, 'avg_ip_per_start', 'avg ip per start', 'avg_ip'))
       };
       ['home', 'away'].forEach(function(loc) {
         ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {

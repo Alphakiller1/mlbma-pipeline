@@ -25,9 +25,9 @@
     difficulty: [
       { key: 'abq', label: 'ABQ', digits: 1, phase: 0, sanity: [0, 150] },
       { key: 'obr', label: 'OBR', digits: 1, phase: 0, sanity: [0, 150] },
-      { key: 'qs', label: 'QS%', digits: 1, phase: 1, placeholder: true },
-      { key: 'pitchInn', label: 'Pitch/Inn', digits: 1, phase: 1, placeholder: true },
-      { key: 'pitchScore', label: 'PitchScore', digits: 1, phase: 1, placeholder: true },
+      { key: 'qs', label: 'QS%', digits: 1, phase: 0, sanity: [0, 100] },
+      { key: 'pitchInn', label: 'Pitch/Inn', digits: 1, phase: 0, sanity: [8, 30] },
+      { key: 'pitchScore', label: 'PitchScore', digits: 1, phase: 0, sanity: [0, 150] },
       { key: 'trend', label: 'TREND', trend: true, phase: 0 }
     ],
     surface: [
