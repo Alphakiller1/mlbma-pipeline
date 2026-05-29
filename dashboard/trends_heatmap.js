@@ -17,11 +17,11 @@
   };
 
   var METRICS = [
-    { key: 'winPct', label: 'Win%', disabled: true, reason: 'Phase 1' },
-    { key: 'f5WinPct', label: 'F5 Win%', disabled: true, reason: 'Phase 1' },
-    { key: 'pitchScoreFaced', label: 'PitchScore Faced', disabled: true, reason: 'Phase 1' },
-    { key: 'rcv', label: 'RCV', disabled: false, colorCtx: 'rcv' },
-    { key: 'obr', label: 'OBR', disabled: false, colorCtx: 'obr' }
+    { key: 'winPct', sourceKey: 'winPct', label: 'Win%', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
+    { key: 'f5WinPct', sourceKey: 'f5WinPct', label: 'F5 Win%', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
+    { key: 'pitchScoreFaced', sourceKey: 'pitchScore', label: 'Pitching Score Faced', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
+    { key: 'rcv', sourceKey: 'rcv', label: 'RCV', disabled: false, colorCtx: 'rcv' },
+    { key: 'obr', sourceKey: 'obr', label: 'OBR', disabled: false, colorCtx: 'obr' }
   ];
 
   function teamKey(t) { return MS.teamKey ? MS.teamKey(t) : String(t || '').trim().toUpperCase(); }
@@ -105,6 +105,8 @@
   }
 
   function buildRows(state) {
+    var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || { sourceKey: state.metric };
+    var sourceKey = metricDef.sourceKey || state.metric;
     return Promise.all([
       fetchWindowRows(state, 'YTD'),
       fetchWindowRows(state, 'L30'),
@@ -125,11 +127,10 @@
         var a = (l30 || []).find(function(r) { return teamKey(r.t) === t; }) || {};
         var b = (l14 || []).find(function(r) { return teamKey(r.t) === t; }) || {};
         var c = (l7 || []).find(function(r) { return teamKey(r.t) === t; }) || {};
-        var m = state.metric;
-        by[t].ytd = num(y[m]);
-        by[t].l30 = num(a[m]);
-        by[t].l14 = num(b[m]);
-        by[t].l7 = num(c[m]);
+        by[t].ytd = num(y[sourceKey]);
+        by[t].l30 = num(a[sourceKey]);
+        by[t].l14 = num(b[sourceKey]);
+        by[t].l7 = num(c[sourceKey]);
         by[t].delta = by[t].ytd != null && by[t].l7 != null ? by[t].l7 - by[t].ytd : null;
       });
       return Object.keys(by).sort().map(function(t) { return by[t]; });
@@ -183,8 +184,8 @@
 
   function metricPill(metric, state) {
     var on = state.metric === metric.key;
-    return '<button class="thm-pill' + (on ? ' active' : '') + (metric.disabled ? ' is-phase1' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.disabled ? ' title="Phase 1 metric"' : '') + '>'
-      + esc(metric.label) + (metric.disabled ? '<span class="thm-phase">Phase 1</span>' : '') + '</button>';
+    return '<button class="thm-pill' + (on ? ' active' : '') + (metric.phase ? ' is-phase1' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.phase ? ' title="Proxy metric until Phase 1 feed"' : '') + '>'
+      + esc(metric.label) + (metric.phase ? '<span class="thm-phase">Phase 1</span>' : '') + '</button>';
   }
   function choicePill(group, key, val, label, state) {
     var on = state[key] === val;
@@ -197,7 +198,7 @@
       return;
     }
     var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || null;
-    var phase1Mode = !!(metricDef && metricDef.disabled);
+    var phase1Mode = !!(metricDef && metricDef.phase);
     var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
     root.innerHTML = '<div class="thm-wrap"><h3 class="thm-title">Trends Heat Map</h3><div class="thm-bar">'
       + '<div class="thm-row">'
@@ -218,16 +219,11 @@
       + '<div class="thm-note' + ((splitWarn || phase1Mode) ? ' warn' : '') + '">'
       + esc((state.metric.toUpperCase() + ' trend · ' + state.hand.toUpperCase() + ' · ' + state.location + ' locations · color = value · read left→right for movement'))
       + (splitWarn ? ' · windowed split columns unavailable; using all-context window values with split fallback.' : '')
-      + (phase1Mode ? ' · Phase 1 metric: windowed data feed not connected yet.' : '')
+      + (phase1Mode ? ' · Phase 1 metric: showing current proxy model values until dedicated feed is connected.' : '')
       + '</div>'
       + '</div><div class="thm-table-wrap"><div class="thm-note">Loading trends heat map...</div></div></div>';
 
     buildRows(state).then(function(rows) {
-      if (phase1Mode) {
-        rows = (rows || []).map(function(r) {
-          return { t: r.t, ytd: null, l30: null, l14: null, l7: null, delta: null };
-        });
-      }
       var sorted = sortedRows(rows, state);
       var valueRange = minMax([].concat(
         sorted.map(function(r) { return r.ytd; }),
