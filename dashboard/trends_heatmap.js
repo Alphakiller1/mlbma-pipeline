@@ -6,7 +6,6 @@
   var A = global.MLBMAAssets || null;
   var MS = global.MLBMASharedMatchup || {};
   var _mounted = null;
-  var _poolSeeded = {};
 
   var DEFAULT_STATE = {
     metric: 'rcv',
@@ -105,16 +104,6 @@
     return LM.rankAll(filter, 'scoring').then(function(rows) { return rows || []; });
   }
 
-  function seedLeaguePool(metricKey) {
-    if (!A || !A.registerLeaguePool || !LM || !LM.leaguePool || _poolSeeded[metricKey]) return Promise.resolve();
-    return LM.leaguePool(metricKey).then(function(pool) {
-      if (pool && pool.values && pool.values.length) {
-        A.registerLeaguePool(metricKey, pool.values);
-        _poolSeeded[metricKey] = true;
-      }
-    });
-  }
-
   function buildRows(state) {
     return Promise.all([
       fetchWindowRows(state, 'YTD'),
@@ -167,9 +156,24 @@
     return out;
   }
 
-  function metricColor(state, value) {
-    if (value == null || !A || !A.metricColor) return null;
-    return A.metricColor(value, state.metric, false);
+  function minMax(values) {
+    var vals = (values || []).map(num).filter(function(v) { return v != null; });
+    if (!vals.length) return null;
+    var min = Math.min.apply(null, vals);
+    var max = Math.max.apply(null, vals);
+    if (!isFinite(min) || !isFinite(max)) return null;
+    if (Math.abs(max - min) < 1e-9) return { min: min - 1, max: max + 1 };
+    return { min: min, max: max };
+  }
+  function vibrantColor(value, range) {
+    var v = num(value);
+    if (v == null || !range) return null;
+    var t = (v - range.min) / (range.max - range.min);
+    if (!isFinite(t)) t = 0.5;
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+    var hue = 4 + (132 * t);
+    return 'hsl(' + hue.toFixed(1) + ', 84%, 60%)';
   }
 
   function teamLogo(team) {
@@ -215,10 +219,15 @@
       + '</div>'
       + '</div><div class="thm-table-wrap"><div class="thm-note">Loading trends heat map...</div></div></div>';
 
-    seedLeaguePool(state.metric).then(function() {
-      return buildRows(state);
-    }).then(function(rows) {
+    buildRows(state).then(function(rows) {
       var sorted = sortedRows(rows, state);
+      var valueRange = minMax([].concat(
+        sorted.map(function(r) { return r.ytd; }),
+        sorted.map(function(r) { return r.l30; }),
+        sorted.map(function(r) { return r.l14; }),
+        sorted.map(function(r) { return r.l7; })
+      ));
+      var deltaRange = minMax(sorted.map(function(r) { return r.delta; }));
       var head = '<table class="thm-table"><thead><tr>'
         + '<th class="sortable" data-a="sort" data-k="team">Team' + sortArrow(state, 'team') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="ytd">YTD' + sortArrow(state, 'ytd') + '</th>'
@@ -230,7 +239,7 @@
       var body = sorted.map(function(r) {
         function cell(v, digits) {
           if (v == null) return '<td><div class="thm-cell no-data">—</div></td>';
-          var c = metricColor(state, v);
+          var c = vibrantColor(v, valueRange);
           var txt = Number(v).toFixed(digits == null ? 1 : digits);
           return '<td><div class="thm-cell" style="' + (c ? ('background:' + c + ';') : '') + '">' + txt + '</div></td>';
         }
@@ -240,7 +249,7 @@
           + cell(r.l30, 1)
           + cell(r.l14, 1)
           + cell(r.l7, 1)
-          + '<td class="thm-delta ' + deltaClass(r.delta) + '">' + esc(deltaText(r.delta)) + '</td>'
+          + '<td class="thm-delta ' + deltaClass(r.delta) + '" style="color:' + (vibrantColor(r.delta, deltaRange) || '#94a3b8') + '">' + esc(deltaText(r.delta)) + '</td>'
           + '</tr>';
       }).join('');
       root.querySelector('.thm-table-wrap').innerHTML = head + body + '</tbody></table>';

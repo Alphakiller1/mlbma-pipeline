@@ -181,6 +181,33 @@
     if (key === 'woba') return A.metricColor(value, 'woba', false);
     return A.metricColor(value, key, false);
   }
+  function rangeFor(rows, key) {
+    var vals = (rows || []).map(function(r) { return num(r[key]); }).filter(function(v) { return v != null; });
+    if (vals.length < 2) return null;
+    var min = Math.min.apply(null, vals);
+    var max = Math.max.apply(null, vals);
+    if (!isFinite(min) || !isFinite(max) || max - min < 1e-9) return null;
+    return { min: min, max: max };
+  }
+  function rangeColor(value, range, key) {
+    var n = num(value);
+    if (n == null) return '#a1a1aa';
+    if (!range) return colorMetric(key || 'osi', n);
+    var t = (n - range.min) / (range.max - range.min);
+    if (!isFinite(t)) t = 0.5;
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+    var hue = 4 + (132 * t);
+    return 'hsl(' + hue.toFixed(1) + ', 86%, 56%)';
+  }
+  function rangeMapForDefs(rows, defs) {
+    var out = {};
+    (defs || []).forEach(function(def) {
+      if (!def || def.placeholder || def.trend) return;
+      out[def.key] = rangeFor(rows, def.key);
+    });
+    return out;
+  }
   function ordinal(n) {
     n = Number(n) || 0;
     var m = n % 100;
@@ -255,6 +282,7 @@
   function renderBody(root, state, rows) {
     var mount = root.querySelector('.lv-body');
     var defs = familyDefs(state.family);
+    var ranges = rangeMapForDefs(rows, defs);
     if (state.scope.mode === 'team' && state.scope.team) {
       var row = (rows || []).find(function(r) { return teamKey(r.t) === teamKey(state.scope.team); });
       if (!row) {
@@ -282,7 +310,7 @@
           }
         }
         return '<article class="lv-card"><div class="lv-card-lab">' + esc(def.label) + '</div>'
-          + '<div class="lv-card-val" style="color:' + colorMetric(def.key, row[def.key]) + '">' + valHtml + '</div>'
+          + '<div class="lv-card-val" style="color:' + rangeColor(row[def.key], ranges[def.key], def.key) + '">' + valHtml + '</div>'
           + '<div class="lv-card-meta">' + meta + '</div>' + meter + '</article>';
       }).join('');
       mount.innerHTML = '<div class="lv-note" style="padding:0 0 10px 0"><span class="lv-team-cell">'
@@ -314,7 +342,7 @@
         var raw = r[def.key];
         var safe = sanityOk(def, raw) ? raw : null;
         if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, r.t, raw);
-        return '<td style="color:' + colorMetric(def.key, safe) + '">' + (safe == null ? '—' : fmt(safe, def.digits)) + '</td>';
+        return '<td style="color:' + rangeColor(safe, ranges[def.key], def.key) + '">' + (safe == null ? '—' : fmt(safe, def.digits)) + '</td>';
       }).join('');
       return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><span class="lv-team-cell">'
         + teamLogoHtml(r.t, 22) + '<strong>' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
