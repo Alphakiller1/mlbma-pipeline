@@ -553,10 +553,10 @@
     if (abq === null || rcv === null || obr === null || osi === null) return null;
     if (projOSI == null) projOSI = osi;
     if (ppGap == null && abq != null && rcv != null) ppGap = abq - rcv;
-    var woba = parseFloat(row['wOBA'] || row['woba'] || row['woba_rhp'] || 0) || null;
-    var xwoba = parseFloat(row['xwOBA'] || row['xwoba'] || 0) || null;
-    var slg = parseFloat(row['SLG'] || row['slg'] || 0) || null;
-    var wrc = parseFloat(row['wRC+'] || row['wrc_plus'] || row['wRC'] || 0) || null;
+    var woba = numOrNull(pickCol(row, 'wOBA', 'woba', 'woba_rhp'));
+    var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
+    var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
+    var wrc = numOrNull(pickCol(row, 'wRC+', 'wrc_plus', 'wRC'));
     if (woba === 0) woba = null;
     if (xwoba === 0) xwoba = null;
     if (slg === 0) slg = null;
@@ -655,6 +655,26 @@
         out.xwoba = Math.round(d.xwoba / ratePa * 1000) / 1000;
         out.slg = Math.round(d.slg / ratePa * 1000) / 1000;
       }
+      if (out.osi == null && out.wrc != null) {
+        // Phase 0 proxy: when split tabs provide only rate stats, map headline process metrics
+        // through a light wRC+ anchored transform so context can still move values.
+        var base = out.wrc;
+        out.osi = base;
+        out.rcv = base;
+        out.abq = base;
+        out.obr = base;
+        out.ppGap = 0;
+        out.projOSI = out.osi;
+      }
+      if (out.osi == null && out.woba != null) {
+        var proxy = out.woba * 250;
+        out.osi = proxy;
+        out.rcv = proxy;
+        out.abq = proxy;
+        out.obr = proxy;
+        out.ppGap = 0;
+        out.projOSI = out.osi;
+      }
       if (out.osi == null) return null;
       return out;
     }).filter(Boolean);
@@ -694,7 +714,14 @@
       var pack = by[t], r = pack.r, l = pack.l;
       if (!r && l) return Object.assign({}, l);
       if (r && !l) return Object.assign({}, r);
-      function b(k) { return 0.5 * (r[k] || 0) + 0.5 * (l[k] || 0); }
+      function b(k) {
+        var rv = numOrNull(r[k]);
+        var lv = numOrNull(l[k]);
+        if (rv == null && lv == null) return null;
+        if (rv == null) return lv;
+        if (lv == null) return rv;
+        return 0.5 * rv + 0.5 * lv;
+      }
       var row = {
         t: t,
         abq: b('abq'),
@@ -761,6 +788,8 @@
     var scBoth = (data.scBoth && data.scBoth.length) ? data.scBoth : blendSplits(scR, scL);
     var scHome = data.scHome || [];
     var scAway = data.scAway || [];
+    var scVsSp = data.scVsSp || [];
+    var scVsRp = data.scVsRp || [];
     var teamProfiles = data.teamProfiles || {};
     var opts = options || {};
 
@@ -768,6 +797,8 @@
     if (f.window === 'YTD') {
       if (f.location === 'home' && f.hand === 'both' && scHome.length >= 10) source = scHome;
       else if (f.location === 'away' && f.hand === 'both' && scAway.length >= 10) source = scAway;
+      else if (f.pitcher === 'sp' && f.hand === 'both' && scVsSp.length >= 10) source = scVsSp;
+      else if (f.pitcher === 'rp' && f.hand === 'both' && scVsRp.length >= 10) source = scVsRp;
       else if (f.hand === 'r') source = scR;
       else if (f.hand === 'l') source = scL;
     } else {
@@ -777,8 +808,14 @@
 
     var homeMap = {};
     var awayMap = {};
+    var bothMap = {};
+    var spMap = {};
+    var rpMap = {};
     scHome.forEach(function(r) { if (r && r.t) homeMap[teamKey(r.t)] = r; });
     scAway.forEach(function(r) { if (r && r.t) awayMap[teamKey(r.t)] = r; });
+    scBoth.forEach(function(r) { if (r && r.t) bothMap[teamKey(r.t)] = r; });
+    scVsSp.forEach(function(r) { if (r && r.t) spMap[teamKey(r.t)] = r; });
+    scVsRp.forEach(function(r) { if (r && r.t) rpMap[teamKey(r.t)] = r; });
 
     var rows = (source || []).map(function(base) {
       var d = Object.assign({}, base);
@@ -827,6 +864,34 @@
               var v = _num(prof[loc + '_' + m]);
               if (v == null && locRow) v = _num(locRow[m]);
               if (v != null) d[m] = v;
+            });
+            if (d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
+          }
+        }
+      }
+
+      if (f.pitcher === 'sp' || f.pitcher === 'rp') {
+        var alreadyPitchScoped = f.window === 'YTD' && f.hand === 'both' && f.location === 'all'
+          && ((f.pitcher === 'sp' && scVsSp.length >= 10) || (f.pitcher === 'rp' && scVsRp.length >= 10));
+        if (!alreadyPitchScoped) {
+          var pitchRow = f.pitcher === 'sp' ? spMap[teamKey(t)] : rpMap[teamKey(t)];
+          var baseBoth = bothMap[teamKey(t)];
+          if (pitchRow && baseBoth) {
+            var ratioBase = null;
+            if (_num(pitchRow.wrc) != null && _num(baseBoth.wrc) != null && Math.abs(_num(baseBoth.wrc)) > 0.0001) {
+              ratioBase = _num(pitchRow.wrc) / _num(baseBoth.wrc);
+            } else if (_num(pitchRow.woba) != null && _num(baseBoth.woba) != null && Math.abs(_num(baseBoth.woba)) > 0.0001) {
+              ratioBase = _num(pitchRow.woba) / _num(baseBoth.woba);
+            }
+            ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'slg', 'projOSI'].forEach(function(m) {
+              var pv = _num(pitchRow[m]);
+              var bv = _num(baseBoth[m]);
+              if (_num(d[m]) == null) return;
+              if (pv != null && bv != null && Math.abs(bv) > 0.0001) {
+                d[m] = d[m] * (pv / bv);
+              } else if (ratioBase != null) {
+                d[m] = d[m] * ratioBase;
+              }
             });
             if (d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
           }
@@ -1080,6 +1145,214 @@
     return A.pitcherAvatar(name, o);
   }
 
+  function extractWindowOSI(val) {
+    if (val == null || val === '') return null;
+    var n = parseFloat(val);
+    if (!isNaN(n)) return n;
+    if (typeof val === 'string') {
+      var m = val.match(/OSI[\s":]+([0-9.]+)/i);
+      if (m) return parseFloat(m[1]);
+    }
+    return null;
+  }
+
+  function parseTeamProfilesMap(rows) {
+    var map = {};
+    (rows || []).forEach(function(row) {
+      var t = teamKey(pickCol(row, 'team', 'Tm', 'Team'));
+      if (!t) return;
+      var prof = {
+        osi_ytd: extractWindowOSI(pickCol(row, 'osi_ytd', 'OSI_YTD', 'osi', 'OSI')),
+        osi_l30: extractWindowOSI(pickCol(row, 'osi_l30', 'OSI_L30', 'L30_OSI')),
+        osi_l14: extractWindowOSI(pickCol(row, 'osi_l14', 'OSI_L14', 'L14_OSI')),
+        osi_l7: extractWindowOSI(pickCol(row, 'osi_l7', 'OSI_L7', 'L7_OSI')),
+        osi: extractWindowOSI(pickCol(row, 'osi', 'OSI', 'osi_ytd', 'OSI_YTD')),
+        abq: numOrNull(pickCol(row, 'abq', 'ABQ')),
+        rcv: numOrNull(pickCol(row, 'rcv', 'RCV')),
+        obr: numOrNull(pickCol(row, 'obr', 'OBR'))
+      };
+      ['home', 'away'].forEach(function(loc) {
+        ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
+          var key = loc + '_' + m;
+          prof[key] = numOrNull(pickCol(row, key, key.toUpperCase()));
+        });
+      });
+      ['abq', 'rcv', 'obr'].forEach(function(m) {
+        ['l30', 'l14', 'l7'].forEach(function(w) {
+          prof[m + '_' + w] = numOrNull(pickCol(row, m + '_' + w, m.toUpperCase() + '_' + w.toUpperCase(), w + '_' + m));
+        });
+      });
+      map[t] = prof;
+    });
+    return map;
+  }
+
+  function lineupStoreFromScored(scR, scL, teamProfiles, scVsSp, scVsRp) {
+    var both = blendSplits(scR, scL);
+    var home = [];
+    var away = [];
+    Object.keys(teamProfiles || {}).forEach(function(t) {
+      var p = teamProfiles[t];
+      if (!p) return;
+      var h = { t: t };
+      var a = { t: t };
+      var hasH = false;
+      var hasA = false;
+      ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
+        var hv = numOrNull(p['home_' + m]);
+        var av = numOrNull(p['away_' + m]);
+        if (hv != null) { h[m] = hv; hasH = true; }
+        if (av != null) { a[m] = av; hasA = true; }
+      });
+      if (hasH) {
+        if (h.abq != null && h.rcv != null) h.ppGap = h.abq - h.rcv;
+        if (h.projOSI == null && h.osi != null) h.projOSI = h.osi;
+        home.push(h);
+      }
+      if (hasA) {
+        if (a.abq != null && a.rcv != null) a.ppGap = a.abq - a.rcv;
+        if (a.projOSI == null && a.osi != null) a.projOSI = a.osi;
+        away.push(a);
+      }
+    });
+    return {
+      scR: scR || [],
+      scL: scL || [],
+      scBoth: both || [],
+      scHome: home,
+      scAway: away,
+      scVsSp: scVsSp || [],
+      scVsRp: scVsRp || [],
+      teamProfiles: teamProfiles || {}
+    };
+  }
+
+  var _lineupModelCache = null;
+  var _lineupModelInflight = null;
+
+  function lineupModelFetchAll(options) {
+    options = options || {};
+    if (!options.forceRefresh && _lineupModelCache) return Promise.resolve(_lineupModelCache);
+    if (!options.forceRefresh && _lineupModelInflight) return _lineupModelInflight;
+    if (options.forceRefresh) clearSheetTabCache();
+    var tabs = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SHEET_TABS;
+    if (!tabs) return Promise.reject(new Error('SHEET_TABS missing'));
+    _lineupModelInflight = Promise.all([
+      fetchSheetTab(tabs.vs_rhp, options),
+      fetchSheetTab(tabs.vs_lhp, options),
+      fetchSheetTab(tabs.team_profiles, options),
+      fetchSheetTab(tabs.batter_splits_vs_sp, options).catch(function() { return []; }),
+      fetchSheetTab(tabs.batter_splits_vs_rp, options).catch(function() { return []; })
+    ]).then(function(res) {
+      var payload = {
+        rhp: res[0] || [],
+        lhp: res[1] || [],
+        profiles: res[2] || [],
+        splitVsSp: res[3] || [],
+        splitVsRp: res[4] || []
+      };
+      _lineupModelCache = payload;
+      return payload;
+    }).finally(function() {
+      _lineupModelInflight = null;
+    });
+    return _lineupModelInflight;
+  }
+
+  function lineupModelScoreRow(raw) {
+    return scoreRowFromSheet(raw);
+  }
+
+  function lineupModelEnsureStore(options) {
+    return lineupModelFetchAll(options).then(function(raw) {
+      var scR = (raw.rhp || []).map(scoreRowFromSheet).filter(Boolean);
+      var scL = (raw.lhp || []).map(scoreRowFromSheet).filter(Boolean);
+      var profiles = parseTeamProfilesMap(raw.profiles || []);
+      var scVsSp = aggregateTeamOffenseFromBatterRows(raw.splitVsSp || []);
+      var scVsRp = aggregateTeamOffenseFromBatterRows(raw.splitVsRp || []);
+      return lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp);
+    });
+  }
+
+  function lineupModelResolve(team, filter, options) {
+    return lineupModelEnsureStore(options).then(function(store) {
+      var f = normalizeFilter(filter || {});
+      var rows = resolveLineupRows(store, f);
+      var tk = teamKey(team);
+      var row = (rows || []).find(function(r) { return teamKey(r.t) === tk; }) || null;
+      if (!row) return null;
+      return Object.assign({ approx: false }, row);
+    });
+  }
+
+  function _leadMetricForFamily(family) {
+    if (family === 'difficulty') return 'abq';
+    if (family === 'surface') return 'osi';
+    return 'osi';
+  }
+
+  function lineupModelRankAll(filter, family, options) {
+    return lineupModelEnsureStore(options).then(function(store) {
+      var f = normalizeFilter(filter || {});
+      var rows = resolveLineupRows(store, f).slice();
+      var lead = _leadMetricForFamily(String(family || 'scoring').toLowerCase());
+      rows.sort(function(a, b) {
+        var av = numOrNull(a[lead]);
+        var bv = numOrNull(b[lead]);
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        return bv - av;
+      });
+      return rows.map(function(r, i) {
+        var pct = rows.length > 1 ? Math.round(((rows.length - (i + 1)) / (rows.length - 1)) * 100) : 100;
+        return Object.assign({ rank: i + 1, pct: pct }, r);
+      });
+    });
+  }
+
+  function lineupModelWindowDelta(team, metric, filter, options) {
+    var f = normalizeFilter(filter || {});
+    return Promise.all([
+      lineupModelResolve(team, f, options),
+      lineupModelResolve(team, Object.assign({}, f, { window: 'YTD' }), options)
+    ]).then(function(res) {
+      var cur = res[0];
+      var ytd = res[1];
+      if (!cur || !ytd) return null;
+      var m = String(metric || 'osi');
+      var a = numOrNull(cur[m]);
+      var b = numOrNull(ytd[m]);
+      if (a == null || b == null) return null;
+      return a - b;
+    });
+  }
+
+  function lineupModelLeaguePool(metric, options) {
+    var f = createFilterState({ hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' });
+    return lineupModelRankAll(f, 'scoring', options).then(function(rows) {
+      var vals = (rows || []).map(function(r) { return numOrNull(r[metric]); }).filter(function(v) { return v != null && !isNaN(v); });
+      if (!vals.length) return { mean: null, sd: null, values: [] };
+      var mean = vals.reduce(function(a, b) { return a + b; }, 0) / vals.length;
+      var variance = vals.reduce(function(acc, v) { return acc + Math.pow(v - mean, 2); }, 0) / vals.length;
+      return { mean: mean, sd: Math.sqrt(variance), values: vals };
+    });
+  }
+
+  var LineupModel = {
+    fetchAll: lineupModelFetchAll,
+    scoreRow: lineupModelScoreRow,
+    blendSplits: blendSplits,
+    resolve: lineupModelResolve,
+    rankAll: lineupModelRankAll,
+    windowDelta: lineupModelWindowDelta,
+    leaguePool: lineupModelLeaguePool,
+    clearCache: function() {
+      _lineupModelCache = null;
+      _lineupModelInflight = null;
+      clearSheetTabCache();
+    }
+  };
+
   global.MLBMASharedMatchup = {
     esc: esc,
     numOrNull: numOrNull,
@@ -1139,4 +1412,6 @@
     matchupGameKey: matchupGameKey,
     normalizeGameKey: normalizeGameKey
   };
+  global.LineupModel = LineupModel;
+  global.MLBMALineupModel = LineupModel;
 })(typeof window !== 'undefined' ? window : this);

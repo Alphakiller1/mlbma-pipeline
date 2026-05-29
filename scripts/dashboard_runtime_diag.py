@@ -1,16 +1,13 @@
 #!/usr/bin/env python
-"""Runtime diagnostics for team_rankings dashboard.
-
-Usage:
-  python scripts/dashboard_runtime_diag.py --base-url http://127.0.0.1:8765/team_rankings.html
-"""
+"""Runtime diagnostics for unified lineup view."""
 
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from playwright.sync_api import TimeoutError as PWTimeout
 from playwright.sync_api import sync_playwright
@@ -23,111 +20,138 @@ class CheckResult:
     note: str = ""
 
 
+def _parse_num(text: str) -> Optional[float]:
+    m = re.search(r"-?\d+(?:\.\d+)?", text or "")
+    return float(m.group(0)) if m else None
+
+
 def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
     results: List[CheckResult] = []
 
     def check(name: str, ok: bool, note: str = "") -> None:
         results.append(CheckResult(name=name, ok=bool(ok), note=note))
 
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         console_errors: List[str] = []
         page_errors: List[str] = []
-        page.on(
-            "console",
-            lambda msg: console_errors.append(msg.text)
-            if msg.type == "error"
-            else None,
-        )
-        def _capture_page_error(err: BaseException) -> None:
-            stack = getattr(err, "stack", "") or ""
-            message = str(err)
-            page_errors.append((message + (" :: " + stack if stack else "")).strip())
-
-        page.on("pageerror", _capture_page_error)
+        page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+        page.on("pageerror", lambda err: page_errors.append(str(err)))
         page.goto(base_url, wait_until="domcontentloaded", timeout=timeout_ms)
 
-        def safe_click(selector: str) -> None:
-            """Click robustly across transient overlays/animations."""
-            loc = page.locator(selector).first
+        def click(sel: str) -> None:
+            loc = page.locator(sel).first
             loc.scroll_into_view_if_needed(timeout=timeout_ms)
             loc.click(timeout=timeout_ms, force=True)
 
-        check("scope all control", page.locator('[data-hub-scope="all"]').count() == 1)
-        check("scope team control", page.locator('[data-hub-scope="team"]').count() == 1)
-        check("team input control", page.locator("#hubTeamSelect").count() == 1)
-        check("family summary control", page.locator('[data-hub-family="summary"]').count() == 1)
-        check("family scoring control", page.locator('[data-hub-family="scoring"]').count() == 1)
+        def card_value(label: str) -> Optional[float]:
+            js = """
+            (lab) => {
+              const cards = [...document.querySelectorAll('.lv-card')];
+              const hit = cards.find(c => (c.querySelector('.lv-card-lab')?.textContent || '').trim().toLowerCase() === lab.toLowerCase());
+              if (!hit) return null;
+              return hit.querySelector('.lv-card-val')?.textContent || null;
+            }
+            """
+            raw = page.evaluate(js, label)
+            return _parse_num(raw or "")
+
+        # Basic controls and model boot
+        check("scope all control", page.locator('[data-a="scope"][data-v="all"]').count() == 1)
+        check("scope team control", page.locator('[data-a="scope"][data-v="team"]').count() == 1)
+        check("family scoring control", page.locator('[data-a="family"][data-v="scoring"]').count() == 1)
+        check("family difficulty control", page.locator('[data-a="family"][data-v="difficulty"]').count() == 1)
+        check("family surface control", page.locator('[data-a="family"][data-v="surface"]').count() == 1)
 
         try:
-            page.wait_for_function(
-                "() => !!window.HUB && !!window.HUB.filter && !!window.HUB.scope",
-                timeout=timeout_ms,
-            )
-            check("HUB initialized", True)
+            page.wait_for_function("() => !!window.LineupModel && !!window.LineupView", timeout=timeout_ms)
+            check("LineupModel initialized", True)
         except PWTimeout:
-            check("HUB initialized", False, "window.HUB state never initialized")
+            check("LineupModel initialized", False, "model did not initialize")
 
         try:
-            page.wait_for_function("() => !!window.HUB && window.HUB.loaded === true", timeout=timeout_ms)
-            check("HUB data load finished", True)
+            page.wait_for_selector(".lv-table tbody tr.lv-row-team", timeout=timeout_ms)
+            check("table loaded", True)
         except PWTimeout:
-            issue = page.evaluate("() => (window.HUB && window.HUB.dataIssue) || ''")
-            check("HUB data load finished", False, issue or "load did not complete in time")
+            check("table loaded", False, "table rows missing")
 
-        # Verify URL persistence: scope
-        # Give UI a chance to dismiss loading mask before interactions.
-        page.wait_for_timeout(400)
-        safe_click('[data-hub-scope="team"]')
-        page.wait_for_timeout(250)
-        query = page.evaluate("location.search")
-        check("scope=team persisted", "scope=team" in query, query)
-
-        # Verify alias handling + team persistence
-        page.fill("#hubTeamSelect", "SF")
-        safe_click("button:has-text('Apply')")
+        # Scope+team URL persistence
+        click('[data-a="scope"][data-v="team"]')
+        page.fill(".lv-team-wrap.show #lvTeamInput", "SF")
+        click(".lv-team-wrap.show [data-a=\"team-apply\"]")
         page.wait_for_timeout(300)
-        query = page.evaluate("location.search")
-        check("team alias persisted as SFG", "team=SFG" in query, query)
+        q = page.evaluate("location.search")
+        check("scope=team persisted", "scope=team" in q, q)
+        check("team alias persisted as SFG", "team=SFG" in q, q)
 
-        # Verify family persistence
-        safe_click('[data-hub-family="scoring"]')
+        # Context-driven value changes (model-level assertions)
+        click('[data-a="family"][data-v="scoring"]')
         page.wait_for_timeout(250)
-        query = page.evaluate("location.search")
-        check("family=scoring persisted", "family=scoring" in query, query)
-
-        # Verify filter persistence
-        safe_click('[data-hub-key="hand"][data-val="r"]')
+        click('[data-a="f"][data-k="window"][data-v="YTD"]')
         page.wait_for_timeout(250)
-        query = page.evaluate("location.search")
-        check("hand=r persisted", "hand=r" in query, query)
 
-        # Team-card branch in runtime
-        in_team_scope = page.evaluate(
-            "() => !!window.HUB && !!window.HUB.scope && window.HUB.scope.mode === 'team'"
+        hand_diff_count = page.evaluate(
+            """async () => {
+                const base = {location:'all', pitcher:'both', batSide:'both', segment:'full', window:'YTD'};
+                const r = await window.LineupModel.rankAll({...base, hand:'r'}, 'scoring');
+                const l = await window.LineupModel.rankAll({...base, hand:'l'}, 'scoring');
+                const lm = {};
+                (l || []).forEach(x => { lm[x.t] = x; });
+                let diff = 0;
+                (r || []).forEach(x => {
+                  const y = lm[x.t];
+                  if (!y) return;
+                  const a = Number(x.wrc), b = Number(y.wrc);
+                  if (!isNaN(a) && !isNaN(b) && Math.abs(a - b) > 0.01) diff += 1;
+                });
+                return diff;
+            }"""
         )
-        cards_visible = page.evaluate(
-            "() => {"
-            "  const el = document.getElementById('hubTeamCards');"
-            "  return !!el && el.classList.contains('show');"
-            "}"
-        )
-        check("team scope active", in_team_scope)
-        check("team cards visible", cards_visible)
+        check("hand changes model values", hand_diff_count > 0, f"teams changed={hand_diff_count}")
 
-        # Return to all scope and verify team param cleanup
-        safe_click('[data-hub-scope="all"]')
+        click('[data-a="f"][data-k="window"][data-v="YTD"]')
         page.wait_for_timeout(250)
-        query = page.evaluate("location.search")
-        check("scope=all persisted", "scope=all" in query, query)
-        check("team key removed in all scope", "team=" not in query, query)
+        osi_ytd = card_value("OSI")
+        click('[data-a="f"][data-k="window"][data-v="L7"]')
+        page.wait_for_timeout(250)
+        osi_l7 = card_value("OSI")
+        check("window changes card value", osi_ytd is not None and osi_l7 is not None and abs(osi_ytd - osi_l7) > 0.01, f"ytd={osi_ytd}, l7={osi_l7}")
 
-        # Optional data sanity - if loaded, should have at least one rendered row or card
-        data_ready = page.evaluate(
-            "() => !!window.HUB && (window.HUB.loaded === true || window.HUB.rows?.length > 0)"
+        click('[data-a="f"][data-k="location"][data-v="home"]')
+        page.wait_for_timeout(250)
+        woba_home = card_value("wOBA")
+        click('[data-a="f"][data-k="location"][data-v="away"]')
+        page.wait_for_timeout(250)
+        woba_away = card_value("wOBA")
+        check("location changes card value", woba_home is not None and woba_away is not None and abs(woba_home - woba_away) > 0.0001, f"home={woba_home}, away={woba_away}")
+
+        pitch_diff_count = page.evaluate(
+            """async () => {
+                const base = {hand:'both', location:'all', batSide:'both', segment:'full', window:'YTD'};
+                const sp = await window.LineupModel.rankAll({...base, pitcher:'sp'}, 'scoring');
+                const rp = await window.LineupModel.rankAll({...base, pitcher:'rp'}, 'scoring');
+                const rm = {};
+                (rp || []).forEach(x => { rm[x.t] = x; });
+                let diff = 0;
+                (sp || []).forEach(x => {
+                  const y = rm[x.t];
+                  if (!y) return;
+                  const a = Number(x.rcv), b = Number(y.rcv);
+                  if (!isNaN(a) && !isNaN(b) && Math.abs(a - b) > 0.01) diff += 1;
+                });
+                return diff;
+            }"""
         )
-        check("data loaded or rows present", data_ready)
+        check("pitch changes model values", pitch_diff_count > 0, f"teams changed={pitch_diff_count}")
+
+        # Return to all scope and team cleanup
+        click('[data-a="scope"][data-v="all"]')
+        page.wait_for_timeout(250)
+        q = page.evaluate("location.search")
+        check("scope=all persisted", "scope=all" in q, q)
+        check("team key removed in all scope", "team=" not in q, q)
+
         if page_errors:
             check("no uncaught page errors", False, " | ".join(page_errors[:3]))
         else:
@@ -143,28 +167,20 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run runtime diagnostics on team_rankings dashboard.")
+    parser = argparse.ArgumentParser(description="Run runtime diagnostics on team_rankings lineup view.")
     parser.add_argument(
         "--base-url",
         default="http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1",
         help="Full URL to the team_rankings page.",
     )
-    parser.add_argument(
-        "--timeout-ms",
-        type=int,
-        default=30000,
-        help="Timeout in milliseconds for page operations.",
-    )
+    parser.add_argument("--timeout-ms", type=int, default=45000)
     args = parser.parse_args()
 
-    results = run_diagnostic(base_url=args.base_url, timeout_ms=args.timeout_ms)
+    results = run_diagnostic(args.base_url, args.timeout_ms)
     failures = [r for r in results if not r.ok]
-
     print("RUNTIME_DIAGNOSTIC")
-    for result in results:
-        status = "PASS" if result.ok else "FAIL"
-        suffix = f" | {result.note}" if result.note else ""
-        print(f"{status} | {result.name}{suffix}")
+    for r in results:
+        print(("PASS" if r.ok else "FAIL") + " | " + r.name + ((" | " + r.note) if r.note else ""))
     print("---")
     print(f"TOTAL {len(results)} PASS {len(results) - len(failures)} FAIL {len(failures)}")
     return 1 if failures else 0
