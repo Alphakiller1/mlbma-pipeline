@@ -634,6 +634,41 @@ html.view-research #oorSection { display: none !important; }
 .rl-global-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-left: 8px; }
 .rl-split-gold td { background: var(--warn-bg, rgba(245,158,11,.14)); }
 .rl-trend-heatmap-wrap { margin-top: 12px; }
+
+/* Trends heatmap filter pills — hero CTA ghost/primary (also inlined in trends_heatmap.js) */
+#rlTrendsHeatmapMount .ca-pill-btn,
+.thm-wrap .ca-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(124, 77, 255, 0.4);
+  background: rgba(255, 255, 255, 0.03);
+  color: #e9e6ff;
+  box-shadow: none;
+}
+#rlTrendsHeatmapMount .ca-pill-btn:hover:not(:disabled):not(.active),
+.thm-wrap .ca-pill-btn:hover:not(:disabled):not(.active) {
+  background: rgba(124, 77, 255, 0.12);
+  border-color: #C4B0FF;
+  color: #fff;
+}
+#rlTrendsHeatmapMount .ca-pill-btn.active,
+.thm-wrap .ca-pill-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, #7C4DFF 0%, #5B2BE0 100%);
+  border-color: transparent;
+  box-shadow: 0 10px 40px -10px rgba(124, 77, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
 .rl-splits-scroll {
   overflow-y: auto;
   max-height: 600px;

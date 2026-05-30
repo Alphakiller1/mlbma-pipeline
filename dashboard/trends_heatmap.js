@@ -48,6 +48,13 @@
     return 'thm-delta-flat';
   }
 
+  function thmPillCss() {
+    return ''
+      + '.thm-wrap .ca-pill-btn,.thm-wrap button.ca-pill-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:10px 18px!important;border-radius:14px!important;font-family:inherit!important;font-size:13px!important;font-weight:600!important;line-height:1.25!important;cursor:pointer!important;appearance:none!important;-webkit-appearance:none!important;text-decoration:none!important;white-space:nowrap!important;border:1px solid rgba(124,77,255,.4)!important;background:rgba(255,255,255,.03)!important;color:#e9e6ff!important;box-shadow:none!important;transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease!important}'
+      + '.thm-wrap .ca-pill-btn:hover:not(:disabled):not(.active),.thm-wrap button.ca-pill-btn:hover:not(:disabled):not(.active){background:rgba(124,77,255,.12)!important;border-color:#C4B0FF!important;color:#fff!important}'
+      + '.thm-wrap .ca-pill-btn.active,.thm-wrap button.ca-pill-btn.active{color:#fff!important;background:linear-gradient(135deg,#7C4DFF 0%,#5B2BE0 100%)!important;border-color:transparent!important;box-shadow:0 10px 40px -10px rgba(124,77,255,.55),inset 0 1px 0 rgba(255,255,255,.18)!important}';
+  }
+
   function ensureStyles() {
     var style = document.getElementById('trendsHeatmapStyles');
     if (!style) {
@@ -63,6 +70,7 @@
       + '.thm-group{display:flex;flex-direction:column;gap:6px}'
       + '.thm-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:700;line-height:1;font-family:var(--font,system-ui)}'
       + '.thm-pills{display:flex;flex-wrap:wrap;gap:10px}'
+      + thmPillCss()
       + '.thm-pill.is-phase1{opacity:1}'
       + '.thm-note{font-size:15px;font-weight:600;color:var(--text-2,#a1a1aa);margin-top:6px;padding-top:0;border-top:0;line-height:1.6}'
       + '.thm-note.warn{color:var(--warn,#fbbf24)}'
@@ -277,6 +285,7 @@
   }
 
   function render(root, state) {
+    ensureStyles();
     if (!LM || !LM.rankAll) {
       root.innerHTML = '<div class="thm-note">LineupModel unavailable.</div>';
       return;
