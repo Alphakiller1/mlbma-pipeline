@@ -204,7 +204,13 @@
     var px = opts.size || cropCfg.px;
     var mod = cropCfg.mod;
     var mlbId = resolveMlbId(idOrName);
-    if (!mlbId) return headshotImg(null, px, opts.className || opts.cls || 'pitcher-headshot', Object.assign({}, opts, { cropMod: mod }));
+    if (!mlbId) {
+      var missingCls = opts.className || opts.cls || 'pitcher-headshot';
+      return '<span class="ca-pitcher-avatar headshot-wrap ' + missingCls + '-wrap ca-pitcher-avatar--' + mod + '" '
+        + 'role="img" aria-label="Pitcher photo unavailable">'
+        + '<span class="ca-pitcher-avatar-fallback pitcher-silhouette" aria-hidden="true" style="display:flex"></span>'
+        + '</span>';
+    }
     var cls = opts.className || opts.cls || 'pitcher-headshot';
     return headshotImg(mlbId, px, cls, Object.assign({}, opts, { cropMod: mod }));
   }
@@ -215,13 +221,11 @@
     cls = cls || 'pitcher-headshot';
     var mod = opts.cropMod || (px >= 96 ? 'profile' : px >= 56 ? 'compare' : 'matchup');
     var url = headshotUrl(mlbId);
-    var generic = GENERIC_HEADSHOT;
     var modClass = 'ca-pitcher-avatar--' + mod;
     var loading = opts.eager ? 'eager' : (opts.lazy === false ? 'eager' : 'lazy');
     var fetchPri = opts.eager ? ' fetchpriority="high"' : '';
     var err = 'var i=this,w=i.closest(\'.ca-pitcher-avatar\');if(!w)return;'
-      + 'if(i.dataset.fallback!==\'1\'){i.dataset.fallback=\'1\';i.src=\'' + generic + '\';}'
-      + 'else{i.style.display=\'none\';var f=w.querySelector(\'.ca-pitcher-avatar-fallback\');if(f)f.style.display=\'flex\';}';
+      + 'i.style.display=\'none\';var f=w.querySelector(\'.ca-pitcher-avatar-fallback\');if(f)f.style.display=\'flex\';';
     return '<span class="ca-pitcher-avatar headshot-wrap ' + cls + '-wrap ' + modClass + '" '
       + 'role="img" aria-label="Pitcher photo">'
       + '<img class="ca-pitcher-avatar-img ' + cls + '" src="' + url + '" alt="" width="' + px + '" height="' + px + '" '
