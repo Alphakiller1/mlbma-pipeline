@@ -266,7 +266,7 @@
     return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"></span>';
   }
 
-  function iconCircle(name) {
+  function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
     var tier = tierLabel(m.osi);
     var logo = A ? A.teamLogoImg(team, 88, 'ca-profile-logo-glow snapshot-logo') : '';
@@ -282,6 +282,7 @@
       + '<div class="ca-profile-hero__body">' + logo + insightRailHtml(m) + '</div>'
       + '</div>';
   }
+
   function insightRailHtml(m) {
     var gap = (m.proj != null && m.osi != null) ? (m.proj - m.osi) : null;
     var splitGap = (m.osiR != null && m.osiL != null) ? Math.abs(m.osiR - m.osiL) : null;
