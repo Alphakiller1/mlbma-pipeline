@@ -11,15 +11,16 @@
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260609a">
-<link rel="stylesheet" href="team_profile.css?v=20260617b">
+<link rel="stylesheet" href="team_profile.css?v=20260618a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
 <script src="mlbma_assets.js?v=20260616b"></script>
 <script src="mlbma_icons.js?v=20260615b"></script>
 <script src="matchup_shared.js?v=20260615b"></script>
 <script src="mlbma_standings.js?v=20260615b"></script>
-<script src="team_profile_mini.js?v=20260617b"></script>
-<script src="team_profile_sections.js?v=20260617b"></script>
+<script src="team_profile_mini.js?v=20260618a"></script>
+<script src="team_profile_sections.js?v=20260618a"></script>
+<script src="team_profile_staff.js?v=20260618a"></script>
 <script src="mlbma_charts.js?v=20260615b"></script>
 <script src="profile_controls.js?v=20260615b"></script>
 <script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
@@ -132,6 +133,8 @@
     <div id="profileSnapshot"></div>
     <div id="profileOffenseSections"></div>
   </div>
+
+  <div class="profile-staff-block" id="profileStaffSections"></div>
 </main>
 
 <script>
@@ -439,7 +442,7 @@ function mountProfilePageHeader() {
   MLBMAAssets.mountPlatformHeader('profilePageHeader', {
     eyebrow: 'Chase Analytics ? Profiles',
     title: 'Team Profile',
-    subtitle: 'Complete offensive deep-dive ? scoring, splits, momentum, and tonight\'s matchup.',
+    subtitle: "Offense, pitching staff, today's lineup, and qualified roster ? one team's full picture.",
     showPlatformNav: false
   });
 }
@@ -579,7 +582,33 @@ function buildMiniCtx(prof, name, tonight) {
     oppPitchScore: oppPs,
     lineupEdgePct: (teamOsi != null && oppPs != null) ? Math.min(100, Math.max(0, 50 + (teamOsi - oppPs) * 2)) : null,
     osiRank: computeOsiRank(STATE.team),
-    wrc: num(pickCol(prof, ['wrc_plus', 'wRC+', 'wrc', 'WRC+']))
+    wrc: num(pickCol(prof, ['wrc_plus', 'wRC+', 'wrc', 'WRC+'])),
+    avgPitchScore: (function() {
+      var pr = pitchTeamRow(STATE.team);
+      return num(pickCol(prof, ['avg_pitching_score'])) || (pr ? num(pickCol(pr, ['PitchScore'])) : null);
+    })()
+  };
+}
+
+function buildStaffCtx() {
+  return {
+    pickCol: pickCol,
+    num: num,
+    fmt: fmt,
+    valChip: valChip,
+    tierLabel: tierLabel,
+    encodePlayer: encodePlayer,
+    teamKey: teamKey,
+    inferRoleFromLog: inferRoleFromLog,
+    poolPitchScore: poolPitchScore,
+    trendArrow: trendArrow,
+    pitchTeamRow: pitchTeamRow,
+    sectionCard: sectionCard,
+    profileTableOpen: profileTableOpen,
+    profileTableClose: profileTableClose,
+    renderLineup: renderTodayLineupSection,
+    PITCH_TIERS: PITCH_TIERS,
+    data: DATA
   };
 }
 
@@ -592,6 +621,13 @@ function computeOsiRank(team) {
     if (rows[i].t === key) return i + 1;
   }
   return null;
+}
+
+function renderStaffBlock(prof) {
+  var el = document.getElementById('profileStaffSections');
+  if (!el || !window.TeamProfileStaff) return;
+  el.innerHTML = TeamProfileStaff.renderAll(prof, STATE.team, buildStaffCtx());
+  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
 }
 
 function renderOffenseBlock(prof, name, tonight) {
@@ -628,6 +664,7 @@ function renderTeam(team) {
   var game = tonightGame(STATE.team);
   var tonight = buildTonightHtml(game);
   renderOffenseBlock(prof, name, tonight);
+  renderStaffBlock(prof);
   history.replaceState(null, '', '?team=' + STATE.team);
 }
 

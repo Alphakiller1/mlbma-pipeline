@@ -42,7 +42,30 @@ body.team-profile-page {
 }
 
 .profile-offense-block {
+  margin-bottom: 24px;
+}
+
+.profile-staff-block {
   margin-bottom: 32px;
+}
+
+.profile-staff-block .tp-section:first-child {
+  margin-top: 0;
+}
+
+.tp-staff-links {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.tp-staff-links a {
+  color: var(--purple, #9A6BFF);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tp-staff-links a:hover {
+  text-decoration: underline;
 }
 
 .tp-snapshot-card {

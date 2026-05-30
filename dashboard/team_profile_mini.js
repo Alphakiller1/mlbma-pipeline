@@ -322,7 +322,8 @@
       + '<div class="ca-profile-hero__eyebrow">' + esc(eyebrowParts.join(' · ')) + '</div>'
       + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
       + (ctx.recordWl ? '<p class="ca-profile-hero__sub">' + esc(ctx.recordWl)
-        + (rank ? ' · #' + rank + ' OSI rank' : '') + '</p>' : '')
+        + (rank ? ' · #' + rank + ' OSI rank' : '')
+        + (ctx.avgPitchScore != null ? ' · Pitch Score ' + ctx.avgPitchScore.toFixed(0) : '') + '</p>' : '')
       + '</div>'
       + '<div class="ca-profile-hero__body">'
       + '<div class="tp-logo-glow" style="--team-glow:' + accent + '">' + logo + '</div>'

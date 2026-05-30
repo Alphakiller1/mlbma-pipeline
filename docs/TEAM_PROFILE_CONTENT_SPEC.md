@@ -1,6 +1,6 @@
 # MLBMA — Team Profile Content Spec (what goes in)
 
-**Purpose:** define what a Team Profile shows — one team's **complete offensive story** in one page. Metrics are pulled from the sets you already defined for **Team Rankings** (families) and the **Compare tool** (Lineup-vs-Lineup), organized as a deep-dive (not a ranking, not a head-to-head). **Layout = hybrid:** infographic-style header (like the Yankees/Cubs sheets) → functional sections below. **Scope = real data only**; OBP/AVG/OPS/QS% are flagged Phase-1, never faked.
+**Purpose:** define what a Team Profile shows — one team's **complete story** (offense + pitching staff + roster) in one page. Offense uses Team Rankings families and Compare Mode-1 metrics; pitching covers rotation, bullpen, and staff snapshot; roster lists qualified batters. **Layout = hybrid:** infographic-style header → functional offense sections → staff/roster block below.
 
 Builds on `INFOGRAPHIC_PATTERNS_SPEC.md` (header, insight rails, split cards) and `PLATFORM_IDENTITY_SPEC.md` (chips, green=elite, bold faces). Presentation/wiring only; reuse `valChipHtml`/`metricColor`/`pickCol`.
 
@@ -79,10 +79,14 @@ The Astros sheet is **visual inspiration**, but the build must match the **exist
 
 ---
 
+## What belongs on Team Profile (full team)
+- **Offense block (§1–§10):** snapshot header, scoring, process, full-season line, handedness splits, home/away, surface wins, momentum, tonight, analyst take.
+- **Staff block:** today's projected lineup, pitching snapshot (Pitch Score / ERA), starting rotation table, bullpen overview + relievers, qualified batter roster (50+ PA).
+
 ## What to LEAVE OUT (belongs in other tools)
 - Full 30-team rankings → that's **Team Rankings**.
-- Head-to-head vs another specific team → that's **Compare**.
-- Pitcher/bullpen deep-dives → **pitcher_profile / bullpen_report**. The team profile is **offense-focused** (its own lineup, not opponents). The only pitching shown is *its own staff context* if at all — keep the focus on the lineup.
+- Head-to-head vs another specific team → that's **Compare** (tonight's matchup slice is OK).
+- League-wide bullpen usage matrix → **Bullpen Report** (team profile links there; shows this team's relievers).
 
 ---
 
