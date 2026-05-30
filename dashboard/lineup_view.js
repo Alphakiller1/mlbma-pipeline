@@ -214,6 +214,7 @@
     if (!A || !A.metricColor) return 'var(--text,#f4f4f7)';
     if (key === 'wrc') return A.metricColor(value, 'wrc', false);
     if (key === 'woba' || key === 'xwoba') return A.metricColor(value, 'woba', false);
+    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, 'osi', false);
     if (key === 'pitchScore') return A.metricColor(value, 'pitching', false);
     if (key === 'qs') return A.metricColor(value, 'pitching', true);
     if (key === 'xfip') return A.metricColor(value, 'xfip', true);
@@ -303,14 +304,24 @@
     return '<div class="lv-sec">' + iconCircle(icon) + '<span>' + esc(label) + '</span></div>';
   }
 
-  function renderContextBanner(meta) {
+  function renderContextBanner(meta, state) {
     meta = meta || {};
+    state = state || {};
     var un = meta.unavailable || {};
     var msgs = [];
+    if (meta.teamResultsEmpty && state.family === 'surface') {
+      msgs.push('Team_Results sheet is empty — run the game-results pipeline (scrape_results → compute_results → push_team_results).');
+    }
+    if (state.family === 'surface' && meta.resultsPitcherUnsplit) {
+      msgs.push('Win results are team-level; not split by pitcher faced.');
+    }
+    if (state.family === 'surface' && meta.resultsHandUnsplit) {
+      msgs.push('Win results are team-level; not split by platoon.');
+    }
     if (un.window) msgs.push('Selected window split unavailable; showing closest available context.');
     if (un.location) msgs.push('Location split unavailable for selected combination; showing nearest available split.');
     if (un.pitcher) msgs.push('Pitcher split unavailable for selected combination; showing nearest available split.');
-    if (un.segment) msgs.push('F5 split tab unavailable; using derived F5 proxy from available components.');
+    if (un.segment && state.family !== 'surface') msgs.push('F5 split tab unavailable; using derived F5 proxy from available components.');
     if (!msgs.length) return '';
     return '<div class="lv-banner warn">' + esc(msgs.join(' ')) + '</div>';
   }
@@ -347,7 +358,7 @@
       + '</div>'
       + '</div>'
       + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>'
-      + renderContextBanner(meta);
+      + renderContextBanner(meta, state);
     root.querySelector('.lv-controls').innerHTML = rows;
   }
   function pill(key, val, label, state, disabled) {
