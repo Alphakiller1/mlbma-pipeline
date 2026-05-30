@@ -14,6 +14,7 @@
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
+<script src="mlbma_icons.js?v=20260610a"></script>
 <style>
 body { background: var(--ca-black, #0A0A0A); color: var(--text, #F4F4F7); min-height: 100vh; }
 .index-wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; text-align: center; }
@@ -21,9 +22,10 @@ body { background: var(--ca-black, #0A0A0A); color: var(--text, #F4F4F7); min-he
 .index-tagline { font-size: 15px; color: var(--ca-gray-brand, #9CA3AF); margin-bottom: 40px; letter-spacing: 0.02em; }
 .index-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; text-align: left; }
 .index-card {
-  display: block; padding: 18px 20px; border-radius: 12px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; padding: 18px 20px; border-radius: 12px; text-decoration: none; color: inherit;
   background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f); transition: border-color 0.15s;
 }
+.index-card-icon { margin-bottom: 12px; }
 .index-card:hover { border-color: var(--ca-purple, #9A6BFF); }
 .index-card h2 { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: #9A6BFF; }
 .index-card p { margin: 0; font-size: 12px; color: var(--text-2); line-height: 1.45; }
@@ -123,19 +125,23 @@ body { background: var(--ca-black, #0A0A0A); color: var(--text, #F4F4F7); min-he
     onerror="this.style.display='none'">
   <p class="index-tagline">MLB Offensive Intelligence Platform</p>
   <nav class="index-nav">
-    <a class="index-card" href="chase_analytics_mlb_oem_v7.html">
-      <h2>Opening Dashboard</h2>
+    <a class="index-card" href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">
+      <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="swords"></i></span>
+      <h2>Projected Matchups</h2>
       <p>Today&apos;s matchups, lineups, and model edges.</p>
     </a>
     <a class="index-card" href="chase_analytics_mlb_oem_v7.html#section-research-lab">
+      <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="flask-conical"></i></span>
       <h2>Research Lab</h2>
       <p>Splits, compare, leaderboards, and pitching context.</p>
     </a>
     <a class="index-card" href="model_report.html">
-      <h2>Model Report</h2>
+      <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="bar-chart-3"></i></span>
+      <h2>Model Insights</h2>
       <p>Daily signals and convergence plays.</p>
     </a>
     <a class="index-card" href="player_search.html">
+      <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="search"></i></span>
       <h2>Player Search</h2>
       <p>Batter, pitcher, and team profiles.</p>
     </a>

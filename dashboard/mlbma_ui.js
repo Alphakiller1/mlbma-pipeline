@@ -60,7 +60,17 @@
     });
   }
 
+  function ensureIconScripts() {
+    if (document.getElementById('mlbma-icons-script')) return;
+    var s = document.createElement('script');
+    s.id = 'mlbma-icons-script';
+    s.src = 'mlbma_icons.js?v=20260610a';
+    s.async = true;
+    document.head.appendChild(s);
+  }
+
   function injectShell() {
+    ensureIconScripts();
     var page = currentPage();
     if (!document.getElementById('chaseHeader')) {
       document.querySelectorAll('[data-mlbma-nav]').forEach(function (el) {

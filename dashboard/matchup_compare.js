@@ -13,6 +13,10 @@
     if (v == null || isNaN(v)) return '—';
     return (d != null ? v.toFixed(d) : v.toFixed(1));
   }
+  function metricChip(v, ctx, invert, decimals) {
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals);
+    return '<strong>' + fmt(v, decimals) + '</strong>';
+  }
 
   function qp(name) {
     return new URLSearchParams(global.location.search).get(name) || '';
@@ -370,14 +374,14 @@
       + '<div><div class="ca-metric-label">' + esc(side) + ' SP · ' + esc(team) + '</div>'
       + '<div class="mc-sp-name">' + nameHtml + ' <span class="hand-pill">' + esc((hand || '?').charAt(0)) + '</span>'
       + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'
-      + '<div class="ca-helper">Pitching Score <strong style="color:' + S.metricColor(pitchScore, true) + '">' + fmt(pitchScore) + '</strong></div>'
+      + '<div class="ca-helper">Pitching Score ' + metricChip(pitchScore, 'pitching', false, 1) + '</div>'
       + '</div></div>'
       + '<div class="mc-sp-stats">'
       + '<span>K% <strong>' + fmt(stats.k) + '</strong></span>'
       + '<span>BB% <strong>' + fmt(stats.bb) + '</strong></span>'
       + '<span>FIP/xFIP <strong>' + xfipStr + '</strong></span>'
       + '<span>HR/9 <strong>' + (stats.hr9 != null ? stats.hr9.toFixed(2) : '—') + '</strong></span>'
-      + '<span>OSI Allowed <strong style="color:' + S.metricColor(osiAllow, true) + '">' + fmt(osiAllow) + '</strong></span>'
+      + '<span>OSI Allowed ' + metricChip(osiAllow, 'osi', true, 1) + '</span>'
       + '</div>'
       + (oorCtx ? '<div class="mc-sp-note">Has faced <strong>' + oorCtx + '</strong> average competition this season (Pitcher OOR ' + fmt(oor, 1) + ')</div>' : '')
       + (stale ? '<div class="mc-sp-note mc-stale">⚠ L14 form drift detected — metrics may be stale</div>' : '')
@@ -401,10 +405,9 @@
     var palsRow = palsTeam || {};
     var ps = S.palsStatus(palsRow.osi || osi, palsRow.pals);
     var edge = S.lineupEdgeIndicator(osi, pitcherAllowed);
-    var color = S.metricColor(osi, false);
     return '<div class="mc-card mc-edge-panel">'
       + '<div class="mc-edge-label">' + esc(label) + '</div>'
-      + '<div class="mc-edge-osi" style="color:' + color + '">' + fmt(osi) + '</div>'
+      + '<div class="mc-edge-osi">' + metricChip(osi, 'osi', false, 1) + '</div>'
       + '<div class="mc-edge-tier">' + esc(S.osiTierLabel(osi)) + '</div>'
       + '<div class="pals-line ' + ps.cls + '">PALS: ' + (palsRow.pals != null ? fmt(palsRow.pals, 1) : '—') + ' — ' + esc(ps.label) + '</div>'
       + '<div class="mc-edge-metrics">'
@@ -447,9 +450,9 @@
     var logo = S.teamLogo(team, 28);
     return '<div class="mc-card">'
       + '<div class="mc-bp-team"><a href="' + teamProfileUrl(team) + '">' + logo + '<strong>' + esc(team) + '</strong></a></div>'
-      + '<div class="mc-bp-metric">Bullpen Pitching Score <a href="' + bullpenReportUrl(team) + '"><strong style="color:' + S.metricColor(ps, false) + '">' + fmt(ps) + '</strong></a>'
+      + '<div class="mc-bp-metric">Bullpen Pitching Score <a href="' + bullpenReportUrl(team) + '">' + metricChip(ps, 'pitching', false, 1) + '</a>'
       + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'
-      + '<div class="mc-bp-metric">OSI Allowed <strong style="color:' + S.metricColor(unit && unit.osiAllowed, true) + '">' + fmt(unit && unit.osiAllowed) + '</strong></div>'
+      + '<div class="mc-bp-metric">OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'osi', true, 1) + '</div>'
       + '<div class="mc-bp-metric">ABQ Allowed <strong>' + fmt(unit && unit.abqAllowed) + '</strong></div>'
       + (unit && unit.hiLevEra != null ? '<div class="mc-bp-metric">High Leverage ERA <strong>' + unit.hiLevEra.toFixed(2) + '</strong></div>' : '')
       + (unit && unit.oor != null ? '<div class="mc-bp-metric">Avg competition faced (OOR) <strong>' + fmt(unit.oor, 1) + '</strong></div>' : '')

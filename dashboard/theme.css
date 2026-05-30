@@ -206,6 +206,10 @@ h1 {
   text-transform: uppercase;
 }
 
+.ca-section-head .ca-icon-circle--sm {
+  flex-shrink: 0;
+}
+
 .ca-section-head::after {
   content: "";
   flex: 1;
@@ -213,26 +217,49 @@ h1 {
   background: var(--border);
 }
 
-.ca-icon {
-  flex: none;
-  width: 38px;
-  height: 38px;
+.ca-icon-circle {
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: rgba(124, 77, 255, 0.14);
-  border: 1px solid rgba(124, 77, 255, 0.45);
+  background: var(--v-grad);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--v-light, #c4b0ff);
+  color: #fff;
+  box-shadow: 0 6px 18px -6px var(--v-glow);
+  flex: none;
 }
-.ca-icon svg {
+.ca-icon-circle [data-lucide],
+.ca-icon-circle svg {
+  width: 22px;
+  height: 22px;
+  stroke: #fff;
+  stroke-width: 2.4;
+  fill: none;
+}
+.ca-icon-circle--sm {
+  width: 38px;
+  height: 38px;
+}
+.ca-icon-circle--sm [data-lucide],
+.ca-icon-circle--sm svg {
   width: 18px;
   height: 18px;
-  stroke: currentColor;
-  stroke-width: 2;
   fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+}
+.ca-tool-card__cta [data-lucide],
+.ca-tool-card__cta svg,
+.ca-btn [data-lucide],
+.ca-btn svg,
+.rl-home-card-cta [data-lucide],
+.rl-home-card-cta svg {
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+}
+/* Legacy alias — insight rails use ca-icon-circle--sm */
+.ca-icon {
+  flex: none;
 }
 .ca-insight-rail {
   background: var(--bg-3, #12141d);

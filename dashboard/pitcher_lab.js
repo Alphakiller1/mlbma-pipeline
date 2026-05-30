@@ -52,6 +52,15 @@
     if (ctx === 'oor') return A.contextualOorColor ? A.contextualOorColor(v) : '#71717A';
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
+  function chipStyle(v, ctx, invert, opts) {
+    if (A && A.chipStyle) return A.chipStyle(v, ctx, invert, opts);
+    var text = mColor(v, invert, ctx);
+    return 'background:color-mix(in srgb,' + text + ' 18%, transparent);color:' + text + ';';
+  }
+  function metricChip(v, invert, ctx, decimals) {
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals);
+    return '<span class="val-chip" style="' + chipStyle(v, ctx, invert) + '">' + fmt(v, decimals) + '</span>';
+  }
 
   function profileMetrics(row) {
     return (row && S && S.spProfileMetrics) ? S.spProfileMetrics(row) : {};
@@ -285,8 +294,7 @@
         + '<td class="num">' + fmt(numOrNull(pickCol(split, ['starts'])), 0) + '</td>'
         + '<td class="num">' + fmt(numOrNull(pickCol(split, ['ERA'])), 2) + '</td>'
         + '<td class="num">' + fmtPct(numOrNull(pickCol(split, ['K_pct', 'K%']))) + '</td>'
-        + '<td class="num" style="color:' + mColor(numOrNull(pickCol(split, ['OSI_allowed'])), true) + '">'
-        + fmt(numOrNull(pickCol(split, ['OSI_allowed']))) + '</td></tr>';
+        + '<td class="num">' + metricChip(numOrNull(pickCol(split, ['OSI_allowed'])), true, 'osi', 1) + '</td></tr>';
     }).join('');
     return '<div class="pl-opp-panel">'
       + '<h4 class="pl-section-title">Opponent Profile</h4>'
@@ -637,10 +645,10 @@
           + '<td class="num">' + fmt(m.bbPct, 1) + '</td>'
           + '<td class="num">' + fmt(st.xfip, 2) + '</td>'
           + '<td class="num">' + fmt(st.woba, 3) + '</td>'
-          + '<td class="num" style="color:' + mColor(m.pitchScore, false, 'pitching') + '">' + fmt(m.pitchScore, 0) + '</td>'
-          + '<td class="num" style="color:' + mColor(m.osiAllowed, true) + '">' + fmt(m.osiAllowed) + '</td>'
-          + '<td class="num" style="color:' + mColor(m.abqAllowed, true) + '">' + fmt(m.abqAllowed) + '</td>'
-          + '<td class="num" style="color:' + mColor(m.oor, false, 'oor') + '">' + fmt(m.oor, 0) + '</td>'
+          + '<td class="num">' + metricChip(m.pitchScore, false, 'pitching', 0) + '</td>'
+          + '<td class="num">' + metricChip(m.osiAllowed, true, 'osi', 1) + '</td>'
+          + '<td class="num">' + metricChip(m.abqAllowed, true, 'osi', 1) + '</td>'
+          + '<td class="num">' + metricChip(m.oor, false, 'oor', 0) + '</td>'
           + '<td class="num">' + fmt(st.f5Era, 2) + '</td></tr>';
       }).join('') + '</tbody></table></div>';
 

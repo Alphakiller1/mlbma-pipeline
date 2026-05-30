@@ -635,6 +635,15 @@ function metricColor(score) {
   }
   return 'var(--text-3)';
 }
+function metricChip(val, ctx, decimals) {
+  if (window.MLBMAAssets && MLBMAAssets.valChipHtml) {
+    return MLBMAAssets.valChipHtml(val, ctx || 'osi', false, decimals != null ? decimals : 1);
+  }
+  var c = metricColor(val);
+  var d = decimals != null ? decimals : 1;
+  var display = val != null && !isNaN(val) ? Number(val).toFixed(d) : '—';
+  return '<span class="val-chip" style="background:color-mix(in srgb,' + c + ' 18%, transparent);color:' + c + '">' + display + '</span>';
+}
 
 function metricTierClass(score) {
   if (score === null || isNaN(score)) return 'tier-mid';
@@ -774,10 +783,12 @@ function windowMetricEstimate(baseRow, window, trend) {
 }
 
 function statCell(label, val, color) {
-  var style = color ? ' style="color:' + color + '"' : '';
-  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val"' + style + '>' +
-    (typeof val === 'number' ? fmt(val, label === 'AVG' || label === 'OBP' || label === 'SLG' || label === 'wOBA' || label === 'xwOBA' || label === 'OPS' ? 3 : 1) : escHtml(val)) +
-    '</div></div>';
+  var chip = (color && window.MLBMAAssets && MLBMAAssets.valChipHtml)
+    ? MLBMAAssets.valChipHtml(val, 'osi', false, label === 'AVG' || label === 'OBP' || label === 'SLG' || label === 'wOBA' || label === 'xwOBA' || label === 'OPS' ? 3 : 1)
+    : null;
+  var inner = chip || ((typeof val === 'number' ? fmt(val, label === 'AVG' || label === 'OBP' || label === 'SLG' || label === 'wOBA' || label === 'xwOBA' || label === 'OPS' ? 3 : 1) : escHtml(val)));
+  if (!chip && color) inner = '<span style="color:' + color + '">' + inner + '</span>';
+  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + inner + '</div></div>';
 }
 
 function renderHeader(key) {
@@ -894,10 +905,10 @@ function renderWindowTable(key) {
     var trCls = r.window === 'L7' && hotCold === 'hot' ? 'hot-row' : r.window === 'L7' && hotCold === 'cold' ? 'cold-row' : '';
     return '<tr class="' + trCls + '">' +
       '<td><strong>' + r.window + '</strong></td>' +
-      '<td class="num">' + fmt(r.m.OSI, 1) + '</td>' +
-      '<td class="num">' + fmt(r.m.ABQ, 1) + '</td>' +
-      '<td class="num">' + fmt(r.m.RCV, 1) + '</td>' +
-      '<td class="num">' + fmt(r.m.OBR, 1) + '</td>' +
+      '<td class="num">' + metricChip(r.m.OSI, 'osi', 1) + '</td>' +
+      '<td class="num">' + metricChip(r.m.ABQ, 'abq', 1) + '</td>' +
+      '<td class="num">' + metricChip(r.m.RCV, 'rcv', 1) + '</td>' +
+      '<td class="num">' + metricChip(r.m.OBR, 'obr', 1) + '</td>' +
       '<td class="' + r.arrowCls + '">' + r.arrow + '</td></tr>';
   }).join('');
 

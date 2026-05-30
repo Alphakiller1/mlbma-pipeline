@@ -339,33 +339,7 @@ html.view-research #oorSection { display: none !important; }
   background: var(--surface-2, #14141e);
 }
 .rl-home-card-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0;
   margin-bottom: 16px;
-  background-size: 22px 22px;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.rl-home-card[data-rl-tab="trends"] .rl-home-card-icon {
-  background-color: color-mix(in srgb, var(--pos, #22C55E) 20%, transparent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fff' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 17l6-6 4 4 8-8'/%3E%3C/svg%3E");
-}
-.rl-home-card[data-rl-tab="splits"] .rl-home-card-icon {
-  background-color: color-mix(in srgb, var(--teal, #2DD4BF) 20%, transparent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fff' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7h12M8 12h8M8 17h4M4 7v0M4 12v0M4 17v0'/%3E%3C/svg%3E");
-}
-.rl-home-card[data-rl-tab="compare"] .rl-home-card-icon {
-  background-color: color-mix(in srgb, var(--accent, #9A6BFF) 24%, transparent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fff' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7h8M8 12h8M8 17h8M6 5v14'/%3E%3C/svg%3E");
-}
-.rl-home-card[data-rl-tab="pitching"] .rl-home-card-icon {
-  background-color: color-mix(in srgb, var(--warn, #F59E0B) 20%, transparent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fff' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 2c2 2 4 5 4 8a4 4 0 01-8 0c0-3 2-6 4-8zM8 18h8'/%3E%3C/svg%3E");
 }
 .rl-home-card-title {
   font-size: 24px;
@@ -418,16 +392,11 @@ html.view-research #oorSection { display: none !important; }
 .rl-home-card[data-rl-tab="compare"] .rl-home-card-cta { color: var(--accent-l, #A78BFA); }
 .rl-home-card[data-rl-tab="pitching"] .rl-home-card-cta { color: var(--warn, #F59E0B); }
 .rl-home-card:hover .rl-home-card-cta { color: var(--text); }
+.rl-home-card > .ca-icon-circle {
+  margin-bottom: 12px;
+}
 .rl-home-icon {
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--r-sm, 8px);
-  background: var(--accent-bg, rgba(139,92,246,0.14));
-  color: var(--accent-l, #c084fc);
+  margin-bottom: 12px;
 }
 .rl-metric-legend {
   display: flex;

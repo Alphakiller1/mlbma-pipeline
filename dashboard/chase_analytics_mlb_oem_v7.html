@@ -2297,20 +2297,8 @@ body.view-research .ca-lab { display: block; }
 .ca-tool-card--purple .ca-tool-card__accent { background: var(--accent); }
 .ca-tool-card--amber .ca-tool-card__accent { background: var(--warn); }
 .ca-tool-card__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-bottom: 18px;
-  background: var(--surface-2);
-  color: var(--text);
 }
-.ca-tool-card--green .ca-tool-card__icon { background: var(--pos-bg); color: var(--pos); }
-.ca-tool-card--teal .ca-tool-card__icon { background: var(--teal-bg); color: var(--teal-l); }
-.ca-tool-card--purple .ca-tool-card__icon { background: var(--accent-bg); color: var(--accent-l); }
-.ca-tool-card--amber .ca-tool-card__icon { background: var(--warn-bg); color: var(--warn); }
 .ca-tool-card__title { font-size: 18px; font-weight: 700; color: var(--text); margin: 0 0 14px; }
 .ca-tool-card__list {
   list-style: none;
@@ -2351,13 +2339,56 @@ body.view-research .ca-lab { display: block; }
   margin-right: calc(50% - 50vw);
 }
 
+/* ====== FEATURE ROW (ca-features) ====== */
+.ca-features {
+  padding: 0 24px 32px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+.ca-features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.ca-feature-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ca-feature-card:hover {
+  border-color: var(--border-2);
+  box-shadow: var(--e-2);
+}
+.ca-feature-card__body { min-width: 0; }
+.ca-feature-card__title {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.ca-feature-card__desc {
+  display: block;
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+@media (max-width: 900px) { .ca-features__grid { grid-template-columns: 1fr; } }
+
 @media (max-width: 1024px) { .ca-tools__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
-<link rel="stylesheet" href="theme.css?v=20260610b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260610d">
+<link rel="stylesheet" href="theme.css?v=20260610d">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260609a">
 <link rel="stylesheet" href="research_lab.css?v=20260610a">
@@ -2380,13 +2411,14 @@ body.view-research .ca-lab { display: block; }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260527s"></script>
+<script src="mlbma_assets.js?v=20260610d"></script>
+<script src="mlbma_icons.js?v=20260610a"></script>
 <script src="matchup_shared.js?v=20260610a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
-<script src="research_lab.js?v=20260610b"></script>
+<script src="research_lab.js?v=20260610d"></script>
 <script src="lineup_view.js?v=20260610e"></script>
 <script src="trends_heatmap.js?v=20260609a"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
@@ -2519,9 +2551,7 @@ body.view-research .ca-lab { display: block; }
         <a href="#" id="hero-cta-matchups" class="ca-btn ca-btn--primary"
           onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
           <span>View Today's Matchups</span>
-          <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-            <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <i data-lucide="arrow-right" style="width:18px;height:18px" aria-hidden="true"></i>
         </a>
         <a href="#" id="hero-cta-research" class="ca-btn ca-btn--ghost"
           onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
@@ -2562,6 +2592,32 @@ body.view-research .ca-lab { display: block; }
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="ca-features" id="section-opening-features">
+  <div class="ca-features__grid">
+    <a class="ca-feature-card" href="#" onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
+      <span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="swords"></i></span>
+      <span class="ca-feature-card__body">
+        <span class="ca-feature-card__title">Projected Matchups</span>
+        <span class="ca-feature-card__desc">Split-specific lineup edges, starters, and weather context.</span>
+      </span>
+    </a>
+    <a class="ca-feature-card" href="#" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
+      <span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="flask-conical"></i></span>
+      <span class="ca-feature-card__body">
+        <span class="ca-feature-card__title">Research Lab</span>
+        <span class="ca-feature-card__desc">Compare, trends, splits, and pitcher intelligence workspace.</span>
+      </span>
+    </a>
+    <a class="ca-feature-card" href="model_report.html">
+      <span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="bar-chart-3"></i></span>
+      <span class="ca-feature-card__body">
+        <span class="ca-feature-card__title">Model Insights</span>
+        <span class="ca-feature-card__desc">Daily signals, convergence plays, and model report.</span>
+      </span>
+    </a>
   </div>
 </section>
 
@@ -2618,7 +2674,7 @@ body.view-research .ca-lab { display: block; }
       <div class="ca-tool-card ca-tool-card--green" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('trends');},300);">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
-          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M3 17l4-8 4 4 4-6 4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="ca-icon-circle"><i data-lucide="trending-up"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Trends</h3>
         <ul class="ca-tool-card__list">
@@ -2626,12 +2682,12 @@ body.view-research .ca-lab { display: block; }
           <li>L7/L14 form vs YTD validation</li>
           <li>Total market timing signals</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Trends <span>?</span></div>
+        <div class="ca-tool-card__cta">Open Trends <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
       <div class="ca-tool-card ca-tool-card--teal" onclick="window.location.href='team_rankings.html';">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
-          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="ca-icon-circle"><i data-lucide="trophy"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Team Rankings</h3>
         <ul class="ca-tool-card__list">
@@ -2639,12 +2695,12 @@ body.view-research .ca-lab { display: block; }
           <li>Home/away and F5 context</li>
           <li>Player prop research angles</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Team Rankings <span>?</span></div>
+        <div class="ca-tool-card__cta">Open Team Rankings <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
       <div class="ca-tool-card ca-tool-card--purple" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('compare');},300);">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
-          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="ca-icon-circle"><i data-lucide="swords"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Compare</h3>
         <ul class="ca-tool-card__list">
@@ -2652,12 +2708,12 @@ body.view-research .ca-lab { display: block; }
           <li>Bullpen vs Bullpen matchups</li>
           <li>Run line and over/under edges</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Compare <span>?</span></div>
+        <div class="ca-tool-card__cta">Open Compare <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
       <div class="ca-tool-card ca-tool-card--amber" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('pitcher');},300);">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
-          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="ca-icon-circle"><i data-lucide="target"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Pitcher Intelligence</h3>
         <ul class="ca-tool-card__list">
@@ -2665,7 +2721,7 @@ body.view-research .ca-lab { display: block; }
           <li>Vulnerable starter identification</li>
           <li>SP prop and F5 decisions</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Pitcher Lab <span>?</span></div>
+        <div class="ca-tool-card__cta">Open Pitcher Lab <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
     </div>
   </div>
@@ -5598,6 +5654,18 @@ function rowOsiSparkline(d) {
   return MLBMACharts.buildSparkline(vals, 60, 24);
 }
 
+function chipStyleInline(v, ctx, invert, colorOverride) {
+  var A = window.MLBMAAssets;
+  var opts = colorOverride ? { color: colorOverride } : null;
+  if (A && A.chipStyle) return A.chipStyle(v, ctx || 'osi', !!invert, opts);
+  var c = colorOverride || (A && A.metricColor ? A.metricColor(v, ctx || 'osi', !!invert) : '#71717A');
+  return 'background:color-mix(in srgb,' + c + ' 18%, transparent);color:' + c + ';';
+}
+function metricChipHtml(v, display, ctx, invert, colorOverride) {
+  var d = display != null ? display : (v != null && !isNaN(v) ? Number(v).toFixed(1) : '?');
+  return '<span class="val-chip" style="' + chipStyleInline(v, ctx, invert, colorOverride) + '">' + d + '</span>';
+}
+
 function renderMasterTable(target){
   target = target || {};
   if (typeof hideRankSkeleton === 'function' && !target.bodyId) hideRankSkeleton();
@@ -5736,12 +5804,12 @@ function renderMasterTable(target){
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
       '<td class="rank-cell">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ?':' ?')+'</td>'+
       '<td class="team-cell" style="color:var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
-      '<td class="num" style="color:'+mColor(d.abq)+';'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
-      '<td class="num" style="color:'+mColor(d.rcv)+';'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
-      '<td class="num" style="color:'+mColor(d.obr)+';'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+metricDecision('obr',d)+'</td>'+
-      '<td class="num" style="color:'+mColor(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+metricDecision('osi',d)+'</td>'+
-      '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+projArrow+metricDecision('projOSI',d)+'</td>'+
-      '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('abq')+'">'+metricChipHtml(d.abq, d.abq.toFixed(1), 'abq', false)+metricDecision('abq',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('rcv')+'">'+metricChipHtml(d.rcv, d.rcv.toFixed(1), 'rcv', false)+metricDecision('rcv',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('obr')+'">'+metricChipHtml(d.obr, d.obr.toFixed(1), 'obr', false)+metricDecision('obr',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('osi')+'">'+metricChipHtml(d.osi, d.osi.toFixed(1), 'osi', false)+metricDecision('osi',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('projOSI')+'">'+metricChipHtml(d.projOSI, projStr + projArrow, 'osi', false, projC)+metricDecision('projOSI',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('ppGap')+'">'+metricChipHtml(d.ppGap, ppStr, 'ppGap', false, ppC)+metricDecision('ppGap',d)+'</td>'+
       '<td class="num">'+palsHtml+'</td>'+
       '<td><span class="rl-trend-cell">' + rowOsiSparkline(d) + ' ' + (d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+trendArrow(d)+' '+d.trend+'</span>':'?') + '</span></td>'+
     '</tr>';
@@ -5749,13 +5817,13 @@ function renderMasterTable(target){
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
       '<td class="rank-cell">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ?':' ?')+'</td>'+
       '<td class="team-cell" style="color: var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
-      '<td class="num" style="'+activeColStyle('abq')+'">'+d.abq.toFixed(1)+metricDecision('abq',d)+'</td>'+
-      '<td class="num" style="'+activeColStyle('rcv')+'">'+d.rcv.toFixed(1)+metricDecision('rcv',d)+'</td>'+
-      '<td class="num" style="'+activeColStyle('obr')+'">'+d.obr.toFixed(1)+metricDecision('obr',d)+'</td>'+
-      '<td class="num" style="color:'+tcol(d.osi)+';font-weight:600;'+activeColStyle('osi')+'">'+d.osi.toFixed(1)+metricDecision('osi',d)+'</td>'+
-      '<td class="num" style="color:'+projC+';font-weight:500;'+activeColStyle('projOSI')+'">'+projStr+metricDecision('projOSI',d)+'</td>'+
-      '<td class="num" style="color:'+ppC+';'+activeColStyle('ppGap')+'">'+ppStr+metricDecision('ppGap',d)+'</td>'+
-      '<td class="num" style="color:'+dfC+';'+activeColStyle('dfGap')+'">'+dfStr+metricDecision('dfGap',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('abq')+'">'+metricChipHtml(d.abq, d.abq.toFixed(1), 'abq', false)+metricDecision('abq',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('rcv')+'">'+metricChipHtml(d.rcv, d.rcv.toFixed(1), 'rcv', false)+metricDecision('rcv',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('obr')+'">'+metricChipHtml(d.obr, d.obr.toFixed(1), 'obr', false)+metricDecision('obr',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('osi')+'">'+metricChipHtml(d.osi, d.osi.toFixed(1), 'osi', false)+metricDecision('osi',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('projOSI')+'">'+metricChipHtml(d.projOSI, projStr, 'osi', false, projC)+metricDecision('projOSI',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('ppGap')+'">'+metricChipHtml(d.ppGap, ppStr, 'ppGap', false, ppC)+metricDecision('ppGap',d)+'</td>'+
+      '<td class="num" style="'+activeColStyle('dfGap')+'">'+metricChipHtml(d.dfGap, dfStr, 'dfGap', false, dfC)+metricDecision('dfGap',d)+'</td>'+
       '<td>'+(d.trend?'<span class="trend-pill" style="background:'+tc+'22;color:'+tc+';">'+d.trend+'</span>':'?')+'</td>'+
       '<td class="num">'+(d.rhpOSI!=null?d.rhpOSI.toFixed(1):'?')+'</td>'+
       '<td class="num">'+(d.lhpOSI!=null?d.lhpOSI.toFixed(1):'?')+'</td>'+
@@ -6224,7 +6292,7 @@ function setModalMetric(m){
     html += '<tr>'+
       '<td class="rank-cell">'+(i+1)+'</td>'+
       '<td class="team-cell" style="color:var(--purple);">'+d.t+'</td>'+
-      '<td class="num" style="color:'+c+';font-weight:600;">'+displayV+grade+'</td>'+
+      '<td class="num">'+metricChipHtml(v, displayV+grade, m, false, c)+'</td>'+
       '<td>'+barHtml+'</td>'+
     '</tr>';
   });
@@ -6512,7 +6580,10 @@ function renderComparePane(){
         var v = r[key];
         if(v===null || v===undefined) return '<td>?</td>';
         var isBest = (v === best);
-        return '<td class="num" style="'+(isBest?'color:var(--purple);font-weight:700;':'')+'">'+(v>0&&(key==='ppGap'||key==='dfGap'||key==='splitEdge'||key==='velocity')?'+':'')+v.toFixed(1)+'</td>';
+        var prefix = (v>0&&(key==='ppGap'||key==='dfGap'||key==='splitEdge'||key==='velocity')?'+':'');
+        var chipCtx = key === 'ppGap' ? 'ppGap' : key === 'dfGap' ? 'dfGap' : key;
+        var chipColor = isBest ? 'var(--purple)' : null;
+        return '<td class="num">'+metricChipHtml(v, prefix+v.toFixed(1), chipCtx, false, chipColor)+'</td>';
       }).join('') + '</tr>';
   }).join('') + '</tbody>';
   tableEl.innerHTML = '<div class="table-wrap"><table>'+th+tb+'</table></div>';
@@ -6727,19 +6798,27 @@ function renderHomeResearchCards() {
   if (document.querySelector('.ca-tools__grid')) return;
   var root = document.getElementById('rlHomeCardsGrid');
   if (!root) return;
+  var tabIcons = {
+    trends: 'trending-up',
+    'team-rankings': 'trophy',
+    compare: 'swords',
+    pitching: 'target'
+  };
   var cards = [
-    { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends ?' },
-    { tab: 'team-rankings', title: 'Team Rankings', uses: ['Sortable 30-team table by metric family', 'Platoon and location context for ranking', 'One-team scope for focused reads'], cta: 'Open Team Rankings ?' },
-    { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare ?' },
-    { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Intelligence ?' }
+    { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends' },
+    { tab: 'team-rankings', title: 'Team Rankings', uses: ['Sortable 30-team table by metric family', 'Platoon and location context for ranking', 'One-team scope for focused reads'], cta: 'Open Team Rankings' },
+    { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare' },
+    { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Intelligence' }
   ];
   root.innerHTML = cards.map(function(c) {
+    var icon = tabIcons[c.tab] || 'circle-dot';
     return '<button type="button" class="rl-home-card" data-rl-tab="' + c.tab + '">'
-      + '<span class="rl-home-card-icon" aria-hidden="true"></span>'
+      + '<span class="ca-icon-circle rl-home-card-icon" aria-hidden="true"><i data-lucide="' + icon + '"></i></span>'
       + '<strong class="rl-home-card-title">' + c.title + '</strong>'
       + '<ul class="rl-home-card-uses">' + c.uses.map(function(u) { return '<li>' + u + '</li>'; }).join('') + '</ul>'
-      + '<span class="rl-home-card-cta">' + c.cta + '</span></button>';
+      + '<span class="rl-home-card-cta">' + c.cta + ' <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></span></button>';
   }).join('');
+  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
   root.querySelectorAll('[data-rl-tab]').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var tab = btn.getAttribute('data-rl-tab');
@@ -7038,7 +7117,7 @@ function renderPitchingScore() {
       + '<td class="num">' + (r.kPct != null ? r.kPct.toFixed(1) : '?') + '</td>'
       + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : '?') + '</td>'
       + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : '?') + '</td>'
-      + '<td class="num" style="color:' + cl + ';font-weight:600;">' + (ps != null ? ps.toFixed(1) : '?') + '</td></tr>';
+      + '<td class="num">' + metricChipHtml(ps, ps != null ? ps.toFixed(1) : '?', 'pitching', false, cl) + '</td></tr>';
   }).join('');
 }
 
@@ -7083,11 +7162,11 @@ function renderPALS() {
     var xfip = r.avg_xFIP_faced;
     return '<tr><td class="rank-cell">' + (i + 1) + '</td>'
       + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
-      + '<td class="num">' + fmt1(r.osi) + '</td>'
-      + '<td class="num" style="color:' + xfipFacedColor(xfip) + ';font-weight:600;">' + fmt2(xfip) + '</td>'
+      + '<td class="num">' + metricChipHtml(r.osi, fmt1(r.osi), 'osi', false) + '</td>'
+      + '<td class="num">' + metricChipHtml(xfip, fmt2(xfip), 'osi', true, xfipFacedColor(xfip)) + '</td>'
       + '<td class="num">' + fmt1(r.BA_plus) + '</td>'
       + '<td class="num">' + fmt1(r.PTF_plus) + '</td>'
-      + '<td class="num" style="color:' + palsColor(pals) + ';font-weight:600;">' + fmt1(pals) + '</td></tr>';
+      + '<td class="num">' + metricChipHtml(pals, fmt1(pals), 'osi', false, palsColor(pals)) + '</td></tr>';
   }).join('');
 }
 

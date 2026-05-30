@@ -227,9 +227,14 @@ function profileWindowFieldsFromRow(row) {
     if (ctx === 'ppGap') return A.ppGapColor ? A.ppGapColor(v) : '#71717A';
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
-  function chipStyle(v, ctx, invert) {
+  function chipStyle(v, ctx, invert, opts) {
+    if (A && A.chipStyle) return A.chipStyle(v, ctx, invert, opts);
     var text = mColor(v, invert, ctx);
     return 'background:color-mix(in srgb,' + text + ' 18%, transparent);color:' + text + ';';
+  }
+  function metricChip(v, ctx, invert, decimals) {
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals);
+    return '<span class="val-chip" style="' + chipStyle(v, ctx, invert) + '">' + fmt(v, decimals) + '</span>';
   }
 
   function metricCell(opts) {
@@ -631,7 +636,7 @@ function profileWindowFieldsFromRow(row) {
 
     root.innerHTML = '<div class="rl-compare-h2h ca-card">'
       + '<div class="rl-compare-h2h-header ca-section-head">'
-      + '<span>Compare Workspace</span>'
+      + iconCircle('swords') + '<span>Compare Workspace</span>'
       + '</div>'
       + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
       + '<p class="rl-compare-h2h-subtitle">Select existing entities and compare on the current model surfaces.</p>'
@@ -649,6 +654,8 @@ function profileWindowFieldsFromRow(row) {
       + '</div>'
       + '<div id="rlCompareOutput"></div>'
       + '</div>';
+
+    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
 
     bindCompareSidePanel('A', teams);
     bindCompareSidePanel('B', teams);
@@ -1103,10 +1110,10 @@ function profileWindowFieldsFromRow(row) {
       }).join('')
       + '</div></div>';
   }
-  function compareIconSvg(name) {
-    if (name === 'edge') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l5-5 4 4 7-7"></path><path d="M14 8h6v6"></path></svg>';
-    if (name === 'risk') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v5"></path><path d="M12 17h.01"></path><path d="M10.3 3.2L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.2a2 2 0 0 0-3.4 0z"></path></svg>';
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>';
+  function iconCircle(name) {
+    var I = global.MLBMAIcons;
+    if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
+    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="' + esc(name) + '"></i></span>';
   }
   function compareInsightRailHtml(dataA, dataB, metricRows) {
     var top = (metricRows || []).slice().filter(function(r) {
@@ -1119,11 +1126,11 @@ function profileWindowFieldsFromRow(row) {
     var primaryB = dataB && dataB.primary != null ? Number(dataB.primary).toFixed(1) : '—';
     var rows = [
       { icon: 'edge', label: 'Primary Edge', text: esc(dataA.label) + ' ' + primaryA + ' vs ' + esc(dataB.label) + ' ' + primaryB },
-      { icon: 'edge', label: 'Largest Gap', text: top ? (top.label + ' ' + (top.delta >= 0 ? '+' : '') + top.delta.toFixed(1)) : 'No comparable metrics' },
-      { icon: 'risk', label: 'Risk Context', text: top && top.abs < 1.0 ? 'Tight matchup, low separation' : 'Meaningful spread across core metrics' }
+      { icon: 'trend-up', label: 'Largest Gap', text: top ? (top.label + ' ' + (top.delta >= 0 ? '+' : '') + top.delta.toFixed(1)) : 'No comparable metrics' },
+      { icon: top && top.abs < 1.0 ? 'discipline' : 'trend-down', label: 'Risk Context', text: top && top.abs < 1.0 ? 'Tight matchup, low separation' : 'Meaningful spread across core metrics' }
     ];
     return '<div class="ca-insight-rail" style="margin-top:12px;">' + rows.map(function(r) {
-      return '<div class="ca-insight-row"><span class="ca-icon">' + compareIconSvg(r.icon) + '</span><span><span class="ca-insight-label">'
+      return '<div class="ca-insight-row">' + iconCircle(r.icon) + '<span><span class="ca-insight-label">'
         + esc(r.label) + '</span><span class="ca-insight-text">' + r.text + '</span></span></div>';
     }).join('') + '</div>';
   }
@@ -1175,6 +1182,8 @@ function profileWindowFieldsFromRow(row) {
         + compareEdgeSummaryHtml(dataA, dataB, pair, metricRows)
         + compareProfileLinks(dataA, dataB, pair)
         + '</div>';
+
+      if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(out);
 
       if (pair === 'lineup-lineup' && dataA.row && dataB.row) {
         if (global.STATE) global.STATE.compareTeams = [dataA.row.t, dataB.row.t];
@@ -1236,21 +1245,23 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlResearchHomeRoot');
     if (!root) return;
     var cards = [
-      { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: 'â—†' },
-      { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: 'â—Ž' },
-      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: 'âš¡' },
-      { pane: 'compare', title: 'Compare', use: 'Team vs team, pitcher vs pitcher, bullpen vs bullpen, lineup vs pitcher', cta: 'Open Compare', icon: 'â‡„' },
-      { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: 'â–¤' }
+      { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: 'trending-up' },
+      { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: 'target' },
+      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: 'swords' },
+      { pane: 'compare', title: 'Compare', use: 'Team vs team, pitcher vs pitcher, bullpen vs bullpen, lineup vs pitcher', cta: 'Open Compare', icon: 'swords' },
+      { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: 'trophy' }
     ];
     root.innerHTML = '<div class="rl-home-header"><h2 class="rl-workspace-title">Research Home</h2>'
-      + '<p class="rl-workspace-subtitle">Choose a research path â€” no giant tables on this screen.</p></div>'
+      + '<p class="rl-workspace-subtitle">Choose a research path — no giant tables on this screen.</p></div>'
       + '<div class="rl-home-grid">' + cards.map(function(c) {
         return '<button type="button" class="rl-home-card" data-rl-pane="' + c.pane + '">'
-          + '<span class="rl-home-icon">' + c.icon + '</span>'
+          + iconCircle(c.icon)
           + '<strong>' + esc(c.title) + '</strong>'
           + '<span class="rl-home-use">Use for: ' + esc(c.use) + '</span>'
-          + '<em>' + esc(c.cta) + ' â†’</em></button>';
+          + '<em>' + esc(c.cta) + ' <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></em></button>';
       }).join('') + '</div>';
+
+    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
 
     root.querySelectorAll('[data-rl-pane]').forEach(function(btn) {
       btn.addEventListener('click', function() {

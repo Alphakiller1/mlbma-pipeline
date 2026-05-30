@@ -6,8 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-window.__MLBMA_EXPECT_HUB_BUILD = '20260610c';
-console.log('[VERSION] team_rankings build 20260610c — lineup_view.js');
+window.__MLBMA_EXPECT_HUB_BUILD = '20260610d';
+console.log('[VERSION] team_rankings build 20260610d — lineup_view.js');
 </script>
 <meta charset="UTF-8">
 
@@ -16,7 +16,7 @@ console.log('[VERSION] team_rankings build 20260610c — lineup_view.js');
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 (function() {
-  var BUILD = '20260610c';
+  var BUILD = '20260610d';
   var pBuild = new URLSearchParams(location.search);
   if (pBuild.get('_trbuild') !== BUILD) {
     pBuild.set('_trbuild', BUILD);
@@ -37,8 +37,8 @@ console.log('[VERSION] team_rankings build 20260610c — lineup_view.js');
 </script>
 <title>Chase Analytics - Team Rankings v20260604</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
-<link rel="stylesheet" href="theme.css?v=20260610b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260610d">
+<link rel="stylesheet" href="theme.css?v=20260610d">
 <link rel="stylesheet" href="chase_nav.css?v=20260609a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <style>
@@ -89,7 +89,6 @@ h1{font-size:42px;font-weight:800;margin:8px 0 10px;font-family:var(--font-displ
 .hub-banner.show{display:block}
 .hub-banner--window{border:1px solid var(--gold);background:rgba(251,191,36,.08);color:var(--gold)}
 .hub-banner--location{border:1px solid var(--purple);background:rgba(124,77,255,.08);color:var(--purple)}
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);margin-top:16px}
 .hub-team-cards{display:none;margin-top:16px}
 .hub-team-cards.show{display:block}
 .hub-team-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -103,22 +102,26 @@ h1{font-size:42px;font-weight:800;margin:8px 0 10px;font-family:var(--font-displ
 .hub-kpi-meta{display:flex;justify-content:space-between;gap:8px;color:var(--text-2);font-size:12px;margin-top:auto}
 .hub-kpi-meter{height:6px;border-radius:999px;background:rgba(113,113,122,.22);overflow:hidden;margin-top:8px}
 .hub-kpi-meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#A78BFA)}
+.table-wrap,.rl-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--bg-2);margin-top:16px;position:relative}
+.table-wrap::before,.rl-table-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple,#7C4DFF),transparent 70%);z-index:1}
 .hub-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
-.hub-table thead th{position:sticky;top:0;z-index:2;background:var(--bg-3);font-size:10px;text-transform:uppercase;
-  letter-spacing:.06em;color:var(--text-3);padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;
-  white-space:nowrap;cursor:pointer;user-select:none}
-.hub-table thead th.sorted{color:var(--purple)}
-.hub-table thead th.col-primary{background:rgba(124,77,255,.1);color:var(--purple)}
-.hub-table tbody td{padding:9px 10px;border-bottom:1px solid rgba(40,40,47,.8);vertical-align:middle}
+.hub-table thead th{position:sticky;top:0;z-index:2;background:var(--bg-3);font-family:var(--display);font-weight:700;font-stretch:110%;
+  font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-2);padding:11px 12px;
+  border-bottom:1px solid var(--border-2,#3A3A47);text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+.hub-table thead th.sorted,.hub-table thead th.col-primary{background:rgba(124,77,255,.14);color:var(--purple-2,var(--purple))}
+.hub-table tbody td{padding:7px 12px;height:46px;border-bottom:1px solid rgba(40,40,47,.7);vertical-align:middle}
+.hub-table td.num{text-align:right;width:1%;white-space:nowrap}
 .hub-table tbody tr.hub-row{cursor:pointer;transition:background .12s}
-.hub-table tbody tr.hub-row:hover{background:rgba(124,77,255,.06)}
+.hub-table tbody tr.hub-row:nth-child(even){background:rgba(255,255,255,.015)}
+.hub-table tbody tr.hub-row:hover{background:rgba(124,77,255,.09);box-shadow:inset 2px 0 0 var(--purple)}
 .hub-table tbody tr.hub-row.expanded{background:rgba(124,77,255,.04)}
 .hub-table tbody tr.hub-expand-row td{background:var(--bg-3);padding:0;border-bottom:1px solid var(--border)}
+.hub-rank-num{font-family:var(--display);font-weight:800;font-size:14px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.hub-team-cell strong{font-family:var(--display);font-weight:800;font-stretch:110%;font-size:14px;color:var(--text);letter-spacing:.01em}
 .hub-expand-panel{max-height:0;overflow:hidden;transition:max-height 250ms ease}
 .hub-expand-panel.is-open{max-height:720px}
 .hub-rank{white-space:nowrap;width:52px}
 .hub-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:6px;border:1px solid var(--border);border-radius:4px;background:var(--bg-3);color:var(--purple);font-size:14px;font-weight:700;cursor:pointer;line-height:1;padding:0}
-.hub-rank-num{font-weight:700;color:var(--text-2);font-variant-numeric:tabular-nums}
 .hub-expand-inner{display:grid;grid-template-columns:minmax(240px,1fr) minmax(320px,1.2fr);gap:20px;padding:18px 16px}
 @media(max-width:900px){.hub-expand-inner{grid-template-columns:1fr}}
 .hub-expand-left{display:flex;flex-direction:column;gap:12px}
@@ -137,7 +140,6 @@ h1{font-size:42px;font-weight:800;margin:8px 0 10px;font-family:var(--font-displ
 .hub-expand-metric .lab{font-size:9px;text-transform:uppercase;color:var(--text-3);letter-spacing:.06em}
 .hub-expand-metric .val{font-size:15px;font-weight:700;margin-top:2px}
 .hub-team-cell{display:flex;align-items:center;gap:8px}
-.hub-team-cell strong{color:var(--text);font-size:13px}
 .hub-team-pa{font-size:10px;color:var(--text-3);display:block;margin-top:1px}
 .hub-profile-link{font-size:11px;color:var(--purple);text-decoration:none;margin-left:6px}
 .hub-profile-link:hover{text-decoration:underline}
@@ -242,12 +244,13 @@ setTimeout(function() {
 <main class="container">
   <p class="brand-tag">Chase Analytics &middot; Lineup Research</p>
   <h1>Team Rankings</h1>
-  <p class="subtitle">Unified lineup model view across scoring, difficulty, and status-projection families. <strong style="color:var(--purple)">Build 20260610c</strong></p>
+  <p class="subtitle">Unified lineup model view across scoring, difficulty, and status-projection families. <strong style="color:var(--purple)">Build 20260610d</strong></p>
   <section id="lineupViewMount"></section>
 </main>
 
 <script src="mlbma_config.js?v=20260605a"></script>
-<script src="mlbma_assets.js?v=20260605a"></script>
+<script src="mlbma_assets.js?v=20260610d"></script>
+<script src="mlbma_icons.js?v=20260610a"></script>
 <script src="matchup_shared.js?v=20260610a"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script>
@@ -281,7 +284,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260610e"></script>
+<script src="lineup_view.js?v=20260610f"></script>
 <script>
 (function() {
   if (window.LineupView && LineupView.mount) LineupView.mount({ mountId: 'lineupViewMount' });
@@ -332,7 +335,10 @@ setTimeout(function() {
         var valCell = tds[4];
         var cur = String((valCell.innerText || '')).trim();
         if ((!cur || cur === '—' || cur === '?') && palsMap[teamCode] != null) {
-          valCell.innerHTML = '<span class="ca-value-chip" style="--vc:var(--green)">' + palsMap[teamCode].toFixed(1) + '</span>';
+          var chipStyle = (window.MLBMAAssets && MLBMAAssets.chipStyle)
+            ? MLBMAAssets.chipStyle(palsMap[teamCode], 'osi', false, { color: 'var(--green)' })
+            : 'background:color-mix(in srgb,var(--green) 18%, transparent);color:var(--green);';
+          valCell.innerHTML = '<span class="val-chip" style="' + chipStyle + '">' + palsMap[teamCode].toFixed(1) + '</span>';
         }
       });
     }).catch(function() {});

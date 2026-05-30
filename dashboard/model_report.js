@@ -6,6 +6,7 @@
 
   var T = MLBMA_CONFIG.SHEET_TABS;
   var S = global.MLBMASharedMatchup;
+  var A = global.MLBMAAssets;
 
   var STATE = {
     filters: { firedOnly: false, f5Only: false, side: '', gameKey: '', minMag: 0 },
@@ -269,13 +270,27 @@
         if (v == null || isNaN(v)) return '—';
         return Number(v).toFixed(1);
       }
+      function chipFor(v) {
+        if (v == null || isNaN(v)) return '—';
+        if (A && A.valChipHtml) return A.valChipHtml(v, 'osi', false, 1);
+        return c(v);
+      }
       return '<tr><td>' + (i + 1) + '</td><td>' + esc(d.t) + '</td>'
-        + '<td>' + c(ytd) + '</td><td>' + c(l30) + '</td><td>' + c(l14) + '</td><td>' + c(l7) + '</td>'
-        + '<td>' + (dL30 != null ? (dL30 > 0 ? '+' : '') + dL30.toFixed(1) : '—') + '</td>'
-        + '<td>' + (dL14 != null ? (dL14 > 0 ? '+' : '') + dL14.toFixed(1) : '—') + '</td>'
-        + '<td>' + (vel != null ? (vel > 0 ? '+' : '') + vel.toFixed(1) : '—') + '</td>'
+        + '<td class="num">' + chipFor(ytd) + '</td><td class="num">' + chipFor(l30) + '</td><td class="num">' + chipFor(l14) + '</td><td class="num">' + chipFor(l7) + '</td>'
+        + '<td class="num">' + (dL30 != null ? metricChipDelta(dL30) : '—') + '</td>'
+        + '<td class="num">' + (dL14 != null ? metricChipDelta(dL14) : '—') + '</td>'
+        + '<td class="num">' + (vel != null ? metricChipDelta(vel) : '—') + '</td>'
         + '<td>' + esc(trend) + '</td><td>' + esc(rel) + '</td><td>' + esc(interp) + '</td></tr>';
     }).join('');
+  }
+
+  function metricChipDelta(v) {
+    var display = (v > 0 ? '+' : '') + Number(v).toFixed(1);
+    var color = v > 1.5 ? '#4ADE80' : v < -1.5 ? '#F87171' : '#71717A';
+    if (A && A.chipStyle) {
+      return '<span class="val-chip" style="' + A.chipStyle(v, 'osi', false, { color: color }) + '">' + display + '</span>';
+    }
+    return display;
   }
 
   function load() {

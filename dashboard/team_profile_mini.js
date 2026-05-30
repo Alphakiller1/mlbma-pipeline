@@ -213,7 +213,8 @@
 
   function splitTable(rows) {
     return '<table class="ma-split-table"><tbody>' + rows.map(function(r) {
-      return '<tr><td>' + esc(r[0]) + '</td><td style="color:' + metricColor(r[1]) + ';font-family:var(--mono)">' + (r[1] != null ? r[1].toFixed(1) : '—') + '</td></tr>';
+      var chip = (A && A.valChipHtml) ? A.valChipHtml(r[1], 'osi', false, 1) : '<span class="val-chip">' + (r[1] != null ? r[1].toFixed(1) : '—') + '</span>';
+      return '<tr><td>' + esc(r[0]) + '</td><td class="num">' + chip + '</td></tr>';
     }).join('') + '</tbody></table>';
   }
 
@@ -271,11 +272,10 @@
       + '</div></div>';
   }
 
-  function iconSvg(name) {
-    if (name === 'trend') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l5-5 4 4 7-7"></path><path d="M14 8h6v6"></path></svg>';
-    if (name === 'target') return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg>';
-    if (name === 'swap') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h12"></path><path d="M12 3l4 4-4 4"></path><path d="M20 17H8"></path><path d="M12 13l-4 4 4 4"></path></svg>';
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>';
+  function iconCircle(name) {
+    var I = (typeof window !== 'undefined' && window.MLBMAIcons) ? window.MLBMAIcons : null;
+    if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
+    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="' + esc(name) + '"></i></span>';
   }
   function insightRailHtml(m) {
     var gap = (m.proj != null && m.osi != null) ? (m.proj - m.osi) : null;
@@ -287,7 +287,7 @@
         text: 'ProjOSI ' + (m.proj != null ? m.proj.toFixed(1) : '—') + ' vs OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—')
       },
       {
-        icon: 'trend',
+        icon: gap != null && gap >= 2 ? 'trend-down' : gap != null && gap <= -2 ? 'trend-up' : 'discipline',
         label: gap != null && gap >= 2 ? 'Regression Watch' : 'Stability Check',
         text: gap == null ? 'Insufficient projection context'
           : (gap >= 2 ? 'Projection runs ahead of production' : gap <= -2 ? 'Production ahead of projection' : 'Projection and production aligned')
@@ -301,7 +301,7 @@
     ];
     return '<div class="ca-insight-rail">' + rows.map(function(r) {
       return '<div class="ca-insight-row">'
-        + '<span class="ca-icon">' + iconSvg(r.icon) + '</span>'
+        + iconCircle(r.icon)
         + '<span><span class="ca-insight-label">' + esc(r.label) + '</span><span class="ca-insight-text">' + esc(r.text) + '</span></span>'
         + '</div>';
     }).join('') + '</div>';

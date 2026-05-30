@@ -59,6 +59,7 @@
       + '.lv-wrap{margin-top:14px}'
       + '.lv-bar{background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:var(--e-1,none)}'
       + '.lv-sec{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
+      + '.lv-sec .ca-icon-circle--sm{flex-shrink:0}'
       + '.lv-sec::after{content:"";flex:1;height:1px;background:var(--border,#2A2A35)}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
@@ -108,8 +109,12 @@
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){background:var(--raised,#22222C);z-index:3}'
       + '.lv-table td{padding:7px 12px;height:44px;border-bottom:1px solid rgba(40,40,47,.7);min-height:44px;text-align:right;color:var(--text,#F5F5F7);vertical-align:middle}'
       + '.lv-table td:not(:nth-child(2)){font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
-      + '.lv-table td .ca-value-chip{margin-left:auto}'
-      + '.lv-table tbody tr:nth-child(even) td{background:rgba(255,255,255,0.012)}'
+      + '.lv-table td.num{text-align:right;width:1%;white-space:nowrap}'
+      + '.lv-table td .val-chip{margin-left:auto}'
+      + '.lv-rank-num{font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:14px;color:var(--text-2,#a1a1aa);font-variant-numeric:tabular-nums}'
+      + '.lv-team-cell strong{font-family:var(--display,var(--font,system-ui));font-weight:800;font-stretch:110%;font-size:14px;color:var(--text,#F5F5F7);letter-spacing:.01em}'
+      + '.lv-table tbody tr:nth-child(even) td{background:rgba(255,255,255,0.015)}'
+      + '.lv-table tbody tr.lv-row-team:hover td{background:rgba(124,77,255,.09);box-shadow:inset 2px 0 0 var(--purple,#7C4DFF)}'
       + '.lv-row-team{cursor:pointer}.lv-row-team:hover td{background:rgba(139,92,246,0.06)}.lv-row-team:hover td:first-child{box-shadow:inset 2px 0 0 var(--accent,#8b5cf6)}'
       + '.lv-team-cell{display:flex;align-items:center;gap:8px;font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 110;font-weight:700}'
       + '.lv-team-logo{width:22px;height:22px;border-radius:0;object-fit:contain;background:transparent;border:0}'
@@ -244,8 +249,10 @@
   function valueChipHtml(value, def, range) {
     var safe = sanityOk(def, value) ? value : null;
     if (safe == null) return '—';
-    var color = rangeColor(safe, range, def && def.key);
-    return '<span class="ca-value-chip" style="--vc:' + color + '">' + fmt(safe, def.digits) + '</span>';
+    var ctx = def && def.key ? def.key : 'osi';
+    if (A && A.valChipHtml) return A.valChipHtml(safe, ctx, false, def.digits);
+    var color = rangeColor(safe, range, ctx);
+    return '<span class="val-chip" style="background:color-mix(in srgb,' + color + ' 18%, transparent);color:' + color + '">' + fmt(safe, def.digits) + '</span>';
   }
   function visibleDefsForDensity(defs) {
     return (defs || []).filter(function(def) { return def.tier !== 'advanced'; });
@@ -304,10 +311,13 @@
     if (A && A.teamLogoImg) return A.teamLogoImg(team, px || 22, 'lv-team-logo');
     return '';
   }
-  function iconSvg(name) {
-    if (name === 'trend') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l5-5 4 4 7-7"></path><path d="M14 8h6v6"></path></svg>';
-    if (name === 'target') return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg>';
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>';
+  function iconCircle(name) {
+    var I = global.MLBMAIcons;
+    if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
+    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="' + esc(name) + '"></i></span>';
+  }
+  function lvSec(label, icon) {
+    return '<div class="lv-sec">' + iconCircle(icon) + '<span>' + esc(label) + '</span></div>';
   }
   function detailInsightRail(row) {
     var projDelta = num(row && row.projOSI) != null && num(row && row.osi) != null ? (num(row.projOSI) - num(row.osi)) : null;
@@ -315,11 +325,11 @@
     var pp = num(row && row.ppGap);
     var rails = [
       { icon: 'target', label: 'Process Baseline', text: 'ProjOSI ' + fmt(row && row.projOSI, 1) + ' vs OSI ' + fmt(row && row.osi, 1) },
-      { icon: 'trend', label: 'Trend Read', text: trendTxt + (projDelta == null ? '' : (' · Δ ' + (projDelta > 0 ? '+' : '') + projDelta.toFixed(1))) },
-      { icon: 'target', label: 'PP-Gap Signal', text: pp == null ? 'PP-Gap unavailable' : (pp >= 4 ? 'Buy-low profile' : pp <= -4 ? 'Regression risk' : 'Balanced process/result') }
+      { icon: projDelta != null && projDelta < 0 ? 'trend-down' : 'trend-up', label: 'Trend Read', text: trendTxt + (projDelta == null ? '' : (' · Δ ' + (projDelta > 0 ? '+' : '') + projDelta.toFixed(1))) },
+      { icon: pp != null && pp <= -4 ? 'trend-down' : pp >= 4 ? 'trend-up' : 'discipline', label: 'PP-Gap Signal', text: pp == null ? 'PP-Gap unavailable' : (pp >= 4 ? 'Buy-low profile' : pp <= -4 ? 'Regression risk' : 'Balanced process/result') }
     ];
     return '<div class="ca-insight-rail">' + rails.map(function(r) {
-      return '<div class="ca-insight-row"><span class="ca-icon">' + iconSvg(r.icon) + '</span><span><span class="ca-insight-label">'
+      return '<div class="ca-insight-row">' + iconCircle(r.icon) + '<span><span class="ca-insight-label">'
         + esc(r.label) + '</span><span class="ca-insight-text">' + esc(r.text) + '</span></span></div>';
     }).join('') + '</div>';
   }
@@ -329,7 +339,7 @@
     var p = num(row && row.pitcherWinPct);
     var diff = (l != null && r != null) ? (l - r) : null;
     function stat(label, val) {
-      return '<div class="ca-split-stat"><div class="v">' + (val == null ? '—' : '<span class="ca-value-chip" style="--vc:' + colorMetric('osi', val) + '">' + val.toFixed(1) + '</span>') + '</div><div class="k">' + esc(label) + '</div></div>';
+      return '<div class="ca-split-stat"><div class="v">' + (val == null ? '—' : (A && A.valChipHtml ? A.valChipHtml(val, 'osi', false, 1) : '<span class="val-chip" style="--vc:' + colorMetric('osi', val) + '">' + val.toFixed(1) + '</span>')) + '</div><div class="k">' + esc(label) + '</div></div>';
     }
     return '<div class="ca-split-pair">'
       + '<div class="ca-split-card lhp"><div class="ca-split-head">Surface</div><div class="ca-split-grid">'
@@ -355,7 +365,7 @@
   }
   function renderControls(root, state, teams, meta) {
     var rows = ''
-      + '<div class="lv-sec">Scope</div>'
+      + lvSec('Scope', 'circle-dot')
       + '<div class="lv-row">'
       + '<div class="lv-group"><div class="lv-pills">'
       + '<button class="lv-pill' + (state.scope.mode === 'all' ? ' active' : '') + '" data-a="scope" data-v="all">All teams</button>'
@@ -366,14 +376,14 @@
       + '<datalist id="lvTeamList">' + (teams || []).map(function(t) { return '<option value="' + esc(t) + '"></option>'; }).join('') + '</datalist>'
       + '<span id="lvTeamHelp" class="lv-help">Aliases: SF, TB, KC, SD, WSH, OAK, AZ</span></div>'
       + '</div>'
-      + '<div class="lv-sec" style="margin-top:12px">Metric family</div>'
+      + lvSec('Metric family', 'bar-chart-3')
       + '<div class="lv-family-grid">'
       + familyCard('surface', 'Surface Level Wins', 'Win-facing outcomes for full game, F5, and pitching context.', ['Win%', 'F5 Win%', 'Pitcher Win%'], state)
       + familyCard('scoring', 'Scoring', 'How much damage the lineup does at the plate.', ['OSI', 'wRC+', 'wOBA', 'RCV'], state)
       + familyCard('difficulty', 'Difficulty', 'How hard the lineup is to pitch against.', ['ABQ', 'OBR', 'QS%', 'Pitch/Inn', 'PitchScore'], state)
       + familyCard('status', 'Status-Projection', 'How current output compares with projection/process.', ['projOSI', 'PP-Gap', 'PALS'], state)
       + '</div>'
-      + '<div class="lv-sec">Lens context</div>'
+      + lvSec('Lens context', 'target')
       + '<div class="lv-lens">'
       + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills">'
@@ -496,9 +506,9 @@
         var raw = r[def.key];
         var safe = sanityOk(def, raw) ? raw : null;
         if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, r.t, raw);
-        return '<td class="' + (state.sortKey === def.key ? 'sort-col' : '') + '">' + valueChipHtml(safe, def, ranges[def.key]) + '</td>';
+        return '<td class="num' + (state.sortKey === def.key ? ' sort-col' : '') + '">' + valueChipHtml(safe, def, ranges[def.key]) + '</td>';
       }).join('');
-      return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><span class="lv-team-cell">'
+      return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td class="lv-rank-num">' + (idx + 1) + '</td><td><span class="lv-team-cell">'
         + teamLogoHtml(r.t, 22) + '<strong>' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
     }).join('');
     mount.innerHTML = '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
@@ -590,6 +600,7 @@
       if (ctx.state.scope.mode === 'team' && !ctx.state.scope.team && ctx.teams.length) ctx.state.scope.team = ctx.teams[0];
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
       renderBody(root, ctx.state, rows);
+      if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
       return null;
     }).then(function() {
       if (!A || !A.registerLeaguePool || !LM.leaguePool) return null;

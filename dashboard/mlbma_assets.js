@@ -470,6 +470,39 @@
     return GRADE_COLORS.average;
   }
 
+  /** Resolve display color for chips — same rules as metricCell, no math changes. */
+  function metricTextColor(value, context, invert, opts) {
+    opts = opts || {};
+    if (opts.color != null) return opts.color;
+    if (opts.trend) return trendColor(opts.trend);
+    if (opts.staleness) return stalenessColor(opts.staleness);
+    context = context || 'osi';
+    if (context === 'oor' || context === 'OOR' || opts.mode === 'contextual') {
+      return contextualOorColor(value);
+    }
+    if (context === 'ppGap' || context === 'PP_GAP') return ppGapColor(value);
+    if (context === 'dfGap' || context === 'POWER_FLOOR') return dfGapColor(value);
+    return metricColor(value, context, !!invert);
+  }
+
+  /** Inline style for filled metric chips — bg @ alpha, text @ full strength. */
+  function chipStyle(value, context, invert, opts) {
+    opts = opts || {};
+    var text = metricTextColor(value, context, invert, opts);
+    var alpha = opts.alpha != null ? opts.alpha : 0.18;
+    var pct = Math.round(alpha * 100);
+    return 'background:color-mix(in srgb,' + text + ' ' + pct + '%, transparent);color:' + text + ';';
+  }
+
+  /** Standard filled chip HTML for table cells and stat blocks. */
+  function valChipHtml(value, context, invert, decimals, opts) {
+    opts = opts || {};
+    var d = decimals != null ? decimals : 1;
+    var display = opts.display != null ? opts.display
+      : ((value != null && !isNaN(value)) ? Number(value).toFixed(d) : '—');
+    return '<span class="val-chip" style="' + chipStyle(value, context, invert, opts) + '">' + display + '</span>';
+  }
+
   /**
    * Standard metric display cell for Research Lab / profiles.
    * @param {object} opts - { label, value, context, invert, mode, tier, hint, decimals, trend, staleness }
@@ -477,25 +510,11 @@
   function metricCell(opts) {
     opts = opts || {};
     var v = opts.value;
-    var color;
-    if (opts.mode === 'contextual' || opts.context === 'OOR' || opts.context === 'oor') {
-      color = contextualOorColor(v);
-    } else if (opts.context === 'ppGap' || opts.context === 'PP_GAP') {
-      color = ppGapColor(v);
-    } else if (opts.context === 'dfGap' || opts.context === 'POWER_FLOOR') {
-      color = dfGapColor(v);
-    } else if (opts.trend) {
-      color = trendColor(opts.trend);
-    } else if (opts.staleness) {
-      color = stalenessColor(opts.staleness);
-    } else {
-      color = metricColor(v, opts.context || 'osi', !!opts.invert);
-    }
     var d = opts.decimals != null ? opts.decimals : 1;
     var display = (v != null && !isNaN(v)) ? Number(v).toFixed(d) : '—';
     return '<div class="mc-metric-cell">'
       + '<span class="mc-label">' + escHtml(opts.label || '') + '</span>'
-      + '<span class="mc-value" style="color:' + color + '">' + display + '</span>'
+      + valChipHtml(v, opts.context || 'osi', !!opts.invert, d, opts)
       + (opts.tier ? '<span class="mc-tier">' + escHtml(opts.tier) + '</span>' : '')
       + (opts.hint ? '<span class="mc-hint">' + escHtml(opts.hint) + '</span>' : '')
       + '</div>';
@@ -531,6 +550,9 @@
     normName: normName,
     registerLeaguePool: registerLeaguePool,
     metricColor: metricColor,
+    metricTextColor: metricTextColor,
+    chipStyle: chipStyle,
+    valChipHtml: valChipHtml,
     heatColor: heatColor,
     trendColor: trendColor,
     metricLegendHtml: metricLegendHtml,

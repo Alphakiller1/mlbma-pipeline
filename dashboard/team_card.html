@@ -40,6 +40,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 
 <script src="mlbma_config.js?v=20260610a"></script>
 <script src="mlbma_assets.js?v=20260610a"></script>
+<script src="mlbma_icons.js?v=20260610a"></script>
 <script src="matchup_shared.js?v=20260610a"></script>
 <script src="team_profile_mini.js?v=20260610a"></script>
 <script>
@@ -106,6 +107,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
       pickCol: pick
     });
     mount.innerHTML = html;
+    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(mount);
   }).catch(function(err) {
     mount.innerHTML = '<div class="empty-state">Load failed: ' + String(err && err.message || err) + '</div>';
   }).finally(function() {
