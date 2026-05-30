@@ -167,15 +167,16 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 .ca-badge-inconsistent { background: rgba(107, 114, 128, 0.15); color: var(--text-2); border-color: rgba(107, 114, 128, 0.3); }
 .ca-badge-weak { background: rgba(251, 113, 133, 0.15); color: var(--ca-red); border-color: rgba(251, 113, 133, 0.3); }
 
-/* Global table styling */
+/* Global table styling — bold reference spec */
 .ca-table-wrap,
 .rl-table-wrap,
 .table-wrap {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  background: #10131F;
+  border: 1.5px solid #37405A;
+  border-radius: 16px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 24px 70px -20px rgba(0, 0, 0, 0.7);
 }
 .ca-table-wrap::before,
 .rl-table-wrap::before,
@@ -185,96 +186,86 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--ca-purple, #7C4DFF), transparent 70%);
-  z-index: 1;
+  height: 3px;
+  background: linear-gradient(90deg, #9A6BFF, #5B2BE0);
+  z-index: 3;
 }
 table.ca-table,
 .rl-table-premium,
 .rankings-table,
-.hub-table {
+.hub-table,
+.lv-table,
+.thm-table {
   width: 100%;
   border-collapse: collapse;
 }
 table.ca-table thead th,
 .rl-table-premium thead th,
 .rankings-table thead th,
-.hub-table thead th {
+.hub-table thead th,
+.lv-table thead th,
+.thm-table thead th {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--bg-3, var(--raised));
-  color: var(--text-2);
+  background: #0C0E18;
+  color: #AEB4C6;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   font-stretch: 110%;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 11px 12px;
-  border-bottom: 1px solid var(--border-2, rgba(255, 255, 255, 0.18));
+  padding: 14px;
+  border-bottom: 1.5px solid #37405A;
   font-family: var(--font-display, var(--display));
-}
-.hub-table thead th.sorted,
-.hub-table thead th.col-primary,
-.rl-table-premium thead th.sorted {
-  background: rgba(124, 77, 255, 0.14);
-  color: var(--purple-2, var(--ca-purple-light));
+  text-align: center;
 }
 table.ca-table tbody td,
 .rl-table-premium tbody td,
 .rankings-table tbody td,
-.hub-table tbody td {
-  padding: 7px 12px;
+.hub-table tbody td,
+.lv-table tbody td,
+.thm-table tbody td {
+  padding: 0 14px;
   height: 46px;
   vertical-align: middle;
-  border-bottom: 1px solid rgba(40, 40, 47, 0.7);
-  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-variant-numeric: tabular-nums;
-  font-family: var(--mono);
-  font-weight: 500;
+  text-align: center;
 }
 .hub-table td.num,
 .hub-rank-num,
 .rl-table-premium td.num,
-table.ca-table td.num {
-  text-align: right;
+table.ca-table td.num,
+.lv-table td.num,
+.thm-table td.numcol {
+  text-align: center;
   width: 1%;
   white-space: nowrap;
 }
-.hub-team-cell strong {
-  font-family: var(--font-display, var(--display));
-  font-weight: 800;
-  font-stretch: 110%;
-  font-size: 14px;
-  color: var(--text);
-  letter-spacing: 0.01em;
-}
-.hub-rank-num {
-  font-family: var(--font-display, var(--display));
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-}
-table.ca-table tbody tr,
-.rl-table-premium tbody tr,
-.rankings-table tbody tr,
-.hub-table tbody tr.hub-row {
-  cursor: pointer;
-  transition: background 150ms ease;
-}
-table.ca-table tbody tr:hover,
-.rl-table-premium tbody tr:hover,
-.rankings-table tbody tr:hover,
-.hub-table tbody tr.hub-row:hover {
-  background: rgba(124, 77, 255, 0.09);
-  box-shadow: inset 2px 0 0 var(--ca-purple);
+.hub-table thead th.sorted,
+.hub-table thead th.col-primary,
+.rl-table-premium thead th.sorted,
+.lv-table thead th.sorted {
+  background: rgba(124, 77, 255, 0.16);
+  color: #9A6BFF;
 }
 table.ca-table tbody tr:nth-child(even),
 .rl-table-premium tbody tr:nth-child(even),
 .rankings-table tbody tr:nth-child(even),
-.hub-table tbody tr.hub-row:nth-child(even) {
-  background: rgba(255, 255, 255, 0.015);
+.hub-table tbody tr.hub-row:nth-child(even),
+.lv-table tbody tr:nth-child(even),
+.thm-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.018);
+}
+table.ca-table tbody tr:hover,
+.rl-table-premium tbody tr:hover,
+.rankings-table tbody tr:hover,
+.hub-table tbody tr.hub-row:hover,
+.lv-table tbody tr.lv-row-team:hover,
+.thm-table tbody tr:hover {
+  background: rgba(124, 77, 255, 0.10);
+  box-shadow: inset 3px 0 0 var(--ca-purple, #7C4DFF);
 }
 table.ca-table th.sort-active,
 .rl-table-premium th.sort-active {

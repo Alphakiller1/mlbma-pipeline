@@ -213,7 +213,7 @@
 
   function splitTable(rows) {
     return '<table class="ma-split-table"><tbody>' + rows.map(function(r) {
-      var chip = (A && A.valChipHtml) ? A.valChipHtml(r[1], 'osi', false, 1) : '<span class="val-chip">' + (r[1] != null ? r[1].toFixed(1) : '—') + '</span>';
+      var chip = (A && A.valChipHtml) ? A.valChipHtml(r[1], 'osi', false, 1) : '<span class="chip c-mid">' + (r[1] != null ? r[1].toFixed(1) : '—') + '</span>';
       return '<tr><td>' + esc(r[0]) + '</td><td class="num">' + chip + '</td></tr>';
     }).join('') + '</tbody></table>';
   }

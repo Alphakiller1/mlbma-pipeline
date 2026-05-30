@@ -357,6 +357,65 @@
     return 'elite';
   }
 
+  /** Map 7-step grade keys to 5 solid chip classes (reference spec). */
+  var SOLID_CHIP_CLASS = {
+    elite: 'c-elite',
+    strong: 'c-good',
+    aboveAvg: 'c-good',
+    average: 'c-mid',
+    belowAvg: 'c-mid',
+    weak: 'c-weak',
+    veryWeak: 'c-poor'
+  };
+
+  function metricGradeKey(value, context, invert) {
+    if (value == null || isNaN(value)) return null;
+    if (typeof context === 'boolean') {
+      invert = context;
+      context = 'osi';
+    }
+    context = context || 'osi';
+    return gradeKeyFromZ(zScore(value, context), !!invert);
+  }
+
+  function solidChipClass(value, context, invert, opts) {
+    opts = opts || {};
+    if (opts.chipClass) return opts.chipClass;
+    if (value == null || isNaN(value)) return 'c-na';
+    if (opts.trend) {
+      var s = String(opts.trend).toLowerCase();
+      if (s.indexOf('rising') >= 0 || s.indexOf('hot') >= 0) return SOLID_CHIP_CLASS.strong;
+      if (s.indexOf('cooling') >= 0 || s.indexOf('reg') >= 0) return SOLID_CHIP_CLASS.weak;
+      return SOLID_CHIP_CLASS.average;
+    }
+    context = context || 'osi';
+    if (context === 'oor' || context === 'OOR' || opts.mode === 'contextual') {
+      if (value >= 55) return 'c-good';
+      if (value <= 45) return 'c-mid';
+      return 'c-mid';
+    }
+    if (context === 'ppGap' || context === 'PP_GAP') {
+      if (value > 0) return 'c-good';
+      if (value < 0) return 'c-poor';
+      return 'c-mid';
+    }
+    if (context === 'dfGap' || context === 'POWER_FLOOR') {
+      if (value >= 8) return 'c-weak';
+      if (value <= -4) return 'c-good';
+      return 'c-mid';
+    }
+    if (opts.color != null) {
+      var c = String(opts.color);
+      if (c.indexOf('green') >= 0 || c.indexOf('#4ADE') >= 0 || c.indexOf('#22C55') >= 0 || c.indexOf('#1FB8') >= 0) return 'c-good';
+      if (c.indexOf('red') >= 0 || c.indexOf('#F871') >= 0 || c.indexOf('#EF44') >= 0 || c.indexOf('#E039') >= 0) return 'c-poor';
+      if (c.indexOf('gold') >= 0 || c.indexOf('#FBBF') >= 0 || c.indexOf('#C9A2') >= 0) return 'c-mid';
+      if (c.indexOf('purple') >= 0) return 'c-mid';
+      return 'c-mid';
+    }
+    var gk = metricGradeKey(value, context, invert);
+    return gk ? (SOLID_CHIP_CLASS[gk] || 'c-mid') : 'c-mid';
+  }
+
   /**
    * Central metric color — 7-step red→green vs league average.
    * @param {number} value
@@ -485,22 +544,29 @@
     return metricColor(value, context, !!invert);
   }
 
-  /** Inline style for filled metric chips — bg @ alpha, text @ full strength. */
+  /** @deprecated Inline styles replaced by solid .chip classes — kept for legacy call sites. */
   function chipStyle(value, context, invert, opts) {
-    opts = opts || {};
-    var text = metricTextColor(value, context, invert, opts);
-    var alpha = opts.alpha != null ? opts.alpha : 0.18;
-    var pct = Math.round(alpha * 100);
-    return 'background:color-mix(in srgb,' + text + ' ' + pct + '%, transparent);color:' + text + ';';
+    return '';
   }
 
-  /** Standard filled chip HTML for table cells and stat blocks. */
+  /** Neutral placeholder chip for missing window/metric data. */
+  function chipPlaceholderHtml(label) {
+    var display = label != null ? String(label) : '—';
+    return '<span class="chip c-na">' + escHtml(display) + '</span>';
+  }
+
+  /** Standard solid chip HTML — saturated block, dark ink (reference spec). */
   function valChipHtml(value, context, invert, decimals, opts) {
     opts = opts || {};
     var d = decimals != null ? decimals : 1;
+    if (value == null || isNaN(value)) {
+      if (opts.placeholder === false) return escHtml(opts.display != null ? opts.display : '—');
+      return chipPlaceholderHtml(opts.display != null ? opts.display : '—');
+    }
     var display = opts.display != null ? opts.display
-      : ((value != null && !isNaN(value)) ? Number(value).toFixed(d) : '—');
-    return '<span class="val-chip" style="' + chipStyle(value, context, invert, opts) + '">' + display + '</span>';
+      : Number(value).toFixed(d);
+    var cls = solidChipClass(value, context, invert, opts);
+    return '<span class="chip ' + cls + '">' + escHtml(display) + '</span>';
   }
 
   /**
@@ -553,6 +619,10 @@
     metricTextColor: metricTextColor,
     chipStyle: chipStyle,
     valChipHtml: valChipHtml,
+    chipPlaceholderHtml: chipPlaceholderHtml,
+    solidChipClass: solidChipClass,
+    metricGradeKey: metricGradeKey,
+    SOLID_CHIP_CLASS: SOLID_CHIP_CLASS,
     heatColor: heatColor,
     trendColor: trendColor,
     metricLegendHtml: metricLegendHtml,

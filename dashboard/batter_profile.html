@@ -642,7 +642,7 @@ function metricChip(val, ctx, decimals) {
   var c = metricColor(val);
   var d = decimals != null ? decimals : 1;
   var display = val != null && !isNaN(val) ? Number(val).toFixed(d) : '—';
-  return '<span class="val-chip" style="background:color-mix(in srgb,' + c + ' 18%, transparent);color:' + c + '">' + display + '</span>';
+  return '<span class="chip c-mid">' + display + '</span>';
 }
 
 function metricTierClass(score) {

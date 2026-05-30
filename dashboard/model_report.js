@@ -286,9 +286,9 @@
 
   function metricChipDelta(v) {
     var display = (v > 0 ? '+' : '') + Number(v).toFixed(1);
-    var color = v > 1.5 ? '#4ADE80' : v < -1.5 ? '#F87171' : '#71717A';
-    if (A && A.chipStyle) {
-      return '<span class="val-chip" style="' + A.chipStyle(v, 'osi', false, { color: color }) + '">' + display + '</span>';
+    if (A && A.valChipHtml) {
+      var cls = v > 1.5 ? 'c-good' : v < -1.5 ? 'c-poor' : 'c-mid';
+      return A.valChipHtml(v, 'osi', false, 1, { display: display, chipClass: cls });
     }
     return display;
   }

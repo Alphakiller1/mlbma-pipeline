@@ -227,14 +227,9 @@ function profileWindowFieldsFromRow(row) {
     if (ctx === 'ppGap') return A.ppGapColor ? A.ppGapColor(v) : '#71717A';
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
-  function chipStyle(v, ctx, invert, opts) {
-    if (A && A.chipStyle) return A.chipStyle(v, ctx, invert, opts);
-    var text = mColor(v, invert, ctx);
-    return 'background:color-mix(in srgb,' + text + ' 18%, transparent);color:' + text + ';';
-  }
-  function metricChip(v, ctx, invert, decimals) {
-    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals);
-    return '<span class="val-chip" style="' + chipStyle(v, ctx, invert) + '">' + fmt(v, decimals) + '</span>';
+  function metricChip(v, ctx, invert, decimals, opts) {
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals, opts || {});
+    return '<span class="chip c-na">' + fmt(v, decimals) + '</span>';
   }
 
   function metricCell(opts) {
@@ -502,9 +497,9 @@ function profileWindowFieldsFromRow(row) {
           var ps = m.pitchScore;
           return '<tr class="pl-rank-row" onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
             + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td>'
-            + '<td class="num"><span class="val-chip" style="' + chipStyle(ps, 'pitching', false) + '">' + fmt(ps) + '</span></td>'
-            + '<td class="num"><span class="val-chip" style="' + chipStyle(m.osiAllowed, 'osi', true) + '">' + fmt(m.osiAllowed) + '</span></td>'
-            + '<td class="num"><span class="val-chip" style="' + chipStyle(m.oor, 'oor', false) + '">' + fmt(m.oor) + '</span></td></tr>';
+            + '<td class="num">' + metricChip(ps, 'pitching', false, 1) + '</td>'
+            + '<td class="num">' + metricChip(m.osiAllowed, 'osi', true, 1) + '</td>'
+            + '<td class="num">' + metricChip(m.oor, 'oor', false, 1) + '</td></tr>';
         }).join('') + '</tbody></table></div></div>';
 
       var units = global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits) : [];
@@ -519,9 +514,9 @@ function profileWindowFieldsFromRow(row) {
         + bpRows.map(function(r) {
           return '<tr onclick="location.href=\'bullpen_report.html?team=' + encodeURIComponent(r.t) + '\'">'
             + '<td>' + (A ? A.teamLogoImg(r.t, 20) : '') + ' ' + esc(r.t) + '</td>'
-            + '<td class="num"><span class="val-chip" style="' + chipStyle(r.score, 'pitching', false) + '">' + fmt(r.score) + '</span></td>'
-            + '<td class="num"><span class="val-chip" style="' + chipStyle(r.u.osiAllowed, 'osi', true) + '">' + fmt(r.u.osiAllowed) + '</span></td>'
-            + '<td class="num"><span class="val-chip" style="' + chipStyle(r.u.oor, 'oor', false) + '">' + fmt(r.u.oor) + '</span></td></tr>';
+            + '<td class="num">' + metricChip(r.score, 'pitching', false, 1) + '</td>'
+            + '<td class="num">' + metricChip(r.u.osiAllowed, 'osi', true, 1) + '</td>'
+            + '<td class="num">' + metricChip(r.u.oor, 'oor', false, 1) + '</td></tr>';
         }).join('') + '</tbody></table></div>'
         : '<p class="ca-helper">Bullpen_Unit data not loaded.</p>') + '</div>';
 
@@ -862,7 +857,7 @@ function profileWindowFieldsFromRow(row) {
       + pitcherAvatarHtml(name, 'compare')
       + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary"><span class="val-chip" style="' + chipStyle(val, 'pitching', invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</span></div></div></div>';
+      + '<div class="rl-metric-primary">' + metricChip(val, 'pitching', invert, 1) + '</div></div></div>';
   }
 
   function bpScore(u) {
@@ -949,8 +944,8 @@ function profileWindowFieldsFromRow(row) {
     var logo = A ? A.teamLogoImg(team, 40) : '';
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(team) + ' Bullpen</div>'
-      + '<div class="ca-helper">Bullpen Score <span class="val-chip" style="' + chipStyle(score, 'pitching', false) + '">' + fmt(score) + '</span>'
-      + ' · OSI Allowed <span class="val-chip" style="' + chipStyle(unit && unit.osiAllowed, 'osi', true) + '">' + fmt(unit && unit.osiAllowed) + '</span></div></div></div>';
+      + '<div class="ca-helper">Bullpen Score ' + metricChip(score, 'pitching', false, 1)
+      + ' · OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'osi', true, 1) + '</div></div></div>';
   }
 
   function teamIdentityCard(row, splitNote) {
@@ -961,7 +956,7 @@ function profileWindowFieldsFromRow(row) {
     var splitTag = splitNote ? ' <span class="rl-compare-split-tag">' + esc(splitNote) + '</span>' : '';
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(row.t) + splitTag + '</div>'
-      + '<div class="ca-helper">OSI <span class="val-chip" style="' + chipStyle(row.osi, 'osi', false) + '">' + fmt(row.osi) + '</span>'
+      + '<div class="ca-helper">OSI ' + metricChip(row.osi, 'osi', false, 1)
       + ' <span class="tier-badge ' + tierCls + '">' + esc(tier) + '</span></div></div></div>';
   }
 
@@ -1037,9 +1032,9 @@ function profileWindowFieldsFromRow(row) {
         winner = aWins ? 'a' : 'b';
       }
       return '<div class="rl-compare-metric-row">'
-        + '<span class="rl-compare-metric-val rl-compare-metric-val--a' + (winner === 'a' ? ' rl-compare-metric-val--win' : '') + '"><span class="val-chip" style="' + chipStyle(va, row.ctx || 'osi', row.invertA) + '">' + fmt(va) + '</span></span>'
+        + '<span class="rl-compare-metric-val rl-compare-metric-val--a' + (winner === 'a' ? ' rl-compare-metric-val--win' : '') + '">' + metricChip(va, row.ctx || 'osi', row.invertA, 1) + '</span>'
         + '<span class="rl-compare-metric-label">' + esc(row.label) + '</span>'
-        + '<span class="rl-compare-metric-val rl-compare-metric-val--b' + (winner === 'b' ? ' rl-compare-metric-val--win' : '') + '"><span class="val-chip" style="' + chipStyle(vb, row.ctx || 'osi', row.invertB) + '">' + fmt(vb) + '</span></span>'
+        + '<span class="rl-compare-metric-val rl-compare-metric-val--b' + (winner === 'b' ? ' rl-compare-metric-val--win' : '') + '">' + metricChip(vb, row.ctx || 'osi', row.invertB, 1) + '</span>'
         + '</div>';
     }).join('');
   }
@@ -1346,7 +1341,7 @@ function profileWindowFieldsFromRow(row) {
   function snap(title, name, metric, val, inv, ctx) {
     return '<div class="rl-pvl-snapshot ca-stat-card"><h4>' + esc(title) + '</h4><div style="font-weight:700;margin-bottom:6px;">' + esc(name) + '</div>'
       + '<div class="ca-stat-eyebrow">' + esc(metric) + '</div>'
-      + '<div class="ca-stat-value"><span class="val-chip" style="' + chipStyle(val, ctx || 'osi', inv) + '">' + fmt(val) + '</span></div></div>';
+      + '<div class="ca-stat-value">' + metricChip(val, ctx || 'osi', inv, 1) + '</div></div>';
   }
 
   function renderModelLinks() {

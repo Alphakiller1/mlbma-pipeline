@@ -59,30 +59,32 @@
       + '.thm-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}'
       + '.thm-group{display:flex;flex-direction:column;gap:6px}'
       + '.thm-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:700;line-height:1;font-family:var(--font,system-ui)}'
-      + '.thm-pills{display:flex;flex-wrap:wrap;gap:6px}'
-      + '.thm-pill{border:0.5px solid var(--border,#26262f);background:var(--surface-2,#14141e);color:var(--text-2,#a1a1aa);font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--r-pill,999px);cursor:pointer;line-height:1.1}'
-      + '.thm-pill:hover{border-color:var(--border-2,#34343d);color:var(--text,#f4f4f7)}'
-      + '.thm-pill.active{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
-      + '.thm-pill.is-phase1{opacity:.78;color:var(--text-2,#a1a1aa);background:var(--surface-2,#14141e);border-color:var(--border,#26262f)}'
-      + '.thm-pill .thm-phase{margin-left:4px;color:var(--text-3,#6b6b76);font-size:10px}'
+      + '.thm-pills{display:flex;flex-wrap:wrap;gap:9px}'
+      + '.thm-pill.is-phase1{opacity:.78}'
       + '.thm-note{font-size:15px;font-weight:600;color:var(--text-2,#a1a1aa);margin-top:6px;padding-top:0;border-top:0;line-height:1.6}'
       + '.thm-note.warn{color:var(--warn,#fbbf24)}'
-      + '.thm-legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2,#a1a1aa);margin-top:8px}'
-      + '.thm-legend-bar{width:180px;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--d-elite,#EC6A6A),var(--d-good,#E89A5C),var(--d-mid,#D8C36A),var(--d-weak,#8FB0D4),var(--d-poor,#6E8CC0));border:1px solid var(--border,#2A2A35)}'
-      + '.thm-table-wrap{overflow:auto;border:0;border-radius:0;background:transparent}'
-      + '.thm-table{width:100%;border-collapse:separate;border-spacing:8px 6px;font-size:14px}'
-      + '.thm-table thead th{background:var(--surface-2,#14141e);color:var(--text-3,#6b6b76);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:10px 8px;border-radius:var(--r-sm,8px);text-align:left;white-space:nowrap;font-weight:700;font-family:var(--font,system-ui)}'
+      + '.thm-legend{display:flex;align-items:center;gap:9px;font-size:11px;color:#717892;margin-top:14px;font-family:var(--display);font-weight:600;letter-spacing:.04em;text-transform:uppercase}'
+      + '.thm-table-wrap{overflow:auto;margin-top:12px}'
+      + '.thm-table{width:100%;border-collapse:collapse}'
+      + '.thm-table thead th{background:#0C0E18;color:#AEB4C6;font-family:var(--display);font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:14px;border-bottom:1.5px solid #37405A;text-align:center;white-space:nowrap}'
+      + '.thm-table thead th:first-child{text-align:left}'
       + '.thm-table thead th.sortable{cursor:pointer;user-select:none}'
-      + '.thm-cell{padding:12px 12px;border-radius:var(--r-sm,8px);font-weight:700;color:var(--text,#F5F5F7);min-width:120px;text-align:center;font-size:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
-      + '.thm-cell.no-data{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--text-3,#6b6b76) 14%, transparent),color-mix(in srgb,var(--text-3,#6b6b76) 14%, transparent) 6px,transparent 6px,transparent 12px);color:var(--text-3,#6b6b76)}'
-      + '.thm-rel{font-size:12px;font-weight:700;color:var(--text-2,#a1a1aa)}'
-      + '.thm-int{font-size:12px;font-weight:700;color:var(--text,#f5f5f7)}'
-      + '.thm-team{display:flex;align-items:center;gap:8px;padding:0 6px;min-width:120px;color:var(--text,#f4f4f7);font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 110}'
-      + '.thm-team strong{font-size:13px}'
-      + '.thm-team-logo{width:24px;height:24px;border-radius:0!important;object-fit:contain;background:transparent!important;border:0!important;box-shadow:none!important;clip-path:none!important}'
-      + '.thm-team .team-logo-fallback{border-radius:0!important;background:transparent!important;border:0!important;box-shadow:none!important}'
-      + '.thm-delta{font-weight:800;text-align:right;padding-right:8px;white-space:nowrap;font-size:13px;font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
-      + '.thm-delta-up{color:var(--pos,#4ade80)}.thm-delta-down{color:var(--neg,#f87171)}.thm-delta-flat{color:var(--text-3,#6b6b76)}';
+      + '.thm-table tbody td{padding:0 14px;height:46px;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:middle}'
+      + '.thm-table tbody td:first-child{text-align:left}'
+      + '.thm-table tbody tr:nth-child(even){background:rgba(255,255,255,.018)}'
+      + '.thm-table tbody tr:hover{background:rgba(124,77,255,.10);box-shadow:inset 3px 0 0 #7C4DFF}'
+      + '.thm-table td.numcol{width:1%;white-space:nowrap}'
+      + '.thm-rel{font-size:12px;font-weight:700;color:#AEB4C6;text-align:center}'
+      + '.thm-int{font-size:12px;font-weight:600;color:#F6F8FC;text-align:center}'
+      + '.thm-team{display:flex;align-items:center;gap:11px;padding:0;color:#F6F8FC;font-family:var(--display)}'
+      + '.thm-team strong{font-size:15px;font-weight:800;letter-spacing:.02em}'
+      + '.thm-team-logo{width:28px;height:28px;border-radius:0!important;object-fit:contain;background:transparent!important;border:0!important}'
+      + '.thm-delta{font-weight:800;text-align:center;white-space:nowrap;font-size:15px;font-family:var(--display);font-variant-numeric:tabular-nums}'
+      + '.thm-delta-up{color:#1FB866}.thm-delta-down{color:#E0392E}.thm-delta-flat{color:#717892}'
+      + '.thm-legend-bar{width:130px;height:10px;border-radius:5px;overflow:hidden;display:flex}'
+      + '.thm-legend-bar i{flex:1;background:#1FB866}'
+      + '.thm-legend-bar i:nth-child(2){background:#5FB83C}.thm-legend-bar i:nth-child(3){background:#C9A21E}'
+      + '.thm-legend-bar i:nth-child(4){background:#E0762E}.thm-legend-bar i:nth-child(5){background:#E0392E}';
     document.head.appendChild(style);
   }
 
@@ -120,7 +122,11 @@
     ]).then(function(parts) {
       var ytd = parts[0], l30 = parts[1], l14 = parts[2], l7 = parts[3];
       var by = {};
-      [ytd, l30, l14, l7].forEach(function(rows) {
+      (ytd || []).forEach(function(r) {
+        var t = teamKey(r.t);
+        if (t) by[t] = { t: t };
+      });
+      [l30, l14, l7].forEach(function(rows) {
         (rows || []).forEach(function(r) {
           var t = teamKey(r.t);
           if (!t) return;
@@ -298,7 +304,7 @@
       + (phase1Mode ? ' · Phase 1 metric: showing current proxy model values until dedicated feed is connected.' : '')
       + ' · L7 is a momentum flag, not a standalone predictor.'
       + '</div>'
-      + '<div class="thm-legend"><span>Elite</span><span class="thm-legend-bar"></span><span>Poor</span></div>'
+      + '<div class="thm-legend"><span>Elite</span><span class="thm-legend-bar"><i></i><i></i><i></i><i></i><i></i></span><span>Poor</span></div>'
       + '</div><div class="thm-table-wrap"><div class="thm-note">Loading trends heat map...</div></div></div>';
 
     buildRows(state).then(function(rows) {
@@ -318,22 +324,29 @@
         + '</tr></thead><tbody>';
       var body = sorted.map(function(r) {
         function cell(v, digits) {
-          if (v == null) return '<td><div class="thm-cell no-data">—</div></td>';
-          var c = metricColor(v, colorKey);
-          var txt = Number(v).toFixed(digits == null ? 1 : digits);
-          var bg = c ? ('background:color-mix(in srgb,' + c + ' 28%, var(--card,#16161D)); color:' + c + ';') : '';
-          return '<td><div class="thm-cell" style="' + bg + '">' + txt + '</div></td>';
+          if (A && A.valChipHtml) {
+            return '<td class="numcol">' + A.valChipHtml(v, colorKey, false, digits == null ? 1 : digits) + '</td>';
+          }
+          if (v == null) return '<td class="numcol"><span class="chip c-na">—</span></td>';
+          return '<td class="numcol"><span class="chip c-mid">' + Number(v).toFixed(digits == null ? 1 : digits) + '</span></td>';
+        }
+        function deltaChip(v) {
+          if (v == null) return '<td class="numcol">' + (A && A.chipPlaceholderHtml ? A.chipPlaceholderHtml('—') : '<span class="chip c-na">—</span>') + '</td>';
+          var display = (v > 0 ? '+' : '') + Number(v).toFixed(1);
+          var cls = v > 1.5 ? 'c-good' : v < -1.5 ? 'c-poor' : 'c-mid';
+          return '<td class="numcol"><span class="chip ' + cls + '">' + display + '</span></td>';
         }
         var vel = num(r.velocity);
-        var velTxt = vel == null ? '—' : (vel > 0 ? '▲ ' : vel < 0 ? '▼ ' : '■ ') + Math.abs(vel).toFixed(2);
+        var velDisplay = vel == null ? '—' : (vel > 0 ? '+' : '') + vel.toFixed(2);
+        var velCls = vel == null ? 'c-na' : (vel > 0.6 ? 'c-good' : vel < -0.6 ? 'c-poor' : 'c-mid');
         return '<tr>'
-          + '<td><div class="thm-team">' + teamLogo(r.t) + '<strong>' + esc(r.t) + '</strong></div></td>'
+          + '<td><div class="thm-team team-cell-bold">' + teamLogo(r.t) + '<strong class="ab">' + esc(r.t) + '</strong></div></td>'
           + cell(r.ytd, 1)
           + cell(r.l30, 1)
           + cell(r.l14, 1)
           + cell(r.l7, 1)
-          + '<td class="thm-delta ' + deltaClass(r.delta) + '">' + esc(deltaText(r.delta)) + '</td>'
-          + '<td><div class="thm-cell">' + esc(velTxt) + '</div></td>'
+          + deltaChip(r.delta)
+          + '<td class="numcol"><span class="chip ' + velCls + '">' + esc(velDisplay) + '</span></td>'
           + '<td><div class="thm-rel">' + esc(r.reliability || 'Noisy') + '</div></td>'
           + '<td><div class="thm-int">' + esc(r.interpretation || 'Insufficient') + '</div></td>'
           + '</tr>';

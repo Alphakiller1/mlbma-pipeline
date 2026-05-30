@@ -52,14 +52,9 @@
     if (ctx === 'oor') return A.contextualOorColor ? A.contextualOorColor(v) : '#71717A';
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
-  function chipStyle(v, ctx, invert, opts) {
-    if (A && A.chipStyle) return A.chipStyle(v, ctx, invert, opts);
-    var text = mColor(v, invert, ctx);
-    return 'background:color-mix(in srgb,' + text + ' 18%, transparent);color:' + text + ';';
-  }
   function metricChip(v, invert, ctx, decimals) {
     if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals);
-    return '<span class="val-chip" style="' + chipStyle(v, ctx, invert) + '">' + fmt(v, decimals) + '</span>';
+    return '<span class="chip c-na">' + fmt(v, decimals) + '</span>';
   }
 
   function profileMetrics(row) {

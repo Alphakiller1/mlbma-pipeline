@@ -67,8 +67,8 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
 
             stat = page.evaluate(
                 """() => {
-                    const cells = Array.from(document.querySelectorAll('.thm-cell'));
-                    const dataCells = cells.filter(c => !c.classList.contains('no-data'));
+                    const cells = Array.from(document.querySelectorAll('.thm-table tbody td.numcol .chip'));
+                    const dataCells = cells.filter(c => !c.classList.contains('c-na'));
                     const numeric = dataCells.filter(c => /-?\\d+(?:\\.\\d+)?/.test(c.textContent || ''));
                     return { total: cells.length, data: dataCells.length, numeric: numeric.length };
                 }"""
