@@ -87,6 +87,15 @@
     return 'Stable';
   }
 
+  function rawSplitRowForTeam(team, split, metricsR, metricsL) {
+    var t = String(team || '').trim().toUpperCase();
+    var list = split === 'lhp' ? metricsL : split === 'rhp' ? metricsR : null;
+    if (!list || !list.length) return null;
+    return list.find(function(r) {
+      return String(pick(r, ['Tm', 'Team', 'team', 'tm'])).trim().toUpperCase() === t;
+    }) || null;
+  }
+
   function metricRowForTeam(team, split, metricsR, metricsL) {
     var t = String(team || '').toUpperCase();
     var row = null;
@@ -125,8 +134,8 @@
     var pickCol = ctx.pickCol;
     var splitKey = split === 'home' || split === 'away' || split === 'f5' ? 'both' : split;
     var sheetRow = metricRowForTeam(ctx.team, splitKey, ctx.metricsR, ctx.metricsL);
-    var rowR = metricRowForTeam(ctx.team, 'rhp', ctx.metricsR, ctx.metricsL);
-    var rowL = metricRowForTeam(ctx.team, 'lhp', ctx.metricsR, ctx.metricsL);
+    var rowR = rawSplitRowForTeam(ctx.team, 'rhp', ctx.metricsR, ctx.metricsL);
+    var rowL = rawSplitRowForTeam(ctx.team, 'lhp', ctx.metricsR, ctx.metricsL);
 
     function pf(keys) { return num(pick(prof, keys, pickCol)); }
 
@@ -331,40 +340,52 @@
     if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, digits == null ? 1 : digits);
     return '<span class="chip c-mid">' + Number(v).toFixed(digits == null ? 1 : digits) + '</span>';
   }
-  function splitCardStats(splitRow, fallbackOsi, side) {
-    var avg = pickSplitStat(splitRow, ['AVG', 'BA', 'avg']);
-    var ops = pickSplitStat(splitRow, ['OPS', 'ops']);
-    var kPct = pickSplitStat(splitRow, ['K%', 'K_pct', 'SO%', 'k_pct']);
+  function splitDisplayVal(v, digits, ctx, invert) {
+    if (v == null || isNaN(v)) {
+      return (A && A.chipPlaceholderHtml) ? A.chipPlaceholderHtml('—') : '<span class="chip c-na">—</span>';
+    }
+    if (ctx === 'woba' || ctx === 'ops') {
+      var cls = A && A.solidChipClass ? A.solidChipClass(v, 'woba', !!invert) : 'c-mid';
+      return '<span class="chip ' + cls + '">' + Number(v).toFixed(digits == null ? 3 : digits) + '</span>';
+    }
+    return splitStatChip(v, digits, ctx, invert);
+  }
+
+  function splitCardStats(splitRow, fallbackOsi) {
+    if (!splitRow) splitRow = {};
+    var woba = pickSplitStat(splitRow, ['wOBA', 'woba']);
     var xwoba = pickSplitStat(splitRow, ['xwOBA', 'xwoba']);
     var slg = pickSplitStat(splitRow, ['SLG', 'slg']);
-    var hr = pickSplitStat(splitRow, ['HR', 'hr']);
-    var bbPct = pickSplitStat(splitRow, ['BB%', 'BB_pct', 'bb_pct']);
-    var brl = pickSplitStat(splitRow, ['Barrel%', 'BRL%', 'barrel', 'barrel_pct']);
-    if (ops == null && fallbackOsi != null) ops = fallbackOsi / 100;
+    var wrc = pickSplitStat(splitRow, ['wRC+', 'wrc_plus', 'wRC']);
+    var osi = pickSplitStat(splitRow, ['OSI', 'osi']);
+    var abq = pickSplitStat(splitRow, ['ABQ', 'abq']);
+    var rcv = pickSplitStat(splitRow, ['RCV', 'rcv']);
+    var obr = pickSplitStat(splitRow, ['OBR', 'obr']);
+    if (osi == null) osi = fallbackOsi;
     return [
-      ['AVG', avg, 3, 'avg', false],
-      ['OPS', ops, 3, 'ops', false],
-      ['K%', kPct, 1, 'pitching', true],
-      ['xwOBA', xwoba, 3, 'woba', false],
+      ['wOBA', woba, 3, 'woba', false],
       ['SLG', slg, 3, 'woba', false],
-      ['HR', hr, 0, 'hr', false],
-      ['BB%', bbPct, 1, 'osi', false],
-      ['BRL%', brl, 1, 'osi', false]
+      ['xwOBA', xwoba, 3, 'woba', false],
+      ['wRC+', wrc, 0, 'wrc', false],
+      ['OSI', osi, 1, 'osi', false],
+      ['ABQ', abq, 1, 'abq', false],
+      ['RCV', rcv, 1, 'rcv', false],
+      ['OBR', obr, 1, 'obr', false]
     ];
   }
   function splitPairHtml(m) {
-    var lStats = splitCardStats(m.rowL, m.osiL, 'L');
-    var rStats = splitCardStats(m.rowR, m.osiR, 'R');
-    var lOps = lStats[1][1];
-    var rOps = rStats[1][1];
-    var diff = (lOps != null && rOps != null) ? (lOps - rOps) : null;
+    var lStats = splitCardStats(m.rowL, m.osiL);
+    var rStats = splitCardStats(m.rowR, m.osiR);
+    var lWoba = lStats[0][1];
+    var rWoba = rStats[0][1];
+    var diff = (lWoba != null && rWoba != null) ? (lWoba - rWoba) : null;
     var strongerL = diff != null ? diff >= 0 : null;
     var badgeL = strongerL == null ? 'Split Pending' : (strongerL ? 'Stronger Split' : 'Weaker Split');
     var badgeR = strongerL == null ? 'Split Pending' : (strongerL ? 'Weaker Split' : 'Stronger Split');
     function cardHtml(title, cls, stats, badge) {
       return '<div class="ca-split-card ' + cls + '"><div class="ca-split-head">' + esc(title) + '</div><div class="ca-split-grid">'
         + stats.map(function(s) {
-          return '<div class="ca-split-stat"><div class="v">' + splitStatChip(s[1], s[2], s[3], s[4]) + '</div><div class="k">' + esc(s[0]) + '</div></div>';
+          return '<div class="ca-split-stat"><div class="v">' + splitDisplayVal(s[1], s[2], s[3], s[4]) + '</div><div class="k">' + esc(s[0]) + '</div></div>';
         }).join('')
         + '</div><div class="ca-split-badge">' + esc(badge) + '</div></div>';
     }
@@ -372,7 +393,7 @@
     var diffDisplay = diff == null ? '—' : ((diff > 0 ? '+' : '') + diff.toFixed(3));
     return '<div class="ca-split-pair">'
       + cardHtml('vs LHP', 'lhp', lStats, badgeL)
-      + '<div class="ca-split-medallion"><div class="d"><span class="chip ' + diffCls + '" style="font-size:13px;padding:2px 6px">' + diffDisplay + '</span></div><div class="c">OPS vs LHP</div></div>'
+      + '<div class="ca-split-medallion"><div class="d"><span class="chip ' + diffCls + '" style="font-size:13px;padding:2px 6px">' + diffDisplay + '</span></div><div class="c">wOBA vs LHP</div></div>'
       + cardHtml('vs RHP', 'rhp', rStats, badgeR)
       + '</div>';
   }
