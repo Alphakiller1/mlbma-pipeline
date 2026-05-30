@@ -256,7 +256,6 @@ function profileWindowFieldsFromRow(row) {
         ? S.buildOorByTeam(LIVE_DATA.oor) : {};
       if (S.enrichSpProfiles) S.enrichSpProfiles(RL.spProfiles, oorMap);
       if (global.LIVE_DATA) LIVE_DATA.spProfiles = RL.spProfiles;
-      console.log('[FETCH] SP_Profiles loaded:', RL.spProfiles.length);
       return RL.spProfiles;
     }).catch(function() { return []; });
   }
@@ -518,7 +517,6 @@ function profileWindowFieldsFromRow(row) {
         : '<p class="ca-helper">Bullpen_Unit data not loaded.</p>') + '</div>';
 
       root.innerHTML = pitchHtml + bpHtml;
-      console.log('[MLBMA] extra leaderboards pitchers=' + pitchRows.length + ' bullpens=' + bpRows.length);
     });
   }
 

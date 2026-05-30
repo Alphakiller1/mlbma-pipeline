@@ -383,7 +383,6 @@
     var data = (rows || []).filter(function(d) {
       return d && d.rcv != null && !isNaN(d.rcv) && quadYValue(d) != null;
     });
-    console.log('[CHART] rendering market quadrant with', data.length, 'teams');
     if (!data.length) {
       el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map loads when team offense data is available (vs_RHP scores).</p></div>';
       return el;

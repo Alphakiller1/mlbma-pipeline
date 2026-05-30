@@ -356,8 +356,6 @@
       + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-'
       + String(tomorrow.getDate()).padStart(2, '0');
     var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + tomorrowStr + '&hydrate=probablePitcher,team,venue';
-    console.log('[TOMORROW] fetching date:', tomorrowStr);
-    console.log('[TOMORROW] URL:', url);
     return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
       var games = [];
       (data.dates || []).forEach(function(d) {
@@ -382,8 +380,6 @@
       });
       global.LIVE_DATA = global.LIVE_DATA || {};
       global.LIVE_DATA.tomorrowMatchups = games;
-      console.log('[TOMORROW] API response games:', games.length);
-      if (games.length > 0) console.log('[TOMORROW] sample game:', JSON.stringify(games[0]).substring(0, 200));
       return games;
     }).catch(function(err) {
       console.warn('[PD] tomorrow schedule fetch failed', err);

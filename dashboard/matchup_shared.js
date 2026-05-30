@@ -534,13 +534,7 @@
     return rows;
   }
 
-  var _scoreRowLogged = false;
-
   function scoreRowFromSheet(row) {
-    if (!_scoreRowLogged && row && typeof row === 'object') {
-      _scoreRowLogged = true;
-      console.log('[SCORE] extracting row, available columns:', Object.keys(row));
-    }
     var t = teamKey(pickCol(row, 'Tm', 'Team', 'tm'));
     if (!t) return null;
     var abq = numOrNull(pickCol(row, 'ABQ', 'abq'));

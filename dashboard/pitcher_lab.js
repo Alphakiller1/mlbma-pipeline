@@ -94,12 +94,10 @@
 
   function loadProfiles() {
     if (CACHE.profiles && CACHE.profiles.length) {
-      console.log('[PITCHER INTEL] profiles available:', CACHE.profiles.length);
       return Promise.resolve(CACHE.profiles);
     }
     if (global.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length) {
       CACHE.profiles = LIVE_DATA.spProfiles;
-      console.log('[PITCHER INTEL] profiles available:', CACHE.profiles.length);
       return Promise.resolve(CACHE.profiles);
     }
     if (!S || !TABS) return Promise.resolve([]);
@@ -109,7 +107,6 @@
         ? S.buildOorByTeam(LIVE_DATA.oor) : {};
       if (S.enrichSpProfiles) S.enrichSpProfiles(CACHE.profiles, CACHE.oorByTeam);
       if (global.LIVE_DATA) LIVE_DATA.spProfiles = CACHE.profiles;
-      console.log('[PITCHER INTEL] profiles available:', CACHE.profiles.length);
       return CACHE.profiles;
     }).catch(function() { CACHE.profiles = []; return []; });
   }
