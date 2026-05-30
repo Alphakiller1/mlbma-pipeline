@@ -796,16 +796,36 @@
     var opts = options || {};
 
     var source = scBoth;
-    if (f.window === 'YTD') {
-      if (f.location === 'home' && f.hand === 'both' && scHome.length >= 10) source = scHome;
-      else if (f.location === 'away' && f.hand === 'both' && scAway.length >= 10) source = scAway;
-      else if (f.pitcher === 'sp' && f.hand === 'both' && scVsSp.length >= 10) source = scVsSp;
-      else if (f.pitcher === 'rp' && f.hand === 'both' && scVsRp.length >= 10) source = scVsRp;
-      else if (f.hand === 'r') source = scR;
-      else if (f.hand === 'l') source = scL;
-    } else {
-      if (f.hand === 'r') source = scR;
-      else if (f.hand === 'l') source = scL;
+    var sourceKey = 'both';
+    if (f.hand === 'r') { source = scR; sourceKey = 'hand:r'; }
+    else if (f.hand === 'l') { source = scL; sourceKey = 'hand:l'; }
+
+    var unavailable = {
+      window: false,
+      location: false,
+      pitcher: false,
+      segment: false
+    };
+    var windowAppliedAny = false;
+    var locationAppliedAny = false;
+    var pitcherAppliedAny = false;
+
+    if (f.window === 'YTD' && f.hand === 'both') {
+      if (f.location === 'home') {
+        if (scHome.length >= 10) { source = scHome; sourceKey = 'ytd:home'; }
+        else unavailable.location = true;
+      } else if (f.location === 'away') {
+        if (scAway.length >= 10) { source = scAway; sourceKey = 'ytd:away'; }
+        else unavailable.location = true;
+      }
+
+      if (f.pitcher === 'sp') {
+        if (scVsSp.length >= 10) { source = scVsSp; sourceKey = 'ytd:sp'; }
+        else unavailable.pitcher = true;
+      } else if (f.pitcher === 'rp') {
+        if (scVsRp.length >= 10) { source = scVsRp; sourceKey = 'ytd:rp'; }
+        else unavailable.pitcher = true;
+      }
     }
 
     var homeMap = {};
@@ -849,6 +869,7 @@
             applied = true;
           }
         });
+        if (applied) windowAppliedAny = true;
         if (applied && f.hand !== 'both') {
           var ratios = handMetricRatios(f.hand, t, scR, scL, scBoth);
           if (ratios) d = applyHandMetricRatios(d, ratios);
@@ -861,6 +882,16 @@
           && ((loc === 'home' && scHome.length >= 10) || (loc === 'away' && scAway.length >= 10));
         if (!alreadyScoped) {
           var locRow = loc === 'home' ? homeMap[teamKey(t)] : awayMap[teamKey(t)];
+          var locRatio = null;
+          var locOsi = _num(prof[loc + '_osi']);
+          var baseOsi = _num(prof.osi_ytd) != null ? _num(prof.osi_ytd) : _num(prof.osi);
+          if (locOsi != null && baseOsi != null && Math.abs(baseOsi) > 0.0001) locRatio = locOsi / baseOsi;
+          if (locRatio == null && locRow) {
+            var baseBothForLoc = bothMap[teamKey(t)];
+            if (baseBothForLoc && _num(locRow.osi) != null && _num(baseBothForLoc.osi) != null && Math.abs(_num(baseBothForLoc.osi)) > 0.0001) {
+              locRatio = _num(locRow.osi) / _num(baseBothForLoc.osi);
+            }
+          }
           var scaled = false;
           ['osi', 'abq', 'rcv', 'obr'].forEach(function(m) {
             var locVal = _num(prof[loc + '_' + m]);
@@ -872,12 +903,46 @@
             }
           });
           if (scaled) {
+            locationAppliedAny = true;
             ['wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
               var v = _num(prof[loc + '_' + m]);
               if (v == null && locRow) v = _num(locRow[m]);
+              if (locRow && m === 'woba' && _num(d.woba) != null) {
+                var baseBothForWoba = bothMap[teamKey(t)];
+                var locWrc = _num(locRow.wrc);
+                var baseWrc = baseBothForWoba ? _num(baseBothForWoba.wrc) : null;
+                if (locWrc != null && baseWrc != null && Math.abs(baseWrc) > 0.0001) {
+                  v = _num(d.woba) * (locWrc / baseWrc);
+                }
+              }
+              if (v == null && locRatio != null && _num(d[m]) != null) v = _num(d[m]) * locRatio;
               if (v != null) d[m] = v;
             });
             if (d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
+          } else if (locRow) {
+            // If explicit location aggregate rows exist, apply them directly so location context is never silently ignored.
+            ['wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
+              var lv = _num(locRow[m]);
+              if (m === 'woba' && _num(d.woba) != null) {
+                var baseBothForWoba2 = bothMap[teamKey(t)];
+                var locWrc2 = _num(locRow.wrc);
+                var baseWrc2 = baseBothForWoba2 ? _num(baseBothForWoba2.wrc) : null;
+                if (locWrc2 != null && baseWrc2 != null && Math.abs(baseWrc2) > 0.0001) {
+                  lv = _num(d.woba) * (locWrc2 / baseWrc2);
+                }
+              }
+              if (lv == null && locRatio != null && _num(d[m]) != null) lv = _num(d[m]) * locRatio;
+              if (lv != null) d[m] = lv;
+            });
+            var baseBoth = bothMap[teamKey(t)];
+            if (baseBoth && _num(locRow.osi) != null && _num(baseBoth.osi) != null && Math.abs(_num(baseBoth.osi)) > 0.0001) {
+              ['osi', 'abq', 'rcv', 'obr', 'projOSI'].forEach(function(m) {
+                if (_num(d[m]) == null) return;
+                d[m] = d[m] * (_num(locRow.osi) / _num(baseBoth.osi));
+              });
+              if (d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
+            }
+            locationAppliedAny = true;
           }
         }
       }
@@ -889,6 +954,7 @@
           var pitchRow = f.pitcher === 'sp' ? spMap[teamKey(t)] : rpMap[teamKey(t)];
           var baseBoth = bothMap[teamKey(t)];
           if (pitchRow && baseBoth) {
+            pitcherAppliedAny = true;
             var ratioBase = null;
             if (_num(pitchRow.wrc) != null && _num(baseBoth.wrc) != null && Math.abs(_num(baseBoth.wrc)) > 0.0001) {
               ratioBase = _num(pitchRow.wrc) / _num(baseBoth.wrc);
@@ -938,11 +1004,27 @@
     }).filter(Boolean);
 
     if (opts.includeMeta) {
+      if (f.window !== 'YTD' && !windowAppliedAny) unavailable.window = true;
+      if ((f.location === 'home' || f.location === 'away') && !locationAppliedAny && !(f.window === 'YTD' && f.hand === 'both')) {
+        unavailable.location = true;
+      }
+      if ((f.pitcher === 'sp' || f.pitcher === 'rp') && !pitcherAppliedAny && !(f.window === 'YTD' && f.hand === 'both')) {
+        unavailable.pitcher = true;
+      }
+      if (f.segment === 'f5') {
+        // No dedicated F5 split tabs currently; F5 context uses derived proxy.
+        unavailable.segment = true;
+      }
+      if (opts.debugSource && typeof console !== 'undefined' && console.debug) {
+        console.debug('[LineupModel] resolved_source', sourceKey, 'filter=', f, 'unavailable=', unavailable);
+      }
       return {
         rows: rows,
         meta: {
+          sourceKey: sourceKey,
           approxWindow: f.window !== 'YTD',
-          approxLocation: (f.location === 'home' || f.location === 'away') && f.hand !== 'both'
+          approxLocation: (f.location === 'home' || f.location === 'away') && f.hand !== 'both',
+          unavailable: unavailable
         }
       };
     }
@@ -1328,7 +1410,11 @@
   function lineupModelRankAll(filter, family, options) {
     return lineupModelEnsureStore(options).then(function(store) {
       var f = normalizeFilter(filter || {});
-      var rows = resolveLineupRows(store, f).slice();
+      var resolved = resolveLineupRows(store, f, {
+        includeMeta: !!(options && options.includeMeta),
+        debugSource: !!(options && options.debugSource)
+      });
+      var rows = ((resolved && resolved.rows) ? resolved.rows : resolved).slice();
       var lead = _leadMetricForFamily(String(family || 'scoring').toLowerCase());
       rows.sort(function(a, b) {
         var av = numOrNull(a[lead]);
@@ -1337,10 +1423,14 @@
         if (bv == null) return -1;
         return bv - av;
       });
-      return rows.map(function(r, i) {
+      var ranked = rows.map(function(r, i) {
         var pct = rows.length > 1 ? Math.round(((rows.length - (i + 1)) / (rows.length - 1)) * 100) : 100;
         return Object.assign({ rank: i + 1, pct: pct }, r);
       });
+      if (options && options.includeMeta) {
+        return { rows: ranked, meta: resolved && resolved.meta ? resolved.meta : {} };
+      }
+      return ranked;
     });
   }
 

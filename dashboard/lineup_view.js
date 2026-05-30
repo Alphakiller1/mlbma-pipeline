@@ -58,7 +58,7 @@
     style.textContent = ''
       + '.lv-wrap{margin-top:14px}'
       + '.lv-bar{background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:var(--e-1,none)}'
-      + '.lv-sec{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--font-body,var(--font,system-ui))}'
+      + '.lv-sec{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
       + '.lv-sec::after{content:"";flex:1;height:1px;background:var(--border,#2A2A35)}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
@@ -106,7 +106,7 @@
       + '.lv-table th:first-child,.lv-table td:first-child{position:sticky;left:0;background:var(--bg-3,#16161D);z-index:1}'
       + '.lv-table th:nth-child(2),.lv-table td:nth-child(2){position:sticky;left:48px;background:var(--bg-3,#16161D);z-index:1}'
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){background:var(--raised,#22222C);z-index:3}'
-      + '.lv-table td{padding:7px 12px;height:46px;border-bottom:1px solid rgba(40,40,47,.7);min-height:46px;text-align:right;color:var(--text,#F5F5F7);vertical-align:middle}'
+      + '.lv-table td{padding:7px 12px;height:44px;border-bottom:1px solid rgba(40,40,47,.7);min-height:44px;text-align:right;color:var(--text,#F5F5F7);vertical-align:middle}'
       + '.lv-table td:not(:nth-child(2)){font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
       + '.lv-table td .ca-value-chip{margin-left:auto}'
       + '.lv-table tbody tr:nth-child(even) td{background:rgba(255,255,255,0.012)}'
@@ -123,7 +123,9 @@
       + '.lv-meter{height:6px;border-radius:var(--r-pill,999px);background:color-mix(in srgb, var(--text-3,#6b6b76) 22%, transparent);overflow:hidden;margin-top:8px}'
       + '.lv-meter>span{display:block;height:100%;background:var(--accent)}'
       + '.lv-phase{font-size:10px;color:var(--warn,#fbbf24);margin-left:6px}'
-      + '.lv-note{font-size:12px;color:var(--text-2,#a1a1aa);padding:14px}';
+      + '.lv-note{font-size:12px;color:var(--text-2,#a1a1aa);padding:14px}'
+      + '.lv-banner{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.45;border:1px solid var(--border,#2A2A35);background:var(--bg-2,#101015);color:var(--text-2,#a1a1aa)}'
+      + '.lv-banner.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--gold,#fbbf24)}';
     document.head.appendChild(style);
   }
 
@@ -340,7 +342,18 @@
       + '</div>';
   }
 
-  function renderControls(root, state, teams) {
+  function renderContextBanner(meta) {
+    meta = meta || {};
+    var un = meta.unavailable || {};
+    var msgs = [];
+    if (un.window) msgs.push('Selected window split unavailable; showing closest available context.');
+    if (un.location) msgs.push('Location split unavailable for selected combination; showing nearest available split.');
+    if (un.pitcher) msgs.push('Pitcher split unavailable for selected combination; showing nearest available split.');
+    if (un.segment) msgs.push('F5 split tab unavailable; using derived F5 proxy from available components.');
+    if (!msgs.length) return '';
+    return '<div class="lv-banner warn">' + esc(msgs.join(' ')) + '</div>';
+  }
+  function renderControls(root, state, teams, meta) {
     var rows = ''
       + '<div class="lv-sec">Scope</div>'
       + '<div class="lv-row">'
@@ -383,7 +396,8 @@
       + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false) + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false) + '</div></div>'
       + '</div>'
       + '</div>'
-      + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>';
+      + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>'
+      + renderContextBanner(meta);
     root.querySelector('.lv-controls').innerHTML = rows;
   }
   function pill(key, val, label, state, disabled) {
@@ -487,9 +501,7 @@
       return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><span class="lv-team-cell">'
         + teamLogoHtml(r.t, 22) + '<strong>' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
     }).join('');
-    var lead = sortedRows[0] || null;
-    var topInfographic = lead ? ('<div class="lv-infographic">' + detailInsightRail(lead) + splitPairCompact(lead) + '</div>') : '';
-    mount.innerHTML = topInfographic + '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+    mount.innerHTML = '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
   }
 
   function bind(root, ctx) {
@@ -550,28 +562,33 @@
       return;
     }
     writeUrl(ctx.state);
-    renderControls(root, ctx.state, ctx.teams);
+    renderControls(root, ctx.state, ctx.teams, ctx.meta);
     root.querySelector('.lv-body').innerHTML = '<div class="lv-note">Loading lineup model…</div>';
-    LM.rankAll(ctx.state.filter, ctx.state.family).then(function(rows) {
-      rows = rows || [];
+    LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true }).then(function(resolved) {
+      var rows = (resolved && resolved.rows) ? resolved.rows : (resolved || []);
+      ctx.meta = (resolved && resolved.meta) ? resolved.meta : {};
       var shouldRetryPals = ctx.state.family === 'status'
         && rows.length > 0
         && rows.every(function(r) { return num(r && r.pals) == null; });
       if (shouldRetryPals && !ctx._didPalsForceRefresh) {
         ctx._didPalsForceRefresh = true;
         if (LM && LM.clearCache) LM.clearCache();
-        return LM.rankAll(ctx.state.filter, ctx.state.family, { forceRefresh: true });
+        return LM.rankAll(ctx.state.filter, ctx.state.family, { forceRefresh: true, includeMeta: true });
       }
       ctx._didPalsForceRefresh = false;
-      return rows;
+      return { rows: rows, meta: ctx.meta };
+    }).then(function(resolved) {
+      var rows = (resolved && resolved.rows) ? resolved.rows : (resolved || []);
+      var meta = (resolved && resolved.meta) ? resolved.meta : ctx.meta;
+      if (ctx.state.family !== 'status') return { rows: rows || [], meta: meta || {} };
+      return withPalsFallback(rows || []).then(function(nextRows) { return { rows: nextRows, meta: meta || {} }; });
     }).then(function(rows) {
-      if (ctx.state.family !== 'status') return rows || [];
-      return withPalsFallback(rows || []);
-    }).then(function(rows) {
-      rows = rows || [];
+      var meta = (rows && rows.meta) ? rows.meta : (ctx.meta || {});
+      rows = (rows && rows.rows) ? rows.rows : (rows || []);
+      ctx.meta = meta;
       ctx.teams = rows.map(function(r) { return r.t; }).sort();
       if (ctx.state.scope.mode === 'team' && !ctx.state.scope.team && ctx.teams.length) ctx.state.scope.team = ctx.teams[0];
-      renderControls(root, ctx.state, ctx.teams);
+      renderControls(root, ctx.state, ctx.teams, ctx.meta);
       renderBody(root, ctx.state, rows);
       return null;
     }).then(function() {
@@ -601,7 +618,7 @@
     shell.innerHTML = '<div class="lv-bar"><div class="lv-controls"></div></div><div class="lv-body"></div>';
     el.innerHTML = '';
     el.appendChild(shell);
-    var ctx = { state: state, teams: [], _didPalsForceRefresh: false };
+    var ctx = { state: state, teams: [], _didPalsForceRefresh: false, meta: {} };
     bind(shell, ctx);
     rerender(shell, ctx);
     return {
