@@ -53,6 +53,7 @@
     style.textContent = ''
       + '.lv-wrap{margin-top:12px}'
       + '.lv-bar{background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:var(--r-md,12px);padding:12px 14px;margin-bottom:10px;box-shadow:var(--e-1,none)}'
+      + '.lv-sec{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-l,#c4b5fd);margin:2px 0 10px;font-family:var(--font,system-ui)}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
       + '.lv-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:700;font-family:var(--font,system-ui)}'
@@ -62,6 +63,25 @@
       + '.lv-pill.active{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
       + '.lv-pill[disabled],.lv-disabled .lv-pill{opacity:.45;cursor:not-allowed}'
       + '.lv-query{font-size:13px;color:var(--text-2,#a1a1aa);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border,#26262f);line-height:1.5}'
+      + '.lv-family-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin:8px 0 14px}'
+      + '@media(max-width:1040px){.lv-family-grid{grid-template-columns:1fr}}'
+      + '.lv-family{position:relative;background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:16px;padding:16px 16px 14px;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}'
+      + '.lv-family:hover{border-color:var(--border-2,#34343d);transform:translateY(-1px)}'
+      + '.lv-family.active{background:var(--surface-2,#14141e);border-color:color-mix(in srgb,var(--accent,#8b5cf6) 45%, var(--border,#26262f));box-shadow:0 14px 36px -18px color-mix(in srgb,var(--accent,#8b5cf6) 40%, transparent)}'
+      + '.lv-family-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}'
+      + '.lv-family-name{font-family:var(--font-display,var(--font,system-ui));font-size:20px;font-weight:800;letter-spacing:-.01em}'
+      + '.lv-family-n{font-family:var(--mono,monospace);font-size:11px;color:var(--text-3,#6b6b76)}'
+      + '.lv-family-desc{font-size:12px;color:var(--text-2,#a1a1aa);margin:6px 0 10px;line-height:1.45}'
+      + '.lv-family-chips{display:flex;flex-wrap:wrap;gap:6px}'
+      + '.lv-family-chip{font-family:var(--mono,monospace);font-size:11px;padding:4px 8px;border-radius:7px;background:var(--surface-3,#1c1c28);border:0.5px solid var(--border,#26262f);color:var(--text-2,#a1a1aa)}'
+      + '.lv-family.active .lv-family-chip{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
+      + '.lv-family-chip.phase{border-style:dashed;color:var(--text-3,#6b6b76);background:transparent}'
+      + '.lv-lens{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:10px;background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:16px;padding:8px}'
+      + '@media(max-width:960px){.lv-lens{grid-template-columns:1fr}}'
+      + '.lv-cat{background:var(--surface-2,#14141e);border:0.5px solid var(--border,#26262f);border-radius:12px;padding:12px 12px 10px}'
+      + '.lv-cat-h{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#6b6b76);margin-bottom:10px;font-family:var(--font,system-ui)}'
+      + '.lv-cat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}.lv-cat-row:last-child{margin-bottom:0}'
+      + '.lv-cat-k{font-size:12px;color:var(--text-3,#6b6b76);min-width:74px}'
       + '.lv-team-wrap{display:none}.lv-team-wrap.show{display:flex}'
       + '.lv-input{border:0.5px solid var(--border,#26262f);background:var(--surface-2,#14141e);color:var(--text,#f4f4f7);padding:7px 10px;border-radius:var(--r-sm,8px);min-width:160px;font-size:12px;font-weight:600}'
       + '.lv-input-row{display:flex;gap:6px;align-items:center}'
@@ -232,6 +252,7 @@
   function renderControls(root, state, teams) {
     var surfaceMode = state.family === 'surface';
     var rows = ''
+      + '<div class="lv-sec">Scope</div>'
       + '<div class="lv-row">'
       + '<div class="lv-group"><span class="lv-label">Scope</span><div class="lv-pills">'
       + '<button class="lv-pill' + (state.scope.mode === 'all' ? ' active' : '') + '" data-a="scope" data-v="all">All teams</button>'
@@ -242,24 +263,34 @@
       + '<datalist id="lvTeamList">' + (teams || []).map(function(t) { return '<option value="' + esc(t) + '"></option>'; }).join('') + '</datalist>'
       + '<span id="lvTeamHelp" class="lv-help">Aliases: SF, TB, KC, SD, WSH, OAK, AZ</span></div>'
       + '</div>'
-      + '<div class="lv-row" style="margin-top:8px">'
-      + '<div class="lv-group' + (surfaceMode ? ' lv-disabled' : '') + '" title="' + (surfaceMode ? 'Not applicable for Surface wins' : '') + '"><span class="lv-label">Hand</span><div class="lv-pills">'
+      + '<div class="lv-sec" style="margin-top:12px">Metric family</div>'
+      + '<div class="lv-family-grid">'
+      + familyCard('scoring', 'Scoring', 'How much damage the lineup does at the plate.', ['OSI', 'wRC+', 'wOBA', 'RCV'], state)
+      + familyCard('difficulty', 'Difficulty', 'How hard the lineup is to pitch against.', ['ABQ', 'OBR', 'QS%', 'Pitch/Inn', 'PitchScore'], state)
+      + familyCard('surface', 'Surface wins', 'How often this lineup translates to wins.', ['Win%', 'F5 Win%', 'Pitcher Win%'], state)
+      + '</div>'
+      + '<div class="lv-sec">Lens context</div>'
+      + '<div class="lv-lens">'
+      + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills' + (surfaceMode ? ' lv-disabled' : '') + '" title="' + (surfaceMode ? 'Not applicable for Surface wins' : '') + '">'
       + pill('hand', 'both', 'Both', state, surfaceMode) + pill('hand', 'r', 'vs RHP', state, surfaceMode) + pill('hand', 'l', 'vs LHP', state, surfaceMode) + '</div></div>'
-      + '<div class="lv-group"><span class="lv-label">Location</span><div class="lv-pills">'
-      + pill('location', 'all', 'All', state, false) + pill('location', 'home', 'Home', state, false) + pill('location', 'away', 'Away', state, false) + '</div></div>'
-      + '<div class="lv-group' + (surfaceMode ? ' lv-disabled' : '') + '" title="' + (surfaceMode ? 'Not applicable for Surface wins' : '') + '"><span class="lv-label">Pitch</span><div class="lv-pills">'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills' + (surfaceMode ? ' lv-disabled' : '') + '" title="' + (surfaceMode ? 'Not applicable for Surface wins' : '') + '">'
       + pill('pitcher', 'both', 'Both', state, surfaceMode) + pill('pitcher', 'sp', 'SP', state, surfaceMode) + pill('pitcher', 'rp', 'RP', state, surfaceMode) + '</div></div>'
-      + '<div class="lv-group"><span class="lv-label">Side</span><div class="lv-pills">'
-      + pill('batSide', 'both', 'Both', state, false) + pill('batSide', 'rhb', 'RHB', state, false) + pill('batSide', 'lhb', 'LHB', state, false) + '</div></div>'
-      + '<div class="lv-group"><span class="lv-label">Segment</span><div class="lv-pills">'
+      + '</div>'
+      + '<div class="lv-cat"><div class="lv-cat-h">Situation</div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Location</span><div class="lv-pills">'
+      + pill('location', 'all', 'All', state, false) + pill('location', 'home', 'Home', state, false) + pill('location', 'away', 'Away', state, false) + '</div></div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Segment</span><div class="lv-pills">'
       + pill('segment', 'full', 'Full', state, false) + pill('segment', 'f5', 'F5', state, false) + '</div></div>'
-      + '<div class="lv-group"><span class="lv-label">Window</span><div class="lv-pills">'
+      + '</div>'
+      + '<div class="lv-cat"><div class="lv-cat-h">Lineup side</div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Bats</span><div class="lv-pills">'
+      + pill('batSide', 'both', 'Both', state, false) + pill('batSide', 'rhb', 'RHB', state, false) + pill('batSide', 'lhb', 'LHB', state, false) + '</div></div>'
+      + '</div>'
+      + '<div class="lv-cat"><div class="lv-cat-h">Time window</div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Range</span><div class="lv-pills">'
       + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false) + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false) + '</div></div>'
       + '</div>'
-      + '<div class="lv-row" style="margin-top:8px">'
-      + '<div class="lv-group"><span class="lv-label">Family</span><div class="lv-pills">'
-      + famPill('scoring', 'Scoring', state) + famPill('difficulty', 'Difficulty', state) + famPill('surface', 'Surface wins', state)
-      + '</div></div>'
       + '</div>'
       + '<div class="lv-query">' + esc(nonDefaultTokens(state).join(' · ')) + '</div>';
     root.querySelector('.lv-controls').innerHTML = rows;
@@ -270,6 +301,16 @@
   }
   function famPill(val, label, state) {
     return '<button class="lv-pill' + (state.family === val ? ' active' : '') + '" data-a="family" data-v="' + val + '">' + esc(label) + '</button>';
+  }
+  function familyCard(val, name, desc, chips, state) {
+    var on = state.family === val;
+    return '<button class="lv-family' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">'
+      + '<div class="lv-family-top"><span class="lv-family-name">' + esc(name) + '</span><span class="lv-family-n">' + chips.length + ' metrics</span></div>'
+      + '<div class="lv-family-desc">' + esc(desc) + '</div>'
+      + '<div class="lv-family-chips">' + chips.map(function(ch) {
+        var phase = (ch === 'QS%' || ch === 'Pitch/Inn' || ch === 'PitchScore' || ch === 'Win%' || ch === 'F5 Win%' || ch === 'Pitcher Win%');
+        return '<span class="lv-family-chip' + (phase ? ' phase' : '') + '">' + esc(ch) + '</span>';
+      }).join('') + '</div></button>';
   }
 
   function teamAliasesResolve(raw, teams) {
