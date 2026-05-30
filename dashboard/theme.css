@@ -1,0 +1,193 @@
+:root {
+  --bg: #08080B;
+  --bg-2: #101015;
+  --card: #16161D;
+  --card-2: #1C1C25;
+  --raised: #22222C;
+  --border: #2A2A35;
+  --border-2: #3A3A47;
+  --border-violet: rgba(139, 92, 246, 0.45);
+  --text: #F5F5F7;
+  --text-2: #A1A1AA;
+  --text-3: #71717A;
+  --text-4: #52525B;
+  --v-light: #C4A8FF;
+  --v: #A684FF;
+  --v-mid: #8B5CF6;
+  --v-deep: #6D28D9;
+  --v-grad: linear-gradient(135deg, #A684FF 0%, #6D28D9 100%);
+  --v-grad-soft: linear-gradient(135deg, rgba(166, 132, 255, 0.16), rgba(109, 40, 217, 0.10));
+  --v-glow: rgba(139, 92, 246, 0.40);
+  --v-bg: rgba(139, 92, 246, 0.14);
+  --d-elite: #EC6A6A;
+  --d-good: #E89A5C;
+  --d-mid: #D8C36A;
+  --d-weak: #8FB0D4;
+  --d-poor: #6E8CC0;
+  --display: "Archivo", -apple-system, system-ui, sans-serif;
+  --sans: "Archivo", -apple-system, system-ui, sans-serif;
+  --mono: "JetBrains Mono", monospace;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse 72% 56% at 82% -12%, rgba(139, 92, 246, 0.26), transparent 58%),
+    radial-gradient(ellipse 66% 50% at 8% 108%, rgba(109, 40, 217, 0.14), transparent 62%);
+  background-color: var(--bg);
+}
+
+body::before,
+body::after,
+.ca-grid-texture {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  background-image: none !important;
+}
+
+.ca-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.ca-card.is-active {
+  background: var(--card-2);
+  border-color: var(--border-violet);
+  box-shadow: inset 0 3px 0 0 rgba(139, 92, 246, 0.2);
+  position: relative;
+}
+
+.ca-card.is-active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  background: var(--v-grad);
+}
+
+.ca-pill {
+  border: 1px solid var(--border);
+  background: var(--raised);
+  color: var(--text-2);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+}
+
+.ca-pill.is-active {
+  border-color: transparent;
+  background: var(--v-grad);
+  color: #fff;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25), 0 10px 24px -14px var(--v-glow);
+}
+
+.ca-chip {
+  border: 1px solid var(--border);
+  background: var(--raised);
+  color: var(--text-2);
+  border-radius: 7px;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  padding: 4px 9px;
+}
+
+.ca-value-chip {
+  --vc: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--vc) 16%, transparent);
+  color: var(--vc);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ca-query-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ca-query-line strong {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.ca-stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 14px 12px;
+}
+
+.ca-stat-eyebrow {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ca-stat-value {
+  margin-top: 6px;
+  color: var(--text);
+  font-size: 32px;
+  line-height: 1.08;
+  font-weight: 800;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-title {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+
+.section-subtitle,
+.rl-tab-purpose {
+  color: var(--text-2);
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.ca-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ca-section-head::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}

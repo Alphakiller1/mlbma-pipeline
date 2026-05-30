@@ -610,18 +610,34 @@ function profileWindowFieldsFromRow(row) {
   function splitLabelForCompare(split) {
     return { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away', f5: 'F5' }[split] || 'Both';
   }
+  function compareModeMeta(sideA, sideB) {
+    var pair = deriveComparePair(sideA, sideB);
+    var symmetric = (pair === 'lineup-lineup' || pair === 'pitcher-pitcher' || pair === 'bullpen-bullpen');
+    var title = symmetric ? 'Symmetric compare' : 'Asymmetric compare';
+    var desc = symmetric
+      ? 'Same-type entities are scored on shared axes.'
+      : 'Cross-type entities use normalized matchup bars and safe comparison rows.';
+    return { pair: pair, title: title, desc: desc, symmetric: symmetric };
+  }
 
   function renderComparePaneInner(root) {
     ensureCompareSides();
     syncResearchGlobalsFromLiveData();
     var teams = (global.SCO_YTD_B || []).map(function(r) { return r.t; }).filter(Boolean).sort();
     if (!teams.length) teams = teamList();
+    var mode = compareModeMeta(RL.compareSideA, RL.compareSideB);
 
-    root.innerHTML = '<div class="rl-compare-h2h">'
-      + '<div class="rl-compare-h2h-header">'
-      + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
-      + '<p class="rl-compare-h2h-subtitle">Select any two entities. Compare the data. Find the edge.</p>'
+    root.innerHTML = '<div class="rl-compare-h2h ca-card">'
+      + '<div class="rl-compare-h2h-header ca-section-head">'
+      + '<span>Compare Workspace</span>'
       + '</div>'
+      + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
+      + '<p class="rl-compare-h2h-subtitle">Select existing entities and compare on the current model surfaces.</p>'
+      + '<div class="rl-compare-modes rl-compare-modes--large">'
+      + '<button type="button" class="rl-compare-mode-btn rl-compare-mode-btn--static' + (mode.symmetric ? ' active' : '') + '" aria-disabled="true">Symmetric</button>'
+      + '<button type="button" class="rl-compare-mode-btn rl-compare-mode-btn--static' + (!mode.symmetric ? ' active' : '') + '" aria-disabled="true">Asymmetric</button>'
+      + '</div>'
+      + '<div id="rlCompareQueryLine" class="ca-query-line"><strong>' + esc(mode.title) + '</strong> · ' + esc(mode.desc) + '</div>'
       + '<div class="rl-compare-panels">'
       + renderCompareSidePanelHtml('SIDE A', 'A', RL.compareSideA, teams)
       + renderCompareSidePanelHtml('SIDE B', 'B', RL.compareSideB, teams)
@@ -724,6 +740,9 @@ function profileWindowFieldsFromRow(row) {
       + renderCompareSidePanelHtml('SIDE B', 'B', RL.compareSideB, teams);
     bindCompareSidePanel('A', teams);
     bindCompareSidePanel('B', teams);
+    var mode = compareModeMeta(RL.compareSideA, RL.compareSideB);
+    var q = document.getElementById('rlCompareQueryLine');
+    if (q) q.innerHTML = '<strong>' + esc(mode.title) + '</strong> · ' + esc(mode.desc);
   }
 
   function teamSelectHtml(id, label, teams, val) {
@@ -1067,7 +1086,7 @@ function profileWindowFieldsFromRow(row) {
     var out = document.getElementById('rlCompareOutput');
     if (!out) return;
     if (!RL.compareSideA.key || !RL.compareSideB.key) {
-      out.innerHTML = '<div class="rl-pane-card"><p class="rl-empty">Select entities on both sides and click Compare to generate output.</p></div>';
+      out.innerHTML = '<div class="rl-pane-card ca-card"><p class="rl-empty">Select entities on both sides and click Compare to generate output.</p></div>';
       return;
     }
     out.innerHTML = '<div class="rl-loading">Computing comparison…</div>';
@@ -1078,7 +1097,7 @@ function profileWindowFieldsFromRow(row) {
       var dataA = getSideCompareData(sideA);
       var dataB = getSideCompareData(sideB);
       if (!dataA || !dataB) {
-        out.innerHTML = '<div class="rl-pane-card"><p class="ca-helper">Data not available for one or both selections.</p></div>';
+        out.innerHTML = '<div class="rl-pane-card ca-card"><p class="ca-helper">Data not available for one or both selections.</p></div>';
         return;
       }
 
@@ -1206,7 +1225,7 @@ function profileWindowFieldsFromRow(row) {
     if (!root) return;
     var teams = teamList();
     var pitchers = pitcherOptions();
-    root.innerHTML = '<div class="rl-pane-card">'
+    root.innerHTML = '<div class="rl-pane-card ca-card">'
       + '<div class="rl-pvl-grid">'
       + '<div><label class="ca-metric-label">Lineup Team</label><select id="rlPvlTeam" class="search-input" style="width:100%;margin-top:6px;">'
       + '<option value="">â€”</option>' + teams.map(function(t) {
@@ -1255,19 +1274,19 @@ function profileWindowFieldsFromRow(row) {
       + snap('SP Snapshot', RL.pvlPitcher || 'â€”', 'Pitching Score', ps, false)
       + snap('Bullpen Snapshot', RL.pvlBpTeam || 'â€”', 'Bullpen Score', bpScore, false)
       + '</div>'
-      + '<div class="rl-edge-card" style="margin-top:14px;"><strong>Edge Read</strong> â€” '
+      + '<div class="rl-edge-card ca-card" style="margin-top:14px;"><strong>Edge Read</strong> â€” '
       + (splitRow && sm.osiAllowed && splitRow.osi > 100 - sm.osiAllowed ? 'Lineup carries platoon split edge vs SP.' : 'Pitching profile suppresses lineup split.')
       + '</div>'
-      + '<div class="rl-pane-card" style="margin-top:12px;"><div class="ca-metric-label">F5 vs Full Game</div>'
+      + '<div class="rl-pane-card ca-card" style="margin-top:12px;"><div class="ca-metric-label">F5 vs Full Game</div>'
       + '<p style="font-size:13px;color:var(--text-2);margin:8px 0 0;">F5 lean tracks SP vs lineup split. Full game adds bullpen score '
       + (bpScore != null ? '(' + bpScore.toFixed(1) + ')' : '') + ' after starter.</p>'
       + '<a href="matchup_compare.html?away=' + encodeURIComponent(RL.pvlTeam) + '&home=' + encodeURIComponent(RL.pvlBpTeam || RL.pvlTeam) + '" class="ca-helper">Open full matchup compare â†’</a></div>';
   }
 
   function snap(title, name, metric, val, inv) {
-    return '<div class="rl-pvl-snapshot"><h4>' + esc(title) + '</h4><div style="font-weight:700;margin-bottom:6px;">' + esc(name) + '</div>'
-      + '<div class="ca-metric-label">' + esc(metric) + '</div>'
-      + '<div class="rl-metric-primary" style="color:' + mColor(val, inv) + '">' + fmt(val) + '</div></div>';
+    return '<div class="rl-pvl-snapshot ca-stat-card"><h4>' + esc(title) + '</h4><div style="font-weight:700;margin-bottom:6px;">' + esc(name) + '</div>'
+      + '<div class="ca-stat-eyebrow">' + esc(metric) + '</div>'
+      + '<div class="ca-stat-value" style="color:' + mColor(val, inv) + '">' + fmt(val) + '</div></div>';
   }
 
   function renderModelLinks() {

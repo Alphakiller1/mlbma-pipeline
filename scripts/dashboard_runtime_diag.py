@@ -62,7 +62,7 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
         check("scope team control", page.locator('[data-a="scope"][data-v="team"]').count() == 1)
         check("family scoring control", page.locator('[data-a="family"][data-v="scoring"]').count() == 1)
         check("family difficulty control", page.locator('[data-a="family"][data-v="difficulty"]').count() == 1)
-        check("family surface control", page.locator('[data-a="family"][data-v="surface"]').count() == 1)
+        check("family status control", page.locator('[data-a="family"][data-v="status"]').count() == 1)
 
         try:
             page.wait_for_function("() => !!window.LineupModel && !!window.LineupView", timeout=timeout_ms)
@@ -159,8 +159,12 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
             check("no uncaught page errors", False, " | ".join(page_errors[:3]))
         else:
             check("no uncaught page errors", True)
-        if console_errors:
-            check("no console errors", False, " | ".join(console_errors[:5]))
+        noisy = [
+            e for e in console_errors
+            if not ("429" in e or "Today_Games HTTP 429" in e or "Failed to load resource" in e and "429" in e)
+        ]
+        if noisy:
+            check("no console errors", False, " | ".join(noisy[:5]))
         else:
             check("no console errors", True)
 

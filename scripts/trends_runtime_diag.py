@@ -104,7 +104,12 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
             check("no uncaught page errors", True)
         hard_console = [
             e for e in console_errors
-            if not (e.startswith("[LINEUPS]") or e.startswith("[MATCHUPS]"))
+            if not (
+                e.startswith("[LINEUPS]")
+                or e.startswith("[MATCHUPS]")
+                or "429" in e
+                or ("Failed to load resource" in e and "429" in e)
+            )
         ]
         if hard_console:
             check("no console errors", False, " | ".join(hard_console[:4]))

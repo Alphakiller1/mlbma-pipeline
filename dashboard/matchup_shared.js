@@ -1318,7 +1318,7 @@
 
   function _leadMetricForFamily(family) {
     if (family === 'difficulty') return 'abq';
-    if (family === 'surface') return 'osi';
+    if (family === 'surface' || family === 'status') return 'osi';
     return 'osi';
   }
 

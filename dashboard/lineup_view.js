@@ -11,28 +11,29 @@
     filter: (CFG.FILTER_DEFAULTS || { hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' }),
     scope: (CFG.SCOPE_DEFAULTS || { mode: 'all', team: null }),
     family: 'scoring',
+    density: 'core',
     sortKey: 'osi',
     sortDir: 'desc'
   };
 
   var FAMILY_DEFS = {
     scoring: [
-      { key: 'osi', label: 'OSI', digits: 1, phase: 0, sanity: [0, 150] },
-      { key: 'wrc', label: 'wRC+', digits: 0, phase: 0, sanity: [40, 200] },
-      { key: 'woba', label: 'wOBA', digits: 3, phase: 0, sanity: [0.25, 0.45] },
-      { key: 'rcv', label: 'RCV', digits: 1, phase: 0, sanity: [0, 150] }
+      { key: 'osi', label: 'OSI', digits: 1, tier: 'core', sanity: [0, 150] },
+      { key: 'wrc', label: 'wRC+', digits: 0, tier: 'core', sanity: [40, 200] },
+      { key: 'woba', label: 'wOBA', digits: 3, tier: 'core', sanity: [0.25, 0.45] },
+      { key: 'rcv', label: 'RCV', digits: 1, tier: 'advanced', sanity: [0, 150] }
     ],
     difficulty: [
-      { key: 'abq', label: 'ABQ', digits: 1, phase: 0, sanity: [0, 150] },
-      { key: 'obr', label: 'OBR', digits: 1, phase: 0, sanity: [0, 150] },
-      { key: 'qs', label: 'QS%', digits: 1, phase: 0, sanity: [0, 100] },
-      { key: 'pitchInn', label: 'Pitch/Inn', digits: 1, phase: 0, sanity: [8, 30] },
-      { key: 'pitchScore', label: 'PitchScore', digits: 1, phase: 0, sanity: [0, 150] }
+      { key: 'abq', label: 'ABQ', digits: 1, tier: 'core', sanity: [0, 150] },
+      { key: 'obr', label: 'OBR', digits: 1, tier: 'core', sanity: [0, 150] },
+      { key: 'qs', label: 'QS%', digits: 1, tier: 'advanced', sanity: [0, 100] },
+      { key: 'pitchInn', label: 'Pitch/Inn', digits: 1, tier: 'advanced', sanity: [8, 30] },
+      { key: 'pitchScore', label: 'PitchScore', digits: 1, tier: 'advanced', sanity: [0, 150] }
     ],
-    surface: [
-      { key: 'winPct', label: 'Win%', digits: 1, phase: 0, sanity: [0, 100] },
-      { key: 'f5WinPct', label: 'F5 Win%', digits: 1, phase: 0, sanity: [0, 100] },
-      { key: 'pitcherWinPct', label: 'Pitcher Win%', digits: 1, phase: 0, sanity: [0, 100] }
+    status: [
+      { key: 'projOSI', label: 'projOSI', digits: 1, tier: 'core', sanity: [0, 150] },
+      { key: 'ppGap', label: 'PP-Gap', digits: 1, tier: 'advanced', sanity: [-75, 75] },
+      { key: 'pals', label: 'PALS', digits: 1, tier: 'advanced', sanity: [0, 150] }
     ]
   };
 
@@ -64,6 +65,7 @@
       + '.lv-pill.active{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
       + '.lv-pill[disabled],.lv-disabled .lv-pill{opacity:.45;cursor:not-allowed}'
       + '.lv-query{font-size:13.5px;font-weight:600;color:var(--text-2,#a1a1aa);margin:18px 0 0;line-height:1.6;display:flex;align-items:center;flex-wrap:wrap;gap:8px}'
+      + '.lv-query strong{font-family:var(--mono,monospace);font-variant-numeric:tabular-nums;color:var(--text,#f4f4f7)}'
       + '.lv-family-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin:8px 0 14px}'
       + '@media(max-width:1040px){.lv-family-grid{grid-template-columns:1fr}}'
       + '.lv-family{position:relative;background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:20px 20px 16px;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;color:var(--text,#F5F5F7);appearance:none;-webkit-appearance:none}'
@@ -101,6 +103,7 @@
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){background:var(--raised,#22222C);z-index:3}'
       + '.lv-table td{padding:0 12px;height:54px;border-bottom:1px solid var(--border,#2A2A35);min-height:54px;text-align:right;color:var(--text,#F5F5F7)}'
       + '.lv-table td:not(:nth-child(2)){font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
+      + '.lv-table td .ca-value-chip{margin-left:auto}'
       + '.lv-table tbody tr:nth-child(even) td{background:rgba(255,255,255,0.012)}'
       + '.lv-row-team{cursor:pointer}.lv-row-team:hover td{background:rgba(139,92,246,0.06)}.lv-row-team:hover td:first-child{box-shadow:inset 2px 0 0 var(--accent,#8b5cf6)}'
       + '.lv-team-cell{display:flex;align-items:center;gap:8px;font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 110;font-weight:700}'
@@ -156,14 +159,17 @@
       team: p.get('team') || DEFAULTS.scope.team
     });
     var family = String(p.get('family') || DEFAULTS.family).toLowerCase();
+    if (family === 'surface') family = 'status';
     if (!FAMILY_DEFS[family]) family = DEFAULTS.family;
     var st = {
       filter: f,
       scope: scope,
       family: family,
+      density: String(p.get('density') || DEFAULTS.density).toLowerCase(),
       sortKey: String(p.get('sort') || defaultSortKeyForFamily(family)),
       sortDir: String(p.get('dir') || DEFAULTS.sortDir).toLowerCase()
     };
+    if (st.density !== 'core' && st.density !== 'advanced' && st.density !== 'all') st.density = 'core';
     normalizeSortState(st);
     return st;
   }
@@ -174,6 +180,7 @@
     p.set('hand', f.hand); p.set('loc', f.location); p.set('pitch', f.pitcher); p.set('side', f.batSide);
     p.set('seg', f.segment); p.set('window', f.window);
     p.set('scope', state.scope.mode); p.set('family', state.family);
+    p.set('density', state.density || 'core');
     p.set('sort', state.sortKey); p.set('dir', state.sortDir);
     if (state.scope.mode === 'team' && state.scope.team) p.set('team', teamKey(state.scope.team)); else p.delete('team');
     p.delete('trend');
@@ -184,13 +191,14 @@
     var out = [];
     if (state.scope.mode === 'team' && state.scope.team) out.push(teamKey(state.scope.team));
     else out.push('All teams');
-    out.push(state.family);
+    out.push(state.family === 'status' ? 'status-projection' : state.family);
     var f = state.filter;
     if (f.hand !== 'both') out.push(f.hand === 'r' ? 'vs RHP' : 'vs LHP');
     if (f.location !== 'all') out.push(f.location);
     if (f.pitcher !== 'both') out.push(f.pitcher === 'sp' ? 'vs SP' : 'vs RP');
     if (f.segment !== 'full') out.push('F5');
     if (f.window !== 'YTD') out.push(f.window);
+    if (state.density && state.density !== 'core') out.push(state.density + ' density');
     return out;
   }
 
@@ -223,13 +231,21 @@
   function rangeColor(value, range, key) {
     var n = num(value);
     if (n == null) return 'var(--text-2,#a1a1aa)';
-    if (!range) return colorMetric(key || 'osi', n);
-    var t = (n - range.min) / (range.max - range.min);
-    if (!isFinite(t)) t = 0.5;
-    if (t < 0) t = 0;
-    if (t > 1) t = 1;
-    var hue = 4 + (132 * t);
-    return 'hsl(' + hue.toFixed(1) + ', 86%, 56%)';
+    return colorMetric(key || 'osi', n);
+  }
+  function valueChipHtml(value, def, range) {
+    var safe = sanityOk(def, value) ? value : null;
+    if (safe == null) return '—';
+    var color = rangeColor(safe, range, def && def.key);
+    return '<span class="ca-value-chip" style="--vc:' + color + '">' + fmt(safe, def.digits) + '</span>';
+  }
+  function visibleDefsForDensity(defs, density) {
+    var d = density || 'core';
+    if (d === 'all') return (defs || []).slice();
+    return (defs || []).filter(function(def) {
+      if (d === 'advanced') return def.tier === 'advanced';
+      return def.tier !== 'advanced';
+    });
   }
   function rangeMapForDefs(rows, defs) {
     var out = {};
@@ -256,7 +272,6 @@
   }
 
   function renderControls(root, state, teams) {
-    var surfaceMode = state.family === 'surface';
     var rows = ''
       + '<div class="lv-sec">Scope</div>'
       + '<div class="lv-row">'
@@ -273,15 +288,15 @@
       + '<div class="lv-family-grid">'
       + familyCard('scoring', 'Scoring', 'How much damage the lineup does at the plate.', ['OSI', 'wRC+', 'wOBA', 'RCV'], state)
       + familyCard('difficulty', 'Difficulty', 'How hard the lineup is to pitch against.', ['ABQ', 'OBR', 'QS%', 'Pitch/Inn', 'PitchScore'], state)
-      + familyCard('surface', 'Surface wins', 'How often this lineup translates to wins.', ['Win%', 'F5 Win%', 'Pitcher Win%'], state)
+      + familyCard('status', 'Status-Projection', 'How current output compares with projection/process.', ['projOSI', 'PP-Gap', 'PALS'], state)
       + '</div>'
       + '<div class="lv-sec">Lens context</div>'
       + '<div class="lv-lens">'
       + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills' + (surfaceMode ? ' lv-disabled' : '') + '" title="' + (surfaceMode ? 'Not applicable for Surface wins' : '') + '">'
-      + pill('hand', 'both', 'Both', state, surfaceMode) + pill('hand', 'r', 'vs RHP', state, surfaceMode) + pill('hand', 'l', 'vs LHP', state, surfaceMode) + '</div></div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills' + (surfaceMode ? ' lv-disabled' : '') + '" title="' + (surfaceMode ? 'Not applicable for Surface wins' : '') + '">'
-      + pill('pitcher', 'both', 'Both', state, surfaceMode) + pill('pitcher', 'sp', 'SP', state, surfaceMode) + pill('pitcher', 'rp', 'RP', state, surfaceMode) + '</div></div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills">'
+      + pill('hand', 'both', 'Both', state, false) + pill('hand', 'r', 'vs RHP', state, false) + pill('hand', 'l', 'vs LHP', state, false) + '</div></div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills">'
+      + pill('pitcher', 'both', 'Both', state, false) + pill('pitcher', 'sp', 'SP', state, false) + pill('pitcher', 'rp', 'RP', state, false) + '</div></div>'
       + '</div>'
       + '<div class="lv-cat"><div class="lv-cat-h">Situation</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Location</span><div class="lv-pills">'
@@ -297,8 +312,12 @@
       + '<div class="lv-cat-row"><span class="lv-cat-k">Range</span><div class="lv-pills">'
       + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false) + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false) + '</div></div>'
       + '</div>'
+      + '<div class="lv-cat"><div class="lv-cat-h">Table density</div>'
+      + '<div class="lv-cat-row"><span class="lv-cat-k">Columns</span><div class="lv-pills">'
+      + densityPill('core', 'Core', state) + densityPill('advanced', 'Advanced', state) + densityPill('all', 'All', state) + '</div></div>'
       + '</div>'
-      + '<div class="lv-query">' + esc(nonDefaultTokens(state).join(' · ')) + '</div>';
+      + '</div>'
+      + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>';
     root.querySelector('.lv-controls').innerHTML = rows;
   }
   function pill(key, val, label, state, disabled) {
@@ -308,13 +327,17 @@
   function famPill(val, label, state) {
     return '<button class="lv-pill' + (state.family === val ? ' active' : '') + '" data-a="family" data-v="' + val + '">' + esc(label) + '</button>';
   }
+  function densityPill(val, label, state) {
+    var on = (state.density || 'core') === val;
+    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="density" data-v="' + val + '">' + esc(label) + '</button>';
+  }
   function familyCard(val, name, desc, chips, state) {
     var on = state.family === val;
     return '<button class="lv-family' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">'
       + '<div class="lv-family-top"><span class="lv-family-name">' + esc(name) + '</span><span class="lv-family-n">' + chips.length + ' metrics</span></div>'
       + '<div class="lv-family-desc">' + esc(desc) + '</div>'
       + '<div class="lv-family-chips">' + chips.map(function(ch) {
-        var phase = (ch === 'QS%' || ch === 'Pitch/Inn' || ch === 'PitchScore' || ch === 'Win%' || ch === 'F5 Win%' || ch === 'Pitcher Win%');
+        var phase = (ch === 'QS%' || ch === 'Pitch/Inn' || ch === 'PitchScore' || ch === 'PP-Gap');
         return '<span class="lv-family-chip' + (phase ? ' phase' : '') + '">' + esc(ch) + '</span>';
       }).join('') + '</div></button>';
   }
@@ -333,7 +356,7 @@
 
   function renderBody(root, state, rows) {
     var mount = root.querySelector('.lv-body');
-    var defs = familyDefs(state.family);
+    var defs = visibleDefsForDensity(familyDefs(state.family), state.density);
     var ranges = rangeMapForDefs(rows, defs);
     if (state.scope.mode === 'team' && state.scope.team) {
       var row = (rows || []).find(function(r) { return teamKey(r.t) === teamKey(state.scope.team); });
@@ -362,7 +385,7 @@
           }
         }
         return '<article class="lv-card"><div class="lv-card-lab">' + esc(def.label) + '</div>'
-          + '<div class="lv-card-val" style="color:' + rangeColor(row[def.key], ranges[def.key], def.key) + '">' + valHtml + '</div>'
+          + '<div class="lv-card-val">' + valueChipHtml(row[def.key], def, ranges[def.key]) + '</div>'
           + '<div class="lv-card-meta">' + meta + '</div>' + meter + '</article>';
       }).join('');
       mount.innerHTML = '<div class="lv-note" style="padding:0 0 10px 0"><span class="lv-team-cell">'
@@ -396,7 +419,7 @@
         var raw = r[def.key];
         var safe = sanityOk(def, raw) ? raw : null;
         if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, r.t, raw);
-        return '<td class="' + (state.sortKey === def.key ? 'sort-col' : '') + '" style="color:' + rangeColor(safe, ranges[def.key], def.key) + '">' + (safe == null ? '—' : fmt(safe, def.digits)) + '</td>';
+        return '<td class="' + (state.sortKey === def.key ? 'sort-col' : '') + '">' + valueChipHtml(safe, def, ranges[def.key]) + '</td>';
       }).join('');
       return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><span class="lv-team-cell">'
         + teamLogoHtml(r.t, 22) + '<strong>' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
@@ -429,8 +452,10 @@
           rerender(root, ctx);
         } else if (a === 'family') {
           ctx.state.family = btn.dataset.v;
-          if (ctx.state.family === 'surface') ctx.state.filter.batSide = 'both';
           normalizeSortState(ctx.state);
+          rerender(root, ctx);
+        } else if (a === 'density') {
+          ctx.state.density = btn.dataset.v || 'core';
           rerender(root, ctx);
         } else if (a === 'team-apply') {
           var input = root.querySelector('#lvTeamInput');

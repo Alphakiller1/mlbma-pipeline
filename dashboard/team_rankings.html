@@ -29,8 +29,9 @@ console.log('[VERSION] team_rankings build 20260606a — lineup_view.js');
 })();
 </script>
 <title>Chase Analytics - Team Rankings v20260604</title>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260609a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260609a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260609a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <style>
@@ -41,13 +42,18 @@ console.log('[VERSION] team_rankings build 20260606a — lineup_view.js');
   --amber:#FBBF24; --blue:#60A5FA;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body,var(--font,system-ui));font-size:14px;line-height:1.5;
-  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(192,132,252,.08),transparent),var(--bg)}
+body{
+  background:
+    radial-gradient(ellipse 72% 56% at 82% -12%, rgba(139,92,246,.26), transparent 58%),
+    radial-gradient(ellipse 66% 50% at 8% 108%, rgba(109,40,217,.14), transparent 62%),
+    var(--bg);
+  color:var(--text);font-family:var(--font-body,var(--font,system-ui));font-size:14px;line-height:1.5;
+}
 .container{max-width:1400px;margin:0 auto;padding:20px 24px 72px}
 .brand-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
 h1{font-size:42px;font-weight:800;margin:8px 0 10px;color:var(--text);font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 125;letter-spacing:-.015em}
 .subtitle{color:var(--text-2);font-size:13px;max-width:760px;margin-bottom:8px}
-.hub-sticky-wrap{position:sticky;top:56px;z-index:40;background:linear-gradient(var(--bg) 70%,transparent);padding:12px 0 8px;margin:0 -4px}
+.hub-sticky-wrap{position:sticky;top:56px;z-index:40;background:var(--bg);padding:12px 0 8px;margin:0 -4px}
 .hub-control-bar{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .hub-control-row{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-start;margin-bottom:10px}
 .hub-control-row:last-child{margin-bottom:0}
@@ -229,7 +235,7 @@ setTimeout(function() {
 <main class="container">
   <p class="brand-tag">Chase Analytics &middot; Lineup Research</p>
   <h1>Team Rankings</h1>
-  <p class="subtitle">Unified lineup model view across scoring, difficulty, and surface-win families.</p>
+  <p class="subtitle">Unified lineup model view across scoring, difficulty, and status-projection families.</p>
   <section id="lineupViewMount"></section>
 </main>
 

@@ -67,12 +67,16 @@
       + '.thm-pill .thm-phase{margin-left:4px;color:var(--text-3,#6b6b76);font-size:10px}'
       + '.thm-note{font-size:15px;font-weight:600;color:var(--text-2,#a1a1aa);margin-top:6px;padding-top:0;border-top:0;line-height:1.6}'
       + '.thm-note.warn{color:var(--warn,#fbbf24)}'
+      + '.thm-legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2,#a1a1aa);margin-top:8px}'
+      + '.thm-legend-bar{width:180px;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--d-elite,#EC6A6A),var(--d-good,#E89A5C),var(--d-mid,#D8C36A),var(--d-weak,#8FB0D4),var(--d-poor,#6E8CC0));border:1px solid var(--border,#2A2A35)}'
       + '.thm-table-wrap{overflow:auto;border:0;border-radius:0;background:transparent}'
       + '.thm-table{width:100%;border-collapse:separate;border-spacing:8px 6px;font-size:14px}'
       + '.thm-table thead th{background:var(--surface-2,#14141e);color:var(--text-3,#6b6b76);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:10px 8px;border-radius:var(--r-sm,8px);text-align:left;white-space:nowrap;font-weight:700;font-family:var(--font,system-ui)}'
       + '.thm-table thead th.sortable{cursor:pointer;user-select:none}'
       + '.thm-cell{padding:12px 12px;border-radius:var(--r-sm,8px);font-weight:700;color:var(--text,#F5F5F7);min-width:120px;text-align:center;font-size:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
-      + '.thm-cell.no-data{background:color-mix(in srgb,var(--text-3,#6b6b76) 12%, transparent);color:var(--text-3,#6b6b76)}'
+      + '.thm-cell.no-data{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--text-3,#6b6b76) 14%, transparent),color-mix(in srgb,var(--text-3,#6b6b76) 14%, transparent) 6px,transparent 6px,transparent 12px);color:var(--text-3,#6b6b76)}'
+      + '.thm-rel{font-size:12px;font-weight:700;color:var(--text-2,#a1a1aa)}'
+      + '.thm-int{font-size:12px;font-weight:700;color:var(--text,#f5f5f7)}'
       + '.thm-team{display:flex;align-items:center;gap:8px;padding:0 6px;min-width:120px;color:var(--text,#f4f4f7);font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 110}'
       + '.thm-team strong{font-size:13px}'
       + '.thm-team-logo{width:24px;height:24px;border-radius:0!important;object-fit:contain;background:transparent!important;border:0!important;box-shadow:none!important;clip-path:none!important}'
@@ -133,6 +137,11 @@
         by[t].l14 = num(b[sourceKey]);
         by[t].l7 = num(c[sourceKey]);
         by[t].delta = by[t].ytd != null && by[t].l7 != null ? by[t].l7 - by[t].ytd : null;
+        by[t].velocity = computeVelocity(by[t]);
+        by[t].trend = trendLabel(by[t]);
+        by[t].reliability = reliabilityLabel(by[t]);
+        by[t].reliabilityScore = reliabilityRank(by[t].reliability);
+        by[t].interpretation = interpretationLabel(by[t]);
       });
       return Object.keys(by).sort().map(function(t) { return by[t]; });
     });
@@ -147,6 +156,14 @@
         var ta = teamKey(a.t), tb = teamKey(b.t);
         return dir === 'asc' ? ta.localeCompare(tb) : tb.localeCompare(ta);
       }
+      if (k === 'reliability') {
+        var ar = num(a.reliabilityScore), br = num(b.reliabilityScore);
+        if (ar == null && br == null) return teamKey(a.t).localeCompare(teamKey(b.t));
+        if (ar == null) return 1;
+        if (br == null) return -1;
+        if (ar === br) return teamKey(a.t).localeCompare(teamKey(b.t));
+        return dir === 'asc' ? (ar - br) : (br - ar);
+      }
       var av = num(a[k]);
       var bv = num(b[k]);
       if (av == null && bv == null) return teamKey(a.t).localeCompare(teamKey(b.t));
@@ -156,6 +173,62 @@
       return dir === 'asc' ? (av - bv) : (bv - av);
     });
     return out;
+  }
+  function computeVelocity(row) {
+    var pts = [num(row.ytd), num(row.l30), num(row.l14), num(row.l7)];
+    var xy = [];
+    for (var i = 0; i < pts.length; i++) {
+      if (pts[i] == null) continue;
+      xy.push({ x: i, y: pts[i] });
+    }
+    if (xy.length < 2) return null;
+    var mx = xy.reduce(function(s, p) { return s + p.x; }, 0) / xy.length;
+    var my = xy.reduce(function(s, p) { return s + p.y; }, 0) / xy.length;
+    var nume = 0, den = 0;
+    xy.forEach(function(p) {
+      nume += (p.x - mx) * (p.y - my);
+      den += (p.x - mx) * (p.x - mx);
+    });
+    if (!den) return 0;
+    return nume / den;
+  }
+  function trendLabel(row) {
+    var v = num(row.velocity);
+    if (v == null) return 'Stable';
+    if (v >= 0.6) return 'Rising';
+    if (v <= -0.6) return 'Cooling';
+    return 'Stable';
+  }
+  function reliabilityLabel(row) {
+    if (global.OEMOverhaul && typeof global.OEMOverhaul.trendReliabilityLabel === 'function') {
+      return global.OEMOverhaul.trendReliabilityLabel({
+        l7OSI: num(row.l7),
+        ytdOSI: num(row.ytd),
+        l30OSI: num(row.l30),
+        trend: trendLabel(row)
+      });
+    }
+    return 'Noisy';
+  }
+  function reliabilityRank(label) {
+    var m = { 'Sustained Rise': 4, Stable: 3, Declining: 2, 'Short Spike': 1, Noisy: 0 };
+    return m[label] != null ? m[label] : 0;
+  }
+  function interpretationLabel(row) {
+    var d = num(row.delta);
+    var v = num(row.velocity);
+    if (d == null || v == null) return 'Insufficient';
+    if (d >= 4 && v > 0.6) return 'Momentum Up';
+    if (d <= -4 && v < -0.6) return 'Momentum Down';
+    if (Math.abs(d) <= 2 && Math.abs(v) < 0.6) return 'Stable Band';
+    if (Math.abs(d) >= 5 && Math.abs(v) < 0.4) return 'Recent Spike';
+    return 'Mixed Signal';
+  }
+  function metricColor(value, metricKey) {
+    var n = num(value);
+    if (n == null) return null;
+    if (A && A.metricColor) return A.metricColor(n, metricKey || 'osi', false);
+    return null;
   }
 
   function minMax(values) {
@@ -202,7 +275,7 @@
     }
     var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || null;
     var phase1Mode = !!(metricDef && metricDef.phase);
-    var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
+      var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
     root.innerHTML = '<div class="thm-wrap"><h3 class="thm-title">Trends Heat Map</h3><div class="thm-bar">'
       + '<div class="thm-row">'
       + '<div class="thm-group"><span class="thm-label">Hand</span><div class="thm-pills">'
@@ -220,21 +293,18 @@
       + METRICS.map(function(m) { return metricPill(m, state); }).join('')
       + '</div></div></div>'
       + '<div class="thm-note' + ((splitWarn || phase1Mode) ? ' warn' : '') + '">'
-      + esc((state.metric.toUpperCase() + ' trend · ' + state.hand.toUpperCase() + ' · ' + state.location + ' locations · color = value · read left→right for movement'))
+      + esc((state.metric.toUpperCase() + ' trend · ' + state.hand.toUpperCase() + ' · ' + state.location + ' locations · color = fixed all-30 league scale · read left→right for movement'))
       + (splitWarn ? ' · windowed split columns unavailable; using all-context window values with split fallback.' : '')
       + (phase1Mode ? ' · Phase 1 metric: showing current proxy model values until dedicated feed is connected.' : '')
+      + ' · L7 is a momentum flag, not a standalone predictor.'
       + '</div>'
+      + '<div class="thm-legend"><span>Elite</span><span class="thm-legend-bar"></span><span>Poor</span></div>'
       + '</div><div class="thm-table-wrap"><div class="thm-note">Loading trends heat map...</div></div></div>';
 
     buildRows(state).then(function(rows) {
       var sorted = sortedRows(rows, state);
-      var valueRange = minMax([].concat(
-        sorted.map(function(r) { return r.ytd; }),
-        sorted.map(function(r) { return r.l30; }),
-        sorted.map(function(r) { return r.l14; }),
-        sorted.map(function(r) { return r.l7; })
-      ));
-      var deltaRange = minMax(sorted.map(function(r) { return r.delta; }));
+      var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || {};
+      var colorKey = metricDef.colorCtx || metricDef.sourceKey || state.metric;
       var head = '<table class="thm-table"><thead><tr>'
         + '<th class="sortable" data-a="sort" data-k="team">Team' + sortArrow(state, 'team') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="ytd">YTD' + sortArrow(state, 'ytd') + '</th>'
@@ -242,21 +312,30 @@
         + '<th class="sortable" data-a="sort" data-k="l14">L14' + sortArrow(state, 'l14') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="l7">L7' + sortArrow(state, 'l7') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="delta">Δ L7-YTD' + sortArrow(state, 'delta') + '</th>'
+        + '<th class="sortable" data-a="sort" data-k="velocity">Velocity' + sortArrow(state, 'velocity') + '</th>'
+        + '<th class="sortable" data-a="sort" data-k="reliability">Reliability' + sortArrow(state, 'reliability') + '</th>'
+        + '<th>Interpretation</th>'
         + '</tr></thead><tbody>';
       var body = sorted.map(function(r) {
         function cell(v, digits) {
           if (v == null) return '<td><div class="thm-cell no-data">—</div></td>';
-          var c = vibrantColor(v, valueRange);
+          var c = metricColor(v, colorKey);
           var txt = Number(v).toFixed(digits == null ? 1 : digits);
-          return '<td><div class="thm-cell" style="' + (c ? ('background:' + c + ';') : '') + '">' + txt + '</div></td>';
+          var bg = c ? ('background:color-mix(in srgb,' + c + ' 28%, var(--card,#16161D)); color:' + c + ';') : '';
+          return '<td><div class="thm-cell" style="' + bg + '">' + txt + '</div></td>';
         }
+        var vel = num(r.velocity);
+        var velTxt = vel == null ? '—' : (vel > 0 ? '▲ ' : vel < 0 ? '▼ ' : '■ ') + Math.abs(vel).toFixed(2);
         return '<tr>'
           + '<td><div class="thm-team">' + teamLogo(r.t) + '<strong>' + esc(r.t) + '</strong></div></td>'
           + cell(r.ytd, 1)
           + cell(r.l30, 1)
           + cell(r.l14, 1)
           + cell(r.l7, 1)
-          + '<td class="thm-delta ' + deltaClass(r.delta) + '" style="color:' + (vibrantColor(r.delta, deltaRange) || 'var(--text-3,#6b6b76)') + '">' + esc(deltaText(r.delta)) + '</td>'
+          + '<td class="thm-delta ' + deltaClass(r.delta) + '">' + esc(deltaText(r.delta)) + '</td>'
+          + '<td><div class="thm-cell">' + esc(velTxt) + '</div></td>'
+          + '<td><div class="thm-rel">' + esc(r.reliability || 'Noisy') + '</div></td>'
+          + '<td><div class="thm-int">' + esc(r.interpretation || 'Insufficient') + '</div></td>'
           + '</tr>';
       }).join('');
       root.querySelector('.thm-table-wrap').innerHTML = head + body + '</tbody></table>';
