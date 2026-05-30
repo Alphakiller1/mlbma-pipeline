@@ -487,7 +487,9 @@
       return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td>' + (idx + 1) + '</td><td><span class="lv-team-cell">'
         + teamLogoHtml(r.t, 22) + '<strong>' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
     }).join('');
-    mount.innerHTML = '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+    var lead = sortedRows[0] || null;
+    var topInfographic = lead ? ('<div class="lv-infographic">' + detailInsightRail(lead) + splitPairCompact(lead) + '</div>') : '';
+    mount.innerHTML = topInfographic + '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
   }
 
   function bind(root, ctx) {
