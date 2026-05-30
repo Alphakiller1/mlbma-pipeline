@@ -30,7 +30,8 @@
   margin-bottom: 12px;
 }
 .mlbma-load-logo {
-  font-family: var(--font, 'DM Sans', system-ui, sans-serif);
+  font-family: var(--font-display, var(--font, system-ui));
+  font-variation-settings: 'wdth' 125;
   font-size: 22px; font-weight: 700; letter-spacing: 0.04em;
   background: linear-gradient(135deg, #fff 0%, #7C3AED 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -62,7 +63,7 @@ body.mlbma-shell-ready .loading-text {
   width: 1px; height: 20px; background: var(--border, #28282f); margin: 0 6px;
 }
 .mlbma-nav-pill {
-  font-size: 11.5px; font-weight: 500; color: var(--text-2, #A1A1AA);
+  font-size: 12px; font-weight: 500; color: var(--text-2, #A1A1AA);
   text-decoration: none; padding: 7px 12px; border-radius: 99px;
   border: 1px solid var(--border, #28282f); background: var(--bg-2, #111114);
   transition: all 0.15s ease; white-space: nowrap;

@@ -1,59 +1,62 @@
 /**
  * Chase Analytics design system — typography, brand, metric grading.
- * Load after page :root overrides; sets --font to DM Sans globally.
+ * Global identity aligns with design_comp_v2 / visual spec.
  */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   /* Page & surfaces */
-  --page-bg: #050509;
-  --bg: #050509;
-  --bg-2: #0a0a10;
-  --bg-3: rgba(255, 255, 255, 0.04);
-  --bg-4: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-2: rgba(255, 255, 255, 0.10);
-  --text: #F9FAFB;
-  --text-2: #9CA3AF;
-  --text-3: #6B7280;
+  --page-bg: #08080B;
+  --bg: #08080B;
+  --bg-2: #101015;
+  --bg-3: #16161D;
+  --bg-4: #1C1C25;
+  --raised: #22222C;
+  --border: #2A2A35;
+  --border-2: #3A3A47;
+  --text: #F5F5F7;
+  --text-2: #A1A1AA;
+  --text-3: #71717A;
+  --text-4: #52525B;
 
-  --ca-purple: #7C3AED;
-  --ca-purple-dark: #5B21B6;
-  --ca-purple-light: #A78BFA;
-  --ca-purple-glow: rgba(124, 58, 237, 0.3);
-  --ca-white: #F9FAFB;
+  --ca-purple: #A684FF;
+  --ca-purple-dark: #6D28D9;
+  --ca-purple-light: #C4A8FF;
+  --ca-purple-glow: rgba(139, 92, 246, 0.4);
+  --ca-white: #F5F5F7;
   --ca-gray-brand: #9CA3AF;
   --ca-black: #050509;
-  --ca-brand: #7C3AED;
-  --ca-brand-dim: rgba(124, 58, 237, 0.15);
-  --ca-brand-glow: rgba(124, 58, 237, 0.35);
-  --ca-brand-border: rgba(124, 58, 237, 0.4);
+  --ca-brand: #A684FF;
+  --ca-brand-dim: rgba(139, 92, 246, 0.16);
+  --ca-brand-glow: rgba(139, 92, 246, 0.4);
+  --ca-brand-border: rgba(139, 92, 246, 0.45);
 
-  --ca-green: #22C55E;
-  --ca-teal: #2DD4BF;
-  --ca-amber: #F59E0B;
-  --ca-red: #FB7185;
+  --ca-green: #E89A5C;
+  --ca-teal: #8FB0D4;
+  --ca-amber: #D8C36A;
+  --ca-red: #EC6A6A;
 
-  --ca-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  --ca-card-bg: var(--bg-3);
   --ca-card-radius: 16px;
-  --ca-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --ca-card-hover-shadow: 0 8px 32px rgba(124, 58, 237, 0.2);
-  --ca-hero-bg: linear-gradient(135deg, #0d0d1a 0%, #12082a 40%, #0a0a14 100%);
+  --ca-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --ca-card-hover-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+  --ca-hero-bg: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
   --ca-grid-texture: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.015) 40px, rgba(255, 255, 255, 0.015) 41px);
 
-  --font-primary: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-primary: 'Archivo', system-ui, -apple-system, sans-serif;
   --font: var(--font-primary);
-  --font-display: 'DM Sans', system-ui, sans-serif;
-  --mono: 'DM Sans', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
+  --font-body: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
 
   /* 7-step metric gradient (league-relative) */
-  --metric-very-weak: #EF4444;
-  --metric-weak: #F97316;
-  --metric-below: #FBBF24;
-  --metric-neutral: #71717A;
-  --metric-above: #86EFAC;
-  --metric-strong: #4ADE80;
-  --metric-elite: #22C55E;
+  --metric-very-weak: #6E8CC0;
+  --metric-weak: #8FB0D4;
+  --metric-below: #D8C36A;
+  --metric-neutral: #A1A1AA;
+  --metric-above: #E89A5C;
+  --metric-strong: #EC6A6A;
+  --metric-elite: #EC6A6A;
 
   /* Semantic accents (signals — not primary grade) */
   --accent-buy: #22d3ee;
@@ -71,9 +74,14 @@ html {
 }
 
 body {
-  font-family: var(--font);
+  font-family: var(--font-body);
   background: var(--page-bg);
   color: var(--text);
+}
+h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
+  letter-spacing: -0.015em;
 }
 
 /* Decorative grid texture utility */
@@ -222,16 +230,16 @@ table.ca-table td.sort-active,
 /* Typography scale */
 .ca-page-title {
   font-family: var(--font-display);
-  font-size: var(--text-title);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 4vw, 3.375rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
   line-height: 1.15;
 }
 
 .ca-section-title {
   font-family: var(--font-display);
-  font-size: var(--text-section);
-  font-weight: 700;
+  font-size: clamp(1.25rem, 2.2vw, 1.45rem);
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
@@ -243,11 +251,12 @@ table.ca-table td.sort-active,
 }
 
 .ca-metric-label {
-  font-size: var(--text-label);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-3, #71717A);
+  font-family: var(--font);
 }
 
 .ca-metric-value {
