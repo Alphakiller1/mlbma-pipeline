@@ -7,7 +7,22 @@ from pathlib import Path
 from pipeline.deps import check_step_deps
 
 ROOT = Path(__file__).resolve().parent.parent
-PYTHON = ROOT / "crawl_env" / "Scripts" / "python.exe"
+
+
+def _resolve_python() -> Path:
+    candidates = [
+        Path((Path.cwd() / "crawl_env" / "Scripts" / "python.exe")),
+        Path((ROOT / "crawl_env" / "Scripts" / "python.exe")),
+        Path((ROOT.parent / "crawl_env" / "Scripts" / "python.exe")),
+        Path(sys.executable),
+    ]
+    for c in candidates:
+        if c and c.exists():
+            return c
+    return Path(sys.executable)
+
+
+PYTHON = _resolve_python()
 
 # Required: Savant is the minimum data source for the pipeline to proceed.
 SCRIPTS_REQUIRED = [

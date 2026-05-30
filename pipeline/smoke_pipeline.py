@@ -8,7 +8,23 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PYTHON = ROOT / "crawl_env" / "Scripts" / "python.exe"
+
+
+def _resolve_python() -> Path:
+    env_python = Path(sys.executable)
+    candidates = [
+        Path((Path.cwd() / "crawl_env" / "Scripts" / "python.exe")),
+        Path((ROOT / "crawl_env" / "Scripts" / "python.exe")),
+        Path((ROOT.parent / "crawl_env" / "Scripts" / "python.exe")),
+        Path(sys.executable),
+    ]
+    for c in candidates:
+        if c and c.exists():
+            return c
+    return env_python
+
+
+PYTHON = _resolve_python()
 
 SCRIPTS = [
     "scrapers.scrape_savant",
