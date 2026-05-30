@@ -164,8 +164,15 @@
       : '';
     el.innerHTML = staleHtml
       + '<div class="mr-hero-top">'
-      + '<div><div class="ca-title-with-icon"><img src="assets/chase-icon-filled.png" alt="" width="48" height="48" onerror="this.style.display=\'none\'"><h1 class="mr-title">Model Report</h1></div>'
+      + '<div><div class="ca-title-with-icon">'
+      + (global.MLBMAIcons && MLBMAIcons.iconCircleHtml ? MLBMAIcons.iconCircleHtml('clipboard', true) : '')
+      + '<h1 class="mr-title">Model Report</h1></div>'
       + '<p class="mr-subtitle">Daily predictive signal board, convergence plays, and game-context reads for tonight\'s slate.</p></div>'
+      + '</div>'
+      + '<div class="ca-insight-rail" style="margin-bottom:16px">'
+      + '<div class="ca-insight-row">' + (global.MLBMAIcons ? MLBMAIcons.iconCircleHtml('target', true) : '') + '<span><span class="ca-insight-label">Signal Board</span><span class="ca-insight-text">' + fired.length + ' fired of ' + signals.length + ' evaluated tonight</span></span></div>'
+      + '<div class="ca-insight-row">' + (global.MLBMAIcons ? MLBMAIcons.iconCircleHtml('trend-up', true) : '') + '<span><span class="ca-insight-label">Convergence</span><span class="ca-insight-text">' + plays.length + ' multi-signal plays on the slate</span></span></div>'
+      + '<div class="ca-insight-row">' + (global.MLBMAIcons ? MLBMAIcons.iconCircleHtml('edge', true) : '') + '<span><span class="ca-insight-label">Slate Context</span><span class="ca-insight-text">' + (STATE.matchups.length || 0) + ' games · filter by fired, F5, or side below</span></span></div>'
       + '</div>'
       + '<div class="mr-stats">'
       + '<div class="mr-stat"><div class="mr-stat-val">' + (STATE.matchups.length || '—') + '</div><div class="mr-stat-label">Games</div></div>'

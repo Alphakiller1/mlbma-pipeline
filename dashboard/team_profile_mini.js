@@ -236,46 +236,71 @@
   function renderSnapshot(prof, team, ctx) {
     ctx = ctx || {};
     var m = resolveView(prof, ctx);
-    var name = ctx.teamName || team;
-    var logo = A ? A.teamLogoImg(team, 72, 'snapshot-logo') : '';
-    var tier = tierLabel(m.osi);
-    var summary = getSummaryLabel(m.osi, m.ppGap, m.abq, m.rcv, m.obr);
     var projArrow = m.proj != null && m.osi != null ? (m.proj > m.osi + 2 ? ' ↑' : m.proj < m.osi - 2 ? ' ↓' : ' →') : '';
-    var signal = '';
-    if (m.ppGap != null && m.ppGap >= 4) signal = 'Buy-Low Signal';
-    else if (m.ppGap != null && m.ppGap <= -4) signal = 'Fade Risk';
     var tonight = ctx.tonightHtml || '';
 
     return '<div class="team-snapshot">'
-      + logo
-      + '<div class="snapshot-main">'
-      + '<h1 class="snapshot-name">' + esc(name) + ' <span class="team-abbr-inline">' + esc(team) + '</span>'
-      + (ctx.recordWl ? ' <span class="team-record-pill">' + esc(ctx.recordWl) + '</span>' : '') + '</h1>'
-      + '<div class="snapshot-badges">'
-      + '<span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span>'
-      + '<span class="summary-badge" style="color:' + summaryColor(summary) + ';border-color:currentColor;">' + esc(summary) + '</span>'
-      + (signal ? '<span class="signal-badge">' + esc(signal) + '</span>' : '')
-      + '</div>'
-      + '<div class="snapshot-metrics">'
-      + '<span>OSI <strong style="color:' + metricColor(m.osi) + '">' + (m.osi != null ? m.osi.toFixed(1) : '—') + '</strong></span>'
+      + '<div class="snapshot-main" style="width:100%">'
+      + renderInfographicHero(prof, team, m, ctx)
+      + '<div class="ca-stat-strip">'
+      + '<span>OSI ' + (A && A.valChipHtml ? A.valChipHtml(m.osi, 'osi', false, 1) : '<strong>' + (m.osi != null ? m.osi.toFixed(1) : '—') + '</strong>') + '</span>'
       + '<span>ProjOSI <strong>' + (m.proj != null ? m.proj.toFixed(1) : '—') + projArrow + '</strong></span>'
-      + '<span>PP-Gap <strong style="color:' + (m.ppGap > 0 ? 'var(--blue)' : m.ppGap < 0 ? 'var(--gold)' : 'var(--text-2)') + '">' + (m.ppGap != null ? ((m.ppGap > 0 ? '+' : '') + m.ppGap.toFixed(1)) : '—') + '</strong></span>'
+      + '<span>PP-Gap ' + (A && A.valChipHtml ? A.valChipHtml(m.ppGap, 'ppGap', false, 1) : '<strong>' + (m.ppGap != null ? ((m.ppGap > 0 ? '+' : '') + m.ppGap.toFixed(1)) : '—') + '</strong>') + '</span>'
       + '<span>PALS <strong>' + (m.pals != null ? m.pals.toFixed(1) : '—') + '</strong> ' + palsBadge(m.osi, m.pals) + '</span>'
+      + '<span>ABQ ' + (A && A.valChipHtml ? A.valChipHtml(m.abq, 'abq', false, 1) : '<strong>' + (m.abq != null ? m.abq.toFixed(1) : '—') + '</strong>') + '</span>'
+      + '<span>RCV ' + (A && A.valChipHtml ? A.valChipHtml(m.rcv, 'rcv', false, 1) : '<strong>' + (m.rcv != null ? m.rcv.toFixed(1) : '—') + '</strong>') + '</span>'
       + '</div>'
       + (tonight ? '<div class="snapshot-tonight">' + tonight + '</div>' : '')
       + '<div class="snapshot-context">' + esc(ctx.splitLabel || '') + ' · ' + esc(ctx.windowLabel || 'YTD') + '</div>'
       + '<div id="teamSnapshotRadar" class="snapshot-radar-slot"></div>'
-      + '<div class="snapshot-infographic">'
-      + insightRailHtml(m)
-      + splitPairHtml(m)
-      + '</div>'
+      + '<div class="snapshot-infographic">' + splitPairHtml(m) + '</div>'
       + '</div></div>';
   }
 
   function iconCircle(name) {
     var I = (typeof window !== 'undefined' && window.MLBMAIcons) ? window.MLBMAIcons : null;
     if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
-    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="' + esc(name) + '"></i></span>';
+    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"></span>';
+  }
+
+  function wrcTierLabel(wrc) {
+    if (wrc == null || isNaN(wrc)) return '—';
+    if (wrc >= 115) return 'MLB ELITE';
+    if (wrc >= 105) return 'ABOVE AVG';
+    if (wrc >= 95) return 'LEAGUE AVG';
+    if (wrc >= 85) return 'BELOW AVG';
+    return 'WEAK';
+  }
+
+  function wrcMedallionHtml(wrc) {
+    var display = wrc != null ? Math.round(wrc) : '—';
+    var color = (A && A.metricColor) ? A.metricColor(wrc, 'wrc', false) : 'var(--text)';
+    return '<div class="ca-wrc-medallion"><div class="v" style="color:' + color + '">' + display + '</div><div class="c">WRC+ | ' + esc(wrcTierLabel(wrc)) + '</div></div>';
+  }
+
+  function renderInfographicHero(prof, team, m, ctx) {
+    ctx = ctx || {};
+    var tier = tierLabel(m.osi);
+    var rank = ctx.osiRank;
+    var logo = A ? A.teamLogoImg(team, 88, 'ca-profile-logo-glow snapshot-logo') : '';
+    var brand = (A && A.brandLogoLightBadgeHtml) ? A.brandLogoLightBadgeHtml(26) : '';
+    var eyebrow = [];
+    if (rank != null) eyebrow.push('#' + rank + ' OVERALL');
+    if (tier.label && tier.label !== '—') eyebrow.push(tier.label.toUpperCase());
+    eyebrow.push(String(ctx.teamName || team).toUpperCase());
+    var sub = rank != null
+      ? '#' + rank + ' overall team offense in MLB'
+      : 'Live offensive profile from Team Profiles + splits';
+    return '<div class="ca-profile-hero">'
+      + '<div class="ca-profile-hero__main">'
+      + '<div class="ca-profile-hero__eyebrow">' + esc(eyebrow.join(' • ')) + '</div>'
+      + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
+      + '<p class="ca-profile-hero__sub">' + esc(sub) + '</p>'
+      + (ctx.recordWl ? '<p class="ca-profile-hero__sub" style="margin-top:4px">' + esc(ctx.recordWl) + '</p>' : '')
+      + '</div>'
+      + '<div class="ca-profile-hero__rail">' + wrcMedallionHtml(ctx.wrc) + brand + '</div>'
+      + '</div>'
+      + '<div class="ca-profile-hero__body">' + logo + insightRailHtml(m) + '</div>';
   }
   function insightRailHtml(m) {
     var gap = (m.proj != null && m.osi != null) ? (m.proj - m.osi) : null;
@@ -318,9 +343,12 @@
     if (!A || !A.metricColor || v == null || isNaN(v)) return 'var(--text-2)';
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
-  function statValHtml(v, digits, ctx, invert) {
-    if (v == null || isNaN(v)) return '—';
-    return '<span style="color:' + statColor(v, ctx, invert) + '">' + Number(v).toFixed(digits == null ? 1 : digits) + '</span>';
+  function splitStatChip(v, digits, ctx, invert) {
+    if (v == null || isNaN(v)) {
+      return (A && A.chipPlaceholderHtml) ? A.chipPlaceholderHtml('—') : '<span class="chip c-na">—</span>';
+    }
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, digits == null ? 1 : digits);
+    return '<span class="chip c-mid">' + Number(v).toFixed(digits == null ? 1 : digits) + '</span>';
   }
   function splitCardStats(splitRow, fallbackOsi, side) {
     var avg = pickSplitStat(splitRow, ['AVG', 'BA', 'avg']);
@@ -333,12 +361,12 @@
     var brl = pickSplitStat(splitRow, ['Barrel%', 'BRL%', 'barrel', 'barrel_pct']);
     if (ops == null && fallbackOsi != null) ops = fallbackOsi / 100;
     return [
-      ['AVG', avg, 3, 'woba', false],
-      ['OPS', ops, 3, 'woba', false],
+      ['AVG', avg, 3, 'avg', false],
+      ['OPS', ops, 3, 'ops', false],
       ['K%', kPct, 1, 'pitching', true],
       ['xwOBA', xwoba, 3, 'woba', false],
       ['SLG', slg, 3, 'woba', false],
-      ['HR', hr, 0, 'osi', false],
+      ['HR', hr, 0, 'hr', false],
       ['BB%', bbPct, 1, 'osi', false],
       ['BRL%', brl, 1, 'osi', false]
     ];
@@ -355,13 +383,15 @@
     function cardHtml(title, cls, stats, badge) {
       return '<div class="ca-split-card ' + cls + '"><div class="ca-split-head">' + esc(title) + '</div><div class="ca-split-grid">'
         + stats.map(function(s) {
-          return '<div class="ca-split-stat"><div class="v">' + statValHtml(s[1], s[2], s[3], s[4]) + '</div><div class="k">' + esc(s[0]) + '</div></div>';
+          return '<div class="ca-split-stat"><div class="v">' + splitStatChip(s[1], s[2], s[3], s[4]) + '</div><div class="k">' + esc(s[0]) + '</div></div>';
         }).join('')
         + '</div><div class="ca-split-badge">' + esc(badge) + '</div></div>';
     }
+    var diffCls = diff == null ? 'c-na' : (diff > 0 ? 'c-good' : diff < 0 ? 'c-poor' : 'c-mid');
+    var diffDisplay = diff == null ? '—' : ((diff > 0 ? '+' : '') + diff.toFixed(3));
     return '<div class="ca-split-pair">'
       + cardHtml('vs LHP', 'lhp', lStats, badgeL)
-      + '<div class="ca-split-medallion"><div class="d">' + (diff == null ? '—' : ((diff > 0 ? '+' : '') + diff.toFixed(3))) + '</div><div class="c">OPS vs LHP</div></div>'
+      + '<div class="ca-split-medallion"><div class="d"><span class="chip ' + diffCls + '" style="font-size:13px;padding:2px 6px">' + diffDisplay + '</span></div><div class="c">OPS vs LHP</div></div>'
       + cardHtml('vs RHP', 'rhp', rStats, badgeR)
       + '</div>';
   }

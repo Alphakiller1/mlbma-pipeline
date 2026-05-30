@@ -56,6 +56,12 @@
     obr: { mean: 50, std: 12 },
     pitching: { mean: 50, std: 12 },
     rate: { mean: 50, std: 10 },
+    woba: { mean: 0.320, std: 0.035 },
+    xfip: { mean: 4.05, std: 0.35 },
+    ops: { mean: 0.750, std: 0.080 },
+    avg: { mean: 0.250, std: 0.025 },
+    hr: { mean: 140, std: 45 },
+    wrc: { mean: 100, std: 15 },
     default: { mean: 50, std: 12 }
   };
 

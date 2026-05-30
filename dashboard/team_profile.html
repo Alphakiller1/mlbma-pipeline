@@ -266,12 +266,7 @@ h1 {
 .split-panel h4 { font-size: 12px; color: var(--text-2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
 .snapshot-infographic {
   margin-top: 14px;
-  display: grid;
-  grid-template-columns: minmax(240px, 1fr) minmax(360px, 1.4fr);
-  gap: 14px;
-}
-@media (max-width: 920px) {
-  .snapshot-infographic { grid-template-columns: 1fr; }
+  display: block;
 }
 .ca-insight-rail { background: var(--bg-3); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
 .ca-insight-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
@@ -394,10 +389,10 @@ h1 {
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
-<script src="mlbma_icons.js?v=20260610a"></script>
+<script src="mlbma_icons.js?v=20260611b"></script>
 <script src="matchup_shared.js?v=20260523"></script>
 <script src="mlbma_standings.js"></script>
-<script src="team_profile_mini.js"></script>
+<script src="team_profile_mini.js?v=20260611b"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260524c"></script>
 <script src="mlbma_ui.js" data-page="team_profile.html"></script>
@@ -740,8 +735,21 @@ function buildMiniCtx(prof, name, tonight) {
     metricsL: DATA.metricsL,
     tonightHtml: tonight ? tonight.html : '',
     tonightSpHand: tonight ? tonight.spHand : '',
-    spFx: computeSpFx(STATE.team)
+    spFx: computeSpFx(STATE.team),
+    osiRank: computeOsiRank(STATE.team),
+    wrc: num(pickCol(prof, ['wrc_plus', 'wRC+', 'wrc', 'WRC+']))
   };
+}
+
+function computeOsiRank(team) {
+  var key = teamKey(team);
+  var rows = (DATA.profiles || []).map(function(p) {
+    return { t: teamKey(pickCol(p, ['team', 'Team', 'tm'])), osi: num(pickCol(p, ['osi', 'OSI'])) };
+  }).filter(function(r) { return r.t && r.osi != null; }).sort(function(a, b) { return b.osi - a.osi; });
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i].t === key) return i + 1;
+  }
+  return null;
 }
 
 function renderOffenseBlock(prof, name, tonight) {

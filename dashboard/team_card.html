@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics · Team Card</title>
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
-<link rel="stylesheet" href="theme.css?v=20260610b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260611b">
+<link rel="stylesheet" href="theme.css?v=20260611b">
 <style>
 body { background: var(--bg); color: var(--text); font-family: var(--font-body); }
 .card-wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
@@ -39,10 +39,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 </div>
 
 <script src="mlbma_config.js?v=20260610a"></script>
-<script src="mlbma_assets.js?v=20260610a"></script>
-<script src="mlbma_icons.js?v=20260610a"></script>
-<script src="matchup_shared.js?v=20260610a"></script>
-<script src="team_profile_mini.js?v=20260610a"></script>
+<script src="mlbma_assets.js?v=20260611b"></script>
+<script src="mlbma_icons.js?v=20260611b"></script>
+<script src="matchup_shared.js?v=20260611b"></script>
+<script src="team_profile_mini.js?v=20260611b"></script>
 <script>
 (function() {
   var p = new URLSearchParams(location.search);
@@ -87,6 +87,18 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     return;
   }
 
+  function computeOsiRank(team, profiles) {
+    var rows = (profiles || []).map(function(r) {
+      var t = String(pick(r, ['team', 'Tm', 'Team'])).trim().toUpperCase();
+      var o = num(pick(r, ['osi', 'OSI']));
+      return t && o != null ? { t: t, osi: o } : null;
+    }).filter(Boolean).sort(function(a, b) { return b.osi - a.osi; });
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].t === team) return i + 1;
+    }
+    return null;
+  }
+
   Promise.all([
     S.fetchSheetTab(tabs.team_profiles),
     S.fetchSheetTab(tabs.vs_rhp),
@@ -100,11 +112,14 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     }
     var html = TeamProfileMini.renderSnapshot(prof, team, {
       team: team,
+      teamName: team,
       split: 'both',
       window: 'YTD',
       metricsR: res[1] || [],
       metricsL: res[2] || [],
-      pickCol: pick
+      pickCol: pick,
+      osiRank: computeOsiRank(team, res[0] || []),
+      wrc: num(pick(prof, ['wrc_plus', 'wRC+', 'wrc', 'WRC+']))
     });
     mount.innerHTML = html;
     if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(mount);

@@ -847,6 +847,7 @@
       var palsRow = palsByTeam[tk] || null;
       if (d.ppGap == null && d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
       if (_num(d.pals) == null && palsRow && _num(palsRow.pals) != null) d.pals = _num(palsRow.pals);
+      if (_num(d.xfip) == null && palsRow && _num(palsRow.xfip) != null) d.xfip = _num(palsRow.xfip);
       d.ytdOSI = prof.osi_ytd != null ? _num(prof.osi_ytd) : _num(d.osi);
       d.l30OSI = _num(prof.osi_l30);
       d.l14OSI = _num(prof.osi_l14);
@@ -1104,10 +1105,21 @@
       var t = teamKey(pickCol(row, 'Tm', 'Team', 'tm', 'team', 'TEAM'));
       if (!t) return;
       var palsVal = numOrNull(pickCol(row, 'PALS', 'pals', 'Pals', 'APLs', 'apls', 'APL', 'apl'));
+      var xfip = numOrNull(pickCol(row, 'avg_xFIP_faced', 'Avg xFIP Faced', 'avg xfip faced', 'Avg_xFIP_Faced'));
+      if (xfip == null) {
+        var keys = Object.keys(row || {});
+        for (var i = 0; i < keys.length; i++) {
+          if (/xfip/i.test(keys[i]) && /avg|faced/i.test(keys[i])) {
+            xfip = numOrNull(row[keys[i]]);
+            if (xfip != null) break;
+          }
+        }
+      }
       map[t] = {
         t: t,
         osi: numOrNull(pickCol(row, 'OSI', 'osi', 'Osi')),
-        pals: palsVal
+        pals: palsVal,
+        xfip: xfip
       };
     });
     return map;
@@ -1280,8 +1292,10 @@
         abq: numOrNull(pickCol(row, 'abq', 'ABQ')),
         rcv: numOrNull(pickCol(row, 'rcv', 'RCV')),
         obr: numOrNull(pickCol(row, 'obr', 'OBR')),
-        avg_pitching_score: numOrNull(pickCol(row, 'avg_pitching_score', 'avg pitching score', 'avg_pitchscore')),
-        avg_ip_per_start: numOrNull(pickCol(row, 'avg_ip_per_start', 'avg ip per start', 'avg_ip'))
+        avg_pitching_score: numOrNull(pickCol(row, 'avg_pitching_score', 'avg pitching score', 'avg_pitchscore', 'Avg Pitching Score', 'Pitch Score Against')),
+        avg_ip_per_start: numOrNull(pickCol(row, 'avg_ip_per_start', 'avg ip per start', 'avg_ip', 'Avg IP Per Start')),
+        qs_against_pct: numOrNull(pickCol(row, 'qs_against_pct', 'QS_Against_Pct', 'QS% Allowed', 'qs against pct')),
+        qs_against: numOrNull(pickCol(row, 'qs_against', 'QS_Against', 'qs against'))
       };
       ['home', 'away'].forEach(function(loc) {
         ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {

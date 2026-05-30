@@ -64,7 +64,7 @@
     if (document.getElementById('mlbma-icons-script')) return;
     var s = document.createElement('script');
     s.id = 'mlbma-icons-script';
-    s.src = 'mlbma_icons.js?v=20260610a';
+    s.src = 'mlbma_icons.js?v=20260611b';
     s.async = true;
     document.head.appendChild(s);
   }

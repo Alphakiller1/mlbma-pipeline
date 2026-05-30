@@ -1108,7 +1108,7 @@ function profileWindowFieldsFromRow(row) {
   function iconCircle(name) {
     var I = global.MLBMAIcons;
     if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
-    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="' + esc(name) + '"></i></span>';
+    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true">' + (global.MLBMAIcons && MLBMAIcons.iconSvg ? MLBMAIcons.iconSvg(name) : '') + '</span>';
   }
   function compareInsightRailHtml(dataA, dataB, metricRows) {
     var top = (metricRows || []).slice().filter(function(r) {

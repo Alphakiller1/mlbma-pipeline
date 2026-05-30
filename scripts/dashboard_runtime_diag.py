@@ -58,11 +58,10 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
             return _parse_num(raw or "")
 
         # Basic controls and model boot
-        check("scope all control", page.locator('[data-a="scope"][data-v="all"]').count() == 1)
-        check("scope team control", page.locator('[data-a="scope"][data-v="team"]').count() == 1)
         check("family scoring control", page.locator('[data-a="family"][data-v="scoring"]').count() == 1)
         check("family difficulty control", page.locator('[data-a="family"][data-v="difficulty"]').count() == 1)
         check("family status control", page.locator('[data-a="family"][data-v="status"]').count() == 1)
+        check("scope controls removed", page.locator('[data-a="scope"]').count() == 0)
 
         try:
             page.wait_for_function("() => !!window.LineupModel && !!window.LineupView", timeout=timeout_ms)
@@ -72,21 +71,12 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
 
         try:
             page.wait_for_function(
-                "() => !!document.querySelector('.lv-table tbody tr.lv-row-team') || !!document.querySelector('.lv-card')",
+                "() => !!document.querySelector('.lv-table tbody tr.lv-row-team')",
                 timeout=timeout_ms,
             )
-            check("table/cards loaded", True)
+            check("table loaded", True)
         except PWTimeout:
-            check("table/cards loaded", False, "no lineup rows or cards rendered")
-
-        # Scope+team URL persistence
-        click('[data-a="scope"][data-v="team"]')
-        page.fill(".lv-team-wrap.show #lvTeamInput", "SF")
-        click(".lv-team-wrap.show [data-a=\"team-apply\"]")
-        page.wait_for_timeout(300)
-        q = page.evaluate("location.search")
-        check("scope=team persisted", "scope=team" in q, q)
-        check("team alias persisted as SFG", "team=SFG" in q, q)
+            check("table loaded", False, "no lineup table rows rendered")
 
         # Context-driven value changes (model-level assertions)
         click('[data-a="family"][data-v="scoring"]')
@@ -113,21 +103,39 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
         )
         check("hand changes model values", hand_diff_count > 0, f"teams changed={hand_diff_count}")
 
-        click('[data-a="f"][data-k="window"][data-v="YTD"]')
-        page.wait_for_timeout(250)
-        osi_ytd = card_value("OSI")
-        click('[data-a="f"][data-k="window"][data-v="L7"]')
-        page.wait_for_timeout(250)
-        osi_l7 = card_value("OSI")
-        check("window changes card value", osi_ytd is not None and osi_l7 is not None and abs(osi_ytd - osi_l7) > 0.01, f"ytd={osi_ytd}, l7={osi_l7}")
+        window_diff_count = page.evaluate(
+            """async () => {
+                const base = {hand:'both', location:'all', pitcher:'both', batSide:'both', segment:'full'};
+                const ytd = await window.LineupModel.rankAll({...base, window:'YTD'}, 'scoring');
+                const l7 = await window.LineupModel.rankAll({...base, window:'L7'}, 'scoring');
+                let diff = 0;
+                (ytd || []).forEach(x => {
+                  const y = (l7 || []).find(z => z.t === x.t);
+                  if (!y) return;
+                  const a = Number(x.osi), b = Number(y.osi);
+                  if (!isNaN(a) && !isNaN(b) && Math.abs(a - b) > 0.01) diff += 1;
+                });
+                return diff;
+            }"""
+        )
+        check("window changes model values", window_diff_count > 0, f"teams changed={window_diff_count}")
 
-        click('[data-a="f"][data-k="location"][data-v="home"]')
-        page.wait_for_timeout(250)
-        woba_home = card_value("wOBA")
-        click('[data-a="f"][data-k="location"][data-v="away"]')
-        page.wait_for_timeout(250)
-        woba_away = card_value("wOBA")
-        check("location changes card value", woba_home is not None and woba_away is not None and abs(woba_home - woba_away) > 0.0001, f"home={woba_home}, away={woba_away}")
+        location_diff_count = page.evaluate(
+            """async () => {
+                const base = {hand:'both', pitcher:'both', batSide:'both', segment:'full', window:'YTD'};
+                const home = await window.LineupModel.rankAll({...base, location:'home'}, 'scoring');
+                const away = await window.LineupModel.rankAll({...base, location:'away'}, 'scoring');
+                let diff = 0;
+                (home || []).forEach(x => {
+                  const y = (away || []).find(z => z.t === x.t);
+                  if (!y) return;
+                  const a = Number(x.woba), b = Number(y.woba);
+                  if (!isNaN(a) && !isNaN(b) && Math.abs(a - b) > 0.0001) diff += 1;
+                });
+                return diff;
+            }"""
+        )
+        check("location changes model values", location_diff_count > 0, f"teams changed={location_diff_count}")
 
         pitch_diff_count = page.evaluate(
             """async () => {
@@ -148,12 +156,9 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
         )
         check("pitch changes model values", pitch_diff_count > 0, f"teams changed={pitch_diff_count}")
 
-        # Return to all scope and team cleanup
-        click('[data-a="scope"][data-v="all"]')
-        page.wait_for_timeout(250)
         q = page.evaluate("location.search")
-        check("scope=all persisted", "scope=all" in q, q)
-        check("team key removed in all scope", "team=" not in q, q)
+        check("scope param not in url", "scope=" not in q, q)
+        check("team param not in url", "team=" not in q, q)
 
         if page_errors:
             check("no uncaught page errors", False, " | ".join(page_errors[:3]))
