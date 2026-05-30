@@ -2632,37 +2632,8 @@ body.view-research .ca-lab { display: block; }
           onerror="this.style.display='none'">
         <div class="ca-hero__mark-title">CHASE</div>
         <div class="ca-hero__mark-sub">ANALYTICS</div>
-        <div class="ca-hero__mark-meta">
-          <span>s</span><span>?</span><span>xwOBA</span><span>RCV</span>
-        </div>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="ca-features" id="section-opening-features">
-  <div class="ca-features__grid">
-    <a class="ca-feature-card" href="#" onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
-      <span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="swords"></i></span>
-      <span class="ca-feature-card__body">
-        <span class="ca-feature-card__title">Projected Matchups</span>
-        <span class="ca-feature-card__desc">Split-specific lineup edges, starters, and weather context.</span>
-      </span>
-    </a>
-    <a class="ca-feature-card" href="#" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
-      <span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="flask-conical"></i></span>
-      <span class="ca-feature-card__body">
-        <span class="ca-feature-card__title">Research Lab</span>
-        <span class="ca-feature-card__desc">Compare, trends, splits, and pitcher intelligence workspace.</span>
-      </span>
-    </a>
-    <a class="ca-feature-card" href="model_report.html">
-      <span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"><i data-lucide="bar-chart-3"></i></span>
-      <span class="ca-feature-card__body">
-        <span class="ca-feature-card__title">Model Insights</span>
-        <span class="ca-feature-card__desc">Daily signals, convergence plays, and model report.</span>
-      </span>
-    </a>
   </div>
 </section>
 
@@ -2770,16 +2741,6 @@ body.view-research .ca-lab { display: block; }
       </div>
     </div>
   </div>
-</section>
-
-
-<section class="platform-section" id="section-opening-trend-insights">
-  <header class="matchups-section-head">
-    <div class="platform-eyebrow">Trend Signals</div>
-    <h2 class="platform-title">Offensive Movement</h2>
-    <p class="platform-subtitle">Biggest risers, fallers, L7 spikes, and stable profiles across the league.</p>
-  </header>
-  <div id="homeTrendSummaryMount" class="rl-split-summary-grid ca-trend-insight-grid"></div>
 </section>
 
 </main><!-- /opening-dashboard -->
@@ -6829,10 +6790,6 @@ function renderHomePage() {
       document.getElementById('marketToggleLHP') && document.getElementById('marketToggleLHP').classList.contains('ca-toggle--active') ? 'lhp' : 'rhp'
     );
   }, 'home market map');
-  whenLiveDataReady(function() {
-    if (window.ResearchLab && ResearchLab.renderTrendSummary) ResearchLab.renderTrendSummary();
-    else if (typeof renderTrendSummary === 'function') renderTrendSummary();
-  }, 'home trend insights');
   if (typeof scheduleMarketMapRender === 'function') scheduleMarketMapRender();
 }
 
