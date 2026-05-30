@@ -30,8 +30,13 @@
     return null;
   }
 
-  function metricColor(v) {
-    return A ? A.metricColor(v) : 'var(--text)';
+  function valChip(v, ctx, invert, decimals) {
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals == null ? 1 : decimals);
+    return '<span class="chip c-na">' + (v != null && !isNaN(v) ? Number(v).toFixed(decimals == null ? 1 : decimals) : '—') + '</span>';
+  }
+
+  function metricColor(v, ctx, invert) {
+    return A ? A.metricColor(v, ctx || 'osi', !!invert) : 'var(--text)';
   }
 
   function f5Note() {
@@ -176,10 +181,10 @@
     };
   }
 
-  function accordion(id, title, score, open, bodyHtml) {
+  function accordion(id, title, score, open, bodyHtml, chipCtx) {
     return '<details class="metric-accordion"' + (open ? ' open' : '') + ' id="' + id + '">'
       + '<summary><span class="ma-title">' + esc(title) + '</span>'
-      + '<span class="ma-score" style="color:' + metricColor(score) + '">' + (score != null ? score.toFixed(1) : '—') + '</span></summary>'
+      + '<span class="ma-score">' + valChip(score, chipCtx || 'osi', false, 1) + '</span></summary>'
       + '<div class="ma-body">' + bodyHtml + '</div></details>';
   }
 
@@ -202,12 +207,14 @@
       + '<span class="ma-trend-label">' + esc(trendLabel(vals)) + '</span></div>';
   }
 
-  function componentBars(items) {
+  function componentBars(items, ctx) {
+    ctx = ctx || 'osi';
     return '<div class="component-bars">' + items.map(function(it) {
       var w = Math.max(4, Math.min(100, it.pct || 0));
+      var chipCtx = it.ctx || ctx;
       return '<div class="cb-row"><span class="cb-label">' + esc(it.label) + '</span>'
-        + '<div class="cb-track"><div class="cb-fill" style="width:' + w + '%;background:' + metricColor(it.score) + '"></div></div>'
-        + '<span class="cb-val">' + (it.display != null ? esc(it.display) : (it.score != null ? it.score.toFixed(0) : '—')) + '</span></div>';
+        + '<div class="cb-track"><div class="cb-fill" style="width:' + w + '%;background:' + metricColor(it.score, chipCtx) + '"></div></div>'
+        + '<span class="cb-val">' + valChip(it.score, chipCtx, false, 0) + '</span></div>';
     }).join('') + '</div>';
   }
 
@@ -243,12 +250,12 @@
       + '<div class="snapshot-main" style="width:100%">'
       + renderInfographicHero(prof, team, m, ctx)
       + '<div class="ca-stat-strip">'
-      + '<span>OSI ' + (A && A.valChipHtml ? A.valChipHtml(m.osi, 'osi', false, 1) : '<strong>' + (m.osi != null ? m.osi.toFixed(1) : '—') + '</strong>') + '</span>'
-      + '<span>ProjOSI <strong>' + (m.proj != null ? m.proj.toFixed(1) : '—') + projArrow + '</strong></span>'
-      + '<span>PP-Gap ' + (A && A.valChipHtml ? A.valChipHtml(m.ppGap, 'ppGap', false, 1) : '<strong>' + (m.ppGap != null ? ((m.ppGap > 0 ? '+' : '') + m.ppGap.toFixed(1)) : '—') + '</strong>') + '</span>'
-      + '<span>PALS <strong>' + (m.pals != null ? m.pals.toFixed(1) : '—') + '</strong> ' + palsBadge(m.osi, m.pals) + '</span>'
-      + '<span>ABQ ' + (A && A.valChipHtml ? A.valChipHtml(m.abq, 'abq', false, 1) : '<strong>' + (m.abq != null ? m.abq.toFixed(1) : '—') + '</strong>') + '</span>'
-      + '<span>RCV ' + (A && A.valChipHtml ? A.valChipHtml(m.rcv, 'rcv', false, 1) : '<strong>' + (m.rcv != null ? m.rcv.toFixed(1) : '—') + '</strong>') + '</span>'
+      + '<span>OSI ' + valChip(m.osi, 'osi', false, 1) + '</span>'
+      + '<span>ProjOSI ' + valChip(m.proj, 'osi', false, 1) + projArrow + '</span>'
+      + '<span>PP-Gap ' + valChip(m.ppGap, 'ppGap', false, 1) + '</span>'
+      + '<span>PALS ' + valChip(m.pals, 'osi', false, 1) + ' ' + palsBadge(m.osi, m.pals) + '</span>'
+      + '<span>ABQ ' + valChip(m.abq, 'abq', false, 1) + '</span>'
+      + '<span>RCV ' + valChip(m.rcv, 'rcv', false, 1) + '</span>'
       + '</div>'
       + (tonight ? '<div class="snapshot-tonight">' + tonight + '</div>' : '')
       + '<div class="snapshot-context">' + esc(ctx.splitLabel || '') + ' · ' + esc(ctx.windowLabel || 'YTD') + '</div>'
@@ -273,9 +280,7 @@
   }
 
   function wrcMedallionHtml(wrc) {
-    var display = wrc != null ? Math.round(wrc) : '—';
-    var color = (A && A.metricColor) ? A.metricColor(wrc, 'wrc', false) : 'var(--text)';
-    return '<div class="ca-wrc-medallion"><div class="v" style="color:' + color + '">' + display + '</div><div class="c">WRC+ | ' + esc(wrcTierLabel(wrc)) + '</div></div>';
+    return '<div class="ca-wrc-medallion"><div class="v">' + valChip(wrc, 'wrc', false, 0) + '</div><div class="c">WRC+ | ' + esc(wrcTierLabel(wrc)) + '</div></div>';
   }
 
   function renderInfographicHero(prof, team, m, ctx) {
@@ -428,7 +433,7 @@
       { label: 'Contact Quality (ZCon + OCon)', score: m.abq, pct: m.abq * 0.9, display: 'wt 35%' },
       { label: 'Pitch Pressure (SwStr% inv)', score: m.abq, pct: m.abq * 0.85, display: 'wt 20%' },
       { label: 'K Avoidance (K% inv)', score: m.abq, pct: m.abq * 0.8, display: 'wt 15%' }
-    ]);
+    ], 'abq');
     var abqBody = '<p class="ma-read">' + (m.abq != null ? m.abq.toFixed(0) : '—') + '/100 — ' + abqInterp + '</p>'
       + abqComponents
       + '<div class="ma-panel"><div class="ma-panel-title">What this lineup does to opposing SPs</div>'
@@ -448,7 +453,7 @@
         { label: 'Barrel% (park-adj)', score: m.rcv, pct: m.rcv * 0.92, display: 'wt 32%' },
         { label: 'ISO (park-adj)', score: m.rcv, pct: m.rcv * 0.88, display: 'wt 20%' },
         { label: 'HardHit% (park-adj)', score: m.rcv, pct: m.rcv * 0.85, display: 'wt 13%' }
-      ])
+      ], 'rcv')
       + '<div class="ma-panel"><div class="ma-panel-title">Is this RCV schedule-confirmed?</div>'
       + '<p class="ma-read">OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—') + ' vs PALS ' + (m.pals != null ? m.pals.toFixed(1) : '—') + '</p>'
       + palsBadge(m.osi, m.pals) + '</div>'
@@ -465,7 +470,7 @@
       + componentBars([
         { label: 'xwOBA contribution', score: m.obr, pct: m.obr, display: 'wt 65%' },
         { label: 'BB% contribution', score: m.obr, pct: m.obr * 0.9, display: 'wt 35%' }
-      ])
+      ], 'obr')
       + (obrRel ? '<p class="ma-read">' + esc(obrRel) + '</p>' : '')
       + '<div class="ma-panel"><div class="ma-panel-title">Effect on opposing pitchers</div>'
       + '<p class="ma-read">High OBR lineups force pitchers to work harder in the zone.</p></div>'
@@ -476,9 +481,9 @@
     var tonightPals = ctx.tonightSpHand ? 'Tonight vs ' + ctx.tonightSpHand + 'HP — PALS context for SP-only schedule' : '';
     var palsBody = '<p class="ma-read"><strong>PALS evaluates performance vs opposing SPs only.</strong></p>'
       + '<div class="pals-compare">'
-      + '<div><span class="pals-num" style="color:' + metricColor(m.osi) + '">' + (m.osi != null ? m.osi.toFixed(1) : '—') + '</span><span class="pals-lbl">OSI</span></div>'
-      + '<span class="pals-gap">' + (m.pals != null && m.osi != null ? ((m.osi - m.pals) > 0 ? '+' : '') + (m.osi - m.pals).toFixed(1) : '—') + '</span>'
-      + '<div><span class="pals-num">' + (m.pals != null ? m.pals.toFixed(1) : '—') + '</span><span class="pals-lbl">PALS</span></div>'
+      + '<div><span class="pals-num">' + valChip(m.osi, 'osi', false, 1) + '</span><span class="pals-lbl">OSI</span></div>'
+      + '<span class="pals-gap">' + valChip(m.pals != null && m.osi != null ? (m.osi - m.pals) : null, 'ppGap', false, 1) + '</span>'
+      + '<div><span class="pals-num">' + valChip(m.pals, 'osi', false, 1) + '</span><span class="pals-lbl">PALS</span></div>'
       + '</div>'
       + '<p class="ma-read">' + esc(palsInterpretation(m.osi, m.pals)) + '</p>'
       + splitTable([['vs RHP SPs', m.osiR], ['vs LHP SPs', m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
@@ -487,11 +492,11 @@
       + f5;
 
     return '<div class="mini-dashboards">'
-      + accordion('ma-osi', 'OSI — Offensive Strength', m.osi, true, osiBody)
-      + accordion('ma-abq', 'ABQ — Process Quality', m.abq, false, abqBody)
-      + accordion('ma-rcv', 'RCV — Run Creation', m.rcv, false, rcvBody)
-      + accordion('ma-obr', 'OBR — On-Base Floor', m.obr, false, obrBody)
-      + accordion('ma-pals', 'PALS — vs SP Schedule', m.pals, false, palsBody)
+      + accordion('ma-osi', 'OSI — Offensive Strength', m.osi, true, osiBody, 'osi')
+      + accordion('ma-abq', 'ABQ — Process Quality', m.abq, false, abqBody, 'abq')
+      + accordion('ma-rcv', 'RCV — Run Creation', m.rcv, false, rcvBody, 'rcv')
+      + accordion('ma-obr', 'OBR — On-Base Floor', m.obr, false, obrBody, 'obr')
+      + accordion('ma-pals', 'PALS — vs SP Schedule', m.pals, false, palsBody, 'osi')
       + '</div>';
   }
 

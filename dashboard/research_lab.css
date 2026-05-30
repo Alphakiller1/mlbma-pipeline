@@ -470,7 +470,13 @@ html.view-research #oorSection { display: none !important; }
 .pl-allowed-pct { font-size: 10px; color: var(--text-3); }
 .pl-allowed-note { font-size: 10px; color: var(--text-3); margin-top: 4px; }
 .pl-rank-wrap { max-height: 520px; overflow: auto; }
-.pl-rank-av { width: 28px; height: 28px; border-radius: 0; vertical-align: middle; margin-right: 6px; }
+.pl-rank-av { width: 28px; height: 28px; border-radius: 0; vertical-align: middle; margin-right: 8px; flex-shrink: 0; }
+.pl-rank-pitcher-cell { display: inline-flex; align-items: center; gap: 8px; }
+.pl-rank-pitcher-text { font-family: var(--display, var(--font-display, "Roboto Condensed", sans-serif)); font-weight: 800; font-size: 13px; }
+.pl-rank-team { white-space: nowrap; }
+.pl-rank-team img { vertical-align: middle; margin-right: 6px; }
+.rl-sp-rank-table thead th { white-space: nowrap; }
+.rl-sp-rank-table td.num { text-align: right; white-space: nowrap; }
 .pl-rank-name a { color: var(--accent-l, #c4b5fd); text-decoration: none; font-weight: 500; }
 .pl-rank-row { cursor: pointer; }
 .pl-rank-row:hover { background: color-mix(in srgb, var(--accent, #8b5cf6) 10%, transparent); }

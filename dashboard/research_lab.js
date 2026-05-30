@@ -491,17 +491,27 @@ function profileWindowFieldsFromRow(row) {
         return (mb.pitchScore || 0) - (ma.pitchScore || 0);
       });
       var pitchHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Starting Pitcher Rankings (' + pitchRows.length + ')</h4>'
-        + '<div class="rl-table-wrap"><table class="rl-table-premium"><thead><tr>'
-        + '<th>Pitcher</th><th>Team</th><th>Pitch Score</th><th>OSI Allowed</th><th>Pitcher OOR</th></tr></thead><tbody>'
+        + '<div class="rl-table-wrap pl-rank-wrap"><table class="rl-table-premium rl-sp-rank-table"><thead><tr>'
+        + '<th>Pitcher</th><th>Team</th><th>Pitch Score</th><th>K%</th><th>BB%</th><th>ERA</th><th>FIP</th>'
+        + '<th>OSI Allowed</th><th>ABQ Allowed</th><th>Pitcher OOR</th></tr></thead><tbody>'
         + pitchRows.map(function(row) {
           var n = S.pickCol(row, 'pitcher_name', 'Name');
           var t = S.pickCol(row, 'pitcher_team', 'Team');
           var m = S.spProfileMetrics(row);
-          var ps = m.pitchScore;
+          var av = A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-rank-av' }) : '';
+          var logo = A ? A.teamLogoImg(t, 24) : '';
+          var staleBadge = m.stale ? ' <span class="pl-stale-pill">Stale</span>' : '';
           return '<tr class="pl-rank-row" onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
-            + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td>'
-            + '<td class="num">' + metricChip(ps, 'pitching', false, 1) + '</td>'
+            + '<td class="pl-rank-name"><span class="pl-rank-pitcher-cell">' + av
+            + '<span class="pl-rank-pitcher-text">' + esc(n) + staleBadge + '</span></span></td>'
+            + '<td class="pl-rank-team">' + logo + ' <span>' + esc(t) + '</span></td>'
+            + '<td class="num">' + metricChip(m.pitchScore, 'pitching', false, 0) + '</td>'
+            + '<td class="num">' + metricChip(m.kPct, 'pitching', false, 1) + '</td>'
+            + '<td class="num">' + metricChip(m.bbPct, 'pitching', true, 1) + '</td>'
+            + '<td class="num">' + metricChip(m.era, 'pitching', true, 2) + '</td>'
+            + '<td class="num">' + metricChip(m.fip, 'pitching', true, 2) + '</td>'
             + '<td class="num">' + metricChip(m.osiAllowed, 'osi', true, 1) + '</td>'
+            + '<td class="num">' + metricChip(m.abqAllowed, 'osi', true, 1) + '</td>'
             + '<td class="num">' + metricChip(m.oor, 'oor', false, 1) + '</td></tr>';
         }).join('') + '</tbody></table></div></div>';
 
