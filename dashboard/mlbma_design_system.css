@@ -2,7 +2,7 @@
  * Chase Analytics design system — typography, brand, metric grading.
  * Global identity aligns with design_comp_v2 / visual spec.
  */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 
 :root {
   /* Page & surfaces */
@@ -44,11 +44,11 @@
   --ca-hero-bg: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
   --ca-grid-texture: none;
 
-  --font-primary: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-primary: 'DM Sans', system-ui, -apple-system, sans-serif;
   --font: var(--font-primary);
-  --font-body: 'Archivo', system-ui, -apple-system, sans-serif;
-  --font-display: 'Archivo', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
+  --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Roboto Condensed', 'DM Sans', system-ui, sans-serif;
+  --mono: 'Roboto Condensed', ui-sans-serif, system-ui, sans-serif;
 
   /* 7-step metric gradient (league-relative) */
   --metric-very-weak: #F2545B;
