@@ -121,7 +121,7 @@
       svg += '<text x="' + lx.x.toFixed(1) + '" y="' + (lx.y + 4).toFixed(1) + '" text-anchor="middle" fill="#A1A1AA" font-size="10" font-weight="600">' + esc(metrics[ai]) + '</text>';
     }
     teams.forEach(function(team, ti) {
-      var col = colors[ti] || '#7C3AED';
+      var col = colors[ti] || '#7C4DFF';
       var vals = (team.values || []).map(function(v) {
         var x = num(v);
         return x == null ? 50 : Math.max(0, Math.min(100, x));
@@ -145,7 +145,7 @@
     svg += '</svg>';
     var legend = '<div class="mlbma-radar-legend">';
     teams.forEach(function(team, ti) {
-      var col = colors[ti] || '#7C3AED';
+      var col = colors[ti] || '#7C4DFF';
       legend += '<span class="mlbma-radar-legend-item"><i style="background:' + col + '"></i>' + esc(team.abbr || team.name || 'Team') + '</span>';
     });
     legend += '</div>';
@@ -199,7 +199,7 @@
       var cy = ys(d.ppGap);
       var hi = d.t === highlightTeam;
       var r = hi ? 9 : 5;
-      var col = hi ? '#7C3AED' : 'rgba(161,161,170,.55)';
+      var col = hi ? '#7C4DFF' : 'rgba(161,161,170,.55)';
       svg += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + col + '" stroke="' + (hi ? '#fff' : 'none') + '" stroke-width="1.5"/>';
       if (hi) svg += '<text x="' + cx.toFixed(1) + '" y="' + (cy - 12).toFixed(1) + '" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">' + esc(d.t) + '</text>';
     });
@@ -241,7 +241,7 @@
     var cy = size / 2;
     var maxR = size * 0.34;
     var start = -Math.PI / 2;
-    var teamCol = opts.teamColor || '#7C3AED';
+    var teamCol = opts.teamColor || '#7C4DFF';
     var refVals = metricNames.map(function() { return 50; });
     var svg = '<svg class="mlbma-radar mlbma-snapshot-radar" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">';
 
@@ -571,7 +571,7 @@
     var colors = [];
     if (teamAData) {
       teams.push({ abbr: labelA || 'A', values: radarPayloadValues(teamAData) });
-      colors.push('#7C3AED');
+      colors.push('#7C4DFF');
     }
     if (teamBData) {
       teams.push({ abbr: labelB || 'B', values: radarPayloadValues(teamBData) });

@@ -167,7 +167,7 @@
     ];
     var id = 'mcPitcherRadar';
     setTimeout(function() {
-      MLBMACharts.buildRadarChart(id, teams, metrics, ['#7C3AED', '#0891B2'], { size: 280 });
+      MLBMACharts.buildRadarChart(id, teams, metrics, ['#7C4DFF', '#0891B2'], { size: 280 });
     }, 0);
     return '<div id="' + id + '" class="mc-radar-mount"></div>';
   }

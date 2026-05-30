@@ -13,8 +13,8 @@
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
   --border: #28282f; --border-2: #34343d;
   --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
-  --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
-  --purple-glow: rgba(192, 132, 252, 0.25);
+  --purple: #9A6BFF; --purple-2: #6D28D9; --purple-3: #C4B0FF;
+  --purple-glow: rgba(124, 77, 255, 0.25);
   --green-l: #86EFAC; --green: #4ADE80; --green-dim: rgba(74, 222, 128, 0.15);
   --red-l: #FCA5A5; --red: #F87171; --red-dim: rgba(248, 113, 113, 0.15);
   --gold-l: #FCD34D; --gold: #FBBF24; --gold-dim: rgba(251, 191, 36, 0.15);
@@ -31,7 +31,7 @@ html, body {
   font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
 }
 body {
-  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(192, 132, 252, 0.08), transparent), var(--bg);
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 77, 255, 0.08), transparent), var(--bg);
 }
 .container { max-width: 1360px; margin: 0 auto; padding: 28px 24px 64px; }
 .loading {
@@ -59,7 +59,7 @@ h1 {
   font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
   font-family: var(--font-display);
   font-variation-settings: "wdth" 125;
-  background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--purple-2) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .section-title,
@@ -95,7 +95,7 @@ h1 {
   transition: all 0.15s ease;
 }
 .today-chip:hover, .today-chip.active {
-  border-color: var(--purple); color: var(--text); background: rgba(192, 132, 252, 0.1);
+  border-color: var(--purple); color: var(--text); background: rgba(124, 77, 255, 0.1);
 }
 .today-chip.playing { border-color: rgba(74, 222, 128, 0.4); color: var(--green-l); }
 .selector-bar {
@@ -161,10 +161,10 @@ thead th {
   text-align: left; white-space: nowrap;
 }
 tbody td { padding: 8px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
-tbody tr:hover { background: rgba(192, 132, 252, 0.05); }
+tbody tr:hover { background: rgba(124, 77, 255, 0.05); }
 tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 tbody tr.reliever-row { cursor: pointer; }
-tbody tr.reliever-row.expanded { background: rgba(192, 132, 252, 0.08); }
+tbody tr.reliever-row.expanded { background: rgba(124, 77, 255, 0.08); }
 tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space: normal; }
 .num { font-family: var(--mono); }
 .tier-high { color: var(--red-l); font-weight: 600; }
@@ -180,7 +180,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 .insight-line strong { color: var(--text); }
 .betting-panel {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-3) 100%);
-  border: 1px solid rgba(192, 132, 252, 0.35); border-radius: 12px;
+  border: 1px solid rgba(124, 77, 255, 0.35); border-radius: 12px;
   padding: 18px 20px; font-size: 13.5px; line-height: 1.6; color: var(--text-2);
 }
 .betting-panel strong { color: var(--purple-2); }
@@ -242,7 +242,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 .profile-deep-sections { margin-top: 8px; }
 .pill-tonight {
   font-size: 11px; padding: 6px 10px; border-radius: 8px;
-  background: rgba(192,132,252,.12); border: 1px solid rgba(192,132,252,.35); color: var(--purple-2);
+  background: rgba(124,77,255,.12); border: 1px solid rgba(124,77,255,.35); color: var(--purple-2);
 }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">

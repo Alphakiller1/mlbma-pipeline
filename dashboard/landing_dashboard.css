@@ -88,7 +88,7 @@ body.opening-dashboard .freshness-bar {
 }
 
 .ca-hero-gradient {
-  background: linear-gradient(90deg, #7C3AED, #A78BFA);
+  background: linear-gradient(90deg, #7C4DFF, #C4B0FF);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -119,7 +119,7 @@ body.opening-dashboard .freshness-bar {
   padding: 12px 28px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #7C3AED, #A78BFA);
+  background: linear-gradient(135deg, #7C4DFF, #C4B0FF);
   color: #fff;
   font-family: inherit;
   font-size: 14px;
@@ -441,12 +441,12 @@ body.view-research .ca-page-identity { display: none; }
   transition: all 0.15s ease;
 }
 .ca-pill-btn:hover {
-  border-color: var(--ca-brand, #7C3AED);
+  border-color: var(--ca-brand, #9A6BFF);
   color: var(--text);
 }
 .ca-pill-btn.active {
   background: var(--ca-brand-dim, rgba(124, 58, 237, 0.18));
-  border-color: var(--ca-brand, #7C3AED);
+  border-color: var(--ca-brand, #9A6BFF);
   color: #fff;
 }
 
@@ -462,7 +462,7 @@ body.view-research .ca-page-identity { display: none; }
   position: relative;
 }
 .hero-matchup-card:hover {
-  border-color: var(--ca-brand, #7C3AED);
+  border-color: var(--ca-brand, #9A6BFF);
   box-shadow: 0 8px 32px rgba(124, 58, 237, 0.12);
   transform: translateY(-1px);
 }
@@ -518,7 +518,7 @@ body.view-research .ca-page-identity { display: none; }
   white-space: nowrap;
 }
 .mc-sp-name a { color: inherit; text-decoration: none; }
-.mc-sp-name a:hover { color: var(--ca-brand, #7C3AED); }
+.mc-sp-name a:hover { color: var(--ca-brand, #9A6BFF); }
 .mc-ps-badge {
   display: inline-flex;
   align-items: center;
@@ -561,13 +561,13 @@ body.view-research .ca-page-identity { display: none; }
   transition: border-color 0.15s ease;
 }
 .opening-link-card:hover {
-  border-color: var(--ca-brand, #7C3AED);
+  border-color: var(--ca-brand, #9A6BFF);
 }
 .opening-link-title {
   display: block;
   font-size: 14px;
   font-weight: 700;
-  color: #C084FC;
+  color: #C4B0FF;
   margin-bottom: 4px;
 }
 .opening-link-desc {
@@ -585,14 +585,14 @@ body.view-research .ca-page-identity { display: none; }
   color: inherit;
 }
 .hero-matchup-card .hmc-team a.team-link:hover .hmc-abbr {
-  color: var(--ca-brand, #7C3AED);
+  color: var(--ca-brand, #9A6BFF);
 }
 .hero-matchup-card .pitcher-link {
   color: var(--text);
   text-decoration: none;
 }
 .hero-matchup-card .pitcher-link:hover {
-  color: var(--ca-brand, #7C3AED);
+  color: var(--ca-brand, #9A6BFF);
   text-decoration: underline;
 }
 
@@ -637,7 +637,7 @@ body.view-research .ca-page-identity { display: none; }
   margin-bottom: 8px;
   font-family: var(--font);
 }
-.hmc-lineup-toggle:hover { color: var(--ca-brand, #7C3AED); }
+.hmc-lineup-toggle:hover { color: var(--ca-brand, #9A6BFF); }
 
 .matchup-lineup-grid {
   display: grid;
@@ -658,7 +658,7 @@ body.view-research .ca-page-identity { display: none; }
   font-weight: 500;
 }
 .lineup-name-link:hover {
-  color: var(--ca-brand, #7C3AED);
+  color: var(--ca-brand, #9A6BFF);
 }
 
 .hmc-view-full {
@@ -666,7 +666,7 @@ body.view-research .ca-page-identity { display: none; }
   margin-top: 12px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--ca-brand, #7C3AED);
+  color: var(--ca-brand, #9A6BFF);
   text-align: right;
   pointer-events: none;
 }
@@ -682,7 +682,7 @@ body.view-research .ca-page-identity { display: none; }
 .signal-teaser-header a.signal-teaser-cta {
   font-size: 12px;
   font-weight: 600;
-  color: var(--ca-brand, #7C3AED);
+  color: var(--ca-brand, #9A6BFF);
   text-decoration: none;
 }
 .signal-teaser-header a.signal-teaser-cta:hover {
@@ -710,7 +710,7 @@ body.view-research .ca-page-identity { display: none; }
   font-family: var(--font);
 }
 .signal-chip:hover {
-  border-color: var(--ca-brand, #7C3AED);
+  border-color: var(--ca-brand, #9A6BFF);
 }
 .signal-chip .chip-label {
   font-size: 10px;

@@ -158,7 +158,7 @@
       link.style.color = '';
       if (href && href.split('/').pop().split('?')[0] === profilePage) {
         link.style.background = 'rgba(124, 58, 237, 0.15)';
-        link.style.color = '#7C3AED';
+        link.style.color = '#9A6BFF';
         var dropdown = link.closest('.chase-dropdown');
         if (dropdown) {
           var trig = dropdown.querySelector('.chase-nav-link');

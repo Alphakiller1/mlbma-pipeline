@@ -13,8 +13,8 @@
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
   --border: #28282f; --border-2: #34343d;
   --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
-  --purple: #C084FC; --purple-2: #A78BFA; --purple-3: #8B5CF6;
-  --purple-glow: rgba(192, 132, 252, 0.25);
+  --purple: #9A6BFF; --purple-2: #6D28D9; --purple-3: #C4B0FF;
+  --purple-glow: rgba(124, 77, 255, 0.25);
   --green-l: #86EFAC; --green: #4ADE80; --green-dim: rgba(74, 222, 128, 0.15);
   --red-l: #FCA5A5; --red: #F87171; --red-dim: rgba(248, 113, 113, 0.15);
   --gold-l: #FCD34D; --gold: #FBBF24; --gold-dim: rgba(251, 191, 36, 0.15);
@@ -33,7 +33,7 @@ html, body {
 }
 body {
   background:
-    radial-gradient(ellipse 70% 45% at 50% -15%, rgba(192, 132, 252, 0.1), transparent),
+    radial-gradient(ellipse 70% 45% at 50% -15%, rgba(124, 77, 255, 0.1), transparent),
     var(--bg);
 }
 .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px 72px; }
@@ -58,7 +58,7 @@ h1 {
   font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px;
   font-family: var(--font-display);
   font-variation-settings: "wdth" 125;
-  background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--purple-2) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -109,7 +109,7 @@ h1 {
 }
 .filter-pill:hover { border-color: var(--purple-3); color: var(--text); }
 .filter-pill.active {
-  background: rgba(139, 92, 246, 0.22); border-color: var(--purple); color: var(--purple-2);
+  background: rgba(124, 77, 255, 0.22); border-color: var(--purple); color: var(--purple-2);
 }
 .featured { margin-bottom: 32px; }
 .featured-grid {
@@ -165,7 +165,7 @@ h1 {
 .type-batter { background: var(--green-dim); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
 .type-sp { background: var(--blue-dim); color: var(--blue-l); border: 1px solid rgba(96,165,250,0.3); }
 .type-reliever { background: var(--gold-dim); color: var(--gold-l); border: 1px solid rgba(251,191,36,0.3); }
-.type-team { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(192,132,252,0.35); }
+.type-team { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(124,77,255,0.35); }
 .card-name { font-size: 20px; font-weight: 600; font-family: var(--mono); margin-bottom: 8px; letter-spacing: -0.02em; }
 .card-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .team-abbr {
