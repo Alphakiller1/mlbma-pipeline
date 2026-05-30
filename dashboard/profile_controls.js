@@ -66,14 +66,26 @@
     });
   }
 
-  function pillGroup(label, groupKey, options, active) {
-    return '<div class="control-group" data-pgroup="' + groupKey + '">'
-      + '<span class="control-label">' + esc(label) + '</span>'
-      + '<div class="toggle-group">'
+  function pillGroup(label, groupKey, options, active, variant) {
+    variant = variant || 'hub';
+    if (variant === 'legacy') {
+      return '<div class="control-group" data-pgroup="' + groupKey + '">'
+        + '<span class="control-label">' + esc(label) + '</span>'
+        + '<div class="toggle-group">'
+        + options.map(function(o) {
+          var val = o.value || o;
+          var lbl = o.label || splitLabel(val);
+          return '<button type="button" class="toggle-btn' + (active === val ? ' active' : '') + (o.warn ? ' warn' : '') + '" data-pctrl="' + esc(val) + '">' + esc(lbl) + '</button>';
+        }).join('')
+        + '</div></div>';
+    }
+    return '<div class="hub-ctrl-group" data-pgroup="' + groupKey + '">'
+      + '<span class="hub-ctrl-label">' + esc(label) + '</span>'
+      + '<div class="hub-pill-row">'
       + options.map(function(o) {
         var val = o.value || o;
         var lbl = o.label || splitLabel(val);
-        return '<button type="button" class="toggle-btn' + (active === val ? ' active' : '') + (o.warn ? ' warn' : '') + '" data-pctrl="' + esc(val) + '">' + esc(lbl) + '</button>';
+        return '<button type="button" class="hub-pill' + (active === val ? ' active' : '') + (o.warn ? ' warn' : '') + '" data-pctrl="' + esc(val) + '">' + esc(lbl) + '</button>';
       }).join('')
       + '</div></div>';
   }
@@ -303,8 +315,8 @@
         + '</div>';
     }
 
-    el.innerHTML = '<div class="global-control-bar pc-control-bar sticky-profile-bar">'
-      + '<div class="pc-control-row">'
+    el.innerHTML = '<div class="hub-control-bar tp-filter-bar">'
+      + '<div class="hub-control-row">'
       + pillGroup('Split', 'split', [
         { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
         { value: 'home' }, { value: 'away' }, { value: 'f5' }
@@ -312,7 +324,7 @@
       + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }], state.window)
       + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
       + '</div>'
-      + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
+      + '<div class="hub-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
       + teamSnapshotStrip(state) + '</div>';
 
     bindToggles(el, state, { confirmText: confirmText, onChange: opts.onChange });
@@ -358,9 +370,9 @@
       + pillGroup('Split', 'split', [
         { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
         { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'F5' }
-      ], state.split)
-      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }], state.window)
-      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
+      ], state.split, 'legacy')
+      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }], state.window, 'legacy')
+      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view, 'legacy')
       + '</div>'
       + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
       + '<div class="pc-spark-row" data-pspark></div></div>';
@@ -426,9 +438,9 @@
         { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
         { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' },
         { value: 'hlev', label: 'High Lev' }, { value: 'llev', label: 'Low Lev' }
-      ], state.split)
-      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }], state.window)
-      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
+      ], state.split, 'legacy')
+      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }], state.window, 'legacy')
+      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view, 'legacy')
       + '</div>'
       + '<div class="pc-control-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
       + '<div class="pc-spark-row" data-pspark></div></div>';

@@ -7,424 +7,23 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics · Team Profile</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
-:root {
-  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
-  --border: #28282f; --border-2: #34343d;
-  --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
-  --purple: #9A6BFF; --purple-2: #6D28D9; --purple-3: #C4B0FF;
-  --purple-glow: rgba(124, 77, 255, 0.25);
-  --green-l: #86EFAC; --green: #4ADE80; --green-d: #16A34A;
-  --green-dim: rgba(74, 222, 128, 0.15);
-  --red-l: #FCA5A5; --red: #F87171; --red-d: #DC2626;
-  --red-dim: rgba(248, 113, 113, 0.15);
-  --gold-l: #FCD34D; --gold: #FBBF24; --gold-d: #B45309;
-  --gold-dim: rgba(251, 191, 36, 0.15);
-  --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
-  --blue-dim: rgba(96, 165, 250, 0.15);
-  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
-  --font-display: "Roboto Condensed", "DM Sans", system-ui, sans-serif;
-  --display: var(--font-display);
-  --sans: var(--font-body);
-  --font: var(--font-body);
-  --mono: var(--font-display);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  background: var(--bg); color: var(--text); font-family: var(--font);
-  font-size: 14px; line-height: 1.5; min-height: 100vh;
-  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
-}
-body {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 77, 255, 0.08), transparent),
-    var(--bg);
-}
-.container { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
-.loading {
-  position: fixed; inset: 0; background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 2000; gap: 16px;
-}
-.loading.hide { display: none; }
-.spinner {
-  width: 36px; height: 36px; border: 2px solid var(--border);
-  border-top-color: var(--purple); border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { color: var(--text-2); font-size: 13px; }
-.metric-accordion { background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
-.metric-accordion summary { cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; list-style: none; }
-.ma-body { padding: 0 16px 16px; font-size: 12px; color: var(--text-2); }
-.team-snapshot { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; padding: 20px; background: var(--bg-3); border-radius: 12px; border: 1px solid var(--border); }
-.profile-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; padding: 12px; background: var(--bg-2); border-radius: 8px; }
-.header { margin-bottom: 22px; }
-.brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-.brand-tag {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--purple);
-}
-.brand-pill {
-  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
-  padding: 3px 8px; border-radius: 99px;
-  background: var(--green-dim); color: var(--green);
-  border: 1px solid rgba(74, 222, 128, 0.25);
-}
-.brand-pill.warn {
-  background: var(--gold-dim); color: var(--gold);
-  border-color: rgba(251, 191, 36, 0.35);
-}
-h1 {
-  font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 125;
-  background: linear-gradient(135deg, #fff 0%, var(--purple-2) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.section-title,
-.team-name-lg,
-.snapshot-name {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 125;
-  letter-spacing: -0.015em;
-}
-.subtitle { color: var(--text-2); font-size: 13px; max-width: 720px; }
-.nav-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-.nav-link {
-  font-size: 11.5px; font-weight: 500; color: var(--text-2);
-  text-decoration: none; padding: 7px 12px; border-radius: 8px;
-  border: 1px solid var(--border); background: var(--bg-2);
-  transition: all 0.15s ease;
-}
-.nav-link:hover {
-  color: var(--text); border-color: var(--purple-3);
-  box-shadow: 0 0 12px var(--purple-glow);
-}
-.nav-link.active { color: var(--purple-2); border-color: var(--purple); }
-.data-banner {
-  display: none; margin-top: 12px; padding: 10px 14px;
-  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.35);
-  border-radius: 10px; font-size: 12px; color: var(--gold-l);
-}
-.data-banner.show { display: block; }
-.selector-bar {
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;
-  display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
-}
-.selector-group { flex: 1; min-width: 200px; }
-.selector-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; display: block;
-}
-.selector-select {
-  width: 100%; background: var(--bg-3); border: 1px solid var(--border-2);
-  color: var(--text); padding: 10px 12px; border-radius: 8px;
-  font-size: 13px; font-family: var(--font);
-}
-.selector-select:focus {
-  outline: none; border-color: var(--purple);
-  box-shadow: 0 0 0 2px var(--purple-glow);
-}
-.metric-accordion { background: var(--bg-3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
-.metric-accordion summary { cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; list-style: none; }
-.metric-accordion summary::-webkit-details-marker { display: none; }
-.ma-score { display: inline-flex; align-items: center; font-family: var(--font-display); font-weight: 800; font-size: 16px; }
-.ma-body { padding: 0 16px 16px; font-size: 12px; color: var(--text-2); }
-.ma-split-pill { display: inline-block; padding: 3px 8px; margin: 2px; border-radius: 4px; background: var(--bg-4); font-family: var(--mono); font-size: 10px; }
-.sparkline { display: flex; align-items: flex-end; gap: 6px; height: 32px; margin: 10px 0; }
-.spark-bar { width: 12px; background: var(--purple); border-radius: 2px 2px 0 0; min-height: 4px; }
-.team-snapshot { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; padding: 20px; background: var(--bg-3); border-radius: 12px; border: 1px solid var(--border); }
-.snapshot-name { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-.snapshot-metrics { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--text-2); }
-.global-control-bar {
-  display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
-  margin-bottom: 20px; padding: 14px 16px; background: var(--bg-2);
-  border: 1px solid var(--border); border-radius: 12px;
-}
-.global-control-bar .control-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-3); margin-right: 6px;
-}
-.global-control-bar .control-group { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.toggle-group { display: flex; flex-wrap: wrap; gap: 4px; }
-.toggle-btn {
-  font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
-}
-.toggle-btn.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.15); }
-.toggle-btn.warn.active { border-color: var(--gold); color: var(--gold-l); }
-.pc-control-bar { flex-direction: column; align-items: stretch; gap: 10px; }
-.pc-control-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
-.pc-control-confirm { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
-.mlbma-sparkline-row { display: flex; align-items: center; gap: 8px; }
-.mlbma-sparkline-limited { opacity: 0.85; }
-.mlbma-spark-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--text-3); min-width: 28px; }
-.mlbma-spark-val { font-size: 11px; font-weight: 700; font-family: var(--font-display); color: var(--text); }
-.mlbma-spark-note { font-size: 10px; color: var(--text-3); }
-.pc-team-snapshot { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 10px 0 6px; border-top: 1px solid var(--border); margin-top: 8px; width: 100%; }
-.pc-team-snapshot-meta { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
-.pc-split-compare { display: flex; gap: 14px; font-size: 12px; font-family: var(--font-display); color: var(--text-2); }
-.pc-spark-strip { display: flex; flex-wrap: wrap; gap: 12px; flex: 1; min-width: 280px; }
-.pc-tonight-chip { font-size: 11px; color: var(--text-2); padding: 4px 8px; border-radius: 6px; background: var(--bg-3); border: 1px solid var(--border); }
-.team-abbr-inline { font-size: 14px; color: var(--text-3); font-family: var(--mono); }
-.snapshot-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.summary-badge, .signal-badge {
-  font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; border: 1px solid;
-}
-.signal-badge { background: var(--blue-dim); color: var(--blue-l); border-color: rgba(96,165,250,.35); }
-.snapshot-tonight { margin-top: 10px; }
-.snapshot-context { font-size: 11px; color: var(--text-3); margin-top: 8px; font-family: var(--mono); }
-.tier-muted { background: var(--bg-4); color: var(--text-3); }
-.tier-elite, .tier-high { background: var(--green-dim); color: var(--green); }
-.tier-dangerous { background: var(--purple-glow); color: var(--purple); }
-.tier-inconsistent { background: var(--gold-dim); color: var(--gold); }
-.tier-weak { background: var(--red-dim); color: var(--red-l); }
-.component-bars { margin: 12px 0; }
-.cb-row { display: grid; grid-template-columns: 1fr 120px 48px; gap: 8px; align-items: center; margin-bottom: 6px; font-size: 11px; }
-.cb-track { height: 6px; background: var(--bg-4); border-radius: 3px; overflow: hidden; }
-.cb-fill { height: 100%; border-radius: 3px; }
-.cb-val { font-family: var(--font-display); font-size: 11px; font-weight: 800; text-align: right; }
-.cb-val .chip { font-size: 11px; padding: 2px 6px; }
-.ma-panel { margin-top: 12px; padding: 12px; background: var(--bg-4); border-radius: 8px; border: 1px solid var(--border); }
-.ma-panel-title { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
-.ma-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-@media (max-width: 700px) { .ma-stat-grid { grid-template-columns: repeat(2, 1fr); } }
-.ma-stat-box { background: var(--bg-3); padding: 8px; border-radius: 6px; text-align: center; }
-.ma-stat-box .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
-.ma-stat-box .ms-val { font-family: var(--font-display); font-size: 14px; font-weight: 800; }
-.ma-muted { font-size: 10px; color: var(--text-3); margin-top: 6px; }
-.ma-split-table { width: 100%; font-size: 11px; margin-top: 8px; }
-.ma-split-table td { padding: 4px 0; border-bottom: 1px solid var(--border); }
-.pals-compare { display: flex; align-items: center; gap: 16px; margin: 10px 0; }
-.pals-num { display: block; }
-.pals-num .chip { font-size: 18px; padding: 4px 8px; }
-.pals-lbl { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
-.pals-gap { font-family: var(--font-display); font-size: 14px; font-weight: 800; }
-.pals-gap .chip { font-size: 13px; }
-.pals-status { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
-.pals-ok { background: var(--green-dim); color: var(--green); }
-.pals-warn { background: var(--gold-dim); color: var(--gold); }
-.pals-neutral { background: var(--bg-4); color: var(--text-2); }
-.ma-headline { margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.ma-read { margin: 6px 0; line-height: 1.5; }
-.ma-reliability { margin-top: 8px; }
-.profile-offense-block { margin-bottom: 28px; }
-.team-name-lg { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
-.team-abbr {
-  font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 8px;
-  background: var(--bg-3); border: 1px solid var(--border-2);
-  color: var(--purple-2); font-family: var(--mono);
-}
-.pill-tonight {
-  background: var(--green-dim); color: var(--green);
-  border: 1px solid rgba(74, 222, 128, 0.35);
-  font-size: 10px; font-weight: 600; padding: 5px 10px; border-radius: 99px;
-}
-.pill-platoon {
-  background: var(--gold-dim); color: var(--gold-l);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  font-size: 10px; font-weight: 600; padding: 5px 10px; border-radius: 99px;
-}
-.pill-hot { background: var(--red-dim); color: var(--red-l); border: 1px solid rgba(248,113,113,0.35); }
-.pill-cold { background: var(--blue-dim); color: var(--blue-l); border: 1px solid rgba(96,165,250,0.35); }
-.header-meta { font-size: 12px; color: var(--text-2); width: 100%; margin-top: 4px; }
-.section {
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 14px; padding: 20px 22px; margin-bottom: 18px;
-}
-.section-eyebrow {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
-}
-.section-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-.section-subtitle { font-size: 11.5px; color: var(--text-2); margin-bottom: 14px; }
-.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-@media (max-width: 900px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
-.metric-card {
-  background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg-4) 100%);
-  border: 1px solid var(--border); border-radius: 12px; padding: 16px;
-}
-.metric-card .m-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
-}
-.metric-card .m-val {
-  font-family: var(--font-display); font-weight: 800; line-height: 1.1;
-}
-.metric-card .m-val .chip { font-size: 22px; font-weight: 800; padding: 4px 10px; }
-.ca-split-stat .v { font-family: var(--font-display); font-size: 15px; font-weight: 800; line-height: 1.1; }
-.mini-stat .ms-val { font-size: 16px; font-weight: 800; font-family: var(--font-display); }
-.mini-stat .ms-val .chip { font-size: 15px; }
-.window-cell .w-val { font-size: 22px; font-weight: 800; font-family: var(--font-display); }
-.window-cell .w-val .chip { font-size: 20px; }
-.ca-wrc-medallion .v .chip { font-size: 28px; font-weight: 800; padding: 6px 12px; }
-.data-table td.num .chip { font-size: 12px; }
-.lineup-profile-table td.num .chip { font-size: 13px; min-width: 52px; }
-.cta.cta-sm { font-size: 11px; padding: 4px 8px; display: inline-block; }
-.quadrant-wrap {
-  display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;
-  margin-top: 14px;
-}
-.quadrant-chart {
-  width: 200px; height: 200px; background: var(--bg-3);
-  border: 1px solid var(--border); border-radius: 12px;
-  position: relative; flex-shrink: 0;
-}
-.quadrant-chart::before, .quadrant-chart::after {
-  content: ''; position: absolute; background: var(--border-2);
-}
-.quadrant-chart::before { left: 50%; top: 8px; bottom: 8px; width: 1px; }
-.quadrant-chart::after { top: 50%; left: 8px; right: 8px; height: 1px; }
-.quadrant-dot {
-  position: absolute; width: 12px; height: 12px; border-radius: 50%;
-  background: var(--purple); box-shadow: 0 0 12px var(--purple-glow);
-  transform: translate(-50%, -50%); border: 2px solid #fff;
-}
-.quadrant-legend { font-size: 11px; color: var(--text-2); line-height: 1.6; flex: 1; min-width: 180px; }
-.split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media (max-width: 700px) { .split-grid { grid-template-columns: 1fr; } }
-.split-panel {
-  background: var(--bg-3); border: 1px solid var(--border);
-  border-radius: 12px; padding: 16px;
-}
-.split-panel h4 { font-size: 12px; color: var(--text-2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
-.snapshot-infographic {
-  margin-top: 14px;
-  display: block;
-}
-.ca-insight-rail { background: var(--bg-3); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-.ca-insight-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
-.ca-insight-row:last-child { margin-bottom: 0; }
-.ca-insight-label {
-  display: block; font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
-  letter-spacing: 0.03em; text-transform: uppercase; color: var(--purple-3);
-}
-.ca-insight-text { display: block; margin-top: 2px; font-size: 12px; color: var(--text-2); line-height: 1.45; }
-.ca-split-pair { position: relative; display: flex; align-items: stretch; gap: 0; }
-.ca-split-card {
-  flex: 1; background: var(--bg-3); border: 1px solid var(--border);
-  border-radius: 14px; padding: 14px 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-}
-.ca-split-card.lhp { border-color: rgba(20, 184, 166, 0.4); }
-.ca-split-card.rhp { border-color: rgba(240, 147, 91, 0.4); }
-.ca-split-head {
-  font-family: var(--font-display); font-size: 11px; font-weight: 800;
-  letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px;
-}
-.ca-split-card.lhp .ca-split-head { color: #2DD4BF; }
-.ca-split-card.rhp .ca-split-head { color: #F0935B; text-align: right; }
-.ca-split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 8px; }
-.ca-split-stat .k { margin-top: 2px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); }
-.ca-split-badge {
-  margin-top: 10px; text-align: center; font-family: var(--font-display); font-size: 9.5px; font-weight: 800;
-  letter-spacing: 0.06em; text-transform: uppercase; border-radius: 6px; padding: 4px 6px;
-}
-.ca-split-card.lhp .ca-split-badge { color: #2DD4BF; border: 1px solid rgba(20, 184, 166, 0.4); }
-.ca-split-card.rhp .ca-split-badge { color: #F0935B; border: 1px solid rgba(240, 147, 91, 0.4); }
-.ca-split-medallion {
-  flex: none; align-self: center; z-index: 2; margin: 0 -12px; width: 62px; height: 62px;
-  border-radius: 50%; background: var(--bg-2); border: 1px solid var(--border-2);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-}
-.ca-split-medallion .d { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--text); }
-.ca-split-medallion .c { margin-top: 1px; font-size: 7px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-3); line-height: 1.2; }
-.mini-stat-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.mini-stat {
-  flex: 1; min-width: 70px; background: var(--bg-4);
-  border: 1px solid var(--border); border-radius: 8px; padding: 10px;
-}
-.mini-stat .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
-.platoon-bar {
-  height: 8px; border-radius: 4px; background: var(--bg-4);
-  margin-top: 10px; overflow: hidden; display: flex;
-}
-.platoon-bar .rhp { background: var(--blue); }
-.platoon-bar .lhp { background: var(--gold); }
-.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-.data-table th {
-  text-align: left; font-size: 9.5px; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3);
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-}
-.data-table td {
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-  font-family: var(--mono); font-size: 12px;
-}
-.data-table tr:hover td { background: var(--bg-3); }
-.data-table a { color: var(--purple-2); text-decoration: none; }
-.data-table a:hover { color: var(--purple); text-decoration: underline; }
-.tier-badge {
-  font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 4px;
-  display: inline-block;
-}
-.tier-ace { background: var(--green-dim); color: var(--green); }
-.tier-solid { background: var(--blue-dim); color: var(--blue); }
-.tier-avg { background: var(--gold-dim); color: var(--gold); }
-.tier-vol { background: var(--red-dim); color: var(--red-l); }
-.role-badge {
-  font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 4px;
-}
-.role-closer { background: var(--purple-glow); color: var(--purple); }
-.role-setup { background: var(--blue-dim); color: var(--blue-l); }
-.trend-up { color: var(--green); }
-.trend-down { color: var(--red-l); }
-.trend-flat { color: var(--text-3); }
-.window-row {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-}
-@media (max-width: 700px) { .window-row { grid-template-columns: repeat(2, 1fr); } }
-.window-cell {
-  background: var(--bg-3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px; text-align: center;
-}
-.window-cell .w-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; margin-bottom: 6px; }
-.empty-state { padding: 24px; text-align: center; color: var(--text-3); font-size: 13px; }
-.matchup-panel {
-  background: var(--bg-3); border: 1px solid var(--border);
-  border-radius: 12px; padding: 18px;
-}
-.matchup-panel a.cta {
-  display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 600;
-  color: var(--purple-2); text-decoration: none; padding: 8px 14px;
-  border: 1px solid var(--purple-3); border-radius: 8px;
-}
-.matchup-panel a.cta:hover { background: var(--purple-glow); }
-.snapshot-mini-quad { margin-top: 16px; display: flex; justify-content: flex-start; }
-.team-snapshot { flex-wrap: wrap; align-items: flex-start; }
-.snapshot-radar-slot { margin-left: auto; min-width: 160px; }
-.ma-trend-spark { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
-.ma-trend-label { display: block; margin-top: 6px; font-size: 10px; color: var(--text-3); letter-spacing: 0.04em; }
-.mlbma-snapshot-radar-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.mlbma-snapshot-radar-legend { display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: center; font-size: 10px; color: var(--text-2); }
-.mlbma-sr-leg-item { display: inline-flex; align-items: center; gap: 4px; }
-.mlbma-sr-leg-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.pc-pitcher-search, .pc-team-select {
-  min-width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-2);
-  background: var(--bg-3); color: var(--text); font-size: 13px;
-}
-.pc-search-group { flex: 1; min-width: 220px; }
-</style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260614h">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260614h">
-<link rel="stylesheet" href="theme.css?v=20260614h">
-<link rel="stylesheet" href="chase_nav.css?v=20260529e">
-<script src="mlbma_config.js?v=20260614h"></script>
-<script src="mlbma_assets.js?v=20260614h"></script>
-<script src="mlbma_icons.js?v=20260614h"></script>
-<script src="matchup_shared.js?v=20260614h"></script>
-<script src="mlbma_standings.js?v=20260614h"></script>
-<script src="team_profile_mini.js?v=20260614h"></script>
-<script src="mlbma_charts.js?v=20260614h"></script>
-<script src="profile_controls.js?v=20260614h"></script>
-<script src="mlbma_ui.js?v=20260614h" data-page="team_profile.html"></script>
-<link rel="stylesheet" href="research_lab.css?v=20260614h">
-  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260615b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260615b">
+<link rel="stylesheet" href="theme.css?v=20260615b">
+<link rel="stylesheet" href="chase_nav.css?v=20260609a">
+<link rel="stylesheet" href="team_profile.css?v=20260615b">
+<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+<script src="mlbma_config.js?v=20260615b"></script>
+<script src="mlbma_assets.js?v=20260615b"></script>
+<script src="mlbma_icons.js?v=20260615b"></script>
+<script src="matchup_shared.js?v=20260615b"></script>
+<script src="mlbma_standings.js?v=20260615b"></script>
+<script src="team_profile_mini.js?v=20260615b"></script>
+<script src="mlbma_charts.js?v=20260615b"></script>
+<script src="profile_controls.js?v=20260615b"></script>
+<script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
 </head>
-<body>
+<body class="team-profile-page">
 <div class="loading-text">Loading team intelligence...</div>
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
@@ -512,25 +111,21 @@ h1 {
 </div>
 
 
-<div class="container">
-  <div class="header">
-    <div class="brand-row">
-      <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill">Team Profile System</span>
-    </div>
-    <h1>Team Organizational View</h1>
-    <p class="subtitle">Today's lineup profiles, offensive snapshot, rotation, and bullpen.</p>
-    <div class="data-banner" id="dataBanner"></div>
-  </div>
+<main class="container ca-page-shell">
+  <div id="profilePageHeader"></div>
+  <div class="tp-data-banner" id="dataBanner"></div>
 
-  <div class="selector-bar">
-    <div class="selector-group">
-      <label class="selector-label" for="teamSelect">Team</label>
-      <select class="selector-select" id="teamSelect"></select>
+  <div class="tp-sticky-wrap">
+    <div class="hub-control-bar tp-team-bar">
+      <div class="hub-control-row">
+        <div class="hub-ctrl-group">
+          <span class="hub-ctrl-label">Team</span>
+          <select class="hub-team-select" id="teamSelect" aria-label="Select team"></select>
+        </div>
+      </div>
     </div>
+    <div id="profileControlBar"></div>
   </div>
-
-  <div id="profileControlBar"></div>
 
   <div class="profile-offense-block">
     <div id="profileSnapshot"></div>
@@ -538,7 +133,7 @@ h1 {
   </div>
 
   <div id="profileOrgSections"></div>
-</div>
+</main>
 
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -778,21 +373,16 @@ function todayLineupForTeam(team) {
 function renderTodayLineupSection(team) {
   var slots = todayLineupForTeam(team);
   if (!slots.length) {
-    return '<div class="section"><div class="section-eyebrow">Lineup</div>'
-      + '<div class="section-title">Today\'s Projected Lineup</div>'
-      + '<div class="section-subtitle">Batting order from Today_Lineups · run pipeline for slate updates</div>'
-      + '<div class="empty-state">No projected lineup in Today_Lineups for ' + escHtml(team) + '.</div></div>';
+    return sectionCard('Lineup', "Today's Projected Lineup",
+      'Batting order from Today_Lineups · run pipeline for slate updates',
+      '<div class="tp-empty">No projected lineup in Today_Lineups for ' + escHtml(team) + '.</div>');
   }
   var game = pickCol(slots[0], ['Game', 'game']);
   var time = pickCol(slots[0], ['Time', 'time']);
   var spHand = lineupSpHand(team);
   var splitNote = spHand ? ' · vs ' + spHand + 'HP SP split' : '';
-  var html = '<div class="section"><div class="section-eyebrow">Lineup</div>'
-    + '<div class="section-title">Today\'s Projected Lineup</div>'
-    + '<div class="section-subtitle">' + escHtml(game || 'Slate game') + (time ? ' · ' + escHtml(time) : '') + escHtml(splitNote) + '</div>'
-    + '<table class="data-table lineup-profile-table"><thead><tr>'
-    + '<th>#</th><th>Pos</th><th>Player</th><th>B</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>Profile</th>'
-    + '</tr></thead><tbody>';
+  var body = profileTableOpen()
+    + '<thead><tr><th>#</th><th>Pos</th><th>Player</th><th>B</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th></th></tr></thead><tbody>';
   slots.forEach(function(slot) {
     var pname = pickCol(slot, ['Player', 'player']);
     var profileName = resolvePlayerFullName(pname, team);
@@ -804,7 +394,7 @@ function renderTodayLineupSection(team) {
     var rcv = row ? num(pickCol(row, ['RCV'])) : null;
     var obr = row ? num(pickCol(row, ['OBR'])) : null;
     var osi = row ? num(pickCol(row, ['OSI'])) : null;
-    html += '<tr><td class="num">' + escHtml(order || '—') + '</td>'
+    body += '<tr><td class="num">' + escHtml(order || '—') + '</td>'
       + '<td>' + escHtml(pos || '—') + '</td>'
       + '<td><a href="batter_profile.html?player=' + encodePlayer(profileName) + '">' + escHtml(pname) + '</a></td>'
       + '<td>' + escHtml(bats || '—') + '</td>'
@@ -812,14 +402,47 @@ function renderTodayLineupSection(team) {
       + '<td class="num">' + valChip(rcv, 'rcv', false, 1) + '</td>'
       + '<td class="num">' + valChip(obr, 'obr', false, 1) + '</td>'
       + '<td class="num">' + valChip(osi, 'osi', false, 1) + '</td>'
-      + '<td><a class="cta cta-sm" href="batter_profile.html?player=' + encodePlayer(profileName) + '">Profile →</a></td></tr>';
+      + '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + encodePlayer(profileName) + '">Profile</a></td></tr>';
   });
-  html += '</tbody></table></div>';
-  return html;
+  body += '</tbody>' + profileTableClose();
+  return sectionCard('Lineup', "Today's Projected Lineup",
+    (game || 'Slate game') + (time ? ' · ' + time : '') + splitNote, body);
 }
 
 function escHtml(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function sectionHeaderHtml(eyebrow, title, subtitle) {
+  if (window.MLBMAAssets && MLBMAAssets.sectionHeaderHtml) {
+    return MLBMAAssets.sectionHeaderHtml({ eyebrow: eyebrow, title: title, subtitle: subtitle || '' });
+  }
+  return '<header class="ca-section-header"><p class="ca-eyebrow">' + escHtml(eyebrow) + '</p>'
+    + '<h2 class="ca-section-title">' + escHtml(title) + '</h2>'
+    + (subtitle ? '<p class="ca-helper">' + escHtml(subtitle) + '</p>' : '') + '</header>';
+}
+
+function sectionCard(eyebrow, title, subtitle, body, extraClass) {
+  return '<section class="ca-card tp-section' + (extraClass ? ' ' + extraClass : '') + '">'
+    + sectionHeaderHtml(eyebrow, title, subtitle) + body + '</section>';
+}
+
+function profileTableOpen() {
+  return '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table">';
+}
+
+function profileTableClose() {
+  return '</table></div>';
+}
+
+function mountProfilePageHeader() {
+  if (!window.MLBMAAssets || !MLBMAAssets.mountPlatformHeader) return;
+  MLBMAAssets.mountPlatformHeader('profilePageHeader', {
+    eyebrow: 'Chase Analytics · Profiles',
+    title: 'Team Profile',
+    subtitle: "Today's lineup, offensive snapshot, rotation, and bullpen intelligence.",
+    showPlatformNav: false
+  });
 }
 
 function poolPitchScore(sp) {
@@ -975,83 +598,67 @@ function renderTeam(team) {
 
   var html = renderTodayLineupSection(STATE.team);
   if (platoonSens) {
-    html += '<div style="margin-bottom:12px;"><span class="pill-platoon">Platoon Sensitive (gap ' + fmt(platoonGap, 1) + ')</span></div>';
+    html += '<div class="tp-platoon-callout"><span class="pill-platoon">Platoon Sensitive (gap ' + fmt(platoonGap, 1) + ')</span></div>';
   }
 
-  html += '<div class="section" style="display:none;"><div class="section-eyebrow">Offense</div>';
-  html += '<div class="section-title">Offensive Overview</div>';
-  html += '<div class="section-subtitle">Created metrics + PALS context</div>';
-  html += '<div class="metric-grid">';
-  ['osi','abq','rcv','obr','proj_osi','pals'].forEach(function(k) {
-    var labels = { osi:'OSI', abq:'ABQ', rcv:'RCV', obr:'OBR', proj_osi:'projOSI', pals:'PALS' };
-    var v = num(pickCol(prof, [k]));
-    html += '<div class="metric-card"><div class="m-label">' + labels[k] + '</div>';
-    html += '<div class="m-val">' + metricCardChip(k, v) + '</div></div>';
-  });
-  html += '</div>';
-  html += '<div class="quadrant-wrap"><div class="quadrant-chart">';
-  html += '<div class="quadrant-dot" style="left:' + q.x + '%;top:' + q.y + '%;"></div></div>';
-  html += '<div class="quadrant-legend"><strong>OSI × PP-Gap quadrant</strong><br>';
-  html += 'Position shows team relative to league on offensive quality (OSI, horizontal) and projection gap (PP-Gap, vertical).<br>';
-  html += 'PP-Gap: ' + valChip(ppGap, 'ppGap', false, 1);
-  if (platoonSens) html += '<br><span style="color:var(--gold-l);">⚠ Platoon gap exceeds ' + PLATOON_GAP + ' OSI points</span>';
-  html += '</div></div></div>';
-
-  /* Section 3 — Rotation */
-  html += '<div class="section"><div class="section-eyebrow">Rotation</div>';
-  html += '<div class="section-title">Starting Rotation</div>';
-  html += '<div class="metric-grid" style="margin-bottom:14px;">';
+  /* Rotation */
+  var rotKpi = '<div class="tp-kpi-grid">';
   var avgPs = num(pickCol(prof, ['avg_pitching_score']));
-  html += '<div class="metric-card"><div class="m-label">Pitching Score</div><div class="m-val">' + valChip(avgPs, 'pitching', false, 0) + '</div></div>';
-  html += '<div class="metric-card"><div class="m-label">Avg IP/Start</div><div class="m-val">' + valChip(num(pickCol(prof, ['avg_ip_per_start'])), 'osi', false, 2) + '</div></div>';
-  html += '<div class="metric-card"><div class="m-label">Team K%</div><div class="m-val">' + valChip(num(pickCol(prof, ['team_k_pct'])), 'pitching', false, 1) + '</div></div>';
-  html += '<div class="metric-card"><div class="m-label">Team BB%</div><div class="m-val">' + valChip(num(pickCol(prof, ['team_bb_pct'])), 'pitching', true, 1) + '</div></div>';
-  html += '<div class="metric-card"><div class="m-label">Team ERA</div><div class="m-val">' + valChip(num(pickCol(prof, ['team_era'])), 'pitching', true, 2) + '</div></div>';
-  html += '</div>';
-  html += '<table class="data-table"><thead><tr><th>Name</th><th>Tier</th><th>K%</th><th>BB%</th><th>OSI Allowed</th><th>Stale</th></tr></thead><tbody>';
+  [
+    ['Pitching Score', valChip(avgPs, 'pitching', false, 0)],
+    ['Avg IP/Start', valChip(num(pickCol(prof, ['avg_ip_per_start'])), 'osi', false, 2)],
+    ['Team K%', valChip(num(pickCol(prof, ['team_k_pct'])), 'pitching', false, 1)],
+    ['Team BB%', valChip(num(pickCol(prof, ['team_bb_pct'])), 'pitching', true, 1)],
+    ['Team ERA', valChip(num(pickCol(prof, ['team_era'])), 'pitching', true, 2)]
+  ].forEach(function(pair) {
+    rotKpi += '<div class="tp-kpi-card"><div class="tp-kpi-lab">' + pair[0] + '</div><div class="m-val">' + pair[1] + '</div></div>';
+  });
+  rotKpi += '</div>';
+  rotKpi += profileTableOpen()
+    + '<thead><tr><th>Name</th><th>Tier</th><th>K%</th><th>BB%</th><th>OSI Allowed</th><th>Stale</th></tr></thead><tbody>';
   var teamSps = DATA.sps.filter(function(s) {
     return teamKey(pickCol(s, ['pitcher_team', 'pitcher team'])) === STATE.team;
   }).sort(function(a, b) {
     return (num(pickCol(b, ['PitchScore'])) || 0) - (num(pickCol(a, ['PitchScore'])) || 0);
   });
   if (!teamSps.length) {
-    html += '<tr><td colspan="6" class="empty-state">No SP profiles for this team</td></tr>';
+    rotKpi += '<tr><td colspan="6" class="tp-empty">No SP profiles for this team</td></tr>';
   } else {
     teamSps.forEach(function(sp) {
       var pname = pickCol(sp, ['pitcher_name']);
       var ps = num(pickCol(sp, ['PitchScore'])) || poolPitchScore(sp);
       var tier = tierLabel(ps, PITCH_TIERS);
       var stale = pickCol(sp, ['stale']) === 'True' || pickCol(sp, ['stale']) === 'true';
-      html += '<tr><td><a href="pitcher_profile.html?pitcher=' + encodePlayer(pname) + '">' + pname + '</a></td>';
-      html += '<td><span class="tier-badge ' + tier.cls + '">' + tier.label + '</span></td>';
-      html += '<td>' + fmt(num(pickCol(sp, ['K_pct'])), 1) + '</td>';
-      html += '<td>' + fmt(num(pickCol(sp, ['BB_pct'])), 1) + '</td>';
-      html += '<td>' + fmt(num(pickCol(sp, ['OSI_allowed'])), 1) + '</td>';
-      html += '<td>' + (stale ? '<span style="color:var(--gold-l);">⚠</span>' : '—') + '</td></tr>';
+      rotKpi += '<tr><td><a href="pitcher_profile.html?pitcher=' + encodePlayer(pname) + '">' + pname + '</a></td>';
+      rotKpi += '<td><span class="tier-badge ' + tier.cls + '">' + tier.label + '</span></td>';
+      rotKpi += '<td class="num">' + fmt(num(pickCol(sp, ['K_pct'])), 1) + '</td>';
+      rotKpi += '<td class="num">' + fmt(num(pickCol(sp, ['BB_pct'])), 1) + '</td>';
+      rotKpi += '<td class="num">' + fmt(num(pickCol(sp, ['OSI_allowed'])), 1) + '</td>';
+      rotKpi += '<td>' + (stale ? '⚠' : '—') + '</td></tr>';
     });
   }
-  html += '</tbody></table></div>';
+  rotKpi += '</tbody>' + profileTableClose();
+  html += sectionCard('Rotation', 'Starting Rotation', 'SP profiles and team pitching context', rotKpi);
 
-  /* Section 4 — Bullpen */
-  html += '<div class="section"><div class="section-eyebrow">Bullpen</div>';
-  html += '<div class="section-title">Bullpen Overview</div>';
-  html += '<div class="metric-grid" style="margin-bottom:14px;">';
+  /* Bullpen */
+  var bpKpi = '<div class="tp-kpi-grid">';
   [['bullpen_era','ERA', true, 2], ['bullpen_osi_allowed','OSI Allowed', true, 1], ['bullpen_high_lev_era','High-Lev ERA', true, 2], ['bullpen_ir_scored_pct','IR Scored%', false, 1]].forEach(function(pair) {
     var v = num(pickCol(prof, [pair[0]]));
-    html += '<div class="metric-card"><div class="m-label">' + pair[1] + '</div><div class="m-val">' + valChip(v, pair[1].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]) + '</div></div>';
+    bpKpi += '<div class="tp-kpi-card"><div class="tp-kpi-lab">' + pair[1] + '</div><div class="m-val">'
+      + valChip(v, pair[1].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]) + '</div></div>';
   });
-  html += '</div>';
+  bpKpi += '</div>';
   var closer = pickCol(prof, ['closer_name']);
   var setup = pickCol(prof, ['primary_setup']);
-  if (closer) html += '<p style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Closer: <strong>' + closer + '</strong>';
-  if (setup) html += ' · Setup: ' + setup.split(';').join(', ');
-  if (closer) html += '</p>';
-  html += '<table class="data-table"><thead><tr><th>Name</th><th>Role</th><th>ERA</th><th>OSI Allowed</th><th>Hand</th></tr></thead><tbody>';
+  if (closer) bpKpi += '<p class="ca-helper" style="margin-bottom:12px">Closer: <strong>' + closer + '</strong>'
+    + (setup ? ' · Setup: ' + setup.split(';').join(', ') : '') + '</p>';
+  bpKpi += profileTableOpen()
+    + '<thead><tr><th>Name</th><th>Role</th><th>ERA</th><th>OSI Allowed</th><th>Hand</th></tr></thead><tbody>';
   var relievers = DATA.bullpen.filter(function(r) {
     return teamKey(pickCol(r, ['pitcher_team'])) === STATE.team;
   });
   if (!relievers.length) {
-    html += '<tr><td colspan="5" class="empty-state">No bullpen individual data</td></tr>';
+    bpKpi += '<tr><td colspan="5" class="tp-empty">No bullpen individual data</td></tr>';
   } else {
     relievers.forEach(function(r) {
       var pname = pickCol(r, ['pitcher_name']);
@@ -1066,18 +673,18 @@ function renderTeam(team) {
       if (rhh !== null && lhh !== null) {
         handAdv = rhh < lhh ? 'vs RHH' : (lhh < rhh ? 'vs LHH' : 'even');
       }
-      html += '<tr><td><a href="reliever_profile.html?player=' + encodePlayer(pname) + '">' + pname + '</a></td>';
-      html += '<td><span class="role-badge ' + role.cls + '">' + role.label + '</span></td>';
-      html += '<td>' + fmt(era, 2) + '</td><td>' + fmt(osiA, 1) + '</td>';
-      html += '<td>' + hand + (handAdv ? ' · ' + handAdv : '') + '</td></tr>';
+      bpKpi += '<tr><td><a href="reliever_profile.html?player=' + encodePlayer(pname) + '">' + pname + '</a></td>';
+      bpKpi += '<td><span class="role-badge ' + role.cls + '">' + role.label + '</span></td>';
+      bpKpi += '<td class="num">' + fmt(era, 2) + '</td><td class="num">' + fmt(osiA, 1) + '</td>';
+      bpKpi += '<td>' + hand + (handAdv ? ' · ' + handAdv : '') + '</td></tr>';
     });
   }
-  html += '</tbody></table></div>';
+  bpKpi += '</tbody>' + profileTableClose();
+  html += sectionCard('Bullpen', 'Bullpen Overview', 'Unit metrics and individual reliever profiles', bpKpi);
 
-  /* Section 5 — Batters */
-  html += '<div class="section"><div class="section-eyebrow">Roster</div>';
-  html += '<div class="section-title">Qualified Batters (50+ PA)</div>';
-  html += '<table class="data-table"><thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>vs RHP</th><th>vs LHP</th><th>Trend</th></tr></thead><tbody>';
+  /* Roster */
+  var rosterBody = profileTableOpen()
+    + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>vs RHP</th><th>vs LHP</th><th>Trend</th></tr></thead><tbody>';
   var batters = DATA.batters.filter(function(b) {
     return teamKey(pickCol(b, ['team'])) === STATE.team && num(pickCol(b, ['PA'])) >= 50;
   });
@@ -1109,20 +716,21 @@ function renderTeam(team) {
   }).sort(function(a, b) { return (b.osi || 0) - (a.osi || 0); });
 
   if (!rosterList.length) {
-    html += '<tr><td colspan="10" class="empty-state">No qualified batters (run batter profile pipeline)</td></tr>';
+    rosterBody += '<tr><td colspan="10" class="tp-empty">No qualified batters (run batter profile pipeline)</td></tr>';
   } else {
     rosterList.forEach(function(b) {
-      html += '<tr><td><a href="batter_profile.html?player=' + encodePlayer(b.name) + '">' + b.name + '</a></td>';
-      html += '<td>' + (b.pos || '—') + '</td><td>' + (b.bats || '—') + '</td>';
-      html += '<td class="num">' + valChip(b.abq, 'abq', false, 1) + '</td><td class="num">' + valChip(b.rcv, 'rcv', false, 1) + '</td><td class="num">' + valChip(b.obr, 'obr', false, 1) + '</td>';
-      html += '<td class="num">' + valChip(b.osi, 'osi', false, 1) + '</td>';
-      html += '<td class="num">' + valChip(b.rhp, 'osi', false, 1) + '</td><td class="num">' + valChip(b.lhp, 'osi', false, 1) + '</td>';
-      html += '<td>' + trendArrow(b.trend) + '</td></tr>';
+      rosterBody += '<tr><td><a href="batter_profile.html?player=' + encodePlayer(b.name) + '">' + b.name + '</a></td>';
+      rosterBody += '<td>' + (b.pos || '—') + '</td><td>' + (b.bats || '—') + '</td>';
+      rosterBody += '<td class="num">' + valChip(b.abq, 'abq', false, 1) + '</td><td class="num">' + valChip(b.rcv, 'rcv', false, 1) + '</td><td class="num">' + valChip(b.obr, 'obr', false, 1) + '</td>';
+      rosterBody += '<td class="num">' + valChip(b.osi, 'osi', false, 1) + '</td>';
+      rosterBody += '<td class="num">' + valChip(b.rhp, 'osi', false, 1) + '</td><td class="num">' + valChip(b.lhp, 'osi', false, 1) + '</td>';
+      rosterBody += '<td>' + trendArrow(b.trend) + '</td></tr>';
     });
   }
-  html += '</tbody></table></div>';
+  rosterBody += '</tbody>' + profileTableClose();
+  html += sectionCard('Roster', 'Qualified Batters (50+ PA)', 'Season-long batter metrics with platoon splits', rosterBody);
 
-  /* Section 6 — Window trend */
+  /* Window trend */
   var ytd = num(pickCol(prof, ['osi_ytd']));
   var l30 = num(pickCol(prof, ['osi_l30']));
   var l14 = num(pickCol(prof, ['osi_l14']));
@@ -1130,63 +738,56 @@ function renderTeam(team) {
   var dir = pickCol(prof, ['window_direction']) || 'stable';
   var hotCold = '';
   if (l7 !== null && ytd !== null) {
-    if (l7 - ytd >= WINDOW_GAP) hotCold = '<span class="pill-hot" style="margin-left:8px;">Hot</span>';
-    else if (l7 - ytd <= -WINDOW_GAP) hotCold = '<span class="pill-cold" style="margin-left:8px;">Cold</span>';
+    if (l7 - ytd >= WINDOW_GAP) hotCold = ' <span class="pill-hot">Hot</span>';
+    else if (l7 - ytd <= -WINDOW_GAP) hotCold = ' <span class="pill-cold">Cold</span>';
   }
-  html += '<div class="section"><div class="section-eyebrow">Momentum</div>';
-  html += '<div class="section-title">Team Window Trend' + hotCold + '</div>';
-  html += '<div class="section-subtitle">ABQ / RCV / OBR components from season baseline · ' + dir + '</div>';
-  html += '<div class="window-row">';
+  var winBody = '<div class="tp-window-row">';
   [['YTD', ytd], ['L30', l30], ['L14', l14], ['L7', l7]].forEach(function(w) {
-    html += '<div class="window-cell"><div class="w-label">' + w[0] + '</div>';
-    html += '<div class="w-val">' + valChip(w[1], 'osi', false, 1) + '</div>';
-    html += '<div style="font-size:10px;color:var(--text-3);margin-top:6px;">ABQ ' + fmt(num(pickCol(prof, ['abq'])),1) +
-      ' · RCV ' + fmt(num(pickCol(prof, ['rcv'])),1) + ' · OBR ' + fmt(num(pickCol(prof, ['obr'])),1) + '</div></div>';
+    winBody += '<div class="tp-window-cell"><div class="w-label">' + w[0] + '</div>';
+    winBody += '<div class="w-val">' + valChip(w[1], 'osi', false, 1) + '</div>';
+    winBody += '<div class="ca-helper" style="margin-top:6px;font-size:10px">ABQ ' + fmt(num(pickCol(prof, ['abq'])), 1)
+      + ' · RCV ' + fmt(num(pickCol(prof, ['rcv'])), 1) + ' · OBR ' + fmt(num(pickCol(prof, ['obr'])), 1) + '</div></div>';
   });
-  html += '</div></div>';
+  winBody += '</div>';
+  html += sectionCard('Momentum', 'Team Window Trend' + hotCold, 'ABQ / RCV / OBR from season baseline · ' + dir, winBody);
 
-  /* Section 7 — Handedness */
-  html += '<div class="section"><div class="section-eyebrow">Platoon</div>';
-  html += '<div class="section-title">Handedness Profile</div>';
-  html += '<div class="split-grid">';
-  html += '<div class="split-panel"><h4>vs RHP</h4><div class="mini-stat-row">';
-  html += miniStat('OSI', num(pickCol(prof, ['osi_vs_rhp'])));
-  html += miniStat('ABQ', num(pickCol(prof, ['abq_vs_rhp'])), 'abq');
-  html += miniStat('RCV', num(pickCol(prof, ['rcv_vs_rhp'])), 'rcv');
-  html += miniStat('OBR', num(pickCol(prof, ['obr_vs_rhp'])), 'obr');
-  html += '</div></div>';
-  html += '<div class="split-panel"><h4>vs LHP</h4><div class="mini-stat-row">';
-  html += miniStat('OSI', num(pickCol(prof, ['osi_vs_lhp'])));
-  html += miniStat('ABQ', num(pickCol(prof, ['abq_vs_lhp'])), 'abq');
-  html += miniStat('RCV', num(pickCol(prof, ['rcv_vs_lhp'])), 'rcv');
-  html += miniStat('OBR', num(pickCol(prof, ['obr_vs_lhp'])), 'obr');
-  html += '</div></div></div>';
+  /* Handedness */
+  var platBody = '<div class="tp-split-grid">';
+  platBody += '<div class="tp-split-panel"><h4>vs RHP</h4><div class="tp-mini-stat-row">';
+  platBody += miniStat('OSI', num(pickCol(prof, ['osi_vs_rhp'])));
+  platBody += miniStat('ABQ', num(pickCol(prof, ['abq_vs_rhp'])), 'abq');
+  platBody += miniStat('RCV', num(pickCol(prof, ['rcv_vs_rhp'])), 'rcv');
+  platBody += miniStat('OBR', num(pickCol(prof, ['obr_vs_rhp'])), 'obr');
+  platBody += '</div></div>';
+  platBody += '<div class="tp-split-panel"><h4>vs LHP</h4><div class="tp-mini-stat-row">';
+  platBody += miniStat('OSI', num(pickCol(prof, ['osi_vs_lhp'])));
+  platBody += miniStat('ABQ', num(pickCol(prof, ['abq_vs_lhp'])), 'abq');
+  platBody += miniStat('RCV', num(pickCol(prof, ['rcv_vs_lhp'])), 'rcv');
+  platBody += miniStat('OBR', num(pickCol(prof, ['obr_vs_lhp'])), 'obr');
+  platBody += '</div></div></div>';
   if (platoonGap !== null) {
     var pctR = 50 + platoonGap / 2;
-    html += '<div class="platoon-bar" title="Platoon gap ' + fmt(platoonGap, 1) + '"><div class="rhp" style="width:' + pctR + '%"></div><div class="lhp" style="width:' + (100 - pctR) + '%"></div></div>';
-    html += '<p style="font-size:11px;color:var(--text-3);margin-top:6px;">Platoon gap (RHP OSI − LHP OSI): ' + fmt(platoonGap, 1) + '</p>';
+    platBody += '<div class="tp-platoon-bar" title="Platoon gap ' + fmt(platoonGap, 1) + '"><div class="rhp" style="width:' + pctR + '%"></div><div class="lhp" style="width:' + (100 - pctR) + '%"></div></div>';
+    platBody += '<p class="ca-helper" style="margin-top:8px">Platoon gap (RHP OSI − LHP OSI): ' + fmt(platoonGap, 1) + '</p>';
   }
-  html += '</div>';
+  html += sectionCard('Platoon', 'Handedness Profile', 'Offensive quality by pitcher hand', platBody);
 
-  /* Section 8 — Home/Away */
+  /* Home/Away */
   var hOsi = num(pickCol(prof, ['home_osi']));
   var aOsi = num(pickCol(prof, ['away_osi']));
   var haGap = num(pickCol(prof, ['home_away_osi_gap']));
-  html += '<div class="section"><div class="section-eyebrow">Splits</div>';
-  html += '<div class="section-title">Home / Away Profile</div>';
-  html += '<div class="split-grid">';
-  html += '<div class="split-panel"><h4>Home</h4>' + miniStat('OSI', hOsi) + '</div>';
-  html += '<div class="split-panel"><h4>Away</h4>' + miniStat('OSI', aOsi) + '</div></div>';
+  var haBody = '<div class="tp-split-grid">'
+    + '<div class="tp-split-panel"><h4>Home</h4>' + miniStat('OSI', hOsi) + '</div>'
+    + '<div class="tp-split-panel"><h4>Away</h4>' + miniStat('OSI', aOsi) + '</div></div>';
   if (haGap !== null && Math.abs(haGap) >= HOME_AWAY_GAP) {
-    html += '<p style="font-size:12px;color:var(--gold-l);margin-top:10px;">Notable home/away OSI gap: ' + fmt(haGap, 1) + '</p>';
+    haBody += '<p class="ca-helper" style="margin-top:10px;color:var(--gold)">Notable home/away OSI gap: ' + fmt(haGap, 1) + '</p>';
   }
-  html += '</div>';
+  html += sectionCard('Splits', 'Home / Away Profile', 'Location-based offensive context', haBody);
 
-  /* Section 9 — Tonight */
-  html += '<div class="section"><div class="section-eyebrow">Tonight</div>';
-  html += '<div class="section-title">Matchup Context</div>';
+  /* Tonight */
+  var tonightBody = '';
   if (!game) {
-    html += '<div class="empty-state">No game scheduled today for ' + STATE.team + '</div>';
+    tonightBody = '<div class="tp-empty">No game scheduled today for ' + STATE.team + '</div>';
   } else {
     var away = teamKey(pickCol(game, ['Away', 'away_team']));
     var home = teamKey(pickCol(game, ['Home', 'home_team']));
@@ -1197,17 +798,17 @@ function renderTeam(team) {
     var oppPitch = pitchTeamRow(opp);
     var oppPs = oppPitch ? num(pickCol(oppPitch, ['PitchScore'])) : null;
     var edge = (teamOsi !== null && oppPs !== null) ? teamOsi - oppPs : null;
-    html += '<div class="matchup-panel">';
-    html += '<p><strong>Opponent:</strong> ' + (TEAM_NAMES[opp] || opp) + ' · OSI ' + fmt(oppOsi, 1) + '</p>';
-    html += '<p><strong>Opposing SP:</strong> ' + (spName || 'TBD') + (oppPs !== null ? ' · Pitch Score ' + fmt(oppPs, 1) : '') + '</p>';
+    tonightBody = '<div class="tp-matchup-panel">';
+    tonightBody += '<p><strong>Opponent:</strong> ' + (TEAM_NAMES[opp] || opp) + ' · OSI ' + fmt(oppOsi, 1) + '</p>';
+    tonightBody += '<p><strong>Opposing SP:</strong> ' + (spName || 'TBD') + (oppPs !== null ? ' · Pitch Score ' + fmt(oppPs, 1) : '') + '</p>';
     if (edge !== null) {
-      html += '<p><strong>Lineup edge (OSI − opp Pitch):</strong> <span style="color:' +
-        (edge > 0 ? 'var(--green)' : 'var(--red-l)') + '">' + (edge >= 0 ? '+' : '') + fmt(edge, 1) + '</span></p>';
+      tonightBody += '<p><strong>Lineup edge (OSI − opp Pitch):</strong> <span class="' + (edge > 0 ? 'trend-up' : 'trend-down') + '">'
+        + (edge >= 0 ? '+' : '') + fmt(edge, 1) + '</span></p>';
     }
-    if (platoonSens) html += '<p style="color:var(--gold-l);font-size:12px;">Platoon-sensitive offense — check handedness vs opposing SP</p>';
-    html += '<a class="cta" href="team_rankings.html">Full matchup sheet →</a></div>';
+    if (platoonSens) tonightBody += '<p class="ca-helper" style="color:var(--gold)">Platoon-sensitive offense — check handedness vs opposing SP</p>';
+    tonightBody += '<a class="ca-btn ca-btn--primary" href="team_rankings.html">Full matchup sheet</a></div>';
   }
-  html += '</div>';
+  html += sectionCard('Tonight', 'Matchup Context', 'Slate opponent and pitching edge', tonightBody);
 
   var org = document.getElementById('profileOrgSections');
   if (org) org.innerHTML = html;
@@ -1215,7 +816,7 @@ function renderTeam(team) {
 }
 
 function miniStat(label, val, ctx) {
-  return '<div class="mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' + valChip(val, ctx || 'osi', false, 1) + '</div></div>';
+  return '<div class="tp-mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' + valChip(val, ctx || 'osi', false, 1) + '</div></div>';
 }
 
 function initSelector() {
@@ -1295,6 +896,7 @@ function dismissLoading() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  mountProfilePageHeader();
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }

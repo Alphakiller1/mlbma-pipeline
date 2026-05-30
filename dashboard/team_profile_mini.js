@@ -254,7 +254,7 @@
     var m = resolveView(prof, ctx);
     var projArrow = m.proj != null && m.osi != null ? (m.proj > m.osi + 2 ? ' ↑' : m.proj < m.osi - 2 ? ' ↓' : ' →') : '';
 
-    return '<div class="team-snapshot">'
+    return '<section class="ca-card tp-snapshot-card"><div class="team-snapshot">'
       + '<div class="snapshot-main" style="width:100%">'
       + renderInfographicHero(prof, team, m, ctx)
       + '<div class="ca-stat-strip">'
@@ -266,7 +266,7 @@
       + '<span>RCV ' + valChip(m.rcv, 'rcv', false, 1) + '</span>'
       + '</div>'
       + '<div class="snapshot-infographic">' + splitPairHtml(m) + '</div>'
-      + '</div></div>';
+      + '</div></div></section>';
   }
 
   function iconCircle(name) {
