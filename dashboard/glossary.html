@@ -8,22 +8,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics · Metric Glossary</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root {
   --bg:#0A0A0A; --bg-2:#111114; --bg-3:#18181c; --border:#28282f;
   --text:#F4F4F7; --text-2:#A1A1AA; --text-3:#71717A;
   --purple:#C084FC; --purple-3:#8B5CF6; --purple-glow:rgba(192,132,252,.25);
   --green:#4ADE80; --red:#F87171; --gold:#FBBF24; --blue:#60A5FA;
+  --font-body:"Inter Tight",system-ui,-apple-system,sans-serif;
+  --font-display:"Archivo",system-ui,sans-serif;
+  --font:var(--font-body);
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Monaco,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;font-size:14px;line-height:1.55}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.55}
 .container{max-width:1100px;margin:0 auto;padding:32px 24px 80px}
 .brand-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
-h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(135deg,#fff,var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-display);font-variation-settings:"wdth" 125;letter-spacing:-.015em;background:linear-gradient(135deg,#fff,var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .subtitle{color:var(--text-2);font-size:13px;max-width:640px}
 .glossary-search{width:100%;max-width:420px;margin:20px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-size:14px}
 .layer-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin:28px 0 12px}
 .section{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px}
-.section h2{font-size:16px;margin-bottom:10px}
+.section h2{font-size:16px;margin-bottom:10px;font-family:var(--font-display);font-variation-settings:"wdth" 125;letter-spacing:-.01em}
 .reading-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 .reading-step{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12px}
 .reading-step strong{display:block;color:var(--purple);margin-bottom:4px}
@@ -36,16 +41,16 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;background:linear-gradient(13
 .tier-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
 .tier-table th,.tier-table td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left}
 .tier-elite{color:var(--green)} .tier-mid{color:var(--gold)} .tier-weak{color:var(--red)}
-.formula{font-family:monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin:8px 0;color:var(--text-2)}
+.formula{font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin:8px 0;color:var(--text-2)}
 .archetype-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .alpha-list{columns:2;gap:24px;font-size:12px}
 .alpha-list li{break-inside:avoid;margin-bottom:8px;color:var(--text-2)}
 .alpha-list b{color:var(--text)}
 .glossary-term.hidden{display:none}
 </style>
-<link rel="stylesheet" href="mlbma_ui.css">
-<link rel="stylesheet" href="mlbma_design_system.css">
-<link rel="stylesheet" href="chase_nav.css">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260529f">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260608c">
+<link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
 <script src="mlbma_ui.js" data-page="glossary.html"></script>

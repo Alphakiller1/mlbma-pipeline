@@ -479,7 +479,7 @@ html.view-research #oorSection { display: none !important; }
 }
 .pl-snapshot-card { margin-bottom: 20px; }
 .pl-snap-top { display: flex; gap: 16px; align-items: flex-start; }
-.pl-snap-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.pl-snap-avatar { width: 64px; height: 64px; border-radius: 0; object-fit: cover; }
 .pl-snap-name { font-size: 18px; margin: 0 0 6px; }
 .pl-snap-name a { color: var(--text); text-decoration: none; }
 .pl-snap-name a:hover { color: var(--accent-l, #c4b5fd); }
@@ -499,7 +499,7 @@ html.view-research #oorSection { display: none !important; }
 .pl-allowed-pct { font-size: 10px; color: var(--text-3); }
 .pl-allowed-note { font-size: 10px; color: var(--text-3); margin-top: 4px; }
 .pl-rank-wrap { max-height: 520px; overflow: auto; }
-.pl-rank-av { width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
+.pl-rank-av { width: 28px; height: 28px; border-radius: 0; vertical-align: middle; margin-right: 6px; }
 .pl-rank-name a { color: var(--accent-l, #c4b5fd); text-decoration: none; font-weight: 500; }
 .pl-rank-row { cursor: pointer; }
 .pl-rank-row:hover { background: color-mix(in srgb, var(--accent, #8b5cf6) 10%, transparent); }
@@ -731,8 +731,8 @@ html.view-research #oorSection { display: none !important; }
   border: none; background: transparent; color: var(--text); text-align: left; cursor: pointer;
 }
 .pl-dd-item:hover { background: color-mix(in srgb, var(--accent, #8b5cf6) 12%, transparent); }
-.pl-dd-av { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-.pl-snap-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.pl-dd-av { width: 24px; height: 24px; border-radius: 0; object-fit: cover; }
+.pl-snap-avatar { width: 64px; height: 64px; border-radius: 0; object-fit: cover; }
 .pl-snapshot-card { padding: 18px; border: 0.5px solid var(--border); border-radius: var(--r-md, 12px); background: var(--surface-1, #0c0c14); margin-bottom: 20px; box-shadow: var(--e-1, none); }
 .pl-allowed-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
 .pl-allowed-card { padding: 10px; border-radius: var(--r-sm, 8px); background: var(--surface-2, #14141e); border: 0.5px solid var(--border); }
@@ -764,7 +764,7 @@ html.view-research #oorSection { display: none !important; }
   font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--purple-2); margin-bottom: 12px; font-weight: 700;
 }
-.pl-snap-avatar--intel { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.pl-snap-avatar--intel { width: 80px; height: 80px; border-radius: 0; object-fit: cover; flex-shrink: 0; }
 .pl-snap-row1 { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
 .pl-snap-name--intel { font-size: 24px; font-weight: 700; margin: 0 0 8px; line-height: 1.2; }
 .pl-role-pill {

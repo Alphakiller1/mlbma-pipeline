@@ -41,9 +41,9 @@
   --ca-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
   --ca-card-hover-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
   --ca-hero-bg: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
-  --ca-grid-texture: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.015) 40px, rgba(255, 255, 255, 0.015) 41px);
+  --ca-grid-texture: none;
 
-  --font-primary: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-primary: 'Inter Tight', system-ui, -apple-system, sans-serif;
   --font: var(--font-primary);
   --font-body: 'Inter Tight', system-ui, -apple-system, sans-serif;
   --font-display: 'Archivo', system-ui, sans-serif;
@@ -86,7 +86,7 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 /* Decorative grid texture utility */
 .ca-grid-texture {
-  background-image: var(--ca-grid-texture);
+  background-image: none;
 }
 
 /* Eyebrow label */
@@ -125,21 +125,24 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   gap: 4px;
   padding: 4px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--raised);
   border: 1px solid var(--border);
 }
 .ca-pill-control .ca-pill-btn {
   border-radius: 8px;
   padding: 6px 14px;
-  border: none;
+  border: 1px solid var(--border);
   background: transparent;
-  color: var(--text-3);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
   transition: all 150ms ease;
 }
 .ca-pill-control .ca-pill-btn.active {
-  background: var(--ca-brand);
+  background: linear-gradient(135deg, var(--ca-brand) 0%, var(--ca-purple-dark) 100%);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+  border-color: transparent;
+  box-shadow: 0 4px 14px -2px var(--ca-brand-glow);
 }
 
 /* Tier badges */
@@ -180,22 +183,25 @@ table.ca-table thead th,
   position: sticky;
   top: 0;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--raised);
   color: var(--text-3);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 10px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-body);
 }
 table.ca-table tbody td,
 .rl-table-premium tbody td,
 .rankings-table tbody td {
   padding: 10px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  font-size: 14px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
+  font-family: var(--mono);
+  font-weight: 500;
 }
 table.ca-table tbody tr,
 .rl-table-premium tbody tr,
@@ -206,7 +212,8 @@ table.ca-table tbody tr,
 table.ca-table tbody tr:hover,
 .rl-table-premium tbody tr:hover,
 .rankings-table tbody tr:hover {
-  background: rgba(124, 58, 237, 0.06);
+  background: rgba(139, 92, 246, 0.06);
+  box-shadow: inset 2px 0 0 var(--ca-purple);
 }
 table.ca-table th.sort-active,
 .rl-table-premium th.sort-active {
@@ -367,6 +374,15 @@ table.ca-table td.sort-active,
   object-fit: contain;
 }
 
+/* Team logos should render raw with no framing */
+.team-logo,
+.team-logo-fallback {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 /* Metric color legend */
 .ca-metric-legend {
   display: flex;
@@ -436,19 +452,19 @@ table.ca-table td.sort-active,
   display: block;
 }
 
-/* Pitcher avatar — circular crop, size-specific positioning in CSS only */
+/* Pitcher avatar — render raw image without framed crop */
 .ca-pitcher-avatar,
 .headshot-wrap.ca-pitcher-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  overflow: hidden;
+  border-radius: 0;
+  overflow: visible;
   flex: 0 0 auto;
   box-sizing: border-box;
-  aspect-ratio: 1 / 1;
-  background: var(--ca-surface-2, #111827);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  aspect-ratio: auto;
+  background: transparent;
+  border: 0;
   position: relative;
 }
 .ca-pitcher-avatar-img,
@@ -467,7 +483,7 @@ table.ca-table td.sort-active,
   inset: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: 0;
 }
 .ca-pitcher-avatar--matchup {
   width: 48px;
@@ -509,9 +525,9 @@ table.ca-table td.sort-active,
   display: none;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  background: var(--bg-4, #1f1f25);
-  border: 1px solid var(--border, #28282f);
+  border-radius: 0;
+  background: transparent;
+  border: 0;
   flex-shrink: 0;
   box-sizing: border-box;
   width: 100%;
@@ -545,6 +561,20 @@ table.ca-table td.sort-active,
 .platform-subtitle,
 .rl-workspace-subtitle {
   font-size: 15px !important;
+}
+
+/* Section and tool descriptions: larger + bold */
+.subtitle,
+.section-subtitle,
+.platform-subtitle,
+.rl-workspace-subtitle,
+.ca-lab__subtitle,
+.ca-helper,
+.opening-link-desc {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.6;
+  color: var(--text-2);
 }
 
 .ca-card-title,

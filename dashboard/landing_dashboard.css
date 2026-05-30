@@ -26,24 +26,11 @@ body.opening-dashboard .freshness-bar {
 }
 
 .ca-opening-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.015) 40px, rgba(255, 255, 255, 0.015) 41px),
-    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 41px);
-  opacity: 0.5;
+  content: none;
 }
 
 .ca-opening-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.05;
+  content: none;
 }
 
 .ca-hero-brand,

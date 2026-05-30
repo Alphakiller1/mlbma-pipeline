@@ -1,5 +1,5 @@
 /* Model Report hub */
-.mr-page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 72px; }
+.mr-page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 72px; font-family: var(--font-body, var(--font, system-ui)); }
 .mr-breadcrumb { font-size: 12px; color: var(--text-3, #71717A); margin-bottom: 8px; }
 .mr-breadcrumb a { color: var(--text-2); text-decoration: none; }
 .mr-breadcrumb a:hover { color: #7C3AED; }
@@ -13,8 +13,15 @@
   margin-bottom: 20px;
 }
 .mr-hero-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
-.mr-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
-.mr-subtitle { font-size: 14px; color: var(--text-2); margin: 0; max-width: 520px; line-height: 1.5; }
+.mr-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+  font-family: var(--font-display, var(--font, system-ui));
+  font-variation-settings: "wdth" 125;
+}
+.mr-subtitle { font-size: 16px; font-weight: 600; color: var(--text-2); margin: 0; max-width: 520px; line-height: 1.6; }
 .mr-stale-banner {
   font-size: 12px; color: #FB923C; padding: 8px 12px; border-radius: 8px;
   background: rgba(251, 146, 60, 0.1); border: 1px solid rgba(251, 146, 60, 0.3);
@@ -28,7 +35,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-.mr-stat-val { font-size: 22px; font-weight: 800; line-height: 1.1; }
+.mr-stat-val { font-size: 22px; font-weight: 800; line-height: 1.1; font-family: var(--mono, monospace); }
 .mr-stat-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
 
 .mr-section {
@@ -39,7 +46,14 @@
   margin-bottom: 20px;
 }
 .mr-section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.mr-section-title { font-size: 17px; font-weight: 700; margin: 0; }
+.mr-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  font-family: var(--font-display, var(--font, system-ui));
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.01em;
+}
 
 .mr-filters { display: flex; flex-wrap: wrap; gap: 8px; }
 .mr-pill {
@@ -64,6 +78,7 @@
 .mr-table tr.mr-row-fired td { background: rgba(74, 222, 128, 0.04); }
 .mr-table tr.mr-row-highlight td { outline: 2px solid #7C3AED; outline-offset: -2px; }
 .mr-table .num { font-variant-numeric: tabular-nums; text-align: right; }
+.mr-table .num { font-family: var(--mono, monospace); }
 .mr-game-link { color: var(--text); text-decoration: none; font-weight: 600; }
 .mr-game-link:hover { color: #C084FC; }
 .mr-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }

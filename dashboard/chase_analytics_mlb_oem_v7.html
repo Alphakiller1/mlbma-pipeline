@@ -122,16 +122,11 @@ body {
     radial-gradient(ellipse 70% 50% at 6% 102%, rgba(109,40,217,0.12), transparent 60%),
     var(--bg);
 }
+body::before,
 body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
-  background-size:64px 64px;
-  -webkit-mask-image:radial-gradient(ellipse 100% 75% at 50% 38%,#000 30%,transparent 82%);
-  mask-image:radial-gradient(ellipse 100% 75% at 50% 38%,#000 30%,transparent 82%);
+  content:none !important;
+  background:none !important;
+  background-image:none !important;
 }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
@@ -192,7 +187,7 @@ h1 {
   box-shadow: var(--e-0);
 }
 .toggle-btn.warn { color: var(--gold); }
-.toggle-btn.warn.active { background: var(--gold); color: #000; box-shadow: 0 0 0 1px var(--gold); }
+.toggle-btn.warn.active { background: var(--gold); color: var(--bg); box-shadow: 0 0 0 1px var(--gold); }
 
 /* Metric cards */
 .metric-row {
@@ -944,7 +939,7 @@ tr.compare-selected td:first-child::before { content: '?'; color: var(--purple);
   }
   .section { break-inside: avoid; box-shadow: none; border: 1px solid #DDD; }
   .metric-card, .exec-cell { break-inside: avoid; box-shadow: none; }
-  h1 { -webkit-text-fill-color: #000 !important; background: none !important; color: #000 !important; }
+  h1 { -webkit-text-fill-color: #5B21B6 !important; background: none !important; color: #5B21B6 !important; }
   .pill, .grade-badge, .trend-pill { background: transparent !important; border: 1px solid currentColor; }
 }
 
@@ -1673,8 +1668,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .f5-blue { background: rgba(96,165,250,.15); color: var(--blue); }
 .f5-muted { background: var(--bg-4); color: var(--text-3); }
 .team-logo-fallback, .pitcher-headshot-fallback, .mc-headshot-fallback {
-  display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;
-  background: var(--bg-4); color: var(--text-3); font-size: 9px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; border-radius: 0;
+  background: transparent; color: var(--text-3); font-size: 9px; font-weight: 700;
 }
 .signal-summary-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 #signalChips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1731,12 +1726,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 /* Background layers */
 .ca-hero__grid {
-  position: absolute; inset: 0; z-index: -1;
-  background-image:
-    linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 80%);
+  display: none;
 }
 .ca-hero__glow {
   position: absolute; z-index: -1; border-radius: 50%;
@@ -1745,8 +1735,25 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .ca-hero__glow--a { width: 520px; height: 520px; background: #7C3AED; top: -120px; left: -80px; }
 .ca-hero__glow--b { width: 420px; height: 420px; background: #4c1d95; bottom: -180px; right: 10%; opacity: 0.5; }
 .ca-hero__noise {
-  position: absolute; inset: 0; z-index: -1; opacity: 0.04; pointer-events: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  display: none;
+}
+.ca-grid-texture,
+.ca-opening-hero::before,
+.ca-opening-hero::after{
+  display:none !important;
+  content:none !important;
+  background:none !important;
+  background-image:none !important;
+}
+.thm-team-logo,
+.thm-team-logo-wrap,
+.thm-team-cell img,
+.thm-team-fallback{
+  border-radius:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  clip-path:none !important;
 }
 
 /* Layout */
@@ -2306,11 +2313,11 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260608a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260608a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260609a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260609a">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260608a">
-<link rel="stylesheet" href="research_lab.css?v=20260607g">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260609a">
+<link rel="stylesheet" href="research_lab.css?v=20260609a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -2333,12 +2340,12 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_assets.js?v=20260527s"></script>
 <script src="matchup_shared.js?v=20260530d"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
-<script src="mlbma_charts.js?v=20260527s"></script>
+<script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
 <script src="research_lab.js?v=20260607a"></script>
-<script src="lineup_view.js?v=20260607h"></script>
-<script src="trends_heatmap.js?v=20260607h"></script>
+<script src="lineup_view.js?v=20260609a"></script>
+<script src="trends_heatmap.js?v=20260609a"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">

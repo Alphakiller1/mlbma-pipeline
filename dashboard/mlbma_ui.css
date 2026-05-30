@@ -63,9 +63,9 @@ body.mlbma-shell-ready .loading-text {
   width: 1px; height: 20px; background: var(--border, #28282f); margin: 0 6px;
 }
 .mlbma-nav-pill {
-  font-size: 12px; font-weight: 500; color: var(--text-2, #A1A1AA);
+  font-size: 12px; font-weight: 600; color: var(--text-2, #A1A1AA);
   text-decoration: none; padding: 7px 12px; border-radius: 99px;
-  border: 1px solid var(--border, #28282f); background: var(--bg-2, #111114);
+  border: 1px solid var(--border, #28282f); background: var(--raised, var(--bg-2, #111114));
   transition: all 0.15s ease; white-space: nowrap;
 }
 .mlbma-nav-pill:hover {
@@ -73,9 +73,10 @@ body.mlbma-shell-ready .loading-text {
   box-shadow: 0 0 12px rgba(192, 132, 252, 0.2);
 }
 .mlbma-nav-pill.active {
-  color: #fff; background: var(--purple-3, #8B5CF6);
-  border-color: var(--purple, #C084FC);
-  box-shadow: 0 0 14px rgba(192, 132, 252, 0.35);
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple, #A684FF) 0%, #6D28D9 100%);
+  border-color: transparent;
+  box-shadow: 0 4px 14px -2px rgba(139, 92, 246, 0.4);
 }
 
 @media (max-width: 900px) {

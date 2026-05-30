@@ -65,17 +65,18 @@
       + '.thm-pill.active{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
       + '.thm-pill.is-phase1{opacity:.78;color:var(--text-2,#a1a1aa);background:var(--surface-2,#14141e);border-color:var(--border,#26262f)}'
       + '.thm-pill .thm-phase{margin-left:4px;color:var(--text-3,#6b6b76);font-size:10px}'
-      + '.thm-note{font-size:13px;color:var(--text-2,#a1a1aa);margin-top:6px;padding-top:0;border-top:0;line-height:1.25}'
+      + '.thm-note{font-size:15px;font-weight:600;color:var(--text-2,#a1a1aa);margin-top:6px;padding-top:0;border-top:0;line-height:1.6}'
       + '.thm-note.warn{color:var(--warn,#fbbf24)}'
       + '.thm-table-wrap{overflow:auto;border:0;border-radius:0;background:transparent}'
       + '.thm-table{width:100%;border-collapse:separate;border-spacing:8px 6px;font-size:14px}'
       + '.thm-table thead th{background:var(--surface-2,#14141e);color:var(--text-3,#6b6b76);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:10px 8px;border-radius:var(--r-sm,8px);text-align:left;white-space:nowrap;font-weight:700;font-family:var(--font,system-ui)}'
       + '.thm-table thead th.sortable{cursor:pointer;user-select:none}'
-      + '.thm-cell{padding:12px 12px;border-radius:var(--r-sm,8px);font-weight:700;color:var(--bg,#050509);min-width:120px;text-align:center;font-size:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
-      + '.thm-cell.no-data{background:repeating-linear-gradient(45deg,color-mix(in srgb, var(--text-3,#6b6b76) 24%, transparent),color-mix(in srgb, var(--text-3,#6b6b76) 24%, transparent) 8px,color-mix(in srgb, var(--text-3,#6b6b76) 10%, transparent) 8px,color-mix(in srgb, var(--text-3,#6b6b76) 10%, transparent) 16px);color:var(--text-3,#6b6b76)}'
+      + '.thm-cell{padding:12px 12px;border-radius:var(--r-sm,8px);font-weight:700;color:var(--text,#F5F5F7);min-width:120px;text-align:center;font-size:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
+      + '.thm-cell.no-data{background:color-mix(in srgb,var(--text-3,#6b6b76) 12%, transparent);color:var(--text-3,#6b6b76)}'
       + '.thm-team{display:flex;align-items:center;gap:8px;padding:0 6px;min-width:120px;color:var(--text,#f4f4f7);font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 110}'
       + '.thm-team strong{font-size:13px}'
-      + '.thm-team-logo{width:24px;height:24px;border-radius:50%;object-fit:contain;background:var(--surface-2,#14141e);border:0.5px solid var(--border,#26262f)}'
+      + '.thm-team-logo{width:24px;height:24px;border-radius:0!important;object-fit:contain;background:transparent!important;border:0!important;box-shadow:none!important;clip-path:none!important}'
+      + '.thm-team .team-logo-fallback{border-radius:0!important;background:transparent!important;border:0!important;box-shadow:none!important}'
       + '.thm-delta{font-weight:800;text-align:right;padding-right:8px;white-space:nowrap;font-size:13px;font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
       + '.thm-delta-up{color:var(--pos,#4ade80)}.thm-delta-down{color:var(--neg,#f87171)}.thm-delta-flat{color:var(--text-3,#6b6b76)}';
     document.head.appendChild(style);
@@ -178,8 +179,10 @@
   }
 
   function teamLogo(team) {
-    if (A && A.teamLogoImg) return A.teamLogoImg(team, 20, 'thm-team-logo');
-    return '';
+    var t = teamKey(team);
+    var map = { TB: 'tb', TBR: 'tb', WSH: 'wsh', WSN: 'wsh', KC: 'kc', KCR: 'kc', CWS: 'chw', CHW: 'chw', SD: 'sd', SDP: 'sd', SF: 'sf', SFG: 'sf', OAK: 'oak', ATH: 'oak', AZ: 'ari' };
+    var espn = (map[t] || t || 'mlb').toLowerCase();
+    return '<img class="thm-team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/' + espn + '.png" alt="' + esc(t) + '" loading="lazy" onerror="this.style.display=\'none\'">';
   }
 
   function metricPill(metric, state) {

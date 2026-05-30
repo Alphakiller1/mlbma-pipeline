@@ -354,7 +354,7 @@
   }
 
   function teamEspnLogoUrl(t) {
-    var map = { ARI: 'ari', AZ: 'ari', ATH: 'ath', OAK: 'ath', SF: 'sf', SFG: 'sf', TB: 'tb', TBR: 'tb', WSH: 'wsh', WAS: 'wsh', CHW: 'chw', CWS: 'chw', KCR: 'kc', KC: 'kc', SDP: 'sd', SD: 'sd' };
+    var map = { ARI: 'ari', AZ: 'ari', ATH: 'ath', OAK: 'ath', SF: 'sf', SFG: 'sf', TB: 'tb', TBR: 'tb', WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', CHW: 'chw', CWS: 'chw', KCR: 'kc', KC: 'kc', SDP: 'sd', SD: 'sd' };
     var key = String(t || '').trim().toUpperCase();
     var slug = map[key] || key.toLowerCase();
     return 'https://a.espncdn.com/i/teamlogos/mlb/500/' + slug + '.png';

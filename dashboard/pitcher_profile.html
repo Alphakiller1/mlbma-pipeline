@@ -8,6 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics · Pitcher Profile</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root {
   --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
   --border: #28282f; --border-2: #34343d;
@@ -22,8 +23,10 @@
   --gold-dim: rgba(251, 191, 36, 0.15);
   --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
   --blue-dim: rgba(96, 165, 250, 0.15);
-  --font: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", system-ui, sans-serif;
-  --mono: "SF Mono", "JetBrains Mono", Monaco, Consolas, monospace;
+  --font-body: "Inter Tight", system-ui, -apple-system, sans-serif;
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font: var(--font-body);
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Monaco, Consolas, monospace;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -71,9 +74,18 @@ body {
 }
 h1 {
   font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 125;
   background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+.section-title,
+.pitcher-name-lg,
+.ps-name {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.015em;
 }
 .subtitle { color: var(--text-2); font-size: 13px; max-width: 640px; }
 .nav-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
@@ -257,8 +269,8 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 }
 .ps-photo .ca-pitcher-avatar {
   flex-shrink: 0;
-  border-width: 2px;
-  border-color: var(--border-2);
+  border-width: 0;
+  border-color: transparent;
 }
 .pitcher-snapshot {
   display: flex; gap: 20px; align-items: flex-start;
@@ -312,14 +324,14 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 #profileContent { display: none; }
 #profileContent.ready { display: block; }
 </style>
-<link rel="stylesheet" href="mlbma_ui.css">
-<link rel="stylesheet" href="mlbma_design_system.css">
-<link rel="stylesheet" href="chase_nav.css">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260529f">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260608c">
+<link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
 <script src="matchup_shared.js?v=20260523"></script>
 <script src="pitcher_profile_dashboard.js"></script>
-<script src="mlbma_charts.js?v=20260524c"></script>
+<script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260524c"></script>
 <script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260523d">
