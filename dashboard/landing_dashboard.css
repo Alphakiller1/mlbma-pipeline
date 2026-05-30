@@ -417,7 +417,7 @@ body.view-research .ca-page-identity { display: none; }
 .ca-pill-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 10px;
   align-items: center;
 }
 .ca-pill-bar .ca-pill-label {
@@ -428,27 +428,7 @@ body.view-research .ca-page-identity { display: none; }
   color: var(--text-3);
   margin-right: 4px;
 }
-.ca-pill-btn {
-  font-family: var(--font);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 99px;
-  border: 1px solid var(--border);
-  background: var(--bg-3);
-  color: var(--text-2);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.ca-pill-btn:hover {
-  border-color: var(--ca-brand, #9A6BFF);
-  color: var(--text);
-}
-.ca-pill-btn.active {
-  background: var(--ca-brand-dim, rgba(124, 58, 237, 0.18));
-  border-color: var(--ca-brand, #9A6BFF);
-  color: #fff;
-}
+/* .ca-pill-btn — styled in mlbma_design_system.css (hero CTA context pattern) */
 
 #matchupsHeroGrid {
   display: grid;

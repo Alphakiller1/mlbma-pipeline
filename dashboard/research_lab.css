@@ -112,7 +112,6 @@ html.view-research #oorSection { display: none !important; }
   color: var(--accent-l, #C4B0FF);
 }
 .rl-compare-pill-row { margin: 0 !important; }
-.rl-compare-split-row .ca-pill-btn { font-size: 11px; padding: 5px 9px; }
 .rl-compare-panel-select label {
   display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;
   letter-spacing: 0.05em; color: var(--text-3); margin-bottom: 6px;
@@ -205,12 +204,7 @@ html.view-research #oorSection { display: none !important; }
 }
 .rl-compare-links { margin-top: 8px; text-align: center; }
 
-.rl-compare-modes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-.rl-compare-mode-btn {
-  font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: var(--r-sm, 8px);
-  border: 0.5px solid var(--border); background: var(--surface-2, #14141e); color: var(--text-2); cursor: pointer;
-}
-.rl-compare-mode-btn.active { background: var(--accent-bg, rgba(124,77,255,0.14)); border-color: transparent; color: var(--accent-l, #C4B0FF); }
+.rl-compare-modes { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
 .rl-compare-mode-btn--static { cursor: default; pointer-events: none; }
 .rl-compare-selectors {
   display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;
@@ -636,13 +630,8 @@ html.view-research #oorSection { display: none !important; }
 .rl-global-bar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
 .rl-global-bar-title { font-size: 12px; color: var(--text-2); }
 .rl-global-bar-title strong { color: var(--text); }
-.rl-global-bar-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.rl-global-bar-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .rl-global-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-left: 8px; }
-.rl-global-btn {
-  padding: 5px 10px; border-radius: var(--r-xs, 4px); border: 0.5px solid var(--border);
-  background: var(--surface-2, #14141e); color: var(--text-2); font-size: 11px; font-weight: 600; cursor: pointer;
-}
-.rl-global-btn.active { border-color: transparent; color: var(--accent-l, #c4b5fd); background: var(--accent-bg, rgba(139,92,246,.14)); }
 .rl-split-gold td { background: var(--warn-bg, rgba(245,158,11,.14)); }
 .rl-trend-heatmap-wrap { margin-top: 12px; }
 .rl-splits-scroll {
@@ -657,9 +646,7 @@ html.view-research #oorSection { display: none !important; }
   font-weight: 600;
 }
 .rl-confirm-line { font-size: 12px; color: var(--text-3); margin: 8px 0 12px; }
-.rl-pill-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
-.rl-pill-row--primary .ca-pill-btn { padding: 8px 14px; font-size: 12px; font-weight: 700; }
-.rl-pill-row--secondary .ca-pill-btn { padding: 5px 10px; font-size: 11px; }
+.rl-pill-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px; }
 .rl-reliability-badge {
   display: inline-block; padding: 3px 8px; border-radius: 6px;
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
@@ -681,7 +668,6 @@ html.view-research #oorSection { display: none !important; }
 .rl-ytd-tag { font-size: 10px; color: var(--text-3, #9CA3AF); margin-left: 4px; }
 .rl-na-muted { color: var(--text-3, #6B7280); }
 .rl-sticky-table .rl-table-premium thead th { position: sticky; top: 0; z-index: 2; background: var(--bg-2); }
-.rl-compare-modes--large .rl-compare-mode-btn { padding: 10px 14px; font-size: 12px; font-weight: 700; }
 .rl-betting-angle {
   margin-top: 12px; padding: 12px; border-radius: 8px;
   border: 0.5px solid var(--border); background: var(--surface-2, #14141e); font-size: 13px; color: var(--text-2);
@@ -711,16 +697,9 @@ html.view-research #oorSection { display: none !important; }
 .pl-betting-context { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-top: 12px; }
 .pl-rank-row--selected { background: var(--accent-bg, rgba(139,92,246,.14)) !important; }
 
-/* Pitcher Intelligence */
+/* Pitcher Intelligence view toggle — styled in mlbma_design_system.css */
 .pl-view-toggle {
-  display: flex; gap: 8px; margin-bottom: 16px;
-}
-.pl-view-btn {
-  padding: 8px 16px; border-radius: 8px; border: 0.5px solid var(--border);
-  background: var(--surface-2, #14141e); color: var(--text-2); font-size: 12px; font-weight: 600; cursor: pointer;
-}
-.pl-view-btn.active {
-  border-color: transparent; color: var(--accent-l, #c4b5fd); background: var(--accent-bg, rgba(139,92,246,.14));
+  display: flex; gap: 10px; margin-bottom: 16px;
 }
 .pl-intel-search-block { margin-bottom: 20px; }
 .pl-intel-search { max-width: 720px; }
