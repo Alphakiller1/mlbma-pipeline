@@ -12,30 +12,30 @@
 <meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Chase Analytics ? Offensive Dashboard</title>
 <style>
 :root {
-  --bg: #08080B;
-  --surface-1: #16161D;
-  --surface-2: #1C1C25;
-  --surface-3: #22222C;
-  --border: #2A2A35;
-  --border-2: #3A3A47;
-  --text: #F5F5F7;
-  --text-2: #A1A1AA;
-  --text-3: #71717A;
-  --text-4: #52525B;
-  --accent: #A684FF;
-  --accent-d: #6d28d9;
-  --accent-l: #C4A8FF;
-  --accent-bg: rgba(139, 92, 246, 0.16);
-  --accent-ring: rgba(110, 86, 247, 0.45);
-  --d-elite: #EC6A6A;
-  --d-good: #E89A5C;
-  --d-mid: #D8C36A;
-  --d-weak: #8FB0D4;
-  --d-poor: #6E8CC0;
+  --bg: #08090F;
+  --surface-1: #12141D;
+  --surface-2: #181B26;
+  --surface-3: #20232F;
+  --border: #262A38;
+  --border-2: #363B4D;
+  --text: #F5F6FA;
+  --text-2: #A4A8B6;
+  --text-3: #6E7383;
+  --text-4: #4C5161;
+  --accent: #9A6BFF;
+  --accent-d: #5B2BE0;
+  --accent-l: #C4B0FF;
+  --accent-bg: rgba(124, 77, 255, 0.16);
+  --accent-ring: rgba(124, 77, 255, 0.45);
+  --d-elite: #3CCB7F;
+  --d-good: #86D76F;
+  --d-mid: #E8C24A;
+  --d-weak: #F0935B;
+  --d-poor: #F2545B;
   --pos: #4ade80;
   --pos-bg: rgba(74, 222, 128, 0.13);
   --neg: #f87171;
@@ -64,7 +64,7 @@
   --s-7: 48px;
   --font: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-body: "Inter Tight", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --mono: "JetBrains Mono", "SF Mono", Monaco, Consolas, monospace;
 
   /* Backward-compatible aliases while refactor lands */
@@ -74,7 +74,7 @@
   --purple: var(--accent);
   --purple-2: var(--accent-d);
   --purple-3: var(--accent-l);
-  --purple-glow: rgba(139, 92, 246, 0.2);
+  --purple-glow: rgba(124, 77, 255, 0.24);
   --green-l: #86efac;
   --green: var(--pos);
   --green-d: #16a34a;
@@ -118,8 +118,8 @@ html, body {
 }
 body {
   background:
-    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(139,92,246,0.22), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(109,40,217,0.12), transparent 60%),
+    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124,77,255,0.20), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91,43,224,0.12), transparent 60%),
     var(--bg);
 }
 body::before,
@@ -156,7 +156,7 @@ h1 {
   font-size: 36px; font-weight: 800; letter-spacing: -0.015em;
   font-variation-settings: 'wdth' 125;
   margin-bottom: 4px;
-  background: linear-gradient(135deg, var(--text) 0%, var(--accent-l) 100%);
+  background: linear-gradient(180deg,#FFFFFF 0%,#E9EAF0 38%,#9DA0AE 56%,#D7D9E2 72%,#FFFFFF 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -928,7 +928,7 @@ tr.compare-selected td:first-child::before { content: '?'; color: var(--purple);
     --bg: #FFF; --bg-2: #FFF; --bg-3: #FFF; --bg-4: #FFF;
     --text: #000; --text-2: #333; --text-3: #666;
     --border: #DDD; --border-2: #BBB;
-    --purple: #7C3AED; --purple-2: #6D28D9; --purple-3: #5B21B6;
+    --purple: #7C4DFF; --purple-2: #5B2BE0; --purple-3: #9A6BFF;
     --purple-glow: transparent;
   }
   body { background: #FFF !important; }
@@ -939,7 +939,7 @@ tr.compare-selected td:first-child::before { content: '?'; color: var(--purple);
   }
   .section { break-inside: avoid; box-shadow: none; border: 1px solid #DDD; }
   .metric-card, .exec-cell { break-inside: avoid; box-shadow: none; }
-  h1 { -webkit-text-fill-color: #5B21B6 !important; background: none !important; color: #5B21B6 !important; }
+  h1 { -webkit-text-fill-color: #6D28D9 !important; background: none !important; color: #6D28D9 !important; }
   .pill, .grade-badge, .trend-pill { background: transparent !important; border: 1px solid currentColor; }
 }
 
@@ -1719,7 +1719,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     radial-gradient(ellipse 60% 50% at 90% 20%, rgba(167,139,250,0.18), transparent 60%),
     linear-gradient(180deg, #0a0612 0%, #050509 70%);
   color: #f5f3ff;
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-body);
   padding: clamp(80px, 10vw, 140px) clamp(20px, 5vw, 64px) clamp(60px, 8vw, 100px);
   border-bottom: 1px solid rgba(124,58,237,0.18);
 }
@@ -1933,7 +1933,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     radial-gradient(ellipse 70% 50% at 80% 10%, rgba(124,58,237,0.10), transparent 60%),
     linear-gradient(180deg, #050509 0%, #0a0612 100%);
   color: #f5f3ff;
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-body);
   padding: clamp(64px, 8vw, 120px) clamp(20px, 5vw, 64px);
   border-bottom: 1px solid rgba(124,58,237,0.10);
 }
@@ -2113,7 +2113,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   isolation: isolate;
   background: var(--surface-1);
   color: var(--text);
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-body);
   padding: clamp(48px, 6vw, 80px) clamp(20px, 5vw, 48px) clamp(64px, 8vw, 96px);
   min-height: 100vh;
   border: 0.5px solid var(--border);

@@ -2,39 +2,40 @@
  * Chase Analytics design system — typography, brand, metric grading.
  * Global identity aligns with design_comp_v2 / visual spec.
  */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   /* Page & surfaces */
-  --page-bg: #08080B;
-  --bg: #08080B;
-  --bg-2: #101015;
-  --bg-3: #16161D;
-  --bg-4: #1C1C25;
-  --raised: #22222C;
-  --border: #2A2A35;
-  --border-2: #3A3A47;
-  --text: #F5F5F7;
-  --text-2: #A1A1AA;
-  --text-3: #71717A;
-  --text-4: #52525B;
+  --page-bg: #08090F;
+  --bg: #08090F;
+  --bg-2: #0E1018;
+  --bg-3: #12141D;
+  --bg-4: #181B26;
+  --raised: #20232F;
+  --border: #262A38;
+  --border-2: #363B4D;
+  --text: #F5F6FA;
+  --text-2: #A4A8B6;
+  --text-3: #6E7383;
+  --text-4: #4C5161;
 
-  --ca-purple: #A684FF;
-  --ca-purple-dark: #6D28D9;
-  --ca-purple-light: #C4A8FF;
-  --ca-purple-glow: rgba(139, 92, 246, 0.4);
+  --ca-purple: #9A6BFF;
+  --ca-purple-dark: #5B2BE0;
+  --ca-purple-heading: #6D28D9;
+  --ca-purple-light: #C4B0FF;
+  --ca-purple-glow: rgba(124, 77, 255, 0.45);
   --ca-white: #F5F5F7;
   --ca-gray-brand: #9CA3AF;
   --ca-black: #050509;
-  --ca-brand: #A684FF;
-  --ca-brand-dim: rgba(139, 92, 246, 0.16);
-  --ca-brand-glow: rgba(139, 92, 246, 0.4);
-  --ca-brand-border: rgba(139, 92, 246, 0.45);
+  --ca-brand: #9A6BFF;
+  --ca-brand-dim: rgba(124, 77, 255, 0.16);
+  --ca-brand-glow: rgba(124, 77, 255, 0.45);
+  --ca-brand-border: rgba(124, 77, 255, 0.45);
 
-  --ca-green: #E89A5C;
-  --ca-teal: #8FB0D4;
-  --ca-amber: #D8C36A;
-  --ca-red: #EC6A6A;
+  --ca-green: #3CCB7F;
+  --ca-teal: #86D76F;
+  --ca-amber: #E8C24A;
+  --ca-red: #F2545B;
 
   --ca-card-bg: var(--bg-3);
   --ca-card-radius: 16px;
@@ -43,20 +44,20 @@
   --ca-hero-bg: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
   --ca-grid-texture: none;
 
-  --font-primary: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  --font-primary: 'Archivo', system-ui, -apple-system, sans-serif;
   --font: var(--font-primary);
-  --font-body: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  --font-body: 'Archivo', system-ui, -apple-system, sans-serif;
   --font-display: 'Archivo', system-ui, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
 
   /* 7-step metric gradient (league-relative) */
-  --metric-very-weak: #6E8CC0;
-  --metric-weak: #8FB0D4;
-  --metric-below: #D8C36A;
+  --metric-very-weak: #F2545B;
+  --metric-weak: #F0935B;
+  --metric-below: #E8C24A;
   --metric-neutral: #A1A1AA;
-  --metric-above: #E89A5C;
-  --metric-strong: #EC6A6A;
-  --metric-elite: #EC6A6A;
+  --metric-above: #86D76F;
+  --metric-strong: #4ADE80;
+  --metric-elite: #22C55E;
 
   /* Semantic accents (signals — not primary grade) */
   --accent-buy: #22d3ee;
@@ -75,7 +76,10 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--page-bg);
+  background:
+    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124,77,255,0.20), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91,43,224,0.12), transparent 60%),
+    var(--page-bg);
   color: var(--text);
 }
 h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
@@ -241,6 +245,11 @@ table.ca-table td.sort-active,
   font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.15;
+  background: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .ca-section-title {
