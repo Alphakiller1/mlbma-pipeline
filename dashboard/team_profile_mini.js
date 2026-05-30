@@ -244,7 +244,6 @@
     ctx = ctx || {};
     var m = resolveView(prof, ctx);
     var projArrow = m.proj != null && m.osi != null ? (m.proj > m.osi + 2 ? ' ↑' : m.proj < m.osi - 2 ? ' ↓' : ' →') : '';
-    var tonight = ctx.tonightHtml || '';
 
     return '<div class="team-snapshot">'
       + '<div class="snapshot-main" style="width:100%">'
@@ -257,9 +256,6 @@
       + '<span>ABQ ' + valChip(m.abq, 'abq', false, 1) + '</span>'
       + '<span>RCV ' + valChip(m.rcv, 'rcv', false, 1) + '</span>'
       + '</div>'
-      + (tonight ? '<div class="snapshot-tonight">' + tonight + '</div>' : '')
-      + '<div class="snapshot-context">' + esc(ctx.splitLabel || '') + ' · ' + esc(ctx.windowLabel || 'YTD') + '</div>'
-      + '<div id="teamSnapshotRadar" class="snapshot-radar-slot"></div>'
       + '<div class="snapshot-infographic">' + splitPairHtml(m) + '</div>'
       + '</div></div>';
   }
@@ -270,42 +266,21 @@
     return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"></span>';
   }
 
-  function wrcTierLabel(wrc) {
-    if (wrc == null || isNaN(wrc)) return '—';
-    if (wrc >= 115) return 'MLB ELITE';
-    if (wrc >= 105) return 'ABOVE AVG';
-    if (wrc >= 95) return 'LEAGUE AVG';
-    if (wrc >= 85) return 'BELOW AVG';
-    return 'WEAK';
-  }
-
-  function wrcMedallionHtml(wrc) {
-    return '<div class="ca-wrc-medallion"><div class="v">' + valChip(wrc, 'wrc', false, 0) + '</div><div class="c">WRC+ | ' + esc(wrcTierLabel(wrc)) + '</div></div>';
-  }
-
-  function renderInfographicHero(prof, team, m, ctx) {
+  function iconCircle(name) {
     ctx = ctx || {};
     var tier = tierLabel(m.osi);
-    var rank = ctx.osiRank;
     var logo = A ? A.teamLogoImg(team, 88, 'ca-profile-logo-glow snapshot-logo') : '';
-    var brand = (A && A.brandLogoLightBadgeHtml) ? A.brandLogoLightBadgeHtml(26) : '';
     var eyebrow = [];
-    if (rank != null) eyebrow.push('#' + rank + ' OVERALL');
     if (tier.label && tier.label !== '—') eyebrow.push(tier.label.toUpperCase());
     eyebrow.push(String(ctx.teamName || team).toUpperCase());
-    var sub = rank != null
-      ? '#' + rank + ' overall team offense in MLB'
-      : 'Live offensive profile from Team Profiles + splits';
     return '<div class="ca-profile-hero">'
       + '<div class="ca-profile-hero__main">'
       + '<div class="ca-profile-hero__eyebrow">' + esc(eyebrow.join(' • ')) + '</div>'
       + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
-      + '<p class="ca-profile-hero__sub">' + esc(sub) + '</p>'
       + (ctx.recordWl ? '<p class="ca-profile-hero__sub" style="margin-top:4px">' + esc(ctx.recordWl) + '</p>' : '')
       + '</div>'
-      + '<div class="ca-profile-hero__rail">' + wrcMedallionHtml(ctx.wrc) + brand + '</div>'
-      + '</div>'
-      + '<div class="ca-profile-hero__body">' + logo + insightRailHtml(m) + '</div>';
+      + '<div class="ca-profile-hero__body">' + logo + insightRailHtml(m) + '</div>'
+      + '</div>';
   }
   function insightRailHtml(m) {
     var gap = (m.proj != null && m.osi != null) ? (m.proj - m.osi) : null;
