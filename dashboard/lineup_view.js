@@ -32,8 +32,8 @@
     ],
     status: [
       { key: 'projOSI', label: 'projOSI', digits: 1, tier: 'core', sanity: [0, 150] },
-      { key: 'ppGap', label: 'PP-Gap', digits: 1, tier: 'advanced', sanity: [-75, 75] },
-      { key: 'pals', label: 'PALS', digits: 1, tier: 'advanced', sanity: [0, 150] }
+      { key: 'ppGap', label: 'PP-Gap', digits: 1, tier: 'core', sanity: [-75, 75] },
+      { key: 'pals', label: 'PALS', digits: 1, tier: 'core', sanity: [0, 150] }
     ]
   };
 
