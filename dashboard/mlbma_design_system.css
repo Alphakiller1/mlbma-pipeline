@@ -170,10 +170,21 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 /* Global table styling */
 .ca-table-wrap,
 .rl-table-wrap {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   overflow: hidden;
+  position: relative;
+}
+.ca-table-wrap::before,
+.rl-table-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--ca-purple, #7C4DFF), transparent 70%);
 }
 table.ca-table,
 .rl-table-premium,
@@ -188,24 +199,33 @@ table.ca-table thead th,
   top: 0;
   z-index: 2;
   background: var(--raised);
-  color: var(--text-3);
-  font-size: 10.5px;
+  color: var(--text-2);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  font-family: var(--font-body);
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border-2, rgba(255, 255, 255, 0.18));
+  font-family: var(--font-display, var(--display));
 }
 table.ca-table tbody td,
 .rl-table-premium tbody td,
 .rankings-table tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 7px 12px;
+  height: 46px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(40, 40, 47, 0.7);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
   font-family: var(--mono);
   font-weight: 500;
+}
+.hub-table td.num,
+.rl-table-premium td.num,
+table.ca-table td.num {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
 }
 table.ca-table tbody tr,
 .rl-table-premium tbody tr,
@@ -216,8 +236,13 @@ table.ca-table tbody tr,
 table.ca-table tbody tr:hover,
 .rl-table-premium tbody tr:hover,
 .rankings-table tbody tr:hover {
-  background: rgba(139, 92, 246, 0.06);
+  background: rgba(124, 77, 255, 0.09);
   box-shadow: inset 2px 0 0 var(--ca-purple);
+}
+table.ca-table tbody tr:nth-child(even),
+.rl-table-premium tbody tr:nth-child(even),
+.rankings-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
 }
 table.ca-table th.sort-active,
 .rl-table-premium th.sort-active {

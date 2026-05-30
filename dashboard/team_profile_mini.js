@@ -118,7 +118,10 @@
     var split = ctx.split || 'both';
     var window = ctx.window || 'YTD';
     var pickCol = ctx.pickCol;
-    var sheetRow = metricRowForTeam(ctx.team, split === 'home' || split === 'away' || split === 'f5' ? 'both' : split, ctx.metricsR, ctx.metricsL);
+    var splitKey = split === 'home' || split === 'away' || split === 'f5' ? 'both' : split;
+    var sheetRow = metricRowForTeam(ctx.team, splitKey, ctx.metricsR, ctx.metricsL);
+    var rowR = metricRowForTeam(ctx.team, 'rhp', ctx.metricsR, ctx.metricsL);
+    var rowL = metricRowForTeam(ctx.team, 'lhp', ctx.metricsR, ctx.metricsL);
 
     function pf(keys) { return num(pick(prof, keys, pickCol)); }
 
@@ -169,7 +172,7 @@
       rcvYtd: pf(['rcv_ytd', 'rcv']), rcvL30: pf(['rcv_l30']), rcvL14: pf(['rcv_l14']), rcvL7: pf(['rcv_l7']),
       obrYtd: pf(['obr_ytd', 'obr']), obrL30: pf(['obr_l30']), obrL14: pf(['obr_l14']), obrL7: pf(['obr_l7']),
       palsYtd: pf(['pals_ytd', 'pals']), palsL30: pf(['pals_l30']), palsL14: pf(['pals_l14']), palsL7: pf(['pals_l7']),
-      split: split, window: window, isF5: split === 'f5'
+      split: split, window: window, isF5: split === 'f5', rowR: rowR || null, rowL: rowL || null
     };
   }
 
@@ -261,7 +264,106 @@
       + (tonight ? '<div class="snapshot-tonight">' + tonight + '</div>' : '')
       + '<div class="snapshot-context">' + esc(ctx.splitLabel || '') + ' · ' + esc(ctx.windowLabel || 'YTD') + '</div>'
       + '<div id="teamSnapshotRadar" class="snapshot-radar-slot"></div>'
+      + '<div class="snapshot-infographic">'
+      + insightRailHtml(m)
+      + splitPairHtml(m)
+      + '</div>'
       + '</div></div>';
+  }
+
+  function iconSvg(name) {
+    if (name === 'trend') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l5-5 4 4 7-7"></path><path d="M14 8h6v6"></path></svg>';
+    if (name === 'target') return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg>';
+    if (name === 'swap') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h12"></path><path d="M12 3l4 4-4 4"></path><path d="M20 17H8"></path><path d="M12 13l-4 4 4 4"></path></svg>';
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>';
+  }
+  function insightRailHtml(m) {
+    var gap = (m.proj != null && m.osi != null) ? (m.proj - m.osi) : null;
+    var splitGap = (m.osiR != null && m.osiL != null) ? Math.abs(m.osiR - m.osiL) : null;
+    var rows = [
+      {
+        icon: 'target',
+        label: 'Process Baseline',
+        text: 'ProjOSI ' + (m.proj != null ? m.proj.toFixed(1) : '—') + ' vs OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—')
+      },
+      {
+        icon: 'trend',
+        label: gap != null && gap >= 2 ? 'Regression Watch' : 'Stability Check',
+        text: gap == null ? 'Insufficient projection context'
+          : (gap >= 2 ? 'Projection runs ahead of production' : gap <= -2 ? 'Production ahead of projection' : 'Projection and production aligned')
+      },
+      {
+        icon: 'swap',
+        label: 'Split Sensitivity',
+        text: splitGap == null ? 'RHP/LHP split pending'
+          : ('OSI split gap ' + splitGap.toFixed(1) + ' (RHP ' + (m.osiR != null ? m.osiR.toFixed(1) : '—') + ', LHP ' + (m.osiL != null ? m.osiL.toFixed(1) : '—') + ')')
+      }
+    ];
+    return '<div class="ca-insight-rail">' + rows.map(function(r) {
+      return '<div class="ca-insight-row">'
+        + '<span class="ca-icon">' + iconSvg(r.icon) + '</span>'
+        + '<span><span class="ca-insight-label">' + esc(r.label) + '</span><span class="ca-insight-text">' + esc(r.text) + '</span></span>'
+        + '</div>';
+    }).join('') + '</div>';
+  }
+  function pickSplitStat(row, keys) {
+    if (!row) return null;
+    var v = pick(row, keys);
+    if (v == null || v === '') return null;
+    if (typeof v === 'number' && !isNaN(v)) return v;
+    var n = parseFloat(String(v).replace(/%/g, '').replace(/,/g, '').trim());
+    return isNaN(n) ? null : n;
+  }
+  function statColor(v, ctx, invert) {
+    if (!A || !A.metricColor || v == null || isNaN(v)) return 'var(--text-2)';
+    return A.metricColor(v, ctx || 'osi', !!invert);
+  }
+  function statValHtml(v, digits, ctx, invert) {
+    if (v == null || isNaN(v)) return '—';
+    return '<span style="color:' + statColor(v, ctx, invert) + '">' + Number(v).toFixed(digits == null ? 1 : digits) + '</span>';
+  }
+  function splitCardStats(splitRow, fallbackOsi, side) {
+    var avg = pickSplitStat(splitRow, ['AVG', 'BA', 'avg']);
+    var ops = pickSplitStat(splitRow, ['OPS', 'ops']);
+    var kPct = pickSplitStat(splitRow, ['K%', 'K_pct', 'SO%', 'k_pct']);
+    var xwoba = pickSplitStat(splitRow, ['xwOBA', 'xwoba']);
+    var slg = pickSplitStat(splitRow, ['SLG', 'slg']);
+    var hr = pickSplitStat(splitRow, ['HR', 'hr']);
+    var bbPct = pickSplitStat(splitRow, ['BB%', 'BB_pct', 'bb_pct']);
+    var brl = pickSplitStat(splitRow, ['Barrel%', 'BRL%', 'barrel', 'barrel_pct']);
+    if (ops == null && fallbackOsi != null) ops = fallbackOsi / 100;
+    return [
+      ['AVG', avg, 3, 'woba', false],
+      ['OPS', ops, 3, 'woba', false],
+      ['K%', kPct, 1, 'pitching', true],
+      ['xwOBA', xwoba, 3, 'woba', false],
+      ['SLG', slg, 3, 'woba', false],
+      ['HR', hr, 0, 'osi', false],
+      ['BB%', bbPct, 1, 'osi', false],
+      ['BRL%', brl, 1, 'osi', false]
+    ];
+  }
+  function splitPairHtml(m) {
+    var lStats = splitCardStats(m.rowL, m.osiL, 'L');
+    var rStats = splitCardStats(m.rowR, m.osiR, 'R');
+    var lOps = lStats[1][1];
+    var rOps = rStats[1][1];
+    var diff = (lOps != null && rOps != null) ? (lOps - rOps) : null;
+    var strongerL = diff != null ? diff >= 0 : null;
+    var badgeL = strongerL == null ? 'Split Pending' : (strongerL ? 'Stronger Split' : 'Weaker Split');
+    var badgeR = strongerL == null ? 'Split Pending' : (strongerL ? 'Weaker Split' : 'Stronger Split');
+    function cardHtml(title, cls, stats, badge) {
+      return '<div class="ca-split-card ' + cls + '"><div class="ca-split-head">' + esc(title) + '</div><div class="ca-split-grid">'
+        + stats.map(function(s) {
+          return '<div class="ca-split-stat"><div class="v">' + statValHtml(s[1], s[2], s[3], s[4]) + '</div><div class="k">' + esc(s[0]) + '</div></div>';
+        }).join('')
+        + '</div><div class="ca-split-badge">' + esc(badge) + '</div></div>';
+    }
+    return '<div class="ca-split-pair">'
+      + cardHtml('vs LHP', 'lhp', lStats, badgeL)
+      + '<div class="ca-split-medallion"><div class="d">' + (diff == null ? '—' : ((diff > 0 ? '+' : '') + diff.toFixed(3))) + '</div><div class="c">OPS vs LHP</div></div>'
+      + cardHtml('vs RHP', 'rhp', rStats, badgeR)
+      + '</div>';
   }
 
   function render(prof, team, ctx) {

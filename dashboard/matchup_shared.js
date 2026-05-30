@@ -792,6 +792,7 @@
     var scVsSp = data.scVsSp || [];
     var scVsRp = data.scVsRp || [];
     var teamProfiles = data.teamProfiles || {};
+    var palsByTeam = data.palsByTeam || {};
     var opts = options || {};
 
     var source = scBoth;
@@ -821,8 +822,11 @@
     var rows = (source || []).map(function(base) {
       var d = Object.assign({}, base);
       var t = d.t;
+      var tk = teamKey(t);
       var prof = _profileForTeam(teamProfiles, t);
+      var palsRow = palsByTeam[tk] || null;
       if (d.ppGap == null && d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
+      if (_num(d.pals) == null && palsRow && _num(palsRow.pals) != null) d.pals = _num(palsRow.pals);
       d.ytdOSI = prof.osi_ytd != null ? _num(prof.osi_ytd) : _num(d.osi);
       d.l30OSI = _num(prof.osi_l30);
       d.l14OSI = _num(prof.osi_l14);
@@ -1015,12 +1019,13 @@
   function parsePalsRows(rows) {
     var map = {};
     (rows || []).forEach(function(row) {
-      var t = teamKey(pickCol(row, 'Tm', 'Team', 'tm'));
+      var t = teamKey(pickCol(row, 'Tm', 'Team', 'tm', 'team', 'TEAM'));
       if (!t) return;
+      var palsVal = numOrNull(pickCol(row, 'PALS', 'pals', 'Pals', 'APLs', 'apls', 'APL', 'apl'));
       map[t] = {
         t: t,
-        osi: numOrNull(pickCol(row, 'OSI', 'osi')),
-        pals: numOrNull(pickCol(row, 'PALS', 'pals'))
+        osi: numOrNull(pickCol(row, 'OSI', 'osi', 'Osi')),
+        pals: palsVal
       };
     });
     return map;
@@ -1212,7 +1217,7 @@
     return map;
   }
 
-  function lineupStoreFromScored(scR, scL, teamProfiles, scVsSp, scVsRp) {
+  function lineupStoreFromScored(scR, scL, teamProfiles, scVsSp, scVsRp, palsByTeam) {
     var both = blendSplits(scR, scL);
     var home = [];
     var away = [];
@@ -1248,7 +1253,8 @@
       scAway: away,
       scVsSp: scVsSp || [],
       scVsRp: scVsRp || [],
-      teamProfiles: teamProfiles || {}
+      teamProfiles: teamProfiles || {},
+      palsByTeam: palsByTeam || {}
     };
   }
 
@@ -1267,14 +1273,16 @@
       fetchSheetTab(tabs.vs_lhp, options),
       fetchSheetTab(tabs.team_profiles, options),
       fetchSheetTab(tabs.batter_splits_vs_sp, options).catch(function() { return []; }),
-      fetchSheetTab(tabs.batter_splits_vs_rp, options).catch(function() { return []; })
+      fetchSheetTab(tabs.batter_splits_vs_rp, options).catch(function() { return []; }),
+      (tabs.pals ? fetchSheetTab(tabs.pals, options) : Promise.resolve([])).catch(function() { return []; })
     ]).then(function(res) {
       var payload = {
         rhp: res[0] || [],
         lhp: res[1] || [],
         profiles: res[2] || [],
         splitVsSp: res[3] || [],
-        splitVsRp: res[4] || []
+        splitVsRp: res[4] || [],
+        pals: res[5] || []
       };
       _lineupModelCache = payload;
       return payload;
@@ -1295,7 +1303,8 @@
       var profiles = parseTeamProfilesMap(raw.profiles || []);
       var scVsSp = aggregateTeamOffenseFromBatterRows(raw.splitVsSp || []);
       var scVsRp = aggregateTeamOffenseFromBatterRows(raw.splitVsRp || []);
-      return lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp);
+      var palsByTeam = parsePalsRows(raw.pals || []);
+      return lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp, palsByTeam);
     });
   }
 

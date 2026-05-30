@@ -227,6 +227,10 @@ function profileWindowFieldsFromRow(row) {
     if (ctx === 'ppGap') return A.ppGapColor ? A.ppGapColor(v) : '#71717A';
     return A.metricColor(v, ctx || 'osi', !!invert);
   }
+  function chipStyle(v, ctx, invert) {
+    var text = mColor(v, invert, ctx);
+    return 'background:color-mix(in srgb,' + text + ' 18%, transparent);color:' + text + ';';
+  }
 
   function metricCell(opts) {
     return A && A.metricCell ? A.metricCell(opts) : '';
@@ -493,9 +497,9 @@ function profileWindowFieldsFromRow(row) {
           var ps = m.pitchScore;
           return '<tr class="pl-rank-row" onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
             + '<td>' + esc(n) + '</td><td>' + esc(t) + '</td>'
-            + '<td style="color:' + mColor(ps, false, 'pitching') + '">' + fmt(ps) + '</td>'
-            + '<td style="color:' + mColor(m.osiAllowed, true) + '">' + fmt(m.osiAllowed) + '</td>'
-            + '<td style="color:' + mColor(m.oor, false, 'oor') + '">' + fmt(m.oor) + '</td></tr>';
+            + '<td class="num"><span class="val-chip" style="' + chipStyle(ps, 'pitching', false) + '">' + fmt(ps) + '</span></td>'
+            + '<td class="num"><span class="val-chip" style="' + chipStyle(m.osiAllowed, 'osi', true) + '">' + fmt(m.osiAllowed) + '</span></td>'
+            + '<td class="num"><span class="val-chip" style="' + chipStyle(m.oor, 'oor', false) + '">' + fmt(m.oor) + '</span></td></tr>';
         }).join('') + '</tbody></table></div></div>';
 
       var units = global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits) : [];
@@ -510,9 +514,9 @@ function profileWindowFieldsFromRow(row) {
         + bpRows.map(function(r) {
           return '<tr onclick="location.href=\'bullpen_report.html?team=' + encodeURIComponent(r.t) + '\'">'
             + '<td>' + (A ? A.teamLogoImg(r.t, 20) : '') + ' ' + esc(r.t) + '</td>'
-            + '<td style="color:' + mColor(r.score, false, 'pitching') + '">' + fmt(r.score) + '</td>'
-            + '<td style="color:' + mColor(r.u.osiAllowed, true) + '">' + fmt(r.u.osiAllowed) + '</td>'
-            + '<td style="color:' + mColor(r.u.oor, false, 'oor') + '">' + fmt(r.u.oor) + '</td></tr>';
+            + '<td class="num"><span class="val-chip" style="' + chipStyle(r.score, 'pitching', false) + '">' + fmt(r.score) + '</span></td>'
+            + '<td class="num"><span class="val-chip" style="' + chipStyle(r.u.osiAllowed, 'osi', true) + '">' + fmt(r.u.osiAllowed) + '</span></td>'
+            + '<td class="num"><span class="val-chip" style="' + chipStyle(r.u.oor, 'oor', false) + '">' + fmt(r.u.oor) + '</span></td></tr>';
         }).join('') + '</tbody></table></div>'
         : '<p class="ca-helper">Bullpen_Unit data not loaded.</p>') + '</div>';
 
@@ -851,7 +855,7 @@ function profileWindowFieldsFromRow(row) {
       + pitcherAvatarHtml(name, 'compare')
       + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary" style="color:' + mColor(val, invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</div></div></div>';
+      + '<div class="rl-metric-primary"><span class="val-chip" style="' + chipStyle(val, 'pitching', invert) + '">' + (val != null ? Number(val).toFixed(1) : '—') + '</span></div></div></div>';
   }
 
   function bpScore(u) {
@@ -938,8 +942,8 @@ function profileWindowFieldsFromRow(row) {
     var logo = A ? A.teamLogoImg(team, 40) : '';
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(team) + ' Bullpen</div>'
-      + '<div class="ca-helper">Bullpen Score <strong style="color:' + mColor(score, false, 'pitching') + '">' + fmt(score) + '</strong>'
-      + ' · OSI Allowed <strong style="color:' + mColor(unit && unit.osiAllowed, true) + '">' + fmt(unit && unit.osiAllowed) + '</strong></div></div></div>';
+      + '<div class="ca-helper">Bullpen Score <span class="val-chip" style="' + chipStyle(score, 'pitching', false) + '">' + fmt(score) + '</span>'
+      + ' · OSI Allowed <span class="val-chip" style="' + chipStyle(unit && unit.osiAllowed, 'osi', true) + '">' + fmt(unit && unit.osiAllowed) + '</span></div></div></div>';
   }
 
   function teamIdentityCard(row, splitNote) {
@@ -950,7 +954,7 @@ function profileWindowFieldsFromRow(row) {
     var splitTag = splitNote ? ' <span class="rl-compare-split-tag">' + esc(splitNote) + '</span>' : '';
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(row.t) + splitTag + '</div>'
-      + '<div class="ca-helper">OSI <strong style="color:' + mColor(row.osi, false) + '">' + fmt(row.osi) + '</strong>'
+      + '<div class="ca-helper">OSI <span class="val-chip" style="' + chipStyle(row.osi, 'osi', false) + '">' + fmt(row.osi) + '</span>'
       + ' <span class="tier-badge ' + tierCls + '">' + esc(tier) + '</span></div></div></div>';
   }
 
@@ -1026,9 +1030,9 @@ function profileWindowFieldsFromRow(row) {
         winner = aWins ? 'a' : 'b';
       }
       return '<div class="rl-compare-metric-row">'
-        + '<span class="rl-compare-metric-val rl-compare-metric-val--a' + (winner === 'a' ? ' rl-compare-metric-val--win' : '') + '" style="color:' + mColor(va, row.invertA, row.ctx) + '">' + fmt(va) + '</span>'
+        + '<span class="rl-compare-metric-val rl-compare-metric-val--a' + (winner === 'a' ? ' rl-compare-metric-val--win' : '') + '"><span class="val-chip" style="' + chipStyle(va, row.ctx || 'osi', row.invertA) + '">' + fmt(va) + '</span></span>'
         + '<span class="rl-compare-metric-label">' + esc(row.label) + '</span>'
-        + '<span class="rl-compare-metric-val rl-compare-metric-val--b' + (winner === 'b' ? ' rl-compare-metric-val--win' : '') + '" style="color:' + mColor(vb, row.invertB, row.ctx) + '">' + fmt(vb) + '</span>'
+        + '<span class="rl-compare-metric-val rl-compare-metric-val--b' + (winner === 'b' ? ' rl-compare-metric-val--win' : '') + '"><span class="val-chip" style="' + chipStyle(vb, row.ctx || 'osi', row.invertB) + '">' + fmt(vb) + '</span></span>'
         + '</div>';
     }).join('');
   }
@@ -1099,6 +1103,30 @@ function profileWindowFieldsFromRow(row) {
       }).join('')
       + '</div></div>';
   }
+  function compareIconSvg(name) {
+    if (name === 'edge') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l5-5 4 4 7-7"></path><path d="M14 8h6v6"></path></svg>';
+    if (name === 'risk') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v5"></path><path d="M12 17h.01"></path><path d="M10.3 3.2L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.2a2 2 0 0 0-3.4 0z"></path></svg>';
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>';
+  }
+  function compareInsightRailHtml(dataA, dataB, metricRows) {
+    var top = (metricRows || []).slice().filter(function(r) {
+      return r.valA != null && r.valB != null && !isNaN(r.valA) && !isNaN(r.valB);
+    }).map(function(r) {
+      var d = (r.higherBetter ? (r.valA - r.valB) : (r.valB - r.valA));
+      return { label: r.label, delta: d, abs: Math.abs(d) };
+    }).sort(function(a, b) { return b.abs - a.abs; })[0];
+    var primaryA = dataA && dataA.primary != null ? Number(dataA.primary).toFixed(1) : '—';
+    var primaryB = dataB && dataB.primary != null ? Number(dataB.primary).toFixed(1) : '—';
+    var rows = [
+      { icon: 'edge', label: 'Primary Edge', text: esc(dataA.label) + ' ' + primaryA + ' vs ' + esc(dataB.label) + ' ' + primaryB },
+      { icon: 'edge', label: 'Largest Gap', text: top ? (top.label + ' ' + (top.delta >= 0 ? '+' : '') + top.delta.toFixed(1)) : 'No comparable metrics' },
+      { icon: 'risk', label: 'Risk Context', text: top && top.abs < 1.0 ? 'Tight matchup, low separation' : 'Meaningful spread across core metrics' }
+    ];
+    return '<div class="ca-insight-rail" style="margin-top:12px;">' + rows.map(function(r) {
+      return '<div class="ca-insight-row"><span class="ca-icon">' + compareIconSvg(r.icon) + '</span><span><span class="ca-insight-label">'
+        + esc(r.label) + '</span><span class="ca-insight-text">' + r.text + '</span></span></div>';
+    }).join('') + '</div>';
+  }
 
   function renderCompareOutput() {
     ensureCompareSides();
@@ -1143,6 +1171,7 @@ function profileWindowFieldsFromRow(row) {
         + '<div class="rl-compare-identities">' + dataA.identityHtml + dataB.identityHtml + '</div>'
         + '<div class="rl-compare-metrics">' + compareMetricRowsHtml(metricRows) + '</div>'
         + chartHtml
+        + compareInsightRailHtml(dataA, dataB, metricRows)
         + compareEdgeSummaryHtml(dataA, dataB, pair, metricRows)
         + compareProfileLinks(dataA, dataB, pair)
         + '</div>';
@@ -1290,9 +1319,9 @@ function profileWindowFieldsFromRow(row) {
     var bpScore = bp.osiAllowed != null ? 100 - bp.osiAllowed : null;
     var ps = sm.osiAllowed != null ? 100 - sm.osiAllowed : null;
     out.innerHTML = '<div class="rl-pvl-grid" style="margin-top:16px;">'
-      + snap('Lineup Snapshot', RL.pvlTeam, 'OSI vs ' + hand + 'HP', splitRow ? splitRow.osi : team.osi, false)
-      + snap('SP Snapshot', RL.pvlPitcher || 'â€”', 'Pitching Score', ps, false)
-      + snap('Bullpen Snapshot', RL.pvlBpTeam || 'â€”', 'Bullpen Score', bpScore, false)
+      + snap('Lineup Snapshot', RL.pvlTeam, 'OSI vs ' + hand + 'HP', splitRow ? splitRow.osi : team.osi, false, 'osi')
+      + snap('SP Snapshot', RL.pvlPitcher || 'â€”', 'Pitching Score', ps, false, 'pitching')
+      + snap('Bullpen Snapshot', RL.pvlBpTeam || 'â€”', 'Bullpen Score', bpScore, false, 'pitching')
       + '</div>'
       + '<div class="rl-edge-card ca-card" style="margin-top:14px;"><strong>Edge Read</strong> â€” '
       + (splitRow && sm.osiAllowed && splitRow.osi > 100 - sm.osiAllowed ? 'Lineup carries platoon split edge vs SP.' : 'Pitching profile suppresses lineup split.')
@@ -1303,10 +1332,10 @@ function profileWindowFieldsFromRow(row) {
       + '<a href="matchup_compare.html?away=' + encodeURIComponent(RL.pvlTeam) + '&home=' + encodeURIComponent(RL.pvlBpTeam || RL.pvlTeam) + '" class="ca-helper">Open full matchup compare â†’</a></div>';
   }
 
-  function snap(title, name, metric, val, inv) {
+  function snap(title, name, metric, val, inv, ctx) {
     return '<div class="rl-pvl-snapshot ca-stat-card"><h4>' + esc(title) + '</h4><div style="font-weight:700;margin-bottom:6px;">' + esc(name) + '</div>'
       + '<div class="ca-stat-eyebrow">' + esc(metric) + '</div>'
-      + '<div class="ca-stat-value" style="color:' + mColor(val, inv) + '">' + fmt(val) + '</div></div>';
+      + '<div class="ca-stat-value"><span class="val-chip" style="' + chipStyle(val, ctx || 'osi', inv) + '">' + fmt(val) + '</span></div></div>';
   }
 
   function renderModelLinks() {

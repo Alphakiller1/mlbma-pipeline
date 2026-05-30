@@ -2356,8 +2356,8 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
-<link rel="stylesheet" href="theme.css?v=20260530a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
+<link rel="stylesheet" href="theme.css?v=20260610b">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260609a">
 <link rel="stylesheet" href="research_lab.css?v=20260610a">
@@ -2381,13 +2381,13 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260527s"></script>
-<script src="matchup_shared.js?v=20260530d"></script>
+<script src="matchup_shared.js?v=20260610a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
-<script src="research_lab.js?v=20260610a"></script>
-<script src="lineup_view.js?v=20260609a"></script>
+<script src="research_lab.js?v=20260610b"></script>
+<script src="lineup_view.js?v=20260610b"></script>
 <script src="trends_heatmap.js?v=20260609a"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
@@ -5197,7 +5197,7 @@ function hidePitchingResearchSections() {
   var oorSec = document.getElementById('oorSection');
   if (oorSec) oorSec.style.display = 'none';
   var palsSec = document.getElementById('palsSection');
-  if (palsSec) palsSec.style.display = 'none';
+  if (palsSec) palsSec.style.display = '';
 }
 window.hidePitchingResearchSections = hidePitchingResearchSections;
 
@@ -6946,6 +6946,7 @@ function renderResearchLab() {
   renderWatchlistBar();
   if (window.ResearchLab && ResearchLab.renderComparePane) ResearchLab.renderComparePane();
   hidePitchingResearchSections();
+  renderPALS();
   scheduleMarketMapRender();
   urlEncodeState();
 }

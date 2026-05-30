@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Analytics · Team Card</title>
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
+<link rel="stylesheet" href="theme.css?v=20260610b">
+<style>
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); }
+.card-wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
+.card-hero { margin-bottom: 14px; }
+.card-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--v-light);
+}
+.card-title {
+  margin-top: 8px; font-family: var(--display); font-size: 52px; font-weight: 800; letter-spacing: -.015em;
+  color: var(--text);
+}
+.card-sub { margin-top: 8px; color: var(--text-2); font-size: 14px; }
+.card-panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.card-export-note { margin-top: 10px; color: var(--text-3); font-size: 11px; }
+.loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-2); background: var(--bg); z-index: 1000; }
+.loading.hide { display: none; }
+</style>
+</head>
+<body>
+<div class="loading" id="loading">Loading team card...</div>
+<div class="card-wrap">
+  <div class="card-hero">
+    <div class="card-eyebrow">Chase Analytics · Shareable Team Card</div>
+    <div class="card-title" id="cardTitle">Team Card</div>
+    <div class="card-sub" id="cardSub">Live one-pager snapshot from Team Profiles + splits.</div>
+  </div>
+  <div class="card-panel">
+    <div id="teamCardMount"></div>
+    <div class="card-export-note">Tip: screenshot this page to share the live card.</div>
+  </div>
+</div>
+
+<script src="mlbma_config.js?v=20260610a"></script>
+<script src="mlbma_assets.js?v=20260610a"></script>
+<script src="matchup_shared.js?v=20260610a"></script>
+<script src="team_profile_mini.js?v=20260610a"></script>
+<script>
+(function() {
+  var p = new URLSearchParams(location.search);
+  var team = String(p.get('team') || 'NYY').trim().toUpperCase();
+  var mount = document.getElementById('teamCardMount');
+  var title = document.getElementById('cardTitle');
+  var sub = document.getElementById('cardSub');
+  if (title) title.textContent = team + ' Team Card';
+  if (sub) sub.textContent = 'Live profile + split patterns for ' + team + '.';
+
+  function num(v) {
+    if (v == null || v === '') return null;
+    var n = parseFloat(String(v).replace(/%/g, ''));
+    return isNaN(n) ? null : n;
+  }
+  function pick(row, keys) {
+    var ks = Object.keys(row || {});
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (row[k] !== undefined && row[k] !== '') return row[k];
+      var n = String(k).toLowerCase().replace(/[^a-z0-9]/g, '');
+      for (var j = 0; j < ks.length; j++) {
+        if (ks[j].toLowerCase().replace(/[^a-z0-9]/g, '') === n) return row[ks[j]];
+      }
+    }
+    return '';
+  }
+  function teamProfileMap(rows) {
+    var m = {};
+    (rows || []).forEach(function(r) {
+      var t = String(pick(r, ['team', 'Tm', 'Team'])).trim().toUpperCase();
+      if (t) m[t] = r;
+    });
+    return m;
+  }
+
+  var tabs = window.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
+  var S = window.MLBMASharedMatchup;
+  if (!tabs || !S || !S.fetchSheetTab || !window.TeamProfileMini) {
+    mount.innerHTML = '<div class="empty-state">Required scripts unavailable.</div>';
+    document.getElementById('loading').classList.add('hide');
+    return;
+  }
+
+  Promise.all([
+    S.fetchSheetTab(tabs.team_profiles),
+    S.fetchSheetTab(tabs.vs_rhp),
+    S.fetchSheetTab(tabs.vs_lhp)
+  ]).then(function(res) {
+    var profiles = teamProfileMap(res[0] || []);
+    var prof = profiles[team];
+    if (!prof) {
+      mount.innerHTML = '<div class="empty-state">No team profile row for ' + team + '.</div>';
+      return;
+    }
+    var html = TeamProfileMini.renderSnapshot(prof, team, {
+      team: team,
+      split: 'both',
+      window: 'YTD',
+      metricsR: res[1] || [],
+      metricsL: res[2] || [],
+      pickCol: pick
+    });
+    mount.innerHTML = html;
+  }).catch(function(err) {
+    mount.innerHTML = '<div class="empty-state">Load failed: ' + String(err && err.message || err) + '</div>';
+  }).finally(function() {
+    document.getElementById('loading').classList.add('hide');
+  });
+})();
+</script>
+</body>
+</html>
