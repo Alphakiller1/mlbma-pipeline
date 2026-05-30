@@ -46,6 +46,9 @@ STEP_DEPENDENCIES: dict[str, list[str]] = {
         "batter_splits_lhp.csv",
     ],
     "outputs.push_batter_profiles": ["batter_profiles.csv"],
+    "scrapers.scrape_results": [],
+    "core.compute_results": ["game_results.csv"],
+    "outputs.push_team_results": ["team_results.csv"],
     "core.compute_team_profile": [
         "metrics_vs_RHP.csv",
         "metrics_vs_LHP.csv",

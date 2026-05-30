@@ -112,6 +112,27 @@ def run_lineups():
     _run_step("Running scrapers.scrape_lineups", "scrapers.scrape_matchups", _lineups)
 
 
+def run_game_results():
+    """Scrape + compute + push team game-results metrics; non-fatal on failure."""
+
+    def _fn():
+        from scrapers.scrape_results import run as run_scrape_results
+
+        run_scrape_results()
+        from core.compute_results import run as run_compute_results
+
+        run_compute_results()
+        from outputs.push_team_results import run as run_push_team_results
+
+        run_push_team_results()
+
+    _run_step(
+        "Step Results: scrape_results + compute_results + push_team_results",
+        "scrapers.scrape_results",
+        _fn,
+    )
+
+
 def run():
     """
     Pipeline order (19 logical steps):
@@ -143,6 +164,7 @@ def run():
         run_script(script, required=False)
 
     run_lineups()
+    run_game_results()
 
     if check_step_deps("scrapers.scrape_pals"):
         run_script("scrapers.scrape_pals", required=False)
