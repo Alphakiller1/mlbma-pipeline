@@ -632,8 +632,8 @@ function profileWindowFieldsFromRow(row) {
       + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
       + '<p class="rl-compare-h2h-subtitle">Select existing entities and compare on the current model surfaces.</p>'
       + '<div class="rl-compare-modes rl-compare-modes--large">'
-      + '<button type="button" class="rl-compare-mode-btn rl-compare-mode-btn--static' + (mode.symmetric ? ' active' : '') + '" aria-disabled="true">Symmetric</button>'
-      + '<button type="button" class="rl-compare-mode-btn rl-compare-mode-btn--static' + (!mode.symmetric ? ' active' : '') + '" aria-disabled="true">Asymmetric</button>'
+      + '<button type="button" class="rl-compare-mode-btn' + (mode.symmetric ? ' active' : '') + '" data-cmp-mode="symmetric">Symmetric</button>'
+      + '<button type="button" class="rl-compare-mode-btn' + (!mode.symmetric ? ' active' : '') + '" data-cmp-mode="asymmetric">Asymmetric</button>'
       + '</div>'
       + '<div id="rlCompareQueryLine" class="ca-query-line"><strong>' + esc(mode.title) + '</strong> · ' + esc(mode.desc) + '</div>'
       + '<div class="rl-compare-panels">'
@@ -648,6 +648,7 @@ function profileWindowFieldsFromRow(row) {
 
     bindCompareSidePanel('A', teams);
     bindCompareSidePanel('B', teams);
+    bindCompareModeButtons(teams);
 
     var run = document.getElementById('rlCmpRun');
     if (run) run.addEventListener('click', function() {
@@ -741,6 +742,27 @@ function profileWindowFieldsFromRow(row) {
     var mode = compareModeMeta(RL.compareSideA, RL.compareSideB);
     var q = document.getElementById('rlCompareQueryLine');
     if (q) q.innerHTML = '<strong>' + esc(mode.title) + '</strong> · ' + esc(mode.desc);
+  }
+
+  function bindCompareModeButtons(teams) {
+    document.querySelectorAll('[data-cmp-mode]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var mode = btn.getAttribute('data-cmp-mode');
+        ensureCompareSides();
+        if (mode === 'symmetric') {
+          RL.compareSideB.entity = RL.compareSideA.entity || 'lineup';
+          RL.compareSideB.key = '';
+        } else {
+          if (RL.compareSideA.entity === RL.compareSideB.entity) {
+            RL.compareSideB.entity = RL.compareSideA.entity === 'lineup' ? 'pitcher' : 'lineup';
+            RL.compareSideB.key = '';
+          }
+        }
+        rerenderComparePanels(teams);
+        bindCompareModeButtons(teams);
+        renderCompareOutput();
+      });
+    });
   }
 
   function teamSelectHtml(id, label, teams, val) {

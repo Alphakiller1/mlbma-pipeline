@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>console.log('[VERSION] build 20260525b');</script>
+<script>console.log('[VERSION] build 20260530a');</script>
 <meta charset="UTF-8">
 
 
@@ -1789,16 +1789,20 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   font-size: clamp(48px, 7.2vw, 104px);
   font-weight: 800; line-height: 0.96; letter-spacing: -0.03em;
   margin: 28px 0 24px;
-  color: #ffffff;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  background: none !important;
   text-transform: uppercase;
 }
 .ca-hero__title-accent {
-  background: linear-gradient(120deg, #9A6BFF 0%, #7C4DFF 45%, #C4B0FF 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  background: none !important;
+  -webkit-background-clip: border-box !important; background-clip: border-box !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
   display: inline-block;
   letter-spacing: -0.02em;
-  text-shadow: 0 10px 30px rgba(124,77,255,0.45);
-  -webkit-text-stroke: 0.6px rgba(196,176,255,0.55);
+  text-shadow: 0 8px 26px rgba(0,0,0,0.45);
+  -webkit-text-stroke: 0.45px rgba(255,255,255,0.42);
 }
 
 /* Lede */
@@ -2319,7 +2323,7 @@ body.view-research .ca-lab { display: block; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
-<link rel="stylesheet" href="theme.css?v=20260610a">
+<link rel="stylesheet" href="theme.css?v=20260530a">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260609a">
 <link rel="stylesheet" href="research_lab.css?v=20260610a">
@@ -2466,9 +2470,9 @@ body.view-research .ca-lab { display: block; }
         CHASE ANALYTICS ? MLB INTELLIGENCE
       </div>
 
-      <h1 class="ca-hero__title">
+      <h1 class="ca-hero__title" style="color:#FFFFFF !important;-webkit-text-fill-color:#FFFFFF !important;background:none !important;">
         The Edge You<br />
-        <span class="ca-hero__title-accent">Need to Win.</span>
+        <span class="ca-hero__title-accent" style="color:#FFFFFF !important;-webkit-text-fill-color:#FFFFFF !important;background:none !important;">Need to Win.</span>
       </h1>
 
       <p class="ca-hero__lede">
