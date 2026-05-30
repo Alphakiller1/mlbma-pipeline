@@ -395,20 +395,20 @@ h1 {
 }
 .pc-search-group { flex: 1; min-width: 220px; }
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260614c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260614c">
-<link rel="stylesheet" href="theme.css?v=20260614c">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260614d">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260614d">
+<link rel="stylesheet" href="theme.css?v=20260614d">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
-<script src="mlbma_config.js?v=20260614c"></script>
-<script src="mlbma_assets.js?v=20260614c"></script>
-<script src="mlbma_icons.js?v=20260614c"></script>
-<script src="matchup_shared.js?v=20260614c"></script>
-<script src="mlbma_standings.js?v=20260614c"></script>
-<script src="team_profile_mini.js?v=20260614c"></script>
-<script src="mlbma_charts.js?v=20260614c"></script>
-<script src="profile_controls.js?v=20260614c"></script>
-<script src="mlbma_ui.js?v=20260614c" data-page="team_profile.html"></script>
-<link rel="stylesheet" href="research_lab.css?v=20260614c">
+<script src="mlbma_config.js?v=20260614d"></script>
+<script src="mlbma_assets.js?v=20260614d"></script>
+<script src="mlbma_icons.js?v=20260614d"></script>
+<script src="matchup_shared.js?v=20260614d"></script>
+<script src="mlbma_standings.js?v=20260614d"></script>
+<script src="team_profile_mini.js?v=20260614d"></script>
+<script src="mlbma_charts.js?v=20260614d"></script>
+<script src="profile_controls.js?v=20260614d"></script>
+<script src="mlbma_ui.js?v=20260614d" data-page="team_profile.html"></script>
+<link rel="stylesheet" href="research_lab.css?v=20260614d">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
@@ -586,7 +586,13 @@ function parseCSV(text) {
 }
 
 function fetchSheetTab(tabName) {
-  return MLBMASharedMatchup.fetchSheetTab(tabName);
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchSheetTab) {
+    return MLBMASharedMatchup.fetchSheetTab(tabName);
+  }
+  return fetch(gvizUrl(tabName), { cache: 'no-store' }).then(function(r) {
+    if (!r.ok) throw new Error('fetch ' + tabName);
+    return r.text();
+  }).then(parseCSV);
 }
 
 function pickCol(row, names) {
@@ -666,7 +672,9 @@ function encodePlayer(name) {
 }
 
 function normalizePlayerName(name) {
-  return String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  return String(name || '').trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ');
 }
 
 function playerLastName(name) {
@@ -694,10 +702,11 @@ function resolvePlayerFullName(name, team) {
   return regHit ? pickCol(regHit, ['full_name']) : name;
 }
 
-function batterRowForPlayer(name, team) {
+function batterRowForPlayer(name, team, splitHint) {
   var resolved = resolvePlayerFullName(name, team);
   var target = normalizePlayerName(resolved);
   var t = teamKey(team);
+  var splitType = splitHint === 'L' ? 'vs_LHP' : splitHint === 'R' ? 'vs_RHP' : null;
   var rows = (DATA.batters || []).filter(function(b) {
     return teamKey(pickCol(b, ['team', 'Team'])) === t
       && normalizePlayerName(pickCol(b, ['player_name', 'Player'])) === target;
@@ -715,11 +724,32 @@ function batterRowForPlayer(name, team) {
     });
   }
   var main = null;
-  rows.forEach(function(b) {
-    var st = pickCol(b, ['split_type', 'Split']);
-    if (st === 'vs_RHP' || !main) main = b;
-  });
+  if (splitType) {
+    rows.forEach(function(b) {
+      var st = pickCol(b, ['split_type', 'Split']);
+      if (st === splitType) main = b;
+    });
+  }
+  if (!main) {
+    rows.forEach(function(b) {
+      var st = pickCol(b, ['split_type', 'Split']);
+      if (st === 'vs_RHP' || !main) main = b;
+    });
+  }
   return main;
+}
+
+function lineupSpHand(team) {
+  var game = tonightGame(team);
+  if (!game) return null;
+  var away = teamKey(pickCol(game, ['Away', 'away_team', 'Away_Team']));
+  var hand = away === teamKey(team)
+    ? pickCol(game, ['Home_Hand', 'home_hand', 'Home_SP_Hand', 'homeHand'])
+    : pickCol(game, ['Away_Hand', 'away_hand', 'Away_SP_Hand', 'awayHand']);
+  var s = String(hand || '').trim().toUpperCase();
+  if (s.charAt(0) === 'L') return 'L';
+  if (s.charAt(0) === 'R') return 'R';
+  return null;
 }
 
 function todayLineupForTeam(team) {
@@ -742,9 +772,11 @@ function renderTodayLineupSection(team) {
   }
   var game = pickCol(slots[0], ['Game', 'game']);
   var time = pickCol(slots[0], ['Time', 'time']);
+  var spHand = lineupSpHand(team);
+  var splitNote = spHand ? ' · vs ' + spHand + 'HP SP split' : '';
   var html = '<div class="section"><div class="section-eyebrow">Lineup</div>'
     + '<div class="section-title">Today\'s Projected Lineup</div>'
-    + '<div class="section-subtitle">' + escHtml(game || 'Slate game') + (time ? ' · ' + escHtml(time) : '') + '</div>'
+    + '<div class="section-subtitle">' + escHtml(game || 'Slate game') + (time ? ' · ' + escHtml(time) : '') + escHtml(splitNote) + '</div>'
     + '<table class="data-table lineup-profile-table"><thead><tr>'
     + '<th>#</th><th>Pos</th><th>Player</th><th>B</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>Profile</th>'
     + '</tr></thead><tbody>';
@@ -754,7 +786,7 @@ function renderTodayLineupSection(team) {
     var order = pickCol(slot, ['Bat_Order', 'Bat Order', 'bat_order']);
     var pos = pickCol(slot, ['Position', 'position']);
     var bats = pickCol(slot, ['Bats', 'bats']);
-    var row = batterRowForPlayer(pname, team);
+    var row = batterRowForPlayer(pname, team, spHand);
     var abq = row ? num(pickCol(row, ['ABQ'])) : null;
     var rcv = row ? num(pickCol(row, ['RCV'])) : null;
     var obr = row ? num(pickCol(row, ['OBR'])) : null;
@@ -941,6 +973,7 @@ function bindProfileControls() {
 function renderTeam(team) {
   STATE.team = teamKey(team);
   var prof = profileRow(STATE.team) || {};
+  var teamOsi = num(pickCol(prof, ['osi', 'OSI']));
   var game = tonightGame(STATE.team);
   var name = TEAM_NAMES[STATE.team] || STATE.team;
   var platoonSens = pickCol(prof, ['platoon_sensitive']) === 'True' || pickCol(prof, ['platoon_sensitive']) === 'true';
@@ -1170,11 +1203,11 @@ function renderTeam(team) {
     var home = teamKey(pickCol(game, ['Home', 'home_team']));
     var opp = away === STATE.team ? home : away;
     var oppProf = profileRow(opp) || {};
-    var oppOsi = num(pickCol(oppProf, ['osi']));
+    var oppOsi = num(pickCol(oppProf, ['osi', 'OSI']));
     var spName = away === STATE.team ? pickCol(game, ['Home_SP', 'home_sp', 'Home SP']) : pickCol(game, ['Away_SP', 'away_sp', 'Away SP']);
     var oppPitch = pitchTeamRow(opp);
     var oppPs = oppPitch ? num(pickCol(oppPitch, ['PitchScore'])) : null;
-    var edge = (osi !== null && oppPs !== null) ? osi - oppPs : null;
+    var edge = (teamOsi !== null && oppPs !== null) ? teamOsi - oppPs : null;
     html += '<div class="matchup-panel">';
     html += '<p><strong>Opponent:</strong> ' + (TEAM_NAMES[opp] || opp) + ' · OSI ' + fmt(oppOsi, 1) + '</p>';
     html += '<p><strong>Opposing SP:</strong> ' + (spName || 'TBD') + (oppPs !== null ? ' · Pitch Score ' + fmt(oppPs, 1) : '') + '</p>';
@@ -1276,8 +1309,22 @@ document.addEventListener('DOMContentLoaded', function() {
   initSelector();
   bindProfileControls();
   loadAll().then(function() {
-    if (window.MLBMAStandings) MLBMAStandings.load().then(function() { renderTeam(STATE.team); });
-    else renderTeam(STATE.team);
+    function paint() {
+      try {
+        renderTeam(STATE.team);
+      } catch (err) {
+        console.error('[MLBMA] team_profile render failed:', err);
+        var banner = document.getElementById('dataBanner');
+        if (banner) {
+          banner.textContent = 'Render error: ' + err.message;
+          banner.classList.add('show');
+        }
+      }
+    }
+    if (window.MLBMAStandings) {
+      return MLBMAStandings.load().then(paint).catch(function() { paint(); });
+    }
+    paint();
   }).catch(function(err) {
     document.getElementById('dataBanner').textContent = 'Load error: ' + err.message;
     document.getElementById('dataBanner').classList.add('show');
