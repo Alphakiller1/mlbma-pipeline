@@ -9,9 +9,12 @@
   var S = global.MLBMASharedMatchup;
   var TABS = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
 
+  var CM = function() { return global.CompareMetrics; };
+
   var RL = {
-    compareSideA: { entity: 'lineup', split: 'b', key: '' },
-    compareSideB: { entity: 'lineup', split: 'b', key: '' },
+    compareMode: 'lineup-lineup',
+    compareSideA: null,
+    compareSideB: null,
     spProfiles: null,
     pvlTeam: '',
     pvlPitcher: '',
@@ -541,28 +544,53 @@ function profileWindowFieldsFromRow(row) {
   }
 
   function defaultCompareSide() {
-    return { entity: 'lineup', split: 'b', key: '' };
+    var cm = CM();
+    return { key: '', filter: cm ? cm.defaultSideFilter() : { hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' } };
   }
 
   function ensureCompareSides() {
-    if (!RL.compareSideA) RL.compareSideA = defaultCompareSide();
-    if (!RL.compareSideB) RL.compareSideB = defaultCompareSide();
+    if (!RL.compareMode) RL.compareMode = 'lineup-lineup';
+    if (!RL.compareSideA || RL.compareSideA.entity) {
+      var kA = RL.compareSideA && RL.compareSideA.key ? RL.compareSideA.key : '';
+      RL.compareSideA = defaultCompareSide();
+      RL.compareSideA.key = kA;
+    }
+    if (!RL.compareSideB || RL.compareSideB.entity) {
+      var kB = RL.compareSideB && RL.compareSideB.key ? RL.compareSideB.key : '';
+      RL.compareSideB = defaultCompareSide();
+      RL.compareSideB.key = kB;
+    }
+    if (!RL.compareSideA.filter) RL.compareSideA.filter = defaultCompareSide().filter;
+    if (!RL.compareSideB.filter) RL.compareSideB.filter = defaultCompareSide().filter;
+  }
+
+  function compareModeInfo() {
+    var cm = CM();
+    return (cm && cm.MODES && cm.MODES[RL.compareMode]) || { label: 'Compare', desc: '' };
+  }
+
+  function applyCompareMode(modeId) {
+    var cm = CM();
+    if (!cm || !cm.MODES[modeId]) return;
+    RL.compareMode = modeId;
+    RL.compareSideA.key = '';
+    RL.compareSideB.key = '';
+    RL.compareSideA.filter = cm.defaultSideFilter();
+    RL.compareSideB.filter = cm.defaultSideFilter();
+    if (modeId === 'lineup-bullpen') {
+      RL.compareSideA.filter.pitcher = 'rp';
+    }
+    if (modeId === 'lineup-sp') {
+      RL.compareSideA.filter.pitcher = 'sp';
+    }
   }
 
   function compareSideRef(sideKey) {
     return sideKey === 'B' ? RL.compareSideB : RL.compareSideA;
   }
 
-  function deriveComparePair(sideA, sideB) {
-    var ea = sideA.entity;
-    var eb = sideB.entity;
-    if (ea === 'lineup' && eb === 'lineup') return 'lineup-lineup';
-    if (ea === 'pitcher' && eb === 'pitcher') return 'pitcher-pitcher';
-    if (ea === 'bullpen' && eb === 'bullpen') return 'bullpen-bullpen';
-    if ((ea === 'lineup' && eb === 'pitcher') || (ea === 'pitcher' && eb === 'lineup')) return 'lineup-pitcher';
-    if ((ea === 'bullpen' && eb === 'lineup') || (ea === 'lineup' && eb === 'bullpen')) return 'bullpen-lineup';
-    if ((ea === 'bullpen' && eb === 'pitcher') || (ea === 'pitcher' && eb === 'bullpen')) return 'pitcher-bullpen';
-    return 'mixed';
+  function deriveComparePair() {
+    return RL.compareMode || 'lineup-lineup';
   }
 
   function findTeamProfileRaw(t) {
@@ -609,37 +637,26 @@ function profileWindowFieldsFromRow(row) {
     return base;
   }
 
-  function splitLabelForCompare(split) {
-    return { b: 'Both', r: 'vs RHP', l: 'vs LHP', home: 'Home', away: 'Away', f5: 'F5' }[split] || 'Both';
-  }
-  function compareModeMeta(sideA, sideB) {
-    var pair = deriveComparePair(sideA, sideB);
-    var symmetric = (pair === 'lineup-lineup' || pair === 'pitcher-pitcher' || pair === 'bullpen-bullpen');
-    var title = symmetric ? 'Symmetric compare' : 'Asymmetric compare';
-    var desc = symmetric
-      ? 'Same-type entities are scored on shared axes.'
-      : 'Cross-type entities use normalized matchup bars and safe comparison rows.';
-    return { pair: pair, title: title, desc: desc, symmetric: symmetric };
-  }
-
   function renderComparePaneInner(root) {
     ensureCompareSides();
     syncResearchGlobalsFromLiveData();
     var teams = (global.SCO_YTD_B || []).map(function(r) { return r.t; }).filter(Boolean).sort();
     if (!teams.length) teams = teamList();
-    var mode = compareModeMeta(RL.compareSideA, RL.compareSideB);
+    var cm = CM();
+    var mode = compareModeInfo();
+    var modeBtns = cm ? Object.keys(cm.MODES).map(function(id) {
+      var m = cm.MODES[id];
+      return '<button type="button" class="ca-pill-btn rl-compare-mode-btn' + (RL.compareMode === id ? ' active' : '') + '" data-cmp-workspace="' + esc(id) + '">' + esc(m.label) + '</button>';
+    }).join('') : '';
 
     root.innerHTML = '<div class="rl-compare-h2h ca-card">'
       + '<div class="rl-compare-h2h-header ca-section-head">'
       + iconCircle('swords') + '<span>Compare Workspace</span>'
       + '</div>'
       + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
-      + '<p class="rl-compare-h2h-subtitle">Select existing entities and compare on the current model surfaces.</p>'
-      + '<div class="rl-compare-modes rl-compare-modes--large">'
-      + '<button type="button" class="rl-compare-mode-btn' + (mode.symmetric ? ' active' : '') + '" data-cmp-mode="symmetric">Symmetric</button>'
-      + '<button type="button" class="rl-compare-mode-btn' + (!mode.symmetric ? ' active' : '') + '" data-cmp-mode="asymmetric">Asymmetric</button>'
-      + '</div>'
-      + '<div id="rlCompareQueryLine" class="ca-query-line"><strong>' + esc(mode.title) + '</strong> · ' + esc(mode.desc) + '</div>'
+      + '<p class="rl-compare-h2h-subtitle">Four compare modes with independent split controls on each side.</p>'
+      + '<div class="rl-compare-modes rl-compare-modes--large ca-pill-bar">' + modeBtns + '</div>'
+      + '<div id="rlCompareQueryLine" class="ca-query-line"><strong>' + esc(mode.label) + '</strong> · ' + esc(mode.desc) + '</div>'
       + '<div class="rl-compare-panels">'
       + renderCompareSidePanelHtml('SIDE A', 'A', RL.compareSideA, teams)
       + renderCompareSidePanelHtml('SIDE B', 'B', RL.compareSideB, teams)
@@ -652,9 +669,9 @@ function profileWindowFieldsFromRow(row) {
 
     if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
 
+    bindCompareWorkspaceModes(teams);
     bindCompareSidePanel('A', teams);
     bindCompareSidePanel('B', teams);
-    bindCompareModeButtons(teams);
 
     var run = document.getElementById('rlCmpRun');
     if (run) run.addEventListener('click', function() {
@@ -666,56 +683,76 @@ function profileWindowFieldsFromRow(row) {
     renderCompareOutput();
   }
 
+  function compareSideEntityLabel(modeId, sideKey) {
+    var cm = CM();
+    if (!cm) return 'Entity';
+    var ent = cm.modeEntity(modeId, sideKey);
+    return ent === 'pitcher' ? 'Pitcher' : ent === 'bullpen' ? 'Bullpen' : 'Lineup';
+  }
+
+  function renderCompareSplitRows(modeId, sideKey, side) {
+    var cm = CM();
+    if (!cm) return '';
+    var groups = cm.splitGroupsForSide(modeId, sideKey);
+    var filter = side.filter || cm.defaultSideFilter();
+    return groups.map(function(grp) {
+      return '<div class="rl-compare-pill-row ca-pill-bar rl-compare-split-row">'
+        + grp.options.map(function(opt) {
+          var active = filter[grp.key] === opt.v;
+          return '<button type="button" class="ca-pill-btn' + (active ? ' active' : '') + '" data-cmp-filter="' + grp.key + '" data-cmp-filter-val="' + opt.v + '" data-side="' + sideKey + '">' + esc(opt.l) + '</button>';
+        }).join('')
+        + '</div>';
+    }).join('');
+  }
+
   function renderCompareSidePanelHtml(label, sideKey, side, teams) {
-    var entities = [
-      { id: 'lineup', lbl: 'Lineup' },
-      { id: 'pitcher', lbl: 'Pitcher' },
-      { id: 'bullpen', lbl: 'Bullpen' }
-    ];
-    var splits = ['b', 'r', 'l', 'home', 'away', 'f5'];
+    var modeId = RL.compareMode || 'lineup-lineup';
+    var entity = compareSideEntityLabel(modeId, sideKey);
+    var cm = CM();
+    var entType = cm ? cm.modeEntity(modeId, sideKey) : 'lineup';
     var selectorHtml = '';
-    if (side.entity === 'pitcher') {
+    if (entType === 'pitcher') {
       selectorHtml = pitcherSearchHtml('rlCmp' + sideKey + 'Key', 'Select pitcher', side.key);
     } else {
-      selectorHtml = teamSelectHtml('rlCmp' + sideKey + 'Key', side.entity === 'bullpen' ? 'Select bullpen team' : 'Select team', teams, side.key);
+      var selLabel = entType === 'bullpen' ? 'Select bullpen team' : 'Select team';
+      selectorHtml = teamSelectHtml('rlCmp' + sideKey + 'Key', selLabel, teams, side.key);
     }
+    var splitTag = cm ? cm.filterSummary(side.filter) : '';
     return '<div class="rl-compare-panel" data-side="' + sideKey + '">'
-      + '<div class="rl-compare-panel-label">' + esc(label) + '</div>'
-      + '<div class="rl-compare-pill-row ca-pill-bar">'
-      + entities.map(function(e) {
-        return '<button type="button" class="ca-pill-btn' + (side.entity === e.id ? ' active' : '') + '" data-cmp-entity="' + e.id + '" data-side="' + sideKey + '">' + e.lbl + '</button>';
-      }).join('')
-      + '</div>'
-      + '<div class="rl-compare-pill-row ca-pill-bar rl-compare-split-row">'
-      + splits.map(function(sp) {
-        return '<button type="button" class="ca-pill-btn' + (side.split === sp ? ' active' : '') + '" data-cmp-split="' + sp + '" data-side="' + sideKey + '">' + splitLabelForCompare(sp) + '</button>';
-      }).join('')
-      + '</div>'
+      + '<div class="rl-compare-panel-label">' + esc(label) + ' <span class="rl-compare-entity-tag">' + esc(entity) + '</span></div>'
+      + renderCompareSplitRows(modeId, sideKey, side)
       + '<div class="rl-compare-panel-select">' + selectorHtml + '</div>'
+      + (splitTag ? '<div class="ca-helper rl-compare-filter-note">' + esc(splitTag) + '</div>' : '')
       + '<button type="button" class="rl-compare-clear" data-cmp-clear="' + sideKey + '">Clear</button>'
       + '</div>';
   }
 
-  function bindCompareSidePanel(sideKey, teams) {
-    var side = compareSideRef(sideKey);
-    document.querySelectorAll('[data-cmp-entity][data-side="' + sideKey + '"]').forEach(function(btn) {
+  function bindCompareWorkspaceModes(teams) {
+    document.querySelectorAll('[data-cmp-workspace]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        side.entity = btn.getAttribute('data-cmp-entity');
-        side.key = '';
-        rerenderComparePanels(teams);
+        applyCompareMode(btn.getAttribute('data-cmp-workspace'));
+        renderComparePaneInner(document.getElementById('rlCompareRoot'));
       });
     });
-    document.querySelectorAll('[data-cmp-split][data-side="' + sideKey + '"]').forEach(function(btn) {
+  }
+
+  function bindCompareSidePanel(sideKey, teams) {
+    var side = compareSideRef(sideKey);
+    document.querySelectorAll('[data-cmp-filter][data-side="' + sideKey + '"]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        side.split = btn.getAttribute('data-cmp-split');
+        if (!side.filter) side.filter = defaultCompareSide().filter;
+        side.filter[btn.getAttribute('data-cmp-filter')] = btn.getAttribute('data-cmp-filter-val');
         rerenderComparePanels(teams);
+        renderCompareOutput();
       });
     });
     var sel = document.getElementById('rlCmp' + sideKey + 'Key');
     if (sel && sel.tagName === 'SELECT') {
       sel.addEventListener('change', function() { side.key = sel.value; });
     }
-    if (side.entity === 'pitcher') {
+    var modeId = RL.compareMode || 'lineup-lineup';
+    var cm = CM();
+    if (cm && cm.modeEntity(modeId, sideKey) === 'pitcher') {
       bindComparePitcherSearch('rlCmp' + sideKey + 'Key', sideKey);
     }
     var clr = document.querySelector('[data-cmp-clear="' + sideKey + '"]');
@@ -745,30 +782,9 @@ function profileWindowFieldsFromRow(row) {
       + renderCompareSidePanelHtml('SIDE B', 'B', RL.compareSideB, teams);
     bindCompareSidePanel('A', teams);
     bindCompareSidePanel('B', teams);
-    var mode = compareModeMeta(RL.compareSideA, RL.compareSideB);
+    var mode = compareModeInfo();
     var q = document.getElementById('rlCompareQueryLine');
-    if (q) q.innerHTML = '<strong>' + esc(mode.title) + '</strong> · ' + esc(mode.desc);
-  }
-
-  function bindCompareModeButtons(teams) {
-    document.querySelectorAll('[data-cmp-mode]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var mode = btn.getAttribute('data-cmp-mode');
-        ensureCompareSides();
-        if (mode === 'symmetric') {
-          RL.compareSideB.entity = RL.compareSideA.entity || 'lineup';
-          RL.compareSideB.key = '';
-        } else {
-          if (RL.compareSideA.entity === RL.compareSideB.entity) {
-            RL.compareSideB.entity = RL.compareSideA.entity === 'lineup' ? 'pitcher' : 'lineup';
-            RL.compareSideB.key = '';
-          }
-        }
-        rerenderComparePanels(teams);
-        bindCompareModeButtons(teams);
-        renderCompareOutput();
-      });
-    });
+    if (q) q.innerHTML = '<strong>' + esc(mode.label) + '</strong> · ' + esc(mode.desc);
   }
 
   function teamSelectHtml(id, label, teams, val) {
@@ -948,12 +964,21 @@ function profileWindowFieldsFromRow(row) {
       + ' · OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'osi', true, 1) + '</div></div></div>';
   }
 
-  function teamIdentityCard(row, splitNote) {
+  function compareIdentityHtml(data) {
+    if (!data) return '';
+    var cm = CM();
+    var splitTag = data.filterSummary ? ' <span class="rl-compare-split-tag">' + esc(data.filterSummary) + '</span>' : '';
+    if (data.entity === 'pitcher') {
+      return pitcherScorecard(data.label, data.primaryLabel || 'Pitching Score', data.primary, false);
+    }
+    if (data.entity === 'bullpen') {
+      return bullpenIdentityCard(data.label, data.primary, data.row);
+    }
+    var row = data.row;
     if (!row) return '';
     var logo = A ? A.teamLogoImg(row.t, 40) : '';
     var tier = row.osi >= 75 ? 'Elite' : row.osi >= 60 ? 'Solid' : row.osi >= 45 ? 'Avg' : 'Weak';
     var tierCls = row.osi >= 75 ? 'tier-elite' : row.osi >= 60 ? 'tier-solid' : 'tier-mid';
-    var splitTag = splitNote ? ' <span class="rl-compare-split-tag">' + esc(splitNote) + '</span>' : '';
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(row.t) + splitTag + '</div>'
       + '<div class="ca-helper">OSI ' + metricChip(row.osi, 'osi', false, 1)
@@ -978,48 +1003,9 @@ function profileWindowFieldsFromRow(row) {
   }
 
   function buildCompareMetricRows(dataA, dataB, pair) {
-    if (pair === 'lineup-lineup' || pair === 'pitcher-pitcher' || pair === 'bullpen-bullpen') {
-      return dataA.metrics.map(function(spec) {
-        return {
-          label: spec[1],
-          valA: metricValFromSide(dataA, spec),
-          valB: metricValFromSide(dataB, spec),
-          higherBetter: spec[2] !== false,
-          invertA: !!spec[3],
-          invertB: !!spec[3],
-          ctx: spec[4] || (spec[0] === 'ppGap' ? 'ppGap' : (spec[3] ? 'osi' : 'osi'))
-        };
-      });
-    }
-    if (pair === 'lineup-pitcher') {
-      var lineup = dataA.entity === 'lineup' ? dataA : dataB;
-      var pitcher = dataA.entity === 'pitcher' ? dataA : dataB;
-      var allow = pitcher.splitOsiAllowed != null ? pitcher.splitOsiAllowed : pitcher.metricsObj.osiAllowed;
-      var aFirst = dataA.entity === 'lineup';
-      return [
-        { label: 'OSI vs Allowed', valA: aFirst ? lineup.primary : allow, valB: aFirst ? allow : lineup.primary, higherBetter: true, invertA: !aFirst, invertB: aFirst, ctx: 'osi' },
-        { label: 'ABQ vs ABQ Allowed', valA: aFirst ? lineup.row.abq : pitcher.metricsObj.abqAllowed, valB: aFirst ? pitcher.metricsObj.abqAllowed : lineup.row.abq, higherBetter: true, invertA: !aFirst, invertB: aFirst, ctx: 'osi' },
-        { label: 'RCV vs RCV Allowed', valA: aFirst ? lineup.row.rcv : pitcher.metricsObj.rcvAllowed, valB: aFirst ? pitcher.metricsObj.rcvAllowed : lineup.row.rcv, higherBetter: true, invertA: !aFirst, invertB: aFirst, ctx: 'osi' }
-      ];
-    }
-    if (pair === 'bullpen-lineup') {
-      var bp = dataA.entity === 'bullpen' ? dataA : dataB;
-      var lu = dataA.entity === 'lineup' ? dataA : dataB;
-      var aFirstBp = dataA.entity === 'bullpen';
-      return [
-        { label: 'Lineup OSI vs BP Allowed', valA: aFirstBp ? bp.row.osiAllowed : lu.primary, valB: aFirstBp ? lu.primary : bp.row.osiAllowed, higherBetter: true, invertA: aFirstBp, invertB: !aFirstBp, ctx: 'osi' },
-        { label: 'ABQ vs ABQ Allowed', valA: aFirstBp ? bp.row.abqAllowed : lu.row.abq, valB: aFirstBp ? lu.row.abq : bp.row.abqAllowed, higherBetter: true, invertA: aFirstBp, invertB: !aFirstBp, ctx: 'osi' }
-      ];
-    }
-    if (pair === 'pitcher-bullpen') {
-      return [
-        { label: 'Pitching Score', valA: dataA.primary, valB: dataB.primary, higherBetter: true, invertA: false, invertB: false, ctx: 'pitching' },
-        { label: 'OSI Allowed', valA: dataA.splitOsiAllowed || (dataA.metricsObj && dataA.metricsObj.osiAllowed) || (dataA.row && dataA.row.osiAllowed), valB: dataB.splitOsiAllowed || (dataB.metricsObj && dataB.metricsObj.osiAllowed) || (dataB.row && dataB.row.osiAllowed), higherBetter: false, invertA: true, invertB: true, ctx: 'osi' }
-      ];
-    }
-    return [
-      { label: dataA.primaryLabel, valA: dataA.primary, valB: dataB.primary, higherBetter: true, invertA: !!dataA.primaryInvert, invertB: !!dataB.primaryInvert, ctx: 'osi' }
-    ];
+    var cm = CM();
+    if (cm && cm.buildMetricRows) return cm.buildMetricRows(pair || RL.compareMode, dataA, dataB);
+    return [];
   }
 
   function compareMetricRowsHtml(rows) {
@@ -1084,11 +1070,11 @@ function profileWindowFieldsFromRow(row) {
       if (pa > pb + 2) { edgeLabel = 'SIDE A EDGE'; edgeCls = 'rl-compare-edge-a'; }
       else if (pb > pa + 2) { edgeLabel = 'SIDE B EDGE'; edgeCls = 'rl-compare-edge-b'; }
     }
-    if (pair === 'lineup-pitcher' && pa != null && pb != null) {
+    if (pair === 'lineup-sp' && pa != null && pb != null) {
       var lineupSide = dataA.entity === 'lineup' ? dataA : dataB;
       var pitchSide = dataA.entity === 'pitcher' ? dataA : dataB;
-      var lo = lineupSide.primary;
-      var po = pitchSide.metricsObj && pitchSide.metricsObj.osiAllowed;
+      var lo = lineupSide.row && lineupSide.row.osi;
+      var po = pitchSide.splitOsiAllowed != null ? pitchSide.splitOsiAllowed : (pitchSide.metricsObj && pitchSide.metricsObj.osiAllowed);
       if (lo != null && po != null) {
         if (lo > 100 - po + 5) { edgeLabel = dataA.entity === 'lineup' ? 'SIDE A EDGE' : 'SIDE B EDGE'; edgeCls = dataA.entity === 'lineup' ? 'rl-compare-edge-a' : 'rl-compare-edge-b'; }
         else if (100 - po > lo + 5) { edgeLabel = dataA.entity === 'pitcher' ? 'SIDE A EDGE' : 'SIDE B EDGE'; edgeCls = dataA.entity === 'pitcher' ? 'rl-compare-edge-a' : 'rl-compare-edge-b'; }
@@ -1140,12 +1126,15 @@ function profileWindowFieldsFromRow(row) {
       return;
     }
     out.innerHTML = '<div class="rl-loading">Computing comparison…</div>';
-    setTimeout(function() {
-      var sideA = RL.compareSideA;
-      var sideB = RL.compareSideB;
-      var pair = deriveComparePair(sideA, sideB);
-      var dataA = getSideCompareData(sideA);
-      var dataB = getSideCompareData(sideB);
+    var cm = CM();
+    var pair = deriveComparePair();
+    var resolveFn = cm && cm.resolveBoth
+      ? cm.resolveBoth(pair, RL.compareSideA, RL.compareSideB, { findSpProfile: findSpProfile })
+      : Promise.resolve({ dataA: null, dataB: null });
+
+    resolveFn.then(function(res) {
+      var dataA = res.dataA;
+      var dataB = res.dataB;
       if (!dataA || !dataB) {
         out.innerHTML = '<div class="rl-pane-card ca-card"><p class="ca-helper">Data not available for one or both selections.</p></div>';
         return;
@@ -1157,7 +1146,9 @@ function profileWindowFieldsFromRow(row) {
       if (pair === 'lineup-lineup') {
         chartHtml = '<div id="rlTeamRadar" class="rl-compare-chart mc-radar-mount"></div>';
       } else {
-        var barMetrics = metricRows.slice(0, 5).map(function(row) {
+        var barMetrics = metricRows.filter(function(row) {
+          return row.valA != null && row.valB != null;
+        }).slice(0, 5).map(function(row) {
           return {
             label: row.label,
             valA: row.valA,
@@ -1170,7 +1161,7 @@ function profileWindowFieldsFromRow(row) {
       }
 
       out.innerHTML = '<div class="rl-compare-output">'
-        + '<div class="rl-compare-identities">' + dataA.identityHtml + dataB.identityHtml + '</div>'
+        + '<div class="rl-compare-identities">' + compareIdentityHtml(dataA) + compareIdentityHtml(dataB) + '</div>'
         + '<div class="rl-compare-metrics">' + compareMetricRowsHtml(metricRows) + '</div>'
         + chartHtml
         + compareInsightRailHtml(dataA, dataB, metricRows)
@@ -1201,7 +1192,7 @@ function profileWindowFieldsFromRow(row) {
           }
         }, 0);
       }
-    }, 50);
+    });
   }
 
   function compareProfileLinks(dataA, dataB, pair) {
@@ -1209,9 +1200,14 @@ function profileWindowFieldsFromRow(row) {
     var teamB = dataB.entity === 'lineup' || dataB.entity === 'bullpen' ? dataB.label : null;
     var pitcherA = dataA.entity === 'pitcher' ? dataA.label : null;
     var pitcherB = dataB.entity === 'pitcher' ? dataB.label : null;
-    if (pair === 'bullpen-bullpen') {
-      return '<p class="ca-helper rl-compare-links"><a href="bullpen_report.html?team=' + encodeURIComponent(dataA.label) + '">' + esc(dataA.label) + ' report →</a> · '
-        + '<a href="bullpen_report.html?team=' + encodeURIComponent(dataB.label) + '">' + esc(dataB.label) + ' report →</a></p>';
+    if (pair === 'lineup-bullpen') {
+      var bpTeam = dataA.entity === 'bullpen' ? dataA.label : dataB.label;
+      var luTeam = dataA.entity === 'lineup' ? dataA.label : dataB.label;
+      return '<p class="ca-helper rl-compare-links"><a href="team_profile.html?team=' + encodeURIComponent(luTeam) + '">' + esc(luTeam) + ' profile →</a> · '
+        + '<a href="bullpen_report.html?team=' + encodeURIComponent(bpTeam) + '">' + esc(bpTeam) + ' bullpen →</a></p>';
+    }
+    if (pair === 'pitcher-pitcher') {
+      return profileLinks(null, null, dataA.label, dataB.label);
     }
     return profileLinks(teamA, teamB, pitcherA, pitcherB);
   }
@@ -1243,7 +1239,7 @@ function profileWindowFieldsFromRow(row) {
       { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: 'trending-up' },
       { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: 'target' },
       { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: 'swords' },
-      { pane: 'compare', title: 'Compare', use: 'Team vs team, pitcher vs pitcher, bullpen vs bullpen, lineup vs pitcher', cta: 'Open Compare', icon: 'swords' },
+      { pane: 'compare', title: 'Compare', use: 'Lineup vs Lineup, Lineup vs SP, Lineup vs Bullpen, Pitcher vs Pitcher', cta: 'Open Compare', icon: 'swords' },
       { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: 'trophy' }
     ];
     root.innerHTML = '<div class="rl-home-header"><h2 class="rl-workspace-title">Research Home</h2>'

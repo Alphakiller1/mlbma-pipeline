@@ -1152,6 +1152,9 @@
         abqAllowed: numOrNull(pickCol(row, 'overall_ABQ_allowed')),
         rcvAllowed: numOrNull(pickCol(row, 'overall_RCV_allowed')),
         obrAllowed: numOrNull(pickCol(row, 'overall_OBR_allowed')),
+        bbPct: numOrNull(pickCol(row, 'overall_BB_pct', 'BB%', 'BB_pct')),
+        fip: numOrNull(pickCol(row, 'overall_FIP', 'FIP', 'fip')),
+        era: numOrNull(pickCol(row, 'overall_ERA', 'ERA', 'era')),
         hiLevEra: numOrNull(pickCol(row, 'high_leverage_ERA', 'High Leverage ERA')),
         medLevEra: numOrNull(pickCol(row, 'medium_leverage_ERA', 'Medium Leverage ERA')),
         loLevEra: numOrNull(pickCol(row, 'low_leverage_ERA')),
@@ -1548,6 +1551,7 @@
 
   var LineupModel = {
     fetchAll: lineupModelFetchAll,
+    ensureStore: lineupModelEnsureStore,
     scoreRow: lineupModelScoreRow,
     blendSplits: blendSplits,
     resolve: lineupModelResolve,
