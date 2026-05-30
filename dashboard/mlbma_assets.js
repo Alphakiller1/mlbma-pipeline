@@ -626,11 +626,13 @@
     }
   ];
 
-  function platformCtaHtml(activeKey) {
+  function platformCtaHtml(activeKey, opts) {
+    opts = opts || {};
+    var landing = opts.variant === 'landing';
     var I = global.MLBMAIcons;
-    return '<nav class="ca-platform-cta" aria-label="Platform workflows">'
+    return '<nav class="ca-platform-cta' + (landing ? ' ca-platform-cta--landing' : '') + '" aria-label="Platform workflows">'
       + PLATFORM_CTAS.map(function(c) {
-        var on = activeKey === c.key ? ' is-active' : '';
+        var on = !landing && activeKey === c.key ? ' is-active' : '';
         var icon = I && I.iconCircleHtml ? I.iconCircleHtml(c.icon, true) : '';
         return '<a class="ca-platform-cta__item' + on + '" href="' + escHtml(c.href) + '">'
           + icon

@@ -856,8 +856,34 @@ h1.ca-page-title {
   flex-wrap: wrap;
 }
 
-#matchupsPlatformCtaMount,
-#researchPlatformCtaMount,
 #openingPlatformCtaMount {
   margin-bottom: 24px;
+}
+
+/* Landing-only: black placeholder cards for relabeling */
+.ca-platform-cta--landing .ca-platform-cta__item {
+  background: #000;
+  border-color: #1f1f1f;
+  box-shadow: none;
+}
+
+.ca-platform-cta--landing .ca-platform-cta__item:hover {
+  background: #0a0a0a;
+  border-color: #333;
+  transform: none;
+  box-shadow: none;
+}
+
+.ca-platform-cta--landing .ca-platform-cta__item.is-active {
+  background: #000;
+  border-color: #1f1f1f;
+  box-shadow: none;
+}
+
+.ca-platform-cta--landing .ca-platform-cta__label {
+  color: #e5e5e5;
+}
+
+.ca-platform-cta--landing .ca-platform-cta__desc {
+  color: #737373;
 }

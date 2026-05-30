@@ -2432,7 +2432,7 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260612a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260612b">
 <link rel="stylesheet" href="theme.css?v=20260611a">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260609a">
@@ -2456,7 +2456,7 @@ body.view-research .ca-lab { display: block; }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260612a"></script>
+<script src="mlbma_assets.js?v=20260612b"></script>
 <script src="mlbma_icons.js?v=20260611b"></script>
 <script src="matchup_shared.js?v=20260611h"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
@@ -2757,7 +2757,6 @@ body.view-research .ca-lab { display: block; }
     <h2 class="ca-section-title">Projected Matchups</h2>
     <p class="ca-helper">Split-specific lineup edges, starters, weather, and full analysis links</p>
   </header>
-  <div id="matchupsPlatformCtaMount"></div>
   <div class="matchup-day-tabs">
     <button type="button" class="matchup-day-tab active" data-day="today">Today</button>
     <button type="button" class="matchup-day-tab" data-day="tomorrow">Tomorrow</button>
@@ -2790,7 +2789,6 @@ body.view-research .ca-lab { display: block; }
   <h2 class="ca-section-title">Offensive &amp; Pitching Intelligence</h2>
   <p class="ca-helper">Four focused tools for validating model signals before you bet.</p>
 </header>
-<div id="researchPlatformCtaMount"></div>
 <div class="ca-lab__tabs-wrap">
   <div class="ca-lab__tabs" role="tablist" aria-label="Research Lab tabs">
     <button type="button" class="ca-lab__tab ca-lab__tab--active" data-pane="trends" role="tab" aria-selected="true">Trends</button>
@@ -6791,17 +6789,10 @@ function bindHeroCtas() {
 
 function mountPlatformCtas() {
   if (!window.MLBMAAssets || !MLBMAAssets.platformCtaHtml) return;
-  var mounts = [
-    { id: 'openingPlatformCtaMount', active: null },
-    { id: 'matchupsPlatformCtaMount', active: 'matchups' },
-    { id: 'researchPlatformCtaMount', active: 'research' }
-  ];
-  mounts.forEach(function(spec) {
-    var el = document.getElementById(spec.id);
-    if (!el) return;
-    el.innerHTML = MLBMAAssets.platformCtaHtml(spec.active);
-    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
-  });
+  var el = document.getElementById('openingPlatformCtaMount');
+  if (!el) return;
+  el.innerHTML = MLBMAAssets.platformCtaHtml(null, { variant: 'landing' });
+  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
 }
 
 function renderHomePage() {
