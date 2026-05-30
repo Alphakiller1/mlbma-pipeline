@@ -137,8 +137,11 @@ body::after,
   font-size: 14px;
 }
 
-/* Trends heatmap pills — white/gray block toggles (trends_heatmap.js) */
-.thm-pill {
+/* Toggle pills — hero CTA pattern (see mlbma_design_system.css) */
+.ca-pill-bold,
+.lv-pill,
+.hub-pill,
+.thm-pill.ca-pill-btn {
   font-family: inherit;
 }
 

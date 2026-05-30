@@ -49,9 +49,12 @@
   }
 
   function ensureStyles() {
-    if (document.getElementById('trendsHeatmapStyles')) return;
-    var style = document.createElement('style');
-    style.id = 'trendsHeatmapStyles';
+    var style = document.getElementById('trendsHeatmapStyles');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'trendsHeatmapStyles';
+      document.head.appendChild(style);
+    }
     style.textContent = ''
       + '.thm-wrap{margin-top:8px;background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:var(--r-md,12px);padding:16px;box-shadow:var(--e-1,none)}'
       + '.thm-title{font-size:40px;line-height:1.02;font-weight:800;letter-spacing:-.015em;color:var(--text,#f4f4f7);margin:0 0 14px;font-family:var(--font-display,var(--font,system-ui));font-variation-settings:"wdth" 125}'
@@ -59,12 +62,8 @@
       + '.thm-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}'
       + '.thm-group{display:flex;flex-direction:column;gap:6px}'
       + '.thm-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:700;line-height:1;font-family:var(--font,system-ui)}'
-      + '.thm-pills{display:flex;flex-wrap:wrap;gap:4px}'
-      + '.thm-pill{display:inline-flex;align-items:center;justify-content:center;padding:8px 14px;border:0;border-radius:0;background:#fff;color:#0a0a0a;font-family:inherit;font-size:13px;font-weight:700;line-height:1.2;cursor:pointer;appearance:none;-webkit-appearance:none;box-shadow:none;transition:background .15s ease,color .15s ease;white-space:nowrap}'
-      + '.thm-pill:hover:not(.active){background:#f2f2f2;color:#0a0a0a}'
-      + '.thm-pill.active{background:#9ca3af;color:#0a0a0a}'
+      + '.thm-pills{display:flex;flex-wrap:wrap;gap:10px}'
       + '.thm-pill.is-phase1{opacity:1}'
-      + '.thm-pill.is-phase1:not(.active){background:#fff;color:#0a0a0a}'
       + '.thm-note{font-size:15px;font-weight:600;color:var(--text-2,#a1a1aa);margin-top:6px;padding-top:0;border-top:0;line-height:1.6}'
       + '.thm-note.warn{color:var(--warn,#fbbf24)}'
       + '.thm-legend{display:flex;align-items:center;gap:9px;font-size:11px;color:#717892;margin-top:14px;font-family:var(--display);font-weight:600;letter-spacing:.04em;text-transform:uppercase}'
@@ -89,7 +88,6 @@
       + '.thm-legend-bar i{flex:1;background:#1FB866}'
       + '.thm-legend-bar i:nth-child(2){background:#5FB83C}.thm-legend-bar i:nth-child(3){background:#C9A21E}'
       + '.thm-legend-bar i:nth-child(4){background:#E0762E}.thm-legend-bar i:nth-child(5){background:#E0392E}';
-    document.head.appendChild(style);
   }
 
   function mapHand(v) {
@@ -270,12 +268,12 @@
 
   function metricPill(metric, state) {
     var on = state.metric === metric.key;
-    return '<button class="thm-pill' + (on ? ' active' : '') + (metric.phase ? ' is-phase1' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.phase ? ' title="Proxy metric until Phase 1 feed"' : '') + '>'
+    return '<button type="button" class="ca-pill-btn thm-pill' + (on ? ' active' : '') + (metric.phase ? ' is-phase1' : '') + '" data-a="metric" data-v="' + metric.key + '"' + (metric.phase ? ' title="Proxy metric until Phase 1 feed"' : '') + '>'
       + esc(metric.label) + '</button>';
   }
   function choicePill(group, key, val, label, state) {
     var on = state[key] === val;
-    return '<button class="thm-pill' + (on ? ' active' : '') + '" data-a="' + group + '" data-v="' + val + '">' + esc(label) + '</button>';
+    return '<button type="button" class="ca-pill-btn thm-pill' + (on ? ' active' : '') + '" data-a="' + group + '" data-v="' + val + '">' + esc(label) + '</button>';
   }
 
   function render(root, state) {

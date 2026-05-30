@@ -951,7 +951,8 @@ h1.ca-page-title {
 .pl-view-btn,
 .ca-lab__tab,
 .rl-global-btn,
-.rl-compare-mode-btn {
+.rl-compare-mode-btn,
+.thm-pill.ca-pill-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -981,7 +982,8 @@ h1.ca-page-title {
 .pl-view-btn:hover:not(:disabled):not(.active),
 .ca-lab__tab:hover:not(.ca-lab__tab--active),
 .rl-global-btn:hover:not(:disabled):not(.active),
-.rl-compare-mode-btn:hover:not(:disabled):not(.active) {
+.rl-compare-mode-btn:hover:not(:disabled):not(.active),
+.thm-pill.ca-pill-btn:hover:not(:disabled):not(.active) {
   background: rgba(124, 77, 255, 0.12);
   border-color: #C4B0FF;
   color: #fff;
@@ -994,7 +996,8 @@ h1.ca-page-title {
 .pl-view-btn.active,
 .ca-lab__tab--active,
 .rl-global-btn.active,
-.rl-compare-mode-btn.active {
+.rl-compare-mode-btn.active,
+.thm-pill.ca-pill-btn.active {
   color: #fff;
   background: linear-gradient(135deg, #7C4DFF 0%, #5B2BE0 100%);
   border-color: transparent;
@@ -1009,7 +1012,8 @@ h1.ca-page-title {
 .pl-view-btn.active:hover:not(:disabled),
 .ca-lab__tab--active:hover,
 .rl-global-btn.active:hover:not(:disabled),
-.rl-compare-mode-btn.active:hover:not(:disabled) {
+.rl-compare-mode-btn.active:hover:not(:disabled),
+.thm-pill.ca-pill-btn.active:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow:
     0 14px 44px -10px rgba(124, 77, 255, 0.75),
