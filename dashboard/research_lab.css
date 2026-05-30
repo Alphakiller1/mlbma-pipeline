@@ -70,7 +70,7 @@ html.view-research #oorSection { display: none !important; }
 .mlbma-control-group { display: flex; flex-direction: column; gap: 6px; }
 .mlbma-control-label {
   font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.06em; color: var(--text-3);
+  letter-spacing: 0.08em; color: var(--text-3);
 }
 .mlbma-toggle-group { display: flex; flex-wrap: wrap; gap: 4px; }
 .mlbma-toggle {
@@ -92,10 +92,10 @@ html.view-research #oorSection { display: none !important; }
 .rl-compare-h2h { margin-bottom: 20px; }
 .rl-compare-h2h-header { margin-bottom: 18px; }
 .rl-compare-h2h-title {
-  margin: 0 0 6px; font-size: 20px; font-weight: 700; color: var(--text);
+  margin: 0 0 8px; font-size: 24px; font-weight: 700; color: var(--text); font-family: var(--font-display, var(--font));
 }
 .rl-compare-h2h-subtitle {
-  margin: 0; font-size: 13px; color: var(--text-2); line-height: 1.5;
+  margin: 0; font-size: 14px; color: var(--text-2); line-height: 1.6;
 }
 .rl-compare-panels {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;
@@ -366,18 +366,19 @@ html.view-research #oorSection { display: none !important; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fff' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 2c2 2 4 5 4 8a4 4 0 01-8 0c0-3 2-6 4-8zM8 18h8'/%3E%3C/svg%3E");
 }
 .rl-home-card-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   margin: 0 0 12px;
   color: var(--text);
+  font-family: var(--font-display, var(--font));
 }
 .rl-home-card-uses {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-3);
-  line-height: 1.6;
+  line-height: 1.65;
   flex: 1;
 }
 .rl-home-card-uses li {
@@ -406,7 +407,7 @@ html.view-research #oorSection { display: none !important; }
   margin-top: auto;
   padding-top: 20px;
   border-top: 0.5px solid var(--border);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   transition: color 200ms ease;
 }
@@ -561,7 +562,7 @@ html.view-research #oorSection { display: none !important; }
 .rl-summary-card--hot .rl-summary-icon { background-color: rgba(245, 158, 11, 0.15); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F59E0B' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 3v3m0 12v3M3 12h3m12 0h3'/%3E%3C/svg%3E"); }
 .rl-summary-card--stable .rl-summary-icon { background-color: rgba(45, 212, 191, 0.15); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232DD4BF' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M4 12h16'/%3E%3C/svg%3E"); }
 .rl-summary-label {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
   margin: 0;
@@ -569,7 +570,7 @@ html.view-research #oorSection { display: none !important; }
   letter-spacing: normal;
 }
 .rl-summary-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
   margin-top: 2px;
   line-height: 1.4;
@@ -632,7 +633,7 @@ html.view-research #oorSection { display: none !important; }
 .rl-summary-card--stable .rl-summary-empty-icon { background-color: rgba(45, 212, 191, 0.12); }
 .rl-summary-val { font-size: 13px; font-weight: 600; color: var(--text); font-family: var(--mono); }
 .rl-lb-section { margin-top: 24px; }
-.rl-lb-title { font-size: 14px; margin: 0 0 10px; color: var(--accent-l, #c4b5fd); }
+.rl-lb-title { font-family: var(--font-display, var(--font)); font-size: 18px; margin: 0 0 10px; color: var(--accent-l, #c4b5fd); letter-spacing: -0.01em; }
 .rl-metric-legend--global { margin-top: 12px; padding: 12px; border-radius: var(--r-sm, 8px); background: var(--surface-2, #14141e); border: 0.5px solid var(--border); }
 .mc-metric-cell { display: flex; flex-direction: column; gap: 2px; min-width: 72px; }
 .mc-metric-cell .mc-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; }

@@ -10,6 +10,9 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <title>Chase Analytics ? Offensive Dashboard</title>
 <style>
 :root {
@@ -53,6 +56,7 @@
   --s-6: 32px;
   --s-7: 48px;
   --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --mono: "JetBrains Mono", "SF Mono", Monaco, Consolas, monospace;
 
   /* Backward-compatible aliases while refactor lands */
@@ -133,13 +137,14 @@ body {
   border: 0.5px solid color-mix(in srgb, var(--pos) 30%, transparent);
 }
 h1 {
-  font-size: 28px; font-weight: 600; letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: 30px; font-weight: 700; letter-spacing: -0.02em;
   margin-bottom: 4px;
   background: linear-gradient(135deg, var(--text) 0%, var(--accent-l) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.subtitle { color: var(--text-2); font-size: 13px; }
+.subtitle { color: var(--text-2); font-size: 14px; line-height: 1.55; }
 
 /* Control bar */
 .control-bar {
@@ -150,7 +155,7 @@ h1 {
 }
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--text-3);
 }
 .toggle-group { display: flex; gap: 2px; background: var(--surface-2); padding: 3px; border-radius: var(--r-sm); }
@@ -228,11 +233,12 @@ h1 {
   gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
 }
 .section-title {
-  font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.01em;
 }
-.section-subtitle { font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+.section-subtitle { font-size: 13px; color: var(--text-2); margin-top: 4px; line-height: 1.5; }
 .section-eyebrow {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
 }
 
@@ -270,7 +276,7 @@ h1 {
 }
 .exec-cell:hover { border-color: rgba(192, 132, 252, 0.3); }
 .exec-cell .ec-label {
-  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
   text-transform: uppercase; margin-bottom: 5px;
 }
 .exec-cell .ec-team {
@@ -286,7 +292,7 @@ h1 {
 .table-wrap { overflow-x: auto; margin: 0 -4px; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
 thead th {
-  padding: 9px 8px; font-size: 9.5px; font-weight: 600;
+  padding: 9px 8px; font-size: 11px; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--text-3); border-bottom: 1px solid var(--border-2);
   text-align: left; white-space: nowrap; cursor: pointer;
@@ -2274,7 +2280,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260527s">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260527s">
-<link rel="stylesheet" href="research_lab.css?v=20260607e">
+<link rel="stylesheet" href="research_lab.css?v=20260607f">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -2301,7 +2307,7 @@ body.view-research .ca-lab { display: block; }
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
 <script src="research_lab.js?v=20260607a"></script>
-<script src="lineup_view.js?v=20260607e"></script>
+<script src="lineup_view.js?v=20260607f"></script>
 <script src="trends_heatmap.js?v=20260607g"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
