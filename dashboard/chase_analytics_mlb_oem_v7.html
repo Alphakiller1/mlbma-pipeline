@@ -12,23 +12,30 @@
 <meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;110,600;125,700;125,800;125,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Chase Analytics ? Offensive Dashboard</title>
 <style>
 :root {
-  --bg: #050509;
-  --surface-1: #0c0c14;
-  --surface-2: #14141e;
-  --surface-3: #1c1c28;
-  --border: #26262f;
-  --border-2: #34343d;
-  --text: #f4f4f7;
-  --text-2: #a1a1aa;
-  --text-3: #6b6b76;
-  --accent: #8b5cf6;
+  --bg: #08080B;
+  --surface-1: #16161D;
+  --surface-2: #1C1C25;
+  --surface-3: #22222C;
+  --border: #2A2A35;
+  --border-2: #3A3A47;
+  --text: #F5F5F7;
+  --text-2: #A1A1AA;
+  --text-3: #71717A;
+  --text-4: #52525B;
+  --accent: #A684FF;
   --accent-d: #6d28d9;
-  --accent-l: #c4b5fd;
-  --accent-bg: rgba(139, 92, 246, 0.14);
+  --accent-l: #C4A8FF;
+  --accent-bg: rgba(139, 92, 246, 0.16);
+  --accent-ring: rgba(110, 86, 247, 0.45);
+  --d-elite: #EC6A6A;
+  --d-good: #E89A5C;
+  --d-mid: #D8C36A;
+  --d-weak: #8FB0D4;
+  --d-poor: #6E8CC0;
   --pos: #4ade80;
   --pos-bg: rgba(74, 222, 128, 0.13);
   --neg: #f87171;
@@ -55,8 +62,9 @@
   --s-5: 24px;
   --s-6: 32px;
   --s-7: 48px;
-  --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-display: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: "Inter Tight", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --mono: "JetBrains Mono", "SF Mono", Monaco, Consolas, monospace;
 
   /* Backward-compatible aliases while refactor lands */
@@ -102,7 +110,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
-  background: var(--bg); color: var(--text); font-family: var(--font);
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
   font-size: 14px; line-height: 1.5;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
@@ -110,8 +118,20 @@ html, body {
 }
 body {
   background:
-    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(139, 92, 246, 0.07), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(139,92,246,0.22), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(109,40,217,0.12), transparent 60%),
     var(--bg);
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(ellipse 100% 75% at 50% 38%,#000 30%,transparent 82%);
+  mask-image:radial-gradient(ellipse 100% 75% at 50% 38%,#000 30%,transparent 82%);
 }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
@@ -138,7 +158,8 @@ body {
 }
 h1 {
   font-family: var(--font-display);
-  font-size: 30px; font-weight: 700; letter-spacing: -0.02em;
+  font-size: 36px; font-weight: 800; letter-spacing: -0.015em;
+  font-variation-settings: 'wdth' 125;
   margin-bottom: 4px;
   background: linear-gradient(135deg, var(--text) 0%, var(--accent-l) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -234,12 +255,14 @@ h1 {
 }
 .section-title {
   font-family: var(--font-display);
-  font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.01em;
+  font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.01em;
+  font-variation-settings: 'wdth' 125;
 }
 .section-subtitle { font-size: 13px; color: var(--text-2); margin-top: 4px; line-height: 1.5; }
 .section-eyebrow {
   font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
+  font-family: var(--font);
 }
 
 .btn {
@@ -2095,28 +2118,32 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .ca-lab__eyebrow {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent-l);
   margin-bottom: 10px;
+  font-family: var(--font);
 }
 .ca-lab__title {
   font-size: clamp(32px, 4vw, 48px);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   line-height: 1.1;
   margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
   background: linear-gradient(135deg, var(--text) 0%, var(--accent-l) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .ca-lab__subtitle {
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--text-2);
   max-width: 640px;
   margin: 0;
+  font-family: var(--font-body);
 }
 .ca-lab__tabs-wrap { margin-bottom: 28px; }
 .ca-lab__tabs {
@@ -2174,17 +2201,20 @@ body.view-research .ca-lab { display: block; }
 .ca-tools__eyebrow {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent-l);
   margin-bottom: 10px;
+  font-family: var(--font);
 }
 .ca-tools__title {
   font-size: clamp(28px, 3vw, 40px);
   font-weight: 800;
   color: var(--text);
   margin: 0 0 40px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
 }
 .ca-tools__grid {
   display: grid;
@@ -2280,7 +2310,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260527s">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260527s">
-<link rel="stylesheet" href="research_lab.css?v=20260607f">
+<link rel="stylesheet" href="research_lab.css?v=20260607g">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -2307,8 +2337,8 @@ body.view-research .ca-lab { display: block; }
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
 <script src="research_lab.js?v=20260607a"></script>
-<script src="lineup_view.js?v=20260607f"></script>
-<script src="trends_heatmap.js?v=20260607g"></script>
+<script src="lineup_view.js?v=20260607g"></script>
+<script src="trends_heatmap.js?v=20260607h"></script>
 <script src="pitcher_lab.js?v=20260527s"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
