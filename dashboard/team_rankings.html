@@ -292,11 +292,6 @@ setTimeout(function() {
 </script>
 <script>
 (function() {
-  function normalizeTeamCode(raw) {
-    var t = String(raw || '').trim().toUpperCase().replace(/[^A-Z]/g, '');
-    var alias = { TB:'TBR', WSH:'WSN', KC:'KCR', CWS:'CHW', SD:'SDP', SF:'SFG', OAK:'ATH', AZ:'ARI' };
-    return alias[t] || t;
-  }
   function removeDensityCard() {
     var heads = document.querySelectorAll('.lv-cat-h');
     heads.forEach(function(h) {
@@ -307,45 +302,8 @@ setTimeout(function() {
       }
     });
   }
-  function fillPalsFallback() {
-    var S = window.MLBMASharedMatchup;
-    var C = window.MLBMA_CONFIG;
-    if (!S || !S.fetchSheetTab || !C || !C.SHEET_TABS || !C.SHEET_TABS.pals) return;
-    var rows = Array.prototype.slice.call(document.querySelectorAll('.lv-table tbody tr'));
-    if (!rows.length) return;
-    var hasBlanks = rows.some(function(tr) {
-      var tds = tr.querySelectorAll('td');
-      if (!tds || tds.length < 5) return false;
-      var v = String((tds[4].innerText || '')).trim();
-      return !v || v === '—' || v === '?';
-    });
-    if (!hasBlanks) return;
-    S.fetchSheetTab(C.SHEET_TABS.pals, { forceRefresh: true }).then(function(palsRows) {
-      var palsMap = {};
-      (palsRows || []).forEach(function(r) {
-        var t = normalizeTeamCode(S.pickCol(r, 'Tm', 'Team', 'tm', 'team'));
-        var p = parseFloat(S.pickCol(r, 'PALS', 'pals', 'Pals', 'APLs', 'apls'));
-        if (t && !isNaN(p)) palsMap[t] = p;
-      });
-      rows.forEach(function(tr) {
-        var tds = tr.querySelectorAll('td');
-        if (!tds || tds.length < 5) return;
-        var teamCell = tds[1];
-        var teamCode = normalizeTeamCode(teamCell && teamCell.innerText);
-        var valCell = tds[4];
-        var cur = String((valCell.innerText || '')).trim();
-        if ((!cur || cur === '—' || cur === '?') && palsMap[teamCode] != null) {
-          var chipStyle = (window.MLBMAAssets && MLBMAAssets.chipStyle)
-            ? MLBMAAssets.chipStyle(palsMap[teamCode], 'osi', false, { color: 'var(--green)' })
-            : 'background:color-mix(in srgb,var(--green) 18%, transparent);color:var(--green);';
-          valCell.innerHTML = '<span class="val-chip" style="' + chipStyle + '">' + palsMap[teamCode].toFixed(1) + '</span>';
-        }
-      });
-    }).catch(function() {});
-  }
   function hardenTeamRankingsUi() {
     removeDensityCard();
-    fillPalsFallback();
   }
   var mo = new MutationObserver(function() { hardenTeamRankingsUi(); });
   mo.observe(document.documentElement, { childList: true, subtree: true });

@@ -11,7 +11,7 @@
     filter: (CFG.FILTER_DEFAULTS || { hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' }),
     scope: (CFG.SCOPE_DEFAULTS || { mode: 'all', team: null }),
     family: 'surface',
-    sortKey: 'osi',
+    sortKey: 'winPct',
     sortDir: 'desc'
   };
 
