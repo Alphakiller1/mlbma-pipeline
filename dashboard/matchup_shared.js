@@ -670,7 +670,7 @@
         out.projOSI = out.osi;
       }
       if (out.osi == null) return null;
-      return out;
+      return _backfillXwoba(out);
     }).filter(Boolean);
   }
 
@@ -748,6 +748,13 @@
 
   function _num(v) {
     return v == null || v === '' || isNaN(v) ? null : Number(v);
+  }
+
+  /** Team profiles and location splits often have wOBA but not xwOBA — mirror vs_RHP sheet fallback. */
+  function _backfillXwoba(row) {
+    if (!row) return row;
+    if (_num(row.xwoba) == null && _num(row.woba) != null) row.xwoba = _num(row.woba);
+    return row;
   }
 
   function _profileForTeam(teamProfiles, team) {
@@ -840,7 +847,7 @@
     scVsRp.forEach(function(r) { if (r && r.t) rpMap[teamKey(r.t)] = r; });
 
     var rows = (source || []).map(function(base) {
-      var d = Object.assign({}, base);
+      var d = _backfillXwoba(Object.assign({}, base));
       var t = d.t;
       var tk = teamKey(t);
       var prof = _profileForTeam(teamProfiles, t);
@@ -908,12 +915,12 @@
             ['wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
               var v = _num(prof[loc + '_' + m]);
               if (v == null && locRow) v = _num(locRow[m]);
-              if (locRow && m === 'woba' && _num(d.woba) != null) {
+              if (locRow && (m === 'woba' || m === 'xwoba') && _num(d[m]) != null) {
                 var baseBothForWoba = bothMap[teamKey(t)];
                 var locWrc = _num(locRow.wrc);
                 var baseWrc = baseBothForWoba ? _num(baseBothForWoba.wrc) : null;
                 if (locWrc != null && baseWrc != null && Math.abs(baseWrc) > 0.0001) {
-                  v = _num(d.woba) * (locWrc / baseWrc);
+                  v = _num(d[m]) * (locWrc / baseWrc);
                 }
               }
               if (v == null && locRatio != null && _num(d[m]) != null) v = _num(d[m]) * locRatio;
@@ -924,12 +931,12 @@
             // If explicit location aggregate rows exist, apply them directly so location context is never silently ignored.
             ['wrc', 'woba', 'xwoba', 'slg'].forEach(function(m) {
               var lv = _num(locRow[m]);
-              if (m === 'woba' && _num(d.woba) != null) {
+              if ((m === 'woba' || m === 'xwoba') && _num(d[m]) != null) {
                 var baseBothForWoba2 = bothMap[teamKey(t)];
                 var locWrc2 = _num(locRow.wrc);
                 var baseWrc2 = baseBothForWoba2 ? _num(baseBothForWoba2.wrc) : null;
                 if (locWrc2 != null && baseWrc2 != null && Math.abs(baseWrc2) > 0.0001) {
-                  lv = _num(d.woba) * (locWrc2 / baseWrc2);
+                  lv = _num(d[m]) * (locWrc2 / baseWrc2);
                 }
               }
               if (lv == null && locRatio != null && _num(d[m]) != null) lv = _num(d[m]) * locRatio;
@@ -1001,7 +1008,7 @@
 
       d.trend = _trend(d.ytdOSI, d.l14OSI, d.l7OSI);
       d.tier = _tier(d.osi);
-      return d;
+      return _backfillXwoba(d);
     }).filter(Boolean);
 
     if (opts.includeMeta) {
@@ -1333,12 +1340,12 @@
       if (hasH) {
         if (h.abq != null && h.rcv != null) h.ppGap = h.abq - h.rcv;
         if (h.projOSI == null && h.osi != null) h.projOSI = h.osi;
-        home.push(h);
+        home.push(_backfillXwoba(h));
       }
       if (hasA) {
         if (a.abq != null && a.rcv != null) a.ppGap = a.abq - a.rcv;
         if (a.projOSI == null && a.osi != null) a.projOSI = a.osi;
-        away.push(a);
+        away.push(_backfillXwoba(a));
       }
     });
     return {
