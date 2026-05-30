@@ -157,6 +157,19 @@ h1 {
 }
 .toggle-btn.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.15); }
 .toggle-btn.warn.active { border-color: var(--gold); color: var(--gold-l); }
+.pc-control-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+.pc-control-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.pc-control-confirm { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+.mlbma-sparkline-row { display: flex; align-items: center; gap: 8px; }
+.mlbma-sparkline-limited { opacity: 0.85; }
+.mlbma-spark-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--text-3); min-width: 28px; }
+.mlbma-spark-val { font-size: 11px; font-weight: 700; font-family: var(--font-display); color: var(--text); }
+.mlbma-spark-note { font-size: 10px; color: var(--text-3); }
+.pc-team-snapshot { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 10px 0 6px; border-top: 1px solid var(--border); margin-top: 8px; width: 100%; }
+.pc-team-snapshot-meta { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
+.pc-split-compare { display: flex; gap: 14px; font-size: 12px; font-family: var(--font-display); color: var(--text-2); }
+.pc-spark-strip { display: flex; flex-wrap: wrap; gap: 12px; flex: 1; min-width: 280px; }
+.pc-tonight-chip { font-size: 11px; color: var(--text-2); padding: 4px 8px; border-radius: 6px; background: var(--bg-3); border: 1px solid var(--border); }
 .team-abbr-inline { font-size: 14px; color: var(--text-3); font-family: var(--mono); }
 .snapshot-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .summary-badge, .signal-badge {
@@ -395,20 +408,20 @@ h1 {
 }
 .pc-search-group { flex: 1; min-width: 220px; }
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260614g">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260614g">
-<link rel="stylesheet" href="theme.css?v=20260614g">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260614h">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260614h">
+<link rel="stylesheet" href="theme.css?v=20260614h">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
-<script src="mlbma_config.js?v=20260614g"></script>
-<script src="mlbma_assets.js?v=20260614g"></script>
-<script src="mlbma_icons.js?v=20260614g"></script>
-<script src="matchup_shared.js?v=20260614g"></script>
-<script src="mlbma_standings.js?v=20260614g"></script>
-<script src="team_profile_mini.js?v=20260614g"></script>
-<script src="mlbma_charts.js?v=20260614g"></script>
-<script src="profile_controls.js?v=20260614g"></script>
-<script src="mlbma_ui.js?v=20260614g" data-page="team_profile.html"></script>
-<link rel="stylesheet" href="research_lab.css?v=20260614g">
+<script src="mlbma_config.js?v=20260614h"></script>
+<script src="mlbma_assets.js?v=20260614h"></script>
+<script src="mlbma_icons.js?v=20260614h"></script>
+<script src="matchup_shared.js?v=20260614h"></script>
+<script src="mlbma_standings.js?v=20260614h"></script>
+<script src="team_profile_mini.js?v=20260614h"></script>
+<script src="mlbma_charts.js?v=20260614h"></script>
+<script src="profile_controls.js?v=20260614h"></script>
+<script src="mlbma_ui.js?v=20260614h" data-page="team_profile.html"></script>
+<link rel="stylesheet" href="research_lab.css?v=20260614h">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
@@ -1253,7 +1266,11 @@ function loadAll() {
       LIVE_DATA.scYtdL = window.SCO_YTD_L;
     }
     if (window.MLBMAProfileControls && MLBMAProfileControls.buildTeamScores) {
-      return MLBMAProfileControls.buildTeamScores();
+      return MLBMAProfileControls.buildTeamScores().then(function() {
+        if (MLBMAProfileControls.enrichTeamScoresWithProfiles) {
+          MLBMAProfileControls.enrichTeamScoresWithProfiles(DATA.profiles);
+        }
+      });
     }
     var banner = document.getElementById('dataBanner');
     if (!DATA.profiles.length) {

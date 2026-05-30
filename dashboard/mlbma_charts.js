@@ -522,14 +522,17 @@
     width = width || 140;
     height = height || 32;
     var pts = (values || []).filter(function(v) { return v != null && !isNaN(v); });
-    if (pts.length < 2) {
+    var cur = pts.length ? pts[pts.length - 1] : null;
+    if (!pts.length) {
       return '<div class="mlbma-sparkline-row mlbma-sparkline-limited">'
         + '<span class="mlbma-spark-label">' + esc(label) + '</span>'
-        + '<span class="mlbma-spark-note">Limited data</span></div>';
+        + '<span class="mlbma-spark-note">—</span></div>';
     }
     return '<div class="mlbma-sparkline-row">'
       + '<span class="mlbma-spark-label">' + esc(label) + '</span>'
-      + buildSparkline(values, width, height, opts) + '</div>';
+      + buildSparkline(values, width, height, opts)
+      + (cur != null ? '<span class="mlbma-spark-val">' + Number(cur).toFixed(1) + '</span>' : '')
+      + '</div>';
   }
 
   function teamRadarComparePayload(bothRow, rhpRow, lhpRow) {
