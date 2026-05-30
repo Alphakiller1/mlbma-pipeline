@@ -602,6 +602,76 @@
       + '</div>';
   }
 
+  var PLATFORM_CTAS = [
+    {
+      key: 'matchups',
+      label: 'Matchups',
+      desc: "Today's slate, starters, and lineup edges.",
+      href: 'chase_analytics_mlb_oem_v7.html#section-matchups-hero',
+      icon: 'swords'
+    },
+    {
+      key: 'rankings',
+      label: 'Team Rankings',
+      desc: 'Scoring, difficulty, and status-projection tables.',
+      href: 'team_rankings.html',
+      icon: 'trophy'
+    },
+    {
+      key: 'research',
+      label: 'Research Lab',
+      desc: 'Trends, compare, and pitcher intelligence.',
+      href: 'chase_analytics_mlb_oem_v7.html#section-research-lab',
+      icon: 'flask-conical'
+    }
+  ];
+
+  function platformCtaHtml(activeKey) {
+    var I = global.MLBMAIcons;
+    return '<nav class="ca-platform-cta" aria-label="Platform workflows">'
+      + PLATFORM_CTAS.map(function(c) {
+        var on = activeKey === c.key ? ' is-active' : '';
+        var icon = I && I.iconCircleHtml ? I.iconCircleHtml(c.icon, true) : '';
+        return '<a class="ca-platform-cta__item' + on + '" href="' + escHtml(c.href) + '">'
+          + icon
+          + '<span class="ca-platform-cta__body">'
+          + '<span class="ca-platform-cta__label">' + escHtml(c.label) + '</span>'
+          + '<span class="ca-platform-cta__desc">' + escHtml(c.desc) + '</span>'
+          + '</span></a>';
+      }).join('')
+      + '</nav>';
+  }
+
+  function pageHeaderHtml(opts) {
+    opts = opts || {};
+    var out = '<header class="ca-page-header">';
+    if (opts.eyebrow) out += '<p class="ca-eyebrow">' + escHtml(opts.eyebrow) + '</p>';
+    out += '<h1 class="ca-page-title">' + escHtml(opts.title || '') + '</h1>';
+    if (opts.subtitle) out += '<p class="ca-helper ca-page-header__sub">' + escHtml(opts.subtitle) + '</p>';
+    if (opts.showPlatformNav !== false) out += platformCtaHtml(opts.activeNav || null);
+    out += '</header>';
+    return out;
+  }
+
+  function sectionHeaderHtml(opts) {
+    opts = opts || {};
+    var out = '<header class="ca-section-header">';
+    if (opts.eyebrow) out += '<p class="ca-eyebrow">' + escHtml(opts.eyebrow) + '</p>';
+    out += '<h2 class="ca-section-title">' + escHtml(opts.title || '') + '</h2>';
+    if (opts.subtitle) out += '<p class="ca-helper">' + escHtml(opts.subtitle) + '</p>';
+    if (opts.showPlatformNav) out += platformCtaHtml(opts.activeNav || null);
+    if (opts.actions) out += '<div class="ca-section-header__actions">' + opts.actions + '</div>';
+    out += '</header>';
+    return out;
+  }
+
+  function mountPlatformHeader(mountId, opts) {
+    var el = typeof mountId === 'string' ? document.getElementById(mountId) : mountId;
+    if (!el) return;
+    el.innerHTML = pageHeaderHtml(opts || {});
+    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
+  }
+
   global.MLBMAAssets = {
     BRAND: BRAND,
     getEspnAbbr: getEspnAbbr,
@@ -643,6 +713,11 @@
     dfGapColor: dfGapColor,
     stalenessColor: stalenessColor,
     researchLabLegendHtml: researchLabLegendHtml,
+    PLATFORM_CTAS: PLATFORM_CTAS,
+    platformCtaHtml: platformCtaHtml,
+    pageHeaderHtml: pageHeaderHtml,
+    sectionHeaderHtml: sectionHeaderHtml,
+    mountPlatformHeader: mountPlatformHeader,
     GRADE_COLORS: GRADE_COLORS,
     get registry() { return REGISTRY; },
     get leaguePools() { return LEAGUE_POOLS; }

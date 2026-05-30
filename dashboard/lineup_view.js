@@ -55,9 +55,8 @@
     style.textContent = ''
       + '.lv-wrap{margin-top:14px}'
       + '.lv-bar{background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:var(--e-1,none)}'
-      + '.lv-sec{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
-      + '.lv-sec .ca-icon-circle--sm{flex-shrink:0}'
-      + '.lv-sec::after{content:"";flex:1;height:1px;background:var(--border,#2A2A35)}'
+      + '.lv-sec.ca-section-head{margin:4px 0 12px}'
+      + '.lv-sec{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
       + '.lv-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:700;font-family:var(--font,system-ui)}'
@@ -301,7 +300,7 @@
     return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"></span>';
   }
   function lvSec(label, icon) {
-    return '<div class="lv-sec">' + iconCircle(icon) + '<span>' + esc(label) + '</span></div>';
+    return '<div class="ca-section-head lv-sec">' + iconCircle(icon) + '<span>' + esc(label) + '</span></div>';
   }
 
   function renderContextBanner(meta, state) {

@@ -685,3 +685,179 @@ select option {
   color: #F9FAFB !important;
   background-color: #12121e !important;
 }
+
+/* ── Unified page / section headers + platform CTAs ── */
+.ca-page-header {
+  margin: 0 0 28px;
+  padding: 8px 0 0;
+}
+
+.ca-page-header__sub {
+  max-width: 720px;
+  margin: 10px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ca-section-header {
+  margin: 0 0 24px;
+}
+
+.ca-section-header .ca-section-title {
+  margin: 8px 0 0;
+  color: var(--text, #F5F6FA);
+}
+
+.ca-section-header .ca-helper {
+  margin: 10px 0 0;
+  max-width: 720px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ca-section-header__actions {
+  margin-top: 16px;
+}
+
+h1.ca-page-title {
+  margin: 10px 0 0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+.ca-platform-cta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+@media (max-width: 900px) {
+  .ca-platform-cta {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ca-platform-cta__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-3, #16161D);
+  border: 1px solid var(--border, #2A2A35);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.ca-platform-cta__item:hover {
+  border-color: color-mix(in srgb, var(--accent, #9A6BFF) 45%, var(--border, #2A2A35));
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px -16px color-mix(in srgb, var(--accent, #9A6BFF) 55%, transparent);
+}
+
+.ca-platform-cta__item.is-active {
+  border-color: color-mix(in srgb, var(--accent, #9A6BFF) 55%, var(--border, #2A2A35));
+  background: color-mix(in srgb, var(--accent, #9A6BFF) 10%, var(--bg-3, #16161D));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #9A6BFF) 25%, transparent);
+}
+
+.ca-platform-cta__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ca-platform-cta__label {
+  font-family: var(--font-display, var(--font, system-ui));
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text, #F5F6FA);
+}
+
+.ca-platform-cta__desc {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-2, #A1A1AA);
+}
+
+.ca-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.ca-btn--primary {
+  color: #fff;
+  background: linear-gradient(135deg, #7C4DFF 0%, #5B2BE0 100%);
+  box-shadow: 0 10px 40px -10px rgba(124, 77, 255, 0.55);
+}
+
+.ca-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 44px -10px rgba(124, 77, 255, 0.75);
+}
+
+.ca-btn--ghost {
+  color: #e9e6ff;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(124, 77, 255, 0.35);
+}
+
+.ca-btn--ghost:hover {
+  background: rgba(124, 77, 255, 0.12);
+  border-color: #C4B0FF;
+}
+
+.matchups-section-title,
+.ca-lab__title,
+.ca-market__title,
+.ca-tools__title,
+.platform-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text, #F5F6FA);
+}
+
+.matchups-section-sub,
+.ca-lab__subtitle,
+.platform-subtitle {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text-2, #A1A1AA);
+  max-width: 720px;
+}
+
+.ca-market__header.ca-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+#matchupsPlatformCtaMount,
+#researchPlatformCtaMount,
+#openingPlatformCtaMount {
+  margin-bottom: 24px;
+}
