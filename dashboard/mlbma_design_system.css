@@ -485,6 +485,9 @@ table.ca-table td.sort-active,
   object-fit: cover;
   object-position: 50% 28%;
   transform-origin: center top;
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
 }
 .ca-pitcher-avatar-fallback {
   display: none;
