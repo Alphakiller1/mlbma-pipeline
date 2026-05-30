@@ -8,6 +8,42 @@
   var OSI_TIERS = [[85, 'Elite'], [75, 'High'], [65, 'Dangerous'], [50, 'Inconsistent'], [0, 'Weak']];
   var ABQ_WEIGHTS = { discipline: 0.30, contact: 0.35, pressure: 0.20, kAvoid: 0.15 };
 
+  /** Team accent for logo glow (identity framing — spec §1) */
+  var TEAM_ACCENT = {
+    ARI: '#A71930', ATL: '#CE1141', BAL: '#DF4601', BOS: '#BD3039', CHC: '#0E3386', CHW: '#27251F',
+    CIN: '#C6011F', CLE: '#E31937', COL: '#33006F', DET: '#0C2340', HOU: '#EB6E1F', KCR: '#004687',
+    KC: '#004687', LAA: '#BA0021', LAD: '#005A9C', MIA: '#00A3E0', MIL: '#12284B', MIN: '#002B5C',
+    NYM: '#002D72', NYY: '#0C2340', ATH: '#003831', OAK: '#003831', PHI: '#E81828', PIT: '#FDB827',
+    SDP: '#2F241D', SD: '#2F241D', SEA: '#0C2C56', SFG: '#FD5A1E', SF: '#FD5A1E', STL: '#C41E3A',
+    TBR: '#092C5C', TB: '#092C5C', TEX: '#003278', TOR: '#134A8E', WSN: '#AB0003', WAS: '#AB0003'
+  };
+
+  function teamAccent(team) {
+    return TEAM_ACCENT[String(team || '').trim().toUpperCase()] || '#7C4DFF';
+  }
+
+  function wrcTierLabel(wrc) {
+    if (wrc == null || isNaN(wrc)) return '—';
+    if (wrc >= 115) return 'Elite';
+    if (wrc >= 105) return 'Plus';
+    if (wrc >= 95) return 'Average';
+    return 'Below';
+  }
+
+  function standoutTrait(prof, m, ctx) {
+    var pickCol = ctx && ctx.pickCol;
+    var barrel = num(pick(prof, ['barrel_pct', 'Barrel%'], pickCol));
+    var hr = num(pick(prof, ['hr', 'HR'], pickCol));
+    var wrc = ctx.wrc != null ? ctx.wrc : num(pick(prof, ['wrc_plus', 'wRC+'], pickCol));
+    if (barrel != null && barrel >= 10) return 'Barrel rate leader';
+    if (hr != null && hr >= 100) return 'Power profile';
+    if (wrc != null && wrc >= 115) return 'Elite offense';
+    if (m.ppGap != null && m.ppGap >= 4) return 'Process upside';
+    if (m.ppGap != null && m.ppGap <= -4) return 'Regression watch';
+    var tier = tierLabel(m.osi);
+    return tier.label !== '—' ? tier.label + ' offense' : 'Offense profile';
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
@@ -257,15 +293,6 @@
     return '<section class="ca-card tp-snapshot-card"><div class="team-snapshot">'
       + '<div class="snapshot-main" style="width:100%">'
       + renderInfographicHero(prof, team, m, ctx)
-      + '<div class="ca-stat-strip">'
-      + '<span>OSI ' + valChip(m.osi, 'osi', false, 1) + '</span>'
-      + '<span>ProjOSI ' + valChip(m.proj, 'osi', false, 1) + projArrow + '</span>'
-      + '<span>PP-Gap ' + valChip(m.ppGap, 'ppGap', false, 1) + '</span>'
-      + '<span>PALS ' + valChip(m.pals, 'osi', false, 1) + ' ' + palsBadge(m.osi, m.pals) + '</span>'
-      + '<span>ABQ ' + valChip(m.abq, 'abq', false, 1) + '</span>'
-      + '<span>RCV ' + valChip(m.rcv, 'rcv', false, 1) + '</span>'
-      + '</div>'
-      + '<div class="snapshot-infographic">' + splitPairHtml(m) + '</div>'
       + '</div></div></section>';
   }
 
@@ -277,44 +304,105 @@
 
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
-    var tier = tierLabel(m.osi);
+    var accent = teamAccent(team);
     var logo = A ? A.teamLogoImg(team, 88, 'ca-profile-logo-glow snapshot-logo') : '';
-    var eyebrow = [];
-    if (tier.label && tier.label !== '—') eyebrow.push(tier.label.toUpperCase());
-    eyebrow.push(String(ctx.teamName || team).toUpperCase());
+    var wrc = ctx.wrc != null ? ctx.wrc : num(pick(prof, ['wrc_plus', 'wRC+', 'wrc'], ctx.pickCol));
+    var rank = ctx.osiRank;
+    var trait = standoutTrait(prof, m, ctx);
+    var eyebrowParts = [];
+    if (rank) eyebrowParts.push('#' + rank + ' OVERALL OFFENSE');
+    eyebrowParts.push(trait.toUpperCase());
+    eyebrowParts.push(String(ctx.teamName || team).toUpperCase());
+    var wrcHtml = wrc != null
+      ? '<div class="ca-wrc-medallion"><div class="v">' + valChip(wrc, 'wrc', false, 0) + '</div>'
+        + '<div class="c">wRC+ · MLB ' + esc(wrcTierLabel(wrc)) + '</div></div>'
+      : '';
     return '<div class="ca-profile-hero">'
       + '<div class="ca-profile-hero__main">'
-      + '<div class="ca-profile-hero__eyebrow">' + esc(eyebrow.join(' • ')) + '</div>'
+      + '<div class="ca-profile-hero__eyebrow">' + esc(eyebrowParts.join(' · ')) + '</div>'
       + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
-      + (ctx.recordWl ? '<p class="ca-profile-hero__sub" style="margin-top:4px">' + esc(ctx.recordWl) + '</p>' : '')
+      + (ctx.recordWl ? '<p class="ca-profile-hero__sub">' + esc(ctx.recordWl)
+        + (rank ? ' · #' + rank + ' OSI rank' : '') + '</p>' : '')
       + '</div>'
-      + '<div class="ca-profile-hero__body">' + logo + insightRailHtml(m) + '</div>'
+      + '<div class="ca-profile-hero__body">'
+      + '<div class="tp-logo-glow" style="--team-glow:' + accent + '">' + logo + '</div>'
+      + '<div class="ca-profile-hero__rail">' + wrcHtml + '</div>'
+      + '</div>'
+      + insightRailHtml(prof, m, ctx)
       + '</div>';
   }
 
-  function insightRailHtml(m) {
-    var gap = (m.proj != null && m.osi != null) ? (m.proj - m.osi) : null;
+  function insightRailHtml(prof, m, ctx) {
+    ctx = ctx || {};
+    var pickCol = ctx.pickCol;
+    var woba = num(pick(prof, ['woba', 'wOBA'], pickCol));
+    var xwoba = num(pick(prof, ['xwoba', 'xwOBA'], pickCol));
+    var barrel = num(pick(prof, ['barrel_pct', 'Barrel%'], pickCol));
+    var hr = num(pick(prof, ['hr', 'HR'], pickCol));
+    var rows = [];
+
+    if (woba != null && xwoba != null) {
+      var contactGap = (woba - xwoba) * 1000;
+      rows.push({
+        icon: contactGap > 8 ? 'regression' : contactGap < -8 ? 'trend-up' : 'contact',
+        label: contactGap > 8 ? 'Regression watch' : contactGap < -8 ? 'Contact upside' : 'Contact aligned',
+        text: contactGap > 8
+          ? 'wOBA runs ' + Math.round(contactGap) + ' pts above xwOBA — contact results may cool.'
+          : contactGap < -8
+            ? 'xwOBA leads wOBA by ' + Math.abs(Math.round(contactGap)) + ' pts — room for balls to fall.'
+            : 'wOBA tracks xwOBA — underlying contact matches box-score results.'
+      });
+    }
+
+    if (barrel != null && barrel >= 9) {
+      rows.push({
+        icon: 'barrel',
+        label: 'Barrel rate leader',
+        text: 'Barrel% ' + barrel.toFixed(1) + '% — hard-contact profile ranks with elite lineups.'
+      });
+    } else if (hr != null && hr >= 80) {
+      rows.push({
+        icon: 'power',
+        label: 'Power profile',
+        text: hr + ' HR on the season — legitimate middle-of-order thump.'
+      });
+    }
+
     var splitGap = (m.osiR != null && m.osiL != null) ? Math.abs(m.osiR - m.osiL) : null;
-    var rows = [
-      {
-        icon: 'target',
-        label: 'Process Baseline',
-        text: 'ProjOSI ' + (m.proj != null ? m.proj.toFixed(1) : '—') + ' vs OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—')
-      },
-      {
-        icon: gap != null && gap >= 2 ? 'trend-down' : gap != null && gap <= -2 ? 'trend-up' : 'discipline',
-        label: gap != null && gap >= 2 ? 'Regression Watch' : 'Stability Check',
-        text: gap == null ? 'Insufficient projection context'
-          : (gap >= 2 ? 'Projection runs ahead of production' : gap <= -2 ? 'Production ahead of projection' : 'Projection and production aligned')
-      },
-      {
+    if (splitGap != null && splitGap >= 6) {
+      rows.push({
         icon: 'swap',
-        label: 'Split Sensitivity',
-        text: splitGap == null ? 'RHP/LHP split pending'
-          : ('OSI split gap ' + splitGap.toFixed(1) + ' (RHP ' + (m.osiR != null ? m.osiR.toFixed(1) : '—') + ', LHP ' + (m.osiL != null ? m.osiL.toFixed(1) : '—') + ')')
-      }
-    ];
-    return '<div class="ca-insight-rail">' + rows.map(function(r) {
+        label: 'Platoon-sensitive',
+        text: 'OSI split gap ' + splitGap.toFixed(1) + ' (RHP ' + m.osiR.toFixed(1) + ' · LHP ' + m.osiL.toFixed(1) + ') — handedness matters.'
+      });
+    }
+
+    var ppGap = m.ppGap;
+    if (rows.length < 3 && ppGap != null && Math.abs(ppGap) >= 4) {
+      rows.push({
+        icon: ppGap >= 4 ? 'trend-up' : 'regression',
+        label: ppGap >= 4 ? 'Process upside' : 'Regression watch',
+        text: 'PP-Gap ' + (ppGap >= 0 ? '+' : '') + ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
+      });
+    }
+
+    if (rows.length < 3 && m.proj != null && m.osi != null) {
+      rows.push({
+        icon: 'process',
+        label: 'Process baseline',
+        text: 'ProjOSI ' + m.proj.toFixed(1) + ' vs OSI ' + m.osi.toFixed(1) + ' on the active filter.'
+      });
+    }
+
+    if (!rows.length) {
+      rows.push({
+        icon: 'target',
+        label: 'Offense profile',
+        text: 'Core split and window metrics loading — check pipeline refresh if empty.'
+      });
+    }
+
+    return '<div class="ca-insight-rail">' + rows.slice(0, 3).map(function(r) {
       return '<div class="ca-insight-row">'
         + iconCircle(r.icon)
         + '<span><span class="ca-insight-label">' + esc(r.label) + '</span><span class="ca-insight-text">' + esc(r.text) + '</span></span>'
@@ -364,13 +452,13 @@
     if (osi == null) osi = fallbackOsi;
     return [
       ['wOBA', woba, 3, 'woba', false],
-      ['SLG', slg, 3, 'woba', false],
       ['xwOBA', xwoba, 3, 'woba', false],
-      ['wRC+', wrc, 0, 'wrc', false],
-      ['OSI', osi, 1, 'osi', false],
-      ['ABQ', abq, 1, 'abq', false],
-      ['RCV', rcv, 1, 'rcv', false],
-      ['OBR', obr, 1, 'obr', false]
+      ['SLG', slg, 3, 'woba', false],
+      ['K%', pickSplitStat(splitRow, ['K%', 'k_pct']), 1, 'pitching', true],
+      ['BB%', pickSplitStat(splitRow, ['BB%', 'bb_pct']), 1, 'obr', false],
+      ['HR', pickSplitStat(splitRow, ['HR', 'hr']), 0, 'wrc', false],
+      ['Barrel%', pickSplitStat(splitRow, ['Barrel%', 'barrel_pct']), 1, 'rcv', false],
+      ['HardHit%', pickSplitStat(splitRow, ['HardHit%', 'hardhit_pct']), 1, 'rcv', false]
     ];
   }
   function splitPairHtml(m) {
@@ -393,108 +481,16 @@
     var diffDisplay = diff == null ? '—' : ((diff > 0 ? '+' : '') + diff.toFixed(3));
     return '<div class="ca-split-pair">'
       + cardHtml('vs LHP', 'lhp', lStats, badgeL)
-      + '<div class="ca-split-medallion"><div class="d"><span class="chip ' + diffCls + '" style="font-size:13px;padding:2px 6px">' + diffDisplay + '</span></div><div class="c">wOBA vs LHP</div></div>'
+      + '<div class="ca-split-medallion"><div class="d"><span class="chip ' + diffCls + '" style="font-size:13px;padding:2px 6px">' + diffDisplay + '</span></div><div class="c">wOBA Δ LHP−RHP</div></div>'
       + cardHtml('vs RHP', 'rhp', rStats, badgeR)
       + '</div>';
   }
 
   function render(prof, team, ctx) {
-    ctx = ctx || {};
-    var m = resolveView(prof, ctx);
-    var f5 = m.isF5 ? f5Note() : '';
-
-    var osiTier = tierLabel(m.osi);
-    var osiSummary = getSummaryLabel(m.osi, m.ppGap, m.abq, m.rcv, m.obr);
-    var projDelta = m.proj != null && m.osi != null ? m.proj - m.osi : null;
-    var ppRead = projDelta == null ? '—' : projDelta > 2 ? 'Process ahead of box score — projection lean up'
-      : projDelta < -2 ? 'Production ahead of process — regression watch' : 'OSI and ProjOSI aligned';
-
-    var osiBody = '<div class="ma-headline"><span class="tier-badge ' + osiTier.cls + '">' + esc(osiTier.label) + '</span> '
-      + '<span style="color:' + summaryColor(osiSummary) + '">' + esc(osiSummary) + '</span></div>'
-      + '<div class="ma-split-bars">'
-      + ['vs RHP ' + (m.osiR != null ? m.osiR.toFixed(1) : '—'), 'vs LHP ' + (m.osiL != null ? m.osiL.toFixed(1) : '—'),
-         'Home ' + (m.osiH != null ? m.osiH.toFixed(1) : '—'), 'Away ' + (m.osiA != null ? m.osiA.toFixed(1) : '—'),
-         'F5 ' + (m.osiF5 != null ? m.osiF5.toFixed(1) : '—')].map(function(s) {
-        return '<span class="ma-split-pill">' + esc(s) + '</span>';
-      }).join('')
-      + '</div>'
-      + '<p class="ma-read"><strong>Sustainability:</strong> ProjOSI ' + (m.proj != null ? m.proj.toFixed(1) : '—')
-      + ' vs OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—') + ' · ' + esc(ppRead) + '</p>'
-      + metricSparkline([m.osiYtd, m.osiL30, m.osiL14, m.osiL7])
-      + '<p class="ma-reliability">Trend reliability: <strong>' + esc(trendReliability(prof)) + '</strong></p>'
-      + f5;
-
-    var abqInterp = m.abq >= 62 ? 'Patient grinders' : m.abq >= 50 ? 'Balanced' : 'Chase-prone';
-    var abqComponents = componentBars([
-      { label: 'Discipline (BB% + Chase% inv)', score: m.abq, pct: m.abq, display: 'wt 30%' },
-      { label: 'Contact Quality (ZCon + OCon)', score: m.abq, pct: m.abq * 0.9, display: 'wt 35%' },
-      { label: 'Pitch Pressure (SwStr% inv)', score: m.abq, pct: m.abq * 0.85, display: 'wt 20%' },
-      { label: 'K Avoidance (K% inv)', score: m.abq, pct: m.abq * 0.8, display: 'wt 15%' }
-    ], 'abq');
-    var abqBody = '<p class="ma-read">' + (m.abq != null ? m.abq.toFixed(0) : '—') + '/100 — ' + abqInterp + '</p>'
-      + abqComponents
-      + '<div class="ma-panel"><div class="ma-panel-title">What this lineup does to opposing SPs</div>'
-      + '<div class="ma-stat-grid">'
-      + statBox('Avg ER allowed', ctx.spFx && ctx.spFx.er != null ? ctx.spFx.er.toFixed(2) : '—')
-      + statBox('Avg BB% drawn', ctx.spFx && ctx.spFx.bb != null ? ctx.spFx.bb.toFixed(1) + '%' : '—')
-      + statBox('Avg K% faced', ctx.spFx && ctx.spFx.k != null ? ctx.spFx.k.toFixed(1) + '%' : '—')
-      + statBox('Pitches / start', ctx.spFx && ctx.spFx.pitch != null ? ctx.spFx.pitch.toFixed(0) : '—')
-      + '</div><p class="ma-muted">vs league average when available · sourced from SP profiles</p></div>'
-      + metricSparkline([m.abqYtd != null ? m.abqYtd : m.abq, m.abqL30, m.abqL14, m.abqL7])
-      + f5;
-
-    var rcvInterp = m.rcv >= 62 ? 'Cluster scorer' : m.rcv >= 50 ? 'Balanced' : 'Limited damage';
-    var rcvBody = '<p class="ma-read">' + (m.rcv != null ? m.rcv.toFixed(0) : '—') + '/100 — ' + rcvInterp + '</p>'
-      + componentBars([
-        { label: 'wRC+ contribution', score: m.rcv, pct: m.rcv, display: 'wt 35%' },
-        { label: 'Barrel% (park-adj)', score: m.rcv, pct: m.rcv * 0.92, display: 'wt 32%' },
-        { label: 'ISO (park-adj)', score: m.rcv, pct: m.rcv * 0.88, display: 'wt 20%' },
-        { label: 'HardHit% (park-adj)', score: m.rcv, pct: m.rcv * 0.85, display: 'wt 13%' }
-      ], 'rcv')
-      + '<div class="ma-panel"><div class="ma-panel-title">Is this RCV schedule-confirmed?</div>'
-      + '<p class="ma-read">OSI ' + (m.osi != null ? m.osi.toFixed(1) : '—') + ' vs PALS ' + (m.pals != null ? m.pals.toFixed(1) : '—') + '</p>'
-      + palsBadge(m.osi, m.pals) + '</div>'
-      + splitTable([['vs RHP', m.osiR], ['vs LHP', m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
-      + metricSparkline([m.rcvYtd != null ? m.rcvYtd : m.rcv, m.rcvL30, m.rcvL14, m.rcvL7])
-      + f5;
-
-    var obrInterp = m.obr >= 62 ? 'Reliable table-setters' : m.obr >= 50 ? 'Moderate' : 'Thin baserunner paths';
-    var obrRel = '';
-    if (m.abq >= 60 && m.obr >= 60) obrRel = 'Complete process profile — dangerous even vs elite pitching';
-    else if (m.abq >= 60 && m.obr < 50) obrRel = 'Patient but not getting on base — watch opposing SP walk rate';
-    else if (m.obr >= 60 && m.abq < 50) obrRel = 'Gets on base but chase-prone';
-    var obrBody = '<p class="ma-read">' + (m.obr != null ? m.obr.toFixed(0) : '—') + '/100 — ' + obrInterp + '</p>'
-      + componentBars([
-        { label: 'xwOBA contribution', score: m.obr, pct: m.obr, display: 'wt 65%' },
-        { label: 'BB% contribution', score: m.obr, pct: m.obr * 0.9, display: 'wt 35%' }
-      ], 'obr')
-      + (obrRel ? '<p class="ma-read">' + esc(obrRel) + '</p>' : '')
-      + '<div class="ma-panel"><div class="ma-panel-title">Effect on opposing pitchers</div>'
-      + '<p class="ma-read">High OBR lineups force pitchers to work harder in the zone.</p></div>'
-      + splitTable([['vs RHP', m.obrR || m.osiR], ['vs LHP', m.obrL || m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
-      + metricSparkline([m.obrYtd != null ? m.obrYtd : m.obr, m.obrL30, m.obrL14, m.obrL7])
-      + f5;
-
-    var tonightPals = ctx.tonightSpHand ? 'Tonight vs ' + ctx.tonightSpHand + 'HP — PALS context for SP-only schedule' : '';
-    var palsBody = '<p class="ma-read"><strong>PALS evaluates performance vs opposing SPs only.</strong></p>'
-      + '<div class="pals-compare">'
-      + '<div><span class="pals-num">' + valChip(m.osi, 'osi', false, 1) + '</span><span class="pals-lbl">OSI</span></div>'
-      + '<span class="pals-gap">' + valChip(m.pals != null && m.osi != null ? (m.osi - m.pals) : null, 'ppGap', false, 1) + '</span>'
-      + '<div><span class="pals-num">' + valChip(m.pals, 'osi', false, 1) + '</span><span class="pals-lbl">PALS</span></div>'
-      + '</div>'
-      + '<p class="ma-read">' + esc(palsInterpretation(m.osi, m.pals)) + '</p>'
-      + splitTable([['vs RHP SPs', m.osiR], ['vs LHP SPs', m.osiL], ['Home', m.osiH], ['Away', m.osiA], ['F5', m.osiF5]])
-      + (tonightPals ? '<p class="ma-read ma-tonight">' + esc(tonightPals) + '</p>' : '')
-      + metricSparkline([m.palsYtd != null ? m.palsYtd : m.pals, m.palsL30, m.palsL14, m.palsL7])
-      + f5;
-
-    return '<div class="mini-dashboards">'
-      + accordion('ma-osi', 'OSI — Offensive Strength', m.osi, true, osiBody, 'osi')
-      + accordion('ma-abq', 'ABQ — Process Quality', m.abq, false, abqBody, 'abq')
-      + accordion('ma-rcv', 'RCV — Run Creation', m.rcv, false, rcvBody, 'rcv')
-      + accordion('ma-obr', 'OBR — On-Base Floor', m.obr, false, obrBody, 'obr')
-      + accordion('ma-pals', 'PALS — vs SP Schedule', m.pals, false, palsBody, 'osi')
-      + '</div>';
+    if (global.TeamProfileSections && TeamProfileSections.renderAll) {
+      return TeamProfileSections.renderAll(prof, team, ctx);
+    }
+    return '<p class="ca-helper">Offense sections module not loaded.</p>';
   }
 
   function statBox(label, val) {
@@ -508,6 +504,7 @@
 
   global.TeamProfileMini = {
     resolveView: resolveView,
+    splitPairHtml: splitPairHtml,
     render: function(prof, team, ctx) {
       ctx = ctx || {};
       ctx.splitLabel = splitLabel(ctx.split || 'both');
