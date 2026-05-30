@@ -10,7 +10,7 @@
   var TABS = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
   var LEAGUE_OOR = 50;
   var CACHE = {
-    profiles: null, splits: null, relievers: null, oorByTeam: null,
+    profiles: null, splits: null, relievers: null, relieverLog: null, oorByTeam: null,
     sortKey: 'pitchScore', sortDir: -1, selected: '',
     searchQ: '', dropdownOpen: false,
     viewMode: 'pitcher', bpTeam: '', snapSplit: 'overall'
@@ -158,6 +158,15 @@
       CACHE.relievers = rows || [];
       return CACHE.relievers;
     }).catch(function() { CACHE.relievers = []; return []; });
+  }
+
+  function loadRelieverLog() {
+    if (CACHE.relieverLog) return Promise.resolve(CACHE.relieverLog);
+    if (!S || !TABS || !TABS.reliever_log) return Promise.resolve([]);
+    return S.fetchSheetTab(TABS.reliever_log).then(function(rows) {
+      CACHE.relieverLog = rows || [];
+      return CACHE.relieverLog;
+    }).catch(function() { CACHE.relieverLog = []; return []; });
   }
 
   function findProfile(keyOrName) {
@@ -400,47 +409,31 @@
     return numOrNull(pickCol(row, [prefix + '_' + metric, prefix + ' ' + metric]));
   }
 
-  function bullpenUsageForTeam(team) {
-    var tk = teamKey(team);
-    var unit = bullpenUnit(team);
-    var usage = [];
-    if (unit && unit.relievers && unit.relievers.length) {
-      usage = unit.relievers.map(function(r) {
-        return {
-          name: r.name || r.pitcher_name || pickCol(r, ['pitcher_name', 'Name']),
-          days: numOrNull(r.days_last_5) != null ? numOrNull(r.days_last_5) : (numOrNull(r.appearances_last_5) || 0)
-        };
-      });
+  function renderBullpenUsageBlock(team) {
+    var mountId = 'plBpUsageMount';
+    if (!window.BullpenUsage) {
+      return '<div id="' + mountId + '" class="bp-usage-empty">Usage module not loaded.</div>';
     }
-    if (!usage.length) {
-      var counts = {};
-      (CACHE.relievers || []).forEach(function(r) {
-        if (teamKey(pickCol(r, ['pitcher_team', 'team', 'Team', 'Tm'])) !== tk) return;
-        var n = pickCol(r, ['pitcher_name', 'Name']);
-        if (!n) return;
-        counts[n] = (counts[n] || 0) + 1;
-      });
-      usage = Object.keys(counts).map(function(n) { return { name: n, days: counts[n] }; });
-    }
-    return usage.sort(function(a, b) { return b.days - a.days; }).slice(0, 8);
+    return '<div id="' + mountId + '" class="bp-usage-empty">Loading bullpen usage…</div>';
   }
 
-  function bullpenUsageChartSvg(usage) {
-    if (!usage.length) return '<p class="rl-empty">No reliever usage data for this team.</p>';
-    var w = 520, h = 140, pad = 8, barW = Math.max(28, Math.floor((w - pad * 2) / usage.length) - 6);
-    var maxD = Math.max.apply(null, usage.map(function(u) { return u.days; }).concat([1]));
-    var bars = usage.map(function(u, i) {
-      var bh = Math.round((u.days / maxD) * 90) || 4;
-      var x = pad + i * (barW + 6);
-      var col = u.days <= 1 ? '#4ADE80' : u.days === 2 ? '#FBBF24' : '#F87171';
-      var label = String(u.name || '').split(' ').pop() || u.name;
-      return '<rect x="' + x + '" y="' + (h - 28 - bh) + '" width="' + barW + '" height="' + bh + '" fill="' + col + '" rx="3"/>'
-        + '<text x="' + (x + barW / 2) + '" y="' + (h - 10) + '" fill="#9CA3AF" font-size="9" text-anchor="middle">' + esc(label) + '</text>'
-        + '<text x="' + (x + barW / 2) + '" y="' + (h - 32 - bh) + '" fill="#E4E4E7" font-size="10" text-anchor="middle">' + u.days + '</text>';
-    }).join('');
-    return '<div class="pl-bp-usage"><h4 class="pl-section-title">Last 5 Days Usage</h4>'
-      + '<svg class="pl-bp-usage-svg" viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">' + bars + '</svg>'
-      + '<p class="rl-note" style="font-size:11px;margin-top:6px">Green = 0\u20131 days \u00B7 Amber = 2 \u00B7 Red = 3+</p></div>';
+  function paintBullpenUsage(team) {
+    var el = document.getElementById('plBpUsageMount');
+    if (!el || !window.BullpenUsage) return;
+    BullpenUsage.loadForTeam(team, {
+      log: CACHE.relieverLog || [],
+      individuals: CACHE.relievers || [],
+      live: true
+    }).then(function(model) {
+      el.outerHTML = BullpenUsage.renderUsageChart(model, { compact: true });
+    }).catch(function() {
+      var model = BullpenUsage.buildUsageModel({
+        team: team,
+        log: CACHE.relieverLog || [],
+        individuals: CACHE.relievers || []
+      });
+      el.outerHTML = BullpenUsage.renderUsageChart(model, { compact: true });
+    });
   }
 
   function renderBullpenView() {
@@ -485,9 +478,11 @@
       + '<select id="plBpTeamSelect" class="pl-bp-select">' + teamOpts + '</select>'
       + '</div>'
       + snapshot
-      + bullpenUsageChartSvg(bullpenUsageForTeam(team))
+      + renderBullpenUsageBlock(team)
       + '<p class="rl-profile-link"><a href="bullpen_report.html?team=' + encodeURIComponent(team || '') + '">Full bullpen report \u2192</a></p>'
       + '</div>';
+
+    paintBullpenUsage(team);
 
     var sel = document.getElementById('plBpTeamSelect');
     if (sel) {
@@ -666,7 +661,7 @@
     var root = document.getElementById(rootId || 'rlPitcherLabRoot');
     if (!root) return;
     root.innerHTML = '<p class="rl-loading">Loading Pitcher Intelligence…</p>';
-    Promise.all([loadProfiles(), loadSplits()]).then(function(results) {
+    Promise.all([loadProfiles(), loadSplits(), loadRelievers(), loadRelieverLog()]).then(function(results) {
       var rows = results[0];
       if (!CACHE.oorByTeam && S && S.buildOorByTeam && global.LIVE_DATA && LIVE_DATA.oor) {
         CACHE.oorByTeam = S.buildOorByTeam(LIVE_DATA.oor);

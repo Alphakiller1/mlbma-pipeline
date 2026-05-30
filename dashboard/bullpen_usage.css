@@ -1,0 +1,208 @@
+/* Bullpen Usage — L7 pitch matrix (inspired by traditional usage charts) */
+.bp-usage-chart {
+  display: flex;
+  border: 1px solid var(--border, #28282f);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-2, #111114);
+}
+
+.bp-usage-chart--compact {
+  font-size: 12px;
+}
+
+.bp-usage-sidebar {
+  flex: 0 0 72px;
+  background: linear-gradient(180deg, #1a2744 0%, #0f1729 100%);
+  border-right: 1px solid var(--border, #28282f);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 8px;
+  gap: 8px;
+}
+
+.bp-usage-brand {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.bp-usage-logo {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.bp-usage-team {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-2, #a1a1aa);
+  letter-spacing: 0.06em;
+}
+
+.bp-usage-scroll {
+  flex: 1;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bp-usage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  min-width: 520px;
+}
+
+.bp-usage-table thead th {
+  background: #1a2744;
+  color: #e8ecf4;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border, #28282f);
+  white-space: nowrap;
+}
+
+.bp-usage-table tbody td {
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--border, #28282f);
+  text-align: center;
+  font-size: 12px;
+}
+
+.bp-usage-table tbody tr:hover {
+  background: rgba(124, 77, 255, 0.06);
+}
+
+.bp-usage-sticky {
+  text-align: left !important;
+  min-width: 88px;
+}
+
+.bp-usage-date-sub {
+  display: block;
+  font-size: 8px;
+  font-weight: 500;
+  opacity: 0.65;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.bp-usage-name {
+  text-align: left !important;
+  font-weight: 700;
+  color: var(--gold, #fbbf24);
+  font-family: var(--font-display, inherit);
+}
+
+.bp-usage-role {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+
+.bp-role-close { color: #c4b0ff; }
+.bp-role-setup { color: #93c5fd; }
+.bp-role-mid { color: var(--text-3); }
+.bp-role-long { color: #86efac; }
+.bp-role-il { color: var(--red-l, #fca5a5); }
+
+.bp-avail-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.bp-avail-yes {
+  background: #22c55e;
+  color: #052e16;
+}
+
+.bp-avail-prob {
+  background: #86efac;
+  color: #14532d;
+}
+
+.bp-avail-doubt {
+  background: #fb923c;
+  color: #431407;
+}
+
+.bp-avail-no {
+  background: #ef4444;
+  color: #fff;
+}
+
+.bp-pitch-cell {
+  font-weight: 700;
+  font-family: var(--font-display, inherit);
+  min-width: 36px;
+}
+
+.bp-pitch-none {
+  color: var(--text-3);
+  background: transparent;
+}
+
+.bp-pitch-lo {
+  background: rgba(251, 146, 60, 0.18);
+  color: #fdba74;
+}
+
+.bp-pitch-med {
+  background: rgba(249, 115, 22, 0.35);
+  color: #fed7aa;
+}
+
+.bp-pitch-hi {
+  background: rgba(234, 88, 12, 0.55);
+  color: #fff;
+}
+
+.bp-pitch-max {
+  background: rgba(185, 28, 28, 0.75);
+  color: #fff;
+}
+
+.bp-usage-meta {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.bp-usage-sync {
+  color: var(--purple, #9a6bff);
+}
+
+.bp-usage-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-3);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .bp-usage-sidebar {
+    flex: 0 0 56px;
+    padding: 8px 4px;
+  }
+  .bp-usage-brand {
+    display: none;
+  }
+}
