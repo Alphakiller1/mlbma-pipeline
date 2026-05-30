@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Metric Glossary</title>
+<title>Chase Analytics · Metric Glossary</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 :root {
@@ -49,7 +49,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
 .glossary-term.hidden{display:none}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
@@ -58,10 +58,10 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -94,7 +94,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -138,7 +138,7 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -168,15 +168,15 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
 
   <div class="layer-label">Core Metric Definitions</div>
   <div class="metric-grid" id="metricCards">
-    <div class="card glossary-term" data-term="abq discipline contact chase"><div class="term">ABQ</div><p>At-bat quality â€” plate discipline and contact process.</p><div class="hi">High: patient, quality contact</div><div class="lo">Low: chase-heavy, weak decisions</div><p><b>Bet use:</b> Unders on weak ABQ vs elite pitching.</p></div>
-    <div class="card glossary-term" data-term="rcv damage barrel power"><div class="term">RCV</div><p>Run creation value â€” damage and scoring pressure.</p><div class="hi">High: barrels, ISO, wRC+</div><div class="lo">Low: limited hard contact</div><p><b>Bet use:</b> Overs when RCV leads process gaps.</p></div>
-    <div class="card glossary-term" data-term="obr on base xwoba walks"><div class="term">OBR</div><p>On-base rating â€” floor from xwOBA and walks.</p><div class="hi">High: traffic, table-setters</div><div class="lo">Low: thin on-base paths</div><p><b>Bet use:</b> Team totals when OBR pairs with soft K% arms.</p></div>
-    <div class="card glossary-term" data-term="osi offensive strength composite"><div class="term">OSI</div><p>Offensive strength index â€” headline composite (RCV+ABQ+OBR).</p><div class="hi">High: elite offense</div><div class="lo">Low: weak unit</div><p><b>Bet use:</b> Primary team offensive ranking.</p></div>
+    <div class="card glossary-term" data-term="abq discipline contact chase"><div class="term">ABQ</div><p>At-bat quality — plate discipline and contact process.</p><div class="hi">High: patient, quality contact</div><div class="lo">Low: chase-heavy, weak decisions</div><p><b>Bet use:</b> Unders on weak ABQ vs elite pitching.</p></div>
+    <div class="card glossary-term" data-term="rcv damage barrel power"><div class="term">RCV</div><p>Run creation value — damage and scoring pressure.</p><div class="hi">High: barrels, ISO, wRC+</div><div class="lo">Low: limited hard contact</div><p><b>Bet use:</b> Overs when RCV leads process gaps.</p></div>
+    <div class="card glossary-term" data-term="obr on base xwoba walks"><div class="term">OBR</div><p>On-base rating — floor from xwOBA and walks.</p><div class="hi">High: traffic, table-setters</div><div class="lo">Low: thin on-base paths</div><p><b>Bet use:</b> Team totals when OBR pairs with soft K% arms.</p></div>
+    <div class="card glossary-term" data-term="osi offensive strength composite"><div class="term">OSI</div><p>Offensive strength index — headline composite (RCV+ABQ+OBR).</p><div class="hi">High: elite offense</div><div class="lo">Low: weak unit</div><p><b>Bet use:</b> Primary team offensive ranking.</p></div>
     <div class="card glossary-term" data-term="projosi projected regression"><div class="term">projOSI</div><p>OSI adjusted for xwOBA vs wOBA regression.</p><div class="hi">Above OSI: buy-low lean</div><div class="lo">Below OSI: fade lean</div><p><b>Bet use:</b> Market mispricing signal.</p></div>
     <div class="card glossary-term" data-term="pals pitching adjusted"><div class="term">PALS</div><p>Lineup strength adjusted for SP quality faced.</p><div class="hi">High: production vs tough SPs</div><div class="lo">Low: weak schedule context</div><p><b>Bet use:</b> Confirm OSI with schedule truth.</p></div>
-    <div class="card glossary-term" data-term="oor opponent hvr hvl"><div class="term">OOR</div><p>Opponent offensive rating â€” split strength vs RHP/LHP.</p><div class="hi">High: dangerous opposing lineups</div><div class="lo">Low: soft opposing offenses</div><p><b>Bet use:</b> Pitcher matchup environment.</p></div>
+    <div class="card glossary-term" data-term="oor opponent hvr hvl"><div class="term">OOR</div><p>Opponent offensive rating — split strength vs RHP/LHP.</p><div class="hi">High: dangerous opposing lineups</div><div class="lo">Low: soft opposing offenses</div><p><b>Bet use:</b> Pitcher matchup environment.</p></div>
     <div class="card glossary-term" data-term="pp gap process production"><div class="term">PP-Gap</div><p>ABQ minus RCV. Positive = process ahead of results.</p><div class="hi">+4 or more: buy-low</div><div class="lo">-4 or less: regression risk</div><p><b>Bet use:</b> Convergence signal weight x2.</p></div>
-    <div class="card glossary-term" data-term="df gap damage floor"><div class="term">Power-Floor Gap</div><p>RCV minus OBR â€” power vs floor split.</p><div class="hi">+8: boom-or-bust slug</div><div class="lo">Negative: OBP-first</div><p><b>Bet use:</b> Volatility on run lines.</p></div>
+    <div class="card glossary-term" data-term="df gap damage floor"><div class="term">Power-Floor Gap</div><p>RCV minus OBR — power vs floor split.</p><div class="hi">+8: boom-or-bust slug</div><div class="lo">Negative: OBP-first</div><p><b>Bet use:</b> Volatility on run lines.</p></div>
     <div class="card glossary-term" data-term="pitching score k bb hr9"><div class="term">Pitching Score</div><p>SP/bullpen quality from K%, BB%, HR/9 blend.</p><div class="hi">85+: Ace tier</div><div class="lo">Below 55: volatile</div><p><b>Bet use:</b> OSI vs Pitching Score signal.</p></div>
   </div>
 
@@ -185,15 +185,15 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
     <h2>OSI tiers</h2>
     <table class="tier-table"><thead><tr><th>Tier</th><th>Range</th><th>Read</th></tr></thead><tbody>
       <tr class="tier-elite"><td>Elite</td><td>85+</td><td>Complete offensive weapon</td></tr>
-      <tr><td>High Level</td><td>75â€“84</td><td>Reliable top-tier unit</td></tr>
-      <tr class="tier-mid"><td>Dangerous</td><td>65â€“74</td><td>Can run hot in stretches</td></tr>
-      <tr><td>Inconsistent</td><td>50â€“64</td><td>Matchup-dependent</td></tr>
+      <tr><td>High Level</td><td>75–84</td><td>Reliable top-tier unit</td></tr>
+      <tr class="tier-mid"><td>Dangerous</td><td>65–74</td><td>Can run hot in stretches</td></tr>
+      <tr><td>Inconsistent</td><td>50–64</td><td>Matchup-dependent</td></tr>
       <tr class="tier-weak"><td>Weak</td><td>&lt;50</td><td>Limited run paths</td></tr>
     </tbody></table>
     <h2 style="margin-top:16px">Pitching Score tiers</h2>
     <table class="tier-table"><thead><tr><th>Tier</th><th>Range</th></tr></thead><tbody>
-      <tr class="tier-elite"><td>Ace</td><td>85+</td></tr><tr><td>Solid</td><td>70â€“84</td></tr>
-      <tr class="tier-mid"><td>Average</td><td>55â€“69</td></tr><tr class="tier-weak"><td>Volatile</td><td>&lt;55</td></tr>
+      <tr class="tier-elite"><td>Ace</td><td>85+</td></tr><tr><td>Solid</td><td>70–84</td></tr>
+      <tr class="tier-mid"><td>Average</td><td>55–69</td></tr><tr class="tier-weak"><td>Volatile</td><td>&lt;55</td></tr>
     </tbody></table>
     <p style="margin-top:12px;font-size:12px;color:var(--text-3)">Sample size: prefer YTD for stability; L7 is momentum-only (small sample warning).</p>
   </div>
@@ -204,65 +204,65 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
     <div class="formula"><strong>RCV</strong> = 35% wRC+ + 32% Barrel/park + 20% ISO/park + 13% HardHit/park</div>
     <div class="formula"><strong>OBR</strong> = 65% xwOBA + 35% BB%</div>
     <div class="formula"><strong>OSI</strong> = 43% RCV + 37% ABQ + 20% OBR</div>
-    <div class="formula"><strong>projOSI</strong> = OSI + clip((xwOBA âˆ’ wOBA) Ã— 450, âˆ’8, +8)</div>
-    <div class="formula"><strong>OOR</strong> = 55% HvR + 45% HvL Â· <strong>PALS</strong> = (BA+ + PTF+) / 2</div>
-    <p style="font-size:12px;color:var(--text-2);margin-top:8px">Metrics are pool-normalized to 0â€“100 within the active leaderboard sample. Park factors adjust barrel/ISO/hard-hit for home environment.</p>
+    <div class="formula"><strong>projOSI</strong> = OSI + clip((xwOBA - wOBA) × 450, -8, +8)</div>
+    <div class="formula"><strong>OOR</strong> = 55% HvR + 45% HvL · <strong>PALS</strong> = (BA+ + PTF+) / 2</div>
+    <p style="font-size:12px;color:var(--text-2);margin-top:8px">Metrics are pool-normalized to 0–100 within the active leaderboard sample. Park factors adjust barrel/ISO/hard-hit for home environment.</p>
   </div>
 
   <div class="layer-label">Nine Signal Definitions</div>
   <div class="metric-grid">
-    <div class="card glossary-term" data-term="signal 1 k obr"><div class="term">Signal 1 â€” K% vs OBR</div><p>Soft K% arm vs elite on-base floor.</p><p><b>Threshold:</b> K% low, OBR high Â· <b>Angle:</b> Over offense</p></div>
-    <div class="card glossary-term" data-term="signal 2 bb abq"><div class="term">Signal 2 â€” BB% vs ABQ</div><p>Walk rate vs lineup patience.</p><p><b>Angle:</b> Traffic or pitcher edge</p></div>
-    <div class="card glossary-term" data-term="signal 3 hr9 rcv"><div class="term">Signal 3 â€” HR/9 vs RCV</div><p>Flyball risk vs damage lineup.</p><p><b>Angle:</b> Over total / HR props</p></div>
-    <div class="card glossary-term" data-term="signal 4 osi pitch"><div class="term">Signal 4 â€” OSI vs Pitching Score</div><p>Offense vs opposing staff quality.</p></div>
-    <div class="card glossary-term" data-term="signal 5 pals projosi"><div class="term">Signal 5 â€” PALS + projOSI</div><p>Process vs results alignment.</p></div>
-    <div class="card glossary-term" data-term="signal 6 obr bb"><div class="term">Signal 6 â€” OBR + BB%</div><p>Table-setting environment.</p></div>
-    <div class="card glossary-term" data-term="signal 7 platoon abq"><div class="term">Signal 7 â€” ABQ platoon</div><p>Handedness split edge.</p></div>
-    <div class="card glossary-term" data-term="signal 8 archetype rcv obr"><div class="term">Signal 8 â€” RCV archetype</div><p>Offensive shape classification.</p></div>
-    <div class="card glossary-term" data-term="signal 9 schedule oor"><div class="term">Signal 9 â€” Schedule OOR</div><p>Opponent context vs baseline.</p></div>
+    <div class="card glossary-term" data-term="signal 1 k obr"><div class="term">Signal 1 — K% vs OBR</div><p>Soft K% arm vs elite on-base floor.</p><p><b>Threshold:</b> K% low, OBR high · <b>Angle:</b> Over offense</p></div>
+    <div class="card glossary-term" data-term="signal 2 bb abq"><div class="term">Signal 2 — BB% vs ABQ</div><p>Walk rate vs lineup patience.</p><p><b>Angle:</b> Traffic or pitcher edge</p></div>
+    <div class="card glossary-term" data-term="signal 3 hr9 rcv"><div class="term">Signal 3 — HR/9 vs RCV</div><p>Flyball risk vs damage lineup.</p><p><b>Angle:</b> Over total / HR props</p></div>
+    <div class="card glossary-term" data-term="signal 4 osi pitch"><div class="term">Signal 4 — OSI vs Pitching Score</div><p>Offense vs opposing staff quality.</p></div>
+    <div class="card glossary-term" data-term="signal 5 pals projosi"><div class="term">Signal 5 — PALS + projOSI</div><p>Process vs results alignment.</p></div>
+    <div class="card glossary-term" data-term="signal 6 obr bb"><div class="term">Signal 6 — OBR + BB%</div><p>Table-setting environment.</p></div>
+    <div class="card glossary-term" data-term="signal 7 platoon abq"><div class="term">Signal 7 — ABQ platoon</div><p>Handedness split edge.</p></div>
+    <div class="card glossary-term" data-term="signal 8 archetype rcv obr"><div class="term">Signal 8 — RCV archetype</div><p>Offensive shape classification.</p></div>
+    <div class="card glossary-term" data-term="signal 9 schedule oor"><div class="term">Signal 9 — Schedule OOR</div><p>Opponent context vs baseline.</p></div>
   </div>
   <div class="section"><p style="font-size:12px;color:var(--text-2)"><strong>Convergence:</strong> Fired signals sum weighted votes (PP-Gap counts double). Play flag at 4+ weighted convergence.</p></div>
 
   <div class="layer-label">Archetype System (9 profiles)</div>
   <div class="archetype-grid">
-    <div class="card glossary-term" data-term="elite engine high high"><div class="term">Elite Engine</div><p>High RCV + High OBR â€” complete profile. ML/over lean.</p></div>
-    <div class="card glossary-term" data-term="power leverage"><div class="term">Power Leverage</div><p>High/Mid â€” slug-first. Over F5 if SP vulnerable.</p></div>
-    <div class="card glossary-term" data-term="boom bust"><div class="term">Boom-or-Bust</div><p>High/Low â€” volatile overs, risky unders.</p></div>
-    <div class="card glossary-term" data-term="table setter"><div class="term">Table Setter Plus</div><p>Mid/High â€” grind, RL +0.5.</p></div>
-    <div class="card glossary-term" data-term="balanced mid mid"><div class="term">Balanced</div><p>Mid/Mid â€” neutral, use signals.</p></div>
-    <div class="card glossary-term" data-term="contact floor"><div class="term">Contact Floor</div><p>Mid/Low â€” limited paths.</p></div>
-    <div class="card glossary-term" data-term="obp first"><div class="term">OBP First</div><p>Low/High â€” walks, unders on K arms.</p></div>
-    <div class="card glossary-term" data-term="glove line"><div class="term">Glove Line</div><p>Low/Mid â€” weak damage.</p></div>
-    <div class="card glossary-term" data-term="cold profile"><div class="term">Cold Profile</div><p>Low/Low â€” under lean.</p></div>
+    <div class="card glossary-term" data-term="elite engine high high"><div class="term">Elite Engine</div><p>High RCV + High OBR — complete profile. ML/over lean.</p></div>
+    <div class="card glossary-term" data-term="power leverage"><div class="term">Power Leverage</div><p>High/Mid — slug-first. Over F5 if SP vulnerable.</p></div>
+    <div class="card glossary-term" data-term="boom bust"><div class="term">Boom-or-Bust</div><p>High/Low — volatile overs, risky unders.</p></div>
+    <div class="card glossary-term" data-term="table setter"><div class="term">Table Setter Plus</div><p>Mid/High — grind, RL +0.5.</p></div>
+    <div class="card glossary-term" data-term="balanced mid mid"><div class="term">Balanced</div><p>Mid/Mid — neutral, use signals.</p></div>
+    <div class="card glossary-term" data-term="contact floor"><div class="term">Contact Floor</div><p>Mid/Low — limited paths.</p></div>
+    <div class="card glossary-term" data-term="obp first"><div class="term">OBP First</div><p>Low/High — walks, unders on K arms.</p></div>
+    <div class="card glossary-term" data-term="glove line"><div class="term">Glove Line</div><p>Low/Mid — weak damage.</p></div>
+    <div class="card glossary-term" data-term="cold profile"><div class="term">Cold Profile</div><p>Low/Low — under lean.</p></div>
   </div>
 
-  <div class="layer-label">Searchable Glossary (Aâ€“Z)</div>
+  <div class="layer-label">Searchable Glossary (A–Z)</div>
   <div class="section">
     <ul class="alpha-list" id="alphaGlossary">
-      <li><b>ABQ</b> â€” At-bat quality composite</li>
-      <li><b>Archetype</b> â€” RCV/OBR tier label (9 types)</li>
-      <li><b>Barrel%</b> â€” Barreled ball rate</li>
-      <li><b>Chase%</b> â€” O-swing rate</li>
-      <li><b>Convergence</b> â€” Weighted fired-signal count</li>
-      <li><b>Power-Floor Gap</b> â€” RCV minus OBR</li>
-      <li><b>FIP</b> â€” Fielding-independent pitching</li>
-      <li><b>HvL / HvR</b> â€” Offense vs LHP/RHP</li>
-      <li><b>ISO</b> â€” Isolated power</li>
-      <li><b>OBR</b> â€” On-base rating</li>
-      <li><b>OOR</b> â€” Opponent offensive rating</li>
-      <li><b>OSI</b> â€” Offensive strength index</li>
-      <li><b>PALS</b> â€” Pitching-adjusted lineup score</li>
-      <li><b>Park factor</b> â€” Home run environment adjustment</li>
-      <li><b>Pitching Score</b> â€” Staff K/BB/HR blend</li>
-      <li><b>PP-Gap</b> â€” ABQ minus RCV</li>
-      <li><b>projOSI</b> â€” Regression-adjusted OSI</li>
-      <li><b>RCV</b> â€” Run creation value</li>
-      <li><b>Regression signal</b> â€” xwOBA vs wOBA direction</li>
-      <li><b>SwStr%</b> â€” Whiff rate</li>
-      <li><b>Trend</b> â€” YTD vs recent window direction</li>
-      <li><b>wRC+</b> â€” Weighted runs created plus</li>
-      <li><b>xwOBA</b> â€” Expected weighted on-base</li>
-      <li><b>ZCon%</b> â€” Zone contact rate</li>
+      <li><b>ABQ</b> — At-bat quality composite</li>
+      <li><b>Archetype</b> — RCV/OBR tier label (9 types)</li>
+      <li><b>Barrel%</b> — Barreled ball rate</li>
+      <li><b>Chase%</b> — O-swing rate</li>
+      <li><b>Convergence</b> — Weighted fired-signal count</li>
+      <li><b>Power-Floor Gap</b> — RCV minus OBR</li>
+      <li><b>FIP</b> — Fielding-independent pitching</li>
+      <li><b>HvL / HvR</b> — Offense vs LHP/RHP</li>
+      <li><b>ISO</b> — Isolated power</li>
+      <li><b>OBR</b> — On-base rating</li>
+      <li><b>OOR</b> — Opponent offensive rating</li>
+      <li><b>OSI</b> — Offensive strength index</li>
+      <li><b>PALS</b> — Pitching-adjusted lineup score</li>
+      <li><b>Park factor</b> — Home run environment adjustment</li>
+      <li><b>Pitching Score</b> — Staff K/BB/HR blend</li>
+      <li><b>PP-Gap</b> — ABQ minus RCV</li>
+      <li><b>projOSI</b> — Regression-adjusted OSI</li>
+      <li><b>RCV</b> — Run creation value</li>
+      <li><b>Regression signal</b> — xwOBA vs wOBA direction</li>
+      <li><b>SwStr%</b> — Whiff rate</li>
+      <li><b>Trend</b> — YTD vs recent window direction</li>
+      <li><b>wRC+</b> — Weighted runs created plus</li>
+      <li><b>xwOBA</b> — Expected weighted on-base</li>
+      <li><b>ZCon%</b> — Zone contact rate</li>
     </ul>
   <script>
 function filterGlossary() {

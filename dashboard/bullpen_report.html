@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 2<html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Bullpen Report</title>
+<title>Chase Analytics · Bullpen Report</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 :root {
@@ -246,7 +246,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
@@ -261,11 +261,11 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 </head>
 <body>
 
-<div class="loading-text" id="loadingText">Loading bullpen intelligence from Google Sheetsâ€¦</div>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<div class="loading-text" id="loadingText">Loading bullpen intelligence from Google Sheets…</div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -298,7 +298,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -342,7 +342,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -352,7 +352,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   <header class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill" id="brandPill">Loadingâ€¦</span>
+      <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Bullpen Intelligence Report</h1>
     <p class="subtitle">Team bullpen intelligence and matchup context.</p>
@@ -363,7 +363,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   <div class="today-games-bar" id="todayBar"></div>
 
   <select class="selector-select" id="teamSelect" style="display:none" aria-hidden="true">
-    <option value="">â€” Choose a team â€”</option>
+    <option value="">— Choose a team —</option>
   </select>
 
   <div id="bullpenControlBar"></div>
@@ -376,8 +376,8 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
     </section>
 
     <section class="section" id="secOOR">
-      <div class="section-title">Bullpen OOR â€” Competition Strength</div>
-      <div class="section-subtitle">Average offensive quality of lineups faced Â· context for ERA validation</div>
+      <div class="section-title">Bullpen OOR — Competition Strength</div>
+      <div class="section-subtitle">Average offensive quality of lineups faced · context for ERA validation</div>
       <div id="oorPanel"></div>
     </section>
 
@@ -504,17 +504,17 @@ function pickCol(row, names) {
 }
 
 function num(v) {
-  if (v === null || v === undefined || v === '' || v === 'â€”') return null;
+  if (v === null || v === undefined || v === '' || v === '—') return null;
   var n = parseFloat(String(v).replace(/%/g, ''));
   return isNaN(n) ? null : n;
 }
 
 function fmt(v, d) {
-  if (v === null || v === undefined || isNaN(v)) return 'â€”';
+  if (v === null || v === undefined || isNaN(v)) return '—';
   return Number(v).toFixed(d === undefined ? 1 : d);
 }
 
-function fmtPct(v) { return v === null || isNaN(v) ? 'â€”' : fmt(v, 1) + '%'; }
+function fmtPct(v) { return v === null || isNaN(v) ? '—' : fmt(v, 1) + '%'; }
 
 function parseIP(ip) {
   if (!ip && ip !== 0) return 0;
@@ -675,7 +675,7 @@ function buildTonightContext(team) {
   var oppOsi = num(isHome ? pickCol(g, ['Away_OSI', 'Away OSI']) : pickCol(g, ['Home_OSI', 'Home OSI']));
   var time = pickCol(g, ['Time', 'Game_Time', 'game_time']) || 'TBD';
   return {
-    html: '<span class="pill-tonight">Tonight vs ' + teamKey(opp) + ' Â· ' + (isHome ? 'Home' : 'Away') + ' Â· ' + time + '</span>',
+    html: '<span class="pill-tonight">Tonight vs ' + teamKey(opp) + ' · ' + (isHome ? 'Home' : 'Away') + ' · ' + time + '</span>',
     oppOsi: oppOsi
   };
 }
@@ -776,12 +776,12 @@ function osiInsight(unit, team) {
   var oL = colVal(unit, 'vs_low_osi', 'OSI_allowed');
   var parts = [];
   if (eH != null && eL != null && eH > eL + 1.0) {
-    parts.push('<strong>Tier flag:</strong> ERA balloons vs High OSI (' + fmt(eH, 2) + ' vs ' + fmt(eL, 2) + ' vs Low) â€” fade late-inning spots vs elite offenses.');
+    parts.push('<strong>Tier flag:</strong> ERA balloons vs High OSI (' + fmt(eH, 2) + ' vs ' + fmt(eL, 2) + ' vs Low) — fade late-inning spots vs elite offenses.');
   } else if (eH != null && eL != null && eH < eL - 0.8) {
-    parts.push('Surprisingly stronger vs High OSI (' + fmt(eH, 2) + ' ERA) than vs soft matchups â€” trust process vs top lineups.');
+    parts.push('Surprisingly stronger vs High OSI (' + fmt(eH, 2) + ' ERA) than vs soft matchups — trust process vs top lineups.');
   }
   if (oH != null && oL != null && oH > oL + 8) {
-    parts.push('OSI allowed jumps vs High tier (' + fmt(oH, 1) + ' vs ' + fmt(oL, 1) + ' vs Low) â€” quality of opponent faced explains part of the split.');
+    parts.push('OSI allowed jumps vs High tier (' + fmt(oH, 1) + ' vs ' + fmt(oL, 1) + ' vs Low) — quality of opponent faced explains part of the split.');
   }
   return parts.length ? parts.join(' ') : 'Bullpen OSI-tier splits are relatively flat in the current sample.';
 }
@@ -790,10 +790,10 @@ function levInsight(unit) {
   var hi = colVal(unit, 'high_leverage', 'ERA');
   var lo = colVal(unit, 'low_leverage', 'ERA');
   if (hi != null && lo != null && hi > lo + 1.5) {
-    return '<strong>Leverage flag:</strong> High-leverage ERA (' + fmt(hi, 2) + ') is much worse than low-leverage (' + fmt(lo, 2) + ') â€” lean run-line/fade when games stay close late.';
+    return '<strong>Leverage flag:</strong> High-leverage ERA (' + fmt(hi, 2) + ') is much worse than low-leverage (' + fmt(lo, 2) + ') — lean run-line/fade when games stay close late.';
   }
   if (hi != null && lo != null && hi < lo - 1.0) {
-    return 'Bullpen tightens in high leverage (' + fmt(hi, 2) + ' vs ' + fmt(lo, 2) + ' low) â€” back late-game unders when this unit is active.';
+    return 'Bullpen tightens in high leverage (' + fmt(hi, 2) + ' vs ' + fmt(lo, 2) + ' low) — back late-game unders when this unit is active.';
   }
   return 'Leverage ERA split is within normal range for the sample size.';
 }
@@ -802,12 +802,12 @@ function allowedNote(unit) {
   var abq = colVal(unit, 'overall', 'ABQ_allowed');
   var rcv = colVal(unit, 'overall', 'RCV_allowed');
   if (abq != null && abq >= 65) {
-    return 'Patient lineups (high ABQ allowed) have taxed this bullpen â€” walk sequences and deep counts are a live risk.';
+    return 'Patient lineups (high ABQ allowed) have taxed this bullpen — walk sequences and deep counts are a live risk.';
   }
   if (rcv != null && rcv >= 65) {
-    return 'Barrel-heavy opponents (high RCV allowed) â€” HR blow-up risk is elevated in short outings.';
+    return 'Barrel-heavy opponents (high RCV allowed) — HR blow-up risk is elevated in short outings.';
   }
-  return 'Metric-allowed profile is balanced â€” outcomes likely driven by leverage and inherited runners more than opponent archetype.';
+  return 'Metric-allowed profile is balanced — outcomes likely driven by leverage and inherited runners more than opponent archetype.';
 }
 
 
@@ -822,7 +822,7 @@ function appearanceDetail(pid, name) {
   apps.forEach(function(g) {
     var tier = pickCol(g, ['opponent_OSI_tier']);
     inner += '<tr><td>' + pickCol(g, ['date']) + '</td><td>' + pickCol(g, ['opponent_team']) + '</td>' +
-      '<td class="tier-' + (tier || '').toLowerCase() + '">' + (tier || 'â€”') + '</td>' +
+      '<td class="tier-' + (tier || '').toLowerCase() + '">' + (tier || '—') + '</td>' +
       '<td>' + pickCol(g, ['IP']) + '</td><td>' + pickCol(g, ['ER']) + '</td>' +
       '<td>' + pickCol(g, ['leverage_situation']) + '</td><td>' + pickCol(g, ['result']) + '</td>' +
       '<td>' + pickCol(g, ['inherited_runners']) + '/' + pickCol(g, ['inherited_scored']) + '</td></tr>';
@@ -860,14 +860,14 @@ function buildMatchupContext(team, unit) {
     var time = pickCol(g, ['Time', 'Game_Time']);
     var edge = '';
     if (tierEra != null && tierEra <= 3.5 && tier === 'High') {
-      edge = 'Bullpen has handled elite OSI well (' + fmt(tierEra, 2) + ' ERA vs High) â€” slight edge suppressing ' + opp + ' late.';
+      edge = 'Bullpen has handled elite OSI well (' + fmt(tierEra, 2) + ' ERA vs High) — slight edge suppressing ' + opp + ' late.';
     } else if (tierEra != null && tierEra >= 5.0) {
-      edge = 'Bullpen vulnerable vs ' + tier + ' OSI bucket (' + fmt(tierEra, 2) + ' ERA) â€” ' + opp + ' lineup OSI ' + fmt(oppOsi, 1) + ' maps to a fade spot.';
+      edge = 'Bullpen vulnerable vs ' + tier + ' OSI bucket (' + fmt(tierEra, 2) + ' ERA) — ' + opp + ' lineup OSI ' + fmt(oppOsi, 1) + ' maps to a fade spot.';
     } else {
       edge = 'Neutral bullpen read vs ' + tier + ' OSI profile (opp OSI ' + fmt(oppOsi, 1) + ', bullpen tier ERA ' + fmt(tierEra, 2) + ').';
     }
     html += '<div class="matchup-card"><div class="mc-head">' + (isHome ? home + ' vs ' + away : away + ' @ ' + home) +
-      (time ? ' Â· ' + time : '') + '</div>' +
+      (time ? ' · ' + time : '') + '</div>' +
       'Opponent <strong>' + opp + '</strong> OSI <strong>' + fmt(oppOsi, 1) + '</strong> (' + tier + ' tier). ' +
       'Bullpen vs ' + tier + ' OSI: ERA ' + fmt(tierEra, 2) + ', OSI allowed ' + fmt(tierOsi, 1) + '.<br>' +
       '<span style="color:var(--purple-2);">' + edge + '</span></div>';
@@ -890,16 +890,16 @@ function bettingSummary(team, unit) {
     bullets.push('Struggles vs High OSI lineups (OSI allowed ' + fmt(oH, 1) + ' vs ' + fmt(oL, 1) + ' vs Low OSI).');
   }
   if (eH != null && eL != null && eH > eL + 1.2) {
-    bullets.push('ERA vs High OSI (' + fmt(eH, 2) + ') worse than vs Low (' + fmt(eL, 2) + ') â€” target overs when facing elite offenses.');
+    bullets.push('ERA vs High OSI (' + fmt(eH, 2) + ') worse than vs Low (' + fmt(eL, 2) + ') — target overs when facing elite offenses.');
   }
   var ir = colVal(unit, 'overall', 'inherited_runners_scored_pct');
   if (ir != null && ir >= 35) {
-    bullets.push('Inherited runners scored rate ' + fmtPct(ir) + ' is elevated â€” late-inning chaos risk for unders.');
+    bullets.push('Inherited runners scored rate ' + fmtPct(ir) + ' is elevated — late-inning chaos risk for unders.');
   }
   var rhh = colVal(unit, 'vs_rhh', 'ERA');
   var lhh = colVal(unit, 'vs_lhh', 'ERA');
   if (rhh != null && lhh != null && rhh > lhh + 1.0) {
-    bullets.push('Weaker vs RHH (' + fmt(rhh, 2) + ' ERA) than LHH (' + fmt(lhh, 2) + ') â€” RH-heavy late lineups are a threat.');
+    bullets.push('Weaker vs RHH (' + fmt(rhh, 2) + ' ERA) than LHH (' + fmt(lhh, 2) + ') — RH-heavy late lineups are a threat.');
   }
   if (!bullets.length) {
     return '<strong>' + team + '</strong> bullpen profile is balanced across leverage and OSI tiers in the current sample. Re-check after more 2026 appearances.';
@@ -973,7 +973,7 @@ function bindRelieverClicks() {
 
 function populateTeams() {
   var sel = document.getElementById('teamSelect');
-  sel.innerHTML = '<option value="">â€” Choose a team â€”</option>';
+  sel.innerHTML = '<option value="">— Choose a team —</option>';
   DATA.units.map(function(u) { return teamKey(pickCol(u, ['team', 'Tm'])); })
     .filter(Boolean).sort().forEach(function(t) {
       var o = document.createElement('option');
@@ -1005,7 +1005,7 @@ function loadAll() {
     if (pill) { pill.textContent = 'Live'; pill.classList.remove('warn'); }
 
     if (!DATA.units.length) {
-      document.getElementById('dataBanner').textContent = 'Bullpen_Unit empty â€” run pipeline steps 12â€“13.';
+      document.getElementById('dataBanner').textContent = 'Bullpen_Unit empty — run pipeline steps 12–13.';
       document.getElementById('dataBanner').classList.add('show');
       if (pill) { pill.textContent = 'No data'; pill.classList.add('warn'); }
       return;
@@ -1037,7 +1037,7 @@ var _profileWatchdogDone = null;
 function showDelayedLoadBanner() {
   var banner = document.getElementById('dataBanner');
   if (banner) {
-    banner.textContent = 'Data load delayed â€” retryingâ€¦';
+    banner.textContent = 'Data load delayed — retrying…';
     banner.classList.add('show');
   }
 }

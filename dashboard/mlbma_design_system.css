@@ -515,10 +515,11 @@ table.ca-table td.sort-active,
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: 50% 28%;
-  transform-origin: center top;
+  object-position: 50% 50%;
+  transform: none;
+  transform-origin: center center;
   image-rendering: auto;
-  image-rendering: -webkit-optimize-contrast;
+  filter: contrast(1.06) saturate(1.04);
   backface-visibility: hidden;
 }
 .ca-pitcher-avatar-fallback {
@@ -538,8 +539,8 @@ table.ca-table td.sort-active,
   overflow: hidden;
 }
 .ca-pitcher-avatar--matchup img {
-  object-position: 50% 28%;
-  transform: scale(1.04);
+  object-position: 50% 50%;
+  transform: none;
   clip-path: none;
   -webkit-clip-path: none;
 }
@@ -552,8 +553,8 @@ table.ca-table td.sort-active,
   overflow: hidden;
 }
 .ca-pitcher-avatar--compare img {
-  object-position: 50% 28%;
-  transform: scale(1.04);
+  object-position: 50% 50%;
+  transform: none;
   clip-path: none;
   -webkit-clip-path: none;
 }
@@ -564,8 +565,8 @@ table.ca-table td.sort-active,
   min-height: 112px;
 }
 .ca-pitcher-avatar--profile img {
-  object-position: 50% 20%;
-  transform: scale(1.2);
+  object-position: 50% 50%;
+  transform: none;
 }
 /* Legacy pixel class aliases */
 .ca-pitcher-avatar--48 { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }

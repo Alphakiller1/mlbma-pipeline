@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,9 +6,9 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Matchup Comparison</title>
+<title>Chase Analytics · Matchup Comparison</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260523b">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260610a">
@@ -16,7 +16,7 @@
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260523b"></script>
 <script src="mlbma_config.js?v=20260523b"></script>
-<script src="mlbma_assets.js?v=20260523b"></script>
+<script src="mlbma_assets.js?v=20260616b"></script>
 <script src="mlbma_standings.js?v=20260523b"></script>
 <script src="matchup_shared.js?v=20260523b"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
@@ -25,10 +25,10 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
 </style>
 </head>
 <body>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -61,7 +61,7 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -105,14 +105,14 @@ body { background: var(--bg, #0A0A0A); color: var(--text, #F4F4F7); min-height: 
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
 
 
 <div id="compareRoot">
-  <div class="compare-page"><p class="ca-helper">Loading matchupâ€¦</p></div>
+  <div class="compare-page"><p class="ca-helper">Loading matchup…</p></div>
 </div>
 <script src="mlbma_ui.js?v=20260523b" data-page="matchup_compare.html"></script>
 <script src="matchup_compare.js?v=20260610a"></script>

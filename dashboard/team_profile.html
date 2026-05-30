@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,15 +6,15 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Team Profile</title>
+<title>Chase Analytics · Team Profile</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260615b">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260615b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260609a">
 <link rel="stylesheet" href="team_profile.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
-<script src="mlbma_assets.js?v=20260615b"></script>
+<script src="mlbma_assets.js?v=20260616b"></script>
 <script src="mlbma_icons.js?v=20260615b"></script>
 <script src="matchup_shared.js?v=20260615b"></script>
 <script src="mlbma_standings.js?v=20260615b"></script>
@@ -25,10 +25,10 @@
 </head>
 <body class="team-profile-page">
 <div class="loading-text">Loading team intelligence...</div>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -61,7 +61,7 @@
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -105,7 +105,7 @@
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -211,13 +211,13 @@ function pickCol(row, names) {
 }
 
 function num(v) {
-  if (v === null || v === undefined || v === '' || v === 'â€”') return null;
+  if (v === null || v === undefined || v === '' || v === '—') return null;
   var n = parseFloat(String(v).replace('%',''));
   return isNaN(n) ? null : n;
 }
 
 function fmt(v, d) {
-  if (v === null || isNaN(v)) return 'â€”';
+  if (v === null || isNaN(v)) return '—';
   return Number(v).toFixed(d === undefined ? 1 : d);
 }
 
@@ -234,11 +234,11 @@ function teamKey(t) {
 }
 
 function tierLabel(val, tiers) {
-  if (val === null) return { label: 'â€”', cls: '' };
+  if (val === null) return { label: '—', cls: '' };
   for (var i = 0; i < tiers.length; i++) {
     if (val >= tiers[i][0]) return { label: tiers[i][1], cls: 'tier-' + tiers[i][1].toLowerCase().replace(/\s/g,'') };
   }
-  return { label: 'â€”', cls: '' };
+  return { label: '—', cls: '' };
 }
 
 function osiColor(v) {
@@ -260,9 +260,9 @@ function metricCardChip(key, v) {
 }
 
 function trendArrow(t) {
-  if (t === 'rising') return '<span class="trend-up">â–²</span>';
-  if (t === 'falling') return '<span class="trend-down">â–¼</span>';
-  return '<span class="trend-flat">â€”</span>';
+  if (t === 'rising') return '<span class="trend-up">?</span>';
+  if (t === 'falling') return '<span class="trend-down">?</span>';
+  return '<span class="trend-flat">—</span>';
 }
 
 function profileRow(team) {
@@ -374,13 +374,13 @@ function renderTodayLineupSection(team) {
   var slots = todayLineupForTeam(team);
   if (!slots.length) {
     return sectionCard('Lineup', "Today's Projected Lineup",
-      'Batting order from Today_Lineups Â· run pipeline for slate updates',
+      'Batting order from Today_Lineups · run pipeline for slate updates',
       '<div class="tp-empty">No projected lineup in Today_Lineups for ' + escHtml(team) + '.</div>');
   }
   var game = pickCol(slots[0], ['Game', 'game']);
   var time = pickCol(slots[0], ['Time', 'time']);
   var spHand = lineupSpHand(team);
-  var splitNote = spHand ? ' Â· vs ' + spHand + 'HP SP split' : '';
+  var splitNote = spHand ? ' · vs ' + spHand + 'HP SP split' : '';
   var body = profileTableOpen()
     + '<thead><tr><th>#</th><th>Pos</th><th>Player</th><th>B</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th></th></tr></thead><tbody>';
   slots.forEach(function(slot) {
@@ -394,10 +394,10 @@ function renderTodayLineupSection(team) {
     var rcv = row ? num(pickCol(row, ['RCV'])) : null;
     var obr = row ? num(pickCol(row, ['OBR'])) : null;
     var osi = row ? num(pickCol(row, ['OSI'])) : null;
-    body += '<tr><td class="num">' + escHtml(order || 'â€”') + '</td>'
-      + '<td>' + escHtml(pos || 'â€”') + '</td>'
+    body += '<tr><td class="num">' + escHtml(order || '—') + '</td>'
+      + '<td>' + escHtml(pos || '—') + '</td>'
       + '<td><a href="batter_profile.html?player=' + encodePlayer(profileName) + '">' + escHtml(pname) + '</a></td>'
-      + '<td>' + escHtml(bats || 'â€”') + '</td>'
+      + '<td>' + escHtml(bats || '—') + '</td>'
       + '<td class="num">' + valChip(abq, 'abq', false, 1) + '</td>'
       + '<td class="num">' + valChip(rcv, 'rcv', false, 1) + '</td>'
       + '<td class="num">' + valChip(obr, 'obr', false, 1) + '</td>'
@@ -406,7 +406,7 @@ function renderTodayLineupSection(team) {
   });
   body += '</tbody>' + profileTableClose();
   return sectionCard('Lineup', "Today's Projected Lineup",
-    (game || 'Slate game') + (time ? ' Â· ' + time : '') + splitNote, body);
+    (game || 'Slate game') + (time ? ' · ' + time : '') + splitNote, body);
 }
 
 function escHtml(s) {
@@ -438,7 +438,7 @@ function profileTableClose() {
 function mountProfilePageHeader() {
   if (!window.MLBMAAssets || !MLBMAAssets.mountPlatformHeader) return;
   MLBMAAssets.mountPlatformHeader('profilePageHeader', {
-    eyebrow: 'Chase Analytics Â· Profiles',
+    eyebrow: 'Chase Analytics · Profiles',
     title: 'Team Profile',
     subtitle: "Today's lineup, offensive snapshot, rotation, and bullpen intelligence.",
     showPlatformNav: false
@@ -503,9 +503,9 @@ function buildTonightHtml(game) {
     ? pickCol(game, ['Home_SP', 'home_sp', 'Home SP'])
     : pickCol(game, ['Away_SP', 'away_sp', 'Away SP']);
   return {
-    html: '<span class="pill-tonight">Tonight vs ' + (TEAM_NAMES[opp] || opp) + ' Â· ' +
-      (isHome ? 'Home' : 'Away') + ' Â· ' + time +
-      (spName ? ' Â· SP ' + spName + (spHand ? ' (' + spHand + 'HP)' : '') : '') + '</span>',
+    html: '<span class="pill-tonight">Tonight vs ' + (TEAM_NAMES[opp] || opp) + ' · ' +
+      (isHome ? 'Home' : 'Away') + ' · ' + time +
+      (spName ? ' · SP ' + spName + (spHand ? ' (' + spHand + 'HP)' : '') : '') + '</span>',
     opp: opp,
     spHand: spHand
   };
@@ -634,7 +634,7 @@ function renderTeam(team) {
       rotKpi += '<td class="num">' + fmt(num(pickCol(sp, ['K_pct'])), 1) + '</td>';
       rotKpi += '<td class="num">' + fmt(num(pickCol(sp, ['BB_pct'])), 1) + '</td>';
       rotKpi += '<td class="num">' + fmt(num(pickCol(sp, ['OSI_allowed'])), 1) + '</td>';
-      rotKpi += '<td>' + (stale ? 'âš ' : 'â€”') + '</td></tr>';
+      rotKpi += '<td>' + (stale ? '?' : '—') + '</td></tr>';
     });
   }
   rotKpi += '</tbody>' + profileTableClose();
@@ -651,7 +651,7 @@ function renderTeam(team) {
   var closer = pickCol(prof, ['closer_name']);
   var setup = pickCol(prof, ['primary_setup']);
   if (closer) bpKpi += '<p class="ca-helper" style="margin-bottom:12px">Closer: <strong>' + closer + '</strong>'
-    + (setup ? ' Â· Setup: ' + setup.split(';').join(', ') : '') + '</p>';
+    + (setup ? ' · Setup: ' + setup.split(';').join(', ') : '') + '</p>';
   bpKpi += profileTableOpen()
     + '<thead><tr><th>Name</th><th>Role</th><th>ERA</th><th>OSI Allowed</th><th>Hand</th></tr></thead><tbody>';
   var relievers = DATA.bullpen.filter(function(r) {
@@ -676,7 +676,7 @@ function renderTeam(team) {
       bpKpi += '<tr><td><a href="reliever_profile.html?player=' + encodePlayer(pname) + '">' + pname + '</a></td>';
       bpKpi += '<td><span class="role-badge ' + role.cls + '">' + role.label + '</span></td>';
       bpKpi += '<td class="num">' + fmt(era, 2) + '</td><td class="num">' + fmt(osiA, 1) + '</td>';
-      bpKpi += '<td>' + hand + (handAdv ? ' Â· ' + handAdv : '') + '</td></tr>';
+      bpKpi += '<td>' + hand + (handAdv ? ' · ' + handAdv : '') + '</td></tr>';
     });
   }
   bpKpi += '</tbody>' + profileTableClose();
@@ -720,7 +720,7 @@ function renderTeam(team) {
   } else {
     rosterList.forEach(function(b) {
       rosterBody += '<tr><td><a href="batter_profile.html?player=' + encodePlayer(b.name) + '">' + b.name + '</a></td>';
-      rosterBody += '<td>' + (b.pos || 'â€”') + '</td><td>' + (b.bats || 'â€”') + '</td>';
+      rosterBody += '<td>' + (b.pos || '—') + '</td><td>' + (b.bats || '—') + '</td>';
       rosterBody += '<td class="num">' + valChip(b.abq, 'abq', false, 1) + '</td><td class="num">' + valChip(b.rcv, 'rcv', false, 1) + '</td><td class="num">' + valChip(b.obr, 'obr', false, 1) + '</td>';
       rosterBody += '<td class="num">' + valChip(b.osi, 'osi', false, 1) + '</td>';
       rosterBody += '<td class="num">' + valChip(b.rhp, 'osi', false, 1) + '</td><td class="num">' + valChip(b.lhp, 'osi', false, 1) + '</td>';
@@ -746,10 +746,10 @@ function renderTeam(team) {
     winBody += '<div class="tp-window-cell"><div class="w-label">' + w[0] + '</div>';
     winBody += '<div class="w-val">' + valChip(w[1], 'osi', false, 1) + '</div>';
     winBody += '<div class="ca-helper" style="margin-top:6px;font-size:10px">ABQ ' + fmt(num(pickCol(prof, ['abq'])), 1)
-      + ' Â· RCV ' + fmt(num(pickCol(prof, ['rcv'])), 1) + ' Â· OBR ' + fmt(num(pickCol(prof, ['obr'])), 1) + '</div></div>';
+      + ' · RCV ' + fmt(num(pickCol(prof, ['rcv'])), 1) + ' · OBR ' + fmt(num(pickCol(prof, ['obr'])), 1) + '</div></div>';
   });
   winBody += '</div>';
-  html += sectionCard('Momentum', 'Team Window Trend' + hotCold, 'ABQ / RCV / OBR from season baseline Â· ' + dir, winBody);
+  html += sectionCard('Momentum', 'Team Window Trend' + hotCold, 'ABQ / RCV / OBR from season baseline · ' + dir, winBody);
 
   /* Handedness */
   var platBody = '<div class="tp-split-grid">';
@@ -768,7 +768,7 @@ function renderTeam(team) {
   if (platoonGap !== null) {
     var pctR = 50 + platoonGap / 2;
     platBody += '<div class="tp-platoon-bar" title="Platoon gap ' + fmt(platoonGap, 1) + '"><div class="rhp" style="width:' + pctR + '%"></div><div class="lhp" style="width:' + (100 - pctR) + '%"></div></div>';
-    platBody += '<p class="ca-helper" style="margin-top:8px">Platoon gap (RHP OSI âˆ’ LHP OSI): ' + fmt(platoonGap, 1) + '</p>';
+    platBody += '<p class="ca-helper" style="margin-top:8px">Platoon gap (RHP OSI - LHP OSI): ' + fmt(platoonGap, 1) + '</p>';
   }
   html += sectionCard('Platoon', 'Handedness Profile', 'Offensive quality by pitcher hand', platBody);
 
@@ -799,13 +799,13 @@ function renderTeam(team) {
     var oppPs = oppPitch ? num(pickCol(oppPitch, ['PitchScore'])) : null;
     var edge = (teamOsi !== null && oppPs !== null) ? teamOsi - oppPs : null;
     tonightBody = '<div class="tp-matchup-panel">';
-    tonightBody += '<p><strong>Opponent:</strong> ' + (TEAM_NAMES[opp] || opp) + ' Â· OSI ' + fmt(oppOsi, 1) + '</p>';
-    tonightBody += '<p><strong>Opposing SP:</strong> ' + (spName || 'TBD') + (oppPs !== null ? ' Â· Pitch Score ' + fmt(oppPs, 1) : '') + '</p>';
+    tonightBody += '<p><strong>Opponent:</strong> ' + (TEAM_NAMES[opp] || opp) + ' · OSI ' + fmt(oppOsi, 1) + '</p>';
+    tonightBody += '<p><strong>Opposing SP:</strong> ' + (spName || 'TBD') + (oppPs !== null ? ' · Pitch Score ' + fmt(oppPs, 1) : '') + '</p>';
     if (edge !== null) {
-      tonightBody += '<p><strong>Lineup edge (OSI âˆ’ opp Pitch):</strong> <span class="' + (edge > 0 ? 'trend-up' : 'trend-down') + '">'
+      tonightBody += '<p><strong>Lineup edge (OSI - opp Pitch):</strong> <span class="' + (edge > 0 ? 'trend-up' : 'trend-down') + '">'
         + (edge >= 0 ? '+' : '') + fmt(edge, 1) + '</span></p>';
     }
-    if (platoonSens) tonightBody += '<p class="ca-helper" style="color:var(--gold)">Platoon-sensitive offense â€” check handedness vs opposing SP</p>';
+    if (platoonSens) tonightBody += '<p class="ca-helper" style="color:var(--gold)">Platoon-sensitive offense — check handedness vs opposing SP</p>';
     tonightBody += '<a class="ca-btn ca-btn--primary" href="team_rankings.html">Full matchup sheet</a></div>';
   }
   html += sectionCard('Tonight', 'Matchup Context', 'Slate opponent and pitching edge', tonightBody);
@@ -824,7 +824,7 @@ function initSelector() {
   ALL_TEAMS.forEach(function(t) {
     var opt = document.createElement('option');
     opt.value = t;
-    opt.textContent = t + ' â€” ' + (TEAM_NAMES[t] || t);
+    opt.textContent = t + ' — ' + (TEAM_NAMES[t] || t);
     sel.appendChild(opt);
   });
   var params = new URLSearchParams(window.location.search);
@@ -875,7 +875,7 @@ function loadAll() {
     }
     var banner = document.getElementById('dataBanner');
     if (!DATA.profiles.length) {
-      banner.textContent = 'Team_Profiles tab empty â€” run pipeline steps 18â€“19 (compute_team_profile + push).';
+      banner.textContent = 'Team_Profiles tab empty — run pipeline steps 18–19 (compute_team_profile + push).';
       banner.classList.add('show');
     }
   });
@@ -885,7 +885,7 @@ var _profileWatchdogDone = null;
 function showDelayedLoadBanner() {
   var banner = document.getElementById('dataBanner');
   if (banner) {
-    banner.textContent = 'Data load delayed â€” retryingâ€¦';
+    banner.textContent = 'Data load delayed — retrying…';
     banner.classList.add('show');
   }
 }

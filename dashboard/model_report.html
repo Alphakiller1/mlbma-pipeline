@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,9 +6,9 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Model Report</title>
+<title>Chase Analytics · Model Report</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260529f">
@@ -20,10 +20,10 @@
 <script src="matchup_shared.js"></script>
 </head>
 <body>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -56,7 +56,7 @@
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -100,7 +100,7 @@
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -110,14 +110,14 @@
 
 <div class="mr-page">
   <nav class="mr-breadcrumb" aria-label="Breadcrumb">
-    <a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">â€º</span>
+    <a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>
     <span>Model Report</span>
   </nav>
 
   <div class="mr-hero" id="mrHero">
     <div class="ca-title-with-icon" style="margin-bottom:12px;">
       <img src="assets/chase-icon-filled.png" alt="" width="48" height="48" onerror="this.style.display='none'">
-      <p class="ca-helper" style="margin:0;">Loading model reportâ€¦</p>
+      <p class="ca-helper" style="margin:0;">Loading model report…</p>
     </div>
   </div>
 
@@ -137,7 +137,7 @@
 
   <section class="mr-section" id="section-convergence">
     <div class="mr-section-head">
-      <h2 class="mr-section-title">Signal Explorer Â· Convergence</h2>
+      <h2 class="mr-section-title">Signal Explorer · Convergence</h2>
       <p class="ca-helper" style="margin:0;font-size:12px;">Click a game card to filter the signal board</p>
     </div>
     <div id="convergenceCards"></div>
@@ -152,13 +152,13 @@
   <section class="mr-section" id="section-trend-classifications">
     <div class="mr-section-head">
       <h2 class="mr-section-title">Trend Classifications &amp; Velocity</h2>
-      <p class="ca-helper" style="margin:0;font-size:12px;">Team OSI windows from Team_Profiles â€” reliability labels for model context.</p>
+      <p class="ca-helper" style="margin:0;font-size:12px;">Team OSI windows from Team_Profiles — reliability labels for model context.</p>
     </div>
     <div class="table-wrap rl-sticky-table">
       <table class="rl-table-premium">
         <thead><tr>
           <th>#</th><th>Team</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
-          <th>Î” L30</th><th>Î” L14</th><th>Vel.</th><th>Trend</th><th>Reliability</th><th>Interpretation</th>
+          <th>? L30</th><th>? L14</th><th>Vel.</th><th>Trend</th><th>Reliability</th><th>Interpretation</th>
         </tr></thead>
         <tbody id="mrTrendBody"></tbody>
       </table>

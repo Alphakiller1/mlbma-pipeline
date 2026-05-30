@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Reliever Profile</title>
+<title>Chase Analytics · Reliever Profile</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 :root {
@@ -205,7 +205,7 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
 #profileContent.ready { display: block; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
@@ -216,11 +216,11 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
 </head>
 <body>
 
-<div class="loading-text">Loading reliever intelligence from Google Sheetsâ€¦</div>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<div class="loading-text">Loading reliever intelligence from Google Sheets…</div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -253,7 +253,7 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -297,7 +297,7 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -307,7 +307,7 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
   <header class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill" id="brandPill">Loadingâ€¦</span>
+      <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Reliever Profile</h1>
     <p class="subtitle">Reliever splits, leverage, and betting context.</p>
@@ -317,7 +317,7 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
   <div class="selector-bar" id="playerSearch">
     <div class="selector-group wide">
       <label class="selector-label" for="playerSearchInput">Search reliever or team</label>
-      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Chapman, NYYâ€¦" autocomplete="off">
+      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Chapman, NYY…" autocomplete="off">
       <datalist id="playerList"></datalist>
     </div>
     <div class="selector-group">
@@ -326,7 +326,7 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
     </div>
     <div class="selector-group">
       <label class="selector-label" for="playerSelect">Roster</label>
-      <select class="selector-select" id="playerSelect"><option value="">â€” Select reliever â€”</option></select>
+      <select class="selector-select" id="playerSelect"><option value="">— Select reliever —</option></select>
     </div>
     <div class="selector-group">
       <label class="selector-label">Window</label>
@@ -355,34 +355,34 @@ tbody tr.cold-row { background: rgba(248,113,113,0.08); }
 
     <section class="section">
       <div class="section-title">Metric Allowed Profile</div>
-      <div class="section-subtitle">Lower is better â€” percentile among qualified relievers</div>
+      <div class="section-subtitle">Lower is better — percentile among qualified relievers</div>
       <div class="metric-grid" id="allowedCards"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Window Trend</div>
-      <div class="section-subtitle">OSI allowed by window â€” hot = pitching better recently (lower allowed)</div>
+      <div class="section-subtitle">OSI allowed by window — hot = pitching better recently (lower allowed)</div>
       <div class="table-wrap" id="windowTableWrap"></div>
       <div class="insight-line" id="windowInsight"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Leverage Splits</div>
-      <div class="section-subtitle">High vs low leverage â€” flag if high-lev ERA is 1.5+ runs worse</div>
+      <div class="section-subtitle">High vs low leverage — flag if high-lev ERA is 1.5+ runs worse</div>
       <div class="split-grid" id="levGrid"></div>
       <div class="insight-line" id="levInsight"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Handedness Splits</div>
-      <div class="section-subtitle">vs LHH and vs RHH â€” platoon flag if OSI allowed gap exceeds 8</div>
+      <div class="section-subtitle">vs LHH and vs RHH — platoon flag if OSI allowed gap exceeds 8</div>
       <div class="split-grid" id="handGrid"></div>
       <div class="insight-line" id="handInsight"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Inherited Runners</div>
-      <div class="section-subtitle">Clean entry vs inherited entry â€” warn if inherited scored above 35%</div>
+      <div class="section-subtitle">Clean entry vs inherited entry — warn if inherited scored above 35%</div>
       <div class="split-grid" id="inheritGrid"></div>
       <div class="insight-line" id="inheritInsight"></div>
     </section>
@@ -483,17 +483,17 @@ function pickCol(row, names) {
 }
 
 function num(v) {
-  if (v === null || v === undefined || v === '' || v === 'â€”') return null;
+  if (v === null || v === undefined || v === '' || v === '—') return null;
   var n = parseFloat(String(v).replace(/%/g, ''));
   return isNaN(n) ? null : n;
 }
 
 function fmt(v, d) {
-  if (v === null || v === undefined || isNaN(v)) return 'â€”';
+  if (v === null || v === undefined || isNaN(v)) return '—';
   return Number(v).toFixed(d === undefined ? 1 : d);
 }
 
-function fmtPct(v) { return v === null || isNaN(v) ? 'â€”' : fmt(v, 1) + '%'; }
+function fmtPct(v) { return v === null || isNaN(v) ? '—' : fmt(v, 1) + '%'; }
 
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -675,7 +675,7 @@ function renderHeader(key) {
   if (today) {
     html += '<span class="pill pill-today">Pitching Today</span>' +
       '<div class="lineup-meta">Opponent <strong>' + escHtml(today.oppName) + '</strong>' +
-      (today.oppOsi !== null ? ' Â· lineup OSI <strong>' + fmt(today.oppOsi, 1) + '</strong>' : '') + '</div>';
+      (today.oppOsi !== null ? ' · lineup OSI <strong>' + fmt(today.oppOsi, 1) + '</strong>' : '') + '</div>';
   }
   document.getElementById('headerBlock').innerHTML = html;
   document.getElementById('playerHeader').innerHTML = html;
@@ -703,7 +703,7 @@ function renderSeasonBar(key) {
     if (r === 'hold') holds++;
   });
   document.getElementById('seasonSubtitle').textContent =
-    STATE.window + ' â€” ' + agg.apps + ' appearances, ' + fmt(agg.ip, 1) + ' IP';
+    STATE.window + ' — ' + agg.apps + ' appearances, ' + fmt(agg.ip, 1) + ' IP';
 
   var ind = getIndividual(key);
   var sheetFip = ind ? colVal(ind, 'overall', 'FIP') : null;
@@ -745,7 +745,7 @@ function renderAllowedCards(key) {
     );
     html += '<div class="metric-card"><div class="m-label">' + m[0] + '</div>' +
       '<div class="m-val" style="color:' + allowedColor(val) + '">' + fmt(val, 1) + '</div>' +
-      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile (elite = high)' : 'â€”') + '</div>' +
+      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile (elite = high)' : '—') + '</div>' +
       '<div class="m-note">' + m[2] + '</div></div>';
   });
   document.getElementById('allowedCards').innerHTML = html;
@@ -758,11 +758,11 @@ function renderWindowTable(key) {
   var prev = null;
   WINDOWS.forEach(function(w) {
     var a = aggFromApps(windowApps(key, w));
-    var arrow = 'â€”', cls = 'trend-flat';
+    var arrow = '—', cls = 'trend-flat';
     if (prev !== null && a.osi_allowed !== null && prev !== null) {
       var d = a.osi_allowed - prev;
-      if (d < -1) { arrow = 'â–¼'; cls = 'trend-up'; }
-      else if (d > 1) { arrow = 'â–²'; cls = 'trend-down'; }
+      if (d < -1) { arrow = '?'; cls = 'trend-up'; }
+      else if (d > 1) { arrow = '?'; cls = 'trend-down'; }
     }
     prev = a.osi_allowed;
     rows.push({ w: w, a: a, arrow: arrow, cls: cls });
@@ -787,10 +787,10 @@ function renderWindowTable(key) {
   document.getElementById('windowTableWrap').innerHTML =
     '<table><thead><tr><th>Window</th><th>OSI Allowed</th><th>ERA</th><th>K%</th><th>BB%</th><th>Trend</th></tr></thead><tbody>' + tbody + '</tbody></table>';
   var ins = hotCold === 'hot'
-    ? 'Hot: recent outings show lower OSI allowed than YTD â€” arm pitching better than season baseline.'
+    ? 'Hot: recent outings show lower OSI allowed than YTD — arm pitching better than season baseline.'
     : hotCold === 'cold'
-    ? 'Cold: recent OSI allowed elevated vs YTD â€” fade late leverage spots.'
-    : 'Recent form in line with season baseline (within Â±' + RELIEVER_WINDOW_HOT_COLD_GAP + ' OSI).';
+    ? 'Cold: recent OSI allowed elevated vs YTD — fade late leverage spots.'
+    : 'Recent form in line with season baseline (within ±' + RELIEVER_WINDOW_HOT_COLD_GAP + ' OSI).';
   document.getElementById('windowInsight').textContent = ins;
 }
 
@@ -844,7 +844,7 @@ function renderHand(key) {
   document.getElementById('handInsight').textContent =
     (gap >= RELIEVER_PLATOON_OSI_GAP
       ? 'Platoon vulnerability: OSI allowed gap of ' + fmt(gap, 1) + ' points. '
-      : 'Platoon gap ' + fmt(gap, 1) + ' â€” manageable. ') + dom;
+      : 'Platoon gap ' + fmt(gap, 1) + ' — manageable. ') + dom;
 }
 
 function renderInherited(key) {
@@ -866,7 +866,7 @@ function renderInherited(key) {
     mini('IR Scored%', irPct, irPct > RELIEVER_INHERITED_SCORED_PCT_WARN ? 'var(--red-l)' : '') +
     '</div></div>';
   document.getElementById('inheritInsight').textContent = flag
-    ? 'Inherited runners scored ' + fmtPct(irPct) + ' â€” above ' + RELIEVER_INHERITED_SCORED_PCT_WARN + '% warning threshold.'
+    ? 'Inherited runners scored ' + fmtPct(irPct) + ' — above ' + RELIEVER_INHERITED_SCORED_PCT_WARN + '% warning threshold.'
     : 'Inherited runner damage within acceptable range (' + fmtPct(irPct) + ').';
 }
 
@@ -881,7 +881,7 @@ function renderLoc(key) {
     splitPanel('Home', ind, 'home', flagH) +
     splitPanel('Away', ind, 'away', flagA);
   document.getElementById('locInsight').textContent = gap >= RELIEVER_HOME_AWAY_OSI_GAP
-    ? 'Home/away OSI allowed gap of ' + fmt(gap, 1) + ' â€” park or usage split matters for totals.'
+    ? 'Home/away OSI allowed gap of ' + fmt(gap, 1) + ' — park or usage split matters for totals.'
     : 'Home and road OSI allowed are similar.';
 }
 
@@ -935,13 +935,13 @@ function buildBettingSummary(key) {
   if (hi !== null && lo !== null && hi > lo + RELIEVER_LEVERAGE_ERA_GAP) {
     parts.push('fade <strong>high-leverage</strong> spots (ERA ' + fmt(hi, 2) + ' vs ' + fmt(lo, 2) + ' low)');
   } else if (role === 'Closer' || role === 'Setup') {
-    parts.push('best used in <strong>save/setup situations</strong> â€” lean unders when deployed early in close games');
+    parts.push('best used in <strong>save/setup situations</strong> — lean unders when deployed early in close games');
   }
   var today = todayContext(key);
   if (today && today.oppOsi !== null) {
     parts.push('faces <strong>' + today.oppName + '</strong> today (OSI ' + fmt(today.oppOsi, 1) + ')');
   }
-  if (!parts.length) return name + ' â€” relief profile loaded; no extreme leverage or platoon flags in current sample.';
+  if (!parts.length) return name + ' — relief profile loaded; no extreme leverage or platoon flags in current sample.';
   return parts.join('. ') + '.';
 }
 
@@ -985,7 +985,7 @@ function populateSelectors() {
   var list = document.getElementById('playerList');
   list.innerHTML = '';
   var sel = document.getElementById('playerSelect');
-  sel.innerHTML = '<option value="">â€” Select reliever â€”</option>';
+  sel.innerHTML = '<option value="">— Select reliever —</option>';
   relievers.sort(function(a, b) {
     var ta = teamKey(pickCol(a, ['pitcher_team']));
     var tb = teamKey(pickCol(b, ['pitcher_team']));
@@ -997,7 +997,7 @@ function populateSelectors() {
     var team = teamKey(pickCol(r, ['pitcher_team']));
     var o = document.createElement('option');
     o.value = key;
-    o.textContent = team + ' â€” ' + name;
+    o.textContent = team + ' — ' + name;
     o.dataset.team = team;
     sel.appendChild(o);
     var d1 = document.createElement('option');
@@ -1086,7 +1086,7 @@ function loadAll() {
     pill.classList.remove('warn');
     if (!DATA.individuals.length) {
       document.getElementById('dataBanner').textContent =
-        'Bullpen_Individual is empty â€” run pipeline steps 12â€“13.';
+        'Bullpen_Individual is empty — run pipeline steps 12–13.';
       document.getElementById('dataBanner').classList.add('show');
       pill.textContent = 'No data';
       pill.classList.add('warn');
@@ -1117,7 +1117,7 @@ var _profileWatchdogDone = null;
 function showDelayedLoadBanner() {
   var banner = document.getElementById('dataBanner');
   if (banner) {
-    banner.textContent = 'Data load delayed â€” retryingâ€¦';
+    banner.textContent = 'Data load delayed — retrying…';
     banner.classList.add('show');
   }
 }

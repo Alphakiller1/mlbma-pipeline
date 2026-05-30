@@ -110,12 +110,56 @@
   }
 
   var GENERIC_HEADSHOT =
-    'https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/0/headshot/67/current';
+    'https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/c_fill,g_auto:face,w_320,h_320,q_auto:best/v1/people/0/headshot/67/current';
 
-  function headshotUrl(mlbId) {
+  /** Minimum CDN square (face-crop) width per avatar preset. */
+  var AVATAR_IMG_SCALE = { matchup: 1.0, compare: 1.0, profile: 1.0 };
+  var HEADSHOT_MIN_WIDTH = { matchup: 320, compare: 426, profile: 640 };
+  var HEADSHOT_WIDTH_STEPS = [320, 426, 640];
+
+  function headshotEffectivePx(px, cropMod) {
+    px = px || 48;
+    var scale = AVATAR_IMG_SCALE[cropMod] || AVATAR_IMG_SCALE.matchup;
+    return Math.ceil(px * scale);
+  }
+
+  function headshotUrlWidth(displayPx, dpr, cropMod) {
+    cropMod = cropMod || 'matchup';
+    dpr = dpr || 2;
+    var floor = HEADSHOT_MIN_WIDTH[cropMod] || HEADSHOT_MIN_WIDTH.matchup;
+    var need = Math.ceil(displayPx * dpr * 1.15);
+    var chosen = floor;
+    for (var i = 0; i < HEADSHOT_WIDTH_STEPS.length; i++) {
+      if (HEADSHOT_WIDTH_STEPS[i] >= need) {
+        chosen = HEADSHOT_WIDTH_STEPS[i];
+        break;
+      }
+      chosen = HEADSHOT_WIDTH_STEPS[i];
+    }
+    return Math.max(floor, chosen);
+  }
+
+  /** Square face crop from MLB CDN — fills circular avatars with a sharp, centered head. */
+  function headshotUrlPath(mlbId, width) {
+    var id = mlbId != null ? String(mlbId) : '0';
+    var w = width || HEADSHOT_MIN_WIDTH.matchup;
+    return 'https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/c_fill,g_auto:face,w_'
+      + w + ',h_' + w + ',q_auto:best/v1/people/' + id + '/headshot/67/current';
+  }
+
+  function headshotUrl(mlbId, displayPx, cropMod) {
     if (!mlbId) return GENERIC_HEADSHOT;
-    return 'https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/'
-      + mlbId + '/headshot/67/current';
+    var eff = headshotEffectivePx(displayPx, cropMod);
+    return headshotUrlPath(mlbId, headshotUrlWidth(eff, 2, cropMod));
+  }
+
+  function headshotSrcSet(mlbId, displayPx, cropMod) {
+    if (!mlbId) return '';
+    var eff = headshotEffectivePx(displayPx, cropMod);
+    var w1 = headshotUrlWidth(eff, 1, cropMod);
+    var w2 = headshotUrlWidth(eff, 2, cropMod);
+    if (w1 === w2) return headshotUrlPath(mlbId, w2) + ' 2x';
+    return headshotUrlPath(mlbId, w1) + ' 1x, ' + headshotUrlPath(mlbId, w2) + ' 2x';
   }
 
   var KNOWN_PITCHER_IDS = {
@@ -226,16 +270,20 @@
     px = px || 48;
     cls = cls || 'pitcher-headshot';
     var mod = opts.cropMod || (px >= 96 ? 'profile' : px >= 56 ? 'compare' : 'matchup');
-    var url = headshotUrl(mlbId);
+    var url = headshotUrl(mlbId, px, mod);
+    var srcset = headshotSrcSet(mlbId, px, mod);
     var modClass = 'ca-pitcher-avatar--' + mod;
     var loading = opts.eager ? 'eager' : (opts.lazy === false ? 'eager' : 'lazy');
     var fetchPri = opts.eager ? ' fetchpriority="high"' : '';
+    var decoding = opts.eager ? ' sync' : ' async';
     var err = 'var i=this,w=i.closest(\'.ca-pitcher-avatar\');if(!w)return;'
       + 'i.style.display=\'none\';var f=w.querySelector(\'.ca-pitcher-avatar-fallback\');if(f)f.style.display=\'flex\';';
     return '<span class="ca-pitcher-avatar headshot-wrap ' + cls + '-wrap ' + modClass + '" '
       + 'role="img" aria-label="Pitcher photo">'
-      + '<img class="ca-pitcher-avatar-img ' + cls + '" src="' + url + '" alt="" width="' + px + '" height="' + px + '" '
-      + 'loading="' + loading + '"' + fetchPri + ' onerror="' + err + '">'
+      + '<img class="ca-pitcher-avatar-img ' + cls + '" src="' + url + '"'
+      + (srcset ? ' srcset="' + srcset + '"' : '')
+      + ' alt="" width="' + px + '" height="' + px + '" '
+      + 'loading="' + loading + '" decoding="' + decoding + '"' + fetchPri + ' onerror="' + err + '">'
       + '<span class="ca-pitcher-avatar-fallback pitcher-silhouette" aria-hidden="true"></span>'
       + '</span>';
   }

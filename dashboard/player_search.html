@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics Â· Player Search</title>
+<title>Chase Analytics · Player Search</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 :root {
@@ -196,7 +196,7 @@ h1 {
 .data-banner.show { display: block; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
@@ -206,10 +206,10 @@ h1 {
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics â€” Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -242,7 +242,7 @@ h1 {
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncingâ€¦</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -286,7 +286,7 @@ h1 {
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncingâ€¦</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -555,13 +555,13 @@ function renderCard(item) {
     (item.today ? '<span class="today-badge" style="margin-left:6px;">Today</span>' : '') +
     '<div class="card-name">' + esc(item.name) + '</div>' +
     '<div class="card-row">' +
-    '<span class="team-abbr">' + esc(item.team || 'â€”') + '</span>' +
+    '<span class="team-abbr">' + esc(item.team || '—') + '</span>' +
     (item.position ? '<span class="hand-pill">' + esc(item.position) + '</span>' : '') +
     (item.hand ? '<span class="hand-pill">' + esc(item.hand) + '</span>' : '') +
     '</div>' +
     '<div class="metric-row">' +
     '<span class="metric-label">' + esc(item.metricLabel) + '</span>' +
-    '<span class="metric-val" style="color:' + mc + '">' + (item.metric !== null ? item.metric.toFixed(1) : 'â€”') + '</span>' +
+    '<span class="metric-val" style="color:' + mc + '">' + (item.metric !== null ? item.metric.toFixed(1) : '—') + '</span>' +
     '</div></a>';
 }
 
@@ -632,8 +632,8 @@ function renderFeatured() {
   function featItem(item, labelKey) {
     return '<a class="featured-item" href="' + item.href + '">' +
       '<div><div class="fi-name">' + esc(item.name) + '</div>' +
-      '<div class="fi-meta">' + esc(item.team) + (item.team && labelKey ? ' Â· ' + labelKey : '') + '</div></div>' +
-      '<div class="fi-val">' + (item.metric !== null ? item.metric.toFixed(1) : 'â€”') + '</div></a>';
+      '<div class="fi-meta">' + esc(item.team) + (item.team && labelKey ? ' · ' + labelKey : '') + '</div></div>' +
+      '<div class="fi-val">' + (item.metric !== null ? item.metric.toFixed(1) : '—') + '</div></a>';
   }
 
   function panel(title, items, emptyMsg) {
@@ -642,7 +642,7 @@ function renderFeatured() {
       items.map(function(it) {
         return '<a class="featured-item" href="' + it.href + '"><div><div class="fi-name">' + esc(it.name) + '</div>' +
           '<div class="fi-meta">' + esc(it.team) + '</div></div>' +
-          '<div class="fi-val">' + (it.val !== null && it.val !== undefined ? Number(it.val).toFixed(1) : 'â€”') + '</div></a>';
+          '<div class="fi-val">' + (it.val !== null && it.val !== undefined ? Number(it.val).toFixed(1) : '—') + '</div></a>';
       }).join('') + '</div></div>';
   }
 
@@ -657,7 +657,7 @@ function renderFeatured() {
 
   el.innerHTML = '<div class="featured-grid">' +
     panel("Today's Starters", starterItems, 'No probable starters in Today_Matchups') +
-    panel("Today's Lineups â€” Top OSI", lineupItems, 'No lineup rows in Today_Lineups') +
+    panel("Today's Lineups — Top OSI", lineupItems, 'No lineup rows in Today_Lineups') +
     '<div class="featured-panel"><h3>Hot Batters</h3><div class="featured-list">' +
     (hot.length ? hot.map(function(i) { return featItem(i, 'rising'); }).join('') : '<div class="empty-msg" style="padding:12px;">No rising trends</div>') +
     '</div></div>' +
@@ -706,7 +706,7 @@ function loadAll() {
     buildIndexes();
     if (!INDEX.length) {
       document.getElementById('dataBanner').textContent =
-        'Limited index data â€” run the full pipeline and publish profile tabs to Sheets.';
+        'Limited index data — run the full pipeline and publish profile tabs to Sheets.';
       document.getElementById('dataBanner').classList.add('show');
     }
   });
@@ -723,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     watchdogDone = MLBMA_UI.startLoadWatchdog(10000, function() {
       var b = document.getElementById('dataBanner');
-      if (b) { b.textContent = 'Data load delayed â€” retryingâ€¦'; b.classList.add('show'); }
+      if (b) { b.textContent = 'Data load delayed — retrying…'; b.classList.add('show'); }
     });
   }
   loadAll().then(function() {
