@@ -77,8 +77,8 @@ Replace `C:\Users\chase\crawl_env\Scripts\python.exe` with `$PY` if you set the 
 | 2 | FanGraphs team + SP stats (Selenium) | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_fangraphs` |
 | 3 | Compute ABQ, RCV, OBR, OSI, OOR, PitchScore | `C:\Users\chase\crawl_env\Scripts\python.exe -m core.compute` |
 | 4 | Push core metrics → Sheets | `C:\Users\chase\crawl_env\Scripts\python.exe -m outputs.push_sheets` |
-| 5 | Today's matchups | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_matchups` |
-| 6 | Rotowire lineups | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_lineups` |
+| 5 | Rotowire lineups (+ refreshes `Today_Matchups`) | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_lineups` |
+| 6 | Today's matchups only (optional; lineups step already refreshes this) | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_matchups` |
 | 7 | Game weather | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_weather` |
 | 8a | MLB game results scrape | `C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_results` |
 | 8b | Team Win%, F5, saves, etc. | `C:\Users\chase\crawl_env\Scripts\python.exe -m core.compute_results` |
@@ -166,7 +166,6 @@ C:\Users\chase\crawl_env\Scripts\python.exe -m outputs.push_sheets
 
 ```powershell
 cd C:\Users\chase\mlbma_pipeline
-C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_matchups
 C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_lineups
 C:\Users\chase\crawl_env\Scripts\python.exe -m scrapers.scrape_weather
 C:\Users\chase\crawl_env\Scripts\python.exe -m core.compute_signals
@@ -262,19 +261,18 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 2. `scrapers.scrape_fangraphs`
 3. `core.compute`
 4. `outputs.push_sheets`
-5. `scrapers.scrape_matchups`
+5. `scrapers.scrape_lineups` (also refreshes `Today_Matchups` via `scrape_matchups`)
 6. `scrapers.scrape_weather`
-7. `scrapers.scrape_lineups`
-8. `scrapers.scrape_results` → `core.compute_results` → `outputs.push_team_results`
-9. `scrapers.scrape_pals`
-10. `core.compute_signals`
-11. `scrapers.scrape_sp_gamelog` → `core.compute_sp_splits` → `outputs.push_sp_splits`
-12. `scrapers.scrape_reliever_gamelog`
-13. `core.compute_bullpen_profile` → `outputs.push_bullpen`
-14. `scrapers.scrape_player_registry`
-15. `scrapers.scrape_batter_splits`
-16. `core.compute_batter_profile` → `outputs.push_batter_profiles`
-17. `core.compute_team_profile` → `outputs.push_team_profiles`
+7. `scrapers.scrape_results` → `core.compute_results` → `outputs.push_team_results`
+8. `scrapers.scrape_pals`
+9. `core.compute_signals`
+10. `scrapers.scrape_sp_gamelog` → `core.compute_sp_splits` → `outputs.push_sp_splits`
+11. `scrapers.scrape_reliever_gamelog`
+12. `core.compute_bullpen_profile` → `outputs.push_bullpen`
+13. `scrapers.scrape_player_registry`
+14. `scrapers.scrape_batter_splits`
+15. `core.compute_batter_profile` → `outputs.push_batter_profiles`
+16. `core.compute_team_profile` → `outputs.push_team_profiles`
 
 ---
 
@@ -288,4 +286,4 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 ---
 
-*Last updated: 2026-05-30. Source of truth for step order: `pipeline/main.py`.*
+*Last updated: 2026-05-31. Source of truth for step order: `pipeline/main.py`.*

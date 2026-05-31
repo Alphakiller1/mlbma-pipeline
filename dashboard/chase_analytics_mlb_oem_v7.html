@@ -6827,11 +6827,8 @@ function shouldRenderOpeningMatchups() {
 
 function initMatchupsView() {
   if (!shouldRenderMatchupsView()) return;
-  if (window.PlatformDashboard && PlatformDashboard.bindHeroControls) {
-    PlatformDashboard.bindHeroControls();
-  }
   if (window.PlatformDashboard) {
-    if (PlatformDashboard.bindHeroControls) PlatformDashboard.bindHeroControls();
+    PlatformDashboard.bindHeroControls();
     PlatformDashboard.initRegistry().then(function() {
       showSlateFreshnessBanner();
       PlatformDashboard.renderHeroMatchups();
