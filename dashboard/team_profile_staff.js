@@ -20,7 +20,7 @@
       kicker: meta.kicker || 'Staff',
       actions: meta.actions || ''
     };
-    return '<section class="ca-board ca-card tp-section' + (extraClass ? ' ' + extraClass : '') + '">'
+    return '<section class="ca-board tp-section' + (extraClass ? ' ' + extraClass : '') + '">'
       + (A && A.sectionHeaderHtml
         ? A.sectionHeaderHtml(hdrOpts)
         : '<header class="ca-section-header"><h2 class="ca-section-title">' + esc(title) + '</h2>'
