@@ -11,13 +11,14 @@
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260609a">
-<link rel="stylesheet" href="team_profile.css?v=20260618a">
+<link rel="stylesheet" href="team_profile.css?v=20260618b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
 <script src="mlbma_assets.js?v=20260616b"></script>
 <script src="mlbma_icons.js?v=20260615b"></script>
 <script src="matchup_shared.js?v=20260615b"></script>
 <script src="mlbma_standings.js?v=20260615b"></script>
+<script src="team_profile_picker.js?v=20260618b"></script>
 <script src="team_profile_mini.js?v=20260618a"></script>
 <script src="team_profile_sections.js?v=20260618a"></script>
 <script src="team_profile_staff.js?v=20260618a"></script>
@@ -120,9 +121,9 @@
   <div class="tp-sticky-wrap">
     <div class="hub-control-bar tp-team-bar">
       <div class="hub-control-row">
-        <div class="hub-ctrl-group">
+        <div class="hub-ctrl-group tp-team-picker-group">
           <span class="hub-ctrl-label">Team</span>
-          <select class="hub-team-select" id="teamSelect" aria-label="Select team"></select>
+          <div id="teamPickerMount"></div>
         </div>
       </div>
     </div>
@@ -672,19 +673,22 @@ function miniStat(label, val, ctx) {
   return '<div class="tp-mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' + valChip(val, ctx || 'osi', false, 1) + '</div></div>';
 }
 
+var _teamPicker = null;
+
 function initSelector() {
-  var sel = document.getElementById('teamSelect');
-  ALL_TEAMS.forEach(function(t) {
-    var opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = t + ' ? ' + (TEAM_NAMES[t] || t);
-    sel.appendChild(opt);
-  });
   var params = new URLSearchParams(window.location.search);
   var fromUrl = teamKey(params.get('team') || 'NYY');
-  sel.value = ALL_TEAMS.indexOf(fromUrl) >= 0 ? fromUrl : 'NYY';
-  STATE.team = sel.value;
-  sel.addEventListener('change', function() { renderTeam(sel.value); });
+  var initial = ALL_TEAMS.indexOf(fromUrl) >= 0 ? fromUrl : 'NYY';
+  STATE.team = initial;
+  if (window.TeamProfilePicker && TeamProfilePicker.mount) {
+    _teamPicker = TeamProfilePicker.mount({
+      mount: 'teamPickerMount',
+      teams: ALL_TEAMS,
+      teamNames: TEAM_NAMES,
+      value: initial,
+      onChange: function(t) { renderTeam(t); }
+    });
+  }
 }
 
 function loadAll() {
