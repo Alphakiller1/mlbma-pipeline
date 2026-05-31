@@ -182,6 +182,8 @@
     'Pablo Lopez': 641154,
     'Tyler Glasnow': 607192,
     'Yoshinobu Yamamoto': 808967,
+    'Y. Yamamoto': 808967,
+    'Y Yamamoto': 808967,
     'Shota Imanaga': 810517,
     'Paul Skenes': 694973,
     'Tarik Skubal': 669373,
@@ -193,13 +195,60 @@
     'Roki Sasaki': 838982
   };
 
+  function lastToken(name) {
+    var parts = String(name || '').trim().split(/\s+/);
+    return parts.length ? parts[parts.length - 1].replace(/\.$/, '').toLowerCase() : '';
+  }
+
+  function isAbbreviatedPitcherName(name) {
+    var parts = String(name || '').trim().split(/\s+/);
+    if (parts.length < 2) return false;
+    return parts[0].replace(/\.$/, '').length === 1;
+  }
+
+  function lookupKnownPitcherId(name) {
+    var key = String(name || '').trim();
+    if (KNOWN_PITCHER_IDS[key]) return String(KNOWN_PITCHER_IDS[key]);
+    if (!isAbbreviatedPitcherName(key)) return null;
+    var ln = lastToken(key);
+    if (!ln) return null;
+    var hit = null;
+    Object.keys(KNOWN_PITCHER_IDS).forEach(function(full) {
+      if (lastToken(full) !== ln) return;
+      if (hit != null) { hit = null; return; }
+      hit = KNOWN_PITCHER_IDS[full];
+    });
+    return hit != null ? String(hit) : null;
+  }
+
+  function lookupMlbIdByLastName(name) {
+    var ln = lastToken(name);
+    if (!ln || ln.length < 3) return null;
+    var ids = {};
+    if (REGISTRY.loaded) {
+      Object.keys(REGISTRY.byId).forEach(function(id) {
+        var entry = REGISTRY.byId[id];
+        if (entry && lastToken(entry.name) === ln) ids[id] = true;
+      });
+    }
+    Object.keys(KNOWN_PITCHER_IDS).forEach(function(full) {
+      if (lastToken(full) === ln) ids[String(KNOWN_PITCHER_IDS[full])] = true;
+    });
+    var matches = Object.keys(ids);
+    return matches.length === 1 ? matches[0] : null;
+  }
+
   function resolveMlbId(idOrName) {
     if (idOrName == null || idOrName === '') return null;
     if (/^\d+$/.test(String(idOrName))) return String(idOrName);
     var id = lookupMlbId(idOrName);
     if (id) return id;
-    var key = String(idOrName).trim();
-    if (KNOWN_PITCHER_IDS[key]) return String(KNOWN_PITCHER_IDS[key]);
+    id = lookupKnownPitcherId(idOrName);
+    if (id) return id;
+    if (isAbbreviatedPitcherName(idOrName)) {
+      id = lookupMlbIdByLastName(idOrName);
+      if (id) return id;
+    }
     return null;
   }
 
@@ -242,7 +291,7 @@
         idOrName = directId;
       } else {
         var nm = p.pitcher_name || p.name || p.Pitcher || p.fullName;
-        var fromMap = KNOWN_PITCHER_IDS[nm] || KNOWN_PITCHER_IDS[p.name] || KNOWN_PITCHER_IDS[p.full_name];
+        var fromMap = lookupKnownPitcherId(nm);
         if (!fromMap && !directId) {
           console.warn('[AVATAR] no ID for pitcher:', p.pitcher_name || p.name || p.Pitcher);
         }

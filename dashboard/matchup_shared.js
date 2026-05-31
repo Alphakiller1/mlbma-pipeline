@@ -153,7 +153,9 @@
       return _sheetTabInflight[key].then(function(rows) { return rows.slice(); });
     }
     var bust = (global.MLBMA_SHEET_BUST != null) ? global.MLBMA_SHEET_BUST : Date.now();
-    var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName) + '&_b=' + encodeURIComponent(String(bust));
+    var pageBust = (global.MLBMA_PAGE_LOAD_BUST != null) ? global.MLBMA_PAGE_LOAD_BUST : Date.now();
+    var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName)
+      + '&_b=' + encodeURIComponent(String(bust)) + '&_p=' + encodeURIComponent(String(pageBust));
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
     _sheetTabInflight[key] = fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {

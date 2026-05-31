@@ -2949,15 +2949,17 @@ function invalidateSheetCaches(lastUpdated) {
   var prev = null;
   try { prev = sessionStorage.getItem(SHEET_SYNC_KEY); } catch (e) { /* ignore */ }
   var next = lastUpdated ? String(lastUpdated).trim() : null;
-  if (prev && next && prev === next) return false;
+  var syncChanged = !(prev && next && prev === next);
   applySheetSyncBust(next || String(Date.now()));
-  try { sessionStorage.removeItem(LIVE_CACHE_KEY); } catch (e) { /* ignore */ }
   if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
     MLBMASharedMatchup.clearSheetTabCache();
   }
-  if (LIVE_DATA) delete LIVE_DATA.tomorrowMatchups;
-  _researchBundleLoaded = false;
-  return true;
+  if (syncChanged) {
+    try { sessionStorage.removeItem(LIVE_CACHE_KEY); } catch (e) { /* ignore */ }
+    if (LIVE_DATA) delete LIVE_DATA.tomorrowMatchups;
+    _researchBundleLoaded = false;
+  }
+  return syncChanged;
 }
 
 function prefetchSheetSync() {
@@ -2980,8 +2982,10 @@ function prefetchSheetSync() {
 
 function sheetCsvUrl(tabName) {
   var day = new Date().toISOString().slice(0, 10);
+  var pageBust = window.MLBMA_PAGE_LOAD_BUST != null ? window.MLBMA_PAGE_LOAD_BUST : Date.now();
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName) + '&_d=' + day + '&_b=' + sheetBustValue();
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName) +
+    '&_d=' + day + '&_b=' + sheetBustValue() + '&_p=' + encodeURIComponent(String(pageBust));
 }
 
 function ensureCacheForToday() {
@@ -3889,39 +3893,59 @@ function teamOsiVsPitcherHand(team, pitcherHand, scR, scL) {
   return row && row.osi != null ? row.osi : null;
 }
 
+function slatePitcherName(raw) {
+  var s = String(raw || '').trim();
+  return s && s.toUpperCase() !== 'TBD' ? s : 'TBD';
+}
+
+function pitcherNamesMatch(a, b) {
+  if (!a || !b) return false;
+  var na = String(a).trim().toLowerCase();
+  var nb = String(b).trim().toLowerCase();
+  if (!na || !nb || na === 'tbd' || nb === 'tbd') return false;
+  if (na === nb) return true;
+  var la = na.split(/\s+/).pop();
+  var lb = nb.split(/\s+/).pop();
+  return la.length > 2 && la === lb;
+}
+
 function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
   var away = normalizeTeamAbbr(g.away);
   var home = normalizeTeamAbbr(g.home);
   var key = away + '@' + home;
   if (luKeys && Object.keys(luKeys).length && !luKeys[key]) return null;
-  var ex = byMatchup[key];
-  var awayHand = ex && ex.awayHand && ex.awayHand !== '?'
+  var ex = byMatchup ? byMatchup[key] : null;
+  var awaySP = slatePitcherName(g.awaySP);
+  var homeSP = slatePitcherName(g.homeSP);
+  var exAway = ex && pitcherNamesMatch(ex.awaySP, awaySP);
+  var exHome = ex && pitcherNamesMatch(ex.homeSP, homeSP);
+  var awayHand = exAway && ex.awayHand && ex.awayHand !== '?'
     ? normalizePitcherHand(ex.awayHand)
-    : (pitcherHandFromProfiles(g.awaySP, away) || '?');
-  var homeHand = ex && ex.homeHand && ex.homeHand !== '?'
+    : (pitcherHandFromProfiles(awaySP, away) || '?');
+  var homeHand = exHome && ex.homeHand && ex.homeHand !== '?'
     ? normalizePitcherHand(ex.homeHand)
-    : (pitcherHandFromProfiles(g.homeSP, home) || '?');
+    : (pitcherHandFromProfiles(homeSP, home) || '?');
   if (awayHand === '?') awayHand = 'R';
   if (homeHand === '?') homeHand = 'R';
   return {
     time: g.time || (ex && ex.time) || '',
     away: away,
     home: home,
-    awaySP: g.awaySP || (ex && ex.awaySP) || 'TBD',
-    homeSP: g.homeSP || (ex && ex.homeSP) || 'TBD',
+    awaySP: awaySP,
+    homeSP: homeSP,
     awayHand: awayHand,
     homeHand: homeHand,
-    awayK: ex ? ex.awayK : null,
-    awayBB: ex ? ex.awayBB : null,
-    awayHR9: ex ? ex.awayHR9 : null,
-    awayFIP: ex ? ex.awayFIP : null,
-    homeK: ex ? ex.homeK : null,
-    homeBB: ex ? ex.homeBB : null,
-    homeHR9: ex ? ex.homeHR9 : null,
-    homeFIP: ex ? ex.homeFIP : null,
-    awayOSI: ex && ex.awayOSI != null ? ex.awayOSI : teamOsiVsPitcherHand(away, homeHand, scR, scL),
-    homeOSI: ex && ex.homeOSI != null ? ex.homeOSI : teamOsiVsPitcherHand(home, awayHand, scR, scL),
-    lineupEdge: ex && ex.lineupEdge ? ex.lineupEdge : '',
+    awayK: exAway ? ex.awayK : null,
+    awayBB: exAway ? ex.awayBB : null,
+    awayHR9: exAway ? ex.awayHR9 : null,
+    awayFIP: exAway ? ex.awayFIP : null,
+    homeK: exHome ? ex.homeK : null,
+    homeBB: exHome ? ex.homeBB : null,
+    homeHR9: exHome ? ex.homeHR9 : null,
+    homeFIP: exHome ? ex.homeFIP : null,
+    awayOSI: exAway && ex.awayOSI != null ? ex.awayOSI : teamOsiVsPitcherHand(away, homeHand, scR, scL),
+    homeOSI: exHome && ex.homeOSI != null ? ex.homeOSI : teamOsiVsPitcherHand(home, awayHand, scR, scL),
+    lineupEdge: (exAway || exHome) && ex.lineupEdge ? ex.lineupEdge : '',
     stadium: ex && ex.stadium ? ex.stadium : ''
   };
 }
@@ -4375,13 +4399,21 @@ function loadResearchData() {
 var _liveLoadGen = 0;
 var _liveLoadPromise = null;
 
-function loadLiveData() {
-  if (_liveLoadPromise) {
+function loadLiveData(forceRefresh) {
+  if (_liveLoadPromise && !forceRefresh) {
     console.log('[MLBMA] loadLiveData reuse in-flight');
     return _liveLoadPromise;
   }
+  if (forceRefresh) {
+    _liveLoadPromise = null;
+    _researchBundleLoaded = false;
+  }
+  window.MLBMA_PAGE_LOAD_BUST = Date.now();
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
+    MLBMASharedMatchup.clearSheetTabCache();
+  }
   var gen = ++_liveLoadGen;
-  console.log('[MLBMA] loadLiveData start gen=' + gen);
+  console.log('[MLBMA] loadLiveData start gen=' + gen + (forceRefresh ? ' (force)' : ''));
   ensureCacheForToday();
   _liveLoadPromise = loadLandingData()
     .then(function() { return loadResearchData(); })
@@ -7060,6 +7092,8 @@ function bindDashboardViewSync() {
 }
 bindDashboardViewSync();
 window.syncDashboardView = syncDashboardView;
+window.loadLiveData = loadLiveData;
+window.refreshLiveData = function() { return loadLiveData(true); };
 
 function whenLiveDataReady(fn, label) {
   if (window.MLBMACharts && MLBMACharts.renderOnLiveDataReady) {

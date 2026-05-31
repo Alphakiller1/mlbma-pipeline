@@ -34,7 +34,6 @@ SCRIPTS_OPTIONAL = [
     "scrapers.scrape_fangraphs",
     "core.compute",
     "outputs.push_sheets",
-    "scrapers.scrape_matchups",
     "scrapers.scrape_weather",
 ]
 
@@ -140,7 +139,7 @@ def run():
       2 scrape_fangraphs (optional)
       3 core.compute (optional, needs Savant + FanGraphs)
       4 push_sheets core metrics (optional)
-      5 scrape_matchups + 6 scrape_lineups (optional / lineups after matchups)
+      5 scrape_lineups (+ Today_Matchups refresh) then weather (optional)
       7 scrape_weather (optional)
       8 scrape_pals (optional)
       9 compute_signals (optional)

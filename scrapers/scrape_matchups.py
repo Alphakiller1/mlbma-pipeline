@@ -158,18 +158,18 @@ def schedule_game_keys(games_df):
 
 def build_matchups():
     print("Building matchup sheet...")
-    games = get_today_schedule()
     rotowire = load_games_from_rotowire_exports()
+    games = get_today_schedule()
     if not rotowire.empty:
         api_keys = schedule_game_keys(games)
         rw_keys = schedule_game_keys(rotowire)
         overlap = len(api_keys & rw_keys)
-        if games.empty or overlap < max(1, len(rw_keys) // 2):
-            print(
-                f"  Using Rotowire schedule ({len(rotowire)} games; "
-                f"MLB API overlap={overlap})"
-            )
-            games = rotowire
+        print(
+            f"  Rotowire slate: {len(rotowire)} games; MLB API overlap={overlap}"
+        )
+        games = rotowire
+    elif games.empty:
+        print("  No Rotowire export and MLB API schedule empty")
     if games.empty:
         print("No games today")
         return pd.DataFrame()
