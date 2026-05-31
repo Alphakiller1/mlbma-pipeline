@@ -1673,12 +1673,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .platform-subtitle { font-size: 12px; color: var(--text-2); margin-bottom: 16px; }
 .matchups-hero-header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
 .matchups-hero-meta { font-size: 13px; color: var(--text-2); font-family: var(--mono); margin-right: auto; }
-.sort-controls, .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.sort-controls button, .filter-pills button {
-  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
-}
-.sort-controls button.active, .filter-pills button.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.12); }
 .matchup-day-tabs {
   display: inline-flex; gap: 8px; margin-bottom: 16px; padding: 4px;
   background: rgba(255,255,255,0.04); border: 1px solid rgba(124,58,237,0.2); border-radius: 12px;
@@ -1696,9 +1690,10 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hero-matchup-card--tomorrow .hmc-badges,
 .hero-matchup-card--tomorrow .hmc-lineups { display: none !important; }
 .hmc-tomorrow-note { font-size: 12px; color: #9CA3AF; margin-top: 12px; font-style: italic; }
-#matchupsHeroGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+#matchupsHeroGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; width: 100%; max-width: 100%; min-width: 0; }
 .hero-matchup-card {
   background: var(--bg-3); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+  min-width: 0; max-width: 100%; box-sizing: border-box;
 }
 .hmc-row { margin-bottom: 12px; }
 .hmc-teams { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -1706,12 +1701,12 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hmc-team .hmc-abbr { color: var(--text); }
 .hmc-at { color: var(--text-3); font-size: 12px; }
 .hmc-time { margin-left: auto; font-size: 11px; color: var(--text-3); font-family: var(--mono); }
-.hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.hmc-row.hmc-teams { flex-wrap: wrap; align-items: center; gap: 8px; }
+.hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-width: 0; }
+.hmc-row.hmc-teams { flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
 .mc-sp-block { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; }
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 10px; margin-top: 2px; }
 .hmc-edge-label { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
-.hmc-osi-bar { display: grid; grid-template-columns: 72px 1fr 72px; gap: 8px; align-items: center; margin-bottom: 10px; }
+.hmc-osi-bar { display: grid; grid-template-columns: minmax(0, 72px) minmax(0, 1fr) minmax(0, 72px); gap: 8px; align-items: center; margin-bottom: 10px; min-width: 0; }
 .hmc-osi-val { font-size: 11px; color: var(--text); }
 .hmc-osi-val.edge-team strong { color: var(--green); }
 .hmc-osi-val.tr { text-align: right; }
@@ -1729,6 +1724,15 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .f5-amber { background: rgba(251,191,36,.15); color: var(--gold); }
 .f5-blue { background: rgba(96,165,250,.15); color: var(--blue); }
 .f5-muted { background: var(--bg-4); color: var(--text-3); }
+@media (max-width: 520px) {
+  #section-matchups-hero.platform-section { padding: 16px 12px; }
+  #matchupsHeroGrid { grid-template-columns: 1fr; gap: 12px; }
+  .hero-matchup-card { padding: 14px 12px; }
+  .hmc-pitchers { grid-template-columns: 1fr; gap: 10px; }
+  .hmc-meta { margin-left: 0; width: 100%; justify-content: flex-start; }
+  .hmc-osi-bar { grid-template-columns: minmax(0, 1fr) minmax(48px, 2fr) minmax(0, 1fr); gap: 6px; }
+  .hmc-osi-val { font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
 .team-logo-fallback, .pitcher-headshot-fallback, .mc-headshot-fallback {
   display: inline-flex; align-items: center; justify-content: center; border-radius: 0;
   background: transparent; color: var(--text-3); font-size: 9px; font-weight: 700;
@@ -2469,7 +2473,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
 <link rel="stylesheet" href="theme.css?v=20260616c">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260620t">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260620u">
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -2497,7 +2501,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260531g"></script>
+<script src="platform_dashboard.js?v=20260531h"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260531i"></script>
 <script src="lineup_view.js?v=20260618a"></script>
@@ -2817,16 +2821,6 @@ body.view-research .ca-lab { display: block; }
   <div class="matchup-day-tabs">
     <button type="button" class="matchup-day-tab active" data-day="today">Today</button>
     <button type="button" class="matchup-day-tab" data-day="tomorrow">Tomorrow</button>
-  </div>
-  <div class="matchups-slate-controls matchups-hero-header">
-    <div class="ca-pill-bar">
-      <span class="ca-pill-label">Filter</span>
-      <button type="button" class="ca-pill-btn active" data-match-filter="all">All Games</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="edge">Best Edge</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="duel">Pitching Duels</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="power">Power Matchups</button>
-      <button type="button" class="ca-pill-btn" data-match-filter="f5">F5 Angles</button>
-    </div>
   </div>
   <div id="matchupsHeroGrid"></div>
 </section>
@@ -4061,7 +4055,7 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL)
   });
 
   if (lineupKeys.length) {
-    console.warn('[MATCHUPS] Slate from Today_Lineups:', lineupKeys.length, 'games');
+    console.info('[MATCHUPS] Slate from Today_Lineups:', lineupKeys.length, 'games');
     var out = lineupKeys.filter(function(key) { return !!key; }).map(function(key) {
       var g = gamesByKey[key];
       if (!g) {
@@ -4399,7 +4393,7 @@ function loadLandingData() {
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
     LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
     LIVE_DATA.lineups = parseLineupRows(lineupsRows);
-    console.error('[LINEUPS] parsed', LIVE_DATA.lineups.length, 'rows from', (lineupsRows || []).length, 'sheet rows');
+    console.info('[LINEUPS] parsed', LIVE_DATA.lineups.length, 'rows from', (lineupsRows || []).length, 'sheet rows');
     LIVE_DATA.signalsToday = signalsTodayRows || [];
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
     LIVE_DATA.playerRegistry = registryRows || [];
@@ -4427,7 +4421,7 @@ function loadLandingData() {
       scL
     );
     enrichMatchupCards();
-    console.error('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games ?',
+    console.info('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games —',
       LIVE_DATA.matchups.slice(0, 4).map(function(m) { return m.away + '@' + m.home; }).join(', '));
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;

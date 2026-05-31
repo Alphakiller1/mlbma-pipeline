@@ -23,9 +23,9 @@
 
   function allowedColor(val) {
     if (val === null || isNaN(val)) return 'var(--text-3)';
-    if (val <= 52) return 'var(--green)';
-    if (val <= 62) return 'var(--gold)';
-    return 'var(--red-l)';
+    if (val <= 52) return 'var(--d-elite, var(--green))';
+    if (val <= 62) return 'var(--d-mid, var(--gold))';
+    return 'var(--d-poor, var(--red-l))';
   }
 
   function pitchingTier(score, tiers) {
@@ -338,6 +338,120 @@
       + '</div>';
   }
 
+  function deriveStartVerdict(profile, ctx) {
+    var pick = ctx.pickCol;
+    var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore', 'pitch_score', 'Pitching Score']));
+    var k = num(pick(profile, ['K_pct', 'K%']));
+    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var resolved = resolveAllowed(ctx);
+    var osiAllow = resolved.metrics.osi;
+    var hr9 = num(pick(profile, ['HR9', 'HR/9']));
+    var risks = 0;
+    var notes = [];
+    if (bb != null && bb >= 10) { risks++; notes.push('elevated walks'); }
+    if (k != null && k < 18) { risks++; notes.push('modest strikeout rate'); }
+    if (osiAllow != null && osiAllow >= 62) { risks++; notes.push('tough opposing lineups faced'); }
+    if (hr9 != null && hr9 >= 1.35) { risks++; notes.push('HR/9 pressure'); }
+    if (ps != null && ps < 55) risks++;
+    if (ctx.window === 'L14' && (pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true')) {
+      risks++;
+      notes.push('limited recent sample');
+    }
+    if (ps == null && k == null) {
+      return { verdict: 'Respect', tone: 'respect', detail: 'Insufficient sample for a firm start read in this split.' };
+    }
+    if (ps != null && ps >= 72 && risks <= 1) {
+      return { verdict: 'Attack', tone: 'attack', detail: 'Pitch score and command profile support attacking this start' + (notes.length ? ' — watch ' + notes.join(', ') + '.' : '.') };
+    }
+    if (risks >= 3 || (ps != null && ps < 52)) {
+      return { verdict: 'Fade', tone: 'fade', detail: 'Volatility flags: ' + (notes.length ? notes.join(', ') : 'weak pitch score / contact risk') + '.' };
+    }
+    if (risks >= 2 || (ps != null && ps < 65)) {
+      return { verdict: 'Volatile', tone: 'volatile', detail: 'Mixed signals — ' + (notes.length ? notes.join(', ') : 'command or contact risk in play') + '.' };
+    }
+    return { verdict: 'Respect', tone: 'respect', detail: 'Balanced starter profile — respect quality without forcing exposure.' };
+  }
+
+  function renderStartVerdict(profile, ctx) {
+    var PS = global.ProfileShell;
+    if (!PS) return '';
+    var v = deriveStartVerdict(profile, ctx);
+    return PS.verdictCard('Start Verdict', v.verdict, v.detail, v.tone);
+  }
+
+  function renderDecisionStrip(profile, ctx) {
+    var PS = global.ProfileShell;
+    if (!PS) return '';
+    var pick = ctx.pickCol;
+    var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore']));
+    var k = num(pick(profile, ['K_pct', 'K%']));
+    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var resolved = resolveAllowed(ctx);
+    var osiAllow = resolved.metrics.osi;
+    var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
+    if (avgOor == null) avgOor = avgOorFromLog(ctx.log || [], pick, ctx.oorMap || {}, null);
+    var cmdTone = bb != null && bb >= 10 ? 'risk' : bb != null && bb <= 7 ? 'elite' : 'watch';
+    var contactTone = osiAllow != null ? PS.toneFromScore(osiAllow, true) : '';
+    return PS.decisionStrip([
+      PS.decisionCard('Pitch Score', ps != null ? fmt(ps, 0) : '—', '', PS.toneFromScore(ps, false)),
+      PS.decisionCard('Command Risk', bb != null ? fmt(bb, 1) + '% BB' : '—', k != null ? fmt(k, 1) + '% K' : '', cmdTone),
+      PS.decisionCard('Contact Risk', osiAllow != null ? fmt(osiAllow, 1) + ' OSI all.' : '—', 'Lower allowed = softer lineups', contactTone),
+      PS.decisionCard('Opponent Quality', avgOor != null ? fmt(avgOor, 1) + ' OOR' : '—', ctx.tonightOsi != null ? 'Tonight OSI ' + fmt(ctx.tonightOsi, 1) : 'Season competition context', avgOor != null ? PS.toneFromScore(avgOor, false) : '')
+    ]);
+  }
+
+  function renderRiskStrip(profile, ctx) {
+    var pick = ctx.pickCol;
+    var log = ctx.log || [];
+    var k = num(pick(profile, ['K_pct', 'K%']));
+    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var era = num(pick(profile, ['ERA']));
+    var fip = num(pick(profile, ['FIP', 'fip']));
+    var xfip = num(pick(profile, ['xFIP', 'xfip']));
+    var hr9 = num(pick(profile, ['HR9', 'HR/9']));
+    var recent = log.slice().sort(function(a, b) {
+      return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
+    }).slice(0, 5);
+    var pitchSum = 0, pitchN = 0;
+    recent.forEach(function(g) {
+      var p = num(pick(g, ['pitches', 'Pitches']));
+      if (p != null) { pitchSum += p; pitchN++; }
+    });
+    var avgPitches = pitchN ? Math.round(pitchSum / pitchN) : null;
+    return '<div class="profile-decision-strip pitcher-risk-strip">'
+      + statPill('K%', fmt(k, 1) + (k != null ? '%' : ''))
+      + statPill('BB%', fmt(bb, 1) + (bb != null ? '%' : ''))
+      + statPill('ERA', fmt(era, 2))
+      + statPill('FIP', fip != null ? fmt(fip, 2) : (era != null ? fmt(era, 2) + ' (ERA)' : '—'))
+      + statPill('xFIP', xfip != null ? fmt(xfip, 2) : '—')
+      + statPill('HR/9', fmt(hr9, 2))
+      + statPill('Recent Pitches', avgPitches != null ? String(avgPitches) + '/start' : '—')
+      + '</div>';
+  }
+
+  function renderAnalystTakeLine(profile, ctx) {
+    var PS = global.ProfileShell;
+    var pick = ctx.pickCol;
+    var v = deriveStartVerdict(profile, ctx);
+    var k = num(pick(profile, ['K_pct', 'K%']));
+    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var parts = [v.detail];
+    if (k != null && bb != null && bb >= 9 && k < 20) {
+      parts.push('Weak K/BB mix raises inning-to-inning volatility.');
+    }
+    var hi = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'osi_tier', 'High') : null;
+    var lo = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'osi_tier', 'Low') : null;
+    if (hi && lo) {
+      var ipH = num(pick(hi, ['avg_IP', 'avg IP']));
+      var ipL = num(pick(lo, ['avg_IP', 'avg IP']));
+      if (ipH != null && ipL != null && ipH < ipL - 1) {
+        parts.push('Shorter leash vs high-OSI lineups — F5 risk rises late.');
+      }
+    }
+    var line = parts.filter(Boolean).slice(0, 2).join(' ');
+    return PS ? PS.analystTakeLine(line) : '';
+  }
+
   global.PitcherProfileDashboard = {
     renderSnapshot: function(profile, ctx) {
       return renderSnapshot(profile, ctx).replace(/<\/?motion>/g, '');
@@ -348,6 +462,19 @@
     renderOORPanel: function(profile, ctx) {
       return renderOORPanel(profile, ctx).replace(/<\/?motion>/g, '');
     },
+    renderStartVerdict: function(profile, ctx) {
+      return renderStartVerdict(profile, ctx).replace(/<\/?motion>/g, '');
+    },
+    renderDecisionStrip: function(profile, ctx) {
+      return renderDecisionStrip(profile, ctx).replace(/<\/?motion>/g, '');
+    },
+    renderRiskStrip: function(profile, ctx) {
+      return renderRiskStrip(profile, ctx).replace(/<\/?motion>/g, '');
+    },
+    renderAnalystTakeLine: function(profile, ctx) {
+      return renderAnalystTakeLine(profile, ctx).replace(/<\/?motion>/g, '');
+    },
+    deriveStartVerdict: deriveStartVerdict,
     resolveAllowed: resolveAllowed
   };
 })(typeof window !== 'undefined' ? window : this);

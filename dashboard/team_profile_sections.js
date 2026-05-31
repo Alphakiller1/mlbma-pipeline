@@ -206,6 +206,28 @@
       + '</article>';
   }
 
+  function offenseStatCell(key, v, ctxKey, invert, decimals, rankMeta) {
+    rankMeta = rankMeta || {};
+    var m = metricLabel(key);
+    var glossLink = m.gloss
+      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
+      : '';
+    var rank = rankMeta.rank;
+    var total = rankMeta.total;
+    var rankHtml = rank != null
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="League rank">'
+        + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
+        + (total ? '<span class="tp-offense-stat__rank-of">/' + esc(String(total)) + '</span>' : '')
+        + '</span>'
+      : '';
+    return '<div class="tp-offense-stat" aria-label="' + esc(m.abbr) + '">'
+      + '<span class="tp-offense-stat__label">' + esc(m.abbr) + glossLink + '</span>'
+      + '<span class="tp-offense-stat__body">'
+      + valChip(v, ctxKey, invert, decimals)
+      + rankHtml
+      + '</span></div>';
+  }
+
   function offenseStatsBand(title, hint, iconKey, slots, cache, team, layout) {
     var cells = slots.map(function(s) {
       var key = s[0];
@@ -501,7 +523,24 @@
   }
 
   function renderSurfaceWins(resultsRow, window) {
-    return '';
+    window = window || 'YTD';
+    var r = resultsForWindow(resultsRow, window);
+    var body = lineupWindowBar(window)
+      + '<div class="tp-surface-wins">'
+      + chipRow([
+        metricSlot('Win%', r.winPct, 'osi', false, 1),
+        metricSlot('F5 Win%', r.f5WinPct, 'osi', false, 1),
+        metricSlot('Pitcher Win%', r.spWinPct, 'pitching', false, 1)
+      ]);
+    if (A && A.f5WarningHtml) body += A.f5WarningHtml();
+    if (r.qsPct != null) {
+      body += chipRow([metricSlot('QS%', r.qsPct, 'pitching', false, 1)]);
+    } else {
+      body += '<p class="ca-helper tp-phase1-inline">QS% — <span class="tp-phase1-tag">Phase 1</span> (wire game-results QS to profile)</p>';
+    }
+    body += '</div>';
+    return sectionCard('Surface Wins', 'Team_Results · ' + window, body,
+      { icon: 'trophy', kicker: 'Results', sectionId: 'surface-wins' });
   }
 
   function renderRollingTrend(m, prof, ctx) {
@@ -510,6 +549,10 @@
       + '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
     return sectionCard('Rolling Trend', 'YTD → L7 grade windows · velocity · reliability', body,
       { icon: 'trending-up', kicker: 'Momentum', sectionId: 'rolling-trend' });
+  }
+
+  function renderMomentum(m, prof, ctx) {
+    return renderRollingTrend(m, prof, ctx);
   }
 
   function renderHandednessSection(prof, team, ctx) {
@@ -585,7 +628,57 @@
   }
 
   function renderAnalystTake(m, prof, ctx) {
-    return '';
+    var pickCol = ctx.pickCol;
+    var rows = [];
+    var woba = pf(prof, ['woba', 'wOBA'], pickCol);
+    var xwoba = pf(prof, ['xwoba', 'xwOBA'], pickCol);
+    if (woba != null && xwoba != null) {
+      var gap = (woba - xwoba) * 1000;
+      rows.push({
+        icon: gap > 8 ? 'trending-up' : gap < -8 ? 'trending-down' : 'target',
+        label: 'Contact Profile',
+        text: gap > 8 ? 'wOBA runs ' + Math.round(gap) + ' pts above xwOBA — possible regression in contact results.'
+          : gap < -8 ? 'xwOBA ahead of wOBA by ' + Math.abs(Math.round(gap)) + ' pts — upside if balls find gaps.'
+          : 'wOBA and xwOBA are aligned — contact results match process.'
+      });
+    }
+    var bbR = pf(prof, ['bb_pct_vs_rhp', 'bb_vs_rhp'], pickCol);
+    var bbL = pf(prof, ['bb_pct_vs_lhp', 'bb_vs_lhp'], pickCol);
+    if (m.osiR != null && m.osiL != null && Math.abs(m.osiR - m.osiL) >= 6) {
+      rows.push({
+        icon: 'split',
+        label: 'Platoon Profile',
+        text: 'OSI split gap ' + Math.abs(m.osiR - m.osiL).toFixed(1) + ' (RHP '
+          + m.osiR.toFixed(1) + ' vs LHP ' + m.osiL.toFixed(1) + ') — platoon matters for lineup construction.'
+      });
+    } else if (bbR != null && bbL != null && Math.abs(bbR - bbL) >= 3) {
+      rows.push({
+        icon: 'target',
+        label: 'Plate Discipline Split',
+        text: 'BB% vs RHP ' + bbR.toFixed(1) + '% vs LHP ' + bbL.toFixed(1) + '% — discipline shifts by handedness.'
+      });
+    }
+    if (m.ppGap != null && Math.abs(m.ppGap) >= 4) {
+      rows.push({
+        icon: m.ppGap >= 4 ? 'trending-up' : 'activity',
+        label: m.ppGap >= 4 ? 'Process Upside' : 'Regression Watch',
+        text: 'PP-Gap ' + (m.ppGap >= 0 ? '+' : '') + m.ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
+      });
+    }
+    rows = rows.filter(Boolean).slice(0, 3);
+    if (!rows.length) {
+      return sectionCard('Analyst Take', 'Rule-based callouts from real metrics',
+        '<p class="ca-helper">Insufficient split data for analyst callouts.</p>',
+        { icon: 'lightbulb', kicker: 'Analysis', sectionId: 'analyst-take' });
+    }
+    var body = '<div class="ca-insight-rail tp-analyst-rail">' + rows.map(function(r) {
+      return '<div class="ca-insight-row">'
+        + iconCircle(r.icon)
+        + '<span><span class="ca-insight-label">' + esc(r.label) + '</span>'
+        + '<span class="ca-insight-text">' + esc(r.text) + '</span></span></div>';
+    }).join('') + '</div>';
+    return sectionCard('Analyst Take', 'Notable angles from this team\'s real metrics', body,
+      { icon: 'lightbulb', kicker: 'Analysis', sectionId: 'analyst-take' });
   }
 
   function renderSplitCards(m) {
@@ -607,6 +700,7 @@
     html += renderHandednessSection(prof, team, ctx);
     html += renderLocationSection(prof, team, ctx);
     html += renderScheduleContext(ctx, ctx.resultsRow, ctx.window);
+    html += renderSurfaceWins(ctx.resultsRow, ctx.window);
     if (global.TeamProfileIntel) {
       html += TeamProfileIntel.renderSustainabilitySection(m, prof, ctx);
     }

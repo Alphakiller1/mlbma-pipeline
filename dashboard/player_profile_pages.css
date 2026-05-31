@@ -1,0 +1,308 @@
+/**
+ * Player profile pages — design contract alignment (styling only).
+ * Pitcher, Batter, Reliever, Bullpen Report + shared profile patterns.
+ */
+body.player-profile-page {
+  font-family: var(--sans, var(--font-body, system-ui));
+  font-variant-numeric: tabular-nums;
+}
+
+body.player-profile-page .container {
+  max-width: 1400px;
+  padding: 20px 24px 72px;
+}
+
+/* Page header — editorial, not marketing gradient */
+body.player-profile-page .header {
+  margin-bottom: 20px;
+}
+
+body.player-profile-page .header h1,
+body.player-profile-page h1.page-title {
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  background: none !important;
+  background-clip: border-box !important;
+  font-family: var(--display, var(--font-display));
+  font-weight: 800;
+  font-size: clamp(22px, 2.5vw, 28px);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+body.player-profile-page .brand-tag {
+  color: var(--v-light, var(--purple));
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+body.player-profile-page .subtitle {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-2);
+  max-width: 680px;
+}
+
+/* Premium dark boards (§7.2) */
+body.player-profile-page .section {
+  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
+  border: 1.5px solid var(--border-2, var(--border));
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+body.player-profile-page .section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--v-grad, linear-gradient(135deg, #9A6BFF 0%, #5B2BE0 100%));
+  pointer-events: none;
+}
+
+body.player-profile-page .section-eyebrow {
+  color: var(--v-light, var(--purple));
+  font-weight: 700;
+}
+
+body.player-profile-page .section-title {
+  font-family: var(--display, var(--font-display));
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+  padding-top: 2px;
+  color: var(--text);
+}
+
+body.player-profile-page .section-subtitle {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+  margin-bottom: 16px;
+}
+
+/* Snapshot / header panels */
+body.player-profile-page .pitcher-snapshot,
+body.player-profile-page .player-header-panel,
+body.player-profile-page .player-header {
+  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
+  border: 1.5px solid var(--border-2, var(--border));
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+body.player-profile-page .pitcher-snapshot::before,
+body.player-profile-page .player-header-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--v-grad);
+  pointer-events: none;
+}
+
+body.player-profile-page .ps-name,
+body.player-profile-page .player-name-lg,
+body.player-profile-page .team-name-lg {
+  font-family: var(--display, var(--font-display));
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+/* Controls */
+body.player-profile-page .selector-bar {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+body.player-profile-page .window-pill {
+  font-weight: 600;
+  border-radius: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+body.player-profile-page .window-pill.active {
+  background: var(--v-bg, rgba(124, 77, 255, 0.16));
+  border-color: var(--v, var(--purple));
+  color: var(--v-light, var(--text));
+}
+
+body.player-profile-page .window-pill:hover:not(.active) {
+  border-color: color-mix(in srgb, var(--v) 35%, var(--border));
+  color: var(--text);
+}
+
+/* Metric tiles */
+body.player-profile-page .stat-cell,
+body.player-profile-page .metric-card,
+body.player-profile-page .hand-panel,
+body.player-profile-page .loc-panel,
+body.player-profile-page .split-panel {
+  background: var(--card-2, var(--bg-3));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+body.player-profile-page .metric-card::before {
+  background: var(--v-grad);
+  height: 3px;
+  opacity: 1;
+}
+
+body.player-profile-page .metric-card .m-val,
+body.player-profile-page .stat-cell .s-val,
+body.player-profile-page .mini-stat .ms-val {
+  font-family: var(--display, var(--mono));
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+body.player-profile-page .hand-panel h4,
+body.player-profile-page .loc-panel h4 {
+  color: var(--text);
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* Tables */
+body.player-profile-page .table-wrap {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.15);
+  padding: 4px 8px;
+}
+
+body.player-profile-page thead th {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  background: transparent;
+}
+
+body.player-profile-page tbody tr:hover {
+  background: rgba(124, 77, 255, 0.08);
+}
+
+body.player-profile-page tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--v, #9A6BFF);
+}
+
+body.player-profile-page .num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Insight / analyst rails (§7.6) */
+body.player-profile-page .insight-line,
+body.player-profile-page .betting-panel {
+  border-left: 3px solid var(--v, var(--purple));
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0 12px 12px 0;
+}
+
+body.player-profile-page .betting-panel {
+  border: 1px solid var(--border-violet, rgba(124, 77, 255, 0.35));
+  border-left-width: 3px;
+  border-left-color: var(--v);
+}
+
+body.player-profile-page .betting-panel strong {
+  color: var(--text);
+}
+
+body.player-profile-page .ca-insight-rail .ca-insight-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+body.player-profile-page .ca-insight-label {
+  display: block;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+body.player-profile-page .ca-insight-text {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* Tier pills — semantic scale only */
+body.player-profile-page .tier-ace { color: var(--d-elite, var(--green)); }
+body.player-profile-page .tier-solid { color: var(--d-good, var(--blue-l)); }
+body.player-profile-page .tier-avg { color: var(--d-mid, var(--gold)); }
+body.player-profile-page .tier-vol { color: var(--d-poor, var(--red-l)); }
+
+body.player-profile-page .tier-high { color: var(--d-poor, var(--red-l)); }
+body.player-profile-page .tier-mid { color: var(--d-mid, var(--gold)); }
+body.player-profile-page .tier-low { color: var(--d-elite, var(--green-l)); }
+
+/* Chips from shared helpers */
+body.player-profile-page .comp-row a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+body.player-profile-page .comp-row a:hover {
+  color: var(--v-light, var(--purple));
+  text-decoration: underline;
+}
+
+body.player-profile-page .chip {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  body.player-profile-page .container {
+    padding: 12px 12px 48px;
+  }
+
+  body.player-profile-page .metric-grid,
+  body.player-profile-page .stat-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  body.player-profile-page .metric-grid,
+  body.player-profile-page .stat-bar {
+    grid-template-columns: 1fr;
+  }
+
+  body.player-profile-page .hand-grid,
+  body.player-profile-page .loc-grid {
+    grid-template-columns: 1fr;
+  }
+}

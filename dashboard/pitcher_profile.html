@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics � Pitcher Profile</title>
+<title>Chase Analytics — Pitcher Profile</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 :root {
@@ -328,23 +328,26 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
 <link rel="stylesheet" href="theme.css?v=20260616c">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
+<link rel="stylesheet" href="player_profile_pages.css?v=20260531p">
+<link rel="stylesheet" href="profile_shell.css?v=20260531p">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
 <script src="matchup_shared.js?v=20260523"></script>
-<script src="pitcher_profile_dashboard.js"></script>
+<script src="profile_shell.js?v=20260531p"></script>
+<script src="pitcher_profile_dashboard.js?v=20260531p"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260524c"></script>
 <script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
-<body>
+<body class="player-profile-page">
 
-<div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets�</div>
-<!-- Chase Analytics navigation � synced via scripts/integrate_chase_nav.py -->
+<div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets—</div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics � Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -377,7 +380,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncing�</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -421,7 +424,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncing�</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
@@ -431,36 +434,39 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   <header class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill" id="brandPill">Loading�</span>
+      <span class="brand-pill" id="brandPill">Loading…</span>
     </div>
     <h1>Pitcher Intelligence Profile</h1>
-    <p class="subtitle">SP deep dive � splits, trends, betting context.</p>
-    <div class="header-meta">Sheet: <span id="headerUpdated">�</span></div>
+    <p class="subtitle">SP deep dive — splits, trends, betting context.</p>
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
   <select class="selector-select" id="pitcherSelect" style="display:none" aria-hidden="true">
-    <option value="">� Choose a starter �</option>
+    <option value="">— Choose a starter —</option>
   </select>
   <datalist id="pitcherList"></datalist>
 
-  <div id="pitcherControlBar"></div>
+  <div id="profileContent" class="profile-shell">
+    <div id="pitcherSnapshot" class="profile-hero"></div>
+    <div id="pitcherVerdict"></div>
+    <div id="pitcherDecisionStrip"></div>
+    <div id="pitcherRiskStrip"></div>
 
-  <div id="profileContent">
-    <div id="pitcherSnapshot"></div>
-
-    <section class="section" id="secAllowed">
-      <div id="allowedDashboard"></div>
-    </section>
-
-    <section class="section" id="secOOR">
-      <div class="section-title">Quality of Lineups Faced This Season</div>
-      <div class="section-subtitle">OOR � competition strength context for ERA validation</div>
+    <section class="section profile-section" id="secOOR">
+      <div class="section-title">Quality of Lineups Faced</div>
+      <div class="section-subtitle">OOR — competition strength context for ERA validation</div>
       <div id="oorPanel"></div>
     </section>
 
+    <div id="pitcherControlBar" class="profile-context-bar"></div>
+    <div id="pitcherAnalystTake"></div>
+
+    <section class="section profile-section" id="secAllowed">
+      <div id="allowedDashboard"></div>
+    </section>
+
     <div class="profile-deep-sections">
-    <section class="section" id="secSeason">
+    <section class="section profile-section" id="secSeason">
       <div class="section-title">Season Line</div>
       <div class="section-subtitle">YTD standard line and team pitching environment</div>
       <div class="stat-bar" id="seasonBar"></div>
@@ -482,7 +488,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 
     <section class="section" id="secHand">
       <div class="section-title">Handedness Splits</div>
-      <div class="section-subtitle">vs LHH and vs RHH � from sheet platoon rows when available</div>
+      <div class="section-subtitle">vs LHH and vs RHH — from sheet platoon rows when available</div>
       <div class="hand-grid" id="handGrid"></div>
     </section>
 
@@ -510,7 +516,10 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
       <div class="section-subtitle">Auto-synthesized angles from the strongest patterns in this profile</div>
       <div class="betting-panel" id="bettingPanel"></div>
     </section>
-    <script>
+    </div>
+  </div>
+</div>
+<script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 
@@ -595,19 +604,19 @@ function pickCol(row, names) {
 }
 
 function numOrNull(v) {
-  if (v === null || v === undefined || v === '' || v === '�') return null;
+  if (v === null || v === undefined || v === '' || v === '—') return null;
   var n = parseFloat(String(v).replace(/%/g, ''));
   return isNaN(n) ? null : n;
 }
 
 function fmt(v, dec) {
-  if (v === null || v === undefined || v === '' || isNaN(v)) return '�';
+  if (v === null || v === undefined || v === '' || isNaN(v)) return '—';
   dec = dec === undefined ? 1 : dec;
   return Number(v).toFixed(dec);
 }
 
 function fmtPct(v) {
-  if (v === null || v === undefined || isNaN(v)) return '�';
+  if (v === null || v === undefined || isNaN(v)) return '—';
   return fmt(v, 1) + '%';
 }
 
@@ -633,7 +642,7 @@ function pitcherKey(row) {
 }
 
 function pitchingTier(score) {
-  if (score === null || isNaN(score)) return { label: '�', cls: 'tier-avg' };
+  if (score === null || isNaN(score)) return { label: '—', cls: 'tier-avg' };
   for (var i = 0; i < PITCHING_TIERS.length; i++) {
     if (score >= PITCHING_TIERS[i][0]) {
       return { label: PITCHING_TIERS[i][1], cls: PITCHING_TIERS[i][2] };
@@ -805,7 +814,7 @@ function buildPitcherTonightContext(name, team) {
   }
   var time = pickCol(mToday, ['Game_Time', 'game_time']) || 'TBD';
   return {
-    html: '<span class="pill-tonight">Tonight vs ' + opp + ' � ' + (isAway ? 'Away' : 'Home') + ' � ' + time + '</span>',
+    html: '<span class="pill-tonight">Tonight vs ' + opp + ' — ' + (isAway ? 'Away' : 'Home') + ' — ' + time + '</span>',
     opp: opp,
     oppOsi: oppOsi
   };
@@ -836,9 +845,17 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   var tonight = buildPitcherTonightContext(name, team);
   var ctx = buildDashboardCtx(profile, splits, log, name, team, isToday, tonight);
   var snap = document.getElementById('pitcherSnapshot');
+  var verdict = document.getElementById('pitcherVerdict');
+  var strip = document.getElementById('pitcherDecisionStrip');
+  var risk = document.getElementById('pitcherRiskStrip');
+  var take = document.getElementById('pitcherAnalystTake');
   var allowed = document.getElementById('allowedDashboard');
   var oorEl = document.getElementById('oorPanel');
   if (snap) snap.innerHTML = PitcherProfileDashboard.renderSnapshot(profile, ctx);
+  if (verdict) verdict.innerHTML = PitcherProfileDashboard.renderStartVerdict(profile, ctx);
+  if (strip) strip.innerHTML = PitcherProfileDashboard.renderDecisionStrip(profile, ctx);
+  if (risk) risk.innerHTML = PitcherProfileDashboard.renderRiskStrip(profile, ctx);
+  if (take) take.innerHTML = PitcherProfileDashboard.renderAnalystTakeLine(profile, ctx);
   if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, ctx);
   if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, ctx);
 }
@@ -856,7 +873,7 @@ function buildTierTable(splits, dimension, tierOrder) {
     var s = findSplit(splits, dimension, tier);
     if (!s) {
       return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td>' +
-        '<td colspan="8" style="color:var(--text-3)">�</td></tr>';
+        '<td colspan="8" style="color:var(--text-3)">—</td></tr>';
     }
     var starts = numOrNull(pickCol(s, ['starts', 'Starts']));
     var avgIp = numOrNull(pickCol(s, ['avg_IP', 'avg IP']));
@@ -869,7 +886,7 @@ function buildTierTable(splits, dimension, tierOrder) {
     var flag = (dimension === 'osi_tier' && tier === 'High' && ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) ? 'flag-row' : '';
     return '<tr class="' + flag + '">' +
       '<td class="' + tierClass(tier) + '">' + tier + '</td>' +
-      '<td class="num">' + (starts != null ? starts : '�') + '</td>' +
+      '<td class="num">' + (starts != null ? starts : '—') + '</td>' +
       '<td class="num">' + fmt(avgIp, 1) + '</td>' +
       '<td class="num">' + fmt(era, 2) + '</td>' +
       '<td class="num">' + fmtPct(k) + '</td>' +
@@ -896,17 +913,17 @@ function insightOsiTier(splits) {
   if (ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) {
     parts.push(
       '<strong>F5 flag:</strong> IP/Start drops materially vs High OSI lineups (' +
-      fmt(ipHigh, 1) + ' vs ' + fmt(ipLow, 1) + ' vs Low OSI) � shorter leash vs process-heavy offenses.'
+      fmt(ipHigh, 1) + ' vs ' + fmt(ipLow, 1) + ' vs Low OSI) — shorter leash vs process-heavy offenses.'
     );
   } else if (ipHigh != null && ipLow != null && ipHigh > ipLow + 0.8) {
     parts.push(
-      'Works deeper vs elite OSI (' + fmt(ipHigh, 1) + ' IP) than vs weak OSI (' + fmt(ipLow, 1) + ' IP) � unusual workload profile.'
+      'Works deeper vs elite OSI (' + fmt(ipHigh, 1) + ' IP) than vs weak OSI (' + fmt(ipLow, 1) + ' IP) — unusual workload profile.'
     );
   }
   if (eraHigh != null && eraLow != null && eraHigh > eraLow + 1.2) {
     parts.push('ERA balloons vs High OSI (' + fmt(eraHigh, 2) + ' vs ' + fmt(eraLow, 2) + ') despite opponent quality context.');
   } else if (eraHigh != null && eraLow != null && eraHigh < eraLow - 0.8) {
-    parts.push('Suppresses runs vs High OSI better than expected � possible fade candidate if market overweights opponent tier.');
+    parts.push('Suppresses runs vs High OSI better than expected — possible fade candidate if market overweights opponent tier.');
   }
   return parts.length ? parts.join(' ') : 'OSI-tier workload and ERA are relatively stable across opponent quality buckets.';
 }
@@ -921,12 +938,12 @@ function insightAbqTier(splits) {
   var kLow = numOrNull(pickCol(low, ['K_pct']));
   var parts = [];
   if (bbHigh != null && bbLow != null && bbHigh > bbLow + 2) {
-    parts.push('Walk rate rises vs High ABQ (' + fmtPct(bbHigh) + ' vs ' + fmtPct(bbLow) + ') � patience tax in chess-match spots.');
+    parts.push('Walk rate rises vs High ABQ (' + fmtPct(bbHigh) + ' vs ' + fmtPct(bbLow) + ') — patience tax in chess-match spots.');
   }
   if (kHigh != null && kLow != null && kHigh > kLow + 4) {
-    parts.push('Strikeout spike vs High ABQ (' + fmtPct(kHigh) + ' vs ' + fmtPct(kLow) + ') � swing-and-miss plays through discipline.');
+    parts.push('Strikeout spike vs High ABQ (' + fmtPct(kHigh) + ' vs ' + fmtPct(kLow) + ') — swing-and-miss plays through discipline.');
   }
-  return parts.length ? parts.join(' ') : 'Pitch efficiency (K%/BB%) is consistent across ABQ tiers � run prevention drives outcomes more than command splits.';
+  return parts.length ? parts.join(' ') : 'Pitch efficiency (K%/BB%) is consistent across ABQ tiers — run prevention drives outcomes more than command splits.';
 }
 
 function buildBettingSummary(profile, splits, log, name, hand) {
@@ -963,7 +980,7 @@ function buildBettingSummary(profile, splits, log, name, hand) {
       bullets.push('vulnerable to RHH power (HR/9 ' + fmt(hrR, 2) + ' vs RHH)');
     }
   } else if (hand === 'R' || hand === 'L') {
-    bullets.push('Platoon batter splits not in sheet � using full-season pool; check back after pipeline platoon export.');
+    bullets.push('Platoon batter splits not in sheet — using full-season pool; check back after pipeline platoon export.');
   }
 
   var home = findSplit(splits, 'location', 'home');
@@ -972,9 +989,9 @@ function buildBettingSummary(profile, splits, log, name, hand) {
     var eH = numOrNull(pickCol(home, ['ERA']));
     var eA = numOrNull(pickCol(away, ['ERA']));
     if (eH != null && eA != null && eA > eH + 1.0) {
-      bullets.push('Road ERA (' + fmt(eA, 2) + ') worse than home (' + fmt(eH, 2) + ') � park/help factor on home side.');
+      bullets.push('Road ERA (' + fmt(eA, 2) + ') worse than home (' + fmt(eH, 2) + ') — park/help factor on home side.');
     } else if (eH != null && eA != null && eH > eA + 1.0) {
-      bullets.push('Better on the road (' + fmt(eA, 2) + ' ERA away vs ' + fmt(eH, 2) + ' home) � possible undervaluation away.');
+      bullets.push('Better on the road (' + fmt(eA, 2) + ' ERA away vs ' + fmt(eH, 2) + ' home) — possible undervaluation away.');
     }
   }
 
@@ -982,7 +999,7 @@ function buildBettingSummary(profile, splits, log, name, hand) {
   if (abqHi) {
     var bb = numOrNull(pickCol(abqHi, ['BB_pct']));
     if (bb != null && bb >= 9) {
-      bullets.push('Elevated walks vs High ABQ (' + fmtPct(bb) + ') � tighten F5 unders when facing patient lineups.');
+      bullets.push('Elevated walks vs High ABQ (' + fmtPct(bb) + ') — tighten F5 unders when facing patient lineups.');
     }
   }
 
@@ -998,7 +1015,7 @@ function buildBettingSummary(profile, splits, log, name, hand) {
 function startResult(g) {
   var er = numOrNull(pickCol(g, ['ER']));
   var ip = parseIP(pickCol(g, ['IP']));
-  if (er === null) return '�';
+  if (er === null) return '—';
   if (er <= 2 && ip >= 6) return 'Sharp';
   if (er <= 3) return 'Quality';
   if (er <= 5) return 'Mixed';
@@ -1046,7 +1063,7 @@ function renderProfile(key) {
 
   var lhh = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
   var rhh = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
-  var handNote = (!lhh && !rhh) ? '<p style="font-size:11px;color:var(--text-3);margin-top:10px;">Platoon rows not in SP_Metric_Splits yet � showing season pool in primary hand panel.</p>' : '';
+  var handNote = (!lhh && !rhh) ? '<p style="font-size:11px;color:var(--text-3);margin-top:10px;">Platoon rows not in SP_Metric_Splits yet — showing season pool in primary hand panel.</p>' : '';
   var seasonPool = findSplit(splits, 'hand', hand) || profile;
   document.getElementById('handGrid').innerHTML =
     '<div class="hand-panel"><h4>vs LHH</h4>' + splitRowToCells(lhh || seasonPool, 'No LHH split') + '</div>' +
@@ -1069,7 +1086,7 @@ function renderProfile(key) {
       return '<tr><td>' + pickCol(g, ['date']) + '</td>' +
         '<td class="num">' + pickCol(g, ['opponent_team', 'opponent team']) + '</td>' +
         '<td class="num">' + fmt(numOrNull(pickCol(g, ['opponent_OSI'])), 1) + '</td>' +
-        '<td class="' + tierClass(tier) + '">' + (tier || '�') + '</td>' +
+        '<td class="' + tierClass(tier) + '">' + (tier || '—') + '</td>' +
         '<td class="num">' + pickCol(g, ['IP']) + '</td>' +
         '<td class="num">' + pickCol(g, ['ER']) + '</td>' +
         '<td class="num">' + pickCol(g, ['pitches']) + '</td>' +
@@ -1094,7 +1111,7 @@ function renderProfile(key) {
     var f5h = numOrNull(pickCol(f5High, ['F5_ERA']));
     var f5l = numOrNull(pickCol(f5Low, ['F5_ERA']));
     if (f5h != null && f5l != null && f5h > f5l + 1.5) {
-      f5Note = '<strong>Betting note:</strong> F5 ERA worse vs High OSI (' + fmt(f5h, 2) + ') than Low OSI (' + fmt(f5l, 2) + ') � lean Under/F5 fade when tier is High even if full-game ERA looks fine.';
+      f5Note = '<strong>Betting note:</strong> F5 ERA worse vs High OSI (' + fmt(f5h, 2) + ') than Low OSI (' + fmt(f5l, 2) + ') — lean Under/F5 fade when tier is High even if full-game ERA looks fine.';
     }
   }
   document.getElementById('f5Insight').innerHTML = f5Note;
@@ -1104,14 +1121,14 @@ function renderProfile(key) {
 }
 
 function statCell(label, val) {
-  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + (val || '�') + '</div></div>';
+  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + (val || '—') + '</div></div>';
 }
 
 
 function populateSelectors() {
   var select = document.getElementById('pitcherSelect');
   var datalist = document.getElementById('pitcherList');
-  select.innerHTML = '<option value="">� Choose a starter �</option>';
+  select.innerHTML = '<option value="">— Choose a starter —</option>';
   datalist.innerHTML = '';
 
   var sorted = DATA.profiles.slice().sort(function(a, b) {
@@ -1195,7 +1212,7 @@ function loadAll() {
     }
     if (!DATA.profiles.length) {
       var banner = document.getElementById('dataBanner');
-      banner.textContent = 'SP_Profiles is empty � run pipeline steps 10�11 after metrics are built.';
+      banner.textContent = 'SP_Profiles is empty — run pipeline steps 10—11 after metrics are built.';
       banner.classList.add('show');
       if (pill) { pill.textContent = 'No SP data'; pill.classList.add('warn'); }
     }
@@ -1220,7 +1237,7 @@ function loadAll() {
     var banner = document.getElementById('dataBanner');
     banner.textContent = 'Could not load Google Sheets: ' + DATA.error + '. Ensure tabs are published and named correctly.';
     banner.classList.add('show');
-    if (loadingText) loadingText.textContent = 'Load failed � check sheet tabs';
+    if (loadingText) loadingText.textContent = 'Load failed — check sheet tabs';
   }).finally(function() {
     if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
     else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
@@ -1232,7 +1249,7 @@ var _profileWatchdogDone = null;
 function showDelayedLoadBanner() {
   var banner = document.getElementById('dataBanner');
   if (banner) {
-    banner.textContent = 'Data load delayed � retrying�';
+    banner.textContent = 'Data load delayed — retrying…';
     banner.classList.add('show');
   }
 }

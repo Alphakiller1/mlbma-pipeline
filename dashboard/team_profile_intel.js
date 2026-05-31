@@ -522,6 +522,65 @@
     return sectionWrap('Research Takeaways', 'Metric translation for research — not betting picks', grid, 'lightbulb');
   }
 
+  function cleanText(s) {
+    var PS = global.ProfileShell;
+    if (PS && PS.cleanGlyphs) return PS.cleanGlyphs(s);
+    return String(s == null ? '' : s).replace(/\uFFFD/g, '\u2014');
+  }
+
+  function shortLabel(text, max) {
+    text = cleanText(String(text || '').trim());
+    max = max || 48;
+    if (!text) return '—';
+    if (text.length <= max) return text;
+    return text.slice(0, max - 1) + '…';
+  }
+
+  function renderLineupDecisionStrip(m, rates, ctx) {
+    var PS = global.ProfileShell;
+    if (!PS) return '';
+    m = m || {};
+    rates = rates || {};
+    ctx = ctx || {};
+    var osi = num(m.osi);
+    var edgeHint = ctx.osiRank != null ? 'League rank #' + ctx.osiRank : (osi != null && osi >= 65 ? 'Plus run-scoring unit' : osi != null && osi <= 52 ? 'Below-average offense' : 'League-average profile');
+    var form = cleanText(formRead(m, ctx));
+    var formLead = form ? form.split('\u2014')[0].split('.')[0].trim() : 'Stable vs baseline';
+    var formTone = form && form.indexOf('improving') >= 0 ? 'elite' : form && form.indexOf('cooling') >= 0 ? 'risk' : 'watch';
+    var sv = cleanText(splitVerdict(m));
+    var splitLead = shortLabel(sv.split('.')[0], 42);
+    var splitTone = sv.indexOf('balanced') >= 0 ? 'elite' : sv.indexOf('unavailable') >= 0 ? '' : 'watch';
+    var sus = sustainabilityVerdict(rates);
+    var fadeVal = sus.label || 'Monitor';
+    var fadeHint = sus.gapPts != null ? 'wOBA−xOBA ' + (sus.gapPts > 0 ? '+' : '') + sus.gapPts + ' pts' : shortLabel(cleanText(sus.sentence), 52);
+    var fadeTone = sus.label === 'Overperforming' ? 'risk' : sus.label === 'Underperforming' ? 'elite' : 'watch';
+    return PS.decisionStrip([
+      PS.decisionCard('Offensive Edge', osi != null ? osi.toFixed(1) : '—', edgeHint, PS.toneFromScore(osi, false)),
+      PS.decisionCard('Current Form', shortLabel(formLead, 36), '', formTone),
+      PS.decisionCard('Split Stress', splitLead, '', splitTone),
+      PS.decisionCard('Fade Conditions', fadeVal, fadeHint, fadeTone)
+    ]);
+  }
+
+  function renderLineupAnalystOneLiner(m, rates, ctx) {
+    var PS = global.ProfileShell;
+    m = m || {};
+    rates = rates || {};
+    ctx = ctx || {};
+    var parts = [];
+    var identity = cleanText(offenseIdentityLine(m, rates, ctx));
+    if (identity) parts.push(identity);
+    var form = cleanText(formRead(m, ctx));
+    if (form && form.indexOf('baseline') < 0) parts.push(form.split('\u2014')[0].trim());
+    var sv = cleanText(splitVerdict(m));
+    if (sv && sv.indexOf('unavailable') < 0 && sv.indexOf('balanced') < 0) {
+      parts.push(sv.split('.')[0] + '.');
+    }
+    var line = parts.slice(0, 2).join(' ');
+    if (PS) return PS.analystTakeLine(line || null);
+    return line ? '<div class="profile-analyst-take"><p class="profile-analyst-take__text">' + esc(line) + '</p></div>' : '';
+  }
+
   function renderLineupIdentityPanel(m, rates, ctx, chipsHtml, filterHtml) {
     var status = offenseStatusLabel(m, rates);
     var line = offenseIdentityLine(m, rates, ctx);
@@ -533,7 +592,6 @@
     };
     var splitLbl = splitLabels[split] || split;
     return '<div class="tp-identity-panel tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
-      + (filterHtml || '')
       + '<div class="tp-identity-panel__grid">'
       + '<div class="tp-identity-panel__metrics">'
       + '<p class="ca-eyebrow tp-identity-panel__eyebrow">' + esc(splitLbl) + ' view</p>'
@@ -934,6 +992,8 @@
     renderResearchTakeaways: renderResearchTakeaways,
     renderStatusIdentity: renderStatusIdentity,
     renderLineupIdentityPanel: renderLineupIdentityPanel,
+    renderLineupDecisionStrip: renderLineupDecisionStrip,
+    renderLineupAnalystOneLiner: renderLineupAnalystOneLiner,
     buildRotationPack: buildRotationPack,
     buildBullpenPack: buildBullpenPack,
     renderRotationIntel: renderRotationIntel,

@@ -32,9 +32,9 @@
 
   function allowedColor(val) {
     if (val === null || isNaN(val)) return 'var(--text-3)';
-    if (val <= 52) return 'var(--green)';
-    if (val <= 62) return 'var(--gold)';
-    return 'var(--red-l)';
+    if (val <= 52) return 'var(--d-elite, var(--green))';
+    if (val <= 62) return 'var(--d-mid, var(--gold))';
+    return 'var(--d-poor, var(--red-l))';
   }
 
   function eraColor(era) {
@@ -314,10 +314,69 @@
     return String(s || '').replace(/<\/?motion>/g, '');
   }
 
+  function renderBullpenDecisionStrip(unit, ctx) {
+    var PS = global.ProfileShell;
+    if (!PS || !unit) return '';
+    var pickCol = ctx.pickCol;
+    var hiEra = colVal(unit, 'high_leverage', 'ERA', pickCol);
+    var loEra = colVal(unit, 'low_leverage', 'ERA', pickCol);
+    var overallEra = colVal(unit, 'overall', 'ERA', pickCol);
+    var levTone = 'watch';
+    var levHint = 'High vs low leverage ERA';
+    if (hiEra != null && loEra != null) {
+      if (hiEra > loEra + 1.2) { levTone = 'risk'; levHint = 'Hi lev ERA ' + fmt(hiEra, 2) + ' vs ' + fmt(loEra, 2); }
+      else if (hiEra <= loEra) { levTone = 'elite'; levHint = 'Holds up in leverage spots'; }
+    }
+    var rhhOsi = colVal(unit, 'vs_rhh', 'OSI_allowed', pickCol);
+    var lhhOsi = colVal(unit, 'vs_lhh', 'OSI_allowed', pickCol);
+    var handVal = '—';
+    var handHint = 'Platoon allowed profile';
+    var handTone = '';
+    if (rhhOsi != null && lhhOsi != null) {
+      handVal = Math.abs(rhhOsi - lhhOsi) <= 2 ? 'Balanced' : (rhhOsi > lhhOsi ? 'RHH tougher' : 'LHH tougher');
+      handHint = 'RHH ' + fmt(rhhOsi, 1) + ' · LHH ' + fmt(lhhOsi, 1) + ' OSI all.';
+      handTone = Math.abs(rhhOsi - lhhOsi) >= 4 ? 'watch' : 'elite';
+    }
+    var tonightVal = ctx.tonightOsi != null ? fmt(ctx.tonightOsi, 1) : (ctx.isToday ? 'Tonight' : '—');
+    var tonightHint = ctx.tonightHtml ? 'Slate game on deck' : 'No slate match found';
+    var tonightTone = ctx.tonightOsi != null && colVal(unit, 'overall', 'OSI_allowed', pickCol) != null
+      && ctx.tonightOsi > colVal(unit, 'overall', 'OSI_allowed', pickCol) + 3 ? 'risk' : 'watch';
+    return PS.decisionStrip([
+      PS.decisionCard('Availability', 'See board', 'Closer/setup/long relief below', ''),
+      PS.decisionCard('Leverage Risk', hiEra != null ? fmt(hiEra, 2) + ' ERA' : '—', levHint, levTone),
+      PS.decisionCard('Fatigue', ctx.totalApps != null ? ctx.totalApps + ' apps' : '—', 'Check 7-day usage chart', 'watch'),
+      PS.decisionCard('Handedness Fit', handVal, handHint, handTone),
+      PS.decisionCard('Tonight Pressure', tonightVal, tonightHint, tonightTone)
+    ]);
+  }
+
+  function renderBullpenAnalystTakeLine(unit, ctx) {
+    var PS = global.ProfileShell;
+    if (!PS || !unit) return PS ? PS.analystTakeLine(null) : '';
+    var pickCol = ctx.pickCol;
+    var hiEra = colVal(unit, 'high_leverage', 'ERA', pickCol);
+    var loEra = colVal(unit, 'low_leverage', 'ERA', pickCol);
+    var overall = colVal(unit, 'overall', 'ERA', pickCol);
+    var parts = [];
+    if (hiEra != null && loEra != null && hiEra > loEra + 1.2) {
+      parts.push('Run-line risk rises late: high-leverage ERA is materially worse than low leverage.');
+    } else if (overall != null && overall <= 3.8) {
+      parts.push('Headline bullpen ERA is strong — validate against opponent quality in OOR panel.');
+    }
+    if (ctx.tonightOsi != null && colVal(unit, 'overall', 'OSI_allowed', pickCol) != null) {
+      var delta = ctx.tonightOsi - colVal(unit, 'overall', 'OSI_allowed', pickCol);
+      if (delta > 4) parts.push('Tonight\'s lineup OSI runs hotter than this bullpen\'s season average allowed.');
+      else if (delta < -4) parts.push('Tonight\'s opponent profiles softer than season competition faced.');
+    }
+    return PS.analystTakeLine(parts.slice(0, 2).join(' ') || null);
+  }
+
   global.BullpenProfileDashboard = {
     renderSnapshot: function(team, unit, ctx) { return strip(renderSnapshot(team, unit, ctx)); },
     renderAllowedDashboard: function(unit, ctx) { return strip(renderAllowedDashboard(unit, ctx)); },
     renderOORPanel: function(unit, ctx) { return strip(renderOORPanel(unit, ctx)); },
+    renderDecisionStrip: function(unit, ctx) { return strip(renderBullpenDecisionStrip(unit, ctx)); },
+    renderAnalystTakeLine: function(unit, ctx) { return strip(renderBullpenAnalystTakeLine(unit, ctx)); },
     buildRelieverTable: function(relievers, ctx) { return strip(buildRelieverTable(relievers, ctx)); },
     resolveAllowed: resolveAllowed
   };

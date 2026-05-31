@@ -7,7 +7,6 @@
 
   var A = global.MLBMAAssets;
   var S = global.MLBMASharedMatchup || global.MatchupShared;
-  var FILTER = 'all';
   var MATCH_DAY = 'today';
 
   function esc(s) {
@@ -63,34 +62,6 @@
     var homeRow = teamRow(m.home, m.awayHand);
     var lineupEdge = Math.abs((m.awayOSI || 0) - (m.homeOSI || 0));
     return maxPs + (100 - minBp) * 0.3 + lineupEdge;
-  }
-
-  function gameScriptBadge(m) {
-    var awayRow = teamRow(m.away, m.homeHand);
-    var homeRow = teamRow(m.home, m.awayHand);
-    var abqAvg = ((awayRow ? awayRow.abq : 50) + (homeRow ? homeRow.abq : 50)) / 2;
-    var psAvg = ((spPitchScore(m.home) || 50) + (spPitchScore(m.away) || 50)) / 2;
-    var maxRcv = Math.max(awayRow ? awayRow.rcv : 0, homeRow ? homeRow.rcv : 0);
-    var maxHr9 = Math.max(m.homeHR9 || 0, m.awayHR9 || 0);
-    if (maxRcv >= 65 && maxHr9 >= 1.2) return { label: 'Power Showdown', cls: 'script-orange' };
-    if (abqAvg > 60 && psAvg > 65) return { label: 'Pitching Duel', cls: 'script-gray' };
-    if (abqAvg > 60 && psAvg < 50) return { label: 'Lineup Grinds SP', cls: 'script-amber' };
-    if (abqAvg < 50 && psAvg > 65) return { label: 'Quick Game', cls: 'script-blue' };
-    return { label: 'Balanced', cls: 'script-muted' };
-  }
-
-  function f5Badge(m) {
-    var awayPs = spPitchScore(m.home) || 50;
-    var homePs = spPitchScore(m.away) || 50;
-    var maxPs = Math.max(awayPs, homePs);
-    var awayBp = bullpenOsiAllowed(m.home);
-    var homeBp = bullpenOsiAllowed(m.away);
-    var minBp = Math.min(awayBp != null ? awayBp : 55, homeBp != null ? homeBp : 55);
-    var maxBp = Math.max(awayBp != null ? awayBp : 55, homeBp != null ? homeBp : 55);
-    if (maxPs >= 70 && minBp < 50) return { label: 'F5 + Full', cls: 'f5-green' };
-    if (maxPs >= 70 && maxBp > 60) return { label: 'F5 Only', cls: 'f5-amber' };
-    if (maxPs < 55 && minBp < 50) return { label: 'Full Only', cls: 'f5-blue' };
-    return { label: 'Lineup Edge', cls: 'f5-muted' };
   }
 
   function weatherText(w) {
@@ -213,17 +184,6 @@
       + '<span class="mc-sp-stat"><em>BB%</em><strong>' + esc(bbVal) + '</strong></span>'
       + '<span class="mc-sp-stat"><em>FIP</em><strong>' + esc(fipVal) + '</strong></span>'
       + '</div></div></div>';
-  }
-
-  function passesFilter(m, script, f5) {
-    if (FILTER === 'all') return true;
-    if (FILTER === 'edge') {
-      return Math.abs((m.awayOSI || 0) - (m.homeOSI || 0)) >= 5;
-    }
-    if (FILTER === 'duel') return script.label === 'Pitching Duel';
-    if (FILTER === 'power') return script.label === 'Power Showdown';
-    if (FILTER === 'f5') return f5.label === 'F5 Only' || f5.label === 'F5 + Full';
-    return true;
   }
 
   function parseGameTimeSortKey(timeStr) {
@@ -522,9 +482,7 @@
         : '<div class="empty-msg">No matchups loaded for today.</div>';
       return;
     }
-    var sorted = sortGames(games).filter(function(m) {
-      return passesFilter(m, gameScriptBadge(m), f5Badge(m));
-    });
+    var sorted = sortGames(games);
 
     grid.innerHTML = sorted.map(function(m, cardIdx) {
       return renderHeroMatchupCard(m, cardIdx);
@@ -661,24 +619,6 @@
         document.querySelectorAll('.matchup-day-tab').forEach(function(b) {
           b.classList.toggle('active', b.getAttribute('data-day') === MATCH_DAY);
         });
-        var controls = document.querySelector('.matchups-slate-controls');
-        if (controls) controls.style.display = MATCH_DAY === 'today' ? '' : 'none';
-        renderHeroMatchups();
-      });
-    });
-  }
-
-  function bindHeroControls() {
-    bindDayTabs();
-    document.querySelectorAll('[data-match-filter]').forEach(function(btn) {
-      if (btn.dataset.bound) return;
-      btn.dataset.bound = '1';
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        FILTER = btn.getAttribute('data-match-filter');
-        document.querySelectorAll('[data-match-filter]').forEach(function(b) {
-          b.classList.toggle('active', b === btn);
-        });
         renderHeroMatchups();
       });
     });
@@ -691,13 +631,17 @@
     } else {
       renderSignalChips();
     }
-    bindHeroControls();
+    bindDayTabs();
   }
 
   if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', function() {
       if (document.querySelectorAll('.matchup-day-tab').length) bindDayTabs();
     });
+  }
+
+  function bindHeroControls() {
+    /* Opening Dashboard only — safe no-op on profile pages that bundle platform_dashboard.js */
   }
 
   function initRegistry() {

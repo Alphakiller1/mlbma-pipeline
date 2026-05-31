@@ -94,10 +94,10 @@
   color: var(--text-3, #71717A);
 }
 
-.team-profile-page .tp-metric-tile__rank--elite { color: #4ade80; }
-.team-profile-page .tp-metric-tile__rank--strong { color: #93c5fd; }
-.team-profile-page .tp-metric-tile__rank--mid { color: #fbbf24; }
-.team-profile-page .tp-metric-tile__rank--weak { color: #f87171; }
+.team-profile-page .tp-metric-tile__rank--elite { color: var(--d-elite, #3CCB7F); }
+.team-profile-page .tp-metric-tile__rank--strong { color: var(--d-good, #86D76F); }
+.team-profile-page .tp-metric-tile__rank--mid { color: var(--d-mid, #E8C24A); }
+.team-profile-page .tp-metric-tile__rank--weak { color: var(--d-poor, #F2545B); }
 
 .team-profile-page .tp-metric-tile__rank-of {
   font-weight: 600;
@@ -168,4 +168,51 @@
   .team-profile-page .tp-identity-panel__grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Surface wins + analyst take — contract §7.6 / §7.2 */
+.team-profile-page .tp-surface-wins {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.team-profile-page .tp-surface-wins .tp-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.team-profile-page .tp-analyst-rail .ca-insight-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.team-profile-page .tp-analyst-rail .ca-insight-label {
+  display: block;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.team-profile-page .tp-analyst-rail .ca-insight-text {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat {
+  background: var(--card-2, var(--bg-3));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
 }

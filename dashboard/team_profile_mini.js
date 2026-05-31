@@ -1056,7 +1056,7 @@
     if (global.TeamProfileSections && TeamProfileSections.renderAll) {
       return TeamProfileSections.renderAll(prof, team, ctx);
     }
-    return '<p class="ca-helper">Offense sections module not loaded.</p>';
+    return '<div class="ca-empty-state"><p class="ca-helper">Offense breakdown unavailable — sections could not load. Hard refresh or verify team_profile_sections.js is present.</p></div>';
   }
 
   function statBox(label, val) {
