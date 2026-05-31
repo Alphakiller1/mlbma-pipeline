@@ -170,8 +170,15 @@ var DATA = { profiles: [], batters: [], sps: [], bullpen: [], registry: [], matc
 var STATE = { team: 'NYY', split: 'both', window: 'YTD', category: 'lineup', battingTab: 'projected', chartMetric: 'osi' };
 
 function gvizUrl(tab) {
+  var bust = window.MLBMA_SHEET_BUST != null ? window.MLBMA_SHEET_BUST : Date.now();
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tab);
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tab) + '&_b=' + encodeURIComponent(String(bust));
+}
+
+function applySheetSyncBust(lastUpdated) {
+  var ts = lastUpdated ? String(lastUpdated).trim() : String(Date.now());
+  window.MLBMA_SHEET_BUST = ts;
+  try { sessionStorage.setItem('mlbma_sheet_sync_ts', ts); } catch (e) { /* ignore */ }
 }
 
 function parseCSVLine(line) {
@@ -1101,6 +1108,19 @@ function initSelector() {
 }
 
 function loadAll() {
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
+    MLBMASharedMatchup.clearSheetTabCache();
+  }
+  var probeUrl = gvizUrl('Last_Updated') + '&_probe=' + Date.now();
+  return fetch(probeUrl, { cache: 'no-store' }).then(function(r) {
+    return r.ok ? r.text() : '';
+  }).then(function(text) {
+    var m = text && text.match(/"Last Updated","([^"]+)"/i);
+    if (m && m[1]) applySheetSyncBust(m[1]);
+    else applySheetSyncBust(String(Date.now()));
+  }).catch(function() {
+    applySheetSyncBust(String(Date.now()));
+  }).then(function() {
   return Promise.all([
     fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_profiles).catch(function() { return []; }),
@@ -1153,6 +1173,7 @@ function loadAll() {
       banner.textContent = 'Team_Profiles tab empty ? run pipeline steps 18?19 (compute_team_profile + push).';
       banner.classList.add('show');
     }
+  });
   });
 }
 

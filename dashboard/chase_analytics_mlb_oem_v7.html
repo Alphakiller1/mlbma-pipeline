@@ -2924,15 +2924,64 @@ var _landingRendered = false;
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
+var SHEET_SYNC_KEY = 'mlbma_sheet_sync_ts';
 var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], bullpenUnits: {}, teamProfilesByTeam: {}, signalsToday: [], signalsConvergence: [],
   windowDataAvailable: { L30: false, L14: false, L7: false }, rhp: null, lhp: null };
 var SP_WEIGHT = 0.70;
 var BULLPEN_WEIGHT = 0.30;
 
+function sheetBustValue() {
+  var raw = window.MLBMA_SHEET_BUST;
+  if (raw == null) {
+    try { raw = sessionStorage.getItem(SHEET_SYNC_KEY); } catch (e) { /* ignore */ }
+  }
+  if (raw == null) raw = String(Date.now());
+  return encodeURIComponent(String(raw));
+}
+
+function applySheetSyncBust(lastUpdated) {
+  var ts = lastUpdated ? String(lastUpdated).trim() : String(Date.now());
+  window.MLBMA_SHEET_BUST = ts;
+  try { sessionStorage.setItem(SHEET_SYNC_KEY, ts); } catch (e) { /* ignore */ }
+}
+
+function invalidateSheetCaches(lastUpdated) {
+  var prev = null;
+  try { prev = sessionStorage.getItem(SHEET_SYNC_KEY); } catch (e) { /* ignore */ }
+  var next = lastUpdated ? String(lastUpdated).trim() : null;
+  if (prev && next && prev === next) return false;
+  applySheetSyncBust(next || String(Date.now()));
+  try { sessionStorage.removeItem(LIVE_CACHE_KEY); } catch (e) { /* ignore */ }
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
+    MLBMASharedMatchup.clearSheetTabCache();
+  }
+  if (LIVE_DATA) delete LIVE_DATA.tomorrowMatchups;
+  _researchBundleLoaded = false;
+  return true;
+}
+
+function prefetchSheetSync() {
+  var probeUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(TABS.last_updated) + '&_probe=' + Date.now();
+  return fetch(probeUrl, { cache: 'no-store' }).then(function(res) {
+    if (!res.ok) throw new Error('Last_Updated HTTP ' + res.status);
+    return res.text();
+  }).then(function(text) {
+    var ts = parseLastUpdatedFromText(text);
+    if (ts) invalidateSheetCaches(ts);
+    else applySheetSyncBust(String(Date.now()));
+    return ts;
+  }).catch(function(err) {
+    console.warn('[MLBMA] sheet sync probe failed', err);
+    applySheetSyncBust(String(Date.now()));
+    return null;
+  });
+}
+
 function sheetCsvUrl(tabName) {
   var day = new Date().toISOString().slice(0, 10);
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName) + '&_d=' + day;
+    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName) + '&_d=' + day + '&_b=' + sheetBustValue();
 }
 
 function ensureCacheForToday() {
@@ -4172,7 +4221,8 @@ function loadLandingData() {
   console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading today\'s matchups?';
-  return Promise.all([
+  return prefetchSheetSync().then(function() {
+    return Promise.all([
     fetchTabSafe(TABS.today_matchups),
     fetchTabSafe(TABS.today_lineups),
     fetchTabSafe(TABS.weather),
@@ -4185,7 +4235,8 @@ function loadLandingData() {
     fetchTabSafe(TABS.last_updated, ''),
     fetchTabSafe(TABS.sp_profiles, []),
     fetchTabSafe(TABS.today_games, [])
-  ]).then(function(results) {
+  ]);
+  }).then(function(results) {
     var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
         signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9],
@@ -4225,7 +4276,10 @@ function loadLandingData() {
       MLBMAAssets.parseRegistryRows(parseRegistrySheet(registryRows));
     }
     LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
-    if (LIVE_DATA.lastUpdated) syncFreshnessIndicator(LIVE_DATA.lastUpdated);
+    if (LIVE_DATA.lastUpdated) {
+      applySheetSyncBust(LIVE_DATA.lastUpdated);
+      syncFreshnessIndicator(LIVE_DATA.lastUpdated);
+    }
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.spProfiles = spProfileRows || [];
@@ -4335,6 +4389,14 @@ function loadLiveData() {
       LIVE_DATA.loaded = false;
       LIVE_DATA.error = err && err.message ? err.message : String(err);
       var cached = loadLiveCache();
+      if (cached && cached.scYtdR && cached.scYtdR.length) {
+        var cachedTs = cached.lastUpdated ? String(cached.lastUpdated).trim() : '';
+        var syncTs = null;
+        try { syncTs = sessionStorage.getItem(SHEET_SYNC_KEY); } catch (e) { /* ignore */ }
+        if (syncTs && cachedTs && syncTs !== cachedTs) {
+          cached = null;
+        }
+      }
       if (cached && cached.scYtdR && cached.scYtdR.length) {
         applyLiveCache(cached);
         showDataError(

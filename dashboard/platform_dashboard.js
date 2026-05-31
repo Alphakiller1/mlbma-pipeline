@@ -176,8 +176,9 @@
 
   function spRow(label, name, hand, team, stats, opts) {
     opts = opts || {};
-    var pid = A ? A.lookupMlbId(name) : null;
-    var hs = A ? A.pitcherAvatar(pid, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
+    var pid = opts.mlbId != null ? String(opts.mlbId)
+      : (A && A.resolveMlbId ? A.resolveMlbId(name) : (A ? A.lookupMlbId(name) : null));
+    var hs = A ? A.pitcherAvatar(pid || name, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
       : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
     var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team);
     if (ps == null) ps = spPitchScore(team);
@@ -346,8 +347,8 @@
     }
   }
 
-  function fetchTomorrowMatchups() {
-    if (global.LIVE_DATA && LIVE_DATA.tomorrowMatchups && LIVE_DATA.tomorrowMatchups.length) {
+  function fetchTomorrowMatchups(forceRefresh) {
+    if (!forceRefresh && global.LIVE_DATA && LIVE_DATA.tomorrowMatchups && LIVE_DATA.tomorrowMatchups.length) {
       return Promise.resolve(LIVE_DATA.tomorrowMatchups);
     }
     var now = new Date();
@@ -371,8 +372,10 @@
             home: teamKey(home.abbreviation || home.teamName),
             stadium: (g.venue && g.venue.name) || '',
             awaySP: awaySp.fullName || 'TBD',
+            awaySPId: awaySp.id || null,
             awayHand: (awaySp.pitchHand && awaySp.pitchHand.code) || 'R',
             homeSP: homeSp.fullName || 'TBD',
+            homeSPId: homeSp.id || null,
             homeHand: (homeSp.pitchHand && homeSp.pitchHand.code) || 'R',
             isTomorrow: true
           });
@@ -399,8 +402,8 @@
       + '<span class="hmc-meta">' + esc(m.time) + (m.stadium ? ' \u00B7 ' + esc(m.stadium) : '') + '</span>'
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3, pitchScore: awayPs })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, fip: homePs }, { eager: cardIdx < 3, pitchScore: homePs })
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3, pitchScore: awayPs, mlbId: m.awaySPId })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, fip: homePs }, { eager: cardIdx < 3, pitchScore: homePs, mlbId: m.homeSPId })
       + '</div>'
       + '<p class="hmc-lineup-placeholder" style="font-size:12px;color:#9CA3AF;margin:8px 0">Lineups TBD</p>'
       + '<p class="hmc-tomorrow-note">Projected lineups and full analysis available day-of</p>'
@@ -421,13 +424,21 @@
     renderOpeningHero();
 
     if (MATCH_DAY === 'tomorrow') {
-      fetchTomorrowMatchups().then(function(games) {
+      var renderTomorrow = function(games) {
         if (!games.length) {
           grid.innerHTML = '<div class="empty-msg">No games scheduled for tomorrow.</div>';
           return;
         }
         grid.innerHTML = games.map(function(m, i) { return renderTomorrowCard(m, i); }).join('');
-      });
+      };
+      var loadTomorrow = function() {
+        return fetchTomorrowMatchups(true).then(renderTomorrow);
+      };
+      if (window.PlatformDashboard && PlatformDashboard.initRegistry) {
+        PlatformDashboard.initRegistry().then(loadTomorrow);
+      } else {
+        loadTomorrow();
+      }
       return;
     }
 
