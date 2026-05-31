@@ -524,7 +524,7 @@ tr.rank-row-expanded { background: rgba(124, 77, 255, 0.06); }
 /* Modal */
 .modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.82);
   display: none !important; align-items: center; justify-content: center;
   z-index: 1000; padding: 20px;
   visibility: hidden; pointer-events: none;
@@ -729,7 +729,7 @@ tr.rank-row-expanded { background: rgba(124, 77, 255, 0.06); }
 /* ===== Watchlist bar ===== */
 .watchlist-bar {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(10px);
+  background: rgba(10, 10, 10, 0.97);
   border: 1px solid var(--border-2); border-radius: 10px;
   padding: 8px 14px; margin-bottom: 18px;
   display: none; flex-wrap: wrap; align-items: center; gap: 8px;
@@ -1017,7 +1017,6 @@ tr.compare-selected td:first-child::before { content: '?'; color: var(--purple);
 }
 .matchup-headline .tm.favored {
   color: var(--green);
-  text-shadow: 0 0 20px rgba(74, 222, 128, 0.25);
 }
 .matchup-sp-block {
   background: var(--bg-4);
@@ -1803,7 +1802,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   padding: 8px 14px; border-radius: 999px;
   background: rgba(124,58,237,0.12);
   border: 1px solid rgba(124,58,237,0.35);
-  backdrop-filter: blur(8px);
 }
 .ca-hero__pulse {
   width: 8px; height: 8px; border-radius: 50%; background: #a78bfa;
@@ -1833,8 +1831,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   -webkit-text-fill-color: #FFFFFF !important;
   display: inline-block;
   letter-spacing: -0.02em;
-  text-shadow: 0 8px 26px rgba(0,0,0,0.45);
-  -webkit-text-stroke: 0.45px rgba(255,255,255,0.42);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* Lede */
@@ -1868,9 +1865,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .ca-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 16px 50px -10px rgba(124,77,255,0.9), inset 0 1px 0 rgba(255,255,255,0.25); }
 .ca-btn--ghost {
   color: #e9e6ff;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.05);
   border-color: rgba(124,77,255,0.4);
-  backdrop-filter: blur(8px);
 }
 .ca-btn--ghost:hover { background: rgba(124,77,255,0.12); border-color: #C4B0FF; }
 
@@ -1882,7 +1878,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   background: rgba(124,77,255,0.18);
   border: 1px solid rgba(124,77,255,0.22);
   border-radius: 18px; overflow: hidden;
-  backdrop-filter: blur(10px);
 }
 .ca-stat {
   padding: 20px 22px;
@@ -2044,7 +2039,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   box-shadow:
     0 1px 0 rgba(255,255,255,0.06) inset,
     0 20px 60px rgba(0,0,0,0.45);
-  backdrop-filter: blur(10px);
 }
 
 .ca-market__chart {
@@ -2210,7 +2204,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   background: transparent;
   border: none;
 }
-/* .ca-lab__tab — styled in mlbma_design_system.css (hero CTA context pattern) */
+/* .ca-lab__tab — styled in mlbma_design_system.css?v=20260602a (hero CTA context pattern) */
 .ca-lab__panes { margin-top: 8px; }
 body.view-research .ca-lab { display: block; }
 
@@ -2439,10 +2433,10 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260531i">
-<link rel="stylesheet" href="theme.css?v=20260612b">
-<link rel="stylesheet" href="chase_nav.css?v=20260620u">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260602a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260602a">
+<link rel="stylesheet" href="theme.css?v=20260602a">
+<link rel="stylesheet" href="chase_nav.css?v=20260602a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260620t">
 <link rel="stylesheet" href="research_lab.css?v=20260531e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">

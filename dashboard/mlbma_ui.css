@@ -17,7 +17,7 @@
 .mlbma-loading {
   position: fixed; inset: 0; z-index: 10000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(6px);
+  background: rgba(10, 10, 10, 0.97);
   transition: opacity 0.45s ease, visibility 0.45s;
 }
 .mlbma-loading.hide {
@@ -36,6 +36,7 @@
   background: linear-gradient(135deg, #fff 0%, #6D28D9 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; margin-bottom: 10px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 .mlbma-load-sub { color: #A1A1AA; font-size: 13px; }
 

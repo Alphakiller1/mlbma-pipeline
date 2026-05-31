@@ -4,6 +4,15 @@
  */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 
+/* Platform-wide crisp text rendering (Retina / high-DPI) */
+html,
+body,
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 :root {
   /* Page & surfaces */
   --page-bg: #08090F;
@@ -125,12 +134,6 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   transform: translateY(-2px);
   border-color: var(--ca-brand-border);
   box-shadow: var(--ca-card-hover-shadow);
-}
-@supports (backdrop-filter: blur(12px)) {
-  .ca-card,
-  .ca-glass {
-    backdrop-filter: blur(12px);
-  }
 }
 
 /* Pill controls — layout only; button chrome in mlbma_design_system.css context-toggle block */
@@ -710,6 +713,7 @@ table.ca-table td.sort-active,
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 .ca-section-title {
@@ -1171,6 +1175,7 @@ h1.ca-page-title {
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35) !important;
 }
 
 /* Team Profile — hero team name stays solid; page/section titles use platform chrome below */
@@ -1194,6 +1199,7 @@ h1.ca-page-title {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 /* Matchups + Research Lab + Opening landing sections — unified page-title treatment */
@@ -1272,6 +1278,7 @@ h1.ca-page-title {
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35) !important;
 }
 
 #section-matchups-hero .ca-section-title,
@@ -1293,6 +1300,7 @@ h1.ca-page-title {
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35) !important;
 }
 
 #section-matchups-hero .ca-page-shell,
