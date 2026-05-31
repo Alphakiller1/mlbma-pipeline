@@ -832,9 +832,9 @@ function renderContextMeta(prof, name, ctx) {
   var wrcHtml = wrc != null
     ? '<div class="ca-wrc-medallion ca-wrc-medallion--compact"><div class="v">'
       + valChip(wrc, 'wrc', false, 0) + '</div><div class="c">wRC+ · '
-      + esc(window.TeamProfileMini && TeamProfileMini.wrcTierLabel ? TeamProfileMini.wrcTierLabel(wrc) : 'MLB') + '</div></div>'
+      + escHtml(window.TeamProfileMini && TeamProfileMini.wrcTierLabel ? TeamProfileMini.wrcTierLabel(wrc) : 'MLB') + '</div></div>'
     : '';
-  var wlHtml = wl ? '<span class="tp-context-wl">' + esc(wl) + '</span>' : '';
+  var wlHtml = wl ? '<span class="tp-context-wl">' + escHtml(wl) + '</span>' : '';
   el.innerHTML = wrcHtml + wlHtml;
 }
 
