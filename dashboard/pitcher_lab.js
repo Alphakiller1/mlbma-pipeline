@@ -1,4 +1,4 @@
-// v20260620h
+// v20260531d
 /**
  * Research Lab — Pitcher Intelligence tab
  */
@@ -48,11 +48,13 @@
 
   var CACHE = {
     profiles: null, splits: null, gameLog: null, relievers: null, relieverLog: null, oorByTeam: null,
+    bullpenUnitRows: null,
     searchQ: '', dropdownOpen: false,
-    viewMode: 'pitcher', bpTeam: '', snapSplit: 'overall',
-    intelTab: 'snapshot',
+    intelTab: 'rankings',
     sortKey: 'pitchScore', sortDir: -1, selected: '',
-    tableHand: 'overall', tableSegment: 'full', expandedPitcher: ''
+    tableHand: 'overall', tableSegment: 'full', expandedPitcher: '',
+    bpSplit: 'overall', bpContext: 'overall',
+    bpSortKey: 'bullpenScore', bpSortDir: -1, bpExpandedTeam: ''
   };
 
   var SNAP_SPLIT_PILLS = [
@@ -120,6 +122,70 @@
     var base = presets[slot] || { crop: 'matchup', className: 'mc-headshot' };
     var html = A.pitcherAvatar(idOrName, Object.assign({}, base, extra || {}));
     return html ? '<span class="mc-sp-photo">' + html + '</span>' : '';
+  }
+
+  function loadBullpenUnits() {
+    if (CACHE.bullpenUnitRows) return Promise.resolve(CACHE.bullpenUnitRows);
+    if (!S || !TABS || !TABS.bullpen_unit) return Promise.resolve([]);
+    return S.fetchSheetTab(TABS.bullpen_unit).then(function(rows) {
+      CACHE.bullpenUnitRows = rows || [];
+      return CACHE.bullpenUnitRows;
+    });
+  }
+
+  function bpContextPrefixMap() {
+    return {
+      hlev: 'high_leverage',
+      mlev: 'medium_leverage',
+      llev: 'low_leverage',
+      vs_high: 'vs_high_osi',
+      vs_mid: 'vs_mid_osi',
+      vs_low: 'vs_low_osi'
+    };
+  }
+
+  function bpActivePrefix() {
+    var ctx = CACHE.bpContext || 'overall';
+    var ctxMap = bpContextPrefixMap();
+    if (ctx !== 'overall' && ctxMap[ctx]) return ctxMap[ctx];
+    var hand = CACHE.bpSplit || 'overall';
+    if (hand === 'rhh') return 'vs_rhh';
+    if (hand === 'lhh') return 'vs_lhh';
+    return 'overall';
+  }
+
+  function bpColVal(row, metric) {
+    var prefix = bpActivePrefix();
+    return numOrNull(pickCol(row, [prefix + '_' + metric, prefix + ' ' + metric]));
+  }
+
+  function bpScoreFromOsi(osi) {
+    if (osi == null || isNaN(osi)) return null;
+    return Math.max(0, Math.min(100, 100 - osi));
+  }
+
+  function bpRowTeam(row) {
+    return teamKey(pickCol(row, ['team', 'Tm', 'Team']));
+  }
+
+  function bullpenRankRows() {
+    return (CACHE.bullpenUnitRows || []).filter(function(r) { return bpRowTeam(r); });
+  }
+
+  function bullpenProfileUrl(team) {
+    return 'bullpen_report.html?team=' + encodeURIComponent(team || '');
+  }
+
+  function pitcherProfileUrl(name) {
+    return 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
+  }
+
+  function goPitcherProfile(name) {
+    if (name) global.location.href = pitcherProfileUrl(name);
+  }
+
+  function goBullpenProfile(team) {
+    if (team) global.location.href = bullpenProfileUrl(team);
   }
 
   function ensureRegistry() {
@@ -709,21 +775,15 @@
     }).join('');
     dd.querySelectorAll('.pl-dd-item').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        selectPitcher(btn.getAttribute('data-name'), true);
+        selectPitcher(btn.getAttribute('data-name'));
         dd.style.display = 'none';
       });
     });
   }
 
-  function selectPitcher(name, switchToSnapshot) {
+  function selectPitcher(name) {
     CACHE.selected = name;
-    if (switchToSnapshot) CACHE.intelTab = 'snapshot';
-    var inp = document.getElementById('plPitcherSearch');
-    if (inp) inp.value = name;
-    loadGameLog().then(function() {
-      renderIntelSubTabs();
-      renderSnapshot();
-    });
+    goPitcherProfile(name);
   }
 
   function renderSnapshot() {
@@ -810,181 +870,53 @@
     });
   }
 
-  function renderBullpenView() {
-    var mount = document.getElementById('plBullpenMount');
-    if (!mount) return;
-    if (CACHE.viewMode !== 'bullpen') {
-      mount.innerHTML = '';
-      return;
-    }
-    var teams = bullpenTeams();
-    if (!CACHE.bpTeam && teams.length) CACHE.bpTeam = teams[0];
-    var team = CACHE.bpTeam;
-    var unit = bullpenUnit(team);
-    var bpScore = S && S.bullpenPitchScore ? S.bullpenPitchScore(unit) : (unit && unit.bullpenScore);
-    var woba = unit && (unit.woba != null ? unit.woba : numOrNull(pickCol(unit, ['overall_wOBA', 'wOBA'])));
-    var rcv = unit && (unit.rcvAllowed != null ? unit.rcvAllowed : numOrNull(pickCol(unit, ['overall_RCV_allowed', 'RCV_allowed'])));
-    var obr = unit && (unit.obrAllowed != null ? unit.obrAllowed : numOrNull(pickCol(unit, ['overall_OBR_allowed', 'OBR_allowed'])));
-    var hiEra = unit && (unit.hiLevEra != null ? unit.hiLevEra : colVal(unit, 'high_leverage', 'ERA'));
-    var medEra = unit && (unit.medLevEra != null ? unit.medLevEra : colVal(unit, 'medium_leverage', 'ERA'));
-
-    var teamOpts = teams.map(function(t) {
-      return '<option value="' + esc(t) + '"' + (t === team ? ' selected' : '') + '>' + esc(t) + '</option>';
-    }).join('');
-
-    var snapshot = unit
-      ? '<div class="pl-bp-snapshot pl-bp-snapshot--unit">'
-        + (A ? A.teamLogoImg(team, 48) : '')
-        + '<div><h3 class="pl-bp-name">' + esc(team) + ' Bullpen Unit</h3>'
-        + '<span class="pl-bp-score-badge" style="color:' + mColor(bpScore, false, 'pitching') + '">Score ' + fmt(bpScore, 0) + '</span>'
-        + '<div class="pl-bp-stats">'
-        + '<span>wOBA <strong>' + (woba != null ? Number(woba).toFixed(3) : '\u2014') + '</strong></span>'
-        + '<span>RCV Allowed <strong style="color:' + mColor(rcv, true) + '">' + fmt(rcv) + '</strong></span>'
-        + '<span>OBR Allowed <strong style="color:' + mColor(obr, true) + '">' + fmt(obr) + '</strong></span>'
-        + '<span>Hi Lev ERA <strong>' + fmt(hiEra, 2) + '</strong></span>'
-        + '<span>Med Lev ERA <strong>' + fmt(medEra, 2) + '</strong></span>'
-        + '</div></div></div>'
-      : '<p class="rl-empty">Bullpen unit data not loaded \u2014 run pipeline steps 12\u201313.</p>';
-
-    mount.innerHTML = '<div class="pl-bp-panel">'
-      + '<div class="pl-bp-controls">'
-      + '<label for="plBpTeamSelect" class="ca-metric-label">Team</label>'
-      + '<select id="plBpTeamSelect" class="pl-bp-select">' + teamOpts + '</select>'
-      + '</div>'
-      + snapshot
-      + renderBullpenUsageBlock(team)
-      + '<p class="rl-profile-link"><a href="bullpen_report.html?team=' + encodeURIComponent(team || '') + '">Full bullpen report \u2192</a></p>'
-      + '</div>';
-
-    paintBullpenUsage(team);
-
-    var sel = document.getElementById('plBpTeamSelect');
-    if (sel) {
-      sel.addEventListener('change', function() {
-        CACHE.bpTeam = sel.value;
-        renderBullpenView();
-      });
-    }
-  }
-
-  function syncViewChrome() {
-    var searchBlock = document.querySelector('.pl-intel-search-block');
-    var subTabs = document.getElementById('plIntelSubTabs');
-    if (searchBlock) searchBlock.style.display = CACHE.viewMode === 'bullpen' ? 'none' : '';
-    if (subTabs && CACHE.viewMode === 'bullpen') {
-      subTabs.innerHTML = '';
-      subTabs.hidden = true;
-    }
-    syncIntelPanes();
-  }
-
-  function renderViewToggle() {
-    var mount = document.getElementById('plViewToggle');
-    if (!mount) return;
-    mount.innerHTML = '<div class="pl-view-toggle">'
-      + '<button type="button" class="pl-view-btn' + (CACHE.viewMode === 'pitcher' ? ' active' : '') + '" data-plview="pitcher">Pitcher Intelligence</button>'
-      + '<button type="button" class="pl-view-btn' + (CACHE.viewMode === 'bullpen' ? ' active' : '') + '" data-plview="bullpen">Bullpen View</button>'
-      + '</div>';
-    syncViewChrome();
-    mount.querySelectorAll('[data-plview]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        CACHE.viewMode = btn.getAttribute('data-plview');
-        renderViewToggle();
-        renderIntelSubTabs();
-        if (CACHE.viewMode === 'bullpen') {
-          loadRelievers().then(function() {
-            renderBullpenView();
-            renderSnapshot();
-            renderRankings();
-          });
-        } else {
-          renderBullpenView();
-          renderSnapshot();
-          renderRankings();
-        }
-      });
-    });
-  }
-
   function syncIntelPanes() {
-    var snap = document.getElementById('plSnapshotPane');
     var rank = document.getElementById('plRankingsPane');
-    var isPitcher = CACHE.viewMode === 'pitcher';
-    var isSnap = CACHE.intelTab === 'snapshot';
-    if (snap) snap.hidden = !isPitcher || !isSnap;
-    if (rank) rank.hidden = !isPitcher || isSnap;
+    var bp = document.getElementById('plBullpenRankingsPane');
+    var tab = CACHE.intelTab || 'rankings';
+    if (rank) rank.hidden = tab !== 'rankings';
+    if (bp) bp.hidden = tab !== 'bullpen';
   }
 
   function renderIntelSubTabs() {
     var mount = document.getElementById('plIntelSubTabs');
     if (!mount) return;
-    if (CACHE.viewMode === 'bullpen') {
-      mount.innerHTML = '';
-      mount.hidden = true;
-      syncIntelPanes();
-      return;
-    }
     mount.hidden = false;
-    var tab = CACHE.intelTab || 'snapshot';
+    var tab = CACHE.intelTab || 'rankings';
     mount.innerHTML = '<div class="pl-intel-subtabs hub-pill-row" role="tablist" aria-label="Pitcher Intelligence views">'
-      + '<button type="button" class="hub-pill pl-intel-subtab' + (tab === 'snapshot' ? ' active' : '')
-      + '" data-pl-intel-tab="snapshot" role="tab" aria-selected="' + (tab === 'snapshot' ? 'true' : 'false') + '">Pitcher Snapshot</button>'
       + '<button type="button" class="hub-pill pl-intel-subtab' + (tab === 'rankings' ? ' active' : '')
       + '" data-pl-intel-tab="rankings" role="tab" aria-selected="' + (tab === 'rankings' ? 'true' : 'false') + '">Today\'s Starters Rankings</button>'
+      + '<button type="button" class="hub-pill pl-intel-subtab' + (tab === 'bullpen' ? ' active' : '')
+      + '" data-pl-intel-tab="bullpen" role="tab" aria-selected="' + (tab === 'bullpen' ? 'true' : 'false') + '">Bullpen Rankings</button>'
       + '</div>';
     mount.querySelectorAll('[data-pl-intel-tab]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        CACHE.intelTab = btn.getAttribute('data-pl-intel-tab') || 'snapshot';
+        CACHE.intelTab = btn.getAttribute('data-pl-intel-tab') || 'rankings';
         renderIntelSubTabs();
-        renderSnapshot();
         renderRankings();
+        renderBullpenRankings();
       });
     });
     syncIntelPanes();
   }
 
   function renderSearchMount(root) {
-    root.innerHTML = '<div id="plViewToggle"></div>'
-      + '<div id="plIntelSubTabs"></div>'
-      + '<div id="plSnapshotPane" class="pl-intel-pane">'
-      + '<div class="pl-intel-search-block">'
-      + '<p class="pl-intel-purpose">Starting pitchers only — prop outlook, recent starts, and opponent-quality context. Relievers → Bullpen View.</p>'
-      + '<div class="pl-search-wrap pl-intel-search">'
-      + '<input type="search" id="plPitcherSearch" class="pl-search-input pl-intel-search-input" placeholder="Select Pitcher" autocomplete="off">'
-      + '<div id="plSearchDropdown" class="pl-search-dropdown"></div></div></div>'
-      + '<div id="plSnapshotMount"></div>'
-      + '</div>'
-      + '<div id="plRankingsPane" class="pl-intel-pane" hidden>'
+    root.innerHTML = '<div id="plIntelSubTabs"></div>'
+      + '<div id="plRankingsPane" class="pl-intel-pane">'
       + '<div id="plIntelToolbar"></div>'
       + '<div id="plRankingsMount"></div>'
       + '</div>'
-      + '<div id="plBullpenMount"></div>';
+      + '<div id="plBullpenRankingsPane" class="pl-intel-pane" hidden>'
+      + '<div id="plBpIntelToolbar"></div>'
+      + '<div id="plBullpenRankingsMount"></div>'
+      + '</div>';
 
-    renderViewToggle();
     renderIntelSubTabs();
-
-    syncViewChrome();
-    var inp = document.getElementById('plPitcherSearch');
-    if (inp) {
-      inp.addEventListener('input', function() {
-        CACHE.searchQ = inp.value;
-        renderDropdown(searchMatches(inp.value));
-      });
-      inp.addEventListener('focus', function() {
-        renderDropdown(searchMatches(inp.value));
-      });
-    }
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.pl-search-wrap')) {
-        var dd = document.getElementById('plSearchDropdown');
-        if (dd) dd.style.display = 'none';
-      }
-    });
   }
 
   function renderIntelToolbar() {
     var mount = document.getElementById('plIntelToolbar');
-    if (!mount || CACHE.viewMode === 'bullpen' || CACHE.intelTab !== 'rankings') {
+    if (!mount || CACHE.intelTab !== 'rankings') {
       if (mount) mount.innerHTML = '';
       return;
     }
@@ -1040,23 +972,136 @@
     });
   }
 
+  function expandStatTile(label, value, invert, ctx, decimals) {
+    return '<div class="pl-expand-tile">'
+      + '<span class="pl-expand-tile-label">' + esc(label) + '</span>'
+      + '<div class="pl-expand-tile-val">' + metricChip(value, invert, ctx, decimals) + '</div>'
+      + '</div>';
+  }
+
+  function expandPlainStat(label, value, suffix) {
+    var display = (value != null && !isNaN(value))
+      ? fmt(value, typeof suffix === 'number' ? suffix : 1) + (typeof suffix === 'string' ? suffix : '')
+      : '—';
+    return '<div class="pl-expand-tile pl-expand-tile--plain">'
+      + '<span class="pl-expand-tile-label">' + esc(label) + '</span>'
+      + '<div class="pl-expand-tile-val pl-expand-tile-val--plain">' + esc(display) + '</div>'
+      + '</div>';
+  }
+
+  function renderExpandedStartsCompact(name, limit) {
+    var log = pitcherGamelog(name, limit || 3);
+    if (!log.length) {
+      return '<p class="pl-expand-empty">No recent starts in SP_Game_Log.</p>';
+    }
+    return '<div class="pl-expand-starts">'
+      + log.map(function(g) {
+        var dt = pickCol(g, ['date', 'Date']);
+        var opp = pickCol(g, ['opponent_team', 'opponent team', 'Opponent']);
+        var ip = pickCol(g, ['IP', 'ip']);
+        var er = pickCol(g, ['ER', 'er']);
+        var k = pickCol(g, ['K']);
+        var f5 = pickCol(g, ['f5_er', 'F5_ER', 'f5 ER']);
+        var cls = gamelogRowClass(g);
+        var logo = A ? A.teamLogoImg(opp, 16) : '';
+        return '<div class="pl-expand-start' + cls + '">'
+          + '<div class="pl-expand-start-top">'
+          + '<span class="pl-expand-start-date">' + esc(dt) + '</span>'
+          + '<span class="pl-expand-start-opp">' + logo + ' ' + esc(opp) + '</span>'
+          + '</div>'
+          + '<div class="pl-expand-start-stats">'
+          + '<span><strong>' + esc(ip) + '</strong> IP</span>'
+          + '<span><strong>' + esc(er) + '</strong> ER</span>'
+          + '<span class="pl-expand-start-k"><strong>' + esc(k) + '</strong> K</span>'
+          + (f5 !== '' && f5 != null ? '<span><strong>' + esc(f5) + '</strong> F5</span>' : '')
+          + '</div></div>';
+      }).join('')
+      + '</div>';
+  }
+
   function renderExpandedPanel(row) {
     var m = profileMetrics(row);
+    var st = extendedStats(row, m);
     var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
+    var team = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
+    var hand = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || 'R').charAt(0);
+    var pid = pickCol(row, ['pitcher_id', 'playerId', 'mlb_id']);
     var flags = spFlags(m);
-    return '<div class="pl-rank-expand">'
-      + '<div class="pl-rank-expand-grid">'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">OSI Allowed</span>' + metricChip(m.osiAllowed, true, 'osi', 1) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">ABQ Allowed</span>' + metricChip(m.abqAllowed, true, 'osi', 1) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">RCV Allowed</span>' + metricChip(m.rcvAllowed, true, 'osi', 1) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">OBR Allowed</span>' + metricChip(m.obrAllowed, true, 'osi', 1) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">OOR</span>' + metricChip(m.oor, false, 'oor', 0) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">HR/9</span>' + metricChip(m.hr9, true, 'pitching', 2) + '</div>'
+    var log = pitcherGamelog(n, 12);
+    var l5 = summarizeStarts(log.slice(0, 5));
+    var leans = buildPropLeans(m, l5, null);
+    var profileUrl = pitcherProfileUrl(n);
+    var avatar = piPitcherAvatar(pid || n, 'snapshot');
+    var logo = A ? A.teamLogoImg(team, 28) : '';
+    var tonight = isTonightStarter(n);
+
+    var leanHtml = leans.length
+      ? '<div class="pl-expand-leans">' + leans.map(function(l) {
+        return '<span class="pl-flag-pill pl-flag-pill--' + esc(l.tone) + '">' + esc(l.label) + '</span>';
+      }).join('') + '</div>'
+      : '<p class="pl-expand-empty">No strong prop leans in recent form.</p>';
+
+    var l5Strip = l5
+      ? '<div class="pl-expand-l5">'
+        + '<span class="pl-expand-l5-item">L5 K/start <strong>' + fmt(l5.avgK, 1) + '</strong></span>'
+        + '<span class="pl-expand-l5-item">L5 ER/start <strong>' + fmt(l5.avgEr, 1) + '</strong></span>'
+        + '<span class="pl-expand-l5-item">L5 K% <strong>' + fmt(l5.kPct, 1) + '%</strong></span>'
+        + (l5.avgF5Er != null ? '<span class="pl-expand-l5-item">L5 F5 ER <strong>' + fmt(l5.avgF5Er, 2) + '</strong></span>' : '')
+        + '</div>'
+      : '';
+
+    return '<div class="pl-expand-card">'
+      + '<div class="pl-expand-header">'
+      + '<div class="pl-expand-identity">'
+      + avatar
+      + '<div class="pl-expand-id-text">'
+      + '<h4 class="pl-expand-name">' + esc(n) + '</h4>'
+      + '<div class="pl-expand-meta">'
+      + logo + ' <span class="pl-rank-team-abbr">' + esc(team) + '</span>'
+      + ' <span class="hand-pill hand-' + hand.toLowerCase() + '">' + esc(hand) + 'HP</span>'
+      + (tonight ? ' <span class="pl-tonight-badge">TONIGHT</span>' : '')
+      + (isStale(row) ? ' <span class="pl-stale-pill">Stale sample</span>' : '')
       + '</div>'
       + (flags.length ? '<div class="pl-expand-flags">' + renderFlagPills(flags) + '</div>' : '')
-      + (isStale(row) ? '<span class="pl-stale-pill">Stale sample</span> ' : '')
-      + '<p class="rl-profile-link"><a href="pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '">Open full profile →</a></p>'
-      + '</div>';
+      + '</div></div>'
+      + '<div class="pl-expand-hero">'
+      + '<span class="pl-expand-hero-label">Pitch Score</span>'
+      + '<div class="pl-expand-hero-val">' + metricChip(m.pitchScore, false, 'pitching', 0) + '</div>'
+      + '</div></div>'
+      + '<div class="pl-expand-body">'
+      + '<section class="pl-expand-panel">'
+      + '<header class="pl-expand-panel-head"><span class="pl-expand-panel-title">Offense Allowed</span>'
+      + '<span class="pl-expand-panel-sub">How dangerous is the offense this arm gives up?</span></header>'
+      + '<div class="pl-expand-stat-grid pl-expand-stat-grid--4">'
+      + expandStatTile('OSI Allowed', m.osiAllowed, true, 'osi', 1)
+      + expandStatTile('ABQ Allowed', m.abqAllowed, true, 'osi', 1)
+      + expandStatTile('RCV Allowed', m.rcvAllowed, true, 'osi', 1)
+      + expandStatTile('OBR Allowed', m.obrAllowed, true, 'osi', 1)
+      + '</div></section>'
+      + '<section class="pl-expand-panel">'
+      + '<header class="pl-expand-panel-head"><span class="pl-expand-panel-title">Pitching Profile</span>'
+      + '<span class="pl-expand-panel-sub">Rate stats &amp; competition quality faced</span></header>'
+      + '<div class="pl-expand-stat-grid pl-expand-stat-grid--4">'
+      + expandStatTile('K%', m.kPct, false, 'pitching', 1)
+      + expandStatTile('BB%', m.bbPct, true, 'pitching', 1)
+      + expandPlainStat('ERA', st.era, 2)
+      + expandPlainStat('FIP', st.fip, 2)
+      + expandStatTile('HR/9', m.hr9, true, 'pitching', 2)
+      + expandPlainStat('WHIP', st.whip, 2)
+      + expandStatTile('OOR', m.oor, false, 'oor', 0)
+      + expandPlainStat('xFIP', st.xfip, 2)
+      + '</div></section>'
+      + '<section class="pl-expand-panel pl-expand-panel--intel">'
+      + '<header class="pl-expand-panel-head"><span class="pl-expand-panel-title">Prop Intel</span>'
+      + '<span class="pl-expand-panel-sub">Recent form signals for tonight\'s slate</span></header>'
+      + leanHtml + l5Strip
+      + '<div class="pl-expand-starts-head">Last ' + Math.min(3, log.length || 0) + ' starts</div>'
+      + renderExpandedStartsCompact(n, 3)
+      + '</section></div>'
+      + '<footer class="pl-expand-footer">'
+      + '<a class="pl-expand-profile-btn" href="' + esc(profileUrl) + '" onclick="event.stopPropagation()">'
+      + 'Open Full Pitcher Profile <span aria-hidden="true">→</span></a>'
+      + '</footer></div>';
   }
 
   function sortValue(row, key, met, stats) {
@@ -1068,6 +1113,223 @@
     if (key === 'xfip') return stats.xfip;
     if (key === 'woba') return stats.woba;
     return met[key];
+  }
+
+  function bpSortValue(row, key) {
+    var osi = bpColVal(row, 'OSI_allowed');
+    if (key === 'team') return bpRowTeam(row);
+    if (key === 'bullpenScore') return bpScoreFromOsi(osi);
+    if (key === 'osiAllowed') return osi;
+    if (key === 'abqAllowed') return bpColVal(row, 'ABQ_allowed');
+    if (key === 'rcvAllowed') return bpColVal(row, 'RCV_allowed');
+    if (key === 'obrAllowed') return bpColVal(row, 'OBR_allowed');
+    if (key === 'era') return bpColVal(row, 'ERA');
+    if (key === 'fip') return bpColVal(row, 'FIP');
+    if (key === 'kPct') return bpColVal(row, 'K_pct');
+    if (key === 'bbPct') return bpColVal(row, 'BB_pct');
+    if (key === 'hr9') return bpColVal(row, 'HR9');
+    if (key === 'irPct') return bpColVal(row, 'inherited_runners_scored_pct');
+    return null;
+  }
+
+  function sortBpRows(rows) {
+    var key = CACHE.bpSortKey;
+    var dir = CACHE.bpSortDir;
+    return rows.slice().sort(function(a, b) {
+      var av = bpSortValue(a, key);
+      var bv = bpSortValue(b, key);
+      if (key === 'team') return dir * String(av || '').localeCompare(String(bv || ''));
+      if (av == null) av = -999;
+      if (bv == null) bv = -999;
+      return dir * (av - bv);
+    });
+  }
+
+  function bpActiveSplitLabel() {
+    var prefix = bpActivePrefix();
+    var labels = {
+      overall: 'Overall',
+      vs_rhh: 'vs RHH',
+      vs_lhh: 'vs LHH',
+      high_leverage: 'High Leverage',
+      medium_leverage: 'Medium Leverage',
+      low_leverage: 'Low Leverage',
+      vs_high_osi: 'vs High OSI',
+      vs_mid_osi: 'vs Mid OSI',
+      vs_low_osi: 'vs Low OSI'
+    };
+    return labels[prefix] || prefix;
+  }
+
+  function renderBpExpandedPanel(row) {
+    var team = bpRowTeam(row);
+    var hiEra = numOrNull(pickCol(row, ['high_leverage_ERA']));
+    var medEra = numOrNull(pickCol(row, ['medium_leverage_ERA']));
+    var loEra = numOrNull(pickCol(row, ['low_leverage_ERA']));
+    var vsHi = numOrNull(pickCol(row, ['vs_high_osi_OSI_allowed']));
+    var vsMid = numOrNull(pickCol(row, ['vs_mid_osi_OSI_allowed']));
+    var vsLo = numOrNull(pickCol(row, ['vs_low_osi_OSI_allowed']));
+    return '<div class="pl-rank-expand">'
+      + '<div class="pl-rank-expand-grid">'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">Hi Lev ERA</span>' + metricChip(hiEra, true, 'pitching', 2) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">Med Lev ERA</span>' + metricChip(medEra, true, 'pitching', 2) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">Low Lev ERA</span>' + metricChip(loEra, true, 'pitching', 2) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">vs High OSI</span>' + metricChip(vsHi, true, 'osi', 1) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">vs Mid OSI</span>' + metricChip(vsMid, true, 'osi', 1) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">vs Low OSI</span>' + metricChip(vsLo, true, 'osi', 1) + '</div>'
+      + '</div>'
+      + '<p class="rl-profile-link"><a href="' + esc(bullpenProfileUrl(team)) + '">Open full bullpen report →</a></p>'
+      + '</div>';
+  }
+
+  function renderBpIntelToolbar() {
+    var mount = document.getElementById('plBpIntelToolbar');
+    if (!mount || CACHE.intelTab !== 'bullpen') {
+      if (mount) mount.innerHTML = '';
+      return;
+    }
+    var hand = CACHE.bpSplit || 'overall';
+    var ctx = CACHE.bpContext || 'overall';
+    mount.innerHTML = '<div class="pl-intel-toolbar">'
+      + '<div class="pl-intel-group">'
+      + '<span class="ca-metric-label">Viewing</span>'
+      + '<div class="rl-pill-row"><span class="pl-intel-hint">' + esc(bpActiveSplitLabel()) + ' split</span></div>'
+      + '</div>'
+      + '<div class="pl-intel-group">'
+      + '<span class="ca-metric-label">Handedness</span>'
+      + '<div class="rl-pill-row">'
+      + ['overall', 'rhh', 'lhh'].map(function(h) {
+        var lbl = { overall: 'Overall', rhh: 'vs RHH', lhh: 'vs LHH' }[h];
+        return '<button type="button" class="ca-pill-btn' + (hand === h ? ' active' : '') + '" data-bp-hand="' + h + '">' + lbl + '</button>';
+      }).join('')
+      + '</div></div>'
+      + '<div class="pl-intel-group">'
+      + '<span class="ca-metric-label">Context</span>'
+      + '<div class="rl-pill-row">'
+      + [
+        { id: 'overall', label: 'Overall' },
+        { id: 'hlev', label: 'High Lev' },
+        { id: 'mlev', label: 'Med Lev' },
+        { id: 'vs_high', label: 'vs High OSI' },
+        { id: 'vs_mid', label: 'vs Mid OSI' },
+        { id: 'vs_low', label: 'vs Low OSI' }
+      ].map(function(opt) {
+        return '<button type="button" class="ca-pill-btn' + (ctx === opt.id ? ' active' : '') + '" data-bp-context="' + opt.id + '">' + opt.label + '</button>';
+      }).join('')
+      + '</div></div></div>';
+
+    mount.querySelectorAll('[data-bp-hand]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        CACHE.bpSplit = btn.getAttribute('data-bp-hand');
+        if (CACHE.bpSplit !== 'overall') CACHE.bpContext = 'overall';
+        renderBullpenRankings();
+      });
+    });
+    mount.querySelectorAll('[data-bp-context]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        CACHE.bpContext = btn.getAttribute('data-bp-context');
+        if (CACHE.bpContext !== 'overall') CACHE.bpSplit = 'overall';
+        renderBullpenRankings();
+      });
+    });
+  }
+
+  function renderBullpenRankings() {
+    var mount = document.getElementById('plBullpenRankingsMount');
+    if (!mount || CACHE.intelTab !== 'bullpen') {
+      if (mount) mount.innerHTML = '';
+      var tb = document.getElementById('plBpIntelToolbar');
+      if (tb && CACHE.intelTab !== 'bullpen') tb.innerHTML = '';
+      return;
+    }
+    renderBpIntelToolbar();
+    var rows = sortBpRows(bullpenRankRows());
+    if (!rows.length) {
+      mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Bullpen Rankings</h4>'
+        + '<p class="pl-section-sub">30-team bullpen units ranked by allowed metrics</p></div>'
+        + '<p class="rl-empty">Bullpen_Unit data not loaded — run pipeline steps 12–13.</p>';
+      return;
+    }
+    var COLS = [
+      { k: 'bullpenScore', label: 'Bullpen Score' },
+      { k: 'osiAllowed', label: 'OSI Allowed' },
+      { k: 'abqAllowed', label: 'ABQ Allowed' },
+      { k: 'rcvAllowed', label: 'RCV Allowed' },
+      { k: 'obrAllowed', label: 'OBR Allowed' },
+      { k: 'era', label: 'ERA' },
+      { k: 'fip', label: 'FIP' },
+      { k: 'kPct', label: 'K%' },
+      { k: 'bbPct', label: 'BB%' }
+    ];
+    function th(k, label) {
+      var sorted = CACHE.bpSortKey === k;
+      var arrow = sorted ? (CACHE.bpSortDir < 0 ? ' ↓' : ' ↑') : '';
+      return '<th class="pl-sort-th' + (sorted ? ' sorted' : '') + '" data-bpsort="' + k + '">' + esc(label) + arrow + '</th>';
+    }
+    function tdNum(val, d, invert, ctx) {
+      if (val == null || isNaN(val)) return '<td class="num">—</td>';
+      return '<td class="num">' + metricChip(val, invert, ctx, d) + '</td>';
+    }
+    var colCount = 2 + COLS.length + 1;
+    var body = rows.map(function(row, i) {
+      var team = bpRowTeam(row);
+      var exp = CACHE.bpExpandedTeam === team ? ' pl-rank-row--expanded' : '';
+      var vals = COLS.map(function(c) {
+        var v = bpSortValue(row, c.k);
+        var inv = c.k !== 'bullpenScore' && c.k !== 'kPct';
+        var ctx = c.k === 'bullpenScore' ? 'pitching' : (c.k === 'era' || c.k === 'fip' ? 'pitching' : 'osi');
+        var d = c.k === 'bullpenScore' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);
+        if (c.k === 'era' || c.k === 'fip') {
+          return '<td class="num">' + (v != null && !isNaN(v) ? fmt(v, 2) : '—') + '</td>';
+        }
+        return tdNum(v, d, inv, ctx);
+      }).join('');
+      var main = '<tr class="pl-rank-row pl-bp-rank-row' + exp + '" data-team="' + esc(team) + '">'
+        + '<td class="num pl-rank-idx">' + (i + 1) + '</td>'
+        + '<td class="pl-rank-team pl-rank-team-select"><span class="pl-rank-team-inner">'
+        + (A ? A.teamLogoImg(team, 28) : '')
+        + '<span class="pl-rank-team-abbr pl-rank-team-link">' + esc(team) + '</span>'
+        + '<span class="pl-profile-link-hint">Report →</span>'
+        + '</span></td>'
+        + vals
+        + '<td class="pl-rank-chevron" aria-hidden="true">' + (exp ? '▾' : '▸') + '</td>'
+        + '</tr>';
+      var expand = exp
+        ? '<tr class="pl-rank-expand-row"><td colspan="' + colCount + '">' + renderBpExpandedPanel(row) + '</td></tr>'
+        : '';
+      return main + expand;
+    }).join('');
+
+    mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Bullpen Rankings</h4>'
+      + '<p class="pl-section-sub">' + esc(bpActiveSplitLabel()) + ' · sort any column · click team name for full bullpen report · click row for leverage &amp; OSI-tier depth</p></div>'
+      + '<div class="rl-table-wrap pl-rank-wrap rl-sticky-table pl-rank-table-wrap"><table class="rl-table-premium pl-rank-table rl-bp-rank-table hub-table"><thead><tr>'
+      + '<th class="pl-rank-idx">#</th>'
+      + th('team', 'Team') + COLS.map(function(c) { return th(c.k, c.label); }).join('')
+      + '<th></th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+
+    mount.querySelectorAll('[data-bpsort]').forEach(function(thEl) {
+      thEl.addEventListener('click', function() {
+        var k = thEl.getAttribute('data-bpsort');
+        if (CACHE.bpSortKey === k) CACHE.bpSortDir *= -1;
+        else {
+          CACHE.bpSortKey = k;
+          CACHE.bpSortDir = k === 'team' ? 1 : -1;
+        }
+        renderBullpenRankings();
+      });
+    });
+    mount.querySelectorAll('.pl-bp-rank-row').forEach(function(tr) {
+      tr.addEventListener('click', function(e) {
+        var team = tr.getAttribute('data-team');
+        if (e.target.closest('.pl-rank-team-select')) {
+          goBullpenProfile(team);
+          return;
+        }
+        CACHE.bpExpandedTeam = CACHE.bpExpandedTeam === team ? '' : team;
+        renderBullpenRankings();
+      });
+    });
   }
 
   function sortProfiles(rows) {
@@ -1091,10 +1353,10 @@
 
   function renderRankings() {
     var mount = document.getElementById('plRankingsMount');
-    if (!mount || CACHE.viewMode === 'bullpen' || CACHE.intelTab !== 'rankings') {
+    if (!mount || CACHE.intelTab !== 'rankings') {
       if (mount) mount.innerHTML = '';
       var tb = document.getElementById('plIntelToolbar');
-      if (tb && (CACHE.viewMode === 'bullpen' || CACHE.intelTab !== 'rankings')) tb.innerHTML = '';
+      if (tb && CACHE.intelTab !== 'rankings') tb.innerHTML = '';
       return;
     }
     renderIntelToolbar();
@@ -1167,6 +1429,7 @@
         + '<td class="pl-rank-name-select"><span class="pl-rank-pitcher-cell">'
         + piPitcherAvatar(pid || n, 'rank')
         + '<span class="pl-rank-pitcher-text">' + esc(n) + '</span>'
+        + '<span class="pl-profile-link-hint">Profile →</span>'
         + staleBadge
         + ' <span class="pl-tonight-badge">START</span>'
         + '</span></td>'
@@ -1184,7 +1447,7 @@
     }).join('');
 
     mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Today\'s Starters Rankings</h4>'
-      + '<p class="pl-section-sub">Projected starters only · sort any column · click row for allowed-metrics depth</p></div>'
+      + '<p class="pl-section-sub">Projected starters only · sort any column · click pitcher name for full profile · click row for allowed-metrics depth</p></div>'
       + '<div class="rl-table-wrap pl-rank-wrap rl-sticky-table pl-rank-table-wrap"><table class="rl-table-premium pl-rank-table rl-sp-rank-table hub-table"><thead><tr>'
       + '<th class="pl-rank-idx">#</th>'
       + '<th class="pl-sort-th' + (CACHE.sortKey === 'name' ? ' sorted' : '') + '" data-plsort="name">Pitcher' + (CACHE.sortKey === 'name' ? (CACHE.sortDir < 0 ? ' ↓' : ' ↑') : '') + '</th>'
@@ -1209,7 +1472,7 @@
       tr.addEventListener('click', function(e) {
         var n = tr.getAttribute('data-pitcher');
         if (e.target.closest('.pl-rank-name-select')) {
-          selectPitcher(n, true);
+          goPitcherProfile(n);
           return;
         }
         CACHE.expandedPitcher = CACHE.expandedPitcher === n ? '' : n;
@@ -1222,35 +1485,24 @@
     var root = document.getElementById(rootId || 'rlPitcherLabRoot');
     if (!root) return;
     root.innerHTML = '<p class="rl-loading">Loading Pitcher Intelligence…</p>';
-    Promise.all([ensureRegistry(), loadProfiles(), loadSplits(), loadGameLog(), loadRelievers(), loadRelieverLog()]).then(function(results) {
-      var rows = results[1] || [];
+    Promise.all([ensureRegistry(), loadProfiles(), loadSplits(), loadGameLog(), loadBullpenUnits()]).then(function() {
       if (!CACHE.oorByTeam && S && S.buildOorByTeam && global.LIVE_DATA && LIVE_DATA.oor) {
         CACHE.oorByTeam = S.buildOorByTeam(LIVE_DATA.oor);
       }
+      CACHE.intelTab = 'rankings';
       renderSearchMount(root);
-      renderIntelSubTabs();
       renderRankings();
-      renderBullpenView();
-      var starters = starterProfiles();
-      if (starters.length && !CACHE.selected) {
-        CACHE.selected = pickCol(starters[0], ['pitcher_name', 'Name', 'Pitcher']);
-        renderSnapshot();
-      }
+      renderBullpenRankings();
     }).catch(function(err) {
       root.innerHTML = '<p class="rl-empty">Error loading Pitcher Intelligence: ' + esc(String(err)) + '</p>';
     });
   }
 
   function renderPitcherSnapshot(pitcher) {
-    CACHE.intelTab = 'snapshot';
-    renderIntelSubTabs();
-    if (typeof pitcher === 'string') selectPitcher(pitcher, true);
-    else if (pitcher) {
-      CACHE.selected = pickCol(pitcher, ['pitcher_name', 'Name', 'Pitcher']);
-      loadSplits().then(function() {
-        renderSnapshot();
-      });
-    }
+    var name = typeof pitcher === 'string'
+      ? pitcher
+      : (pitcher ? pickCol(pitcher, ['pitcher_name', 'Name', 'Pitcher']) : '');
+    if (name) goPitcherProfile(name);
   }
 
   global.PitcherLab = {

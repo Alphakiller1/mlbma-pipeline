@@ -470,7 +470,7 @@
       + ttRow('Split Edge', '<span style="color:' + (edge != null && Math.abs(edge) >= 3 ? '#9A6BFF' : '#E4E4E7') + '">' + fmtSigned(edge) + '</span>');
   }
 
-  /**
+  /** RCV vs regression gap quadrant — 30-team market map bubbles. */
   function renderMarketQuadrant(containerId, rows, opts) {
     opts = opts || {};
     var el = opts.el || document.getElementById(containerId);

@@ -1183,6 +1183,38 @@ h1.ca-page-title {
   font-weight: 600;
 }
 
+#section-matchups-hero .matchups-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#section-matchups-hero .matchups-feature-list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+#section-matchups-hero .matchups-feature-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.58em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.18);
+  transform: translateY(-50%);
+}
+
 #section-matchups-hero h1.ca-page-title,
 #section-research-lab h1.ca-page-title {
   margin: 10px 0 0;

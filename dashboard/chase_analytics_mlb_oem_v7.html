@@ -2004,7 +2004,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #6D28D9;
-  margin-bottom: 8px;
+  margin: 8px 0 0;
+}
+
+.ca-market__lede {
+  margin: 12px 0 0;
+  max-width: 640px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--text-2, #A1A1AA);
 }
 
 .ca-market__title {
@@ -2442,11 +2451,11 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260620n">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260531c">
 <link rel="stylesheet" href="theme.css?v=20260612b">
 <link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260620t">
-<link rel="stylesheet" href="research_lab.css?v=20260620l">
+<link rel="stylesheet" href="research_lab.css?v=20260531e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
@@ -2471,15 +2480,15 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_icons.js?v=20260620q"></script>
 <script src="matchup_shared.js?v=20260620q"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
-<script src="mlbma_charts.js?v=20260620v"></script>
+<script src="mlbma_charts.js?v=20260531f"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260620t"></script>
+<script src="platform_dashboard.js?v=20260531g"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260620d"></script>
 <script src="lineup_view.js?v=20260618a"></script>
 <script src="trends_heatmap.js?v=20260612e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
-<script src="pitcher_lab.js?v=20260620k"></script>
+<script src="pitcher_lab.js?v=20260531e"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation ? synced via scripts/integrate_chase_nav.py -->
@@ -2651,8 +2660,9 @@ body.view-research .ca-lab { display: block; }
 
     <header class="ca-section-header ca-market__header">
       <div class="ca-market__header-copy">
-        <p class="ca-eyebrow">Visual Matrix</p>
-        <h2 class="ca-section-title">Market Map</h2>
+        <h2 class="ca-section-title ca-market__title">Market Map</h2>
+        <p class="ca-eyebrow ca-market__eyebrow">Visual Matrix</p>
+        <p class="ca-helper ca-market__lede">Plot every team by contact quality (RCV) against xwOBA regression gap. Find elite undervalued offenses, buy-low units, and clubs the market may be mispricing — toggle RHP or LHP for platoon-specific reads.</p>
       </div>
 
       <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
@@ -2781,17 +2791,19 @@ body.view-research .ca-lab { display: block; }
   <header class="ca-page-header">
     <p class="ca-eyebrow">Today's Slate</p>
     <h1 class="ca-page-title">Projected Matchups</h1>
-    <p class="ca-helper ca-page-header__sub">Split-specific lineup edges, starters, weather, and full analysis links</p>
+    <ul class="matchups-feature-list ca-page-header__sub" aria-label="What each matchup card includes">
+      <li>Split-specific lineup OSI edges vs probable starter hand</li>
+      <li>Probable starters with Pitch Score and platoon context</li>
+      <li>Stadium, game time, and weather conditions</li>
+      <li>Projected batting orders with platoon coloring</li>
+      <li>One-click jump to full matchup compare</li>
+    </ul>
   </header>
   <div class="matchup-day-tabs">
     <button type="button" class="matchup-day-tab active" data-day="today">Today</button>
     <button type="button" class="matchup-day-tab" data-day="tomorrow">Tomorrow</button>
   </div>
   <div class="matchups-slate-controls matchups-hero-header">
-    <div class="ca-pill-bar">
-      <span class="ca-pill-label">Sort</span>
-      <button type="button" class="ca-pill-btn active" data-match-sort="time">Game Time</button>
-    </div>
     <div class="ca-pill-bar">
       <span class="ca-pill-label">Filter</span>
       <button type="button" class="ca-pill-btn active" data-match-filter="all">All Games</button>
@@ -2971,6 +2983,7 @@ var LIVE_CACHE_KEY = 'mlbma_oem_v7_live_cache';
 var SHEET_SYNC_KEY = 'mlbma_sheet_sync_ts';
 var LIVE_DATA = { loaded: false, error: null, lastUpdated: null, oor: [], pitching: [], pals: [], matchups: [], lineups: [], todayGames: [], bullpenUnits: {}, teamProfilesByTeam: {}, signalsToday: [], signalsConvergence: [],
   windowDataAvailable: { L30: false, L14: false, L7: false }, rhp: null, lhp: null };
+window.LIVE_DATA = LIVE_DATA;
 var SP_WEIGHT = 0.70;
 var BULLPEN_WEIGHT = 0.30;
 
@@ -3043,11 +3056,24 @@ function ensureCacheForToday() {
   } catch (e) { /* ignore */ }
 }
 
+function parseSheetSyncDate(ts) {
+  var s = String(ts || '').trim();
+  if (!s) return null;
+  var d = new Date(s);
+  if (!isNaN(d.getTime())) return d;
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+  if (m) {
+    d = new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
 function isSheetDataStale() {
   var ts = LIVE_DATA && LIVE_DATA.lastUpdated;
   if (!ts) return true;
-  var d = new Date(String(ts).trim());
-  if (isNaN(d.getTime())) return true;
+  var d = parseSheetSyncDate(ts);
+  if (!d) return true;
   return (Date.now() - d.getTime()) > 18 * 60 * 60 * 1000;
 }
 
@@ -3348,10 +3374,16 @@ function applyLiveCache(cache) {
   LIVE_DATA.lastUpdated = cache.lastUpdated || null;
   LIVE_DATA.scYtdR = cache.scYtdR || [];
   LIVE_DATA.scYtdL = cache.scYtdL || [];
+  LIVE_DATA.lineups = cache.lineups || [];
+  LIVE_DATA.matchups = cache.matchups || [];
+  LIVE_DATA.todayGames = cache.todayGames || [];
+  LIVE_DATA._slateGamesRows = cache._slateGamesRows || [];
+  LIVE_DATA._slateMatchupsRows = cache._slateMatchupsRows || [];
   LIVE_DATA.error = null;
   YTD = cache.ytd || buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
   applyLiveData();
   attachPalsToScores();
+  initMatchupsView();
 }
 
 function getPaWeights(team) {
@@ -4010,7 +4042,7 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL)
 
   if (lineupKeys.length) {
     console.warn('[MATCHUPS] Slate from Today_Lineups:', lineupKeys.length, 'games');
-    var out = lineupKeys.map(function(key) {
+    var out = lineupKeys.filter(function(key) { return !!key; }).map(function(key) {
       var g = gamesByKey[key];
       if (!g) {
         var p = key.split('@');
@@ -4019,6 +4051,7 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL)
       return buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL);
     }).filter(Boolean);
     if (out.length) return out;
+    console.warn('[MATCHUPS] Today_Lineups keys present but 0 built games; falling back to Today_Games');
   }
 
   if (games.length) {
@@ -4222,14 +4255,18 @@ function enrichSpProfilesFromLive() {
 function parseLastUpdatedFromText(text) {
   var lines = (text || '').replace(/^\ufeff/, '').trim().split(/\r?\n/);
   if (!lines.length) return null;
-  var first = parseCSVLine(lines[0]);
-  if (first.length >= 2 && /last\s*updated/i.test(first[0])) {
-    return first[1].replace(/^"|"$/g, '').trim();
+  for (var i = 0; i < lines.length; i++) {
+    var cols = parseCSVLine(lines[i]);
+    if (cols.length >= 2 && /last\s*updated/i.test(String(cols[0]).replace(/^"|"$/g, ''))) {
+      return String(cols[1]).replace(/^"|"$/g, '').trim();
+    }
   }
-  if (lines.length >= 2) {
-    var a2 = parseCSVLine(lines[1]);
-    var cell = (a2[0] || '').replace(/^"|"$/g, '').trim();
-    if (cell && /\d{4}/.test(cell) && !/^(season|source)/i.test(cell)) return cell;
+  for (var j = 0; j < lines.length; j++) {
+    var row = parseCSVLine(lines[j]);
+    for (var k = 0; k < row.length; k++) {
+      var cell = String(row[k] || '').replace(/^"|"$/g, '').trim();
+      if (cell && /\d{4}-\d{2}-\d{2}/.test(cell) && !/^(season|source)/i.test(cell)) return cell;
+    }
   }
   return null;
 }
@@ -4293,7 +4330,9 @@ function loadLandingData() {
   console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading today\'s matchups?';
-  return prefetchSheetSync().then(function() {
+  var sheetSyncProbeTs = null;
+  return prefetchSheetSync().then(function(probeTs) {
+    sheetSyncProbeTs = probeTs || null;
     return Promise.all([
     fetchTabSafe(TABS.today_matchups),
     fetchTabSafe(TABS.today_lineups),
@@ -4347,7 +4386,7 @@ function loadLandingData() {
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(parseRegistrySheet(registryRows));
     }
-    LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText);
+    LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText) || sheetSyncProbeTs || null;
     if (LIVE_DATA.lastUpdated) {
       applySheetSyncBust(LIVE_DATA.lastUpdated);
       syncFreshnessIndicator(LIVE_DATA.lastUpdated);
@@ -4357,6 +4396,8 @@ function loadLandingData() {
     LIVE_DATA.spProfiles = spProfileRows || [];
     enrichSpProfilesFromLive();
     console.log('[FETCH] SP_Profiles loaded:', LIVE_DATA.spProfiles.length);
+    LIVE_DATA._slateGamesRows = gamesRows || [];
+    LIVE_DATA._slateMatchupsRows = matchupsRows || [];
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
     LIVE_DATA.matchups = buildTodayMatchupsFromSlate(
       LIVE_DATA.lineups,
@@ -4371,6 +4412,8 @@ function loadLandingData() {
     LIVE_DATA.loaded = true;
     LIVE_DATA.error = null;
     YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
+    syncHeroStats();
+    initMatchupsView();
     applyLiveData();
     return window.MLBMAStandings ? MLBMAStandings.load() : Promise.resolve();
   });
@@ -4437,6 +4480,11 @@ function loadResearchData() {
       pals: LIVE_DATA.pals,
       scYtdR: LIVE_DATA.scYtdR,
       scYtdL: LIVE_DATA.scYtdL,
+      lineups: LIVE_DATA.lineups,
+      matchups: LIVE_DATA.matchups,
+      todayGames: LIVE_DATA.todayGames,
+      _slateGamesRows: LIVE_DATA._slateGamesRows,
+      _slateMatchupsRows: LIVE_DATA._slateMatchupsRows,
       ytd: YTD
     });
     if (_researchLabInitialized) renderResearchLabWhenReady();
@@ -4496,6 +4544,7 @@ function loadLiveData(forceRefresh) {
     })
     .finally(function() {
       if (gen === _liveLoadGen) _liveLoadPromise = null;
+      if (shouldRenderMatchupsView()) refreshMatchupsSlateUi();
     });
   return _liveLoadPromise;
 }
@@ -6112,17 +6161,22 @@ function resetSort(){
 function renderLandingMarketQuadrant(split) {
   var el = document.getElementById('landingMarketQuadrant');
   if (!el) return;
+  var hand = split === 'lhp' ? 'lhp' : 'rhp';
   var rows = [];
   if (window.MLBMACharts && MLBMACharts.getQuadrantRows) {
-    rows = MLBMACharts.getQuadrantRows(split === 'lhp' ? 'lhp' : 'rhp');
-  } else if (split === 'lhp' && LIVE_DATA.scYtdL) {
-    rows = LIVE_DATA.scYtdL;
-  } else if (LIVE_DATA.scYtdR) {
-    rows = LIVE_DATA.scYtdR;
+    rows = MLBMACharts.getQuadrantRows(hand);
   }
-  var renderFn = (window.MLBMACharts && MLBMACharts.renderMarketQuadrant) || (typeof renderMarketQuadrant === 'function' ? renderMarketQuadrant : null);
+  if (!rows.length) {
+    if (hand === 'lhp' && typeof SCO_YTD_L !== 'undefined' && SCO_YTD_L.length) rows = SCO_YTD_L;
+    else if (typeof SCO_YTD_R !== 'undefined' && SCO_YTD_R.length) rows = SCO_YTD_R;
+    else if (hand === 'lhp' && LIVE_DATA.scYtdL) rows = LIVE_DATA.scYtdL;
+    else if (LIVE_DATA.scYtdR) rows = LIVE_DATA.scYtdR;
+  }
+  var renderFn = window.MLBMACharts && MLBMACharts.renderMarketQuadrant;
   if (renderFn) {
     renderFn('landingMarketQuadrant', rows, { tipId: 'landingMarketQuadrantTip' });
+  } else {
+    el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map module failed to load.</p></div>';
   }
 }
 
@@ -6876,15 +6930,81 @@ function shouldRenderOpeningMatchups() {
   return shouldRenderMatchupsView();
 }
 
+function rebuildTodayMatchupsSlateIfNeeded() {
+  if (LIVE_DATA.matchups && LIVE_DATA.matchups.length) return;
+  if (!LIVE_DATA.lineups || !LIVE_DATA.lineups.length) return;
+  var scR = (LIVE_DATA.scYtdR && LIVE_DATA.scYtdR.length) ? LIVE_DATA.scYtdR
+    : (typeof SCO_YTD_R !== 'undefined' ? SCO_YTD_R : []);
+  var scL = (LIVE_DATA.scYtdL && LIVE_DATA.scYtdL.length) ? LIVE_DATA.scYtdL
+    : (typeof SCO_YTD_L !== 'undefined' ? SCO_YTD_L : []);
+  LIVE_DATA.matchups = buildTodayMatchupsFromSlate(
+    LIVE_DATA.lineups,
+    LIVE_DATA._slateGamesRows || LIVE_DATA.todayGames || [],
+    LIVE_DATA._slateMatchupsRows || [],
+    scR,
+    scL
+  );
+  enrichMatchupCards();
+}
+
+function refreshMatchupsSlateUi() {
+  rebuildTodayMatchupsSlateIfNeeded();
+  if (!shouldRenderMatchupsView()) return;
+  showSlateFreshnessBanner();
+  syncHeroStats();
+  if (window.PlatformDashboard && PlatformDashboard.renderHeroMatchups) {
+    PlatformDashboard.renderHeroMatchups();
+  }
+}
+
 function initMatchupsView() {
   if (!shouldRenderMatchupsView()) return;
+  var paint = function() {
+    refreshMatchupsSlateUi();
+  };
   if (window.PlatformDashboard) {
     PlatformDashboard.bindHeroControls();
-    PlatformDashboard.initRegistry().then(function() {
-      showSlateFreshnessBanner();
-      PlatformDashboard.renderHeroMatchups();
-    });
+    PlatformDashboard.initRegistry().then(paint);
+  } else {
+    paint();
   }
+  whenMatchupsReady(paint);
+}
+
+function whenMatchupsReady(fn) {
+  if (!fn) return;
+  if (LIVE_DATA.matchups && LIVE_DATA.matchups.length) {
+    fn();
+    return;
+  }
+  if (LIVE_DATA.loaded) {
+    rebuildTodayMatchupsSlateIfNeeded();
+    if (LIVE_DATA.matchups && LIVE_DATA.matchups.length) {
+      fn();
+      return;
+    }
+  }
+  var tries = 0;
+  var timer = setInterval(function() {
+    tries += 1;
+    if (LIVE_DATA.matchups && LIVE_DATA.matchups.length) {
+      clearInterval(timer);
+      fn();
+      return;
+    }
+    if (LIVE_DATA.loaded) {
+      rebuildTodayMatchupsSlateIfNeeded();
+      if (LIVE_DATA.matchups && LIVE_DATA.matchups.length) {
+        clearInterval(timer);
+        fn();
+        return;
+      }
+    }
+    if (LIVE_DATA.error || tries >= 75) {
+      clearInterval(timer);
+      fn();
+    }
+  }, 200);
 }
 
 function bindHeroCtas() {
@@ -7329,6 +7449,8 @@ function runPostLoadUI() {
     setupResearchLazyInit();
     if (document.body.classList.contains('view-research')) {
       renderResearchLabWhenReady();
+    } else if (shouldRenderMatchupsView()) {
+      initMatchupsView();
     } else {
       populateMatchupSelectors();
     }
@@ -7397,7 +7519,6 @@ function init(){
   try {
     urlDecodeState();
     if (typeof syncDashboardView === 'function') syncDashboardView();
-    mountPlatformCtas();
     bindDashRankingsControls();
     initMarketMapToggle();
     initLandingMarketMapToggle();

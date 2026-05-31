@@ -7,7 +7,6 @@
 
   var A = global.MLBMAAssets;
   var S = global.MLBMASharedMatchup || global.MatchupShared;
-  var SORT = 'time';
   var FILTER = 'all';
   var MATCH_DAY = 'today';
 
@@ -514,9 +513,13 @@
       return;
     }
 
-    var games = LIVE_DATA.matchups || [];
+    var live = global.LIVE_DATA || {};
+    var games = live.matchups || [];
     if (!games.length) {
-      grid.innerHTML = '<div class="empty-msg">No matchups loaded for today.</div>';
+      var stillLoading = !live.loaded && !live.error;
+      grid.innerHTML = stillLoading
+        ? '<div class="empty-msg">Loading today\u2019s matchups\u2026</div>'
+        : '<div class="empty-msg">No matchups loaded for today.</div>';
       return;
     }
     var sorted = sortGames(games).filter(function(m) {
@@ -604,7 +607,7 @@
     }
 
     if (!chips.length) {
-      var games = LIVE_DATA.matchups || [];
+      var games = (global.LIVE_DATA && global.LIVE_DATA.matchups) || [];
       var rows = typeof SCO_YTD_B !== 'undefined' ? SCO_YTD_B : [];
       if (games.length) {
         var bestLineup = null, bestOsi = -1;
@@ -667,18 +670,6 @@
 
   function bindHeroControls() {
     bindDayTabs();
-    document.querySelectorAll('[data-match-sort]').forEach(function(btn) {
-      if (btn.dataset.bound) return;
-      btn.dataset.bound = '1';
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        SORT = btn.getAttribute('data-match-sort');
-        document.querySelectorAll('[data-match-sort]').forEach(function(b) {
-          b.classList.toggle('active', b === btn);
-        });
-        renderHeroMatchups();
-      });
-    });
     document.querySelectorAll('[data-match-filter]').forEach(function(btn) {
       if (btn.dataset.bound) return;
       btn.dataset.bound = '1';
@@ -712,8 +703,8 @@
   function initRegistry() {
     if (!A) return Promise.resolve();
     if (A.registry && A.registry.loaded) return Promise.resolve();
-    if (LIVE_DATA && LIVE_DATA.playerRegistry && LIVE_DATA.playerRegistry.length && A.parseRegistryRows) {
-      A.parseRegistryRows(typeof parseRegistrySheet === 'function' ? parseRegistrySheet(LIVE_DATA.playerRegistry) : LIVE_DATA.playerRegistry);
+    if (global.LIVE_DATA && global.LIVE_DATA.playerRegistry && global.LIVE_DATA.playerRegistry.length && A.parseRegistryRows) {
+      A.parseRegistryRows(typeof parseRegistrySheet === 'function' ? parseRegistrySheet(global.LIVE_DATA.playerRegistry) : global.LIVE_DATA.playerRegistry);
       return Promise.resolve();
     }
     if (!global.fetchSheetTab || !global.TABS) return Promise.resolve();
