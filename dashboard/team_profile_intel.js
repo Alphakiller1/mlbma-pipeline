@@ -253,16 +253,34 @@
     return { label: 'League-average offensive profile', cls: 'tp-intel-status--neutral' };
   }
 
-  function offenseIdentityLine(m, rates) {
+  function splitIdentityPrefix(ctx) {
+    ctx = ctx || {};
+    var split = ctx.split || 'both';
+    var labels = {
+      both: 'Season',
+      rhp: 'vs RHP',
+      lhp: 'vs LHP',
+      home: 'Home',
+      away: 'Away',
+      f5: 'First 5 (vs SP proxy)',
+      sp: 'vs Starting Pitching',
+      rp: 'vs Bullpens'
+    };
+    var lbl = labels[split] || split;
+    return lbl + ' view — ';
+  }
+
+  function offenseIdentityLine(m, rates, ctx) {
     m = m || {};
     rates = rates || {};
+    ctx = ctx || {};
     var osi = num(m.osi);
     var rcv = num(m.rcv);
     var abq = num(m.abq);
     var obr = num(m.obr);
     var k = num(rates.k);
     if (osi == null) {
-      return 'Load Team_Profiles for a data-derived offensive identity summary.';
+      return 'Load Team_Profiles and batter split tabs for a data-derived offensive identity on this split.';
     }
     var tier = osi >= 75 ? 'upper-tier' : osi >= 60 ? 'competitive' : 'subpar';
     var shape = '';
@@ -280,7 +298,7 @@
     function cap(s) {
       return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
     }
-    return 'A ' + cap(tier) + ' offense built on ' + (shape || 'mixed grade pillars') + kNote + obrNote + '.';
+    return splitIdentityPrefix(ctx) + 'A ' + cap(tier) + ' offense built on ' + (shape || 'mixed grade pillars') + kNote + obrNote + '.';
   }
 
   function researchTakeaways(m, rates, ctx) {
@@ -504,13 +522,12 @@
     return sectionWrap('Research Takeaways', 'Metric translation for research — not betting picks', grid, 'lightbulb');
   }
 
-  function renderStatusIdentity(m, rates) {
+  function renderStatusIdentity(m, rates, ctx) {
     var status = offenseStatusLabel(m, rates);
-    var line = offenseIdentityLine(m, rates);
+    var line = offenseIdentityLine(m, rates, ctx);
     var tierKey = String(status.cls || '').replace('tp-intel-status--', '') || 'neutral';
     return '<div class="tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
-      + '<p class="tp-lineup-identity__eyebrow">Offensive Identity</p>'
-      + '<h2 class="tp-lineup-identity__headline ' + esc(status.cls) + '">' + esc(status.label) + '</h2>'
+      + '<h2 class="ca-section-title tp-lineup-identity__title">Offensive Identity</h2>'
       + '<p class="tp-lineup-identity__desc">' + esc(line) + '</p>'
       + '</div>';
   }

@@ -239,6 +239,100 @@
     return out;
   }
 
+  function estimateF5OsiMetrics(abq, obr, rcv) {
+    if (abq == null || obr == null || rcv == null || isNaN(abq) || isNaN(obr) || isNaN(rcv)) return null;
+    return (abq * 0.45) + (obr * 0.35) + (rcv * 0.20);
+  }
+
+  function batterRowsForPitchSplit(ctx, split) {
+    if (!ctx) return [];
+    if (split === 'sp') return ctx.batterSplitsVsSp || ctx.batters || [];
+    if (split === 'rp') return ctx.batterSplitsVsRp || ctx.batters || [];
+    return ctx.batters || [];
+  }
+
+  function aggregateTeamMetricsFromRows(team, rows, pickCol) {
+    if (!rows || !rows.length || !pickCol) return null;
+    var t = String(team || '').trim().toUpperCase();
+    var paSum = 0;
+    var acc = { osi: 0, abq: 0, rcv: 0, obr: 0, wrc: 0, woba: 0, slg: 0 };
+    var hasMetrics = false;
+    var hasRates = false;
+    rows.forEach(function(b) {
+      if (teamKeyFromRow(b, pickCol) !== t) return;
+      var pa = num(pickCol(b, ['PA', 'pa'])) || 1;
+      var o = num(pickCol(b, ['OSI', 'osi']));
+      var abq = num(pickCol(b, ['ABQ', 'abq']));
+      var rcv = num(pickCol(b, ['RCV', 'rcv']));
+      var obr = num(pickCol(b, ['OBR', 'obr']));
+      if (o != null && abq != null && rcv != null && obr != null) {
+        acc.osi += o * pa;
+        acc.abq += abq * pa;
+        acc.rcv += rcv * pa;
+        acc.obr += obr * pa;
+        paSum += pa;
+        hasMetrics = true;
+      }
+      var wrc = num(pickCol(b, ['wRC+', 'wrc_plus', 'wRC', 'wrc']));
+      var woba = num(pickCol(b, ['wOBA', 'woba']));
+      var slg = num(pickCol(b, ['SLG', 'slg']));
+      if (wrc != null) {
+        acc.wrc += wrc * pa;
+        if (woba != null) acc.woba += woba * pa;
+        if (slg != null) acc.slg += slg * pa;
+        if (!hasMetrics) paSum += pa;
+        hasRates = true;
+      }
+    });
+    if (!hasMetrics && !hasRates) return null;
+    var div = paSum > 0 ? paSum : 1;
+    var out = {};
+    if (hasMetrics) {
+      out.osi = acc.osi / div;
+      out.abq = acc.abq / div;
+      out.rcv = acc.rcv / div;
+      out.obr = acc.obr / div;
+    }
+    if (hasRates) {
+      out.wrc = Math.round((acc.wrc / div) * 10) / 10;
+      if (acc.woba) out.woba = Math.round((acc.woba / div) * 1000) / 1000;
+      if (acc.slg) out.slg = Math.round((acc.slg / div) * 1000) / 1000;
+    }
+    return out;
+  }
+
+  function aggregateTeamLocationSplit(team, loc, ctx, pickCol) {
+    var rows = loc === 'home'
+      ? (ctx.batterSplitsHome || [])
+      : (ctx.batterSplitsAway || []);
+    if (rows.length) {
+      var fromSheet = aggregateTeamMetricsFromRows(team, rows, pickCol);
+      if (fromSheet) return fromSheet;
+    }
+    return aggregateTeamBatterSplit(team, loc, ctx.batters || [], pickCol);
+  }
+
+  function aggregateTeamPitchSplit(team, split, ctx, pickCol) {
+    var rows = batterRowsForPitchSplit(ctx, split);
+    if (rows.length) {
+      var fromSheet = aggregateTeamMetricsFromRows(team, rows, pickCol);
+      if (fromSheet) return fromSheet;
+    }
+    var want = split === 'sp' ? 'vs_sp' : 'vs_rp';
+    return aggregateTeamBatterSplit(team, want, ctx.batters || [], pickCol);
+  }
+
+  function profileLocationMetrics(prof, pickCol, prefix) {
+    function pf(keys) { return num(pick(prof, keys, pickCol)); }
+    var cap = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+    return {
+      osi: pf([prefix + '_osi', cap + '_OSI']),
+      abq: pf([prefix + '_abq', cap + '_ABQ']),
+      rcv: pf([prefix + '_rcv', cap + '_RCV']),
+      obr: pf([prefix + '_obr', cap + '_OBR'])
+    };
+  }
+
   function offenseRatesFromBatterSplits(team, split, splitsR, splitsL, pickCol) {
     if (split === 'rhp') return offenseRatesFromBatterSplitRows(team, splitsR, pickCol);
     if (split === 'lhp') return offenseRatesFromBatterSplitRows(team, splitsL, pickCol);
@@ -328,34 +422,29 @@
     if (rates.slg == null) rates.slg = teamLocationRate(prof, split, 'slg', pickCol);
 
     if (split === 'home') {
+      fillMissingRates(rates, offenseRatesFromBatterSplitRows(team, ctx.batterSplitsHome, pickCol));
       if (pf(['home_wrc']) != null) rates.wrc = pf(['home_wrc']);
       if (pf(['home_woba']) != null) rates.woba = pf(['home_woba']);
       if (pf(['home_slg']) != null) rates.slg = pf(['home_slg']);
     } else if (split === 'away') {
+      fillMissingRates(rates, offenseRatesFromBatterSplitRows(team, ctx.batterSplitsAway, pickCol));
       if (pf(['away_wrc']) != null) rates.wrc = pf(['away_wrc']);
       if (pf(['away_woba']) != null) rates.woba = pf(['away_woba']);
       if (pf(['away_slg']) != null) rates.slg = pf(['away_slg']);
-    }
-
-    var sheetSplit = (split === 'home' || split === 'away' || split === 'f5' || split === 'sp' || split === 'rp') ? 'both' : split;
-    applySheetRates(rates, offenseRatesFromMetrics(team, sheetSplit, ctx.metricsR, ctx.metricsL, pickCol));
-
-    var batterSplit = (split === 'home' || split === 'away' || split === 'f5') ? 'both' : split;
-    if (split === 'sp' || split === 'rp') {
-      var pitchAgg = aggregateTeamBatterSplit(
-        team,
-        split === 'sp' ? 'vs_sp' : 'vs_rp',
-        ctx.batters,
-        pickCol
-      );
+    } else if (split === 'f5') {
+      fillMissingRates(rates, offenseRatesFromBatterSplitRows(team, ctx.batterSplitsVsSp, pickCol));
+    } else if (split === 'sp' || split === 'rp') {
+      var pitchAgg = aggregateTeamPitchSplit(team, split, ctx, pickCol);
       if (pitchAgg) {
         if (pitchAgg.wrc != null) rates.wrc = pitchAgg.wrc;
         if (pitchAgg.woba != null) rates.woba = pitchAgg.woba;
         if (pitchAgg.slg != null) rates.slg = pitchAgg.slg;
       }
     } else {
+      var sheetSplit = split;
+      applySheetRates(rates, offenseRatesFromMetrics(team, sheetSplit, ctx.metricsR, ctx.metricsL, pickCol));
       fillMissingRates(rates, offenseRatesFromBatterSplits(
-        team, batterSplit, ctx.batterSplitsR, ctx.batterSplitsL, pickCol
+        team, split, ctx.batterSplitsR, ctx.batterSplitsL, pickCol
       ));
     }
 
@@ -407,22 +496,33 @@
 
     var osi, abq, rcv, obr, proj;
     if (split === 'rhp') {
-      osi = pf(['osi_vs_rhp']); abq = pf(['abq_vs_rhp']); rcv = pf(['rcv_vs_rhp']); obr = pf(['obr_vs_rhp']);
+      osi = pf(['osi_vs_rhp', 'OSI_vs_RHP']); abq = pf(['abq_vs_rhp', 'ABQ_vs_RHP']); rcv = pf(['rcv_vs_rhp', 'RCV_vs_RHP']); obr = pf(['obr_vs_rhp', 'OBR_vs_RHP']);
     } else if (split === 'lhp') {
-      osi = pf(['osi_vs_lhp']); abq = pf(['abq_vs_lhp']); rcv = pf(['rcv_vs_lhp']); obr = pf(['obr_vs_lhp']);
-    } else     if (split === 'home') {
-      osi = pf(['home_osi']); abq = pf(['home_abq', 'abq']); rcv = pf(['home_rcv', 'rcv']); obr = pf(['home_obr', 'obr']);
-    } else if (split === 'away') {
-      osi = pf(['away_osi']); abq = pf(['away_abq', 'abq']); rcv = pf(['away_rcv', 'rcv']); obr = pf(['away_obr', 'obr']);
+      osi = pf(['osi_vs_lhp', 'OSI_vs_LHP']); abq = pf(['abq_vs_lhp', 'ABQ_vs_LHP']); rcv = pf(['rcv_vs_lhp', 'RCV_vs_LHP']); obr = pf(['obr_vs_lhp', 'OBR_vs_LHP']);
+    } else if (split === 'home' || split === 'away') {
+      var loc = split;
+      var locAgg = aggregateTeamLocationSplit(ctx.team, loc, ctx, pickCol);
+      var profLoc = profileLocationMetrics(prof, pickCol, loc);
+      osi = (locAgg && locAgg.osi != null) ? locAgg.osi : profLoc.osi;
+      abq = (locAgg && locAgg.abq != null) ? locAgg.abq : profLoc.abq;
+      rcv = (locAgg && locAgg.rcv != null) ? locAgg.rcv : profLoc.rcv;
+      obr = (locAgg && locAgg.obr != null) ? locAgg.obr : profLoc.obr;
     } else if (split === 'f5') {
-      osi = pf(['osi_f5']); abq = pf(['abq_f5', 'abq']); rcv = pf(['rcv_f5', 'rcv']); obr = pf(['obr_f5', 'obr']);
+      var f5Agg = aggregateTeamPitchSplit(ctx.team, 'sp', ctx, pickCol);
+      if (f5Agg) {
+        if (f5Agg.osi != null) osi = f5Agg.osi;
+        if (f5Agg.abq != null) abq = f5Agg.abq;
+        if (f5Agg.rcv != null) rcv = f5Agg.rcv;
+        if (f5Agg.obr != null) obr = f5Agg.obr;
+      } else {
+        osi = pf(['osi_f5', 'OSI_F5']);
+        abq = pf(['abq_f5', 'ABQ_F5']);
+        rcv = pf(['rcv_f5', 'RCV_F5']);
+        obr = pf(['obr_f5', 'OBR_F5']);
+      }
+      if (osi == null) osi = estimateF5OsiMetrics(abq, obr, rcv);
     } else if (split === 'sp' || split === 'rp') {
-      var pitchAgg = aggregateTeamBatterSplit(
-        ctx.team,
-        split === 'sp' ? 'vs_sp' : 'vs_rp',
-        ctx.batters,
-        pickCol
-      );
+      var pitchAgg = aggregateTeamPitchSplit(ctx.team, split, ctx, pickCol);
       if (pitchAgg) {
         if (pitchAgg.osi != null) osi = pitchAgg.osi;
         if (pitchAgg.abq != null) abq = pitchAgg.abq;
@@ -789,16 +889,24 @@
       + '</div>';
   }
 
+  function heroRpgTone(rpg) {
+    if (rpg == null || isNaN(rpg)) return 'neutral';
+    if (rpg >= 5.2) return 'elite';
+    if (rpg >= 4.8) return 'strong';
+    if (rpg >= 4.3) return 'mid';
+    return 'weak';
+  }
+
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
     var accent = teamAccent(team);
     var logo = A ? A.teamLogoImg(team, 96, 'tp-team-banner__logo-img snapshot-logo') : '';
     var rank = ctx.osiRank;
-    var ps = ctx.avgPitchScore;
+    var rpg = ctx.runsPerGame;
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + heroStatChip('OSI Rank', rank ? '#' + esc(String(rank)) : null, heroRankTone(rank))
-      + heroStatChip('Pitch Score', ps != null && !isNaN(ps) ? esc(ps.toFixed(0)) : null, heroPitchTone(ps));
+      + heroStatChip('Runs Per Game', rpg != null && !isNaN(rpg) ? esc(Number(rpg).toFixed(2)) : null, heroRpgTone(rpg));
     return '<section class="tp-team-banner" style="--tp-accent:' + esc(accent) + '">'
       + '<div class="tp-team-banner__head">'
       + '<div class="tp-team-banner__copy">'

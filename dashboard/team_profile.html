@@ -21,10 +21,10 @@
 <script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260616f"></script>
+<script src="team_profile_mini.js?v=20260616i"></script>
 <script src="team_profile_sections.js?v=20260601g"></script>
 <script src="team_profile_staff.js?v=20260620g"></script>
-<script src="team_profile_intel.js?v=20260531r"></script>
+<script src="team_profile_intel.js?v=20260616i"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
 <script src="platform_dashboard.js?v=20260618v"></script>
 <script src="profile_controls.js?v=20260531j"></script>
@@ -1098,6 +1098,8 @@ function buildMiniCtx(prof, name, tonight) {
       pickCol: pickCol, team: STATE.team, split: activeSplit(),
       metricsR: DATA.metricsR, metricsL: DATA.metricsL,
       batterSplitsR: DATA.batterSplitsR, batterSplitsL: DATA.batterSplitsL,
+      batterSplitsHome: DATA.batterSplitsHome, batterSplitsAway: DATA.batterSplitsAway,
+      batterSplitsVsSp: DATA.batterSplitsVsSp, batterSplitsVsRp: DATA.batterSplitsVsRp,
       batters: DATA.batters
     })
     : {};
@@ -1127,6 +1129,7 @@ function buildMiniCtx(prof, name, tonight) {
     oppPitchScore: oppPs,
     lineupEdgePct: (teamOsi != null && oppPs != null) ? Math.min(100, Math.max(0, 50 + (teamOsi - oppPs) * 2)) : null,
     osiRank: computeOsiRank(STATE.team),
+    runsPerGame: runsPerGameForTeam(STATE.team),
     wrc: (function() {
       if (rates.wrc != null) return rates.wrc;
       var hw = num(pickCol(prof, ['home_wrc']));
@@ -1270,6 +1273,10 @@ function miniCtxForTeam(team, split) {
     metricsL: DATA.metricsL,
     batterSplitsR: DATA.batterSplitsR,
     batterSplitsL: DATA.batterSplitsL,
+    batterSplitsHome: DATA.batterSplitsHome,
+    batterSplitsAway: DATA.batterSplitsAway,
+    batterSplitsVsSp: DATA.batterSplitsVsSp,
+    batterSplitsVsRp: DATA.batterSplitsVsRp,
     batters: DATA.batters
   };
 }
@@ -1330,6 +1337,19 @@ function computeRpgRank(team) {
   });
 }
 
+function obpForTeam(team, split) {
+  var prof = profileRow(team);
+  if (!prof || !window.TeamProfileMini || !TeamProfileMini.resolveOffenseRates) return null;
+  return TeamProfileMini.resolveOffenseRates(prof, miniCtxForTeam(team, split)).obp;
+}
+
+function computeObpRank(team, split) {
+  return computeRankAmong(team, DATA.profiles, function(prof) {
+    var t = teamKey(pickCol(prof, ['team', 'Team', 'tm']));
+    return obpForTeam(t, split);
+  });
+}
+
 function syncIdentityStackLayout() {
   var snapEl = document.getElementById('tpUnitSnapshot');
   if (snapEl) {
@@ -1352,11 +1372,11 @@ function renderUnitSnapshotStrip(prof, ctx) {
   if (cat === 'lineup') {
     var intelHtml = '';
     if (window.TeamProfileIntel && TeamProfileIntel.renderStatusIdentity) {
-      intelHtml = TeamProfileIntel.renderStatusIdentity(m, rates);
+      intelHtml = TeamProfileIntel.renderStatusIdentity(m, rates, ctx);
     }
     var chips = unitSnapshotChipRanked('Proj OSI', m.proj, computeProjOsiRank(STATE.team, split), 'osi', false, 1)
       + unitSnapshotChipRanked('wRC+', ctx.wrc != null ? ctx.wrc : rates.wrc, computeWrcRank(STATE.team, split), 'wrc', false, 0)
-      + unitSnapshotChipRanked('Runs Per Game', runsPerGameForTeam(STATE.team), computeRpgRank(STATE.team), 'osi', false, 2);
+      + unitSnapshotChipRanked('OBP', rates.obp, computeObpRank(STATE.team, split), 'obp', false, 3);
     el.innerHTML = intelHtml
       + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
     syncIdentityStackLayout();
