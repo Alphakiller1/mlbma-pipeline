@@ -1097,6 +1097,27 @@ table.ca-table tbody td,
   font-size: 12px !important;
 }
 
+.mlbma-quad-tip .tt-map-pos {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+}
+
+.mlbma-quad-team {
+  paint-order: stroke fill;
+  stroke: rgba(5, 5, 9, 0.85);
+  stroke-width: 3px;
+}
+
+.mlbma-quad-pos {
+  paint-order: stroke fill;
+  stroke: rgba(5, 5, 9, 0.9);
+  stroke-width: 2px;
+  text-transform: uppercase;
+}
+
 .rl-tab-purpose {
   font-size: 15px !important;
   color: #D1D5DB !important;

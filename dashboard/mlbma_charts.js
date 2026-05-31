@@ -347,10 +347,10 @@
   function marketQuadrantMeta(rcv, yVal) {
     var hiRcv = (rcv || 0) >= 50;
     var posY = (yVal || 0) > 0;
-    if (hiRcv && posY) return { color: '#4ADE80', label: 'Elite & Undervalued' };
-    if (!hiRcv && posY) return { color: '#2DD4BF', label: 'Buy-Low Offense' };
-    if (hiRcv && !posY) return { color: '#FBBF24', label: 'Strong But Cooling' };
-    return { color: '#F87171', label: 'Weak & Concerning' };
+    if (hiRcv && posY) return { color: '#4ADE80', label: 'Elite & Undervalued', short: 'Elite' };
+    if (!hiRcv && posY) return { color: '#2DD4BF', label: 'Buy-Low Offense', short: 'Buy-Low' };
+    if (hiRcv && !posY) return { color: '#FBBF24', label: 'Strong But Cooling', short: 'Cooling' };
+    return { color: '#F87171', label: 'Weak & Concerning', short: 'Weak' };
   }
 
   function teamEspnLogoUrl(t) {
@@ -363,13 +363,17 @@
   function quadrantBubbleMarkup(d, cx, cy, meta) {
     var logoUrl = teamEspnLogoUrl(d.t);
     var gid = 'qb_' + String(d.t).replace(/[^a-z0-9]/gi, '');
-    return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + '">'
+    var teamY = cy + 38;
+    var posY = cy + 50;
+    return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" data-map-pos="' + esc(meta.short || meta.label) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + ' · ' + esc(meta.label) + '">'
       + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" fill-opacity=".18"/>'
       + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
       + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="22"/></clipPath>'
       + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 11) + '" y="' + (cy - 11) + '" width="22" height="22" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
       + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
-      + '<title>' + esc(d.t) + ' · RCV ' + d.rcv.toFixed(1) + ' · Gap ' + quadYValue(d).toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + meta.label + '</title>'
+      + '<text class="mlbma-quad-team" x="' + cx + '" y="' + teamY + '" text-anchor="middle" fill="#D4D4D8" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
+      + '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
+      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · RCV ' + d.rcv.toFixed(1) + ' · Gap ' + quadYValue(d).toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + '</title>'
       + '</g>';
   }
 
@@ -451,7 +455,14 @@
 
     var regHtml = '<span style="color:' + reg[1] + '">' + esc(reg[0]) + '</span>';
 
+    var gapVal = quadYValue(d);
+    var mapMeta = (d.rcv != null && gapVal != null) ? marketQuadrantMeta(d.rcv, gapVal) : null;
+    var mapPosHtml = mapMeta
+      ? '<div class="tt-map-pos" style="color:' + mapMeta.color + '">' + esc(mapMeta.label) + '</div>'
+      : '';
+
     return '<div class="tt-team">' + esc(d.t) + '</div>'
+      + mapPosHtml
       + '<div class="tt-sep"></div>'
       + ttRow('OSI', '<span style="color:' + metricColor(osi, 'osi') + '">' + fmtMetric(osi) + '</span>')
       + ttRow('Projected OSI', projHtml)
@@ -484,7 +495,7 @@
     }
     var W = opts.width || Math.min(1200, el.clientWidth || 900);
     var H = opts.height || Math.max(520, W < 700 ? 520 : 560);
-    var ml = 80, mr = 60, mt = 60, mb = 70;
+    var ml = 80, mr = 60, mt = 60, mb = 88;
     var cw = W - ml - mr;
     var ch = H - mt - mb;
     var xMn = 0, xMx = 100;
