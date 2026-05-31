@@ -1211,6 +1211,25 @@ h1.ca-page-title {
   color: transparent;
 }
 
+/* Standalone pages — same open header as Matchups / Team Rankings (no card shell) */
+#profilePageHeader,
+#teamRankingsPageHeader {
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+#profilePageHeader .ca-page-header,
+#teamRankingsPageHeader .ca-page-header {
+  margin: 0 0 28px;
+  padding: 8px 0 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
 /* Matchups + Research Lab + Opening landing sections — unified page-title treatment */
 #section-matchups-hero .ca-page-header,
 #section-research-lab .ca-page-header,

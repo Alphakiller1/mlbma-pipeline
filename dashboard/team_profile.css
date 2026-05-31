@@ -187,24 +187,12 @@ body.team-profile-page {
   border-bottom: none;
 }
 
-#profileHeroMount,
-.tp-identity-stack--has-hero,
-.tp-identity-stack--has-hero .tp-hero-card {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-}
-
 /* Team profile banner hero — full-width stat strip */
-.team-profile-page .ca-profile-hero.tp-profile-banner-hero {
-  display: grid !important;
+.team-profile-page .tp-profile-banner-hero {
+  display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 24px 40px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
   min-height: 156px;
   padding: 22px 28px 24px;
   margin: 0;
@@ -213,7 +201,7 @@ body.team-profile-page {
     linear-gradient(120deg, color-mix(in srgb, var(--tp-accent, #7C4DFF) 14%, transparent) 0%, transparent 48%),
     linear-gradient(180deg, rgba(124, 77, 255, 0.07) 0%, transparent 55%);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .team-profile-page .tp-profile-banner-hero::before {
@@ -253,8 +241,6 @@ body.team-profile-page {
   justify-content: center;
   align-self: center;
   flex-shrink: 0;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .team-profile-page .tp-profile-banner-hero .ca-profile-hero__eyebrow {
@@ -267,9 +253,7 @@ body.team-profile-page {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-top: 18px;
-  max-width: min(520px, 100%);
-  width: 100%;
-  min-width: 0;
+  max-width: 520px;
 }
 
 .tp-hero-stat {
@@ -309,21 +293,14 @@ body.team-profile-page {
 .tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
 .tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
 
-@media (max-width: 900px) {
-  .team-profile-page .ca-profile-hero.tp-profile-banner-hero {
-    grid-template-columns: minmax(0, 1fr);
+@media (max-width: 720px) {
+  .team-profile-page .tp-profile-banner-hero {
+    grid-template-columns: 1fr;
     min-height: 0;
     padding: 20px 20px 22px;
   }
-  .team-profile-page .ca-profile-hero.tp-profile-banner-hero .ca-profile-hero__aside {
+  .team-profile-page .tp-profile-banner-hero .ca-profile-hero__aside {
     justify-content: flex-start;
-    width: 100%;
-  }
-  .team-profile-page .ca-profile-hero.tp-profile-banner-hero .ca-profile-hero__aside .team-logo,
-  .team-profile-page .ca-profile-hero.tp-profile-banner-hero .ca-profile-hero__aside .tp-hero-logo,
-  .team-profile-page .ca-profile-hero.tp-profile-banner-hero .ca-profile-hero__aside .snapshot-logo {
-    width: min(148px, 72vw);
-    height: min(148px, 72vw);
   }
   .tp-hero-stat-row {
     max-width: none;
@@ -338,22 +315,6 @@ body.team-profile-page {
 
 .tp-identity-stack:not(.tp-identity-stack--has-hero) .tp-unit-snapshot {
   margin-bottom: 0;
-}
-
-/* Page banner — title + unit snapshot strip */
-.tp-profile-banner {
-  margin: 0 0 14px;
-  background: var(--bg-2, #0E1018);
-  border: 1px solid var(--border, #262A38);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 12px 40px -20px rgba(0, 0, 0, 0.45);
-}
-
-.tp-profile-banner #profilePageHeader .ca-page-header {
-  margin: 0;
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid var(--border, #262A38);
 }
 
 .tp-profile-toolbar {
@@ -1150,14 +1111,11 @@ body.team-profile-page {
 }
 
 .team-profile-page #profilePageHeader .ca-page-header {
-  margin: 0 0 12px;
-  padding: 0;
-}
-
-.team-profile-page .tp-profile-banner #profilePageHeader .ca-page-header {
-  margin: 0;
-  padding: 0;
+  margin: 0 0 28px;
+  padding: 8px 0 0;
   border: none;
+  background: none;
+  box-shadow: none;
 }
 
 .team-profile-page #profilePageHeader .ca-eyebrow,
@@ -1216,14 +1174,11 @@ body.team-profile-page {
   letter-spacing: -0.015em;
   line-height: 1.08;
   margin: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  color: var(--text, #F5F6FA) !important;
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  background-clip: unset !important;
-  -webkit-text-fill-color: var(--text, #F5F6FA) !important;
-  text-shadow: none;
+  background: var(--tp-chrome-title) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
 }
 
 .team-profile-page .tp-profile-banner-hero .ca-profile-hero__sub {
