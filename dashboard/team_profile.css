@@ -240,13 +240,6 @@ body.team-profile-page {
 .team-profile-page .tp-profile-banner-hero .ca-profile-hero__eyebrow {
   margin: 0 0 8px;
   padding: 0;
-  font-family: var(--font-display, var(--display));
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  line-height: 1.35;
-  text-transform: uppercase;
-  color: var(--v-2, #C4B0FF);
 }
 
 .tp-hero-stat-row {
@@ -1118,7 +1111,11 @@ body.team-profile-page {
   margin-bottom: 20px;
 }
 
-/* ── Team Profile heading system (page header + section modules) ── */
+/* ── Team Profile heading system — Matchups chrome treatment ── */
+.team-profile-page {
+  --tp-chrome-title: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%);
+}
+
 .team-profile-page #profilePageHeader .ca-page-header {
   margin: 0 0 12px;
   padding: 0;
@@ -1130,25 +1127,28 @@ body.team-profile-page {
   border: none;
 }
 
-.team-profile-page #profilePageHeader .ca-eyebrow {
+.team-profile-page #profilePageHeader .ca-eyebrow,
+.team-profile-page .ca-section-header .ca-eyebrow,
+.team-profile-page .ca-section-head .kicker,
+.team-profile-page .tp-profile-banner-hero .ca-profile-hero__eyebrow {
   font-family: var(--font-display, var(--display));
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--v-2, #C4B0FF);
-  margin-bottom: 4px;
+  color: var(--ca-purple-light, #C4B0FF);
+  margin: 0 0 6px;
+  line-height: 1.35;
 }
 
 .team-profile-page #profilePageHeader h1.ca-page-title {
   font-family: var(--font-display, var(--display));
-  font-size: clamp(1.35rem, 2.4vw, 1.625rem);
-  font-weight: 800;
-  font-variation-settings: "wdth" 125;
-  letter-spacing: -0.005em;
-  line-height: 1.05;
+  font-size: clamp(2rem, 4vw, 3.375rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.15 !important;
   margin: 0 !important;
-  background: linear-gradient(135deg, #FFFFFF 0%, #C4B0FF 45%, #6D28D9 100%) !important;
+  background: var(--tp-chrome-title) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -1161,15 +1161,15 @@ body.team-profile-page {
 }
 
 .team-profile-page .tp-section .ca-section-title,
-.team-profile-page .tp-summary-head .ca-section-title {
+.team-profile-page .tp-summary-head .ca-section-title,
+.team-profile-page .ca-section-head .title {
   font-family: var(--font-display, var(--display));
-  font-size: clamp(1.35rem, 2.4vw, 1.625rem);
-  font-weight: 600;
-  font-variation-settings: "wdth" 125;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   margin: 0 0 4px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #C4B0FF 45%, #6D28D9 100%) !important;
+  background: var(--tp-chrome-title) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -1180,15 +1180,14 @@ body.team-profile-page {
   font-family: var(--font-display, var(--display));
   font-size: clamp(1.85rem, 3.8vw, 2.5rem);
   font-weight: 800;
-  font-variation-settings: "wdth" 125;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   line-height: 1.08;
   margin: 0;
-  color: var(--text, #F5F6FA) !important;
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  background-clip: unset !important;
-  -webkit-text-fill-color: var(--text, #F5F6FA) !important;
+  background: var(--tp-chrome-title) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
 }
 
 .team-profile-page .tp-profile-banner-hero .ca-profile-hero__sub {
@@ -1207,11 +1206,6 @@ body.team-profile-page {
 }
 
 .team-profile-page .ca-section-header .ca-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ca-purple-light, #C4B0FF);
   margin-bottom: 6px;
 }
 

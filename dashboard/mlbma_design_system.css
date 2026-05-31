@@ -1152,22 +1152,7 @@ h1.ca-page-title {
   color: transparent !important;
 }
 
-/* Team Profile — match section heading treatment; never Opening Dashboard silver chrome */
-.team-profile-page #profilePageHeader h1.ca-page-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.4vw, 1.625rem);
-  font-weight: 800;
-  font-variation-settings: "wdth" 125;
-  letter-spacing: -0.005em;
-  line-height: 1.05;
-  margin: 0 !important;
-  background: linear-gradient(135deg, #FFFFFF 0%, #C4B0FF 45%, #6D28D9 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  color: transparent !important;
-}
-
+/* Team Profile — hero team name stays solid; page/section titles use platform chrome below */
 .team-profile-page .ca-profile-hero__title {
   color: var(--text, #F5F6FA) !important;
   background: none !important;
