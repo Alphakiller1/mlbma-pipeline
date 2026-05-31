@@ -1097,10 +1097,24 @@ html.view-research #oorSection { display: none !important; }
   border-radius: var(--r-md, 12px);
   border: 0.5px solid var(--border);
   background: var(--surface-1, #0c0c14);
-  backdrop-filter: blur(8px);
+  isolation: isolate;
   box-shadow: var(--e-1, none);
 }
-.rl-global-bar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
+.rl-global-control-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+.rl-global-control-bar .rl-global-bar-inner {
+  position: relative;
+  z-index: 1;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between;
+}
 .rl-global-bar-title { font-size: 12px; color: var(--text-2); }
 .rl-global-bar-title strong { color: var(--text); }
 .rl-global-bar-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
