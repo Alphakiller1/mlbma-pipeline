@@ -961,6 +961,15 @@ body.team-profile-page {
   overflow: visible;
 }
 
+.profile-lineup-footer {
+  margin-bottom: 32px;
+  overflow: visible;
+}
+
+.profile-lineup-footer:empty {
+  display: none;
+}
+
 .profile-staff-block .tp-section:first-child {
   margin-top: 0;
 }
