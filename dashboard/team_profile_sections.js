@@ -473,143 +473,34 @@
     return '';
   }
 
-  function fmtRatePct(v) {
-    if (v == null || v === '' || isNaN(v)) return '—';
-    var n = Number(v);
-    if (n > 0 && n <= 1) return Math.round(n * 100) + '%';
-    return Math.round(n) + '%';
-  }
-
-  function pitchHandLabel(h) {
-    var s = String(h || '').trim().toUpperCase();
-    if (s === 'L' || s === 'LHP' || s.charAt(0) === 'L') return 'LHP';
-    if (s === 'R' || s === 'RHP' || s.charAt(0) === 'R') return 'RHP';
-    return '?';
-  }
-
-  function pitchTierLabel(score) {
-    if (score == null || isNaN(score)) return { label: '', cls: '' };
-    if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
-    if (score >= 55) return { label: 'Solid', cls: 'tier-solid' };
-    if (score >= 40) return { label: 'Avg', cls: 'tier-mid' };
-    return { label: 'Volatile', cls: 'tier-vol' };
-  }
-
-  function spPitchScoreFor(name, team) {
-    var S = global.MLBMASharedMatchup;
-    var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
-    if (S && S.findSpProfile && profiles.length) {
-      var p = S.findSpProfile(profiles, name, team);
-      if (p && S.spProfileMetrics) {
-        var metrics = S.spProfileMetrics(p);
-        if (metrics && metrics.pitchScore != null) return metrics.pitchScore;
-      }
-    }
-    return typeof global.getSpPitchScore === 'function' ? global.getSpPitchScore(team) : null;
-  }
-
-  function teamRecordHtml(team) {
-    if (global.MLBMAStandings && MLBMAStandings.recordHtml) return MLBMAStandings.recordHtml(team);
-    return '';
-  }
-
   function compareMatchupUrl(away, home) {
     var PD = global.PlatformDashboard;
     if (PD && PD.compareUrl) return PD.compareUrl(away, home);
     return 'matchup_compare.html?away=' + encodeURIComponent(away || '') + '&home=' + encodeURIComponent(home || '');
   }
 
-  function pitcherProfileUrl(name) {
-    return 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
-  }
-
-  function renderTonightSpSnap(side, m, role) {
-    var team = role === 'away' ? m.away : m.home;
-    var name = role === 'away' ? m.awaySP : m.homeSP;
-    var hand = role === 'away' ? m.awayHand : m.homeHand;
-    var k = role === 'away' ? m.awayK : m.homeK;
-    var bb = role === 'away' ? m.awayBB : m.homeBB;
-    var fip = role === 'away' ? m.awayFIP : m.homeFIP;
-    var ps = spPitchScoreFor(name, team);
-    var tier = pitchTierLabel(ps);
-    var psColor = A && ps != null ? A.metricColor(ps, true) : 'var(--text-2)';
-    var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
-    var pid = A && A.resolveMlbId ? A.resolveMlbId(name) : (A ? A.lookupMlbId(name) : null);
-    var avatar = A && pname !== 'TBD'
-      ? A.pitcherAvatar(pid || name, { crop: 'matchup', className: 'tp-tonight-snap__avatar', eager: true })
-      : '';
-    var nameHtml = pname === 'TBD'
-      ? '<span class="tp-tonight-snap__name">' + esc(pname) + '</span>'
-      : '<a href="' + pitcherProfileUrl(pname) + '" class="tp-tonight-snap__name pitcher-link" onclick="event.stopPropagation()">' + esc(pname) + '</a>';
-    var stats = [fmtRatePct(k) + ' K%', fmtRatePct(bb) + ' BB%', fip != null ? Number(fip).toFixed(2) + ' FIP' : '— FIP'];
-    return '<div class="tp-tonight-snap__sp tp-tonight-snap__sp--' + role + '" onclick="event.stopPropagation()">'
-      + avatar
-      + '<div class="tp-tonight-snap__sp-body">'
-      + '<div class="tp-tonight-snap__sp-top">'
-      + '<span class="tp-tonight-snap__side">' + esc(side) + '</span>'
-      + '<span class="hand-pill hand-' + pitchHandLabel(hand).charAt(0).toLowerCase() + '">' + esc(pitchHandLabel(hand)) + '</span>'
-      + (tier.label ? '<span class="pitch-tier ' + tier.cls + '">' + esc(tier.label) + '</span>' : '')
-      + '</div>'
-      + nameHtml
-      + '<div class="tp-tonight-snap__sp-meta">'
-      + (ps != null
-        ? '<span class="tp-tonight-snap__ps"><em>Pitch Score</em><strong style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong></span>'
-        : '')
-      + '<span class="tp-tonight-snap__sp-stats">' + esc(stats.join(' · ')) + '</span>'
-      + '</div></div></div>';
-  }
-
   function renderTonightSnapshot(m) {
-    var logo = A && A.teamLogoImg ? function(t) { return A.teamLogoImg(t, { className: 'tp-tonight-snap__logo' }); } : function() { return ''; };
-    var awayRec = teamRecordHtml(m.away);
-    var homeRec = teamRecordHtml(m.home);
-    var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
-    var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
-    var total = awayOSI + homeOSI || 1;
-    var awayPct = Math.max(10, (awayOSI / total) * 100);
-    var fav = awayOSI >= homeOSI ? m.away : m.home;
-    var handLabel = pitchHandLabel(m.homeHand);
-    var awayHandLabel = pitchHandLabel(m.awayHand);
-    var awayEdgeCls = fav === m.away ? ' edge-team' : '';
-    var homeEdgeCls = fav === m.home ? ' edge-team' : '';
-    var meta = [];
-    if (m.time) meta.push('<span class="tp-tonight-snap__time">' + esc(m.time) + '</span>');
-    if (m.stadium) meta.push('<span class="tp-tonight-snap__venue">' + esc(m.stadium) + '</span>');
-    var S = global.MLBMASharedMatchup;
-    if (S && S.formatWeatherMetaHtml) {
-      var gk = m.away + '@' + m.home;
-      var w = (global.LIVE_DATA && LIVE_DATA.weather || {})[gk] || m.weather;
-      if (w) {
-        var wh = S.formatWeatherMetaHtml(w, m.home);
-        if (wh) meta.push(wh);
-      }
-    }
     var compareUrl = compareMatchupUrl(m.away, m.home);
-    return '<div class="tp-tonight-snapshot" data-tp-matchup-card>'
-      + '<article class="tp-tonight-snap" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
-      + '<div class="tp-tonight-snap__head">'
-      + '<div class="tp-tonight-snap__matchup">'
-      + '<span class="tp-tonight-snap__team">' + logo(m.away) + '<strong>' + esc(m.away) + '</strong>'
-      + (awayRec ? '<span class="tp-tonight-snap__rec">' + awayRec + '</span>' : '') + '</span>'
-      + '<span class="tp-tonight-snap__at">@</span>'
-      + '<span class="tp-tonight-snap__team">' + logo(m.home) + '<strong>' + esc(m.home) + '</strong>'
-      + (homeRec ? '<span class="tp-tonight-snap__rec">' + homeRec + '</span>' : '') + '</span>'
-      + '</div>'
-      + (meta.length ? '<div class="tp-tonight-snap__meta">' + meta.join('') + '</div>' : '')
-      + '</div>'
-      + '<div class="tp-tonight-snap__pitchers">'
-      + renderTonightSpSnap('Away', m, 'away')
-      + renderTonightSpSnap('Home', m, 'home')
-      + '</div>'
-      + '<div class="tp-tonight-snap__edge">'
-      + '<div class="tp-tonight-snap__edge-label">Lineup edge vs ' + esc(handLabel) + ' / ' + esc(awayHandLabel) + '</div>'
-      + '<div class="tp-tonight-snap__osi">'
-      + '<span class="tp-tonight-snap__osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
-      + '<div class="tp-tonight-snap__bar"><span style="width:' + awayPct + '%"></span></div>'
-      + '<span class="tp-tonight-snap__osi-val tr' + homeEdgeCls + '">' + esc(m.home) + ' <strong>' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
-      + '</div></div>'
-      + '<a class="tp-tonight-snap__cta" href="' + compareUrl + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
-      + '</article></div>';
+    var meta = [];
+    if (m.time) meta.push(esc(m.time));
+    if (m.stadium) meta.push(esc(m.stadium));
+    var awaySp = m.awaySP && String(m.awaySP).trim() && String(m.awaySP).toUpperCase() !== 'TBD' ? m.awaySP : null;
+    var homeSp = m.homeSP && String(m.homeSP).trim() && String(m.homeSP).toUpperCase() !== 'TBD' ? m.homeSP : null;
+    var spLine = (awaySp || homeSp)
+      ? '<p class="tp-tonight-compare__sp">' + esc(awaySp || 'TBD') + ' vs ' + esc(homeSp || 'TBD') + '</p>'
+      : '';
+    return '<div class="tp-tonight-compare" data-tp-matchup-card>'
+      + '<div class="tp-tonight-compare__inner">'
+      + '<p class="tp-tonight-compare__matchup">'
+      + '<strong>' + esc(m.away) + '</strong>'
+      + '<span class="tp-tonight-compare__at">@</span>'
+      + '<strong>' + esc(m.home) + '</strong>'
+      + (meta.length ? '<span class="tp-tonight-compare__meta">' + meta.join(' · ') + '</span>' : '')
+      + '</p>'
+      + spLine
+      + '<p class="tp-tonight-compare__prompt">Full matchup analysis — starters, lineups, and side-by-side metrics — lives in <strong>Compare</strong>. Open the workspace for these two teams.</p>'
+      + '<a class="ca-btn ca-btn--primary ca-btn--sm tp-tonight-compare__cta" href="' + compareUrl + '">Open Compare →</a>'
+      + '</div></div>';
   }
 
   function renderTonight(ctx) {
@@ -617,7 +508,7 @@
     if (ctx.battingTab === 'qualified') return '';
     var m = ctx.tonightMatchup;
     if (!m || !m.away || !m.home) return '';
-    return sectionCard('Tonight\'s Matchup', 'Starters and lineup edge at a glance',
+    return sectionCard('Tonight\'s Matchup', 'Head-to-head compare for tonight\'s game',
       renderTonightSnapshot(m),
       { icon: 'swords', kicker: 'Tonight' });
   }

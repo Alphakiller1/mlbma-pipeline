@@ -186,17 +186,17 @@ body.team-profile-page {
 .team-profile-page .tp-profile-banner-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
+  align-items: start;
   gap: 20px 36px;
-  min-height: 156px;
-  padding: 22px 28px 24px;
+  min-height: 0;
+  padding: 20px 28px 22px;
   margin: 0;
   border-bottom: 1px solid var(--border, #262A38);
   background:
     linear-gradient(120deg, color-mix(in srgb, var(--tp-accent, #7C4DFF) 14%, transparent) 0%, transparent 48%),
     linear-gradient(180deg, rgba(124, 77, 255, 0.07) 0%, transparent 55%);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .team-profile-page .tp-profile-banner-hero::before {
@@ -233,15 +233,20 @@ body.team-profile-page {
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
+  padding-top: 4px;
 }
 
 .team-profile-page .tp-profile-banner-hero .ca-profile-hero__eyebrow {
-  margin: 0 0 6px;
-  font-size: 10px;
+  margin: 0 0 8px;
+  padding: 0;
+  font-family: var(--font-display, var(--display));
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
+  line-height: 1.35;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--tp-accent, #C4B0FF) 65%, #fff 35%);
+  color: var(--v-2, #C4B0FF);
 }
 
 .tp-hero-stat-row {
@@ -1007,6 +1012,60 @@ body.team-profile-page {
   display: none;
 }
 
+.tp-rate-stat {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1, #E5E7EB);
+}
+
+.tp-batting-section .num .tp-rate-stat {
+  display: inline-block;
+  min-width: 3.25rem;
+}
+
+.tp-batter-player-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tp-batter-player-cell .tp-batter-avatar,
+.tp-batter-player-cell .ca-pitcher-avatar--matchup,
+.tp-batter-player-cell .headshot-wrap {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.tp-batter-player-cell .ca-pitcher-avatar--matchup img,
+.tp-batter-player-cell .tp-batter-avatar {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+}
+
+.tp-batter-player-link {
+  font-weight: 600;
+  color: var(--ca-purple-light, #C4B0FF);
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.tp-batter-player-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.tp-batting-section .profile-table td:first-child + td + td,
+.tp-batting-section .profile-table th:nth-child(3) {
+  min-width: 168px;
+}
+
 .tp-staff-links {
   margin-top: 12px;
   font-size: 12px;
@@ -1063,20 +1122,28 @@ body.team-profile-page {
 }
 
 .team-profile-page #profilePageHeader .ca-eyebrow {
+  font-family: var(--font-display, var(--display));
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ca-purple-light, #C4B0FF);
+  color: var(--v-2, #C4B0FF);
   margin-bottom: 4px;
 }
 
 .team-profile-page #profilePageHeader h1.ca-page-title {
-  font-size: clamp(1.5rem, 3vw, 2rem) !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.015em !important;
-  line-height: 1.15 !important;
+  font-family: var(--font-display, var(--display));
+  font-size: clamp(1.35rem, 2.4vw, 1.625rem);
+  font-weight: 800;
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.005em;
+  line-height: 1.05;
   margin: 0 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: var(--text, #F5F6FA) !important;
+  color: var(--text, #F5F6FA) !important;
 }
 
 .team-profile-page #profilePageHeader .ca-page-header__sub,
@@ -1101,16 +1168,18 @@ body.team-profile-page {
 }
 
 .team-profile-page .ca-profile-hero__title {
+  font-family: var(--font-display, var(--display));
   font-size: clamp(1.85rem, 3.8vw, 2.5rem);
   font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
   margin: 0;
-  background: linear-gradient(135deg, #FFFFFF 0%, #E9EAF0 38%, color-mix(in srgb, var(--tp-accent, #C4B0FF) 55%, #C4B0FF) 72%, #FFFFFF 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  color: transparent !important;
+  color: var(--text, #F5F6FA) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: var(--text, #F5F6FA) !important;
 }
 
 .team-profile-page .tp-profile-banner-hero .ca-profile-hero__sub {
@@ -1773,19 +1842,22 @@ body.team-profile-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid color-mix(in srgb, var(--tp-accent, #7C4DFF) 22%, var(--border, #262A38));
-  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--tp-accent, #7C4DFF) 32%, transparent));
+  background: linear-gradient(180deg, #E8EAED 0%, #D1D5DB 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 8px 24px -12px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .tp-hero-logo-wrap img,
 .tp-hero-logo-wrap .tp-hero-logo,
 .tp-hero-logo-wrap .snapshot-logo {
-  width: 148px;
-  height: 148px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
 }
 
 .tp-summary-panel {
@@ -3047,252 +3119,57 @@ body.team-profile-page {
   margin: 0;
 }
 
-.tp-tonight-snapshot {
+.tp-tonight-compare {
   margin-top: 4px;
 }
 
-.tp-tonight-snap {
-  padding: 16px 18px 14px;
-  border: 1px solid color-mix(in srgb, var(--purple, #7C4DFF) 28%, var(--border, #262A38));
-  border-radius: 14px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--purple, #7C4DFF) 5%, var(--bg-2, #0E1018)) 0%, var(--bg-2, #0E1018) 100%);
-  box-shadow: 0 10px 32px -18px rgba(124, 77, 255, 0.45);
-  cursor: pointer;
+.tp-tonight-compare__inner {
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--purple, #7C4DFF) 22%, var(--border, #262A38));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--purple, #7C4DFF) 4%, var(--bg-2, #0E1018));
 }
 
-.tp-tonight-snap:focus-visible {
-  outline: 2px solid var(--purple, #7C4DFF);
-  outline-offset: 2px;
-}
-
-.tp-tonight-snap__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px 16px;
-  margin-bottom: 14px;
-}
-
-.tp-tonight-snap__matchup {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 10px;
-  font-size: 14px;
-}
-
-.tp-tonight-snap__team {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-1, #E5E7EB);
-}
-
-.tp-tonight-snap__team strong {
+.tp-tonight-compare__matchup {
+  margin: 0 0 6px;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  color: var(--text-1, #E5E7EB);
+  letter-spacing: 0.03em;
 }
 
-.tp-tonight-snap__logo {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
-.tp-tonight-snap__rec {
-  font-size: 12px;
+.tp-tonight-compare__at {
+  margin: 0 8px;
   color: var(--text-3, #9CA3AF);
   font-weight: 500;
 }
 
-.tp-tonight-snap__at {
-  color: var(--text-3, #9CA3AF);
+.tp-tonight-compare__meta {
+  margin-left: 10px;
   font-size: 13px;
-}
-
-.tp-tonight-snap__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.tp-tonight-snap__time,
-.tp-tonight-snap__venue {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-2, #D1D5DB);
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border, #262A38);
-  background: var(--bg-3, #141824);
-}
-
-.tp-tonight-snap__pitchers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-@media (max-width: 720px) {
-  .tp-tonight-snap__pitchers {
-    grid-template-columns: 1fr;
-  }
-}
-
-.tp-tonight-snap__sp {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--bg-3, #141824) 88%, transparent);
-  border: 1px solid var(--border, #262A38);
-}
-
-.tp-tonight-snap__avatar,
-.tp-tonight-snap__sp .ca-pitcher-avatar--matchup {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-}
-
-.tp-tonight-snap__sp-body {
-  min-width: 0;
-  flex: 1;
-}
-
-.tp-tonight-snap__sp-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.tp-tonight-snap__side {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: var(--text-3, #9CA3AF);
 }
 
-.tp-tonight-snap__name {
-  display: block;
+.tp-tonight-compare__sp {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--text-2, #D1D5DB);
+}
+
+.tp-tonight-compare__prompt {
+  margin: 0 0 14px;
   font-size: 14px;
-  font-weight: 700;
-  color: var(--text-1, #E5E7EB);
-  line-height: 1.3;
-  margin: 0 0 4px;
-  text-decoration: none;
+  line-height: 1.55;
+  color: var(--text-2, #A1A1AA);
+  max-width: 640px;
 }
 
-a.tp-tonight-snap__name:hover {
+.tp-tonight-compare__prompt strong {
   color: var(--ca-purple-light, #C4B0FF);
+  font-weight: 600;
 }
 
-.tp-tonight-snap__sp-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 12px;
-}
-
-.tp-tonight-snap__ps {
+.tp-tonight-compare__cta {
   display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  font-size: 12px;
-}
-
-.tp-tonight-snap__ps em {
-  font-style: normal;
-  color: var(--text-3, #9CA3AF);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.tp-tonight-snap__ps strong {
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.tp-tonight-snap__sp-stats {
-  font-size: 12px;
-  color: var(--text-3, #9CA3AF);
-  line-height: 1.4;
-}
-
-.tp-tonight-snap__edge {
-  padding-top: 12px;
-  border-top: 1px solid var(--border, #262A38);
-}
-
-.tp-tonight-snap__edge-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3, #9CA3AF);
-  margin-bottom: 8px;
-}
-
-.tp-tonight-snap__osi {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px;
-}
-
-.tp-tonight-snap__osi-val {
-  font-size: 12px;
-  color: var(--text-2, #D1D5DB);
-  white-space: nowrap;
-}
-
-.tp-tonight-snap__osi-val strong {
-  font-size: 14px;
-  color: var(--text-1, #E5E7EB);
-}
-
-.tp-tonight-snap__osi-val.edge-team strong {
-  color: var(--ca-purple-light, #C4B0FF);
-}
-
-.tp-tonight-snap__osi-val.tr {
-  text-align: right;
-}
-
-.tp-tonight-snap__bar {
-  height: 6px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--purple, #7C4DFF) 18%, var(--bg-3, #141A28));
-  display: flex;
-}
-
-.tp-tonight-snap__bar > span {
-  display: block;
-  height: 100%;
-  border-radius: 999px 0 0 999px;
-  background: linear-gradient(90deg, var(--purple, #7C4DFF), color-mix(in srgb, var(--purple, #7C4DFF) 55%, #fff));
-}
-
-.tp-tonight-snap__cta {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ca-purple-light, #C4B0FF);
-  text-decoration: none;
-}
-
-.tp-tonight-snap__cta:hover {
-  color: #fff;
 }

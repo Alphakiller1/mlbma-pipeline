@@ -794,7 +794,7 @@
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
     var accent = teamAccent(team);
-    var logo = A ? A.teamLogoImg(team, 148, 'tp-hero-logo snapshot-logo') : '';
+    var logo = A ? A.teamLogoImg(team, 120, 'tp-hero-logo snapshot-logo') : '';
     var rank = ctx.osiRank;
     var ps = ctx.avgPitchScore;
     var statRow = ''

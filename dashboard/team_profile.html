@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260531t">
+<link rel="stylesheet" href="team_profile.css?v=20260531y">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
@@ -21,8 +21,8 @@
 <script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260531o"></script>
-<script src="team_profile_sections.js?v=20260531t"></script>
+<script src="team_profile_mini.js?v=20260531v"></script>
+<script src="team_profile_sections.js?v=20260531w"></script>
 <script src="team_profile_staff.js?v=20260620g"></script>
 <script src="team_profile_intel.js?v=20260531r"></script>
 <script src="mlbma_charts.js?v=20260531n"></script>
@@ -181,7 +181,7 @@ var TEAM_NAMES = {
 var OSI_TIERS = [[85,'Elite'],[75,'High'],[65,'Dangerous'],[50,'Inconsistent'],[0,'Weak']];
 var PITCH_TIERS = [[85,'Ace'],[70,'Solid'],[55,'Average'],[0,'Volatile']];
 
-var DATA = { profiles: [], batters: [], sps: [], bullpen: [], bullpenUnit: [], spMetricSplits: [], registry: [], matchups: [], matchupsEnriched: [], lineups: [], lineupsParsed: [], weather: [], pitchTeams: [], metricsR: [], metricsL: [], batterSplitsR: [], batterSplitsL: [], results: [], palsMap: {} };
+var DATA = { profiles: [], batters: [], sps: [], bullpen: [], bullpenUnit: [], spMetricSplits: [], registry: [], matchups: [], matchupsEnriched: [], lineups: [], lineupsParsed: [], weather: [], pitchTeams: [], metricsR: [], metricsL: [], batterSplitsR: [], batterSplitsL: [], batterSplitsOverall: [], batterSplitsHome: [], batterSplitsAway: [], batterSplitsVsSp: [], batterSplitsVsRp: [], batterRatePool: [], results: [], palsMap: {} };
 var STATE = {
   team: 'NYY',
   splitByCategory: { lineup: 'both', rotation: 'overall', bullpen: 'overall' },
@@ -268,6 +268,47 @@ function num(v) {
 function fmt(v, d) {
   if (v === null || isNaN(v)) return '?';
   return Number(v).toFixed(d === undefined ? 1 : d);
+}
+
+function fmtSlashStat(v) {
+  if (v == null || v === '' || isNaN(v)) return '—';
+  var n = Number(v);
+  var s = n.toFixed(3);
+  if (Math.abs(n) < 1 && Math.abs(n) > 0) s = s.replace(/^-0\./, '-.').replace(/^0\./, '.');
+  return s;
+}
+
+function rateStatCell(v) {
+  return '<span class="tp-rate-stat">' + escHtml(fmtSlashStat(v)) + '</span>';
+}
+
+function registryPlayerId(name, team) {
+  var reg = findRegistryEntry(name, team);
+  if (!reg) return null;
+  var pid = pickCol(reg, ['player_id', 'Player_ID', 'mlb_id', 'MLB_ID']);
+  return pid != null && String(pid).trim() !== '' ? String(pid).trim() : null;
+}
+
+function batterLineupAvatar(name, team, profileName) {
+  var A = window.MLBMAAssets;
+  if (!A || !A.pitcherAvatar) return '';
+  var pid = registryPlayerId(name, team);
+  if (!pid && A.resolveMlbId) pid = A.resolveMlbId(profileName || name);
+  return A.pitcherAvatar(pid || profileName || name, {
+    size: 32,
+    crop: 'matchup',
+    className: 'tp-batter-avatar',
+    lazy: true
+  });
+}
+
+function batterPlayerCellHtml(displayName, profileName, team) {
+  var avatar = batterLineupAvatar(displayName, team, profileName);
+  var href = 'batter_profile.html?player=' + encodePlayer(profileName);
+  return '<div class="tp-batter-player-cell">'
+    + avatar
+    + '<a class="tp-batter-player-link" href="' + href + '">' + escHtml(displayName) + '</a>'
+    + '</div>';
 }
 
 function teamKey(t) {
@@ -386,16 +427,73 @@ function resolvePlayerFullName(name, team) {
 
 function rowHasMetrics(row) {
   if (!row) return false;
-  return num(pickCol(row, ['OSI', 'osi'])) != null || num(pickCol(row, ['ABQ', 'abq'])) != null;
+  return num(pickCol(row, ['wOBA', 'woba'])) != null
+    || num(pickCol(row, ['OPS', 'ops'])) != null
+    || num(pickCol(row, ['OBP', 'obp'])) != null
+    || num(pickCol(row, ['OSI', 'osi'])) != null;
 }
 
 function rowBySplitType(rows, splitType) {
   var want = String(splitType || '').toLowerCase();
   for (var i = 0; i < rows.length; i++) {
-    var st = String(pickCol(rows[i], ['split_type', 'Split']) || '').toLowerCase();
+    var st = String(pickCol(rows[i], ['split_type', 'Split', '_rateSplit']) || '').toLowerCase();
     if (st === want) return rows[i];
   }
   return null;
+}
+
+function buildBatterRatePool() {
+  function tag(rows, splitType) {
+    return (rows || []).map(function(r) {
+      var o = Object.assign({}, r);
+      o._rateSplit = splitType;
+      return o;
+    });
+  }
+  DATA.batterRatePool = []
+    .concat(tag(DATA.batterSplitsOverall, 'overall'))
+    .concat(tag(DATA.batterSplitsR, 'vs_RHP'))
+    .concat(tag(DATA.batterSplitsL, 'vs_LHP'))
+    .concat(tag(DATA.batterSplitsHome, 'home'))
+    .concat(tag(DATA.batterSplitsAway, 'away'))
+    .concat(tag(DATA.batterSplitsVsSp, 'vs_SP'))
+    .concat(tag(DATA.batterSplitsVsRp, 'vs_RP'));
+}
+
+function batterRateProfilesForPlayer(name, team) {
+  var resolved = findRegistryEntry(name, team);
+  var resolvedName = resolved ? pickCol(resolved, ['full_name']) : name;
+  var targets = [normalizePlayerName(resolvedName), normalizePlayerName(name)];
+  var t = teamKey(team);
+  var ln = playerLastName(resolvedName) || playerLastName(name);
+  var init = playerInitial(name) || playerInitial(resolvedName) || (normalizePlayerName(name).split(' ')[0] || '').charAt(0);
+  var scored = [];
+  (DATA.batterRatePool || []).forEach(function(b) {
+    var rawName = pickCol(b, ['player_name', 'Player', 'Name']);
+    var bn = normalizePlayerName(rawName);
+    var bt = teamKey(pickCol(b, ['team', 'Team', 'Tm']));
+    var matchScore = 0;
+    if (targets.indexOf(bn) >= 0) matchScore = 100;
+    else if (ln && playerLastName(rawName) === ln) {
+      var firstTok = (String(rawName || '').replace(/\./g, ' ').trim().split(/\s+/)[0] || '');
+      matchScore = (!init || firstTok.charAt(0).toLowerCase() === init) ? 80 : 50;
+    }
+    if (!matchScore) return;
+    if (bt && bt !== t) matchScore -= 15;
+    scored.push({ row: b, score: matchScore });
+  });
+  scored.sort(function(a, b) { return b.score - a.score; });
+  var out = [];
+  var seenSplit = {};
+  scored.forEach(function(s) {
+    if (s.score < 50) return;
+    var st = String(s.row._rateSplit || pickCol(s.row, ['split_type', 'Split']) || '').toLowerCase();
+    var key = st + '|' + normalizePlayerName(pickCol(s.row, ['player_name', 'Player', 'Name']));
+    if (seenSplit[key]) return;
+    seenSplit[key] = true;
+    out.push(s.row);
+  });
+  return out;
 }
 
 function blendSplitMetric(rowA, rowB, key) {
@@ -406,21 +504,25 @@ function blendSplitMetric(rowA, rowB, key) {
 }
 
 function metricsFromBatterRow(row) {
-  if (!row) return { abq: null, rcv: null, obr: null, osi: null };
+  if (!row) return { ops: null, obp: null, iso: null, woba: null };
+  var obp = num(pickCol(row, ['OBP', 'obp']));
+  var slg = num(pickCol(row, ['SLG', 'slg']));
+  var ops = num(pickCol(row, ['OPS', 'ops']));
+  if (ops == null && obp != null && slg != null) ops = obp + slg;
   return {
-    abq: num(pickCol(row, ['ABQ', 'abq'])),
-    rcv: num(pickCol(row, ['RCV', 'rcv'])),
-    obr: num(pickCol(row, ['OBR', 'obr'])),
-    osi: num(pickCol(row, ['OSI', 'osi']))
+    ops: ops,
+    obp: obp,
+    iso: num(pickCol(row, ['ISO', 'iso'])),
+    woba: num(pickCol(row, ['wOBA', 'woba']))
   };
 }
 
 function metricsFromBlend(rowA, rowB) {
   return {
-    abq: blendSplitMetric(rowA, rowB, 'ABQ'),
-    rcv: blendSplitMetric(rowA, rowB, 'RCV'),
-    obr: blendSplitMetric(rowA, rowB, 'OBR'),
-    osi: blendSplitMetric(rowA, rowB, 'OSI')
+    ops: blendSplitMetric(rowA, rowB, 'OPS'),
+    obp: blendSplitMetric(rowA, rowB, 'OBP'),
+    iso: blendSplitMetric(rowA, rowB, 'ISO'),
+    woba: blendSplitMetric(rowA, rowB, 'wOBA')
   };
 }
 
@@ -491,7 +593,7 @@ function batterProfilesForPlayer(name, team) {
 }
 
 function batterMetricsForLineup(name, team, filter, spHand) {
-  var rows = batterProfilesForPlayer(name, team);
+  var rows = batterRateProfilesForPlayer(name, team);
   if (!rows.length) return metricsFromBatterRow(null);
 
   if (filter === 'both') {
@@ -561,7 +663,7 @@ function buildProjectedLineupTableHtml(team, ctx) {
     return '<div class="tp-empty">No projected lineup in Today_Lineups for ' + escHtml(team) + '.</div>';
   }
   var body = profileTableOpen()
-    + '<thead><tr><th>#</th><th>Pos</th><th>Player</th><th>B</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th></th></tr></thead><tbody>';
+    + '<thead><tr><th>#</th><th>Pos</th><th>Player</th><th>B</th><th>OPS</th><th>OBP</th><th>ISO</th><th>wOBA</th><th></th></tr></thead><tbody>';
   slots.forEach(function(slot) {
     var pname = pickCol(slot, ['Player', 'player']);
     var profileName = resolvePlayerFullName(pname, team);
@@ -571,12 +673,12 @@ function buildProjectedLineupTableHtml(team, ctx) {
     var m = batterMetricsForLineup(pname, team, split, spHand);
     body += '<tr><td class="num">' + escHtml(order || '?') + '</td>'
       + '<td>' + escHtml(pos || '?') + '</td>'
-      + '<td><a href="batter_profile.html?player=' + encodePlayer(profileName) + '">' + escHtml(pname) + '</a></td>'
+      + '<td>' + batterPlayerCellHtml(pname, profileName, team) + '</td>'
       + '<td>' + escHtml(bats || '?') + '</td>'
-      + '<td class="num">' + valChip(m.abq, 'abq', false, 1) + '</td>'
-      + '<td class="num">' + valChip(m.rcv, 'rcv', false, 1) + '</td>'
-      + '<td class="num">' + valChip(m.obr, 'obr', false, 1) + '</td>'
-      + '<td class="num">' + valChip(m.osi, 'osi', false, 1) + '</td>'
+      + '<td class="num">' + rateStatCell(m.ops) + '</td>'
+      + '<td class="num">' + rateStatCell(m.obp) + '</td>'
+      + '<td class="num">' + rateStatCell(m.iso) + '</td>'
+      + '<td class="num">' + rateStatCell(m.woba) + '</td>'
       + '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + encodePlayer(profileName) + '">Profile</a></td></tr>';
   });
   body += '</tbody>' + profileTableClose();
@@ -608,26 +710,26 @@ function buildQualifiedBattersTableHtml(team, ctx) {
       name: n,
       pos: reg ? pickCol(reg, ['position']) : '',
       bats: reg ? pickCol(reg, ['bats']) : '',
-      abq: m.abq,
-      rcv: m.rcv,
-      obr: m.obr,
-      osi: m.osi,
+      ops: m.ops,
+      obp: m.obp,
+      iso: m.iso,
+      woba: m.woba,
       trend: pickCol(main, ['trend'])
     };
-  }).sort(function(a, b) { return (b.osi || 0) - (a.osi || 0); });
+  }).sort(function(a, b) { return (b.woba || 0) - (a.woba || 0); });
 
   var body = profileTableOpen()
-    + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>Trend</th><th></th></tr></thead><tbody>';
+    + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>OPS</th><th>OBP</th><th>ISO</th><th>wOBA</th><th>Trend</th><th></th></tr></thead><tbody>';
   if (!rosterList.length) {
     body += '<tr><td colspan="9" class="tp-empty">No qualified batters (run batter profile pipeline)</td></tr>';
   } else {
     rosterList.forEach(function(b) {
-      body += '<tr><td><a href="batter_profile.html?player=' + encodePlayer(b.name) + '">' + escHtml(b.name) + '</a></td>'
+      body += '<tr><td>' + batterPlayerCellHtml(b.name, b.name, team) + '</td>'
         + '<td>' + escHtml(b.pos || '—') + '</td><td>' + escHtml(b.bats || '—') + '</td>'
-        + '<td class="num">' + valChip(b.abq, 'abq', false, 1) + '</td>'
-        + '<td class="num">' + valChip(b.rcv, 'rcv', false, 1) + '</td>'
-        + '<td class="num">' + valChip(b.obr, 'obr', false, 1) + '</td>'
-        + '<td class="num">' + valChip(b.osi, 'osi', false, 1) + '</td>'
+        + '<td class="num">' + rateStatCell(b.ops) + '</td>'
+        + '<td class="num">' + rateStatCell(b.obp) + '</td>'
+        + '<td class="num">' + rateStatCell(b.iso) + '</td>'
+        + '<td class="num">' + rateStatCell(b.woba) + '</td>'
         + '<td>' + trendArrow(b.trend) + '</td>'
         + '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + encodePlayer(b.name) + '">Profile</a></td></tr>';
     });
@@ -849,32 +951,9 @@ window.getSpPitchScore = function(team) {
 };
 
 function bindTeamProfileMatchupCard(root) {
-  if (!root) return;
+  if (!root || !window.MLBMAIcons || !MLBMAIcons.refreshIcons) return;
   var wrap = root.querySelector('[data-tp-matchup-card]');
-  if (!wrap) return;
-  var card = wrap.querySelector('.tp-tonight-snap') || wrap.querySelector('.hero-matchup-card');
-  if (!card || card.dataset.navBound) return;
-  card.dataset.navBound = '1';
-  var goCompare = function() {
-    var away = card.getAttribute('data-away');
-    var home = card.getAttribute('data-home');
-    if (!away || !home) return;
-    var url = window.PlatformDashboard && PlatformDashboard.compareUrl
-      ? PlatformDashboard.compareUrl(away, home)
-      : 'matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home);
-    window.location.href = url;
-  };
-  card.addEventListener('click', function(e) {
-    if (e.target.closest('a, button')) return;
-    goCompare();
-  });
-  card.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      goCompare();
-    }
-  });
-  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(wrap);
+  if (wrap) MLBMAIcons.refreshIcons(wrap);
 }
 
 function quadrantPosition(team, prof) {
@@ -1245,11 +1324,8 @@ function renderUnitSnapshotStrip(prof, ctx) {
     var chips = unitSnapshotChipRanked('Proj OSI', m.proj, computeProjOsiRank(STATE.team, split), 'osi', false, 1)
       + unitSnapshotChipRanked('wRC+', ctx.wrc != null ? ctx.wrc : rates.wrc, computeWrcRank(STATE.team, split), 'wrc', false, 0)
       + unitSnapshotChipRanked('Runs Per Game', runsPerGameForTeam(STATE.team), computeRpgRank(STATE.team), 'osi', false, 2);
-    var splitHtml = window.TeamProfileMini && TeamProfileMini.renderOffenseSplitSummary
-      ? TeamProfileMini.renderOffenseSplitSummary(prof, m, ctx) : '';
     el.innerHTML = intelHtml
-      + '<div class="tp-unit-snapshot-row">' + chips + '</div>'
-      + splitHtml;
+      + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
     syncIdentityStackLayout();
     return;
   } else if (cat === 'rotation') {
@@ -1528,6 +1604,11 @@ function loadAll() {
     fetchSheetTab(TABS.vs_lhp).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_rhp).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_lhp).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_overall).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_vs_sp).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_vs_rp).catch(function() { return []; }),
     fetchSheetTab(TABS.team_results).catch(function() { return []; }),
     fetchSheetTab(TABS.pals).catch(function() { return []; }),
     fetchSheetTab(TABS.sp_metric_splits).catch(function() { return []; }),
@@ -1546,11 +1627,17 @@ function loadAll() {
     DATA.metricsL = res[10] || [];
     DATA.batterSplitsR = res[11] || [];
     DATA.batterSplitsL = res[12] || [];
-    DATA.results = res[13] || [];
-    DATA.spMetricSplits = res[15] || [];
-    DATA.bullpenUnit = res[16] || [];
+    DATA.batterSplitsOverall = res[13] || [];
+    DATA.batterSplitsHome = res[14] || [];
+    DATA.batterSplitsAway = res[15] || [];
+    DATA.batterSplitsVsSp = res[16] || [];
+    DATA.batterSplitsVsRp = res[17] || [];
+    DATA.results = res[18] || [];
+    DATA.spMetricSplits = res[20] || [];
+    DATA.bullpenUnit = res[21] || [];
+    buildBatterRatePool();
     if (window.MLBMASharedMatchup && MLBMASharedMatchup.parsePalsRows) {
-      DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[14] || []);
+      DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[19] || []);
     }
     if (window.MLBMASharedMatchup && MLBMASharedMatchup.scoreRowFromSheet) {
       window.SCO_YTD_R = (DATA.metricsR || []).map(MLBMASharedMatchup.scoreRowFromSheet).filter(Boolean);
