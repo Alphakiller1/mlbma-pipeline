@@ -343,9 +343,9 @@
   }
 
   function brandLogoNavHtml(heightPx) {
-    heightPx = heightPx || 32;
-    return '<img class="chase-nav-logo ca-logo-nav chase-brand-logo--dark" src="' + BRAND.logoNavDark + '" '
-      + 'alt="Chase Analytics" height="' + heightPx + '" style="height:' + heightPx + 'px;width:auto;max-height:36px;object-fit:contain" loading="eager" '
+    heightPx = heightPx || 48;
+    return '<img class="chase-nav-logo ca-logo-nav chase-brand-logo chase-nav-logo--dark" src="' + BRAND.logoNavDark + '" '
+      + 'alt="Chase Analytics" height="' + heightPx + '" style="height:' + heightPx + 'px;width:auto;max-height:48px;object-fit:contain" loading="eager" '
       + 'onerror="this.style.display=\'none\';var f=this.nextElementSibling;if(f)f.style.display=\'inline\';">'
       + '<span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>';
   }

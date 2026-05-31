@@ -406,10 +406,10 @@
       }
       el.innerHTML = '<div class="hub-control-bar tp-filter-bar tp-context-bar">'
         + '<div class="hub-control-row tp-split-window-row">'
-        + pillGroup('Split', 'split', splitOpts, activeSplit)
-        + pillGroup('Window', 'window', [
+        + '<div class="tp-split-window-cell">' + pillGroup('Split', 'split', splitOpts, activeSplit) + '</div>'
+        + '<div class="tp-split-window-cell">' + pillGroup('Window', 'window', [
           { value: 'YTD', label: 'Season' }, { value: 'L30', label: 'Last 30' }, { value: 'L14', label: 'Last 14' }, { value: 'L7', label: 'Last 7', warn: true }
-        ], state.window)
+        ], state.window) + '</div>'
         + '</div>'
         + '<p class="tp-control-hint">' + esc(splitHintForCategory(cat)) + '</p>'
         + '</div>';

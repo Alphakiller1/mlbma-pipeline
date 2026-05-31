@@ -115,8 +115,7 @@
     var presets = {
       rank: { crop: 'matchup', className: 'mc-headshot' },
       dropdown: { crop: 'matchup', className: 'mc-headshot' },
-      snapshot: { crop: 'compare', className: 'mc-headshot', size: 80, eager: true },
-      standout: { crop: 'matchup', className: 'mc-headshot', eager: false }
+      snapshot: { crop: 'compare', className: 'mc-headshot', size: 80, eager: true }
     };
     var base = presets[slot] || { crop: 'matchup', className: 'mc-headshot' };
     var html = A.pitcherAvatar(idOrName, Object.assign({}, base, extra || {}));
@@ -724,7 +723,6 @@
     loadGameLog().then(function() {
       renderIntelSubTabs();
       renderSnapshot();
-      renderPitcherLabChrome();
     });
   }
 
@@ -903,7 +901,6 @@
           renderBullpenView();
           renderSnapshot();
           renderRankings();
-          renderPitcherLabChrome();
         }
       });
     });
@@ -939,7 +936,6 @@
       btn.addEventListener('click', function() {
         CACHE.intelTab = btn.getAttribute('data-pl-intel-tab') || 'snapshot';
         renderIntelSubTabs();
-        renderPitcherLabChrome();
         renderSnapshot();
         renderRankings();
       });
@@ -954,9 +950,8 @@
       + '<div class="pl-intel-search-block">'
       + '<p class="pl-intel-purpose">Starting pitchers only — prop outlook, recent starts, and opponent-quality context. Relievers → Bullpen View.</p>'
       + '<div class="pl-search-wrap pl-intel-search">'
-      + '<input type="search" id="plPitcherSearch" class="pl-search-input pl-intel-search-input" placeholder="Search starting pitcher or team…" autocomplete="off">'
+      + '<input type="search" id="plPitcherSearch" class="pl-search-input pl-intel-search-input" placeholder="Select Pitcher" autocomplete="off">'
       + '<div id="plSearchDropdown" class="pl-search-dropdown"></div></div></div>'
-      + '<div id="plStandoutMount"></div>'
       + '<div id="plSnapshotMount"></div>'
       + '</div>'
       + '<div id="plRankingsPane" class="pl-intel-pane" hidden>'
@@ -974,7 +969,6 @@
       inp.addEventListener('input', function() {
         CACHE.searchQ = inp.value;
         renderDropdown(searchMatches(inp.value));
-        renderPitcherLabChrome();
       });
       inp.addEventListener('focus', function() {
         renderDropdown(searchMatches(inp.value));
@@ -985,110 +979,6 @@
         var dd = document.getElementById('plSearchDropdown');
         if (dd) dd.style.display = 'none';
       }
-    });
-  }
-
-  function filteredProfiles() {
-    var q = CACHE.searchQ.toLowerCase().trim();
-    return starterProfiles().filter(function(row) {
-      if (!q) return true;
-      var n = pickCol(row, ['pitcher_name', 'Name']).toLowerCase();
-      var t = pickCol(row, ['pitcher_team', 'Team']).toLowerCase();
-      return n.indexOf(q) >= 0 || t.indexOf(q) >= 0;
-    });
-  }
-
-  function pickStandoutCards(rows) {
-    var picks = [];
-    var used = {};
-    function tryAdd(row, reason, metricKey, label) {
-      if (picks.length >= 3 || !row) return;
-      var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-      if (!n || used[n]) return;
-      used[n] = true;
-      var m = profileMetrics(row);
-      var val = metricKey === 'fipGap' ? ((m.fip || 0) - (m.era || 0)) : m[metricKey];
-      picks.push({ row: row, reason: reason, label: label || 'Pitching Score', val: val, flags: spFlags(m) });
-    }
-    var elite = rows.filter(function(r) {
-      return spFlags(profileMetrics(r)).some(function(f) { return f.tone === 'elite'; });
-    }).sort(function(a, b) {
-      return (profileMetrics(b).pitchScore || 0) - (profileMetrics(a).pitchScore || 0);
-    });
-    tryAdd(elite[0], 'Elite stuff', 'pitchScore', 'Pitching Score');
-
-    var reg = rows.filter(function(r) {
-      return spFlags(profileMetrics(r)).some(function(f) { return f.tone === 'risk'; });
-    }).sort(function(a, b) {
-      var ma = profileMetrics(a), mb = profileMetrics(b);
-      return ((mb.fip || 0) - (mb.era || 0)) - ((ma.fip || 0) - (ma.era || 0));
-    });
-    tryAdd(reg[0], 'Regression risk', 'fipGap', 'FIP − ERA');
-
-    var rawStarters = todayStarterRawNames();
-    if (rawStarters.length) {
-      var starter = rows.filter(function(r) {
-        var n = pickCol(r, ['pitcher_name', 'Name']);
-        return rawStarters.some(function(s) { return pitcherNamesMatch(s, n); });
-      }).sort(function(a, b) {
-        return (profileMetrics(b).pitchScore || 0) - (profileMetrics(a).pitchScore || 0);
-      })[0];
-      tryAdd(starter, 'Tonight', 'pitchScore', 'Pitching Score');
-    }
-
-    rows.slice().sort(function(a, b) {
-      return (profileMetrics(b).pitchScore || 0) - (profileMetrics(a).pitchScore || 0);
-    }).forEach(function(r) {
-      tryAdd(r, 'Top arm', 'pitchScore', 'Pitching Score');
-    });
-    return picks;
-  }
-
-  function standoutCardHtml(card) {
-    var n = pickCol(card.row, ['pitcher_name', 'Name', 'Pitcher']);
-    var pid = pickCol(card.row, ['pitcher_id', 'playerId', 'mlb_id']);
-    var av = piPitcherAvatar(pid || n, 'standout');
-    var invert = card.label === 'FIP − ERA';
-    var valHtml = card.label === 'FIP − ERA'
-      ? '<span class="chip" style="color:' + mColor(card.val, false, 'pitching') + '">' + fmt(card.val, 2) + '</span>'
-      : metricChip(card.val, false, 'pitching', card.label === 'Pitching Score' ? 0 : 1);
-    return '<button type="button" class="rl-scorecard rl-scorecard--pitcher pl-standout-card" data-standout-pitcher="' + esc(n) + '">'
-      + av
-      + '<div class="rl-scorecard-body">'
-      + '<h4>' + esc(n) + '</h4>'
-      + '<div class="pl-standout-reason">' + renderFlagPills(
-        card.flags.length
-          ? [card.flags.find(function(f) {
-            return (card.reason === 'Elite stuff' && f.tone === 'elite')
-              || (card.reason === 'Regression risk' && f.tone === 'risk')
-              || (card.reason === 'Tonight' && f.tone !== 'risk')
-              || (card.reason === 'Top arm' && f.tone === 'elite');
-          }) || card.flags[0]]
-          : [{ label: card.reason, tone: 'mid' }]
-      ) + '</div>'
-      + '<div class="ca-metric-label">' + esc(card.label) + '</div>'
-      + '<div class="rl-metric-primary">' + valHtml + '</div>'
-      + '</div></button>';
-  }
-
-  function renderStandoutMount(rows) {
-    var mount = document.getElementById('plStandoutMount');
-    if (!mount || CACHE.viewMode === 'bullpen' || CACHE.intelTab !== 'snapshot') {
-      if (mount) mount.innerHTML = '';
-      return;
-    }
-    var cards = pickStandoutCards(rows || filteredProfiles());
-    if (!cards.length) {
-      mount.innerHTML = '';
-      return;
-    }
-    mount.innerHTML = '<div class="pl-standout-head"><h4 class="pl-section-title">Quick Angles</h4>'
-      + '<p class="pl-section-sub">Tonight\'s starters and flagged arms — click to load prop research</p></div>'
-      + '<div class="pl-standout-strip">' + cards.map(standoutCardHtml).join('') + '</div>';
-    mount.querySelectorAll('[data-standout-pitcher]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        selectPitcher(btn.getAttribute('data-standout-pitcher'), true);
-      });
     });
   }
 
@@ -1328,15 +1218,6 @@
     });
   }
 
-  function renderPitcherLabChrome() {
-    if (CACHE.viewMode === 'bullpen') {
-      var sm = document.getElementById('plStandoutMount');
-      if (sm) sm.innerHTML = '';
-      return;
-    }
-    renderStandoutMount(filteredProfiles());
-  }
-
   function mount(rootId) {
     var root = document.getElementById(rootId || 'rlPitcherLabRoot');
     if (!root) return;
@@ -1348,7 +1229,6 @@
       }
       renderSearchMount(root);
       renderIntelSubTabs();
-      renderPitcherLabChrome();
       renderRankings();
       renderBullpenView();
       var starters = starterProfiles();
@@ -1369,7 +1249,6 @@
       CACHE.selected = pickCol(pitcher, ['pitcher_name', 'Name', 'Pitcher']);
       loadSplits().then(function() {
         renderSnapshot();
-        renderPitcherLabChrome();
       });
     }
   }

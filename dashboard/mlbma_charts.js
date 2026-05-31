@@ -373,9 +373,104 @@
       + '</g>';
   }
 
+  function resolveQuadrantTipRow(d) {
+    if (!d) return d;
+    var master = null;
+    if (typeof global.SCO_YTD_B !== 'undefined' && global.SCO_YTD_B.length) {
+      master = global.SCO_YTD_B.find(function(r) { return r.t === d.t; });
+    } else if (global.LIVE_DATA && global.LIVE_DATA.scYtdB) {
+      master = (global.LIVE_DATA.scYtdB || []).find(function(r) { return r.t === d.t; });
+    }
+    if (!master) return d;
+    return Object.assign({}, master, d);
+  }
+
+  function metricColor(v, ctx, invert) {
+    var A = global.MLBMAAssets;
+    if (A && A.metricColor) return A.metricColor(v, ctx || 'osi', !!invert);
+    if (typeof global.tcol === 'function') return global.tcol(v, ctx, invert);
+    return '#E4E4E7';
+  }
+
+  function trendColor(trend) {
+    var A = global.MLBMAAssets;
+    if (A && A.trendColor) return A.trendColor(trend);
+    if (typeof global.trendCol === 'function') return global.trendCol(trend);
+    return '#71717A';
+  }
+
+  function fmtMetric(v, decimals) {
+    if (v == null || isNaN(v)) return '—';
+    return Number(v).toFixed(decimals == null ? 1 : decimals);
+  }
+
+  function fmtSigned(v, decimals) {
+    if (v == null || isNaN(v)) return '—';
+    var n = Number(v);
+    return (n > 0 ? '+' : '') + n.toFixed(decimals == null ? 1 : decimals);
+  }
+
+  function ttRow(label, valHtml) {
+    return '<div class="tt-row"><span class="lab">' + esc(label) + '</span><span class="val">' + valHtml + '</span></div>';
+  }
+
+  function buildMarketQuadrantTipHtml(d) {
+    d = resolveQuadrantTipRow(d);
+    if (!d) return '';
+
+    var osi = num(d.osi);
+    var proj = num(d.projOSI != null ? d.projOSI : d.osi);
+    var form = num(d.currentFormOSI);
+    var projDelta = (proj != null && osi != null) ? proj - osi : null;
+
+    var pp = num(d.ppGap != null ? d.ppGap : (d.abq != null && d.rcv != null ? d.abq - d.rcv : null));
+    var df = num(d.dfGap != null ? d.dfGap : (d.rcv != null && d.obr != null ? d.rcv - d.obr : null));
+    var edge = num(d.splitEdge);
+
+    var susVal = num(d.sus);
+    var sus = (typeof global.susGrade === 'function' && susVal != null)
+      ? global.susGrade(susVal)
+      : { l: '—', c: '#FBBF24' };
+
+    var reg = (typeof global.regFmt === 'function')
+      ? global.regFmt(d.reg != null ? d.reg : d.reg_signal)
+      : ['—', '#71717A', 'Stable'];
+
+    var trend = d.trend || 'Stable';
+    var trendC = trendColor(trend);
+
+    var projHtml = proj != null
+      ? '<span style="color:' + metricColor(proj, 'osi') + '">' + fmtMetric(proj) + '</span>'
+        + (projDelta != null && Math.abs(projDelta) >= 0.05
+          ? ' <span class="tt-delta">(' + fmtSigned(projDelta) + ')</span>' : '')
+      : '—';
+
+    var susHtml = susVal != null
+      ? '<span style="color:' + sus.c + '">' + esc(sus.l) + ' (' + fmtMetric(susVal) + ')</span>'
+      : '—';
+
+    var regHtml = '<span style="color:' + reg[1] + '">' + esc(reg[0]) + '</span>';
+
+    return '<div class="tt-team">' + esc(d.t) + '</div>'
+      + '<div class="tt-sep"></div>'
+      + ttRow('OSI', '<span style="color:' + metricColor(osi, 'osi') + '">' + fmtMetric(osi) + '</span>')
+      + ttRow('Projected OSI', projHtml)
+      + ttRow('Current Form', '<span style="color:' + metricColor(form, 'osi') + '">' + fmtMetric(form) + '</span>')
+      + '<div class="tt-sep"></div>'
+      + ttRow('RCV', '<span style="color:' + metricColor(d.rcv, 'rcv') + '">' + fmtMetric(d.rcv) + '</span>')
+      + ttRow('ABQ', '<span style="color:' + metricColor(d.abq, 'abq') + '">' + fmtMetric(d.abq) + '</span>')
+      + ttRow('OBR', '<span style="color:' + metricColor(d.obr, 'obr') + '">' + fmtMetric(d.obr) + '</span>')
+      + '<div class="tt-sep"></div>'
+      + ttRow('PP Gap (ABQ–RCV)', '<span style="color:' + metricColor(pp, 'ppGap') + '">' + fmtSigned(pp) + '</span>')
+      + ttRow('DF Gap (RCV–OBR)', '<span style="color:' + metricColor(df, 'dfGap') + '">' + fmtSigned(df) + '</span>')
+      + '<div class="tt-sep"></div>'
+      + ttRow('Sustainability', susHtml)
+      + ttRow('Regression', regHtml)
+      + ttRow('Trend', '<span style="color:' + trendC + '">' + esc(trend) + '</span>')
+      + ttRow('Split Edge', '<span style="color:' + (edge != null && Math.abs(edge) >= 3 ? '#9A6BFF' : '#E4E4E7') + '">' + fmtSigned(edge) + '</span>');
+  }
+
   /**
-   * RCV (x) vs reg_signal / PP-Gap (y) market quadrant — pure SVG.
-   */
   function renderMarketQuadrant(containerId, rows, opts) {
     opts = opts || {};
     var el = opts.el || document.getElementById(containerId);
@@ -451,7 +546,7 @@
 
     el.innerHTML = '<div class="mlbma-quad-wrap">' + legend
       + '<div class="mlbma-quad-chart-wrap chart-wrap">' + svg
-      + '<div id="' + esc(tipId) + '" class="chart-tip mlbma-quad-tip"></div></div></div>';
+      + '<div id="' + esc(tipId) + '" class="tooltip chart-tip mlbma-quad-tip" role="tooltip"></div></div></div>';
 
     var tip = document.getElementById(tipId);
     var wrap = el.querySelector('.mlbma-quad-chart-wrap');
@@ -468,29 +563,49 @@
           abbr.style.display = 'block';
         });
       }
-      g.addEventListener('mouseenter', function(e) {
+      g.addEventListener('mouseenter', function() {
         var t = g.getAttribute('data-team');
         var d = data.find(function(r) { return r.t === t; });
         if (!d || !tip) return;
-        var yVal = quadYValue(d);
-        var meta = marketQuadrantMeta(d.rcv, yVal);
-        var pp = d.ppGap != null ? d.ppGap.toFixed(1) : '—';
-        tip.innerHTML = '<div class="tt-team">' + esc(d.t) + '</div>'
-          + '<div>RCV <strong>' + d.rcv.toFixed(1) + '</strong> · Gap <strong>' + yVal.toFixed(1) + '</strong></div>'
-          + '<div>PP-Gap <strong>' + pp + '</strong> · OSI <strong>' + (d.osi != null ? d.osi.toFixed(1) : '—') + '</strong></div>'
-          + '<div class="tt-quad" style="color:' + meta.color + '">' + esc(meta.label) + '</div>';
+        tip.innerHTML = buildMarketQuadrantTipHtml(d);
         tip.classList.add('show');
       });
       g.addEventListener('mousemove', function(e) {
         if (!tip || !wrap) return;
         var rect = wrap.getBoundingClientRect();
-        var x = e.clientX - rect.left + 12;
-        var y = e.clientY - rect.top + 12;
-        if (x + 200 > rect.width) x = e.clientX - rect.left - 210;
+        var tipW = tip.offsetWidth || 240;
+        var tipH = tip.offsetHeight || 200;
+        var x = e.clientX - rect.left + 14;
+        var y = e.clientY - rect.top + 14;
+        if (x + tipW + 8 > rect.width) x = e.clientX - rect.left - tipW - 14;
+        if (y + tipH + 8 > rect.height) y = e.clientY - rect.top - tipH - 14;
+        if (x < 8) x = 8;
+        if (y < 8) y = 8;
         tip.style.left = x + 'px';
         tip.style.top = y + 'px';
       });
       g.addEventListener('mouseleave', function() {
+        if (tip) tip.classList.remove('show');
+      });
+      g.addEventListener('focus', function() {
+        var t = g.getAttribute('data-team');
+        var d = data.find(function(r) { return r.t === t; });
+        if (!d || !tip) return;
+        tip.innerHTML = buildMarketQuadrantTipHtml(d);
+        tip.classList.add('show');
+        var circle = g.querySelector('circle');
+        if (circle && wrap) {
+          var cx = parseFloat(circle.getAttribute('cx') || '0');
+          var cy = parseFloat(circle.getAttribute('cy') || '0');
+          var tipW = tip.offsetWidth || 240;
+          var x = cx + 36;
+          var y = cy - 20;
+          if (x + tipW > wrap.clientWidth) x = cx - tipW - 36;
+          tip.style.left = Math.max(8, x) + 'px';
+          tip.style.top = Math.max(8, y) + 'px';
+        }
+      });
+      g.addEventListener('blur', function() {
         if (tip) tip.classList.remove('show');
       });
     });
@@ -819,6 +934,7 @@
     renderRadarChart: renderRadarChart,
     quadYValue: quadYValue,
     marketQuadrantMeta: marketQuadrantMeta,
+    buildMarketQuadrantTipHtml: buildMarketQuadrantTipHtml,
     getQuadrantRows: getQuadrantRows
   };
 })(typeof window !== 'undefined' ? window : this);

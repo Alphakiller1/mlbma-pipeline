@@ -1,6 +1,13 @@
 /**
  * Team Profile — platform-aligned layout (matches Team Rankings / Opening Dashboard)
  */
+html:has(body.team-profile-page) {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 body.team-profile-page {
   background:
     radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.2), transparent 58%),
@@ -12,8 +19,10 @@ body.team-profile-page {
   line-height: 1.55;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  height: auto;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: visible;
   scroll-padding-top: 72px;
   --tp-label-size: 13px;
   --tp-label-desc-size: 12px;
@@ -137,6 +146,43 @@ body.team-profile-page {
   max-width: 1400px;
   padding: 12px 24px 72px;
   overflow: visible;
+  height: auto;
+  max-height: none;
+}
+
+/* Team hero + unit snapshot — stacked below unit nav */
+.tp-identity-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 0 16px;
+}
+
+.tp-identity-stack--has-hero {
+  border: 1px solid var(--border, #262A38);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-2, #0E1018);
+  box-shadow: 0 12px 40px -20px rgba(0, 0, 0, 0.45);
+}
+
+.tp-hero-card {
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  overflow: visible;
+}
+
+.tp-identity-stack--has-hero .tp-hero-card .ca-profile-hero {
+  padding: 20px 22px 18px;
+  margin: 0;
+}
+
+.tp-identity-stack:not(.tp-identity-stack--has-hero) .tp-unit-snapshot {
+  margin-bottom: 0;
 }
 
 /* Page banner — title + unit snapshot strip */
@@ -165,7 +211,7 @@ body.team-profile-page {
 
 .tp-sticky-wrap {
   position: sticky;
-  top: 56px;
+  top: 68px;
   z-index: 40;
   background: var(--bg, #08090F);
   padding: 0 0 8px;
@@ -177,8 +223,8 @@ body.team-profile-page {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 16px;
-  padding: 14px 16px 16px;
+  gap: 20px;
+  padding: 16px 18px 18px;
   background: var(--bg-2, #0E1018);
   border: 1px solid var(--border, #262A38);
   border-radius: 14px;
@@ -238,22 +284,35 @@ body.team-profile-page {
   box-shadow: none;
 }
 
-.tp-context-controls .tp-split-window-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px 28px;
-  justify-content: flex-start;
-  align-items: flex-end;
+.tp-context-controls .tp-split-window-cell {
+  min-width: 0;
+}
+
+.tp-context-controls .tp-split-window-cell .hub-ctrl-group {
+  width: 100%;
+}
+  grid-template-columns: 1fr;
+  gap: 18px;
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+@media (min-width: 900px) {
+  .tp-context-controls .tp-split-window-row {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 20px 36px;
+  }
 }
 
 .tp-context-controls .hub-ctrl-group {
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .tp-context-controls .hub-pill-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .tp-context-controls .hub-pill,
@@ -350,18 +409,31 @@ body.team-profile-page {
   margin: 0 0 16px;
 }
 
+.tp-unit-snapshot--below-hero {
+  margin: 0;
+  padding: 14px 18px 16px;
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border, #262A38);
+  background: transparent;
+}
+
+.tp-unit-snapshot--below-hero .tp-intel-status {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border, #262A38);
+}
+
+.tp-unit-snapshot--solo {
+  margin-bottom: 16px;
+}
+
 .tp-unit-snapshot--banner {
   margin: 0;
   padding: 14px 18px 16px;
   border: none;
   border-radius: 0;
   background: transparent;
-}
-
-.tp-unit-snapshot--banner .tp-intel-status {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border, #262A38);
 }
 
 .tp-unit-snapshot-row {
@@ -736,7 +808,7 @@ body.team-profile-page {
 
 .tp-snapshot-card {
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 16px;
 }
 
@@ -1314,6 +1386,20 @@ body.team-profile-page {
   flex-wrap: wrap;
   gap: 14px 18px;
   align-items: flex-start;
+}
+
+#profileControlBar .hub-control-row.tp-split-window-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+@media (min-width: 900px) {
+  #profileControlBar .hub-control-row.tp-split-window-row {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 20px 36px;
+  }
 }
 
 #profileControlBar .hub-confirm {

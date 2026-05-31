@@ -416,7 +416,7 @@ html.view-research #oorSection { display: none !important; }
 
 .pc-control-bar.sticky-profile-bar {
   position: sticky;
-  top: 56px;
+  top: 68px;
   z-index: 40;
   margin-bottom: 20px;
 }
@@ -839,7 +839,7 @@ html.view-research #oorSection { display: none !important; }
 
 .rl-global-control-bar {
   position: sticky;
-  top: 56px;
+  top: 68px;
   z-index: 35;
   margin: 0 0 16px;
   padding: 10px 14px;
@@ -1032,6 +1032,24 @@ html.view-research #oorSection { display: none !important; }
 .pl-created-val { font-size: 22px; font-weight: 700; font-family: var(--mono); margin-top: 4px; }
 .pl-section-title { font-size: 14px; font-weight: 700; margin: 0 0 4px; color: var(--text); }
 .pl-section-sub { font-size: 11px; color: var(--text-3); margin: 0 0 12px; }
+
+/* Pitcher Intelligence — rankings table header */
+#plRankingsMount .pl-section-head {
+  margin: 28px 0 18px;
+}
+#plRankingsMount .pl-section-title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 0 8px !important;
+  line-height: 1.2;
+}
+#plRankingsMount .pl-section-sub {
+  font-size: 14px !important;
+  line-height: 1.45;
+  color: var(--text-2, #D1D5DB) !important;
+  margin: 0 0 16px !important;
+}
 .pl-oor-panel, .pl-opp-panel, .pl-bp-panel {
   margin: 18px 0; padding: 16px; border-radius: 12px;
   background: var(--surface-2, #14141e); border: 0.5px solid var(--border);

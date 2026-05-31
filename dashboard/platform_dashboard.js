@@ -7,7 +7,7 @@
 
   var A = global.MLBMAAssets;
   var S = global.MLBMASharedMatchup || global.MatchupShared;
-  var SORT = 'edge';
+  var SORT = 'time';
   var FILTER = 'all';
   var MATCH_DAY = 'today';
 
@@ -104,20 +104,21 @@
     var gk = m.away + '@' + m.home;
     var w = (global.LIVE_DATA && LIVE_DATA.weather || {})[gk] || m.weather;
     if (!w) return '';
+    if (S && S.formatWeatherMetaHtml) return S.formatWeatherMetaHtml(w, m.home);
     if (typeof w === 'string') {
       var su = w.toUpperCase();
-      if (su.indexOf('DOME') >= 0 || su.indexOf('ROOF') >= 0) return '<span class="weather-badge dome">DOME</span>';
-      return '<span class="weather-badge">' + esc(w) + '</span>';
+      if (su.indexOf('DOME') >= 0 || su.indexOf('ROOF') >= 0) return '<span class="hmc-weather-chip hmc-weather-chip--dome">Dome</span>';
+      return '<span class="hmc-weather-chip">' + esc(w) + '</span>';
     }
-    if (w.dome) return '<span class="weather-badge dome">DOME</span>';
+    if (w.dome) return '<span class="hmc-weather-chip hmc-weather-chip--dome">Dome</span>';
     var bits = [];
     if (w.temp != null) bits.push(w.temp + '°');
     if (w.wind != null) bits.push(w.wind + ' mph' + (w.windDir ? ' ' + w.windDir : ''));
     var cond = w.cond || w.conditions || w.weather || w.raw || '';
-    if (cond && String(cond).toUpperCase().indexOf('DOME') >= 0) return '<span class="weather-badge dome">DOME</span>';
+    if (cond && String(cond).toUpperCase().indexOf('DOME') >= 0) return '<span class="hmc-weather-chip hmc-weather-chip--dome">Dome</span>';
     if (cond) bits.push(cond);
     if (!bits.length) return '';
-    return '<span class="weather-badge">' + esc(bits.join(' · ')) + '</span>';
+    return '<span class="hmc-weather-chip">' + esc(bits.join(' · ')) + '</span>';
   }
 
   function teamOsiSparkline(team, spHand) {
@@ -186,27 +187,32 @@
     var psColor = A && ps != null ? A.metricColor(ps, true) : 'var(--text-2)';
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var nameHtml = pname === 'TBD'
-      ? '<strong>TBD</strong>'
-      : '<a href="' + pitcherProfileUrl(pname) + '" class="pitcher-link" onclick="event.stopPropagation()"><strong>' + esc(pname) + '</strong></a>';
+      ? '<span class="mc-sp-name-text">TBD</span>'
+      : '<a href="' + pitcherProfileUrl(pname) + '" class="pitcher-link mc-sp-name-text" onclick="event.stopPropagation()">' + esc(pname) + '</a>';
     stats = stats || {};
-    var psBadge = ps != null
-      ? '<span class="mc-ps-badge">Pitching Score <strong style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong></span>'
-      : '';
+    var handLbl = normalizePitchHand(hand) === 'L' ? 'LHP' : normalizePitchHand(hand) === 'R' ? 'RHP' : '?';
+    var kVal = fmtRatePct(stats.k);
+    var bbVal = fmtRatePct(stats.bb);
+    var fipVal = stats.fip != null ? Number(stats.fip).toFixed(2) : '—';
     return '<div class="mc-sp-block" onclick="event.stopPropagation()">'
       + '<div class="mc-sp-photo">' + hs + '</div>'
       + '<div class="mc-sp-info">'
-      + '<div class="mc-sp-name-row">'
-      + '<span class="mc-sp-side">' + label + '</span> '
-      + '<span class="mc-sp-name">' + nameHtml + '</span>'
-      + '<span class="hand-pill hand-' + normalizePitchHand(hand).toLowerCase() + '">'
-      + esc(normalizePitchHand(hand) === 'L' ? 'LHP' : normalizePitchHand(hand) === 'R' ? 'RHP' : '?') + '</span>'
+      + '<div class="mc-sp-top">'
+      + '<span class="mc-sp-side">' + esc(label.replace(' SP', '')) + '</span>'
+      + '<span class="hand-pill hand-' + normalizePitchHand(hand).toLowerCase() + '">' + esc(handLbl) + '</span>'
       + '<span class="pitch-tier ' + pt.cls + '">' + pt.label + '</span>'
       + '</div>'
-      + psBadge
-      + '<div class="mc-sp-stats">'
-      + 'K ' + esc(fmtRatePct(stats.k)) + ' · '
-      + 'BB ' + esc(fmtRatePct(stats.bb)) + ' · '
-      + 'FIP ' + esc(stats.fip != null ? Number(stats.fip).toFixed(2) : '—')
+      + '<div class="mc-sp-name-row">' + nameHtml + '</div>'
+      + (ps != null
+        ? '<div class="mc-ps-badge mc-ps-badge--defined">'
+          + '<span class="mc-ps-badge__label">Pitch Score</span>'
+          + '<strong class="mc-ps-badge__val" style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong>'
+          + '</div>'
+        : '')
+      + '<div class="mc-sp-stats mc-sp-stats--grid">'
+      + '<span class="mc-sp-stat"><em>K%</em><strong>' + esc(kVal) + '</strong></span>'
+      + '<span class="mc-sp-stat"><em>BB%</em><strong>' + esc(bbVal) + '</strong></span>'
+      + '<span class="mc-sp-stat"><em>FIP</em><strong>' + esc(fipVal) + '</strong></span>'
       + '</div></div></div>';
   }
 
@@ -221,19 +227,23 @@
     return true;
   }
 
+  function parseGameTimeSortKey(timeStr) {
+    var s = String(timeStr || '').trim().toUpperCase();
+    if (!s || s === 'TBD') return 9999;
+    var m = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/);
+    if (!m) return 5000 + s.charCodeAt(0);
+    var h = parseInt(m[1], 10);
+    var min = parseInt(m[2], 10);
+    var ap = m[3];
+    if (ap === 'PM' && h < 12) h += 12;
+    if (ap === 'AM' && h === 12) h = 0;
+    return h * 60 + min;
+  }
+
   function sortGames(games) {
     var list = games.slice();
     list.sort(function(a, b) {
-      if (SORT === 'time') return String(a.time || '').localeCompare(String(b.time || ''));
-      if (SORT === 'pitch') {
-        var aPs = Math.max(spPitchScore(a.home) || 0, spPitchScore(a.away) || 0);
-        var bPs = Math.max(spPitchScore(b.home) || 0, spPitchScore(b.away) || 0);
-        return bPs - aPs;
-      }
-      if (SORT === 'f5') return f5EdgeScore(b) - f5EdgeScore(a);
-      var aEdge = Math.abs((a.awayOSI || 0) - (a.homeOSI || 0));
-      var bEdge = Math.abs((b.awayOSI || 0) - (b.homeOSI || 0));
-      return bEdge - aEdge;
+      return parseGameTimeSortKey(a.time) - parseGameTimeSortKey(b.time);
     });
     return list;
   }
@@ -418,8 +428,6 @@
     var total = awayOSI + homeOSI || 1;
     var awayPct = Math.max(10, (awayOSI / total) * 100);
     var fav = awayOSI >= homeOSI ? m.away : m.home;
-    var script = gameScriptBadge(m);
-    var f5 = f5Badge(m);
     var handLabel = m.homeHand === 'L' ? 'LHP' : m.homeHand === 'R' ? 'RHP' : 'SP';
     var awayHandLabel = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
     var awayEdgeCls = fav === m.away ? ' edge-team' : '';
@@ -431,9 +439,9 @@
     var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
     return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
       + '<div class="hmc-row hmc-teams">'
-      + '<div class="hmc-team' + awayEdgeCls + '">' + teamLinkHtml(m.away, logo, '') + '</div>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '') + '</div>'
       + '<span class="hmc-at">@</span>'
-      + '<div class="hmc-team' + homeEdgeCls + '">' + teamLinkHtml(m.home, logo, '') + '</div>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '') + '</div>'
       + gameMetaHtml(m)
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
@@ -449,10 +457,6 @@
       + '<div class="hmc-osi-sparklines" aria-hidden="true">'
       + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'
       + '<span class="hmc-spark">' + teamOsiSparkline(m.home, m.awayHand) + '</span>'
-      + '</div>'
-      + '<div class="hmc-badges">'
-      + '<span class="script-badge ' + script.cls + '">' + esc(script.label) + '</span>'
-      + '<span class="f5-badge ' + f5.cls + '">' + esc(f5.label) + '</span>'
       + '</div>'
       + lineupHtml
       + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'

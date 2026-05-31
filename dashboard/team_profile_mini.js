@@ -537,6 +537,23 @@
       + '</div>';
   }
 
+  function renderTrendSnapshot(prof, team, ctx) {
+    ctx = ctx || {};
+    var m = resolveView(prof, ctx);
+    return '<section class="ca-card tp-snapshot-card"><div class="team-snapshot">'
+      + '<div class="snapshot-main" style="width:100%">'
+      + renderSummaryPanel(prof, team, m, ctx)
+      + '</div></div></section>';
+  }
+
+  function renderHeroCard(prof, team, ctx) {
+    ctx = ctx || {};
+    var m = resolveView(prof, ctx);
+    return '<section class="ca-card tp-hero-card">'
+      + renderInfographicHero(prof, team, m, ctx)
+      + '</section>';
+  }
+
   function renderSnapshot(prof, team, ctx) {
     ctx = ctx || {};
     var m = resolveView(prof, ctx);
@@ -740,6 +757,18 @@
       ctx.splitLabel = splitLabel(ctx.split || 'both');
       ctx.windowLabel = ctx.window || 'YTD';
       return renderSnapshot(prof, team, ctx).replace(/<\/?motion>/g, '');
+    },
+    renderHeroCard: function(prof, team, ctx) {
+      ctx = ctx || {};
+      ctx.splitLabel = splitLabel(ctx.split || 'both');
+      ctx.windowLabel = ctx.window || 'YTD';
+      return renderHeroCard(prof, team, ctx).replace(/<\/?motion>/g, '');
+    },
+    renderTrendSnapshot: function(prof, team, ctx) {
+      ctx = ctx || {};
+      ctx.splitLabel = splitLabel(ctx.split || 'both');
+      ctx.windowLabel = ctx.window || 'YTD';
+      return renderTrendSnapshot(prof, team, ctx).replace(/<\/?motion>/g, '');
     }
   };
 })(typeof window !== 'undefined' ? window : this);

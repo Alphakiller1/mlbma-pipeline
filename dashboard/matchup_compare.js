@@ -343,7 +343,7 @@
       + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
       + '<header class="mc-header mc-section">'
       + '<div class="mc-header-teams">' + teamBlock(m.away) + '<span class="mc-at">@</span>' + teamBlock(m.home) + '</div>'
-      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + ' · ' + S.weatherBadge(weather) + '</div>'
+      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + ' · ' + S.weatherBadge(weather, m.home) + '</div>'
       + '<div class="mc-header-badges">'
       + '<span class="' + esc(script.cls) + '">' + esc(script.label) + '</span>'
       + '<span class="' + esc(f5.cls) + '">' + esc(f5.label) + '</span>'

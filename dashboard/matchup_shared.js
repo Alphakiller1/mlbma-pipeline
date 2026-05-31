@@ -311,10 +311,11 @@
 
   function buildLineupBoard(lineupRows, opts) {
     opts = opts || {};
+    var compact = !!opts.compact;
     var oppHand = opts.oppHand != null ? opts.oppHand : opts.opposingSPHand;
     var teamLabel = opts.team || opts.teamLabel || '';
     if (!lineupRows || !lineupRows.length) {
-      return '<div class="lineup-board lineup-board--empty"><div class="lineup-empty">Lineup not yet confirmed</div></div>';
+      return '<div class="lineup-board lineup-board--empty' + (compact ? ' lineup-board--compact' : '') + '"><div class="lineup-empty">Lineup not yet confirmed</div></div>';
     }
     var A = global.MLBMAAssets;
     var headHtml = '';
@@ -322,7 +323,12 @@
       var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : '?HP';
       var title = opts.title || ('Projected lineup · ' + teamLabel);
       var purpose = opts.purpose != null ? opts.purpose : ('vs ' + handLbl);
-      if (A && A.caSectionHeadHtml) {
+      if (compact) {
+        headHtml = '<div class="lineup-board-head lineup-board-head--compact">'
+          + '<span class="lineup-board-head__team">' + esc(title) + '</span>'
+          + '<span class="lineup-board-head__vs">vs ' + esc(handLbl) + '</span>'
+          + '</div>';
+      } else if (A && A.caSectionHeadHtml) {
         headHtml = A.caSectionHeadHtml(opts.icon || 'users', opts.kicker || 'Tonight', title, purpose);
       } else {
         headHtml = '<div class="lineup-table-head">' + esc(title) + ' · vs ' + esc(handLbl) + '</div>';
@@ -332,12 +338,22 @@
     lineupRows.slice(0, 9).forEach(function(r) {
       var bn = normalizeBatsHand(r.bats);
       var platCls = platoonHighlightClass(bn, oppHand);
+      var platoonRowCls = platCls ? platCls.replace('lineup-row', 'lb-row') : '';
+      var rowCls = 'lb-row' + (compact ? ' lb-row--compact' : '') + (platoonRowCls ? ' ' + platoonRowCls : '');
+      if (compact) {
+        body += '<div class="' + rowCls + '">'
+          + '<span class="lb-ord">' + (r.batOrder <= 9 ? r.batOrder : '\u2014') + '</span>'
+          + '<span class="lb-pos">' + esc(r.position) + '</span>'
+          + '<span class="lb-name">' + batterProfileLink(r.player) + '</span>'
+          + '<span class="lb-hand">' + esc(bn === '?' ? '?' : bn) + '</span>'
+          + '</div>';
+        return;
+      }
       var flag = lineupFormFlag(r);
       var flagHtml = flag
         ? '<span class="' + flag.cls + '">' + esc(flag.label) + '</span>'
         : '<span class="lb-flag-empty" aria-hidden="true"></span>';
-      var platoonRowCls = platCls ? platCls.replace('lineup-row', 'lb-row') : '';
-      body += '<div class="lb-row' + (platoonRowCls ? ' ' + platoonRowCls : '') + '">'
+      body += '<div class="' + rowCls + '">'
         + '<span class="lb-ord">' + (r.batOrder <= 9 ? r.batOrder : '\u2014') + '</span>'
         + '<span class="lb-pos">' + esc(r.position) + '</span>'
         + '<span class="lb-name">' + batterProfileLink(r.player) + '</span>'
@@ -345,11 +361,48 @@
         + '<span class="lb-hand">' + esc(bn === '?' ? '?' : bn) + '</span>'
         + '</div>';
     });
-    return '<div class="lineup-board">' + headHtml + body + '</div>';
+    return '<div class="lineup-board' + (compact ? ' lineup-board--compact' : '') + '">' + headHtml + body + '</div>';
   }
 
   function buildLineupTable(lineupRows, opposingSPHand) {
     return buildLineupBoard(lineupRows, { opposingSPHand: opposingSPHand });
+  }
+
+  /** Flat, dense lineup column for matchup hero cards (no scorecard wrapper). */
+  function lineupColHeadHtml(teamLabel, handLbl) {
+    var I = (typeof global !== 'undefined' && global.MLBMAIcons) ? global.MLBMAIcons : null;
+    var iconHtml = (I && I.iconHtml) ? I.iconHtml('lineup', 13) : '';
+    var raw = String(teamLabel || '').trim();
+    var parsed = raw.match(/^(.+?)\s*\((away|home)\)\s*$/i);
+    var team = parsed ? parsed[1].trim() : raw;
+    var side = parsed ? parsed[2].toLowerCase() : '';
+    var meta = (side ? side + ' · ' : '') + 'vs ' + handLbl;
+    return '<div class="matchup-lineup-col-head">'
+      + (iconHtml ? '<span class="matchup-lineup-col-head__icon" aria-hidden="true">' + iconHtml + '</span>' : '')
+      + '<span class="matchup-lineup-col-head__team">' + esc(team) + '</span>'
+      + '<span class="matchup-lineup-col-head__meta">' + esc(meta) + '</span>'
+      + '</div>';
+  }
+
+  function buildLineupColCompact(teamLabel, lineupRows, oppHand) {
+    var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : '?HP';
+    var head = lineupColHeadHtml(teamLabel, handLbl);
+    if (!lineupRows || !lineupRows.length) {
+      return '<div class="matchup-lineup-col matchup-lineup-col--compact">' + head
+        + '<div class="matchup-lineup-empty">No rows</div></div>';
+    }
+    var body = lineupRows.slice(0, 9).map(function(r) {
+      var bn = normalizeBatsHand(r.bats);
+      var plat = platoonHighlightClass(bn, oppHand);
+      var bp = esc(bn === '?' ? '?' : bn);
+      return '<div class="lineup-row' + (plat ? ' ' + plat : '') + '">'
+        + '<span class="lineup-bo">' + ((r.batOrder >= 1 && r.batOrder <= 9) ? String(r.batOrder) : '\u2014') + '</span>'
+        + '<span class="lineup-pos">' + esc(r.position) + '</span>'
+        + '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>'
+        + '<span class="bats-pill hand-' + (bn === '?' ? 'unk' : bn.toLowerCase()) + '">' + bp + '</span>'
+        + '</div>';
+    }).join('');
+    return '<div class="matchup-lineup-col matchup-lineup-col--compact">' + head + body + '</div>';
   }
 
   function parseWeatherString(raw) {
@@ -409,15 +462,107 @@
     return map;
   }
 
-  function weatherBadge(weatherData) {
-    var w = weatherData || {};
-    if (w.dome) return '<span class="weather-badge dome">DOME</span>';
+  /** Approximate center-field bearing from home plate (degrees clockwise from north). */
+  var STADIUM_CF_BEARING = {
+    ARI: 45, ATH: 55, ATL: 35, BAL: 45, BOS: 45, CHC: 95, CHW: 125, CIN: 45, CLE: 25,
+    COL: 5, DET: 150, HOU: 45, KCR: 45, KC: 45, LAA: 45, LAD: 35, MIA: 125, MIL: 45,
+    MIN: 45, NYM: 25, NYY: 75, PHI: 25, PIT: 115, SDP: 355, SD: 355, SEA: 45, SFG: 85,
+    SF: 85, STL: 65, TBR: 45, TB: 45, TEX: 45, TOR: 45, WSN: 45, WSH: 45
+  };
+
+  var WIND_COMPASS16 = {
+    N: 0, NNE: 22.5, NE: 45, ENE: 67.5, E: 90, ESE: 112.5, SE: 135, SSE: 157.5,
+    S: 180, SSW: 202.5, SW: 225, WSW: 247.5, W: 270, WNW: 292.5, NW: 315, NNW: 337.5
+  };
+
+  function parseWindFromDeg(windDir) {
+    if (windDir == null || windDir === '') return null;
+    var s = String(windDir).trim().toUpperCase().replace(/\./g, '');
+    if (/^\d+(\.\d+)?$/.test(s)) return parseFloat(s) % 360;
+    if (WIND_COMPASS16[s] != null) return WIND_COMPASS16[s];
+    var m = s.match(/\b(NNW|NW|WNW|W|WSW|SW|SSW|S|SSE|SE|ESE|E|ENE|NE|NNE|N)\b/);
+    if (m && WIND_COMPASS16[m[1]] != null) return WIND_COMPASS16[m[1]];
+    return null;
+  }
+
+  function compassUnitVec(bearingDeg) {
+    var r = bearingDeg * Math.PI / 180;
+    return { x: Math.sin(r), y: Math.cos(r) };
+  }
+
+  /** Wind FROM bearing vs CF bearing -> plate-relative carry label. */
+  function windPlateEffect(windFromDeg, cfBearingDeg) {
+    if (windFromDeg == null || cfBearingDeg == null) {
+      return { label: '', icon: 'wind', cls: 'hmc-wind--unknown', title: 'Wind direction unknown' };
+    }
+    var windTo = (windFromDeg + 180) % 360;
+    var w = compassUnitVec(windTo);
+    var cf = compassUnitVec(cfBearingDeg);
+    var left = compassUnitVec((cfBearingDeg - 90 + 360) % 360);
+    var along = w.x * cf.x + w.y * cf.y;
+    var cross = w.x * left.x + w.y * left.y;
+    if (Math.abs(along) >= Math.abs(cross)) {
+      if (along > 0.35) return { label: 'Out', icon: 'arrow-up', cls: 'hmc-wind--out', title: 'Wind blowing out toward center field' };
+      if (along < -0.35) return { label: 'In', icon: 'arrow-down', cls: 'hmc-wind--in', title: 'Wind blowing in toward home plate' };
+    }
+    if (cross > 0.35) return { label: 'L→R', icon: 'arrow-left-right', cls: 'hmc-wind--lr', title: 'Crosswind left to right (3B → 1B)' };
+    if (cross < -0.35) return { label: 'R→L', icon: 'arrow-left-right', cls: 'hmc-wind--rl', title: 'Crosswind right to left (1B → 3B)' };
+    return { label: 'Cross', icon: 'wind', cls: 'hmc-wind--cross', title: 'Crosswind' };
+  }
+
+  function tempColorCss(temp) {
+    if (temp == null || isNaN(temp)) return 'var(--text-2, #D1D5DB)';
+    var t = Math.max(45, Math.min(95, Number(temp)));
+    var pct = (t - 45) / 50;
+    var r = Math.round(96 + pct * (248 - 96));
+    var g = Math.round(165 + pct * (113 - 165));
+    var b = Math.round(250 + pct * (113 - 250));
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function formatWeatherMetaHtml(weather, homeTeam) {
+    if (!weather) return '';
+    if (typeof weather === 'string') {
+      var su = weather.toUpperCase();
+      if (su.indexOf('DOME') >= 0 || su.indexOf('ROOF') >= 0) {
+        return '<span class="hmc-weather-chip hmc-weather-chip--dome">Dome</span>';
+      }
+      return '<span class="hmc-weather-chip">' + esc(weather) + '</span>';
+    }
+    if (weather.dome) return '<span class="hmc-weather-chip hmc-weather-chip--dome">Dome</span>';
+    var cond = weather.cond || weather.conditions || weather.weather || weather.raw || '';
+    if (cond && String(cond).toUpperCase().indexOf('DOME') >= 0) {
+      return '<span class="hmc-weather-chip hmc-weather-chip--dome">Dome</span>';
+    }
+
     var parts = [];
-    if (w.temp != null) parts.push(w.temp + '°F');
-    if (w.wind != null) parts.push('Wind ' + w.wind + 'mph' + (w.windDir ? ' ' + w.windDir : ''));
-    if (w.conditions && w.conditions !== '—') parts.push(w.conditions);
-    if (!parts.length) parts.push(w.raw || '—');
-    return '<span class="weather-badge">' + esc(parts.join(' · ')) + '</span>';
+    if (weather.temp != null && !isNaN(weather.temp)) {
+      var tc = tempColorCss(weather.temp);
+      parts.push('<span class="hmc-weather-chip hmc-weather-chip--temp" style="--temp-color:' + tc + '">'
+        + '<strong>' + Math.round(Number(weather.temp)) + '°</strong></span>');
+    }
+    if (weather.wind != null && !isNaN(weather.wind)) {
+      var home = normalizeTeamAbbrShared(homeTeam || weather.home || '');
+      var cf = STADIUM_CF_BEARING[home] != null ? STADIUM_CF_BEARING[home] : 45;
+      var fromDeg = parseWindFromDeg(weather.windDir);
+      var effect = windPlateEffect(fromDeg, cf);
+      var I = global.MLBMAIcons;
+      var iconHtml = (I && I.iconHtml) ? I.iconHtml(effect.icon, 13) : '';
+      parts.push('<span class="hmc-weather-chip hmc-weather-chip--wind ' + effect.cls + '" title="' + esc(effect.title || '') + '">'
+        + (iconHtml ? '<span class="hmc-wind-arrow" aria-hidden="true">' + iconHtml + '</span>' : '')
+        + (effect.label ? '<span class="hmc-wind-label">' + esc(effect.label) + '</span>' : '')
+        + '<strong class="hmc-wind-mph">' + Math.round(Number(weather.wind)) + '</strong>'
+        + '<span class="hmc-wind-unit">mph</span></span>');
+    }
+    if (cond && String(cond).toLowerCase() !== 'dome' && String(cond) !== '—') {
+      parts.push('<span class="hmc-weather-chip hmc-weather-chip--cond">' + esc(String(cond)) + '</span>');
+    }
+    if (!parts.length) return '';
+    return '<span class="hmc-weather-group">' + parts.join('') + '</span>';
+  }
+
+  function weatherBadge(weatherData, homeTeam) {
+    return formatWeatherMetaHtml(weatherData, homeTeam);
   }
 
   function pitchTier(score) {
@@ -1636,10 +1781,14 @@
     platoonHighlightClass: platoonHighlightClass,
     buildLineupTable: buildLineupTable,
     buildLineupBoard: buildLineupBoard,
+    buildLineupColCompact: buildLineupColCompact,
     parseWeatherString: parseWeatherString,
     parseWeatherRow: parseWeatherRow,
     parseWeatherMap: parseWeatherMap,
     weatherBadge: weatherBadge,
+    formatWeatherMetaHtml: formatWeatherMetaHtml,
+    tempColorCss: tempColorCss,
+    windPlateEffect: windPlateEffect,
     pctDecimal: pctDecimal,
     computePitchScoreFromRates: computePitchScoreFromRates,
     enrichSpProfiles: enrichSpProfiles,

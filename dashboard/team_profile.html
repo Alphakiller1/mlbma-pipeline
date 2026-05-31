@@ -10,9 +10,9 @@
 <link rel="stylesheet" href="mlbma_ui.css?v=20260615b">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260620c">
 <link rel="stylesheet" href="theme.css?v=20260615b">
-<link rel="stylesheet" href="chase_nav.css?v=20260609a">
+<link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260620g">
+<link rel="stylesheet" href="team_profile.css?v=20260620m">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
@@ -21,13 +21,13 @@
 <script src="matchup_shared.js?v=20260620c"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260620g"></script>
+<script src="team_profile_mini.js?v=20260620m"></script>
 <script src="team_profile_sections.js?v=20260620g"></script>
 <script src="team_profile_staff.js?v=20260620g"></script>
 <script src="team_profile_intel.js?v=20260620g"></script>
 <script src="mlbma_charts.js?v=20260619b"></script>
 <script src="platform_dashboard.js?v=20260618v"></script>
-<script src="profile_controls.js?v=20260619d"></script>
+<script src="profile_controls.js?v=20260620m"></script>
 <script src="bullpen_usage.js?v=20260615b"></script>
 <script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
 </head>
@@ -122,7 +122,6 @@
 <main class="container ca-page-shell">
   <div class="tp-profile-banner">
     <div id="profilePageHeader"></div>
-    <div class="tp-unit-snapshot tp-unit-snapshot--banner" id="tpUnitSnapshot" aria-live="polite"></div>
   </div>
   <div class="tp-data-banner" id="dataBanner"></div>
 
@@ -141,6 +140,11 @@
 
   <div class="tp-sticky-wrap">
     <nav class="tp-unit-nav" id="tpUnitNav" role="tablist" aria-label="Team profile units"></nav>
+  </div>
+
+  <div class="tp-identity-stack" id="tpIdentityStack">
+    <div id="profileHeroMount"></div>
+    <div class="tp-unit-snapshot" id="tpUnitSnapshot" aria-live="polite"></div>
   </div>
 
   <div class="profile-offense-block">
@@ -708,10 +712,8 @@ function sectionCard(title, subtitle, body, extraClass, opts) {
 
 function tpBuildLineupColHtml(teamLabel, rows, oppHand) {
   var S = window.MLBMASharedMatchup;
-  if (S && S.buildLineupBoard) {
-    return '<div class="matchup-lineup-col">'
-      + S.buildLineupBoard(rows, { teamLabel: teamLabel, oppHand: oppHand, kicker: 'Projected', icon: 'users' })
-      + '</div>';
+  if (S && S.buildLineupColCompact) {
+    return S.buildLineupColCompact(teamLabel, rows, oppHand);
   }
   if (!rows.length) {
     return '<div class="matchup-lineup-col"><div class="matchup-lineup-empty">No rows</div></div>';
@@ -1062,8 +1064,8 @@ function bindUnitNavStrip() {
     var prof = profileRow(STATE.team) || {};
     var name = TEAM_NAMES[STATE.team] || STATE.team;
     renderUnitNavStrip();
-    renderUnitSnapshotStrip(prof, buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team))));
     renderOffenseBlock(prof, name, buildTonightHtml(tonightGame(STATE.team)));
+    renderUnitSnapshotStrip(prof, buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team))));
     renderStaffBlock(prof);
   });
 }
@@ -1071,6 +1073,18 @@ function bindUnitNavStrip() {
 function unitSnapshotChip(label, val, ctx, invert, dec) {
   return '<div class="tp-unit-chip"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
     + '<div class="tp-unit-chip-v">' + valChip(val, ctx, invert, dec) + '</div></div>';
+}
+
+function syncIdentityStackLayout() {
+  var heroMount = document.getElementById('profileHeroMount');
+  var stack = document.getElementById('tpIdentityStack');
+  var snapEl = document.getElementById('tpUnitSnapshot');
+  var hasHero = !!(heroMount && heroMount.innerHTML.trim());
+  if (stack) stack.classList.toggle('tp-identity-stack--has-hero', hasHero);
+  if (snapEl) {
+    snapEl.classList.toggle('tp-unit-snapshot--below-hero', hasHero);
+    snapEl.classList.toggle('tp-unit-snapshot--solo', !hasHero);
+  }
 }
 
 function renderUnitSnapshotStrip(prof, ctx) {
@@ -1093,6 +1107,7 @@ function renderUnitSnapshotStrip(prof, ctx) {
       + unitSnapshotChip('wRC+', ctx.wrc != null ? ctx.wrc : rates.wrc, 'wrc', false, 0)
       + unitSnapshotChip('Proj OSI', m.proj, 'osi', false, 1);
     el.innerHTML = intelHtml + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
+    syncIdentityStackLayout();
     return;
   } else if (cat === 'rotation') {
     var staffCtx = buildStaffCtx();
@@ -1118,6 +1133,7 @@ function renderUnitSnapshotStrip(prof, ctx) {
       + unitSnapshotChip('Strikeout %', kPct, 'pitching', false, 1)
       + unitSnapshotChip('OSI Allowed', osiAllow, 'osi', true, 1);
     el.innerHTML = intelHtml + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
+    syncIdentityStackLayout();
     return;
   } else {
     var staffCtxBp = buildStaffCtx();
@@ -1136,6 +1152,7 @@ function renderUnitSnapshotStrip(prof, ctx) {
       + unitSnapshotChip('OSI Allowed', bpOsi, 'osi', true, 1);
     el.innerHTML = intelBp + '<div class="tp-unit-snapshot-row">' + chipsBp + '</div>';
   }
+  syncIdentityStackLayout();
 }
 
 function bindTrendChartPanel() {
@@ -1151,7 +1168,7 @@ function bindTrendChartPanel() {
     if (!window.TeamProfileMini) return;
     var ctx = buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team)));
     ctx.chartMetric = STATE.chartMetric;
-    snap.innerHTML = TeamProfileMini.renderSnapshot(prof, STATE.team, ctx);
+    snap.innerHTML = TeamProfileMini.renderTrendSnapshot(prof, STATE.team, ctx);
     if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(snap);
     snap.querySelectorAll('[data-trend-metric]').forEach(function(b) {
       var on = b.getAttribute('data-trend-metric') === STATE.chartMetric;
@@ -1244,24 +1261,34 @@ function renderStaffBlock(prof) {
 }
 
 function renderOffenseBlock(prof, name, tonight) {
+  var heroMount = document.getElementById('profileHeroMount');
   var snap = document.getElementById('profileSnapshot');
   var sections = document.getElementById('profileOffenseSections');
   var offenseWrap = document.querySelector('.profile-offense-block');
+  var identityStack = document.getElementById('tpIdentityStack');
   if (!snap || !sections || !window.TeamProfileMini) return;
   var showOffense = STATE.category === 'lineup';
   if (offenseWrap) offenseWrap.style.display = showOffense ? '' : 'none';
+  if (identityStack) identityStack.hidden = false;
   if (!showOffense) {
+    if (heroMount) heroMount.innerHTML = '';
     snap.innerHTML = '';
     sections.innerHTML = '';
+    syncIdentityStackLayout();
     return;
   }
   var ctx = buildMiniCtx(prof, name, tonight);
-  snap.innerHTML = TeamProfileMini.renderSnapshot(prof, STATE.team, ctx);
+  if (heroMount) {
+    heroMount.innerHTML = TeamProfileMini.renderHeroCard(prof, STATE.team, ctx);
+  }
+  snap.innerHTML = TeamProfileMini.renderTrendSnapshot(prof, STATE.team, ctx);
   sections.innerHTML = TeamProfileMini.render(prof, STATE.team, ctx);
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
+    if (heroMount) MLBMAIcons.refreshIcons(heroMount);
     MLBMAIcons.refreshIcons(snap);
     MLBMAIcons.refreshIcons(sections);
   }
+  syncIdentityStackLayout();
   bindTeamProfileMatchupCard(sections);
   bindTrendChartPanel();
 }
@@ -1291,8 +1318,8 @@ function renderTeam(team) {
   var ctx = buildMiniCtx(prof, name, tonight);
   bindProfileControls();
   renderUnitNavStrip();
-  renderUnitSnapshotStrip(prof, ctx);
   renderOffenseBlock(prof, name, tonight);
+  renderUnitSnapshotStrip(prof, ctx);
   renderStaffBlock(prof);
   history.replaceState(null, '', '?team=' + STATE.team);
 }
@@ -1408,7 +1435,9 @@ function showDelayedLoadBanner() {
   }
 }
 function dismissLoading() {
+  document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
+  document.body.classList.remove('mlbma-page-loading');
   if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
   else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
 }

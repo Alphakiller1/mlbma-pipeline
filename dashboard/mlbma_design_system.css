@@ -276,7 +276,7 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 .lb-row {
   display: grid;
-  grid-template-columns: 26px 40px 1fr auto auto;
+  grid-template-columns: 26px 40px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 10px;
   height: 38px;
@@ -386,6 +386,71 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 .matchup-lineup-col .lineup-board {
   margin-top: 0;
+}
+
+/* Compact lineup boards inside matchup hero cards */
+.lineup-board--compact {
+  padding: 8px 10px 6px;
+  border-radius: 12px;
+  border-width: 1px;
+}
+
+.lineup-board-head--compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.lineup-board-head__team {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.lineup-board-head__vs {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.lb-row--compact {
+  grid-template-columns: 16px 26px minmax(0, 1fr) 18px;
+  gap: 5px;
+  height: 24px;
+  font-size: 11px;
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+.lb-row--compact .lb-ord {
+  font-size: 10px;
+}
+
+.lb-row--compact .lb-pos {
+  font-size: 9px;
+}
+
+.lb-row--compact .lb-name {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lb-row--compact .lb-hand {
+  width: 18px;
+  height: 18px;
+  font-size: 9px;
+  border-radius: 4px;
 }
 
 /* ── Glossary metric cards (Prompt 3) ── */

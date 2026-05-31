@@ -447,8 +447,9 @@ tr.rank-row-expanded { background: rgba(124, 77, 255, 0.06); }
 .tt-team { font-size: 14px; font-weight: 700; font-family: var(--mono); color: var(--purple); margin-bottom: 6px; }
 .tt-row { display: flex; justify-content: space-between; gap: 12px; font-size: 10.5px; padding: 1px 0; }
 .tt-row .lab { color: var(--text-3); }
-.tt-row .val { color: var(--text); font-family: var(--mono); font-weight: 500; }
-.tt-sep { border-top: 1px solid var(--border); margin: 5px 0; }
+.tt-row .val { color: var(--text); font-family: var(--mono); font-weight: 600; font-size: 11px; }
+.tt-delta { color: var(--text-3); font-weight: 500; font-size: 10px; }
+.tt-sep { border-top: 1px solid var(--border); margin: 6px 0; }
 
 
 /* Progressive disclosure ? read first, math deeper */
@@ -1672,7 +1673,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hmc-row { margin-bottom: 12px; }
 .hmc-teams { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .hmc-team { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-weight: 700; font-size: 18px; }
-.hmc-team.edge-team .hmc-abbr { color: var(--green); }
+.hmc-team .hmc-abbr { color: var(--text); }
 .hmc-at { color: var(--text-3); font-size: 12px; }
 .hmc-time { margin-left: auto; font-size: 11px; color: var(--text-3); font-family: var(--mono); }
 .hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -1681,7 +1682,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 10px; margin-top: 2px; }
 .hmc-edge-label { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
 .hmc-osi-bar { display: grid; grid-template-columns: 72px 1fr 72px; gap: 8px; align-items: center; margin-bottom: 10px; }
-.hmc-osi-val { font-size: 11px; color: var(--text-2); }
+.hmc-osi-val { font-size: 11px; color: var(--text); }
 .hmc-osi-val.edge-team strong { color: var(--green); }
 .hmc-osi-val.tr { text-align: right; }
 .hmc-bar-track { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: var(--bg-4); }
@@ -1843,7 +1844,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 }
 
 /* CTA */
-.ca-hero__cta { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 56px; }
+.ca-hero__cta { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 56px; max-width: 540px; }
+.ca-hero__cta .ca-btn--primary {
+  flex: 1 1 100%;
+  justify-content: center;
+  min-width: min(100%, 420px);
+  padding: 16px 48px;
+}
 .ca-btn {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 16px 26px; border-radius: 14px;
@@ -2078,7 +2085,12 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   position: absolute;
   z-index: 20;
   pointer-events: none;
-  min-width: 160px;
+  min-width: 228px;
+  max-width: 268px;
+  padding: 12px 14px;
+}
+.ca-market__chart .mlbma-quad-chart-wrap {
+  position: relative;
 }
 
 .ca-market__legend {
@@ -2219,7 +2231,7 @@ body.view-research .ca-lab { display: block; }
 
 /* ====== RESEARCH TOOLS (ca-tools) ====== */
 .ca-tools {
-  padding: clamp(64px, 8vw, 100px) clamp(20px, 5vw, 64px);
+  padding: clamp(48px, 6vw, 80px) clamp(20px, 5vw, 64px);
   background: var(--bg);
 }
 .ca-tools__inner { max-width: 1320px; margin: 0 auto; }
@@ -2243,8 +2255,8 @@ body.view-research .ca-lab { display: block; }
 }
 .ca-tools__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
 }
 .ca-tool-card {
   position: relative;
@@ -2274,6 +2286,11 @@ body.view-research .ca-lab { display: block; }
 .ca-tool-card--green:hover { border-color: rgba(31, 184, 102, 0.6); box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.8), 0 0 30px -8px rgba(31, 184, 102, 0.4); }
 .ca-tool-card--teal .ca-tool-card__accent { background: linear-gradient(90deg, #1DB6A0, #10897A); }
 .ca-tool-card--teal:hover { border-color: rgba(29, 182, 160, 0.6); box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.8), 0 0 30px -8px rgba(29, 182, 160, 0.4); }
+.ca-tool-card--violet .ca-tool-card__accent { background: linear-gradient(135deg, #B794FF, #7C4DFF); }
+.ca-tool-card--violet:hover { border-color: rgba(124, 77, 255, 0.65); box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.8), 0 0 30px -8px rgba(124, 77, 255, 0.45); }
+.ca-tool-card--violet .ca-tool-card__icon { background: rgba(124, 77, 255, 0.18); border-color: rgba(124, 77, 255, 0.45); color: #C4B0FF; }
+.ca-tool-card--violet .ca-tool-card__list li::before { background: rgba(124, 77, 255, 0.22); color: #C4B0FF; }
+.ca-tool-card--violet .ca-tool-card__cta { color: #C4B0FF; }
 .ca-tool-card--purple .ca-tool-card__accent { background: linear-gradient(135deg, #9A6BFF, #5B2BE0); }
 .ca-tool-card--purple:hover { border-color: rgba(124, 77, 255, 0.6); box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.8), 0 0 30px -8px rgba(124, 77, 255, 0.45); }
 .ca-tool-card--amber .ca-tool-card__accent { background: linear-gradient(90deg, #E0A21E, #C9761E); }
@@ -2294,11 +2311,18 @@ body.view-research .ca-lab { display: block; }
 .ca-tool-card--amber .ca-tool-card__icon { background: rgba(224, 162, 30, 0.15); border-color: rgba(224, 162, 30, 0.4); color: #F0C24A; }
 .ca-tool-card__title {
   font-family: var(--display);
-  font-size: 21px;
+  font-size: 19px;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--text);
-  margin: 0 0 13px;
+  margin: 0 0 8px;
+}
+.ca-tool-card__lede {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+  font-weight: 500;
 }
 .ca-tool-card__list {
   list-style: none;
@@ -2358,6 +2382,15 @@ body.view-research .ca-lab { display: block; }
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+  padding-top: clamp(48px, 6vw, 72px);
+}
+.opening-layer .ca-tools .ca-section-header .ca-helper {
+  max-width: 720px;
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text-2);
 }
 
 /* ====== FEATURE ROW (ca-features) ====== */
@@ -2403,16 +2436,17 @@ body.view-research .ca-lab { display: block; }
 }
 @media (max-width: 900px) { .ca-features__grid { grid-template-columns: 1fr; } }
 
-@media (max-width: 1024px) { .ca-tools__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1280px) { .ca-tools__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .ca-tools__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260620d">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260620n">
 <link rel="stylesheet" href="theme.css?v=20260612b">
-<link rel="stylesheet" href="chase_nav.css?v=20260527s">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260612a">
-<link rel="stylesheet" href="research_lab.css?v=20260620h">
+<link rel="stylesheet" href="chase_nav.css?v=20260620u">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260620t">
+<link rel="stylesheet" href="research_lab.css?v=20260620l">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
@@ -2434,25 +2468,25 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260620d"></script>
-<script src="mlbma_icons.js?v=20260611b"></script>
-<script src="matchup_shared.js?v=20260620c"></script>
+<script src="mlbma_icons.js?v=20260620q"></script>
+<script src="matchup_shared.js?v=20260620q"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
-<script src="mlbma_charts.js?v=20260609a"></script>
+<script src="mlbma_charts.js?v=20260620v"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260528c"></script>
+<script src="platform_dashboard.js?v=20260620t"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260620d"></script>
 <script src="lineup_view.js?v=20260618a"></script>
 <script src="trends_heatmap.js?v=20260612e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
-<script src="pitcher_lab.js?v=20260620i"></script>
+<script src="pitcher_lab.js?v=20260620k"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation ? synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics ? Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--wordmark" src="assets/chase-logo-transparent.png" alt="Chase Analytics" height="36"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
@@ -2496,7 +2530,7 @@ body.view-research .ca-lab { display: block; }
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--compact" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="28" height="28" style="width:28px;height:28px;object-fit:contain"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="40"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
@@ -2577,10 +2611,6 @@ body.view-research .ca-lab { display: block; }
           <span>View Today's Matchups</span>
           <i data-lucide="arrow-right" style="width:18px;height:18px" aria-hidden="true"></i>
         </a>
-        <a href="#" id="hero-cta-research" class="ca-btn ca-btn--ghost"
-          onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
-          <span>Open Research Lab</span>
-        </a>
       </div>
 
       <div class="ca-hero__stats">
@@ -2614,10 +2644,6 @@ body.view-research .ca-lab { display: block; }
       </div>
     </div>
   </div>
-</section>
-
-<section class="ca-page-shell" aria-label="Platform workflows">
-  <div id="openingPlatformCtaMount"></div>
 </section>
 
 <section class="ca-market" id="section-opening-market-map">
@@ -2665,25 +2691,29 @@ body.view-research .ca-lab { display: block; }
   </div>
 </section>
 
-<section class="ca-tools" id="section-opening-research-cards">
+<section class="ca-tools" id="section-opening-workflows">
   <div class="ca-tools__inner">
     <header class="ca-section-header">
-      <p class="ca-eyebrow">Research Tools</p>
-      <h2 class="ca-section-title">Four Tools. One Edge.</h2>
+      <p class="ca-eyebrow">Platform Workflows</p>
+      <h2 class="ca-section-title">Matchups &amp; Research Tools</h2>
+      <p class="ca-helper">Tonight's slate first — then rankings, form trends, head-to-head compare, and pitcher intelligence. Each tool uses the same OSI / RCV / ABQ model layer.</p>
     </header>
     <div class="ca-tools__grid">
-      <div class="ca-tool-card ca-tool-card--green" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('trends');},300);">
+      <div class="ca-tool-card ca-tool-card--violet" role="link" tabindex="0"
+        onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView();"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.hash='#section-matchups-hero';if(typeof syncDashboardView==='function')syncDashboardView();}">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
-          <span class="ca-icon-circle"><i data-lucide="trending-up"></i></span>
+          <span class="ca-icon-circle"><i data-lucide="calendar-days"></i></span>
         </div>
-        <h3 class="ca-tool-card__title">Trends</h3>
+        <h3 class="ca-tool-card__title">Today's Matchups</h3>
+        <p class="ca-tool-card__lede">Full-slate game cards with probable starters, weather, projected lineups, and split-specific OSI edges — sorted by first pitch.</p>
         <ul class="ca-tool-card__list">
-          <li>Hot and cold offense movement</li>
-          <li>L7/L14 form vs YTD validation</li>
-          <li>Total market timing signals</li>
+          <li>Probable SP stats, Pitch Score, and handedness context</li>
+          <li>Projected batting orders with platoon coloring</li>
+          <li>Jump to full matchup compare for any game</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Trends <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
+        <div class="ca-tool-card__cta">Open Matchups <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
       <div class="ca-tool-card ca-tool-card--teal" onclick="window.location.href='team_rankings.html';">
         <div class="ca-tool-card__accent"></div>
@@ -2691,12 +2721,27 @@ body.view-research .ca-lab { display: block; }
           <span class="ca-icon-circle"><i data-lucide="trophy"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Team Rankings</h3>
+        <p class="ca-tool-card__lede">Unified 30-team table across scoring, difficulty, and status-projection families — filter by handedness, location, window, and segment.</p>
         <ul class="ca-tool-card__list">
-          <li>Platoon edges by handedness</li>
-          <li>Home/away and F5 context</li>
-          <li>Player prop research angles</li>
+          <li>Platoon and home/away splits with F5 context</li>
+          <li>One-team scope for focused prop research</li>
+          <li>Sortable OSI, RCV, ABQ, wRC+, and rate columns</li>
         </ul>
         <div class="ca-tool-card__cta">Open Team Rankings <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
+      </div>
+      <div class="ca-tool-card ca-tool-card--green" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('trends');},300);">
+        <div class="ca-tool-card__accent"></div>
+        <div class="ca-tool-card__icon">
+          <span class="ca-icon-circle"><i data-lucide="trending-up"></i></span>
+        </div>
+        <h3 class="ca-tool-card__title">Trends</h3>
+        <p class="ca-tool-card__lede">Color-coded team trajectory heatmap — validate whether short-term heat is real or noise against YTD baseline grades.</p>
+        <ul class="ca-tool-card__list">
+          <li>L7 / L14 / L30 vs YTD for OSI and components</li>
+          <li>RHP and LHP toggle with location filters</li>
+          <li>Spot rising offenses before the market adjusts</li>
+        </ul>
+        <div class="ca-tool-card__cta">Open Trends <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
       <div class="ca-tool-card ca-tool-card--purple" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('compare');},300);">
         <div class="ca-tool-card__accent"></div>
@@ -2704,10 +2749,11 @@ body.view-research .ca-lab { display: block; }
           <span class="ca-icon-circle"><i data-lucide="swords"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Compare</h3>
+        <p class="ca-tool-card__lede">Head-to-head research for tonight's games — lineup vs lineup, lineup vs pitcher, and bullpen unit matchups in one workspace.</p>
         <ul class="ca-tool-card__list">
-          <li>Lineup vs Lineup and vs Pitcher</li>
-          <li>Bullpen vs Bullpen matchups</li>
-          <li>Run line and over/under edges</li>
+          <li>Lineup vs Lineup and vs probable SP grades</li>
+          <li>Bullpen OSI allowed and platoon fit</li>
+          <li>Run line, total, and fantasy edge framing</li>
         </ul>
         <div class="ca-tool-card__cta">Open Compare <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
@@ -2717,10 +2763,11 @@ body.view-research .ca-lab { display: block; }
           <span class="ca-icon-circle"><i data-lucide="target"></i></span>
         </div>
         <h3 class="ca-tool-card__title">Pitcher Intelligence</h3>
+        <p class="ca-tool-card__lede">Starting-pitcher lab with Pitch Score, K%/BB%/FIP validation, and vulnerability flags against today's offensive units.</p>
         <ul class="ca-tool-card__list">
-          <li>ERA validation vs competition</li>
-          <li>Vulnerable starter identification</li>
-          <li>SP prop and F5 decisions</li>
+          <li>ERA vs competition-quality cross-check</li>
+          <li>Today's starters ranked with intel badges</li>
+          <li>SP props and F5 vs full-game decisions</li>
         </ul>
         <div class="ca-tool-card__cta">Open Pitcher Lab <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
@@ -2743,10 +2790,7 @@ body.view-research .ca-lab { display: block; }
   <div class="matchups-slate-controls matchups-hero-header">
     <div class="ca-pill-bar">
       <span class="ca-pill-label">Sort</span>
-      <button type="button" class="ca-pill-btn active" data-match-sort="edge">OSI Edge</button>
-      <button type="button" class="ca-pill-btn" data-match-sort="time">Game Time</button>
-      <button type="button" class="ca-pill-btn" data-match-sort="pitch">Pitching Score</button>
-      <button type="button" class="ca-pill-btn" data-match-sort="f5">F5 Edge</button>
+      <button type="button" class="ca-pill-btn active" data-match-sort="time">Game Time</button>
     </div>
     <div class="ca-pill-bar">
       <span class="ca-pill-label">Filter</span>
@@ -4056,10 +4100,8 @@ function batterProfileLink(name) {
 
 function buildLineupColHtml(teamLabel, rows, oppHand) {
   var S = window.MLBMASharedMatchup;
-  if (S && S.buildLineupBoard) {
-    return '<div class="matchup-lineup-col">'
-      + S.buildLineupBoard(rows, { teamLabel: teamLabel, oppHand: oppHand, kicker: 'Projected', icon: 'users' })
-      + '</div>';
+  if (S && S.buildLineupColCompact) {
+    return S.buildLineupColCompact(teamLabel, rows, oppHand);
   }
   var head = '<div class="matchup-lineup-col-head">' + escHtml(teamLabel)
     + ' <span class="lineup-opp-hand">vs ' + (oppHand === 'L' || oppHand === 'R' ? escHtml(oppHand + 'HP') : '?HP') + '</span></div>';
@@ -6855,30 +6897,16 @@ function bindHeroCtas() {
       if (typeof syncDashboardView === 'function') syncDashboardView();
     });
   }
-  var researchLink = document.getElementById('hero-cta-research');
-  if (researchLink && !researchLink.dataset.bound) {
-    researchLink.dataset.bound = '1';
-    researchLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.hash = '#section-research-lab';
-      if (typeof syncDashboardView === 'function') syncDashboardView();
-    });
-  }
-}
-
-function mountPlatformCtas() {
-  if (!window.MLBMAAssets || !MLBMAAssets.platformCtaHtml) return;
-  var el = document.getElementById('openingPlatformCtaMount');
-  if (!el) return;
-  el.innerHTML = MLBMAAssets.platformCtaHtml(null, { variant: 'landing' });
-  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
 }
 
 function renderHomePage() {
   bindHeroCtas();
-  mountPlatformCtas();
   registerMetricPools();
   renderHomeResearchCards();
+  var workflowSection = document.getElementById('section-opening-workflows');
+  if (workflowSection && window.MLBMAIcons && MLBMAIcons.refreshIcons) {
+    MLBMAIcons.refreshIcons(workflowSection);
+  }
   whenLiveDataReady(syncHeroStats, 'hero stats');
   whenLiveDataReady(function() {
     renderLandingMarketQuadrant(
@@ -7078,7 +7106,7 @@ function syncDashboardView() {
   }, 'opening view sync');
 
   var scrollId = hash || 'section-opening-market-map';
-  if (scrollId === 'section-opening-research-cards' || scrollId === 'section-opening-market-map' || scrollId === 'opening') {
+  if (scrollId === 'section-opening-workflows' || scrollId === 'section-opening-research-cards' || scrollId === 'section-opening-market-map' || scrollId === 'opening') {
     setTimeout(function() {
       var target = document.getElementById(scrollId === 'opening' ? 'section-opening-hero' : scrollId);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -450,77 +450,321 @@ body.view-research .ca-page-identity { display: none; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px 8px;
   margin-left: auto;
   font-size: 11px;
   color: var(--text-3);
   font-family: var(--mono);
+  justify-content: flex-end;
 }
-.hmc-meta .hmc-time { color: var(--text-2); font-weight: 600; }
-.hmc-meta .hmc-venue {
-  max-width: 140px;
+.hmc-meta .hmc-time {
+  color: var(--text-1);
+  font-weight: 700;
+}
+.hmc-meta .hmc-stadium {
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-transform: uppercase;
+  font-size: 9px;
   letter-spacing: 0.04em;
-  font-size: 10px;
-}
-.hmc-lineups--always .hmc-lineups-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
-  margin-bottom: 8px;
 }
-.hmc-pitchers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 10px;
+.hmc-weather-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
 }
-.mc-sp-block {
+.hmc-weather-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.hmc-weather-chip--temp {
+  color: var(--temp-color, var(--text-1));
+  border-color: color-mix(in srgb, var(--temp-color, #9CA3AF) 35%, transparent);
+  background: color-mix(in srgb, var(--temp-color, #9CA3AF) 12%, transparent);
+}
+.hmc-weather-chip--temp strong {
+  font-family: var(--font-display, var(--font));
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.hmc-weather-chip--wind {
+  gap: 3px;
+  font-family: var(--mono, monospace);
+}
+.hmc-wind-arrow {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-2);
+}
+.hmc-wind--out .hmc-wind-arrow { color: #F87171; }
+.hmc-wind--in .hmc-wind-arrow { color: #60A5FA; }
+.hmc-wind--lr .hmc-wind-arrow,
+.hmc-wind--rl .hmc-wind-arrow { color: #FBBF24; }
+.hmc-wind--rl .hmc-wind-arrow { transform: scaleX(-1); }
+.hmc-wind-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.hmc-wind-mph {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-left: 1px;
+}
+.hmc-wind-unit {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.hmc-weather-chip--cond {
+  font-size: 9px;
+  text-transform: capitalize;
+  color: var(--text-3);
+}
+.hmc-weather-chip--dome {
+  color: var(--purple-2, #9A6BFF);
+  border-color: rgba(154, 107, 255, 0.35);
+  background: rgba(124, 77, 255, 0.12);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hmc-lineups--always .hmc-lineups-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+
+/* Flat projected lineup columns inside matchup cards */
+.hero-matchup-card .matchup-lineup-col--compact {
   min-width: 0;
 }
-.mc-sp-name-row {
+
+.hero-matchup-card .matchup-lineup-col-head {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+  min-height: 0;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.hero-matchup-card .matchup-lineup-col-head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--purple-2, #9A6BFF);
+  opacity: 0.9;
+}
+
+.hero-matchup-card .matchup-lineup-col-head__icon svg {
+  display: block;
+}
+
+.hero-matchup-card .matchup-lineup-col-head__team {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-1, #F3F4F6);
+  font-family: var(--font-display, var(--font));
+  flex: none;
+}
+
+.hero-matchup-card .matchup-lineup-col-head__meta {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3, #9CA3AF);
+  font-family: var(--mono, monospace);
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Safety: shrink legacy scorecard headers if cached markup still renders */
+.hero-matchup-card .lineup-board .ca-section-head {
   align-items: center;
   gap: 6px;
   margin-bottom: 4px;
 }
-.mc-sp-name {
-  font-weight: 600;
-  max-width: 160px;
+
+.hero-matchup-card .lineup-board .ca-section-head .ca-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.hero-matchup-card .lineup-board .ca-section-head .ca-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.hero-matchup-card .lineup-board .ca-section-head .kicker {
+  display: none;
+}
+
+.hero-matchup-card .lineup-board .ca-section-head__body {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.hero-matchup-card .lineup-board .ca-section-head .title {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.hero-matchup-card .lineup-board .ca-section-head .purpose {
+  font-size: 9px;
+  margin: 0 0 0 auto;
   white-space: nowrap;
+  flex: none;
 }
-.mc-sp-name a { color: inherit; text-decoration: none; }
-.mc-sp-name a:hover { color: var(--ca-brand, #9A6BFF); }
-.mc-ps-badge {
-  display: inline-flex;
+
+.hmc-pitchers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.mc-sp-block {
+  min-width: 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 10px 9px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mc-sp-info {
+  flex: 1;
+  min-width: 0;
+}
+.mc-sp-top {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+.mc-sp-side {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.mc-sp-name-row {
+  margin-bottom: 6px;
+}
+.mc-sp-name-text {
+  display: block;
+  font-family: var(--font-display, var(--font));
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-sp-name a.mc-sp-name-text {
+  text-decoration: none;
+  color: inherit;
+}
+.mc-sp-name a.mc-sp-name-text:hover {
+  color: var(--ca-brand, #9A6BFF);
+}
+.mc-ps-badge--defined {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 7px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mc-ps-badge__label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.mc-ps-badge__val {
+  font-family: var(--font-display, var(--font));
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.mc-sp-stats--grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 3px 8px;
+}
+.mc-sp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 5px;
   border-radius: 6px;
-  background: var(--bg-4);
-  border: 1px solid var(--border);
-  color: var(--text-3);
-  margin: 2px 0 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 0;
 }
-.mc-ps-badge strong {
-  font-family: var(--mono);
+.mc-sp-stat em {
+  font-style: normal;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.mc-sp-stat strong {
+  font-family: var(--mono, monospace);
   font-size: 12px;
-}
-.mc-sp-stats {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-3);
-  line-height: 1.4;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.2;
 }
 .mc-sp-photo {
   margin-right: 4px;
@@ -564,6 +808,12 @@ body.view-research .ca-page-identity { display: none; }
   text-decoration: none;
   color: inherit;
 }
+.hero-matchup-card .hmc-abbr {
+  color: var(--text);
+}
+.hero-matchup-card .hmc-osi-val {
+  color: var(--text);
+}
 .hero-matchup-card .hmc-team a.team-link:hover .hmc-abbr {
   color: var(--ca-brand, #9A6BFF);
 }
@@ -582,23 +832,98 @@ body.view-research .ca-page-identity { display: none; }
 .mc-sp-photo .ca-pitcher-avatar {
   display: block;
 }
-.mc-sp-block {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
 
 .hmc-lineups {
-  margin-top: 12px;
+  margin-top: 10px;
   border-top: 1px solid var(--border);
-  padding-top: 10px;
+  padding-top: 8px;
 }
 .hmc-lineups .matchup-lineup-panel {
   display: block;
-  max-height: 2000px;
-  overflow: hidden;
+  max-height: none;
+  overflow: visible;
   transition: max-height 0.25s ease, opacity 0.2s ease;
   opacity: 1;
+}
+.hmc-lineups--always .matchup-lineup-grid {
+  gap: 8px;
+}
+
+.hero-matchup-card .lineup-row {
+  display: grid;
+  grid-template-columns: 14px 22px minmax(0, 1fr) auto;
+  gap: 4px 6px;
+  align-items: center;
+  min-height: 20px;
+  padding: 1px 0;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.hero-matchup-card .lineup-bo {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-align: right;
+}
+
+.hero-matchup-card .lineup-pos {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+.hero-matchup-card .lineup-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.hero-matchup-card .lineup-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero-matchup-card .lineup-name-link:hover {
+  color: var(--ca-brand, #9A6BFF);
+}
+
+.hero-matchup-card .lineup-row--platoon-l .lineup-name {
+  color: var(--blue, #60A5FA);
+}
+
+.hero-matchup-card .lineup-row--platoon-r .lineup-name {
+  color: var(--orange, #FB923C);
+}
+
+.hero-matchup-card .bats-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-4, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+
+.hero-matchup-card .lineup-board--compact {
+  box-shadow: none;
+}
+.hero-matchup-card .lineup-board--compact::before {
+  height: 2px;
+}
+.hero-matchup-card .matchup-lineup-col {
+  min-width: 0;
 }
 .hmc-lineups:not(.is-open) .matchup-lineup-panel {
   max-height: 0;
