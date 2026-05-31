@@ -132,6 +132,67 @@
     }) || null;
   }
 
+  function scoredSplitRow(rawRow) {
+    if (!rawRow) return null;
+    var S = global.MLBMASharedMatchup;
+    if (S && S.scoreRowFromSheet) {
+      var scored = S.scoreRowFromSheet(rawRow);
+      if (scored) {
+        return Object.assign({}, rawRow, scored, {
+          wOBA: scored.woba != null ? scored.woba : rawRow.wOBA,
+          xwOBA: scored.xwoba != null ? scored.xwoba : rawRow.xwOBA,
+          'wRC+': scored.wrc != null ? scored.wrc : rawRow['wRC+'],
+          SLG: scored.slg != null ? scored.slg : rawRow.SLG,
+          OSI: scored.osi != null ? scored.osi : rawRow.OSI
+        });
+      }
+    }
+    return rawRow;
+  }
+
+  function resolveOffenseRates(prof, ctx) {
+    ctx = ctx || {};
+    var pickCol = ctx.pickCol;
+    var split = ctx.split || 'both';
+    var team = ctx.team;
+
+    function pf(keys) { return num(pick(prof, keys, pickCol)); }
+
+    var wrc = ctx.wrc != null ? ctx.wrc : pf(['wrc_plus', 'wRC+', 'wrc']);
+    var woba = pf(['woba', 'wOBA']);
+    var xwoba = pf(['xwoba', 'xwOBA']);
+    var slg = pf(['slg', 'SLG']);
+    var hr = pf(['hr', 'HR']);
+    var k = pf(['k_pct', 'K%']);
+    var bb = pf(['bb_pct', 'BB%']);
+    var barrel = pf(['barrel_pct', 'Barrel%']);
+    var hard = pf(['hardhit_pct', 'HardHit%']);
+
+    var S = global.MLBMASharedMatchup;
+    if (split === 'home') {
+      if (pf(['home_wrc']) != null) wrc = pf(['home_wrc']);
+      if (pf(['home_woba']) != null) woba = pf(['home_woba']);
+      if (pf(['home_slg']) != null) slg = pf(['home_slg']);
+    } else if (split === 'away') {
+      if (pf(['away_wrc']) != null) wrc = pf(['away_wrc']);
+      if (pf(['away_woba']) != null) woba = pf(['away_woba']);
+      if (pf(['away_slg']) != null) slg = pf(['away_slg']);
+    } else if (S && S.findScoreRow) {
+      var row = null;
+      if (split === 'rhp' && global.SCO_YTD_R) row = S.findScoreRow(global.SCO_YTD_R, team);
+      else if (split === 'lhp' && global.SCO_YTD_L) row = S.findScoreRow(global.SCO_YTD_L, team);
+      else if (global.SCO_YTD_B) row = S.findScoreRow(global.SCO_YTD_B, team);
+      if (row) {
+        if (row.wrc != null) wrc = row.wrc;
+        if (row.woba != null) woba = row.woba;
+        if (row.xwoba != null) xwoba = row.xwoba;
+        if (row.slg != null) slg = row.slg;
+      }
+    }
+
+    return { wrc: wrc, woba: woba, xwoba: xwoba, slg: slg, hr: hr, k: k, bb: bb, barrel: barrel, hard: hard };
+  }
+
   function metricRowForTeam(team, split, metricsR, metricsL) {
     var t = String(team || '').toUpperCase();
     var row = null;
@@ -170,8 +231,8 @@
     var pickCol = ctx.pickCol;
     var splitKey = split === 'home' || split === 'away' || split === 'f5' ? 'both' : split;
     var sheetRow = metricRowForTeam(ctx.team, splitKey, ctx.metricsR, ctx.metricsL);
-    var rowR = rawSplitRowForTeam(ctx.team, 'rhp', ctx.metricsR, ctx.metricsL);
-    var rowL = rawSplitRowForTeam(ctx.team, 'lhp', ctx.metricsR, ctx.metricsL);
+    var rowR = scoredSplitRow(rawSplitRowForTeam(ctx.team, 'rhp', ctx.metricsR, ctx.metricsL));
+    var rowL = scoredSplitRow(rawSplitRowForTeam(ctx.team, 'lhp', ctx.metricsR, ctx.metricsL));
 
     function pf(keys) { return num(pick(prof, keys, pickCol)); }
 
@@ -285,14 +346,65 @@
     return '<span class="pals-status ' + cls + '">' + esc(label) + '</span>';
   }
 
+  function renderSummaryPanel(prof, team, m, ctx) {
+    var C = global.MLBMACharts;
+    var PC = global.MLBMAProfileControls;
+    if (!C || !C.buildTrendLineChart) return '';
+
+    function trendVals(metric) {
+      if (PC && PC.teamMetricTrend) {
+        var vals = PC.teamMetricTrend(team, metric);
+        if (vals.some(function(v) { return v != null && !isNaN(v); })) return vals;
+      }
+      if (metric === 'osi') return [m.osiYtd, m.osiL30, m.osiL14, m.osiL7];
+      if (metric === 'abq') return [m.abqYtd, m.abqL30, m.abqL14, m.abqL7];
+      if (metric === 'rcv') return [m.rcvYtd, m.rcvL30, m.rcvL14, m.rcvL7];
+      if (metric === 'obr') return [m.obrYtd, m.obrL30, m.obrL14, m.obrL7];
+      return [null, null, null, null];
+    }
+
+    function trendChart(label, metric) {
+      return C.buildTrendLineChart(label, trendVals(metric), null, null, { labels: ['YTD', 'L30', 'L14', 'L7'] });
+    }
+
+    var rates = resolveOffenseRates(prof, ctx);
+    var wrc = ctx.wrc != null ? ctx.wrc : rates.wrc;
+    var chips = [
+      ['OSI', m.osi, 'osi', false, 1],
+      ['ABQ', m.abq, 'abq', false, 1],
+      ['RCV', m.rcv, 'rcv', false, 1],
+      ['OBR', m.obr, 'obr', false, 1],
+      ['projOSI', m.proj, 'osi', false, 1],
+      ['PP-Gap', m.ppGap, 'ppGap', false, 1],
+      ['wRC+', wrc, 'wrc', false, 0],
+      ['wOBA', rates.woba, 'woba', false, 3]
+    ].map(function(c) {
+      return '<span class="tp-summary-chip"><span class="tp-summary-chip-k">' + esc(c[0]) + '</span>'
+        + valChip(c[1], c[2], c[3], c[4]) + '</span>';
+    }).join('');
+
+    var filterNote = esc((ctx.splitLabel || ctx.split || 'both') + ' · ' + (ctx.windowLabel || ctx.window || 'YTD'));
+
+    return '<div class="tp-summary-panel">'
+      + '<div class="tp-summary-head"><span class="tp-summary-title">Offense Summary</span>'
+      + '<span class="tp-summary-filter">' + filterNote + '</span></div>'
+      + '<div class="tp-summary-chips">' + chips + '</div>'
+      + '<div class="tp-summary-trends">'
+      + trendChart('OSI', 'osi') + trendChart('RCV', 'rcv')
+      + trendChart('ABQ', 'abq') + trendChart('OBR', 'obr')
+      + '</div></div>';
+  }
+
   function renderSnapshot(prof, team, ctx) {
     ctx = ctx || {};
     var m = resolveView(prof, ctx);
-    var projArrow = m.proj != null && m.osi != null ? (m.proj > m.osi + 2 ? ' ↑' : m.proj < m.osi - 2 ? ' ↓' : ' →') : '';
+    var rates = resolveOffenseRates(prof, ctx);
+    if (rates.wrc != null) ctx.wrc = rates.wrc;
 
     return '<section class="ca-card tp-snapshot-card"><div class="team-snapshot">'
       + '<div class="snapshot-main" style="width:100%">'
       + renderInfographicHero(prof, team, m, ctx)
+      + renderSummaryPanel(prof, team, m, ctx)
       + '</div></div></section>';
   }
 
@@ -304,9 +416,9 @@
 
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
-    var accent = teamAccent(team);
-    var logo = A ? A.teamLogoImg(team, 88, 'ca-profile-logo-glow snapshot-logo') : '';
-    var wrc = ctx.wrc != null ? ctx.wrc : num(pick(prof, ['wrc_plus', 'wRC+', 'wrc'], ctx.pickCol));
+    var rates = resolveOffenseRates(prof, ctx);
+    var logo = A ? A.teamLogoImg(team, 120, 'tp-hero-logo snapshot-logo') : '';
+    var wrc = ctx.wrc != null ? ctx.wrc : rates.wrc;
     var rank = ctx.osiRank;
     var trait = standoutTrait(prof, m, ctx);
     var eyebrowParts = [];
@@ -326,7 +438,7 @@
         + (ctx.avgPitchScore != null ? ' · Pitch Score ' + ctx.avgPitchScore.toFixed(0) : '') + '</p>' : '')
       + '</div>'
       + '<div class="ca-profile-hero__body">'
-      + '<div class="tp-logo-glow" style="--team-glow:' + accent + '">' + logo + '</div>'
+      + '<div class="tp-hero-logo-wrap">' + logo + '</div>'
       + '<div class="ca-profile-hero__rail">' + wrcHtml + '</div>'
       + '</div>'
       + insightRailHtml(prof, m, ctx)
@@ -336,8 +448,9 @@
   function insightRailHtml(prof, m, ctx) {
     ctx = ctx || {};
     var pickCol = ctx.pickCol;
-    var woba = num(pick(prof, ['woba', 'wOBA'], pickCol));
-    var xwoba = num(pick(prof, ['xwoba', 'xwOBA'], pickCol));
+    var rates = resolveOffenseRates(prof, ctx);
+    var woba = rates.woba;
+    var xwoba = rates.xwoba;
     var barrel = num(pick(prof, ['barrel_pct', 'Barrel%'], pickCol));
     var hr = num(pick(prof, ['hr', 'HR'], pickCol));
     var rows = [];
@@ -505,6 +618,7 @@
 
   global.TeamProfileMini = {
     resolveView: resolveView,
+    resolveOffenseRates: resolveOffenseRates,
     splitPairHtml: splitPairHtml,
     render: function(prof, team, ctx) {
       ctx = ctx || {};

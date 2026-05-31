@@ -85,39 +85,17 @@
   }
 
   function renderScoring(m, prof, ctx) {
-    var wrc = ctx.wrc != null ? ctx.wrc : pf(prof, ['wrc_plus', 'wRC+', 'wrc'], ctx.pickCol);
-    var woba = pf(prof, ['woba', 'wOBA'], ctx.pickCol);
-    return sectionCard('Scoring', 'Offensive Quality', 'Team Rankings — Scoring family',
-      chipRow([
-        metricSlot('OSI', m.osi, 'osi', false, 1),
-        metricSlot('wRC+', wrc, 'wrc', false, 0),
-        metricSlot('wOBA', woba, 'woba', false, 3),
-        metricSlot('RCV', m.rcv, 'rcv', false, 1)
-      ]));
-  }
+    var rates = (Mini && Mini.resolveOffenseRates) ? Mini.resolveOffenseRates(prof, ctx) : {};
+    var wrc = ctx.wrc != null ? ctx.wrc : rates.wrc;
+    var woba = rates.woba;
+    var xwoba = rates.xwoba;
+    var slg = rates.slg;
+    var hr = rates.hr;
+    var k = rates.k;
+    var bb = rates.bb;
+    var barrel = rates.barrel;
+    var hard = rates.hard;
 
-  function renderProcess(m) {
-    return sectionCard('Process', 'Process & Projection', 'Difficulty + Status families',
-      chipRow([
-        metricSlot('ABQ', m.abq, 'abq', false, 1),
-        metricSlot('OBR', m.obr, 'obr', false, 1),
-        metricSlot('projOSI', m.proj, 'osi', false, 1),
-        metricSlot('PP-Gap', m.ppGap, 'ppGap', false, 1),
-        metricSlot('PALS', m.pals, 'osi', false, 1)
-      ]));
-  }
-
-  function renderFullSeasonLine(prof, ctx) {
-    var pickCol = ctx.pickCol;
-    var woba = pf(prof, ['woba', 'wOBA'], pickCol);
-    var xwoba = pf(prof, ['xwoba', 'xwOBA'], pickCol);
-    var slg = pf(prof, ['slg', 'SLG'], pickCol);
-    var hr = pf(prof, ['hr', 'HR'], pickCol);
-    var k = pf(prof, ['k_pct', 'K%'], pickCol);
-    var bb = pf(prof, ['bb_pct', 'BB%'], pickCol);
-    var barrel = pf(prof, ['barrel_pct', 'Barrel%'], pickCol);
-    var hard = pf(prof, ['hardhit_pct', 'HardHit%'], pickCol);
-    var wrc = ctx.wrc != null ? ctx.wrc : pf(prof, ['wrc_plus', 'wRC+'], pickCol);
     var summary = '';
     if (woba != null && xwoba != null) {
       var delta = (woba - xwoba) * 1000;
@@ -125,9 +103,12 @@
         + (delta > 5 ? 'outpaces' : delta < -5 ? 'trails' : 'tracks')
         + ' xwOBA by <strong>' + Math.abs(Math.round(delta)) + '</strong> points.</p>';
     }
+
     var slots = [
+      metricSlot('OSI', m.osi, 'osi', false, 1),
       metricSlot('wRC+', wrc, 'wrc', false, 0),
       metricSlot('wOBA', woba, 'woba', false, 3),
+      metricSlot('RCV', m.rcv, 'rcv', false, 1),
       metricSlot('xwOBA', xwoba, 'woba', false, 3),
       metricSlot('SLG', slg, 'woba', false, 3),
       metricSlot('HR', hr, 'wrc', false, 0),
@@ -139,8 +120,33 @@
       phase1Slot('OBP'),
       phase1Slot('OPS')
     ];
-    return sectionCard('Offense', 'Full-Season Offense Line', 'Compare Mode-1 core metrics',
+
+    return sectionCard('Scoring', 'Offensive Quality', 'Scoring + full-season rate line on active filter',
       '<div class="tp-metric-grid">' + slots.join('') + '</div>' + summary);
+  }
+
+  function renderProcess(m) {
+    return sectionCard('Process', 'Process & Projection', 'Difficulty + Status families',
+      chipRow([
+        metricSlot('ABQ', m.abq, 'abq', false, 1),
+        metricSlot('OBR', m.obr, 'obr', false, 1),
+        metricSlot('projOSI', m.proj, 'osi', false, 1),
+        metricSlot('PP-Gap', m.ppGap, 'ppGap', false, 1)
+      ]));
+  }
+
+  function renderPitchingFaced(ctx) {
+    var pals = ctx.pals;
+    var xfip = ctx.xfipFaced;
+    if (pals == null && xfip == null) {
+      return sectionCard('Pitching Faced', 'Quality of Arms Seen', 'PALS tab — run compute_pals pipeline step',
+        '<p class="ca-helper">PALS and avg xFIP faced not loaded for this team.</p>');
+    }
+    return sectionCard('Pitching Faced', 'Quality of Arms Seen', 'Schedule-adjusted pitching difficulty (PALS tab)',
+      chipRow([
+        metricSlot('PALS', pals, 'osi', false, 1),
+        metricSlot('xFIP Faced', xfip, 'pitching', true, 2)
+      ]));
   }
 
   function renderHomeAway(prof, ctx) {
@@ -160,8 +166,12 @@
   function renderHandednessSplits(prof, team, ctx) {
     if (!Mini || !Mini.splitPairHtml) return '';
     var m = resolveM(prof, team, ctx);
-    return sectionCard('Platoon', 'Handedness Splits', 'vs RHP / vs LHP — centerpiece compare profile',
-      '<div class="tp-split-section">' + Mini.splitPairHtml(m) + '</div>');
+    var body = '<div class="tp-split-section">' + Mini.splitPairHtml(m) + '</div>'
+      + '<div class="tp-bp-usage-block">'
+      + '<h3 class="tp-bp-usage-title">Bullpen Usage · L7</h3>'
+      + '<div id="tpBpUsageMount" class="tp-bp-usage-mount" data-team="' + esc(team) + '">'
+      + '<div class="tp-empty">Loading bullpen usage…</div></div></div>';
+    return sectionCard('Platoon', 'Handedness Splits', 'vs RHP / vs LHP compare + recent bullpen workload', body);
   }
 
   function renderSurfaceWins(resultsRow, window) {
@@ -291,11 +301,15 @@
 
   function renderAll(prof, team, ctx) {
     ctx = ctx || {};
+    if (Mini && Mini.resolveOffenseRates) {
+      var rates = Mini.resolveOffenseRates(prof, ctx);
+      if (rates.wrc != null) ctx.wrc = rates.wrc;
+    }
     var m = resolveM(prof, team, ctx);
     var html = '';
     html += renderScoring(m, prof, ctx);
     html += renderProcess(m);
-    html += renderFullSeasonLine(prof, ctx);
+    html += renderPitchingFaced(ctx);
     html += renderHandednessSplits(prof, team, ctx);
     html += renderHomeAway(prof, ctx);
     html += renderSurfaceWins(ctx.resultsRow, ctx.window);
@@ -309,7 +323,7 @@
     renderAll: renderAll,
     renderScoring: renderScoring,
     renderProcess: renderProcess,
-    renderFullSeasonLine: renderFullSeasonLine,
+    renderPitchingFaced: renderPitchingFaced,
     renderHandednessSplits: renderHandednessSplits,
     renderSurfaceWins: renderSurfaceWins,
     renderMomentum: renderMomentum,

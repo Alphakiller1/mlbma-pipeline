@@ -535,6 +535,33 @@
       + '</div>';
   }
 
+  /** Larger trend chart for profile summary panels (YTD → L7). */
+  function buildTrendLineChart(label, values, width, height, opts) {
+    opts = opts || {};
+    width = width || 280;
+    height = height || 88;
+    var labels = opts.labels || ['YTD', 'L30', 'L14', 'L7'];
+    var chartH = Math.max(48, height - 40);
+    var pts = (values || []).filter(function(v) { return v != null && !isNaN(v); });
+    var cur = pts.length ? pts[pts.length - 1] : null;
+    var spark = buildSparkline(values, width, chartH, opts);
+    var axis = labels.map(function(l, i) {
+      var v = values[i];
+      var valHtml = (v != null && !isNaN(v))
+        ? '<strong>' + Number(v).toFixed(1) + '</strong>'
+        : '<span class="mlbma-trend-na">—</span>';
+      return '<span class="mlbma-trend-axis"><span class="mlbma-trend-axis-l">' + esc(l) + '</span>' + valHtml + '</span>';
+    }).join('');
+    return '<div class="mlbma-trend-chart">'
+      + '<div class="mlbma-trend-head">'
+      + '<span class="mlbma-trend-label">' + esc(label) + '</span>'
+      + (cur != null ? '<span class="mlbma-trend-cur">' + Number(cur).toFixed(1) + '</span>' : '')
+      + '</div>'
+      + spark
+      + '<div class="mlbma-trend-axis-row">' + axis + '</div>'
+      + '</div>';
+  }
+
   function teamRadarComparePayload(bothRow, rhpRow, lhpRow) {
     if (!bothRow) return null;
     var rhpOsi = rhpRow && rhpRow.osi != null ? rhpRow.osi : null;
@@ -623,6 +650,7 @@
   global.MLBMACharts = {
     buildSparkline: buildSparkline,
     buildSparklineRow: buildSparklineRow,
+    buildTrendLineChart: buildTrendLineChart,
     buildRadarChart: buildRadarChart,
     buildMiniQuadrant: buildMiniQuadrant,
     buildSnapshotRadar: buildSnapshotRadar,

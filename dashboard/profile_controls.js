@@ -28,6 +28,10 @@
     return { summary: 'Summary', expanded: 'Expanded', analyst: 'Analyst' }[v] || v;
   }
 
+  function categoryLabel(v) {
+    return { lineup: 'Lineup', rotation: 'Starting Pitchers', bullpen: 'Bullpen' }[v] || v;
+  }
+
   function pickCol(row, names) {
     if (!row) return '';
     for (var i = 0; i < names.length; i++) {
@@ -261,10 +265,24 @@
     opts = opts || {};
     var el = typeof mount === 'string' ? document.getElementById(mount) : mount;
     if (!el) return null;
-    var state = Object.assign({ split: 'both', window: 'YTD', view: 'summary', team: opts.teamName || '' }, opts.state || {});
+    var teamProfileMode = !!opts.teamProfileMode;
+    var state = Object.assign({
+      split: 'both',
+      window: 'YTD',
+      view: 'summary',
+      category: 'lineup',
+      team: opts.teamName || ''
+    }, opts.state || {});
 
     function confirmText(st) {
-      return 'Showing: ' + (st.team || opts.teamName || 'Team') + ' · ' + splitLabel(st.split) + ' · ' + st.window + ' · ' + viewLabel(st.view);
+      var parts = [
+        st.team || opts.teamName || 'Team',
+        splitLabel(st.split),
+        st.window
+      ];
+      if (teamProfileMode) parts.push(categoryLabel(st.category || 'lineup'));
+      else parts.push(viewLabel(st.view));
+      return 'Showing: ' + parts.join(' · ');
     }
 
     function sparkBlock(st) {
@@ -315,17 +333,41 @@
         + '</div>';
     }
 
-    el.innerHTML = '<div class="hub-control-bar tp-filter-bar">'
-      + '<div class="hub-control-row">'
-      + pillGroup('Split', 'split', [
-        { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
-        { value: 'home' }, { value: 'away' }, { value: 'f5' }
-      ], state.split)
-      + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }], state.window)
-      + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
-      + '</div>'
-      + '<div class="hub-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
-      + teamSnapshotStrip(state) + '</div>';
+    if (teamProfileMode) {
+      el.innerHTML = '<div class="hub-control-bar tp-filter-bar tp-control-bar">'
+        + '<div class="tp-control-grid">'
+        + '<div class="tp-control-row tp-control-row--filters">'
+        + pillGroup('Split', 'split', [
+          { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
+          { value: 'home' }, { value: 'away' }, { value: 'f5' }
+        ], state.split)
+        + pillGroup('Window', 'window', [
+          { value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }
+        ], state.window)
+        + '</div>'
+        + '<div class="tp-control-row tp-control-row--category">'
+        + pillGroup('Section', 'category', [
+          { value: 'lineup', label: 'Lineup' },
+          { value: 'rotation', label: 'Starting Pitchers' },
+          { value: 'bullpen', label: 'Bullpen' }
+        ], state.category || 'lineup')
+        + '</div>'
+        + '</div>'
+        + '<div class="hub-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
+        + '</div>';
+    } else {
+      el.innerHTML = '<div class="hub-control-bar tp-filter-bar">'
+        + '<div class="hub-control-row">'
+        + pillGroup('Split', 'split', [
+          { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
+          { value: 'home' }, { value: 'away' }, { value: 'f5' }
+        ], state.split)
+        + pillGroup('Window', 'window', [{ value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }], state.window)
+        + pillGroup('View', 'view', [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], state.view)
+        + '</div>'
+        + '<div class="hub-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
+        + teamSnapshotStrip(state) + '</div>';
+    }
 
     bindToggles(el, state, { confirmText: confirmText, onChange: opts.onChange });
     el._profileState = state;

@@ -208,12 +208,29 @@
 
   function renderAll(prof, team, ctx) {
     ctx = ctx || {};
+    var cat = ctx.category || 'lineup';
     var html = '';
-    if (ctx.renderLineup) html += ctx.renderLineup(team);
-    html += renderPitchingSummary(prof, team, ctx);
-    html += renderRotation(prof, team, ctx);
-    html += renderBullpen(prof, team, ctx);
-    html += renderRoster(prof, team, ctx);
+    if (cat === 'lineup') {
+      if (ctx.renderLineup) html += ctx.renderLineup(team);
+      html += renderRoster(prof, team, ctx);
+    } else if (cat === 'rotation') {
+      html += renderPitchingSummary(prof, team, ctx);
+      html += renderRotation(prof, team, ctx);
+    } else if (cat === 'bullpen') {
+      html += renderBullpen(prof, team, ctx);
+      html += '<section class="ca-card tp-section tp-bp-usage-section">'
+        + (A && A.sectionHeaderHtml
+          ? A.sectionHeaderHtml({ eyebrow: 'Usage', title: 'Bullpen Usage · L7', subtitle: 'Live MLB API pitch matrix' })
+          : '<header class="ca-section-header"><h2>Bullpen Usage · L7</h2></header>')
+        + '<div id="tpBpUsageMount" class="tp-bp-usage-mount" data-team="' + esc(team) + '">'
+        + '<div class="tp-empty">Loading bullpen usage…</div></div></section>';
+    } else {
+      if (ctx.renderLineup) html += ctx.renderLineup(team);
+      html += renderPitchingSummary(prof, team, ctx);
+      html += renderRotation(prof, team, ctx);
+      html += renderBullpen(prof, team, ctx);
+      html += renderRoster(prof, team, ctx);
+    }
     return html;
   }
 

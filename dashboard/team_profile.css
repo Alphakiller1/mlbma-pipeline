@@ -575,7 +575,49 @@ body.team-profile-page {
 #profileControlBar .hub-control-bar {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  padding: 14px 16px;
+  padding: 16px 18px;
+}
+
+.tp-control-bar .tp-control-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tp-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 20px 28px;
+}
+
+.tp-control-row--filters .hub-ctrl-group {
+  flex: 1;
+  min-width: min(100%, 280px);
+}
+
+.tp-control-row--category {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.tp-control-row--category .hub-ctrl-group {
+  flex: 1;
+  min-width: 100%;
+}
+
+.tp-control-row--category .hub-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tp-control-row--category .hub-pill {
+  flex: 1;
+  min-width: 120px;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 13px;
 }
 
 #profileControlBar .hub-control-row {
@@ -735,6 +777,181 @@ body.team-profile-page {
 .trend-flat { color: var(--text-3); }
 
 /* Content spec §1–§10 */
+.tp-hero-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.tp-hero-logo-wrap img,
+.tp-hero-logo-wrap .tp-hero-logo,
+.tp-hero-logo-wrap .snapshot-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.tp-summary-panel {
+  margin-top: 18px;
+  padding: 18px 20px 20px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(124, 77, 255, 0.06) 0%, transparent 100%);
+}
+
+.tp-summary-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+}
+
+.tp-summary-title {
+  font-family: var(--font-display, var(--display));
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.tp-summary-filter {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+
+.tp-summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-bottom: 18px;
+}
+
+.tp-summary-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 72px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+}
+
+.tp-summary-chip-k {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.tp-summary-chip .chip {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.tp-summary-trends {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .tp-summary-trends {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mlbma-trend-chart {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px 10px;
+}
+
+.mlbma-trend-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.mlbma-trend-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.mlbma-trend-cur {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.mlbma-trend-axis-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mlbma-trend-axis {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.mlbma-trend-axis-l {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.mlbma-trend-axis strong {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.mlbma-trend-na {
+  opacity: 0.5;
+}
+
+.tp-bp-usage-block {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.tp-bp-usage-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin: 0 0 12px;
+}
+
+.tp-bp-usage-mount {
+  margin-top: 8px;
+}
+
+.tp-bp-usage-section .bp-usage-chart {
+  margin-top: 4px;
+}
+
+/* legacy glow — kept for reference, unused */
 .tp-logo-glow {
   position: relative;
   display: flex;
