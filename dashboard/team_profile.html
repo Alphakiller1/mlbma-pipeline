@@ -8,11 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics ? Team Profile</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260615b">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260620c">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260601a">
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260531y">
+<link rel="stylesheet" href="team_profile.css?v=20260601a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
@@ -21,8 +21,8 @@
 <script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260531v"></script>
-<script src="team_profile_sections.js?v=20260531w"></script>
+<script src="team_profile_mini.js?v=20260601a"></script>
+<script src="team_profile_sections.js?v=20260601a"></script>
 <script src="team_profile_staff.js?v=20260620g"></script>
 <script src="team_profile_intel.js?v=20260531r"></script>
 <script src="mlbma_charts.js?v=20260531n"></script>
@@ -153,7 +153,9 @@
   </div>
 
   <div class="profile-staff-block" id="profileStaffSections"></div>
+  <div id="profileLineupFooter" class="profile-lineup-footer"></div>
 </main>
+<!-- team-profile build: 20260601a -->
 
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -1472,15 +1474,7 @@ function renderStaffBlock(prof) {
   if (!el || !window.TeamProfileStaff) return;
   _bpUsageLoadToken++;
   var ctx = buildStaffCtx();
-  var html = TeamProfileStaff.renderAll(prof, STATE.team, ctx);
-  if (STATE.category === 'lineup' && window.TeamProfileIntel && TeamProfileIntel.renderResearchTakeaways
-      && window.TeamProfileMini && TeamProfileMini.resolveView) {
-    var name = TEAM_NAMES[STATE.team] || STATE.team;
-    var miniCtx = buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team)));
-    var m = TeamProfileMini.resolveView(prof, miniCtx);
-    html += TeamProfileIntel.renderResearchTakeaways(m, prof, miniCtx);
-  }
-  el.innerHTML = html;
+  el.innerHTML = TeamProfileStaff.renderAll(prof, STATE.team, ctx);
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
   bindBattingTabs();
   if (STATE.category === 'bullpen') {
@@ -1488,6 +1482,21 @@ function renderStaffBlock(prof) {
   } else {
     clearBullpenUsageMount();
   }
+}
+
+function renderLineupFooter(prof) {
+  var el = document.getElementById('profileLineupFooter');
+  if (!el) return;
+  if (STATE.category !== 'lineup' || !window.TeamProfileIntel || !TeamProfileIntel.renderResearchTakeaways
+      || !window.TeamProfileMini || !TeamProfileMini.resolveView) {
+    el.innerHTML = '';
+    return;
+  }
+  var name = TEAM_NAMES[STATE.team] || STATE.team;
+  var miniCtx = buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team)));
+  var m = TeamProfileMini.resolveView(prof, miniCtx);
+  el.innerHTML = TeamProfileIntel.renderResearchTakeaways(m, prof, miniCtx);
+  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
 }
 
 function renderOffenseBlock(prof, name, tonight) {
@@ -1551,6 +1560,7 @@ function renderTeam(team) {
   renderOffenseBlock(prof, name, tonight);
   renderUnitSnapshotStrip(prof, ctx);
   renderStaffBlock(prof);
+  renderLineupFooter(prof);
   history.replaceState(null, '', '?team=' + STATE.team);
 }
 
