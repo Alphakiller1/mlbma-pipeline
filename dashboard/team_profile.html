@@ -12,19 +12,19 @@
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260609a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260620b">
+<link rel="stylesheet" href="team_profile.css?v=20260620g">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
 <script src="mlbma_assets.js?v=20260620c"></script>
-<script src="mlbma_icons.js?v=20260615b"></script>
+<script src="mlbma_icons.js?v=20260620g"></script>
 <script src="matchup_shared.js?v=20260620c"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260620b"></script>
-<script src="team_profile_sections.js?v=20260620c"></script>
-<script src="team_profile_staff.js?v=20260620c"></script>
-<script src="team_profile_intel.js?v=20260620c"></script>
+<script src="team_profile_mini.js?v=20260620g"></script>
+<script src="team_profile_sections.js?v=20260620g"></script>
+<script src="team_profile_staff.js?v=20260620g"></script>
+<script src="team_profile_intel.js?v=20260620g"></script>
 <script src="mlbma_charts.js?v=20260619b"></script>
 <script src="platform_dashboard.js?v=20260618v"></script>
 <script src="profile_controls.js?v=20260619d"></script>
@@ -120,7 +120,10 @@
 
 
 <main class="container ca-page-shell">
-  <div id="profilePageHeader"></div>
+  <div class="tp-profile-banner">
+    <div id="profilePageHeader"></div>
+    <div class="tp-unit-snapshot tp-unit-snapshot--banner" id="tpUnitSnapshot" aria-live="polite"></div>
+  </div>
   <div class="tp-data-banner" id="dataBanner"></div>
 
   <details class="tp-page-guide" id="tpPageGuide">
@@ -129,15 +132,15 @@
     <p class="tp-page-guide__note">Created metrics (OSI, RCV, ABQ, OBR) are 0–100 Chase Analytics grades. <a href="glossary.html">Glossary →</a></p>
   </details>
 
-  <div class="tp-sticky-wrap">
+  <div class="tp-profile-toolbar">
     <div class="tp-context-strip">
-      <div class="tp-context-left">
-        <div id="teamPickerMount" class="tp-context-picker"></div>
-      </div>
+      <div id="teamPickerMount" class="tp-context-picker"></div>
       <div id="profileControlBar" class="tp-context-controls"></div>
     </div>
+  </div>
+
+  <div class="tp-sticky-wrap">
     <nav class="tp-unit-nav" id="tpUnitNav" role="tablist" aria-label="Team profile units"></nav>
-    <div class="tp-unit-snapshot" id="tpUnitSnapshot" aria-live="polite"></div>
   </div>
 
   <div class="profile-offense-block">
@@ -638,7 +641,8 @@ function renderBattingSection(team, ctx) {
     + buildProjectedLineupTableHtml(team, ctx) + '</div>';
   var qualifiedPane = '<div class="tp-batting-pane' + (activeTab === 'qualified' ? ' is-active' : '') + '" data-batting-pane="qualified" role="tabpanel"' + (activeTab === 'qualified' ? '' : ' hidden') + '>'
     + buildQualifiedBattersTableHtml(team, ctx) + '</div>';
-  return sectionCard('Team Batting', subtitle, tabs + projectedPane + qualifiedPane, 'tp-batting-section');
+  return sectionCard('Team Batting', subtitle, tabs + projectedPane + qualifiedPane, 'tp-batting-section',
+    { icon: 'bats', kicker: 'Lineup unit' });
 }
 
 function bindBattingTabs() {
@@ -728,7 +732,6 @@ function mountProfilePageHeader() {
   MLBMAAssets.mountPlatformHeader('profilePageHeader', {
     eyebrow: 'Chase Analytics · Profiles',
     title: 'Team Profile',
-    subtitle: 'Offense, pitching staff, today\'s lineup, and qualified roster · one team\'s full picture.',
     showPlatformNav: false
   });
 }
@@ -1019,17 +1022,20 @@ function renderUnitNavStrip() {
   if (!nav) return;
   var cat = STATE.category || 'lineup';
   var tabs = [
-    { value: 'lineup', label: 'Lineup', hint: 'Batters & offense' },
-    { value: 'rotation', label: 'Starting Pitchers', hint: 'Rotation & SP scores' },
-    { value: 'bullpen', label: 'Bullpen', hint: 'Relievers & usage' }
+    { value: 'lineup', label: 'Lineup', hint: 'Batters & offense', icon: 'bats' },
+    { value: 'rotation', label: 'Starters', hint: 'Rotation & SP scores', icon: 'target' },
+    { value: 'bullpen', label: 'Bullpen', hint: 'Relievers & usage', icon: 'flame' }
   ];
+  var I = window.MLBMAIcons;
   if (!nav.querySelector('[data-unit-tab]')) {
     nav.innerHTML = '<div class="tp-unit-nav-row hub-pill-row">' + tabs.map(function(t) {
+      var iconHtml = (I && I.iconHtml) ? I.iconHtml(t.icon, 16) : '';
       return '<button type="button" class="hub-pill tp-unit-tab' + (cat === t.value ? ' active' : '')
         + '" data-unit-tab="' + t.value + '" role="tab" aria-selected="' + (cat === t.value ? 'true' : 'false') + '"'
         + ' title="' + escHtml(t.hint) + '">'
+        + (iconHtml ? '<span class="tp-unit-tab-icon" aria-hidden="true">' + iconHtml + '</span>' : '')
         + '<span class="tp-unit-tab-label">' + escHtml(t.label) + '</span>'
-        + '<span class="tp-unit-tab-hint">' + escHtml(t.hint) + '</span>'
+        + '<span class="tp-unit-tab-hint" aria-hidden="true">' + escHtml(t.hint) + '</span>'
         + '</button>';
     }).join('') + '</div>';
     bindUnitNavStrip();
@@ -1402,6 +1408,7 @@ function showDelayedLoadBanner() {
   }
 }
 function dismissLoading() {
+  document.body.style.overflow = '';
   if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
   else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
 }

@@ -46,17 +46,27 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
 .alpha-list{columns:2;gap:24px;font-size:12px}
 .alpha-list li{break-inside:avoid;margin-bottom:8px;color:var(--text-2)}
 .alpha-list b{color:var(--text)}
+.alpha-list a{color:var(--purple-3);text-decoration:none}
+.alpha-list a:hover{text-decoration:underline}
 .glossary-term.hidden{display:none}
+.gloss-convention{margin-bottom:16px;padding:20px}
+.gloss-convention__lead{font-size:13px;color:var(--text-2);line-height:1.55;margin-bottom:12px;max-width:720px}
+.gloss-convention__note{font-size:12px;color:var(--text-3);margin-top:8px}
+.gloss-convention__list{font-size:12px;color:var(--text-2);margin:12px 0 0 18px;line-height:1.6}
+.gloss-convention__list code{font-family:var(--mono);font-size:11px;color:var(--text)}
+.gloss-convention .ca-metric-legend{margin:14px 0}
+.gloss-section-block{margin-bottom:20px}
+.gloss-section-block .ca-section-head{margin-bottom:14px}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260620c">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260530g">
 <link rel="stylesheet" href="theme.css?v=20260610a">
 <link rel="stylesheet" href="chase_nav.css?v=20260529e">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_icons.js"></script>
-<script src="mlbma_assets.js?v=20260620c"></script>
+<script src="mlbma_assets.js?v=20260530g"></script>
 <script src="mlbma_ui.js" data-page="glossary.html"></script>
-<script src="glossary.js?v=20260620c"></script>
+<script src="glossary.js?v=20260530g"></script>
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body>
@@ -156,9 +166,11 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
   <p class="subtitle">All definitions, formulas, and methodology in one place.</p>
   <input type="search" class="glossary-search" id="glossarySearch" placeholder="Search glossary terms..." oninput="filterGlossary()">
 
+  <div id="glossaryConventions"></div>
+
   <div class="layer-label">How to Read the Model</div>
-  <div class="section">
-    <h2>5-step reading order</h2>
+  <div class="section glossary-term" data-term="reading order status map pals archetype">
+    <div id="glossaryReadingHead"></div>
     <div class="reading-grid">
       <div class="reading-step"><strong>1. Status map</strong>Scan quadrants for undervalued vs cooling offenses.</div>
       <div class="reading-step"><strong>2. OSI + PALS</strong>Pair composite strength with schedule-adjusted confirmation.</div>
@@ -168,23 +180,46 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
     </div>
   </div>
 
-  <div class="layer-label">Core Metric Definitions</div>
-  <div class="gloss-section ca-board" style="padding:20px;margin-bottom:16px;">
-    <div id="glossarySectionHead"></div>
-    <div class="gloss-grid" id="glossaryMetricCards"></div>
+  <div class="gloss-section-block">
+    <div id="glossaryCoreHead"></div>
+    <div class="gloss-section ca-board" style="padding:20px;">
+      <div class="gloss-grid" id="glossaryMetricCards"></div>
+    </div>
   </div>
-  <div class="layer-label" style="margin-top:8px">Quick reference cards</div>
-  <div class="metric-grid" id="metricCardsLegacy">
-    <div class="card glossary-term" data-term="abq discipline contact chase"><div class="term">ABQ</div><p>At-bat quality ù plate discipline and contact process.</p><div class="hi">High: patient, quality contact</div><div class="lo">Low: chase-heavy, weak decisions</div><p><b>Bet use:</b> Unders on weak ABQ vs elite pitching.</p></div>
-    <div class="card glossary-term" data-term="rcv damage barrel power"><div class="term">RCV</div><p>Run creation value ù damage and scoring pressure.</p><div class="hi">High: barrels, ISO, wRC+</div><div class="lo">Low: limited hard contact</div><p><b>Bet use:</b> Overs when RCV leads process gaps.</p></div>
-    <div class="card glossary-term" data-term="obr on base xwoba walks"><div class="term">OBR</div><p>On-base rating ù floor from xwOBA and walks.</p><div class="hi">High: traffic, table-setters</div><div class="lo">Low: thin on-base paths</div><p><b>Bet use:</b> Team totals when OBR pairs with soft K% arms.</p></div>
-    <div class="card glossary-term" data-term="osi offensive strength composite"><div class="term">OSI</div><p>Offensive strength index ù headline composite (RCV+ABQ+OBR).</p><div class="hi">High: elite offense</div><div class="lo">Low: weak unit</div><p><b>Bet use:</b> Primary team offensive ranking.</p></div>
-    <div class="card glossary-term" data-term="projosi projected regression"><div class="term">projOSI</div><p>OSI adjusted for xwOBA vs wOBA regression.</p><div class="hi">Above OSI: buy-low lean</div><div class="lo">Below OSI: fade lean</div><p><b>Bet use:</b> Market mispricing signal.</p></div>
-    <div class="card glossary-term" data-term="pals pitching adjusted"><div class="term">PALS</div><p>Lineup strength adjusted for SP quality faced.</p><div class="hi">High: production vs tough SPs</div><div class="lo">Low: weak schedule context</div><p><b>Bet use:</b> Confirm OSI with schedule truth.</p></div>
-    <div class="card glossary-term" data-term="oor opponent hvr hvl"><div class="term">OOR</div><p>Opponent offensive rating ù split strength vs RHP/LHP.</p><div class="hi">High: dangerous opposing lineups</div><div class="lo">Low: soft opposing offenses</div><p><b>Bet use:</b> Pitcher matchup environment.</p></div>
-    <div class="card glossary-term" data-term="pp gap process production"><div class="term">PP-Gap</div><p>ABQ minus RCV. Positive = process ahead of results.</p><div class="hi">+4 or more: buy-low</div><div class="lo">-4 or less: regression risk</div><p><b>Bet use:</b> Convergence signal weight x2.</p></div>
-    <div class="card glossary-term" data-term="df gap damage floor"><div class="term">Power-Floor Gap</div><p>RCV minus OBR ù power vs floor split.</p><div class="hi">+8: boom-or-bust slug</div><div class="lo">Negative: OBP-first</div><p><b>Bet use:</b> Volatility on run lines.</p></div>
-    <div class="card glossary-term" data-term="pitching score k bb hr9"><div class="term">Pitching Score</div><p>SP/bullpen quality from K%, BB%, HR/9 blend.</p><div class="hi">85+: Ace tier</div><div class="lo">Below 55: volatile</div><p><b>Bet use:</b> OSI vs Pitching Score signal.</p></div>
+
+  <div class="gloss-section-block">
+    <div id="glossarySurfaceHead"></div>
+    <div class="gloss-section ca-board" style="padding:20px;">
+      <div class="gloss-grid" id="glossarySurfaceCards"></div>
+    </div>
+  </div>
+
+  <div class="gloss-section-block">
+    <div id="glossarySpHead"></div>
+    <div class="gloss-section ca-board" style="padding:20px;">
+      <div class="gloss-grid" id="glossarySpCards"></div>
+    </div>
+  </div>
+
+  <div class="gloss-section-block">
+    <div id="glossaryBpHead"></div>
+    <div class="gloss-section ca-board" style="padding:20px;">
+      <div class="gloss-grid" id="glossaryBpCards"></div>
+    </div>
+  </div>
+
+  <div class="gloss-section-block">
+    <div id="glossaryTrendHead"></div>
+    <div class="gloss-section ca-board" style="padding:20px;">
+      <div class="gloss-grid" id="glossaryTrendCards"></div>
+    </div>
+  </div>
+
+  <div class="gloss-section-block">
+    <div id="glossaryFlagsHead"></div>
+    <div class="gloss-section ca-board" style="padding:20px;">
+      <div class="gloss-grid" id="glossaryFlagsCards"></div>
+    </div>
   </div>
 
   <div class="layer-label">Numerical Interpretation</div>
@@ -246,29 +281,48 @@ h1{font-size:26px;font-weight:600;margin:8px 0 6px;font-family:var(--font-displa
   <div class="layer-label">Searchable Glossary (AùZ)</div>
   <div class="section">
     <ul class="alpha-list" id="alphaGlossary">
-      <li><b>ABQ</b> ù At-bat quality composite</li>
+      <li><b><a href="#abq">ABQ</a></b> ù At-bat quality composite</li>
+      <li><b><a href="#blown-save-pct">Blown Save%</a></b> ù Failed save opportunities</li>
+      <li><b><a href="#bb-pct">BB%</a></b> ù Walk rate (inverted on pitcher tables)</li>
+      <li><b><a href="#flag-elite-stuff">Elite Stuff</a></b> ù Pitcher Intelligence flag</li>
+      <li><b><a href="#era">ERA</a></b> ù Earned run average (inverted)</li>
+      <li><b><a href="#f5-win-pct">F5 Win%</a></b> ù Lead after five innings rate</li>
+      <li><b><a href="#fip">FIP</a></b> ù Fielding independent pitching</li>
+      <li><b><a href="#form-windows">Form Windows</a></b> ù L30 / L14 / L7 cuts</li>
+      <li><b><a href="#hi-leverage-era">Hi-Leverage ERA</a></b> ù Bullpen high-leverage ERA</li>
+      <li><b><a href="#hr9">HR/9</a></b> ù Homers per nine (inverted)</li>
+      <li><b><a href="#k-pct">K%</a></b> ù Strikeout rate</li>
+      <li><b><a href="#delta-l7-ytd">? L7?YTD</a></b> ù Short-window form delta</li>
+      <li><b><a href="#velocity">Velocity</a></b> ù Trend slope on heat map</li>
+      <li><b><a href="#win-pct">Win%</a></b> ù Team win percentage</li>
+      <li><b><a href="#qs-pct">QS%</a></b> ù Quality start rate (6+ IP, ?3 ER)</li>
+      <li><b><a href="#qs-against-pct">QS% Allowed</a></b> ù Opponent quality starts (inverted)</li>
+      <li><b><a href="#sp-win-pct">SP Win%</a></b> ù Wins credited to starters</li>
+      <li><b><a href="#rp-win-pct">RP Win%</a></b> ù Wins credited to relievers</li>
+      <li><b><a href="#save-pct">Save%</a></b> ù Save conversion rate</li>
+      <li><b><a href="#flag-regression">Regression Risk</a></b> ù FIP vs ERA flag</li>
+      <li><b><a href="#sustainability">Sustainability</a></b> ù Team Profile form verdict</li>
+      <li><b><a href="#flag-vulnerable">Vulnerable</a></b> ù Pretty ERA / weak underlying flag</li>
       <li><b>Archetype</b> ù RCV/OBR tier label (9 types)</li>
       <li><b>Barrel%</b> ù Barreled ball rate</li>
       <li><b>Chase%</b> ù O-swing rate</li>
       <li><b>Convergence</b> ù Weighted fired-signal count</li>
-      <li><b>Power-Floor Gap</b> ù RCV minus OBR</li>
-      <li><b>FIP</b> ù Fielding-independent pitching</li>
-      <li><b>HvL / HvR</b> ù Offense vs LHP/RHP</li>
-      <li><b>ISO</b> ù Isolated power</li>
-      <li><b>OBR</b> ù On-base rating</li>
-      <li><b>OOR</b> ù Opponent offensive rating</li>
-      <li><b>OSI</b> ù Offensive strength index</li>
-      <li><b>PALS</b> ù Pitching-adjusted lineup score</li>
+      <li><b><a href="#power-floor-gap">Power-Floor Gap</a></b> ù RCV minus OBR</li>
+      <li><b><a href="#obr">OBR</a></b> ù On-base rating</li>
+      <li><b><a href="#oor">OOR</a></b> ù Pitcher / bullpen opponent rating</li>
+      <li><b><a href="#osi">OSI</a></b> ù Offensive strength index</li>
+      <li><b><a href="#pals">PALS</a></b> ù Pitching-adjusted lineup score</li>
       <li><b>Park factor</b> ù Home run environment adjustment</li>
-      <li><b>Pitching Score</b> ù Staff K/BB/HR blend</li>
-      <li><b>PP-Gap</b> ù ABQ minus RCV</li>
-      <li><b>projOSI</b> ù Regression-adjusted OSI</li>
-      <li><b>RCV</b> ù Run creation value</li>
+      <li><b><a href="#pitching-score">Pitching Score</a></b> ù Staff K/BB/HR blend</li>
+      <li><b><a href="#pp-gap">PP-Gap</a></b> ù ABQ minus RCV</li>
+      <li><b><a href="#projosi">projOSI</a></b> ù Regression-adjusted OSI</li>
+      <li><b><a href="#rcv">RCV</a></b> ù Run creation value</li>
       <li><b>Regression signal</b> ù xwOBA vs wOBA direction</li>
       <li><b>SwStr%</b> ù Whiff rate</li>
-      <li><b>Trend</b> ù YTD vs recent window direction</li>
-      <li><b>wRC+</b> ù Weighted runs created plus</li>
-      <li><b>xwOBA</b> ù Expected weighted on-base</li>
+      <li><b>Trend</b> ù Rising / Stable / Cooling label</li>
+      <li><b><a href="#wrc-plus">wRC+</a></b> ù Weighted runs created plus</li>
+      <li><b><a href="#woba">wOBA</a></b> ù Weighted on-base average</li>
+      <li><b><a href="#xwoba">xwOBA</a></b> ù Expected weighted on-base</li>
       <li><b>ZCon%</b> ù Zone contact rate</li>
     </ul>
   <script>
@@ -283,8 +337,16 @@ function filterGlossary() {
   });
 }
 document.addEventListener('DOMContentLoaded', function() {
+  var readHead = document.getElementById('glossaryReadingHead');
+  if (readHead && window.MLBMAAssets && MLBMAAssets.caSectionHeadHtml) {
+    readHead.innerHTML = MLBMAAssets.caSectionHeadHtml('target', 'Workflow', '5-Step Reading Order', 'How to scan the model before placing a bet.');
+  }
   if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
   else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
+  if (window.location.hash) {
+    var el = document.getElementById(window.location.hash.replace(/^#/, ''));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 });
 </script>
   <script src="chase_nav.js"></script>

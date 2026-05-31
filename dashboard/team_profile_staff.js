@@ -385,7 +385,8 @@
       });
     }
     rosterBody += '</tbody>' + ctx.profileTableClose();
-    return sectionCard(ctx, 'Qualified Batters (50+ PA)', 'Season-long batter metrics with platoon splits', rosterBody);
+    return sectionCard(ctx, 'Qualified Batters (50+ PA)', 'Season-long batter metrics with platoon splits', rosterBody, null,
+      { icon: 'users', kicker: 'Roster' });
   }
 
   function renderAll(prof, team, ctx) {
@@ -401,7 +402,12 @@
       html += renderBullpen(prof, team, ctx);
       html += '<section class="ca-card tp-section tp-bp-usage-section">'
         + (A && A.sectionHeaderHtml
-          ? A.sectionHeaderHtml({ title: 'Bullpen Usage · L7', subtitle: 'Live MLB API pitch matrix' })
+          ? A.sectionHeaderHtml({
+            title: 'Bullpen Usage · L7',
+            subtitle: 'Live MLB API pitch matrix',
+            icon: 'bar-chart-3',
+            kicker: 'Usage'
+          })
           : '<header class="ca-section-header"><h2 class="ca-section-title">Bullpen Usage · L7</h2>'
             + '<p class="ca-helper">Live MLB API pitch matrix</p></header>')
         + '<div id="tpBpUsageMount" class="tp-bp-usage-mount" data-team="' + esc(team) + '">'

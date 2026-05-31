@@ -298,7 +298,7 @@
           : woba != null && woba >= 0.330
             ? 'Contact profile supports a productive run environment on wOBA alone.'
             : 'Middle-of-the-pack run environment — totals lean neutral without a clear RCV edge.';
-      cards.push({ title: 'Totals lean', body: env });
+      cards.push({ title: 'Totals lean', icon: 'chart-line', body: env });
     }
 
     if (k != null || m.osiR != null || m.osiL != null) {
@@ -314,7 +314,7 @@
       if (rcvDiff != null && Math.abs(rcvDiff) >= 4) {
         risk += ' Platoon split adds handedness risk — weaker side is more fade-friendly.';
       }
-      cards.push({ title: 'Matchup risk', body: risk });
+      cards.push({ title: 'Matchup risk', icon: 'crosshair', body: risk });
     }
 
     var fade = [];
@@ -325,6 +325,7 @@
     if (fade.length) {
       cards.push({
         title: 'Fade conditions',
+        icon: 'alert-triangle',
         body: 'Offense is most vulnerable ' + fade.join(', ') + ' — research context only, not a wager recommendation.'
       });
     }
@@ -332,6 +333,7 @@
     if (!cards.length) {
       cards.push({
         title: 'Research note',
+        icon: 'lightbulb',
         body: 'Insufficient grade/rate data for automated takeaways — expand split/window filters or refresh Team_Profiles.'
       });
     }
@@ -374,15 +376,23 @@
     return sectionWrap('Sustainability Check', 'wOBA vs expected contact quality (xwOBA)', body, 'activity');
   }
 
+  function takeawayCardHtml(c) {
+    var I = global.MLBMAIcons;
+    var iconKey = c.icon || 'lightbulb';
+    var iconHtml = (I && I.iconCircleHtml) ? I.iconCircleHtml(iconKey, true) : '';
+    return '<article class="tp-intel-takeaway ca-card">'
+      + '<div class="tp-intel-takeaway__head">'
+      + (iconHtml ? '<span class="tp-intel-takeaway__icon">' + iconHtml + '</span>' : '')
+      + '<h3 class="tp-intel-takeaway__title">' + esc(c.title) + '</h3>'
+      + '</div>'
+      + '<p class="tp-intel-takeaway__body">' + esc(c.body) + '</p>'
+      + '</article>';
+  }
+
   function renderResearchTakeaways(m, prof, ctx) {
     var rates = Mini && Mini.resolveOffenseRates ? Mini.resolveOffenseRates(prof, ctx) : {};
     var cards = researchTakeaways(m, rates, ctx);
-    var grid = '<div class="tp-intel-takeaways">' + cards.map(function(c) {
-      return '<article class="tp-intel-takeaway ca-card">'
-        + '<h3 class="tp-intel-takeaway__title">' + esc(c.title) + '</h3>'
-        + '<p class="tp-intel-takeaway__body">' + esc(c.body) + '</p>'
-        + '</article>';
-    }).join('') + '</div>';
+    var grid = '<div class="tp-intel-takeaways">' + cards.map(takeawayCardHtml).join('') + '</div>';
     return sectionWrap('Research Takeaways', 'Metric translation for research — not betting picks', grid, 'lightbulb');
   }
 
@@ -420,12 +430,7 @@
 
   function staffTakeawaysGrid(cards, subtitle) {
     if (!cards || !cards.length) return '';
-    var grid = '<div class="tp-intel-takeaways">' + cards.map(function(c) {
-      return '<article class="tp-intel-takeaway ca-card">'
-        + '<h3 class="tp-intel-takeaway__title">' + esc(c.title) + '</h3>'
-        + '<p class="tp-intel-takeaway__body">' + esc(c.body) + '</p>'
-        + '</article>';
-    }).join('') + '</div>';
+    var grid = '<div class="tp-intel-takeaways">' + cards.map(takeawayCardHtml).join('') + '</div>';
     return sectionWrap('Staff Takeaways', subtitle || 'Research context — not betting picks', grid, 'clipboard-list');
   }
 
@@ -575,6 +580,7 @@
     if (pack.avgPs != null) {
       cards.push({
         title: 'Run prevention lean',
+        icon: 'target',
         body: pack.avgPs >= 68
           ? 'Staff Pitch Score supports limiting runs — lean under-friendly when this rotation is on the mound.'
           : pack.avgPs < 55
@@ -586,6 +592,7 @@
       var kbb = pack.kPct - pack.bbPct;
       cards.push({
         title: 'Matchup risk',
+        icon: 'zap',
         body: kbb >= 14
           ? 'High K−BB rotation — contact-heavy offenses are the main fade spot; swing-and-miss lineups are tougher.'
           : kbb <= 8
@@ -596,6 +603,7 @@
     if (pack.top && pack.bottom && pack.top.ps - pack.bottom.ps >= 15) {
       cards.push({
         title: 'Depth gap',
+        icon: 'layers',
         body: 'Large ace-to-back-end gap — research the specific starter; staff average overstates the bottom of the rotation.'
       });
     }
@@ -706,6 +714,7 @@
     if (pack.bpScore != null || pack.era != null) {
       cards.push({
         title: 'Late-inning lean',
+        icon: 'flame',
         body: (pack.bpScore != null && pack.bpScore >= 65) || (pack.era != null && pack.era <= 3.85)
           ? 'Bullpen supports holding leads — late runs less likely when the pen is active.'
           : (pack.bpScore != null && pack.bpScore < 50) || (pack.era != null && pack.era >= 4.60)
@@ -716,12 +725,14 @@
     if (pack.hiEra != null && pack.era != null && pack.hiEra >= pack.era + 0.6) {
       cards.push({
         title: 'High-leverage risk',
+        icon: 'alert-triangle',
         body: 'Hi-leverage ERA exceeds unit ERA — closer/setup matchups deserve extra scrutiny in research.'
       });
     }
     if (pack.lhhOsi != null && pack.rhhOsi != null && Math.abs(pack.lhhOsi - pack.rhhOsi) >= 3) {
       cards.push({
         title: 'Platoon angle',
+        icon: 'git-branch',
         body: 'Handedness split on OSI Allowed is meaningful — stack research toward the softer platoon side.'
       });
     }

@@ -499,32 +499,38 @@
       + '</div>';
   }
 
+  function subsectionHeadHtml(label, iconKey) {
+    return '<div class="tp-subsection-head">'
+      + iconCircle(iconKey || 'circle-dot')
+      + '<span class="tp-subsection-head__label">' + esc(label) + '</span>'
+      + '</div>';
+  }
+
   function splitContextSummary(m, prof, ctx) {
     var platoon = platoonSplitSummary(m, ctx);
     var location = locationSplitSummary(prof, m, ctx);
     if (!platoon && !location) return '';
-    var platoonInner = platoon ? platoon.replace(/<div class="tp-platoon-summary-head">[^<]*<\/div>/, '') : '';
-    var locationInner = location ? location.replace(/<div class="tp-platoon-summary-head">[^<]*<\/div>/, '') : '';
     return '<div class="tp-split-context">'
-      + (platoonInner ? platoonInner.replace('tp-platoon-summary', 'tp-platoon-summary tp-split-context__platoon') : '')
-      + (locationInner ? locationInner.replace('tp-location-summary', 'tp-location-summary tp-split-context__location') : '')
+      + (platoon ? platoon.replace('tp-platoon-summary', 'tp-platoon-summary tp-split-context__platoon') : '')
+      + (location ? location.replace('tp-location-summary', 'tp-location-summary tp-split-context__location') : '')
       + '</div>';
   }
 
   function renderSummaryPanel(prof, team, m, ctx) {
-    var filterNote = esc((ctx.splitLabel || ctx.split || 'both') + ' · ' + (ctx.windowLabel || ctx.window || 'YTD'));
+    var filterNote = (ctx.splitLabel || ctx.split || 'both') + ' · ' + (ctx.windowLabel || ctx.window || 'YTD');
     var splitNotes = splitContextSummary(m, prof, ctx);
     var splitVerdictExtra = '';
     if (global.TeamProfileIntel && TeamProfileIntel.renderSplitVerdictHtml
         && (ctx.split === 'both' || ctx.split === 'home' || ctx.split === 'away' || ctx.split === 'f5' || !ctx.split)) {
       splitVerdictExtra = TeamProfileIntel.renderSplitVerdictHtml(m);
     }
+    var trendHead = (A && A.caSectionHeadHtml)
+      ? A.caSectionHeadHtml('trending-up', 'Trend', 'Rolling Trend', filterNote)
+      : '<h2 class="ca-section-title">Rolling Trend</h2>'
+        + '<p class="ca-helper tp-summary-filter" title="Active split and time window">' + esc(filterNote) + '</p>';
 
     return '<div class="tp-summary-panel">'
-      + '<header class="ca-section-header tp-summary-head">'
-      + '<h2 class="ca-section-title">Rolling Trend</h2>'
-      + '<p class="ca-helper tp-summary-filter" title="Active split and time window">' + filterNote + '</p>'
-      + '</header>'
+      + '<header class="ca-section-header tp-summary-head">' + trendHead + '</header>'
       + (splitNotes ? splitNotes : '')
       + splitVerdictExtra
       + renderTrendChartPanel(m, ctx)
@@ -621,7 +627,7 @@
     if (!details.length) return '';
 
     return '<div class="tp-platoon-summary">'
-      + '<div class="tp-platoon-summary-head">Platoon Report</div>'
+      + '<div class="tp-platoon-summary-head">' + subsectionHeadHtml('Platoon Report', 'git-branch') + '</div>'
       + (details.length ? '<p class="tp-platoon-summary-detail">' + details.join(' · ') + '</p>' : '')
       + '</div>';
   }
@@ -695,7 +701,7 @@
     if (!lead && !details.length) return '';
 
     return '<div class="tp-platoon-summary tp-location-summary">'
-      + '<div class="tp-platoon-summary-head">Location Report</div>'
+      + '<div class="tp-platoon-summary-head">' + subsectionHeadHtml('Location Report', 'stadium') + '</div>'
       + (lead ? '<p class="tp-platoon-summary-lead">' + lead + '</p>' : '')
       + (details.length ? '<p class="tp-platoon-summary-detail">' + details.join(' · ') + '</p>' : '')
       + '</div>';

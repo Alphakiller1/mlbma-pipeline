@@ -105,11 +105,18 @@
       + '</div>';
   }
 
-  function metricTileGroup(title, hint, slots, layout) {
+  function metricTileGroup(title, hint, slots, layout, iconKey) {
+    var I = (typeof window !== 'undefined' && window.MLBMAIcons) ? window.MLBMAIcons : null;
+    var iconHtml = (I && I.iconCircleHtml && iconKey)
+      ? I.iconCircleHtml(iconKey, true)
+      : '';
     return '<div class="tp-metric-group">'
       + '<div class="tp-metric-group__head">'
+      + (iconHtml ? '<div class="tp-metric-group__icon">' + iconHtml + '</div>' : '')
+      + '<div class="tp-metric-group__copy">'
       + '<h3 class="tp-metric-group__title">' + esc(title) + '</h3>'
       + (hint ? '<p class="tp-metric-group__hint">' + esc(hint) + '</p>' : '')
+      + '</div>'
       + '</div>'
       + metricTileGrid(slots, layout || 'auto')
       + '</div>';
@@ -201,7 +208,9 @@
       ['HardHit%', rates.hard, 'rcv', false, 1]
     ];
 
-    var body = metricTileGrid(caGrades.concat(runPower).concat(plateSkills), 'auto');
+    var body = metricTileGroup('Chase Analytics Grades', 'Process and projection pillars', caGrades, 'auto', 'layers')
+      + metricTileGroup('Run Production', 'Rate stats and counting production', runPower, 'auto', 'chart-line')
+      + metricTileGroup('Plate Skills', 'Discipline, contact quality, and power indicators', plateSkills, 'auto', 'bats');
 
     return sectionCard('Offense Profile', filterNote, body, { icon: 'layers', kicker: 'Lineup unit' });
   }
