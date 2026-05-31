@@ -289,7 +289,7 @@ function registryPlayerId(name, team) {
   return pid != null && String(pid).trim() !== '' ? String(pid).trim() : null;
 }
 
-function batterLineupAvatar(name, team, profileName) {
+function batterLineupAvatar(name, team, profileName, eager) {
   var A = window.MLBMAAssets;
   if (!A || !A.pitcherAvatar) return '';
   var pid = registryPlayerId(name, team);
@@ -298,12 +298,13 @@ function batterLineupAvatar(name, team, profileName) {
     size: 32,
     crop: 'matchup',
     className: 'tp-batter-avatar',
-    lazy: true
+    eager: !!eager,
+    lazy: !eager
   });
 }
 
-function batterPlayerCellHtml(displayName, profileName, team) {
-  var avatar = batterLineupAvatar(displayName, team, profileName);
+function batterPlayerCellHtml(displayName, profileName, team, eager) {
+  var avatar = batterLineupAvatar(displayName, team, profileName, eager);
   var href = 'batter_profile.html?player=' + encodePlayer(profileName);
   return '<div class="tp-batter-player-cell">'
     + avatar
@@ -664,7 +665,7 @@ function buildProjectedLineupTableHtml(team, ctx) {
   }
   var body = profileTableOpen()
     + '<thead><tr><th>#</th><th>Pos</th><th>Player</th><th>B</th><th>OPS</th><th>OBP</th><th>ISO</th><th>wOBA</th><th></th></tr></thead><tbody>';
-  slots.forEach(function(slot) {
+  slots.forEach(function(slot, idx) {
     var pname = pickCol(slot, ['Player', 'player']);
     var profileName = resolvePlayerFullName(pname, team);
     var order = pickCol(slot, ['Bat_Order', 'Bat Order', 'bat_order']);
@@ -673,7 +674,7 @@ function buildProjectedLineupTableHtml(team, ctx) {
     var m = batterMetricsForLineup(pname, team, split, spHand);
     body += '<tr><td class="num">' + escHtml(order || '?') + '</td>'
       + '<td>' + escHtml(pos || '?') + '</td>'
-      + '<td>' + batterPlayerCellHtml(pname, profileName, team) + '</td>'
+      + '<td>' + batterPlayerCellHtml(pname, profileName, team, idx < 3) + '</td>'
       + '<td>' + escHtml(bats || '?') + '</td>'
       + '<td class="num">' + rateStatCell(m.ops) + '</td>'
       + '<td class="num">' + rateStatCell(m.obp) + '</td>'
@@ -723,8 +724,8 @@ function buildQualifiedBattersTableHtml(team, ctx) {
   if (!rosterList.length) {
     body += '<tr><td colspan="9" class="tp-empty">No qualified batters (run batter profile pipeline)</td></tr>';
   } else {
-    rosterList.forEach(function(b) {
-      body += '<tr><td>' + batterPlayerCellHtml(b.name, b.name, team) + '</td>'
+    rosterList.forEach(function(b, idx) {
+      body += '<tr><td>' + batterPlayerCellHtml(b.name, b.name, team, idx < 3) + '</td>'
         + '<td>' + escHtml(b.pos || '—') + '</td><td>' + escHtml(b.bats || '—') + '</td>'
         + '<td class="num">' + rateStatCell(b.ops) + '</td>'
         + '<td class="num">' + rateStatCell(b.obp) + '</td>'
@@ -1636,6 +1637,9 @@ function loadAll() {
     DATA.spMetricSplits = res[20] || [];
     DATA.bullpenUnit = res[21] || [];
     buildBatterRatePool();
+    if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
+      MLBMAAssets.parseRegistryRows(DATA.registry);
+    }
     if (window.MLBMASharedMatchup && MLBMASharedMatchup.parsePalsRows) {
       DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[19] || []);
     }
