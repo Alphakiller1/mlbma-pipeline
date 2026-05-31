@@ -1,0 +1,52 @@
+---
+description: MLBMA dashboard & website design contract — tokens, density, structure lock (read design/MLBMA_CURSOR_DESIGN_CONTRACT.md)
+globs: dashboard/**,design/**,docs/**/*SPEC*.md
+alwaysApply: true
+---
+
+# MLBMA Design Contract
+
+**Full source of truth:** [design/MLBMA_CURSOR_DESIGN_CONTRACT.md](../../design/MLBMA_CURSOR_DESIGN_CONTRACT.md)
+
+Before any dashboard or website UI work, read that file and adapt to the **existing** codebase — do not invent a parallel design system.
+
+## North star
+
+Premium baseball matchup command center: dense, editorial, credible, fast. Violet accent + dark boards. **Green=elite → red=poor** on all metric chips via existing helpers.
+
+## Project anchors (use these, do not reinvent)
+
+| Layer | Files |
+|-------|--------|
+| Design system | `dashboard/mlbma_design_system.css`, `dashboard/theme.css`, `dashboard/mlbma_ui.css` |
+| Shared helpers | `dashboard/mlbma_assets.js` — `valChipHtml`, `metricColor`, `sectionHeaderHtml`, `caSectionHeadHtml` |
+| Gold-standard UI | Team Rankings (`lineup_view.js`, `.lv-bar`, `.lv-family`), Opening Dashboard (`landing_dashboard.css`, `.ca-board`, `.hub-pill.active`) |
+| Team Profile lineup | `team_profile_lineup_ui.css`, single `ca-board` sections (never `ca-board` + `ca-card` stacked) |
+| Brand (separate rule) | Logos, avatars, nav — `.cursor/rules/chase-brand-and-avatars.mdc` |
+
+## Structure lock (dashboard)
+
+**May change:** chip styling, typography, spacing/density, borders/shadows, section-header polish, class names, tokens.
+
+**Must not change** unless the user explicitly asks: section order, Lineup/SP/Bullpen tabs, DOM hierarchy, data placement, metric definitions, routing, controls, section count.
+
+If a visual idea requires moving data or re-nesting sections → **stop**; ask or scope as structural task.
+
+## Visual rules
+
+- **Tokens first** — `--bg`, `--card`, `--border`, `--v-grad`, `--c-*`; no scattered one-off hex.
+- **Typography** — Roboto Condensed (display/headers), DM Sans (UI/numbers); `font-variant-numeric: tabular-nums`.
+- **Metric chips** — solid, high-contrast; always `valChipHtml` / `metricColor`; never per-stat rainbow palettes.
+- **Filters** — platform `hub-control-bar` + `hub-pill` active gradient; no flat custom pill overrides.
+- **Density** — Rankings-level tight rhythm (~12–16px section gaps, compact boards); avoid triple-wrapped cards and oversized empty space.
+- **Data integrity** — honest empty states; no fake production stats.
+
+## Workflow (every UI pass)
+
+1. Read contract + touched owner files.
+2. State edit plan: visual vs structural; how structure lock is preserved.
+3. Scoped diff in existing files — no new CSS framework, no duplicate component trees.
+4. Verify: lint if available, browser smoke test, console clean, responsive check.
+5. Report: files changed + confirm structure lock for dashboard aesthetic work:
+
+> Confirmed: dashboard visual changes were styling/class/token changes only. No sections were moved, added, removed, merged, split, or re-nested; Lineup/SP/Bullpen tabs and data placement remain intact.
