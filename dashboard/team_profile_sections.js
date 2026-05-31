@@ -184,28 +184,6 @@
     'K%': true
   };
 
-  function offenseMetricTile(key, v, ctxKey, invert, decimals, rankMeta) {
-    rankMeta = rankMeta || {};
-    var m = metricLabel(key);
-    var glossLink = m.gloss
-      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
-      : '';
-    var rank = rankMeta.rank;
-    var total = rankMeta.total;
-    var rankHtml = rank != null
-      ? '<span class="tp-metric-tile__rank tp-metric-tile__rank--' + rankTone(rank) + '">#'
-        + esc(String(rank)) + (total ? '<span class="tp-metric-tile__rank-of">/' + esc(String(total)) + '</span>' : '')
-        + '</span>'
-      : '';
-    return '<article class="tp-metric-tile tp-metric-tile--dense" aria-label="' + esc(m.abbr) + '">'
-      + '<div class="tp-metric-tile__head">'
-      + '<span class="tp-metric-tile__abbr">' + esc(m.abbr) + glossLink + '</span>'
-      + '</div>'
-      + '<div class="tp-metric-tile__value">' + valChip(v, ctxKey, invert, decimals) + '</div>'
-      + (rankHtml ? '<div class="tp-metric-tile__foot">' + rankHtml + '</div>' : '')
-      + '</article>';
-  }
-
   function offenseStatCell(key, v, ctxKey, invert, decimals, rankMeta) {
     rankMeta = rankMeta || {};
     var m = metricLabel(key);
@@ -220,7 +198,7 @@
         + (total ? '<span class="tp-offense-stat__rank-of">/' + esc(String(total)) + '</span>' : '')
         + '</span>'
       : '';
-    return '<div class="tp-offense-stat" aria-label="' + esc(m.abbr) + '">'
+    return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(m.abbr) + '">'
       + '<span class="tp-offense-stat__label">' + esc(m.abbr) + glossLink + '</span>'
       + '<span class="tp-offense-stat__body">'
       + valChip(v, ctxKey, invert, decimals)
@@ -228,7 +206,7 @@
       + '</span></div>';
   }
 
-  function offenseStatsBand(title, hint, iconKey, slots, cache, team, layout) {
+  function offenseStatsBand(title, hint, iconKey, slots, cache, team) {
     var cells = slots.map(function(s) {
       var key = s[0];
       var field = METRIC_FIELD[key];
@@ -236,24 +214,23 @@
       var rankMeta = field && cache && team
         ? leagueRank(cache, team, field, invertRank)
         : { rank: null, total: null };
-      return offenseMetricTile(key, s[1], s[2], s[3], s[4], rankMeta);
+      return offenseStatCell(key, s[1], s[2], s[3], s[4], rankMeta);
     }).join('');
     var iconHtml = iconKey ? iconCircle(iconKey) : '';
-    return '<div class="tp-metric-band">'
-      + '<header class="tp-metric-band__head">'
-      + (iconHtml ? '<span class="tp-metric-band__icon">' + iconHtml + '</span>' : '')
-      + '<div class="tp-metric-band__copy">'
-      + '<span class="tp-metric-band__title">' + esc(title) + '</span>'
-      + (hint ? '<span class="tp-metric-band__hint">' + esc(hint) + '</span>' : '')
-      + '</div></header>'
-      + '<div class="tp-metric-tile-grid tp-metric-tile-grid--' + esc(layout || 'auto') + '">' + cells + '</div>'
+    return '<div class="tp-offense-metrics__band">'
+      + '<div class="tp-offense-metrics__band-head">'
+      + (iconHtml ? '<span class="tp-offense-metrics__band-icon">' + iconHtml + '</span>' : '')
+      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
+      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
+      + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cells + '</div>'
       + '</div>';
   }
 
   function offenseMetricsPanel(bands, cache, team) {
-    return '<div class="tp-profile-metrics">'
+    return '<div class="tp-offense-metrics tp-offense-metrics--profile">'
       + bands.map(function(b) {
-        return offenseStatsBand(b.title, b.hint, b.icon, b.slots, cache, team, b.layout);
+        return offenseStatsBand(b.title, b.hint, b.icon, b.slots, cache, team);
       }).join('')
       + '</div>';
   }
@@ -385,24 +362,9 @@
 
     var bands = [
       {
-        title: 'Chase Analytics Grades',
-        hint: 'Process & projection',
-        icon: 'layers',
-        layout: '3',
-        slots: [
-          ['OSI', m.osi, 'osi', false, 1],
-          ['RCV', m.rcv, 'rcv', false, 1],
-          ['ABQ', m.abq, 'abq', false, 1],
-          ['OBR', m.obr, 'obr', false, 1],
-          ['projOSI', m.proj, 'osi', false, 1],
-          ['PP-Gap', m.ppGap, 'ppGap', false, 1]
-        ]
-      },
-      {
         title: 'Run Production',
         hint: 'Rate & counting stats',
         icon: 'trending-up',
-        layout: '4',
         slots: [
           ['wRC+', wrc, 'wrc', false, 0],
           ['wOBA', rates.woba, 'woba', false, 3],
@@ -417,7 +379,6 @@
         title: 'Plate Skills',
         hint: 'Discipline & contact',
         icon: 'target',
-        layout: '3',
         slots: [
           ['K%', rates.k, 'pitching', true, 1],
           ['BB%', rates.bb, 'obr', false, 1],

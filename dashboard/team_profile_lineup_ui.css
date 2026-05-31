@@ -1,107 +1,255 @@
 /**
- * Team Profile — lineup sections UI pass (platform density + Rankings-style tiles)
+ * Team Profile — flat metric rows (no nested stat cards)
  */
-.team-profile-page .tp-profile-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.team-profile-page .tp-offense-metrics--profile,
+.team-profile-page .tp-offense-metrics--opponent {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
 }
 
-.team-profile-page .tp-metric-band__head {
-  display: flex;
+.team-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-metrics__band {
+  padding: 0 0 18px;
+}
+
+.team-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band:last-child,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-metrics__band:last-child {
+  padding-bottom: 0;
+}
+
+.team-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band + .tp-offense-metrics__band,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-metrics__band + .tp-offense-metrics__band {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 2px;
+}
+
+.team-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-head,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-metrics__band-head {
   align-items: center;
-  gap: 10px;
+  gap: 8px 10px;
   margin-bottom: 10px;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
-.team-profile-page .tp-metric-band__icon .ca-icon-circle {
-  width: 36px;
-  height: 36px;
+.team-profile-page .tp-offense-metrics__band-icon .ca-icon-circle {
+  width: 28px;
+  height: 28px;
 }
 
-.team-profile-page .tp-metric-band__copy {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 10px;
-  min-width: 0;
-}
-
-.team-profile-page .tp-metric-band__title {
-  font-family: var(--font-display, var(--display));
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-1, #F5F5F7);
-}
-
-.team-profile-page .tp-metric-band__hint {
-  font-size: 12px;
-  font-weight: 500;
+.team-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-hint {
   color: var(--v-light, #c4b0ff);
 }
 
-.team-profile-page .tp-metric-tile-grid {
+.team-profile-page .tp-offense-metrics__row--inline,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-metrics__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+  grid-template-columns: none;
+}
+
+.team-profile-page .tp-offense-stat--inline,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.team-profile-page .tp-offense-stat--inline:hover,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.team-profile-page .tp-offense-stat--inline .tp-offense-stat__label,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat__label {
+  min-height: 0;
+  margin-bottom: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+  white-space: nowrap;
+}
+
+.team-profile-page .tp-offense-stat--inline .tp-offense-stat__body,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat__body {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
+  min-height: 0;
+  justify-content: flex-start;
+}
+
+.team-profile-page .tp-offense-stat--inline .tp-offense-stat__body .chip,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat__body .chip {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 3px 8px;
+  min-width: 0;
+}
+
+.team-profile-page .tp-offense-stat--inline .tp-offense-stat__rank,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat__rank {
+  margin-left: 0;
+}
+
+.team-profile-page .tp-offense-stat--inline .tp-offense-stat__rank-num,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat__rank-num {
+  font-size: 11px;
+}
+
+.team-profile-page .tp-offense-stat--inline .tp-offense-stat__rank-of,
+.team-profile-page .tp-offense-metrics--opponent .tp-offense-stat__rank-of {
+  font-size: 10px;
+}
+
+/* Hero snapshot — inline strip, no stat cards */
+.team-profile-page .tp-team-banner__stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 0;
+}
+
+.team-profile-page .tp-team-banner__stats .tp-hero-stat {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px 0 0;
+  margin: 0 18px 0 0;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.team-profile-page .tp-team-banner__stats .tp-hero-stat:last-child {
+  margin-right: 0;
+  padding-right: 0;
+  border-right: none;
+}
+
+.team-profile-page .tp-team-banner__stats .tp-hero-stat__label {
+  margin-bottom: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+  white-space: nowrap;
+}
+
+.team-profile-page .tp-team-banner__stats .tp-hero-stat__value {
+  font-size: 18px;
+}
+
+.team-profile-page .tp-team-banner__stats .tp-hero-stat__value .chip {
+  font-size: 16px;
+  padding: 3px 9px;
+  min-width: 0;
+}
+
+/* Sustainability + intel chips — label/value row, no boxes */
+.team-profile-page .tp-intel-chip-row {
+  gap: 10px 22px;
+  align-items: center;
+}
+
+.team-profile-page .tp-intel-chip-item {
+  flex-direction: row;
+  align-items: center;
   gap: 8px;
 }
 
-.team-profile-page .tp-metric-tile-grid--auto {
-  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+.team-profile-page .tp-intel-chip-item .ca-metric-label {
+  margin: 0;
+  white-space: nowrap;
 }
 
-.team-profile-page .tp-metric-tile--dense {
-  min-height: 88px;
-  padding: 10px 12px 11px;
-  border-radius: 10px;
-  background: var(--surface-1, #0c0c14);
-  border: 1px solid var(--border, #26262f);
-  gap: 6px;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+/* Identity snapshot chips — flat inline, no mini-cards */
+.team-profile-page .tp-unit-snapshot-row,
+.team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  grid-template-columns: none;
+  height: auto;
 }
 
-.team-profile-page .tp-metric-tile--dense:hover {
-  border-color: color-mix(in srgb, var(--accent, #9A6BFF) 42%, var(--border));
-  transform: translateY(-1px);
-  box-shadow: 0 12px 32px -18px color-mix(in srgb, var(--accent, #9A6BFF) 45%, transparent);
+.team-profile-page .tp-unit-chip,
+.team-profile-page .tp-identity-panel .tp-unit-chip {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 
-.team-profile-page .tp-metric-tile--dense .tp-metric-tile__abbr {
-  font-size: 10.5px;
+.team-profile-page .tp-unit-chip-k {
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3, #71717A);
 }
 
-.team-profile-page .tp-metric-tile--dense .tp-metric-tile__value .chip {
-  font-size: 20px;
-  font-weight: 800;
-  padding: 4px 10px;
-  min-width: 48px;
+.team-profile-page .tp-unit-chip-v {
+  gap: 6px;
 }
 
-.team-profile-page .tp-metric-tile__foot {
-  margin-top: auto;
-  padding-top: 2px;
-}
+@media (max-width: 640px) {
+  .team-profile-page .tp-offense-metrics__row--inline,
+  .team-profile-page .tp-offense-metrics--opponent .tp-offense-metrics__row {
+    gap: 8px 14px;
+  }
 
-.team-profile-page .tp-metric-tile__rank {
-  font-family: var(--font-display, var(--display));
-  font-size: 11px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-3, #71717A);
-}
+  .team-profile-page .tp-offense-stat--inline,
+  .team-profile-page .tp-offense-metrics--opponent .tp-offense-stat {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
 
-.team-profile-page .tp-metric-tile__rank--elite { color: var(--d-elite, #3CCB7F); }
-.team-profile-page .tp-metric-tile__rank--strong { color: var(--d-good, #86D76F); }
-.team-profile-page .tp-metric-tile__rank--mid { color: var(--d-mid, #E8C24A); }
-.team-profile-page .tp-metric-tile__rank--weak { color: var(--d-poor, #F2545B); }
+  .team-profile-page .tp-team-banner__stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 
-.team-profile-page .tp-metric-tile__rank-of {
-  font-weight: 600;
-  opacity: 0.75;
+  .team-profile-page .tp-team-banner__stats .tp-hero-stat {
+    width: 100%;
+    margin: 0;
+    padding: 0 0 12px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .team-profile-page .tp-team-banner__stats .tp-hero-stat:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 }
 
 .team-profile-page .tp-split-section {
@@ -161,11 +309,17 @@
 }
 
 @media (max-width: 900px) {
-  .team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
+  .team-profile-page .tp-identity-panel__body {
     grid-template-columns: 1fr;
   }
 
-  .team-profile-page .tp-identity-panel__grid {
+  .team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
     grid-template-columns: 1fr;
   }
 }
@@ -211,8 +365,8 @@
 }
 
 .team-profile-page .tp-offense-metrics--opponent .tp-offense-stat {
-  background: var(--card-2, var(--bg-3));
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }

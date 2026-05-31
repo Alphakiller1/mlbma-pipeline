@@ -478,8 +478,11 @@
   }
 
   function renderSustainabilitySection(m, prof, ctx) {
+    m = m || {};
     var rates = Mini && Mini.resolveOffenseRates ? Mini.resolveOffenseRates(prof, ctx) : {};
     var v = sustainabilityVerdict(rates);
+    var proj = num(m.proj);
+    var ppGap = num(m.ppGap);
     var labelChip = v.label
       ? '<span class="tp-intel-verdict-label tp-intel-verdict-label--' + esc(String(v.label).toLowerCase().replace(/\s+/g, '-')) + '">'
         + esc(v.label) + '</span>'
@@ -491,6 +494,12 @@
         ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">Gap</span>'
           + '<span class="chip">' + (v.gapPts >= 0 ? '+' : '') + v.gapPts + '</span></span>'
         : '')
+      + (proj != null
+        ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">Proj OSI</span>' + valChip(proj, 'osi', false, 1) + '</span>'
+        : '')
+      + (ppGap != null
+        ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">PP-Gap</span>' + valChip(ppGap, 'ppGap', false, 1) + '</span>'
+        : '')
       + renderMarketMapPositionHtml(m, prof, ctx)
       + '</div>';
     var body = '<div class="tp-intel-sustain">'
@@ -499,7 +508,7 @@
       + '<p class="tp-intel-read">' + esc(v.sentence) + '</p>'
       + '<p class="ca-helper tp-intel-note">' + esc(v.note) + '</p>'
       + '</div>';
-    return sectionWrap('Sustainability Check', 'wOBA vs xwOBA · RCV vs regression gap market map quadrant', body, 'activity');
+    return sectionWrap('Sustainability Check', 'wOBA vs xwOBA · Proj OSI · PP-Gap · market map quadrant', body, 'activity');
   }
 
   function takeawayCardHtml(c) {
@@ -592,12 +601,12 @@
     };
     var splitLbl = splitLabels[split] || split;
     return '<div class="tp-identity-panel tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
-      + '<div class="tp-identity-panel__grid">'
-      + '<div class="tp-identity-panel__metrics">'
+      + '<div class="tp-identity-panel__head">'
       + '<p class="ca-eyebrow tp-identity-panel__eyebrow">' + esc(splitLbl) + ' view</p>'
       + '<h2 class="ca-section-title tp-lineup-identity__title">Summary Of Identity</h2>'
-      + '<div class="tp-unit-snapshot-row">' + (chipsHtml || '') + '</div>'
       + '</div>'
+      + '<div class="tp-identity-panel__body">'
+      + '<div class="tp-unit-snapshot-row tp-identity-panel__stats">' + (chipsHtml || '') + '</div>'
       + '<div class="tp-identity-panel__readout">'
       + '<span class="tp-lineup-identity__badge ' + esc(status.cls) + '">' + esc(status.label) + '</span>'
       + '<p class="tp-lineup-identity__desc">' + esc(line) + '</p>'

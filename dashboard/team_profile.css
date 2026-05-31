@@ -252,6 +252,14 @@ body.team-profile-page {
   color: var(--text-1, #F3F4F6);
 }
 
+.tp-team-banner__stats .tp-hero-stat__value .chip {
+  font-size: 22px;
+  font-weight: 800;
+  padding: 5px 12px;
+  min-width: 56px;
+  text-align: center;
+}
+
 .tp-team-banner__stats .tp-hero-stat--positive .tp-hero-stat__value,
 .tp-team-banner__stats .tp-hero-stat--elite .tp-hero-stat__value { color: var(--green, #4ADE80); }
 .tp-team-banner__stats .tp-hero-stat--negative .tp-hero-stat__value { color: var(--red-l, #F87171); }
@@ -2956,7 +2964,7 @@ body.team-profile-page {
   color: var(--text-3);
 }
 
-/* Identity panel — ca-board rhythm, compact grid */
+/* Identity panel — horizontal summary strip */
 .tp-identity-panel {
   position: relative;
   margin-bottom: 0;
@@ -2967,6 +2975,9 @@ body.team-profile-page {
   border-left-width: 1px;
   overflow: hidden;
   box-shadow: var(--e-1, none);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .tp-identity-panel::before {
@@ -2980,17 +2991,22 @@ body.team-profile-page {
   pointer-events: none;
 }
 
-.tp-identity-panel__grid {
+.tp-identity-panel__head {
+  min-width: 0;
+}
+
+.tp-identity-panel__head .tp-lineup-identity__title {
+  margin-bottom: 0;
+}
+
+.tp-identity-panel__body {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 14px 16px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 12px 14px;
   align-items: stretch;
 }
 
-.tp-identity-panel__metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.tp-identity-panel__stats {
   min-width: 0;
 }
 
@@ -2998,9 +3014,9 @@ body.team-profile-page {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 12px;
   background: var(--bg-2, #101015);
   border: 1px solid var(--border, #2A2A35);
@@ -3009,6 +3025,13 @@ body.team-profile-page {
 .tp-identity-panel .tp-unit-snapshot-row {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+  height: 100%;
+}
+
+.tp-identity-panel .tp-unit-chip {
+  padding: 8px 10px;
+  justify-content: space-between;
+  min-height: 72px;
 }
 
 .tp-identity-panel .tp-lineup-identity__title {
@@ -3016,8 +3039,9 @@ body.team-profile-page {
 }
 
 .tp-identity-panel .tp-lineup-identity__desc {
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .tp-lineup-identity__badge {
@@ -3039,11 +3063,6 @@ body.team-profile-page {
 .tp-lineup-identity__badge.tp-intel-status--volatile { color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); background: rgba(251, 191, 36, 0.08); }
 .tp-lineup-identity__badge.tp-intel-status--weak { color: #f87171; border-color: rgba(248, 113, 113, 0.35); background: rgba(248, 113, 113, 0.08); }
 .tp-lineup-identity__badge.tp-intel-status--neutral { color: var(--text-2); }
-
-.tp-identity-panel .tp-unit-snapshot-row {
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
 
 /* Stat chips — card hue reflects grade */
 .tp-unit-chip--elite {
@@ -3072,9 +3091,10 @@ body.team-profile-page {
 }
 
 @media (max-width: 900px) {
-  .tp-identity-panel__grid {
+  .tp-identity-panel__body {
     grid-template-columns: 1fr;
   }
+
   .tp-identity-panel .tp-unit-snapshot-row {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

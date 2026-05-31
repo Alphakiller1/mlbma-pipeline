@@ -65,6 +65,7 @@
     avg: { mean: 0.250, std: 0.025 },
     hr: { mean: 140, std: 45 },
     wrc: { mean: 100, std: 15 },
+    rpg: { mean: 4.45, std: 0.38 },
     default: { mean: 50, std: 12 }
   };
 

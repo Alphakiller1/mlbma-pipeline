@@ -881,11 +881,24 @@
     return 'weak';
   }
 
-  function heroStatChip(label, value, tone) {
-    if (value == null || value === '') return '';
+  function heroStatChip(label, value, tone, chipOpts) {
+    chipOpts = chipOpts || {};
+    var valueHtml = '';
+    if (chipOpts.numeric != null && !isNaN(chipOpts.numeric) && A && A.valChipHtml) {
+      valueHtml = valChip(
+        chipOpts.numeric,
+        chipOpts.context || 'osi',
+        !!chipOpts.invert,
+        chipOpts.decimals == null ? 1 : chipOpts.decimals
+      );
+    } else if (value != null && value !== '') {
+      valueHtml = value;
+    } else {
+      return '';
+    }
     return '<div class="tp-hero-stat tp-hero-stat--' + esc(tone || 'neutral') + '">'
       + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-hero-stat__value">' + value + '</span>'
+      + '<span class="tp-hero-stat__value">' + valueHtml + '</span>'
       + '</div>';
   }
 
@@ -906,7 +919,8 @@
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + heroStatChip('OSI Rank', rank ? '#' + esc(String(rank)) : null, heroRankTone(rank))
-      + heroStatChip('Runs Per Game', rpg != null && !isNaN(rpg) ? esc(Number(rpg).toFixed(2)) : null, heroRpgTone(rpg));
+      + heroStatChip('Runs Per Game', null, heroRpgTone(rpg),
+        rpg != null && !isNaN(rpg) ? { numeric: rpg, context: 'rpg', decimals: 2 } : null);
     return '<section class="tp-team-banner" style="--tp-accent:' + esc(accent) + '">'
       + '<div class="tp-team-banner__head">'
       + '<div class="tp-team-banner__copy">'
