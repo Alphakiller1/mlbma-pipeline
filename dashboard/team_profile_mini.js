@@ -794,7 +794,7 @@
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
     var accent = teamAccent(team);
-    var logo = A ? A.teamLogoImg(team, 120, 'tp-hero-logo snapshot-logo') : '';
+    var logo = A ? A.teamLogoImg(team, 148, 'tp-hero-logo snapshot-logo') : '';
     var rank = ctx.osiRank;
     var ps = ctx.avgPitchScore;
     var statRow = ''
@@ -807,9 +807,7 @@
       + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
       + (statRow ? '<div class="tp-hero-stat-row" aria-label="Team snapshot">' + statRow + '</div>' : '')
       + '</div>'
-      + '<div class="ca-profile-hero__aside">'
-      + '<div class="tp-hero-logo-wrap">' + logo + '</div>'
-      + '</div>'
+      + '<div class="ca-profile-hero__aside">' + logo + '</div>'
       + '</div>';
   }
 
