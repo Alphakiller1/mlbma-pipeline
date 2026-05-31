@@ -507,8 +507,13 @@ html.view-research #oorSection { display: none !important; }
   min-width: 48px;
   min-height: 48px;
 }
-.pl-snap-split-row {
-  flex-wrap: wrap;
+.pl-opp-foot {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+.pl-opp-row--empty td {
+  color: var(--text-3);
 }
 .pl-intel-toolbar .f5-variance-note {
   margin-top: 8px;

@@ -2412,7 +2412,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="theme.css?v=20260612b">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260612a">
-<link rel="stylesheet" href="research_lab.css?v=20260620e">
+<link rel="stylesheet" href="research_lab.css?v=20260620f">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
@@ -2445,7 +2445,7 @@ body.view-research .ca-lab { display: block; }
 <script src="lineup_view.js?v=20260618a"></script>
 <script src="trends_heatmap.js?v=20260612e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
-<script src="pitcher_lab.js?v=20260620e"></script>
+<script src="pitcher_lab.js?v=20260620f"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation ? synced via scripts/integrate_chase_nav.py -->
@@ -4353,7 +4353,8 @@ function loadResearchData() {
     fetchTabSafe(TABS.batter_splits_vs_rp, []),
     fetchTabSafe(TABS.batter_splits_home, []),
     fetchTabSafe(TABS.batter_splits_away, []),
-    fetchTabSafe(TABS.sp_metric_splits, [])
+    fetchTabSafe(TABS.sp_metric_splits, []),
+    fetchTabSafe(TABS.sp_game_log, [])
   ]).then(function(results) {
     LIVE_DATA.oor = parseOorRows(results[0]);
     LIVE_DATA.pals = parsePalsRows(results[1]);
@@ -4364,7 +4365,9 @@ function loadResearchData() {
     LIVE_DATA.batterSplitsHome = results[7] || [];
     LIVE_DATA.batterSplitsAway = results[8] || [];
     LIVE_DATA.spMetricSplits = results[9] || [];
+    LIVE_DATA.spGameLog = results[10] || [];
     console.log('[DATA] spMetricSplits loaded:', LIVE_DATA.spMetricSplits ? LIVE_DATA.spMetricSplits.length : 0, 'rows');
+    console.log('[DATA] spGameLog loaded:', LIVE_DATA.spGameLog ? LIVE_DATA.spGameLog.length : 0, 'rows');
     console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');
     console.log('[TRENDS] teamProfiles rows:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 0);
     if (LIVE_DATA.teamProfiles && LIVE_DATA.teamProfiles.length > 0) {

@@ -1,4 +1,4 @@
-// v20260620e
+// v20260620f
 /**
  * Research Lab — Pitcher Intelligence tab
  */
@@ -41,7 +41,7 @@
   };
 
   var CACHE = {
-    profiles: null, splits: null, relievers: null, relieverLog: null, oorByTeam: null,
+    profiles: null, splits: null, gameLog: null, relievers: null, relieverLog: null, oorByTeam: null,
     sortKey: 'pitchScore', sortDir: -1, selected: '',
     searchQ: '', dropdownOpen: false,
     viewMode: 'pitcher', bpTeam: '', snapSplit: 'overall',
@@ -263,6 +263,125 @@
     }).catch(function() { CACHE.profiles = []; return []; });
   }
 
+  function loadGameLog() {
+    if (CACHE.gameLog && CACHE.gameLog.length) return Promise.resolve(CACHE.gameLog);
+    if (global.LIVE_DATA && LIVE_DATA.spGameLog && LIVE_DATA.spGameLog.length) {
+      CACHE.gameLog = LIVE_DATA.spGameLog;
+      return Promise.resolve(CACHE.gameLog);
+    }
+    if (!S || !TABS || !TABS.sp_game_log) return Promise.resolve([]);
+    return S.fetchSheetTab(TABS.sp_game_log).then(function(rows) {
+      CACHE.gameLog = rows || [];
+      if (global.LIVE_DATA) LIVE_DATA.spGameLog = CACHE.gameLog;
+      return CACHE.gameLog;
+    }).catch(function() { CACHE.gameLog = []; return []; });
+  }
+
+  function splitsRows() {
+    if (CACHE.splits && CACHE.splits.length) return CACHE.splits;
+    if (global.LIVE_DATA && LIVE_DATA.spMetricSplits && LIVE_DATA.spMetricSplits.length) {
+      CACHE.splits = LIVE_DATA.spMetricSplits;
+      return CACHE.splits;
+    }
+    return [];
+  }
+
+  function gamelogRows() {
+    if (CACHE.gameLog && CACHE.gameLog.length) return CACHE.gameLog;
+    if (global.LIVE_DATA && LIVE_DATA.spGameLog && LIVE_DATA.spGameLog.length) {
+      CACHE.gameLog = LIVE_DATA.spGameLog;
+      return CACHE.gameLog;
+    }
+    return [];
+  }
+
+  function parseIp(ip) {
+    if (ip == null || ip === '') return 0;
+    var s = String(ip).trim();
+    var dot = s.indexOf('.');
+    if (dot >= 0) {
+      var whole = parseInt(s.slice(0, dot), 10) || 0;
+      var outs = parseInt(s.slice(dot + 1), 10) || 0;
+      return whole + outs / 3;
+    }
+    var n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function splitRowToStats(split) {
+    if (!split) return null;
+    return {
+      starts: numOrNull(pickCol(split, ['starts', 'Starts'])),
+      ERA: numOrNull(pickCol(split, ['ERA', 'era'])),
+      K_pct: numOrNull(pickCol(split, ['K_pct', 'K%'])),
+      OSI_allowed: numOrNull(pickCol(split, ['OSI_allowed', 'OSI Allowed']))
+    };
+  }
+
+  function aggregateGamelogTier(starts) {
+    if (!starts || !starts.length) return null;
+    var totalIp = 0;
+    var totalEr = 0;
+    var totalBf = 0;
+    var totalK = 0;
+    var osiSum = 0;
+    var osiN = 0;
+    starts.forEach(function(r) {
+      totalIp += parseIp(pickCol(r, ['IP', 'ip']));
+      totalEr += numOrNull(pickCol(r, ['ER', 'er'])) || 0;
+      var k = numOrNull(pickCol(r, ['K'])) || 0;
+      var bb = numOrNull(pickCol(r, ['BB'])) || 0;
+      var h = numOrNull(pickCol(r, ['H'])) || 0;
+      var bf = numOrNull(pickCol(r, ['batters_faced', 'batters faced', 'BF']));
+      if (bf == null || bf === 0) bf = k + bb + h;
+      totalBf += bf;
+      totalK += k;
+      var osi = numOrNull(pickCol(r, ['opponent_OSI', 'opponent OSI']));
+      if (osi != null) { osiSum += osi; osiN += 1; }
+    });
+    return {
+      starts: starts.length,
+      ERA: totalIp > 0 ? Math.round((totalEr / totalIp) * 9 * 100) / 100 : null,
+      K_pct: totalBf > 0 ? Math.round((totalK / totalBf) * 1000) / 10 : null,
+      OSI_allowed: osiN > 0 ? Math.round((osiSum / osiN) * 10) / 10 : null
+    };
+  }
+
+  function findTierSplitRow(name, tier, dimension) {
+    var key = normName(name);
+    return splitsRows().find(function(s) {
+      if (normName(pickCol(s, ['pitcher_name', 'Name', 'Pitcher'])) !== key) return false;
+      var dim = String(pickCol(s, ['split_dimension', 'splitDimension'])).toLowerCase();
+      if (dim !== dimension) return false;
+      return String(pickCol(s, ['split_value', 'splitValue'])).toLowerCase() === tier.toLowerCase();
+    }) || null;
+  }
+
+  function findOpponentTierSplit(name, tier) {
+    return findTierSplitRow(name, tier, 'abq_tier') || findTierSplitRow(name, tier, 'osi_tier');
+  }
+
+  function buildAbqTierStats(name) {
+    var tiers = ['High', 'Mid', 'Low'];
+    var key = normName(name);
+    var log = gamelogRows();
+    var pitcherStarts = log.filter(function(r) {
+      return normName(pickCol(r, ['pitcher_name', 'Name', 'Pitcher'])) === key;
+    });
+    if (pitcherStarts.length) {
+      return tiers.map(function(tier) {
+        var bucket = pitcherStarts.filter(function(r) {
+          var t = String(pickCol(r, ['opponent_ABQ_tier', 'opponent ABQ tier', 'Opponent_ABQ_tier'])).trim();
+          return t.toLowerCase() === tier.toLowerCase();
+        });
+        return { tier: tier, stats: aggregateGamelogTier(bucket), source: 'gamelog' };
+      });
+    }
+    return tiers.map(function(tier) {
+      return { tier: tier, stats: splitRowToStats(findOpponentTierSplit(name, tier)), source: 'splits' };
+    });
+  }
+
   function loadSplits() {
     if (CACHE.splits && CACHE.splits.length) return Promise.resolve(CACHE.splits);
     if (global.LIVE_DATA && LIVE_DATA.spMetricSplits && LIVE_DATA.spMetricSplits.length) {
@@ -400,13 +519,7 @@
   }
 
   function findAbqSplit(name, tier) {
-    var key = normName(name);
-    return (CACHE.splits || []).find(function(s) {
-      if (normName(pickCol(s, ['pitcher_name', 'Name'])) !== key) return false;
-      var dim = String(pickCol(s, ['split_dimension', 'splitDimension'])).toLowerCase();
-      if (dim !== 'abq_tier') return false;
-      return String(pickCol(s, ['split_value', 'splitValue'])).toLowerCase() === tier.toLowerCase();
-    }) || null;
+    return findOpponentTierSplit(name, tier);
   }
 
   function renderDropdown(items) {
@@ -444,6 +557,8 @@
     var inp = document.getElementById('plPitcherSearch');
     if (inp) inp.value = name;
     loadSplits().then(function() {
+      return loadGameLog();
+    }).then(function() {
       renderSnapshot();
       renderRankings();
     });
@@ -488,24 +603,32 @@
   }
 
   function renderOpponentTable(name) {
-    var tiers = ['High', 'Mid', 'Low'];
-    var rows = tiers.map(function(tier) {
-      var split = findAbqSplit(name, tier);
-      if (!split) {
-        return '<tr><td>' + esc(tier) + ' ABQ</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>';
+    var tierStats = buildAbqTierStats(name);
+    var totalStarts = tierStats.reduce(function(n, t) { return n + ((t.stats && t.stats.starts) || 0); }, 0);
+    var source = tierStats.some(function(t) { return t.source === 'gamelog'; }) ? 'SP_Game_Log' : 'SP_Metric_Splits';
+    var rows = tierStats.map(function(entry) {
+      var split = entry.stats;
+      if (!split || !split.starts) {
+        return '<tr class="pl-opp-row pl-opp-row--empty"><td>' + esc(entry.tier) + ' ABQ</td>'
+          + '<td class="num" title="No starts vs this opponent ABQ tier">—</td>'
+          + '<td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>';
       }
-      return '<tr><td>' + esc(tier) + ' ABQ</td>'
-        + '<td class="num">' + fmt(numOrNull(pickCol(split, ['starts'])), 0) + '</td>'
-        + '<td class="num">' + fmt(numOrNull(pickCol(split, ['ERA'])), 2) + '</td>'
-        + '<td class="num">' + fmtPct(numOrNull(pickCol(split, ['K_pct', 'K%']))) + '</td>'
-        + '<td class="num">' + metricChip(numOrNull(pickCol(split, ['OSI_allowed'])), true, 'osi', 1) + '</td></tr>';
+      return '<tr class="pl-opp-row"><td>' + esc(entry.tier) + ' ABQ</td>'
+        + '<td class="num">' + fmt(split.starts, 0) + '</td>'
+        + '<td class="num">' + fmt(split.ERA, 2) + '</td>'
+        + '<td class="num">' + fmtPct(split.K_pct) + '</td>'
+        + '<td class="num">' + metricChip(split.OSI_allowed, true, 'osi', 1) + '</td></tr>';
     }).join('');
+    var foot = totalStarts
+      ? '<p class="pl-section-sub pl-opp-foot">' + totalStarts + ' starts bucketed by opponent ABQ tier · ' + esc(source) + '</p>'
+      : '<p class="pl-section-sub pl-opp-foot">No gamelog rows for this pitcher — run SP gamelog scrape + compute_sp_splits.</p>';
     return '<div class="pl-opp-panel">'
       + '<h4 class="pl-section-title">Opponent Profile</h4>'
-      + '<p class="pl-section-sub">Performance vs High / Mid / Low ABQ lineups</p>'
+      + '<p class="pl-section-sub">Performance vs High / Mid / Low ABQ lineups (by opponent lineup ABQ tier per start)</p>'
       + '<table class="rl-table-premium pl-opp-table"><thead><tr>'
-      + '<th>Tier</th><th>Starts</th><th>ERA</th><th>K%</th><th>OSI Allowed</th>'
-      + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+      + '<th>Tier</th><th>Starts</th><th>ERA</th><th>K%</th><th>Opp OSI</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table>'
+      + foot + '</div>';
   }
 
   function renderSnapshot() {
@@ -1120,8 +1243,8 @@
     var root = document.getElementById(rootId || 'rlPitcherLabRoot');
     if (!root) return;
     root.innerHTML = '<p class="rl-loading">Loading Pitcher Intelligence…</p>';
-    Promise.all([ensureRegistry(), loadProfiles(), loadSplits(), loadRelievers(), loadRelieverLog()]).then(function(results) {
-      var rows = results[0];
+    Promise.all([ensureRegistry(), loadProfiles(), loadSplits(), loadGameLog(), loadRelievers(), loadRelieverLog()]).then(function(results) {
+      var rows = results[1] || [];
       if (!CACHE.oorByTeam && S && S.buildOorByTeam && global.LIVE_DATA && LIVE_DATA.oor) {
         CACHE.oorByTeam = S.buildOorByTeam(LIVE_DATA.oor);
       }
