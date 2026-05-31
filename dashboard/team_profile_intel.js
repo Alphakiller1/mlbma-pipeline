@@ -454,27 +454,55 @@
     };
   }
 
+  function sustainStatCell(label, valueHtml) {
+    return '<div class="tp-offense-stat tp-offense-stat--inline tp-intel-stat" aria-label="' + esc(label) + '">'
+      + '<span class="tp-offense-stat__label">' + esc(label) + '</span>'
+      + '<span class="tp-offense-stat__body">' + valueHtml + '</span>'
+      + '</div>';
+  }
+
+  function gapChipHtml(gapPts) {
+    if (gapPts == null) return '<span class="chip c-na">—</span>';
+    var display = (gapPts >= 0 ? '+' : '') + gapPts;
+    if (A && A.valChipHtml) {
+      var tone = Math.abs(gapPts) < 6 ? 'c-mid' : gapPts > 0 ? 'c-mid' : 'c-good';
+      if (Math.abs(gapPts) >= 24) tone = gapPts > 0 ? 'c-weak' : 'c-good';
+      return '<span class="chip ' + tone + '">' + esc(display) + '</span>';
+    }
+    return '<span class="chip c-mid">' + esc(display) + '</span>';
+  }
+
+  function sustainMetricsBand(title, hint, cellsHtml) {
+    if (!cellsHtml) return '';
+    return '<div class="tp-offense-metrics__band tp-intel-sustain__band">'
+      + '<div class="tp-offense-metrics__band-head">'
+      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
+      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
+      + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cellsHtml + '</div>'
+      + '</div>';
+  }
+
   function renderMarketMapPositionHtml(m, prof, ctx) {
     var pos = marketMapPosition(m, prof, ctx);
     if (!pos) {
-      return '<span class="tp-intel-chip-item tp-intel-chip-item--market">'
-        + '<span class="ca-metric-label">Market Map</span>'
-        + '<span class="chip c-na">—</span></span>';
+      return '<div class="tp-intel-sustain__map">'
+        + '<span class="tp-intel-sustain__map-label">Market map</span>'
+        + '<span class="chip c-na">—</span>'
+        + '</div>';
     }
     var rankHtml = pos.rcvRank != null
       ? '<span class="tp-intel-market-pos__rank">RCV #' + esc(String(pos.rcvRank))
         + (pos.total ? '/' + esc(String(pos.total)) : '') + '</span>'
       : '';
-    return '<span class="tp-intel-chip-item tp-intel-chip-item--market">'
-      + '<span class="ca-metric-label">Market Map</span>'
-      + '<span class="tp-intel-market-pos" style="--pos-color:' + esc(pos.color) + '">'
+    return '<div class="tp-intel-sustain__map">'
+      + '<span class="tp-intel-sustain__map-label">Market map</span>'
+      + '<span class="tp-intel-market-pos tp-intel-market-pos--compact" style="--pos-color:' + esc(pos.color) + '">'
       + '<span class="tp-intel-market-pos__dot" aria-hidden="true"></span>'
       + '<span class="tp-intel-market-pos__label">' + esc(pos.label) + '</span>'
-      + '</span>'
       + rankHtml
-      + '<span class="tp-intel-market-pos__meta">RCV ' + pos.rcv.toFixed(1)
-      + ' · Gap ' + (pos.gap >= 0 ? '+' : '') + pos.gap.toFixed(1) + '</span>'
-      + '</span>';
+      + '</span>'
+      + '</div>';
   }
 
   function renderSustainabilitySection(m, prof, ctx) {
@@ -487,28 +515,26 @@
       ? '<span class="tp-intel-verdict-label tp-intel-verdict-label--' + esc(String(v.label).toLowerCase().replace(/\s+/g, '-')) + '">'
         + esc(v.label) + '</span>'
       : '';
-    var chips = '<div class="tp-intel-chip-row">'
-      + '<span class="tp-intel-chip-item"><span class="ca-metric-label">wOBA</span>' + valChip(v.woba, 'woba', false, 3) + '</span>'
-      + '<span class="tp-intel-chip-item"><span class="ca-metric-label">xwOBA</span>' + valChip(v.xwoba, 'woba', false, 3) + '</span>'
-      + (v.gapPts != null
-        ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">Gap</span>'
-          + '<span class="chip">' + (v.gapPts >= 0 ? '+' : '') + v.gapPts + '</span></span>'
-        : '')
-      + (proj != null
-        ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">Proj OSI</span>' + valChip(proj, 'osi', false, 1) + '</span>'
-        : '')
-      + (ppGap != null
-        ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">PP-Gap</span>' + valChip(ppGap, 'ppGap', false, 1) + '</span>'
-        : '')
-      + renderMarketMapPositionHtml(m, prof, ctx)
-      + '</div>';
+    var contactCells = ''
+      + sustainStatCell('wOBA', valChip(v.woba, 'woba', false, 3))
+      + sustainStatCell('xwOBA', valChip(v.xwoba, 'woba', false, 3))
+      + (v.gapPts != null ? sustainStatCell('Gap', gapChipHtml(v.gapPts)) : '');
+    var projCells = ''
+      + (proj != null ? sustainStatCell('Proj OSI', valChip(proj, 'osi', false, 1)) : '')
+      + (ppGap != null ? sustainStatCell('PP-Gap', valChip(ppGap, 'ppGap', false, 1)) : '');
     var body = '<div class="tp-intel-sustain">'
+      + '<div class="tp-intel-sustain__lead">'
       + labelChip
-      + chips
-      + '<p class="tp-intel-read">' + esc(v.sentence) + '</p>'
+      + '<p class="tp-intel-read tp-intel-read--lead">' + esc(v.sentence) + '</p>'
+      + '</div>'
+      + '<div class="tp-offense-metrics tp-offense-metrics--profile tp-intel-sustain__board">'
+      + sustainMetricsBand('Contact vs expected', 'wOBA − xwOBA sustainability', contactCells)
+      + sustainMetricsBand('Process vs production', 'Regression-adjusted projection', projCells)
+      + '</div>'
+      + renderMarketMapPositionHtml(m, prof, ctx)
       + '<p class="ca-helper tp-intel-note">' + esc(v.note) + '</p>'
       + '</div>';
-    return sectionWrap('Sustainability Check', 'wOBA vs xwOBA · Proj OSI · PP-Gap · market map quadrant', body, 'activity');
+    return sectionWrap('Sustainability Check', 'Contact quality · projection · market map quadrant', body, 'activity');
   }
 
   function takeawayCardHtml(c) {
@@ -571,8 +597,7 @@
     ]);
   }
 
-  function renderLineupAnalystOneLiner(m, rates, ctx) {
-    var PS = global.ProfileShell;
+  function lineupAnalystTakeText(m, rates, ctx) {
     m = m || {};
     rates = rates || {};
     ctx = ctx || {};
@@ -580,19 +605,33 @@
     var identity = cleanText(offenseIdentityLine(m, rates, ctx));
     if (identity) parts.push(identity);
     var form = cleanText(formRead(m, ctx));
-    if (form && form.indexOf('baseline') < 0) parts.push(form.split('\u2014')[0].trim());
+    if (form && form.indexOf('baseline') < 0) {
+      var formLead = form.split('\u2014')[0].trim();
+      if (formLead) parts.push(formLead);
+    }
     var sv = cleanText(splitVerdict(m));
     if (sv && sv.indexOf('unavailable') < 0 && sv.indexOf('balanced') < 0) {
       parts.push(sv.split('.')[0] + '.');
     }
-    var line = parts.slice(0, 2).join(' ');
+    return parts.slice(0, 2).join(' ');
+  }
+
+  function renderLineupAnalystTakeHtml(m, rates, ctx) {
+    var PS = global.ProfileShell;
+    var line = lineupAnalystTakeText(m, rates, ctx);
     if (PS) return PS.analystTakeLine(line || null);
-    return line ? '<div class="profile-analyst-take"><p class="profile-analyst-take__text">' + esc(line) + '</p></div>' : '';
+    return line
+      ? '<div class="profile-analyst-take"><div class="profile-analyst-take__label">Analyst Take</div>'
+        + '<p class="profile-analyst-take__text">' + esc(line) + '</p></div>'
+      : '';
+  }
+
+  function renderLineupAnalystOneLiner(m, rates, ctx) {
+    return renderLineupAnalystTakeHtml(m, rates, ctx);
   }
 
   function renderLineupIdentityPanel(m, rates, ctx, chipsHtml, filterHtml) {
     var status = offenseStatusLabel(m, rates);
-    var line = offenseIdentityLine(m, rates, ctx);
     var tierKey = String(status.cls || '').replace('tp-intel-status--', '') || 'neutral';
     var split = (ctx && ctx.split) ? ctx.split : 'both';
     var splitLabels = {
@@ -600,6 +639,7 @@
       f5: 'First 5', sp: 'vs SP', rp: 'vs RP'
     };
     var splitLbl = splitLabels[split] || split;
+    var analystTake = renderLineupAnalystTakeHtml(m, rates, ctx);
     return '<div class="tp-identity-panel tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
       + '<div class="tp-identity-panel__head">'
       + '<p class="ca-eyebrow tp-identity-panel__eyebrow">' + esc(splitLbl) + ' view</p>'
@@ -609,7 +649,7 @@
       + '<div class="tp-unit-snapshot-row tp-identity-panel__stats">' + (chipsHtml || '') + '</div>'
       + '<div class="tp-identity-panel__readout">'
       + '<span class="tp-lineup-identity__badge ' + esc(status.cls) + '">' + esc(status.label) + '</span>'
-      + '<p class="tp-lineup-identity__desc">' + esc(line) + '</p>'
+      + (analystTake ? '<div class="tp-identity-panel__analyst">' + analystTake + '</div>' : '')
       + '</div>'
       + '</div></div>';
   }

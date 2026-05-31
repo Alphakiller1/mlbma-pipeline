@@ -12,8 +12,8 @@
 <link rel="stylesheet" href="theme.css?v=20260616d">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260531s">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260531u">
+<link rel="stylesheet" href="team_profile.css?v=20260531w">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260601a">
 <link rel="stylesheet" href="profile_shell.css?v=20260531p">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -24,10 +24,10 @@
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="team_profile_mini.js?v=20260531s"></script>
-<script src="team_profile_sections.js?v=20260531t"></script>
+<script src="team_profile_mini.js?v=20260531v"></script>
+<script src="team_profile_sections.js?v=20260531y"></script>
 <script src="team_profile_staff.js?v=20260617c"></script>
-<script src="team_profile_intel.js?v=20260531t"></script>
+<script src="team_profile_intel.js?v=20260531z"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
 <script src="platform_dashboard.js?v=20260531p"></script>
 <script src="profile_controls.js?v=20260617c"></script>
@@ -128,7 +128,7 @@
 
   <details class="tp-page-guide" id="tpPageGuide">
     <summary>How to read this page</summary>
-    <p class="tp-page-guide__lead">Switch <strong>Lineup · Starters · Bullpen</strong>, then use each section&rsquo;s split and window controls — offense profile, rolling trend, handedness, and staff tables filter independently.</p>
+    <p class="tp-page-guide__lead">Switch <strong>Lineup · Starters · Bullpen</strong>, then use each section&rsquo;s split and window controls — offense profile, rolling trend, and staff tables filter independently.</p>
     <p class="tp-page-guide__note">Created metrics (OSI, RCV, ABQ, OBR) are 0–100 Chase Analytics grades. <a href="glossary.html">Glossary →</a></p>
   </details>
 
@@ -1645,17 +1645,7 @@ function renderOffenseBlock(prof, name, tonight) {
   }
   sections.innerHTML = TeamProfileMini.render(prof, STATE.team, ctx);
   var takeMount = document.getElementById('tpAnalystTakeMount');
-  if (takeMount) {
-    var m = TeamProfileMini.resolveView(prof, ctx);
-    var rates = TeamProfileMini.resolveOffenseRates(prof, ctx);
-    if (window.TeamProfileIntel && TeamProfileIntel.renderLineupAnalystOneLiner) {
-      takeMount.innerHTML = TeamProfileIntel.renderLineupAnalystOneLiner(m, rates, ctx);
-    } else if (window.TeamProfileSections && TeamProfileSections.renderAnalystTake) {
-      takeMount.innerHTML = TeamProfileSections.renderAnalystTake(m, prof, ctx);
-    } else {
-      takeMount.innerHTML = '';
-    }
-  }
+  if (takeMount) takeMount.innerHTML = '';
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
     if (heroMount) MLBMAIcons.refreshIcons(heroMount);
     MLBMAIcons.refreshIcons(sections);

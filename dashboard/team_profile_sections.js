@@ -336,21 +336,77 @@
     return num(pick(pickCol ? prof : prof, keys, pickCol));
   }
 
-  function resultsForWindow(row, window) {
-    if (!row) return {};
+  function pctFromResultsRow(row, metric, window, location) {
+    if (!row) return null;
     window = window || 'YTD';
-    var sfx = window === 'L30' ? '_l30' : window === 'L14' ? '_l14' : window === 'L7' ? '_l7' : '';
-    function pct(key) {
-      var v = num(row[key]);
-      if (v == null) return null;
-      return v <= 1 ? Math.round(v * 1000) / 10 : v;
+    var winSuf = window === 'L30' ? '_l30' : window === 'L14' ? '_l14' : window === 'L7' ? '_l7' : '';
+    var locSuf = location === 'home' ? '_home' : location === 'away' ? '_away' : '';
+    var keys = [];
+    if (winSuf && locSuf) {
+      keys.push(metric + winSuf + locSuf);
+      keys.push(metric + winSuf);
+      keys.push(metric + locSuf);
+    } else if (winSuf) {
+      keys.push(metric + winSuf);
+    } else if (locSuf) {
+      keys.push(metric + locSuf);
     }
+    keys.push(metric);
+    for (var i = 0; i < keys.length; i++) {
+      var v = num(row[keys[i]]);
+      if (v == null) continue;
+      return v <= 1 ? Math.round(v * 1000) / 10 : Math.round(v * 10) / 10;
+    }
+    return null;
+  }
+
+  function surfaceWinMetrics(row, window, location) {
     return {
-      winPct: pct('win_pct' + sfx) != null ? pct('win_pct' + sfx) : pct('win_pct'),
-      f5WinPct: pct('f5_win_pct' + sfx) != null ? pct('f5_win_pct' + sfx) : pct('f5_win_pct'),
-      spWinPct: pct('sp_win_pct' + sfx) != null ? pct('sp_win_pct' + sfx) : pct('sp_win_pct'),
-      qsPct: pct('qs_pct' + sfx) != null ? pct('qs_pct' + sfx) : pct('qs_pct')
+      winPct: pctFromResultsRow(row, 'win_pct', window, location),
+      f5WinPct: pctFromResultsRow(row, 'f5_win_pct', window, location),
+      spWinPct: pctFromResultsRow(row, 'sp_win_pct', window, location),
+      qsPct: pctFromResultsRow(row, 'qs_pct', window, location)
     };
+  }
+
+  function surfaceStatCell(label, v, ctx, invert, decimals) {
+    var m = METRIC_LABELS[label] || { abbr: label, gloss: '' };
+    var glossLink = m.gloss
+      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
+      : '';
+    return '<div class="tp-surface-stat tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(m.abbr) + '">'
+      + '<span class="tp-offense-stat__label">' + esc(m.abbr) + glossLink + '</span>'
+      + '<span class="tp-offense-stat__body">' + valChip(v, ctx, invert, decimals) + '</span>'
+      + '</div>';
+  }
+
+  function surfaceWinBand(title, hint, slots) {
+    var cells = slots.map(function(s) {
+      return surfaceStatCell(s[0], s[1], s[2], s[3], s[4]);
+    }).join('');
+    if (!cells) return '';
+    return '<div class="tp-offense-metrics__band tp-surface-wins__band">'
+      + '<div class="tp-offense-metrics__band-head">'
+      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
+      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
+      + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cells + '</div>'
+      + '</div>';
+  }
+
+  function surfaceWinSlots(metrics) {
+    metrics = metrics || {};
+    var slots = [
+      ['Win%', metrics.winPct, 'osi', false, 1],
+      ['F5 Win%', metrics.f5WinPct, 'osi', false, 1],
+      ['Pitcher Win%', metrics.spWinPct, 'pitching', false, 1]
+    ];
+    if (metrics.qsPct != null) slots.push(['QS%', metrics.qsPct, 'pitching', false, 1]);
+    return slots;
+  }
+
+  function resultsForWindow(row, window) {
+    return surfaceWinMetrics(row, window || 'YTD', null);
   }
 
   function renderOffenseProfile(m, prof, ctx) {
@@ -485,22 +541,21 @@
 
   function renderSurfaceWins(resultsRow, window) {
     window = window || 'YTD';
-    var r = resultsForWindow(resultsRow, window);
+    var overall = surfaceWinMetrics(resultsRow, window, null);
+    var home = surfaceWinMetrics(resultsRow, window, 'home');
+    var away = surfaceWinMetrics(resultsRow, window, 'away');
+    var windowLabel = window === 'YTD' ? 'Season' : window;
     var body = lineupWindowBar(window)
-      + '<div class="tp-surface-wins">'
-      + chipRow([
-        metricSlot('Win%', r.winPct, 'osi', false, 1),
-        metricSlot('F5 Win%', r.f5WinPct, 'osi', false, 1),
-        metricSlot('Pitcher Win%', r.spWinPct, 'pitching', false, 1)
-      ]);
+      + '<div class="tp-surface-wins tp-offense-metrics tp-offense-metrics--profile">'
+      + surfaceWinBand('Overall', windowLabel + ' · full sample', surfaceWinSlots(overall))
+      + surfaceWinBand('Home', windowLabel + ' · home games', surfaceWinSlots(home))
+      + surfaceWinBand('Away', windowLabel + ' · road games', surfaceWinSlots(away))
+      + '</div>';
     if (A && A.f5WarningHtml) body += A.f5WarningHtml();
-    if (r.qsPct != null) {
-      body += chipRow([metricSlot('QS%', r.qsPct, 'pitching', false, 1)]);
-    } else {
+    if (overall.qsPct == null) {
       body += '<p class="ca-helper tp-phase1-inline">QS% — <span class="tp-phase1-tag">Phase 1</span> (wire game-results QS to profile)</p>';
     }
-    body += '</div>';
-    return sectionCard('Surface Wins', 'Team_Results · ' + window, body,
+    return sectionCard('Surface Wins', 'Win% · F5 · SP context · home/away splits', body,
       { icon: 'trophy', kicker: 'Results', sectionId: 'surface-wins' });
   }
 
@@ -514,21 +569,6 @@
 
   function renderMomentum(m, prof, ctx) {
     return renderRollingTrend(m, prof, ctx);
-  }
-
-  function renderHandednessSection(prof, team, ctx) {
-    if (!Mini || !Mini.platoonSplitSummary) return '';
-    var platoonCtx = Object.assign({}, ctx, { split: 'both' });
-    var m = Mini.resolveView ? Mini.resolveView(prof, platoonCtx) : {};
-    var platoon = Mini.platoonSplitSummary(m, platoonCtx);
-    var verdict = '';
-    if (global.TeamProfileIntel && TeamProfileIntel.renderSplitVerdictHtml) {
-      verdict = TeamProfileIntel.renderSplitVerdictHtml(m);
-    }
-    if (!platoon && !verdict) return '';
-    var body = '<div class="tp-split-section">' + (platoon || '') + (verdict || '') + '</div>';
-    return sectionCard('Handedness Splits', 'vs RHP · vs LHP · platoon differential', body,
-      { icon: 'split', kicker: 'Platoon', sectionId: 'handedness-splits' });
   }
 
   function renderLocationSection(prof, team, ctx) {
@@ -658,7 +698,6 @@
     var html = '';
     html += renderOffenseProfile(m, prof, ctx);
     html += renderRollingTrend(m, prof, ctx);
-    html += renderHandednessSection(prof, team, ctx);
     html += renderLocationSection(prof, team, ctx);
     html += renderScheduleContext(ctx, ctx.resultsRow, ctx.window);
     html += renderSurfaceWins(ctx.resultsRow, ctx.window);

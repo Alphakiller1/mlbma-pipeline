@@ -912,24 +912,62 @@
 
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
+    m = m || {};
     var accent = teamAccent(team);
-    var logo = A ? A.teamLogoImg(team, 96, 'tp-team-banner__logo-img snapshot-logo') : '';
+    var logo = A ? A.teamLogoImg(team, 88, 'tp-team-banner__logo-img snapshot-logo') : '';
+    var watermark = A ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
     var rank = ctx.osiRank;
     var rpg = ctx.runsPerGame;
+    var osi = num(m.osi);
+    var wrc = ctx.wrc != null ? ctx.wrc : null;
+    var rates = resolveOffenseRates(prof, ctx);
+    var status = global.TeamProfileIntel && TeamProfileIntel.offenseStatusLabel
+      ? TeamProfileIntel.offenseStatusLabel(m, rates)
+      : { label: '', cls: 'tp-intel-status--neutral' };
+
+    var contextBits = [];
+    if (ctx.splitLabel || ctx.split) contextBits.push(ctx.splitLabel || ctx.split);
+    if (ctx.windowLabel || ctx.window) contextBits.push(ctx.windowLabel || ctx.window);
+    var contextLine = contextBits.length ? contextBits.join(' · ') : '';
+
+    var badge = status.label
+      ? '<span class="tp-team-banner__badge tp-lineup-identity__badge ' + esc(status.cls) + '">'
+        + esc(status.label) + '</span>'
+      : '';
+
+    var medallion = osi != null
+      ? '<div class="tp-team-banner__medallion" aria-label="Offense Score">'
+        + '<span class="tp-team-banner__medallion-k">OSI</span>'
+        + valChip(osi, 'osi', false, 1)
+        + (rank ? '<span class="tp-team-banner__medallion-rank">League #' + esc(String(rank)) + '</span>' : '')
+        + '</div>'
+      : '';
+
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + heroStatChip('OSI Rank', rank ? '#' + esc(String(rank)) : null, heroRankTone(rank))
       + heroStatChip('Runs Per Game', null, heroRpgTone(rpg),
-        rpg != null && !isNaN(rpg) ? { numeric: rpg, context: 'rpg', decimals: 2 } : null);
-    return '<section class="tp-team-banner" style="--tp-accent:' + esc(accent) + '">'
-      + '<div class="tp-team-banner__head">'
+        rpg != null && !isNaN(rpg) ? { numeric: rpg, context: 'rpg', decimals: 2 } : null)
+      + (wrc != null && !isNaN(wrc)
+        ? heroStatChip('wRC+', null, heroRankTone(wrc >= 110 ? 5 : wrc >= 100 ? 12 : 22),
+          { numeric: wrc, context: 'wrc', decimals: 0 })
+        : '');
+
+    return '<section class="tp-team-banner tp-team-banner--hero" style="--tp-accent:' + esc(accent) + '">'
+      + '<div class="tp-team-banner__ambient" aria-hidden="true"></div>'
+      + (watermark ? '<div class="tp-team-banner__watermark" aria-hidden="true">' + watermark + '</div>' : '')
+      + '<div class="tp-team-banner__inner">'
+      + '<div class="tp-team-banner__identity">'
+      + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
       + '<div class="tp-team-banner__copy">'
       + '<p class="ca-eyebrow tp-team-banner__eyebrow">Offense Profile</p>'
       + '<h2 class="tp-team-banner__title">' + esc(ctx.teamName || team) + '</h2>'
+      + (contextLine ? '<p class="tp-team-banner__sub">' + esc(contextLine) + '</p>' : '')
+      + badge
+      + '</div></div>'
+      + medallion
       + '</div>'
-      + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
-      + '</div>'
-      + (statRow ? '<div class="tp-team-banner__stats" aria-label="Team snapshot">' + statRow + '</div>' : '')
+      + (statRow ? '<div class="tp-team-banner__stats tp-team-banner__stats--hero" aria-label="Team snapshot">' + statRow + '</div>' : '')
       + '</section>';
   }
 
