@@ -242,9 +242,9 @@
         var stale = pickCol(sp, ['stale']) === 'True' || pickCol(sp, ['stale']) === 'true';
         rotKpi += '<tr><td><a href="pitcher_profile.html?pitcher=' + ctx.encodePlayer(pname) + '">' + esc(pname) + '</a></td>';
         rotKpi += '<td><span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></td>';
-        rotKpi += '<td class="num">' + fmt(m.kPct, 1) + '</td>';
-        rotKpi += '<td class="num">' + fmt(m.bbPct, 1) + '</td>';
-        rotKpi += '<td class="num">' + fmt(m.osiAllowed, 1) + '</td>';
+        rotKpi += '<td class="num">' + valChip(ctx, m.kPct, 'pitching', false, 1) + '</td>';
+        rotKpi += '<td class="num">' + valChip(ctx, m.bbPct, 'pitching', true, 1) + '</td>';
+        rotKpi += '<td class="num">' + valChip(ctx, m.osiAllowed, 'osi', true, 1) + '</td>';
         rotKpi += '<td>' + (stale ? '⚠' : '—') + '</td></tr>';
       });
     }
