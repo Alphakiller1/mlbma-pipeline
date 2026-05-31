@@ -64,7 +64,7 @@
     'OPS': { abbr: 'OPS', gloss: 'ops' },
     'PALS': { abbr: 'PALS', gloss: 'pals' },
     'xFIP Faced': { abbr: 'xFIP Faced', gloss: 'xfip' },
-    'Pitch Score Faced': { abbr: 'Pitch Score Faced', gloss: 'pitching-score' },
+    'Pitch Score Faced': { abbr: 'Pitch Score', gloss: 'pitching-score' },
     'Strength of Schedule': { abbr: 'SOS', gloss: 'pals' },
     'Win%': { abbr: 'Win%', gloss: 'win-pct' },
     'F5 Win%': { abbr: 'F5 Win%', gloss: 'f5-win-pct' },

@@ -2216,12 +2216,15 @@ body.team-profile-page {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
   gap: 2px;
+  align-items: stretch;
 }
 
 .tp-offense-stat {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
   padding: 10px 12px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.02);
@@ -2234,10 +2237,13 @@ body.team-profile-page {
 
 .tp-offense-stat__label {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
+  min-height: 2.5em;
+  margin-bottom: 8px;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.25;
   letter-spacing: 0.02em;
   color: var(--text-2, #AEB4C6);
 }
@@ -2247,6 +2253,8 @@ body.team-profile-page {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  margin-top: auto;
+  min-height: 32px;
 }
 
 .tp-offense-stat__body .chip {
@@ -2289,6 +2297,10 @@ body.team-profile-page {
   margin-bottom: 4px;
 }
 
+.tp-offense-metrics--opponent .tp-offense-metrics__row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .tp-opponent-strength-note {
   margin: 10px 0 0;
   font-size: 12px;
@@ -2298,6 +2310,10 @@ body.team-profile-page {
 
 @media (max-width: 640px) {
   .tp-offense-metrics__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tp-offense-metrics--opponent .tp-offense-metrics__row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
