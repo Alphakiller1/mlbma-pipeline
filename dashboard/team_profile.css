@@ -1028,8 +1028,12 @@ body.team-profile-page {
   color: var(--text-1, #E5E7EB);
 }
 
-.tp-batting-section .num .tp-rate-stat {
-  display: inline-block;
+.tp-batting-section .num .chip {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
   min-width: 3.25rem;
 }
 

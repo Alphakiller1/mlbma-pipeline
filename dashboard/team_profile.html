@@ -12,11 +12,11 @@
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260601d">
+<link rel="stylesheet" href="team_profile.css?v=20260601e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
-<script src="mlbma_assets.js?v=20260620c"></script>
+<script src="mlbma_assets.js?v=20260601e"></script>
 <script src="mlbma_icons.js?v=20260620g"></script>
 <script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
@@ -155,7 +155,7 @@
   <div class="profile-staff-block" id="profileStaffSections"></div>
   <div id="profileLineupFooter" class="profile-lineup-footer"></div>
 </main>
-<!-- team-profile build: 20260601c -->
+<!-- team-profile build: 20260601d -->
 
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -280,8 +280,44 @@ function fmtSlashStat(v) {
   return s;
 }
 
-function rateStatCell(v) {
-  return '<span class="tp-rate-stat">' + escHtml(fmtSlashStat(v)) + '</span>';
+function rateStatCell(v, context) {
+  var A = window.MLBMAAssets;
+  if (v == null || v === '' || isNaN(v)) {
+    if (A && A.chipPlaceholderHtml) return A.chipPlaceholderHtml('—');
+    return '<span class="tp-rate-stat">' + escHtml('—') + '</span>';
+  }
+  var n = Number(v);
+  var display = fmtSlashStat(n);
+  if (A && A.valChipHtml) {
+    return A.valChipHtml(n, context || 'woba', false, 3, { display: display });
+  }
+  if (A && A.metricColor) {
+    var color = A.metricColor(n, context || 'woba', false);
+    return '<span class="tp-rate-stat" style="color:' + color + '">' + escHtml(display) + '</span>';
+  }
+  return '<span class="tp-rate-stat">' + escHtml(display) + '</span>';
+}
+
+function registerBatterRatePools() {
+  var A = window.MLBMAAssets;
+  if (!A || !A.registerLeaguePool) return;
+  var keys = ['ops', 'obp', 'iso', 'woba'];
+  var cols = {
+    ops: ['OPS', 'ops'],
+    obp: ['OBP', 'obp'],
+    iso: ['ISO', 'iso'],
+    woba: ['wOBA', 'woba']
+  };
+  var buckets = { ops: [], obp: [], iso: [], woba: [] };
+  (DATA.batterRatePool || []).forEach(function(row) {
+    keys.forEach(function(k) {
+      var v = num(pickCol(row, cols[k]));
+      if (v != null) buckets[k].push(v);
+    });
+  });
+  keys.forEach(function(k) {
+    if (buckets[k].length >= 20) A.registerLeaguePool(k, buckets[k]);
+  });
 }
 
 function registryPlayerId(name, team) {
@@ -678,10 +714,10 @@ function buildProjectedLineupTableHtml(team, ctx) {
       + '<td>' + escHtml(pos || '?') + '</td>'
       + '<td>' + batterPlayerCellHtml(pname, profileName, team, idx < 3) + '</td>'
       + '<td>' + escHtml(bats || '?') + '</td>'
-      + '<td class="num">' + rateStatCell(m.ops) + '</td>'
-      + '<td class="num">' + rateStatCell(m.obp) + '</td>'
-      + '<td class="num">' + rateStatCell(m.iso) + '</td>'
-      + '<td class="num">' + rateStatCell(m.woba) + '</td>'
+      + '<td class="num">' + rateStatCell(m.ops, 'ops') + '</td>'
+      + '<td class="num">' + rateStatCell(m.obp, 'obp') + '</td>'
+      + '<td class="num">' + rateStatCell(m.iso, 'iso') + '</td>'
+      + '<td class="num">' + rateStatCell(m.woba, 'woba') + '</td>'
       + '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + encodePlayer(profileName) + '">Profile</a></td></tr>';
   });
   body += '</tbody>' + profileTableClose();
@@ -729,10 +765,10 @@ function buildQualifiedBattersTableHtml(team, ctx) {
     rosterList.forEach(function(b, idx) {
       body += '<tr><td>' + batterPlayerCellHtml(b.name, b.name, team, idx < 3) + '</td>'
         + '<td>' + escHtml(b.pos || '—') + '</td><td>' + escHtml(b.bats || '—') + '</td>'
-        + '<td class="num">' + rateStatCell(b.ops) + '</td>'
-        + '<td class="num">' + rateStatCell(b.obp) + '</td>'
-        + '<td class="num">' + rateStatCell(b.iso) + '</td>'
-        + '<td class="num">' + rateStatCell(b.woba) + '</td>'
+        + '<td class="num">' + rateStatCell(b.ops, 'ops') + '</td>'
+        + '<td class="num">' + rateStatCell(b.obp, 'obp') + '</td>'
+        + '<td class="num">' + rateStatCell(b.iso, 'iso') + '</td>'
+        + '<td class="num">' + rateStatCell(b.woba, 'woba') + '</td>'
         + '<td>' + trendArrow(b.trend) + '</td>'
         + '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + encodePlayer(b.name) + '">Profile</a></td></tr>';
     });
@@ -1647,6 +1683,7 @@ function loadAll() {
     DATA.spMetricSplits = res[20] || [];
     DATA.bullpenUnit = res[21] || [];
     buildBatterRatePool();
+    registerBatterRatePools();
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(DATA.registry);
     }
