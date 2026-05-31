@@ -150,7 +150,7 @@ body.team-profile-page {
   max-height: none;
 }
 
-/* Team hero + unit snapshot — stacked below unit nav */
+/* Team hero + unit snapshot — stacked sections (same rhythm as tp-unit-snapshot / tp-section) */
 .tp-identity-stack {
   display: flex;
   flex-direction: column;
@@ -158,163 +158,129 @@ body.team-profile-page {
   margin: 0 0 16px;
 }
 
-.tp-identity-stack--has-hero {
-  border: 1px solid var(--border, #262A38);
-  border-radius: 16px;
-  overflow: visible;
+#profileHeroMount:empty {
+  display: none;
+}
+
+/* Team banner — aligned with context strip + unit snapshot cards */
+.tp-team-banner {
+  padding: 16px 18px 18px;
   background: var(--bg-2, #0E1018);
-  box-shadow: 0 12px 40px -20px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border, #262A38);
+  border-radius: 14px;
+  margin: 0 0 16px;
 }
 
-.tp-identity-stack--has-hero .tp-unit-snapshot {
-  border-radius: 0 0 16px 16px;
-  overflow: hidden;
-}
-
-.tp-hero-card {
-  padding: 0;
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-  overflow: visible;
-}
-
-.tp-identity-stack--has-hero .tp-hero-card .ca-profile-hero {
-  padding: 0;
-  margin: 0;
-  border-bottom: none;
-}
-
-/* Team profile banner hero — full-width stat strip */
-.team-profile-page .tp-profile-banner-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+.tp-team-banner__head {
+  display: flex;
   align-items: center;
-  gap: 24px 40px;
-  min-height: 156px;
-  padding: 22px 28px 24px;
-  margin: 0;
-  border-bottom: 1px solid var(--border, #262A38);
-  background:
-    linear-gradient(120deg, color-mix(in srgb, var(--tp-accent, #7C4DFF) 14%, transparent) 0%, transparent 48%),
-    linear-gradient(180deg, rgba(124, 77, 255, 0.07) 0%, transparent 55%);
-  position: relative;
-  overflow: visible;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 16px;
 }
 
-.team-profile-page .tp-profile-banner-hero::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--tp-accent, #7C4DFF), color-mix(in srgb, var(--tp-accent, #7C4DFF) 35%, transparent));
-}
-
-.team-profile-page .tp-profile-banner-hero::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--tp-accent, #7C4DFF) 18%, transparent) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__main {
-  position: relative;
-  z-index: 1;
+.tp-team-banner__copy {
   min-width: 0;
+  flex: 1;
 }
 
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__aside {
-  position: relative;
-  z-index: 1;
+.tp-team-banner__eyebrow {
+  margin: 0 0 6px;
+}
+
+.tp-team-banner__title {
+  font-family: var(--font-display, var(--display));
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--text, #F5F6FA);
+}
+
+.tp-team-banner__logo {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  align-self: center;
-  flex-shrink: 0;
 }
 
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__eyebrow {
-  margin: 0 0 8px;
-  padding: 0;
+.tp-team-banner__logo-img,
+.tp-team-banner__logo .team-logo,
+.tp-team-banner__logo .snapshot-logo {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 0.92;
 }
 
-.tp-hero-stat-row {
+.tp-team-banner__stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 18px;
-  max-width: 520px;
 }
 
-.tp-hero-stat {
-  padding: 14px 16px 16px;
+.tp-team-banner__stats .tp-hero-stat {
+  padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid color-mix(in srgb, var(--border, #262A38) 88%, var(--tp-accent, #7C4DFF) 12%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: var(--bg-3, #12141D);
+  border: 1px solid var(--border, #262A38);
+  box-shadow: none;
 }
 
-.tp-hero-stat__label {
+.tp-team-banner__stats .tp-hero-stat__label {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3, #71717A);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-1, #F3F4F6);
   margin-bottom: 8px;
 }
 
-.tp-hero-stat__value {
+.tp-team-banner__stats .tp-hero-stat__value {
   display: block;
   font-family: var(--font-display, var(--display));
-  font-size: clamp(1.625rem, 3vw, 2.125rem);
+  font-size: var(--tp-stat-value-size, 24px);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1;
   color: var(--text-1, #F3F4F6);
 }
 
-.tp-hero-stat--positive .tp-hero-stat__value { color: var(--green, #4ADE80); }
-.tp-hero-stat--negative .tp-hero-stat__value { color: var(--red-l, #F87171); }
-.tp-hero-stat--elite .tp-hero-stat__value { color: var(--green, #4ADE80); }
-.tp-hero-stat--strong .tp-hero-stat__value { color: #86EFAC; }
-.tp-hero-stat--solid .tp-hero-stat__value { color: var(--gold, #FBBF24); }
-.tp-hero-stat--mid .tp-hero-stat__value { color: var(--text-1, #E5E7EB); }
-.tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
-.tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
+.tp-team-banner__stats .tp-hero-stat--positive .tp-hero-stat__value,
+.tp-team-banner__stats .tp-hero-stat--elite .tp-hero-stat__value { color: var(--green, #4ADE80); }
+.tp-team-banner__stats .tp-hero-stat--negative .tp-hero-stat__value { color: var(--red-l, #F87171); }
+.tp-team-banner__stats .tp-hero-stat--strong .tp-hero-stat__value { color: #86EFAC; }
+.tp-team-banner__stats .tp-hero-stat--solid .tp-hero-stat__value { color: var(--gold, #FBBF24); }
+.tp-team-banner__stats .tp-hero-stat--mid .tp-hero-stat__value { color: var(--text-1, #E5E7EB); }
+.tp-team-banner__stats .tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
+.tp-team-banner__stats .tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
 
 @media (max-width: 720px) {
-  .team-profile-page .tp-profile-banner-hero {
-    grid-template-columns: 1fr;
-    min-height: 0;
-    padding: 20px 20px 22px;
+  .tp-team-banner__head {
+    flex-wrap: wrap;
   }
-  .team-profile-page .tp-profile-banner-hero .ca-profile-hero__aside {
+  .tp-team-banner__logo {
+    order: -1;
+    width: 100%;
     justify-content: flex-start;
   }
-  .tp-hero-stat-row {
-    max-width: none;
-  }
-}
-
-@media (max-width: 520px) {
-  .tp-hero-stat-row {
+  .tp-team-banner__stats {
     grid-template-columns: 1fr;
   }
 }
 
-.tp-identity-stack:not(.tp-identity-stack--has-hero) .tp-unit-snapshot {
-  margin-bottom: 0;
+.tp-snapshot-card .tp-team-banner {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 16px;
+  border-radius: 0;
 }
 
 .tp-profile-toolbar {
@@ -1121,7 +1087,7 @@ body.team-profile-page {
 .team-profile-page #profilePageHeader .ca-eyebrow,
 .team-profile-page .ca-section-header .ca-eyebrow,
 .team-profile-page .ca-section-head .kicker,
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__eyebrow {
+.team-profile-page .tp-team-banner__eyebrow {
   font-family: var(--font-display, var(--display));
   font-size: 11px;
   font-weight: 600;
@@ -1174,15 +1140,11 @@ body.team-profile-page {
   letter-spacing: -0.015em;
   line-height: 1.08;
   margin: 0;
-  background: var(--tp-chrome-title) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  color: transparent !important;
-}
-
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__sub {
-  display: none;
+  color: var(--text, #F5F6FA) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: var(--text, #F5F6FA) !important;
 }
 
 .team-profile-page .tp-section .ca-section-header .ca-helper,
@@ -1831,36 +1793,51 @@ body.team-profile-page {
 .trend-down { color: var(--red, #F2545B); }
 .trend-flat { color: var(--text-3); }
 
+/* Legacy export / team_card hero stats */
+.tp-hero-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.tp-hero-stat {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--bg-3, #12141D);
+  border: 1px solid var(--border, #262A38);
+}
+
+.tp-hero-stat__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-1, #F3F4F6);
+  margin-bottom: 8px;
+}
+
+.tp-hero-stat__value {
+  display: block;
+  font-family: var(--font-display, var(--display));
+  font-size: var(--tp-stat-value-size, 24px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text-1, #F3F4F6);
+}
+
+.tp-hero-stat--positive .tp-hero-stat__value,
+.tp-hero-stat--elite .tp-hero-stat__value { color: var(--green, #4ADE80); }
+.tp-hero-stat--negative .tp-hero-stat__value { color: var(--red-l, #F87171); }
+.tp-hero-stat--strong .tp-hero-stat__value { color: #86EFAC; }
+.tp-hero-stat--solid .tp-hero-stat__value { color: var(--gold, #FBBF24); }
+.tp-hero-stat--mid .tp-hero-stat__value { color: var(--text-1, #E5E7EB); }
+.tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
+.tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
+
 /* Content spec §1–§10 */
-/* Hero team logo — raw mark, no badge/backdrop */
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__aside .team-logo,
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__aside .tp-hero-logo,
-.team-profile-page .tp-profile-banner-hero .ca-profile-hero__aside .snapshot-logo,
-.tp-hero-logo-wrap img,
-.tp-hero-logo-wrap .tp-hero-logo,
-.tp-hero-logo-wrap .snapshot-logo {
-  width: 148px;
-  height: 148px;
-  object-fit: contain;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--tp-accent, #7C4DFF) 32%, transparent));
-}
-
-.tp-hero-logo-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  filter: none;
-}
-
 .tp-summary-panel {
   margin-top: 12px;
   padding: 18px 20px 20px;

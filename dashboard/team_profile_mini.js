@@ -732,9 +732,7 @@
   function renderHeroCard(prof, team, ctx) {
     ctx = ctx || {};
     var m = resolveView(prof, ctx);
-    return '<section class="ca-card tp-hero-card">'
-      + renderInfographicHero(prof, team, m, ctx)
-      + '</section>';
+    return renderInfographicHero(prof, team, m, ctx);
   }
 
   function renderSnapshot(prof, team, ctx) {
@@ -794,21 +792,23 @@
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
     var accent = teamAccent(team);
-    var logo = A ? A.teamLogoImg(team, 148, 'tp-hero-logo snapshot-logo') : '';
+    var logo = A ? A.teamLogoImg(team, 96, 'tp-team-banner__logo-img snapshot-logo') : '';
     var rank = ctx.osiRank;
     var ps = ctx.avgPitchScore;
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + heroStatChip('OSI Rank', rank ? '#' + esc(String(rank)) : null, heroRankTone(rank))
       + heroStatChip('Pitch Score', ps != null && !isNaN(ps) ? esc(ps.toFixed(0)) : null, heroPitchTone(ps));
-    return '<div class="ca-profile-hero tp-profile-banner-hero" style="--tp-accent:' + esc(accent) + '">'
-      + '<div class="ca-profile-hero__main">'
-      + '<p class="ca-profile-hero__eyebrow">Offense Profile</p>'
-      + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
-      + (statRow ? '<div class="tp-hero-stat-row" aria-label="Team snapshot">' + statRow + '</div>' : '')
+    return '<section class="tp-team-banner" style="--tp-accent:' + esc(accent) + '">'
+      + '<div class="tp-team-banner__head">'
+      + '<div class="tp-team-banner__copy">'
+      + '<p class="ca-eyebrow tp-team-banner__eyebrow">Offense Profile</p>'
+      + '<h2 class="tp-team-banner__title">' + esc(ctx.teamName || team) + '</h2>'
       + '</div>'
-      + '<div class="ca-profile-hero__aside">' + logo + '</div>'
-      + '</div>';
+      + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
+      + '</div>'
+      + (statRow ? '<div class="tp-team-banner__stats" aria-label="Team snapshot">' + statRow + '</div>' : '')
+      + '</section>';
   }
 
   function pickSplitStat(row, keys) {

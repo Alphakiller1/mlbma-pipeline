@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="theme.css?v=20260616d">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260616e">
+<link rel="stylesheet" href="team_profile.css?v=20260616f">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
@@ -21,7 +21,7 @@
 <script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260601d"></script>
+<script src="team_profile_mini.js?v=20260616f"></script>
 <script src="team_profile_sections.js?v=20260601g"></script>
 <script src="team_profile_staff.js?v=20260620g"></script>
 <script src="team_profile_intel.js?v=20260531r"></script>
@@ -1331,14 +1331,10 @@ function computeRpgRank(team) {
 }
 
 function syncIdentityStackLayout() {
-  var heroMount = document.getElementById('profileHeroMount');
-  var stack = document.getElementById('tpIdentityStack');
   var snapEl = document.getElementById('tpUnitSnapshot');
-  var hasHero = !!(heroMount && heroMount.innerHTML.trim());
-  if (stack) stack.classList.toggle('tp-identity-stack--has-hero', hasHero);
   if (snapEl) {
-    snapEl.classList.toggle('tp-unit-snapshot--below-hero', hasHero);
-    snapEl.classList.toggle('tp-unit-snapshot--solo', !hasHero);
+    snapEl.classList.add('tp-unit-snapshot--solo');
+    snapEl.classList.remove('tp-unit-snapshot--below-hero');
   }
 }
 
