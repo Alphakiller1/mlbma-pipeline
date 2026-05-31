@@ -19,9 +19,43 @@
     var map = {
       both: 'Both', overall: 'Overall', rhp: 'vs RHP', lhp: 'vs LHP', lhh: 'vs LHH', rhh: 'vs RHH',
       home: 'Home', away: 'Away', f5: 'F5', hlev: 'High Leverage', llev: 'Low Leverage',
-      b: 'Both', r: 'vs RHP', l: 'vs LHP', hilev: 'High Leverage'
+      b: 'Both', r: 'vs RHP', l: 'vs LHP', hilev: 'High Leverage', lolev: 'Low Leverage'
     };
     return map[key] || key;
+  }
+
+  var LINEUP_SPLIT_OPTIONS = [
+    { value: 'both', label: 'Both Hands' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
+    { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'First 5' }
+  ];
+  var ROTATION_SPLIT_OPTIONS = [
+    { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
+    { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'F5' }
+  ];
+  var BULLPEN_SPLIT_OPTIONS = [
+    { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
+    { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' },
+    { value: 'hlev', label: 'High Lev' }, { value: 'llev', label: 'Low Lev' }
+  ];
+
+  function splitOptionsForCategory(category) {
+    if (category === 'rotation') return ROTATION_SPLIT_OPTIONS;
+    if (category === 'bullpen') return BULLPEN_SPLIT_OPTIONS;
+    return LINEUP_SPLIT_OPTIONS;
+  }
+
+  function defaultSplitForCategory(category) {
+    return category === 'lineup' ? 'both' : 'overall';
+  }
+
+  function splitHintForCategory(category) {
+    if (category === 'rotation') {
+      return 'Split matches Starting Pitcher profiles (Overall · vs LHH/RHH · Home/Away · F5 tier). Window sets time range for trends.';
+    }
+    if (category === 'bullpen') {
+      return 'Split matches Bullpen Report (Overall · vs LHH/RHH · Home/Away · High/Low leverage). Window sets time range for trends.';
+    }
+    return 'Split changes platoon/location views for batters. Window sets the time range for scoring, trends, and snapshot KPIs.';
   }
 
   function viewLabel(v) {
@@ -363,16 +397,22 @@
     }
 
     if (teamProfileMode) {
+      var cat = state.category || 'lineup';
+      var splitOpts = splitOptionsForCategory(cat);
+      var activeSplit = state.split || defaultSplitForCategory(cat);
+      if (!splitOpts.some(function(o) { return (o.value || o) === activeSplit; })) {
+        activeSplit = defaultSplitForCategory(cat);
+        state.split = activeSplit;
+      }
       el.innerHTML = '<div class="hub-control-bar tp-filter-bar tp-context-bar">'
         + '<div class="hub-control-row tp-split-window-row">'
-        + pillGroup('Split', 'split', [
-          { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
-          { value: 'home' }, { value: 'away' }, { value: 'f5' }
-        ], state.split)
+        + pillGroup('Split', 'split', splitOpts, activeSplit)
         + pillGroup('Window', 'window', [
-          { value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }
+          { value: 'YTD', label: 'Season' }, { value: 'L30', label: 'Last 30' }, { value: 'L14', label: 'Last 14' }, { value: 'L7', label: 'Last 7', warn: true }
         ], state.window)
-        + '</div></div>';
+        + '</div>'
+        + '<p class="tp-control-hint">' + esc(splitHintForCategory(cat)) + '</p>'
+        + '</div>';
     } else {
       el.innerHTML = '<div class="hub-control-bar tp-filter-bar">'
         + '<div class="hub-control-row">'
@@ -536,6 +576,10 @@
     enrichTeamScoresWithProfiles: enrichTeamScoresWithProfiles,
     teamMetricTrend: teamMetricTrend,
     pitcherPitchTrend: pitcherPitchTrend,
-    pitcherOsiAllowTrend: pitcherOsiAllowTrend
+    pitcherOsiAllowTrend: pitcherOsiAllowTrend,
+    splitLabel: splitLabel,
+    splitOptionsForCategory: splitOptionsForCategory,
+    splitHintForCategory: splitHintForCategory,
+    defaultSplitForCategory: defaultSplitForCategory
   };
 })(typeof window !== 'undefined' ? window : this);

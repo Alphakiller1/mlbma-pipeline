@@ -480,40 +480,7 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlExtraLeaderboards');
     if (!root) return;
     fetchSpProfiles().then(function() {
-      var rows = RL.spProfiles || [];
-      if (!rows.length) {
-        root.innerHTML = '<div class="rl-pane-card" style="margin-top:20px;"><p class="ca-helper">Pitcher and bullpen leaderboards require SP_Profiles and Bullpen_Unit sheet data.</p></div>';
-        return;
-      }
-      var pitchRows = rows.slice().sort(function(a, b) {
-        var ma = S.spProfileMetrics(a);
-        var mb = S.spProfileMetrics(b);
-        return (mb.pitchScore || 0) - (ma.pitchScore || 0);
-      });
-      var pitchHtml = '<div class="rl-lb-section"><h4 class="rl-lb-title">Starting Pitcher Rankings (' + pitchRows.length + ')</h4>'
-        + '<div class="rl-table-wrap pl-rank-wrap"><table class="rl-table-premium rl-sp-rank-table"><thead><tr>'
-        + '<th>Pitcher</th><th>Team</th><th>Pitch Score</th><th>K%</th><th>BB%</th><th>ERA</th><th>FIP</th>'
-        + '<th>OSI Allowed</th><th>ABQ Allowed</th><th>Pitcher OOR</th></tr></thead><tbody>'
-        + pitchRows.map(function(row) {
-          var n = S.pickCol(row, 'pitcher_name', 'Name');
-          var t = S.pickCol(row, 'pitcher_team', 'Team');
-          var m = S.spProfileMetrics(row);
-          var av = A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-rank-av' }) : '';
-          var logo = A ? A.teamLogoImg(t, 24) : '';
-          var staleBadge = m.stale ? ' <span class="pl-stale-pill">Stale</span>' : '';
-          return '<tr class="pl-rank-row" onclick="location.href=\'pitcher_profile.html?pitcher=' + encodeURIComponent(n) + '\'">'
-            + '<td class="pl-rank-name"><span class="pl-rank-pitcher-cell">' + av
-            + '<span class="pl-rank-pitcher-text">' + esc(n) + staleBadge + '</span></span></td>'
-            + '<td class="pl-rank-team">' + logo + ' <span>' + esc(t) + '</span></td>'
-            + '<td class="num">' + metricChip(m.pitchScore, 'pitching', false, 0) + '</td>'
-            + '<td class="num">' + metricChip(m.kPct, 'pitching', false, 1) + '</td>'
-            + '<td class="num">' + metricChip(m.bbPct, 'pitching', true, 1) + '</td>'
-            + '<td class="num">' + metricChip(m.era, 'pitching', true, 2) + '</td>'
-            + '<td class="num">' + metricChip(m.fip, 'pitching', true, 2) + '</td>'
-            + '<td class="num">' + metricChip(m.osiAllowed, 'osi', true, 1) + '</td>'
-            + '<td class="num">' + metricChip(m.abqAllowed, 'osi', true, 1) + '</td>'
-            + '<td class="num">' + metricChip(m.oor, 'oor', false, 1) + '</td></tr>';
-        }).join('') + '</tbody></table></div></div>';
+      var pitchHtml = '<div class="rl-lb-section"><p class="ca-helper">Starting pitcher rankings moved to the <strong>Pitching</strong> tab (intelligence flags, today\'s starters, expandable rows).</p></div>';
 
       var units = global.LIVE_DATA && LIVE_DATA.bullpenUnits ? Object.keys(LIVE_DATA.bullpenUnits) : [];
       var bpRows = units.map(function(tk) {
@@ -659,12 +626,10 @@ function profileWindowFieldsFromRow(row) {
       return '<button type="button" class="ca-pill-btn rl-compare-mode-btn' + (RL.compareMode === id ? ' active' : '') + '" data-cmp-workspace="' + esc(id) + '">' + esc(m.label) + '</button>';
     }).join('') : '';
 
-    root.innerHTML = '<div class="rl-compare-h2h ca-card">'
-      + '<div class="rl-compare-h2h-header ca-section-head">'
-      + iconCircle('swords') + '<span>Compare Workspace</span>'
-      + '</div>'
-      + '<h3 class="rl-compare-h2h-title">Head-to-Head Intelligence</h3>'
-      + '<p class="rl-compare-h2h-subtitle">Four compare modes with independent split controls on each side.</p>'
+    root.innerHTML = '<div class="rl-compare-h2h ca-board ca-card">'
+      + (global.MLBMAAssets && MLBMAAssets.caSectionHeadHtml
+        ? MLBMAAssets.caSectionHeadHtml('swords', 'Research Lab', 'Compare Workspace', 'Four compare modes with independent split controls on each side.')
+        : '<div class="rl-compare-h2h-header ca-section-head--rule">' + iconCircle('swords') + '<span>Compare Workspace</span></div>')
       + '<div class="rl-compare-modes rl-compare-modes--large ca-pill-bar">' + modeBtns + '</div>'
       + '<div id="rlCompareQueryLine" class="ca-query-line"><strong>' + esc(mode.label) + '</strong> · ' + esc(mode.desc) + '</div>'
       + '<div class="rl-compare-panels">'
@@ -838,7 +803,7 @@ function profileWindowFieldsFromRow(row) {
         var tm = S.pickCol(row, ['pitcher_team', 'Team', 'Tm']);
         var hand = String(S.pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || 'R').charAt(0);
         var met = S.spProfileMetrics(row);
-        var av = A ? A.pitcherAvatar(n, { crop: 'compare', className: 'pl-dd-av' }) : '';
+        var av = A ? A.pitcherAvatar(n, { crop: 'matchup', className: 'pl-dd-av' }) : '';
         return '<button type="button" class="pl-dd-item" data-name="' + esc(n) + '">' + av
           + '<span class="pl-dd-name">' + esc(n) + '</span>'
           + '<span class="pl-dd-meta">' + esc(tm) + ' · ' + esc(hand) + 'HP · PS '
@@ -875,12 +840,14 @@ function profileWindowFieldsFromRow(row) {
 
   function pitcherAvatarHtml(name, sizeKey) {
     if (!A || !name) return '';
-    return A.pitcherAvatar(name, { crop: sizeKey === 'matchup' ? 'matchup' : 'compare', className: 'rl-compare-avatar' });
+    var crop = sizeKey === 'compare' ? 'compare' : 'matchup';
+    var html = A.pitcherAvatar(name, { crop: crop, className: 'mc-headshot' });
+    return html ? '<span class="mc-sp-photo">' + html + '</span>' : '';
   }
 
   function pitcherScorecard(name, label, val, invert) {
     return '<div class="rl-scorecard rl-scorecard--pitcher">'
-      + pitcherAvatarHtml(name, 'compare')
+      + pitcherAvatarHtml(name, 'matchup')
       + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
       + '<div class="rl-metric-primary">' + metricChip(val, 'pitching', invert, 1) + '</div></div></div>';

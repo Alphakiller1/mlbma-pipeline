@@ -271,7 +271,8 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   font-weight: 600;
 }
 
-.ca-section-head {
+/* Legacy rule-line section label (superseded by .ca-section-head in design system) */
+.ca-section-head--rule {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -282,11 +283,11 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   text-transform: uppercase;
 }
 
-.ca-section-head .ca-icon-circle--sm {
+.ca-section-head--rule .ca-icon-circle--sm {
   flex-shrink: 0;
 }
 
-.ca-section-head::after {
+.ca-section-head--rule::after {
   content: "";
   flex: 1;
   height: 1px;

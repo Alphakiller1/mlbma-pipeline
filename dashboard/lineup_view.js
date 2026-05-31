@@ -56,6 +56,7 @@
       + '.lv-wrap{margin-top:14px}'
       + '.lv-bar{background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:var(--e-1,none)}'
       + '.lv-sec.ca-section-head{margin:4px 0 12px}'
+      + '.lv-sec.ca-section-head--rule{margin:4px 0 12px}'
       + '.lv-sec{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
@@ -297,8 +298,12 @@
     if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
     return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"></span>';
   }
-  function lvSec(label, icon) {
-    return '<div class="ca-section-head lv-sec">' + iconCircle(icon) + '<span>' + esc(label) + '</span></div>';
+  function lvSec(label, icon, purpose) {
+    var A = global.MLBMAAssets;
+    if (A && A.caSectionHeadHtml) {
+      return A.caSectionHeadHtml(icon || 'bar-chart-3', 'Team Rankings', label, purpose || '');
+    }
+    return '<div class="ca-section-head--rule lv-sec">' + iconCircle(icon) + '<span>' + esc(label) + '</span></div>';
   }
 
   function renderContextBanner(meta, state) {

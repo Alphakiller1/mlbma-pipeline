@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 from core.config import (
+    BATTER_LINEUP_MIN_PA,
     BATTER_MIN_PA,
     BATTER_RECENT_DAYS,
     BATTER_SPLIT_ARR,
@@ -18,9 +19,11 @@ from core.config import (
     BATTER_WINDOW_MIN_PA,
     CHROME_VERSION,
     DATA_DIR,
+    FG_BATTER_PAGE_SIZE,
     SEASON_END,
     SEASON_START,
 )
+from core.name_utils import lineup_full_names, normalize_player_name
 from scrapers.fangraphs_session import get_driver, get_export_csv, login, safe_quit_driver
 
 PAGE_DELAY = 22
@@ -115,7 +118,7 @@ def _leaderboard_url(
         f"splitArr={arr}&splitArrPitcher=&position=B&autoPt={auto_pt}&splitTeams=false"
         f"&startDate={start_date}&endDate={end_date}"
         f"&statType=player&statgroup={statgroup}"
-        f"&minPAf={min_pa_param}&pageSize=500"
+        f"&minPAf={min_pa_param}&pageSize={FG_BATTER_PAGE_SIZE}"
         f"&players="
         f"{filter_clause}"
     )
@@ -249,15 +252,37 @@ def filter_registry_batters(
     df: pd.DataFrame,
     registry: pd.DataFrame,
     min_pa: int | None = None,
+    lineup_names: set[str] | None = None,
 ) -> pd.DataFrame:
     floor = BATTER_MIN_PA if min_pa is None else min_pa
+    lineup_norm = {normalize_player_name(n) for n in (lineup_names or set())}
     batters = registry[~registry["position_type"].isin(["SP", "RP"])].copy()
-    names = set(batters["full_name"].str.strip())
+    registry_by_norm = {
+        normalize_player_name(str(n).strip()): str(n).strip()
+        for n in batters["full_name"]
+        if str(n).strip()
+    }
     name_col = "Name" if "Name" in df.columns else df.columns[0]
-    out = df[df[name_col].isin(names)].copy()
+    out = df.copy()
+    out["_registry_name"] = out[name_col].map(
+        lambda x: registry_by_norm.get(normalize_player_name(x))
+    )
+    out = out[out["_registry_name"].notna()].copy()
     if "PA" in out.columns:
         out["PA"] = pd.to_numeric(out["PA"], errors="coerce")
-        out = out[out["PA"] >= floor]
+
+        def _pa_ok(row: pd.Series) -> bool:
+            pa = row["PA"]
+            if pd.isna(pa):
+                return False
+            norm = normalize_player_name(row["_registry_name"])
+            min_floor = BATTER_LINEUP_MIN_PA if norm in lineup_norm else floor
+            return float(pa) >= min_floor
+
+        out = out[out.apply(_pa_ok, axis=1)]
+
+    out[name_col] = out["_registry_name"]
+    out = out.drop(columns=["_registry_name"])
     out = out.merge(
         batters[["full_name", "team_abbr", "player_id", "bats", "throws"]],
         left_on=name_col,
@@ -267,6 +292,88 @@ def filter_registry_batters(
     if "team_abbr" in out.columns:
         out["Tm"] = out["team_abbr"]
     return out
+
+
+LINEUP_GAP_SPLITS = ["overall", "vs_RHP", "vs_LHP"]
+
+
+def _load_split_csv(filename: str) -> pd.DataFrame:
+    path = os.path.join(DATA_DIR, filename)
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+
+
+def _names_in_split(filename: str) -> set[str]:
+    df = _load_split_csv(filename)
+    if df.empty:
+        return set()
+    name_col = "Name" if "Name" in df.columns else df.columns[0]
+    return {normalize_player_name(n) for n in df[name_col].astype(str)}
+
+
+def find_lineup_gap_names(registry: pd.DataFrame) -> set[str]:
+    lineup_path = os.path.join(DATA_DIR, "today_lineups.csv")
+    if not os.path.exists(lineup_path):
+        return set()
+    lineups = pd.read_csv(lineup_path)
+    resolved = lineup_full_names(registry, lineups)
+    if not resolved:
+        return set()
+    present = _names_in_split("batter_splits_overall.csv")
+    return {n for n in resolved if normalize_player_name(n) not in present}
+
+
+def merge_split_rows(new_df: pd.DataFrame | None, filename: str) -> int:
+    path = os.path.join(DATA_DIR, filename)
+    if new_df is None or new_df.empty:
+        return 0
+    existing = _load_split_csv(filename)
+    name_col = "Name" if "Name" in new_df.columns else new_df.columns[0]
+    if existing.empty:
+        new_df.to_csv(path, index=False)
+        return len(new_df)
+    ex_name = "Name" if "Name" in existing.columns else existing.columns[0]
+    existing_norm = existing[ex_name].map(normalize_player_name)
+    add_norm = new_df[name_col].map(normalize_player_name)
+    keep = existing[~existing_norm.isin(set(add_norm))]
+    merged = pd.concat([keep, new_df], ignore_index=True)
+    merged.to_csv(path, index=False)
+    return len(new_df)
+
+
+def fill_lineup_gaps(driver, registry: pd.DataFrame, reconnect_state: dict) -> object:
+    gap_names = find_lineup_gap_names(registry)
+    if not gap_names:
+        print("  Lineup gap fill: all lineup batters present in splits")
+        return driver
+    print(f"  Lineup gap fill: {len(gap_names)} batters missing — {sorted(gap_names)[:8]}...")
+    outputs = build_outputs()
+    key_to_output = {v[0]: fname for fname, v in outputs.items()}
+    for split_key in LINEUP_GAP_SPLITS:
+        fname = key_to_output.get(split_key)
+        if not fname:
+            continue
+        key, arr, start, end = outputs[fname]
+        driver, raw = scrape_batter_split_resilient(
+            driver, key, arr, start, end, min_pa=1, reconnect_state=reconnect_state
+        )
+        raw_n = len(raw) if raw is not None else 0
+        filtered = (
+            filter_registry_batters(raw, registry, min_pa=1, lineup_names=gap_names)
+            if raw is not None
+            else None
+        )
+        added = merge_split_rows(filtered, fname)
+        if added:
+            print(f"  Gap fill {split_key}: merged {added} rows (FG raw {raw_n})")
+        else:
+            print(f"  Gap fill {split_key}: no rows merged (FG raw {raw_n})")
+        time.sleep(SPLIT_COOLDOWN)
+    return driver
 
 
 def save_split(
@@ -316,6 +423,7 @@ def build_outputs(now: datetime | None = None) -> dict:
 def run(
     windows_only: bool = False,
     split_keys: list[str] | None = None,
+    lineup_gaps_only: bool = False,
 ) -> None:
     registry_path = DATA_DIR / "player_registry.csv"
     if not registry_path.exists():
@@ -324,6 +432,23 @@ def run(
     registry = pd.read_csv(registry_path)
     batter_count = len(registry[~registry["position_type"].isin(["SP", "RP"])])
     print(f"  Registry batters to cover: {batter_count}")
+
+    if lineup_gaps_only:
+        print("Mode: lineup gap fill only (minPA=1 for missing Today_Lineups batters)")
+        driver = get_driver()
+        reconnect_state: dict = {"count": 0}
+        try:
+            if not login(driver):
+                print("FanGraphs login failed")
+                return
+            print("FanGraphs login successful.")
+            fill_lineup_gaps(driver, registry, reconnect_state)
+        finally:
+            safe_quit_driver(driver)
+        print("Lineup gap fill complete.")
+        print("Next: python -m core.compute_batter_profile")
+        print("      python -m outputs.push_batter_profiles")
+        return
 
     outputs = build_outputs()
     key_to_output = {v[0]: fname for fname, v in outputs.items()}
@@ -371,6 +496,9 @@ def run(
             if group_idx < len(groups) - 1:
                 print(f"  Group cooldown {GROUP_COOLDOWN}s...")
                 time.sleep(GROUP_COOLDOWN)
+
+        reconnect_state = {"count": 0}
+        driver = fill_lineup_gaps(driver, registry, reconnect_state)
     finally:
         safe_quit_driver(driver)
 
@@ -393,9 +521,14 @@ def main():
         default="",
         help="Comma-separated split keys, e.g. recent,l14,l7",
     )
+    parser.add_argument(
+        "--lineup-gaps-only",
+        action="store_true",
+        help="Only scrape missing Today_Lineups batters (minPA=1) into split CSVs.",
+    )
     args = parser.parse_args()
     keys = [k.strip() for k in args.splits.split(",") if k.strip()] if args.splits else None
-    run(windows_only=args.windows_only, split_keys=keys)
+    run(windows_only=args.windows_only, split_keys=keys, lineup_gaps_only=args.lineup_gaps_only)
 
 
 if __name__ == "__main__":

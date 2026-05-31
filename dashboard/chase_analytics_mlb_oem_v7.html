@@ -2408,11 +2408,11 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260616b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260620d">
 <link rel="stylesheet" href="theme.css?v=20260612b">
 <link rel="stylesheet" href="chase_nav.css?v=20260527s">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260612a">
-<link rel="stylesheet" href="research_lab.css?v=20260614a">
+<link rel="stylesheet" href="research_lab.css?v=20260620e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
@@ -2433,19 +2433,19 @@ body.view-research .ca-lab { display: block; }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260616b"></script>
+<script src="mlbma_assets.js?v=20260620d"></script>
 <script src="mlbma_icons.js?v=20260611b"></script>
-<script src="matchup_shared.js?v=20260613a"></script>
+<script src="matchup_shared.js?v=20260620c"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260528c"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
-<script src="research_lab.js?v=20260614a"></script>
+<script src="research_lab.js?v=20260620d"></script>
 <script src="lineup_view.js?v=20260618a"></script>
 <script src="trends_heatmap.js?v=20260612e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
-<script src="pitcher_lab.js?v=20260617a"></script>
+<script src="pitcher_lab.js?v=20260620e"></script>
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
 <!-- Chase Analytics navigation ? synced via scripts/integrate_chase_nav.py -->
@@ -4055,6 +4055,12 @@ function batterProfileLink(name) {
 }
 
 function buildLineupColHtml(teamLabel, rows, oppHand) {
+  var S = window.MLBMASharedMatchup;
+  if (S && S.buildLineupBoard) {
+    return '<div class="matchup-lineup-col">'
+      + S.buildLineupBoard(rows, { teamLabel: teamLabel, oppHand: oppHand, kicker: 'Projected', icon: 'users' })
+      + '</div>';
+  }
   var head = '<div class="matchup-lineup-col-head">' + escHtml(teamLabel)
     + ' <span class="lineup-opp-hand">vs ' + (oppHand === 'L' || oppHand === 'R' ? escHtml(oppHand + 'HP') : '?HP') + '</span></div>';
   if (!rows.length) {

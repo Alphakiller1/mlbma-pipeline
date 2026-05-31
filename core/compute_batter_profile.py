@@ -11,6 +11,7 @@ from core.config import (
     ABQ_CONTACT_WEIGHTS,
     ABQ_DISCIPLINE_WEIGHTS,
     ABQ_WEIGHTS,
+    BATTER_LINEUP_MIN_PA,
     BATTER_MIN_PA,
     BATTER_TREND_FALLING_MAX,
     BATTER_TREND_RISING_MIN,
@@ -23,6 +24,7 @@ from core.config import (
     RCV_WEIGHTS,
 )
 from core.metrics_utils import clean_pct, normalize_pool
+from core.name_utils import lineup_full_names, normalize_player_name
 
 PROFILE_COLUMNS = [
     "player_name",
@@ -62,7 +64,20 @@ def _series_or_default(
     return pd.Series(default, index=index, dtype=float)
 
 
-def _prep_frame(df: pd.DataFrame) -> pd.DataFrame:
+def _lineup_name_set() -> set[str]:
+    path = DATA_DIR / "today_lineups.csv"
+    reg_path = DATA_DIR / "player_registry.csv"
+    if not path.exists() or not reg_path.exists():
+        return set()
+    try:
+        lineups = pd.read_csv(path)
+        registry = pd.read_csv(reg_path)
+        return {normalize_player_name(n) for n in lineup_full_names(registry, lineups)}
+    except Exception:
+        return set()
+
+
+def _prep_frame(df: pd.DataFrame, lineup_names: set[str] | None = None) -> pd.DataFrame:
     out = df.copy()
     name_col = "Name" if "Name" in out.columns else out.columns[0]
     out["player_name"] = out[name_col].astype(str).str.strip()
@@ -85,6 +100,10 @@ def _prep_frame(df: pd.DataFrame) -> pd.DataFrame:
         if col in out.columns:
             out[col] = _num(out[col])
 
+    lineup = lineup_names if lineup_names is not None else _lineup_name_set()
+    if lineup:
+        mask = out["player_name"].map(lambda n: normalize_player_name(n) in lineup)
+        return out[(out["PA"] >= BATTER_MIN_PA) | (mask & (out["PA"] >= BATTER_LINEUP_MIN_PA))].copy()
     return out[out["PA"] >= BATTER_MIN_PA].copy()
 
 

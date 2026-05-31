@@ -290,22 +290,66 @@
     return '<a href="batter_profile.html?player=' + encodeURIComponent(name) + '" class="lineup-name-link" onclick="event.stopPropagation()">' + esc(name) + '</a>';
   }
 
-  function buildLineupTable(lineupRows, opposingSPHand) {
-    if (!lineupRows || !lineupRows.length) {
-      return '<div class="lineup-empty">Lineup not yet confirmed</div>';
+  function lineupFormFlag(r) {
+    if (!r) return null;
+    if (r.formFlag && r.formFlag.label) return r.formFlag;
+    if (r.rcv != null && !isNaN(r.rcv) && r.rcv >= 75) {
+      return { label: 'Power', cls: 'lb-flag lb-flag--power' };
     }
-    var handLbl = opposingSPHand === 'L' || opposingSPHand === 'R' ? opposingSPHand + 'HP' : '?HP';
-    var html = '<div class="lineup-table-head">vs ' + esc(handLbl) + '</div>';
-    lineupRows.forEach(function(r) {
+    var tr = String(r.trend || r.formTrend || '').toLowerCase();
+    if (tr === 'rising' || tr === 'up' || tr === 'hot') {
+      return { label: 'Hot', cls: 'lb-flag lb-flag--hot' };
+    }
+    if (tr === 'falling' || tr === 'down' || tr === 'cold') {
+      return { label: 'Cold', cls: 'lb-flag lb-flag--cold' };
+    }
+    if (r.osi != null && !isNaN(r.osi) && r.osi >= 78) {
+      return { label: 'Hot', cls: 'lb-flag lb-flag--hot' };
+    }
+    return null;
+  }
+
+  function buildLineupBoard(lineupRows, opts) {
+    opts = opts || {};
+    var oppHand = opts.oppHand != null ? opts.oppHand : opts.opposingSPHand;
+    var teamLabel = opts.team || opts.teamLabel || '';
+    if (!lineupRows || !lineupRows.length) {
+      return '<div class="lineup-board lineup-board--empty"><div class="lineup-empty">Lineup not yet confirmed</div></div>';
+    }
+    var A = global.MLBMAAssets;
+    var headHtml = '';
+    if (teamLabel || opts.title) {
+      var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : '?HP';
+      var title = opts.title || ('Projected lineup · ' + teamLabel);
+      var purpose = opts.purpose != null ? opts.purpose : ('vs ' + handLbl);
+      if (A && A.caSectionHeadHtml) {
+        headHtml = A.caSectionHeadHtml(opts.icon || 'users', opts.kicker || 'Tonight', title, purpose);
+      } else {
+        headHtml = '<div class="lineup-table-head">' + esc(title) + ' · vs ' + esc(handLbl) + '</div>';
+      }
+    }
+    var body = '';
+    lineupRows.slice(0, 9).forEach(function(r) {
       var bn = normalizeBatsHand(r.bats);
-      html += '<div class="lineup-row ' + platoonHighlightClass(bn, opposingSPHand) + '">'
-        + '<span class="lineup-bo">' + (r.batOrder <= 9 ? r.batOrder : '—') + '</span>'
-        + '<span class="lineup-pos">' + esc(r.position) + '</span>'
-        + '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>'
-        + '<span class="bats-pill hand-' + bn.toLowerCase() + '">' + esc(bn) + '</span>'
+      var platCls = platoonHighlightClass(bn, oppHand);
+      var flag = lineupFormFlag(r);
+      var flagHtml = flag
+        ? '<span class="' + flag.cls + '">' + esc(flag.label) + '</span>'
+        : '<span class="lb-flag-empty" aria-hidden="true"></span>';
+      var platoonRowCls = platCls ? platCls.replace('lineup-row', 'lb-row') : '';
+      body += '<div class="lb-row' + (platoonRowCls ? ' ' + platoonRowCls : '') + '">'
+        + '<span class="lb-ord">' + (r.batOrder <= 9 ? r.batOrder : '\u2014') + '</span>'
+        + '<span class="lb-pos">' + esc(r.position) + '</span>'
+        + '<span class="lb-name">' + batterProfileLink(r.player) + '</span>'
+        + flagHtml
+        + '<span class="lb-hand">' + esc(bn === '?' ? '?' : bn) + '</span>'
         + '</div>';
     });
-    return html;
+    return '<div class="lineup-board">' + headHtml + body + '</div>';
+  }
+
+  function buildLineupTable(lineupRows, opposingSPHand) {
+    return buildLineupBoard(lineupRows, { opposingSPHand: opposingSPHand });
   }
 
   function parseWeatherString(raw) {
@@ -1591,6 +1635,7 @@
     platoonHighlight: platoonHighlight,
     platoonHighlightClass: platoonHighlightClass,
     buildLineupTable: buildLineupTable,
+    buildLineupBoard: buildLineupBoard,
     parseWeatherString: parseWeatherString,
     parseWeatherRow: parseWeatherRow,
     parseWeatherMap: parseWeatherMap,

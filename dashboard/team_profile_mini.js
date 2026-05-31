@@ -75,40 +75,6 @@
     return { label: 'Weak', cls: 'tier-weak' };
   }
 
-  function getSummaryLabel(osi, ppGap, abq, rcv, obr) {
-    osi = osi != null ? osi : 0;
-    ppGap = ppGap != null ? ppGap : 0;
-    if (osi >= 75 && ppGap > 0) return 'Strong + Supported';
-    if (osi >= 75 && ppGap < 0) return 'Cooling / Fade Risk';
-    if (osi >= 50 && osi < 75 && ppGap >= 4) return 'Buy-Low Candidate';
-    if (osi >= 50 && osi < 75 && ppGap < 0) return 'Monitor Closely';
-    if (osi < 50 && ppGap > 0) return 'Speculative Upside';
-    if (osi < 50 && ppGap < 0) return 'Avoid / Under Lean';
-    return 'Neutral Profile';
-  }
-
-  function summaryColor(label) {
-    if (label === 'Strong + Supported') return 'var(--green)';
-    if (label === 'Buy-Low Candidate' || label === 'Speculative Upside') return 'var(--blue)';
-    if (label === 'Cooling / Fade Risk' || label === 'Avoid / Under Lean') return 'var(--red-l)';
-    if (label === 'Monitor Closely') return 'var(--gold)';
-    return 'var(--text-2)';
-  }
-
-  function trendReliability(prof) {
-    var ytd = num(pick(prof, ['osi_ytd', 'osi']));
-    var l30 = num(pick(prof, ['osi_l30']));
-    var l7 = num(pick(prof, ['osi_l7']));
-    var dir = String(pick(prof, ['window_direction']) || '').toLowerCase();
-    if (l7 != null && ytd != null && Math.abs(l7 - ytd) > 8 && (l30 == null || Math.abs(l30 - ytd) < 4)) {
-      return 'Noisy L7 Only';
-    }
-    if (dir === 'rising' && l30 != null && ytd != null && l30 > ytd) return 'Sustained Rise';
-    if (dir === 'falling') return 'Declining';
-    if (l7 != null && ytd != null && Math.abs(l7 - ytd) > 8) return 'Short Spike';
-    return 'Stable';
-  }
-
   function rawSplitRowForTeam(team, split, metricsR, metricsL) {
     var t = String(team || '').trim().toUpperCase();
     var list = split === 'lhp' ? metricsL : split === 'rhp' ? metricsR : null;
@@ -129,7 +95,11 @@
           xwOBA: scored.xwoba != null ? scored.xwoba : rawRow.xwOBA,
           'wRC+': scored.wrc != null ? scored.wrc : rawRow['wRC+'],
           SLG: scored.slg != null ? scored.slg : rawRow.SLG,
-          OSI: scored.osi != null ? scored.osi : rawRow.OSI
+          OSI: scored.osi != null ? scored.osi : rawRow.OSI,
+          'K%': scored.k != null ? scored.k : rawRow['K%'],
+          'BB%': scored.bb != null ? scored.bb : rawRow['BB%'],
+          'Barrel%': scored.barrel != null ? scored.barrel : rawRow['Barrel%'],
+          'HardHit%': scored.hard != null ? scored.hard : rawRow['HardHit%']
         });
       }
     }
@@ -153,9 +123,74 @@
       hr: num(pick(row, ['HR', 'hr'], pickCol)),
       k: normalizeRatePct(num(pick(row, ['K%', 'k_pct', 'k'], pickCol)), true),
       bb: normalizeRatePct(num(pick(row, ['BB%', 'bb_pct', 'bb'], pickCol)), true),
-      barrel: normalizeRatePct(num(pick(row, ['Barrel%', 'barrel_pct', 'barrel'], pickCol)), false),
-      hard: normalizeRatePct(num(pick(row, ['HardHit%', 'hardhit_pct', 'hard'], pickCol)), false)
+      barrel: normalizeRatePct(num(pick(row, ['Barrel%', 'barrel_pct', 'barrel'], pickCol)), true),
+      hard: normalizeRatePct(num(pick(row, ['HardHit%', 'hardhit_pct', 'hard'], pickCol)), true),
+      avg: num(pick(row, ['AVG', 'avg'], pickCol)),
+      obp: num(pick(row, ['OBP', 'obp'], pickCol)),
+      ops: num(pick(row, ['OPS', 'ops'], pickCol))
     };
+  }
+
+  /** PA-weighted team rates from Batter_Splits_RHP/LHP player rows (fallback when vs_RHP sheet lacks columns). */
+  function offenseRatesFromBatterSplitRows(team, rows, pickCol) {
+    if (!rows || !rows.length) return {};
+    var t = String(team || '').trim().toUpperCase();
+    var teamRows = rows.filter(function(r) {
+      return String(pick(r, ['team', 'Team', 'Tm'], pickCol)).trim().toUpperCase() === t;
+    });
+    if (!teamRows.length) return {};
+    var paSum = 0;
+    var acc = { wrc: 0, woba: 0, xwoba: 0, slg: 0, k: 0, bb: 0, barrel: 0, hard: 0, avg: 0, obp: 0, ops: 0 };
+    var has = {};
+    teamRows.forEach(function(r) {
+      var pa = num(pick(r, ['PA', 'pa'], pickCol)) || 0;
+      if (pa < 1) return;
+      paSum += pa;
+      function add(key, cols, pct) {
+        var v = num(pick(r, cols, pickCol));
+        if (v == null) return;
+        if (pct) v = normalizeRatePct(v, true);
+        acc[key] += v * pa;
+        has[key] = true;
+      }
+      add('wrc', ['wRC+', 'wrc_plus', 'wrc'], false);
+      add('woba', ['wOBA', 'woba'], false);
+      add('xwoba', ['xwOBA', 'xwoba'], false);
+      add('slg', ['SLG', 'slg'], false);
+      add('k', ['K%', 'k_pct'], true);
+      add('bb', ['BB%', 'bb_pct'], true);
+      add('barrel', ['Barrel%', 'barrel_pct'], true);
+      add('hard', ['HardHit%', 'hardhit_pct'], true);
+      add('avg', ['AVG', 'avg'], false);
+      add('obp', ['OBP', 'obp'], false);
+      add('ops', ['OPS', 'ops'], false);
+    });
+    if (paSum < 1) return {};
+    var out = {};
+    Object.keys(acc).forEach(function(k) {
+      if (!has[k]) return;
+      out[k] = acc[k] / paSum;
+    });
+    if (out.wrc != null) out.wrc = Math.round(out.wrc * 10) / 10;
+    ['woba', 'xwoba', 'slg', 'avg', 'obp', 'ops'].forEach(function(k) {
+      if (out[k] != null) out[k] = Math.round(out[k] * 1000) / 1000;
+    });
+    ['k', 'bb', 'barrel', 'hard'].forEach(function(k) {
+      if (out[k] != null) out[k] = Math.round(out[k] * 10) / 10;
+    });
+    return out;
+  }
+
+  function offenseRatesFromBatterSplits(team, split, splitsR, splitsL, pickCol) {
+    if (split === 'rhp') return offenseRatesFromBatterSplitRows(team, splitsR, pickCol);
+    if (split === 'lhp') return offenseRatesFromBatterSplitRows(team, splitsL, pickCol);
+    if (split === 'both') {
+      return blendOffenseRates(
+        offenseRatesFromBatterSplitRows(team, splitsR, pickCol),
+        offenseRatesFromBatterSplitRows(team, splitsL, pickCol)
+      );
+    }
+    return {};
   }
 
   function blendOffenseRates(a, b) {
@@ -167,7 +202,8 @@
     }
     return {
       wrc: blend('wrc'), woba: blend('woba'), xwoba: blend('xwoba'), slg: blend('slg'),
-      hr: blend('hr'), k: blend('k'), bb: blend('bb'), barrel: blend('barrel'), hard: blend('hard')
+      hr: blend('hr'), k: blend('k'), bb: blend('bb'), barrel: blend('barrel'), hard: blend('hard'),
+      avg: blend('avg'), obp: blend('obp'), ops: blend('ops')
     };
   }
 
@@ -183,9 +219,27 @@
 
   function applySheetRates(target, source) {
     if (!source) return;
-    ['wrc', 'woba', 'xwoba', 'slg', 'hr', 'k', 'bb', 'barrel', 'hard'].forEach(function(key) {
+    ['wrc', 'woba', 'xwoba', 'slg', 'hr', 'k', 'bb', 'barrel', 'hard', 'avg', 'obp', 'ops'].forEach(function(key) {
       if (source[key] != null) target[key] = source[key];
     });
+  }
+
+  function fillMissingRates(target, source) {
+    if (!source) return;
+    ['wrc', 'woba', 'xwoba', 'slg', 'hr', 'k', 'bb', 'barrel', 'hard', 'avg', 'obp', 'ops'].forEach(function(key) {
+      if ((target[key] == null || isNaN(target[key])) && source[key] != null) target[key] = source[key];
+    });
+  }
+
+  function teamLocationRate(prof, split, key, pickCol) {
+    if (!prof || !pickCol) return null;
+    function pf(keys) { return num(pick(prof, keys, pickCol)); }
+    if (split === 'home') return pf(['home_' + key, key]);
+    if (split === 'away') return pf(['away_' + key, key]);
+    var h = pf(['home_' + key]);
+    var a = pf(['away_' + key]);
+    if (h != null && a != null) return (h + a) / 2;
+    return h != null ? h : a;
   }
 
   function resolveOffenseRates(prof, ctx) {
@@ -204,9 +258,16 @@
       hr: pf(['hr', 'HR']),
       k: normalizeRatePct(pf(['k_pct', 'K%']), true),
       bb: normalizeRatePct(pf(['bb_pct', 'BB%']), true),
-      barrel: normalizeRatePct(pf(['barrel_pct', 'Barrel%']), false),
-      hard: normalizeRatePct(pf(['hardhit_pct', 'HardHit%']), false)
+      barrel: normalizeRatePct(pf(['barrel_pct', 'Barrel%']), true),
+      hard: normalizeRatePct(pf(['hardhit_pct', 'HardHit%']), true),
+      avg: pf(['avg', 'AVG']),
+      obp: pf(['obp', 'OBP']),
+      ops: pf(['ops', 'OPS'])
     };
+
+    if (rates.wrc == null) rates.wrc = teamLocationRate(prof, split, 'wrc', pickCol);
+    if (rates.woba == null) rates.woba = teamLocationRate(prof, split, 'woba', pickCol);
+    if (rates.slg == null) rates.slg = teamLocationRate(prof, split, 'slg', pickCol);
 
     if (split === 'home') {
       if (pf(['home_wrc']) != null) rates.wrc = pf(['home_wrc']);
@@ -220,6 +281,11 @@
 
     var sheetSplit = (split === 'home' || split === 'away' || split === 'f5') ? 'both' : split;
     applySheetRates(rates, offenseRatesFromMetrics(team, sheetSplit, ctx.metricsR, ctx.metricsL, pickCol));
+
+    var batterSplit = (split === 'home' || split === 'away' || split === 'f5') ? 'both' : split;
+    fillMissingRates(rates, offenseRatesFromBatterSplits(
+      team, batterSplit, ctx.batterSplitsR, ctx.batterSplitsL, pickCol
+    ));
 
     return rates;
   }
@@ -272,10 +338,10 @@
       osi = pf(['osi_vs_rhp']); abq = pf(['abq_vs_rhp']); rcv = pf(['rcv_vs_rhp']); obr = pf(['obr_vs_rhp']);
     } else if (split === 'lhp') {
       osi = pf(['osi_vs_lhp']); abq = pf(['abq_vs_lhp']); rcv = pf(['rcv_vs_lhp']); obr = pf(['obr_vs_lhp']);
-    } else if (split === 'home') {
-      osi = pf(['home_osi']); abq = pf(['abq']); rcv = pf(['rcv']); obr = pf(['obr']);
+    } else     if (split === 'home') {
+      osi = pf(['home_osi']); abq = pf(['home_abq', 'abq']); rcv = pf(['home_rcv', 'rcv']); obr = pf(['home_obr', 'obr']);
     } else if (split === 'away') {
-      osi = pf(['away_osi']); abq = pf(['abq']); rcv = pf(['rcv']); obr = pf(['obr']);
+      osi = pf(['away_osi']); abq = pf(['away_abq', 'abq']); rcv = pf(['away_rcv', 'rcv']); obr = pf(['away_obr', 'obr']);
     } else if (split === 'f5') {
       osi = pf(['osi_f5']); abq = pf(['abq_f5', 'abq']); rcv = pf(['rcv_f5', 'rcv']); obr = pf(['obr_f5', 'obr']);
     } else {
@@ -303,10 +369,11 @@
     var oor = pf(['oor']);
 
     var osiYtd = pf(['osi_ytd', 'OSI_YTD']);
-    var abqYtd = pf(['abq_ytd', 'ABQ_YTD', 'abq']);
-    var rcvYtd = pf(['rcv_ytd', 'RCV_YTD', 'rcv']);
-    var obrYtd = pf(['obr_ytd', 'OBR_YTD', 'obr']);
+    var abqYtd = pf(['abq_ytd', 'ABQ_YTD']);
+    var rcvYtd = pf(['rcv_ytd', 'RCV_YTD']);
+    var obrYtd = pf(['obr_ytd', 'OBR_YTD']);
     if (osiYtd == null) osiYtd = pf(['osi']);
+    /* Do not use split-filtered abq/rcv/obr as YTD trend anchors — causes flat +0.0 deltas. */
 
     return {
       osi: osi, abq: abq, rcv: rcv, obr: obr, proj: proj, ppGap: ppGap, pals: pals, oor: oor,
@@ -404,11 +471,21 @@
     var sliced = C.trendWindowSlice
       ? C.trendWindowSlice(['YTD', 'L30', 'L14', 'L7'], pack[active] || [], windowKey)
       : { labels: ['YTD', 'L30', 'L14', 'L7'], values: pack[active] || [] };
-    var readout = C.trendDeltaReadout ? C.trendDeltaReadout(m, windowKey) : '';
-    var toggles = ['osi', 'rcv', 'abq', 'obr'].map(function(k) {
-      var lbl = k.toUpperCase();
-      return '<button type="button" class="hub-pill tp-trend-metric' + (active === k ? ' active' : '')
-        + '" data-trend-metric="' + k + '" aria-pressed="' + (active === k ? 'true' : 'false') + '">' + lbl + '</button>';
+    var readout = '';
+    if (!global.TeamProfileIntel && C.trendDeltaReadout) {
+      readout = C.trendDeltaReadout(m, windowKey);
+    }
+    var formReadHtml = global.TeamProfileIntel && TeamProfileIntel.renderFormReadHtml
+      ? TeamProfileIntel.renderFormReadHtml(m) : '';
+    var toggles = [
+      { k: 'osi', abbr: 'OSI', desc: 'Offense Score' },
+      { k: 'rcv', abbr: 'RCV', desc: 'Contact Value' },
+      { k: 'abq', abbr: 'ABQ', desc: 'Approach Quality' },
+      { k: 'obr', abbr: 'OBR', desc: 'On-Base Value' }
+    ].map(function(t) {
+      return '<button type="button" class="hub-pill tp-trend-metric' + (active === t.k ? ' active' : '')
+        + '" data-trend-metric="' + t.k + '" aria-pressed="' + (active === t.k ? 'true' : 'false') + '"'
+        + ' title="' + esc(t.desc) + '">' + esc(t.abbr) + '</button>';
     }).join('');
     var chart = C.buildTrendLineChart(active.toUpperCase(), sliced.values, 480, 120, {
       labels: sliced.labels,
@@ -417,30 +494,39 @@
     return '<div class="tp-trend-panel" data-window="' + esc(windowKey) + '">'
       + '<div class="tp-trend-controls" role="group" aria-label="Chart metric">' + toggles + '</div>'
       + '<div class="tp-trend-chart-mount" data-active-metric="' + esc(active) + '">' + chart + '</div>'
-      + '<p class="tp-trend-readout ca-helper">' + esc(readout) + '</p></div>';
+      + (readout ? '<p class="tp-trend-readout ca-helper">' + esc(readout) + '</p>' : '')
+      + formReadHtml
+      + '</div>';
+  }
+
+  function splitContextSummary(m, prof, ctx) {
+    var platoon = platoonSplitSummary(m, ctx);
+    var location = locationSplitSummary(prof, m, ctx);
+    if (!platoon && !location) return '';
+    var platoonInner = platoon ? platoon.replace(/<div class="tp-platoon-summary-head">[^<]*<\/div>/, '') : '';
+    var locationInner = location ? location.replace(/<div class="tp-platoon-summary-head">[^<]*<\/div>/, '') : '';
+    return '<div class="tp-split-context">'
+      + (platoonInner ? platoonInner.replace('tp-platoon-summary', 'tp-platoon-summary tp-split-context__platoon') : '')
+      + (locationInner ? locationInner.replace('tp-location-summary', 'tp-location-summary tp-split-context__location') : '')
+      + '</div>';
   }
 
   function renderSummaryPanel(prof, team, m, ctx) {
-    var rates = resolveOffenseRates(prof, ctx);
-    var wrc = ctx.wrc != null ? ctx.wrc : rates.wrc;
-    var chips = [
-      ['projOSI', m.proj, 'osi', false, 1],
-      ['PP-Gap', m.ppGap, 'ppGap', false, 1]
-    ].map(function(c) {
-      return '<span class="tp-summary-chip"><span class="tp-summary-chip-k">' + esc(c[0]) + '</span>'
-        + valChip(c[1], c[2], c[3], c[4]) + '</span>';
-    }).join('');
-
     var filterNote = esc((ctx.splitLabel || ctx.split || 'both') + ' · ' + (ctx.windowLabel || ctx.window || 'YTD'));
-    var platoonHtml = platoonSplitSummary(m, ctx);
-    var locationHtml = locationSplitSummary(prof, m, ctx);
+    var splitNotes = splitContextSummary(m, prof, ctx);
+    var splitVerdictExtra = '';
+    if (global.TeamProfileIntel && TeamProfileIntel.renderSplitVerdictHtml
+        && (ctx.split === 'both' || ctx.split === 'home' || ctx.split === 'away' || ctx.split === 'f5' || !ctx.split)) {
+      splitVerdictExtra = TeamProfileIntel.renderSplitVerdictHtml(m);
+    }
 
     return '<div class="tp-summary-panel">'
-      + '<div class="tp-summary-head"><span class="tp-summary-title">Offense Summary</span>'
-      + '<span class="tp-summary-filter">' + filterNote + '</span></div>'
-      + '<div class="tp-summary-chips">' + chips + '</div>'
-      + platoonHtml
-      + locationHtml
+      + '<header class="ca-section-header tp-summary-head">'
+      + '<h2 class="ca-section-title">Rolling Trend</h2>'
+      + '<p class="ca-helper tp-summary-filter" title="Active split and time window">' + filterNote + '</p>'
+      + '</header>'
+      + (splitNotes ? splitNotes : '')
+      + splitVerdictExtra
       + renderTrendChartPanel(m, ctx)
       + '</div>';
   }
@@ -468,98 +554,21 @@
     ctx = ctx || {};
     var logo = A ? A.teamLogoImg(team, 120, 'tp-hero-logo snapshot-logo') : '';
     var rank = ctx.osiRank;
+    var subParts = [];
+    if (ctx.recordWl) subParts.push('<span class="tp-hero-record">' + esc(ctx.recordWl) + '</span>');
+    if (rank) subParts.push('#' + rank + ' OSI rank');
+    if (ctx.avgPitchScore != null) subParts.push('Pitch Score ' + ctx.avgPitchScore.toFixed(0));
     return '<div class="ca-profile-hero">'
       + '<div class="ca-profile-hero__main">'
       + '<h1 class="ca-profile-hero__title">' + esc(ctx.teamName || team) + '</h1>'
-      + (ctx.recordWl ? '<p class="ca-profile-hero__sub">'
-        + (rank ? '#' + rank + ' OSI rank' : '')
-        + (ctx.avgPitchScore != null ? (rank ? ' · ' : '') + 'Pitch Score ' + ctx.avgPitchScore.toFixed(0) : '') + '</p>' : '')
+      + (subParts.length ? '<p class="ca-profile-hero__sub">' + subParts.join(' · ') + '</p>' : '')
       + '</div>'
       + '<div class="ca-profile-hero__body">'
       + '<div class="tp-hero-logo-wrap">' + logo + '</div>'
       + '</div>'
-      + insightRailHtml(prof, m, ctx)
       + '</div>';
   }
 
-  function insightRailHtml(prof, m, ctx) {
-    ctx = ctx || {};
-    var pickCol = ctx.pickCol;
-    var rates = resolveOffenseRates(prof, ctx);
-    var woba = rates.woba;
-    var xwoba = rates.xwoba;
-    var barrel = num(pick(prof, ['barrel_pct', 'Barrel%'], pickCol));
-    var hr = num(pick(prof, ['hr', 'HR'], pickCol));
-    var rows = [];
-
-    if (woba != null && xwoba != null) {
-      var contactGap = (woba - xwoba) * 1000;
-      rows.push({
-        icon: contactGap > 8 ? 'regression' : contactGap < -8 ? 'trend-up' : 'contact',
-        label: contactGap > 8 ? 'Regression watch' : contactGap < -8 ? 'Contact upside' : 'Contact aligned',
-        text: contactGap > 8
-          ? 'wOBA runs ' + Math.round(contactGap) + ' pts above xwOBA — contact results may cool.'
-          : contactGap < -8
-            ? 'xwOBA leads wOBA by ' + Math.abs(Math.round(contactGap)) + ' pts — room for balls to fall.'
-            : 'wOBA tracks xwOBA — underlying contact matches box-score results.'
-      });
-    }
-
-    if (barrel != null && barrel >= 9) {
-      rows.push({
-        icon: 'barrel',
-        label: 'Barrel rate leader',
-        text: 'Barrel% ' + barrel.toFixed(1) + '% — hard-contact profile ranks with elite lineups.'
-      });
-    } else if (hr != null && hr >= 80) {
-      rows.push({
-        icon: 'power',
-        label: 'Power profile',
-        text: hr + ' HR on the season — legitimate middle-of-order thump.'
-      });
-    }
-
-    var splitGap = (m.osiR != null && m.osiL != null) ? Math.abs(m.osiR - m.osiL) : null;
-    if (splitGap != null && splitGap >= 6) {
-      rows.push({
-        icon: 'swap',
-        label: 'Platoon-sensitive',
-        text: 'OSI split gap ' + splitGap.toFixed(1) + ' (RHP ' + m.osiR.toFixed(1) + ' · LHP ' + m.osiL.toFixed(1) + ') — handedness matters.'
-      });
-    }
-
-    var ppGap = m.ppGap;
-    if (rows.length < 3 && ppGap != null && Math.abs(ppGap) >= 4) {
-      rows.push({
-        icon: ppGap >= 4 ? 'trend-up' : 'regression',
-        label: ppGap >= 4 ? 'Process upside' : 'Regression watch',
-        text: 'PP-Gap ' + (ppGap >= 0 ? '+' : '') + ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
-      });
-    }
-
-    if (rows.length < 3 && m.proj != null && m.osi != null) {
-      rows.push({
-        icon: 'process',
-        label: 'Process baseline',
-        text: 'ProjOSI ' + m.proj.toFixed(1) + ' vs OSI ' + m.osi.toFixed(1) + ' on the active filter.'
-      });
-    }
-
-    if (!rows.length) {
-      rows.push({
-        icon: 'target',
-        label: 'Offense profile',
-        text: 'Core split and window metrics loading — check pipeline refresh if empty.'
-      });
-    }
-
-    return '<div class="ca-insight-rail">' + rows.slice(0, 3).map(function(r) {
-      return '<div class="ca-insight-row">'
-        + iconCircle(r.icon)
-        + '<span><span class="ca-insight-label">' + esc(r.label) + '</span><span class="ca-insight-text">' + esc(r.text) + '</span></span>'
-        + '</div>';
-    }).join('') + '</div>';
-  }
   function pickSplitStat(row, keys) {
     if (!row) return null;
     var v = pick(row, keys);
@@ -592,27 +601,6 @@
     var wrcDiff = (lWrc != null && rWrc != null) ? lWrc - rWrc : null;
     var slgDiff = (lSlg != null && rSlg != null) ? lSlg - rSlg : null;
 
-    var stronger = '';
-    var weaker = '';
-    var balanced = false;
-    if (wobaDiff != null) {
-      if (Math.abs(wobaDiff) < 0.005) balanced = true;
-      else if (wobaDiff > 0) { stronger = 'vs LHP'; weaker = 'vs RHP'; }
-      else { stronger = 'vs RHP'; weaker = 'vs LHP'; }
-    } else if (osiDiff != null) {
-      if (Math.abs(osiDiff) < 2) balanced = true;
-      else if (osiDiff > 0) { stronger = 'vs LHP'; weaker = 'vs RHP'; }
-      else { stronger = 'vs RHP'; weaker = 'vs LHP'; }
-    }
-
-    var lead = '';
-    if (balanced) {
-      lead = 'Platoon profile is <strong>balanced</strong> across handedness.';
-    } else if (stronger && weaker) {
-      lead = '<span class="tp-platoon-tag tp-platoon-tag--strong">' + esc(stronger) + ' stronger</span>'
-        + '<span class="tp-platoon-tag tp-platoon-tag--weak">' + esc(weaker) + ' weaker</span>';
-    }
-
     var details = [];
     if (wobaDiff != null) {
       details.push('wOBA Δ <strong>' + (wobaDiff >= 0 ? '+' : '') + wobaDiff.toFixed(3) + '</strong>'
@@ -630,11 +618,10 @@
         + ' · LHP ' + osiL.toFixed(1) + ' · RHP ' + osiR.toFixed(1));
     }
 
-    if (!lead && !details.length) return '';
+    if (!details.length) return '';
 
     return '<div class="tp-platoon-summary">'
       + '<div class="tp-platoon-summary-head">Platoon Report</div>'
-      + (lead ? '<p class="tp-platoon-summary-lead">' + lead + '</p>' : '')
       + (details.length ? '<p class="tp-platoon-summary-detail">' + details.join(' · ') + '</p>' : '')
       + '</div>';
   }

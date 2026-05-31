@@ -78,7 +78,9 @@
   function resolvePrefix(split) {
     var map = {
       overall: 'overall', lhh: 'vs_lhh', rhh: 'vs_rhh',
-      home: 'home', away: 'away', hilev: 'high_leverage', lolev: 'low_leverage'
+      home: 'home', away: 'away',
+      hilev: 'high_leverage', lolev: 'low_leverage',
+      hlev: 'high_leverage', llev: 'low_leverage'
     };
     return map[split] || 'overall';
   }

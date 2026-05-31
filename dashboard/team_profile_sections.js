@@ -43,24 +43,101 @@
       + valChip(v, ctx, invert, decimals) + '</span>';
   }
 
-  function metricGrid(headers, cells) {
-    return '<div class="tp-metric-grid tp-metric-grid--header-row">'
-      + '<div class="tp-metric-grid-head">' + headers.map(function(h) {
-        return '<span class="tp-metric-grid-h">' + esc(h) + '</span>';
-      }).join('') + '</div>'
-      + '<div class="tp-metric-grid-body">' + cells.join('') + '</div></div>';
+  var METRIC_LABELS = {
+    'OSI': { abbr: 'OSI', gloss: 'osi' },
+    'RCV': { abbr: 'RCV', gloss: 'rcv' },
+    'ABQ': { abbr: 'ABQ', gloss: 'abq' },
+    'OBR': { abbr: 'OBR', gloss: 'obr' },
+    'projOSI': { abbr: 'proj OSI', gloss: 'projosi' },
+    'PP-Gap': { abbr: 'PP-Gap', gloss: 'pp-gap' },
+    'wRC+': { abbr: 'wRC+', gloss: 'wrc-plus' },
+    'wOBA': { abbr: 'wOBA', gloss: 'woba' },
+    'xwOBA': { abbr: 'xwOBA', gloss: 'xwoba' },
+    'SLG': { abbr: 'SLG', gloss: 'slg' },
+    'HR': { abbr: 'HR', gloss: 'hr' },
+    'K%': { abbr: 'K%', gloss: 'k-pct' },
+    'BB%': { abbr: 'BB%', gloss: 'bb-pct' },
+    'Barrel%': { abbr: 'Barrel%', gloss: 'barrel' },
+    'HardHit%': { abbr: 'Hard Hit%', gloss: 'hardhit' },
+    'AVG': { abbr: 'AVG', gloss: 'avg' },
+    'OBP': { abbr: 'OBP', gloss: 'obp' },
+    'OPS': { abbr: 'OPS', gloss: 'ops' },
+    'PALS': { abbr: 'PALS', gloss: 'pals' },
+    'xFIP Faced': { abbr: 'xFIP', gloss: 'xfip' },
+    'Win%': { abbr: 'Win%', gloss: 'win-pct' },
+    'F5 Win%': { abbr: 'F5 Win%', gloss: 'f5-win-pct' },
+    'Pitcher Win%': { abbr: 'SP Win%', gloss: 'sp-win-pct' },
+    'QS%': { abbr: 'QS%', gloss: 'qs-pct' }
+  };
+
+  function metricHeaderCell(key) {
+    var m = METRIC_LABELS[key] || { abbr: key, gloss: '' };
+    var gloss = m.gloss
+      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Definition in glossary">↗</a>'
+      : '';
+    return '<span class="tp-metric-grid-h">'
+      + '<span class="tp-metric-abbr">' + esc(m.abbr) + '</span>'
+      + gloss
+      + '</span>';
+  }
+
+  function metricLabel(key) {
+    return METRIC_LABELS[key] || { abbr: key, gloss: '' };
+  }
+
+  function metricTile(key, v, ctx, invert, decimals) {
+    var m = metricLabel(key);
+    var glossLink = m.gloss
+      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
+      : '';
+    return '<article class="tp-metric-tile" aria-label="' + esc(m.abbr) + '">'
+      + '<div class="tp-metric-tile__head">'
+      + '<span class="tp-metric-tile__name">' + esc(m.abbr) + glossLink + '</span>'
+      + '</div>'
+      + '<div class="tp-metric-tile__value">' + valChip(v, ctx, invert, decimals) + '</div>'
+      + '</article>';
+  }
+
+  function metricTileGrid(slots, layout) {
+    layout = layout || 'auto';
+    return '<div class="tp-metric-tile-grid tp-metric-tile-grid--' + esc(layout) + '">'
+      + slots.map(function(s) { return metricTile(s[0], s[1], s[2], s[3], s[4]); }).join('')
+      + '</div>';
+  }
+
+  function metricTileGroup(title, hint, slots, layout) {
+    return '<div class="tp-metric-group">'
+      + '<div class="tp-metric-group__head">'
+      + '<h3 class="tp-metric-group__title">' + esc(title) + '</h3>'
+      + (hint ? '<p class="tp-metric-group__hint">' + esc(hint) + '</p>' : '')
+      + '</div>'
+      + metricTileGrid(slots, layout || 'auto')
+      + '</div>';
+  }
+
+  function metricGridFromSlots(slots, layout) {
+    return metricTileGrid(slots, layout || 'auto');
   }
 
   function metricSlot(label, v, ctx, invert, decimals) {
     return chipOnly(v, ctx, invert, decimals, label);
   }
 
-  function sectionCard(eyebrow, title, subtitle, body) {
-    return '<section class="ca-card tp-section">'
+  function sectionCard(title, subtitle, body, meta) {
+    meta = meta || {};
+    var hdrOpts = {
+      title: title,
+      subtitle: subtitle || '',
+      icon: meta.icon,
+      kicker: meta.kicker || 'Team Profile'
+    };
+    return '<section class="ca-board ca-card tp-section">'
       + (window.MLBMAAssets && MLBMAAssets.sectionHeaderHtml
-        ? MLBMAAssets.sectionHeaderHtml({ eyebrow: eyebrow, title: title, subtitle: subtitle || '' })
-        : '<header class="ca-section-header"><p class="ca-eyebrow">' + esc(eyebrow) + '</p><h2 class="ca-section-title">'
-          + esc(title) + '</h2></header>')
+        ? MLBMAAssets.sectionHeaderHtml(hdrOpts)
+        : '<header class="ca-section-header"><h2 class="ca-section-title">'
+          + esc(title) + '</h2>'
+          + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
+          + '</header>')
       + body + '</section>';
   }
 
@@ -94,164 +171,96 @@
     };
   }
 
-  function renderScoring(m, prof, ctx) {
+  function renderOffenseProfile(m, prof, ctx) {
     var rates = (Mini && Mini.resolveOffenseRates) ? Mini.resolveOffenseRates(prof, ctx) : {};
     var wrc = ctx.wrc != null ? ctx.wrc : rates.wrc;
-    var woba = rates.woba;
-    var xwoba = rates.xwoba;
-    var slg = rates.slg;
-    var hr = rates.hr;
-    var k = rates.k;
-    var bb = rates.bb;
-    var barrel = rates.barrel;
-    var hard = rates.hard;
+    var filterNote = (ctx.splitLabel || ctx.split || 'both') + ' · ' + (ctx.windowLabel || ctx.window || 'YTD');
 
-    var summary = '';
-    if (woba != null && xwoba != null) {
-      var delta = (woba - xwoba) * 1000;
-      summary = '<p class="ca-helper tp-summary-line">wOBA '
-        + (delta > 5 ? 'outpaces' : delta < -5 ? 'trails' : 'tracks')
-        + ' xwOBA by <strong>' + Math.abs(Math.round(delta)) + '</strong> points.</p>';
+    var caGrades = [
+      ['OSI', m.osi, 'osi', false, 1],
+      ['RCV', m.rcv, 'rcv', false, 1],
+      ['ABQ', m.abq, 'abq', false, 1],
+      ['OBR', m.obr, 'obr', false, 1],
+      ['projOSI', m.proj, 'osi', false, 1],
+      ['PP-Gap', m.ppGap, 'ppGap', false, 1]
+    ];
+    var runPower = [
+      ['wRC+', wrc, 'wrc', false, 0],
+      ['wOBA', rates.woba, 'woba', false, 3],
+      ['xwOBA', rates.xwoba, 'woba', false, 3],
+      ['OPS', rates.ops, 'wrc', false, 3],
+      ['HR', rates.hr, 'wrc', false, 0],
+      ['SLG', rates.slg, 'woba', false, 3],
+      ['AVG', rates.avg, 'woba', false, 3]
+    ];
+    var plateSkills = [
+      ['K%', rates.k, 'pitching', true, 1],
+      ['BB%', rates.bb, 'obr', false, 1],
+      ['OBP', rates.obp, 'obr', false, 3],
+      ['Barrel%', rates.barrel, 'rcv', false, 1],
+      ['HardHit%', rates.hard, 'rcv', false, 1]
+    ];
+
+    var body = metricTileGrid(caGrades.concat(runPower).concat(plateSkills), 'auto');
+
+    return sectionCard('Offense Profile', filterNote, body, { icon: 'layers', kicker: 'Lineup unit' });
+  }
+
+  function renderScheduleContext(ctx, resultsRow, window) {
+    var pals = ctx.pals;
+    var xfip = ctx.xfipFaced;
+    var r = resultsForWindow(resultsRow, window);
+    var slots = [];
+    if (pals != null) slots.push(['PALS', pals, 'osi', false, 1]);
+    if (xfip != null) slots.push(['xFIP Faced', xfip, 'pitching', true, 2]);
+    if (r.winPct != null) slots.push(['Win%', r.winPct, 'osi', false, 1]);
+    if (r.f5WinPct != null) slots.push(['F5 Win%', r.f5WinPct, 'osi', false, 1]);
+    if (r.spWinPct != null) slots.push(['SP Win%', r.spWinPct, 'pitching', false, 1]);
+    if (r.qsPct != null) slots.push(['QS%', r.qsPct, 'pitching', false, 1]);
+
+    if (!slots.length) {
+      return sectionCard('Schedule & Results', 'Run compute_pals and team results export when empty',
+        '<p class="ca-helper">PALS, xFIP faced, and win rates appear here after the pipeline runs.</p>',
+        { icon: 'calendar', kicker: 'Context' });
     }
 
-    var slots = [
-      ['wRC+', wrc, 'wrc', false, 0],
-      ['wOBA', woba, 'woba', false, 3],
-      ['xwOBA', xwoba, 'woba', false, 3],
-      ['SLG', slg, 'woba', false, 3],
-      ['HR', hr, 'wrc', false, 0],
-      ['K%', k, 'pitching', true, 1],
-      ['BB%', bb, 'obr', false, 1],
-      ['Barrel%', barrel, 'rcv', false, 1],
-      ['HardHit%', hard, 'rcv', false, 1]
-    ];
-    var headers = slots.map(function(s) { return s[0]; }).concat(['AVG', 'OBP', 'OPS']);
-    var cells = slots.map(function(s) {
-      return chipOnly(s[1], s[2], s[3], s[4], s[0]);
-    });
-    cells.push(phase1Chip('AVG'));
-    cells.push(phase1Chip('OBP'));
-    cells.push(phase1Chip('OPS'));
+    var body = metricTileGrid(slots, 'auto');
+    if (A && A.f5WarningHtml && r.f5WinPct != null) body += A.f5WarningHtml();
+    return sectionCard('Schedule & Results', (ctx.windowLabel || ctx.window || 'YTD') + ' · schedule difficulty and win rates', body,
+      { icon: 'calendar', kicker: 'Context' });
+  }
 
-    return sectionCard('Scoring', 'Scoring', 'Rate line on active split · created metrics in Process',
-      metricGrid(headers, cells) + summary);
+  function renderScoring(m, prof, ctx) {
+    return renderOffenseProfile(m, prof, ctx);
   }
 
   function renderProcess(m) {
-    var headers = ['OSI', 'RCV', 'ABQ', 'OBR', 'projOSI', 'PP-Gap'];
-    var cells = [
-      chipOnly(m.osi, 'osi', false, 1, 'OSI'),
-      chipOnly(m.rcv, 'rcv', false, 1, 'RCV'),
-      chipOnly(m.abq, 'abq', false, 1, 'ABQ'),
-      chipOnly(m.obr, 'obr', false, 1, 'OBR'),
-      chipOnly(m.proj, 'osi', false, 1, 'projOSI'),
-      chipOnly(m.ppGap, 'ppGap', false, 1, 'PP-Gap')
-    ];
-    return sectionCard('Process', 'Process', 'Created metrics + projection spread',
-      metricGrid(headers, cells));
+    return '';
   }
 
   function renderPitchingFaced(ctx) {
-    var pals = ctx.pals;
-    var xfip = ctx.xfipFaced;
-    if (pals == null && xfip == null) {
-      return sectionCard('Pitching Faced', 'Quality of Arms Seen', 'PALS tab — run compute_pals pipeline step',
-        '<p class="ca-helper">PALS and avg xFIP faced not loaded for this team.</p>');
-    }
-    return sectionCard('Pitching Faced', 'Pitching Faced', 'Schedule-adjusted difficulty (PALS tab)',
-      metricGrid(['PALS', 'xFIP Faced'], [
-        chipOnly(pals, 'osi', false, 1, 'PALS'),
-        chipOnly(xfip, 'pitching', true, 2, 'xFIP Faced')
-      ]));
+    return '';
   }
 
   function renderSurfaceWins(resultsRow, window) {
-    var r = resultsForWindow(resultsRow, window);
-    var body = metricGrid(['Win%', 'F5 Win%', 'Pitcher Win%'], [
-      chipOnly(r.winPct, 'osi', false, 1, 'Win%'),
-      chipOnly(r.f5WinPct, 'osi', false, 1, 'F5 Win%'),
-      chipOnly(r.spWinPct, 'pitching', false, 1, 'Pitcher Win%')
-    ]);
-    if (A && A.f5WarningHtml) body += A.f5WarningHtml();
-    if (r.qsPct != null) {
-      body += metricGrid(['QS%'], [chipOnly(r.qsPct, 'pitching', false, 1, 'QS%')]);
-    } else {
-      body += '<p class="ca-helper tp-phase1-inline">QS% — <span class="tp-phase1-tag">Phase 1</span> (wire game-results QS to profile)</p>';
-    }
-    return sectionCard('Surface', 'Surface Wins', 'Team_Results · ' + (window || 'YTD'),
-      body);
+    return '';
   }
 
   function renderMomentum(m, prof, ctx) {
-    var pickCol = ctx.pickCol;
-    var hotCold = '';
-    if (m.osiL7 != null && m.osiYtd != null) {
-      if (m.osiL7 - m.osiYtd >= 8) hotCold = ' <span class="pill-hot">Hot</span>';
-      else if (m.osiL7 - m.osiYtd <= -8) hotCold = ' <span class="pill-cold">Cold</span>';
-    }
-
-    function formatWindowDelta(delta) {
-      if (delta == null || isNaN(delta)) return '—';
-      if (Math.abs(delta) < 0.005) return '0.0';
-      var dec = Math.abs(delta) < 10 ? 2 : 1;
-      var text = delta.toFixed(dec);
-      if (text === '-0.00' || text === '-0.0') text = '0.0';
-      return (delta > 0 ? '+' : '') + text;
-    }
-
-    function trendDelta(ytd, l30, l14, l7) {
-      if (l7 == null) return null;
-      if (ytd != null && Math.abs(l7 - ytd) >= 0.05) return l7 - ytd;
-      if (l30 != null && Math.abs(l7 - l30) >= 0.05) return l7 - l30;
-      if (l14 != null && Math.abs(l7 - l14) >= 0.05) return l7 - l14;
-      if (ytd != null) return l7 - ytd;
-      return null;
-    }
-
-    function trendRow(label, ytd, l30, l14, l7) {
-      var delta = trendDelta(ytd, l30, l14, l7);
-      var deltaCls = delta == null ? '' : delta > 2 ? ' trend-up' : delta < -2 ? ' trend-down' : ' trend-flat';
-      return '<tr><td>' + esc(label) + '</td>'
-        + '<td class="num">' + valChip(ytd, label.toLowerCase(), false, 1) + '</td>'
-        + '<td class="num">' + valChip(l30, label.toLowerCase(), false, 1) + '</td>'
-        + '<td class="num">' + valChip(l14, label.toLowerCase(), false, 1) + '</td>'
-        + '<td class="num">' + valChip(l7, label.toLowerCase(), false, 1) + '</td>'
-        + '<td class="num' + deltaCls + '">' + formatWindowDelta(delta) + '</td></tr>';
-    }
-
-    var staleNote = '';
-    if (m.osiYtd != null && m.osiL7 != null && m.osiL30 != null
-        && Math.abs(m.osiL7 - m.osiYtd) < 0.05
-        && Math.abs(m.osiL30 - m.osiYtd) < 0.05
-        && Math.abs(m.osiL14 - m.osiYtd) < 0.05) {
-      staleNote = '<p class="ca-helper tp-window-stale">Rolling windows match YTD — run <code>scrape_batter_splits</code> + team profile push for live L7/L14/L30 splits.</p>';
-    }
-
-    var table = '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>'
-      + '<th>Metric</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th><th>Δ L7</th></tr></thead><tbody>'
-      + trendRow('OSI', m.osiYtd, m.osiL30, m.osiL14, m.osiL7)
-      + trendRow('RCV', m.rcvYtd, m.rcvL30, m.rcvL14, m.rcvL7)
-      + trendRow('OBR', m.obrYtd, m.obrL30, m.obrL14, m.obrL7)
-      + '</tbody></table></div>';
-    return sectionCard('Momentum', 'Window Trends' + hotCold, 'OSI / RCV / OBR across rolling windows · Δ uses L7−YTD, else L7−L30/L14', table + staleNote);
+    return '';
   }
 
   function renderTonight(ctx) {
-    if (!ctx.tonightGame) return '';
-    var g = ctx.tonightGame;
-    var edge = (ctx.teamOsi != null && ctx.oppPitchScore != null) ? ctx.teamOsi - ctx.oppPitchScore : null;
-    var body = '<div class="tp-matchup-panel">';
-    body += '<p><strong>Opponent:</strong> ' + esc(g.oppName || g.opp) + (g.oppOsi != null ? ' · OSI ' + g.oppOsi.toFixed(1) : '') + '</p>';
-    body += '<p><strong>Opposing SP:</strong> ' + esc(g.spName || 'TBD') + (g.oppPs != null ? ' · Pitch Score ' + g.oppPs.toFixed(1) : '') + '</p>';
-    if (edge != null) {
-      body += '<p><strong>Lineup edge (OSI − opp Pitch):</strong> <span class="' + (edge > 0 ? 'trend-up' : 'trend-down') + '">'
-        + (edge >= 0 ? '+' : '') + edge.toFixed(1) + '</span></p>';
-    }
-    if (ctx.lineupEdgePct != null) {
-      body += '<div class="tp-edge-bar" style="--edge:' + Math.max(0, Math.min(100, ctx.lineupEdgePct)) + '%"></div>';
-    }
-    body += '<a class="ca-btn ca-btn--primary" href="matchup_compare.html">View full matchup</a></div>';
-    return sectionCard('Tonight', 'Matchup Context', 'Today\'s slate — compact compare slice', body);
+    ctx = ctx || {};
+    if (ctx.battingTab === 'qualified') return '';
+    var m = ctx.tonightMatchup;
+    if (!m || !m.away || !m.home) return '';
+    var PD = global.PlatformDashboard;
+    if (!PD || !PD.renderHeroMatchupCard) return '';
+    var cardHtml = PD.renderHeroMatchupCard(m, 0, { eagerAvatars: true, extraClass: 'hero-matchup-card--profile' });
+    return sectionCard('Tonight\'s Matchup', 'Starters, lineup edge, and projected batting order',
+      '<div class="tp-matchup-card-wrap" data-tp-matchup-card>' + cardHtml + '</div>',
+      { icon: 'swords', kicker: 'Tonight' });
   }
 
   function iconCircle(name) {
@@ -278,18 +287,22 @@
     }
     var m = resolveM(prof, team, ctx);
     var html = '';
-    html += renderScoring(m, prof, ctx);
-    html += renderProcess(m);
-    html += renderPitchingFaced(ctx);
-    html += renderSurfaceWins(ctx.resultsRow, ctx.window);
-    html += renderMomentum(m, prof, ctx);
+    html += renderOffenseProfile(m, prof, ctx);
+    html += renderScheduleContext(ctx, ctx.resultsRow, ctx.window);
+    if (global.TeamProfileIntel) {
+      html += TeamProfileIntel.renderSustainabilitySection(m, prof, ctx);
+    }
     html += renderTonight(ctx);
-    html += renderAnalystTake(m, prof, ctx);
+    if (global.TeamProfileIntel) {
+      html += TeamProfileIntel.renderResearchTakeaways(m, prof, ctx);
+    }
     return html.replace(/<\/?motion>/g, '');
   }
 
   global.TeamProfileSections = {
     renderAll: renderAll,
+    renderOffenseProfile: renderOffenseProfile,
+    renderScheduleContext: renderScheduleContext,
     renderScoring: renderScoring,
     renderProcess: renderProcess,
     renderPitchingFaced: renderPitchingFaced,

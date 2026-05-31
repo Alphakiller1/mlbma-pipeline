@@ -86,6 +86,10 @@ F5_OSI_WEIGHTS = {"ABQ": 0.45, "OBR": 0.35, "RCV": 0.20}
 
 # Batter profile system
 BATTER_MIN_PA = 50
+# Lower PA floor for today's lineup batters so projected lineups stay populated
+BATTER_LINEUP_MIN_PA = 8
+# FanGraphs splits export page size (500 truncates regulars on deep rosters)
+FG_BATTER_PAGE_SIZE = 2000
 # Date-window leaderboards: lower PA floor (7-day windows rarely reach 50 PA)
 BATTER_WINDOW_MIN_PA = {
     "overall": 50,

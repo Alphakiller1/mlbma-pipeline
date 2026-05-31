@@ -579,15 +579,22 @@
     var keys = ['osi', 'rcv', 'abq', 'obr'];
     var labels = { osi: 'OSI', rcv: 'RCV', abq: 'ABQ', obr: 'OBR' };
     var deltas = [];
+    var missing = [];
     keys.forEach(function(k) {
       var ytd = num((pack[k] || [])[0]);
       var l7 = num((pack[k] || [])[3]);
-      if (ytd == null || l7 == null) return;
+      if (ytd == null || l7 == null) {
+        missing.push(labels[k]);
+        return;
+      }
       if (Math.abs(l7 - ytd) < 0.05) return;
       deltas.push({ key: k, label: labels[k], delta: l7 - ytd });
     });
     if (!deltas.length) {
-      return 'Windowed trend data unavailable for this team — run team profile pipeline for L7/L14/L30 splits.';
+      if (missing.length === keys.length) {
+        return 'Rolling window columns missing — run compute_team_profile + push_team_profiles for L7/L14/L30 splits.';
+      }
+      return 'L7 matches YTD across metrics — run batter split window scrape for fresh rolling trends.';
     }
     deltas.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
     var lead = deltas[0];
@@ -676,11 +683,18 @@
     }).join('');
 
     var deltaHtml = '';
-    if (valid.length >= 2) {
-      var delta = valid[valid.length - 1] - valid[0];
-      var deltaCls = delta > 2 ? 'is-up' : delta < -2 ? 'is-down' : 'is-flat';
-      deltaHtml = '<span class="mlbma-trend-delta ' + deltaCls + '">'
-        + (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' YTD→L7</span>';
+    var ytdVal = nums.length ? nums[0] : null;
+    var endIdx = labels.length > 3 ? 3 : labels.length - 1;
+    var endVal = nums.length > endIdx ? nums[endIdx] : null;
+    if (ytdVal != null && endVal != null && !isNaN(ytdVal) && !isNaN(endVal)) {
+      var delta = endVal - ytdVal;
+      if (Math.abs(delta) >= 0.05) {
+        var deltaCls = delta > 2 ? 'is-up' : delta < -2 ? 'is-down' : 'is-flat';
+        deltaHtml = '<span class="mlbma-trend-delta ' + deltaCls + '">'
+          + (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' YTD→L7</span>';
+      } else {
+        deltaHtml = '<span class="mlbma-trend-delta is-flat">Flat YTD→L7</span>';
+      }
     }
 
     return '<div class="mlbma-trend-chart" data-metric="' + esc(metricCtx) + '">'

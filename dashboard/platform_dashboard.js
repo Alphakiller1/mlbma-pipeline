@@ -410,6 +410,74 @@
       + '</article>';
   }
 
+  function renderHeroMatchupCard(m, cardIdx, opts) {
+    opts = opts || {};
+    cardIdx = cardIdx == null ? 0 : cardIdx;
+    var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
+    var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
+    var total = awayOSI + homeOSI || 1;
+    var awayPct = Math.max(10, (awayOSI / total) * 100);
+    var fav = awayOSI >= homeOSI ? m.away : m.home;
+    var script = gameScriptBadge(m);
+    var f5 = f5Badge(m);
+    var handLabel = m.homeHand === 'L' ? 'LHP' : m.homeHand === 'R' ? 'RHP' : 'SP';
+    var awayHandLabel = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
+    var awayEdgeCls = fav === m.away ? ' edge-team' : '';
+    var homeEdgeCls = fav === m.home ? ' edge-team' : '';
+    var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
+    var lineupHtml = opts.lineupHtml != null ? opts.lineupHtml
+      : (typeof global.buildMatchupLineupBlock === 'function'
+        ? global.buildMatchupLineupBlock(m, { expanded: true, hideToggle: true }) : '');
+    var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
+    return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
+      + '<div class="hmc-row hmc-teams">'
+      + '<div class="hmc-team' + awayEdgeCls + '">' + teamLinkHtml(m.away, logo, '') + '</div>'
+      + '<span class="hmc-at">@</span>'
+      + '<div class="hmc-team' + homeEdgeCls + '">' + teamLinkHtml(m.home, logo, '') + '</div>'
+      + gameMetaHtml(m)
+      + '</div>'
+      + '<div class="hmc-row hmc-pitchers">'
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
+      + '</div>'
+      + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
+      + '<div class="hmc-osi-bar">'
+      + '<span class="hmc-osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
+      + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
+      + '<span class="hmc-osi-val tr' + homeEdgeCls + '">' + esc(m.home) + ' <strong>' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
+      + '</div>'
+      + '<div class="hmc-osi-sparklines" aria-hidden="true">'
+      + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'
+      + '<span class="hmc-spark">' + teamOsiSparkline(m.home, m.awayHand) + '</span>'
+      + '</div>'
+      + '<div class="hmc-badges">'
+      + '<span class="script-badge ' + script.cls + '">' + esc(script.label) + '</span>'
+      + '<span class="f5-badge ' + f5.cls + '">' + esc(f5.label) + '</span>'
+      + '</div>'
+      + lineupHtml
+      + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
+      + '</article>';
+  }
+
+  function bindHeroMatchupCard(card) {
+    if (!card || card.dataset.navBound) return;
+    card.dataset.navBound = '1';
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('a, button, .hmc-lineup-toggle')) return;
+      var away = card.getAttribute('data-away');
+      var home = card.getAttribute('data-home');
+      if (away && home) global.location.href = compareUrl(away, home);
+    });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        var away = card.getAttribute('data-away');
+        var home = card.getAttribute('data-home');
+        if (away && home) global.location.href = compareUrl(away, home);
+      }
+    });
+  }
+
   function renderHeroMatchups() {
     bindDayTabs();
     var grid = document.getElementById('matchupsHeroGrid');
@@ -450,64 +518,13 @@
     var sorted = sortGames(games).filter(function(m) {
       return passesFilter(m, gameScriptBadge(m), f5Badge(m));
     });
-    var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
 
     grid.innerHTML = sorted.map(function(m, cardIdx) {
-      var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
-      var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
-      var total = awayOSI + homeOSI || 1;
-      var awayPct = Math.max(10, (awayOSI / total) * 100);
-      var fav = awayOSI >= homeOSI ? m.away : m.home;
-      var script = gameScriptBadge(m);
-      var f5 = f5Badge(m);
-      var handLabel = m.homeHand === 'L' ? 'LHP' : m.homeHand === 'R' ? 'RHP' : 'SP';
-      var awayHandLabel = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
-      var awayEdgeCls = fav === m.away ? ' edge-team' : '';
-      var homeEdgeCls = fav === m.home ? ' edge-team' : '';
-      var lineupHtml = typeof buildMatchupLineupBlock === 'function'
-        ? buildMatchupLineupBlock(m, { expanded: true, hideToggle: true }) : '';
-
-      return '<article class="hero-matchup-card" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
-        + '<div class="hmc-row hmc-teams">'
-        + '<div class="hmc-team' + awayEdgeCls + '">' + teamLinkHtml(m.away, logo, '') + '</div>'
-        + '<span class="hmc-at">@</span>'
-        + '<div class="hmc-team' + homeEdgeCls + '">' + teamLinkHtml(m.home, logo, '') + '</div>'
-        + gameMetaHtml(m)
-        + '</div>'
-        + '<div class="hmc-row hmc-pitchers">'
-        + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP }, { eager: cardIdx < 3 })
-        + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP }, { eager: cardIdx < 3 })
-        + '</div>'
-        + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
-        + '<div class="hmc-osi-bar">'
-        + '<span class="hmc-osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
-        + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
-        + '<span class="hmc-osi-val tr' + homeEdgeCls + '">' + esc(m.home) + ' <strong>' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
-        + '</div>'
-        + '<div class="hmc-osi-sparklines" aria-hidden="true">'
-        + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'
-        + '<span class="hmc-spark">' + teamOsiSparkline(m.home, m.awayHand) + '</span>'
-        + '</div>'
-        + '<div class="hmc-badges">'
-        + '<span class="script-badge ' + script.cls + '">' + esc(script.label) + '</span>'
-        + '<span class="f5-badge ' + f5.cls + '">' + esc(f5.label) + '</span>'
-        + '</div>'
-        + lineupHtml
-        + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
-        + '</article>';
+      return renderHeroMatchupCard(m, cardIdx);
     }).join('').replace(/<\/?motion>/g, '');
 
     bindCardNavigation();
-    grid.querySelectorAll('.hero-matchup-card').forEach(function(card) {
-      card.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          var away = card.getAttribute('data-away');
-          var home = card.getAttribute('data-home');
-          if (away && home) global.location.href = compareUrl(away, home);
-        }
-      });
-    });
+    grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
   }
 
   function signalConfClass(conf) {
@@ -711,6 +728,9 @@
     renderDashboard: renderDashboard,
     renderOpeningHero: renderOpeningHero,
     renderHeroMatchups: renderHeroMatchups,
+    renderHeroMatchupCard: renderHeroMatchupCard,
+    bindHeroMatchupCard: bindHeroMatchupCard,
+    compareUrl: compareUrl,
     renderSignalChips: renderSignalChips,
     setOpeningHeroSync: setOpeningHeroSync,
     initRegistry: initRegistry,

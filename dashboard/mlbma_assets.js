@@ -127,7 +127,7 @@
     cropMod = cropMod || 'matchup';
     dpr = dpr || 2;
     var floor = HEADSHOT_MIN_WIDTH[cropMod] || HEADSHOT_MIN_WIDTH.matchup;
-    var need = Math.ceil(displayPx * dpr * 1.15);
+    var need = Math.ceil(displayPx * dpr * 1.35);
     var chosen = floor;
     for (var i = 0; i < HEADSHOT_WIDTH_STEPS.length; i++) {
       if (HEADSHOT_WIDTH_STEPS[i] >= need) {
@@ -301,7 +301,12 @@
     var opts = normalizeAvatarOpts(sizeKeyOrOpts, maybeOpts);
     var cropCfg = resolveAvatarCrop(opts);
     var px = opts.size || cropCfg.px;
-    var mod = cropCfg.mod;
+    var mod = opts.cropMod || cropCfg.mod;
+    if (opts.size && !opts.cropMod) {
+      if (opts.size >= 96) mod = 'profile';
+      else if (opts.size >= 56) mod = 'compare';
+      else mod = 'matchup';
+    }
     var mlbId = resolveMlbId(idOrName);
     if (!mlbId) {
       var missingCls = opts.className || opts.cls || 'pitcher-headshot';
@@ -752,8 +757,41 @@
     return out;
   }
 
+  function caSectionHeadHtml(iconKey, kicker, title, purpose) {
+    var I = global.MLBMAIcons;
+    var icon = '';
+    if (I && I.iconSvg) {
+      icon = '<span class="ca-icon" aria-hidden="true">' + I.iconSvg(iconKey || 'circle-dot') + '</span>';
+    }
+    var body = '<div class="ca-section-head__body">';
+    if (kicker) body += '<div class="kicker">' + escHtml(kicker) + '</div>';
+    body += '<div class="title">' + escHtml(title || '') + '</div>';
+    if (purpose) body += '<div class="purpose">' + escHtml(purpose) + '</div>';
+    body += '</div>';
+    return '<div class="ca-section-head">' + icon + body + '</div>';
+  }
+
+  function glossaryLinkHtml(anchor, label) {
+    var id = String(anchor || '').replace(/^#/, '');
+    var text = label || 'Glossary';
+    return '<a class="glossary-link" href="glossary.html#' + escHtml(id) + '">' + escHtml(text) + '</a>';
+  }
+
   function sectionHeaderHtml(opts) {
     opts = opts || {};
+    if (opts.icon || opts.iconKey) {
+      var head = caSectionHeadHtml(
+        opts.icon || opts.iconKey,
+        opts.kicker || opts.eyebrow || '',
+        opts.title || '',
+        opts.subtitle || opts.purpose || ''
+      );
+      var out = '<header class="ca-section-header">' + head;
+      if (opts.showPlatformNav) out += platformCtaHtml(opts.activeNav || null);
+      if (opts.actions) out += '<div class="ca-section-header__actions">' + opts.actions + '</div>';
+      out += '</header>';
+      return out;
+    }
     var out = '<header class="ca-section-header">';
     if (opts.eyebrow) out += '<p class="ca-eyebrow">' + escHtml(opts.eyebrow) + '</p>';
     out += '<h2 class="ca-section-title">' + escHtml(opts.title || '') + '</h2>';
@@ -816,6 +854,8 @@
     platformCtaHtml: platformCtaHtml,
     pageHeaderHtml: pageHeaderHtml,
     sectionHeaderHtml: sectionHeaderHtml,
+    caSectionHeadHtml: caSectionHeadHtml,
+    glossaryLinkHtml: glossaryLinkHtml,
     mountPlatformHeader: mountPlatformHeader,
     GRADE_COLORS: GRADE_COLORS,
     get registry() { return REGISTRY; },

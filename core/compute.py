@@ -9,10 +9,10 @@ from core.compute_osi import calc_osi
 from core.compute_pitching import calc_pitching_score
 from core.compute_rcv import calc_rcv
 from core.config import DATA_DIR
-from core.metrics_utils import load_all
+from core.metrics_utils import load, load_all
 
 
-def compute_split(std, bb, savant, label):
+def compute_split(std, bb, savant, label, traditional=None):
     abq = calc_abq(std, savant)
     rcv = calc_rcv(std, bb, savant)
     obr = calc_obr(std, savant)
@@ -21,7 +21,7 @@ def compute_split(std, bb, savant, label):
     for col in rate_cols:
         if col in std.columns and col not in osi.columns:
             osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
-    for col in ("K%", "BB%"):
+    for col in ("K%", "BB%", "AVG", "OBP", "OPS"):
         if col in std.columns and col not in osi.columns:
             osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
     if "wOBA" in rcv.columns:
@@ -29,9 +29,12 @@ def compute_split(std, bb, savant, label):
     for col in ("Barrel%", "HardHit%"):
         if col in savant.columns and col not in osi.columns:
             osi = osi.merge(savant[["Tm", col]], on="Tm", how="left")
+    if traditional is not None and "HR" in traditional.columns and "HR" not in osi.columns:
+        osi = osi.merge(traditional[["Tm", "HR"]], on="Tm", how="left")
     export_cols = [
         "Tm", "ABQ", "RCV", "OBR", "OSI", "projOSI", "reg_signal",
-        "wRC+", "wOBA", "xwOBA", "SLG", "K%", "BB%", "Barrel%", "HardHit%",
+        "wRC+", "wOBA", "xwOBA", "SLG", "AVG", "OBP", "OPS", "HR",
+        "K%", "BB%", "Barrel%", "HardHit%",
     ]
     export_cols = [c for c in export_cols if c in osi.columns]
     osi_sorted = osi[export_cols].sort_values("OSI", ascending=False).reset_index(drop=True)
@@ -73,8 +76,11 @@ def run():
         print("  Run scrapers.scrape_savant and scrapers.scrape_fangraphs for full metrics.")
         return
 
-    osi_rhp = compute_split(std_rhp, bb_rhp, savant, "vs_RHP")
-    osi_lhp = compute_split(std_lhp, bb_lhp, savant, "vs_LHP")
+    trad_rhp = load("vs_RHP_traditional.csv")
+    trad_lhp = load("vs_LHP_traditional.csv")
+
+    osi_rhp = compute_split(std_rhp, bb_rhp, savant, "vs_RHP", trad_rhp)
+    osi_lhp = compute_split(std_lhp, bb_lhp, savant, "vs_LHP", trad_lhp)
 
     if sp_std is not None:
         calc_pitching_score(sp_std)
