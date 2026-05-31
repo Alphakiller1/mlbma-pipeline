@@ -284,6 +284,174 @@ body.player-profile-page .chip {
   font-variant-numeric: tabular-nums;
 }
 
+/* Flat inline metric rows — design contract (pitcher intel panel) */
+body.player-profile-page {
+  --pp-stat-label-size: 12.5px;
+  --pp-stat-label-color: #C8D0DC;
+  --pp-stat-chip-size: 15px;
+}
+
+body.player-profile-page .pp-intel-panel {
+  margin-bottom: 0;
+  padding: 14px 16px 16px;
+  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
+  border: 1.5px solid var(--border-2, var(--border));
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+body.player-profile-page .pp-intel-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple, #7C4DFF), transparent 70%);
+  pointer-events: none;
+}
+
+body.player-profile-page .pp-intel-panel .ca-section-header {
+  margin-bottom: 12px;
+}
+
+body.player-profile-page .pp-intel-panel__metrics {
+  margin-top: 0;
+}
+
+body.player-profile-page .tp-offense-metrics--profile,
+body.player-profile-page .pp-intel-panel .tp-offense-metrics--profile {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band {
+  padding: 0 0 16px;
+}
+
+body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band:last-child {
+  padding-bottom: 0;
+}
+
+body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band + .tp-offense-metrics__band {
+  border-top: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  padding-top: 14px;
+  margin-top: 2px;
+}
+
+body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-head {
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 10px;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-title {
+  font-size: 14px;
+  font-family: var(--display, var(--font-display));
+  font-weight: 800;
+}
+
+body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-hint {
+  font-size: 13px;
+  color: var(--text-2, #B0B8C8);
+}
+
+body.player-profile-page .tp-offense-metrics__row--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+}
+
+body.player-profile-page .tp-offense-stat--inline {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__label {
+  font-family: var(--font-display, var(--display));
+  font-size: var(--pp-stat-label-size);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: var(--pp-stat-label-color);
+  white-space: nowrap;
+}
+
+body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__body {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__body .chip {
+  font-size: var(--pp-stat-chip-size);
+  font-weight: 800;
+  padding: 4px 9px;
+  min-width: 0;
+}
+
+body.player-profile-page .pp-stat-hint {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-3, #9CA3AF);
+  white-space: nowrap;
+}
+
+body.player-profile-page .pp-intel-read {
+  margin: 0;
+  padding: 12px 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2, #A4A8B6);
+}
+
+body.player-profile-page .pp-intel-follow:not(:empty) {
+  margin: -8px 0 0;
+  padding: 0 16px 14px;
+  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
+  border: 1.5px solid var(--border-2, var(--border));
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+}
+
+body.player-profile-page .pp-intel-follow:not(:empty) + .section,
+body.player-profile-page .pp-intel-follow:not(:empty) + .profile-section {
+  margin-top: 14px;
+}
+
+body.player-profile-page #pitcherIntelPanel:not(:empty) + .pp-intel-follow:not(:empty) {
+  margin-top: -14px;
+}
+
+body.player-profile-page #pitcherIntelPanel:not(:empty) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+body.player-profile-page #pitcherIntelPanel:not(:empty) + .pp-intel-follow:empty {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  body.player-profile-page .tp-offense-metrics__row--inline {
+    gap: 8px 14px;
+  }
+}
+
 @media (max-width: 640px) {
   body.player-profile-page .container {
     padding: 12px 12px 48px;

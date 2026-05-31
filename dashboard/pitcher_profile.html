@@ -328,13 +328,14 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
 <link rel="stylesheet" href="theme.css?v=20260616c">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
-<link rel="stylesheet" href="player_profile_pages.css?v=20260531p">
-<link rel="stylesheet" href="profile_shell.css?v=20260531p">
+<link rel="stylesheet" href="player_profile_pages.css?v=20260601c">
+<link rel="stylesheet" href="profile_shell.css?v=20260601c">
 <script src="mlbma_config.js"></script>
+<script src="mlbma_icons.js?v=20260620g"></script>
 <script src="mlbma_assets.js"></script>
 <script src="matchup_shared.js?v=20260523"></script>
-<script src="profile_shell.js?v=20260531p"></script>
-<script src="pitcher_profile_dashboard.js?v=20260531p"></script>
+<script src="profile_shell.js?v=20260601c"></script>
+<script src="pitcher_profile_dashboard.js?v=20260601c"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260524c"></script>
 <script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
@@ -448,9 +449,8 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 
   <div id="profileContent" class="profile-shell">
     <div id="pitcherSnapshot" class="profile-hero"></div>
-    <div id="pitcherVerdict"></div>
-    <div id="pitcherDecisionStrip"></div>
-    <div id="pitcherRiskStrip"></div>
+    <div id="pitcherIntelPanel"></div>
+    <div id="pitcherAnalystTake" class="pp-intel-follow"></div>
 
     <section class="section profile-section" id="secOOR">
       <div class="section-title">Quality of Lineups Faced</div>
@@ -459,7 +459,6 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     </section>
 
     <div id="pitcherControlBar" class="profile-context-bar"></div>
-    <div id="pitcherAnalystTake"></div>
 
     <section class="section profile-section" id="secAllowed">
       <div id="allowedDashboard"></div>
@@ -845,19 +844,18 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   var tonight = buildPitcherTonightContext(name, team);
   var ctx = buildDashboardCtx(profile, splits, log, name, team, isToday, tonight);
   var snap = document.getElementById('pitcherSnapshot');
-  var verdict = document.getElementById('pitcherVerdict');
-  var strip = document.getElementById('pitcherDecisionStrip');
-  var risk = document.getElementById('pitcherRiskStrip');
+  var intel = document.getElementById('pitcherIntelPanel');
   var take = document.getElementById('pitcherAnalystTake');
   var allowed = document.getElementById('allowedDashboard');
   var oorEl = document.getElementById('oorPanel');
   if (snap) snap.innerHTML = PitcherProfileDashboard.renderSnapshot(profile, ctx);
-  if (verdict) verdict.innerHTML = PitcherProfileDashboard.renderStartVerdict(profile, ctx);
-  if (strip) strip.innerHTML = PitcherProfileDashboard.renderDecisionStrip(profile, ctx);
-  if (risk) risk.innerHTML = PitcherProfileDashboard.renderRiskStrip(profile, ctx);
+  if (intel) intel.innerHTML = PitcherProfileDashboard.renderPitcherIntelPanel(profile, ctx);
   if (take) take.innerHTML = PitcherProfileDashboard.renderAnalystTakeLine(profile, ctx);
   if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, ctx);
   if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, ctx);
+  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
+    if (intel) MLBMAIcons.refreshIcons(intel);
+  }
 }
 
 

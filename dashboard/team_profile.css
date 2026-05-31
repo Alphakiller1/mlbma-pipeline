@@ -805,6 +805,13 @@ body.team-profile-page {
   margin-bottom: 16px;
 }
 
+.tp-unit-snapshot:has(.tp-identity-panel) {
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
 .tp-unit-snapshot--banner {
   margin: 0;
   padding: 14px 18px 16px;
@@ -3132,97 +3139,26 @@ body.team-profile-page {
   color: var(--text-3);
 }
 
-/* Identity panel — horizontal summary strip */
-.tp-identity-panel {
-  position: relative;
-  margin-bottom: 0;
-  padding: 14px 16px 16px;
-  border-radius: 16px;
-  background: var(--bg-3, #16161D);
-  border: 1px solid var(--border, #2A2A35);
-  border-left-width: 1px;
-  overflow: hidden;
-  box-shadow: var(--e-1, none);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.tp-identity-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--v-grad, linear-gradient(135deg, #9A6BFF, #5B2BE0));
-  pointer-events: none;
-}
-
-.tp-identity-panel__head {
-  min-width: 0;
-}
-
-.tp-identity-panel__head .tp-lineup-identity__title {
+/* Identity panel — same section + inline metrics as Offense Profile */
+.team-profile-page .tp-identity-panel.tp-section {
   margin-bottom: 0;
 }
 
-.tp-identity-panel__body {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 12px 14px;
-  align-items: stretch;
+.team-profile-page .tp-identity-panel .ca-section-header {
+  margin-bottom: 12px;
 }
 
-.tp-identity-panel__stats {
-  min-width: 0;
+.team-profile-page .tp-identity-panel__metrics {
+  margin-top: 0;
 }
 
-.tp-identity-panel__readout {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--bg-2, #101015);
-  border: 1px solid var(--border, #2A2A35);
-}
-
-.tp-identity-panel__analyst {
-  min-width: 0;
-}
-
-.tp-identity-panel__readout .profile-analyst-take {
-  background: transparent;
-  border: none;
-  border-left: 3px solid var(--v, #9A6BFF);
-  border-radius: 0;
-  padding: 0 0 0 10px;
-  margin: 0;
-}
-
-.tp-identity-panel .tp-unit-snapshot-row {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  height: 100%;
-}
-
-.tp-identity-panel .tp-unit-chip {
-  padding: 8px 10px;
-  justify-content: space-between;
-  min-height: 72px;
-}
-
-.tp-identity-panel .tp-lineup-identity__title {
-  font-size: clamp(1.125rem, 2vw, 1.375rem);
-}
-
-.tp-identity-panel .tp-lineup-identity__desc {
+.team-profile-page .tp-identity-panel__take {
+  margin: 12px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--border, #262A38) 88%, transparent);
   font-size: 13px;
-  line-height: 1.5;
-  margin: 0;
+  line-height: 1.55;
+  color: var(--text-2, #A4A8B6);
 }
 
 .tp-lineup-identity__badge {
@@ -3271,23 +3207,7 @@ body.team-profile-page {
   border-color: var(--border, #262A38);
 }
 
-@media (max-width: 900px) {
-  .tp-identity-panel__body {
-    grid-template-columns: 1fr;
-  }
-
-  .tp-identity-panel .tp-unit-snapshot-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .tp-identity-panel .tp-unit-snapshot-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Lineup identity — prominent snapshot headline + readable summary */
+/* Lineup identity — legacy gradient card (staff status blocks only) */
 .tp-lineup-identity {
   margin-bottom: 16px;
   padding: 18px 22px 20px 20px;

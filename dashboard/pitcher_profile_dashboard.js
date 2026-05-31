@@ -214,6 +214,60 @@
     return '<div class="ps-stat"><span class="ps-stat-label">' + esc(label) + '</span><span class="ps-stat-val">' + esc(val) + '</span></div>';
   }
 
+  function valChip(val, ctx, invert, dec, opts) {
+    opts = opts || {};
+    var d = dec == null ? 1 : dec;
+    if (A && A.valChipHtml) return A.valChipHtml(val, ctx, invert, d, opts);
+    var txt = val == null || isNaN(val) ? '—' : fmt(val, d);
+    return '<span class="chip">' + esc(txt) + '</span>';
+  }
+
+  function verdictChipHtml(verdict, tone) {
+    var cls = { attack: 'c-elite', respect: 'c-good', volatile: 'c-mid', fade: 'c-weak' }[tone] || 'c-mid';
+    return '<span class="chip ' + cls + '">' + esc(verdict) + '</span>';
+  }
+
+  function toneToChipClass(tone) {
+    if (tone === 'elite' || tone === 'attack') return 'c-elite';
+    if (tone === 'watch' || tone === 'respect' || tone === 'volatile') return 'c-mid';
+    if (tone === 'risk' || tone === 'fade') return 'c-weak';
+    return null;
+  }
+
+  function pitcherStatCell(label, chipHtml, hint) {
+    var hintHtml = hint
+      ? '<span class="pp-stat-hint">' + esc(hint) + '</span>'
+      : '';
+    return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(label) + '">'
+      + '<span class="tp-offense-stat__label">' + esc(label) + '</span>'
+      + '<span class="tp-offense-stat__body">' + chipHtml + hintHtml + '</span>'
+      + '</div>';
+  }
+
+  function chipWithText(val, ctx, invert, dec, text, tone) {
+    var opts = tone ? { chipClass: toneToChipClass(tone) } : {};
+    var chip = valChip(val, ctx, invert, dec, opts);
+    if (text == null) return chip;
+    return chip.replace(/>([^<]*)</, '>' + esc(String(text)) + '<');
+  }
+
+  function pitcherStatNum(label, val, ctx, invert, dec, hint, tone) {
+    var chipClass = tone ? toneToChipClass(tone) : null;
+    var opts = chipClass ? { chipClass: chipClass } : {};
+    return pitcherStatCell(label, valChip(val, ctx, invert, dec, opts), hint);
+  }
+
+  function metricsBand(title, hint, cellsHtml) {
+    if (!cellsHtml) return '';
+    return '<div class="tp-offense-metrics__band">'
+      + '<div class="tp-offense-metrics__band-head">'
+      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
+      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
+      + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cellsHtml + '</div>'
+      + '</div>';
+  }
+
   function renderAllowedDashboard(profile, ctx) {
     var resolved = resolveAllowed(ctx);
     var m = resolved.metrics;
@@ -373,42 +427,33 @@
   }
 
   function renderStartVerdict(profile, ctx) {
-    var PS = global.ProfileShell;
-    if (!PS) return '';
-    var v = deriveStartVerdict(profile, ctx);
-    return PS.verdictCard('Start Verdict', v.verdict, v.detail, v.tone);
+    return renderPitcherIntelPanel(profile, ctx);
   }
 
   function renderDecisionStrip(profile, ctx) {
-    var PS = global.ProfileShell;
-    if (!PS) return '';
+    return '';
+  }
+
+  function renderRiskStrip(profile, ctx) {
+    return '';
+  }
+
+  function renderPitcherIntelPanel(profile, ctx) {
     var pick = ctx.pickCol;
-    var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore']));
+    var PS = global.ProfileShell;
+    var v = deriveStartVerdict(profile, ctx);
+    var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore', 'pitch_score', 'Pitching Score']));
     var k = num(pick(profile, ['K_pct', 'K%']));
     var bb = num(pick(profile, ['BB_pct', 'BB%']));
     var resolved = resolveAllowed(ctx);
     var osiAllow = resolved.metrics.osi;
     var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
     if (avgOor == null) avgOor = avgOorFromLog(ctx.log || [], pick, ctx.oorMap || {}, null);
-    var cmdTone = bb != null && bb >= 10 ? 'risk' : bb != null && bb <= 7 ? 'elite' : 'watch';
-    var contactTone = osiAllow != null ? PS.toneFromScore(osiAllow, true) : '';
-    return PS.decisionStrip([
-      PS.decisionCard('Pitch Score', ps != null ? fmt(ps, 0) : '—', '', PS.toneFromScore(ps, false)),
-      PS.decisionCard('Command Risk', bb != null ? fmt(bb, 1) + '% BB' : '—', k != null ? fmt(k, 1) + '% K' : '', cmdTone),
-      PS.decisionCard('Contact Risk', osiAllow != null ? fmt(osiAllow, 1) + ' OSI all.' : '—', 'Lower allowed = softer lineups', contactTone),
-      PS.decisionCard('Opponent Quality', avgOor != null ? fmt(avgOor, 1) + ' OOR' : '—', ctx.tonightOsi != null ? 'Tonight OSI ' + fmt(ctx.tonightOsi, 1) : 'Season competition context', avgOor != null ? PS.toneFromScore(avgOor, false) : '')
-    ]);
-  }
-
-  function renderRiskStrip(profile, ctx) {
-    var pick = ctx.pickCol;
-    var log = ctx.log || [];
-    var k = num(pick(profile, ['K_pct', 'K%']));
-    var bb = num(pick(profile, ['BB_pct', 'BB%']));
     var era = num(pick(profile, ['ERA']));
     var fip = num(pick(profile, ['FIP', 'fip']));
     var xfip = num(pick(profile, ['xFIP', 'xfip']));
     var hr9 = num(pick(profile, ['HR9', 'HR/9']));
+    var log = ctx.log || [];
     var recent = log.slice().sort(function(a, b) {
       return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
     }).slice(0, 5);
@@ -418,24 +463,76 @@
       if (p != null) { pitchSum += p; pitchN++; }
     });
     var avgPitches = pitchN ? Math.round(pitchSum / pitchN) : null;
-    return '<div class="profile-decision-strip pitcher-risk-strip">'
-      + statPill('K%', fmt(k, 1) + (k != null ? '%' : ''))
-      + statPill('BB%', fmt(bb, 1) + (bb != null ? '%' : ''))
-      + statPill('ERA', fmt(era, 2))
-      + statPill('FIP', fip != null ? fmt(fip, 2) : (era != null ? fmt(era, 2) + ' (ERA)' : '—'))
-      + statPill('xFIP', xfip != null ? fmt(xfip, 2) : '—')
-      + statPill('HR/9', fmt(hr9, 2))
-      + statPill('Recent Pitches', avgPitches != null ? String(avgPitches) + '/start' : '—')
-      + '</div>';
+
+    var cmdTone = bb != null && bb >= 10 ? 'risk' : bb != null && bb <= 7 ? 'elite' : 'watch';
+    var contactTone = osiAllow != null && PS ? PS.toneFromScore(osiAllow, true) : '';
+    var psTone = ps != null && PS ? PS.toneFromScore(ps, false) : '';
+    var oorTone = avgOor != null && PS ? PS.toneFromScore(avgOor, false) : '';
+    var oorHint = ctx.tonightOsi != null
+      ? 'Tonight OSI ' + fmt(ctx.tonightOsi, 1)
+      : 'Season competition context';
+
+    var bbChip = bb != null
+      ? chipWithText(bb, 'pitching', true, 1, fmt(bb, 1) + '% BB', cmdTone)
+      : '<span class="chip chip-ph">—</span>';
+
+    var osiChip = osiAllow != null
+      ? chipWithText(osiAllow, 'osi', true, 1, fmt(osiAllow, 1) + ' OSI all.', contactTone)
+      : '<span class="chip chip-ph">—</span>';
+
+    var oorChip = avgOor != null
+      ? chipWithText(avgOor, 'osi', false, 1, fmt(avgOor, 1) + ' OOR', oorTone)
+      : '<span class="chip chip-ph">—</span>';
+
+    var decisionCells = pitcherStatCell('Start Verdict', verdictChipHtml(v.verdict, v.tone))
+      + pitcherStatNum('Pitch Score', ps, 'pitching', false, 0, '', psTone)
+      + pitcherStatCell('Command Risk', bbChip, k != null ? fmt(k, 1) + '% K' : '')
+      + pitcherStatCell('Contact Risk', osiChip, 'Lower allowed = softer lineups')
+      + pitcherStatCell('Opponent Quality', oorChip, oorHint);
+
+    var fipLabel = fip != null ? fmt(fip, 2) : (era != null ? fmt(era, 2) + ' (ERA)' : null);
+    var rateCells = pitcherStatNum('K%', k, 'pitching', false, 1)
+      + pitcherStatNum('BB%', bb, 'pitching', true, 1)
+      + pitcherStatNum('ERA', era, 'pitching', true, 2)
+      + (fipLabel != null
+        ? pitcherStatCell('FIP', chipWithText(fip != null ? fip : era, 'pitching', true, 2, fipLabel), fip == null && era != null ? 'ERA proxy' : '')
+        : pitcherStatCell('FIP', '<span class="chip chip-ph">—</span>'))
+      + pitcherStatNum('xFIP', xfip, 'pitching', true, 2)
+      + pitcherStatNum('HR/9', hr9, 'pitching', true, 2)
+      + pitcherStatCell('Recent Pitches', avgPitches != null
+        ? '<span class="chip">' + esc(String(avgPitches)) + '/start</span>'
+        : '<span class="chip chip-ph">—</span>');
+
+    var subtitle = v.detail || '';
+    if (ctx.splitLabel || ctx.window) {
+      subtitle = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD')
+        + (subtitle ? ' · ' + subtitle : '');
+    }
+    var header = (A && A.sectionHeaderHtml)
+      ? A.sectionHeaderHtml({
+        icon: 'target',
+        kicker: 'Start read',
+        title: 'Pitcher Profile',
+        subtitle: subtitle
+      })
+      : '<header class="ca-section-header"><p class="ca-eyebrow">Start read</p>'
+        + '<h2 class="ca-section-title">Pitcher Profile</h2>'
+        + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
+        + '</header>';
+
+    return '<section class="ca-board pp-section pp-intel-panel" aria-label="Pitcher profile summary">'
+      + header
+      + '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
+      + metricsBand('Risk & quality', 'Verdict and exposure drivers for this split', decisionCells)
+      + metricsBand('Rates & workload', 'Season line and recent pitch count', rateCells)
+      + '</div></section>';
   }
 
   function renderAnalystTakeLine(profile, ctx) {
-    var PS = global.ProfileShell;
     var pick = ctx.pickCol;
-    var v = deriveStartVerdict(profile, ctx);
     var k = num(pick(profile, ['K_pct', 'K%']));
     var bb = num(pick(profile, ['BB_pct', 'BB%']));
-    var parts = [v.detail];
+    var parts = [];
     if (k != null && bb != null && bb >= 9 && k < 20) {
       parts.push('Weak K/BB mix raises inning-to-inning volatility.');
     }
@@ -449,7 +546,8 @@
       }
     }
     var line = parts.filter(Boolean).slice(0, 2).join(' ');
-    return PS ? PS.analystTakeLine(line) : '';
+    if (!line) return '';
+    return '<p class="pp-intel-read">' + esc(line) + '</p>';
   }
 
   global.PitcherProfileDashboard = {
@@ -464,6 +562,9 @@
     },
     renderStartVerdict: function(profile, ctx) {
       return renderStartVerdict(profile, ctx).replace(/<\/?motion>/g, '');
+    },
+    renderPitcherIntelPanel: function(profile, ctx) {
+      return renderPitcherIntelPanel(profile, ctx).replace(/<\/?motion>/g, '');
     },
     renderDecisionStrip: function(profile, ctx) {
       return renderDecisionStrip(profile, ctx).replace(/<\/?motion>/g, '');

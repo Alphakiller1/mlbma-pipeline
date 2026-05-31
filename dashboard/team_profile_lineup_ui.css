@@ -268,35 +268,23 @@ body.team-profile-page {
   margin: 0;
 }
 
-/* Identity snapshot chips — flat inline, no mini-cards */
+/* Staff unit snapshot — inline metric rows */
 .team-profile-page .tp-unit-snapshot-row,
-.team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
+.team-profile-page .tp-unit-snapshot-metrics .tp-offense-metrics__row--inline {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 20px;
+  align-items: center;
   grid-template-columns: none;
   height: auto;
 }
 
-.team-profile-page .tp-unit-chip,
-.team-profile-page .tp-identity-panel .tp-unit-chip {
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  min-height: 0;
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
+.team-profile-page .tp-unit-snapshot-metrics {
+  margin-top: 10px;
 }
 
-.team-profile-page .tp-unit-chip-v {
-  gap: 7px;
-}
-
-.team-profile-page .tp-unit-chip-v .chip {
-  font-size: var(--tp-stat-chip-size);
-  padding: 4px 9px;
+.team-profile-page .tp-unit-snapshot-metrics .tp-offense-metrics__band {
+  padding-bottom: 0;
 }
 
 @media (max-width: 640px) {
@@ -367,20 +355,8 @@ body.team-profile-page {
   margin-top: 4px;
 }
 
-@media (max-width: 900px) {
-  .team-profile-page .tp-identity-panel__body {
-    grid-template-columns: 1fr;
-  }
-
-  .team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
-    grid-template-columns: 1fr;
-  }
+.team-profile-page .tp-identity-panel .ca-section-header .ca-helper {
+  color: var(--text-2, #B0B8C8);
 }
 
 /* Surface wins — flat labeled metric rows */

@@ -632,26 +632,40 @@
 
   function renderLineupIdentityPanel(m, rates, ctx, chipsHtml, filterHtml) {
     var status = offenseStatusLabel(m, rates);
-    var tierKey = String(status.cls || '').replace('tp-intel-status--', '') || 'neutral';
     var split = (ctx && ctx.split) ? ctx.split : 'both';
     var splitLabels = {
       both: 'Season', rhp: 'vs RHP', lhp: 'vs LHP', home: 'Home', away: 'Away',
       f5: 'First 5', sp: 'vs SP', rp: 'vs RP'
     };
     var splitLbl = splitLabels[split] || split;
-    var analystTake = renderLineupAnalystTakeHtml(m, rates, ctx);
-    return '<div class="tp-identity-panel tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
-      + '<div class="tp-identity-panel__head">'
-      + '<p class="ca-eyebrow tp-identity-panel__eyebrow">' + esc(splitLbl) + ' view</p>'
-      + '<h2 class="ca-section-title tp-lineup-identity__title">Summary Of Identity</h2>'
+    var take = cleanText(lineupAnalystTakeText(m, rates, ctx));
+    var subtitle = splitLbl + ' view'
+      + (status.label ? ' · ' + status.label : '');
+    var header = (A && A.sectionHeaderHtml)
+      ? A.sectionHeaderHtml({
+        icon: 'target',
+        kicker: 'Identity',
+        title: 'Summary Of Identity',
+        subtitle: subtitle
+      })
+      : '<header class="ca-section-header"><p class="ca-eyebrow">Identity</p>'
+        + '<h2 class="ca-section-title">Summary Of Identity</h2>'
+        + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
+        + '</header>';
+    var metrics = '<div class="tp-offense-metrics tp-offense-metrics--profile tp-identity-panel__metrics">'
+      + '<div class="tp-offense-metrics__band">'
+      + '<div class="tp-offense-metrics__band-head">'
+      + '<span class="tp-offense-metrics__band-title">Snapshot</span>'
+      + '<span class="tp-offense-metrics__band-hint">Proj OSI · wRC+ · OBP with league rank</span>'
       + '</div>'
-      + '<div class="tp-identity-panel__body">'
-      + '<div class="tp-unit-snapshot-row tp-identity-panel__stats">' + (chipsHtml || '') + '</div>'
-      + '<div class="tp-identity-panel__readout">'
-      + '<span class="tp-lineup-identity__badge ' + esc(status.cls) + '">' + esc(status.label) + '</span>'
-      + (analystTake ? '<div class="tp-identity-panel__analyst">' + analystTake + '</div>' : '')
-      + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + (chipsHtml || '') + '</div>'
       + '</div></div>';
+    var takeHtml = take
+      ? '<p class="tp-intel-read tp-identity-panel__take">' + esc(take) + '</p>'
+      : '';
+    return '<section class="ca-board tp-section tp-identity-panel tp-intel-section">'
+      + header + metrics + takeHtml
+      + '</section>';
   }
 
   function renderStatusIdentity(m, rates, ctx) {

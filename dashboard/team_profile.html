@@ -12,8 +12,8 @@
 <link rel="stylesheet" href="theme.css?v=20260616d">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260531w">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260601a">
+<link rel="stylesheet" href="team_profile.css?v=20260601b">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260601b">
 <link rel="stylesheet" href="profile_shell.css?v=20260531p">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -27,7 +27,7 @@
 <script src="team_profile_mini.js?v=20260531v"></script>
 <script src="team_profile_sections.js?v=20260531y"></script>
 <script src="team_profile_staff.js?v=20260617c"></script>
-<script src="team_profile_intel.js?v=20260531z"></script>
+<script src="team_profile_intel.js?v=20260601a"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
 <script src="platform_dashboard.js?v=20260531p"></script>
 <script src="profile_controls.js?v=20260617c"></script>
@@ -1246,10 +1246,24 @@ function unitChipToneClass(val, ctx, invert, dec, rank) {
   return toneMap[chipCls] || 'neutral';
 }
 
+function unitSnapshotChipRanked(label, val, rankMeta, ctx, invert, dec) {
+  rankMeta = rankMeta || {};
+  var rank = rankMeta.rank;
+  var total = rankMeta.total;
+  var rankHtml = rank != null
+    ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + snapshotRankTone(rank) + '">'
+      + '<span class="tp-offense-stat__rank-num">#' + escHtml(String(rank)) + '</span>'
+      + (total ? '<span class="tp-offense-stat__rank-of">/' + escHtml(String(total)) + '</span>' : '')
+      + '</span>'
+    : '';
+  return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + escHtml(label) + '">'
+    + '<span class="tp-offense-stat__label">' + escHtml(label) + '</span>'
+    + '<span class="tp-offense-stat__body">' + rankedValChip(val, rank, ctx, invert, dec) + rankHtml + '</span>'
+    + '</div>';
+}
+
 function unitSnapshotChip(label, val, ctx, invert, dec) {
-  var tone = unitChipToneClass(val, ctx, invert, dec, null);
-  return '<div class="tp-unit-chip tp-unit-chip--' + tone + '"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
-    + '<div class="tp-unit-chip-v">' + valChip(val, ctx, invert, dec) + '</div></div>';
+  return unitSnapshotChipRanked(label, val, null, ctx, invert, dec);
 }
 
 function snapshotRankTone(rank) {
@@ -1278,18 +1292,10 @@ function rankedValChip(val, rank, ctx, invert, dec) {
   return valChip(val, ctx, invert, d);
 }
 
-function unitSnapshotChipRanked(label, val, rankMeta, ctx, invert, dec) {
-  rankMeta = rankMeta || {};
-  var rank = rankMeta.rank;
-  var total = rankMeta.total;
-  var rankHtml = rank != null
-    ? '<span class="tp-unit-chip-rank tp-unit-chip-rank--' + snapshotRankTone(rank) + '">'
-      + '<span class="tp-unit-chip-rank__num">#' + escHtml(String(rank)) + '</span>'
-      + (total ? '<span class="tp-unit-chip-rank__of">of ' + escHtml(String(total)) + '</span>' : '')
-      + '</span>'
-    : '';
-  return '<div class="tp-unit-chip tp-unit-chip--' + unitChipToneClass(val, ctx, invert, dec, rank) + '"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
-    + '<div class="tp-unit-chip-v">' + rankedValChip(val, rank, ctx, invert, dec) + rankHtml + '</div></div>';
+function unitSnapshotMetricsRow(chipsHtml) {
+  return '<div class="tp-offense-metrics tp-offense-metrics--profile tp-unit-snapshot-metrics">'
+    + '<div class="tp-offense-metrics__band"><div class="tp-offense-metrics__row tp-offense-metrics__row--inline">'
+    + (chipsHtml || '') + '</div></div></div>';
 }
 
 function miniCtxForTeam(team, split) {
@@ -1441,7 +1447,7 @@ function renderUnitSnapshotStrip(prof, ctx) {
     var chips = unitSnapshotChip('Pitching Score', avgPs, 'pitching', false, 0)
       + unitSnapshotChip('Strikeout %', kPct, 'pitching', false, 1)
       + unitSnapshotChip('OSI Allowed', osiAllow, 'osi', true, 1);
-    el.innerHTML = intelHtml + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
+    el.innerHTML = intelHtml + unitSnapshotMetricsRow(chips);
     syncIdentityStackLayout();
     return;
   } else {
@@ -1461,7 +1467,7 @@ function renderUnitSnapshotStrip(prof, ctx) {
     var chipsBp = unitSnapshotChip('Bullpen Score', bpScore, 'pitching', false, 0)
       + unitSnapshotChip('ERA', bpEra, 'pitching', true, 2)
       + unitSnapshotChip('OSI Allowed', bpOsi, 'osi', true, 1);
-    el.innerHTML = intelBp + '<div class="tp-unit-snapshot-row">' + chipsBp + '</div>';
+    el.innerHTML = intelBp + unitSnapshotMetricsRow(chipsBp);
   }
   syncIdentityStackLayout();
 }
