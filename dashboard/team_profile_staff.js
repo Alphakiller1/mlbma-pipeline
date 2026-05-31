@@ -13,7 +13,13 @@
   function sectionCard(ctx, title, subtitle, body, extraClass, meta) {
     meta = meta || {};
     if (ctx.sectionCard) return ctx.sectionCard(title, subtitle, body, extraClass, meta);
-    var hdrOpts = { title: title, subtitle: subtitle || '', icon: meta.icon, kicker: meta.kicker || 'Staff' };
+    var hdrOpts = {
+      title: title,
+      subtitle: subtitle || '',
+      icon: meta.icon,
+      kicker: meta.kicker || 'Staff',
+      actions: meta.actions || ''
+    };
     return '<section class="ca-board ca-card tp-section' + (extraClass ? ' ' + extraClass : '') + '">'
       + (A && A.sectionHeaderHtml
         ? A.sectionHeaderHtml(hdrOpts)
@@ -251,7 +257,11 @@
     rotKpi += '</tbody>' + ctx.profileTableClose();
     var intel = (global.TeamProfileIntel && TeamProfileIntel.renderRotationIntel)
       ? TeamProfileIntel.renderRotationIntel(prof, team, ctx) : '';
-    return sectionCard(ctx, 'Starting Rotation', staffSplitSubtitle(split, 'rotation'), rotKpi, 'tp-rotation-section',
+    var PC = global.MLBMAProfileControls;
+    var splitBar = PC && PC.renderSplitControls && PC.wrapSectionFilterBar
+      ? PC.wrapSectionFilterBar(PC.renderSplitControls('rotation', split), 'tp-section-filter-bar--split')
+      : '';
+    return sectionCard(ctx, 'Starting Rotation', 'Split filters rotation KPIs and SP rows', splitBar + rotKpi, 'tp-rotation-section',
       { icon: 'target', kicker: 'SP unit' }) + intel;
   }
 
@@ -320,7 +330,11 @@
     bpKpi += '</tbody>' + ctx.profileTableClose();
     var intel = (global.TeamProfileIntel && TeamProfileIntel.renderBullpenIntel)
       ? TeamProfileIntel.renderBullpenIntel(prof, team, ctx) : '';
-    return sectionCard(ctx, 'Bullpen Overview', staffSplitSubtitle(split, 'bullpen'), bpKpi, 'tp-bullpen-section',
+    var PC = global.MLBMAProfileControls;
+    var splitBar = PC && PC.renderSplitControls && PC.wrapSectionFilterBar
+      ? PC.wrapSectionFilterBar(PC.renderSplitControls('bullpen', split), 'tp-section-filter-bar--split')
+      : '';
+    return sectionCard(ctx, 'Bullpen Overview', 'Split filters bullpen KPIs and reliever rows', splitBar + bpKpi, 'tp-bullpen-section',
       { icon: 'flame', kicker: 'Bullpen unit' }) + intel;
   }
 

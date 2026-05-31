@@ -1098,6 +1098,8 @@
       ctx.splitLabel = splitLabel(ctx.split || 'both');
       ctx.windowLabel = ctx.window || 'YTD';
       return renderTrendSnapshot(prof, team, ctx).replace(/<\/?motion>/g, '');
-    }
+    },
+    renderTrendChartPanel: renderTrendChartPanel,
+    renderSummaryPanel: renderSummaryPanel,
   };
 })(typeof window !== 'undefined' ? window : this);

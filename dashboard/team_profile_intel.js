@@ -522,14 +522,33 @@
     return sectionWrap('Research Takeaways', 'Metric translation for research — not betting picks', grid, 'lightbulb');
   }
 
-  function renderStatusIdentity(m, rates, ctx) {
+  function renderLineupIdentityPanel(m, rates, ctx, chipsHtml, filterHtml) {
     var status = offenseStatusLabel(m, rates);
     var line = offenseIdentityLine(m, rates, ctx);
     var tierKey = String(status.cls || '').replace('tp-intel-status--', '') || 'neutral';
-    return '<div class="tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
-      + '<h2 class="ca-section-title tp-lineup-identity__title">Offensive Identity</h2>'
+    var split = (ctx && ctx.split) ? ctx.split : 'both';
+    var splitLabels = {
+      both: 'Season', rhp: 'vs RHP', lhp: 'vs LHP', home: 'Home', away: 'Away',
+      f5: 'First 5', sp: 'vs SP', rp: 'vs RP'
+    };
+    var splitLbl = splitLabels[split] || split;
+    return '<div class="tp-identity-panel tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
+      + (filterHtml || '')
+      + '<div class="tp-identity-panel__grid">'
+      + '<div class="tp-identity-panel__metrics">'
+      + '<p class="ca-eyebrow tp-identity-panel__eyebrow">' + esc(splitLbl) + ' view</p>'
+      + '<h2 class="ca-section-title tp-lineup-identity__title">Summary Of Identity</h2>'
+      + '<div class="tp-unit-snapshot-row">' + (chipsHtml || '') + '</div>'
+      + '</div>'
+      + '<div class="tp-identity-panel__readout">'
+      + '<span class="tp-lineup-identity__badge ' + esc(status.cls) + '">' + esc(status.label) + '</span>'
       + '<p class="tp-lineup-identity__desc">' + esc(line) + '</p>'
-      + '</div>';
+      + '</div>'
+      + '</div></div>';
+  }
+
+  function renderStatusIdentity(m, rates, ctx) {
+    return renderLineupIdentityPanel(m, rates, ctx, '');
   }
 
   function sectionWrap(title, subtitle, body, iconKey) {
@@ -914,6 +933,7 @@
     renderSustainabilitySection: renderSustainabilitySection,
     renderResearchTakeaways: renderResearchTakeaways,
     renderStatusIdentity: renderStatusIdentity,
+    renderLineupIdentityPanel: renderLineupIdentityPanel,
     buildRotationPack: buildRotationPack,
     buildBullpenPack: buildBullpenPack,
     renderRotationIntel: renderRotationIntel,

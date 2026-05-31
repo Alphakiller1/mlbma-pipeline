@@ -280,13 +280,16 @@
 
   function sectionCard(title, subtitle, body, meta) {
     meta = meta || {};
+    var extraClass = meta.extraClass ? ' ' + meta.extraClass : '';
     var hdrOpts = {
       title: title,
       subtitle: subtitle || '',
       icon: meta.icon,
-      kicker: meta.kicker || 'Team Profile'
+      kicker: meta.kicker || 'Team Profile',
+      actions: meta.actions || ''
     };
-    return '<section class="ca-board ca-card tp-section">'
+    return '<section class="ca-board ca-card tp-section' + extraClass + '"'
+      + (meta.sectionId ? ' data-tp-section="' + esc(meta.sectionId) + '"' : '') + '>'
       + (window.MLBMAAssets && MLBMAAssets.sectionHeaderHtml
         ? MLBMAAssets.sectionHeaderHtml(hdrOpts)
         : '<header class="ca-section-header"><h2 class="ca-section-title">'
@@ -294,6 +297,28 @@
           + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
           + '</header>')
       + body + '</section>';
+  }
+
+  function profileControls() {
+    return (typeof window !== 'undefined' && window.MLBMAProfileControls) ? window.MLBMAProfileControls : null;
+  }
+
+  function lineupSplitBar(split) {
+    var PC = profileControls();
+    if (PC && PC.renderLineupSplitBar) return PC.renderLineupSplitBar(split || 'both');
+    if (PC && PC.renderSplitControls && PC.wrapSectionFilterBar) {
+      return PC.wrapSectionFilterBar(PC.renderSplitControls('lineup', split || 'both'), 'tp-section-filter-bar--split');
+    }
+    return '';
+  }
+
+  function lineupWindowBar(windowKey) {
+    var PC = profileControls();
+    if (PC && PC.renderLineupWindowBar) return PC.renderLineupWindowBar(windowKey || 'YTD');
+    if (PC && PC.renderWindowControls && PC.wrapSectionFilterBar) {
+      return PC.wrapSectionFilterBar(PC.renderWindowControls(windowKey || 'YTD'), 'tp-section-filter-bar--window');
+    }
+    return '';
   }
 
   function chipRow(items) {
@@ -329,7 +354,7 @@
   function renderOffenseProfile(m, prof, ctx) {
     var rates = (Mini && Mini.resolveOffenseRates) ? Mini.resolveOffenseRates(prof, ctx) : {};
     var wrc = ctx.wrc != null ? ctx.wrc : rates.wrc;
-    var filterNote = (ctx.splitLabel || ctx.split || 'both') + ' · ' + (ctx.windowLabel || ctx.window || 'YTD');
+    var split = ctx.split || 'both';
     var team = ctx.teamKey ? ctx.teamKey(ctx.team) : String(ctx.team || '').trim().toUpperCase();
     var cache = buildTeamMetricCache(ctx);
 
@@ -372,9 +397,10 @@
       }
     ];
 
-    var body = offenseMetricsPanel(bands, cache, team);
+    var body = lineupSplitBar(split) + offenseMetricsPanel(bands, cache, team);
 
-    return sectionCard('Offense Profile', filterNote + ' · #/30 = league rank', body, { icon: 'layers', kicker: 'Lineup unit' });
+    return sectionCard('Offense Profile', '#/30 = league rank', body,
+      { icon: 'layers', kicker: 'Lineup unit', sectionId: 'offense-profile' });
   }
 
   function buildOpponentStrengthCache(ctx) {
@@ -469,8 +495,38 @@
     return '';
   }
 
-  function renderMomentum(m, prof, ctx) {
-    return '';
+  function renderRollingTrend(m, prof, ctx) {
+    if (!Mini || !Mini.renderTrendChartPanel) return '';
+    var body = lineupWindowBar(ctx.window || 'YTD')
+      + '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
+    return sectionCard('Rolling Trend', 'YTD → L7 grade windows · velocity · reliability', body,
+      { icon: 'trending-up', kicker: 'Momentum', sectionId: 'rolling-trend' });
+  }
+
+  function renderHandednessSection(prof, team, ctx) {
+    if (!Mini || !Mini.platoonSplitSummary) return '';
+    var platoonCtx = Object.assign({}, ctx, { split: 'both' });
+    var m = Mini.resolveView ? Mini.resolveView(prof, platoonCtx) : {};
+    var platoon = Mini.platoonSplitSummary(m, platoonCtx);
+    var verdict = '';
+    if (global.TeamProfileIntel && TeamProfileIntel.renderSplitVerdictHtml) {
+      verdict = TeamProfileIntel.renderSplitVerdictHtml(m);
+    }
+    if (!platoon && !verdict) return '';
+    var body = '<div class="tp-split-section">' + (platoon || '') + (verdict || '') + '</div>';
+    return sectionCard('Handedness Splits', 'vs RHP · vs LHP · platoon differential', body,
+      { icon: 'split', kicker: 'Platoon', sectionId: 'handedness-splits' });
+  }
+
+  function renderLocationSection(prof, team, ctx) {
+    if (!Mini || !Mini.locationSplitSummary) return '';
+    var locCtx = Object.assign({}, ctx, { split: 'both' });
+    var m = Mini.resolveView ? Mini.resolveView(prof, locCtx) : {};
+    var location = Mini.locationSplitSummary(prof, m, locCtx);
+    if (!location) return '';
+    var body = '<div class="tp-split-section">' + location + '</div>';
+    return sectionCard('Home / Away', 'Location split · park-adjusted offense rates', body,
+      { icon: 'map-pin', kicker: 'Location', sectionId: 'location-splits' });
   }
 
   function compareMatchupUrl(away, home) {
@@ -538,6 +594,9 @@
     var m = resolveM(prof, team, ctx);
     var html = '';
     html += renderOffenseProfile(m, prof, ctx);
+    html += renderRollingTrend(m, prof, ctx);
+    html += renderHandednessSection(prof, team, ctx);
+    html += renderLocationSection(prof, team, ctx);
     html += renderScheduleContext(ctx, ctx.resultsRow, ctx.window);
     if (global.TeamProfileIntel) {
       html += TeamProfileIntel.renderSustainabilitySection(m, prof, ctx);

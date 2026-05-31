@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="theme.css?v=20260616d">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260616f">
+<link rel="stylesheet" href="team_profile.css?v=20260617b">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
@@ -21,13 +21,13 @@
 <script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260616i"></script>
-<script src="team_profile_sections.js?v=20260601g"></script>
-<script src="team_profile_staff.js?v=20260616j"></script>
-<script src="team_profile_intel.js?v=20260616i"></script>
+<script src="team_profile_mini.js?v=20260617b"></script>
+<script src="team_profile_sections.js?v=20260617b"></script>
+<script src="team_profile_staff.js?v=20260617b"></script>
+<script src="team_profile_intel.js?v=20260617b"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
 <script src="platform_dashboard.js?v=20260618v"></script>
-<script src="profile_controls.js?v=20260531j"></script>
+<script src="profile_controls.js?v=20260617b"></script>
 <script src="bullpen_usage.js?v=20260615b"></script>
 <script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
 </head>
@@ -125,14 +125,13 @@
 
   <details class="tp-page-guide" id="tpPageGuide">
     <summary>How to read this page</summary>
-    <p class="tp-page-guide__lead">Use <strong>Split &amp; Window</strong> filters at the top, switch <strong>Lineup · Starters · Bullpen</strong>, then scroll offense metrics, trend chart, and staff tables.</p>
+    <p class="tp-page-guide__lead">Switch <strong>Lineup · Starters · Bullpen</strong>, then use each section&rsquo;s split and window controls — offense profile, rolling trend, handedness, and staff tables filter independently.</p>
     <p class="tp-page-guide__note">Created metrics (OSI, RCV, ABQ, OBR) are 0–100 Chase Analytics grades. <a href="glossary.html">Glossary →</a></p>
   </details>
 
   <div class="tp-profile-toolbar">
-    <div class="tp-context-strip">
+    <div class="tp-context-strip tp-context-strip--picker">
       <div id="teamPickerMount" class="tp-context-picker"></div>
-      <div id="profileControlBar" class="tp-context-controls"></div>
     </div>
   </div>
 
@@ -146,14 +145,13 @@
   </div>
 
   <div class="profile-offense-block">
-    <div id="profileSnapshot"></div>
     <div id="profileOffenseSections"></div>
   </div>
 
   <div class="profile-staff-block" id="profileStaffSections"></div>
   <div id="profileLineupFooter" class="profile-lineup-footer"></div>
 </main>
-<!-- team-profile build: 20260601d -->
+<!-- team-profile build: 20260617b -->
 
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -832,7 +830,8 @@ function sectionHeaderHtml(title, subtitle, opts) {
       title: title,
       subtitle: subtitle || opts.subtitle || '',
       icon: opts.icon,
-      kicker: opts.kicker || opts.eyebrow || 'Team Profile'
+      kicker: opts.kicker || opts.eyebrow || 'Team Profile',
+      actions: opts.actions || ''
     };
     return MLBMAAssets.sectionHeaderHtml(hdr);
   }
@@ -1109,6 +1108,7 @@ function buildMiniCtx(prof, name, tonight) {
     team: STATE.team,
     split: activeSplit(),
     window: STATE.window,
+    chartMetric: STATE.chartMetric || 'osi',
     category: STATE.category,
     recordWl: (window.MLBMAStandings && MLBMAStandings.formatRecord(STATE.team))
       || formatRecordFromResults(STATE.team),
@@ -1208,7 +1208,7 @@ function bindUnitNavStrip() {
     if (!btn) return;
     STATE.category = btn.getAttribute('data-unit-tab') || 'lineup';
     syncSplitFromCategory();
-    bindProfileControls();
+    bindTeamProfileFilters();
     var prof = profileRow(STATE.team) || {};
     var name = TEAM_NAMES[STATE.team] || STATE.team;
     renderUnitNavStrip();
@@ -1218,8 +1218,21 @@ function bindUnitNavStrip() {
   });
 }
 
+function unitChipToneClass(val, ctx, invert, dec, rank) {
+  var A = window.MLBMAAssets;
+  var chipCls = 'c-na';
+  if (A && A.solidChipClass) {
+    chipCls = (rank != null && chipClassFromRank(rank))
+      ? chipClassFromRank(rank)
+      : A.solidChipClass(val, ctx, invert, {});
+  }
+  var toneMap = { 'c-elite': 'elite', 'c-good': 'strong', 'c-mid': 'mid', 'c-weak': 'weak', 'c-poor': 'poor' };
+  return toneMap[chipCls] || 'neutral';
+}
+
 function unitSnapshotChip(label, val, ctx, invert, dec) {
-  return '<div class="tp-unit-chip"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
+  var tone = unitChipToneClass(val, ctx, invert, dec, null);
+  return '<div class="tp-unit-chip tp-unit-chip--' + tone + '"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
     + '<div class="tp-unit-chip-v">' + valChip(val, ctx, invert, dec) + '</div></div>';
 }
 
@@ -1259,7 +1272,7 @@ function unitSnapshotChipRanked(label, val, rankMeta, ctx, invert, dec) {
       + (total ? '<span class="tp-unit-chip-rank__of">of ' + escHtml(String(total)) + '</span>' : '')
       + '</span>'
     : '';
-  return '<div class="tp-unit-chip"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
+  return '<div class="tp-unit-chip tp-unit-chip--' + unitChipToneClass(val, ctx, invert, dec, rank) + '"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
     + '<div class="tp-unit-chip-v">' + rankedValChip(val, rank, ctx, invert, dec) + rankHtml + '</div></div>';
 }
 
@@ -1370,15 +1383,16 @@ function renderUnitSnapshotStrip(prof, ctx) {
   var Staff = window.TeamProfileStaff;
 
   if (cat === 'lineup') {
-    var intelHtml = '';
-    if (window.TeamProfileIntel && TeamProfileIntel.renderStatusIdentity) {
-      intelHtml = TeamProfileIntel.renderStatusIdentity(m, rates, ctx);
-    }
     var chips = unitSnapshotChipRanked('Proj OSI', m.proj, computeProjOsiRank(STATE.team, split), 'osi', false, 1)
       + unitSnapshotChipRanked('wRC+', ctx.wrc != null ? ctx.wrc : rates.wrc, computeWrcRank(STATE.team, split), 'wrc', false, 0)
       + unitSnapshotChipRanked('OBP', rates.obp, computeObpRank(STATE.team, split), 'obp', false, 3);
-    el.innerHTML = intelHtml
-      + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
+    var splitBar = '';
+    if (window.MLBMAProfileControls && MLBMAProfileControls.renderLineupSplitBar) {
+      splitBar = MLBMAProfileControls.renderLineupSplitBar(split);
+    }
+    el.innerHTML = (window.TeamProfileIntel && TeamProfileIntel.renderLineupIdentityPanel)
+      ? TeamProfileIntel.renderLineupIdentityPanel(m, rates, ctx, chips, splitBar)
+      : splitBar + chips;
     syncIdentityStackLayout();
     return;
   } else if (cat === 'rotation') {
@@ -1428,10 +1442,10 @@ function renderUnitSnapshotStrip(prof, ctx) {
 }
 
 function bindTrendChartPanel() {
-  var snap = document.getElementById('profileSnapshot');
-  if (!snap || snap._trendBound) return;
-  snap._trendBound = true;
-  snap.addEventListener('click', function(e) {
+  var root = document.getElementById('profileOffenseSections');
+  if (!root || root._trendBound) return;
+  root._trendBound = true;
+  root.addEventListener('click', function(e) {
     var btn = e.target.closest('[data-trend-metric]');
     var row = e.target.closest('[data-trend-metric-row]');
     if (!btn && !row) return;
@@ -1440,19 +1454,51 @@ function bindTrendChartPanel() {
       : (row.getAttribute('data-trend-metric-row') || 'osi');
     var prof = profileRow(STATE.team) || {};
     var name = TEAM_NAMES[STATE.team] || STATE.team;
-    if (!window.TeamProfileMini) return;
+    if (!window.TeamProfileMini || !window.TeamProfileSections) return;
     var ctx = buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team)));
     ctx.chartMetric = STATE.chartMetric;
-    snap.innerHTML = TeamProfileMini.renderTrendSnapshot(prof, STATE.team, ctx);
-    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(snap);
-    snap.querySelectorAll('[data-trend-metric]').forEach(function(b) {
+    var trendSection = root.querySelector('[data-tp-trend-section]');
+    if (!trendSection) return;
+    var m = TeamProfileMini.resolveView(prof, ctx);
+    trendSection.innerHTML = TeamProfileMini.renderTrendChartPanel(m, ctx);
+    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(trendSection);
+    root.querySelectorAll('[data-trend-metric]').forEach(function(b) {
       var on = b.getAttribute('data-trend-metric') === STATE.chartMetric;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    snap.querySelectorAll('[data-trend-metric-row]').forEach(function(r) {
+    root.querySelectorAll('[data-trend-metric-row]').forEach(function(r) {
       r.classList.toggle('is-active', r.getAttribute('data-trend-metric-row') === STATE.chartMetric);
     });
+  });
+}
+
+function removeLegacyTopFilters() {
+  ['profileControlBar', 'profileSnapshot'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.remove();
+  });
+}
+
+function bindTeamProfileFilters() {
+  var main = document.querySelector('.ca-page-shell');
+  if (!main || main._tpFiltersBound) return;
+  main._tpFiltersBound = true;
+  main.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-tp-ctrl]');
+    if (!btn) return;
+    var grp = btn.closest('[data-tp-ctrl-group]');
+    if (!grp) return;
+    var key = grp.getAttribute('data-tp-ctrl-group');
+    var val = btn.getAttribute('data-tp-ctrl');
+    if (key === 'split') {
+      saveSplitForCategory(STATE.category, val);
+    } else if (key === 'window') {
+      STATE.window = val;
+    } else {
+      return;
+    }
+    renderTeam(STATE.team);
   });
 }
 
@@ -1551,17 +1597,15 @@ function renderLineupFooter(prof) {
 
 function renderOffenseBlock(prof, name, tonight) {
   var heroMount = document.getElementById('profileHeroMount');
-  var snap = document.getElementById('profileSnapshot');
   var sections = document.getElementById('profileOffenseSections');
   var offenseWrap = document.querySelector('.profile-offense-block');
   var identityStack = document.getElementById('tpIdentityStack');
-  if (!snap || !sections || !window.TeamProfileMini) return;
+  if (!sections || !window.TeamProfileMini) return;
   var showOffense = STATE.category === 'lineup';
   if (offenseWrap) offenseWrap.style.display = showOffense ? '' : 'none';
   if (identityStack) identityStack.hidden = false;
   if (!showOffense) {
     if (heroMount) heroMount.innerHTML = '';
-    snap.innerHTML = '';
     sections.innerHTML = '';
     syncIdentityStackLayout();
     return;
@@ -1570,31 +1614,14 @@ function renderOffenseBlock(prof, name, tonight) {
   if (heroMount) {
     heroMount.innerHTML = TeamProfileMini.renderHeroCard(prof, STATE.team, ctx);
   }
-  snap.innerHTML = TeamProfileMini.renderTrendSnapshot(prof, STATE.team, ctx);
   sections.innerHTML = TeamProfileMini.render(prof, STATE.team, ctx);
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
     if (heroMount) MLBMAIcons.refreshIcons(heroMount);
-    MLBMAIcons.refreshIcons(snap);
     MLBMAIcons.refreshIcons(sections);
   }
   syncIdentityStackLayout();
   bindTeamProfileMatchupCard(sections);
   bindTrendChartPanel();
-}
-
-function bindProfileControls() {
-  if (!window.MLBMAProfileControls) return;
-  syncSplitFromCategory();
-  MLBMAProfileControls.renderTeam('profileControlBar', {
-    teamProfileMode: true,
-    teamName: STATE.team,
-    state: { split: activeSplit(), window: STATE.window, category: STATE.category, team: STATE.team },
-    onChange: function(st) {
-      saveSplitForCategory(STATE.category, st.split);
-      STATE.window = st.window;
-      renderTeam(STATE.team);
-    }
-  });
 }
 
 function renderTeam(team) {
@@ -1605,7 +1632,7 @@ function renderTeam(team) {
   var game = tonightGame(STATE.team);
   var tonight = buildTonightHtml(game);
   var ctx = buildMiniCtx(prof, name, tonight);
-  bindProfileControls();
+  bindTeamProfileFilters();
   renderUnitNavStrip();
   renderOffenseBlock(prof, name, tonight);
   renderUnitSnapshotStrip(prof, ctx);
@@ -1748,13 +1775,14 @@ function dismissLoading() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  removeLegacyTopFilters();
   mountProfilePageHeader();
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
   console.log('[MLBMA] team_profile loadAll start');
   initSelector();
-  bindProfileControls();
+  bindTeamProfileFilters();
   loadAll().then(function() {
     function paint() {
       try {

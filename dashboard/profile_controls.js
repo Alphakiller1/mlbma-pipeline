@@ -130,6 +130,53 @@
       + '</div></div>';
   }
 
+  var WINDOW_OPTIONS = [
+    { value: 'YTD', label: 'Season' },
+    { value: 'L30', label: 'Last 30' },
+    { value: 'L14', label: 'Last 14' },
+    { value: 'L7', label: 'Last 7', warn: true }
+  ];
+
+  function sectionPillGroup(label, groupKey, options, active) {
+    return '<div class="hub-ctrl-group tp-section-ctrl" data-tp-ctrl-group="' + esc(groupKey) + '">'
+      + '<span class="hub-ctrl-label">' + esc(label) + '</span>'
+      + '<div class="hub-pill-row">'
+      + options.map(function(o) {
+        var val = o.value || o;
+        var lbl = o.label || splitLabel(val);
+        return '<button type="button" class="hub-pill' + (active === val ? ' active' : '')
+          + (o.warn ? ' warn' : '') + '" data-tp-ctrl="' + esc(val) + '">' + esc(lbl) + '</button>';
+      }).join('')
+      + '</div></div>';
+  }
+
+  function renderSplitControls(category, activeSplit) {
+    var cat = category || 'lineup';
+    var splitOpts = splitOptionsForCategory(cat);
+    var active = activeSplit || defaultSplitForCategory(cat);
+    if (!splitOpts.some(function(o) { return (o.value || o) === active; })) {
+      active = defaultSplitForCategory(cat);
+    }
+    return sectionPillGroup('Split', 'split', splitOpts, active);
+  }
+
+  function renderWindowControls(activeWindow) {
+    return sectionPillGroup('Window', 'window', WINDOW_OPTIONS, activeWindow || 'YTD');
+  }
+
+  function wrapSectionFilterBar(innerHtml, extraClass) {
+    if (!innerHtml) return '';
+    return '<div class="tp-section-filter-bar' + (extraClass ? ' ' + extraClass : '') + '">' + innerHtml + '</div>';
+  }
+
+  function renderLineupSplitBar(activeSplit) {
+    return wrapSectionFilterBar(renderSplitControls('lineup', activeSplit), 'tp-section-filter-bar--split');
+  }
+
+  function renderLineupWindowBar(activeWindow) {
+    return wrapSectionFilterBar(renderWindowControls(activeWindow), 'tp-section-filter-bar--window');
+  }
+
   var _profileTeamScores = null;
   var _profileTeamScoresPromise = null;
 
@@ -582,6 +629,12 @@
     splitLabel: splitLabel,
     splitOptionsForCategory: splitOptionsForCategory,
     splitHintForCategory: splitHintForCategory,
-    defaultSplitForCategory: defaultSplitForCategory
+    defaultSplitForCategory: defaultSplitForCategory,
+    WINDOW_OPTIONS: WINDOW_OPTIONS,
+    renderSplitControls: renderSplitControls,
+    renderWindowControls: renderWindowControls,
+    renderLineupSplitBar: renderLineupSplitBar,
+    renderLineupWindowBar: renderLineupWindowBar,
+    wrapSectionFilterBar: wrapSectionFilterBar
   };
 })(typeof window !== 'undefined' ? window : this);
