@@ -510,3 +510,50 @@ Pipeline complete at 2026-05-18 00:02:04
 All metrics pushed to Google Sheets
  
  
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 6,
+  "ui_issues": 1
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 2,
+  "ui_issues": 1
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 0,
+  "ui_issues": 1
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 0,
+  "ui_issues": 1
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 0,
+  "ui_issues": 1
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 0,
+  "ui_issues": 2
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 0,
+  "ui_issues": 0
+}
+
+--- dashboard_diagnostic ---
+{
+  "sheet_issues": 0,
+  "ui_issues": 0
+}
