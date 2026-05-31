@@ -333,7 +333,7 @@ function profileWindowFieldsFromRow(row) {
     el.dataset.mounted = '1';
     el.innerHTML = '<div class="rl-workspace-header">'
       + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">Four focused tools \u2014 trends, splits, compare, and pitcher research.</p>'
+      + '<p class="rl-workspace-subtitle">Three focused tools \u2014 Trends, Compare, and Pitcher Intelligence.</p>'
       + '</div>';
   }
 

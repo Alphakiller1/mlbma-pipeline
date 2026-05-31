@@ -43,8 +43,8 @@ def get_season_games():
                 home_sp = game["teams"]["home"].get("probablePitcher", {}).get("fullName", "TBD")
                 game_date = date["date"]
 
-                records.append({"date": game_date, "team": away_team, "opp_sp": home_sp})
-                records.append({"date": game_date, "team": home_team, "opp_sp": away_sp})
+                records.append({"date": game_date, "team": away_team, "opp": home_team, "opp_sp": home_sp})
+                records.append({"date": game_date, "team": home_team, "opp": away_team, "opp_sp": away_sp})
             except Exception:
                 continue
 

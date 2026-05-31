@@ -1384,7 +1384,10 @@
         t: t,
         osi: numOrNull(pickCol(row, 'OSI', 'osi', 'Osi')),
         pals: palsVal,
-        xfip: xfip
+        xfip: xfip,
+        ptfPlus: numOrNull(pickCol(row, 'PTF_plus', 'PTF+', 'PTF_Plus', 'ptf_plus')),
+        baPlus: numOrNull(pickCol(row, 'BA_plus', 'BA+', 'BA_Plus', 'ba_plus')),
+        pitchScoreFaced: numOrNull(pickCol(row, 'avg_pitch_score_faced', 'Avg Pitch Score Faced', 'avg_pitch_score_faced'))
       };
     });
     return map;

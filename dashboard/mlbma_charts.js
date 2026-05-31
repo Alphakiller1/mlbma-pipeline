@@ -719,6 +719,89 @@
     return lead.label + ' ' + arrow + ' ' + Math.abs(lead.delta).toFixed(1) + ' over ' + winLabel + driver + '.';
   }
 
+  function computeTrendVelocityFromWindows(values) {
+    var pts = (values || []).map(num);
+    var xy = [];
+    for (var i = 0; i < pts.length; i++) {
+      if (pts[i] == null) continue;
+      xy.push({ x: i, y: pts[i] });
+    }
+    if (xy.length < 2) return null;
+    var mx = xy.reduce(function(s, p) { return s + p.x; }, 0) / xy.length;
+    var my = xy.reduce(function(s, p) { return s + p.y; }, 0) / xy.length;
+    var nume = 0;
+    var den = 0;
+    xy.forEach(function(p) {
+      nume += (p.x - mx) * (p.y - my);
+      den += (p.x - mx) * (p.x - mx);
+    });
+    if (!den) return 0;
+    return nume / den;
+  }
+
+  function trendDirectionFromVelocity(velocity) {
+    var v = num(velocity);
+    if (v == null) return 'Stable';
+    if (v >= 0.6) return 'Rising';
+    if (v <= -0.6) return 'Cooling';
+    return 'Stable';
+  }
+
+  function trendInterpretationLabel(delta, velocity) {
+    var d = num(delta);
+    var v = num(velocity);
+    if (d == null || v == null) return 'Insufficient';
+    if (d >= 4 && v > 0.6) return 'Momentum Up';
+    if (d <= -4 && v < -0.6) return 'Momentum Down';
+    if (Math.abs(d) <= 2 && Math.abs(v) < 0.6) return 'Stable Band';
+    if (Math.abs(d) >= 5 && Math.abs(v) < 0.4) return 'Recent Spike';
+    return 'Mixed Signal';
+  }
+
+  function trendReliabilityForRow(ytd, l30, l7, trendDir) {
+    var OEM = (typeof global !== 'undefined' && global.OEMOverhaul) ? global.OEMOverhaul : null;
+    if (OEM && typeof OEM.trendReliabilityLabel === 'function') {
+      return OEM.trendReliabilityLabel({
+        l7OSI: num(l7),
+        ytdOSI: num(ytd),
+        l30OSI: num(l30),
+        trend: trendDir
+      });
+    }
+    var l7v = num(l7);
+    var ytdv = num(ytd);
+    var l30v = num(l30);
+    if (l7v != null && ytdv != null && Math.abs(l7v - ytdv) > 8
+        && (l30v == null || Math.abs(l30v - ytdv) < 4)) {
+      return 'Short Spike';
+    }
+    if (trendDir === 'Rising' && l30v != null && ytdv != null && l30v > ytdv) return 'Sustained Rise';
+    if (trendDir === 'Cooling') return 'Declining';
+    if (trendDir === 'Stable') return 'Stable';
+    return 'Noisy';
+  }
+
+  function buildTrendWindowRow(values) {
+    var ytd = num(values && values[0]);
+    var l30 = num(values && values[1]);
+    var l14 = num(values && values[2]);
+    var l7 = num(values && values[3]);
+    var velocity = computeTrendVelocityFromWindows([ytd, l30, l14, l7]);
+    var trendDir = trendDirectionFromVelocity(velocity);
+    var deltaVal = ytd != null && l7 != null ? l7 - ytd : null;
+    return {
+      ytd: ytd,
+      l30: l30,
+      l14: l14,
+      l7: l7,
+      delta: deltaVal,
+      velocity: velocity,
+      trend: trendDir,
+      reliability: trendReliabilityForRow(ytd, l30, l7, trendDir),
+      interpretation: trendInterpretationLabel(deltaVal, velocity)
+    };
+  }
+
   function buildTrendLineChart(label, values, width, height, opts) {
     opts = opts || {};
     width = width || 320;
@@ -917,6 +1000,9 @@
     trendWindowSlice: trendWindowSlice,
     trendMetricPack: trendMetricPack,
     trendDeltaReadout: trendDeltaReadout,
+    buildTrendWindowRow: buildTrendWindowRow,
+    trendDirectionFromVelocity: trendDirectionFromVelocity,
+    trendInterpretationLabel: trendInterpretationLabel,
     buildRadarChart: buildRadarChart,
     buildMiniQuadrant: buildMiniQuadrant,
     buildSnapshotRadar: buildSnapshotRadar,

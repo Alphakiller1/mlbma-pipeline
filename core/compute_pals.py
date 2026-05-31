@@ -52,6 +52,20 @@ def load_osi_for_pals():
     return pd.read_csv(path)[["Tm", "OSI"]]
 
 
+def load_team_pitch_scores() -> dict:
+    path = DATA_DIR / "metrics_pitching_score.csv"
+    if not path.exists():
+        return {}
+    df = pd.read_csv(path)
+    out = {}
+    for _, row in df.iterrows():
+        tm = str(row.get("Tm", "")).strip().upper()
+        ps = row.get("PitchScore")
+        if tm and pd.notna(ps):
+            out[tm] = float(ps)
+    return out
+
+
 def calc_pals(games, sp_df, osi_df):
     games = games.copy()
     games["opp_xfip"] = games["opp_sp"].apply(lambda x: match_sp(x, sp_df))
@@ -61,7 +75,20 @@ def calc_pals(games, sp_df, osi_df):
     ptf = matched.groupby("team")["opp_xfip"].mean().reset_index()
     ptf.columns = ["Tm", "avg_xFIP_faced"]
 
+    pitch_map = load_team_pitch_scores()
+    ps_faced = None
+    if pitch_map and "opp" in games.columns:
+        games["opp_pitch_score"] = games["opp"].astype(str).str.strip().str.upper().map(pitch_map)
+        ps_matched = games.dropna(subset=["opp_pitch_score"])
+        if not ps_matched.empty:
+            ps_faced = (
+                ps_matched.groupby("team")["opp_pitch_score"].mean().reset_index()
+            )
+            ps_faced.columns = ["Tm", "avg_pitch_score_faced"]
+
     df = osi_df.merge(ptf, on="Tm", how="left")
+    if ps_faced is not None:
+        df = df.merge(ps_faced, on="Tm", how="left")
     df = df.dropna(subset=["avg_xFIP_faced"])
 
     df["BA_plus"] = normalize_optional(df["OSI"])
@@ -74,6 +101,8 @@ def calc_pals(games, sp_df, osi_df):
     df = df.sort_values("PALS", ascending=False).reset_index(drop=True)
     df.index += 1
     df["avg_xFIP_faced"] = df["avg_xFIP_faced"].round(2)
+    if "avg_pitch_score_faced" in df.columns:
+        df["avg_pitch_score_faced"] = df["avg_pitch_score_faced"].round(1)
     df["BA_plus"] = df["BA_plus"].round(1)
     df["PTF_plus"] = df["PTF_plus"].round(1)
     df["PALS"] = df["PALS"].round(1)

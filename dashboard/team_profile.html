@@ -12,22 +12,22 @@
 <link rel="stylesheet" href="theme.css?v=20260615b">
 <link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260618v">
-<link rel="stylesheet" href="team_profile.css?v=20260620m">
+<link rel="stylesheet" href="team_profile.css?v=20260531t">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260615b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
 <script src="mlbma_assets.js?v=20260620c"></script>
 <script src="mlbma_icons.js?v=20260620g"></script>
-<script src="matchup_shared.js?v=20260620c"></script>
+<script src="matchup_shared.js?v=20260531q"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
-<script src="team_profile_mini.js?v=20260620m"></script>
-<script src="team_profile_sections.js?v=20260620g"></script>
+<script src="team_profile_mini.js?v=20260531o"></script>
+<script src="team_profile_sections.js?v=20260531t"></script>
 <script src="team_profile_staff.js?v=20260620g"></script>
-<script src="team_profile_intel.js?v=20260620g"></script>
-<script src="mlbma_charts.js?v=20260619b"></script>
+<script src="team_profile_intel.js?v=20260531r"></script>
+<script src="mlbma_charts.js?v=20260531n"></script>
 <script src="platform_dashboard.js?v=20260618v"></script>
-<script src="profile_controls.js?v=20260620m"></script>
+<script src="profile_controls.js?v=20260531j"></script>
 <script src="bullpen_usage.js?v=20260615b"></script>
 <script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
 </head>
@@ -425,6 +425,8 @@ function metricsFromBlend(rowA, rowB) {
 }
 
 function lineupSplitCandidates(filter, spHand) {
+  if (filter === 'sp') return ['vs_SP', 'vs_RHP', 'vs_LHP', 'overall', 'home', 'away', 'vs_RP'];
+  if (filter === 'rp') return ['vs_RP', 'vs_RHP', 'vs_LHP', 'overall', 'home', 'away', 'vs_SP'];
   if (filter === 'rhp') return ['vs_RHP', 'vs_SP', 'vs_RP', 'overall', 'home', 'away', 'vs_LHP'];
   if (filter === 'lhp') return ['vs_LHP', 'vs_SP', 'vs_RP', 'overall', 'home', 'away', 'vs_RHP'];
   if (filter === 'home') return ['home', 'vs_RHP', 'vs_LHP', 'vs_SP', 'overall', 'away'];
@@ -440,6 +442,8 @@ function lineupSplitSubtitle(filter, spHand, windowKey) {
     both: 'Blended platoon (RHP + LHP)',
     rhp: 'vs RHP split',
     lhp: 'vs LHP split',
+    sp: 'vs starting pitching split',
+    rp: 'vs bullpen split',
     home: 'Home split',
     away: 'Away split',
     f5: 'vs SP split (F5 proxy)'
@@ -848,11 +852,28 @@ function bindTeamProfileMatchupCard(root) {
   if (!root) return;
   var wrap = root.querySelector('[data-tp-matchup-card]');
   if (!wrap) return;
-  var card = wrap.querySelector('.hero-matchup-card');
-  if (!card) return;
-  if (window.PlatformDashboard && PlatformDashboard.bindHeroMatchupCard) {
-    PlatformDashboard.bindHeroMatchupCard(card);
-  }
+  var card = wrap.querySelector('.tp-tonight-snap') || wrap.querySelector('.hero-matchup-card');
+  if (!card || card.dataset.navBound) return;
+  card.dataset.navBound = '1';
+  var goCompare = function() {
+    var away = card.getAttribute('data-away');
+    var home = card.getAttribute('data-home');
+    if (!away || !home) return;
+    var url = window.PlatformDashboard && PlatformDashboard.compareUrl
+      ? PlatformDashboard.compareUrl(away, home)
+      : 'matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home);
+    window.location.href = url;
+  };
+  card.addEventListener('click', function(e) {
+    if (e.target.closest('a, button')) return;
+    goCompare();
+  });
+  card.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goCompare();
+    }
+  });
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(wrap);
 }
 
@@ -960,7 +981,8 @@ function buildMiniCtx(prof, name, tonight) {
     ? TeamProfileMini.resolveOffenseRates(prof, {
       pickCol: pickCol, team: STATE.team, split: activeSplit(),
       metricsR: DATA.metricsR, metricsL: DATA.metricsL,
-      batterSplitsR: DATA.batterSplitsR, batterSplitsL: DATA.batterSplitsL
+      batterSplitsR: DATA.batterSplitsR, batterSplitsL: DATA.batterSplitsL,
+      batters: DATA.batters
     })
     : {};
   return {
@@ -976,6 +998,10 @@ function buildMiniCtx(prof, name, tonight) {
     metricsL: DATA.metricsL,
     batterSplitsR: DATA.batterSplitsR,
     batterSplitsL: DATA.batterSplitsL,
+    batters: DATA.batters,
+    profiles: DATA.profiles,
+    results: DATA.results,
+    teamKey: teamKey,
     resultsRow: resultsRow(STATE.team),
     tonightHtml: tonight ? tonight.html : '',
     tonightSpHand: tonight ? tonight.spHand : '',
@@ -997,6 +1023,9 @@ function buildMiniCtx(prof, name, tonight) {
     })(),
     pals: palsPack.pals != null ? palsPack.pals : num(pickCol(prof, ['pals', 'PALS'])),
     xfipFaced: palsPack.xfip != null ? palsPack.xfip : null,
+    pitchScoreFaced: palsPack.pitchScoreFaced != null ? palsPack.pitchScoreFaced : null,
+    ptfPlus: palsPack.ptfPlus != null ? palsPack.ptfPlus : null,
+    palsMap: DATA.palsMap || {},
     avgPitchScore: (function() {
       var pr = pitchTeamRow(STATE.team);
       return num(pickCol(prof, ['avg_pitching_score'])) || (pr ? num(pickCol(pr, ['PitchScore'])) : null);
@@ -1075,6 +1104,116 @@ function unitSnapshotChip(label, val, ctx, invert, dec) {
     + '<div class="tp-unit-chip-v">' + valChip(val, ctx, invert, dec) + '</div></div>';
 }
 
+function snapshotRankTone(rank) {
+  if (rank == null || isNaN(rank)) return 'neutral';
+  if (rank <= 5) return 'elite';
+  if (rank <= 12) return 'strong';
+  if (rank <= 20) return 'mid';
+  return 'weak';
+}
+
+function chipClassFromRank(rank) {
+  if (rank == null || isNaN(rank)) return null;
+  if (rank <= 5) return 'c-elite';
+  if (rank <= 12) return 'c-good';
+  if (rank <= 20) return 'c-mid';
+  return 'c-weak';
+}
+
+function rankedValChip(val, rank, ctx, invert, dec) {
+  var d = dec == null ? 1 : dec;
+  if (val == null || isNaN(val)) return valChip(val, ctx, invert, d);
+  var chipClass = chipClassFromRank(rank);
+  if (chipClass && window.MLBMAAssets && MLBMAAssets.valChipHtml) {
+    return MLBMAAssets.valChipHtml(val, ctx, invert, d, { chipClass: chipClass });
+  }
+  return valChip(val, ctx, invert, d);
+}
+
+function unitSnapshotChipRanked(label, val, rankMeta, ctx, invert, dec) {
+  rankMeta = rankMeta || {};
+  var rank = rankMeta.rank;
+  var total = rankMeta.total;
+  var rankHtml = rank != null
+    ? '<span class="tp-unit-chip-rank tp-unit-chip-rank--' + snapshotRankTone(rank) + '">'
+      + '<span class="tp-unit-chip-rank__num">#' + escHtml(String(rank)) + '</span>'
+      + (total ? '<span class="tp-unit-chip-rank__of">of ' + escHtml(String(total)) + '</span>' : '')
+      + '</span>'
+    : '';
+  return '<div class="tp-unit-chip"><span class="tp-unit-chip-k">' + escHtml(label) + '</span>'
+    + '<div class="tp-unit-chip-v">' + rankedValChip(val, rank, ctx, invert, dec) + rankHtml + '</div></div>';
+}
+
+function miniCtxForTeam(team, split) {
+  return {
+    pickCol: pickCol,
+    team: team,
+    split: split || activeSplit(),
+    window: STATE.window,
+    metricsR: DATA.metricsR,
+    metricsL: DATA.metricsL,
+    batterSplitsR: DATA.batterSplitsR,
+    batterSplitsL: DATA.batterSplitsL,
+    batters: DATA.batters
+  };
+}
+
+function computeRankAmong(team, rows, valueFn) {
+  var key = teamKey(team);
+  var scored = (rows || []).map(function(row) {
+    return { t: teamKey(pickCol(row, ['team', 'Team', 'tm'])), v: valueFn(row) };
+  }).filter(function(r) { return r.t && r.v != null && !isNaN(r.v); })
+    .sort(function(a, b) { return b.v - a.v; });
+  for (var i = 0; i < scored.length; i++) {
+    if (scored[i].t === key) return { rank: i + 1, total: scored.length };
+  }
+  return { rank: null, total: scored.length || null };
+}
+
+function projOsiForTeam(team, split) {
+  var prof = profileRow(team);
+  if (!prof || !window.TeamProfileMini || !TeamProfileMini.resolveView) return null;
+  return TeamProfileMini.resolveView(prof, miniCtxForTeam(team, split)).proj;
+}
+
+function wrcForTeam(team, split) {
+  var prof = profileRow(team);
+  if (!prof || !window.TeamProfileMini || !TeamProfileMini.resolveOffenseRates) return null;
+  return TeamProfileMini.resolveOffenseRates(prof, miniCtxForTeam(team, split)).wrc;
+}
+
+function runsPerGameForTeam(team) {
+  var row = resultsRow(team);
+  if (!row) return null;
+  var rpg = num(pickCol(row, ['runs_per_game', 'RPG', 'rpg', 'Runs_Per_Game']));
+  if (rpg != null) return rpg;
+  var rs = num(pickCol(row, ['runs_scored', 'RS', 'runs', 'Runs_Scored']));
+  var g = num(pickCol(row, ['games', 'G', 'Games']));
+  if (rs != null && g > 0) return rs / g;
+  return null;
+}
+
+function computeProjOsiRank(team, split) {
+  return computeRankAmong(team, DATA.profiles, function(prof) {
+    var t = teamKey(pickCol(prof, ['team', 'Team', 'tm']));
+    return projOsiForTeam(t, split);
+  });
+}
+
+function computeWrcRank(team, split) {
+  return computeRankAmong(team, DATA.profiles, function(prof) {
+    var t = teamKey(pickCol(prof, ['team', 'Team', 'tm']));
+    return wrcForTeam(t, split);
+  });
+}
+
+function computeRpgRank(team) {
+  return computeRankAmong(team, DATA.results, function(row) {
+    var t = teamKey(pickCol(row, ['team', 'Team', 'tm']));
+    return runsPerGameForTeam(t);
+  });
+}
+
 function syncIdentityStackLayout() {
   var heroMount = document.getElementById('profileHeroMount');
   var stack = document.getElementById('tpIdentityStack');
@@ -1103,10 +1242,14 @@ function renderUnitSnapshotStrip(prof, ctx) {
     if (window.TeamProfileIntel && TeamProfileIntel.renderStatusIdentity) {
       intelHtml = TeamProfileIntel.renderStatusIdentity(m, rates);
     }
-    var chips = unitSnapshotChip('Offense Score', m.osi, 'osi', false, 1)
-      + unitSnapshotChip('wRC+', ctx.wrc != null ? ctx.wrc : rates.wrc, 'wrc', false, 0)
-      + unitSnapshotChip('Proj OSI', m.proj, 'osi', false, 1);
-    el.innerHTML = intelHtml + '<div class="tp-unit-snapshot-row">' + chips + '</div>';
+    var chips = unitSnapshotChipRanked('Proj OSI', m.proj, computeProjOsiRank(STATE.team, split), 'osi', false, 1)
+      + unitSnapshotChipRanked('wRC+', ctx.wrc != null ? ctx.wrc : rates.wrc, computeWrcRank(STATE.team, split), 'wrc', false, 0)
+      + unitSnapshotChipRanked('Runs Per Game', runsPerGameForTeam(STATE.team), computeRpgRank(STATE.team), 'osi', false, 2);
+    var splitHtml = window.TeamProfileMini && TeamProfileMini.renderOffenseSplitSummary
+      ? TeamProfileMini.renderOffenseSplitSummary(prof, m, ctx) : '';
+    el.innerHTML = intelHtml
+      + '<div class="tp-unit-snapshot-row">' + chips + '</div>'
+      + splitHtml;
     syncIdentityStackLayout();
     return;
   } else if (cat === 'rotation') {
@@ -1161,8 +1304,11 @@ function bindTrendChartPanel() {
   snap._trendBound = true;
   snap.addEventListener('click', function(e) {
     var btn = e.target.closest('[data-trend-metric]');
-    if (!btn) return;
-    STATE.chartMetric = btn.getAttribute('data-trend-metric') || 'osi';
+    var row = e.target.closest('[data-trend-metric-row]');
+    if (!btn && !row) return;
+    STATE.chartMetric = btn
+      ? (btn.getAttribute('data-trend-metric') || 'osi')
+      : (row.getAttribute('data-trend-metric-row') || 'osi');
     var prof = profileRow(STATE.team) || {};
     var name = TEAM_NAMES[STATE.team] || STATE.team;
     if (!window.TeamProfileMini) return;
@@ -1174,6 +1320,9 @@ function bindTrendChartPanel() {
       var on = b.getAttribute('data-trend-metric') === STATE.chartMetric;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    snap.querySelectorAll('[data-trend-metric-row]').forEach(function(r) {
+      r.classList.toggle('is-active', r.getAttribute('data-trend-metric-row') === STATE.chartMetric);
     });
   });
 }
@@ -1236,21 +1385,25 @@ function mountBullpenUsage(team) {
 }
 
 function computeOsiRank(team) {
-  var key = teamKey(team);
-  var rows = (DATA.profiles || []).map(function(p) {
-    return { t: teamKey(pickCol(p, ['team', 'Team', 'tm'])), osi: num(pickCol(p, ['osi', 'OSI'])) };
-  }).filter(function(r) { return r.t && r.osi != null; }).sort(function(a, b) { return b.osi - a.osi; });
-  for (var i = 0; i < rows.length; i++) {
-    if (rows[i].t === key) return i + 1;
-  }
-  return null;
+  return computeRankAmong(team, DATA.profiles, function(prof) {
+    return num(pickCol(prof, ['osi', 'OSI']));
+  }).rank;
 }
 
 function renderStaffBlock(prof) {
   var el = document.getElementById('profileStaffSections');
   if (!el || !window.TeamProfileStaff) return;
   _bpUsageLoadToken++;
-  el.innerHTML = TeamProfileStaff.renderAll(prof, STATE.team, buildStaffCtx());
+  var ctx = buildStaffCtx();
+  var html = TeamProfileStaff.renderAll(prof, STATE.team, ctx);
+  if (STATE.category === 'lineup' && window.TeamProfileIntel && TeamProfileIntel.renderResearchTakeaways
+      && window.TeamProfileMini && TeamProfileMini.resolveView) {
+    var name = TEAM_NAMES[STATE.team] || STATE.team;
+    var miniCtx = buildMiniCtx(prof, name, buildTonightHtml(tonightGame(STATE.team)));
+    var m = TeamProfileMini.resolveView(prof, miniCtx);
+    html += TeamProfileIntel.renderResearchTakeaways(m, prof, miniCtx);
+  }
+  el.innerHTML = html;
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
   bindBattingTabs();
   if (STATE.category === 'bullpen') {

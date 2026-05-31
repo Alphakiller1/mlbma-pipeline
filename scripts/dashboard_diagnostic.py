@@ -162,18 +162,25 @@ def run_playwright() -> list[str]:
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         page.set_default_timeout(60000)
 
-        # Main OEM page — full load
-        page.goto(f"{base}/chase_analytics_mlb_oem_v7.html", wait_until="domcontentloaded")
+        # Main OEM page — matchups view (cards live on #section-matchups-hero, not opening hero)
+        page.goto(f"{base}/chase_analytics_mlb_oem_v7.html#section-matchups-hero", wait_until="domcontentloaded")
+        page.evaluate(
+            "if (typeof syncDashboardView === 'function') syncDashboardView();"
+            " else { document.documentElement.classList.remove('view-opening','view-research');"
+            " document.documentElement.classList.add('view-matchups');"
+            " document.body.classList.remove('view-opening','view-research');"
+            " document.body.classList.add('view-matchups'); }"
+        )
         try:
-            page.wait_for_selector(".hero-matchup-card, .matchup-card", timeout=20000)
+            page.wait_for_selector(".hero-matchup-card, .matchup-card", timeout=25000)
         except Exception:
             page.wait_for_timeout(12000)
 
         cards = page.locator(".matchup-card, .hero-matchup-card, .ca-matchup-card")
         if cards.count() == 0:
-            issues.append("[UI] Opening Dashboard: no matchup cards visible after load")
+            issues.append("[UI] Matchups view: no matchup cards visible after load")
         else:
-            ok.append(f"[UI] Opening Dashboard: {cards.count()} matchup elements")
+            ok.append(f"[UI] Matchups view: {cards.count()} matchup elements")
 
         # Research Lab → Pitcher Intelligence
         page.goto(f"{base}/chase_analytics_mlb_oem_v7.html#section-research-lab", wait_until="domcontentloaded")
@@ -189,27 +196,30 @@ def run_playwright() -> list[str]:
         else:
             issues.append("[UI] Research Lab: Pitcher Intelligence tab not found")
 
-        snap_tab = page.locator('[data-pl-intel-tab="snapshot"]')
-        rank_tab = page.locator('[data-pl-intel-tab="rankings"]')
+        snap_tab = page.locator('[data-pl-intel-tab="rankings"]')
+        rank_tab = page.locator('[data-pl-intel-tab="bullpen"]')
         if snap_tab.count() == 0:
-            issues.append("[UI] Pitcher Intelligence: missing Snapshot/Rankings sub-tabs")
+            issues.append("[UI] Pitcher Intelligence: missing Rankings/Bullpen sub-tabs")
         else:
             ok.append("[UI] Pitcher Intelligence: sub-tabs present")
             rank_tab.click()
             page.wait_for_timeout(3000)
-            rank_rows = page.locator(".pl-rank-row").count()
+            rank_rows = page.locator(".pl-rank-row, .pl-bp-rank-row").count()
             if rank_rows == 0:
-                empty = page.locator(".rl-empty").first
+                empty = page.locator(".rl-empty, .pl-empty").first
+                msg = empty.inner_text()[:80] if empty.count() else "no rows"
+                issues.append(f"[UI] Bullpen Rankings: 0 rows — {msg}")
+            else:
+                ok.append(f"[UI] Bullpen Rankings: {rank_rows} rows")
+            snap_tab.click()
+            page.wait_for_timeout(3000)
+            starter_rows = page.locator(".pl-rank-row").count()
+            if starter_rows == 0:
+                empty = page.locator(".rl-empty, .pl-empty").first
                 msg = empty.inner_text()[:80] if empty.count() else "no rows"
                 issues.append(f"[UI] Today's Starters Rankings: 0 rows — {msg}")
             else:
-                ok.append(f"[UI] Today's Starters Rankings: {rank_rows} rows")
-            snap_tab.click()
-            page.wait_for_timeout(2000)
-            if page.locator(".pl-intel-snapshot, .pl-snapshot-card").count() == 0:
-                issues.append("[UI] Pitcher Snapshot: no snapshot card")
-            else:
-                ok.append("[UI] Pitcher Snapshot: card rendered")
+                ok.append(f"[UI] Today's Starters Rankings: {starter_rows} rows")
 
         # Team Profile clicks
         page.goto(f"{base}/team_profile.html?team=NYY", wait_until="domcontentloaded")

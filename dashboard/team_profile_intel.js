@@ -277,7 +277,10 @@
         ? ' with strong contact rates'
         : '';
     var obrNote = obr != null && obr >= 68 ? ' and on-base value that keeps innings alive' : '';
-    return 'A ' + tier + ' offense built on ' + (shape || 'mixed grade pillars') + kNote + obrNote + '.';
+    function cap(s) {
+      return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+    }
+    return 'A ' + cap(tier) + ' offense built on ' + (shape || 'mixed grade pillars') + kNote + obrNote + '.';
   }
 
   function researchTakeaways(m, rates, ctx) {
@@ -352,6 +355,110 @@
     return '<p class="tp-intel-read tp-intel-read--split">' + esc(text) + '</p>';
   }
 
+  function resolveMarketMapRow(m, prof, ctx) {
+    ctx = ctx || {};
+    var MS = global.MLBMASharedMatchup;
+    var team = ctx.teamKey ? ctx.teamKey(ctx.team) : String(ctx.team || '').trim().toUpperCase();
+    if (MS && MS.scoreRowFromSheet && ctx.metricsR && ctx.metricsR.length) {
+      for (var i = 0; i < ctx.metricsR.length; i++) {
+        var parsed = MS.scoreRowFromSheet(ctx.metricsR[i]);
+        if (parsed && MS.teamKey(parsed.t) === MS.teamKey(team)) return parsed;
+      }
+    }
+    if (MS && MS.findScoreRow && global.SCO_YTD_R && global.SCO_YTD_R.length) {
+      var fromLive = MS.findScoreRow(global.SCO_YTD_R, team);
+      if (fromLive) return fromLive;
+    }
+    m = m || {};
+    var rates = Mini && Mini.resolveOffenseRates ? Mini.resolveOffenseRates(prof, ctx) : {};
+    var rcv = num(m.rcv);
+    if (rcv == null) return null;
+    var row = {
+      t: team,
+      rcv: rcv,
+      osi: num(m.osi),
+      ppGap: num(m.ppGap)
+    };
+    if (rates.woba != null && rates.xwoba != null) {
+      row.reg_signal = rates.xwoba - rates.woba;
+    }
+    return row;
+  }
+
+  function marketMapPosition(m, prof, ctx) {
+    var C = global.MLBMACharts;
+    if (!C || !C.marketQuadrantMeta || !C.quadYValue) return null;
+    var row = resolveMarketMapRow(m, prof, ctx);
+    if (!row || row.rcv == null) return null;
+    var yVal = C.quadYValue(row);
+    if (yVal == null) return null;
+    var meta = C.marketQuadrantMeta(row.rcv, yVal);
+    var rcvRank = null;
+    var total = null;
+    if (ctx && ctx.profiles && ctx.profiles.length && Mini && ctx.pickCol) {
+      var scored = [];
+      ctx.profiles.forEach(function(p) {
+        var t = ctx.teamKey
+          ? ctx.teamKey(ctx.pickCol(p, ['team', 'Team', 'tm']))
+          : String(ctx.pickCol(p, ['team', 'Team', 'tm']) || '').trim().toUpperCase();
+        if (!t) return;
+        var miniCtx = {
+          pickCol: ctx.pickCol,
+          team: t,
+          split: ctx.split || 'both',
+          window: ctx.window || 'YTD',
+          metricsR: ctx.metricsR,
+          metricsL: ctx.metricsL,
+          batterSplitsR: ctx.batterSplitsR,
+          batterSplitsL: ctx.batterSplitsL,
+          batters: ctx.batters
+        };
+        var mv = Mini.resolveView(p, miniCtx);
+        if (mv.rcv != null) scored.push({ t: t, rcv: mv.rcv });
+      });
+      scored.sort(function(a, b) { return b.rcv - a.rcv; });
+      total = scored.length;
+      var tk = ctx.teamKey ? ctx.teamKey(ctx.team) : ctx.team;
+      for (var i = 0; i < scored.length; i++) {
+        if (scored[i].t === tk) {
+          rcvRank = i + 1;
+          break;
+        }
+      }
+    }
+    return {
+      label: meta.label,
+      color: meta.color,
+      rcv: row.rcv,
+      gap: yVal,
+      rcvRank: rcvRank,
+      total: total
+    };
+  }
+
+  function renderMarketMapPositionHtml(m, prof, ctx) {
+    var pos = marketMapPosition(m, prof, ctx);
+    if (!pos) {
+      return '<span class="tp-intel-chip-item tp-intel-chip-item--market">'
+        + '<span class="ca-metric-label">Market Map</span>'
+        + '<span class="chip c-na">—</span></span>';
+    }
+    var rankHtml = pos.rcvRank != null
+      ? '<span class="tp-intel-market-pos__rank">RCV #' + esc(String(pos.rcvRank))
+        + (pos.total ? '/' + esc(String(pos.total)) : '') + '</span>'
+      : '';
+    return '<span class="tp-intel-chip-item tp-intel-chip-item--market">'
+      + '<span class="ca-metric-label">Market Map</span>'
+      + '<span class="tp-intel-market-pos" style="--pos-color:' + esc(pos.color) + '">'
+      + '<span class="tp-intel-market-pos__dot" aria-hidden="true"></span>'
+      + '<span class="tp-intel-market-pos__label">' + esc(pos.label) + '</span>'
+      + '</span>'
+      + rankHtml
+      + '<span class="tp-intel-market-pos__meta">RCV ' + pos.rcv.toFixed(1)
+      + ' · Gap ' + (pos.gap >= 0 ? '+' : '') + pos.gap.toFixed(1) + '</span>'
+      + '</span>';
+  }
+
   function renderSustainabilitySection(m, prof, ctx) {
     var rates = Mini && Mini.resolveOffenseRates ? Mini.resolveOffenseRates(prof, ctx) : {};
     var v = sustainabilityVerdict(rates);
@@ -366,6 +473,7 @@
         ? '<span class="tp-intel-chip-item"><span class="ca-metric-label">Gap</span>'
           + '<span class="chip">' + (v.gapPts >= 0 ? '+' : '') + v.gapPts + '</span></span>'
         : '')
+      + renderMarketMapPositionHtml(m, prof, ctx)
       + '</div>';
     var body = '<div class="tp-intel-sustain">'
       + labelChip
@@ -373,7 +481,7 @@
       + '<p class="tp-intel-read">' + esc(v.sentence) + '</p>'
       + '<p class="ca-helper tp-intel-note">' + esc(v.note) + '</p>'
       + '</div>';
-    return sectionWrap('Sustainability Check', 'wOBA vs expected contact quality (xwOBA)', body, 'activity');
+    return sectionWrap('Sustainability Check', 'wOBA vs xwOBA · RCV vs regression gap market map quadrant', body, 'activity');
   }
 
   function takeawayCardHtml(c) {
@@ -399,9 +507,11 @@
   function renderStatusIdentity(m, rates) {
     var status = offenseStatusLabel(m, rates);
     var line = offenseIdentityLine(m, rates);
-    return '<div class="tp-intel-status">'
-      + '<span class="tp-intel-status__label ' + esc(status.cls) + '">' + esc(status.label) + '</span>'
-      + '<p class="tp-intel-status__line">' + esc(line) + '</p>'
+    var tierKey = String(status.cls || '').replace('tp-intel-status--', '') || 'neutral';
+    return '<div class="tp-lineup-identity tp-lineup-identity--' + esc(tierKey) + '">'
+      + '<p class="tp-lineup-identity__eyebrow">Offensive Identity</p>'
+      + '<h2 class="tp-lineup-identity__headline ' + esc(status.cls) + '">' + esc(status.label) + '</h2>'
+      + '<p class="tp-lineup-identity__desc">' + esc(line) + '</p>'
       + '</div>';
   }
 
@@ -777,6 +887,8 @@
     formRead: formRead,
     splitVerdict: splitVerdict,
     sustainabilityVerdict: sustainabilityVerdict,
+    marketMapPosition: marketMapPosition,
+    renderMarketMapPositionHtml: renderMarketMapPositionHtml,
     researchTakeaways: researchTakeaways,
     offenseStatusLabel: offenseStatusLabel,
     offenseIdentityLine: offenseIdentityLine,

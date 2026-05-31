@@ -18,7 +18,8 @@
   function splitLabel(key) {
     var map = {
       both: 'Both', overall: 'Overall', rhp: 'vs RHP', lhp: 'vs LHP', lhh: 'vs LHH', rhh: 'vs RHH',
-      home: 'Home', away: 'Away', f5: 'F5', hlev: 'High Leverage', llev: 'Low Leverage',
+      home: 'Home', away: 'Away', f5: 'F5', sp: 'vs Starting Pitching', rp: 'vs Bullpens',
+      hlev: 'High Leverage', llev: 'Low Leverage',
       b: 'Both', r: 'vs RHP', l: 'vs LHP', hilev: 'High Leverage', lolev: 'Low Leverage'
     };
     return map[key] || key;
@@ -26,6 +27,7 @@
 
   var LINEUP_SPLIT_OPTIONS = [
     { value: 'both', label: 'Both Hands' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
+    { value: 'sp', label: 'vs Starting Pitching' }, { value: 'rp', label: 'vs Bullpens' },
     { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'First 5' }
   ];
   var ROTATION_SPLIT_OPTIONS = [
@@ -55,7 +57,7 @@
     if (category === 'bullpen') {
       return 'Split matches Bullpen Report (Overall · vs LHH/RHH · Home/Away · High/Low leverage). Window sets time range for trends.';
     }
-    return 'Split changes platoon/location views for batters. Window sets the time range for scoring, trends, and snapshot KPIs.';
+    return 'Split changes platoon, location, and pitcher-type views (vs SP / vs bullpen) for batters. Window sets the time range for scoring, trends, and snapshot KPIs.';
   }
 
   function viewLabel(v) {

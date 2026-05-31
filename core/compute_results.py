@@ -17,6 +17,9 @@ BASE_METRICS = [
     "games",
     "wins",
     "losses",
+    "runs_scored",
+    "runs_allowed",
+    "runs_per_game",
     "win_pct",
     "f5_wins",
     "f5_losses",
@@ -74,11 +77,21 @@ def _aggregate(df: pd.DataFrame) -> Dict[str, float]:
     saves = int(((df["result"] == "W") & (df["save_pitcher_id"].notna())).sum())
     blown_saves = int(df["blown_save"].sum())
     save_opps = saves + blown_saves
+    runs_scored = int(df["team_runs"].sum()) if "team_runs" in df.columns else None
+    runs_allowed = int(df["opp_runs"].sum()) if "opp_runs" in df.columns else None
+    runs_per_game = (
+        round(float(runs_scored) / float(games), 2)
+        if runs_scored is not None and games > 0
+        else None
+    )
 
     return {
         "games": games,
         "wins": wins,
         "losses": losses,
+        "runs_scored": runs_scored,
+        "runs_allowed": runs_allowed,
+        "runs_per_game": runs_per_game,
         "win_pct": _safe_rate(wins, games),
         "f5_wins": f5_wins,
         "f5_losses": f5_losses,

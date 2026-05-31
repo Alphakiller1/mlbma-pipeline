@@ -1998,35 +1998,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   flex-wrap: wrap;
 }
 
-.ca-market__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #6D28D9;
-  margin: 8px 0 0;
-}
-
-.ca-market__lede {
-  margin: 12px 0 0;
-  max-width: 640px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.55;
-  color: var(--text-2, #A1A1AA);
-}
-
-.ca-market__title {
-  font-size: clamp(28px, 3.2vw, 44px);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
 .ca-market__toggle-group {
   display: inline-flex;
@@ -2393,7 +2364,7 @@ body.view-research .ca-lab { display: block; }
   margin-right: calc(50% - 50vw);
   padding-top: clamp(48px, 6vw, 72px);
 }
-.opening-layer .ca-tools .ca-section-header .ca-helper {
+.opening-layer .ca-tools .ca-page-header .ca-helper {
   max-width: 720px;
   margin-top: 12px;
   font-size: 15px;
@@ -2451,7 +2422,7 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260610a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260531c">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260531i">
 <link rel="stylesheet" href="theme.css?v=20260612b">
 <link rel="stylesheet" href="chase_nav.css?v=20260620u">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260620t">
@@ -2484,7 +2455,7 @@ body.view-research .ca-lab { display: block; }
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260531g"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
-<script src="research_lab.js?v=20260620d"></script>
+<script src="research_lab.js?v=20260531i"></script>
 <script src="lineup_view.js?v=20260618a"></script>
 <script src="trends_heatmap.js?v=20260612e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
@@ -2658,11 +2629,11 @@ body.view-research .ca-lab { display: block; }
 <section class="ca-market" id="section-opening-market-map">
   <div class="ca-market__inner">
 
-    <header class="ca-section-header ca-market__header">
+    <header class="ca-page-header ca-market__header">
       <div class="ca-market__header-copy">
-        <h2 class="ca-section-title ca-market__title">Market Map</h2>
-        <p class="ca-eyebrow ca-market__eyebrow">Visual Matrix</p>
-        <p class="ca-helper ca-market__lede">Plot every team by contact quality (RCV) against xwOBA regression gap. Find elite undervalued offenses, buy-low units, and clubs the market may be mispricing — toggle RHP or LHP for platoon-specific reads.</p>
+        <p class="ca-eyebrow">Visual Matrix</p>
+        <h2 class="ca-page-title">Market Map</h2>
+        <p class="ca-page-header__sub ca-helper">Plot every team by contact quality (RCV) against xwOBA regression gap. Find elite undervalued offenses, buy-low units, and clubs the market may be mispricing — toggle RHP or LHP for platoon-specific reads.</p>
       </div>
 
       <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
@@ -2703,10 +2674,10 @@ body.view-research .ca-lab { display: block; }
 
 <section class="ca-tools" id="section-opening-workflows">
   <div class="ca-tools__inner">
-    <header class="ca-section-header">
+    <header class="ca-page-header">
       <p class="ca-eyebrow">Platform Workflows</p>
-      <h2 class="ca-section-title">Matchups &amp; Research Tools</h2>
-      <p class="ca-helper">Tonight's slate first — then rankings, form trends, head-to-head compare, and pitcher intelligence. Each tool uses the same OSI / RCV / ABQ model layer.</p>
+      <h2 class="ca-page-title">Matchups &amp; Research Tools</h2>
+      <p class="ca-page-header__sub ca-helper">Tonight's slate first — then rankings, form trends, head-to-head compare, and pitcher intelligence. Each tool uses the same OSI / RCV / ABQ model layer.</p>
     </header>
     <div class="ca-tools__grid">
       <div class="ca-tool-card ca-tool-card--violet" role="link" tabindex="0"
@@ -2822,7 +2793,12 @@ body.view-research .ca-lab { display: block; }
 <header class="ca-page-header" id="researchLabHeader">
   <p class="ca-eyebrow">Research Lab</p>
   <h1 class="ca-page-title">Offensive &amp; Pitching Intelligence</h1>
-  <p class="ca-helper ca-page-header__sub">Four focused tools for validating model signals before you bet.</p>
+  <p class="ca-helper ca-page-header__sub">Three focused tools for validating model signals before you bet.</p>
+  <ul class="ca-page-feature-list" aria-label="Research Lab tools">
+    <li>Trends heatmap across YTD, L30, L14, and L7 with RHP/LHP and location filters</li>
+    <li>Compare workspace for lineup vs lineup, vs starter, and bullpen unit matchups</li>
+    <li>Pitcher Intelligence with today's starter rankings, bullpen table, and prop intel</li>
+  </ul>
 </header>
 <div class="ca-lab__tabs-wrap">
   <div class="ca-lab__tabs" role="tablist" aria-label="Research Lab tabs">

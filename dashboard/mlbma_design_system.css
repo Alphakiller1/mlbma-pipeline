@@ -1166,9 +1166,11 @@ h1.ca-page-title {
   color: transparent;
 }
 
-/* Matchups + Research Lab — same page-title treatment as Team Rankings */
+/* Matchups + Research Lab + Opening landing sections — unified page-title treatment */
 #section-matchups-hero .ca-page-header,
-#section-research-lab .ca-page-header {
+#section-research-lab .ca-page-header,
+#section-opening-market-map .ca-page-header,
+#section-opening-workflows .ca-page-header {
   margin: 0 0 28px;
   padding: 8px 0 0;
 }
@@ -1176,14 +1178,19 @@ h1.ca-page-title {
 #section-matchups-hero .ca-page-header__sub,
 #section-research-lab .ca-page-header__sub,
 #section-matchups-hero .ca-page-header .ca-helper,
-#section-research-lab .ca-page-header .ca-helper {
+#section-research-lab .ca-page-header .ca-helper,
+#section-opening-market-map .ca-page-header__sub,
+#section-opening-workflows .ca-page-header__sub,
+#section-opening-market-map .ca-page-header .ca-helper,
+#section-opening-workflows .ca-page-header .ca-helper {
   max-width: 720px;
   margin: 10px 0 0;
   font-size: 15px;
   font-weight: 600;
 }
 
-#section-matchups-hero .matchups-feature-list {
+#section-matchups-hero .matchups-feature-list,
+#section-research-lab .ca-page-feature-list {
   list-style: none;
   padding: 0;
   margin: 14px 0 0;
@@ -1193,7 +1200,8 @@ h1.ca-page-title {
   gap: 10px;
 }
 
-#section-matchups-hero .matchups-feature-list li {
+#section-matchups-hero .matchups-feature-list li,
+#section-research-lab .ca-page-feature-list li {
   position: relative;
   padding-left: 22px;
   font-size: 16px;
@@ -1202,7 +1210,8 @@ h1.ca-page-title {
   color: var(--text-2);
 }
 
-#section-matchups-hero .matchups-feature-list li::before {
+#section-matchups-hero .matchups-feature-list li::before,
+#section-research-lab .ca-page-feature-list li::before {
   content: '';
   position: absolute;
   left: 0;
@@ -1216,7 +1225,13 @@ h1.ca-page-title {
 }
 
 #section-matchups-hero h1.ca-page-title,
-#section-research-lab h1.ca-page-title {
+#section-matchups-hero h2.ca-page-title,
+#section-research-lab h1.ca-page-title,
+#section-research-lab h2.ca-page-title,
+#section-opening-market-map h1.ca-page-title,
+#section-opening-market-map h2.ca-page-title,
+#section-opening-workflows h1.ca-page-title,
+#section-opening-workflows h2.ca-page-title {
   margin: 10px 0 0;
   font-size: clamp(2rem, 4vw, 3.375rem) !important;
   font-weight: 800 !important;
@@ -1354,7 +1369,6 @@ h1.ca-page-title {
 
 .matchups-section-title,
 .ca-lab__title,
-.ca-market__title,
 .ca-tools__title,
 .platform-title {
   font-family: var(--font-display);
@@ -1375,7 +1389,7 @@ h1.ca-page-title {
   max-width: 720px;
 }
 
-.ca-market__header.ca-section-header {
+.ca-market__header.ca-page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
