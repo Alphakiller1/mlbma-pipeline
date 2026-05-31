@@ -39,6 +39,7 @@ PROFILE_COLUMNS = [
 ]
 
 SPLIT_FILES = {
+    "overall": "batter_splits_overall.csv",
     "vs_RHP": "batter_splits_rhp.csv",
     "vs_LHP": "batter_splits_lhp.csv",
     "home": "batter_splits_home.csv",

@@ -21,11 +21,17 @@ def compute_split(std, bb, savant, label):
     for col in rate_cols:
         if col in std.columns and col not in osi.columns:
             osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
+    for col in ("K%", "BB%"):
+        if col in std.columns and col not in osi.columns:
+            osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
     if "wOBA" in rcv.columns:
         osi = osi.merge(rcv[["Tm", "wOBA", "xwOBA"]], on="Tm", how="left")
+    for col in ("Barrel%", "HardHit%"):
+        if col in savant.columns and col not in osi.columns:
+            osi = osi.merge(savant[["Tm", col]], on="Tm", how="left")
     export_cols = [
         "Tm", "ABQ", "RCV", "OBR", "OSI", "projOSI", "reg_signal",
-        "wRC+", "wOBA", "xwOBA", "SLG",
+        "wRC+", "wOBA", "xwOBA", "SLG", "K%", "BB%", "Barrel%", "HardHit%",
     ]
     export_cols = [c for c in export_cols if c in osi.columns]
     osi_sorted = osi[export_cols].sort_values("OSI", ascending=False).reset_index(drop=True)

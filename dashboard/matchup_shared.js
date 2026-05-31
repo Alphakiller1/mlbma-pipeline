@@ -551,6 +551,10 @@
     var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
     var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
     var wrc = numOrNull(pickCol(row, 'wRC+', 'wrc_plus', 'wRC'));
+    var k = numOrNull(pickCol(row, 'K%', 'k_pct'));
+    var bb = numOrNull(pickCol(row, 'BB%', 'bb_pct'));
+    var barrel = numOrNull(pickCol(row, 'Barrel%', 'barrel_pct'));
+    var hard = numOrNull(pickCol(row, 'HardHit%', 'hardhit_pct'));
     if (woba === 0) woba = null;
     if (xwoba === 0) xwoba = null;
     if (slg === 0) slg = null;
@@ -559,7 +563,8 @@
     return {
       t: t, abq: abq, rcv: rcv, obr: obr, osi: osi,
       projOSI: projOSI, reg_signal: reg, reg: reg, ppGap: ppGap,
-      wrc: wrc, woba: woba, xwoba: xwoba, slg: slg
+      wrc: wrc, woba: woba, xwoba: xwoba, slg: slg,
+      k: k, bb: bb, barrel: barrel, hard: hard
     };
   }
 

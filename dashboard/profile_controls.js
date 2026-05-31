@@ -29,7 +29,7 @@
   }
 
   function categoryLabel(v) {
-    return { lineup: 'Lineup', rotation: 'Starting Pitchers', bullpen: 'Bullpen' }[v] || v;
+    return { lineup: 'Lineup', rotation: 'Starters', bullpen: 'Bullpen' }[v] || v;
   }
 
   function pickCol(row, names) {
@@ -121,12 +121,18 @@
       if (!r && l) return Object.assign({}, l, { lhpOSI: l.osi, ytdOSI: l.osi });
       if (r && !l) return Object.assign({}, r, { rhpOSI: r.osi, ytdOSI: r.osi });
       function blend(k) { return 0.5 * r[k] + 0.5 * l[k]; }
+      function blendOpt(k) {
+        if (r[k] != null && l[k] != null) return blend(k);
+        return r[k] != null ? r[k] : l[k];
+      }
       var osi = blend('osi');
       return {
         t: t, abq: blend('abq'), rcv: blend('rcv'), obr: blend('obr'), osi: osi,
         projOSI: blend('projOSI'), ppGap: blend('abq') - blend('rcv'), reg: r.reg,
         ytdOSI: osi, rhpOSI: r.osi, lhpOSI: l.osi,
-        splitEdge: r.osi != null && l.osi != null ? l.osi - r.osi : null
+        splitEdge: r.osi != null && l.osi != null ? l.osi - r.osi : null,
+        wrc: blendOpt('wrc'), woba: blendOpt('woba'), xwoba: blendOpt('xwoba'), slg: blendOpt('slg'),
+        k: blendOpt('k'), bb: blendOpt('bb'), barrel: blendOpt('barrel'), hard: blendOpt('hard')
       };
     });
   }
@@ -150,12 +156,36 @@
       if (l30 != null) row.l30OSI = l30;
       if (l14 != null) row.l14OSI = l14;
       if (l7 != null) row.l7OSI = l7;
+      var abqYtd = num(pickCol(prof, ['abq_ytd', 'abq']));
+      var abqL30 = num(pickCol(prof, ['abq_l30']));
+      var abqL14 = num(pickCol(prof, ['abq_l14']));
+      var abqL7 = num(pickCol(prof, ['abq_l7']));
+      var rcvYtd = num(pickCol(prof, ['rcv_ytd', 'rcv']));
+      var rcvL30 = num(pickCol(prof, ['rcv_l30']));
+      var rcvL14 = num(pickCol(prof, ['rcv_l14']));
+      var rcvL7 = num(pickCol(prof, ['rcv_l7']));
+      var obrYtd = num(pickCol(prof, ['obr_ytd', 'obr']));
+      var obrL30 = num(pickCol(prof, ['obr_l30']));
+      var obrL14 = num(pickCol(prof, ['obr_l14']));
+      var obrL7 = num(pickCol(prof, ['obr_l7']));
       var abq = num(pickCol(prof, ['abq']));
       var rcv = num(pickCol(prof, ['rcv']));
       var obr = num(pickCol(prof, ['obr']));
       if (abq != null) row.abq = abq;
       if (rcv != null) row.rcv = rcv;
       if (obr != null) row.obr = obr;
+      if (abqYtd != null) row.abqYtd = abqYtd;
+      if (abqL30 != null) row.l30ABQ = abqL30;
+      if (abqL14 != null) row.l14ABQ = abqL14;
+      if (abqL7 != null) row.l7ABQ = abqL7;
+      if (rcvYtd != null) row.rcvYtd = rcvYtd;
+      if (rcvL30 != null) row.l30RCV = rcvL30;
+      if (rcvL14 != null) row.l14RCV = rcvL14;
+      if (rcvL7 != null) row.l7RCV = rcvL7;
+      if (obrYtd != null) row.obrYtd = obrYtd;
+      if (obrL30 != null) row.l30OBR = obrL30;
+      if (obrL14 != null) row.l14OBR = obrL14;
+      if (obrL7 != null) row.l7OBR = obrL7;
       var rhp = num(pickCol(prof, ['osi_vs_rhp']));
       var lhp = num(pickCol(prof, ['osi_vs_lhp']));
       if (rhp != null) row.rhpOSI = rhp;
@@ -218,9 +248,9 @@
     if (!row) return [null, null, null, null];
     var m = metric.toLowerCase();
     if (m === 'osi') return [row.ytdOSI != null ? row.ytdOSI : row.osi, row.l30OSI, row.l14OSI, row.l7OSI];
-    if (m === 'abq') return [row.abq, row.l30ABQ, row.l14ABQ, row.l7ABQ];
-    if (m === 'rcv') return [row.rcv, row.l30RCV, row.l14RCV, row.l7RCV];
-    if (m === 'obr') return [row.obr, row.l30OBR, row.l14OBR, row.l7OBR];
+    if (m === 'abq') return [row.abqYtd != null ? row.abqYtd : row.abq, row.l30ABQ, row.l14ABQ, row.l7ABQ];
+    if (m === 'rcv') return [row.rcvYtd != null ? row.rcvYtd : row.rcv, row.l30RCV, row.l14RCV, row.l7RCV];
+    if (m === 'obr') return [row.obrYtd != null ? row.obrYtd : row.obr, row.l30OBR, row.l14OBR, row.l7OBR];
     return [null, null, null, null];
   }
 
@@ -280,8 +310,7 @@
         splitLabel(st.split),
         st.window
       ];
-      if (teamProfileMode) parts.push(categoryLabel(st.category || 'lineup'));
-      else parts.push(viewLabel(st.view));
+      if (!teamProfileMode) parts.push(viewLabel(st.view));
       return 'Showing: ' + parts.join(' · ');
     }
 
@@ -334,9 +363,8 @@
     }
 
     if (teamProfileMode) {
-      el.innerHTML = '<div class="hub-control-bar tp-filter-bar tp-control-bar">'
-        + '<div class="tp-control-grid">'
-        + '<div class="tp-control-row tp-control-row--filters">'
+      el.innerHTML = '<div class="hub-control-bar tp-filter-bar tp-context-bar">'
+        + '<div class="hub-control-row tp-split-window-row">'
         + pillGroup('Split', 'split', [
           { value: 'both' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
           { value: 'home' }, { value: 'away' }, { value: 'f5' }
@@ -344,17 +372,7 @@
         + pillGroup('Window', 'window', [
           { value: 'YTD' }, { value: 'L30' }, { value: 'L14' }, { value: 'L7', warn: true }
         ], state.window)
-        + '</div>'
-        + '<div class="tp-control-row tp-control-row--category">'
-        + pillGroup('Section', 'category', [
-          { value: 'lineup', label: 'Lineup' },
-          { value: 'rotation', label: 'Starting Pitchers' },
-          { value: 'bullpen', label: 'Bullpen' }
-        ], state.category || 'lineup')
-        + '</div>'
-        + '</div>'
-        + '<div class="hub-confirm" data-pconfirm>' + esc(confirmText(state)) + '</div>'
-        + '</div>';
+        + '</div></div>';
     } else {
       el.innerHTML = '<div class="hub-control-bar tp-filter-bar">'
         + '<div class="hub-control-row">'

@@ -80,18 +80,23 @@ def run(base_url: str, timeout_ms: int) -> List[Check]:
             )
             add(page_name, "no grid overlay", not grid_present, "grid-like pseudo background detected" if grid_present else "")
 
-            # Rule: no black-looking text in major headings
+            # Rule: no black-looking text in major headings (skip gradient-clip titles)
             dark_heading = page.evaluate(
                 r"""() => {
                     const nodes = Array.from(document.querySelectorAll('h1, .title, .platform-title, .thm-title, .lv-family-name'));
                     const luminance = (rgb) => {
-                      const nums = String(rgb || '').replace(/[^\d,]/g, '').split(',').filter(Boolean).map(Number);
+                      const s = String(rgb || '').trim().toLowerCase();
+                      if (!s || s === 'transparent') return 255;
+                      const nums = s.replace(/[^\d.,]/g, ' ').trim().split(/\s+/).filter(Boolean).map(Number);
+                      if (nums.length === 4 && nums[3] === 0) return 255;
                       if (nums.length < 3) return 255;
                       const r = nums[0], g = nums[1], b = nums[2];
                       return 0.2126 * r + 0.7152 * g + 0.0722 * b;
                     };
                     for (const n of nodes) {
                       const cs = getComputedStyle(n);
+                      const clip = cs.backgroundClip || cs.webkitBackgroundClip || '';
+                      if (clip === 'text') continue;
                       const color = cs.color || '';
                       const fill = cs.webkitTextFillColor || '';
                       const fillIsVisible = !!fill && fill !== 'transparent' && !/rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/i.test(fill);

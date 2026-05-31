@@ -155,8 +155,11 @@
     var num = ctx.num;
     var teamKey = ctx.teamKey;
     var DATA = ctx.data;
+    var split = ctx.split || 'both';
+    var spHand = ctx.lineupSpHand ? ctx.lineupSpHand(team) : null;
+    var batterMetrics = ctx.batterMetricsForLineup;
     var rosterBody = ctx.profileTableOpen()
-      + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>vs RHP</th><th>vs LHP</th><th>Trend</th></tr></thead><tbody>';
+      + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>OSI</th><th>Trend</th><th></th></tr></thead><tbody>';
     var batters = (DATA.batters || []).filter(function(b) {
       return teamKey(pickCol(b, ['team'])) === teamKey(team) && num(pickCol(b, ['PA'])) >= 50;
     });
@@ -173,22 +176,28 @@
       var reg = (DATA.registry || []).find(function(r) {
         return pickCol(r, ['full_name']) === n && teamKey(pickCol(r, ['team_abbr', 'team'])) === teamKey(team);
       });
+      var m = batterMetrics
+        ? batterMetrics(n, team, split, spHand)
+        : {
+          abq: num(pickCol(main, ['ABQ'])),
+          rcv: num(pickCol(main, ['RCV'])),
+          obr: num(pickCol(main, ['OBR'])),
+          osi: num(pickCol(main, ['OSI']))
+        };
       return {
         name: n,
         pos: reg ? pickCol(reg, ['position']) : '',
         bats: reg ? pickCol(reg, ['bats']) : '',
-        abq: num(pickCol(main, ['ABQ'])),
-        rcv: num(pickCol(main, ['RCV'])),
-        obr: num(pickCol(main, ['OBR'])),
-        osi: num(pickCol(main, ['OSI'])),
-        rhp: byName[n]['vs_RHP'] ? num(pickCol(byName[n]['vs_RHP'], ['OSI'])) : null,
-        lhp: byName[n]['vs_LHP'] ? num(pickCol(byName[n]['vs_LHP'], ['OSI'])) : null,
+        abq: m.abq,
+        rcv: m.rcv,
+        obr: m.obr,
+        osi: m.osi,
         trend: pickCol(main, ['trend'])
       };
     }).sort(function(a, b) { return (b.osi || 0) - (a.osi || 0); });
 
     if (!rosterList.length) {
-      rosterBody += '<tr><td colspan="10" class="tp-empty">No qualified batters (run batter profile pipeline)</td></tr>';
+      rosterBody += '<tr><td colspan="9" class="tp-empty">No qualified batters (run batter profile pipeline)</td></tr>';
     } else {
       rosterList.forEach(function(b) {
         rosterBody += '<tr><td><a href="batter_profile.html?player=' + ctx.encodePlayer(b.name) + '">' + esc(b.name) + '</a></td>';
@@ -197,9 +206,8 @@
         rosterBody += '<td class="num">' + valChip(ctx, b.rcv, 'rcv', false, 1) + '</td>';
         rosterBody += '<td class="num">' + valChip(ctx, b.obr, 'obr', false, 1) + '</td>';
         rosterBody += '<td class="num">' + valChip(ctx, b.osi, 'osi', false, 1) + '</td>';
-        rosterBody += '<td class="num">' + valChip(ctx, b.rhp, 'osi', false, 1) + '</td>';
-        rosterBody += '<td class="num">' + valChip(ctx, b.lhp, 'osi', false, 1) + '</td>';
-        rosterBody += '<td>' + (ctx.trendArrow ? ctx.trendArrow(b.trend) : '—') + '</td></tr>';
+        rosterBody += '<td>' + (ctx.trendArrow ? ctx.trendArrow(b.trend) : '—') + '</td>';
+        rosterBody += '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + ctx.encodePlayer(b.name) + '">Profile</a></td></tr>';
       });
     }
     rosterBody += '</tbody>' + ctx.profileTableClose();
@@ -211,8 +219,8 @@
     var cat = ctx.category || 'lineup';
     var html = '';
     if (cat === 'lineup') {
-      if (ctx.renderLineup) html += ctx.renderLineup(team);
-      html += renderRoster(prof, team, ctx);
+      if (ctx.renderBattingSection) html += ctx.renderBattingSection(team, ctx);
+      else if (ctx.renderLineup) html += ctx.renderLineup(team, ctx);
     } else if (cat === 'rotation') {
       html += renderPitchingSummary(prof, team, ctx);
       html += renderRotation(prof, team, ctx);
@@ -225,11 +233,11 @@
         + '<div id="tpBpUsageMount" class="tp-bp-usage-mount" data-team="' + esc(team) + '">'
         + '<div class="tp-empty">Loading bullpen usage…</div></div></section>';
     } else {
-      if (ctx.renderLineup) html += ctx.renderLineup(team);
+      if (ctx.renderBattingSection) html += ctx.renderBattingSection(team, ctx);
+      else if (ctx.renderLineup) html += ctx.renderLineup(team, ctx);
       html += renderPitchingSummary(prof, team, ctx);
       html += renderRotation(prof, team, ctx);
       html += renderBullpen(prof, team, ctx);
-      html += renderRoster(prof, team, ctx);
     }
     return html;
   }

@@ -33,16 +33,26 @@
     return '<span class="chip c-na">' + (v != null && !isNaN(v) ? Number(v).toFixed(decimals == null ? 1 : decimals) : '—') + '</span>';
   }
 
-  function phase1Slot(label) {
-    return '<span class="tp-metric-slot tp-phase1-slot" title="Phase 1 — export not wired">'
-      + '<span class="tp-metric-k">' + esc(label) + '</span>'
-      + '<span class="chip c-na">—</span>'
-      + '<span class="tp-phase1-tag">Phase 1</span></span>';
+  function phase1Chip(label) {
+    return '<span class="tp-metric-chip-only tp-phase1-slot" title="Phase 1 — export not wired" aria-label="' + esc(label) + '">'
+      + '<span class="chip c-na">—</span><span class="tp-phase1-tag">Phase 1</span></span>';
+  }
+
+  function chipOnly(v, ctx, invert, decimals, label) {
+    return '<span class="tp-metric-chip-only"' + (label ? ' aria-label="' + esc(label) + '"' : '') + '>'
+      + valChip(v, ctx, invert, decimals) + '</span>';
+  }
+
+  function metricGrid(headers, cells) {
+    return '<div class="tp-metric-grid tp-metric-grid--header-row">'
+      + '<div class="tp-metric-grid-head">' + headers.map(function(h) {
+        return '<span class="tp-metric-grid-h">' + esc(h) + '</span>';
+      }).join('') + '</div>'
+      + '<div class="tp-metric-grid-body">' + cells.join('') + '</div></div>';
   }
 
   function metricSlot(label, v, ctx, invert, decimals) {
-    return '<span class="tp-metric-slot"><span class="tp-metric-k">' + esc(label) + '</span>'
-      + valChip(v, ctx, invert, decimals) + '</span>';
+    return chipOnly(v, ctx, invert, decimals, label);
   }
 
   function sectionCard(eyebrow, title, subtitle, body) {
@@ -105,34 +115,40 @@
     }
 
     var slots = [
-      metricSlot('OSI', m.osi, 'osi', false, 1),
-      metricSlot('wRC+', wrc, 'wrc', false, 0),
-      metricSlot('wOBA', woba, 'woba', false, 3),
-      metricSlot('RCV', m.rcv, 'rcv', false, 1),
-      metricSlot('xwOBA', xwoba, 'woba', false, 3),
-      metricSlot('SLG', slg, 'woba', false, 3),
-      metricSlot('HR', hr, 'wrc', false, 0),
-      metricSlot('K%', k, 'pitching', true, 1),
-      metricSlot('BB%', bb, 'obr', false, 1),
-      metricSlot('Barrel%', barrel, 'rcv', false, 1),
-      metricSlot('HardHit%', hard, 'rcv', false, 1),
-      phase1Slot('AVG'),
-      phase1Slot('OBP'),
-      phase1Slot('OPS')
+      ['wRC+', wrc, 'wrc', false, 0],
+      ['wOBA', woba, 'woba', false, 3],
+      ['xwOBA', xwoba, 'woba', false, 3],
+      ['SLG', slg, 'woba', false, 3],
+      ['HR', hr, 'wrc', false, 0],
+      ['K%', k, 'pitching', true, 1],
+      ['BB%', bb, 'obr', false, 1],
+      ['Barrel%', barrel, 'rcv', false, 1],
+      ['HardHit%', hard, 'rcv', false, 1]
     ];
+    var headers = slots.map(function(s) { return s[0]; }).concat(['AVG', 'OBP', 'OPS']);
+    var cells = slots.map(function(s) {
+      return chipOnly(s[1], s[2], s[3], s[4], s[0]);
+    });
+    cells.push(phase1Chip('AVG'));
+    cells.push(phase1Chip('OBP'));
+    cells.push(phase1Chip('OPS'));
 
-    return sectionCard('Scoring', 'Offensive Quality', 'Scoring + full-season rate line on active filter',
-      '<div class="tp-metric-grid">' + slots.join('') + '</div>' + summary);
+    return sectionCard('Scoring', 'Scoring', 'Rate line on active split · created metrics in Process',
+      metricGrid(headers, cells) + summary);
   }
 
   function renderProcess(m) {
-    return sectionCard('Process', 'Process & Projection', 'Difficulty + Status families',
-      chipRow([
-        metricSlot('ABQ', m.abq, 'abq', false, 1),
-        metricSlot('OBR', m.obr, 'obr', false, 1),
-        metricSlot('projOSI', m.proj, 'osi', false, 1),
-        metricSlot('PP-Gap', m.ppGap, 'ppGap', false, 1)
-      ]));
+    var headers = ['OSI', 'RCV', 'ABQ', 'OBR', 'projOSI', 'PP-Gap'];
+    var cells = [
+      chipOnly(m.osi, 'osi', false, 1, 'OSI'),
+      chipOnly(m.rcv, 'rcv', false, 1, 'RCV'),
+      chipOnly(m.abq, 'abq', false, 1, 'ABQ'),
+      chipOnly(m.obr, 'obr', false, 1, 'OBR'),
+      chipOnly(m.proj, 'osi', false, 1, 'projOSI'),
+      chipOnly(m.ppGap, 'ppGap', false, 1, 'PP-Gap')
+    ];
+    return sectionCard('Process', 'Process', 'Created metrics + projection spread',
+      metricGrid(headers, cells));
   }
 
   function renderPitchingFaced(ctx) {
@@ -142,48 +158,23 @@
       return sectionCard('Pitching Faced', 'Quality of Arms Seen', 'PALS tab — run compute_pals pipeline step',
         '<p class="ca-helper">PALS and avg xFIP faced not loaded for this team.</p>');
     }
-    return sectionCard('Pitching Faced', 'Quality of Arms Seen', 'Schedule-adjusted pitching difficulty (PALS tab)',
-      chipRow([
-        metricSlot('PALS', pals, 'osi', false, 1),
-        metricSlot('xFIP Faced', xfip, 'pitching', true, 2)
+    return sectionCard('Pitching Faced', 'Pitching Faced', 'Schedule-adjusted difficulty (PALS tab)',
+      metricGrid(['PALS', 'xFIP Faced'], [
+        chipOnly(pals, 'osi', false, 1, 'PALS'),
+        chipOnly(xfip, 'pitching', true, 2, 'xFIP Faced')
       ]));
-  }
-
-  function renderHomeAway(prof, ctx) {
-    var pickCol = ctx.pickCol;
-    function col(prefix, label, ctxKey) {
-      return '<div class="tp-ha-col"><h4>' + esc(label) + '</h4>'
-        + metricSlot('OSI', pf(prof, [prefix + '_osi'], pickCol), 'osi', false, 1)
-        + metricSlot('wRC+', pf(prof, [prefix + '_wrc'], pickCol), 'wrc', false, 0)
-        + metricSlot('wOBA', pf(prof, [prefix + '_woba'], pickCol), 'woba', false, 3)
-        + metricSlot('SLG', pf(prof, [prefix + '_slg'], pickCol), 'woba', false, 3)
-        + '</div>';
-    }
-    return sectionCard('Location', 'Home / Away Splits', 'Location filter — real split columns',
-      '<div class="tp-ha-grid">' + col('home', 'Home') + col('away', 'Away') + '</div>');
-  }
-
-  function renderHandednessSplits(prof, team, ctx) {
-    if (!Mini || !Mini.splitPairHtml) return '';
-    var m = resolveM(prof, team, ctx);
-    var body = '<div class="tp-split-section">' + Mini.splitPairHtml(m) + '</div>'
-      + '<div class="tp-bp-usage-block">'
-      + '<h3 class="tp-bp-usage-title">Bullpen Usage · L7</h3>'
-      + '<div id="tpBpUsageMount" class="tp-bp-usage-mount" data-team="' + esc(team) + '">'
-      + '<div class="tp-empty">Loading bullpen usage…</div></div></div>';
-    return sectionCard('Platoon', 'Handedness Splits', 'vs RHP / vs LHP compare + recent bullpen workload', body);
   }
 
   function renderSurfaceWins(resultsRow, window) {
     var r = resultsForWindow(resultsRow, window);
-    var body = chipRow([
-      metricSlot('Win%', r.winPct, 'osi', false, 1),
-      metricSlot('F5 Win%', r.f5WinPct, 'osi', false, 1),
-      metricSlot('Pitcher Win%', r.spWinPct, 'pitching', false, 1)
+    var body = metricGrid(['Win%', 'F5 Win%', 'Pitcher Win%'], [
+      chipOnly(r.winPct, 'osi', false, 1, 'Win%'),
+      chipOnly(r.f5WinPct, 'osi', false, 1, 'F5 Win%'),
+      chipOnly(r.spWinPct, 'pitching', false, 1, 'Pitcher Win%')
     ]);
     if (A && A.f5WarningHtml) body += A.f5WarningHtml();
     if (r.qsPct != null) {
-      body += chipRow([metricSlot('QS%', r.qsPct, 'pitching', false, 1)]);
+      body += metricGrid(['QS%'], [chipOnly(r.qsPct, 'pitching', false, 1, 'QS%')]);
     } else {
       body += '<p class="ca-helper tp-phase1-inline">QS% — <span class="tp-phase1-tag">Phase 1</span> (wire game-results QS to profile)</p>';
     }
@@ -198,23 +189,51 @@
       if (m.osiL7 - m.osiYtd >= 8) hotCold = ' <span class="pill-hot">Hot</span>';
       else if (m.osiL7 - m.osiYtd <= -8) hotCold = ' <span class="pill-cold">Cold</span>';
     }
+
+    function formatWindowDelta(delta) {
+      if (delta == null || isNaN(delta)) return '—';
+      if (Math.abs(delta) < 0.005) return '0.0';
+      var dec = Math.abs(delta) < 10 ? 2 : 1;
+      var text = delta.toFixed(dec);
+      if (text === '-0.00' || text === '-0.0') text = '0.0';
+      return (delta > 0 ? '+' : '') + text;
+    }
+
+    function trendDelta(ytd, l30, l14, l7) {
+      if (l7 == null) return null;
+      if (ytd != null && Math.abs(l7 - ytd) >= 0.05) return l7 - ytd;
+      if (l30 != null && Math.abs(l7 - l30) >= 0.05) return l7 - l30;
+      if (l14 != null && Math.abs(l7 - l14) >= 0.05) return l7 - l14;
+      if (ytd != null) return l7 - ytd;
+      return null;
+    }
+
     function trendRow(label, ytd, l30, l14, l7) {
-      var delta = (l7 != null && ytd != null) ? l7 - ytd : null;
+      var delta = trendDelta(ytd, l30, l14, l7);
       var deltaCls = delta == null ? '' : delta > 2 ? ' trend-up' : delta < -2 ? ' trend-down' : ' trend-flat';
       return '<tr><td>' + esc(label) + '</td>'
         + '<td class="num">' + valChip(ytd, label.toLowerCase(), false, 1) + '</td>'
         + '<td class="num">' + valChip(l30, label.toLowerCase(), false, 1) + '</td>'
         + '<td class="num">' + valChip(l14, label.toLowerCase(), false, 1) + '</td>'
         + '<td class="num">' + valChip(l7, label.toLowerCase(), false, 1) + '</td>'
-        + '<td class="num' + deltaCls + '">' + (delta != null ? ((delta >= 0 ? '+' : '') + delta.toFixed(1)) : '—') + '</td></tr>';
+        + '<td class="num' + deltaCls + '">' + formatWindowDelta(delta) + '</td></tr>';
     }
+
+    var staleNote = '';
+    if (m.osiYtd != null && m.osiL7 != null && m.osiL30 != null
+        && Math.abs(m.osiL7 - m.osiYtd) < 0.05
+        && Math.abs(m.osiL30 - m.osiYtd) < 0.05
+        && Math.abs(m.osiL14 - m.osiYtd) < 0.05) {
+      staleNote = '<p class="ca-helper tp-window-stale">Rolling windows match YTD — run <code>scrape_batter_splits</code> + team profile push for live L7/L14/L30 splits.</p>';
+    }
+
     var table = '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>'
       + '<th>Metric</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th><th>Δ L7</th></tr></thead><tbody>'
       + trendRow('OSI', m.osiYtd, m.osiL30, m.osiL14, m.osiL7)
       + trendRow('RCV', m.rcvYtd, m.rcvL30, m.rcvL14, m.rcvL7)
       + trendRow('OBR', m.obrYtd, m.obrL30, m.obrL14, m.obrL7)
       + '</tbody></table></div>';
-    return sectionCard('Momentum', 'Window Trends' + hotCold, 'OSI / RCV / OBR across rolling windows', table);
+    return sectionCard('Momentum', 'Window Trends' + hotCold, 'OSI / RCV / OBR across rolling windows · Δ uses L7−YTD, else L7−L30/L14', table + staleNote);
   }
 
   function renderTonight(ctx) {
@@ -242,55 +261,7 @@
   }
 
   function renderAnalystTake(m, prof, ctx) {
-    var pickCol = ctx.pickCol;
-    var rows = [];
-    var woba = pf(prof, ['woba', 'wOBA'], pickCol);
-    var xwoba = pf(prof, ['xwoba', 'xwOBA'], pickCol);
-    if (woba != null && xwoba != null) {
-      var gap = (woba - xwoba) * 1000;
-      rows.push({
-        icon: gap > 8 ? 'trend-up' : gap < -8 ? 'trend-down' : 'target',
-        label: 'Contact Profile',
-        text: gap > 8 ? 'wOBA runs ' + Math.round(gap) + ' pts above xwOBA — possible regression in contact results.'
-          : gap < -8 ? 'xwOBA ahead of wOBA by ' + Math.abs(Math.round(gap)) + ' pts — upside if balls find gaps.'
-          : 'wOBA and xwOBA are aligned — contact results match process.'
-      });
-    }
-    var bbR = pf(prof, ['bb_pct_vs_rhp', 'bb_vs_rhp'], pickCol);
-    var bbL = pf(prof, ['bb_pct_vs_lhp', 'bb_vs_lhp'], pickCol);
-    if (m.osiR != null && m.osiL != null && Math.abs(m.osiR - m.osiL) >= 6) {
-      rows.push({
-        icon: 'swap',
-        label: 'Platoon Profile',
-        text: 'OSI split gap ' + Math.abs(m.osiR - m.osiL).toFixed(1) + ' (RHP '
-          + m.osiR.toFixed(1) + ' vs LHP ' + m.osiL.toFixed(1) + ') — platoon matters for lineup construction.'
-      });
-    } else if (bbR != null && bbL != null && Math.abs(bbR - bbL) >= 3) {
-      rows.push({
-        icon: 'discipline',
-        label: 'Plate Discipline Split',
-        text: 'BB% vs RHP ' + bbR.toFixed(1) + '% vs LHP ' + bbL.toFixed(1) + '% — discipline shifts by handedness.'
-      });
-    }
-    if (m.ppGap != null && Math.abs(m.ppGap) >= 4) {
-      rows.push({
-        icon: m.ppGap >= 4 ? 'trend-up' : 'regression',
-        label: m.ppGap >= 4 ? 'Process Upside' : 'Regression Watch',
-        text: 'PP-Gap ' + (m.ppGap >= 0 ? '+' : '') + m.ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
-      });
-    }
-    rows = rows.filter(Boolean).slice(0, 3);
-    if (!rows.length) {
-      return sectionCard('Analysis', 'Analyst Take', 'Rule-based callouts from real metrics',
-        '<p class="ca-helper">Insufficient split data for analyst callouts.</p>');
-    }
-    var body = '<div class="ca-insight-rail tp-analyst-rail">' + rows.map(function(r) {
-      return '<div class="ca-insight-row">'
-        + iconCircle(r.icon)
-        + '<span><span class="ca-insight-label">' + esc(r.label) + '</span>'
-        + '<span class="ca-insight-text">' + esc(r.text) + '</span></span></div>';
-    }).join('') + '</div>';
-    return sectionCard('Analysis', 'Analyst Take', 'Notable angles from this team\'s real metrics', body);
+    return '';
   }
 
   function renderSplitCards(m) {
@@ -310,8 +281,6 @@
     html += renderScoring(m, prof, ctx);
     html += renderProcess(m);
     html += renderPitchingFaced(ctx);
-    html += renderHandednessSplits(prof, team, ctx);
-    html += renderHomeAway(prof, ctx);
     html += renderSurfaceWins(ctx.resultsRow, ctx.window);
     html += renderMomentum(m, prof, ctx);
     html += renderTonight(ctx);
@@ -324,11 +293,10 @@
     renderScoring: renderScoring,
     renderProcess: renderProcess,
     renderPitchingFaced: renderPitchingFaced,
-    renderHandednessSplits: renderHandednessSplits,
     renderSurfaceWins: renderSurfaceWins,
     renderMomentum: renderMomentum,
     renderTonight: renderTonight,
     renderAnalystTake: renderAnalystTake,
-    phase1Slot: phase1Slot
+    phase1Chip: phase1Chip
   };
 })(typeof window !== 'undefined' ? window : this);

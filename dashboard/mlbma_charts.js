@@ -536,28 +536,162 @@
   }
 
   /** Larger trend chart for profile summary panels (YTD → L7). */
+  function trendLineColor(values, metricCtx) {
+    var pts = (values || []).map(num).filter(function(v) { return v != null; });
+    if (pts.length < 2) return '#9A6BFF';
+    var first = pts[0];
+    var last = pts[pts.length - 1];
+    if (Math.abs(last - first) <= 2) return '#C4B0FF';
+    return last > first ? '#4ADE80' : '#F87171';
+  }
+
+  function metricColorVal(v, ctx) {
+    if (v == null || isNaN(v)) return 'var(--text-3, #71717A)';
+    if (global.MLBMAAssets && MLBMAAssets.metricColor) return MLBMAAssets.metricColor(v, ctx || 'osi', false);
+    return trendLineColor([v], ctx);
+  }
+
+  function trendWindowSlice(allLabels, values, windowKey) {
+    var labels = allLabels || ['YTD', 'L30', 'L14', 'L7'];
+    var vals = values || [];
+    var idx;
+    if (windowKey === 'L7') idx = [0, 3];
+    else if (windowKey === 'L14') idx = [0, 2, 3];
+    else idx = [0, 1, 2, 3];
+    return {
+      labels: idx.map(function(i) { return labels[i]; }),
+      values: idx.map(function(i) { return vals[i]; })
+    };
+  }
+
+  function trendMetricPack(m) {
+    m = m || {};
+    return {
+      osi: [m.osiYtd, m.osiL30, m.osiL14, m.osiL7],
+      abq: [m.abqYtd, m.abqL30, m.abqL14, m.abqL7],
+      rcv: [m.rcvYtd, m.rcvL30, m.rcvL14, m.rcvL7],
+      obr: [m.obrYtd, m.obrL30, m.obrL14, m.obrL7]
+    };
+  }
+
+  function trendDeltaReadout(m, windowKey) {
+    var pack = trendMetricPack(m);
+    var keys = ['osi', 'rcv', 'abq', 'obr'];
+    var labels = { osi: 'OSI', rcv: 'RCV', abq: 'ABQ', obr: 'OBR' };
+    var deltas = [];
+    keys.forEach(function(k) {
+      var ytd = num((pack[k] || [])[0]);
+      var l7 = num((pack[k] || [])[3]);
+      if (ytd == null || l7 == null) return;
+      if (Math.abs(l7 - ytd) < 0.05) return;
+      deltas.push({ key: k, label: labels[k], delta: l7 - ytd });
+    });
+    if (!deltas.length) {
+      return 'Windowed trend data unavailable for this team — run team profile pipeline for L7/L14/L30 splits.';
+    }
+    deltas.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+    var lead = deltas[0];
+    var winLabel = windowKey === 'L7' ? 'L7' : windowKey === 'L14' ? 'L14' : windowKey === 'L30' ? 'L30' : 'L7';
+    var arrow = lead.delta > 0 ? '▲' : '▼';
+    var driver = deltas.length > 1 ? ', driven by ' + deltas[1].label + ' (' + (deltas[1].delta >= 0 ? '+' : '') + deltas[1].delta.toFixed(1) + ')' : '';
+    return lead.label + ' ' + arrow + ' ' + Math.abs(lead.delta).toFixed(1) + ' over ' + winLabel + driver + '.';
+  }
+
   function buildTrendLineChart(label, values, width, height, opts) {
     opts = opts || {};
-    width = width || 280;
-    height = height || 88;
+    width = width || 320;
+    height = height || 96;
+    var chartH = 56;
     var labels = opts.labels || ['YTD', 'L30', 'L14', 'L7'];
-    var chartH = Math.max(48, height - 40);
-    var pts = (values || []).filter(function(v) { return v != null && !isNaN(v); });
-    var cur = pts.length ? pts[pts.length - 1] : null;
-    var spark = buildSparkline(values, width, chartH, opts);
+    var metricCtx = opts.metricCtx || 'osi';
+    var raw = values || [];
+    var nums = raw.map(num);
+    var valid = nums.filter(function(v) { return v != null; });
+    var cur = valid.length ? valid[valid.length - 1] : null;
+    var lineColor = trendLineColor(nums, metricCtx);
+    var curColor = metricColorVal(cur, metricCtx);
+    var padL = 10;
+    var padR = 10;
+    var padT = 8;
+    var padB = 8;
+    var iw = width - padL - padR;
+    var ih = chartH - padT - padB;
+    var denom = Math.max(1, raw.length - 1);
+    var coords = [];
+
+    for (var i = 0; i < raw.length; i++) {
+      var v = nums[i];
+      if (v == null) continue;
+      coords.push({ x: padL + (i / denom) * iw, v: v, i: i });
+    }
+
+    var min = valid.length ? Math.min.apply(null, valid) : 0;
+    var max = valid.length ? Math.max.apply(null, valid) : 100;
+    var range = max - min || 1;
+    coords.forEach(function(c) {
+      c.y = padT + ih - ((c.v - min) / range) * ih;
+    });
+
+    var svgBody = '';
+    if (!valid.length) {
+      svgBody = '<line x1="' + padL + '" y1="' + (chartH / 2) + '" x2="' + (width - padR) + '" y2="' + (chartH / 2)
+        + '" stroke="rgba(124,77,255,0.25)" stroke-width="1" stroke-dasharray="4 4"/>';
+    } else if (coords.length === 1) {
+      var c0 = coords[0];
+      svgBody = '<line x1="' + padL + '" y1="' + c0.y.toFixed(1) + '" x2="' + (width - padR) + '" y2="' + c0.y.toFixed(1)
+        + '" stroke="rgba(124,77,255,0.2)" stroke-width="1"/>'
+        + '<circle cx="' + c0.x.toFixed(1) + '" cy="' + c0.y.toFixed(1) + '" r="4" fill="' + lineColor + '" stroke="#08090F" stroke-width="2"/>';
+    } else {
+      var linePath = 'M' + coords.map(function(c) { return c.x.toFixed(1) + ',' + c.y.toFixed(1); }).join(' L');
+      var areaPath = linePath
+        + ' L' + coords[coords.length - 1].x.toFixed(1) + ',' + (padT + ih).toFixed(1)
+        + ' L' + coords[0].x.toFixed(1) + ',' + (padT + ih).toFixed(1) + ' Z';
+      var gridLines = [0.25, 0.5, 0.75].map(function(pct) {
+        var gy = padT + ih * (1 - pct);
+        return '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (width - padR) + '" y2="' + gy.toFixed(1)
+          + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+      }).join('');
+      var dots = coords.map(function(c, idx) {
+        var isLast = idx === coords.length - 1;
+        return '<circle cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + (isLast ? '4.5' : '3') + '" fill="'
+          + (isLast ? lineColor : '#C4B0FF') + '" stroke="#08090F" stroke-width="' + (isLast ? '2' : '1.5') + '"/>';
+      }).join('');
+      svgBody = '<defs>'
+        + '<linearGradient id="trendFill-' + esc(metricCtx) + '" x1="0" y1="0" x2="0" y2="1">'
+        + '<stop offset="0%" stop-color="' + lineColor + '" stop-opacity="0.35"/>'
+        + '<stop offset="100%" stop-color="' + lineColor + '" stop-opacity="0"/>'
+        + '</linearGradient></defs>'
+        + gridLines
+        + '<path d="' + areaPath + '" fill="url(#trendFill-' + esc(metricCtx) + ')" stroke="none"/>'
+        + '<path d="' + linePath + '" fill="none" stroke="' + lineColor + '" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>'
+        + dots;
+    }
+
     var axis = labels.map(function(l, i) {
-      var v = values[i];
+      var v = nums[i];
       var valHtml = (v != null && !isNaN(v))
-        ? '<strong>' + Number(v).toFixed(1) + '</strong>'
+        ? '<strong style="color:' + esc(metricColorVal(v, metricCtx)) + '">' + Number(v).toFixed(1) + '</strong>'
         : '<span class="mlbma-trend-na">—</span>';
       return '<span class="mlbma-trend-axis"><span class="mlbma-trend-axis-l">' + esc(l) + '</span>' + valHtml + '</span>';
     }).join('');
-    return '<div class="mlbma-trend-chart">'
+
+    var deltaHtml = '';
+    if (valid.length >= 2) {
+      var delta = valid[valid.length - 1] - valid[0];
+      var deltaCls = delta > 2 ? 'is-up' : delta < -2 ? 'is-down' : 'is-flat';
+      deltaHtml = '<span class="mlbma-trend-delta ' + deltaCls + '">'
+        + (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' YTD→L7</span>';
+    }
+
+    return '<div class="mlbma-trend-chart" data-metric="' + esc(metricCtx) + '">'
       + '<div class="mlbma-trend-head">'
       + '<span class="mlbma-trend-label">' + esc(label) + '</span>'
-      + (cur != null ? '<span class="mlbma-trend-cur">' + Number(cur).toFixed(1) + '</span>' : '')
-      + '</div>'
-      + spark
+      + '<div class="mlbma-trend-head-val">'
+      + (cur != null ? '<span class="mlbma-trend-cur" style="color:' + esc(curColor) + '">' + Number(cur).toFixed(1) + '</span>' : '')
+      + deltaHtml + '</div></div>'
+      + '<div class="mlbma-trend-svg-wrap">'
+      + '<svg class="mlbma-trend-svg" viewBox="0 0 ' + width + ' ' + chartH + '" preserveAspectRatio="none" aria-hidden="true">'
+      + svgBody + '</svg></div>'
       + '<div class="mlbma-trend-axis-row">' + axis + '</div>'
       + '</div>';
   }
@@ -651,6 +785,9 @@
     buildSparkline: buildSparkline,
     buildSparklineRow: buildSparklineRow,
     buildTrendLineChart: buildTrendLineChart,
+    trendWindowSlice: trendWindowSlice,
+    trendMetricPack: trendMetricPack,
+    trendDeltaReadout: trendDeltaReadout,
     buildRadarChart: buildRadarChart,
     buildMiniQuadrant: buildMiniQuadrant,
     buildSnapshotRadar: buildSnapshotRadar,

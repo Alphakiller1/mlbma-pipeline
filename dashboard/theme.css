@@ -248,7 +248,8 @@ body::after,
   color: var(--v-heading);
 }
 
-h1, h2, h3, .platform-title, .ca-page-title, .ca-section-title {
+h1:not(.ca-page-title):not(.ca-profile-hero__title),
+h2, h3, .platform-title, .ca-section-title {
   font-family: var(--display);
   font-weight: 800;
   font-variation-settings: "wdth" 125;
@@ -256,7 +257,7 @@ h1, h2, h3, .platform-title, .ca-page-title, .ca-section-title {
   color: var(--v-heading);
 }
 
-h1 {
+h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   background: none !important;
   -webkit-text-fill-color: var(--v-heading) !important;
   color: var(--v-heading) !important;
