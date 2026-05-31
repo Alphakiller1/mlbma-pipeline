@@ -166,7 +166,8 @@
 
   function wrapSectionFilterBar(innerHtml, extraClass) {
     if (!innerHtml) return '';
-    return '<div class="tp-section-filter-bar' + (extraClass ? ' ' + extraClass : '') + '">' + innerHtml + '</div>';
+    return '<div class="hub-control-bar tp-hub-bar tp-section-filter-bar'
+      + (extraClass ? ' ' + extraClass : '') + '">' + innerHtml + '</div>';
   }
 
   function renderLineupSplitBar(activeSplit) {

@@ -1,0 +1,171 @@
+/**
+ * Team Profile — lineup sections UI pass (platform density + Rankings-style tiles)
+ */
+.team-profile-page .tp-profile-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.team-profile-page .tp-metric-band__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.team-profile-page .tp-metric-band__icon .ca-icon-circle {
+  width: 36px;
+  height: 36px;
+}
+
+.team-profile-page .tp-metric-band__copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.team-profile-page .tp-metric-band__title {
+  font-family: var(--font-display, var(--display));
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-1, #F5F5F7);
+}
+
+.team-profile-page .tp-metric-band__hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v-light, #c4b0ff);
+}
+
+.team-profile-page .tp-metric-tile-grid {
+  gap: 8px;
+}
+
+.team-profile-page .tp-metric-tile-grid--auto {
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+}
+
+.team-profile-page .tp-metric-tile--dense {
+  min-height: 88px;
+  padding: 10px 12px 11px;
+  border-radius: 10px;
+  background: var(--surface-1, #0c0c14);
+  border: 1px solid var(--border, #26262f);
+  gap: 6px;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.team-profile-page .tp-metric-tile--dense:hover {
+  border-color: color-mix(in srgb, var(--accent, #9A6BFF) 42%, var(--border));
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px -18px color-mix(in srgb, var(--accent, #9A6BFF) 45%, transparent);
+}
+
+.team-profile-page .tp-metric-tile--dense .tp-metric-tile__abbr {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+}
+
+.team-profile-page .tp-metric-tile--dense .tp-metric-tile__value .chip {
+  font-size: 20px;
+  font-weight: 800;
+  padding: 4px 10px;
+  min-width: 48px;
+}
+
+.team-profile-page .tp-metric-tile__foot {
+  margin-top: auto;
+  padding-top: 2px;
+}
+
+.team-profile-page .tp-metric-tile__rank {
+  font-family: var(--font-display, var(--display));
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3, #71717A);
+}
+
+.team-profile-page .tp-metric-tile__rank--elite { color: #4ade80; }
+.team-profile-page .tp-metric-tile__rank--strong { color: #93c5fd; }
+.team-profile-page .tp-metric-tile__rank--mid { color: #fbbf24; }
+.team-profile-page .tp-metric-tile__rank--weak { color: #f87171; }
+
+.team-profile-page .tp-metric-tile__rank-of {
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.team-profile-page .tp-split-section {
+  margin-top: 0;
+}
+
+.team-profile-page .tp-split-section .tp-platoon-summary,
+.team-profile-page .tp-split-section .tp-location-summary {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg-2, #101015);
+  border: 1px solid var(--border, #2A2A35);
+}
+
+.team-profile-page .tp-trend-panel {
+  margin-top: 0;
+}
+
+.team-profile-page .tp-trend-table-wrap {
+  margin-top: 8px;
+}
+
+.team-profile-page .tp-trend-table tbody th,
+.team-profile-page .tp-trend-table tbody td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.team-profile-page .profile-staff-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.team-profile-page .tp-team-banner {
+  padding: 14px 16px;
+  margin: 0;
+  border-radius: 16px;
+  background: var(--bg-3, #16161D);
+}
+
+.team-profile-page .tp-team-banner__head {
+  margin-bottom: 12px;
+}
+
+.team-profile-page .tp-team-banner__title {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+}
+
+.team-profile-page .ca-section-header .ca-section-head .purpose,
+.team-profile-page .ca-section-header .ca-helper {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2, #a1a1aa);
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .team-profile-page .tp-identity-panel .tp-unit-snapshot-row {
+    grid-template-columns: 1fr;
+  }
+
+  .team-profile-page .tp-identity-panel__grid {
+    grid-template-columns: 1fr;
+  }
+}
