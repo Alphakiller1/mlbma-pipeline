@@ -34,12 +34,47 @@ NAV_BLOCK_RE = re.compile(
     r'</header>\s*\n'
     r'<div class="chase-mobile-overlay"[\s\S]*?'
     r'<span id="mobileLastUpdated">[^<]*</span>[\s\S]*?'
-    r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main |\s*<div id="compareRoot")',
+    r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
     re.MULTILINE,
 )
 
+# Truncated drawer — mobile menu never closed (content nested inside hidden panel).
+NAV_BLOCK_TRUNCATED_RE = re.compile(
+    r'(?:<!-- Chase Analytics navigation[^\n]*\n)?'
+    r'<header class="chase-header" id="chaseHeader">[\s\S]*?'
+    r'</header>\s*\n'
+    r'<div class="chase-mobile-overlay"[\s\S]*?'
+    r'<div class="chase-mobile-brand"[\s\S]*?</div>\s*\n'
+    r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+    re.MULTILINE,
+)
+
+MOBILE_DRAWER_TAIL = (
+    "  <div class=\"chase-mobile-nav\">\n"
+    "    <a href=\"chase_analytics_mlb_oem_v7.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
+    "    <a href=\"chase_analytics_mlb_oem_v7.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
+    "    <a href=\"team_rankings.html\" class=\"chase-mobile-link\" data-nav=\"team-rankings\">Team Rankings</a>\n"
+    "    <a href=\"chase_analytics_mlb_oem_v7.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
+    "    <div class=\"chase-mobile-section\">Profiles</div>\n"
+    "    <a href=\"team_profile.html\" class=\"chase-mobile-link\">Team Profile</a>\n"
+    "    <a href=\"pitcher_profile.html\" class=\"chase-mobile-link\">Pitcher Profile</a>\n"
+    "    <a href=\"bullpen_report.html\" class=\"chase-mobile-link\">Bullpen Report</a>\n"
+    "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
+    "    <a href=\"reliever_profile.html\" class=\"chase-mobile-link\">Reliever Profile</a>\n"
+    "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
+    "    <a href=\"model_report.html\" class=\"chase-mobile-link\" data-nav=\"model-report\">Model Report</a>\n"
+    "  </div>\n"
+    "  <div class=\"chase-mobile-status\">\n"
+    "    <div class=\"chase-timestamp\">\n"
+    "      <span class=\"chase-pipeline-dot\" title=\"Pipeline: Fresh\"></span>\n"
+    "      <span id=\"mobileLastUpdated\">syncing…</span>\n"
+    "    </div>\n"
+    "  </div>\n"
+    "</div>\n\n"
+)
+
 TRAILING_NAV_DIV_RE = re.compile(
-    r'(?:</div>\s*){1,12}(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main |\s*<div id="compareRoot")',
+    r'(?:</div>\s*){1,12}(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
     re.MULTILINE,
 )
 
@@ -131,34 +166,12 @@ def ensure_mobile_nav_complete(html: str) -> str:
     if 'id="chaseHeader"' not in html or 'class="chase-mobile-nav"' in html:
         return html
     broken = re.compile(
-        r'(<div class="chase-mobile-brand"[\s\S]*?</div>\s*)\n(<div class="container")',
+        r'(<div class="chase-mobile-brand"[\s\S]*?</div>\s*)\n'
+        r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
         re.MULTILINE,
     )
     if broken.search(html):
-        insert = (
-            "  <div class=\"chase-mobile-nav\">\n"
-            "    <a href=\"chase_analytics_mlb_oem_v7.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
-            "    <a href=\"chase_analytics_mlb_oem_v7.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
-            "    <a href=\"matchup_sheet.html\" class=\"chase-mobile-link\" data-nav=\"team-rankings\">Team Rankings</a>\n"
-            "    <a href=\"chase_analytics_mlb_oem_v7.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
-            "    <div class=\"chase-mobile-section\">Profiles</div>\n"
-            "    <a href=\"team_profile.html\" class=\"chase-mobile-link\">Team Profile</a>\n"
-            "    <a href=\"pitcher_profile.html\" class=\"chase-mobile-link\">Pitcher Profile</a>\n"
-            "    <a href=\"bullpen_report.html\" class=\"chase-mobile-link\">Bullpen Report</a>\n"
-            "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
-            "    <a href=\"reliever_profile.html\" class=\"chase-mobile-link\">Reliever Profile</a>\n"
-            "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
-            "    <a href=\"model_report.html\" class=\"chase-mobile-link\" data-nav=\"model-report\">Model Report</a>\n"
-            "  </div>\n"
-            "  <div class=\"chase-mobile-status\">\n"
-            "    <div class=\"chase-timestamp\">\n"
-            "      <span class=\"chase-pipeline-dot\" title=\"Pipeline: Fresh\"></span>\n"
-            "      <span id=\"mobileLastUpdated\">syncing…</span>\n"
-            "    </div>\n"
-            "  </div>\n"
-            "</div>\n\n"
-        )
-        html = broken.sub(r"\1\n" + insert + r"\2", html, count=1)
+        html = broken.sub(r"\1\n" + MOBILE_DRAWER_TAIL, html, count=1)
     return html
 
 
@@ -169,6 +182,8 @@ def sync_nav_block(html: str) -> str:
     html = strip_orphan_mobile_nav(html)
     if NAV_BLOCK_RE.search(html):
         html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
+    elif NAV_BLOCK_TRUNCATED_RE.search(html):
+        html = NAV_BLOCK_TRUNCATED_RE.sub(NAV_HTML + "\n", html, count=1)
     html = strip_orphan_mobile_nav(html)
     html = ensure_mobile_nav_complete(html)
     return dedupe_nav_comments(html)

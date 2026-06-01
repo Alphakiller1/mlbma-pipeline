@@ -268,11 +268,14 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 <body class="player-profile-page">
 
 <div class="loading-text" id="loadingText">Loading bullpen intelligence from Google Sheets—</div>
-<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
+<meta charset="UTF-8">
+
+
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
@@ -315,7 +318,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--compact" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="28" height="28" style="width:28px;height:28px;object-fit:contain"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
@@ -332,7 +335,7 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="matchup_sheet.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
+    <a href="team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>

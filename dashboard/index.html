@@ -30,11 +30,14 @@ body { background: var(--ca-black, #0A0A0A); color: var(--text, #F4F4F7); min-he
 </head>
 <body>
 <script src="mlbma_ui.js" data-page="index.html"></script>
-<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
+<meta charset="UTF-8">
+
+
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics � Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
@@ -65,7 +68,7 @@ body { background: var(--ca-black, #0A0A0A); color: var(--text, #F4F4F7); min-he
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncing�</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -77,7 +80,7 @@ body { background: var(--ca-black, #0A0A0A); color: var(--text, #F4F4F7); min-he
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--compact" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="28" height="28" style="width:28px;height:28px;object-fit:contain"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>

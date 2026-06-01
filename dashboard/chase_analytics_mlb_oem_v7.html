@@ -2511,10 +2511,13 @@ body.view-research .ca-lab { display: block; }
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
-<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
+<meta charset="UTF-8">
+
+
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics ? Opening Dashboard">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
       <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
@@ -2546,7 +2549,7 @@ body.view-research .ca-lab { display: block; }
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncing?</span>
+        <span id="lastUpdated">syncing…</span>
       </div>
       <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -2558,7 +2561,7 @@ body.view-research .ca-lab { display: block; }
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="40"
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
         onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
       <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
@@ -2575,7 +2578,7 @@ body.view-research .ca-lab { display: block; }
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="matchup_sheet.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
+    <a href="team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <div class="chase-mobile-section">Profiles</div>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
