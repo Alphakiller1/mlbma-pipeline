@@ -104,6 +104,15 @@ def get_team_osi(team, hand, rhp_df, lhp_df):
         return None
     return round(match.iloc[0]["OSI"], 1)
 
+def get_pitch_score(team, ps_df):
+    if ps_df.empty or "Tm" not in ps_df.columns or "PitchScore" not in ps_df.columns:
+        return None
+    match = ps_df[ps_df["Tm"] == team]
+    if match.empty:
+        return None
+    val = pd.to_numeric(match.iloc[0]["PitchScore"], errors="coerce")
+    return None if pd.isna(val) else round(float(val), 1)
+
 def load_games_from_rotowire_exports():
     """Schedule from scrape_lineups (Today_Games / today_lineups) — must match lineup cards."""
     games_path = os.path.join(DATA_DIR, "today_games.csv")
@@ -186,6 +195,10 @@ def build_matchups():
         away_lineup_osi = get_team_osi(g["Away_Team"], g["Home_SP_Hand"], rhp_df, lhp_df)
         home_lineup_osi = get_team_osi(g["Home_Team"], g["Away_SP_Hand"], rhp_df, lhp_df)
 
+        # Team pitching score (composite SP/staff quality)
+        away_pitch_score = get_pitch_score(g["Away_Team"], ps_df)
+        home_pitch_score = get_pitch_score(g["Home_Team"], ps_df)
+
         # Edge
         if away_lineup_osi and home_lineup_osi:
             edge_team = g["Away_Team"] if away_lineup_osi > home_lineup_osi else g["Home_Team"]
@@ -204,12 +217,14 @@ def build_matchups():
             "Away_BB%": away_stats["BB%"],
             "Away_HR9": away_stats["HR/9"],
             "Away_FIP": away_stats["FIP"],
+            "Away_PitchScore": away_pitch_score,
             "Home_SP": g["Home_SP"],
             "Home_Hand": g["Home_SP_Hand"],
             "Home_K%": home_stats["K%"],
             "Home_BB%": home_stats["BB%"],
             "Home_HR9": home_stats["HR/9"],
             "Home_FIP": home_stats["FIP"],
+            "Home_PitchScore": home_pitch_score,
             "Away_OSI": away_lineup_osi,
             "Home_OSI": home_lineup_osi,
             "Lineup_Edge": edge,
