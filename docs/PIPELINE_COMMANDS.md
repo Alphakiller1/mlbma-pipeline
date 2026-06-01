@@ -122,6 +122,24 @@ cd C:\Users\chase\mlbma_pipeline
 C:\Users\chase\crawl_env\Scripts\python.exe -m pipeline.main
 ```
 
+## Automation — run after last final
+
+Use this command for a Codex local cron automation scheduled hourly from 6 PM
+through 2 AM Eastern. It checks the MLB scoreboard first, uses the prior slate
+date for after-midnight checks, and only runs the full pipeline once every game
+on that slate is final.
+
+```powershell
+cd C:\Users\chase\mlbma_pipeline
+C:\Users\chase\crawl_env\Scripts\python.exe -m scripts.run_after_last_final
+```
+
+Dry-run the watcher without launching the pipeline:
+
+```powershell
+C:\Users\chase\crawl_env\Scripts\python.exe -m scripts.run_after_last_final --dry-run
+```
+
 ---
 
 ## Batter window refresh (L30 / L14 / L7)
