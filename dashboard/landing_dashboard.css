@@ -1252,12 +1252,18 @@ body.view-research .ca-page-identity { display: none; }
 }
 
 /* Active opening-dashboard hero path: glossy infographic treatment. */
+body.opening-dashboard .opening-layer,
+body.opening-dashboard #section-opening-hero {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
 .opening-layer .ca-hero {
   border: 1px solid rgba(154, 107, 255, 0.58);
   border-radius: 18px;
-  min-height: 0;
-  padding-top: clamp(28px, 4vw, 56px);
-  padding-bottom: clamp(42px, 6vw, 76px);
+  margin-top: 0 !important;
+  min-height: 0 !important;
+  padding: clamp(8px, 1.2vw, 18px) clamp(20px, 5vw, 64px) clamp(36px, 5vw, 64px) !important;
   background:
     radial-gradient(ellipse 76% 58% at 82% 12%, rgba(124, 77, 255, 0.34), transparent 66%),
     linear-gradient(135deg, #06070D 0%, #111124 46%, #05060B 100%);
@@ -1287,6 +1293,13 @@ body.view-research .ca-page-identity { display: none; }
 
 .opening-layer .ca-hero__inner {
   align-items: start;
+  margin-top: 0 !important;
+  min-height: 0 !important;
+  transform: none !important;
+}
+
+.opening-layer .ca-hero__grid {
+  display: none !important;
 }
 
 .opening-layer .ca-hero__mark-ring {
