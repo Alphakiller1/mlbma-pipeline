@@ -18,7 +18,6 @@ PAGES = [
     "reliever_profile.html",
     "bullpen_report.html",
     "team_profile.html",
-    "player_search.html",
     "glossary.html",
 ]
 
@@ -148,7 +147,6 @@ def ensure_mobile_nav_complete(html: str) -> str:
             "    <a href=\"bullpen_report.html\" class=\"chase-mobile-link\">Bullpen Report</a>\n"
             "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
             "    <a href=\"reliever_profile.html\" class=\"chase-mobile-link\">Reliever Profile</a>\n"
-            "    <a href=\"player_search.html\" class=\"chase-mobile-link\">Player Search</a>\n"
             "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
             "    <a href=\"model_report.html\" class=\"chase-mobile-link\" data-nav=\"model-report\">Model Report</a>\n"
             "  </div>\n"

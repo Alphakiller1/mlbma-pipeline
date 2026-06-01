@@ -29,7 +29,6 @@ PAGES = [
     "dashboard/batter_profile.html",
     "dashboard/reliever_profile.html",
     "dashboard/bullpen_report.html",
-    "dashboard/player_search.html",
     "dashboard/glossary.html",
 ]
 

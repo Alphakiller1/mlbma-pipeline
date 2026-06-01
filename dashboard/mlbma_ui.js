@@ -8,7 +8,6 @@
     [{ file: 'chase_analytics_mlb_oem_v7.html', label: 'Main' }],
     [
       { file: 'team_rankings.html', label: 'Matchups' },
-      { file: 'player_search.html', label: 'Player Search' },
       { file: 'glossary.html', label: 'Glossary' },
     ],
     [

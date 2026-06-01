@@ -14,7 +14,6 @@ FILES = [
     "batter_profile.html",
     "reliever_profile.html",
     "team_profile.html",
-    "player_search.html",
 ]
 
 SHEET_ID_RE = re.compile(

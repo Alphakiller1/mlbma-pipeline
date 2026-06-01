@@ -18,7 +18,6 @@ PAGES = [
     "reliever_profile.html",
     "bullpen_report.html",
     "team_profile.html",
-    "player_search.html",
     "glossary.html",
 ]
 

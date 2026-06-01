@@ -500,18 +500,12 @@ SIGNAL_8_OBR_LOW = ARCHETYPE_LOW_MAX
 
 SIGNAL_9_OOR_DELTA_MIN = 5.0
 
-# Dashboard pages -- canonical nav labels and URL patterns (8 pages)
+# Dashboard pages -- canonical nav labels and URL patterns
 DASHBOARD_PAGES = {
     "main": {
         "file": "chase_analytics_mlb_oem_v7.html",
         "label": "Main Dashboard",
         "url": "chase_analytics_mlb_oem_v7.html",
-        "params": None,
-    },
-    "player_search": {
-        "file": "player_search.html",
-        "label": "Player Search",
-        "url": "player_search.html",
         "params": None,
     },
     "matchup_sheet": {

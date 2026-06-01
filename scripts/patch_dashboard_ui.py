@@ -14,7 +14,6 @@ PAGES = [
     "batter_profile.html",
     "reliever_profile.html",
     "team_profile.html",
-    "player_search.html",
     "glossary.html",
 ]
 
@@ -26,7 +25,6 @@ TITLES = {
     "batter_profile.html": "Chase Analytics · Batter Profile",
     "reliever_profile.html": "Chase Analytics · Reliever Profile",
     "team_profile.html": "Chase Analytics · Team Profile",
-    "player_search.html": "Chase Analytics · Player Search",
     "glossary.html": "Chase Analytics · Metric Glossary",
 }
 
@@ -38,7 +36,6 @@ SUBTITLES = {
     "reliever_profile.html": "Reliever splits, leverage, and betting context.",
     "bullpen_report.html": "Team bullpen intelligence and matchup context.",
     "team_profile.html": "Full organizational offensive and pitching view.",
-    "player_search.html": "Search all players and teams in the pipeline.",
     "glossary.html": "All definitions, formulas, and methodology in one place.",
 }
 

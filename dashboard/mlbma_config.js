@@ -1,21 +1,9 @@
-﻿/**
+/**
  * MLBMA shared dashboard constants -- generated from core/config.py
  * Regenerate: python -m dashboard.generate_mlbma_config_js
  */
 window.MLBMA_CONFIG = {
   SHEET_ID: "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk",
-  FILTER_DEFAULTS: {
-    hand: "both",
-    location: "all",
-    pitcher: "both",
-    batSide: "both",
-    segment: "full",
-    window: "YTD"
-  },
-  SCOPE_DEFAULTS: {
-    mode: "all",
-    team: null
-  },
   SHEET_TABS: {
   "vs_rhp": "vs_RHP",
   "vs_lhp": "vs_LHP",
@@ -51,8 +39,7 @@ window.MLBMA_CONFIG = {
 },
   DASHBOARD_PAGES: [
     { id: "main", label: "Main Dashboard", file: "chase_analytics_mlb_oem_v7.html", url: "chase_analytics_mlb_oem_v7.html", params: null },
-    { id: "player_search", label: "Player Search", file: "player_search.html", url: "player_search.html", params: null },
-    { id: "matchup_sheet", label: "Matchup Sheet", file: "team_rankings.html", url: "team_rankings.html", params: null },
+    { id: "matchup_sheet", label: "Matchup Sheet", file: "matchup_sheet.html", url: "matchup_sheet.html", params: null },
     { id: "batter_profile", label: "Batter Profile", file: "batter_profile.html", url: "batter_profile.html", params: ["player"] },
     { id: "pitcher_profile", label: "Pitcher Profile", file: "pitcher_profile.html", url: "pitcher_profile.html", params: ["pitcher"] },
     { id: "reliever_profile", label: "Reliever Profile", file: "reliever_profile.html", url: "reliever_profile.html", params: ["player"] },
