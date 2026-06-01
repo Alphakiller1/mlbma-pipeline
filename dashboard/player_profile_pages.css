@@ -45,14 +45,16 @@ body.player-profile-page .subtitle {
 
 /* Premium dark boards (§7.2) */
 body.player-profile-page .section {
-  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
-  border: 1.5px solid var(--border-2, var(--border));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.072), transparent 28%),
+    linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
+  border: 1.5px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 16px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: var(--ca-glow-violet, 0 28px 78px rgba(0,0,0,0.78));
 }
 
 body.player-profile-page .section::before {
@@ -92,14 +94,16 @@ body.player-profile-page .section-subtitle {
 body.player-profile-page .pitcher-snapshot,
 body.player-profile-page .player-header-panel,
 body.player-profile-page .player-header {
-  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
-  border: 1.5px solid var(--border-2, var(--border));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.082), transparent 28%),
+    linear-gradient(135deg, #181A2A 0%, #0B0E18 58%, #05060C 100%);
+  border: 2px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 16px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: var(--ca-glow-violet-strong, 0 34px 96px rgba(0,0,0,0.9));
 }
 
 body.player-profile-page .pitcher-snapshot::before,
@@ -124,8 +128,10 @@ body.player-profile-page .team-name-lg {
 
 /* Controls */
 body.player-profile-page .selector-bar {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), transparent 30%),
+    linear-gradient(180deg, #151827, #080A13);
+  border: 1.5px solid rgba(196, 176, 255, 0.24);
   border-radius: 12px;
   padding: 14px 16px;
   margin-bottom: 16px;
@@ -154,9 +160,12 @@ body.player-profile-page .metric-card,
 body.player-profile-page .hand-panel,
 body.player-profile-page .loc-panel,
 body.player-profile-page .split-panel {
-  background: var(--card-2, var(--bg-3));
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%),
+    linear-gradient(180deg, #171A29, #090B14);
+  border: 1.5px solid rgba(196, 176, 255, 0.22);
   border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 16px 42px rgba(0,0,0,0.42);
 }
 
 body.player-profile-page .metric-card::before {
@@ -186,9 +195,12 @@ body.player-profile-page .loc-panel h4 {
 /* Tables */
 body.player-profile-page .table-wrap {
   border-radius: 10px;
-  border: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.15);
+  border: 1.5px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 24%),
+    linear-gradient(180deg, #10131F, #06070D);
   padding: 4px 8px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.10);
 }
 
 body.player-profile-page thead th {
@@ -216,7 +228,9 @@ body.player-profile-page .num {
 body.player-profile-page .insight-line,
 body.player-profile-page .betting-panel {
   border-left: 3px solid var(--v, var(--purple));
-  background: rgba(255, 255, 255, 0.03);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.052), transparent 28%),
+    linear-gradient(180deg, #151827, #080A13);
   border-radius: 0 12px 12px 0;
 }
 
@@ -236,8 +250,10 @@ body.player-profile-page .ca-insight-rail .ca-insight-row {
   align-items: flex-start;
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), transparent 30%),
+    linear-gradient(180deg, #141726, #080A13);
+  border: 1px solid rgba(196, 176, 255, 0.20);
   margin-bottom: 8px;
 }
 
@@ -294,11 +310,14 @@ body.player-profile-page {
 body.player-profile-page .pp-intel-panel {
   margin-bottom: 0;
   padding: 14px 16px 16px;
-  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
-  border: 1.5px solid var(--border-2, var(--border));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.072), transparent 28%),
+    linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
+  border: 1.5px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
   border-radius: 16px;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--ca-glow-violet, 0 28px 78px rgba(0,0,0,0.78));
 }
 
 body.player-profile-page .pp-intel-panel::before {
@@ -322,14 +341,17 @@ body.player-profile-page .pp-intel-panel__metrics {
 
 body.player-profile-page .tp-offense-metrics--profile,
 body.player-profile-page .pp-intel-panel .tp-offense-metrics--profile {
-  border: none;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
+  border: 1.5px solid rgba(196, 176, 255, 0.20);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.052), transparent 28%),
+    linear-gradient(180deg, #151827, #080A13);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 18px 48px rgba(0,0,0,0.48);
+  overflow: hidden;
 }
 
 body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band {
-  padding: 0 0 16px;
+  padding: 14px 16px 16px;
 }
 
 body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band:last-child {
@@ -337,9 +359,9 @@ body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band:
 }
 
 body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band + .tp-offense-metrics__band {
-  border-top: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-top: 1px solid rgba(196, 176, 255, 0.12);
   padding-top: 14px;
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-head {
@@ -373,11 +395,12 @@ body.player-profile-page .tp-offense-stat--inline {
   flex-direction: row;
   align-items: center;
   gap: 9px;
-  padding: 0;
+  padding: 4px 7px;
   margin: 0;
-  border: none;
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid rgba(196, 176, 255, 0.10);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.055);
 }
 
 body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__label {
@@ -422,8 +445,10 @@ body.player-profile-page .pp-intel-read {
 body.player-profile-page .pp-intel-follow:not(:empty) {
   margin: -8px 0 0;
   padding: 0 16px 14px;
-  background: linear-gradient(180deg, var(--card, var(--bg-2)), #0A0C16);
-  border: 1.5px solid var(--border-2, var(--border));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.052), transparent 30%),
+    linear-gradient(180deg, #10131F, #06070D);
+  border: 1.5px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
   border-top: none;
   border-radius: 0 0 16px 16px;
 }

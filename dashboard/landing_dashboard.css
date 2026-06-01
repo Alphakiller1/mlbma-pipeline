@@ -19,11 +19,9 @@ body.opening-dashboard .freshness-bar {
   border-radius: 18px;
   border: 1px solid rgba(154, 107, 255, 0.58);
   background:
-    linear-gradient(rgba(154, 107, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(154, 107, 255, 0.055) 1px, transparent 1px),
     radial-gradient(ellipse 75% 58% at 82% 12%, rgba(124, 77, 255, 0.34), transparent 66%),
     linear-gradient(135deg, #06070D 0%, #111124 46%, #05060B 100%);
-  background-size: 42px 42px, 42px 42px, auto, auto;
+  background-size: auto, auto;
   box-shadow: 0 0 0 1px rgba(196, 176, 255, 0.12), 0 0 42px rgba(124, 77, 255, 0.30), 0 30px 100px rgba(0, 0, 0, 0.82);
   overflow: hidden;
 }
@@ -1257,12 +1255,13 @@ body.view-research .ca-page-identity { display: none; }
 .opening-layer .ca-hero {
   border: 1px solid rgba(154, 107, 255, 0.58);
   border-radius: 18px;
+  min-height: 0;
+  padding-top: clamp(28px, 4vw, 56px);
+  padding-bottom: clamp(42px, 6vw, 76px);
   background:
-    linear-gradient(rgba(154, 107, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(154, 107, 255, 0.055) 1px, transparent 1px),
     radial-gradient(ellipse 76% 58% at 82% 12%, rgba(124, 77, 255, 0.34), transparent 66%),
     linear-gradient(135deg, #06070D 0%, #111124 46%, #05060B 100%);
-  background-size: 42px 42px, 42px 42px, auto, auto;
+  background-size: auto, auto;
   box-shadow: 0 0 0 1px rgba(196, 176, 255, 0.12), 0 0 42px rgba(124, 77, 255, 0.30), 0 30px 100px rgba(0, 0, 0, 0.82);
 }
 
@@ -1284,6 +1283,14 @@ body.view-research .ca-page-identity { display: none; }
 .opening-layer .ca-hero__noise {
   position: relative;
   z-index: 1;
+}
+
+.opening-layer .ca-hero__inner {
+  align-items: start;
+}
+
+.opening-layer .ca-hero__mark-ring {
+  display: none !important;
 }
 
 body.opening-dashboard .opening-layer .ca-hero__title {

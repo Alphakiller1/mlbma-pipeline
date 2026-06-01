@@ -75,18 +75,20 @@ th.num,
   --ca-grid-texture: none;
   --ca-ink: #05060B;
   --ca-ink-2: #090A12;
-  --ca-board-top: rgba(25, 27, 43, 0.94);
-  --ca-board-bottom: rgba(5, 6, 12, 0.98);
-  --ca-panel-glass: linear-gradient(180deg, rgba(28, 30, 45, 0.88) 0%, rgba(9, 10, 18, 0.96) 100%);
-  --ca-panel-border: rgba(154, 107, 255, 0.42);
-  --ca-panel-border-hot: rgba(196, 176, 255, 0.72);
-  --ca-inner-stroke: rgba(255, 255, 255, 0.08);
-  --ca-inner-stroke-soft: rgba(255, 255, 255, 0.045);
+  --ca-board-top: #181A2A;
+  --ca-board-bottom: #05060C;
+  --ca-panel-solid: #10131F;
+  --ca-panel-solid-2: #070912;
+  --ca-panel-glass: linear-gradient(180deg, #1A1D2D 0%, #0D101B 54%, #06070D 100%);
+  --ca-panel-border: rgba(154, 107, 255, 0.58);
+  --ca-panel-border-hot: rgba(213, 196, 255, 0.86);
+  --ca-inner-stroke: rgba(255, 255, 255, 0.14);
+  --ca-inner-stroke-soft: rgba(255, 255, 255, 0.075);
   --ca-violet-neon: #9A6BFF;
   --ca-violet-hot: #B794FF;
   --ca-gold: #F0C24A;
-  --ca-glow-violet: 0 0 0 1px rgba(154, 107, 255, 0.22), 0 0 26px rgba(124, 77, 255, 0.28), 0 22px 70px rgba(0, 0, 0, 0.78);
-  --ca-glow-violet-strong: 0 0 0 1px rgba(196, 176, 255, 0.38), 0 0 34px rgba(124, 77, 255, 0.42), 0 28px 90px rgba(0, 0, 0, 0.86);
+  --ca-glow-violet: 0 0 0 1px rgba(196, 176, 255, 0.18), 0 0 30px rgba(124, 77, 255, 0.34), 0 28px 78px rgba(0, 0, 0, 0.86), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --ca-glow-violet-strong: 0 0 0 1px rgba(213, 196, 255, 0.42), 0 0 42px rgba(124, 77, 255, 0.54), 0 34px 96px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.16);
   --ca-metal-text: linear-gradient(180deg, #FFFFFF 0%, #F4F5F8 34%, #B7BBC8 54%, #EEF0F6 78%, #FFFFFF 100%);
   --ca-violet-text: linear-gradient(180deg, #D9CCFF 0%, #A274FF 38%, #6F31F2 72%, #C7B4FF 100%);
   --ca-editorial-caps: 0.1em;
@@ -124,12 +126,10 @@ html {
 body {
   font-family: var(--font-body);
   background:
-    linear-gradient(rgba(124, 77, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 77, 255, 0.045) 1px, transparent 1px),
     radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124,77,255,0.18), transparent 62%),
     radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91,43,224,0.14), transparent 60%),
     var(--page-bg);
-  background-size: 42px 42px, 42px 42px, auto, auto, auto;
+  background-size: auto, auto, auto;
   color: var(--text);
 }
 h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
@@ -155,7 +155,7 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 /* Premium card shell */
 .ca-card {
   border-radius: var(--ca-card-radius);
-  border: 1px solid var(--ca-panel-border);
+  border: 1.5px solid var(--ca-panel-border);
   background: var(--ca-panel-glass);
   padding: 24px;
   box-shadow: var(--ca-glow-violet);
@@ -169,7 +169,8 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   inset: 1px;
   border-radius: inherit;
   pointer-events: none;
-  box-shadow: inset 0 1px 0 var(--ca-inner-stroke), inset 0 -24px 44px rgba(0, 0, 0, 0.22);
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%);
+  box-shadow: inset 0 1px 0 var(--ca-inner-stroke), inset 0 -32px 56px rgba(0, 0, 0, 0.34);
 }
 .ca-card:hover {
   transform: translateY(-2px);
@@ -271,14 +272,14 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 /* ── Contained dark boards (Prompt 4) ── */
 .ca-board {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,0.075), transparent 26%),
     linear-gradient(180deg, var(--ca-board-top), var(--ca-board-bottom));
-  border: 1.5px solid var(--ca-panel-border);
+  border: 2px solid var(--ca-panel-border);
   border-radius: 18px;
   padding: 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--ca-glow-violet), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: var(--ca-glow-violet), inset 0 1px 0 rgba(255, 255, 255, 0.13), inset 0 -42px 74px rgba(0, 0, 0, 0.34);
 }
 
 .ca-board::before {
@@ -301,7 +302,7 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 .ca-card.ca-board,
 .tp-section.ca-board {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,0.075), transparent 26%),
     linear-gradient(180deg, var(--ca-board-top), var(--ca-board-bottom));
 }
 

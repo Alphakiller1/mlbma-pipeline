@@ -143,20 +143,24 @@ The May 2026 ChatGPT-generated MLBMA images are the current visual north star. C
 
 Required visual qualities:
 
-- near-black broadcast background with subtle scouting-grid texture
+- near-black broadcast background without grid texture
 - violet neon edge light, not a flat purple wash
-- glossy dark panels with border glow, inset highlight, and deep shadow
+- solid lacquered dark panels with border glow, inset highlight, and deep shadow
 - metallic silver display headings for major page titles
 - violet gradient display emphasis for selected words or key CTAs
 - compact all-caps editorial labels with deliberate tracking
 - circular icon badges with violet glow where icons already exist
 - thin luminous divider rules and top-edge glints on major boards
 - active tabs and buttons that feel like illuminated controls
+- filled panel mass; avoid thin, translucent, wireframe, or binary-outline surfaces
 
 Implementation requirements:
 
 - Use shared CSS tokens for glow, panel, metallic text, and violet text effects.
 - Apply these effects to existing panels, cards, tables, tabs, chips, and section headers.
+- Panel backgrounds must be opaque dark gradients first, with gloss layered on top. Do not rely on low-alpha glass to create depth.
+- Borders should usually be 1.5px to 2px on major boards/cards; 1px low-alpha strokes are only for internal dividers and minor table rows.
+- Profile pages are a priority surface for this rule: hero banners, pitcher/player snapshots, decision cards, stat strips, metric bands, tables, and context controls must feel like filled broadcast boards, not transparent inline boxes.
 - Keep metric colors on the existing green-to-red grading scale; violet and gold are brand/editorial accents only.
 - Do not add fake stadium art, generated backgrounds, decorative bokeh, or extra hero sections to chase the image.
 

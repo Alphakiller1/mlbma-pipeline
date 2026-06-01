@@ -233,6 +233,42 @@
   gap: 12px;
 }
 
+/* Profile solid-surface pass: heavier broadcast boards, not translucent boxes. */
+.profile-context-bar,
+.profile-decision-card,
+.profile-verdict-card,
+.profile-analyst-take,
+.profile-slate-collapsible > summary,
+.pitcher-risk-strip .ps-stat {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.072), transparent 28%),
+    linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
+  border-color: var(--ca-panel-border, rgba(154, 107, 255, 0.58));
+  box-shadow: var(--ca-glow-violet, 0 28px 78px rgba(0,0,0,0.78));
+}
+
+.profile-context-bar,
+.profile-decision-card,
+.profile-verdict-card {
+  border-width: 1.5px;
+}
+
+.profile-analyst-take {
+  border-left-width: 4px;
+  border-left-color: var(--ca-violet-hot, #B794FF);
+  border-radius: 0 14px 14px 0;
+}
+
+.profile-decision-card::after,
+.profile-verdict-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 var(--ca-inner-stroke, rgba(255,255,255,0.14)), inset 0 -28px 52px rgba(0,0,0,0.32);
+}
+
 @media (max-width: 640px) {
   .profile-decision-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));

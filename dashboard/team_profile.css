@@ -166,8 +166,10 @@ body.team-profile-page {
 .tp-team-banner {
   position: relative;
   padding: 16px 18px 18px;
-  background: var(--bg-2, #0E1018);
-  border: 1px solid var(--border, #262A38);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.072), transparent 28%),
+    linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
+  border: 1.5px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
   border-radius: 14px;
   margin: 0 0 16px;
   overflow: hidden;
@@ -176,16 +178,18 @@ body.team-profile-page {
 .tp-team-banner--hero {
   padding: 20px 22px 18px;
   border-radius: 16px;
-  border-color: color-mix(in srgb, var(--tp-accent, #7C4DFF) 24%, var(--border, #262A38));
-  background: linear-gradient(
-    128deg,
-    color-mix(in srgb, var(--tp-accent, #7C4DFF) 10%, var(--bg-2, #0E1018)) 0%,
-    var(--bg-2, #0E1018) 42%,
-    color-mix(in srgb, var(--bg-3, #12141D) 92%, var(--tp-accent, #7C4DFF) 8%) 100%
-  );
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--tp-accent, #7C4DFF) 46%, var(--ca-panel-border, rgba(154, 107, 255, 0.58)));
+  background:
+    radial-gradient(ellipse 76% 70% at 88% 8%, color-mix(in srgb, var(--tp-accent, #7C4DFF) 26%, transparent), transparent 64%),
+    linear-gradient(128deg, #171A2A 0%, #0B0E18 52%, #05060C 100%);
+  background-size: auto, auto;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 18px 48px -28px color-mix(in srgb, var(--tp-accent, #7C4DFF) 35%, transparent);
+    0 0 0 1px rgba(196,176,255,0.14),
+    0 0 42px color-mix(in srgb, var(--tp-accent, #7C4DFF) 34%, transparent),
+    0 34px 96px rgba(0,0,0,0.88),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -38px 70px rgba(0,0,0,0.34);
 }
 
 .tp-team-banner__ambient {
@@ -1328,6 +1332,11 @@ body.team-profile-page {
 
 .team-profile-page .tp-section.ca-board {
   padding: 14px 16px 16px;
+  border-width: 2px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.075), transparent 26%),
+    linear-gradient(180deg, var(--ca-board-top, #181A2A), var(--ca-board-bottom, #05060C));
+  box-shadow: var(--ca-glow-violet, 0 28px 78px rgba(0,0,0,0.78));
 }
 
 .team-profile-page .tp-section.ca-card {
@@ -1439,6 +1448,12 @@ body.team-profile-page {
 
 .tp-table-wrap {
   margin-top: 0;
+  border-width: 1.5px;
+  border-color: var(--ca-panel-border, rgba(154, 107, 255, 0.58));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 24%),
+    linear-gradient(180deg, #10131F, #06070D);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.10);
 }
 
 .tp-table-wrap::before {
