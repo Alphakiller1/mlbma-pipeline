@@ -172,10 +172,14 @@ def build_matchups():
         api_keys = schedule_game_keys(games)
         rw_keys = schedule_game_keys(rotowire)
         overlap = len(api_keys & rw_keys)
-        print(
-            f"  Rotowire slate: {len(rotowire)} games; MLB API overlap={overlap}"
-        )
-        games = rotowire
+        # The live MLB Stats API schedule is the source of truth. Only use the
+        # Rotowire export when it actually matches today's slate (good overlap) —
+        # otherwise it's a stale cache and we fall back to the API schedule.
+        if not api_keys or overlap >= max(1, len(api_keys) // 2):
+            print(f"  Rotowire slate: {len(rotowire)} games; MLB API overlap={overlap} -> using Rotowire")
+            games = rotowire
+        else:
+            print(f"  Rotowire stale (overlap {overlap}/{len(api_keys)}) -> using live MLB API schedule")
     elif games.empty:
         print("  No Rotowire export and MLB API schedule empty")
     if games.empty:
