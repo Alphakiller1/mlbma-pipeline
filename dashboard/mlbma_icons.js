@@ -5,6 +5,7 @@
   'use strict';
 
   var SVG_ATTRS = ' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+  var MARK_ATTRS = ' class="ca-icon-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"';
 
   /** Inlined Lucide paths + one custom crossed-bats mark. */
   var CA_ICONS = {
@@ -53,6 +54,19 @@
     'line-chart': '<svg' + SVG_ATTRS + '><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>',
     stadium: '<svg' + SVG_ATTRS + '><ellipse cx="12" cy="11" rx="9" ry="5"/><path d="M3 11v3c0 2.8 4 5 9 5s9-2.2 9-5v-3"/><path d="M3 14v3c0 2.8 4 5 9 5s9-2.2 9-5v-3"/></svg>'
   };
+
+  /* MLBMA poster icons: heavier custom marks for broadcast/infographic surfaces. */
+  Object.assign(CA_ICONS, {
+    'bar-chart-3': '<svg' + MARK_ATTRS + '><rect x="3" y="10.5" width="4.2" height="9" rx="1.2" fill="currentColor" opacity=".72"/><rect x="9.9" y="5.5" width="4.2" height="14" rx="1.2" fill="currentColor"/><rect x="16.8" y="2.8" width="4.2" height="16.7" rx="1.2" fill="currentColor" opacity=".82"/><path d="M3 20.7h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".55"/></svg>',
+    'calendar-days': '<svg' + MARK_ATTRS + '><rect x="3.2" y="5.2" width="17.6" height="15.2" rx="3" fill="currentColor" opacity=".18"/><path d="M6.3 3.2v4M17.7 3.2v4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="3.2" y="5.2" width="17.6" height="15.2" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M4.2 10h15.6" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="13.8" r="1.15" fill="currentColor"/><circle cx="12" cy="13.8" r="1.15" fill="currentColor"/><circle cx="16" cy="13.8" r="1.15" fill="currentColor"/><circle cx="8" cy="17" r="1.15" fill="currentColor"/><circle cx="12" cy="17" r="1.15" fill="currentColor"/></svg>',
+    trophy: '<svg' + MARK_ATTRS + '><path d="M7 3h10v5.6a5 5 0 0 1-10 0V3Z" fill="currentColor" opacity=".85"/><path d="M7 5H4.8A2.8 2.8 0 0 0 7 9.5M17 5h2.2A2.8 2.8 0 0 1 17 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 13.5v4.2M8.4 21h7.2M10 17.8h4" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M9.6 6.8h4.8" stroke="#05060B" stroke-width="1.5" stroke-linecap="round" opacity=".55"/></svg>',
+    'trending-up': '<svg' + MARK_ATTRS + '><path d="M3.4 17.4 8.6 12l3.6 3.5 8.4-9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.4 6.5h5.2v5.2" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.6" cy="12" r="1.8" fill="currentColor"/><circle cx="12.2" cy="15.5" r="1.8" fill="currentColor"/></svg>',
+    swords: '<svg' + MARK_ATTRS + '><path d="M4 4.2 19.8 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 4.2 4.2 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="m3 3 4 .6L5.6 7 3 3Zm18 0-4 .6L18.4 7 21 3ZM7.8 18.4 5.4 21 3 18.6l2.6-2.4m10.6 2.2 2.4 2.6 2.4-2.4-2.6-2.4" fill="currentColor" opacity=".92"/></svg>',
+    target: '<svg' + MARK_ATTRS + '><circle cx="12" cy="12" r="8.7" fill="currentColor" opacity=".16"/><circle cx="12" cy="12" r="8.7" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="12" cy="12" r="4.8" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M12 2.4v3.1M12 18.5v3.1M2.4 12h3.1M18.5 12h3.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    'flask-conical': '<svg' + MARK_ATTRS + '><path d="M9.2 3h5.6M10 3v6.4l-5 9.3A1.7 1.7 0 0 0 6.5 21h11a1.7 1.7 0 0 0 1.5-2.3l-5-9.3V3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M8.1 15.1h7.8l2.1 4H6l2.1-4Z" fill="currentColor" opacity=".62"/><circle cx="10" cy="12.8" r="1.1" fill="currentColor"/><circle cx="14.9" cy="17.3" r=".8" fill="#05060B" opacity=".45"/></svg>',
+    bats: '<svg' + MARK_ATTRS + '><path d="m5.1 20.2 5-15.9 2.2.7-5 15.9-2.2-.7Zm13.8 0-5-15.9-2.2.7 5 15.9 2.2-.7Z" fill="currentColor"/><path d="M8.4 13.5h7.2M9.9 9.1l4.2 4.2M14.1 9.1l-4.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".8"/><circle cx="12" cy="12" r="2" fill="currentColor" opacity=".28"/></svg>',
+    'circle-dollar-sign': '<svg' + MARK_ATTRS + '><circle cx="12" cy="12" r="9" fill="currentColor" opacity=".16"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M15.7 8.6h-4.8a2 2 0 0 0 0 4h2.5a2 2 0 0 1 0 4H8.3M12 6.5v11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>'
+  });
 
   var ICON_ALIAS = {
     trend: 'trending-up',
@@ -174,7 +188,10 @@
       if (!svg) return;
       if (el.style.width) svg.style.width = el.style.width;
       if (el.style.height) svg.style.height = el.style.height;
-      if (el.className) svg.setAttribute('class', el.className);
+      var legacyClass = el.getAttribute ? el.getAttribute('class') : '';
+      if (legacyClass) {
+        svg.setAttribute('class', ((svg.getAttribute('class') || '') + ' ' + legacyClass).trim());
+      }
       el.replaceWith(svg);
     });
     return Promise.resolve();

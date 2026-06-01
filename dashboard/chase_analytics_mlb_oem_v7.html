@@ -2511,7 +2511,7 @@ body.view-research .ca-lab { display: block; }
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
-﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -2544,7 +2544,7 @@ body.view-research .ca-lab { display: block; }
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
-      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="signal_board.html" class="chase-nav-link" data-nav="signal-board">Signal Board</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp">
@@ -2587,7 +2587,7 @@ body.view-research .ca-lab { display: block; }
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="signal_board.html" class="chase-mobile-link" data-nav="signal-board">Signal Board</a>
   </div>
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
@@ -2623,9 +2623,9 @@ body.view-research .ca-lab { display: block; }
         CHASE ANALYTICS ? MLB INTELLIGENCE
       </div>
 
-      <h1 class="ca-hero__title" style="color:#FFFFFF !important;-webkit-text-fill-color:#FFFFFF !important;background:none !important;">
+      <h1 class="ca-hero__title">
         The Edge You<br />
-        <span class="ca-hero__title-accent" style="color:#FFFFFF !important;-webkit-text-fill-color:#FFFFFF !important;background:none !important;">Need to Win.</span>
+        <span class="ca-hero__title-accent">Need to Win.</span>
       </h1>
 
       <p class="ca-hero__lede">
@@ -2938,7 +2938,7 @@ body.view-research .ca-lab { display: block; }
       <div>
         <div class="section-eyebrow">Model Links</div>
         <div class="section-title">Reports &amp; Tools</div>
-        <div class="section-subtitle">Jump to model outputs ? signals live in Model Report only.</div>
+        <div class="section-subtitle">Jump to model outputs — signals live on the Signal Board.</div>
       </div>
     </div>
     <div id="rlModelLinksRoot"></div>
@@ -6934,7 +6934,7 @@ function mountDashboardRankings() {
 }
 
 function mountReferenceTables(){
-  /* Team OOR / PALS / Pitching Score tables removed from Research Lab ? Model Report & profiles only */
+  /* Team OOR / PALS / Pitching Score tables removed from Research Lab — Signal Board & profiles only */
 }
 
 function shouldRenderMatchupsView() {
@@ -7189,8 +7189,8 @@ function syncDashboardView() {
   root.classList.remove('view-opening', 'view-research', 'view-matchups', 'view-model-report');
   root.classList.remove('view-pending');
 
-  if (hash === 'section-model-report') {
-    window.location.replace('model_report.html');
+  if (hash === 'section-model-report' || hash === 'section-signal-board') {
+    window.location.replace('signal_board.html');
     return;
   }
 

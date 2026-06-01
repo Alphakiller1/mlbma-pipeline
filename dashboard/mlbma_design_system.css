@@ -73,6 +73,23 @@ th.num,
   --ca-card-hover-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
   --ca-hero-bg: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
   --ca-grid-texture: none;
+  --ca-ink: #05060B;
+  --ca-ink-2: #090A12;
+  --ca-board-top: rgba(25, 27, 43, 0.94);
+  --ca-board-bottom: rgba(5, 6, 12, 0.98);
+  --ca-panel-glass: linear-gradient(180deg, rgba(28, 30, 45, 0.88) 0%, rgba(9, 10, 18, 0.96) 100%);
+  --ca-panel-border: rgba(154, 107, 255, 0.42);
+  --ca-panel-border-hot: rgba(196, 176, 255, 0.72);
+  --ca-inner-stroke: rgba(255, 255, 255, 0.08);
+  --ca-inner-stroke-soft: rgba(255, 255, 255, 0.045);
+  --ca-violet-neon: #9A6BFF;
+  --ca-violet-hot: #B794FF;
+  --ca-gold: #F0C24A;
+  --ca-glow-violet: 0 0 0 1px rgba(154, 107, 255, 0.22), 0 0 26px rgba(124, 77, 255, 0.28), 0 22px 70px rgba(0, 0, 0, 0.78);
+  --ca-glow-violet-strong: 0 0 0 1px rgba(196, 176, 255, 0.38), 0 0 34px rgba(124, 77, 255, 0.42), 0 28px 90px rgba(0, 0, 0, 0.86);
+  --ca-metal-text: linear-gradient(180deg, #FFFFFF 0%, #F4F5F8 34%, #B7BBC8 54%, #EEF0F6 78%, #FFFFFF 100%);
+  --ca-violet-text: linear-gradient(180deg, #D9CCFF 0%, #A274FF 38%, #6F31F2 72%, #C7B4FF 100%);
+  --ca-editorial-caps: 0.1em;
 
   --font-primary: 'DM Sans', system-ui, -apple-system, sans-serif;
   --font: var(--font-primary);
@@ -107,9 +124,12 @@ html {
 body {
   font-family: var(--font-body);
   background:
-    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124,77,255,0.20), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91,43,224,0.12), transparent 60%),
+    linear-gradient(rgba(124, 77, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 77, 255, 0.045) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124,77,255,0.18), transparent 62%),
+    radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91,43,224,0.14), transparent 60%),
     var(--page-bg);
+  background-size: 42px 42px, 42px 42px, auto, auto, auto;
   color: var(--text);
 }
 h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
@@ -135,16 +155,26 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 /* Premium card shell */
 .ca-card {
   border-radius: var(--ca-card-radius);
-  border: 1px solid var(--border);
-  background: var(--ca-card-bg);
+  border: 1px solid var(--ca-panel-border);
+  background: var(--ca-panel-glass);
   padding: 24px;
-  box-shadow: var(--ca-card-shadow);
+  box-shadow: var(--ca-glow-violet);
   transition: all 200ms ease;
+  position: relative;
+  overflow: hidden;
+}
+.ca-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 var(--ca-inner-stroke), inset 0 -24px 44px rgba(0, 0, 0, 0.22);
 }
 .ca-card:hover {
   transform: translateY(-2px);
-  border-color: var(--ca-brand-border);
-  box-shadow: var(--ca-card-hover-shadow);
+  border-color: var(--ca-panel-border-hot);
+  box-shadow: var(--ca-glow-violet-strong);
 }
 /* Solid card surfaces only — backdrop-filter blurs text inside cards */
 
@@ -171,22 +201,31 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: var(--v-bg);
-  border: 1.5px solid var(--border-violet);
+  background: radial-gradient(circle at 35% 25%, rgba(196, 176, 255, 0.28), rgba(124, 77, 255, 0.12) 56%, rgba(8, 9, 15, 0.88));
+  border: 1.5px solid rgba(154, 107, 255, 0.72);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--v-light);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 22px rgba(124, 77, 255, 0.30);
 }
 
 .ca-section-head .ca-icon svg {
   width: 22px;
   height: 22px;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 2.5;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(196, 176, 255, 0.34));
+}
+
+.ca-section-head .ca-icon svg.ca-icon-mark,
+.ca-icon-circle svg.ca-icon-mark,
+.ca-tool-card__icon svg.ca-icon-mark {
+  stroke: none;
+  fill: none;
 }
 
 .ca-section-head__body {
@@ -198,9 +237,10 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--ca-editorial-caps);
   text-transform: uppercase;
-  color: var(--v-2);
+  color: var(--ca-gold);
+  text-shadow: 0 0 14px rgba(240, 194, 74, 0.24);
 }
 
 .ca-section-head .title {
@@ -210,6 +250,7 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   letter-spacing: -0.005em;
   line-height: 1.05;
   color: var(--text);
+  text-transform: uppercase;
 }
 
 .ca-section-head .purpose {
@@ -229,13 +270,15 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 /* ── Contained dark boards (Prompt 4) ── */
 .ca-board {
-  background: linear-gradient(180deg, var(--card), #0A0C16);
-  border: 1.5px solid var(--border-2);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%),
+    linear-gradient(180deg, var(--ca-board-top), var(--ca-board-bottom));
+  border: 1.5px solid var(--ca-panel-border);
   border-radius: 18px;
   padding: 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: var(--ca-glow-violet), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .ca-board::before {
@@ -244,8 +287,9 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: var(--v-grad);
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #7C4DFF 18%, #C4B0FF 50%, #7C4DFF 82%, transparent 100%);
+  box-shadow: 0 0 18px rgba(124, 77, 255, 0.76);
   pointer-events: none;
 }
 
@@ -256,7 +300,9 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 .ca-card.ca-board,
 .tp-section.ca-board {
-  background: linear-gradient(180deg, var(--card), #0A0C16);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%),
+    linear-gradient(180deg, var(--ca-board-top), var(--ca-board-bottom));
 }
 
 /* ── Lineup board scorecard (Prompt 2) ── */

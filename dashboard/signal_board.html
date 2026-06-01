@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics � Model Report</title>
+<title>Chase Analytics — Signal Board</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
 <link rel="stylesheet" href="theme.css?v=20260616c">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260529f">
-<link rel="stylesheet" href="model_report.css?v=20260529g">
+<link rel="stylesheet" href="signal_board.css?v=20260601a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js"></script>
@@ -21,7 +18,7 @@
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body>
-﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -54,7 +51,7 @@
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
-      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="signal_board.html" class="chase-nav-link" data-nav="signal-board">Signal Board</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp">
@@ -97,7 +94,7 @@
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="signal_board.html" class="chase-mobile-link" data-nav="signal-board">Signal Board</a>
   </div>
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
@@ -107,18 +104,18 @@
   </div>
 </div>
 
-  <script src="mlbma_ui.js" data-page="model_report.html"></script>
+<script src="mlbma_ui.js" data-page="signal_board.html"></script>
 
 <div class="mr-page">
   <nav class="mr-breadcrumb" aria-label="Breadcrumb">
-    <a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">�</span>
-    <span>Model Report</span>
+    <a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>
+    <span>Signal Board</span>
   </nav>
 
-  <div class="mr-hero" id="mrHero">
+  <div class="mr-hero" id="sbHero">
     <div class="ca-title-with-icon" style="margin-bottom:12px;">
       <img src="assets/chase-icon-filled.png" alt="" width="48" height="48" onerror="this.style.display='none'">
-      <p class="ca-helper" style="margin:0;">Loading model report�</p>
+      <p class="ca-helper" style="margin:0;">Loading signal board…</p>
     </div>
   </div>
 
@@ -126,11 +123,11 @@
     <div class="mr-section-head">
       <h2 class="mr-section-title">Daily Predictive Signal Board</h2>
       <div class="mr-filters">
-        <button type="button" class="mr-pill" data-mr-filter="fired">Fired only</button>
-        <button type="button" class="mr-pill" data-mr-filter="f5">F5 angles</button>
-        <button type="button" class="mr-pill" data-mr-filter="side-away">Away</button>
-        <button type="button" class="mr-pill" data-mr-filter="side-home">Home</button>
-        <button type="button" class="mr-pill" id="mrGameFilterPill" data-mr-filter="clear-game" style="display:none;">Clear game</button>
+        <button type="button" class="mr-pill" data-sb-filter="fired">Fired only</button>
+        <button type="button" class="mr-pill" data-sb-filter="f5">F5 angles</button>
+        <button type="button" class="mr-pill" data-sb-filter="side-away">Away</button>
+        <button type="button" class="mr-pill" data-sb-filter="side-home">Home</button>
+        <button type="button" class="mr-pill" id="sbGameFilterPill" data-sb-filter="clear-game" style="display:none;">Clear game</button>
       </div>
     </div>
     <div id="signalsTodayPanel"></div>
@@ -138,38 +135,15 @@
 
   <section class="mr-section" id="section-convergence">
     <div class="mr-section-head">
-      <h2 class="mr-section-title">Signal Explorer � Convergence</h2>
+      <h2 class="mr-section-title">Signal Explorer — Convergence</h2>
       <p class="ca-helper" style="margin:0;font-size:12px;">Click a game card to filter the signal board</p>
     </div>
     <div id="convergenceCards"></div>
     <div id="convergenceGrid"></div>
   </section>
-
-  <section class="mr-section" id="section-strats">
-    <h2 class="mr-section-title" style="margin-bottom:14px;">Offensive Strategy Signals</h2>
-    <div id="stratsSignals"></div>
-  </section>
-
-  <section class="mr-section" id="section-trend-classifications">
-    <div class="mr-section-head">
-      <h2 class="mr-section-title">Trend Classifications &amp; Velocity</h2>
-      <p class="ca-helper" style="margin:0;font-size:12px;">Team OSI windows from Team_Profiles � reliability labels for model context.</p>
-    </div>
-    <div class="table-wrap rl-sticky-table">
-      <table class="rl-table-premium">
-        <thead><tr>
-          <th>#</th><th>Team</th><th>YTD</th><th>L30</th><th>L14</th><th>L7</th>
-          <th>? L30</th><th>? L14</th><th>Vel.</th><th>Trend</th><th>Reliability</th><th>Interpretation</th>
-        </tr></thead>
-        <tbody id="mrTrendBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <div id="metricLegendMount"></div>
 </div>
-<script src="mlbma_signals.js"></script>
-<script src="model_report.js"></script>
+<script src="mlbma_signals.js?v=20260601a"></script>
+<script src="signal_board.js?v=20260601a"></script>
 <script src="chase_nav.js"></script>
 </body>
 </html>

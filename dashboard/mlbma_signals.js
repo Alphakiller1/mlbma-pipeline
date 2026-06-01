@@ -1,5 +1,5 @@
 /**
- * Signal Explorer — Signals_Today + Signals_Convergence (shared + Model Report).
+ * Signal Explorer — Signals_Today + Signals_Convergence (shared + Signal Board).
  */
 (function(global) {
   'use strict';
@@ -117,9 +117,10 @@
         el.innerHTML = '<div class="mr-empty">No signals match the current filters. '
           + '<button type="button" class="mr-pill" id="mrClearFiltersBtn">Clear filters</button></div>';
         var clr = document.getElementById('mrClearFiltersBtn');
-        if (clr && global.ModelReport) {
+        var board = global.SignalBoard;
+        if (clr && board) {
           clr.addEventListener('click', function() {
-            var st = ModelReport.getState();
+            var st = board.getState();
             if (st) {
               st.filters.firedOnly = false;
               st.filters.f5Only = false;
@@ -127,7 +128,7 @@
               st.filters.gameKey = '';
             }
             document.querySelectorAll('.mr-pill.active').forEach(function(p) { p.classList.remove('active'); });
-            ModelReport.setGameFilter('');
+            board.setGameFilter('');
           });
         }
       } else {
@@ -199,7 +200,7 @@
     mount.querySelectorAll('.mr-conv-card').forEach(function(card) {
       card.addEventListener('click', function() {
         var gk = card.getAttribute('data-game-key');
-        if (global.ModelReport && ModelReport.setGameFilter) ModelReport.setGameFilter(gk);
+        if (global.SignalBoard && SignalBoard.setGameFilter) SignalBoard.setGameFilter(gk);
       });
     });
   }

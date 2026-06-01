@@ -14,6 +14,10 @@ Before any dashboard or website UI work, read that file and adapt to the **exist
 
 Premium baseball matchup command center: dense, editorial, credible, fast. Violet accent + dark boards. **Green=elite → red=poor** on all metric chips via existing helpers.
 
+Gloss target: the May 2026 ChatGPT-generated MLBMA infographic look translated into the locked system — near-black scouting grid, violet neon edge light, glossy/inset panels, metallic silver display headings, violet gradient emphasis, compact editorial caps, circular glowing icon badges, and illuminated active controls. Aesthetic only; no structure changes.
+
+Icon rule: key MLBMA surfaces should use bold custom poster marks from `dashboard/mlbma_icons.js`; default thin Lucide strokes are only acceptable for small utility controls. High-visibility icons need circular/glowing badge treatment and enough fill/stroke weight to read like the generated infographic icons.
+
 ## Project anchors (use these, do not reinvent)
 
 | Layer | Files |

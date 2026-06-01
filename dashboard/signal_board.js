@@ -1,19 +1,22 @@
 /**
- * Model Report hub — signals board, convergence explorer, matchup context.
+ * Daily Predictive Signal Board — Signals_Today + Signals_Convergence UI.
  */
 (function(global) {
   'use strict';
 
   var T = MLBMA_CONFIG.SHEET_TABS;
   var S = global.MLBMASharedMatchup;
-  var A = global.MLBMAAssets;
 
   var STATE = {
     filters: { firedOnly: false, f5Only: false, side: '', gameKey: '', minMag: 0 },
     matchups: [],
     weather: {},
     pitching: {},
-    pipelineTs: null
+    scR: {},
+    scL: {},
+    bullpen: {},
+    pipelineTs: null,
+    highlightSignalIdx: null
   };
 
   function esc(s) {
@@ -33,17 +36,7 @@
       return r.text();
     }).then(function(text) {
       if (S && S.parseCsvText) return S.parseCsvText(text);
-      var lines = text.trim().split('\n');
-      if (lines.length < 2) return [];
-      var headers = lines[0].split(',').map(function(h) { return h.replace(/^"|"$/g, '').trim(); });
-      return lines.slice(1).map(function(line) {
-        var cols = line.match(/("([^"]|"")*"|[^,]*)/g) || [];
-        var row = {};
-        headers.forEach(function(h, i) {
-          row[h] = (cols[i] || '').replace(/^"|"$/g, '').replace(/""/g, '"').trim();
-        });
-        return row;
-      });
+      return [];
     });
   }
 
@@ -66,31 +59,6 @@
     if (hash.indexOf('signal-') === 0) {
       STATE.highlightSignalIdx = parseInt(hash.slice(7), 10);
     }
-  }
-
-  function buildYtdForStrats(vsRhpRows, palsRows) {
-    if (!S) return [];
-    var pals = S.parsePalsRows(palsRows);
-    return (vsRhpRows || []).map(function(row) {
-      var s = S.scoreRowFromSheet(row);
-      if (!s) return null;
-      var p = pals[s.t];
-      var palsVal = p ? p.pals : null;
-      return {
-        t: s.t,
-        osi: s.osi,
-        abq: s.abq,
-        rcv: s.rcv,
-        obr: s.obr,
-        pals: palsVal,
-        ppGap: palsVal != null ? s.osi - palsVal : 0,
-        dfGap: 0,
-        trend: 'Stable',
-        sus: null,
-        exploit: 0,
-        reg: null
-      };
-    }).filter(Boolean);
   }
 
   function parseLastUpdated(rows) {
@@ -124,32 +92,30 @@
 
   function matchupContextHtml(gk) {
     var m = getMatchup(gk);
-    if (!m) return '';
+    if (!m || !S) return '';
     var chips = [];
-    if (S) {
-      var awayRow = S.splitOSI({ vsR: STATE.scR[m.away], vsL: STATE.scL[m.away] }, m.homeHand);
-      var homeRow = S.splitOSI({ vsR: STATE.scR[m.home], vsL: STATE.scL[m.home] }, m.awayHand);
-      var script = S.gamescriptBadge(
-        awayRow ? awayRow.abq : null, homeRow ? homeRow.abq : null,
-        getPitchScore(m.away), getPitchScore(m.home),
-        awayRow ? awayRow.rcv : null, homeRow ? homeRow.rcv : null,
-        m.awayHR9, m.homeHR9
-      );
-      var f5 = S.f5Badge(
-        getPitchScore(m.away), getPitchScore(m.home),
-        STATE.bullpen[m.home] ? STATE.bullpen[m.home].osiAllowed : null,
-        STATE.bullpen[m.away] ? STATE.bullpen[m.away].osiAllowed : null
-      );
-      chips.push('<span class="mr-chip script">' + esc(script.label) + '</span>');
-      chips.push('<span class="mr-chip f5">' + esc(f5.label) + '</span>');
-    }
+    var awayRow = S.splitOSI({ vsR: STATE.scR[m.away], vsL: STATE.scL[m.away] }, m.homeHand);
+    var homeRow = S.splitOSI({ vsR: STATE.scR[m.home], vsL: STATE.scL[m.home] }, m.awayHand);
+    var script = S.gamescriptBadge(
+      awayRow ? awayRow.abq : null, homeRow ? homeRow.abq : null,
+      getPitchScore(m.away), getPitchScore(m.home),
+      awayRow ? awayRow.rcv : null, homeRow ? homeRow.rcv : null,
+      m.awayHR9, m.homeHR9
+    );
+    var f5 = S.f5Badge(
+      getPitchScore(m.away), getPitchScore(m.home),
+      STATE.bullpen[m.home] ? STATE.bullpen[m.home].osiAllowed : null,
+      STATE.bullpen[m.away] ? STATE.bullpen[m.away].osiAllowed : null
+    );
+    chips.push('<span class="mr-chip script">' + esc(script.label) + '</span>');
+    chips.push('<span class="mr-chip f5">' + esc(f5.label) + '</span>');
     var w = STATE.weather[gk];
     if (w) chips.push('<span class="mr-chip weather">' + (w.dome ? 'DOME' : esc(w.raw || w.conditions).slice(0, 24)) + '</span>');
     return chips.length ? '<div class="mr-chips">' + chips.join('') + '</div>' : '';
   }
 
   function renderHero(LD) {
-    var el = document.getElementById('mrHero');
+    var el = document.getElementById('sbHero');
     if (!el) return;
     var signals = LD.signalsToday || [];
     var conv = LD.signalsConvergence || [];
@@ -165,14 +131,9 @@
     el.innerHTML = staleHtml
       + '<div class="mr-hero-top">'
       + '<div><div class="ca-title-with-icon">'
-      + (global.MLBMAIcons && MLBMAIcons.iconCircleHtml ? MLBMAIcons.iconCircleHtml('clipboard', true) : '')
-      + '<h1 class="mr-title">Model Report</h1></div>'
-      + '<p class="mr-subtitle">Daily predictive signal board, convergence plays, and game-context reads for tonight\'s slate.</p></div>'
-      + '</div>'
-      + '<div class="ca-insight-rail" style="margin-bottom:16px">'
-      + '<div class="ca-insight-row">' + (global.MLBMAIcons ? MLBMAIcons.iconCircleHtml('target', true) : '') + '<span><span class="ca-insight-label">Signal Board</span><span class="ca-insight-text">' + fired.length + ' fired of ' + signals.length + ' evaluated tonight</span></span></div>'
-      + '<div class="ca-insight-row">' + (global.MLBMAIcons ? MLBMAIcons.iconCircleHtml('trend-up', true) : '') + '<span><span class="ca-insight-label">Convergence</span><span class="ca-insight-text">' + plays.length + ' multi-signal plays on the slate</span></span></div>'
-      + '<div class="ca-insight-row">' + (global.MLBMAIcons ? MLBMAIcons.iconCircleHtml('edge', true) : '') + '<span><span class="ca-insight-label">Slate Context</span><span class="ca-insight-text">' + (STATE.matchups.length || 0) + ' games · filter by fired, F5, or side below</span></span></div>'
+      + (global.MLBMAIcons && MLBMAIcons.iconCircleHtml ? MLBMAIcons.iconCircleHtml('target', true) : '')
+      + '<h1 class="mr-title">Signal Board</h1></div>'
+      + '<p class="mr-subtitle">Tonight\'s fired model signals, convergence plays, and game-context reads.</p></div>'
       + '</div>'
       + '<div class="mr-stats">'
       + '<div class="mr-stat"><div class="mr-stat-val">' + (STATE.matchups.length || '—') + '</div><div class="mr-stat-label">Games</div></div>'
@@ -183,11 +144,11 @@
   }
 
   function bindFilters() {
-    document.querySelectorAll('[data-mr-filter]').forEach(function(btn) {
+    document.querySelectorAll('[data-sb-filter]').forEach(function(btn) {
       if (btn.dataset.bound) return;
       btn.dataset.bound = '1';
       btn.addEventListener('click', function() {
-        var key = btn.getAttribute('data-mr-filter');
+        var key = btn.getAttribute('data-sb-filter');
         if (key === 'fired') {
           STATE.filters.firedOnly = !STATE.filters.firedOnly;
           btn.classList.toggle('active', STATE.filters.firedOnly);
@@ -201,8 +162,8 @@
         } else if (key === 'side-away' || key === 'side-home') {
           var side = key === 'side-away' ? 'away' : 'home';
           STATE.filters.side = STATE.filters.side === side ? '' : side;
-          document.querySelectorAll('[data-mr-filter^="side-"]').forEach(function(b) {
-            b.classList.toggle('active', b.getAttribute('data-mr-filter') === 'side-' + STATE.filters.side);
+          document.querySelectorAll('[data-sb-filter^="side-"]').forEach(function(b) {
+            b.classList.toggle('active', b.getAttribute('data-sb-filter') === 'side-' + STATE.filters.side);
           });
         }
         renderAll();
@@ -211,7 +172,7 @@
   }
 
   function syncGamePill() {
-    var pill = document.getElementById('mrGameFilterPill');
+    var pill = document.getElementById('sbGameFilterPill');
     if (!pill) return;
     if (STATE.filters.gameKey) {
       pill.textContent = 'Game: ' + STATE.filters.gameKey;
@@ -241,65 +202,6 @@
     }
   }
 
-  function renderTrendClassifications(vsRhpRows, profileRows) {
-    var body = document.getElementById('mrTrendBody');
-    if (!body || !S) return;
-    var profMap = {};
-    (profileRows || []).forEach(function(row) {
-      var t = S.teamKey(S.pickCol(row, ['team', 'Tm', 'Team']));
-      if (!t) return;
-      profMap[t] = {
-        l30: parseFloat(S.pickCol(row, ['osi_l30', 'OSI_L30'])) || null,
-        l14: parseFloat(S.pickCol(row, ['osi_l14', 'OSI_L14'])) || null,
-        l7: parseFloat(S.pickCol(row, ['osi_l7', 'OSI_L7'])) || null
-      };
-    });
-    var rows = (vsRhpRows || []).map(S.scoreRowFromSheet).filter(Boolean)
-      .sort(function(a, b) { return b.osi - a.osi; });
-    body.innerHTML = rows.map(function(d, i) {
-      var p = profMap[d.t] || {};
-      var ytd = d.osi;
-      var l30 = p.l30, l14 = p.l14, l7 = p.l7;
-      var dL30 = l30 != null ? l30 - ytd : null;
-      var dL14 = l14 != null ? l14 - ytd : null;
-      var vel = l7 != null && l14 != null ? l7 - l14 : null;
-      var trend = d.trend || 'Stable';
-      var rel = 'Mixed';
-      if (l7 != null && l14 != null && ytd != null) {
-        if (l7 > ytd + 5 && l14 > ytd + 3) rel = 'Sustained Rise';
-        else if (l7 > ytd + 5) rel = 'Short Spike';
-        else if (l7 < ytd - 5 && l14 < ytd - 3) rel = 'Cooling Risk';
-        else if (l7 < ytd - 5) rel = 'Noisy L7 Drop';
-        else if (Math.abs(l7 - ytd) <= 3 && Math.abs(l14 - ytd) <= 3) rel = 'Stable';
-      }
-      var interp = trend === 'Rising' ? 'Momentum building across windows' : trend === 'Cooling' ? 'Output declining' : 'Consistent across samples';
-      function c(v) {
-        if (v == null || isNaN(v)) return '—';
-        return Number(v).toFixed(1);
-      }
-      function chipFor(v) {
-        if (v == null || isNaN(v)) return '—';
-        if (A && A.valChipHtml) return A.valChipHtml(v, 'osi', false, 1);
-        return c(v);
-      }
-      return '<tr><td>' + (i + 1) + '</td><td>' + esc(d.t) + '</td>'
-        + '<td class="num">' + chipFor(ytd) + '</td><td class="num">' + chipFor(l30) + '</td><td class="num">' + chipFor(l14) + '</td><td class="num">' + chipFor(l7) + '</td>'
-        + '<td class="num">' + (dL30 != null ? metricChipDelta(dL30) : '—') + '</td>'
-        + '<td class="num">' + (dL14 != null ? metricChipDelta(dL14) : '—') + '</td>'
-        + '<td class="num">' + (vel != null ? metricChipDelta(vel) : '—') + '</td>'
-        + '<td>' + esc(trend) + '</td><td>' + esc(rel) + '</td><td>' + esc(interp) + '</td></tr>';
-    }).join('');
-  }
-
-  function metricChipDelta(v) {
-    var display = (v > 0 ? '+' : '') + Number(v).toFixed(1);
-    if (A && A.valChipHtml) {
-      var cls = v > 1.5 ? 'c-good' : v < -1.5 ? 'c-poor' : 'c-mid';
-      return A.valChipHtml(v, 'osi', false, 1, { display: display, chipClass: cls });
-    }
-    return display;
-  }
-
   function load() {
     applyUrlFilters();
     global.LIVE_DATA = global.LIVE_DATA || {};
@@ -313,9 +215,7 @@
       fetchTab(T.vs_rhp).catch(function() { return []; }),
       fetchTab(T.vs_lhp).catch(function() { return []; }),
       fetchTab(T.pitching_score).catch(function() { return []; }),
-      fetchTab(T.bullpen_unit).catch(function() { return []; }),
-      fetchTab(T.pals).catch(function() { return []; }),
-      fetchTab(T.team_profiles).catch(function() { return []; })
+      fetchTab(T.bullpen_unit).catch(function() { return []; })
     ]).then(function(res) {
       LIVE_DATA.signalsToday = res[0] || [];
       LIVE_DATA.signalsConvergence = res[1] || [];
@@ -339,41 +239,34 @@
       STATE.scR = {};
       STATE.scL = {};
       (res[5] || []).forEach(function(row) {
-        var s = S.scoreRowFromSheet(row);
-        if (s) STATE.scR[s.t] = s;
+        var scored = S.scoreRowFromSheet(row);
+        if (scored) STATE.scR[scored.t] = scored;
       });
       (res[6] || []).forEach(function(row) {
-        var s = S.scoreRowFromSheet(row);
-        if (s) STATE.scL[s.t] = s;
+        var scored = S.scoreRowFromSheet(row);
+        if (scored) STATE.scL[scored.t] = scored;
       });
       STATE.pitching = S ? S.parsePitchingRows(res[7]) : {};
       STATE.bullpen = S ? S.parseBullpenUnitRows(res[8]) : {};
-      global.SCO_YTD_B = buildYtdForStrats(res[5], res[9]);
-      renderTrendClassifications(res[5], res[10]);
 
       renderHero(LIVE_DATA);
       bindFilters();
       if (STATE.filters.firedOnly) {
-        var fb = document.querySelector('[data-mr-filter="fired"]');
+        var fb = document.querySelector('[data-sb-filter="fired"]');
         if (fb) fb.classList.add('active');
       }
       if (STATE.filters.gameKey) syncGamePill();
       renderAll();
-
-      var leg = document.getElementById('metricLegendMount');
-      if (leg && global.MLBMAAssets && MLBMAAssets.metricLegendHtml) {
-        leg.innerHTML = MLBMAAssets.metricLegendHtml();
-      }
       if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
     }).catch(function(err) {
       console.error(err);
-      var leg = document.getElementById('metricLegendMount');
-      if (leg) leg.innerHTML = '<p class="ca-helper">Could not load model report data.</p>';
+      var hero = document.getElementById('sbHero');
+      if (hero) hero.innerHTML = '<p class="ca-helper">Could not load signal board data.</p>';
       if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
     });
   }
 
-  global.ModelReport = {
+  global.SignalBoard = {
     load: load,
     setGameFilter: function(gk) {
       if (STATE.filters.gameKey === gk) STATE.filters.gameKey = '';

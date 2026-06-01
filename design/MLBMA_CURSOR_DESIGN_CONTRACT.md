@@ -137,6 +137,42 @@ The preferred aesthetic reference is the ChatGPT-generated MLB team scouting inf
 
 Use that as inspiration only. Translate it into the project design system.
 
+### 4.0 Glossy Infographic Target
+
+The May 2026 ChatGPT-generated MLBMA images are the current visual north star. Cursor must translate their look into the locked dashboard structure rather than inventing new layouts.
+
+Required visual qualities:
+
+- near-black broadcast background with subtle scouting-grid texture
+- violet neon edge light, not a flat purple wash
+- glossy dark panels with border glow, inset highlight, and deep shadow
+- metallic silver display headings for major page titles
+- violet gradient display emphasis for selected words or key CTAs
+- compact all-caps editorial labels with deliberate tracking
+- circular icon badges with violet glow where icons already exist
+- thin luminous divider rules and top-edge glints on major boards
+- active tabs and buttons that feel like illuminated controls
+
+Implementation requirements:
+
+- Use shared CSS tokens for glow, panel, metallic text, and violet text effects.
+- Apply these effects to existing panels, cards, tables, tabs, chips, and section headers.
+- Keep metric colors on the existing green-to-red grading scale; violet and gold are brand/editorial accents only.
+- Do not add fake stadium art, generated backgrounds, decorative bokeh, or extra hero sections to chase the image.
+
+### 4.0.1 Icon Standard
+
+The generated infographic icons are bold poster marks, not thin generic line icons. Cursor must not treat default Lucide stroke icons as the finished visual standard on hero, workflow, research, matchup, or section-header surfaces.
+
+Icon requirements:
+
+- Use `dashboard/mlbma_icons.js` as the shared icon owner.
+- Prefer MLBMA custom poster marks for high-visibility concepts: matchups, rankings, trends, pitcher intelligence, research lab, offense, edge, slate, and signals.
+- Lucide-style line icons are acceptable only for small utility affordances such as arrows, close controls, search, list toggles, and minor UI controls.
+- High-visibility icons must sit inside circular or badge-like containers with violet glow, inset highlight, and sufficient stroke/fill weight.
+- Icons should read at small sizes without looking like wireframes; use filled shapes, heavier strokes, and simple silhouettes where needed.
+- Do not scatter raw SVGs across page files. Add or alias icons in `mlbma_icons.js`, then render through `MLBMAIcons.iconSvg`, `iconHtml`, or `iconCircleHtml`.
+
 ### 4.1 Take From The Infographic Direction
 
 Adopt:

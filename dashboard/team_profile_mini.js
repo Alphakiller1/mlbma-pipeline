@@ -749,9 +749,12 @@
     var sliced = C.trendWindowSlice
       ? C.trendWindowSlice(['YTD', 'L30', 'L14', 'L7'], pack[active] || [], windowKey)
       : { labels: ['YTD', 'L30', 'L14', 'L7'], values: pack[active] || [] };
-    var readout = C.trendDeltaReadout ? C.trendDeltaReadout(m, windowKey) : '';
     var formReadHtml = global.TeamProfileIntel && TeamProfileIntel.renderFormReadHtml
       ? TeamProfileIntel.renderFormReadHtml(m) : '';
+    var readout = '';
+    if (!formReadHtml && C.trendDeltaReadout) {
+      readout = C.trendDeltaReadout(m, windowKey);
+    }
     var toggles = [
       { k: 'osi', abbr: 'OSI', desc: 'Offense Score' },
       { k: 'rcv', abbr: 'RCV', desc: 'Contact Value' },
@@ -768,10 +771,8 @@
     });
     return '<div class="tp-trend-panel" data-window="' + esc(windowKey) + '">'
       + '<div class="tp-trend-controls" role="group" aria-label="Chart metric">' + toggles + '</div>'
-      + renderTeamTrendTable(m, ctx, active)
       + '<div class="tp-trend-chart-mount" data-active-metric="' + esc(active) + '">' + chart + '</div>'
-      + (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : '')
-      + formReadHtml
+      + (formReadHtml || (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : ''))
       + '</div>';
   }
 
@@ -831,8 +832,12 @@
 
   function renderHeroCard(prof, team, ctx) {
     ctx = ctx || {};
-    var m = resolveView(prof, ctx);
-    return renderInfographicHero(prof, team, m, ctx);
+    var heroCtx = Object.assign({}, ctx, {
+      window: 'YTD',
+      windowLabel: 'Season'
+    });
+    var m = resolveView(prof, heroCtx);
+    return renderInfographicHero(prof, team, m, heroCtx);
   }
 
   function renderSnapshot(prof, team, ctx) {
@@ -927,8 +932,8 @@
 
     var contextBits = [];
     if (ctx.splitLabel || ctx.split) contextBits.push(ctx.splitLabel || ctx.split);
-    if (ctx.windowLabel || ctx.window) contextBits.push(ctx.windowLabel || ctx.window);
-    var contextLine = contextBits.length ? contextBits.join(' · ') : '';
+    contextBits.push('Season');
+    var contextLine = contextBits.join(' · ');
 
     var badge = status.label
       ? '<span class="tp-team-banner__badge tp-lineup-identity__badge ' + esc(status.cls) + '">'

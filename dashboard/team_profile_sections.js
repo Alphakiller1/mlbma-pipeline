@@ -563,7 +563,7 @@
     if (!Mini || !Mini.renderTrendChartPanel) return '';
     var body = lineupWindowBar(ctx.window || 'YTD')
       + '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
-    return sectionCard('Rolling Trend', 'YTD → L7 grade windows · velocity · reliability', body,
+    return sectionCard('Rolling Trend', 'Grade movement across time windows', body,
       { icon: 'trending-up', kicker: 'Momentum', sectionId: 'rolling-trend' });
   }
 

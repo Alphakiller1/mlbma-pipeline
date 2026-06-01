@@ -24,8 +24,8 @@
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="team_profile_mini.js?v=20260531v"></script>
-<script src="team_profile_sections.js?v=20260531y"></script>
+<script src="team_profile_mini.js?v=20260601e"></script>
+<script src="team_profile_sections.js?v=20260601d"></script>
 <script src="team_profile_staff.js?v=20260617c"></script>
 <script src="team_profile_intel.js?v=20260601a"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
@@ -37,7 +37,7 @@
 </head>
 <body class="team-profile-page">
 <!-- Loading overlay injected by mlbma_ui.js -->
-﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -70,7 +70,7 @@
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
-      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="signal_board.html" class="chase-nav-link" data-nav="signal-board">Signal Board</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp">
@@ -113,7 +113,7 @@
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="signal_board.html" class="chase-mobile-link" data-nav="signal-board">Signal Board</a>
   </div>
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
@@ -1479,11 +1479,8 @@ function bindTrendChartPanel() {
   root._trendBound = true;
   root.addEventListener('click', function(e) {
     var btn = e.target.closest('[data-trend-metric]');
-    var row = e.target.closest('[data-trend-metric-row]');
-    if (!btn && !row) return;
-    STATE.chartMetric = btn
-      ? (btn.getAttribute('data-trend-metric') || 'osi')
-      : (row.getAttribute('data-trend-metric-row') || 'osi');
+    if (!btn) return;
+    STATE.chartMetric = btn.getAttribute('data-trend-metric') || 'osi';
     var prof = profileRow(STATE.team) || {};
     var name = TEAM_NAMES[STATE.team] || STATE.team;
     if (!window.TeamProfileMini || !window.TeamProfileSections) return;
@@ -1498,9 +1495,6 @@ function bindTrendChartPanel() {
       var on = b.getAttribute('data-trend-metric') === STATE.chartMetric;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-    root.querySelectorAll('[data-trend-metric-row]').forEach(function(r) {
-      r.classList.toggle('is-active', r.getAttribute('data-trend-metric-row') === STATE.chartMetric);
     });
   });
 }

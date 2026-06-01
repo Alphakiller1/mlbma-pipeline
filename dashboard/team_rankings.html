@@ -166,6 +166,7 @@ body{
   .hub-kpi-val{font-size:32px}
 }
 </style>
+  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body>
 <div class="loading" id="hubLoading">
@@ -180,7 +181,7 @@ setTimeout(function() {
   console.warn('[LINEUP VIEW] still loading after 20s — hard refresh and verify shared scripts');
 }, 20000);
 </script>
-<!-- Chase Analytics navigation â€” synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics \u2014 Opening Dashboard">
@@ -207,7 +208,7 @@ setTimeout(function() {
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
-      <a href="model_report.html" class="chase-nav-link" data-nav="model-report">Model Report</a>
+      <a href="signal_board.html" class="chase-nav-link" data-nav="signal-board">Signal Board</a>
     </div>
     <div class="chase-status">
       <div class="chase-timestamp"><span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span><span id="lastUpdated">syncing\u2026</span></div>
@@ -230,7 +231,7 @@ setTimeout(function() {
     <a href="team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
     <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
-    <a href="model_report.html" class="chase-mobile-link" data-nav="model-report">Model Report</a>
+    <a href="signal_board.html" class="chase-mobile-link" data-nav="signal-board">Signal Board</a>
   </div>
 </div>
 

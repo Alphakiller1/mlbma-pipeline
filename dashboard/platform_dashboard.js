@@ -539,7 +539,7 @@
   }
 
   function modelReportHref(s) {
-    var base = 'model_report.html';
+    var base = 'signal_board.html';
     if (s.gameKey) return base + '?game=' + encodeURIComponent(s.gameKey) + '#signal-' + s.idx;
     if (s.away && s.home) {
       return base + '?game=' + encodeURIComponent(s.away + '@' + s.home) + '#signal-' + s.idx;
@@ -582,14 +582,14 @@
             label: 'Top Lineup Edge',
             val: bestLineup.game + ' · ' + bestLineup.team,
             conf: 'High',
-            href: 'model_report.html?game=' + encodeURIComponent(bestLineup.game)
+            href: 'signal_board.html?game=' + encodeURIComponent(bestLineup.game)
           });
         }
       }
       if (rows.length) {
         var buy = rows.filter(function(d) { return d.ppGap >= 4; }).sort(function(a, b) { return b.ppGap - a.ppGap; })[0];
         if (buy && chips.length < 3) {
-          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'model_report.html?fired=1' });
+          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'signal_board.html?fired=1' });
         }
       }
     }

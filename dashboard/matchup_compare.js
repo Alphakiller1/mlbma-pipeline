@@ -515,7 +515,7 @@
       + '<div class="mc-model-links">'
       + '<a href="' + teamProfileUrl(m.away) + '">View Away Team Profile →</a>'
       + '<a href="' + teamProfileUrl(m.home) + '">View Home Team Profile →</a>'
-      + '<a href="model_report.html">View Full Model Report →</a>'
+      + '<a href="signal_board.html">View Signal Board →</a>'
       + '</div></div></section></div>';
   }
 

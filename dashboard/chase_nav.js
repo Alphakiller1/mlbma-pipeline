@@ -106,13 +106,13 @@
     }
     var page = pathPart.split('/').pop() || '';
   if (page === 'chase_analytics_mlb_oem_v7.html' || page === '') {
-      if (hash === 'section-model-report') return 'model-report';
+      if (hash === 'section-model-report' || hash === 'section-signal-board') return 'signal-board';
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       if (!hash) return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
-    if (page === 'model_report.html') return 'model-report';
+    if (page === 'signal_board.html') return 'signal-board';
     if (page === 'matchup_compare.html') return 'matchups';
     if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'team-rankings';
     return page;
@@ -122,13 +122,13 @@
     var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
     if (page === 'chase_analytics_mlb_oem_v7.html') {
-      if (hash === 'section-model-report') return 'model-report';
+      if (hash === 'section-model-report' || hash === 'section-signal-board') return 'signal-board';
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
-    if (page === 'model_report.html') return 'model-report';
+    if (page === 'signal_board.html') return 'signal-board';
     if (page === 'matchup_compare.html') return 'matchups';
     if (page === 'team_rankings.html') return 'team-rankings';
     return page;

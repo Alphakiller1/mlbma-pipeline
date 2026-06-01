@@ -1321,12 +1321,9 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'model_report.html', title: 'Daily Predictive Signal Board', desc: 'All fired signals and verdicts for tonight.' },
-      { href: 'model_report.html#section-convergence', title: 'Signal Explorer', desc: 'Convergence matrix and weighted plays.' },
-      { href: 'model_report.html?fired=1', title: 'Highest Confidence Signals', desc: 'Filter to actionable fired rows.' },
-      { href: 'model_report.html#section-risks', title: 'Context Risks', desc: 'Schedule, platoon, and volatility flags.' },
-      { href: 'model_report.html#section-f5', title: 'F5 Model Signals', desc: 'First-five specific model outputs.' },
-      { href: 'model_report.html#section-regression', title: 'Regression / Buy-Low Signals', desc: 'Process vs production divergence plays.' }
+      { href: 'signal_board.html', title: 'Daily Predictive Signal Board', desc: 'All fired signals and verdicts for tonight.' },
+      { href: 'signal_board.html#section-convergence', title: 'Signal Explorer', desc: 'Convergence matrix and weighted plays.' },
+      { href: 'signal_board.html?fired=1', title: 'Highest Confidence Signals', desc: 'Filter to actionable fired rows.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {
       return '<a class="rl-model-link-card" href="' + c.href + '"><h4>' + esc(c.title) + '</h4><p>' + esc(c.desc) + '</p></a>';

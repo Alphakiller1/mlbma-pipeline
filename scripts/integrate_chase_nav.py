@@ -10,7 +10,7 @@ NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
 PAGES = [
     "index.html",
     "chase_analytics_mlb_oem_v7.html",
-    "model_report.html",
+    "signal_board.html",
     "matchup_compare.html",
     "matchup_sheet.html",
     "pitcher_profile.html",
@@ -18,6 +18,7 @@ PAGES = [
     "reliever_profile.html",
     "bullpen_report.html",
     "team_profile.html",
+    "team_rankings.html",
     "glossary.html",
 ]
 
@@ -62,7 +63,7 @@ MOBILE_DRAWER_TAIL = (
     "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
     "    <a href=\"reliever_profile.html\" class=\"chase-mobile-link\">Reliever Profile</a>\n"
     "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
-    "    <a href=\"model_report.html\" class=\"chase-mobile-link\" data-nav=\"model-report\">Model Report</a>\n"
+    "    <a href=\"signal_board.html\" class=\"chase-mobile-link\" data-nav=\"signal-board\">Signal Board</a>\n"
     "  </div>\n"
     "  <div class=\"chase-mobile-status\">\n"
     "    <div class=\"chase-timestamp\">\n"

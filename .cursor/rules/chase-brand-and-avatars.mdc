@@ -43,7 +43,7 @@ python scripts/integrate_chase_nav.py
 - Research Lab hidden until `#section-research-lab` hash (`body.view-research`); opening hidden in that view.
 - Avatar crop via CSS classes `ca-pitcher-avatar--matchup|compare|profile` — no inline transform scale in JS.
 - Use `pitcherAvatar('matchup')`, auto lineups (`hideToggle: true`), stadium/time/weather meta, Pitching Score on SP rows.
-- Do not auto-load Research Lab on scroll; full tables/signals live in Research Lab or `model_report.html`.
+- Do not auto-load Research Lab on scroll; full tables/signals live in Research Lab or `signal_board.html`.
 
 ## Pitcher avatars (`pitcherAvatar()` in `mlbma_assets.js`)
 
