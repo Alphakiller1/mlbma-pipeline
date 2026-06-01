@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import gspread
-from google.oauth2.service_account import Credentials
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, check_google_credentials
 
@@ -55,13 +54,8 @@ def scrape_lineups():
             game_time = time_el.text.strip() if time_el else "TBD"
 
             # Get starting pitchers
-            pitcher_block = div.find_all("div", class_="lineup__player-highlight")
             away_sp = "TBD"
             home_sp = "TBD"
-            sp_links = div.find_all("a", class_="lineup__pitcher") if div.find("a", class_="lineup__pitcher") else []
-
-            # Try finding pitchers via the pitcher section
-            pitcher_divs = div.find_all("div", class_=lambda c: c and "lineup__p" in c and "pitcher" in c)
             sp_names = div.select("div.lineup__main .lineup__player-highlight a")
             if len(sp_names) >= 2:
                 away_sp = sp_names[0].text.strip()

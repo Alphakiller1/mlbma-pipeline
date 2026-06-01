@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import json
-import os
 from typing import Dict, List, Optional
 
 import pandas as pd
 
 from core.config import (
     DATA_DIR,
-    TEAM_HOME_AWAY_OSI_GAP,
     TEAM_PLATOON_OSI_GAP,
     TEAM_TOP_BATTERS_N,
     TEAM_TOP_SP_N,

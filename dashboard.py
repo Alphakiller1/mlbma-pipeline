@@ -48,8 +48,6 @@ from core.dashboard_terminal import (
     tier_label,
     fmt,
     PITCHING_TIERS,
-    OSI_TIERS,
-    primary_score,
     market_implication,
 )
 

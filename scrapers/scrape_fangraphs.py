@@ -74,7 +74,7 @@ def scrape_one(driver, split_label, split_code, sg_name, sg_num):
         df.to_csv(fname, index=False)
         print(f"  Saved: {fname}")
     else:
-        print(f"  FAIL No data found")
+        print("  FAIL No data found")
     time.sleep(15)
     return df
 
@@ -106,7 +106,7 @@ def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basen
         df.to_csv(fname, index=False)
         print(f"  Saved: {fname}")
     else:
-        print(f"  No data found")
+        print("  No data found")
     time.sleep(15)
     return df
 

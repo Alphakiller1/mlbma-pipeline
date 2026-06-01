@@ -9,7 +9,6 @@ from datetime import datetime
 import gspread
 import pandas as pd
 import requests
-from google.oauth2.service_account import Credentials
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 

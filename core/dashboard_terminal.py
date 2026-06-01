@@ -5,8 +5,6 @@ Used by dashboard.py CLI.
 
 from __future__ import annotations
 
-import os
-import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -21,7 +19,6 @@ from core.compute_signals import (
     PitcherMetrics,
     TeamMetrics,
     build_team_metrics,
-    compute_convergence,
     evaluate_matchup_side,
     num_value,
     pct_value,
@@ -39,9 +36,6 @@ from core.config import (
     METRIC_CHOICES,
     OSI_TIERS,
     OSI_WEIGHTS,
-    PITCHING_TIERS,
-    PROJ_OSI_REG_CLIP,
-    PROJ_OSI_REG_SCALE,
     SIGNAL_NAMES,
     TEAM_MAP,
     TIME_WINDOWS,
@@ -391,7 +385,7 @@ class DataStore:
             return detail
         sav_one = sav_t.copy()
         if not sav_one.empty:
-            from core.config import ABQ_CONTACT_WEIGHTS, ABQ_DISCIPLINE_WEIGHTS, ABQ_WEIGHTS
+            from core.config import ABQ_CONTACT_WEIGHTS, ABQ_DISCIPLINE_WEIGHTS
 
             std_one["K%"] = clean_pct(std_one["K%"])
             std_one["BB%"] = clean_pct(std_one["BB%"])
@@ -675,9 +669,6 @@ class DataStore:
         away_snap = self.team_snapshot(away, opts)
         home_snap = self.team_snapshot(home, opts)
 
-        away_hand = pitcher_hand_code(
-            opts.opponent_pitcher.hand if opts.opponent_pitcher else None
-        )
         # away lineup faces home SP
         home_pitcher = opts.opponent_pitcher or PitcherMetrics(
             home_sp, "R", None, None, None, None
@@ -903,7 +894,6 @@ def bet_angle_matrix(
 ) -> dict[str, dict]:
     fired = [s for s in signals if s.get("fired")]
     headline = primary_score(snap, True)
-    osi = snap.osi
     pals = snap.pals
 
     def lean_from_direction(default: str = "neutral") -> str:
@@ -986,7 +976,6 @@ def build_verdict(
     pals = snap.pals if snap else None
     arch = snap.archetype_label if snap else "--"
     osi = snap.osi if snap else None
-    proj = snap.proj_osi if snap else None
 
     v0_parts = []
     if conv.get("is_convergence_play"):

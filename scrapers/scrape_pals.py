@@ -4,7 +4,6 @@ from datetime import datetime
 import gspread
 import pandas as pd
 import requests
-from google.oauth2.service_account import Credentials
 
 from core.compute_pals import calc_pals, load_osi_for_pals, load_sp_xfip
 from core.config import DATA_DIR, SEASON_START, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials

@@ -7,8 +7,6 @@ HvP = average of OSI vs RHP and OSI vs LHP
 
 import os
 
-import pandas as pd
-
 from core.config import DATA_DIR, OOR_WEIGHTS
 from core.metrics_utils import normalize
 
