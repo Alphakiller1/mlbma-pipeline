@@ -48,6 +48,17 @@ def compute_split(std, bb, savant, label, traditional=None):
     return osi_sorted
 
 
+def _with_split_xwoba(base, split):
+    """Override xwOBA in the season leaderboard with the handedness-specific xwOBA
+    (the only split-available Savant column) so OBR/RCV reflect how a lineup hits vs
+    RHP vs LHP. Discipline/batted-ball stats stay season-level (not split-available)."""
+    if split is None or "Tm" not in getattr(split, "columns", []) or "xwOBA" not in split.columns:
+        return base
+    m = base.merge(split[["Tm", "xwOBA"]].rename(columns={"xwOBA": "_xsplit"}), on="Tm", how="left")
+    m["xwOBA"] = m["_xsplit"].where(m["_xsplit"].notna(), m["xwOBA"])
+    return m.drop(columns=["_xsplit"])
+
+
 def run():
     data = load_all()
     std_rhp = data.get("vs_RHP_standard")
@@ -79,8 +90,12 @@ def run():
     trad_rhp = load("vs_RHP_traditional.csv")
     trad_lhp = load("vs_LHP_traditional.csv")
 
-    osi_rhp = compute_split(std_rhp, bb_rhp, savant, "vs_RHP", trad_rhp)
-    osi_lhp = compute_split(std_lhp, bb_lhp, savant, "vs_LHP", trad_lhp)
+    # Use handedness-specific xwOBA where available (now that split keys are normalized).
+    sav_rhp = _with_split_xwoba(savant, load("savant_vs_RHP.csv"))
+    sav_lhp = _with_split_xwoba(savant, load("savant_vs_LHP.csv"))
+
+    osi_rhp = compute_split(std_rhp, bb_rhp, sav_rhp, "vs_RHP", trad_rhp)
+    osi_lhp = compute_split(std_lhp, bb_lhp, sav_lhp, "vs_LHP", trad_lhp)
 
     if sp_std is not None:
         calc_pitching_score(sp_std)
