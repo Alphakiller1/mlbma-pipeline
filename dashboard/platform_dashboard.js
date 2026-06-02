@@ -128,6 +128,32 @@
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
+  function pitcherStatColor(metric, value) {
+    if (value == null || value === '' || isNaN(value)) return 'var(--text-3)';
+    var v = Number(value);
+    if (metric === 'k') {
+      if (v <= 1) v *= 100;
+      if (v >= 28) return 'var(--green)';
+      if (v >= 23) return 'var(--gold)';
+      if (v >= 18) return 'var(--text-1)';
+      return 'var(--orange)';
+    }
+    if (metric === 'bb') {
+      if (v <= 1) v *= 100;
+      if (v <= 6) return 'var(--green)';
+      if (v <= 9) return 'var(--text-1)';
+      if (v <= 12) return 'var(--gold)';
+      return 'var(--red-l)';
+    }
+    if (metric === 'era' || metric === 'fip') {
+      if (v <= 3.25) return 'var(--green)';
+      if (v <= 4.0) return 'var(--text-1)';
+      if (v <= 4.75) return 'var(--gold)';
+      return 'var(--red-l)';
+    }
+    return 'var(--text-1)';
+  }
+
   function spPitchScoreFromProfile(pitcherName, team) {
     var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
     if (!profiles.length || !S || !S.findSpProfile) return null;
@@ -135,6 +161,21 @@
     if (!p || !S.spProfileMetrics) return null;
     var m = S.spProfileMetrics(p);
     return m && m.pitchScore != null ? m.pitchScore : null;
+  }
+
+  function spEraFromProfile(pitcherName, team) {
+    var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
+    if (!profiles.length || !S || !S.findSpProfile) return null;
+    var p = S.findSpProfile(profiles, pitcherName, team);
+    if (!p) return null;
+    if (S.spProfileMetrics) {
+      var m = S.spProfileMetrics(p);
+      if (m && m.era != null && !isNaN(m.era)) return m.era;
+    }
+    if (S.numOrNull && S.pickCol) {
+      return S.numOrNull(S.pickCol(p, 'ERA', 'era'));
+    }
+    return null;
   }
 
   function normalizePitchHand(h) {
@@ -163,7 +204,12 @@
     var handLbl = normalizePitchHand(hand) === 'L' ? 'LHP' : normalizePitchHand(hand) === 'R' ? 'RHP' : '?';
     var kVal = fmtRatePct(stats.k);
     var bbVal = fmtRatePct(stats.bb);
-    var fipVal = stats.fip != null ? Number(stats.fip).toFixed(2) : '—';
+    var eraRaw = stats.era != null ? stats.era : spEraFromProfile(name, team);
+    if (eraRaw == null) eraRaw = stats.fip;
+    var kColor = pitcherStatColor('k', stats.k);
+    var bbColor = pitcherStatColor('bb', stats.bb);
+    var eraColor = pitcherStatColor('era', eraRaw);
+    var eraVal = eraRaw != null ? Number(eraRaw).toFixed(2) : '—';
     return '<div class="mc-sp-block" onclick="event.stopPropagation()">'
       + '<div class="mc-sp-photo">' + hs + '</div>'
       + '<div class="mc-sp-info">'
@@ -180,9 +226,9 @@
           + '</div>'
         : '')
       + '<div class="mc-sp-stats mc-sp-stats--grid">'
-      + '<span class="mc-sp-stat"><em>K%</em><strong>' + esc(kVal) + '</strong></span>'
-      + '<span class="mc-sp-stat"><em>BB%</em><strong>' + esc(bbVal) + '</strong></span>'
-      + '<span class="mc-sp-stat"><em>FIP</em><strong>' + esc(fipVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--k"><em>K%</em><strong style="color:' + kColor + '">' + esc(kVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--bb"><em>BB%</em><strong style="color:' + bbColor + '">' + esc(bbVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--era"><em>ERA</em><strong style="color:' + eraColor + '">' + esc(eraVal) + '</strong></span>'
       + '</div></div></div>';
   }
 
@@ -374,8 +420,8 @@
       + '</div>'
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3, pitchScore: awayPs, mlbId: m.awaySPId })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, fip: homePs }, { eager: cardIdx < 3, pitchScore: homePs, mlbId: m.homeSPId })
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, era: null }, { eager: cardIdx < 3, pitchScore: awayPs, mlbId: m.awaySPId })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: null, bb: null, era: null }, { eager: cardIdx < 3, pitchScore: homePs, mlbId: m.homeSPId })
       + '</div>'
       + '<p class="hmc-lineup-placeholder" style="font-size:12px;color:#9CA3AF;margin:8px 0">Lineups TBD</p>'
       + '<p class="hmc-tomorrow-note">Projected lineups and full analysis available day-of</p>'
@@ -407,8 +453,8 @@
       + gameMetaHtml(m)
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, fip: m.awayFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, fip: m.homeFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, era: m.awayERA, fip: m.awayFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, era: m.homeERA, fip: m.homeFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
       + '</div>'
       + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
       + '<div class="hmc-osi-bar">'
