@@ -455,10 +455,16 @@ html.view-research .ca-page-identity,
 body.view-research .ca-page-identity { display: none; }
 #dashboard-data-templates { display: none !important; }
 .hmc-row.hmc-teams {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 8px 10px;
+  column-gap: 12px;
+  row-gap: 6px;
+  min-width: 0;
+}
+
+.hero-matchup-card .hmc-row.hmc-teams > .hmc-team {
+  min-width: 0;
 }
 #section-research-lab.layer-research-wrap {
   margin-top: 48px;
@@ -889,6 +895,24 @@ body.view-research .ca-page-identity { display: none; }
   gap: 8px;
   text-decoration: none;
   color: inherit;
+}
+
+/* Force equal-width sides + consistent alignment around the @ divider */
+.hero-matchup-card .hmc-row.hmc-teams > .hmc-team a.team-link {
+  width: 100%;
+}
+.hero-matchup-card .hmc-row.hmc-teams > .hmc-team:nth-of-type(1) a.team-link {
+  justify-content: flex-start;
+}
+.hero-matchup-card .hmc-row.hmc-teams > .hmc-team:nth-of-type(2) a.team-link {
+  justify-content: flex-end;
+}
+
+.hero-matchup-card .hmc-at { justify-self: center; }
+
+.hero-matchup-card .hmc-meta {
+  grid-column: 1 / -1;
+  justify-self: center;
 }
 
 /* Symmetry: home team block mirrors away (logo on outer edge). */
