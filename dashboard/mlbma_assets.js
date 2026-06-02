@@ -92,6 +92,7 @@
     kpct: { mean: 0.222, std: 0.035, hi: true },      // K% (pitcher, higher better)
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
+    ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)
     default: { mean: 50, std: 12, hi: true }
   };
 

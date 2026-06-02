@@ -30,25 +30,21 @@
     return num(pickCol(row, [prefix + '_' + metric, prefix + ' ' + metric]));
   }
 
-  function allowedColor(val) {
+  // Delegate to the central league-average grader so the bullpen page matches the
+  // platform's red->green scale (was hardcoded 3-step thresholds).
+  function allowedColor(val) {   // OSI allowed: 0-100, lower is better
     if (val === null || isNaN(val)) return 'var(--text-3)';
-    if (val <= 52) return 'var(--d-elite, var(--green))';
-    if (val <= 62) return 'var(--d-mid, var(--gold))';
-    return 'var(--d-poor, var(--red-l))';
+    return (A && A.metricColor) ? A.metricColor(val, 'osi', true) : 'var(--text-3)';
   }
 
   function eraColor(era) {
     if (era === null || isNaN(era)) return 'var(--text-3)';
-    if (era <= 3.5) return 'var(--green)';
-    if (era <= 4.5) return 'var(--gold)';
-    return 'var(--red-l)';
+    return (A && A.metricColor) ? A.metricColor(era, 'era') : 'var(--text-3)';
   }
 
-  function irColor(v) {
+  function irColor(v) {          // inherited-runners scored %, lower is better
     if (v === null || isNaN(v)) return 'var(--text-3)';
-    if (v <= 25) return 'var(--green)';
-    if (v <= 40) return 'var(--gold)';
-    return 'var(--red-l)';
+    return (A && A.metricColor) ? A.metricColor(v, 'ir') : 'var(--text-3)';
   }
 
   function percentileRank(value, values, lowerIsBetter) {
