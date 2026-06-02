@@ -28,7 +28,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603f" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603g" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -167,16 +167,11 @@
       <div class="pp-season-strip" id="seasonBar"></div>
     </section>
 
-    <section class="ca-board tp-section" id="secOsi">
-      <div id="ppHdrOsi"></div>
-      <div class="table-wrap tp-table-wrap" id="osiTableWrap"></div>
-      <div class="insight-line tp-note" id="osiInsight"></div>
-    </section>
-
-    <section class="ca-board tp-section" id="secAbq">
-      <div id="ppHdrAbq"></div>
-      <div class="table-wrap tp-table-wrap" id="abqTableWrap"></div>
-      <div class="insight-line tp-note" id="abqInsight"></div>
+    <section class="ca-board tp-section" id="secTierSplits">
+      <div id="ppHdrTierSplits"></div>
+      <div id="pitcherTierControls"></div>
+      <div id="tierSplitTableWrap"></div>
+      <div class="insight-line tp-note" id="tierSplitInsight"></div>
     </section>
 
     <section class="ca-board tp-section" id="secLog">
@@ -220,7 +215,8 @@ var STATE = { pitcherKey: null, pitcherName: '', split: 'overall', window: 'YTD'
 STATE.sectionFilters = {
   overview: { split: 'overall', window: 'YTD', view: 'summary' },
   allowed: { split: 'overall', window: 'YTD' },
-  oor: { window: 'YTD' }
+  oor: { window: 'YTD' },
+  tiers: { dim: 'osi_tier' }
 };
 
 var OSI_TIER_ORDER = ['High', 'Mid', 'Low'];
@@ -610,8 +606,7 @@ function renderPitcherSectionHeaders() {
     { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
     { id: 'ppHdrOOR', title: 'Quality of Lineups Faced', subtitle: 'OOR — competition strength context for ERA validation', icon: 'insight' },
     { id: 'ppHdrSeason', title: 'Season Line', subtitle: 'ERA, IP, K%, BB%, WHIP, and pitch score for the active window', icon: 'clipboard' },
-    { id: 'ppHdrOsi', title: 'Performance vs Lineup Quality (OSI Tier)', subtitle: 'How workload and results shift vs High / Mid / Low OSI offenses', icon: 'spark' },
-    { id: 'ppHdrAbq', title: 'ABQ Split', subtitle: 'Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups', icon: 'target' },
+    { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
     { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
     { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five ERA by opponent OSI tier (team runs through 5 innings)', icon: 'clock' },
     { id: 'ppHdrBetting', title: 'Betting Context Panel', subtitle: 'Auto-synthesized angles from the strongest patterns in this profile', icon: 'badge' }
@@ -680,6 +675,27 @@ function renderPitcherSectionControls() {
       ]
     });
   }
+
+  var tierBar = document.getElementById('pitcherTierControls');
+  if (tierBar) {
+    var dim = (STATE.sectionFilters.tiers && STATE.sectionFilters.tiers.dim) || 'osi_tier';
+    tierBar.innerHTML = PC.renderSectionOptionBar({
+      barClass: 'tp-section-filter-bar--controls',
+      sectionKey: 'pitcher-tiers',
+      groups: [
+        {
+          label: 'Tier set',
+          groupKey: 'tier-dim',
+          tabMode: true,
+          options: [
+            { value: 'osi_tier', label: 'OSI tier' },
+            { value: 'abq_tier', label: 'ABQ tier' }
+          ],
+          active: dim
+        }
+      ]
+    });
+  }
 }
 
 function bindPitcherSectionControls() {
@@ -718,6 +734,14 @@ function bindPitcherSectionControls() {
       if (groupKey === 'window') STATE.sectionFilters.oor.window = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
+    if (sectionKey === 'pitcher-tiers') {
+      STATE.sectionFilters.tiers = STATE.sectionFilters.tiers || {};
+      if (groupKey === 'tier-dim') STATE.sectionFilters.tiers.dim = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
     }
   });
 }
@@ -930,11 +954,14 @@ function renderProfile(key) {
       + '<span class="tp-offense-stat__label">Tier</span>'
       + '<span class="tp-offense-stat__body"><span class="tier-pill ' + pt.cls + '">' + pt.label + '</span></span></div>';
 
-  document.getElementById('osiTableWrap').innerHTML = buildTierTable(splits, 'osi_tier', OSI_TIER_ORDER);
-  document.getElementById('osiInsight').innerHTML = insightOsiTier(splits);
-
-  document.getElementById('abqTableWrap').innerHTML = buildTierTable(splits, 'abq_tier', ABQ_TIER_ORDER);
-  document.getElementById('abqInsight').innerHTML = insightAbqTier(splits);
+  var tierDim = (STATE.sectionFilters.tiers && STATE.sectionFilters.tiers.dim) || 'osi_tier';
+  var tierOrder = tierDim === 'abq_tier' ? ABQ_TIER_ORDER : OSI_TIER_ORDER;
+  var tierWrap = document.getElementById('tierSplitTableWrap');
+  if (tierWrap) tierWrap.innerHTML = buildTierTable(splits, tierDim, tierOrder);
+  var tierInsight = document.getElementById('tierSplitInsight');
+  if (tierInsight) {
+    tierInsight.innerHTML = tierDim === 'abq_tier' ? insightAbqTier(splits) : insightOsiTier(splits);
+  }
 
   // Handedness splits section removed (user request)
 
