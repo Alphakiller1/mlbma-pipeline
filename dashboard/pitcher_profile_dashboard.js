@@ -21,11 +21,9 @@
     return Number(v).toFixed(d === undefined ? 1 : d);
   }
 
-  function allowedColor(val) {
+  function allowedColor(val) {   // OSI allowed: 0-100, lower is better
     if (val === null || isNaN(val)) return 'var(--text-3)';
-    if (val <= 52) return 'var(--d-elite, var(--green))';
-    if (val <= 62) return 'var(--d-mid, var(--gold))';
-    return 'var(--d-poor, var(--red-l))';
+    return (A && A.metricColor) ? A.metricColor(val, 'osi', true) : 'var(--text-3)';
   }
 
   function pitchingTier(score, tiers) {
