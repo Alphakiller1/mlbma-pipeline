@@ -492,11 +492,7 @@
       + pitcherStatCell('Contact Risk', osiChip, 'Lower allowed = softer lineups')
       + pitcherStatCell('Opponent Quality', oorChip, oorHint);
 
-    var detailNote = v.detail || '';
-    if (ctx.splitLabel || ctx.window) {
-      detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD')
-        + (detailNote ? ' · ' + detailNote : '');
-    }
+    var detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD');
     var coreCells = ''
       + pitcherStatNum('K%', k, 'pitching', false, 1)
       + pitcherStatNum('BB%', bb, 'pitching', true, 1)
@@ -539,8 +535,11 @@
       : '<div class="empty-state">No split rows available for this pitcher.</div>';
 
     var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand('Pitching Value', detailNote || 'Key pitching rates for the active split', coreCells)
-      + metricsBand('Start read', '', decisionCells)
+      + metricsBand(
+        'Pitching Value',
+        'Core pitching rates + risk context · ' + detailNote,
+        coreCells + decisionCells
+      )
       + '</div>'
       + splitTable;
 
@@ -556,13 +555,13 @@
     var header = (A && A.sectionHeaderHtml)
       ? A.sectionHeaderHtml({
         icon: 'target',
-        kicker: 'Start read',
-        title: 'Pitcher Profile',
-        subtitle: subtitle
+        kicker: 'Pitcher Profile',
+        title: 'Pitching Value',
+        subtitle: 'Core pitching rates + split table (Overall / vs LHH / vs RHH)'
       })
-      : '<header class="ca-section-header"><p class="ca-eyebrow">Start read</p>'
-        + '<h2 class="ca-section-title">Pitcher Profile</h2>'
-        + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
+      : '<header class="ca-section-header"><p class="ca-eyebrow">Pitcher Profile</p>'
+        + '<h2 class="ca-section-title">Pitching Value</h2>'
+        + '<p class="ca-helper">Core pitching rates + split table (Overall / vs LHH / vs RHH)</p>'
         + '</header>';
 
     return '<section class="ca-board pp-section pp-intel-panel" aria-label="Pitcher profile summary">'
