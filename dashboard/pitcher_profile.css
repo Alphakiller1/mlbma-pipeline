@@ -10,6 +10,27 @@
   width: 100%;
 }
 
+/* Inline pitcher picker (reuses team picker skin) */
+.pitcher-profile-page .tp-team-picker--inline.tp-pitcher-picker {
+  max-width: 520px;
+}
+
+.pitcher-profile-page .tp-team-picker__panel--inline {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border, #262A38);
+  background: var(--bg-2, #0E1018);
+  box-shadow: 0 18px 48px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px color-mix(in srgb, var(--purple, #7C4DFF) 18%, transparent);
+  overflow: hidden;
+}
+
+.pitcher-profile-page .tp-team-picker__search-wrap--inline {
+  border-bottom: none;
+}
+
 .pitcher-profile-page #profileContent:not(.ready) {
   visibility: hidden;
   height: 0;
