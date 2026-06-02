@@ -198,9 +198,8 @@
     var rank = rankMeta.rank;
     var total = rankMeta.total;
     var rankHtml = rank != null
-      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="League rank">'
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
         + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
-        + (total ? '<span class="tp-offense-stat__rank-of">/' + esc(String(total)) + '</span>' : '')
         + '</span>'
       : '';
     return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(m.abbr) + '">'
@@ -546,7 +545,7 @@
       + opponentStrengthPanel(slots, cache, team)
       + '<p class="ca-helper tp-opponent-strength-note">SOS derived from PTF+ (higher = harder pitching schedule). xFIP rank #1 = toughest staff faced.</p>';
 
-    return sectionCard('Strength of Opponents Faced', filterNote + ' · #/30 = league rank', body,
+    return sectionCard('Strength of Opponents Faced', filterNote + ' · league rank on each metric', body,
       { icon: 'calendar-days', kicker: 'Schedule context', sectionId: 'schedule-context' });
   }
 

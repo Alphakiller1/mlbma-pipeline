@@ -492,8 +492,7 @@
         + '</div>';
     }
     var rankHtml = pos.rcvRank != null
-      ? '<span class="tp-intel-market-pos__rank">RCV #' + esc(String(pos.rcvRank))
-        + (pos.total ? '/' + esc(String(pos.total)) : '') + '</span>'
+      ? '<span class="tp-intel-market-pos__rank">RCV #' + esc(String(pos.rcvRank)) + '</span>'
       : '';
     return '<div class="tp-intel-sustain__map">'
       + '<span class="tp-intel-sustain__map-label">Market map</span>'

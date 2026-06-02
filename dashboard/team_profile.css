@@ -1283,6 +1283,39 @@ body.team-profile-page {
   gap: var(--tp-section-gap, 12px);
 }
 
+.tp-batting-section .tp-batting-tabs {
+  margin: 0 0 var(--tp-header-gap, 12px);
+  padding: 0;
+}
+
+.tp-batting-section .tp-batting-tabs .hub-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tp-batting-section .tp-batting-tabs .hub-pill {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-2, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-2, #9CA3AF);
+}
+
+.tp-batting-section .tp-batting-tabs .hub-pill:hover {
+  color: var(--text-1, #F3F4F6);
+  border-color: rgba(154, 107, 255, 0.35);
+}
+
+.tp-batting-section .tp-batting-tabs .hub-pill.active {
+  background: rgba(154, 107, 255, 0.18);
+  border-color: rgba(154, 107, 255, 0.55);
+  color: #E9D5FF;
+}
+
 .tp-batting-split {
   display: flex;
   flex-direction: column;
@@ -1290,8 +1323,8 @@ body.team-profile-page {
 }
 
 .tp-batting-split + .tp-batting-split {
-  padding-top: var(--tp-section-gap, 12px);
-  border-top: 1px solid color-mix(in srgb, var(--border, #262A38) 88%, transparent);
+  padding-top: 0;
+  border-top: none;
 }
 
 .tp-batting-split__head {

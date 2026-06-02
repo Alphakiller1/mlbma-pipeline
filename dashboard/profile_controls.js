@@ -85,7 +85,7 @@
       return 'Full platoon, location, and pitcher-type splits for rate tables.';
     }
     if (sectionKey === 'batting') {
-      return 'Split filters projected lineup and qualified batter OPS/OBP rows.';
+      return 'Split filter applies to Season Overview tab only; use vs RHP / vs LHP tabs for platoon tables.';
     }
     if (sectionKey === 'schedule') {
       return 'Platoon context for opponent quality faced (PALS · xFIP · schedule).';
