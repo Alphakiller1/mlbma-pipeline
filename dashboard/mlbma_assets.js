@@ -496,6 +496,48 @@
     return !!(cfg && cfg.hi === false);
   }
 
+  /**
+   * Continuous red->green gradient. Color is INTERPOLATED from the deviation vs league
+   * average (z-score) instead of snapped to a few buckets, so neighbouring values get
+   * distinct shades. League average sits at the amber midpoint.
+   */
+  var GRADIENT_STOPS = [
+    { t: 0.00, c: [239, 68, 68] },    // poor      #EF4444 red
+    { t: 0.27, c: [249, 115, 22] },   // weak      #F97316 orange
+    { t: 0.50, c: [234, 179, 8] },    // average   #EAB308 amber (league avg)
+    { t: 0.74, c: [132, 204, 22] },   // good      #84CC16 lime
+    { t: 1.00, c: [34, 197, 94] }     // elite     #22C55E green
+  ];
+
+  function _gradRgb(t) {
+    t = t < 0 ? 0 : (t > 1 ? 1 : t);
+    for (var i = 1; i < GRADIENT_STOPS.length; i++) {
+      var hi = GRADIENT_STOPS[i];
+      if (t <= hi.t) {
+        var lo = GRADIENT_STOPS[i - 1];
+        var f = (t - lo.t) / ((hi.t - lo.t) || 1);
+        return [
+          Math.round(lo.c[0] + (hi.c[0] - lo.c[0]) * f),
+          Math.round(lo.c[1] + (hi.c[1] - lo.c[1]) * f),
+          Math.round(lo.c[2] + (hi.c[2] - lo.c[2]) * f)
+        ];
+      }
+    }
+    return GRADIENT_STOPS[GRADIENT_STOPS.length - 1].c.slice();
+  }
+
+  /** Direction-adjusted z-score -> gradient position [0,1]. +/-2.5 sigma spans the scale. */
+  function _zToGradient(z, invert) {
+    if (invert) z = -z;
+    return (z + 2.5) / 5;
+  }
+
+  function gradientColor(value, context, invert) {
+    if (value == null || isNaN(value)) return GRADE_COLORS.average;
+    var rgb = _gradRgb(_zToGradient(zScore(value, context), _resolveInvert(context, invert)));
+    return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+  }
+
   function gradeKeyFromZ(z, invert) {
     if (invert) z = -z;
     if (z <= -2) return 'veryWeak';
@@ -579,8 +621,8 @@
       context = 'osi';
     }
     context = context || 'osi';
-    var z = zScore(value, context);
-    return GRADE_COLORS[gradeKeyFromZ(z, _resolveInvert(context, invert))];
+    var rgb = _gradRgb(_zToGradient(zScore(value, context), _resolveInvert(context, invert)));
+    return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
   }
 
   /** @deprecated Use metricColor — alias for legacy call sites */
@@ -596,8 +638,8 @@
       context = 'osi';
     }
     context = context || 'osi';
-    var z = zScore(value, context);
-    return HEAT_RGBA[gradeKeyFromZ(z, _resolveInvert(context, invert))] || HEAT_RGBA.average;
+    var rgb = _gradRgb(_zToGradient(zScore(value, context), _resolveInvert(context, invert)));
+    return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.85)';
   }
 
   /** @deprecated Use heatColor */
@@ -896,6 +938,7 @@
     normName: normName,
     registerLeaguePool: registerLeaguePool,
     metricColor: metricColor,
+    gradientColor: gradientColor,
     metricTextColor: metricTextColor,
     chipStyle: chipStyle,
     valChipHtml: valChipHtml,
