@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics � Batter Profile</title>
+<title>Chase Analytics — Batter Profile</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 :root {
@@ -282,8 +282,8 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 </head>
 <body class="player-profile-page">
 
-<div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets�</div>
-﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets—</div>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -373,7 +373,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   <header class="header">
     <div class="brand-row">
       <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill" id="brandPill">Loading�</span>
+      <span class="brand-pill" id="brandPill">Loading—</span>
     </div>
     <h1>Batter Profile</h1>
     <p class="subtitle">Batter splits, trends, and betting context.</p>
@@ -383,7 +383,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   <div class="selector-bar" id="playerSearch">
     <div class="selector-group wide">
       <label class="selector-label" for="playerSearchInput">Search player or team</label>
-      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, NYY, Soto�" autocomplete="off">
+      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, NYY, Soto—" autocomplete="off">
       <datalist id="playerList"></datalist>
     </div>
     <div class="selector-group">
@@ -395,7 +395,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     <div class="selector-group">
       <label class="selector-label" for="playerSelect">Roster</label>
       <select class="selector-select" id="playerSelect">
-        <option value="">� Select batter �</option>
+        <option value="">— Select batter —</option>
       </select>
     </div>
     <div class="selector-group">
@@ -425,34 +425,34 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 
     <section class="section">
       <div class="section-title">Created Metric Profile</div>
-      <div class="section-subtitle">ABQ / RCV / OBR / OSI � percentile vs qualified batter pool (season vs RHP baseline)</div>
+      <div class="section-subtitle">ABQ / RCV / OBR / OSI — percentile vs qualified batter pool (season vs RHP baseline)</div>
       <div class="metric-grid" id="metricCards"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Window Trend Table</div>
-      <div class="section-subtitle">Created metrics across windows � hot/cold if L7 is �8+ vs YTD</div>
+      <div class="section-subtitle">Created metrics across windows — hot/cold if L7 is —8+ vs YTD</div>
       <div class="table-wrap" id="windowTableWrap"></div>
       <div class="insight-line" id="windowInsight"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Handedness Splits</div>
-      <div class="section-subtitle">vs RHP and vs LHP � gold flag if ABQ platoon gap exceeds 8 points</div>
+      <div class="section-subtitle">vs RHP and vs LHP — gold flag if ABQ platoon gap exceeds 8 points</div>
       <div class="split-grid" id="handGrid"></div>
       <div class="insight-line" id="handInsight"></div>
     </section>
 
     <section class="section">
       <div class="section-title">Home / Away Splits</div>
-      <div class="section-subtitle">Location context � flagged if home/away OSI gap exceeds 10 points</div>
+      <div class="section-subtitle">Location context — flagged if home/away OSI gap exceeds 10 points</div>
       <div class="split-grid" id="locGrid"></div>
       <div class="insight-line" id="locInsight"></div>
     </section>
 
     <section class="section">
       <div class="section-title">vs SP / vs RP Splits</div>
-      <div class="section-subtitle">Starter vs reliever exposure � full-game value flag when OSI vs RP exceeds OSI vs SP by 10+</div>
+      <div class="section-subtitle">Starter vs reliever exposure — full-game value flag when OSI vs RP exceeds OSI vs SP by 10+</div>
       <div class="split-grid" id="spRpGrid"></div>
       <div class="insight-line" id="spRpInsight"></div>
     </section>
@@ -492,10 +492,10 @@ var LOC_OSI_GAP = 10;
 var SP_RP_OSI_GAP = 10;
 
 var METRIC_NOTES = {
-  ABQ: 'Plate discipline and contact quality � higher means tougher out.',
-  RCV: 'Damage and run-creation pressure � power and quality of contact.',
-  OBR: 'On-base engine � walks and expected on-base skill.',
-  OSI: 'Overall offensive strength � composite of ABQ, RCV, and OBR.'
+  ABQ: 'Plate discipline and contact quality — higher means tougher out.',
+  RCV: 'Damage and run-creation pressure — power and quality of contact.',
+  OBR: 'On-base engine — walks and expected on-base skill.',
+  OSI: 'Overall offensive strength — composite of ABQ, RCV, and OBR.'
 };
 
 var OPTIONAL_RAW_TABS = [
@@ -574,19 +574,19 @@ function pickCol(row, names) {
 }
 
 function numOrNull(v) {
-  if (v === null || v === undefined || v === '' || v === '�') return null;
+  if (v === null || v === undefined || v === '' || v === '—') return null;
   var n = parseFloat(String(v).replace(/%/g, ''));
   return isNaN(n) ? null : n;
 }
 
 function fmt(v, dec) {
-  if (v === null || v === undefined || v === '' || isNaN(v)) return '�';
+  if (v === null || v === undefined || v === '' || isNaN(v)) return '—';
   dec = dec === undefined ? 1 : dec;
   return Number(v).toFixed(dec);
 }
 
 function fmtPct(v) {
-  if (v === null || v === undefined || isNaN(v)) return '�';
+  if (v === null || v === undefined || isNaN(v)) return '—';
   var x = Number(v);
   if (x <= 1.5 && x >= 0) x *= 100;
   return fmt(x, 1) + '%';
@@ -643,7 +643,7 @@ function metricChip(val, ctx, decimals) {
   }
   var c = metricColor(val);
   var d = decimals != null ? decimals : 1;
-  var display = val != null && !isNaN(val) ? Number(val).toFixed(d) : '�';
+  var display = val != null && !isNaN(val) ? Number(val).toFixed(d) : '—';
   return '<span class="chip c-mid">' + display + '</span>';
 }
 
@@ -797,9 +797,9 @@ function renderHeader(key) {
   var reg = getRegistry(key);
   var name = playerDisplayName(key);
   var team = pickCol(reg || {}, ['team_abbr', 'team']) || pickCol(getSplitRow(key, 'vs_RHP') || {}, ['team']);
-  var pos = pickCol(reg || {}, ['position_type', 'position']) || '�';
+  var pos = pickCol(reg || {}, ['position_type', 'position']) || '—';
   var bats = pickCol(reg || {}, ['bats']) || 'R';
-  var jersey = pickCol(reg || {}, ['jersey_number', 'jersey']) || '�';
+  var jersey = pickCol(reg || {}, ['jersey_number', 'jersey']) || '—';
   var lineup = findLineupContext(key);
 
   var batsCls = bats === 'L' ? 'pill-bats-l' : bats === 'S' ? 'pill-bats-s' : 'pill-bats-r';
@@ -812,7 +812,7 @@ function renderHeader(key) {
   if (lineup && lineup.inLineup) {
     html += '<span class="pill pill-lineup">Today\'s Lineup</span>';
     html += '<div class="lineup-meta">Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' +
-      escHtml(lineup.side) + ') � vs <strong>' + escHtml(lineup.oppSp) + '</strong> (' +
+      escHtml(lineup.side) + ') — vs <strong>' + escHtml(lineup.oppSp) + '</strong> (' +
       escHtml(lineup.oppHand) + 'HP)</div>';
   }
 
@@ -827,21 +827,21 @@ function renderSeasonBar(key) {
   var hasRaw = raw && Object.keys(raw).length;
   sub.textContent = hasRaw
     ? 'Rate line for ' + STATE.window + ' from Batter_Splits_Overall (live sheet)'
-    : 'Rate line for ' + STATE.window + ' � run batter splits pipeline and push to Batter_Splits_Overall';
+    : 'Rate line for ' + STATE.window + ' — run batter splits pipeline and push to Batter_Splits_Overall';
 
   var cells = [
-    statCell('wRC+', numOrNull(pickCol(raw, ['wRC+'])) || '�'),
-    statCell('OPS', opsFromRow(raw) !== null ? opsFromRow(raw) : '�'),
-    statCell('AVG', numOrNull(pickCol(raw, ['AVG'])) || '�'),
-    statCell('OBP', numOrNull(pickCol(raw, ['OBP'])) || '�'),
-    statCell('SLG', numOrNull(pickCol(raw, ['SLG'])) || '�'),
-    statCell('BB%', pickCol(raw, ['BB%']) ? fmtPct(numOrNull(pickCol(raw, ['BB%']))) : '�'),
-    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '�'),
-    statCell('wOBA', numOrNull(pickCol(raw, ['wOBA'])) || '�'),
-    statCell('xwOBA', numOrNull(pickCol(raw, ['xwOBA'])) || '�'),
-    statCell('Chase%', pickCol(raw, ['Chase%']) ? fmtPct(numOrNull(pickCol(raw, ['Chase%']))) : '�'),
-    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '�'),
-    statCell('PA', numOrNull(pickCol(raw, ['PA'])) || numOrNull(pickCol(base || {}, ['PA'])) || '�'),
+    statCell('wRC+', numOrNull(pickCol(raw, ['wRC+'])) || '—'),
+    statCell('OPS', opsFromRow(raw) !== null ? opsFromRow(raw) : '—'),
+    statCell('AVG', numOrNull(pickCol(raw, ['AVG'])) || '—'),
+    statCell('OBP', numOrNull(pickCol(raw, ['OBP'])) || '—'),
+    statCell('SLG', numOrNull(pickCol(raw, ['SLG'])) || '—'),
+    statCell('BB%', pickCol(raw, ['BB%']) ? fmtPct(numOrNull(pickCol(raw, ['BB%']))) : '—'),
+    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '—'),
+    statCell('wOBA', numOrNull(pickCol(raw, ['wOBA'])) || '—'),
+    statCell('xwOBA', numOrNull(pickCol(raw, ['xwOBA'])) || '—'),
+    statCell('Chase%', pickCol(raw, ['Chase%']) ? fmtPct(numOrNull(pickCol(raw, ['Chase%']))) : '—'),
+    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '—'),
+    statCell('PA', numOrNull(pickCol(raw, ['PA'])) || numOrNull(pickCol(base || {}, ['PA'])) || '—'),
     statCell('OSI', numOrNull(pickCol(base || {}, ['OSI'])), metricColor(numOrNull(pickCol(base || {}, ['OSI']))))
   ];
   document.getElementById('seasonBar').innerHTML = cells.join('');
@@ -868,7 +868,7 @@ function renderMetricCards(key) {
     html += '<div class="metric-card ' + metricTierClass(val) + '">' +
       '<div class="m-label">' + m[0] + '</div>' +
       '<div class="m-val" style="color:' + metricColor(val) + '">' + fmt(val, 1) + '</div>' +
-      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile' : '�') + '</div>' +
+      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile' : '—') + '</div>' +
       '<div class="m-note">' + METRIC_NOTES[m[0]] + '</div></div>';
   });
   document.getElementById('metricCards').innerHTML = html;
@@ -883,7 +883,7 @@ function renderWindowTable(key) {
 
   WINDOWS.forEach(function(w) {
     var m = windowMetricEstimate(base, w, trend);
-    var arrow = '�';
+    var arrow = '—';
     var arrowCls = 'trend-flat';
     if (prevOsi !== null && m.OSI !== null) {
       var d = m.OSI - prevOsi;
@@ -919,9 +919,9 @@ function renderWindowTable(key) {
     tbody + '</tbody></table>';
 
   var insight = '';
-  if (hotCold === 'hot') insight = '<strong>Hot flag:</strong> L7 OSI is ' + fmt(l7.m.OSI - ytdRow.m.OSI, 1) + ' points above YTD � recent form elevated.';
-  else if (hotCold === 'cold') insight = '<strong>Cold flag:</strong> L7 OSI is ' + fmt(ytdRow.m.OSI - l7.m.OSI, 1) + ' points below YTD � recent slump.';
-  else insight = 'L7 within �' + HOT_COLD_GAP + ' of YTD � no extreme hot/cold signal.';
+  if (hotCold === 'hot') insight = '<strong>Hot flag:</strong> L7 OSI is ' + fmt(l7.m.OSI - ytdRow.m.OSI, 1) + ' points above YTD — recent form elevated.';
+  else if (hotCold === 'cold') insight = '<strong>Cold flag:</strong> L7 OSI is ' + fmt(ytdRow.m.OSI - l7.m.OSI, 1) + ' points below YTD — recent slump.';
+  else insight = 'L7 within —' + HOT_COLD_GAP + ' of YTD — no extreme hot/cold signal.';
   if (!getRawForPlayer(key, 'YTD') || !Object.keys(getRawForPlayer(key, 'YTD')).length) {
     insight += ' Window rate columns use Batter_Profiles trend adjustment when Batter_Splits_Overall is unavailable.';
   }
@@ -947,10 +947,10 @@ function splitPanelHtml(title, row, raw, extraCls) {
     '<div class="mini-grid">' +
     mini('ABQ', abq) + mini('RCV', rcv) + mini('OBR', obr) +
     '</div><div class="mini-grid" style="margin-top:8px;">' +
-    mini('OSI', osi) + mini('wRC+', wrc) + mini('K%', kk !== null ? fmtPct(kk) : '�') +
+    mini('OSI', osi) + mini('wRC+', wrc) + mini('K%', kk !== null ? fmtPct(kk) : '—') +
     '</div><div class="mini-grid" style="margin-top:8px;">' +
-    mini('BB%', bb !== null ? fmtPct(bb) : '�') + mini('Chase%', chase !== null ? fmtPct(chase) : '�') +
-    mini('Barrel%', barrel !== null ? fmtPct(barrel) : '�') +
+    mini('BB%', bb !== null ? fmtPct(bb) : '—') + mini('Chase%', chase !== null ? fmtPct(chase) : '—') +
+    mini('Barrel%', barrel !== null ? fmtPct(barrel) : '—') +
     '</div></div>';
 }
 
@@ -981,7 +981,7 @@ function renderHandSplits(key) {
     splitPanelHtml('vs LHP', lhp, rawL, flagL);
 
   var ins = abqGap >= PLATOON_ABQ_GAP
-    ? 'Platoon alert: ABQ gap of ' + fmt(abqGap, 1) + ' points � significant handedness split.'
+    ? 'Platoon alert: ABQ gap of ' + fmt(abqGap, 1) + ' points — significant handedness split.'
     : 'Platoon gap manageable (ABQ delta ' + fmt(abqGap, 1) + ').';
   if (dom) ins += ' ' + dom + '.';
   document.getElementById('handInsight').textContent = ins;
@@ -1004,7 +1004,7 @@ function renderLocSplits(key) {
 
   document.getElementById('locInsight').textContent = gap >= LOC_OSI_GAP
     ? 'Location split: OSI gap of ' + fmt(gap, 1) + ' between home and away.'
-    : 'Home/away OSI gap ' + fmt(gap, 1) + ' � within normal range.';
+    : 'Home/away OSI gap ' + fmt(gap, 1) + ' — within normal range.';
 }
 
 function renderSpRpSplits(key) {
@@ -1026,7 +1026,7 @@ function renderSpRpSplits(key) {
     html = splitPanelHtml('vs SP', sp, rawSp, flag) + splitPanelHtml('vs RP', rp, rawRp, flag);
     document.getElementById('spRpInsight').textContent = (osiRp !== null && osiSp !== null && osiRp - osiSp >= SP_RP_OSI_GAP)
       ? 'Full game value over F5 - this batter significantly outperforms vs relief pitching.'
-      : 'OSI vs SP ' + fmt(osiSp, 1) + ' � OSI vs RP ' + fmt(osiRp, 1) + ' � no full-game value flag.';
+      : 'OSI vs SP ' + fmt(osiSp, 1) + ' — OSI vs RP ' + fmt(osiRp, 1) + ' — no full-game value flag.';
   }
   document.getElementById('spRpGrid').innerHTML = html;
 }
@@ -1063,7 +1063,7 @@ function renderComparables(key) {
 
   document.getElementById('comparableList').innerHTML = top.map(function(c) {
     return '<div class="comp-row"><div><a href="batter_profile.html?player=' +
-      encodeURIComponent(c.name) + '">' + escHtml(c.name) + '</a> � ' + escHtml(c.arch) + '</div>' +
+      encodeURIComponent(c.name) + '">' + escHtml(c.name) + '</a> — ' + escHtml(c.arch) + '</div>' +
       '<div class="num" style="color:' + metricColor(c.osi) + '">OSI ' + fmt(c.osi, 1) + '</div></div>';
   }).join('') + '<div class="insight-line" style="margin-top:10px;">Your archetype: <strong>' + arch + '</strong></div>';
 }
@@ -1087,7 +1087,7 @@ function buildBettingSummary(key) {
     var abqGap = Math.abs(numOrNull(pickCol(rhp, ['ABQ'])) - numOrNull(pickCol(lhp, ['ABQ'])));
     if (abqGap >= PLATOON_ABQ_GAP) {
       var better = numOrNull(pickCol(rhp, ['OSI'])) >= numOrNull(pickCol(lhp, ['OSI'])) ? 'RHP' : 'LHP';
-      parts.push('<strong>' + fmt(abqGap, 1) + '-point platoon gap</strong> � lean vs ' + (better === 'LHP' ? 'southpaws' : 'righties'));
+      parts.push('<strong>' + fmt(abqGap, 1) + '-point platoon gap</strong> — lean vs ' + (better === 'LHP' ? 'southpaws' : 'righties'));
     }
   }
   if (home && away) {
@@ -1097,13 +1097,13 @@ function buildBettingSummary(key) {
       parts.push('significant <strong>' + loc + ' park split</strong> (OSI gap ' + fmt(g, 1) + ')');
     }
   }
-  if (trend === 'rising') parts.push('currently <strong>trending up</strong> � recent OSI above season baseline');
-  if (trend === 'falling') parts.push('<strong>slumping</strong> � recent OSI below season baseline');
+  if (trend === 'rising') parts.push('currently <strong>trending up</strong> — recent OSI above season baseline');
+  if (trend === 'falling') parts.push('<strong>slumping</strong> — recent OSI below season baseline');
   if (lineup && lineup.inLineup) {
     parts.push('in <strong>today\'s lineup</strong> (' + lineup.batOrder + ') vs ' + lineup.oppSp + ' (' + lineup.oppHand + 'HP)');
   }
 
-  if (!parts.length) return name + ' � profile loaded; no extreme flags. Review splits above for edges.';
+  if (!parts.length) return name + ' — profile loaded; no extreme flags. Review splits above for edges.';
   return parts.join('. ') + '.';
 }
 
@@ -1151,7 +1151,7 @@ function populateSelectors() {
   var datalist = document.getElementById('playerList');
   datalist.innerHTML = '';
   var playerSel = document.getElementById('playerSelect');
-  playerSel.innerHTML = '<option value="">� Select batter �</option>';
+  playerSel.innerHTML = '<option value="">— Select batter —</option>';
 
   batters.sort(function(a, b) {
     var ta = pickCol(a, ['team_abbr']);
@@ -1164,7 +1164,7 @@ function populateSelectors() {
     var team = pickCol(b, ['team_abbr', 'team']);
     var o = document.createElement('option');
     o.value = key;
-    o.textContent = team + ' � ' + name;
+    o.textContent = team + ' — ' + name;
     o.dataset.team = team;
     playerSel.appendChild(o);
 
@@ -1268,7 +1268,7 @@ function loadAll() {
 
     if (!DATA.profiles.length) {
       var banner = document.getElementById('dataBanner');
-      banner.textContent = 'Batter_Profiles is empty � run pipeline steps 14�17 after FanGraphs batter splits.';
+      banner.textContent = 'Batter_Profiles is empty — run pipeline steps 14—17 after FanGraphs batter splits.';
       banner.classList.add('show');
       if (pill) { pill.textContent = 'No data'; pill.classList.add('warn'); }
     }
@@ -1309,7 +1309,7 @@ var _profileWatchdogDone = null;
 function showDelayedLoadBanner() {
   var banner = document.getElementById('dataBanner');
   if (banner) {
-    banner.textContent = 'Data load delayed � retrying�';
+    banner.textContent = 'Data load delayed — retrying—';
     banner.classList.add('show');
   }
 }
