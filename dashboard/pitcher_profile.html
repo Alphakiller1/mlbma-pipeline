@@ -25,10 +25,10 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603q"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603r"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603q" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603r" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -333,9 +333,13 @@ function parseIP(ip) {
 }
 
 function pitcherKey(row) {
-  var id = pickCol(row, ['pitcher_id', 'pitcherId']);
-  if (id) return 'id:' + id;
-  return 'name:' + normalizeName(pickCol(row, ['pitcher_name', 'pitcherName', 'Name']));
+  var id = pickCol(row, ['pitcher_id', 'pitcherId', 'player_id', 'playerId', 'mlb_id', 'mlbId']);
+  if (id) return 'id:' + String(id).trim();
+  var name = pickCol(row, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher']);
+  var team = pickCol(row, ['pitcher_team', 'pitcherTeam', 'Tm', 'Team', 'team']);
+  var nm = normalizeName(name);
+  var tm = String(team || '').trim().toUpperCase();
+  return 'name:' + nm + (tm ? ('|' + tm) : '');
 }
 
 function pitchingTier(score) {
@@ -375,7 +379,16 @@ function getSplits(key) {
 }
 
 function getGameLog(key) {
-  return DATA.gameLog.filter(function(g) { return pitcherKey(g) === key; });
+  var rows = DATA.gameLog.filter(function(g) { return pitcherKey(g) === key; });
+  if (rows.length) return rows;
+  // Fallback: some SP_Game_Log exports omit ids/teams; match by normalized pitcher name.
+  var nm = '';
+  if (String(key || '').indexOf('name:') === 0) nm = String(key).slice(5).split('|')[0];
+  if (!nm) return rows;
+  return DATA.gameLog.filter(function(g) {
+    var n = normalizeName(pickCol(g, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher']));
+    return n && n === nm;
+  });
 }
 
 function findSplit(splits, dimension, value) {
