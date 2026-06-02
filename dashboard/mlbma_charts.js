@@ -504,10 +504,34 @@
     var ml = 80, mr = 60, mt = 60, mb = 88;
     var cw = W - ml - mr;
     var ch = H - mt - mb;
-    var xMn = 0, xMx = 100;
-    var yVals = data.map(function(d) { return quadYValue(d, yMode); });
-    var yMn = Math.min(-12, Math.min.apply(null, yVals.concat([-12])));
-    var yMx = Math.max(12, Math.max.apply(null, yVals.concat([12])));
+
+    function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+    function padDomain(mn, mx, pad, hardLo, hardHi, minSpan) {
+      var a = mn - pad;
+      var b = mx + pad;
+      a = clamp(a, hardLo, hardHi);
+      b = clamp(b, hardLo, hardHi);
+      if ((b - a) < minSpan) {
+        var mid = (a + b) / 2;
+        a = clamp(mid - minSpan / 2, hardLo, hardHi);
+        b = clamp(mid + minSpan / 2, hardLo, hardHi);
+        if (b > hardHi) { b = hardHi; a = hardHi - minSpan; }
+        if (a < hardLo) { a = hardLo; b = hardLo + minSpan; }
+      }
+      return [a, b];
+    }
+
+    // Auto-zoom to reduce "condensed" cluster: domain hugs data with padding.
+    var xVals = data.map(function(d) { return Number(d.osi); }).filter(function(v) { return v != null && !isNaN(v); });
+    var yVals = data.map(function(d) { return quadYValue(d, yMode); }).filter(function(v) { return v != null && !isNaN(v); });
+    var xMin = Math.min.apply(null, xVals);
+    var xMax = Math.max.apply(null, xVals);
+    var yMin = Math.min.apply(null, yVals);
+    var yMax = Math.max.apply(null, yVals);
+    var xd = padDomain(xMin, xMax, 6, 0, 100, 28);
+    var yd = padDomain(yMin, yMax, 2.5, -20, 20, 14);
+    var xMn = xd[0], xMx = xd[1];
+    var yMn = yd[0], yMx = yd[1];
     var xRng = xMx - xMn;
     var yRng = yMx - yMn;
     function xs(v) { return ml + ((v - xMn) / xRng) * cw; }
@@ -530,16 +554,22 @@
       + '<rect x="' + mx + '" y="' + my + '" width="' + (W - mr - mx) + '" height="' + (H - mb - my) + '" fill="rgba(245,158,11,.08)"/>'
       + '<rect x="' + ml + '" y="' + my + '" width="' + (mx - ml) + '" height="' + (H - mb - my) + '" fill="rgba(251,113,133,.08)"/>';
 
-    [25, 50, 75].forEach(function(v) {
+    // X ticks (5 ticks, integer labels)
+    var xTicks = [];
+    for (var xi = 0; xi < 5; xi++) xTicks.push(xMn + (xi / 4) * (xMx - xMn));
+    xTicks.forEach(function(v) {
       var gx = xs(v);
       svg += '<line x1="' + gx + '" y1="' + mt + '" x2="' + gx + '" y2="' + (H - mb) + '" stroke="rgba(255,255,255,.05)"/>';
-      svg += '<text x="' + gx + '" y="' + (H - mb + 16) + '" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">' + v + '</text>';
+      svg += '<text x="' + gx + '" y="' + (H - mb + 16) + '" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">' + Math.round(v) + '</text>';
     });
-    [-10, -5, 0, 5, 10].forEach(function(v) {
-      if (v < yMn || v > yMx) return;
+    // Y ticks (5 ticks, signed)
+    var yTicks = [];
+    for (var yi = 0; yi < 5; yi++) yTicks.push(yMn + (yi / 4) * (yMx - yMn));
+    yTicks.forEach(function(v) {
       var gy = ys(v);
       svg += '<line x1="' + ml + '" y1="' + gy + '" x2="' + (W - mr) + '" y2="' + gy + '" stroke="rgba(255,255,255,.05)"/>';
-      svg += '<text x="' + (ml - 6) + '" y="' + (gy + 4) + '" text-anchor="end" fill="#71717A" font-size="10" font-family="var(--mono)">' + (v > 0 ? '+' : '') + v + '</text>';
+      var lab = (v > 0 ? '+' : '') + (Math.round(v * 2) / 2).toFixed(1).replace(/\.0$/, '');
+      svg += '<text x="' + (ml - 6) + '" y="' + (gy + 4) + '" text-anchor="end" fill="#71717A" font-size="10" font-family="var(--mono)">' + lab + '</text>';
     });
 
     svg += '<line x1="' + mx + '" y1="' + mt + '" x2="' + mx + '" y2="' + (H - mb) + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
