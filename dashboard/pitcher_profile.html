@@ -28,7 +28,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603b" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603c" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -896,6 +896,15 @@ function startResult(g) {
   return 'Struggled';
 }
 
+function gamelogRowClass(g) {
+  var ip = parseIP(pickCol(g, ['IP', 'ip']));
+  var er = numOrNull(pickCol(g, ['ER', 'er'])) || 0;
+  var k = numOrNull(pickCol(g, ['K'])) || 0;
+  if (k >= 6 && er <= 2) return ' pl-gamelog-row--good';
+  if (er >= 5 || ip < 4) return ' pl-gamelog-row--bad';
+  return '';
+}
+
 function renderProfile(key) {
   if (!key) return;
   var profile = getProfile(key);
@@ -960,19 +969,29 @@ function renderProfile(key) {
   }).slice(0, 10);
 
   var logHtml = sortedLog.length ? '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
-    '<th>Date</th><th>Opp</th><th>Opp OSI</th><th>Tier</th><th>IP</th><th>ER</th><th>Pitches</th><th>K</th><th>BB</th><th>HR</th><th>Result</th>' +
+    '<th>Date</th><th>Opp</th><th>H/A</th><th>Opp ABQ</th><th>Opp OSI</th><th>Tier</th><th>IP</th><th>ER</th><th>K</th><th>BB</th><th>HR</th><th>F5 ER</th><th>GS</th><th>Result</th>' +
     '</tr></thead><tbody>' + sortedLog.map(function(g) {
       var tier = pickCol(g, ['opponent_OSI_tier', 'opponent OSI tier']);
-      return '<tr><td>' + pickCol(g, ['date']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['opponent_team', 'opponent team']) + '</td>' +
-        '<td class="num">' + fmt(numOrNull(pickCol(g, ['opponent_OSI'])), 1) + '</td>' +
+      var opp = pickCol(g, ['opponent_team', 'opponent team', 'Opponent']);
+      var ha = String(pickCol(g, ['home_away', 'home away', 'HA']) || '').charAt(0).toUpperCase();
+      var abqTier = pickCol(g, ['opponent_ABQ_tier', 'opponent ABQ tier']) || '—';
+      var oppOsi = numOrNull(pickCol(g, ['opponent_OSI', 'opponent OSI']));
+      var f5er = pickCol(g, ['f5_er', 'F5_ER', 'f5 ER']);
+      var gs = numOrNull(pickCol(g, ['game_score', 'game score']));
+      var logo = (window.MLBMAAssets && MLBMAAssets.teamLogoImg) ? MLBMAAssets.teamLogoImg(opp, 18) : '';
+      return '<tr class="' + gamelogRowClass(g).trim() + '"><td>' + pickCol(g, ['date']) + '</td>' +
+        '<td><span class="pl-gamelog-opp-inner">' + logo + ' ' + escHtml(opp) + '</span></td>' +
+        '<td class="num">' + (ha || '—') + '</td>' +
+        '<td class="num">' + escHtml(abqTier) + '</td>' +
+        '<td class="num">' + (oppOsi != null ? fmt(oppOsi, 1) : '—') + '</td>' +
         '<td class="' + tierClass(tier) + '">' + (tier || '—') + '</td>' +
-        '<td class="num">' + pickCol(g, ['IP']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['ER']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['pitches']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['IP', 'ip']) + '</td>' +
+        '<td class="num">' + pickCol(g, ['ER', 'er']) + '</td>' +
         '<td class="num">' + pickCol(g, ['K']) + '</td>' +
         '<td class="num">' + pickCol(g, ['BB']) + '</td>' +
         '<td class="num">' + pickCol(g, ['HR']) + '</td>' +
+        '<td class="num">' + (f5er !== '' && f5er != null ? escHtml(f5er) : '—') + '</td>' +
+        '<td class="num">' + (gs != null ? fmt(gs, 1) : '—') + '</td>' +
         '<td>' + startResult(g) + '</td></tr>';
     }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
