@@ -890,6 +890,14 @@ body.view-research .ca-page-identity { display: none; }
   text-decoration: none;
   color: inherit;
 }
+
+/* Symmetry: home team block mirrors away (logo on outer edge). */
+.hero-matchup-card .hmc-team:last-of-type a.team-link {
+  flex-direction: row-reverse;
+}
+.hero-matchup-card .hmc-team:last-of-type a.team-link .hmc-abbr {
+  text-align: right;
+}
 .hero-matchup-card .hmc-abbr {
   color: var(--text);
 }
