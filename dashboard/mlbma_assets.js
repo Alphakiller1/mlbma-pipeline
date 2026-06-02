@@ -49,24 +49,50 @@
   /** @type {Object<string, {mean:number, std:number, n:number}>} */
   var LEAGUE_POOLS = {};
 
+  /**
+   * League-average metric registry — the single source of truth for color grading.
+   * mean = the LEAGUE AVERAGE (the neutral midpoint of the red->green scale, not a
+   * pool-derived average), std = the spread that sets how fast color shifts, hi =
+   * whether HIGHER is better. Color is graded vs the league average so the same value
+   * always gets the same color regardless of the rest of today's slate.
+   */
   var CONTEXT_DEFAULTS = {
-    osi: { mean: 50, std: 12 },
-    abq: { mean: 50, std: 12 },
-    rcv: { mean: 50, std: 12 },
-    obr: { mean: 50, std: 12 },
-    pitching: { mean: 50, std: 12 },
-    rate: { mean: 50, std: 10 },
-    woba: { mean: 0.320, std: 0.035 },
-    xfip: { mean: 4.05, std: 0.35 },
-    ops: { mean: 0.750, std: 0.080 },
-    obp: { mean: 0.320, std: 0.035 },
-    iso: { mean: 0.170, std: 0.060 },
-    slg: { mean: 0.430, std: 0.055 },
-    avg: { mean: 0.250, std: 0.025 },
-    hr: { mean: 140, std: 45 },
-    wrc: { mean: 100, std: 15 },
-    rpg: { mean: 4.45, std: 0.38 },
-    default: { mean: 50, std: 12 }
+    // composite proprietary metrics (already 0-100, higher = better)
+    osi: { mean: 50, std: 12, hi: true },
+    abq: { mean: 50, std: 12, hi: true },
+    rcv: { mean: 50, std: 12, hi: true },
+    obr: { mean: 50, std: 12, hi: true },
+    projosi: { mean: 50, std: 12, hi: true },
+    pals: { mean: 50, std: 12, hi: true },
+    oor: { mean: 50, std: 12, hi: true },
+    pitching: { mean: 50, std: 12, hi: true },   // PitchScore: higher = better
+    rate: { mean: 50, std: 10, hi: true },
+    // offense rate stats (higher = better)
+    woba: { mean: 0.320, std: 0.035, hi: true },
+    xwoba: { mean: 0.318, std: 0.030, hi: true },
+    ops: { mean: 0.730, std: 0.070, hi: true },
+    obp: { mean: 0.318, std: 0.030, hi: true },
+    iso: { mean: 0.165, std: 0.055, hi: true },
+    slg: { mean: 0.410, std: 0.050, hi: true },
+    avg: { mean: 0.248, std: 0.022, hi: true },
+    hr: { mean: 140, std: 45, hi: true },
+    wrc: { mean: 100, std: 15, hi: true },
+    rpg: { mean: 4.40, std: 0.40, hi: true },       // runs scored / game (offense)
+    barrel: { mean: 8.0, std: 2.0, hi: true },       // Barrel% (offense)
+    hardhit: { mean: 39.0, std: 3.0, hi: true },     // HardHit% (offense)
+    // pitching stats (LOWER is better unless noted)
+    era: { mean: 4.10, std: 0.85, hi: false },
+    fip: { mean: 4.10, std: 0.55, hi: false },
+    xfip: { mean: 4.05, std: 0.35, hi: false },
+    whip: { mean: 1.28, std: 0.12, hi: false },
+    hr9: { mean: 1.20, std: 0.28, hi: false },       // HR/9 allowed
+    bb9: { mean: 3.20, std: 0.60, hi: false },        // BB/9 allowed
+    bbpct: { mean: 0.082, std: 0.018, hi: false },    // BB% allowed (pitcher)
+    k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
+    kpct: { mean: 0.222, std: 0.035, hi: true },      // K% (pitcher, higher better)
+    swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
+    ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
+    default: { mean: 50, std: 12, hi: true }
   };
 
   var GRADE_COLORS = {
@@ -452,10 +478,21 @@
 
   function zScore(value, context) {
     var cfg = CONTEXT_DEFAULTS[context] || CONTEXT_DEFAULTS.default;
-    var pool = LEAGUE_POOLS[context];
+    // League-average anchored: grade vs the fixed league baseline for this metric, so
+    // the same value always gets the same color. The live pool is used ONLY when we
+    // have no baseline for this context (unknown metric), never to override one.
+    var hasBaseline = Object.prototype.hasOwnProperty.call(CONTEXT_DEFAULTS, context);
+    var pool = hasBaseline ? null : LEAGUE_POOLS[context];
     var mean = pool && pool.mean != null ? pool.mean : cfg.mean;
     var std = pool && pool.std != null ? pool.std : cfg.std;
     return (value - mean) / std;
+  }
+
+  /** Direction from the registry (lower-is-better => invert), unless caller overrides. */
+  function _resolveInvert(context, invert) {
+    if (invert != null) return !!invert;
+    var cfg = CONTEXT_DEFAULTS[context];
+    return !!(cfg && cfg.hi === false);
   }
 
   function gradeKeyFromZ(z, invert) {
@@ -487,7 +524,7 @@
       context = 'osi';
     }
     context = context || 'osi';
-    return gradeKeyFromZ(zScore(value, context), !!invert);
+    return gradeKeyFromZ(zScore(value, context), _resolveInvert(context, invert));
   }
 
   function solidChipClass(value, context, invert, opts) {
@@ -542,7 +579,7 @@
     }
     context = context || 'osi';
     var z = zScore(value, context);
-    return GRADE_COLORS[gradeKeyFromZ(z, invert)];
+    return GRADE_COLORS[gradeKeyFromZ(z, _resolveInvert(context, invert))];
   }
 
   /** @deprecated Use metricColor — alias for legacy call sites */
@@ -559,7 +596,7 @@
     }
     context = context || 'osi';
     var z = zScore(value, context);
-    return HEAT_RGBA[gradeKeyFromZ(z, invert)] || HEAT_RGBA.average;
+    return HEAT_RGBA[gradeKeyFromZ(z, _resolveInvert(context, invert))] || HEAT_RGBA.average;
   }
 
   /** @deprecated Use heatColor */
