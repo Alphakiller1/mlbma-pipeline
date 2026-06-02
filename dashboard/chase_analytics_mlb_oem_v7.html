@@ -1741,35 +1741,35 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   margin-left: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(90px, 1fr) auto;
   align-items: center;
   justify-content: stretch;
-  gap: 8px;
-  padding: 7px 9px;
+  gap: 10px;
+  padding: 9px 11px;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,.09);
   background: rgba(255,255,255,.04);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
   min-width: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-3);
   font-family: var(--mono);
 }
 .hmc-meta .hmc-time {
   grid-column: auto; justify-self: auto; margin-left: 0;
-  color: var(--text); font-weight: 800; white-space: nowrap;
+  color: var(--text); font-weight: 800; white-space: nowrap; font-size: 13px;
 }
 .hmc-meta .hmc-stadium {
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 10px; letter-spacing: .06em; text-transform: uppercase; text-align: center;
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase; text-align: center;
 }
 .hmc-weather-group { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
 .hmc-weather-chip {
   display: inline-flex; align-items: center; gap: 4px; padding: 0;
-  border: 0; background: transparent; white-space: nowrap;
+  border: 0; background: transparent; white-space: nowrap; font-size: 11px; font-weight: 700;
 }
-.hmc-weather-chip--temp strong { font-size: 14px; letter-spacing: 0; }
-.hmc-weather-chip--cond { max-width: 88px; overflow: hidden; text-overflow: ellipsis; }
+.hmc-weather-chip--temp strong { font-size: 15px; letter-spacing: 0; }
+.hmc-weather-chip--cond { max-width: 88px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
 .hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-width: 0; align-items: stretch; margin: 12px 0; }
 .hmc-row.hmc-teams { min-width: 0; }
 .mc-sp-block {
@@ -1781,8 +1781,15 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 }
 .mc-sp-info { min-width: 0; display: grid; grid-template-rows: auto auto auto 1fr; align-content: start; }
 .mc-sp-photo { width: 42px; margin-right: 0; }
-.mc-sp-top { flex-wrap: nowrap; gap: 4px; min-height: 18px; margin-bottom: 5px; overflow: hidden; }
-.mc-sp-side { margin-right: auto; white-space: nowrap; }
+.mc-sp-top { flex-wrap: wrap; gap: 5px; min-height: 20px; margin-bottom: 6px; overflow: visible; }
+.mc-sp-side { white-space: nowrap; flex: 1 0 auto; font-size: 10px; }
+.hero-matchup-card .pitch-tier {
+  flex: 0 0 auto; margin-left: 0; max-width: 100%; white-space: nowrap;
+  font-size: 10px; line-height: 1.1; padding: 3px 6px;
+}
+.hero-matchup-card .hand-pill {
+  flex: 0 0 auto; font-size: 10px; padding: 3px 7px; line-height: 1.1;
+}
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 12px; margin-top: 2px; }
 .mc-sp-stats--grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-self: end; }
 .mc-sp-stat {
@@ -1810,6 +1817,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   color: var(--text-3);
 }
 .mc-ps-badge__val { font-size: 22px; font-weight: 900; letter-spacing: 0; }
+.hmc-lineups--always .hmc-lineups-label {
+  display: block; width: 100%; text-align: center; font-size: 12px; font-weight: 800;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--text); margin: 2px 0 9px;
+}
+.hero-matchup-card .matchup-lineup-col-head { margin-bottom: 6px; }
+.hero-matchup-card .matchup-lineup-col-head__team { font-size: 12px; font-weight: 800; }
+.hero-matchup-card .matchup-lineup-col-head__meta { font-size: 10px; font-weight: 700; }
 .hmc-edge-label { font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
 .hmc-osi-bar { display: grid; grid-template-columns: minmax(0, 84px) minmax(0, 1fr) minmax(0, 84px); gap: 10px; align-items: center; margin-bottom: 6px; min-width: 0; }
 .hmc-osi-val { font-size: 13px; color: var(--text); font-weight: 800; }
