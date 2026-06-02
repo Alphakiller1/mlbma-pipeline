@@ -609,9 +609,6 @@
     var k = num(pick(profile, ['K_pct', 'K%']));
     var bb = num(pick(profile, ['BB_pct', 'BB%']));
     var parts = [];
-    if (k != null && bb != null && bb >= 9 && k < 20) {
-      parts.push('Weak K/BB mix raises inning-to-inning volatility.');
-    }
     var hi = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'osi_tier', 'High') : null;
     var lo = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'osi_tier', 'Low') : null;
     if (hi && lo) {
