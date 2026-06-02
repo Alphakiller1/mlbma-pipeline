@@ -25,10 +25,10 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603j"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603i" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603j" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -652,8 +652,7 @@ function renderPitcherSectionControls() {
       barClass: 'tp-section-filter-bar--context',
       sectionKey: 'pitcher-allowed',
       groups: [
-        { label: 'Split', groupKey: 'split', options: splitOpts, active: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.split) || STATE.split },
-        { label: 'Window', groupKey: 'window', options: windowOpts, active: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.window) || STATE.window }
+        { label: 'Split', groupKey: 'split', options: splitOpts, active: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.split) || STATE.split }
       ]
     });
   }
@@ -718,7 +717,6 @@ function bindPitcherSectionControls() {
     if (sectionKey === 'pitcher-allowed') {
       STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
       if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
-      if (groupKey === 'window') STATE.sectionFilters.allowed.window = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
       return;

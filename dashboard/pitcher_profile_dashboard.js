@@ -137,7 +137,7 @@
       if (m) metrics = m;
     }
 
-    var maxStarts = window === 'L14' ? 4 : window === 'L30' ? 8 : null;
+    var maxStarts = window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
     if (window !== 'YTD' && log.length) {
       metrics = {
         abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], maxStarts) || metrics.abq,
@@ -272,53 +272,62 @@
   }
 
   function renderAllowedDashboard(profile, ctx) {
-    var resolved = resolveAllowed(ctx);
-    var m = resolved.metrics;
-    var l14 = resolved.l14;
-    var all = ctx.allProfiles || [];
     var pick = ctx.pickCol;
-    var name = pick(profile, ['pitcher_name']);
     var omitHeader = !!ctx.omitHeader;
-
-    function pct(key, val) {
-      var vals = all.map(function(p) { return num(pick(p, [key, key.replace('_', ' ')])); });
-      return percentileRank(val, vals, true);
-    }
-
-    var cards = [
-      { key: 'ABQ_allowed', label: 'ABQ Allowed', val: m.abq, l14: l14.abq,
-        note: 'Plate discipline quality of opposing lineups — lower is easier for command.' },
-      { key: 'RCV_allowed', label: 'RCV Allowed', val: m.rcv, l14: l14.rcv,
-        note: 'Contact quality faced — lower means fewer barrel-heavy matchups.' },
-      { key: 'OBR_allowed', label: 'OBR Allowed', val: m.obr, l14: l14.obr,
-        note: 'On-base floor of offenses faced — lower limits baserunner traffic.' },
-      { key: 'OSI_allowed', label: 'OSI Allowed', val: m.osi, l14: l14.osi,
-        note: 'Composite offensive strength faced — primary schedule difficulty read.' }
-    ];
-
+    var resolved = resolveAllowed(ctx);
     var f5 = resolved.isF5 ? (A ? A.f5WarningHtml() : '') : '';
-    var title = 'What Lineups Do Against ' + esc(name);
 
     var headerHtml = omitHeader ? '' : (
-      '<div class="allowed-header"><h2 class="section-title">' + title + '</h2>'
-      + '<p class="section-subtitle">Lower allowed scores = softer opposing offense · ' + esc(ctx.splitLabel) + ' · ' + esc(ctx.window) + '</p></div>'
+      '<div class="allowed-header">'
+      + '<p class="section-subtitle">Rolling schedule difficulty (lower = softer) · ' + esc(ctx.splitLabel || 'Overall') + '</p>'
+      + '</div>'
     );
 
-    var cells = cards.map(function(c) {
-      var p = pct(c.key, c.val);
-      var hint = (p != null ? 'Softer than ' + p + '% of SPs · ' : '')
-        + 'YTD ' + fmt(num(pick(profile, [c.key])), 1) + ' · L14 ' + fmt(c.l14, 1);
-      var ctxKey = (c.key || '').indexOf('ABQ') >= 0 ? 'abq'
-        : (c.key || '').indexOf('RCV') >= 0 ? 'rcv'
-        : (c.key || '').indexOf('OBR') >= 0 ? 'obr'
-        : 'osi';
-      return pitcherStatCell(c.label, valChip(c.val, ctxKey, true, 1), hint);
-    }).join('');
+    function ctxKeyForMetric(key) {
+      return key === 'abq' ? 'abq' : key === 'rcv' ? 'rcv' : key === 'obr' ? 'obr' : 'osi';
+    }
 
-    return headerHtml + f5
-      + '<div class="tp-offense-metrics tp-offense-metrics--profile">'
-      + metricsBand('Allowed metrics', 'Lower = softer opposing offense · ' + esc(ctx.splitLabel || 'Overall') + ' · ' + esc(ctx.window || 'YTD'), cells)
-      + '</div>';
+    function metricsForWindow(win) {
+      var c = Object.assign({}, ctx, { window: win });
+      return resolveAllowed(c).metrics;
+    }
+
+    var wins = [
+      { key: 'YTD', label: 'YTD' },
+      { key: 'L30', label: 'L30' },
+      { key: 'L14', label: 'L14' },
+      { key: 'L7', label: 'L7' }
+    ];
+
+    var mY = metricsForWindow('YTD');
+    var m30 = metricsForWindow('L30');
+    var m14 = metricsForWindow('L14');
+    var m7 = metricsForWindow('L7');
+    var byWin = { YTD: mY, L30: m30, L14: m14, L7: m7 };
+
+    function cell(metricKey, winKey) {
+      var v = byWin[winKey] ? byWin[winKey][metricKey] : null;
+      return '<td class="num">' + valChip(v, ctxKeyForMetric(metricKey), true, 1) + '</td>';
+    }
+
+    function row(metricKey, label) {
+      return '<tr>'
+        + '<td>' + esc(label) + '</td>'
+        + wins.map(function(w) { return cell(metricKey, w.key); }).join('')
+        + '</tr>';
+    }
+
+    var table = '<div class="table-wrap tp-table-wrap">'
+      + '<table class="hub-table tp-table">'
+      + '<thead><tr><th>Metric</th>' + wins.map(function(w) { return '<th class="num">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
+      + '<tbody>'
+      + row('abq', 'ABQ allowed')
+      + row('rcv', 'RCV allowed')
+      + row('obr', 'OBR allowed')
+      + row('osi', 'OSI allowed')
+      + '</tbody></table></div>';
+
+    return headerHtml + f5 + table;
   }
 
   function renderOORPanel(profile, ctx) {
