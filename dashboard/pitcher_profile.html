@@ -126,6 +126,15 @@ h1 {
   outline: none; border-color: var(--purple);
   box-shadow: 0 0 0 2px var(--purple-glow);
 }
+
+/* Pitcher Profile: move split/window/view to section controls (keep search top). */
+#pitcherControlBar .pc-pitcher-bar [data-pgroup="split"],
+#pitcherControlBar .pc-pitcher-bar [data-pgroup="window"],
+#pitcherControlBar .pc-pitcher-bar [data-pgroup="view"],
+#pitcherControlBar .pc-pitcher-bar .pc-control-confirm,
+#pitcherControlBar .pc-pitcher-bar .pc-spark-row {
+  display: none !important;
+}
 .pitcher-title-row {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   margin-bottom: 18px;
@@ -448,6 +457,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   </select>
   <datalist id="pitcherList"></datalist>
 
+  <div id="pitcherOverviewControls" class="profile-context-bar"></div>
   <div id="pitcherControlBar" class="profile-context-bar"></div>
 
   <div id="profileContent" class="profile-shell">
@@ -458,10 +468,12 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     <section class="section profile-section" id="secOOR">
       <div class="section-title">Quality of Lineups Faced</div>
       <div class="section-subtitle">OOR — competition strength context for ERA validation</div>
+      <div id="pitcherOorControls"></div>
       <div id="oorPanel"></div>
     </section>
 
     <section class="section profile-section" id="secAllowed">
+      <div id="pitcherAllowedControls"></div>
       <div id="allowedDashboard"></div>
     </section>
 
@@ -538,6 +550,11 @@ var DATA = {
 };
 
 var STATE = { pitcherKey: null, pitcherName: '', split: 'overall', window: 'YTD', view: 'summary' };
+STATE.sectionFilters = {
+  overview: { split: 'overall', window: 'YTD', view: 'summary' },
+  allowed: { split: 'overall', window: 'YTD' },
+  oor: { window: 'YTD' }
+};
 
 var OSI_TIER_ORDER = ['High', 'Mid', 'Low'];
 var ABQ_TIER_ORDER = ['High', 'Mid', 'Low'];
@@ -844,6 +861,17 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   if (!window.PitcherProfileDashboard) return;
   var tonight = buildPitcherTonightContext(name, team);
   var ctx = buildDashboardCtx(profile, splits, log, name, team, isToday, tonight);
+  var sf = STATE.sectionFilters || {};
+  var allowedFilter = sf.allowed || {};
+  var oorFilter = sf.oor || {};
+  var allowedCtx = Object.assign({}, ctx, {
+    split: allowedFilter.split || ctx.split,
+    window: allowedFilter.window || ctx.window,
+    splitLabel: splitLabel(allowedFilter.split || ctx.split)
+  });
+  var oorCtx = Object.assign({}, ctx, {
+    window: oorFilter.window || ctx.window
+  });
   var snap = document.getElementById('pitcherSnapshot');
   var intel = document.getElementById('pitcherIntelPanel');
   var take = document.getElementById('pitcherAnalystTake');
@@ -852,11 +880,110 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   if (snap) snap.innerHTML = PitcherProfileDashboard.renderSnapshot(profile, ctx);
   if (intel) intel.innerHTML = PitcherProfileDashboard.renderPitcherIntelPanel(profile, ctx);
   if (take) take.innerHTML = PitcherProfileDashboard.renderAnalystTakeLine(profile, ctx);
-  if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, ctx);
-  if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, ctx);
+  if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, allowedCtx);
+  if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, oorCtx);
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
     if (intel) MLBMAIcons.refreshIcons(intel);
   }
+}
+
+function renderPitcherSectionControls() {
+  var PC = window.MLBMAProfileControls;
+  if (!PC || !PC.renderSectionOptionBar) return;
+  if (!STATE.sectionFilters) return;
+
+  var splitOpts = [
+    { value: 'overall', label: 'Overall' },
+    { value: 'lhh', label: 'vs LHH' },
+    { value: 'rhh', label: 'vs RHH' },
+    { value: 'home', label: 'Home' },
+    { value: 'away', label: 'Away' },
+    { value: 'f5', label: 'F5' }
+  ];
+  var windowOpts = (PC.WINDOW_OPTIONS || [
+    { value: 'YTD', label: 'Season' },
+    { value: 'L30', label: 'Last 30' },
+    { value: 'L14', label: 'Last 14' }
+  ]);
+
+  var overview = document.getElementById('pitcherOverviewControls');
+  if (overview) {
+    overview.innerHTML = PC.renderSectionOptionBar({
+      layout: 'row',
+      barClass: 'tp-section-filter-bar--context',
+      sectionKey: 'pitcher-overview',
+      groups: [
+        { label: 'Split', groupKey: 'split', options: splitOpts, active: STATE.split },
+        { label: 'Window', groupKey: 'window', options: windowOpts, active: STATE.window },
+        { label: 'View', groupKey: 'view', options: [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], active: STATE.view }
+      ]
+    });
+  }
+
+  var allowed = document.getElementById('pitcherAllowedControls');
+  if (allowed) {
+    allowed.innerHTML = PC.renderSectionOptionBar({
+      layout: 'row',
+      barClass: 'tp-section-filter-bar--context',
+      sectionKey: 'pitcher-allowed',
+      groups: [
+        { label: 'Split', groupKey: 'split', options: splitOpts, active: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.split) || STATE.split },
+        { label: 'Window', groupKey: 'window', options: windowOpts, active: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.window) || STATE.window }
+      ]
+    });
+  }
+
+  var oor = document.getElementById('pitcherOorControls');
+  if (oor) {
+    oor.innerHTML = PC.renderSectionOptionBar({
+      layout: 'row',
+      barClass: 'tp-section-filter-bar--context',
+      sectionKey: 'pitcher-oor',
+      groups: [
+        { label: 'Window', groupKey: 'window', options: windowOpts, active: (STATE.sectionFilters.oor && STATE.sectionFilters.oor.window) || STATE.window }
+      ]
+    });
+  }
+}
+
+function bindPitcherSectionControls() {
+  var root = document.querySelector('.container');
+  if (!root || root._ppSectionCtrlsBound) return;
+  root._ppSectionCtrlsBound = true;
+  root.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-tp-ctrl]');
+    if (!btn) return;
+    var grp = btn.closest('[data-tp-ctrl-group]');
+    var bar = btn.closest('[data-tp-section]');
+    if (!grp || !bar) return;
+    var groupKey = grp.getAttribute('data-tp-ctrl-group');
+    var val = btn.getAttribute('data-tp-ctrl');
+    var sectionKey = bar.getAttribute('data-tp-section');
+    if (!groupKey || !sectionKey) return;
+
+    if (sectionKey === 'pitcher-overview') {
+      if (groupKey === 'split') STATE.split = val;
+      if (groupKey === 'window') STATE.window = val;
+      if (groupKey === 'view') STATE.view = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
+    if (sectionKey === 'pitcher-allowed') {
+      STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
+      if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
+      if (groupKey === 'window') STATE.sectionFilters.allowed.window = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
+    if (sectionKey === 'pitcher-oor') {
+      STATE.sectionFilters.oor = STATE.sectionFilters.oor || {};
+      if (groupKey === 'window') STATE.sectionFilters.oor.window = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+    }
+  });
 }
 
 
@@ -1042,6 +1169,8 @@ function renderProfile(key) {
 
   document.getElementById('profileContent').classList.add('ready');
 
+  renderPitcherSectionControls();
+  bindPitcherSectionControls();
   renderPlatformSections(profile, splits, log, name, team, isToday);
 
   document.getElementById('seasonBar').innerHTML =
