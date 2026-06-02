@@ -463,7 +463,11 @@ function findSplit(splits, dimension, value) {
     LHH: ['LHH', 'L', 'vs LHH', 'vs L', 'Left', 'left'],
     RHH: ['RHH', 'R', 'vs RHH', 'vs R', 'Right', 'right'],
     home: ['home', 'Home'],
-    away: ['away', 'Away']
+    away: ['away', 'Away'],
+    // Tier labels vary by export ("Mid" vs "Medium"/"Med").
+    High: ['High', 'HIGH', 'H', 'Top', 'Elite'],
+    Mid: ['Mid', 'MID', 'Med', 'MED', 'Medium', 'MEDIUM', 'Avg', 'Average'],
+    Low: ['Low', 'LOW', 'L', 'Bottom', 'Weak']
   };
   var vals = aliases[value] || [value];
   for (var i = 0; i < splits.length; i++) {
