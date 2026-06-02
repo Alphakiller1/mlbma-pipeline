@@ -375,15 +375,25 @@
     function byHand(handKey) {
       var hk = String(handKey || '').toUpperCase();
       return log.filter(function(g) {
-        var h = String(pick(g, ['opponent_hand', 'opponent hand']) || '').toUpperCase();
-        return h === hk || (hk === 'L' && h === 'LHH') || (hk === 'R' && h === 'RHH');
+        var h = String(pick(g, ['opponent_hand', 'opponent hand', 'OppHand', 'opp_hand', 'opponent_lineup_hand', 'lineup_hand', 'hand']) || '').toUpperCase().trim();
+        if (!h) return false;
+        // Normalize common encodings.
+        if (h === 'LHH' || h === 'L' || h === 'LH' || h === 'LEFT') h = 'L';
+        if (h === 'RHH' || h === 'R' || h === 'RH' || h === 'RIGHT') h = 'R';
+        return h === hk;
       });
     }
 
     function byHA(ha) {
       var key = String(ha || '').toLowerCase();
       return log.filter(function(g) {
-        return String(pick(g, ['home_away', 'home away', 'HA']) || '').toLowerCase() === key;
+        var v = String(pick(g, ['home_away', 'home away', 'HA', 'H/A', 'ha']) || '').trim().toLowerCase();
+        if (!v) return false;
+        // Normalize common encodings.
+        var norm = v;
+        if (norm === 'h' || norm === 'home' || norm.indexOf('home') >= 0) norm = 'home';
+        if (norm === 'a' || norm === 'away' || norm.indexOf('away') >= 0 || norm === '@') norm = 'away';
+        return norm === key;
       });
     }
 
