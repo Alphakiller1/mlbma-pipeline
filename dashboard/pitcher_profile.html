@@ -414,17 +414,32 @@ function tierDimsFromSplits(splits) {
   return out;
 }
 
-function getGameLog(key) {
+function getGameLog(key, nameHint) {
   var rows = DATA.gameLog.filter(function(g) { return pitcherKey(g) === key; });
   if (rows.length) return rows;
-  // Fallback: some SP_Game_Log exports omit ids/teams; match by normalized pitcher name.
+  // Fallback: many SP_Game_Log exports omit ids/teams; match by normalized pitcher name.
   var nm = '';
   if (String(key || '').indexOf('name:') === 0) nm = String(key).slice(5).split('|')[0];
+  if (!nm && nameHint) nm = normalizeName(nameHint);
   if (!nm) return rows;
   return DATA.gameLog.filter(function(g) {
     var n = normalizeName(pickCol(g, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher']));
     return n && n === nm;
   });
+}
+
+function dateSortKey(raw) {
+  var s = String(raw || '').trim();
+  if (!s) return 0;
+  // YYYY-MM-DD
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return Date.UTC(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+  // MM/DD/YYYY or M/D/YYYY
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) return Date.UTC(parseInt(m[3], 10), parseInt(m[1], 10) - 1, parseInt(m[2], 10));
+  // Fallback: try Date.parse
+  var t = Date.parse(s);
+  return isNaN(t) ? 0 : t;
 }
 
 function findSplit(splits, dimension, value) {
@@ -964,8 +979,8 @@ function renderProfile(key) {
 
   STATE.pitcherKey = key;
   var splits = getSplits(key);
-  var log = getGameLog(key);
   var name = pickCol(profile, ['pitcher_name', 'pitcherName', 'Name']);
+  var log = getGameLog(key, name);
   STATE.pitcherName = name;
   var team = pickCol(profile, ['pitcher_team', 'pitcherTeam', 'Tm']);
   var hand = String(pickCol(profile, ['pitcher_hand', 'pitcherHand', 'Hand']) || 'R').toUpperCase().slice(0, 1);
@@ -1002,7 +1017,7 @@ function renderProfile(key) {
   // Home/Away section removed (user request)
 
   var sortedLog = log.slice().sort(function(a, b) {
-    return String(pickCol(b, ['date'])).localeCompare(String(pickCol(a, ['date'])));
+    return dateSortKey(pickCol(b, ['date', 'Date', 'game_date', 'Game Date'])) - dateSortKey(pickCol(a, ['date', 'Date', 'game_date', 'Game Date']));
   }).slice(0, 10);
 
   var logHtml = sortedLog.length ? '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
