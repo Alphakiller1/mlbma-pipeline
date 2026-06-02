@@ -892,10 +892,11 @@ body.view-research .ca-page-identity { display: none; }
 }
 
 /* Symmetry: home team block mirrors away (logo on outer edge). */
-.hero-matchup-card .hmc-team:last-of-type a.team-link {
+/* Header row structure: [div.hmc-team] [span.hmc-at] [div.hmc-team] [div.hmc-meta] */
+.hero-matchup-card .hmc-row.hmc-teams > .hmc-team:nth-of-type(2) a.team-link {
   flex-direction: row-reverse;
 }
-.hero-matchup-card .hmc-team:last-of-type a.team-link .hmc-abbr {
+.hero-matchup-card .hmc-row.hmc-teams > .hmc-team:nth-of-type(2) a.team-link .hmc-abbr {
   text-align: right;
 }
 .hero-matchup-card .hmc-abbr {
