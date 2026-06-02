@@ -775,22 +775,33 @@
     if (!formReadHtml && C.trendDeltaReadout) {
       readout = C.trendDeltaReadout(m, windowKey);
     }
-    var toggles = [
-      { k: 'osi', abbr: 'OSI', desc: 'Offense Score' },
-      { k: 'rcv', abbr: 'RCV', desc: 'Contact Value' },
-      { k: 'abq', abbr: 'ABQ', desc: 'Approach Quality' },
-      { k: 'obr', abbr: 'OBR', desc: 'On-Base Value' }
-    ].map(function(t) {
-      return '<button type="button" class="ca-pill-btn tp-trend-metric' + (active === t.k ? ' active' : '')
-        + '" data-trend-metric="' + t.k + '" aria-pressed="' + (active === t.k ? 'true' : 'false') + '"'
-        + ' title="' + esc(t.desc) + '">' + esc(t.abbr) + '</button>';
-    }).join('');
+    var metricOpts = [
+      { value: 'osi', label: 'OSI', title: 'Offense Score' },
+      { value: 'rcv', label: 'RCV', title: 'Contact Value' },
+      { value: 'abq', label: 'ABQ', title: 'Approach Quality' },
+      { value: 'obr', label: 'OBR', title: 'On-Base Value' }
+    ];
+    var PC = global.MLBMAProfileControls;
+    var metricBar = (PC && PC.renderSectionOptionBar)
+      ? PC.renderSectionOptionBar({
+        label: 'Metric',
+        groupKey: 'trend-metric',
+        options: metricOpts.map(function(t) {
+          return { value: t.value, label: t.label, buttonAttrs: 'title="' + esc(t.title) + '"' };
+        }),
+        active: active,
+        ctrlAttr: 'data-trend-metric',
+        groupAttr: 'data-trend-metric-group',
+        barClass: 'tp-section-filter-bar--trend',
+        sectionKey: 'rolling-trend'
+      })
+      : '';
     var chart = C.buildTrendLineChart(active.toUpperCase(), sliced.values, 480, 120, {
       labels: sliced.labels,
       metricCtx: active
     });
     return '<div class="tp-trend-panel" data-window="' + esc(windowKey) + '">'
-      + '<div class="tp-trend-controls" role="group" aria-label="Chart metric">' + toggles + '</div>'
+      + metricBar
       + renderTeamTrendTable(m, ctx, active)
       + '<div class="tp-trend-chart-mount" data-active-metric="' + esc(active) + '">' + chart + '</div>'
       + (formReadHtml || (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : ''))

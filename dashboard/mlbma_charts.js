@@ -891,27 +891,12 @@
       return '<span class="mlbma-trend-axis"><span class="mlbma-trend-axis-l">' + esc(l) + '</span>' + valHtml + '</span>';
     }).join('');
 
-    var deltaHtml = '';
-    var ytdVal = nums.length ? nums[0] : null;
-    var endIdx = labels.length > 3 ? 3 : labels.length - 1;
-    var endVal = nums.length > endIdx ? nums[endIdx] : null;
-    if (ytdVal != null && endVal != null && !isNaN(ytdVal) && !isNaN(endVal)) {
-      var delta = endVal - ytdVal;
-      if (Math.abs(delta) >= 0.05) {
-        var deltaCls = delta > 2 ? 'is-up' : delta < -2 ? 'is-down' : 'is-flat';
-        deltaHtml = '<span class="mlbma-trend-delta ' + deltaCls + '">'
-          + (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' YTD→L7</span>';
-      } else {
-        deltaHtml = '<span class="mlbma-trend-delta is-flat">Flat YTD→L7</span>';
-      }
-    }
-
     return '<div class="mlbma-trend-chart" data-metric="' + esc(metricCtx) + '">'
       + '<div class="mlbma-trend-head">'
       + '<span class="mlbma-trend-label">' + esc(label) + '</span>'
       + '<div class="mlbma-trend-head-val">'
       + (cur != null ? '<span class="mlbma-trend-cur" style="color:' + esc(curColor) + '">' + Number(cur).toFixed(1) + '</span>' : '')
-      + deltaHtml + '</div></div>'
+      + '</div></div>'
       + '<div class="mlbma-trend-svg-wrap">'
       + '<svg class="mlbma-trend-svg" viewBox="0 0 ' + width + ' ' + chartH + '" preserveAspectRatio="none" aria-hidden="true">'
       + svgBody + '</svg></div>'

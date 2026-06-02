@@ -1386,6 +1386,80 @@
     return teamData.both || teamData.b || null;
   }
 
+  function localDateIso(d) {
+    d = d || new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function formatGameTimeEt(isoUtc) {
+    if (!isoUtc) return 'TBD';
+    try {
+      var dt = new Date(isoUtc);
+      if (isNaN(dt.getTime())) return 'TBD';
+      return dt.toLocaleTimeString('en-US', {
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }) + ' ET';
+    } catch (e) {
+      return 'TBD';
+    }
+  }
+
+  /** Live MLB Stats API schedule — source of truth for today's slate. */
+  function fetchMlbTodaySchedule(dateIso) {
+    var dateStr = dateIso || localDateIso();
+    var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(dateStr)
+      + '&hydrate=probablePitcher,team,venue';
+    return fetch(url, { cache: 'no-store' }).then(function(r) {
+      if (!r.ok) throw new Error('MLB schedule HTTP ' + r.status);
+      return r.json();
+    }).then(function(data) {
+      var games = [];
+      (data.dates || []).forEach(function(block) {
+        (block.games || []).forEach(function(game) {
+          var awayNode = game.teams && game.teams.away;
+          var homeNode = game.teams && game.teams.home;
+          var awayTeam = awayNode && awayNode.team;
+          var homeTeam = homeNode && homeNode.team;
+          if (!awayTeam || !homeTeam) return;
+          var away = normalizeTeamAbbrShared(awayTeam.abbreviation || awayTeam.teamName || awayTeam.name);
+          var home = normalizeTeamAbbrShared(homeTeam.abbreviation || homeTeam.teamName || homeTeam.name);
+          if (!away || !home) return;
+          var awaySP = (awayNode.probablePitcher && awayNode.probablePitcher.fullName) || 'TBD';
+          var homeSP = (homeNode.probablePitcher && homeNode.probablePitcher.fullName) || 'TBD';
+          var awayHand = normalizePitcherHandShared(
+            awayNode.probablePitcher && awayNode.probablePitcher.pitchHand && awayNode.probablePitcher.pitchHand.code
+          );
+          var homeHand = normalizePitcherHandShared(
+            homeNode.probablePitcher && homeNode.probablePitcher.pitchHand && homeNode.probablePitcher.pitchHand.code
+          );
+          games.push({
+            away: away,
+            home: home,
+            time: formatGameTimeEt(game.gameDate),
+            awaySP: awaySP,
+            homeSP: homeSP,
+            awayHand: awayHand,
+            homeHand: homeHand,
+            stadium: (game.venue && game.venue.name) || '',
+            gameKey: away + '@' + home,
+            source: 'mlb-api'
+          });
+        });
+      });
+      console.info('[MATCHUPS] MLB API schedule', dateStr + ':', games.length, 'games');
+      return { date: dateStr, games: games, source: 'mlb-api' };
+    }).catch(function(err) {
+      console.warn('[MATCHUPS] MLB schedule fetch failed', err);
+      return { date: dateStr, games: [], error: err && err.message ? err.message : String(err) };
+    });
+  }
+
   function parseMatchupRows(rows) {
     return (rows || []).map(function(row) {
       var away = normalizeTeamAbbrShared(pickCol(row, 'Away'));
@@ -1914,7 +1988,10 @@
     teamLogo: teamLogo,
     headshot: headshot,
     matchupGameKey: matchupGameKey,
-    normalizeGameKey: normalizeGameKey
+    normalizeGameKey: normalizeGameKey,
+    fetchMlbTodaySchedule: fetchMlbTodaySchedule,
+    localDateIso: localDateIso,
+    formatGameTimeEt: formatGameTimeEt
   };
   global.LineupModel = LineupModel;
   global.MLBMALineupModel = LineupModel;

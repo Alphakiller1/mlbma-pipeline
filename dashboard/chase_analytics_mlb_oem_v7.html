@@ -2535,7 +2535,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260602n" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260620d"></script>
 <script src="mlbma_icons.js?v=20260620q"></script>
-<script src="matchup_shared.js?v=20260620q"></script>
+<script src="matchup_shared.js?v=20260602p"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260601f"></script>
 <script src="profile_controls.js?v=20260527s"></script>
@@ -2543,7 +2543,7 @@ body.view-research .ca-lab { display: block; }
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260531i"></script>
 <script src="lineup_view.js?v=20260618a"></script>
-<script src="trends_heatmap.js?v=20260612e"></script>
+<script src="trends_heatmap.js?v=20260602q"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="pitcher_lab.js?v=20260531e"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
@@ -3141,13 +3141,23 @@ function showSlateFreshnessBanner() {
   }
   var n = (LIVE_DATA.matchups || []).length;
   var sync = LIVE_DATA.lastUpdated || 'unknown';
-  if (isSheetDataStale()) {
-    el.textContent = 'Warning: sheet sync is over 18h old (' + sync + '). Run scrape_lineups then scrape_matchups. Showing '
-      + n + ' games from Today_Lineups (not stale Today_Matchups).';
+  var liveN = (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.games) ? LIVE_DATA._liveSchedule.games.length : 0;
+  var liveDate = (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.date) ? LIVE_DATA._liveSchedule.date : '';
+  if (liveN && n !== liveN) {
+    el.textContent = 'Showing ' + n + ' games (MLB live schedule has ' + liveN + ' for ' + liveDate + '). Sheet sync: ' + sync + '.';
     el.style.borderColor = 'rgba(245,158,11,0.45)';
     el.style.color = '#F59E0B';
+  } else if (isSheetDataStale()) {
+    el.textContent = 'Sheet sync is over 18h old (' + sync + '). Matchups use live MLB schedule'
+      + (liveDate ? ' for ' + liveDate : '') + '. Showing ' + n + ' games.';
+    el.style.borderColor = 'rgba(245,158,11,0.45)';
+    el.style.color = '#F59E0B';
+  } else if (liveN) {
+    el.textContent = 'Today\u2019s slate: ' + n + ' games from MLB schedule (' + liveDate + '). Last sheet sync: ' + sync + '.';
+    el.style.borderColor = '';
+    el.style.color = '';
   } else {
-    el.textContent = 'Today\u2019s slate: ' + n + ' games from projected lineups (Rotowire). Last sheet sync: ' + sync + '.';
+    el.textContent = 'Today\u2019s slate: ' + n + ' games. Last sheet sync: ' + sync + '.';
     el.style.borderColor = '';
     el.style.color = '';
   }
@@ -3169,6 +3179,9 @@ function parseCSV(text) {
 }
 
 function fetchMatchups() {
+  var scheduleP = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
+    ? MLBMASharedMatchup.fetchMlbTodaySchedule()
+    : Promise.resolve({ games: [] });
   return Promise.all([
     fetch(sheetCsvUrl(TABS.today_matchups), { cache: 'no-store' }).then(function(r) {
       if (!r.ok) throw new Error('Today_Matchups HTTP ' + r.status);
@@ -3179,12 +3192,13 @@ function fetchMatchups() {
     }).then(function(t) { return t ? parseSheetRows(t) : []; }),
     fetch(sheetCsvUrl(TABS.today_games), { cache: 'no-store' }).then(function(r) {
       return r.ok ? r.text() : '';
-    }).then(function(t) { return t ? parseSheetRows(t) : []; })
+    }).then(function(t) { return t ? parseSheetRows(t) : []; }),
+    scheduleP
   ]).then(function(parts) {
     var lineups = parseLineupRows(parts[1]);
     LIVE_DATA.lineups = lineups;
-    LIVE_DATA.matchups = buildTodayMatchupsFromSlate(lineups, parts[2], parts[0], LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
-    enrichMatchupCards();
+    LIVE_DATA._liveSchedule = parts[3];
+    refreshTodayMatchups(parts[3]);
     return LIVE_DATA.matchups;
   });
 }
@@ -3430,11 +3444,21 @@ function applyLiveCache(cache) {
   LIVE_DATA.todayGames = cache.todayGames || [];
   LIVE_DATA._slateGamesRows = cache._slateGamesRows || [];
   LIVE_DATA._slateMatchupsRows = cache._slateMatchupsRows || [];
+  LIVE_DATA._liveSchedule = cache._liveSchedule || null;
   LIVE_DATA.error = null;
   YTD = cache.ytd || buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
   applyLiveData();
   attachPalsToScores();
-  initMatchupsView();
+  var fetchLive = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
+    ? MLBMASharedMatchup.fetchMlbTodaySchedule()
+    : Promise.resolve({ games: [] });
+  fetchLive.then(function(sched) {
+    refreshTodayMatchups(sched);
+    initMatchupsView();
+  }).catch(function() {
+    refreshTodayMatchups(LIVE_DATA._liveSchedule);
+    initMatchupsView();
+  });
 }
 
 function getPaWeights(team) {
@@ -4077,10 +4101,37 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
   };
 }
 
-/** Today tab slate = games in Today_Lineups (+ Today_Games SP/times). Never show stale Today_Matchups alone. */
-function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL) {
-  var luKeys = lineupGameKeySet(lineups);
+/** Today tab slate = live MLB schedule, enriched by Today_Lineups / Today_Games / Today_Matchups. */
+function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL, liveSchedule) {
+  var liveGames = (liveSchedule && liveSchedule.games) ? liveSchedule.games : [];
+  var liveByKey = {};
+  liveGames.forEach(function(g) {
+    var key = matchupGameKey(g);
+    if (key) liveByKey[key] = g;
+  });
+  var liveKeyList = Object.keys(liveByKey).sort();
+
+  var filteredLineups = lineups;
+  if (liveKeyList.length) {
+    filteredLineups = (lineups || []).filter(function(r) {
+      return !!liveByKey[normalizeLineupGameKey(r.game)];
+    });
+  }
+
+  var luKeys = lineupGameKeySet(filteredLineups);
   var lineupKeys = Object.keys(luKeys).sort();
+
+  if (liveKeyList.length && lineupKeys.length) {
+    var overlap = lineupKeys.filter(function(k) { return liveByKey[k]; }).length;
+    if (overlap < Math.max(1, Math.ceil(liveKeyList.length * 0.5))) {
+      console.warn('[MATCHUPS] Today_Lineups stale (overlap ' + overlap + '/' + liveKeyList.length + ') — using MLB API schedule');
+      lineupKeys = [];
+      luKeys = lineupGameKeySet([]);
+    }
+  } else if (liveKeyList.length && !lineupKeys.length) {
+    console.warn('[MATCHUPS] No projected lineups for today\'s slate — using MLB API schedule');
+  }
+
   var byMatchup = {};
   parseMatchupRows(matchupsRows || []).forEach(function(m) {
     byMatchup[matchupGameKey(m)] = m;
@@ -4091,29 +4142,83 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL)
     gamesByKey[matchupGameKey(g)] = g;
   });
 
+  liveGames.forEach(function(lg) {
+    var key = matchupGameKey(lg);
+    if (!key) return;
+    var existing = gamesByKey[key] || {};
+    gamesByKey[key] = {
+      away: lg.away,
+      home: lg.home,
+      time: existing.time || lg.time || '',
+      awaySP: (existing.awaySP && existing.awaySP !== 'TBD') ? existing.awaySP : (lg.awaySP || 'TBD'),
+      homeSP: (existing.homeSP && existing.homeSP !== 'TBD') ? existing.homeSP : (lg.homeSP || 'TBD'),
+      gameKey: key
+    };
+  });
+
   if (lineupKeys.length) {
-    console.info('[MATCHUPS] Slate from Today_Lineups:', lineupKeys.length, 'games');
-    var out = lineupKeys.filter(function(key) { return !!key; }).map(function(key) {
+    console.info('[MATCHUPS] Slate from Today_Lineups:', lineupKeys.length, 'games (MLB API: ' + liveKeyList.length + ')');
+    var outLine = lineupKeys.filter(function(key) { return !!key; }).map(function(key) {
       var g = gamesByKey[key];
       if (!g) {
+        var live = liveByKey[key];
         var p = key.split('@');
-        g = { away: p[0], home: p[1], time: '', awaySP: 'TBD', homeSP: 'TBD', gameKey: key };
+        g = live || { away: p[0], home: p[1], time: '', awaySP: 'TBD', homeSP: 'TBD', gameKey: key };
       }
       return buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL);
     }).filter(Boolean);
-    if (out.length) return out;
-    console.warn('[MATCHUPS] Today_Lineups keys present but 0 built games; falling back to Today_Games');
+    if (outLine.length) return outLine;
+    console.warn('[MATCHUPS] Today_Lineups keys present but 0 built games; falling back to live schedule');
+  }
+
+  if (liveKeyList.length) {
+    console.info('[MATCHUPS] Slate from MLB API:', liveKeyList.length, 'games');
+    return liveKeyList.map(function(key) {
+      var g = gamesByKey[key] || liveByKey[key];
+      if (!g) return null;
+      return buildMatchupFromSlateGame({
+        away: g.away,
+        home: g.home,
+        time: g.time || '',
+        awaySP: g.awaySP || 'TBD',
+        homeSP: g.homeSP || 'TBD',
+        gameKey: key
+      }, luKeys, byMatchup, scR, scL);
+    }).filter(Boolean);
   }
 
   if (games.length) {
-    console.warn('[MATCHUPS] No lineups parsed; using Today_Games:', games.length);
+    console.warn('[MATCHUPS] No live schedule; using Today_Games:', games.length);
     return games.map(function(g) {
       return buildMatchupFromSlateGame(g, null, byMatchup, scR, scL);
     }).filter(Boolean);
   }
 
-  console.warn('[MATCHUPS] No lineups/games ? fallback Today_Matchups (may be stale)');
+  console.warn('[MATCHUPS] No lineups/games/live API — fallback Today_Matchups (may be stale)');
   return parseMatchupRows(matchupsRows || []);
+}
+
+function refreshTodayMatchups(liveSchedule) {
+  if (liveSchedule) LIVE_DATA._liveSchedule = liveSchedule;
+  LIVE_DATA.matchups = buildTodayMatchupsFromSlate(
+    LIVE_DATA.lineups,
+    LIVE_DATA._slateGamesRows || LIVE_DATA.todayGames || [],
+    LIVE_DATA._slateMatchupsRows || [],
+    LIVE_DATA.scYtdR || [],
+    LIVE_DATA.scYtdL || [],
+    LIVE_DATA._liveSchedule
+  );
+  if (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.games && LIVE_DATA._liveSchedule.games.length) {
+    var liveKeys = {};
+    LIVE_DATA._liveSchedule.games.forEach(function(g) {
+      var key = matchupGameKey(g);
+      if (key) liveKeys[key] = true;
+    });
+    LIVE_DATA.lineups = (LIVE_DATA.lineups || []).filter(function(r) {
+      return liveKeys[normalizeLineupGameKey(r.game)];
+    });
+  }
+  enrichMatchupCards();
 }
 
 function normalizeBatsHand(bats) {
@@ -4384,6 +4489,9 @@ function loadLandingData() {
   var sheetSyncProbeTs = null;
   return prefetchSheetSync().then(function(probeTs) {
     sheetSyncProbeTs = probeTs || null;
+    var scheduleP = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
+      ? MLBMASharedMatchup.fetchMlbTodaySchedule()
+      : Promise.resolve({ games: [] });
     return Promise.all([
     fetchTabSafe(TABS.today_matchups),
     fetchTabSafe(TABS.today_lineups),
@@ -4396,13 +4504,14 @@ function loadLandingData() {
     fetchTabSafe(TABS.vs_lhp),
     fetchTabSafe(TABS.last_updated, ''),
     fetchTabSafe(TABS.sp_profiles, []),
-    fetchTabSafe(TABS.today_games, [])
+    fetchTabSafe(TABS.today_games, []),
+    scheduleP
   ]);
   }).then(function(results) {
     var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
         signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9],
-        spProfileRows = results[10], gamesRows = results[11];
+        spProfileRows = results[10], gamesRows = results[11], liveSchedule = results[12];
     var scR = [];
     var scL = [];
     try {
@@ -4450,14 +4559,8 @@ function loadLandingData() {
     LIVE_DATA._slateGamesRows = gamesRows || [];
     LIVE_DATA._slateMatchupsRows = matchupsRows || [];
     LIVE_DATA.todayGames = parseTodayGamesRows(gamesRows);
-    LIVE_DATA.matchups = buildTodayMatchupsFromSlate(
-      LIVE_DATA.lineups,
-      gamesRows,
-      matchupsRows,
-      scR,
-      scL
-    );
-    enrichMatchupCards();
+    LIVE_DATA._liveSchedule = liveSchedule || { games: [] };
+    refreshTodayMatchups(LIVE_DATA._liveSchedule);
     console.info('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games —',
       LIVE_DATA.matchups.slice(0, 4).map(function(m) { return m.away + '@' + m.home; }).join(', '));
     LIVE_DATA.loaded = true;
@@ -4536,6 +4639,7 @@ function loadResearchData() {
       todayGames: LIVE_DATA.todayGames,
       _slateGamesRows: LIVE_DATA._slateGamesRows,
       _slateMatchupsRows: LIVE_DATA._slateMatchupsRows,
+      _liveSchedule: LIVE_DATA._liveSchedule,
       ytd: YTD
     });
     if (_researchLabInitialized) renderResearchLabWhenReady();
@@ -6982,20 +7086,36 @@ function shouldRenderOpeningMatchups() {
 }
 
 function rebuildTodayMatchupsSlateIfNeeded() {
-  if (LIVE_DATA.matchups && LIVE_DATA.matchups.length) return;
-  if (!LIVE_DATA.lineups || !LIVE_DATA.lineups.length) return;
+  if (LIVE_DATA.matchups && LIVE_DATA.matchups.length && LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.games && LIVE_DATA._liveSchedule.games.length) {
+    var liveKeys = {};
+    LIVE_DATA._liveSchedule.games.forEach(function(g) {
+      var key = matchupGameKey(g);
+      if (key) liveKeys[key] = true;
+    });
+    var stale = LIVE_DATA.matchups.some(function(m) {
+      return !liveKeys[matchupGameKey(m)];
+    });
+    if (!stale) return;
+  }
+  if (!LIVE_DATA.lineups || !LIVE_DATA.lineups.length) {
+    if (!LIVE_DATA._liveSchedule || !LIVE_DATA._liveSchedule.games || !LIVE_DATA._liveSchedule.games.length) return;
+  }
   var scR = (LIVE_DATA.scYtdR && LIVE_DATA.scYtdR.length) ? LIVE_DATA.scYtdR
     : (typeof SCO_YTD_R !== 'undefined' ? SCO_YTD_R : []);
   var scL = (LIVE_DATA.scYtdL && LIVE_DATA.scYtdL.length) ? LIVE_DATA.scYtdL
     : (typeof SCO_YTD_L !== 'undefined' ? SCO_YTD_L : []);
-  LIVE_DATA.matchups = buildTodayMatchupsFromSlate(
-    LIVE_DATA.lineups,
-    LIVE_DATA._slateGamesRows || LIVE_DATA.todayGames || [],
-    LIVE_DATA._slateMatchupsRows || [],
-    scR,
-    scL
-  );
-  enrichMatchupCards();
+  if (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.games && LIVE_DATA._liveSchedule.games.length) {
+    refreshTodayMatchups(LIVE_DATA._liveSchedule);
+    return;
+  }
+  var fetchLive = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
+    ? MLBMASharedMatchup.fetchMlbTodaySchedule()
+    : Promise.resolve({ games: [] });
+  fetchLive.then(function(sched) {
+    LIVE_DATA._liveSchedule = sched;
+    refreshTodayMatchups(sched);
+    if (shouldRenderMatchupsView()) refreshMatchupsSlateUi();
+  });
 }
 
 function refreshMatchupsSlateUi() {

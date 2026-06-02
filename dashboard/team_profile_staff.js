@@ -384,8 +384,8 @@
     var intel = (global.TeamProfileIntel && TeamProfileIntel.renderRotationIntel)
       ? TeamProfileIntel.renderRotationIntel(prof, team, ctx) : '';
     var PC = global.MLBMAProfileControls;
-    var splitBar = PC && PC.renderSplitControls && PC.wrapSectionFilterBar
-      ? PC.wrapSectionFilterBar(PC.renderSplitControls('rotation', split), 'tp-section-filter-bar--split', 'rotation')
+    var splitBar = PC && PC.renderCategorySplitBar
+      ? PC.renderCategorySplitBar('rotation', split)
       : '';
     return sectionCard(ctx, 'Starting Rotation', 'Split filters rotation KPIs and SP rows', splitBar + rotKpi, 'tp-rotation-section',
       { icon: 'rotation-section', kicker: 'SP unit' }) + intel;
@@ -471,8 +471,8 @@
     var intel = (global.TeamProfileIntel && TeamProfileIntel.renderBullpenIntel)
       ? TeamProfileIntel.renderBullpenIntel(prof, team, ctx) : '';
     var PC = global.MLBMAProfileControls;
-    var splitBar = PC && PC.renderSplitControls && PC.wrapSectionFilterBar
-      ? PC.wrapSectionFilterBar(PC.renderSplitControls('bullpen', split), 'tp-section-filter-bar--split', 'bullpen')
+    var splitBar = PC && PC.renderCategorySplitBar
+      ? PC.renderCategorySplitBar('bullpen', split)
       : '';
     return sectionCard(ctx, 'Bullpen Overview', 'Split filters bullpen KPIs and reliever rows', splitBar + bpKpi, 'tp-bullpen-section',
       { icon: 'bullpen-section', kicker: 'Bullpen unit' }) + intel;

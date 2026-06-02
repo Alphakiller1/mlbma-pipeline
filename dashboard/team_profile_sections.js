@@ -502,7 +502,7 @@
       }
     ];
 
-    var body = sectionSplitBar('offense', split) + offenseMetricsPanel(bands, cache, team);
+    var body = offenseMetricsPanel(bands, cache, team);
 
     return sectionCard('Offense Profile', 'League rank on every metric', body,
       { icon: 'offense-profile', kicker: 'Lineup unit', sectionId: 'offense-profile' });
@@ -573,8 +573,7 @@
         { icon: 'schedule-context', kicker: 'Schedule context' });
     }
 
-    var body = sectionSplitBar('schedule', ctx.split || 'both')
-      + opponentStrengthPanel(slots, cache, team)
+    var body = opponentStrengthPanel(slots, cache, team)
       + '<p class="ca-helper tp-opponent-strength-note">SOS derived from PTF+ (higher = harder pitching schedule). xFIP rank #1 = toughest staff faced.</p>';
 
     return sectionCard('Strength of Opponents Faced', filterNote + ' · league rank on each metric', body,

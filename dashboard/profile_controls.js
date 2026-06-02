@@ -85,7 +85,7 @@
       return 'Full platoon, location, and pitcher-type splits for rate tables.';
     }
     if (sectionKey === 'batting') {
-      return 'Split filter applies to Season Overview tab only; use vs RHP / vs LHP tabs for platoon tables.';
+      return 'Use Season Overview, vs RHP, and vs LHP tabs for platoon views.';
     }
     if (sectionKey === 'schedule') {
       return 'Platoon context for opponent quality faced (PALS · xFIP · schedule).';
@@ -183,17 +183,104 @@
     { value: 'L7', label: 'Last 7', warn: true }
   ];
 
-  function sectionPillGroup(label, groupKey, options, active) {
-    return '<div class="hub-ctrl-group tp-section-ctrl" data-tp-ctrl-group="' + esc(groupKey) + '">'
+  function buildSectionPillGroup(opts) {
+    opts = opts || {};
+    var label = opts.label || '';
+    var groupKey = opts.groupKey || '';
+    var options = opts.options || [];
+    var active = opts.active;
+    var ctrlAttr = opts.ctrlAttr || 'data-tp-ctrl';
+    var groupAttr = opts.groupAttr || 'data-tp-ctrl-group';
+    var pillClass = opts.pillClass || 'hub-pill';
+    var rowAttrs = opts.rowAttrs || '';
+    var tabMode = !!opts.tabMode;
+    return '<div class="hub-ctrl-group tp-section-ctrl"' + (groupKey ? ' ' + groupAttr + '="' + esc(groupKey) + '"' : '') + '>'
       + '<span class="hub-ctrl-label">' + esc(label) + '</span>'
-      + '<div class="hub-pill-row">'
+      + '<div class="hub-pill-row"' + (rowAttrs ? ' ' + rowAttrs : '') + '>'
       + options.map(function(o) {
-        var val = o.value || o;
+        var val = o.value != null ? o.value : o;
         var lbl = o.label || splitLabel(val);
-        return '<button type="button" class="hub-pill' + (active === val ? ' active' : '')
-          + (o.warn ? ' warn' : '') + '" data-tp-ctrl="' + esc(val) + '">' + esc(lbl) + '</button>';
+        var selected = active === val;
+        var tabAria = tabMode ? ' role="tab" aria-selected="' + (selected ? 'true' : 'false') + '"' : '';
+        return '<button type="button" class="' + pillClass + (selected ? ' active' : '') + (o.warn ? ' warn' : '')
+          + '" ' + ctrlAttr + '="' + esc(val) + '"' + tabAria
+          + (o.buttonAttrs ? ' ' + o.buttonAttrs : '') + '>' + esc(lbl) + '</button>';
       }).join('')
       + '</div></div>';
+  }
+
+  function sectionPillGroup(label, groupKey, options, active) {
+    return buildSectionPillGroup({ label: label, groupKey: groupKey, options: options, active: active });
+  }
+
+  function renderSectionOptionBar(config) {
+    config = config || {};
+    var inner = '';
+    if (config.groups && config.groups.length) {
+      if (config.layout === 'row') {
+        inner = '<div class="hub-control-row tp-filter-groups-row">'
+          + config.groups.map(function(g) { return buildSectionPillGroup(g); }).join('')
+          + '</div>';
+      } else {
+        inner = config.groups.map(function(g) { return buildSectionPillGroup(g); }).join('');
+      }
+    } else {
+      inner = buildSectionPillGroup({
+        label: config.label,
+        groupKey: config.groupKey,
+        options: config.options,
+        active: config.active,
+        ctrlAttr: config.ctrlAttr,
+        groupAttr: config.groupAttr,
+        pillClass: config.pillClass,
+        rowAttrs: config.rowAttrs,
+        tabMode: config.tabMode
+      });
+    }
+    if (!inner) return '';
+    return wrapSectionFilterBar(
+      inner,
+      config.barClass || 'tp-section-filter-bar--controls',
+      config.sectionKey || ''
+    );
+  }
+
+  function renderCategorySplitBar(category, activeSplit) {
+    var cat = category || 'lineup';
+    var splitOpts = splitOptionsForCategory(cat);
+    var active = activeSplit || defaultSplitForCategory(cat);
+    if (!splitOpts.some(function(o) { return (o.value || o) === active; })) {
+      active = defaultSplitForCategory(cat);
+    }
+    return renderSectionOptionBar({
+      label: 'Split',
+      groupKey: 'split',
+      options: splitOpts,
+      active: active,
+      barClass: 'tp-section-filter-bar--split',
+      sectionKey: cat
+    });
+  }
+
+  /** Lineup / staff unit toolbar — Split + Window in one bar (Team Rankings hub pattern). */
+  function renderUnitContextBar(category, activeSplit, activeWindow) {
+    var cat = category || 'lineup';
+    var splitOpts = splitOptionsForCategory(cat);
+    var split = activeSplit || defaultSplitForCategory(cat);
+    if (!splitOpts.some(function(o) { return (o.value || o) === split; })) {
+      split = defaultSplitForCategory(cat);
+    }
+    var windowKey = activeWindow || 'YTD';
+    var hint = splitHintForCategory(cat);
+    return wrapSectionFilterBar(
+      '<div class="hub-control-row tp-filter-groups-row">'
+      + buildSectionPillGroup({ label: 'Split', groupKey: 'split', options: splitOpts, active: split })
+      + buildSectionPillGroup({ label: 'Window', groupKey: 'window', options: WINDOW_OPTIONS, active: windowKey })
+      + '</div>'
+      + (hint ? '<p class="tp-control-hint">' + esc(hint) + '</p>' : ''),
+      'tp-section-filter-bar--context',
+      'lineup-context'
+    );
   }
 
   function renderSplitControls(category, activeSplit) {
@@ -707,6 +794,10 @@
     renderLineupWindowBar: renderLineupWindowBar,
     renderSectionSplitBar: renderSectionSplitBar,
     renderSectionWindowBar: renderSectionWindowBar,
+    renderSectionOptionBar: renderSectionOptionBar,
+    renderCategorySplitBar: renderCategorySplitBar,
+    renderUnitContextBar: renderUnitContextBar,
+    buildSectionPillGroup: buildSectionPillGroup,
     splitOptionsForSection: splitOptionsForSection,
     defaultSplitForSection: defaultSplitForSection,
     splitHintForSection: splitHintForSection,

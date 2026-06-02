@@ -541,6 +541,10 @@
   padding: var(--tp-filter-pad, 12px 14px);
 }
 
+.team-profile-page .tp-lineup-context-bar {
+  margin-bottom: var(--tp-header-gap, 14px);
+}
+
 .team-profile-page .tp-intel-sustain__band .tp-offense-metrics__band {
   padding: var(--tp-band-pad-y, 14px) var(--tp-band-pad-x, 16px);
 }

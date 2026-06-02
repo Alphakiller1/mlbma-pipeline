@@ -529,10 +529,6 @@
     var team = ctx.teamKey ? ctx.teamKey(ctx.team) : String(ctx.team || '').trim().toUpperCase();
     var metricCache = (Sections && Sections.buildTeamMetricCache) ? Sections.buildTeamMetricCache(ctx) : {};
     var leagueRankFn = Sections && Sections.leagueRank ? Sections.leagueRank : function() { return { rank: null, total: null }; };
-    var PC = global.MLBMAProfileControls;
-    var splitBar = PC && PC.renderSectionSplitBar
-      ? PC.renderSectionSplitBar('sustainability', ctx.split || 'both')
-      : '';
     var labelChip = v.label
       ? '<span class="tp-intel-verdict-label tp-intel-verdict-label--' + esc(String(v.label).toLowerCase().replace(/\s+/g, '-')) + '">'
         + esc(v.label) + '</span>'
@@ -565,7 +561,7 @@
           subtitle: 'Contact quality · projection · market map quadrant'
         })
         : '<header class="ca-section-header"><h2 class="ca-section-title">Sustainability Check</h2></header>')
-      + splitBar + body + '</section>';
+      + body + '</section>';
   }
 
   function takeawayCardHtml(c) {

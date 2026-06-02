@@ -12,8 +12,8 @@
 <link rel="stylesheet" href="theme.css?v=20260616d">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260602m">
-<link rel="stylesheet" href="team_profile.css?v=20260602m">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260602j">
+<link rel="stylesheet" href="team_profile.css?v=20260602w">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260602w">
 <link rel="stylesheet" href="profile_shell.css?v=20260602a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -24,13 +24,13 @@
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="team_profile_mini.js?v=20260602j"></script>
-<script src="team_profile_sections.js?v=20260602j"></script>
-<script src="team_profile_staff.js?v=20260602l"></script>
-<script src="team_profile_intel.js?v=20260602j"></script>
-<script src="mlbma_charts.js?v=20260601f"></script>
+<script src="team_profile_mini.js?v=20260602w"></script>
+<script src="team_profile_sections.js?v=20260602w"></script>
+<script src="team_profile_staff.js?v=20260602w"></script>
+<script src="team_profile_intel.js?v=20260602w"></script>
+<script src="mlbma_charts.js?v=20260602t"></script>
 <script src="platform_dashboard.js?v=20260531p"></script>
-<script src="profile_controls.js?v=20260602b"></script>
+<script src="profile_controls.js?v=20260602w"></script>
 <script src="bullpen_usage.js?v=20260602l"></script>
 <script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
 </head>
@@ -126,12 +126,6 @@
   <div id="profilePageHeader"></div>
   <div class="tp-data-banner" id="dataBanner"></div>
 
-  <details class="tp-page-guide" id="tpPageGuide">
-    <summary>How to read this page</summary>
-    <p class="tp-page-guide__lead">Switch <strong>Lineup · Starters · Bullpen</strong>, then use each section&rsquo;s split and window controls — offense profile, rolling trend, and staff tables filter independently.</p>
-    <p class="tp-page-guide__note">Created metrics (OSI, RCV, ABQ, OBR) are 0–100 Chase Analytics grades. <a href="glossary.html">Glossary →</a></p>
-  </details>
-
   <div class="tp-profile-toolbar">
     <div class="tp-context-strip tp-context-strip--picker">
       <div id="teamPickerMount" class="tp-context-picker"></div>
@@ -143,10 +137,10 @@
   </div>
 
   <div class="tp-identity-stack profile-shell" id="tpIdentityStack">
+    <div id="tpContextBar" class="profile-context-bar tp-lineup-context-bar" hidden></div>
     <div id="profileHeroMount" class="profile-hero"></div>
-    <div id="profileOffenseSections" class="profile-deep-sections profile-offense-sections"></div>
-    <div id="tpContextBar" class="profile-context-bar" hidden></div>
     <div class="tp-unit-snapshot" id="tpUnitSnapshot" aria-live="polite" hidden></div>
+    <div id="profileOffenseSections" class="profile-deep-sections profile-offense-sections"></div>
   </div>
 
   <div class="profile-offense-block profile-offense-block--aux">
@@ -156,7 +150,7 @@
   <div class="profile-staff-block" id="profileStaffSections"></div>
   <div id="profileLineupFooter" class="profile-lineup-footer"></div>
 </main>
-<!-- team-profile build: 20260602b -->
+<!-- team-profile build: 20260602w -->
 
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -184,7 +178,7 @@ var TEAM_NAMES = {
 var OSI_TIERS = [[85,'Elite'],[75,'High'],[65,'Dangerous'],[50,'Inconsistent'],[0,'Weak']];
 var PITCH_TIERS = [[85,'Ace'],[70,'Solid'],[55,'Average'],[0,'Volatile']];
 
-var DATA = { profiles: [], batters: [], sps: [], bullpen: [], bullpenUnit: [], spMetricSplits: [], registry: [], matchups: [], matchupsEnriched: [], lineups: [], lineupsParsed: [], weather: [], pitchTeams: [], metricsR: [], metricsL: [], batterSplitsR: [], batterSplitsL: [], batterSplitsOverall: [], batterSplitsHome: [], batterSplitsAway: [], batterSplitsVsSp: [], batterSplitsVsRp: [], batterRatePool: [], results: [], palsMap: {} };
+var DATA = { profiles: [], batters: [], sps: [], bullpen: [], bullpenUnit: [], spMetricSplits: [], registry: [], matchups: [], matchupsEnriched: [], lineups: [], lineupsParsed: [], weather: [], pitchTeams: [], metricsR: [], metricsL: [], batterSplitsR: [], batterSplitsL: [], batterSplitsOverall: [], batterSplitsRecent: [], batterSplitsHome: [], batterSplitsAway: [], batterSplitsVsSp: [], batterSplitsVsRp: [], batterRatePool: [], results: [], palsMap: {} };
 var STATE = {
   team: 'NYY',
   splitByCategory: { lineup: 'both', rotation: 'overall', bullpen: 'overall' },
@@ -211,6 +205,16 @@ var DEFAULT_SECTION_SPLITS = {
   rotation: 'overall',
   bullpen: 'overall'
 };
+
+var LINEUP_SPLIT_SECTIONS = ['identity', 'offense', 'batting', 'schedule', 'sustainability'];
+
+function syncLineupSectionSplits(split) {
+  if (!STATE.splitBySection) STATE.splitBySection = Object.assign({}, DEFAULT_SECTION_SPLITS);
+  LINEUP_SPLIT_SECTIONS.forEach(function(key) {
+    STATE.splitBySection[key] = split;
+  });
+  saveSplitForCategory('lineup', split);
+}
 
 function activeSplit() {
   var cat = STATE.category || 'lineup';
@@ -492,9 +496,61 @@ function metricCardChip(key, v) {
 }
 
 function trendArrow(t) {
-  if (t === 'rising') return '<span class="trend-up" aria-hidden="true">\u2191</span>';
-  if (t === 'falling') return '<span class="trend-down" aria-hidden="true">\u2193</span>';
-  return '<span class="trend-flat" aria-hidden="true">\u2192</span>';
+  var s = String(t == null ? '' : t).trim().toLowerCase();
+  if (s === 'rising') return '<span class="trend-up" aria-hidden="true" title="OSI recent above season baseline">\u2191</span>';
+  if (s === 'falling') return '<span class="trend-down" aria-hidden="true" title="OSI recent below season baseline">\u2193</span>';
+  return '<span class="trend-flat" aria-hidden="true" title="Stable recent form">\u2192</span>';
+}
+
+var WOBA_FORM_UP = 0.025;
+var WOBA_FORM_DOWN = -0.025;
+
+function batterRecentWoba(name, team) {
+  var rows = batterRateProfilesForPlayer(name, team);
+  var recent = rowBySplitType(rows, 'recent');
+  return recent ? num(pickCol(recent, ['wOBA', 'woba'])) : null;
+}
+
+function batterProfileTrendFallback(name, team, metricsSplit) {
+  var profiles = batterProfilesForPlayer(name, team);
+  if (!profiles.length) return 'stable';
+  var splitType = metricsSplit === 'rhp' ? 'vs_RHP' : metricsSplit === 'lhp' ? 'vs_LHP' : 'overall';
+  var row = rowBySplitType(profiles, splitType) || rowBySplitType(profiles, 'overall') || profiles[0];
+  return String(pickCol(row, ['trend']) || 'stable').trim().toLowerCase();
+}
+
+function batterFormTrend(name, team, metricsSplit, spHand) {
+  var metrics = batterMetricsForLineup(name, team, metricsSplit, spHand);
+  var seasonWoba = metrics.woba;
+  var recentWoba = batterRecentWoba(name, team);
+  if (seasonWoba != null && recentWoba != null) {
+    return {
+      type: 'woba',
+      delta: recentWoba - seasonWoba,
+      recent: recentWoba,
+      season: seasonWoba
+    };
+  }
+  return { type: 'osi', trend: batterProfileTrendFallback(name, team, metricsSplit) };
+}
+
+function trendFormCell(trendPack) {
+  if (!trendPack) {
+    return '<span class="trend-flat" title="Insufficient form data">\u2014</span>';
+  }
+  if (trendPack.type === 'woba') {
+    var d = trendPack.delta;
+    if (d == null || isNaN(d)) {
+      return '<span class="trend-flat" title="Insufficient form data">\u2014</span>';
+    }
+    var dir = d >= WOBA_FORM_UP ? 'up' : d <= WOBA_FORM_DOWN ? 'down' : 'flat';
+    var arrow = dir === 'up' ? '\u2191' : dir === 'down' ? '\u2193' : '\u2192';
+    var cls = dir === 'up' ? 'trend-up' : dir === 'down' ? 'trend-down' : 'trend-flat';
+    var label = (d >= 0 ? '+' : '') + d.toFixed(3);
+    return '<span class="' + cls + '" title="L30 wOBA ' + fmtSlashStat(trendPack.recent)
+      + ' vs season ' + fmtSlashStat(trendPack.season) + ' (' + label + ')">' + arrow + '</span>';
+  }
+  return trendArrow(trendPack.trend);
 }
 
 function profileRow(team) {
@@ -594,6 +650,7 @@ function buildBatterRatePool() {
   }
   DATA.batterRatePool = []
     .concat(tag(DATA.batterSplitsOverall, 'overall'))
+    .concat(tag(DATA.batterSplitsRecent, 'recent'))
     .concat(tag(DATA.batterSplitsR, 'vs_RHP'))
     .concat(tag(DATA.batterSplitsL, 'vs_LHP'))
     .concat(tag(DATA.batterSplitsHome, 'home'))
@@ -782,12 +839,7 @@ function todayLineupForTeam(team) {
 }
 
 function battingSectionSubtitle(team, ctx) {
-  ctx = ctx || {};
-  var split = ctx.split || (ctx.getSectionSplit && ctx.getSectionSplit('batting')) || 'both';
-  var windowKey = ctx.window || STATE.window || 'YTD';
-  var spHand = lineupSpHand(team);
-  var splitNote = lineupSplitSubtitle(split, spHand, windowKey);
-  return 'Season qualified batters (50+ PA) · ' + splitNote;
+  return 'Season qualified batters (50+ PA) · switch tabs for platoon splits';
 }
 
 function qualifiedBattersRosterList(team, metricsSplit, spHand) {
@@ -805,7 +857,6 @@ function qualifiedBattersRosterList(team, metricsSplit, spHand) {
     if (st === 'vs_RHP' || !byName[n].main) byName[n].main = b;
   });
   return Object.keys(byName).map(function(n) {
-    var main = byName[n].main || byName[n]['vs_RHP'] || {};
     var reg = findRegistryEntry(n, team);
     var m = batterMetricsForLineup(n, team, metricsSplit, spHand);
     return {
@@ -816,7 +867,7 @@ function qualifiedBattersRosterList(team, metricsSplit, spHand) {
       obp: m.obp,
       iso: m.iso,
       woba: m.woba,
-      trend: pickCol(main, ['trend'])
+      formTrend: batterFormTrend(n, team, metricsSplit, spHand)
     };
   }).sort(function(a, b) { return (b.woba || 0) - (a.woba || 0); });
 }
@@ -828,7 +879,7 @@ function buildQualifiedBattersTableHtml(team, ctx, metricsSplit) {
   var rosterList = qualifiedBattersRosterList(team, metricsSplit, spHand);
 
   var body = profileTableOpen()
-    + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>OPS</th><th>OBP</th><th>ISO</th><th>wOBA</th><th>Trend</th><th></th></tr></thead><tbody>';
+    + '<thead><tr><th>Name</th><th>Pos</th><th>Bats</th><th>OPS</th><th>OBP</th><th>ISO</th><th>wOBA</th><th>Form</th><th></th></tr></thead><tbody>';
   if (!rosterList.length) {
     body += '<tr><td colspan="9" class="tp-empty">No qualified batters (run batter profile pipeline)</td></tr>';
   } else {
@@ -839,7 +890,7 @@ function buildQualifiedBattersTableHtml(team, ctx, metricsSplit) {
         + '<td class="num">' + rateStatCell(b.obp, 'obp') + '</td>'
         + '<td class="num">' + rateStatCell(b.iso, 'iso') + '</td>'
         + '<td class="num">' + rateStatCell(b.woba, 'woba') + '</td>'
-        + '<td>' + trendArrow(b.trend) + '</td>'
+        + '<td>' + trendFormCell(b.formTrend) + '</td>'
         + '<td><a class="ca-btn ca-btn--ghost ca-btn--sm" href="batter_profile.html?player=' + encodePlayer(b.name) + '">Profile</a></td></tr>';
     });
   }
@@ -859,18 +910,32 @@ function buildQualifiedBattersSplitBlock(title, hint, team, ctx, metricsSplit) {
 
 function battingSplitTabPills(activeTab) {
   activeTab = activeTab || 'season';
+  var PC = window.MLBMAProfileControls;
   var tabs = [
-    { key: 'season', label: 'Season Overview' },
-    { key: 'rhp', label: 'vs RHP' },
-    { key: 'lhp', label: 'vs LHP' }
+    { value: 'season', label: 'Season Overview' },
+    { value: 'rhp', label: 'vs RHP' },
+    { value: 'lhp', label: 'vs LHP' }
   ];
-  return '<div class="tp-batting-tabs" role="tablist" aria-label="Qualified batter splits">'
-    + '<div class="hub-pill-row">'
+  if (PC && PC.renderSectionOptionBar) {
+    return PC.renderSectionOptionBar({
+      label: 'View',
+      groupKey: 'batting-view',
+      options: tabs,
+      active: activeTab,
+      ctrlAttr: 'data-batting-split-tab',
+      groupAttr: 'data-batting-split-group',
+      rowAttrs: 'role="tablist" aria-label="Qualified batter splits"',
+      tabMode: true,
+      barClass: 'tp-section-filter-bar--batting',
+      sectionKey: 'batting'
+    });
+  }
+  return '<div class="hub-control-bar tp-hub-bar tp-section-filter-bar tp-section-filter-bar--batting" data-tp-section="batting">'
+    + '<div class="hub-ctrl-group tp-section-ctrl"><span class="hub-ctrl-label">View</span><div class="hub-pill-row" role="tablist">'
     + tabs.map(function(t) {
-      var on = t.key === activeTab;
-      return '<button type="button" class="hub-pill' + (on ? ' active' : '') + '" data-batting-split-tab="' + escHtml(t.key) + '" role="tab" aria-selected="' + (on ? 'true' : 'false') + '">' + escHtml(t.label) + '</button>';
-    }).join('')
-    + '</div></div>';
+      var on = t.value === activeTab;
+      return '<button type="button" class="hub-pill' + (on ? ' active' : '') + '" data-batting-split-tab="' + escHtml(t.value) + '">' + escHtml(t.label) + '</button>';
+    }).join('') + '</div></div></div>';
 }
 
 function battingSplitPane(tabKey, activeTab, innerHtml) {
@@ -884,26 +949,20 @@ function renderBattingSection(team, ctx) {
   ctx = ctx || {};
   var battingCtx = sectionCtx(ctx, 'batting', profileRow(STATE.team));
   var subtitle = battingSectionSubtitle(team, battingCtx);
-  var PC = window.MLBMAProfileControls;
   var activeTab = STATE.battingSplitTab || 'season';
-  var mainSplit = battingCtx.split || 'both';
-  var splitBar = (activeTab === 'season' && PC && PC.renderSectionSplitBar)
-    ? PC.renderSectionSplitBar('batting', battingCtx.split)
-    : '';
-  var seasonPane = splitBar
-    + buildQualifiedBattersSplitBlock(
+  var seasonPane = buildQualifiedBattersSplitBlock(
       'Season qualified batters',
-      '50+ PA · stats follow the split filter above',
-      team, battingCtx, mainSplit
+      '50+ PA · season composite · Form = L30 wOBA vs season baseline',
+      team, battingCtx, 'both'
     );
   var rhpPane = buildQualifiedBattersSplitBlock(
     'vs Right-Handed Pitching',
-    'Platoon split · OPS, OBP, ISO, wOBA vs RHP',
+    'Platoon split · Form = L30 wOBA vs vs RHP season baseline',
     team, battingCtx, 'rhp'
   );
   var lhpPane = buildQualifiedBattersSplitBlock(
     'vs Left-Handed Pitching',
-    'Platoon split · OPS, OBP, ISO, wOBA vs LHP',
+    'Platoon split · Form = L30 wOBA vs vs LHP season baseline',
     team, battingCtx, 'lhp'
   );
   var body = battingSplitTabPills(activeTab)
@@ -1550,12 +1609,28 @@ function syncIdentityStackLayout() {
   }
 }
 
+function renderContextFilterBar() {
+  var el = document.getElementById('tpContextBar');
+  if (!el) return;
+  var cat = STATE.category || 'lineup';
+  var PC = window.MLBMAProfileControls;
+  if (cat === 'lineup') {
+    var split = activeSectionSplit('offense');
+    var windowKey = STATE.window || 'YTD';
+    el.innerHTML = (PC && PC.renderUnitContextBar)
+      ? PC.renderUnitContextBar('lineup', split, windowKey)
+      : '';
+    el.hidden = !el.innerHTML;
+  } else {
+    el.innerHTML = '';
+    el.hidden = true;
+  }
+}
+
 function renderUnitSnapshotStrip(prof, baseCtx) {
   var el = document.getElementById('tpUnitSnapshot');
   if (!el) return;
   var cat = STATE.category || 'lineup';
-  var contextEl = document.getElementById('tpContextBar');
-  if (contextEl) { contextEl.innerHTML = ''; contextEl.hidden = true; }
   var Staff = window.TeamProfileStaff;
 
   if (cat === 'lineup') {
@@ -1691,8 +1766,25 @@ function bindTeamProfileFilters() {
     var val = btn.getAttribute('data-tp-ctrl');
     var section = bar ? bar.getAttribute('data-tp-section') : null;
 
+    if (section === 'lineup-context') {
+      if (key === 'split') {
+        syncLineupSectionSplits(val);
+        renderTeam(STATE.team);
+        return;
+      }
+      if (key === 'window') {
+        STATE.window = val;
+        renderTeam(STATE.team);
+        return;
+      }
+    }
     if (key === 'split' && section) {
       saveSectionSplit(section, val);
+      if (LINEUP_SPLIT_SECTIONS.indexOf(section) >= 0) {
+        syncLineupSectionSplits(val);
+        renderTeam(STATE.team);
+        return;
+      }
       rerenderTeamSection(section);
       return;
     }
@@ -1781,6 +1873,7 @@ function buildStaffCtx() {
     inferRoleFromLog: inferRoleFromLog,
     poolPitchScore: poolPitchScore,
     trendArrow: trendArrow,
+    trendFormCell: trendFormCell,
     pitchTeamRow: pitchTeamRow,
     sectionCard: sectionCard,
     profileTableOpen: profileTableOpen,
@@ -1870,8 +1963,7 @@ function renderOffenseBlock(prof, name, tonight) {
     sections.innerHTML = '';
     var takeMountOff = document.getElementById('tpAnalystTakeMount');
     if (takeMountOff) takeMountOff.innerHTML = '';
-    var contextOff = document.getElementById('tpContextBar');
-    if (contextOff) { contextOff.innerHTML = ''; contextOff.hidden = true; }
+    renderContextFilterBar();
     syncIdentityStackLayout();
     return;
   }
@@ -1901,6 +1993,7 @@ function renderTeam(team) {
   var ctx = buildMiniCtx(prof, name, tonight);
   bindTeamProfileFilters();
   renderUnitNavStrip();
+  renderContextFilterBar();
   renderOffenseBlock(prof, name, tonight);
   renderUnitSnapshotStrip(prof, ctx);
   renderStaffBlock(prof);
@@ -1960,6 +2053,7 @@ function loadAll() {
     fetchSheetTab(TABS.batter_splits_rhp).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_lhp).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_overall).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_recent).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; }),
     fetchSheetTab(TABS.batter_splits_vs_sp).catch(function() { return []; }),
@@ -1983,13 +2077,14 @@ function loadAll() {
     DATA.batterSplitsR = res[11] || [];
     DATA.batterSplitsL = res[12] || [];
     DATA.batterSplitsOverall = res[13] || [];
-    DATA.batterSplitsHome = res[14] || [];
-    DATA.batterSplitsAway = res[15] || [];
-    DATA.batterSplitsVsSp = res[16] || [];
-    DATA.batterSplitsVsRp = res[17] || [];
-    DATA.results = res[18] || [];
-    DATA.spMetricSplits = res[20] || [];
-    DATA.bullpenUnit = res[21] || [];
+    DATA.batterSplitsRecent = res[14] || [];
+    DATA.batterSplitsHome = res[15] || [];
+    DATA.batterSplitsAway = res[16] || [];
+    DATA.batterSplitsVsSp = res[17] || [];
+    DATA.batterSplitsVsRp = res[18] || [];
+    DATA.results = res[19] || [];
+    DATA.spMetricSplits = res[21] || [];
+    DATA.bullpenUnit = res[22] || [];
     buildBatterRatePool();
     registerBatterRatePools();
     registerRpgPool();
@@ -1997,7 +2092,7 @@ function loadAll() {
       MLBMAAssets.parseRegistryRows(DATA.registry);
     }
     if (window.MLBMASharedMatchup && MLBMASharedMatchup.parsePalsRows) {
-      DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[19] || []);
+      DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[20] || []);
     }
     if (window.MLBMASharedMatchup && MLBMASharedMatchup.enrichSpProfiles) {
       MLBMASharedMatchup.enrichSpProfiles(DATA.sps, null);

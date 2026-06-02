@@ -601,10 +601,58 @@ body.team-profile-page {
 .tp-section-filter-bar {
   margin: 0 0 var(--tp-filter-gap, 12px);
   padding: var(--tp-filter-pad, 12px 14px);
-  background: var(--bg-3, #16161D);
+  background: var(--bg-2, #0E1018);
   border: 1px solid var(--border, #2A2A35);
   border-radius: 12px;
   box-shadow: var(--e-1, none);
+  position: relative;
+  overflow: hidden;
+}
+
+.tp-section-filter-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple, #7C4DFF), transparent 72%);
+  pointer-events: none;
+}
+
+.tp-section-filter-bar--context {
+  margin-bottom: var(--tp-header-gap, 14px);
+}
+
+.tp-section-filter-bar--context .tp-filter-groups-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  align-items: flex-end;
+}
+
+.tp-section-filter-bar--context .hub-ctrl-group {
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.tp-section-filter-bar--context .hub-pill-row {
+  gap: 10px;
+}
+
+.tp-section-filter-bar--context .tp-control-hint {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border, #2A2A35) 88%, transparent);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--tp-note-color, #B8C0CC);
+}
+
+.tp-lineup-context-bar:not([hidden]) {
+  display: block;
 }
 
 .tp-section-filter-bar--identity {
@@ -650,9 +698,7 @@ body.team-profile-page :is(
   .tp-control-cell--split,
   .tp-control-cell--window,
   .tp-control-cell--section,
-  .tp-section .ca-section-header__actions,
-  .tp-batting-section .tp-batting-tabs,
-  .tp-trend-controls
+  .tp-section .ca-section-header__actions
 ) .hub-pill-row {
   gap: var(--tp-pill-row-gap, 10px);
 }
@@ -666,11 +712,8 @@ body.team-profile-page :is(
   .tp-control-cell--split,
   .tp-control-cell--window,
   .tp-control-cell--section,
-  .tp-section .ca-section-header__actions,
-  .tp-batting-section .tp-batting-tabs,
-  .tp-trend-controls
-) .hub-pill,
-body.team-profile-page .tp-trend-controls .ca-pill-btn.tp-trend-metric {
+  .tp-section .ca-section-header__actions
+) .hub-pill {
   min-height: var(--tp-pill-min-height, 44px);
   padding: var(--tp-pill-padding-y, 11px) var(--tp-pill-padding-x, 20px);
   font-size: var(--tp-pill-font-size, 14px);
@@ -765,9 +808,23 @@ body.team-profile-page .tp-trend-controls .ca-pill-btn.tp-trend-metric {
 
 .tp-unit-nav {
   padding: 10px 12px;
+  margin-bottom: var(--tp-filter-gap, 12px);
   background: var(--bg-2, #0E1018);
   border: 1px solid var(--border, #262A38);
-  border-radius: 14px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tp-unit-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple, #7C4DFF), transparent 72%);
+  pointer-events: none;
 }
 
 .tp-unit-nav-row {
@@ -1310,14 +1367,8 @@ body.team-profile-page .tp-trend-controls .ca-pill-btn.tp-trend-metric {
   gap: var(--tp-section-gap, 12px);
 }
 
-.tp-batting-section .tp-batting-tabs {
+.tp-batting-section .tp-section-filter-bar--batting {
   margin: 0 0 var(--tp-header-gap, 12px);
-  padding: 0;
-}
-
-.tp-batting-section .tp-batting-tabs .hub-pill-row {
-  display: flex;
-  flex-wrap: wrap;
 }
 
 .tp-batting-split {
@@ -3035,31 +3086,8 @@ body.team-profile-page .tp-trend-controls .ca-pill-btn.tp-trend-metric {
   line-height: 1.2;
 }
 
-.tp-trend-metric {
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-height: 48px;
-  min-width: 88px;
-  padding: 10px 14px 8px;
-}
-
-.tp-trend-metric-abbr {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.tp-trend-metric-desc {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-2, #D1D5DB);
-  line-height: 1.2;
-  text-align: center;
-}
-
-.tp-trend-metric.active .tp-trend-metric-desc {
-  color: rgba(255, 255, 255, 0.75);
+.tp-section-filter-bar--trend {
+  margin-bottom: var(--tp-filter-gap, 12px);
 }
 
 .tp-metric-chip-only {
@@ -3076,13 +3104,6 @@ body.team-profile-page .tp-trend-controls .ca-pill-btn.tp-trend-metric {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
-}
-
-.tp-trend-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--tp-pill-row-gap, 10px);
-  margin-bottom: 14px;
 }
 
 .tp-trend-table-wrap {

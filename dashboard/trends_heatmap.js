@@ -86,7 +86,6 @@
       + '.thm-table tbody tr:hover{background:rgba(124,77,255,.10);box-shadow:inset 3px 0 0 #7C4DFF}'
       + '.thm-table td.numcol{width:1%;white-space:nowrap}'
       + '.thm-rel{font-size:12px;font-weight:700;color:#AEB4C6;text-align:center}'
-      + '.thm-int{font-size:12px;font-weight:600;color:#F6F8FC;text-align:center}'
       + '.thm-team{display:flex;align-items:center;gap:11px;padding:0;color:#F6F8FC;font-family:var(--display)}'
       + '.thm-team strong{font-size:15px;font-weight:800;letter-spacing:.02em}'
       + '.thm-team-logo{width:28px;height:28px;border-radius:0!important;object-fit:contain;background:transparent!important;border:0!important}'
@@ -157,7 +156,6 @@
         by[t].trend = trendLabel(by[t]);
         by[t].reliability = reliabilityLabel(by[t]);
         by[t].reliabilityScore = reliabilityRank(by[t].reliability);
-        by[t].interpretation = interpretationLabel(by[t]);
       });
       return Object.keys(by).sort().map(function(t) { return by[t]; });
     });
@@ -229,16 +227,6 @@
   function reliabilityRank(label) {
     var m = { 'Sustained Rise': 4, Stable: 3, Declining: 2, 'Short Spike': 1, Noisy: 0 };
     return m[label] != null ? m[label] : 0;
-  }
-  function interpretationLabel(row) {
-    var d = num(row.delta);
-    var v = num(row.velocity);
-    if (d == null || v == null) return 'Insufficient';
-    if (d >= 4 && v > 0.6) return 'Momentum Up';
-    if (d <= -4 && v < -0.6) return 'Momentum Down';
-    if (Math.abs(d) <= 2 && Math.abs(v) < 0.6) return 'Stable Band';
-    if (Math.abs(d) >= 5 && Math.abs(v) < 0.4) return 'Recent Spike';
-    return 'Mixed Signal';
   }
   function metricColor(value, metricKey) {
     var n = num(value);
@@ -331,7 +319,6 @@
         + '<th class="sortable" data-a="sort" data-k="delta">Δ L7-YTD' + sortArrow(state, 'delta') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="velocity">Velocity' + sortArrow(state, 'velocity') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="reliability">Reliability' + sortArrow(state, 'reliability') + '</th>'
-        + '<th>Interpretation</th>'
         + '</tr></thead><tbody>';
       var body = sorted.map(function(r) {
         function cell(v, digits) {
@@ -359,7 +346,6 @@
           + deltaChip(r.delta)
           + '<td class="numcol"><span class="chip ' + velCls + '">' + esc(velDisplay) + '</span></td>'
           + '<td><div class="thm-rel">' + esc(r.reliability || 'Noisy') + '</div></td>'
-          + '<td><div class="thm-int">' + esc(r.interpretation || 'Insufficient') + '</div></td>'
           + '</tr>';
       }).join('');
       root.querySelector('.thm-table-wrap').innerHTML = head + body + '</tbody></table>';
