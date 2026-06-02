@@ -561,8 +561,7 @@
 
   function renderRollingTrend(m, prof, ctx) {
     if (!Mini || !Mini.renderTrendChartPanel) return '';
-    var body = lineupWindowBar(ctx.window || 'YTD')
-      + '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
+    var body = '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
     return sectionCard('Rolling Trend', 'Grade movement across time windows', body,
       { icon: 'trending-up', kicker: 'Momentum', sectionId: 'rolling-trend' });
   }
