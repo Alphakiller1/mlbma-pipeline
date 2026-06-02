@@ -656,7 +656,6 @@
       + '<div class="tp-offense-metrics__band">'
       + '<div class="tp-offense-metrics__band-head">'
       + '<span class="tp-offense-metrics__band-title">Snapshot</span>'
-      + '<span class="tp-offense-metrics__band-hint">Proj OSI · wRC+ · OBP with league rank</span>'
       + '</div>'
       + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + (chipsHtml || '') + '</div>'
       + '</div></div>';

@@ -2542,7 +2542,13 @@ body.team-profile-page {
 }
 
 .tp-offense-metrics--opponent .tp-offense-metrics__row {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 6px 8px 4px;
+  grid-template-columns: none;
 }
 
 .tp-opponent-strength-note {

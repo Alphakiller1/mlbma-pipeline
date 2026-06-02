@@ -771,6 +771,7 @@
     });
     return '<div class="tp-trend-panel" data-window="' + esc(windowKey) + '">'
       + '<div class="tp-trend-controls" role="group" aria-label="Chart metric">' + toggles + '</div>'
+      + renderTeamTrendTable(m, ctx, active)
       + '<div class="tp-trend-chart-mount" data-active-metric="' + esc(active) + '">' + chart + '</div>'
       + (formReadHtml || (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : ''))
       + '</div>';
@@ -1157,6 +1158,7 @@
       return renderTrendSnapshot(prof, team, ctx).replace(/<\/?motion>/g, '');
     },
     renderTrendChartPanel: renderTrendChartPanel,
+    renderTeamTrendTable: renderTeamTrendTable,
     renderSummaryPanel: renderSummaryPanel,
   };
 })(typeof window !== 'undefined' ? window : this);

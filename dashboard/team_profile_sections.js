@@ -571,17 +571,6 @@
     return renderRollingTrend(m, prof, ctx);
   }
 
-  function renderLocationSection(prof, team, ctx) {
-    if (!Mini || !Mini.locationSplitSummary) return '';
-    var locCtx = Object.assign({}, ctx, { split: 'both' });
-    var m = Mini.resolveView ? Mini.resolveView(prof, locCtx) : {};
-    var location = Mini.locationSplitSummary(prof, m, locCtx);
-    if (!location) return '';
-    var body = '<div class="tp-split-section">' + location + '</div>';
-    return sectionCard('Home / Away', 'Location split · park-adjusted offense rates', body,
-      { icon: 'map-pin', kicker: 'Location', sectionId: 'location-splits' });
-  }
-
   function compareMatchupUrl(away, home) {
     var PD = global.PlatformDashboard;
     if (PD && PD.compareUrl) return PD.compareUrl(away, home);
@@ -698,7 +687,6 @@
     var html = '';
     html += renderOffenseProfile(m, prof, ctx);
     html += renderRollingTrend(m, prof, ctx);
-    html += renderLocationSection(prof, team, ctx);
     html += renderScheduleContext(ctx, ctx.resultsRow, ctx.window);
     html += renderSurfaceWins(ctx.resultsRow, ctx.window);
     if (global.TeamProfileIntel) {
