@@ -28,7 +28,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603d" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603e" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -182,11 +182,6 @@
     <section class="ca-board tp-section" id="secHand">
       <div id="ppHdrHand"></div>
       <div class="hand-grid" id="handGrid"></div>
-    </section>
-
-    <section class="ca-board tp-section" id="secLoc">
-      <div id="ppHdrLoc"></div>
-      <div class="loc-grid" id="locGrid"></div>
     </section>
 
     <section class="ca-board tp-section" id="secLog">
@@ -623,7 +618,6 @@ function renderPitcherSectionHeaders() {
     { id: 'ppHdrOsi', title: 'Performance vs Lineup Quality (OSI Tier)', subtitle: 'How workload and results shift vs High / Mid / Low OSI offenses', icon: 'spark' },
     { id: 'ppHdrAbq', title: 'ABQ Split', subtitle: 'Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups', icon: 'target' },
     { id: 'ppHdrHand', title: 'Handedness Splits', subtitle: 'vs LHH and vs RHH — from sheet platoon rows when available', icon: 'platoon' },
-    { id: 'ppHdrLoc', title: 'Home / Away Splits', subtitle: 'Park and road context', icon: 'home' },
     { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
     { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five ERA by opponent OSI tier (team runs through 5 innings)', icon: 'clock' },
     { id: 'ppHdrBetting', title: 'Betting Context Panel', subtitle: 'Auto-synthesized angles from the strongest patterns in this profile', icon: 'badge' }
@@ -956,11 +950,7 @@ function renderProfile(key) {
     '<div class="hand-panel"><h4>vs LHH</h4>' + splitRowToCells(lhh || seasonPool, 'No LHH split') + '</div>' +
     '<div class="hand-panel"><h4>vs RHH</h4>' + splitRowToCells(rhh || seasonPool, 'No RHH split') + '</div>' + handNote;
 
-  var homeS = findSplit(splits, 'location', 'home');
-  var awayS = findSplit(splits, 'location', 'away');
-  document.getElementById('locGrid').innerHTML =
-    '<div class="loc-panel"><h4>Home</h4>' + splitRowToCells(homeS, 'No home starts') + '</div>' +
-    '<div class="loc-panel"><h4>Away</h4>' + splitRowToCells(awayS, 'No away starts') + '</div>';
+  // Home/Away section removed (user request)
 
   var sortedLog = log.slice().sort(function(a, b) {
     return String(pickCol(b, ['date'])).localeCompare(String(pickCol(a, ['date'])));
