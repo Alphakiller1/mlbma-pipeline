@@ -1773,22 +1773,34 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-width: 0; align-items: stretch; margin: 12px 0; }
 .hmc-row.hmc-teams { min-width: 0; }
 .mc-sp-block {
-  display: flex; gap: 10px; align-items: flex-start; font-size: 11px;
-  height: 100%; padding: 12px; border-radius: 8px;
-  background: linear-gradient(180deg, rgba(255,255,255,.052), rgba(255,255,255,.018));
-  border: 1px solid rgba(196,176,255,.12);
+  display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 12px;
+  align-items: flex-start; font-size: 11px; height: 100%;
+  padding: 12px 12px 11px; border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
+  border: 1px solid rgba(196,176,255,.08);
 }
+.mc-sp-info { min-width: 0; display: grid; grid-template-rows: auto auto auto 1fr; align-content: start; }
+.mc-sp-photo { width: 42px; margin-right: 0; }
+.mc-sp-top { flex-wrap: nowrap; gap: 4px; min-height: 18px; margin-bottom: 5px; overflow: hidden; }
+.mc-sp-side { margin-right: auto; white-space: nowrap; }
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 12px; margin-top: 2px; }
-.mc-sp-stats--grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.mc-sp-stats--grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-self: end; }
 .mc-sp-stat {
-  display: flex; flex-direction: column; gap: 1px; padding: 7px 6px;
-  border-radius: 6px; background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.06); text-align: center; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 2px;
+  border-radius: 0; background: transparent; border: 0; text-align: center; min-width: 0;
 }
-.mc-sp-stat em { font-style: normal; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.mc-sp-stat strong { color: var(--text); font-size: 14px; font-weight: 800; line-height: 1.2; }
-.mc-sp-name-text { font-size: 15px; letter-spacing: 0; }
-.mc-ps-badge__val { font-size: 20px; letter-spacing: 0; }
+.mc-sp-stat em { font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.mc-sp-stat strong { color: var(--text); font-size: 16px; font-weight: 900; line-height: 1.1; }
+.mc-sp-name-text { font-size: 15.5px; font-weight: 800; letter-spacing: 0; }
+.mc-ps-badge--defined {
+  display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline;
+  gap: 8px; width: 100%; margin: 0 0 8px; padding: 6px 0;
+  border-radius: 0; background: transparent;
+  border-top: 1px solid rgba(255,255,255,.065);
+  border-bottom: 1px solid rgba(255,255,255,.065);
+}
+.mc-ps-badge__label { font-size: 9.5px; font-weight: 800; letter-spacing: .1em; line-height: 1.05; }
+.mc-ps-badge__val { font-size: 22px; font-weight: 900; letter-spacing: 0; }
 .hmc-edge-label { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
 .hmc-osi-bar { display: grid; grid-template-columns: minmax(0, 72px) minmax(0, 1fr) minmax(0, 72px); gap: 8px; align-items: center; margin-bottom: 10px; min-width: 0; }
 .hmc-osi-val { font-size: 12px; color: var(--text); font-weight: 700; }
