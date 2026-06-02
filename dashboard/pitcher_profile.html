@@ -8,348 +8,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Pitcher Profile</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
-:root {
-  --bg: #0A0A0A; --bg-2: #111114; --bg-3: #18181c; --bg-4: #1f1f25;
-  --border: #28282f; --border-2: #34343d;
-  --text: #F4F4F7; --text-2: #A1A1AA; --text-3: #71717A;
-  --purple: #9A6BFF; --purple-2: #6D28D9; --purple-3: #C4B0FF;
-  --purple-glow: rgba(124, 77, 255, 0.25);
-  --green-l: #86EFAC; --green: #4ADE80; --green-d: #16A34A;
-  --green-dim: rgba(74, 222, 128, 0.15);
-  --red-l: #FCA5A5; --red: #F87171; --red-d: #DC2626;
-  --red-dim: rgba(248, 113, 113, 0.15);
-  --gold-l: #FCD34D; --gold: #FBBF24; --gold-d: #B45309;
-  --gold-dim: rgba(251, 191, 36, 0.15);
-  --blue-l: #93C5FD; --blue: #60A5FA; --blue-d: #2563EB;
-  --blue-dim: rgba(96, 165, 250, 0.15);
-  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
-  --font-display: "Roboto Condensed", "DM Sans", system-ui, sans-serif;
-  --font: var(--font-body);
-  --mono: "Roboto Condensed", "DM Sans", system-ui, sans-serif;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  background: var(--bg); color: var(--text); font-family: var(--font);
-  font-size: 14px; line-height: 1.5; min-height: 100vh;
-  font-variant-numeric: tabular-nums;
-  -webkit-font-smoothing: antialiased;
-}
-body {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 77, 255, 0.08), transparent),
-    var(--bg);
-}
-.container { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
-
-.loading {
-  position: fixed; inset: 0; background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 2000; gap: 16px;
-}
-.loading.hide { display: none; }
-.spinner {
-  width: 36px; height: 36px; border: 2px solid var(--border);
-  border-top-color: var(--purple); border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { color: var(--text-2); font-size: 13px; }
-
-.header { margin-bottom: 22px; }
-.brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-.brand-tag {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--purple);
-}
-.brand-pill {
-  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
-  padding: 3px 8px; border-radius: 99px;
-  background: var(--green-dim); color: var(--green);
-  border: 1px solid rgba(74, 222, 128, 0.25);
-}
-.brand-pill.warn {
-  background: var(--gold-dim); color: var(--gold);
-  border-color: rgba(251, 191, 36, 0.35);
-}
-h1 {
-  font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 125;
-  background: linear-gradient(135deg, #fff 0%, var(--purple-2) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.section-title,
-.pitcher-name-lg,
-.ps-name {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 125;
-  letter-spacing: -0.015em;
-}
-.subtitle { color: var(--text-2); font-size: 13px; max-width: 640px; }
-.nav-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-.nav-link {
-  font-size: 11.5px; font-weight: 500; color: var(--text-2);
-  text-decoration: none; padding: 7px 12px; border-radius: 8px;
-  border: 1px solid var(--border); background: var(--bg-2);
-  transition: all 0.15s ease;
-}
-.nav-link:hover {
-  color: var(--text); border-color: var(--purple-3);
-  box-shadow: 0 0 12px var(--purple-glow);
-}
-.header-meta { font-size: 11px; color: var(--text-3); margin-top: 10px; }
-.data-banner {
-  display: none; margin-top: 12px; padding: 10px 14px;
-  background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.35);
-  border-radius: 10px; font-size: 12px; color: var(--gold-l);
-}
-.data-banner.show { display: block; }
-
-.selector-bar {
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;
-  display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
-}
-.selector-group { flex: 1; min-width: 220px; }
-.selector-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; display: block;
-}
-.selector-input, .selector-select {
-  width: 100%; background: var(--bg-3); border: 1px solid var(--border-2);
-  color: var(--text); padding: 10px 12px; border-radius: 8px;
-  font-size: 13px; font-family: var(--font);
-}
-.selector-input:focus, .selector-select:focus {
-  outline: none; border-color: var(--purple);
-  box-shadow: 0 0 0 2px var(--purple-glow);
-}
-
-/* Pitcher Profile: move split/window/view to section controls (keep search top). */
-#pitcherControlBar .pc-pitcher-bar [data-pgroup="split"],
-#pitcherControlBar .pc-pitcher-bar [data-pgroup="window"],
-#pitcherControlBar .pc-pitcher-bar [data-pgroup="view"],
-#pitcherControlBar .pc-pitcher-bar .pc-control-confirm,
-#pitcherControlBar .pc-pitcher-bar .pc-spark-row {
-  display: none !important;
-}
-.pitcher-title-row {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-.pitcher-name-lg {
-  font-size: 22px; font-weight: 600; font-family: var(--mono);
-  letter-spacing: -0.02em;
-}
-.pill {
-  display: inline-flex; align-items: center;
-  font-size: 9.5px; font-weight: 600; padding: 3px 8px;
-  border-radius: 99px; letter-spacing: 0.02em;
-}
-.pill-today {
-  background: var(--green-dim); color: var(--green);
-  border: 1px solid rgba(74, 222, 128, 0.35);
-}
-.hand-pill-r {
-  background: var(--blue-dim); color: var(--blue-l);
-  border: 1px solid rgba(96, 165, 250, 0.35);
-}
-.hand-pill-l {
-  background: var(--gold-dim); color: var(--gold-l);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-}
-.tier-pill {
-  font-family: var(--mono); font-size: 10px; font-weight: 700;
-  padding: 4px 10px; border-radius: 6px;
-}
-.tier-ace { background: rgba(74, 222, 128, 0.18); color: var(--green); }
-.tier-solid { background: rgba(96, 165, 250, 0.18); color: var(--blue-l); }
-.tier-avg { background: rgba(251, 191, 36, 0.18); color: var(--gold); }
-.tier-vol { background: rgba(248, 113, 113, 0.18); color: var(--red-l); }
-
-.section {
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 14px; padding: 20px 22px; margin-bottom: 18px;
-}
-.section-eyebrow {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
-}
-.section-title { font-size: var(--tp-band-title-size, 14px); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; text-align: left; }
-.section-subtitle { font-size: var(--tp-helper-size, 15px); font-weight: 500; line-height: 1.55; color: var(--tp-desc-color, #C4CBD6); margin-bottom: 12px; text-align: left; max-width: none; }
-
-.stat-bar {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-}
-.stat-cell {
-  background: var(--bg-3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px 14px;
-}
-.stat-cell .s-label {
-  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
-}
-.stat-cell .s-val {
-  font-size: 20px; font-weight: 600; font-family: var(--mono);
-}
-
-.metric-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-}
-@media (max-width: 900px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
-.metric-card {
-  background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg-4) 100%);
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px; position: relative; overflow: hidden;
-}
-.metric-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--purple), transparent);
-}
-.metric-card .m-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
-}
-.metric-card .m-val {
-  font-size: 28px; font-weight: 600; font-family: var(--mono);
-  margin-bottom: 6px;
-}
-.metric-card .m-note { font-size: 11px; color: var(--text-2); line-height: 1.45; }
-
-.hand-grid, .loc-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-}
-@media (max-width: 700px) { .hand-grid, .loc-grid { grid-template-columns: 1fr; } }
-.hand-panel, .loc-panel {
-  background: var(--bg-3); border: 1px solid var(--border);
-  border-radius: 12px; padding: 16px;
-}
-.hand-panel h4, .loc-panel h4 {
-  font-size: 12px; font-weight: 600; color: var(--purple-2);
-  margin-bottom: 12px; letter-spacing: 0.04em;
-}
-.mini-stat-row {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-}
-.mini-stat { text-align: center; }
-.mini-stat .ms-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; }
-.mini-stat .ms-val { font-size: 16px; font-family: var(--mono); font-weight: 600; margin-top: 2px; }
-
-.table-wrap { overflow-x: auto; margin: 0 -4px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-thead th {
-  padding: 9px 8px; font-size: 9.5px; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text-3); border-bottom: 1px solid var(--border-2);
-  text-align: left; white-space: nowrap;
-}
-tbody td {
-  padding: 8px; border-bottom: 1px solid var(--border);
-  white-space: nowrap; vertical-align: middle;
-}
-tbody tr:hover { background: rgba(124, 77, 255, 0.05); }
-tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
-.num { font-family: var(--mono); }
-.tier-high { color: var(--red-l); font-weight: 600; }
-.tier-mid { color: var(--gold); font-weight: 600; }
-.tier-low { color: var(--green-l); font-weight: 600; }
-
-.insight-line {
-  margin-top: 12px; padding: 12px 14px;
-  background: var(--bg-3); border-left: 3px solid var(--purple);
-  border-radius: 0 10px 10px 0; font-size: 12.5px; color: var(--text-2);
-  line-height: 1.55;
-}
-.insight-line strong { color: var(--text); }
-
-.betting-panel {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-3) 100%);
-  border: 1px solid rgba(124, 77, 255, 0.35);
-  border-radius: 12px; padding: 18px 20px;
-  font-size: 13.5px; line-height: 1.6; color: var(--text-2);
-}
-.betting-panel strong { color: var(--purple-2); }
-
-.empty-state {
-  text-align: center; padding: 28px; color: var(--text-3); font-size: 13px;
-}
-.ps-photo .ca-pitcher-avatar {
-  flex-shrink: 0;
-  border-width: 0;
-  border-color: transparent;
-}
-.pitcher-snapshot {
-  display: flex; gap: 20px; align-items: flex-start;
-  margin-bottom: 20px; padding: 20px; background: var(--bg-3);
-  border: 1px solid var(--border); border-radius: 14px;
-}
-.ps-name-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.ps-name { font-size: 24px; font-weight: 700; font-family: var(--mono); margin: 0; }
-.ps-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.ps-stat-bar { display: flex; flex-wrap: wrap; gap: 10px; }
-.ps-stat { background: var(--bg-4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; min-width: 72px; }
-.ps-stat-label { display: block; font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
-.ps-stat-val { font-family: var(--mono); font-size: 16px; font-weight: 600; }
-.ps-stale-note { font-size: 11px; color: var(--gold-l); margin-top: 8px; }
-.ps-tonight { margin-top: 10px; }
-.global-control-bar {
-  display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
-  margin-bottom: 18px; padding: 14px 16px; background: var(--bg-2);
-  border: 1px solid var(--border); border-radius: 12px;
-}
-.global-control-bar .control-label {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-3); margin-right: 6px;
-}
-.global-control-bar .control-group { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.toggle-group { display: flex; flex-wrap: wrap; gap: 4px; }
-.toggle-btn {
-  font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2); cursor: pointer;
-}
-.toggle-btn.active { border-color: var(--purple-3); color: var(--text); background: rgba(168,85,247,.15); }
-.toggle-btn.warn.active { border-color: var(--gold); color: var(--gold-l); }
-.allowed-grid .allowed-card .m-pctile {
-  font-size: 10px; font-weight: 600; color: var(--purple-2); margin-bottom: 6px;
-}
-.allowed-grid .m-compare {
-  display: flex; gap: 12px; font-size: 10px; font-family: var(--mono); color: var(--text-3); margin-bottom: 6px;
-}
-.oor-panel { margin-top: 4px; }
-.oor-hero { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 16px; }
-.oor-score { font-size: 42px; font-weight: 700; font-family: var(--mono); line-height: 1; }
-.oor-label { font-size: 13px; color: var(--text-2); line-height: 1.5; }
-.oor-tonight { font-size: 12px; color: var(--text-3); margin-top: 8px; }
-.oor-splits { margin-bottom: 14px; }
-.ma-split-table { width: 100%; font-size: 12px; }
-.ma-split-table td { padding: 6px 0; border-bottom: 1px solid var(--border); }
-.oor-spark { display: flex; align-items: flex-end; gap: 4px; height: 36px; margin-top: 8px; }
-.oor-bar { width: 10px; border-radius: 2px 2px 0 0; min-height: 4px; }
-.oor-trend-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
-.profile-deep-sections { margin-top: 8px; }
-#profileContent { display: none; }
-#profileContent.ready { display: block; }
+/* Minimal boot — full styles in linked CSS */
+.loading-text { color: var(--text-3, #71717A); font-size: 13px; padding: 12px 24px; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
 <link rel="stylesheet" href="theme.css?v=20260616c">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
-<link rel="stylesheet" href="team_profile.css?v=20260602y">
-<link rel="stylesheet" href="player_profile_pages.css?v=20260602y">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260602y">
-<link rel="stylesheet" href="profile_shell.css?v=20260602y">
-<script src="mlbma_config.js?v=20260602y"></script>
-<script src="mlbma_icons.js?v=20260602y"></script>
-<script src="mlbma_assets.js?v=20260602y"></script>
-<script src="matchup_shared.js?v=20260602y"></script>
-<script src="profile_shell.js?v=20260602y"></script>
-<script src="pitcher_profile_dashboard.js?v=20260602y"></script>
-<script src="mlbma_charts.js?v=20260602y"></script>
-<script src="profile_controls.js?v=20260602y"></script>
-<script src="mlbma_ui.js?v=20260602y" data-page="pitcher_profile.html"></script>
+<link rel="stylesheet" href="team_profile.css?v=20260603a">
+<link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260603a">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260603a">
+<link rel="stylesheet" href="profile_shell.css?v=20260603a">
+<script src="mlbma_config.js?v=20260603a"></script>
+<script src="mlbma_icons.js?v=20260603a"></script>
+<script src="mlbma_assets.js?v=20260603a"></script>
+<script src="matchup_shared.js?v=20260603a"></script>
+<script src="profile_shell.js?v=20260603a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603a"></script>
+<script src="mlbma_charts.js?v=20260603a"></script>
+<script src="profile_controls.js?v=20260603a"></script>
+<script src="mlbma_ui.js?v=20260603a" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -459,18 +138,15 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 
   <div class="tp-identity-stack profile-shell" id="profileContent">
     <div id="ppContextBar" class="profile-context-bar tp-lineup-context-bar"></div>
-    <div id="pitcherSnapshot" class="profile-hero"></div>
+
+    <section class="ca-board tp-section pp-hero-section" id="secHero">
+      <div id="pitcherSnapshot" class="profile-hero"></div>
+    </section>
 
     <section class="ca-board tp-section pp-intel-section" id="secIntel">
       <div id="ppHdrIntel"></div>
       <div id="pitcherIntelPanel"></div>
       <div id="pitcherAnalystTake" class="pp-intel-follow"></div>
-    </section>
-
-    <section class="ca-board tp-section profile-section" id="secOOR">
-      <div id="ppHdrOOR"></div>
-      <div id="pitcherOorControls"></div>
-      <div id="oorPanel"></div>
     </section>
 
     <section class="ca-board tp-section profile-section" id="secAllowed">
@@ -479,10 +155,16 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
       <div id="allowedDashboard"></div>
     </section>
 
+    <section class="ca-board tp-section profile-section" id="secOOR">
+      <div id="ppHdrOOR"></div>
+      <div id="pitcherOorControls"></div>
+      <div id="oorPanel"></div>
+    </section>
+
     <div class="profile-deep-sections profile-offense-sections">
     <section class="ca-board tp-section profile-section" id="secSeason">
       <div id="ppHdrSeason"></div>
-      <div class="stat-bar" id="seasonBar"></div>
+      <div class="pp-season-strip" id="seasonBar"></div>
     </section>
 
     <section class="ca-board tp-section" id="secOsi">
@@ -525,7 +207,7 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     </div>
   </div>
 </main>
-<!-- pitcher-profile build: 20260602y -->
+<!-- pitcher-profile build: 20260603a -->
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -738,7 +420,7 @@ function findSplit(splits, dimension, value) {
 
 function splitRowToCells(s, emptyMsg) {
   if (!s) {
-    return '<div class="empty-state" style="padding:12px;">' + (emptyMsg || 'No split data') + '</div>';
+    return '<div class="empty-state">' + escHtml(emptyMsg || 'No split data') + '</div>';
   }
   return '<div class="mini-stat-row">' +
     statMini('K%', numOrNull(pickCol(s, ['K_pct', 'K%']))) +
@@ -794,41 +476,56 @@ function ctrlSplitToState(s) {
 }
 
 function bindPitcherProfileControls() {
-  if (!window.MLBMAProfileControls) return;
+  var mount = document.getElementById('pitcherControlBar');
+  if (!mount) return;
   var pitchers = DATA.profiles.map(function(p) {
     var key = pitcherKey(p);
     var name = pickCol(p, ['pitcher_name', 'Name', 'Pitcher']);
     var team = pickCol(p, ['pitcher_team', 'Team', 'Tm']);
     return { key: key, label: name + ' (' + team + ')', name: name, team: team };
   });
-  var prof = STATE.pitcherKey ? getProfile(STATE.pitcherKey) : null;
-  MLBMAProfileControls.renderPitcher('pitcherControlBar', {
-    pitchers: pitchers,
-    pitchingRows: DATA.pitching,
-    state: {
-      split: STATE.split,
-      window: STATE.window,
-      view: STATE.view,
-      pitcherKey: STATE.pitcherKey,
-      pitcherName: STATE.pitcherName || (prof ? pickCol(prof, ['pitcher_name']) : ''),
-      profile: prof,
-      team: prof ? pickCol(prof, ['pitcher_team', 'Tm']) : ''
-    },
-    getProfile: getProfile,
-    onPitcherSelect: function(key, label) {
-      STATE.pitcherName = label ? label.replace(/\s*\([^)]+\)\s*$/, '').trim() : '';
-      var sel = document.getElementById('pitcherSelect');
-      if (sel) sel.value = key;
-      renderProfile(key);
-      bindPitcherProfileControls();
-    },
-    onChange: function(st) {
-      STATE.split = ctrlSplitToState(st.split);
-      STATE.window = st.window;
-      STATE.view = st.view;
-      renderPitcherSectionControls();
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+  var displayName = STATE.pitcherName || '';
+  mount.innerHTML = '<div class="tp-pitcher-picker">'
+    + '<div class="tp-team-picker__search-wrap">'
+    + '<svg class="tp-team-picker__search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+    + '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
+    + '<input type="search" class="tp-team-picker__search" id="pcPitcherSearch" list="pcPitcherList" '
+    + 'placeholder="Search pitcher or team…" value="' + escHtml(displayName) + '" autocomplete="off" spellcheck="false" aria-label="Search pitchers">'
+    + '<datalist id="pcPitcherList">' + pitchers.map(function(p) {
+      return '<option value="' + escHtml(p.label) + '" data-key="' + escHtml(p.key) + '"></option>';
+    }).join('') + '</datalist>'
+    + '</div></div>';
+
+  var search = mount.querySelector('#pcPitcherSearch');
+  if (!search || search._ppSearchBound) return;
+  search._ppSearchBound = true;
+
+  function pickPitcher(hit) {
+    if (!hit) return;
+    STATE.pitcherName = hit.name || hit.label.replace(/\s*\([^)]+\)\s*$/, '').trim();
+    var sel = document.getElementById('pitcherSelect');
+    if (sel) sel.value = hit.key;
+    renderProfile(hit.key);
+    bindPitcherProfileControls();
+  }
+
+  search.addEventListener('change', function() {
+    var val = search.value.trim();
+    var hit = pitchers.find(function(p) { return p.label === val || p.key === val || p.name === val; });
+    pickPitcher(hit);
+  });
+  search.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    var val = search.value.trim().toLowerCase();
+    var hit = pitchers.find(function(p) {
+      return p.label.toLowerCase() === val || p.key.toLowerCase() === val
+        || p.name.toLowerCase() === val || (p.team && p.team.toLowerCase() === val);
+    });
+    if (!hit) {
+      var resolvedKey = resolveSearchToKey(val);
+      if (resolvedKey) hit = pitchers.find(function(p) { return p.key === resolvedKey; });
     }
+    pickPitcher(hit);
   });
 }
 
@@ -919,10 +616,10 @@ function mountProfilePageHeader() {
 
 function renderPitcherSectionHeaders() {
   var map = [
-    { id: 'ppHdrIntel', title: 'Start Read', subtitle: 'Verdict, command/contact risk, and rate snapshot for the active split', icon: 'target' },
+    { id: 'ppHdrIntel', title: 'Start Read', subtitle: 'Verdict and exposure drivers for the active split', icon: 'target' },
+    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
     { id: 'ppHdrOOR', title: 'Quality of Lineups Faced', subtitle: 'OOR — competition strength context for ERA validation', icon: 'insight' },
-    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed Dashboard', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
-    { id: 'ppHdrSeason', title: 'Season Line', subtitle: 'YTD standard line and team pitching environment', icon: 'clipboard' },
+    { id: 'ppHdrSeason', title: 'Season Line', subtitle: 'ERA, IP, K%, BB%, WHIP, and pitch score for the active window', icon: 'clipboard' },
     { id: 'ppHdrOsi', title: 'Performance vs Lineup Quality (OSI Tier)', subtitle: 'How workload and results shift vs High / Mid / Low OSI offenses', icon: 'spark' },
     { id: 'ppHdrAbq', title: 'ABQ Split', subtitle: 'Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups', icon: 'target' },
     { id: 'ppHdrHand', title: 'Handedness Splits', subtitle: 'vs LHH and vs RHH — from sheet platoon rows when available', icon: 'platoon' },
@@ -1050,7 +747,7 @@ function buildTierTable(splits, dimension, tierOrder) {
     var s = findSplit(splits, dimension, tier);
     if (!s) {
       return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td>' +
-        '<td colspan="8" style="color:var(--text-3)">—</td></tr>';
+        '<td colspan="8" class="tp-empty-cell">—</td></tr>';
     }
     var starts = numOrNull(pickCol(s, ['starts', 'Starts']));
     var avgIp = numOrNull(pickCol(s, ['avg_IP', 'avg IP']));
@@ -1073,9 +770,9 @@ function buildTierTable(splits, dimension, tierOrder) {
       '<td class="num">' + fmt(rcv, 1) + '</td>' +
       '</tr>';
   }).join('');
-  return '<table><thead><tr>' +
+  return '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
     '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>K%</th><th>BB%</th><th>Pitches/Start</th><th>ABQ Allowed</th><th>RCV Allowed</th>' +
-    '</tr></thead><tbody>' + rows + '</tbody></table>';
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function insightOsiTier(splits) {
@@ -1244,7 +941,7 @@ function renderProfile(key) {
 
   var lhh = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
   var rhh = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
-  var handNote = (!lhh && !rhh) ? '<p style="font-size:11px;color:var(--text-3);margin-top:10px;">Platoon rows not in SP_Metric_Splits yet — showing season pool in primary hand panel.</p>' : '';
+  var handNote = (!lhh && !rhh) ? '<p class="tp-note" style="margin-top:10px;">Platoon rows not in SP_Metric_Splits yet — showing season pool in primary hand panel.</p>' : '';
   var seasonPool = findSplit(splits, 'hand', hand) || profile;
   document.getElementById('handGrid').innerHTML =
     '<div class="hand-panel"><h4>vs LHH</h4>' + splitRowToCells(lhh || seasonPool, 'No LHH split') + '</div>' +
@@ -1260,7 +957,7 @@ function renderProfile(key) {
     return String(pickCol(b, ['date'])).localeCompare(String(pickCol(a, ['date'])));
   }).slice(0, 10);
 
-  var logHtml = sortedLog.length ? '<table><thead><tr>' +
+  var logHtml = sortedLog.length ? '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
     '<th>Date</th><th>Opp</th><th>Opp OSI</th><th>Tier</th><th>IP</th><th>ER</th><th>Pitches</th><th>K</th><th>BB</th><th>HR</th><th>Result</th>' +
     '</tr></thead><tbody>' + sortedLog.map(function(g) {
       var tier = pickCol(g, ['opponent_OSI_tier', 'opponent OSI tier']);
@@ -1275,7 +972,7 @@ function renderProfile(key) {
         '<td class="num">' + pickCol(g, ['BB']) + '</td>' +
         '<td class="num">' + pickCol(g, ['HR']) + '</td>' +
         '<td>' + startResult(g) + '</td></tr>';
-    }).join('') + '</tbody></table>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
+    }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
 
   var f5Rows = OSI_TIER_ORDER.map(function(tier) {
@@ -1283,7 +980,7 @@ function renderProfile(key) {
     var f5 = s ? numOrNull(pickCol(s, ['F5_ERA', 'F5 ERA'])) : null;
     return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td><td class="num">' + fmt(f5, 2) + '</td></tr>';
   }).join('');
-  document.getElementById('f5TableWrap').innerHTML = '<table><thead><tr><th>OSI Tier</th><th>F5 ERA</th></tr></thead><tbody>' + f5Rows + '</tbody></table>';
+  document.getElementById('f5TableWrap').innerHTML = '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr><th>OSI Tier</th><th>F5 ERA</th></tr></thead><tbody>' + f5Rows + '</tbody></table></div>';
 
   var f5High = findSplit(splits, 'osi_tier', 'High');
   var f5Low = findSplit(splits, 'osi_tier', 'Low');
@@ -1302,7 +999,9 @@ function renderProfile(key) {
 }
 
 function statCell(label, val) {
-  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + (val || '—') + '</div></div>';
+  return '<div class="tp-offense-stat tp-offense-stat--inline">'
+    + '<span class="tp-offense-stat__label">' + escHtml(label) + '</span>'
+    + '<span class="tp-offense-stat__body"><span class="chip">' + escHtml(val || '—') + '</span></span></div>';
 }
 
 

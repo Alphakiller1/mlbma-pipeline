@@ -1,0 +1,326 @@
+/**
+ * Pitcher Profile — layout + components (uses team_profile.css shell).
+ */
+.pitcher-profile-page .tp-pitcher-picker {
+  width: 100%;
+  max-width: 420px;
+}
+
+.pitcher-profile-page .tp-pitcher-picker .tp-team-picker__search-wrap {
+  width: 100%;
+}
+
+.pitcher-profile-page #profileContent:not(.ready) {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.pitcher-profile-page #profileContent.ready {
+  visibility: visible;
+  height: auto;
+}
+
+/* Hero — inside ca-board, no second panel chrome */
+.pitcher-profile-page .pp-hero-section.ca-board {
+  padding: 0;
+  overflow: visible;
+}
+
+.pitcher-profile-page .pp-hero-inner {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: var(--tp-section-pad-y, 14px) var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+.pitcher-profile-page .pp-hero-inner .ps-photo {
+  flex-shrink: 0;
+}
+
+.pitcher-profile-page .pp-hero-inner .ps-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.pitcher-profile-page .pp-hero-inner .ps-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.pitcher-profile-page .pp-hero-inner .ps-name {
+  font-family: var(--font-display, "Roboto Condensed", sans-serif);
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--text-1, #F3F4F6);
+  -webkit-text-fill-color: unset;
+  background: none;
+}
+
+.pitcher-profile-page .pp-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pitcher-profile-page .pp-hero-score {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pitcher-profile-page .pp-hero-score .hub-ctrl-label {
+  margin: 0;
+}
+
+.pitcher-profile-page .ps-tonight {
+  margin-top: 12px;
+}
+
+.pitcher-profile-page .ps-stale-note {
+  font-size: var(--tp-note-size, 14px);
+  color: var(--gold, #FBBF24);
+  margin-top: 10px;
+}
+
+/* Pills */
+.pitcher-profile-page .pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pitcher-profile-page .pill-today {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--green, #4ADE80);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+}
+
+.pitcher-profile-page .hand-pill-r {
+  background: rgba(96, 165, 250, 0.15);
+  color: var(--blue-l, #93C5FD);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+}
+
+.pitcher-profile-page .hand-pill-l {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--gold-l, #FCD34D);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.pitcher-profile-page .tier-pill {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.pitcher-profile-page .tier-ace { background: rgba(74, 222, 128, 0.18); color: var(--green); }
+.pitcher-profile-page .tier-solid { background: rgba(96, 165, 250, 0.18); color: var(--blue-l); }
+.pitcher-profile-page .tier-avg { background: rgba(251, 191, 36, 0.18); color: var(--gold); }
+.pitcher-profile-page .tier-vol { background: rgba(248, 113, 113, 0.18); color: var(--red-l); }
+
+/* Season stat strip */
+.pitcher-profile-page .pp-season-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+/* Hand / location split panels */
+.pitcher-profile-page .hand-grid,
+.pitcher-profile-page .loc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .pitcher-profile-page .hand-grid,
+  .pitcher-profile-page .loc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pitcher-profile-page .hand-panel,
+.pitcher-profile-page .loc-panel {
+  background: var(--bg-3, #18181c);
+  border: 1px solid var(--border, #262A38);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.pitcher-profile-page .hand-panel h4,
+.pitcher-profile-page .loc-panel h4 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v-light, #C4B0FF);
+  margin: 0 0 12px;
+}
+
+.pitcher-profile-page .mini-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pitcher-profile-page .mini-stat-row + .mini-stat-row {
+  margin-top: 10px;
+}
+
+.pitcher-profile-page .mini-stat {
+  text-align: center;
+  padding: 8px 6px;
+  background: var(--bg-4, #1f1f25);
+  border-radius: 8px;
+  border: 1px solid var(--border, #262A38);
+}
+
+.pitcher-profile-page .mini-stat .ms-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.pitcher-profile-page .mini-stat .ms-val {
+  font-size: 15px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* OOR */
+.pitcher-profile-page .oor-panel {
+  margin-top: 0;
+}
+
+.pitcher-profile-page .oor-hero {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.pitcher-profile-page .oor-score {
+  font-size: 40px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.pitcher-profile-page .oor-label {
+  font-size: var(--tp-helper-size, 15px);
+  color: var(--tp-desc-color, #C4CBD6);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pitcher-profile-page .oor-tonight {
+  font-size: var(--tp-note-size, 14px);
+  color: var(--tp-note-color, #B8C0CC);
+  margin: 8px 0 0;
+}
+
+/* Tables */
+.pitcher-profile-page .tp-table-wrap {
+  margin-top: 4px;
+}
+
+.pitcher-profile-page .tier-high { color: var(--red-l, #FCA5A5); font-weight: 700; }
+.pitcher-profile-page .tier-mid { color: var(--gold, #FBBF24); font-weight: 700; }
+.pitcher-profile-page .tier-low { color: var(--green-l, #86EFAC); font-weight: 700; }
+
+.pitcher-profile-page tbody tr.flag-row {
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.pitcher-profile-page .tp-note.insight-line {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--bg-3, #18181c);
+  border-left: 3px solid var(--purple, #7C4DFF);
+  border-radius: 0 10px 10px 0;
+  font-size: var(--tp-note-size, 14px);
+  line-height: 1.55;
+  color: var(--tp-note-color, #B8C0CC);
+}
+
+.pitcher-profile-page .betting-panel.tp-note {
+  padding: 14px 16px;
+  background: var(--bg-3, #18181c);
+  border: 1px solid var(--border, #262A38);
+  border-radius: 12px;
+  font-size: var(--tp-helper-size, 15px);
+  line-height: 1.55;
+  color: var(--tp-desc-color, #C4CBD6);
+}
+
+.pitcher-profile-page .empty-state {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-3);
+  font-size: var(--tp-note-size, 14px);
+}
+
+.pitcher-profile-page .pp-intel-section .ca-section-header {
+  margin-bottom: var(--tp-header-gap, 12px);
+}
+
+.pitcher-profile-page .pp-intel-section #pitcherIntelPanel {
+  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+.pitcher-profile-page .pp-intel-follow:not(:empty) {
+  margin: 0;
+  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+  border: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+.pitcher-profile-page .tp-section > .tp-section-filter-bar,
+.pitcher-profile-page .tp-section > .tp-hub-bar {
+  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
+}
+
+.pitcher-profile-page .tp-section > #oorPanel,
+.pitcher-profile-page .tp-section > #allowedDashboard {
+  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+@media (max-width: 640px) {
+  .pitcher-profile-page .pp-hero-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .pitcher-profile-page .pp-hero-inner .ps-name-row {
+    justify-content: center;
+  }
+  .pitcher-profile-page .pp-hero-badges,
+  .pitcher-profile-page .pp-hero-score {
+    justify-content: center;
+  }
+}

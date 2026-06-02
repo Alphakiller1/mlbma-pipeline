@@ -180,30 +180,23 @@
     var pt = pitchingTier(ps, ctx.pitchTiers || []);
     var stale = pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true';
     var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
-    var fipVal = num(pick(profile, ['FIP', 'fip']));
-    var eraVal = num(pick(profile, ['ERA']));
-    var xfipVal = num(pick(profile, ['xFIP', 'xfip']));
-    var fipLabel = fipVal != null ? fmt(fipVal, 2) : (eraVal != null ? fmt(eraVal, 2) + ' (ERA)' : 'FIP N/A');
-    var xfipLabel = xfipVal != null ? fmt(xfipVal, 2) : '—';
+    var psChip = (ps != null && A && A.valChipHtml)
+      ? A.valChipHtml(ps, 'pitching', false, 0)
+      : '<span class="chip chip-ph">' + esc(fmt(ps, 0)) + '</span>';
 
-    return '<div class="pitcher-snapshot">'
+    return '<div class="pp-hero-inner">'
       + '<div class="ps-photo">' + hs + '</div>'
       + '<div class="ps-main">'
       + '<div class="ps-name-row">' + logo + '<h1 class="ps-name">' + esc(name) + '</h1></div>'
-      + '<div class="ps-badges">'
+      + '<div class="pp-hero-badges">'
       + '<span class="pill ' + (hand === 'L' ? 'hand-pill-l' : 'hand-pill-r') + '">' + (hand === 'L' ? 'LHP' : 'RHP') + '</span>'
-      + '<span class="pill" style="background:var(--bg-4);border:1px solid var(--border);">' + esc(team) + ' · SP</span>'
+      + '<span class="pill">' + esc(team) + ' · SP</span>'
       + (ctx.isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '')
       + '<span class="tier-pill ' + pt.cls + '">' + esc(pt.label) + '</span>'
-      + (stale ? '<span class="pill" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,.35);">Stale L14</span>' : '')
+      + (stale ? '<span class="pill">Stale L14</span>' : '')
       + '</div>'
-      + '<div class="ps-stat-bar">'
-      + statPill('Pitch Score', fmt(ps, 0))
-      + statPill('K%', fmt(num(pick(profile, ['K_pct', 'K%'])), 1) + (num(pick(profile, ['K_pct'])) != null ? '%' : ''))
-      + statPill('BB%', fmt(num(pick(profile, ['BB_pct', 'BB%'])), 1) + (num(pick(profile, ['BB_pct'])) != null ? '%' : ''))
-      + statPill('FIP', fipLabel)
-      + statPill('xFIP', xfipLabel)
-      + statPill('ERA', fmt(num(pick(profile, ['ERA'])), 2))
+      + '<div class="pp-hero-score">'
+      + '<span class="hub-ctrl-label">Pitch Score</span>' + psChip
       + '</div>'
       + (staleWarn ? '<p class="ps-stale-note">' + esc(staleWarn) + '</p>' : '')
       + (ctx.tonightHtml ? '<div class="ps-tonight">' + ctx.tonightHtml + '</div>' : '')
@@ -301,18 +294,17 @@
       + '<p class="section-subtitle">Lower allowed scores = softer opposing offense · ' + esc(ctx.splitLabel) + ' · ' + esc(ctx.window) + '</p></div>'
     );
 
+    var cells = cards.map(function(c) {
+      var p = pct(c.key, c.val);
+      var hint = (p != null ? 'Softer than ' + p + '% of SPs · ' : '')
+        + 'YTD ' + fmt(num(pick(profile, [c.key])), 1) + ' · L14 ' + fmt(c.l14, 1);
+      return pitcherStatCell(c.label, valChip(c.val, 'osi', true, 1), hint);
+    }).join('');
+
     return headerHtml + f5
-      + '<div class="metric-grid allowed-grid">' + cards.map(function(c) {
-        var col = allowedColor(c.val);
-        var p = pct(c.key, c.val);
-        return '<div class="metric-card allowed-card">'
-          + '<div class="m-label">' + esc(c.label) + '</div>'
-          + '<div class="m-val" style="color:' + col + '">' + fmt(c.val, 1) + '</div>'
-          + (p != null ? '<div class="m-pctile">Softer than ' + p + '% of SPs</div>' : '')
-          + '<div class="m-compare"><span>YTD ' + fmt(num(pick(profile, [c.key])), 1) + '</span>'
-          + '<span>L14 ' + fmt(c.l14, 1) + '</span></div>'
-          + '<div class="m-note">' + esc(c.note) + '</div></div>';
-      }).join('') + '</div>';
+      + '<div class="tp-offense-metrics tp-offense-metrics--profile">'
+      + metricsBand('Allowed metrics', 'Lower = softer opposing offense · ' + esc(ctx.splitLabel || 'Overall') + ' · ' + esc(ctx.window || 'YTD'), cells)
+      + '</div>';
   }
 
   function renderOORPanel(profile, ctx) {
@@ -456,21 +448,6 @@
     var osiAllow = resolved.metrics.osi;
     var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
     if (avgOor == null) avgOor = avgOorFromLog(ctx.log || [], pick, ctx.oorMap || {}, null);
-    var era = num(pick(profile, ['ERA']));
-    var fip = num(pick(profile, ['FIP', 'fip']));
-    var xfip = num(pick(profile, ['xFIP', 'xfip']));
-    var hr9 = num(pick(profile, ['HR9', 'HR/9']));
-    var log = ctx.log || [];
-    var recent = log.slice().sort(function(a, b) {
-      return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
-    }).slice(0, 5);
-    var pitchSum = 0, pitchN = 0;
-    recent.forEach(function(g) {
-      var p = num(pick(g, ['pitches', 'Pitches']));
-      if (p != null) { pitchSum += p; pitchN++; }
-    });
-    var avgPitches = pitchN ? Math.round(pitchSum / pitchN) : null;
-
     var cmdTone = bb != null && bb >= 10 ? 'risk' : bb != null && bb <= 7 ? 'elite' : 'watch';
     var contactTone = osiAllow != null && PS ? PS.toneFromScore(osiAllow, true) : '';
     var psTone = ps != null && PS ? PS.toneFromScore(ps, false) : '';
@@ -497,22 +474,13 @@
       + pitcherStatCell('Contact Risk', osiChip, 'Lower allowed = softer lineups')
       + pitcherStatCell('Opponent Quality', oorChip, oorHint);
 
-    var fipLabel = fip != null ? fmt(fip, 2) : (era != null ? fmt(era, 2) + ' (ERA)' : null);
-    var rateCells = pitcherStatNum('K%', k, 'pitching', false, 1)
-      + pitcherStatNum('BB%', bb, 'pitching', true, 1)
-      + pitcherStatNum('ERA', era, 'pitching', true, 2)
-      + (fipLabel != null
-        ? pitcherStatCell('FIP', chipWithText(fip != null ? fip : era, 'pitching', true, 2, fipLabel), fip == null && era != null ? 'ERA proxy' : '')
-        : pitcherStatCell('FIP', '<span class="chip chip-ph">—</span>'))
-      + pitcherStatNum('xFIP', xfip, 'pitching', true, 2)
-      + pitcherStatNum('HR/9', hr9, 'pitching', true, 2)
-      + pitcherStatCell('Recent Pitches', avgPitches != null
-        ? '<span class="chip">' + esc(String(avgPitches)) + '/start</span>'
-        : '<span class="chip chip-ph">—</span>');
-
+    var detailNote = v.detail || '';
+    if (ctx.splitLabel || ctx.window) {
+      detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD')
+        + (detailNote ? ' · ' + detailNote : '');
+    }
     var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand('Risk & quality', 'Verdict and exposure drivers for this split', decisionCells)
-      + metricsBand('Rates & workload', 'Season line and recent pitch count', rateCells)
+      + metricsBand('Start read', detailNote || 'Verdict and exposure drivers for this split', decisionCells)
       + '</div>';
 
     if (ctx.omitHeader) {
