@@ -129,29 +129,41 @@
   }
 
   function pitcherStatColor(metric, value) {
-    if (value == null || value === '' || isNaN(value)) return 'var(--text-3)';
+    var muted = 'var(--text-3, #9CA3AF)';
+    var neutral = 'var(--text-1, #F5F5F7)';
+    var good = 'var(--green, #4ADE80)';
+    var warn = 'var(--gold, #FBBF24)';
+    var risk = 'var(--orange, #FB923C)';
+    var bad = 'var(--red-l, #FCA5A5)';
+    if (value == null || value === '' || isNaN(value)) return muted;
     var v = Number(value);
+    if (metric === 'pitchScore') {
+      if (v >= 70) return good;
+      if (v >= 55) return warn;
+      if (v >= 40) return neutral;
+      return bad;
+    }
     if (metric === 'k') {
       if (v <= 1) v *= 100;
-      if (v >= 28) return 'var(--green)';
-      if (v >= 23) return 'var(--gold)';
-      if (v >= 18) return 'var(--text-1)';
-      return 'var(--orange)';
+      if (v >= 28) return good;
+      if (v >= 23) return warn;
+      if (v >= 18) return neutral;
+      return risk;
     }
     if (metric === 'bb') {
       if (v <= 1) v *= 100;
-      if (v <= 6) return 'var(--green)';
-      if (v <= 9) return 'var(--text-1)';
-      if (v <= 12) return 'var(--gold)';
-      return 'var(--red-l)';
+      if (v <= 6) return good;
+      if (v <= 9) return neutral;
+      if (v <= 12) return warn;
+      return bad;
     }
     if (metric === 'era' || metric === 'fip') {
-      if (v <= 3.25) return 'var(--green)';
-      if (v <= 4.0) return 'var(--text-1)';
-      if (v <= 4.75) return 'var(--gold)';
-      return 'var(--red-l)';
+      if (v <= 3.25) return good;
+      if (v <= 4.0) return neutral;
+      if (v <= 4.75) return warn;
+      return bad;
     }
-    return 'var(--text-1)';
+    return neutral;
   }
 
   function spPitchScoreFromProfile(pitcherName, team) {
@@ -195,7 +207,7 @@
     var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team);
     if (ps == null) ps = spPitchScore(team);
     var pt = pitchTier(ps);
-    var psColor = A && ps != null ? A.metricColor(ps, true) : 'var(--text-2)';
+    var psColor = pitcherStatColor('pitchScore', ps);
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var nameHtml = pname === 'TBD'
       ? '<span class="mc-sp-name-text">TBD</span>'
@@ -220,15 +232,15 @@
       + '</div>'
       + '<div class="mc-sp-name-row">' + nameHtml + '</div>'
       + (ps != null
-        ? '<div class="mc-ps-badge mc-ps-badge--defined">'
+        ? '<div class="mc-ps-badge mc-ps-badge--defined" style="--stat-color:' + psColor + '">'
           + '<span class="mc-ps-badge__label">Pitch Score</span>'
           + '<strong class="mc-ps-badge__val" style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong>'
           + '</div>'
         : '')
       + '<div class="mc-sp-stats mc-sp-stats--grid">'
-      + '<span class="mc-sp-stat mc-sp-stat--k"><em>K%</em><strong style="color:' + kColor + '">' + esc(kVal) + '</strong></span>'
-      + '<span class="mc-sp-stat mc-sp-stat--bb"><em>BB%</em><strong style="color:' + bbColor + '">' + esc(bbVal) + '</strong></span>'
-      + '<span class="mc-sp-stat mc-sp-stat--era"><em>ERA</em><strong style="color:' + eraColor + '">' + esc(eraVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--k" style="--stat-color:' + kColor + '"><em>K%</em><strong style="color:' + kColor + '">' + esc(kVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--bb" style="--stat-color:' + bbColor + '"><em>BB%</em><strong style="color:' + bbColor + '">' + esc(bbVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--era" style="--stat-color:' + eraColor + '"><em>ERA</em><strong style="color:' + eraColor + '">' + esc(eraVal) + '</strong></span>'
       + '</div></div></div>';
   }
 
