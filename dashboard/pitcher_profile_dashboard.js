@@ -512,7 +512,6 @@
     var osiAllow = resolved.metrics.osi;
     var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
     if (avgOor == null) avgOor = avgOorFromLog(ctx.log || [], pick, ctx.oorMap || {}, null);
-    var cmdTone = bb != null && bb >= 10 ? 'risk' : bb != null && bb <= 7 ? 'elite' : 'watch';
     var contactTone = osiAllow != null && PS ? PS.toneFromScore(osiAllow, true) : '';
     var psTone = ps != null && PS ? PS.toneFromScore(ps, false) : '';
     var oorTone = avgOor != null && PS ? PS.toneFromScore(avgOor, false) : '';
@@ -520,23 +519,13 @@
       ? 'Tonight OSI ' + fmt(ctx.tonightOsi, 1)
       : 'Season competition context';
 
-    var bbChip = bb != null
-      ? chipWithText(bb, 'pitching', true, 1, fmt(bb, 1) + '% BB', cmdTone)
-      : '<span class="chip chip-ph">—</span>';
-
     var osiChip = osiAllow != null
-      ? chipWithText(osiAllow, 'osi', true, 1, fmt(osiAllow, 1) + ' OSI all.', contactTone)
+      ? chipWithText(osiAllow, 'osi', true, 1, fmt(osiAllow, 1) + ' OSI', contactTone)
       : '<span class="chip chip-ph">—</span>';
 
     var oorChip = avgOor != null
-      ? chipWithText(avgOor, 'osi', false, 1, fmt(avgOor, 1) + ' OOR', oorTone)
+      ? chipWithText(avgOor, 'oor', false, 1, fmt(avgOor, 1) + ' OOR', oorTone)
       : '<span class="chip chip-ph">—</span>';
-
-    var decisionCells = pitcherStatCell('Start Verdict', verdictChipHtml(v.verdict, v.tone))
-      + pitcherStatNum('Pitch Score', ps, 'pitching', false, 0, '', psTone)
-      + pitcherStatCell('Command Risk', bbChip, k != null ? fmt(k, 1) + '% K' : '')
-      + pitcherStatCell('Contact Risk', osiChip, 'Lower allowed = softer lineups')
-      + pitcherStatCell('Opponent Quality', oorChip, oorHint);
 
     var detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD');
     var coreCells = ''
@@ -546,6 +535,12 @@
       + pitcherStatNum('ERA', era, 'pitching', true, 2)
       + pitcherStatNum('FIP', fip, 'pitching', true, 2)
       + pitcherStatNum('xFIP', xfip, 'pitching', true, 2);
+
+    var ctxCells = ''
+      + pitcherStatCell('Start Verdict', verdictChipHtml(v.verdict, v.tone))
+      + pitcherStatNum('Pitch Score', ps, 'pitching', false, 0, '', psTone)
+      + pitcherStatCell('OSI allowed', osiChip, 'Lower = softer lineups')
+      + pitcherStatCell('Opponent Quality', oorChip, oorHint);
 
     function splitRow(label, row) {
       if (!row) return '';
@@ -581,11 +576,8 @@
       : '<div class="empty-state">No split rows available for this pitcher.</div>';
 
     var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand(
-        'Pitching Value',
-        'Core pitching rates + risk context · ' + detailNote,
-        coreCells + decisionCells
-      )
+      + metricsBand('Core Rates', detailNote, coreCells)
+      + metricsBand('Context', 'Start read + schedule context', ctxCells)
       + '</div>'
       + splitTable;
 

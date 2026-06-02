@@ -25,10 +25,10 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603s"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603u"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603s" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -1009,7 +1009,11 @@ function renderProfile(key) {
   }
   document.getElementById('f5Insight').innerHTML = f5Note;
 
-  document.getElementById('bettingPanel').innerHTML = buildBettingSummary(profile, splits, log, name, hand);
+  var betHtml = buildBettingSummary(profile, splits, log, name, hand);
+  var betPanel = document.getElementById('bettingPanel');
+  if (betPanel) betPanel.innerHTML = betHtml;
+  var betSec = document.getElementById('secBetting');
+  if (betSec) betSec.style.display = (betHtml && String(betHtml).trim()) ? '' : 'none';
   bindPitcherProfileControls();
 }
 
