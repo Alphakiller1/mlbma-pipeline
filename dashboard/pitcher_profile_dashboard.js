@@ -140,10 +140,12 @@
     var maxStarts = window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
     if (window !== 'YTD' && log.length) {
       metrics = {
-        abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], maxStarts) || metrics.abq,
-        rcv: avgFromLog(log, pick, ['opponent_RCV', 'opponent RCV'], maxStarts) || metrics.rcv,
-        obr: avgFromLog(log, pick, ['opponent_OBR', 'opponent OBR'], maxStarts) || metrics.obr,
-        osi: avgFromLog(log, pick, ['opponent_OSI', 'opponent OSI'], maxStarts) || metrics.osi
+        // Rolling windows must reflect recent schedule difficulty. If the game log
+        // doesn't include opponent_* fields yet, show empty rather than repeating YTD.
+        abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], maxStarts),
+        rcv: avgFromLog(log, pick, ['opponent_RCV', 'opponent RCV'], maxStarts),
+        obr: avgFromLog(log, pick, ['opponent_OBR', 'opponent OBR'], maxStarts),
+        osi: avgFromLog(log, pick, ['opponent_OSI', 'opponent OSI'], maxStarts)
       };
     }
 
@@ -375,7 +377,18 @@
     function byHand(handKey) {
       var hk = String(handKey || '').toUpperCase();
       return log.filter(function(g) {
-        var h = String(pick(g, ['opponent_hand', 'opponent hand', 'OppHand', 'opp_hand', 'opponent_lineup_hand', 'lineup_hand', 'hand']) || '').toUpperCase().trim();
+        var h = String(pick(g, [
+          'opponent_hand', 'opponent hand', 'OppHand', 'opp_hand',
+          'opponent_lineup_hand', 'lineup_hand', 'hand',
+          'oppHand', 'opp hand', 'opponentHand'
+        ]) || '').toUpperCase().trim();
+        if (!h) {
+          // Try infer from matchup string if present (rare).
+          var m = String(pick(g, ['matchup', 'Matchup', 'OPP', 'Opp', 'opponent', 'Opponent']) || '').toUpperCase();
+          // Common encodings like "LHH" / "RHH" embedded.
+          if (m.indexOf('LHH') >= 0) h = 'LHH';
+          if (m.indexOf('RHH') >= 0) h = 'RHH';
+        }
         if (!h) return false;
         // Normalize common encodings.
         if (h === 'LHH' || h === 'L' || h === 'LH' || h === 'LEFT') h = 'L';
@@ -387,7 +400,16 @@
     function byHA(ha) {
       var key = String(ha || '').toLowerCase();
       return log.filter(function(g) {
-        var v = String(pick(g, ['home_away', 'home away', 'HA', 'H/A', 'ha']) || '').trim().toLowerCase();
+        var v = String(pick(g, ['home_away', 'home away', 'HA', 'H/A', 'ha', 'Home/Away', 'homeAway']) || '').trim().toLowerCase();
+        if (!v) {
+          // Fallback: infer from matchup/opponent string: "@NYY" => away, "vs BOS" => home.
+          var m = String(pick(g, ['matchup', 'Matchup', 'opponent', 'Opponent', 'OPP', 'Opp']) || '').trim();
+          if (m) {
+            var mu = m.toUpperCase();
+            if (mu.indexOf('@') >= 0) v = 'away';
+            else if (mu.indexOf('VS') >= 0 || mu.indexOf('V ') === 0) v = 'home';
+          }
+        }
         if (!v) return false;
         // Normalize common encodings.
         var norm = v;
