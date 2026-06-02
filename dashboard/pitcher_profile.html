@@ -25,10 +25,10 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603j"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603k"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603j" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603k" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -599,7 +599,7 @@ function renderPitcherSectionHeaders() {
   var map = [
     { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'Pitching stat pack + split table for the active split', icon: 'target' },
     { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
-    { id: 'ppHdrOOR', title: 'Quality of Lineups Faced', subtitle: 'OOR — competition strength context for ERA validation', icon: 'insight' },
+    { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR — competition faced across home/away, handedness, and rolling windows', icon: 'insight' },
     { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
     { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
     { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five ERA by opponent OSI tier (team runs through 5 innings)', icon: 'clock' },
@@ -663,9 +663,7 @@ function renderPitcherSectionControls() {
       layout: 'row',
       barClass: 'tp-section-filter-bar--context',
       sectionKey: 'pitcher-oor',
-      groups: [
-        { label: 'Window', groupKey: 'window', options: windowOpts, active: (STATE.sectionFilters.oor && STATE.sectionFilters.oor.window) || STATE.window }
-      ]
+      groups: []
     });
   }
 
@@ -723,7 +721,6 @@ function bindPitcherSectionControls() {
     }
     if (sectionKey === 'pitcher-oor') {
       STATE.sectionFilters.oor = STATE.sectionFilters.oor || {};
-      if (groupKey === 'window') STATE.sectionFilters.oor.window = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
       return;

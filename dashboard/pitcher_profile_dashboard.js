@@ -334,84 +334,83 @@
     var pick = ctx.pickCol;
     var log = ctx.log || [];
     var oorMap = ctx.oorMap || {};
-    var window = ctx.window || 'YTD';
-    var maxStarts = window === 'L14' ? 4 : window === 'L30' ? 8 : null;
-    var compact = !!ctx.compact;
-
-    var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
-    if (avgOor == null) avgOor = avgOorFromLog(log, pick, oorMap, maxStarts);
-    if (avgOor == null && log.length) avgOor = avgFromLog(log, pick, ['opponent_OSI', 'opponent OSI'], maxStarts);
-
-    var oorLabel = avgOor == null ? 'OOR data pending'
-      : avgOor >= 55 ? 'Above-average offensive competition faced — ERA may be legitimate'
-      : avgOor <= 45 ? 'Soft schedule — headline ERA may be inflated'
-      : 'Near-average competition faced';
-
-    var oorColor = avgOor >= 55 ? 'var(--red-l)' : avgOor <= 45 ? 'var(--green)' : 'var(--text-2)';
-
-    var tonightOsi = ctx.tonightOsi;
-    var tonightLabel = '';
-    if (tonightOsi != null && avgOor != null) {
-      var delta = tonightOsi - avgOor;
-      tonightLabel = delta > 3 ? 'Tougher than season avg' : delta < -3 ? 'Softer than season avg' : 'In line with season avg';
+    function maxStartsForWindow(win) {
+      return win === 'L7' ? 2 : win === 'L14' ? 4 : win === 'L30' ? 8 : null;
     }
 
-    var splitRows = [
-      ['vs LHH lineups', avgFromLog(log.filter(function(g) {
+    function overallOorForWindow(win) {
+      if (win === 'YTD') {
+        var v = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
+        if (v != null) return v;
+      }
+      var ms = maxStartsForWindow(win);
+      return avgOorFromLog(log, pick, oorMap, ms);
+    }
+
+    function oorForFilteredLog(win, filtered) {
+      var ms = maxStartsForWindow(win);
+      return avgOorFromLog(filtered, pick, oorMap, ms);
+    }
+
+    function byHand(handKey) {
+      var hk = String(handKey || '').toUpperCase();
+      return log.filter(function(g) {
         var h = String(pick(g, ['opponent_hand', 'opponent hand']) || '').toUpperCase();
-        return h === 'L' || h === 'LHH';
-      }), pick, ['opponent_OSI', 'opponent OSI'], null)],
-      ['vs RHH lineups', avgFromLog(log.filter(function(g) {
-        var h = String(pick(g, ['opponent_hand', 'opponent hand']) || '').toUpperCase();
-        return h === 'R' || h === 'RHH';
-      }), pick, ['opponent_OSI', 'opponent OSI'], null)],
-      ['Home', avgFromLog(log.filter(function(g) {
-        return String(pick(g, ['home_away', 'home away']) || '').toLowerCase() === 'home';
-      }), pick, ['opponent_OSI', 'opponent OSI'], null)],
-      ['Away', avgFromLog(log.filter(function(g) {
-        return String(pick(g, ['home_away', 'home away']) || '').toLowerCase() === 'away';
-      }), pick, ['opponent_OSI', 'opponent OSI'], null)]
+        return h === hk || (hk === 'L' && h === 'LHH') || (hk === 'R' && h === 'RHH');
+      });
+    }
+
+    function byHA(ha) {
+      var key = String(ha || '').toLowerCase();
+      return log.filter(function(g) {
+        return String(pick(g, ['home_away', 'home away', 'HA']) || '').toLowerCase() === key;
+      });
+    }
+
+    var wins = [
+      { key: 'YTD', label: 'YTD' },
+      { key: 'L30', label: 'L30' },
+      { key: 'L14', label: 'L14' },
+      { key: 'L7', label: 'L7' }
     ];
 
-    var trend = log.slice().sort(function(a, b) {
-      return String(pick(a, ['date', 'Date'])).localeCompare(String(pick(b, ['date', 'Date'])));
-    }).slice(-12).map(function(g, i) {
-      var v = pickNum(g, pick, ['opponent_OSI', 'opponent OSI']);
-      if (v == null) {
-        var tm = String(pick(g, ['opponent_team', 'opponent team']) || '').toUpperCase();
-        v = oorMap[tm];
-      }
-      return { i: i, v: v };
-    }).filter(function(x) { return x.v != null; });
-
-    var trendHtml = '';
-    if (!compact && trend.length >= 3) {
-      var max = Math.max.apply(null, trend.map(function(t) { return t.v; }));
-      var min = Math.min.apply(null, trend.map(function(t) { return t.v; }));
-      var range = max - min || 1;
-      trendHtml = '<div class="oor-trend"><div class="oor-trend-label">Last ' + trend.length + ' starts — opponent strength</div><div class="oor-spark">'
-        + trend.map(function(t) {
-          var h = 8 + ((t.v - min) / range) * 24;
-          return '<div class="oor-bar" style="height:' + h + 'px;background:' + allowedColor(t.v) + '" title="' + t.v.toFixed(1) + '"></div>';
-        }).join('') + '</div></div>';
+    function chipOor(v) {
+      return valChip(v, 'oor', false, 1);
     }
 
-    return '<div class="oor-panel">'
-      + '<div class="oor-hero">'
-      + '<div class="oor-score" style="color:' + oorColor + '">' + (avgOor != null ? avgOor.toFixed(1) : '—') + '</div>'
-      + '<div class="oor-copy"><p class="oor-label">' + esc(oorLabel) + '</p>'
-      + (tonightOsi != null ? '<p class="oor-tonight">Tonight\'s lineup OSI <strong>' + tonightOsi.toFixed(1) + '</strong>'
-        + (avgOor != null ? ' vs season avg OOR <strong>' + avgOor.toFixed(1) + '</strong>' : '')
-        + (tonightLabel ? ' · <em>' + esc(tonightLabel) + '</em>' : '') + '</p>' : '')
-      + '</div></div>'
-      + (compact ? '' : (
-        '<div class="oor-splits"><table class="ma-split-table"><tbody>'
-        + splitRows.map(function(r) {
-          return '<tr><td>' + esc(r[0]) + '</td><td style="font-family:var(--mono);color:' + allowedColor(r[1]) + '">' + fmt(r[1], 1) + '</td></tr>';
-        }).join('') + '</tbody></table></div>'
-      ))
-      + trendHtml
-      + '</div>';
+    function cell(winKey, v) {
+      return '<td class="num">' + chipOor(v) + '</td>';
+    }
+
+    function row(label, getter) {
+      return '<tr><td>' + esc(label) + '</td>'
+        + wins.map(function(w) { return cell(w.key, getter(w.key)); }).join('')
+        + '</tr>';
+    }
+
+    var overallYtd = overallOorForWindow('YTD');
+    var lbl = overallYtd == null ? 'OOR data pending'
+      : overallYtd >= 55 ? 'Tough schedule — ERA may be legitimate'
+      : overallYtd <= 45 ? 'Soft schedule — headline ERA may be inflated'
+      : 'Near-average competition faced';
+
+    var hero = '<div class="oor-panel"><div class="oor-hero">'
+      + '<div class="oor-score">' + (overallYtd != null ? fmt(overallYtd, 1) : '—') + '</div>'
+      + '<div class="oor-copy"><p class="oor-label">' + esc(lbl) + '</p></div>'
+      + '</div></div>';
+
+    var table = '<div class="table-wrap tp-table-wrap">'
+      + '<table class="hub-table tp-table">'
+      + '<thead><tr><th>Split</th>' + wins.map(function(w) { return '<th class="num">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
+      + '<tbody>'
+      + row('Overall', function(win) { return overallOorForWindow(win); })
+      + row('Home', function(win) { return oorForFilteredLog(win, byHA('home')); })
+      + row('Away', function(win) { return oorForFilteredLog(win, byHA('away')); })
+      + row('vs LHH', function(win) { return oorForFilteredLog(win, byHand('L')); })
+      + row('vs RHH', function(win) { return oorForFilteredLog(win, byHand('R')); })
+      + '</tbody></table></div>';
+
+    return hero + table;
   }
 
   function deriveStartVerdict(profile, ctx) {
