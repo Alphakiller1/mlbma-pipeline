@@ -32,9 +32,13 @@ body.opening-dashboard.view-opening .opening-layer .ca-tools {
 }
 
 html.view-opening,
+html.view-opening body.opening-dashboard,
 body.view-opening.opening-dashboard {
-  overscroll-behavior-y: none;
+  height: auto;
+  min-height: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
   background: #050509;
 }
 
@@ -54,13 +58,13 @@ body.opening-dashboard .freshness-bar {
   gap: 32px;
   padding: clamp(32px, 5vw, 58px) clamp(24px, 5vw, 58px);
   margin: 16px 0 48px;
-  border-radius: 18px;
-  border: 1px solid rgba(154, 107, 255, 0.41);
+  border-radius: 0;
+  border: none;
   background:
     radial-gradient(ellipse 75% 58% at 82% 12%, rgba(124, 77, 255, 0.24), transparent 66%),
     linear-gradient(135deg, #06070D 0%, #111124 46%, #05060B 100%);
   background-size: auto, auto;
-  box-shadow: 0 0 0 1px rgba(196, 176, 255, 0.12), 0 0 42px rgba(124, 77, 255, 0.30), 0 30px 100px rgba(0, 0, 0, 0.82);
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -1297,8 +1301,8 @@ body.opening-dashboard #section-opening-hero {
 }
 
 .opening-layer .ca-hero {
-  border: 1px solid rgba(154, 107, 255, 0.58);
-  border-radius: 18px;
+  border: none;
+  border-radius: 0;
   margin-top: 0 !important;
   min-height: 0 !important;
   padding: 16px clamp(20px, 5vw, 64px) clamp(32px, 4vw, 56px) !important;
@@ -1306,20 +1310,11 @@ body.opening-dashboard #section-opening-hero {
     radial-gradient(ellipse 76% 58% at 82% 12%, rgba(124, 77, 255, 0.24), transparent 66%),
     linear-gradient(135deg, #06070D 0%, #111124 46%, #05060B 100%);
   background-size: auto, auto;
-  box-shadow: 0 0 0 1px rgba(196, 176, 255, 0.08), 0 0 42px rgba(124, 77, 255, 0.21), 0 30px 100px rgba(0, 0, 0, 0.82);
+  box-shadow: none;
 }
 
 .opening-layer .ca-hero::before {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.084), transparent 22%),
-    linear-gradient(90deg, transparent, rgba(196,176,255,0.11), transparent);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -40px 70px rgba(0,0,0,0.32);
-  z-index: 0;
+  display: none;
 }
 
 .opening-layer .ca-hero__inner,

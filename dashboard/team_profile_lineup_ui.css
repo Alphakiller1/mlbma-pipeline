@@ -46,15 +46,12 @@
 .team-profile-page .tp-intel-sustain__band .tp-offense-metrics__band-title,
 :is(.team-profile-page, .player-profile-page) .tp-batting-split__title,
 :is(.team-profile-page, .player-profile-page) .tp-metric-group__title,
-:is(.team-profile-page, .player-profile-page) .tp-intel-takeaway__title,
-:is(.team-profile-page, .player-profile-page) .tp-offense-split-summary__label {
+:is(.team-profile-page, .player-profile-page) .tp-intel-takeaway__title {
   font-size: var(--tp-band-title-size, 14px);
 }
 
 :is(.team-profile-page, .player-profile-page) .tp-offense-metrics--profile .tp-offense-metrics__band-hint,
-:is(.team-profile-page, .player-profile-page) .tp-offense-metrics--opponent .tp-offense-metrics__band-hint,
-:is(.team-profile-page, .player-profile-page) .tp-batting-split__hint,
-:is(.team-profile-page, .player-profile-page) .tp-metric-group__hint {
+:is(.team-profile-page, .player-profile-page) .tp-offense-metrics--opponent .tp-offense-metrics__band-hint {
   font-size: var(--tp-band-hint-size, 14px);
   font-weight: 500;
   line-height: 1.55;
@@ -163,7 +160,9 @@
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat--inline .tp-offense-stat__rank,
 :is(.team-profile-page, .player-profile-page) .tp-surface-stat .tp-offense-stat__rank,
 :is(.team-profile-page, .player-profile-page) .tp-intel-stat .tp-offense-stat__rank,
-:is(.team-profile-page, .player-profile-page) .tp-offense-metrics--opponent .tp-offense-stat__rank {
+:is(.team-profile-page, .player-profile-page) .tp-offense-metrics--opponent .tp-offense-stat__rank,
+:is(.team-profile-page, .player-profile-page) .tp-offense-metrics--staff .tp-offense-stat__rank,
+:is(.team-profile-page, .player-profile-page) .tp-unit-snapshot-metrics .tp-offense-stat__rank {
   margin-left: 0;
 }
 
@@ -199,6 +198,8 @@
 
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat--inline .tp-offense-stat__rank-num,
 :is(.team-profile-page, .player-profile-page) .tp-offense-metrics--opponent .tp-offense-stat__rank-num,
+:is(.team-profile-page, .player-profile-page) .tp-offense-metrics--staff .tp-offense-stat__rank-num,
+:is(.team-profile-page, .player-profile-page) .tp-unit-snapshot-metrics .tp-offense-stat__rank-num,
 :is(.team-profile-page, .player-profile-page) .tp-surface-stat .tp-offense-stat__rank-num,
 :is(.team-profile-page, .player-profile-page) .tp-intel-stat .tp-offense-stat__rank-num {
   font-size: var(--tp-stat-rank-size);
@@ -245,6 +246,15 @@
 
 .team-profile-page .tp-team-banner__stats--hero .tp-hero-stat__value {
   font-size: var(--tp-stat-chip-size, 15px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.team-profile-page .tp-team-banner__stats--hero .tp-hero-stat__value .tp-offense-stat__rank-num {
+  font-size: var(--tp-stat-rank-size, 12px);
+  color: var(--tp-stat-rank-muted, #9CA8BA);
+  font-weight: 700;
 }
 
 .team-profile-page .tp-team-banner__stats--hero .tp-hero-stat__value .chip {
@@ -338,13 +348,6 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-}
-
-.team-profile-page .tp-intel-sustain .tp-intel-note {
-  margin: 0;
-  font-size: var(--tp-note-size, 14px);
-  line-height: 1.55;
-  color: var(--tp-note-color, #B8C0CC);
 }
 
 .team-profile-page .tp-intel-sustain .tp-intel-verdict-label {
@@ -483,11 +486,8 @@
 :is(.team-profile-page, .player-profile-page) .tp-surface-wins + .f5-variance-note,
 .team-profile-page .tp-section[data-tp-section="surface-wins"] .f5-variance-note {
   margin: 12px 0 0;
-  padding: 0 14px;
-  font-size: var(--tp-note-size, 14px);
-  line-height: 1.55;
+  padding: 0;
   text-align: left;
-  color: var(--tp-note-color, #B8C0CC);
 }
 
 .team-profile-page .tp-analyst-rail .ca-insight-row {
@@ -545,17 +545,60 @@
   padding: var(--tp-band-pad-y, 14px) var(--tp-band-pad-x, 16px);
 }
 
-/* Section copy — subtitles, summaries, footnotes */
-:is(.team-profile-page, .player-profile-page) .tp-section .ca-helper,
-:is(.team-profile-page, .player-profile-page) .tp-section .ca-empty-state .ca-helper,
-:is(.team-profile-page, .player-profile-page) .tp-empty + .ca-helper,
-:is(.team-profile-page, .player-profile-page) .tp-section > .ca-helper,
-:is(.team-profile-page, .player-profile-page) .section .ca-helper {
+/* Section footnotes & supplementary copy — one style at section bottom */
+:is(.team-profile-page, .player-profile-page) :is(
+  .tp-section .ca-helper,
+  .tp-section .ca-empty-state .ca-helper,
+  .tp-empty + .ca-helper,
+  .tp-section > .ca-helper,
+  .section .ca-helper,
+  .tp-trend-table-note,
+  .tp-trend-readout,
+  .tp-opponent-strength-note,
+  .tp-intel-note,
+  .tp-phase1-inline,
+  .tp-staff-meta,
+  .f5-variance-note,
+  .tp-metric-group__hint,
+  .tp-batting-split__hint,
+  .tp-offense-split-summary__label,
+  .tp-summary-filter,
+  .tp-staff-links
+) {
+  font-family: inherit;
   font-size: var(--tp-helper-size, 15px);
   font-weight: 500;
   line-height: 1.55;
   color: var(--tp-desc-color, #C4CBD6);
   text-align: left;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(.team-profile-page, .player-profile-page) :is(
+  .tp-opponent-strength-note,
+  .tp-phase1-inline,
+  .tp-intel-note,
+  .tp-staff-meta,
+  .f5-variance-note,
+  .tp-trend-readout,
+  .tp-section-body > .ca-helper:last-child,
+  .tp-section > .ca-helper:last-child
+) {
+  margin-top: var(--tp-header-gap, 12px);
+  margin-bottom: 0;
+}
+
+:is(.team-profile-page, .player-profile-page) .tp-trend-table-note {
+  margin: 0 0 var(--tp-header-gap, 12px);
+}
+
+:is(.team-profile-page, .player-profile-page) .tp-batting-split__hint {
+  margin: 0 0 var(--tp-header-gap, 12px);
+}
+
+:is(.team-profile-page, .player-profile-page) .tp-offense-split-summary__label {
+  margin: 0 0 8px;
 }
 
 :is(.team-profile-page, .player-profile-page) .tp-batting-split__head {

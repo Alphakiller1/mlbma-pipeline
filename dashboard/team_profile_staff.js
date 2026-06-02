@@ -6,6 +6,11 @@
 
   var A = global.MLBMAAssets;
 
+  function tpIcon(key) {
+    var I = global.MLBMAIcons;
+    return (I && I.profileIcon) ? I.profileIcon(key) : key;
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
@@ -16,7 +21,7 @@
     var hdrOpts = {
       title: title,
       subtitle: subtitle || '',
-      icon: meta.icon,
+      icon: tpIcon(meta.icon),
       kicker: meta.kicker || 'Staff',
       actions: meta.actions || ''
     };
@@ -42,10 +47,89 @@
     return '<div class="tp-chip-row">' + items.join('') + '</div>';
   }
 
-  function staffStatCell(label, chipHtml) {
+  function rankTone(rank) {
+    if (rank == null || isNaN(rank)) return 'neutral';
+    if (rank <= 5) return 'elite';
+    if (rank <= 12) return 'strong';
+    if (rank <= 20) return 'mid';
+    return 'weak';
+  }
+
+  function staffLeagueRank(cache, team, field, invert) {
+    var entries = Object.keys(cache || {}).map(function(t) {
+      return { t: t, v: cache[t][field] };
+    }).filter(function(e) { return e.v != null && !isNaN(e.v); });
+    entries.sort(function(a, b) {
+      if (a.v === b.v) return a.t.localeCompare(b.t);
+      return invert ? a.v - b.v : b.v - a.v;
+    });
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].t === team) return { rank: i + 1, total: entries.length };
+    }
+    return { rank: null, total: entries.length || null };
+  }
+
+  function buildTeamStaffCache(data, options) {
+    options = options || {};
+    var split = options.split || 'overall';
+    var scope = options.scope || 'staff';
+    var pickCol = options.pickCol;
+    var num = options.num;
+    var teamKey = options.teamKey;
+    var poolPS = options.poolPitchScore;
+    var prefix = resolveBullpenPrefix(split);
+    var cache = {};
+    (data.profiles || []).forEach(function(prof) {
+      var t = teamKey(pickCol(prof, ['team', 'Team', 'tm']));
+      if (!t) return;
+      var teamSps = (data.sps || []).filter(function(s) {
+        return teamKey(pickCol(s, ['pitcher_team', 'pitcher team'])) === t;
+      });
+      var unit = bullpenUnitForTeam(t, data, teamKey);
+      var entry = {};
+      if (scope === 'staff' || scope === 'rotation') {
+        entry.avgPs = split === 'overall'
+          ? num(pickCol(prof, ['avg_pitching_score']))
+          : avgTeamSpMetric(teamSps, data, split, 'pitchScore', pickCol, num, teamKey, poolPS);
+        if (entry.avgPs == null) {
+          entry.avgPs = avgTeamSpMetric(teamSps, data, 'overall', 'pitchScore', pickCol, num, teamKey, poolPS);
+        }
+        entry.kPct = split === 'overall'
+          ? num(pickCol(prof, ['team_k_pct']))
+          : avgTeamSpMetric(teamSps, data, split, 'kPct', pickCol, num, teamKey, poolPS);
+        entry.bbPct = split === 'overall'
+          ? num(pickCol(prof, ['team_bb_pct']))
+          : avgTeamSpMetric(teamSps, data, split, 'bbPct', pickCol, num, teamKey, poolPS);
+        entry.osiAllow = avgTeamSpMetric(teamSps, data, split, 'osiAllowed', pickCol, num, teamKey, poolPS);
+        entry.ipStart = num(pickCol(prof, ['avg_ip_per_start']));
+        entry.teamEra = num(pickCol(prof, ['team_era']));
+      }
+      if (scope === 'staff' || scope === 'bullpen') {
+        entry.bpEra = unit ? colVal(unit, prefix, 'ERA', pickCol, num) : null;
+        if (entry.bpEra == null) entry.bpEra = num(pickCol(prof, ['bullpen_era']));
+        entry.bpOsi = unit ? colVal(unit, prefix, 'OSI_allowed', pickCol, num) : null;
+        if (entry.bpOsi == null) entry.bpOsi = num(pickCol(prof, ['bullpen_osi_allowed']));
+        entry.bpK = unit ? colVal(unit, prefix, 'K_pct', pickCol, num) : null;
+        entry.bpBb = unit ? colVal(unit, prefix, 'BB_pct', pickCol, num) : null;
+        entry.bpScore = entry.bpOsi != null ? Math.max(0, Math.min(100, 100 - entry.bpOsi)) : null;
+      }
+      cache[t] = entry;
+    });
+    return cache;
+  }
+
+  function staffStatCell(label, chipHtml, rankMeta) {
+    rankMeta = rankMeta || {};
+    var rank = rankMeta.rank;
+    var total = rankMeta.total;
+    var rankHtml = rank != null
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+        + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
+        + '</span>'
+      : '';
     return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(label) + '">'
       + '<span class="tp-offense-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-offense-stat__body">' + chipHtml + '</span></div>';
+      + '<span class="tp-offense-stat__body">' + chipHtml + rankHtml + '</span></div>';
   }
 
   function staffMetricsBand(title, hint, cellsHtml) {
@@ -132,11 +216,6 @@
     return null;
   }
 
-  function computePitchScore(kPct, bbPct, hr9) {
-    if (kPct == null || bbPct == null || hr9 == null) return null;
-    return Math.min(100, Math.max(0, kPct * 0.4 + (100 - bbPct) * 0.35 + (100 - Math.min(hr9 * 12, 100)) * 0.25));
-  }
-
   function resolveSpSplitMetrics(sp, splits, split, pickCol, num, poolPitchScore) {
     var kPct = num(pickCol(sp, ['K_pct']));
     var bbPct = num(pickCol(sp, ['BB_pct']));
@@ -144,8 +223,7 @@
     var osiAllowed = num(pickCol(sp, ['OSI_allowed']));
     var pitchScore = num(pickCol(sp, ['PitchScore']));
     if (pitchScore == null && poolPitchScore) pitchScore = poolPitchScore(sp);
-    if (pitchScore == null) pitchScore = computePitchScore(kPct, bbPct, hr9);
-    var base = { kPct: kPct, bbPct: bbPct, osiAllowed: osiAllowed, pitchScore: pitchScore };
+    var base = { kPct: kPct, bbPct: bbPct, hr9: hr9, osiAllowed: osiAllowed, pitchScore: pitchScore };
     if (!split || split === 'overall' || !splits.length) return base;
     var s = null;
     if (split === 'lhh') {
@@ -164,6 +242,7 @@
       kPct: num(pickCol(s, ['K_pct'])) != null ? num(pickCol(s, ['K_pct'])) : base.kPct,
       bbPct: num(pickCol(s, ['BB_pct'])) != null ? num(pickCol(s, ['BB_pct'])) : base.bbPct,
       osiAllowed: num(pickCol(s, ['OSI_allowed'])) != null ? num(pickCol(s, ['OSI_allowed'])) : base.osiAllowed,
+      hr9: base.hr9,
       pitchScore: base.pitchScore
     };
   }
@@ -196,6 +275,17 @@
   function renderPitchingSummary(prof, team, ctx) {
     var pickCol = ctx.pickCol;
     var num = ctx.num;
+    var teamKey = ctx.teamKey;
+    var DATA = ctx.data;
+    var tk = teamKey(team);
+    var staffCache = buildTeamStaffCache(DATA, {
+      split: 'overall',
+      scope: 'staff',
+      pickCol: pickCol,
+      num: num,
+      teamKey: teamKey,
+      poolPitchScore: ctx.poolPitchScore
+    });
     var pitchRow = ctx.pitchTeamRow ? ctx.pitchTeamRow(team) : null;
     var avgPs = num(pickCol(prof, ['avg_pitching_score']));
     if (avgPs == null && pitchRow) avgPs = num(pickCol(pitchRow, ['PitchScore']));
@@ -203,17 +293,17 @@
     var bpOsi = num(pickCol(prof, ['bullpen_osi_allowed']));
     var teamEra = num(pickCol(prof, ['team_era']));
     var cells = [
-      staffStatCell('Pitch Score', valChip(ctx, avgPs, 'pitching', false, 0)),
-      staffStatCell('Team ERA', valChip(ctx, teamEra, 'pitching', true, 2)),
-      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'pitching', true, 2)),
-      staffStatCell('Bullpen OSI Allowed', valChip(ctx, bpOsi, 'osi', true, 1))
+      staffStatCell('Pitch Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(staffCache, tk, 'avgPs', false)),
+      staffStatCell('Team ERA', valChip(ctx, teamEra, 'pitching', true, 2), staffLeagueRank(staffCache, tk, 'teamEra', true)),
+      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'pitching', true, 2), staffLeagueRank(staffCache, tk, 'bpEra', true)),
+      staffStatCell('Bullpen OSI Allowed', valChip(ctx, bpOsi, 'osi', true, 1), staffLeagueRank(staffCache, tk, 'bpOsi', true))
     ].join('');
-    var body = staffMetricsBand('Staff snapshot', 'Team-level pitching context from profiles + Pitch Score', cells);
+    var body = staffMetricsBand('Staff snapshot', 'Team-level pitching context · league rank on each metric', cells);
     body += '<p class="ca-helper tp-staff-meta">'
       + '<a href="bullpen_report.html">Full bullpen report</a>'
       + ' · Rotation and reliever tables below</p>';
     return sectionCard(ctx, 'Staff Snapshot', 'Team-level pitching context from profiles + Pitch Score', body, null,
-      { icon: 'gauge', kicker: 'Pitching' });
+      { icon: 'staff-snapshot', kicker: 'Pitching' });
   }
 
   function renderRotation(prof, team, ctx) {
@@ -242,16 +332,25 @@
       : avgTeamSpMetric(teamSps, DATA, split, 'bbPct', pickCol, num, teamKey, poolPS);
     var era = num(pickCol(prof, ['team_era']));
     var ipStart = num(pickCol(prof, ['avg_ip_per_start']));
+    var tk = teamKey(team);
+    var rotCache = buildTeamStaffCache(DATA, {
+      split: split,
+      scope: 'rotation',
+      pickCol: pickCol,
+      num: num,
+      teamKey: teamKey,
+      poolPitchScore: poolPS
+    });
     var rotCells = [
-      staffStatCell('Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0)),
-      staffStatCell('Avg IP/Start', valChip(ctx, ipStart, 'osi', false, 2)),
-      staffStatCell('K%', valChip(ctx, kPct, 'pitching', false, 1)),
-      staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1)),
-      staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2))
+      staffStatCell('Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(rotCache, tk, 'avgPs', false)),
+      staffStatCell('Avg IP/Start', valChip(ctx, ipStart, 'osi', false, 2), staffLeagueRank(rotCache, tk, 'ipStart', false)),
+      staffStatCell('K%', valChip(ctx, kPct, 'pitching', false, 1), staffLeagueRank(rotCache, tk, 'kPct', false)),
+      staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1), staffLeagueRank(rotCache, tk, 'bbPct', true)),
+      staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2), staffLeagueRank(rotCache, tk, 'teamEra', true))
     ].join('');
     var rotKpi = staffMetricsBand(
       'Rotation snapshot',
-      staffSplitSubtitle(split, 'rotation') + ' · KPIs and SP table follow the split filter',
+      staffSplitSubtitle(split, 'rotation') + ' · league rank on each KPI',
       rotCells
     );
     rotKpi += ctx.profileTableOpen()
@@ -259,15 +358,22 @@
     if (!teamSps.length) {
       rotKpi += '<tr><td colspan="6" class="tp-empty">No SP profiles for this team</td></tr>';
     } else {
-      teamSps.forEach(function(sp) {
+      teamSps.forEach(function(sp, idx) {
         var pname = pickCol(sp, ['pitcher_name']);
         var splits = spMetricSplitsFor(sp, DATA, teamKey);
         var m = resolveSpSplitMetrics(sp, splits, split, pickCol, num, poolPS);
-        var ps = m.pitchScore || (ctx.poolPitchScore ? ctx.poolPitchScore(sp) : null);
-        var tier = ctx.tierLabel(ps, ctx.PITCH_TIERS);
+        var ps = m.pitchScore != null ? m.pitchScore : (ctx.poolPitchScore ? ctx.poolPitchScore(sp) : null);
+        var S = global.MLBMASharedMatchup;
+        var tier = (S && S.pitcherStaffTier)
+          ? S.pitcherStaffTier({ pitchScore: ps, kPct: m.kPct, bbPct: m.bbPct, osiAllowed: m.osiAllowed, hr9: m.hr9 })
+          : ctx.tierLabel(ps, ctx.PITCH_TIERS);
         var stale = pickCol(sp, ['stale']) === 'True' || pickCol(sp, ['stale']) === 'true';
-        rotKpi += '<tr><td><a href="pitcher_profile.html?pitcher=' + ctx.encodePlayer(pname) + '">' + esc(pname) + '</a></td>';
-        rotKpi += '<td><span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></td>';
+        var nameCell = ctx.spPlayerCellHtml
+          ? ctx.spPlayerCellHtml(sp, idx < 3)
+          : '<a href="pitcher_profile.html?pitcher=' + ctx.encodePlayer(pname) + '">' + esc(pname) + '</a>';
+        rotKpi += '<tr><td>' + nameCell + '</td>';
+        rotKpi += '<td><span class="tier-badge ' + esc(tier.cls) + '"'
+          + (tier.hint ? ' title="' + esc(tier.hint) + '"' : '') + '>' + esc(tier.label) + '</span></td>';
         rotKpi += '<td class="num">' + valChip(ctx, m.kPct, 'pitching', false, 1) + '</td>';
         rotKpi += '<td class="num">' + valChip(ctx, m.bbPct, 'pitching', true, 1) + '</td>';
         rotKpi += '<td class="num">' + valChip(ctx, m.osiAllowed, 'osi', true, 1) + '</td>';
@@ -282,7 +388,7 @@
       ? PC.wrapSectionFilterBar(PC.renderSplitControls('rotation', split), 'tp-section-filter-bar--split', 'rotation')
       : '';
     return sectionCard(ctx, 'Starting Rotation', 'Split filters rotation KPIs and SP rows', splitBar + rotKpi, 'tp-rotation-section',
-      { icon: 'calendar-days', kicker: 'SP unit' }) + intel;
+      { icon: 'rotation-section', kicker: 'SP unit' }) + intel;
   }
 
   function renderBullpen(prof, team, ctx) {
@@ -300,6 +406,16 @@
       ['K%', 'K_pct', false, 1],
       ['BB%', 'BB_pct', true, 1]
     ];
+    var tk = teamKey(team);
+    var bpCache = buildTeamStaffCache(DATA, {
+      split: split,
+      scope: 'bullpen',
+      pickCol: pickCol,
+      num: num,
+      teamKey: teamKey,
+      poolPitchScore: ctx.poolPitchScore
+    });
+    var bpRankField = { ERA: 'bpEra', 'OSI Allowed': 'bpOsi', 'K%': 'bpK', 'BB%': 'bpBb' };
     var bpCells = kpiDefs.map(function(pair) {
       var v = unit ? colVal(unit, prefix, pair[1], pickCol, num) : null;
       if (v == null && split === 'overall') {
@@ -309,11 +425,13 @@
       if (v == null && pair[0] === 'ERA' && split === 'hlev') {
         v = num(pickCol(prof, ['bullpen_high_lev_era']));
       }
-      return staffStatCell(pair[0], valChip(ctx, v, pair[0].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]));
+      var rankField = bpRankField[pair[0]];
+      var rankMeta = rankField ? staffLeagueRank(bpCache, tk, rankField, pair[2]) : null;
+      return staffStatCell(pair[0], valChip(ctx, v, pair[0].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]), rankMeta);
     }).join('');
     var bpKpi = staffMetricsBand(
       'Bullpen snapshot',
-      staffSplitSubtitle(split, 'bullpen') + ' · KPIs and reliever table follow the split filter',
+      staffSplitSubtitle(split, 'bullpen') + ' · league rank on each KPI',
       bpCells
     );
     var closer = pickCol(prof, ['closer_name']);
@@ -357,7 +475,7 @@
       ? PC.wrapSectionFilterBar(PC.renderSplitControls('bullpen', split), 'tp-section-filter-bar--split', 'bullpen')
       : '';
     return sectionCard(ctx, 'Bullpen Overview', 'Split filters bullpen KPIs and reliever rows', splitBar + bpKpi, 'tp-bullpen-section',
-      { icon: 'gauge', kicker: 'Bullpen unit' }) + intel;
+      { icon: 'bullpen-section', kicker: 'Bullpen unit' }) + intel;
   }
 
   function renderRoster(prof, team, ctx) {
@@ -422,7 +540,7 @@
     }
     rosterBody += '</tbody>' + ctx.profileTableClose();
     return sectionCard(ctx, 'Qualified Batters (50+ PA)', 'Season-long batter metrics with platoon splits', rosterBody, null,
-      { icon: 'users', kicker: 'Roster' });
+      { icon: 'roster', kicker: 'Roster' });
   }
 
   function renderAll(prof, team, ctx) {
@@ -441,7 +559,7 @@
           ? A.sectionHeaderHtml({
             title: 'Bullpen Usage · L7',
             subtitle: 'Live MLB API pitch matrix',
-            icon: 'bar-chart-3',
+            icon: 'usage',
             kicker: 'Usage'
           })
           : '<header class="ca-section-header"><h2 class="ca-section-title">Bullpen Usage · L7</h2>'
@@ -469,6 +587,8 @@
     resolveSpSplitMetrics: resolveSpSplitMetrics,
     avgTeamSpMetric: avgTeamSpMetric,
     bullpenUnitForTeam: bullpenUnitForTeam,
-    spMetricSplitsFor: spMetricSplitsFor
+    spMetricSplitsFor: spMetricSplitsFor,
+    buildTeamStaffCache: buildTeamStaffCache,
+    staffLeagueRank: staffLeagueRank
   };
 })(typeof window !== 'undefined' ? window : this);

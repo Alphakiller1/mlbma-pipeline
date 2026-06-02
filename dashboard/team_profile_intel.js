@@ -7,6 +7,11 @@
   var A = global.MLBMAAssets;
   var Mini = global.TeamProfileMini;
 
+  function tpIcon(key) {
+    var I = global.MLBMAIcons;
+    return (I && I.profileIcon) ? I.profileIcon(key) : key;
+  }
+
   var METRIC_NAMES = {
     osi: 'Offense Score (OSI)',
     abq: 'Approach (ABQ)',
@@ -319,7 +324,7 @@
           : woba != null && woba >= 0.330
             ? 'Contact profile supports a productive run environment on wOBA alone.'
             : 'Middle-of-the-pack run environment — totals lean neutral without a clear RCV edge.';
-      cards.push({ title: 'Totals lean', icon: 'chart-line', body: env });
+      cards.push({ title: 'Totals lean', icon: 'totals-lean', body: env });
     }
 
     if (k != null || m.osiR != null || m.osiL != null) {
@@ -335,7 +340,7 @@
       if (rcvDiff != null && Math.abs(rcvDiff) >= 4) {
         risk += ' Platoon split adds handedness risk — weaker side is more fade-friendly.';
       }
-      cards.push({ title: 'Matchup risk', icon: 'swords', body: risk });
+      cards.push({ title: 'Matchup risk', icon: 'matchup-risk', body: risk });
     }
 
     var fade = [];
@@ -346,7 +351,7 @@
     if (fade.length) {
       cards.push({
         title: 'Fade conditions',
-        icon: 'alert-triangle',
+        icon: 'fade-conditions',
         body: 'Offense is most vulnerable ' + fade.join(', ') + ' — research context only, not a wager recommendation.'
       });
     }
@@ -354,7 +359,7 @@
     if (!cards.length) {
       cards.push({
         title: 'Research note',
-        icon: 'clipboard-list',
+        icon: 'research-note',
         body: 'Insufficient grade/rate data for automated takeaways — expand split/window filters or refresh Team_Profiles.'
       });
     }
@@ -454,10 +459,20 @@
     };
   }
 
-  function sustainStatCell(label, valueHtml) {
+  function sustainStatCell(label, valueHtml, rankMeta) {
+    rankMeta = rankMeta || {};
+    var rank = rankMeta.rank;
+    var total = rankMeta.total;
+    var Sections = global.TeamProfileSections;
+    var tone = (Sections && Sections.rankTone) ? Sections.rankTone(rank) : 'neutral';
+    var rankHtml = rank != null
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + esc(tone) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+        + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
+        + '</span>'
+      : '';
     return '<div class="tp-offense-stat tp-offense-stat--inline tp-intel-stat" aria-label="' + esc(label) + '">'
       + '<span class="tp-offense-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-offense-stat__body">' + valueHtml + '</span>'
+      + '<span class="tp-offense-stat__body">' + valueHtml + rankHtml + '</span>'
       + '</div>';
   }
 
@@ -510,6 +525,10 @@
     var v = sustainabilityVerdict(rates);
     var proj = num(m.proj);
     var ppGap = num(m.ppGap);
+    var Sections = global.TeamProfileSections;
+    var team = ctx.teamKey ? ctx.teamKey(ctx.team) : String(ctx.team || '').trim().toUpperCase();
+    var metricCache = (Sections && Sections.buildTeamMetricCache) ? Sections.buildTeamMetricCache(ctx) : {};
+    var leagueRankFn = Sections && Sections.leagueRank ? Sections.leagueRank : function() { return { rank: null, total: null }; };
     var PC = global.MLBMAProfileControls;
     var splitBar = PC && PC.renderSectionSplitBar
       ? PC.renderSectionSplitBar('sustainability', ctx.split || 'both')
@@ -519,12 +538,12 @@
         + esc(v.label) + '</span>'
       : '';
     var contactCells = ''
-      + sustainStatCell('wOBA', valChip(v.woba, 'woba', false, 3))
-      + sustainStatCell('xwOBA', valChip(v.xwoba, 'woba', false, 3))
-      + (v.gapPts != null ? sustainStatCell('Gap', gapChipHtml(v.gapPts)) : '');
+      + sustainStatCell('wOBA', valChip(v.woba, 'woba', false, 3), leagueRankFn(metricCache, team, 'woba', false))
+      + sustainStatCell('xwOBA', valChip(v.xwoba, 'woba', false, 3), leagueRankFn(metricCache, team, 'xwoba', false))
+      + (v.gapPts != null ? sustainStatCell('Gap', gapChipHtml(v.gapPts), leagueRankFn(metricCache, team, 'contactGap', false)) : '');
     var projCells = ''
-      + (proj != null ? sustainStatCell('Proj OSI', valChip(proj, 'osi', false, 1)) : '')
-      + (ppGap != null ? sustainStatCell('PP-Gap', valChip(ppGap, 'ppGap', false, 1)) : '');
+      + (proj != null ? sustainStatCell('Proj OSI', valChip(proj, 'osi', false, 1), leagueRankFn(metricCache, team, 'proj', false)) : '')
+      + (ppGap != null ? sustainStatCell('PP-Gap', valChip(ppGap, 'ppGap', false, 1), leagueRankFn(metricCache, team, 'ppGap', false)) : '');
     var body = '<div class="tp-intel-sustain">'
       + '<div class="tp-intel-sustain__lead">'
       + labelChip
@@ -540,7 +559,7 @@
     return '<section class="ca-board ca-card tp-section tp-intel-section" data-tp-section="sustainability">'
       + (A && A.sectionHeaderHtml
         ? A.sectionHeaderHtml({
-          icon: 'chart-line',
+          icon: 'sustainability',
           kicker: 'Intelligence',
           title: 'Sustainability Check',
           subtitle: 'Contact quality · projection · market map quadrant'
@@ -551,7 +570,7 @@
 
   function takeawayCardHtml(c) {
     var I = global.MLBMAIcons;
-    var iconKey = c.icon || 'clipboard-list';
+    var iconKey = tpIcon(c.icon || 'research-note');
     var iconHtml = (I && I.iconCircleHtml) ? I.iconCircleHtml(iconKey, true) : '';
     return '<article class="tp-intel-takeaway ca-card">'
       + '<div class="tp-intel-takeaway__head">'
@@ -566,7 +585,7 @@
     var rates = Mini && Mini.resolveOffenseRates ? Mini.resolveOffenseRates(prof, ctx) : {};
     var cards = researchTakeaways(m, rates, ctx);
     var grid = '<div class="tp-intel-takeaways">' + cards.map(takeawayCardHtml).join('') + '</div>';
-    return sectionWrap('Research Takeaways', 'Metric translation for research — not betting picks', grid, 'lightbulb');
+    return sectionWrap('Research Takeaways', 'Metric translation for research — not betting picks', grid, 'research-takeaways');
   }
 
   function cleanText(s) {
@@ -655,7 +674,7 @@
       + (status.label ? ' · ' + status.label : '');
     var header = (A && A.sectionHeaderHtml)
       ? A.sectionHeaderHtml({
-        icon: 'bats',
+        icon: 'identity',
         kicker: 'Identity',
         title: 'Summary Of Identity',
         subtitle: subtitle
@@ -686,7 +705,7 @@
 
   function sectionWrap(title, subtitle, body, iconKey) {
     var hdrOpts = {
-      icon: iconKey || 'clipboard-list',
+      icon: tpIcon(iconKey || 'research-note'),
       kicker: 'Intelligence',
       title: title,
       subtitle: subtitle || ''
@@ -710,7 +729,7 @@
   function staffTakeawaysGrid(cards, subtitle) {
     if (!cards || !cards.length) return '';
     var grid = '<div class="tp-intel-takeaways">' + cards.map(takeawayCardHtml).join('') + '</div>';
-    return sectionWrap('Staff Takeaways', subtitle || 'Research context — not betting picks', grid, 'clipboard-list');
+    return sectionWrap('Staff Takeaways', subtitle || 'Research context — not betting picks', grid, 'staff-takeaways');
   }
 
   function renderStaffStatus(pack, kind) {
@@ -859,7 +878,7 @@
     if (pack.avgPs != null) {
       cards.push({
         title: 'Run prevention lean',
-        icon: 'gauge',
+        icon: 'run-prevention',
         body: pack.avgPs >= 68
           ? 'Staff Pitch Score supports limiting runs — lean under-friendly when this rotation is on the mound.'
           : pack.avgPs < 55
@@ -871,7 +890,7 @@
       var kbb = pack.kPct - pack.bbPct;
       cards.push({
         title: 'Matchup risk',
-        icon: 'swords',
+        icon: 'matchup-risk',
         body: kbb >= 14
           ? 'High K−BB rotation — contact-heavy offenses are the main fade spot; swing-and-miss lineups are tougher.'
           : kbb <= 8
@@ -882,7 +901,7 @@
     if (pack.top && pack.bottom && pack.top.ps - pack.bottom.ps >= 15) {
       cards.push({
         title: 'Depth gap',
-        icon: 'list-ordered',
+        icon: 'depth-gap',
         body: 'Large ace-to-back-end gap — research the specific starter; staff average overstates the bottom of the rotation.'
       });
     }
@@ -993,7 +1012,7 @@
     if (pack.bpScore != null || pack.era != null) {
       cards.push({
         title: 'Late-inning lean',
-        icon: 'clock',
+        icon: 'late-inning',
         body: (pack.bpScore != null && pack.bpScore >= 65) || (pack.era != null && pack.era <= 3.85)
           ? 'Bullpen supports holding leads — late runs less likely when the pen is active.'
           : (pack.bpScore != null && pack.bpScore < 50) || (pack.era != null && pack.era >= 4.60)
@@ -1004,14 +1023,14 @@
     if (pack.hiEra != null && pack.era != null && pack.hiEra >= pack.era + 0.6) {
       cards.push({
         title: 'High-leverage risk',
-        icon: 'alert-triangle',
+        icon: 'high-leverage',
         body: 'Hi-leverage ERA exceeds unit ERA — closer/setup matchups deserve extra scrutiny in research.'
       });
     }
     if (pack.lhhOsi != null && pack.rhhOsi != null && Math.abs(pack.lhhOsi - pack.rhhOsi) >= 3) {
       cards.push({
         title: 'Platoon angle',
-        icon: 'git-branch',
+        icon: 'platoon-angle',
         body: 'Handedness split on OSI Allowed is meaningful — stack research toward the softer platoon side.'
       });
     }

@@ -65,6 +65,7 @@
     mobileOverlay.classList.remove('open');
     mobileMenu.classList.remove('open');
     mobileMenu.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
     setTimeout(function () {
       mobileOverlay.style.display = 'none';

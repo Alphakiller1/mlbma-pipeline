@@ -155,6 +155,65 @@
     analysis: 'clipboard-list'
   };
 
+  /** Team Profile — one semantic key → one Lucide mark (sections, bands, takeaways). */
+  var PROFILE_ICONS = {
+    lineup: 'bats',
+    rotation: 'baseball',
+    bullpen: 'activity',
+    starters: 'baseball',
+    relievers: 'activity',
+    'offense-profile': 'bats',
+    batting: 'bats',
+    'rolling-trend': 'activity',
+    momentum: 'activity',
+    trend: 'activity',
+    'schedule-context': 'binoculars',
+    schedule: 'binoculars',
+    opponents: 'binoculars',
+    'surface-wins': 'trophy',
+    results: 'trophy',
+    tonight: 'stadium',
+    'analyst-take': 'lightbulb',
+    analysis: 'lightbulb',
+    sustainability: 'target',
+    'research-takeaways': 'clipboard-list',
+    'staff-takeaways': 'clipboard-list',
+    'staff-snapshot': 'gauge',
+    pitching: 'gauge',
+    'rotation-section': 'baseball',
+    'bullpen-section': 'activity',
+    roster: 'users',
+    usage: 'bar-chart-3',
+    'run-production': 'bar-chart-3',
+    'plate-skills': 'bats',
+    'totals-lean': 'circle-dollar-sign',
+    'matchup-risk': 'swords',
+    'fade-conditions': 'alert-triangle',
+    'research-note': 'clipboard-list',
+    'run-prevention': 'gauge',
+    'depth-gap': 'list-ordered',
+    'late-inning': 'clock',
+    'high-leverage': 'alert-triangle',
+    'platoon-angle': 'git-branch',
+    'contact-hot': 'trending-up',
+    'contact-cold': 'trending-down',
+    'contact-flat': 'target',
+    'platoon-profile': 'git-branch',
+    'discipline-split': 'bats',
+    'process-upside': 'target',
+    'regression-watch': 'trending-down',
+    'platoon-report': 'git-branch',
+    identity: 'bats',
+    intelligence: 'target'
+  };
+
+  function profileIcon(key) {
+    if (!key) return 'clipboard-list';
+    var k = String(key).toLowerCase();
+    if (PROFILE_ICONS[k]) return PROFILE_ICONS[k];
+    return resolveLucideName(k);
+  }
+
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
@@ -170,7 +229,7 @@
   }
 
   function iconSvg(name) {
-    var key = resolveLucideName(name);
+    var key = profileIcon(name);
     return CA_ICONS[key] || CA_ICONS['circle-dot'];
   }
 
@@ -226,6 +285,8 @@
     iconSvg: iconSvg,
     refreshIcons: refreshIcons,
     resolveLucideName: resolveLucideName,
+    profileIcon: profileIcon,
+    PROFILE_ICONS: PROFILE_ICONS,
     ICON_ALIAS: ICON_ALIAS
   };
 })(typeof window !== 'undefined' ? window : this);

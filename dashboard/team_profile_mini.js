@@ -830,7 +830,7 @@
 
   function renderSummaryPanel(prof, team, m, ctx) {
     var trendHead = (A && A.caSectionHeadHtml)
-      ? A.caSectionHeadHtml('chart-line', 'Trend', 'Rolling Trend', 'YTD → L7 windows · velocity · reliability')
+      ? A.caSectionHeadHtml('rolling-trend', 'Trend', 'Rolling Trend', 'YTD → L7 windows · velocity · reliability')
       : '<h2 class="ca-section-title">Rolling Trend</h2>'
         + '<p class="ca-helper tp-summary-filter" title="Research Lab trend parameters">YTD → L7 windows · velocity · reliability</p>';
 
@@ -875,7 +875,8 @@
 
   function iconCircle(name) {
     var I = (typeof window !== 'undefined' && window.MLBMAIcons) ? window.MLBMAIcons : null;
-    if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
+    var key = (I && I.profileIcon) ? I.profileIcon(name) : name;
+    if (I && I.iconCircleHtml) return I.iconCircleHtml(key, true);
     return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true"></span>';
   }
 
@@ -929,9 +930,14 @@
     } else {
       return '';
     }
+    var rank = chipOpts.rank;
+    var rankHtml = rank != null
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + esc(heroRankTone(rank)) + '" title="League rank #' + esc(String(rank)) + '">'
+        + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span></span>'
+      : '';
     return '<div class="tp-hero-stat tp-hero-stat--' + esc(tone || 'neutral') + '">'
       + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-hero-stat__value">' + valueHtml + '</span>'
+      + '<span class="tp-hero-stat__value">' + valueHtml + rankHtml + '</span>'
       + '</div>';
   }
 
@@ -950,7 +956,8 @@
     var logo = A ? A.teamLogoImg(team, 88, 'tp-team-banner__logo-img snapshot-logo') : '';
     var watermark = A ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
     var rank = ctx.osiRank;
-    var rpg = ctx.runsPerGame;
+    var rpgRankMeta = ctx.rpgRank || null;
+    var rpgRank = rpgRankMeta && rpgRankMeta.rank != null ? rpgRankMeta.rank : null;
     var osi = num(m.osi);
     var rates = resolveOffenseRates(prof, ctx);
     var status = global.TeamProfileIntel && TeamProfileIntel.offenseStatusLabel
@@ -964,14 +971,15 @@
         + esc(status.label) + '</span>'
       : '';
 
+    var rpg = ctx.runsPerGame;
+
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + (osi != null && !isNaN(osi)
-        ? heroStatChip('OSI', esc(Number(osi).toFixed(1)), heroOsiTone(osi))
+        ? heroStatChip('OSI', esc(Number(osi).toFixed(1)), heroOsiTone(osi), { rank: rank })
         : '')
-      + heroStatChip('OSI Rank', rank ? '#' + esc(String(rank)) : null, heroRankTone(rank))
       + (rpg != null && !isNaN(rpg)
-        ? heroStatChip('Runs Per Game', esc(Number(rpg).toFixed(2)), heroRpgTone(rpg))
+        ? heroStatChip('Runs Per Game', esc(Number(rpg).toFixed(2)), heroRpgTone(rpg), { rank: rpgRank })
         : '');
 
     return '<section class="tp-team-banner tp-team-banner--hero" style="--tp-accent:' + esc(accent) + '">'
@@ -1044,7 +1052,7 @@
     if (!details.length) return '';
 
     return '<div class="tp-platoon-summary">'
-      + '<div class="tp-platoon-summary-head">' + subsectionHeadHtml('Platoon Report', 'git-branch') + '</div>'
+      + '<div class="tp-platoon-summary-head">' + subsectionHeadHtml('Platoon Report', 'platoon-report') + '</div>'
       + (details.length ? '<p class="tp-platoon-summary-detail">' + details.join(' · ') + '</p>' : '')
       + '</div>';
   }

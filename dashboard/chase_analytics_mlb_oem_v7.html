@@ -618,6 +618,7 @@ tr.rank-row-expanded { background: rgba(124, 77, 255, 0.06); }
   position: fixed; inset: 0; background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   flex-direction: column; gap: 16px; z-index: 9999;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 .loading.hide { opacity: 0; pointer-events: none; }
@@ -2469,11 +2470,11 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260602n">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260620a">
 <link rel="stylesheet" href="theme.css?v=20260620a">
-<link rel="stylesheet" href="chase_nav.css?v=20260620b">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260601j">
+<link rel="stylesheet" href="chase_nav.css?v=20260602o">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260602n">
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -2531,7 +2532,7 @@ body.view-research .ca-lab { display: block; }
   }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
-<script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_ui.js?v=20260602n" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260620d"></script>
 <script src="mlbma_icons.js?v=20260620q"></script>
 <script src="matchup_shared.js?v=20260620q"></script>
@@ -2555,7 +2556,8 @@ body.view-research .ca-lab { display: block; }
 
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <span class="chase-wordmark" aria-label="Chase Analytics">CHASE <span class="chase-wordmark__accent">ANALYTICS</span></span>
+      <img class="chase-nav-logo chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="36" height="36"
+        onerror="this.style.display='none'">
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
@@ -2596,7 +2598,8 @@ body.view-research .ca-lab { display: block; }
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <span class="chase-wordmark" aria-label="Chase Analytics">CHASE <span class="chase-wordmark__accent">ANALYTICS</span></span>
+      <img class="chase-nav-logo chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="36" height="36"
+        onerror="this.style.display='none'">
     </a>
     <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2708,52 +2711,6 @@ body.view-research .ca-lab { display: block; }
   </div>
 </section>
 
-<section class="ca-market" id="section-opening-market-map">
-  <div class="ca-market__inner">
-
-    <header class="ca-page-header ca-market__header">
-      <div class="ca-market__header-copy">
-        <p class="ca-eyebrow">Visual Matrix</p>
-        <h2 class="ca-page-title">Market Map</h2>
-        <p class="ca-page-header__sub ca-helper">Plot every team by contact quality (RCV) against xwOBA regression gap. Find elite undervalued offenses, buy-low units, and clubs the market may be mispricing — toggle RHP or LHP for platoon-specific reads.</p>
-      </div>
-
-      <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
-        <button type="button" id="marketToggleRHP" class="ca-toggle ca-toggle--active" aria-pressed="true">
-          RHP
-        </button>
-        <button type="button" id="marketToggleLHP" class="ca-toggle" aria-pressed="false">
-          LHP
-        </button>
-      </div>
-    </header>
-
-    <div class="ca-market__card">
-      <div class="ca-market__chart" id="landingMarketQuadrant"></div>
-    </div>
-
-    <div class="ca-market__legend">
-      <div class="ca-legend__pill">
-        <span class="ca-legend__dot ca-legend__dot--elite"></span>
-        <span class="ca-legend__label">Elite &amp; Undervalued</span>
-      </div>
-      <div class="ca-legend__pill">
-        <span class="ca-legend__dot ca-legend__dot--buylow"></span>
-        <span class="ca-legend__label">Buy-Low Offense</span>
-      </div>
-      <div class="ca-legend__pill">
-        <span class="ca-legend__dot ca-legend__dot--cooling"></span>
-        <span class="ca-legend__label">Strong But Cooling</span>
-      </div>
-      <div class="ca-legend__pill">
-        <span class="ca-legend__dot ca-legend__dot--weak"></span>
-        <span class="ca-legend__label">Weak &amp; Concerning</span>
-      </div>
-    </div>
-
-  </div>
-</section>
-
 <section class="ca-tools" id="section-opening-workflows">
   <div class="ca-tools__inner">
     <header class="ca-page-header">
@@ -2835,6 +2792,52 @@ body.view-research .ca-lab { display: block; }
         <div class="ca-tool-card__cta">Open Pitcher Lab <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="ca-market" id="section-opening-market-map">
+  <div class="ca-market__inner">
+
+    <header class="ca-page-header ca-market__header">
+      <div class="ca-market__header-copy">
+        <p class="ca-eyebrow">Visual Matrix</p>
+        <h2 class="ca-page-title">Market Map</h2>
+        <p class="ca-page-header__sub ca-helper">Plot every team by contact quality (RCV) against xwOBA regression gap. Find elite undervalued offenses, buy-low units, and clubs the market may be mispricing — toggle RHP or LHP for platoon-specific reads.</p>
+      </div>
+
+      <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
+        <button type="button" id="marketToggleRHP" class="ca-toggle ca-toggle--active" aria-pressed="true">
+          RHP
+        </button>
+        <button type="button" id="marketToggleLHP" class="ca-toggle" aria-pressed="false">
+          LHP
+        </button>
+      </div>
+    </header>
+
+    <div class="ca-market__card">
+      <div class="ca-market__chart" id="landingMarketQuadrant"></div>
+    </div>
+
+    <div class="ca-market__legend">
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot ca-legend__dot--elite"></span>
+        <span class="ca-legend__label">Elite &amp; Undervalued</span>
+      </div>
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot ca-legend__dot--buylow"></span>
+        <span class="ca-legend__label">Buy-Low Offense</span>
+      </div>
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot ca-legend__dot--cooling"></span>
+        <span class="ca-legend__label">Strong But Cooling</span>
+      </div>
+      <div class="ca-legend__pill">
+        <span class="ca-legend__dot ca-legend__dot--weak"></span>
+        <span class="ca-legend__label">Weak &amp; Concerning</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -7273,7 +7276,7 @@ function syncDashboardView() {
     renderHomePage();
   }, 'opening view sync');
 
-  var scrollId = hash || 'section-opening-market-map';
+  var scrollId = hash || 'section-opening-workflows';
   if (scrollId === 'section-opening-workflows' || scrollId === 'section-opening-research-cards' || scrollId === 'section-opening-market-map' || scrollId === 'opening') {
     setTimeout(function() {
       var target = document.getElementById(scrollId === 'opening' ? 'section-opening-hero' : scrollId);
@@ -7464,6 +7467,8 @@ function renderPALS() {
 
 function hideLoadingOverlay() {
   console.log('[MLBMA] hideLoadingOverlay');
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
   if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
   else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
   if (typeof hideChartPlaceholder === 'function') hideChartPlaceholder();
@@ -7559,6 +7564,7 @@ function bindDashRankingsControls(){
 
 function init(){
   document.body.classList.add('platform-dashboard', 'opening-dashboard');
+  document.body.classList.remove('view-pending');
   document.documentElement.classList.remove('view-pending');
   console.log('[MLBMA] init start');
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
@@ -7751,6 +7757,6 @@ if (document.readyState === 'loading') {
   <script src="oem_overhaul.js?v=20260528b"></script>
   <script src="mlbma_standings.js?v=20260527s"></script>
   <script src="mlbma_signals.js?v=20260527s"></script>
-  <script src="chase_nav.js?v=20260527s"></script>
+  <script src="chase_nav.js?v=20260602n"></script>
 </body>
 </html>

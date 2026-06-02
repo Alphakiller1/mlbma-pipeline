@@ -113,6 +113,8 @@
       el.classList.add('hide');
       el.style.display = 'none';
     });
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
     document.body.classList.remove('mlbma-page-loading');
   }
 

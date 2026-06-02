@@ -77,6 +77,17 @@
   filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.35));
 }
 
+.chase-nav-logo--icon {
+  height: 36px !important;
+  max-height: 36px !important;
+  min-width: 0 !important;
+  width: 36px !important;
+  max-width: 36px !important;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.45));
+}
+
 .chase-nav-logo--compact {
   display: none !important;
 }

@@ -573,6 +573,90 @@
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
+  /** K%/BB% as percentage points (22.5 not 0.225). */
+  function rateAsPctPoints(v) {
+    var d = pctDecimal(v);
+    if (d == null) return null;
+    return d * 100;
+  }
+
+  function invOsiScore(osiAllowed) {
+    if (osiAllowed == null || isNaN(osiAllowed)) return null;
+    return Math.max(0, Math.min(100, 100 - osiAllowed));
+  }
+
+  function kRateScore(kPct) {
+    var kp = rateAsPctPoints(kPct);
+    if (kp == null) return null;
+    return Math.max(0, Math.min(100, ((kp - 15) / 20) * 100));
+  }
+
+  /** Composite SP grade — pool Pitch Score + run suppression + K% blend. */
+  function pitcherStaffGrade(m) {
+    m = m || {};
+    var ps = numOrNull(m.pitchScore);
+    var osi = invOsiScore(m.osiAllowed);
+    var kb = kRateScore(m.kPct);
+    var parts = [];
+    var w = 0;
+    if (ps != null) { parts.push([ps, 0.45]); w += 0.45; }
+    if (osi != null) { parts.push([osi, 0.40]); w += 0.40; }
+    if (kb != null) { parts.push([kb, 0.15]); w += 0.15; }
+    if (!parts.length) return null;
+    var sum = parts.reduce(function(acc, pair) { return acc + pair[0] * pair[1]; }, 0);
+    return Math.round((sum / w) * 10) / 10;
+  }
+
+  /**
+   * Rotation tier — multi-signal (Pitch Score + OSI Allowed + K%).
+   * Aligns with Pitcher Lab elite-stuff thresholds; avoids PS-only mislabels on small samples.
+   */
+  function pitcherStaffTier(m) {
+    m = m || {};
+    var ps = numOrNull(m.pitchScore);
+    var osi = numOrNull(m.osiAllowed);
+    var k = rateAsPctPoints(m.kPct);
+    var grade = pitcherStaffGrade(m);
+
+    if (k != null && osi != null) {
+      if (k >= 26 && osi <= 50) {
+        return {
+          label: 'Ace',
+          cls: 'tier-ace',
+          hint: 'Elite K% (' + k.toFixed(1) + '%) with strong run suppression'
+        };
+      }
+      if (k >= 22 && osi <= 55) {
+        grade = Math.max(grade || 0, 72);
+      }
+    }
+
+    if (grade == null && ps != null) grade = ps;
+    if (grade == null) return { label: '—', cls: '', hint: '' };
+
+    var label;
+    var cls;
+    if (grade >= 78 || (ps != null && ps >= 82)) {
+      label = 'Ace';
+      cls = 'tier-ace';
+    } else if (grade >= 65 || (k != null && osi != null && k >= 22 && osi <= 55)) {
+      label = 'Solid';
+      cls = 'tier-solid';
+    } else if (grade >= 52) {
+      label = 'Average';
+      cls = 'tier-average';
+    } else {
+      label = 'Volatile';
+      cls = 'tier-volatile';
+    }
+
+    var hintParts = [];
+    if (ps != null) hintParts.push('Pitch Score ' + ps);
+    if (osi != null) hintParts.push('OSI Allowed ' + osi);
+    if (k != null) hintParts.push('K% ' + k.toFixed(1));
+    return { label: label, cls: cls, hint: hintParts.join(' · ') };
+  }
+
   function gamescriptBadge(awayABQ, homeABQ, awayPitchScore, homePitchScore, awayRcv, homeRcv, awayHr9, homeHr9) {
     awayABQ = awayABQ != null ? awayABQ : 50;
     homeABQ = homeABQ != null ? homeABQ : 50;
@@ -1794,6 +1878,9 @@
     windPlateEffect: windPlateEffect,
     pctDecimal: pctDecimal,
     computePitchScoreFromRates: computePitchScoreFromRates,
+    rateAsPctPoints: rateAsPctPoints,
+    pitcherStaffGrade: pitcherStaffGrade,
+    pitcherStaffTier: pitcherStaffTier,
     enrichSpProfiles: enrichSpProfiles,
     buildOorByTeam: buildOorByTeam,
     pitcherOorFromTeamHand: pitcherOorFromTeamHand,

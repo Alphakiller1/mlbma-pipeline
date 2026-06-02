@@ -7,6 +7,11 @@
   var A = global.MLBMAAssets;
   var Mini = global.TeamProfileMini;
 
+  function tpIcon(key) {
+    var I = global.MLBMAIcons;
+    return (I && I.profileIcon) ? I.profileIcon(key) : key;
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
@@ -74,12 +79,8 @@
 
   function metricHeaderCell(key) {
     var m = METRIC_LABELS[key] || { abbr: key, gloss: '' };
-    var gloss = m.gloss
-      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Definition in glossary">↗</a>'
-      : '';
     return '<span class="tp-metric-grid-h">'
       + '<span class="tp-metric-abbr">' + esc(m.abbr) + '</span>'
-      + gloss
       + '</span>';
   }
 
@@ -146,6 +147,9 @@
         barrel: num(rates.barrel),
         hard: num(rates.hard)
       };
+      if (rates.woba != null && rates.xwoba != null) {
+        cache[t].contactGap = Math.round((rates.woba - rates.xwoba) * 1000);
+      }
     });
     return cache;
   }
@@ -192,9 +196,6 @@
   function offenseStatCell(key, v, ctxKey, invert, decimals, rankMeta) {
     rankMeta = rankMeta || {};
     var m = metricLabel(key);
-    var glossLink = m.gloss
-      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
-      : '';
     var rank = rankMeta.rank;
     var total = rankMeta.total;
     var rankHtml = rank != null
@@ -203,7 +204,7 @@
         + '</span>'
       : '';
     return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(m.abbr) + '">'
-      + '<span class="tp-offense-stat__label">' + esc(m.abbr) + glossLink + '</span>'
+      + '<span class="tp-offense-stat__label">' + esc(m.abbr) + '</span>'
       + '<span class="tp-offense-stat__body">'
       + valChip(v, ctxKey, invert, decimals)
       + rankHtml
@@ -241,12 +242,9 @@
 
   function metricTile(key, v, ctx, invert, decimals) {
     var m = metricLabel(key);
-    var glossLink = m.gloss
-      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
-      : '';
     return '<article class="tp-metric-tile" aria-label="' + esc(m.abbr) + '">'
       + '<div class="tp-metric-tile__head">'
-      + '<span class="tp-metric-tile__name">' + esc(m.abbr) + glossLink + '</span>'
+      + '<span class="tp-metric-tile__name">' + esc(m.abbr) + '</span>'
       + '</div>'
       + '<div class="tp-metric-tile__value">' + valChip(v, ctx, invert, decimals) + '</div>'
       + '</article>';
@@ -290,7 +288,7 @@
     var hdrOpts = {
       title: title,
       subtitle: subtitle || '',
-      icon: meta.icon,
+      icon: tpIcon(meta.icon),
       kicker: meta.kicker || 'Team Profile',
       actions: meta.actions || ''
     };
@@ -394,20 +392,54 @@
     };
   }
 
-  function surfaceStatCell(label, v, ctx, invert, decimals) {
+  function surfaceStatCell(label, v, ctx, invert, decimals, rankMeta) {
     var m = METRIC_LABELS[label] || { abbr: label, gloss: '' };
-    var glossLink = m.gloss
-      ? '<a class="tp-metric-gloss-link" href="glossary.html#' + esc(m.gloss) + '" title="Glossary">↗</a>'
+    rankMeta = rankMeta || {};
+    var rank = rankMeta.rank;
+    var total = rankMeta.total;
+    var rankHtml = rank != null
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+        + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
+        + '</span>'
       : '';
     return '<div class="tp-surface-stat tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(m.abbr) + '">'
-      + '<span class="tp-offense-stat__label">' + esc(m.abbr) + glossLink + '</span>'
-      + '<span class="tp-offense-stat__body">' + valChip(v, ctx, invert, decimals) + '</span>'
+      + '<span class="tp-offense-stat__label">' + esc(m.abbr) + '</span>'
+      + '<span class="tp-offense-stat__body">' + valChip(v, ctx, invert, decimals) + rankHtml + '</span>'
       + '</div>';
   }
 
-  function surfaceWinBand(title, hint, slots) {
+  function buildSurfaceWinCache(results, window, location, ctx) {
+    var cache = {};
+    (results || []).forEach(function(row) {
+      var pickColFn = ctx && ctx.pickCol ? ctx.pickCol : pick;
+      var tkFn = ctx && ctx.teamKey ? ctx.teamKey : function(t) { return String(t || '').trim().toUpperCase(); };
+      var t = tkFn(pickColFn(row, ['team', 'Team', 'tm']));
+      if (!t) return;
+      var m = surfaceWinMetrics(row, window, location);
+      cache[t] = {
+        winPct: m.winPct,
+        f5WinPct: m.f5WinPct,
+        spWinPct: m.spWinPct,
+        qsPct: m.qsPct
+      };
+    });
+    return cache;
+  }
+
+  var SURFACE_RANK_FIELD = {
+    'Win%': { field: 'winPct', invert: false },
+    'F5 Win%': { field: 'f5WinPct', invert: false },
+    'Pitcher Win%': { field: 'spWinPct', invert: false },
+    'QS%': { field: 'qsPct', invert: false }
+  };
+
+  function surfaceWinBand(title, hint, slots, cache, team) {
     var cells = slots.map(function(s) {
-      return surfaceStatCell(s[0], s[1], s[2], s[3], s[4]);
+      var meta = SURFACE_RANK_FIELD[s[0]] || {};
+      var rankMeta = meta.field && cache && team
+        ? leagueRank(cache, team, meta.field, meta.invert)
+        : { rank: null, total: null };
+      return surfaceStatCell(s[0], s[1], s[2], s[3], s[4], rankMeta);
     }).join('');
     if (!cells) return '';
     return '<div class="tp-offense-metrics__band tp-surface-wins__band">'
@@ -445,7 +477,7 @@
       {
         title: 'Run Production',
         hint: 'Rate & counting stats',
-        icon: 'chart-line',
+        icon: 'run-production',
         slots: [
           ['wRC+', wrc, 'wrc', false, 0],
           ['wOBA', rates.woba, 'woba', false, 3],
@@ -459,7 +491,7 @@
       {
         title: 'Plate Skills',
         hint: 'Discipline & contact',
-        icon: 'bats',
+        icon: 'plate-skills',
         slots: [
           ['K%', rates.k, 'pitching', true, 1],
           ['BB%', rates.bb, 'obr', false, 1],
@@ -473,7 +505,7 @@
     var body = sectionSplitBar('offense', split) + offenseMetricsPanel(bands, cache, team);
 
     return sectionCard('Offense Profile', 'League rank on every metric', body,
-      { icon: 'bats', kicker: 'Lineup unit', sectionId: 'offense-profile' });
+      { icon: 'offense-profile', kicker: 'Lineup unit', sectionId: 'offense-profile' });
   }
 
   function buildOpponentStrengthCache(ctx) {
@@ -538,7 +570,7 @@
     if (!pals && !xfip && !psFaced && sos == null) {
       return sectionCard('Strength of Opponents Faced', 'Run scrape_pals / compute_pals for PALS and schedule metrics',
         '<p class="ca-helper">PALS, xFIP faced, pitch score faced, and SOS appear after the PALS pipeline runs.</p>',
-        { icon: 'calendar-days', kicker: 'Schedule context' });
+        { icon: 'schedule-context', kicker: 'Schedule context' });
     }
 
     var body = sectionSplitBar('schedule', ctx.split || 'both')
@@ -546,7 +578,7 @@
       + '<p class="ca-helper tp-opponent-strength-note">SOS derived from PTF+ (higher = harder pitching schedule). xFIP rank #1 = toughest staff faced.</p>';
 
     return sectionCard('Strength of Opponents Faced', filterNote + ' · league rank on each metric', body,
-      { icon: 'calendar-days', kicker: 'Schedule context', sectionId: 'schedule-context' });
+      { icon: 'schedule-context', kicker: 'Schedule context', sectionId: 'schedule-context' });
   }
 
   function renderScheduleContext(ctx, resultsRow, window) {
@@ -565,31 +597,34 @@
     return '';
   }
 
-  function renderSurfaceWins(resultsRow, window) {
+  function renderSurfaceWins(resultsRow, window, ctx) {
     window = window || 'YTD';
+    ctx = ctx || {};
+    var team = ctx.teamKey ? ctx.teamKey(ctx.team) : String(ctx.team || '').trim().toUpperCase();
+    var winCache = buildSurfaceWinCache(ctx.results || [], window, null, ctx);
     var overall = surfaceWinMetrics(resultsRow, window, null);
     var home = surfaceWinMetrics(resultsRow, window, 'home');
     var away = surfaceWinMetrics(resultsRow, window, 'away');
     var windowLabel = window === 'YTD' ? 'Season' : window;
     var body = lineupWindowBar(window)
       + '<div class="tp-surface-wins tp-offense-metrics tp-offense-metrics--profile">'
-      + surfaceWinBand('Overall', windowLabel + ' · full sample', surfaceWinSlots(overall))
-      + surfaceWinBand('Home', windowLabel + ' · home games', surfaceWinSlots(home))
-      + surfaceWinBand('Away', windowLabel + ' · road games', surfaceWinSlots(away))
+      + surfaceWinBand('Overall', windowLabel + ' · full sample', surfaceWinSlots(overall), winCache, team)
+      + surfaceWinBand('Home', windowLabel + ' · home games', surfaceWinSlots(home), buildSurfaceWinCache(ctx.results || [], window, 'home', ctx), team)
+      + surfaceWinBand('Away', windowLabel + ' · road games', surfaceWinSlots(away), buildSurfaceWinCache(ctx.results || [], window, 'away', ctx), team)
       + '</div>';
     if (A && A.f5WarningHtml) body += A.f5WarningHtml();
     if (overall.qsPct == null) {
       body += '<p class="ca-helper tp-phase1-inline">QS% — <span class="tp-phase1-tag">Phase 1</span> (wire game-results QS to profile)</p>';
     }
-    return sectionCard('Surface Wins', 'Win% · F5 · SP context · home/away splits', body,
-      { icon: 'trophy', kicker: 'Results', sectionId: 'surface-wins' });
+    return sectionCard('Surface Wins', 'Win% · F5 · SP context · league rank on each metric', body,
+      { icon: 'surface-wins', kicker: 'Results', sectionId: 'surface-wins' });
   }
 
   function renderRollingTrend(m, prof, ctx) {
     if (!Mini || !Mini.renderTrendChartPanel) return '';
     var body = '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
     return sectionCard('Rolling Trend', 'Grade movement across time windows', body,
-      { icon: 'chart-line', kicker: 'Momentum', sectionId: 'rolling-trend' });
+      { icon: 'rolling-trend', kicker: 'Momentum', sectionId: 'rolling-trend' });
   }
 
   function renderMomentum(m, prof, ctx) {
@@ -632,12 +667,13 @@
     if (!m || !m.away || !m.home) return '';
     return sectionCard('Tonight\'s Matchup', 'Head-to-head compare for tonight\'s game',
       renderTonightSnapshot(m),
-      { icon: 'stadium', kicker: 'Tonight' });
+      { icon: 'tonight', kicker: 'Tonight' });
   }
 
   function iconCircle(name) {
     var I = global.MLBMAIcons;
-    if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
+    var key = tpIcon(name);
+    if (I && I.iconCircleHtml) return I.iconCircleHtml(key, true);
     return '<span class="ca-icon-circle ca-icon-circle--sm"></span>';
   }
 
@@ -649,7 +685,7 @@
     if (woba != null && xwoba != null) {
       var gap = (woba - xwoba) * 1000;
       rows.push({
-        icon: gap > 8 ? 'chart-line' : gap < -8 ? 'chart-line' : 'chart-line',
+        icon: gap > 8 ? 'contact-hot' : gap < -8 ? 'contact-cold' : 'contact-flat',
         label: 'Contact Profile',
         text: gap > 8 ? 'wOBA runs ' + Math.round(gap) + ' pts above xwOBA — possible regression in contact results.'
           : gap < -8 ? 'xwOBA ahead of wOBA by ' + Math.abs(Math.round(gap)) + ' pts — upside if balls find gaps.'
@@ -660,21 +696,19 @@
     var bbL = pf(prof, ['bb_pct_vs_lhp', 'bb_vs_lhp'], pickCol);
     if (m.osiR != null && m.osiL != null && Math.abs(m.osiR - m.osiL) >= 6) {
       rows.push({
-        icon: 'git-branch',
-        label: 'Platoon Profile',
+        icon: 'platoon-profile',
         text: 'OSI split gap ' + Math.abs(m.osiR - m.osiL).toFixed(1) + ' (RHP '
           + m.osiR.toFixed(1) + ' vs LHP ' + m.osiL.toFixed(1) + ') — platoon matters for lineup construction.'
       });
     } else if (bbR != null && bbL != null && Math.abs(bbR - bbL) >= 3) {
       rows.push({
-        icon: 'bats',
-        label: 'Plate Discipline Split',
+        icon: 'discipline-split',
         text: 'BB% vs RHP ' + bbR.toFixed(1) + '% vs LHP ' + bbL.toFixed(1) + '% — discipline shifts by handedness.'
       });
     }
     if (m.ppGap != null && Math.abs(m.ppGap) >= 4) {
       rows.push({
-        icon: m.ppGap >= 4 ? 'chart-line' : 'gauge',
+        icon: m.ppGap >= 4 ? 'process-upside' : 'regression-watch',
         label: m.ppGap >= 4 ? 'Process Upside' : 'Regression Watch',
         text: 'PP-Gap ' + (m.ppGap >= 0 ? '+' : '') + m.ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
       });
@@ -683,7 +717,7 @@
     if (!rows.length) {
       return sectionCard('Analyst Take', 'Rule-based callouts from real metrics',
         '<p class="ca-helper">Insufficient split data for analyst callouts.</p>',
-        { icon: 'clipboard-list', kicker: 'Analysis', sectionId: 'analyst-take' });
+        { icon: 'analyst-take', kicker: 'Analysis', sectionId: 'analyst-take' });
     }
     var body = '<div class="ca-insight-rail tp-analyst-rail">' + rows.map(function(r) {
       return '<div class="ca-insight-row">'
@@ -692,7 +726,7 @@
         + '<span class="ca-insight-text">' + esc(r.text) + '</span></span></div>';
     }).join('') + '</div>';
     return sectionCard('Analyst Take', 'Notable angles from this team\'s real metrics', body,
-      { icon: 'clipboard-list', kicker: 'Analysis', sectionId: 'analyst-take' });
+      { icon: 'analyst-take', kicker: 'Analysis', sectionId: 'analyst-take' });
   }
 
   function renderSplitCards(m) {
@@ -708,7 +742,7 @@
     html += renderOffenseProfile(m, prof, ctxForSection(ctx, prof, team, 'offense'));
     html += renderRollingTrend(resolveM(prof, team, ctx), prof, ctx);
     html += renderScheduleContext(ctxForSection(ctx, prof, team, 'schedule'), ctx.resultsRow, ctx.window);
-    html += renderSurfaceWins(ctx.resultsRow, ctx.getSectionWindow ? ctx.getSectionWindow('surface') : ctx.window);
+    html += renderSurfaceWins(ctx.resultsRow, ctx.getSectionWindow ? ctx.getSectionWindow('surface') : ctx.window, ctx);
     if (global.TeamProfileIntel) {
       html += TeamProfileIntel.renderSustainabilitySection(
         resolveM(prof, team, ctxForSection(ctx, prof, team, 'sustainability')),
@@ -732,6 +766,9 @@
     renderMomentum: renderMomentum,
     renderTonight: renderTonight,
     renderAnalystTake: renderAnalystTake,
-    phase1Chip: phase1Chip
+    phase1Chip: phase1Chip,
+    buildTeamMetricCache: buildTeamMetricCache,
+    leagueRank: leagueRank,
+    rankTone: rankTone
   };
 })(typeof window !== 'undefined' ? window : this);
