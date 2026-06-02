@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import os
 import gspread
 
@@ -29,8 +29,10 @@ def get_today_schedule():
 
                 game_time = game.get("gameDate", "")
                 if game_time:
-                    dt = datetime.strptime(game_time, "%Y-%m-%dT%H:%M:%SZ")
-                    game_time_str = dt.strftime("%-I:%M %p ET") if os.name != 'nt' else dt.strftime("%I:%M %p ET")
+                    utc_dt = datetime.strptime(game_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+                    # MLB Stats API sends UTC. Convert to Eastern before labeling ET.
+                    dt = utc_dt - timedelta(hours=4)
+                    game_time_str = dt.strftime("%-I:%M %p ET") if os.name != 'nt' else dt.strftime("%I:%M %p ET").lstrip("0")
                 else:
                     game_time_str = "TBD"
 
@@ -164,11 +166,43 @@ def schedule_game_keys(games_df):
     }
 
 
+def merge_rotowire_with_api_schedule(rotowire, api_games):
+    """Use Rotowire lineup details when present, and append API-only games."""
+    if api_games.empty:
+        print(f"  MLB API schedule empty -> using Rotowire slate ({len(rotowire)} games)")
+        return rotowire
+
+    if rotowire.empty:
+        print(f"  Rotowire slate empty -> using live MLB API schedule ({len(api_games)} games)")
+        return api_games
+
+    api_keys = schedule_game_keys(api_games)
+    rw_keys = schedule_game_keys(rotowire)
+    overlap = len(api_keys & rw_keys)
+    missing_api = api_games[
+        ~api_games.apply(lambda row: f"{row['Away_Team']}@{row['Home_Team']}" in rw_keys, axis=1)
+    ]
+
+    if missing_api.empty:
+        print(
+            f"  Rotowire slate: {len(rotowire)} games; MLB API overlap={overlap}/{len(api_keys)} "
+            "-> using Rotowire"
+        )
+        return rotowire
+
+    print(
+        f"  Rotowire slate: {len(rotowire)} games; MLB API schedule: {len(api_games)}; "
+        f"overlap={overlap}; appending {len(missing_api)} API-only games"
+    )
+    return pd.concat([rotowire, missing_api], ignore_index=True)
+
+
 def build_matchups():
     print("Building matchup sheet...")
     rotowire = load_games_from_rotowire_exports()
     games = get_today_schedule()
-    if not rotowire.empty:
+    games = merge_rotowire_with_api_schedule(rotowire, games)
+    if False and not rotowire.empty:
         api_keys = schedule_game_keys(games)
         rw_keys = schedule_game_keys(rotowire)
         overlap = len(api_keys & rw_keys)
@@ -235,6 +269,18 @@ def build_matchups():
         })
 
     df = pd.DataFrame(rows)
+    if "Time" in df.columns:
+        sort_time = pd.to_datetime(
+            df["Time"].astype(str).str.replace(" ET", "", regex=False),
+            format="%I:%M %p",
+            errors="coerce",
+        )
+        df = (
+            df.assign(_sort_time=sort_time)
+            .sort_values("_sort_time", na_position="last")
+            .drop(columns=["_sort_time"])
+            .reset_index(drop=True)
+        )
     print(f"  Built {len(df)} matchup rows")
     return df
 
