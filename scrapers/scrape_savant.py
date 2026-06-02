@@ -108,6 +108,12 @@ def fetch_savant_splits(pitcher_hand=None):
         "launch_speed": "exit_velo",
         "launch_angle": "launch_angle",
     }, inplace=True)
+    # Savant's batting_team uses native abbreviations (AZ/CWS/KC/SD/SF/TB/WSH) that
+    # DON'T match the pipeline standard (ARI/CHW/KCR/SDP/SFG/TBR/WSN). Normalize so
+    # these split files can be joined on "Tm" without silently dropping ~7 teams.
+    SAVANT_TEAM_FIX = {"AZ": "ARI", "CWS": "CHW", "KC": "KCR", "SD": "SDP",
+                       "SF": "SFG", "TB": "TBR", "WSH": "WSN", "OAK": "ATH"}
+    team_df["Tm"] = team_df["Tm"].astype(str).str.upper().replace(SAVANT_TEAM_FIX)
     print(f"  Teams: {len(team_df)} | Cols: {list(team_df.columns)}")
     fname = os.path.join(DATA_DIR, f"savant_{label}.csv")
     team_df.to_csv(fname, index=False)
