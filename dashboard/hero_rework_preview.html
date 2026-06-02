@@ -77,16 +77,16 @@
     <div class="hx__proof" role="group" aria-label="Track record">
       <div class="pf">
         <div class="pf__v pf__v--win" data-cc="roi">+20.8%</div>
-        <div class="pf__l">ROI / unit — steam-up spots</div>
-        <div class="pf__s">FDR-validated · n=201 settled</div>
+        <div class="pf__l" data-cc="roi_label">ROI / unit — steam-up spots</div>
+        <div class="pf__s" data-cc="roi_sub">FDR-validated · n=201 settled</div>
       </div>
       <div class="pf">
-        <div class="pf__v" data-cc="games">877</div>
+        <div class="pf__v" data-cc="games">443</div>
         <div class="pf__l">Games back-tested</div>
         <div class="pf__s">closing line vs outcome</div>
       </div>
       <div class="pf">
-        <div class="pf__v" data-cc="clv">+8.5 pts</div>
+        <div class="pf__v" data-cc="clv">+7.6 pts</div>
         <div class="pf__l">Avg closing-line value</div>
         <div class="pf__s">the #1 long-run profit signal</div>
       </div>
@@ -113,9 +113,13 @@
 </section>
 
 <script>
-// Slots can be filled live from the warehouse (or a static JSON the pipeline writes):
-// fetch('data/track_record.json').then(r=>r.json()).then(d=>{
-//   for (const k in d) document.querySelectorAll('[data-cc="'+k+'"]').forEach(e=>e.textContent=d[k]); });
+// Live proof from the warehouse (written by backtest.export_track_record).
+fetch('track_record.json?_=' + Date.now())
+  .then(r => r.ok ? r.json() : null)
+  .then(d => { if (!d) return;
+    for (const k in d) document.querySelectorAll('[data-cc="' + k + '"]')
+      .forEach(e => { e.textContent = d[k]; }); })
+  .catch(() => {});  // keep the static fallbacks if the JSON isn't there
 </script>
 </body>
 </html>
