@@ -192,6 +192,13 @@
     var kChip = chip(k, 'pitching', false, 1, k != null ? fmt(k, 1) + '%': '—');
     var bbChip = chip(bb, 'pitching', true, 1, bb != null ? fmt(bb, 1) + '%': '—');
 
+    function heroStat(label, chipHtml) {
+      return '<div class="pp-hero-stat">'
+        + '<div class="pp-hero-stat-label">' + esc(label) + '</div>'
+        + '<div class="pp-hero-stat-val">' + chipHtml + '</div>'
+        + '</div>';
+    }
+
     return '<div class="pp-hero-inner">'
       + '<div class="ps-photo">' + hs + '</div>'
       + '<div class="ps-main">'
@@ -201,14 +208,13 @@
       + '<span class="pill">' + esc(team) + ' · SP</span>'
       + (ctx.isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '')
       + '<span class="tier-pill ' + pt.cls + '">' + esc(pt.label) + '</span>'
-      + (stale ? '<span class="pill">Stale L14</span>' : '')
       + '</div>'
-      + '<div class="pp-hero-score">'
-      + '<span class="hub-ctrl-label">Pitch Score</span>' + psChip
-      + '<span class="hub-ctrl-label">K%</span>' + kChip
-      + '<span class="hub-ctrl-label">BB%</span>' + bbChip
+      + '<div class="pp-hero-stats" role="group" aria-label="YTD headline stats">'
+      + heroStat('Pitch Score', psChip)
+      + heroStat('K%', kChip)
+      + heroStat('BB%', bbChip)
       + '</div>'
-      + (staleWarn ? '<p class="ps-stale-note">' + esc(staleWarn) + '</p>' : '')
+      + (staleWarn ? '<div class="pp-hero-note">' + esc(staleWarn) + '</div>' : '')
       + (ctx.tonightHtml ? '<div class="ps-tonight">' + ctx.tonightHtml + '</div>' : '')
       + '</div></div>';
   }
