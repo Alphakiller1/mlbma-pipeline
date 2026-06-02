@@ -105,11 +105,11 @@
 
   function gameMetaHtml(m) {
     var parts = [];
-    if (m.time) parts.push('<span class="hmc-time chip">' + esc(m.time) + '</span>');
-    if (m.stadium) parts.push('<span class="hmc-stadium chip">' + esc(m.stadium) + '</span>');
+    if (m.time) parts.push('<span class="hmc-time">' + esc(m.time) + '</span>');
+    if (m.stadium) parts.push('<span class="hmc-stadium">' + esc(m.stadium) + '</span>');
     var wh = weatherHtml(m);
     if (wh) parts.push(wh);
-    if (!parts.length) return '<div class="hmc-meta"><span class="chip">TBD</span></div>';
+    if (!parts.length) return '<div class="hmc-meta"><span class="hmc-time">TBD</span></div>';
     return '<div class="hmc-meta">' + parts.join('') + '</div>';
   }
 
@@ -368,7 +368,10 @@
       + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '') + '</div>'
       + '<span class="hmc-at">@</span>'
       + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '') + '</div>'
-      + '<span class="hmc-meta">' + esc(m.time) + (m.stadium ? ' \u00B7 ' + esc(m.stadium) : '') + '</span>'
+      + '<div class="hmc-meta">'
+      + '<span class="hmc-time">' + esc(m.time || 'TBD') + '</span>'
+      + (m.stadium ? '<span class="hmc-stadium">' + esc(m.stadium) + '</span>' : '')
+      + '</div>'
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
       + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, fip: awayPs }, { eager: cardIdx < 3, pitchScore: awayPs, mlbId: m.awaySPId })
