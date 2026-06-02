@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MLBMA Icons — Baseball Set Preview</title>
+<link rel="stylesheet" href="theme.css" />
+<style>
+  body{margin:0;background:#0a0e16;color:#e9eef7;font-family:-apple-system,Segoe UI,Roboto,sans-serif;padding:28px;}
+  h1{font-size:22px;margin:0 0 4px;}
+  .sub{color:#8a97ad;margin:0 0 22px;font-size:13px;}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:#9a6bff;margin:26px 0 12px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+  .cell{background:#121a2b;border:1px solid #1e293b;border-radius:12px;padding:14px;display:flex;
+        flex-direction:column;align-items:center;gap:9px;text-align:center;}
+  .cell .lab{font-size:11.5px;color:#cdd7e6;}
+  .cell .key{font-size:10px;color:#6b7890;font-family:ui-monospace,monospace;}
+  .swatch{display:flex;gap:14px;align-items:center;}
+  /* show the icon in three accent colors to prove themeability */
+  .c1{color:#c4b0ff;} .c2{color:#2dd4bf;} .c3{color:#f59e0b;}
+</style>
+</head>
+<body>
+  <h1>MLBMA Baseball Icon Set</h1>
+  <p class="sub">Section badges rendered at real size. Each shown in three accent colors to confirm the texture stays themeable (gradient = currentColor).</p>
+
+  <h2>Sections — by meaning</h2>
+  <div class="grid" id="sections"></div>
+
+  <h2>Full glyph catalog</h2>
+  <div class="grid" id="catalog"></div>
+
+  <script src="mlbma_icons.js"></script>
+  <script>
+    var I = window.MLBMAIcons;
+    // semantic section keys → what they represent
+    var SECTIONS = [
+      ['rotation','Starting rotation'], ['bullpen','Bullpen / relief'], ['offense-profile','Offense'],
+      ['lineup','Lineup'], ['plate-skills','Plate skills'], ['totals-lean','Totals / betting edge'],
+      ['matchup-risk','Matchup'], ['tonight','Tonight / game'], ['rolling-trend','Trend / momentum'],
+      ['sustainability','Sustainability'], ['regression-watch','Regression watch'], ['contact-hot','Contact hot'],
+      ['surface-wins','Wins / results'], ['roster','Roster / team'], ['schedule-context','Schedule'],
+      ['opponents','Scouting / opponents'], ['run-prevention','Run prevention'], ['usage','Usage / stats'],
+      ['platoon-profile','Platoon split'], ['late-inning','Late innings'], ['fade-conditions','Risk / fade'],
+      ['analyst-take','Analyst note'], ['high-leverage','High leverage'], ['identity','Identity']
+    ];
+    function cell(key, label) {
+      return '<div class="cell"><div class="swatch">'
+        + '<span class="c1">' + I.iconCircleHtml(key) + '</span>'
+        + '<span class="c2">' + I.iconCircleHtml(key, true) + '</span>'
+        + '<span class="c3">' + I.iconCircleHtml(key, true) + '</span>'
+        + '</div><div class="lab">' + label + '</div><div class="key">' + key + '</div></div>';
+    }
+    document.getElementById('sections').innerHTML = SECTIONS.map(function(s){return cell(s[0],s[1]);}).join('');
+    // unique glyph names (dedupe aliases that point to same svg)
+    var seen = {}, cat = [];
+    Object.keys(I.CA_ICONS).forEach(function(k){
+      var svg = I.CA_ICONS[k];
+      if (seen[svg]) return; seen[svg] = 1; cat.push(k);
+    });
+    document.getElementById('catalog').innerHTML = cat.map(function(k){return cell(k,k);}).join('');
+  </script>
+</body>
+</html>
