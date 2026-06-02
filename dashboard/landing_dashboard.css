@@ -940,10 +940,10 @@ body.view-research .ca-page-identity { display: none; }
   justify-self: center;
 }
 
-/* Symmetry: home team block mirrors away (logo on outer edge). */
+/* Keep both team labels in logo-then-abbreviation order. */
 /* Header row structure: [div.hmc-team] [span.hmc-at] [div.hmc-team] [div.hmc-meta] */
 .hero-matchup-card .hmc-row.hmc-teams > .hmc-team:nth-of-type(2) a.team-link {
-  flex-direction: row-reverse;
+  flex-direction: row;
 }
 .hero-matchup-card .hmc-row.hmc-teams > .hmc-team:nth-of-type(2) a.team-link .hmc-abbr {
   text-align: right;
