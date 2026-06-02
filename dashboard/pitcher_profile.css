@@ -329,20 +329,9 @@
   font-size: var(--tp-note-size, 14px);
 }
 
-.pitcher-profile-page .pp-intel-section .ca-section-header {
-  margin-bottom: var(--tp-header-gap, 12px);
-}
-
-.pitcher-profile-page .pp-intel-section #pitcherIntelPanel {
-  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
-}
-
-.pitcher-profile-page .pp-intel-follow:not(:empty) {
-  margin: 0;
-  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
-  border: none;
-  background: transparent;
-  border-radius: 0;
+/* Pitching Value uses Team Profile identity-panel layout */
+.pitcher-profile-page .tp-identity-panel__metrics {
+  margin-top: 0;
 }
 
 .pitcher-profile-page .pp-split-table-wrap {
