@@ -28,7 +28,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603e" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603f" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -177,11 +177,6 @@
       <div id="ppHdrAbq"></div>
       <div class="table-wrap tp-table-wrap" id="abqTableWrap"></div>
       <div class="insight-line tp-note" id="abqInsight"></div>
-    </section>
-
-    <section class="ca-board tp-section" id="secHand">
-      <div id="ppHdrHand"></div>
-      <div class="hand-grid" id="handGrid"></div>
     </section>
 
     <section class="ca-board tp-section" id="secLog">
@@ -617,7 +612,6 @@ function renderPitcherSectionHeaders() {
     { id: 'ppHdrSeason', title: 'Season Line', subtitle: 'ERA, IP, K%, BB%, WHIP, and pitch score for the active window', icon: 'clipboard' },
     { id: 'ppHdrOsi', title: 'Performance vs Lineup Quality (OSI Tier)', subtitle: 'How workload and results shift vs High / Mid / Low OSI offenses', icon: 'spark' },
     { id: 'ppHdrAbq', title: 'ABQ Split', subtitle: 'Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups', icon: 'target' },
-    { id: 'ppHdrHand', title: 'Handedness Splits', subtitle: 'vs LHH and vs RHH — from sheet platoon rows when available', icon: 'platoon' },
     { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
     { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five ERA by opponent OSI tier (team runs through 5 innings)', icon: 'clock' },
     { id: 'ppHdrBetting', title: 'Betting Context Panel', subtitle: 'Auto-synthesized angles from the strongest patterns in this profile', icon: 'badge' }
@@ -942,13 +936,7 @@ function renderProfile(key) {
   document.getElementById('abqTableWrap').innerHTML = buildTierTable(splits, 'abq_tier', ABQ_TIER_ORDER);
   document.getElementById('abqInsight').innerHTML = insightAbqTier(splits);
 
-  var lhh = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
-  var rhh = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
-  var handNote = (!lhh && !rhh) ? '<p class="tp-note" style="margin-top:10px;">Platoon rows not in SP_Metric_Splits yet — showing season pool in primary hand panel.</p>' : '';
-  var seasonPool = findSplit(splits, 'hand', hand) || profile;
-  document.getElementById('handGrid').innerHTML =
-    '<div class="hand-panel"><h4>vs LHH</h4>' + splitRowToCells(lhh || seasonPool, 'No LHH split') + '</div>' +
-    '<div class="hand-panel"><h4>vs RHH</h4>' + splitRowToCells(rhh || seasonPool, 'No RHH split') + '</div>' + handNote;
+  // Handedness splits section removed (user request)
 
   // Home/Away section removed (user request)
 
