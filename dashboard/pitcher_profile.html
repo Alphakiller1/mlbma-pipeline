@@ -25,7 +25,7 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603w"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603x"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
@@ -299,6 +299,13 @@ function normalizeName(n) {
   return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
 }
 
+function normalizeNameKey(n) {
+  // Makes matching resilient to "Last, First" vs "First Last".
+  var base = normalizeName(n);
+  if (!base) return '';
+  return base.split(/\s+/g).filter(Boolean).sort().join(' ');
+}
+
 function escHtml(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -381,9 +388,11 @@ function getSplits(key) {
   var nm = '';
   if (String(key || '').indexOf('name:') === 0) nm = String(key).slice(5).split('|')[0];
   if (!nm) return rows;
+  var nk = normalizeNameKey(nm);
   return DATA.splits.filter(function(s) {
-    var n = normalizeName(pickCol(s, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher']));
-    return n && n === nm;
+    var n = pickCol(s, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher', 'player_name', 'Player', 'player']);
+    var sk = normalizeNameKey(n);
+    return sk && sk === nk;
   });
 }
 
@@ -420,11 +429,13 @@ function getGameLog(key, nameHint) {
   // Fallback: many SP_Game_Log exports omit ids/teams; match by normalized pitcher name.
   var nm = '';
   if (String(key || '').indexOf('name:') === 0) nm = String(key).slice(5).split('|')[0];
-  if (!nm && nameHint) nm = normalizeName(nameHint);
+  if (!nm && nameHint) nm = nameHint;
   if (!nm) return rows;
+  var nk = normalizeNameKey(nm);
   return DATA.gameLog.filter(function(g) {
-    var n = normalizeName(pickCol(g, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher']));
-    return n && n === nm;
+    var n = pickCol(g, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher', 'player_name', 'Player', 'player']);
+    var gk = normalizeNameKey(n);
+    return gk && gk === nk;
   });
 }
 
