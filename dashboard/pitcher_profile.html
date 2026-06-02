@@ -25,7 +25,7 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603v"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603w"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
@@ -375,7 +375,43 @@ function getProfile(key) {
 }
 
 function getSplits(key) {
-  return DATA.splits.filter(function(s) { return pitcherKey(s) === key; });
+  var rows = DATA.splits.filter(function(s) { return pitcherKey(s) === key; });
+  if (rows.length) return rows;
+  // Fallback: many split exports omit pitcher_team/id; match by normalized pitcher name.
+  var nm = '';
+  if (String(key || '').indexOf('name:') === 0) nm = String(key).slice(5).split('|')[0];
+  if (!nm) return rows;
+  return DATA.splits.filter(function(s) {
+    var n = normalizeName(pickCol(s, ['pitcher_name', 'pitcherName', 'Name', 'Pitcher', 'pitcher']));
+    return n && n === nm;
+  });
+}
+
+function tierDimsFromSplits(splits) {
+  function normKey(s) {
+    return String(s == null ? '' : s).trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+  }
+  var seen = {};
+  var out = [];
+  (splits || []).forEach(function(r) {
+    var raw = pickCol(r, ['split_dimension', 'splitDimension']);
+    var k = normKey(raw);
+    if (!k) return;
+    if (k.indexOf('_tier') < 0) return;
+    if (seen[k]) return;
+    seen[k] = true;
+    var head = k.replace(/_tier$/, '').toUpperCase();
+    out.push({ value: k, label: head + ' tier' });
+  });
+  // Stable order (if present).
+  var order = ['osi_tier', 'abq_tier', 'rcv_tier', 'obr_tier', 'projosi_tier', 'pitching_score_tier'];
+  out.sort(function(a, b) {
+    var ia = order.indexOf(a.value); if (ia < 0) ia = 999;
+    var ib = order.indexOf(b.value); if (ib < 0) ib = 999;
+    if (ia !== ib) return ia - ib;
+    return a.label.localeCompare(b.label);
+  });
+  return out;
 }
 
 function getGameLog(key) {
@@ -687,6 +723,14 @@ function renderPitcherSectionControls() {
   var tierBar = document.getElementById('pitcherTierControls');
   if (tierBar) {
     var dim = (STATE.sectionFilters.tiers && STATE.sectionFilters.tiers.dim) || 'osi_tier';
+    var tierOpts = tierDimsFromSplits(getSplits(STATE.pitcherKey || '')) || [];
+    if (!tierOpts.length) {
+      tierOpts = [
+        { value: 'osi_tier', label: 'OSI tier' },
+        { value: 'abq_tier', label: 'ABQ tier' }
+      ];
+    }
+    if (!tierOpts.some(function(o) { return o.value === dim; })) dim = tierOpts[0].value;
     tierBar.innerHTML = PC.renderSectionOptionBar({
       barClass: 'tp-section-filter-bar--controls',
       sectionKey: 'pitcher-tiers',
@@ -695,10 +739,7 @@ function renderPitcherSectionControls() {
           label: 'Tier set',
           groupKey: 'tier-dim',
           tabMode: true,
-          options: [
-            { value: 'osi_tier', label: 'OSI tier' },
-            { value: 'abq_tier', label: 'ABQ tier' }
-          ],
+          options: tierOpts,
           active: dim
         }
       ]
@@ -946,12 +987,14 @@ function renderProfile(key) {
   // Season Line section removed (user request); keep YTD headline stats in the banner.
 
   var tierDim = (STATE.sectionFilters.tiers && STATE.sectionFilters.tiers.dim) || 'osi_tier';
-  var tierOrder = tierDim === 'abq_tier' ? ABQ_TIER_ORDER : OSI_TIER_ORDER;
+  var tierOrder = (tierDim === 'abq_tier' ? ABQ_TIER_ORDER : OSI_TIER_ORDER);
   var tierWrap = document.getElementById('tierSplitTableWrap');
   if (tierWrap) tierWrap.innerHTML = buildTierTable(splits, tierDim, tierOrder);
   var tierInsight = document.getElementById('tierSplitInsight');
   if (tierInsight) {
-    tierInsight.innerHTML = tierDim === 'abq_tier' ? insightAbqTier(splits) : insightOsiTier(splits);
+    if (tierDim === 'abq_tier') tierInsight.innerHTML = insightAbqTier(splits);
+    else if (tierDim === 'osi_tier') tierInsight.innerHTML = insightOsiTier(splits);
+    else tierInsight.innerHTML = 'Tier-split sample sizes vary — use Starts/IP as the reliability read.';
   }
 
   // Handedness splits section removed (user request)
