@@ -336,21 +336,26 @@
     tick();
   }
 
-  function quadYValue(d) {
+  function quadYValue(d, mode) {
     if (!d) return null;
-    if (d.reg_signal != null && !isNaN(d.reg_signal)) return Number(d.reg_signal) * 450;
-    if (d.reg != null && !isNaN(d.reg)) return Number(d.reg) * 450;
+    var m = String(mode || 'ppGap').toLowerCase();
+    if (m === 'reg' || m === 'regression') {
+      if (d.reg_signal != null && !isNaN(d.reg_signal)) return Number(d.reg_signal) * 450;
+      if (d.reg != null && !isNaN(d.reg)) return Number(d.reg) * 450;
+      return null;
+    }
     if (d.ppGap != null && !isNaN(d.ppGap)) return Number(d.ppGap);
+    if (d.abq != null && d.rcv != null && !isNaN(d.abq) && !isNaN(d.rcv)) return Number(d.abq) - Number(d.rcv);
     return null;
   }
 
-  function marketQuadrantMeta(rcv, yVal) {
-    var hiRcv = (rcv || 0) >= 50;
+  function marketQuadrantMeta(osi, yVal) {
+    var hiOsi = (osi || 0) >= 50;
     var posY = (yVal || 0) > 0;
-    if (hiRcv && posY) return { color: '#4ADE80', label: 'Elite & Undervalued', short: 'Elite' };
-    if (!hiRcv && posY) return { color: '#2DD4BF', label: 'Buy-Low Offense', short: 'Buy-Low' };
-    if (hiRcv && !posY) return { color: '#FBBF24', label: 'Strong But Cooling', short: 'Cooling' };
-    return { color: '#F87171', label: 'Weak & Concerning', short: 'Weak' };
+    if (hiOsi && posY) return { color: '#4ADE80', label: 'Strong + Supported', short: 'Strong' };
+    if (!hiOsi && posY) return { color: '#2DD4BF', label: 'Process Upside', short: 'Upside' };
+    if (hiOsi && !posY) return { color: '#FBBF24', label: 'Cooling / Fade Risk', short: 'Cooling' };
+    return { color: '#F87171', label: 'Weak / Under Lean', short: 'Weak' };
   }
 
   function teamEspnLogoUrl(t) {
@@ -373,7 +378,7 @@
       + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
       + '<text class="mlbma-quad-team" x="' + cx + '" y="' + teamY + '" text-anchor="middle" fill="#D4D4D8" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
       + '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
-      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · RCV ' + d.rcv.toFixed(1) + ' · Gap ' + quadYValue(d).toFixed(1) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + '</title>'
+      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · PP Gap ' + quadYValue(d, "ppGap").toFixed(1) + '</title>'
       + '</g>';
   }
 
@@ -455,8 +460,8 @@
 
     var regHtml = '<span style="color:' + reg[1] + '">' + esc(reg[0]) + '</span>';
 
-    var gapVal = quadYValue(d);
-    var mapMeta = (d.rcv != null && gapVal != null) ? marketQuadrantMeta(d.rcv, gapVal) : null;
+    var gapVal = quadYValue(d, 'ppGap');
+    var mapMeta = (d.osi != null && gapVal != null) ? marketQuadrantMeta(d.osi, gapVal) : null;
     var mapPosHtml = mapMeta
       ? '<div class="tt-map-pos" style="color:' + mapMeta.color + '">' + esc(mapMeta.label) + '</div>'
       : '';
@@ -481,13 +486,14 @@
       + ttRow('Split Edge', '<span style="color:' + (edge != null && Math.abs(edge) >= 3 ? '#9A6BFF' : '#E4E4E7') + '">' + fmtSigned(edge) + '</span>');
   }
 
-  /** RCV vs regression gap quadrant — 30-team market map bubbles. */
+  /** OSI vs PP-Gap quadrant — 30-team market status map bubbles. */
   function renderMarketQuadrant(containerId, rows, opts) {
     opts = opts || {};
     var el = opts.el || document.getElementById(containerId);
     if (!el) return null;
+    var yMode = (opts.mode || 'ppGap');
     var data = (rows || []).filter(function(d) {
-      return d && d.rcv != null && !isNaN(d.rcv) && quadYValue(d) != null;
+      return d && d.osi != null && !isNaN(d.osi) && quadYValue(d, yMode) != null;
     });
     if (!data.length) {
       el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map loads when team offense data is available (vs_RHP scores).</p></div>';
@@ -499,7 +505,7 @@
     var cw = W - ml - mr;
     var ch = H - mt - mb;
     var xMn = 0, xMx = 100;
-    var yVals = data.map(quadYValue);
+    var yVals = data.map(function(d) { return quadYValue(d, yMode); });
     var yMn = Math.min(-12, Math.min.apply(null, yVals.concat([-12])));
     var yMx = Math.max(12, Math.max.apply(null, yVals.concat([12])));
     var xRng = xMx - xMn;
@@ -511,13 +517,13 @@
     var tipId = opts.tipId || (containerId + 'Tip');
 
     var legend = '<div class="mlbma-quad-legend">'
-      + [{ c: '#22C55E', l: 'Elite & Undervalued' }, { c: '#2DD4BF', l: 'Buy-Low Offense' },
-         { c: '#F59E0B', l: 'Strong But Cooling' }, { c: '#FB7185', l: 'Weak & Concerning' }]
+      + [{ c: '#22C55E', l: 'Strong + Supported' }, { c: '#2DD4BF', l: 'Process Upside' },
+         { c: '#F59E0B', l: 'Cooling / Fade Risk' }, { c: '#FB7185', l: 'Weak / Under Lean' }]
         .map(function(q) {
           return '<span class="mlbma-quad-leg-item"><i style="background:' + q.c + '"></i>' + esc(q.l) + '</span>';
         }).join('') + '</div>';
 
-    var svg = '<svg class="mlbma-market-quad" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="RCV vs regression gap market map">'
+    var svg = '<svg class="mlbma-market-quad" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="OSI vs PP-Gap market map">'
       + '<rect x="' + ml + '" y="' + mt + '" width="' + cw + '" height="' + ch + '" fill="#0f0f12" rx="8"/>'
       + '<rect x="' + mx + '" y="' + mt + '" width="' + (W - mr - mx) + '" height="' + (my - mt) + '" fill="rgba(34,197,94,.08)"/>'
       + '<rect x="' + ml + '" y="' + mt + '" width="' + (mx - ml) + '" height="' + (my - mt) + '" fill="rgba(45,212,191,.08)"/>'
@@ -539,20 +545,20 @@
     svg += '<line x1="' + mx + '" y1="' + mt + '" x2="' + mx + '" y2="' + (H - mb) + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
     svg += '<line x1="' + ml + '" y1="' + my + '" x2="' + (W - mr) + '" y2="' + my + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
 
-    svg += '<text x="' + (W - mr - 6) + '" y="' + (mt + 12) + '" text-anchor="end" fill="rgba(34,197,94,.95)" font-size="9" font-weight="700">ELITE &amp; UNDERVALUED</text>';
-    svg += '<text x="' + (ml + 6) + '" y="' + (mt + 12) + '" text-anchor="start" fill="rgba(45,212,191,.95)" font-size="9" font-weight="700">BUY-LOW OFFENSE</text>';
-    svg += '<text x="' + (W - mr - 6) + '" y="' + (H - mb - 6) + '" text-anchor="end" fill="rgba(245,158,11,.95)" font-size="9" font-weight="700">STRONG BUT COOLING</text>';
-    svg += '<text x="' + (ml + 6) + '" y="' + (H - mb - 6) + '" text-anchor="start" fill="rgba(251,113,133,.95)" font-size="9" font-weight="700">WEAK &amp; CONCERNING</text>';
+    svg += '<text x="' + (W - mr - 6) + '" y="' + (mt + 12) + '" text-anchor="end" fill="rgba(34,197,94,.95)" font-size="9" font-weight="700">STRONG + SUPPORTED</text>';
+    svg += '<text x="' + (ml + 6) + '" y="' + (mt + 12) + '" text-anchor="start" fill="rgba(45,212,191,.95)" font-size="9" font-weight="700">PROCESS UPSIDE</text>';
+    svg += '<text x="' + (W - mr - 6) + '" y="' + (H - mb - 6) + '" text-anchor="end" fill="rgba(245,158,11,.95)" font-size="9" font-weight="700">COOLING / FADE RISK</text>';
+    svg += '<text x="' + (ml + 6) + '" y="' + (H - mb - 6) + '" text-anchor="start" fill="rgba(251,113,133,.95)" font-size="9" font-weight="700">WEAK / UNDER LEAN</text>';
 
     data.forEach(function(d) {
-      var xVal = d.rcv;
-      var yVal = quadYValue(d);
+      var xVal = d.osi;
+      var yVal = quadYValue(d, yMode);
       var meta = marketQuadrantMeta(xVal, yVal);
       svg += quadrantBubbleMarkup(d, xs(xVal), ys(yVal), meta);
     });
 
-    svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">RCV Score</text>';
-    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">xwOBA − wOBA Gap</text>';
+    svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">OSI</text>';
+    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">PP Gap (ABQ − RCV)</text>';
     svg += '</svg>';
 
     el.innerHTML = '<div class="mlbma-quad-wrap">' + legend
