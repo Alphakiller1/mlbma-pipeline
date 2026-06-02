@@ -182,7 +182,9 @@
     var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
     var fipVal = num(pick(profile, ['FIP', 'fip']));
     var eraVal = num(pick(profile, ['ERA']));
+    var xfipVal = num(pick(profile, ['xFIP', 'xfip']));
     var fipLabel = fipVal != null ? fmt(fipVal, 2) : (eraVal != null ? fmt(eraVal, 2) + ' (ERA)' : 'FIP N/A');
+    var xfipLabel = xfipVal != null ? fmt(xfipVal, 2) : '—';
 
     return '<div class="pitcher-snapshot">'
       + '<div class="ps-photo">' + hs + '</div>'
@@ -200,7 +202,7 @@
       + statPill('K%', fmt(num(pick(profile, ['K_pct', 'K%'])), 1) + (num(pick(profile, ['K_pct'])) != null ? '%' : ''))
       + statPill('BB%', fmt(num(pick(profile, ['BB_pct', 'BB%'])), 1) + (num(pick(profile, ['BB_pct'])) != null ? '%' : ''))
       + statPill('FIP', fipLabel)
-      + statPill('xFIP', '—')
+      + statPill('xFIP', xfipLabel)
       + statPill('ERA', fmt(num(pick(profile, ['ERA'])), 2))
       + '</div>'
       + (staleWarn ? '<p class="ps-stale-note">' + esc(staleWarn) + '</p>' : '')
