@@ -786,11 +786,9 @@
 
   function splitContextSummary(m, prof, ctx) {
     var platoon = platoonSplitSummary(m, ctx);
-    var location = locationSplitSummary(prof, m, ctx);
-    if (!platoon && !location) return '';
+    if (!platoon) return '';
     return '<div class="tp-split-context">'
-      + (platoon ? platoon.replace('tp-platoon-summary', 'tp-platoon-summary tp-split-context__platoon') : '')
-      + (location ? location.replace('tp-location-summary', 'tp-location-summary tp-split-context__location') : '')
+      + platoon.replace('tp-platoon-summary', 'tp-platoon-summary tp-split-context__platoon')
       + '</div>';
   }
 
@@ -1036,78 +1034,7 @@
   }
 
   function locationSplitSummary(prof, m, ctx) {
-    ctx = ctx || {};
-    var split = ctx.split || 'both';
-    if (split === 'home' || split === 'away') return '';
-
-    var pickCol = ctx.pickCol;
-    function pf(keys) { return num(pick(prof, keys, pickCol)); }
-
-    var hWoba = pf(['home_woba']);
-    var aWoba = pf(['away_woba']);
-    var hWrc = pf(['home_wrc']);
-    var aWrc = pf(['away_wrc']);
-    var hSlg = pf(['home_slg']);
-    var aSlg = pf(['away_slg']);
-    var osiH = m && m.osiH != null ? m.osiH : pf(['home_osi']);
-    var osiA = m && m.osiA != null ? m.osiA : pf(['away_osi']);
-
-    if (hWoba == null && aWoba == null && hWrc == null && aWrc == null && osiH == null && osiA == null) return '';
-
-    var wobaDiff = (hWoba != null && aWoba != null) ? hWoba - aWoba : null;
-    var wrcDiff = (hWrc != null && aWrc != null) ? hWrc - aWrc : null;
-    var slgDiff = (hSlg != null && aSlg != null) ? hSlg - aSlg : null;
-    var osiDiff = (osiH != null && osiA != null) ? osiH - osiA : null;
-
-    var stronger = '';
-    var weaker = '';
-    var balanced = false;
-    if (wobaDiff != null && Math.abs(wobaDiff) >= 0.005) {
-      if (wobaDiff > 0) { stronger = 'Home'; weaker = 'Away'; }
-      else { stronger = 'Away'; weaker = 'Home'; }
-    } else if (wrcDiff != null && Math.abs(wrcDiff) >= 2) {
-      if (wrcDiff > 0) { stronger = 'Home'; weaker = 'Away'; }
-      else { stronger = 'Away'; weaker = 'Home'; }
-    } else if (osiDiff != null && Math.abs(osiDiff) >= 2) {
-      if (osiDiff > 0) { stronger = 'Home'; weaker = 'Away'; }
-      else { stronger = 'Away'; weaker = 'Home'; }
-    } else if ((hWoba != null && aWoba != null) || (hWrc != null && aWrc != null) || (osiH != null && osiA != null)) {
-      balanced = true;
-    }
-
-    var lead = '';
-    if (balanced) {
-      lead = 'Home / away profile is <strong>balanced</strong>.';
-    } else if (stronger && weaker) {
-      lead = '<span class="tp-platoon-tag tp-platoon-tag--strong">' + esc(stronger) + ' stronger</span>'
-        + '<span class="tp-platoon-tag tp-platoon-tag--weak">' + esc(weaker) + ' weaker</span>';
-    }
-
-    var details = [];
-    if (wobaDiff != null) {
-      details.push('wOBA Δ <strong>' + (wobaDiff >= 0 ? '+' : '') + wobaDiff.toFixed(3) + '</strong>'
-        + ' · Home ' + hWoba.toFixed(3) + ' · Away ' + aWoba.toFixed(3));
-    }
-    if (wrcDiff != null && Math.abs(wrcDiff) >= 1) {
-      details.push('wRC+ Δ <strong>' + (wrcDiff >= 0 ? '+' : '') + Math.round(wrcDiff) + '</strong>'
-        + ' · Home ' + Math.round(hWrc) + ' · Away ' + Math.round(aWrc));
-    }
-    if (slgDiff != null && Math.abs(slgDiff) >= 0.01) {
-      details.push('SLG Δ <strong>' + (slgDiff >= 0 ? '+' : '') + slgDiff.toFixed(3) + '</strong>'
-        + ' · Home ' + hSlg.toFixed(3) + ' · Away ' + aSlg.toFixed(3));
-    }
-    if (osiDiff != null && Math.abs(osiDiff) >= 2) {
-      details.push('OSI Δ <strong>' + (osiDiff >= 0 ? '+' : '') + osiDiff.toFixed(1) + '</strong>'
-        + ' · Home ' + osiH.toFixed(1) + ' · Away ' + osiA.toFixed(1));
-    }
-
-    if (!lead && !details.length) return '';
-
-    return '<div class="tp-platoon-summary tp-location-summary">'
-      + '<div class="tp-platoon-summary-head">' + subsectionHeadHtml('Location Report', 'stadium') + '</div>'
-      + (lead ? '<p class="tp-platoon-summary-lead">' + lead + '</p>' : '')
-      + (details.length ? '<p class="tp-platoon-summary-detail">' + details.join(' · ') + '</p>' : '')
-      + '</div>';
+    return '';
   }
 
   function render(prof, team, ctx) {
