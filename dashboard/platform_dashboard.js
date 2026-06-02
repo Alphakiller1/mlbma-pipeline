@@ -130,7 +130,6 @@
 
   function pitcherStatColor(metric, value) {
     var muted = 'var(--text-3, #9CA3AF)';
-    var neutral = 'var(--text-1, #F5F5F7)';
     var good = 'var(--green, #4ADE80)';
     var warn = 'var(--gold, #FBBF24)';
     var risk = 'var(--orange, #FB923C)';
@@ -140,30 +139,30 @@
     if (metric === 'pitchScore') {
       if (v >= 70) return good;
       if (v >= 55) return warn;
-      if (v >= 40) return neutral;
+      if (v >= 40) return risk;
       return bad;
     }
     if (metric === 'k') {
       if (v <= 1) v *= 100;
       if (v >= 28) return good;
       if (v >= 23) return warn;
-      if (v >= 18) return neutral;
-      return risk;
+      if (v >= 18) return risk;
+      return bad;
     }
     if (metric === 'bb') {
       if (v <= 1) v *= 100;
       if (v <= 6) return good;
-      if (v <= 9) return neutral;
-      if (v <= 12) return warn;
+      if (v <= 9) return warn;
+      if (v <= 12) return risk;
       return bad;
     }
     if (metric === 'era' || metric === 'fip') {
       if (v <= 3.25) return good;
-      if (v <= 4.0) return neutral;
-      if (v <= 4.75) return warn;
+      if (v <= 4.0) return warn;
+      if (v <= 4.75) return risk;
       return bad;
     }
-    return neutral;
+    return muted;
   }
 
   function spPitchScoreFromProfile(pitcherName, team) {
@@ -232,7 +231,7 @@
       + '</div>'
       + '<div class="mc-sp-name-row">' + nameHtml + '</div>'
       + (ps != null
-        ? '<div class="mc-ps-badge mc-ps-badge--defined" style="--stat-color:' + psColor + '">'
+        ? '<div class="mc-ps-badge mc-ps-badge--defined">'
           + '<span class="mc-ps-badge__label">Pitch Score</span>'
           + '<strong class="mc-ps-badge__val" style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong>'
           + '</div>'

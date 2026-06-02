@@ -1788,11 +1788,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mc-sp-stat {
   display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 2px;
   border-radius: 0; background: transparent; border: 0; text-align: center; min-width: 0;
-  color: var(--stat-color, var(--text));
+  color: var(--text);
 }
 .mc-sp-stat em {
   font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--stat-color, var(--text-3)) 72%, var(--text-3));
+  color: var(--text-3);
 }
 .mc-sp-stat strong { color: var(--text); font-size: 16px; font-weight: 900; line-height: 1.1; }
 .mc-sp-name-text { font-size: 15.5px; font-weight: 800; letter-spacing: 0; }
@@ -1802,12 +1802,12 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   border-radius: 0; background: transparent;
   border-top: 1px solid rgba(255,255,255,.065);
   border-bottom: 1px solid rgba(255,255,255,.065);
-  color: var(--stat-color, var(--text));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stat-color, #F5F5F7) 18%, transparent);
+  color: var(--text);
+  box-shadow: none;
 }
 .mc-ps-badge__label {
   font-size: 9.5px; font-weight: 800; letter-spacing: .1em; line-height: 1.05;
-  color: color-mix(in srgb, var(--stat-color, var(--text-3)) 78%, var(--text-3));
+  color: var(--text-3);
 }
 .mc-ps-badge__val { font-size: 22px; font-weight: 900; letter-spacing: 0; }
 .hmc-edge-label { font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
