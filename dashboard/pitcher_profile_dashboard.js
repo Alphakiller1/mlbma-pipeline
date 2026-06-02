@@ -180,9 +180,17 @@
     var pt = pitchingTier(ps, ctx.pitchTiers || []);
     var stale = pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true';
     var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
-    var psChip = (ps != null && A && A.valChipHtml)
-      ? A.valChipHtml(ps, 'pitching', false, 0)
-      : '<span class="chip chip-ph">' + esc(fmt(ps, 0)) + '</span>';
+    var k = num(pick(profile, ['K_pct', 'K%']));
+    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+
+    function chip(v, context, invert, dec, display) {
+      if (A && A.valChipHtml) return A.valChipHtml(v, context, !!invert, dec, { display: display });
+      return '<span class="chip">' + esc(display != null ? display : (v == null ? '—' : String(v))) + '</span>';
+    }
+
+    var psChip = chip(ps, 'pitching', false, 0, ps != null ? fmt(ps, 0) : '—');
+    var kChip = chip(k, 'pitching', false, 1, k != null ? fmt(k, 1) + '%': '—');
+    var bbChip = chip(bb, 'pitching', true, 1, bb != null ? fmt(bb, 1) + '%': '—');
 
     return '<div class="pp-hero-inner">'
       + '<div class="ps-photo">' + hs + '</div>'
@@ -197,6 +205,8 @@
       + '</div>'
       + '<div class="pp-hero-score">'
       + '<span class="hub-ctrl-label">Pitch Score</span>' + psChip
+      + '<span class="hub-ctrl-label">K%</span>' + kChip
+      + '<span class="hub-ctrl-label">BB%</span>' + bbChip
       + '</div>'
       + (staleWarn ? '<p class="ps-stale-note">' + esc(staleWarn) + '</p>' : '')
       + (ctx.tonightHtml ? '<div class="ps-tonight">' + ctx.tonightHtml + '</div>' : '')
@@ -448,6 +458,10 @@
     var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore', 'pitch_score', 'Pitching Score']));
     var k = num(pick(profile, ['K_pct', 'K%']));
     var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var hr9 = num(pick(profile, ['HR9', 'HR/9']));
+    var era = num(pick(profile, ['ERA']));
+    var fip = num(pick(profile, ['FIP', 'fip']));
+    var xfip = num(pick(profile, ['xFIP', 'xfip']));
     var resolved = resolveAllowed(ctx);
     var osiAllow = resolved.metrics.osi;
     var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
@@ -483,9 +497,52 @@
       detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD')
         + (detailNote ? ' · ' + detailNote : '');
     }
+    var coreCells = ''
+      + pitcherStatNum('K%', k, 'pitching', false, 1)
+      + pitcherStatNum('BB%', bb, 'pitching', true, 1)
+      + pitcherStatNum('HR/9', hr9, 'pitching', true, 2)
+      + pitcherStatNum('ERA', era, 'pitching', true, 2)
+      + pitcherStatNum('FIP', fip, 'pitching', true, 2)
+      + pitcherStatNum('xFIP', xfip, 'pitching', true, 2);
+
+    function splitRow(label, row) {
+      if (!row) return '';
+      var rk = num(pick(row, ['K_pct', 'K%']));
+      var rbb = num(pick(row, ['BB_pct', 'BB%']));
+      var rhr9 = num(pick(row, ['HR9', 'HR/9']));
+      var rera = num(pick(row, ['ERA']));
+      var rfip = num(pick(row, ['FIP', 'fip']));
+      var rxfip = num(pick(row, ['xFIP', 'xfip']));
+      return '<tr>'
+        + '<td>' + esc(label) + '</td>'
+        + '<td>' + valChip(rk, 'pitching', false, 1) + '</td>'
+        + '<td>' + valChip(rbb, 'pitching', true, 1) + '</td>'
+        + '<td>' + valChip(rhr9, 'pitching', true, 2) + '</td>'
+        + '<td>' + valChip(rera, 'pitching', true, 2) + '</td>'
+        + '<td>' + valChip(rfip, 'pitching', true, 2) + '</td>'
+        + '<td>' + valChip(rxfip, 'pitching', true, 2) + '</td>'
+        + '</tr>';
+    }
+
+    var sOverall = profile;
+    var sLhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'LHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'L')) : null;
+    var sRhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'RHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'R')) : null;
+
+    var splitBody = splitRow('Overall', sOverall)
+      + (sLhh ? splitRow('vs LHH', sLhh) : '')
+      + (sRhh ? splitRow('vs RHH', sRhh) : '');
+
+    var splitTable = splitBody
+      ? '<div class="pp-split-table-wrap"><table class="hub-table tp-table pp-split-table"><thead><tr>'
+        + '<th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>ERA</th><th>FIP</th><th>xFIP</th>'
+        + '</tr></thead><tbody>' + splitBody + '</tbody></table></div>'
+      : '<div class="empty-state">No split rows available for this pitcher.</div>';
+
     var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand('Start read', detailNote || 'Verdict and exposure drivers for this split', decisionCells)
-      + '</div>';
+      + metricsBand('Pitching Value', detailNote || 'Key pitching rates for the active split', coreCells)
+      + metricsBand('Start read', '', decisionCells)
+      + '</div>'
+      + splitTable;
 
     if (ctx.omitHeader) {
       return metricsHtml;

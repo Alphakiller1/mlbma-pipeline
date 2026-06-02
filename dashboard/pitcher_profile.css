@@ -300,6 +300,14 @@
   border-radius: 0;
 }
 
+.pitcher-profile-page .pp-split-table-wrap {
+  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+.pitcher-profile-page .pp-split-table td .chip {
+  font-size: 13px;
+}
+
 .pitcher-profile-page .tp-section > .tp-section-filter-bar,
 .pitcher-profile-page .tp-section > .tp-hub-bar {
   margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
