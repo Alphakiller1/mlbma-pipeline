@@ -273,6 +273,7 @@
     var all = ctx.allProfiles || [];
     var pick = ctx.pickCol;
     var name = pick(profile, ['pitcher_name']);
+    var omitHeader = !!ctx.omitHeader;
 
     function pct(key, val) {
       var vals = all.map(function(p) { return num(pick(p, [key, key.replace('_', ' ')])); });
@@ -293,9 +294,12 @@
     var f5 = resolved.isF5 ? (A ? A.f5WarningHtml() : '') : '';
     var title = 'What Lineups Do Against ' + esc(name);
 
-    return '<div class="allowed-header"><h2 class="section-title">' + title + '</h2>'
+    var headerHtml = omitHeader ? '' : (
+      '<div class="allowed-header"><h2 class="section-title">' + title + '</h2>'
       + '<p class="section-subtitle">Lower allowed scores = softer opposing offense · ' + esc(ctx.splitLabel) + ' · ' + esc(ctx.window) + '</p></div>'
-      + f5
+    );
+
+    return headerHtml + f5
       + '<div class="metric-grid allowed-grid">' + cards.map(function(c) {
         var col = allowedColor(c.val);
         var p = pct(c.key, c.val);
@@ -315,6 +319,7 @@
     var oorMap = ctx.oorMap || {};
     var window = ctx.window || 'YTD';
     var maxStarts = window === 'L14' ? 4 : window === 'L30' ? 8 : null;
+    var compact = !!ctx.compact;
 
     var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
     if (avgOor == null) avgOor = avgOorFromLog(log, pick, oorMap, maxStarts);
@@ -363,7 +368,7 @@
     }).filter(function(x) { return x.v != null; });
 
     var trendHtml = '';
-    if (trend.length >= 3) {
+    if (!compact && trend.length >= 3) {
       var max = Math.max.apply(null, trend.map(function(t) { return t.v; }));
       var min = Math.min.apply(null, trend.map(function(t) { return t.v; }));
       var range = max - min || 1;
@@ -382,10 +387,12 @@
         + (avgOor != null ? ' vs season avg OOR <strong>' + avgOor.toFixed(1) + '</strong>' : '')
         + (tonightLabel ? ' · <em>' + esc(tonightLabel) + '</em>' : '') + '</p>' : '')
       + '</div></div>'
-      + '<div class="oor-splits"><table class="ma-split-table"><tbody>'
-      + splitRows.map(function(r) {
-        return '<tr><td>' + esc(r[0]) + '</td><td style="font-family:var(--mono);color:' + allowedColor(r[1]) + '">' + fmt(r[1], 1) + '</td></tr>';
-      }).join('') + '</tbody></table></div>'
+      + (compact ? '' : (
+        '<div class="oor-splits"><table class="ma-split-table"><tbody>'
+        + splitRows.map(function(r) {
+          return '<tr><td>' + esc(r[0]) + '</td><td style="font-family:var(--mono);color:' + allowedColor(r[1]) + '">' + fmt(r[1], 1) + '</td></tr>';
+        }).join('') + '</tbody></table></div>'
+      ))
       + trendHtml
       + '</div>';
   }

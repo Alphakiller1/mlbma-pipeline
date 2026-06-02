@@ -881,10 +881,12 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   var allowedCtx = Object.assign({}, ctx, {
     split: allowedFilter.split || ctx.split,
     window: allowedFilter.window || ctx.window,
-    splitLabel: splitLabel(allowedFilter.split || ctx.split)
+    splitLabel: splitLabel(allowedFilter.split || ctx.split),
+    omitHeader: true
   });
   var oorCtx = Object.assign({}, ctx, {
-    window: oorFilter.window || ctx.window
+    window: oorFilter.window || ctx.window,
+    compact: true
   });
   var snap = document.getElementById('pitcherSnapshot');
   var intel = document.getElementById('pitcherIntelPanel');
