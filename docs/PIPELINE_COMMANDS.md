@@ -140,6 +140,46 @@ Dry-run the watcher without launching the pipeline:
 C:\Users\chase\crawl_env\Scripts\python.exe -m scripts.run_after_last_final --dry-run
 ```
 
+## Instagram auto-posting
+
+Build a safe preview manifest from the latest pipeline artifacts:
+
+```powershell
+cd C:\Users\chase\mlbma_pipeline
+C:\Users\chase\crawl_env\Scripts\python.exe -m outputs.push_instagram
+```
+
+Publish a post after setting Instagram credentials and a public image URL:
+
+```powershell
+C:\Users\chase\crawl_env\Scripts\python.exe -m outputs.push_instagram --publish --image-url "https://example.com/mlbma-card.png"
+```
+
+Required `.env` values for publishing:
+
+```
+INSTAGRAM_USER_ID=your-instagram-professional-account-id
+INSTAGRAM_ACCESS_TOKEN=your-long-lived-access-token
+INSTAGRAM_IMAGE_URL=https://public-url-to-image.png
+```
+
+Optional `.env` values:
+
+```
+INSTAGRAM_GRAPH_VERSION=v24.0
+INSTAGRAM_AUTO_POST=1
+INSTAGRAM_PUBLISH=0
+```
+
+`INSTAGRAM_AUTO_POST=1` adds the Instagram step to `pipeline.main`. Keep
+`INSTAGRAM_PUBLISH=0` for dry-run manifests; switch it to `1` only when the
+account, token, and public image URL are ready.
+
+Instagram requirements: the account must be an Instagram Professional account
+connected through Meta, the app/token must have content-publishing permission,
+and the media must be reachable at a public HTTPS URL. The Graph API publish
+flow creates a media container and then publishes it through `media_publish`.
+
 ---
 
 ## Batter window refresh (L30 / L14 / L7)

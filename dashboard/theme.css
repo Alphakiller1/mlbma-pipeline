@@ -6,7 +6,7 @@
   --raised: #20232F;
   --border: #262A38;
   --border-2: #363B4D;
-  --border-violet: rgba(124, 77, 255, 0.45);
+  --border-violet: rgba(124, 77, 255, 0.32);
   --text: #F5F6FA;
   --text-2: #A4A8B6;
   --text-3: #6E7383;
@@ -17,9 +17,9 @@
   --v-deep: #5B2BE0;
   --v-heading: #6D28D9;
   --v-grad: linear-gradient(135deg, #9A6BFF 0%, #5B2BE0 100%);
-  --v-grad-soft: linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(91, 43, 224, 0.10));
-  --v-glow: rgba(124, 77, 255, 0.45);
-  --v-bg: rgba(124, 77, 255, 0.16);
+  --v-grad-soft: linear-gradient(135deg, rgba(124, 77, 255, 0.13), rgba(91, 43, 224, 0.07));
+  --v-glow: rgba(124, 77, 255, 0.32);
+  --v-bg: rgba(124, 77, 255, 0.11);
   --edge-grad: linear-gradient(90deg, #3B82F6 0%, #7C4DFF 50%, #EC4899 100%);
   --d-elite: #3CCB7F;
   --d-good: #86D76F;
@@ -43,8 +43,8 @@ html, body {
 
 body {
   background-image:
-    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.20), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.12), transparent 60%);
+    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.08), transparent 60%);
   background-color: var(--bg);
 }
 

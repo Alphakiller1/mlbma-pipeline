@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 import time
@@ -181,6 +182,7 @@ def run():
     run_batter_splits()
     run_batter_profiles()
     run_team_profiles()
+    run_instagram_autopost()
 
     total = time.perf_counter() - pipeline_t0
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -302,6 +304,24 @@ def run_team_profiles():
         "core.compute_team_profile",
         _fn,
     )
+
+
+def run_instagram_autopost():
+    """Optional social publishing step; dry-run unless explicitly enabled."""
+    if os.getenv("INSTAGRAM_AUTO_POST", "").strip().lower() not in {"1", "true", "yes"}:
+        return
+
+    def _fn():
+        from outputs.push_instagram import run as run_push_instagram
+
+        publish = os.getenv("INSTAGRAM_PUBLISH", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        run_push_instagram(publish=publish)
+
+    _run_step("Optional: outputs.push_instagram", "outputs.push_instagram", _fn)
 
 
 if __name__ == "__main__":

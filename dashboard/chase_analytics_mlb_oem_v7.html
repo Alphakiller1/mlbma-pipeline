@@ -2470,10 +2470,10 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
-<link rel="stylesheet" href="theme.css?v=20260616c">
-<link rel="stylesheet" href="chase_nav.css?v=20260616c">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260620y">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260620a">
+<link rel="stylesheet" href="theme.css?v=20260620a">
+<link rel="stylesheet" href="chase_nav.css?v=20260620b">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260601j">
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -2492,6 +2492,43 @@ body.view-research .ca-lab { display: block; }
   html.view-research #opening-dashboard{display:none!important}
   html.view-research #section-matchups-hero{display:none!important}
   html.view-research #section-research-lab{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
+  html.view-opening body.opening-dashboard #opening-dashboard{
+    margin-top:0!important;
+    padding-top:0!important;
+  }
+  html.view-opening body.opening-dashboard > .container{
+    padding-top:0!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    max-width:none!important;
+  }
+  html.view-opening body.opening-dashboard #section-opening-hero.ca-hero{
+    display:block!important;
+    height:auto!important;
+    min-height:0!important;
+    margin-top:0!important;
+    padding:16px clamp(20px,5vw,64px) 40px!important;
+  }
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__glow{
+    display:none!important;
+  }
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__inner{
+    align-items:start!important;
+    height:auto!important;
+    min-height:0!important;
+    margin-top:0!important;
+    transform:none!important;
+  }
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__content,
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__mark{
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+    margin-top:0!important;
+  }
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__grid{
+    display:none!important;
+  }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260527s" data-page="chase_analytics_mlb_oem_v7.html"></script>
@@ -2518,9 +2555,7 @@ body.view-research .ca-lab { display: block; }
 
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
+      <span class="chase-wordmark" aria-label="Chase Analytics">CHASE <span class="chase-wordmark__accent">ANALYTICS</span></span>
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
@@ -2561,9 +2596,7 @@ body.view-research .ca-lab { display: block; }
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
+      <span class="chase-wordmark" aria-label="Chase Analytics">CHASE <span class="chase-wordmark__accent">ANALYTICS</span></span>
     </a>
     <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

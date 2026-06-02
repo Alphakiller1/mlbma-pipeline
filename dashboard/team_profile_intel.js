@@ -335,7 +335,7 @@
       if (rcvDiff != null && Math.abs(rcvDiff) >= 4) {
         risk += ' Platoon split adds handedness risk — weaker side is more fade-friendly.';
       }
-      cards.push({ title: 'Matchup risk', icon: 'crosshair', body: risk });
+      cards.push({ title: 'Matchup risk', icon: 'swords', body: risk });
     }
 
     var fade = [];
@@ -354,7 +354,7 @@
     if (!cards.length) {
       cards.push({
         title: 'Research note',
-        icon: 'lightbulb',
+        icon: 'clipboard-list',
         body: 'Insufficient grade/rate data for automated takeaways — expand split/window filters or refresh Team_Profiles.'
       });
     }
@@ -511,6 +511,10 @@
     var v = sustainabilityVerdict(rates);
     var proj = num(m.proj);
     var ppGap = num(m.ppGap);
+    var PC = global.MLBMAProfileControls;
+    var splitBar = PC && PC.renderSectionSplitBar
+      ? PC.renderSectionSplitBar('sustainability', ctx.split || 'both')
+      : '';
     var labelChip = v.label
       ? '<span class="tp-intel-verdict-label tp-intel-verdict-label--' + esc(String(v.label).toLowerCase().replace(/\s+/g, '-')) + '">'
         + esc(v.label) + '</span>'
@@ -534,12 +538,21 @@
       + renderMarketMapPositionHtml(m, prof, ctx)
       + '<p class="ca-helper tp-intel-note">' + esc(v.note) + '</p>'
       + '</div>';
-    return sectionWrap('Sustainability Check', 'Contact quality · projection · market map quadrant', body, 'activity');
+    return '<section class="ca-board ca-card tp-section tp-intel-section" data-tp-section="sustainability">'
+      + (A && A.sectionHeaderHtml
+        ? A.sectionHeaderHtml({
+          icon: 'chart-line',
+          kicker: 'Intelligence',
+          title: 'Sustainability Check',
+          subtitle: 'Contact quality · projection · market map quadrant'
+        })
+        : '<header class="ca-section-header"><h2 class="ca-section-title">Sustainability Check</h2></header>')
+      + splitBar + body + '</section>';
   }
 
   function takeawayCardHtml(c) {
     var I = global.MLBMAIcons;
-    var iconKey = c.icon || 'lightbulb';
+    var iconKey = c.icon || 'clipboard-list';
     var iconHtml = (I && I.iconCircleHtml) ? I.iconCircleHtml(iconKey, true) : '';
     return '<article class="tp-intel-takeaway ca-card">'
       + '<div class="tp-intel-takeaway__head">'
@@ -643,7 +656,7 @@
       + (status.label ? ' · ' + status.label : '');
     var header = (A && A.sectionHeaderHtml)
       ? A.sectionHeaderHtml({
-        icon: 'target',
+        icon: 'bats',
         kicker: 'Identity',
         title: 'Summary Of Identity',
         subtitle: subtitle
@@ -662,7 +675,8 @@
     var takeHtml = take
       ? '<p class="tp-intel-read tp-identity-panel__take">' + esc(take) + '</p>'
       : '';
-    return '<section class="ca-board tp-section tp-identity-panel tp-intel-section">'
+    return '<section class="ca-board tp-section tp-identity-panel tp-intel-section" data-tp-section="identity">'
+      + (filterHtml || '')
       + header + metrics + takeHtml
       + '</section>';
   }
@@ -673,7 +687,7 @@
 
   function sectionWrap(title, subtitle, body, iconKey) {
     var hdrOpts = {
-      icon: iconKey || 'brain-circuit',
+      icon: iconKey || 'clipboard-list',
       kicker: 'Intelligence',
       title: title,
       subtitle: subtitle || ''
@@ -846,7 +860,7 @@
     if (pack.avgPs != null) {
       cards.push({
         title: 'Run prevention lean',
-        icon: 'target',
+        icon: 'gauge',
         body: pack.avgPs >= 68
           ? 'Staff Pitch Score supports limiting runs — lean under-friendly when this rotation is on the mound.'
           : pack.avgPs < 55
@@ -858,7 +872,7 @@
       var kbb = pack.kPct - pack.bbPct;
       cards.push({
         title: 'Matchup risk',
-        icon: 'zap',
+        icon: 'swords',
         body: kbb >= 14
           ? 'High K−BB rotation — contact-heavy offenses are the main fade spot; swing-and-miss lineups are tougher.'
           : kbb <= 8
@@ -869,7 +883,7 @@
     if (pack.top && pack.bottom && pack.top.ps - pack.bottom.ps >= 15) {
       cards.push({
         title: 'Depth gap',
-        icon: 'layers',
+        icon: 'list-ordered',
         body: 'Large ace-to-back-end gap — research the specific starter; staff average overstates the bottom of the rotation.'
       });
     }
@@ -980,7 +994,7 @@
     if (pack.bpScore != null || pack.era != null) {
       cards.push({
         title: 'Late-inning lean',
-        icon: 'flame',
+        icon: 'clock',
         body: (pack.bpScore != null && pack.bpScore >= 65) || (pack.era != null && pack.era <= 3.85)
           ? 'Bullpen supports holding leads — late runs less likely when the pen is active.'
           : (pack.bpScore != null && pack.bpScore < 50) || (pack.era != null && pack.era >= 4.60)

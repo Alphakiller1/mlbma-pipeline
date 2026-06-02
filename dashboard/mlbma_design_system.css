@@ -43,22 +43,22 @@ th.num,
   --ca-purple-dark: #5B2BE0;
   --ca-purple-heading: #6D28D9;
   --ca-purple-light: #C4B0FF;
-  --ca-purple-glow: rgba(124, 77, 255, 0.45);
+  --ca-purple-glow: rgba(124, 77, 255, 0.32);
   --ca-white: #F5F5F7;
   --ca-gray-brand: #9CA3AF;
   --ca-black: #050509;
   --ca-brand: #9A6BFF;
-  --ca-brand-dim: rgba(124, 77, 255, 0.16);
-  --ca-brand-glow: rgba(124, 77, 255, 0.45);
-  --ca-brand-border: rgba(124, 77, 255, 0.45);
+  --ca-brand-dim: rgba(124, 77, 255, 0.11);
+  --ca-brand-glow: rgba(124, 77, 255, 0.32);
+  --ca-brand-border: rgba(124, 77, 255, 0.32);
 
   --card: #12141D;
   --card-2: #181B26;
   --v-grad: linear-gradient(135deg, #9A6BFF 0%, #5B2BE0 100%);
-  --v-bg: rgba(124, 77, 255, 0.16);
+  --v-bg: rgba(124, 77, 255, 0.11);
   --v-2: #9A6BFF;
   --v-light: #C4B0FF;
-  --border-violet: rgba(124, 77, 255, 0.45);
+  --border-violet: rgba(124, 77, 255, 0.32);
   --border-soft: rgba(255, 255, 255, 0.06);
   --display: var(--font-display);
 
@@ -70,7 +70,7 @@ th.num,
   --ca-card-bg: var(--bg-3);
   --ca-card-radius: 16px;
   --ca-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-  --ca-card-hover-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+  --ca-card-hover-shadow: 0 8px 32px rgba(139, 92, 246, 0.14);
   --ca-hero-bg: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
   --ca-grid-texture: none;
   --ca-ink: #05060B;
@@ -80,15 +80,15 @@ th.num,
   --ca-panel-solid: #10131F;
   --ca-panel-solid-2: #070912;
   --ca-panel-glass: linear-gradient(180deg, #1A1D2D 0%, #0D101B 54%, #06070D 100%);
-  --ca-panel-border: rgba(154, 107, 255, 0.58);
-  --ca-panel-border-hot: rgba(213, 196, 255, 0.86);
-  --ca-inner-stroke: rgba(255, 255, 255, 0.14);
-  --ca-inner-stroke-soft: rgba(255, 255, 255, 0.075);
+  --ca-panel-border: rgba(154, 107, 255, 0.41);
+  --ca-panel-border-hot: rgba(213, 196, 255, 0.60);
+  --ca-inner-stroke: rgba(255, 255, 255, 0.10);
+  --ca-inner-stroke-soft: rgba(255, 255, 255, 0.052);
   --ca-violet-neon: #9A6BFF;
   --ca-violet-hot: #B794FF;
   --ca-gold: #F0C24A;
-  --ca-glow-violet: 0 0 0 1px rgba(196, 176, 255, 0.18), 0 0 30px rgba(124, 77, 255, 0.34), 0 28px 78px rgba(0, 0, 0, 0.86), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --ca-glow-violet-strong: 0 0 0 1px rgba(213, 196, 255, 0.42), 0 0 42px rgba(124, 77, 255, 0.54), 0 34px 96px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  --ca-glow-violet: 0 0 0 1px rgba(196, 176, 255, 0.13), 0 0 30px rgba(124, 77, 255, 0.24), 0 28px 78px rgba(0, 0, 0, 0.86), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --ca-glow-violet-strong: 0 0 0 1px rgba(213, 196, 255, 0.29), 0 0 42px rgba(124, 77, 255, 0.38), 0 34px 96px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.11);
   --ca-metal-text: linear-gradient(180deg, #FFFFFF 0%, #F4F5F8 34%, #B7BBC8 54%, #EEF0F6 78%, #FFFFFF 100%);
   --ca-violet-text: linear-gradient(180deg, #D9CCFF 0%, #A274FF 38%, #6F31F2 72%, #C7B4FF 100%);
   --ca-editorial-caps: 0.1em;
@@ -126,8 +126,8 @@ html {
 body {
   font-family: var(--font-body);
   background:
-    radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124,77,255,0.18), transparent 62%),
-    radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91,43,224,0.14), transparent 60%),
+    radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124,77,255,0.13), transparent 62%),
+    radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91,43,224,0.10), transparent 60%),
     var(--page-bg);
   background-size: auto, auto, auto;
   color: var(--text);

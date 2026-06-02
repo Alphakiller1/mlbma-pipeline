@@ -121,10 +121,10 @@
       xwoba: num(pick(row, ['xwOBA', 'xwoba'], pickCol)),
       slg: num(pick(row, ['SLG', 'slg'], pickCol)),
       hr: num(pick(row, ['HR', 'hr'], pickCol)),
-      k: normalizeRatePct(num(pick(row, ['K%', 'k_pct', 'k'], pickCol)), true),
-      bb: normalizeRatePct(num(pick(row, ['BB%', 'bb_pct', 'bb'], pickCol)), true),
-      barrel: normalizeRatePct(num(pick(row, ['Barrel%', 'barrel_pct', 'barrel'], pickCol)), true),
-      hard: normalizeRatePct(num(pick(row, ['HardHit%', 'hardhit_pct', 'hard'], pickCol)), true),
+      k: normalizeRatePct(num(pick(row, ['K%', 'k_pct', 'K_pct', 'k'], pickCol)), true),
+      bb: normalizeRatePct(num(pick(row, ['BB%', 'bb_pct', 'BB_pct', 'bb'], pickCol)), true),
+      barrel: normalizeRatePct(num(pick(row, ['Barrel%', 'barrel_pct', 'Barrel_pct', 'barrel'], pickCol)), true),
+      hard: normalizeRatePct(num(pick(row, ['HardHit%', 'hardhit_pct', 'HardHit_pct', 'hard', 'Hard%'], pickCol)), true),
       avg: num(pick(row, ['AVG', 'avg'], pickCol)),
       obp: num(pick(row, ['OBP', 'obp'], pickCol)),
       ops: num(pick(row, ['OPS', 'ops'], pickCol))
@@ -136,12 +136,14 @@
     if (!rows || !rows.length) return {};
     var t = String(team || '').trim().toUpperCase();
     var teamRows = rows.filter(function(r) {
-      return String(pick(r, ['team', 'Team', 'Tm'], pickCol)).trim().toUpperCase() === t;
+      return String(pick(r, ['team', 'Team', 'Tm', 'team_abbr'], pickCol)).trim().toUpperCase() === t;
     });
     if (!teamRows.length) return {};
     var paSum = 0;
     var acc = { wrc: 0, woba: 0, xwoba: 0, slg: 0, k: 0, bb: 0, barrel: 0, hard: 0, avg: 0, obp: 0, ops: 0 };
     var has = {};
+    var hrSum = 0;
+    var hrHas = false;
     teamRows.forEach(function(r) {
       var pa = num(pick(r, ['PA', 'pa'], pickCol)) || 0;
       if (pa < 1) return;
@@ -157,13 +159,15 @@
       add('woba', ['wOBA', 'woba'], false);
       add('xwoba', ['xwOBA', 'xwoba'], false);
       add('slg', ['SLG', 'slg'], false);
-      add('k', ['K%', 'k_pct'], true);
-      add('bb', ['BB%', 'bb_pct'], true);
-      add('barrel', ['Barrel%', 'barrel_pct'], true);
-      add('hard', ['HardHit%', 'hardhit_pct'], true);
+      add('k', ['K%', 'k_pct', 'K_pct'], true);
+      add('bb', ['BB%', 'bb_pct', 'BB_pct'], true);
+      add('barrel', ['Barrel%', 'barrel_pct', 'Barrel_pct'], true);
+      add('hard', ['HardHit%', 'hardhit_pct', 'HardHit_pct', 'Hard%'], true);
       add('avg', ['AVG', 'avg'], false);
       add('obp', ['OBP', 'obp'], false);
       add('ops', ['OPS', 'ops'], false);
+      var hr = num(pick(r, ['HR', 'hr'], pickCol));
+      if (hr != null) { hrSum += hr; hrHas = true; }
     });
     if (paSum < 1) return {};
     var out = {};
@@ -171,6 +175,7 @@
       if (!has[k]) return;
       out[k] = acc[k] / paSum;
     });
+    if (hrHas) out.hr = hrSum;
     if (out.wrc != null) out.wrc = Math.round(out.wrc * 10) / 10;
     ['woba', 'xwoba', 'slg', 'avg', 'obp', 'ops'].forEach(function(k) {
       if (out[k] != null) out[k] = Math.round(out[k] * 1000) / 1000;
@@ -252,53 +257,59 @@
   }
 
   function aggregateTeamMetricsFromRows(team, rows, pickCol) {
-    if (!rows || !rows.length || !pickCol) return null;
-    var t = String(team || '').trim().toUpperCase();
-    var paSum = 0;
-    var acc = { osi: 0, abq: 0, rcv: 0, obr: 0, wrc: 0, woba: 0, slg: 0 };
-    var hasMetrics = false;
-    var hasRates = false;
-    rows.forEach(function(b) {
-      if (teamKeyFromRow(b, pickCol) !== t) return;
-      var pa = num(pickCol(b, ['PA', 'pa'])) || 1;
-      var o = num(pickCol(b, ['OSI', 'osi']));
-      var abq = num(pickCol(b, ['ABQ', 'abq']));
-      var rcv = num(pickCol(b, ['RCV', 'rcv']));
-      var obr = num(pickCol(b, ['OBR', 'obr']));
-      if (o != null && abq != null && rcv != null && obr != null) {
-        acc.osi += o * pa;
-        acc.abq += abq * pa;
-        acc.rcv += rcv * pa;
-        acc.obr += obr * pa;
-        paSum += pa;
-        hasMetrics = true;
-      }
-      var wrc = num(pickCol(b, ['wRC+', 'wrc_plus', 'wRC', 'wrc']));
-      var woba = num(pickCol(b, ['wOBA', 'woba']));
-      var slg = num(pickCol(b, ['SLG', 'slg']));
-      if (wrc != null) {
-        acc.wrc += wrc * pa;
-        if (woba != null) acc.woba += woba * pa;
-        if (slg != null) acc.slg += slg * pa;
-        if (!hasMetrics) paSum += pa;
-        hasRates = true;
+    return offenseRatesFromBatterSplitRows(team, rows, pickCol);
+  }
+
+  function splitBatterRowsForSplit(ctx, split) {
+    if (!ctx) return [];
+    if (split === 'home') return ctx.batterSplitsHome || [];
+    if (split === 'away') return ctx.batterSplitsAway || [];
+    if (split === 'sp' || split === 'f5') return ctx.batterSplitsVsSp || [];
+    if (split === 'rp') return ctx.batterSplitsVsRp || [];
+    if (split === 'rhp') return ctx.batterSplitsR || [];
+    if (split === 'lhp') return ctx.batterSplitsL || [];
+    return ctx.batterSplitsOverall || [];
+  }
+
+  function cascadeFillOffenseRates(rates, team, ctx, pickCol, primaryRows) {
+    var sources = [];
+    if (primaryRows && primaryRows.length) {
+      sources.push(offenseRatesFromBatterSplitRows(team, primaryRows, pickCol));
+    }
+    if (ctx.batterSplitsOverall && ctx.batterSplitsOverall.length) {
+      sources.push(offenseRatesFromBatterSplitRows(team, ctx.batterSplitsOverall, pickCol));
+    }
+    sources.push(offenseRatesFromBatterSplits(
+      team, 'both', ctx.batterSplitsR, ctx.batterSplitsL, pickCol
+    ));
+    sources.push(offenseRatesFromMetrics(team, 'both', ctx.metricsR, ctx.metricsL, pickCol));
+    sources.push(offenseRatesFromMetrics(team, 'rhp', ctx.metricsR, ctx.metricsL, pickCol));
+    sources.push(offenseRatesFromMetrics(team, 'lhp', ctx.metricsR, ctx.metricsL, pickCol));
+    sources.forEach(function(src) { fillMissingRates(rates, src); });
+  }
+
+  function applyProfileLocationOverrides(rates, prof, pickCol, split) {
+    if (!prof || !pickCol || (split !== 'home' && split !== 'away')) return;
+    function pf(keys) { return num(pick(prof, keys, pickCol)); }
+    var cap = split.charAt(0).toUpperCase() + split.slice(1);
+    var pairs = [
+      ['wrc', [split + '_wrc', cap + '_wRC+', cap + '_wrc']],
+      ['woba', [split + '_woba', cap + '_wOBA', cap + '_woba']],
+      ['slg', [split + '_slg', cap + '_SLG', cap + '_slg']],
+      ['obp', [split + '_obp', cap + '_OBP', cap + '_obp']],
+      ['ops', [split + '_ops', cap + '_OPS', cap + '_ops']]
+    ];
+    pairs.forEach(function(pair) {
+      for (var i = 0; i < pair[1].length; i++) {
+        var v = pf([pair[1][i]]);
+        if (v != null) { rates[pair[0]] = v; break; }
       }
     });
-    if (!hasMetrics && !hasRates) return null;
-    var div = paSum > 0 ? paSum : 1;
-    var out = {};
-    if (hasMetrics) {
-      out.osi = acc.osi / div;
-      out.abq = acc.abq / div;
-      out.rcv = acc.rcv / div;
-      out.obr = acc.obr / div;
-    }
-    if (hasRates) {
-      out.wrc = Math.round((acc.wrc / div) * 10) / 10;
-      if (acc.woba) out.woba = Math.round((acc.woba / div) * 1000) / 1000;
-      if (acc.slg) out.slg = Math.round((acc.slg / div) * 1000) / 1000;
-    }
-    return out;
+  }
+
+  function hasRateData(obj) {
+    if (!obj) return false;
+    return Object.keys(obj).some(function(k) { return obj[k] != null && !isNaN(obj[k]); });
   }
 
   function aggregateTeamLocationSplit(team, loc, ctx, pickCol) {
@@ -307,7 +318,7 @@
       : (ctx.batterSplitsAway || []);
     if (rows.length) {
       var fromSheet = aggregateTeamMetricsFromRows(team, rows, pickCol);
-      if (fromSheet) return fromSheet;
+      if (hasRateData(fromSheet)) return fromSheet;
     }
     return aggregateTeamBatterSplit(team, loc, ctx.batters || [], pickCol);
   }
@@ -316,7 +327,7 @@
     var rows = batterRowsForPitchSplit(ctx, split);
     if (rows.length) {
       var fromSheet = aggregateTeamMetricsFromRows(team, rows, pickCol);
-      if (fromSheet) return fromSheet;
+      if (hasRateData(fromSheet)) return fromSheet;
     }
     var want = split === 'sp' ? 'vs_sp' : 'vs_rp';
     return aggregateTeamBatterSplit(team, want, ctx.batters || [], pickCol);
@@ -383,6 +394,18 @@
     });
   }
 
+  function deriveOffenseRateComplements(rates) {
+    if (!rates) return;
+    if ((rates.obp == null || isNaN(rates.obp)) && rates.ops != null && rates.slg != null
+      && !isNaN(rates.ops) && !isNaN(rates.slg)) {
+      rates.obp = Math.round((rates.ops - rates.slg) * 1000) / 1000;
+    }
+    if ((rates.ops == null || isNaN(rates.ops)) && rates.obp != null && rates.slg != null
+      && !isNaN(rates.obp) && !isNaN(rates.slg)) {
+      rates.ops = Math.round((rates.obp + rates.slg) * 1000) / 1000;
+    }
+  }
+
   function teamLocationRate(prof, split, key, pickCol) {
     if (!prof || !pickCol) return null;
     function pf(keys) { return num(pick(prof, keys, pickCol)); }
@@ -408,10 +431,10 @@
       xwoba: pf(['xwoba', 'xwOBA']),
       slg: pf(['slg', 'SLG']),
       hr: pf(['hr', 'HR']),
-      k: normalizeRatePct(pf(['k_pct', 'K%']), true),
-      bb: normalizeRatePct(pf(['bb_pct', 'BB%']), true),
-      barrel: normalizeRatePct(pf(['barrel_pct', 'Barrel%']), true),
-      hard: normalizeRatePct(pf(['hardhit_pct', 'HardHit%']), true),
+      k: normalizeRatePct(pf(['k_pct', 'K%', 'K_pct', 'k_pct_vs_rhp']), true),
+      bb: normalizeRatePct(pf(['bb_pct', 'BB%', 'BB_pct', 'bb_pct_vs_rhp']), true),
+      barrel: normalizeRatePct(pf(['barrel_pct', 'Barrel%', 'Barrel_pct']), true),
+      hard: normalizeRatePct(pf(['hardhit_pct', 'HardHit%', 'HardHit_pct', 'Hard%']), true),
       avg: pf(['avg', 'AVG']),
       obp: pf(['obp', 'OBP']),
       ops: pf(['ops', 'OPS'])
@@ -419,35 +442,32 @@
 
     if (rates.wrc == null) rates.wrc = teamLocationRate(prof, split, 'wrc', pickCol);
     if (rates.woba == null) rates.woba = teamLocationRate(prof, split, 'woba', pickCol);
+    if (rates.xwoba == null) rates.xwoba = teamLocationRate(prof, split, 'xwoba', pickCol);
     if (rates.slg == null) rates.slg = teamLocationRate(prof, split, 'slg', pickCol);
+    if (rates.obp == null) rates.obp = teamLocationRate(prof, split, 'obp', pickCol);
+    if (rates.ops == null) rates.ops = teamLocationRate(prof, split, 'ops', pickCol);
+    if (rates.avg == null) rates.avg = teamLocationRate(prof, split, 'avg', pickCol);
+    if (rates.k == null) {
+      var kLoc = teamLocationRate(prof, split, 'k', pickCol);
+      if (kLoc != null) rates.k = normalizeRatePct(kLoc, true);
+    }
+    if (rates.bb == null) {
+      var bbLoc = teamLocationRate(prof, split, 'bb', pickCol);
+      if (bbLoc != null) rates.bb = normalizeRatePct(bbLoc, true);
+    }
 
-    if (split === 'home') {
-      fillMissingRates(rates, offenseRatesFromBatterSplitRows(team, ctx.batterSplitsHome, pickCol));
-      if (pf(['home_wrc']) != null) rates.wrc = pf(['home_wrc']);
-      if (pf(['home_woba']) != null) rates.woba = pf(['home_woba']);
-      if (pf(['home_slg']) != null) rates.slg = pf(['home_slg']);
-    } else if (split === 'away') {
-      fillMissingRates(rates, offenseRatesFromBatterSplitRows(team, ctx.batterSplitsAway, pickCol));
-      if (pf(['away_wrc']) != null) rates.wrc = pf(['away_wrc']);
-      if (pf(['away_woba']) != null) rates.woba = pf(['away_woba']);
-      if (pf(['away_slg']) != null) rates.slg = pf(['away_slg']);
-    } else if (split === 'f5') {
-      fillMissingRates(rates, offenseRatesFromBatterSplitRows(team, ctx.batterSplitsVsSp, pickCol));
-    } else if (split === 'sp' || split === 'rp') {
-      var pitchAgg = aggregateTeamPitchSplit(team, split, ctx, pickCol);
-      if (pitchAgg) {
-        if (pitchAgg.wrc != null) rates.wrc = pitchAgg.wrc;
-        if (pitchAgg.woba != null) rates.woba = pitchAgg.woba;
-        if (pitchAgg.slg != null) rates.slg = pitchAgg.slg;
-      }
-    } else {
-      var sheetSplit = split;
-      applySheetRates(rates, offenseRatesFromMetrics(team, sheetSplit, ctx.metricsR, ctx.metricsL, pickCol));
+    if (split === 'home' || split === 'away' || split === 'f5' || split === 'sp' || split === 'rp') {
+      cascadeFillOffenseRates(rates, team, ctx, pickCol, splitBatterRowsForSplit(ctx, split));
+      applyProfileLocationOverrides(rates, prof, pickCol, split);
+    } else if (split === 'rhp' || split === 'lhp' || split === 'both') {
+      applySheetRates(rates, offenseRatesFromMetrics(team, split, ctx.metricsR, ctx.metricsL, pickCol));
       fillMissingRates(rates, offenseRatesFromBatterSplits(
         team, split, ctx.batterSplitsR, ctx.batterSplitsL, pickCol
       ));
+      cascadeFillOffenseRates(rates, team, ctx, pickCol, splitBatterRowsForSplit(ctx, split));
     }
 
+    deriveOffenseRateComplements(rates);
     return rates;
   }
 
@@ -810,7 +830,7 @@
 
   function renderSummaryPanel(prof, team, m, ctx) {
     var trendHead = (A && A.caSectionHeadHtml)
-      ? A.caSectionHeadHtml('trending-up', 'Trend', 'Rolling Trend', 'YTD → L7 windows · velocity · reliability')
+      ? A.caSectionHeadHtml('chart-line', 'Trend', 'Rolling Trend', 'YTD → L7 windows · velocity · reliability')
       : '<h2 class="ca-section-title">Rolling Trend</h2>'
         + '<p class="ca-helper tp-summary-filter" title="Research Lab trend parameters">YTD → L7 windows · velocity · reliability</p>';
 
@@ -832,6 +852,7 @@
   function renderHeroCard(prof, team, ctx) {
     ctx = ctx || {};
     var heroCtx = Object.assign({}, ctx, {
+      split: 'both',
       window: 'YTD',
       windowLabel: 'Season'
     });
@@ -885,6 +906,14 @@
     return 'weak';
   }
 
+  function heroOsiTone(osi) {
+    if (osi == null || isNaN(osi)) return 'neutral';
+    if (osi >= 75) return 'elite';
+    if (osi >= 65) return 'strong';
+    if (osi >= 55) return 'mid';
+    return 'weak';
+  }
+
   function heroStatChip(label, value, tone, chipOpts) {
     chipOpts = chipOpts || {};
     var valueHtml = '';
@@ -923,44 +952,32 @@
     var rank = ctx.osiRank;
     var rpg = ctx.runsPerGame;
     var osi = num(m.osi);
-    var wrc = ctx.wrc != null ? ctx.wrc : null;
     var rates = resolveOffenseRates(prof, ctx);
     var status = global.TeamProfileIntel && TeamProfileIntel.offenseStatusLabel
       ? TeamProfileIntel.offenseStatusLabel(m, rates)
       : { label: '', cls: 'tp-intel-status--neutral' };
 
-    var contextBits = [];
-    if (ctx.splitLabel || ctx.split) contextBits.push(ctx.splitLabel || ctx.split);
-    contextBits.push('Season');
-    var contextLine = contextBits.join(' · ');
+    var contextLine = 'Season';
 
     var badge = status.label
       ? '<span class="tp-team-banner__badge tp-lineup-identity__badge ' + esc(status.cls) + '">'
         + esc(status.label) + '</span>'
       : '';
 
-    var medallion = osi != null
-      ? '<div class="tp-team-banner__medallion" aria-label="Offense Score">'
-        + '<span class="tp-team-banner__medallion-k">OSI</span>'
-        + valChip(osi, 'osi', false, 1)
-        + (rank ? '<span class="tp-team-banner__medallion-rank">League #' + esc(String(rank)) + '</span>' : '')
-        + '</div>'
-      : '';
-
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
+      + (osi != null && !isNaN(osi)
+        ? heroStatChip('OSI', esc(Number(osi).toFixed(1)), heroOsiTone(osi))
+        : '')
       + heroStatChip('OSI Rank', rank ? '#' + esc(String(rank)) : null, heroRankTone(rank))
-      + heroStatChip('Runs Per Game', null, heroRpgTone(rpg),
-        rpg != null && !isNaN(rpg) ? { numeric: rpg, context: 'rpg', decimals: 2 } : null)
-      + (wrc != null && !isNaN(wrc)
-        ? heroStatChip('wRC+', null, heroRankTone(wrc >= 110 ? 5 : wrc >= 100 ? 12 : 22),
-          { numeric: wrc, context: 'wrc', decimals: 0 })
+      + (rpg != null && !isNaN(rpg)
+        ? heroStatChip('Runs Per Game', esc(Number(rpg).toFixed(2)), heroRpgTone(rpg))
         : '');
 
     return '<section class="tp-team-banner tp-team-banner--hero" style="--tp-accent:' + esc(accent) + '">'
       + '<div class="tp-team-banner__ambient" aria-hidden="true"></div>'
       + (watermark ? '<div class="tp-team-banner__watermark" aria-hidden="true">' + watermark + '</div>' : '')
-      + '<div class="tp-team-banner__inner">'
+      + '<div class="tp-team-banner__inner tp-team-banner__inner--solo">'
       + '<div class="tp-team-banner__identity">'
       + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
       + '<div class="tp-team-banner__copy">'
@@ -969,7 +986,6 @@
       + (contextLine ? '<p class="tp-team-banner__sub">' + esc(contextLine) + '</p>' : '')
       + badge
       + '</div></div>'
-      + medallion
       + '</div>'
       + (statRow ? '<div class="tp-team-banner__stats tp-team-banner__stats--hero" aria-label="Team snapshot">' + statRow + '</div>' : '')
       + '</section>';

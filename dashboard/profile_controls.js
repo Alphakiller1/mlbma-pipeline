@@ -30,6 +30,13 @@
     { value: 'sp', label: 'vs Starting Pitching' }, { value: 'rp', label: 'vs Bullpens' },
     { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'First 5' }
   ];
+  var IDENTITY_SPLIT_OPTIONS = [
+    { value: 'both', label: 'Both Hands' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' },
+    { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }
+  ];
+  var PLATOON_SPLIT_OPTIONS = [
+    { value: 'both', label: 'Both Hands' }, { value: 'rhp', label: 'vs RHP' }, { value: 'lhp', label: 'vs LHP' }
+  ];
   var ROTATION_SPLIT_OPTIONS = [
     { value: 'overall', label: 'Overall' }, { value: 'lhh', label: 'vs LHH' }, { value: 'rhh', label: 'vs RHH' },
     { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' }, { value: 'f5', label: 'F5' }
@@ -39,6 +46,15 @@
     { value: 'home', label: 'Home' }, { value: 'away', label: 'Away' },
     { value: 'hlev', label: 'High Lev' }, { value: 'llev', label: 'Low Lev' }
   ];
+  var SECTION_SPLIT_OPTIONS = {
+    identity: IDENTITY_SPLIT_OPTIONS,
+    offense: LINEUP_SPLIT_OPTIONS,
+    batting: LINEUP_SPLIT_OPTIONS,
+    schedule: PLATOON_SPLIT_OPTIONS,
+    sustainability: PLATOON_SPLIT_OPTIONS,
+    rotation: ROTATION_SPLIT_OPTIONS,
+    bullpen: BULLPEN_SPLIT_OPTIONS
+  };
 
   function splitOptionsForCategory(category) {
     if (category === 'rotation') return ROTATION_SPLIT_OPTIONS;
@@ -48,6 +64,36 @@
 
   function defaultSplitForCategory(category) {
     return category === 'lineup' ? 'both' : 'overall';
+  }
+
+  function splitOptionsForSection(sectionKey) {
+    if (SECTION_SPLIT_OPTIONS[sectionKey]) return SECTION_SPLIT_OPTIONS[sectionKey];
+    if (sectionKey === 'rotation' || sectionKey === 'bullpen') return splitOptionsForCategory(sectionKey);
+    return LINEUP_SPLIT_OPTIONS;
+  }
+
+  function defaultSplitForSection(sectionKey) {
+    if (sectionKey === 'rotation' || sectionKey === 'bullpen') return defaultSplitForCategory(sectionKey);
+    return 'both';
+  }
+
+  function splitHintForSection(sectionKey) {
+    if (sectionKey === 'identity') {
+      return 'Platoon and home/away lens for identity snapshot KPIs — does not affect other sections.';
+    }
+    if (sectionKey === 'offense') {
+      return 'Full platoon, location, and pitcher-type splits for rate tables.';
+    }
+    if (sectionKey === 'batting') {
+      return 'Split filters projected lineup and qualified batter OPS/OBP rows.';
+    }
+    if (sectionKey === 'schedule') {
+      return 'Platoon context for opponent quality faced (PALS · xFIP · schedule).';
+    }
+    if (sectionKey === 'sustainability') {
+      return 'Platoon lens for wOBA/xwOBA sustainability and projection gap.';
+    }
+    return splitHintForCategory(sectionKey === 'rotation' || sectionKey === 'bullpen' ? sectionKey : 'lineup');
   }
 
   function splitHintForCategory(category) {
@@ -164,18 +210,41 @@
     return sectionPillGroup('Window', 'window', WINDOW_OPTIONS, activeWindow || 'YTD');
   }
 
-  function wrapSectionFilterBar(innerHtml, extraClass) {
+  function wrapSectionFilterBar(innerHtml, extraClass, sectionKey) {
     if (!innerHtml) return '';
     return '<div class="hub-control-bar tp-hub-bar tp-section-filter-bar'
-      + (extraClass ? ' ' + extraClass : '') + '">' + innerHtml + '</div>';
+      + (extraClass ? ' ' + extraClass : '') + '"'
+      + (sectionKey ? ' data-tp-section="' + esc(sectionKey) + '"' : '')
+      + '>' + innerHtml + '</div>';
+  }
+
+  function renderSectionSplitBar(sectionKey, activeSplit) {
+    var opts = splitOptionsForSection(sectionKey);
+    var active = activeSplit || defaultSplitForSection(sectionKey);
+    if (!opts.some(function(o) { return (o.value || o) === active; })) {
+      active = defaultSplitForSection(sectionKey);
+    }
+    return wrapSectionFilterBar(
+      sectionPillGroup('Split', 'split', opts, active),
+      'tp-section-filter-bar--split',
+      sectionKey
+    );
+  }
+
+  function renderSectionWindowBar(sectionKey, activeWindow) {
+    return wrapSectionFilterBar(
+      sectionPillGroup('Window', 'window', WINDOW_OPTIONS, activeWindow || 'YTD'),
+      'tp-section-filter-bar--window',
+      sectionKey
+    );
   }
 
   function renderLineupSplitBar(activeSplit) {
-    return wrapSectionFilterBar(renderSplitControls('lineup', activeSplit), 'tp-section-filter-bar--split');
+    return renderSectionSplitBar('offense', activeSplit);
   }
 
   function renderLineupWindowBar(activeWindow) {
-    return wrapSectionFilterBar(renderWindowControls(activeWindow), 'tp-section-filter-bar--window');
+    return renderSectionWindowBar('surface', activeWindow);
   }
 
   var _profileTeamScores = null;
@@ -636,6 +705,11 @@
     renderWindowControls: renderWindowControls,
     renderLineupSplitBar: renderLineupSplitBar,
     renderLineupWindowBar: renderLineupWindowBar,
+    renderSectionSplitBar: renderSectionSplitBar,
+    renderSectionWindowBar: renderSectionWindowBar,
+    splitOptionsForSection: splitOptionsForSection,
+    defaultSplitForSection: defaultSplitForSection,
+    splitHintForSection: splitHintForSection,
     wrapSectionFilterBar: wrapSectionFilterBar
   };
 })(typeof window !== 'undefined' ? window : this);

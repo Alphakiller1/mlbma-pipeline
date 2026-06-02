@@ -5,6 +5,16 @@
 body.player-profile-page {
   font-family: var(--sans, var(--font-body, system-ui));
   font-variant-numeric: tabular-nums;
+  --tp-helper-size: 15px;
+  --tp-band-title-size: 14px;
+  --tp-band-hint-size: 14px;
+  --tp-note-size: 14px;
+  --tp-desc-color: #C4CBD6;
+  --tp-note-color: #B8C0CC;
+  --tp-header-gap: 12px;
+  --tp-band-pad-y: 14px;
+  --tp-band-pad-x: 16px;
+  --tp-band-pad-bottom: 16px;
 }
 
 body.player-profile-page .container {
@@ -76,18 +86,23 @@ body.player-profile-page .section-eyebrow {
 body.player-profile-page .section-title {
   font-family: var(--display, var(--font-display));
   font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 0.02em;
-  margin-bottom: 4px;
-  padding-top: 2px;
-  color: var(--text);
+  font-size: var(--tp-band-title-size, 14px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  padding-top: 0;
+  color: var(--text-1, #F3F4F6);
+  text-align: left;
 }
 
 body.player-profile-page .section-subtitle {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--text-2);
-  margin-bottom: 16px;
+  font-size: var(--tp-helper-size, 15px);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--tp-desc-color, #C4CBD6);
+  margin-bottom: 12px;
+  text-align: left;
+  max-width: none;
 }
 
 /* Snapshot / header panels */
@@ -261,16 +276,16 @@ body.player-profile-page .ca-insight-label {
   display: block;
   font-family: var(--display);
   font-weight: 800;
-  font-size: 13px;
-  color: var(--text);
+  font-size: var(--tp-band-title-size, 14px);
+  color: var(--text-1, #F3F4F6);
   margin-bottom: 4px;
 }
 
 body.player-profile-page .ca-insight-text {
   display: block;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--text-2);
+  font-size: var(--tp-helper-size, 15px);
+  line-height: 1.55;
+  color: var(--tp-desc-color, #C4CBD6);
 }
 
 /* Tier pills — semantic scale only */
@@ -300,7 +315,7 @@ body.player-profile-page .chip {
   font-variant-numeric: tabular-nums;
 }
 
-/* Flat inline metric rows — design contract (pitcher intel panel) */
+/* Flat inline metric rows — pitcher intel panel (band layout in team_profile_lineup_ui.css) */
 body.player-profile-page {
   --pp-stat-label-size: 12.5px;
   --pp-stat-label-color: #C8D0DC;
@@ -339,107 +354,11 @@ body.player-profile-page .pp-intel-panel__metrics {
   margin-top: 0;
 }
 
-body.player-profile-page .tp-offense-metrics--profile,
-body.player-profile-page .pp-intel-panel .tp-offense-metrics--profile {
-  border: 1.5px solid rgba(196, 176, 255, 0.20);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.052), transparent 28%),
-    linear-gradient(180deg, #151827, #080A13);
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 18px 48px rgba(0,0,0,0.48);
-  overflow: hidden;
-}
-
-body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band {
-  padding: 14px 16px 16px;
-}
-
-body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band:last-child {
-  padding-bottom: 0;
-}
-
-body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band + .tp-offense-metrics__band {
-  border-top: 1px solid rgba(196, 176, 255, 0.12);
-  padding-top: 14px;
-  margin-top: 0;
-}
-
-body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-head {
-  align-items: center;
-  gap: 8px 10px;
-  margin-bottom: 10px;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-title {
-  font-size: 14px;
-  font-family: var(--display, var(--font-display));
-  font-weight: 800;
-}
-
-body.player-profile-page .tp-offense-metrics--profile .tp-offense-metrics__band-hint {
-  font-size: 13px;
-  color: var(--text-2, #B0B8C8);
-}
-
-body.player-profile-page .tp-offense-metrics__row--inline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  align-items: center;
-}
-
-body.player-profile-page .tp-offense-stat--inline {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 9px;
-  padding: 4px 7px;
-  margin: 0;
-  border: 1px solid rgba(196, 176, 255, 0.10);
-  border-radius: 8px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.055);
-}
-
-body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__label {
-  font-family: var(--font-display, var(--display));
-  font-size: var(--pp-stat-label-size);
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: none;
-  color: var(--pp-stat-label-color);
-  white-space: nowrap;
-}
-
-body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__body {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
-body.player-profile-page .tp-offense-stat--inline .tp-offense-stat__body .chip {
-  font-size: var(--pp-stat-chip-size);
-  font-weight: 800;
-  padding: 4px 9px;
-  min-width: 0;
-}
-
 body.player-profile-page .pp-stat-hint {
-  font-size: 11px;
-  line-height: 1.35;
-  color: var(--text-3, #9CA3AF);
-  white-space: nowrap;
-}
-
-body.player-profile-page .pp-intel-read {
-  margin: 0;
-  padding: 12px 0 0;
-  border-top: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--text-2, #A4A8B6);
+  font-size: var(--tp-note-size, 14px);
+  line-height: 1.45;
+  color: var(--tp-note-color, #B8C0CC);
+  white-space: normal;
 }
 
 body.player-profile-page .pp-intel-follow:not(:empty) {

@@ -42,6 +42,24 @@
     return '<div class="tp-chip-row">' + items.join('') + '</div>';
   }
 
+  function staffStatCell(label, chipHtml) {
+    return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + esc(label) + '">'
+      + '<span class="tp-offense-stat__label">' + esc(label) + '</span>'
+      + '<span class="tp-offense-stat__body">' + chipHtml + '</span></div>';
+  }
+
+  function staffMetricsBand(title, hint, cellsHtml) {
+    if (!cellsHtml) return '';
+    return '<div class="tp-offense-metrics tp-offense-metrics--profile tp-offense-metrics--staff">'
+      + '<div class="tp-offense-metrics__band">'
+      + '<div class="tp-offense-metrics__band-head">'
+      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
+      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
+      + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cellsHtml + '</div>'
+      + '</div></div>';
+  }
+
   function colVal(row, prefix, metric, pickCol, numFn) {
     if (!row || !pickCol) return null;
     var num = numFn || function(v) {
@@ -184,17 +202,18 @@
     var bpEra = num(pickCol(prof, ['bullpen_era']));
     var bpOsi = num(pickCol(prof, ['bullpen_osi_allowed']));
     var teamEra = num(pickCol(prof, ['team_era']));
-    var body = chipRow(ctx, [
-      metricSlot(ctx, 'Pitch Score', avgPs, 'pitching', false, 0),
-      metricSlot(ctx, 'Team ERA', teamEra, 'pitching', true, 2),
-      metricSlot(ctx, 'Bullpen ERA', bpEra, 'pitching', true, 2),
-      metricSlot(ctx, 'Bullpen OSI Allowed', bpOsi, 'osi', true, 1)
-    ]);
-    body += '<p class="ca-helper tp-staff-links">'
+    var cells = [
+      staffStatCell('Pitch Score', valChip(ctx, avgPs, 'pitching', false, 0)),
+      staffStatCell('Team ERA', valChip(ctx, teamEra, 'pitching', true, 2)),
+      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'pitching', true, 2)),
+      staffStatCell('Bullpen OSI Allowed', valChip(ctx, bpOsi, 'osi', true, 1))
+    ].join('');
+    var body = staffMetricsBand('Staff snapshot', 'Team-level pitching context from profiles + Pitch Score', cells);
+    body += '<p class="ca-helper tp-staff-meta">'
       + '<a href="bullpen_report.html">Full bullpen report</a>'
       + ' · Rotation and reliever tables below</p>';
     return sectionCard(ctx, 'Staff Snapshot', 'Team-level pitching context from profiles + Pitch Score', body, null,
-      { icon: 'shield', kicker: 'Pitching' });
+      { icon: 'gauge', kicker: 'Pitching' });
   }
 
   function renderRotation(prof, team, ctx) {
@@ -212,7 +231,6 @@
       var psB = poolPS ? poolPS(b) : num(pickCol(b, ['PitchScore']));
       return (psB || 0) - (psA || 0);
     });
-    var rotKpi = '<div class="tp-kpi-grid">';
     var avgPs = split === 'overall'
       ? (num(pickCol(prof, ['avg_pitching_score'])) || avgTeamSpMetric(teamSps, DATA, 'overall', 'pitchScore', pickCol, num, teamKey, poolPS))
       : avgTeamSpMetric(teamSps, DATA, split, 'pitchScore', pickCol, num, teamKey, poolPS);
@@ -224,16 +242,18 @@
       : avgTeamSpMetric(teamSps, DATA, split, 'bbPct', pickCol, num, teamKey, poolPS);
     var era = num(pickCol(prof, ['team_era']));
     var ipStart = num(pickCol(prof, ['avg_ip_per_start']));
-    [
-      ['Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0)],
-      ['Avg IP/Start', valChip(ctx, ipStart, 'osi', false, 2)],
-      ['K%', valChip(ctx, kPct, 'pitching', false, 1)],
-      ['BB%', valChip(ctx, bbPct, 'pitching', true, 1)],
-      ['Team ERA', valChip(ctx, era, 'pitching', true, 2)]
-    ].forEach(function(pair) {
-      rotKpi += '<div class="tp-kpi-card"><div class="tp-kpi-lab">' + pair[0] + '</div><div class="m-val">' + pair[1] + '</div></div>';
-    });
-    rotKpi += '</div>';
+    var rotCells = [
+      staffStatCell('Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0)),
+      staffStatCell('Avg IP/Start', valChip(ctx, ipStart, 'osi', false, 2)),
+      staffStatCell('K%', valChip(ctx, kPct, 'pitching', false, 1)),
+      staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1)),
+      staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2))
+    ].join('');
+    var rotKpi = staffMetricsBand(
+      'Rotation snapshot',
+      staffSplitSubtitle(split, 'rotation') + ' · KPIs and SP table follow the split filter',
+      rotCells
+    );
     rotKpi += ctx.profileTableOpen()
       + '<thead><tr><th>Name</th><th>Tier</th><th>K%</th><th>BB%</th><th>OSI Allowed</th><th>Stale</th></tr></thead><tbody>';
     if (!teamSps.length) {
@@ -259,10 +279,10 @@
       ? TeamProfileIntel.renderRotationIntel(prof, team, ctx) : '';
     var PC = global.MLBMAProfileControls;
     var splitBar = PC && PC.renderSplitControls && PC.wrapSectionFilterBar
-      ? PC.wrapSectionFilterBar(PC.renderSplitControls('rotation', split), 'tp-section-filter-bar--split')
+      ? PC.wrapSectionFilterBar(PC.renderSplitControls('rotation', split), 'tp-section-filter-bar--split', 'rotation')
       : '';
     return sectionCard(ctx, 'Starting Rotation', 'Split filters rotation KPIs and SP rows', splitBar + rotKpi, 'tp-rotation-section',
-      { icon: 'target', kicker: 'SP unit' }) + intel;
+      { icon: 'calendar-days', kicker: 'SP unit' }) + intel;
   }
 
   function renderBullpen(prof, team, ctx) {
@@ -274,14 +294,13 @@
     var split = ctx.split || 'overall';
     var prefix = resolveBullpenPrefix(split);
     var unit = bullpenUnitForTeam(team, DATA, teamKey);
-    var bpKpi = '<div class="tp-kpi-grid">';
     var kpiDefs = [
       ['ERA', 'ERA', true, 2],
       ['OSI Allowed', 'OSI_allowed', true, 1],
       ['K%', 'K_pct', false, 1],
       ['BB%', 'BB_pct', true, 1]
     ];
-    kpiDefs.forEach(function(pair) {
+    var bpCells = kpiDefs.map(function(pair) {
       var v = unit ? colVal(unit, prefix, pair[1], pickCol, num) : null;
       if (v == null && split === 'overall') {
         if (pair[1] === 'ERA') v = num(pickCol(prof, ['bullpen_era']));
@@ -290,14 +309,17 @@
       if (v == null && pair[0] === 'ERA' && split === 'hlev') {
         v = num(pickCol(prof, ['bullpen_high_lev_era']));
       }
-      bpKpi += '<div class="tp-kpi-card"><div class="tp-kpi-lab">' + pair[0] + '</div><div class="m-val">'
-        + valChip(ctx, v, pair[0].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]) + '</div></div>';
-    });
-    bpKpi += '</div>';
+      return staffStatCell(pair[0], valChip(ctx, v, pair[0].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]));
+    }).join('');
+    var bpKpi = staffMetricsBand(
+      'Bullpen snapshot',
+      staffSplitSubtitle(split, 'bullpen') + ' · KPIs and reliever table follow the split filter',
+      bpCells
+    );
     var closer = pickCol(prof, ['closer_name']);
     var setup = pickCol(prof, ['primary_setup']);
     if (closer) {
-      bpKpi += '<p class="ca-helper" style="margin-bottom:12px">Closer: <strong>' + esc(closer) + '</strong>'
+      bpKpi += '<p class="ca-helper tp-staff-meta">Closer: <strong>' + esc(closer) + '</strong>'
         + (setup ? ' · Setup: ' + esc(setup.split(';').join(', ')) : '') + '</p>';
     }
     bpKpi += ctx.profileTableOpen()
@@ -332,10 +354,10 @@
       ? TeamProfileIntel.renderBullpenIntel(prof, team, ctx) : '';
     var PC = global.MLBMAProfileControls;
     var splitBar = PC && PC.renderSplitControls && PC.wrapSectionFilterBar
-      ? PC.wrapSectionFilterBar(PC.renderSplitControls('bullpen', split), 'tp-section-filter-bar--split')
+      ? PC.wrapSectionFilterBar(PC.renderSplitControls('bullpen', split), 'tp-section-filter-bar--split', 'bullpen')
       : '';
     return sectionCard(ctx, 'Bullpen Overview', 'Split filters bullpen KPIs and reliever rows', splitBar + bpKpi, 'tp-bullpen-section',
-      { icon: 'flame', kicker: 'Bullpen unit' }) + intel;
+      { icon: 'gauge', kicker: 'Bullpen unit' }) + intel;
   }
 
   function renderRoster(prof, team, ctx) {

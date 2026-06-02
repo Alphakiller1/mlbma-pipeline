@@ -117,6 +117,11 @@
         metricsL: ctx.metricsL,
         batterSplitsR: ctx.batterSplitsR,
         batterSplitsL: ctx.batterSplitsL,
+        batterSplitsOverall: ctx.batterSplitsOverall,
+        batterSplitsHome: ctx.batterSplitsHome,
+        batterSplitsAway: ctx.batterSplitsAway,
+        batterSplitsVsSp: ctx.batterSplitsVsSp,
+        batterSplitsVsRp: ctx.batterSplitsVsRp,
         batters: ctx.batters
       };
       var m = Mini.resolveView(prof, miniCtx);
@@ -305,22 +310,43 @@
     return (typeof window !== 'undefined' && window.MLBMAProfileControls) ? window.MLBMAProfileControls : null;
   }
 
-  function lineupSplitBar(split) {
+  function sectionSplitBar(sectionKey, split) {
     var PC = profileControls();
+    if (PC && PC.renderSectionSplitBar) return PC.renderSectionSplitBar(sectionKey, split || 'both');
     if (PC && PC.renderLineupSplitBar) return PC.renderLineupSplitBar(split || 'both');
-    if (PC && PC.renderSplitControls && PC.wrapSectionFilterBar) {
-      return PC.wrapSectionFilterBar(PC.renderSplitControls('lineup', split || 'both'), 'tp-section-filter-bar--split');
-    }
     return '';
+  }
+
+  function lineupSplitBar(split) {
+    return sectionSplitBar('offense', split);
   }
 
   function lineupWindowBar(windowKey) {
     var PC = profileControls();
+    if (PC && PC.renderSectionWindowBar) return PC.renderSectionWindowBar('surface', windowKey || 'YTD');
     if (PC && PC.renderLineupWindowBar) return PC.renderLineupWindowBar(windowKey || 'YTD');
-    if (PC && PC.renderWindowControls && PC.wrapSectionFilterBar) {
-      return PC.wrapSectionFilterBar(PC.renderWindowControls(windowKey || 'YTD'), 'tp-section-filter-bar--window');
-    }
     return '';
+  }
+
+  function ctxForSection(baseCtx, prof, team, sectionKey) {
+    baseCtx = baseCtx || {};
+    var split = baseCtx.getSectionSplit
+      ? baseCtx.getSectionSplit(sectionKey)
+      : (baseCtx.split || 'both');
+    var windowKey = sectionKey === 'surface' && baseCtx.getSectionWindow
+      ? baseCtx.getSectionWindow('surface')
+      : (baseCtx.window || 'YTD');
+    var c = Object.assign({}, baseCtx, {
+      split: split,
+      sectionKey: sectionKey,
+      window: windowKey,
+      windowLabel: windowKey === 'YTD' ? 'Season' : windowKey
+    });
+    if (Mini && Mini.resolveOffenseRates) {
+      var rates = Mini.resolveOffenseRates(prof, c);
+      if (rates.wrc != null) c.wrc = rates.wrc;
+    }
+    return c;
   }
 
   function chipRow(items) {
@@ -397,11 +423,11 @@
   function surfaceWinSlots(metrics) {
     metrics = metrics || {};
     var slots = [
-      ['Win%', metrics.winPct, 'osi', false, 1],
-      ['F5 Win%', metrics.f5WinPct, 'osi', false, 1],
-      ['Pitcher Win%', metrics.spWinPct, 'pitching', false, 1]
+      ['Win%', metrics.winPct, 'rate', false, 1],
+      ['F5 Win%', metrics.f5WinPct, 'rate', false, 1],
+      ['Pitcher Win%', metrics.spWinPct, 'rate', false, 1]
     ];
-    if (metrics.qsPct != null) slots.push(['QS%', metrics.qsPct, 'pitching', false, 1]);
+    if (metrics.qsPct != null) slots.push(['QS%', metrics.qsPct, 'rate', false, 1]);
     return slots;
   }
 
@@ -420,7 +446,7 @@
       {
         title: 'Run Production',
         hint: 'Rate & counting stats',
-        icon: 'trending-up',
+        icon: 'chart-line',
         slots: [
           ['wRC+', wrc, 'wrc', false, 0],
           ['wOBA', rates.woba, 'woba', false, 3],
@@ -434,7 +460,7 @@
       {
         title: 'Plate Skills',
         hint: 'Discipline & contact',
-        icon: 'target',
+        icon: 'bats',
         slots: [
           ['K%', rates.k, 'pitching', true, 1],
           ['BB%', rates.bb, 'obr', false, 1],
@@ -445,10 +471,10 @@
       }
     ];
 
-    var body = lineupSplitBar(split) + offenseMetricsPanel(bands, cache, team);
+    var body = sectionSplitBar('offense', split) + offenseMetricsPanel(bands, cache, team);
 
     return sectionCard('Offense Profile', 'League rank on every metric', body,
-      { icon: 'layers', kicker: 'Lineup unit', sectionId: 'offense-profile' });
+      { icon: 'bats', kicker: 'Lineup unit', sectionId: 'offense-profile' });
   }
 
   function buildOpponentStrengthCache(ctx) {
@@ -513,14 +539,15 @@
     if (!pals && !xfip && !psFaced && sos == null) {
       return sectionCard('Strength of Opponents Faced', 'Run scrape_pals / compute_pals for PALS and schedule metrics',
         '<p class="ca-helper">PALS, xFIP faced, pitch score faced, and SOS appear after the PALS pipeline runs.</p>',
-        { icon: 'crosshair', kicker: 'Schedule context' });
+        { icon: 'calendar-days', kicker: 'Schedule context' });
     }
 
-    var body = opponentStrengthPanel(slots, cache, team)
+    var body = sectionSplitBar('schedule', ctx.split || 'both')
+      + opponentStrengthPanel(slots, cache, team)
       + '<p class="ca-helper tp-opponent-strength-note">SOS derived from PTF+ (higher = harder pitching schedule). xFIP rank #1 = toughest staff faced.</p>';
 
     return sectionCard('Strength of Opponents Faced', filterNote + ' · #/30 = league rank', body,
-      { icon: 'crosshair', kicker: 'Schedule context' });
+      { icon: 'calendar-days', kicker: 'Schedule context', sectionId: 'schedule-context' });
   }
 
   function renderScheduleContext(ctx, resultsRow, window) {
@@ -563,7 +590,7 @@
     if (!Mini || !Mini.renderTrendChartPanel) return '';
     var body = '<div data-tp-trend-section>' + Mini.renderTrendChartPanel(m, ctx) + '</div>';
     return sectionCard('Rolling Trend', 'Grade movement across time windows', body,
-      { icon: 'trending-up', kicker: 'Momentum', sectionId: 'rolling-trend' });
+      { icon: 'chart-line', kicker: 'Momentum', sectionId: 'rolling-trend' });
   }
 
   function renderMomentum(m, prof, ctx) {
@@ -602,12 +629,11 @@
 
   function renderTonight(ctx) {
     ctx = ctx || {};
-    if (ctx.battingTab === 'qualified') return '';
     var m = ctx.tonightMatchup;
     if (!m || !m.away || !m.home) return '';
     return sectionCard('Tonight\'s Matchup', 'Head-to-head compare for tonight\'s game',
       renderTonightSnapshot(m),
-      { icon: 'swords', kicker: 'Tonight' });
+      { icon: 'stadium', kicker: 'Tonight' });
   }
 
   function iconCircle(name) {
@@ -624,7 +650,7 @@
     if (woba != null && xwoba != null) {
       var gap = (woba - xwoba) * 1000;
       rows.push({
-        icon: gap > 8 ? 'trending-up' : gap < -8 ? 'trending-down' : 'target',
+        icon: gap > 8 ? 'chart-line' : gap < -8 ? 'chart-line' : 'chart-line',
         label: 'Contact Profile',
         text: gap > 8 ? 'wOBA runs ' + Math.round(gap) + ' pts above xwOBA — possible regression in contact results.'
           : gap < -8 ? 'xwOBA ahead of wOBA by ' + Math.abs(Math.round(gap)) + ' pts — upside if balls find gaps.'
@@ -635,21 +661,21 @@
     var bbL = pf(prof, ['bb_pct_vs_lhp', 'bb_vs_lhp'], pickCol);
     if (m.osiR != null && m.osiL != null && Math.abs(m.osiR - m.osiL) >= 6) {
       rows.push({
-        icon: 'split',
+        icon: 'git-branch',
         label: 'Platoon Profile',
         text: 'OSI split gap ' + Math.abs(m.osiR - m.osiL).toFixed(1) + ' (RHP '
           + m.osiR.toFixed(1) + ' vs LHP ' + m.osiL.toFixed(1) + ') — platoon matters for lineup construction.'
       });
     } else if (bbR != null && bbL != null && Math.abs(bbR - bbL) >= 3) {
       rows.push({
-        icon: 'target',
+        icon: 'bats',
         label: 'Plate Discipline Split',
         text: 'BB% vs RHP ' + bbR.toFixed(1) + '% vs LHP ' + bbL.toFixed(1) + '% — discipline shifts by handedness.'
       });
     }
     if (m.ppGap != null && Math.abs(m.ppGap) >= 4) {
       rows.push({
-        icon: m.ppGap >= 4 ? 'trending-up' : 'activity',
+        icon: m.ppGap >= 4 ? 'chart-line' : 'gauge',
         label: m.ppGap >= 4 ? 'Process Upside' : 'Regression Watch',
         text: 'PP-Gap ' + (m.ppGap >= 0 ? '+' : '') + m.ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
       });
@@ -658,7 +684,7 @@
     if (!rows.length) {
       return sectionCard('Analyst Take', 'Rule-based callouts from real metrics',
         '<p class="ca-helper">Insufficient split data for analyst callouts.</p>',
-        { icon: 'lightbulb', kicker: 'Analysis', sectionId: 'analyst-take' });
+        { icon: 'clipboard-list', kicker: 'Analysis', sectionId: 'analyst-take' });
     }
     var body = '<div class="ca-insight-rail tp-analyst-rail">' + rows.map(function(r) {
       return '<div class="ca-insight-row">'
@@ -667,7 +693,7 @@
         + '<span class="ca-insight-text">' + esc(r.text) + '</span></span></div>';
     }).join('') + '</div>';
     return sectionCard('Analyst Take', 'Notable angles from this team\'s real metrics', body,
-      { icon: 'lightbulb', kicker: 'Analysis', sectionId: 'analyst-take' });
+      { icon: 'clipboard-list', kicker: 'Analysis', sectionId: 'analyst-take' });
   }
 
   function renderSplitCards(m) {
@@ -678,18 +704,18 @@
 
   function renderAll(prof, team, ctx) {
     ctx = ctx || {};
-    if (Mini && Mini.resolveOffenseRates) {
-      var rates = Mini.resolveOffenseRates(prof, ctx);
-      if (rates.wrc != null) ctx.wrc = rates.wrc;
-    }
-    var m = resolveM(prof, team, ctx);
+    var m = resolveM(prof, team, ctxForSection(ctx, prof, team, 'offense'));
     var html = '';
-    html += renderOffenseProfile(m, prof, ctx);
-    html += renderRollingTrend(m, prof, ctx);
-    html += renderScheduleContext(ctx, ctx.resultsRow, ctx.window);
-    html += renderSurfaceWins(ctx.resultsRow, ctx.window);
+    html += renderOffenseProfile(m, prof, ctxForSection(ctx, prof, team, 'offense'));
+    html += renderRollingTrend(resolveM(prof, team, ctx), prof, ctx);
+    html += renderScheduleContext(ctxForSection(ctx, prof, team, 'schedule'), ctx.resultsRow, ctx.window);
+    html += renderSurfaceWins(ctx.resultsRow, ctx.getSectionWindow ? ctx.getSectionWindow('surface') : ctx.window);
     if (global.TeamProfileIntel) {
-      html += TeamProfileIntel.renderSustainabilitySection(m, prof, ctx);
+      html += TeamProfileIntel.renderSustainabilitySection(
+        resolveM(prof, team, ctxForSection(ctx, prof, team, 'sustainability')),
+        prof,
+        ctxForSection(ctx, prof, team, 'sustainability')
+      );
     }
     html += renderTonight(ctx);
     return html.replace(/<\/?motion>/g, '');
