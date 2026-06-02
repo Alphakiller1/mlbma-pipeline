@@ -25,10 +25,10 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603p"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603q"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603p" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603q" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -379,6 +379,10 @@ function getGameLog(key) {
 }
 
 function findSplit(splits, dimension, value) {
+  function normKey(s) {
+    return String(s == null ? '' : s).trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+  }
+  var dimKey = normKey(dimension);
   value = String(value);
   var aliases = {
     LHH: ['LHH', 'L', 'vs LHH', 'vs L', 'Left', 'left'],
@@ -391,7 +395,7 @@ function findSplit(splits, dimension, value) {
     var s = splits[i];
     var dim = pickCol(s, ['split_dimension', 'splitDimension']);
     var sv = pickCol(s, ['split_value', 'splitValue']);
-    if (dim !== dimension) continue;
+    if (normKey(dim) !== dimKey) continue;
     for (var j = 0; j < vals.length; j++) {
       if (String(sv).toLowerCase() === String(vals[j]).toLowerCase()) return s;
     }
@@ -748,16 +752,15 @@ function buildTierTable(splits, dimension, tierOrder) {
     var s = findSplit(splits, dimension, tier);
     if (!s) {
       return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td>' +
-        '<td colspan="8" class="tp-empty-cell">—</td></tr>';
+        '<td colspan="7" class="tp-empty-cell">—</td></tr>';
     }
     var starts = numOrNull(pickCol(s, ['starts', 'Starts']));
     var avgIp = numOrNull(pickCol(s, ['avg_IP', 'avg IP']));
     var era = numOrNull(pickCol(s, ['ERA', 'era']));
     var k = numOrNull(pickCol(s, ['K_pct', 'K%']));
     var bb = numOrNull(pickCol(s, ['BB_pct', 'BB%']));
+    var hr9 = numOrNull(pickCol(s, ['HR9', 'HR/9']));
     var pitches = numOrNull(pickCol(s, ['avg_pitches', 'avg pitches']));
-    var abq = numOrNull(pickCol(s, ['ABQ_allowed']));
-    var rcv = numOrNull(pickCol(s, ['RCV_allowed']));
     var flag = (dimension === 'osi_tier' && tier === 'High' && ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) ? 'flag-row' : '';
     return '<tr class="' + flag + '">' +
       '<td class="' + tierClass(tier) + '">' + tier + '</td>' +
@@ -766,13 +769,12 @@ function buildTierTable(splits, dimension, tierOrder) {
       '<td class="num">' + fmt(era, 2) + '</td>' +
       '<td class="num">' + fmtPct(k) + '</td>' +
       '<td class="num">' + fmtPct(bb) + '</td>' +
+      '<td class="num">' + fmt(hr9, 2) + '</td>' +
       '<td class="num">' + fmt(pitches, 0) + '</td>' +
-      '<td class="num">' + fmt(abq, 1) + '</td>' +
-      '<td class="num">' + fmt(rcv, 1) + '</td>' +
       '</tr>';
   }).join('');
   return '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
-    '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>K%</th><th>BB%</th><th>Pitches/Start</th><th>ABQ Allowed</th><th>RCV Allowed</th>' +
+    '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>K%</th><th>BB%</th><th>HR/9</th><th>Pitches/Start</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
