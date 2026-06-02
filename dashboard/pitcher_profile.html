@@ -25,10 +25,10 @@
 <script src="mlbma_assets.js?v=20260603a"></script>
 <script src="matchup_shared.js?v=20260603a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260603r"></script>
+<script src="pitcher_profile_dashboard.js?v=20260603s"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603r" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603s" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -892,10 +892,7 @@ function buildBettingSummary(profile, splits, log, name, hand) {
   }
 
   if (!bullets.length) {
-    var osi = numOrNull(pickCol(profile, ['OSI_allowed']));
-    return '<strong>' + name + '</strong>: Profile is balanced across tiers in the current sample' +
-      (osi != null ? ' (avg opponent OSI ' + fmt(osi, 1) + ').' : '.') +
-      ' Re-check after more 2026 starts populate the game log.';
+    return '';
   }
   return bullets.join(' ');
 }
