@@ -549,7 +549,7 @@
   function renderColorScaleSection() {
     var A = global.MLBMAAssets;
     var legend = A && A.metricLegendHtml
-      ? A.metricLegendHtml({ title: 'Fixed all-30 league scale — same color everywhere for the same value' })
+      ? A.metricLegendHtml({ title: 'Graded vs the current-season league average — same color everywhere for the same value' })
       : '<div class="gloss-color-ramp">'
         + '<span class="gloss-swatch gloss-swatch--elite">Elite</span>'
         + '<span class="gloss-swatch gloss-swatch--strong">Strong</span>'
@@ -558,7 +558,7 @@
         + '<span class="gloss-swatch gloss-swatch--poor">Poor</span></div>';
     return '<div class="gloss-convention ca-board">'
       + '<div id="glossaryColorHead"></div>'
-      + '<p class="gloss-convention__lead">Every metric chip and heat-map cell uses the same <strong>green = elite → red = poor</strong> grading. Colors are computed from a <strong>fixed all-30 team league scale</strong> — not rescaled to whatever rows are visible in a filtered table.</p>'
+      + '<p class="gloss-convention__lead">Every metric chip and heat-map cell uses the same <strong>green = elite → red = poor</strong> grading. Each stat is graded against its <strong>current-season league average</strong> (the neutral midpoint of the scale) — so the same value always gets the same color, never rescaled to whatever rows are visible in a filtered table.</p>'
       + legend
       + '<ul class="gloss-convention__list">'
       + '<li><strong>Uniform:</strong> A green OSI chip on Team Rankings means the same thing on Team Profile or Compare.</li>'
@@ -591,7 +591,7 @@
     var root = document.getElementById('glossaryConventions');
     if (!root) return;
     root.innerHTML = renderColorScaleSection() + renderAllowedSection() + renderUnitSection();
-    mountSectionHead('glossaryColorHead', 'bar-chart-3', 'Platform', 'Color Scale', 'Green = elite through red = poor on a fixed league scale — uniform across every dashboard surface.');
+    mountSectionHead('glossaryColorHead', 'bar-chart-3', 'Platform', 'Color Scale', 'Green = elite through red = poor, graded vs each stat\'s league average — uniform across every dashboard surface.');
     mountSectionHead('glossaryAllowedHead', 'arrow-left-right', 'Pitching', 'Allowed & Inverted Metrics', 'Lower is better for Allowed stats and ERA-type rates.');
     mountSectionHead('glossaryUnitHead', 'layout-grid', 'Architecture', 'Unit Structure', 'How Lineup, Rotation, and Bullpen sections fit together.');
   }

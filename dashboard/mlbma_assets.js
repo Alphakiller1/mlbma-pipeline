@@ -851,6 +851,31 @@
     if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
   }
 
+  /**
+   * Live league-average baselines (written by core.compute_baselines -> the pipeline).
+   * Updates the registry mean/std with the current season's full-league averages while
+   * KEEPING each metric's direction (hi). Falls back silently to the built-in defaults.
+   */
+  function applyLeagueBaselines(data) {
+    var b = data && data.baselines;
+    if (!b) return;
+    Object.keys(b).forEach(function(ctx) {
+      var live = b[ctx];
+      if (CONTEXT_DEFAULTS[ctx] && live && live.mean != null && live.std) {
+        CONTEXT_DEFAULTS[ctx].mean = live.mean;
+        CONTEXT_DEFAULTS[ctx].std = live.std;   // direction (hi) preserved
+      }
+    });
+  }
+
+  function loadLeagueBaselines() {
+    if (typeof fetch !== 'function') return Promise.resolve(null);
+    return fetch('league_baselines.json?_=' + Date.now())
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) { if (d) applyLeagueBaselines(d); return d; })
+      .catch(function() { return null; });
+  }
+
   global.MLBMAAssets = {
     BRAND: BRAND,
     getEspnAbbr: getEspnAbbr,
@@ -900,7 +925,12 @@
     glossaryLinkHtml: glossaryLinkHtml,
     mountPlatformHeader: mountPlatformHeader,
     GRADE_COLORS: GRADE_COLORS,
+    loadLeagueBaselines: loadLeagueBaselines,
     get registry() { return REGISTRY; },
     get leaguePools() { return LEAGUE_POOLS; }
   };
+
+  // Fetch live league baselines on load (best-effort). The JSON is tiny + local, so it
+  // typically resolves before a page's own (slower) data fetch + render.
+  loadLeagueBaselines();
 })(typeof window !== 'undefined' ? window : this);

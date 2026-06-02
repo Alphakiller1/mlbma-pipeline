@@ -104,6 +104,13 @@ def run():
 
     calc_oor(osi_rhp, osi_lhp)
 
+    # Refresh the dashboard's league-average color baselines from the fresh metrics.
+    try:
+        from core.compute_baselines import run as run_baselines
+        run_baselines()
+    except Exception as exc:
+        print(f"  WARNING: league baselines not refreshed: {exc}")
+
     print()
     print("All metrics computed.")
 
