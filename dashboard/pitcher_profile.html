@@ -28,7 +28,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603c" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603d" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -853,8 +853,6 @@ function buildBettingSummary(profile, splits, log, name, hand) {
     if (hrR != null && hrR >= 1.25) {
       bullets.push('vulnerable to RHH power (HR/9 ' + fmt(hrR, 2) + ' vs RHH)');
     }
-  } else if (hand === 'R' || hand === 'L') {
-    bullets.push('Platoon batter splits not in sheet — using full-season pool; check back after pipeline platoon export.');
   }
 
   var home = findSplit(splits, 'location', 'home');
