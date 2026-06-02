@@ -54,9 +54,14 @@ def run_script(module: str, required: bool = True) -> bool:
     print(f"Running {module}...")
     print(f"{'='*50}")
     t0 = time.perf_counter()
+    # Force UTF-8 stdout/stderr in child processes so a single non-ASCII print
+    # (em-dash, box-drawing, check-mark) can't crash a scraper on a cp1252 console
+    # (the WinError 6 / UnicodeEncodeError cascade seen in pipeline_log.txt).
+    child_env = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
     result = subprocess.run(
         [str(PYTHON), "-m", module],
         cwd=str(ROOT),
+        env=child_env,
     )
     elapsed = time.perf_counter() - t0
     ok = result.returncode == 0

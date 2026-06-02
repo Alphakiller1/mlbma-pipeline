@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import unquote
 from io import StringIO
 import pandas as pd
@@ -9,6 +11,25 @@ from dotenv import load_dotenv
 
 from core.config import CHROME_VERSION, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
 from scrapers.fangraphs_session import get_driver, safe_quit_driver
+
+# Tunable pacing. The old code blind-slept 20s/page + 15s/fetch + 45s/cooldown
+# (~8 min of pure sleeping). We now wait for the actual Export Data link (appears
+# in a few seconds) and keep only a light politeness throttle.
+EXPORT_TIMEOUT = 25     # max wait for the table/export link to render
+THROTTLE = 4            # polite pause between FanGraphs requests
+COOLDOWN = 10           # pause between split groups / windows
+_EXPORT_XPATH = "//a[contains(text(),'Export Data')]"
+
+
+def _wait_export(driver, timeout: int = EXPORT_TIMEOUT) -> bool:
+    """Wait for the Export Data link to be present (what get_export_csv reads),
+    instead of a fixed sleep. Returns True if it appeared in time."""
+    try:
+        WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((By.XPATH, _EXPORT_XPATH)))
+        return True
+    except Exception:
+        return False
 
 load_dotenv(ENV_FILE)
 
@@ -33,11 +54,11 @@ L14_END = datetime.now().strftime("%Y-%m-%d")
 def login(driver):
     print("Logging in...")
     driver.get("https://blogs.fangraphs.com/wp-login.php")
-    time.sleep(8)
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "user_login")))
     driver.find_element(By.ID, "user_login").send_keys(EMAIL)
     driver.find_element(By.ID, "user_pass").send_keys(PASSWORD)
     driver.find_element(By.ID, "wp-submit").click()
-    time.sleep(10)
+    WebDriverWait(driver, 20).until(lambda d: "wp-login" not in d.current_url)
     print(f"Login URL: {driver.current_url}")
     return "wp-admin" in driver.current_url or "fangraphs.com" in driver.current_url
 
@@ -66,7 +87,7 @@ def scrape_one(driver, split_label, split_code, sg_name, sg_num):
     )
     print(f"  Loading {split_label} {sg_name}...")
     driver.get(url)
-    time.sleep(20)
+    _wait_export(driver)
     df = get_export_csv(driver)
     if df is not None:
         print(f"  OK {len(df)} rows | Cols: {list(df.columns)}")
@@ -75,7 +96,7 @@ def scrape_one(driver, split_label, split_code, sg_name, sg_num):
         print(f"  Saved: {fname}")
     else:
         print("  FAIL No data found")
-    time.sleep(15)
+    time.sleep(THROTTLE)
     return df
 
 
@@ -98,7 +119,7 @@ def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basen
     )
     print(f"  Loading SP {sg_name} ({start_date} to {end_date})...")
     driver.get(url)
-    time.sleep(20)
+    _wait_export(driver)
     df = get_export_csv(driver)
     if df is not None:
         print(f"  OK {len(df)} pitchers | Cols: {list(df.columns)}")
@@ -107,7 +128,7 @@ def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basen
         print(f"  Saved: {fname}")
     else:
         print("  No data found")
-    time.sleep(15)
+    time.sleep(THROTTLE)
     return df
 
 
@@ -137,12 +158,12 @@ def run():
             print(f"=== {split_label} ===")
             for sg_name, sg_num in STAT_GROUPS.items():
                 scrape_one(driver, split_label, split_code, sg_name, sg_num)
-            print("Cooling down 45s...")
-            time.sleep(45)
+            print(f"Cooling down {COOLDOWN}s...")
+            time.sleep(COOLDOWN)
 
         scrape_sp_window(driver, SEASON_START, SEASON_END, "sp_standard", "season")
-        print("Cooling down 45s...")
-        time.sleep(45)
+        print(f"Cooling down {COOLDOWN}s...")
+        time.sleep(COOLDOWN)
         scrape_sp_window(driver, L14_START, L14_END, "sp_l14", "L14")
     finally:
         safe_quit_driver(driver)
