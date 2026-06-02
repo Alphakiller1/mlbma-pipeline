@@ -1394,6 +1394,17 @@
     return y + '-' + m + '-' + day;
   }
 
+  /** MLB slate day is Eastern Time; avoid browser-local "yesterday" mismatch. */
+  function easternDateIso(d) {
+    d = d || new Date();
+    try {
+      // en-CA returns YYYY-MM-DD
+      var iso = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    } catch (e) { /* ignore */ }
+    return localDateIso(d);
+  }
+
   function formatGameTimeEt(isoUtc) {
     if (!isoUtc) return 'TBD';
     try {
@@ -1412,7 +1423,7 @@
 
   /** Live MLB Stats API schedule — source of truth for today's slate. */
   function fetchMlbTodaySchedule(dateIso) {
-    var dateStr = dateIso || localDateIso();
+    var dateStr = dateIso || easternDateIso();
     var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(dateStr)
       + '&hydrate=probablePitcher,team,venue';
     return fetch(url, { cache: 'no-store' }).then(function(r) {
@@ -1991,6 +2002,7 @@
     normalizeGameKey: normalizeGameKey,
     fetchMlbTodaySchedule: fetchMlbTodaySchedule,
     localDateIso: localDateIso,
+    easternDateIso: easternDateIso,
     formatGameTimeEt: formatGameTimeEt
   };
   global.LineupModel = LineupModel;
