@@ -323,14 +323,28 @@
         + '</tr>';
     }
 
-    var table = '<div class="table-wrap tp-table-wrap">'
-      + '<table class="hub-table tp-table">'
-      + '<thead><tr><th>Metric</th>' + wins.map(function(w) { return '<th class="num">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
+    function metricHead(label, desc) {
+      return '<span class="tp-trend-table__metric">' + esc(label)
+        + (desc ? '<span class="tp-trend-table__metric-desc">' + esc(desc) + '</span>' : '')
+        + '</span>';
+    }
+
+    function trendRow(metricKey, label, desc) {
+      return '<tr data-trend-metric-row="' + esc(metricKey) + '">'
+        + '<th scope="row">' + metricHead(label, desc) + '</th>'
+        + wins.map(function(w) { return cell(metricKey, w.key); }).join('')
+        + '</tr>';
+    }
+
+    var table = '<div class="tp-trend-table-wrap">'
+      + '<p class="tp-trend-table-note">Rolling windows · lower = softer opposing offense · ' + esc(ctx.splitLabel || 'Overall') + '</p>'
+      + '<table class="tp-trend-table" aria-label="Opposing offense allowed rolling windows">'
+      + '<thead><tr><th>Metric</th>' + wins.map(function(w) { return '<th class="numcol">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
       + '<tbody>'
-      + row('abq', 'ABQ allowed')
-      + row('rcv', 'RCV allowed')
-      + row('obr', 'OBR allowed')
-      + row('osi', 'OSI allowed')
+      + trendRow('abq', 'ABQ allowed', 'Discipline quality faced (lower = easier)') 
+      + trendRow('rcv', 'RCV allowed', 'Contact quality faced (lower = fewer barrels)') 
+      + trendRow('obr', 'OBR allowed', 'On-base floor faced (lower = less traffic)') 
+      + trendRow('osi', 'OSI allowed', 'Composite offensive strength faced') 
       + '</tbody></table></div>';
 
     return headerHtml + f5 + table;
@@ -385,11 +399,18 @@
     }
 
     function cell(winKey, v) {
-      return '<td class="num">' + chipOor(v) + '</td>';
+      return '<td class="numcol">' + chipOor(v) + '</td>';
     }
 
-    function row(label, getter) {
-      return '<tr><td>' + esc(label) + '</td>'
+    function metricHead(label, desc) {
+      return '<span class="tp-trend-table__metric">' + esc(label)
+        + (desc ? '<span class="tp-trend-table__metric-desc">' + esc(desc) + '</span>' : '')
+        + '</span>';
+    }
+
+    function row(label, desc, getter) {
+      return '<tr data-trend-metric-row="' + esc(label) + '">'
+        + '<th scope="row">' + metricHead(label, desc) + '</th>'
         + wins.map(function(w) { return cell(w.key, getter(w.key)); }).join('')
         + '</tr>';
     }
@@ -405,15 +426,16 @@
       + '<div class="oor-copy"><p class="oor-label">' + esc(lbl) + '</p></div>'
       + '</div></div>';
 
-    var table = '<div class="table-wrap tp-table-wrap">'
-      + '<table class="hub-table tp-table">'
-      + '<thead><tr><th>Split</th>' + wins.map(function(w) { return '<th class="num">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
+    var table = '<div class="tp-trend-table-wrap">'
+      + '<p class="tp-trend-table-note">Strength of competition (OOR) · rolling windows by split</p>'
+      + '<table class="tp-trend-table" aria-label="Strength of competition rolling windows">'
+      + '<thead><tr><th>Split</th>' + wins.map(function(w) { return '<th class="numcol">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
       + '<tbody>'
-      + row('Overall', function(win) { return overallOorForWindow(win); })
-      + row('Home', function(win) { return oorForFilteredLog(win, byHA('home')); })
-      + row('Away', function(win) { return oorForFilteredLog(win, byHA('away')); })
-      + row('vs LHH', function(win) { return oorForFilteredLog(win, byHand('L')); })
-      + row('vs RHH', function(win) { return oorForFilteredLog(win, byHand('R')); })
+      + row('Overall', 'All starts', function(win) { return overallOorForWindow(win); })
+      + row('Home', 'Home starts', function(win) { return oorForFilteredLog(win, byHA('home')); })
+      + row('Away', 'Away starts', function(win) { return oorForFilteredLog(win, byHA('away')); })
+      + row('vs LHH', 'Lineups flagged LHH', function(win) { return oorForFilteredLog(win, byHand('L')); })
+      + row('vs RHH', 'Lineups flagged RHH', function(win) { return oorForFilteredLog(win, byHand('R')); })
       + '</tbody></table></div>';
 
     return hero + table;
