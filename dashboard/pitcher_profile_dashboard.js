@@ -508,6 +508,15 @@
         ? '<span class="chip">' + esc(String(avgPitches)) + '/start</span>'
         : '<span class="chip chip-ph">—</span>');
 
+    var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
+      + metricsBand('Risk & quality', 'Verdict and exposure drivers for this split', decisionCells)
+      + metricsBand('Rates & workload', 'Season line and recent pitch count', rateCells)
+      + '</div>';
+
+    if (ctx.omitHeader) {
+      return metricsHtml;
+    }
+
     var subtitle = v.detail || '';
     if (ctx.splitLabel || ctx.window) {
       subtitle = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD')
@@ -526,11 +535,7 @@
         + '</header>';
 
     return '<section class="ca-board pp-section pp-intel-panel" aria-label="Pitcher profile summary">'
-      + header
-      + '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand('Risk & quality', 'Verdict and exposure drivers for this split', decisionCells)
-      + metricsBand('Rates & workload', 'Season line and recent pitch count', rateCells)
-      + '</div></section>';
+      + header + metricsHtml + '</section>';
   }
 
   function renderAnalystTakeLine(profile, ctx) {

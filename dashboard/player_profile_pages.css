@@ -2,6 +2,27 @@
  * Player profile pages — design contract alignment (styling only).
  * Pitcher, Batter, Reliever, Bullpen Report + shared profile patterns.
  */
+/* Pitcher Profile — inherit Team Profile section shell when body has team-profile-page */
+body.pitcher-profile-page.team-profile-page .tp-identity-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-section-gap, 12px);
+}
+
+body.pitcher-profile-page.team-profile-page .tp-lineup-context-bar:not(:empty) {
+  margin-bottom: var(--tp-header-gap, 12px);
+}
+
+body.pitcher-profile-page.team-profile-page .pp-intel-section .pp-intel-panel__metrics {
+  margin-top: 0;
+}
+
+body.pitcher-profile-page.team-profile-page .profile-deep-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-section-gap, 12px);
+}
+
 body.player-profile-page {
   font-family: var(--sans, var(--font-body, system-ui));
   font-variant-numeric: tabular-nums;
@@ -53,8 +74,8 @@ body.player-profile-page .subtitle {
   max-width: 680px;
 }
 
-/* Premium dark boards (§7.2) */
-body.player-profile-page .section {
+/* Legacy .section boards — ca-board.tp-section uses team_profile.css when team-profile-page is on body */
+body.player-profile-page .section:not(.ca-board) {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.072), transparent 28%),
     linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
@@ -381,9 +402,15 @@ body.player-profile-page #pitcherIntelPanel:not(:empty) + .pp-intel-follow:not(:
   margin-top: -14px;
 }
 
-body.player-profile-page #pitcherIntelPanel:not(:empty) {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+body.player-profile-page .pp-intel-section #pitcherIntelPanel:not(:empty) {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+body.player-profile-page .pp-intel-section #pitcherIntelPanel:not(:empty)::before {
+  display: none;
 }
 
 body.player-profile-page #pitcherIntelPanel:not(:empty) + .pp-intel-follow:empty {

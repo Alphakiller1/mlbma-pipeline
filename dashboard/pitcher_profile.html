@@ -337,22 +337,23 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260616c">
 <link rel="stylesheet" href="theme.css?v=20260616c">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
-<link rel="stylesheet" href="player_profile_pages.css?v=20260602x">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260602a">
-<link rel="stylesheet" href="profile_shell.css?v=20260602a">
-<script src="mlbma_config.js"></script>
-<script src="mlbma_icons.js?v=20260620g"></script>
-<script src="mlbma_assets.js"></script>
-<script src="matchup_shared.js?v=20260523"></script>
-<script src="profile_shell.js?v=20260602x"></script>
-<script src="pitcher_profile_dashboard.js?v=20260602x"></script>
-<script src="mlbma_charts.js?v=20260609a"></script>
-<script src="profile_controls.js?v=20260602x"></script>
-<script src="mlbma_ui.js" data-page="pitcher_profile.html"></script>
+<link rel="stylesheet" href="team_profile.css?v=20260602y">
+<link rel="stylesheet" href="player_profile_pages.css?v=20260602y">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260602y">
+<link rel="stylesheet" href="profile_shell.css?v=20260602y">
+<script src="mlbma_config.js?v=20260602y"></script>
+<script src="mlbma_icons.js?v=20260602y"></script>
+<script src="mlbma_assets.js?v=20260602y"></script>
+<script src="matchup_shared.js?v=20260602y"></script>
+<script src="profile_shell.js?v=20260602y"></script>
+<script src="pitcher_profile_dashboard.js?v=20260602y"></script>
+<script src="mlbma_charts.js?v=20260602y"></script>
+<script src="profile_controls.js?v=20260602y"></script>
+<script src="mlbma_ui.js?v=20260602y" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
-<body class="player-profile-page">
+<body class="player-profile-page pitcher-profile-page team-profile-page">
 
 <div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets—</div>
 ﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -441,88 +442,90 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
   </div>
 </div>
 
-<div class="container">
-  <header class="header">
-    <div class="brand-row">
-      <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill" id="brandPill">Loading…</span>
+<select class="selector-select" id="pitcherSelect" style="display:none" aria-hidden="true">
+  <option value="">— Choose a starter —</option>
+</select>
+<datalist id="pitcherList"></datalist>
+
+<main class="container ca-page-shell">
+  <div id="profilePageHeader"></div>
+  <div class="tp-data-banner data-banner" id="dataBanner"></div>
+
+  <div class="tp-profile-toolbar">
+    <div class="tp-context-strip tp-context-strip--picker">
+      <div id="pitcherControlBar" class="profile-context-bar tp-context-picker"></div>
     </div>
-    <h1>Pitcher Intelligence Profile</h1>
-    <p class="subtitle">SP deep dive — splits, trends, betting context.</p>
-    <div class="data-banner" id="dataBanner"></div>
-  </header>
+  </div>
 
-  <select class="selector-select" id="pitcherSelect" style="display:none" aria-hidden="true">
-    <option value="">— Choose a starter —</option>
-  </select>
-  <datalist id="pitcherList"></datalist>
-
-  <div id="pitcherOverviewControls" class="profile-context-bar"></div>
-  <div id="pitcherControlBar" class="profile-context-bar"></div>
-
-  <div id="profileContent" class="profile-shell">
+  <div class="tp-identity-stack profile-shell" id="profileContent">
+    <div id="ppContextBar" class="profile-context-bar tp-lineup-context-bar"></div>
     <div id="pitcherSnapshot" class="profile-hero"></div>
-    <div id="pitcherIntelPanel"></div>
-    <div id="pitcherAnalystTake" class="pp-intel-follow"></div>
 
-    <section class="section profile-section" id="secOOR">
+    <section class="ca-board tp-section pp-intel-section" id="secIntel">
+      <div id="ppHdrIntel"></div>
+      <div id="pitcherIntelPanel"></div>
+      <div id="pitcherAnalystTake" class="pp-intel-follow"></div>
+    </section>
+
+    <section class="ca-board tp-section profile-section" id="secOOR">
       <div id="ppHdrOOR"></div>
       <div id="pitcherOorControls"></div>
       <div id="oorPanel"></div>
     </section>
 
-    <section class="section profile-section" id="secAllowed">
+    <section class="ca-board tp-section profile-section" id="secAllowed">
       <div id="ppHdrAllowed"></div>
       <div id="pitcherAllowedControls"></div>
       <div id="allowedDashboard"></div>
     </section>
 
-    <div class="profile-deep-sections">
-    <section class="section profile-section" id="secSeason">
+    <div class="profile-deep-sections profile-offense-sections">
+    <section class="ca-board tp-section profile-section" id="secSeason">
       <div id="ppHdrSeason"></div>
       <div class="stat-bar" id="seasonBar"></div>
     </section>
 
-    <section class="section" id="secOsi">
+    <section class="ca-board tp-section" id="secOsi">
       <div id="ppHdrOsi"></div>
-      <div class="table-wrap" id="osiTableWrap"></div>
-      <div class="insight-line" id="osiInsight"></div>
+      <div class="table-wrap tp-table-wrap" id="osiTableWrap"></div>
+      <div class="insight-line tp-note" id="osiInsight"></div>
     </section>
 
-    <section class="section" id="secAbq">
+    <section class="ca-board tp-section" id="secAbq">
       <div id="ppHdrAbq"></div>
-      <div class="table-wrap" id="abqTableWrap"></div>
-      <div class="insight-line" id="abqInsight"></div>
+      <div class="table-wrap tp-table-wrap" id="abqTableWrap"></div>
+      <div class="insight-line tp-note" id="abqInsight"></div>
     </section>
 
-    <section class="section" id="secHand">
+    <section class="ca-board tp-section" id="secHand">
       <div id="ppHdrHand"></div>
       <div class="hand-grid" id="handGrid"></div>
     </section>
 
-    <section class="section" id="secLoc">
+    <section class="ca-board tp-section" id="secLoc">
       <div id="ppHdrLoc"></div>
       <div class="loc-grid" id="locGrid"></div>
     </section>
 
-    <section class="section" id="secLog">
+    <section class="ca-board tp-section" id="secLog">
       <div id="ppHdrLog"></div>
-      <div class="table-wrap" id="logTableWrap"></div>
+      <div class="table-wrap tp-table-wrap" id="logTableWrap"></div>
     </section>
 
-    <section class="section" id="secF5">
+    <section class="ca-board tp-section" id="secF5">
       <div id="ppHdrF5"></div>
-      <div class="table-wrap" id="f5TableWrap"></div>
-      <div class="insight-line" id="f5Insight"></div>
+      <div class="table-wrap tp-table-wrap" id="f5TableWrap"></div>
+      <div class="insight-line tp-note" id="f5Insight"></div>
     </section>
 
-    <section class="section" id="secBetting">
+    <section class="ca-board tp-section" id="secBetting">
       <div id="ppHdrBetting"></div>
-      <div class="betting-panel" id="bettingPanel"></div>
+      <div class="betting-panel tp-note" id="bettingPanel"></div>
     </section>
     </div>
   </div>
-</div>
+</main>
+<!-- pitcher-profile build: 20260602y -->
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -823,6 +826,7 @@ function bindPitcherProfileControls() {
       STATE.split = ctrlSplitToState(st.split);
       STATE.window = st.window;
       STATE.view = st.view;
+      renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
     }
   });
@@ -894,7 +898,8 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   var allowed = document.getElementById('allowedDashboard');
   var oorEl = document.getElementById('oorPanel');
   if (snap) snap.innerHTML = PitcherProfileDashboard.renderSnapshot(profile, ctx);
-  if (intel) intel.innerHTML = PitcherProfileDashboard.renderPitcherIntelPanel(profile, ctx);
+  var intelCtx = Object.assign({}, ctx, { omitHeader: true });
+  if (intel) intel.innerHTML = PitcherProfileDashboard.renderPitcherIntelPanel(profile, intelCtx);
   if (take) take.innerHTML = PitcherProfileDashboard.renderAnalystTakeLine(profile, ctx);
   if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, allowedCtx);
   if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, oorCtx);
@@ -903,8 +908,18 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   }
 }
 
+function mountProfilePageHeader() {
+  if (!window.MLBMAAssets || !MLBMAAssets.mountPlatformHeader) return;
+  MLBMAAssets.mountPlatformHeader('profilePageHeader', {
+    eyebrow: 'Chase Analytics · Profiles',
+    title: 'Pitcher Profile',
+    showPlatformNav: false
+  });
+}
+
 function renderPitcherSectionHeaders() {
   var map = [
+    { id: 'ppHdrIntel', title: 'Start Read', subtitle: 'Verdict, command/contact risk, and rate snapshot for the active split', icon: 'target' },
     { id: 'ppHdrOOR', title: 'Quality of Lineups Faced', subtitle: 'OOR — competition strength context for ERA validation', icon: 'insight' },
     { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed Dashboard', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
     { id: 'ppHdrSeason', title: 'Season Line', subtitle: 'YTD standard line and team pitching environment', icon: 'clipboard' },
@@ -942,9 +957,9 @@ function renderPitcherSectionControls() {
     { value: 'L14', label: 'Last 14' }
   ]);
 
-  var overview = document.getElementById('pitcherOverviewControls');
-  if (overview) {
-    overview.innerHTML = PC.renderSectionOptionBar({
+  var ctxBar = document.getElementById('ppContextBar');
+  if (ctxBar) {
+    ctxBar.innerHTML = PC.renderSectionOptionBar({
       layout: 'row',
       barClass: 'tp-section-filter-bar--context',
       sectionKey: 'pitcher-overview',
@@ -983,7 +998,7 @@ function renderPitcherSectionControls() {
 }
 
 function bindPitcherSectionControls() {
-  var root = document.querySelector('.container');
+  var root = document.querySelector('.ca-page-shell');
   if (!root || root._ppSectionCtrlsBound) return;
   root._ppSectionCtrlsBound = true;
   root.addEventListener('click', function(e) {
@@ -1205,6 +1220,7 @@ function renderProfile(key) {
 
   document.getElementById('profileContent').classList.add('ready');
 
+  mountProfilePageHeader();
   renderPitcherSectionHeaders();
   renderPitcherSectionControls();
   bindPitcherSectionControls();
@@ -1369,17 +1385,12 @@ function loadAll() {
     populateSelectors();
     bindSelectors();
     bindPitcherProfileControls();
+    mountProfilePageHeader();
 
-    var pill = document.getElementById('brandPill');
-    if (pill) {
-      pill.textContent = 'Live';
-      pill.classList.remove('warn');
-    }
     if (!DATA.profiles.length) {
       var banner = document.getElementById('dataBanner');
       banner.textContent = 'SP_Profiles is empty — run pipeline steps 10—11 after metrics are built.';
       banner.classList.add('show');
-      if (pill) { pill.textContent = 'No SP data'; pill.classList.add('warn'); }
     }
 
     var urlPitcher = new URLSearchParams(window.location.search).get('pitcher');
@@ -1397,8 +1408,6 @@ function loadAll() {
   }).catch(function(err) {
     DATA.error = String(err);
     console.error(err);
-    var pill = document.getElementById('brandPill');
-    if (pill) { pill.textContent = 'Load failed'; pill.classList.add('warn'); }
     var banner = document.getElementById('dataBanner');
     banner.textContent = 'Could not load Google Sheets: ' + DATA.error + '. Ensure tabs are published and named correctly.';
     banner.classList.add('show');
@@ -1420,6 +1429,7 @@ function showDelayedLoadBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  mountProfilePageHeader();
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }
