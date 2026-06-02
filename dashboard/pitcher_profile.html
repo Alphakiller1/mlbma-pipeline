@@ -466,66 +466,58 @@ tbody tr.flag-row { background: rgba(251, 191, 36, 0.08); }
     <div id="pitcherAnalystTake" class="pp-intel-follow"></div>
 
     <section class="section profile-section" id="secOOR">
-      <div class="section-title">Quality of Lineups Faced</div>
-      <div class="section-subtitle">OOR — competition strength context for ERA validation</div>
+      <div id="ppHdrOOR"></div>
       <div id="pitcherOorControls"></div>
       <div id="oorPanel"></div>
     </section>
 
     <section class="section profile-section" id="secAllowed">
+      <div id="ppHdrAllowed"></div>
       <div id="pitcherAllowedControls"></div>
       <div id="allowedDashboard"></div>
     </section>
 
     <div class="profile-deep-sections">
     <section class="section profile-section" id="secSeason">
-      <div class="section-title">Season Line</div>
-      <div class="section-subtitle">YTD standard line and team pitching environment</div>
+      <div id="ppHdrSeason"></div>
       <div class="stat-bar" id="seasonBar"></div>
     </section>
 
     <section class="section" id="secOsi">
-      <div class="section-title">Performance vs Lineup Quality (OSI Tier)</div>
-      <div class="section-subtitle">How workload and results shift vs High / Mid / Low OSI offenses</div>
+      <div id="ppHdrOsi"></div>
       <div class="table-wrap" id="osiTableWrap"></div>
       <div class="insight-line" id="osiInsight"></div>
     </section>
 
     <section class="section" id="secAbq">
-      <div class="section-title">ABQ Split</div>
-      <div class="section-subtitle">Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups</div>
+      <div id="ppHdrAbq"></div>
       <div class="table-wrap" id="abqTableWrap"></div>
       <div class="insight-line" id="abqInsight"></div>
     </section>
 
     <section class="section" id="secHand">
-      <div class="section-title">Handedness Splits</div>
-      <div class="section-subtitle">vs LHH and vs RHH — from sheet platoon rows when available</div>
+      <div id="ppHdrHand"></div>
       <div class="hand-grid" id="handGrid"></div>
     </section>
 
     <section class="section" id="secLoc">
-      <div class="section-title">Home / Away Splits</div>
-      <div class="section-subtitle">Park and road context</div>
+      <div id="ppHdrLoc"></div>
       <div class="loc-grid" id="locGrid"></div>
     </section>
 
     <section class="section" id="secLog">
-      <div class="section-title">Recent Start Log</div>
-      <div class="section-subtitle">Last 10 starts with opponent lineup quality</div>
+      <div id="ppHdrLog"></div>
       <div class="table-wrap" id="logTableWrap"></div>
     </section>
 
     <section class="section" id="secF5">
-      <div class="section-title">F5 Profile</div>
-      <div class="section-subtitle">First-five ERA by opponent OSI tier (team runs through 5 innings)</div>
+      <div id="ppHdrF5"></div>
       <div class="table-wrap" id="f5TableWrap"></div>
       <div class="insight-line" id="f5Insight"></div>
     </section>
 
     <section class="section" id="secBetting">
-      <div class="section-title">Betting Context Panel</div>
-      <div class="section-subtitle">Auto-synthesized angles from the strongest patterns in this profile</div>
+      <div id="ppHdrBetting"></div>
       <div class="betting-panel" id="bettingPanel"></div>
     </section>
     </div>
@@ -639,6 +631,28 @@ function fmtPct(v) {
 
 function normalizeName(n) {
   return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+}
+
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function sectionHeaderHtml(title, subtitle, opts) {
+  opts = typeof opts === 'string' ? { eyebrow: opts } : (opts || {});
+  if (window.MLBMAAssets && MLBMAAssets.sectionHeaderHtml) {
+    return MLBMAAssets.sectionHeaderHtml({
+      title: title,
+      subtitle: subtitle || opts.subtitle || '',
+      icon: (window.MLBMAIcons && MLBMAIcons.profileIcon) ? MLBMAIcons.profileIcon(opts.icon) : opts.icon,
+      kicker: opts.kicker || opts.eyebrow || 'Pitcher Profile',
+      actions: opts.actions || ''
+    });
+  }
+  var out = '<header class="ca-section-header">';
+  if (opts.eyebrow) out += '<p class="ca-eyebrow">' + escHtml(opts.eyebrow) + '</p>';
+  out += '<h2 class="ca-section-title">' + escHtml(title) + '</h2>';
+  if (subtitle) out += '<p class="ca-helper">' + escHtml(subtitle) + '</p>';
+  return out + '</header>';
 }
 
 function parseIP(ip) {
@@ -885,6 +899,26 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
     if (intel) MLBMAIcons.refreshIcons(intel);
   }
+}
+
+function renderPitcherSectionHeaders() {
+  var map = [
+    { id: 'ppHdrOOR', title: 'Quality of Lineups Faced', subtitle: 'OOR — competition strength context for ERA validation', icon: 'insight' },
+    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed Dashboard', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
+    { id: 'ppHdrSeason', title: 'Season Line', subtitle: 'YTD standard line and team pitching environment', icon: 'clipboard' },
+    { id: 'ppHdrOsi', title: 'Performance vs Lineup Quality (OSI Tier)', subtitle: 'How workload and results shift vs High / Mid / Low OSI offenses', icon: 'spark' },
+    { id: 'ppHdrAbq', title: 'ABQ Split', subtitle: 'Pitch efficiency vs patient (High ABQ) vs aggressive (Low ABQ) lineups', icon: 'target' },
+    { id: 'ppHdrHand', title: 'Handedness Splits', subtitle: 'vs LHH and vs RHH — from sheet platoon rows when available', icon: 'platoon' },
+    { id: 'ppHdrLoc', title: 'Home / Away Splits', subtitle: 'Park and road context', icon: 'home' },
+    { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
+    { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five ERA by opponent OSI tier (team runs through 5 innings)', icon: 'clock' },
+    { id: 'ppHdrBetting', title: 'Betting Context Panel', subtitle: 'Auto-synthesized angles from the strongest patterns in this profile', icon: 'badge' }
+  ];
+  map.forEach(function(h) {
+    var el = document.getElementById(h.id);
+    if (!el) return;
+    el.innerHTML = sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Pitcher Profile' });
+  });
 }
 
 function renderPitcherSectionControls() {
@@ -1169,6 +1203,7 @@ function renderProfile(key) {
 
   document.getElementById('profileContent').classList.add('ready');
 
+  renderPitcherSectionHeaders();
   renderPitcherSectionControls();
   bindPitcherSectionControls();
   renderPlatformSections(profile, splits, log, name, team, isToday);
