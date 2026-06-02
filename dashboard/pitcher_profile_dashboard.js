@@ -298,7 +298,11 @@
       var p = pct(c.key, c.val);
       var hint = (p != null ? 'Softer than ' + p + '% of SPs · ' : '')
         + 'YTD ' + fmt(num(pick(profile, [c.key])), 1) + ' · L14 ' + fmt(c.l14, 1);
-      return pitcherStatCell(c.label, valChip(c.val, 'osi', true, 1), hint);
+      var ctxKey = (c.key || '').indexOf('ABQ') >= 0 ? 'abq'
+        : (c.key || '').indexOf('RCV') >= 0 ? 'rcv'
+        : (c.key || '').indexOf('OBR') >= 0 ? 'obr'
+        : 'osi';
+      return pitcherStatCell(c.label, valChip(c.val, ctxKey, true, 1), hint);
     }).join('');
 
     return headerHtml + f5

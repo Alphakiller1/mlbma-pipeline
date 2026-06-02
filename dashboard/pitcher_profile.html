@@ -28,7 +28,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260603a" data-page="pitcher_profile.html"></script>
+<script src="mlbma_ui.js?v=20260603b" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
@@ -924,14 +924,16 @@ function renderProfile(key) {
   renderPlatformSections(profile, splits, log, name, team, isToday);
 
   document.getElementById('seasonBar').innerHTML =
-    statCell('ERA', fmt(numOrNull(pickCol(profile, ['ERA'])), 2)) +
-    statCell('IP', fmt(displayIp, 1)) +
-    statCell('K%', fmtPct(numOrNull(pickCol(profile, ['K_pct', 'K%'])))) +
-    statCell('BB%', fmtPct(numOrNull(pickCol(profile, ['BB_pct', 'BB%'])))) +
-    statCell('HR/9', fmt(numOrNull(pickCol(profile, ['HR9', 'HR/9'])), 2)) +
-    statCell('WHIP', fmt(whip, 2)) +
-    statCell('Pitch Score', fmt(ps, 0)) +
-    '<div class="stat-cell"><div class="s-label">Tier</div><div class="s-val"><span class="tier-pill ' + pt.cls + '">' + pt.label + '</span></div></div>';
+    statChipCell('ERA', numOrNull(pickCol(profile, ['ERA'])), 'pitching', true, 2) +
+    statChipCell('IP', displayIp, 'neutral', false, 1, fmt(displayIp, 1)) +
+    statChipCell('K%', numOrNull(pickCol(profile, ['K_pct', 'K%'])), 'pitching', false, 1, fmtPct(numOrNull(pickCol(profile, ['K_pct', 'K%'])))) +
+    statChipCell('BB%', numOrNull(pickCol(profile, ['BB_pct', 'BB%'])), 'pitching', true, 1, fmtPct(numOrNull(pickCol(profile, ['BB_pct', 'BB%'])))) +
+    statChipCell('HR/9', numOrNull(pickCol(profile, ['HR9', 'HR/9'])), 'pitching', true, 2) +
+    statChipCell('WHIP', whip, 'pitching', true, 2) +
+    statChipCell('Pitch Score', ps, 'pitching', false, 0, fmt(ps, 0)) +
+    '<div class="tp-offense-stat tp-offense-stat--inline">'
+      + '<span class="tp-offense-stat__label">Tier</span>'
+      + '<span class="tp-offense-stat__body"><span class="tier-pill ' + pt.cls + '">' + pt.label + '</span></span></div>';
 
   document.getElementById('osiTableWrap').innerHTML = buildTierTable(splits, 'osi_tier', OSI_TIER_ORDER);
   document.getElementById('osiInsight').innerHTML = insightOsiTier(splits);
@@ -1002,6 +1004,17 @@ function statCell(label, val) {
   return '<div class="tp-offense-stat tp-offense-stat--inline">'
     + '<span class="tp-offense-stat__label">' + escHtml(label) + '</span>'
     + '<span class="tp-offense-stat__body"><span class="chip">' + escHtml(val || '—') + '</span></span></div>';
+}
+
+function statChipCell(label, value, ctx, invert, dec, display) {
+  var A = window.MLBMAAssets;
+  var d = dec == null ? 1 : dec;
+  var chip = A && A.valChipHtml
+    ? A.valChipHtml(value, ctx || 'osi', !!invert, d, { display: display })
+    : ('<span class="chip">' + escHtml(display != null ? display : (value == null ? '—' : String(value))) + '</span>');
+  return '<div class="tp-offense-stat tp-offense-stat--inline">'
+    + '<span class="tp-offense-stat__label">' + escHtml(label) + '</span>'
+    + '<span class="tp-offense-stat__body">' + chip + '</span></div>';
 }
 
 
