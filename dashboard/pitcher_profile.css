@@ -673,3 +673,58 @@
   color: var(--tp-note-color, #B8C0CC);
 }
 
+/* Strength of Competition — single-row metrics (split via pills above) */
+.pitcher-profile-page #secOOR .pp-oor-metrics-wrap {
+  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+.pitcher-profile-page #secOOR > #pitcherOorControls {
+  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
+}
+
+.pitcher-profile-page .pp-oor-metrics-table {
+  width: 100%;
+  border: 1.5px solid rgba(196, 176, 255, 0.22);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), transparent 28%),
+    linear-gradient(180deg, #151827, #080a13);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 18px 48px rgba(0, 0, 0, 0.48);
+  overflow: hidden;
+}
+
+.pitcher-profile-page .pp-oor-metrics-table thead th {
+  text-align: center;
+  font-size: var(--pp-table-head-size, 13px);
+  letter-spacing: 0.06em;
+  padding: 14px 16px;
+}
+
+.pitcher-profile-page .pp-oor-metric-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: 18px 16px;
+  font-size: var(--pp-table-num-size, 18px);
+}
+
+.pitcher-profile-page .pp-oor-metric-cell .chip {
+  margin: 0 auto;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 72px;
+  font-size: var(--pp-table-chip-size, 16px);
+  padding: 8px 14px;
+}
+
+.pitcher-profile-page .pp-oor-split-note {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--tp-note-color, #B8C0CC);
+}
+
+.pitcher-profile-page .pp-oor-split-note strong {
+  color: var(--v-light, #C4B0FF);
+  font-weight: 700;
+}
+

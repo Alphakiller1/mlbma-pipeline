@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260607a">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260608a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -27,7 +27,7 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260607a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260608a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -152,6 +152,7 @@
 
     <section class="ca-board tp-section profile-section" id="secOOR">
       <div id="ppHdrOOR"></div>
+      <div id="pitcherOorControls"></div>
       <div id="oorPanel"></div>
     </section>
 
@@ -661,7 +662,10 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
     compact: true,
     log: log,
     splits: splits,
-    splitFocus: 'overall'
+    splitFocus: oorFilter.split || 'overall',
+    splitLabel: splitLabel(oorFilter.split || 'overall'),
+    oorMap: DATA.oorMap,
+    teamProfiles: DATA.teamProfiles
   });
   var snap = document.getElementById('pitcherSnapshot');
   var allowed = document.getElementById('allowedDashboard');
@@ -696,10 +700,41 @@ function renderPitcherSectionHeaders() {
   });
 }
 
+function pitcherMatrixSplitOpts() {
+  return [
+    { value: 'overall', label: 'Both' },
+    { value: 'home', label: 'Home' },
+    { value: 'away', label: 'Away' },
+    { value: 'lhh', label: 'vs LHB' },
+    { value: 'rhh', label: 'vs RHB' }
+  ];
+}
+
+function renderPitcherSplitControlBar(mountId, sectionKey, filterKey) {
+  var el = document.getElementById(mountId);
+  var PC = window.MLBMAProfileControls;
+  if (!el || !PC || !PC.renderSectionOptionBar) return;
+  var sf = STATE.sectionFilters[filterKey] || {};
+  el.innerHTML = PC.renderSectionOptionBar({
+    layout: 'row',
+    barClass: 'tp-section-filter-bar--controls',
+    sectionKey: sectionKey,
+    groups: [{
+      label: 'Split',
+      groupKey: 'split',
+      tabMode: true,
+      options: pitcherMatrixSplitOpts(),
+      active: sf.split || 'overall'
+    }]
+  });
+}
+
 function renderPitcherSectionControls() {
   var PC = window.MLBMAProfileControls;
   if (!PC || !PC.renderSectionOptionBar) return;
   if (!STATE.sectionFilters) return;
+
+  renderPitcherSplitControlBar('pitcherOorControls', 'pitcher-oor', 'oor');
 
   var splitOpts = [
     { value: 'overall', label: 'Overall' },
@@ -789,6 +824,34 @@ function bindPitcherSectionControls() {
       if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
+    if (sectionKey === 'pitcher-oor') {
+      STATE.sectionFilters.oor = STATE.sectionFilters.oor || {};
+      if (groupKey === 'split') STATE.sectionFilters.oor.split = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) {
+        var prof = getProfile(STATE.pitcherKey);
+        var oorEl = document.getElementById('oorPanel');
+        if (prof && oorEl && window.PitcherProfileDashboard) {
+          var ctx = buildDashboardCtx(
+            prof,
+            getSplits(STATE.pitcherKey),
+            getGameLog(STATE.pitcherKey, STATE.pitcherName),
+            STATE.pitcherName,
+            pickCol(prof, ['pitcher_team', 'pitcherTeam', 'Tm']),
+            DATA.todayStarters.has(normalizeName(STATE.pitcherName)),
+            buildPitcherTonightContext(STATE.pitcherName, pickCol(prof, ['pitcher_team', 'pitcherTeam', 'Tm']))
+          );
+          var sf = STATE.sectionFilters.oor || {};
+          var oorCtx = Object.assign({}, ctx, {
+            splitFocus: sf.split || 'overall',
+            splitLabel: splitLabel(sf.split || 'overall'),
+            omitHeader: true
+          });
+          oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(prof, oorCtx);
+        }
+      }
       return;
     }
     if (sectionKey === 'pitcher-tiers') {
