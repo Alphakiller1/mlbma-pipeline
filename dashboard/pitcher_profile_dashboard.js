@@ -214,8 +214,8 @@
 
     function heroTone(good, bad, val, lowerBetter) {
       if (val == null || isNaN(val)) return 'neutral';
-      if (lowerBetter) return val <= good ? 'good' : (val >= bad ? 'bad' : 'neutral');
-      return val >= good ? 'good' : (val <= bad ? 'bad' : 'neutral');
+      if (lowerBetter) return val <= good ? 'positive' : (val >= bad ? 'negative' : 'mid');
+      return val >= good ? 'positive' : (val <= bad ? 'negative' : 'mid');
     }
 
     function heroStat(label, valueHtml, tone) {
@@ -235,7 +235,7 @@
       + (ctx.isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '')
       + '<span class="tier-pill ' + pt.cls + '">' + esc(pt.label) + '</span>'
       + '</div>'
-      + '<div class="pp-hero-stats" role="group" aria-label="Headline stats">'
+      + '<div class="pp-hero-stats tp-hero-stat-row tp-team-banner__stats--hero" role="group" aria-label="Headline stats">'
       + heroStat('Pitcher Score', ps != null ? fmt(ps, 0) : '—', heroTone(60, 45, ps, false))
       + heroStat('ERA', era != null ? fmt(era, 2) : '—', heroTone(3.60, 4.60, era, true))
       + heroStat('QS%', qsPct != null ? fmt(qsPct, 0) + '%' : '—', heroTone(60, 40, qsPct, false))
@@ -470,48 +470,6 @@
 
   function renderPitcherIntelPanel(profile, ctx) {
     var pick = ctx.pickCol;
-    var PS = global.ProfileShell;
-    var v = deriveStartVerdict(profile, ctx);
-    var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore', 'pitch_score', 'Pitching Score']));
-    var k = pctNorm(num(pick(profile, ['K_pct', 'K%'])));
-    var bb = pctNorm(num(pick(profile, ['BB_pct', 'BB%'])));
-    var hr9 = num(pick(profile, ['HR9', 'HR/9']));
-    var era = num(pick(profile, ['ERA']));
-    var fip = num(pick(profile, ['FIP', 'fip']));
-    var xfip = num(pick(profile, ['xFIP', 'xfip']));
-    var resolved = resolveAllowed(ctx);
-    var osiAllow = resolved.metrics.osi;
-    var avgOor = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
-    if (avgOor == null) avgOor = avgOorFromLog(ctx.log || [], pick, ctx.oorMap || {}, null);
-    var contactTone = osiAllow != null && PS ? PS.toneFromScore(osiAllow, true) : '';
-    var psTone = ps != null && PS ? PS.toneFromScore(ps, false) : '';
-    var oorTone = avgOor != null && PS ? PS.toneFromScore(avgOor, false) : '';
-    var oorHint = ctx.tonightOsi != null
-      ? 'Tonight OSI ' + fmt(ctx.tonightOsi, 1)
-      : 'Season competition context';
-
-    var osiChip = osiAllow != null
-      ? chipWithText(osiAllow, 'osi', true, 1, fmt(osiAllow, 1) + ' OSI', contactTone)
-      : '<span class="chip chip-ph">—</span>';
-
-    var oorChip = avgOor != null
-      ? chipWithText(avgOor, 'oor', false, 1, fmt(avgOor, 1) + ' OOR', oorTone)
-      : '<span class="chip chip-ph">—</span>';
-
-    var detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD');
-    var coreCells = ''
-      + pitcherStatNum('K%', k, 'kpct', false, 1)
-      + pitcherStatNum('BB%', bb, 'bbpct', true, 1)
-      + pitcherStatNum('HR/9', hr9, 'hr9', true, 2)
-      + pitcherStatNum('ERA', era, 'era', true, 2)
-      + pitcherStatNum('FIP', fip, 'fip', true, 2)
-      + pitcherStatNum('xFIP', xfip, 'xfip', true, 2);
-
-    var ctxCells = ''
-      + pitcherStatCell('Start Verdict', verdictChipHtml(v.verdict, v.tone))
-      + pitcherStatNum('Pitch Score', ps, 'pitching', false, 0, '', psTone)
-      + pitcherStatCell('OSI allowed', osiChip, 'Lower = softer lineups')
-      + pitcherStatCell('Opponent Quality', oorChip, oorHint);
 
     function splitRow(label, row) {
       if (!row) return '<tr><td>' + esc(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
@@ -542,7 +500,7 @@
       + splitRow('vs LHB', sLhh)
       + splitRow('vs RHB', sRhh);
 
-    var splitTable = '<div class="pp-split-table-wrap"><table class="hub-table tp-table pp-split-table"><thead><tr>'
+    var splitTable = '<div class="pp-split-table-wrap"><table class="hub-table tp-table pp-split-table pp-startlog"><thead><tr>'
       + '<th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th>'
       + '</tr></thead><tbody>' + splitBody + '</tbody></table></div>';
 
@@ -553,21 +511,16 @@
       return metricsHtml;
     }
 
-    var subtitle = v.detail || '';
-    if (ctx.splitLabel || ctx.window) {
-      subtitle = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD')
-        + (subtitle ? ' · ' + subtitle : '');
-    }
     var header = (A && A.sectionHeaderHtml)
       ? A.sectionHeaderHtml({
         icon: 'target',
         kicker: 'Pitcher Profile',
         title: 'Pitching Value',
-        subtitle: 'Core pitching rates + split table (Overall / vs LHH / vs RHH)'
+        subtitle: 'K% · BB% · HR/9 · xFIP · OPS — Both / Home / Away / vs LHB / vs RHB'
       })
       : '<header class="ca-section-header"><p class="ca-eyebrow">Pitcher Profile</p>'
         + '<h2 class="ca-section-title">Pitching Value</h2>'
-        + '<p class="ca-helper">Core pitching rates + split table (Overall / vs LHH / vs RHH)</p>'
+        + '<p class="ca-helper">K% · BB% · HR/9 · xFIP · OPS — Both / Home / Away / vs LHB / vs RHB</p>'
         + '</header>';
 
     return '<section class="ca-board pp-section pp-intel-panel" aria-label="Pitcher profile summary">'
