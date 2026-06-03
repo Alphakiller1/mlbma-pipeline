@@ -737,6 +737,11 @@
 }
 
 .pitcher-profile-page #secAllowed .tp-section-filter-bar--trend,
+.pitcher-profile-page #allowedDashboard .tp-section-filter-bar--trend,
+.pitcher-profile-page #allowedDashboard [data-trend-metric-group] {
+  display: none !important;
+}
+
 .pitcher-profile-page #secAllowed .tp-section-filter-bar--context {
   margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
 }
