@@ -213,7 +213,10 @@
     if (key === 'wrc') return A.metricColor(value, 'wrc', false);
     if (key === 'woba' || key === 'xwoba') return A.metricColor(value, 'woba', false);
     if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, 'osi', false);
-    if (key === 'pitchScore') return A.metricColor(value, 'pitching', false);
+    // Pitch Score Against: high = pitchers did WELL = lineup was EASY = bad for the
+    // lineup, so invert (high -> red), same as QS% Allowed.
+    if (key === 'pitchScore') return A.metricColor(value, 'pitching', true);
+    if (key === 'pitchInn') return A.metricColor(value, 'pitchinn', false);
     if (key === 'qs') return A.metricColor(value, 'pitching', true);
     if (key === 'xfip') return A.metricColor(value, 'xfip', true);
     if (key === 'ppGap') return A.metricColor(value, 'ppGap', false);
@@ -237,7 +240,8 @@
     if (safe == null) return (A && A.chipPlaceholderHtml) ? A.chipPlaceholderHtml('—') : '—';
     var ctx = def && def.key ? def.key : 'osi';
     var invert = false;
-    if (ctx === 'pitchScore') ctx = 'pitching';
+    if (ctx === 'pitchScore') { ctx = 'pitching'; invert = true; }  // high = easy lineup = red
+    if (ctx === 'pitchInn') ctx = 'pitchinn';
     if (ctx === 'qs') { ctx = 'pitching'; invert = true; }
     if (ctx === 'xfip') { ctx = 'xfip'; invert = true; }
     if (ctx === 'xwoba') ctx = 'woba';

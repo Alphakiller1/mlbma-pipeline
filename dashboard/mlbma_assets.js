@@ -59,7 +59,9 @@
   var CONTEXT_DEFAULTS = {
     // composite proprietary metrics (already 0-100, higher = better)
     osi: { mean: 50, std: 12, hi: true },
-    abq: { mean: 50, std: 12, hi: true },
+    // abq teams cluster tightly around average; sens>1 widens the color spread so
+    // near-average differences are still legible (otherwise everything reads amber).
+    abq: { mean: 50, std: 12, hi: true, sens: 1.5 },
     rcv: { mean: 50, std: 12, hi: true },
     obr: { mean: 50, std: 12, hi: true },
     projosi: { mean: 50, std: 12, hi: true },
@@ -93,6 +95,7 @@
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
     ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)
+    pitchinn: { mean: 16.65, std: 0.45, hi: true, sens: 1.2 },  // pitches/inning forced (higher = grind = harder lineup); tight cluster, measured from game_results
     default: { mean: 50, std: 12, hi: true }
   };
 
@@ -486,7 +489,11 @@
     var pool = hasBaseline ? null : LEAGUE_POOLS[context];
     var mean = pool && pool.mean != null ? pool.mean : cfg.mean;
     var std = pool && pool.std != null ? pool.std : cfg.std;
-    return (value - mean) / std;
+    var z = (value - mean) / std;
+    // Optional per-metric sensitivity: scales the color spread for tightly-clustered
+    // metrics (e.g. ABQ) so near-average teams still differentiate. Same scaling feeds
+    // both the gradient and the discrete chips, so they stay consistent.
+    return cfg.sens ? z * cfg.sens : z;
   }
 
   /** Direction from the registry (lower-is-better => invert), unless caller overrides. */
@@ -502,8 +509,8 @@
    * distinct shades. League average sits at the amber midpoint.
    */
   var GRADIENT_STOPS = [
-    { t: 0.00, c: [239, 68, 68] },    // poor      #EF4444 red
-    { t: 0.27, c: [249, 115, 22] },   // weak      #F97316 orange
+    { t: 0.00, c: [200, 32, 28] },    // poor      #C8201C deep red (warm, not pink)
+    { t: 0.27, c: [232, 96, 24] },    // weak      #E86018 orange
     { t: 0.50, c: [234, 179, 8] },    // average   #EAB308 amber (league avg)
     { t: 0.74, c: [132, 204, 22] },   // good      #84CC16 lime
     { t: 1.00, c: [34, 197, 94] }     // elite     #22C55E green

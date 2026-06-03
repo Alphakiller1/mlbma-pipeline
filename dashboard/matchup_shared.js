@@ -345,7 +345,7 @@
           + '<span class="lb-ord">' + (r.batOrder <= 9 ? r.batOrder : '\u2014') + '</span>'
           + '<span class="lb-pos">' + esc(r.position) + '</span>'
           + '<span class="lb-name">' + batterProfileLink(r.player) + '</span>'
-          + '<span class="lb-hand">' + esc(bn === '?' ? '?' : bn) + '</span>'
+          + '<span class="lb-hand lb-hand--' + (bn === '?' ? 'unk' : bn.toLowerCase()) + '">' + esc(bn === '?' ? '?' : bn) + '</span>'
           + '</div>';
         return;
       }
@@ -1202,8 +1202,15 @@
       d.pitchScore = _num(prof.avg_pitching_score);
       var ipNorm = _num(prof.avg_ip_per_start);
       var ipPerStart = ipNorm != null ? (ipNorm > 0 && ipNorm < 1.5 ? ipNorm * 9 : ipNorm) : null;
-      d.pitchInn = ipPerStart != null && ipPerStart > 0 ? (92 / ipPerStart) : null; // proxy pitches per inning faced
-      var qsRaw = _num(prof.qs_against_pct != null ? prof.qs_against_pct : prof.qs_against);
+      var difSuf = f.window !== 'YTD' ? _windowSuffix(f.window) : null;
+      // Real pitches/inning forced (windowed) from team_results; 92/IP-per-start proxy only as fallback.
+      var realPitchInn = _num(difSuf ? prof['pitch_inn_' + difSuf] : prof.pitch_inn);
+      if (realPitchInn == null) realPitchInn = _num(prof.pitch_inn);
+      d.pitchInn = realPitchInn != null ? realPitchInn
+        : (ipPerStart != null && ipPerStart > 0 ? (92 / ipPerStart) : null);
+      // QS% allowed (windowed) from team_results, falling back to season then an IP/start proxy.
+      var qsRaw = _num(difSuf ? prof['qs_against_pct_' + difSuf] : null);
+      if (qsRaw == null) qsRaw = _num(prof.qs_against_pct != null ? prof.qs_against_pct : prof.qs_against);
       if (qsRaw != null) d.qs = qsRaw;
       else if (ipPerStart != null) d.qs = Math.max(0, Math.min(100, ((ipPerStart - 4.0) / 2.5) * 100)); // IP/start -> QS% proxy
 

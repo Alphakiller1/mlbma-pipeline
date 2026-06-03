@@ -210,14 +210,17 @@
     return 'Even lineup advantage';
   }
 
+  function osiValColor(v) {
+    return (A && A.metricColor && v != null) ? A.metricColor(v, 'osi', false) : 'inherit';
+  }
   function lineupEdgeBarHtml(m) {
     var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
     var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
     var total = awayOSI + homeOSI || 1;
     var awayPct = Math.max(8, (awayOSI / total) * 100);
     return '<div class="mc-lineup-bar-wrap">'
-      + '<div class="mc-lineup-bar-labels"><span>' + esc(m.away) + ' <strong>' + fmt(awayOSI) + '</strong></span>'
-      + '<span>' + esc(m.home) + ' <strong>' + fmt(homeOSI) + '</strong></span></div>'
+      + '<div class="mc-lineup-bar-labels"><span>' + esc(m.away) + ' <strong style="color:' + osiValColor(m.awayOSI) + '">' + fmt(awayOSI) + '</strong></span>'
+      + '<span>' + esc(m.home) + ' <strong style="color:' + osiValColor(m.homeOSI) + '">' + fmt(homeOSI) + '</strong></span></div>'
       + '<div class="mc-lineup-bar-track"><div class="mc-lineup-bar-away" style="width:' + awayPct + '%"></div>'
       + '<div class="mc-lineup-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
       + '<div class="mc-lineup-edge-read">' + esc(lineupEdgeRead(m)) + '</div></div>';
@@ -515,7 +518,6 @@
       + '<div class="mc-model-links">'
       + '<a href="' + teamProfileUrl(m.away) + '">View Away Team Profile →</a>'
       + '<a href="' + teamProfileUrl(m.home) + '">View Home Team Profile →</a>'
-      + '<a href="signal_board.html">View Signal Board →</a>'
       + '</div></div></section></div>';
   }
 

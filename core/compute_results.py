@@ -34,6 +34,7 @@ BASE_METRICS = [
     "qs_against",
     "qs_pct",
     "qs_against_pct",
+    "pitch_inn",
     "saves",
     "blown_saves",
     "blown_save_pct",
@@ -74,6 +75,14 @@ def _aggregate(df: pd.DataFrame) -> Dict[str, float]:
     rp_wins = int(((df["result"] == "W") & (~df["winning_pitcher_is_starter"])).sum())
     qs = int(df["team_quality_start"].sum())
     qs_against = int(df["opp_quality_start"].sum())
+    # Real pitches/inning the lineup forces = opposing pitches / innings the team batted
+    # (replaces the dashboard's 92/IP-per-start proxy). Higher = grindier lineup.
+    if "opp_pitches" in df.columns and "team_innings_batted" in df.columns:
+        opp_pitches = pd.to_numeric(df["opp_pitches"], errors="coerce").sum()
+        innings_batted = pd.to_numeric(df["team_innings_batted"], errors="coerce").sum()
+        pitch_inn = round(float(opp_pitches) / float(innings_batted), 2) if innings_batted > 0 else None
+    else:
+        pitch_inn = None
     saves = int(((df["result"] == "W") & (df["save_pitcher_id"].notna())).sum())
     blown_saves = int(df["blown_save"].sum())
     save_opps = saves + blown_saves
@@ -106,6 +115,7 @@ def _aggregate(df: pd.DataFrame) -> Dict[str, float]:
         "qs_against": qs_against,
         "qs_pct": _safe_rate(qs, games),
         "qs_against_pct": _safe_rate(qs_against, games),
+        "pitch_inn": pitch_inn,
         "saves": saves,
         "blown_saves": blown_saves,
         "blown_save_pct": _safe_rate(blown_saves, save_opps),
@@ -115,7 +125,7 @@ def _aggregate(df: pd.DataFrame) -> Dict[str, float]:
 def _apply_suffixed(dst: dict, pack: Dict[str, float], suffix: str, include_counts: Iterable[str]) -> None:
     keep_counts = set(include_counts)
     for key, val in pack.items():
-        if key in keep_counts or key.endswith("_pct"):
+        if key in keep_counts or key.endswith("_pct") or key == "pitch_inn":
             dst[f"{key}_{suffix}"] = val
 
 
@@ -152,6 +162,7 @@ def run():
                 row[f"rp_win_pct_{win}"] = None
                 row[f"qs_pct_{win}"] = None
                 row[f"qs_against_pct_{win}"] = None
+                row[f"pitch_inn_{win}"] = None
                 row[f"blown_save_pct_{win}"] = None
             for loc in ("home", "away"):
                 row[f"win_pct_{loc}"] = None
@@ -160,6 +171,7 @@ def run():
                 row[f"rp_win_pct_{loc}"] = None
                 row[f"qs_pct_{loc}"] = None
                 row[f"qs_against_pct_{loc}"] = None
+                row[f"pitch_inn_{loc}"] = None
                 row[f"blown_save_pct_{loc}"] = None
             rows.append(row)
             continue
