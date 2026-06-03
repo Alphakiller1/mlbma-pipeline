@@ -548,8 +548,7 @@
     var cat = ctx.category || 'lineup';
     var html = '';
     if (cat === 'lineup') {
-      if (ctx.renderBattingSection) html += ctx.renderBattingSection(team, ctx);
-      else if (ctx.renderLineup) html += ctx.renderLineup(team, ctx);
+      /* Team Batters render inside TeamProfileSections.renderAll for lineup unit order */
     } else if (cat === 'rotation') {
       html += renderRotation(prof, team, ctx);
     } else if (cat === 'bullpen') {

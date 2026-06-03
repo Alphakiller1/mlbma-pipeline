@@ -425,18 +425,6 @@ tbody tr.detail-row td { background: var(--bg-3); padding: 12px 8px; white-space
       <div class="section-subtitle">Click a row to expand last 10 appearances</div>
       <div class="table-wrap" id="relieverTableWrap"></div>
     </section>
-
-    <section class="section">
-      <div class="section-title">Today's Matchup Context</div>
-      <div class="section-subtitle">Opponent OSI vs this bullpen's historical tier performance</div>
-      <div id="matchupContext"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-title">Bullpen Betting Context Panel</div>
-      <div class="section-subtitle">Auto-synthesized angles from the strongest patterns</div>
-      <div class="betting-panel" id="bettingPanel"></div>
-    </section>
     </div>
   </div>
 </div>
@@ -851,83 +839,6 @@ function appearanceDetail(pid, name) {
   return inner + '</tbody></table>';
 }
 
-function osiTierFromValue(osi) {
-  if (osi === null || isNaN(osi)) return '';
-  if (osi > 65) return 'High';
-  if (osi >= 50) return 'Mid';
-  return 'Low';
-}
-
-function buildMatchupContext(team, unit) {
-  var games = DATA.matchups.filter(function(g) {
-    var away = teamKey(pickCol(g, ['Away', 'away']));
-    var home = teamKey(pickCol(g, ['Home', 'home']));
-    return away === teamKey(team) || home === teamKey(team);
-  });
-  if (!games.length) {
-    return '<div class="empty-state">No games in Today_Matchups for ' + team + '.</div>';
-  }
-  var html = '';
-  games.forEach(function(g) {
-    var away = pickCol(g, ['Away', 'away']);
-    var home = pickCol(g, ['Home', 'home']);
-    var isHome = teamKey(home) === teamKey(team);
-    var opp = isHome ? away : home;
-    var oppOsi = num(isHome ? pickCol(g, ['Away_OSI', 'Away OSI']) : pickCol(g, ['Home_OSI', 'Home OSI']));
-    var tier = osiTierFromValue(oppOsi);
-    var prefix = tier === 'High' ? 'vs_high_osi' : tier === 'Mid' ? 'vs_mid_osi' : 'vs_low_osi';
-    var tierEra = colVal(unit, prefix, 'ERA');
-    var tierOsi = colVal(unit, prefix, 'OSI_allowed');
-    var time = pickCol(g, ['Time', 'Game_Time']);
-    var edge = '';
-    if (tierEra != null && tierEra <= 3.5 && tier === 'High') {
-      edge = 'Bullpen has handled elite OSI well (' + fmt(tierEra, 2) + ' ERA vs High) — slight edge suppressing ' + opp + ' late.';
-    } else if (tierEra != null && tierEra >= 5.0) {
-      edge = 'Bullpen vulnerable vs ' + tier + ' OSI bucket (' + fmt(tierEra, 2) + ' ERA) — ' + opp + ' lineup OSI ' + fmt(oppOsi, 1) + ' maps to a fade spot.';
-    } else {
-      edge = 'Neutral bullpen read vs ' + tier + ' OSI profile (opp OSI ' + fmt(oppOsi, 1) + ', bullpen tier ERA ' + fmt(tierEra, 2) + ').';
-    }
-    html += '<div class="matchup-card"><div class="mc-head">' + (isHome ? home + ' vs ' + away : away + ' @ ' + home) +
-      (time ? ' — ' + time : '') + '</div>' +
-      'Opponent <strong>' + opp + '</strong> OSI <strong>' + fmt(oppOsi, 1) + '</strong> (' + tier + ' tier). ' +
-      'Bullpen vs ' + tier + ' OSI: ERA ' + fmt(tierEra, 2) + ', OSI allowed ' + fmt(tierOsi, 1) + '.<br>' +
-      '<span style="color:var(--purple-2);">' + edge + '</span></div>';
-  });
-  return html;
-}
-
-function bettingSummary(team, unit) {
-  var bullets = [];
-  var lo = colVal(unit, 'low_leverage', 'ERA');
-  var hi = colVal(unit, 'high_leverage', 'ERA');
-  if (lo != null && hi != null && hi > lo + 1.5) {
-    bullets.push(team + ' bullpen excels in low leverage (' + fmt(lo, 2) + ' ERA) but collapses in high leverage (' + fmt(hi, 2) + ' ERA), suggesting <strong>fading the run line</strong> when games are close late.');
-  }
-  var oH = colVal(unit, 'vs_high_osi', 'OSI_allowed');
-  var oL = colVal(unit, 'vs_low_osi', 'OSI_allowed');
-  var eH = colVal(unit, 'vs_high_osi', 'ERA');
-  var eL = colVal(unit, 'vs_low_osi', 'ERA');
-  if (oH != null && oL != null && oH > oL + 5) {
-    bullets.push('Struggles vs High OSI lineups (OSI allowed ' + fmt(oH, 1) + ' vs ' + fmt(oL, 1) + ' vs Low OSI).');
-  }
-  if (eH != null && eL != null && eH > eL + 1.2) {
-    bullets.push('ERA vs High OSI (' + fmt(eH, 2) + ') worse than vs Low (' + fmt(eL, 2) + ') — target overs when facing elite offenses.');
-  }
-  var ir = colVal(unit, 'overall', 'inherited_runners_scored_pct');
-  if (ir != null && ir >= 35) {
-    bullets.push('Inherited runners scored rate ' + fmtPct(ir) + ' is elevated — late-inning chaos risk for unders.');
-  }
-  var rhh = colVal(unit, 'vs_rhh', 'ERA');
-  var lhh = colVal(unit, 'vs_lhh', 'ERA');
-  if (rhh != null && lhh != null && rhh > lhh + 1.0) {
-    bullets.push('Weaker vs RHH (' + fmt(rhh, 2) + ' ERA) than LHH (' + fmt(lhh, 2) + ') — RH-heavy late lineups are a threat.');
-  }
-  if (!bullets.length) {
-    return '<strong>' + team + '</strong> bullpen profile is balanced across leverage and OSI tiers in the current sample. Re-check after more 2026 appearances.';
-  }
-  return bullets.join(' ');
-}
-
 function renderTeam(team) {
   if (!team) return;
   STATE.team = teamKey(team);
@@ -977,9 +888,6 @@ function renderTeam(team) {
     ? BullpenProfileDashboard.buildRelieverTable(rels, ctx)
     : '<div class="empty-state">Dashboard module not loaded.</div>';
   bindRelieverClicks();
-
-  document.getElementById('matchupContext').innerHTML = buildMatchupContext(team, unit);
-  document.getElementById('bettingPanel').innerHTML = bettingSummary(team, unit);
 
   document.querySelectorAll('.today-chip').forEach(function(c) {
     c.classList.toggle('active', c.textContent === teamKey(team));

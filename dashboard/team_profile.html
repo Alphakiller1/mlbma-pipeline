@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="theme.css?v=20260618b">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260602m">
-<link rel="stylesheet" href="team_profile.css?v=20260602w">
+<link rel="stylesheet" href="team_profile.css?v=20260603w">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260602a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
@@ -25,8 +25,8 @@
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
 <script src="team_profile_mini.js?v=20260602w"></script>
-<script src="team_profile_sections.js?v=20260602w"></script>
-<script src="team_profile_staff.js?v=20260602w"></script>
+<script src="team_profile_sections.js?v=20260603w"></script>
+<script src="team_profile_staff.js?v=20260603w"></script>
 <script src="team_profile_intel.js?v=20260602w"></script>
 <script src="mlbma_charts.js?v=20260602t"></script>
 <script src="platform_dashboard.js?v=20260618a"></script>
@@ -124,19 +124,16 @@
   <div id="profilePageHeader"></div>
   <div class="tp-data-banner" id="dataBanner"></div>
 
-  <div class="tp-profile-toolbar">
-    <div class="tp-context-strip tp-context-strip--picker">
-      <div id="teamPickerMount" class="tp-context-picker"></div>
-    </div>
-  </div>
-
   <div class="tp-sticky-wrap">
     <nav class="tp-unit-nav" id="tpUnitNav" role="tablist" aria-label="Team profile units"></nav>
   </div>
 
   <div class="tp-identity-stack profile-shell" id="tpIdentityStack">
     <div id="tpContextBar" class="profile-context-bar tp-lineup-context-bar" hidden></div>
-    <div id="profileHeroMount" class="profile-hero"></div>
+    <div class="tp-hero-banner-shell">
+      <div id="teamPickerMount" class="tp-hero-search tp-context-picker"></div>
+      <div id="profileHeroMount" class="profile-hero"></div>
+    </div>
     <div class="tp-unit-snapshot" id="tpUnitSnapshot" aria-live="polite" hidden></div>
     <div id="profileOffenseSections" class="profile-deep-sections profile-offense-sections"></div>
   </div>
@@ -148,7 +145,7 @@
   <div class="profile-staff-block" id="profileStaffSections"></div>
   <div id="profileLineupFooter" class="profile-lineup-footer"></div>
 </main>
-<!-- team-profile build: 20260602w -->
+<!-- team-profile build: 20260603w -->
 
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
@@ -967,12 +964,12 @@ function renderBattingSection(team, ctx) {
     + battingSplitPane('season', activeTab, seasonPane)
     + battingSplitPane('rhp', activeTab, rhpPane)
     + battingSplitPane('lhp', activeTab, lhpPane);
-  return sectionCard('Team Batting', subtitle, body, 'tp-batting-section',
+  return sectionCard('Team Batters', subtitle, body, 'tp-batting-section',
     { icon: 'batting', kicker: 'Lineup unit', sectionId: 'batting' });
 }
 
 function bindBattingSplitTabs() {
-  var root = document.getElementById('profileStaffSections');
+  var root = document.getElementById('profileOffenseSections') || document.getElementById('profileStaffSections');
   if (!root) return;
   var section = root.querySelector('.tp-batting-section');
   if (!section) return;
@@ -1610,19 +1607,8 @@ function syncIdentityStackLayout() {
 function renderContextFilterBar() {
   var el = document.getElementById('tpContextBar');
   if (!el) return;
-  var cat = STATE.category || 'lineup';
-  var PC = window.MLBMAProfileControls;
-  if (cat === 'lineup') {
-    var split = activeSectionSplit('offense');
-    var windowKey = STATE.window || 'YTD';
-    el.innerHTML = (PC && PC.renderUnitContextBar)
-      ? PC.renderUnitContextBar('lineup', split, windowKey)
-      : '';
-    el.hidden = !el.innerHTML;
-  } else {
-    el.innerHTML = '';
-    el.hidden = true;
-  }
+  el.innerHTML = '';
+  el.hidden = true;
 }
 
 function renderUnitSnapshotStrip(prof, baseCtx) {
@@ -1823,6 +1809,12 @@ function rerenderTeamSection(sectionKey) {
   if (sectionKey === 'identity') return;
 
   if (sectionKey === 'rotation' || sectionKey === 'bullpen' || sectionKey === 'batting') {
+    if (sectionKey === 'batting') {
+      html = renderBattingSection(STATE.team, sectionCtx(baseCtx, 'batting', prof));
+      replaceSectionInDom('batting', html);
+      bindBattingSplitTabs();
+      return;
+    }
     renderStaffBlock(prof);
     return;
   }
@@ -1928,6 +1920,13 @@ function computeOsiRank(team) {
 function renderStaffBlock(prof) {
   var el = document.getElementById('profileStaffSections');
   if (!el || !window.TeamProfileStaff) return;
+  if (STATE.category === 'lineup') {
+    el.innerHTML = '';
+    el.hidden = true;
+    clearBullpenUsageMount();
+    return;
+  }
+  el.hidden = false;
   _bpUsageLoadToken++;
   var ctx = buildStaffCtx();
   el.innerHTML = TeamProfileStaff.renderAll(prof, STATE.team, ctx);
@@ -1966,6 +1965,7 @@ function renderOffenseBlock(prof, name, tonight) {
     return;
   }
   var ctx = buildMiniCtx(prof, name, tonight);
+  ctx.renderBattingSection = renderBattingSection;
   if (heroMount) {
     heroMount.innerHTML = TeamProfileMini.renderHeroCard(prof, STATE.team, ctx);
   }
@@ -1977,8 +1977,8 @@ function renderOffenseBlock(prof, name, tonight) {
     MLBMAIcons.refreshIcons(sections);
   }
   syncIdentityStackLayout();
-  bindTeamProfileMatchupCard(sections);
   bindTrendChartPanel();
+  bindBattingSplitTabs();
 }
 
 function renderTeam(team) {

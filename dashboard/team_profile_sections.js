@@ -502,9 +502,9 @@
       }
     ];
 
-    var body = offenseMetricsPanel(bands, cache, team);
+    var body = lineupSplitBar(split) + offenseMetricsPanel(bands, cache, team);
 
-    return sectionCard('Offense Profile', 'League rank on every metric', body,
+    return sectionCard('Offense Profile', 'Full split lens · league rank on every metric', body,
       { icon: 'offense-profile', kicker: 'Lineup unit', sectionId: 'offense-profile' });
   }
 
@@ -739,9 +739,9 @@
     var m = resolveM(prof, team, ctxForSection(ctx, prof, team, 'offense'));
     var html = '';
     html += renderOffenseProfile(m, prof, ctxForSection(ctx, prof, team, 'offense'));
+    html += renderSurfaceWins(ctx.resultsRow, ctx.getSectionWindow ? ctx.getSectionWindow('surface') : ctx.window, ctx);
     html += renderRollingTrend(resolveM(prof, team, ctx), prof, ctx);
     html += renderScheduleContext(ctxForSection(ctx, prof, team, 'schedule'), ctx.resultsRow, ctx.window);
-    html += renderSurfaceWins(ctx.resultsRow, ctx.getSectionWindow ? ctx.getSectionWindow('surface') : ctx.window, ctx);
     if (global.TeamProfileIntel) {
       html += TeamProfileIntel.renderSustainabilitySection(
         resolveM(prof, team, ctxForSection(ctx, prof, team, 'sustainability')),
@@ -749,7 +749,9 @@
         ctxForSection(ctx, prof, team, 'sustainability')
       );
     }
-    html += renderTonight(ctx);
+    if (typeof ctx.renderBattingSection === 'function') {
+      html += ctx.renderBattingSection(team, ctxForSection(ctx, prof, team, 'batting'));
+    }
     return html.replace(/<\/?motion>/g, '');
   }
 
