@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260604a">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260604b">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -25,7 +25,7 @@
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260604a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260604b"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
@@ -143,8 +143,7 @@
 
     <section class="ca-board tp-section tp-identity-panel pp-intel-section" id="secIntel">
       <div id="ppHdrIntel"></div>
-      <div class="tp-identity-panel__metrics" id="pitcherIntelPanel"></div>
-      <div class="tp-identity-panel__take" id="pitcherAnalystTake"></div>
+      <div class="table-wrap tp-table-wrap pp-pitching-value-wrap" id="pitchingValueTableWrap"></div>
     </section>
 
     <section class="ca-board tp-section profile-section" id="secAllowed">
@@ -648,19 +647,11 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
     compact: true
   });
   var snap = document.getElementById('pitcherSnapshot');
-  var intel = document.getElementById('pitcherIntelPanel');
-  var take = document.getElementById('pitcherAnalystTake');
   var allowed = document.getElementById('allowedDashboard');
   var oorEl = document.getElementById('oorPanel');
   if (snap) snap.innerHTML = PitcherProfileDashboard.renderSnapshot(profile, ctx);
-  var intelCtx = Object.assign({}, ctx, { omitHeader: true });
-  if (intel) intel.innerHTML = PitcherProfileDashboard.renderPitcherIntelPanel(profile, intelCtx);
-  if (take) take.innerHTML = '';
   if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, allowedCtx);
   if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, oorCtx);
-  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) {
-    if (intel) MLBMAIcons.refreshIcons(intel);
-  }
 }
 
 function mountProfilePageHeader() {
@@ -818,6 +809,46 @@ function bindPitcherSectionControls() {
 
 
 function pctNormP(v) { return (v == null || isNaN(v)) ? v : (v <= 1.5 ? v * 100 : v); }
+
+function pitchingValueChip(v, ctx, invert, dec) {
+  if (v == null || isNaN(v)) return '<span class="chip chip-ph">—</span>';
+  var A = window.MLBMAAssets;
+  if (A && A.valChipHtml) return A.valChipHtml(v, ctx, !!invert, dec == null ? 1 : dec);
+  return '<span class="chip">' + fmt(v, dec == null ? 1 : dec) + '</span>';
+}
+
+function buildPitchingValueTable(profile, splits) {
+  function pvRow(label, row) {
+    if (!row) {
+      return '<tr><td>' + escHtml(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
+    }
+    var k = pctNormP(numOrNull(pickCol(row, ['K_pct', 'K%'])));
+    var bb = pctNormP(numOrNull(pickCol(row, ['BB_pct', 'BB%'])));
+    var hr9 = numOrNull(pickCol(row, ['HR9', 'HR/9']));
+    var xfip = numOrNull(pickCol(row, ['xFIP', 'xfip']));
+    var ops = numOrNull(pickCol(row, ['OPS', 'ops', 'OPS_against']));
+    return '<tr>'
+      + '<td>' + escHtml(label) + '</td>'
+      + '<td class="num">' + pitchingValueChip(k, 'kpct', false, 1) + '</td>'
+      + '<td class="num">' + pitchingValueChip(bb, 'bbpct', true, 1) + '</td>'
+      + '<td class="num">' + pitchingValueChip(hr9, 'hr9', true, 2) + '</td>'
+      + '<td class="num">' + pitchingValueChip(xfip, 'xfip', true, 2) + '</td>'
+      + '<td class="num">' + pitchingValueChip(ops, 'ops', true, 3) + '</td>'
+      + '</tr>';
+  }
+  var sHome = findSplit(splits, 'location', 'home');
+  var sAway = findSplit(splits, 'location', 'away');
+  var sLhb = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
+  var sRhb = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
+  var body = pvRow('Both', profile)
+    + pvRow('Home', sHome)
+    + pvRow('Away', sAway)
+    + pvRow('vs LHB', sLhb)
+    + pvRow('vs RHB', sRhb);
+  return '<table class="hub-table tp-table pp-startlog pp-pitching-value-table" aria-label="Pitching value by split">'
+    + '<thead><tr><th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
+    + '<tbody>' + body + '</tbody></table>';
+}
 
 // Color-graded numeric cell (red->green vs league average), matching the team profile.
 function tierCell(v, ctx, invert, dec, asPct) {
@@ -1025,6 +1056,9 @@ function renderProfile(key) {
   renderPitcherSectionControls();
   bindPitcherSectionControls();
   renderPlatformSections(profile, splits, log, name, team, isToday);
+
+  var pvWrap = document.getElementById('pitchingValueTableWrap');
+  if (pvWrap) pvWrap.innerHTML = buildPitchingValueTable(profile, splits);
 
   // Season Line section removed (user request); keep YTD headline stats in the banner.
 

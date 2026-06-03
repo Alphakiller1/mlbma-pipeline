@@ -369,8 +369,8 @@
   margin-top: 0;
 }
 
-.pitcher-profile-page .pp-split-table-wrap {
-  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+.pitcher-profile-page .pp-pitching-value-wrap .pp-pitching-value-table {
+  width: 100%;
 }
 
 .pitcher-profile-page .pp-split-table.pp-startlog td .chip {
@@ -383,7 +383,8 @@
 }
 
 .pitcher-profile-page .tp-section > #oorPanel,
-.pitcher-profile-page .tp-section > #allowedDashboard {
+.pitcher-profile-page .tp-section > #allowedDashboard,
+.pitcher-profile-page .tp-section > #pitchingValueTableWrap {
   padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
 }
 
