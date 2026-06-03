@@ -508,12 +508,15 @@
     }
 
     var handVal = hand === 'L' ? 'LHP' : 'RHP';
+    var chipPh = A && A.chipPlaceholderHtml ? A.chipPlaceholderHtml('—') : '—';
 
     var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Pitcher headline stats">'
       + heroStat('Hand', handVal, 'neutral')
-      + heroStat('Pitch Score', ps != null ? valChip(ps, 'pitching', false, 0) : (A && A.chipPlaceholderHtml ? A.chipPlaceholderHtml('—') : '—'), 'neutral')
-      + heroStat('ERA', era != null ? fmt(era, 2) : '—', heroTone(3.60, 4.60, era, true))
-      + heroStat('QS%', qsPct != null ? fmt(qsPct, 0) + '%' : '—', heroTone(60, 40, qsPct, false))
+      + heroStat('Pitch Score', ps != null ? valChip(ps, 'pitching', false, 0) : chipPh, 'neutral')
+      + heroStat('ERA', era != null ? valChip(era, 'era', true, 2) : chipPh, 'neutral')
+      + heroStat('QS%', qsPct != null
+        ? valChip(qsPct, 'pitching', false, 0, { display: fmt(qsPct, 0) + '%' })
+        : chipPh, 'neutral')
       + '</div>';
 
     var notes = ctx.tonightHtml
