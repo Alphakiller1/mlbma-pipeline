@@ -507,11 +507,10 @@
         + '</div>';
     }
 
-    var handBadge = '<span class="tp-pitcher-banner__hand pp-hand-badge pp-hand-badge--'
-      + (hand === 'L' ? 'l' : 'r') + '" aria-label="' + esc(hand === 'L' ? 'Left-handed pitcher' : 'Right-handed pitcher') + '">'
-      + (hand === 'L' ? 'LHP' : 'RHP') + '</span>';
+    var handVal = hand === 'L' ? 'LHP' : 'RHP';
 
-    var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero" role="group" aria-label="Pitcher headline stats">'
+    var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Pitcher headline stats">'
+      + heroStat('Hand', handVal, 'neutral')
       + heroStat('Pitch Score', ps != null ? fmt(ps, 0) : '—', heroTone(60, 45, ps, false))
       + heroStat('ERA', era != null ? fmt(era, 2) : '—', heroTone(3.60, 4.60, era, true))
       + heroStat('QS%', qsPct != null ? fmt(qsPct, 0) + '%' : '—', heroTone(60, 40, qsPct, false))
@@ -527,7 +526,6 @@
       + '<div class="tp-team-banner__inner tp-pitcher-banner__inner">'
       + '<div class="tp-pitcher-banner__photo">' + hs + '</div>'
       + '<div class="tp-pitcher-banner__identity">'
-      + handBadge
       + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
       + '<div class="tp-team-banner__copy">'
       + '<p class="ca-eyebrow tp-team-banner__eyebrow">Pitcher Profile</p>'
