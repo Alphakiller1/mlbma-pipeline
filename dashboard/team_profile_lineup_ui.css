@@ -4,25 +4,25 @@
 
 /* Metric scan typography — brighter labels, slightly larger type */
 :is(body.team-profile-page, body.player-profile-page) {
-  --tp-stat-label-size: 12.5px;
+  --tp-stat-label-size: 11px;
   --tp-stat-label-color: #C8D0DC;
-  --tp-stat-chip-size: 15px;
-  --tp-stat-rank-size: 12px;
+  --tp-stat-chip-size: 13px;
+  --tp-stat-rank-size: 11px;
   --tp-stat-rank-muted: #9CA8BA;
-  --tp-metric-chip-min-w: 52px;
-  --tp-metric-chip-h: 28px;
-  --tp-metric-stat-gap: 9px;
-  --tp-metric-row-gap: 12px 20px;
-  --tp-helper-size: 15px;
-  --tp-band-title-size: 14px;
-  --tp-band-hint-size: 14px;
-  --tp-note-size: 14px;
+  --tp-metric-chip-min-w: 48px;
+  --tp-metric-chip-h: 24px;
+  --tp-metric-stat-gap: 8px;
+  --tp-metric-row-gap: 10px 16px;
+  --tp-helper-size: 12px;
+  --tp-band-title-size: 12px;
+  --tp-band-hint-size: 11px;
+  --tp-note-size: 12px;
   --tp-desc-color: #C4CBD6;
   --tp-note-color: #B8C0CC;
-  --tp-header-gap: 12px;
-  --tp-band-pad-y: 14px;
-  --tp-band-pad-x: 16px;
-  --tp-band-pad-bottom: 16px;
+  --tp-header-gap: 10px;
+  --tp-band-pad-y: 10px;
+  --tp-band-pad-x: 0;
+  --tp-band-pad-bottom: 10px;
 }
 
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat--inline .tp-offense-stat__label,
@@ -56,6 +56,29 @@
   font-weight: 500;
   line-height: 1.55;
   color: var(--tp-note-color, #B8C0CC);
+}
+
+:is(.team-profile-page, .player-profile-page) .tp-section.ca-board :is(.tp-offense-metrics--profile, .tp-offense-metrics--opponent, .tp-surface-wins) {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+:is(.team-profile-page, .player-profile-page) .tp-section.ca-board .tp-offense-metrics--profile .tp-offense-metrics__band,
+:is(.team-profile-page, .player-profile-page) .tp-section.ca-board .tp-offense-metrics--opponent .tp-offense-metrics__band,
+:is(.team-profile-page, .player-profile-page) .tp-section.ca-board .tp-surface-wins .tp-offense-metrics__band {
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+:is(.team-profile-page, .player-profile-page) .tp-section.ca-board .tp-offense-metrics__band:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 :is(.team-profile-page, .player-profile-page) .tp-offense-metrics--profile,
