@@ -247,10 +247,16 @@ body.player-profile-page .table-wrap {
 body.player-profile-page thead th {
   font-family: var(--display);
   font-weight: 800;
-  font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--text-3);
   background: transparent;
+}
+
+/* Compact headers on legacy profile panels — not pp-profile-table data grids */
+body.player-profile-page:not(.pitcher-profile-page) thead th,
+body.player-profile-page .hand-panel thead th,
+body.player-profile-page .loc-panel thead th {
+  font-size: 10px;
 }
 
 body.player-profile-page tbody tr:hover {

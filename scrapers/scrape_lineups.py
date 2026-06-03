@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import gspread
+from datetime import datetime
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, check_google_credentials
 
@@ -69,6 +70,7 @@ def scrape_lineups():
                 "Time": game_time,
                 "Away_SP": away_sp,
                 "Home_SP": home_sp,
+                "Slate_Date": datetime.now().strftime("%Y-%m-%d"),
             })
 
             # Get batting orders
@@ -157,9 +159,15 @@ def run():
     try:
         from scrapers import scrape_matchups
         print("\nRefreshing Today_Matchups to match lineup slate...")
-        scrape_matchups.run()
+        scrape_matchups.run(touch_sync=False)
     except Exception as e:
         print(f"  WARNING: Today_Matchups refresh after lineups failed: {e}")
+
+    try:
+        from outputs.push_sheets import touch_last_updated
+        touch_last_updated("Rotowire lineups + Today_Matchups")
+    except Exception as e:
+        print(f"  WARNING: Last_Updated touch after lineups failed: {e}")
 
     print("\nDone.")
 

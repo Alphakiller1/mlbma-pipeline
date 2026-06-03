@@ -519,7 +519,7 @@
 }
 
 .pitcher-profile-page .pp-split-metric-desc {
-  font-size: 12px;
+  font-size: var(--pp-trend-metric-desc-size, 14px);
   font-weight: 600;
   color: var(--text-3, #9CA3AF);
 }
@@ -627,51 +627,66 @@
   }
 }
 
-/* Profile tables — legibility (PDF: tier/log/splits readable) */
+/* Profile tables — legibility */
 .pitcher-profile-page {
-  --pp-table-size: 16px;
-  --pp-table-num-size: 18px;
-  --pp-table-head-size: 13px;
-  --pp-table-chip-size: 16px;
+  --pp-table-size: 22px;
+  --pp-table-num-size: 24px;
+  --pp-table-head-size: 16px;
+  --pp-table-chip-size: 22px;
+  --pp-trend-metric-size: 19px;
+  --pp-trend-metric-desc-size: 14px;
+  --pp-trend-meta-size: 15px;
 }
 
 .pitcher-profile-page .pp-startlog,
-.pitcher-profile-page .tp-table.hub-table.pp-startlog {
+.pitcher-profile-page .pp-tier-split-table,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog,
+.pitcher-profile-page .tp-table.hub-table.pp-tier-split-table {
   font-size: var(--pp-table-size);
 }
 
 .pitcher-profile-page .pp-startlog thead th,
-.pitcher-profile-page .tp-table.hub-table.pp-startlog thead th {
+.pitcher-profile-page .pp-tier-split-table thead th,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog thead th,
+.pitcher-profile-page .tp-table.hub-table.pp-tier-split-table thead th {
   font-size: var(--pp-table-head-size);
   letter-spacing: 0.05em;
   padding: 15px 13px;
 }
 
 .pitcher-profile-page .pp-startlog tbody td,
-.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td {
-  padding: 14px 13px;
-  min-height: 54px;
-  height: 54px;
+.pitcher-profile-page .pp-tier-split-table tbody td,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td,
+.pitcher-profile-page .tp-table.hub-table.pp-tier-split-table tbody td {
+  padding: 15px 14px;
+  min-height: 58px;
+  height: 58px;
   font-weight: 600;
   font-size: var(--pp-table-size);
   line-height: 1.4;
 }
 
 .pitcher-profile-page .pp-startlog tbody td.num,
-.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td.num {
+.pitcher-profile-page .pp-tier-split-table tbody td.num,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td.num,
+.pitcher-profile-page .tp-table.hub-table.pp-tier-split-table tbody td.num {
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   font-size: var(--pp-table-num-size);
 }
 
 .pitcher-profile-page .pp-startlog tbody td:first-child,
-.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td:first-child {
-  font-size: 15px;
+.pitcher-profile-page .pp-tier-split-table tbody td:first-child,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td:first-child,
+.pitcher-profile-page .tp-table.hub-table.pp-tier-split-table tbody td:first-child {
+  font-size: var(--pp-table-size);
   font-weight: 700;
 }
 
 .pitcher-profile-page .pp-startlog tbody tr:hover,
-.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody tr:hover {
+.pitcher-profile-page .pp-tier-split-table tbody tr:hover,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody tr:hover,
+.pitcher-profile-page .tp-table.hub-table.pp-tier-split-table tbody tr:hover {
   background: rgba(124, 77, 255, 0.10);
   box-shadow: inset 3px 0 0 #7C4DFF;
 }
@@ -740,49 +755,91 @@
 
 /* Rolling trend + hub tables on pitcher profile */
 .pitcher-profile-page .tp-trend-table thead th {
-  font-size: 12px;
-  padding: 13px 11px;
+  font-size: var(--pp-table-head-size, 15px);
+  padding: 14px 12px;
 }
 
 .pitcher-profile-page .tp-trend-table tbody th,
 .pitcher-profile-page .tp-trend-table tbody td {
-  height: 52px;
-  padding: 0 11px;
-  font-size: 15px;
+  height: 58px;
+  padding: 0 12px;
+  font-size: var(--pp-table-size, 18px);
 }
 
 .pitcher-profile-page .tp-trend-table tbody td.num .chip,
 .pitcher-profile-page .tp-trend-table .numcol .chip {
-  font-size: 15px;
-  padding: 6px 11px;
+  font-size: var(--pp-table-chip-size, 18px);
+  font-weight: 800;
+  padding: 8px 12px;
+  min-width: 54px;
+  min-height: 36px;
 }
 
 .pitcher-profile-page .tp-trend-table__metric {
-  font-size: 16px;
+  font-size: var(--pp-trend-metric-size, 19px);
 }
 
 .pitcher-profile-page .tp-trend-table__metric-desc {
-  font-size: 12px;
+  font-size: var(--pp-trend-metric-desc-size, 14px);
+  line-height: 1.35;
 }
 
 .pitcher-profile-page .tp-trend-table__reliability,
 .pitcher-profile-page .tp-trend-table__interp {
-  font-size: 13.5px;
+  font-size: var(--pp-trend-meta-size, 15px);
+  font-weight: 700;
+}
+
+.pitcher-profile-page .tp-table.hub-table thead th {
+  font-size: var(--pp-table-head-size, 15px);
+  letter-spacing: 0.05em;
+  padding: 15px 14px;
 }
 
 .pitcher-profile-page .tp-table.hub-table tbody td {
-  font-size: 15px;
-  padding: 13px 12px;
+  font-size: var(--pp-table-size, 18px);
+  padding: 15px 14px;
+  line-height: 1.35;
+}
+
+.pitcher-profile-page .tp-table.hub-table tbody td.num {
+  font-size: var(--pp-table-num-size, 21px);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
 }
 
 .pitcher-profile-page .tp-table.hub-table tbody td.num .chip {
-  font-size: 15px;
-  padding: 6px 11px;
+  font-size: var(--pp-table-chip-size, 18px);
+  padding: 8px 13px;
+  min-height: 36px;
+}
+
+.pitcher-profile-page #secTierSplits .hub-table.pp-tier-split-table thead th,
+.pitcher-profile-page #logTableWrap .hub-table.pp-startlog thead th {
+  font-size: var(--pp-table-head-size);
+}
+
+.pitcher-profile-page #secTierSplits .hub-table.pp-tier-split-table tbody td,
+.pitcher-profile-page #logTableWrap .hub-table.pp-startlog tbody td {
+  font-size: var(--pp-table-size);
+  height: 58px;
+  min-height: 58px;
+}
+
+.pitcher-profile-page #secTierSplits .hub-table.pp-tier-split-table tbody td.num,
+.pitcher-profile-page #logTableWrap .hub-table.pp-startlog tbody td.num {
+  font-size: var(--pp-table-num-size);
+}
+
+.pitcher-profile-page .pp-tier-dim-note {
+  font-size: var(--tp-note-size, 15px);
+  line-height: 1.5;
 }
 
 .pitcher-profile-page .tp-trend-table-note,
 .pitcher-profile-page .tp-trend-directive__read {
-  font-size: 14px;
+  font-size: var(--tp-note-size, 15px);
+  line-height: 1.5;
 }
 
 /* Opposing Offense Allowed — Team Profile rolling-trend chrome */
@@ -805,6 +862,21 @@
   margin-bottom: 14px;
 }
 
+.pitcher-profile-page #secAllowed .tp-trend-table thead th {
+  font-size: var(--pp-table-head-size, 15px);
+  padding: 15px 12px;
+}
+
+.pitcher-profile-page #secAllowed .tp-trend-table tbody th,
+.pitcher-profile-page #secAllowed .tp-trend-table tbody td {
+  height: 60px;
+}
+
+.pitcher-profile-page #secAllowed .tp-trend-table .numcol .chip {
+  font-size: var(--pp-table-chip-size, 18px);
+  padding: 8px 13px;
+}
+
 .pitcher-profile-page #secAllowed .tp-trend-chart-mount .mlbma-trend-chart {
   width: 100%;
   max-width: 100%;
@@ -812,9 +884,18 @@
 
 .pitcher-profile-page #secAllowed .tp-trend-readout {
   margin: 12px 0 0;
-  font-size: 14px;
+  font-size: var(--tp-note-size, 15px);
   line-height: 1.5;
   color: var(--tp-note-color, #B8C0CC);
+}
+
+.pitcher-profile-page #secAllowed .tp-section-filter-bar--context,
+.pitcher-profile-page #secAllowed .tp-trend-directive {
+  font-size: var(--tp-note-size, 15px);
+}
+
+.pitcher-profile-page #secAllowed .tp-section-filter-bar--context .tp-control-hint {
+  font-size: var(--tp-note-size, 15px);
 }
 
 /* Strength of Competition — single-row metrics (split via pills above) */
@@ -846,7 +927,7 @@
 
 .pitcher-profile-page .pp-oor-metrics-table thead th {
   text-align: center;
-  font-size: var(--pp-table-head-size, 13px);
+  font-size: var(--pp-table-head-size, 15px);
   letter-spacing: 0.06em;
   padding: 14px 16px;
 }
@@ -855,7 +936,7 @@
   text-align: center;
   vertical-align: middle;
   padding: 18px 16px;
-  font-size: var(--pp-table-num-size, 18px);
+  font-size: var(--pp-table-num-size, 21px);
 }
 
 .pitcher-profile-page .pp-oor-metric-cell .chip {
@@ -863,14 +944,14 @@
   display: inline-flex;
   justify-content: center;
   min-width: 72px;
-  font-size: var(--pp-table-chip-size, 16px);
+  font-size: var(--pp-table-chip-size, 18px);
   padding: 8px 14px;
 }
 
 .pitcher-profile-page .pp-oor-split-note {
   margin: 10px 0 0;
   text-align: center;
-  font-size: 13px;
+  font-size: var(--tp-note-size, 15px);
   color: var(--tp-note-color, #B8C0CC);
 }
 
@@ -901,7 +982,7 @@
 
 .pitcher-profile-page .pp-f5-metrics-table thead th {
   text-align: center;
-  font-size: var(--pp-table-head-size, 13px);
+  font-size: var(--pp-table-head-size, 15px);
   letter-spacing: 0.06em;
   padding: 14px 16px;
 }
@@ -910,7 +991,7 @@
   text-align: center;
   vertical-align: middle;
   padding: 18px 16px;
-  font-size: var(--pp-table-num-size, 18px);
+  font-size: var(--pp-table-num-size, 21px);
 }
 
 .pitcher-profile-page .pp-f5-metric-cell .chip {
@@ -918,14 +999,14 @@
   display: inline-flex;
   justify-content: center;
   min-width: 72px;
-  font-size: var(--pp-table-chip-size, 16px);
+  font-size: var(--pp-table-chip-size, 18px);
   padding: 8px 14px;
 }
 
 .pitcher-profile-page .pp-f5-split-note {
   margin: 10px 0 0;
   text-align: center;
-  font-size: 13px;
+  font-size: var(--tp-note-size, 15px);
   color: var(--tp-note-color, #B8C0CC);
 }
 
@@ -934,3 +1015,87 @@
   font-weight: 700;
 }
 
+/* Tier splits + recent start log — pp-data-table (no hub-table / tp-table shrink) */
+body.pitcher-profile-page table.pp-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui, "DM Sans", system-ui, sans-serif);
+  font-size: var(--pp-table-size, 22px);
+}
+
+body.pitcher-profile-page table.pp-data-table thead th,
+body.pitcher-profile-page table.pp-data-table thead th.pp-table-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #0C0E18;
+  color: #AEB4C6;
+  font-family: var(--font-display, "Roboto Condensed", sans-serif);
+  font-size: var(--pp-table-head-size, 16px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 16px 14px;
+  border-bottom: 1.5px solid #37405A;
+  text-align: center;
+}
+
+body.pitcher-profile-page table.pp-data-table tbody td {
+  padding: 16px 14px;
+  height: 62px;
+  min-height: 62px;
+  vertical-align: middle;
+  text-align: center;
+  font-size: var(--pp-table-size, 22px);
+  font-weight: 600;
+  line-height: 1.35;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+body.pitcher-profile-page table.pp-data-table tbody td.num {
+  font-size: var(--pp-table-num-size, 24px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+body.pitcher-profile-page table.pp-data-table .pp-table-num-text {
+  display: inline-block;
+  font-size: var(--pp-table-num-size, 24px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+body.pitcher-profile-page table.pp-data-table .pp-table-label-text {
+  display: inline-block;
+  font-size: var(--pp-table-size, 22px);
+  font-weight: 700;
+}
+
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table,
+body.pitcher-profile-page #logTableWrap table.pp-data-table {
+  font-size: 22px;
+}
+
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table thead th,
+body.pitcher-profile-page #logTableWrap table.pp-data-table thead th {
+  font-size: 16px;
+}
+
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table tbody td,
+body.pitcher-profile-page #logTableWrap table.pp-data-table tbody td {
+  font-size: 22px;
+}
+
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table tbody td.num,
+body.pitcher-profile-page #logTableWrap table.pp-data-table tbody td.num,
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table .pp-table-num-text,
+body.pitcher-profile-page #logTableWrap table.pp-data-table .pp-table-num-text {
+  font-size: 24px;
+}
+
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table tbody tr:hover,
+body.pitcher-profile-page #logTableWrap table.pp-data-table tbody tr:hover {
+  background: rgba(124, 77, 255, 0.10);
+  box-shadow: inset 3px 0 0 #7C4DFF;
+}

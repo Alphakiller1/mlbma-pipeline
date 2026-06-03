@@ -166,6 +166,36 @@ def schedule_game_keys(games_df):
     }
 
 
+def enrich_games_with_api_pitchers(games_df, api_games):
+    """Fill SP names/hands from MLB API when Rotowire rows are TBD or default R."""
+    if games_df is None or games_df.empty:
+        return games_df
+    if api_games is None or api_games.empty:
+        return games_df
+    api_by_key = {}
+    for _, row in api_games.iterrows():
+        api_by_key[f"{row['Away_Team']}@{row['Home_Team']}"] = row
+    records = []
+    for _, g in games_df.iterrows():
+        rec = g.to_dict()
+        api = api_by_key.get(f"{rec['Away_Team']}@{rec['Home_Team']}")
+        if api is None:
+            records.append(rec)
+            continue
+        for side in ("Away", "Home"):
+            sp_col = f"{side}_SP"
+            hand_col = f"{side}_SP_Hand"
+            api_sp = str(api.get(sp_col, "TBD")).strip()
+            api_hand = str(api.get(hand_col, "R")).strip() or "R"
+            cur_sp = str(rec.get(sp_col, "TBD")).strip()
+            if cur_sp in ("", "TBD", "nan", "None") and api_sp not in ("", "TBD"):
+                rec[sp_col] = api_sp
+            if api_hand in ("L", "R"):
+                rec[hand_col] = api_hand
+        records.append(rec)
+    return pd.DataFrame(records)
+
+
 def merge_rotowire_with_api_schedule(rotowire, api_games):
     """Use Rotowire lineup details when present, and append API-only games."""
     if api_games.empty:
@@ -200,8 +230,9 @@ def merge_rotowire_with_api_schedule(rotowire, api_games):
 def build_matchups():
     print("Building matchup sheet...")
     rotowire = load_games_from_rotowire_exports()
-    games = get_today_schedule()
-    games = merge_rotowire_with_api_schedule(rotowire, games)
+    api_games = get_today_schedule()
+    games = merge_rotowire_with_api_schedule(rotowire, api_games)
+    games = enrich_games_with_api_pitchers(games, api_games)
     if False and not rotowire.empty:
         api_keys = schedule_game_keys(games)
         rw_keys = schedule_game_keys(rotowire)
@@ -311,7 +342,27 @@ def push_to_sheets(df):
     ws.update(data)
     print(f"  Pushed {tab}: {len(df)} games")
 
-def run():
+def clear_matchups_sheet():
+    if not check_google_credentials():
+        print("  Skipping Today_Matchups clear (credentials unavailable).")
+        return
+    from core.config import CREDS_FILE, SCOPES
+    from google.oauth2.service_account import Credentials
+
+    creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
+    client = gspread.authorize(creds)
+    sheet = client.open_by_key(SHEET_ID)
+    tab = SHEET_TABS["today_matchups"]
+    try:
+        ws = sheet.worksheet(tab)
+        ws.clear()
+        ws.update([["Time", "Away", "Home", "Away_SP", "Away_Hand", "Home_SP", "Home_Hand"]])
+        print(f"  Cleared {tab} (no games today)")
+    except gspread.exceptions.WorksheetNotFound:
+        pass
+
+
+def run(touch_sync: bool = True):
     df = build_matchups()
     if not df.empty:
         fname = os.path.join(DATA_DIR, "today_matchups.csv")
@@ -320,6 +371,18 @@ def run():
         push_to_sheets(df)
         print("\nMatchup sheet:")
         print(df[["Time", "Away", "Home", "Away_SP", "Away_Hand", "Home_SP", "Home_Hand", "Away_OSI", "Home_OSI", "Lineup_Edge"]].to_string())
+    else:
+        stale_path = os.path.join(DATA_DIR, "today_matchups.csv")
+        if os.path.exists(stale_path):
+            os.remove(stale_path)
+            print("  Removed stale today_matchups.csv")
+        clear_matchups_sheet()
+    if touch_sync:
+        try:
+            from outputs.push_sheets import touch_last_updated
+            touch_last_updated("Today_Matchups slate")
+        except Exception as e:
+            print(f"  WARNING: Last_Updated touch after matchups failed: {e}")
     print("\nDone.")
 
 if __name__ == "__main__":

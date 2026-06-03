@@ -118,8 +118,19 @@
   function opponentCompetitionFromGame(g, pickCol, extras) {
     extras = extras || {};
     var tm = String(pickCol(g, ['opponent_team', 'opponent team', 'Opponent']) || '').trim().toUpperCase();
-    var oor = pickNum(g, pickCol, ['opponent_OOR', 'opponent OOR']);
-    if (oor == null && tm && extras.oorMap) oor = num(extras.oorMap[tm]);
+    var oor = null;
+    var oorTeam = extras.oorByTeam && tm ? extras.oorByTeam[tm] : null;
+    if (extras.platoonSplit === 'lhh') {
+      oor = pickNum(g, pickCol, ['opponent_HvL', 'opponent HvL', 'opponent_hvL']);
+      if (oor == null && oorTeam && oorTeam.hvL != null) oor = oorTeam.hvL;
+    } else if (extras.platoonSplit === 'rhh') {
+      oor = pickNum(g, pickCol, ['opponent_HvR', 'opponent HvR', 'opponent_hvR']);
+      if (oor == null && oorTeam && oorTeam.hvR != null) oor = oorTeam.hvR;
+    } else {
+      oor = pickNum(g, pickCol, ['opponent_OOR', 'opponent OOR']);
+      if (oor == null && tm && extras.oorMap) oor = num(extras.oorMap[tm]);
+      if (oor == null && oorTeam && oorTeam.oor != null) oor = oorTeam.oor;
+    }
     var pals = pickNum(g, pickCol, ['opponent_PALS', 'opponent PALS']);
     if (pals == null && tm) {
       var tp = findTeamProfile(extras.teamProfiles, pickCol, tm);
@@ -194,6 +205,7 @@
   function competitionExtrasFromCtx(ctx) {
     return {
       oorMap: ctx.oorMap || {},
+      oorByTeam: ctx.oorByTeam || {},
       teamProfiles: ctx.teamProfiles || []
     };
   }
@@ -311,7 +323,9 @@
         if (opts.mode === 'competition') {
           return aggregateCompetitionFromLog(sub, pickCol, {
             oorMap: opts.oorMap,
-            teamProfiles: opts.teamProfiles
+            oorByTeam: opts.oorByTeam,
+            teamProfiles: opts.teamProfiles,
+            platoonSplit: opts.platoonSplit
           });
         }
         if (opts.mode === 'f5') {
@@ -326,7 +340,9 @@
       if (opts.mode === 'competition') {
         var compExtras = {
           oorMap: opts.oorMap,
-          teamProfiles: opts.teamProfiles
+          oorByTeam: opts.oorByTeam,
+          teamProfiles: opts.teamProfiles,
+          platoonSplit: opts.platoonSplit
         };
         if (log && log.length) {
           var compAgg = aggregateCompetitionFromLog(log, pickCol, compExtras);
@@ -346,6 +362,7 @@
     if (opts.mode === 'competition' && opts.competitionLogFallback && log && log.length) {
       return aggregateCompetitionFromLog(log, pickCol, {
         oorMap: opts.oorMap,
+        oorByTeam: opts.oorByTeam,
         teamProfiles: opts.teamProfiles,
         platoonSplit: opts.platoonSplit
       });
@@ -1170,9 +1187,16 @@
     var baseOpts = {
       mode: 'competition',
       oorMap: extras.oorMap,
+      oorByTeam: extras.oorByTeam,
       teamProfiles: extras.teamProfiles,
       ctx: ctx
     };
+
+    if (viewSplit === 'lhh' || viewSplit === 'rhh') {
+      var platoonRow = aggregateCompetitionFromLog(rawLog, pickCol, extras);
+      if (competitionRowHasData(platoonRow)) return platoonRow;
+    }
+
     var row = resolvePitcherSplitRow(
       splits,
       rawLog,
@@ -1222,7 +1246,7 @@
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-oor-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
       + (viewSplit === 'lhh' || viewSplit === 'rhh'
-        ? ' · platoon-adjusted opponent quality (OOR/PALS + wRC+ vs RHP/LHP per start)'
+        ? ' · OOR = HvL/HvR · wRC+ = vs LHP/RHP · PALS = season avg'
         : ' · higher = tougher schedule (contextualizes ERA)')
       + '</p>';
   }

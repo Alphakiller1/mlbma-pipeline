@@ -29,6 +29,26 @@ def sanitize_df_for_sheets(df: pd.DataFrame) -> pd.DataFrame:
     return out.fillna("")
 
 
+def touch_last_updated(source: str = "MLBMA pipeline") -> None:
+    """Bump Last_Updated so dashboard cache busts after slate-only pushes."""
+    if not check_google_credentials():
+        print("  Skipping Last_Updated touch (credentials unavailable).")
+        return
+    sheet = get_client().open_by_key(SHEET_ID)
+    tab_ts = SHEET_TABS["last_updated"]
+    try:
+        ts_sheet = sheet.worksheet(tab_ts)
+        ts_sheet.clear()
+    except gspread.exceptions.WorksheetNotFound:
+        ts_sheet = sheet.add_worksheet(title=tab_ts, rows=5, cols=2)
+    ts_sheet.update([
+        ["Last Updated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
+        ["Season", str(CURRENT_SEASON)],
+        ["Source", source],
+    ])
+    print("  Touched Last_Updated timestamp")
+
+
 def push_df(sheet, tab_name, df):
     nrows = max(int(len(df)) + 10, 50)
     ncols = max(int(len(df.columns)) + 2, 20)

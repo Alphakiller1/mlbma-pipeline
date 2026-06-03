@@ -64,6 +64,8 @@ def enrich_faced(gamelog: pd.DataFrame) -> pd.DataFrame:
     g = gamelog.copy()
     pals = _team_metric_map("metrics_pals.csv", "PALS")
     oor = _team_metric_map("metrics_oor.csv", "OOR")
+    hvl = _team_metric_map("metrics_oor.csv", "HvL")
+    hvr = _team_metric_map("metrics_oor.csv", "HvR")
     wrc_r = _team_metric_map("metrics_vs_RHP.csv", "wRC+")
     wrc_l = _team_metric_map("metrics_vs_LHP.csv", "wRC+")
 
@@ -71,6 +73,8 @@ def enrich_faced(gamelog: pd.DataFrame) -> pd.DataFrame:
         return str(r.get("opponent_team", "")).strip().upper()
 
     g["opponent_OOR"] = g.apply(lambda r: oor.get(opp(r)), axis=1)
+    g["opponent_HvL"] = g.apply(lambda r: hvl.get(opp(r)), axis=1)
+    g["opponent_HvR"] = g.apply(lambda r: hvr.get(opp(r)), axis=1)
     g["opponent_PALS"] = g.apply(lambda r: pals.get(opp(r)), axis=1)
     g["opponent_wRC"] = g.apply(
         lambda r: (wrc_r if str(r.get("pitcher_hand", "R")).upper().startswith("R") else wrc_l).get(opp(r)),
@@ -329,11 +333,12 @@ def _avg_platoon_allowed(gamelog: pd.DataFrame, pname_key: str, bat_side: str) -
 
 
 def _avg_platoon_competition(gamelog: pd.DataFrame, pname_key: str, bat_side: str) -> dict:
-    """Season avg OOR / PALS / platoon wRC+ faced across this pitcher's starts."""
+    """Season avg platoon OOR (HvL/HvR) / PALS / wRC+ faced across this pitcher's starts."""
     pdf = gamelog[gamelog["pitcher_name"].apply(lambda n: _norm(n) == pname_key)]
     if pdf.empty:
         return {}
-    oor = _team_metric_map("metrics_oor.csv", "OOR")
+    oor_col = "HvL" if bat_side == "LHH" else "HvR"
+    oor = _team_metric_map("metrics_oor.csv", oor_col)
     pals = _team_metric_map("metrics_pals.csv", "PALS")
     wrc_fname = "metrics_vs_RHP.csv" if bat_side == "RHH" else "metrics_vs_LHP.csv"
     wrc = _team_metric_map(wrc_fname, "wRC+")

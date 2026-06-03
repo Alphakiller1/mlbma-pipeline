@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-
-
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Pitcher Profile</title>
 <style>
@@ -16,8 +16,7 @@
 <link rel="stylesheet" href="theme.css?v=20260618b">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
-<link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260610d">
+<link rel="stylesheet" href="player_profile_pages.css?v=20260610r">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -27,9 +26,10 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260610n"></script>
+<script src="pitcher_profile_dashboard.js?v=20260610o"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260603u">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body class="player-profile-page pitcher-profile-page team-profile-page">
@@ -161,7 +161,7 @@
     <section class="ca-board tp-section" id="secTierSplits">
       <div id="ppHdrTierSplits"></div>
       <div id="pitcherTierControls"></div>
-      <div id="tierSplitTableWrap"></div>
+      <div class="table-wrap tp-table-wrap" id="tierSplitTableWrap"></div>
       <div class="insight-line tp-note" id="tierSplitInsight"></div>
     </section>
 
@@ -179,7 +179,7 @@
     </div>
   </div>
 </main>
-<!-- pitcher-profile build: 20260610n -->
+<!-- pitcher-profile build: 20260610t -->
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -195,6 +195,7 @@ var DATA = {
   todayStarters: new Set(),
   lastUpdated: null,
   oorMap: {},
+  oorByTeam: {},
   teamProfiles: []
 };
 
@@ -584,6 +585,25 @@ function buildOorMap(rows) {
   return map;
 }
 
+function buildOorByTeam(rows) {
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.buildOorByTeam) {
+    return MLBMASharedMatchup.buildOorByTeam(rows);
+  }
+  var map = {};
+  (rows || []).forEach(function(row) {
+    var t = String(pickCol(row, ['Tm', 'tm', 'Team', 'team'])).trim().toUpperCase();
+    if (!t) return;
+    map[t] = {
+      t: t,
+      hvP: numOrNull(pickCol(row, ['HvP', 'hvP'])),
+      hvL: numOrNull(pickCol(row, ['HvL', 'hvL'])),
+      hvR: numOrNull(pickCol(row, ['HvR', 'hvR'])),
+      oor: numOrNull(pickCol(row, ['OOR', 'oor']))
+    };
+  });
+  return map;
+}
+
 function splitLabel(split) {
   var labels = { overall: 'Overall', ytd: 'Overall', lhh: 'vs LHH', rhh: 'vs RHH', home: 'Home', away: 'Away', f5: 'F5' };
   return labels[split] || split;
@@ -724,6 +744,7 @@ function buildDashboardCtx(profile, splits, log, name, team, isToday, tonight) {
     tonightOsi: tonight ? tonight.oppOsi : null,
     allProfiles: DATA.profiles,
     oorMap: DATA.oorMap,
+    oorByTeam: DATA.oorByTeam,
     teamProfiles: DATA.teamProfiles,
     chartMetric: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.chartMetric)
       || STATE.chartMetric || 'osi'
@@ -1095,13 +1116,36 @@ function renderF5Section(profile, splits, log, name, team, isToday) {
   );
 }
 
-// Color-graded numeric cell (red->green vs league average), matching the team profile.
+// Color-graded numeric cell — solid chips (same visual weight as start log / profile tables).
+function ppTableNumSpan(text) {
+  return '<span class="pp-table-num-text">' + escHtml(text != null && text !== '' ? String(text) : '—') + '</span>';
+}
+
+function ppTableLabelSpan(text) {
+  return '<span class="pp-table-label-text">' + escHtml(text != null ? String(text) : '—') + '</span>';
+}
+
+function ppTableHeadCell(label) {
+  return '<th class="pp-table-head">' + escHtml(label) + '</th>';
+}
+
 function tierCell(v, ctx, invert, dec, asPct) {
-  if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+  if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">' + ppTableNumSpan('—') + '</td>';
   var disp = asPct ? fmtPct(v) : fmt(v, dec);
   var A = window.MLBMAAssets;
   var color = (A && A.metricColor) ? A.metricColor(v, ctx, invert) : '';
-  return '<td class="num"' + (color ? ' style="color:' + color + ';font-weight:800"' : '') + '>' + disp + '</td>';
+  if (color) {
+    return '<td class="num"><span class="pp-table-num-text pp-table-num-text--graded" style="color:' + color + '">' + escHtml(disp) + '</span></td>';
+  }
+  return '<td class="num">' + ppTableNumSpan(disp) + '</td>';
+}
+
+function tierPlainNumCell(v, dec) {
+  if (v == null || v === '' || (typeof v === 'number' && isNaN(v))) {
+    return '<td class="num tp-empty-cell">' + ppTableNumSpan('—') + '</td>';
+  }
+  var disp = dec != null ? fmt(v, dec) : String(v);
+  return '<td class="num">' + ppTableNumSpan(disp) + '</td>';
 }
 
 function tierDimensionLabel(dim) {
@@ -1140,7 +1184,7 @@ function buildTierTable(splits, dimension, tierOrder) {
   var rows = tierOrder.map(function(tier) {
     var s = findSplit(splits, dimension, tier);
     if (!s) {
-      return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td>' +
+      return '<tr><td class="' + tierClass(tier) + '">' + ppTableLabelSpan(tier) + '</td>' +
         '<td colspan="8" class="tp-empty-cell">—</td></tr>';
     }
     var starts = numOrNull(pickCol(s, ['starts', 'Starts']));
@@ -1153,23 +1197,25 @@ function buildTierTable(splits, dimension, tierOrder) {
     var pitches = numOrNull(pickCol(s, ['avg_pitches', 'avg pitches']));
     var flag = (dimension === 'osi_tier' && tier === 'High' && ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) ? 'flag-row' : '';
     return '<tr class="' + flag + '">' +
-      '<td class="' + tierClass(tier) + '">' + tier + '</td>' +
-      '<td class="num">' + (starts != null ? starts : '—') + '</td>' +
-      '<td class="num">' + fmt(avgIp, 1) + '</td>' +
+      '<td class="' + tierClass(tier) + '">' + ppTableLabelSpan(tier) + '</td>' +
+      tierPlainNumCell(starts, null) +
+      tierPlainNumCell(avgIp, 1) +
       tierCell(era, 'era', true, 2, false) +
       tierCell(fip, 'fip', true, 2, false) +
       tierCell(k, 'kpct', false, 1, true) +
       tierCell(bb, 'bbpct', true, 1, true) +
       tierCell(hr9, 'hr9', true, 2, false) +
-      '<td class="num">' + fmt(pitches, 0) + '</td>' +
+      tierPlainNumCell(pitches, 0) +
       '</tr>';
   }).join('');
   return '<p class="tp-trend-table-note pp-tier-dim-note">Showing stats vs opponent <strong>'
     + escHtml(tierDimensionLabel(dimension)) + '</strong> tier (High / Mid / Low).</p>'
-    + '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table pp-tier-split-table" data-tier-dim="'
+    + '<table class="pp-data-table pp-tier-split-table pp-profile-table" data-tier-dim="'
     + escHtml(dimension) + '"><thead><tr>'
-    + '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>FIP</th><th>K%</th><th>BB%</th><th>HR/9</th><th>Pitches/Start</th>'
-    + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+    + ppTableHeadCell('Tier') + ppTableHeadCell('Starts') + ppTableHeadCell('IP/Start')
+    + ppTableHeadCell('ERA') + ppTableHeadCell('FIP') + ppTableHeadCell('K%')
+    + ppTableHeadCell('BB%') + ppTableHeadCell('HR/9') + ppTableHeadCell('Pitches/Start')
+    + '</tr></thead><tbody>' + rows + '</tbody></table>';
 }
 
 function insightOsiTier(splits) {
@@ -1343,9 +1389,13 @@ function renderProfile(key) {
     return dateSortKey(pickCol(b, ['date', 'Date', 'game_date', 'Game Date'])) - dateSortKey(pickCol(a, ['date', 'Date', 'game_date', 'Game Date']));
   }).slice(0, 10);
 
-  var logHtml = sortedLog.length ? '<table class="hub-table tp-table pp-startlog"><thead><tr>' +
-    '<th>Date</th><th>Opp</th><th>H/A</th><th>Opp ABQ</th><th>Opp OSI</th><th>Tier</th><th>IP</th><th>ER</th><th>K</th><th>BB</th><th>HR</th><th>F5 ER</th><th>GS</th><th>Result</th>' +
-    '</tr></thead><tbody>' + sortedLog.map(function(g) {
+  var logHtml = sortedLog.length ? '<table class="pp-data-table pp-startlog pp-profile-table"><thead><tr>'
+    + ppTableHeadCell('Date') + ppTableHeadCell('Opp') + ppTableHeadCell('H/A')
+    + ppTableHeadCell('Opp ABQ') + ppTableHeadCell('Opp OSI') + ppTableHeadCell('Tier')
+    + ppTableHeadCell('IP') + ppTableHeadCell('ER') + ppTableHeadCell('K')
+    + ppTableHeadCell('BB') + ppTableHeadCell('HR') + ppTableHeadCell('F5 ER')
+    + ppTableHeadCell('GS') + ppTableHeadCell('Result')
+    + '</tr></thead><tbody>' + sortedLog.map(function(g) {
       var tier = pickCol(g, ['opponent_OSI_tier', 'opponent OSI tier']);
       var opp = pickCol(g, ['opponent_team', 'opponent team', 'Opponent']);
       var ha = String(pickCol(g, ['home_away', 'home away', 'HA']) || '').charAt(0).toUpperCase();
@@ -1356,19 +1406,26 @@ function renderProfile(key) {
       var logo = (window.MLBMAAssets && MLBMAAssets.teamLogoImg)
         ? '<span class="pp-startlog-opp-logo-slot">' + MLBMAAssets.teamLogoImg(opp, 96, 'pp-startlog-opp-logo') + '</span>'
         : '';
-      return '<tr class="' + gamelogRowClass(g).trim() + '"><td>' + pickCol(g, ['date']) + '</td>' +
+      var gsColor = (gs != null && window.MLBMAAssets) ? MLBMAAssets.metricColor(gs, 'osi', false) : '';
+      var gsCellInner = gs != null ? fmt(gs, 1) : '—';
+      if (gsColor) {
+        gsCellInner = '<span class="pp-table-num-text" style="color:' + gsColor + '">' + escHtml(gsCellInner) + '</span>';
+      } else {
+        gsCellInner = ppTableNumSpan(gsCellInner);
+      }
+      return '<tr class="' + gamelogRowClass(g).trim() + '"><td>' + ppTableNumSpan(pickCol(g, ['date'])) + '</td>' +
         '<td class="pp-startlog-opp"><span class="pl-gamelog-opp-inner">' + logo + '<span class="pp-startlog-opp-abbr">' + escHtml(opp) + '</span></span></td>' +
-        '<td class="num">' + (ha || '—') + '</td>' +
-        '<td class="num">' + escHtml(abqTier) + '</td>' +
-        '<td class="num">' + (oppOsi != null ? fmt(oppOsi, 1) : '—') + '</td>' +
-        '<td class="' + tierClass(tier) + '">' + (tier || '—') + '</td>' +
-        '<td class="num">' + pickCol(g, ['IP', 'ip']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['ER', 'er']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['K']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['BB']) + '</td>' +
-        '<td class="num">' + pickCol(g, ['HR']) + '</td>' +
-        '<td class="num">' + (f5er !== '' && f5er != null ? escHtml(f5er) : '—') + '</td>' +
-        '<td class="num" style="font-weight:800;color:' + ((gs != null && window.MLBMAAssets) ? MLBMAAssets.metricColor(gs, 'osi', false) : 'inherit') + '">' + (gs != null ? fmt(gs, 1) : '—') + '</td>' +
+        '<td class="num">' + ppTableNumSpan(ha || '—') + '</td>' +
+        '<td class="num">' + ppTableNumSpan(abqTier) + '</td>' +
+        '<td class="num">' + ppTableNumSpan(oppOsi != null ? fmt(oppOsi, 1) : '—') + '</td>' +
+        '<td class="' + tierClass(tier) + '">' + ppTableLabelSpan(tier || '—') + '</td>' +
+        '<td class="num">' + ppTableNumSpan(pickCol(g, ['IP', 'ip'])) + '</td>' +
+        '<td class="num">' + ppTableNumSpan(pickCol(g, ['ER', 'er'])) + '</td>' +
+        '<td class="num">' + ppTableNumSpan(pickCol(g, ['K'])) + '</td>' +
+        '<td class="num">' + ppTableNumSpan(pickCol(g, ['BB'])) + '</td>' +
+        '<td class="num">' + ppTableNumSpan(pickCol(g, ['HR'])) + '</td>' +
+        '<td class="num">' + ppTableNumSpan(f5er !== '' && f5er != null ? f5er : '—') + '</td>' +
+        '<td class="num">' + gsCellInner + '</td>' +
         '<td>' + startResultChip(g) + '</td></tr>';
     }).join('') + '</tbody></table>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
@@ -1680,6 +1737,7 @@ function loadAll() {
       MLBMAAssets.parseRegistryRows(results[5] || []);
     }
     DATA.oorMap = buildOorMap(results[6] || []);
+    DATA.oorByTeam = buildOorByTeam(results[6] || []);
     DATA.teamProfiles = results[7] || [];
     DATA.loaded = true;
     buildTodayStarters();
@@ -1739,6 +1797,40 @@ document.addEventListener('DOMContentLoaded', function() {
   loadAll();
 });
 </script>
+<!-- pitcher-profile build: 20260603u — pp-data-table tier typography -->
+<style id="pp-tier-table-lock">
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table,
+body.pitcher-profile-page #logTableWrap table.pp-data-table {
+  font-size: 22px !important;
+}
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table thead th,
+body.pitcher-profile-page #logTableWrap table.pp-data-table thead th {
+  font-size: 16px !important;
+  padding: 16px 14px !important;
+}
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table tbody td,
+body.pitcher-profile-page #logTableWrap table.pp-data-table tbody td {
+  font-size: 22px !important;
+  padding: 16px 14px !important;
+  height: 62px !important;
+}
+body.pitcher-profile-page #tierSplitTableWrap table.pp-data-table tbody td.num,
+body.pitcher-profile-page #logTableWrap table.pp-data-table tbody td.num {
+  font-size: 24px !important;
+}
+body.pitcher-profile-page #tierSplitTableWrap .pp-table-num-text,
+body.pitcher-profile-page #logTableWrap .pp-table-num-text,
+body.pitcher-profile-page #tierSplitTableWrap .pp-table-label-text,
+body.pitcher-profile-page #logTableWrap .pp-table-label-text {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+}
+body.pitcher-profile-page #tierSplitTableWrap .pp-table-label-text,
+body.pitcher-profile-page #logTableWrap .pp-table-label-text {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+</style>
   <script src="chase_nav.js"></script>
 </body>
 </html>
