@@ -393,3 +393,12 @@
     max-width: 420px;
   }
 }
+
+/* Recent Start Log — high-legibility table (larger type, more breathing room,
+   color-graded game score + result chip). */
+.pp-startlog { font-size: 14px; }
+.pp-startlog thead th { font-size: 11.5px; letter-spacing: 0.04em; padding: 13px 11px; }
+.pp-startlog tbody td { padding: 12px 11px; height: 46px; font-weight: 600; }
+.pp-startlog tbody td.num { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 15px; }
+.pp-startlog tbody tr:hover { background: rgba(124, 77, 255, 0.10); box-shadow: inset 3px 0 0 #7C4DFF; }
+.pp-result-chip { min-width: 76px; height: 27px; font-size: 12.5px; padding: 0 12px; }

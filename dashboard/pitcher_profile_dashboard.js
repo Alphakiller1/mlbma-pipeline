@@ -145,14 +145,24 @@
     }
 
     var maxStarts = window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
-    if (window !== 'YTD' && log.length) {
-      metrics = {
-        // Rolling windows must reflect recent schedule difficulty. If the game log
-        // doesn't include opponent_* fields yet, show empty rather than repeating YTD.
+    var overall = (split === 'ytd' || split === '' || split == null);
+    // Drive the rolling windows from the game log so YTD/L30/L14/L7 sit on ONE
+    // consistent basis (recent schedule difficulty) and actually differ. For the
+    // overall view we window every column incl. YTD; for a specific split we only
+    // window the non-YTD columns and keep the split-row value otherwise. Falls back
+    // to the profile/split value when the log lacks a metric.
+    if (log.length && (overall || window !== 'YTD')) {
+      var lm = {
         abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], maxStarts),
         rcv: avgFromLog(log, pick, ['opponent_RCV', 'opponent RCV'], maxStarts),
         obr: avgFromLog(log, pick, ['opponent_OBR', 'opponent OBR'], maxStarts),
         osi: avgFromLog(log, pick, ['opponent_OSI', 'opponent OSI'], maxStarts)
+      };
+      metrics = {
+        abq: lm.abq != null ? lm.abq : metrics.abq,
+        rcv: lm.rcv != null ? lm.rcv : metrics.rcv,
+        obr: lm.obr != null ? lm.obr : metrics.obr,
+        osi: lm.osi != null ? lm.osi : metrics.osi
       };
     }
 
@@ -591,10 +601,14 @@
     }
 
     var sOverall = profile;
+    var sHome = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'location', 'home') : null;
+    var sAway = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'location', 'away') : null;
     var sLhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'LHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'L')) : null;
     var sRhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'RHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'R')) : null;
 
     var splitBody = splitRow('Overall', sOverall)
+      + (sHome ? splitRow('Home', sHome) : '')
+      + (sAway ? splitRow('Away', sAway) : '')
       + (sLhh ? splitRow('vs LHH', sLhh) : '')
       + (sRhh ? splitRow('vs RHH', sRhh) : '');
 
@@ -604,8 +618,9 @@
         + '</tr></thead><tbody>' + splitBody + '</tbody></table></div>'
       : '<div class="empty-state">No split rows available for this pitcher.</div>';
 
+    // Core rates live in the split table below (Overall row) — no separate band, to
+    // avoid duplicating the same stats twice.
     var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand('Core Rates', detailNote, coreCells)
       + metricsBand('Context', 'Start read + schedule context', ctxCells)
       + '</div>'
       + splitTable;

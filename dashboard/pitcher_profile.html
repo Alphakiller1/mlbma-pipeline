@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260603b">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260618c">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -25,7 +25,7 @@
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260618a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260618c"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
@@ -990,6 +990,12 @@ function startResult(g) {
   return 'Struggled';
 }
 
+function startResultChip(g) {
+  var r = startResult(g);
+  var cls = { Sharp: 'c-elite', Quality: 'c-good', Mixed: 'c-mid', Struggled: 'c-poor' }[r] || 'c-na';
+  return '<span class="chip ' + cls + ' pp-result-chip">' + r + '</span>';
+}
+
 function gamelogRowClass(g) {
   var ip = parseIP(pickCol(g, ['IP', 'ip']));
   var er = numOrNull(pickCol(g, ['ER', 'er'])) || 0;
@@ -1047,7 +1053,7 @@ function renderProfile(key) {
     return dateSortKey(pickCol(b, ['date', 'Date', 'game_date', 'Game Date'])) - dateSortKey(pickCol(a, ['date', 'Date', 'game_date', 'Game Date']));
   }).slice(0, 10);
 
-  var logHtml = sortedLog.length ? '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
+  var logHtml = sortedLog.length ? '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table pp-startlog"><thead><tr>' +
     '<th>Date</th><th>Opp</th><th>H/A</th><th>Opp ABQ</th><th>Opp OSI</th><th>Tier</th><th>IP</th><th>ER</th><th>K</th><th>BB</th><th>HR</th><th>F5 ER</th><th>GS</th><th>Result</th>' +
     '</tr></thead><tbody>' + sortedLog.map(function(g) {
       var tier = pickCol(g, ['opponent_OSI_tier', 'opponent OSI tier']);
@@ -1070,8 +1076,8 @@ function renderProfile(key) {
         '<td class="num">' + pickCol(g, ['BB']) + '</td>' +
         '<td class="num">' + pickCol(g, ['HR']) + '</td>' +
         '<td class="num">' + (f5er !== '' && f5er != null ? escHtml(f5er) : '—') + '</td>' +
-        '<td class="num">' + (gs != null ? fmt(gs, 1) : '—') + '</td>' +
-        '<td>' + startResult(g) + '</td></tr>';
+        '<td class="num" style="font-weight:800;color:' + ((gs != null && window.MLBMAAssets) ? MLBMAAssets.metricColor(gs, 'osi', false) : 'inherit') + '">' + (gs != null ? fmt(gs, 1) : '—') + '</td>' +
+        '<td>' + startResultChip(g) + '</td></tr>';
     }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
 
