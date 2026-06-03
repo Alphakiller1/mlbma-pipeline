@@ -490,9 +490,11 @@
       qsPct = qsTot ? (qsHits / qsTot * 100) : null;
     }
 
-    function heroStat(label, valueHtml, tone) {
-      return '<div class="tp-hero-stat tp-hero-stat--' + (tone || 'neutral') + '">'
-        + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
+    function heroStat(label, valueHtml, tone, ariaLabel) {
+      var solo = !label;
+      var aria = solo && ariaLabel ? ' aria-label="' + esc(ariaLabel) + '"' : '';
+      return '<div class="tp-hero-stat tp-hero-stat--' + (tone || 'neutral') + (solo ? ' tp-hero-stat--solo' : '') + '"' + aria + '>'
+        + (label ? '<span class="tp-hero-stat__label">' + esc(label) + '</span>' : '')
         + '<span class="tp-hero-stat__value">' + valueHtml + '</span>'
         + '</div>';
     }
@@ -513,7 +515,7 @@
     var handVal = hand === 'L' ? 'LHP' : 'RHP';
 
     var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Pitcher headline stats">'
-      + heroStat('Hand', '<span class="tp-hero-stat__num">' + esc(handVal) + '</span>', 'neutral')
+      + heroStat('', '<span class="tp-hero-stat__num">' + esc(handVal) + '</span>', 'neutral', handVal)
       + heroStat('Pitch Score', heroMetricText(ps, 'pitching', false, 0), 'neutral')
       + heroStat('ERA', heroMetricText(era, 'era', true, 2), 'neutral')
       + heroStat('QS%', heroMetricText(qsPct, 'pitching', false, 0, { display: qsPct != null ? fmt(qsPct, 0) + '%' : '—' }), 'neutral')

@@ -236,6 +236,15 @@
   font-variant-numeric: tabular-nums;
 }
 
+.pitcher-profile-page .pp-hero-stats .tp-hero-stat--solo {
+  justify-content: center;
+  min-width: 52px;
+}
+
+.pitcher-profile-page .pp-hero-stats .tp-hero-stat--solo .tp-hero-stat__value {
+  color: var(--text-1, #F3F4F6);
+}
+
 .pitcher-profile-page .pp-hero-stats .tp-hero-stat__value .tp-hero-stat__num {
   display: inline-block;
   font-size: 17px;
