@@ -112,13 +112,13 @@ def _merge_sp_standard_advanced(standard_df: pd.DataFrame, advanced_df: pd.DataF
 
 def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basename: str,
               split_arr: str = "", split_pitcher: str = ""):
-    # For pitchers, the batter-handedness split goes in splitArrPitcher (not splitArr,
-    # which is the batter-side param and returns an empty table for position=P).
+    # Pitcher vs LHH/RHH quick splits use splitArr=5/6 (position=P). splitArrPitcher is unused.
     url = (
         f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_arr}&splitArrPitcher={split_pitcher}"
-        f"&position=P&autoPt=false&byTeam=false"
+        f"&position=P&autoPt=false&byTeam=false&splitTeams=false"
+        f"&startDate={start_date}&endDate={end_date}"
         f"&start={start_date}&end={end_date}"
-        f"&statType=player&statgroup={sg_num}&minPAf=&pageSize=100"
+        f"&statType=player&statgroup={sg_num}&minPAf=0&pageSize=200&groupBy=season"
     )
     print(f"  Loading SP {sg_name} ({start_date} to {end_date})...")
     driver.get(url)
@@ -151,17 +151,17 @@ def scrape_sp_window(driver, start_date: str, end_date: str, out_basename: str, 
     return std
 
 
-# Batter handedness the pitcher faces (FanGraphs splitArr: 1 = vs L, 2 = vs R).
-SP_HAND_SPLITS = {"vs_LHH": "1", "vs_RHH": "2"}
+# FanGraphs pitching quick-split codes (splitArr with position=P): 5=vs LHH, 6=vs RHH.
+SP_HAND_SPLITS = {"vs_LHH": "5", "vs_RHH": "6"}
 
 
-def scrape_sp_hand_split(driver, hand_label: str, split_code: str):
+def scrape_sp_hand_split(driver, hand_label: str, split_arr: str):
     """Pitcher stats vs LHB/RHB (traditional + standard + advanced incl. xFIP/OPS) -> sp_{hand_label}.csv."""
-    print(f"=== SP hand split: {hand_label} (splitArr={split_code}) ===")
+    print(f"=== SP hand split: {hand_label} (splitArr={split_arr}) ===")
     base = f"sp_{hand_label}"
-    trad = scrape_sp(driver, "traditional", 1, SEASON_START, SEASON_END, base, split_pitcher=split_code)
-    std = scrape_sp(driver, "standard", 2, SEASON_START, SEASON_END, base, split_pitcher=split_code)
-    adv = scrape_sp(driver, "advanced", 3, SEASON_START, SEASON_END, base, split_pitcher=split_code)
+    trad = scrape_sp(driver, "traditional", 1, SEASON_START, SEASON_END, base, split_arr=split_arr)
+    std = scrape_sp(driver, "standard", 2, SEASON_START, SEASON_END, base, split_arr=split_arr)
+    adv = scrape_sp(driver, "advanced", 3, SEASON_START, SEASON_END, base, split_arr=split_arr)
     if std is not None:
         merged = _merge_sp_standard_advanced(std, adv)
         if trad is not None:
@@ -169,6 +169,12 @@ def scrape_sp_hand_split(driver, hand_label: str, split_code: str):
         out_path = os.path.join(DATA_DIR, f"{base}.csv")
         merged.to_csv(out_path, index=False)
         print(f"  Merged -> {out_path} ({len(merged)} rows)")
+        if std is not None and trad is not None:
+            sample = merged[merged["Name"].str.contains("Gausman|Skenes", case=False, na=False)]
+            if not sample.empty:
+                for _, r in sample.iterrows():
+                    k = r.get("K%")
+                    print(f"  Sample {r.get('Name')}: K%={k}, xFIP={r.get('xFIP')}")
     return std
 
 
@@ -193,8 +199,8 @@ def run():
         time.sleep(COOLDOWN)
         scrape_sp_window(driver, L14_START, L14_END, "sp_l14", "L14")
 
-        for hand_label, code in SP_HAND_SPLITS.items():
-            scrape_sp_hand_split(driver, hand_label, code)
+        for hand_label, split_arr in SP_HAND_SPLITS.items():
+            scrape_sp_hand_split(driver, hand_label, split_arr)
             print(f"Cooling down {COOLDOWN}s...")
             time.sleep(COOLDOWN)
     finally:

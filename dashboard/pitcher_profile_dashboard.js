@@ -70,10 +70,8 @@
     return null;
   }
 
-  function avgFromLog(log, pickCol, names, maxStarts) {
-    var rows = log.slice().sort(function(a, b) {
-      return String(pickCol(b, ['date', 'Date'])).localeCompare(String(pickCol(a, ['date', 'Date'])));
-    });
+  function avgFromLog(log, pickCol, names, maxStarts, dateSortKey) {
+    var rows = sortLogByDate(log, pickCol, dateSortKey);
     if (maxStarts) rows = rows.slice(0, maxStarts);
     var sum = 0, n = 0;
     rows.forEach(function(g) {
@@ -83,10 +81,8 @@
     return n ? sum / n : null;
   }
 
-  function avgOorFromLog(log, pickCol, oorMap, maxStarts) {
-    var rows = log.slice().sort(function(a, b) {
-      return String(pickCol(b, ['date', 'Date'])).localeCompare(String(pickCol(a, ['date', 'Date'])));
-    });
+  function avgOorFromLog(log, pickCol, oorMap, maxStarts, dateSortKey) {
+    var rows = sortLogByDate(log, pickCol, dateSortKey);
     if (maxStarts) rows = rows.slice(0, maxStarts);
     var sum = 0, n = 0;
     rows.forEach(function(g) {
@@ -129,7 +125,14 @@
       var tp = findTeamProfile(extras.teamProfiles, pickCol, tm);
       if (tp) pals = num(pickCol(tp, ['pals', 'PALS']));
     }
-    var wrc = pickNum(g, pickCol, ['opponent_wRC', 'opponent wRC', 'opponent_wRC+']);
+    var wrc = null;
+    if (extras.platoonSplit === 'rhh') {
+      wrc = pickNum(g, pickCol, ['opponent_wRC_rhh', 'opponent_wRC_RHH', 'opponent_wRC', 'opponent wRC']);
+    } else if (extras.platoonSplit === 'lhh') {
+      wrc = pickNum(g, pickCol, ['opponent_wRC_lhh', 'opponent_wRC_LHH', 'opponent_wRC', 'opponent wRC']);
+    } else {
+      wrc = pickNum(g, pickCol, ['opponent_wRC', 'opponent wRC', 'opponent_wRC+']);
+    }
     if (wrc == null && tm) {
       var tpW = findTeamProfile(extras.teamProfiles, pickCol, tm);
       if (tpW) {
@@ -172,6 +175,20 @@
       PALS_faced: num(pickCol(profile, ['PALS_faced', 'PALS faced'])),
       wRC_faced: num(pickCol(profile, ['wRC_faced', 'wrc_faced', 'wRC+_faced']))
     };
+  }
+
+  function competitionFromSplitRow(hit, pickCol) {
+    if (!hit || !pickCol) return null;
+    return {
+      OOR_faced: num(pickCol(hit, ['OOR_faced', 'avg_opponent_OOR', 'OOR'])),
+      PALS_faced: num(pickCol(hit, ['PALS_faced', 'PALS faced'])),
+      wRC_faced: num(pickCol(hit, ['wRC_faced', 'wrc_faced', 'wRC+_faced']))
+    };
+  }
+
+  function competitionRowHasData(row) {
+    if (!row) return false;
+    return row.OOR_faced != null || row.PALS_faced != null || row.wRC_faced != null;
   }
 
   function competitionExtrasFromCtx(ctx) {
@@ -240,23 +257,51 @@
     return out;
   }
 
+  function splitPitchingProfileBackfill(opts, profile) {
+    if (opts.handSplitView || opts.noProfileBackfill) return null;
+    return profile;
+  }
+
+  function attachF5FromLog(row, log, pickCol, logLocation) {
+    if (!row || !log || !log.length || !logLocation) return row;
+    if (num(pickCol(row, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5'])) != null) return row;
+    var sub = filterLogByLocation(log, pickCol, logLocation);
+    if (!sub.length) return row;
+    var f5 = aggregateF5FromLog(sub, pickCol);
+    if (f5 && f5.F5_ERA != null) return Object.assign({}, row, { F5_ERA: f5.F5_ERA });
+    return row;
+  }
+
   function resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, opts) {
     opts = opts || {};
     var dims = opts.dimensions || [];
     var i;
     var hit;
+    if (opts.handSplitView) {
+      hit = findHandPitchingSplit(splits, findSplit, opts.handSplitView, opts.ctx);
+      if (hit) {
+        if (opts.mode === 'competition') {
+          var compHand = competitionFromSplitRow(hit, pickCol);
+          if (competitionRowHasData(compHand)) return compHand;
+        } else {
+          var handRow = enrichPitchingRow(hit, null, pickCol);
+          if (opts.mode === 'f5') return attachF5FromLog(handRow, log, pickCol, opts.logLocation);
+          return handRow;
+        }
+      }
+    }
     if (findSplit && splits && splits.length) {
       for (i = 0; i < dims.length; i++) {
         hit = findSplit(splits, dims[i][0], dims[i][1]);
         if (hit) {
           if (opts.mode === 'competition') {
-            return {
-              OOR_faced: num(pickCol(hit, ['OOR_faced', 'avg_opponent_OOR', 'OOR'])),
-              PALS_faced: num(pickCol(hit, ['PALS_faced', 'PALS faced'])),
-              wRC_faced: num(pickCol(hit, ['wRC_faced', 'wrc_faced', 'wRC+_faced']))
-            };
+            var compHit = competitionFromSplitRow(hit, pickCol);
+            if (competitionRowHasData(compHit)) return compHit;
+          } else {
+            var dimRow = enrichPitchingRow(hit, splitPitchingProfileBackfill(opts, profile), pickCol);
+            if (opts.mode === 'f5') return attachF5FromLog(dimRow, log, pickCol, opts.logLocation);
+            return dimRow;
           }
-          return enrichPitchingRow(hit, profile, pickCol);
         }
       }
     }
@@ -271,10 +316,10 @@
         }
         if (opts.mode === 'f5') {
           var f5 = aggregateF5FromLog(sub, pickCol);
-          if (f5) return enrichPitchingRow(f5, profile, pickCol);
+          if (f5) return enrichPitchingRow(f5, splitPitchingProfileBackfill(opts, profile), pickCol);
         }
         var pitch = aggregatePitchingFromLog(sub, pickCol);
-        if (pitch) return enrichPitchingRow(pitch, profile, pickCol);
+        if (pitch) return enrichPitchingRow(pitch, splitPitchingProfileBackfill(opts, profile), pickCol);
       }
     }
     if (opts.useProfile) {
@@ -298,63 +343,119 @@
       }
       return base;
     }
+    if (opts.mode === 'competition' && opts.competitionLogFallback && log && log.length) {
+      return aggregateCompetitionFromLog(log, pickCol, {
+        oorMap: opts.oorMap,
+        teamProfiles: opts.teamProfiles,
+        platoonSplit: opts.platoonSplit
+      });
+    }
     return null;
   }
 
-  function sortLogByDate(log, pickCol) {
-    return (log || []).slice().sort(function(a, b) {
-      return String(pickCol(b, ['date', 'Date', 'game_date'])).localeCompare(
-        String(pickCol(a, ['date', 'Date', 'game_date']))
+  function sortLogByDate(log, pickCol, dateSortKey) {
+    var rows = (log || []).slice();
+    if (typeof dateSortKey === 'function') {
+      rows.sort(function(a, b) {
+        return dateSortKey(pickCol(b, ['date', 'Date', 'game_date', 'Game Date']))
+          - dateSortKey(pickCol(a, ['date', 'Date', 'game_date', 'Game Date']));
+      });
+      return rows;
+    }
+    return rows.sort(function(a, b) {
+      return String(pickCol(b, ['date', 'Date', 'game_date', 'Game Date'])).localeCompare(
+        String(pickCol(a, ['date', 'Date', 'game_date', 'Game Date']))
       );
     });
   }
 
-  function filterLogForAllowedSplit(log, pickCol, split) {
-    var rows = sortLogByDate(log, pickCol);
-    if (!split || split === 'overall' || split === 'ytd') return rows;
-    if (split === 'home') return filterLogByLocation(rows, pickCol, 'home');
-    if (split === 'away') return filterLogByLocation(rows, pickCol, 'away');
-    if (split === 'f5') {
-      return rows.filter(function(g) {
-        return num(pickCol(g, ['f5_er', 'F5_ER', 'f5 ER'])) != null;
-      });
+  var ALLOWED_METRIC_SPECS = {
+    osi: { log: ['opponent_OSI', 'opponent OSI'], team: ['osi', 'OSI'] },
+    abq: { log: ['opponent_ABQ', 'opponent ABQ'], team: ['abq', 'ABQ'] },
+    rcv: { log: ['opponent_RCV', 'opponent RCV'], team: ['rcv', 'RCV'] },
+    obr: { log: ['opponent_OBR', 'opponent OBR'], team: ['obr', 'OBR'] }
+  };
+
+  function platoonTeamMetricCols(split, metricKey) {
+    if (split === 'rhh') {
+      return {
+        osi: ['osi_vs_rhp', 'osi_vs_RHP'],
+        abq: ['abq_vs_rhp', 'abq_vs_RHP'],
+        rcv: ['rcv_vs_rhp', 'rcv_vs_RHP'],
+        obr: ['obr_vs_rhp', 'obr_vs_RHP']
+      }[metricKey];
     }
-    // Start log has no batter-hand context per start — use sheet split rows instead.
-    if (split === 'lhh' || split === 'rhh') return [];
-    return rows;
+    if (split === 'lhh') {
+      return {
+        osi: ['osi_vs_lhp', 'osi_vs_LHP'],
+        abq: ['abq_vs_lhp', 'abq_vs_LHP'],
+        rcv: ['rcv_vs_lhp', 'rcv_vs_LHP'],
+        obr: ['obr_vs_lhp', 'obr_vs_LHP']
+      }[metricKey];
+    }
+    return null;
   }
 
-  function shouldUseSheetForAllowedSplit(split) {
-    return split === 'lhh' || split === 'rhh';
+  function resolveAllowedMetric(g, pickCol, metricKey, extras) {
+    var spec = ALLOWED_METRIC_SPECS[metricKey];
+    if (!spec) return null;
+    var tm = String(pickCol(g, ['opponent_team', 'opponent team', 'Opponent']) || '').trim().toUpperCase();
+    if (extras && extras.platoonSplit && tm) {
+      var pcols = platoonTeamMetricCols(extras.platoonSplit, metricKey);
+      var tpPlat = findTeamProfile(extras.teamProfiles, pickCol, tm);
+      if (tpPlat && pcols) {
+        var platVal = pickNum(tpPlat, pickCol, pcols);
+        if (platVal != null) return platVal;
+      }
+    }
+    var v = pickNum(g, pickCol, spec.log);
+    if (v != null) return v;
+    var tp = findTeamProfile(extras && extras.teamProfiles, pickCol, tm);
+    if (tp) return num(pickCol(tp, spec.team));
+    return null;
   }
 
-  function metricsFromLogRows(log, pickCol, maxStarts) {
+  function avgAllowedMetric(rows, pickCol, metricKey, extras) {
+    var sum = 0, n = 0;
+    (rows || []).forEach(function(g) {
+      var v = resolveAllowedMetric(g, pickCol, metricKey, extras);
+      if (v != null) { sum += v; n++; }
+    });
+    return n ? sum / n : null;
+  }
+
+  function allowedWindowMetrics(sortedLog, pickCol, windowSize, extras) {
+    var slice = (sortedLog || []).slice(0, Math.min(windowSize, sortedLog.length));
     return {
-      abq: avgFromLog(log, pickCol, ['opponent_ABQ', 'opponent ABQ'], maxStarts),
-      rcv: avgFromLog(log, pickCol, ['opponent_RCV', 'opponent RCV'], maxStarts),
-      obr: avgFromLog(log, pickCol, ['opponent_OBR', 'opponent OBR'], maxStarts),
-      osi: avgFromLog(log, pickCol, ['opponent_OSI', 'opponent OSI'], maxStarts)
+      abq: avgAllowedMetric(slice, pickCol, 'abq', extras),
+      rcv: avgAllowedMetric(slice, pickCol, 'rcv', extras),
+      obr: avgAllowedMetric(slice, pickCol, 'obr', extras),
+      osi: avgAllowedMetric(slice, pickCol, 'osi', extras)
     };
   }
 
-  function sheetAllowedMetrics(splits, profile, pick, findSplit, split) {
-    function fromSplitRow(s) {
-      if (!s) return null;
-      return {
-        abq: num(pick(s, ['ABQ_allowed', 'ABQ allowed'])),
-        rcv: num(pick(s, ['RCV_allowed', 'RCV allowed'])),
-        obr: num(pick(s, ['OBR_allowed', 'OBR allowed'])),
-        osi: num(pick(s, ['OSI_allowed', 'OSI allowed']))
-      };
-    }
-    if (split === 'lhh' && findSplit) {
-      return fromSplitRow(findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L'));
-    }
-    if (split === 'rhh' && findSplit) {
-      return fromSplitRow(findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R'));
-    }
-    if (split === 'home' && findSplit) return fromSplitRow(findSplit(splits, 'location', 'home'));
-    if (split === 'away' && findSplit) return fromSplitRow(findSplit(splits, 'location', 'away'));
+  function filterLogForAllowedSplit(log, pickCol, split, dateSortKey) {
+    var rows = sortLogByDate(log, pickCol, dateSortKey);
+    if (!split || split === 'overall' || split === 'ytd') return rows;
+    if (split === 'home') return filterLogByLocation(rows, pickCol, 'home');
+    if (split === 'away') return filterLogByLocation(rows, pickCol, 'away');
+    // vs LHB/RHB: per-start platoon is approximated via opponent team vs-RHP/vs-LHP metrics.
+    return rows;
+  }
+
+  function allowedMetricsHasData(m) {
+    if (!m) return false;
+    return m.osi != null || m.abq != null || m.rcv != null || m.obr != null;
+  }
+
+  function applyStaticAllowedPack(pack, m) {
+    pack.abq = [m.abq, m.abq, m.abq, m.abq];
+    pack.rcv = [m.rcv, m.rcv, m.rcv, m.rcv];
+    pack.obr = [m.obr, m.obr, m.obr, m.obr];
+    pack.osi = [m.osi, m.osi, m.osi, m.osi];
+  }
+
+  function profileAllowedMetrics(profile, pick) {
     if (!profile || !pick) return null;
     return {
       abq: num(pick(profile, ['ABQ_allowed', 'ABQ allowed'])),
@@ -364,35 +465,95 @@
     };
   }
 
+  function isAllowedSplitSpecific(split) {
+    return split === 'home' || split === 'away' || split === 'lhh' || split === 'rhh';
+  }
+
+  function sheetAllowedMetrics(splits, profile, pick, findSplit, split, ctx) {
+    function fromSplitRow(s) {
+      if (!s) return null;
+      return {
+        abq: num(pick(s, ['ABQ_allowed', 'ABQ allowed'])),
+        rcv: num(pick(s, ['RCV_allowed', 'RCV allowed'])),
+        obr: num(pick(s, ['OBR_allowed', 'OBR allowed'])),
+        osi: num(pick(s, ['OSI_allowed', 'OSI allowed']))
+      };
+    }
+    if (split === 'lhh') {
+      var lhh = fromSplitRow(findHandPitchingSplit(splits, findSplit, 'lhh', ctx));
+      return allowedMetricsHasData(lhh) ? lhh : null;
+    }
+    if (split === 'rhh') {
+      var rhh = fromSplitRow(findHandPitchingSplit(splits, findSplit, 'rhh', ctx));
+      return allowedMetricsHasData(rhh) ? rhh : null;
+    }
+    if (split === 'home' && findSplit) {
+      var home = fromSplitRow(
+        findSplit(splits, 'location', 'home') || findSplit(splits, 'home_away', 'home')
+      );
+      return allowedMetricsHasData(home) ? home : null;
+    }
+    if (split === 'away' && findSplit) {
+      var away = fromSplitRow(
+        findSplit(splits, 'location', 'away') || findSplit(splits, 'home_away', 'away')
+      );
+      return allowedMetricsHasData(away) ? away : null;
+    }
+    return null;
+  }
+
   /** Rolling pack: [L10, L6, L3, L1] per metric from filtered start log. */
   function buildAllowedTrendPack(ctx) {
     var pick = ctx.pickCol;
     var split = ctx.split || 'overall';
-    var log = shouldUseSheetForAllowedSplit(split)
-      ? []
-      : filterLogForAllowedSplit(ctx.log || [], pick, split);
+    var rawLog = ctx.gameLog || ctx.log || [];
+    var log = filterLogForAllowedSplit(rawLog, pick, split, ctx.dateSortKey);
+    var extras = { teamProfiles: ctx.teamProfiles || [] };
+    if (split === 'lhh' || split === 'rhh') extras.platoonSplit = split;
     var pack = {
       abq: [], rcv: [], obr: [], osi: [],
       logCount: log.length,
       split: split,
-      source: 'log'
+      source: 'log',
+      platoonAdjust: split === 'lhh' || split === 'rhh'
     };
-    [10, 6, 3, 1].forEach(function(n) {
-      var m = metricsFromLogRows(log, pick, n);
-      pack.abq.push(m.abq);
-      pack.rcv.push(m.rcv);
-      pack.obr.push(m.obr);
-      pack.osi.push(m.osi);
-    });
-    if (log.length) return pack;
 
-    pack.source = 'sheet';
-    var sheet = sheetAllowedMetrics(ctx.splits, ctx.profile, pick, ctx.findSplit, split);
-    if (!sheet) return pack;
-    pack.abq = [sheet.abq, sheet.abq, sheet.abq, sheet.abq];
-    pack.rcv = [sheet.rcv, sheet.rcv, sheet.rcv, sheet.rcv];
-    pack.obr = [sheet.obr, sheet.obr, sheet.obr, sheet.obr];
-    pack.osi = [sheet.osi, sheet.osi, sheet.osi, sheet.osi];
+    if (log.length) {
+      var sorted = sortLogByDate(log, pick, ctx.dateSortKey);
+      var hasAny = false;
+      [10, 6, 3, 1].forEach(function(n) {
+        var m = allowedWindowMetrics(sorted, pick, n, extras);
+        pack.abq.push(m.abq);
+        pack.rcv.push(m.rcv);
+        pack.obr.push(m.obr);
+        pack.osi.push(m.osi);
+        if (m.osi != null || m.abq != null || m.rcv != null || m.obr != null) hasAny = true;
+      });
+      pack.logCount = sorted.length;
+      if (hasAny) {
+        pack.source = 'log';
+        return pack;
+      }
+    }
+
+    var sheet = sheetAllowedMetrics(ctx.splits, ctx.profile, pick, ctx.findSplit, split, ctx);
+    if (allowedMetricsHasData(sheet)) {
+      pack.source = 'sheet';
+      pack.logCount = log.length;
+      applyStaticAllowedPack(pack, sheet);
+      return pack;
+    }
+
+    if (!isAllowedSplitSpecific(split)) {
+      var prof = profileAllowedMetrics(ctx.profile, pick);
+      if (allowedMetricsHasData(prof)) {
+        pack.source = 'profile';
+        pack.logCount = log.length;
+        applyStaticAllowedPack(pack, prof);
+        return pack;
+      }
+    }
+
     return pack;
   }
 
@@ -665,7 +826,13 @@
     });
     if (!deltas.length) {
       if (!pack.logCount) {
+        if (pack.source === 'sheet') {
+          return 'Season platoon snapshot — no start log loaded for rolling L10→L1 windows.';
+        }
         return 'No start log rows for this pitcher — run SP game-log scrape for rolling windows.';
+      }
+      if (pack.source === 'sheet') {
+        return 'Platoon season snapshot — rolling windows need SP_Game_Log rows in this session.';
       }
       return 'Last 1 matches Last 10 across metrics — schedule difficulty flat over recent starts.';
     }
@@ -692,14 +859,24 @@
     });
     var filterNote = (ctx.splitLabel || 'Overall')
       + ' · read L10→L1 left to right · lower = softer opposing offense';
-    if (pack.source === 'sheet') {
+    if (pack.source === 'log' && pack.platoonAdjust) {
+      filterNote += ' · platoon-adjusted rolling windows (opponent team vs-RHP/vs-LHP quality per start)';
+    } else if (pack.source === 'sheet') {
       if (ctx.split === 'lhh' || ctx.split === 'rhh') {
-        filterNote += ' · season split snapshot (platoon not in start log)';
-      } else if (ctx.split === 'f5') {
-        filterNote += ' · no F5-tagged starts in log — showing season snapshot';
+        filterNote += ' · platoon offense-allowed snapshot from sheet (season avg opponent vs-RHP/vs-LHP)';
+      } else if (ctx.split === 'home' || ctx.split === 'away') {
+        filterNote += ' · ' + ctx.split + ' split snapshot from sheet (no matching starts in log filter)';
       } else {
-        filterNote += ' · no starts for this split — showing season snapshot';
+        filterNote += ' · season snapshot from sheet';
       }
+    } else if (pack.source === 'profile') {
+      filterNote += ' · no start log — showing season profile snapshot';
+    } else if (isAllowedSplitSpecific(ctx.split) && !pack.logCount) {
+      filterNote += ' · no starts for this split — run SP game-log scrape';
+    } else if (isAllowedSplitSpecific(ctx.split) && pack.source === 'log') {
+      // split-specific log rolling — note already covers platoon approx when needed
+    } else if (pack.logCount > 0 && pack.logCount < 10) {
+      filterNote += ' · ' + pack.logCount + ' start' + (pack.logCount === 1 ? '' : 's') + ' in sample';
     }
     var body = rows.map(function(item) {
       var def = item.def;
@@ -733,7 +910,6 @@
   function renderAllowedDashboard(profile, ctx) {
     var C = global.MLBMACharts;
     var pack = buildAllowedTrendPack(ctx);
-    var f5 = (ctx.split || '') === 'f5' ? (A ? A.f5WarningHtml() : '') : '';
 
     var chart = '';
     if (C && C.buildTrendLineChart) {
@@ -748,45 +924,87 @@
     var readout = allowedTrendReadout(pack);
     var splitKey = ctx.split || 'overall';
     return '<div class="pp-allowed-trend tp-trend-panel" data-allowed-source="' + esc(pack.source) + '" data-allowed-split="' + esc(splitKey) + '">'
-      + f5
       + renderPitcherAllowedTrendTable(pack, ctx)
       + '<div class="tp-trend-chart-mount" data-active-metric="osi">' + chart + '</div>'
       + (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : '')
       + '</div>';
   }
 
-  function resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit) {
+  function findHandPitchingSplit(splits, findSplit, viewSplit, ctx) {
+    if (findSplit && splits && splits.length) {
+      if (viewSplit === 'lhh') {
+        var lHit = findSplit(splits, 'batter_hand', 'LHH')
+          || findSplit(splits, 'batter_hand', 'L')
+          || findSplit(splits, 'vs_lhh', 'LHH');
+        if (lHit) return lHit;
+      }
+      if (viewSplit === 'rhh') {
+        var rHit = findSplit(splits, 'batter_hand', 'RHH')
+          || findSplit(splits, 'batter_hand', 'R')
+          || findSplit(splits, 'vs_rhh', 'RHH');
+        if (rHit) return rHit;
+      }
+    }
+    if (ctx && typeof ctx.lookupHandSplit === 'function') {
+      var indexed = ctx.lookupHandSplit(viewSplit);
+      if (indexed) return indexed;
+    }
+    return null;
+  }
+
+  function pitchingRowHasData(row, pickCol) {
+    if (!row || !pickCol) return false;
+    return num(pickCol(row, ['K_pct', 'K%'])) != null
+      || num(pickCol(row, ['BB_pct', 'BB%'])) != null
+      || num(pickCol(row, ['HR9', 'HR/9'])) != null
+      || num(pickCol(row, ['xFIP', 'xfip'])) != null
+      || num(pickCol(row, ['OPS', 'ops', 'OPS_against'])) != null;
+  }
+
+  function resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx) {
     var s;
+    var handOnly = viewSplit === 'lhh' || viewSplit === 'rhh';
+    var splitSpecific = handOnly || viewSplit === 'home' || viewSplit === 'away';
     if (viewSplit === 'home') {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
         dimensions: [['location', 'home'], ['home_away', 'home']],
-        logLocation: 'home'
+        logLocation: 'home',
+        noProfileBackfill: true
       });
     } else if (viewSplit === 'away') {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
         dimensions: [['location', 'away'], ['home_away', 'away']],
-        logLocation: 'away'
+        logLocation: 'away',
+        noProfileBackfill: true
       });
-    } else if (viewSplit === 'lhh') {
+    } else if (handOnly) {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-        dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
+        handSplitView: viewSplit,
+        ctx: ctx,
+        noProfileBackfill: true,
+        dimensions: [['batter_hand', viewSplit === 'lhh' ? 'LHH' : 'RHH']]
       });
-    } else if (viewSplit === 'rhh') {
-      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-        dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
-      });
+      if (!s) {
+        var handHit = findHandPitchingSplit(splits, findSplit, viewSplit, ctx);
+        if (handHit) s = enrichPitchingRow(handHit, null, pickCol);
+      }
     } else {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true });
     }
-    return enrichPitchingRow(s, profile, pickCol);
+    if (pitchingRowHasData(s, pickCol)) return s;
+    if (splitSpecific) return s || null;
+    if (profile) return enrichPitchingRow(profile, profile, pickCol);
+    return s;
   }
 
-  function buildPitchingValueTableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
+  function buildPitchingValueTableHtml(profile, splits, log, pickCol, findSplit, viewSplit, ctx) {
     viewSplit = viewSplit || 'overall';
     var splitLabels = {
       overall: 'Both', home: 'Home', away: 'Away', lhh: 'vs LHB', rhh: 'vs RHB'
     };
-    var s = resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit);
+    var s = resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx);
+    var handMissing = (viewSplit === 'lhh' || viewSplit === 'rhh') && !pitchingRowHasData(s, pickCol);
+    s = s || {};
     function cell(v, ctx, invert, dec) {
       if (v == null || isNaN(v)) return '<td class="pp-pv-metric-cell tp-empty-cell">—</td>';
       return '<td class="pp-pv-metric-cell">' + valChip(v, ctx, invert, dec) + '</td>';
@@ -803,52 +1021,70 @@
       + cell(rxfip, 'xfip', true, 2) + cell(rops, 'ops', true, 3)
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-pv-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
-      + ' · lower OPS / xFIP = stronger pitching value for this split</p>';
+      + (handMissing
+        ? ' · hand split not loaded — run FanGraphs SP vs-L/R scrape (sp_vs_LHH.csv / sp_vs_RHH.csv)'
+        : ' · lower OPS / xFIP = stronger pitching value for this split')
+      + '</p>';
   }
 
-  function enrichF5Row(row, profile, pickCol) {
+  function enrichF5Row(row, profile, pickCol, opts) {
+    opts = opts || {};
     if (!row) row = {};
-    row = enrichPitchingRow(row, profile, pickCol);
-    if (num(pickCol(row, ['F5_ERA', 'F5 ERA', 'ER/5'])) == null && profile) {
+    var profBack = opts.noProfilePitching ? null : profile;
+    row = enrichPitchingRow(row, profBack, pickCol);
+    if (opts.noProfileF5) return row;
+    if (num(pickCol(row, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5'])) == null && profile) {
       var f5 = num(pickCol(profile, ['F5_ERA', 'F5 ERA', 'ER/5']));
       if (f5 != null) row.F5_ERA = f5;
     }
     return row;
   }
 
-  function resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit) {
-    var base = { mode: 'f5' };
+  function resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit, ctx) {
+    var handOnly = viewSplit === 'lhh' || viewSplit === 'rhh';
+    var splitSpecific = handOnly || viewSplit === 'home' || viewSplit === 'away';
+    var f5Opts = { mode: 'f5', noProfileBackfill: splitSpecific };
+    var enrichOpts = { noProfilePitching: splitSpecific, noProfileF5: splitSpecific };
     var s;
     if (viewSplit === 'home') {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
         dimensions: [['location', 'home'], ['home_away', 'home']],
         logLocation: 'home'
-      }, base));
+      }, f5Opts));
     } else if (viewSplit === 'away') {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
         dimensions: [['location', 'away'], ['home_away', 'away']],
         logLocation: 'away'
-      }, base));
-    } else if (viewSplit === 'lhh') {
+      }, f5Opts));
+    } else if (handOnly) {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-        dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
-      }, base));
-    } else if (viewSplit === 'rhh') {
-      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-        dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
-      }, base));
+        handSplitView: viewSplit,
+        ctx: ctx,
+        dimensions: [['batter_hand', viewSplit === 'lhh' ? 'LHH' : 'RHH']]
+      }, f5Opts));
+      if (!s) {
+        var handHit = findHandPitchingSplit(splits, findSplit, viewSplit, ctx);
+        if (handHit) s = enrichPitchingRow(handHit, null, pickCol);
+      }
     } else {
-      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({ useProfile: true }, base));
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { mode: 'f5', useProfile: true });
+      enrichOpts = {};
     }
+    if (pitchingRowHasData(s, pickCol) || num(pickCol(s, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5'])) != null) {
+      return enrichF5Row(s, profile, pickCol, enrichOpts);
+    }
+    if (splitSpecific) return enrichF5Row(s || {}, null, pickCol, { noProfilePitching: true, noProfileF5: true });
     return enrichF5Row(s, profile, pickCol);
   }
 
-  function buildF5TableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
+  function buildF5TableHtml(profile, splits, log, pickCol, findSplit, viewSplit, ctx) {
     viewSplit = viewSplit || 'overall';
     var splitLabels = {
       overall: 'Both', home: 'Home', away: 'Away', lhh: 'vs LHB', rhh: 'vs RHB'
     };
-    var s = resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit);
+    var s = resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit, ctx);
+    var handOnly = viewSplit === 'lhh' || viewSplit === 'rhh';
+    var handMissing = handOnly && !pitchingRowHasData(s, pickCol);
     var xfip = num(pickCol(s, ['xFIP', 'xfip']));
     var k = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
     var bb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
@@ -857,49 +1093,113 @@
       if (v == null || isNaN(v)) return '<td class="pp-f5-metric-cell tp-empty-cell">—</td>';
       return '<td class="pp-f5-metric-cell">' + valChip(v, ctx, invert, dec) + '</td>';
     }
+    var handNote = handMissing
+      ? ' · hand split not loaded — run FanGraphs SP vs-L/R scrape (sp_vs_LHH.csv / sp_vs_RHH.csv)'
+      : (handOnly && f5er == null
+        ? ' · ER/5 not tracked by platoon — use Both / Home / Away for first-five runs'
+        : ' · ER/5 = earned runs per five innings (first-five)');
     return '<table class="hub-table tp-table pp-f5-metrics-table" aria-label="F5 profile metrics">'
       + '<thead><tr><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead>'
       + '<tbody><tr>'
       + cell(xfip, 'xfip', true, 2) + cell(k, 'kpct', false, 1) + cell(bb, 'bbpct', true, 1) + cell(f5er, 'era', true, 2)
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-f5-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
-      + ' · ER/5 = earned runs per five innings (first-five)</p>';
+      + handNote + '</p>';
+  }
+
+  function sheetCompetitionMetrics(splits, profile, pick, findSplit, split, ctx) {
+    function fromRow(s) {
+      return competitionFromSplitRow(s, pick);
+    }
+    if (split === 'lhh') {
+      var lRow = fromRow(findHandPitchingSplit(splits, findSplit, 'lhh', ctx));
+      if (competitionRowHasData(lRow)) return lRow;
+    }
+    if (split === 'rhh') {
+      var rRow = fromRow(findHandPitchingSplit(splits, findSplit, 'rhh', ctx));
+      if (competitionRowHasData(rRow)) return rRow;
+    }
+    if (split === 'home' && findSplit) {
+      var hRow = fromRow(findSplit(splits, 'location', 'home') || findSplit(splits, 'home_away', 'home'));
+      if (competitionRowHasData(hRow)) return hRow;
+    }
+    if (split === 'away' && findSplit) {
+      var aRow = fromRow(findSplit(splits, 'location', 'away') || findSplit(splits, 'home_away', 'away'));
+      if (competitionRowHasData(aRow)) return aRow;
+    }
+    return null;
+  }
+
+  function filterLogForCompetitionSplit(log, pickCol, split, dateSortKey) {
+    var rows = sortLogByDate(log, pickCol, dateSortKey);
+    if (!split || split === 'overall' || split === 'ytd') return rows;
+    if (split === 'home') return filterLogByLocation(rows, pickCol, 'home');
+    if (split === 'away') return filterLogByLocation(rows, pickCol, 'away');
+    return rows;
+  }
+
+  function competitionSplitOpts(viewSplit, baseOpts) {
+    var opts = Object.assign({}, baseOpts);
+    if (viewSplit === 'home') {
+      opts.dimensions = [['location', 'home'], ['home_away', 'home']];
+      opts.logLocation = 'home';
+    } else if (viewSplit === 'away') {
+      opts.dimensions = [['location', 'away'], ['home_away', 'away']];
+      opts.logLocation = 'away';
+    } else if (viewSplit === 'lhh') {
+      opts.dimensions = [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']];
+      opts.handSplitView = 'lhh';
+      opts.platoonSplit = 'lhh';
+      opts.competitionLogFallback = true;
+    } else if (viewSplit === 'rhh') {
+      opts.dimensions = [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']];
+      opts.handSplitView = 'rhh';
+      opts.platoonSplit = 'rhh';
+      opts.competitionLogFallback = true;
+    } else {
+      opts.useProfile = true;
+    }
+    return opts;
   }
 
   function resolveCompetitionRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx) {
+    viewSplit = viewSplit || 'overall';
     var extras = competitionExtrasFromCtx(ctx);
+    if (viewSplit === 'lhh' || viewSplit === 'rhh') extras.platoonSplit = viewSplit;
+    var rawLog = ctx.gameLog || log || [];
     var baseOpts = {
       mode: 'competition',
       oorMap: extras.oorMap,
-      teamProfiles: extras.teamProfiles
+      teamProfiles: extras.teamProfiles,
+      ctx: ctx
     };
-    if (viewSplit === 'home') {
-      return resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-        dimensions: [['location', 'home'], ['home_away', 'home']],
-        logLocation: 'home'
-      }, baseOpts));
+    var row = resolvePitcherSplitRow(
+      splits,
+      rawLog,
+      profile,
+      pickCol,
+      findSplit,
+      competitionSplitOpts(viewSplit, baseOpts)
+    );
+    if (competitionRowHasData(row)) return row;
+
+    row = sheetCompetitionMetrics(splits, profile, pickCol, findSplit, viewSplit, ctx);
+    if (competitionRowHasData(row)) return row;
+
+    var sub = filterLogForCompetitionSplit(rawLog, pickCol, viewSplit, ctx.dateSortKey);
+    if (sub.length) {
+      row = aggregateCompetitionFromLog(sub, pickCol, extras);
+      if (competitionRowHasData(row)) return row;
     }
-    if (viewSplit === 'away') {
-      return resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-        dimensions: [['location', 'away'], ['home_away', 'away']],
-        logLocation: 'away'
-      }, baseOpts));
+
+    if (viewSplit === 'lhh' || viewSplit === 'rhh') {
+      row = aggregateCompetitionFromLog(rawLog, pickCol, extras);
+      if (competitionRowHasData(row)) return row;
     }
-    if (viewSplit === 'lhh') {
-      return resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-        dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
-      }, baseOpts));
-    }
-    if (viewSplit === 'rhh') {
-      return resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-        dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
-      }, baseOpts));
-    }
-    var row = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
-      useProfile: true
-    }, baseOpts));
-    if (row) return row;
-    return competitionFromProfile(profile, pickCol);
+
+    var prof = competitionFromProfile(profile, pickCol);
+    if (competitionRowHasData(prof)) return prof;
+    return prof;
   }
 
   function buildOORMetricsTableHtml(profile, splits, log, pickCol, findSplit, viewSplit, ctx) {
@@ -921,14 +1221,17 @@
       + cell(oor, 'oor', 1) + cell(pals, 'pals', 1) + cell(wrc, 'wrc', 0)
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-oor-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
-      + ' · higher = tougher schedule (contextualizes ERA)</p>';
+      + (viewSplit === 'lhh' || viewSplit === 'rhh'
+        ? ' · platoon-adjusted opponent quality (OOR/PALS + wRC+ vs RHP/LHP per start)'
+        : ' · higher = tougher schedule (contextualizes ERA)')
+      + '</p>';
   }
 
   function renderOORPanel(profile, ctx) {
     var pick = ctx.pickCol;
     var find = ctx.findSplit;
     var splits = ctx.splits || [];
-    var log = ctx.log || [];
+    var log = ctx.gameLog || ctx.log || [];
     var viewSplit = ctx.splitFocus || 'overall';
 
     return '<div class="tp-trend-table-wrap pp-oor-metrics-wrap" data-split-focus="' + esc(viewSplit) + '">'
@@ -989,7 +1292,7 @@
     var log = ctx.log || [];
     var viewSplit = ctx.splitFocus || 'overall';
     var metricsHtml = '<div class="pp-intel-panel__metrics">'
-      + buildPitchingValueTableHtml(profile, splits, log, pick, find, viewSplit)
+      + buildPitchingValueTableHtml(profile, splits, log, pick, find, viewSplit, ctx)
       + '</div>';
 
     if (ctx.omitHeader) {

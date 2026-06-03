@@ -676,6 +676,61 @@
   box-shadow: inset 3px 0 0 #7C4DFF;
 }
 
+.pitcher-profile-page .pp-startlog .pl-gamelog-opp-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+}
+
+/* Fixed logo frame — ESPN PNGs have uneven padding; cover normalizes visual size. */
+.pitcher-profile-page .pp-startlog .pp-startlog-opp-logo-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.pitcher-profile-page .pp-startlog .pp-startlog-opp-logo-slot img,
+.pitcher-profile-page .pp-startlog .pp-startlog-opp-logo {
+  display: block;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: cover;
+  object-position: center center;
+  flex-shrink: 0;
+}
+
+.pitcher-profile-page .pp-startlog .pp-startlog-opp-logo-slot .team-logo-fallback,
+.pitcher-profile-page .pp-startlog .pp-startlog-opp-logo + .team-logo-fallback,
+.pitcher-profile-page .pp-startlog .pl-gamelog-opp-inner .team-logo-fallback {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pitcher-profile-page .pp-startlog td.pp-startlog-opp {
+  min-width: 96px;
+}
+
+.pitcher-profile-page .pp-startlog .pp-startlog-opp-abbr {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
 .pitcher-profile-page .pp-result-chip {
   min-width: 80px;
   height: 30px;
@@ -763,8 +818,15 @@
 }
 
 /* Strength of Competition — single-row metrics (split via pills above) */
-.pitcher-profile-page #secOOR .pp-oor-metrics-wrap {
+.pitcher-profile-page #secOOR .pp-oor-metrics-wrap.tp-trend-table-wrap {
+  border: none;
+  background: transparent;
+  box-shadow: none;
   padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+.pitcher-profile-page #secOOR .pp-oor-metrics-wrap.tp-trend-table-wrap::before {
+  display: none;
 }
 
 .pitcher-profile-page #secOOR > #pitcherOorControls {

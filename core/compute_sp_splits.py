@@ -75,6 +75,8 @@ def enrich_faced(gamelog: pd.DataFrame) -> pd.DataFrame:
     g["opponent_wRC"] = g.apply(
         lambda r: (wrc_r if str(r.get("pitcher_hand", "R")).upper().startswith("R") else wrc_l).get(opp(r)),
         axis=1)
+    g["opponent_wRC_rhh"] = g.apply(lambda r: wrc_r.get(opp(r)), axis=1)
+    g["opponent_wRC_lhh"] = g.apply(lambda r: wrc_l.get(opp(r)), axis=1)
     return g
 
 SPLIT_DIMENSIONS = (
@@ -296,6 +298,62 @@ def season_advanced_lookup() -> dict:
     return out
 
 
+def _platoon_metric_maps(bat_side: str) -> dict:
+    """Team offense vs RHP/LHP — proxy for opposing RHH/LHH lineup quality faced."""
+    fname = "metrics_vs_RHP.csv" if bat_side == "RHH" else "metrics_vs_LHP.csv"
+    return {
+        "OSI_allowed": _team_metric_map(fname, "OSI"),
+        "ABQ_allowed": _team_metric_map(fname, "ABQ"),
+        "RCV_allowed": _team_metric_map(fname, "RCV"),
+        "OBR_allowed": _team_metric_map(fname, "OBR"),
+    }
+
+
+def _avg_platoon_allowed(gamelog: pd.DataFrame, pname_key: str, bat_side: str) -> dict:
+    """Season avg opponent platoon metrics across this pitcher's starts."""
+    pdf = gamelog[gamelog["pitcher_name"].apply(lambda n: _norm(n) == pname_key)]
+    if pdf.empty:
+        return {}
+    maps = _platoon_metric_maps(bat_side)
+    out = {}
+    for col, tmap in maps.items():
+        vals = []
+        for _, r in pdf.iterrows():
+            tm = str(r.get("opponent_team", "")).strip().upper()
+            v = tmap.get(tm)
+            if v is not None:
+                vals.append(float(v))
+        if vals:
+            out[col] = round(sum(vals) / len(vals), 1)
+    return out
+
+
+def _avg_platoon_competition(gamelog: pd.DataFrame, pname_key: str, bat_side: str) -> dict:
+    """Season avg OOR / PALS / platoon wRC+ faced across this pitcher's starts."""
+    pdf = gamelog[gamelog["pitcher_name"].apply(lambda n: _norm(n) == pname_key)]
+    if pdf.empty:
+        return {}
+    oor = _team_metric_map("metrics_oor.csv", "OOR")
+    pals = _team_metric_map("metrics_pals.csv", "PALS")
+    wrc_fname = "metrics_vs_RHP.csv" if bat_side == "RHH" else "metrics_vs_LHP.csv"
+    wrc = _team_metric_map(wrc_fname, "wRC+")
+    out = {}
+    for col, tmap in (
+        ("OOR_faced", oor),
+        ("PALS_faced", pals),
+        ("wRC_faced", wrc),
+    ):
+        vals = []
+        for _, r in pdf.iterrows():
+            tm = str(r.get("opponent_team", "")).strip().upper()
+            v = tmap.get(tm)
+            if v is not None:
+                vals.append(float(v))
+        if vals:
+            out[col] = round(sum(vals) / len(vals), 1)
+    return out
+
+
 def build_hand_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
     """Pitcher vs-LHH / vs-RHH split rows from the FanGraphs hand-split exports
     (sp_vs_LHH.csv / sp_vs_RHH.csv). Skipped gracefully until those are scraped."""
@@ -317,6 +375,8 @@ def build_hand_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
             pid, pteam, phand = idmap.get(key, (None, r.get("Team"), None))
             g_ = _num(r.get("GS")) or _num(r.get("G"))
             ip = parse_ip(r.get("IP")) if r.get("IP") is not None else None
+            platoon = _avg_platoon_allowed(gamelog, key, split_value)
+            competition = _avg_platoon_competition(gamelog, key, split_value)
             rows.append({
                 "pitcher_id": pid, "pitcher_name": r[name_col], "pitcher_team": pteam,
                 "pitcher_hand": phand, "split_dimension": "batter_hand", "split_value": split_value,
@@ -324,9 +384,14 @@ def build_hand_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
                 "avg_IP": round(ip / g_, 2) if ip and g_ else None,
                 "ERA": _num(r.get("ERA")), "K_pct": _pct_pts(r.get("K%")),
                 "BB_pct": _pct_pts(r.get("BB%")), "HR9": _num(r.get("HR/9")),
-                "avg_pitches": None, "ABQ_allowed": None, "RCV_allowed": None,
-                "OBR_allowed": None, "OSI_allowed": None,
-                "OOR_faced": None, "PALS_faced": None, "wRC_faced": None,
+                "avg_pitches": None,
+                "ABQ_allowed": platoon.get("ABQ_allowed"),
+                "RCV_allowed": platoon.get("RCV_allowed"),
+                "OBR_allowed": platoon.get("OBR_allowed"),
+                "OSI_allowed": platoon.get("OSI_allowed"),
+                "OOR_faced": competition.get("OOR_faced"),
+                "PALS_faced": competition.get("PALS_faced"),
+                "wRC_faced": competition.get("wRC_faced"),
                 "OPS": _ops_from_fg_row(r),
                 "FIP": _num(r.get("FIP")), "xFIP": _num(r.get("xFIP")), "F5_ERA": None,
             })
@@ -406,6 +471,7 @@ def run():
             if col in gamelog.columns:
                 gamelog[col] = pd.to_numeric(gamelog[col], errors="coerce")
         gamelog = enrich_faced(gamelog)   # opponent OOR / PALS / wRC+ faced per start
+        gamelog.to_csv(path, index=False)
         splits = build_metric_splits(gamelog)
         hand = build_hand_splits(gamelog)
         if not hand.empty:
