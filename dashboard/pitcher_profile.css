@@ -104,8 +104,26 @@
 }
 
 .pitcher-profile-page .tp-pitcher-banner .tp-team-banner__title {
+  font-family: var(--font-display, "Roboto Condensed", sans-serif);
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 800;
   margin: 0;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  background: none !important;
+  background-clip: border-box;
+  -webkit-background-clip: border-box;
+}
+
+.pitcher-profile-page .tp-pitcher-picker .tp-team-picker__search {
+  font-family: var(--font-display, "Roboto Condensed", sans-serif);
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.pitcher-profile-page .tp-pitcher-picker .tp-team-picker__search::placeholder {
+  font-weight: 600;
+  color: var(--text-3, #9CA3AF);
 }
 
 .pitcher-profile-page .tp-pitcher-banner__today {
