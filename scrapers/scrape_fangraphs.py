@@ -110,9 +110,12 @@ def _merge_sp_standard_advanced(standard_df: pd.DataFrame, advanced_df: pd.DataF
     return standard_df.merge(advanced_df[adv_cols], on=key, how="left", suffixes=("", "_adv"))
 
 
-def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basename: str, split_arr: str = ""):
+def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basename: str,
+              split_arr: str = "", split_pitcher: str = ""):
+    # For pitchers, the batter-handedness split goes in splitArrPitcher (not splitArr,
+    # which is the batter-side param and returns an empty table for position=P).
     url = (
-        f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_arr}&splitArrPitcher="
+        f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_arr}&splitArrPitcher={split_pitcher}"
         f"&position=P&autoPt=false&byTeam=false"
         f"&start={start_date}&end={end_date}"
         f"&statType=player&statgroup={sg_num}&minPAf=&pageSize=100"
@@ -153,8 +156,8 @@ def scrape_sp_hand_split(driver, hand_label: str, split_code: str):
     """Pitcher stats vs LHB/RHB (standard + advanced incl. xFIP) -> sp_{hand_label}.csv."""
     print(f"=== SP hand split: {hand_label} (splitArr={split_code}) ===")
     base = f"sp_{hand_label}"
-    std = scrape_sp(driver, "standard", 2, SEASON_START, SEASON_END, base, split_arr=split_code)
-    adv = scrape_sp(driver, "advanced", 3, SEASON_START, SEASON_END, base, split_arr=split_code)
+    std = scrape_sp(driver, "standard", 2, SEASON_START, SEASON_END, base, split_pitcher=split_code)
+    adv = scrape_sp(driver, "advanced", 3, SEASON_START, SEASON_END, base, split_pitcher=split_code)
     if std is not None:
         merged = _merge_sp_standard_advanced(std, adv)
         out_path = os.path.join(DATA_DIR, f"{base}.csv")
