@@ -89,9 +89,9 @@
     whip: { mean: 1.28, std: 0.12, hi: false },
     hr9: { mean: 1.20, std: 0.28, hi: false },       // HR/9 allowed
     bb9: { mean: 3.20, std: 0.60, hi: false },        // BB/9 allowed
-    bbpct: { mean: 0.082, std: 0.018, hi: false },    // BB% allowed (pitcher)
+    bbpct: { mean: 8.0, std: 1.8, hi: false },        // BB% in percent points (lower better)
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
-    kpct: { mean: 0.222, std: 0.035, hi: true },      // K% (pitcher, higher better)
+    kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
     ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)

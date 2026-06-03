@@ -1082,11 +1082,11 @@
       + '<header class="pl-expand-panel-head"><span class="pl-expand-panel-title">Pitching Profile</span>'
       + '<span class="pl-expand-panel-sub">Rate stats &amp; competition quality faced</span></header>'
       + '<div class="pl-expand-stat-grid pl-expand-stat-grid--4">'
-      + expandStatTile('K%', m.kPct, false, 'pitching', 1)
-      + expandStatTile('BB%', m.bbPct, true, 'pitching', 1)
+      + expandStatTile('K%', m.kPct, false, 'kpct', 1)
+      + expandStatTile('BB%', m.bbPct, true, 'bbpct', 1)
       + expandPlainStat('ERA', st.era, 2)
       + expandPlainStat('FIP', st.fip, 2)
-      + expandStatTile('HR/9', m.hr9, true, 'pitching', 2)
+      + expandStatTile('HR/9', m.hr9, true, 'hr9', 2)
       + expandPlainStat('WHIP', st.whip, 2)
       + expandStatTile('OOR', m.oor, false, 'oor', 0)
       + expandPlainStat('xFIP', st.xfip, 2)
@@ -1171,9 +1171,9 @@
     var vsLo = numOrNull(pickCol(row, ['vs_low_osi_OSI_allowed']));
     return '<div class="pl-rank-expand">'
       + '<div class="pl-rank-expand-grid">'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">Hi Lev ERA</span>' + metricChip(hiEra, true, 'pitching', 2) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">Med Lev ERA</span>' + metricChip(medEra, true, 'pitching', 2) + '</div>'
-      + '<div class="pl-expand-metric"><span class="ca-metric-label">Low Lev ERA</span>' + metricChip(loEra, true, 'pitching', 2) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">Hi Lev ERA</span>' + metricChip(hiEra, true, 'era', 2) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">Med Lev ERA</span>' + metricChip(medEra, true, 'era', 2) + '</div>'
+      + '<div class="pl-expand-metric"><span class="ca-metric-label">Low Lev ERA</span>' + metricChip(loEra, true, 'era', 2) + '</div>'
       + '<div class="pl-expand-metric"><span class="ca-metric-label">vs High OSI</span>' + metricChip(vsHi, true, 'osi', 1) + '</div>'
       + '<div class="pl-expand-metric"><span class="ca-metric-label">vs Mid OSI</span>' + metricChip(vsMid, true, 'osi', 1) + '</div>'
       + '<div class="pl-expand-metric"><span class="ca-metric-label">vs Low OSI</span>' + metricChip(vsLo, true, 'osi', 1) + '</div>'
@@ -1277,7 +1277,9 @@
       var vals = COLS.map(function(c) {
         var v = bpSortValue(row, c.k);
         var inv = c.k !== 'bullpenScore' && c.k !== 'kPct';
-        var ctx = c.k === 'bullpenScore' ? 'pitching' : (c.k === 'era' || c.k === 'fip' ? 'pitching' : 'osi');
+        var ctx = c.k === 'bullpenScore' ? 'pitching'
+          : c.k === 'era' ? 'era' : c.k === 'fip' ? 'fip'
+          : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';
         var d = c.k === 'bullpenScore' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);
         if (c.k === 'era' || c.k === 'fip') {
           return '<td class="num">' + (v != null && !isNaN(v) ? fmt(v, 2) : '—') + '</td>';
@@ -1412,7 +1414,9 @@
       var vals = COLS.map(function(c) {
         var v = tableMetric(row, hand, c.k, m, st);
         var inv = c.k === 'osiAllowed' || c.k === 'abqAllowed' || c.k === 'bbPct' || c.k === 'era' || c.k === 'fip';
-        var ctx = c.k === 'pitchScore' ? 'pitching' : (c.k === 'oor' ? 'oor' : (c.k === 'era' || c.k === 'fip' ? 'pitching' : 'osi'));
+        var ctx = c.k === 'pitchScore' ? 'pitching' : c.k === 'oor' ? 'oor'
+          : c.k === 'era' ? 'era' : c.k === 'fip' ? 'fip'
+          : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';
         var d = c.k === 'pitchScore' || c.k === 'oor' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);
         if (hand !== 'overall' && !hasPlatoon) {
           v = (c.k === 'era' || c.k === 'fip' || c.k === 'f5Era') ? st[c.k === 'f5Era' ? 'f5Era' : c.k] : m[c.k];

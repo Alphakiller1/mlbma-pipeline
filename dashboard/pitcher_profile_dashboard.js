@@ -21,6 +21,13 @@
     return Number(v).toFixed(d === undefined ? 1 : d);
   }
 
+  // K%/BB% arrive as a fraction (0.21) in some feeds and percent (21) in others;
+  // normalize to percent points so they grade on the kpct/bbpct contexts.
+  function pctNorm(v) {
+    if (v == null || isNaN(v)) return v;
+    return v <= 1.5 ? v * 100 : v;
+  }
+
   function allowedColor(val) {   // OSI allowed: 0-100, lower is better
     if (val === null || isNaN(val)) return 'var(--text-3)';
     return (A && A.metricColor) ? A.metricColor(val, 'osi', true) : 'var(--text-3)';
@@ -182,8 +189,8 @@
     var pt = pitchingTier(ps, ctx.pitchTiers || []);
     var stale = pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true';
     var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
-    var k = num(pick(profile, ['K_pct', 'K%']));
-    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var k = pctNorm(num(pick(profile, ['K_pct', 'K%'])));
+    var bb = pctNorm(num(pick(profile, ['BB_pct', 'BB%'])));
 
     function chip(v, context, invert, dec, display) {
       if (A && A.valChipHtml) return A.valChipHtml(v, context, !!invert, dec, { display: display });
@@ -191,8 +198,8 @@
     }
 
     var psChip = chip(ps, 'pitching', false, 0, ps != null ? fmt(ps, 0) : '—');
-    var kChip = chip(k, 'pitching', false, 1, k != null ? fmt(k, 1) + '%': '—');
-    var bbChip = chip(bb, 'pitching', true, 1, bb != null ? fmt(bb, 1) + '%': '—');
+    var kChip = chip(k, 'kpct', false, 1, k != null ? fmt(k, 1) + '%': '—');
+    var bbChip = chip(bb, 'bbpct', true, 1, bb != null ? fmt(bb, 1) + '%': '—');
 
     function heroStat(label, chipHtml) {
       return '<div class="pp-hero-stat">'
@@ -524,8 +531,8 @@
     var PS = global.ProfileShell;
     var v = deriveStartVerdict(profile, ctx);
     var ps = ctx.pitchScore != null ? ctx.pitchScore : num(pick(profile, ['PitchScore', 'pitch_score', 'Pitching Score']));
-    var k = num(pick(profile, ['K_pct', 'K%']));
-    var bb = num(pick(profile, ['BB_pct', 'BB%']));
+    var k = pctNorm(num(pick(profile, ['K_pct', 'K%'])));
+    var bb = pctNorm(num(pick(profile, ['BB_pct', 'BB%'])));
     var hr9 = num(pick(profile, ['HR9', 'HR/9']));
     var era = num(pick(profile, ['ERA']));
     var fip = num(pick(profile, ['FIP', 'fip']));
@@ -551,12 +558,12 @@
 
     var detailNote = (ctx.splitLabel || 'Overall') + ' · ' + (ctx.window || 'YTD');
     var coreCells = ''
-      + pitcherStatNum('K%', k, 'pitching', false, 1)
-      + pitcherStatNum('BB%', bb, 'pitching', true, 1)
-      + pitcherStatNum('HR/9', hr9, 'pitching', true, 2)
-      + pitcherStatNum('ERA', era, 'pitching', true, 2)
-      + pitcherStatNum('FIP', fip, 'pitching', true, 2)
-      + pitcherStatNum('xFIP', xfip, 'pitching', true, 2);
+      + pitcherStatNum('K%', k, 'kpct', false, 1)
+      + pitcherStatNum('BB%', bb, 'bbpct', true, 1)
+      + pitcherStatNum('HR/9', hr9, 'hr9', true, 2)
+      + pitcherStatNum('ERA', era, 'era', true, 2)
+      + pitcherStatNum('FIP', fip, 'fip', true, 2)
+      + pitcherStatNum('xFIP', xfip, 'xfip', true, 2);
 
     var ctxCells = ''
       + pitcherStatCell('Start Verdict', verdictChipHtml(v.verdict, v.tone))
@@ -566,20 +573,20 @@
 
     function splitRow(label, row) {
       if (!row) return '';
-      var rk = num(pick(row, ['K_pct', 'K%']));
-      var rbb = num(pick(row, ['BB_pct', 'BB%']));
+      var rk = pctNorm(num(pick(row, ['K_pct', 'K%'])));
+      var rbb = pctNorm(num(pick(row, ['BB_pct', 'BB%'])));
       var rhr9 = num(pick(row, ['HR9', 'HR/9']));
       var rera = num(pick(row, ['ERA']));
       var rfip = num(pick(row, ['FIP', 'fip']));
       var rxfip = num(pick(row, ['xFIP', 'xfip']));
       return '<tr>'
         + '<td>' + esc(label) + '</td>'
-        + '<td>' + valChip(rk, 'pitching', false, 1) + '</td>'
-        + '<td>' + valChip(rbb, 'pitching', true, 1) + '</td>'
-        + '<td>' + valChip(rhr9, 'pitching', true, 2) + '</td>'
-        + '<td>' + valChip(rera, 'pitching', true, 2) + '</td>'
-        + '<td>' + valChip(rfip, 'pitching', true, 2) + '</td>'
-        + '<td>' + valChip(rxfip, 'pitching', true, 2) + '</td>'
+        + '<td>' + valChip(rk, 'kpct', false, 1) + '</td>'
+        + '<td>' + valChip(rbb, 'bbpct', true, 1) + '</td>'
+        + '<td>' + valChip(rhr9, 'hr9', true, 2) + '</td>'
+        + '<td>' + valChip(rera, 'era', true, 2) + '</td>'
+        + '<td>' + valChip(rfip, 'fip', true, 2) + '</td>'
+        + '<td>' + valChip(rxfip, 'xfip', true, 2) + '</td>'
         + '</tr>';
     }
 
