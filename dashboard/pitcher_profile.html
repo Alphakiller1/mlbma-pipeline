@@ -29,7 +29,7 @@
 <script src="pitcher_profile_dashboard.js?v=20260610p"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260603u">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260603v">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 </head>
 <body class="player-profile-page pitcher-profile-page team-profile-page">
@@ -128,15 +128,17 @@
   <div id="profilePageHeader"></div>
   <div class="tp-data-banner data-banner" id="dataBanner"></div>
 
-  <div class="tp-profile-toolbar">
-    <div class="tp-context-strip tp-context-strip--picker">
-      <div id="pitcherControlBar" class="profile-context-bar tp-context-picker"></div>
-    </div>
-  </div>
-
   <div class="tp-identity-stack profile-shell" id="profileContent">
     <section class="ca-board tp-section pp-hero-section" id="secHero">
-      <div id="pitcherSnapshot" class="profile-hero"></div>
+      <div class="pp-hero-banner-shell">
+        <div id="pitcherControlBar" class="pp-hero-search profile-context-bar tp-context-picker"></div>
+        <div id="pitcherSnapshot" class="profile-hero"></div>
+      </div>
+    </section>
+
+    <section class="ca-board tp-section" id="secLog">
+      <div id="ppHdrLog"></div>
+      <div class="table-wrap tp-table-wrap" id="logTableWrap"></div>
     </section>
 
     <section class="ca-board tp-section tp-identity-panel pp-intel-section" id="secIntel">
@@ -151,13 +153,6 @@
       <div id="allowedDashboard"></div>
     </section>
 
-    <section class="ca-board tp-section profile-section" id="secOOR">
-      <div id="ppHdrOOR"></div>
-      <div id="pitcherOorControls"></div>
-      <div id="oorPanel"></div>
-    </section>
-
-    <div class="profile-deep-sections profile-offense-sections">
     <section class="ca-board tp-section" id="secTierSplits">
       <div id="ppHdrTierSplits"></div>
       <div id="pitcherTierControls"></div>
@@ -165,9 +160,10 @@
       <div class="insight-line tp-note" id="tierSplitInsight"></div>
     </section>
 
-    <section class="ca-board tp-section" id="secLog">
-      <div id="ppHdrLog"></div>
-      <div class="table-wrap tp-table-wrap" id="logTableWrap"></div>
+    <section class="ca-board tp-section profile-section" id="secOOR">
+      <div id="ppHdrOOR"></div>
+      <div id="pitcherOorControls"></div>
+      <div id="oorPanel"></div>
     </section>
 
     <section class="ca-board tp-section" id="secF5">
@@ -176,10 +172,9 @@
       <div class="table-wrap tp-table-wrap pp-f5-metrics-wrap" id="f5TableWrap"></div>
       <div class="insight-line tp-note" id="f5Insight"></div>
     </section>
-    </div>
   </div>
 </main>
-<!-- pitcher-profile build: 20260610t -->
+<!-- pitcher-profile build: 20260603v -->
 <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -860,11 +855,11 @@ function mountProfilePageHeader() {
 
 function renderPitcherSectionHeaders() {
   var map = [
+    { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
     { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS — by home/away and handedness', icon: 'target' },
     { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'Rolling trend · L10 → L1 start windows · lower allowed = softer schedule', icon: 'shield' },
-    { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR · PALS faced · wRC+ faced — by home/away and handedness', icon: 'insight' },
     { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
-    { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
+    { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR · PALS faced · wRC+ faced — by home/away and handedness', icon: 'insight' },
     { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five: xFIP · K% · BB% · ER/5 — by home/away and handedness', icon: 'clock' }
   ];
   map.forEach(function(h) {
