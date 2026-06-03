@@ -236,6 +236,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.pitcher-profile-page .pp-hero-stats .tp-hero-stat__value .chip {
+  font-size: 17px;
+  font-weight: 800;
+  min-width: 52px;
+  padding: 6px 12px;
+  justify-content: center;
+}
+
 .pitcher-profile-page .pp-hero-stats .tp-hero-stat--positive .tp-hero-stat__value { color: var(--green, #4ADE80); }
 .pitcher-profile-page .pp-hero-stats .tp-hero-stat--negative .tp-hero-stat__value { color: var(--red-l, #F87171); }
 .pitcher-profile-page .pp-hero-stats .tp-hero-stat--mid .tp-hero-stat__value { color: var(--gold, #FBBF24); }
