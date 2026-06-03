@@ -647,11 +647,29 @@
 }
 
 /* Opposing Offense Allowed — Team Profile rolling-trend chrome */
-.pitcher-profile-page #secAllowed .pp-allowed-trend {
-  margin-top: 4px;
+.pitcher-profile-page #secAllowed .pp-allowed-trend.tp-trend-panel {
+  margin-top: 0;
+  padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
 }
+
+.pitcher-profile-page #secAllowed .tp-section-filter-bar--trend,
+.pitcher-profile-page #secAllowed .tp-section-filter-bar--context {
+  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
+}
+
+.pitcher-profile-page #secAllowed .tp-trend-table-wrap {
+  margin-bottom: 14px;
+}
+
 .pitcher-profile-page #secAllowed .tp-trend-chart-mount .mlbma-trend-chart {
   width: 100%;
   max-width: 100%;
+}
+
+.pitcher-profile-page #secAllowed .tp-trend-readout {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tp-note-color, #B8C0CC);
 }
 

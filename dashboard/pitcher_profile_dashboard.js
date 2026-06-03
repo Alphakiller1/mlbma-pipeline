@@ -217,19 +217,32 @@
     return rowKey === splitFocus ? ' is-active' : '';
   }
 
-  function resolveAllowed(ctx) {
-    var profile = ctx.profile;
-    var splits = ctx.splits || [];
-    var log = ctx.log || [];
-    var split = ctx.split || 'ytd';
-    var window = ctx.window || 'YTD';
-    var pick = ctx.pickCol;
+  function sortLogByDate(log, pickCol) {
+    return (log || []).slice().sort(function(a, b) {
+      return String(pickCol(b, ['date', 'Date', 'game_date'])).localeCompare(
+        String(pickCol(a, ['date', 'Date', 'game_date']))
+      );
+    });
+  }
 
-    function pf(keys) {
-      if (!profile || !pick) return null;
-      return num(pick(profile, keys));
-    }
+  function filterLogForAllowedSplit(log, pickCol, split) {
+    var rows = sortLogByDate(log, pickCol);
+    if (!split || split === 'overall' || split === 'ytd') return rows;
+    if (split === 'home') return filterLogByLocation(rows, pickCol, 'home');
+    if (split === 'away') return filterLogByLocation(rows, pickCol, 'away');
+    return rows;
+  }
 
+  function metricsFromLogRows(log, pickCol, maxStarts) {
+    return {
+      abq: avgFromLog(log, pickCol, ['opponent_ABQ', 'opponent ABQ'], maxStarts),
+      rcv: avgFromLog(log, pickCol, ['opponent_RCV', 'opponent RCV'], maxStarts),
+      obr: avgFromLog(log, pickCol, ['opponent_OBR', 'opponent OBR'], maxStarts),
+      osi: avgFromLog(log, pickCol, ['opponent_OSI', 'opponent OSI'], maxStarts)
+    };
+  }
+
+  function sheetAllowedMetrics(splits, profile, pick, findSplit, split) {
     function fromSplitRow(s) {
       if (!s) return null;
       return {
@@ -239,58 +252,111 @@
         osi: num(pick(s, ['OSI_allowed', 'OSI allowed']))
       };
     }
-
-    var metrics = {
-      abq: pf(['ABQ_allowed', 'ABQ allowed']),
-      rcv: pf(['RCV_allowed', 'RCV allowed']),
-      obr: pf(['OBR_allowed', 'OBR allowed']),
-      osi: pf(['OSI_allowed', 'OSI allowed'])
-    };
-
-    if (split === 'lhh' && ctx.findSplit) {
-      var s = ctx.findSplit(splits, 'batter_hand', 'LHH') || ctx.findSplit(splits, 'batter_hand', 'L');
-      var m = fromSplitRow(s);
-      if (m) metrics = m;
-    } else if (split === 'rhh' && ctx.findSplit) {
-      s = ctx.findSplit(splits, 'batter_hand', 'RHH') || ctx.findSplit(splits, 'batter_hand', 'R');
-      m = fromSplitRow(s);
-      if (m) metrics = m;
-    } else if (split === 'home' && ctx.findSplit) {
-      m = fromSplitRow(ctx.findSplit(splits, 'location', 'home'));
-      if (m) metrics = m;
-    } else if (split === 'away' && ctx.findSplit) {
-      m = fromSplitRow(ctx.findSplit(splits, 'location', 'away'));
-      if (m) metrics = m;
+    if (split === 'lhh' && findSplit) {
+      return fromSplitRow(findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L'));
     }
+    if (split === 'rhh' && findSplit) {
+      return fromSplitRow(findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R'));
+    }
+    if (split === 'home' && findSplit) return fromSplitRow(findSplit(splits, 'location', 'home'));
+    if (split === 'away' && findSplit) return fromSplitRow(findSplit(splits, 'location', 'away'));
+    if (!profile || !pick) return null;
+    return {
+      abq: num(pick(profile, ['ABQ_allowed', 'ABQ allowed'])),
+      rcv: num(pick(profile, ['RCV_allowed', 'RCV allowed'])),
+      obr: num(pick(profile, ['OBR_allowed', 'OBR allowed'])),
+      osi: num(pick(profile, ['OSI_allowed', 'OSI allowed']))
+    };
+  }
 
-    var maxStarts = window === 'L1' ? 1 : window === 'L3' ? 3 : window === 'L6' ? 6
-      : window === 'L10' ? 10 : window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
-    var useLogRoll = !split || split === 'ytd' || split === 'overall';
-    // Rolling windows from game log (opponent_* per start). YTD = all logged starts;
-    // L30/L14/L7 = last N starts. Split-specific rows keep sheet values unless overall.
-    if (log.length && useLogRoll) {
-      var lm = {
-        abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], maxStarts),
-        rcv: avgFromLog(log, pick, ['opponent_RCV', 'opponent RCV'], maxStarts),
-        obr: avgFromLog(log, pick, ['opponent_OBR', 'opponent OBR'], maxStarts),
-        osi: avgFromLog(log, pick, ['opponent_OSI', 'opponent OSI'], maxStarts)
-      };
-      metrics = {
-        abq: lm.abq != null ? lm.abq : metrics.abq,
-        rcv: lm.rcv != null ? lm.rcv : metrics.rcv,
-        obr: lm.obr != null ? lm.obr : metrics.obr,
-        osi: lm.osi != null ? lm.osi : metrics.osi
+  /** Rolling pack: [L10, L6, L3, L1] per metric from filtered start log. */
+  function buildAllowedTrendPack(ctx) {
+    var pick = ctx.pickCol;
+    var split = ctx.split || 'overall';
+    var log = filterLogForAllowedSplit(ctx.log || [], pick, split);
+    var pack = {
+      abq: [], rcv: [], obr: [], osi: [],
+      logCount: log.length,
+      split: split,
+      source: 'log'
+    };
+    [10, 6, 3, 1].forEach(function(n) {
+      var m = metricsFromLogRows(log, pick, n);
+      pack.abq.push(m.abq);
+      pack.rcv.push(m.rcv);
+      pack.obr.push(m.obr);
+      pack.osi.push(m.osi);
+    });
+    if (log.length) return pack;
+
+    pack.source = 'sheet';
+    var sheet = sheetAllowedMetrics(ctx.splits, ctx.profile, pick, ctx.findSplit, split);
+    if (!sheet) return pack;
+    var v = [sheet.abq, sheet.rcv, sheet.obr, sheet.osi];
+    pack.abq = v.map(function() { return sheet.abq; });
+    pack.rcv = v.map(function() { return sheet.rcv; });
+    pack.obr = v.map(function() { return sheet.obr; });
+    pack.osi = v.map(function() { return sheet.osi; });
+    return pack;
+  }
+
+  function buildPitcherAllowedTrendRow(values) {
+    var C = global.MLBMACharts;
+    var l10 = num(values && values[0]);
+    var l6 = num(values && values[1]);
+    var l3 = num(values && values[2]);
+    var l1 = num(values && values[3]);
+    var velocity = C && C.computeTrendVelocityFromWindows
+      ? C.computeTrendVelocityFromWindows([l10, l6, l3, l1])
+      : null;
+    var trendDir = C && C.trendDirectionFromVelocity
+      ? C.trendDirectionFromVelocity(velocity)
+      : 'Stable';
+    var deltaVal = l10 != null && l1 != null ? l1 - l10 : null;
+    var interpretation = allowedInterpretation(deltaVal, velocity);
+    var reliability = 'Noisy';
+    if (C && C.trendReliabilityForRow) {
+      reliability = C.trendReliabilityForRow(l10, l6, l1, trendDir);
+    } else if (Math.abs(deltaVal || 0) > 8) {
+      reliability = 'Short Spike';
+    } else if (trendDir === 'Stable') {
+      reliability = 'Stable';
+    }
+    return {
+      l10: l10,
+      l6: l6,
+      l3: l3,
+      l1: l1,
+      delta: deltaVal,
+      velocity: velocity,
+      trend: trendDir,
+      reliability: reliability,
+      interpretation: interpretation
+    };
+  }
+
+  function resolveAllowed(ctx) {
+    var pack = buildAllowedTrendPack(ctx);
+    var window = ctx.window || 'L10';
+    var idx = { L10: 0, L6: 1, L3: 2, L1: 3 }[window];
+    if (idx == null) idx = 0;
+    function pickWindow(key) {
+      var i = { L10: 0, L6: 1, L3: 2, L1: 3 }[key];
+      if (i == null) i = 0;
+      return {
+        abq: pack.abq[i],
+        rcv: pack.rcv[i],
+        obr: pack.obr[i],
+        osi: pack.osi[i]
       };
     }
-
-    var l14 = {
-      abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], 4),
-      rcv: avgFromLog(log, pick, ['opponent_RCV', 'opponent RCV'], 4),
-      obr: avgFromLog(log, pick, ['opponent_OBR', 'opponent OBR'], 4),
-      osi: avgFromLog(log, pick, ['opponent_OSI', 'opponent OSI'], 4)
+    return {
+      metrics: pickWindow(window),
+      pack: pack,
+      isF5: (ctx.split || '') === 'f5',
+      logCount: pack.logCount,
+      source: pack.source
     };
-
-    return { metrics: metrics, l14: l14, isF5: split === 'f5' };
   }
 
   function lookupMlbId(profile, pickCol) {
@@ -482,48 +548,148 @@
     return '<span class="chip ' + cls + '">' + esc(display) + '</span>';
   }
 
-  function renderAllowedDashboard(profile, ctx) {
-    var omitHeader = !!ctx.omitHeader;
-    var resolved = resolveAllowed(ctx);
-    var f5 = resolved.isF5 ? (A ? A.f5WarningHtml() : '') : '';
-    var wins = [
-      { key: 'L1', label: 'Last 1' },
-      { key: 'L3', label: 'Last 3' },
-      { key: 'L6', label: 'Last 6' },
-      { key: 'L10', label: 'Last 10' }
+  function allowedTrendReadout(pack) {
+    var keys = ['osi', 'rcv', 'abq', 'obr'];
+    var labels = { osi: 'OSI allowed', rcv: 'RCV allowed', abq: 'ABQ allowed', obr: 'OBR allowed' };
+    var deltas = [];
+    keys.forEach(function(k) {
+      var vals = pack[k] || [];
+      var l10 = num(vals[0]);
+      var l1 = num(vals[3]);
+      if (l10 == null || l1 == null) return;
+      if (Math.abs(l1 - l10) < 0.05) return;
+      deltas.push({ key: k, label: labels[k], delta: l1 - l10 });
+    });
+    if (!deltas.length) {
+      if (!pack.logCount) {
+        return 'No start log rows for this pitcher — run SP game-log scrape for rolling windows.';
+      }
+      return 'Last 1 matches Last 10 across metrics — schedule difficulty flat over recent starts.';
+    }
+    deltas.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+    var lead = deltas[0];
+    var harder = lead.delta > 0;
+    var arrow = harder ? '▲' : '▼';
+    var driver = deltas.length > 1
+      ? '; ' + deltas[1].label + ' ' + (deltas[1].delta >= 0 ? '▲' : '▼') + ' ' + Math.abs(deltas[1].delta).toFixed(1)
+      : '';
+    return lead.label + ' ' + arrow + ' ' + Math.abs(lead.delta).toFixed(1) + ' (L1−L10)'
+      + (harder ? ' — recent lineups tougher' : ' — recent lineups softer') + driver + '.';
+  }
+
+  function renderPitcherAllowedTrendTable(pack, ctx, active) {
+    var metrics = [
+      { k: 'osi', label: 'OSI', ctx: 'osi', desc: 'Composite offense faced' },
+      { k: 'rcv', label: 'RCV', ctx: 'rcv', desc: 'Contact quality faced' },
+      { k: 'abq', label: 'ABQ', ctx: 'abq', desc: 'Discipline quality faced' },
+      { k: 'obr', label: 'OBR', ctx: 'obr', desc: 'On-base floor faced' }
     ];
-    function metricsForWindow(win) {
-      return resolveAllowed(Object.assign({}, ctx, { window: win })).metrics;
+    var rows = metrics.map(function(def) {
+      return { def: def, row: buildPitcherAllowedTrendRow(pack[def.k] || []) };
+    });
+    var activePack = rows.find(function(r) { return r.def.k === active; }) || rows[0];
+    var activeRow = activePack ? activePack.row : null;
+    var directive = '';
+    if (activeRow && activeRow.interpretation && activeRow.interpretation !== 'Insufficient') {
+      var deltaTxt = activeRow.delta != null
+        ? ((activeRow.delta > 0 ? '▲ ' : activeRow.delta < 0 ? '▼ ' : '± ')
+          + Math.abs(activeRow.delta).toFixed(1) + ' L1−L10')
+        : '';
+      directive = '<div class="tp-trend-directive tp-trend-directive--' + allowedDirectiveTone(activeRow.interpretation) + '">'
+        + '<span class="tp-trend-directive__metric">' + esc((activePack.def.label || active).toUpperCase()) + ' ALLOWED</span>'
+        + '<span class="tp-trend-directive__read">' + esc(activeRow.interpretation)
+        + (deltaTxt ? ' · ' + esc(deltaTxt) : '')
+        + ' · ' + esc(activeRow.trend || 'Stable')
+        + ' · ' + esc(activeRow.reliability || 'Noisy')
+        + '</span></div>';
     }
-    function ctxKeyForMetric(key) {
-      return key === 'abq' ? 'abq' : key === 'rcv' ? 'rcv' : key === 'obr' ? 'obr' : 'osi';
+    var filterNote = (ctx.splitLabel || 'Overall')
+      + ' · read L10→L1 left to right · lower = softer opposing offense';
+    if (pack.source === 'sheet') {
+      filterNote += ' · start log empty — showing season split snapshot in all windows';
+    } else if ((ctx.split === 'lhh' || ctx.split === 'rhh') && pack.logCount) {
+      filterNote += ' · platoon filter uses full start log until hand-split log is available';
     }
-    function cell(metricKey, winKey) {
-      var m = metricsForWindow(winKey);
-      var v = m ? m[metricKey] : null;
-      return '<td class="num">' + valChip(v, ctxKeyForMetric(metricKey), true, 1) + '</td>';
-    }
-    function trendRow(metricKey, label, desc) {
-      return '<tr>'
-        + '<th scope="row"><span class="pp-split-metric">' + esc(label)
-        + (desc ? '<span class="pp-split-metric-desc">' + esc(desc) + '</span>' : '')
-        + '</span></th>'
-        + wins.map(function(w) { return cell(metricKey, w.key); }).join('')
+    var body = rows.map(function(item) {
+      var def = item.def;
+      var row = item.row;
+      var isActive = def.k === active;
+      return '<tr class="tp-trend-table__row' + (isActive ? ' is-active' : '') + '" data-trend-metric-row="' + esc(def.k) + '">'
+        + '<th scope="row"><span class="tp-trend-table__metric">' + esc(def.label)
+        + '<span class="tp-trend-table__metric-desc">' + esc(def.desc) + '</span></span></th>'
+        + '<td class="numcol">' + trendTableMetricCellAllowed(row.l10, def.ctx) + '</td>'
+        + '<td class="numcol">' + trendTableMetricCellAllowed(row.l6, def.ctx) + '</td>'
+        + '<td class="numcol">' + trendTableMetricCellAllowed(row.l3, def.ctx) + '</td>'
+        + '<td class="numcol tp-trend-col--highlight">' + trendTableMetricCellAllowed(row.l1, def.ctx) + '</td>'
+        + '<td class="numcol">' + trendTableDeltaCellAllowed(row.delta) + '</td>'
+        + '<td class="numcol">' + trendTableVelocityCellAllowed(row.velocity) + '</td>'
+        + '<td><span class="tp-trend-table__reliability">' + esc(row.reliability || 'Noisy') + '</span></td>'
+        + '<td><span class="tp-trend-table__interp tp-trend-table__interp--' + allowedDirectiveTone(row.interpretation) + '">'
+        + esc(row.interpretation || 'Insufficient') + '</span></td>'
         + '</tr>';
+    }).join('');
+    return '<div class="tp-trend-table-wrap">'
+      + '<p class="tp-trend-table-note">' + esc(filterNote) + ' · L1 is a momentum flag, not a standalone predictor.</p>'
+      + directive
+      + '<table class="tp-trend-table" aria-label="Opposing offense allowed rolling trends">'
+      + '<thead><tr>'
+      + '<th scope="col">Metric</th>'
+      + '<th scope="col">L10</th><th scope="col">L6</th><th scope="col">L3</th>'
+      + '<th scope="col" class="tp-trend-col--highlight">L1</th>'
+      + '<th scope="col">Δ L1−L10</th><th scope="col">Velocity</th>'
+      + '<th scope="col">Reliability</th><th scope="col">Interpretation</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+  }
+
+  function renderAllowedDashboard(profile, ctx) {
+    var C = global.MLBMACharts;
+    var PC = global.MLBMAProfileControls;
+    var active = ctx.chartMetric || 'osi';
+    var pack = buildAllowedTrendPack(ctx);
+    var f5 = (ctx.split || '') === 'f5' ? (A ? A.f5WarningHtml() : '') : '';
+
+    var metricOpts = [
+      { value: 'osi', label: 'OSI', title: 'Composite offense faced' },
+      { value: 'rcv', label: 'RCV', title: 'Contact quality faced' },
+      { value: 'abq', label: 'ABQ', title: 'Discipline quality faced' },
+      { value: 'obr', label: 'OBR', title: 'On-base floor faced' }
+    ];
+    var metricBar = (PC && PC.renderSectionOptionBar)
+      ? PC.renderSectionOptionBar({
+        layout: 'row',
+        barClass: 'tp-section-filter-bar--trend',
+        sectionKey: 'pitcher-allowed-trend',
+        groups: [{
+          label: 'Metric',
+          groupKey: 'trend-metric',
+          options: metricOpts.map(function(t) {
+            return { value: t.value, label: t.label, buttonAttrs: 'title="' + esc(t.title) + '"' };
+          }),
+          active: active,
+          ctrlAttr: 'data-trend-metric',
+          groupAttr: 'data-trend-metric-group'
+        }]
+      })
+      : '';
+
+    var chart = '';
+    if (C && C.buildTrendLineChart) {
+      var vals = pack[active] || [];
+      chart = C.buildTrendLineChart((active || 'osi').toUpperCase() + ' allowed', vals, 480, 120, {
+        labels: ['L10', 'L6', 'L3', 'L1'],
+        metricCtx: active,
+        invertTrend: true
+      });
     }
-    var filterNote = (ctx.splitLabel || 'Overall') + ' · lower = softer opposing offense';
-    var table = '<div class="tp-trend-table-wrap pp-split-table-wrap">'
-      + '<p class="tp-trend-table-note">' + esc(filterNote) + '</p>'
-      + '<table class="hub-table tp-table pp-startlog pp-split-matrix" aria-label="Opposing offense allowed by start window">'
-      + '<thead><tr><th>Metric</th>'
-      + wins.map(function(w) { return '<th class="numcol">' + esc(w.label) + '</th>'; }).join('')
-      + '</tr></thead><tbody>'
-      + trendRow('abq', 'ABQ allowed', 'Discipline quality faced')
-      + trendRow('rcv', 'RCV allowed', 'Contact quality faced')
-      + trendRow('obr', 'OBR allowed', 'On-base floor faced')
-      + trendRow('osi', 'OSI allowed', 'Composite offense faced')
-      + '</tbody></table></div>';
-    return (omitHeader ? '' : '') + f5 + table;
+
+    var readout = allowedTrendReadout(pack);
+    return '<div class="pp-allowed-trend tp-trend-panel" data-allowed-source="' + esc(pack.source) + '">'
+      + f5
+      + metricBar
+      + renderPitcherAllowedTrendTable(pack, ctx, active)
+      + '<div class="tp-trend-chart-mount" data-active-metric="' + esc(active) + '">' + chart + '</div>'
+      + (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : '')
+      + '</div>';
   }
 
   function splitRowsForView(allRows, viewSplit) {
