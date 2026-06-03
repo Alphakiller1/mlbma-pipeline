@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260605a">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260606b">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -141,7 +141,6 @@
 
     <section class="ca-board tp-section tp-identity-panel pp-intel-section" id="secIntel">
       <div id="ppHdrIntel"></div>
-      <div id="pitcherPitchingControls"></div>
       <div class="table-wrap tp-table-wrap pp-pitching-value-wrap" id="pitchingValueTableWrap"></div>
     </section>
 
@@ -153,7 +152,6 @@
 
     <section class="ca-board tp-section profile-section" id="secOOR">
       <div id="ppHdrOOR"></div>
-      <div id="pitcherOorControls"></div>
       <div id="oorPanel"></div>
     </section>
 
@@ -172,7 +170,6 @@
 
     <section class="ca-board tp-section" id="secF5">
       <div id="ppHdrF5"></div>
-      <div id="pitcherF5Controls"></div>
       <div class="table-wrap tp-table-wrap pp-split-table-wrap" id="f5TableWrap"></div>
       <div class="insight-line tp-note" id="f5Insight"></div>
     </section>
@@ -664,7 +661,7 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
     compact: true,
     log: log,
     splits: splits,
-    splitFocus: oorFilter.split || 'overall'
+    splitFocus: 'overall'
   });
   var snap = document.getElementById('pitcherSnapshot');
   var allowed = document.getElementById('allowedDashboard');
@@ -685,7 +682,7 @@ function mountProfilePageHeader() {
 
 function renderPitcherSectionHeaders() {
   var map = [
-    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS by split · vs LHB/RHB need FanGraphs hand-split scrape', icon: 'target' },
+    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS — Both / Home / Away / vs LHB / vs RHB', icon: 'target' },
     { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI allowed · Last 1 / 3 / 6 / 10 starts · lower is softer', icon: 'shield' },
     { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR · PALS faced · wRC+ faced — by home/away and handedness', icon: 'insight' },
     { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
@@ -696,35 +693,6 @@ function renderPitcherSectionHeaders() {
     var el = document.getElementById(h.id);
     if (!el) return;
     el.innerHTML = sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Pitcher Profile' });
-  });
-}
-
-function pitcherMatrixSplitOpts() {
-  return [
-    { value: 'overall', label: 'Both' },
-    { value: 'home', label: 'Home' },
-    { value: 'away', label: 'Away' },
-    { value: 'lhh', label: 'vs LHB' },
-    { value: 'rhh', label: 'vs RHB' }
-  ];
-}
-
-function renderPitcherSplitControlBar(mountId, sectionKey, filterKey) {
-  var el = document.getElementById(mountId);
-  var PC = window.MLBMAProfileControls;
-  if (!el || !PC || !PC.renderSectionOptionBar) return;
-  var sf = STATE.sectionFilters[filterKey] || {};
-  el.innerHTML = PC.renderSectionOptionBar({
-    layout: 'row',
-    barClass: 'tp-section-filter-bar--controls',
-    sectionKey: sectionKey,
-    groups: [{
-      label: 'Split',
-      groupKey: 'split',
-      tabMode: true,
-      options: pitcherMatrixSplitOpts(),
-      active: sf.split || 'overall'
-    }]
   });
 }
 
@@ -741,8 +709,6 @@ function renderPitcherSectionControls() {
     { value: 'away', label: 'Away' },
     { value: 'f5', label: 'F5' }
   ];
-  renderPitcherSplitControlBar('pitcherPitchingControls', 'pitcher-pitching', 'pitching');
-
   var allowed = document.getElementById('pitcherAllowedControls');
   if (allowed) {
     allowed.innerHTML = PC.renderSectionOptionBar({
@@ -754,9 +720,6 @@ function renderPitcherSectionControls() {
       ]
     });
   }
-
-  renderPitcherSplitControlBar('pitcherOorControls', 'pitcher-oor', 'oor');
-  renderPitcherSplitControlBar('pitcherF5Controls', 'pitcher-f5', 'f5');
 
   var tierBar = document.getElementById('pitcherTierControls');
   if (tierBar) {
@@ -811,30 +774,9 @@ function bindPitcherSectionControls() {
     var sectionKey = bar.getAttribute('data-tp-section');
     if (!groupKey || !sectionKey) return;
 
-    if (sectionKey === 'pitcher-pitching') {
-      STATE.sectionFilters.pitching = STATE.sectionFilters.pitching || {};
-      if (groupKey === 'split') STATE.sectionFilters.pitching.split = val;
-      renderPitcherSectionControls();
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
-      return;
-    }
     if (sectionKey === 'pitcher-allowed') {
       STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
       if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
-      renderPitcherSectionControls();
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
-      return;
-    }
-    if (sectionKey === 'pitcher-oor') {
-      STATE.sectionFilters.oor = STATE.sectionFilters.oor || {};
-      if (groupKey === 'split') STATE.sectionFilters.oor.split = val;
-      renderPitcherSectionControls();
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
-      return;
-    }
-    if (sectionKey === 'pitcher-f5') {
-      STATE.sectionFilters.f5 = STATE.sectionFilters.f5 || {};
-      if (groupKey === 'split') STATE.sectionFilters.f5.split = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
       return;
@@ -1082,11 +1024,10 @@ function renderProfile(key) {
   bindPitcherSectionControls();
   renderPlatformSections(profile, splits, log, name, team, isToday);
 
-  var pitchingSplit = (STATE.sectionFilters.pitching && STATE.sectionFilters.pitching.split) || 'overall';
   var pvWrap = document.getElementById('pitchingValueTableWrap');
   if (pvWrap) {
-    pvWrap.setAttribute('data-split-view', pitchingSplit);
-    pvWrap.innerHTML = buildPitchingValueTable(profile, splits, log, pitchingSplit);
+    pvWrap.setAttribute('data-split-view', 'overall');
+    pvWrap.innerHTML = buildPitchingValueTable(profile, splits, log, 'overall');
   }
 
   // Season Line section removed (user request); keep YTD headline stats in the banner.
@@ -1138,11 +1079,10 @@ function renderProfile(key) {
     }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
 
-  var f5Split = (STATE.sectionFilters.f5 && STATE.sectionFilters.f5.split) || 'overall';
   var f5Wrap = document.getElementById('f5TableWrap');
   if (f5Wrap) {
-    f5Wrap.setAttribute('data-split-view', f5Split);
-    f5Wrap.innerHTML = buildF5Table(profile, splits, log, f5Split);
+    f5Wrap.setAttribute('data-split-view', 'overall');
+    f5Wrap.innerHTML = buildF5Table(profile, splits, log, 'overall');
   }
   document.getElementById('f5Insight').innerHTML =
     'ER/5 = earned runs allowed per five innings (first-five). xFIP / K% / BB% are full-start rates for the split.';

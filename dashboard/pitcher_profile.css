@@ -496,23 +496,6 @@
   color: var(--text-3, #9CA3AF);
 }
 
-/* Split control bars — visible hub pills (match tier splits) */
-.pitcher-profile-page .tp-section-filter-bar--controls {
-  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
-}
-
-.pitcher-profile-page .tp-section-filter-bar--controls .hub-pill {
-  min-height: 34px;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.pitcher-profile-page .tp-section-filter-bar--controls .hub-pill.active {
-  background: var(--v-grad, linear-gradient(135deg, #7C4DFF, #9A6BFF));
-  border-color: rgba(196, 176, 255, 0.55);
-}
-
 .pitcher-profile-page .tp-section > .tp-section-filter-bar,
 .pitcher-profile-page .tp-section > .tp-hub-bar {
   margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
@@ -672,22 +655,3 @@
   max-width: 100%;
 }
 
-/* Split matrix tables — hub-pill highlight row */
-.pitcher-profile-page .tp-section > #pitcherPitchingControls,
-.pitcher-profile-page .tp-section > #pitcherF5Controls,
-.pitcher-profile-page .tp-section > #pitcherOorControls {
-  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
-}
-
-.pitcher-profile-page .pp-split-matrix .pp-split-row.is-active {
-  background: rgba(124, 77, 255, 0.12);
-  box-shadow: inset 3px 0 0 var(--purple, #7C4DFF);
-}
-
-.pitcher-profile-page .pp-split-table-wrap[data-split-focus]:not([data-split-focus="overall"]) .pp-split-matrix .pp-split-row:not(.is-active) {
-  opacity: 0.42;
-}
-
-.pitcher-profile-page .pp-pitching-value-wrap[data-split-focus]:not([data-split-focus="overall"]) .pp-split-matrix .pp-split-row:not(.is-active) {
-  opacity: 0.42;
-}
