@@ -251,12 +251,40 @@
     return out;
   }
 
+  function opsFromRow(row, pickCol) {
+    if (!row || !pickCol) return null;
+    var ops = num(pickCol(row, ['OPS', 'ops', 'OPS_against', 'OPP', 'Opp OPS']));
+    if (ops != null) return ops;
+    var obp = num(pickCol(row, ['OBP', 'obp']));
+    var slg = num(pickCol(row, ['SLG', 'slg']));
+    if (obp != null && slg != null) return Math.round((obp + slg) * 1000) / 1000;
+    return null;
+  }
+
+  function blendHandOps(splits, findSplit, ctx, pickCol) {
+    var lo = opsFromRow(findHandPitchingSplit(splits, findSplit, 'lhh', ctx), pickCol);
+    var ro = opsFromRow(findHandPitchingSplit(splits, findSplit, 'rhh', ctx), pickCol);
+    if (lo != null && ro != null) return Math.round(((lo + ro) / 2) * 1000) / 1000;
+    return lo != null ? lo : ro;
+  }
+
+  function attachOpsFallback(row, splits, findSplit, ctx, pickCol) {
+    if (!row) return row;
+    if (opsFromRow(row, pickCol) != null) {
+      if (row.OPS == null) row = Object.assign({}, row, { OPS: opsFromRow(row, pickCol) });
+      return row;
+    }
+    var blended = blendHandOps(splits, findSplit, ctx, pickCol);
+    return blended != null ? Object.assign({}, row, { OPS: blended }) : row;
+  }
+
   function enrichPitchingRow(row, profile, pickCol) {
     if (!row) return row;
-    if (!profile || !pickCol) return row;
     var out = Object.assign({}, row);
+    if (!pickCol) return out;
     function fillIfMissing(outKeys, profKeys) {
       if (num(pickCol(out, outKeys)) != null) return;
+      if (!profile) return;
       var v = num(pickCol(profile, profKeys || outKeys));
       if (v != null) out[outKeys[0]] = v;
     }
@@ -265,7 +293,12 @@
     fillIfMissing(['K_pct', 'K%'], ['K_pct', 'K%']);
     fillIfMissing(['BB_pct', 'BB%'], ['BB_pct', 'BB%']);
     fillIfMissing(['HR9', 'HR/9'], ['HR9', 'HR/9']);
-    fillIfMissing(['OPS', 'ops', 'OPS_against'], ['OPS', 'ops', 'OPS_against']);
+    if (opsFromRow(out, pickCol) == null && profile) {
+      var profOps = opsFromRow(profile, pickCol);
+      if (profOps != null) out.OPS = profOps;
+    } else if (opsFromRow(out, pickCol) != null) {
+      out.OPS = opsFromRow(out, pickCol);
+    }
     return out;
   }
 
@@ -975,7 +1008,7 @@
       || num(pickCol(row, ['BB_pct', 'BB%'])) != null
       || num(pickCol(row, ['HR9', 'HR/9'])) != null
       || num(pickCol(row, ['xFIP', 'xfip'])) != null
-      || num(pickCol(row, ['OPS', 'ops', 'OPS_against'])) != null;
+      || opsFromRow(row, pickCol) != null;
   }
 
   function resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx) {
@@ -1008,10 +1041,10 @@
     } else {
       s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true });
     }
-    if (pitchingRowHasData(s, pickCol)) return s;
-    if (splitSpecific) return s || null;
-    if (profile) return enrichPitchingRow(profile, profile, pickCol);
-    return s;
+    if (pitchingRowHasData(s, pickCol)) return attachOpsFallback(s, splits, findSplit, ctx, pickCol);
+    if (splitSpecific) return attachOpsFallback(s, splits, findSplit, ctx, pickCol) || null;
+    if (profile) return attachOpsFallback(enrichPitchingRow(profile, profile, pickCol), splits, findSplit, ctx, pickCol);
+    return attachOpsFallback(s, splits, findSplit, ctx, pickCol);
   }
 
   function buildPitchingValueTableHtml(profile, splits, log, pickCol, findSplit, viewSplit, ctx) {
@@ -1019,7 +1052,10 @@
     var splitLabels = {
       overall: 'Both', home: 'Home', away: 'Away', lhh: 'vs LHB', rhh: 'vs RHB'
     };
-    var s = resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx);
+    var s = attachOpsFallback(
+      resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx) || {},
+      splits, findSplit, ctx, pickCol
+    );
     var handMissing = (viewSplit === 'lhh' || viewSplit === 'rhh') && !pitchingRowHasData(s, pickCol);
     s = s || {};
     function cell(v, ctx, invert, dec) {
@@ -1030,7 +1066,7 @@
     var rbb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
     var rhr9 = num(pickCol(s, ['HR9', 'HR/9']));
     var rxfip = num(pickCol(s, ['xFIP', 'xfip']));
-    var rops = num(pickCol(s, ['OPS', 'ops', 'OPS_against', 'OPP', 'Opp OPS']));
+    var rops = opsFromRow(s, pickCol);
     return '<table class="hub-table tp-table pp-pitching-value-metrics-table" aria-label="Pitching value metrics">'
       + '<thead><tr><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
       + '<tbody><tr>'

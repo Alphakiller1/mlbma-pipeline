@@ -283,22 +283,61 @@ def _norm(name) -> str:
         return str(name).strip().lower()
 
 
+def hand_ops_blend_lookup() -> dict:
+    """Average vs-LHH / vs-RHH OPS from FanGraphs hand exports when season OPS is missing."""
+    acc: dict[str, list[float]] = {}
+    for fname in ("sp_vs_LHH.csv", "sp_vs_RHH.csv"):
+        p = DATA_DIR / fname
+        if not p.exists():
+            continue
+        df = pd.read_csv(p)
+        name_col = "Name" if "Name" in df.columns else None
+        if not name_col:
+            continue
+        for _, r in df.iterrows():
+            ops = _ops_from_fg_row(r)
+            if ops is None:
+                continue
+            acc.setdefault(_norm(r[name_col]), []).append(ops)
+    return {k: round(sum(v) / len(v), 3) for k, v in acc.items() if v}
+
+
+def profile_ops_from_splits(splits: pd.DataFrame, pname_key: str) -> Optional[float]:
+    """Mean OPS across vs-LHH / vs-RHH split rows already merged into sp_metric_splits."""
+    if splits is None or splits.empty:
+        return None
+    hand = splits[
+        (splits["split_dimension"] == "batter_hand")
+        & (splits["pitcher_name"].apply(lambda n: _norm(n) == pname_key))
+    ]
+    if hand.empty or "OPS" not in hand.columns:
+        return None
+    ops_vals = pd.to_numeric(hand["OPS"], errors="coerce").dropna()
+    if ops_vals.empty:
+        return None
+    return round(float(ops_vals.mean()), 3)
+
+
 def season_advanced_lookup() -> dict:
     """{normalized pitcher name: {FIP, xFIP, OPS}} from the FanGraphs season export."""
+    out: dict[str, dict] = {}
     p = DATA_DIR / "sp_standard.csv"
-    if not p.exists():
-        return {}
-    df = pd.read_csv(p)
-    name_col = "Name" if "Name" in df.columns else None
-    if not name_col:
-        return {}
-    out = {}
-    for _, r in df.iterrows():
-        out[_norm(r[name_col])] = {
-            "FIP": _num(r.get("FIP")),
-            "xFIP": _num(r.get("xFIP")),
-            "OPS": _ops_from_fg_row(r),
-        }
+    if p.exists():
+        df = pd.read_csv(p)
+        name_col = "Name" if "Name" in df.columns else None
+        if name_col:
+            for _, r in df.iterrows():
+                out[_norm(r[name_col])] = {
+                    "FIP": _num(r.get("FIP")),
+                    "xFIP": _num(r.get("xFIP")),
+                    "OPS": _ops_from_fg_row(r),
+                }
+    hand_ops = hand_ops_blend_lookup()
+    for key, ops in hand_ops.items():
+        if key not in out:
+            out[key] = {"FIP": None, "xFIP": None, "OPS": ops}
+        elif out[key].get("OPS") is None:
+            out[key]["OPS"] = ops
     return out
 
 
@@ -429,6 +468,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
             continue
         st = stale_lookup.get(str(pname), {})
         a = adv.get(_norm(pname), {})
+        split_ops = profile_ops_from_splits(splits, _norm(pname))
         rows.append(
             {
                 "pitcher_id": pid,
@@ -438,7 +478,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
                 **block,
                 "FIP": a.get("FIP") if a.get("FIP") is not None else block.get("FIP"),
                 "xFIP": a.get("xFIP"),
-                "OPS": a.get("OPS") if a.get("OPS") is not None else block.get("OPS"),
+                "OPS": a.get("OPS") if a.get("OPS") is not None else split_ops if split_ops is not None else block.get("OPS"),
                 "high_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "High"),
                 "low_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "Low"),
                 "home_ERA": _split_era(pdf, "home_away", "home"),

@@ -26,7 +26,7 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260610o"></script>
+<script src="pitcher_profile_dashboard.js?v=20260610p"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
 <link rel="stylesheet" href="pitcher_profile.css?v=20260603u">
@@ -1586,7 +1586,7 @@ function fgHandRowToSplit(row, splitValue) {
     BB_pct: pctFromFg(pickCol(row, ['BB_pct', 'BB%'])),
     HR9: pickCol(row, ['HR9', 'HR/9']),
     xFIP: pickCol(row, ['xFIP', 'xfip']),
-    OPS: pickCol(row, ['OPS', 'ops', 'OPP', 'Opp OPS']),
+    OPS: opsFromFgRow(row),
     FIP: pickCol(row, ['FIP', 'fip'])
   };
 }
@@ -1617,6 +1617,28 @@ function mergeSeasonOpsFromStandard(profiles, splits, stdRows) {
   }
   (profiles || []).forEach(apply);
   (splits || []).forEach(apply);
+}
+
+function mergeProfileOpsFromHandSplits(profiles, splits) {
+  if (!profiles || !profiles.length || !splits || !splits.length) return;
+  var opsByName = {};
+  splits.forEach(function(s) {
+    var dim = String(pickCol(s, ['split_dimension', 'splitDimension'])).toLowerCase();
+    if (dim !== 'batter_hand') return;
+    var nk = normalizeName(pickCol(s, ['pitcher_name', 'pitcherName', 'Name']));
+    if (!nk) return;
+    var ops = opsFromFgRow(s);
+    if (ops == null) return;
+    if (!opsByName[nk]) opsByName[nk] = [];
+    opsByName[nk].push(ops);
+  });
+  profiles.forEach(function(p) {
+    if (opsFromFgRow(p) != null) return;
+    var nk = normalizeName(pickCol(p, ['pitcher_name', 'pitcherName', 'Name']));
+    var arr = opsByName[nk];
+    if (!arr || !arr.length) return;
+    p.OPS = Math.round(arr.reduce(function(a, b) { return a + b; }, 0) / arr.length * 1000) / 1000;
+  });
 }
 
 function mergeHandSplitsIntoData(lhhRows, rhhRows) {
@@ -1724,6 +1746,7 @@ function loadAll() {
     var lhhRows = firstNonEmptyCsvResult(results, [8, 12]);
     var rhhRows = firstNonEmptyCsvResult(results, [9, 13]);
     mergeHandSplitsIntoData(lhhRows, rhhRows);
+    mergeProfileOpsFromHandSplits(DATA.profiles, DATA.splits);
     if (!lhhRows.length || !rhhRows.length) {
       console.warn('[pitcher profile] Hand split CSV missing — vs LHB/vs RHB tabs need sp_vs_LHH.csv / sp_vs_RHH.csv in data/');
     }
