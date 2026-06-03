@@ -6,16 +6,30 @@ from typing import List, Optional
 
 import pandas as pd
 
-from core.config import DATA_DIR
+from core.config import DATA_DIR, OPPONENT_TIER_HIGH_MIN, OPPONENT_TIER_MID_MIN
 from core.compute_pitching import build_pitcher_staleness_df, park_adjust_allowed_value
 from core.metrics_utils import parse_ip
 
 SPLIT_DIMENSIONS = (
     ("osi_tier", "opponent_OSI_tier"),
     ("abq_tier", "opponent_ABQ_tier"),
+    ("rcv_tier", "opponent_RCV_tier"),
+    ("obr_tier", "opponent_OBR_tier"),
     ("hand", "pitcher_hand"),
     ("location", "home_away"),
 )
+
+
+def _opp_tier(value) -> str:
+    """High/Mid/Low bucket for an opponent composite (same thresholds as OSI/ABQ)."""
+    v = pd.to_numeric(value, errors="coerce")
+    if pd.isna(v):
+        return ""
+    if v > OPPONENT_TIER_HIGH_MIN:
+        return "High"
+    if v >= OPPONENT_TIER_MID_MIN:
+        return "Mid"
+    return "Low"
 
 METRIC_SPLIT_COLUMNS = [
     "pitcher_id",
@@ -35,6 +49,7 @@ METRIC_SPLIT_COLUMNS = [
     "RCV_allowed",
     "OBR_allowed",
     "OSI_allowed",
+    "FIP",
     "F5_ERA",
 ]
 
@@ -105,6 +120,8 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
         "K_pct": round(df["K"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "BB_pct": round(df["BB"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "HR9": round(df["HR"].sum() / total_ip * 9, 2) if total_ip > 0 else None,
+        "FIP": round((13 * df["HR"].sum() + 3 * df["BB"].sum() - 2 * df["K"].sum()) / total_ip + 3.10, 2)
+        if total_ip > 0 else None,
         "avg_pitches": round(df["pitches"].mean(), 1) if "pitches" in df.columns else None,
         "ABQ_allowed": round(pd.to_numeric(df["opponent_ABQ"], errors="coerce").mean(), 1),
         "RCV_allowed": round(pd.to_numeric(df["opponent_RCV"], errors="coerce").mean(), 1),
@@ -118,6 +135,14 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
 
 def build_metric_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
     rows: List[dict] = []
+
+    gamelog = gamelog.copy()
+    # Derive RCV/OBR tier buckets from the per-start opponent composites so the
+    # profile can split by all four created offense metrics, not just OSI/ABQ.
+    if "opponent_RCV" in gamelog.columns:
+        gamelog["opponent_RCV_tier"] = gamelog["opponent_RCV"].map(_opp_tier)
+    if "opponent_OBR" in gamelog.columns:
+        gamelog["opponent_OBR_tier"] = gamelog["opponent_OBR"].map(_opp_tier)
 
     for (pid, pname, pteam, phand), pdf in gamelog.groupby(
         ["pitcher_id", "pitcher_name", "pitcher_team", "pitcher_hand"], dropna=False

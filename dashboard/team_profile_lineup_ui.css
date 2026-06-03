@@ -187,7 +187,7 @@
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat__body .chip.c-good { background: #5FB83C; color: #06140C; }
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat__body .chip.c-mid { background: #C9A21E; color: #1B0E03; }
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat__body .chip.c-weak { background: #E0762E; color: #1B0E03; }
-:is(.team-profile-page, .player-profile-page) .tp-offense-stat__body .chip.c-poor { background: #E0392E; color: #fff; }
+:is(.team-profile-page, .player-profile-page) .tp-offense-stat__body .chip.c-poor { background: #C8201C; color: #fff; }
 :is(.team-profile-page, .player-profile-page) .tp-offense-stat__body .chip.c-na {
   background: #1B2030;
   color: #717892;

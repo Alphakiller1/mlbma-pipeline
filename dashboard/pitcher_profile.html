@@ -13,12 +13,12 @@
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260618a">
-<link rel="stylesheet" href="theme.css?v=20260616c">
+<link rel="stylesheet" href="theme.css?v=20260618b">
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
 <link rel="stylesheet" href="pitcher_profile.css?v=20260603b">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260603a">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
 <script src="mlbma_icons.js?v=20260618a"></script>
@@ -823,6 +823,17 @@ function bindPitcherSectionControls() {
 }
 
 
+function pctNormP(v) { return (v == null || isNaN(v)) ? v : (v <= 1.5 ? v * 100 : v); }
+
+// Color-graded numeric cell (red->green vs league average), matching the team profile.
+function tierCell(v, ctx, invert, dec, asPct) {
+  if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+  var disp = asPct ? fmtPct(v) : fmt(v, dec);
+  var A = window.MLBMAAssets;
+  var color = (A && A.metricColor) ? A.metricColor(v, ctx, invert) : '';
+  return '<td class="num"' + (color ? ' style="color:' + color + ';font-weight:800"' : '') + '>' + disp + '</td>';
+}
+
 function buildTierTable(splits, dimension, tierOrder) {
   var ipHigh = null, ipLow = null;
   if (dimension === 'osi_tier') {
@@ -835,13 +846,14 @@ function buildTierTable(splits, dimension, tierOrder) {
     var s = findSplit(splits, dimension, tier);
     if (!s) {
       return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td>' +
-        '<td colspan="7" class="tp-empty-cell">—</td></tr>';
+        '<td colspan="8" class="tp-empty-cell">—</td></tr>';
     }
     var starts = numOrNull(pickCol(s, ['starts', 'Starts']));
     var avgIp = numOrNull(pickCol(s, ['avg_IP', 'avg IP']));
     var era = numOrNull(pickCol(s, ['ERA', 'era']));
-    var k = numOrNull(pickCol(s, ['K_pct', 'K%']));
-    var bb = numOrNull(pickCol(s, ['BB_pct', 'BB%']));
+    var fip = numOrNull(pickCol(s, ['FIP', 'fip']));
+    var k = pctNormP(numOrNull(pickCol(s, ['K_pct', 'K%'])));
+    var bb = pctNormP(numOrNull(pickCol(s, ['BB_pct', 'BB%'])));
     var hr9 = numOrNull(pickCol(s, ['HR9', 'HR/9']));
     var pitches = numOrNull(pickCol(s, ['avg_pitches', 'avg pitches']));
     var flag = (dimension === 'osi_tier' && tier === 'High' && ipHigh != null && ipLow != null && ipHigh < ipLow - 1.0) ? 'flag-row' : '';
@@ -849,15 +861,16 @@ function buildTierTable(splits, dimension, tierOrder) {
       '<td class="' + tierClass(tier) + '">' + tier + '</td>' +
       '<td class="num">' + (starts != null ? starts : '—') + '</td>' +
       '<td class="num">' + fmt(avgIp, 1) + '</td>' +
-      '<td class="num">' + fmt(era, 2) + '</td>' +
-      '<td class="num">' + fmtPct(k) + '</td>' +
-      '<td class="num">' + fmtPct(bb) + '</td>' +
-      '<td class="num">' + fmt(hr9, 2) + '</td>' +
+      tierCell(era, 'era', true, 2, false) +
+      tierCell(fip, 'fip', true, 2, false) +
+      tierCell(k, 'kpct', false, 1, true) +
+      tierCell(bb, 'bbpct', true, 1, true) +
+      tierCell(hr9, 'hr9', true, 2, false) +
       '<td class="num">' + fmt(pitches, 0) + '</td>' +
       '</tr>';
   }).join('');
   return '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
-    '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>K%</th><th>BB%</th><th>HR/9</th><th>Pitches/Start</th>' +
+    '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>FIP</th><th>K%</th><th>BB%</th><th>HR/9</th><th>Pitches/Start</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
