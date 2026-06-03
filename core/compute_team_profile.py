@@ -620,6 +620,13 @@ def window_trend(offense_df: pd.DataFrame, trend_adj_df: pd.DataFrame) -> pd.Dat
             print(f"  WARNING: {fname} missing -- {key} windows use history/YTD fallback")
         split_windows[key] = team_offense_from_batter_csv(fname)
 
+    # Season batter-pool baseline (same normalized-pool basis as the windows). Used to
+    # anchor windowed metrics to the season TEAM composite: the raw pool values compress
+    # every team toward ~50 (per-batter percentiles averaged), which erases team spread.
+    # Anchoring (season_composite * window_pool/season_pool) keeps the team ranking while
+    # still moving with recent form.
+    pool_season = team_offense_from_batter_csv("batter_splits_overall.csv")
+
     rows = []
     for _, off in offense_df.iterrows():
         tm = str(off.get("team", "")).strip().upper()
@@ -629,13 +636,19 @@ def window_trend(offense_df: pd.DataFrame, trend_adj_df: pd.DataFrame) -> pd.Dat
         if ytd.get("osi") is None:
             continue
 
+        season_pool_team = pool_season.get(tm, {})
         window_vals: Dict[str, Dict[str, Optional[float]]] = {k: {} for k in ("l30", "l14", "l7")}
         for win_key in ("l30", "l14", "l7"):
             split_team = split_windows.get(win_key, {}).get(tm, {})
             for metric in METRIC_KEYS:
                 val = _num(split_team.get(metric))
-                if val is None:
-                    val = _history_window_avg(hist, tm, metric, cutoffs[win_key], ytd.get(metric))
+                base = ytd.get(metric)
+                sp = _num(season_pool_team.get(metric))
+                if val is not None and sp is not None and sp != 0 and base is not None:
+                    ratio = max(0.7, min(1.4, val / sp))   # clamp noisy short-window swings
+                    val = round(base * ratio, 1)
+                elif val is None:
+                    val = _history_window_avg(hist, tm, metric, cutoffs[win_key], base)
                 window_vals[win_key][metric] = val
 
         osi_l30, osi_l14, osi_l7 = _blend_metric(
