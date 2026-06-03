@@ -27,7 +27,7 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260610a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260610b"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -645,20 +645,32 @@ function buildDashboardCtx(profile, splits, log, name, team, isToday, tonight) {
   };
 }
 
+function buildAllowedCtx(profile, splits, log, name, team, isToday, tonight) {
+  var ctx = buildDashboardCtx(profile, splits, log, name, team, isToday, tonight);
+  var sf = STATE.sectionFilters.allowed || {};
+  return Object.assign({}, ctx, {
+    split: sf.split || 'overall',
+    window: sf.window || ctx.window,
+    splitLabel: splitLabel(sf.split || 'overall'),
+    chartMetric: sf.chartMetric || ctx.chartMetric || 'osi',
+    omitHeader: true
+  });
+}
+
+function renderAllowedSection(profile, splits, log, name, team, isToday) {
+  var allowed = document.getElementById('allowedDashboard');
+  if (!allowed || !profile || !window.PitcherProfileDashboard) return;
+  var tonight = buildPitcherTonightContext(name, team);
+  var allowedCtx = buildAllowedCtx(profile, splits, log, name, team, isToday, tonight);
+  allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, allowedCtx);
+}
+
 function renderPlatformSections(profile, splits, log, name, team, isToday) {
   if (!window.PitcherProfileDashboard) return;
   var tonight = buildPitcherTonightContext(name, team);
   var ctx = buildDashboardCtx(profile, splits, log, name, team, isToday, tonight);
   var sf = STATE.sectionFilters || {};
-  var allowedFilter = sf.allowed || {};
   var oorFilter = sf.oor || {};
-  var allowedCtx = Object.assign({}, ctx, {
-    split: allowedFilter.split || 'overall',
-    window: allowedFilter.window || ctx.window,
-    splitLabel: splitLabel(allowedFilter.split || 'overall'),
-    chartMetric: allowedFilter.chartMetric || ctx.chartMetric || 'osi',
-    omitHeader: true
-  });
   var oorCtx = Object.assign({}, ctx, {
     window: oorFilter.window || ctx.window,
     compact: true,
@@ -670,10 +682,9 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
     teamProfiles: DATA.teamProfiles
   });
   var snap = document.getElementById('pitcherSnapshot');
-  var allowed = document.getElementById('allowedDashboard');
   var oorEl = document.getElementById('oorPanel');
   if (snap) snap.innerHTML = PitcherProfileDashboard.renderSnapshot(profile, ctx);
-  if (allowed) allowed.innerHTML = PitcherProfileDashboard.renderAllowedDashboard(profile, allowedCtx);
+  renderAllowedSection(profile, splits, log, name, team, isToday);
   if (oorEl) oorEl.innerHTML = PitcherProfileDashboard.renderOORPanel(profile, oorCtx);
 }
 
@@ -826,7 +837,19 @@ function bindPitcherSectionControls() {
       STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
       if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
       renderPitcherSectionControls();
-      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      if (STATE.pitcherKey) {
+        var profA = getProfile(STATE.pitcherKey);
+        if (profA) {
+          renderAllowedSection(
+            profA,
+            getSplits(STATE.pitcherKey),
+            getGameLog(STATE.pitcherKey, STATE.pitcherName),
+            STATE.pitcherName,
+            pickCol(profA, ['pitcher_team', 'pitcherTeam', 'Tm']),
+            DATA.todayStarters.has(normalizeName(STATE.pitcherName))
+          );
+        }
+      }
       return;
     }
     if (sectionKey === 'pitcher-f5') {

@@ -314,7 +314,18 @@
     if (!split || split === 'overall' || split === 'ytd') return rows;
     if (split === 'home') return filterLogByLocation(rows, pickCol, 'home');
     if (split === 'away') return filterLogByLocation(rows, pickCol, 'away');
+    if (split === 'f5') {
+      return rows.filter(function(g) {
+        return num(pickCol(g, ['f5_er', 'F5_ER', 'f5 ER'])) != null;
+      });
+    }
+    // Start log has no batter-hand context per start — use sheet split rows instead.
+    if (split === 'lhh' || split === 'rhh') return [];
     return rows;
+  }
+
+  function shouldUseSheetForAllowedSplit(split) {
+    return split === 'lhh' || split === 'rhh';
   }
 
   function metricsFromLogRows(log, pickCol, maxStarts) {
@@ -357,7 +368,9 @@
   function buildAllowedTrendPack(ctx) {
     var pick = ctx.pickCol;
     var split = ctx.split || 'overall';
-    var log = filterLogForAllowedSplit(ctx.log || [], pick, split);
+    var log = shouldUseSheetForAllowedSplit(split)
+      ? []
+      : filterLogForAllowedSplit(ctx.log || [], pick, split);
     var pack = {
       abq: [], rcv: [], obr: [], osi: [],
       logCount: log.length,
@@ -376,11 +389,10 @@
     pack.source = 'sheet';
     var sheet = sheetAllowedMetrics(ctx.splits, ctx.profile, pick, ctx.findSplit, split);
     if (!sheet) return pack;
-    var v = [sheet.abq, sheet.rcv, sheet.obr, sheet.osi];
-    pack.abq = v.map(function() { return sheet.abq; });
-    pack.rcv = v.map(function() { return sheet.rcv; });
-    pack.obr = v.map(function() { return sheet.obr; });
-    pack.osi = v.map(function() { return sheet.osi; });
+    pack.abq = [sheet.abq, sheet.abq, sheet.abq, sheet.abq];
+    pack.rcv = [sheet.rcv, sheet.rcv, sheet.rcv, sheet.rcv];
+    pack.obr = [sheet.obr, sheet.obr, sheet.obr, sheet.obr];
+    pack.osi = [sheet.osi, sheet.osi, sheet.osi, sheet.osi];
     return pack;
   }
 
@@ -681,9 +693,13 @@
     var filterNote = (ctx.splitLabel || 'Overall')
       + ' · read L10→L1 left to right · lower = softer opposing offense';
     if (pack.source === 'sheet') {
-      filterNote += ' · start log empty — showing season split snapshot in all windows';
-    } else if ((ctx.split === 'lhh' || ctx.split === 'rhh') && pack.logCount) {
-      filterNote += ' · platoon filter uses full start log until hand-split log is available';
+      if (ctx.split === 'lhh' || ctx.split === 'rhh') {
+        filterNote += ' · season split snapshot (platoon not in start log)';
+      } else if (ctx.split === 'f5') {
+        filterNote += ' · no F5-tagged starts in log — showing season snapshot';
+      } else {
+        filterNote += ' · no starts for this split — showing season snapshot';
+      }
     }
     var body = rows.map(function(item) {
       var def = item.def;
@@ -730,7 +746,8 @@
     }
 
     var readout = allowedTrendReadout(pack);
-    return '<div class="pp-allowed-trend tp-trend-panel" data-allowed-source="' + esc(pack.source) + '">'
+    var splitKey = ctx.split || 'overall';
+    return '<div class="pp-allowed-trend tp-trend-panel" data-allowed-source="' + esc(pack.source) + '" data-allowed-split="' + esc(splitKey) + '">'
       + f5
       + renderPitcherAllowedTrendTable(pack, ctx)
       + '<div class="tp-trend-chart-mount" data-active-metric="osi">' + chart + '</div>'
