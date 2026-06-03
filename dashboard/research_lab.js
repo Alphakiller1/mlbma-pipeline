@@ -1321,9 +1321,9 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'signal_board.html', title: 'Daily Predictive Signal Board', desc: 'All fired signals and verdicts for tonight.' },
-      { href: 'signal_board.html#section-convergence', title: 'Signal Explorer', desc: 'Convergence matrix and weighted plays.' },
-      { href: 'signal_board.html?fired=1', title: 'Highest Confidence Signals', desc: 'Filter to actionable fired rows.' }
+      { href: 'matchup_compare.html', title: "Tonight's Matchups", desc: 'Per-game offense vs pitching leans across the slate.' },
+      { href: 'team_rankings.html', title: 'Team Rankings', desc: 'Full-league OSI and metric leaderboard.' },
+      { href: 'glossary.html', title: 'Metric Glossary', desc: 'How every metric and signal is defined.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {
       return '<a class="rl-model-link-card" href="' + c.href + '"><h4>' + esc(c.title) + '</h4><p>' + esc(c.desc) + '</p></a>';

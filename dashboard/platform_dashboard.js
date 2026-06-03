@@ -599,12 +599,17 @@
   }
 
   function modelReportHref(s) {
-    var base = 'signal_board.html';
-    if (s.gameKey) return base + '?game=' + encodeURIComponent(s.gameKey) + '#signal-' + s.idx;
-    if (s.away && s.home) {
-      return base + '?game=' + encodeURIComponent(s.away + '@' + s.home) + '#signal-' + s.idx;
+    var base = 'matchup_compare.html';
+    var away = s.away, home = s.home;
+    if ((!away || !home) && s.gameKey && s.gameKey.indexOf('@') >= 0) {
+      var parts = s.gameKey.split('@');
+      away = away || parts[0];
+      home = home || parts[1];
     }
-    return base + '#signal-' + s.idx;
+    if (away && home) {
+      return base + '?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home);
+    }
+    return base;
   }
 
   function renderSignalChips() {
@@ -642,14 +647,14 @@
             label: 'Top Lineup Edge',
             val: bestLineup.game + ' · ' + bestLineup.team,
             conf: 'High',
-            href: 'signal_board.html?game=' + encodeURIComponent(bestLineup.game)
+            href: modelReportHref({ gameKey: bestLineup.game })
           });
         }
       }
       if (rows.length) {
         var buy = rows.filter(function(d) { return d.ppGap >= 4; }).sort(function(a, b) { return b.ppGap - a.ppGap; })[0];
         if (buy && chips.length < 3) {
-          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'signal_board.html?fired=1' });
+          chips.push({ label: 'Buy-Low Offense', val: buy.t, conf: 'Medium', href: 'matchup_compare.html' });
         }
       }
     }
