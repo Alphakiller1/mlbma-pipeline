@@ -144,7 +144,8 @@
       if (m) metrics = m;
     }
 
-    var maxStarts = window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
+    var maxStarts = window === 'L1' ? 1 : window === 'L3' ? 3 : window === 'L6' ? 6
+      : window === 'L10' ? 10 : window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
     var overall = (split === 'ytd' || split === '' || split == null);
     // Drive the rolling windows from the game log so YTD/L30/L14/L7 sit on ONE
     // consistent basis (recent schedule difficulty) and actually differ. For the
@@ -199,22 +200,28 @@
     var pt = pitchingTier(ps, ctx.pitchTiers || []);
     var stale = pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true';
     var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
-    var k = pctNorm(num(pick(profile, ['K_pct', 'K%'])));
-    var bb = pctNorm(num(pick(profile, ['BB_pct', 'BB%'])));
-
-    function chip(v, context, invert, dec, display) {
-      if (A && A.valChipHtml) return A.valChipHtml(v, context, !!invert, dec, { display: display });
-      return '<span class="chip">' + esc(display != null ? display : (v == null ? '—' : String(v))) + '</span>';
+    var era = num(pick(profile, ['ERA', 'era']));
+    var qsPct = null;
+    if (ctx.log && ctx.log.length) {
+      var qsHits = 0, qsTot = 0;
+      ctx.log.forEach(function(g) {
+        var gip = parseIP(pick(g, ['IP', 'ip']));
+        var ger = num(pick(g, ['ER', 'er']));
+        if (ger != null) { qsTot++; if (gip >= 6 && ger <= 3) qsHits++; }
+      });
+      qsPct = qsTot ? (qsHits / qsTot * 100) : null;
     }
 
-    var psChip = chip(ps, 'pitching', false, 0, ps != null ? fmt(ps, 0) : '—');
-    var kChip = chip(k, 'kpct', false, 1, k != null ? fmt(k, 1) + '%': '—');
-    var bbChip = chip(bb, 'bbpct', true, 1, bb != null ? fmt(bb, 1) + '%': '—');
+    function heroTone(good, bad, val, lowerBetter) {
+      if (val == null || isNaN(val)) return 'neutral';
+      if (lowerBetter) return val <= good ? 'good' : (val >= bad ? 'bad' : 'neutral');
+      return val >= good ? 'good' : (val <= bad ? 'bad' : 'neutral');
+    }
 
-    function heroStat(label, chipHtml) {
-      return '<div class="pp-hero-stat">'
-        + '<div class="pp-hero-stat-label">' + esc(label) + '</div>'
-        + '<div class="pp-hero-stat-val">' + chipHtml + '</div>'
+    function heroStat(label, valueHtml, tone) {
+      return '<div class="tp-hero-stat tp-hero-stat--' + (tone || 'neutral') + '">'
+        + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
+        + '<span class="tp-hero-stat__value">' + valueHtml + '</span>'
         + '</div>';
     }
 
@@ -228,10 +235,10 @@
       + (ctx.isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '')
       + '<span class="tier-pill ' + pt.cls + '">' + esc(pt.label) + '</span>'
       + '</div>'
-      + '<div class="pp-hero-stats" role="group" aria-label="YTD headline stats">'
-      + heroStat('Pitch Score', psChip)
-      + heroStat('K%', kChip)
-      + heroStat('BB%', bbChip)
+      + '<div class="pp-hero-stats" role="group" aria-label="Headline stats">'
+      + heroStat('Pitcher Score', ps != null ? fmt(ps, 0) : '—', heroTone(60, 45, ps, false))
+      + heroStat('ERA', era != null ? fmt(era, 2) : '—', heroTone(3.60, 4.60, era, true))
+      + heroStat('QS%', qsPct != null ? fmt(qsPct, 0) + '%' : '—', heroTone(60, 40, qsPct, false))
       + '</div>'
       + (staleWarn ? '<div class="pp-hero-note">' + esc(staleWarn) + '</div>' : '')
       + (ctx.tonightHtml ? '<div class="ps-tonight">' + ctx.tonightHtml + '</div>' : '')
@@ -318,17 +325,18 @@
     }
 
     var wins = [
-      { key: 'YTD', label: 'YTD' },
-      { key: 'L30', label: 'L30' },
-      { key: 'L14', label: 'L14' },
-      { key: 'L7', label: 'L7' }
+      { key: 'L1', label: 'Last 1' },
+      { key: 'L3', label: 'Last 3' },
+      { key: 'L6', label: 'Last 6' },
+      { key: 'L10', label: 'Last 10' }
     ];
 
-    var mY = metricsForWindow('YTD');
-    var m30 = metricsForWindow('L30');
-    var m14 = metricsForWindow('L14');
-    var m7 = metricsForWindow('L7');
-    var byWin = { YTD: mY, L30: m30, L14: m14, L7: m7 };
+    var byWin = {
+      L1: metricsForWindow('L1'),
+      L3: metricsForWindow('L3'),
+      L6: metricsForWindow('L6'),
+      L10: metricsForWindow('L10')
+    };
 
     function cell(metricKey, winKey) {
       var v = byWin[winKey] ? byWin[winKey][metricKey] : null;
@@ -582,21 +590,19 @@
       + pitcherStatCell('Opponent Quality', oorChip, oorHint);
 
     function splitRow(label, row) {
-      if (!row) return '';
+      if (!row) return '<tr><td>' + esc(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
       var rk = pctNorm(num(pick(row, ['K_pct', 'K%'])));
       var rbb = pctNorm(num(pick(row, ['BB_pct', 'BB%'])));
       var rhr9 = num(pick(row, ['HR9', 'HR/9']));
-      var rera = num(pick(row, ['ERA']));
-      var rfip = num(pick(row, ['FIP', 'fip']));
       var rxfip = num(pick(row, ['xFIP', 'xfip']));
+      var rops = num(pick(row, ['OPS', 'ops', 'OPS_against']));
       return '<tr>'
         + '<td>' + esc(label) + '</td>'
         + '<td>' + valChip(rk, 'kpct', false, 1) + '</td>'
         + '<td>' + valChip(rbb, 'bbpct', true, 1) + '</td>'
         + '<td>' + valChip(rhr9, 'hr9', true, 2) + '</td>'
-        + '<td>' + valChip(rera, 'era', true, 2) + '</td>'
-        + '<td>' + valChip(rfip, 'fip', true, 2) + '</td>'
         + '<td>' + valChip(rxfip, 'xfip', true, 2) + '</td>'
+        + '<td>' + valChip(rops, 'ops', true, 3) + '</td>'
         + '</tr>';
     }
 
@@ -606,24 +612,18 @@
     var sLhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'LHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'L')) : null;
     var sRhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'RHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'R')) : null;
 
-    var splitBody = splitRow('Overall', sOverall)
-      + (sHome ? splitRow('Home', sHome) : '')
-      + (sAway ? splitRow('Away', sAway) : '')
-      + (sLhh ? splitRow('vs LHH', sLhh) : '')
-      + (sRhh ? splitRow('vs RHH', sRhh) : '');
+    var splitBody = splitRow('Both', sOverall)
+      + splitRow('Home', sHome)
+      + splitRow('Away', sAway)
+      + splitRow('vs LHB', sLhh)
+      + splitRow('vs RHB', sRhh);
 
-    var splitTable = splitBody
-      ? '<div class="pp-split-table-wrap"><table class="hub-table tp-table pp-split-table"><thead><tr>'
-        + '<th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>ERA</th><th>FIP</th><th>xFIP</th>'
-        + '</tr></thead><tbody>' + splitBody + '</tbody></table></div>'
-      : '<div class="empty-state">No split rows available for this pitcher.</div>';
+    var splitTable = '<div class="pp-split-table-wrap"><table class="hub-table tp-table pp-split-table"><thead><tr>'
+      + '<th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th>'
+      + '</tr></thead><tbody>' + splitBody + '</tbody></table></div>';
 
-    // Core rates live in the split table below (Overall row) — no separate band, to
-    // avoid duplicating the same stats twice.
-    var metricsHtml = '<div class="tp-offense-metrics tp-offense-metrics--profile pp-intel-panel__metrics">'
-      + metricsBand('Context', 'Start read + schedule context', ctxCells)
-      + '</div>'
-      + splitTable;
+    // Pitching Value = the split table only (Context band removed per spec).
+    var metricsHtml = '<div class="pp-intel-panel__metrics">' + splitTable + '</div>';
 
     if (ctx.omitHeader) {
       return metricsHtml;

@@ -25,7 +25,7 @@
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260618c"></script>
+<script src="pitcher_profile_dashboard.js?v=20260618d"></script>
 <script src="mlbma_charts.js?v=20260603a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
@@ -176,11 +176,6 @@
       <div id="ppHdrF5"></div>
       <div class="table-wrap tp-table-wrap" id="f5TableWrap"></div>
       <div class="insight-line tp-note" id="f5Insight"></div>
-    </section>
-
-    <section class="ca-board tp-section" id="secBetting">
-      <div id="ppHdrBetting"></div>
-      <div class="betting-panel tp-note" id="bettingPanel"></div>
     </section>
     </div>
   </div>
@@ -679,13 +674,12 @@ function mountProfilePageHeader() {
 
 function renderPitcherSectionHeaders() {
   var map = [
-    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'Pitching stat pack + split table for the active split', icon: 'target' },
-    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI allowed · lower is better', icon: 'shield' },
-    { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR — competition faced across home/away, handedness, and rolling windows', icon: 'insight' },
+    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS by split (Both / Home / Away / vs LHB / vs RHB)', icon: 'target' },
+    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI faced · Last 1 / 3 / 6 / 10 starts · lower is softer', icon: 'shield' },
+    { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR · PALS faced · wRC+ faced — by home/away and handedness', icon: 'insight' },
     { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
     { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
-    { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five ERA by opponent OSI tier (team runs through 5 innings)', icon: 'clock' },
-    { id: 'ppHdrBetting', title: 'Betting Context Panel', subtitle: 'Auto-synthesized angles from the strongest patterns in this profile', icon: 'badge' }
+    { id: 'ppHdrF5', title: 'F5 Profile', subtitle: 'First-five: xFIP · K% · BB% · ER/5 — by home/away and handedness', icon: 'clock' }
   ];
   map.forEach(function(h) {
     var el = document.getElementById(h.id);
@@ -869,7 +863,7 @@ function buildTierTable(splits, dimension, tierOrder) {
       '<td class="num">' + fmt(pitches, 0) + '</td>' +
       '</tr>';
   }).join('');
-  return '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr>' +
+  return '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table pp-startlog"><thead><tr>' +
     '<th>Tier</th><th>Starts</th><th>IP/Start</th><th>ERA</th><th>FIP</th><th>K%</th><th>BB%</th><th>HR/9</th><th>Pitches/Start</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
@@ -1081,30 +1075,36 @@ function renderProfile(key) {
     }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
 
-  var f5Rows = OSI_TIER_ORDER.map(function(tier) {
-    var s = findSplit(splits, 'osi_tier', tier);
-    var f5 = s ? numOrNull(pickCol(s, ['F5_ERA', 'F5 ERA'])) : null;
-    return '<tr><td class="' + tierClass(tier) + '">' + tier + '</td><td class="num">' + fmt(f5, 2) + '</td></tr>';
-  }).join('');
-  document.getElementById('f5TableWrap').innerHTML = '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table"><thead><tr><th>OSI Tier</th><th>F5 ERA</th></tr></thead><tbody>' + f5Rows + '</tbody></table></div>';
-
-  var f5High = findSplit(splits, 'osi_tier', 'High');
-  var f5Low = findSplit(splits, 'osi_tier', 'Low');
-  var f5Note = 'F5 ERA uses team runs allowed through five innings when a full five-inning line is available.';
-  if (f5High && f5Low) {
-    var f5h = numOrNull(pickCol(f5High, ['F5_ERA']));
-    var f5l = numOrNull(pickCol(f5Low, ['F5_ERA']));
-    if (f5h != null && f5l != null && f5h > f5l + 1.5) {
-      f5Note = '<strong>Betting note:</strong> F5 ERA worse vs High OSI (' + fmt(f5h, 2) + ') than Low OSI (' + fmt(f5l, 2) + ') — lean Under/F5 fade when tier is High even if full-game ERA looks fine.';
-    }
+  // F5 Profile: xFIP / K% / BB% / ER per 5 by split (home/away + handedness); OSI tier removed.
+  var A2 = window.MLBMAAssets;
+  function f5Cell(v, ctx, invert, dec, asPct) {
+    if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+    var disp = asPct ? fmtPct(v) : fmt(v, dec);
+    var color = (A2 && A2.metricColor) ? A2.metricColor(v, ctx, invert) : '';
+    return '<td class="num"' + (color ? ' style="color:' + color + ';font-weight:800"' : '') + '>' + disp + '</td>';
   }
-  document.getElementById('f5Insight').innerHTML = f5Note;
+  function f5Row(label, s) {
+    if (!s) return '<tr><td>' + label + '</td><td colspan="4" class="tp-empty-cell">—</td></tr>';
+    return '<tr><td>' + label + '</td>'
+      + f5Cell(numOrNull(pickCol(s, ['xFIP', 'xfip'])), 'xfip', true, 2, false)
+      + f5Cell(pctNormP(numOrNull(pickCol(s, ['K_pct', 'K%']))), 'kpct', false, 1, true)
+      + f5Cell(pctNormP(numOrNull(pickCol(s, ['BB_pct', 'BB%']))), 'bbpct', true, 1, true)
+      + f5Cell(numOrNull(pickCol(s, ['F5_ERA', 'F5 ERA'])), 'era', true, 2, false)
+      + '</tr>';
+  }
+  var f5Home = findSplit(splits, 'location', 'home');
+  var f5Away = findSplit(splits, 'location', 'away');
+  var f5Lhb = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
+  var f5Rhb = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
+  var f5Body = f5Row('Both', profile) + f5Row('Home', f5Home) + f5Row('Away', f5Away)
+    + f5Row('vs LHB', f5Lhb) + f5Row('vs RHB', f5Rhb);
+  document.getElementById('f5TableWrap').innerHTML =
+    '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table pp-startlog"><thead><tr>'
+    + '<th>Split</th><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead><tbody>'
+    + f5Body + '</tbody></table></div>';
+  document.getElementById('f5Insight').innerHTML =
+    'ER/5 = earned runs allowed per five innings (first-five). xFIP / K% / BB% are full-start rates for the split.';
 
-  var betHtml = buildBettingSummary(profile, splits, log, name, hand);
-  var betPanel = document.getElementById('bettingPanel');
-  if (betPanel) betPanel.innerHTML = betHtml;
-  var betSec = document.getElementById('secBetting');
-  if (betSec) betSec.style.display = (betHtml && String(betHtml).trim()) ? '' : 'none';
   bindPitcherProfileControls();
 }
 
