@@ -110,9 +110,9 @@ def _merge_sp_standard_advanced(standard_df: pd.DataFrame, advanced_df: pd.DataF
     return standard_df.merge(advanced_df[adv_cols], on=key, how="left", suffixes=("", "_adv"))
 
 
-def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basename: str):
+def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basename: str, split_arr: str = ""):
     url = (
-        f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=&splitArrPitcher="
+        f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_arr}&splitArrPitcher="
         f"&position=P&autoPt=false&byTeam=false"
         f"&start={start_date}&end={end_date}"
         f"&statType=player&statgroup={sg_num}&minPAf=&pageSize=100"
@@ -145,6 +145,24 @@ def scrape_sp_window(driver, start_date: str, end_date: str, out_basename: str, 
     return std
 
 
+# Batter handedness the pitcher faces (FanGraphs splitArr: 1 = vs L, 2 = vs R).
+SP_HAND_SPLITS = {"vs_LHH": "1", "vs_RHH": "2"}
+
+
+def scrape_sp_hand_split(driver, hand_label: str, split_code: str):
+    """Pitcher stats vs LHB/RHB (standard + advanced incl. xFIP) -> sp_{hand_label}.csv."""
+    print(f"=== SP hand split: {hand_label} (splitArr={split_code}) ===")
+    base = f"sp_{hand_label}"
+    std = scrape_sp(driver, "standard", 2, SEASON_START, SEASON_END, base, split_arr=split_code)
+    adv = scrape_sp(driver, "advanced", 3, SEASON_START, SEASON_END, base, split_arr=split_code)
+    if std is not None:
+        merged = _merge_sp_standard_advanced(std, adv)
+        out_path = os.path.join(DATA_DIR, f"{base}.csv")
+        merged.to_csv(out_path, index=False)
+        print(f"  Merged -> {out_path} ({len(merged)} rows)")
+    return std
+
+
 def run():
     print(f"FanGraphs scrape (Chrome version_main={CHROME_VERSION})")
     driver = get_driver()
@@ -165,6 +183,11 @@ def run():
         print(f"Cooling down {COOLDOWN}s...")
         time.sleep(COOLDOWN)
         scrape_sp_window(driver, L14_START, L14_END, "sp_l14", "L14")
+
+        for hand_label, code in SP_HAND_SPLITS.items():
+            scrape_sp_hand_split(driver, hand_label, code)
+            print(f"Cooling down {COOLDOWN}s...")
+            time.sleep(COOLDOWN)
     finally:
         safe_quit_driver(driver)
     print("All done.")

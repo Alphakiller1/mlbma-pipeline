@@ -9,6 +9,23 @@ import pandas as pd
 from core.config import DATA_DIR, OPPONENT_TIER_HIGH_MIN, OPPONENT_TIER_MID_MIN
 from core.compute_pitching import build_pitcher_staleness_df, park_adjust_allowed_value
 from core.metrics_utils import parse_ip
+from core.name_utils import normalize_player_name
+
+
+def _num(v) -> Optional[float]:
+    try:
+        f = float(v)
+        return None if pd.isna(f) else f
+    except (TypeError, ValueError):
+        return None
+
+
+def _pct_pts(v) -> Optional[float]:
+    """FanGraphs K%/BB% arrive as a fraction (0.21) or percent; return percent points."""
+    n = _num(str(v).replace("%", "").strip()) if isinstance(v, str) else _num(v)
+    if n is None:
+        return None
+    return round(n * 100, 1) if n <= 1.5 else round(n, 1)
 
 SPLIT_DIMENSIONS = (
     ("osi_tier", "opponent_OSI_tier"),
@@ -50,6 +67,7 @@ METRIC_SPLIT_COLUMNS = [
     "OBR_allowed",
     "OSI_allowed",
     "FIP",
+    "xFIP",
     "F5_ERA",
 ]
 
@@ -61,6 +79,8 @@ PROFILE_COLUMNS = [
     "starts",
     "avg_IP",
     "ERA",
+    "FIP",
+    "xFIP",
     "K_pct",
     "BB_pct",
     "HR9",
@@ -122,6 +142,7 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
         "HR9": round(df["HR"].sum() / total_ip * 9, 2) if total_ip > 0 else None,
         "FIP": round((13 * df["HR"].sum() + 3 * df["BB"].sum() - 2 * df["K"].sum()) / total_ip + 3.10, 2)
         if total_ip > 0 else None,
+        "xFIP": None,  # not derivable from the game log; populated for Overall + vs-L/R from FanGraphs
         "avg_pitches": round(df["pitches"].mean(), 1) if "pitches" in df.columns else None,
         "ABQ_allowed": round(pd.to_numeric(df["opponent_ABQ"], errors="coerce").mean(), 1),
         "RCV_allowed": round(pd.to_numeric(df["opponent_RCV"], errors="coerce").mean(), 1),
@@ -171,6 +192,65 @@ def build_metric_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)[METRIC_SPLIT_COLUMNS]
 
 
+def _norm(name) -> str:
+    try:
+        return normalize_player_name(str(name))
+    except Exception:
+        return str(name).strip().lower()
+
+
+def season_advanced_lookup() -> dict:
+    """{normalized pitcher name: {FIP, xFIP}} from the FanGraphs season export."""
+    p = DATA_DIR / "sp_standard.csv"
+    if not p.exists():
+        return {}
+    df = pd.read_csv(p)
+    name_col = "Name" if "Name" in df.columns else None
+    if not name_col:
+        return {}
+    out = {}
+    for _, r in df.iterrows():
+        out[_norm(r[name_col])] = {"FIP": _num(r.get("FIP")), "xFIP": _num(r.get("xFIP"))}
+    return out
+
+
+def build_hand_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
+    """Pitcher vs-LHH / vs-RHH split rows from the FanGraphs hand-split exports
+    (sp_vs_LHH.csv / sp_vs_RHH.csv). Skipped gracefully until those are scraped."""
+    idmap = {}
+    for _, g in gamelog.iterrows():
+        idmap[_norm(g.get("pitcher_name", ""))] = (
+            g.get("pitcher_id"), g.get("pitcher_team"), g.get("pitcher_hand"))
+    rows: List[dict] = []
+    for split_value, fname in (("LHH", "sp_vs_LHH.csv"), ("RHH", "sp_vs_RHH.csv")):
+        p = DATA_DIR / fname
+        if not p.exists():
+            continue
+        df = pd.read_csv(p)
+        name_col = "Name" if "Name" in df.columns else None
+        if not name_col:
+            continue
+        for _, r in df.iterrows():
+            key = _norm(r[name_col])
+            pid, pteam, phand = idmap.get(key, (None, r.get("Team"), None))
+            g_ = _num(r.get("GS")) or _num(r.get("G"))
+            ip = parse_ip(r.get("IP")) if r.get("IP") is not None else None
+            rows.append({
+                "pitcher_id": pid, "pitcher_name": r[name_col], "pitcher_team": pteam,
+                "pitcher_hand": phand, "split_dimension": "batter_hand", "split_value": split_value,
+                "starts": int(g_) if g_ else None,
+                "avg_IP": round(ip / g_, 2) if ip and g_ else None,
+                "ERA": _num(r.get("ERA")), "K_pct": _pct_pts(r.get("K%")),
+                "BB_pct": _pct_pts(r.get("BB%")), "HR9": _num(r.get("HR/9")),
+                "avg_pitches": None, "ABQ_allowed": None, "RCV_allowed": None,
+                "OBR_allowed": None, "OSI_allowed": None,
+                "FIP": _num(r.get("FIP")), "xFIP": _num(r.get("xFIP")), "F5_ERA": None,
+            })
+    if not rows:
+        return pd.DataFrame(columns=METRIC_SPLIT_COLUMNS)
+    return pd.DataFrame(rows)[METRIC_SPLIT_COLUMNS]
+
+
 def _split_era(pdf: pd.DataFrame, col: str, value: str) -> Optional[float]:
     sub = pdf[pdf[col] == value]
     block = _agg_block(sub)
@@ -179,6 +259,7 @@ def _split_era(pdf: pd.DataFrame, col: str, value: str) -> Optional[float]:
 
 def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
     rows: List[dict] = []
+    adv = season_advanced_lookup()   # season FIP/xFIP from FanGraphs (xFIP isn't in the log)
     staleness_df = build_pitcher_staleness_df()
     stale_lookup = (
         staleness_df.set_index("pitcher_name").to_dict("index")
@@ -193,6 +274,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
         if not block:
             continue
         st = stale_lookup.get(str(pname), {})
+        a = adv.get(_norm(pname), {})
         rows.append(
             {
                 "pitcher_id": pid,
@@ -200,6 +282,8 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
                 "pitcher_team": pteam,
                 "pitcher_hand": phand,
                 **block,
+                "FIP": a.get("FIP") if a.get("FIP") is not None else block.get("FIP"),
+                "xFIP": a.get("xFIP"),
                 "high_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "High"),
                 "low_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "Low"),
                 "home_ERA": _split_era(pdf, "home_away", "home"),
@@ -237,6 +321,10 @@ def run():
             if col in gamelog.columns:
                 gamelog[col] = pd.to_numeric(gamelog[col], errors="coerce")
         splits = build_metric_splits(gamelog)
+        hand = build_hand_splits(gamelog)
+        if not hand.empty:
+            splits = pd.concat([splits, hand], ignore_index=True)
+            print(f"  + {len(hand)} vs-LHH/RHH hand-split rows from FanGraphs")
         profiles = build_profiles(gamelog, splits)
 
     splits_path = DATA_DIR / "sp_metric_splits.csv"
