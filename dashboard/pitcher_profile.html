@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260608a">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260608b">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -27,7 +27,7 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260608a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260608b"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -171,7 +171,8 @@
 
     <section class="ca-board tp-section" id="secF5">
       <div id="ppHdrF5"></div>
-      <div class="table-wrap tp-table-wrap pp-split-table-wrap" id="f5TableWrap"></div>
+      <div id="pitcherF5Controls"></div>
+      <div class="table-wrap tp-table-wrap pp-f5-metrics-wrap" id="f5TableWrap"></div>
       <div class="insight-line tp-note" id="f5Insight"></div>
     </section>
     </div>
@@ -735,6 +736,7 @@ function renderPitcherSectionControls() {
   if (!STATE.sectionFilters) return;
 
   renderPitcherSplitControlBar('pitcherOorControls', 'pitcher-oor', 'oor');
+  renderPitcherSplitControlBar('pitcherF5Controls', 'pitcher-f5', 'f5');
 
   var splitOpts = [
     { value: 'overall', label: 'Overall' },
@@ -824,6 +826,26 @@ function bindPitcherSectionControls() {
       if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
+    if (sectionKey === 'pitcher-f5') {
+      STATE.sectionFilters.f5 = STATE.sectionFilters.f5 || {};
+      if (groupKey === 'split') STATE.sectionFilters.f5.split = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) {
+        var profF5 = getProfile(STATE.pitcherKey);
+        var f5Wrap = document.getElementById('f5TableWrap');
+        if (profF5 && f5Wrap) {
+          var f5Split = (STATE.sectionFilters.f5 && STATE.sectionFilters.f5.split) || 'overall';
+          f5Wrap.setAttribute('data-split-view', f5Split);
+          f5Wrap.innerHTML = buildF5Table(
+            profF5,
+            getSplits(STATE.pitcherKey),
+            getGameLog(STATE.pitcherKey, STATE.pitcherName),
+            f5Split
+          );
+        }
+      }
       return;
     }
     if (sectionKey === 'pitcher-oor') {
@@ -1152,10 +1174,11 @@ function renderProfile(key) {
     }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
 
+  var f5Split = (STATE.sectionFilters.f5 && STATE.sectionFilters.f5.split) || 'overall';
   var f5Wrap = document.getElementById('f5TableWrap');
   if (f5Wrap) {
-    f5Wrap.setAttribute('data-split-view', 'overall');
-    f5Wrap.innerHTML = buildF5Table(profile, splits, log, 'overall');
+    f5Wrap.setAttribute('data-split-view', f5Split);
+    f5Wrap.innerHTML = buildF5Table(profile, splits, log, f5Split);
   }
   document.getElementById('f5Insight').innerHTML =
     'ER/5 = earned runs allowed per five innings (first-five). xFIP / K% / BB% are full-start rates for the split.';

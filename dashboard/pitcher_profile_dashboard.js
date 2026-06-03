@@ -836,60 +836,64 @@
       + '<tbody>' + body + '</tbody></table>';
   }
 
+  function enrichF5Row(row, profile, pickCol) {
+    if (!row) row = {};
+    row = enrichPitchingRow(row, profile, pickCol);
+    if (num(pickCol(row, ['F5_ERA', 'F5 ERA', 'ER/5'])) == null && profile) {
+      var f5 = num(pickCol(profile, ['F5_ERA', 'F5 ERA', 'ER/5']));
+      if (f5 != null) row.F5_ERA = f5;
+    }
+    return row;
+  }
+
+  function resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit) {
+    var base = { mode: 'f5' };
+    var s;
+    if (viewSplit === 'home') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
+        dimensions: [['location', 'home'], ['home_away', 'home']],
+        logLocation: 'home'
+      }, base));
+    } else if (viewSplit === 'away') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
+        dimensions: [['location', 'away'], ['home_away', 'away']],
+        logLocation: 'away'
+      }, base));
+    } else if (viewSplit === 'lhh') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
+        dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
+      }, base));
+    } else if (viewSplit === 'rhh') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({
+        dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
+      }, base));
+    } else {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, Object.assign({ useProfile: true }, base));
+    }
+    return enrichF5Row(s, profile, pickCol);
+  }
+
   function buildF5TableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
     viewSplit = viewSplit || 'overall';
-    function f5Row(label, rowKey, s) {
-      if (!s) {
-        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
-          + '<td>' + esc(label) + '</td><td colspan="4" class="tp-empty-cell">—</td></tr>';
-      }
-      var xfip = num(pickCol(s, ['xFIP', 'xfip']));
-      var k = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
-      var bb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
-      var f5er = num(pickCol(s, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5']));
-      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
-        + '<td>' + esc(label) + '</td>'
-        + '<td class="num">' + valChip(xfip, 'xfip', true, 2) + '</td>'
-        + '<td class="num">' + valChip(k, 'kpct', false, 1) + '</td>'
-        + '<td class="num">' + valChip(bb, 'bbpct', true, 1) + '</td>'
-        + '<td class="num">' + valChip(f5er, 'era', true, 2) + '</td>'
-        + '</tr>';
+    var splitLabels = {
+      overall: 'Both', home: 'Home', away: 'Away', lhh: 'vs LHB', rhh: 'vs RHB'
+    };
+    var s = resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit);
+    var xfip = num(pickCol(s, ['xFIP', 'xfip']));
+    var k = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
+    var bb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
+    var f5er = num(pickCol(s, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5']));
+    function cell(v, ctx, invert, dec) {
+      if (v == null || isNaN(v)) return '<td class="pp-f5-metric-cell tp-empty-cell">—</td>';
+      return '<td class="pp-f5-metric-cell">' + valChip(v, ctx, invert, dec) + '</td>';
     }
-    var sBoth = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true, mode: 'f5' });
-    if (sBoth && num(pickCol(sBoth, ['F5_ERA', 'F5 ERA'])) == null) {
-      sBoth = Object.assign({}, sBoth, { F5_ERA: num(pickCol(profile, ['F5_ERA', 'F5 ERA'])) });
-    }
-    var sHome = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['location', 'home'], ['home_away', 'home']],
-      logLocation: 'home',
-      mode: 'f5'
-    });
-    var sAway = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['location', 'away'], ['home_away', 'away']],
-      logLocation: 'away',
-      mode: 'f5'
-    });
-    var sLhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']],
-      mode: 'f5'
-    });
-    var sRhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']],
-      mode: 'f5'
-    });
-    var rowDefs = [
-      { key: 'overall', label: 'Both', row: sBoth },
-      { key: 'home', label: 'Home', row: sHome },
-      { key: 'away', label: 'Away', row: sAway },
-      { key: 'lhh', label: 'vs LHB', row: sLhh },
-      { key: 'rhh', label: 'vs RHB', row: sRhh }
-    ];
-    var body = splitRowsForView(rowDefs, viewSplit).map(function(d) {
-      return f5Row(d.label, d.key, d.row);
-    }).join('');
-    return '<table class="hub-table tp-table pp-startlog pp-split-matrix" aria-label="F5 profile by split">'
-      + '<thead><tr><th>Split</th><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead>'
-      + '<tbody>' + body + '</tbody></table>';
+    return '<table class="hub-table tp-table pp-f5-metrics-table" aria-label="F5 profile metrics">'
+      + '<thead><tr><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead>'
+      + '<tbody><tr>'
+      + cell(xfip, 'xfip', true, 2) + cell(k, 'kpct', false, 1) + cell(bb, 'bbpct', true, 1) + cell(f5er, 'era', true, 2)
+      + '</tr></tbody></table>'
+      + '<p class="tp-trend-table-note pp-f5-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
+      + ' · ER/5 = earned runs per five innings (first-five)</p>';
   }
 
   function resolveCompetitionRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx) {
