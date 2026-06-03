@@ -44,10 +44,110 @@
   height: auto;
 }
 
-/* Hero — inside ca-board, no second panel chrome */
+/* Hero — broadcast banner (Team Profile chrome) */
 .pitcher-profile-page .pp-hero-section.ca-board {
   padding: 0;
   overflow: visible;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.pitcher-profile-page .tp-team-banner.tp-pitcher-banner {
+  padding: var(--tp-section-pad-y, 14px) var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+  margin: 0;
+  border-radius: var(--tp-section-radius, 14px);
+  border: 1.5px solid color-mix(in srgb, var(--tp-accent, #7C4DFF) 46%, rgba(154, 107, 255, 0.58));
+  background:
+    radial-gradient(ellipse 76% 70% at 88% 8%, color-mix(in srgb, var(--tp-accent, #7C4DFF) 26%, transparent), transparent 64%),
+    linear-gradient(128deg, #171A2A 0%, #0B0E18 52%, #05060C 100%);
+  box-shadow:
+    0 0 0 1px rgba(196, 176, 255, 0.14),
+    0 0 42px color-mix(in srgb, var(--tp-accent, #7C4DFF) 34%, transparent),
+    0 34px 96px rgba(0, 0, 0, 0.88),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.pitcher-profile-page .tp-pitcher-banner {
+  width: 100%;
+}
+
+.pitcher-profile-page .tp-pitcher-banner__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 20px;
+}
+
+.pitcher-profile-page .tp-pitcher-banner__photo {
+  flex-shrink: 0;
+}
+
+.pitcher-profile-page .tp-pitcher-banner__photo .tp-pitcher-banner__avatar,
+.pitcher-profile-page .tp-pitcher-banner__photo img {
+  width: 112px;
+  height: 112px;
+  border-radius: 14px;
+  object-fit: cover;
+  object-position: center top;
+  border: 1.5px solid color-mix(in srgb, var(--tp-accent, #7C4DFF) 55%, transparent);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--tp-accent, #7C4DFF) 40%, transparent);
+}
+
+.pitcher-profile-page .tp-pitcher-banner__identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.pitcher-profile-page .tp-pitcher-banner__hand.pp-hand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  height: 52px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-family: var(--font-display, "Roboto Condensed", sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  border: 1.5px solid rgba(196, 176, 255, 0.45);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--tp-accent, #7C4DFF) 35%, transparent);
+}
+
+.pitcher-profile-page .pp-hand-badge--l {
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.35), rgba(30, 58, 138, 0.85));
+  color: #E0F2FE;
+}
+
+.pitcher-profile-page .pp-hand-badge--r {
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.35), rgba(127, 29, 29, 0.85));
+  color: #FEE2E2;
+}
+
+.pitcher-profile-page .tp-pitcher-banner .tp-team-banner__title {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  margin: 0;
+}
+
+.pitcher-profile-page .tp-pitcher-banner__today {
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.pitcher-profile-page .tp-pitcher-banner__note {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--gold-l, #FCD34D);
+}
+
+.pitcher-profile-page .tp-pitcher-banner .tp-team-banner__stats--hero {
+  flex: 1 1 100%;
+  margin-top: 4px;
 }
 
 .pitcher-profile-page .pp-hero-inner {
@@ -373,8 +473,44 @@
   width: 100%;
 }
 
-.pitcher-profile-page .pp-split-table.pp-startlog td .chip {
-  font-size: 14px;
+.pitcher-profile-page .pp-split-table.pp-startlog td .chip,
+.pitcher-profile-page .pp-split-matrix td .chip,
+.pitcher-profile-page .pp-pitching-value-table td .chip {
+  font-size: var(--pp-table-chip-size);
+  padding: 7px 12px;
+  min-height: 32px;
+}
+
+.pitcher-profile-page .pp-split-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-display, "Roboto Condensed", sans-serif);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.pitcher-profile-page .pp-split-metric-desc {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3, #9CA3AF);
+}
+
+/* Split control bars — visible hub pills (match tier splits) */
+.pitcher-profile-page .tp-section-filter-bar--controls {
+  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
+}
+
+.pitcher-profile-page .tp-section-filter-bar--controls .hub-pill {
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pitcher-profile-page .tp-section-filter-bar--controls .hub-pill.active {
+  background: var(--v-grad, linear-gradient(135deg, #7C4DFF, #9A6BFF));
+  border-color: rgba(196, 176, 255, 0.55);
 }
 
 .pitcher-profile-page .tp-section > .tp-section-filter-bar,
@@ -384,8 +520,23 @@
 
 .pitcher-profile-page .tp-section > #oorPanel,
 .pitcher-profile-page .tp-section > #allowedDashboard,
-.pitcher-profile-page .tp-section > #pitchingValueTableWrap {
+.pitcher-profile-page .tp-section > #pitchingValueTableWrap,
+.pitcher-profile-page .tp-section > #f5TableWrap,
+.pitcher-profile-page .tp-section > #tierSplitTableWrap,
+.pitcher-profile-page .tp-section > #logTableWrap {
   padding: 0 var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 16px);
+}
+
+.pitcher-profile-page .pp-pitching-value-wrap,
+.pitcher-profile-page .pp-split-table-wrap,
+.pitcher-profile-page #allowedDashboard .pp-split-table-wrap {
+  border: 1.5px solid rgba(196, 176, 255, 0.22);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), transparent 28%),
+    linear-gradient(180deg, #151827, #080a13);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 18px 48px rgba(0, 0, 0, 0.48);
+  overflow: hidden;
 }
 
 @media (max-width: 640px) {
@@ -409,11 +560,134 @@
   }
 }
 
-/* Recent Start Log — high-legibility table (larger type, more breathing room,
-   color-graded game score + result chip). */
-.pp-startlog { font-size: 14px; }
-.pp-startlog thead th { font-size: 11.5px; letter-spacing: 0.04em; padding: 13px 11px; }
-.pp-startlog tbody td { padding: 12px 11px; height: 46px; font-weight: 600; }
-.pp-startlog tbody td.num { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 15px; }
-.pp-startlog tbody tr:hover { background: rgba(124, 77, 255, 0.10); box-shadow: inset 3px 0 0 #7C4DFF; }
-.pp-result-chip { min-width: 76px; height: 27px; font-size: 12.5px; padding: 0 12px; }
+/* Profile tables — legibility (PDF: tier/log/splits readable) */
+.pitcher-profile-page {
+  --pp-table-size: 16px;
+  --pp-table-num-size: 18px;
+  --pp-table-head-size: 13px;
+  --pp-table-chip-size: 16px;
+}
+
+.pitcher-profile-page .pp-startlog,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog {
+  font-size: var(--pp-table-size);
+}
+
+.pitcher-profile-page .pp-startlog thead th,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog thead th {
+  font-size: var(--pp-table-head-size);
+  letter-spacing: 0.05em;
+  padding: 15px 13px;
+}
+
+.pitcher-profile-page .pp-startlog tbody td,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td {
+  padding: 14px 13px;
+  min-height: 54px;
+  height: 54px;
+  font-weight: 600;
+  font-size: var(--pp-table-size);
+  line-height: 1.4;
+}
+
+.pitcher-profile-page .pp-startlog tbody td.num,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td.num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: var(--pp-table-num-size);
+}
+
+.pitcher-profile-page .pp-startlog tbody td:first-child,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody td:first-child {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pitcher-profile-page .pp-startlog tbody tr:hover,
+.pitcher-profile-page .tp-table.hub-table.pp-startlog tbody tr:hover {
+  background: rgba(124, 77, 255, 0.10);
+  box-shadow: inset 3px 0 0 #7C4DFF;
+}
+
+.pitcher-profile-page .pp-result-chip {
+  min-width: 80px;
+  height: 30px;
+  font-size: 13.5px;
+  padding: 0 13px;
+}
+
+/* Rolling trend + hub tables on pitcher profile */
+.pitcher-profile-page .tp-trend-table thead th {
+  font-size: 12px;
+  padding: 13px 11px;
+}
+
+.pitcher-profile-page .tp-trend-table tbody th,
+.pitcher-profile-page .tp-trend-table tbody td {
+  height: 52px;
+  padding: 0 11px;
+  font-size: 15px;
+}
+
+.pitcher-profile-page .tp-trend-table tbody td.num .chip,
+.pitcher-profile-page .tp-trend-table .numcol .chip {
+  font-size: 15px;
+  padding: 6px 11px;
+}
+
+.pitcher-profile-page .tp-trend-table__metric {
+  font-size: 16px;
+}
+
+.pitcher-profile-page .tp-trend-table__metric-desc {
+  font-size: 12px;
+}
+
+.pitcher-profile-page .tp-trend-table__reliability,
+.pitcher-profile-page .tp-trend-table__interp {
+  font-size: 13.5px;
+}
+
+.pitcher-profile-page .tp-table.hub-table tbody td {
+  font-size: 15px;
+  padding: 13px 12px;
+}
+
+.pitcher-profile-page .tp-table.hub-table tbody td.num .chip {
+  font-size: 15px;
+  padding: 6px 11px;
+}
+
+.pitcher-profile-page .tp-trend-table-note,
+.pitcher-profile-page .tp-trend-directive__read {
+  font-size: 14px;
+}
+
+/* Opposing Offense Allowed — Team Profile rolling-trend chrome */
+.pitcher-profile-page #secAllowed .pp-allowed-trend {
+  margin-top: 4px;
+}
+.pitcher-profile-page #secAllowed .tp-trend-chart-mount .mlbma-trend-chart {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Split matrix tables — hub-pill highlight row */
+.pitcher-profile-page .tp-section > #pitcherPitchingControls,
+.pitcher-profile-page .tp-section > #pitcherF5Controls,
+.pitcher-profile-page .tp-section > #pitcherOorControls {
+  margin: 0 var(--tp-section-pad-x, 16px) var(--tp-header-gap, 12px);
+}
+
+.pitcher-profile-page .pp-split-matrix .pp-split-row.is-active {
+  background: rgba(124, 77, 255, 0.12);
+  box-shadow: inset 3px 0 0 var(--purple, #7C4DFF);
+}
+
+.pitcher-profile-page .pp-split-table-wrap[data-split-focus]:not([data-split-focus="overall"]) .pp-split-matrix .pp-split-row:not(.is-active) {
+  opacity: 0.42;
+}
+
+.pitcher-profile-page .pp-pitching-value-wrap[data-split-focus]:not([data-split-focus="overall"]) .pp-split-matrix .pp-split-row:not(.is-active) {
+  opacity: 0.42;
+}

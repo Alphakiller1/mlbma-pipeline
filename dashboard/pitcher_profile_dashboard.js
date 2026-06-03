@@ -98,6 +98,125 @@
     return n ? sum / n : null;
   }
 
+  function normHomeAway(v) {
+    var s = String(v == null ? '' : v).trim().toLowerCase();
+    if (s === 'h' || s === 'home') return 'home';
+    if (s === 'a' || s === 'away' || s === '@') return 'away';
+    return s;
+  }
+
+  function filterLogByLocation(log, pickCol, loc) {
+    return (log || []).filter(function(g) {
+      return normHomeAway(pickCol(g, ['home_away', 'home away', 'HA'])) === loc;
+    });
+  }
+
+  function aggregateCompetitionFromLog(log, pickCol) {
+    if (!log || !log.length) return null;
+    var oor = avgFromLog(log, pickCol, ['opponent_OOR', 'opponent OOR'], null);
+    var pals = avgFromLog(log, pickCol, ['opponent_PALS', 'opponent PALS'], null);
+    var wrc = avgFromLog(log, pickCol, ['opponent_wRC', 'opponent wRC', 'opponent_wRC+'], null);
+    if (oor == null && pals == null && wrc == null) return null;
+    return { OOR_faced: oor, PALS_faced: pals, wRC_faced: wrc };
+  }
+
+  function aggregatePitchingFromLog(log, pickCol) {
+    if (!log || !log.length) return null;
+    var k = 0, bb = 0, hr = 0, bf = 0, ip = 0;
+    log.forEach(function(g) {
+      var rowBf = num(pickCol(g, ['batters_faced', 'batters faced', 'BF']));
+      var rowK = num(pickCol(g, ['K', 'k']));
+      var rowBb = num(pickCol(g, ['BB', 'bb']));
+      var rowHr = num(pickCol(g, ['HR', 'hr']));
+      var rowIp = parseIP(pickCol(g, ['IP', 'ip']));
+      if (rowBf != null && rowBf > 0) {
+        bf += rowBf;
+        k += rowK || 0;
+        bb += rowBb || 0;
+        hr += rowHr || 0;
+      }
+      ip += rowIp;
+    });
+    if (bf <= 0 && ip <= 0) return null;
+    return {
+      K_pct: bf > 0 ? Math.round(k / bf * 1000) / 10 : null,
+      BB_pct: bf > 0 ? Math.round(bb / bf * 1000) / 10 : null,
+      HR9: ip > 0 ? Math.round(hr / ip * 9 * 100) / 100 : null,
+      xFIP: null,
+      OPS: null
+    };
+  }
+
+  function aggregateF5FromLog(log, pickCol) {
+    if (!log || !log.length) return null;
+    var pitch = aggregatePitchingFromLog(log, pickCol);
+    var sumF5 = 0, nF5 = 0;
+    log.forEach(function(g) {
+      var v = num(pickCol(g, ['f5_er', 'F5_ER', 'f5 ER']));
+      if (v != null) { sumF5 += v; nF5++; }
+    });
+    if (!pitch && nF5 === 0) return null;
+    var out = pitch ? Object.assign({}, pitch) : {};
+    if (nF5 > 0) out.F5_ERA = Math.round(sumF5 / nF5 * 100) / 100;
+    return out;
+  }
+
+  function enrichPitchingRow(row, profile, pickCol) {
+    if (!row) return row;
+    if (!profile || !pickCol) return row;
+    var out = Object.assign({}, row);
+    function fillIfMissing(outKeys, profKeys) {
+      if (num(pickCol(out, outKeys)) != null) return;
+      var v = num(pickCol(profile, profKeys || outKeys));
+      if (v != null) out[outKeys[0]] = v;
+    }
+    fillIfMissing(['xFIP', 'xfip'], ['xFIP', 'xfip']);
+    fillIfMissing(['FIP', 'fip'], ['FIP', 'fip']);
+    fillIfMissing(['K_pct', 'K%'], ['K_pct', 'K%']);
+    fillIfMissing(['BB_pct', 'BB%'], ['BB_pct', 'BB%']);
+    fillIfMissing(['HR9', 'HR/9'], ['HR9', 'HR/9']);
+    return out;
+  }
+
+  function resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, opts) {
+    opts = opts || {};
+    var dims = opts.dimensions || [];
+    var i;
+    var hit;
+    if (findSplit && splits && splits.length) {
+      for (i = 0; i < dims.length; i++) {
+        hit = findSplit(splits, dims[i][0], dims[i][1]);
+        if (hit) return enrichPitchingRow(hit, profile, pickCol);
+      }
+    }
+    if (opts.logLocation && log && log.length) {
+      var sub = filterLogByLocation(log, pickCol, opts.logLocation);
+      if (sub.length) {
+        if (opts.mode === 'competition') return aggregateCompetitionFromLog(sub, pickCol);
+        if (opts.mode === 'f5') {
+          var f5 = aggregateF5FromLog(sub, pickCol);
+          if (f5) return enrichPitchingRow(f5, profile, pickCol);
+        }
+        var pitch = aggregatePitchingFromLog(sub, pickCol);
+        if (pitch) return enrichPitchingRow(pitch, profile, pickCol);
+      }
+    }
+    if (opts.useProfile) {
+      var base = enrichPitchingRow(profile, profile, pickCol);
+      if (opts.mode === 'f5' && log && log.length) {
+        var allF5 = aggregateF5FromLog(log, pickCol);
+        if (allF5) base = Object.assign({}, base, allF5);
+      }
+      return base;
+    }
+    return null;
+  }
+
+  function splitRowActiveClass(rowKey, activeSplit) {
+    if (!activeSplit || activeSplit === 'overall') return rowKey === 'overall' ? ' is-active' : '';
+    return rowKey === activeSplit ? ' is-active' : '';
+  }
+
   function resolveAllowed(ctx) {
     var profile = ctx.profile;
     var splits = ctx.splits || [];
@@ -146,13 +265,10 @@
 
     var maxStarts = window === 'L1' ? 1 : window === 'L3' ? 3 : window === 'L6' ? 6
       : window === 'L10' ? 10 : window === 'L7' ? 2 : window === 'L14' ? 4 : window === 'L30' ? 8 : null;
-    var overall = (split === 'ytd' || split === '' || split == null);
-    // Drive the rolling windows from the game log so YTD/L30/L14/L7 sit on ONE
-    // consistent basis (recent schedule difficulty) and actually differ. For the
-    // overall view we window every column incl. YTD; for a specific split we only
-    // window the non-YTD columns and keep the split-row value otherwise. Falls back
-    // to the profile/split value when the log lacks a metric.
-    if (log.length && (overall || window !== 'YTD')) {
+    var useLogRoll = !split || split === 'ytd' || split === 'overall';
+    // Rolling windows from game log (opponent_* per start). YTD = all logged starts;
+    // L30/L14/L7 = last N starts. Split-specific rows keep sheet values unless overall.
+    if (log.length && useLogRoll) {
       var lm = {
         abq: avgFromLog(log, pick, ['opponent_ABQ', 'opponent ABQ'], maxStarts),
         rcv: avgFromLog(log, pick, ['opponent_RCV', 'opponent RCV'], maxStarts),
@@ -188,18 +304,30 @@
     return id || null;
   }
 
+  var TEAM_ACCENT = {
+    ARI: '#A71930', ATL: '#CE1141', BAL: '#DF4601', BOS: '#BD3039', CHC: '#0E3386', CHW: '#27251F',
+    CIN: '#C6011F', CLE: '#E31937', COL: '#33006F', DET: '#0C2340', HOU: '#EB6E1F', KCR: '#004687',
+    KC: '#004687', LAA: '#BA0021', LAD: '#005A9C', MIA: '#00A3E0', MIL: '#FFC52F', MIN: '#002B5C',
+    NYM: '#002D72', NYY: '#003087', OAK: '#003831', ATH: '#003831', PHI: '#E81828', PIT: '#FDB827',
+    SDP: '#2F241D', SD: '#2F241D', SEA: '#0C2C56', SFG: '#FD5A1E', SF: '#FD5A1E', STL: '#C41E3A',
+    TBR: '#092C5C', TB: '#092C5C', TEX: '#003278', TOR: '#134A8E', WSN: '#AB0003', WAS: '#AB0003'
+  };
+
+  function teamAccent(team) {
+    return TEAM_ACCENT[String(team || '').trim().toUpperCase()] || '#7C4DFF';
+  }
+
   function renderSnapshot(profile, ctx) {
     var pick = ctx.pickCol;
     var name = pick(profile, ['pitcher_name', 'pitcherName', 'Name']);
     var team = pick(profile, ['pitcher_team', 'pitcherTeam', 'Tm']);
     var hand = String(pick(profile, ['pitcher_hand', 'pitcherHand', 'Hand']) || 'R').toUpperCase().slice(0, 1);
     var pid = lookupMlbId(profile, pick);
-    var hs = A ? A.pitcherAvatar(pid, { crop: 'profile', className: 'pitcher-headshot-lg', eager: true }) : '';
-    var logo = A ? A.teamLogoImg(team, 40, 'snapshot-logo') : '';
+    var hs = A ? A.pitcherAvatar(pid, { crop: 'profile', className: 'tp-pitcher-banner__avatar', eager: true }) : '';
+    var logo = A ? A.teamLogoImg(team, 88, 'tp-team-banner__logo-img snapshot-logo') : '';
+    var watermark = A ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
+    var accent = teamAccent(team);
     var ps = ctx.pitchScore;
-    var pt = pitchingTier(ps, ctx.pitchTiers || []);
-    var stale = pick(profile, ['stale']) === 'True' || pick(profile, ['stale']) === 'true';
-    var staleWarn = pick(profile, ['staleness_warning', 'stalenessWarning']);
     var era = num(pick(profile, ['ERA', 'era']));
     var qsPct = null;
     if (ctx.log && ctx.log.length) {
@@ -225,24 +353,36 @@
         + '</div>';
     }
 
-    return '<div class="pp-hero-inner">'
-      + '<div class="ps-photo">' + hs + '</div>'
-      + '<div class="ps-main">'
-      + '<div class="ps-name-row">' + logo + '<h1 class="ps-name">' + esc(name) + '</h1></div>'
-      + '<div class="pp-hero-badges">'
-      + '<span class="pill ' + (hand === 'L' ? 'hand-pill-l' : 'hand-pill-r') + '">' + (hand === 'L' ? 'LHP' : 'RHP') + '</span>'
-      + '<span class="pill">' + esc(team) + ' · SP</span>'
-      + (ctx.isToday ? '<span class="pill pill-today">Today\'s Starter</span>' : '')
-      + '<span class="tier-pill ' + pt.cls + '">' + esc(pt.label) + '</span>'
-      + '</div>'
-      + '<div class="pp-hero-stats tp-hero-stat-row tp-team-banner__stats--hero" role="group" aria-label="Headline stats">'
-      + heroStat('Pitcher Score', ps != null ? fmt(ps, 0) : '—', heroTone(60, 45, ps, false))
+    var handBadge = '<span class="tp-pitcher-banner__hand pp-hand-badge pp-hand-badge--'
+      + (hand === 'L' ? 'l' : 'r') + '" aria-label="' + esc(hand === 'L' ? 'Left-handed pitcher' : 'Right-handed pitcher') + '">'
+      + (hand === 'L' ? 'LHP' : 'RHP') + '</span>';
+
+    var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero" role="group" aria-label="Pitcher headline stats">'
+      + heroStat('Pitch Score', ps != null ? fmt(ps, 0) : '—', heroTone(60, 45, ps, false))
       + heroStat('ERA', era != null ? fmt(era, 2) : '—', heroTone(3.60, 4.60, era, true))
       + heroStat('QS%', qsPct != null ? fmt(qsPct, 0) + '%' : '—', heroTone(60, 40, qsPct, false))
-      + '</div>'
-      + (staleWarn ? '<div class="pp-hero-note">' + esc(staleWarn) + '</div>' : '')
-      + (ctx.tonightHtml ? '<div class="ps-tonight">' + ctx.tonightHtml + '</div>' : '')
-      + '</div></div>';
+      + '</div>';
+
+    var notes = ctx.tonightHtml
+      ? '<div class="tp-pitcher-banner__tonight">' + ctx.tonightHtml + '</div>'
+      : '';
+
+    return '<section class="tp-team-banner tp-team-banner--hero tp-pitcher-banner" style="--tp-accent:' + esc(accent) + '">'
+      + '<div class="tp-team-banner__ambient" aria-hidden="true"></div>'
+      + (watermark ? '<div class="tp-team-banner__watermark" aria-hidden="true">' + watermark + '</div>' : '')
+      + '<div class="tp-team-banner__inner tp-pitcher-banner__inner">'
+      + '<div class="tp-pitcher-banner__photo">' + hs + '</div>'
+      + '<div class="tp-pitcher-banner__identity">'
+      + handBadge
+      + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
+      + '<div class="tp-team-banner__copy">'
+      + '<p class="ca-eyebrow tp-team-banner__eyebrow">Pitcher Profile</p>'
+      + '<h1 class="tp-team-banner__title">' + esc(name) + '</h1>'
+      + (ctx.isToday ? '<span class="tp-pitcher-banner__today pill pill-today">Today\'s starter</span>' : '')
+      + notes
+      + '</div></div>'
+      + statRow
+      + '</div></section>';
   }
 
   function statPill(label, val) {
@@ -303,123 +443,261 @@
       + '</div>';
   }
 
+  function allowedInterpretation(delta, velocity) {
+    var d = num(delta);
+    var v = num(velocity);
+    if (d == null || v == null) return 'Insufficient';
+    if (d >= 4 && v > 0.6) return 'Schedule Harder';
+    if (d <= -4 && v < -0.6) return 'Schedule Softer';
+    if (Math.abs(d) <= 2 && Math.abs(v) < 0.6) return 'Stable Band';
+    if (Math.abs(d) >= 5 && Math.abs(v) < 0.4) return 'Short Spike';
+    return 'Mixed Signal';
+  }
+
+  function allowedDirectiveTone(interp) {
+    var t = String(interp || '').toLowerCase();
+    if (t.indexOf('harder') >= 0 || t.indexOf('spike') >= 0) return 'down';
+    if (t.indexOf('softer') >= 0) return 'up';
+    if (t.indexOf('stable') >= 0) return 'stable';
+    return 'mixed';
+  }
+
+  function trendTableMetricCellAllowed(v, ctxKey) {
+    return valChip(v, ctxKey, true, 1);
+  }
+
+  function trendTableDeltaCellAllowed(v) {
+    if (v == null || isNaN(v)) {
+      return A && A.chipPlaceholderHtml ? A.chipPlaceholderHtml('—') : '<span class="chip c-na">—</span>';
+    }
+    var display = (v > 0 ? '+' : '') + Number(v).toFixed(1);
+    var cls = v > 1.5 ? 'c-weak' : v < -1.5 ? 'c-elite' : 'c-mid';
+    return '<span class="chip ' + cls + '">' + esc(display) + '</span>';
+  }
+
+  function trendTableVelocityCellAllowed(v) {
+    if (v == null || isNaN(v)) return '<span class="chip c-na">—</span>';
+    var display = (v > 0 ? '+' : '') + Number(v).toFixed(2);
+    var cls = v > 0.6 ? 'c-weak' : v < -0.6 ? 'c-elite' : 'c-mid';
+    return '<span class="chip ' + cls + '">' + esc(display) + '</span>';
+  }
+
   function renderAllowedDashboard(profile, ctx) {
-    var pick = ctx.pickCol;
     var omitHeader = !!ctx.omitHeader;
     var resolved = resolveAllowed(ctx);
     var f5 = resolved.isF5 ? (A ? A.f5WarningHtml() : '') : '';
-
-    var headerHtml = omitHeader ? '' : (
-      '<div class="allowed-header">'
-      + '<p class="section-subtitle">Rolling schedule difficulty (lower = softer) · ' + esc(ctx.splitLabel || 'Overall') + '</p>'
-      + '</div>'
-    );
-
-    function ctxKeyForMetric(key) {
-      return key === 'abq' ? 'abq' : key === 'rcv' ? 'rcv' : key === 'obr' ? 'obr' : 'osi';
-    }
-
-    function metricsForWindow(win) {
-      var c = Object.assign({}, ctx, { window: win });
-      return resolveAllowed(c).metrics;
-    }
-
     var wins = [
       { key: 'L1', label: 'Last 1' },
       { key: 'L3', label: 'Last 3' },
       { key: 'L6', label: 'Last 6' },
       { key: 'L10', label: 'Last 10' }
     ];
-
-    var byWin = {
-      L1: metricsForWindow('L1'),
-      L3: metricsForWindow('L3'),
-      L6: metricsForWindow('L6'),
-      L10: metricsForWindow('L10')
-    };
-
+    function metricsForWindow(win) {
+      return resolveAllowed(Object.assign({}, ctx, { window: win })).metrics;
+    }
+    function ctxKeyForMetric(key) {
+      return key === 'abq' ? 'abq' : key === 'rcv' ? 'rcv' : key === 'obr' ? 'obr' : 'osi';
+    }
     function cell(metricKey, winKey) {
-      var v = byWin[winKey] ? byWin[winKey][metricKey] : null;
+      var m = metricsForWindow(winKey);
+      var v = m ? m[metricKey] : null;
       return '<td class="num">' + valChip(v, ctxKeyForMetric(metricKey), true, 1) + '</td>';
     }
-
-    function row(metricKey, label) {
-      return '<tr>'
-        + '<td>' + esc(label) + '</td>'
-        + wins.map(function(w) { return cell(metricKey, w.key); }).join('')
-        + '</tr>';
-    }
-
-    function metricHead(label, desc) {
-      return '<span class="tp-trend-table__metric">' + esc(label)
-        + (desc ? '<span class="tp-trend-table__metric-desc">' + esc(desc) + '</span>' : '')
-        + '</span>';
-    }
-
     function trendRow(metricKey, label, desc) {
-      return '<tr data-trend-metric-row="' + esc(metricKey) + '">'
-        + '<th scope="row">' + metricHead(label, desc) + '</th>'
+      return '<tr>'
+        + '<th scope="row"><span class="pp-split-metric">' + esc(label)
+        + (desc ? '<span class="pp-split-metric-desc">' + esc(desc) + '</span>' : '')
+        + '</span></th>'
         + wins.map(function(w) { return cell(metricKey, w.key); }).join('')
         + '</tr>';
     }
-
-    var table = '<div class="tp-trend-table-wrap">'
-      + '<p class="tp-trend-table-note">Rolling windows · lower = softer opposing offense · ' + esc(ctx.splitLabel || 'Overall') + '</p>'
-      + '<table class="tp-trend-table" aria-label="Opposing offense allowed rolling windows">'
-      + '<thead><tr><th>Metric</th>' + wins.map(function(w) { return '<th class="numcol">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
-      + '<tbody>'
-      + trendRow('abq', 'ABQ allowed', 'Discipline quality faced (lower = easier)') 
-      + trendRow('rcv', 'RCV allowed', 'Contact quality faced (lower = fewer barrels)') 
-      + trendRow('obr', 'OBR allowed', 'On-base floor faced (lower = less traffic)') 
-      + trendRow('osi', 'OSI allowed', 'Composite offensive strength faced') 
+    var filterNote = (ctx.splitLabel || 'Overall') + ' · lower = softer opposing offense';
+    var table = '<div class="tp-trend-table-wrap pp-split-table-wrap">'
+      + '<p class="tp-trend-table-note">' + esc(filterNote) + '</p>'
+      + '<table class="hub-table tp-table pp-startlog pp-split-matrix" aria-label="Opposing offense allowed by start window">'
+      + '<thead><tr><th>Metric</th>'
+      + wins.map(function(w) { return '<th class="numcol">' + esc(w.label) + '</th>'; }).join('')
+      + '</tr></thead><tbody>'
+      + trendRow('abq', 'ABQ allowed', 'Discipline quality faced')
+      + trendRow('rcv', 'RCV allowed', 'Contact quality faced')
+      + trendRow('obr', 'OBR allowed', 'On-base floor faced')
+      + trendRow('osi', 'OSI allowed', 'Composite offense faced')
       + '</tbody></table></div>';
+    return (omitHeader ? '' : '') + f5 + table;
+  }
 
-    return headerHtml + f5 + table;
+  function splitRowsForView(allRows, viewSplit) {
+    if (!viewSplit || viewSplit === 'overall') return allRows;
+    return allRows.filter(function(r) { return r.key === viewSplit; });
+  }
+
+  function buildPitchingValueTableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
+    viewSplit = viewSplit || 'overall';
+    function pvRow(label, rowKey, row) {
+      if (!row) {
+        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+          + '<td>' + esc(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
+      }
+      var rk = pctNorm(num(pickCol(row, ['K_pct', 'K%'])));
+      var rbb = pctNorm(num(pickCol(row, ['BB_pct', 'BB%'])));
+      var rhr9 = num(pickCol(row, ['HR9', 'HR/9']));
+      var rxfip = num(pickCol(row, ['xFIP', 'xfip']));
+      var rops = num(pickCol(row, ['OPS', 'ops', 'OPS_against']));
+      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+        + '<td>' + esc(label) + '</td>'
+        + '<td class="num">' + valChip(rk, 'kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(rbb, 'bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(rhr9, 'hr9', true, 2) + '</td>'
+        + '<td class="num">' + valChip(rxfip, 'xfip', true, 2) + '</td>'
+        + '<td class="num">' + valChip(rops, 'ops', true, 3) + '</td>'
+        + '</tr>';
+    }
+    var sBoth = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true });
+    var sHome = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['location', 'home'], ['home_away', 'home']],
+      logLocation: 'home'
+    });
+    var sAway = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['location', 'away'], ['home_away', 'away']],
+      logLocation: 'away'
+    });
+    var sLhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
+    });
+    var sRhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
+    });
+    var rowDefs = [
+      { key: 'overall', label: 'Both', row: sBoth },
+      { key: 'home', label: 'Home', row: sHome },
+      { key: 'away', label: 'Away', row: sAway },
+      { key: 'lhh', label: 'vs LHB', row: sLhh },
+      { key: 'rhh', label: 'vs RHB', row: sRhh }
+    ];
+    var body = splitRowsForView(rowDefs, viewSplit).map(function(d) {
+      return pvRow(d.label, d.key, d.row);
+    }).join('');
+    return '<table class="hub-table tp-table pp-startlog pp-pitching-value-table pp-split-matrix" aria-label="Pitching value by split">'
+      + '<thead><tr><th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
+      + '<tbody>' + body + '</tbody></table>';
+  }
+
+  function buildF5TableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
+    viewSplit = viewSplit || 'overall';
+    function f5Row(label, rowKey, s) {
+      if (!s) {
+        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+          + '<td>' + esc(label) + '</td><td colspan="4" class="tp-empty-cell">—</td></tr>';
+      }
+      var xfip = num(pickCol(s, ['xFIP', 'xfip']));
+      var k = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
+      var bb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
+      var f5er = num(pickCol(s, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5']));
+      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+        + '<td>' + esc(label) + '</td>'
+        + '<td class="num">' + valChip(xfip, 'xfip', true, 2) + '</td>'
+        + '<td class="num">' + valChip(k, 'kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(bb, 'bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(f5er, 'era', true, 2) + '</td>'
+        + '</tr>';
+    }
+    var sBoth = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true, mode: 'f5' });
+    if (sBoth && num(pickCol(sBoth, ['F5_ERA', 'F5 ERA'])) == null) {
+      sBoth = Object.assign({}, sBoth, { F5_ERA: num(pickCol(profile, ['F5_ERA', 'F5 ERA'])) });
+    }
+    var sHome = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['location', 'home'], ['home_away', 'home']],
+      logLocation: 'home',
+      mode: 'f5'
+    });
+    var sAway = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['location', 'away'], ['home_away', 'away']],
+      logLocation: 'away',
+      mode: 'f5'
+    });
+    var sLhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']],
+      mode: 'f5'
+    });
+    var sRhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']],
+      mode: 'f5'
+    });
+    var rowDefs = [
+      { key: 'overall', label: 'Both', row: sBoth },
+      { key: 'home', label: 'Home', row: sHome },
+      { key: 'away', label: 'Away', row: sAway },
+      { key: 'lhh', label: 'vs LHB', row: sLhh },
+      { key: 'rhh', label: 'vs RHB', row: sRhh }
+    ];
+    var body = splitRowsForView(rowDefs, viewSplit).map(function(d) {
+      return f5Row(d.label, d.key, d.row);
+    }).join('');
+    return '<table class="hub-table tp-table pp-startlog pp-split-matrix" aria-label="F5 profile by split">'
+      + '<thead><tr><th>Split</th><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead>'
+      + '<tbody>' + body + '</tbody></table>';
+  }
+
+  function buildOORSplitTableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
+    viewSplit = viewSplit || 'overall';
+    var sBoth = profile;
+    var sHome = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['location', 'home'], ['home_away', 'home']],
+      logLocation: 'home',
+      mode: 'competition'
+    });
+    var sAway = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['location', 'away'], ['home_away', 'away']],
+      logLocation: 'away',
+      mode: 'competition'
+    });
+    var sLhb = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']],
+      mode: 'competition'
+    });
+    var sRhb = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']],
+      mode: 'competition'
+    });
+    function frow(label, rowKey, s) {
+      var oor = s ? num(pickCol(s, ['OOR_faced', 'avg_opponent_OOR', 'OOR'])) : null;
+      var pals = s ? num(pickCol(s, ['PALS_faced'])) : null;
+      var wrc = s ? num(pickCol(s, ['wRC_faced'])) : null;
+      function cell(v, ctx, dec) {
+        if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+        return '<td class="num">' + valChip(v, ctx, false, dec) + '</td>';
+      }
+      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+        + '<td>' + esc(label) + '</td>'
+        + cell(oor, 'oor', 1) + cell(pals, 'pals', 1) + cell(wrc, 'wrc', 0) + '</tr>';
+    }
+    var rowDefs = [
+      { key: 'overall', label: 'Both', row: sBoth },
+      { key: 'home', label: 'Home', row: sHome },
+      { key: 'away', label: 'Away', row: sAway },
+      { key: 'lhh', label: 'vs LHB', row: sLhb },
+      { key: 'rhh', label: 'vs RHB', row: sRhb }
+    ];
+    var body = splitRowsForView(rowDefs, viewSplit).map(function(d) {
+      return frow(d.label, d.key, d.row);
+    }).join('');
+    return '<table class="hub-table tp-table pp-startlog pp-split-matrix" aria-label="Strength of competition by split">'
+      + '<thead><tr><th>Split</th><th>OOR</th><th>PALS Faced</th><th>wRC+ Faced</th></tr></thead><tbody>'
+      + body + '</tbody></table>';
   }
 
   function renderOORPanel(profile, ctx) {
     var pick = ctx.pickCol;
     var find = ctx.findSplit;
     var splits = ctx.splits || [];
+    var log = ctx.log || [];
+    var activeSplit = ctx.splitFocus || 'overall';
+    var viewSplit = activeSplit;
 
-    var sBoth = profile;
-    var sHome = find ? find(splits, 'location', 'home') : null;
-    var sAway = find ? find(splits, 'location', 'away') : null;
-    var sLhb = find ? (find(splits, 'batter_hand', 'LHH') || find(splits, 'batter_hand', 'L')) : null;
-    var sRhb = find ? (find(splits, 'batter_hand', 'RHH') || find(splits, 'batter_hand', 'R')) : null;
-
-    function fcell(v, ctxKey, dec) {
-      if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
-      return '<td class="num">' + valChip(v, ctxKey, false, dec) + '</td>';
-    }
-    function frow(label, s) {
-      var oor = s ? num(pick(s, ['OOR_faced', 'avg_opponent_OOR', 'OOR'])) : null;
-      var pals = s ? num(pick(s, ['PALS_faced'])) : null;
-      var wrc = s ? num(pick(s, ['wRC_faced'])) : null;
-      return '<tr><td>' + esc(label) + '</td>'
-        + fcell(oor, 'oor', 1) + fcell(pals, 'pals', 1) + fcell(wrc, 'wrc', 0) + '</tr>';
-    }
-
-    var overall = num(pick(profile, ['OOR_faced', 'avg_opponent_OOR', 'avg_OOR', 'OOR']));
-    var lbl = overall == null ? 'Competition strength pending'
-      : overall >= 50 ? 'Tough schedule — ERA may be legitimate'
-      : overall <= 42 ? 'Soft schedule — headline ERA may be inflated'
-      : 'Near-average competition faced';
-
-    var hero = '<div class="oor-panel"><div class="oor-hero">'
-      + '<div class="oor-score">' + (overall != null ? fmt(overall, 1) : '—') + '</div>'
-      + '<div class="oor-copy"><p class="oor-label">' + esc(lbl) + '</p></div>'
-      + '</div></div>';
-
-    var table = '<div class="tp-trend-table-wrap">'
+    return '<div class="tp-trend-table-wrap pp-split-table-wrap" data-split-focus="' + esc(activeSplit) + '">'
       + '<p class="tp-trend-table-note">Competition faced — higher = tougher schedule (contextualizes ERA)</p>'
-      + '<table class="hub-table tp-table pp-startlog" aria-label="Strength of competition by split">'
-      + '<thead><tr><th>Split</th><th>OOR</th><th>PALS Faced</th><th>wRC+ Faced</th></tr></thead><tbody>'
-      + frow('Both', sBoth) + frow('Home', sHome) + frow('Away', sAway)
-      + frow('vs LHB', sLhb) + frow('vs RHB', sRhb)
-      + '</tbody></table></div>';
-
-    return hero + table;
+      + buildOORSplitTableHtml(profile, splits, log, pick, find, viewSplit)
+      + '</div>';
   }
 
   function deriveStartVerdict(profile, ctx) {
@@ -488,11 +766,22 @@
         + '</tr>';
     }
 
-    var sOverall = profile;
-    var sHome = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'location', 'home') : null;
-    var sAway = ctx.findSplit && ctx.splits ? ctx.findSplit(ctx.splits, 'location', 'away') : null;
-    var sLhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'LHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'L')) : null;
-    var sRhh = ctx.findSplit && ctx.splits ? (ctx.findSplit(ctx.splits, 'batter_hand', 'RHH') || ctx.findSplit(ctx.splits, 'batter_hand', 'R')) : null;
+    var log = ctx.log || [];
+    var sOverall = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, { useProfile: true });
+    var sHome = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
+      dimensions: [['location', 'home'], ['home_away', 'home']],
+      logLocation: 'home'
+    });
+    var sAway = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
+      dimensions: [['location', 'away'], ['home_away', 'away']],
+      logLocation: 'away'
+    });
+    var sLhh = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
+      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
+    });
+    var sRhh = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
+      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
+    });
 
     var splitBody = splitRow('Both', sOverall)
       + splitRow('Home', sHome)
@@ -572,6 +861,10 @@
       return renderAnalystTakeLine(profile, ctx).replace(/<\/?motion>/g, '');
     },
     deriveStartVerdict: deriveStartVerdict,
-    resolveAllowed: resolveAllowed
+    resolveAllowed: resolveAllowed,
+    buildPitchingValueTableHtml: buildPitchingValueTableHtml,
+    buildF5TableHtml: buildF5TableHtml,
+    buildOORSplitTableHtml: buildOORSplitTableHtml,
+    resolvePitcherSplitRow: resolvePitcherSplitRow
   };
 })(typeof window !== 'undefined' ? window : this);

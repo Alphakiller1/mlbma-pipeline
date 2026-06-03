@@ -17,6 +17,11 @@ body.pitcher-profile-page.team-profile-page .pp-intel-section .pp-intel-panel__m
   margin-top: 0;
 }
 
+body.pitcher-profile-page.team-profile-page {
+  --tp-stat-chip-size: 16px;
+  --tp-stat-label-size: 13px;
+}
+
 body.pitcher-profile-page.team-profile-page .profile-deep-sections {
   display: flex;
   flex-direction: column;

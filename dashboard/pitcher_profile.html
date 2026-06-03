@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="chase_nav.css?v=20260616c">
 <link rel="stylesheet" href="team_profile.css?v=20260603a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260603a">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260604b">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260605a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618b">
 <link rel="stylesheet" href="profile_shell.css?v=20260603a">
 <script src="mlbma_config.js?v=20260603a"></script>
@@ -25,9 +25,9 @@
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260604b"></script>
-<script src="mlbma_charts.js?v=20260603a"></script>
+<script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260605d"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -135,14 +135,13 @@
   </div>
 
   <div class="tp-identity-stack profile-shell" id="profileContent">
-    <div id="ppContextBar" class="profile-context-bar tp-lineup-context-bar"></div>
-
     <section class="ca-board tp-section pp-hero-section" id="secHero">
       <div id="pitcherSnapshot" class="profile-hero"></div>
     </section>
 
     <section class="ca-board tp-section tp-identity-panel pp-intel-section" id="secIntel">
       <div id="ppHdrIntel"></div>
+      <div id="pitcherPitchingControls"></div>
       <div class="table-wrap tp-table-wrap pp-pitching-value-wrap" id="pitchingValueTableWrap"></div>
     </section>
 
@@ -173,7 +172,8 @@
 
     <section class="ca-board tp-section" id="secF5">
       <div id="ppHdrF5"></div>
-      <div class="table-wrap tp-table-wrap" id="f5TableWrap"></div>
+      <div id="pitcherF5Controls"></div>
+      <div class="table-wrap tp-table-wrap pp-split-table-wrap" id="f5TableWrap"></div>
       <div class="insight-line tp-note" id="f5Insight"></div>
     </section>
     </div>
@@ -198,11 +198,13 @@ var DATA = {
   teamProfiles: []
 };
 
-var STATE = { pitcherKey: null, pitcherName: '', split: 'overall', window: 'YTD', view: 'summary' };
+var STATE = { pitcherKey: null, pitcherName: '', split: 'overall', window: 'YTD', view: 'summary', chartMetric: 'osi' };
 STATE.sectionFilters = {
   overview: { split: 'overall', window: 'YTD', view: 'summary' },
-  allowed: { split: 'overall', window: 'YTD' },
-  oor: { window: 'YTD' },
+  pitching: { split: 'overall' },
+  allowed: { split: 'overall', window: 'YTD', chartMetric: 'osi' },
+  oor: { window: 'YTD', split: 'overall' },
+  f5: { split: 'overall' },
   tiers: { dim: 'osi_tier' }
 };
 
@@ -449,24 +451,36 @@ function findSplit(splits, dimension, value) {
   function normKey(s) {
     return String(s == null ? '' : s).trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
   }
-  var dimKey = normKey(dimension);
+  function normVal(v) {
+    var s = String(v == null ? '' : v).trim().toLowerCase();
+    if (s === 'h' || s === 'home') return 'home';
+    if (s === 'a' || s === 'away' || s === '@') return 'away';
+    return s;
+  }
+  var dimAliases = {
+    location: ['location', 'home_away', 'homeaway'],
+    batter_hand: ['batter_hand', 'batterhand', 'vs_lhh', 'vs_rhh'],
+    home_away: ['location', 'home_away', 'homeaway']
+  };
+  var dimKeys = dimAliases[normKey(dimension)] || [normKey(dimension)];
   value = String(value);
   var aliases = {
-    LHH: ['LHH', 'L', 'vs LHH', 'vs L', 'Left', 'left'],
-    RHH: ['RHH', 'R', 'vs RHH', 'vs R', 'Right', 'right'],
-    home: ['home', 'Home'],
-    away: ['away', 'Away'],
-    // Tier labels vary by export ("Mid" vs "Medium"/"Med").
+    LHH: ['LHH', 'L', 'vs LHH', 'vs L', 'Left', 'left', 'vs_lhh'],
+    RHH: ['RHH', 'R', 'vs RHH', 'vs R', 'Right', 'right', 'vs_rhh'],
+    home: ['home', 'Home', 'H', 'h'],
+    away: ['away', 'Away', 'A', 'a', '@'],
     High: ['High', 'HIGH', 'H', 'Top', 'Elite'],
     Mid: ['Mid', 'MID', 'Med', 'MED', 'Medium', 'MEDIUM', 'Avg', 'Average'],
     Low: ['Low', 'LOW', 'L', 'Bottom', 'Weak']
   };
   var vals = aliases[value] || [value];
+  var want = normVal(value);
   for (var i = 0; i < splits.length; i++) {
     var s = splits[i];
-    var dim = pickCol(s, ['split_dimension', 'splitDimension']);
+    var dim = normKey(pickCol(s, ['split_dimension', 'splitDimension']));
+    if (dimKeys.indexOf(dim) < 0) continue;
     var sv = pickCol(s, ['split_value', 'splitValue']);
-    if (normKey(dim) !== dimKey) continue;
+    if (normVal(sv) === want) return s;
     for (var j = 0; j < vals.length; j++) {
       if (String(sv).toLowerCase() === String(vals[j]).toLowerCase()) return s;
     }
@@ -625,7 +639,9 @@ function buildDashboardCtx(profile, splits, log, name, team, isToday, tonight) {
     tonightHtml: tonight ? tonight.html : '',
     tonightOsi: tonight ? tonight.oppOsi : null,
     allProfiles: DATA.profiles,
-    oorMap: DATA.oorMap
+    oorMap: DATA.oorMap,
+    chartMetric: (STATE.sectionFilters.allowed && STATE.sectionFilters.allowed.chartMetric)
+      || STATE.chartMetric || 'osi'
   };
 }
 
@@ -640,11 +656,15 @@ function renderPlatformSections(profile, splits, log, name, team, isToday) {
     split: allowedFilter.split || ctx.split,
     window: allowedFilter.window || ctx.window,
     splitLabel: splitLabel(allowedFilter.split || ctx.split),
+    chartMetric: allowedFilter.chartMetric || ctx.chartMetric || 'osi',
     omitHeader: true
   });
   var oorCtx = Object.assign({}, ctx, {
     window: oorFilter.window || ctx.window,
-    compact: true
+    compact: true,
+    log: log,
+    splits: splits,
+    splitFocus: oorFilter.split || 'overall'
   });
   var snap = document.getElementById('pitcherSnapshot');
   var allowed = document.getElementById('allowedDashboard');
@@ -665,8 +685,8 @@ function mountProfilePageHeader() {
 
 function renderPitcherSectionHeaders() {
   var map = [
-    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS by split (Both / Home / Away / vs LHB / vs RHB)', icon: 'target' },
-    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI faced · Last 1 / 3 / 6 / 10 starts · lower is softer', icon: 'shield' },
+    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS by split · vs LHB/RHB need FanGraphs hand-split scrape', icon: 'target' },
+    { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'ABQ / RCV / OBR / OSI allowed · Last 1 / 3 / 6 / 10 starts · lower is softer', icon: 'shield' },
     { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR · PALS faced · wRC+ faced — by home/away and handedness', icon: 'insight' },
     { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
     { id: 'ppHdrLog', title: 'Recent Start Log', subtitle: 'Last 10 starts with opponent lineup quality', icon: 'list' },
@@ -676,6 +696,35 @@ function renderPitcherSectionHeaders() {
     var el = document.getElementById(h.id);
     if (!el) return;
     el.innerHTML = sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Pitcher Profile' });
+  });
+}
+
+function pitcherMatrixSplitOpts() {
+  return [
+    { value: 'overall', label: 'Both' },
+    { value: 'home', label: 'Home' },
+    { value: 'away', label: 'Away' },
+    { value: 'lhh', label: 'vs LHB' },
+    { value: 'rhh', label: 'vs RHB' }
+  ];
+}
+
+function renderPitcherSplitControlBar(mountId, sectionKey, filterKey) {
+  var el = document.getElementById(mountId);
+  var PC = window.MLBMAProfileControls;
+  if (!el || !PC || !PC.renderSectionOptionBar) return;
+  var sf = STATE.sectionFilters[filterKey] || {};
+  el.innerHTML = PC.renderSectionOptionBar({
+    layout: 'row',
+    barClass: 'tp-section-filter-bar--controls',
+    sectionKey: sectionKey,
+    groups: [{
+      label: 'Split',
+      groupKey: 'split',
+      tabMode: true,
+      options: pitcherMatrixSplitOpts(),
+      active: sf.split || 'overall'
+    }]
   });
 }
 
@@ -692,25 +741,7 @@ function renderPitcherSectionControls() {
     { value: 'away', label: 'Away' },
     { value: 'f5', label: 'F5' }
   ];
-  var windowOpts = (PC.WINDOW_OPTIONS || [
-    { value: 'YTD', label: 'Season' },
-    { value: 'L30', label: 'Last 30' },
-    { value: 'L14', label: 'Last 14' }
-  ]);
-
-  var ctxBar = document.getElementById('ppContextBar');
-  if (ctxBar) {
-    ctxBar.innerHTML = PC.renderSectionOptionBar({
-      layout: 'row',
-      barClass: 'tp-section-filter-bar--context',
-      sectionKey: 'pitcher-overview',
-      groups: [
-        { label: 'Split', groupKey: 'split', options: splitOpts, active: STATE.split },
-        { label: 'Window', groupKey: 'window', options: windowOpts, active: STATE.window },
-        { label: 'View', groupKey: 'view', options: [{ value: 'summary' }, { value: 'expanded' }, { value: 'analyst' }], active: STATE.view }
-      ]
-    });
-  }
+  renderPitcherSplitControlBar('pitcherPitchingControls', 'pitcher-pitching', 'pitching');
 
   var allowed = document.getElementById('pitcherAllowedControls');
   if (allowed) {
@@ -724,15 +755,8 @@ function renderPitcherSectionControls() {
     });
   }
 
-  var oor = document.getElementById('pitcherOorControls');
-  if (oor) {
-    oor.innerHTML = PC.renderSectionOptionBar({
-      layout: 'row',
-      barClass: 'tp-section-filter-bar--context',
-      sectionKey: 'pitcher-oor',
-      groups: []
-    });
-  }
+  renderPitcherSplitControlBar('pitcherOorControls', 'pitcher-oor', 'oor');
+  renderPitcherSplitControlBar('pitcherF5Controls', 'pitcher-f5', 'f5');
 
   var tierBar = document.getElementById('pitcherTierControls');
   if (tierBar) {
@@ -766,6 +790,17 @@ function bindPitcherSectionControls() {
   if (!root || root._ppSectionCtrlsBound) return;
   root._ppSectionCtrlsBound = true;
   root.addEventListener('click', function(e) {
+    var trendBtn = e.target.closest('[data-trend-metric]');
+    var trendRow = e.target.closest('[data-trend-metric-row]');
+    if (trendBtn || trendRow) {
+      STATE.chartMetric = trendBtn
+        ? (trendBtn.getAttribute('data-trend-metric') || 'osi')
+        : (trendRow.getAttribute('data-trend-metric-row') || 'osi');
+      STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
+      STATE.sectionFilters.allowed.chartMetric = STATE.chartMetric;
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
     var btn = e.target.closest('[data-tp-ctrl]');
     if (!btn) return;
     var grp = btn.closest('[data-tp-ctrl-group]');
@@ -776,10 +811,9 @@ function bindPitcherSectionControls() {
     var sectionKey = bar.getAttribute('data-tp-section');
     if (!groupKey || !sectionKey) return;
 
-    if (sectionKey === 'pitcher-overview') {
-      if (groupKey === 'split') STATE.split = val;
-      if (groupKey === 'window') STATE.window = val;
-      if (groupKey === 'view') STATE.view = val;
+    if (sectionKey === 'pitcher-pitching') {
+      STATE.sectionFilters.pitching = STATE.sectionFilters.pitching || {};
+      if (groupKey === 'split') STATE.sectionFilters.pitching.split = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
       return;
@@ -793,6 +827,14 @@ function bindPitcherSectionControls() {
     }
     if (sectionKey === 'pitcher-oor') {
       STATE.sectionFilters.oor = STATE.sectionFilters.oor || {};
+      if (groupKey === 'split') STATE.sectionFilters.oor.split = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
+      return;
+    }
+    if (sectionKey === 'pitcher-f5') {
+      STATE.sectionFilters.f5 = STATE.sectionFilters.f5 || {};
+      if (groupKey === 'split') STATE.sectionFilters.f5.split = val;
       renderPitcherSectionControls();
       if (STATE.pitcherKey) renderProfile(STATE.pitcherKey);
       return;
@@ -817,37 +859,20 @@ function pitchingValueChip(v, ctx, invert, dec) {
   return '<span class="chip">' + fmt(v, dec == null ? 1 : dec) + '</span>';
 }
 
-function buildPitchingValueTable(profile, splits) {
-  function pvRow(label, row) {
-    if (!row) {
-      return '<tr><td>' + escHtml(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
-    }
-    var k = pctNormP(numOrNull(pickCol(row, ['K_pct', 'K%'])));
-    var bb = pctNormP(numOrNull(pickCol(row, ['BB_pct', 'BB%'])));
-    var hr9 = numOrNull(pickCol(row, ['HR9', 'HR/9']));
-    var xfip = numOrNull(pickCol(row, ['xFIP', 'xfip']));
-    var ops = numOrNull(pickCol(row, ['OPS', 'ops', 'OPS_against']));
-    return '<tr>'
-      + '<td>' + escHtml(label) + '</td>'
-      + '<td class="num">' + pitchingValueChip(k, 'kpct', false, 1) + '</td>'
-      + '<td class="num">' + pitchingValueChip(bb, 'bbpct', true, 1) + '</td>'
-      + '<td class="num">' + pitchingValueChip(hr9, 'hr9', true, 2) + '</td>'
-      + '<td class="num">' + pitchingValueChip(xfip, 'xfip', true, 2) + '</td>'
-      + '<td class="num">' + pitchingValueChip(ops, 'ops', true, 3) + '</td>'
-      + '</tr>';
+function buildPitchingValueTable(profile, splits, log, activeSplit) {
+  var PPD = window.PitcherProfileDashboard;
+  if (PPD && PPD.buildPitchingValueTableHtml) {
+    return PPD.buildPitchingValueTableHtml(profile, splits, log || [], pickCol, findSplit, activeSplit || 'overall');
   }
-  var sHome = findSplit(splits, 'location', 'home');
-  var sAway = findSplit(splits, 'location', 'away');
-  var sLhb = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
-  var sRhb = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
-  var body = pvRow('Both', profile)
-    + pvRow('Home', sHome)
-    + pvRow('Away', sAway)
-    + pvRow('vs LHB', sLhb)
-    + pvRow('vs RHB', sRhb);
-  return '<table class="hub-table tp-table pp-startlog pp-pitching-value-table" aria-label="Pitching value by split">'
-    + '<thead><tr><th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
-    + '<tbody>' + body + '</tbody></table>';
+  return '<div class="empty-state">Pitching value table unavailable.</div>';
+}
+
+function buildF5Table(profile, splits, log, activeSplit) {
+  var PPD = window.PitcherProfileDashboard;
+  if (PPD && PPD.buildF5TableHtml) {
+    return PPD.buildF5TableHtml(profile, splits, log || [], pickCol, findSplit, activeSplit || 'overall');
+  }
+  return '<div class="empty-state">F5 profile table unavailable.</div>';
 }
 
 // Color-graded numeric cell (red->green vs league average), matching the team profile.
@@ -1057,8 +1082,12 @@ function renderProfile(key) {
   bindPitcherSectionControls();
   renderPlatformSections(profile, splits, log, name, team, isToday);
 
+  var pitchingSplit = (STATE.sectionFilters.pitching && STATE.sectionFilters.pitching.split) || 'overall';
   var pvWrap = document.getElementById('pitchingValueTableWrap');
-  if (pvWrap) pvWrap.innerHTML = buildPitchingValueTable(profile, splits);
+  if (pvWrap) {
+    pvWrap.setAttribute('data-split-view', pitchingSplit);
+    pvWrap.innerHTML = buildPitchingValueTable(profile, splits, log, pitchingSplit);
+  }
 
   // Season Line section removed (user request); keep YTD headline stats in the banner.
 
@@ -1109,33 +1138,12 @@ function renderProfile(key) {
     }).join('') + '</tbody></table></div>' : '<div class="empty-state">No game log rows for this pitcher.</div>';
   document.getElementById('logTableWrap').innerHTML = logHtml;
 
-  // F5 Profile: xFIP / K% / BB% / ER per 5 by split (home/away + handedness); OSI tier removed.
-  var A2 = window.MLBMAAssets;
-  function f5Cell(v, ctx, invert, dec, asPct) {
-    if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
-    var disp = asPct ? fmtPct(v) : fmt(v, dec);
-    var color = (A2 && A2.metricColor) ? A2.metricColor(v, ctx, invert) : '';
-    return '<td class="num"' + (color ? ' style="color:' + color + ';font-weight:800"' : '') + '>' + disp + '</td>';
+  var f5Split = (STATE.sectionFilters.f5 && STATE.sectionFilters.f5.split) || 'overall';
+  var f5Wrap = document.getElementById('f5TableWrap');
+  if (f5Wrap) {
+    f5Wrap.setAttribute('data-split-view', f5Split);
+    f5Wrap.innerHTML = buildF5Table(profile, splits, log, f5Split);
   }
-  function f5Row(label, s) {
-    if (!s) return '<tr><td>' + label + '</td><td colspan="4" class="tp-empty-cell">—</td></tr>';
-    return '<tr><td>' + label + '</td>'
-      + f5Cell(numOrNull(pickCol(s, ['xFIP', 'xfip'])), 'xfip', true, 2, false)
-      + f5Cell(pctNormP(numOrNull(pickCol(s, ['K_pct', 'K%']))), 'kpct', false, 1, true)
-      + f5Cell(pctNormP(numOrNull(pickCol(s, ['BB_pct', 'BB%']))), 'bbpct', true, 1, true)
-      + f5Cell(numOrNull(pickCol(s, ['F5_ERA', 'F5 ERA'])), 'era', true, 2, false)
-      + '</tr>';
-  }
-  var f5Home = findSplit(splits, 'location', 'home');
-  var f5Away = findSplit(splits, 'location', 'away');
-  var f5Lhb = findSplit(splits, 'batter_hand', 'LHH') || findSplit(splits, 'batter_hand', 'L');
-  var f5Rhb = findSplit(splits, 'batter_hand', 'RHH') || findSplit(splits, 'batter_hand', 'R');
-  var f5Body = f5Row('Both', profile) + f5Row('Home', f5Home) + f5Row('Away', f5Away)
-    + f5Row('vs LHB', f5Lhb) + f5Row('vs RHB', f5Rhb);
-  document.getElementById('f5TableWrap').innerHTML =
-    '<div class="table-wrap tp-table-wrap"><table class="hub-table tp-table pp-startlog"><thead><tr>'
-    + '<th>Split</th><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead><tbody>'
-    + f5Body + '</tbody></table></div>';
   document.getElementById('f5Insight').innerHTML =
     'ER/5 = earned runs allowed per five innings (first-five). xFIP / K% / BB% are full-start rates for the split.';
 
@@ -1212,6 +1220,42 @@ function bindSelectors() {
   }
 }
 
+function fetchDataCsv(relPath) {
+  return fetch(relPath).then(function(r) { return r.ok ? r.text() : ''; })
+    .then(function(t) { return t ? parseCSV(t) : []; })
+    .catch(function() { return []; });
+}
+
+function fgHandRowToSplit(row, splitValue) {
+  if (!row) return null;
+  var name = pickCol(row, ['Name', 'pitcher_name']);
+  if (!name) return null;
+  return {
+    pitcher_name: name,
+    split_dimension: 'batter_hand',
+    split_value: splitValue,
+    K_pct: pickCol(row, ['K_pct', 'K%']),
+    BB_pct: pickCol(row, ['BB_pct', 'BB%']),
+    HR9: pickCol(row, ['HR9', 'HR/9']),
+    xFIP: pickCol(row, ['xFIP', 'xfip']),
+    OPS: pickCol(row, ['OPS', 'ops']),
+    FIP: pickCol(row, ['FIP', 'fip'])
+  };
+}
+
+function mergeHandSplitsIntoData(lhhRows, rhhRows) {
+  var extra = [];
+  (lhhRows || []).forEach(function(r) {
+    var s = fgHandRowToSplit(r, 'LHH');
+    if (s) extra.push(s);
+  });
+  (rhhRows || []).forEach(function(r) {
+    var s = fgHandRowToSplit(r, 'RHH');
+    if (s) extra.push(s);
+  });
+  if (extra.length) DATA.splits = (DATA.splits || []).concat(extra);
+}
+
 function loadAll() {
   var loadingText = document.getElementById('loadingText');
   return Promise.all([
@@ -1222,10 +1266,13 @@ function loadAll() {
     fetchSheetTab(TABS.today_matchups),
     fetchSheetTab(TABS.player_registry).catch(function() { return []; }),
     fetchSheetTab(TABS.oor).catch(function() { return []; }),
-    fetchSheetTab(TABS.team_profiles).catch(function() { return []; })
+    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
+    fetchDataCsv('../data/sp_vs_LHH.csv'),
+    fetchDataCsv('../data/sp_vs_RHH.csv')
   ]).then(function(results) {
     DATA.profiles = results[0] || [];
     DATA.splits = results[1] || [];
+    mergeHandSplitsIntoData(results[8], results[9]);
     DATA.gameLog = results[2] || [];
     DATA.pitching = results[3] || [];
     DATA.matchups = results[4] || [];

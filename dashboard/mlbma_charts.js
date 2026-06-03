@@ -860,8 +860,19 @@
     var nums = raw.map(num);
     var valid = nums.filter(function(v) { return v != null; });
     var cur = valid.length ? valid[valid.length - 1] : null;
-    var lineColor = trendLineColor(nums, metricCtx);
-    var curColor = metricColorVal(cur, metricCtx);
+    var lineColor = opts.invertTrend
+      ? (function() {
+        var pts = nums.filter(function(v) { return v != null; });
+        if (pts.length < 2) return '#9A6BFF';
+        var first = pts[0];
+        var last = pts[pts.length - 1];
+        if (Math.abs(last - first) <= 2) return '#C4B0FF';
+        return last > first ? '#F87171' : '#4ADE80';
+      })()
+      : trendLineColor(nums, metricCtx);
+    var curColor = (opts.invertTrend && global.MLBMAAssets && MLBMAAssets.metricColor)
+      ? MLBMAAssets.metricColor(cur, metricCtx, true)
+      : metricColorVal(cur, metricCtx);
     var padL = 10;
     var padR = 10;
     var padT = 8;
@@ -922,7 +933,11 @@
     var axis = labels.map(function(l, i) {
       var v = nums[i];
       var valHtml = (v != null && !isNaN(v))
-        ? '<strong style="color:' + esc(metricColorVal(v, metricCtx)) + '">' + Number(v).toFixed(1) + '</strong>'
+        ? '<strong style="color:' + esc(
+          (opts.invertTrend && global.MLBMAAssets && MLBMAAssets.metricColor)
+            ? MLBMAAssets.metricColor(v, metricCtx, true)
+            : metricColorVal(v, metricCtx)
+        ) + '">' + Number(v).toFixed(1) + '</strong>'
         : '<span class="mlbma-trend-na">—</span>';
       return '<span class="mlbma-trend-axis"><span class="mlbma-trend-axis-l">' + esc(l) + '</span>' + valHtml + '</span>';
     }).join('');

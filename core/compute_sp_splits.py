@@ -202,8 +202,21 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
     }
 
 
+def _apply_season_pitching_rates(block: dict, pname: str, adv: dict) -> dict:
+    """FanGraphs xFIP/FIP are season-level; attach to every split row so dashboards populate."""
+    if not block:
+        return block
+    a = adv.get(_norm(pname), {})
+    if a.get("xFIP") is not None:
+        block["xFIP"] = a["xFIP"]
+    if a.get("FIP") is not None and block.get("FIP") is None:
+        block["FIP"] = a["FIP"]
+    return block
+
+
 def build_metric_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
     rows: List[dict] = []
+    adv = season_advanced_lookup()
 
     gamelog = gamelog.copy()
     # Derive RCV/OBR tier buckets from the per-start opponent composites so the
@@ -223,6 +236,7 @@ def build_metric_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
                 block = _agg_block(sdf)
                 if not block:
                     continue
+                block = _apply_season_pitching_rates(block, pname, adv)
                 rows.append(
                     {
                         "pitcher_id": pid,
