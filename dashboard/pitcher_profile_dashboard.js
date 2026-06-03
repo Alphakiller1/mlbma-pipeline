@@ -1131,7 +1131,7 @@
     resolveAllowed: resolveAllowed,
     buildPitchingValueTableHtml: buildPitchingValueTableHtml,
     buildF5TableHtml: buildF5TableHtml,
-    buildOORSplitTableHtml: buildOORSplitTableHtml,
+    buildOORMetricsTableHtml: buildOORMetricsTableHtml,
     resolvePitcherSplitRow: resolvePitcherSplitRow
   };
 })(typeof window !== 'undefined' ? window : this);
