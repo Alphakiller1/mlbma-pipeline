@@ -27,6 +27,43 @@ def _pct_pts(v) -> Optional[float]:
         return None
     return round(n * 100, 1) if n <= 1.5 else round(n, 1)
 
+
+def _col_mean(df, col) -> Optional[float]:
+    if col not in df.columns:
+        return None
+    v = pd.to_numeric(df[col], errors="coerce")
+    return round(float(v.mean()), 1) if v.notna().any() else None
+
+
+def _team_metric_map(fname: str, col: str) -> dict:
+    p = DATA_DIR / fname
+    if not p.exists():
+        return {}
+    df = pd.read_csv(p)
+    if "Tm" not in df.columns or col not in df.columns:
+        return {}
+    return {str(t).strip().upper(): _num(v) for t, v in zip(df["Tm"], df[col])}
+
+
+def enrich_faced(gamelog: pd.DataFrame) -> pd.DataFrame:
+    """Attach opponent OOR / PALS / wRC+ (vs the pitcher's hand) per start from team
+    metrics, so strength-of-competition can be split by home/away and handedness."""
+    g = gamelog.copy()
+    pals = _team_metric_map("metrics_pals.csv", "PALS")
+    oor = _team_metric_map("metrics_oor.csv", "OOR")
+    wrc_r = _team_metric_map("metrics_vs_RHP.csv", "wRC+")
+    wrc_l = _team_metric_map("metrics_vs_LHP.csv", "wRC+")
+
+    def opp(r):
+        return str(r.get("opponent_team", "")).strip().upper()
+
+    g["opponent_OOR"] = g.apply(lambda r: oor.get(opp(r)), axis=1)
+    g["opponent_PALS"] = g.apply(lambda r: pals.get(opp(r)), axis=1)
+    g["opponent_wRC"] = g.apply(
+        lambda r: (wrc_r if str(r.get("pitcher_hand", "R")).upper().startswith("R") else wrc_l).get(opp(r)),
+        axis=1)
+    return g
+
 SPLIT_DIMENSIONS = (
     ("osi_tier", "opponent_OSI_tier"),
     ("abq_tier", "opponent_ABQ_tier"),
@@ -66,8 +103,12 @@ METRIC_SPLIT_COLUMNS = [
     "RCV_allowed",
     "OBR_allowed",
     "OSI_allowed",
+    "OOR_faced",
+    "PALS_faced",
+    "wRC_faced",
     "FIP",
     "xFIP",
+    "OPS",
     "F5_ERA",
 ]
 
@@ -89,6 +130,9 @@ PROFILE_COLUMNS = [
     "RCV_allowed",
     "OBR_allowed",
     "OSI_allowed",
+    "OOR_faced",
+    "PALS_faced",
+    "wRC_faced",
     "F5_ERA",
     "high_osi_ERA",
     "low_osi_ERA",
@@ -143,11 +187,15 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
         "FIP": round((13 * df["HR"].sum() + 3 * df["BB"].sum() - 2 * df["K"].sum()) / total_ip + 3.10, 2)
         if total_ip > 0 else None,
         "xFIP": None,  # not derivable from the game log; populated for Overall + vs-L/R from FanGraphs
+        "OPS": None,   # opponent OPS against — only from the FanGraphs hand-split scrape
         "avg_pitches": round(df["pitches"].mean(), 1) if "pitches" in df.columns else None,
         "ABQ_allowed": round(pd.to_numeric(df["opponent_ABQ"], errors="coerce").mean(), 1),
         "RCV_allowed": round(pd.to_numeric(df["opponent_RCV"], errors="coerce").mean(), 1),
         "OBR_allowed": round(pd.to_numeric(df["opponent_OBR"], errors="coerce").mean(), 1),
         "OSI_allowed": round(pd.to_numeric(df["opponent_OSI"], errors="coerce").mean(), 1),
+        "OOR_faced": _col_mean(df, "opponent_OOR"),
+        "PALS_faced": _col_mean(df, "opponent_PALS"),
+        "wRC_faced": _col_mean(df, "opponent_wRC"),
         "F5_ERA": round(f5_er / f5_starts / 5 * 9, 2)
         if f5_er is not None and f5_starts > 0
         else None,
@@ -244,6 +292,8 @@ def build_hand_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
                 "BB_pct": _pct_pts(r.get("BB%")), "HR9": _num(r.get("HR/9")),
                 "avg_pitches": None, "ABQ_allowed": None, "RCV_allowed": None,
                 "OBR_allowed": None, "OSI_allowed": None,
+                "OOR_faced": None, "PALS_faced": None, "wRC_faced": None,
+                "OPS": _num(r.get("OPS")),
                 "FIP": _num(r.get("FIP")), "xFIP": _num(r.get("xFIP")), "F5_ERA": None,
             })
     if not rows:
@@ -320,6 +370,7 @@ def run():
         for col in ("ER", "R", "H", "BB", "K", "HR", "pitches", "batters_faced", "f5_er"):
             if col in gamelog.columns:
                 gamelog[col] = pd.to_numeric(gamelog[col], errors="coerce")
+        gamelog = enrich_faced(gamelog)   # opponent OOR / PALS / wRC+ faced per start
         splits = build_metric_splits(gamelog)
         hand = build_hand_splits(gamelog)
         if not hand.empty:

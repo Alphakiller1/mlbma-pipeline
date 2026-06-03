@@ -379,120 +379,44 @@
 
   function renderOORPanel(profile, ctx) {
     var pick = ctx.pickCol;
-    var log = ctx.log || [];
-    var oorMap = ctx.oorMap || {};
-    function maxStartsForWindow(win) {
-      return win === 'L7' ? 2 : win === 'L14' ? 4 : win === 'L30' ? 8 : null;
+    var find = ctx.findSplit;
+    var splits = ctx.splits || [];
+
+    var sBoth = profile;
+    var sHome = find ? find(splits, 'location', 'home') : null;
+    var sAway = find ? find(splits, 'location', 'away') : null;
+    var sLhb = find ? (find(splits, 'batter_hand', 'LHH') || find(splits, 'batter_hand', 'L')) : null;
+    var sRhb = find ? (find(splits, 'batter_hand', 'RHH') || find(splits, 'batter_hand', 'R')) : null;
+
+    function fcell(v, ctxKey, dec) {
+      if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+      return '<td class="num">' + valChip(v, ctxKey, false, dec) + '</td>';
+    }
+    function frow(label, s) {
+      var oor = s ? num(pick(s, ['OOR_faced', 'avg_opponent_OOR', 'OOR'])) : null;
+      var pals = s ? num(pick(s, ['PALS_faced'])) : null;
+      var wrc = s ? num(pick(s, ['wRC_faced'])) : null;
+      return '<tr><td>' + esc(label) + '</td>'
+        + fcell(oor, 'oor', 1) + fcell(pals, 'pals', 1) + fcell(wrc, 'wrc', 0) + '</tr>';
     }
 
-    function overallOorForWindow(win) {
-      if (win === 'YTD') {
-        var v = num(pick(profile, ['avg_opponent_OOR', 'avg_OOR', 'OOR']));
-        if (v != null) return v;
-      }
-      var ms = maxStartsForWindow(win);
-      return avgOorFromLog(log, pick, oorMap, ms);
-    }
-
-    function oorForFilteredLog(win, filtered) {
-      var ms = maxStartsForWindow(win);
-      return avgOorFromLog(filtered, pick, oorMap, ms);
-    }
-
-    function byHand(handKey) {
-      var hk = String(handKey || '').toUpperCase();
-      return log.filter(function(g) {
-        var h = String(pick(g, [
-          'opponent_hand', 'opponent hand', 'OppHand', 'opp_hand',
-          'opponent_lineup_hand', 'lineup_hand', 'hand',
-          'oppHand', 'opp hand', 'opponentHand'
-        ]) || '').toUpperCase().trim();
-        if (!h) {
-          // Try infer from matchup string if present (rare).
-          var m = String(pick(g, ['matchup', 'Matchup', 'OPP', 'Opp', 'opponent', 'Opponent']) || '').toUpperCase();
-          // Common encodings like "LHH" / "RHH" embedded.
-          if (m.indexOf('LHH') >= 0) h = 'LHH';
-          if (m.indexOf('RHH') >= 0) h = 'RHH';
-        }
-        if (!h) return false;
-        // Normalize common encodings.
-        if (h === 'LHH' || h === 'L' || h === 'LH' || h === 'LEFT') h = 'L';
-        if (h === 'RHH' || h === 'R' || h === 'RH' || h === 'RIGHT') h = 'R';
-        return h === hk;
-      });
-    }
-
-    function byHA(ha) {
-      var key = String(ha || '').toLowerCase();
-      return log.filter(function(g) {
-        var v = String(pick(g, ['home_away', 'home away', 'HA', 'H/A', 'ha', 'Home/Away', 'homeAway']) || '').trim().toLowerCase();
-        if (!v) {
-          // Fallback: infer from matchup/opponent string: "@NYY" => away, "vs BOS" => home.
-          var m = String(pick(g, ['matchup', 'Matchup', 'opponent', 'Opponent', 'OPP', 'Opp']) || '').trim();
-          if (m) {
-            var mu = m.toUpperCase();
-            if (mu.indexOf('@') >= 0) v = 'away';
-            else if (mu.indexOf('VS') >= 0 || mu.indexOf('V ') === 0) v = 'home';
-          }
-        }
-        if (!v) return false;
-        // Normalize common encodings.
-        var norm = v;
-        if (norm === 'h' || norm === 'home' || norm.indexOf('home') >= 0) norm = 'home';
-        if (norm === 'a' || norm === 'away' || norm.indexOf('away') >= 0 || norm === '@') norm = 'away';
-        return norm === key;
-      });
-    }
-
-    var wins = [
-      { key: 'YTD', label: 'YTD' },
-      { key: 'L30', label: 'L30' },
-      { key: 'L14', label: 'L14' },
-      { key: 'L7', label: 'L7' }
-    ];
-
-    function chipOor(v) {
-      return valChip(v, 'oor', false, 1);
-    }
-
-    function cell(winKey, v) {
-      return '<td class="numcol">' + chipOor(v) + '</td>';
-    }
-
-    function metricHead(label, desc) {
-      return '<span class="tp-trend-table__metric">' + esc(label)
-        + (desc ? '<span class="tp-trend-table__metric-desc">' + esc(desc) + '</span>' : '')
-        + '</span>';
-    }
-
-    function row(label, desc, getter) {
-      return '<tr data-trend-metric-row="' + esc(label) + '">'
-        + '<th scope="row">' + metricHead(label, desc) + '</th>'
-        + wins.map(function(w) { return cell(w.key, getter(w.key)); }).join('')
-        + '</tr>';
-    }
-
-    var overallYtd = overallOorForWindow('YTD');
-    var lbl = overallYtd == null ? 'OOR data pending'
-      : overallYtd >= 55 ? 'Tough schedule — ERA may be legitimate'
-      : overallYtd <= 45 ? 'Soft schedule — headline ERA may be inflated'
+    var overall = num(pick(profile, ['OOR_faced', 'avg_opponent_OOR', 'avg_OOR', 'OOR']));
+    var lbl = overall == null ? 'Competition strength pending'
+      : overall >= 50 ? 'Tough schedule — ERA may be legitimate'
+      : overall <= 42 ? 'Soft schedule — headline ERA may be inflated'
       : 'Near-average competition faced';
 
     var hero = '<div class="oor-panel"><div class="oor-hero">'
-      + '<div class="oor-score">' + (overallYtd != null ? fmt(overallYtd, 1) : '—') + '</div>'
+      + '<div class="oor-score">' + (overall != null ? fmt(overall, 1) : '—') + '</div>'
       + '<div class="oor-copy"><p class="oor-label">' + esc(lbl) + '</p></div>'
       + '</div></div>';
 
     var table = '<div class="tp-trend-table-wrap">'
-      + '<p class="tp-trend-table-note">Strength of competition (OOR) · rolling windows by split</p>'
-      + '<table class="tp-trend-table" aria-label="Strength of competition rolling windows">'
-      + '<thead><tr><th>Split</th>' + wins.map(function(w) { return '<th class="numcol">' + esc(w.label) + '</th>'; }).join('') + '</tr></thead>'
-      + '<tbody>'
-      + row('Overall', 'All starts', function(win) { return overallOorForWindow(win); })
-      + row('Home', 'Home starts', function(win) { return oorForFilteredLog(win, byHA('home')); })
-      + row('Away', 'Away starts', function(win) { return oorForFilteredLog(win, byHA('away')); })
-      + row('vs LHH', 'Lineups flagged LHH', function(win) { return oorForFilteredLog(win, byHand('L')); })
-      + row('vs RHH', 'Lineups flagged RHH', function(win) { return oorForFilteredLog(win, byHand('R')); })
+      + '<p class="tp-trend-table-note">Competition faced — higher = tougher schedule (contextualizes ERA)</p>'
+      + '<table class="hub-table tp-table pp-startlog" aria-label="Strength of competition by split">'
+      + '<thead><tr><th>Split</th><th>OOR</th><th>PALS Faced</th><th>wRC+ Faced</th></tr></thead><tbody>'
+      + frow('Both', sBoth) + frow('Home', sHome) + frow('Away', sAway)
+      + frow('vs LHB', sLhb) + frow('vs RHB', sRhb)
       + '</tbody></table></div>';
 
     return hero + table;
