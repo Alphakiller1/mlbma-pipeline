@@ -136,12 +136,15 @@ def scrape_sp(driver, sg_name, sg_num, start_date: str, end_date: str, out_basen
 
 
 def scrape_sp_window(driver, start_date: str, end_date: str, out_basename: str, label: str):
-    """Scrape SP standard + advanced for a date window; write merged {out_basename}.csv."""
+    """Scrape SP traditional + standard + advanced for a date window; write merged {out_basename}.csv."""
     print(f"=== SP Leaderboard ({label}: {start_date} to {end_date}) ===")
+    trad = scrape_sp(driver, "traditional", 1, start_date, end_date, out_basename)
     std = scrape_sp(driver, "standard", 2, start_date, end_date, out_basename)
     adv = scrape_sp(driver, "advanced", 3, start_date, end_date, out_basename)
     if std is not None:
         merged = _merge_sp_standard_advanced(std, adv)
+        if trad is not None:
+            merged = _merge_sp_standard_advanced(merged, trad)
         out_path = os.path.join(DATA_DIR, f"{out_basename}.csv")
         merged.to_csv(out_path, index=False)
         print(f"  Merged -> {out_path} ({len(merged)} rows)")
@@ -153,13 +156,16 @@ SP_HAND_SPLITS = {"vs_LHH": "1", "vs_RHH": "2"}
 
 
 def scrape_sp_hand_split(driver, hand_label: str, split_code: str):
-    """Pitcher stats vs LHB/RHB (standard + advanced incl. xFIP) -> sp_{hand_label}.csv."""
+    """Pitcher stats vs LHB/RHB (traditional + standard + advanced incl. xFIP/OPS) -> sp_{hand_label}.csv."""
     print(f"=== SP hand split: {hand_label} (splitArr={split_code}) ===")
     base = f"sp_{hand_label}"
+    trad = scrape_sp(driver, "traditional", 1, SEASON_START, SEASON_END, base, split_pitcher=split_code)
     std = scrape_sp(driver, "standard", 2, SEASON_START, SEASON_END, base, split_pitcher=split_code)
     adv = scrape_sp(driver, "advanced", 3, SEASON_START, SEASON_END, base, split_pitcher=split_code)
     if std is not None:
         merged = _merge_sp_standard_advanced(std, adv)
+        if trad is not None:
+            merged = _merge_sp_standard_advanced(merged, trad)
         out_path = os.path.join(DATA_DIR, f"{base}.csv")
         merged.to_csv(out_path, index=False)
         print(f"  Merged -> {out_path} ({len(merged)} rows)")

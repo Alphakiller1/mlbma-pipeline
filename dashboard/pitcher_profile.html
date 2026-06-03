@@ -27,7 +27,7 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260609a"></script>
+<script src="pitcher_profile_dashboard.js?v=20260609e"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -141,6 +141,7 @@
 
     <section class="ca-board tp-section tp-identity-panel pp-intel-section" id="secIntel">
       <div id="ppHdrIntel"></div>
+      <div id="pitcherIntelControls"></div>
       <div class="table-wrap tp-table-wrap pp-pitching-value-wrap" id="pitchingValueTableWrap"></div>
     </section>
 
@@ -687,7 +688,7 @@ function mountProfilePageHeader() {
 
 function renderPitcherSectionHeaders() {
   var map = [
-    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS — Both / Home / Away / vs LHB / vs RHB', icon: 'target' },
+    { id: 'ppHdrIntel', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · xFIP · OPS — by home/away and handedness', icon: 'target' },
     { id: 'ppHdrAllowed', title: 'Opposing Offense Allowed', subtitle: 'Rolling trend · L10 → L1 start windows · lower allowed = softer schedule', icon: 'shield' },
     { id: 'ppHdrOOR', title: 'Strength of Competition', subtitle: 'OOR · PALS faced · wRC+ faced — by home/away and handedness', icon: 'insight' },
     { id: 'ppHdrTierSplits', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low tiers — switch tiers with tabs', icon: 'spark' },
@@ -735,6 +736,7 @@ function renderPitcherSectionControls() {
   if (!PC || !PC.renderSectionOptionBar) return;
   if (!STATE.sectionFilters) return;
 
+  renderPitcherSplitControlBar('pitcherIntelControls', 'pitcher-intel', 'pitching');
   renderPitcherSplitControlBar('pitcherOorControls', 'pitcher-oor', 'oor');
   renderPitcherSplitControlBar('pitcherF5Controls', 'pitcher-f5', 'f5');
 
@@ -790,27 +792,6 @@ function bindPitcherSectionControls() {
   if (!root || root._ppSectionCtrlsBound) return;
   root._ppSectionCtrlsBound = true;
   root.addEventListener('click', function(e) {
-    var trendBtn = e.target.closest('[data-trend-metric]');
-    var trendRow = e.target.closest('[data-trend-metric-row]');
-    if (trendBtn || trendRow) {
-      var metric = trendBtn
-        ? (trendBtn.getAttribute('data-trend-metric') || 'osi')
-        : (trendRow.getAttribute('data-trend-metric-row') || 'osi');
-      STATE.chartMetric = metric;
-      STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
-      STATE.sectionFilters.allowed.chartMetric = metric;
-      if (STATE.pitcherKey) {
-        renderPlatformSections(
-          getProfile(STATE.pitcherKey),
-          getSplits(STATE.pitcherKey),
-          getGameLog(STATE.pitcherKey, STATE.pitcherName),
-          STATE.pitcherName,
-          pickCol(getProfile(STATE.pitcherKey), ['pitcher_team', 'pitcherTeam', 'Tm']),
-          DATA.todayStarters.has(normalizeName(STATE.pitcherName))
-        );
-      }
-      return;
-    }
     var btn = e.target.closest('[data-tp-ctrl]');
     if (!btn) return;
     var grp = btn.closest('[data-tp-ctrl-group]');
@@ -821,6 +802,26 @@ function bindPitcherSectionControls() {
     var sectionKey = bar.getAttribute('data-tp-section');
     if (!groupKey || !sectionKey) return;
 
+    if (sectionKey === 'pitcher-intel') {
+      STATE.sectionFilters.pitching = STATE.sectionFilters.pitching || {};
+      if (groupKey === 'split') STATE.sectionFilters.pitching.split = val;
+      renderPitcherSectionControls();
+      if (STATE.pitcherKey) {
+        var profPv = getProfile(STATE.pitcherKey);
+        var pvWrap = document.getElementById('pitchingValueTableWrap');
+        if (profPv && pvWrap) {
+          var pvSplit = (STATE.sectionFilters.pitching && STATE.sectionFilters.pitching.split) || 'overall';
+          pvWrap.setAttribute('data-split-view', pvSplit);
+          pvWrap.innerHTML = buildPitchingValueTable(
+            profPv,
+            getSplits(STATE.pitcherKey),
+            getGameLog(STATE.pitcherKey, STATE.pitcherName),
+            pvSplit
+          );
+        }
+      }
+      return;
+    }
     if (sectionKey === 'pitcher-allowed') {
       STATE.sectionFilters.allowed = STATE.sectionFilters.allowed || {};
       if (groupKey === 'split') STATE.sectionFilters.allowed.split = val;
@@ -1119,10 +1120,11 @@ function renderProfile(key) {
   bindPitcherSectionControls();
   renderPlatformSections(profile, splits, log, name, team, isToday);
 
+  var pvSplit = (STATE.sectionFilters.pitching && STATE.sectionFilters.pitching.split) || 'overall';
   var pvWrap = document.getElementById('pitchingValueTableWrap');
   if (pvWrap) {
-    pvWrap.setAttribute('data-split-view', 'overall');
-    pvWrap.innerHTML = buildPitchingValueTable(profile, splits, log, 'overall');
+    pvWrap.setAttribute('data-split-view', pvSplit);
+    pvWrap.innerHTML = buildPitchingValueTable(profile, splits, log, pvSplit);
   }
 
   // Season Line section removed (user request); keep YTD headline stats in the banner.
@@ -1274,9 +1276,37 @@ function fgHandRowToSplit(row, splitValue) {
     BB_pct: pickCol(row, ['BB_pct', 'BB%']),
     HR9: pickCol(row, ['HR9', 'HR/9']),
     xFIP: pickCol(row, ['xFIP', 'xfip']),
-    OPS: pickCol(row, ['OPS', 'ops']),
+    OPS: pickCol(row, ['OPS', 'ops', 'OPP', 'Opp OPS']),
     FIP: pickCol(row, ['FIP', 'fip'])
   };
+}
+
+function opsFromFgRow(row) {
+  var ops = numOrNull(pickCol(row, ['OPS', 'ops', 'OPP', 'Opp OPS']));
+  if (ops != null) return ops;
+  var obp = numOrNull(pickCol(row, ['OBP', 'obp']));
+  var slg = numOrNull(pickCol(row, ['SLG', 'slg']));
+  if (obp != null && slg != null) return Math.round((obp + slg) * 1000) / 1000;
+  return null;
+}
+
+function mergeSeasonOpsFromStandard(profiles, splits, stdRows) {
+  if (!stdRows || !stdRows.length) return;
+  var opsByName = {};
+  stdRows.forEach(function(r) {
+    var name = pickCol(r, ['Name', 'pitcher_name']);
+    if (!name) return;
+    var ops = opsFromFgRow(r);
+    if (ops != null) opsByName[normalizeName(name)] = ops;
+  });
+  function apply(row) {
+    var key = normalizeName(pickCol(row, ['pitcher_name', 'Name']));
+    if (!key || opsByName[key] == null) return;
+    var cur = numOrNull(pickCol(row, ['OPS', 'ops', 'OPS_against']));
+    if (cur == null) row.OPS = opsByName[key];
+  }
+  (profiles || []).forEach(apply);
+  (splits || []).forEach(apply);
 }
 
 function mergeHandSplitsIntoData(lhhRows, rhhRows) {
@@ -1304,10 +1334,12 @@ function loadAll() {
     fetchSheetTab(TABS.oor).catch(function() { return []; }),
     fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
     fetchDataCsv('../data/sp_vs_LHH.csv'),
-    fetchDataCsv('../data/sp_vs_RHH.csv')
+    fetchDataCsv('../data/sp_vs_RHH.csv'),
+    fetchDataCsv('../data/sp_standard.csv')
   ]).then(function(results) {
     DATA.profiles = results[0] || [];
     DATA.splits = results[1] || [];
+    mergeSeasonOpsFromStandard(DATA.profiles, DATA.splits, results[10]);
     mergeHandSplitsIntoData(results[8], results[9]);
     DATA.gameLog = results[2] || [];
     DATA.pitching = results[3] || [];

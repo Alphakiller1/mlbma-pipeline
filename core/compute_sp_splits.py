@@ -20,6 +20,19 @@ def _num(v) -> Optional[float]:
         return None
 
 
+def _ops_from_fg_row(r) -> Optional[float]:
+    """Opponent OPS against from FanGraphs SP export (or OBP + SLG)."""
+    for key in ("OPS", "ops", "OPP", "Opp OPS", "OPS Against"):
+        v = _num(r.get(key))
+        if v is not None:
+            return round(v, 3)
+    obp = _num(r.get("OBP"))
+    slg = _num(r.get("SLG"))
+    if obp is not None and slg is not None:
+        return round(obp + slg, 3)
+    return None
+
+
 def _pct_pts(v) -> Optional[float]:
     """FanGraphs K%/BB% arrive as a fraction (0.21) or percent; return percent points."""
     n = _num(str(v).replace("%", "").strip()) if isinstance(v, str) else _num(v)
@@ -133,6 +146,7 @@ PROFILE_COLUMNS = [
     "OOR_faced",
     "PALS_faced",
     "wRC_faced",
+    "OPS",
     "F5_ERA",
     "high_osi_ERA",
     "low_osi_ERA",
@@ -203,7 +217,7 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
 
 
 def _apply_season_pitching_rates(block: dict, pname: str, adv: dict) -> dict:
-    """FanGraphs xFIP/FIP are season-level; attach to every split row so dashboards populate."""
+    """FanGraphs xFIP/FIP/OPS are season-level; attach to every split row so dashboards populate."""
     if not block:
         return block
     a = adv.get(_norm(pname), {})
@@ -211,6 +225,8 @@ def _apply_season_pitching_rates(block: dict, pname: str, adv: dict) -> dict:
         block["xFIP"] = a["xFIP"]
     if a.get("FIP") is not None and block.get("FIP") is None:
         block["FIP"] = a["FIP"]
+    if a.get("OPS") is not None and block.get("OPS") is None:
+        block["OPS"] = a["OPS"]
     return block
 
 
@@ -262,7 +278,7 @@ def _norm(name) -> str:
 
 
 def season_advanced_lookup() -> dict:
-    """{normalized pitcher name: {FIP, xFIP}} from the FanGraphs season export."""
+    """{normalized pitcher name: {FIP, xFIP, OPS}} from the FanGraphs season export."""
     p = DATA_DIR / "sp_standard.csv"
     if not p.exists():
         return {}
@@ -272,7 +288,11 @@ def season_advanced_lookup() -> dict:
         return {}
     out = {}
     for _, r in df.iterrows():
-        out[_norm(r[name_col])] = {"FIP": _num(r.get("FIP")), "xFIP": _num(r.get("xFIP"))}
+        out[_norm(r[name_col])] = {
+            "FIP": _num(r.get("FIP")),
+            "xFIP": _num(r.get("xFIP")),
+            "OPS": _ops_from_fg_row(r),
+        }
     return out
 
 
@@ -307,7 +327,7 @@ def build_hand_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
                 "avg_pitches": None, "ABQ_allowed": None, "RCV_allowed": None,
                 "OBR_allowed": None, "OSI_allowed": None,
                 "OOR_faced": None, "PALS_faced": None, "wRC_faced": None,
-                "OPS": _num(r.get("OPS")),
+                "OPS": _ops_from_fg_row(r),
                 "FIP": _num(r.get("FIP")), "xFIP": _num(r.get("xFIP")), "F5_ERA": None,
             })
     if not rows:
@@ -348,6 +368,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
                 **block,
                 "FIP": a.get("FIP") if a.get("FIP") is not None else block.get("FIP"),
                 "xFIP": a.get("xFIP"),
+                "OPS": a.get("OPS") if a.get("OPS") is not None else block.get("OPS"),
                 "high_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "High"),
                 "low_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "Low"),
                 "home_ERA": _split_era(pdf, "home_away", "home"),

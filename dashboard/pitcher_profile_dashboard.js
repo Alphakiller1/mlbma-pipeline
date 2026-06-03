@@ -236,6 +236,7 @@
     fillIfMissing(['K_pct', 'K%'], ['K_pct', 'K%']);
     fillIfMissing(['BB_pct', 'BB%'], ['BB_pct', 'BB%']);
     fillIfMissing(['HR9', 'HR/9'], ['HR9', 'HR/9']);
+    fillIfMissing(['OPS', 'ops', 'OPS_against'], ['OPS', 'ops', 'OPS_against']);
     return out;
   }
 
@@ -298,11 +299,6 @@
       return base;
     }
     return null;
-  }
-
-  function splitRowActiveClass(rowKey, splitFocus) {
-    if (!splitFocus || splitFocus === 'overall') return rowKey === 'overall' ? ' is-active' : '';
-    return rowKey === splitFocus ? ' is-active' : '';
   }
 
   function sortLogByDate(log, pickCol) {
@@ -494,12 +490,6 @@
       qsPct = qsTot ? (qsHits / qsTot * 100) : null;
     }
 
-    function heroTone(good, bad, val, lowerBetter) {
-      if (val == null || isNaN(val)) return 'neutral';
-      if (lowerBetter) return val <= good ? 'positive' : (val >= bad ? 'negative' : 'mid');
-      return val >= good ? 'positive' : (val <= bad ? 'negative' : 'mid');
-    }
-
     function heroStat(label, valueHtml, tone) {
       return '<div class="tp-hero-stat tp-hero-stat--' + (tone || 'neutral') + '">'
         + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
@@ -507,16 +497,26 @@
         + '</div>';
     }
 
+    function heroMetricText(val, ctx, invert, dec, opts) {
+      opts = opts || {};
+      if (val == null || isNaN(val)) {
+        return '<span class="tp-hero-stat__num tp-hero-stat__num--na">—</span>';
+      }
+      var d = dec == null ? 1 : dec;
+      var display = opts.display != null ? String(opts.display) : fmt(val, d);
+      var color = A && A.metricTextColor
+        ? A.metricTextColor(val, ctx, !!invert, opts)
+        : 'var(--text-1, #F3F4F6)';
+      return '<span class="tp-hero-stat__num" style="color:' + color + '">' + esc(display) + '</span>';
+    }
+
     var handVal = hand === 'L' ? 'LHP' : 'RHP';
-    var chipPh = A && A.chipPlaceholderHtml ? A.chipPlaceholderHtml('—') : '—';
 
     var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Pitcher headline stats">'
-      + heroStat('Hand', handVal, 'neutral')
-      + heroStat('Pitch Score', ps != null ? valChip(ps, 'pitching', false, 0) : chipPh, 'neutral')
-      + heroStat('ERA', era != null ? valChip(era, 'era', true, 2) : chipPh, 'neutral')
-      + heroStat('QS%', qsPct != null
-        ? valChip(qsPct, 'pitching', false, 0, { display: fmt(qsPct, 0) + '%' })
-        : chipPh, 'neutral')
+      + heroStat('Hand', '<span class="tp-hero-stat__num">' + esc(handVal) + '</span>', 'neutral')
+      + heroStat('Pitch Score', heroMetricText(ps, 'pitching', false, 0), 'neutral')
+      + heroStat('ERA', heroMetricText(era, 'era', true, 2), 'neutral')
+      + heroStat('QS%', heroMetricText(qsPct, 'pitching', false, 0, { display: qsPct != null ? fmt(qsPct, 0) + '%' : '—' }), 'neutral')
       + '</div>';
 
     var notes = ctx.tonightHtml
@@ -666,7 +666,7 @@
       + (harder ? ' — recent lineups tougher' : ' — recent lineups softer') + driver + '.';
   }
 
-  function renderPitcherAllowedTrendTable(pack, ctx, active) {
+  function renderPitcherAllowedTrendTable(pack, ctx) {
     var metrics = [
       { k: 'osi', label: 'OSI', ctx: 'osi', desc: 'Composite offense faced' },
       { k: 'rcv', label: 'RCV', ctx: 'rcv', desc: 'Contact quality faced' },
@@ -676,22 +676,6 @@
     var rows = metrics.map(function(def) {
       return { def: def, row: buildPitcherAllowedTrendRow(pack[def.k] || []) };
     });
-    var activePack = rows.find(function(r) { return r.def.k === active; }) || rows[0];
-    var activeRow = activePack ? activePack.row : null;
-    var directive = '';
-    if (activeRow && activeRow.interpretation && activeRow.interpretation !== 'Insufficient') {
-      var deltaTxt = activeRow.delta != null
-        ? ((activeRow.delta > 0 ? '▲ ' : activeRow.delta < 0 ? '▼ ' : '± ')
-          + Math.abs(activeRow.delta).toFixed(1) + ' L1−L10')
-        : '';
-      directive = '<div class="tp-trend-directive tp-trend-directive--' + allowedDirectiveTone(activeRow.interpretation) + '">'
-        + '<span class="tp-trend-directive__metric">' + esc((activePack.def.label || active).toUpperCase()) + ' ALLOWED</span>'
-        + '<span class="tp-trend-directive__read">' + esc(activeRow.interpretation)
-        + (deltaTxt ? ' · ' + esc(deltaTxt) : '')
-        + ' · ' + esc(activeRow.trend || 'Stable')
-        + ' · ' + esc(activeRow.reliability || 'Noisy')
-        + '</span></div>';
-    }
     var filterNote = (ctx.splitLabel || 'Overall')
       + ' · read L10→L1 left to right · lower = softer opposing offense';
     if (pack.source === 'sheet') {
@@ -702,8 +686,7 @@
     var body = rows.map(function(item) {
       var def = item.def;
       var row = item.row;
-      var isActive = def.k === active;
-      return '<tr class="tp-trend-table__row' + (isActive ? ' is-active' : '') + '" data-trend-metric-row="' + esc(def.k) + '">'
+      return '<tr class="tp-trend-table__row">'
         + '<th scope="row"><span class="tp-trend-table__metric">' + esc(def.label)
         + '<span class="tp-trend-table__metric-desc">' + esc(def.desc) + '</span></span></th>'
         + '<td class="numcol">' + trendTableMetricCellAllowed(row.l10, def.ctx) + '</td>'
@@ -719,7 +702,6 @@
     }).join('');
     return '<div class="tp-trend-table-wrap">'
       + '<p class="tp-trend-table-note">' + esc(filterNote) + ' · L1 is a momentum flag, not a standalone predictor.</p>'
-      + directive
       + '<table class="tp-trend-table" aria-label="Opposing offense allowed rolling trends">'
       + '<thead><tr>'
       + '<th scope="col">Metric</th>'
@@ -732,41 +714,15 @@
 
   function renderAllowedDashboard(profile, ctx) {
     var C = global.MLBMACharts;
-    var PC = global.MLBMAProfileControls;
-    var active = ctx.chartMetric || 'osi';
     var pack = buildAllowedTrendPack(ctx);
     var f5 = (ctx.split || '') === 'f5' ? (A ? A.f5WarningHtml() : '') : '';
 
-    var metricOpts = [
-      { value: 'osi', label: 'OSI', title: 'Composite offense faced' },
-      { value: 'rcv', label: 'RCV', title: 'Contact quality faced' },
-      { value: 'abq', label: 'ABQ', title: 'Discipline quality faced' },
-      { value: 'obr', label: 'OBR', title: 'On-base floor faced' }
-    ];
-    var metricBar = (PC && PC.renderSectionOptionBar)
-      ? PC.renderSectionOptionBar({
-        layout: 'row',
-        barClass: 'tp-section-filter-bar--trend',
-        sectionKey: 'pitcher-allowed-trend',
-        groups: [{
-          label: 'Metric',
-          groupKey: 'trend-metric',
-          options: metricOpts.map(function(t) {
-            return { value: t.value, label: t.label, buttonAttrs: 'title="' + esc(t.title) + '"' };
-          }),
-          active: active,
-          ctrlAttr: 'data-trend-metric',
-          groupAttr: 'data-trend-metric-group'
-        }]
-      })
-      : '';
-
     var chart = '';
     if (C && C.buildTrendLineChart) {
-      var vals = pack[active] || [];
-      chart = C.buildTrendLineChart((active || 'osi').toUpperCase() + ' allowed', vals, 480, 120, {
+      var vals = pack.osi || [];
+      chart = C.buildTrendLineChart('OSI allowed', vals, 480, 120, {
         labels: ['L10', 'L6', 'L3', 'L1'],
-        metricCtx: active,
+        metricCtx: 'osi',
         invertTrend: true
       });
     }
@@ -774,67 +730,61 @@
     var readout = allowedTrendReadout(pack);
     return '<div class="pp-allowed-trend tp-trend-panel" data-allowed-source="' + esc(pack.source) + '">'
       + f5
-      + metricBar
-      + renderPitcherAllowedTrendTable(pack, ctx, active)
-      + '<div class="tp-trend-chart-mount" data-active-metric="' + esc(active) + '">' + chart + '</div>'
+      + renderPitcherAllowedTrendTable(pack, ctx)
+      + '<div class="tp-trend-chart-mount" data-active-metric="osi">' + chart + '</div>'
       + (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : '')
       + '</div>';
   }
 
-  function splitRowsForView(allRows, viewSplit) {
-    if (!viewSplit || viewSplit === 'overall') return allRows;
-    return allRows.filter(function(r) { return r.key === viewSplit; });
+  function resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit) {
+    var s;
+    if (viewSplit === 'home') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+        dimensions: [['location', 'home'], ['home_away', 'home']],
+        logLocation: 'home'
+      });
+    } else if (viewSplit === 'away') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+        dimensions: [['location', 'away'], ['home_away', 'away']],
+        logLocation: 'away'
+      });
+    } else if (viewSplit === 'lhh') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+        dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
+      });
+    } else if (viewSplit === 'rhh') {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
+        dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
+      });
+    } else {
+      s = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true });
+    }
+    return enrichPitchingRow(s, profile, pickCol);
   }
 
   function buildPitchingValueTableHtml(profile, splits, log, pickCol, findSplit, viewSplit) {
     viewSplit = viewSplit || 'overall';
-    function pvRow(label, rowKey, row) {
-      if (!row) {
-        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
-          + '<td>' + esc(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
-      }
-      var rk = pctNorm(num(pickCol(row, ['K_pct', 'K%'])));
-      var rbb = pctNorm(num(pickCol(row, ['BB_pct', 'BB%'])));
-      var rhr9 = num(pickCol(row, ['HR9', 'HR/9']));
-      var rxfip = num(pickCol(row, ['xFIP', 'xfip']));
-      var rops = num(pickCol(row, ['OPS', 'ops', 'OPS_against']));
-      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
-        + '<td>' + esc(label) + '</td>'
-        + '<td class="num">' + valChip(rk, 'kpct', false, 1) + '</td>'
-        + '<td class="num">' + valChip(rbb, 'bbpct', true, 1) + '</td>'
-        + '<td class="num">' + valChip(rhr9, 'hr9', true, 2) + '</td>'
-        + '<td class="num">' + valChip(rxfip, 'xfip', true, 2) + '</td>'
-        + '<td class="num">' + valChip(rops, 'ops', true, 3) + '</td>'
-        + '</tr>';
+    var splitLabels = {
+      overall: 'Both', home: 'Home', away: 'Away', lhh: 'vs LHB', rhh: 'vs RHB'
+    };
+    var s = resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit);
+    function cell(v, ctx, invert, dec) {
+      if (v == null || isNaN(v)) return '<td class="pp-pv-metric-cell tp-empty-cell">—</td>';
+      return '<td class="pp-pv-metric-cell">' + valChip(v, ctx, invert, dec) + '</td>';
     }
-    var sBoth = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, { useProfile: true });
-    var sHome = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['location', 'home'], ['home_away', 'home']],
-      logLocation: 'home'
-    });
-    var sAway = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['location', 'away'], ['home_away', 'away']],
-      logLocation: 'away'
-    });
-    var sLhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
-    });
-    var sRhh = resolvePitcherSplitRow(splits, log, profile, pickCol, findSplit, {
-      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
-    });
-    var rowDefs = [
-      { key: 'overall', label: 'Both', row: sBoth },
-      { key: 'home', label: 'Home', row: sHome },
-      { key: 'away', label: 'Away', row: sAway },
-      { key: 'lhh', label: 'vs LHB', row: sLhh },
-      { key: 'rhh', label: 'vs RHB', row: sRhh }
-    ];
-    var body = splitRowsForView(rowDefs, viewSplit).map(function(d) {
-      return pvRow(d.label, d.key, d.row);
-    }).join('');
-    return '<table class="hub-table tp-table pp-startlog pp-pitching-value-table pp-split-matrix" aria-label="Pitching value by split">'
-      + '<thead><tr><th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
-      + '<tbody>' + body + '</tbody></table>';
+    var rk = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
+    var rbb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
+    var rhr9 = num(pickCol(s, ['HR9', 'HR/9']));
+    var rxfip = num(pickCol(s, ['xFIP', 'xfip']));
+    var rops = num(pickCol(s, ['OPS', 'ops', 'OPS_against', 'OPP', 'Opp OPS']));
+    return '<table class="hub-table tp-table pp-pitching-value-metrics-table" aria-label="Pitching value metrics">'
+      + '<thead><tr><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
+      + '<tbody><tr>'
+      + cell(rk, 'kpct', false, 1) + cell(rbb, 'bbpct', true, 1) + cell(rhr9, 'hr9', true, 2)
+      + cell(rxfip, 'xfip', true, 2) + cell(rops, 'ops', true, 3)
+      + '</tr></tbody></table>'
+      + '<p class="tp-trend-table-note pp-pv-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
+      + ' · lower OPS / xFIP = stronger pitching value for this split</p>';
   }
 
   function enrichF5Row(row, profile, pickCol) {
@@ -1015,53 +965,13 @@
 
   function renderPitcherIntelPanel(profile, ctx) {
     var pick = ctx.pickCol;
-
-    function splitRow(label, row) {
-      if (!row) return '<tr><td>' + esc(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
-      var rk = pctNorm(num(pick(row, ['K_pct', 'K%'])));
-      var rbb = pctNorm(num(pick(row, ['BB_pct', 'BB%'])));
-      var rhr9 = num(pick(row, ['HR9', 'HR/9']));
-      var rxfip = num(pick(row, ['xFIP', 'xfip']));
-      var rops = num(pick(row, ['OPS', 'ops', 'OPS_against']));
-      return '<tr>'
-        + '<td>' + esc(label) + '</td>'
-        + '<td>' + valChip(rk, 'kpct', false, 1) + '</td>'
-        + '<td>' + valChip(rbb, 'bbpct', true, 1) + '</td>'
-        + '<td>' + valChip(rhr9, 'hr9', true, 2) + '</td>'
-        + '<td>' + valChip(rxfip, 'xfip', true, 2) + '</td>'
-        + '<td>' + valChip(rops, 'ops', true, 3) + '</td>'
-        + '</tr>';
-    }
-
+    var find = ctx.findSplit;
+    var splits = ctx.splits || [];
     var log = ctx.log || [];
-    var sOverall = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, { useProfile: true });
-    var sHome = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
-      dimensions: [['location', 'home'], ['home_away', 'home']],
-      logLocation: 'home'
-    });
-    var sAway = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
-      dimensions: [['location', 'away'], ['home_away', 'away']],
-      logLocation: 'away'
-    });
-    var sLhh = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
-      dimensions: [['batter_hand', 'LHH'], ['batter_hand', 'L'], ['vs_lhh', 'LHH'], ['vs_lhh', 'vs LHH']]
-    });
-    var sRhh = resolvePitcherSplitRow(ctx.splits, log, profile, pick, ctx.findSplit, {
-      dimensions: [['batter_hand', 'RHH'], ['batter_hand', 'R'], ['vs_rhh', 'RHH'], ['vs_rhh', 'vs RHH']]
-    });
-
-    var splitBody = splitRow('Both', sOverall)
-      + splitRow('Home', sHome)
-      + splitRow('Away', sAway)
-      + splitRow('vs LHB', sLhh)
-      + splitRow('vs RHB', sRhh);
-
-    var splitTable = '<div class="pp-split-table-wrap"><table class="hub-table tp-table pp-split-table pp-startlog"><thead><tr>'
-      + '<th>Split</th><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th>'
-      + '</tr></thead><tbody>' + splitBody + '</tbody></table></div>';
-
-    // Pitching Value = the split table only (Context band removed per spec).
-    var metricsHtml = '<div class="pp-intel-panel__metrics">' + splitTable + '</div>';
+    var viewSplit = ctx.splitFocus || 'overall';
+    var metricsHtml = '<div class="pp-intel-panel__metrics">'
+      + buildPitchingValueTableHtml(profile, splits, log, pick, find, viewSplit)
+      + '</div>';
 
     if (ctx.omitHeader) {
       return metricsHtml;
