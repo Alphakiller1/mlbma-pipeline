@@ -212,9 +212,9 @@
     return null;
   }
 
-  function splitRowActiveClass(rowKey, activeSplit) {
-    if (!activeSplit || activeSplit === 'overall') return rowKey === 'overall' ? ' is-active' : '';
-    return rowKey === activeSplit ? ' is-active' : '';
+  function splitRowActiveClass(rowKey, splitFocus) {
+    if (!splitFocus || splitFocus === 'overall') return rowKey === 'overall' ? ' is-active' : '';
+    return rowKey === splitFocus ? ' is-active' : '';
   }
 
   function resolveAllowed(ctx) {
@@ -535,7 +535,7 @@
     viewSplit = viewSplit || 'overall';
     function pvRow(label, rowKey, row) {
       if (!row) {
-        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
           + '<td>' + esc(label) + '</td><td colspan="5" class="tp-empty-cell">—</td></tr>';
       }
       var rk = pctNorm(num(pickCol(row, ['K_pct', 'K%'])));
@@ -543,7 +543,7 @@
       var rhr9 = num(pickCol(row, ['HR9', 'HR/9']));
       var rxfip = num(pickCol(row, ['xFIP', 'xfip']));
       var rops = num(pickCol(row, ['OPS', 'ops', 'OPS_against']));
-      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
         + '<td>' + esc(label) + '</td>'
         + '<td class="num">' + valChip(rk, 'kpct', false, 1) + '</td>'
         + '<td class="num">' + valChip(rbb, 'bbpct', true, 1) + '</td>'
@@ -586,14 +586,14 @@
     viewSplit = viewSplit || 'overall';
     function f5Row(label, rowKey, s) {
       if (!s) {
-        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+        return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
           + '<td>' + esc(label) + '</td><td colspan="4" class="tp-empty-cell">—</td></tr>';
       }
       var xfip = num(pickCol(s, ['xFIP', 'xfip']));
       var k = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
       var bb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
       var f5er = num(pickCol(s, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5']));
-      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
         + '<td>' + esc(label) + '</td>'
         + '<td class="num">' + valChip(xfip, 'xfip', true, 2) + '</td>'
         + '<td class="num">' + valChip(k, 'kpct', false, 1) + '</td>'
@@ -667,7 +667,7 @@
         if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
         return '<td class="num">' + valChip(v, ctx, false, dec) + '</td>';
       }
-      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, activeSplit) + '" data-split-row="' + esc(rowKey) + '">'
+      return '<tr class="pp-split-row' + splitRowActiveClass(rowKey, viewSplit) + '" data-split-row="' + esc(rowKey) + '">'
         + '<td>' + esc(label) + '</td>'
         + cell(oor, 'oor', 1) + cell(pals, 'pals', 1) + cell(wrc, 'wrc', 0) + '</tr>';
     }
