@@ -27,7 +27,7 @@
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
-<script src="pitcher_profile_dashboard.js?v=20260609f"></script>
+<script src="pitcher_profile_dashboard.js?v=20260610a"></script>
 <script src="mlbma_ui.js?v=20260603t" data-page="pitcher_profile.html"></script>
 <link rel="stylesheet" href="research_lab.css?v=20260616c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -1103,6 +1103,7 @@ function renderProfile(key) {
   var name = pickCol(profile, ['pitcher_name', 'pitcherName', 'Name']);
   var log = getGameLog(key, name);
   STATE.pitcherName = name;
+  syncPitcherUrl(key);
   var team = pickCol(profile, ['pitcher_team', 'pitcherTeam', 'Tm']);
   var hand = String(pickCol(profile, ['pitcher_hand', 'pitcherHand', 'Hand']) || 'R').toUpperCase().slice(0, 1);
   var isToday = DATA.todayStarters.has(normalizeName(name));
@@ -1236,8 +1237,22 @@ function populateSelectors() {
 }
 
 function resolveSearchToKey(q) {
-  q = normalizeName(q);
   if (!q) return null;
+  var raw = String(q).trim();
+  if (!raw) return null;
+  if (raw.indexOf('id:') === 0 || raw.indexOf('name:') === 0) {
+    if (getProfile(raw)) return raw;
+  }
+  var decoded = raw;
+  try { decoded = decodeURIComponent(raw); } catch (e) { decoded = raw; }
+  var exactKey = normalizeNameKey(decoded);
+  if (exactKey) {
+    for (var j = 0; j < DATA.profiles.length; j++) {
+      var prof = DATA.profiles[j];
+      if (normalizeNameKey(pickCol(prof, ['pitcher_name'])) === exactKey) return pitcherKey(prof);
+    }
+  }
+  q = normalizeName(decoded);
   for (var i = 0; i < DATA.profiles.length; i++) {
     var p = DATA.profiles[i];
     var name = normalizeName(pickCol(p, ['pitcher_name']));
@@ -1247,6 +1262,20 @@ function resolveSearchToKey(q) {
     }
   }
   return null;
+}
+
+function syncPitcherUrl(key) {
+  if (!key || !window.history || !window.history.replaceState) return;
+  var profile = getProfile(key);
+  if (!profile) return;
+  var name = pickCol(profile, ['pitcher_name', 'pitcherName', 'Name']);
+  if (!name) return;
+  var params = new URLSearchParams(window.location.search);
+  params.set('pitcher', name);
+  var qs = params.toString();
+  var next = window.location.pathname + (qs ? '?' + qs : '');
+  var cur = window.location.pathname + window.location.search;
+  if (cur !== next) history.replaceState(null, '', next);
 }
 
 function bindSelectors() {
