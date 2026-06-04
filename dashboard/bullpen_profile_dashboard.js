@@ -118,36 +118,46 @@
     return { metrics: metrics, l14: l14, prefix: prefix };
   }
 
-  function statPill(label, val, color) {
-    return '<div class="ps-stat"><span class="ps-stat-label">' + esc(label) + '</span>' +
-      '<span class="ps-stat-val" style="color:' + (color || 'inherit') + '">' + esc(val) + '</span></div>';
+  function statPill(label, rawVal, display) {
+    var ctx = (label.indexOf('ERA') >= 0) ? 'era' : (label.indexOf('OSI') >= 0) ? 'osi' : 'ir';
+    var inv = label.indexOf('OSI') >= 0;
+    var dec = (label.indexOf('%') >= 0 || label.indexOf('OSI') >= 0) ? 1 : 2;
+    var chip = (A && A.valChipHtml && rawVal != null && !isNaN(rawVal))
+      ? A.valChipHtml(rawVal, ctx, inv, dec)
+      : esc(display);
+    return '<div class="tp-hero-stat"><span class="tp-hero-stat__label">' + esc(label) + '</span>' +
+      '<span class="tp-hero-stat__value">' + chip + '</span></div>';
   }
 
   function renderSnapshot(team, unit, ctx) {
     var pickCol = ctx.pickCol;
-    var logo = A ? A.teamLogoImg(team, 44, 'snapshot-logo') : '';
+    var logo = A ? A.teamLogoImg(team, 52, 'tp-team-banner__logo') : '';
     var era = colVal(unit, 'overall', 'ERA', pickCol);
     var osi = colVal(unit, 'overall', 'OSI_allowed', pickCol);
     var irp = colVal(unit, 'overall', 'inherited_runners_scored_pct', pickCol);
     var hiEra = colVal(unit, 'high_leverage', 'ERA', pickCol);
     var apps = num(pickCol(unit, ['appearances'])) || (ctx.totalApps != null ? ctx.totalApps : null);
-
-    return '<div class="bullpen-snapshot">' +
-      '<div class="ps-photo">' + logo + '</div>' +
-      '<div class="ps-main">' +
-      '<div class="ps-name-row"><h1 class="ps-name">' + esc(team) + ' Bullpen</h1></div>' +
-      '<div class="ps-badges">' +
-      (ctx.isToday ? '<span class="pill pill-today">Playing Today</span>' : '') +
+    var badges = (ctx.isToday ? '<span class="pill pill-today">Playing Today</span>' : '') +
       (ctx.pitchScore != null ? '<span class="pill pill-score">Staff Pitch Score ' + fmt(ctx.pitchScore, 0) + '</span>' : '') +
-      (apps != null ? '<span class="pill" style="background:var(--bg-4);border:1px solid var(--border);">' + apps + ' apps</span>' : '') +
+      (apps != null ? '<span class="pill pill-meta">' + apps + ' apps</span>' : '');
+
+    return '<div class="tp-team-banner tp-team-banner--hero bullpen-snapshot">' +
+      '<div class="tp-team-banner__ambient" aria-hidden="true"></div>' +
+      '<div class="tp-team-banner__inner">' +
+      '<div class="tp-team-banner__identity">' +
+      (logo ? '<div class="tp-team-banner__logo-wrap">' + logo + '</div>' : '') +
+      '<div class="tp-team-banner__copy">' +
+      '<div class="tp-team-banner__eyebrow">Bullpen Profile</div>' +
+      '<h1 class="tp-team-banner__name ca-profile-hero__title">' + esc(team) + ' Bullpen</h1>' +
+      (badges ? '<div class="tp-team-banner__badges ps-badges">' + badges + '</div>' : '') +
+      '</div></div>' +
+      '<div class="tp-hero-stat-row tp-team-banner__stats--hero">' +
+      statPill('ERA', era, fmt(era, 2)) +
+      statPill('OSI Allowed', osi, fmt(osi, 1)) +
+      statPill('IR Scored %', irp, fmtPct(irp)) +
+      statPill('Hi Lev ERA', hiEra, fmt(hiEra, 2)) +
       '</div>' +
-      '<div class="ps-stat-bar">' +
-      statPill('ERA', fmt(era, 2), eraColor(era)) +
-      statPill('OSI Allowed', fmt(osi, 1), allowedColor(osi)) +
-      statPill('IR Scored %', fmtPct(irp), irColor(irp)) +
-      statPill('Hi Lev ERA', fmt(hiEra, 2), eraColor(hiEra)) +
-      '</div>' +
-      (ctx.tonightHtml ? '<div class="ps-tonight">' + ctx.tonightHtml + '</div>' : '') +
+      (ctx.tonightHtml ? '<div class="tp-team-banner__meta ps-tonight">' + ctx.tonightHtml + '</div>' : '') +
       '</div></div>';
   }
 
@@ -175,21 +185,21 @@
         note: 'Composite offensive strength faced — primary schedule difficulty read.' }
     ];
 
-    return '<div class="allowed-header"><h2 class="section-title">Bullpen Metric Allowed Profile</h2>' +
-      '<p class="section-subtitle">Lower allowed scores = softer opposing offense · ' + esc(ctx.splitLabel) +
-      ' · ' + esc(ctx.window) + '</p></div>' +
-      '<div class="metric-grid allowed-grid">' + cards.map(function(c) {
-        var col = allowedColor(c.val);
+    return '<div class="bp-allowed-metrics">' + cards.map(function(c) {
         var p = pct(c.key, c.val);
-        return '<div class="metric-card allowed-card">' +
-          '<div class="m-label">' + esc(c.label) + '</div>' +
-          '<div class="m-val" style="color:' + col + '">' + fmt(c.val, 1) + '</div>' +
-          (p != null ? '<div class="m-pctile">Softer than ' + p + '% of bullpens</div>' : '') +
-          '<div class="m-compare"><span>YTD ' + fmt(colVal(unit, 'overall', c.key, pickCol), 1) + '</span>' +
-          '<span>L14 ' + fmt(c.l14, 1) + '</span></div>' +
-          '<div class="m-note">' + esc(c.note) + '</div></div>';
+        var chip = (A && A.valChipHtml && c.val != null)
+          ? A.valChipHtml(c.val, 'osi', true, 1)
+          : esc(fmt(c.val, 1));
+        return '<div class="bp-allowed-stat">' +
+          '<div class="bp-allowed-stat__row">' +
+          '<span class="bp-allowed-stat__label">' + esc(c.label) + '</span>' +
+          '<span class="bp-allowed-stat__value">' + chip + '</span>' +
+          (p != null ? '<span class="bp-allowed-stat__rank">P' + p + ' softer</span>' : '') +
+          '</div>' +
+          '<span class="bp-allowed-stat__note">YTD ' + fmt(colVal(unit, 'overall', c.key, pickCol), 1) +
+          ' · L14 ' + fmt(c.l14, 1) + '</span></div>';
       }).join('') + '</div>' +
-      (ctx.allowedNote ? '<div class="insight-line">' + ctx.allowedNote + '</div>' : '');
+      (ctx.allowedNote ? '<div class="insight-line tp-note">' + ctx.allowedNote + '</div>' : '');
   }
 
   function renderOORPanel(unit, ctx) {
@@ -271,7 +281,7 @@
     var appearanceDetail = ctx.appearanceDetail;
     var colCount = 14;
 
-    var html = '<table><thead><tr>' +
+    var html = '<table class="tp-table hub-table"><thead><tr>' +
       '<th>Name</th><th>Role</th><th>IP</th><th>ERA</th><th>K%</th><th>BB%</th><th>HR/9</th>' +
       '<th>OSI All.</th><th>ABQ All.</th><th>OOR</th><th>vs RHH OSI</th><th>vs LHH OSI</th>' +
       '<th>IR Scored%</th><th>Hi Lev ERA</th>' +

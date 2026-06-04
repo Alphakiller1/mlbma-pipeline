@@ -434,6 +434,37 @@ body.pitcher-profile-page .pp-hero-stats .tp-hero-stat__value .chip {
   font-size: 16px !important;
 }
 
+/* Hero picker ↔ banner — one card, no stacked search panel */
+body.team-profile-page .tp-hero-search.profile-context-bar,
+body.pitcher-profile-page .pp-hero-search.profile-context-bar,
+body.player-profile-page .bp-hero-search.profile-context-bar {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 10px 18px 6px !important;
+}
+
+body.player-profile-page .bp-hero-banner-shell {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+body.player-profile-page .bp-hero-banner-shell .bullpen-snapshot {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  margin: 0 !important;
+}
+
+body.player-profile-page .bp-hero-banner-shell .ps-stat {
+  border: none;
+  background: rgba(0, 0, 0, 0.18);
+}
+
 body.player-profile-page .hub-pill,
 body.player-profile-page .window-pill {
   font-size: 12px !important;
