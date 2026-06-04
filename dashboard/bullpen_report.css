@@ -1,5 +1,5 @@
 /**
- * Bullpen Report — platform profile shell (team / pitcher parity).
+ * Bullpen Profile — platform profile shell (team / pitcher parity).
  * Styling only; section order and data mounts unchanged.
  */
 html:has(body.bullpen-profile-page) {

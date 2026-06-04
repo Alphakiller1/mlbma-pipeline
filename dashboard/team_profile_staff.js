@@ -268,7 +268,7 @@
     var PC = global.MLBMAProfileControls;
     var label = PC && PC.splitLabel ? PC.splitLabel(split) : split;
     if (category === 'rotation') return label + ' · matches SP profile splits';
-    if (category === 'bullpen') return label + ' · matches bullpen report splits';
+    if (category === 'bullpen') return label + ' · matches Bullpen Profile splits';
     return label;
   }
 
@@ -300,7 +300,7 @@
     ].join('');
     var body = staffMetricsBand('Staff snapshot', 'Team-level pitching context · league rank on each metric', cells);
     body += '<p class="ca-helper tp-staff-meta">'
-      + '<a href="bullpen_report.html">Full bullpen report</a>'
+      + '<a href="bullpen_report.html">Full Bullpen Profile</a>'
       + ' · Rotation and reliever tables below</p>';
     return sectionCard(ctx, 'Staff Snapshot', 'Team-level pitching context from profiles + Pitch Score', body, null,
       { icon: 'staff-snapshot', kicker: 'Pitching' });

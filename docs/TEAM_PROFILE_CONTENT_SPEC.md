@@ -86,7 +86,7 @@ The Astros sheet is **visual inspiration**, but the build must match the **exist
 ## What to LEAVE OUT (belongs in other tools)
 - Full 30-team rankings → that's **Team Rankings**.
 - Head-to-head vs another specific team → that's **Compare** (tonight's matchup slice is OK).
-- League-wide bullpen usage matrix → **Bullpen Report** (team profile links there; shows this team's relievers).
+- League-wide bullpen usage matrix → **Bullpen Profile** (team profile links there; shows this team's relievers).
 
 ---
 

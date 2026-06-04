@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="bullpen_report.css?v=20260606b">
+<link rel="stylesheet" href="bullpen_report.css?v=20260606c">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
@@ -22,7 +22,7 @@
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260606b"></script>
+<script src="bullpen_profile_dashboard.js?v=20260606c"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
@@ -121,7 +121,7 @@
   <div class="tp-data-banner data-banner" id="dataBanner"></div>
 
   <details class="profile-slate-collapsible" id="todayBarWrap">
-    summary>Today's Bullpens <span id="todayBarCount" style="font-weight:400;color:var(--text-3);"></span></summary>
+    <summary>Today's Bullpens <span id="todayBarCount" style="font-weight:400;color:var(--text-3);"></span></summary>
     <div class="today-games-bar" id="todayBar"></div>
   </details>
 
@@ -149,6 +149,7 @@
 
     <section class="ca-board tp-section" id="secLev">
       <div id="bpHdrLev"></div>
+      <div id="bpLeverageControls" class="tp-section-filter-bar hub-control-bar"></div>
       <div id="leveragePanel"></div>
     </section>
 
@@ -171,6 +172,7 @@
 
     <section class="ca-board tp-section" id="secSOS">
       <div id="bpHdrSOS"></div>
+      <div id="bpSosControls" class="tp-section-filter-bar hub-control-bar"></div>
       <div id="strengthOfSchedulePanel"></div>
     </section>
   </div>
@@ -189,7 +191,10 @@ var DATA = {
   todayTeams: new Set()
 };
 
-var STATE = { team: null, expandedPid: null, split: 'overall', window: 'YTD', view: 'summary', relieverSort: 'ip', relieverSortDir: 'desc' };
+var STATE = {
+  team: null, expandedPid: null, split: 'overall', sosSplit: 'overall', levView: 'all',
+  window: 'YTD', view: 'summary', relieverSort: 'ip', relieverSortDir: 'desc'
+};
 
 var ALL_MLB_TEAMS = [
   'ARI', 'ATL', 'BAL', 'BOS', 'CHC', 'CHW', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KC',
@@ -266,6 +271,59 @@ function renderBpPitchingSplitBar() {
       var v = btn.getAttribute('data-opt-value');
       STATE.split = v === 'hlev' ? 'hilev' : v === 'llev' ? 'llev' : v;
       renderBpPitchingSplitBar();
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  });
+}
+
+function renderBpLeverageBar() {
+  var el = document.getElementById('bpLeverageControls');
+  if (!el) return;
+  var views = [
+    { value: 'all', label: 'All' },
+    { value: 'high', label: 'High Lev' },
+    { value: 'low', label: 'Low Lev' }
+  ];
+  var html = '<div class="hub-pill-row">';
+  views.forEach(function(v) {
+    html += '<button type="button" class="hub-pill' + (STATE.levView === v.value ? ' active' : '')
+      + '" data-bp-lev="' + esc(v.value) + '">' + esc(v.label) + '</button>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+  el.querySelectorAll('[data-bp-lev]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      STATE.levView = btn.getAttribute('data-bp-lev') || 'all';
+      renderBpLeverageBar();
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  });
+}
+
+function renderBpSosSplitBar() {
+  var el = document.getElementById('bpSosControls');
+  var PC = window.MLBMAProfileControls;
+  if (!el || !PC || !PC.renderSectionOptionBar) return;
+  el.innerHTML = PC.renderSectionOptionBar({
+    layout: 'row',
+    barClass: 'tp-section-filter-bar--controls',
+    groups: [{
+      label: 'Split',
+      key: 'sosSplit',
+      options: [
+        { value: 'overall', label: 'Overall' },
+        { value: 'lhh', label: 'vs LHH' },
+        { value: 'rhh', label: 'vs RHH' },
+        { value: 'home', label: 'Home' },
+        { value: 'away', label: 'Away' }
+      ],
+      value: STATE.sosSplit
+    }]
+  });
+  el.querySelectorAll('[data-opt-key="sosSplit"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      STATE.sosSplit = btn.getAttribute('data-opt-value') || 'overall';
+      renderBpSosSplitBar();
       if (STATE.team) renderTeam(STATE.team);
     });
   });
@@ -539,26 +597,6 @@ function buildTodayBar() {
   });
 }
 
-
-
-function splitPanel(title, row, prefix) {
-  if (!row) return '<div class="bp-split-panel"><h4>' + title + '</h4><div class="empty-state">No data</div></div>';
-  return '<div class="bp-split-panel"><h4>' + title + '</h4><div class="bp-mini-stat-row">' +
-    statMini('ERA', colVal(row, prefix, 'ERA')) +
-    statMini('K%', colVal(row, prefix, 'K_pct')) +
-    statMini('BB%', colVal(row, prefix, 'BB_pct')) +
-    statMini('OSI', colVal(row, prefix, 'OSI_allowed')) +
-    statMini('ABQ', colVal(row, prefix, 'ABQ_allowed')) +
-    statMini('HR/9', colVal(row, prefix, 'HR9')) +
-    '</div></div>';
-}
-
-function statMini(lbl, v) {
-  var display = lbl.indexOf('%') >= 0 ? fmtPct(v) : fmt(v, lbl === 'ERA' || lbl === 'HR/9' ? 2 : 1);
-  return '<div class="bp-mini-stat"><span class="bp-mini-stat__label">' + lbl + '</span>' +
-    '<span class="bp-mini-stat__val">' + display + '</span></div>';
-}
-
 function splitLabel(split) {
   var labels = {
     overall: 'Season', lhh: 'vs LHH', rhh: 'vs RHH',
@@ -594,8 +632,11 @@ function buildDashboardCtx(team, unit) {
     pickCol: pickCol,
     team: team,
     split: STATE.split,
+    sosSplit: STATE.sosSplit,
+    levView: STATE.levView,
     window: STATE.window,
     splitLabel: splitLabel(STATE.split),
+    sosSplitLabel: splitLabel(STATE.sosSplit),
     teamLog: log,
     allUnits: DATA.units,
     isToday: DATA.todayTeams.has(teamKey(team)),
@@ -630,29 +671,6 @@ function renderPlatformSections(team, unit) {
   if (osiInsight) osiInsight.innerHTML = osiInsightText(unit, team);
 }
 
-function buildOsiTable(unit, team) {
-  var tiers = [
-    { tier: 'High', prefix: 'vs_high_osi' },
-    { tier: 'Mid', prefix: 'vs_mid_osi' },
-    { tier: 'Low', prefix: 'vs_low_osi' }
-  ];
-  var rows = tiers.map(function(t) {
-    var apps = tierAppearances(team, t.tier);
-    var flag = '';
-    var eraH = colVal(unit, 'vs_high_osi', 'ERA');
-    var eraL = colVal(unit, 'vs_low_osi', 'ERA');
-    if (t.tier === 'High' && eraH != null && eraL != null && eraH > eraL + 1.2) flag = 'flag-row';
-    return '<tr class="' + flag + '"><td class="tier-' + t.tier.toLowerCase() + '">' + t.tier + '</td>' +
-      '<td class="num">' + apps + '</td>' +
-      '<td class="num">' + fmt(colVal(unit, t.prefix, 'ERA'), 2) + '</td>' +
-      '<td class="num">' + fmtPct(colVal(unit, t.prefix, 'K_pct')) + '</td>' +
-      '<td class="num">' + fmtPct(colVal(unit, t.prefix, 'BB_pct')) + '</td>' +
-      '<td class="num">' + fmt(colVal(unit, t.prefix, 'ABQ_allowed'), 1) + '</td>' +
-      '<td class="num">' + fmt(colVal(unit, t.prefix, 'RCV_allowed'), 1) + '</td></tr>';
-  }).join('');
-  return '<table class="tp-table hub-table"><thead><tr><th>Tier</th><th>Apps</th><th>ERA</th><th>K%</th><th>BB%</th><th>ABQ Allowed</th><th>RCV Allowed</th></tr></thead><tbody>' + rows + '</tbody></table>';
-}
-
 function osiInsight(unit, team) {
   var eH = colVal(unit, 'vs_high_osi', 'ERA');
   var eM = colVal(unit, 'vs_mid_osi', 'ERA');
@@ -669,18 +687,6 @@ function osiInsight(unit, team) {
     parts.push('OSI allowed jumps vs High tier (' + fmt(oH, 1) + ' vs ' + fmt(oL, 1) + ' vs Low) — quality of opponent faced explains part of the split.');
   }
   return parts.length ? parts.join(' ') : 'Bullpen OSI-tier splits are relatively flat in the current sample.';
-}
-
-function levInsight(unit) {
-  var hi = colVal(unit, 'high_leverage', 'ERA');
-  var lo = colVal(unit, 'low_leverage', 'ERA');
-  if (hi != null && lo != null && hi > lo + 1.5) {
-    return '<strong>Leverage flag:</strong> High-leverage ERA (' + fmt(hi, 2) + ') is much worse than low-leverage (' + fmt(lo, 2) + ') — lean run-line/fade when games stay close late.';
-  }
-  if (hi != null && lo != null && hi < lo - 1.0) {
-    return 'Bullpen tightens in high leverage (' + fmt(hi, 2) + ' vs ' + fmt(lo, 2) + ' low) — back late-game unders when this unit is active.';
-  }
-  return 'Leverage ERA split is within normal range for the sample size.';
 }
 
 function allowedNote(unit) {
@@ -733,6 +739,8 @@ function renderTeam(team) {
 
   renderPlatformSections(team, unit);
   renderBpPitchingSplitBar();
+  renderBpLeverageBar();
+  renderBpSosSplitBar();
   renderBpRelieverSortBar();
 
   var rels = DATA.individuals.filter(function(r) {
@@ -873,6 +881,8 @@ document.addEventListener('DOMContentLoaded', function() {
   mountProfilePageHeader();
   renderBullpenSectionHeaders();
   renderBpPitchingSplitBar();
+  renderBpLeverageBar();
+  renderBpSosSplitBar();
   renderBpRelieverSortBar();
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);

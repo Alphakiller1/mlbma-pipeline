@@ -204,12 +204,15 @@
       + ' · lower ERA / OPS allowed = stronger bullpen value.</p></div>';
   }
 
-  function buildLeverageTableHtml(unit, pickCol) {
-    var rows = [
-      { label: 'High leverage', prefix: 'high_leverage' },
-      { label: 'Low leverage', prefix: 'low_leverage' },
-      { label: 'Overall', prefix: 'overall' }
+  function buildLeverageTableHtml(unit, pickCol, levView) {
+    var allRows = [
+      { label: 'High leverage', prefix: 'high_leverage', key: 'high' },
+      { label: 'Low leverage', prefix: 'low_leverage', key: 'low' },
+      { label: 'Overall', prefix: 'overall', key: 'all' }
     ];
+    var rows = allRows;
+    if (levView === 'high') rows = allRows.filter(function(r) { return r.key === 'high'; });
+    else if (levView === 'low') rows = allRows.filter(function(r) { return r.key === 'low'; });
     var body = rows.map(function(r) {
       return '<tr><th scope="row">' + esc(r.label) + '</th>'
         + '<td class="num">' + valChip(colVal(unit, r.prefix, 'ERA', pickCol), 'era', true, 2) + '</td>'
@@ -224,8 +227,12 @@
   }
 
   function renderLeveragePanel(unit, ctx) {
-    return '<div class="tp-table-wrap">' + buildLeverageTableHtml(unit, ctx.pickCol)
-      + '<p class="tp-trend-table-note">High vs low leverage execution — color grades vs league bullpen context.</p></div>';
+    var levView = ctx.levView || 'all';
+    var note = levView === 'high' ? 'High-leverage spots only'
+      : levView === 'low' ? 'Low-leverage spots only'
+      : 'High vs low leverage execution';
+    return '<div class="tp-table-wrap">' + buildLeverageTableHtml(unit, ctx.pickCol, levView)
+      + '<p class="tp-trend-table-note">' + esc(note) + ' — color grades vs league bullpen context.</p></div>';
   }
 
   function buildOsiTierTableHtml(unit, pickCol) {
@@ -374,8 +381,36 @@
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
-  function aggregateSOSFromLog(log, pickCol, maxApps) {
-    var rows = (log || []).slice().sort(function(a, b) {
+  function filterLogBySosSplit(log, pickCol, split, team) {
+    if (!split || split === 'overall' || !team) return log || [];
+    return (log || []).filter(function(g) {
+      var home = String(pickCol(g, ['Home', 'home']) || '').trim();
+      var away = String(pickCol(g, ['Away', 'away']) || '').trim();
+      var tk = String(team || '').trim();
+      if (split === 'home') return home === tk;
+      if (split === 'away') return away === tk;
+      if (split === 'lhh' || split === 'rhh') {
+        var hand = String(pickCol(g, ['opponent_hand', 'Opponent Hand', 'opp_hand', 'vs_hand', 'vs hand']) || '').toUpperCase();
+        if (!hand) return true;
+        var isLeft = hand.indexOf('L') === 0 || hand.indexOf('LHH') >= 0 || hand.indexOf('LHB') >= 0;
+        return split === 'lhh' ? isLeft : !isLeft;
+      }
+      return true;
+    });
+  }
+
+  function sosFromUnit(unit, split, pickCol) {
+    var prefix = resolvePrefix(split || 'overall');
+    if (split === 'hilev' || split === 'lolev' || split === 'hlev' || split === 'llev') prefix = 'overall';
+    return {
+      OOR_faced: colVal(unit, prefix, 'OOR_faced', pickCol) || colVal(unit, prefix, 'OOR', pickCol),
+      PALS_faced: colVal(unit, prefix, 'PALS_faced', pickCol) || colVal(unit, prefix, 'PALS', pickCol),
+      wRC_faced: colVal(unit, prefix, 'wRC_faced', pickCol) || colVal(unit, prefix, 'wRC_allowed', pickCol)
+    };
+  }
+
+  function aggregateSOSFromLog(log, pickCol, maxApps, split, team) {
+    var rows = filterLogBySosSplit(log, pickCol, split, team).slice().sort(function(a, b) {
       return String(pickCol(b, ['date', 'Date'])).localeCompare(String(pickCol(a, ['date', 'Date'])));
     });
     if (maxApps) rows = rows.slice(0, maxApps);
@@ -399,27 +434,32 @@
     var pickCol = ctx.pickCol;
     var log = ctx.teamLog || [];
     var window = ctx.window || 'YTD';
+    var split = ctx.sosSplit || 'overall';
+    var splitLabels = {
+      overall: 'Overall', home: 'Home', away: 'Away', lhh: 'vs LHH', rhh: 'vs RHH'
+    };
     var maxApps = window === 'L14' ? 20 : window === 'L30' ? 45 : null;
-    var row = aggregateSOSFromLog(log, pickCol, maxApps);
+    var row = aggregateSOSFromLog(log, pickCol, maxApps, split, ctx.team);
     if (!row.OOR_faced && !row.PALS_faced && !row.wRC_faced) {
-      row = {
-        OOR_faced: colVal(unit, 'overall', 'OSI_allowed', pickCol),
-        PALS_faced: null,
-        wRC_faced: null
-      };
+      row = sosFromUnit(unit, split, pickCol);
+    }
+    if (!row.OOR_faced && !row.PALS_faced && !row.wRC_faced && split !== 'overall') {
+      row = sosFromUnit(unit, 'overall', pickCol);
     }
     var oor = row.OOR_faced;
     var pals = row.PALS_faced;
     var wrc = row.wRC_faced;
-    return '<div class="tp-trend-table-wrap pp-oor-metrics-wrap">'
+    return '<div class="tp-trend-table-wrap pp-oor-metrics-wrap" data-sos-split="' + esc(split) + '">'
       + '<table class="hub-table tp-table pp-oor-metrics-table"><thead><tr>'
       + '<th>OOR</th><th>PALS Faced</th><th>wRC+ Faced</th></tr></thead><tbody><tr>'
       + '<td class="pp-oor-metric-cell">' + valChip(oor, 'oor', false, 1) + '</td>'
       + '<td class="pp-oor-metric-cell">' + valChip(pals, 'pals', false, 1) + '</td>'
       + '<td class="pp-oor-metric-cell">' + valChip(wrc, 'wrc', false, 0) + '</td>'
       + '</tr></tbody></table>'
-      + '<p class="tp-trend-table-note">Strength of schedule from reliever appearance log'
-      + (window !== 'YTD' ? ' · ' + esc(window) + ' window' : '') + '.</p></div>';
+      + '<p class="tp-trend-table-note">Showing <strong>' + esc(splitLabels[split] || ctx.sosSplitLabel || 'Overall') + '</strong>'
+      + (split === 'lhh' || split === 'rhh' ? ' · OOR/PALS/wRC+ from hand-split log when available' : '')
+      + (window !== 'YTD' ? ' · ' + esc(window) + ' window' : '')
+      + ' · higher OOR / wRC+ = tougher opposing offenses faced.</p></div>';
   }
 
   function renderAllowedDashboard(unit, ctx) {
@@ -646,7 +686,7 @@
     if (hiEra != null && loEra != null && hiEra > loEra + 1.2) {
       parts.push('Run-line risk rises late: high-leverage ERA is materially worse than low leverage.');
     } else if (overall != null && overall <= 3.8) {
-      parts.push('Headline bullpen ERA is strong — validate against opponent quality in OOR panel.');
+      parts.push('Headline bullpen ERA is strong — validate against opponent quality in Strength of Schedule.');
     }
     if (ctx.tonightOsi != null && colVal(unit, 'overall', 'OSI_allowed', pickCol) != null) {
       var delta = ctx.tonightOsi - colVal(unit, 'overall', 'OSI_allowed', pickCol);

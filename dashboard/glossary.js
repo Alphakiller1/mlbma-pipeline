@@ -233,7 +233,7 @@
       components: 'RP wins ÷ games from Team_Results',
       read: 'High = bullpen frequently vulturing or holding leads late.',
       research: 'Bullpen usage and team win-style context.',
-      limits: 'Team aggregate; see Bullpen Report for unit-level detail.'
+      limits: 'Team aggregate; see Bullpen Profile for unit-level detail.'
     },
     {
       id: 'qs-pct',
@@ -361,7 +361,7 @@
       def: 'ERA in medium-leverage relief innings.',
       components: 'Bullpen_Unit medium_leverage_ERA',
       read: 'Bridge between mop-up and high-leverage performance.',
-      research: 'Unit depth read on Bullpen Report.',
+      research: 'Unit depth read on Bullpen Profile.',
       limits: 'Leverage buckets depend on pipeline tagging.'
     },
     {
@@ -583,7 +583,7 @@
       + '<ul class="gloss-convention__list">'
       + '<li><strong>OOR</strong> appears only as <em>Pitcher OOR</em> or <em>Bullpen Unit OOR</em> — there is no team-level OOR headline.</li>'
       + '<li><strong>Surface wins</strong> (Win%, F5 Win%, SP Win%, QS%) live on Team Rankings and Team Profile lineup/rotation strips from <code>Team_Results</code>.</li>'
-      + '<li><strong>Pitcher Intelligence</strong> = SP prop research (recent starts). <strong>Bullpen View</strong> + Bullpen Report = relievers.</li>'
+      + '<li><strong>Pitcher Intelligence</strong> = SP prop research (recent starts). <strong>Bullpen View</strong> + Bullpen Profile = relievers.</li>'
       + '</ul></div>';
   }
 

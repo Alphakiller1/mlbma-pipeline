@@ -460,7 +460,7 @@
       + (unit && unit.hiLevEra != null ? '<div class="mc-bp-metric">High Leverage ERA <strong>' + unit.hiLevEra.toFixed(2) + '</strong></div>' : '')
       + (unit && unit.oor != null ? '<div class="mc-bp-metric">Avg competition faced (OOR) <strong>' + fmt(unit.oor, 1) + '</strong></div>' : '')
       + '<div class="mc-bp-metric">Risk: <span class="' + risk.cls + '">' + esc(risk.label) + '</span></div>'
-      + '<a class="mc-bp-link" href="' + bullpenReportUrl(team) + '">Full Bullpen Report →</a>'
+      + '<a class="mc-bp-link" href="' + bullpenReportUrl(team) + '">Full Bullpen Profile →</a>'
       + '</div>';
   }
 

@@ -534,7 +534,7 @@ DASHBOARD_PAGES = {
     },
     "bullpen_report": {
         "file": "bullpen_report.html",
-        "label": "Bullpen Report",
+        "label": "Bullpen Profile",
         "url": "bullpen_report.html",
         "params": None,
     },

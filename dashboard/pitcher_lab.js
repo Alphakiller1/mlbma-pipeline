@@ -346,7 +346,7 @@
     return 'SP';
   }
 
-  /** Rotation SPs only — relievers belong in Bullpen View / bullpen report. */
+  /** Rotation SPs only — relievers belong in Bullpen View / Bullpen Profile. */
   function isRotationSp(row) {
     if (!row || pitcherRole(row) !== 'SP') return false;
     var starts = numOrNull(pickCol(row, ['starts', 'Starts']));
@@ -1178,7 +1178,7 @@
       + '<div class="pl-expand-metric"><span class="ca-metric-label">vs Mid OSI</span>' + metricChip(vsMid, true, 'osi', 1) + '</div>'
       + '<div class="pl-expand-metric"><span class="ca-metric-label">vs Low OSI</span>' + metricChip(vsLo, true, 'osi', 1) + '</div>'
       + '</div>'
-      + '<p class="rl-profile-link"><a href="' + esc(bullpenProfileUrl(team)) + '">Open full bullpen report →</a></p>'
+      + '<p class="rl-profile-link"><a href="' + esc(bullpenProfileUrl(team)) + '">Open full Bullpen Profile →</a></p>'
       + '</div>';
   }
 
@@ -1303,7 +1303,7 @@
     }).join('');
 
     mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Bullpen Rankings</h4>'
-      + '<p class="pl-section-sub">' + esc(bpActiveSplitLabel()) + ' · sort any column · click team name for full bullpen report · click row for leverage &amp; OSI-tier depth</p></div>'
+      + '<p class="pl-section-sub">' + esc(bpActiveSplitLabel()) + ' · sort any column · click team name for full Bullpen Profile · click row for leverage &amp; OSI-tier depth</p></div>'
       + '<div class="rl-table-wrap pl-rank-wrap rl-sticky-table pl-rank-table-wrap"><table class="rl-table-premium pl-rank-table rl-bp-rank-table hub-table"><thead><tr>'
       + '<th class="pl-rank-idx">#</th>'
       + th('team', 'Team') + COLS.map(function(c) { return th(c.k, c.label); }).join('')

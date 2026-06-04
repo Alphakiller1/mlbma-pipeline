@@ -21,7 +21,7 @@ TITLES = {
     "chase_analytics_mlb_oem_v7.html": "Chase Analytics · Offensive Dashboard",
     "matchup_sheet.html": "Chase Analytics · Daily Matchups",
     "pitcher_profile.html": "Chase Analytics · Pitcher Profile",
-    "bullpen_report.html": "Chase Analytics · Bullpen Report",
+    "bullpen_report.html": "Chase Analytics · Bullpen Profile",
     "batter_profile.html": "Chase Analytics · Batter Profile",
     "reliever_profile.html": "Chase Analytics · Reliever Profile",
     "team_profile.html": "Chase Analytics · Team Profile",

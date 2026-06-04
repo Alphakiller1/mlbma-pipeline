@@ -1,6 +1,6 @@
 /**
  * Player profile pages — design contract alignment (styling only).
- * Pitcher, Batter, Reliever, Bullpen Report + shared profile patterns.
+ * Pitcher, Batter, Reliever, Bullpen Profile + shared profile patterns.
  */
 /* Pitcher Profile — inherit Team Profile section shell when body has team-profile-page */
 body.pitcher-profile-page.team-profile-page .tp-identity-stack {

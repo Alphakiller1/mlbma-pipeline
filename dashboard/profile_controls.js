@@ -101,7 +101,7 @@
       return 'Split matches Starting Pitcher profiles (Overall · vs LHH/RHH · Home/Away · F5 tier). Window sets time range for trends.';
     }
     if (category === 'bullpen') {
-      return 'Split matches Bullpen Report (Overall · vs LHH/RHH · Home/Away · High/Low leverage). Window sets time range for trends.';
+      return 'Split matches Bullpen Profile (Overall · vs LHH/RHH · Home/Away · High/Low leverage). Window sets time range for trends.';
     }
     return 'Split changes platoon, location, and pitcher-type views (vs SP / vs bullpen) for batters. Window sets the time range for scoring, trends, and snapshot KPIs.';
   }
@@ -711,7 +711,7 @@
     return state;
   }
 
-  /** Bullpen report — team dropdown + 3 rows */
+  /** Bullpen Profile — team dropdown + 3 rows */
   function renderBullpen(mount, opts) {
     opts = opts || {};
     var el = typeof mount === 'string' ? document.getElementById(mount) : mount;
