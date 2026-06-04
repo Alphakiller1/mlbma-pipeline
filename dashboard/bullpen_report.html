@@ -12,21 +12,20 @@
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="bullpen_report.css?v=20260606c">
+<link rel="stylesheet" href="bullpen_report.css?v=20260606e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
-<script src="mlbma_assets.js"></script>
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="mlbma_icons.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260606c"></script>
+<script src="bullpen_profile_dashboard.js?v=20260606e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
-<script src="mlbma_ui.js" data-page="bullpen_report.html"></script>
+<script src="mlbma_ui.js?v=20260606d" data-page="bullpen_report.html"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="bullpen-profile-page player-profile-page team-profile-page">
@@ -490,6 +489,19 @@ function parseIP(ip) {
 
 function teamKey(t) { return String(t || '').toUpperCase().trim(); }
 
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showReportContent() {
+  var el = document.getElementById('reportContent');
+  if (el) el.classList.add('ready');
+}
+
 function getUnit(team) {
   return DATA.units.find(function(u) { return teamKey(pickCol(u, ['team', 'Tm'])) === teamKey(team); });
 }
@@ -726,41 +738,50 @@ function osiInsightText(unit, team) {
 }
 
 function renderTeam(team) {
-  if (!team) return;
+  if (!team) {
+    showReportContent();
+    return;
+  }
   STATE.team = teamKey(team);
   var unit = getUnit(team);
+  showReportContent();
   if (!unit) {
     document.getElementById('dataBanner').textContent = 'No Bullpen_Unit row for ' + team;
     document.getElementById('dataBanner').classList.add('show');
     return;
   }
   document.getElementById('dataBanner').classList.remove('show');
-  document.getElementById('reportContent').classList.add('ready');
 
-  renderPlatformSections(team, unit);
-  renderBpPitchingSplitBar();
-  renderBpLeverageBar();
-  renderBpSosSplitBar();
-  renderBpRelieverSortBar();
+  try {
+    renderPlatformSections(team, unit);
+    renderBpPitchingSplitBar();
+    renderBpLeverageBar();
+    renderBpSosSplitBar();
+    renderBpRelieverSortBar();
 
-  var rels = DATA.individuals.filter(function(r) {
-    return teamKey(pickCol(r, ['pitcher_team', 'pitcher team'])) === teamKey(team);
-  });
-  var ctx = buildDashboardCtx(team, unit);
-  ctx.sortKey = STATE.relieverSort;
-  ctx.sortDir = STATE.relieverSortDir;
-  document.getElementById('relieverTableWrap').innerHTML = window.BullpenProfileDashboard
-    ? BullpenProfileDashboard.buildRelieverTable(rels, ctx)
-    : '<div class="empty-state">Dashboard module not loaded.</div>';
-  bindRelieverClicks();
-  bindRelieverSortHeaders();
+    var rels = DATA.individuals.filter(function(r) {
+      return teamKey(pickCol(r, ['pitcher_team', 'pitcher team'])) === teamKey(team);
+    });
+    var ctx = buildDashboardCtx(team, unit);
+    ctx.sortKey = STATE.relieverSort;
+    ctx.sortDir = STATE.relieverSortDir;
+    document.getElementById('relieverTableWrap').innerHTML = window.BullpenProfileDashboard
+      ? BullpenProfileDashboard.buildRelieverTable(rels, ctx)
+      : '<div class="empty-state">Dashboard module not loaded.</div>';
+    bindRelieverClicks();
+    bindRelieverSortHeaders();
 
-  document.querySelectorAll('.today-chip').forEach(function(c) {
-    c.classList.toggle('active', c.textContent === teamKey(team));
-    c.classList.toggle('playing', DATA.todayTeams.has(c.textContent));
-  });
-  if (_teamPicker && _teamPicker.setValue) _teamPicker.setValue(STATE.team);
-  renderBullpenUsage(team);
+    document.querySelectorAll('.today-chip').forEach(function(c) {
+      c.classList.toggle('active', c.textContent === teamKey(team));
+      c.classList.toggle('playing', DATA.todayTeams.has(c.textContent));
+    });
+    if (_teamPicker && _teamPicker.setValue) _teamPicker.setValue(STATE.team);
+    renderBullpenUsage(team);
+  } catch (err) {
+    console.error('[MLBMA] bullpen renderTeam failed:', err);
+    document.getElementById('dataBanner').textContent = 'Render error: ' + (err && err.message ? err.message : err);
+    document.getElementById('dataBanner').classList.add('show');
+  }
 }
 
 function bindRelieverSortHeaders() {
@@ -842,6 +863,7 @@ function loadAll() {
     if (!DATA.units.length) {
       document.getElementById('dataBanner').textContent = 'Bullpen_Unit empty — run pipeline steps 12—13.';
       document.getElementById('dataBanner').classList.add('show');
+      showReportContent();
       return;
     }
 
@@ -859,9 +881,11 @@ function loadAll() {
     renderTeam(start);
   }).catch(function(err) {
     console.error(err);
-    document.getElementById('dataBanner').textContent = 'Could not load sheets: ' + err;
+    document.getElementById('dataBanner').textContent = 'Could not load sheets: ' + (err && err.message ? err.message : err);
     document.getElementById('dataBanner').classList.add('show');
+    showReportContent();
   }).finally(function() {
+    showReportContent();
     if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
     else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
     if (_profileWatchdogDone) _profileWatchdogDone();
@@ -878,12 +902,22 @@ function showDelayedLoadBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  mountProfilePageHeader();
-  renderBullpenSectionHeaders();
-  renderBpPitchingSplitBar();
-  renderBpLeverageBar();
-  renderBpSosSplitBar();
-  renderBpRelieverSortBar();
+  try {
+    mountProfilePageHeader();
+    renderBullpenSectionHeaders();
+    renderBpPitchingSplitBar();
+    renderBpLeverageBar();
+    renderBpSosSplitBar();
+    renderBpRelieverSortBar();
+  } catch (err) {
+    console.error('[MLBMA] bullpen_report init UI failed:', err);
+    var banner = document.getElementById('dataBanner');
+    if (banner) {
+      banner.textContent = 'UI init error: ' + (err && err.message ? err.message : err);
+      banner.classList.add('show');
+    }
+    showReportContent();
+  }
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }

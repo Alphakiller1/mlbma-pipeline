@@ -503,12 +503,13 @@ body.bullpen-profile-page .empty-state {
 }
 
 body.bullpen-profile-page #reportContent:not(.ready) {
-  visibility: hidden;
-  height: 0;
-  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  min-height: 120px;
 }
 
 body.bullpen-profile-page #reportContent.ready {
-  visibility: visible;
-  height: auto;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
 }
