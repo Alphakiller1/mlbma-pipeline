@@ -228,7 +228,7 @@ def appearance_context(
                     entry_lead = _signed_lead(hs, aw, pitcher_side)
             if hs is not None and aw is not None:
                 exit_lead = _signed_lead(hs, aw, pitcher_side)
-            bat = play.get("matchup", {}).get("batter", {}).get("batSide", {}).get("code")
+            bat = play.get("matchup", {}).get("batSide", {}).get("code")
             if bat == "L":
                 lhb += 1
             elif bat == "R":

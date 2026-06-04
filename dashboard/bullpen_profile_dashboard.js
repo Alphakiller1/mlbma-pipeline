@@ -627,7 +627,7 @@
     var appearanceDetail = ctx.appearanceDetail;
     var sortKey = ctx.sortKey || 'ip';
     var sortDir = ctx.sortDir === 'asc' ? 1 : -1;
-    var colCount = 14;
+    var colCount = 11;
 
     function sortVal(r) {
       if (sortKey === 'era') return colVal(r, 'overall', 'ERA', pickCol);
@@ -647,7 +647,7 @@
     var html = '<table class="tp-table hub-table bp-reliever-rank-table" data-sort="' + esc(sortKey) + '"><thead><tr>'
       + '<th data-sort="name">Name</th><th>Role</th><th data-sort="ip">IP</th><th data-sort="era">ERA</th>'
       + '<th data-sort="k">K%</th><th>BB%</th><th>HR/9</th>'
-      + '<th data-sort="osi">OSI All.</th><th>ABQ All.</th><th>OOR</th><th>vs RHH OSI</th><th>vs LHH OSI</th>'
+      + '<th data-sort="osi">OSI All.</th><th>ABQ All.</th>'
       + '<th>IR Scored%</th><th>Hi Lev ERA</th>'
       + '</tr></thead><tbody>';
 
@@ -657,7 +657,6 @@
       var role = inferRole(pid, name);
       var ip = relieverIP(pid, name);
       var exp = expandedPid === String(pid);
-      var oor = colVal(r, 'overall', 'OSI_allowed', pickCol);
 
       html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">'
         + '<td><strong><a href="reliever_profile.html?player=' + encodeURIComponent(name) + '" class="bp-reliever-link">' + esc(name) + '</a></strong></td>'
@@ -669,9 +668,6 @@
         + '<td class="num">' + valChip(colVal(r, 'overall', 'HR9', pickCol), 'hr9', true, 2) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
-        + '<td class="num">' + valChip(oor, 'osi', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'vs_rhh', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'vs_lhh', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'inherited_runners_scored_pct', pickCol), 'ir', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'high_leverage', 'ERA', pickCol), 'era', true, 2) + '</td></tr>';
       if (exp) html += '<tr class="detail-row"><td colspan="' + colCount + '">' + appearanceDetail(pid, name) + '</td></tr>';
