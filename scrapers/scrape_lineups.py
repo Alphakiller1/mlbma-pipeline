@@ -12,6 +12,7 @@ HEADERS = {
 }
 
 def scrape_lineups():
+    slate_date = datetime.now().strftime("%Y-%m-%d")
     print("Fetching Rotowire lineups...")
     r = requests.get(
         "https://www.rotowire.com/baseball/daily-lineups.php",
@@ -70,7 +71,7 @@ def scrape_lineups():
                 "Time": game_time,
                 "Away_SP": away_sp,
                 "Home_SP": home_sp,
-                "Slate_Date": datetime.now().strftime("%Y-%m-%d"),
+                "Slate_Date": slate_date,
             })
 
             # Get batting orders
@@ -98,6 +99,7 @@ def scrape_lineups():
                         "Position": pos,
                         "Player": name,
                         "Bats": hand,
+                        "Slate_Date": slate_date,
                     })
 
         except Exception as e:
@@ -109,6 +111,33 @@ def scrape_lineups():
 
     print(f"  Parsed {len(games_df)} games, {len(lineup_df)} player rows")
     return lineup_df, games_df
+
+def clear_sheet_tab(tab_name, header_row):
+    if not check_google_credentials():
+        print(f"  Skipping {tab_name} clear (credentials unavailable).")
+        return
+    from core.config import CREDS_FILE, SCOPES
+    from google.oauth2.service_account import Credentials
+
+    creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
+    client = gspread.authorize(creds)
+    sheet = client.open_by_key(SHEET_ID)
+    try:
+        ws = sheet.worksheet(tab_name)
+        ws.clear()
+        ws.update([header_row])
+        print(f"  Cleared {tab_name} (no slate data)")
+    except gspread.exceptions.WorksheetNotFound:
+        pass
+
+
+def remove_stale_slate_files():
+    for fname in ("today_lineups.csv", "today_games.csv"):
+        path = os.path.join(DATA_DIR, fname)
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"  Removed stale {fname}")
+
 
 def push_to_sheets(lineup_df, games_df):
     if not check_google_credentials():
@@ -122,17 +151,20 @@ def push_to_sheets(lineup_df, games_df):
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 
-    for tab_name, df in [
-        (SHEET_TABS["today_lineups"], lineup_df),
-        (SHEET_TABS["today_games"], games_df),
-    ]:
-        if df is None or df.empty:
-            continue
+    payloads = [
+        (SHEET_TABS["today_lineups"], lineup_df, ["Game", "Time", "Team", "Side", "Bat_Order", "Position", "Player", "Bats", "Slate_Date"]),
+        (SHEET_TABS["today_games"], games_df, ["Away", "Home", "Time", "Away_SP", "Home_SP", "Slate_Date"]),
+    ]
+    for tab_name, df, header_row in payloads:
         try:
             ws = sheet.worksheet(tab_name)
             ws.clear()
         except gspread.exceptions.WorksheetNotFound:
-            ws = sheet.add_worksheet(title=tab_name, rows=300, cols=10)
+            ws = sheet.add_worksheet(title=tab_name, rows=300, cols=12)
+        if df is None or df.empty:
+            ws.update([header_row])
+            print(f"  Cleared {tab_name} (empty slate)")
+            continue
         data = [df.columns.tolist()] + df.values.tolist()
         ws.update(data)
         print(f"  Pushed {tab_name}: {len(df)} rows")
@@ -141,12 +173,22 @@ def run():
     try:
         lineup_df, games_df = scrape_lineups()
     except requests.RequestException as e:
-        print(f"WARNING: scrape_lineups failed - continuing ({e})")
+        print(f"WARNING: scrape_lineups failed - clearing stale slate ({e})")
+        remove_stale_slate_files()
+        clear_sheet_tab(SHEET_TABS["today_lineups"], ["Game", "Time", "Team", "Side", "Bat_Order", "Position", "Player", "Bats", "Slate_Date"])
+        clear_sheet_tab(SHEET_TABS["today_games"], ["Away", "Home", "Time", "Away_SP", "Home_SP", "Slate_Date"])
+        try:
+            from scrapers import scrape_matchups
+            scrape_matchups.run(touch_sync=False)
+        except Exception as ex:
+            print(f"  WARNING: Today_Matchups clear after lineup failure failed: {ex}")
         return
 
     if not lineup_df.empty:
         lineup_df.to_csv(os.path.join(DATA_DIR, "today_lineups.csv"), index=False)
         print("  Saved: today_lineups.csv")
+    else:
+        remove_stale_slate_files()
 
     if not games_df.empty:
         games_df.to_csv(os.path.join(DATA_DIR, "today_games.csv"), index=False)

@@ -115,11 +115,28 @@ def get_pitch_score(team, ps_df):
     val = pd.to_numeric(match.iloc[0]["PitchScore"], errors="coerce")
     return None if pd.isna(val) else round(float(val), 1)
 
+def _today_iso():
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def _df_matches_today(df, date_col="Slate_Date"):
+    if df is None or df.empty or date_col not in df.columns:
+        return True
+    today = _today_iso()
+    dates = df[date_col].astype(str).str.slice(0, 10)
+    if not dates.str.match(r"^\d{4}-\d{2}-\d{2}$").any():
+        return True
+    return bool(dates.eq(today).any())
+
+
 def load_games_from_rotowire_exports():
     """Schedule from scrape_lineups (Today_Games / today_lineups) — must match lineup cards."""
     games_path = os.path.join(DATA_DIR, "today_games.csv")
     if os.path.exists(games_path):
         gdf = pd.read_csv(games_path)
+        if not _df_matches_today(gdf):
+            print(f"  WARNING: today_games.csv Slate_Date is not {_today_iso()} — ignoring stale export")
+            gdf = pd.DataFrame()
         if not gdf.empty and "Away" in gdf.columns and "Home" in gdf.columns:
             records = []
             for _, row in gdf.iterrows():
@@ -138,6 +155,9 @@ def load_games_from_rotowire_exports():
     if not os.path.exists(lineup_path):
         return pd.DataFrame()
     lu = pd.read_csv(lineup_path)
+    if not _df_matches_today(lu):
+        print(f"  WARNING: today_lineups.csv Slate_Date is not {_today_iso()} — ignoring stale export")
+        return pd.DataFrame()
     if lu.empty or "Game" not in lu.columns:
         return pd.DataFrame()
     records = []
@@ -196,57 +216,51 @@ def enrich_games_with_api_pitchers(games_df, api_games):
     return pd.DataFrame(records)
 
 
-def merge_rotowire_with_api_schedule(rotowire, api_games):
-    """Use Rotowire lineup details when present, and append API-only games."""
-    if api_games.empty:
-        print(f"  MLB API schedule empty -> using Rotowire slate ({len(rotowire)} games)")
-        return rotowire
+def resolve_slate_games(rotowire, api_games):
+    """Keep Today_Matchups on the same slate as Today_Games / Today_Lineups.
 
-    if rotowire.empty:
+    Rotowire is the slate source of truth once today's exported games exist.
+    The MLB API can fill probable pitchers and hands for those same games, but
+    it must not append extra games or doubleheaders that are absent from the
+    lineup slate.
+    """
+    if rotowire is None:
+        rotowire = pd.DataFrame()
+    if api_games is None:
+        api_games = pd.DataFrame()
+
+    if not rotowire.empty:
+        rw_keys = schedule_game_keys(rotowire)
+        api_keys = schedule_game_keys(api_games)
+        overlap = len(rw_keys & api_keys) if api_keys else 0
+        api_only = sorted(api_keys - rw_keys)
+        if api_only:
+            preview = ", ".join(api_only[:5])
+            print(
+                f"  Rotowire slate locked at {len(rotowire)} games; "
+                f"ignoring {len(api_only)} API-only game(s): {preview}"
+            )
+        else:
+            print(
+                f"  Rotowire slate locked at {len(rotowire)} games; "
+                f"MLB API overlap={overlap}/{len(api_keys)}"
+            )
+        return rotowire.copy()
+
+    if not api_games.empty:
         print(f"  Rotowire slate empty -> using live MLB API schedule ({len(api_games)} games)")
-        return api_games
+        return api_games.copy()
 
-    api_keys = schedule_game_keys(api_games)
-    rw_keys = schedule_game_keys(rotowire)
-    overlap = len(api_keys & rw_keys)
-    missing_api = api_games[
-        ~api_games.apply(lambda row: f"{row['Away_Team']}@{row['Home_Team']}" in rw_keys, axis=1)
-    ]
-
-    if missing_api.empty:
-        print(
-            f"  Rotowire slate: {len(rotowire)} games; MLB API overlap={overlap}/{len(api_keys)} "
-            "-> using Rotowire"
-        )
-        return rotowire
-
-    print(
-        f"  Rotowire slate: {len(rotowire)} games; MLB API schedule: {len(api_games)}; "
-        f"overlap={overlap}; appending {len(missing_api)} API-only games"
-    )
-    return pd.concat([rotowire, missing_api], ignore_index=True)
+    print("  No Rotowire export and MLB API schedule empty")
+    return pd.DataFrame()
 
 
 def build_matchups():
     print("Building matchup sheet...")
     rotowire = load_games_from_rotowire_exports()
     api_games = get_today_schedule()
-    games = merge_rotowire_with_api_schedule(rotowire, api_games)
+    games = resolve_slate_games(rotowire, api_games)
     games = enrich_games_with_api_pitchers(games, api_games)
-    if False and not rotowire.empty:
-        api_keys = schedule_game_keys(games)
-        rw_keys = schedule_game_keys(rotowire)
-        overlap = len(api_keys & rw_keys)
-        # The live MLB Stats API schedule is the source of truth. Only use the
-        # Rotowire export when it actually matches today's slate (good overlap) —
-        # otherwise it's a stale cache and we fall back to the API schedule.
-        if not api_keys or overlap >= max(1, len(api_keys) // 2):
-            print(f"  Rotowire slate: {len(rotowire)} games; MLB API overlap={overlap} -> using Rotowire")
-            games = rotowire
-        else:
-            print(f"  Rotowire stale (overlap {overlap}/{len(api_keys)}) -> using live MLB API schedule")
-    elif games.empty:
-        print("  No Rotowire export and MLB API schedule empty")
     if games.empty:
         print("No games today")
         return pd.DataFrame()
@@ -277,6 +291,7 @@ def build_matchups():
             edge = "--"
 
         rows.append({
+            "Slate_Date": _today_iso(),
             "Time": g["Game_Time"],
             "Away": g["Away_Team"],
             "Home": g["Home_Team"],
@@ -356,7 +371,7 @@ def clear_matchups_sheet():
     try:
         ws = sheet.worksheet(tab)
         ws.clear()
-        ws.update([["Time", "Away", "Home", "Away_SP", "Away_Hand", "Home_SP", "Home_Hand"]])
+        ws.update([["Slate_Date", "Time", "Away", "Home", "Away_SP", "Away_Hand", "Home_SP", "Home_Hand"]])
         print(f"  Cleared {tab} (no games today)")
     except gspread.exceptions.WorksheetNotFound:
         pass

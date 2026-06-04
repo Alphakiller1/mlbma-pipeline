@@ -128,41 +128,38 @@
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
+  /** League-anchored red→green gradient (mlbma_assets.metricColor), not flat pink tokens. */
   function pitcherStatColor(metric, value) {
     var muted = 'var(--text-3, #9CA3AF)';
-    var good = 'var(--green, #4ADE80)';
-    var warn = 'var(--gold, #FBBF24)';
-    var risk = 'var(--orange, #FB923C)';
-    var bad = 'var(--red-l, #FCA5A5)';
     if (value == null || value === '' || isNaN(value)) return muted;
+    if (!A || !A.metricColor) return muted;
     var v = Number(value);
+    var ctx = 'default';
     if (metric === 'pitchScore') {
-      if (v >= 70) return good;
-      if (v >= 55) return warn;
-      if (v >= 40) return risk;
-      return bad;
+      ctx = 'pitching';
+    } else if (metric === 'k') {
+      if (v > 0 && v <= 1) v *= 100;
+      ctx = 'kpct';
+    } else if (metric === 'bb') {
+      if (v > 0 && v <= 1) v *= 100;
+      ctx = 'bbpct';
+    } else if (metric === 'era') {
+      ctx = 'era';
+    } else if (metric === 'fip') {
+      ctx = 'fip';
+    } else {
+      return muted;
     }
-    if (metric === 'k') {
-      if (v <= 1) v *= 100;
-      if (v >= 28) return good;
-      if (v >= 23) return warn;
-      if (v >= 18) return risk;
-      return bad;
-    }
-    if (metric === 'bb') {
-      if (v <= 1) v *= 100;
-      if (v <= 6) return good;
-      if (v <= 9) return warn;
-      if (v <= 12) return risk;
-      return bad;
-    }
-    if (metric === 'era' || metric === 'fip') {
-      if (v <= 3.25) return good;
-      if (v <= 4.0) return warn;
-      if (v <= 4.75) return risk;
-      return bad;
-    }
-    return muted;
+    return A.metricColor(v, ctx);
+  }
+
+  function pitcherTierStyle(score) {
+    if (score == null || isNaN(score) || !A || !A.metricColor) return '';
+    var c = A.metricColor(Number(score), 'pitching');
+    return ' style="background:color-mix(in srgb, ' + c + ' 22%, transparent);'
+      + 'color:' + c + ';'
+      + 'border:1px solid color-mix(in srgb, ' + c + ' 42%, transparent);'
+      + 'box-shadow:0 0 14px color-mix(in srgb, ' + c + ' 28%, transparent)"';
   }
 
   function spPitchScoreFromProfile(pitcherName, team) {
@@ -227,7 +224,7 @@
       + '<div class="mc-sp-top">'
       + '<span class="mc-sp-side">' + esc(label.replace(' SP', '')) + '</span>'
       + '<span class="hand-pill hand-' + normalizePitchHand(hand).toLowerCase() + '">' + esc(handLbl) + '</span>'
-      + '<span class="pitch-tier ' + pt.cls + '">' + pt.label + '</span>'
+      + '<span class="pitch-tier ' + pt.cls + '"' + pitcherTierStyle(ps) + '>' + pt.label + '</span>'
       + '</div>'
       + '<div class="mc-sp-name-row">' + nameHtml + '</div>'
       + (ps != null

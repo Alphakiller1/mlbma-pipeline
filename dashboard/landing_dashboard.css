@@ -898,8 +898,15 @@ body.view-research .ca-page-identity { display: none; }
   font-family: var(--mono, monospace);
   font-size: 16px;
   font-weight: 900;
-  color: var(--text-1);
+  color: var(--stat-color, var(--text-1));
   line-height: 1.1;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--stat-color, transparent) 35%, transparent);
+}
+.hero-matchup-card .pitch-tier.tier-vol {
+  background: color-mix(in srgb, #C8201C 24%, transparent);
+  color: #F2545B;
+  border: 1px solid color-mix(in srgb, #C8201C 48%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, #C8201C 22%, transparent);
 }
 .mc-sp-photo {
   width: 42px;
