@@ -118,16 +118,34 @@
     return { metrics: metrics, l14: l14, prefix: prefix };
   }
 
+  // Tone for headline bullpen stats (all lower-is-better) -> colored value text,
+  // matching the team-profile banner style (tp-hero-stat--{tone}).
+  function bpStatTone(label, v) {
+    if (v == null || isNaN(v)) return 'neutral';
+    if (label.indexOf('IR') >= 0) {        // IR Scored % - lower better
+      if (v <= 25) return 'elite';
+      if (v <= 30) return 'strong';
+      if (v <= 36) return 'mid';
+      return 'weak';
+    }
+    if (label.indexOf('OSI') >= 0) {       // OSI Allowed - lower better
+      if (v <= 45) return 'elite';
+      if (v <= 50) return 'strong';
+      if (v <= 56) return 'mid';
+      return 'weak';
+    }
+    // ERA / Hi Lev ERA - lower better
+    if (v <= 3.00) return 'elite';
+    if (v <= 3.75) return 'strong';
+    if (v <= 4.25) return 'mid';
+    return 'weak';
+  }
+
   function statPill(label, rawVal, display) {
-    var ctx = (label.indexOf('ERA') >= 0) ? 'era' : (label.indexOf('OSI') >= 0) ? 'osi' : 'ir';
-    var inv = label.indexOf('OSI') >= 0;
-    var dec = (label.indexOf('%') >= 0 || label.indexOf('OSI') >= 0) ? 1 : 2;
-    var chip = (A && A.valChipHtml && rawVal != null && !isNaN(rawVal))
-      ? A.valChipHtml(rawVal, ctx, inv, dec)
-      : esc(display);
-    return '<div class="tp-hero-stat tp-hero-stat--neutral">'
+    var tone = bpStatTone(label, rawVal);
+    return '<div class="tp-hero-stat tp-hero-stat--' + tone + '">'
       + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-hero-stat__value">' + chip + '</span></div>';
+      + '<span class="tp-hero-stat__value">' + esc(display) + '</span></div>';
   }
 
   function renderSnapshot(team, unit, ctx) {
@@ -137,10 +155,7 @@
     var osi = colVal(unit, 'overall', 'OSI_allowed', pickCol);
     var irp = colVal(unit, 'overall', 'inherited_runners_scored_pct', pickCol);
     var hiEra = colVal(unit, 'high_leverage', 'ERA', pickCol);
-    var apps = num(pickCol(unit, ['appearances'])) || (ctx.totalApps != null ? ctx.totalApps : null);
-    var badges = (ctx.isToday ? '<span class="pill pill-today">Playing Today</span>' : '') +
-      (ctx.pitchScore != null ? '<span class="pill pill-score">Staff Pitch Score ' + fmt(ctx.pitchScore, 0) + '</span>' : '') +
-      (apps != null ? '<span class="pill pill-meta">' + apps + ' apps</span>' : '');
+    var badges = (ctx.isToday ? '<span class="pill pill-today">Playing Today</span>' : '');
 
     var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero tp-hero-stat-row" role="group" aria-label="Bullpen headline stats">'
       + statPill('ERA', era, fmt(era, 2))
@@ -208,14 +223,13 @@
   }
 
   function buildLeverageTableHtml(unit, pickCol, levView) {
-    var allRows = [
-      { label: 'High leverage', prefix: 'high_leverage', key: 'high' },
-      { label: 'Low leverage', prefix: 'low_leverage', key: 'low' },
-      { label: 'Overall', prefix: 'overall', key: 'all' }
+    var rows = [
+      { label: 'Both', prefix: 'overall', key: 'all' },
+      { label: 'vs LHB', prefix: 'vs_lhh', key: 'lhh' },
+      { label: 'vs RHB', prefix: 'vs_rhh', key: 'rhh' },
+      { label: 'Away', prefix: 'away', key: 'away' },
+      { label: 'Home', prefix: 'home', key: 'home' }
     ];
-    var rows = allRows;
-    if (levView === 'high') rows = allRows.filter(function(r) { return r.key === 'high'; });
-    else if (levView === 'low') rows = allRows.filter(function(r) { return r.key === 'low'; });
     var body = rows.map(function(r) {
       return '<tr><th scope="row">' + esc(r.label) + '</th>'
         + '<td class="num">' + valChip(colVal(unit, r.prefix, 'ERA', pickCol), 'era', true, 2) + '</td>'
@@ -230,12 +244,8 @@
   }
 
   function renderLeveragePanel(unit, ctx) {
-    var levView = ctx.levView || 'all';
-    var note = levView === 'high' ? 'High-leverage spots only'
-      : levView === 'low' ? 'Low-leverage spots only'
-      : 'High vs low leverage execution';
-    return '<div class="tp-table-wrap">' + buildLeverageTableHtml(unit, ctx.pickCol, levView)
-      + '<p class="tp-trend-table-note">' + esc(note) + ' — color grades vs league bullpen context.</p></div>';
+    return '<div class="tp-table-wrap">' + buildLeverageTableHtml(unit, ctx.pickCol, ctx.levView)
+      + '<p class="tp-trend-table-note">Platoon &amp; venue splits (vs LHB / vs RHB · Away / Home) — color grades vs league bullpen context.</p></div>';
   }
 
   function buildOsiTierTableHtml(unit, pickCol) {
@@ -348,6 +358,31 @@
     return 'Mixed Signal';
   }
 
+  function bullpenTrendReadout(pack) {
+    var keys = ['osi', 'rcv', 'abq', 'obr'];
+    var labels = { osi: 'OSI faced', rcv: 'RCV faced', abq: 'ABQ faced', obr: 'OBR faced' };
+    var deltas = [];
+    keys.forEach(function(k) {
+      var vals = pack[k] || [];
+      var l10 = num(vals[0]), l1 = num(vals[3]);
+      if (l10 == null || l1 == null || Math.abs(l1 - l10) < 0.05) return;
+      deltas.push({ label: labels[k], delta: l1 - l10 });
+    });
+    if (!deltas.length) {
+      return pack.logCount
+        ? 'Last 1 matches Last 10 across metrics — schedule difficulty flat over recent appearances.'
+        : 'No reliever log rows — showing unit snapshot; run pipeline step 12 for rolling windows.';
+    }
+    deltas.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+    var lead = deltas[0];
+    var harder = lead.delta > 0;
+    var driver = deltas.length > 1
+      ? '; ' + deltas[1].label + ' ' + (deltas[1].delta >= 0 ? '▲' : '▼') + ' ' + Math.abs(deltas[1].delta).toFixed(1)
+      : '';
+    return lead.label + ' ' + (harder ? '▲' : '▼') + ' ' + Math.abs(lead.delta).toFixed(1) + ' (L1−L10)'
+      + (harder ? ' — recent lineups tougher' : ' — recent lineups softer') + driver + '.';
+  }
+
   function renderRollingTrendPanel(unit, ctx) {
     var pack = buildBullpenTrendPack(ctx);
     var C = global.MLBMACharts;
@@ -362,10 +397,15 @@
       var l10 = num(vals[0]), l6 = num(vals[1]), l3 = num(vals[2]), l1 = num(vals[3]);
       var velocity = C && C.computeTrendVelocityFromWindows
         ? C.computeTrendVelocityFromWindows([l10, l6, l3, l1]) : null;
+      var trendDir = C && C.trendDirectionFromVelocity ? C.trendDirectionFromVelocity(velocity) : 'Stable';
       var delta = l10 != null && l1 != null ? l1 - l10 : null;
       var interp = trendInterpBullpen(delta, velocity);
       var tone = interp.indexOf('Harder') >= 0 || interp.indexOf('Heating') >= 0 ? 'down'
         : interp.indexOf('Softer') >= 0 || interp.indexOf('Cooling') >= 0 ? 'up' : 'mixed';
+      var reliability = 'Noisy';
+      if (C && C.trendReliabilityForRow) reliability = C.trendReliabilityForRow(l10, l6, l1, trendDir);
+      else if (Math.abs(delta || 0) > 8) reliability = 'Short Spike';
+      else if (trendDir === 'Stable') reliability = 'Stable';
       return '<tr><th scope="row"><span class="tp-trend-table__metric">' + esc(def.label)
         + '<span class="tp-trend-table__metric-desc">' + esc(def.desc) + '</span></span></th>'
         + '<td class="numcol">' + valChip(l10, def.ctx, true, 1) + '</td>'
@@ -374,14 +414,26 @@
         + '<td class="numcol tp-trend-col--highlight">' + valChip(l1, def.ctx, true, 1) + '</td>'
         + '<td class="numcol">' + (delta != null ? valChip(delta, def.ctx, true, 1) : '—') + '</td>'
         + '<td class="numcol">' + (velocity != null ? esc((velocity > 0 ? '+' : '') + velocity.toFixed(2)) : '—') + '</td>'
+        + '<td><span class="tp-trend-table__reliability">' + esc(reliability) + '</span></td>'
         + '<td><span class="tp-trend-table__interp tp-trend-table__interp--' + tone + '">' + esc(interp) + '</span></td></tr>';
     }).join('');
+    var chart = '';
+    if (C && C.buildTrendLineChart) {
+      chart = C.buildTrendLineChart('OSI faced', pack.osi || [], 480, 120, {
+        labels: ['L10', 'L6', 'L3', 'L1'], metricCtx: 'osi', invertTrend: true
+      });
+    }
+    var readout = bullpenTrendReadout(pack);
     return '<div class="tp-trend-table-wrap pp-allowed-trend"><p class="tp-trend-table-note">'
       + esc(ctx.splitLabel || 'Overall') + ' · opponent quality by appearance date (L10→L1) · '
       + (pack.logCount ? pack.logCount + ' appearance days in log' : 'no reliever log — showing unit snapshot')
-      + '.</p><table class="tp-trend-table"><thead><tr><th>Metric</th><th>L10</th><th>L6</th><th>L3</th>'
-      + '<th class="tp-trend-col--highlight">L1</th><th>Δ L1−L10</th><th>Velocity</th><th>Interpretation</th>'
-      + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+      + ' · L1 is a momentum flag, not a standalone predictor.</p>'
+      + '<table class="tp-trend-table"><thead><tr><th>Metric</th><th>L10</th><th>L6</th><th>L3</th>'
+      + '<th class="tp-trend-col--highlight">L1</th><th>Δ L1−L10</th><th>Velocity</th><th>Reliability</th><th>Interpretation</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table>'
+      + '<div class="tp-trend-chart-mount" data-active-metric="osi">' + chart + '</div>'
+      + (readout ? '<p class="tp-trend-readout">' + esc(readout) + '</p>' : '')
+      + '</div>';
   }
 
   function filterLogBySosSplit(log, pickCol, split, team) {
@@ -402,34 +454,29 @@
     });
   }
 
-  function sosFromUnit(unit, split, pickCol) {
-    var prefix = resolvePrefix(split || 'overall');
-    if (split === 'hilev' || split === 'lolev' || split === 'hlev' || split === 'llev') prefix = 'overall';
-    return {
-      OOR_faced: colVal(unit, prefix, 'OOR_faced', pickCol) || colVal(unit, prefix, 'OOR', pickCol),
-      PALS_faced: colVal(unit, prefix, 'PALS_faced', pickCol) || colVal(unit, prefix, 'PALS', pickCol),
-      wRC_faced: colVal(unit, prefix, 'wRC_faced', pickCol) || colVal(unit, prefix, 'wRC_allowed', pickCol)
-    };
-  }
-
-  function aggregateSOSFromLog(log, pickCol, maxApps, split, team) {
+  // Strength of schedule faced: map each opponent the bullpen faced (from the
+  // reliever log) to that opponent's season OOR / PALS / OSI and average them.
+  function aggregateSOSFromLog(log, pickCol, maxApps, split, team, oorMap, palsMap) {
     var rows = filterLogBySosSplit(log, pickCol, split, team).slice().sort(function(a, b) {
       return String(pickCol(b, ['date', 'Date'])).localeCompare(String(pickCol(a, ['date', 'Date'])));
     });
     if (maxApps) rows = rows.slice(0, maxApps);
-    var o = 0, no = 0, p = 0, np = 0, w = 0, nw = 0;
+    var o = 0, no = 0, p = 0, np = 0, s = 0, ns = 0;
     rows.forEach(function(g) {
-      var oi = num(pickCol(g, ['opponent_OOR', 'opponent OOR']));
-      var pi = num(pickCol(g, ['opponent_PALS', 'opponent PALS']));
-      var wi = num(pickCol(g, ['opponent_wRC', 'opponent wRC', 'opponent_wRC+']));
-      if (oi != null) { o += oi; no++; }
-      if (pi != null) { p += pi; np++; }
-      if (wi != null) { w += wi; nw++; }
+      var opp = String(pickCol(g, ['opponent_team', 'opponent team']) || '').trim().toUpperCase();
+      var oor = oorMap ? oorMap[opp] : null;
+      var pl = palsMap ? palsMap[opp] : null;
+      var osiFaced = num(pickCol(g, ['opponent_OSI', 'opponent OSI']));
+      if (osiFaced == null && pl && pl.osi != null) osiFaced = pl.osi;
+      if (oor != null && !isNaN(oor)) { o += oor; no++; }
+      if (pl && pl.pals != null && !isNaN(pl.pals)) { p += pl.pals; np++; }
+      if (osiFaced != null && !isNaN(osiFaced)) { s += osiFaced; ns++; }
     });
     return {
       OOR_faced: no ? o / no : null,
       PALS_faced: np ? p / np : null,
-      wRC_faced: nw ? w / nw : null
+      OSI_faced: ns ? s / ns : null,
+      apps: rows.length
     };
   }
 
@@ -442,27 +489,22 @@
       overall: 'Overall', home: 'Home', away: 'Away', lhh: 'vs LHH', rhh: 'vs RHH'
     };
     var maxApps = window === 'L14' ? 20 : window === 'L30' ? 45 : null;
-    var row = aggregateSOSFromLog(log, pickCol, maxApps, split, ctx.team);
-    if (!row.OOR_faced && !row.PALS_faced && !row.wRC_faced) {
-      row = sosFromUnit(unit, split, pickCol);
+    var row = aggregateSOSFromLog(log, pickCol, maxApps, split, ctx.team, ctx.oorMap, ctx.palsMap);
+    // If a split has no faced-opponent data, fall back to the full-season faced set.
+    if (row.OOR_faced == null && row.PALS_faced == null && row.OSI_faced == null && split !== 'overall') {
+      row = aggregateSOSFromLog(log, pickCol, maxApps, 'overall', ctx.team, ctx.oorMap, ctx.palsMap);
     }
-    if (!row.OOR_faced && !row.PALS_faced && !row.wRC_faced && split !== 'overall') {
-      row = sosFromUnit(unit, 'overall', pickCol);
-    }
-    var oor = row.OOR_faced;
-    var pals = row.PALS_faced;
-    var wrc = row.wRC_faced;
     return '<div class="tp-trend-table-wrap pp-oor-metrics-wrap" data-sos-split="' + esc(split) + '">'
       + '<table class="hub-table tp-table pp-oor-metrics-table"><thead><tr>'
-      + '<th>OOR</th><th>PALS Faced</th><th>wRC+ Faced</th></tr></thead><tbody><tr>'
-      + '<td class="pp-oor-metric-cell">' + valChip(oor, 'oor', false, 1) + '</td>'
-      + '<td class="pp-oor-metric-cell">' + valChip(pals, 'pals', false, 1) + '</td>'
-      + '<td class="pp-oor-metric-cell">' + valChip(wrc, 'wrc', false, 0) + '</td>'
+      + '<th>OOR Faced</th><th>PALS Faced</th><th>OSI Faced</th></tr></thead><tbody><tr>'
+      + '<td class="pp-oor-metric-cell">' + valChip(row.OOR_faced, 'oor', false, 1) + '</td>'
+      + '<td class="pp-oor-metric-cell">' + valChip(row.PALS_faced, 'pals', false, 1) + '</td>'
+      + '<td class="pp-oor-metric-cell">' + valChip(row.OSI_faced, 'osi', false, 1) + '</td>'
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note">Showing <strong>' + esc(splitLabels[split] || ctx.sosSplitLabel || 'Overall') + '</strong>'
-      + (split === 'lhh' || split === 'rhh' ? ' · OOR/PALS/wRC+ from hand-split log when available' : '')
+      + ' · ' + (row.apps || 0) + ' opponent' + ((row.apps === 1) ? '' : 's') + ' faced'
       + (window !== 'YTD' ? ' · ' + esc(window) + ' window' : '')
-      + ' · higher OOR / wRC+ = tougher opposing offenses faced.</p></div>';
+      + ' · higher OOR / PALS / OSI = tougher opposing offenses faced.</p></div>';
   }
 
   function renderAllowedDashboard(unit, ctx) {

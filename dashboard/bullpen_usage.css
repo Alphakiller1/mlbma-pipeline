@@ -158,23 +158,24 @@
   background: transparent;
 }
 
+/* Workload heat: low pitch counts = fresh (green) -> high = taxed (red). */
 .bp-pitch-lo {
-  background: rgba(251, 146, 60, 0.18);
-  color: #fdba74;
+  background: rgba(34, 197, 94, 0.22);
+  color: #86efac;
 }
 
 .bp-pitch-med {
-  background: rgba(249, 115, 22, 0.35);
-  color: #fed7aa;
+  background: rgba(234, 179, 8, 0.30);
+  color: #fde68a;
 }
 
 .bp-pitch-hi {
-  background: rgba(234, 88, 12, 0.55);
-  color: #fff;
+  background: rgba(249, 115, 22, 0.50);
+  color: #ffedd5;
 }
 
 .bp-pitch-max {
-  background: rgba(185, 28, 28, 0.75);
+  background: rgba(220, 38, 38, 0.72);
   color: #fff;
 }
 

@@ -298,14 +298,21 @@
       ? 'MLB Stats API · refreshed live'
       : 'Reliever_Log · run pipeline step 12 to update';
 
+    // Display newest -> oldest so the most recent dates sit next to the Avail column.
+    // The model stays chronological (availability math relies on it); only display flips.
+    var order = model.dayCols.map(function(_, i) { return i; }).reverse();
+
     var head = '<tr><th class="bp-usage-sticky">Pitcher</th><th>Role</th><th>Avail</th>'
-      + model.dayCols.map(function(c) {
+      + order.map(function(idx) {
+        var c = model.dayCols[idx];
         return '<th class="bp-usage-date" title="' + esc(c.label) + '">' + esc(c.short) + '<span class="bp-usage-date-sub">' + esc(c.iso.slice(5)) + '</span></th>';
       }).join('') + '</tr>';
 
     var body = model.rows.map(function(r) {
       var last = String(r.name).split(' ').pop();
-      var cells = (r.pitchesByDay || []).map(function(p) {
+      var pbd = r.pitchesByDay || [];
+      var cells = order.map(function(idx) {
+        var p = pbd[idx];
         if (p == null || p <= 0) return '<td class="bp-pitch-cell bp-pitch-none">—</td>';
         return '<td class="bp-pitch-cell ' + pitchHeatClass(p) + '">' + p + '</td>';
       }).join('');
