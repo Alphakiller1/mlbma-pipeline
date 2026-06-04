@@ -1,5 +1,5 @@
 /**
- * Bullpen Report — snapshot, metrics allowed, OOR panel, reliever table.
+ * Bullpen Profile — snapshot, pitching value, leverage, OSI tiers, trends, SOS, reliever rank.
  */
 (function(global) {
   'use strict';
@@ -161,6 +161,267 @@
       '</div></div>';
   }
 
+  function valChip(v, metricCtx, invert, dec) {
+    if (v == null || isNaN(v)) {
+      return A && A.chipPlaceholderHtml ? A.chipPlaceholderHtml('—') : '<span class="chip c-na">—</span>';
+    }
+    return A && A.valChipHtml ? A.valChipHtml(v, metricCtx, invert, dec) : esc(fmt(v, dec));
+  }
+
+  function pctNorm(v) {
+    if (v == null || isNaN(v)) return null;
+    return Math.abs(v) <= 1 ? v * 100 : v;
+  }
+
+  function buildPitchingValueTableHtml(unit, prefix, pickCol) {
+    var rk = pctNorm(colVal(unit, prefix, 'K_pct', pickCol));
+    var rbb = pctNorm(colVal(unit, prefix, 'BB_pct', pickCol));
+    var rhr9 = colVal(unit, prefix, 'HR9', pickCol);
+    var rera = colVal(unit, prefix, 'ERA', pickCol);
+    var rops = colVal(unit, prefix, 'OPS_allowed', pickCol);
+    if (rops == null) rops = colVal(unit, prefix, 'OPS', pickCol);
+    function cell(v, ctx, inv, d) {
+      if (v == null || isNaN(v)) return '<td class="pp-pv-metric-cell tp-empty-cell">—</td>';
+      return '<td class="pp-pv-metric-cell">' + valChip(v, ctx, inv, d) + '</td>';
+    }
+    return '<table class="hub-table tp-table pp-pitching-value-metrics-table" aria-label="Bullpen pitching value">'
+      + '<thead><tr><th>K%</th><th>BB%</th><th>HR/9</th><th>ERA</th><th>OPS Allowed</th></tr></thead><tbody><tr>'
+      + cell(rk, 'kpct', false, 1) + cell(rbb, 'bbpct', true, 1) + cell(rhr9, 'hr9', true, 2)
+      + cell(rera, 'era', true, 2) + cell(rops, 'ops', true, 3)
+      + '</tr></tbody></table>';
+  }
+
+  function renderPitchingValuePanel(unit, ctx) {
+    var pickCol = ctx.pickCol;
+    var prefix = resolvePrefix(ctx.split || 'overall');
+    var labels = {
+      overall: 'Overall', lhh: 'vs LHH', rhh: 'vs RHH', home: 'Home', away: 'Away',
+      hilev: 'High leverage', lolev: 'Low leverage', hlev: 'High leverage', llev: 'Low leverage'
+    };
+    return '<div class="tp-trend-table-wrap pp-pv-metrics-wrap">'
+      + buildPitchingValueTableHtml(unit, prefix, pickCol)
+      + '<p class="tp-trend-table-note">Showing <strong>' + esc(labels[ctx.split] || ctx.splitLabel || 'Overall') + '</strong>'
+      + ' · lower ERA / OPS allowed = stronger bullpen value.</p></div>';
+  }
+
+  function buildLeverageTableHtml(unit, pickCol) {
+    var rows = [
+      { label: 'High leverage', prefix: 'high_leverage' },
+      { label: 'Low leverage', prefix: 'low_leverage' },
+      { label: 'Overall', prefix: 'overall' }
+    ];
+    var body = rows.map(function(r) {
+      return '<tr><th scope="row">' + esc(r.label) + '</th>'
+        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'ERA', pickCol), 'era', true, 2) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'BB_pct', pickCol)), 'bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'HR9', pickCol), 'hr9', true, 2) + '</td></tr>';
+    }).join('');
+    return '<table class="hub-table tp-table bp-leverage-table"><thead><tr>'
+      + '<th>Split</th><th>ERA</th><th>K%</th><th>BB%</th><th>OSI Allowed</th><th>HR/9</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table>';
+  }
+
+  function renderLeveragePanel(unit, ctx) {
+    return '<div class="tp-table-wrap">' + buildLeverageTableHtml(unit, ctx.pickCol)
+      + '<p class="tp-trend-table-note">High vs low leverage execution — color grades vs league bullpen context.</p></div>';
+  }
+
+  function buildOsiTierTableHtml(unit, pickCol) {
+    var tiers = [
+      { tier: 'High', prefix: 'vs_high_osi', cls: 'tier-high' },
+      { tier: 'Mid', prefix: 'vs_mid_osi', cls: 'tier-mid' },
+      { tier: 'Low', prefix: 'vs_low_osi', cls: 'tier-low' }
+    ];
+    var body = tiers.map(function(t) {
+      return '<tr><td class="' + t.cls + '">' + esc(t.tier) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, t.prefix, 'ERA', pickCol), 'era', true, 2) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(unit, t.prefix, 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(unit, t.prefix, 'BB_pct', pickCol)), 'bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, t.prefix, 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, t.prefix, 'RCV_allowed', pickCol), 'rcv', true, 1) + '</td></tr>';
+    }).join('');
+    return '<table class="hub-table tp-table pp-tier-split-table"><thead><tr>'
+      + '<th>Tier</th><th>ERA</th><th>K%</th><th>BB%</th><th>ABQ Allowed</th><th>RCV Allowed</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table>';
+  }
+
+  function renderOsiTierPanel(unit, ctx) {
+    return '<div class="tp-table-wrap">' + buildOsiTierTableHtml(unit, ctx.pickCol)
+      + '<p class="tp-trend-table-note">Results vs High / Mid / Low opposing OSI tiers — same layout as pitcher tier splits.</p></div>';
+  }
+
+  function appearanceDates(log, pickCol) {
+    var seen = {};
+    var dates = [];
+    (log || []).forEach(function(g) {
+      var d = String(pickCol(g, ['date', 'Date']) || '').trim();
+      if (!d || seen[d]) return;
+      seen[d] = true;
+      dates.push(d);
+    });
+    dates.sort(function(a, b) { return b.localeCompare(a); });
+    return dates;
+  }
+
+  function avgMetricOnDates(log, pickCol, names, dateSet) {
+    var sum = 0, n = 0;
+    (log || []).forEach(function(g) {
+      var d = String(pickCol(g, ['date', 'Date']) || '').trim();
+      if (!dateSet[d]) return;
+      for (var i = 0; i < names.length; i++) {
+        var v = num(pickCol(g, [names[i]]));
+        if (v != null) { sum += v; n++; break; }
+      }
+    });
+    return n ? sum / n : null;
+  }
+
+  function buildBullpenTrendPack(ctx) {
+    var pickCol = ctx.pickCol;
+    var log = ctx.teamLog || [];
+    var dates = appearanceDates(log, pickCol);
+    var windows = [
+      { key: 'l10', size: 10 },
+      { key: 'l6', size: 6 },
+      { key: 'l3', size: 3 },
+      { key: 'l1', size: 1 }
+    ];
+    var sets = {};
+    windows.forEach(function(w) {
+      var slice = dates.slice(0, w.size);
+      var set = {};
+      slice.forEach(function(d) { set[d] = true; });
+      sets[w.key] = set;
+    });
+    var metrics = {
+      osi: ['opponent_OSI', 'opponent OSI'],
+      rcv: ['opponent_RCV', 'opponent RCV'],
+      abq: ['opponent_ABQ', 'opponent ABQ'],
+      obr: ['opponent_OBR', 'opponent OBR']
+    };
+    var pack = { osi: [], rcv: [], abq: [], obr: [] };
+    windows.forEach(function(w) {
+      Object.keys(metrics).forEach(function(k) {
+        pack[k].push(avgMetricOnDates(log, pickCol, metrics[k], sets[w.key]));
+      });
+    });
+    pack.logCount = dates.length;
+    pack.source = dates.length ? 'log' : 'unit';
+    return pack;
+  }
+
+  function trendInterpBullpen(delta, velocity) {
+    var C = global.MLBMACharts;
+    var d = num(delta);
+    var v = num(velocity);
+    if (d == null && v == null) return 'Insufficient';
+    if (C && typeof C.trendDirectionFromVelocity === 'function' && v != null && d == null) {
+      var dir = C.trendDirectionFromVelocity(v);
+      return dir === 'Up' ? 'Heating Up' : dir === 'Down' ? 'Cooling Off' : 'Flat Momentum';
+    }
+    if (d == null && v != null) {
+      if (v > 0.75) return 'Heating Up';
+      if (v < -0.75) return 'Cooling Off';
+      return 'Flat Momentum';
+    }
+    if (v == null && d != null) {
+      if (d >= 3) return 'Schedule Harder';
+      if (d <= -3) return 'Schedule Softer';
+      return 'Stable Band';
+    }
+    if (d >= 3 && v > 0.5) return 'Schedule Harder';
+    if (d <= -3 && v < -0.5) return 'Schedule Softer';
+    if (Math.abs(d) <= 1.5 && Math.abs(v) < 0.5) return 'Stable Band';
+    if (Math.abs(d) >= 4 && Math.abs(v) < 0.35) return 'Short Spike';
+    return 'Mixed Signal';
+  }
+
+  function renderRollingTrendPanel(unit, ctx) {
+    var pack = buildBullpenTrendPack(ctx);
+    var C = global.MLBMACharts;
+    var metrics = [
+      { k: 'osi', label: 'OSI', ctx: 'osi', desc: 'Composite offense faced' },
+      { k: 'rcv', label: 'RCV', ctx: 'rcv', desc: 'Contact quality faced' },
+      { k: 'abq', label: 'ABQ', ctx: 'abq', desc: 'Discipline quality faced' },
+      { k: 'obr', label: 'OBR', ctx: 'obr', desc: 'On-base floor faced' }
+    ];
+    var body = metrics.map(function(def) {
+      var vals = pack[def.k] || [];
+      var l10 = num(vals[0]), l6 = num(vals[1]), l3 = num(vals[2]), l1 = num(vals[3]);
+      var velocity = C && C.computeTrendVelocityFromWindows
+        ? C.computeTrendVelocityFromWindows([l10, l6, l3, l1]) : null;
+      var delta = l10 != null && l1 != null ? l1 - l10 : null;
+      var interp = trendInterpBullpen(delta, velocity);
+      var tone = interp.indexOf('Harder') >= 0 || interp.indexOf('Heating') >= 0 ? 'down'
+        : interp.indexOf('Softer') >= 0 || interp.indexOf('Cooling') >= 0 ? 'up' : 'mixed';
+      return '<tr><th scope="row"><span class="tp-trend-table__metric">' + esc(def.label)
+        + '<span class="tp-trend-table__metric-desc">' + esc(def.desc) + '</span></span></th>'
+        + '<td class="numcol">' + valChip(l10, def.ctx, true, 1) + '</td>'
+        + '<td class="numcol">' + valChip(l6, def.ctx, true, 1) + '</td>'
+        + '<td class="numcol">' + valChip(l3, def.ctx, true, 1) + '</td>'
+        + '<td class="numcol tp-trend-col--highlight">' + valChip(l1, def.ctx, true, 1) + '</td>'
+        + '<td class="numcol">' + (delta != null ? valChip(delta, def.ctx, true, 1) : '—') + '</td>'
+        + '<td class="numcol">' + (velocity != null ? esc((velocity > 0 ? '+' : '') + velocity.toFixed(2)) : '—') + '</td>'
+        + '<td><span class="tp-trend-table__interp tp-trend-table__interp--' + tone + '">' + esc(interp) + '</span></td></tr>';
+    }).join('');
+    return '<div class="tp-trend-table-wrap pp-allowed-trend"><p class="tp-trend-table-note">'
+      + esc(ctx.splitLabel || 'Overall') + ' · opponent quality by appearance date (L10→L1) · '
+      + (pack.logCount ? pack.logCount + ' appearance days in log' : 'no reliever log — showing unit snapshot')
+      + '.</p><table class="tp-trend-table"><thead><tr><th>Metric</th><th>L10</th><th>L6</th><th>L3</th>'
+      + '<th class="tp-trend-col--highlight">L1</th><th>Δ L1−L10</th><th>Velocity</th><th>Interpretation</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+  }
+
+  function aggregateSOSFromLog(log, pickCol, maxApps) {
+    var rows = (log || []).slice().sort(function(a, b) {
+      return String(pickCol(b, ['date', 'Date'])).localeCompare(String(pickCol(a, ['date', 'Date'])));
+    });
+    if (maxApps) rows = rows.slice(0, maxApps);
+    var o = 0, no = 0, p = 0, np = 0, w = 0, nw = 0;
+    rows.forEach(function(g) {
+      var oi = num(pickCol(g, ['opponent_OOR', 'opponent OOR']));
+      var pi = num(pickCol(g, ['opponent_PALS', 'opponent PALS']));
+      var wi = num(pickCol(g, ['opponent_wRC', 'opponent wRC', 'opponent_wRC+']));
+      if (oi != null) { o += oi; no++; }
+      if (pi != null) { p += pi; np++; }
+      if (wi != null) { w += wi; nw++; }
+    });
+    return {
+      OOR_faced: no ? o / no : null,
+      PALS_faced: np ? p / np : null,
+      wRC_faced: nw ? w / nw : null
+    };
+  }
+
+  function renderStrengthOfSchedulePanel(unit, ctx) {
+    var pickCol = ctx.pickCol;
+    var log = ctx.teamLog || [];
+    var window = ctx.window || 'YTD';
+    var maxApps = window === 'L14' ? 20 : window === 'L30' ? 45 : null;
+    var row = aggregateSOSFromLog(log, pickCol, maxApps);
+    if (!row.OOR_faced && !row.PALS_faced && !row.wRC_faced) {
+      row = {
+        OOR_faced: colVal(unit, 'overall', 'OSI_allowed', pickCol),
+        PALS_faced: null,
+        wRC_faced: null
+      };
+    }
+    var oor = row.OOR_faced;
+    var pals = row.PALS_faced;
+    var wrc = row.wRC_faced;
+    return '<div class="tp-trend-table-wrap pp-oor-metrics-wrap">'
+      + '<table class="hub-table tp-table pp-oor-metrics-table"><thead><tr>'
+      + '<th>OOR</th><th>PALS Faced</th><th>wRC+ Faced</th></tr></thead><tbody><tr>'
+      + '<td class="pp-oor-metric-cell">' + valChip(oor, 'oor', false, 1) + '</td>'
+      + '<td class="pp-oor-metric-cell">' + valChip(pals, 'pals', false, 1) + '</td>'
+      + '<td class="pp-oor-metric-cell">' + valChip(wrc, 'wrc', false, 0) + '</td>'
+      + '</tr></tbody></table>'
+      + '<p class="tp-trend-table-note">Strength of schedule from reliever appearance log'
+      + (window !== 'YTD' ? ' · ' + esc(window) + ' window' : '') + '.</p></div>';
+  }
+
   function renderAllowedDashboard(unit, ctx) {
     var resolved = resolveAllowed(unit, ctx);
     var m = resolved.metrics;
@@ -279,15 +540,33 @@
     var inferRole = ctx.inferRole;
     var relieverIP = ctx.relieverIP;
     var appearanceDetail = ctx.appearanceDetail;
+    var sortKey = ctx.sortKey || 'ip';
+    var sortDir = ctx.sortDir === 'asc' ? 1 : -1;
     var colCount = 14;
 
-    var html = '<table class="tp-table hub-table"><thead><tr>' +
-      '<th>Name</th><th>Role</th><th>IP</th><th>ERA</th><th>K%</th><th>BB%</th><th>HR/9</th>' +
-      '<th>OSI All.</th><th>ABQ All.</th><th>OOR</th><th>vs RHH OSI</th><th>vs LHH OSI</th>' +
-      '<th>IR Scored%</th><th>Hi Lev ERA</th>' +
-      '</tr></thead><tbody>';
+    function sortVal(r) {
+      if (sortKey === 'era') return colVal(r, 'overall', 'ERA', pickCol);
+      if (sortKey === 'k') return pctNorm(colVal(r, 'overall', 'K_pct', pickCol));
+      if (sortKey === 'osi') return colVal(r, 'overall', 'OSI_allowed', pickCol);
+      return relieverIP(pickCol(r, ['pitcher_id']), pickCol(r, ['pitcher_name']));
+    }
 
-    relievers.forEach(function(r) {
+    var sorted = relievers.slice().sort(function(a, b) {
+      var va = sortVal(a), vb = sortVal(b);
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      return (va - vb) * sortDir;
+    });
+
+    var html = '<table class="tp-table hub-table bp-reliever-rank-table" data-sort="' + esc(sortKey) + '"><thead><tr>'
+      + '<th data-sort="name">Name</th><th>Role</th><th data-sort="ip">IP</th><th data-sort="era">ERA</th>'
+      + '<th data-sort="k">K%</th><th>BB%</th><th>HR/9</th>'
+      + '<th data-sort="osi">OSI All.</th><th>ABQ All.</th><th>OOR</th><th>vs RHH OSI</th><th>vs LHH OSI</th>'
+      + '<th>IR Scored%</th><th>Hi Lev ERA</th>'
+      + '</tr></thead><tbody>';
+
+    sorted.forEach(function(r) {
       var pid = pickCol(r, ['pitcher_id']);
       var name = pickCol(r, ['pitcher_name']);
       var role = inferRole(pid, name);
@@ -295,21 +574,21 @@
       var exp = expandedPid === String(pid);
       var oor = colVal(r, 'overall', 'OSI_allowed', pickCol);
 
-      html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">' +
-        '<td><strong><a href="reliever_profile.html?player=' + encodeURIComponent(name) + '" style="color:var(--purple-2);text-decoration:none;">' + esc(name) + '</a></strong></td>' +
-        '<td class="' + role.cls + '">' + esc(role.label) + '</td>' +
-        '<td class="num">' + fmt(ip, 1) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'overall', 'ERA', pickCol), 2) + '</td>' +
-        '<td class="num">' + fmtPct(colVal(r, 'overall', 'K_pct', pickCol)) + '</td>' +
-        '<td class="num">' + fmtPct(colVal(r, 'overall', 'BB_pct', pickCol)) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'overall', 'HR9', pickCol), 2) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'overall', 'OSI_allowed', pickCol), 1) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'overall', 'ABQ_allowed', pickCol), 1) + '</td>' +
-        '<td class="num">' + fmt(oor, 1) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'vs_rhh', 'OSI_allowed', pickCol), 1) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'vs_lhh', 'OSI_allowed', pickCol), 1) + '</td>' +
-        '<td class="num">' + fmtPct(colVal(r, 'overall', 'inherited_runners_scored_pct', pickCol)) + '</td>' +
-        '<td class="num">' + fmt(colVal(r, 'high_leverage', 'ERA', pickCol), 2) + '</td></tr>';
+      html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">'
+        + '<td><strong><a href="reliever_profile.html?player=' + encodeURIComponent(name) + '" class="bp-reliever-link">' + esc(name) + '</a></strong></td>'
+        + '<td class="' + role.cls + '">' + esc(role.label) + '</td>'
+        + '<td class="num">' + valChip(ip, 'ip', false, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'ERA', pickCol), 'era', true, 2) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'BB_pct', pickCol)), 'bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'HR9', pickCol), 'hr9', true, 2) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
+        + '<td class="num">' + valChip(oor, 'osi', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'vs_rhh', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'vs_lhh', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'inherited_runners_scored_pct', pickCol), 'ir', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'high_leverage', 'ERA', pickCol), 'era', true, 2) + '</td></tr>';
       if (exp) html += '<tr class="detail-row"><td colspan="' + colCount + '">' + appearanceDetail(pid, name) + '</td></tr>';
     });
 
@@ -379,10 +658,13 @@
 
   global.BullpenProfileDashboard = {
     renderSnapshot: function(team, unit, ctx) { return strip(renderSnapshot(team, unit, ctx)); },
+    renderPitchingValuePanel: function(unit, ctx) { return strip(renderPitchingValuePanel(unit, ctx)); },
+    renderLeveragePanel: function(unit, ctx) { return strip(renderLeveragePanel(unit, ctx)); },
+    renderOsiTierPanel: function(unit, ctx) { return strip(renderOsiTierPanel(unit, ctx)); },
+    renderRollingTrendPanel: function(unit, ctx) { return strip(renderRollingTrendPanel(unit, ctx)); },
+    renderStrengthOfSchedulePanel: function(unit, ctx) { return strip(renderStrengthOfSchedulePanel(unit, ctx)); },
     renderAllowedDashboard: function(unit, ctx) { return strip(renderAllowedDashboard(unit, ctx)); },
-    renderOORPanel: function(unit, ctx) { return strip(renderOORPanel(unit, ctx)); },
-    renderDecisionStrip: function(unit, ctx) { return strip(renderBullpenDecisionStrip(unit, ctx)); },
-    renderAnalystTakeLine: function(unit, ctx) { return strip(renderBullpenAnalystTakeLine(unit, ctx)); },
+    renderOORPanel: function(unit, ctx) { return strip(renderStrengthOfSchedulePanel(unit, ctx)); },
     buildRelieverTable: function(relievers, ctx) { return strip(buildRelieverTable(relievers, ctx)); },
     resolveAllowed: resolveAllowed
   };

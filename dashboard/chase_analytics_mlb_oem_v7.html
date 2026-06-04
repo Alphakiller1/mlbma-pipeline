@@ -2679,15 +2679,16 @@ body.view-research .ca-lab { display: block; }
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard">
-﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
 
   <nav class="chase-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="36" height="36"
-        onerror="this.style.display='none'">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
@@ -2704,7 +2705,7 @@ body.view-research .ca-lab { display: block; }
         <div class="chase-dropdown-menu">
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
           <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
+          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Profile</a>
           <div class="chase-dropdown-divider"></div>
           <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
           <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
@@ -2727,8 +2728,9 @@ body.view-research .ca-lab { display: block; }
 <div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="Chase Analytics" width="36" height="36"
-        onerror="this.style.display='none'">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
     <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2748,7 +2750,7 @@ body.view-research .ca-lab { display: block; }
     <div class="chase-mobile-section">Profiles</div>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
     <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Profile</a>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>

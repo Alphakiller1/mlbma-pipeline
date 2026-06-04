@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics — Bullpen Report</title>
+<title>Chase Analytics — Bullpen Profile</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260618a">
 <link rel="stylesheet" href="theme.css?v=20260618b">
@@ -12,25 +12,27 @@
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="bullpen_report.css?v=20260606a">
+<link rel="stylesheet" href="bullpen_report.css?v=20260606b">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
+<script src="mlbma_assets.js"></script>
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="mlbma_icons.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260606a"></script>
+<script src="bullpen_profile_dashboard.js?v=20260606b"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
 <script src="mlbma_ui.js" data-page="bullpen_report.html"></script>
+  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="bullpen-profile-page player-profile-page team-profile-page">
 
 <div class="loading-text" id="loadingText">Loading bullpen intelligence from Google Sheets—</div>
-﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+﻿﻿﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -56,7 +58,7 @@
         <div class="chase-dropdown-menu">
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
           <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Report</a>
+          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Profile</a>
           <div class="chase-dropdown-divider"></div>
           <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
           <a href="reliever_profile.html" class="chase-dropdown-item">Reliever Profile</a>
@@ -101,7 +103,7 @@
     <div class="chase-mobile-section">Profiles</div>
     <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
     <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Report</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Profile</a>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
@@ -119,7 +121,7 @@
   <div class="tp-data-banner data-banner" id="dataBanner"></div>
 
   <details class="profile-slate-collapsible" id="todayBarWrap">
-    <summary>Today's Bullpens <span id="todayBarCount" style="font-weight:400;color:var(--text-3);"></span></summary>
+    summary>Today's Bullpens <span id="todayBarCount" style="font-weight:400;color:var(--text-3);"></span></summary>
     <div class="today-games-bar" id="todayBar"></div>
   </details>
 
@@ -139,44 +141,38 @@
       <div id="bullpenUsageWrap"><div class="bp-usage-empty">Select a team to load usage chart.</div></div>
     </section>
 
+    <section class="ca-board tp-section" id="secPitchingValue">
+      <div id="bpHdrPitchingValue"></div>
+      <div id="bpPitchingValueControls" class="tp-section-filter-bar hub-control-bar"></div>
+      <div id="pitchingValuePanel"></div>
+    </section>
+
     <section class="ca-board tp-section" id="secLev">
       <div id="bpHdrLev"></div>
-      <div class="bp-split-grid" id="levGrid"></div>
-      <div class="insight-line tp-note" id="levInsight"></div>
+      <div id="leveragePanel"></div>
     </section>
 
-    <section class="ca-board tp-section" id="secAllowed">
-      <div id="bpHdrAllowed"></div>
-      <div id="allowedDashboard"></div>
+    <section class="ca-board tp-section" id="secOsi">
+      <div id="bpHdrOsi"></div>
+      <div id="osiTierPanel"></div>
+      <div class="insight-line tp-note" id="osiInsight"></div>
     </section>
 
-    <section class="ca-board tp-section" id="secOOR">
-      <div id="bpHdrOOR"></div>
-      <div id="oorPanel"></div>
+    <section class="ca-board tp-section" id="secTrends">
+      <div id="bpHdrTrends"></div>
+      <div id="rollingTrendPanel"></div>
     </section>
 
-    <div class="profile-deep-sections">
-      <section class="ca-board tp-section" id="secOsi">
-        <div id="bpHdrOsi"></div>
-        <div class="tp-table-wrap table-wrap" id="osiTableWrap"></div>
-        <div class="insight-line tp-note" id="osiInsight"></div>
-      </section>
+    <section class="ca-board tp-section" id="secRelievers">
+      <div id="bpHdrRelievers"></div>
+      <div id="bpRelieverSort" class="tp-section-filter-bar hub-control-bar"></div>
+      <div class="tp-table-wrap table-wrap" id="relieverTableWrap"></div>
+    </section>
 
-      <section class="ca-board tp-section" id="secHand">
-        <div id="bpHdrHand"></div>
-        <div class="bp-split-grid" id="handGrid"></div>
-      </section>
-
-      <section class="ca-board tp-section" id="secLoc">
-        <div id="bpHdrLoc"></div>
-        <div class="bp-split-grid" id="locGrid"></div>
-      </section>
-
-      <section class="ca-board tp-section" id="secRelievers">
-        <div id="bpHdrRelievers"></div>
-        <div class="tp-table-wrap table-wrap" id="relieverTableWrap"></div>
-      </section>
-    </div>
+    <section class="ca-board tp-section" id="secSOS">
+      <div id="bpHdrSOS"></div>
+      <div id="strengthOfSchedulePanel"></div>
+    </section>
   </div>
 </main>
 <script>
@@ -193,7 +189,7 @@ var DATA = {
   todayTeams: new Set()
 };
 
-var STATE = { team: null, expandedPid: null, split: 'overall', window: 'YTD', view: 'summary' };
+var STATE = { team: null, expandedPid: null, split: 'overall', window: 'YTD', view: 'summary', relieverSort: 'ip', relieverSortDir: 'desc' };
 
 var ALL_MLB_TEAMS = [
   'ARI', 'ATL', 'BAL', 'BOS', 'CHC', 'CHW', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KC',
@@ -220,7 +216,7 @@ function mountProfilePageHeader() {
   if (!window.MLBMAAssets || !MLBMAAssets.mountPlatformHeader) return;
   MLBMAAssets.mountPlatformHeader('profilePageHeader', {
     eyebrow: 'Chase Analytics · Profiles',
-    title: 'Bullpen Report',
+    title: 'Bullpen Profile',
     showPlatformNav: false
   });
 }
@@ -228,20 +224,85 @@ function mountProfilePageHeader() {
 function renderBullpenSectionHeaders() {
   if (!window.MLBMAAssets || !MLBMAAssets.sectionHeaderHtml) return;
   var map = [
-    { id: 'bpHdrUsage', title: 'Availability Board', subtitle: 'Closer / setup / long relief — last 7 days pitch counts', icon: 'list' },
-    { id: 'bpHdrLev', title: 'Leverage Splits', subtitle: 'High-leverage vs low-leverage execution', icon: 'target' },
-    { id: 'bpHdrAllowed', title: 'Metric Allowed Profile', subtitle: 'Lower allowed = softer opposing offense faced', icon: 'shield' },
-    { id: 'bpHdrOOR', title: 'Strength of Competition', subtitle: 'Average offensive quality of lineups faced', icon: 'insight' },
+    { id: 'bpHdrUsage', title: 'Bullpen Usage', subtitle: 'Closer / setup / long relief — last 7 days pitch counts', icon: 'list' },
+    { id: 'bpHdrPitchingValue', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · ERA · OPS allowed — by split', icon: 'target' },
+    { id: 'bpHdrLev', title: 'Leverage Splits', subtitle: 'High-leverage vs low-leverage execution with graded stats', icon: 'split' },
     { id: 'bpHdrOsi', title: 'Performance vs Lineup Quality', subtitle: 'Results vs High / Mid / Low OSI offenses', icon: 'spark' },
-    { id: 'bpHdrHand', title: 'Handedness Splits', subtitle: 'vs RHH and vs LHH', icon: 'split' },
-    { id: 'bpHdrLoc', title: 'Home / Away Splits', subtitle: 'Bullpen execution by ballpark side', icon: 'clock' },
-    { id: 'bpHdrRelievers', title: 'Individual Relievers', subtitle: 'Click a row to expand last 10 appearances', icon: 'users' }
+    { id: 'bpHdrTrends', title: 'Opposing Offense Allowed — Rolling Trends', subtitle: 'L10 → L1 appearance windows · interpretation per metric', icon: 'shield' },
+    { id: 'bpHdrRelievers', title: 'Reliever Rank', subtitle: 'Sort by stat group · click row for last 10 appearances', icon: 'users' },
+    { id: 'bpHdrSOS', title: 'Bullpen Strength of Schedule', subtitle: 'OOR · PALS faced · wRC+ faced from appearance log', icon: 'insight' }
   ];
   map.forEach(function(h) {
     var el = document.getElementById(h.id);
     if (!el) return;
-    el.innerHTML = MLBMAAssets.sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Bullpen Report' });
+    el.innerHTML = MLBMAAssets.sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Bullpen Profile' });
   });
+}
+
+function renderBpPitchingSplitBar() {
+  var el = document.getElementById('bpPitchingValueControls');
+  var PC = window.MLBMAProfileControls;
+  if (!el || !PC || !PC.renderSectionOptionBar) return;
+  el.innerHTML = PC.renderSectionOptionBar({
+    layout: 'row',
+    barClass: 'tp-section-filter-bar--controls',
+    groups: [{
+      label: 'Split',
+      key: 'split',
+      options: [
+        { value: 'overall', label: 'Overall' },
+        { value: 'lhh', label: 'vs LHH' },
+        { value: 'rhh', label: 'vs RHH' },
+        { value: 'home', label: 'Home' },
+        { value: 'away', label: 'Away' },
+        { value: 'hilev', label: 'High Lev' },
+        { value: 'lolev', label: 'Low Lev' }
+      ],
+      value: STATE.split === 'hlev' ? 'hilev' : STATE.split === 'llev' ? 'lolev' : STATE.split
+    }]
+  });
+  el.querySelectorAll('[data-opt-key="split"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var v = btn.getAttribute('data-opt-value');
+      STATE.split = v === 'hlev' ? 'hilev' : v === 'llev' ? 'llev' : v;
+      renderBpPitchingSplitBar();
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  });
+}
+
+function renderBpRelieverSortBar() {
+  var el = document.getElementById('bpRelieverSort');
+  if (!el) return;
+  var sorts = [
+    { value: 'ip', label: 'IP' },
+    { value: 'era', label: 'ERA' },
+    { value: 'k', label: 'K%' },
+    { value: 'osi', label: 'OSI Allowed' }
+  ];
+  var html = '<div class="hub-pill-row">';
+  sorts.forEach(function(s) {
+    var active = STATE.relieverSort === s.value;
+    html += '<button type="button" class="hub-pill' + (active ? ' active' : '') + '" data-bp-sort="' + esc(s.value) + '">' + esc(s.label) + '</button>';
+  });
+  html += '<button type="button" class="hub-pill' + (STATE.relieverSortDir === 'asc' ? ' active' : '') + '" data-bp-sort-dir="toggle">'
+    + (STATE.relieverSortDir === 'asc' ? 'Asc' : 'Desc') + '</button></div>';
+  el.innerHTML = html;
+  el.querySelectorAll('[data-bp-sort]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      STATE.relieverSort = btn.getAttribute('data-bp-sort');
+      renderBpRelieverSortBar();
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  });
+  var dirBtn = el.querySelector('[data-bp-sort-dir]');
+  if (dirBtn) {
+    dirBtn.addEventListener('click', function() {
+      STATE.relieverSortDir = STATE.relieverSortDir === 'asc' ? 'desc' : 'asc';
+      renderBpRelieverSortBar();
+      if (STATE.team) renderTeam(STATE.team);
+    });
+  }
 }
 
 function mountTeamPicker() {
@@ -554,11 +615,19 @@ function renderPlatformSections(team, unit) {
   if (!window.BullpenProfileDashboard) return;
   var ctx = buildDashboardCtx(team, unit);
   var snap = document.getElementById('bullpenSnapshot');
-  var allowed = document.getElementById('allowedDashboard');
-  var oorEl = document.getElementById('oorPanel');
   if (snap) snap.innerHTML = BullpenProfileDashboard.renderSnapshot(team, unit, ctx);
-  if (allowed) allowed.innerHTML = BullpenProfileDashboard.renderAllowedDashboard(unit, ctx);
-  if (oorEl) oorEl.innerHTML = BullpenProfileDashboard.renderOORPanel(unit, ctx);
+  var pv = document.getElementById('pitchingValuePanel');
+  if (pv) pv.innerHTML = BullpenProfileDashboard.renderPitchingValuePanel(unit, ctx);
+  var lev = document.getElementById('leveragePanel');
+  if (lev) lev.innerHTML = BullpenProfileDashboard.renderLeveragePanel(unit, ctx);
+  var osi = document.getElementById('osiTierPanel');
+  if (osi) osi.innerHTML = BullpenProfileDashboard.renderOsiTierPanel(unit, ctx);
+  var tr = document.getElementById('rollingTrendPanel');
+  if (tr) tr.innerHTML = BullpenProfileDashboard.renderRollingTrendPanel(unit, ctx);
+  var sos = document.getElementById('strengthOfSchedulePanel');
+  if (sos) sos.innerHTML = BullpenProfileDashboard.renderStrengthOfSchedulePanel(unit, ctx);
+  var osiInsight = document.getElementById('osiInsight');
+  if (osiInsight) osiInsight.innerHTML = osiInsightText(unit, team);
 }
 
 function buildOsiTable(unit, team) {
@@ -646,6 +715,10 @@ function appearanceDetail(pid, name) {
   return inner + '</tbody></table>';
 }
 
+function osiInsightText(unit, team) {
+  return osiInsight(unit, team);
+}
+
 function renderTeam(team) {
   if (!team) return;
   STATE.team = teamKey(team);
@@ -659,42 +732,20 @@ function renderTeam(team) {
   document.getElementById('reportContent').classList.add('ready');
 
   renderPlatformSections(team, unit);
-
-  document.getElementById('osiTableWrap').innerHTML = buildOsiTable(unit, team);
-  document.getElementById('osiInsight').innerHTML = osiInsight(unit, team);
-
-  document.getElementById('levGrid').innerHTML =
-    splitPanel('High Leverage', unit, 'high_leverage') +
-    splitPanel('Low Leverage', unit, 'low_leverage');
-  document.getElementById('levInsight').innerHTML = levInsight(unit);
-
-  var rhhEra = colVal(unit, 'vs_rhh', 'ERA');
-  var lhhEra = colVal(unit, 'vs_lhh', 'ERA');
-  if (rhhEra == null && lhhEra == null && colVal(unit, 'vs_rhh', 'OSI_allowed') == null && colVal(unit, 'vs_lhh', 'OSI_allowed') == null) {
-    document.getElementById('handGrid').innerHTML = '<div class="empty-state" style="padding:14px;font-size:13px;color:var(--text-2);">Handedness bullpen split unavailable for this export.</div>';
-  } else {
-    document.getElementById('handGrid').innerHTML =
-      splitPanel('vs RHH', unit, 'vs_rhh') +
-      splitPanel('vs LHH', unit, 'vs_lhh');
-  }
-
-  document.getElementById('locGrid').innerHTML =
-    splitPanel('Home', unit, 'home') +
-    splitPanel('Away', unit, 'away');
+  renderBpPitchingSplitBar();
+  renderBpRelieverSortBar();
 
   var rels = DATA.individuals.filter(function(r) {
     return teamKey(pickCol(r, ['pitcher_team', 'pitcher team'])) === teamKey(team);
   });
-  rels.sort(function(a, b) {
-    var ipA = relieverIP(pickCol(a, ['pitcher_id']), pickCol(a, ['pitcher_name']));
-    var ipB = relieverIP(pickCol(b, ['pitcher_id']), pickCol(b, ['pitcher_name']));
-    return ipB - ipA;
-  });
   var ctx = buildDashboardCtx(team, unit);
+  ctx.sortKey = STATE.relieverSort;
+  ctx.sortDir = STATE.relieverSortDir;
   document.getElementById('relieverTableWrap').innerHTML = window.BullpenProfileDashboard
     ? BullpenProfileDashboard.buildRelieverTable(rels, ctx)
     : '<div class="empty-state">Dashboard module not loaded.</div>';
   bindRelieverClicks();
+  bindRelieverSortHeaders();
 
   document.querySelectorAll('.today-chip').forEach(function(c) {
     c.classList.toggle('active', c.textContent === teamKey(team));
@@ -702,6 +753,24 @@ function renderTeam(team) {
   });
   if (_teamPicker && _teamPicker.setValue) _teamPicker.setValue(STATE.team);
   renderBullpenUsage(team);
+}
+
+function bindRelieverSortHeaders() {
+  document.querySelectorAll('.bp-reliever-rank-table thead th[data-sort]').forEach(function(th) {
+    th.style.cursor = 'pointer';
+    th.onclick = function() {
+      var key = th.getAttribute('data-sort');
+      if (key === 'name') return;
+      if (STATE.relieverSort === key) {
+        STATE.relieverSortDir = STATE.relieverSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        STATE.relieverSort = key;
+        STATE.relieverSortDir = 'desc';
+      }
+      renderBpRelieverSortBar();
+      if (STATE.team) renderTeam(STATE.team);
+    };
+  });
 }
 
 function renderBullpenUsage(team) {
@@ -761,7 +830,6 @@ function loadAll() {
     mountProfilePageHeader();
     renderBullpenSectionHeaders();
     mountTeamPicker();
-    bindBullpenProfileControls();
 
     if (!DATA.units.length) {
       document.getElementById('dataBanner').textContent = 'Bullpen_Unit empty — run pipeline steps 12—13.';
@@ -779,6 +847,7 @@ function loadAll() {
     var fromUrl = teamKey(params.get('team') || '');
     var start = fromUrl || todayFirst || first;
     document.getElementById('teamSelect').value = start;
+    bindBullpenProfileControls();
     renderTeam(start);
   }).catch(function(err) {
     console.error(err);
@@ -803,6 +872,8 @@ function showDelayedLoadBanner() {
 document.addEventListener('DOMContentLoaded', function() {
   mountProfilePageHeader();
   renderBullpenSectionHeaders();
+  renderBpPitchingSplitBar();
+  renderBpRelieverSortBar();
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
     _profileWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
   }

@@ -43,7 +43,7 @@ window.MLBMA_CONFIG = {
     { id: "batter_profile", label: "Batter Profile", file: "batter_profile.html", url: "batter_profile.html", params: ["player"] },
     { id: "pitcher_profile", label: "Pitcher Profile", file: "pitcher_profile.html", url: "pitcher_profile.html", params: ["pitcher"] },
     { id: "reliever_profile", label: "Reliever Profile", file: "reliever_profile.html", url: "reliever_profile.html", params: ["player"] },
-    { id: "bullpen_report", label: "Bullpen Report", file: "bullpen_report.html", url: "bullpen_report.html", params: null },
+    { id: "bullpen_report", label: "Bullpen Profile", file: "bullpen_report.html", url: "bullpen_report.html", params: null },
     { id: "team_profile", label: "Team Profile", file: "team_profile.html", url: "team_profile.html", params: ["team"] },
     { id: "glossary", label: "Glossary", file: "glossary.html", url: "glossary.html", params: null }
   ],

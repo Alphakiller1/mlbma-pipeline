@@ -826,11 +826,23 @@
   function allowedInterpretation(delta, velocity) {
     var d = num(delta);
     var v = num(velocity);
-    if (d == null || v == null) return 'Insufficient';
+    if (d == null && v == null) return 'Insufficient';
+    if (d == null && v != null) {
+      if (v > 0.75) return 'Heating Up';
+      if (v < -0.75) return 'Cooling Off';
+      return 'Flat Momentum';
+    }
+    if (v == null && d != null) {
+      if (d >= 4) return 'Schedule Harder';
+      if (d <= -4) return 'Schedule Softer';
+      return 'Stable Band';
+    }
     if (d >= 4 && v > 0.6) return 'Schedule Harder';
     if (d <= -4 && v < -0.6) return 'Schedule Softer';
     if (Math.abs(d) <= 2 && Math.abs(v) < 0.6) return 'Stable Band';
     if (Math.abs(d) >= 5 && Math.abs(v) < 0.4) return 'Short Spike';
+    if (d > 0 && v <= 0) return 'Late Softening';
+    if (d < 0 && v >= 0) return 'Late Firming';
     return 'Mixed Signal';
   }
 
@@ -1220,6 +1232,10 @@
     var extras = competitionExtrasFromCtx(ctx);
     if (viewSplit === 'lhh' || viewSplit === 'rhh') extras.platoonSplit = viewSplit;
     var rawLog = ctx.gameLog || log || [];
+
+    var row = sheetCompetitionMetrics(splits, profile, pickCol, findSplit, viewSplit, ctx);
+    if (competitionRowHasData(row)) return row;
+
     var baseOpts = {
       mode: 'competition',
       oorMap: extras.oorMap,
@@ -1228,12 +1244,7 @@
       ctx: ctx
     };
 
-    if (viewSplit === 'lhh' || viewSplit === 'rhh') {
-      var platoonRow = aggregateCompetitionFromLog(rawLog, pickCol, extras);
-      if (competitionRowHasData(platoonRow)) return platoonRow;
-    }
-
-    var row = resolvePitcherSplitRow(
+    row = resolvePitcherSplitRow(
       splits,
       rawLog,
       profile,
@@ -1241,9 +1252,6 @@
       findSplit,
       competitionSplitOpts(viewSplit, baseOpts)
     );
-    if (competitionRowHasData(row)) return row;
-
-    row = sheetCompetitionMetrics(splits, profile, pickCol, findSplit, viewSplit, ctx);
     if (competitionRowHasData(row)) return row;
 
     var sub = filterLogForCompetitionSplit(rawLog, pickCol, viewSplit, ctx.dateSortKey);
@@ -1282,7 +1290,7 @@
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-oor-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
       + (viewSplit === 'lhh' || viewSplit === 'rhh'
-        ? ' · OOR = HvL/HvR · wRC+ = vs LHP/RHP · PALS = season avg'
+        ? ' · OOR = HvL/HvR · wRC+ = vs LHP/RHP · PALS from hand-split game log'
         : ' · higher = tougher schedule (contextualizes ERA)')
       + '</p>';
   }
