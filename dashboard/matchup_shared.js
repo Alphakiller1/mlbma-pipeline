@@ -141,11 +141,19 @@
   var _sheetTabCache = {};
   var _sheetTabInflight = {};
 
+  var SLATE_TABS = { Today_Matchups: 1, Today_Lineups: 1, Today_Games: 1 };
+
+  function isSlateTab(tabName) {
+    var t = String(tabName || '');
+    return !!(SLATE_TABS[t] || t.indexOf('Today_') === 0);
+  }
+
   function fetchSheetTab(tabName, options) {
     options = options || {};
     var sid = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_ID;
     if (!sid) return Promise.reject(new Error('no sheet id'));
-    var key = String(tabName);
+    var slateDay = options.slateDay || (isSlateTab(tabName) ? easternDateIso() : '');
+    var key = String(tabName) + (slateDay ? '|' + slateDay : '');
     if (!options.forceRefresh && _sheetTabCache[key]) {
       return Promise.resolve(_sheetTabCache[key].slice());
     }
@@ -155,7 +163,9 @@
     var bust = (global.MLBMA_SHEET_BUST != null) ? global.MLBMA_SHEET_BUST : Date.now();
     var pageBust = (global.MLBMA_PAGE_LOAD_BUST != null) ? global.MLBMA_PAGE_LOAD_BUST : Date.now();
     var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName)
-      + '&_b=' + encodeURIComponent(String(bust)) + '&_p=' + encodeURIComponent(String(pageBust));
+      + '&_b=' + encodeURIComponent(String(bust)) + '&_p=' + encodeURIComponent(String(pageBust))
+      + (slateDay ? '&_d=' + encodeURIComponent(slateDay) : '')
+      + '&_r=' + encodeURIComponent(String(Date.now()));
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
     _sheetTabInflight[key] = fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {

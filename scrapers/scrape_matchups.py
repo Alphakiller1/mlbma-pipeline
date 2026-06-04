@@ -5,13 +5,14 @@ import os
 import gspread
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
+from core.slate_date import eastern_slate_date_iso
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 
 def get_today_schedule():
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = eastern_slate_date_iso()
     url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=probablePitcher,lineups,team"
     print(f"Fetching schedule for {today}...")
     r = requests.get(url, headers=HEADERS, timeout=30)
@@ -116,7 +117,7 @@ def get_pitch_score(team, ps_df):
     return None if pd.isna(val) else round(float(val), 1)
 
 def _today_iso():
-    return datetime.now().strftime("%Y-%m-%d")
+    return eastern_slate_date_iso()
 
 
 def _df_matches_today(df, date_col="Slate_Date"):

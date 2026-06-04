@@ -13,6 +13,7 @@ from core.config import (
     SHEET_TABS,
     check_google_credentials,
 )
+from core.slate_date import eastern_slate_date_iso
 
 
 def get_client():
@@ -43,6 +44,7 @@ def touch_last_updated(source: str = "MLBMA pipeline") -> None:
         ts_sheet = sheet.add_worksheet(title=tab_ts, rows=5, cols=2)
     ts_sheet.update([
         ["Last Updated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
+        ["Slate_Date_ET", eastern_slate_date_iso()],
         ["Season", str(CURRENT_SEASON)],
         ["Source", source],
     ])

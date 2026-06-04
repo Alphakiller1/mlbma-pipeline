@@ -6,13 +6,14 @@ import gspread
 from datetime import datetime
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, check_google_credentials
+from core.slate_date import eastern_slate_date_iso
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
 }
 
 def scrape_lineups():
-    slate_date = datetime.now().strftime("%Y-%m-%d")
+    slate_date = eastern_slate_date_iso()
     print("Fetching Rotowire lineups...")
     r = requests.get(
         "https://www.rotowire.com/baseball/daily-lineups.php",
