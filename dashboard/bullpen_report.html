@@ -22,7 +22,7 @@
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260604z"></script>
+<script src="bullpen_profile_dashboard.js?v=20260604aa"></script>
 <script src="bullpen_usage.js?v=20260604z"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260602w"></script>
@@ -148,6 +148,7 @@
 
     <section class="ca-board tp-section" id="secOsi">
       <div id="bpHdrOsi"></div>
+      <div id="bpTierControls" class="tp-section-filter-bar hub-control-bar"></div>
       <div id="osiTierPanel"></div>
       <div class="insight-line tp-note" id="osiInsight"></div>
     </section>
@@ -186,6 +187,7 @@ var DATA = {
 
 var STATE = {
   team: null, expandedPid: null, split: 'overall', sosSplit: 'overall', levView: 'all',
+  tierDim: 'osi',
   window: 'YTD', view: 'summary', relieverSort: 'ip', relieverSortDir: 'desc'
 };
 
@@ -239,7 +241,7 @@ function renderBullpenSectionHeaders() {
     { id: 'bpHdrUsage', title: 'Bullpen Usage', subtitle: 'Closer / setup / long relief — last 7 days pitch counts', icon: 'list' },
     { id: 'bpHdrPitchingValue', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · ERA · OPS allowed — by split', icon: 'target' },
     { id: 'bpHdrLev', title: 'Platoon & Venue Splits', subtitle: 'vs LHB / vs RHB · Away / Home execution with graded stats', icon: 'split' },
-    { id: 'bpHdrOsi', title: 'Performance vs Lineup Quality', subtitle: 'Results vs High / Mid / Low OSI offenses', icon: 'spark' },
+    { id: 'bpHdrOsi', title: 'Tier Splits (Created Metrics)', subtitle: 'Stats vs High / Mid / Low opponent tiers — switch tier set with tabs', icon: 'spark' },
     { id: 'bpHdrTrends', title: 'Opposing Offense Allowed — Rolling Trends', subtitle: 'L10 → L1 appearance windows · interpretation per metric', icon: 'shield' },
     { id: 'bpHdrRelievers', title: 'Reliever Rank', subtitle: 'Sort by stat group · click row for last 10 appearances', icon: 'users' },
     { id: 'bpHdrSOS', title: 'Bullpen Strength of Schedule', subtitle: 'OOR · PALS · OSI of opponents faced (from appearance log)', icon: 'insight' }
@@ -329,6 +331,31 @@ function renderBpSosSplitBar() {
     STATE.sosSplit = v || 'overall';
     renderBpSosSplitBar();
     refreshBullpenPanel('strengthOfSchedulePanel', 'renderStrengthOfSchedulePanel');
+  });
+}
+
+function renderBpTierTabs() {
+  var el = document.getElementById('bpTierControls');
+  if (!el) return;
+  var dims = [
+    { value: 'osi', label: 'OSI tier' },
+    { value: 'abq', label: 'ABQ tier' },
+    { value: 'rcv', label: 'RCV tier' },
+    { value: 'obr', label: 'OBR tier' }
+  ];
+  var html = '<div class="hub-ctrl-group tp-section-ctrl"><span class="hub-ctrl-label">Tier set</span><div class="hub-pill-row">';
+  dims.forEach(function(d) {
+    html += '<button type="button" class="hub-pill' + (STATE.tierDim === d.value ? ' active' : '')
+      + '" data-bp-tier="' + esc(d.value) + '">' + esc(d.label) + '</button>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+  el.querySelectorAll('[data-bp-tier]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      STATE.tierDim = btn.getAttribute('data-bp-tier') || 'osi';
+      renderBpTierTabs();
+      refreshBullpenPanel('osiTierPanel', 'renderOsiTierPanel');
+    });
   });
 }
 
@@ -667,7 +694,8 @@ function buildDashboardCtx(team, unit) {
     relieverIP: relieverIP,
     appearanceDetail: appearanceDetail,
     oorMap: DATA.oorMap || {},
-    palsMap: DATA.palsMap || {}
+    palsMap: DATA.palsMap || {},
+    tierDim: STATE.tierDim || 'osi'
   };
 }
 
@@ -763,6 +791,7 @@ function renderTeam(team) {
     renderPlatformSections(team, unit);
     renderBpPitchingSplitBar();
     renderBpSosSplitBar();
+    renderBpTierTabs();
     renderBpRelieverSortBar();
 
     var rels = DATA.individuals.filter(function(r) {

@@ -248,28 +248,59 @@
       + '<p class="tp-trend-table-note">Platoon &amp; venue splits (vs LHB / vs RHB · Away / Home) — color grades vs league bullpen context.</p></div>';
   }
 
-  function buildOsiTierTableHtml(unit, pickCol) {
-    var tiers = [
-      { tier: 'High', prefix: 'vs_high_osi', cls: 'tier-high' },
-      { tier: 'Mid', prefix: 'vs_mid_osi', cls: 'tier-mid' },
-      { tier: 'Low', prefix: 'vs_low_osi', cls: 'tier-low' }
-    ];
-    var body = tiers.map(function(t) {
-      return '<tr><td class="' + t.cls + '">' + esc(t.tier) + '</td>'
-        + '<td class="num">' + valChip(colVal(unit, t.prefix, 'ERA', pickCol), 'era', true, 2) + '</td>'
-        + '<td class="num">' + valChip(pctNorm(colVal(unit, t.prefix, 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
-        + '<td class="num">' + valChip(pctNorm(colVal(unit, t.prefix, 'BB_pct', pickCol)), 'bbpct', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(unit, t.prefix, 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(unit, t.prefix, 'RCV_allowed', pickCol), 'rcv', true, 1) + '</td></tr>';
+  // Tier splits styled exactly like the pitcher profile: plain graded-text values
+  // (not filled chips), High/Mid/Low tier pills, switchable tier dimension.
+  var TIER_DIM_LABEL = { osi: 'OSI', abq: 'ABQ', rcv: 'RCV', obr: 'OBR' };
+
+  function bpTierClass(tier) {
+    return tier === 'High' ? 'tier-high' : tier === 'Mid' ? 'tier-mid' : tier === 'Low' ? 'tier-low' : '';
+  }
+
+  function bpTierColorCell(v, metricCtx, invert, dec, asPct) {
+    if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+    var disp = asPct ? fmtPct(v) : fmt(v, dec);
+    var color = (A && A.metricColor) ? A.metricColor(v, metricCtx, invert) : '';
+    if (color) {
+      return '<td class="num"><span class="pp-table-num-text pp-table-num-text--graded" style="color:' + color + '">' + esc(disp) + '</span></td>';
+    }
+    return '<td class="num">' + esc(disp) + '</td>';
+  }
+
+  function bpTierPlainCell(v, dec) {
+    if (v == null || isNaN(v)) return '<td class="num tp-empty-cell">—</td>';
+    return '<td class="num">' + esc(dec != null ? fmt(v, dec) : String(Math.round(v))) + '</td>';
+  }
+
+  function buildTierSplitTableHtml(unit, pickCol, dim) {
+    var body = ['High', 'Mid', 'Low'].map(function(tier) {
+      var p = 'vs_' + tier.toLowerCase() + '_' + dim;
+      var apps = colVal(unit, p, 'apps', pickCol);
+      var labelCell = '<td class="' + bpTierClass(tier) + '"><span class="pp-table-label-text">' + tier + '</span></td>';
+      if (apps == null || apps === 0) {
+        return '<tr>' + labelCell + '<td colspan="8" class="tp-empty-cell">—</td></tr>';
+      }
+      return '<tr>' + labelCell
+        + bpTierPlainCell(apps, 0)
+        + bpTierPlainCell(colVal(unit, p, 'ip_per_app', pickCol), 1)
+        + bpTierColorCell(colVal(unit, p, 'ERA', pickCol), 'era', true, 2, false)
+        + bpTierColorCell(colVal(unit, p, 'FIP', pickCol), 'fip', true, 2, false)
+        + bpTierColorCell(pctNorm(colVal(unit, p, 'K_pct', pickCol)), 'kpct', false, 1, true)
+        + bpTierColorCell(pctNorm(colVal(unit, p, 'BB_pct', pickCol)), 'bbpct', true, 1, true)
+        + bpTierColorCell(colVal(unit, p, 'HR9', pickCol), 'hr9', true, 2, false)
+        + bpTierPlainCell(colVal(unit, p, 'pitches_per_app', pickCol), 0)
+        + '</tr>';
     }).join('');
-    return '<table class="hub-table tp-table pp-tier-split-table"><thead><tr>'
-      + '<th>Tier</th><th>ERA</th><th>K%</th><th>BB%</th><th>ABQ Allowed</th><th>RCV Allowed</th>'
+    return '<p class="tp-trend-table-note pp-tier-dim-note">Showing stats vs opponent <strong>'
+      + esc(TIER_DIM_LABEL[dim] || String(dim).toUpperCase()) + '</strong> tier (High / Mid / Low).</p>'
+      + '<table class="pp-data-table pp-tier-split-table pp-profile-table hub-table tp-table" data-tier-dim="' + esc(dim) + '"><thead><tr>'
+      + '<th class="pp-table-head">Tier</th><th class="pp-table-head">Apps</th><th class="pp-table-head">IP/App</th>'
+      + '<th class="pp-table-head">ERA</th><th class="pp-table-head">FIP</th><th class="pp-table-head">K%</th>'
+      + '<th class="pp-table-head">BB%</th><th class="pp-table-head">HR/9</th><th class="pp-table-head">Pitches/App</th>'
       + '</tr></thead><tbody>' + body + '</tbody></table>';
   }
 
   function renderOsiTierPanel(unit, ctx) {
-    return '<div class="tp-table-wrap">' + buildOsiTierTableHtml(unit, ctx.pickCol)
-      + '<p class="tp-trend-table-note">Results vs High / Mid / Low opposing OSI tiers — same layout as pitcher tier splits.</p></div>';
+    return '<div class="tp-table-wrap">' + buildTierSplitTableHtml(unit, ctx.pickCol, ctx.tierDim || 'osi') + '</div>';
   }
 
   function appearanceDates(log, pickCol) {
