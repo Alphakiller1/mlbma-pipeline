@@ -106,7 +106,11 @@
   function finishLoading() {
     var ov = document.getElementById('mlbmaLoading');
     var bar = document.getElementById('mlbmaLoadProgress');
-    if (ov) ov.classList.add('hide');
+    if (ov) {
+      ov.classList.add('hide');
+      ov.setAttribute('aria-hidden', 'true');
+      ov.style.display = 'none';
+    }
     if (bar) bar.classList.add('done');
     hideInlineLoadingText();
     document.querySelectorAll('.loading, #loadingScreen, #loading, #loadingOverlay').forEach(function (el) {
@@ -115,7 +119,10 @@
     });
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
+    document.documentElement.classList.remove('mlbma-page-loading');
     document.body.classList.remove('mlbma-page-loading');
+    document.documentElement.classList.remove('view-pending');
+    document.body.classList.remove('view-pending');
   }
 
   /** Dismiss full-viewport loading overlay (alias used by dashboards). */
@@ -133,9 +140,10 @@
     var done = false;
     var timer = setTimeout(function () {
       if (done) return;
+      console.warn('[MLBMA_UI] load watchdog fired — dismissing overlay');
       if (typeof onTimeout === 'function') onTimeout();
       hideLoadingOverlay();
-    }, ms || 10000);
+    }, ms || 8000);
     return function complete() {
       done = true;
       clearTimeout(timer);
@@ -190,6 +198,13 @@
     document.body.classList.add('mlbma-page-loading');
     injectShell();
     injectFooter();
+    setTimeout(function () {
+      var ov = document.getElementById('mlbmaLoading');
+      if (ov && !ov.classList.contains('hide')) {
+        console.warn('[MLBMA_UI] safety timeout — dismissing loading overlay');
+        finishLoading();
+      }
+    }, 14000);
   }
 
   if (document.readyState === 'loading') {

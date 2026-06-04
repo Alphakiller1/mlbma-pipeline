@@ -1428,15 +1428,26 @@
     }
   }
 
+  function fetchJsonWithTimeout(url, ms) {
+    ms = ms || 10000;
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function() {
+      try { ctrl.abort(); } catch (e) { /* ignore */ }
+    }, ms) : null;
+    return fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .finally(function() { if (timer) clearTimeout(timer); });
+  }
+
   /** Live MLB Stats API schedule — source of truth for today's slate. */
   function fetchMlbTodaySchedule(dateIso) {
     var dateStr = dateIso || easternDateIso();
     var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(dateStr)
       + '&hydrate=probablePitcher,team,venue';
-    return fetch(url, { cache: 'no-store' }).then(function(r) {
-      if (!r.ok) throw new Error('MLB schedule HTTP ' + r.status);
-      return r.json();
-    }).then(function(data) {
+    return fetchJsonWithTimeout(url, 10000).then(function(data) {
       var games = [];
       (data.dates || []).forEach(function(block) {
         (block.games || []).forEach(function(game) {

@@ -2662,10 +2662,10 @@ body.view-research .ca-lab { display: block; }
   }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
-<script src="mlbma_ui.js?v=20260602n" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_ui.js?v=20260606d" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618a"></script>
 <script src="mlbma_icons.js?v=20260618a"></script>
-<script src="matchup_shared.js?v=20260603m"></script>
+<script src="matchup_shared.js?v=20260606d"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260602s"></script>
 <script src="profile_controls.js?v=20260527s"></script>
@@ -3204,13 +3204,24 @@ function invalidateSheetCaches(lastUpdated) {
   return syncChanged;
 }
 
+function fetchTextWithTimeout(url, ms) {
+  ms = ms || 10000;
+  var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function() {
+    try { ctrl.abort(); } catch (e) { /* ignore */ }
+  }, ms) : null;
+  return fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text();
+    })
+    .finally(function() { if (timer) clearTimeout(timer); });
+}
+
 function prefetchSheetSync() {
   var probeUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
     '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(TABS.last_updated) + '&_probe=' + Date.now();
-  return fetch(probeUrl, { cache: 'no-store' }).then(function(res) {
-    if (!res.ok) throw new Error('Last_Updated HTTP ' + res.status);
-    return res.text();
-  }).then(function(text) {
+  return fetchTextWithTimeout(probeUrl, 8000).then(function(text) {
     var ts = parseLastUpdatedFromText(text);
     if (ts) invalidateSheetCaches(ts);
     else applySheetSyncBust(String(Date.now()));
@@ -3391,7 +3402,15 @@ function applyLiveData() {
   console.log('[MLBMA] applyLiveData start');
   try {
     if (!LIVE_DATA.scYtdR || !LIVE_DATA.scYtdL || !LIVE_DATA.scYtdR.length || !LIVE_DATA.scYtdL.length) {
-      console.warn('[MLBMA] applyLiveData skipped ? missing vs_RHP / vs_LHP scores');
+      console.warn('[MLBMA] applyLiveData skipped — missing vs_RHP / vs_LHP scores');
+      if ((!SCO_YTD_B || !SCO_YTD_B.length) && typeof recomputeAllScores === 'function') {
+        try { recomputeAllScores(); } catch (e) { /* ignore */ }
+      }
+      if (typeof renderLanding === 'function') {
+        _landingRendered = false;
+        renderLanding();
+      }
+      hideLoadingOverlay();
       return false;
     }
 
@@ -4422,16 +4441,6 @@ function refreshTodayMatchups(liveSchedule) {
     LIVE_DATA._liveSchedule
   );
   LIVE_DATA._matchupsBuiltAt = Date.now();
-  if (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.games && LIVE_DATA._liveSchedule.games.length) {
-    var liveKeys = {};
-    LIVE_DATA._liveSchedule.games.forEach(function(g) {
-      var key = matchupGameKey(g);
-      if (key) liveKeys[key] = true;
-    });
-    LIVE_DATA.lineups = (LIVE_DATA.lineups || []).filter(function(r) {
-      return liveKeys[normalizeLineupGameKey(r.game)];
-    });
-  }
   enrichMatchupCards();
 }
 
@@ -4783,7 +4792,18 @@ function loadLandingData() {
     syncHeroStats();
     initMatchupsView();
     applyLiveData();
-    return window.MLBMAStandings ? MLBMAStandings.load() : Promise.resolve();
+    if (window.MLBMAStandings) {
+      return Promise.race([
+        MLBMAStandings.load(),
+        new Promise(function(resolve) {
+          setTimeout(function() {
+            console.warn('[MLBMA] standings load timed out — continuing');
+            resolve({});
+          }, 5000);
+        })
+      ]);
+    }
+    return Promise.resolve();
   });
 }
 
@@ -4897,7 +4917,7 @@ function loadLiveData(forceRefresh) {
   console.log('[MLBMA] loadLiveData start gen=' + gen + (forceRefresh ? ' (force)' : ''));
   ensureCacheForToday();
   _landingDataLoaded = false;
-  _liveLoadPromise = loadLandingData()
+  var loadChain = loadLandingData()
     .then(function() {
       _landingDataLoaded = true;
       return loadResearchData();
@@ -4944,6 +4964,19 @@ function loadLiveData(forceRefresh) {
       enrichMatchupCards();
       if (shouldRenderMatchupsView()) refreshMatchupsSlateUi();
     });
+  _liveLoadPromise = Promise.race([
+    loadChain,
+    new Promise(function(resolve) {
+      setTimeout(function() {
+        console.warn('[MLBMA] loadLiveData timed out — showing available data');
+        if (!LIVE_DATA.error) LIVE_DATA.error = 'Load timed out — partial data shown';
+        if ((!SCO_YTD_B || !SCO_YTD_B.length) && typeof recomputeAllScores === 'function') {
+          try { recomputeAllScores(); } catch (e) { /* ignore */ }
+        }
+        resolve(false);
+      }, 22000);
+    })
+  ]);
   return _liveLoadPromise;
 }
 
@@ -7922,7 +7955,7 @@ function init(){
   document.documentElement.classList.remove('view-pending');
   console.log('[MLBMA] init start');
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {
-    _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(10000, showDelayedLoadBanner);
+    _loadWatchdogDone = MLBMA_UI.startLoadWatchdog(8000, showDelayedLoadBanner);
   }
   try {
     urlDecodeState();
