@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="bullpen_report.css?v=20260606e">
+<link rel="stylesheet" href="bullpen_report.css?v=20260606f">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
@@ -21,12 +21,11 @@
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260606e"></script>
+<script src="bullpen_profile_dashboard.js?v=20260606f"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
 <script src="mlbma_ui.js?v=20260606d" data-page="bullpen_report.html"></script>
-  <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
 <body class="bullpen-profile-page player-profile-page team-profile-page">
 
@@ -129,11 +128,13 @@
   </select>
 
   <div id="reportContent" class="tp-identity-stack profile-shell">
-    <div class="bp-hero-banner-shell">
-      <div id="teamPickerMount" class="bp-hero-search tp-hero-search tp-context-picker"></div>
-      <div id="bullpenFilterBar" class="bp-hero-filters"></div>
-      <div id="bullpenSnapshot" class="profile-hero"></div>
-    </div>
+    <section class="ca-board tp-section bp-hero-section" id="secHero">
+      <div class="bp-hero-banner-shell tp-hero-banner-shell">
+        <div id="teamPickerMount" class="bp-hero-search tp-hero-search tp-context-picker"></div>
+        <div id="bullpenFilterBar" class="bp-hero-filters"></div>
+        <div id="bullpenSnapshot" class="profile-hero"></div>
+      </div>
+    </section>
 
     <section class="ca-board tp-section" id="secUsage">
       <div id="bpHdrUsage"></div>
@@ -225,8 +226,22 @@ function mountProfilePageHeader() {
   });
 }
 
+function sectionHeaderHtml(title, subtitle, opts) {
+  opts = typeof opts === 'string' ? { eyebrow: opts } : (opts || {});
+  if (!window.MLBMAAssets || !MLBMAAssets.sectionHeaderHtml) {
+    return '<header class="ca-section-header"><h2 class="ca-section-title">' + esc(title) + '</h2>'
+      + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '') + '</header>';
+  }
+  return MLBMAAssets.sectionHeaderHtml({
+    title: title,
+    subtitle: subtitle || opts.subtitle || '',
+    icon: (window.MLBMAIcons && MLBMAIcons.profileIcon) ? MLBMAIcons.profileIcon(opts.icon) : opts.icon,
+    kicker: opts.kicker || opts.eyebrow || 'Bullpen Profile',
+    actions: opts.actions || ''
+  });
+}
+
 function renderBullpenSectionHeaders() {
-  if (!window.MLBMAAssets || !MLBMAAssets.sectionHeaderHtml) return;
   var map = [
     { id: 'bpHdrUsage', title: 'Bullpen Usage', subtitle: 'Closer / setup / long relief — last 7 days pitch counts', icon: 'list' },
     { id: 'bpHdrPitchingValue', title: 'Pitching Value', subtitle: 'K% · BB% · HR/9 · ERA · OPS allowed — by split', icon: 'target' },
@@ -239,7 +254,7 @@ function renderBullpenSectionHeaders() {
   map.forEach(function(h) {
     var el = document.getElementById(h.id);
     if (!el) return;
-    el.innerHTML = MLBMAAssets.sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Bullpen Profile' });
+    el.innerHTML = sectionHeaderHtml(h.title, h.subtitle, { icon: h.icon, kicker: 'Bullpen Profile' });
   });
 }
 

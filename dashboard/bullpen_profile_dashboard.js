@@ -125,8 +125,9 @@
     var chip = (A && A.valChipHtml && rawVal != null && !isNaN(rawVal))
       ? A.valChipHtml(rawVal, ctx, inv, dec)
       : esc(display);
-    return '<div class="tp-hero-stat"><span class="tp-hero-stat__label">' + esc(label) + '</span>' +
-      '<span class="tp-hero-stat__value">' + chip + '</span></div>';
+    return '<div class="tp-hero-stat tp-hero-stat--neutral">'
+      + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
+      + '<span class="tp-hero-stat__value">' + chip + '</span></div>';
   }
 
   function renderSnapshot(team, unit, ctx) {
@@ -141,24 +142,26 @@
       (ctx.pitchScore != null ? '<span class="pill pill-score">Staff Pitch Score ' + fmt(ctx.pitchScore, 0) + '</span>' : '') +
       (apps != null ? '<span class="pill pill-meta">' + apps + ' apps</span>' : '');
 
-    return '<div class="tp-team-banner tp-team-banner--hero bullpen-snapshot">' +
-      '<div class="tp-team-banner__ambient" aria-hidden="true"></div>' +
-      '<div class="tp-team-banner__inner">' +
-      '<div class="tp-team-banner__identity">' +
-      (logo ? '<div class="tp-team-banner__logo-wrap">' + logo + '</div>' : '') +
-      '<div class="tp-team-banner__copy">' +
-      '<div class="tp-team-banner__eyebrow">Bullpen Profile</div>' +
-      '<h1 class="tp-team-banner__name ca-profile-hero__title">' + esc(team) + ' Bullpen</h1>' +
-      (badges ? '<div class="tp-team-banner__badges ps-badges">' + badges + '</div>' : '') +
-      '</div></div>' +
-      '<div class="tp-hero-stat-row tp-team-banner__stats--hero">' +
-      statPill('ERA', era, fmt(era, 2)) +
-      statPill('OSI Allowed', osi, fmt(osi, 1)) +
-      statPill('IR Scored %', irp, fmtPct(irp)) +
-      statPill('Hi Lev ERA', hiEra, fmt(hiEra, 2)) +
-      '</div>' +
-      (ctx.tonightHtml ? '<div class="tp-team-banner__meta ps-tonight">' + ctx.tonightHtml + '</div>' : '') +
-      '</div></div>';
+    var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero tp-hero-stat-row" role="group" aria-label="Bullpen headline stats">'
+      + statPill('ERA', era, fmt(era, 2))
+      + statPill('OSI Allowed', osi, fmt(osi, 1))
+      + statPill('IR Scored %', irp, fmtPct(irp))
+      + statPill('Hi Lev ERA', hiEra, fmt(hiEra, 2))
+      + '</div>';
+
+    return '<section class="tp-team-banner tp-team-banner--hero bullpen-snapshot profile-hero">'
+      + '<div class="tp-team-banner__ambient" aria-hidden="true"></div>'
+      + '<div class="tp-team-banner__inner tp-team-banner__inner--solo bp-banner__inner">'
+      + '<div class="tp-team-banner__identity">'
+      + (logo ? '<div class="tp-team-banner__logo-wrap">' + logo + '</div>' : '')
+      + '<div class="tp-team-banner__copy">'
+      + '<p class="ca-eyebrow tp-team-banner__eyebrow">Bullpen Profile</p>'
+      + '<h1 class="tp-team-banner__title ca-profile-hero__title">' + esc(team) + ' Bullpen</h1>'
+      + (badges ? '<div class="tp-team-banner__badges ps-badges">' + badges + '</div>' : '')
+      + (ctx.tonightHtml ? '<div class="tp-team-banner__meta ps-tonight">' + ctx.tonightHtml + '</div>' : '')
+      + '</div></div>'
+      + statRow
+      + '</div></section>';
   }
 
   function valChip(v, metricCtx, invert, dec) {
