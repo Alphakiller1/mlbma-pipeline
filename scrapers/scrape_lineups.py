@@ -113,6 +113,65 @@ def scrape_lineups():
     print(f"  Parsed {len(games_df)} games, {len(lineup_df)} player rows")
     return lineup_df, games_df
 
+
+def reconcile_slate_with_api(lineup_df, games_df):
+    """MLB Stats API is authoritative for which games are on today's slate.
+
+    Rotowire keeps stale/next-day lineup cards on the page, which is why the
+    dashboard matchup cards were showing yesterday's games. Drop any Rotowire
+    game not on the API schedule, and add API games Rotowire is missing so the
+    slate (today_games.csv -> Today_Games sheet) always matches the real slate.
+    """
+    try:
+        from scrapers.scrape_matchups import get_today_schedule
+        api_df = get_today_schedule()
+    except Exception as e:
+        print(f"  WARNING: schedule reconcile skipped ({e}) - using Rotowire slate as-is")
+        return lineup_df, games_df
+
+    if api_df is None or api_df.empty:
+        print("  WARNING: MLB API returned no games - keeping Rotowire slate unverified")
+        return lineup_df, games_df
+
+    api_keys = {f"{r.Away_Team}@{r.Home_Team}" for r in api_df.itertuples()}
+    slate_date = eastern_slate_date_iso()
+
+    # Drop stale Rotowire games not on the authoritative schedule
+    if not games_df.empty:
+        rw_keys = {f"{r.Away}@{r.Home}" for r in games_df.itertuples()}
+        stale = sorted(rw_keys - api_keys)
+        if stale:
+            print(f"  Dropping {len(stale)} stale Rotowire game(s): {', '.join(stale)}")
+        games_df = games_df[games_df.apply(
+            lambda x: f"{x['Away']}@{x['Home']}" in api_keys, axis=1)].copy()
+
+    # Add API games Rotowire is missing (no lineups yet, but slate must be complete)
+    present = {f"{r.Away}@{r.Home}" for r in games_df.itertuples()} if not games_df.empty else set()
+    add_rows = []
+    for r in api_df.itertuples():
+        key = f"{r.Away_Team}@{r.Home_Team}"
+        if key not in present:
+            add_rows.append({
+                "Away": r.Away_Team,
+                "Home": r.Home_Team,
+                "Time": getattr(r, "Game_Time", "TBD"),
+                "Away_SP": getattr(r, "Away_SP", "TBD"),
+                "Home_SP": getattr(r, "Home_SP", "TBD"),
+                "Slate_Date": slate_date,
+            })
+    if add_rows:
+        added = ', '.join(f"{r['Away']}@{r['Home']}" for r in add_rows)
+        print(f"  Adding {len(add_rows)} API game(s) missing from Rotowire: {added}")
+        games_df = pd.concat([games_df, pd.DataFrame(add_rows)], ignore_index=True)
+
+    # Filter lineups to the authoritative slate (drop stale-game lineup rows)
+    if not lineup_df.empty:
+        lineup_df = lineup_df[lineup_df["Game"].isin(api_keys)].copy()
+
+    print(f"  Reconciled slate: {len(api_keys)} authoritative game(s)")
+    return lineup_df, games_df
+
+
 def clear_sheet_tab(tab_name, header_row):
     if not check_google_credentials():
         print(f"  Skipping {tab_name} clear (credentials unavailable).")
@@ -184,6 +243,10 @@ def run():
         except Exception as ex:
             print(f"  WARNING: Today_Matchups clear after lineup failure failed: {ex}")
         return
+
+    # Make the MLB Stats API authoritative for the slate before anything is saved
+    # or pushed, so the dashboard cards can never show stale/next-day Rotowire games.
+    lineup_df, games_df = reconcile_slate_with_api(lineup_df, games_df)
 
     if not lineup_df.empty:
         lineup_df.to_csv(os.path.join(DATA_DIR, "today_lineups.csv"), index=False)
