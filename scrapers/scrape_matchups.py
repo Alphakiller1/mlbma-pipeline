@@ -218,42 +218,55 @@ def enrich_games_with_api_pitchers(games_df, api_games):
 
 
 def resolve_slate_games(rotowire, api_games):
-    """Keep Today_Matchups on the same slate as Today_Games / Today_Lineups.
+    """The MLB Stats API schedule is the AUTHORITATIVE game set for today.
 
-    Rotowire is the slate source of truth once today's exported games exist.
-    The MLB API can fill probable pitchers and hands for those same games, but
-    it must not append extra games or doubleheaders that are absent from the
-    lineup slate.
+    Rotowire/lineup exports only ENRICH that set (SP names, times) — they must
+    never decide *which* games are today. Trusting Rotowire wholesale is exactly
+    how yesterday's stale exported games leaked onto today's slate. So we reconcile:
+    keep Rotowire rows that are on today's real schedule, drop ones that aren't,
+    and add any real games Rotowire missed. Only if the API is unreachable do we
+    fall back to the (unverified) Rotowire slate.
     """
     if rotowire is None:
         rotowire = pd.DataFrame()
     if api_games is None:
         api_games = pd.DataFrame()
 
-    if not rotowire.empty:
-        rw_keys = schedule_game_keys(rotowire)
-        api_keys = schedule_game_keys(api_games)
-        overlap = len(rw_keys & api_keys) if api_keys else 0
-        api_only = sorted(api_keys - rw_keys)
-        if api_only:
-            preview = ", ".join(api_only[:5])
-            print(
-                f"  Rotowire slate locked at {len(rotowire)} games; "
-                f"ignoring {len(api_only)} API-only game(s): {preview}"
-            )
-        else:
-            print(
-                f"  Rotowire slate locked at {len(rotowire)} games; "
-                f"MLB API overlap={overlap}/{len(api_keys)}"
-            )
-        return rotowire.copy()
+    # API down/empty -> best-effort fallback to whatever Rotowire we have.
+    if api_games.empty:
+        if not rotowire.empty:
+            print(f"  WARNING: MLB API schedule empty -> using Rotowire slate "
+                  f"({len(rotowire)} games) UNVERIFIED against the live schedule")
+            return rotowire.copy()
+        print("  No Rotowire export and MLB API schedule empty")
+        return pd.DataFrame()
 
-    if not api_games.empty:
-        print(f"  Rotowire slate empty -> using live MLB API schedule ({len(api_games)} games)")
+    api_keyed = {f"{r['Away_Team']}@{r['Home_Team']}": r for _, r in api_games.iterrows()}
+    api_keys = set(api_keyed)
+
+    if rotowire.empty:
+        print(f"  No Rotowire export -> using live MLB API schedule ({len(api_keys)} games)")
         return api_games.copy()
 
-    print("  No Rotowire export and MLB API schedule empty")
-    return pd.DataFrame()
+    rw_keyed = {f"{r['Away_Team']}@{r['Home_Team']}": r for _, r in rotowire.iterrows()}
+    rw_keys = set(rw_keyed)
+
+    stale = sorted(rw_keys - api_keys)      # Rotowire games NOT on today's real schedule
+    missing = sorted(api_keys - rw_keys)    # real games Rotowire lacks
+
+    # Keep Rotowire data for games that are genuinely on today's schedule, in
+    # schedule order; append any real games Rotowire missed (from the API).
+    kept = [rw_keyed[k] for k in sorted(rw_keys & api_keys)] + [api_keyed[k] for k in missing]
+
+    if stale:
+        print(f"  Dropped {len(stale)} stale Rotowire game(s) NOT on today's MLB "
+              f"schedule: {', '.join(stale[:8])}")
+    if missing:
+        print(f"  Added {len(missing)} real game(s) from MLB API that Rotowire "
+              f"lacked: {', '.join(missing[:8])}")
+    print(f"  Slate reconciled to the MLB schedule: {len(kept)} games "
+          f"(API authoritative = {len(api_keys)})")
+    return pd.DataFrame(kept).reset_index(drop=True)
 
 
 def build_matchups():
