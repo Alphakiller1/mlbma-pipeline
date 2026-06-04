@@ -526,12 +526,6 @@ DASHBOARD_PAGES = {
         "url": "pitcher_profile.html",
         "params": ("pitcher",),
     },
-    "reliever_profile": {
-        "file": "reliever_profile.html",
-        "label": "Reliever Profile",
-        "url": "reliever_profile.html",
-        "params": ("player",),
-    },
     "bullpen_report": {
         "file": "bullpen_report.html",
         "label": "Bullpen Profile",

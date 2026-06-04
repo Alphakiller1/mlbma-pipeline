@@ -15,7 +15,6 @@ PAGES = [
     "matchup_sheet.html",
     "pitcher_profile.html",
     "batter_profile.html",
-    "reliever_profile.html",
     "bullpen_report.html",
     "team_profile.html",
     "team_rankings.html",

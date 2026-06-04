@@ -16,11 +16,15 @@ METRIC_FIELDS = [
     "K_pct",
     "BB_pct",
     "HR9",
+    "OPS_allowed",
     "inherited_runners_scored_pct",
     "ABQ_allowed",
     "RCV_allowed",
     "OBR_allowed",
     "OSI_allowed",
+    "apps",
+    "ip_per_app",
+    "pitches_per_app",
 ]
 
 
@@ -34,6 +38,15 @@ SPLIT_PREFIXES = [
     ("vs_high_osi", ("opponent_OSI_tier", "High")),
     ("vs_mid_osi", ("opponent_OSI_tier", "Mid")),
     ("vs_low_osi", ("opponent_OSI_tier", "Low")),
+    ("vs_high_abq", ("opponent_ABQ_tier", "High")),
+    ("vs_mid_abq", ("opponent_ABQ_tier", "Mid")),
+    ("vs_low_abq", ("opponent_ABQ_tier", "Low")),
+    ("vs_high_rcv", ("opponent_RCV_tier", "High")),
+    ("vs_mid_rcv", ("opponent_RCV_tier", "Mid")),
+    ("vs_low_rcv", ("opponent_RCV_tier", "Low")),
+    ("vs_high_obr", ("opponent_OBR_tier", "High")),
+    ("vs_mid_obr", ("opponent_OBR_tier", "Mid")),
+    ("vs_low_obr", ("opponent_OBR_tier", "Low")),
     ("vs_rhh", ("batter_hand_faced", "RHH")),
     ("vs_lhh", ("batter_hand_faced", "LHH")),
     ("home", ("home_away", "home")),
@@ -41,6 +54,27 @@ SPLIT_PREFIXES = [
     ("high_leverage", ("leverage_situation", "high")),
     ("low_leverage", ("leverage_situation", "low")),
 ]
+
+
+def _assign_tiers(series: pd.Series) -> pd.Series:
+    """Bucket a numeric opponent-quality column into High/Mid/Low by league tertiles
+    (High = toughest third faced). Used for RCV/OBR which have no tier column."""
+    vals = pd.to_numeric(series, errors="coerce")
+    valid = vals.dropna()
+    if valid.empty:
+        return pd.Series(["" for _ in series], index=series.index)
+    lo, hi = valid.quantile(0.33), valid.quantile(0.67)
+
+    def _tier(v):
+        if pd.isna(v):
+            return ""
+        if v >= hi:
+            return "High"
+        if v <= lo:
+            return "Low"
+        return "Mid"
+
+    return vals.apply(_tier)
 
 
 def _filter_split(df: pd.DataFrame, spec) -> pd.DataFrame:
@@ -70,6 +104,15 @@ def _agg_block(df: pd.DataFrame) -> Dict[str, Optional[float]]:
     total_hr = df["HR"].sum()
     total_k = df["K"].sum()
 
+    # Opponent OPS allowed. OBP is exact from the log; SLG is estimated because
+    # the appearance log has H and HR but not 2B/3B, so non-HR hits are valued at
+    # ~1.25 total bases (league extra-base-hit mix) and HR at 4.
+    opp_ab = total_bf - total_bb
+    opp_obp = (total_h + total_bb) / total_bf if total_bf > 0 else None
+    opp_tb = (total_h - total_hr) * 1.25 + total_hr * 4
+    opp_slg = opp_tb / opp_ab if opp_ab > 0 else None
+    opp_ops = round(opp_obp + opp_slg, 3) if (opp_obp is not None and opp_slg is not None) else None
+
     return {
         "ERA": round(total_er / total_ip * 9, 2) if total_ip > 0 else None,
         "FIP": _calc_fip(total_hr, total_bb, total_k, total_ip),
@@ -77,11 +120,15 @@ def _agg_block(df: pd.DataFrame) -> Dict[str, Optional[float]]:
         "K_pct": round(df["K"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "BB_pct": round(df["BB"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "HR9": round(df["HR"].sum() / total_ip * 9, 2) if total_ip > 0 else None,
+        "OPS_allowed": opp_ops,
         "inherited_runners_scored_pct": round(irs / ir * 100, 1) if ir > 0 else None,
         "ABQ_allowed": round(df["opponent_ABQ"].mean(), 1) if "opponent_ABQ" in df.columns else None,
         "RCV_allowed": round(df["opponent_RCV"].mean(), 1) if "opponent_RCV" in df.columns else None,
         "OBR_allowed": round(df["opponent_OBR"].mean(), 1) if "opponent_OBR" in df.columns else None,
         "OSI_allowed": round(df["opponent_OSI"].mean(), 1) if "opponent_OSI" in df.columns else None,
+        "apps": int(len(df)),
+        "ip_per_app": round(total_ip / len(df), 1) if len(df) > 0 else None,
+        "pitches_per_app": round(df["pitches"].sum() / len(df), 0) if ("pitches" in df.columns and len(df) > 0) else None,
     }
 
 
@@ -166,6 +213,13 @@ def run():
         for col in numeric_cols:
             if col in gamelog.columns:
                 gamelog[col] = pd.to_numeric(gamelog[col], errors="coerce")
+
+        # RCV / OBR have no tier column upstream; bucket them so all four tier
+        # dimensions (OSI / ABQ / RCV / OBR) are available for the tier-splits view.
+        if "opponent_RCV" in gamelog.columns and "opponent_RCV_tier" not in gamelog.columns:
+            gamelog["opponent_RCV_tier"] = _assign_tiers(gamelog["opponent_RCV"])
+        if "opponent_OBR" in gamelog.columns and "opponent_OBR_tier" not in gamelog.columns:
+            gamelog["opponent_OBR_tier"] = _assign_tiers(gamelog["opponent_OBR"])
 
         unit = build_team_unit(gamelog)
         individual = build_individual(gamelog)

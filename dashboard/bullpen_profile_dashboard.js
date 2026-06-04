@@ -660,7 +660,7 @@
       var exp = expandedPid === String(pid);
 
       html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">'
-        + '<td><strong><a href="reliever_profile.html?player=' + encodeURIComponent(name) + '" class="bp-reliever-link">' + esc(name) + '</a></strong></td>'
+        + '<td><strong class="bp-reliever-name">' + esc(name) + '</strong></td>'
         + '<td class="' + role.cls + '">' + esc(role.label) + '</td>'
         + '<td class="num">' + valChip(ip, 'ip', false, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'ERA', pickCol), 'era', true, 2) + '</td>'

@@ -461,7 +461,7 @@
         if (rhh !== null && lhh !== null) {
           handAdv = rhh < lhh ? 'vs RHH' : (lhh < rhh ? 'vs LHH' : 'even');
         }
-        bpKpi += '<tr><td><a href="reliever_profile.html?player=' + ctx.encodePlayer(pname) + '">' + esc(pname) + '</a></td>';
+        bpKpi += '<tr><td>' + esc(pname) + '</td>';
         bpKpi += '<td><span class="role-badge ' + role.cls + '">' + esc(role.label) + '</span></td>';
         bpKpi += '<td class="num">' + fmt(era, 2) + '</td><td class="num">' + fmt(osiA, 1) + '</td>';
         bpKpi += '<td>' + esc(hand) + (handAdv ? ' · ' + handAdv : '') + '</td></tr>';
