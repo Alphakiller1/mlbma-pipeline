@@ -158,25 +158,27 @@
   background: transparent;
 }
 
-/* Workload heat: low pitch counts = fresh (green) -> high = taxed (red). */
+/* Workload heat: low pitch counts = fresh (green) -> high = taxed (red).
+   Solid hues (not translucent) so they read as clean green/amber/orange/red
+   instead of muddy olive over the dark table background. */
 .bp-pitch-lo {
-  background: rgba(34, 197, 94, 0.22);
-  color: #86efac;
+  background: #1f9d57;
+  color: #ffffff;
 }
 
 .bp-pitch-med {
-  background: rgba(234, 179, 8, 0.30);
-  color: #fde68a;
+  background: #e0b215;
+  color: #1a1400;
 }
 
 .bp-pitch-hi {
-  background: rgba(249, 115, 22, 0.50);
-  color: #ffedd5;
+  background: #e2620f;
+  color: #ffffff;
 }
 
 .bp-pitch-max {
-  background: rgba(220, 38, 38, 0.72);
-  color: #fff;
+  background: #d12f2f;
+  color: #ffffff;
 }
 
 .bp-usage-meta {
