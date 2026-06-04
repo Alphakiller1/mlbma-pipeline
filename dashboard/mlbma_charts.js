@@ -505,31 +505,32 @@
     var cw = W - ml - mr;
     var ch = H - mt - mb;
 
-    function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
-    function padDomain(mn, mx, pad, hardLo, hardHi, minSpan) {
-      var a = mn - pad;
-      var b = mx + pad;
-      a = clamp(a, hardLo, hardHi);
-      b = clamp(b, hardLo, hardHi);
-      if ((b - a) < minSpan) {
-        var mid = (a + b) / 2;
-        a = clamp(mid - minSpan / 2, hardLo, hardHi);
-        b = clamp(mid + minSpan / 2, hardLo, hardHi);
-        if (b > hardHi) { b = hardHi; a = hardHi - minSpan; }
-        if (a < hardLo) { a = hardLo; b = hardLo + minSpan; }
+    // Fit the domain so every bubble (radius ~28px, with a team/pos label below)
+    // sits fully inside the plot. We expand the data range by the pixel inset each
+    // edge needs, converted to data units — this never clamps data off the graph.
+    function fitDomain(mn, mx, sizePx, insetLoPx, insetHiPx, minSpan) {
+      var span = mx - mn;
+      if (!(span > 0) || span < minSpan) {
+        var mid = (mn + mx) / 2 || 0;
+        mn = mid - minSpan / 2;
+        mx = mid + minSpan / 2;
+        span = minSpan;
       }
-      return [a, b];
+      var usable = Math.max(20, sizePx - insetLoPx - insetHiPx);
+      var dpp = span / usable;               // data units per pixel
+      return [mn - dpp * insetLoPx, mx + dpp * insetHiPx];
     }
 
-    // Auto-zoom to reduce "condensed" cluster: domain hugs data with padding.
     var xVals = data.map(function(d) { return Number(d.osi); }).filter(function(v) { return v != null && !isNaN(v); });
     var yVals = data.map(function(d) { return quadYValue(d, yMode); }).filter(function(v) { return v != null && !isNaN(v); });
     var xMin = Math.min.apply(null, xVals);
     var xMax = Math.max.apply(null, xVals);
     var yMin = Math.min.apply(null, yVals);
     var yMax = Math.max.apply(null, yVals);
-    var xd = padDomain(xMin, xMax, 6, 0, 100, 28);
-    var yd = padDomain(yMin, yMax, 2.5, -20, 20, 14);
+    // Insets: bubble radius ~28 on every side; bottom needs extra ~28 for the
+    // team + position labels that render below each bubble.
+    var xd = fitDomain(xMin, xMax, cw, 34, 34, 20);
+    var yd = fitDomain(yMin, yMax, ch, 58, 34, 8);
     var xMn = xd[0], xMx = xd[1];
     var yMn = yd[0], yMx = yd[1];
     var xRng = xMx - xMn;
