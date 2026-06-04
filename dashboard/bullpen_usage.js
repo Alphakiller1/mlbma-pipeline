@@ -139,12 +139,13 @@
     return { code: 'YES', cls: 'bp-avail-yes', label: 'YES' };
   }
 
+  // Workload heat per appearance: light = green (fresh) -> heavy = red (taxed).
   function pitchHeatClass(n) {
     if (n == null || n <= 0) return 'bp-pitch-none';
-    if (n <= 10) return 'bp-pitch-lo';
-    if (n <= 20) return 'bp-pitch-med';
-    if (n <= 30) return 'bp-pitch-hi';
-    return 'bp-pitch-max';
+    if (n <= 13) return 'bp-pitch-lo';    // light outing
+    if (n <= 23) return 'bp-pitch-med';   // normal
+    if (n <= 32) return 'bp-pitch-hi';    // heavy
+    return 'bp-pitch-max';                // max effort
   }
 
   function buildFromLog(logRows, team, dayCols) {

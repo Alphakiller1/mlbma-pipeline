@@ -437,17 +437,18 @@
   }
 
   function filterLogBySosSplit(log, pickCol, split, team) {
-    if (!split || split === 'overall' || !team) return log || [];
+    if (!split || split === 'overall') return log || [];
     return (log || []).filter(function(g) {
-      var home = String(pickCol(g, ['Home', 'home']) || '').trim();
-      var away = String(pickCol(g, ['Away', 'away']) || '').trim();
-      var tk = String(team || '').trim();
-      if (split === 'home') return home === tk;
-      if (split === 'away') return away === tk;
+      if (split === 'home' || split === 'away') {
+        // Reliever log records venue in home_away ('home'/'away'), not Home/Away team cols.
+        var ha = String(pickCol(g, ['home_away', 'home away']) || '').toLowerCase();
+        return ha === split;
+      }
       if (split === 'lhh' || split === 'rhh') {
-        var hand = String(pickCol(g, ['opponent_hand', 'Opponent Hand', 'opp_hand', 'vs_hand', 'vs hand']) || '').toUpperCase();
-        if (!hand) return true;
-        var isLeft = hand.indexOf('L') === 0 || hand.indexOf('LHH') >= 0 || hand.indexOf('LHB') >= 0;
+        // Predominant batter hand faced per appearance (LHH/RHH), now populated.
+        var hand = String(pickCol(g, ['batter_hand_faced', 'batter hand faced']) || '').toUpperCase();
+        if (!hand) return false;
+        var isLeft = hand.indexOf('L') === 0;
         return split === 'lhh' ? isLeft : !isLeft;
       }
       return true;

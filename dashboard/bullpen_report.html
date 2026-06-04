@@ -21,8 +21,8 @@
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260604y"></script>
-<script src="bullpen_usage.js?v=20260604x"></script>
+<script src="bullpen_profile_dashboard.js?v=20260604z"></script>
+<script src="bullpen_usage.js?v=20260604z"></script>
 <script src="mlbma_charts.js?v=20260609a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
 <script src="mlbma_ui.js?v=20260606d" data-page="bullpen_report.html"></script>
@@ -265,6 +265,16 @@ function renderPillSplitBar(el, opts, current, onPick) {
   });
 }
 
+// Re-render only one section's panel (seamless split change, no full-page rebuild/flicker).
+function refreshBullpenPanel(panelId, method) {
+  if (!STATE.team || !window.BullpenProfileDashboard) return;
+  var unit = getUnit(STATE.team);
+  if (!unit) return;
+  var ctx = buildDashboardCtx(STATE.team, unit);
+  var el = document.getElementById(panelId);
+  if (el) el.innerHTML = BullpenProfileDashboard[method](unit, ctx);
+}
+
 function renderBpPitchingSplitBar() {
   var el = document.getElementById('bpPitchingValueControls');
   var cur = STATE.split === 'hlev' ? 'hilev' : STATE.split === 'llev' ? 'lolev' : STATE.split;
@@ -279,7 +289,7 @@ function renderBpPitchingSplitBar() {
   ], cur, function(v) {
     STATE.split = v === 'hlev' ? 'hilev' : v === 'llev' ? 'llev' : v;
     renderBpPitchingSplitBar();
-    if (STATE.team) renderTeam(STATE.team);
+    refreshBullpenPanel('pitchingValuePanel', 'renderPitchingValuePanel');
   });
 }
 
@@ -318,7 +328,7 @@ function renderBpSosSplitBar() {
   ], STATE.sosSplit, function(v) {
     STATE.sosSplit = v || 'overall';
     renderBpSosSplitBar();
-    if (STATE.team) renderTeam(STATE.team);
+    refreshBullpenPanel('strengthOfSchedulePanel', 'renderStrengthOfSchedulePanel');
   });
 }
 
