@@ -125,7 +125,7 @@ body::after,
   font-family: var(--display);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: 0.01em;
   line-height: 1.15;
   background: transparent !important;
@@ -143,20 +143,25 @@ body::after,
 .chip.c-poor,  .val-chip.c-poor  { color: #F87171; }
 .chip.c-na,    .val-chip.c-na    { color: #6E7383; font-size: 14px; }
 
-/* ---- Banners only: #3 large filled chip with black ink ---- */
+/* ---- Banners (#4): dark pill (styled on .tp-hero-stat) + larger gradient TEXT value ---- */
 :is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip {
-  min-width: 60px !important;
-  padding: 7px 15px !important;
-  border-radius: 10px !important;
-  font-size: 18px !important;
-  line-height: 1 !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
 }
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-elite { background:#1FB866 !important; color:#06140C !important; }
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-good  { background:#5FB83C !important; color:#06140C !important; }
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-mid   { background:#C9A21E !important; color:#1B0E03 !important; }
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-weak  { background:#E0762E !important; color:#1B0E03 !important; }
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-poor  { background:#C8201C !important; color:#FFFFFF !important; }
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-na    { background:#1B2030 !important; color:#9AA1B5 !important; }
+
+/* ---- Larger, legible profile/ranking tables (bare-gradient-text era) ---- */
+.tp-table th, .hub-table th, .pp-data-table th, .tp-trend-table th, .tp-trend-table thead th,
+.pp-pv-metrics-table th, .pp-oor-metrics-table th, .bp-reliever-rank-table th, .pp-tier-split-table th,
+.rl-table-premium th, .rl-table th, .pl-prop-table th, .pp-table-head {
+  font-size: 13.5px;
+  letter-spacing: 0.03em;
+}
+.tp-trend-table__metric, .pp-table-label-text,
+.tp-trend-table tbody th[scope="row"], .tp-table tbody th[scope="row"],
+.hub-table tbody th[scope="row"] {
+  font-size: 15px;
+}
 
 /* Toggle pills — hero CTA pattern (see mlbma_design_system.css) */
 .ca-pill-bold,

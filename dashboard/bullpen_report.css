@@ -26,8 +26,8 @@ body.bullpen-profile-page {
   --tp-section-pad-x: 14px;
   --tp-section-pad-bottom: 14px;
   --tp-section-radius: 12px;
-  --tp-helper-size: 12px;
-  --tp-band-title-size: 12px;
+  --tp-helper-size: 14.5px;
+  --tp-band-title-size: 14px;
 }
 
 body.bullpen-profile-page .ca-page-shell {

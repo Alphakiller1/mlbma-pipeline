@@ -872,6 +872,16 @@
     return '<a class="glossary-link" href="glossary.html#' + escHtml(id) + '">' + escHtml(text) + '</a>';
   }
 
+  // Title-Case a subtitle/explanation, leaving acronyms & metric tokens
+  // (wRC+, xFIP, K%, HR/9, OSI…) untouched — only all-lowercase words get capitalized.
+  function titleCaseLabel(s) {
+    if (!s) return s;
+    return String(s).replace(/\S+/g, function(w) {
+      if (/[A-Z]/.test(w)) return w;
+      return w.replace(/(^|[-/])([a-z])/g, function(m, sep, ch) { return sep + ch.toUpperCase(); });
+    });
+  }
+
   function sectionHeaderHtml(opts) {
     opts = opts || {};
     if (opts.icon || opts.iconKey) {
@@ -879,7 +889,7 @@
         opts.icon || opts.iconKey,
         opts.kicker || opts.eyebrow || '',
         opts.title || '',
-        opts.subtitle || opts.purpose || ''
+        titleCaseLabel(opts.subtitle || opts.purpose || '')
       );
       var out = '<header class="ca-section-header">' + head;
       if (opts.showPlatformNav) out += platformCtaHtml(opts.activeNav || null);
@@ -890,7 +900,7 @@
     var out = '<header class="ca-section-header">';
     if (opts.eyebrow) out += '<p class="ca-eyebrow">' + escHtml(opts.eyebrow) + '</p>';
     out += '<h2 class="ca-section-title">' + escHtml(opts.title || '') + '</h2>';
-    if (opts.subtitle) out += '<p class="ca-helper">' + escHtml(opts.subtitle) + '</p>';
+    if (opts.subtitle) out += '<p class="ca-helper">' + escHtml(titleCaseLabel(opts.subtitle)) + '</p>';
     if (opts.showPlatformNav) out += platformCtaHtml(opts.activeNav || null);
     if (opts.actions) out += '<div class="ca-section-header__actions">' + opts.actions + '</div>';
     out += '</header>';

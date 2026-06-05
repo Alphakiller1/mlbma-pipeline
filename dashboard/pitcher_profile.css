@@ -699,12 +699,12 @@
 
 /* Profile tables — unified research density */
 .pitcher-profile-page {
-  --pp-table-size: 13px;
-  --pp-table-num-size: 13px;
-  --pp-table-head-size: 10px;
-  --pp-table-chip-size: 13px;
-  --pp-trend-metric-size: 14px;
-  --pp-trend-metric-desc-size: 11px;
+  --pp-table-size: 15px;
+  --pp-table-num-size: 16px;
+  --pp-table-head-size: 13px;
+  --pp-table-chip-size: 17px;
+  --pp-trend-metric-size: 16px;
+  --pp-trend-metric-desc-size: 12.5px;
   --pp-trend-meta-size: 12px;
 }
 
