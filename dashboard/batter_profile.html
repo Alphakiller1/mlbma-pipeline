@@ -673,15 +673,8 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 </div>
 
   <div class="container">
-  <header class="header">
-    <div class="brand-row">
-      <span class="brand-tag">Chase Analytics</span>
-      <span class="brand-pill" id="brandPill">Loading—</span>
-    </div>
-    <h1>Batter Profile</h1>
-    <p class="subtitle">Prop-first batter read with matchup context, quick leans, and expandable support.</p>
-    <div class="data-banner" id="dataBanner"></div>
-  </header>
+  <div id="profilePageHeader"></div>
+  <div class="data-banner" id="dataBanner"></div>
 
   <div class="selector-bar" id="playerSearch">
     <div class="selector-group wide">
@@ -1947,6 +1940,15 @@ function bindUi() {
   });
 }
 
+function mountProfilePageHeader() {
+  if (!window.MLBMAAssets || !MLBMAAssets.mountPlatformHeader) return;
+  MLBMAAssets.mountPlatformHeader('profilePageHeader', {
+    eyebrow: 'Chase Analytics · Profiles',
+    title: 'Batter Profile',
+    showPlatformNav: false
+  });
+}
+
 function loadAll() {
   var fetches = [
     fetchSheetTab(TABS.batter_profiles),
@@ -1967,6 +1969,7 @@ function loadAll() {
     DATA.lineups = results[2] || [];
     DATA.matchups = results[3] || [];
     DATA.loaded = true;
+    mountProfilePageHeader();
     indexRawStats();
     buildPool();
     populateSelectors();
@@ -2004,8 +2007,11 @@ function loadAll() {
     var banner = document.getElementById('dataBanner');
     banner.textContent = 'Could not load Google Sheets: ' + DATA.error;
     banner.classList.add('show');
-    document.getElementById('brandPill').textContent = 'Load failed';
-    document.getElementById('brandPill').classList.add('warn');
+    var pill = document.getElementById('brandPill');
+    if (pill) {
+      pill.textContent = 'Load failed';
+      pill.classList.add('warn');
+    }
   }).finally(function() {
     if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
     else if (window.MLBMA_UI) MLBMA_UI.finishLoading();
