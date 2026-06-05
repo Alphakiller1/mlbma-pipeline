@@ -339,7 +339,7 @@
     });
     var rotCells = [
       staffStatCell('Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(rotCache, tk, 'avgPs', false)),
-      staffStatCell('Avg IP/Start', valChip(ctx, ipStart, 'osi', false, 2), staffLeagueRank(rotCache, tk, 'ipStart', false)),
+      staffStatCell('Avg IP/Start', '<span class="tp-stat-plain">' + (ipStart != null && !isNaN(ipStart) ? Number(ipStart).toFixed(1) : '—') + '</span>', staffLeagueRank(rotCache, tk, 'ipStart', false)),
       staffStatCell('K%', valChip(ctx, kPct, 'pitching', false, 1), staffLeagueRank(rotCache, tk, 'kPct', false)),
       staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1), staffLeagueRank(rotCache, tk, 'bbPct', true)),
       staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2), staffLeagueRank(rotCache, tk, 'teamEra', true))
@@ -351,14 +351,16 @@
       + '</span></div>';
     // Compact launchpad: each SP links to its full Pitcher Profile (deep splits live there).
     rotKpi += ctx.profileTableOpen('tp-rotation-launch-table')
-      + '<thead><tr><th>Name</th><th>Hand</th><th>Tier</th><th>Profile</th></tr></thead><tbody>';
+      + '<thead><tr><th>Name</th><th>ERA</th><th>K%</th><th>BB%</th><th>Tier</th><th>Profile</th></tr></thead><tbody>';
     if (!teamSps.length) {
-      rotKpi += '<tr><td colspan="4" class="tp-empty">No SP profiles for this team</td></tr>';
+      rotKpi += '<tr><td colspan="6" class="tp-empty">No SP profiles for this team</td></tr>';
     } else {
       var S = global.MLBMASharedMatchup;
       teamSps.forEach(function(sp, idx) {
         var pname = pickCol(sp, ['pitcher_name']);
-        var hand = pickCol(sp, ['pitcher_hand']) || '—';
+        var spEra = num(pickCol(sp, ['ERA', 'era']));
+        var spK = num(pickCol(sp, ['K_pct', 'K%']));
+        var spBb = num(pickCol(sp, ['BB_pct', 'BB%']));
         var ps = poolPS ? poolPS(sp) : num(pickCol(sp, ['PitchScore']));
         var tier = (S && S.pitcherStaffTier)
           ? S.pitcherStaffTier({
@@ -369,14 +371,19 @@
               hr9: num(pickCol(sp, ['HR9', 'HR/9']))
             })
           : ctx.tierLabel(ps, ctx.PITCH_TIERS);
+        var handRaw = String(pickCol(sp, ['pitcher_hand', 'Hand', 'hand']) || '').trim();
+        var hand = handRaw ? handRaw.charAt(0).toUpperCase() : '';
         var profileHref = 'pitcher_profile.html?pitcher=' + ctx.encodePlayer(pname);
         var nameCell = ctx.spPlayerCellHtml
           ? ctx.spPlayerCellHtml(sp, idx < 3)
-          : '<a class="tp-sp-player-link" href="' + profileHref + '" title="Open full Pitcher Profile">'
-            + esc(pname) + '</a>';
+          : '<a class="tp-sp-player-link tp-rotation-sp-link" href="' + profileHref + '" title="Open full Pitcher Profile">'
+            + esc(pname)
+            + (hand ? '<span class="tp-sp-player-hand">' + esc(hand) + '</span>' : '') + '</a>';
         rotKpi += '<tr class="tp-rotation-launch-row">'
           + '<td>' + nameCell + '</td>'
-          + '<td>' + esc(hand) + '</td>'
+          + '<td class="num">' + valChip(ctx, spEra, 'pitching', true, 2) + '</td>'
+          + '<td class="num">' + valChip(ctx, spK, 'pitching', false, 1) + '</td>'
+          + '<td class="num">' + valChip(ctx, spBb, 'pitching', true, 1) + '</td>'
           + '<td><span class="tier-badge ' + esc(tier.cls) + '"'
           + (tier.hint ? ' title="' + esc(tier.hint) + '"' : '') + '>' + esc(tier.label) + '</span></td>'
           + '<td class="tp-profile-action">'

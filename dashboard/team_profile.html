@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="theme.css?v=20260618b">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260602m">
-<link rel="stylesheet" href="team_profile.css?v=20260607e">
+<link rel="stylesheet" href="team_profile.css?v=20260608a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
@@ -26,7 +26,7 @@
 <script src="profile_shell.js?v=20260531p"></script>
 <script src="team_profile_mini.js?v=20260602w"></script>
 <script src="team_profile_sections.js?v=20260603w"></script>
-<script src="team_profile_staff.js?v=20260607d"></script>
+<script src="team_profile_staff.js?v=20260608a"></script>
 <script src="team_profile_intel.js?v=20260607c"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="platform_dashboard.js?v=20260618a"></script>
@@ -443,12 +443,16 @@ function spPlayerAvatar(spRow, eager) {
 
 function spPlayerCellHtml(spRow, eager) {
   var pname = pickCol(spRow, ['pitcher_name', 'Pitcher', 'name']) || '';
+  var handRaw = String(pickCol(spRow, ['pitcher_hand', 'Hand', 'hand']) || '').trim();
+  var hand = handRaw ? handRaw.charAt(0).toUpperCase() : '';
   var avatar = spPlayerAvatar(spRow, eager);
   var href = 'pitcher_profile.html?pitcher=' + encodePlayer(pname);
   return '<div class="tp-sp-player-cell tp-batter-player-cell">'
     + avatar
-    + '<a class="tp-sp-player-link tp-batter-player-link" href="' + href + '" title="Open full Pitcher Profile">'
-    + escHtml(pname) + '<span class="tp-sp-player-link__cue" aria-hidden="true">&rarr;</span></a>'
+    + '<a class="tp-sp-player-link tp-rotation-sp-link" href="' + href + '" title="Open full Pitcher Profile">'
+    + escHtml(pname)
+    + (hand ? '<span class="tp-sp-player-hand">' + escHtml(hand) + '</span>' : '')
+    + '<span class="tp-sp-player-link__cue" aria-hidden="true">&rarr;</span></a>'
     + '</div>';
 }
 

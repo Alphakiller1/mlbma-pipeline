@@ -1566,6 +1566,13 @@ body.team-profile-page :is(
 .tp-rotation-section .tp-sp-player-link:hover .tp-sp-player-link__cue {
   color: rgba(255, 255, 255, 0.9);
 }
+.tp-sp-player-hand {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ca-purple-light, #C4B0FF);
+  letter-spacing: 0.02em;
+}
 
 .tp-rotation-section .profile-table td:first-child {
   min-width: 168px;
@@ -1776,6 +1783,19 @@ body.team-profile-page :is(
 
 .tp-table.hub-table a:hover {
   text-decoration: underline;
+}
+
+.tp-rotation-section .tp-rotation-launch-table a.tp-rotation-sp-link {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+.tp-rotation-section .tp-rotation-launch-table a.tp-rotation-sp-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+.tp-rotation-section .tp-rotation-launch-table .tp-sp-player-hand {
+  color: var(--ca-purple-light, #C4B0FF);
 }
 
 .tp-kpi-grid {
@@ -2365,6 +2385,12 @@ body.team-profile-page :is(
 }
 .tp-profile-launch:active { transform: translateY(1px); }
 .tp-profile-launch__arrow { font-weight: 800; }
+/* Neutral (ungraded) stat value — e.g. Avg IP/Start, which has no 0-100 grade. */
+.tp-stat-plain {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text-1, #E5E7EB);
+}
 .tp-staff-launch-hint {
   margin: 4px 0 10px;
   font-size: 12px;
