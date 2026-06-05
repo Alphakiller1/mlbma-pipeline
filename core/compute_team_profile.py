@@ -295,7 +295,9 @@ def rotation_summary(
             scores = [p["pitch_score"] for p in pitchers if p["pitch_score"] is not None]
             avg_ps = sum(scores) / len(scores) if scores else None
 
-        total_ip = sum(p["ip"] or 0 for p in pitchers)
+        # p["ip"] is each starter's avg IP *per start*, so weight by their starts
+        # (summing per-start averages then dividing by total starts deflates it ~9x).
+        total_ip = sum((p["ip"] or 0) * (p["starts"] or 0) for p in pitchers)
         total_starts = sum(p["starts"] or 0 for p in pitchers)
         avg_ip = round(total_ip / total_starts, 2) if total_starts > 0 else None
 
