@@ -110,35 +110,53 @@ body::after,
   padding: 4px 9px;
 }
 
+/* ============================================================
+   Numeric stat display system
+   #1 (bare graded TEXT) everywhere; banners override to #3 (large filled chip).
+   The !important reset below neutralizes every per-section "chip box"
+   (min-width / padding / background) in one place, so values render as bare
+   legible text dashboard-wide. Poor/weak hues are lightened for contrast on
+   the dark page background.
+   ============================================================ */
 .ca-value-chip,
 .val-chip,
 .chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 62px;
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 8px;
+  display: inline-block;
   font-family: var(--display);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 15px;
   letter-spacing: 0.01em;
-  line-height: 1;
+  line-height: 1.15;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 1px !important;
 }
-.chip.c-elite, .val-chip.c-elite { background: #1FB866; color: #06140C; }
-.chip.c-good, .val-chip.c-good { background: #5FB83C; color: #06140C; }
-.chip.c-mid, .val-chip.c-mid { background: #C9A21E; color: #1B0E03; }
-.chip.c-weak, .val-chip.c-weak { background: #E0762E; color: #1B0E03; }
-.chip.c-poor, .val-chip.c-poor { background: #C8201C; color: #fff; }
-.chip.c-na, .val-chip.c-na {
-  background: #1B2030;
-  color: #717892;
-  border: 1px solid #37405A;
-  min-width: 48px;
-  font-size: 14px;
+.chip.c-elite, .val-chip.c-elite { color: #4ADE80; }
+.chip.c-good,  .val-chip.c-good  { color: #7BDC5A; }
+.chip.c-mid,   .val-chip.c-mid   { color: #FBBF24; }
+.chip.c-weak,  .val-chip.c-weak  { color: #FB923C; }
+.chip.c-poor,  .val-chip.c-poor  { color: #F87171; }
+.chip.c-na,    .val-chip.c-na    { color: #6E7383; font-size: 14px; }
+
+/* ---- Banners only: #3 large filled chip with black ink ---- */
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip {
+  min-width: 60px !important;
+  padding: 7px 15px !important;
+  border-radius: 10px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
 }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-elite { background:#1FB866 !important; color:#06140C !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-good  { background:#5FB83C !important; color:#06140C !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-mid   { background:#C9A21E !important; color:#1B0E03 !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-weak  { background:#E0762E !important; color:#1B0E03 !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-poor  { background:#C8201C !important; color:#FFFFFF !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip.c-na    { background:#1B2030 !important; color:#9AA1B5 !important; }
 
 /* Toggle pills — hero CTA pattern (see mlbma_design_system.css) */
 .ca-pill-bold,

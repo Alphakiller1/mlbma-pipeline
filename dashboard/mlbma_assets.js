@@ -93,6 +93,7 @@
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
     ipstart: { mean: 5.10, std: 0.40, hi: true },      // avg IP per SP start (higher = deeper outings)
+    rpwin: { mean: 20, std: 5, hi: true },             // reliever win % of team games (higher = better)
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
     ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)
@@ -509,12 +510,14 @@
    * average (z-score) instead of snapped to a few buckets, so neighbouring values get
    * distinct shades. League average sits at the amber midpoint.
    */
+  // Tuned for TEXT on the dark page bg (metricColor is text-only; fills use heatColor).
+  // Poor/weak lightened so red/orange values clear the contrast floor.
   var GRADIENT_STOPS = [
-    { t: 0.00, c: [200, 32, 28] },    // poor      #C8201C deep red (warm, not pink)
-    { t: 0.27, c: [232, 96, 24] },    // weak      #E86018 orange
-    { t: 0.50, c: [234, 179, 8] },    // average   #EAB308 amber (league avg)
-    { t: 0.74, c: [132, 204, 22] },   // good      #84CC16 lime
-    { t: 1.00, c: [34, 197, 94] }     // elite     #22C55E green
+    { t: 0.00, c: [248, 113, 113] },  // poor      #F87171 legible red
+    { t: 0.27, c: [251, 146, 60] },   // weak      #FB923C orange
+    { t: 0.50, c: [251, 191, 36] },   // average   #FBBF24 amber (league avg)
+    { t: 0.74, c: [123, 220, 90] },   // good      #7BDC5A lime
+    { t: 1.00, c: [74, 222, 128] }    // elite     #4ADE80 green
   ];
 
   function _gradRgb(t) {

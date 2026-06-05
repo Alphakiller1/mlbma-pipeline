@@ -724,15 +724,14 @@
 
     function heroMetricText(val, ctx, invert, dec, opts) {
       opts = opts || {};
+      var d = dec == null ? 1 : dec;
+      // Banner stats render as #3 filled chips (theme.css banner scope styles .chip).
+      if (A && A.valChipHtml) return A.valChipHtml(val, ctx, !!invert, d, opts);
       if (val == null || isNaN(val)) {
         return '<span class="tp-hero-stat__num tp-hero-stat__num--na">—</span>';
       }
-      var d = dec == null ? 1 : dec;
       var display = opts.display != null ? String(opts.display) : fmt(val, d);
-      var color = A && A.metricTextColor
-        ? A.metricTextColor(val, ctx, !!invert, opts)
-        : 'var(--text-1, #F3F4F6)';
-      return '<span class="tp-hero-stat__num" style="color:' + color + '">' + esc(display) + '</span>';
+      return '<span class="tp-hero-stat__num">' + esc(display) + '</span>';
     }
 
     var handVal = hand === 'L' ? 'LHP' : 'RHP';

@@ -9,24 +9,24 @@
 <title>Chase Analytics — Team Profile</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260618a">
-<link rel="stylesheet" href="theme.css?v=20260618b">
+<link rel="stylesheet" href="theme.css?v=20260605a">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260602m">
 <link rel="stylesheet" href="team_profile.css?v=20260608p">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260608q">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260615b"></script>
-<script src="mlbma_assets.js?v=20260608b"></script>
+<script src="mlbma_assets.js?v=20260605a"></script>
 <script src="mlbma_icons.js?v=20260618a"></script>
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="team_profile_mini.js?v=20260608o"></script>
+<script src="team_profile_mini.js?v=20260605a"></script>
 <script src="team_profile_sections.js?v=20260603w"></script>
-<script src="team_profile_staff.js?v=20260608r"></script>
+<script src="team_profile_staff.js?v=20260608s"></script>
 <script src="team_profile_intel.js?v=20260608p"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="platform_dashboard.js?v=20260618a"></script>
@@ -513,7 +513,7 @@ function osiColor(v) {
 
 function valChip(v, ctx, invert, dec) {
   var assets = window.MLBMAAssets;
-  if (assets && assets.valChipHtml) return assets.valChipHtml(v, ctx || 'osi', !!invert, dec == null ? 1 : dec);
+  if (assets && assets.valChipHtml) return assets.valChipHtml(v, ctx || 'osi', invert, dec == null ? 1 : dec);
   return '<span class="chip c-na">' + fmt(v, dec == null ? 1 : dec) + '</span>';
 }
 
@@ -1687,7 +1687,7 @@ function renderUnitSnapshotStrip(prof, baseCtx) {
       : {};
     var staffRank = Staff && Staff.staffLeagueRank ? Staff.staffLeagueRank.bind(Staff) : function() { return { rank: null, total: null }; };
     var chips = unitSnapshotChipRanked('Rotation Pitch Score', avgPs, staffRank(rotCache, tk, 'avgPs', false), 'pitching', false, 0)
-      + unitSnapshotChipRanked('Rotation ERA', rotEra, staffRank(rotCache, tk, 'teamEra', true), 'pitching', true, 2)
+      + unitSnapshotChipRanked('Rotation ERA', rotEra, staffRank(rotCache, tk, 'teamEra', true), 'era', true, 2)
       + unitSnapshotChipRanked('Rotation IP/Start', ipStart, staffRank(rotCache, tk, 'ipStart', false), 'ipstart', false, 1);
     el.innerHTML = intelHtml + unitSnapshotMetricsRow(chips);
     syncIdentityStackLayout();
@@ -1723,8 +1723,8 @@ function renderUnitSnapshotStrip(prof, baseCtx) {
     var snapBpWin = bpEntry.bpWinPct;
     var bpRank = Staff && Staff.staffLeagueRank ? Staff.staffLeagueRank.bind(Staff) : function() { return { rank: null, total: null }; };
     var bpChips = unitSnapshotChipRanked('Bullpen Pitch Score', snapBpScore, bpRank(bpCache, bpTk, 'bpScore', false), 'pitching', false, 0)
-      + unitSnapshotChipRanked('Bullpen ERA', snapBpEra, bpRank(bpCache, bpTk, 'bpEra', true), 'pitching', true, 2)
-      + unitSnapshotChipRanked('Bullpen Win%', snapBpWin, bpRank(bpCache, bpTk, 'bpWinPct', false), 'rate', false, 1);
+      + unitSnapshotChipRanked('Bullpen ERA', snapBpEra, bpRank(bpCache, bpTk, 'bpEra', true), 'era', true, 2)
+      + unitSnapshotChipRanked('Bullpen Win%', snapBpWin, bpRank(bpCache, bpTk, 'bpWinPct', false), 'rpwin', false, 1);
     el.innerHTML = bpIntel + unitSnapshotMetricsRow(bpChips);
     syncIdentityStackLayout();
     return;
