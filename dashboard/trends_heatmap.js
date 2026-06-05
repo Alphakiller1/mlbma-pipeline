@@ -85,7 +85,12 @@
       + '.thm-table tbody tr:nth-child(even){background:rgba(255,255,255,.018)}'
       + '.thm-table tbody tr:hover{background:rgba(124,77,255,.10);box-shadow:inset 3px 0 0 #7C4DFF}'
       + '.thm-table td.numcol{width:1%;white-space:nowrap}'
-      + '.thm-rel{font-size:12px;font-weight:700;color:#AEB4C6;text-align:center}'
+      + '.thm-rel{display:inline-block;font-size:12px;font-weight:700;text-align:center;letter-spacing:.01em}'
+      + '.thm-rel--rise{color:#1FB866}'
+      + '.thm-rel--stable{color:#AEB4C6}'
+      + '.thm-rel--decline{color:#E0392E}'
+      + '.thm-rel--spike{color:#C9A21E}'
+      + '.thm-rel--noisy{color:#717892}'
       + '.thm-team{display:flex;align-items:center;gap:11px;padding:0;color:#F6F8FC;font-family:var(--display)}'
       + '.thm-team strong{font-size:15px;font-weight:800;letter-spacing:.02em}'
       + '.thm-team-logo{width:28px;height:28px;border-radius:0!important;object-fit:contain;background:transparent!important;border:0!important}'
@@ -228,6 +233,14 @@
     var m = { 'Sustained Rise': 4, Stable: 3, Declining: 2, 'Short Spike': 1, Noisy: 0 };
     return m[label] != null ? m[label] : 0;
   }
+  function reliabilityClass(label) {
+    var key = String(label || 'Noisy');
+    if (key === 'Sustained Rise') return 'thm-rel--rise';
+    if (key === 'Declining') return 'thm-rel--decline';
+    if (key === 'Short Spike') return 'thm-rel--spike';
+    if (key === 'Stable' || key === 'Stable Elite') return 'thm-rel--stable';
+    return 'thm-rel--noisy';
+  }
   function metricColor(value, metricKey) {
     var n = num(value);
     if (n == null) return null;
@@ -345,7 +358,7 @@
           + cell(r.l7, 1)
           + deltaChip(r.delta)
           + '<td class="numcol"><span class="chip ' + velCls + '">' + esc(velDisplay) + '</span></td>'
-          + '<td><div class="thm-rel">' + esc(r.reliability || 'Noisy') + '</div></td>'
+          + '<td><span class="thm-rel ' + reliabilityClass(r.reliability) + '">' + esc(r.reliability || 'Noisy') + '</span></td>'
           + '</tr>';
       }).join('');
       root.querySelector('.thm-table-wrap').innerHTML = head + body + '</tbody></table>';

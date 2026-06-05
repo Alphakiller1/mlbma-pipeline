@@ -299,10 +299,11 @@
   function teamLinkHtml(team, logoFn, extraCls, side) {
     var sideCls = side === 'home' ? ' team-link--home' : ' team-link--away';
     return '<a href="' + teamProfileUrl(team) + '" class="team-link' + sideCls + (extraCls || '') + '" onclick="event.stopPropagation()">'
-      + logoFn(team, 48)
       + '<span class="hmc-abbr">' + esc(team)
       + (global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '')
-      + '</span></a>';
+      + '</span>'
+      + logoFn(team, 48)
+      + '</a>';
   }
 
   function formatOpeningHeroDate(d) {

@@ -473,27 +473,59 @@
     });
   }
 
+  function registerLeaguePoolsFromRows(dataRows) {
+    if (!A || !A.registerLeaguePool || !dataRows || !dataRows.length) return false;
+    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'];
+    var registered = false;
+    metrics.forEach(function(k) {
+      var vals = dataRows.map(function(r) { return num(r[k]); }).filter(function(v) { return v != null && !isNaN(v); });
+      if (vals.length >= 2) {
+        A.registerLeaguePool(k, vals);
+        registered = true;
+      }
+    });
+    return registered;
+  }
+
   function scheduleLeaguePools(root, ctx, rows) {
-    if (!A || !A.registerLeaguePool || !LM || !LM.leaguePool) return;
+    if (!A || !A.registerLeaguePool || !LM) return;
     var run = function() {
-      Promise.all(['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'].map(function(k) {
-        return LM.leaguePool(k).then(function(pool) {
-          if (pool && pool.values && pool.values.length) A.registerLeaguePool(k, pool.values);
-        });
-      })).then(function() {
+      var finish = function(dataRows) {
+        if (registerLeaguePoolsFromRows(dataRows) && rows && rows.length) {
+          renderBody(root, ctx.state, rows);
+        }
+      };
+      if (registerLeaguePoolsFromRows(rows)) {
         if (rows && rows.length) renderBody(root, ctx.state, rows);
-      }).catch(function(err) {
+        return;
+      }
+      if (LM.leaguePoolsBulk) {
+        LM.leaguePoolsBulk().then(function(pools) {
+          Object.keys(pools || {}).forEach(function(k) {
+            var pool = pools[k];
+            if (pool && pool.values && pool.values.length) A.registerLeaguePool(k, pool.values);
+          });
+          if (rows && rows.length) renderBody(root, ctx.state, rows);
+        }).catch(function(err) {
+          console.warn('[LineupView] league pool registration failed', err);
+        });
+        return;
+      }
+      var scoringFilter = MS.createFilterState
+        ? MS.createFilterState({ hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' })
+        : DEFAULTS.filter;
+      LM.rankAll(scoringFilter, 'scoring').then(finish).catch(function(err) {
         console.warn('[LineupView] league pool registration failed', err);
       });
     };
-    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 2500 });
+    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 4000 });
     else setTimeout(run, 50);
   }
 
   function rerender(root, ctx) {
     var l = document.getElementById('hubLoading');
-    if (l) l.classList.add('hide');
     if (!LM || !LM.rankAll) {
+      if (l) l.classList.add('hide');
       root.querySelector('.lv-body').innerHTML = '<div class="lv-note">LineupModel not available.</div>';
       return;
     }
@@ -532,11 +564,13 @@
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
       renderBody(root, ctx.state, rows);
       if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
+      if (l) l.classList.add('hide');
       global.__lineupViewReady = true;
       scheduleLeaguePools(root, ctx, rows);
       return null;
     }).catch(function(err) {
       console.error('[LineupView] render failed', err);
+      if (l) l.classList.add('hide');
       root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
     });
   }
@@ -554,8 +588,16 @@
     shell.innerHTML = '<div class="lv-bar"><div class="lv-controls"></div></div><div class="lv-body"></div>';
     el.innerHTML = '';
     el.appendChild(shell);
-    var ctx = { state: state, teams: [], _didPalsForceRefresh: false, meta: {} };
+    var ctx = { state: state, teams: [], _didPalsForceRefresh: false, meta: {}, _teamResultsRefresh: false };
     bind(shell, ctx);
+    if (LM && LM.onUpdate) {
+      LM.onUpdate(function(reason) {
+        if (reason !== 'teamResults' || ctx._teamResultsRefresh) return;
+        if (ctx.state.family !== 'surface') return;
+        ctx._teamResultsRefresh = true;
+        rerender(shell, ctx);
+      });
+    }
     rerender(shell, ctx);
     return {
       rerender: function() { rerender(shell, ctx); },
@@ -564,8 +606,4 @@
   }
 
   global.LineupView = { mount: mount };
-
-  if (LM && LM.ensureStore) {
-    LM.ensureStore({ needPitcherSplits: false, needPals: false }).catch(function() { /* prefetch best-effort */ });
-  }
 })(typeof window !== 'undefined' ? window : this);

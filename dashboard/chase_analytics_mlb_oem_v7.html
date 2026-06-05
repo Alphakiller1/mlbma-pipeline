@@ -1775,7 +1775,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mc-sp-block {
   display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 10px;
   align-items: stretch; font-size: 11px; height: 100%;
-  padding: 12px 14px 11px; border-radius: 8px; box-sizing: border-box; overflow: hidden;
+  padding: 12px 14px 11px; border-radius: 8px; box-sizing: border-box; overflow: visible;
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
   border: 1px solid rgba(196,176,255,.08);
 }
@@ -1796,17 +1796,18 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   flex: 0 0 auto; font-size: 10px; padding: 3px 7px; line-height: 1.1;
 }
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 12px; margin-top: 2px; }
-.mc-sp-stats--grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-self: end; }
+.mc-sp-stats--grid { display: grid; grid-template-columns: repeat(3, minmax(2.75rem, 1fr)); gap: 4px; align-self: end; padding: 0 4px 2px; overflow: visible; width: 100%; }
 .mc-sp-stat {
-  display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 2px;
-  border-radius: 0; background: transparent; border: 0; text-align: center; min-width: 0;
-  color: var(--text);
+  display: flex; flex-direction: column; gap: 2px; padding: 4px 4px 2px;
+  border-radius: 0; background: transparent; border: 0; text-align: center; min-width: 2.75rem;
+  color: var(--text); overflow: visible;
 }
 .mc-sp-stat em {
   font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
   color: var(--text-3);
 }
-.mc-sp-stat strong { color: var(--text); font-size: 16px; font-weight: 900; line-height: 1.1; }
+.mc-sp-stat strong { color: var(--text); font-size: 15px; font-weight: 900; line-height: 1.1; white-space: nowrap; overflow: visible; }
+.mc-sp-stat em { white-space: nowrap; overflow: visible; }
 .mc-sp-name-text { font-size: 15.5px; font-weight: 800; letter-spacing: 0; }
 .mc-ps-badge--defined {
   display: flex; align-items: baseline; justify-content: space-between;
@@ -1836,7 +1837,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hmc-osi-val--home { align-items: flex-end; justify-self: end; text-align: right; }
 .hmc-osi-team { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); line-height: 1.1; }
 .hmc-osi-num { display: block; font-family: var(--font-display, var(--display)); font-size: 17px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
-.hero-matchup-card .team-link--home { justify-content: flex-end; flex-direction: row-reverse; }
+.hero-matchup-card .team-link--home { justify-content: flex-end; flex-direction: row; }
 .hero-matchup-card .team-link--away { justify-content: flex-start; flex-direction: row; }
 .mc-sp-block--home { grid-template-columns: minmax(0, 1fr) 42px; padding-left: 11px; padding-right: 14px; }
 .mc-sp-block--away { padding-right: 11px; }
@@ -2618,10 +2619,10 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260602n">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260620b">
 <link rel="stylesheet" href="theme.css?v=20260619a">
 <link rel="stylesheet" href="chase_nav.css?v=20260618n">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260619c">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260619f">
 <link rel="stylesheet" href="research_lab.css?v=20260605e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
@@ -2679,19 +2680,28 @@ body.view-research .ca-lab { display: block; }
     display:none!important;
   }
 </style>
+<script>
+(function() {
+  try {
+    var ts = sessionStorage.getItem('mlbma_sheet_sync_ts');
+    if (ts) window.MLBMA_SHEET_BUST = ts;
+  } catch (e) { /* ignore */ }
+  if (window.MLBMA_PAGE_LOAD_BUST == null) window.MLBMA_PAGE_LOAD_BUST = Date.now();
+})();
+</script>
 <script src="mlbma_config.js?v=20260527s"></script>
-<script src="mlbma_ui.js?v=20260618b" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_ui.js?v=20260620b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260609a"></script>
+<script src="matchup_shared.js?v=20260620d"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260619b"></script>
+<script src="platform_dashboard.js?v=20260619c"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260618b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
-<script src="trends_heatmap.js?v=20260605e"></script>
+<script src="trends_heatmap.js?v=20260620c"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="pitcher_lab.js?v=20260605e"></script>
 </head>
@@ -2992,13 +3002,7 @@ body.view-research .ca-lab { display: block; }
   <header class="ca-page-header">
     <p class="ca-eyebrow">Today's Slate</p>
     <h1 class="ca-page-title">Projected Matchups</h1>
-    <ul class="matchups-feature-list ca-page-header__sub" aria-label="What each matchup card includes">
-      <li>Split-specific lineup OSI edges vs probable starter hand</li>
-      <li>Probable starters with Pitch Score and platoon context</li>
-      <li>Stadium, game time, and weather conditions</li>
-      <li>Projected batting orders with platoon coloring</li>
-      <li>One-click jump to full matchup compare</li>
-    </ul>
+    <p class="ca-helper ca-page-header__sub">Split-specific lineup OSI edges vs probable starter hand, probable starters with Pitch Score and platoon context, stadium and weather, projected batting orders with platoon coloring, and one-click compare.</p>
   </header>
   <div class="matchup-day-tabs">
     <button type="button" class="matchup-day-tab active" data-day="today">Today</button>
@@ -3204,7 +3208,7 @@ function invalidateSheetCaches(lastUpdated) {
   var next = lastUpdated ? String(lastUpdated).trim() : null;
   var syncChanged = !(prev && next && prev === next);
   applySheetSyncBust(next || String(Date.now()));
-  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
+  if (syncChanged && window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
     MLBMASharedMatchup.clearSheetTabCache();
   }
   if (syncChanged) {
@@ -3271,10 +3275,10 @@ function isSlateSheetTab(tabName) {
   return /^Today_(Matchups|Lineups|Games)$/i.test(String(tabName || ''));
 }
 
-function fetchSlateSheetTab(tabName) {
+function fetchSlateSheetTab(tabName, options) {
   var day = mlbSlateDayIso();
   if (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchSheetTab) {
-    return MLBMASharedMatchup.fetchSheetTab(tabName, { forceRefresh: true, slateDay: day });
+    return MLBMASharedMatchup.fetchSheetTab(tabName, Object.assign({ slateDay: day }, options || {}));
   }
   return fetchSheetTab(tabName);
 }
@@ -3576,7 +3580,10 @@ function parseSheetRows(text) {
   return parseCSV(text);
 }
 
-function fetchSheetTab(tabName) {
+function fetchSheetTab(tabName, options) {
+  if (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchSheetTab) {
+    return MLBMASharedMatchup.fetchSheetTab(tabName, options || {});
+  }
   var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
   var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
   return fetch(sheetCsvUrl(tabName), { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(res) {
@@ -4826,12 +4833,14 @@ function loadLandingData() {
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading today\'s matchups?';
   var sheetSyncProbeTs = null;
-  return prefetchSheetSync().then(function(probeTs) {
-    sheetSyncProbeTs = probeTs || null;
-    var scheduleP = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
-      ? MLBMASharedMatchup.fetchMlbTodaySchedule()
-      : Promise.resolve({ games: [] });
-    return Promise.all([
+  var scheduleP = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
+    ? MLBMASharedMatchup.fetchMlbTodaySchedule()
+    : Promise.resolve({ games: [] });
+  var syncP = prefetchSheetSync().catch(function(err) {
+    console.warn('[MLBMA] sheet sync probe failed (non-blocking)', err);
+    return null;
+  });
+  var fetchP = Promise.all([
     fetchTabSafe(TABS.today_matchups),
     fetchTabSafe(TABS.today_lineups),
     fetchTabSafe(TABS.weather),
@@ -4846,7 +4855,9 @@ function loadLandingData() {
     fetchTabSafe(TABS.today_games, []),
     scheduleP
   ]);
-  }).then(function(results) {
+  return Promise.all([syncP, fetchP]).then(function(bundle) {
+    sheetSyncProbeTs = bundle[0] || null;
+    var results = bundle[1];
     var matchupsRows = results[0], lineupsRows = results[1], weatherRows = results[2],
         pitchingRows = results[3], bullpenRows = results[4], registryRows = results[5],
         signalsTodayRows = results[6], vsRhpRows = results[7], vsLhpRows = results[8], tsText = results[9],
@@ -5005,6 +5016,26 @@ function loadResearchData() {
 var _liveLoadGen = 0;
 var _liveLoadPromise = null;
 var _landingDataLoaded = false;
+var _researchLoadScheduled = false;
+
+function deferResearchDataLoad() {
+  if (_researchBundleLoaded) return Promise.resolve(true);
+  var hash = String(window.location.hash || '');
+  if (document.body.classList.contains('view-research') || hash.indexOf('section-research-lab') >= 0) {
+    return loadResearchData();
+  }
+  if (_researchLoadScheduled) return Promise.resolve(true);
+  _researchLoadScheduled = true;
+  var run = function() {
+    if (_researchBundleLoaded) return;
+    loadResearchData().catch(function(err) {
+      console.warn('[MLBMA] deferred research load failed', err);
+    });
+  };
+  if (window.requestIdleCallback) window.requestIdleCallback(run, { timeout: 12000 });
+  else setTimeout(run, 400);
+  return Promise.resolve(true);
+}
 
 function loadLiveData(forceRefresh) {
   if (_liveLoadPromise && !forceRefresh) {
@@ -5014,6 +5045,7 @@ function loadLiveData(forceRefresh) {
   if (forceRefresh) {
     _liveLoadPromise = null;
     _researchBundleLoaded = false;
+    _researchLoadScheduled = false;
     _landingRendered = false;
     _landingDataLoaded = false;
     try { sessionStorage.removeItem(LIVE_CACHE_KEY); } catch (e) { /* ignore */ }
@@ -5025,9 +5057,11 @@ function loadLiveData(forceRefresh) {
       delete LIVE_DATA._matchupsBuiltAt;
     }
   }
-  window.MLBMA_PAGE_LOAD_BUST = Date.now();
-  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
-    MLBMASharedMatchup.clearSheetTabCache();
+  if (forceRefresh) {
+    window.MLBMA_PAGE_LOAD_BUST = Date.now();
+    if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
+      MLBMASharedMatchup.clearSheetTabCache();
+    }
   }
   var gen = ++_liveLoadGen;
   console.log('[MLBMA] loadLiveData start gen=' + gen + (forceRefresh ? ' (force)' : ''));
@@ -5036,7 +5070,7 @@ function loadLiveData(forceRefresh) {
   var loadChain = loadLandingData()
     .then(function() {
       _landingDataLoaded = true;
-      return loadResearchData();
+      return deferResearchDataLoad();
     })
     .catch(function(err) {
       if (_landingDataLoaded && LIVE_DATA && (LIVE_DATA.lineups || []).length) {
@@ -5065,7 +5099,7 @@ function loadLiveData(forceRefresh) {
         showDataError(
           'Could not refresh live data. Showing last known sheet data. (' + LIVE_DATA.error + ')'
         );
-        return loadResearchData();
+        return deferResearchDataLoad();
       }
       YTD = FALLBACK_YTD.map(function(d) { return JSON.parse(JSON.stringify(d)); });
       recomputeAllScores();
@@ -8103,11 +8137,16 @@ function init(){
   document.body.classList.add('platform-dashboard', 'opening-dashboard');
   document.body.classList.remove('view-pending');
   document.documentElement.classList.remove('view-pending');
-  window.MLBMA_PAGE_LOAD_BUST = Date.now();
+  if (window.MLBMA_PAGE_LOAD_BUST == null) window.MLBMA_PAGE_LOAD_BUST = Date.now();
   ensureCacheForToday();
-  try { sessionStorage.removeItem(LIVE_CACHE_KEY); } catch (e) { /* ignore */ }
-  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
-    MLBMASharedMatchup.clearSheetTabCache();
+  var cached = loadLiveCache();
+  if (cached && cached.scYtdR && cached.scYtdR.length) {
+    try {
+      applyLiveCache(cached);
+      if (cached.oor && cached.oor.length) _researchBundleLoaded = true;
+    } catch (cacheErr) {
+      console.warn('[MLBMA] live cache bootstrap failed', cacheErr);
+    }
   }
   console.log('[MLBMA] init start — slate day ET:', mlbSlateDayIso());
   if (window.MLBMA_UI && MLBMA_UI.startLoadWatchdog) {

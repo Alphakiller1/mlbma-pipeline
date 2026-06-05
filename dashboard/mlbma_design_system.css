@@ -1352,8 +1352,15 @@ h1.ca-page-title {
 }
 
 #section-matchups-hero .ca-page-header__sub,
+#section-matchups-hero .ca-page-header .ca-helper {
+  max-width: 720px;
+  margin: 10px 0 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-2, #A1A1AA);
+}
 #section-research-lab .ca-page-header__sub,
-#section-matchups-hero .ca-page-header .ca-helper,
 #section-research-lab .ca-page-header .ca-helper,
 #section-opening-market-map .ca-page-header__sub,
 #section-opening-workflows .ca-page-header__sub,

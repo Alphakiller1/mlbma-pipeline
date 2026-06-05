@@ -242,11 +242,20 @@ setTimeout(function() {
   <section id="lineupViewMount"></section>
 </main>
 
+<script>
+(function() {
+  try {
+    var ts = sessionStorage.getItem('mlbma_sheet_sync_ts');
+    if (ts) window.MLBMA_SHEET_BUST = ts;
+  } catch (e) { /* ignore */ }
+  window.MLBMA_PAGE_LOAD_BUST = Date.now();
+})();
+</script>
 <script src="mlbma_config.js?v=20260605a"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_ui.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260619a"></script>
+<script src="matchup_shared.js?v=20260620d"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script>
 (function() {
@@ -279,7 +288,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260619b"></script>
+<script src="lineup_view.js?v=20260620a"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

@@ -17,10 +17,19 @@
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+<script>
+(function() {
+  try {
+    var ts = sessionStorage.getItem('mlbma_sheet_sync_ts');
+    if (ts) window.MLBMA_SHEET_BUST = ts;
+  } catch (e) { /* ignore */ }
+  if (window.MLBMA_PAGE_LOAD_BUST == null) window.MLBMA_PAGE_LOAD_BUST = Date.now();
+})();
+</script>
 <script src="mlbma_config.js?v=20260615b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260618a"></script>
+<script src="matchup_shared.js?v=20260620d"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
@@ -2077,10 +2086,7 @@ function initSelector() {
   }
 }
 
-function loadAll() {
-  if (window.MLBMASharedMatchup && MLBMASharedMatchup.clearSheetTabCache) {
-    MLBMASharedMatchup.clearSheetTabCache();
-  }
+function probeSheetSyncBust() {
   var probeUrl = gvizUrl('Last_Updated') + '&_probe=' + Date.now();
   return fetch(probeUrl, { cache: 'no-store' }).then(function(r) {
     return r.ok ? r.text() : '';
@@ -2090,32 +2096,10 @@ function loadAll() {
     else applySheetSyncBust(String(Date.now()));
   }).catch(function() {
     applySheetSyncBust(String(Date.now()));
-  }).then(function() {
-  return Promise.all([
-    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_profiles).catch(function() { return []; }),
-    fetchSheetTab(TABS.sp_profiles).catch(function() { return []; }),
-    fetchSheetTab(TABS.bullpen_individual).catch(function() { return []; }),
-    fetchSheetTab(TABS.player_registry).catch(function() { return []; }),
-    fetchSheetTab(TABS.today_matchups).catch(function() { return []; }),
-    fetchSheetTab(TABS.today_lineups).catch(function() { return []; }),
-    fetchSheetTab(TABS.pitching_score).catch(function() { return []; }),
-    fetchSheetTab(TABS.reliever_log).catch(function() { return []; }),
-    fetchSheetTab(TABS.vs_rhp).catch(function() { return []; }),
-    fetchSheetTab(TABS.vs_lhp).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_rhp).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_lhp).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_overall).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_recent).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_vs_sp).catch(function() { return []; }),
-    fetchSheetTab(TABS.batter_splits_vs_rp).catch(function() { return []; }),
-    fetchSheetTab(TABS.team_results).catch(function() { return []; }),
-    fetchSheetTab(TABS.pals).catch(function() { return []; }),
-    fetchSheetTab(TABS.sp_metric_splits).catch(function() { return []; }),
-    fetchSheetTab(TABS.bullpen_unit).catch(function() { return []; })
-  ]).then(function(res) {
+  });
+}
+
+function assignProfileCoreData(res) {
     DATA.profiles = res[0];
     DATA.batters = res[1];
     DATA.sps = res[2];
@@ -2127,25 +2111,31 @@ function loadAll() {
     DATA.log = res[8];
     DATA.metricsR = res[9] || [];
     DATA.metricsL = res[10] || [];
-    DATA.batterSplitsR = res[11] || [];
-    DATA.batterSplitsL = res[12] || [];
-    DATA.batterSplitsOverall = res[13] || [];
-    DATA.batterSplitsRecent = res[14] || [];
-    DATA.batterSplitsHome = res[15] || [];
-    DATA.batterSplitsAway = res[16] || [];
-    DATA.batterSplitsVsSp = res[17] || [];
-    DATA.batterSplitsVsRp = res[18] || [];
-    DATA.results = res[19] || [];
-    DATA.spMetricSplits = res[21] || [];
-    DATA.bullpenUnit = res[22] || [];
+    DATA.bullpenUnit = res[11] || [];
+}
+
+function assignProfileSplitData(res) {
+    DATA.batterSplitsR = res[0] || [];
+    DATA.batterSplitsL = res[1] || [];
+    DATA.batterSplitsOverall = res[2] || [];
+    DATA.batterSplitsRecent = res[3] || [];
+    DATA.batterSplitsHome = res[4] || [];
+    DATA.batterSplitsAway = res[5] || [];
+    DATA.batterSplitsVsSp = res[6] || [];
+    DATA.batterSplitsVsRp = res[7] || [];
+    DATA.results = res[8] || [];
+    DATA.spMetricSplits = res[10] || [];
+    if (window.MLBMASharedMatchup && MLBMASharedMatchup.parsePalsRows) {
+      DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[9] || []);
+    }
+}
+
+function finalizeProfileData() {
     buildBatterRatePool();
     registerBatterRatePools();
     registerRpgPool();
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(DATA.registry);
-    }
-    if (window.MLBMASharedMatchup && MLBMASharedMatchup.parsePalsRows) {
-      DATA.palsMap = MLBMASharedMatchup.parsePalsRows(res[20] || []);
     }
     if (window.MLBMASharedMatchup && MLBMASharedMatchup.enrichSpProfiles) {
       MLBMASharedMatchup.enrichSpProfiles(DATA.sps, null);
@@ -2162,6 +2152,50 @@ function loadAll() {
       LIVE_DATA.scYtdL = window.SCO_YTD_L;
     }
     enrichProfileMatchups();
+}
+
+function loadAll() {
+  var syncP = probeSheetSyncBust().catch(function() { applySheetSyncBust(String(Date.now())); });
+  var coreP = Promise.all([
+    fetchSheetTab(TABS.team_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.sp_profiles).catch(function() { return []; }),
+    fetchSheetTab(TABS.bullpen_individual).catch(function() { return []; }),
+    fetchSheetTab(TABS.player_registry).catch(function() { return []; }),
+    fetchSheetTab(TABS.today_matchups).catch(function() { return []; }),
+    fetchSheetTab(TABS.today_lineups).catch(function() { return []; }),
+    fetchSheetTab(TABS.pitching_score).catch(function() { return []; }),
+    fetchSheetTab(TABS.reliever_log).catch(function() { return []; }),
+    fetchSheetTab(TABS.vs_rhp).catch(function() { return []; }),
+    fetchSheetTab(TABS.vs_lhp).catch(function() { return []; }),
+    fetchSheetTab(TABS.bullpen_unit).catch(function() { return []; })
+  ]);
+  var splitP = Promise.all([
+    fetchSheetTab(TABS.batter_splits_rhp).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_lhp).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_overall).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_recent).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_home).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_away).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_vs_sp).catch(function() { return []; }),
+    fetchSheetTab(TABS.batter_splits_vs_rp).catch(function() { return []; }),
+    fetchSheetTab(TABS.team_results).catch(function() { return []; }),
+    fetchSheetTab(TABS.pals).catch(function() { return []; }),
+    fetchSheetTab(TABS.sp_metric_splits).catch(function() { return []; })
+  ]);
+  return Promise.all([syncP, coreP]).then(function(bundle) {
+    assignProfileCoreData(bundle[1]);
+    finalizeProfileData();
+    splitP.then(function(splitRes) {
+      assignProfileSplitData(splitRes);
+      buildBatterRatePool();
+      registerBatterRatePools();
+      if (window._teamProfileRendered && typeof renderTeam === 'function') {
+        try { renderTeam(STATE.team); } catch (e) { console.warn('[MLBMA] split refresh render failed', e); }
+      }
+    }).catch(function(err) {
+      console.warn('[MLBMA] deferred profile splits failed', err);
+    });
     if (window.MLBMAProfileControls && MLBMAProfileControls.buildTeamScores) {
       return MLBMAProfileControls.buildTeamScores().then(function() {
         if (MLBMAProfileControls.enrichTeamScoresWithProfiles) {
@@ -2174,7 +2208,6 @@ function loadAll() {
       banner.textContent = 'Team_Profiles tab empty ? run pipeline steps 18?19 (compute_team_profile + push).';
       banner.classList.add('show');
     }
-  });
   });
 }
 
@@ -2206,6 +2239,7 @@ document.addEventListener('DOMContentLoaded', function() {
   loadAll().then(function() {
     function paint() {
       try {
+        window._teamProfileRendered = true;
         renderTeam(STATE.team);
       } catch (err) {
         console.error('[MLBMA] team_profile render failed:', err);

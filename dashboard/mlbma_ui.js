@@ -216,7 +216,7 @@
 
   function shouldSkipTitleCase(el) {
     if (!el || el.dataset.titleCased === '1') return true;
-    if (el.querySelector('.chip, .val-chip, .hub-pill, button, img, svg, input, select, table')) return true;
+    if (el.querySelector('.chip, .val-chip, .hub-pill, button, img, svg, input, select, table, li')) return true;
     return false;
   }
 
