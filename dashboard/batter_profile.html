@@ -131,10 +131,83 @@ h1 {
   color: var(--purple-2);
 }
 .player-header {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
   margin-bottom: 18px;
+  padding: 16px 18px;
+  background:
+    radial-gradient(circle at top right, rgba(154, 107, 255, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(255,255,255,0.06), transparent 40%),
+    linear-gradient(180deg, #171b2b 0%, #0b0e17 100%);
+  border: 1.5px solid rgba(196, 176, 255, 0.22);
+  border-radius: 14px;
 }
 .player-name-lg { font-size: 24px; font-weight: 600; font-family: var(--mono); letter-spacing: -0.02em; }
+.batter-hero-avatar {
+  width: 108px;
+  height: 108px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.32);
+}
+.batter-hero-avatar .ca-pitcher-avatar,
+.batter-hero-avatar .ca-pitcher-avatar-img,
+.batter-hero-avatar .ca-pitcher-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+}
+.batter-hero-stack {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.batter-hero-meta,
+.batter-hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.batter-hero-team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.batter-hero-team-logo {
+  width: 28px;
+  height: 28px;
+}
+.batter-hero-context {
+  min-width: 220px;
+  justify-self: end;
+  text-align: right;
+  display: grid;
+  gap: 6px;
+}
+.batter-hero-context .context-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  font-weight: 700;
+}
+.batter-hero-context .context-value {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+.batter-hero-context .context-note {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
 .team-badge {
   font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px;
   background: var(--bg-3); border: 1px solid var(--border-2); color: var(--purple-2);
@@ -440,6 +513,15 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   }
 }
 @media (max-width: 640px) {
+  .player-header {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .batter-hero-context {
+    justify-self: start;
+    text-align: left;
+    min-width: 0;
+  }
   .prop-anchor-grid,
   .quick-score-row {
     grid-template-columns: 1fr;
@@ -830,11 +912,24 @@ function playerDisplayName(key) {
 }
 
 function getRegistry(key) {
-  return DATA.registry.find(function(r) { return playerKey(r) === key; });
+  var hit = DATA.registry.find(function(r) { return playerKey(r) === key; });
+  if (hit) return hit;
+  var target = normalizeName(String(key || '').replace(/^name:/, '').replace(/^id:/, ''));
+  if (!target) return null;
+  return DATA.registry.find(function(r) {
+    return normalizeName(pickCol(r, ['full_name', 'fullName', 'name'])) === target;
+  }) || null;
 }
 
 function getProfileRows(key) {
-  return DATA.profiles.filter(function(p) { return playerKey(p) === key; });
+  var direct = DATA.profiles.filter(function(p) { return playerKey(p) === key; });
+  if (direct.length) return direct;
+  var reg = getRegistry(key);
+  var target = normalizeName(pickCol(reg || {}, ['full_name', 'fullName', 'name']) || playerDisplayName(key));
+  if (!target) return [];
+  return DATA.profiles.filter(function(p) {
+    return normalizeName(pickCol(p, ['player_name', 'playerName', 'Name'])) === target;
+  });
 }
 
 function getSplitRow(key, splitType) {
@@ -845,6 +940,27 @@ function getSplitRow(key, splitType) {
     }
   }
   return null;
+}
+
+function overallProfileRow(key) {
+  return getSplitRow(key, 'overall') || getProfileRows(key)[0] || null;
+}
+
+function preferredProfileRow(key, splitType) {
+  return getSplitRow(key, splitType) || overallProfileRow(key);
+}
+
+function rawSplitForKey(key, splitType) {
+  var raw = DATA.rawStats[normalizeName(playerDisplayName(key))] || {};
+  return raw[splitType] || raw.overall || {};
+}
+
+function resolvePlayerMlbId(key) {
+  var reg = getRegistry(key);
+  var direct = pickCol(reg || {}, ['player_id', 'playerId']);
+  if (direct) return direct;
+  if (window.MLBMAAssets && MLBMAAssets.lookupMlbId) return MLBMAAssets.lookupMlbId(playerDisplayName(key));
+  return '';
 }
 
 function metricColor(score) {
@@ -1418,6 +1534,269 @@ function renderPropHub(key) {
   document.getElementById('bettingPanel').innerHTML = summary;
   var detail = document.getElementById('bettingPanelDetail');
   if (detail) detail.innerHTML = summary;
+}
+
+function splitPanelHtml(title, row, raw, extraCls, note) {
+  if (!row && (!raw || !Object.keys(raw).length)) {
+    return '<div class="split-panel"><h4>' + escHtml(title) + '</h4><div class="empty-state">No data</div></div>';
+  }
+  var abq = numOrNull(pickCol(row || {}, ['ABQ']));
+  var rcv = numOrNull(pickCol(row || {}, ['RCV']));
+  var obr = numOrNull(pickCol(row || {}, ['OBR']));
+  var osi = numOrNull(pickCol(row || {}, ['OSI']));
+  var wrc = numOrNull(pickCol(raw || {}, ['wRC+']));
+  var kk = numOrNull(pickCol(raw || {}, ['K%']));
+  var bb = numOrNull(pickCol(raw || {}, ['BB%']));
+  var chase = numOrNull(pickCol(raw || {}, ['Chase%']));
+  var barrel = numOrNull(pickCol(raw || {}, ['Barrel%']));
+
+  return '<div class="split-panel' + (extraCls || '') + '">' +
+    '<h4>' + escHtml(title) + '</h4>' +
+    (note ? '<div class="dominant">' + escHtml(note) + '</div>' : '') +
+    '<div class="mini-grid">' +
+    mini('ABQ', abq) + mini('RCV', rcv) + mini('OBR', obr) +
+    '</div><div class="mini-grid" style="margin-top:8px;">' +
+    mini('OSI', osi) + mini('wRC+', wrc) + mini('K%', kk !== null ? fmtPct(kk) : '—') +
+    '</div><div class="mini-grid" style="margin-top:8px;">' +
+    mini('BB%', bb !== null ? fmtPct(bb) : '—') + mini('Chase%', chase !== null ? fmtPct(chase) : '—') +
+    mini('Barrel%', barrel !== null ? fmtPct(barrel) : '—') +
+    '</div></div>';
+}
+
+function renderHeader(key) {
+  var reg = getRegistry(key);
+  var name = playerDisplayName(key);
+  var base = overallProfileRow(key);
+  var team = pickCol(reg || {}, ['team_abbr', 'team']) || pickCol(base || {}, ['team']);
+  var pos = pickCol(reg || {}, ['position_type', 'position']) || '—';
+  var bats = pickCol(reg || {}, ['bats']) || 'R';
+  var jersey = pickCol(reg || {}, ['jersey_number', 'jersey']) || '—';
+  var lineup = findLineupContext(key);
+  var mlbId = resolvePlayerMlbId(key);
+  var avatar = window.MLBMAAssets && MLBMAAssets.headshotImg
+    ? MLBMAAssets.headshotImg(mlbId, 108, 'batter-hero-headshot', { cropMod: 'profile', eager: true })
+    : '';
+  var logo = window.MLBMAAssets && MLBMAAssets.teamLogoImg
+    ? MLBMAAssets.teamLogoImg(team, 56, 'batter-hero-team-logo')
+    : '';
+  var batsCls = bats === 'L' ? 'pill-bats-l' : bats === 'S' ? 'pill-bats-s' : 'pill-bats-r';
+  var chips = '<span class="team-badge">' + escHtml(team) + '</span>' +
+    '<span class="pill pill-pos">' + escHtml(pos) + '</span>' +
+    '<span class="pill ' + batsCls + '">' + escHtml(bats) + 'HB</span>' +
+    '<span class="pill pill-pos">#' + escHtml(jersey) + '</span>' +
+    (lineup && lineup.inLineup ? '<span class="pill pill-lineup">Today\'s Lineup</span>' : '');
+
+  document.getElementById('headerBlock').innerHTML =
+    '<div class="player-name-lg">' + escHtml(name) + '</div>' +
+    chips +
+    '<div class="lineup-meta">' +
+    (lineup && lineup.inLineup
+      ? 'Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' + escHtml(lineup.side) + ') — vs <strong>' + escHtml(lineup.oppSp) + '</strong> (' + escHtml(lineup.oppHand) + 'HP)'
+      : 'No confirmed lineup slot yet.') +
+    '</div>';
+
+  document.getElementById('playerHeader').innerHTML =
+    '<div class="batter-hero-avatar">' + avatar + '</div>' +
+    '<div class="batter-hero-stack">' +
+      '<div class="batter-hero-team">' + logo + '<div class="player-name-lg">' + escHtml(name) + '</div></div>' +
+      '<div class="batter-hero-chips">' + chips + '</div>' +
+      '<div class="lineup-meta">' + (lineup && lineup.inLineup
+        ? 'Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' + escHtml(lineup.side) + ') — live lineup confirmed.'
+        : 'No confirmed lineup slot yet.') + '</div>' +
+    '</div>' +
+    '<div class="batter-hero-context">' +
+      '<div class="context-label">Matchup Focus</div>' +
+      '<div class="context-value">' + escHtml(lineup && lineup.inLineup ? ('Vs ' + lineup.oppSp + ' (' + lineup.oppHand + 'HP)') : 'Profile baseline') + '</div>' +
+      '<div class="context-note">' + escHtml(lineup && lineup.inLineup ? ('Batting ' + lineup.batOrder + ' • ' + lineup.side + ' • ' + (lineup.game || team)) : 'Waiting for confirmed lineup context.') + '</div>' +
+    '</div>';
+}
+
+function renderSeasonBar(key) {
+  var raw = getRawForPlayer(key, STATE.window);
+  var base = overallProfileRow(key);
+  var sub = document.getElementById('snapshotSubtitle');
+  var hasRaw = raw && Object.keys(raw).length;
+  sub.textContent = hasRaw
+    ? 'Rate line for ' + STATE.window + ' from Batter_Splits_Overall (live sheet)'
+    : 'Rate line for ' + STATE.window + ' — run batter splits pipeline and push to Batter_Splits_Overall';
+
+  var cells = [
+    statCell('wRC+', numOrNull(pickCol(raw, ['wRC+'])) || '—'),
+    statCell('OPS', opsFromRow(raw) !== null ? opsFromRow(raw) : '—'),
+    statCell('AVG', numOrNull(pickCol(raw, ['AVG'])) || '—'),
+    statCell('OBP', numOrNull(pickCol(raw, ['OBP'])) || '—'),
+    statCell('SLG', numOrNull(pickCol(raw, ['SLG'])) || '—'),
+    statCell('BB%', pickCol(raw, ['BB%']) ? fmtPct(numOrNull(pickCol(raw, ['BB%']))) : '—'),
+    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '—'),
+    statCell('wOBA', numOrNull(pickCol(raw, ['wOBA'])) || '—'),
+    statCell('xwOBA', numOrNull(pickCol(raw, ['xwOBA'])) || '—'),
+    statCell('Chase%', pickCol(raw, ['Chase%']) ? fmtPct(numOrNull(pickCol(raw, ['Chase%']))) : '—'),
+    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '—'),
+    statCell('PA', numOrNull(pickCol(raw, ['PA'])) || numOrNull(pickCol(base || {}, ['PA'])) || '—'),
+    statCell('OSI', numOrNull(pickCol(base || {}, ['OSI'])), metricColor(numOrNull(pickCol(base || {}, ['OSI']))))
+  ];
+  document.getElementById('seasonBar').innerHTML = cells.join('');
+}
+
+function renderMetricCards(key) {
+  var row = overallProfileRow(key);
+  if (!row) {
+    document.getElementById('metricCards').innerHTML = '<div class="empty-state">No profile metrics in sheet.</div>';
+    return;
+  }
+  var pool = DATA.pool.vs_RHP && DATA.pool.vs_RHP.length ? DATA.pool.vs_RHP : DATA.profiles;
+  var metrics = [['ABQ', 'ABQ'], ['RCV', 'RCV'], ['OBR', 'OBR'], ['OSI', 'OSI']];
+  var html = '';
+  metrics.forEach(function(m) {
+    var val = numOrNull(pickCol(row, [m[1]]));
+    var pctPool = pool.map(function(p) { return numOrNull(pickCol(p, [m[1]])); });
+    var pct = percentile(pctPool, val);
+    html += '<div class="metric-card ' + metricTierClass(val) + '">' +
+      '<div class="m-label">' + m[0] + '</div>' +
+      '<div class="m-val" style="color:' + metricColor(val) + '">' + fmt(val, 1) + '</div>' +
+      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile' : '—') + '</div>' +
+      '<div class="m-note">' + METRIC_NOTES[m[0]] + '</div></div>';
+  });
+  document.getElementById('metricCards').innerHTML = html;
+}
+
+function renderWindowTable(key) {
+  var base = overallProfileRow(key);
+  var trend = pickCol(base || {}, ['trend']) || 'stable';
+  var rows = [];
+  var prevOsi = null;
+  WINDOWS.forEach(function(w) {
+    var m = windowMetricEstimate(base, w, trend);
+    var arrow = '—';
+    var arrowCls = 'trend-flat';
+    if (prevOsi !== null && m.OSI !== null) {
+      var d = m.OSI - prevOsi;
+      if (d > 1) { arrow = '↑'; arrowCls = 'trend-up'; }
+      else if (d < -1) { arrow = '↓'; arrowCls = 'trend-down'; }
+    }
+    prevOsi = m.OSI;
+    rows.push({ window: w, m: m, arrow: arrow, arrowCls: arrowCls });
+  });
+  var l7 = rows.find(function(r) { return r.window === 'L7'; });
+  var ytdRow = rows.find(function(r) { return r.window === 'YTD'; });
+  var hotCold = '';
+  if (l7 && ytdRow && l7.m.OSI !== null && ytdRow.m.OSI !== null) {
+    var gap = l7.m.OSI - ytdRow.m.OSI;
+    if (gap >= HOT_COLD_GAP) hotCold = 'hot';
+    else if (gap <= -HOT_COLD_GAP) hotCold = 'cold';
+  }
+  document.getElementById('windowTableWrap').innerHTML =
+    '<table><thead><tr><th>Window</th><th>OSI</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>Trend</th></tr></thead><tbody>' +
+    rows.map(function(r) {
+      var trCls = r.window === 'L7' && hotCold === 'hot' ? 'hot-row' : r.window === 'L7' && hotCold === 'cold' ? 'cold-row' : '';
+      return '<tr class="' + trCls + '"><td><strong>' + r.window + '</strong></td><td class="num">' + metricChip(r.m.OSI, 'osi', 1) + '</td><td class="num">' + metricChip(r.m.ABQ, 'abq', 1) + '</td><td class="num">' + metricChip(r.m.RCV, 'rcv', 1) + '</td><td class="num">' + metricChip(r.m.OBR, 'obr', 1) + '</td><td class="' + r.arrowCls + '">' + r.arrow + '</td></tr>';
+    }).join('') + '</tbody></table>';
+
+  var insight = hotCold === 'hot'
+    ? 'Hot flag: L7 OSI is ' + fmt(l7.m.OSI - ytdRow.m.OSI, 1) + ' points above YTD — recent form elevated.'
+    : hotCold === 'cold'
+      ? 'Cold flag: L7 OSI is ' + fmt(ytdRow.m.OSI - l7.m.OSI, 1) + ' points below YTD — recent slump.'
+      : 'L7 within —' + HOT_COLD_GAP + ' of YTD — no extreme hot/cold signal.';
+  if (!getRawForPlayer(key, 'YTD') || !Object.keys(getRawForPlayer(key, 'YTD')).length) {
+    insight += ' Window rate columns use Batter_Profiles trend adjustment when Batter_Splits_Overall is unavailable.';
+  }
+  document.getElementById('windowInsight').textContent = insight;
+}
+
+function renderHandSplits(key) {
+  var rhpActual = getSplitRow(key, 'vs_RHP');
+  var lhpActual = getSplitRow(key, 'vs_LHP');
+  var rhp = rhpActual || overallProfileRow(key);
+  var lhp = lhpActual || overallProfileRow(key);
+  var rawR = rawSplitForKey(key, 'vs_RHP');
+  var rawL = rawSplitForKey(key, 'vs_LHP');
+  var abqGap = (numOrNull(pickCol(rhp || {}, ['ABQ'])) !== null && numOrNull(pickCol(lhp || {}, ['ABQ'])) !== null)
+    ? Math.abs(numOrNull(pickCol(rhp, ['ABQ'])) - numOrNull(pickCol(lhp, ['ABQ']))) : 0;
+  var flagR = abqGap >= PLATOON_ABQ_GAP ? ' flag-gold' : '';
+  var flagL = flagR;
+  var dom = '';
+  if (rhp && lhp) {
+    var osiR = numOrNull(pickCol(rhp, ['OSI'])) || 0;
+    var osiL = numOrNull(pickCol(lhp, ['OSI'])) || 0;
+    dom = osiR >= osiL ? 'Dominant vs RHP' : 'Dominant vs LHP';
+  }
+  document.getElementById('handGrid').innerHTML =
+    splitPanelHtml('vs RHP', rhp, rawR, flagR, rhpActual ? '' : 'Overall fallback') +
+    splitPanelHtml('vs LHP', lhp, rawL, flagL, lhpActual ? '' : 'Overall fallback');
+  var ins = abqGap >= PLATOON_ABQ_GAP
+    ? 'Platoon alert: ABQ gap of ' + fmt(abqGap, 1) + ' points — significant handedness split.'
+    : 'Platoon gap manageable (ABQ delta ' + fmt(abqGap, 1) + ').';
+  if (dom) ins += ' ' + dom + '.';
+  document.getElementById('handInsight').textContent = ins;
+}
+
+function renderLocSplits(key) {
+  var homeActual = getSplitRow(key, 'home');
+  var awayActual = getSplitRow(key, 'away');
+  var home = homeActual || overallProfileRow(key);
+  var away = awayActual || overallProfileRow(key);
+  var rawH = rawSplitForKey(key, 'home');
+  var rawA = rawSplitForKey(key, 'away');
+  var osiH = numOrNull(pickCol(home || {}, ['OSI']));
+  var osiA = numOrNull(pickCol(away || {}, ['OSI']));
+  var gap = (osiH !== null && osiA !== null) ? Math.abs(osiH - osiA) : 0;
+  var flagH = gap >= LOC_OSI_GAP && osiH > osiA ? ' flag-gold' : '';
+  var flagA = gap >= LOC_OSI_GAP && osiA > osiH ? ' flag-gold' : '';
+  document.getElementById('locGrid').innerHTML =
+    splitPanelHtml('Home', home, rawH, flagH, homeActual ? '' : 'Overall fallback') +
+    splitPanelHtml('Away', away, rawA, flagA, awayActual ? '' : 'Overall fallback');
+  document.getElementById('locInsight').textContent = gap >= LOC_OSI_GAP
+    ? 'Location split: OSI gap of ' + fmt(gap, 1) + ' between home and away.'
+    : 'Home/away OSI gap ' + fmt(gap, 1) + ' — within normal range.';
+}
+
+function renderSpRpSplits(key) {
+  var spActual = getSplitRow(key, 'vs_SP');
+  var rpActual = getSplitRow(key, 'vs_RP');
+  var sp = spActual || overallProfileRow(key);
+  var rp = rpActual || overallProfileRow(key);
+  var rawSp = rawSplitForKey(key, 'vs_SP');
+  var rawRp = rawSplitForKey(key, 'vs_RP');
+  var osiSp = numOrNull(pickCol(sp || {}, ['OSI']));
+  var osiRp = numOrNull(pickCol(rp || {}, ['OSI']));
+  var flag = (spActual && rpActual && osiSp !== null && osiRp !== null && osiRp - osiSp >= SP_RP_OSI_GAP) ? ' flag-gold' : '';
+  document.getElementById('spRpGrid').innerHTML =
+    splitPanelHtml('vs SP', sp, rawSp, flag, spActual ? '' : 'Overall fallback') +
+    splitPanelHtml('vs RP', rp, rawRp, flag, rpActual ? '' : 'Overall fallback');
+  document.getElementById('spRpInsight').textContent = (spActual && rpActual && osiRp !== null && osiSp !== null && osiRp - osiSp >= SP_RP_OSI_GAP)
+    ? 'Full game value over F5 - this batter significantly outperforms vs relief pitching.'
+    : 'OSI vs SP ' + fmt(osiSp, 1) + ' — OSI vs RP ' + fmt(osiRp, 1) + (spActual && rpActual ? ' — no full-game value flag.' : ' — using overall fallback where split exports are missing.');
+}
+
+function renderComparables(key) {
+  var row = preferredProfileRow(key, 'vs_RHP');
+  if (!row) {
+    document.getElementById('comparableList').innerHTML = '<div class="empty-state">Need a batter profile row.</div>';
+    return;
+  }
+  var abq = numOrNull(pickCol(row, ['ABQ']));
+  var rcv = numOrNull(pickCol(row, ['RCV']));
+  var arch = archetypeKey(rcv, numOrNull(pickCol(row, ['OBR'])));
+  var pool = (DATA.pool.vs_RHP && DATA.pool.vs_RHP.length ? DATA.pool.vs_RHP : DATA.profiles).filter(function(p) { return playerKey(p) !== key; });
+  var scored = pool.map(function(p) {
+    var pa = numOrNull(pickCol(p, ['ABQ']));
+    var pr = numOrNull(pickCol(p, ['RCV']));
+    return {
+      key: playerKey(p),
+      name: pickCol(p, ['player_name']),
+      osi: numOrNull(pickCol(p, ['OSI'])),
+      arch: archetypeKey(pr, numOrNull(pickCol(p, ['OBR']))),
+      dist: Math.sqrt(Math.pow((pa || 50) - (abq || 50), 2) + Math.pow((pr || 50) - (rcv || 50), 2))
+    };
+  }).sort(function(a, b) { return a.dist - b.dist; });
+  var top = scored.slice(0, 3);
+  if (!top.length) {
+    document.getElementById('comparableList').innerHTML = '<div class="empty-state">No comparables in pool.</div>';
+    return;
+  }
+  document.getElementById('comparableList').innerHTML = top.map(function(c) {
+    return '<div class="comp-row"><div><a href="batter_profile.html?player=' + encodeURIComponent(c.name) + '">' + escHtml(c.name) + '</a> — ' + escHtml(c.arch) + '</div><div class="num" style="color:' + metricColor(c.osi) + '">OSI ' + fmt(c.osi, 1) + '</div></div>';
+  }).join('') + '<div class="insight-line" style="margin-top:10px;">Your archetype: <strong>' + arch + '</strong></div>';
 }
 
 function renderProfile(key) {
