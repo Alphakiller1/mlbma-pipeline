@@ -12,7 +12,9 @@
 
   function numOrNull(v) {
     if (v === null || v === undefined || v === '') return null;
-    var n = parseFloat(String(v).replace(/%/g, ''));
+    var s = String(v).trim();
+    if (s === '--' || s === '—' || s === 'N/A' || s === 'n/a') return null;
+    var n = parseFloat(s.replace(/%/g, ''));
     return isNaN(n) ? null : n;
   }
 
@@ -194,6 +196,24 @@
     return !!(SLATE_TABS[t] || t.indexOf('Today_') === 0);
   }
 
+  function isTeamRankingsPage() {
+    var path = (global.location && global.location.pathname) || '';
+    return /team_rankings/i.test(path);
+  }
+
+  function scheduleSheetTabRevalidate(tabName, options, cacheKey) {
+    if (_sheetTabInflight[cacheKey]) return;
+    var run = function() {
+      fetchSheetTab(tabName, Object.assign({}, options, { revalidate: true })).catch(function() { /* best-effort */ });
+    };
+    var delay = isTeamRankingsPage() ? 12000 : 4000;
+    if (global.requestIdleCallback) {
+      global.requestIdleCallback(run, { timeout: delay });
+    } else {
+      setTimeout(run, delay);
+    }
+  }
+
   function fetchSheetTab(tabName, options) {
     options = options || {};
     var sid = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_ID;
@@ -208,9 +228,7 @@
       var persisted = readPersistedSheetTab(key);
       if (persisted && persisted.length) {
         _sheetTabCache[key] = persisted;
-        if (!options.revalidate && !_sheetTabInflight[key]) {
-          fetchSheetTab(tabName, Object.assign({}, options, { revalidate: true })).catch(function() { /* best-effort */ });
-        }
+        if (!options.revalidate) scheduleSheetTabRevalidate(tabName, options, key);
         return Promise.resolve(persisted.slice());
       }
     }
@@ -524,8 +542,23 @@
     };
   }
 
+  function weatherHasData(w) {
+    if (!w) return false;
+    if (w.dome) return true;
+    if (w.temp != null && !isNaN(w.temp)) return true;
+    if (w.wind != null && !isNaN(w.wind)) return true;
+    var cond = w.cond || w.conditions || w.raw || '';
+    return !!(cond && String(cond) !== '—' && String(cond).toLowerCase() !== 'dome');
+  }
+
+  function normalizeStadiumKey(name) {
+    return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
   function parseWeatherMap(rows) {
     var map = {};
+    var byHome = {};
+    var byStadium = {};
     (rows || []).forEach(function(row) {
       var away = normalizeTeamAbbrShared(pickCol(row, 'away_team', 'Away'));
       var home = normalizeTeamAbbrShared(pickCol(row, 'home_team', 'Home'));
@@ -533,19 +566,160 @@
       var w = parseWeatherRow(row);
       var key = away + '@' + home;
       map[key] = w;
+      if (!byHome[home] || weatherHasData(w)) byHome[home] = w;
+      var sk = normalizeStadiumKey(w.stadium);
+      if (sk && (!byStadium[sk] || weatherHasData(w))) byStadium[sk] = w;
     });
+    map._byHome = byHome;
+    map._byStadium = byStadium;
     return map;
   }
 
   /** Resolve weather for a matchup — normalized team keys (TB/TBR, etc.). */
-  function weatherLookup(map, away, home) {
+  function weatherLookup(map, away, home, stadium) {
     if (!map || !away || !home) return null;
     var a = normalizeTeamAbbrShared(away);
     var h = normalizeTeamAbbrShared(home);
-    return map[a + '@' + h]
+    var direct = map[a + '@' + h]
       || map[teamKey(away) + '@' + teamKey(home)]
-      || map[away + '@' + home]
-      || null;
+      || map[away + '@' + home];
+    if (direct && weatherHasData(direct)) return direct;
+    var sk = normalizeStadiumKey(stadium);
+    if (sk && map._byStadium && map._byStadium[sk] && weatherHasData(map._byStadium[sk])) {
+      return map._byStadium[sk];
+    }
+    if (map._byHome && map._byHome[h] && weatherHasData(map._byHome[h])) {
+      return map._byHome[h];
+    }
+    return null;
+  }
+
+  var FIXED_DOME_HOME = { MIA: 1, TBR: 1, TB: 1, TOR: 1 };
+
+  var TEAM_WEATHER_CITY = {
+    ARI: 'Phoenix', ATH: 'Sacramento', ATL: 'Atlanta', BAL: 'Baltimore', BOS: 'Boston',
+    CHC: 'Chicago', CHW: 'Chicago', CIN: 'Cincinnati', CLE: 'Cleveland', COL: 'Denver',
+    DET: 'Detroit', HOU: 'Houston', KCR: 'Kansas City', KC: 'Kansas City', LAA: 'Anaheim',
+    LAD: 'Los Angeles', MIA: 'Miami', MIL: 'Milwaukee', MIN: 'Minneapolis', NYM: 'New York',
+    NYY: 'Bronx', PHI: 'Philadelphia', PIT: 'Pittsburgh', SDP: 'San Diego', SD: 'San Diego',
+    SEA: 'Seattle', SFG: 'San Francisco', SF: 'San Francisco', STL: 'St Louis', TBR: 'St Petersburg',
+    TEX: 'Arlington', TOR: 'Toronto', WSN: 'Washington', WSH: 'Washington'
+  };
+
+  var _weatherGeoCache = {};
+  var _weatherMeteoCache = {};
+
+  function isDomeStadium(home, stadium) {
+    var h = normalizeTeamAbbrShared(home);
+    if (FIXED_DOME_HOME[h]) return true;
+    var s = String(stadium || '').toLowerCase();
+    return /tropicana|rogers centre|rogers center/.test(s);
+  }
+
+  function openMeteoCodeToCond(code) {
+    var c = Number(code);
+    if (c === 0) return 'clear';
+    if (c <= 3) return 'cloudy';
+    if (c <= 48) return 'cloudy';
+    if (c <= 67) return 'rain';
+    if (c <= 77) return 'snow';
+    if (c <= 86) return 'snow';
+    if (c <= 99) return 'storm';
+    return 'cloudy';
+  }
+
+  function assignWeatherToMatchup(map, away, home, w) {
+    if (!map || !away || !home || !w) return;
+    var a = normalizeTeamAbbrShared(away);
+    var h = normalizeTeamAbbrShared(home);
+    map[a + '@' + h] = w;
+    if (!map._byHome) map._byHome = {};
+    if (!map._byStadium) map._byStadium = {};
+    map._byHome[h] = w;
+    var sk = normalizeStadiumKey(w.stadium);
+    if (sk) map._byStadium[sk] = w;
+  }
+
+  function geocodeWeatherCity(city) {
+    if (_weatherGeoCache[city]) return Promise.resolve(_weatherGeoCache[city]);
+    var url = 'https://geocoding-api.open-meteo.com/v1/search?name='
+      + encodeURIComponent(city) + '&count=1&language=en&format=json';
+    return fetch(url, { cache: 'no-store' }).then(function(r) {
+      if (!r.ok) throw new Error('geocode ' + city);
+      return r.json();
+    }).then(function(data) {
+      var hit = data && data.results && data.results[0];
+      if (!hit) return null;
+      var coords = { lat: hit.latitude, lon: hit.longitude };
+      _weatherGeoCache[city] = coords;
+      return coords;
+    }).catch(function() { return null; });
+  }
+
+  function fetchOpenMeteoWeather(lat, lon) {
+    var key = lat + ',' + lon;
+    if (_weatherMeteoCache[key]) return Promise.resolve(_weatherMeteoCache[key]);
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + encodeURIComponent(lat)
+      + '&longitude=' + encodeURIComponent(lon)
+      + '&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code'
+      + '&wind_speed_unit=mph&temperature_unit=fahrenheit';
+    return fetch(url, { cache: 'no-store' }).then(function(r) {
+      if (!r.ok) throw new Error('open-meteo');
+      return r.json();
+    }).then(function(data) {
+      var cur = data && data.current;
+      if (!cur) return null;
+      var w = {
+        temp: cur.temperature_2m != null ? Math.round(Number(cur.temperature_2m)) : null,
+        wind: cur.wind_speed_10m != null ? Math.round(Number(cur.wind_speed_10m)) : null,
+        windDir: cur.wind_direction_10m,
+        conditions: openMeteoCodeToCond(cur.weather_code),
+        raw: openMeteoCodeToCond(cur.weather_code),
+        source: 'open-meteo'
+      };
+      _weatherMeteoCache[key] = w;
+      return w;
+    }).catch(function() { return null; });
+  }
+
+  /** Fill missing sheet weather via home-stadium city lookup (Open-Meteo). */
+  function enrichMissingWeatherFromApi(matchups, weatherMap) {
+    weatherMap = weatherMap || {};
+    if (!weatherMap._byHome) weatherMap._byHome = {};
+    if (!weatherMap._byStadium) weatherMap._byStadium = {};
+    var byHome = {};
+    (matchups || []).forEach(function(m) {
+      if (!m || !m.away || !m.home) return;
+      if (weatherHasData(weatherLookup(weatherMap, m.away, m.home, m.stadium))) return;
+      var home = normalizeTeamAbbrShared(m.home);
+      if (!byHome[home]) byHome[home] = [];
+      byHome[home].push(m);
+    });
+    var homes = Object.keys(byHome);
+    if (!homes.length) return Promise.resolve(weatherMap);
+    var tasks = homes.map(function(home) {
+      var sample = byHome[home][0];
+      if (isDomeStadium(home, sample.stadium)) {
+        var domeWx = { dome: true, conditions: 'dome', stadium: sample.stadium || '' };
+        byHome[home].forEach(function(m) {
+          assignWeatherToMatchup(weatherMap, m.away, m.home, domeWx);
+        });
+        return Promise.resolve();
+      }
+      var city = TEAM_WEATHER_CITY[home];
+      if (!city) return Promise.resolve();
+      return geocodeWeatherCity(city).then(function(coords) {
+        if (!coords) return;
+        return fetchOpenMeteoWeather(coords.lat, coords.lon).then(function(wx) {
+          if (!wx || !weatherHasData(wx)) return;
+          wx.stadium = sample.stadium || '';
+          byHome[home].forEach(function(m) {
+            assignWeatherToMatchup(weatherMap, m.away, m.home, wx);
+          });
+        });
+      });
+    });
+    return Promise.all(tasks).then(function() { return weatherMap; });
   }
 
   /** Approximate center-field bearing from home plate (degrees clockwise from north). */
@@ -1970,16 +2144,27 @@
     var raw = existing || _emptyLineupModelRaw();
     var chain = Promise.resolve(raw);
 
+    var prefetchTeamResults = !!options.prefetchTeamResults
+      || (isTeamRankingsPage() && needs.needTeamResults);
+
     if (!raw._coreLoaded) {
       chain = chain.then(function() {
-        return Promise.all([
+        var coreFetches = [
           fetchSheetTab(tabs.vs_rhp, options),
           fetchSheetTab(tabs.vs_lhp, options),
           fetchSheetTab(tabs.team_profiles, options)
-        ]).then(function(res) {
+        ];
+        if (prefetchTeamResults && tabs.team_results && !raw._hasTeamResults) {
+          coreFetches.push(fetchSheetTab(tabs.team_results, options).catch(function() { return []; }));
+        }
+        return Promise.all(coreFetches).then(function(res) {
           raw.rhp = res[0] || [];
           raw.lhp = res[1] || [];
           raw.profiles = res[2] || [];
+          if (prefetchTeamResults && res[3]) {
+            raw.teamResults = res[3] || [];
+            raw._hasTeamResults = true;
+          }
           raw._coreLoaded = true;
           _lineupModelRaw = raw;
           _lineupModelStore = null;
@@ -2002,7 +2187,7 @@
       };
       if (blockOnResults) {
         chain = chain.then(fetchTeamResults);
-      } else {
+      } else if (!prefetchTeamResults) {
         chain = chain.then(function(r) {
           if (!r._hasTeamResults && !_lineupTeamResultsInflight) {
             _lineupTeamResultsInflight = fetchTeamResults(r).finally(function() {
@@ -2137,7 +2322,10 @@
   }
 
   function lineupModelRankAll(filter, family, options) {
-    options = Object.assign({ allowPartialTeamResults: true }, options || {}, lineupModelRankNeeds(filter, family));
+    options = Object.assign({
+      allowPartialTeamResults: !isTeamRankingsPage(),
+      prefetchTeamResults: isTeamRankingsPage()
+    }, options || {}, lineupModelRankNeeds(filter, family));
     return lineupModelEnsureStore(options).then(function(store) {
       var f = normalizeFilter(filter || {});
       var resolved = resolveLineupRows(store, f, {
@@ -2187,23 +2375,42 @@
     });
   }
 
-  function lineupModelLeaguePoolsBulk(options) {
-    var f = createFilterState({ hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' });
+  var _leaguePoolsCache = null;
+  var _leaguePoolsInflight = null;
+
+  function lineupModelBuildLeaguePools(rows) {
     var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'];
-    return lineupModelRankAll(f, 'scoring', options).then(function(rows) {
-      var pools = {};
-      metrics.forEach(function(metric) {
-        var vals = (rows || []).map(function(r) { return numOrNull(r[metric]); }).filter(function(v) { return v != null && !isNaN(v); });
-        if (!vals.length) {
-          pools[metric] = { mean: null, sd: null, values: [] };
-          return;
-        }
-        var mean = vals.reduce(function(a, b) { return a + b; }, 0) / vals.length;
-        var variance = vals.reduce(function(acc, v) { return acc + Math.pow(v - mean, 2); }, 0) / vals.length;
-        pools[metric] = { mean: mean, sd: Math.sqrt(variance), values: vals };
-      });
-      return pools;
+    var pools = {};
+    metrics.forEach(function(metric) {
+      var vals = (rows || []).map(function(r) { return numOrNull(r[metric]); }).filter(function(v) { return v != null && !isNaN(v); });
+      if (!vals.length) {
+        pools[metric] = { mean: null, sd: null, values: [] };
+        return;
+      }
+      var mean = vals.reduce(function(a, b) { return a + b; }, 0) / vals.length;
+      var variance = vals.reduce(function(acc, v) { return acc + Math.pow(v - mean, 2); }, 0) / vals.length;
+      pools[metric] = { mean: mean, sd: Math.sqrt(variance), values: vals };
     });
+    return pools;
+  }
+
+  function lineupModelLeaguePoolsBulk(options) {
+    options = options || {};
+    if (_leaguePoolsCache && !options.forceRefresh) {
+      return Promise.resolve(_leaguePoolsCache);
+    }
+    if (_leaguePoolsInflight && !options.forceRefresh) {
+      return _leaguePoolsInflight;
+    }
+    var f = createFilterState({ hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' });
+    _leaguePoolsInflight = lineupModelRankAll(f, 'scoring', options).then(function(rows) {
+      var pools = lineupModelBuildLeaguePools(rows);
+      _leaguePoolsCache = pools;
+      return pools;
+    }).finally(function() {
+      _leaguePoolsInflight = null;
+    });
+    return _leaguePoolsInflight;
   }
 
   var LineupModel = {
@@ -2228,8 +2435,11 @@
       _lineupModelStore = null;
       _lineupModelInflight = null;
       _lineupTeamResultsInflight = null;
+      _leaguePoolsCache = null;
+      _leaguePoolsInflight = null;
       clearSheetTabCache();
-    }
+    },
+    buildLeaguePools: lineupModelBuildLeaguePools
   };
 
   global.MLBMASharedMatchup = {
@@ -2256,6 +2466,7 @@
     parseWeatherRow: parseWeatherRow,
     parseWeatherMap: parseWeatherMap,
     weatherLookup: weatherLookup,
+    enrichMissingWeatherFromApi: enrichMissingWeatherFromApi,
     weatherBadge: weatherBadge,
     formatWeatherMetaHtml: formatWeatherMetaHtml,
     tempColorCss: tempColorCss,
@@ -2311,14 +2522,30 @@
     var cfg = global.MLBMA_CONFIG;
     if (!cfg || !cfg.SHEET_TABS) return;
     var t = cfg.SHEET_TABS;
-    [
-      t.vs_rhp, t.vs_lhp, t.team_profiles, t.team_results, t.pitching_score,
-      t.bullpen_unit, t.sp_profiles, t.player_registry, t.pals, t.oor,
-      t.batter_profiles, t.today_matchups, t.today_lineups
-    ].forEach(function(tab) {
+    var rankings = isTeamRankingsPage();
+    var warmTabs = rankings
+      ? [t.vs_rhp, t.vs_lhp, t.team_profiles, t.team_results]
+      : [t.vs_rhp, t.vs_lhp, t.team_profiles];
+    warmTabs.forEach(function(tab) {
       if (!tab) return;
       fetchSheetTab(tab).catch(function() { return []; });
     });
-    LineupModel.ensureStore({ needPitcherSplits: false, needPals: false, allowPartialTeamResults: true }).catch(function() { /* prefetch */ });
+    if (!rankings) {
+      [
+        t.pitching_score, t.bullpen_unit, t.sp_profiles, t.player_registry, t.pals, t.oor,
+        t.batter_profiles, t.today_matchups, t.today_lineups, t.team_results
+      ].forEach(function(tab) {
+        if (!tab) return;
+        var defer = function() { fetchSheetTab(tab).catch(function() { return []; }); };
+        if (global.requestIdleCallback) global.requestIdleCallback(defer, { timeout: 8000 });
+        else setTimeout(defer, 1500);
+      });
+    }
+    LineupModel.ensureStore({
+      needPitcherSplits: false,
+      needPals: false,
+      allowPartialTeamResults: !rankings,
+      prefetchTeamResults: rankings
+    }).catch(function() { /* prefetch */ });
   })();
 })(typeof window !== 'undefined' ? window : this);

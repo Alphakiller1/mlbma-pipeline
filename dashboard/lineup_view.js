@@ -487,16 +487,25 @@
     return registered;
   }
 
+  function applyLeaguePoolsFromRows(rows) {
+    if (!A || !A.registerLeaguePool || !rows || !rows.length) return false;
+    if (registerLeaguePoolsFromRows(rows)) return true;
+    if (LM && LM.buildLeaguePools) {
+      var pools = LM.buildLeaguePools(rows);
+      Object.keys(pools || {}).forEach(function(k) {
+        var pool = pools[k];
+        if (pool && pool.values && pool.values.length) A.registerLeaguePool(k, pool.values);
+      });
+      return true;
+    }
+    return false;
+  }
+
   function scheduleLeaguePools(root, ctx, rows) {
     if (!A || !A.registerLeaguePool || !LM) return;
     var run = function() {
-      var finish = function(dataRows) {
-        if (registerLeaguePoolsFromRows(dataRows) && rows && rows.length) {
-          renderBody(root, ctx.state, rows);
-        }
-      };
-      if (registerLeaguePoolsFromRows(rows)) {
-        if (rows && rows.length) renderBody(root, ctx.state, rows);
+      if (applyLeaguePoolsFromRows(rows)) {
+        renderBody(root, ctx.state, rows);
         return;
       }
       if (LM.leaguePoolsBulk) {
@@ -509,17 +518,10 @@
         }).catch(function(err) {
           console.warn('[LineupView] league pool registration failed', err);
         });
-        return;
       }
-      var scoringFilter = MS.createFilterState
-        ? MS.createFilterState({ hand: 'both', location: 'all', pitcher: 'both', batSide: 'both', segment: 'full', window: 'YTD' })
-        : DEFAULTS.filter;
-      LM.rankAll(scoringFilter, 'scoring').then(finish).catch(function(err) {
-        console.warn('[LineupView] league pool registration failed', err);
-      });
     };
-    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 4000 });
-    else setTimeout(run, 50);
+    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 2500 });
+    else setTimeout(run, 0);
   }
 
   function rerender(root, ctx) {
@@ -530,8 +532,15 @@
       return;
     }
     writeUrl(ctx.state);
-    renderControls(root, ctx.state, ctx.teams, ctx.meta);
-    root.querySelector('.lv-body').innerHTML = '<div class="lv-note">Loading lineup model…</div>';
+    var body = root.querySelector('.lv-body');
+    if (!ctx._controlsReady) {
+      renderControls(root, ctx.state, ctx.teams, ctx.meta);
+      ctx._controlsReady = true;
+      if (l) l.classList.add('hide');
+    } else {
+      renderControls(root, ctx.state, ctx.teams, ctx.meta);
+    }
+    if (body) body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
     LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true }).then(function(resolved) {
       var rows = (resolved && resolved.rows) ? resolved.rows : (resolved || []);
       ctx.meta = (resolved && resolved.meta) ? resolved.meta : {};
@@ -562,6 +571,7 @@
       ctx.meta = meta;
       ctx.teams = rows.map(function(r) { return r.t; }).sort();
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
+      ctx._controlsReady = true;
       renderBody(root, ctx.state, rows);
       if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
       if (l) l.classList.add('hide');
@@ -588,7 +598,7 @@
     shell.innerHTML = '<div class="lv-bar"><div class="lv-controls"></div></div><div class="lv-body"></div>';
     el.innerHTML = '';
     el.appendChild(shell);
-    var ctx = { state: state, teams: [], _didPalsForceRefresh: false, meta: {}, _teamResultsRefresh: false };
+    var ctx = { state: state, teams: [], _didPalsForceRefresh: false, meta: {}, _teamResultsRefresh: false, _controlsReady: false };
     bind(shell, ctx);
     if (LM && LM.onUpdate) {
       LM.onUpdate(function(reason) {
@@ -598,7 +608,20 @@
         rerender(shell, ctx);
       });
     }
-    rerender(shell, ctx);
+    if (LM && LM.ensureStore) {
+      LM.ensureStore({
+        needPitcherSplits: false,
+        needPals: state.family === 'status',
+        allowPartialTeamResults: false,
+        prefetchTeamResults: true
+      }).then(function() {
+        rerender(shell, ctx);
+      }).catch(function() {
+        rerender(shell, ctx);
+      });
+    } else {
+      rerender(shell, ctx);
+    }
     return {
       rerender: function() { rerender(shell, ctx); },
       getState: function() { return JSON.parse(JSON.stringify(ctx.state)); }

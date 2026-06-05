@@ -72,7 +72,7 @@
 
   function weatherHtml(m) {
     var wMap = (global.LIVE_DATA && LIVE_DATA.weather) || {};
-    var w = (S && S.weatherLookup ? S.weatherLookup(wMap, m.away, m.home) : wMap[m.away + '@' + m.home]) || m.weather;
+    var w = (S && S.weatherLookup ? S.weatherLookup(wMap, m.away, m.home, m.stadium) : wMap[m.away + '@' + m.home]) || m.weather;
     if (!w) return '';
     if (S && S.formatWeatherMetaHtml) return S.formatWeatherMetaHtml(w, m.home);
     if (typeof w === 'string') {
@@ -299,10 +299,10 @@
   function teamLinkHtml(team, logoFn, extraCls, side) {
     var sideCls = side === 'home' ? ' team-link--home' : ' team-link--away';
     return '<a href="' + teamProfileUrl(team) + '" class="team-link' + sideCls + (extraCls || '') + '" onclick="event.stopPropagation()">'
+      + logoFn(team, 48)
       + '<span class="hmc-abbr">' + esc(team)
       + (global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '')
       + '</span>'
-      + logoFn(team, 48)
       + '</a>';
   }
 
@@ -435,10 +435,7 @@
       + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '', 'away') + '</div>'
       + '<span class="hmc-at">@</span>'
       + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '', 'home') + '</div>'
-      + '<div class="hmc-meta">'
-      + '<span class="hmc-time">' + esc(m.time || 'TBD') + '</span>'
-      + (m.stadium ? '<span class="hmc-stadium">' + esc(m.stadium) + '</span>' : '')
-      + '</div>'
+      + gameMetaHtml(m)
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
       + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: null, bb: null, era: null }, { eager: cardIdx < 3, pitchScore: awayPs, mlbId: m.awaySPId })

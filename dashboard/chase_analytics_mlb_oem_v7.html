@@ -1779,14 +1779,12 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
   border: 1px solid rgba(196,176,255,.08);
 }
-.mc-sp-info { min-width: 0; display: grid; grid-template-rows: 22px 26px 38px 52px; gap: 4px; align-content: start; }
+.mc-sp-info { min-width: 0; display: grid; grid-template-rows: 22px 26px 38px auto; gap: 4px; align-content: start; }
+.mc-sp-block--home .mc-sp-info { padding-right: 8px; box-sizing: border-box; }
 .mc-sp-photo { width: 42px; margin-right: 0; }
-.mc-sp-top { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; height: 22px; margin: 0; overflow: visible; }
-.mc-sp-block--away .mc-sp-top { justify-content: flex-start; }
-.mc-sp-block--home .mc-sp-top { justify-content: flex-end; }
-.mc-sp-block--home .mc-sp-side { order: 3; }
-.mc-sp-block--home .hand-pill { order: 2; }
-.mc-sp-block--home .pitch-tier { order: 1; }
+.mc-sp-top { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; height: 22px; margin: 0; overflow: hidden; min-width: 0; width: 100%; }
+.mc-sp-block--away .mc-sp-top { flex-direction: row; justify-content: flex-start; }
+.mc-sp-block--home .mc-sp-top { flex-direction: row-reverse; justify-content: flex-start; }
 .mc-sp-side { white-space: nowrap; font-size: 10px; flex-shrink: 0; }
 .hero-matchup-card .pitch-tier {
   flex: 0 0 auto; flex-shrink: 0; margin-left: 0; max-width: none; white-space: nowrap;
@@ -1810,19 +1808,24 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mc-sp-stat em { white-space: nowrap; overflow: visible; }
 .mc-sp-name-text { font-size: 15.5px; font-weight: 800; letter-spacing: 0; }
 .mc-ps-badge--defined {
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 10px; width: 100%; min-height: 38px; height: 38px; margin: 0; padding: 4px 2px;
+  display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline; column-gap: 10px;
+  width: 100%; min-height: 38px; height: 38px; margin: 0; padding: 4px 2px;
   border-radius: 0; background: transparent; box-sizing: border-box;
   border-top: 1px solid rgba(255,255,255,.065);
   border-bottom: 1px solid rgba(255,255,255,.065);
   color: var(--text);
   box-shadow: none;
 }
+.mc-sp-block--home .mc-ps-badge--defined { grid-template-columns: auto minmax(0,1fr); }
+.mc-sp-block--away .mc-ps-badge__label { grid-column: 1; justify-self: start; text-align: left; }
+.mc-sp-block--away .mc-ps-badge__val { grid-column: 2; justify-self: end; text-align: right; }
+.mc-sp-block--home .mc-ps-badge__val { grid-column: 1; justify-self: start; text-align: left; }
+.mc-sp-block--home .mc-ps-badge__label { grid-column: 2; justify-self: end; text-align: right; }
 .mc-ps-badge__label {
   font-size: 9.5px; font-weight: 800; letter-spacing: .1em; line-height: 1.05;
-  color: var(--text-3);
+  color: var(--text-3); white-space: nowrap;
 }
-.mc-ps-badge__val { font-size: 22px; font-weight: 900; letter-spacing: 0; }
+.mc-ps-badge__val { font-size: 22px; font-weight: 900; letter-spacing: 0; white-space: nowrap; }
 .hmc-lineups--always .hmc-lineups-label {
   display: block; width: 100%; text-align: center; font-size: 12px; font-weight: 800;
   letter-spacing: .12em; text-transform: uppercase; color: var(--text); margin: 2px 0 9px;
@@ -1839,14 +1842,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hmc-osi-num { display: block; font-family: var(--font-display, var(--display)); font-size: 17px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 .hero-matchup-card .team-link--home { justify-content: flex-end; flex-direction: row; }
 .hero-matchup-card .team-link--away { justify-content: flex-start; flex-direction: row; }
-.mc-sp-block--home { grid-template-columns: minmax(0, 1fr) 42px; padding-left: 11px; padding-right: 14px; }
-.mc-sp-block--away { padding-right: 11px; }
+.mc-sp-block--home { grid-template-columns: minmax(0, 1fr) 42px; padding: 12px 14px 11px 12px; }
+.mc-sp-block--away { padding-right: 12px; }
 .mc-sp-block--home .mc-sp-photo { grid-column: 2; grid-row: 1; }
 .mc-sp-block--home .mc-sp-info { grid-column: 1; grid-row: 1; }
 .mc-sp-block--home .mc-sp-name-row { display: flex; align-items: center; justify-content: flex-end; text-align: right; }
-.mc-sp-block--home .mc-ps-badge--defined { flex-direction: row-reverse; }
-.mc-sp-block--home .mc-sp-stats--grid { direction: rtl; }
-.mc-sp-block--home .mc-sp-stat { direction: ltr; }
 .hmc-bar-track { height: 11px; border-radius: 999px; overflow: hidden; display: flex; background: var(--bg-4); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
 .hmc-bar-away { background: var(--blue); height: 100%; }
 .hmc-bar-home { background: var(--purple); height: 100%; }
@@ -2622,7 +2622,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260620b">
 <link rel="stylesheet" href="theme.css?v=20260619a">
 <link rel="stylesheet" href="chase_nav.css?v=20260618n">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260619f">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260621b">
 <link rel="stylesheet" href="research_lab.css?v=20260605e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
@@ -2693,11 +2693,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260620b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260620d"></script>
+<script src="matchup_shared.js?v=20260621a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260619c"></script>
+<script src="platform_dashboard.js?v=20260621c"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260618b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -3717,16 +3717,21 @@ function applyLiveCache(cache) {
   var fetchLive = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
     ? MLBMASharedMatchup.fetchMlbTodaySchedule()
     : Promise.resolve({ games: [] });
-  fetchLive.then(function(sched) {
+  function finishCacheBootstrap(sched) {
     refreshTodayMatchups(sched);
-    applyLiveData();
-    attachPalsToScores();
-    initMatchupsView();
-  }).catch(function() {
-    refreshTodayMatchups(LIVE_DATA._liveSchedule);
-    applyLiveData();
-    attachPalsToScores();
-    initMatchupsView();
+    var wxP = (window.MLBMASharedMatchup && MLBMASharedMatchup.enrichMissingWeatherFromApi)
+      ? MLBMASharedMatchup.enrichMissingWeatherFromApi(LIVE_DATA.matchups, LIVE_DATA.weather)
+      : Promise.resolve();
+    wxP.then(function() {
+      enrichMatchupCards();
+      applyLiveData();
+      attachPalsToScores();
+      initMatchupsView();
+      if (shouldRenderMatchupsView()) refreshMatchupsSlateUi();
+    });
+  }
+  fetchLive.then(finishCacheBootstrap).catch(function() {
+    finishCacheBootstrap(LIVE_DATA._liveSchedule);
   });
 }
 
@@ -4263,7 +4268,7 @@ function enrichMatchupCards() {
     }
     var S = window.MLBMASharedMatchup;
     var w = S && S.weatherLookup
-      ? S.weatherLookup(LIVE_DATA.weather, m.away, m.home)
+      ? S.weatherLookup(LIVE_DATA.weather, m.away, m.home, m.stadium)
       : (LIVE_DATA.weather && LIVE_DATA.weather[matchupGameKey(m)]);
     if (w && typeof w === 'object') {
       m.weather = w;
@@ -4914,24 +4919,44 @@ function loadLandingData() {
     refreshTodayMatchups(LIVE_DATA._liveSchedule);
     console.info('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games —',
       LIVE_DATA.matchups.slice(0, 4).map(function(m) { return m.away + '@' + m.home; }).join(', '));
-    LIVE_DATA.loaded = true;
-    LIVE_DATA.error = null;
-    YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
-    syncHeroStats();
-    initMatchupsView();
-    applyLiveData();
-    if (window.MLBMAStandings) {
-      return Promise.race([
-        MLBMAStandings.load(),
-        new Promise(function(resolve) {
-          setTimeout(function() {
-            console.warn('[MLBMA] standings load timed out — continuing');
-            resolve({});
-          }, 5000);
-        })
-      ]);
-    }
-    return Promise.resolve();
+    var wxEnrich = (window.MLBMASharedMatchup && MLBMASharedMatchup.enrichMissingWeatherFromApi)
+      ? MLBMASharedMatchup.enrichMissingWeatherFromApi(LIVE_DATA.matchups, LIVE_DATA.weather)
+      : Promise.resolve(LIVE_DATA.weather);
+    return wxEnrich.then(function() {
+      enrichMatchupCards();
+      LIVE_DATA.loaded = true;
+      LIVE_DATA.error = null;
+      YTD = buildYtdFromLive(LIVE_DATA.scYtdR, LIVE_DATA.scYtdL);
+      saveLiveCache({
+        lastUpdated: LIVE_DATA.lastUpdated,
+        scYtdR: LIVE_DATA.scYtdR,
+        scYtdL: LIVE_DATA.scYtdL,
+        lineups: LIVE_DATA.lineups,
+        weather: LIVE_DATA.weather,
+        spProfiles: LIVE_DATA.spProfiles,
+        todayGames: LIVE_DATA.todayGames,
+        _slateGamesRows: LIVE_DATA._slateGamesRows,
+        _slateMatchupsRows: LIVE_DATA._slateMatchupsRows,
+        _liveSchedule: LIVE_DATA._liveSchedule,
+        ytd: YTD
+      });
+      syncHeroStats();
+      initMatchupsView();
+      applyLiveData();
+      if (shouldRenderMatchupsView()) refreshMatchupsSlateUi();
+      if (window.MLBMAStandings) {
+        return Promise.race([
+          MLBMAStandings.load(),
+          new Promise(function(resolve) {
+            setTimeout(function() {
+              console.warn('[MLBMA] standings load timed out — continuing');
+              resolve({});
+            }, 5000);
+          })
+        ]);
+      }
+      return Promise.resolve();
+    });
   });
 }
 

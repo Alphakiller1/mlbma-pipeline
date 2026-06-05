@@ -86,9 +86,13 @@
   }
 
   function gameWeatherBadge(m) {
-    var gk = m.away + '@' + m.home;
-    var w = (LIVE_DATA.weather || {})[gk];
+    var S = window.MLBMASharedMatchup;
+    var wMap = LIVE_DATA.weather || {};
+    var w = (S && S.weatherLookup)
+      ? S.weatherLookup(wMap, m.away, m.home, m.stadium)
+      : wMap[m.away + '@' + m.home];
     if (!w) return '';
+    if (S && S.formatWeatherMetaHtml) return S.formatWeatherMetaHtml(w, m.home);
     var text = typeof w === 'string' ? w : (w.cond || w.conditions || '');
     if (!text) return '';
     return '<span class="weather-badge">' + esc(text) + '</span>';
