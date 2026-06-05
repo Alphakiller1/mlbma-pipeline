@@ -1611,6 +1611,54 @@ function renderHeader(key) {
     '</div>';
 }
 
+function metricContextForLabel(label) {
+  var key = String(label || '').toUpperCase();
+  if (key === 'ABQ') return 'abq';
+  if (key === 'RCV') return 'rcv';
+  if (key === 'OBR') return 'obr';
+  if (key === 'OSI') return 'osi';
+  if (key === 'WRC+') return 'wrc';
+  if (key === 'OPS') return 'ops';
+  if (key === 'AVG') return 'avg';
+  if (key === 'OBP') return 'obp';
+  if (key === 'SLG') return 'slg';
+  if (key === 'WOBA') return 'woba';
+  if (key === 'XWOBA') return 'xwoba';
+  if (key === 'BB%') return 'bbpct';
+  if (key === 'K%') return 'kpct';
+  if (key === 'BARREL%') return 'barrel';
+  return 'osi';
+}
+
+function metricDecimalsForLabel(label) {
+  var key = String(label || '').toUpperCase();
+  if (key === 'AVG' || key === 'OBP' || key === 'SLG' || key === 'WOBA' || key === 'XWOBA' || key === 'OPS') return 3;
+  return 1;
+}
+
+function statCell(label, val, color) {
+  var context = metricContextForLabel(label);
+  var decimals = metricDecimalsForLabel(label);
+  var invert = String(label || '').toUpperCase() === 'K%';
+  var chip = (typeof val === 'number' && !isNaN(val) && window.MLBMAAssets && MLBMAAssets.valChipHtml)
+    ? MLBMAAssets.valChipHtml(val, context, invert, decimals)
+    : null;
+  var inner = chip || ((typeof val === 'number' && !isNaN(val)) ? fmt(val, decimals) : escHtml(val));
+  if (!chip && color) inner = '<span style="color:' + color + '">' + inner + '</span>';
+  return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + inner + '</div></div>';
+}
+
+function mini(label, val) {
+  var context = metricContextForLabel(label);
+  var decimals = metricDecimalsForLabel(label);
+  var invert = String(label || '').toUpperCase() === 'K%';
+  var chip = (typeof val === 'number' && !isNaN(val) && window.MLBMAAssets && MLBMAAssets.valChipHtml)
+    ? MLBMAAssets.valChipHtml(val, context, invert, decimals)
+    : null;
+  return '<div class="mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' +
+    (chip || (typeof val === 'string' ? val : fmt(val, decimals))) + '</div></div>';
+}
+
 function renderSeasonBar(key) {
   var raw = getRawForPlayer(key, STATE.window);
   var base = overallProfileRow(key);
