@@ -236,6 +236,8 @@
         && osiAllowed <= SP_FLAG_RULES.eliteOsiAllowedMax) {
       flags.push({ label: 'Elite stuff', tone: 'elite' });
     }
+    // Every pitcher carries a flag — neutral when nothing else trips.
+    if (!flags.length) flags.push({ label: 'Balanced', tone: 'mid' });
     return flags;
   }
 
@@ -1423,7 +1425,8 @@
         }
         if (c.k === 'era' || c.k === 'fip' || c.k === 'f5Era') {
           var ev = c.k === 'f5Era' ? st.f5Era : v;
-          return '<td class="num">' + (ev != null && !isNaN(ev) ? fmt(ev, 2) : '—') + '</td>';
+          // Color-code ERA / FIP / F5 ERA (lower = better).
+          return tdNum(ev, 2, true, c.k === 'fip' ? 'fip' : 'era');
         }
         return tdNum(v, d, inv, ctx);
       }).join('');

@@ -697,7 +697,6 @@ function profileWindowFieldsFromRow(row) {
       + '<div class="rl-compare-panel-label">' + esc(label) + ' <span class="rl-compare-entity-tag">' + esc(entity) + '</span></div>'
       + renderCompareSplitRows(modeId, sideKey, side)
       + '<div class="rl-compare-panel-select">' + selectorHtml + '</div>'
-      + (splitTag ? '<div class="ca-helper rl-compare-filter-note">' + esc(splitTag) + '</div>' : '')
       + '<button type="button" class="rl-compare-clear" data-cmp-clear="' + sideKey + '">Clear</button>'
       + '</div>';
   }

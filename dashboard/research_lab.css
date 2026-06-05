@@ -165,8 +165,10 @@ html.view-research #oorSection { display: none !important; }
 .rl-compare-metric-val {
   font-family: var(--mono, monospace); font-size: 15px; font-weight: 600;
 }
-.rl-compare-metric-val--a { text-align: right; }
-.rl-compare-metric-val--b { text-align: left; }
+/* Push each side's stat to the OUTER edge so both are equidistant from the
+   center label (item 4 — comparison less centered). */
+.rl-compare-metric-val--a { text-align: left; padding-left: 6px; }
+.rl-compare-metric-val--b { text-align: right; padding-right: 6px; }
 .rl-compare-metric-val--win { font-weight: 800; }
 .rl-compare-metric-label {
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
@@ -540,7 +542,11 @@ html.view-research #oorSection { display: none !important; }
   background: var(--bg-2, var(--surface-1));
   margin-top: 8px;
   position: relative;
+  max-height: 520px;
+  overflow: auto;
 }
+/* Slightly larger ranking-table headings (punch-list items 8, 12). */
+.pl-rank-table thead th { font-size: 13.5px; letter-spacing: 0.02em; }
 .pl-rank-table-wrap::before {
   content: '';
   position: absolute;
