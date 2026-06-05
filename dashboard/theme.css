@@ -368,32 +368,61 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   height: 24px;
 }
 
-/* Infographic PNG marks (ChatGPT MLB icon set) */
-.ca-icon-circle--asset {
-  width: auto;
-  height: auto;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+/* Neon line-art PNG marks — replace badges, never stack under ca-icon-circle */
+.ca-neon-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   border-radius: 0;
+  padding: 0;
+  line-height: 0;
 }
-.ca-icon-circle--asset .ca-icon-img {
+.ca-neon-icon .ca-icon-img {
   display: block;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 14px rgba(124, 77, 255, 0.32));
+  filter: drop-shadow(0 0 14px rgba(124, 77, 255, 0.42));
 }
-.ca-icon-circle--asset.ca-icon-circle--sm .ca-icon-img {
+.ca-neon-icon--sm .ca-icon-img {
   width: 38px;
   height: 38px;
 }
-.ca-icon-circle--asset:not(.ca-icon-circle--sm):not(.ca-icon-circle--hero) .ca-icon-img {
-  width: 46px;
-  height: 46px;
-}
-.ca-icon-circle--asset.ca-icon-circle--hero .ca-icon-img {
+.ca-neon-icon--hero .ca-icon-img {
   width: 50px;
   height: 50px;
+}
+.ca-neon-icon--tool .ca-icon-img {
+  width: 52px;
+  height: 52px;
+}
+
+.ca-section-head .ca-neon-icon,
+.ca-section-head .ca-icon.ca-icon--asset,
+.ca-section-head .ca-icon:has(.ca-icon-img) {
+  width: auto;
+  height: auto;
+  min-width: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0;
+  padding: 0;
+}
+
+.ca-tool-card__icon--asset,
+.ca-tool-card__icon:has(.ca-neon-icon) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin-bottom: 14px;
 }
 
 .ca-section-head .ca-icon .ca-icon-img,
@@ -402,7 +431,7 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   object-fit: contain;
   width: 38px;
   height: 38px;
-  filter: drop-shadow(0 4px 14px rgba(124, 77, 255, 0.32));
+  filter: drop-shadow(0 0 14px rgba(124, 77, 255, 0.42));
 }
 .ca-platform-cta__item .ca-icon-circle--asset .ca-icon-img {
   width: 36px;

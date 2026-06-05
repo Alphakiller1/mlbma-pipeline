@@ -259,13 +259,22 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   height: 50px;
 }
 
+.ca-section-head .ca-neon-icon,
 .ca-section-head .ca-icon.ca-icon--asset,
 .ca-icon.ca-icon--asset {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
+  width: auto;
+  height: auto;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0;
+  padding: 0;
 }
+.ca-section-head .ca-neon-icon .ca-icon-img,
 .ca-section-head .ca-icon.ca-icon--asset .ca-icon-img,
 .ca-icon.ca-icon--asset .ca-icon-img {
   width: 38px;

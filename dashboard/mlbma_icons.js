@@ -1,15 +1,14 @@
 /**
- * MLBMA icon system — infographic PNG marks from the ChatGPT MLB icon set,
- * plus thin inline SVG for small utility affordances (arrows, wind, etc.).
+ * MLBMA icon system — neon purple line-art PNG marks (8-icon grid),
+ * plus thin inline SVG for micro utility affordances (arrows, wind, etc.).
  *
- * Mark icons: dashboard/assets/icons/*.png (cropped from MLB icons grids).
- * Regenerate: python scripts/build_mlbma_icons.py
- * Validate:   python scripts/validate_mlbma_icons.py
+ * Regenerate marks: python scripts/build_neon_icons.py
+ * Validate:         python scripts/validate_mlbma_icons.py
  */
 (function(global) {
   'use strict';
 
-  var ICON_VER = '20260619b';
+  var ICON_VER = '20260605c';
   var ICON_BASE = 'assets/icons/';
   var MICRO_PX = 18;
 
@@ -17,91 +16,100 @@
 
   function L(body) { return '<svg' + SVG_ATTRS + '>' + body + '</svg>'; }
 
-  /** Primary mark catalog — PNG filename stem (no extension). */
-  var MARK_ICONS = {
-    dashboard: 'dashboard',
-    'team-rankings': 'team-rankings',
-    trends: 'trends',
-    matchups: 'matchups',
-    compare: 'compare',
-    'team-profile': 'team-profile',
-    'player-profile': 'player-profile',
-    offense: 'offense',
-    pitching: 'pitching',
-    lineups: 'lineups',
-    metrics: 'metrics',
-    'research-lab': 'research-lab',
-    alerts: 'alerts',
-    glossary: 'glossary',
-    reports: 'reports',
-    settings: 'settings',
-    'strike-zone': 'strike-zone',
-    'velocity-gauge': 'velocity-gauge',
-    'search-filter': 'search-filter',
-    'team-shield': 'team-shield',
-    'roster-board': 'roster-board',
-    'lab-flask': 'lab-flask',
-    'notify-bell': 'notify-bell',
-    playbook: 'playbook',
-    'summary-doc': 'summary-doc',
-    'config-gear': 'config-gear',
-    'diamond-field': 'diamond-field',
-    'lineup-bars': 'lineup-bars',
-    'trend-line': 'trend-line',
-    'matchup-plates': 'matchup-plates',
-    'batting-chart': 'batting-chart',
-    'compare-stats': 'compare-stats',
-    'player-card': 'player-card',
-    'offense-power': 'offense-power',
-    'analytics-hub': 'analytics-hub',
+  var NEON = {
+    field: 'neon-diamond-field',
+    ball: 'neon-baseball',
+    bat: 'neon-bat',
+    stadium: 'neon-stadium',
+    weather: 'neon-weather-field',
+    vs: 'neon-vs',
+    up: 'neon-trend-up',
+    down: 'neon-trend-down'
+  };
 
-    // Legacy keys → PNG marks
-    baseball: 'pitching',
-    bat: 'offense',
-    bats: 'matchups',
-    'home-plate': 'diamond-field',
-    home: 'diamond-field',
-    diamond: 'diamond-field',
-    glove: 'team-shield',
-    cap: 'team-profile',
-    helmet: 'player-profile',
-    mask: 'strike-zone',
-    magnifier: 'search-filter',
-    binoculars: 'search-filter',
-    pennant: 'team-rankings',
-    trophy: 'team-rankings',
-    target: 'strike-zone',
-    crosshair: 'strike-zone',
-    radar: 'trends',
-    gauge: 'velocity-gauge',
-    activity: 'trend-line',
-    flame: 'trend-line',
-    'chart-line': 'trend-line',
-    'line-chart': 'trend-line',
-    scoreboard: 'team-rankings',
-    'bar-chart-3': 'metrics',
-    layers: 'metrics',
-    'circle-dollar-sign': 'metrics',
-    split: 'compare-stats',
-    clock: 'settings',
-    'alert-triangle': 'alerts',
-    stadium: 'diamond-field',
-    'clipboard-list': 'reports',
-    'flask-conical': 'research-lab',
-    swords: 'matchups',
-    'trending-up': 'trends',
-    'trending-down': 'trend-line',
-    'trend-up': 'trends',
-    'trend-down': 'trend-line',
-    'calendar-days': 'lineups',
-    'list-ordered': 'lineups',
-    'layout-grid': 'dashboard',
-    'table-2': 'metrics',
-    'book-open': 'glossary',
-    'git-compare': 'compare',
-    search: 'search-filter',
-    list: 'lineup-bars',
-    insight: 'research-lab'
+  /** All section marks map to the 8 neon line-art icons (replace, never stack). */
+  var MARK_ICONS = {
+    dashboard: NEON.stadium,
+    'team-rankings': NEON.up,
+    trends: NEON.up,
+    matchups: NEON.vs,
+    compare: NEON.vs,
+    'team-profile': NEON.stadium,
+    'player-profile': NEON.bat,
+    offense: NEON.bat,
+    pitching: NEON.ball,
+    lineups: NEON.field,
+    metrics: NEON.up,
+    'research-lab': NEON.up,
+    alerts: NEON.down,
+    glossary: NEON.ball,
+    reports: NEON.up,
+    settings: NEON.stadium,
+    'strike-zone': NEON.field,
+    'velocity-gauge': NEON.up,
+    'search-filter': NEON.stadium,
+    'team-shield': NEON.stadium,
+    'roster-board': NEON.stadium,
+    'lab-flask': NEON.up,
+    'notify-bell': NEON.down,
+    playbook: NEON.up,
+    'summary-doc': NEON.up,
+    'config-gear': NEON.stadium,
+    'diamond-field': NEON.field,
+    'lineup-bars': NEON.field,
+    'trend-line': NEON.down,
+    'matchup-plates': NEON.vs,
+    'batting-chart': NEON.bat,
+    'compare-stats': NEON.vs,
+    'player-card': NEON.bat,
+    'offense-power': NEON.bat,
+    'analytics-hub': NEON.stadium,
+    baseball: NEON.ball,
+    bat: NEON.bat,
+    bats: NEON.vs,
+    'home-plate': NEON.field,
+    home: NEON.field,
+    diamond: NEON.field,
+    glove: NEON.stadium,
+    cap: NEON.stadium,
+    helmet: NEON.bat,
+    mask: NEON.field,
+    magnifier: NEON.stadium,
+    binoculars: NEON.stadium,
+    pennant: NEON.up,
+    trophy: NEON.up,
+    target: NEON.ball,
+    crosshair: NEON.field,
+    radar: NEON.up,
+    gauge: NEON.up,
+    activity: NEON.down,
+    flame: NEON.down,
+    'chart-line': NEON.down,
+    'line-chart': NEON.down,
+    scoreboard: NEON.up,
+    'bar-chart-3': NEON.up,
+    layers: NEON.up,
+    'circle-dollar-sign': NEON.up,
+    split: NEON.vs,
+    clock: NEON.stadium,
+    'alert-triangle': NEON.down,
+    stadium: NEON.stadium,
+    'clipboard-list': NEON.up,
+    'flask-conical': NEON.up,
+    swords: NEON.vs,
+    'trending-up': NEON.up,
+    'trending-down': NEON.down,
+    'trend-up': NEON.up,
+    'trend-down': NEON.down,
+    'calendar-days': NEON.field,
+    'list-ordered': NEON.field,
+    'layout-grid': NEON.stadium,
+    'table-2': NEON.up,
+    'book-open': NEON.ball,
+    'git-compare': NEON.vs,
+    search: NEON.stadium,
+    list: NEON.field,
+    insight: NEON.up
   };
 
   /** Thin line SVGs — utility controls + micro-size fallbacks (<=18px). */
@@ -226,13 +234,20 @@
     return LINE_ICONS[key] || LINE_ICONS['circle-dot'];
   }
 
+  function neonWrapHtml(name, px, small, hero) {
+    var cls = 'ca-neon-icon';
+    if (small) cls += ' ca-neon-icon--sm';
+    if (hero) cls += ' ca-neon-icon--hero';
+    return '<span class="' + cls + '" aria-hidden="true">' + iconImgHtml(name, px) + '</span>';
+  }
+
   function iconCircleHtml(name, small, hero) {
+    var px = hero ? 50 : (small ? 38 : 46);
+    if (isMarkIcon(name)) return neonWrapHtml(name, px, small, hero);
     var cls = 'ca-icon-circle';
-    if (isMarkIcon(name)) cls += ' ca-icon-circle--asset';
     if (hero) cls += ' ca-icon-circle--hero';
     else if (small) cls += ' ca-icon-circle--sm';
-    var px = hero ? 50 : (small ? 38 : 46);
-    return '<span class="' + cls + '" aria-hidden="true">' + iconSvg(name, { px: px }) + '</span>';
+    return '<span class="' + cls + '" aria-hidden="true">' + iconSvg(name, { px: px, preferLine: true }) + '</span>';
   }
 
   function iconHtml(name, size) {
@@ -244,16 +259,47 @@
     return out.replace('<svg', '<svg style="width:' + px + 'px;height:' + px + 'px;flex:none"');
   }
 
-  function decorateAssetParent(node) {
-    if (!node || node.tagName !== 'IMG') return;
-    var circle = node.closest('.ca-icon-circle');
-    if (circle) circle.classList.add('ca-icon-circle--asset');
-    var toolIcon = node.closest('.ca-tool-card__icon');
-    if (toolIcon) toolIcon.classList.add('ca-tool-card__icon--asset');
-    var sectionIcon = node.closest('.ca-icon');
-    if (sectionIcon) sectionIcon.classList.add('ca-icon--asset');
-    var tabIcon = node.closest('.tp-unit-tab-icon');
-    if (tabIcon) tabIcon.classList.add('tp-unit-tab-icon--asset');
+  function neonSizeFromContext(el) {
+    var circle = el.closest('.ca-icon-circle');
+    if (circle && circle.classList.contains('ca-icon-circle--hero')) return 50;
+    if (circle && circle.classList.contains('ca-icon-circle--sm')) return 38;
+    if (circle) return 46;
+    var inlinePx = parseInt(el.style.width, 10) || parseInt(el.style.height, 10) || 0;
+    return inlinePx > MICRO_PX ? inlinePx : 46;
+  }
+
+  function mountReplacedIcon(el, node, name) {
+    if (node.tagName === 'IMG' && isMarkIcon(name)) {
+      var toolIcon = el.closest('.ca-tool-card__icon');
+      var circle = el.closest('.ca-icon-circle');
+      var sectionIcon = el.closest('.ca-section-head .ca-icon, .ca-icon');
+      var px = neonSizeFromContext(el);
+      var small = px <= 40;
+      var hero = circle && circle.classList.contains('ca-icon-circle--hero');
+      var wrap = document.createElement('span');
+      wrap.className = 'ca-neon-icon' + (small ? ' ca-neon-icon--sm' : '') + (hero ? ' ca-neon-icon--hero' : '') + (toolIcon ? ' ca-neon-icon--tool' : '');
+      wrap.appendChild(node);
+      if (toolIcon && circle) {
+        toolIcon.classList.add('ca-tool-card__icon--asset');
+        toolIcon.innerHTML = '';
+        toolIcon.appendChild(wrap);
+        return;
+      }
+      if (circle) {
+        if (sectionIcon) sectionIcon.classList.add('ca-icon--asset');
+        circle.replaceWith(wrap);
+        return;
+      }
+      if (sectionIcon) {
+        sectionIcon.classList.add('ca-icon--asset');
+        sectionIcon.innerHTML = '';
+        sectionIcon.appendChild(wrap);
+        return;
+      }
+    }
+    if (el.style.width) node.style.width = el.style.width;
+    if (el.style.height) node.style.height = el.style.height;
+    el.replaceWith(node);
   }
 
   function refreshIcons(root) {
@@ -263,18 +309,12 @@
       var name = el.getAttribute('data-lucide');
       if (!name) return;
       var inlinePx = parseInt(el.style.width, 10) || parseInt(el.style.height, 10) || 0;
+      var useLine = inlinePx > 0 && inlinePx <= MICRO_PX && !isMarkIcon(name);
       var tmp = document.createElement('div');
-      tmp.innerHTML = iconSvg(name, { px: inlinePx || undefined, preferLine: inlinePx > 0 && inlinePx <= MICRO_PX });
+      tmp.innerHTML = iconSvg(name, { px: useLine ? inlinePx : neonSizeFromContext(el), preferLine: useLine });
       var node = tmp.firstElementChild;
       if (!node) return;
-      if (el.style.width) node.style.width = el.style.width;
-      if (el.style.height) node.style.height = el.style.height;
-      var legacyClass = el.getAttribute ? el.getAttribute('class') : '';
-      if (legacyClass) {
-        node.setAttribute('class', ((node.getAttribute('class') || '') + ' ' + legacyClass).trim());
-      }
-      decorateAssetParent(node);
-      el.replaceWith(node);
+      mountReplacedIcon(el, node, name);
     });
     return Promise.resolve();
   }
