@@ -229,6 +229,55 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   fill: none;
 }
 
+.ca-tool-card__icon .ca-icon-img,
+.ca-tool-card__icon img.ca-icon-img,
+.ca-tool-card__icon--asset .ca-icon-circle .ca-icon-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(124, 77, 255, 0.28));
+}
+.ca-tool-card__icon--asset {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin-bottom: 14px;
+}
+.ca-tool-card__icon--asset .ca-icon-circle {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  padding: 0;
+}
+.ca-tool-card__icon--asset .ca-icon-img {
+  width: 50px;
+  height: 50px;
+}
+
+.ca-section-head .ca-icon.ca-icon--asset,
+.ca-icon.ca-icon--asset {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+.ca-section-head .ca-icon.ca-icon--asset .ca-icon-img,
+.ca-icon.ca-icon--asset .ca-icon-img {
+  width: 38px;
+  height: 38px;
+}
+
+.tp-unit-tab-icon--asset .ca-icon-img {
+  width: 16px;
+  height: 16px;
+  filter: none;
+}
+
 .ca-section-head__body {
   min-width: 0;
   flex: 1;

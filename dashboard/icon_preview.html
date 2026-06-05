@@ -21,8 +21,8 @@
 </style>
 </head>
 <body>
-  <h1>MLBMA Baseball Icon Set</h1>
-  <p class="sub">Section badges rendered at real size. Each shown in three accent colors to confirm the texture stays themeable (gradient = currentColor).</p>
+  <h1>MLBMA Infographic Icon Set</h1>
+  <p class="sub">PNG marks from the ChatGPT MLB icon grids — cropped into <code>assets/icons/</code>. Regenerate with <code>python scripts/build_mlbma_icons.py</code>.</p>
 
   <h2>Sections — by meaning</h2>
   <div class="grid" id="sections"></div>
@@ -30,7 +30,7 @@
   <h2>Full glyph catalog</h2>
   <div class="grid" id="catalog"></div>
 
-  <script src="mlbma_icons.js"></script>
+  <script src="mlbma_icons.js?v=20260619b"></script>
   <script>
     var I = window.MLBMAIcons;
     // semantic section keys → what they represent
@@ -52,11 +52,12 @@
         + '</div><div class="lab">' + label + '</div><div class="key">' + key + '</div></div>';
     }
     document.getElementById('sections').innerHTML = SECTIONS.map(function(s){return cell(s[0],s[1]);}).join('');
-    // unique glyph names (dedupe aliases that point to same svg)
+    // unique primary marks (filename stems)
     var seen = {}, cat = [];
-    Object.keys(I.CA_ICONS).forEach(function(k){
-      var svg = I.CA_ICONS[k];
-      if (seen[svg]) return; seen[svg] = 1; cat.push(k);
+    Object.keys(I.MARK_ICONS || {}).forEach(function(k){
+      var file = I.MARK_ICONS[k];
+      if (k !== file || seen[file]) return;
+      seen[file] = 1; cat.push(k);
     });
     document.getElementById('catalog').innerHTML = cat.map(function(k){return cell(k,k);}).join('');
   </script>

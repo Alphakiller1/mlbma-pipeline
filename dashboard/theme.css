@@ -367,6 +367,57 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   width: 24px;
   height: 24px;
 }
+
+/* Infographic PNG marks (ChatGPT MLB icon set) */
+.ca-icon-circle--asset {
+  width: auto;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+.ca-icon-circle--asset .ca-icon-img {
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 14px rgba(124, 77, 255, 0.32));
+}
+.ca-icon-circle--asset.ca-icon-circle--sm .ca-icon-img {
+  width: 38px;
+  height: 38px;
+}
+.ca-icon-circle--asset:not(.ca-icon-circle--sm):not(.ca-icon-circle--hero) .ca-icon-img {
+  width: 46px;
+  height: 46px;
+}
+.ca-icon-circle--asset.ca-icon-circle--hero .ca-icon-img {
+  width: 50px;
+  height: 50px;
+}
+
+.ca-section-head .ca-icon .ca-icon-img,
+.ca-tool-card__icon .ca-icon-img {
+  display: block;
+  object-fit: contain;
+  width: 38px;
+  height: 38px;
+  filter: drop-shadow(0 4px 14px rgba(124, 77, 255, 0.32));
+}
+.ca-platform-cta__item .ca-icon-circle--asset .ca-icon-img {
+  width: 36px;
+  height: 36px;
+}
+
+.index-card-icon.ca-icon-circle--asset .ca-icon-img {
+  width: 38px;
+  height: 38px;
+}
+
+.rl-home-card-icon.ca-icon-circle--asset .ca-icon-img {
+  width: 46px;
+  height: 46px;
+}
 .ca-tool-card__cta [data-lucide],
 .ca-tool-card__cta svg,
 .ca-btn [data-lucide],

@@ -1070,7 +1070,8 @@ function profileWindowFieldsFromRow(row) {
   function iconCircle(name) {
     var I = global.MLBMAIcons;
     if (I && I.iconCircleHtml) return I.iconCircleHtml(name, true);
-    return '<span class="ca-icon-circle ca-icon-circle--sm" aria-hidden="true">' + (global.MLBMAIcons && MLBMAIcons.iconSvg ? MLBMAIcons.iconSvg(name) : '') + '</span>';
+    var assetCls = (I && I.isMarkIcon && I.isMarkIcon(name)) ? ' ca-icon-circle--asset' : '';
+    return '<span class="ca-icon-circle ca-icon-circle--sm' + assetCls + '" aria-hidden="true">' + (I && I.iconSvg ? I.iconSvg(name, { px: 38 }) : '') + '</span>';
   }
   function compareInsightRailHtml(dataA, dataB, metricRows) {
     var top = (metricRows || []).slice().filter(function(r) {

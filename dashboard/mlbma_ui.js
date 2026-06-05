@@ -1,5 +1,5 @@
-ï»¿/**
- * MLBMA shared dashboard UI â€” nav, loading overlay, footer timestamp.
+/**
+ * MLBMA shared dashboard UI — nav, loading overlay, footer timestamp.
  */
 (function (global) {
   'use strict';
@@ -63,7 +63,7 @@
     if (document.getElementById('mlbma-icons-script')) return;
     var s = document.createElement('script');
     s.id = 'mlbma-icons-script';
-    s.src = 'mlbma_icons.js?v=20260611b';
+    s.src = 'mlbma_icons.js?v=20260619b';
     s.async = true;
     document.head.appendChild(s);
   }
@@ -140,7 +140,7 @@
     var done = false;
     var timer = setTimeout(function () {
       if (done) return;
-      console.warn('[MLBMA_UI] load watchdog fired â€” dismissing overlay');
+      console.warn('[MLBMA_UI] load watchdog fired — dismissing overlay');
       if (typeof onTimeout === 'function') onTimeout();
       hideLoadingOverlay();
     }, ms || 8000);
@@ -168,7 +168,7 @@
       global.MLBMA_CONFIG.SHEET_TABS.last_updated;
     var url = tab ? sheetCsvUrl(tab) : null;
     if (!url) {
-      el.textContent = 'â€”';
+      el.textContent = '—';
       return;
     }
     fetch(url, { cache: 'no-store' })
@@ -176,9 +176,9 @@
       .then(function (t) {
         var line = (t || '').trim().split('\n')[1] || '';
         var val = line.split(',')[0].replace(/^"|"$/g, '').trim();
-        el.textContent = val || 'â€”';
+        el.textContent = val || '—';
       })
-      .catch(function () { el.textContent = 'â€”'; });
+      .catch(function () { el.textContent = '—'; });
   }
 
   function injectFooter() {
@@ -187,9 +187,9 @@
     ft.className = 'mlbma-footer';
     ft.id = 'mlbmaFooter';
     ft.innerHTML =
-      '<div>Chase Analytics Â· MLBMA Pipeline v2.0</div>' +
+      '<div>Chase Analytics · MLBMA Pipeline v2.0</div>' +
       '<div class="mlbma-footer-center">Data refreshes daily after 9am ET pipeline run</div>' +
-      '<div class="mlbma-footer-right">Updated: <span id="mlbmaFooterUpdated">â€”</span></div>';
+      '<div class="mlbma-footer-right">Updated: <span id="mlbmaFooterUpdated">—</span></div>';
     document.body.appendChild(ft);
     loadFooterTimestamp();
   }
@@ -201,7 +201,7 @@
     setTimeout(function () {
       var ov = document.getElementById('mlbmaLoading');
       if (ov && !ov.classList.contains('hide')) {
-        console.warn('[MLBMA_UI] safety timeout â€” dismissing loading overlay');
+        console.warn('[MLBMA_UI] safety timeout — dismissing loading overlay');
         finishLoading();
       }
     }, 14000);

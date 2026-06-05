@@ -856,7 +856,8 @@
     var I = global.MLBMAIcons;
     var icon = '';
     if (I && I.iconSvg) {
-      icon = '<span class="ca-icon" aria-hidden="true">' + I.iconSvg(iconKey || 'circle-dot') + '</span>';
+      var assetCls = (I.isMarkIcon && I.isMarkIcon(iconKey || '')) ? ' ca-icon--asset' : '';
+      icon = '<span class="ca-icon' + assetCls + '" aria-hidden="true">' + I.iconSvg(iconKey || 'circle-dot', { px: 38 }) + '</span>';
     }
     var body = '<div class="ca-section-head__body">';
     if (kicker) body += '<div class="kicker">' + escHtml(kicker) + '</div>';
