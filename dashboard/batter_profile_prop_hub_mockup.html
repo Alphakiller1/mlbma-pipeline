@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLBMA Batter Prop Hub Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css?v=20260618b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260618a">
+<style>
+:root {
+  --hub-bg: #070912;
+  --hub-panel: #111522;
+  --hub-panel-2: #0d111c;
+  --hub-raise: rgba(255,255,255,0.04);
+  --hub-border: rgba(154,107,255,0.18);
+  --hub-border-strong: rgba(154,107,255,0.34);
+  --hub-text: #f5f6fa;
+  --hub-text-2: #c5ccda;
+  --hub-text-3: #8790a5;
+  --hub-good: #49d17d;
+  --hub-warn: #f1c24b;
+  --hub-bad: #f17279;
+  --hub-blue: #79b2ff;
+  --hub-violet: #9a6bff;
+  --hub-edge: linear-gradient(90deg, #4f90ff 0%, #8e5cff 52%, #ea5fa3 100%);
+  --hub-shadow: 0 28px 70px rgba(0, 0, 0, 0.4);
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: var(--hub-text);
+  background:
+    radial-gradient(ellipse 86% 60% at 78% -8%, rgba(124,77,255,0.2), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 12% 102%, rgba(91,43,224,0.12), transparent 60%),
+    var(--hub-bg);
+}
+
+body { padding: 22px 14px 40px; }
+.shell { max-width: 1460px; margin: 0 auto; }
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.brand-tag {
+  color: #d8c5ff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.brand-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(73,209,125,0.1);
+  border: 1px solid rgba(73,209,125,0.24);
+  color: #98efbb;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title-wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.title {
+  margin: 0;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: clamp(20px, 2.2vw, 24px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--hub-text);
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  max-width: 760px;
+  color: var(--hub-text-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--hub-text-2);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hub-good);
+  box-shadow: 0 0 10px rgba(73,209,125,0.7);
+}
+
+.board {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--hub-border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), transparent 22%),
+    linear-gradient(180deg, var(--hub-panel) 0%, var(--hub-panel-2) 100%);
+  box-shadow: var(--hub-shadow);
+}
+
+.board::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #9a6bff 0%, #6d2de0 100%);
+}
+
+.pad { padding: 20px; }
+
+.command-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.95fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.identity {
+  display: flex;
+  gap: 14px;
+  align-items: start;
+}
+
+.avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #f0ebff;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(196,176,255,0.24), transparent 40%),
+    linear-gradient(135deg, #21173e 0%, #10182b 100%);
+  border: 1px solid rgba(154,107,255,0.32);
+}
+
+.eyebrow {
+  color: #dac9ff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.name {
+  margin: 0;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 34px;
+  line-height: 0.96;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--hub-text-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.chip.good { color: #98efbb; border-color: rgba(73,209,125,0.3); background: rgba(73,209,125,0.11); }
+.chip.warn { color: #ffd56b; border-color: rgba(241,194,75,0.3); background: rgba(241,194,75,0.11); }
+.chip.blue { color: #a1c3ff; border-color: rgba(121,178,255,0.3); background: rgba(121,178,255,0.11); }
+
+.mini-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--hub-text-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.context-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.context-box {
+  padding: 12px 13px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.label {
+  font-size: 10px;
+  color: var(--hub-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.value {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sub {
+  margin-top: 4px;
+  color: var(--hub-text-2);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.decision-ribbon {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  gap: 12px;
+}
+
+.decision-anchor {
+  border-radius: 16px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(196,176,255,0.16), transparent 34%),
+    linear-gradient(135deg, #171b2d 0%, #0f1421 100%);
+  border: 1px solid var(--hub-border-strong);
+}
+
+.decision-score {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 800;
+  margin: 8px 0 6px;
+}
+
+.decision-copy {
+  color: var(--hub-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.prop-lane {
+  display: grid;
+  gap: 10px;
+}
+
+.prop-card {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.prop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.prop-title {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.tier {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tier.good { background: rgba(73,209,125,0.12); color: #98efbb; }
+.tier.warn { background: rgba(241,194,75,0.12); color: #ffd56b; }
+.tier.bad { background: rgba(241,114,121,0.12); color: #ffb3b8; }
+
+.prop-line {
+  color: var(--hub-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.prop-note {
+  margin-top: 5px;
+  color: var(--hub-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.quick-bars {
+  display: grid;
+  gap: 9px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 94px 1fr 50px;
+  gap: 10px;
+  align-items: center;
+}
+
+.bar-tag {
+  color: var(--hub-text-3);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bar-track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--hub-edge);
+}
+
+.bar-value {
+  text-align: right;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.side-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.compact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.compact-card {
+  padding: 13px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.compact-card .value { font-size: 22px; }
+
+.details-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+details.info {
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+}
+
+details.info[open] {
+  border-color: rgba(154,107,255,0.2);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+details.info summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 15px 18px;
+}
+
+details.info summary::-webkit-details-marker { display: none; }
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.summary-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summary-title {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.summary-preview {
+  color: var(--hub-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.summary-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(121,178,255,0.1);
+  color: #aacaff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summary-caret {
+  color: var(--hub-text-3);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+details.info[open] .summary-caret { transform: rotate(180deg); }
+
+.detail-body {
+  padding: 0 18px 18px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 14px;
+}
+
+.split-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.split-box,
+.metric-box {
+  padding: 13px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.split-box h4,
+.metric-box h4 {
+  margin: 0 0 10px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.stats span {
+  display: block;
+  color: var(--hub-text-3);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.stats strong {
+  display: block;
+  margin-top: 4px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.evidence-list {
+  display: grid;
+  gap: 9px;
+}
+
+.evidence-item {
+  display: grid;
+  grid-template-columns: 100px 1fr 78px;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 13px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.evidence-item .tag {
+  color: var(--hub-text-3);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.evidence-item .copy {
+  color: var(--hub-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.evidence-item .score {
+  text-align: right;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table th,
+.table td {
+  padding: 11px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.table th {
+  color: var(--hub-text-3);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.table td strong {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 15px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--hub-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.action.primary {
+  background: linear-gradient(180deg, #b794ff 0%, #7c4dff 52%, #5b2be0 100%);
+  border-color: rgba(196,176,255,0.28);
+  box-shadow: 0 0 0 1px rgba(196,176,255,0.14), 0 0 26px rgba(124,77,255,0.28);
+}
+
+.footnote {
+  margin-top: 10px;
+  color: var(--hub-text-3);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1180px) {
+  .command-grid,
+  .detail-grid { grid-template-columns: 1fr; }
+  .decision-ribbon { grid-template-columns: 1fr; }
+  .context-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 820px) {
+  .title-wrap,
+  .hero-top,
+  .summary-row { flex-direction: column; align-items: flex-start; }
+  .status-row,
+  .mini-actions { justify-content: flex-start; }
+  .compact-grid,
+  .context-strip,
+  .split-grid { grid-template-columns: 1fr; }
+  .evidence-item { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  body { padding: 16px 10px 30px; }
+  .name { font-size: 28px; }
+  .avatar { width: 58px; height: 58px; font-size: 22px; }
+  .bar-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="title-wrap">
+    <div>
+      <div class="brand-row">
+        <span class="brand-tag">Chase Analytics</span>
+        <span class="brand-pill">Prop Hub Mockup</span>
+      </div>
+      <h1 class="title">Batter Profile</h1>
+      <p class="subtitle">A simpler, more interactive hitter page: best angle first, fewer words on screen, and expandable evidence only when the user wants it.</p>
+    </div>
+    <div class="status-row">
+      <div class="status-chip"><span class="status-dot"></span> In Lineup</div>
+      <div class="status-chip">Mock Data</div>
+      <div class="status-chip">Decision View</div>
+    </div>
+  </div>
+
+  <section class="command-grid">
+    <article class="board">
+      <div class="pad">
+        <div class="hero-top">
+          <div class="identity">
+            <div class="avatar">JA</div>
+            <div>
+              <div class="eyebrow">Tonight's Hitter</div>
+              <h2 class="name">Jose Altuve</h2>
+              <div class="meta">
+                <span class="chip">HOU</span>
+                <span class="chip blue">2nd In Order</span>
+                <span class="chip warn">RHB vs LHP</span>
+                <span class="chip good">Confirmed</span>
+              </div>
+            </div>
+          </div>
+          <div class="mini-actions">
+            <span class="mini-btn">Pitcher</span>
+            <span class="mini-btn">Team</span>
+            <span class="mini-btn">Matchup</span>
+          </div>
+        </div>
+
+        <div class="context-strip">
+          <div class="context-box">
+            <div class="label">Best Angle</div>
+            <div class="value">Total Bases</div>
+            <div class="sub">Cleaner than HR, stronger than RBI.</div>
+          </div>
+          <div class="context-box">
+            <div class="label">Opponent SP</div>
+            <div class="value">LHP Contact Arm</div>
+            <div class="sub">Low K shape, hittable damage lane.</div>
+          </div>
+          <div class="context-box">
+            <div class="label">Run Env</div>
+            <div class="value">7.8 / 10</div>
+            <div class="sub">Good lineup support and scoring climate.</div>
+          </div>
+          <div class="context-box">
+            <div class="label">Risk</div>
+            <div class="value">Singles Heavy</div>
+            <div class="sub">TB misses if only one weak result lands.</div>
+          </div>
+        </div>
+
+        <div class="decision-ribbon">
+          <div class="decision-anchor">
+            <div class="label">Composite Read</div>
+            <div class="decision-score">74</div>
+            <div class="decision-copy">Strong hitter-night setup. Hits and total bases are the cleanest first-click props.</div>
+          </div>
+
+          <div class="prop-lane">
+            <div class="prop-card">
+              <div class="prop-head">
+                <div class="prop-title">Total Bases</div>
+                <span class="tier good">A Tier</span>
+              </div>
+              <div class="prop-line">Best Angle</div>
+              <div class="prop-note">Damage quality plus low strikeout pressure.</div>
+            </div>
+            <div class="prop-card">
+              <div class="prop-head">
+                <div class="prop-title">Hits</div>
+                <span class="tier good">A/B Tier</span>
+              </div>
+              <div class="prop-line">Stable Over Lean</div>
+              <div class="prop-note">Ball-in-play floor stays strong.</div>
+            </div>
+          </div>
+
+          <div class="quick-bars">
+            <div class="bar-row">
+              <div class="bar-tag">Contact Edge</div>
+              <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+              <div class="bar-value">82</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-tag">Power Edge</div>
+              <div class="bar-track"><div class="bar-fill" style="width:71%"></div></div>
+              <div class="bar-value">71</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-tag">K Safety</div>
+              <div class="bar-track"><div class="bar-fill" style="width:79%"></div></div>
+              <div class="bar-value">79</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-tag">HR Ceiling</div>
+              <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
+              <div class="bar-value">62</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <aside class="side-panel">
+      <article class="board">
+        <div class="pad">
+          <div class="eyebrow">Quick Panel</div>
+          <div class="compact-grid">
+            <div class="compact-card">
+              <div class="label">Platoon</div>
+              <div class="value">Plus</div>
+              <div class="sub">RHB path lifts vs this hand.</div>
+            </div>
+            <div class="compact-card">
+              <div class="label">Lineup Spot</div>
+              <div class="value">4.6 PA</div>
+              <div class="sub">Good volume base.</div>
+            </div>
+            <div class="compact-card">
+              <div class="label">HR View</div>
+              <div class="value">Watch</div>
+              <div class="sub">Add-on, not core.</div>
+            </div>
+            <div class="compact-card">
+              <div class="label">Pass Prop</div>
+              <div class="value">Walks</div>
+              <div class="sub">Low patient path.</div>
+            </div>
+          </div>
+          <div class="actions">
+            <a class="action primary" href="#">Open Matchup</a>
+            <a class="action" href="#">Open Pitcher</a>
+          </div>
+        </div>
+      </article>
+    </aside>
+  </section>
+
+  <section class="details-stack">
+    <details class="info" open>
+      <summary>
+        <div class="summary-row">
+          <div class="summary-left">
+            <div>
+              <div class="summary-title">Why This Works</div>
+              <div class="summary-preview">One compact edge board instead of multiple disconnected sections.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="summary-pill">Core Read</span>
+            <span class="summary-caret">⌄</span>
+          </div>
+        </div>
+      </summary>
+      <div class="detail-body">
+        <div class="detail-grid">
+          <div class="metric-box">
+            <h4>Matchup Logic</h4>
+            <div class="evidence-list">
+              <div class="evidence-item">
+                <div class="tag">Hand Edge</div>
+                <div class="copy">RHB process metrics rise enough versus this hand to support both hit floor and extra-base potential.</div>
+                <div class="score" style="color:#98efbb;">Plus</div>
+              </div>
+              <div class="evidence-item">
+                <div class="tag">K Pressure</div>
+                <div class="copy">The opposing shape does not materially threaten the hitter's ball-in-play volume.</div>
+                <div class="score" style="color:#98efbb;">Safe</div>
+              </div>
+              <div class="evidence-item">
+                <div class="tag">Power Path</div>
+                <div class="copy">Pitcher damage profile supports TB and a possible HR ceiling, but HR is not the cleanest median read.</div>
+                <div class="score" style="color:#ffd56b;">Volatile</div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <h4>Prop Priority</h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Prop</th>
+                  <th>Verdict</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Total Bases</strong></td>
+                  <td style="color:#98efbb;"><strong>Best</strong></td>
+                  <td>Primary</td>
+                </tr>
+                <tr>
+                  <td><strong>Hits</strong></td>
+                  <td style="color:#9fd0ff;"><strong>Strong</strong></td>
+                  <td>Safer Alt</td>
+                </tr>
+                <tr>
+                  <td><strong>Home Run</strong></td>
+                  <td style="color:#ffd56b;"><strong>Watch</strong></td>
+                  <td>Ceiling</td>
+                </tr>
+                <tr>
+                  <td><strong>Walks</strong></td>
+                  <td style="color:#ffb3b8;"><strong>Pass</strong></td>
+                  <td>Avoid</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="info">
+      <summary>
+        <div class="summary-row">
+          <div class="summary-left">
+            <div>
+              <div class="summary-title">Splits And Form</div>
+              <div class="summary-preview">Keep the supporting numbers available, but not all visible at once.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="summary-pill">Support</span>
+            <span class="summary-caret">⌄</span>
+          </div>
+        </div>
+      </summary>
+      <div class="detail-body">
+        <div class="split-grid">
+          <div class="split-box">
+            <h4>Vs LHP</h4>
+            <div class="stats">
+              <div><span>wOBA</span><strong>.382</strong></div>
+              <div><span>SLG</span><strong>.541</strong></div>
+              <div><span>K%</span><strong>13.8%</strong></div>
+              <div><span>Barrel</span><strong>12.4%</strong></div>
+            </div>
+          </div>
+          <div class="split-box">
+            <h4>L14</h4>
+            <div class="stats">
+              <div><span>xwOBA</span><strong>.367</strong></div>
+              <div><span>TB/G</span><strong>1.9</strong></div>
+              <div><span>Hard Hit</span><strong>46%</strong></div>
+              <div><span>K Floor</span><strong>Low</strong></div>
+            </div>
+          </div>
+          <div class="split-box">
+            <h4>Context</h4>
+            <div class="stats">
+              <div><span>Bat Slot</span><strong>#2</strong></div>
+              <div><span>PA</span><strong>4.6</strong></div>
+              <div><span>Traffic</span><strong>Good</strong></div>
+              <div><span>RBI Path</span><strong>Avg</strong></div>
+            </div>
+          </div>
+          <div class="split-box">
+            <h4>Risk</h4>
+            <div class="stats">
+              <div><span>GB Risk</span><strong>Med</strong></div>
+              <div><span>Walk Path</span><strong>Low</strong></div>
+              <div><span>HR Reliance</span><strong>Med</strong></div>
+              <div><span>Noise</span><strong>Low</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="info">
+      <summary>
+        <div class="summary-row">
+          <div class="summary-left">
+            <div>
+              <div class="summary-title">Alternate Angles</div>
+              <div class="summary-preview">Use this layer only when the user wants the pivot logic.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="summary-pill">Optional</span>
+            <span class="summary-caret">⌄</span>
+          </div>
+        </div>
+      </summary>
+      <div class="detail-body">
+        <div class="evidence-list">
+          <div class="evidence-item">
+            <div class="tag">Primary</div>
+            <div class="copy">Lead with total bases because it captures the best contact-quality path without needing a HR-only result.</div>
+            <div class="score" style="color:#98efbb;">TB</div>
+          </div>
+          <div class="evidence-item">
+            <div class="tag">Safer Alt</div>
+            <div class="copy">If total bases is too expensive, hits is the cleaner floor-based version of the same thesis.</div>
+            <div class="score" style="color:#9fd0ff;">H</div>
+          </div>
+          <div class="evidence-item">
+            <div class="tag">Ceiling</div>
+            <div class="copy">HR works only as the upside branch. It should not replace the more stable hitter-quality read.</div>
+            <div class="score" style="color:#ffd56b;">HR</div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <div class="footnote">Mockup direction: fewer visible words, stronger graphic hierarchy, expandable evidence, and more unified surfaces instead of isolated section blocks.</div>
+</main>
+</body>
+</html>
