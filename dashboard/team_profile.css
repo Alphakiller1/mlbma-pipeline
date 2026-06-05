@@ -2327,6 +2327,35 @@ body.team-profile-page :is(
   display: inline-block;
 }
 
+/* Launchpad button into a dedicated profile page (Pitcher / Bullpen Profile). */
+.tp-profile-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #C4B0FF;
+  background: rgba(124, 77, 255, 0.14);
+  border: 1px solid rgba(124, 77, 255, 0.42);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+}
+.tp-profile-launch:hover {
+  background: rgba(124, 77, 255, 0.24);
+  border-color: rgba(124, 77, 255, 0.7);
+  color: #E2D6FF;
+}
+.tp-profile-launch:active { transform: translateY(1px); }
+.tp-profile-launch__arrow { font-weight: 800; }
+.tp-staff-launch-hint {
+  margin: 4px 0 10px;
+  font-size: 12px;
+  color: var(--text-3, #8A8A99);
+}
+
 .tier-elite { background: rgba(74, 222, 128, 0.18); color: #4ADE80; }
 .tier-high, .tier-solid { background: rgba(134, 239, 172, 0.15); color: #86EFAC; }
 .tier-dangerous, .tier-danger { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
