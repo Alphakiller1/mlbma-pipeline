@@ -163,8 +163,26 @@ h1 {
 }
 .batter-hero-stack {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
+}
+.batter-hero-topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.batter-hero-nameblock {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.batter-hero-kicker {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+  font-weight: 700;
 }
 .batter-hero-meta,
 .batter-hero-chips {
@@ -181,6 +199,56 @@ h1 {
 .batter-hero-team-logo {
   width: 28px;
   height: 28px;
+}
+.batter-hero-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
+  color: var(--text-2);
+}
+.batter-hero-verdict strong {
+  color: var(--text);
+  font-weight: 800;
+}
+.batter-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.batter-hero-stat {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.batter-hero-stat-label {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.batter-hero-stat-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+.batter-hero-stat-note {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-2);
 }
 .batter-hero-context {
   min-width: 220px;
@@ -202,6 +270,21 @@ h1 {
   font-size: 18px;
   font-weight: 800;
   line-height: 1.05;
+}
+.batter-hero-context .context-badge {
+  display: inline-flex;
+  justify-self: end;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-2);
+  font-size: 11px;
+}
+.batter-hero-context .context-badge strong {
+  color: var(--text);
 }
 .batter-hero-context .context-note {
   color: var(--text-2);
@@ -419,6 +502,34 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   font-weight: 800;
   line-height: 1.05;
 }
+.prop-card-score {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.prop-card-meta {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+.prop-card-meta-row {
+  display: grid;
+  gap: 3px;
+}
+.prop-card-meta-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  font-weight: 700;
+}
+.prop-card-meta-copy {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+}
 .prop-card-note {
   margin-top: 6px;
   color: var(--text-2);
@@ -538,8 +649,28 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   .player-name-lg {
     font-size: 20px;
   }
+  .batter-hero-topline {
+    gap: 8px;
+  }
+  .batter-hero-kicker {
+    font-size: 9px;
+  }
   .batter-hero-chips {
     gap: 6px;
+  }
+  .batter-hero-verdict {
+    width: 100%;
+    font-size: 10px;
+  }
+  .batter-hero-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .batter-hero-stat {
+    padding: 9px 10px;
+  }
+  .batter-hero-stat-value {
+    font-size: 18px;
   }
   .pill,
   .team-badge {
@@ -557,6 +688,9 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
     border-top: 1px solid rgba(255,255,255,0.08);
     text-align: left;
     min-width: 0;
+  }
+  .batter-hero-context .context-badge {
+    justify-self: start;
   }
   .batter-hero-context .context-value {
     font-size: 15px;
@@ -1125,318 +1259,35 @@ function statCell(label, val, color) {
   return '<div class="stat-cell"><div class="s-label">' + label + '</div><div class="s-val">' + inner + '</div></div>';
 }
 
-function renderHeader(key) {
-  var reg = getRegistry(key);
-  var name = playerDisplayName(key);
-  var team = pickCol(reg || {}, ['team_abbr', 'team']) || pickCol(getSplitRow(key, 'vs_RHP') || {}, ['team']);
-  var pos = pickCol(reg || {}, ['position_type', 'position']) || '—';
-  var bats = pickCol(reg || {}, ['bats']) || 'R';
-  var jersey = pickCol(reg || {}, ['jersey_number', 'jersey']) || '—';
-  var lineup = findLineupContext(key);
-
-  var batsCls = bats === 'L' ? 'pill-bats-l' : bats === 'S' ? 'pill-bats-s' : 'pill-bats-r';
-  var html = '<div class="player-name-lg">' + escHtml(name) + '</div>' +
-    '<span class="team-badge">' + escHtml(team) + '</span>' +
-    '<span class="pill pill-pos">' + escHtml(pos) + '</span>' +
-    '<span class="pill ' + batsCls + '">' + escHtml(bats) + 'HB</span>' +
-    '<span class="pill pill-pos">#' + escHtml(jersey) + '</span>';
-
-  if (lineup && lineup.inLineup) {
-    html += '<span class="pill pill-lineup">Today\'s Lineup</span>';
-    html += '<div class="lineup-meta">Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' +
-      escHtml(lineup.side) + ') — vs <strong>' + escHtml(lineup.oppSp) + '</strong> (' +
-      escHtml(lineup.oppHand) + 'HP)</div>';
-  }
-
-  document.getElementById('headerBlock').innerHTML = html;
-  document.getElementById('playerHeader').innerHTML = html;
-}
-
-function renderSeasonBar(key) {
-  var raw = getRawForPlayer(key, STATE.window);
-  var base = getSplitRow(key, 'vs_RHP') || getProfileRows(key)[0];
-  var sub = document.getElementById('snapshotSubtitle');
-  var hasRaw = raw && Object.keys(raw).length;
-  sub.textContent = hasRaw
-    ? 'Rate line for ' + STATE.window + ' from Batter_Splits_Overall (live sheet)'
-    : 'Rate line for ' + STATE.window + ' — run batter splits pipeline and push to Batter_Splits_Overall';
-
-  var cells = [
-    statCell('wRC+', numOrNull(pickCol(raw, ['wRC+'])) || '—'),
-    statCell('OPS', opsFromRow(raw) !== null ? opsFromRow(raw) : '—'),
-    statCell('AVG', numOrNull(pickCol(raw, ['AVG'])) || '—'),
-    statCell('OBP', numOrNull(pickCol(raw, ['OBP'])) || '—'),
-    statCell('SLG', numOrNull(pickCol(raw, ['SLG'])) || '—'),
-    statCell('BB%', pickCol(raw, ['BB%']) ? fmtPct(numOrNull(pickCol(raw, ['BB%']))) : '—'),
-    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '—'),
-    statCell('wOBA', numOrNull(pickCol(raw, ['wOBA'])) || '—'),
-    statCell('xwOBA', numOrNull(pickCol(raw, ['xwOBA'])) || '—'),
-    statCell('Chase%', pickCol(raw, ['Chase%']) ? fmtPct(numOrNull(pickCol(raw, ['Chase%']))) : '—'),
-    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '—'),
-    statCell('PA', numOrNull(pickCol(raw, ['PA'])) || numOrNull(pickCol(base || {}, ['PA'])) || '—'),
-    statCell('OSI', numOrNull(pickCol(base || {}, ['OSI'])), metricColor(numOrNull(pickCol(base || {}, ['OSI']))))
-  ];
-  document.getElementById('seasonBar').innerHTML = cells.join('');
-}
-
-function renderMetricCards(key) {
-  var row = getSplitRow(key, 'vs_RHP') || getProfileRows(key)[0];
-  if (!row) {
-    document.getElementById('metricCards').innerHTML = '<div class="empty-state">No profile metrics in sheet.</div>';
-    return;
-  }
-  var pool = DATA.pool.vs_RHP;
-  var metrics = [
-    ['ABQ', 'ABQ'],
-    ['RCV', 'RCV'],
-    ['OBR', 'OBR'],
-    ['OSI', 'OSI']
-  ];
-  var html = '';
-  metrics.forEach(function(m) {
-    var val = numOrNull(pickCol(row, [m[1]]));
-    var pctPool = pool.map(function(p) { return numOrNull(pickCol(p, [m[1]])); });
-    var pct = percentile(pctPool, val);
-    html += '<div class="metric-card ' + metricTierClass(val) + '">' +
-      '<div class="m-label">' + m[0] + '</div>' +
-      '<div class="m-val" style="color:' + metricColor(val) + '">' + fmt(val, 1) + '</div>' +
-      '<div class="m-pct">' + (pct !== null ? pct + 'th percentile' : '—') + '</div>' +
-      '<div class="m-note">' + METRIC_NOTES[m[0]] + '</div></div>';
-  });
-  document.getElementById('metricCards').innerHTML = html;
-}
-
-function renderWindowTable(key) {
-  var base = getSplitRow(key, 'vs_RHP') || getProfileRows(key)[0];
-  var trend = pickCol(base || {}, ['trend']) || 'stable';
-  var ytd = windowMetricEstimate(base, 'YTD', trend);
-  var rows = [];
-  var prevOsi = null;
-
-  WINDOWS.forEach(function(w) {
-    var m = windowMetricEstimate(base, w, trend);
-    var arrow = '—';
-    var arrowCls = 'trend-flat';
-    if (prevOsi !== null && m.OSI !== null) {
-      var d = m.OSI - prevOsi;
-      if (d > 1) { arrow = '?'; arrowCls = 'trend-up'; }
-      else if (d < -1) { arrow = '?'; arrowCls = 'trend-down'; }
-    }
-    prevOsi = m.OSI;
-    rows.push({ window: w, m: m, arrow: arrow, arrowCls: arrowCls });
-  });
-
-  var l7 = rows.find(function(r) { return r.window === 'L7'; });
-  var ytdRow = rows.find(function(r) { return r.window === 'YTD'; });
-  var hotCold = '';
-  if (l7 && ytdRow && l7.m.OSI !== null && ytdRow.m.OSI !== null) {
-    var gap = l7.m.OSI - ytdRow.m.OSI;
-    if (gap >= HOT_COLD_GAP) hotCold = 'hot';
-    else if (gap <= -HOT_COLD_GAP) hotCold = 'cold';
-  }
-
-  var tbody = rows.map(function(r) {
-    var trCls = r.window === 'L7' && hotCold === 'hot' ? 'hot-row' : r.window === 'L7' && hotCold === 'cold' ? 'cold-row' : '';
-    return '<tr class="' + trCls + '">' +
-      '<td><strong>' + r.window + '</strong></td>' +
-      '<td class="num">' + metricChip(r.m.OSI, 'osi', 1) + '</td>' +
-      '<td class="num">' + metricChip(r.m.ABQ, 'abq', 1) + '</td>' +
-      '<td class="num">' + metricChip(r.m.RCV, 'rcv', 1) + '</td>' +
-      '<td class="num">' + metricChip(r.m.OBR, 'obr', 1) + '</td>' +
-      '<td class="' + r.arrowCls + '">' + r.arrow + '</td></tr>';
-  }).join('');
-
-  document.getElementById('windowTableWrap').innerHTML =
-    '<table><thead><tr><th>Window</th><th>OSI</th><th>ABQ</th><th>RCV</th><th>OBR</th><th>Trend</th></tr></thead><tbody>' +
-    tbody + '</tbody></table>';
-
-  var insight = '';
-  if (hotCold === 'hot') insight = '<strong>Hot flag:</strong> L7 OSI is ' + fmt(l7.m.OSI - ytdRow.m.OSI, 1) + ' points above YTD — recent form elevated.';
-  else if (hotCold === 'cold') insight = '<strong>Cold flag:</strong> L7 OSI is ' + fmt(ytdRow.m.OSI - l7.m.OSI, 1) + ' points below YTD — recent slump.';
-  else insight = 'L7 within —' + HOT_COLD_GAP + ' of YTD — no extreme hot/cold signal.';
-  if (!getRawForPlayer(key, 'YTD') || !Object.keys(getRawForPlayer(key, 'YTD')).length) {
-    insight += ' Window rate columns use Batter_Profiles trend adjustment when Batter_Splits_Overall is unavailable.';
-  }
-  document.getElementById('windowInsight').textContent = insight;
-}
-
-function splitPanelHtml(title, row, raw, extraCls) {
-  if (!row && (!raw || !Object.keys(raw).length)) {
-    return '<div class="split-panel"><h4>' + escHtml(title) + '</h4><div class="empty-state">No data</div></div>';
-  }
-  var abq = numOrNull(pickCol(row || {}, ['ABQ']));
-  var rcv = numOrNull(pickCol(row || {}, ['RCV']));
-  var obr = numOrNull(pickCol(row || {}, ['OBR']));
-  var osi = numOrNull(pickCol(row || {}, ['OSI']));
-  var wrc = numOrNull(pickCol(raw || {}, ['wRC+']));
-  var kk = numOrNull(pickCol(raw || {}, ['K%']));
-  var bb = numOrNull(pickCol(raw || {}, ['BB%']));
-  var chase = numOrNull(pickCol(raw || {}, ['Chase%']));
-  var barrel = numOrNull(pickCol(raw || {}, ['Barrel%']));
-
-  return '<div class="split-panel' + (extraCls || '') + '">' +
-    '<h4>' + escHtml(title) + '</h4>' +
-    '<div class="mini-grid">' +
-    mini('ABQ', abq) + mini('RCV', rcv) + mini('OBR', obr) +
-    '</div><div class="mini-grid" style="margin-top:8px;">' +
-    mini('OSI', osi) + mini('wRC+', wrc) + mini('K%', kk !== null ? fmtPct(kk) : '—') +
-    '</div><div class="mini-grid" style="margin-top:8px;">' +
-    mini('BB%', bb !== null ? fmtPct(bb) : '—') + mini('Chase%', chase !== null ? fmtPct(chase) : '—') +
-    mini('Barrel%', barrel !== null ? fmtPct(barrel) : '—') +
-    '</div></div>';
-}
-
-function mini(label, val) {
-  return '<div class="mini-stat"><div class="ms-label">' + label + '</div><div class="ms-val">' +
-    (typeof val === 'string' ? val : fmt(val, 1)) + '</div></div>';
-}
-
-function renderHandSplits(key) {
-  var rhp = getSplitRow(key, 'vs_RHP');
-  var lhp = getSplitRow(key, 'vs_LHP');
-  var rawR = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).vs_RHP || {};
-  var rawL = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).vs_LHP || {};
-  var abqGap = (numOrNull(pickCol(rhp || {}, ['ABQ'])) !== null && numOrNull(pickCol(lhp || {}, ['ABQ'])) !== null)
-    ? Math.abs(numOrNull(pickCol(rhp, ['ABQ'])) - numOrNull(pickCol(lhp, ['ABQ']))) : 0;
-  var flagR = abqGap >= PLATOON_ABQ_GAP ? ' flag-gold' : '';
-  var flagL = flagR;
-
-  var dom = '';
-  if (rhp && lhp) {
-    var osiR = numOrNull(pickCol(rhp, ['OSI'])) || 0;
-    var osiL = numOrNull(pickCol(lhp, ['OSI'])) || 0;
-    dom = osiR >= osiL ? 'Dominant vs RHP' : 'Dominant vs LHP';
-  }
-
-  document.getElementById('handGrid').innerHTML =
-    splitPanelHtml('vs RHP', rhp, rawR, flagR) +
-    splitPanelHtml('vs LHP', lhp, rawL, flagL);
-
-  var ins = abqGap >= PLATOON_ABQ_GAP
-    ? 'Platoon alert: ABQ gap of ' + fmt(abqGap, 1) + ' points — significant handedness split.'
-    : 'Platoon gap manageable (ABQ delta ' + fmt(abqGap, 1) + ').';
-  if (dom) ins += ' ' + dom + '.';
-  document.getElementById('handInsight').textContent = ins;
-}
-
-function renderLocSplits(key) {
-  var home = getSplitRow(key, 'home');
-  var away = getSplitRow(key, 'away');
-  var rawH = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).home || {};
-  var rawA = (DATA.rawStats[normalizeName(playerDisplayName(key))] || {}).away || {};
-  var osiH = numOrNull(pickCol(home || {}, ['OSI']));
-  var osiA = numOrNull(pickCol(away || {}, ['OSI']));
-  var gap = (osiH !== null && osiA !== null) ? Math.abs(osiH - osiA) : 0;
-  var flagH = gap >= LOC_OSI_GAP && osiH > osiA ? ' flag-gold' : '';
-  var flagA = gap >= LOC_OSI_GAP && osiA > osiH ? ' flag-gold' : '';
-
-  document.getElementById('locGrid').innerHTML =
-    splitPanelHtml('Home', home, rawH, flagH) +
-    splitPanelHtml('Away', away, rawA, flagA);
-
-  document.getElementById('locInsight').textContent = gap >= LOC_OSI_GAP
-    ? 'Location split: OSI gap of ' + fmt(gap, 1) + ' between home and away.'
-    : 'Home/away OSI gap ' + fmt(gap, 1) + ' — within normal range.';
-}
-
-function renderSpRpSplits(key) {
-  var sp = getSplitRow(key, 'vs_SP');
-  var rp = getSplitRow(key, 'vs_RP');
-  var pname = normalizeName(playerDisplayName(key));
-  var rawSp = (DATA.rawStats[pname] || {}).vs_SP || {};
-  var rawRp = (DATA.rawStats[pname] || {}).vs_RP || {};
-  var html = '';
-  if (!sp && !rp) {
-    html = '<div class="split-panel" style="grid-column:1/-1;"><h4>vs SP / vs RP</h4>' +
-      '<p style="font-size:12px;color:var(--text-2);line-height:1.55;">' +
-      'No vs_SP / vs_RP rows in <strong>Batter_Profiles</strong>. Run FanGraphs batter splits (splitArr 24/25) and pipeline step 16.</p></div>';
-    document.getElementById('spRpInsight').textContent = 'Awaiting vs SP / vs RP pipeline exports.';
-  } else {
-    var osiSp = numOrNull(pickCol(sp || {}, ['OSI']));
-    var osiRp = numOrNull(pickCol(rp || {}, ['OSI']));
-    var flag = (osiSp !== null && osiRp !== null && osiRp - osiSp >= SP_RP_OSI_GAP) ? ' flag-gold' : '';
-    html = splitPanelHtml('vs SP', sp, rawSp, flag) + splitPanelHtml('vs RP', rp, rawRp, flag);
-    document.getElementById('spRpInsight').textContent = (osiRp !== null && osiSp !== null && osiRp - osiSp >= SP_RP_OSI_GAP)
-      ? 'Full game value over F5 - this batter significantly outperforms vs relief pitching.'
-      : 'OSI vs SP ' + fmt(osiSp, 1) + ' — OSI vs RP ' + fmt(osiRp, 1) + ' — no full-game value flag.';
-  }
-  document.getElementById('spRpGrid').innerHTML = html;
-}
-
-function renderComparables(key) {
-  var row = getSplitRow(key, 'vs_RHP');
-  if (!row) {
-    document.getElementById('comparableList').innerHTML = '<div class="empty-state">Need vs RHP profile row.</div>';
-    return;
-  }
-  var abq = numOrNull(pickCol(row, ['ABQ']));
-  var rcv = numOrNull(pickCol(row, ['RCV']));
-  var arch = archetypeKey(rcv, numOrNull(pickCol(row, ['OBR'])));
-  var pool = DATA.pool.vs_RHP.filter(function(p) { return playerKey(p) !== key; });
-
-  var scored = pool.map(function(p) {
-    var pa = numOrNull(pickCol(p, ['ABQ']));
-    var pr = numOrNull(pickCol(p, ['RCV']));
-    var dist = Math.sqrt(Math.pow((pa || 50) - (abq || 50), 2) + Math.pow((pr || 50) - (rcv || 50), 2));
-    return {
-      key: playerKey(p),
-      name: pickCol(p, ['player_name']),
-      osi: numOrNull(pickCol(p, ['OSI'])),
-      arch: archetypeKey(pr, numOrNull(pickCol(p, ['OBR']))),
-      dist: dist
-    };
-  }).sort(function(a, b) { return a.dist - b.dist; });
-
-  var top = scored.slice(0, 3);
-  if (!top.length) {
-    document.getElementById('comparableList').innerHTML = '<div class="empty-state">No comparables in pool.</div>';
-    return;
-  }
-
-  document.getElementById('comparableList').innerHTML = top.map(function(c) {
-    return '<div class="comp-row"><div><a href="batter_profile.html?player=' +
-      encodeURIComponent(c.name) + '">' + escHtml(c.name) + '</a> — ' + escHtml(c.arch) + '</div>' +
-      '<div class="num" style="color:' + metricColor(c.osi) + '">OSI ' + fmt(c.osi, 1) + '</div></div>';
-  }).join('') + '<div class="insight-line" style="margin-top:10px;">Your archetype: <strong>' + arch + '</strong></div>';
-}
-
 function buildBettingSummary(key) {
   var name = playerDisplayName(key);
-  var parts = [];
-  var rhp = getSplitRow(key, 'vs_RHP');
-  var lhp = getSplitRow(key, 'vs_LHP');
-  var home = getSplitRow(key, 'home');
-  var away = getSplitRow(key, 'away');
-  var base = rhp || getProfileRows(key)[0];
-  var trend = pickCol(base || {}, ['trend']) || 'stable';
   var lineup = findLineupContext(key);
+  var split = currentSplitRow(key);
+  var bundle = propRatingBundle(key);
+  var trend = pickCol(overallProfileRow(key) || {}, ['trend']) || 'stable';
+  var best = bundle.totalBases >= bundle.hits ? 'Total Bases' : 'Hits';
+  var verdict = 'Best use: <strong>' + best + '</strong>';
+  if (lineup && lineup.inLineup) verdict += ' with lineup spot <strong>' + escHtml(lineup.batOrder) + '</strong> vs <strong>' + escHtml(lineup.oppSp) + '</strong>.';
+  else verdict += ' once lineup context is confirmed.';
 
-  if (rhp) {
-    var osiR = numOrNull(pickCol(rhp, ['OSI']));
-    parts.push(name + ' profiles at <strong>OSI ' + fmt(osiR, 1) + ' vs RHP</strong>');
-  }
-  if (rhp && lhp) {
-    var abqGap = Math.abs(numOrNull(pickCol(rhp, ['ABQ'])) - numOrNull(pickCol(lhp, ['ABQ'])));
-    if (abqGap >= PLATOON_ABQ_GAP) {
-      var better = numOrNull(pickCol(rhp, ['OSI'])) >= numOrNull(pickCol(lhp, ['OSI'])) ? 'RHP' : 'LHP';
-      parts.push('<strong>' + fmt(abqGap, 1) + '-point platoon gap</strong> — lean vs ' + (better === 'LHP' ? 'southpaws' : 'righties'));
-    }
-  }
-  if (home && away) {
-    var g = Math.abs(numOrNull(pickCol(home, ['OSI'])) - numOrNull(pickCol(away, ['OSI'])));
-    if (g >= LOC_OSI_GAP) {
-      var loc = numOrNull(pickCol(home, ['OSI'])) > numOrNull(pickCol(away, ['OSI'])) ? 'home' : 'road';
-      parts.push('significant <strong>' + loc + ' park split</strong> (OSI gap ' + fmt(g, 1) + ')');
-    }
-  }
-  if (trend === 'rising') parts.push('currently <strong>trending up</strong> — recent OSI above season baseline');
-  if (trend === 'falling') parts.push('<strong>slumping</strong> — recent OSI below season baseline');
-  if (lineup && lineup.inLineup) {
-    parts.push('in <strong>today\'s lineup</strong> (' + lineup.batOrder + ') vs ' + lineup.oppSp + ' (' + lineup.oppHand + 'HP)');
+  var support = [];
+  if (bundle.contact >= 68) support.push('contact floor is above average');
+  if (bundle.power >= 68) support.push('damage profile supports extra-base paths');
+  if (bundle.kRisk <= 38) support.push('swing-and-miss risk is manageable');
+  if (trend === 'rising') support.push('recent form is trending up');
+  if (split && numOrNull(pickCol(split, ['OSI'])) !== null) {
+    support.push('active split OSI sits at ' + fmt(numOrNull(pickCol(split, ['OSI'])), 1));
   }
 
-  if (!parts.length) return name + ' — profile loaded; no extreme flags. Review splits above for edges.';
-  return parts.join('. ') + '.';
+  var risk = [];
+  if (!lineup || !lineup.inLineup) risk.push('waiting on confirmed lineup slot');
+  if (bundle.kRisk >= 55) risk.push('strikeout risk can cap the floor');
+  if (bundle.power < 55 && best === 'Total Bases') risk.push('damage output is more moderate than explosive');
+  if (trend === 'falling') risk.push('recent form has cooled');
+
+  return '<strong>' + escHtml(name) + '</strong>. ' + verdict +
+    (support.length ? ' Support: ' + escHtml(support.slice(0, 2).join('; ')) + '.' : '') +
+    (risk.length ? ' Risk: ' + escHtml(risk.slice(0, 2).join('; ')) + '.' : '');
 }
 
 function scoreFromValue(value, fallback) {
@@ -1449,8 +1300,8 @@ function scoreFromValue(value, fallback) {
 
 function currentSplitRow(key) {
   var lineup = findLineupContext(key);
-  if (lineup && lineup.oppHand === 'L') return getSplitRow(key, 'vs_LHP') || getSplitRow(key, 'vs_RHP');
-  return getSplitRow(key, 'vs_RHP') || getSplitRow(key, 'vs_LHP') || getProfileRows(key)[0];
+  if (lineup && lineup.oppHand === 'L') return preferredProfileRow(key, 'vs_LHP');
+  return preferredProfileRow(key, 'vs_RHP');
 }
 
 function toneClass(score) {
@@ -1461,7 +1312,7 @@ function toneClass(score) {
 }
 
 function propRatingBundle(key) {
-  var split = currentSplitRow(key) || {};
+  var split = currentSplitRow(key) || overallProfileRow(key) || {};
   var raw = getRawForPlayer(key, STATE.window) || {};
   var lineup = findLineupContext(key);
   var osi = scoreFromValue(numOrNull(pickCol(split, ['OSI'])), 50);
@@ -1471,18 +1322,19 @@ function propRatingBundle(key) {
   var kPct = numOrNull(pickCol(raw, ['K%']));
   var barrelPct = numOrNull(pickCol(raw, ['Barrel%']));
   var hardPct = numOrNull(pickCol(raw, ['HardHit%', 'Hard Hit%', 'HardHit%']));
-  var contact = Math.round((abq * 0.45) + (obr * 0.35) + ((kPct !== null ? Math.max(0, 30 - kPct) * 3.3 : 50) * 0.20));
-  var power = Math.round((rcv * 0.55) + ((barrelPct !== null ? Math.min(100, barrelPct * 6.2) : 50) * 0.25) + ((hardPct !== null ? Math.min(100, hardPct * 1.7) : 50) * 0.20));
-  var kSafety = Math.round(kPct !== null ? Math.max(0, 100 - (kPct * 3.2)) : 55);
-  var lineupCtx = Math.round((osi * 0.55) + (lineup && lineup.inLineup ? 18 : 0) + (lineup && Number(lineup.batOrder) <= 4 ? 8 : 0));
-  var hits = Math.round((contact * 0.62) + (lineupCtx * 0.38));
-  var totalBases = Math.round((power * 0.58) + (contact * 0.24) + (lineupCtx * 0.18));
-  var homeRun = Math.round((power * 0.70) + (rcv * 0.20) + (lineupCtx * 0.10));
+  var walkPct = numOrNull(pickCol(raw, ['BB%']));
+  var contact = Math.round((abq * 0.44) + (obr * 0.31) + ((kPct !== null ? Math.max(0, 30 - kPct) * 3.3 : 50) * 0.25));
+  var power = Math.round((rcv * 0.56) + ((barrelPct !== null ? Math.min(100, barrelPct * 6.2) : 50) * 0.24) + ((hardPct !== null ? Math.min(100, hardPct * 1.7) : 50) * 0.20));
+  var kRisk = Math.round(kPct !== null ? Math.min(100, kPct * 3.1) : 45);
+  var lineupCtx = Math.round((osi * 0.44) + (lineup && lineup.inLineup ? 18 : 0) + (lineup && Number(lineup.batOrder) <= 4 ? 10 : 0) + (walkPct !== null ? Math.min(12, walkPct) : 0));
+  var hits = Math.round((contact * 0.60) + (lineupCtx * 0.32) + ((100 - kRisk) * 0.08));
+  var totalBases = Math.round((power * 0.56) + (contact * 0.20) + (lineupCtx * 0.16) + ((100 - kRisk) * 0.08));
+  var homeRun = Math.round((power * 0.68) + (rcv * 0.20) + (lineupCtx * 0.12));
   return {
     lineup: lineup,
     contact: Math.min(contact, 100),
     power: Math.min(power, 100),
-    kSafety: Math.min(kSafety, 100),
+    kRisk: Math.min(kRisk, 100),
     lineupCtx: Math.min(lineupCtx, 100),
     hits: Math.min(hits, 100),
     totalBases: Math.min(totalBases, 100),
@@ -1496,44 +1348,48 @@ function renderPropHub(key) {
   var lineup = bundle.lineup;
   var best = bundle.totalBases >= bundle.hits ? 'Total Bases' : 'Hits';
   var bestScore = Math.max(bundle.totalBases, bundle.hits);
+  var alt = best === 'Total Bases' ? 'Hits' : 'Total Bases';
+  var altScore = best === 'Total Bases' ? bundle.hits : bundle.totalBases;
+
   document.getElementById('propAnchor').innerHTML =
     '<div class="prop-anchor-grid">' +
       '<div><div class="section-eyebrow">Best Angle</div><div class="prop-score" style="color:' + metricColor(bestScore) + '">' + bestScore + '</div></div>' +
-      '<div class="prop-anchor-copy"><strong>' + escHtml(best) + '</strong> is the cleanest first-click prop for ' + escHtml(name) +
-      (lineup && lineup.inLineup ? ' batting ' + escHtml(lineup.batOrder) + ' vs ' + escHtml(lineup.oppSp) + ' (' + escHtml(lineup.oppHand) + 'HP).' : '.') +
+      '<div class="prop-anchor-copy"><strong>' + escHtml(best) + '</strong> is the first-click angle for ' + escHtml(name) +
+      (lineup && lineup.inLineup ? ' in the <strong>' + escHtml(lineup.batOrder) + '</strong> spot against <strong>' + escHtml(lineup.oppSp) + '</strong> (' + escHtml(lineup.oppHand) + 'HP).' : '. Waiting on lineup context before upgrading the read.') +
       '</div></div>';
 
   var cards = [
-    { label: 'Best Angle', title: best, score: bestScore, note: best === 'Total Bases' ? 'Damage path is stronger than HR-only dependence.' : 'Ball-in-play floor is the cleaner path.' },
-    { label: 'Stable Alt', title: best === 'Total Bases' ? 'Hits' : 'Total Bases', score: best === 'Total Bases' ? bundle.hits : bundle.totalBases, note: 'Use when the primary line gets expensive.' },
-    { label: 'Ceiling', title: 'Home Run', score: bundle.homeRun, note: 'Upside branch, not the default read.' }
+    { label: 'Best Angle', title: best, score: bestScore, support: best === 'Total Bases' ? 'Power score is carrying the read.' : 'Contact floor is carrying the read.', risk: bundle.kRisk >= 55 ? 'K-risk is the main floor cap.' : 'Price sensitivity is the main concern.' },
+    { label: 'Stable Alt', title: alt, score: altScore, support: alt === 'Hits' ? 'Cleaner ball-in-play path.' : 'Extra-base path still projects live.', risk: 'Move here if the primary line is inflated.' },
+    { label: 'Ceiling', title: 'Home Run', score: bundle.homeRun, support: 'Use when barrel and damage context align.', risk: 'Most volatile branch on the page.' }
   ];
   document.getElementById('propCards').innerHTML = cards.map(function(card) {
     return '<div class="prop-card ' + toneClass(card.score) + '">' +
       '<div class="prop-card-label">' + escHtml(card.label) + '</div>' +
       '<div class="prop-card-title">' + escHtml(card.title) + '</div>' +
-      '<div class="prop-card-note">' + escHtml(card.note) + '</div>' +
+      '<div class="prop-card-score" style="color:' + metricColor(card.score) + '">' + card.score + '</div>' +
+      '<div class="prop-card-meta">' +
+        '<div class="prop-card-meta-row"><div class="prop-card-meta-label">Support</div><div class="prop-card-meta-copy">' + escHtml(card.support) + '</div></div>' +
+        '<div class="prop-card-meta-row"><div class="prop-card-meta-label">Risk</div><div class="prop-card-meta-copy">' + escHtml(card.risk) + '</div></div>' +
+      '</div>' +
     '</div>';
   }).join('');
 
   var quick = [
-    ['Contact', bundle.contact],
-    ['Power', bundle.power],
-    ['K Safety', bundle.kSafety],
-    ['Context', bundle.lineupCtx]
+    ['Contact Edge', bundle.contact],
+    ['Power Edge', bundle.power],
+    ['K Risk', bundle.kRisk],
+    ['Lineup Context', bundle.lineupCtx]
   ];
   document.getElementById('quickScores').innerHTML = quick.map(function(row) {
     return '<div class="quick-score-row">' +
       '<div class="quick-score-label">' + escHtml(row[0]) + '</div>' +
       '<div class="quick-score-track"><div class="quick-score-fill" style="width:' + Math.max(0, Math.min(100, row[1])) + '%"></div></div>' +
-      '<div class="quick-score-value">' + row[1] + '</div>' +
+      '<div class="quick-score-value" style="color:' + metricColor(row[0] === 'K Risk' ? 100 - row[1] : row[1]) + '">' + row[1] + '</div>' +
     '</div>';
   }).join('');
 
-  var summary = buildBettingSummary(key);
-  document.getElementById('bettingPanel').innerHTML = summary;
-  var detail = document.getElementById('bettingPanelDetail');
-  if (detail) detail.innerHTML = summary;
+  document.getElementById('bettingPanel').innerHTML = buildBettingSummary(key);
 }
 
 function splitPanelHtml(title, row, raw, extraCls, note) {
@@ -1579,6 +1435,11 @@ function renderHeader(key) {
   var logo = window.MLBMAAssets && MLBMAAssets.teamLogoImg
     ? MLBMAAssets.teamLogoImg(team, 56, 'batter-hero-team-logo')
     : '';
+  var bundle = propRatingBundle(key);
+  var best = bundle.totalBases >= bundle.hits ? 'Total Bases' : 'Hits';
+  var bestScore = Math.max(bundle.totalBases, bundle.hits);
+  var verdict = best === 'Total Bases' ? 'Damage path is strongest' : 'Contact floor is cleanest';
+  var matchupScore = Math.round((bundle.contact * 0.35) + (bundle.power * 0.40) + (bundle.lineupCtx * 0.25));
   var batsCls = bats === 'L' ? 'pill-bats-l' : bats === 'S' ? 'pill-bats-s' : 'pill-bats-r';
   var chips = '<span class="team-badge">' + escHtml(team) + '</span>' +
     '<span class="pill pill-pos">' + escHtml(pos) + '</span>' +
@@ -1586,28 +1447,28 @@ function renderHeader(key) {
     '<span class="pill pill-pos">#' + escHtml(jersey) + '</span>' +
     (lineup && lineup.inLineup ? '<span class="pill pill-lineup">Today\'s Lineup</span>' : '');
 
-  document.getElementById('headerBlock').innerHTML =
-    '<div class="player-name-lg">' + escHtml(name) + '</div>' +
-    chips +
-    '<div class="lineup-meta">' +
-    (lineup && lineup.inLineup
-      ? 'Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' + escHtml(lineup.side) + ') — vs <strong>' + escHtml(lineup.oppSp) + '</strong> (' + escHtml(lineup.oppHand) + 'HP)'
-      : 'No confirmed lineup slot yet.') +
-    '</div>';
+  document.getElementById('headerBlock').innerHTML = '';
 
   document.getElementById('playerHeader').innerHTML =
     '<div class="batter-hero-avatar">' + avatar + '</div>' +
     '<div class="batter-hero-stack">' +
-      '<div class="batter-hero-team">' + logo + '<div class="player-name-lg">' + escHtml(name) + '</div></div>' +
+      '<div class="batter-hero-topline"><div class="batter-hero-team">' + logo + '<div class="batter-hero-nameblock"><div class="batter-hero-kicker">Batter Prop Hub</div><div class="player-name-lg">' + escHtml(name) + '</div></div></div></div>' +
       '<div class="batter-hero-chips">' + chips + '</div>' +
+      '<div class="batter-hero-verdict"><span>Best use</span><strong>' + escHtml(best) + '</strong><span>' + escHtml(verdict) + '</span></div>' +
+      '<div class="batter-hero-stats">' +
+        '<div class="batter-hero-stat"><span class="batter-hero-stat-label">Prop Score</span><span class="batter-hero-stat-value" style="color:' + metricColor(bestScore) + '">' + bestScore + '</span><span class="batter-hero-stat-note">Primary angle</span></div>' +
+        '<div class="batter-hero-stat"><span class="batter-hero-stat-label">Contact</span><span class="batter-hero-stat-value" style="color:' + metricColor(bundle.contact) + '">' + bundle.contact + '</span><span class="batter-hero-stat-note">Ball-in-play floor</span></div>' +
+        '<div class="batter-hero-stat"><span class="batter-hero-stat-label">Power</span><span class="batter-hero-stat-value" style="color:' + metricColor(bundle.power) + '">' + bundle.power + '</span><span class="batter-hero-stat-note">Damage ceiling</span></div>' +
+      '</div>' +
       '<div class="lineup-meta">' + (lineup && lineup.inLineup
-        ? 'Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' + escHtml(lineup.side) + ') — live lineup confirmed.'
+        ? 'Batting <strong>' + escHtml(lineup.batOrder) + '</strong> (' + escHtml(lineup.side) + ') - live lineup confirmed.'
         : 'No confirmed lineup slot yet.') + '</div>' +
     '</div>' +
     '<div class="batter-hero-context">' +
       '<div class="context-label">Matchup Focus</div>' +
       '<div class="context-value">' + escHtml(lineup && lineup.inLineup ? ('Vs ' + lineup.oppSp + ' (' + lineup.oppHand + 'HP)') : 'Profile baseline') + '</div>' +
-      '<div class="context-note">' + escHtml(lineup && lineup.inLineup ? ('Batting ' + lineup.batOrder + ' • ' + lineup.side + ' • ' + (lineup.game || team)) : 'Waiting for confirmed lineup context.') + '</div>' +
+      '<div class="context-badge"><span>Matchup score</span><strong style="color:' + metricColor(matchupScore) + '">' + matchupScore + '</strong></div>' +
+      '<div class="context-note">' + escHtml(lineup && lineup.inLineup ? ('Batting ' + lineup.batOrder + ' | ' + lineup.side + ' | ' + (lineup.game || team)) : 'Waiting for confirmed lineup context.') + '</div>' +
     '</div>';
 }
 
@@ -1675,13 +1536,7 @@ function renderSeasonBar(key) {
     statCell('OBP', numOrNull(pickCol(raw, ['OBP'])) || '—'),
     statCell('SLG', numOrNull(pickCol(raw, ['SLG'])) || '—'),
     statCell('BB%', pickCol(raw, ['BB%']) ? fmtPct(numOrNull(pickCol(raw, ['BB%']))) : '—'),
-    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '—'),
-    statCell('wOBA', numOrNull(pickCol(raw, ['wOBA'])) || '—'),
-    statCell('xwOBA', numOrNull(pickCol(raw, ['xwOBA'])) || '—'),
-    statCell('Chase%', pickCol(raw, ['Chase%']) ? fmtPct(numOrNull(pickCol(raw, ['Chase%']))) : '—'),
-    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '—'),
-    statCell('PA', numOrNull(pickCol(raw, ['PA'])) || numOrNull(pickCol(base || {}, ['PA'])) || '—'),
-    statCell('OSI', numOrNull(pickCol(base || {}, ['OSI'])), metricColor(numOrNull(pickCol(base || {}, ['OSI']))))
+    statCell('K%', pickCol(raw, ['K%']) ? fmtPct(numOrNull(pickCol(raw, ['K%']))) : '—'),    statCell('Barrel%', pickCol(raw, ['Barrel%']) ? fmtPct(numOrNull(pickCol(raw, ['Barrel%']))) : '—'),    statCell('OSI', numOrNull(pickCol(base || {}, ['OSI'])), metricColor(numOrNull(pickCol(base || {}, ['OSI']))))
   ];
   document.getElementById('seasonBar').innerHTML = cells.join('');
 }
@@ -1778,8 +1633,8 @@ function renderHandSplits(key) {
     dom = osiR >= osiL ? 'Dominant vs RHP' : 'Dominant vs LHP';
   }
   document.getElementById('handGrid').innerHTML =
-    splitPanelHtml('vs RHP', rhp, rawR, flagR, rhpActual ? '' : 'Overall fallback') +
-    splitPanelHtml('vs LHP', lhp, rawL, flagL, lhpActual ? '' : 'Overall fallback');
+    splitPanelHtml('vs RHP', rhp, rawR, flagR, rhpActual ? '' : 'Using season baseline') +
+    splitPanelHtml('vs LHP', lhp, rawL, flagL, lhpActual ? '' : 'Using season baseline');
   var ins = abqGap >= PLATOON_ABQ_GAP
     ? 'Platoon alert: ABQ gap of ' + fmt(abqGap, 1) + ' points — significant handedness split.'
     : 'Platoon gap manageable (ABQ delta ' + fmt(abqGap, 1) + ').';
@@ -1800,8 +1655,8 @@ function renderLocSplits(key) {
   var flagH = gap >= LOC_OSI_GAP && osiH > osiA ? ' flag-gold' : '';
   var flagA = gap >= LOC_OSI_GAP && osiA > osiH ? ' flag-gold' : '';
   document.getElementById('locGrid').innerHTML =
-    splitPanelHtml('Home', home, rawH, flagH, homeActual ? '' : 'Overall fallback') +
-    splitPanelHtml('Away', away, rawA, flagA, awayActual ? '' : 'Overall fallback');
+    splitPanelHtml('Home', home, rawH, flagH, homeActual ? '' : 'Using season baseline') +
+    splitPanelHtml('Away', away, rawA, flagA, awayActual ? '' : 'Using season baseline');
   document.getElementById('locInsight').textContent = gap >= LOC_OSI_GAP
     ? 'Location split: OSI gap of ' + fmt(gap, 1) + ' between home and away.'
     : 'Home/away OSI gap ' + fmt(gap, 1) + ' — within normal range.';
@@ -1818,8 +1673,8 @@ function renderSpRpSplits(key) {
   var osiRp = numOrNull(pickCol(rp || {}, ['OSI']));
   var flag = (spActual && rpActual && osiSp !== null && osiRp !== null && osiRp - osiSp >= SP_RP_OSI_GAP) ? ' flag-gold' : '';
   document.getElementById('spRpGrid').innerHTML =
-    splitPanelHtml('vs SP', sp, rawSp, flag, spActual ? '' : 'Overall fallback') +
-    splitPanelHtml('vs RP', rp, rawRp, flag, rpActual ? '' : 'Overall fallback');
+    splitPanelHtml('vs SP', sp, rawSp, flag, spActual ? '' : 'Using season baseline') +
+    splitPanelHtml('vs RP', rp, rawRp, flag, rpActual ? '' : 'Using season baseline');
   document.getElementById('spRpInsight').textContent = (spActual && rpActual && osiRp !== null && osiSp !== null && osiRp - osiSp >= SP_RP_OSI_GAP)
     ? 'Full game value over F5 - this batter significantly outperforms vs relief pitching.'
     : 'OSI vs SP ' + fmt(osiSp, 1) + ' — OSI vs RP ' + fmt(osiRp, 1) + (spActual && rpActual ? ' — no full-game value flag.' : ' — using overall fallback where split exports are missing.');
@@ -1868,7 +1723,6 @@ function renderProfile(key) {
   renderHandSplits(key);
   renderLocSplits(key);
   renderSpRpSplits(key);
-  renderComparables(key);
 }
 
 function populateSelectors() {
@@ -2039,3 +1893,4 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="chase_nav.js"></script>
 </body>
 </html>
+
