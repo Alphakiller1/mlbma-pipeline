@@ -7,7 +7,9 @@ For checks after midnight, the slate date is treated as the prior ET date.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timedelta
@@ -22,6 +24,11 @@ ROOT = Path(__file__).resolve().parent.parent
 LOG_PATH = ROOT / "pipeline_log.txt"
 STATE_DIR = ROOT / "outputs" / "automation_state"
 STATE_PATH = STATE_DIR / "last_after_final_run.json"
+TODAY_EXPORTS = (
+    ROOT / "data" / "today_games.csv",
+    ROOT / "data" / "today_lineups.csv",
+    ROOT / "data" / "today_matchups.csv",
+)
 EASTERN = ZoneInfo("America/New_York")
 MLB_SCHEDULE_URL = (
     "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}"
@@ -130,10 +137,12 @@ def run_pipeline(slate_date: str) -> int:
     python = resolve_python()
     append_log_header(slate_date)
     print(f"Running MLBMA pipeline with {python}")
+    child_env = {**os.environ, "MLBMA_SLATE_DATE": slate_date}
     with LOG_PATH.open("a", encoding="utf-8") as log:
         process = subprocess.Popen(
             [str(python), "-m", "pipeline.main"],
             cwd=str(ROOT),
+            env=child_env,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -145,6 +154,50 @@ def run_pipeline(slate_date: str) -> int:
             print(line, end="")
             log.write(line)
         return process.wait()
+
+
+def export_matches_slate(path: Path, slate_date: str) -> tuple[bool, str]:
+    if not path.exists():
+        return False, "missing file"
+    try:
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            rows = list(reader)
+    except OSError as exc:
+        return False, f"read failed: {exc}"
+
+    if not rows:
+        return False, "no data rows"
+    if "Slate_Date" not in reader.fieldnames:
+        return False, "Slate_Date column missing"
+
+    dates = {str(row.get("Slate_Date", "")).strip()[:10] for row in rows}
+    if slate_date not in dates:
+        preview = ", ".join(sorted(d for d in dates if d)[:3]) or "none"
+        return False, f"Slate_Date mismatch ({preview})"
+    return True, f"{len(rows)} row(s)"
+
+
+def validate_today_exports(slate_date: str) -> list[str]:
+    issues: list[str] = []
+    for path in TODAY_EXPORTS:
+        ok, detail = export_matches_slate(path, slate_date)
+        if ok:
+            print(f"Verified {path.name}: {detail} for {slate_date}")
+        else:
+            issues.append(f"{path.name}: {detail}")
+    return issues
+
+
+def refresh_today_exports(slate_date: str) -> int:
+    python = resolve_python()
+    env = {**os.environ, "MLBMA_SLATE_DATE": slate_date}
+    print(f"Repairing Today_* exports for slate {slate_date}...")
+    return subprocess.call(
+        [str(python), "-m", "scripts.refresh_today_slate"],
+        cwd=str(ROOT),
+        env=env,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -189,6 +242,21 @@ def main(argv: list[str] | None = None) -> int:
     code = run_pipeline(slate_date)
     elapsed = (datetime.now() - start).total_seconds()
     if code == 0:
+        issues = validate_today_exports(slate_date)
+        if issues:
+            print("Today_* export validation failed after pipeline:")
+            for issue in issues:
+                print(f"  - {issue}")
+            repair_code = refresh_today_exports(slate_date)
+            if repair_code != 0:
+                print(f"Repair refresh failed with exit code {repair_code}.")
+                return repair_code
+            issues = validate_today_exports(slate_date)
+            if issues:
+                print("Today_* export validation still failing after repair:")
+                for issue in issues:
+                    print(f"  - {issue}")
+                return 3
         mark_success(slate_date, elapsed)
         print(f"Pipeline completed for {slate_date} in {elapsed:.1f}s.")
     else:

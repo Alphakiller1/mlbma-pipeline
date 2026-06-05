@@ -376,10 +376,8 @@
       });
     }
     rotKpi += '</tbody>' + ctx.profileTableClose();
-    var intel = (global.TeamProfileIntel && TeamProfileIntel.renderRotationIntel)
-      ? TeamProfileIntel.renderRotationIntel(prof, team, ctx) : '';
     return sectionCard(ctx, 'Starting Rotation', 'Team rotation unit — open any starter for the full Pitcher Profile', rotKpi, 'tp-rotation-section',
-      { icon: 'rotation-section', kicker: 'SP unit' }) + intel;
+      { icon: 'rotation-section', kicker: 'SP unit' });
   }
 
   function renderBullpen(prof, team, ctx) {

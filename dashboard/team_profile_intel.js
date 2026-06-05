@@ -1034,11 +1034,7 @@
   }
 
   function renderRotationIntel(prof, team, ctx) {
-    var pack = buildRotationPack(prof, team, ctx);
-    if (!pack) return '';
-    return readHtml(rotationRead(pack), 'rotation')
-      + readHtml(rotationSplitVerdict(pack), 'split')
-      + staffTakeawaysGrid(rotationTakeaways(pack), 'Rotation research context — not betting picks');
+    return '';
   }
 
   function renderBullpenIntel(prof, team, ctx) {

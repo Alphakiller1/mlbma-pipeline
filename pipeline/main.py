@@ -117,6 +117,26 @@ def run_lineups():
     _run_step("Running scrapers.scrape_lineups", "scrapers.scrape_matchups", _lineups)
 
 
+def run_matchups():
+    """Rebuild Today_Matchups from the MLB schedule (authoritative slate).
+
+    Runs independently of the Rotowire lineup scrape so the matchup sheet always
+    reflects the current slate even if scrape_lineups failed. scrape_matchups has
+    no step dependencies, so this never gets skipped.
+    """
+
+    def _fn():
+        from scrapers import scrape_matchups
+
+        scrape_matchups.run()
+
+    _run_step(
+        "Step 6: scrapers.scrape_matchups (authoritative matchup sheet)",
+        "scrapers.scrape_matchups",
+        _fn,
+    )
+
+
 def run_game_results():
     """Scrape + compute + push team game-results metrics; non-fatal on failure."""
 
@@ -145,7 +165,8 @@ def run():
       2 scrape_fangraphs (optional)
       3 core.compute (optional, needs Savant + FanGraphs)
       4 push_sheets core metrics (optional)
-      5 scrape_lineups (+ Today_Matchups refresh) then weather (optional)
+      5 scrape_lineups (Today_Games/Today_Lineups + Today_Matchups refresh)
+      6 scrape_matchups (authoritative Today_Matchups rebuild — always runs)
       7 scrape_weather (optional)
       8 scrape_pals (optional)
       9 compute_signals (optional)
@@ -169,6 +190,7 @@ def run():
         run_script(script, required=False)
 
     run_lineups()
+    run_matchups()
     run_game_results()
 
     if check_step_deps("scrapers.scrape_pals"):

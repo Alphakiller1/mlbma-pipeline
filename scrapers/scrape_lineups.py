@@ -232,7 +232,10 @@ def push_to_sheets(lineup_df, games_df):
 def run():
     try:
         lineup_df, games_df = scrape_lineups()
-    except requests.RequestException as e:
+    except Exception as e:
+        # Any lineup-scrape failure (network, parse, etc.): clear the stale slate
+        # so the dashboard never shows old games, and still rebuild Today_Matchups
+        # from the authoritative MLB schedule below.
         print(f"WARNING: scrape_lineups failed - clearing stale slate ({e})")
         remove_stale_slate_files()
         clear_sheet_tab(SHEET_TABS["today_lineups"], ["Game", "Time", "Team", "Side", "Bat_Order", "Position", "Player", "Bats", "Slate_Date"])
