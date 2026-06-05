@@ -703,7 +703,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
           <div class="stat-bar" id="seasonBar"></div>
         </section>
 
-        <section class="subsection">
+        <section class="subsection" id="metricProfileSection">
           <div class="section-title">Created Metric Profile</div>
           <div class="section-subtitle">ABQ / RCV / OBR / OSI percentiles against the qualified batter pool.</div>
           <div class="metric-grid" id="metricCards"></div>
@@ -1688,10 +1688,19 @@ function renderSeasonBar(key) {
 
 function renderMetricCards(key) {
   var row = overallProfileRow(key);
+  var section = document.getElementById('metricProfileSection');
   if (!row) {
-    document.getElementById('metricCards').innerHTML = '<div class="empty-state">No profile metrics in sheet.</div>';
+    if (section) section.style.display = 'none';
     return;
   }
+  var values = ['ABQ', 'RCV', 'OBR', 'OSI'].map(function(metric) {
+    return numOrNull(pickCol(row, [metric]));
+  });
+  if (!values.some(function(v) { return v !== null && !isNaN(v); })) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = '';
   var pool = DATA.pool.vs_RHP && DATA.pool.vs_RHP.length ? DATA.pool.vs_RHP : DATA.profiles;
   var metrics = [['ABQ', 'ABQ'], ['RCV', 'RCV'], ['OBR', 'OBR'], ['OSI', 'OSI']];
   var html = '';
