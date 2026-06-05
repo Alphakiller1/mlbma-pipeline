@@ -10,10 +10,6 @@ html:has(body.bullpen-profile-page) {
 }
 
 body.bullpen-profile-page {
-  background:
-    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.2), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.12), transparent 60%),
-    var(--bg, #08090F);
   color: var(--text);
   font-family: var(--font-body, var(--font, system-ui));
   font-size: 14px;

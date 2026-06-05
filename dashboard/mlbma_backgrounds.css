@@ -1,0 +1,168 @@
+/**
+ * MLBMA stadium photo backgrounds — violet night-game atmosphere.
+ * Must load last in <head> so scrim + photo layers win over page CSS.
+ */
+:root {
+  --ca-bg-photo-outfield: url('assets/backgrounds/stadium-outfield-night.png');
+  --ca-bg-photo-catcher: url('assets/backgrounds/stadium-catcher-view.png');
+  --ca-bg-photo-plate: url('assets/backgrounds/stadium-plate-pov.png');
+  --ca-bg-base: #08090f;
+  --ca-bg-scrim: linear-gradient(
+    180deg,
+    rgba(5, 6, 14, 0.90) 0%,
+    rgba(8, 9, 15, 0.74) 38%,
+    rgba(8, 9, 15, 0.82) 68%,
+    rgba(5, 5, 12, 0.93) 100%
+  );
+  --ca-bg-violet-top: radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124, 77, 255, 0.16), transparent 62%);
+  --ca-bg-violet-bottom: radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91, 43, 224, 0.11), transparent 60%);
+}
+
+html:has(body.opening-dashboard),
+html:has(body.platform-dashboard),
+html:has(body.ca-bg-outfield),
+html:has(body.ca-bg-catcher),
+html:has(body.ca-bg-compare),
+html:has(body.ca-bg-plate),
+html:has(body.team-profile-page),
+html:has(body.bullpen-profile-page),
+html:has(body.batter-profile-page),
+html:has(body.pitcher-profile-page) {
+  background-color: var(--ca-bg-base);
+  min-height: 100%;
+}
+
+/* ---- Hub / command center — outfield skyline ---- */
+body.opening-dashboard,
+body.platform-dashboard,
+body.ca-bg-outfield {
+  background-color: var(--ca-bg-base);
+  background-image:
+    var(--ca-bg-scrim),
+    var(--ca-bg-violet-top),
+    var(--ca-bg-violet-bottom),
+    var(--ca-bg-photo-outfield);
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center 35%;
+  background-repeat: no-repeat;
+  background-attachment: scroll, scroll, scroll, fixed;
+}
+
+/* ---- Team / org profiles — catcher view ---- */
+body.team-profile-page:not(.batter-profile-page):not(.pitcher-profile-page),
+body.bullpen-profile-page,
+body.ca-bg-catcher,
+body.ca-bg-compare {
+  background-color: var(--ca-bg-base);
+  background-image:
+    var(--ca-bg-scrim),
+    var(--ca-bg-violet-top),
+    var(--ca-bg-violet-bottom),
+    var(--ca-bg-photo-catcher);
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center 42%;
+  background-repeat: no-repeat;
+  background-attachment: scroll, scroll, scroll, fixed;
+}
+
+/* ---- Player profiles — home-plate POV ---- */
+body.batter-profile-page,
+body.pitcher-profile-page,
+body.ca-bg-plate {
+  background-color: var(--ca-bg-base);
+  background-image:
+    var(--ca-bg-scrim),
+    var(--ca-bg-violet-top),
+    var(--ca-bg-violet-bottom),
+    var(--ca-bg-photo-plate);
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center 55%;
+  background-repeat: no-repeat;
+  background-attachment: scroll, scroll, scroll, fixed;
+}
+
+/* Opening hero — stadium bleed through command-center band */
+body.opening-dashboard .opening-layer .ca-hero,
+body.opening-dashboard #section-opening-hero .ca-hero {
+  background:
+    linear-gradient(180deg, rgba(5, 6, 14, 0.52) 0%, rgba(8, 9, 15, 0.78) 52%, rgba(5, 5, 12, 0.90) 100%),
+    radial-gradient(ellipse 76% 58% at 82% 12%, rgba(124, 77, 255, 0.24), transparent 66%),
+    var(--ca-bg-photo-outfield) center 32% / cover no-repeat,
+    linear-gradient(135deg, #06070d 0%, #111124 46%, #05060b 100%);
+}
+
+/* Matchups hero band */
+body.platform-dashboard.view-matchups #section-matchups-hero,
+body.platform-dashboard.view-matchups .matchups-hero-header {
+  background:
+    linear-gradient(180deg, rgba(5, 6, 14, 0.82) 0%, rgba(8, 9, 15, 0.92) 100%),
+    var(--ca-bg-photo-outfield) center 30% / cover no-repeat;
+}
+
+/* Player hero boards — plate POV wash */
+body.batter-profile-page .bp-hero-section.ca-board,
+body.pitcher-profile-page .pp-hero-section.ca-board {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 28%),
+    linear-gradient(180deg, rgba(18, 20, 31, 0.94), rgba(6, 7, 13, 0.97)),
+    var(--ca-bg-photo-plate) center 48% / cover no-repeat;
+  border-color: rgba(154, 107, 255, 0.28);
+}
+
+/* Team / bullpen hero boards — catcher view wash */
+body.team-profile-page .tp-hero-banner-shell .tp-team-banner--hero,
+body.bullpen-profile-page .bp-hero-banner-shell .profile-hero,
+body.bullpen-profile-page .bp-hero-banner-shell .bullpen-snapshot,
+body.bullpen-profile-page .bp-hero-banner-shell .tp-team-banner {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 28%),
+    linear-gradient(180deg, rgba(18, 20, 31, 0.94), rgba(6, 7, 13, 0.97)),
+    var(--ca-bg-photo-catcher) center 40% / cover no-repeat;
+  border-color: rgba(154, 107, 255, 0.28);
+}
+
+@media (max-width: 768px) {
+  body.opening-dashboard,
+  body.platform-dashboard,
+  body.ca-bg-outfield,
+  body.team-profile-page:not(.batter-profile-page):not(.pitcher-profile-page),
+  body.bullpen-profile-page,
+  body.ca-bg-catcher,
+  body.ca-bg-compare,
+  body.batter-profile-page,
+  body.pitcher-profile-page,
+  body.ca-bg-plate {
+    background-attachment: scroll, scroll, scroll, scroll;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.opening-dashboard,
+  body.platform-dashboard,
+  body.ca-bg-outfield,
+  body.team-profile-page:not(.batter-profile-page):not(.pitcher-profile-page),
+  body.bullpen-profile-page,
+  body.ca-bg-catcher,
+  body.ca-bg-compare,
+  body.batter-profile-page,
+  body.pitcher-profile-page,
+  body.ca-bg-plate {
+    background-attachment: scroll;
+  }
+}
+
+@media print {
+  body.opening-dashboard,
+  body.platform-dashboard,
+  body.ca-bg-outfield,
+  body.team-profile-page,
+  body.bullpen-profile-page,
+  body.ca-bg-catcher,
+  body.ca-bg-compare,
+  body.batter-profile-page,
+  body.pitcher-profile-page,
+  body.ca-bg-plate {
+    background: #fff !important;
+    background-image: none !important;
+  }
+}

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260605c">
 <link rel="stylesheet" href="theme.css?v=20260605c">
 <style>
-body { background: var(--bg); color: var(--text); font-family: var(--font-body); }
+body { color: var(--text); font-family: var(--font-body); min-height: 100vh; }
 .card-wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
 .card-hero { margin-bottom: 14px; }
 .card-eyebrow {
@@ -23,8 +23,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-2); background: var(--bg); z-index: 1000; }
 .loading.hide { display: none; }
 </style>
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605b">
 </head>
-<body>
+<body class="ca-bg-catcher">
 <div class="loading" id="loading">Loading team card...</div>
 <div class="card-wrap">
   <div class="card-hero">
