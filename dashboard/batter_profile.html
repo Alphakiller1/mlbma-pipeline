@@ -519,17 +519,16 @@ function renderPropLines(p) {
     { m: 'Hits', proj: p.hits, lines: [0.5, 1.5], dec: 2 },
     { m: 'Total Bases', proj: p.tb, lines: [1.5, 2.5], dec: 2 },
     { m: 'Home Run', proj: p.hr, lines: [0.5], dec: 2, prob: true },
-    { m: 'Strikeouts', proj: p.k, lines: [0.5, 1.5], dec: 2, invert: true },
+    { m: 'Strikeouts', proj: p.k, lines: [0.5, 1.5], dec: 2 },
     { m: 'Walks', proj: p.bb, lines: [0.5], dec: 2 },
     { m: 'Hits+R+RBI', proj: p.runsRbi, lines: [1.5, 2.5], dec: 2 }
   ];
   var body = rows.map(function(r) {
     var leanCells = r.lines.map(function(L) {
       if (r.prob) { var pc = r.proj != null ? Math.round(r.proj * 100) : null; return '<td class="num">' + (pc != null ? pc + '%' : '—') + '</td>'; }
+      // Lean is a direct projection-vs-line comparison for every market (incl. strikeouts).
       var ln = leanFor(r.proj, L);
-      var cls = r.invert ? (ln.lean === 'over' ? 'under' : ln.lean === 'under' ? 'over' : 'pass') : ln.lean;
-      var txt = r.invert ? (ln.lean === 'over' ? 'Under ' + L : ln.lean === 'under' ? 'Over ' + L : 'Lean ' + L) : ln.label;
-      return '<td class="num"><span class="bx-prop-card__lean bx-lean--' + cls + '">' + esc(txt) + '</span></td>';
+      return '<td class="num"><span class="bx-prop-card__lean bx-lean--' + ln.lean + '">' + esc(ln.label) + '</span></td>';
     });
     while (leanCells.length < 2) leanCells.push('<td class="num">—</td>');
     return '<tr><th scope="row">' + esc(r.m) + '</th><td class="num"><strong>' + (r.proj != null ? fmt(r.proj, r.dec) : '—') + '</strong></td>' + leanCells.join('') + '</tr>';
