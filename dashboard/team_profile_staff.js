@@ -345,12 +345,15 @@
       staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2), staffLeagueRank(rotCache, tk, 'teamEra', true))
     ].join('');
     var rotKpi = staffMetricsBand('Rotation snapshot', 'Team rotation as a unit · league rank on each KPI', rotCells);
-    rotKpi += '<p class="ca-helper tp-staff-launch-hint">Open a starter for full splits, tiers &amp; F5 &rarr;</p>';
+    rotKpi += '<div class="tp-staff-launch-callout" role="note">'
+      + '<span class="tp-staff-launch-callout__text">'
+      + '<strong>Click any starter name or Profile</strong> to open the full Pitcher Profile — splits, tiers, allowed metrics &amp; F5.'
+      + '</span></div>';
     // Compact launchpad: each SP links to its full Pitcher Profile (deep splits live there).
-    rotKpi += ctx.profileTableOpen()
-      + '<thead><tr><th>Name</th><th>Hand</th><th>Tier</th></tr></thead><tbody>';
+    rotKpi += ctx.profileTableOpen('tp-rotation-launch-table')
+      + '<thead><tr><th>Name</th><th>Hand</th><th>Tier</th><th>Profile</th></tr></thead><tbody>';
     if (!teamSps.length) {
-      rotKpi += '<tr><td colspan="3" class="tp-empty">No SP profiles for this team</td></tr>';
+      rotKpi += '<tr><td colspan="4" class="tp-empty">No SP profiles for this team</td></tr>';
     } else {
       var S = global.MLBMASharedMatchup;
       teamSps.forEach(function(sp, idx) {
@@ -366,17 +369,23 @@
               hr9: num(pickCol(sp, ['HR9', 'HR/9']))
             })
           : ctx.tierLabel(ps, ctx.PITCH_TIERS);
+        var profileHref = 'pitcher_profile.html?pitcher=' + ctx.encodePlayer(pname);
         var nameCell = ctx.spPlayerCellHtml
           ? ctx.spPlayerCellHtml(sp, idx < 3)
-          : '<a href="pitcher_profile.html?pitcher=' + ctx.encodePlayer(pname) + '">' + esc(pname) + '</a>';
-        rotKpi += '<tr><td>' + nameCell + '</td>'
+          : '<a class="tp-sp-player-link" href="' + profileHref + '" title="Open full Pitcher Profile">'
+            + esc(pname) + '</a>';
+        rotKpi += '<tr class="tp-rotation-launch-row">'
+          + '<td>' + nameCell + '</td>'
           + '<td>' + esc(hand) + '</td>'
           + '<td><span class="tier-badge ' + esc(tier.cls) + '"'
-          + (tier.hint ? ' title="' + esc(tier.hint) + '"' : '') + '>' + esc(tier.label) + '</span></td></tr>';
+          + (tier.hint ? ' title="' + esc(tier.hint) + '"' : '') + '>' + esc(tier.label) + '</span></td>'
+          + '<td class="tp-profile-action">'
+          + '<a class="ca-btn ca-btn--ghost ca-btn--sm" href="' + profileHref + '" title="Open full Pitcher Profile">Profile</a>'
+          + '</td></tr>';
       });
     }
     rotKpi += '</tbody>' + ctx.profileTableClose();
-    return sectionCard(ctx, 'Starting Rotation', 'Team rotation unit — open any starter for the full Pitcher Profile', rotKpi, 'tp-rotation-section',
+    return sectionCard(ctx, 'Starting Rotation', 'Team rotation unit — click any starter below for the full Pitcher Profile', rotKpi, 'tp-rotation-section',
       { icon: 'rotation-section', kicker: 'SP unit' });
   }
 

@@ -1038,11 +1038,7 @@
   }
 
   function renderBullpenIntel(prof, team, ctx) {
-    var pack = buildBullpenPack(prof, team, ctx);
-    if (!pack) return '';
-    return readHtml(bullpenRead(pack), 'bullpen')
-      + readHtml(bullpenSplitVerdict(pack), 'split')
-      + staffTakeawaysGrid(bullpenTakeaways(pack), 'Bullpen research context — not betting picks');
+    return '';
   }
 
   function renderRotationStatus(prof, team, ctx) {
