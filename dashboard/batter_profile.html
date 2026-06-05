@@ -514,13 +514,55 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 }
 @media (max-width: 640px) {
   .player-header {
-    grid-template-columns: 1fr;
-    justify-items: start;
+    grid-template-columns: 72px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 14px;
+  }
+  .batter-hero-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 14px;
+  }
+  .batter-hero-avatar .ca-pitcher-avatar,
+  .batter-hero-avatar .ca-pitcher-avatar-img,
+  .batter-hero-avatar .ca-pitcher-avatar-fallback {
+    border-radius: 14px;
+  }
+  .batter-hero-team {
+    gap: 8px;
+  }
+  .batter-hero-team-logo {
+    display: none;
+  }
+  .player-name-lg {
+    font-size: 20px;
+  }
+  .batter-hero-chips {
+    gap: 6px;
+  }
+  .pill,
+  .team-badge {
+    font-size: 9px;
+    padding: 3px 7px;
+  }
+  .lineup-meta {
+    font-size: 11px;
+    line-height: 1.45;
   }
   .batter-hero-context {
-    justify-self: start;
+    grid-column: 1 / -1;
+    margin-top: 2px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.08);
     text-align: left;
     min-width: 0;
+  }
+  .batter-hero-context .context-value {
+    font-size: 15px;
+  }
+  .batter-hero-context .context-note {
+    font-size: 11px;
   }
   .prop-anchor-grid,
   .quick-score-row {
