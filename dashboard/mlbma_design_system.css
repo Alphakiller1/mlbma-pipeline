@@ -1387,10 +1387,10 @@ h1.ca-page-title {
 #section-research-lab .ca-page-feature-list li {
   position: relative;
   padding-left: 22px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-2, #A1A1AA);
 }
 
 #section-matchups-hero .matchups-feature-list li::before,
