@@ -195,7 +195,9 @@
 
   function matchupGameKey(m) {
     if (!m) return '';
-    if (m.away && m.home) return teamKey(m.away) + '@' + teamKey(m.home);
+    if (m.away && m.home) {
+      return normalizeTeamAbbrShared(m.away) + '@' + normalizeTeamAbbrShared(m.home);
+    }
     return '';
   }
 
@@ -463,13 +465,25 @@
   function parseWeatherMap(rows) {
     var map = {};
     (rows || []).forEach(function(row) {
-      var away = teamKey(pickCol(row, 'away_team', 'Away'));
-      var home = teamKey(pickCol(row, 'home_team', 'Home'));
+      var away = normalizeTeamAbbrShared(pickCol(row, 'away_team', 'Away'));
+      var home = normalizeTeamAbbrShared(pickCol(row, 'home_team', 'Home'));
       if (!away || !home) return;
       var w = parseWeatherRow(row);
-      map[away + '@' + home] = w;
+      var key = away + '@' + home;
+      map[key] = w;
     });
     return map;
+  }
+
+  /** Resolve weather for a matchup — normalized team keys (TB/TBR, etc.). */
+  function weatherLookup(map, away, home) {
+    if (!map || !away || !home) return null;
+    var a = normalizeTeamAbbrShared(away);
+    var h = normalizeTeamAbbrShared(home);
+    return map[a + '@' + h]
+      || map[teamKey(away) + '@' + teamKey(home)]
+      || map[away + '@' + home]
+      || null;
   }
 
   /** Approximate center-field bearing from home plate (degrees clockwise from north). */
@@ -1469,13 +1483,15 @@
           var away = normalizeTeamAbbrShared(awayTeam.abbreviation || awayTeam.teamName || awayTeam.name);
           var home = normalizeTeamAbbrShared(homeTeam.abbreviation || homeTeam.teamName || homeTeam.name);
           if (!away || !home) return;
-          var awaySP = (awayNode.probablePitcher && awayNode.probablePitcher.fullName) || 'TBD';
-          var homeSP = (homeNode.probablePitcher && homeNode.probablePitcher.fullName) || 'TBD';
+          var awayProb = awayNode.probablePitcher || {};
+          var homeProb = homeNode.probablePitcher || {};
+          var awaySP = awayProb.fullName || 'TBD';
+          var homeSP = homeProb.fullName || 'TBD';
           var awayHand = normalizePitcherHandShared(
-            awayNode.probablePitcher && awayNode.probablePitcher.pitchHand && awayNode.probablePitcher.pitchHand.code
+            awayProb.pitchHand && awayProb.pitchHand.code
           );
           var homeHand = normalizePitcherHandShared(
-            homeNode.probablePitcher && homeNode.probablePitcher.pitchHand && homeNode.probablePitcher.pitchHand.code
+            homeProb.pitchHand && homeProb.pitchHand.code
           );
           games.push({
             away: away,
@@ -1483,6 +1499,8 @@
             time: formatGameTimeEt(game.gameDate),
             awaySP: awaySP,
             homeSP: homeSP,
+            awaySPId: awayProb.id || null,
+            homeSPId: homeProb.id || null,
             awayHand: awayHand,
             homeHand: homeHand,
             stadium: (game.venue && game.venue.name) || '',
@@ -1987,6 +2005,7 @@
     parseWeatherString: parseWeatherString,
     parseWeatherRow: parseWeatherRow,
     parseWeatherMap: parseWeatherMap,
+    weatherLookup: weatherLookup,
     weatherBadge: weatherBadge,
     formatWeatherMetaHtml: formatWeatherMetaHtml,
     tempColorCss: tempColorCss,

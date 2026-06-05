@@ -71,8 +71,8 @@
   }
 
   function weatherHtml(m) {
-    var gk = m.away + '@' + m.home;
-    var w = (global.LIVE_DATA && LIVE_DATA.weather || {})[gk] || m.weather;
+    var wMap = (global.LIVE_DATA && LIVE_DATA.weather) || {};
+    var w = (S && S.weatherLookup ? S.weatherLookup(wMap, m.away, m.home) : wMap[m.away + '@' + m.home]) || m.weather;
     if (!w) return '';
     if (S && S.formatWeatherMetaHtml) return S.formatWeatherMetaHtml(w, m.home);
     if (typeof w === 'string') {
@@ -461,8 +461,8 @@
       + gameMetaHtml(m)
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, era: m.awayERA, fip: m.awayFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, era: m.homeERA, fip: m.homeFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars })
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, era: m.awayERA, fip: m.awayFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars, mlbId: m.awaySPId })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, era: m.homeERA, fip: m.homeFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars, mlbId: m.homeSPId })
       + '</div>'
       + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
       + '<div class="hmc-osi-bar">'
@@ -547,6 +547,7 @@
 
     bindCardNavigation();
     grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
+    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
   }
 
   function signalConfClass(conf) {

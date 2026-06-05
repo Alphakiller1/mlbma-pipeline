@@ -311,8 +311,8 @@
     var teamEra = num(pickCol(prof, ['team_era']));
     var cells = [
       staffStatCell('Pitch Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(staffCache, tk, 'avgPs', false)),
-      staffStatCell('Team ERA', valChip(ctx, teamEra, 'pitching', true, 2), staffLeagueRank(staffCache, tk, 'teamEra', true)),
-      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'pitching', true, 2), staffLeagueRank(staffCache, tk, 'bpEra', true)),
+      staffStatCell('Team ERA', valChip(ctx, teamEra, 'era', true, 2), staffLeagueRank(staffCache, tk, 'teamEra', true)),
+      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'era', true, 2), staffLeagueRank(staffCache, tk, 'bpEra', true)),
       staffStatCell('Bullpen OSI Allowed', valChip(ctx, bpOsi, 'osi', true, 1), staffLeagueRank(staffCache, tk, 'bpOsi', true))
     ].join('');
     var body = staffMetricsBand('Staff snapshot', 'Team-level pitching context · league rank on each metric', cells);
@@ -372,9 +372,9 @@
             + (hand ? '<span class="tp-sp-player-hand">' + esc(hand) + '</span>' : '') + '</a>';
         rotKpi += '<tr class="tp-rotation-launch-row">'
           + '<td>' + nameCell + '</td>'
-          + '<td class="num">' + valChip(ctx, spEra, 'pitching', true, 2) + '</td>'
-          + '<td class="num">' + valChip(ctx, spK, 'pitching', false, 1) + '</td>'
-          + '<td class="num">' + valChip(ctx, spBb, 'pitching', true, 1) + '</td>'
+          + '<td class="num">' + valChip(ctx, spEra, 'era', true, 2) + '</td>'
+          + '<td class="num">' + valChip(ctx, spK, 'kpct', false, 1) + '</td>'
+          + '<td class="num">' + valChip(ctx, spBb, 'bbpct', true, 1) + '</td>'
           + '<td><span class="tier-badge ' + esc(tier.cls) + '"'
           + (tier.hint ? ' title="' + esc(tier.hint) + '"' : '') + '>' + esc(tier.label) + '</span></td>'
           + '<td class="tp-profile-action">'
