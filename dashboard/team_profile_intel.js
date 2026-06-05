@@ -730,10 +730,15 @@
 
   function renderStaffStatus(pack, kind) {
     if (!pack || !pack.status) return '';
-    return '<div class="tp-intel-status">'
-      + '<span class="tp-intel-status__label ' + esc(pack.status.cls) + '">' + esc(pack.status.label) + '</span>'
-      + '<p class="tp-intel-status__line">' + esc(pack.identity || '') + '</p>'
-      + '</div>';
+    var I = global.MLBMAIcons;
+    var iconKey = kind === 'rotation' ? 'rotation-section' : (kind === 'bullpen' ? 'bullpen-section' : 'pitching');
+    var badgeHtml = (I && I.iconCircleHtml) ? I.iconCircleHtml(iconKey, false, false) : '';
+    return '<div class="tp-unit-summary-head tp-unit-summary-head--' + esc(kind || 'staff') + '">'
+      + '<div class="tp-unit-summary-head__badge">' + badgeHtml + '</div>'
+      + '<div class="tp-unit-summary-head__copy">'
+      + '<span class="tp-unit-summary-head__label ' + esc(pack.status.cls) + '">' + esc(pack.status.label) + '</span>'
+      + '<p class="tp-unit-summary-head__identity">' + esc(pack.identity || '') + '</p>'
+      + '</div></div>';
   }
 
   /* ——— Starting Pitchers ——— */

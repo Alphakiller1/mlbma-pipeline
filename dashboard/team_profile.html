@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="theme.css?v=20260618b">
 <link rel="stylesheet" href="chase_nav.css?v=20260616d">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260602m">
-<link rel="stylesheet" href="team_profile.css?v=20260608a">
+<link rel="stylesheet" href="team_profile.css?v=20260608j">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
@@ -26,12 +26,12 @@
 <script src="profile_shell.js?v=20260531p"></script>
 <script src="team_profile_mini.js?v=20260602w"></script>
 <script src="team_profile_sections.js?v=20260603w"></script>
-<script src="team_profile_staff.js?v=20260608b"></script>
-<script src="team_profile_intel.js?v=20260607c"></script>
+<script src="team_profile_staff.js?v=20260608m"></script>
+<script src="team_profile_intel.js?v=20260608g"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="platform_dashboard.js?v=20260618a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
-<script src="bullpen_usage.js?v=20260602l"></script>
+<script src="bullpen_usage.js?v=20260608n"></script>
 <script src="mlbma_ui.js?v=20260615b" data-page="team_profile.html"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
 </head>
@@ -1008,7 +1008,7 @@ function sectionHeaderHtml(title, subtitle, opts) {
       title: title,
       subtitle: subtitle || opts.subtitle || '',
       icon: (window.MLBMAIcons && MLBMAIcons.profileIcon) ? MLBMAIcons.profileIcon(opts.icon) : opts.icon,
-      kicker: opts.kicker || opts.eyebrow || 'Team Profile',
+      kicker: Object.prototype.hasOwnProperty.call(opts, 'kicker') ? opts.kicker : (opts.eyebrow || 'Team Profile'),
       actions: opts.actions || ''
     };
     return MLBMAAssets.sectionHeaderHtml(hdr);
@@ -1494,9 +1494,18 @@ function rankedValChip(val, rank, ctx, invert, dec) {
   return valChip(val, ctx, invert, d);
 }
 
-function unitSnapshotMetricsRow(chipsHtml) {
-  return '<div class="tp-offense-metrics tp-offense-metrics--profile tp-unit-snapshot-metrics">'
-    + '<div class="tp-offense-metrics__band"><div class="tp-offense-metrics__row tp-offense-metrics__row--inline">'
+function unitSnapshotMetricsRow(chipsHtml, bandTitle, bandHint) {
+  var bandHead = '';
+  if (bandTitle) {
+    bandHead = '<div class="tp-offense-metrics__band-head">'
+      + '<span class="tp-offense-metrics__band-title">' + escHtml(bandTitle) + '</span>'
+      + (bandHint ? '<span class="tp-offense-metrics__band-hint">' + escHtml(bandHint) + '</span>' : '')
+      + '</div>';
+  }
+  return '<div class="tp-offense-metrics tp-offense-metrics--profile tp-offense-metrics--staff tp-unit-snapshot-metrics">'
+    + '<div class="tp-offense-metrics__band">'
+    + bandHead
+    + '<div class="tp-offense-metrics__row tp-unit-summary-metrics__row">'
     + (chipsHtml || '') + '</div></div></div>';
 }
 
@@ -1664,7 +1673,11 @@ function renderUnitSnapshotStrip(prof, baseCtx) {
     var chips = unitSnapshotChipRanked('Pitching Score', avgPs, staffRank(rotCache, tk, 'avgPs', false), 'pitching', false, 0)
       + unitSnapshotChipRanked('Strikeout %', kPct, staffRank(rotCache, tk, 'kPct', false), 'pitching', false, 1)
       + unitSnapshotChipRanked('OSI Allowed', osiAllow, staffRank(rotCache, tk, 'osiAllow', true), 'osi', true, 1);
-    el.innerHTML = intelHtml + unitSnapshotMetricsRow(chips);
+    el.innerHTML = '<div class="tp-unit-summary-board tp-unit-summary-board--rotation" role="region" aria-label="Rotation unit summary">'
+      + intelHtml
+      + unitSnapshotMetricsRow(chips, 'Rotation pulse', 'League rank on each KPI')
+      + '</div>';
+    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
     syncIdentityStackLayout();
     return;
   } else if (cat === 'bullpen') {

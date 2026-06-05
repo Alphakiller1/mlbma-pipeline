@@ -187,6 +187,18 @@
     return rows;
   }
 
+  /** Closer → Setup → Mid → Long (top → bottom); IL last within chart. */
+  function roleSortOrder(role) {
+    if (!role) return 50;
+    if (role.cls === 'bp-role-il') return 60;
+    var label = String(role.label || '').toUpperCase();
+    if (label === 'CLOSE' || label === 'CLOSER') return 0;
+    if (label === 'SETUP') return 1;
+    if (label === 'MID' || label === 'MIDDLE') return 2;
+    if (label === 'LONG') return 3;
+    return 40;
+  }
+
   function enrichRows(rows, dayCols, rosterMeta) {
     return rows.map(function(r) {
       var meta = rosterMeta && rosterMeta[r.id];
@@ -196,6 +208,8 @@
       var total = (r.pitchesByDay || []).reduce(function(s, v) { return s + (v || 0); }, 0);
       return Object.assign({}, r, { role: role, avail: avail, totalPitches: total });
     }).sort(function(a, b) {
+      var roleDiff = roleSortOrder(a.role) - roleSortOrder(b.role);
+      if (roleDiff !== 0) return roleDiff;
       if (b.totalPitches !== a.totalPitches) return b.totalPitches - a.totalPitches;
       return String(a.name).localeCompare(String(b.name));
     });

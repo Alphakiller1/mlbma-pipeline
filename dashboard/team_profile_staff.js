@@ -132,15 +132,17 @@
       + '<span class="tp-offense-stat__body">' + chipHtml + rankHtml + '</span></div>';
   }
 
-  function staffMetricsBand(title, hint, cellsHtml) {
+  function staffMetricsBand(title, hint, cellsHtml, rowExtraClass) {
     if (!cellsHtml) return '';
+    var rowCls = 'tp-offense-metrics__row tp-offense-metrics__row--inline'
+      + (rowExtraClass ? ' ' + rowExtraClass : '');
     return '<div class="tp-offense-metrics tp-offense-metrics--profile tp-offense-metrics--staff">'
       + '<div class="tp-offense-metrics__band">'
       + '<div class="tp-offense-metrics__band-head">'
       + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
       + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
       + '</div>'
-      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cellsHtml + '</div>'
+      + '<div class="' + rowCls + '">' + cellsHtml + '</div>'
       + '</div></div>';
   }
 
@@ -344,11 +346,20 @@
       staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1), staffLeagueRank(rotCache, tk, 'bbPct', true)),
       staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2), staffLeagueRank(rotCache, tk, 'teamEra', true))
     ].join('');
-    var rotKpi = staffMetricsBand('Rotation snapshot', 'Team rotation as a unit · league rank on each KPI', rotCells);
-    rotKpi += '<div class="tp-staff-launch-callout" role="note">'
-      + '<span class="tp-staff-launch-callout__text">'
-      + '<strong>Click any starter name or Profile</strong> to open the full Pitcher Profile — splits, tiers, allowed metrics &amp; F5.'
-      + '</span></div>';
+    var rotKpi = '<div class="tp-rotation-body">'
+      + '<div class="tp-rotation-snapshot">'
+      + staffMetricsBand(
+        'Rotation snapshot',
+        'Team rotation as a unit · league rank on each KPI',
+        rotCells,
+        'tp-rotation-snapshot__row'
+      )
+      + '</div>'
+      + '<div class="tp-rotation-roster">'
+      + '<div class="tp-rotation-roster__head">'
+      + '<span class="tp-rotation-roster__title">Starters</span>'
+      + '<span class="tp-rotation-roster__hint">Click any name or <strong>Profile</strong> for full Pitcher Profile — splits, tiers &amp; F5</span>'
+      + '</div>';
     // Compact launchpad: each SP links to its full Pitcher Profile (deep splits live there).
     rotKpi += ctx.profileTableOpen('tp-rotation-launch-table')
       + '<thead><tr><th>Name</th><th>ERA</th><th>K%</th><th>BB%</th><th>Tier</th><th>Profile</th></tr></thead><tbody>';
@@ -391,9 +402,10 @@
           + '</td></tr>';
       });
     }
-    rotKpi += '</tbody>' + ctx.profileTableClose();
-    return sectionCard(ctx, 'Starting Rotation', 'Team rotation unit — click any starter below for the full Pitcher Profile', rotKpi, 'tp-rotation-section',
-      { icon: 'rotation-section', kicker: 'SP unit' });
+    rotKpi += '</tbody>' + ctx.profileTableClose()
+      + '</div></div>';
+    return sectionCard(ctx, 'Starting Rotation', 'Rotation KPIs and starter launchpad', rotKpi, 'tp-rotation-section',
+      { icon: 'rotation-section', kicker: '' });
   }
 
   function renderBullpen(prof, team, ctx) {
@@ -424,16 +436,20 @@
       var rankMeta = staffLeagueRank(bpCache, tk, bpRankField[pair[0]], pair[2]);
       return staffStatCell(pair[0], valChip(ctx, v, pair[0].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]), rankMeta);
     }).join('');
-    var bpKpi = staffMetricsBand('Bullpen snapshot', 'Team bullpen as a unit · league rank on each KPI', bpCells);
-    var closer = pickCol(prof, ['closer_name']);
-    var setup = pickCol(prof, ['primary_setup']);
-    if (closer) {
-      bpKpi += '<p class="ca-helper tp-staff-meta">Closer: <strong>' + esc(closer) + '</strong>'
-        + (setup ? ' · Setup: ' + esc(setup.split(';').join(', ')) : '') + '</p>';
-    }
-    bpKpi += staffLaunchBtn('bullpen_report.html?team=' + encodeURIComponent(tk), 'Open full Bullpen Profile');
-    return sectionCard(ctx, 'Bullpen Overview', 'Team bullpen unit — open the full Bullpen Profile for usage, tiers & splits', bpKpi, 'tp-bullpen-section',
-      { icon: 'bullpen-section', kicker: 'Bullpen unit' });
+    var bpKpi = '<div class="tp-bullpen-body">'
+      + '<div class="tp-bullpen-snapshot">'
+      + staffMetricsBand(
+        'Bullpen snapshot',
+        'Team bullpen as a unit · league rank on each KPI',
+        bpCells,
+        'tp-bullpen-snapshot__row'
+      )
+      + '</div>';
+    bpKpi += '<div class="tp-bullpen-launch">'
+      + staffLaunchBtn('bullpen_report.html?team=' + encodeURIComponent(tk), 'Open full Bullpen Profile')
+      + '</div></div>';
+    return sectionCard(ctx, 'Bullpen Overview', 'Bullpen KPIs and launchpad to usage, tiers & splits', bpKpi, 'tp-bullpen-section',
+      { icon: 'bullpen-section', kicker: '' });
   }
 
   function renderRoster(prof, team, ctx) {
@@ -515,12 +531,11 @@
         + (A && A.sectionHeaderHtml
           ? A.sectionHeaderHtml({
             title: 'Bullpen Usage · L7',
-            subtitle: 'Live MLB API pitch matrix',
+            subtitle: '',
             icon: 'usage',
-            kicker: 'Usage'
+            kicker: ''
           })
-          : '<header class="ca-section-header"><h2 class="ca-section-title">Bullpen Usage · L7</h2>'
-            + '<p class="ca-helper">Live MLB API pitch matrix</p></header>')
+          : '<header class="ca-section-header"><h2 class="ca-section-title">Bullpen Usage · L7</h2></header>')
         + '<div id="tpBpUsageMount" class="tp-bp-usage-mount" data-team="' + esc(team) + '">'
         + '<div class="tp-empty">Loading bullpen usage…</div></div></section>';
     } else {
