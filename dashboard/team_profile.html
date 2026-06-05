@@ -201,6 +201,34 @@ var DEFAULT_SECTION_SPLITS = {
 };
 
 var LINEUP_SPLIT_SECTIONS = ['identity', 'offense', 'batting', 'schedule', 'sustainability'];
+var VALID_UNIT_CATEGORIES = { lineup: true, rotation: true, bullpen: true };
+
+function normalizeUnitCategory(raw) {
+  var v = String(raw || '').trim().toLowerCase();
+  if (v === 'starters' || v === 'sp') return 'rotation';
+  if (v === 'bp' || v === 'relievers') return 'bullpen';
+  if (v === 'offense' || v === 'batting') return 'lineup';
+  return VALID_UNIT_CATEGORIES[v] ? v : null;
+}
+
+function parseUnitCategoryFromParams(params) {
+  if (!params) return 'lineup';
+  var raw = params.get('unit') || params.get('category') || params.get('tab');
+  return normalizeUnitCategory(raw) || 'lineup';
+}
+
+function syncTeamProfileUrl() {
+  if (!window.history || !window.history.replaceState) return;
+  var params = new URLSearchParams(window.location.search);
+  params.set('team', STATE.team);
+  var cat = STATE.category || 'lineup';
+  if (cat === 'lineup') params.delete('unit');
+  else params.set('unit', cat);
+  var qs = params.toString();
+  var next = window.location.pathname + (qs ? '?' + qs : '');
+  var cur = window.location.pathname + window.location.search;
+  if (cur !== next) history.replaceState(null, '', next);
+}
 
 function syncLineupSectionSplits(split) {
   if (!STATE.splitBySection) STATE.splitBySection = Object.assign({}, DEFAULT_SECTION_SPLITS);
@@ -1427,6 +1455,7 @@ function bindUnitNavStrip() {
     if (!btn) return;
     STATE.category = btn.getAttribute('data-unit-tab') || 'lineup';
     syncSplitFromCategory();
+    syncTeamProfileUrl();
     bindTeamProfileFilters();
     var prof = profileRow(STATE.team) || {};
     var name = TEAM_NAMES[STATE.team] || STATE.team;
@@ -2018,7 +2047,7 @@ function renderTeam(team) {
   renderUnitSnapshotStrip(prof, ctx);
   renderStaffBlock(prof);
   renderLineupFooter(prof);
-  history.replaceState(null, '', '?team=' + STATE.team);
+  syncTeamProfileUrl();
 }
 
 function miniStat(label, val, ctx) {
@@ -2032,6 +2061,7 @@ function initSelector() {
   var fromUrl = teamKey(params.get('team') || 'NYY');
   var initial = ALL_TEAMS.indexOf(fromUrl) >= 0 ? fromUrl : 'NYY';
   STATE.team = initial;
+  STATE.category = parseUnitCategoryFromParams(params);
   syncSplitFromCategory();
   if (window.TeamProfilePicker && TeamProfilePicker.mount) {
     _teamPicker = TeamProfilePicker.mount({
