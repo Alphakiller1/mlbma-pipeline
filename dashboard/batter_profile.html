@@ -643,21 +643,9 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 
   <div class="selector-bar" id="playerSearch">
     <div class="selector-group wide">
-      <label class="selector-label" for="playerSearchInput">Search player or team</label>
-      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, NYY, Soto—" autocomplete="off">
+      <label class="selector-label" for="playerSearchInput">Search batter</label>
+      <input type="text" class="selector-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, Soto, Vargas" autocomplete="off">
       <datalist id="playerList"></datalist>
-    </div>
-    <div class="selector-group">
-      <label class="selector-label" for="teamFilter">Team</label>
-      <select class="selector-select" id="teamFilter">
-        <option value="">All teams</option>
-      </select>
-    </div>
-    <div class="selector-group">
-      <label class="selector-label" for="playerSelect">Roster</label>
-      <select class="selector-select" id="playerSelect">
-        <option value="">— Select batter —</option>
-      </select>
     </div>
     <div class="selector-group">
       <label class="selector-label">Window</label>
@@ -1882,57 +1870,15 @@ function populateSelectors() {
     });
   }
 
-  var teams = {};
-  batters.forEach(function(b) {
-    var t = String(pickCol(b, ['team_abbr', 'team'])).toUpperCase();
-    if (t) teams[t] = true;
-  });
-
-  var teamSel = document.getElementById('teamFilter');
-  teamSel.innerHTML = '<option value="">All teams</option>';
-  Object.keys(teams).sort().forEach(function(t) {
-    var o = document.createElement('option');
-    o.value = t;
-    o.textContent = t;
-    teamSel.appendChild(o);
-  });
-
   var datalist = document.getElementById('playerList');
   datalist.innerHTML = '';
-  var playerSel = document.getElementById('playerSelect');
-  playerSel.innerHTML = '<option value="">— Select batter —</option>';
 
   batters.sort(function(a, b) {
-    var ta = pickCol(a, ['team_abbr']);
-    var tb = pickCol(b, ['team_abbr']);
-    if (ta !== tb) return ta.localeCompare(tb);
     return pickCol(a, ['full_name']).localeCompare(pickCol(b, ['full_name']));
   }).forEach(function(b) {
-    var key = playerKey(b);
-    var name = pickCol(b, ['full_name']);
-    var team = pickCol(b, ['team_abbr', 'team']);
-    var o = document.createElement('option');
-    o.value = key;
-    o.textContent = team + ' — ' + name;
-    o.dataset.team = team;
-    playerSel.appendChild(o);
-
-    var d1 = document.createElement('option');
-    d1.value = name;
-    datalist.appendChild(d1);
-    var d2 = document.createElement('option');
-    d2.value = team;
-    datalist.appendChild(d2);
-  });
-}
-
-function refreshPlayerSelect() {
-  var team = document.getElementById('teamFilter').value;
-  var sel = document.getElementById('playerSelect');
-  Array.prototype.forEach.call(sel.options, function(o, idx) {
-    if (idx === 0) return;
-    var show = !team || o.dataset.team === team;
-    o.style.display = show ? '' : 'none';
+    var d = document.createElement('option');
+    d.value = pickCol(b, ['full_name']);
+    datalist.appendChild(d);
   });
 }
 
@@ -1957,15 +1903,11 @@ function resolveSearchToKey(q) {
 }
 
 function bindUi() {
-  document.getElementById('playerSelect').addEventListener('change', function() {
-    if (this.value) renderProfile(this.value);
-  });
-  document.getElementById('teamFilter').addEventListener('change', refreshPlayerSelect);
   document.getElementById('playerSearchInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       var key = resolveSearchToKey(this.value);
       if (key) {
-        document.getElementById('playerSelect').value = key;
+        this.value = playerDisplayName(key);
         renderProfile(key);
       }
     }
@@ -1973,7 +1915,6 @@ function bindUi() {
   document.getElementById('playerSearchInput').addEventListener('input', function() {
     var key = resolveSearchToKey(this.value);
     if (key) {
-      document.getElementById('playerSelect').value = key;
       renderProfile(key);
     }
   });
@@ -2036,7 +1977,6 @@ function loadAll() {
     if (!startKey && DATA.profiles.length) startKey = playerKey(DATA.profiles[0]);
 
     if (startKey) {
-      document.getElementById('playerSelect').value = startKey;
       if (params.get('player')) document.getElementById('playerSearchInput').value = params.get('player');
       renderProfile(startKey);
     }
