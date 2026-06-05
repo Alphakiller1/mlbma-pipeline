@@ -73,9 +73,7 @@ h1 {
   font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
   font-family: var(--font-display);
   font-variation-settings: "wdth" 125;
-  background: linear-gradient(135deg, #fff 0%, var(--purple-2) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text);
 }
 .section-title,
 .player-name-lg {
@@ -267,6 +265,189 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 .empty-state { text-align: center; padding: 24px; color: var(--text-3); font-size: 13px; }
 #profileContent { display: none; }
 #profileContent.ready { display: block; }
+.prop-hub-shell {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), transparent 28%),
+    linear-gradient(180deg, #141827, #090b14);
+  border: 1.5px solid rgba(196, 176, 255, 0.22);
+}
+.prop-hub-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.9fr);
+  gap: 14px;
+}
+.prop-hub-main,
+.prop-hub-side {
+  display: grid;
+  gap: 12px;
+}
+.prop-anchor,
+.quick-score-grid,
+.prop-card,
+.detail-summary,
+.detail-body .subsection {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+}
+.prop-anchor {
+  padding: 16px 18px;
+}
+.prop-anchor-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.prop-score {
+  font-family: var(--mono);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+}
+.prop-anchor-copy {
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.prop-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.prop-card {
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.prop-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+.prop-card.tier-elite::before { background: var(--green); }
+.prop-card.tier-good::before { background: var(--blue); }
+.prop-card.tier-mid::before { background: var(--gold); }
+.prop-card.tier-low::before { background: var(--red); }
+.prop-card-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.prop-card-title {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+.prop-card-note {
+  margin-top: 6px;
+  color: var(--text-2);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.quick-score-grid {
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+.quick-score-row {
+  display: grid;
+  grid-template-columns: 86px 1fr 42px;
+  gap: 10px;
+  align-items: center;
+}
+.quick-score-label {
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.quick-score-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.quick-score-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4f90ff 0%, #8e5cff 52%, #ea5fa3 100%);
+}
+.quick-score-value {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 800;
+}
+.betting-panel.compact {
+  padding: 14px 16px;
+  font-size: 12.5px;
+}
+.detail-section {
+  padding: 0;
+  overflow: hidden;
+}
+.detail-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 15px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 0;
+}
+.detail-section summary::-webkit-details-marker { display: none; }
+.detail-summary-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.detail-summary-note {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.detail-body {
+  padding: 0 18px 18px;
+  display: grid;
+  gap: 12px;
+}
+.detail-body .section,
+.detail-body .subsection {
+  margin: 0;
+  padding: 16px;
+}
+.detail-body .section {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+@media (max-width: 980px) {
+  .prop-hub-grid {
+    grid-template-columns: 1fr;
+  }
+  .prop-card-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .prop-anchor-grid,
+  .quick-score-row {
+    grid-template-columns: 1fr;
+  }
+  .prop-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260618a">
@@ -285,7 +466,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
 <body class="player-profile-page">
 
 <div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets—</div>
-﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -374,7 +555,7 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
       <span class="brand-pill" id="brandPill">Loading—</span>
     </div>
     <h1>Batter Profile</h1>
-    <p class="subtitle">Batter splits, trends, and betting context.</p>
+    <p class="subtitle">Prop-first batter read with matchup context, quick leans, and expandable support.</p>
     <div class="data-banner" id="dataBanner"></div>
   </header>
 
@@ -410,62 +591,99 @@ tbody tr.cold-row { background: rgba(248, 113, 113, 0.08); }
   <div id="profileContent">
     <div class="player-header" id="playerHeader"></div>
 
-    <section class="section">
-      <div class="section-title">Player Header</div>
-      <div id="headerBlock"></div>
+    <section class="section prop-hub-shell">
+      <div class="section-eyebrow">Decision Console</div>
+      <div class="section-title">Prop Hub</div>
+      <div class="section-subtitle">Best angle first. Open deeper context only when you need it.</div>
+      <div class="prop-hub-grid">
+        <div class="prop-hub-main">
+          <div class="prop-anchor" id="propAnchor"></div>
+          <div class="prop-card-grid" id="propCards"></div>
+        </div>
+        <div class="prop-hub-side">
+          <div class="quick-score-grid" id="quickScores"></div>
+          <div class="betting-panel compact" id="bettingPanel"></div>
+        </div>
+      </div>
     </section>
 
-    <section class="section">
-      <div class="section-title">Season Snapshot</div>
-      <div class="section-subtitle" id="snapshotSubtitle">Rate line for selected window</div>
-      <div class="stat-bar" id="seasonBar"></div>
-    </section>
+    <details class="section detail-section" open>
+      <summary class="detail-summary">
+        <span class="detail-summary-title">Snapshot And Core Metrics</span>
+        <span class="detail-summary-note">Window line, core created metrics, and baseline profile.</span>
+      </summary>
+      <div class="detail-body">
+        <div id="headerBlock"></div>
 
-    <section class="section">
-      <div class="section-title">Created Metric Profile</div>
-      <div class="section-subtitle">ABQ / RCV / OBR / OSI — percentile vs qualified batter pool (season vs RHP baseline)</div>
-      <div class="metric-grid" id="metricCards"></div>
-    </section>
+        <section class="subsection">
+          <div class="section-title">Season Snapshot</div>
+          <div class="section-subtitle" id="snapshotSubtitle">Rate line for selected window</div>
+          <div class="stat-bar" id="seasonBar"></div>
+        </section>
 
-    <section class="section">
-      <div class="section-title">Window Trend Table</div>
-      <div class="section-subtitle">Created metrics across windows — hot/cold if L7 is —8+ vs YTD</div>
-      <div class="table-wrap" id="windowTableWrap"></div>
-      <div class="insight-line" id="windowInsight"></div>
-    </section>
+        <section class="subsection">
+          <div class="section-title">Created Metric Profile</div>
+          <div class="section-subtitle">ABQ / RCV / OBR / OSI percentiles against the qualified batter pool.</div>
+          <div class="metric-grid" id="metricCards"></div>
+        </section>
+      </div>
+    </details>
 
-    <section class="section">
-      <div class="section-title">Handedness Splits</div>
-      <div class="section-subtitle">vs RHP and vs LHP — gold flag if ABQ platoon gap exceeds 8 points</div>
-      <div class="split-grid" id="handGrid"></div>
-      <div class="insight-line" id="handInsight"></div>
-    </section>
+    <details class="section detail-section" open>
+      <summary class="detail-summary">
+        <span class="detail-summary-title">Matchup And Form</span>
+        <span class="detail-summary-note">Window trend, hand, location, and starter/reliever context.</span>
+      </summary>
+      <div class="detail-body">
 
-    <section class="section">
-      <div class="section-title">Home / Away Splits</div>
-      <div class="section-subtitle">Location context — flagged if home/away OSI gap exceeds 10 points</div>
-      <div class="split-grid" id="locGrid"></div>
-      <div class="insight-line" id="locInsight"></div>
-    </section>
+        <section class="subsection">
+          <div class="section-title">Form Window</div>
+          <div class="section-subtitle">Recent windows against the season baseline so the trend is visible at a glance.</div>
+          <div class="table-wrap" id="windowTableWrap"></div>
+          <div class="insight-line" id="windowInsight"></div>
+        </section>
 
-    <section class="section">
-      <div class="section-title">vs SP / vs RP Splits</div>
-      <div class="section-subtitle">Starter vs reliever exposure — full-game value flag when OSI vs RP exceeds OSI vs SP by 10+</div>
-      <div class="split-grid" id="spRpGrid"></div>
-      <div class="insight-line" id="spRpInsight"></div>
-    </section>
+        <section class="subsection">
+          <div class="section-title">Platoon Split</div>
+          <div class="section-subtitle">Side-by-side read against righties and lefties to confirm the active hand edge.</div>
+          <div class="split-grid" id="handGrid"></div>
+          <div class="insight-line" id="handInsight"></div>
+        </section>
 
-    <section class="section">
-      <div class="section-title">Comparable Players</div>
-      <div class="section-subtitle">Nearest ABQ/RCV archetype matches on the board</div>
-      <div class="comparable-list" id="comparableList"></div>
-    </section>
+        <section class="subsection">
+          <div class="section-title">Home / Away Context</div>
+          <div class="section-subtitle">Location context for spotting whether the current environment adds support or risk.</div>
+          <div class="split-grid" id="locGrid"></div>
+          <div class="insight-line" id="locInsight"></div>
+        </section>
 
-    <section class="section">
-      <div class="section-title">Betting Context Panel</div>
-      <div class="section-subtitle">Synthesized angles from the strongest patterns in this profile</div>
-      <div class="betting-panel" id="bettingPanel"></div>
-    </section>
+        <section class="subsection">
+          <div class="section-title">Starter / Bullpen Split</div>
+          <div class="section-subtitle">Shows whether the prop reads cleaner early against the starter or later against the full staff.</div>
+          <div class="split-grid" id="spRpGrid"></div>
+          <div class="insight-line" id="spRpInsight"></div>
+        </section>
+      </div>
+    </details>
+    <details class="section detail-section">
+      <summary class="detail-summary">
+        <span class="detail-summary-title">Comparables And Supporting Read</span>
+        <span class="detail-summary-note">Profile neighbors and synthesized batter context.</span>
+      </summary>
+      <div class="detail-body">
+        <section class="subsection">
+          <div class="section-title">Comparable Players</div>
+          <div class="section-subtitle">Nearest ABQ/RCV archetype matches on the board.</div>
+          <div class="comparable-list" id="comparableList"></div>
+        </section>
+
+        <section class="subsection">
+          <div class="section-title">Supporting Read</div>
+          <div class="section-subtitle">Synthesized angles from the strongest patterns in this profile.</div>
+          <div class="betting-panel" id="bettingPanelDetail"></div>
+        </section>
+      </div>
+    </details>
   <script>
 var TABS = MLBMA_CONFIG.SHEET_TABS;
 var SHEET_ID = MLBMA_CONFIG.SHEET_ID;
@@ -1105,11 +1323,109 @@ function buildBettingSummary(key) {
   return parts.join('. ') + '.';
 }
 
+function scoreFromValue(value, fallback) {
+  if (value === null || value === undefined || isNaN(value)) return fallback == null ? 50 : fallback;
+  var n = Number(value);
+  if (n < 0) return 0;
+  if (n > 100) return 100;
+  return Math.round(n);
+}
+
+function currentSplitRow(key) {
+  var lineup = findLineupContext(key);
+  if (lineup && lineup.oppHand === 'L') return getSplitRow(key, 'vs_LHP') || getSplitRow(key, 'vs_RHP');
+  return getSplitRow(key, 'vs_RHP') || getSplitRow(key, 'vs_LHP') || getProfileRows(key)[0];
+}
+
+function toneClass(score) {
+  if (score >= 75) return 'tier-elite';
+  if (score >= 62) return 'tier-good';
+  if (score >= 50) return 'tier-mid';
+  return 'tier-low';
+}
+
+function propRatingBundle(key) {
+  var split = currentSplitRow(key) || {};
+  var raw = getRawForPlayer(key, STATE.window) || {};
+  var lineup = findLineupContext(key);
+  var osi = scoreFromValue(numOrNull(pickCol(split, ['OSI'])), 50);
+  var abq = scoreFromValue(numOrNull(pickCol(split, ['ABQ'])), osi);
+  var rcv = scoreFromValue(numOrNull(pickCol(split, ['RCV'])), osi);
+  var obr = scoreFromValue(numOrNull(pickCol(split, ['OBR'])), osi);
+  var kPct = numOrNull(pickCol(raw, ['K%']));
+  var barrelPct = numOrNull(pickCol(raw, ['Barrel%']));
+  var hardPct = numOrNull(pickCol(raw, ['HardHit%', 'Hard Hit%', 'HardHit%']));
+  var contact = Math.round((abq * 0.45) + (obr * 0.35) + ((kPct !== null ? Math.max(0, 30 - kPct) * 3.3 : 50) * 0.20));
+  var power = Math.round((rcv * 0.55) + ((barrelPct !== null ? Math.min(100, barrelPct * 6.2) : 50) * 0.25) + ((hardPct !== null ? Math.min(100, hardPct * 1.7) : 50) * 0.20));
+  var kSafety = Math.round(kPct !== null ? Math.max(0, 100 - (kPct * 3.2)) : 55);
+  var lineupCtx = Math.round((osi * 0.55) + (lineup && lineup.inLineup ? 18 : 0) + (lineup && Number(lineup.batOrder) <= 4 ? 8 : 0));
+  var hits = Math.round((contact * 0.62) + (lineupCtx * 0.38));
+  var totalBases = Math.round((power * 0.58) + (contact * 0.24) + (lineupCtx * 0.18));
+  var homeRun = Math.round((power * 0.70) + (rcv * 0.20) + (lineupCtx * 0.10));
+  return {
+    lineup: lineup,
+    contact: Math.min(contact, 100),
+    power: Math.min(power, 100),
+    kSafety: Math.min(kSafety, 100),
+    lineupCtx: Math.min(lineupCtx, 100),
+    hits: Math.min(hits, 100),
+    totalBases: Math.min(totalBases, 100),
+    homeRun: Math.min(homeRun, 100)
+  };
+}
+
+function renderPropHub(key) {
+  var name = playerDisplayName(key);
+  var bundle = propRatingBundle(key);
+  var lineup = bundle.lineup;
+  var best = bundle.totalBases >= bundle.hits ? 'Total Bases' : 'Hits';
+  var bestScore = Math.max(bundle.totalBases, bundle.hits);
+  document.getElementById('propAnchor').innerHTML =
+    '<div class="prop-anchor-grid">' +
+      '<div><div class="section-eyebrow">Best Angle</div><div class="prop-score" style="color:' + metricColor(bestScore) + '">' + bestScore + '</div></div>' +
+      '<div class="prop-anchor-copy"><strong>' + escHtml(best) + '</strong> is the cleanest first-click prop for ' + escHtml(name) +
+      (lineup && lineup.inLineup ? ' batting ' + escHtml(lineup.batOrder) + ' vs ' + escHtml(lineup.oppSp) + ' (' + escHtml(lineup.oppHand) + 'HP).' : '.') +
+      '</div></div>';
+
+  var cards = [
+    { label: 'Best Angle', title: best, score: bestScore, note: best === 'Total Bases' ? 'Damage path is stronger than HR-only dependence.' : 'Ball-in-play floor is the cleaner path.' },
+    { label: 'Stable Alt', title: best === 'Total Bases' ? 'Hits' : 'Total Bases', score: best === 'Total Bases' ? bundle.hits : bundle.totalBases, note: 'Use when the primary line gets expensive.' },
+    { label: 'Ceiling', title: 'Home Run', score: bundle.homeRun, note: 'Upside branch, not the default read.' }
+  ];
+  document.getElementById('propCards').innerHTML = cards.map(function(card) {
+    return '<div class="prop-card ' + toneClass(card.score) + '">' +
+      '<div class="prop-card-label">' + escHtml(card.label) + '</div>' +
+      '<div class="prop-card-title">' + escHtml(card.title) + '</div>' +
+      '<div class="prop-card-note">' + escHtml(card.note) + '</div>' +
+    '</div>';
+  }).join('');
+
+  var quick = [
+    ['Contact', bundle.contact],
+    ['Power', bundle.power],
+    ['K Safety', bundle.kSafety],
+    ['Context', bundle.lineupCtx]
+  ];
+  document.getElementById('quickScores').innerHTML = quick.map(function(row) {
+    return '<div class="quick-score-row">' +
+      '<div class="quick-score-label">' + escHtml(row[0]) + '</div>' +
+      '<div class="quick-score-track"><div class="quick-score-fill" style="width:' + Math.max(0, Math.min(100, row[1])) + '%"></div></div>' +
+      '<div class="quick-score-value">' + row[1] + '</div>' +
+    '</div>';
+  }).join('');
+
+  var summary = buildBettingSummary(key);
+  document.getElementById('bettingPanel').innerHTML = summary;
+  var detail = document.getElementById('bettingPanelDetail');
+  if (detail) detail.innerHTML = summary;
+}
+
 function renderProfile(key) {
   if (!key) return;
   STATE.playerKey = key;
   document.getElementById('profileContent').classList.add('ready');
   renderHeader(key);
+  renderPropHub(key);
   renderSeasonBar(key);
   renderMetricCards(key);
   renderWindowTable(key);
@@ -1117,7 +1433,6 @@ function renderProfile(key) {
   renderLocSplits(key);
   renderSpRpSplits(key);
   renderComparables(key);
-  document.getElementById('bettingPanel').innerHTML = buildBettingSummary(key);
 }
 
 function populateSelectors() {
