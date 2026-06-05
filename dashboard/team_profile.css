@@ -1695,7 +1695,7 @@ body.team-profile-page :is(
 .team-profile-page .tp-summary-head .ca-section-title,
 .team-profile-page .ca-section-head .title {
   font-family: var(--font-display, var(--display));
-  font-size: 14px !important;
+  font-size: 20px !important;
   font-weight: 800;
   letter-spacing: -0.012em;
   line-height: 1.2;

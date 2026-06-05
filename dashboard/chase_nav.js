@@ -1,6 +1,6 @@
-ï»¿// v20260523d â€” three-view nav: opening / matchups / research
+// v20260523d — three-view nav: opening / matchups / research
 /**
- * Chase Analytics navigation â€” dropdowns, mobile menu, active page, pipeline timestamp.
+ * Chase Analytics navigation — dropdowns, mobile menu, active page, pipeline timestamp.
  */
 (function () {
   'use strict';
@@ -211,7 +211,7 @@
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');
     var mobile = document.getElementById('mobileLastUpdated');
-    var display = (!text || text === '--' || text === 'â€”') ? 'syncingâ€¦' : text;
+    var display = (!text || text === '--' || text === '—') ? 'syncing…' : text;
     if (el) el.textContent = display;
     if (mobile) mobile.textContent = display;
     if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {

@@ -1284,7 +1284,7 @@
           : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';
         var d = c.k === 'bullpenScore' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);
         if (c.k === 'era' || c.k === 'fip') {
-          return '<td class="num">' + (v != null && !isNaN(v) ? fmt(v, 2) : '—') + '</td>';
+          return tdNum(v, 2, true, c.k);
         }
         return tdNum(v, d, inv, ctx);
       }).join('');

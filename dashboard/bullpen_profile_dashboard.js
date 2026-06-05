@@ -142,13 +142,17 @@
   }
 
   function statPill(label, rawVal, display) {
-    // Banner stats render as #3 filled chips (theme.css banner scope styles .chip).
-    var tone = bpStatTone(label, rawVal);
-    var chipCls = (rawVal == null || isNaN(rawVal)) ? 'c-na'
-      : ({ elite: 'c-elite', strong: 'c-good', mid: 'c-mid', weak: 'c-weak', neutral: 'c-na' }[tone] || 'c-na');
+    var valueHtml;
+    if (rawVal != null && !isNaN(rawVal) && A && A.valChipHtml) {
+      var ctx = label.indexOf('OSI') >= 0 ? 'osi' : 'era';
+      var dec = String(display).indexOf('%') >= 0 ? 0 : (label.indexOf('ERA') >= 0 ? 2 : 1);
+      valueHtml = A.valChipHtml(rawVal, ctx, true, dec, { display: display });
+    } else {
+      valueHtml = '<span class="tp-hero-stat__num tp-hero-stat__num--na">—</span>';
+    }
     return '<div class="tp-hero-stat">'
       + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-hero-stat__value"><span class="chip ' + chipCls + '">' + esc(display) + '</span></span></div>';
+      + '<span class="tp-hero-stat__value">' + valueHtml + '</span></div>';
   }
 
   function renderSnapshot(team, unit, ctx) {

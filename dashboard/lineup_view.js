@@ -93,7 +93,7 @@
       + '.lv-help{font-size:10px;color:var(--text-3,#6b6b76)}.lv-help.error{color:var(--neg,#f87171)}'
       + '.lv-table-wrap{overflow:auto}'
       + '.lv-table{width:100%;border-collapse:collapse}'
-      + '.lv-table thead th{background:#0C0E18;color:#AEB4C6;font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:14px;border-bottom:1.5px solid #37405A;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:2}'
+      + '.lv-table thead th{background:#0C0E18;color:#AEB4C6;font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:13.5px;letter-spacing:.05em;text-transform:uppercase;padding:14px;border-bottom:1.5px solid #37405A;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:2}'
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){text-align:left}'
       + '.lv-table thead th.sorted{background:rgba(124,77,255,.16);color:#9A6BFF}'
       + '.lv-table td.sort-col{background:rgba(124,77,255,.05)}'

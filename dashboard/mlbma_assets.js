@@ -863,7 +863,7 @@
     var body = '<div class="ca-section-head__body">';
     if (kicker) body += '<div class="kicker">' + escHtml(kicker) + '</div>';
     body += '<div class="title">' + escHtml(title || '') + '</div>';
-    if (purpose) body += '<div class="purpose">' + escHtml(purpose) + '</div>';
+    if (purpose) body += '<div class="purpose">' + escHtml(titleCaseLabel(purpose)) + '</div>';
     body += '</div>';
     return '<div class="ca-section-head">' + icon + body + '</div>';
   }

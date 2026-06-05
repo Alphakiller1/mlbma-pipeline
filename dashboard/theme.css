@@ -143,11 +143,18 @@ body::after,
 .chip.c-poor,  .val-chip.c-poor  { color: #F87171; }
 .chip.c-na,    .val-chip.c-na    { color: #6E7383; font-size: 14px; }
 
-/* ---- Banners (#4): dark pill (styled on .tp-hero-stat) + larger gradient TEXT value ---- */
-:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot) .chip {
+/* ---- Profile banners: large graded text values (not filled chips) ---- */
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip,
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .tp-hero-stat__num {
   font-size: 22px !important;
   font-weight: 800 !important;
   letter-spacing: -0.01em;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
 }
 
 /* ---- Larger, legible profile/ranking tables (bare-gradient-text era) ---- */
@@ -385,8 +392,13 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   display: block;
   width: 46px;
   height: 46px;
+  max-width: none;
   object-fit: contain;
-  filter: drop-shadow(0 0 14px rgba(124, 77, 255, 0.42));
+  object-position: center;
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  filter: none;
 }
 .ca-neon-icon--sm .ca-icon-img {
   width: 38px;
@@ -425,13 +437,18 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   margin-bottom: 14px;
 }
 
+.ca-icon-img--mark {
+  shape-rendering: geometricPrecision;
+}
 .ca-section-head .ca-icon .ca-icon-img,
 .ca-tool-card__icon .ca-icon-img {
   display: block;
   object-fit: contain;
+  object-position: center;
+  image-rendering: auto;
+  filter: none;
   width: 38px;
   height: 38px;
-  filter: drop-shadow(0 0 14px rgba(124, 77, 255, 0.42));
 }
 .ca-platform-cta__item .ca-icon-circle--asset .ca-icon-img {
   width: 36px;
@@ -660,3 +677,69 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   font-size: 13px;
 }
 .ca-stat-strip span strong { font-family: var(--mono); font-weight: 700; }
+
+/* ============================================================
+   PDF punch-list (Jun 2026): typography & table density
+   Visual-only — no structure or data changes.
+   ============================================================ */
+
+/* Item 1: section explanations use title case via JS; bump legibility */
+.ca-section-head .purpose,
+.pl-section-sub,
+.thm-note,
+.tp-section .ca-helper {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.55;
+}
+
+/* Items 2–3, 8, 12: ranking / heatmap table headings */
+.lv-table thead th,
+.thm-table thead th {
+  font-size: 13.5px !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* Items 7–12: Pitcher Intelligence ranking sections */
+#plRankingsMount .pl-section-title,
+#plBullpenRankingsMount .pl-section-title {
+  font-size: 22px !important;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.pl-rank-table-wrap {
+  max-height: 520px;
+  overflow: auto;
+}
+
+/* Item 14: profile section headings, row labels, and stat values */
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-section-head .title,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-section-title {
+  font-size: 20px !important;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-section-head .purpose,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-helper {
+  font-size: 16px !important;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .hub-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .pp-data-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .bp-reliever-rank-table tbody td {
+  font-size: 16px !important;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-trend-table__metric,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .pp-table-label-text,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .hub-table tbody th[scope="row"] {
+  font-size: 16px !important;
+  font-weight: 700;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .chip,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .val-chip {
+  font-size: 18px !important;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .hub-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .pp-data-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .bp-reliever-rank-table th {
+  font-size: 14px !important;
+}

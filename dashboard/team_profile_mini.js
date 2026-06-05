@@ -937,11 +937,7 @@
         chipOpts.decimals == null ? 1 : chipOpts.decimals
       );
     } else if (value != null && value !== '') {
-      // Banner stats render as #3 filled chips (theme.css banner scope styles .chip);
-      // map the precomputed tone to a chip grade class.
-      var _tc = { elite: 'c-elite', positive: 'c-elite', strong: 'c-good', solid: 'c-mid',
-        mid: 'c-mid', neutral: 'c-na', weak: 'c-weak', negative: 'c-poor' }[tone] || 'c-na';
-      valueHtml = '<span class="chip ' + _tc + '">' + value + '</span>';
+      valueHtml = '<span class="tp-hero-stat__num">' + value + '</span>';
     } else {
       return '';
     }

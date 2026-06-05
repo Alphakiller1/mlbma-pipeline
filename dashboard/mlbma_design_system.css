@@ -235,7 +235,8 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   width: 40px;
   height: 40px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(124, 77, 255, 0.28));
+  object-position: center;
+  filter: none;
 }
 .ca-tool-card__icon--asset {
   background: transparent !important;
@@ -313,10 +314,11 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 }
 
 .ca-section-head .purpose {
-  color: var(--text-3);
-  font-size: 12.5px;
-  margin-top: 2px;
-  line-height: 1.45;
+  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+  line-height: 1.55;
 }
 
 .ca-section-header .ca-section-head {
@@ -619,20 +621,20 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 .gloss-metric-card__name {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 18px;
+  font-size: 20px;
   color: var(--text);
 }
 
 .gloss-metric-card__full {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-3);
   margin-bottom: 10px;
 }
 
 .gloss-metric-card__def {
-  font-size: 13px;
+  font-size: 15.5px;
   color: var(--text-2);
-  line-height: 1.5;
+  line-height: 1.55;
   margin-bottom: 12px;
 }
 
@@ -643,14 +645,14 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 }
 
 .gloss-metric-card__cell {
-  font-size: 11.5px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .gloss-metric-card__cell strong {
   display: block;
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--v-2);

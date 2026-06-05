@@ -158,17 +158,24 @@ html.view-research #oorSection { display: none !important; }
   background: var(--surface-1, #0c0c14);
 }
 .rl-compare-metric-row {
-  display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;
-  padding: 11px 16px; border-bottom: 0.5px solid var(--border); background: transparent;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(88px, auto) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 0.5px solid var(--border);
+  background: transparent;
 }
 .rl-compare-metric-row:last-child { border-bottom: none; }
 .rl-compare-metric-val {
-  font-family: var(--mono, monospace); font-size: 15px; font-weight: 600;
+  font-family: var(--mono, monospace);
+  font-size: 16px;
+  font-weight: 700;
+  width: 100%;
 }
-/* Push each side's stat to the OUTER edge so both are equidistant from the
-   center label (item 4 — comparison less centered). */
-.rl-compare-metric-val--a { text-align: left; padding-left: 6px; }
-.rl-compare-metric-val--b { text-align: right; padding-right: 6px; }
+/* Push each side's stat to the outer edge — equidistant from center label. */
+.rl-compare-metric-val--a { text-align: left; justify-self: start; padding-left: 2px; }
+.rl-compare-metric-val--b { text-align: right; justify-self: end; padding-right: 2px; }
 .rl-compare-metric-val--win { font-weight: 800; }
 .rl-compare-metric-label {
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
@@ -564,7 +571,8 @@ html.view-research #oorSection { display: none !important; }
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
-.pl-rank-table.rl-sp-rank-table thead th {
+.pl-rank-table.rl-sp-rank-table thead th,
+.pl-rank-table.rl-bp-rank-table thead th {
   position: sticky;
   top: 0;
   z-index: 3;
@@ -572,9 +580,9 @@ html.view-research #oorSection { display: none !important; }
   font-family: var(--display, var(--font-display, "Roboto Condensed", sans-serif));
   font-weight: 700;
   font-stretch: 110%;
-  font-size: 11px;
+  font-size: 13.5px;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.04em;
   color: var(--text-2);
   padding: 11px 12px;
   border-bottom: 1px solid var(--border-2, var(--border));

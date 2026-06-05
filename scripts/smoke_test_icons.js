@@ -44,7 +44,7 @@ checks.forEach(function(name) {
   }
   if (!file) { console.error('FAIL no markFile', name); failed++; return; }
   if (!svg.includes('<img') || !svg.includes(file + '.png')) {
-    console.error('FAIL iconSvg img', name, 'file', file); failed++;
+    console.error('FAIL iconSvg img', name, 'file', file, 'expected .png'); failed++;
   }
 });
 

@@ -2601,11 +2601,11 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260602n">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260605c">
-<link rel="stylesheet" href="theme.css?v=20260605c">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
+<link rel="stylesheet" href="theme.css?v=20260606b">
 <link rel="stylesheet" href="chase_nav.css?v=20260602o">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260606g">
-<link rel="stylesheet" href="research_lab.css?v=20260605d">
+<link rel="stylesheet" href="research_lab.css?v=20260605e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
@@ -2663,19 +2663,19 @@ body.view-research .ca-lab { display: block; }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
 <script src="mlbma_ui.js?v=20260606d" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260605c"></script>
-<script src="mlbma_icons.js?v=20260605c"></script>
+<script src="mlbma_assets.js?v=20260605e"></script>
+<script src="mlbma_icons.js?v=20260606c"></script>
 <script src="matchup_shared.js?v=20260608t"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260608t"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
-<script src="research_lab.js?v=20260605d"></script>
-<script src="lineup_view.js?v=20260618a"></script>
-<script src="trends_heatmap.js?v=20260602q"></script>
+<script src="research_lab.js?v=20260605e"></script>
+<script src="lineup_view.js?v=20260605e"></script>
+<script src="trends_heatmap.js?v=20260605e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
-<script src="pitcher_lab.js?v=20260605d"></script>
+<script src="pitcher_lab.js?v=20260605e"></script>
   <link rel="stylesheet" href="mlbma_design_system.css">
   <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
 </head>
@@ -4309,11 +4309,23 @@ function filterSheetRowsForToday(rows) {
   });
   if (!dated.length) {
     console.warn('[MATCHUPS] Sheet rows lack Slate_Date — ignoring undated slate (run scrape_lineups)');
+    if (LIVE_DATA) LIVE_DATA._slateSheetDate = null;
     return [];
   }
   var fresh = dated.filter(function(row) { return slateDateFromRow(row) === today; });
-  if (fresh.length) return fresh;
-  console.warn('[MATCHUPS] Sheet rows have Slate_Date but none match today (' + today + ') — ignoring stale slate');
+  if (fresh.length) {
+    if (LIVE_DATA) LIVE_DATA._slateSheetDate = today;
+    return fresh;
+  }
+  var sheetDays = {};
+  dated.forEach(function(row) {
+    var d = slateDateFromRow(row);
+    sheetDays[d] = (sheetDays[d] || 0) + 1;
+  });
+  var latest = Object.keys(sheetDays).sort().pop();
+  if (LIVE_DATA) LIVE_DATA._slateSheetDate = latest || null;
+  console.warn('[MATCHUPS] Sheet rows have Slate_Date but none match today (' + today + ') — sheet shows '
+    + latest + '; run: python -m scrapers.scrape_lineups');
   return [];
 }
 
@@ -4619,7 +4631,14 @@ function buildMatchupLineupBlock(m, opts) {
   var homeFaces = normalizePitcherHand(m.awayHand);
   var inner;
   if (!awayRows.length && !homeRows.length) {
-    inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + escHtml(gk) + '</span>.</div>';
+    var slateDay = mlbSlateDayIso();
+    var sheetDay = LIVE_DATA._slateSheetDate || '';
+    var staleNote = (sheetDay && sheetDay !== slateDay)
+      ? ' Sheet slate is dated <strong>' + escHtml(sheetDay) + '</strong> (today is <strong>' + escHtml(slateDay) + '</strong>). Run: <code>python -m scrapers.scrape_lineups</code>.'
+      : ((LIVE_DATA.matchups || []).length && !(LIVE_DATA.lineups || []).length)
+        ? ' Run: <code>python -m scrapers.scrape_lineups</code> to refresh Today_Lineups.'
+        : '';
+    inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + escHtml(gk) + '</span>.' + staleNote + '</div>';
   } else {
     inner = '<div class="matchup-lineup-grid">'
       + buildLineupColHtml(m.away + ' (away)', awayRows, awayFaces)
@@ -7477,12 +7496,24 @@ function ensureLineupsLoaded() {
 function refreshMatchupsSlateUi() {
   rebuildTodayMatchupsSlateIfNeeded();
   if (!shouldRenderMatchupsView()) return;
-  enrichMatchupCards();
-  showSlateFreshnessBanner();
-  syncHeroStats();
-  if (window.PlatformDashboard && PlatformDashboard.renderHeroMatchups) {
-    PlatformDashboard.renderHeroMatchups();
+  var paintCards = function() {
+    enrichMatchupCards();
+    showSlateFreshnessBanner();
+    syncHeroStats();
+    if (window.PlatformDashboard && PlatformDashboard.renderHeroMatchups) {
+      PlatformDashboard.renderHeroMatchups();
+    }
+  };
+  if (!LIVE_DATA.lineups || !LIVE_DATA.lineups.length) {
+    ensureLineupsLoaded().then(function(rows) {
+      if (rows && rows.length) {
+        refreshTodayMatchups(LIVE_DATA._liveSchedule);
+      }
+      paintCards();
+    }).catch(paintCards);
+    return;
   }
+  paintCards();
 }
 
 function initMatchupsView() {
@@ -7508,7 +7539,6 @@ function initMatchupsView() {
     boot = PlatformDashboard.initRegistry();
   }
   boot.then(loadLiveSlate).then(paint).catch(paint);
-  whenMatchupsReady(paint);
 }
 
 function whenMatchupsReady(fn) {

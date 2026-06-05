@@ -43,7 +43,7 @@ for path in DASH.rglob("*"):
 # 3) ICON_VER appears in generated img src
 if icon_ver and icon_ver not in js:
     pass
-img_ver_ok = f"?v={icon_ver}" in js
+img_ver_ok = bool(icon_ver) and ".png?v=" in js and f"ICON_VER = '{icon_ver}'" in js
 
 # 4) Every PROFILE_ICONS value resolves to mark or line
 mark_section = js.split("var MARK_ICONS = {")[1].split("};")[0]
@@ -51,11 +51,22 @@ line_section = js.split("var LINE_ICONS = {")[1].split("};")[0]
 prof_block = re.search(r"var PROFILE_ICONS = \{([\s\S]*?)\};", js)
 alias_block = re.search(r"var ICON_ALIAS = \{([\s\S]*?)\};", js)
 
+neon_section = js.split("var NEON = {")[1].split("};")[0]
+NEON = {}
+for m in re.finditer(r"(\w+):\s*'(neon-[^']+)'", neon_section):
+    NEON[m.group(1)] = m.group(2).lower()
+
 MARK_MAP = {}
 for m in re.finditer(r"['\"]?([a-z0-9-]+)['\"]?\s*:\s*['\"]([^'\"]+)['\"]", mark_section):
     MARK_MAP[m.group(1).lower()] = m.group(2).lower()
+for m in re.finditer(r"['\"]?([a-z0-9-]+)['\"]?\s*:\s*NEON\.(\w+)", mark_section):
+    ref = NEON.get(m.group(2))
+    if ref:
+        MARK_MAP[m.group(1).lower()] = ref
 LINE_KEYS = set(a or b for a, b in re.findall(r"(?:'([a-z0-9-]+)'|([a-z0-9-]+)):\s*L\(", line_section))
 png_files = {p.stem for p in ICONS_DIR.glob("*.png")}
+svg_files = {p.stem for p in ICONS_DIR.glob("neon-*.svg")}
+mark_assets = png_files | svg_files
 ICON_ALIAS = {}
 PROFILE_ICONS = {}
 if alias_block:
@@ -72,11 +83,11 @@ def resolve(k):
     while k in ICON_ALIAS and k not in seen:
         seen.add(k)
         k = ICON_ALIAS[k]
-    if k in MARK_MAP and MARK_MAP[k] in png_files:
+    if k in MARK_MAP and MARK_MAP[k] in mark_assets:
         return True
     if k in LINE_KEYS:
         return True
-    if k in png_files:
+    if k in mark_assets:
         return True
     return False
 
@@ -126,6 +137,7 @@ print(json.dumps(report, indent=2))
 if (
     png_issues
     or not report["cache_bust_consistent"]
+    or not report["img_ver_token_ok"]
     or profile_fail
     or lucide_fail
     or unversioned

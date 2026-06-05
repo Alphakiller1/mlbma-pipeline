@@ -1,5 +1,5 @@
 /**
- * MLBMA icon system — neon purple line-art PNG marks (8-icon grid),
+ * MLBMA icon system — neon purple line-art marks (8-icon grid, 1024px PNG),
  * plus thin inline SVG for micro utility affordances (arrows, wind, etc.).
  *
  * Regenerate marks: python scripts/build_neon_icons.py
@@ -8,7 +8,7 @@
 (function(global) {
   'use strict';
 
-  var ICON_VER = '20260605c';
+  var ICON_VER = '20260606c';
   var ICON_BASE = 'assets/icons/';
   var MICRO_PX = 18;
 
@@ -212,12 +212,17 @@
     return !!markFile(name);
   }
 
+  function markAssetUrl(file) {
+    return ICON_BASE + file + '.png?v=' + ICON_VER;
+  }
+
   function iconImgHtml(name, px) {
     var file = markFile(name);
     if (!file) return '';
     var size = px || 46;
-    return '<img class="ca-icon-img" src="' + ICON_BASE + file + '.png?v=' + ICON_VER + '" '
-      + 'alt="" width="' + size + '" height="' + size + '" loading="lazy" decoding="async">';
+    return '<img class="ca-icon-img ca-icon-img--mark" src="' + markAssetUrl(file) + '" '
+      + 'alt="" width="' + size + '" height="' + size + '" loading="lazy" decoding="async" '
+      + 'draggable="false">';
   }
 
   function iconSvg(name, opts) {
