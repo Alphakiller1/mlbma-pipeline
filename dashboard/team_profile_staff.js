@@ -416,10 +416,8 @@
         + (setup ? ' · Setup: ' + esc(setup.split(';').join(', ')) : '') + '</p>';
     }
     bpKpi += staffLaunchBtn('bullpen_report.html?team=' + encodeURIComponent(tk), 'Open full Bullpen Profile');
-    var intel = (global.TeamProfileIntel && TeamProfileIntel.renderBullpenIntel)
-      ? TeamProfileIntel.renderBullpenIntel(prof, team, ctx) : '';
     return sectionCard(ctx, 'Bullpen Overview', 'Team bullpen unit — open the full Bullpen Profile for usage, tiers & splits', bpKpi, 'tp-bullpen-section',
-      { icon: 'bullpen-section', kicker: 'Bullpen unit' }) + intel;
+      { icon: 'bullpen-section', kicker: 'Bullpen unit' });
   }
 
   function renderRoster(prof, team, ctx) {
