@@ -92,6 +92,7 @@
     bbpct: { mean: 8.0, std: 1.8, hi: false },        // BB% in percent points (lower better)
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
+    ipstart: { mean: 5.10, std: 0.40, hi: true },      // avg IP per SP start (higher = deeper outings)
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
     ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)

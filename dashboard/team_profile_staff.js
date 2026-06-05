@@ -339,7 +339,7 @@
     });
     var rotCells = [
       staffStatCell('Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(rotCache, tk, 'avgPs', false)),
-      staffStatCell('Avg IP/Start', '<span class="tp-stat-plain">' + (ipStart != null && !isNaN(ipStart) ? Number(ipStart).toFixed(1) : '—') + '</span>', staffLeagueRank(rotCache, tk, 'ipStart', false)),
+      staffStatCell('Avg IP/Start', valChip(ctx, ipStart, 'ipstart', false, 1), staffLeagueRank(rotCache, tk, 'ipStart', false)),
       staffStatCell('K%', valChip(ctx, kPct, 'pitching', false, 1), staffLeagueRank(rotCache, tk, 'kPct', false)),
       staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1), staffLeagueRank(rotCache, tk, 'bbPct', true)),
       staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2), staffLeagueRank(rotCache, tk, 'teamEra', true))
