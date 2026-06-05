@@ -69,6 +69,13 @@
     return { rank: null, total: entries.length || null };
   }
 
+  function rpWinPctFromResultsRow(row, pickCol, num) {
+    if (!row || !pickCol) return null;
+    var v = num(pickCol(row, ['rp_win_pct', 'RP_Win_Pct', 'rp win pct']));
+    if (v == null) return null;
+    return v <= 1 ? Math.round(v * 1000) / 10 : Math.round(v * 10) / 10;
+  }
+
   function buildTeamStaffCache(data, options) {
     options = options || {};
     var split = options.split || 'overall';
@@ -112,6 +119,10 @@
         entry.bpK = unit ? colVal(unit, prefix, 'K_pct', pickCol, num) : null;
         entry.bpBb = unit ? colVal(unit, prefix, 'BB_pct', pickCol, num) : null;
         entry.bpScore = entry.bpOsi != null ? Math.max(0, Math.min(100, 100 - entry.bpOsi)) : null;
+        var resRow = (data.results || []).find(function(r) {
+          return teamKey(pickCol(r, ['team', 'Team', 'tm'])) === t;
+        });
+        entry.bpWinPct = rpWinPctFromResultsRow(resRow, pickCol, num);
       }
       cache[t] = entry;
     });
@@ -132,17 +143,15 @@
       + '<span class="tp-offense-stat__body">' + chipHtml + rankHtml + '</span></div>';
   }
 
-  function staffMetricsBand(title, hint, cellsHtml, rowExtraClass) {
+  function staffMetricsBand(title, hint, cellsHtml) {
     if (!cellsHtml) return '';
-    var rowCls = 'tp-offense-metrics__row tp-offense-metrics__row--inline'
-      + (rowExtraClass ? ' ' + rowExtraClass : '');
     return '<div class="tp-offense-metrics tp-offense-metrics--profile tp-offense-metrics--staff">'
       + '<div class="tp-offense-metrics__band">'
       + '<div class="tp-offense-metrics__band-head">'
       + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
       + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
       + '</div>'
-      + '<div class="' + rowCls + '">' + cellsHtml + '</div>'
+      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cellsHtml + '</div>'
       + '</div></div>';
   }
 
@@ -327,39 +336,10 @@
       var psB = poolPS ? poolPS(b) : num(pickCol(b, ['PitchScore']));
       return (psB || 0) - (psA || 0);
     });
-    // Team rotation-as-a-unit KPIs (overall) with league ranks — unique team-level
-    // value not shown on the per-pitcher Pitcher Profile.
-    var avgPs = num(pickCol(prof, ['avg_pitching_score']))
-      || avgTeamSpMetric(teamSps, DATA, 'overall', 'pitchScore', pickCol, num, teamKey, poolPS);
-    var kPct = num(pickCol(prof, ['team_k_pct']));
-    var bbPct = num(pickCol(prof, ['team_bb_pct']));
-    var era = num(pickCol(prof, ['team_era']));
-    var ipStart = num(pickCol(prof, ['avg_ip_per_start']));
-    var tk = teamKey(team);
-    var rotCache = buildTeamStaffCache(DATA, {
-      split: 'overall', scope: 'rotation', pickCol: pickCol, num: num, teamKey: teamKey, poolPitchScore: poolPS
-    });
-    var rotCells = [
-      staffStatCell('Pitching Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(rotCache, tk, 'avgPs', false)),
-      staffStatCell('Avg IP/Start', valChip(ctx, ipStart, 'ipstart', false, 1), staffLeagueRank(rotCache, tk, 'ipStart', false)),
-      staffStatCell('K%', valChip(ctx, kPct, 'pitching', false, 1), staffLeagueRank(rotCache, tk, 'kPct', false)),
-      staffStatCell('BB%', valChip(ctx, bbPct, 'pitching', true, 1), staffLeagueRank(rotCache, tk, 'bbPct', true)),
-      staffStatCell('Team ERA', valChip(ctx, era, 'pitching', true, 2), staffLeagueRank(rotCache, tk, 'teamEra', true))
-    ].join('');
-    var rotKpi = '<div class="tp-rotation-body">'
-      + '<div class="tp-rotation-snapshot">'
-      + staffMetricsBand(
-        'Rotation snapshot',
-        'Team rotation as a unit · league rank on each KPI',
-        rotCells,
-        'tp-rotation-snapshot__row'
-      )
-      + '</div>'
-      + '<div class="tp-rotation-roster">'
-      + '<div class="tp-rotation-roster__head">'
-      + '<span class="tp-rotation-roster__title">Starters</span>'
-      + '<span class="tp-rotation-roster__hint">Click any name or <strong>Profile</strong> for full Pitcher Profile — splits, tiers &amp; F5</span>'
-      + '</div>';
+    var rotKpi = '<div class="tp-staff-launch-callout" role="note">'
+      + '<span class="tp-staff-launch-callout__text">'
+      + '<strong>Click any starter name or Profile</strong> to open the full Pitcher Profile — splits, tiers, allowed metrics &amp; F5.'
+      + '</span></div>';
     // Compact launchpad: each SP links to its full Pitcher Profile (deep splits live there).
     rotKpi += ctx.profileTableOpen('tp-rotation-launch-table')
       + '<thead><tr><th>Name</th><th>ERA</th><th>K%</th><th>BB%</th><th>Tier</th><th>Profile</th></tr></thead><tbody>';
@@ -402,9 +382,8 @@
           + '</td></tr>';
       });
     }
-    rotKpi += '</tbody>' + ctx.profileTableClose()
-      + '</div></div>';
-    return sectionCard(ctx, 'Starting Rotation', 'Rotation KPIs and starter launchpad', rotKpi, 'tp-rotation-section',
+    rotKpi += '</tbody>' + ctx.profileTableClose();
+    return sectionCard(ctx, 'Starting Rotation', 'Team rotation unit — click any starter below for the full Pitcher Profile', rotKpi, 'tp-rotation-section',
       { icon: 'rotation-section', kicker: '' });
   }
 
@@ -413,42 +392,9 @@
     var num = ctx.num;
     var teamKey = ctx.teamKey;
     var DATA = ctx.data;
-    var unit = bullpenUnitForTeam(team, DATA, teamKey);
-    var kpiDefs = [
-      ['ERA', 'ERA', true, 2],
-      ['OSI Allowed', 'OSI_allowed', true, 1],
-      ['K%', 'K_pct', false, 1],
-      ['BB%', 'BB_pct', true, 1]
-    ];
     var tk = teamKey(team);
-    var bpCache = buildTeamStaffCache(DATA, {
-      split: 'overall', scope: 'bullpen', pickCol: pickCol, num: num, teamKey: teamKey, poolPitchScore: ctx.poolPitchScore
-    });
-    var bpRankField = { ERA: 'bpEra', 'OSI Allowed': 'bpOsi', 'K%': 'bpK', 'BB%': 'bpBb' };
-    // Team bullpen-as-a-unit KPIs (overall) with league ranks. Deep usage, tiers,
-    // splits & reliever rank live in the dedicated Bullpen Profile (launch below).
-    var bpCells = kpiDefs.map(function(pair) {
-      var v = unit ? colVal(unit, 'overall', pair[1], pickCol, num) : null;
-      if (v == null) {
-        if (pair[1] === 'ERA') v = num(pickCol(prof, ['bullpen_era']));
-        else if (pair[1] === 'OSI_allowed') v = num(pickCol(prof, ['bullpen_osi_allowed']));
-      }
-      var rankMeta = staffLeagueRank(bpCache, tk, bpRankField[pair[0]], pair[2]);
-      return staffStatCell(pair[0], valChip(ctx, v, pair[0].indexOf('OSI') >= 0 ? 'osi' : 'pitching', pair[2], pair[3]), rankMeta);
-    }).join('');
-    var bpKpi = '<div class="tp-bullpen-body">'
-      + '<div class="tp-bullpen-snapshot">'
-      + staffMetricsBand(
-        'Bullpen snapshot',
-        'Team bullpen as a unit · league rank on each KPI',
-        bpCells,
-        'tp-bullpen-snapshot__row'
-      )
-      + '</div>';
-    bpKpi += '<div class="tp-bullpen-launch">'
-      + staffLaunchBtn('bullpen_report.html?team=' + encodeURIComponent(tk), 'Open full Bullpen Profile')
-      + '</div></div>';
-    return sectionCard(ctx, 'Bullpen Overview', 'Bullpen KPIs and launchpad to usage, tiers & splits', bpKpi, 'tp-bullpen-section',
+    var bpKpi = staffLaunchBtn('bullpen_report.html?team=' + encodeURIComponent(tk), 'Open full Bullpen Profile');
+    return sectionCard(ctx, 'Bullpen Overview', 'Team bullpen unit — open the full Bullpen Profile for usage, tiers & splits', bpKpi, 'tp-bullpen-section',
       { icon: 'bullpen-section', kicker: '' });
   }
 

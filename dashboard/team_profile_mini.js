@@ -987,10 +987,10 @@
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + (osi != null && !isNaN(osi)
-        ? heroStatChip('OSI', esc(Number(osi).toFixed(1)), heroOsiTone(osi), { rank: rank })
+        ? heroStatChip('OSI', null, 'neutral', { rank: rank, numeric: osi, context: 'osi', decimals: 1 })
         : '')
       + (rpg != null && !isNaN(rpg)
-        ? heroStatChip('Runs Per Game', esc(Number(rpg).toFixed(2)), heroRpgTone(rpg), { rank: rpgRank })
+        ? heroStatChip('Runs Per Game', null, 'neutral', { rank: rpgRank, numeric: rpg, context: 'rpg', decimals: 2 })
         : '');
 
     return '<section class="tp-team-banner tp-team-banner--hero" style="--tp-accent:' + esc(accent) + '">'
