@@ -176,9 +176,13 @@ body{
 <script>
 /* Dismiss loading overlay if lineup view never finishes (network/sheet failure) */
 setTimeout(function() {
-  if (window.LineupView) return;
+  if (window.__lineupViewReady) return;
   var l = document.getElementById('hubLoading');
   if (l) l.classList.add('hide');
+  var body = document.querySelector('.lv-body');
+  if (body && !body.querySelector('.lv-table') && !body.querySelector('.lv-note')) {
+    body.innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Load timed out — check network and Google Sheet access, then refresh.</div>';
+  }
   console.warn('[LINEUP VIEW] still loading after 20s — hard refresh and verify shared scripts');
 }, 20000);
 </script>
@@ -242,7 +246,7 @@ setTimeout(function() {
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_ui.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260618a"></script>
+<script src="matchup_shared.js?v=20260619a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script>
 (function() {
@@ -275,7 +279,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260618b"></script>
+<script src="lineup_view.js?v=20260619b"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

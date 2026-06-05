@@ -1781,11 +1781,16 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 }
 .mc-sp-info { min-width: 0; display: grid; grid-template-rows: 22px 26px 38px 52px; gap: 4px; align-content: start; }
 .mc-sp-photo { width: 42px; margin-right: 0; }
-.mc-sp-top { display: grid; grid-template-columns: auto auto minmax(0,1fr); align-items: center; gap: 4px; height: 22px; margin: 0; overflow: hidden; }
-.mc-sp-side { white-space: nowrap; font-size: 10px; }
+.mc-sp-top { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; height: 22px; margin: 0; overflow: visible; }
+.mc-sp-block--away .mc-sp-top { justify-content: flex-start; }
+.mc-sp-block--home .mc-sp-top { justify-content: flex-end; }
+.mc-sp-block--home .mc-sp-side { order: 3; }
+.mc-sp-block--home .hand-pill { order: 2; }
+.mc-sp-block--home .pitch-tier { order: 1; }
+.mc-sp-side { white-space: nowrap; font-size: 10px; flex-shrink: 0; }
 .hero-matchup-card .pitch-tier {
-  flex: 0 0 auto; margin-left: 0; max-width: 100%; white-space: nowrap;
-  font-size: 10px; line-height: 1.1; padding: 3px 6px;
+  flex: 0 0 auto; flex-shrink: 0; margin-left: 0; max-width: none; white-space: nowrap;
+  overflow: visible; font-size: 10px; font-weight: 800; line-height: 1.1; padding: 3px 7px; border-radius: 6px;
 }
 .hero-matchup-card .hand-pill {
   flex: 0 0 auto; font-size: 10px; padding: 3px 7px; line-height: 1.1;
@@ -1826,19 +1831,17 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hero-matchup-card .matchup-lineup-col-head__meta { font-size: 10px; font-weight: 700; }
 .hmc-edge-label { font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; text-align: center; }
 .hmc-osi-bar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(64px, 2fr) minmax(0, 1fr); gap: 10px; align-items: center; margin-bottom: 6px; min-width: 0; }
-.hmc-osi-val { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--text); font-weight: 800; }
+.hmc-osi-val { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--text); }
 .hmc-osi-val--away { align-items: flex-start; justify-self: start; text-align: left; }
 .hmc-osi-val--home { align-items: flex-end; justify-self: end; text-align: right; }
 .hmc-osi-team { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); line-height: 1.1; }
-.hmc-osi-num { font-size: 16px; font-weight: 900; line-height: 1.1; color: var(--text); }
-.hmc-osi-val.edge-team .hmc-osi-num { color: var(--green); }
+.hmc-osi-num { display: block; font-family: var(--font-display, var(--display)); font-size: 17px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 .hero-matchup-card .team-link--home { justify-content: flex-end; flex-direction: row-reverse; }
 .hero-matchup-card .team-link--away { justify-content: flex-start; flex-direction: row; }
 .mc-sp-block--home { grid-template-columns: minmax(0, 1fr) 42px; padding-left: 11px; padding-right: 14px; }
 .mc-sp-block--away { padding-right: 11px; }
 .mc-sp-block--home .mc-sp-photo { grid-column: 2; grid-row: 1; }
 .mc-sp-block--home .mc-sp-info { grid-column: 1; grid-row: 1; }
-.mc-sp-block--home .mc-sp-top { grid-template-columns: minmax(0,1fr) auto auto; }
 .mc-sp-block--home .mc-sp-name-row { display: flex; align-items: center; justify-content: flex-end; text-align: right; }
 .mc-sp-block--home .mc-ps-badge--defined { flex-direction: row-reverse; }
 .mc-sp-block--home .mc-sp-stats--grid { direction: rtl; }
@@ -1875,7 +1878,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   .hmc-pitchers { grid-template-columns: 1fr; gap: 10px; }
   .hmc-meta { margin-left: 0; width: 100%; justify-content: flex-start; }
   .hmc-osi-bar { grid-template-columns: minmax(0, 1fr) minmax(48px, 2fr) minmax(0, 1fr); gap: 6px; }
-  .hmc-osi-val { font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hero-matchup-card .hmc-osi-team { font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hero-matchup-card .hmc-osi-num { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 .team-logo-fallback, .pitcher-headshot-fallback, .mc-headshot-fallback {
   display: inline-flex; align-items: center; justify-content: center; border-radius: 0;
@@ -2617,7 +2621,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
 <link rel="stylesheet" href="theme.css?v=20260619a">
 <link rel="stylesheet" href="chase_nav.css?v=20260618n">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260619a">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260619c">
 <link rel="stylesheet" href="research_lab.css?v=20260605e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
@@ -2683,7 +2687,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260609a"></script>
+<script src="platform_dashboard.js?v=20260619b"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260618b"></script>
 <script src="lineup_view.js?v=20260618b"></script>

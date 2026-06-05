@@ -162,6 +162,16 @@
       + 'box-shadow:0 0 14px color-mix(in srgb, ' + c + ' 28%, transparent)"';
   }
 
+  /** Symmetric lineup-edge OSI — same size/weight on both sides; color from metric grade only. */
+  function osiEdgeNumHtml(val) {
+    if (val == null || isNaN(val)) {
+      return '<span class="hmc-osi-num hmc-osi-num--na">—</span>';
+    }
+    var n = Number(val).toFixed(1);
+    var col = (A && A.metricColor) ? A.metricColor(Number(val), 'osi', false) : 'var(--text, #F5F6FA)';
+    return '<span class="hmc-osi-num" style="color:' + col + '">' + n + '</span>';
+  }
+
   function spPitchScoreFromProfile(pitcherName, team) {
     var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
     if (!profiles.length || !S || !S.findSpProfile) return null;
@@ -468,9 +478,9 @@
       + '</div>'
       + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
       + '<div class="hmc-osi-bar">'
-      + '<span class="hmc-osi-val hmc-osi-val--away' + awayEdgeCls + '"><span class="hmc-osi-team">' + esc(m.away) + '</span><strong class="hmc-osi-num">' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
+      + '<span class="hmc-osi-val hmc-osi-val--away' + awayEdgeCls + '"><span class="hmc-osi-team">' + esc(m.away) + '</span>' + osiEdgeNumHtml(m.awayOSI) + '</span>'
       + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
-      + '<span class="hmc-osi-val hmc-osi-val--home' + homeEdgeCls + '"><span class="hmc-osi-team">' + esc(m.home) + '</span><strong class="hmc-osi-num">' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
+      + '<span class="hmc-osi-val hmc-osi-val--home' + homeEdgeCls + '"><span class="hmc-osi-team">' + esc(m.home) + '</span>' + osiEdgeNumHtml(m.homeOSI) + '</span>'
       + '</div>'
       + '<div class="hmc-osi-sparklines" aria-hidden="true">'
       + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'

@@ -65,19 +65,19 @@
       + '.lv-pill[disabled],.lv-disabled .lv-pill{opacity:.45;cursor:not-allowed}'
       + '.lv-query{font-size:13.5px;font-weight:600;color:var(--text-2,#a1a1aa);margin:18px 0 0;line-height:1.6;display:flex;align-items:center;flex-wrap:wrap;gap:8px}'
       + '.lv-query strong{font-family:var(--mono,monospace);font-variant-numeric:tabular-nums;color:var(--text,#f4f4f7)}'
-      + '.lv-family-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin:8px 0 14px}'
+      + '.lv-family-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin:8px 0 14px;align-items:stretch}'
       + '@media(max-width:1040px){.lv-family-grid{grid-template-columns:1fr}}'
-      + '.lv-family{position:relative;background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:20px 20px 16px;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;color:var(--text,#F5F5F7);appearance:none;-webkit-appearance:none}'
+      + '.lv-family{display:flex;flex-direction:column;position:relative;background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:20px 20px 16px;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;color:var(--text,#F5F5F7);appearance:none;-webkit-appearance:none;height:100%}'
       + '.lv-family::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(135deg,var(--accent,#9A6BFF),#5B2BE0);opacity:0;transition:opacity .15s ease}'
       + '.lv-family:hover{border-color:var(--border-2,#34343d);transform:translateY(-1px)}'
       + '.lv-family.active{background:var(--bg-4,#1C1C25);border-color:color-mix(in srgb,var(--accent,#8b5cf6) 45%, var(--border,#26262f));box-shadow:0 18px 50px -16px color-mix(in srgb,var(--accent,#8b5cf6) 45%, transparent)}'
       + '.lv-family.active::before{opacity:1}'
-      + '.lv-family-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}'
-      + '.lv-family-name{font-family:var(--font-display,var(--font,system-ui));font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--text,#F5F5F7)}'
-      + '.lv-family-n{font-family:var(--mono,monospace);font-size:11px;color:var(--text-3,#6b6b76)}'
-      + '.lv-family-desc{font-size:14px;font-weight:500;color:var(--v-light,#c4b0ff);margin:10px 0 16px;line-height:1.55;letter-spacing:.01em}'
+      + '.lv-family-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;min-height:56px;flex-shrink:0}'
+      + '.lv-family-name{font-family:var(--font-display,var(--font,system-ui));font-size:23px;font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--text,#F5F5F7)}'
+      + '.lv-family-n{font-family:var(--mono,monospace);font-size:11px;color:var(--text-3,#6b6b76);line-height:1.2;padding-top:4px;flex-shrink:0}'
+      + '.lv-family-desc{font-size:14px;font-weight:500;color:var(--v-light,#c4b0ff);margin:10px 0 16px;line-height:1.55;letter-spacing:.01em;min-height:calc(14px * 1.55 * 2);flex-shrink:0}'
       + '.lv-family.active .lv-family-desc{color:#E8DCFF;font-weight:500}'
-      + '.lv-family-chips{display:flex;flex-wrap:wrap;gap:6px}'
+      + '.lv-family-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}'
       + '.lv-family-chip{font-family:var(--mono,monospace);font-size:11px;padding:5px 10px;border-radius:7px;background:var(--raised,#22222C);border:1px solid var(--border,#26262f);color:var(--text-2,#a1a1aa)}'
       + '.lv-family.active .lv-family-chip{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
       + '.lv-family-chip.phase{border-style:dashed;color:var(--text-3,#6b6b76);background:transparent}'
@@ -260,11 +260,32 @@
     });
     return out;
   }
-  function fetchPalsMap() {
-    if (!MS || !MS.fetchSheetTab || !MS.pickCol || !MS.teamKey || !CFG || !CFG.SHEET_TABS || !CFG.SHEET_TABS.pals) {
+  function fetchPalsMap(forceRefresh) {
+    if (LM && LM.refreshPals && forceRefresh) {
+      return LM.refreshPals({ forceRefreshPals: true }).then(function(raw) {
+        if (!MS || !MS.parsePalsRows) return {};
+        var parsed = MS.parsePalsRows((raw && raw.pals) || []);
+        var map = {};
+        Object.keys(parsed || {}).forEach(function(tk) {
+          var row = parsed[tk];
+          if (row && row.pals != null) map[tk] = row.pals;
+        });
+        return map;
+      }).catch(function() { return {}; });
+    }
+    if (!MS || !MS.fetchSheetTab || !CFG || !CFG.SHEET_TABS || !CFG.SHEET_TABS.pals) {
       return Promise.resolve({});
     }
-    return MS.fetchSheetTab(CFG.SHEET_TABS.pals, { forceRefresh: true }).then(function(rows) {
+    return MS.fetchSheetTab(CFG.SHEET_TABS.pals).then(function(rows) {
+      if (MS.parsePalsRows) {
+        var parsed = MS.parsePalsRows(rows || []);
+        var map = {};
+        Object.keys(parsed || {}).forEach(function(tk) {
+          var row = parsed[tk];
+          if (row && row.pals != null) map[tk] = row.pals;
+        });
+        return map;
+      }
       var map = {};
       (rows || []).forEach(function(row) {
         var t = MS.teamKey(MS.pickCol(row, 'Tm', 'Team', 'tm', 'team'));
@@ -452,6 +473,23 @@
     });
   }
 
+  function scheduleLeaguePools(root, ctx, rows) {
+    if (!A || !A.registerLeaguePool || !LM || !LM.leaguePool) return;
+    var run = function() {
+      Promise.all(['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'].map(function(k) {
+        return LM.leaguePool(k).then(function(pool) {
+          if (pool && pool.values && pool.values.length) A.registerLeaguePool(k, pool.values);
+        });
+      })).then(function() {
+        if (rows && rows.length) renderBody(root, ctx.state, rows);
+      }).catch(function(err) {
+        console.warn('[LineupView] league pool registration failed', err);
+      });
+    };
+    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 2500 });
+    else setTimeout(run, 50);
+  }
+
   function rerender(root, ctx) {
     var l = document.getElementById('hubLoading');
     if (l) l.classList.add('hide');
@@ -470,8 +508,14 @@
         && rows.every(function(r) { return num(r && r.pals) == null; });
       if (shouldRetryPals && !ctx._didPalsForceRefresh) {
         ctx._didPalsForceRefresh = true;
-        if (LM && LM.clearCache) LM.clearCache();
-        return LM.rankAll(ctx.state.filter, ctx.state.family, { forceRefresh: true, includeMeta: true });
+        if (LM && LM.refreshPals) {
+          return LM.refreshPals({ forceRefreshPals: true }).then(function() {
+            return LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true });
+          });
+        }
+        return fetchPalsMap(true).then(function() {
+          return LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true });
+        });
       }
       ctx._didPalsForceRefresh = false;
       return { rows: rows, meta: ctx.meta };
@@ -488,14 +532,9 @@
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
       renderBody(root, ctx.state, rows);
       if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
+      global.__lineupViewReady = true;
+      scheduleLeaguePools(root, ctx, rows);
       return null;
-    }).then(function() {
-      if (!A || !A.registerLeaguePool || !LM.leaguePool) return null;
-      return Promise.all(['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'].map(function(k) {
-        return LM.leaguePool(k).then(function(pool) {
-          if (pool && pool.values && pool.values.length) A.registerLeaguePool(k, pool.values);
-        });
-      }));
     }).catch(function(err) {
       console.error('[LineupView] render failed', err);
       root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
@@ -525,4 +564,8 @@
   }
 
   global.LineupView = { mount: mount };
+
+  if (LM && LM.ensureStore) {
+    LM.ensureStore({ needPitcherSplits: false, needPals: false }).catch(function() { /* prefetch best-effort */ });
+  }
 })(typeof window !== 'undefined' ? window : this);

@@ -1842,37 +1842,161 @@
     };
   }
 
-  var _lineupModelCache = null;
+  var _lineupModelRaw = null;
+  var _lineupModelStore = null;
   var _lineupModelInflight = null;
+
+  function _emptyLineupModelRaw() {
+    return {
+      rhp: [], lhp: [], profiles: [], splitVsSp: [], splitVsRp: [], pals: [], teamResults: [],
+      _coreLoaded: false, _hasPitcherSplits: false, _hasPals: false
+    };
+  }
+
+  function lineupModelStoreNeeds(options) {
+    options = options || {};
+    return {
+      needPitcherSplits: !!options.needPitcherSplits,
+      needPals: !!options.needPals
+    };
+  }
+
+  function lineupModelFilterNeeds(filter) {
+    var f = normalizeFilter(filter || {});
+    return { needPitcherSplits: f.pitcher === 'sp' || f.pitcher === 'rp' };
+  }
+
+  function lineupModelRankNeeds(filter, family) {
+    var fam = String(family || 'scoring').toLowerCase();
+    return Object.assign({}, lineupModelFilterNeeds(filter), {
+      needPals: fam === 'status'
+    });
+  }
+
+  function lineupModelRawReady(raw, needs) {
+    if (!raw || !raw._coreLoaded) return false;
+    if (needs.needPitcherSplits && !raw._hasPitcherSplits) return false;
+    if (needs.needPals && !raw._hasPals) return false;
+    return true;
+  }
+
+  function lineupModelBuildStore(raw) {
+    var scR = (raw.rhp || []).map(scoreRowFromSheet).filter(Boolean);
+    var scL = (raw.lhp || []).map(scoreRowFromSheet).filter(Boolean);
+    var profiles = parseTeamProfilesMap(raw.profiles || []);
+    var scVsSp = aggregateTeamOffenseFromBatterRows(raw.splitVsSp || []);
+    var scVsRp = aggregateTeamOffenseFromBatterRows(raw.splitVsRp || []);
+    var palsByTeam = parsePalsRows(raw.pals || []);
+    var resultsByTeam = parseTeamResultsMap(raw.teamResults || []);
+    return lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp, palsByTeam, resultsByTeam);
+  }
+
+  function lineupModelFetchProgressive(existing, needs, options) {
+    var tabs = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SHEET_TABS;
+    if (!tabs) return Promise.reject(new Error('SHEET_TABS missing'));
+    var raw = existing || _emptyLineupModelRaw();
+    var chain = Promise.resolve(raw);
+
+    if (!raw._coreLoaded) {
+      chain = chain.then(function() {
+        return Promise.all([
+          fetchSheetTab(tabs.vs_rhp, options),
+          fetchSheetTab(tabs.vs_lhp, options),
+          fetchSheetTab(tabs.team_profiles, options),
+          (tabs.team_results ? fetchSheetTab(tabs.team_results, options) : Promise.resolve([])).catch(function() { return []; })
+        ]).then(function(res) {
+          raw.rhp = res[0] || [];
+          raw.lhp = res[1] || [];
+          raw.profiles = res[2] || [];
+          raw.teamResults = res[3] || [];
+          raw._coreLoaded = true;
+          _lineupModelRaw = raw;
+          _lineupModelStore = null;
+          return raw;
+        });
+      });
+    }
+
+    if (needs.needPitcherSplits && !raw._hasPitcherSplits) {
+      chain = chain.then(function(r) {
+        return Promise.all([
+          fetchSheetTab(tabs.batter_splits_vs_sp, options).catch(function() { return []; }),
+          fetchSheetTab(tabs.batter_splits_vs_rp, options).catch(function() { return []; })
+        ]).then(function(res) {
+          r.splitVsSp = res[0] || [];
+          r.splitVsRp = res[1] || [];
+          r._hasPitcherSplits = true;
+          _lineupModelRaw = r;
+          _lineupModelStore = null;
+          return r;
+        });
+      });
+    }
+
+    if (needs.needPals && !raw._hasPals) {
+      chain = chain.then(function(r) {
+        if (!tabs.pals) {
+          r._hasPals = true;
+          return r;
+        }
+        return fetchSheetTab(tabs.pals, options).catch(function() { return []; }).then(function(rows) {
+          r.pals = rows || [];
+          r._hasPals = true;
+          _lineupModelRaw = r;
+          _lineupModelStore = null;
+          return r;
+        });
+      });
+    }
+
+    return chain.then(function(r) {
+      _lineupModelRaw = r;
+      return r;
+    });
+  }
+
+  function lineupModelRefreshPals(options) {
+    options = options || {};
+    if (_lineupModelRaw) {
+      _lineupModelRaw.pals = [];
+      _lineupModelRaw._hasPals = false;
+    }
+    _lineupModelStore = null;
+    var tabs = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SHEET_TABS;
+    if (tabs && tabs.pals) clearSheetTabCache(tabs.pals);
+    return lineupModelFetchAll(Object.assign({}, options, { needPals: true, forceRefreshPals: true }));
+  }
 
   function lineupModelFetchAll(options) {
     options = options || {};
-    if (!options.forceRefresh && _lineupModelCache) return Promise.resolve(_lineupModelCache);
-    if (!options.forceRefresh && _lineupModelInflight) return _lineupModelInflight;
-    if (options.forceRefresh) clearSheetTabCache();
-    var tabs = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SHEET_TABS;
-    if (!tabs) return Promise.reject(new Error('SHEET_TABS missing'));
-    _lineupModelInflight = Promise.all([
-      fetchSheetTab(tabs.vs_rhp, options),
-      fetchSheetTab(tabs.vs_lhp, options),
-      fetchSheetTab(tabs.team_profiles, options),
-      fetchSheetTab(tabs.batter_splits_vs_sp, options).catch(function() { return []; }),
-      fetchSheetTab(tabs.batter_splits_vs_rp, options).catch(function() { return []; }),
-      (tabs.pals ? fetchSheetTab(tabs.pals, options) : Promise.resolve([])).catch(function() { return []; }),
-      (tabs.team_results ? fetchSheetTab(tabs.team_results, options) : Promise.resolve([])).catch(function() { return []; })
-    ]).then(function(res) {
-      var payload = {
-        rhp: res[0] || [],
-        lhp: res[1] || [],
-        profiles: res[2] || [],
-        splitVsSp: res[3] || [],
-        splitVsRp: res[4] || [],
-        pals: res[5] || [],
-        teamResults: res[6] || []
-      };
-      _lineupModelCache = payload;
-      return payload;
-    }).finally(function() {
+    var needs = lineupModelStoreNeeds(options);
+    if (options.forceRefresh) {
+      _lineupModelRaw = null;
+      _lineupModelStore = null;
+      clearSheetTabCache();
+    } else if (options.forceRefreshPals) {
+      if (_lineupModelRaw) {
+        _lineupModelRaw.pals = [];
+        _lineupModelRaw._hasPals = false;
+      }
+      _lineupModelStore = null;
+      var palsTab = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SHEET_TABS && global.MLBMA_CONFIG.SHEET_TABS.pals;
+      if (palsTab) clearSheetTabCache(palsTab);
+    }
+    if (!options.forceRefresh && !options.forceRefreshPals && _lineupModelRaw && lineupModelRawReady(_lineupModelRaw, needs)) {
+      return Promise.resolve(_lineupModelRaw);
+    }
+    var fulfill = function() {
+      return lineupModelFetchProgressive(_lineupModelRaw, needs, options);
+    };
+    if (_lineupModelInflight) {
+      return _lineupModelInflight.then(function(raw) {
+        _lineupModelRaw = raw;
+        if (lineupModelRawReady(raw, needs)) return raw;
+        return fulfill();
+      });
+    }
+    _lineupModelInflight = fulfill().finally(function() {
       _lineupModelInflight = null;
     });
     return _lineupModelInflight;
@@ -1883,19 +2007,19 @@
   }
 
   function lineupModelEnsureStore(options) {
+    options = options || {};
     return lineupModelFetchAll(options).then(function(raw) {
-      var scR = (raw.rhp || []).map(scoreRowFromSheet).filter(Boolean);
-      var scL = (raw.lhp || []).map(scoreRowFromSheet).filter(Boolean);
-      var profiles = parseTeamProfilesMap(raw.profiles || []);
-      var scVsSp = aggregateTeamOffenseFromBatterRows(raw.splitVsSp || []);
-      var scVsRp = aggregateTeamOffenseFromBatterRows(raw.splitVsRp || []);
-      var palsByTeam = parsePalsRows(raw.pals || []);
-      var resultsByTeam = parseTeamResultsMap(raw.teamResults || []);
-      return lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp, palsByTeam, resultsByTeam);
+      if (!options.forceRefresh && !options.forceRefreshPals && _lineupModelStore && _lineupModelStore._rawRef === raw) {
+        return _lineupModelStore.store;
+      }
+      var store = lineupModelBuildStore(raw);
+      _lineupModelStore = { _rawRef: raw, store: store };
+      return store;
     });
   }
 
   function lineupModelResolve(team, filter, options) {
+    options = Object.assign({}, options || {}, lineupModelFilterNeeds(filter));
     return lineupModelEnsureStore(options).then(function(store) {
       var f = normalizeFilter(filter || {});
       var rows = resolveLineupRows(store, f);
@@ -1914,6 +2038,7 @@
   }
 
   function lineupModelRankAll(filter, family, options) {
+    options = Object.assign({}, options || {}, lineupModelRankNeeds(filter, family));
     return lineupModelEnsureStore(options).then(function(store) {
       var f = normalizeFilter(filter || {});
       var resolved = resolveLineupRows(store, f, {
@@ -1977,8 +2102,10 @@
     rankAll: lineupModelRankAll,
     windowDelta: lineupModelWindowDelta,
     leaguePool: lineupModelLeaguePool,
+    refreshPals: lineupModelRefreshPals,
     clearCache: function() {
-      _lineupModelCache = null;
+      _lineupModelRaw = null;
+      _lineupModelStore = null;
       _lineupModelInflight = null;
       clearSheetTabCache();
     }
