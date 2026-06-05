@@ -34,14 +34,18 @@
 }
 
 html, body {
-  background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-body {
+html:not(:has(body.opening-dashboard)):not(:has(body.platform-dashboard)):not(:has(body.ca-bg-outfield)):not(:has(body.ca-bg-catcher)):not(:has(body.ca-bg-plate)):not(:has(body.ca-bg-compare)):not(:has(body.team-profile-page)):not(:has(body.bullpen-profile-page)):not(:has(body.batter-profile-page)):not(:has(body.pitcher-profile-page)),
+body:not(.opening-dashboard):not(.platform-dashboard):not(.ca-bg-outfield):not(.ca-bg-catcher):not(.ca-bg-plate):not(.ca-bg-compare):not(.team-profile-page):not(.bullpen-profile-page):not(.batter-profile-page):not(.pitcher-profile-page) {
+  background: var(--bg);
+}
+
+body:not(.opening-dashboard):not(.platform-dashboard):not(.ca-bg-outfield):not(.ca-bg-catcher):not(.ca-bg-plate):not(.ca-bg-compare):not(.team-profile-page):not(.bullpen-profile-page):not(.batter-profile-page):not(.pitcher-profile-page) {
   background-image:
     radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
     radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.08), transparent 60%);
@@ -156,6 +160,18 @@ body::after,
   padding: 0 !important;
   min-width: 0 !important;
 }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip.c-elite { color: #4ADE80 !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip.c-good { color: #7BDC5A !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip.c-mid { color: #FBBF24 !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip.c-weak { color: #FB923C !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip.c-poor { color: #F87171 !important; }
+:is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)
+  .tp-hero-stat__value .chip.c-na { color: #6E7383 !important; }
 
 /* ---- Larger, legible profile/ranking tables (bare-gradient-text era) ---- */
 .tp-table th, .hub-table th, .pp-data-table th, .tp-trend-table th, .tp-trend-table thead th,
@@ -713,18 +729,20 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
 }
 
 /* Item 14: profile section headings, row labels, and stat values */
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-section-head .title,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-section-title {
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .glossary-page) .ca-section-head .title,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .glossary-page) .ca-section-title {
   font-size: 20px !important;
 }
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-section-head .purpose,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .ca-helper {
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .glossary-page) .ca-section-head .purpose,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .glossary-page) .ca-helper {
   font-size: 16px !important;
 }
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-table tbody td,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .hub-table tbody td,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .pp-data-table tbody td,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .bp-reliever-rank-table tbody td {
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .tp-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .hub-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .pp-data-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .bp-reliever-rank-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .tp-trend-table tbody td,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .tp-trend-table tbody th[scope="row"] {
   font-size: 16px !important;
 }
 :is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-trend-table__metric,
@@ -733,13 +751,22 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   font-size: 16px !important;
   font-weight: 700;
 }
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .chip,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .val-chip {
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-trend-table__metric-desc {
+  font-size: 14px !important;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-trend-table__reliability,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-trend-table__interp {
+  font-size: 15px !important;
+  font-weight: 700;
+}
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .chip,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .val-chip {
   font-size: 18px !important;
 }
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .tp-table th,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .hub-table th,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .pp-data-table th,
-:is(.team-profile-page, .pitcher-profile-page, .player-profile-page) .bp-reliever-rank-table th {
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .tp-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .hub-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .pp-data-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .bp-reliever-rank-table th,
+:is(.team-profile-page, .pitcher-profile-page, .player-profile-page, .bullpen-profile-page) .tp-trend-table thead th {
   font-size: 14px !important;
 }

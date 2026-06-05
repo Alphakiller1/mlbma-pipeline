@@ -92,6 +92,7 @@
     bbpct: { mean: 8.0, std: 1.8, hi: false },        // BB% in percent points (lower better)
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
+    qspct: { mean: 35, std: 8, hi: true },             // quality-start rate % (higher better)
     ipstart: { mean: 5.10, std: 0.40, hi: true },      // avg IP per SP start (higher = deeper outings)
     rpwin: { mean: 20, std: 5, hi: true },             // reliever win % of team games (higher = better)
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
@@ -846,7 +847,7 @@
     var out = '<header class="ca-page-header">';
     if (opts.eyebrow) out += '<p class="ca-eyebrow">' + escHtml(opts.eyebrow) + '</p>';
     out += '<h1 class="ca-page-title">' + escHtml(opts.title || '') + '</h1>';
-    if (opts.subtitle) out += '<p class="ca-helper ca-page-header__sub">' + escHtml(opts.subtitle) + '</p>';
+    if (opts.subtitle) out += '<p class="ca-helper ca-page-header__sub">' + escHtml(titleCaseLabel(opts.subtitle)) + '</p>';
     if (opts.showPlatformNav !== false) out += platformCtaHtml(opts.activeNav || null);
     out += '</header>';
     return out;
@@ -989,6 +990,7 @@
     sectionHeaderHtml: sectionHeaderHtml,
     caSectionHeadHtml: caSectionHeadHtml,
     glossaryLinkHtml: glossaryLinkHtml,
+    titleCaseLabel: titleCaseLabel,
     mountPlatformHeader: mountPlatformHeader,
     GRADE_COLORS: GRADE_COLORS,
     loadLeagueBaselines: loadLeagueBaselines,

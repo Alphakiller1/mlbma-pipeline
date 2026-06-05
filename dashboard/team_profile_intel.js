@@ -33,6 +33,18 @@
     return '<span class="chip c-na">—</span>';
   }
 
+  /** Map metric chip grade to staff status pill — league average = amber mid, not grey. */
+  function statusClassFromMetric(value, context, invert) {
+    if (value == null || isNaN(value)) return 'tp-intel-status--neutral';
+    var chip = A && A.solidChipClass ? A.solidChipClass(value, context || 'osi', !!invert) : 'c-mid';
+    if (chip === 'c-elite') return 'tp-intel-status--elite';
+    if (chip === 'c-good') return 'tp-intel-status--plus';
+    if (chip === 'c-mid') return 'tp-intel-status--mid';
+    if (chip === 'c-weak') return 'tp-intel-status--volatile';
+    if (chip === 'c-poor') return 'tp-intel-status--weak';
+    return 'tp-intel-status--neutral';
+  }
+
   function delta(ytd, win) {
     if (ytd == null || win == null || isNaN(ytd) || isNaN(win)) return null;
     return win - ytd;
@@ -255,7 +267,7 @@
     if (num(m.ppGap) != null && m.ppGap > 4) {
       return { label: 'Process ahead of results', cls: 'tp-intel-status--plus' };
     }
-    return { label: 'League-average offensive profile', cls: 'tp-intel-status--neutral' };
+    return { label: 'League-average offensive profile', cls: statusClassFromMetric(osi, 'osi', false) };
   }
 
   function splitIdentityPrefix(ctx) {
@@ -459,21 +471,51 @@
     };
   }
 
-  function sustainStatCell(label, valueHtml, rankMeta) {
+  function titleCaseHint(s) {
+    return A && A.titleCaseLabel ? A.titleCaseLabel(s) : s;
+  }
+
+  function sustainabilitySplitBar(split) {
+    var PC = global.MLBMAProfileControls;
+    if (PC && PC.renderSectionSplitBar) return PC.renderSectionSplitBar('sustainability', split || 'both');
+    return '';
+  }
+
+  function sustainRankTd(rankMeta) {
+    var Sections = global.TeamProfileSections;
     rankMeta = rankMeta || {};
     var rank = rankMeta.rank;
-    var total = rankMeta.total;
-    var Sections = global.TeamProfileSections;
+    if (rank == null) {
+      return '<td class="num tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--neutral">—</td>';
+    }
     var tone = (Sections && Sections.rankTone) ? Sections.rankTone(rank) : 'neutral';
-    var rankHtml = rank != null
-      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + esc(tone) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
-        + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
-        + '</span>'
-      : '';
-    return '<div class="tp-offense-stat tp-offense-stat--inline tp-intel-stat" aria-label="' + esc(label) + '">'
-      + '<span class="tp-offense-stat__label">' + esc(label) + '</span>'
-      + '<span class="tp-offense-stat__body">' + valueHtml + rankHtml + '</span>'
-      + '</div>';
+    return '<td class="num tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--' + esc(tone) + '">'
+      + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span></td>';
+  }
+
+  function sustainMetricsTable(title, hint, items, colClass) {
+    if (!items || !items.length) return '';
+    var headers = items.map(function(it) {
+      return '<th scope="col" class="tp-offense-metrics__th">' + esc(it.label) + '</th>';
+    }).join('');
+    var valueCells = items.map(function(it) {
+      return '<td class="num tp-offense-metrics__val-cell">' + it.valueHtml + '</td>';
+    }).join('');
+    var rankCells = items.map(function(it) {
+      return sustainRankTd(it.rankMeta);
+    }).join('');
+    return '<div class="tp-offense-metrics__band tp-offense-metrics__band--table tp-intel-sustain__band">'
+      + '<div class="tp-offense-metrics__band-head tp-intel-sustain__band-head">'
+      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
+      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(titleCaseHint(hint)) + '</span>' : '')
+      + '</div>'
+      + '<div class="tp-offense-metrics__table-wrap table-wrap tp-intel-sustain__table-wrap">'
+      + '<table class="tp-offense-metrics__table hub-table tp-intel-sustain__table ' + (colClass || '') + '" aria-label="' + esc(title) + '">'
+      + '<thead><tr>' + headers + '</tr></thead>'
+      + '<tbody>'
+      + '<tr class="tp-offense-metrics__values">' + valueCells + '</tr>'
+      + '<tr class="tp-offense-metrics__ranks">' + rankCells + '</tr>'
+      + '</tbody></table></div></div>';
   }
 
   function gapChipHtml(gapPts) {
@@ -485,17 +527,6 @@
       return '<span class="chip ' + tone + '">' + esc(display) + '</span>';
     }
     return '<span class="chip c-mid">' + esc(display) + '</span>';
-  }
-
-  function sustainMetricsBand(title, hint, cellsHtml) {
-    if (!cellsHtml) return '';
-    return '<div class="tp-offense-metrics__band tp-intel-sustain__band">'
-      + '<div class="tp-offense-metrics__band-head">'
-      + '<span class="tp-offense-metrics__band-title">' + esc(title) + '</span>'
-      + (hint ? '<span class="tp-offense-metrics__band-hint">' + esc(hint) + '</span>' : '')
-      + '</div>'
-      + '<div class="tp-offense-metrics__row tp-offense-metrics__row--inline">' + cellsHtml + '</div>'
-      + '</div>';
   }
 
   function renderMarketMapPositionHtml(m, prof, ctx) {
@@ -521,6 +552,10 @@
 
   function renderSustainabilitySection(m, prof, ctx) {
     m = m || {};
+    ctx = ctx || {};
+    var split = ctx.split || 'both';
+    var PC = global.MLBMAProfileControls;
+    var splitLbl = ctx.splitLabel || (PC && PC.splitLabel ? PC.splitLabel(split) : split);
     var rates = Mini && Mini.resolveOffenseRates ? Mini.resolveOffenseRates(prof, ctx) : {};
     var v = sustainabilityVerdict(rates);
     var proj = num(m.proj);
@@ -533,21 +568,49 @@
       ? '<span class="tp-intel-verdict-label tp-intel-verdict-label--' + esc(String(v.label).toLowerCase().replace(/\s+/g, '-')) + '">'
         + esc(v.label) + '</span>'
       : '';
-    var contactCells = ''
-      + sustainStatCell('wOBA', valChip(v.woba, 'woba', false, 3), leagueRankFn(metricCache, team, 'woba', false))
-      + sustainStatCell('xwOBA', valChip(v.xwoba, 'woba', false, 3), leagueRankFn(metricCache, team, 'xwoba', false))
-      + (v.gapPts != null ? sustainStatCell('Gap', gapChipHtml(v.gapPts), leagueRankFn(metricCache, team, 'contactGap', false)) : '');
-    var projCells = ''
-      + (proj != null ? sustainStatCell('Proj OSI', valChip(proj, 'osi', false, 1), leagueRankFn(metricCache, team, 'proj', false)) : '')
-      + (ppGap != null ? sustainStatCell('PP-Gap', valChip(ppGap, 'ppGap', false, 1), leagueRankFn(metricCache, team, 'ppGap', false)) : '');
+    var contactItems = [
+      {
+        label: 'wOBA',
+        valueHtml: valChip(v.woba, 'woba', false, 3),
+        rankMeta: leagueRankFn(metricCache, team, 'woba', false)
+      },
+      {
+        label: 'xwOBA',
+        valueHtml: valChip(v.xwoba, 'woba', false, 3),
+        rankMeta: leagueRankFn(metricCache, team, 'xwoba', false)
+      }
+    ];
+    if (v.gapPts != null) {
+      contactItems.push({
+        label: 'Gap',
+        valueHtml: gapChipHtml(v.gapPts),
+        rankMeta: leagueRankFn(metricCache, team, 'contactGap', false)
+      });
+    }
+    var projItems = [];
+    if (proj != null) {
+      projItems.push({
+        label: 'Proj OSI',
+        valueHtml: valChip(proj, 'osi', false, 1),
+        rankMeta: leagueRankFn(metricCache, team, 'proj', false)
+      });
+    }
+    if (ppGap != null) {
+      projItems.push({
+        label: 'PP-Gap',
+        valueHtml: valChip(ppGap, 'ppGap', false, 1),
+        rankMeta: leagueRankFn(metricCache, team, 'ppGap', false)
+      });
+    }
     var body = '<div class="tp-intel-sustain">'
+      + sustainabilitySplitBar(split)
       + '<div class="tp-intel-sustain__lead">'
       + labelChip
       + '<p class="tp-intel-read tp-intel-read--lead">' + esc(v.sentence) + '</p>'
       + '</div>'
       + '<div class="tp-offense-metrics tp-offense-metrics--profile tp-intel-sustain__board">'
-      + sustainMetricsBand('Contact vs expected', 'wOBA − xwOBA sustainability', contactCells)
-      + sustainMetricsBand('Process vs production', 'Regression-adjusted projection', projCells)
+      + sustainMetricsTable('Contact vs Expected', 'wOBA − xwOBA sustainability', contactItems, 'tp-intel-sustain__table--cols-3')
+      + sustainMetricsTable('Process vs Production', 'Regression-adjusted projection', projItems, 'tp-intel-sustain__table--cols-2')
       + '</div>'
       + renderMarketMapPositionHtml(m, prof, ctx)
       + '<p class="ca-helper tp-intel-note">' + esc(v.note) + '</p>'
@@ -558,7 +621,7 @@
           icon: 'sustainability',
           kicker: 'Intelligence',
           title: 'Sustainability Check',
-          subtitle: 'Contact quality · projection · market map quadrant'
+          subtitle: splitLbl + ' · Contact Quality · Projection · Market Map Quadrant'
         })
         : '<header class="ca-section-header"><h2 class="ca-section-title">Sustainability Check</h2></header>')
       + body + '</section>';
@@ -677,7 +740,7 @@
       })
       : '<header class="ca-section-header"><p class="ca-eyebrow">Identity</p>'
         + '<h2 class="ca-section-title">Summary Of Identity</h2>'
-        + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
+        + (subtitle ? '<p class="ca-helper">' + esc((global.MLBMAAssets && MLBMAAssets.titleCaseLabel) ? MLBMAAssets.titleCaseLabel(subtitle) : subtitle) + '</p>' : '')
         + '</header>';
     var metrics = '<div class="tp-offense-metrics tp-offense-metrics--profile tp-identity-panel__metrics">'
       + '<div class="tp-offense-metrics__band">'
@@ -713,7 +776,7 @@
     }
     return '<section class="ca-board ca-card tp-section tp-intel-section"><header class="ca-section-header">'
       + '<h2 class="ca-section-title">' + esc(title) + '</h2>'
-      + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '')
+      + (subtitle ? '<p class="ca-helper">' + esc((global.MLBMAAssets && MLBMAAssets.titleCaseLabel) ? MLBMAAssets.titleCaseLabel(subtitle) : subtitle) + '</p>' : '')
       + '</header>' + body + '</section>';
   }
 
@@ -798,7 +861,7 @@
     }
     var ps = pack.avgPs;
     var kbb = (pack.kPct != null && pack.bbPct != null) ? pack.kPct - pack.bbPct : null;
-    var status = { label: 'League-average rotation', cls: 'tp-intel-status--neutral' };
+    var status = { label: 'League-average rotation', cls: statusClassFromMetric(ps, 'pitching', false) };
     if (ps != null && ps >= 72 && kbb != null && kbb >= 14) {
       status = { label: 'Strikeout-forward rotation', cls: 'tp-intel-status--elite' };
     } else if (ps != null && ps >= 68 && pack.osiAllow != null && pack.osiAllow <= 52) {
@@ -807,6 +870,8 @@
       status = { label: 'Volatile back-end rotation', cls: 'tp-intel-status--volatile' };
     } else if (kbb != null && kbb <= 8) {
       status = { label: 'Contact-management staff', cls: 'tp-intel-status--volatile' };
+    } else if (ps != null) {
+      status.cls = statusClassFromMetric(ps, 'pitching', false);
     }
     var identity = 'Rotation of ' + pack.count + ' profiled arm' + (pack.count === 1 ? '' : 's');
     if (pack.top && pack.bottom && pack.top.ps != null && pack.bottom.ps != null) {
@@ -952,15 +1017,20 @@
     if (!pack || (!pack.unit && pack.era == null && pack.osi == null)) {
       return { status: { label: 'Bullpen data pending', cls: 'tp-intel-status--neutral' }, identity: 'Run pipeline steps 12–13 for Bullpen_Unit rows.' };
     }
-    var status = { label: 'League-average bullpen', cls: 'tp-intel-status--neutral' };
+    var status = {
+      label: 'League-average bullpen',
+      cls: statusClassFromMetric(pack.bpScore, 'osi', false)
+    };
     if (pack.bpScore != null && pack.bpScore >= 72) {
       status = { label: 'Elite leverage unit', cls: 'tp-intel-status--elite' };
     } else if (pack.bpScore != null && pack.bpScore >= 62) {
       status = { label: 'Reliable late-inning group', cls: 'tp-intel-status--plus' };
     } else if (pack.bpScore != null && pack.bpScore < 48) {
-      status = { label: 'High-risk bullpen', cls: 'tp-intel-status--volatile' };
+      status = { label: 'High-risk bullpen', cls: 'tp-intel-status--weak' };
     } else if (pack.hiEra != null && pack.era != null && pack.hiEra > pack.era + 1.2) {
       status = { label: 'High-leverage concern', cls: 'tp-intel-status--volatile' };
+    } else if (pack.bpScore != null) {
+      status.cls = statusClassFromMetric(pack.bpScore, 'osi', false);
     }
     var identity = pack.relieverCount
       ? pack.relieverCount + ' profiled reliever' + (pack.relieverCount === 1 ? '' : 's')

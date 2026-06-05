@@ -1,5 +1,5 @@
 /**
- * MLBMA shared dashboard UI ó nav, loading overlay, footer timestamp.
+ * MLBMA shared dashboard UI ù nav, loading overlay, footer timestamp.
  */
 (function (global) {
   'use strict';
@@ -123,6 +123,7 @@
     document.body.classList.remove('mlbma-page-loading');
     document.documentElement.classList.remove('view-pending');
     document.body.classList.remove('view-pending');
+    applyDashboardTitleCase(document);
   }
 
   /** Dismiss full-viewport loading overlay (alias used by dashboards). */
@@ -140,7 +141,7 @@
     var done = false;
     var timer = setTimeout(function () {
       if (done) return;
-      console.warn('[MLBMA_UI] load watchdog fired ó dismissing overlay');
+      console.warn('[MLBMA_UI] load watchdog fired ù dismissing overlay');
       if (typeof onTimeout === 'function') onTimeout();
       hideLoadingOverlay();
     }, ms || 8000);
@@ -168,7 +169,7 @@
       global.MLBMA_CONFIG.SHEET_TABS.last_updated;
     var url = tab ? sheetCsvUrl(tab) : null;
     if (!url) {
-      el.textContent = 'ó';
+      el.textContent = 'ù';
       return;
     }
     fetch(url, { cache: 'no-store' })
@@ -176,9 +177,9 @@
       .then(function (t) {
         var line = (t || '').trim().split('\n')[1] || '';
         var val = line.split(',')[0].replace(/^"|"$/g, '').trim();
-        el.textContent = val || 'ó';
+        el.textContent = val || 'ù';
       })
-      .catch(function () { el.textContent = 'ó'; });
+      .catch(function () { el.textContent = 'ù'; });
   }
 
   function injectFooter() {
@@ -187,21 +188,60 @@
     ft.className = 'mlbma-footer';
     ft.id = 'mlbmaFooter';
     ft.innerHTML =
-      '<div>Chase Analytics ∑ MLBMA Pipeline v2.0</div>' +
+      '<div>Chase Analytics ù MLBMA Pipeline v2.0</div>' +
       '<div class="mlbma-footer-center">Data refreshes daily after 9am ET pipeline run</div>' +
-      '<div class="mlbma-footer-right">Updated: <span id="mlbmaFooterUpdated">ó</span></div>';
+      '<div class="mlbma-footer-right">Updated: <span id="mlbmaFooterUpdated">ù</span></div>';
     document.body.appendChild(ft);
     loadFooterTimestamp();
+  }
+
+  var TITLE_CASE_SELECTORS = [
+    '.purpose',
+    '.ca-page-header__sub',
+    '.ca-tool-card__lede',
+    '.ca-hero__lede',
+    '.lv-family-desc',
+    '.rl-workspace-subtitle',
+    '.gloss-convention__lead',
+    '.gloss-convention__note',
+    '.matchups-section-sub',
+    '.ca-section-header .ca-helper',
+    '.tp-intel-note',
+    '.tp-opponent-strength-note',
+    '.tp-staff-meta',
+    '.tp-summary-filter',
+    '.ca-empty-state .ca-helper',
+    '.matchups-feature-list li'
+  ].join(',');
+
+  function shouldSkipTitleCase(el) {
+    if (!el || el.dataset.titleCased === '1') return true;
+    if (el.querySelector('.chip, .val-chip, .hub-pill, button, img, svg, input, select, table')) return true;
+    return false;
+  }
+
+  function applyDashboardTitleCase(root) {
+    var A = global.MLBMAAssets;
+    var tc = A && A.titleCaseLabel;
+    if (!tc) return;
+    (root || document).querySelectorAll(TITLE_CASE_SELECTORS).forEach(function (el) {
+      if (shouldSkipTitleCase(el)) return;
+      var text = (el.textContent || '').trim();
+      if (!text) return;
+      el.textContent = tc(text);
+      el.dataset.titleCased = '1';
+    });
   }
 
   function init() {
     document.body.classList.add('mlbma-page-loading');
     injectShell();
     injectFooter();
+    applyDashboardTitleCase(document);
     setTimeout(function () {
       var ov = document.getElementById('mlbmaLoading');
       if (ov && !ov.classList.contains('hide')) {
-        console.warn('[MLBMA_UI] safety timeout ó dismissing loading overlay');
+        console.warn('[MLBMA_UI] safety timeout ù dismissing loading overlay');
         finishLoading();
       }
     }, 14000);
@@ -221,5 +261,6 @@
     loadFooterTimestamp: loadFooterTimestamp,
     currentPage: currentPage,
     injectShell: injectShell,
+    applyDashboardTitleCase: applyDashboardTitleCase,
   };
 })(window);

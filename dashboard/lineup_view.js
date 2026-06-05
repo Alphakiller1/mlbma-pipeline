@@ -371,11 +371,15 @@
     var on = state.filter[key] === val;
     return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"' + (disabled ? ' disabled' : '') + '>' + esc(label) + '</button>';
   }
+  function titleCaseDesc(s) {
+    var A = global.MLBMAAssets;
+    return A && A.titleCaseLabel ? A.titleCaseLabel(s) : s;
+  }
   function familyCard(val, name, desc, chips, state) {
     var on = state.family === val;
     return '<button class="lv-family' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">'
       + '<div class="lv-family-top"><span class="lv-family-name">' + esc(name) + '</span><span class="lv-family-n">' + chips.length + ' metrics</span></div>'
-      + '<div class="lv-family-desc">' + esc(desc) + '</div>'
+      + '<div class="lv-family-desc">' + esc(titleCaseDesc(desc)) + '</div>'
       + '<div class="lv-family-chips">' + chips.map(function(ch) {
         var phase = (ch === 'PP-Gap');
         return '<span class="lv-family-chip' + (phase ? ' phase' : '') + '">' + esc(ch) + '</span>';

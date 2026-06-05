@@ -223,14 +223,10 @@ def _agg_block(df: pd.DataFrame) -> Optional[dict]:
 
 
 def _apply_season_pitching_rates(block: dict, pname: str, adv: dict) -> dict:
-    """FanGraphs xFIP/FIP/OPS are season-level; attach to every split row so dashboards populate."""
+    """Gamelog splits keep log-derived FIP; season xFIP/FIP live on SP_Profiles only."""
     if not block:
         return block
     a = adv.get(_norm(pname), {})
-    if a.get("xFIP") is not None:
-        block["xFIP"] = a["xFIP"]
-    if a.get("FIP") is not None and block.get("FIP") is None:
-        block["FIP"] = a["FIP"]
     if a.get("OPS") is not None and block.get("OPS") is None:
         block["OPS"] = a["OPS"]
     return block

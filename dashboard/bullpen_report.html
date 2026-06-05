@@ -7,12 +7,12 @@
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
 <link rel="stylesheet" href="theme.css?v=20260606b">
-<link rel="stylesheet" href="chase_nav.css?v=20260616c">
+<link rel="stylesheet" href="chase_nav.css?v=20260618n">
 <link rel="stylesheet" href="team_profile.css?v=20260605a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="bullpen_report.css?v=20260605c">
+<link rel="stylesheet" href="bullpen_report.css?v=20260609d">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260604z">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
@@ -22,7 +22,7 @@
 <script src="matchup_shared.js?v=20260618a"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
-<script src="bullpen_profile_dashboard.js?v=20260605a"></script>
+<script src="bullpen_profile_dashboard.js?v=20260609d"></script>
 <script src="bullpen_usage.js?v=20260608n"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260602w"></script>
@@ -226,7 +226,7 @@ function sectionHeaderHtml(title, subtitle, opts) {
   opts = typeof opts === 'string' ? { eyebrow: opts } : (opts || {});
   if (!window.MLBMAAssets || !MLBMAAssets.sectionHeaderHtml) {
     return '<header class="ca-section-header"><h2 class="ca-section-title">' + esc(title) + '</h2>'
-      + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '') + '</header>';
+      + (subtitle ? '<p class="ca-helper">' + esc((MLBMAAssets && MLBMAAssets.titleCaseLabel) ? MLBMAAssets.titleCaseLabel(subtitle) : subtitle) + '</p>' : '') + '</header>';
   }
   return MLBMAAssets.sectionHeaderHtml({
     title: title,

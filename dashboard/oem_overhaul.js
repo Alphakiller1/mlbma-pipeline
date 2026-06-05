@@ -231,8 +231,6 @@
       var lu = LIVE_DATA.lineups || [];
       var awayPlat = computePlatoonPct(lineupRowsForTeam(lu, gk, m.away, 'AWAY'), homeHand);
       var homePlat = computePlatoonPct(lineupRowsForTeam(lu, gk, m.home, 'HOME'), awayHand);
-      var script = gameScriptForMatchup(m);
-
       return '<article class="matchup-card-v2" data-game="' + gi + '">'
         + '<div class="mc-header">'
         + '<div class="mc-time">' + esc(m.time || 'TBD') + '</div>'
@@ -252,10 +250,6 @@
         + '<div class="mc-meta">Edge: <strong>' + esc(fav) + '</strong>'
         + ' · Away platoon ' + (awayPlat != null ? Math.round(awayPlat) + '%' : '—')
         + ' · Home platoon ' + (homePlat != null ? Math.round(homePlat) + '%' : '—') + '</div>'
-        + '<div class="mc-script-row">'
-        + '<span class="script-label ' + script.cls + '">' + esc(script.label) + '</span>'
-        + '<span class="f5-badge">' + esc(script.f5) + '</span>'
-        + '</div>'
         + '<button type="button" class="metrics-toggle" onclick="toggleMetricsPanel(\'' + uid + '\', this)">Expand matchup ▾</button>'
         + '<div class="metrics-panel" id="' + uid + '">'
         + (typeof buildMatchupLineupBlock === 'function' ? buildMatchupLineupBlock(m) : '')
@@ -311,8 +305,6 @@
       var script = gameScriptForMatchup(m);
       return '<div class="script-card">'
         + '<div class="script-game">' + esc(m.away) + ' @ ' + esc(m.home) + '</div>'
-        + '<div class="script-label ' + script.cls + '">' + esc(script.label) + '</div>'
-        + '<span class="f5-badge">' + esc(script.f5) + '</span>'
         + '<div class="script-detail">ABQ ' + (awayRow ? awayRow.abq.toFixed(0) : '—') + '/' + (homeRow ? homeRow.abq.toFixed(0) : '—')
         + ' · Pitch ' + fmtMatchupStat(awayPs) + '/' + fmtMatchupStat(homePs) + '</div>'
         + '</div>';

@@ -1770,19 +1770,19 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 }
 .hmc-weather-chip--temp strong { font-size: 15px; letter-spacing: 0; }
 .hmc-weather-chip--cond { max-width: 88px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
-.hmc-pitchers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-width: 0; align-items: stretch; margin: 12px 0; }
+.hmc-pitchers { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; min-width: 0; align-items: stretch; margin: 12px 0; }
 .hmc-row.hmc-teams { min-width: 0; }
 .mc-sp-block {
-  display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 12px;
-  align-items: flex-start; font-size: 11px; height: 100%;
-  padding: 12px 12px 11px; border-radius: 8px;
+  display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 10px;
+  align-items: stretch; font-size: 11px; height: 100%;
+  padding: 12px 14px 11px; border-radius: 8px; box-sizing: border-box; overflow: hidden;
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
   border: 1px solid rgba(196,176,255,.08);
 }
-.mc-sp-info { min-width: 0; display: grid; grid-template-rows: auto auto auto 1fr; align-content: start; }
+.mc-sp-info { min-width: 0; display: grid; grid-template-rows: 22px 26px 38px 52px; gap: 4px; align-content: start; }
 .mc-sp-photo { width: 42px; margin-right: 0; }
-.mc-sp-top { flex-wrap: wrap; gap: 5px; min-height: 20px; margin-bottom: 6px; overflow: visible; }
-.mc-sp-side { white-space: nowrap; flex: 1 0 auto; font-size: 10px; }
+.mc-sp-top { display: grid; grid-template-columns: auto auto minmax(0,1fr); align-items: center; gap: 4px; height: 22px; margin: 0; overflow: hidden; }
+.mc-sp-side { white-space: nowrap; font-size: 10px; }
 .hero-matchup-card .pitch-tier {
   flex: 0 0 auto; margin-left: 0; max-width: 100%; white-space: nowrap;
   font-size: 10px; line-height: 1.1; padding: 3px 6px;
@@ -1804,9 +1804,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .mc-sp-stat strong { color: var(--text); font-size: 16px; font-weight: 900; line-height: 1.1; }
 .mc-sp-name-text { font-size: 15.5px; font-weight: 800; letter-spacing: 0; }
 .mc-ps-badge--defined {
-  display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline;
-  gap: 8px; width: 100%; margin: 0 0 8px; padding: 6px 0;
-  border-radius: 0; background: transparent;
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 10px; width: 100%; min-height: 38px; height: 38px; margin: 0; padding: 4px 2px;
+  border-radius: 0; background: transparent; box-sizing: border-box;
   border-top: 1px solid rgba(255,255,255,.065);
   border-bottom: 1px solid rgba(255,255,255,.065);
   color: var(--text);
@@ -1824,12 +1824,25 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 .hero-matchup-card .matchup-lineup-col-head { margin-bottom: 6px; }
 .hero-matchup-card .matchup-lineup-col-head__team { font-size: 12px; font-weight: 800; }
 .hero-matchup-card .matchup-lineup-col-head__meta { font-size: 10px; font-weight: 700; }
-.hmc-edge-label { font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
-.hmc-osi-bar { display: grid; grid-template-columns: minmax(0, 84px) minmax(0, 1fr) minmax(0, 84px); gap: 10px; align-items: center; margin-bottom: 6px; min-width: 0; }
-.hmc-osi-val { font-size: 13px; color: var(--text); font-weight: 800; }
-.hmc-osi-val strong { font-size: 16px; font-weight: 900; }
-.hmc-osi-val.edge-team strong { color: var(--green); }
-.hmc-osi-val.tr { text-align: right; }
+.hmc-edge-label { font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; text-align: center; }
+.hmc-osi-bar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(64px, 2fr) minmax(0, 1fr); gap: 10px; align-items: center; margin-bottom: 6px; min-width: 0; }
+.hmc-osi-val { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--text); font-weight: 800; }
+.hmc-osi-val--away { align-items: flex-start; justify-self: start; text-align: left; }
+.hmc-osi-val--home { align-items: flex-end; justify-self: end; text-align: right; }
+.hmc-osi-team { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); line-height: 1.1; }
+.hmc-osi-num { font-size: 16px; font-weight: 900; line-height: 1.1; color: var(--text); }
+.hmc-osi-val.edge-team .hmc-osi-num { color: var(--green); }
+.hero-matchup-card .team-link--home { justify-content: flex-end; flex-direction: row-reverse; }
+.hero-matchup-card .team-link--away { justify-content: flex-start; flex-direction: row; }
+.mc-sp-block--home { grid-template-columns: minmax(0, 1fr) 42px; padding-left: 11px; padding-right: 14px; }
+.mc-sp-block--away { padding-right: 11px; }
+.mc-sp-block--home .mc-sp-photo { grid-column: 2; grid-row: 1; }
+.mc-sp-block--home .mc-sp-info { grid-column: 1; grid-row: 1; }
+.mc-sp-block--home .mc-sp-top { grid-template-columns: minmax(0,1fr) auto auto; }
+.mc-sp-block--home .mc-sp-name-row { display: flex; align-items: center; justify-content: flex-end; text-align: right; }
+.mc-sp-block--home .mc-ps-badge--defined { flex-direction: row-reverse; }
+.mc-sp-block--home .mc-sp-stats--grid { direction: rtl; }
+.mc-sp-block--home .mc-sp-stat { direction: ltr; }
 .hmc-bar-track { height: 11px; border-radius: 999px; overflow: hidden; display: flex; background: var(--bg-4); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
 .hmc-bar-away { background: var(--blue); height: 100%; }
 .hmc-bar-home { background: var(--purple); height: 100%; }
@@ -1858,7 +1871,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 @media (max-width: 520px) {
   #section-matchups-hero.platform-section { padding: 16px 12px; }
   #matchupsHeroGrid { grid-template-columns: 1fr; gap: 12px; }
-  .hero-matchup-card { padding: 14px 12px; }
+  .hero-matchup-card { padding: 14px 16px; }
   .hmc-pitchers { grid-template-columns: 1fr; gap: 10px; }
   .hmc-meta { margin-left: 0; width: 100%; justify-content: flex-start; }
   .hmc-osi-bar { grid-template-columns: minmax(0, 1fr) minmax(48px, 2fr) minmax(0, 1fr); gap: 6px; }
@@ -2602,11 +2615,12 @@ body.view-research .ca-lab { display: block; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260602n">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
-<link rel="stylesheet" href="theme.css?v=20260606b">
-<link rel="stylesheet" href="chase_nav.css?v=20260602o">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260606g">
+<link rel="stylesheet" href="theme.css?v=20260619a">
+<link rel="stylesheet" href="chase_nav.css?v=20260618n">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260619a">
 <link rel="stylesheet" href="research_lab.css?v=20260605e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_build.js?v=20260527s"></script>
 <script>document.documentElement.classList.add('view-opening','view-pending');</script>
@@ -2662,24 +2676,22 @@ body.view-research .ca-lab { display: block; }
   }
 </style>
 <script src="mlbma_config.js?v=20260527s"></script>
-<script src="mlbma_ui.js?v=20260606d" data-page="chase_analytics_mlb_oem_v7.html"></script>
-<script src="mlbma_assets.js?v=20260605e"></script>
+<script src="mlbma_ui.js?v=20260618b" data-page="chase_analytics_mlb_oem_v7.html"></script>
+<script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260608t"></script>
+<script src="matchup_shared.js?v=20260609a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260608t"></script>
+<script src="platform_dashboard.js?v=20260609a"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
-<script src="research_lab.js?v=20260605e"></script>
-<script src="lineup_view.js?v=20260605e"></script>
+<script src="research_lab.js?v=20260618b"></script>
+<script src="lineup_view.js?v=20260618b"></script>
 <script src="trends_heatmap.js?v=20260605e"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
 <script src="pitcher_lab.js?v=20260605e"></script>
-  <link rel="stylesheet" href="mlbma_design_system.css">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
 </head>
-<body class="view-pending view-opening platform-dashboard opening-dashboard">
+<body class="view-pending view-opening platform-dashboard opening-dashboard ca-bg-outfield">
 ﻿﻿﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
@@ -4595,28 +4607,30 @@ function batterProfileLink(name) {
   return '<a href="batter_profile.html?player=' + encodeURIComponent(name) + '" class="lineup-name-link">' + escHtml(name) + '</a>';
 }
 
-function buildLineupColHtml(teamLabel, rows, oppHand) {
+function buildLineupColHtml(teamLabel, rows, oppHand, side) {
   var S = window.MLBMASharedMatchup;
   if (S && S.buildLineupColCompact) {
-    return S.buildLineupColCompact(teamLabel, rows, oppHand);
+    return S.buildLineupColCompact(teamLabel, rows, oppHand, side);
   }
+  var sideKey = side === 'home' ? 'home' : 'away';
+  var sideCls = ' matchup-lineup-col--' + sideKey;
   var head = '<div class="matchup-lineup-col-head">' + escHtml(teamLabel)
     + ' <span class="lineup-opp-hand">vs ' + (oppHand === 'L' || oppHand === 'R' ? escHtml(oppHand + 'HP') : '?HP') + '</span></div>';
   if (!rows.length) {
-    return '<div class="matchup-lineup-col">' + head + '<div class="matchup-lineup-empty">No rows</div></div>';
+    return '<div class="matchup-lineup-col' + sideCls + '">' + head + '<div class="matchup-lineup-empty">No rows</div></div>';
   }
   var body = rows.slice(0, 9).map(function(r) {
     var bn = normalizeBatsHand(r.bats);
     var plat = platoonHighlightClass(bn, oppHand);
     var bp = escHtml(bn === '?' ? '?' : bn);
-    return '<div class="lineup-row ' + plat + '">'
-      + '<span class="lineup-bo">' + ((r.batOrder >= 1 && r.batOrder <= 9) ? String(r.batOrder) : '\u2014') + '</span>'
-      + '<span class="lineup-pos">' + escHtml(r.position) + '</span>'
-      + '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>'
-      + '<span class="bats-pill hand-' + (bn === '?' ? 'unk' : bn.toLowerCase()) + '">' + bp + '</span>'
-      + '</div>';
+    var bo = '<span class="lineup-bo">' + ((r.batOrder >= 1 && r.batOrder <= 9) ? String(r.batOrder) : '\u2014') + '</span>';
+    var pos = '<span class="lineup-pos">' + escHtml(r.position) + '</span>';
+    var name = '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>';
+    var bats = '<span class="bats-pill hand-' + (bn === '?' ? 'unk' : bn.toLowerCase()) + '">' + bp + '</span>';
+    var cells = sideKey === 'home' ? (bats + name + pos + bo) : (bo + pos + name + bats);
+    return '<div class="lineup-row ' + plat + '">' + cells + '</div>';
   }).join('');
-  return '<div class="matchup-lineup-col">' + head + body + '</div>';
+  return '<div class="matchup-lineup-col' + sideCls + '">' + head + body + '</div>';
 }
 
 function buildMatchupLineupBlock(m, opts) {
@@ -4641,8 +4655,8 @@ function buildMatchupLineupBlock(m, opts) {
     inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + escHtml(gk) + '</span>.' + staleNote + '</div>';
   } else {
     inner = '<div class="matchup-lineup-grid">'
-      + buildLineupColHtml(m.away + ' (away)', awayRows, awayFaces)
-      + buildLineupColHtml(m.home + ' (home)', homeRows, homeFaces)
+      + buildLineupColHtml(m.away + ' (away)', awayRows, awayFaces, 'away')
+      + buildLineupColHtml(m.home + ' (home)', homeRows, homeFaces, 'home')
       + '</div>';
   }
   if (hideToggle) {

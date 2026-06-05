@@ -596,7 +596,21 @@
     mountSectionHead('glossaryUnitHead', 'layout-grid', 'Architecture', 'Unit Structure', 'How Lineup, Rotation, and Bullpen sections fit together.');
   }
 
+  function mountPageHeader() {
+    var el = document.getElementById('glossaryPageHeader');
+    var A = global.MLBMAAssets;
+    if (!el || !A || !A.sectionHeaderHtml) return;
+    el.innerHTML = A.sectionHeaderHtml({
+      icon: 'book-open',
+      kicker: 'Reference',
+      title: 'Metric Glossary & Methodology',
+      subtitle: 'All definitions, formulas, and methodology in one place.'
+    });
+    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
+  }
+
   function initGlossaryPage() {
+    mountPageHeader();
     mountConventions();
     mountSectionHead('glossaryCoreHead', 'clipboard-list', 'Reference', 'Core Metric Definitions', 'Created composites — formulas verified against core/config.py.');
     mountMetricGrid('glossaryMetricCards', CORE_METRICS);

@@ -29,7 +29,7 @@
       + (A && A.sectionHeaderHtml
         ? A.sectionHeaderHtml(hdrOpts)
         : '<header class="ca-section-header"><h2 class="ca-section-title">' + esc(title) + '</h2>'
-          + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '') + '</header>')
+          + (subtitle ? '<p class="ca-helper">' + esc((global.MLBMAAssets && MLBMAAssets.titleCaseLabel) ? MLBMAAssets.titleCaseLabel(subtitle) : subtitle) + '</p>' : '') + '</header>')
       + body + '</section>';
   }
 

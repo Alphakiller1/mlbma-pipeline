@@ -725,13 +725,14 @@
     function heroMetricText(val, ctx, invert, dec, opts) {
       opts = opts || {};
       var d = dec == null ? 1 : dec;
-      // Banner stats render as #3 filled chips (theme.css banner scope styles .chip).
-      if (A && A.valChipHtml) return A.valChipHtml(val, ctx, !!invert, d, opts);
       if (val == null || isNaN(val)) {
-        return '<span class="tp-hero-stat__num tp-hero-stat__num--na">—</span>';
+        var na = opts.display != null ? String(opts.display) : '—';
+        return '<span class="tp-hero-stat__num tp-hero-stat__num--na">' + esc(na) + '</span>';
       }
       var display = opts.display != null ? String(opts.display) : fmt(val, d);
-      return '<span class="tp-hero-stat__num">' + esc(display) + '</span>';
+      var color = (A && A.metricTextColor) ? A.metricTextColor(val, ctx, !!invert, opts) : '';
+      var style = color ? ' style="color:' + color + '"' : '';
+      return '<span class="tp-hero-stat__num"' + style + '>' + esc(display) + '</span>';
     }
 
     var handVal = hand === 'L' ? 'LHP' : 'RHP';
@@ -740,7 +741,7 @@
       + heroStat('', '<span class="tp-hero-stat__num">' + esc(handVal) + '</span>', 'neutral', handVal)
       + heroStat('Pitch Score', heroMetricText(ps, 'pitching', false, 0), 'neutral')
       + heroStat('ERA', heroMetricText(era, 'era', true, 2), 'neutral')
-      + heroStat('QS%', heroMetricText(qsPct, 'pitching', false, 0, { display: qsPct != null ? fmt(qsPct, 0) + '%' : '—' }), 'neutral')
+      + heroStat('QS%', heroMetricText(qsPct, 'qspct', false, 0, { display: qsPct != null ? fmt(qsPct, 0) + '%' : '—' }), 'neutral')
       + '</div>';
 
     var notes = ctx.tonightHtml
@@ -1022,6 +1023,35 @@
       || opsFromRow(row, pickCol) != null;
   }
 
+  function profileXFIP(profile, pickCol) {
+    return profile ? num(pickCol(profile, ['xFIP', 'xfip'])) : null;
+  }
+
+  function isStampedSeasonXFIP(row, profile, pickCol) {
+    var rowX = num(pickCol(row, ['xFIP', 'xfip']));
+    var profX = profileXFIP(profile, pickCol);
+    return rowX != null && profX != null && Math.abs(rowX - profX) < 0.001;
+  }
+
+  /** Split-aware xFIP/FIP for display — home/away use log FIP, not season xFIP stamp. */
+  function splitExpectRunsForDisplay(s, profile, pickCol, viewSplit) {
+    s = s || {};
+    var xfip = num(pickCol(s, ['xFIP', 'xfip']));
+    var fip = num(pickCol(s, ['FIP', 'fip']));
+    var profX = profileXFIP(profile, pickCol);
+
+    if (viewSplit === 'overall') {
+      return { v: xfip != null ? xfip : profX, ctx: 'xfip', dec: 2, usedLogFip: false };
+    }
+    if (isStampedSeasonXFIP(s, profile, pickCol)) xfip = null;
+    if (viewSplit === 'home' || viewSplit === 'away') {
+      if (xfip != null) return { v: xfip, ctx: 'xfip', dec: 2, usedLogFip: false };
+      if (fip != null) return { v: fip, ctx: 'fip', dec: 2, usedLogFip: true };
+      return { v: null, ctx: 'xfip', dec: 2, usedLogFip: false };
+    }
+    return { v: xfip, ctx: 'xfip', dec: 2, usedLogFip: false };
+  }
+
   function resolvePitchingValueRow(viewSplit, profile, splits, log, pickCol, findSplit, ctx) {
     var s;
     var handOnly = viewSplit === 'lhh' || viewSplit === 'rhh';
@@ -1076,18 +1106,22 @@
     var rk = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
     var rbb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
     var rhr9 = num(pickCol(s, ['HR9', 'HR/9']));
-    var rxfip = num(pickCol(s, ['xFIP', 'xfip']));
+    var expectRuns = splitExpectRunsForDisplay(s, profile, pickCol, viewSplit);
     var rops = opsFromRow(s, pickCol);
+    var locFipNote = expectRuns.usedLogFip
+      ? ' · Home/Away show log FIP (split xFIP not in game log)'
+      : '';
     return '<table class="hub-table tp-table pp-pitching-value-metrics-table" aria-label="Pitching value metrics">'
       + '<thead><tr><th>K%</th><th>BB%</th><th>HR/9</th><th>xFIP</th><th>OPS</th></tr></thead>'
       + '<tbody><tr>'
       + cell(rk, 'kpct', false, 1) + cell(rbb, 'bbpct', true, 1) + cell(rhr9, 'hr9', true, 2)
-      + cell(rxfip, 'xfip', true, 2) + cell(rops, 'ops', true, 3)
+      + cell(expectRuns.v, expectRuns.ctx, true, expectRuns.dec) + cell(rops, 'ops', true, 3)
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-pv-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
       + (handMissing
         ? ' · hand split not loaded — run FanGraphs SP vs-L/R scrape (sp_vs_LHH.csv / sp_vs_RHH.csv)'
         : ' · lower OPS / xFIP = stronger pitching value for this split')
+      + locFipNote
       + '</p>';
   }
 
@@ -1149,7 +1183,7 @@
     var s = resolveF5Row(viewSplit, profile, splits, log, pickCol, findSplit, ctx);
     var handOnly = viewSplit === 'lhh' || viewSplit === 'rhh';
     var handMissing = handOnly && !pitchingRowHasData(s, pickCol);
-    var xfip = num(pickCol(s, ['xFIP', 'xfip']));
+    var expectRuns = splitExpectRunsForDisplay(s, profile, pickCol, viewSplit);
     var k = pctNorm(num(pickCol(s, ['K_pct', 'K%'])));
     var bb = pctNorm(num(pickCol(s, ['BB_pct', 'BB%'])));
     var f5er = num(pickCol(s, ['F5_ERA', 'F5 ERA', 'ER/5', 'er5']));
@@ -1162,10 +1196,13 @@
       : (handOnly && f5er == null
         ? ' · ER/5 not tracked by platoon — use Both / Home / Away for first-five runs'
         : ' · ER/5 = earned runs per five innings (first-five)');
+    if (expectRuns.usedLogFip) {
+      handNote += ' · Home/Away show log FIP (split xFIP not in game log)';
+    }
     return '<table class="hub-table tp-table pp-f5-metrics-table" aria-label="F5 profile metrics">'
       + '<thead><tr><th>xFIP</th><th>K%</th><th>BB%</th><th>ER/5</th></tr></thead>'
       + '<tbody><tr>'
-      + cell(xfip, 'xfip', true, 2) + cell(k, 'kpct', false, 1) + cell(bb, 'bbpct', true, 1) + cell(f5er, 'era', true, 2)
+      + cell(expectRuns.v, expectRuns.ctx, true, expectRuns.dec) + cell(k, 'kpct', false, 1) + cell(bb, 'bbpct', true, 1) + cell(f5er, 'era', true, 2)
       + '</tr></tbody></table>'
       + '<p class="tp-trend-table-note pp-f5-split-note">Showing <strong>' + esc(splitLabels[viewSplit] || viewSplit) + '</strong>'
       + handNote + '</p>';

@@ -65,7 +65,6 @@
   border: 1.5px solid rgba(124,77,255,0.32);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
 }
-.bx-anchor__photo .ca-pitcher-avatar--matchup { width: 52px; height: 52px; flex-shrink: 0; }
 .bx-anchor__score { font-family: var(--font-display, inherit); font-size: 42px; font-weight: 800; line-height: 1; }
 .bx-anchor__eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3, #6E7383); }
 .bx-anchor__copy { font-size: 13.5px; line-height: 1.45; color: var(--text-2, #C4CBD6); flex: 1; min-width: 0; }
@@ -74,15 +73,11 @@
 .bx-prop-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 @media (max-width: 560px) { .bx-prop-cards { grid-template-columns: 1fr; } }
 .bx-prop-card {
-  position: relative; padding: 12px 12px 12px 58px; border-radius: 12px; min-height: 88px;
+  padding: 12px 14px; border-radius: 12px; min-height: 88px;
   background: linear-gradient(180deg, rgba(24,27,38,0.98) 0%, rgba(14,16,24,0.98) 100%);
   border: 1.5px solid var(--border, #262A38);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
 }
-.bx-prop-card__photo {
-  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-}
-.bx-prop-card__photo .ca-pitcher-avatar--matchup { width: 40px; height: 40px; }
 .bx-prop-card__label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3, #6E7383); }
 .bx-prop-card__line { display: flex; align-items: baseline; gap: 8px; margin: 4px 0; flex-wrap: wrap; }
 .bx-prop-card__proj { font-family: var(--font-display, inherit); font-size: 21px; font-weight: 800; line-height: 1; }
@@ -102,6 +97,19 @@
 .bx-driver__track { height: 7px; border-radius: 4px; background: var(--bg-4, #181B26); overflow: hidden; }
 .bx-driver__fill { height: 100%; border-radius: 4px; }
 .bx-driver__val { font-size: 13px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Prop lines comparison table */
+#secLines { padding-top: 4px; }
+.bx-prop-lines-wrap { margin-top: 4px; }
+.bx-prop-lines-table tbody th[scope="row"] {
+  font-size: 13px; font-weight: 700; color: var(--text-2, #C4CBD6); white-space: nowrap;
+}
+.bx-prop-lines-table tbody td.num strong {
+  font-family: var(--font-display, inherit); font-size: 15px; font-weight: 800;
+  font-variant-numeric: tabular-nums; color: var(--text, #F5F6FA);
+}
+.bx-prop-lines__sub { font-size: 11.5px; font-weight: 600; color: var(--text-3, #8A90A2); }
+#secLines .bx-flags { margin-top: 12px; }
 
 .bx-flags { display: flex; flex-direction: column; gap: 8px; }
 .bx-flag {

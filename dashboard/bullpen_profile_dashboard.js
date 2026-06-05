@@ -141,16 +141,27 @@
     return 'weak';
   }
 
+  function bannerMetricMeta(label) {
+    var u = String(label || '').toUpperCase();
+    if (u.indexOf('IR') >= 0) return { ctx: 'ir', invert: null };
+    if (u.indexOf('OSI') >= 0) return { ctx: 'osi', invert: true };
+    if (u.indexOf('ERA') >= 0) return { ctx: 'era', invert: null };
+    return { ctx: 'default', invert: null };
+  }
+
   function statPill(label, rawVal, display) {
     var valueHtml;
-    if (rawVal != null && !isNaN(rawVal) && A && A.valChipHtml) {
-      var ctx = label.indexOf('OSI') >= 0 ? 'osi' : 'era';
-      var dec = String(display).indexOf('%') >= 0 ? 0 : (label.indexOf('ERA') >= 0 ? 2 : 1);
-      valueHtml = A.valChipHtml(rawVal, ctx, true, dec, { display: display });
+    if (rawVal != null && !isNaN(rawVal)) {
+      var meta = bannerMetricMeta(label);
+      var color = (A && A.metricTextColor)
+        ? A.metricTextColor(rawVal, meta.ctx, meta.invert)
+        : '';
+      var style = color ? ' style="color:' + color + '"' : '';
+      valueHtml = '<span class="tp-hero-stat__num"' + style + '>' + esc(display) + '</span>';
     } else {
       valueHtml = '<span class="tp-hero-stat__num tp-hero-stat__num--na">—</span>';
     }
-    return '<div class="tp-hero-stat">'
+    return '<div class="tp-hero-stat tp-hero-stat--neutral">'
       + '<span class="tp-hero-stat__label">' + esc(label) + '</span>'
       + '<span class="tp-hero-stat__value">' + valueHtml + '</span></div>';
   }
@@ -164,7 +175,7 @@
     var hiEra = colVal(unit, 'high_leverage', 'ERA', pickCol);
     var badges = (ctx.isToday ? '<span class="pill pill-today">Playing Today</span>' : '');
 
-    var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero tp-hero-stat-row" role="group" aria-label="Bullpen headline stats">'
+    var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Bullpen headline stats">'
       + statPill('ERA', era, fmt(era, 2))
       + statPill('OSI Allowed', osi, fmt(osi, 1))
       + statPill('IR Scored %', irp, fmtPct(irp))
@@ -683,11 +694,22 @@
       return (va - vb) * sortDir;
     });
 
-    var html = '<table class="tp-table hub-table bp-reliever-rank-table" data-sort="' + esc(sortKey) + '"><thead><tr>'
-      + '<th data-sort="name">Name</th><th>Role</th><th data-sort="ip">IP</th><th data-sort="era">ERA</th>'
-      + '<th data-sort="k">K%</th><th>BB%</th><th>HR/9</th>'
-      + '<th data-sort="osi">OSI All.</th><th>ABQ All.</th>'
-      + '<th>IR Scored%</th><th>Hi Lev ERA</th>'
+    function thCell(label, key, isNum) {
+      var parts = [];
+      if (key && sortKey === key) parts.push('sorted');
+      if (isNum) parts.push('col-num');
+      var cls = parts.length ? ' class="' + parts.join(' ') + '"' : '';
+      var ds = key ? ' data-sort="' + esc(key) + '"' : '';
+      return '<th' + cls + ds + '>' + label + '</th>';
+    }
+
+    var html = '<div class="bp-reliever-rank-wrap table-wrap">'
+      + '<table class="tp-table hub-table bp-reliever-rank-table" data-sort="' + esc(sortKey) + '"><thead><tr>'
+      + thCell('Name', 'name', false) + thCell('Role', null, false)
+      + thCell('IP', 'ip', true) + thCell('ERA', 'era', true) + thCell('K%', 'k', true)
+      + thCell('BB%', null, true) + thCell('HR/9', null, true)
+      + thCell('OSI All.', 'osi', true) + thCell('ABQ All.', null, true)
+      + thCell('IR Scored%', null, true) + thCell('Hi Lev ERA', null, true)
       + '</tr></thead><tbody>';
 
     sorted.forEach(function(r) {
@@ -696,10 +718,11 @@
       var role = inferRole(pid, name);
       var ip = relieverIP(pid, name);
       var exp = expandedPid === String(pid);
+      var rolePillCls = 'bp-role-pill' + (role.cls ? ' ' + role.cls : ' bp-role-pill--mid');
 
-      html += '<tr class="reliever-row' + (exp ? ' expanded' : '') + '" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">'
-        + '<td><strong class="bp-reliever-name">' + esc(name) + '</strong></td>'
-        + '<td class="' + role.cls + '">' + esc(role.label) + '</td>'
+      html += '<tr class="reliever-row hub-row' + (exp ? ' expanded' : '') + '" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">'
+        + '<td class="bp-reliever-name-cell"><strong class="bp-reliever-name">' + esc(name) + '</strong></td>'
+        + '<td class="bp-role-cell"><span class="' + rolePillCls + '">' + esc(role.label) + '</span></td>'
         + '<td class="num">' + valChip(ip, 'ip', false, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'ERA', pickCol), 'era', true, 2) + '</td>'
         + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
@@ -712,7 +735,7 @@
       if (exp) html += '<tr class="detail-row"><td colspan="' + colCount + '">' + appearanceDetail(pid, name) + '</td></tr>';
     });
 
-    return html.replace(/<\/?motion>/g, '') + '</tbody></table>';
+    return html.replace(/<\/?motion>/g, '') + '</tbody></table></div>';
   }
 
   function strip(s) {

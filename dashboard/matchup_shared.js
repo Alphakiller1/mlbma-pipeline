@@ -396,25 +396,27 @@
       + '</div>';
   }
 
-  function buildLineupColCompact(teamLabel, lineupRows, oppHand) {
+  function buildLineupColCompact(teamLabel, lineupRows, oppHand, side) {
+    var sideKey = side === 'home' ? 'home' : 'away';
+    var sideCls = ' matchup-lineup-col--' + sideKey;
     var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : '?HP';
     var head = lineupColHeadHtml(teamLabel, handLbl);
     if (!lineupRows || !lineupRows.length) {
-      return '<div class="matchup-lineup-col matchup-lineup-col--compact">' + head
+      return '<div class="matchup-lineup-col matchup-lineup-col--compact' + sideCls + '">' + head
         + '<div class="matchup-lineup-empty">No rows</div></div>';
     }
     var body = lineupRows.slice(0, 9).map(function(r) {
       var bn = normalizeBatsHand(r.bats);
       var plat = platoonHighlightClass(bn, oppHand);
       var bp = esc(bn === '?' ? '?' : bn);
-      return '<div class="lineup-row' + (plat ? ' ' + plat : '') + '">'
-        + '<span class="lineup-bo">' + ((r.batOrder >= 1 && r.batOrder <= 9) ? String(r.batOrder) : '\u2014') + '</span>'
-        + '<span class="lineup-pos">' + esc(r.position) + '</span>'
-        + '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>'
-        + '<span class="bats-pill hand-' + (bn === '?' ? 'unk' : bn.toLowerCase()) + '">' + bp + '</span>'
-        + '</div>';
+      var bo = '<span class="lineup-bo">' + ((r.batOrder >= 1 && r.batOrder <= 9) ? String(r.batOrder) : '\u2014') + '</span>';
+      var pos = '<span class="lineup-pos">' + esc(r.position) + '</span>';
+      var name = '<span class="lineup-name">' + batterProfileLink(r.player) + '</span>';
+      var bats = '<span class="bats-pill hand-' + (bn === '?' ? 'unk' : bn.toLowerCase()) + '">' + bp + '</span>';
+      var cells = sideKey === 'home' ? (bats + name + pos + bo) : (bo + pos + name + bats);
+      return '<div class="lineup-row' + (plat ? ' ' + plat : '') + '">' + cells + '</div>';
     }).join('');
-    return '<div class="matchup-lineup-col matchup-lineup-col--compact">' + head + body + '</div>';
+    return '<div class="matchup-lineup-col matchup-lineup-col--compact' + sideCls + '">' + head + body + '</div>';
   }
 
   function parseWeatherString(raw) {

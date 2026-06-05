@@ -7,11 +7,11 @@
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
 <link rel="stylesheet" href="theme.css?v=20260619b">
-<link rel="stylesheet" href="chase_nav.css?v=20260616c">
+<link rel="stylesheet" href="chase_nav.css?v=20260618n">
 <link rel="stylesheet" href="team_profile.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260604b">
 <link rel="stylesheet" href="profile_shell.css?v=20260604b">
-<link rel="stylesheet" href="batter_profile.css?v=20260619a">
+<link rel="stylesheet" href="batter_profile.css?v=20260619c">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -126,11 +126,17 @@
           <div class="bx-prop-main">
             <div class="bx-anchor" id="propAnchor"></div>
             <div class="bx-prop-cards" id="propCards"></div>
-            <div class="bx-flags" id="propFlags"></div>
           </div>
           <div class="bx-drivers" id="propDrivers"></div>
         </div>
       </div>
+    </section>
+
+    <!-- Prop lines: model estimates vs standard book numbers -->
+    <section class="ca-board tp-section" id="secLines">
+      <div id="bxHdrLines"></div>
+      <div class="table-wrap tp-table-wrap bx-prop-lines-wrap" id="propLinesWrap"></div>
+      <div class="bx-flags" id="propFlags"></div>
     </section>
 
     <!-- Rate lines + platoon / venue / staff splits -->
@@ -238,7 +244,7 @@ function sectionHeaderHtml(title, subtitle, icon) {
     return A.sectionHeaderHtml({ title: title, subtitle: subtitle || '', icon: (window.MLBMAIcons && MLBMAIcons.profileIcon) ? MLBMAIcons.profileIcon(icon) : icon, kicker: 'Batter Profile' });
   }
   return '<header class="ca-section-header"><h2 class="ca-section-title">' + esc(title) + '</h2>'
-    + (subtitle ? '<p class="ca-helper">' + esc(subtitle) + '</p>' : '') + '</header>';
+    + (subtitle ? '<p class="ca-helper">' + esc((MLBMAAssets && MLBMAAssets.titleCaseLabel) ? MLBMAAssets.titleCaseLabel(subtitle) : subtitle) + '</p>' : '') + '</header>';
 }
 
 /* ---------- player/profile resolution (ported) ---------- */
@@ -267,31 +273,61 @@ function getProfileRows(key) {
   if (!target) return [];
   return DATA.profiles.filter(function(p) { return normalizeName(pickCol(p, ['player_name', 'playerName', 'Name'])) === target; });
 }
+function normalizeSplitKey(s) {
+  return String(s || '').toLowerCase().replace(/\s+/g, '_').trim();
+}
 function getSplitRow(key, splitType) {
+  var want = normalizeSplitKey(splitType);
+  if (!want) return null;
   var rows = getProfileRows(key);
   for (var i = 0; i < rows.length; i++) {
-    if (String(pickCol(rows[i], ['split_type', 'splitType'])).toLowerCase() === splitType.toLowerCase()) return rows[i];
+    if (normalizeSplitKey(pickCol(rows[i], ['split_type', 'splitType', 'split', 'Split'])) === want) return rows[i];
   }
   return null;
 }
 function overallProfileRow(key) { return getSplitRow(key, 'overall') || getProfileRows(key)[0] || null; }
 function preferredProfileRow(key, splitType) { return getSplitRow(key, splitType) || overallProfileRow(key); }
+function profileRowForSplit(key, splitType) {
+  if (!splitType || splitType === 'overall') return overallProfileRow(key);
+  return getSplitRow(key, splitType);
+}
+
+function storeRawSplit(bucketKey, split, row) {
+  if (!bucketKey) return;
+  if (!DATA.rawStats[bucketKey]) DATA.rawStats[bucketKey] = {};
+  DATA.rawStats[bucketKey][split] = row;
+}
+function rawBucketForKey(key) {
+  if (!key) return {};
+  var direct = String(key);
+  if (DATA.rawStats[direct]) return DATA.rawStats[direct];
+  var pid = direct.replace(/^id:/, '');
+  if (pid !== direct && DATA.rawStats['id:' + pid]) return DATA.rawStats['id:' + pid];
+  var nk = normalizeName(playerDisplayName(key));
+  return (nk && DATA.rawStats[nk]) ? DATA.rawStats[nk] : {};
+}
 
 function indexRawStats() {
   DATA.rawStats = {};
   RAW_TABS.forEach(function(pair) {
     (DATA['_raw_' + pair[1]] || []).forEach(function(row) {
+      var split = pair[1];
+      var keys = {};
       var name = pickCol(row, ['Name', 'player_name', 'full_name']);
-      if (!name) return;
-      var nk = normalizeName(name);
-      if (!DATA.rawStats[nk]) DATA.rawStats[nk] = {};
-      DATA.rawStats[nk][pair[1]] = row;
+      var full = pickCol(row, ['full_name', 'fullName']);
+      var pid = pickCol(row, ['player_id', 'playerId', 'mlbam_id', 'MLBAMID']);
+      if (name) keys[normalizeName(name)] = 1;
+      if (full) keys[normalizeName(full)] = 1;
+      if (pid) keys['id:' + pid] = 1;
+      Object.keys(keys).forEach(function(k) { storeRawSplit(k, split, row); });
     });
   });
 }
 function rawFor(key, split) {
-  var raw = DATA.rawStats[normalizeName(playerDisplayName(key))] || {};
-  return raw[split] || raw.overall || {};
+  var raw = rawBucketForKey(key);
+  if (!split || split === 'overall') return raw.overall || {};
+  if (raw[split]) return raw[split];
+  return {};
 }
 function activeRaw(key) {
   // Season/Recent toggle is the only window the data actually supports.
@@ -498,11 +534,9 @@ function renderContextStrip(p) {
 }
 
 function renderPropHub(key, p) {
-  var thumb = batterHeadshot(key, 'matchup');
   var best = (p.tb != null && p.hits != null && p.tb / 1.6 >= p.hits / 1.0) ? 'Total Bases' : 'Hits';
   var bestScore = best === 'Total Bases' ? p.drivers.power : p.drivers.contact;
   document.getElementById('propAnchor').innerHTML =
-    (thumb ? '<div class="bx-anchor__photo">' + thumb + '</div>' : '') +
     '<div><div class="bx-anchor__eyebrow">Best Angle</div>' +
     '<div class="bx-anchor__score" style="color:' + metricColor(bestScore) + '">' + bestScore + '</div></div>' +
     '<div class="bx-anchor__copy"><strong>' + esc(best) + '</strong> is the lead read' +
@@ -520,7 +554,6 @@ function renderPropHub(key, p) {
       ? (c.proj != null ? { lean: c.proj >= 0.16 ? 'over' : (c.proj <= 0.08 ? 'under' : 'pass'), label: (Math.round(c.proj * 100)) + '% to go yard' } : { lean: 'pass', label: 'No data' })
       : leanFor(c.proj, c.line);
     return '<div class="bx-prop-card">' +
-      (thumb ? '<div class="bx-prop-card__photo">' + thumb + '</div>' : '') +
       '<div class="bx-prop-card__label">' + esc(c.label) + '</div>' +
       '<div class="bx-prop-card__line">' +
         '<span class="bx-prop-card__proj" style="color:' + metricColor(c.proj != null ? clamp((c.proj / (c.line * 1.3)) * 100, 0, 100) : 50) + '">' + (c.proj != null ? fmt(c.proj, c.dec) : '—') + '</span>' +
@@ -537,6 +570,37 @@ function renderPropHub(key, p) {
       '<div class="bx-driver__track"><div class="bx-driver__fill" style="width:' + d[1] + '%;background:' + col + '"></div></div>' +
       '<div class="bx-driver__val" style="color:' + col + '">' + d[1] + '</div></div>';
   }).join('');
+}
+
+function renderPropLines(p) {
+  var rows = [
+    { m: 'Hits', proj: p.hits, lines: [0.5, 1.5], dec: 2 },
+    { m: 'Total Bases', proj: p.tb, lines: [1.5, 2.5], dec: 2 },
+    { m: 'Home Run', proj: p.hr, lines: [0.5], dec: 2, prob: true },
+    { m: 'Strikeouts', proj: p.k, lines: [0.5, 1.5], dec: 2, invert: true },
+    { m: 'Walks', proj: p.bb, lines: [0.5], dec: 2 },
+    { m: 'Hits+R+RBI', proj: p.runsRbi, lines: [1.5, 2.5], dec: 2 }
+  ];
+  var body = rows.map(function(r) {
+    var leanCells = r.lines.map(function(L) {
+      if (r.prob) {
+        var pc = r.proj != null ? Math.round(r.proj * 100) : null;
+        return '<td class="num">' + (pc != null ? pc + '% HR' : '—') + '</td>';
+      }
+      var ln = leanFor(r.proj, L);
+      var cls = r.invert ? (ln.lean === 'over' ? 'under' : ln.lean === 'under' ? 'over' : 'pass') : ln.lean;
+      var txt = r.invert ? (ln.lean === 'over' ? 'Under ' + L : ln.lean === 'under' ? 'Over ' + L : 'Lean ' + L) : ln.label;
+      return '<td class="num"><span class="bx-prop-card__lean bx-lean--' + cls + '">' + esc(txt) + '</span></td>';
+    });
+    while (leanCells.length < 2) leanCells.push('<td class="num">—</td>');
+    var projCell = (r.proj != null)
+      ? (r.prob ? '<strong>' + fmt(r.proj, r.dec) + '</strong> <span class="bx-prop-lines__sub">(' + Math.round(r.proj * 100) + '%)</span>' : '<strong>' + fmt(r.proj, r.dec) + '</strong>')
+      : '—';
+    return '<tr><th scope="row">' + esc(r.m) + '</th><td class="num">' + projCell + '</td>' + leanCells.join('') + '</tr>';
+  }).join('');
+  document.getElementById('propLinesWrap').innerHTML =
+    '<table class="hub-table tp-table bx-prop-lines-table"><thead><tr><th>Market</th><th>Estimate</th><th>Line A</th><th>Line B</th></tr></thead><tbody>' + body + '</tbody></table>' +
+    '<p class="tp-trend-table-note">Estimates = platoon rate line × expected PA (from lineup slot), adjusted for the listed starter. Lines are standard book thresholds — leans are research reads, not guaranteed outcomes.</p>';
   renderPropFlags(p);
 }
 
@@ -561,8 +625,8 @@ function renderPropFlags(p) {
   if (!el) return;
   el.innerHTML = flags.length
     ? flags.map(function(f) { return '<div class="bx-flag bx-flag--' + f.t + '"><span class="bx-flag__icon">' + (f.t === 'risk' ? '▼' : f.t === 'good' ? '▲' : '!') + '</span><span>' + esc(f.x) + '</span></div>'; }).join('')
-    : '';
-  el.style.display = flags.length ? '' : 'none';
+    : '<div class="bx-flag"><span>No regression or matchup flags — profile and results are aligned.</span></div>';
+  el.style.display = '';
 }
 
 function miniHtml(label, v, ctx, invert, pct) {
@@ -571,9 +635,10 @@ function miniHtml(label, v, ctx, invert, pct) {
 }
 
 function statRowHtml(key, splitKey) {
-  var R = rawFor(key, splitKey);
-  if (!R || !Object.keys(R).length) R = activeRaw(key);
-  var base = overallProfileRow(key);
+  var sk = splitKey || 'overall';
+  var R = rawFor(key, sk);
+  if ((!R || !Object.keys(R).length) && (sk === 'overall' || sk === 'recent')) R = activeRaw(key);
+  var prof = (sk === 'overall' || sk === 'recent') ? overallProfileRow(key) : profileRowForSplit(key, sk);
   var cells = [
     ['wRC+', numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0],
     ['OPS', opsFromRow(R), 'ops', false, 3],
@@ -584,7 +649,7 @@ function statRowHtml(key, splitKey) {
     ['BB%', pct(R, ['BB%']), 'bbpct', false, 1],
     ['K%', pct(R, ['K%']), 'kpct', true, 1],
     ['HardHit%', pct(R, ['HardHit%', 'Hard%']), 'barrel', false, 1],
-    ['OSI', numOrNull(pickCol(base || {}, ['OSI'])), 'osi', false, 1]
+    ['OSI', numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1]
   ];
   return cells.map(function(c) {
     var v = c[1];
@@ -676,7 +741,7 @@ function renderSplits(key, p) {
     chartEl.innerHTML = '';
     chartEl.style.display = 'none';
     var note = (tab === 'vs_RHP' && domHand === 'vs RHP') || (tab === 'vs_LHP' && domHand === 'vs LHP') ? 'Active matchup today' : (tab === 'vs_SP' ? 'Early-game read' : (tab === 'vs_RP' ? 'Late-game read' : ''));
-    panelEl.innerHTML = splitPanel(titles[tab] || tab, note, preferredProfileRow(key, tab), rawFor(key, tab));
+    panelEl.innerHTML = splitPanel(titles[tab] || tab, note, profileRowForSplit(key, tab), rawFor(key, tab));
     if (tab === 'vs_SP' && p.lineup.inLineup && p.lineup.oppSp && p.lineup.oppSp !== 'TBD' && p.sp) {
       panelEl.innerHTML += '<div class="bx-split-panel bx-sp-matchup" style="margin-top:12px;"><h4>Listed Starter — ' + esc(p.lineup.oppSp) + '</h4>' +
         '<div class="bx-mini-grid">' + miniHtml('Pitch Score', numOrNull(pickCol(p.sp, ['PitchScore', 'pitch_score', 'Pitching Score'])), 'pitching', false) +
@@ -696,11 +761,13 @@ function renderPlayer(key) {
   renderIdentity(key, p);
   renderContextStrip(p);
   renderPropHub(key, p);
+  renderPropLines(p);
   renderSplits(key, p);
 }
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
+  document.getElementById('bxHdrLines').innerHTML = sectionHeaderHtml('Prop Lines · Estimates', 'Model projections vs standard book lines — over/under leans and regression flags', 'target');
   document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Rate Lines · Splits', 'Season rates, platoon, venue, and staff context — switch views with the split tools', 'split');
 }
 function buildSearch() {

@@ -347,10 +347,7 @@
       + '<header class="mc-header mc-section">'
       + '<div class="mc-header-teams">' + teamBlock(m.away) + '<span class="mc-at">@</span>' + teamBlock(m.home) + '</div>'
       + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + ' · ' + S.weatherBadge(weather, m.home) + '</div>'
-      + '<div class="mc-header-badges">'
-      + '<span class="' + esc(script.cls) + '">' + esc(script.label) + '</span>'
-      + '<span class="' + esc(f5.cls) + '">' + esc(f5.label) + '</span>'
-      + '</div></header>';
+      + '</header>';
   }
 
   function spCard(side, name, hand, team, m, met, pitchScore, spL14) {

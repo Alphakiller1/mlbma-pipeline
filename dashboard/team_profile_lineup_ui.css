@@ -324,15 +324,20 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 10px 14px;
+  padding: 2px 12px 0;
+  text-align: center;
 }
 
 .team-profile-page .tp-intel-sustain__lead .tp-intel-read--lead {
-  flex: 1 1 240px;
+  flex: 1 1 100%;
+  max-width: 720px;
   margin: 0;
   font-size: var(--tp-helper-size, 15px);
   line-height: 1.55;
   color: var(--tp-desc-color, #C4CBD6);
+  text-align: center;
 }
 
 .team-profile-page .tp-intel-sustain__board {
@@ -347,8 +352,48 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 10px 12px;
-  padding: 2px 0 0;
+  padding: 6px 12px 0;
+  text-align: center;
+}
+
+.team-profile-page .tp-intel-sustain__band-head {
+  justify-content: center;
+  text-align: center;
+}
+
+.team-profile-page .tp-intel-sustain__table-wrap {
+  margin-top: 2px;
+}
+
+.team-profile-page .tp-intel-sustain__table thead th,
+.team-profile-page .tp-intel-sustain__table tbody td {
+  text-align: center;
+}
+
+.team-profile-page .tp-intel-sustain__table--cols-3 thead th,
+.team-profile-page .tp-intel-sustain__table--cols-3 tbody td {
+  width: 33.333%;
+}
+
+.team-profile-page .tp-intel-sustain__table--cols-2 thead th,
+.team-profile-page .tp-intel-sustain__table--cols-2 tbody td {
+  width: 50%;
+}
+
+.team-profile-page .tp-intel-sustain__table tbody tr.tp-offense-metrics__values td {
+  padding-top: 10px;
+  padding-bottom: 4px;
+}
+
+.team-profile-page .tp-intel-sustain__table tbody tr.tp-offense-metrics__ranks td {
+  padding-top: 2px;
+  padding-bottom: 10px;
+}
+
+.team-profile-page .tp-intel-sustain .tp-section-filter-bar {
+  margin-bottom: 4px;
 }
 
 .team-profile-page .tp-intel-sustain__map-label {

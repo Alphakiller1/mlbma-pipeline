@@ -196,6 +196,8 @@
 
   function spRow(label, name, hand, team, stats, opts) {
     opts = opts || {};
+    var isHome = /home/i.test(String(label || ''));
+    var sideCls = isHome ? ' mc-sp-block--home' : ' mc-sp-block--away';
     var pid = opts.mlbId != null ? String(opts.mlbId)
       : (A && A.resolveMlbId ? A.resolveMlbId(name) : (A ? A.lookupMlbId(name) : null));
     var hs = A ? A.pitcherAvatar(pid || name, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
@@ -203,7 +205,8 @@
     var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team);
     if (ps == null) ps = spPitchScore(team);
     var pt = pitchTier(ps);
-    var psColor = pitcherStatColor('pitchScore', ps);
+    var psColor = ps != null ? pitcherStatColor('pitchScore', ps) : 'var(--text-3, #9CA3AF)';
+    var psVal = ps != null ? Number(ps).toFixed(0) : '—';
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var nameHtml = pname === 'TBD'
       ? '<span class="mc-sp-name-text">TBD</span>'
@@ -218,7 +221,7 @@
     var bbColor = pitcherStatColor('bb', stats.bb);
     var eraColor = pitcherStatColor('era', eraRaw);
     var eraVal = eraRaw != null ? Number(eraRaw).toFixed(2) : '—';
-    return '<div class="mc-sp-block" onclick="event.stopPropagation()">'
+    return '<div class="mc-sp-block' + sideCls + '" onclick="event.stopPropagation()">'
       + '<div class="mc-sp-photo">' + hs + '</div>'
       + '<div class="mc-sp-info">'
       + '<div class="mc-sp-top">'
@@ -227,12 +230,10 @@
       + '<span class="pitch-tier ' + pt.cls + '"' + pitcherTierStyle(ps) + '>' + pt.label + '</span>'
       + '</div>'
       + '<div class="mc-sp-name-row">' + nameHtml + '</div>'
-      + (ps != null
-        ? '<div class="mc-ps-badge mc-ps-badge--defined">'
-          + '<span class="mc-ps-badge__label">Pitch Score</span>'
-          + '<strong class="mc-ps-badge__val" style="color:' + psColor + '">' + Number(ps).toFixed(0) + '</strong>'
-          + '</div>'
-        : '')
+      + '<div class="mc-ps-badge mc-ps-badge--defined">'
+      + '<span class="mc-ps-badge__label">Pitch Score</span>'
+      + '<strong class="mc-ps-badge__val" style="color:' + psColor + '">' + psVal + '</strong>'
+      + '</div>'
       + '<div class="mc-sp-stats mc-sp-stats--grid">'
       + '<span class="mc-sp-stat mc-sp-stat--k" style="--stat-color:' + kColor + '"><em>K%</em><strong style="color:' + kColor + '">' + esc(kVal) + '</strong></span>'
       + '<span class="mc-sp-stat mc-sp-stat--bb" style="--stat-color:' + bbColor + '"><em>BB%</em><strong style="color:' + bbColor + '">' + esc(bbVal) + '</strong></span>'
@@ -285,8 +286,9 @@
     });
   }
 
-  function teamLinkHtml(team, logoFn, extraCls) {
-    return '<a href="' + teamProfileUrl(team) + '" class="team-link' + (extraCls || '') + '" onclick="event.stopPropagation()">'
+  function teamLinkHtml(team, logoFn, extraCls, side) {
+    var sideCls = side === 'home' ? ' team-link--home' : ' team-link--away';
+    return '<a href="' + teamProfileUrl(team) + '" class="team-link' + sideCls + (extraCls || '') + '" onclick="event.stopPropagation()">'
       + logoFn(team, 48)
       + '<span class="hmc-abbr">' + esc(team)
       + (global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '')
@@ -419,9 +421,9 @@
     var homePs = spPitchScoreFromProfile(m.homeSP, m.home);
     return '<article class="hero-matchup-card hero-matchup-card--tomorrow" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
       + '<div class="hmc-row hmc-teams">'
-      + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '') + '</div>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '', 'away') + '</div>'
       + '<span class="hmc-at">@</span>'
-      + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '') + '</div>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '', 'home') + '</div>'
       + '<div class="hmc-meta">'
       + '<span class="hmc-time">' + esc(m.time || 'TBD') + '</span>'
       + (m.stadium ? '<span class="hmc-stadium">' + esc(m.stadium) + '</span>' : '')
@@ -455,9 +457,9 @@
     var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
     return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
       + '<div class="hmc-row hmc-teams">'
-      + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '') + '</div>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '', 'away') + '</div>'
       + '<span class="hmc-at">@</span>'
-      + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '') + '</div>'
+      + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '', 'home') + '</div>'
       + gameMetaHtml(m)
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
@@ -466,9 +468,9 @@
       + '</div>'
       + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
       + '<div class="hmc-osi-bar">'
-      + '<span class="hmc-osi-val' + awayEdgeCls + '">' + esc(m.away) + ' <strong>' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
+      + '<span class="hmc-osi-val hmc-osi-val--away' + awayEdgeCls + '"><span class="hmc-osi-team">' + esc(m.away) + '</span><strong class="hmc-osi-num">' + (m.awayOSI != null ? m.awayOSI.toFixed(1) : '—') + '</strong></span>'
       + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
-      + '<span class="hmc-osi-val tr' + homeEdgeCls + '">' + esc(m.home) + ' <strong>' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
+      + '<span class="hmc-osi-val hmc-osi-val--home' + homeEdgeCls + '"><span class="hmc-osi-team">' + esc(m.home) + '</span><strong class="hmc-osi-num">' + (m.homeOSI != null ? m.homeOSI.toFixed(1) : '—') + '</strong></span>'
       + '</div>'
       + '<div class="hmc-osi-sparklines" aria-hidden="true">'
       + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'
