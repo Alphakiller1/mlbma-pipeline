@@ -792,7 +792,7 @@ body.view-research .ca-page-identity { display: none; }
 .mc-sp-block--home .mc-sp-info {
   grid-column: 1;
   grid-row: 1;
-  padding-right: 8px;
+  padding-right: 2px;
   box-sizing: border-box;
 }
 .mc-sp-info {
@@ -806,7 +806,7 @@ body.view-research .ca-page-identity { display: none; }
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   height: 22px;
   min-height: 22px;
   max-height: 22px;
@@ -853,9 +853,9 @@ body.view-research .ca-page-identity { display: none; }
   font-size: 10px;
   font-weight: 800;
   line-height: 1.1;
-  padding: 3px 7px;
+  padding: 3px 5px;
   border-radius: 6px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 .hero-matchup-card .pitch-tier.tier-elite {
   background: rgba(74, 222, 128, 0.18);
@@ -873,7 +873,7 @@ body.view-research .ca-page-identity { display: none; }
   flex: 0 0 auto;
   flex-shrink: 0;
   font-size: 10px;
-  padding: 3px 7px;
+  padding: 3px 5px;
   line-height: 1.1;
 }
 .mc-sp-name-row {
@@ -881,6 +881,10 @@ body.view-research .ca-page-identity { display: none; }
   min-height: 26px;
   height: 26px;
   overflow: hidden;
+  /* Grid items default to min-width:auto, which would size this row to the name's full
+     intrinsic width and overflow the narrow pitcher column (sliding under the avatar).
+     min-width:0 lets it shrink to the column so the name truncates with an ellipsis. */
+  min-width: 0;
 }
 .mc-sp-name-text {
   display: block;
@@ -893,6 +897,11 @@ body.view-research .ca-page-identity { display: none; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* As a flex item inside .mc-sp-name-row, min-width:auto would keep the full name
+     at intrinsic width and let it slide under the avatar. min-width:0 lets it shrink
+     so the ellipsis truncates it inside its own column. */
+  min-width: 0;
+  max-width: 100%;
 }
 .mc-sp-name a.mc-sp-name-text {
   text-decoration: none;
@@ -951,7 +960,9 @@ body.view-research .ca-page-identity { display: none; }
 }
 .mc-sp-stats--grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(2.75rem, 1fr));
+  /* minmax(0,1fr) (not 2.75rem) so the three stat columns shrink to fit the narrow
+     pitcher column instead of overflowing it and getting clipped by the card edge. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   align-self: end;
   min-height: 52px;
@@ -1013,6 +1024,22 @@ body.view-research .ca-page-identity { display: none; }
 .mc-sp-photo {
   width: 42px;
   margin-right: 0;
+}
+/* The shared headshot component (.ca-pitcher-avatar--matchup) is 48px, but the
+   pitcher column is only 42px — so the avatar was overflowing its column and sitting
+   on top of the (right-aligned) pitcher name on the home side. Pin it to the column
+   and clip any overflow so it stays in its own lane. */
+.hero-matchup-card .mc-sp-photo {
+  width: 42px;
+  height: 42px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.hero-matchup-card .mc-sp-photo .ca-pitcher-avatar--matchup {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
 }
 .opening-links-grid {
   display: grid;
