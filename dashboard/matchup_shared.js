@@ -145,6 +145,21 @@
   var SHEET_TAB_PERSIST_PREFIX = 'mlbma_tab_v1:';
   var SHEET_TAB_PERSIST_TTL_MS = 45 * 60 * 1000;
 
+  // Persist sheet tabs in localStorage so they survive across tabs and full navigations.
+  // (This used to be sessionStorage, which is wiped on every fresh tab/visit — forcing a
+  // cold re-fetch of large tabs like Team_Results and making Team Rankings slow to load.)
+  // Falls back to sessionStorage, then null, when storage is unavailable (e.g. private mode).
+  var _tabPersistStore = (function() {
+    try {
+      var ls = global.localStorage;
+      var probe = SHEET_TAB_PERSIST_PREFIX + '__probe';
+      ls.setItem(probe, '1');
+      ls.removeItem(probe);
+      return ls;
+    } catch (e) { /* fall through */ }
+    try { return global.sessionStorage; } catch (e2) { return null; }
+  })();
+
   function sheetSyncBust() {
     var bust = global.MLBMA_SHEET_BUST;
     if (bust != null && bust !== '') return String(bust);
@@ -160,8 +175,9 @@
   }
 
   function readPersistedSheetTab(cacheKey) {
+    if (!_tabPersistStore) return null;
     try {
-      var raw = sessionStorage.getItem(sheetTabPersistKey(cacheKey));
+      var raw = _tabPersistStore.getItem(sheetTabPersistKey(cacheKey));
       if (!raw) return null;
       var obj = JSON.parse(raw);
       if (!obj || !obj.rows || !obj.ts) return null;
@@ -170,22 +186,47 @@
     } catch (e) { return null; }
   }
 
-  function writePersistedSheetTab(cacheKey, rows) {
-    if (isSlateTab(String(cacheKey).split('|')[0])) return;
+  // Drop any older entries for this tab written under a different sync-bust, so the
+  // persisted store keeps at most one entry per tab and can't grow unbounded over time.
+  function evictStalePersistedTab(cacheKey, keepKey) {
+    if (!_tabPersistStore) return;
+    var prefix = SHEET_TAB_PERSIST_PREFIX + cacheKey + '|';
     try {
-      sessionStorage.setItem(sheetTabPersistKey(cacheKey), JSON.stringify({ ts: Date.now(), rows: rows }));
-    } catch (e) { /* ignore quota */ }
+      var toRemove = [];
+      for (var i = 0; i < _tabPersistStore.length; i++) {
+        var k = _tabPersistStore.key(i);
+        if (k && k.indexOf(prefix) === 0 && k !== keepKey) toRemove.push(k);
+      }
+      toRemove.forEach(function(k) { _tabPersistStore.removeItem(k); });
+    } catch (e) { /* ignore */ }
+  }
+
+  function writePersistedSheetTab(cacheKey, rows) {
+    if (!_tabPersistStore) return;
+    if (isSlateTab(String(cacheKey).split('|')[0])) return;
+    var key = sheetTabPersistKey(cacheKey);
+    evictStalePersistedTab(cacheKey, key);
+    var payload = JSON.stringify({ ts: Date.now(), rows: rows });
+    try {
+      _tabPersistStore.setItem(key, payload);
+    } catch (e) {
+      // Quota exceeded — clear all persisted tabs and retry once so the freshest tab
+      // still gets cached instead of silently failing to persist forever.
+      clearPersistedSheetTabs();
+      try { _tabPersistStore.setItem(key, payload); } catch (e2) { /* give up */ }
+    }
   }
 
   function clearPersistedSheetTabs(tabName) {
+    if (!_tabPersistStore) return;
     try {
       var keys = [];
-      for (var i = 0; i < sessionStorage.length; i++) {
-        var k = sessionStorage.key(i);
+      for (var i = 0; i < _tabPersistStore.length; i++) {
+        var k = _tabPersistStore.key(i);
         if (!k || k.indexOf(SHEET_TAB_PERSIST_PREFIX) !== 0) continue;
         if (!tabName || k.indexOf(SHEET_TAB_PERSIST_PREFIX + String(tabName)) === 0) keys.push(k);
       }
-      keys.forEach(function(k) { sessionStorage.removeItem(k); });
+      keys.forEach(function(k) { _tabPersistStore.removeItem(k); });
     } catch (e) { /* ignore */ }
   }
 

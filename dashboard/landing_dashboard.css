@@ -902,15 +902,16 @@ body.view-research .ca-page-identity { display: none; }
   color: var(--ca-brand, #9A6BFF);
 }
 .mc-ps-badge--defined {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  column-gap: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1px;
   width: 100%;
   min-height: 38px;
   height: 38px;
   margin: 0;
-  padding: 4px 2px;
+  padding: 1px 2px;
   border-radius: 0;
   background: transparent;
   border-top: 1px solid rgba(255, 255, 255, 0.065);
@@ -918,42 +919,29 @@ body.view-research .ca-page-identity { display: none; }
   color: var(--text-1);
   box-shadow: none;
   box-sizing: border-box;
+  overflow: hidden;
 }
+/* Home side mirrors to the right edge; both keep the label stacked over the
+   number so the value can never overflow into the gutter between the cards. */
 .mc-sp-block--home .mc-ps-badge--defined {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-.mc-sp-block--away .mc-ps-badge__label {
-  grid-column: 1;
-  justify-self: start;
-  text-align: left;
-}
-.mc-sp-block--away .mc-ps-badge__val {
-  grid-column: 2;
-  justify-self: end;
-  text-align: right;
-}
-.mc-sp-block--home .mc-ps-badge__val {
-  grid-column: 1;
-  justify-self: start;
-  text-align: left;
-}
-.mc-sp-block--home .mc-ps-badge__label {
-  grid-column: 2;
-  justify-self: end;
+  align-items: flex-end;
   text-align: right;
 }
 .mc-ps-badge__label {
   font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-3);
   line-height: 1.05;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mc-ps-badge__val {
   font-family: var(--font-display, var(--font));
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0;

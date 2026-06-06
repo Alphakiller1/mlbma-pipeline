@@ -1810,12 +1810,11 @@ function bindTeamProfileFilters() {
       }
     }
     if (key === 'split' && section) {
+      // Independent per-section splits: only the clicked section re-renders, so each
+      // lineup section keeps its own split. (Previously every lineup section was
+      // force-synced to a single split followed by a full renderTeam, which made the
+      // tables move together.)
       saveSectionSplit(section, val);
-      if (LINEUP_SPLIT_SECTIONS.indexOf(section) >= 0) {
-        syncLineupSectionSplits(val);
-        renderTeam(STATE.team);
-        return;
-      }
       rerenderTeamSection(section);
       return;
     }

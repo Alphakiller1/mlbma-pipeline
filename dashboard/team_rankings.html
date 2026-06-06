@@ -16,13 +16,10 @@ console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 (function() {
-  var BUILD = '20260621b';
-  var pBuild = new URLSearchParams(location.search);
-  if (pBuild.get('_trbuild') !== BUILD) {
-    pBuild.set('_trbuild', BUILD);
-    location.replace(location.pathname + '?' + pBuild.toString() + location.hash);
-    return;
-  }
+  // NOTE: previously this redirected to append a `_trbuild` cache-buster, which forced
+  // a full second document load on every cold visit before any data was fetched. The
+  // page is already served `Cache-Control: no-cache` (see <head>) and all scripts/styles
+  // carry their own ?v= versions, so that redirect only added latency. Removed.
   var p = new URLSearchParams(location.search);
   var away = p.get('away');
   var home = p.get('home');

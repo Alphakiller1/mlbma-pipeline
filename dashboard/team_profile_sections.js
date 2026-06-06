@@ -417,16 +417,19 @@
     var winSuf = window === 'L30' ? '_l30' : window === 'L14' ? '_l14' : window === 'L7' ? '_l7' : '';
     var locSuf = location === 'home' ? '_home' : location === 'away' ? '_away' : '';
     var keys = [];
-    if (winSuf && locSuf) {
-      keys.push(metric + winSuf + locSuf);
-      keys.push(metric + winSuf);
+    if (locSuf) {
+      // Home/Away rows: prefer the windowed home/away column (if the pipeline ever
+      // produces it), then the season-level home/away split. Never fall back to the
+      // location-less value (e.g. win_pct_l7) — that would make Home and Away silently
+      // duplicate the Overall row. Today the data only carries season home/away splits,
+      // so in a window view the location rows show the season split rather than a
+      // misleading copy of Overall.
+      if (winSuf) keys.push(metric + winSuf + locSuf);
       keys.push(metric + locSuf);
-    } else if (winSuf) {
-      keys.push(metric + winSuf);
-    } else if (locSuf) {
-      keys.push(metric + locSuf);
+    } else {
+      if (winSuf) keys.push(metric + winSuf);
+      keys.push(metric);
     }
-    keys.push(metric);
     for (var i = 0; i < keys.length; i++) {
       var v = num(row[keys[i]]);
       if (v == null) continue;
