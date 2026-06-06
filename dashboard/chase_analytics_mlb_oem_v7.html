@@ -5909,6 +5909,7 @@ function metricsPanelRows(d) {
     ['osi', fmtMetricVal(d.osi)],
     ['projOSI', fmtMetricVal(d.projOSI)],
     ['ppGap', fmtMetricVal(d.ppGap, true)],
+    ['pals', fmtMetricVal(d.pals)],
     ['dfGap', fmtMetricVal(d.dfGap, true)]
   ].map(function(row) {
     return '<div class="detail-metric-row"><span class="lab">' + metricLabelFull(row[0]) + '</span><span class="val num-neutral">' + row[1] + '</span></div>';
