@@ -8,3 +8,4 @@ beautifulsoup4
 selenium
 undetected-chromedriver
 setuptools
+tzdata  ; platform_system == "Windows"  # ZoneInfo("America/New_York") has no tz db on Windows without this
