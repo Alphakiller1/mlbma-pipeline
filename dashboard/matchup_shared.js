@@ -276,25 +276,49 @@
     if (_sheetTabInflight[key]) {
       return _sheetTabInflight[key].then(function(rows) { return rows.slice(); });
     }
-    var bust = sheetSyncBust() || String(Date.now());
-    var pageBust = (global.MLBMA_PAGE_LOAD_BUST != null) ? global.MLBMA_PAGE_LOAD_BUST : Date.now();
-    var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName)
-      + '&_b=' + encodeURIComponent(String(bust)) + '&_p=' + encodeURIComponent(String(pageBust))
-      + (slateDay ? '&_d=' + encodeURIComponent(slateDay) : '');
-    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
-    _sheetTabInflight[key] = fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {
-      if (!r.ok) throw new Error('fetch ' + tabName);
-      return r.text();
-    }).then(parseCsvText).then(function(rows) {
-      _sheetTabCache[key] = rows;
-      writePersistedSheetTab(key, rows);
-      return rows;
-    }).finally(function() {
-      if (timer) clearTimeout(timer);
-      delete _sheetTabInflight[key];
+
+    function doNetworkFetch() {
+      var bust = sheetSyncBust() || String(Date.now());
+      var pageBust = (global.MLBMA_PAGE_LOAD_BUST != null) ? global.MLBMA_PAGE_LOAD_BUST : Date.now();
+      var url = 'https://docs.google.com/spreadsheets/d/' + sid + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tabName)
+        + '&_b=' + encodeURIComponent(String(bust)) + '&_p=' + encodeURIComponent(String(pageBust))
+        + (slateDay ? '&_d=' + encodeURIComponent(slateDay) : '');
+      var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 15000) : null;
+      return fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined }).then(function(r) {
+        if (!r.ok) throw new Error('fetch ' + tabName);
+        return r.text();
+      }).then(parseCsvText).then(function(rows) {
+        _sheetTabCache[key] = rows;
+        writePersistedSheetTab(key, rows);
+        return rows;
+      }).finally(function() {
+        if (timer) clearTimeout(timer);
+      });
+    }
+
+    // Consume an early-page prefetch (fired in the HTML <head>, keyed by tab name) so the
+    // heavy data download overlaps script loading. On any failure/empty, transparently
+    // fall back to a normal network fetch — and concurrent callers ride the same promise.
+    var pfStore = global.__MLBMA_TAB_PREFETCH;
+    var pfText = (!skipCacheRead && !isSlateTab(tabName) && pfStore) ? pfStore[String(tabName)] : null;
+    var work;
+    if (pfText) {
+      delete pfStore[String(tabName)];
+      work = pfText.then(parseCsvText).then(function(rows) {
+        if (!rows || !rows.length) throw new Error('empty prefetch');
+        _sheetTabCache[key] = rows;
+        writePersistedSheetTab(key, rows);
+        return rows;
+      }).catch(doNetworkFetch);
+    } else {
+      work = doNetworkFetch();
+    }
+    _sheetTabInflight[key] = work;
+    work.then(function() {}, function() {}).then(function() {
+      if (_sheetTabInflight[key] === work) delete _sheetTabInflight[key];
     });
-    return _sheetTabInflight[key].then(function(rows) { return rows.slice(); });
+    return work.then(function(rows) { return rows.slice(); });
   }
 
   function clearSheetTabCache(tabName) {

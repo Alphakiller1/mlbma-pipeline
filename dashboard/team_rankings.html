@@ -11,7 +11,12 @@ console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
 </script>
 <meta charset="UTF-8">
 
-
+<!-- Warm the TLS connection to Google early so the first sheet fetch doesn't pay
+     DNS+TCP+TLS setup on a cold visit. -->
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="dns-prefetch" href="https://docs.google.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
@@ -30,6 +35,24 @@ console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
   if (p.get('view') === 'matchups' || p.get('section') === 'matchups') {
     location.replace('chase_analytics_mlb_oem_v7.html#section-matchups-hero');
   }
+
+  // Kick off the heavy Team Rankings sheet fetches NOW, in parallel with the rest of
+  // the scripts downloading, so the network and the JS load overlap instead of running
+  // back-to-back. matchup_shared.fetchSheetTab() consumes these (keyed by tab name); if
+  // a prefetch fails it transparently falls back to a normal fetch. Best-effort only.
+  try {
+    var SID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
+    var bust = Date.now();
+    var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
+    ['Team_Results', 'vs_RHP', 'vs_LHP', 'Team_Profiles'].forEach(function (t) {
+      var url = 'https://docs.google.com/spreadsheets/d/' + SID +
+        '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(t) + '&_pf=' + bust;
+      store[t] = fetch(url, { cache: 'no-store' }).then(function (r) {
+        return r.ok ? r.text() : Promise.reject(new Error('prefetch ' + t));
+      });
+      store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
+    });
+  } catch (e) { /* prefetch is best-effort */ }
 })();
 </script>
 <title>Chase Analytics - Team Rankings v20260604</title>
@@ -272,7 +295,7 @@ setTimeout(function() {
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_ui.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260621b"></script>
+<script src="matchup_shared.js?v=20260606a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script>
 (function() {
