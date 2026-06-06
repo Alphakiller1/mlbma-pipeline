@@ -22,12 +22,10 @@ class Check:
 PAGES = [
     "dashboard/chase_analytics_mlb_oem_v7.html",
     "dashboard/team_rankings.html?hubdebug=1",
-    "dashboard/signal_board.html",
     "dashboard/matchup_compare.html",
     "dashboard/team_profile.html",
     "dashboard/pitcher_profile.html",
     "dashboard/batter_profile.html",
-    "dashboard/reliever_profile.html",
     "dashboard/bullpen_report.html",
     "dashboard/glossary.html",
 ]

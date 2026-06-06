@@ -57,7 +57,14 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
             raw = page.evaluate(js, label)
             return _parse_num(raw or "")
 
-        # Basic controls and model boot
+        # Basic controls and model boot.
+        # The lineup view renders its family cards only after its async data load
+        # resolves, so wait for them before asserting their presence (otherwise these
+        # checks race ahead of render and fail spuriously).
+        try:
+            page.wait_for_selector('[data-a="family"]', state="attached", timeout=timeout_ms)
+        except PWTimeout:
+            pass
         check("family scoring control", page.locator('[data-a="family"][data-v="scoring"]').count() == 1)
         check("family difficulty control", page.locator('[data-a="family"][data-v="difficulty"]').count() == 1)
         check("family status control", page.locator('[data-a="family"][data-v="status"]').count() == 1)
