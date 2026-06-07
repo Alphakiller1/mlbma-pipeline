@@ -60,8 +60,6 @@
     var lvbLineup = qp('lvbLineup') === 'home' ? 'home' : 'away';
     var lvbBp = qp('lvbBp') === 'home' ? 'home' : 'away';
     if (lvbLineup === lvbBp) lvbBp = lvbLineup === 'away' ? 'home' : 'away';
-    var lvSplit = qp('lvSplit') || 'tonight';
-    if (['tonight', 'rhp', 'lhp', 'road', 'home'].indexOf(lvSplit) < 0) lvSplit = 'tonight';
     var lvWin = (qp('lvWin') || 'ytd').toLowerCase();
     if (['l7', 'l14', 'l30', 'ytd'].indexOf(lvWin) < 0) lvWin = 'ytd';
     return {
@@ -70,7 +68,6 @@
       lvpPitcher: lvpPitcher,
       lvbLineup: lvbLineup,
       lvbBp: lvbBp,
-      lvSplit: lvSplit,
       lvWin: lvWin
     };
   }
@@ -93,12 +90,11 @@
       params.delete('lvbBp');
     }
     if (state.mode === 'lvL') {
-      params.set('lvSplit', state.lvSplit || 'tonight');
       params.set('lvWin', state.lvWin || 'ytd');
     } else {
-      params.delete('lvSplit');
       params.delete('lvWin');
     }
+    params.delete('lvSplit');
     var qs = params.toString();
     var next = global.location.pathname + (qs ? '?' + qs : '');
     if (global.history && global.history.replaceState) {

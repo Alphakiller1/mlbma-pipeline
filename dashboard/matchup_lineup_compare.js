@@ -7,14 +7,6 @@
   var S = global.MLBMASharedMatchup || global.MatchupShared;
   var A = global.MLBMAAssets;
 
-  var SPLIT_OPTIONS = [
-    { id: 'tonight', label: 'Tonight' },
-    { id: 'rhp', label: 'vs RHP' },
-    { id: 'lhp', label: 'vs LHP' },
-    { id: 'road', label: 'Road' },
-    { id: 'home', label: 'Home' }
-  ];
-
   var WINDOW_OPTIONS = [
     { id: 'l7', label: 'L7' },
     { id: 'l14', label: 'L14' },
@@ -328,15 +320,14 @@
     return '';
   }
 
+  var ACTIVE_SPLIT = 'tonight';
+
+  function activeSplitId(state) {
+    return ACTIVE_SPLIT;
+  }
+
   function controlsHtml(state) {
-    var split = state.lvSplit || 'tonight';
     var win = state.lvWin || 'ytd';
-    var splitPills = SPLIT_OPTIONS.map(function(opt) {
-      var on = split === opt.id;
-      return '<button type="button" class="hub-pill mc-lcc-pill' + (on ? ' active' : '') + '"'
-        + ' data-lcc-split="' + esc(opt.id) + '" aria-pressed="' + (on ? 'true' : 'false') + '">'
-        + esc(opt.label) + '</button>';
-    }).join('');
     var winPills = WINDOW_OPTIONS.map(function(opt) {
       var on = win === opt.id;
       return '<button type="button" class="hub-pill mc-lcc-pill' + (on ? ' active' : '') + '"'
@@ -344,8 +335,6 @@
         + esc(opt.label) + '</button>';
     }).join('');
     return '<div class="mc-lcc-controls hub-control-bar">'
-      + '<div class="hub-ctrl-group mc-lcc-ctrl"><span class="hub-ctrl-label">Split lens</span>'
-      + '<div class="hub-pill-row">' + splitPills + '</div></div>'
       + '<div class="hub-ctrl-group mc-lcc-ctrl"><span class="hub-ctrl-label">Window</span>'
       + '<div class="hub-pill-row">' + winPills + '</div></div>'
       + '</div>';
@@ -353,7 +342,7 @@
 
   function lineupTableHtml(lineup, team, side, ctx, state) {
     var index = ctx.batterIndex || {};
-    var splitId = state.lvSplit || 'tonight';
+    var splitId = activeSplitId(state);
     var window = state.lvWin || 'ytd';
     var m = ctx.m;
     var oppHand = side === 'away' ? m.homeHand : m.awayHand;
@@ -393,7 +382,7 @@
 
   function teamCardHtml(team, side, lineup, ctx, state) {
     var accent = teamAccentColor(team);
-    var splitId = (state && state.lvSplit) || 'tonight';
+    var splitId = activeSplitId(state);
     return '<div class="mc-card mc-lineup-col mc-lcc-card" style="--mc-os-team:' + esc(accent) + '">'
       + '<div class="mc-lcc-head">'
       + teamLogo(team, 44)
@@ -407,13 +396,13 @@
 
   function renderSection(ctx, state) {
     if (!ctx || !ctx.m) return '';
-    state = state || { lvSplit: 'tonight', lvWin: 'ytd' };
+    state = state || { lvWin: 'ytd' };
     var m = ctx.m;
     var banner = ctx.lineupOk ? '' : '<div class="lineup-banner">Lineup not yet confirmed — stats may shift when orders are posted.</div>';
     return '<div class="mc-section-block mc-lineups-block mc-lcc-block">'
       + '<h2 class="mc-section-title">Projected Lineups</h2>'
-      + '<p class="mc-lcc-hint ca-helper">Side-by-side projected orders with color-coded wRC+, OPS, wOBA, and SLG. '
-      + 'Split lens toggles tonight\'s platoon and location context, fixed handedness, or road/home; window toggles L7, L14, L30, and YTD.</p>'
+      + '<p class="mc-lcc-hint ca-helper">Side-by-side projected orders with color-coded wRC+, OPS, wOBA, and SLG '
+      + 'vs tonight\'s opposing starter hand. Window toggles L7, L14, L30, and YTD.</p>'
       + banner
       + controlsHtml(state)
       + '<div class="mc-grid-2 mc-lcc-duo" id="mcLccDuo">'
@@ -431,18 +420,6 @@
   }
 
   function bindControls(root, ctx, state, onChange) {
-    root.querySelectorAll('[data-lcc-split]').forEach(function(btn) {
-      btn.onclick = function() {
-        state.lvSplit = btn.getAttribute('data-lcc-split') || 'tonight';
-        root.querySelectorAll('[data-lcc-split]').forEach(function(b) {
-          var on = b === btn;
-          b.classList.toggle('active', on);
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        });
-        refreshCards(root, ctx, state);
-        if (onChange) onChange(state);
-      };
-    });
     root.querySelectorAll('[data-lcc-win]').forEach(function(btn) {
       btn.onclick = function() {
         state.lvWin = btn.getAttribute('data-lcc-win') || 'ytd';
@@ -462,7 +439,6 @@
     renderSection: renderSection,
     refreshCards: refreshCards,
     bindControls: bindControls,
-    SPLIT_OPTIONS: SPLIT_OPTIONS,
     WINDOW_OPTIONS: WINDOW_OPTIONS
   };
 })(typeof window !== 'undefined' ? window : this);
