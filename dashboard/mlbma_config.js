@@ -95,7 +95,29 @@ window.MLBMA_CONFIG = {
     "Team_Results",
     "vs_RHP",
     "vs_LHP",
-    "Team_Profiles"
+    "Team_Profiles",
+    "OOR",
+    "Pitching_Score",
+    "PALS",
+    "SP_Profiles",
+    "SP_Metric_Splits",
+    "SP_Game_Log",
+    "SP_L14",
+    "Bullpen_Unit",
+    "Bullpen_Individual",
+    "Reliever_Log",
+    "Player_Registry",
+    "Batter_Profiles",
+    "Batter_Splits_Overall",
+    "Batter_Splits_RHP",
+    "Batter_Splits_LHP",
+    "Batter_Splits_Home",
+    "Batter_Splits_Away",
+    "Batter_Splits_vsSP",
+    "Batter_Splits_vsRP",
+    "Batter_Splits_Recent",
+    "Signals_Today",
+    "Signals_Convergence"
   ]
 }
 };

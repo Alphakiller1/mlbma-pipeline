@@ -42,9 +42,20 @@ SUPABASE_DASHBOARD = {
     "publishable_key": "sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2",
     "table": "hub_dataset",
     "enabled": True,
-    # Tabs mirrored into hub_dataset → read from Supabase. Anything not listed still
-    # reads from Google Sheets until it's backfilled.
-    "tabs": ["Team_Results", "vs_RHP", "vs_LHP", "Team_Profiles"],
+    # Tabs mirrored into hub_dataset → read from Supabase. Anything not listed (and all
+    # slate tabs: Today_*) still reads from Google Sheets. Slate tabs are intentionally
+    # excluded (they change intra-day and come from the live MLB API).
+    "tabs": [
+        "Team_Results", "vs_RHP", "vs_LHP", "Team_Profiles",
+        "OOR", "Pitching_Score", "PALS",
+        "SP_Profiles", "SP_Metric_Splits", "SP_Game_Log", "SP_L14",
+        "Bullpen_Unit", "Bullpen_Individual", "Reliever_Log",
+        "Player_Registry", "Batter_Profiles",
+        "Batter_Splits_Overall", "Batter_Splits_RHP", "Batter_Splits_LHP",
+        "Batter_Splits_Home", "Batter_Splits_Away", "Batter_Splits_vsSP",
+        "Batter_Splits_vsRP", "Batter_Splits_Recent",
+        "Signals_Today", "Signals_Convergence",
+    ],
 }
 
 SCOPES = [

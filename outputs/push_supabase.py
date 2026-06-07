@@ -20,7 +20,7 @@ import time
 import urllib.parse
 import urllib.request
 
-from core.config import SHEET_ID, SHEET_TABS
+from core.config import SHEET_ID, SHEET_TABS, SUPABASE_DASHBOARD
 
 try:
     from dotenv import load_dotenv
@@ -33,14 +33,9 @@ SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "")
 HUB_TABLE = "hub_dataset"
 
-# Datasets the dashboard reads. Start with the Team Rankings four (the slow page), but
-# this list is the single place to extend coverage to every page.
-DEFAULT_TABS = [
-    SHEET_TABS["team_results"],
-    SHEET_TABS["vs_rhp"],
-    SHEET_TABS["vs_lhp"],
-    SHEET_TABS["team_profiles"],
-]
+# Single source of truth: the tabs the dashboard is configured to read from Supabase
+# (core.config.SUPABASE_DASHBOARD["tabs"]). Extend coverage by editing that list.
+DEFAULT_TABS = list(SUPABASE_DASHBOARD.get("tabs", []))
 
 
 def _gviz_csv_url(tab: str) -> str:
