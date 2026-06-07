@@ -334,7 +334,7 @@
     // (Sheets) or a pre-parsed rows-array promise (Supabase). On any failure, fall back to
     // the normal remote fetch — and concurrent callers ride the same promise.
     var pfStore = global.__MLBMA_TAB_PREFETCH;
-    var pf = (!skipCacheRead && !isSlateTab(tabName) && pfStore) ? pfStore[String(tabName)] : null;
+    var pf = (!skipCacheRead && pfStore) ? pfStore[String(tabName)] : null;
     var work;
     if (pf) {
       delete pfStore[String(tabName)];
@@ -2733,16 +2733,22 @@
     var t = cfg.SHEET_TABS;
     var rankings = isTeamRankingsPage();
     var warmTabs = rankings
-      ? [t.vs_rhp, t.vs_lhp, t.team_profiles, t.team_results]
+      ? [t.vs_rhp, t.vs_lhp, t.team_profiles]
       : [t.vs_rhp, t.vs_lhp, t.team_profiles];
     warmTabs.forEach(function(tab) {
       if (!tab) return;
       fetchSheetTab(tab).catch(function() { return []; });
     });
     if (!rankings) {
+      if (t.today_lineups) {
+        fetchSheetTab(t.today_lineups).catch(function() { return []; });
+      }
+      if (t.today_matchups) {
+        fetchSheetTab(t.today_matchups).catch(function() { return []; });
+      }
       [
         t.pitching_score, t.bullpen_unit, t.sp_profiles, t.player_registry, t.pals, t.oor,
-        t.batter_profiles, t.today_matchups, t.today_lineups, t.team_results
+        t.batter_profiles, t.team_results
       ].forEach(function(tab) {
         if (!tab) return;
         var defer = function() { fetchSheetTab(tab).catch(function() { return []; }); };
@@ -2750,11 +2756,5 @@
         else setTimeout(defer, 1500);
       });
     }
-    LineupModel.ensureStore({
-      needPitcherSplits: false,
-      needPals: false,
-      allowPartialTeamResults: true,
-      prefetchTeamResults: rankings
-    }).catch(function() { /* prefetch */ });
   })();
 })(typeof window !== 'undefined' ? window : this);
