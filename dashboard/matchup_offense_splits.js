@@ -205,7 +205,7 @@
     }
     var tone = rankTone(rank, total);
     return '<td class="mc-os-cell mc-os-cell--' + tone + '" title="League rank #' + rank + (total ? ' of ' + total : '') + '">'
-      + esc(String(rank)) + '</td>';
+      + '<span class="mc-os-rank">#' + esc(String(rank)) + '</span></td>';
   }
 
   function stripTable(sliceKey, rankIndex, team, windowRows) {
@@ -225,17 +225,24 @@
       + body + '</tbody></table>';
   }
 
+  function teamAccentColor(team) {
+    var C = global.MLBMACharts;
+    if (C && typeof C.radarColorForTeam === 'function') return C.radarColorForTeam(team);
+    return '#7C4DFF';
+  }
+
   function teamCard(team, side, strips, rankIndex) {
-    var logo = A && A.teamLogoImg ? A.teamLogoImg(team, 36) : '';
+    var logo = A && A.teamLogoImg ? A.teamLogoImg(team, 48) : '';
     var sideCls = side === 'home' ? 'mc-os-card--home' : 'mc-os-card--away';
+    var accent = teamAccentColor(team);
     var stripHtml = strips.map(function(st) {
       return '<div class="mc-os-strip">'
         + '<div class="mc-os-strip-head">' + esc(st.title) + '</div>'
         + stripTable(st.sliceKey, rankIndex, team, WINDOWS)
         + '</div>';
     }).join('');
-    return '<div class="mc-os-card ' + sideCls + '">'
-      + '<div class="mc-os-card-brand">' + logo + '</div>'
+    return '<div class="mc-os-card ' + sideCls + '" style="--mc-os-team:' + esc(accent) + '">'
+      + '<div class="mc-os-card-head">' + logo + '<span class="mc-os-card-team">' + esc(team) + '</span></div>'
       + '<div class="mc-os-card-strips">' + stripHtml + '</div>'
       + '</div>';
   }
@@ -266,18 +273,18 @@
     var homeStrips = buildStripsForTeam(m.home, 'home', m.awayHand);
     return '<div class="mc-section-block mc-offense-splits">'
       + '<h2 class="mc-section-title">Offensive Splits — League Rank</h2>'
-      + '<p class="mc-os-hint ca-helper">Color-coded league rank (1 = best). '
+      + '<p class="mc-os-hint ca-helper">Color-coded league rank (#1 = best). '
       + 'Handedness = opposing starter · Location = this game · L7/L14/L30 scaled from team form windows.</p>'
       + '<div class="mc-os-duo">'
       + teamCard(m.away, 'away', awayStrips, idx)
       + teamCard(m.home, 'home', homeStrips, idx)
       + '</div>'
       + '<div class="mc-os-legend">'
-      + '<span class="mc-os-leg mc-os-cell--elite">1–5 Elite</span>'
-      + '<span class="mc-os-leg mc-os-cell--strong">6–12 Strong</span>'
-      + '<span class="mc-os-leg mc-os-cell--mid">13–20 Average</span>'
-      + '<span class="mc-os-leg mc-os-cell--weak">21–25 Weak</span>'
-      + '<span class="mc-os-leg mc-os-cell--poor">26+ Poor</span>'
+      + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'
+      + '<span class="mc-os-leg mc-os-cell--strong">#6–12 Strong</span>'
+      + '<span class="mc-os-leg mc-os-cell--mid">#13–20 Average</span>'
+      + '<span class="mc-os-leg mc-os-cell--weak">#21–25 Weak</span>'
+      + '<span class="mc-os-leg mc-os-cell--poor">#26+ Poor</span>'
       + '</div></div>';
   }
 

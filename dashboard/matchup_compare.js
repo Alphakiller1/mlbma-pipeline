@@ -282,7 +282,7 @@
     if (!global.MLBMACharts) return '';
     return '<div class="mc-section-block mc-radar-section">'
       + '<h2 class="mc-section-title">Team Profile Radar: Lineup vs Lineup</h2>'
-      + '<p class="mc-radar-hint ca-helper">Hover axis labels or points for predictive and prescriptive read on each metric.</p>'
+      + '<p class="mc-radar-hint ca-helper">Hover any axis label or point for what each metric means and what it tells you about each lineup.</p>'
       + '<div class="mc-radar-duo">'
       + '<div class="mc-radar-panel">'
       + '<div class="mc-radar-panel-label">Process Composite</div>'
@@ -359,7 +359,10 @@
       { abbr: m.away, values: pitcherRadarValues(awayMet, awayPs, m, 'away') },
       { abbr: m.home, values: pitcherRadarValues(homeMet, homePs, m, 'home') }
     ];
-    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, [MLBMACharts.COMPARE_RADAR_AWAY || '#7C4DFF', MLBMACharts.COMPARE_RADAR_HOME || '#60A5FA'], { size: radarChartSize() });
+    var radarColors = MLBMACharts.radarColorForTeam
+      ? [MLBMACharts.radarColorForTeam(m.away), MLBMACharts.radarColorForTeam(m.home)]
+      : [MLBMACharts.COMPARE_RADAR_AWAY || '#7C4DFF', MLBMACharts.COMPARE_RADAR_HOME || '#60A5FA'];
+    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, radarColors, { size: radarChartSize() });
     el.dataset.mounted = '1';
   }
 
@@ -475,14 +478,9 @@
 
   function renderPaneLvL(ctx) {
     var m = ctx.m;
-    return '<h2 class="mc-pane-title">Lineup vs Lineup</h2>'
-      + '<p class="mc-pane-desc">Compare both projected lineups and split-adjusted offensive edges.</p>'
+    return '<p class="mc-pane-desc mc-pane-desc--lead">Compare both projected lineups and split-adjusted offensive edges.</p>'
       + renderTeamCompareRadar(m)
       + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
-      + '<div class="mc-grid-2" style="margin-top:16px;">'
-      + edgePanel('Away lineup vs ' + ((m.homeHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP'), ctx.awayRow, m.homeHand, m.awayOSI, ctx.homeMet.osiAllowed, ctx.pals[m.away], m.away)
-      + edgePanel('Home lineup vs ' + ((m.awayHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP'), ctx.homeRow, m.awayHand, m.homeOSI, ctx.awayMet.osiAllowed, ctx.pals[m.home], m.home)
-      + '</div>'
       + sectionProjectedLineups(m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true });
   }
 
@@ -635,46 +633,6 @@
     return '<div class="mc-spark-strip">' + rowHtml('ABQ', 'abq') + rowHtml('RCV', 'rcv') + rowHtml('OBR', 'obr') + rowHtml('OSI', 'osi') + '</div>';
   }
 
-  function confidenceLevel(m, lineups, pals, profiles) {
-    var score = 0;
-    if (m.awayOSI != null && m.homeOSI != null) score += 2;
-    if (lineups && lineups.length >= 12) score += 2;
-    if (profiles && profiles.length) score += 1;
-    if (pals && (pals[m.away] || pals[m.home])) score += 1;
-    if (score >= 5) return { label: 'High', cls: 'conf-high' };
-    if (score >= 3) return { label: 'Medium', cls: 'conf-med' };
-    return { label: 'Low', cls: 'conf-low' };
-  }
-
-  function primaryRead(m, script, f5, h2h) {
-    var parts = [];
-    parts.push(script.label + ' environment');
-    if (m.lineupEdge) parts.push(m.lineupEdge);
-    else if (h2h.edge !== 'Even') parts.push('starter edge leans ' + h2h.edge);
-    parts.push('F5 tag: ' + f5.label);
-    return parts.join(' · ') + '.';
-  }
-
-  function f5Lean(m, awayPs, homePs) {
-    var awayEdge = (awayPs || 50) - (m.homeOSI || 50);
-    var homeEdge = (homePs || 50) - (m.awayOSI || 50);
-    if (awayEdge > homeEdge + 5) return m.away + ' SP vs ' + m.home + ' lineup';
-    if (homeEdge > awayEdge + 5) return m.home + ' SP vs ' + m.away + ' lineup';
-    return 'No clear F5 lean — monitor live';
-  }
-
-  function fullGameLean(m, awayBp, homeBp) {
-    var awayScore = S.bullpenPitchScore(awayBp);
-    var homeScore = S.bullpenPitchScore(homeBp);
-    if (awayScore != null && homeScore != null) {
-      if (awayScore > homeScore + 8) return m.away + ' bullpen advantage post-starter';
-      if (homeScore > awayScore + 8) return m.home + ' bullpen advantage post-starter';
-    }
-    if ((m.awayOSI || 0) > (m.homeOSI || 0) + 5) return m.away + ' lineup carries full-game edge';
-    if ((m.homeOSI || 0) > (m.awayOSI || 0) + 5) return m.home + ' lineup carries full-game edge';
-    return 'Full game likely decided by starter length + leverage spots';
-  }
-
   function render(data) {
     var root = document.getElementById('compareRoot');
     if (!root) return;
@@ -709,14 +667,6 @@
     var awayBp = bullpen[m.away];
     var homeBp = bullpen[m.home];
 
-    var script = S.gamescriptBadge(
-      awayRow ? awayRow.abq : null, homeRow ? homeRow.abq : null,
-      awayPs, homePs,
-      awayRow ? awayRow.rcv : null, homeRow ? homeRow.rcv : null,
-      m.awayHR9, m.homeHR9
-    );
-    var f5 = S.f5Badge(awayPs, homePs, homeBp ? homeBp.osiAllowed : null, awayBp ? awayBp.osiAllowed : null);
-
     var awayProf = S.findSpProfile(data.spProfiles, m.awaySP, m.away);
     var homeProf = S.findSpProfile(data.spProfiles, m.homeSP, m.home);
     var awayMet = S.spProfileMetrics(awayProf) || {};
@@ -727,9 +677,6 @@
     var homeLineup = S.parseLineup(data.lineups, gk, m.home, 'HOME');
     var lineupOk = awayLineup.length >= 5 && homeLineup.length >= 5;
 
-    var conf = confidenceLevel(m, data.lineups, pals, data.spProfiles);
-    var park = S.parkFactor(m.home);
-    var parkLbl = S.parkImpactLabel(park, weather);
     var stadium = m.stadium || '—';
     var state = getCompareState();
 
@@ -755,17 +702,12 @@
       lineupOk: lineupOk,
       teamProfiles: data.teamProfiles || {},
       offenseRankIndex: data.offenseRankIndex || null,
-      h2h: h2h,
-      script: script,
-      f5: f5,
-      conf: conf,
-      park: park,
-      parkLbl: parkLbl
+      h2h: h2h
     };
     _compareCtx = ctx;
 
     root.innerHTML = ''
-      + sectionHeader(m, weather, script, f5, stadium)
+      + sectionHeader(m, weather, stadium)
       + compareNavHtml(state.mode)
       + '<div class="mc-compare-panes">'
       + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx))
@@ -773,9 +715,7 @@
       + paneWrap('lvB', state.mode === 'lvB', renderPaneLvB(ctx, state))
       + paneWrap('bpBp', state.mode === 'bpBp', renderPaneBpBp(ctx))
       + paneWrap('spSp', state.mode === 'spSp', renderPaneSpSp(ctx))
-      + '</div>'
-      + sectionGameScript(m, f5, script, awayPs, homePs, awayBp, homeBp, weather, park, parkLbl)
-      + sectionModel(m, script, f5, h2h, conf, awayRow, homeRow, awayBp, homeBp, awayPs, homePs);
+      + '</div></div>';
 
     _compareState = state;
     bindCompareUI(root, ctx, state);
@@ -810,7 +750,7 @@
       + '</div></a>';
   }
 
-  function sectionHeader(m, weather, script, f5, stadium) {
+  function sectionHeader(m, weather, stadium) {
     var wx = S.weatherBadge(weather, m.home);
     return '<div class="compare-page">'
       + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
@@ -947,58 +887,6 @@
     return wrapOpen + title
       + '<div class="mc-grid-2">' + bullpenPanel(m.away, awayBp) + bullpenPanel(m.home, homeBp) + '</div>'
       + wrapClose;
-  }
-
-  function sectionGameScript(m, f5, script, awayPs, homePs, awayBp, homeBp, weather, park, parkLbl) {
-    var awayBpScore = S.bullpenPitchScore(awayBp);
-    var homeBpScore = S.bullpenPitchScore(homeBp);
-    var bpWinner = (awayBpScore || 0) > (homeBpScore || 0) + 5 ? m.away : ((homeBpScore || 0) > (awayBpScore || 0) + 5 ? m.home : 'Even');
-    return '<section class="mc-section"><h2 class="mc-section-title">Game Script Analysis</h2>'
-      + '<div class="mc-grid-3">'
-      + '<div class="mc-card mc-script-card"><h4>F5 Context</h4>'
-      + '<span class="' + esc(f5.cls) + '" style="display:inline-block;margin-bottom:10px;padding:8px 14px;font-size:13px;font-weight:700">' + esc(f5.label) + '</span>'
-      + '<div class="mc-script-row">' + esc(m.away) + ' SP (' + fmt(awayPs) + ') vs ' + esc(m.home) + ' lineup OSI ' + fmt(m.homeOSI) + '</div>'
-      + '<div class="mc-script-row">' + esc(m.home) + ' SP (' + fmt(homePs) + ') vs ' + esc(m.away) + ' lineup OSI ' + fmt(m.awayOSI) + '</div>'
-      + '<div class="mc-script-row"><strong>F5 lean:</strong> ' + esc(f5Lean(m, awayPs, homePs)) + '</div></div>'
-      + '<div class="mc-card mc-script-card"><h4>Full Game Context</h4>'
-      + '<div class="mc-script-row">' + esc(m.away) + ' bullpen score ' + fmt(awayBpScore) + ' · ' + esc(m.home) + ' ' + fmt(homeBpScore) + '</div>'
-      + '<div class="mc-script-row">Post-starter OSI edge: ' + esc((m.awayOSI || 0) > (m.homeOSI || 0) ? m.away : m.home) + ' lineup</div>'
-      + '<div class="mc-script-row"><strong>Bullpen advantage:</strong> ' + esc(bpWinner) + '</div></div>'
-      + '<div class="mc-card mc-script-card"><h4>Weather / Park Impact</h4>'
-      + '<div class="mc-script-row">Temp: ' + (weather.temp != null ? weather.temp + '°F' : '—') + '</div>'
-      + '<div class="mc-script-row">Wind: ' + (weather.wind != null ? weather.wind + ' mph' + (weather.windDir ? ' ' + weather.windDir : '') : '—') + '</div>'
-      + '<div class="mc-script-row">Conditions: ' + esc(weather.conditions || weather.raw) + '</div>'
-      + '<div class="mc-script-row">Park factor (' + esc(m.home) + '): ' + park.toFixed(2) + '</div>'
-      + '<div class="mc-impact-label">' + esc(parkLbl.label) + '</div>'
-      + '<div class="mc-script-row">' + esc(parkLbl.detail) + '</div></div>'
-      + '</div></section>';
-  }
-
-  function sectionModel(m, script, f5, h2h, conf, awayRow, homeRow, awayBp, homeBp, awayPs, homePs) {
-    var supports = [];
-    if (m.awayOSI != null) supports.push(m.away + ' lineup OSI ' + fmt(m.awayOSI) + ' vs ' + (m.homeHand || '?') + 'HP');
-    if (m.homeOSI != null) supports.push(m.home + ' lineup OSI ' + fmt(m.homeOSI) + ' vs ' + (m.awayHand || '?') + 'HP');
-    if (awayPs != null) supports.push(m.away + ' SP Pitching Score ' + fmt(awayPs));
-    if (homePs != null) supports.push(m.home + ' SP Pitching Score ' + fmt(homePs));
-    var risk = 'Bullpen volatility or unconfirmed lineups could shift the read.';
-    if (awayBp && S.bullpenRisk(awayBp).label === 'Volatile') risk = m.away + ' bullpen volatility is the main invalidation risk.';
-    else if (homeBp && S.bullpenRisk(homeBp).label === 'Volatile') risk = m.home + ' bullpen volatility is the main invalidation risk';
-
-    return '<section class="mc-section"><h2 class="mc-section-title">Model Summary</h2>'
-      + '<div class="mc-card mc-model-card">'
-      + '<div class="mc-model-script ' + esc(script.cls.replace('script-badge ', '')) + '">' + esc(script.label) + '</div>'
-      + '<p class="mc-model-read">' + esc(primaryRead(m, script, f5, h2h)) + '</p>'
-      + '<div class="mc-confidence ' + conf.cls + '"><span class="conf-dot"></span> Confidence: ' + esc(conf.label) + '</div>'
-      + '<ul class="mc-support-list">' + supports.map(function(s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>'
-      + '<div class="mc-risk"><strong>Risk:</strong> ' + esc(risk) + '</div>'
-      + '<div class="mc-leans">'
-      + '<div class="mc-lean"><div class="mc-lean-label">F5 Lean</div><div class="mc-lean-value">' + esc(f5Lean(m, awayPs, homePs)) + '</div></div>'
-      + '<div class="mc-lean"><div class="mc-lean-label">Full Game Lean</div><div class="mc-lean-value">' + esc(fullGameLean(m, awayBp, homeBp)) + '</div></div>'
-      + '</div>'
-      + '<div class="mc-model-links">'
-      + '<a href="' + teamProfileUrl(m.away) + '">View Away Team Profile →</a>'
-      + '<a href="' + teamProfileUrl(m.home) + '">View Home Team Profile →</a>'
-      + '</div></div></section></div>';
   }
 
   function load() {

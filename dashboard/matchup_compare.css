@@ -278,6 +278,17 @@
   margin: 0 0 16px;
   line-height: 1.45;
 }
+.mc-pane-desc--lead {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 22px;
+  padding: 0 12px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+}
 .mc-section-block { margin-top: 18px; }
 
 /* Team profile radar — dual interactive panes */
@@ -334,7 +345,7 @@
 }
 .mlbma-radar-tip.is-visible {
   opacity: 1;
-  max-height: 220px;
+  max-height: 320px;
   padding: 10px 12px;
   background: var(--bg-4, #1f1f25);
   border: 1px solid rgba(124, 77, 255, 0.35);
@@ -369,71 +380,78 @@
 .mlbma-radar-tip-sep { margin: 0 6px; color: var(--text-3, #71717A); }
 
 /* Offensive splits rank chart */
-.mc-offense-splits { margin-bottom: 8px; }
-.mc-os-hint { margin: -6px 0 12px; font-size: 12px; }
+.mc-offense-splits { margin-bottom: 20px; }
+.mc-os-hint { margin: 0 0 16px; font-size: 13px; line-height: 1.5; }
 .mc-os-duo {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 20px;
 }
-@media (max-width: 960px) {
-  .mc-os-duo { grid-template-columns: 1fr; }
+@media (max-width: 1100px) {
+  .mc-os-duo { grid-template-columns: 1fr; gap: 18px; }
 }
 .mc-os-card {
-  display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 10px;
-  padding: 12px 10px;
-  background: var(--bg-4, #1f1f25);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-}
-.mc-os-card--away { border-color: rgba(124, 77, 255, 0.35); }
-.mc-os-card--home { border-color: rgba(96, 165, 250, 0.4); }
-.mc-os-card-brand {
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 28px;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 16px 16px;
+  background: var(--bg-4, #1f1f25);
+  border: 1.5px solid color-mix(in srgb, var(--mc-os-team, #7C4DFF) 38%, transparent);
+  border-radius: 14px;
 }
-.mc-os-card-brand img { width: 40px; height: 40px; object-fit: contain; }
+.mc-os-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mc-os-card-head img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.mc-os-card-team {
+  font-family: var(--font-display, var(--font));
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--mc-os-team, var(--text));
+}
 .mc-os-card-strips {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 14px;
   min-width: 0;
 }
-@media (max-width: 720px) {
-  .mc-os-card { grid-template-columns: 1fr; }
-  .mc-os-card-brand { padding-top: 0; }
-  .mc-os-card-strips {
-    grid-template-columns: 1fr;
-    overflow-x: auto;
-  }
+.mc-os-strip {
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
 }
-.mc-os-strip { min-width: 0; }
 .mc-os-strip-head {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-align: center;
   color: #fff;
-  padding: 5px 4px;
-  border-radius: 6px 6px 0 0;
+  padding: 8px 10px;
   margin-bottom: 0;
   line-height: 1.2;
-}
-.mc-os-card--away .mc-os-strip-head {
-  background: linear-gradient(180deg, #7C4DFF, #5B21B6);
-}
-.mc-os-card--home .mc-os-strip-head {
-  background: linear-gradient(180deg, #60A5FA, #2563EB);
+  background: linear-gradient(
+    180deg,
+    var(--mc-os-team, #7C4DFF),
+    color-mix(in srgb, var(--mc-os-team, #7C4DFF) 52%, #000)
+  );
 }
 .mc-os-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   table-layout: fixed;
 }
@@ -441,29 +459,40 @@
 .mc-os-table td {
   border: 1px solid rgba(255, 255, 255, 0.12);
   text-align: center;
-  padding: 3px 2px;
+  padding: 8px 6px;
 }
 .mc-os-table thead th {
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-2);
   background: rgba(0, 0, 0, 0.25);
+  padding: 10px 6px;
 }
 .mc-os-win {
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-2);
   background: rgba(255, 255, 255, 0.04);
-  width: 28px;
+  width: 44px;
+  padding: 8px 4px;
 }
 .mc-os-cell {
   font-weight: 700;
-  font-size: 12px;
+  font-size: 15px;
   color: #0f172a;
+  vertical-align: middle;
+}
+.mc-os-rank {
+  display: inline-block;
+  font-family: var(--font-display, var(--font));
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 .mc-os-cell--elite { background: #4ADE80; }
 .mc-os-cell--strong { background: #BBF7D0; }
@@ -474,15 +503,15 @@
 .mc-os-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 .mc-os-leg {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 5px 10px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -778,16 +807,20 @@
   }
 
   .mc-os-card {
-    padding: 10px 8px;
+    padding: 14px 12px;
+  }
+
+  .mc-os-rank {
+    font-size: 15px;
   }
 
   .mc-os-legend {
-    gap: 6px;
+    gap: 8px;
   }
 
   .mc-os-leg {
-    font-size: 9px;
-    padding: 2px 6px;
+    font-size: 10px;
+    padding: 4px 8px;
   }
 
   .mc-subsel-pill-sub {
@@ -839,6 +872,11 @@
     font-size: 16px;
   }
 
+  .mc-pane-desc--lead {
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+
   .mc-os-card-strips {
     display: flex;
     flex-direction: column;
@@ -851,21 +889,24 @@
   }
 
   .mc-os-table {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .mc-os-cell {
-    font-size: 11px;
-    padding: 4px 2px;
+    padding: 7px 4px;
+  }
+
+  .mc-os-rank {
+    font-size: 14px;
   }
 
   .mc-os-win {
-    font-size: 7px;
-    width: 26px;
+    font-size: 9px;
+    width: 40px;
   }
 
   .mlbma-radar-tip.is-visible {
-    max-height: 280px;
+    max-height: 360px;
     font-size: 11px;
   }
 

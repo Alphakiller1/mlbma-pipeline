@@ -82,65 +82,78 @@
 
   var RADAR_METRIC_TIPS = {
     rcv: {
-      label: 'RCV',
-      read: 'High RCV = real slug and run paths. Low = limited hard contact.',
-      research: 'Overs when RCV leads process gaps; archetype axis with OBR.'
+      label: 'RCV — Run Creation Value',
+      read: 'Tells you how much run-scoring damage this lineup actually creates — hard contact, extra-base power, and overall production rolled into one score. Higher means real thump and scoring pressure; lower means thin contact and limited slug.',
+      research: 'If RCV leads ABQ by a wide gap, the lineup may be outperforming its process; if RCV trails, look for buy-low offense before the box score catches up.'
     },
     abq: {
-      label: 'ABQ',
-      read: 'High ABQ = patient, quality decisions. Low = chase-heavy, weak process.',
-      research: 'Unders when weak ABQ faces elite pitching; platoon splits when ABQ gap is wide.'
+      label: 'ABQ — At-Bat Quality',
+      read: 'Tells you how well this lineup handles each plate appearance — discipline, contact decisions, and pressure on the pitcher. Higher means patient, quality swings; lower means chase-heavy at-bats that elite arms can exploit.',
+      research: 'Weak ABQ vs a high Pitching Score starter is an under lean; strong ABQ with rising RCV is a process-backed over signal.'
     },
     osi: {
-      label: 'OSI',
-      read: '85+ elite · 75–84 high · 65–74 dangerous · 50–64 inconsistent · <50 weak.',
-      research: 'Primary team offensive ranking; compare vs opposing Pitching Score.'
+      label: 'OSI — Offensive Strength Index',
+      read: 'Tells you the headline offensive grade for this lineup — the single best read on overall lineup strength. Higher means a more dangerous offense; lower means a easier unit to pitch through.',
+      research: 'Compare OSI directly to the opposing starter\'s Pitching Score: a wide gap flags the side with the clearer offensive or pitching edge.'
     },
     obr: {
-      label: 'OBR',
-      read: 'High OBR = table-setters and traffic. Low = thin on-base paths.',
-      research: 'Team totals vs soft K% arms; pairs with Signal 1 and Signal 6.'
+      label: 'OBR — On-Base Rating',
+      read: 'Tells you how reliably this lineup gets on base — walks plus expected production from contact. Higher means traffic and baserunners; lower means thin on-base paths and fewer scoring opportunities.',
+      research: 'High OBR lineups sustain rallies vs high-K arms; low OBR units need RCV spikes to score in bunches.'
     },
     projosi: {
-      label: 'projOSI',
-      read: 'Above OSI → buy-low lean. Below OSI → fade lean.',
-      research: 'Pairs with PALS for process vs results alignment (Signal 5).'
+      label: 'projOSI — Projected Offensive Strength Index',
+      read: 'Tells you where this offense is likely headed after luck and contact-quality regression. Above OSI suggests the lineup has been unlucky and may heat up; below OSI suggests results have outrun underlying quality.',
+      research: 'Use projOSI vs OSI for buy-low and fade calls — the gap is the regression signal, not the headline OSI alone.'
     },
     pals: {
-      label: 'PALS',
-      read: 'High = production vs tough SPs. Low = weak schedule context.',
-      research: 'Confirm raw OSI with schedule truth; Signal 5 pairing.'
+      label: 'PALS — Pitching-Adjusted Lineup Score',
+      read: 'Tells you whether this lineup\'s production holds up against the quality of starting pitching it has faced. Higher means they have hit tough arms; lower means results may be padded by soft matchups.',
+      research: 'Strong OSI with weak PALS is a schedule-inflated read; strong OSI with strong PALS is more durable.'
     },
     sos: {
-      label: 'SOS',
-      read: 'Higher = tougher pitching schedule faced (derived from PTF+).',
-      research: 'Context for raw OSI/PALS — strong results vs soft SOS may fade.'
+      label: 'SOS — Strength of Schedule',
+      read: 'Tells you how difficult the opposing pitching this lineup has faced has been (derived from PTF+). Higher means production was earned vs tougher arms; lower means a softer schedule may be boosting surface stats.',
+      research: 'Pair SOS with OSI and PALS — elite raw numbers against soft SOS deserve skepticism; elite numbers against hard SOS carry more weight.'
     },
     wrc: {
-      label: 'wRC+',
-      read: '110+ strong · 90–109 average band · <90 below average.',
-      research: 'Context for RCV; not duplicated as headline composite.'
+      label: 'wRC+ — Weighted Runs Created Plus',
+      read: 'Tells you how many runs this lineup creates relative to league average (100 = average). Above 100 means above-average run production; below 100 means a below-average offense by results.',
+      research: 'wRC+ is the classic results anchor — compare it to RCV and xwOBA to see if the box score matches underlying quality.'
     },
     xwoba: {
-      label: 'xwOBA',
-      read: 'Above wOBA → likely cooling. Below wOBA → likely heating.',
-      research: 'projOSI regression clip uses (xwOBA − wOBA) × 450.'
+      label: 'xwOBA — Expected Weighted On-Base Average',
+      read: 'Tells you what this lineup\'s production should be based on contact quality — exit velocity and launch angle — not just outcomes. Higher means better process; if xwOBA sits above wOBA, the lineup may be due to heat up.',
+      research: 'xwOBA drives projOSI — a lineup with strong xwOBA but weak wOBA is a classic buy-low profile.'
     },
     iso: {
-      label: 'ISO',
-      read: 'Higher = more extra-base power per contact opportunity.',
-      research: 'RCV input; boom-or-bust slug environments and HR props.'
+      label: 'ISO — Isolated Power',
+      read: 'Tells you how much extra-base power this lineup generates — slugging minus batting average. Higher means more doubles, triples, and home runs per opportunity; lower means a contact-first, singles-heavy shape.',
+      research: 'High ISO with high RCV confirms a slug-heavy offense; low ISO with high OBR points to a table-setter, small-ball profile.'
     }
   };
 
+  var RADAR_GLOSSARY_ALIAS = {
+    wrc: 'wrc-plus',
+    projosi: 'projosi'
+  };
+
   function metricTip(key) {
+    var k = String(key || '').toLowerCase();
+    if (RADAR_METRIC_TIPS[k]) return RADAR_METRIC_TIPS[k];
+    var alias = RADAR_GLOSSARY_ALIAS[k] || k;
     if (global.MLBMAGlossary && MLBMAGlossary.METRICS) {
-      var found = MLBMAGlossary.METRICS.find(function(m) { return m.id === key; });
+      var found = MLBMAGlossary.METRICS.find(function(m) { return m.id === alias; });
       if (found) {
-        return { label: found.name, read: found.read, research: found.research };
+        var full = found.full || found.name;
+        return {
+          label: found.name + (full && full !== found.name ? ' — ' + full : ''),
+          read: found.def || found.read || '',
+          research: found.research || ''
+        };
       }
     }
-    return RADAR_METRIC_TIPS[key] || { label: key, read: '', research: '' };
+    return { label: key, read: '', research: '' };
   }
 
   function formatRadarRaw(key, val) {
@@ -178,8 +191,8 @@
           + esc(formatRadarRaw(key, raw)) + '</span>';
       }).join('<span class="mlbma-radar-tip-sep">·</span>');
       tipEl.innerHTML = '<div class="mlbma-radar-tip-metric">' + esc(tip.label || metrics[idx]) + '</div>'
-        + (tip.read ? '<div class="mlbma-radar-tip-row"><span class="mlbma-radar-tip-k">Predictive</span><p>' + esc(tip.read) + '</p></div>' : '')
-        + (tip.research ? '<div class="mlbma-radar-tip-row"><span class="mlbma-radar-tip-k">Prescriptive</span><p>' + esc(tip.research) + '</p></div>' : '')
+        + (tip.read ? '<div class="mlbma-radar-tip-row"><span class="mlbma-radar-tip-k">What it tells you</span><p>' + esc(tip.read) + '</p></div>' : '')
+        + (tip.research ? '<div class="mlbma-radar-tip-row"><span class="mlbma-radar-tip-k">Matchup read</span><p>' + esc(tip.research) + '</p></div>' : '')
         + (valsHtml ? '<div class="mlbma-radar-tip-vals">' + valsHtml + '</div>' : '');
       tipEl.classList.add('is-visible');
     }
@@ -1149,6 +1162,52 @@
   var COMPARE_RADAR_AWAY = '#7C4DFF';
   var COMPARE_RADAR_HOME = '#60A5FA';
 
+  var TEAM_RADAR_COLORS = {
+    ARI: '#A71930', ATL: '#CE1141', BAL: '#DF4601', BOS: '#BD3039', CHC: '#0E3386', CHW: '#27251F',
+    CIN: '#C6011F', CLE: '#E31937', COL: '#33006F', DET: '#0C2340', HOU: '#EB6E1F', KCR: '#004687',
+    KC: '#004687', LAA: '#BA0021', LAD: '#005A9C', MIA: '#00A3E0', MIL: '#12284B', MIN: '#002B5C',
+    NYM: '#002D72', NYY: '#0C2340', ATH: '#003831', OAK: '#003831', PHI: '#E81828', PIT: '#FDB827',
+    SDP: '#2F241D', SD: '#2F241D', SEA: '#0C2C56', SFG: '#FD5A1E', SF: '#FD5A1E', STL: '#C41E3A',
+    TBR: '#092C5C', TB: '#092C5C', TEX: '#003278', TOR: '#134A8E', WSN: '#AB0003', WAS: '#AB0003'
+  };
+
+  function hexToRgb(hex) {
+    var h = String(hex || '#9A6BFF').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return {
+      r: parseInt(h.slice(0, 2), 16) || 0,
+      g: parseInt(h.slice(2, 4), 16) || 0,
+      b: parseInt(h.slice(4, 6), 16) || 0
+    };
+  }
+
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(function (c) {
+      var s = Math.round(Math.min(255, Math.max(0, c))).toString(16);
+      return s.length === 1 ? '0' + s : s;
+    }).join('');
+  }
+
+  function colorLuminance(rgb) {
+    return (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+  }
+
+  function brightenForRadar(hex, minLum) {
+    minLum = minLum == null ? 0.34 : minLum;
+    var rgb = hexToRgb(hex);
+    var lum = colorLuminance(rgb);
+    if (lum >= minLum) return hex;
+    var f = minLum / Math.max(lum, 0.06);
+    return rgbToHex(rgb.r * f, rgb.g * f, rgb.b * f);
+  }
+
+  function radarColorForTeam(abbr) {
+    var t = String(abbr || '').trim().toUpperCase();
+    if (t === 'NYY') return '#2563EB';
+    var base = TEAM_RADAR_COLORS[t] || '#9A6BFF';
+    return brightenForRadar(base);
+  }
+
   function renderTeamCompareRadars(processId, contextId, awayRow, homeRow, awayPals, homePals, labelA, labelB, opts) {
     opts = opts || {};
     var size = opts.size || 300;
@@ -1161,7 +1220,7 @@
     var processKeys = ['rcv', 'abq', 'osi', 'obr', 'projosi'];
     var contextMetrics = ['PALS', 'SOS', 'wRC+', 'xwOBA', 'ISO'];
     var contextKeys = ['pals', 'sos', 'wrc', 'xwoba', 'iso'];
-    var colors = [COMPARE_RADAR_AWAY, COMPARE_RADAR_HOME];
+    var colors = [radarColorForTeam(labelA), radarColorForTeam(labelB)];
     var radarOpts = {
       size: size,
       interactive: true,
@@ -1208,11 +1267,11 @@
     var colors = [];
     if (teamAData) {
       teams.push({ abbr: labelA || 'A', values: processRadarValues(teamAData) });
-      colors.push(COMPARE_RADAR_AWAY);
+      colors.push(radarColorForTeam(labelA || 'A'));
     }
     if (teamBData) {
       teams.push({ abbr: labelB || 'B', values: processRadarValues(teamBData) });
-      colors.push(COMPARE_RADAR_HOME);
+      colors.push(radarColorForTeam(labelB || 'B'));
     }
     return buildRadarChart(containerId, teams, metrics, colors, Object.assign({}, opts, {
       interactive: opts.interactive != null ? opts.interactive : true,
@@ -1282,6 +1341,7 @@
     renderTeamCompareRadars: renderTeamCompareRadars,
     COMPARE_RADAR_AWAY: COMPARE_RADAR_AWAY,
     COMPARE_RADAR_HOME: COMPARE_RADAR_HOME,
+    radarColorForTeam: radarColorForTeam,
     teamOsiTrend: teamOsiTrend,
     renderOnDataReady: renderOnDataReady,
     renderOnLiveDataReady: renderOnLiveDataReady,
