@@ -221,6 +221,158 @@
 .f5-badge.f5-blue { background: rgba(96, 165, 250, 0.15); color: #60A5FA; }
 .f5-badge.f5-muted { background: rgba(113, 113, 122, 0.12); color: #A1A1AA; }
 
+/* Compare mode navigation */
+.mc-compare-nav {
+  margin: 0 0 20px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.mc-compare-nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.mc-compare-nav .hub-pill {
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.mc-compare-nav .hub-pill:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.mc-compare-panes {
+  position: relative;
+  min-height: 120px;
+}
+.mc-compare-pane {
+  animation: none;
+}
+.mc-compare-pane.is-entering {
+  animation: mcPaneIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes mcPaneIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mc-pane-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+.mc-pane-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0 0 16px;
+  line-height: 1.45;
+}
+.mc-section-block { margin-top: 18px; }
+
+/* Sub-selectors — lineup vs pitcher / bullpen */
+.mc-subsel {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  background: var(--bg-4, #1f1f25);
+  border: 1px solid var(--border, #28282f);
+  border-radius: 10px;
+}
+.mc-subsel-intro {
+  font-size: 12px;
+  color: var(--text-2);
+  margin: 0 0 12px;
+  line-height: 1.45;
+}
+.mc-subsel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+}
+@media (max-width: 720px) {
+  .mc-subsel-grid { grid-template-columns: 1fr; }
+}
+.mc-subsel-group { min-width: 0; }
+.mc-subsel-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+  margin-bottom: 8px;
+}
+.mc-subsel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mc-subsel-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 38px;
+  padding: 8px 12px !important;
+  line-height: 1.2;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.mc-subsel-pill:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.mc-subsel-pill-main {
+  font-size: 12px;
+  font-weight: 700;
+}
+.mc-subsel-pill-sub {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.75;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-subsel-readout {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border, #28282f);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.mc-subsel-readout-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-right: 6px;
+}
+.mc-pair-banner {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.mc-pair-banner--match {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.28);
+  color: #4ADE80;
+}
+.mc-pair-banner--alt {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  color: #FBBF24;
+}
+.mc-lvp-body.is-swapping,
+.mc-lvb-body.is-swapping,
+#mcLvPContent.is-swapping,
+#mcLvBContent.is-swapping {
+  opacity: 0.55;
+  transition: opacity 0.18s ease;
+}
+
 /* Sections */
 .mc-section { margin-bottom: 28px; }
 .mc-section-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--text); letter-spacing: 0.01em; }

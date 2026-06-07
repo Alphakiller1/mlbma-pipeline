@@ -38,6 +38,94 @@
     return 'matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home);
   }
 
+  var COMPARE_MODES = [
+    { id: 'lvL', label: 'Lineup vs Lineup' },
+    { id: 'lvP', label: 'Lineup vs Pitcher' },
+    { id: 'lvB', label: 'Lineup vs Bullpen' },
+    { id: 'bpBp', label: 'Bullpen vs Bullpen' },
+    { id: 'spSp', label: 'Pitcher vs Pitcher' }
+  ];
+  var COMPARE_IDS = COMPARE_MODES.map(function(x) { return x.id; });
+  var _compareCtx = null;
+
+  function getCompareState() {
+    var mode = qp('compare') || 'lvL';
+    if (COMPARE_IDS.indexOf(mode) < 0) mode = 'lvL';
+    var lvpLineup = qp('lvpLineup') === 'home' ? 'home' : 'away';
+    var lvpPitcher = qp('lvpPitcher') === 'away' ? 'away' : 'home';
+    if (lvpLineup === lvpPitcher) lvpPitcher = lvpLineup === 'away' ? 'home' : 'away';
+    var lvbLineup = qp('lvbLineup') === 'home' ? 'home' : 'away';
+    var lvbBp = qp('lvbBp') === 'home' ? 'home' : 'away';
+    if (lvbLineup === lvbBp) lvbBp = lvbLineup === 'away' ? 'home' : 'away';
+    return { mode: mode, lvpLineup: lvpLineup, lvpPitcher: lvpPitcher, lvbLineup: lvbLineup, lvbBp: lvbBp };
+  }
+
+  function syncCompareUrl(state) {
+    var params = new URLSearchParams(global.location.search);
+    params.set('compare', state.mode);
+    if (state.mode === 'lvP') {
+      params.set('lvpLineup', state.lvpLineup);
+      params.set('lvpPitcher', state.lvpPitcher);
+    } else {
+      params.delete('lvpLineup');
+      params.delete('lvpPitcher');
+    }
+    if (state.mode === 'lvB') {
+      params.set('lvbLineup', state.lvbLineup);
+      params.set('lvbBp', state.lvbBp);
+    } else {
+      params.delete('lvbLineup');
+      params.delete('lvbBp');
+    }
+    var qs = params.toString();
+    var next = global.location.pathname + (qs ? '?' + qs : '');
+    if (global.history && global.history.replaceState) {
+      global.history.replaceState(null, '', next);
+    }
+  }
+
+  function compareNavHtml(activeMode) {
+    return '<nav class="mc-compare-nav hub-control-bar" role="tablist" aria-label="Comparison mode">'
+      + '<div class="hub-pill-row mc-compare-nav-row">'
+      + COMPARE_MODES.map(function(mode) {
+        var on = activeMode === mode.id;
+        return '<button type="button" class="hub-pill mc-compare-tab' + (on ? ' active' : '') + '" role="tab"'
+          + ' data-compare="' + mode.id + '" aria-selected="' + (on ? 'true' : 'false') + '"'
+          + ' id="mcTab-' + mode.id + '" aria-controls="mcPane-' + mode.id + '">'
+          + esc(mode.label) + '</button>';
+      }).join('')
+      + '</div></nav>';
+  }
+
+  function paneWrap(id, active, inner) {
+    return '<section class="mc-compare-pane' + (active ? ' is-active is-entering' : '') + '" id="mcPane-' + id + '"'
+      + ' data-compare="' + id + '" role="tabpanel" aria-labelledby="mcTab-' + id + '"'
+      + (active ? '' : ' hidden') + '>' + inner + '</section>';
+  }
+
+  function subPill(kind, side, label, sublabel, active, dataAttr) {
+    return '<button type="button" class="hub-pill mc-subsel-pill' + (active ? ' active' : '') + '"'
+      + ' data-subsel-kind="' + esc(kind) + '" data-subsel-side="' + esc(side) + '"'
+      + ' ' + dataAttr + '="' + esc(side) + '" aria-pressed="' + (active ? 'true' : 'false') + '">'
+      + '<span class="mc-subsel-pill-main">' + esc(label) + '</span>'
+      + (sublabel ? '<span class="mc-subsel-pill-sub">' + esc(sublabel) + '</span>' : '')
+      + '</button>';
+  }
+
+  function pairingBanner(valid, tonightLabel) {
+    if (valid) {
+      return '<div class="mc-pair-banner mc-pair-banner--match">' + esc(tonightLabel) + ' — tonight\'s pairing</div>';
+    }
+    return '<div class="mc-pair-banner mc-pair-banner--alt">Cross-check — not the starter this lineup faces tonight</div>';
+  }
+
+  function pitcherLabel(m, side) {
+    var name = side === 'away' ? (m.awaySP || 'TBD') : (m.homeSP || 'TBD');
+    var team = side === 'away' ? m.away : m.home;
+    var hand = side === 'away' ? m.awayHand : m.homeHand;
+    return { name: name, team: team, hand: hand, side: side === 'away' ? 'Away' : 'Home' };
+  }
+
   function buildScoreMap(rows) {
     var map = {};
     (rows || []).forEach(function(row) {
@@ -148,33 +236,304 @@
 
   function renderPitcherRadar(m, awayMet, homeMet, awayPs, homePs) {
     if (!global.MLBMACharts) return '';
-    var metrics = ['Pitch Score', 'K%', 'BB%', 'HR/9', 'OSI Alw', 'OOR'];
-    var teams = [
-      { abbr: m.away, values: pitcherRadarValues(awayMet, awayPs, m, 'away') },
-      { abbr: m.home, values: pitcherRadarValues(homeMet, homePs, m, 'home') }
-    ];
-    var id = 'mcPitcherRadar';
-    setTimeout(function() {
-      MLBMACharts.buildRadarChart(id, teams, metrics, ['#7C4DFF', '#0891B2'], { size: 280 });
-    }, 0);
-    return '<div id="' + id + '" class="mc-radar-mount"></div>';
+    return '<div id="mcPitcherRadar" class="mc-radar-mount" data-radar="pitcher"></div>';
   }
 
 
   function renderTeamCompareRadar(m, awayRow, homeRow, scR, scL) {
     if (!global.MLBMACharts) return '';
     var id = 'mcTeamRadar';
-    setTimeout(function() {
-      var rA = scR[m.away] || awayRow;
-      var lA = scL[m.away] || awayRow;
-      var rB = scR[m.home] || homeRow;
-      var lB = scL[m.home] || homeRow;
-      MLBMACharts.renderRadarChart(id,
-        MLBMACharts.teamRadarComparePayload(awayRow, rA, lA),
-        MLBMACharts.teamRadarComparePayload(homeRow, rB, lB),
-        m.away, m.home, { size: 360 });
-    }, 0);
-    return '<section class="mc-section mc-radar-anchor"><h2 class="mc-section-title">Team Profile Radar</h2><div id="' + id + '" class="mc-radar-mount"></div></section>';
+    return '<div class="mc-section-block"><h2 class="mc-section-title">Team Profile Radar</h2><div id="' + id + '" class="mc-radar-mount" data-radar="team"></div></div>';
+  }
+
+  function mountTeamRadar(m, awayRow, homeRow, scR, scL) {
+    if (!global.MLBMACharts) return;
+    var el = document.getElementById('mcTeamRadar');
+    if (!el || el.dataset.mounted === '1') return;
+    var rA = scR[m.away] || awayRow;
+    var lA = scL[m.away] || awayRow;
+    var rB = scR[m.home] || homeRow;
+    var lB = scL[m.home] || homeRow;
+    MLBMACharts.renderRadarChart('mcTeamRadar',
+      MLBMACharts.teamRadarComparePayload(awayRow, rA, lA),
+      MLBMACharts.teamRadarComparePayload(homeRow, rB, lB),
+      m.away, m.home, { size: 360 });
+    el.dataset.mounted = '1';
+  }
+
+  function mountPitcherRadar(m, awayMet, homeMet, awayPs, homePs) {
+    if (!global.MLBMACharts) return;
+    var el = document.getElementById('mcPitcherRadar');
+    if (!el || el.dataset.mounted === '1') return;
+    var metrics = ['Pitch Score', 'K%', 'BB%', 'HR/9', 'OSI Alw', 'OOR'];
+    var teams = [
+      { abbr: m.away, values: pitcherRadarValues(awayMet, awayPs, m, 'away') },
+      { abbr: m.home, values: pitcherRadarValues(homeMet, homePs, m, 'home') }
+    ];
+    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, ['#7C4DFF', '#0891B2'], { size: 280 });
+    el.dataset.mounted = '1';
+  }
+
+  function lvPSelectorHtml(m, state) {
+    var awayP = pitcherLabel(m, 'away');
+    var homeP = pitcherLabel(m, 'home');
+    var lineupTeam = state.lvpLineup === 'home' ? m.home : m.away;
+    var pitcher = state.lvpPitcher === 'away' ? awayP : homeP;
+    var valid = (state.lvpLineup === 'away' && state.lvpPitcher === 'home')
+      || (state.lvpLineup === 'home' && state.lvpPitcher === 'away');
+    var readout = lineupTeam + ' lineup vs ' + pitcher.name + ' (' + pitcher.team + ')';
+    return '<div class="mc-subsel mc-subsel--lvp">'
+      + '<p class="mc-subsel-intro">Choose which lineup and which pitcher to analyze for this matchup.</p>'
+      + '<div class="mc-subsel-grid">'
+      + '<div class="mc-subsel-group"><span class="mc-subsel-label">Lineup</span>'
+      + '<div class="hub-pill-row mc-subsel-row">'
+      + subPill('lvp-lineup', 'away', m.away, 'Away', state.lvpLineup === 'away', 'data-lvp-lineup')
+      + subPill('lvp-lineup', 'home', m.home, 'Home', state.lvpLineup === 'home', 'data-lvp-lineup')
+      + '</div></div>'
+      + '<div class="mc-subsel-group"><span class="mc-subsel-label">Pitcher</span>'
+      + '<div class="hub-pill-row mc-subsel-row">'
+      + subPill('lvp-pitcher', 'away', awayP.name, awayP.team + ' · ' + (awayP.hand || '?'), state.lvpPitcher === 'away', 'data-lvp-pitcher')
+      + subPill('lvp-pitcher', 'home', homeP.name, homeP.team + ' · ' + (homeP.hand || '?'), state.lvpPitcher === 'home', 'data-lvp-pitcher')
+      + '</div></div>'
+      + '</div>'
+      + '<div class="mc-subsel-readout"><span class="mc-subsel-readout-label">Analyzing</span> '
+      + '<strong>' + esc(readout) + '</strong></div>'
+      + pairingBanner(valid, readout)
+      + '</div>';
+  }
+
+  function lvBSelectorHtml(m, state) {
+    var lineupTeam = state.lvbLineup === 'home' ? m.home : m.away;
+    var bpTeam = state.lvbBp === 'home' ? m.home : m.away;
+    var valid = (state.lvbLineup === 'away' && state.lvbBp === 'home')
+      || (state.lvbLineup === 'home' && state.lvbBp === 'away');
+    var readout = lineupTeam + ' lineup vs ' + bpTeam + ' bullpen';
+    return '<div class="mc-subsel mc-subsel--lvb">'
+      + '<p class="mc-subsel-intro">Choose which lineup and which bullpen unit to analyze post-starter.</p>'
+      + '<div class="mc-subsel-grid">'
+      + '<div class="mc-subsel-group"><span class="mc-subsel-label">Lineup</span>'
+      + '<div class="hub-pill-row mc-subsel-row">'
+      + subPill('lvb-lineup', 'away', m.away, 'Away', state.lvbLineup === 'away', 'data-lvb-lineup')
+      + subPill('lvb-lineup', 'home', m.home, 'Home', state.lvbLineup === 'home', 'data-lvb-lineup')
+      + '</div></div>'
+      + '<div class="mc-subsel-group"><span class="mc-subsel-label">Bullpen</span>'
+      + '<div class="hub-pill-row mc-subsel-row">'
+      + subPill('lvb-bp', 'away', m.away + ' Bullpen', 'Away relief', state.lvbBp === 'away', 'data-lvb-bp')
+      + subPill('lvb-bp', 'home', m.home + ' Bullpen', 'Home relief', state.lvbBp === 'home', 'data-lvb-bp')
+      + '</div></div>'
+      + '</div>'
+      + '<div class="mc-subsel-readout"><span class="mc-subsel-readout-label">Analyzing</span> '
+      + '<strong>' + esc(readout) + '</strong></div>'
+      + pairingBanner(valid, readout)
+      + '</div>';
+  }
+
+  function lineupVsPitcherContent(ctx, lineupSide, pitcherSide) {
+    var m = ctx.m;
+    var lineupTeam = lineupSide === 'home' ? m.home : m.away;
+    var pitcherSideLbl = pitcherSide === 'home' ? 'Home' : 'Away';
+    var pitcherTeam = pitcherSide === 'home' ? m.home : m.away;
+    var spName = pitcherSide === 'home' ? m.homeSP : m.awaySP;
+    var spHand = pitcherSide === 'home' ? m.homeHand : m.awayHand;
+    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
+    var row = lineupSide === 'home' ? ctx.homeRow : ctx.awayRow;
+    var met = pitcherSide === 'home' ? ctx.homeMet : ctx.awayMet;
+    var ps = pitcherSide === 'home' ? ctx.homePs : ctx.awayPs;
+    var lineupOsi = lineupSide === 'home' ? m.homeOSI : m.awayOSI;
+    var spHandLbl = (spHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP';
+    var oppHand = pitcherSide === 'home' ? m.homeHand : m.awayHand;
+    var palsTeam = ctx.pals[lineupTeam] || {};
+    var edgeLabel = lineupTeam + ' lineup vs ' + spHandLbl + ' (' + spName + ')';
+    return '<div class="mc-lvp-body">'
+      + '<div class="mc-grid-2 mc-lvp-grid">'
+      + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">'
+      + S.teamLogo(lineupTeam, 20) + ' <span>' + esc(lineupTeam) + ' Projected Lineup</span></h3>'
+      + S.buildLineupTable(lineup, oppHand) + '</div>'
+      + '<div class="mc-card">' + spCard(pitcherSideLbl, spName, spHand, pitcherTeam, m, met, ps, ctx.data.spL14) + '</div>'
+      + '</div>'
+      + '<div style="margin-top:16px;">'
+      + edgePanel(edgeLabel, row, oppHand, lineupOsi, met.osiAllowed, palsTeam, lineupTeam)
+      + '</div></div>';
+  }
+
+  function lineupVsBullpenContent(ctx, lineupSide, bpSide) {
+    var m = ctx.m;
+    var lineupTeam = lineupSide === 'home' ? m.home : m.away;
+    var bpTeam = bpSide === 'home' ? m.home : m.away;
+    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
+    var bp = bpSide === 'home' ? ctx.homeBp : ctx.awayBp;
+    var oppHand = lineupSide === 'home' ? m.awayHand : m.homeHand;
+    var lineupOsi = lineupSide === 'home' ? m.homeOSI : m.awayOSI;
+    var bpScore = S.bullpenPitchScore(bp);
+    var risk = S.bullpenRisk(bp);
+    var edge = S.lineupEdgeIndicator(lineupOsi, bp && bp.osiAllowed);
+    return '<div class="mc-lvb-body">'
+      + '<div class="mc-grid-2 mc-lvb-grid">'
+      + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">'
+      + S.teamLogo(lineupTeam, 20) + ' <span>' + esc(lineupTeam) + ' Projected Lineup</span></h3>'
+      + S.buildLineupTable(lineup, oppHand) + '</div>'
+      + '<div>' + bullpenPanel(bpTeam, bp) + '</div>'
+      + '</div>'
+      + '<div class="mc-card mc-lvb-read" style="margin-top:16px;">'
+      + '<div class="mc-edge-label">' + esc(lineupTeam) + ' lineup OSI vs ' + esc(bpTeam) + ' bullpen</div>'
+      + '<div class="mc-edge-osi" style="font-size:28px;margin:8px 0;">' + metricChip(lineupOsi, 'osi', false, 1) + '</div>'
+      + '<div class="mc-bp-metric">Bullpen Pitching Score ' + metricChip(bpScore, 'pitching', false, 1) + '</div>'
+      + '<div class="mc-bp-metric">Bullpen OSI Allowed ' + metricChip(bp && bp.osiAllowed, 'osi', true, 1) + '</div>'
+      + '<div class="' + edge.cls + '" style="margin-top:10px;">' + esc(edge.label) + '</div>'
+      + '<div class="mc-bp-metric" style="margin-top:8px;">Risk: <span class="' + risk.cls + '">' + esc(risk.label) + '</span></div>'
+      + '</div></div>';
+  }
+
+  function renderPaneLvL(ctx) {
+    var m = ctx.m;
+    return '<h2 class="mc-pane-title">Lineup vs Lineup</h2>'
+      + '<p class="mc-pane-desc">Compare both projected lineups and split-adjusted offensive edges.</p>'
+      + lineupEdgeBarHtml(m)
+      + renderTeamCompareRadar(m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL)
+      + '<div class="mc-grid-2" style="margin-top:16px;">'
+      + edgePanel('Away lineup vs ' + ((m.homeHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP'), ctx.awayRow, m.homeHand, m.awayOSI, ctx.homeMet.osiAllowed, ctx.pals[m.away], m.away)
+      + edgePanel('Home lineup vs ' + ((m.awayHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP'), ctx.homeRow, m.awayHand, m.homeOSI, ctx.awayMet.osiAllowed, ctx.pals[m.home], m.home)
+      + '</div>'
+      + sectionProjectedLineups(m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true });
+  }
+
+  function renderPaneLvP(ctx, state) {
+    return '<h2 class="mc-pane-title">Lineup vs Pitcher</h2>'
+      + lvPSelectorHtml(ctx.m, state)
+      + '<div id="mcLvPContent">' + lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher) + '</div>';
+  }
+
+  function renderPaneLvB(ctx, state) {
+    var m = ctx.m;
+    return '<h2 class="mc-pane-title">Lineup vs Bullpen</h2>'
+      + lvBSelectorHtml(m, state)
+      + '<div id="mcLvBContent">' + lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp) + '</div>';
+  }
+
+  function renderPaneBpBp(ctx) {
+    var m = ctx.m;
+    return '<h2 class="mc-pane-title">Bullpen vs Bullpen</h2>'
+      + '<p class="mc-pane-desc">Relief corps comparison for late-game leverage.</p>'
+      + sectionBullpen(m, ctx.awayBp, ctx.homeBp, { bare: true });
+  }
+
+  function renderPaneSpSp(ctx) {
+    return '<h2 class="mc-pane-title">Pitcher vs Pitcher</h2>'
+      + '<p class="mc-pane-desc">Starting pitcher duel — stats, radar, and head-to-head edge.</p>'
+      + sectionSP(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayProf, ctx.homeProf, ctx.awayPs, ctx.homePs, ctx.h2h, ctx.data.spL14, { bare: true });
+  }
+
+  function mountChartsForMode(mode, ctx) {
+    requestAnimationFrame(function() {
+      if (mode === 'lvL') mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL);
+      if (mode === 'spSp') mountPitcherRadar(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayPs, ctx.homePs);
+    });
+  }
+
+  function refreshLvPContent(root, ctx, state) {
+    var box = root.querySelector('#mcLvPContent');
+    var sel = root.querySelector('.mc-subsel--lvp');
+    if (!box || !sel) return;
+    box.classList.add('is-swapping');
+    box.innerHTML = lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher);
+    var tmp = document.createElement('div');
+    tmp.innerHTML = lvPSelectorHtml(ctx.m, state);
+    var newSel = tmp.querySelector('.mc-subsel--lvp');
+    if (newSel) sel.replaceWith(newSel);
+    requestAnimationFrame(function() {
+      box.classList.remove('is-swapping');
+      bindSubSelectors(root, ctx, state);
+    });
+  }
+
+  function refreshLvBContent(root, ctx, state) {
+    var box = root.querySelector('#mcLvBContent');
+    var sel = root.querySelector('.mc-subsel--lvb');
+    if (!box || !sel) return;
+    box.classList.add('is-swapping');
+    box.innerHTML = lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp);
+    var tmp = document.createElement('div');
+    tmp.innerHTML = lvBSelectorHtml(ctx.m, state);
+    var newSel = tmp.querySelector('.mc-subsel--lvb');
+    if (newSel) sel.replaceWith(newSel);
+    requestAnimationFrame(function() {
+      box.classList.remove('is-swapping');
+      bindSubSelectors(root, ctx, state);
+    });
+  }
+
+  function activateComparePane(root, mode) {
+    root.querySelectorAll('.mc-compare-pane').forEach(function(pane) {
+      var on = pane.dataset.compare === mode;
+      pane.classList.toggle('is-active', on);
+      if (on) {
+        pane.removeAttribute('hidden');
+        pane.classList.remove('is-entering');
+        requestAnimationFrame(function() {
+          pane.classList.add('is-entering');
+          setTimeout(function() { pane.classList.remove('is-entering'); }, 340);
+        });
+      } else {
+        pane.setAttribute('hidden', '');
+        pane.classList.remove('is-entering');
+      }
+    });
+    root.querySelectorAll('.mc-compare-tab').forEach(function(tab) {
+      var on = tab.dataset.compare === mode;
+      tab.classList.toggle('active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+
+  function bindSubSelectors(root, ctx, state) {
+    root.querySelectorAll('[data-lvp-lineup]').forEach(function(btn) {
+      btn.onclick = function() {
+        state.lvpLineup = btn.getAttribute('data-lvp-lineup');
+        if (state.lvpLineup === state.lvpPitcher) {
+          state.lvpPitcher = state.lvpLineup === 'away' ? 'home' : 'away';
+        }
+        syncCompareUrl(state);
+        refreshLvPContent(root, ctx, state);
+      };
+    });
+    root.querySelectorAll('[data-lvp-pitcher]').forEach(function(btn) {
+      btn.onclick = function() {
+        state.lvpPitcher = btn.getAttribute('data-lvp-pitcher');
+        syncCompareUrl(state);
+        refreshLvPContent(root, ctx, state);
+      };
+    });
+    root.querySelectorAll('[data-lvb-lineup]').forEach(function(btn) {
+      btn.onclick = function() {
+        state.lvbLineup = btn.getAttribute('data-lvb-lineup');
+        if (state.lvbLineup === state.lvbBp) {
+          state.lvbBp = state.lvbLineup === 'away' ? 'home' : 'away';
+        }
+        syncCompareUrl(state);
+        refreshLvBContent(root, ctx, state);
+      };
+    });
+    root.querySelectorAll('[data-lvb-bp]').forEach(function(btn) {
+      btn.onclick = function() {
+        state.lvbBp = btn.getAttribute('data-lvb-bp');
+        syncCompareUrl(state);
+        refreshLvBContent(root, ctx, state);
+      };
+    });
+  }
+
+  function bindCompareUI(root, ctx, state) {
+    root.querySelectorAll('.mc-compare-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var mode = tab.getAttribute('data-compare');
+        if (!mode || mode === state.mode) return;
+        state.mode = mode;
+        syncCompareUrl(state);
+        activateComparePane(root, mode);
+        mountChartsForMode(mode, ctx);
+      });
+    });
+    bindSubSelectors(root, ctx, state);
   }
 
   function lineupSparkStrip(row, team) {
@@ -301,16 +660,52 @@
     var park = S.parkFactor(m.home);
     var parkLbl = S.parkImpactLabel(park, weather);
     var stadium = m.stadium || '—';
+    var state = getCompareState();
+
+    var ctx = {
+      m: m,
+      data: data,
+      weather: weather,
+      scR: scR,
+      scL: scL,
+      pals: pals,
+      awayRow: awayRow,
+      homeRow: homeRow,
+      awayPs: awayPs,
+      homePs: homePs,
+      awayMet: awayMet,
+      homeMet: homeMet,
+      awayProf: awayProf,
+      homeProf: homeProf,
+      awayBp: awayBp,
+      homeBp: homeBp,
+      awayLineup: awayLineup,
+      homeLineup: homeLineup,
+      lineupOk: lineupOk,
+      h2h: h2h,
+      script: script,
+      f5: f5,
+      conf: conf,
+      park: park,
+      parkLbl: parkLbl
+    };
+    _compareCtx = ctx;
 
     root.innerHTML = ''
       + sectionHeader(m, weather, script, f5, stadium)
-      + renderTeamCompareRadar(m, awayRow, homeRow, scR, scL)
-      + sectionLineupEdge(m, awayRow, homeRow, awayMet, homeMet, pals)
-      + sectionSP(m, awayMet, homeMet, awayProf, homeProf, awayPs, homePs, h2h, data.spL14)
-      + sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk)
-      + sectionBullpen(m, awayBp, homeBp)
+      + compareNavHtml(state.mode)
+      + '<div class="mc-compare-panes">'
+      + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx))
+      + paneWrap('lvP', state.mode === 'lvP', renderPaneLvP(ctx, state))
+      + paneWrap('lvB', state.mode === 'lvB', renderPaneLvB(ctx, state))
+      + paneWrap('bpBp', state.mode === 'bpBp', renderPaneBpBp(ctx))
+      + paneWrap('spSp', state.mode === 'spSp', renderPaneSpSp(ctx))
+      + '</div>'
       + sectionGameScript(m, f5, script, awayPs, homePs, awayBp, homeBp, weather, park, parkLbl)
       + sectionModel(m, script, f5, h2h, conf, awayRow, homeRow, awayBp, homeBp, awayPs, homePs);
+
+    bindCompareUI(root, ctx, state);
+    mountChartsForMode(state.mode, ctx);
   }
 
   function teamSideBlock(team, align) {
@@ -396,8 +791,12 @@
       + '</div>';
   }
 
-  function sectionSP(m, awayMet, homeMet, awayProf, homeProf, awayPs, homePs, h2h, spL14) {
-    return '<section class="mc-section"><h2 class="mc-section-title">Starting Pitcher Comparison</h2>'
+  function sectionSP(m, awayMet, homeMet, awayProf, homeProf, awayPs, homePs, h2h, spL14, opts) {
+    opts = opts || {};
+    var wrapOpen = opts.bare ? '<div class="mc-sp-block">' : '<section class="mc-section">';
+    var title = opts.bare ? '' : '<h2 class="mc-section-title">Starting Pitcher Comparison</h2>';
+    var wrapClose = opts.bare ? '</div>' : '</section>';
+    return wrapOpen + title
       + '<div class="mc-card mc-sp-compare">'
       + spCard('Away', m.awaySP, m.awayHand, m.away, m, awayMet, awayPs, spL14)
       + '<div class="mc-sp-vs">VS</div>'
@@ -405,7 +804,7 @@
       + '</div>'
       + renderPitcherRadar(m, awayMet, homeMet, awayPs, homePs)
       + '<div class="mc-h2h"><strong>Pitching edge: ' + esc(h2h.edgeLabel) + '</strong> — ' + esc(h2h.why) + '</div>'
-      + '</section>';
+      + wrapClose;
   }
 
   function edgePanel(label, row, spHand, lineupOsi, pitcherAllowed, palsTeam, teamKey) {
@@ -439,16 +838,19 @@
       + '</div></section>';
   }
 
-  function sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk) {
+  function sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk, opts) {
+    opts = opts || {};
     var banner = lineupOk ? '' : '<div class="lineup-banner">Lineup not yet confirmed</div>';
     var awayHead = S.teamLogo(m.away, 20) + ' <span>Projected Lineup</span>';
     var homeHead = S.teamLogo(m.home, 20) + ' <span>Projected Lineup</span>';
-    return '<section class="mc-section"><h2 class="mc-section-title">Projected Lineups</h2>'
-      + banner
+    var wrapOpen = opts.bare ? '<div class="mc-lineups-block">' : '<section class="mc-section">';
+    var title = opts.bare ? '' : '<h2 class="mc-section-title">Projected Lineups</h2>';
+    var wrapClose = opts.bare ? '</div>' : '</section>';
+    return wrapOpen + title + banner
       + '<div class="mc-grid-2">'
       + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">' + awayHead + '</h3>' + S.buildLineupTable(awayLineup, m.homeHand) + '</div>'
       + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">' + homeHead + '</h3>' + S.buildLineupTable(homeLineup, m.awayHand) + '</div>'
-      + '</div></section>';
+      + '</div>' + wrapClose;
   }
 
   function bullpenPanel(team, unit) {
@@ -469,9 +871,14 @@
       + '</div>';
   }
 
-  function sectionBullpen(m, awayBp, homeBp) {
-    return '<section class="mc-section"><h2 class="mc-section-title">Bullpen Intelligence</h2>'
-      + '<div class="mc-grid-2">' + bullpenPanel(m.away, awayBp) + bullpenPanel(m.home, homeBp) + '</div></section>';
+  function sectionBullpen(m, awayBp, homeBp, opts) {
+    opts = opts || {};
+    var wrapOpen = opts.bare ? '<div class="mc-bp-block">' : '<section class="mc-section">';
+    var title = opts.bare ? '' : '<h2 class="mc-section-title">Bullpen Intelligence</h2>';
+    var wrapClose = opts.bare ? '</div>' : '</section>';
+    return wrapOpen + title
+      + '<div class="mc-grid-2">' + bullpenPanel(m.away, awayBp) + bullpenPanel(m.home, homeBp) + '</div>'
+      + wrapClose;
   }
 
   function sectionGameScript(m, f5, script, awayPs, homePs, awayBp, homeBp, weather, park, parkLbl) {
