@@ -33,6 +33,7 @@ SCRIPTS_REQUIRED = [
 # Optional: failures log WARNING and execution continues (FanGraphs-free / partial runs).
 SCRIPTS_OPTIONAL = [
     "scrapers.scrape_fangraphs",
+    "scrapers.scrape_pitch_mix",
     "core.compute",
     "outputs.push_sheets",
     "scrapers.scrape_weather",

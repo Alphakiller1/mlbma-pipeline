@@ -506,7 +506,7 @@
   }
 
   function profileAllowedMetrics(profile, pick) {
-    if (!profile || !pick) return null;
+      if (!profile || !pick) return null;
     return {
       abq: num(pick(profile, ['ABQ_allowed', 'ABQ allowed'])),
       rcv: num(pick(profile, ['RCV_allowed', 'RCV allowed'])),

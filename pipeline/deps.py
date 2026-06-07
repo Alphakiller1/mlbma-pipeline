@@ -11,6 +11,7 @@ DATA = Path(DATA_DIR)
 # module_or_label -> list of required files under data/
 STEP_DEPENDENCIES: dict[str, list[str]] = {
     "scrapers.scrape_fangraphs": [],
+    "scrapers.scrape_pitch_mix": [],
     "core.compute": [
         "savant_team_leaderboard.csv",
         "vs_RHP_standard.csv",

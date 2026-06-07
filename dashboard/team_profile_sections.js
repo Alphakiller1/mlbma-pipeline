@@ -619,15 +619,17 @@
 
   function buildOpponentStrengthCache(ctx) {
     var map = ctx.palsMap || {};
+    var S = global.MatchupShared;
     var cache = {};
     Object.keys(map).forEach(function(t) {
       var p = map[t] || {};
-      var ptf = num(p.ptfPlus);
       cache[t] = {
         pals: num(p.pals),
         xfip: num(p.xfip),
         pitchScoreFaced: num(p.pitchScoreFaced),
-        sos: ptf != null ? Math.round((100 - ptf) * 10) / 10 : null
+        sos: S && S.sosFromPalsPack ? S.sosFromPalsPack(p, map, t) : (
+          p.sos != null ? num(p.sos) : (num(p.ptfPlus) != null ? Math.round((100 - num(p.ptfPlus)) * 10) / 10 : null)
+        )
       };
     });
     return cache;
@@ -681,7 +683,9 @@
     var xfip = ctx.xfipFaced != null ? ctx.xfipFaced : num(pack.xfip);
     var psFaced = ctx.pitchScoreFaced != null ? ctx.pitchScoreFaced : num(pack.pitchScoreFaced);
     var ptf = num(pack.ptfPlus);
-    var sos = ptf != null ? Math.round((100 - ptf) * 10) / 10 : null;
+    var sos = (global.MatchupShared && MatchupShared.sosFromPalsPack)
+      ? MatchupShared.sosFromPalsPack(pack, ctx.palsMap, team)
+      : (pack.sos != null ? num(pack.sos) : (ptf != null ? Math.round((100 - ptf) * 10) / 10 : null));
     var split = ctx.split || 'both';
     var PC = profileControls();
     var splitLbl = ctx.splitLabel || (PC && PC.splitLabel ? PC.splitLabel(split) : split);

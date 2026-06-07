@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260618f">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260602l">
-<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script>
 (function() {
   try {
@@ -47,7 +47,7 @@
 </head>
 <body class="team-profile-page">
 <!-- Loading overlay injected by mlbma_ui.js -->
-﻿﻿﻿﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
 
@@ -348,7 +348,7 @@ function parseCSV(text) {
 
 function fetchSheetTab(tabName) {
   if (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchSheetTab) {
-    return MLBMASharedMatchup.fetchSheetTab(tabName);
+  return MLBMASharedMatchup.fetchSheetTab(tabName);
   }
   return fetch(gvizUrl(tabName), { cache: 'no-store' }).then(function(r) {
     if (!r.ok) throw new Error('fetch ' + tabName);
@@ -1354,7 +1354,7 @@ function buildMiniCtx(prof, name, tonight) {
       batters: DATA.batters
     })
     : {};
-  return {
+    return {
     pickCol: pickCol,
     teamName: name,
     team: STATE.team,
@@ -1542,7 +1542,7 @@ function unitSnapshotMetricsRow(chipsHtml) {
 }
 
 function miniCtxForTeam(team, split) {
-  return {
+    return {
     pickCol: pickCol,
     team: team,
     split: split || 'both',
@@ -1898,7 +1898,7 @@ function rerenderTeamSection(sectionKey) {
 }
 
 function buildStaffCtx() {
-  return {
+    return {
     pickCol: pickCol,
     num: num,
     fmt: fmt,

@@ -1,16 +1,25 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urllib.parse import unquote
-from io import StringIO
 import pandas as pd
 import time
 import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-from core.config import CHROME_VERSION, DATA_DIR, ENV_FILE, SEASON_END, SEASON_START
-from scrapers.fangraphs_session import get_driver, safe_quit_driver
+from core.config import (
+    CHROME_VERSION,
+    DATA_DIR,
+    ENV_FILE,
+    SEASON_END,
+    SEASON_START,
+)
+from scrapers.fangraphs_session import (
+    get_driver,
+    get_export_csv,
+    login,
+    safe_quit_driver,
+)
 
 # Tunable pacing. The old code blind-slept 20s/page + 15s/fetch + 45s/cooldown
 # (~8 min of pure sleeping). We now wait for the actual Export Data link (appears
@@ -18,7 +27,10 @@ from scrapers.fangraphs_session import get_driver, safe_quit_driver
 EXPORT_TIMEOUT = 25     # max wait for the table/export link to render
 THROTTLE = 4            # polite pause between FanGraphs requests
 COOLDOWN = 10           # pause between split groups / windows
-_EXPORT_XPATH = "//a[contains(text(),'Export Data')]"
+_EXPORT_XPATH = (
+    "//a[contains(text(),'Export Data') or contains(text(),'Data Export') "
+    "or starts-with(@href,'data:application/csv')]"
+)
 
 
 def _wait_export(driver, timeout: int = EXPORT_TIMEOUT) -> bool:
@@ -33,9 +45,6 @@ def _wait_export(driver, timeout: int = EXPORT_TIMEOUT) -> bool:
 
 load_dotenv(ENV_FILE)
 
-EMAIL = os.getenv("FANGRAPHS_EMAIL")
-PASSWORD = os.getenv("FANGRAPHS_PASSWORD")
-
 STAT_GROUPS = {
     "traditional": 1,
     "standard":    2,
@@ -49,35 +58,6 @@ SPLITS = {
 
 L14_START = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
 L14_END = datetime.now().strftime("%Y-%m-%d")
-
-
-def login(driver):
-    print("Logging in...")
-    driver.get("https://blogs.fangraphs.com/wp-login.php")
-    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "user_login")))
-    driver.find_element(By.ID, "user_login").send_keys(EMAIL)
-    driver.find_element(By.ID, "user_pass").send_keys(PASSWORD)
-    driver.find_element(By.ID, "wp-submit").click()
-    WebDriverWait(driver, 20).until(lambda d: "wp-login" not in d.current_url)
-    print(f"Login URL: {driver.current_url}")
-    return "wp-admin" in driver.current_url or "fangraphs.com" in driver.current_url
-
-
-def get_export_csv(driver):
-    try:
-        links = driver.find_elements(By.XPATH, "//a[contains(text(),'Export Data')]")
-        if not links:
-            return None
-        href = links[0].get_attribute("href")
-        if not href or not href.startswith("data:"):
-            return None
-        csv_text = unquote(href.replace("data:application/csv;charset=utf-8,", ""))
-        return pd.read_csv(StringIO(csv_text))
-    except Exception as e:
-        print(f"  Export error: {e}")
-        return None
-
-
 def scrape_one(driver, split_label, split_code, sg_name, sg_num):
     url = (
         f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr={split_code}"

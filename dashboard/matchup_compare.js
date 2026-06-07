@@ -240,25 +240,42 @@
   }
 
 
-  function renderTeamCompareRadar(m, awayRow, homeRow, scR, scL) {
+  function renderTeamCompareRadar(m) {
     if (!global.MLBMACharts) return '';
-    var id = 'mcTeamRadar';
-    return '<div class="mc-section-block"><h2 class="mc-section-title">Team Profile Radar</h2><div id="' + id + '" class="mc-radar-mount" data-radar="team"></div></div>';
+    return '<div class="mc-section-block mc-radar-section">'
+      + '<h2 class="mc-section-title">Team Profile Radar: Lineup vs Lineup</h2>'
+      + '<p class="mc-radar-hint ca-helper">Hover axis labels or points for predictive and prescriptive read on each metric.</p>'
+      + '<div class="mc-radar-duo">'
+      + '<div class="mc-radar-panel">'
+      + '<div class="mc-radar-panel-label">Process Composite</div>'
+      + '<div id="mcTeamRadarProcess" class="mc-radar-mount" data-radar="process"></div>'
+      + '</div>'
+      + '<div class="mc-radar-panel">'
+      + '<div class="mc-radar-panel-label">Offense &amp; Schedule</div>'
+      + '<div id="mcTeamRadarContext" class="mc-radar-mount" data-radar="context"></div>'
+      + '</div>'
+      + '</div></div>';
   }
 
-  function mountTeamRadar(m, awayRow, homeRow, scR, scL) {
-    if (!global.MLBMACharts) return;
-    var el = document.getElementById('mcTeamRadar');
-    if (!el || el.dataset.mounted === '1') return;
-    var rA = scR[m.away] || awayRow;
-    var lA = scL[m.away] || awayRow;
-    var rB = scR[m.home] || homeRow;
-    var lB = scL[m.home] || homeRow;
-    MLBMACharts.renderRadarChart('mcTeamRadar',
-      MLBMACharts.teamRadarComparePayload(awayRow, rA, lA),
-      MLBMACharts.teamRadarComparePayload(homeRow, rB, lB),
-      m.away, m.home, { size: 360 });
-    el.dataset.mounted = '1';
+  function mountTeamRadar(m, awayRow, homeRow, scR, scL, pals) {
+    if (!global.MLBMACharts || !MLBMACharts.renderTeamCompareRadars) return;
+    var proc = document.getElementById('mcTeamRadarProcess');
+    var ctxEl = document.getElementById('mcTeamRadarContext');
+    if (!proc || !ctxEl || proc.dataset.mounted === '1') return;
+    pals = pals || {};
+    MLBMACharts.renderTeamCompareRadars(
+      'mcTeamRadarProcess',
+      'mcTeamRadarContext',
+      awayRow,
+      homeRow,
+      pals[m.away] || {},
+      pals[m.home] || {},
+      m.away,
+      m.home,
+      { size: 300, palsMap: pals }
+    );
+    proc.dataset.mounted = '1';
+    ctxEl.dataset.mounted = '1';
   }
 
   function mountPitcherRadar(m, awayMet, homeMet, awayPs, homePs) {
@@ -270,7 +287,7 @@
       { abbr: m.away, values: pitcherRadarValues(awayMet, awayPs, m, 'away') },
       { abbr: m.home, values: pitcherRadarValues(homeMet, homePs, m, 'home') }
     ];
-    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, ['#7C4DFF', '#0891B2'], { size: 280 });
+    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, [MLBMACharts.COMPARE_RADAR_AWAY || '#7C4DFF', MLBMACharts.COMPARE_RADAR_HOME || '#60A5FA'], { size: 280 });
     el.dataset.mounted = '1';
   }
 
@@ -388,8 +405,8 @@
     var m = ctx.m;
     return '<h2 class="mc-pane-title">Lineup vs Lineup</h2>'
       + '<p class="mc-pane-desc">Compare both projected lineups and split-adjusted offensive edges.</p>'
-      + lineupEdgeBarHtml(m)
-      + renderTeamCompareRadar(m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL)
+      + renderTeamCompareRadar(m)
+      + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
       + '<div class="mc-grid-2" style="margin-top:16px;">'
       + edgePanel('Away lineup vs ' + ((m.homeHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP'), ctx.awayRow, m.homeHand, m.awayOSI, ctx.homeMet.osiAllowed, ctx.pals[m.away], m.away)
       + edgePanel('Home lineup vs ' + ((m.awayHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP'), ctx.homeRow, m.awayHand, m.homeOSI, ctx.awayMet.osiAllowed, ctx.pals[m.home], m.home)
@@ -425,7 +442,7 @@
 
   function mountChartsForMode(mode, ctx) {
     requestAnimationFrame(function() {
-      if (mode === 'lvL') mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL);
+      if (mode === 'lvL') mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL, ctx.pals);
       if (mode === 'spSp') mountPitcherRadar(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayPs, ctx.homePs);
     });
   }
@@ -545,30 +562,6 @@
     return '<div class="mc-spark-strip">' + rowHtml('ABQ', 'abq') + rowHtml('RCV', 'rcv') + rowHtml('OBR', 'obr') + rowHtml('OSI', 'osi') + '</div>';
   }
 
-  function lineupEdgeRead(m) {
-    var a = m.awayOSI != null ? m.awayOSI : 0;
-    var h = m.homeOSI != null ? m.homeOSI : 0;
-    if (a > h + 4) return 'Away lineup advantage';
-    if (h > a + 4) return 'Home lineup advantage';
-    return 'Even lineup advantage';
-  }
-
-  function osiValColor(v) {
-    return (A && A.metricColor && v != null) ? A.metricColor(v, 'osi', false) : 'inherit';
-  }
-  function lineupEdgeBarHtml(m) {
-    var awayOSI = m.awayOSI != null ? m.awayOSI : 0;
-    var homeOSI = m.homeOSI != null ? m.homeOSI : 0;
-    var total = awayOSI + homeOSI || 1;
-    var awayPct = Math.max(8, (awayOSI / total) * 100);
-    return '<div class="mc-lineup-bar-wrap">'
-      + '<div class="mc-lineup-bar-labels"><span>' + esc(m.away) + ' <strong style="color:' + osiValColor(m.awayOSI) + '">' + fmt(awayOSI) + '</strong></span>'
-      + '<span>' + esc(m.home) + ' <strong style="color:' + osiValColor(m.homeOSI) + '">' + fmt(homeOSI) + '</strong></span></div>'
-      + '<div class="mc-lineup-bar-track"><div class="mc-lineup-bar-away" style="width:' + awayPct + '%"></div>'
-      + '<div class="mc-lineup-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
-      + '<div class="mc-lineup-edge-read">' + esc(lineupEdgeRead(m)) + '</div></div>';
-  }
-
   function confidenceLevel(m, lineups, pals, profiles) {
     var score = 0;
     if (m.awayOSI != null && m.homeOSI != null) score += 2;
@@ -682,6 +675,8 @@
       awayLineup: awayLineup,
       homeLineup: homeLineup,
       lineupOk: lineupOk,
+      teamProfiles: data.teamProfiles || {},
+      offenseRankIndex: data.offenseRankIndex || null,
       h2h: h2h,
       script: script,
       f5: f5,
@@ -827,17 +822,6 @@
       + '</div>';
   }
 
-  function sectionLineupEdge(m, awayRow, homeRow, awayMet, homeMet, pals) {
-    var homeHandLbl = (m.homeHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP';
-    var awayHandLbl = (m.awayHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP';
-    return '<section class="mc-section"><h2 class="mc-section-title">Tonight\'s Lineup Edge</h2>'
-      + lineupEdgeBarHtml(m)
-      + '<div class="mc-grid-2" style="margin-top:16px;">'
-      + edgePanel('Away lineup vs ' + homeHandLbl, awayRow, m.homeHand, m.awayOSI, homeMet.osiAllowed, pals[m.away], m.away)
-      + edgePanel('Home lineup vs ' + awayHandLbl, homeRow, m.awayHand, m.homeOSI, awayMet.osiAllowed, pals[m.home], m.home)
-      + '</div></section>';
-  }
-
   function sectionProjectedLineups(m, awayLineup, homeLineup, lineupOk, opts) {
     opts = opts || {};
     var banner = lineupOk ? '' : '<div class="lineup-banner">Lineup not yet confirmed</div>';
@@ -953,7 +937,11 @@
       S.fetchSheetTab(T.bullpen_unit).catch(function() { return []; }),
       S.fetchSheetTab(T.pals).catch(function() { return []; }),
       S.fetchSheetTab(T.player_registry).catch(function() { return []; }),
-      S.fetchSheetTab(T.sp_l14).catch(function() { return []; })
+      S.fetchSheetTab(T.sp_l14).catch(function() { return []; }),
+      S.fetchSheetTab(T.team_profiles).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_home).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_away).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_recent).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
@@ -969,9 +957,21 @@
         pitching: S.parsePitchingRows(res[5]),
         spProfiles: res[6] || [],
         bullpen: S.parseBullpenUnitRows(res[7]),
-        pals: S.parsePalsRows(res[8]),
+        pals: S.enrichPalsMap ? S.enrichPalsMap(S.parsePalsRows(res[8])) : S.parsePalsRows(res[8]),
         spL14: res[10] || []
       };
+      if (global.MatchupOffenseSplits && MatchupOffenseSplits.prepareData) {
+        var splitPack = MatchupOffenseSplits.prepareData({
+          scR: data.scR,
+          scL: data.scL,
+          teamProfiles: S.parseTeamProfilesMap ? S.parseTeamProfilesMap(res[11]) : {},
+          splitHomeRows: res[12] || [],
+          splitAwayRows: res[13] || [],
+          splitRecentRows: res[14] || []
+        });
+        data.teamProfiles = splitPack.teamProfiles;
+        data.offenseRankIndex = splitPack.offenseRankIndex;
+      }
       if (!m) {
         render(data);
         if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();

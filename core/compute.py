@@ -17,11 +17,11 @@ def compute_split(std, bb, savant, label, traditional=None):
     rcv = calc_rcv(std, bb, savant)
     obr = calc_obr(std, savant)
     osi = calc_osi(abq, rcv, obr)
-    rate_cols = ["Tm", "wRC+", "SLG"]
+    rate_cols = ["Tm", "wRC+", "SLG", "ISO", "AVG"]
     for col in rate_cols:
         if col in std.columns and col not in osi.columns:
             osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
-    for col in ("K%", "BB%", "AVG", "OBP", "OPS"):
+    for col in ("K%", "BB%", "AVG", "OBP", "OPS", "ISO"):
         if col in std.columns and col not in osi.columns:
             osi = osi.merge(std[["Tm", col]], on="Tm", how="left")
     if "wOBA" in rcv.columns:
@@ -33,7 +33,7 @@ def compute_split(std, bb, savant, label, traditional=None):
         osi = osi.merge(traditional[["Tm", "HR"]], on="Tm", how="left")
     export_cols = [
         "Tm", "ABQ", "RCV", "OBR", "OSI", "projOSI", "reg_signal",
-        "wRC+", "wOBA", "xwOBA", "SLG", "AVG", "OBP", "OPS", "HR",
+        "wRC+", "wOBA", "xwOBA", "SLG", "AVG", "OBP", "OPS", "ISO", "HR",
         "K%", "BB%", "Barrel%", "HardHit%",
     ]
     export_cols = [c for c in export_cols if c in osi.columns]

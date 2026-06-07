@@ -80,12 +80,130 @@
     return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
   }
 
+  var RADAR_METRIC_TIPS = {
+    rcv: {
+      label: 'RCV',
+      read: 'High RCV = real slug and run paths. Low = limited hard contact.',
+      research: 'Overs when RCV leads process gaps; archetype axis with OBR.'
+    },
+    abq: {
+      label: 'ABQ',
+      read: 'High ABQ = patient, quality decisions. Low = chase-heavy, weak process.',
+      research: 'Unders when weak ABQ faces elite pitching; platoon splits when ABQ gap is wide.'
+    },
+    osi: {
+      label: 'OSI',
+      read: '85+ elite · 75–84 high · 65–74 dangerous · 50–64 inconsistent · <50 weak.',
+      research: 'Primary team offensive ranking; compare vs opposing Pitching Score.'
+    },
+    obr: {
+      label: 'OBR',
+      read: 'High OBR = table-setters and traffic. Low = thin on-base paths.',
+      research: 'Team totals vs soft K% arms; pairs with Signal 1 and Signal 6.'
+    },
+    projosi: {
+      label: 'projOSI',
+      read: 'Above OSI → buy-low lean. Below OSI → fade lean.',
+      research: 'Pairs with PALS for process vs results alignment (Signal 5).'
+    },
+    pals: {
+      label: 'PALS',
+      read: 'High = production vs tough SPs. Low = weak schedule context.',
+      research: 'Confirm raw OSI with schedule truth; Signal 5 pairing.'
+    },
+    sos: {
+      label: 'SOS',
+      read: 'Higher = tougher pitching schedule faced (derived from PTF+).',
+      research: 'Context for raw OSI/PALS — strong results vs soft SOS may fade.'
+    },
+    wrc: {
+      label: 'wRC+',
+      read: '110+ strong · 90–109 average band · <90 below average.',
+      research: 'Context for RCV; not duplicated as headline composite.'
+    },
+    xwoba: {
+      label: 'xwOBA',
+      read: 'Above wOBA → likely cooling. Below wOBA → likely heating.',
+      research: 'projOSI regression clip uses (xwOBA − wOBA) × 450.'
+    },
+    iso: {
+      label: 'ISO',
+      read: 'Higher = more extra-base power per contact opportunity.',
+      research: 'RCV input; boom-or-bust slug environments and HR props.'
+    }
+  };
+
+  function metricTip(key) {
+    if (global.MLBMAGlossary && MLBMAGlossary.METRICS) {
+      var found = MLBMAGlossary.METRICS.find(function(m) { return m.id === key; });
+      if (found) {
+        return { label: found.name, read: found.read, research: found.research };
+      }
+    }
+    return RADAR_METRIC_TIPS[key] || { label: key, read: '', research: '' };
+  }
+
+  function formatRadarRaw(key, val) {
+    if (val == null || isNaN(val)) return '—';
+    if (key === 'xwoba' || key === 'woba') return Number(val).toFixed(3);
+    if (key === 'wrc') return String(Math.round(val));
+    if (key === 'iso') return Number(val).toFixed(3);
+    return Number(val).toFixed(1);
+  }
+
+  function normRate100(value, context) {
+    if (value == null || isNaN(value)) return 50;
+    var A = global.MLBMAAssets;
+    if (A && A.zScore) {
+      var z = A.zScore(value, context);
+      return Math.max(0, Math.min(100, ((z + 2.5) / 5) * 100));
+    }
+    return 50;
+  }
+
+  function bindRadarInteractivity(wrap, teams, metrics, colors, opts) {
+    if (!wrap || !opts.interactive) return;
+    var tipEl = opts.tipEl || wrap.querySelector('.mlbma-radar-tip');
+    if (!tipEl) return;
+    var metricKeys = opts.metricKeys || [];
+    var rawByTeam = opts.rawByTeam || [];
+
+    function showTip(idx) {
+      var key = metricKeys[idx] || '';
+      var tip = metricTip(key);
+      var valsHtml = rawByTeam.map(function(row, ti) {
+        var col = colors[ti] || '#7C4DFF';
+        var raw = row.values && row.values[idx];
+        return '<span style="color:' + col + '"><strong>' + esc(row.abbr) + '</strong> '
+          + esc(formatRadarRaw(key, raw)) + '</span>';
+      }).join('<span class="mlbma-radar-tip-sep">·</span>');
+      tipEl.innerHTML = '<div class="mlbma-radar-tip-metric">' + esc(tip.label || metrics[idx]) + '</div>'
+        + (tip.read ? '<div class="mlbma-radar-tip-row"><span class="mlbma-radar-tip-k">Predictive</span><p>' + esc(tip.read) + '</p></div>' : '')
+        + (tip.research ? '<div class="mlbma-radar-tip-row"><span class="mlbma-radar-tip-k">Prescriptive</span><p>' + esc(tip.research) + '</p></div>' : '')
+        + (valsHtml ? '<div class="mlbma-radar-tip-vals">' + valsHtml + '</div>' : '');
+      tipEl.classList.add('is-visible');
+    }
+
+    function hideTip() {
+      tipEl.classList.remove('is-visible');
+    }
+
+    wrap.querySelectorAll('[data-metric-idx]').forEach(function(node) {
+      node.addEventListener('mouseenter', function() {
+        showTip(Number(node.getAttribute('data-metric-idx')));
+      });
+      node.addEventListener('mouseleave', hideTip);
+      node.addEventListener('focus', function() { showTip(Number(node.getAttribute('data-metric-idx'))); });
+      node.addEventListener('blur', hideTip);
+    });
+  }
+
   /**
    * @param {string} containerId - element id or pass element via opts.el
    * @param {Array<{abbr, values}>} teams
    * @param {Array<string>} metrics - axis labels
    * @param {Array<string>} colors - hex per team
-   * @param {object} opts - { size, el }
+   * @param {object} opts - { size, el, interactive, metricKeys, rawByTeam, tipEl }
    */
   function buildRadarChart(containerId, teams, metrics, colors, opts) {
     opts = opts || {};
@@ -102,7 +220,8 @@
     var maxR = size * 0.36;
     var start = -Math.PI / 2;
     var rings = [20, 40, 60, 80, 100];
-    var svg = '<svg class="mlbma-radar" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">';
+    var interactive = !!opts.interactive;
+    var svg = '<svg class="mlbma-radar' + (interactive ? ' mlbma-radar--interactive' : '') + '" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">';
     rings.forEach(function(pct) {
       var r = (pct / 100) * maxR;
       var pts = [];
@@ -114,11 +233,18 @@
       svg += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>';
     });
     for (var ai = 0; ai < n; ai++) {
-      var ang = start + (ai / n) * Math.PI * 2;
-      var p = polar(cx, cy, maxR, ang);
-      svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x.toFixed(1) + '" y2="' + p.y.toFixed(1) + '" stroke="rgba(255,255,255,0.12)"/>';
-      var lx = polar(cx, cy, maxR + 16, ang);
-      svg += '<text x="' + lx.x.toFixed(1) + '" y="' + (lx.y + 4).toFixed(1) + '" text-anchor="middle" fill="#A1A1AA" font-size="10" font-weight="600">' + esc(metrics[ai]) + '</text>';
+      var angA = start + (ai / n) * Math.PI * 2;
+      var pA = polar(cx, cy, maxR, angA);
+      svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + pA.x.toFixed(1) + '" y2="' + pA.y.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+      var lx = polar(cx, cy, maxR + 16, angA);
+      if (interactive) {
+        svg += '<g class="mlbma-radar-axis-hit" data-metric-idx="' + ai + '" tabindex="0" role="button">'
+          + '<circle cx="' + lx.x.toFixed(1) + '" cy="' + lx.y.toFixed(1) + '" r="16" fill="transparent"/>'
+          + '<text class="mlbma-radar-axis-label" x="' + lx.x.toFixed(1) + '" y="' + (lx.y + 4).toFixed(1) + '" text-anchor="middle" fill="#C4B5FD" font-size="10" font-weight="700">' + esc(metrics[ai]) + '</text>'
+          + '</g>';
+      } else {
+        svg += '<text x="' + lx.x.toFixed(1) + '" y="' + (lx.y + 4).toFixed(1) + '" text-anchor="middle" fill="#A1A1AA" font-size="10" font-weight="600">' + esc(metrics[ai]) + '</text>';
+      }
     }
     teams.forEach(function(team, ti) {
       var col = colors[ti] || '#7C4DFF';
@@ -132,14 +258,18 @@
         var ang2 = start + (j / n) * Math.PI * 2;
         var rr = (vals[j] / 100) * maxR;
         var pt = polar(cx, cy, rr, ang2);
+        svg += '<line class="mlbma-radar-web" x1="' + cx + '" y1="' + cy + '" x2="' + pt.x.toFixed(1) + '" y2="' + pt.y.toFixed(1) + '" stroke="' + col + '" stroke-opacity="0.55" stroke-width="1.5"/>';
         poly.push(pt.x.toFixed(1) + ',' + pt.y.toFixed(1));
       }
-      svg += '<polygon class="mlbma-radar-fill" points="' + poly.join(' ') + '" fill="' + col + '" fill-opacity="0.15" stroke="' + col + '" stroke-width="2"/>';
+      svg += '<polygon class="mlbma-radar-fill" data-team-idx="' + ti + '" points="' + poly.join(' ') + '" fill="' + col + '" fill-opacity="0.12" stroke="' + col + '" stroke-width="2.25"/>';
       for (var k = 0; k < n; k++) {
         var ang3 = start + (k / n) * Math.PI * 2;
         var rr2 = (vals[k] / 100) * maxR;
         var dot = polar(cx, cy, rr2, ang3);
-        svg += '<circle cx="' + dot.x.toFixed(1) + '" cy="' + dot.y.toFixed(1) + '" r="4" fill="' + col + '"/>';
+        if (interactive) {
+          svg += '<circle class="mlbma-radar-dot-hit" data-metric-idx="' + k + '" cx="' + dot.x.toFixed(1) + '" cy="' + dot.y.toFixed(1) + '" r="8" fill="transparent"/>';
+        }
+        svg += '<circle class="mlbma-radar-dot" cx="' + dot.x.toFixed(1) + '" cy="' + dot.y.toFixed(1) + '" r="4" fill="' + col + '" stroke="#08090F" stroke-width="1.5"/>';
       }
     });
     svg += '</svg>';
@@ -149,14 +279,23 @@
       legend += '<span class="mlbma-radar-legend-item"><i style="background:' + col + '"></i>' + esc(team.abbr || team.name || 'Team') + '</span>';
     });
     legend += '</div>';
-    el.innerHTML = '<div class="mlbma-radar-wrap">' + svg + legend + '</div>';
-    var poly = el.querySelector('.mlbma-radar-fill');
-    if (poly && poly.getTotalLength) {
-      var len = poly.getTotalLength();
-      poly.style.strokeDasharray = len;
-      poly.style.strokeDashoffset = len;
-      poly.style.transition = 'stroke-dashoffset 400ms ease';
-      requestAnimationFrame(function() { poly.style.strokeDashoffset = '0'; });
+    var tipHtml = interactive ? '<div class="mlbma-radar-tip"' + (opts.tipId ? ' id="' + esc(opts.tipId) + '"' : '') + '></div>' : '';
+    el.innerHTML = '<div class="mlbma-radar-wrap">' + svg + legend + tipHtml + '</div>';
+    var wrap = el.querySelector('.mlbma-radar-wrap');
+    var polys = el.querySelectorAll('.mlbma-radar-fill');
+    polys.forEach(function(polyNode) {
+      if (polyNode.getTotalLength) {
+        var len = polyNode.getTotalLength();
+        polyNode.style.strokeDasharray = len;
+        polyNode.style.strokeDashoffset = len;
+        polyNode.style.transition = 'stroke-dashoffset 400ms ease';
+        requestAnimationFrame(function() { polyNode.style.strokeDashoffset = '0'; });
+      }
+    });
+    if (interactive) {
+      bindRadarInteractivity(wrap, teams, metrics, colors, Object.assign({}, opts, {
+        tipEl: opts.tipEl || wrap.querySelector('.mlbma-radar-tip')
+      }));
     }
     return el;
   }
@@ -209,17 +348,7 @@
   }
 
   function teamRadarValues(row) {
-    if (!row) return [50, 50, 50, 50, 50, 50];
-    var sus = row.sus != null ? Math.min(100, Math.max(0, row.sus)) : 50;
-    var edge = row.splitEdge != null ? Math.min(100, Math.max(0, 50 + row.splitEdge * 2)) : 50;
-    return [
-      norm100(row.abq, false),
-      norm100(row.rcv, false),
-      norm100(row.obr, false),
-      norm100(row.projOSI != null ? row.projOSI : row.osi, false),
-      norm100(sus, false),
-      norm100(edge, false)
-    ];
+    return processRadarValues(teamRadarProcessPayload(row));
   }
 
   function norm100(v, invert) {
@@ -956,51 +1085,143 @@
       + '</div>';
   }
 
-  function teamRadarComparePayload(bothRow, rhpRow, lhpRow) {
-    if (!bothRow) return null;
-    var rhpOsi = rhpRow && rhpRow.osi != null ? rhpRow.osi : null;
-    var lhpOsi = lhpRow && lhpRow.osi != null ? lhpRow.osi : null;
-    var bestSplit = rhpOsi != null && lhpOsi != null ? Math.max(rhpOsi, lhpOsi)
-      : (rhpOsi != null ? rhpOsi : lhpOsi);
+  function teamRadarProcessPayload(row) {
+    if (!row) return null;
     return {
-      abq: bothRow.abq,
-      rcv: bothRow.rcv,
-      obr: bothRow.obr,
-      projOSI: bothRow.projOSI != null ? bothRow.projOSI : bothRow.osi,
-      sustain: bothRow.obr,
-      bestSplit: bestSplit
+      rcv: row.rcv,
+      abq: row.abq,
+      osi: row.osi,
+      obr: row.obr,
+      projOSI: row.projOSI != null ? row.projOSI : row.osi
     };
   }
 
-  function radarPayloadValues(payload) {
-    if (!payload) return [50, 50, 50, 50, 50, 50];
+  function processRadarValues(payload) {
+    if (!payload) return [50, 50, 50, 50, 50];
     return [
-      norm100(payload.abq, false),
       norm100(payload.rcv, false),
+      norm100(payload.abq, false),
+      norm100(payload.osi, false),
       norm100(payload.obr, false),
-      norm100(payload.projOSI, false),
-      norm100(payload.sustain, false),
-      norm100(payload.bestSplit, false)
+      norm100(payload.projOSI, false)
     ];
   }
 
+  function processRadarRaw(payload) {
+    if (!payload) return [null, null, null, null, null];
+    return [payload.rcv, payload.abq, payload.osi, payload.obr, payload.projOSI];
+  }
+
+  function teamRadarContextPayload(row, palsPack, palsMap, team) {
+    var S = global.MatchupShared;
+    var iso = S && S.resolveIso ? S.resolveIso(row) : (row && row.iso != null ? row.iso : null);
+    var sos = S && S.sosFromPalsPack
+      ? S.sosFromPalsPack(palsPack, palsMap, team)
+      : null;
+    if (sos == null && palsPack && palsPack.ptfPlus != null) {
+      sos = Math.round((100 - palsPack.ptfPlus) * 10) / 10;
+    }
+    return {
+      pals: palsPack && palsPack.pals != null ? palsPack.pals : null,
+      sos: sos,
+      wrc: row && row.wrc != null ? row.wrc : null,
+      xwoba: row && row.xwoba != null ? row.xwoba : null,
+      iso: iso
+    };
+  }
+
+  function contextRadarValues(payload) {
+    if (!payload) return [50, 50, 50, 50, 50];
+    return [
+      norm100(payload.pals, false),
+      norm100(payload.sos, false),
+      normRate100(payload.wrc, 'wrc'),
+      normRate100(payload.xwoba, 'xwoba'),
+      normRate100(payload.iso, 'iso')
+    ];
+  }
+
+  function contextRadarRaw(payload) {
+    if (!payload) return [null, null, null, null, null];
+    return [payload.pals, payload.sos, payload.wrc, payload.xwoba, payload.iso];
+  }
+
+  var COMPARE_RADAR_AWAY = '#7C4DFF';
+  var COMPARE_RADAR_HOME = '#60A5FA';
+
+  function renderTeamCompareRadars(processId, contextId, awayRow, homeRow, awayPals, homePals, labelA, labelB, opts) {
+    opts = opts || {};
+    var size = opts.size || 300;
+    var palsMap = opts.palsMap || null;
+    var awayProcess = teamRadarProcessPayload(awayRow);
+    var homeProcess = teamRadarProcessPayload(homeRow);
+    var awayContext = teamRadarContextPayload(awayRow, awayPals, palsMap, labelA);
+    var homeContext = teamRadarContextPayload(homeRow, homePals, palsMap, labelB);
+    var processMetrics = ['RCV', 'ABQ', 'OSI', 'OBR', 'ProjOSI'];
+    var processKeys = ['rcv', 'abq', 'osi', 'obr', 'projosi'];
+    var contextMetrics = ['PALS', 'SOS', 'wRC+', 'xwOBA', 'ISO'];
+    var contextKeys = ['pals', 'sos', 'wrc', 'xwoba', 'iso'];
+    var colors = [COMPARE_RADAR_AWAY, COMPARE_RADAR_HOME];
+    var radarOpts = {
+      size: size,
+      interactive: true,
+      colors: colors
+    };
+    buildRadarChart(processId, [
+      { abbr: labelA, values: processRadarValues(awayProcess) },
+      { abbr: labelB, values: processRadarValues(homeProcess) }
+    ], processMetrics, colors, Object.assign({}, radarOpts, {
+      metricKeys: processKeys,
+      rawByTeam: [
+        { abbr: labelA, values: processRadarRaw(awayProcess) },
+        { abbr: labelB, values: processRadarRaw(homeProcess) }
+      ]
+    }));
+    buildRadarChart(contextId, [
+      { abbr: labelA, values: contextRadarValues(awayContext) },
+      { abbr: labelB, values: contextRadarValues(homeContext) }
+    ], contextMetrics, colors, Object.assign({}, radarOpts, {
+      metricKeys: contextKeys,
+      rawByTeam: [
+        { abbr: labelA, values: contextRadarRaw(awayContext) },
+        { abbr: labelB, values: contextRadarRaw(homeContext) }
+      ]
+    }));
+  }
+
+  function teamRadarComparePayload(bothRow, rhpRow, lhpRow) {
+    return teamRadarProcessPayload(bothRow);
+  }
+
+  function radarPayloadValues(payload) {
+    return processRadarValues(payload);
+  }
+
   /**
-   * Two-team hex radar — ABQ, RCV, OBR, ProjOSI, Sustain, Best Split.
+   * Two-team process radar — legacy wrapper (RCV, ABQ, OSI, OBR, ProjOSI).
    */
   function renderRadarChart(containerId, teamAData, teamBData, labelA, labelB, opts) {
     opts = opts || {};
-    var metrics = ['ABQ', 'RCV', 'OBR', 'ProjOSI', 'Sustain', 'Best Split'];
+    var metrics = ['RCV', 'ABQ', 'OSI', 'OBR', 'ProjOSI'];
+    var keys = ['rcv', 'abq', 'osi', 'obr', 'projosi'];
     var teams = [];
     var colors = [];
     if (teamAData) {
-      teams.push({ abbr: labelA || 'A', values: radarPayloadValues(teamAData) });
-      colors.push('#7C4DFF');
+      teams.push({ abbr: labelA || 'A', values: processRadarValues(teamAData) });
+      colors.push(COMPARE_RADAR_AWAY);
     }
     if (teamBData) {
-      teams.push({ abbr: labelB || 'B', values: radarPayloadValues(teamBData) });
-      colors.push('#22D3EE');
+      teams.push({ abbr: labelB || 'B', values: processRadarValues(teamBData) });
+      colors.push(COMPARE_RADAR_HOME);
     }
-  return buildRadarChart(containerId, teams, metrics, colors, opts);
+    return buildRadarChart(containerId, teams, metrics, colors, Object.assign({}, opts, {
+      interactive: opts.interactive != null ? opts.interactive : true,
+      metricKeys: keys,
+      rawByTeam: [
+        teamAData ? { abbr: labelA || 'A', values: processRadarRaw(teamAData) } : null,
+        teamBData ? { abbr: labelB || 'B', values: processRadarRaw(teamBData) } : null
+      ].filter(Boolean)
+    }));
   }
 
   function renderMarketMapWithToggle(containerId, getRowsForSplit, opts) {
@@ -1056,6 +1277,11 @@
     buildSnapshotRadar: buildSnapshotRadar,
     teamRadarValues: teamRadarValues,
     teamRadarComparePayload: teamRadarComparePayload,
+    teamRadarProcessPayload: teamRadarProcessPayload,
+    teamRadarContextPayload: teamRadarContextPayload,
+    renderTeamCompareRadars: renderTeamCompareRadars,
+    COMPARE_RADAR_AWAY: COMPARE_RADAR_AWAY,
+    COMPARE_RADAR_HOME: COMPARE_RADAR_HOME,
     teamOsiTrend: teamOsiTrend,
     renderOnDataReady: renderOnDataReady,
     renderOnLiveDataReady: renderOnLiveDataReady,

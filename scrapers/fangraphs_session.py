@@ -88,12 +88,20 @@ def login(driver) -> bool:
     driver.find_element(By.ID, "wp-submit").click()
     time.sleep(10)
     print(f"  Login URL: {driver.current_url}")
-    return "wp-admin" in driver.current_url or "fangraphs.com" in driver.current_url
+    url = str(driver.current_url or "")
+    if "wp-login.php" in url:
+        return False
+    return "wp-admin" in url or "fangraphs.com" in url
 
 
 def get_export_csv(driver) -> pd.DataFrame | None:
     try:
-        links = driver.find_elements(By.XPATH, "//a[contains(text(),'Export Data')]")
+        links = driver.find_elements(
+            By.XPATH,
+            "//a[contains(text(),'Export Data') or contains(text(),'Data Export')]",
+        )
+        if not links:
+            links = driver.find_elements(By.XPATH, "//a[starts-with(@href,'data:application/csv')]")
         if not links:
             return None
         href = links[0].get_attribute("href")

@@ -1320,7 +1320,11 @@
     var woba = numOrNull(pickCol(row, 'wOBA', 'woba', 'woba_rhp'));
     var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
     var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
+    var obp = numOrNull(pickCol(row, 'OBP', 'obp'));
+    var ops = numOrNull(pickCol(row, 'OPS', 'ops'));
+    var avg = numOrNull(pickCol(row, 'AVG', 'avg'));
     var wrc = numOrNull(pickCol(row, 'wRC+', 'wrc_plus', 'wRC'));
+    var iso = numOrNull(pickCol(row, 'ISO', 'iso'));
     var k = numOrNull(pickCol(row, 'K%', 'k_pct'));
     var bb = numOrNull(pickCol(row, 'BB%', 'bb_pct'));
     var barrel = numOrNull(pickCol(row, 'Barrel%', 'barrel_pct'));
@@ -1328,14 +1332,81 @@
     if (woba === 0) woba = null;
     if (xwoba === 0) xwoba = null;
     if (slg === 0) slg = null;
+    if (obp === 0) obp = null;
+    if (avg === 0) avg = null;
     if (wrc === 0) wrc = null;
     if (xwoba == null && woba != null) xwoba = woba;
+    if (ops == null && obp != null && slg != null) ops = Math.round((obp + slg) * 1000) / 1000;
+    if (iso == null && slg != null && avg != null) {
+      iso = Math.round((slg - avg) * 1000) / 1000;
+    }
     return {
       t: t, abq: abq, rcv: rcv, obr: obr, osi: osi,
       projOSI: projOSI, reg_signal: reg, reg: reg, ppGap: ppGap,
-      wrc: wrc, woba: woba, xwoba: xwoba, slg: slg,
+      wrc: wrc, iso: iso, avg: avg, obp: obp, ops: ops, woba: woba, xwoba: xwoba, slg: slg,
       k: k, bb: bb, barrel: barrel, hard: hard
     };
+  }
+
+  /** ISO from sheet column or SLG − AVG (matches FanGraphs ISO when column absent). */
+  function resolveIso(row) {
+    if (!row) return null;
+    if (row.iso != null && !isNaN(row.iso)) return row.iso;
+    if (row.slg != null && row.avg != null && !isNaN(row.slg) && !isNaN(row.avg)) {
+      return Math.round((row.slg - row.avg) * 1000) / 1000;
+    }
+    return null;
+  }
+
+  function _ptfPlusFromXfipLeague(palsMap, team) {
+    if (!palsMap || !team) return null;
+    var tk = teamKey(team);
+    var pack = palsMap[tk];
+    if (!pack || pack.xfip == null || isNaN(pack.xfip)) return null;
+    var vals = [];
+    Object.keys(palsMap).forEach(function(t) {
+      var x = palsMap[t] && palsMap[t].xfip;
+      if (x != null && !isNaN(x)) vals.push(x);
+    });
+    if (vals.length < 10) return null;
+    var min = Math.min.apply(null, vals);
+    var max = Math.max.apply(null, vals);
+    if (max <= min) return null;
+    var norm = ((pack.xfip - min) / (max - min)) * 100;
+    return Math.round((100 - norm) * 10) / 10;
+  }
+
+  function resolvePtfPlus(palsPack, palsMap, team) {
+    if (!palsPack) return null;
+    if (palsPack.ptfPlus != null && !isNaN(palsPack.ptfPlus)) return palsPack.ptfPlus;
+    if (palsMap) return _ptfPlusFromXfipLeague(palsMap, team || palsPack.t);
+    return null;
+  }
+
+  /** SOS = 100 − PTF+ (higher = harder pitching schedule faced). */
+  function sosFromPalsPack(palsPack, palsMap, team) {
+    if (!palsPack) return null;
+    if (palsPack.sos != null && !isNaN(palsPack.sos)) return palsPack.sos;
+    var ptf = resolvePtfPlus(palsPack, palsMap, team || palsPack.t);
+    if (ptf == null || isNaN(ptf)) return null;
+    return Math.round((100 - ptf) * 10) / 10;
+  }
+
+  function enrichPalsMap(map) {
+    if (!map) return map;
+    var teams = Object.keys(map);
+    teams.forEach(function(t) {
+      var pack = map[t];
+      if (!pack) return;
+      if (pack.ptfPlus == null) {
+        pack.ptfPlus = _ptfPlusFromXfipLeague(map, t);
+      }
+      if (pack.sos == null) {
+        var ptf = pack.ptfPlus;
+        if (ptf != null && !isNaN(ptf)) pack.sos = Math.round((100 - ptf) * 10) / 10;
+      }
+    });
+    return map;
   }
 
   function findScoreRow(rows, team) {
@@ -1373,7 +1444,7 @@
         map[team] = {
           t: team, paSum: 0,
           osi: 0, abq: 0, rcv: 0, obr: 0,
-          wrc: 0, woba: 0, xwoba: 0, slg: 0,
+          wrc: 0, woba: 0, xwoba: 0, slg: 0, obp: 0,
           hasOsi: false, hasRate: false
         };
       }
@@ -1396,11 +1467,13 @@
       var woba = numOrNull(pickCol(row, 'wOBA', 'woba'));
       var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
       var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
+      var obp = numOrNull(pickCol(row, 'OBP', 'obp'));
       if (wrc != null) {
         d.wrc += wrc * pa;
         d.woba += (woba != null ? woba : 0) * pa;
         d.xwoba += (xwoba != null ? xwoba : woba != null ? woba : 0) * pa;
         d.slg += (slg != null ? slg : 0) * pa;
+        d.obp += (obp != null ? obp : 0) * pa;
         d.hasRate = true;
         if (!d.hasOsi) d.paSum += pa;
       }
@@ -1423,6 +1496,10 @@
         out.woba = Math.round(d.woba / ratePa * 1000) / 1000;
         out.xwoba = Math.round(d.xwoba / ratePa * 1000) / 1000;
         out.slg = Math.round(d.slg / ratePa * 1000) / 1000;
+        out.obp = Math.round(d.obp / ratePa * 1000) / 1000;
+        if (out.obp != null && out.slg != null) {
+          out.ops = Math.round((out.obp + out.slg) * 1000) / 1000;
+        }
       }
       if (out.osi == null && out.wrc != null) {
         // Phase 0 proxy: when split tabs provide only rate stats, map headline process metrics
@@ -1503,8 +1580,13 @@
         wrc: b('wrc'),
         woba: b('woba'),
         xwoba: b('xwoba'),
-        slg: b('slg')
+        slg: b('slg'),
+        obp: b('obp'),
+        ops: b('ops')
       };
+      if (row.ops == null && row.obp != null && row.slg != null) {
+        row.ops = Math.round((row.obp + row.slg) * 1000) / 1000;
+      }
       if (row.abq != null && row.rcv != null) row.ppGap = row.abq - row.rcv;
       return row;
     });
@@ -2067,17 +2149,28 @@
           }
         }
       }
+      var ptfPlus = numOrNull(pickCol(row, 'PTF_plus', 'PTF+', 'PTF_Plus', 'ptf_plus'));
+      if (ptfPlus == null) {
+        var ptfKeys = Object.keys(row || {});
+        for (var pi = 0; pi < ptfKeys.length; pi++) {
+          if (/ptf/i.test(ptfKeys[pi]) && (/plus/i.test(ptfKeys[pi]) || /\+/.test(ptfKeys[pi]))) {
+            ptfPlus = numOrNull(row[ptfKeys[pi]]);
+            if (ptfPlus != null) break;
+          }
+        }
+      }
       map[t] = {
         t: t,
         osi: numOrNull(pickCol(row, 'OSI', 'osi', 'Osi')),
         pals: palsVal,
         xfip: xfip,
-        ptfPlus: numOrNull(pickCol(row, 'PTF_plus', 'PTF+', 'PTF_Plus', 'ptf_plus')),
+        ptfPlus: ptfPlus,
         baPlus: numOrNull(pickCol(row, 'BA_plus', 'BA+', 'BA_Plus', 'ba_plus')),
-        pitchScoreFaced: numOrNull(pickCol(row, 'avg_pitch_score_faced', 'Avg Pitch Score Faced', 'avg_pitch_score_faced'))
+        pitchScoreFaced: numOrNull(pickCol(row, 'avg_pitch_score_faced', 'Avg Pitch Score Faced', 'avg_pitch_score_faced')),
+        sos: ptfPlus != null ? Math.round((100 - ptfPlus) * 10) / 10 : null
       };
     });
-    return map;
+    return enrichPalsMap(map);
   }
 
   function parsePitchingRows(rows) {
@@ -2735,7 +2828,12 @@
     resolveLineupRows: resolveLineupRows,
     parseMatchupRows: parseMatchupRows,
     parseBullpenUnitRows: parseBullpenUnitRows,
+    parseTeamProfilesMap: parseTeamProfilesMap,
     parsePalsRows: parsePalsRows,
+    resolveIso: resolveIso,
+    resolvePtfPlus: resolvePtfPlus,
+    sosFromPalsPack: sosFromPalsPack,
+    enrichPalsMap: enrichPalsMap,
     parsePitchingRows: parsePitchingRows,
     findSpProfile: findSpProfile,
     spProfileMetrics: spProfileMetrics,
