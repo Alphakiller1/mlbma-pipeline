@@ -619,7 +619,7 @@
 
   function buildOpponentStrengthCache(ctx) {
     var map = ctx.palsMap || {};
-    var S = global.MatchupShared;
+    var S = global.MLBMASharedMatchup || global.MatchupShared;
     var cache = {};
     Object.keys(map).forEach(function(t) {
       var p = map[t] || {};
@@ -683,8 +683,8 @@
     var xfip = ctx.xfipFaced != null ? ctx.xfipFaced : num(pack.xfip);
     var psFaced = ctx.pitchScoreFaced != null ? ctx.pitchScoreFaced : num(pack.pitchScoreFaced);
     var ptf = num(pack.ptfPlus);
-    var sos = (global.MatchupShared && MatchupShared.sosFromPalsPack)
-      ? MatchupShared.sosFromPalsPack(pack, ctx.palsMap, team)
+    var sos = (global.MLBMASharedMatchup || global.MatchupShared) && (global.MLBMASharedMatchup || global.MatchupShared).sosFromPalsPack
+      ? (global.MLBMASharedMatchup || global.MatchupShared).sosFromPalsPack(pack, ctx.palsMap, team)
       : (pack.sos != null ? num(pack.sos) : (ptf != null ? Math.round((100 - ptf) * 10) / 10 : null));
     var split = ctx.split || 'both';
     var PC = profileControls();

@@ -5,7 +5,7 @@
 (function(global) {
   'use strict';
 
-  var S = global.MatchupShared;
+  var S = global.MLBMASharedMatchup || global.MatchupShared;
   var A = global.MLBMAAssets;
 
   var STATS = [

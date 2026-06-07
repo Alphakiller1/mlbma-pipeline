@@ -1113,7 +1113,7 @@
   }
 
   function teamRadarContextPayload(row, palsPack, palsMap, team) {
-    var S = global.MatchupShared;
+    var S = global.MLBMASharedMatchup || global.MatchupShared;
     var iso = S && S.resolveIso ? S.resolveIso(row) : (row && row.iso != null ? row.iso : null);
     var sos = S && S.sosFromPalsPack
       ? S.sosFromPalsPack(palsPack, palsMap, team)

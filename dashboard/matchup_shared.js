@@ -2827,6 +2827,7 @@
     blendSplits: blendSplits,
     resolveLineupRows: resolveLineupRows,
     parseMatchupRows: parseMatchupRows,
+    normalizeTeamAbbr: normalizeTeamAbbrShared,
     parseBullpenUnitRows: parseBullpenUnitRows,
     parseTeamProfilesMap: parseTeamProfilesMap,
     parsePalsRows: parsePalsRows,

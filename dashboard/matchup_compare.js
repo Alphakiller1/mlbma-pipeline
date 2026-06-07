@@ -47,6 +47,9 @@
   ];
   var COMPARE_IDS = COMPARE_MODES.map(function(x) { return x.id; });
   var _compareCtx = null;
+  var _compareState = null;
+  var _lastRadarSize = null;
+  var _resizeBound = false;
 
   function getCompareState() {
     var mode = qp('compare') || 'lvL';
@@ -149,10 +152,45 @@
   }
 
   function findMatchup(rows, away, home) {
+    var norm = S && S.normalizeTeamAbbr ? S.normalizeTeamAbbr.bind(S) : function(t) { return String(t || '').trim().toUpperCase(); };
     var list = S.parseMatchupRows(rows);
+    var a = norm(away);
+    var h = norm(home);
     return list.find(function(m) {
-      return S.teamKey(m.away) === S.teamKey(away) && S.teamKey(m.home) === S.teamKey(home);
+      return norm(m.away) === a && norm(m.home) === h;
     }) || null;
+  }
+
+  function filterSlateMatchupRows(rows) {
+    if (!S || !S.filterLineupSheetRows) return rows || [];
+    return S.filterLineupSheetRows(rows || [], []);
+  }
+
+  function renderMatchupMissing(root, away, home, rows) {
+    var list = filterSlateMatchupRows(rows || []);
+    var games = S ? S.parseMatchupRows(list) : [];
+    var picks = games.map(function(m) {
+      return '<a class="hub-pill mc-slate-pick" href="' + compareUrl(m.away, m.home) + '">'
+        + esc(m.away) + ' @ ' + esc(m.home) + '</a>';
+    }).join('');
+    var hint = away && home
+      ? '<p class="ca-helper">No slate row for <strong>' + esc(away) + ' @ ' + esc(home) + '</strong>.</p>'
+      : '<p class="ca-helper">Choose a game from today\'s slate:</p>';
+    root.innerHTML = '<div class="compare-page">'
+      + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
+      + '<a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>'
+      + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">Today\'s Matchups</a></nav>'
+      + hint
+      + (picks ? '<div class="hub-pill-row mc-slate-picks">' + picks + '</div>' : '')
+      + '<p class="ca-helper" style="margin-top:14px"><a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">Back to matchups</a></p>'
+      + '</div>';
+  }
+
+  function renderLoadError(root, err) {
+    root.innerHTML = '<div class="compare-page"><p class="ca-helper">Could not load matchup data'
+      + (err && err.message ? ' (' + esc(err.message) + ')' : '')
+      + '. <a href="javascript:location.reload()">Retry</a> or '
+      + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">back to matchups</a>.</p></div>';
   }
 
   function spL14Stale(rows, pitcherName, team) {
@@ -257,6 +295,40 @@
       + '</div></div>';
   }
 
+  function radarChartSize() {
+    var w = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    if (w < 400) return 240;
+    if (w < 520) return 260;
+    if (w < 720) return 280;
+    return 300;
+  }
+
+  function clearRadarMounts() {
+    ['mcTeamRadarProcess', 'mcTeamRadarContext', 'mcPitcherRadar'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      delete el.dataset.mounted;
+      el.innerHTML = '';
+    });
+  }
+
+  function bindRadarResize() {
+    if (_resizeBound || typeof window === 'undefined') return;
+    _resizeBound = true;
+    var timer;
+    window.addEventListener('resize', function() {
+      clearTimeout(timer);
+      timer = setTimeout(function() {
+        if (!_compareCtx || !_compareState) return;
+        var sz = radarChartSize();
+        if (sz === _lastRadarSize) return;
+        _lastRadarSize = sz;
+        clearRadarMounts();
+        mountChartsForMode(_compareState.mode, _compareCtx);
+      }, 180);
+    });
+  }
+
   function mountTeamRadar(m, awayRow, homeRow, scR, scL, pals) {
     if (!global.MLBMACharts || !MLBMACharts.renderTeamCompareRadars) return;
     var proc = document.getElementById('mcTeamRadarProcess');
@@ -272,7 +344,7 @@
       pals[m.home] || {},
       m.away,
       m.home,
-      { size: 300, palsMap: pals }
+      { size: radarChartSize(), palsMap: pals }
     );
     proc.dataset.mounted = '1';
     ctxEl.dataset.mounted = '1';
@@ -287,7 +359,7 @@
       { abbr: m.away, values: pitcherRadarValues(awayMet, awayPs, m, 'away') },
       { abbr: m.home, values: pitcherRadarValues(homeMet, homePs, m, 'home') }
     ];
-    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, [MLBMACharts.COMPARE_RADAR_AWAY || '#7C4DFF', MLBMACharts.COMPARE_RADAR_HOME || '#60A5FA'], { size: 280 });
+    MLBMACharts.buildRadarChart('mcPitcherRadar', teams, metrics, [MLBMACharts.COMPARE_RADAR_AWAY || '#7C4DFF', MLBMACharts.COMPARE_RADAR_HOME || '#60A5FA'], { size: radarChartSize() });
     el.dataset.mounted = '1';
   }
 
@@ -441,6 +513,7 @@
   }
 
   function mountChartsForMode(mode, ctx) {
+    _lastRadarSize = radarChartSize();
     requestAnimationFrame(function() {
       if (mode === 'lvL') mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL, ctx.pals);
       if (mode === 'spSp') mountPitcherRadar(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayPs, ctx.homePs);
@@ -605,12 +678,17 @@
   function render(data) {
     var root = document.getElementById('compareRoot');
     if (!root) return;
+    if (!S) {
+      renderLoadError(root, new Error('shared matchup module not loaded'));
+      return;
+    }
     var m = data.matchup;
     if (!m) {
-      root.innerHTML = '<div class="compare-page"><p class="ca-helper">Matchup not found. <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">Back to matchups</a></p></div>';
+      renderMatchupMissing(root, qp('away'), qp('home'), data.matchupRows || []);
       return;
     }
 
+    try {
     var gk = S.matchupGameKey(m);
     var weather = (S.weatherLookup
       ? S.weatherLookup(data.weather, m.away, m.home, m.stadium)
@@ -699,8 +777,14 @@
       + sectionGameScript(m, f5, script, awayPs, homePs, awayBp, homeBp, weather, park, parkLbl)
       + sectionModel(m, script, f5, h2h, conf, awayRow, homeRow, awayBp, homeBp, awayPs, homePs);
 
+    _compareState = state;
     bindCompareUI(root, ctx, state);
+    bindRadarResize();
     mountChartsForMode(state.mode, ctx);
+    } catch (renderErr) {
+      console.error('[matchup_compare] render failed', renderErr);
+      renderLoadError(root, renderErr);
+    }
   }
 
   function teamSideBlock(team, align) {
@@ -918,16 +1002,47 @@
   }
 
   function load() {
-    var away = qp('away');
-    var home = qp('home');
-    if (!away || !home) {
-      render({ matchup: null });
+    var root = document.getElementById('compareRoot');
+    if (!S || !T) {
+      if (root) renderLoadError(root, new Error('dashboard config not loaded'));
       if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
       return;
     }
 
+    var away = qp('away');
+    var home = qp('home');
+
+    function finish(data) {
+      try {
+        render(data);
+      } catch (err) {
+        console.error('[matchup_compare] render failed', err);
+        if (root) renderLoadError(root, err);
+      }
+      if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+    }
+
+    function fetchMatchups(force) {
+      return S.fetchSheetTab(T.today_matchups, force ? { forceRefresh: true } : {})
+        .catch(function(err) {
+          console.warn('[matchup_compare] Today_Matchups fetch failed', err);
+          return [];
+        });
+    }
+
+    if (!away || !home) {
+      fetchMatchups(true).then(function(rows) {
+        finish({ matchup: null, matchupRows: rows });
+      }).catch(function(err) {
+        console.error('[matchup_compare] slate load failed', err);
+        if (root) renderLoadError(root, err);
+        if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+      });
+      return;
+    }
+
     var fetches = [
-      S.fetchSheetTab(T.today_matchups),
+      fetchMatchups(false),
       S.fetchSheetTab(T.today_lineups).catch(function() { return []; }),
       S.fetchSheetTab(T.weather).catch(function() { return []; }),
       S.fetchSheetTab(T.vs_rhp).catch(function() { return []; }),
@@ -946,10 +1061,12 @@
 
     Promise.all(fetches).then(function(res) {
       if (A && A.parseRegistryRows) A.parseRegistryRows(res[9]);
-      var m = findMatchup(res[0], away, home);
+      var slateRows = filterSlateMatchupRows(res[0]);
+      var m = findMatchup(slateRows, away, home) || findMatchup(res[0], away, home);
       var weatherMap = parseWeatherMap(res[2]);
       var data = {
         matchup: m,
+        matchupRows: res[0],
         lineups: S.parseLineupRows(res[1]),
         weather: weatherMap,
         scR: buildScoreMap(res[3]),
@@ -961,20 +1078,23 @@
         spL14: res[10] || []
       };
       if (global.MatchupOffenseSplits && MatchupOffenseSplits.prepareData) {
-        var splitPack = MatchupOffenseSplits.prepareData({
-          scR: data.scR,
-          scL: data.scL,
-          teamProfiles: S.parseTeamProfilesMap ? S.parseTeamProfilesMap(res[11]) : {},
-          splitHomeRows: res[12] || [],
-          splitAwayRows: res[13] || [],
-          splitRecentRows: res[14] || []
-        });
-        data.teamProfiles = splitPack.teamProfiles;
-        data.offenseRankIndex = splitPack.offenseRankIndex;
+        try {
+          var splitPack = MatchupOffenseSplits.prepareData({
+            scR: data.scR,
+            scL: data.scL,
+            teamProfiles: S.parseTeamProfilesMap ? S.parseTeamProfilesMap(res[11]) : {},
+            splitHomeRows: res[12] || [],
+            splitAwayRows: res[13] || [],
+            splitRecentRows: res[14] || []
+          });
+          data.teamProfiles = splitPack.teamProfiles;
+          data.offenseRankIndex = splitPack.offenseRankIndex;
+        } catch (splitErr) {
+          console.warn('[matchup_compare] offense splits unavailable', splitErr);
+        }
       }
       if (!m) {
-        render(data);
-        if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+        finish(data);
         return;
       }
       var extras = [
@@ -983,12 +1103,15 @@
         S.enrichMissingWeatherFromApi ? S.enrichMissingWeatherFromApi([m], weatherMap) : Promise.resolve()
       ];
       return Promise.all(extras).then(function() {
-        render(data);
-        if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+        finish(data);
       });
     }).catch(function(err) {
-      console.error(err);
-      render({ matchup: null });
+      console.error('[matchup_compare] load failed', err);
+      if (root && away && home) {
+        renderLoadError(root, err);
+      } else {
+        finish({ matchup: null, matchupRows: [] });
+      }
       if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
     });
   }
