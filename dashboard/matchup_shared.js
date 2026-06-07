@@ -437,7 +437,7 @@
     return String(pickCol(row, 'Slate_Date', 'Slate Date', 'Slate_Date_ET', 'Date') || '').trim().slice(0, 10);
   }
 
-  /** Prefer today's slate; fall back to latest sheet date intersecting current matchup keys. */
+  /** Prefer today's slate; never reuse prior-day rows against today's MLB matchups. */
   function filterLineupSheetRows(rows, matchupKeys) {
     if (!rows || !rows.length) return [];
     var live = global.LIVE_DATA || {};
@@ -461,28 +461,14 @@
       sheetDays[d] = (sheetDays[d] || 0) + 1;
     });
     var latest = Object.keys(sheetDays).sort().pop();
-    var latestRows = dated.filter(function(row) { return slateDateFromRow(row) === latest; });
     live._slateSheetDate = latest || null;
     if (matchupKeys && matchupKeys.length) {
-      var keySet = {};
-      matchupKeys.forEach(function(k) {
-        if (k) keySet[normalizeLineupGameKeyShared(k)] = true;
-      });
-      var matched = latestRows.filter(function(row) {
-        var gk = normalizeLineupGameKeyShared(pickCol(row, 'Game', 'game_key', 'GameKey'));
-        return keySet[gk];
-      });
-      if (matched.length) {
-        if (typeof console !== 'undefined' && console.info) {
-          console.info('[LINEUPS] Using sheet slate', latest, '—', matched.length, 'rows for', matchupKeys.length, 'games');
-        }
-        return matched;
-      }
       if (typeof console !== 'undefined' && console.warn) {
-        console.warn('[LINEUPS] Sheet slate', latest, 'has no rows matching today\'s', matchupKeys.length, 'games (ET', today + ')');
+        console.warn('[LINEUPS] No rows for ET', today, '(sheet has', latest + ') — run: python -m scrapers.scrape_lineups');
       }
       return [];
     }
+    var latestRows = dated.filter(function(row) { return slateDateFromRow(row) === latest; });
     if (typeof console !== 'undefined' && console.warn) {
       console.warn('[LINEUPS] No rows for ET', today, '— using latest sheet slate', latest);
     }
@@ -518,11 +504,15 @@
     if (!awayRows.length && !homeRows.length) {
       var slateDay = easternDateIso();
       var sheetDay = live._slateSheetDate || '';
-      var staleNote = (sheetDay && sheetDay !== slateDay)
-        ? ' Sheet slate is dated <strong>' + esc(sheetDay) + '</strong> (today is <strong>' + esc(slateDay) + '</strong>). Run: <code>python -m scrapers.scrape_lineups</code>.'
-        : ((live.matchups || []).length && !(live.lineups || []).length)
-          ? ' Run: <code>python -m scrapers.scrape_lineups</code> to refresh Today_Lineups.'
-          : '';
+      var hasAnyLineups = !!(lu && lu.length);
+      var staleNote = '';
+      if (sheetDay && sheetDay !== slateDay) {
+        staleNote = ' Sheet slate is dated <strong>' + esc(sheetDay) + '</strong> (today is <strong>' + esc(slateDay) + '</strong>). Run: <code>python -m scrapers.scrape_lineups</code>.';
+      } else if (sheetDay === slateDay && hasAnyLineups) {
+        staleNote = ' Rotowire has not posted a projected lineup for this game yet.';
+      } else if ((live.matchups || []).length && !hasAnyLineups) {
+        staleNote = ' Run: <code>python -m scrapers.scrape_lineups</code> to refresh Today_Lineups.';
+      }
       inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + esc(gk) + '</span>.' + staleNote + '</div>';
     } else {
       inner = '<div class="matchup-lineup-grid">'
