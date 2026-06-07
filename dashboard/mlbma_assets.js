@@ -418,6 +418,7 @@
       var parts = normName(name).split(' ');
       if (parts.length >= 2) {
         REGISTRY.byName[parts[parts.length - 1] + ' ' + parts[0]] = entry;
+        REGISTRY.byName[parts[0].charAt(0) + ' ' + parts[parts.length - 1]] = entry;
       }
     });
     REGISTRY.loaded = true;

@@ -44,6 +44,87 @@
     return S.pickCol.apply(S, arguments);
   }
 
+  function normNameLocal(s) {
+    return S && S.normName ? S.normName(s) : String(s || '').toLowerCase().trim();
+  }
+
+  function lastName(name) {
+    var parts = normNameLocal(name).split(' ').filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : normNameLocal(name);
+  }
+
+  function firstInitial(name) {
+    var raw = String(name || '').trim();
+    var dot = raw.match(/^([A-Za-z])\./);
+    if (dot) return dot[1].toLowerCase();
+    var parts = normNameLocal(name).split(' ').filter(Boolean);
+    return parts.length ? parts[0].charAt(0) : '';
+  }
+
+  function batterNamesMatch(lineupName, sheetName) {
+    var na = normNameLocal(lineupName);
+    var nb = normNameLocal(sheetName);
+    if (!na || !nb) return false;
+    if (na === nb) return true;
+    var la = na.split(' ').pop();
+    var lb = nb.split(' ').pop();
+    if (!la || !lb || la.length < 2 || la !== lb) return false;
+    var init = firstInitial(lineupName);
+    if (init) {
+      var sheetFirst = nb.split(' ')[0] || '';
+      if (sheetFirst && sheetFirst.charAt(0) !== init) return false;
+    }
+    return true;
+  }
+
+  function resolveCanonicalName(name, team) {
+    if (!name) return name;
+    if (A && A.lookupPlayer) {
+      var hit = A.lookupPlayer(name);
+      if (hit && hit.name) return hit.name;
+    }
+    return name;
+  }
+
+  function findIndexKey(index, player, team) {
+    if (!index || !player) return null;
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').trim().toUpperCase();
+    var direct = playerKey(player, team);
+    if (index[direct]) return direct;
+
+    var canonical = resolveCanonicalName(player, team);
+    if (canonical && canonical !== player) {
+      direct = playerKey(canonical, team);
+      if (index[direct]) return direct;
+    }
+
+    var ln = lastName(player);
+    var init = firstInitial(player);
+    var bestKey = null;
+    var bestScore = 0;
+    Object.keys(index).forEach(function(key) {
+      var parts = key.split('|');
+      if (parts.length !== 2 || parts[1] !== tk) return;
+      var sheetNorm = parts[0];
+      var sheetParts = sheetNorm.split(' ').filter(Boolean);
+      var sheetLn = sheetParts.length ? sheetParts[sheetParts.length - 1] : '';
+      if (!sheetLn || sheetLn.length < 2 || sheetLn !== ln) return;
+      var score = 70;
+      if (init && sheetParts.length && sheetParts[0].charAt(0) === init) score = 92;
+      if (batterNamesMatch(player, sheetNorm)) score = 100;
+      if (score > bestScore) {
+        bestScore = score;
+        bestKey = key;
+      }
+    });
+    return bestKey;
+  }
+
+  function playerPack(index, player, team) {
+    var key = findIndexKey(index, player, team);
+    return key ? index[key] : null;
+  }
+
   function playerKey(name, team) {
     var n = S && S.normName ? S.normName(name) : String(name || '').toLowerCase().trim();
     var t = S && S.teamKey ? S.teamKey(team) : String(team || '').trim().toUpperCase();
@@ -74,12 +155,13 @@
 
   function ratesFromRow(row) {
     if (!row) return null;
-    var wrc = num(pick(row, 'wRC+', 'wrc', 'wRC'));
-    var woba = num(pick(row, 'wOBA', 'woba'));
+    var wrc = num(pick(row, 'wRC+', 'WRC+', 'wrc+', 'wrc', 'wRC'));
+    var woba = num(pick(row, 'wOBA', 'woba', 'WOBA'));
     var slg = num(pick(row, 'SLG', 'slg'));
     var obp = num(pick(row, 'OBP', 'obp'));
     var ops = num(pick(row, 'OPS', 'ops'));
     if (ops == null && obp != null && slg != null) ops = Math.round((obp + slg) * 1000) / 1000;
+    if (wrc == null && ops == null && woba == null && slg == null) return null;
     return { wrc: wrc, woba: woba, slg: slg, ops: ops };
   }
 
@@ -136,19 +218,21 @@
   }
 
   function lookupRow(index, player, team, bucket) {
-    var pack = index[playerKey(player, team)];
+    var pack = playerPack(index, player, team);
     if (!pack) return null;
     return pack[bucket] || null;
   }
 
   function playerRates(index, player, team, side, splitId, window, profs, m) {
+    var pack = playerPack(index, player, team);
+    if (!pack) return null;
     var bucket = splitBucketForSide(side, splitId, m);
-    var ytdRow = lookupRow(index, player, team, bucket)
-      || lookupRow(index, player, team, bucket === 'handR' ? 'overall' : bucket)
-      || lookupRow(index, player, team, 'overall');
-    if (window === 'l30') {
-      var recent = lookupRow(index, player, team, 'recent');
-      if (recent) return ratesFromRow(recent);
+    var ytdRow = pack[bucket] || pack.overall;
+    if (window === 'l30' && pack.recent) {
+      var recentRates = ratesFromRow(pack.recent);
+      if (recentRates && (recentRates.wrc != null || recentRates.ops != null || recentRates.woba != null)) {
+        return recentRates;
+      }
     }
     var ytd = ratesFromRow(ytdRow);
     if (!ytd || window === 'ytd') return ytd;
