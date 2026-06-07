@@ -7,7 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <script>
 window.__MLBMA_EXPECT_HUB_BUILD = '20260611a';
-console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
+console.log('[VERSION] team_rankings build 20260622b — lineup_view.js');
 </script>
 <meta charset="UTF-8">
 
@@ -15,6 +15,8 @@ console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
      DNS+TCP+TLS setup on a cold visit. -->
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="dns-prefetch" href="https://docs.google.com">
+<link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -37,27 +39,38 @@ console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
   }
 
   // Kick off the Team Rankings data fetch NOW, in parallel with the rest of the scripts
-  // downloading, so the network and the JS load overlap. This is ONE Supabase request for
-  // all four datasets (vs. four Google Sheets gviz round-trips). matchup_shared
-  // .fetchSheetTab() consumes these (keyed by tab name); any failure falls back to
-  // Supabase-per-tab and then Sheets. Best-effort only. (URL + publishable key are public
-  // by design and gated read-only to hub_dataset via RLS.)
+  // downloading. Critical tabs (vs splits + profiles) resolve in one Supabase batch;
+  // Team_Results prefetches separately so it never blocks the first table paint.
   try {
     var SB_URL = 'https://mvxjcfriirguhjujurhf.supabase.co';
     var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
-    var tabs = ['Team_Results', 'vs_RHP', 'vs_LHP', 'Team_Profiles'];
+    var criticalTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
     var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
-    var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + tabs.join(',') + ')&select=name,rows',
+    var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows',
       { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
       .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
       .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
-    tabs.forEach(function (t) {
+    criticalTabs.forEach(function (t) {
       store[t] = batch.then(function (m) {
         if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
-        return m[t]; // pre-parsed rows array
+        return m[t];
       });
       store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
     });
+    store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+      .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })
+      .then(function (arr) {
+        var rows = arr && arr[0] && arr[0].rows;
+        if (!rows || !rows.length) throw new Error('prefetch miss Team_Results');
+        return rows;
+      });
+    store['Team_Results'].catch(function () { /* fall back handled in fetchSheetTab */ });
+    fetch('league_baselines.json?_=' + Date.now()).then(function(r) {
+      return r.ok ? r.json() : null;
+    }).then(function(d) {
+      if (d) window.__MLBMA_BASELINES = d;
+    }).catch(function() { /* optional */ });
   } catch (e) { /* prefetch is best-effort */ }
 })();
 </script>
@@ -202,7 +215,7 @@ body{
 <script>
 /* Dismiss loading overlay if lineup view never finishes (network/sheet failure) */
 setTimeout(function() {
-  if (window.__lineupViewReady) return;
+  if (window.__lineupViewReady || window.__lineupViewMounted) return;
   var l = document.getElementById('hubLoading');
   if (l) l.classList.add('hide');
   var body = document.querySelector('.lv-body');
@@ -301,8 +314,7 @@ setTimeout(function() {
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_ui.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260606b"></script>
-<script src="mlbma_charts.js?v=20260604m"></script>
+<script src="matchup_shared.js?v=20260622b"></script>
 <script>
 (function() {
   var _globalErrorHandling = false;
@@ -334,7 +346,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260621b"></script>
+<script src="lineup_view.js?v=20260622b"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

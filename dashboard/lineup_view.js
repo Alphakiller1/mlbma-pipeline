@@ -502,25 +502,16 @@
   }
 
   function scheduleLeaguePools(root, ctx, rows) {
-    if (!A || !A.registerLeaguePool || !LM) return;
+    if (!A || !A.registerLeaguePool) return;
     var run = function() {
       if (applyLeaguePoolsFromRows(rows)) {
         renderBody(root, ctx.state, rows);
         return;
       }
-      if (LM.leaguePoolsBulk) {
-        LM.leaguePoolsBulk().then(function(pools) {
-          Object.keys(pools || {}).forEach(function(k) {
-            var pool = pools[k];
-            if (pool && pool.values && pool.values.length) A.registerLeaguePool(k, pool.values);
-          });
-          if (rows && rows.length) renderBody(root, ctx.state, rows);
-        }).catch(function(err) {
-          console.warn('[LineupView] league pool registration failed', err);
-        });
-      }
+      // Avoid a second full rankAll() via leaguePoolsBulk on first paint — baselines.json
+      // already seeds chip grading; row pools backfill on the next filter change if needed.
     };
-    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 2500 });
+    if (global.requestIdleCallback) global.requestIdleCallback(run, { timeout: 1200 });
     else setTimeout(run, 0);
   }
 
@@ -536,10 +527,11 @@
     if (!ctx._controlsReady) {
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
       ctx._controlsReady = true;
-      if (l) l.classList.add('hide');
     } else {
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
     }
+    if (l) l.classList.add('hide');
+    global.__lineupViewMounted = true;
     if (body) body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
     LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true }).then(function(resolved) {
       var rows = (resolved && resolved.rows) ? resolved.rows : (resolved || []);
@@ -608,19 +600,14 @@
         rerender(shell, ctx);
       });
     }
+    rerender(shell, ctx);
     if (LM && LM.ensureStore) {
       LM.ensureStore({
         needPitcherSplits: false,
-        needPals: state.family === 'status',
-        allowPartialTeamResults: false,
+        needPals: false,
+        allowPartialTeamResults: true,
         prefetchTeamResults: true
-      }).then(function() {
-        rerender(shell, ctx);
-      }).catch(function() {
-        rerender(shell, ctx);
-      });
-    } else {
-      rerender(shell, ctx);
+      }).catch(function() { /* warm cache */ });
     }
     return {
       rerender: function() { rerender(shell, ctx); },

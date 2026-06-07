@@ -2356,27 +2356,38 @@
     var prefetchTeamResults = !!options.prefetchTeamResults
       || (isTeamRankingsPage() && needs.needTeamResults);
 
+    function fetchTeamResultsRows(r) {
+      return fetchSheetTab(tabs.team_results, options).catch(function() { return []; }).then(function(rows) {
+        r.teamResults = rows || [];
+        r._hasTeamResults = true;
+        _lineupModelRaw = r;
+        _lineupModelStore = null;
+        _notifyLineupModelUpdate('teamResults');
+        return r;
+      });
+    }
+
+    function queueTeamResultsPrefetch(r) {
+      if (!tabs.team_results || r._hasTeamResults || _lineupTeamResultsInflight) return;
+      _lineupTeamResultsInflight = fetchTeamResultsRows(r).finally(function() {
+        _lineupTeamResultsInflight = null;
+      });
+    }
+
     if (!raw._coreLoaded) {
       chain = chain.then(function() {
-        var coreFetches = [
+        return Promise.all([
           fetchSheetTab(tabs.vs_rhp, options),
           fetchSheetTab(tabs.vs_lhp, options),
           fetchSheetTab(tabs.team_profiles, options)
-        ];
-        if (prefetchTeamResults && tabs.team_results && !raw._hasTeamResults) {
-          coreFetches.push(fetchSheetTab(tabs.team_results, options).catch(function() { return []; }));
-        }
-        return Promise.all(coreFetches).then(function(res) {
+        ]).then(function(res) {
           raw.rhp = res[0] || [];
           raw.lhp = res[1] || [];
           raw.profiles = res[2] || [];
-          if (prefetchTeamResults && res[3]) {
-            raw.teamResults = res[3] || [];
-            raw._hasTeamResults = true;
-          }
           raw._coreLoaded = true;
           _lineupModelRaw = raw;
           _lineupModelStore = null;
+          if (prefetchTeamResults) queueTeamResultsPrefetch(raw);
           return raw;
         });
       });
@@ -2384,25 +2395,11 @@
 
     if (!raw._hasTeamResults && tabs.team_results) {
       var blockOnResults = needs.needTeamResults && !options.allowPartialTeamResults;
-      var fetchTeamResults = function(r) {
-        return fetchSheetTab(tabs.team_results, options).catch(function() { return []; }).then(function(rows) {
-          r.teamResults = rows || [];
-          r._hasTeamResults = true;
-          _lineupModelRaw = r;
-          _lineupModelStore = null;
-          _notifyLineupModelUpdate('teamResults');
-          return r;
-        });
-      };
       if (blockOnResults) {
-        chain = chain.then(fetchTeamResults);
-      } else if (!prefetchTeamResults) {
+        chain = chain.then(fetchTeamResultsRows);
+      } else {
         chain = chain.then(function(r) {
-          if (!r._hasTeamResults && !_lineupTeamResultsInflight) {
-            _lineupTeamResultsInflight = fetchTeamResults(r).finally(function() {
-              _lineupTeamResultsInflight = null;
-            });
-          }
+          queueTeamResultsPrefetch(r);
           return r;
         });
       }
@@ -2532,7 +2529,7 @@
 
   function lineupModelRankAll(filter, family, options) {
     options = Object.assign({
-      allowPartialTeamResults: !isTeamRankingsPage(),
+      allowPartialTeamResults: true,
       prefetchTeamResults: isTeamRankingsPage()
     }, options || {}, lineupModelRankNeeds(filter, family));
     return lineupModelEnsureStore(options).then(function(store) {
@@ -2756,7 +2753,7 @@
     LineupModel.ensureStore({
       needPitcherSplits: false,
       needPals: false,
-      allowPartialTeamResults: !rankings,
+      allowPartialTeamResults: true,
       prefetchTeamResults: rankings
     }).catch(function() { /* prefetch */ });
   })();
