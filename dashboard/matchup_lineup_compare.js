@@ -24,10 +24,12 @@
 
   var STAT_COLS = [
     { key: 'wrc', label: 'wRC+', ctx: 'wrc', decimals: 0 },
-    { key: 'ops', label: 'OPS', ctx: 'wrc', decimals: 3 },
+    { key: 'ops', label: 'OPS', ctx: 'ops', decimals: 3 },
     { key: 'woba', label: 'wOBA', ctx: 'woba', decimals: 3 },
-    { key: 'slg', label: 'SLG', ctx: 'wrc', decimals: 3 }
+    { key: 'slg', label: 'SLG', ctx: 'slg', decimals: 3 }
   ];
+
+  var NAME_SUFFIXES = { jr: 1, sr: 1, ii: 1, iii: 1, iv: 1, v: 1 };
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -48,17 +50,30 @@
     return S && S.normName ? S.normName(s) : String(s || '').toLowerCase().trim();
   }
 
-  function lastName(name) {
+  function nameParts(name) {
     var parts = normNameLocal(name).split(' ').filter(Boolean);
+    while (parts.length > 1 && NAME_SUFFIXES[parts[parts.length - 1]]) {
+      parts.pop();
+    }
+    return parts;
+  }
+
+  function lastName(name) {
+    var parts = nameParts(name);
     return parts.length ? parts[parts.length - 1] : normNameLocal(name);
+  }
+
+  function firstNamePart(name) {
+    var parts = nameParts(name);
+    return parts.length ? parts[0] : '';
   }
 
   function firstInitial(name) {
     var raw = String(name || '').trim();
     var dot = raw.match(/^([A-Za-z])\./);
     if (dot) return dot[1].toLowerCase();
-    var parts = normNameLocal(name).split(' ').filter(Boolean);
-    return parts.length ? parts[0].charAt(0) : '';
+    var first = firstNamePart(name);
+    return first ? first.charAt(0) : '';
   }
 
   function batterNamesMatch(lineupName, sheetName) {
@@ -66,15 +81,37 @@
     var nb = normNameLocal(sheetName);
     if (!na || !nb) return false;
     if (na === nb) return true;
-    var la = na.split(' ').pop();
-    var lb = nb.split(' ').pop();
-    if (!la || !lb || la.length < 2 || la !== lb) return false;
+    if (lastName(lineupName) !== lastName(sheetName)) return false;
     var init = firstInitial(lineupName);
     if (init) {
-      var sheetFirst = nb.split(' ')[0] || '';
+      var sheetFirst = firstNamePart(sheetName);
       if (sheetFirst && sheetFirst.charAt(0) !== init) return false;
     }
     return true;
+  }
+
+  function findRegistryEntry(name, team) {
+    if (!A || !A.registry || !A.registry.byId) return null;
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').trim().toUpperCase();
+    var ln = lastName(name);
+    var init = firstInitial(name);
+    var best = null;
+    var bestScore = 0;
+    Object.keys(A.registry.byId).forEach(function(id) {
+      var entry = A.registry.byId[id];
+      if (!entry || !entry.name) return;
+      if (lastName(entry.name) !== ln || ln.length < 2) return;
+      var score = 68;
+      var entryFirst = firstNamePart(entry.name);
+      if (init && entryFirst && entryFirst.charAt(0) === init) score = 88;
+      if (batterNamesMatch(name, entry.name)) score = 100;
+      if (entry.team && S && S.teamKey(entry.team) === tk) score += 10;
+      if (score > bestScore) {
+        bestScore = score;
+        best = entry;
+      }
+    });
+    return bestScore >= 68 ? best : null;
   }
 
   function resolveCanonicalName(name, team) {
@@ -83,41 +120,59 @@
       var hit = A.lookupPlayer(name);
       if (hit && hit.name) return hit.name;
     }
+    var reg = findRegistryEntry(name, team);
+    if (reg && reg.name) return reg.name;
     return name;
+  }
+
+  function scoreIndexKey(key, player, tk) {
+    var parts = key.split('|');
+    if (parts.length !== 2) return 0;
+    var sheetNorm = parts[0];
+    if (lastName(player) !== lastName(sheetNorm)) return 0;
+    var score = 68;
+    var sheetFirst = firstNamePart(sheetNorm);
+    var init = firstInitial(player);
+    if (init && sheetFirst && sheetFirst.charAt(0) === init) score = 90;
+    if (batterNamesMatch(player, sheetNorm)) score = 100;
+    if (parts[1] === tk) score += 12;
+    else score -= 8;
+    return score;
   }
 
   function findIndexKey(index, player, team) {
     if (!index || !player) return null;
     var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').trim().toUpperCase();
-    var direct = playerKey(player, team);
-    if (index[direct]) return direct;
-
+    var reg = findRegistryEntry(player, team);
+    var names = [player];
     var canonical = resolveCanonicalName(player, team);
-    if (canonical && canonical !== player) {
-      direct = playerKey(canonical, team);
+    if (canonical && names.indexOf(canonical) < 0) names.push(canonical);
+    if (reg && reg.name && names.indexOf(reg.name) < 0) names.push(reg.name);
+
+    var i;
+    for (i = 0; i < names.length; i++) {
+      var direct = playerKey(names[i], team);
       if (index[direct]) return direct;
+      if (reg && reg.team) {
+        direct = playerKey(names[i], reg.team);
+        if (index[direct]) return direct;
+      }
     }
 
-    var ln = lastName(player);
-    var init = firstInitial(player);
     var bestKey = null;
     var bestScore = 0;
     Object.keys(index).forEach(function(key) {
-      var parts = key.split('|');
-      if (parts.length !== 2 || parts[1] !== tk) return;
-      var sheetNorm = parts[0];
-      var sheetParts = sheetNorm.split(' ').filter(Boolean);
-      var sheetLn = sheetParts.length ? sheetParts[sheetParts.length - 1] : '';
-      if (!sheetLn || sheetLn.length < 2 || sheetLn !== ln) return;
-      var score = 70;
-      if (init && sheetParts.length && sheetParts[0].charAt(0) === init) score = 92;
-      if (batterNamesMatch(player, sheetNorm)) score = 100;
+      if (key.indexOf('|') < 0) return;
+      var score = 0;
+      for (i = 0; i < names.length; i++) {
+        score = Math.max(score, scoreIndexKey(key, names[i], tk));
+      }
       if (score > bestScore) {
         bestScore = score;
         bestKey = key;
       }
     });
-    return bestKey;
+    return bestScore >= 68 ? bestKey : null;
   }
 
   function playerPack(index, player, team) {
@@ -136,6 +191,7 @@
       var name = pick(row, 'Name', 'Player', 'player_name', 'full_name');
       var team = pick(row, 'Tm', 'Team', 'team', 'team_abbr');
       if (!name || !team) return;
+      if (S && S.teamKey) team = S.teamKey(team);
       var k = playerKey(name, team);
       if (!index[k]) index[k] = {};
       index[k][bucket] = row;
