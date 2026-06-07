@@ -60,7 +60,19 @@
     var lvbLineup = qp('lvbLineup') === 'home' ? 'home' : 'away';
     var lvbBp = qp('lvbBp') === 'home' ? 'home' : 'away';
     if (lvbLineup === lvbBp) lvbBp = lvbLineup === 'away' ? 'home' : 'away';
-    return { mode: mode, lvpLineup: lvpLineup, lvpPitcher: lvpPitcher, lvbLineup: lvbLineup, lvbBp: lvbBp };
+    var lvSplit = qp('lvSplit') || 'tonight';
+    if (['tonight', 'rhp', 'lhp', 'road', 'home'].indexOf(lvSplit) < 0) lvSplit = 'tonight';
+    var lvWin = (qp('lvWin') || 'ytd').toLowerCase();
+    if (['l7', 'l14', 'l30', 'ytd'].indexOf(lvWin) < 0) lvWin = 'ytd';
+    return {
+      mode: mode,
+      lvpLineup: lvpLineup,
+      lvpPitcher: lvpPitcher,
+      lvbLineup: lvbLineup,
+      lvbBp: lvbBp,
+      lvSplit: lvSplit,
+      lvWin: lvWin
+    };
   }
 
   function syncCompareUrl(state) {
@@ -79,6 +91,13 @@
     } else {
       params.delete('lvbLineup');
       params.delete('lvbBp');
+    }
+    if (state.mode === 'lvL') {
+      params.set('lvSplit', state.lvSplit || 'tonight');
+      params.set('lvWin', state.lvWin || 'ytd');
+    } else {
+      params.delete('lvSplit');
+      params.delete('lvWin');
     }
     var qs = params.toString();
     var next = global.location.pathname + (qs ? '?' + qs : '');
@@ -476,12 +495,13 @@
       + '</div></div>';
   }
 
-  function renderPaneLvL(ctx) {
-    var m = ctx.m;
+  function renderPaneLvL(ctx, state) {
     return '<p class="mc-pane-desc mc-pane-desc--lead">Compare both projected lineups and split-adjusted offensive edges.</p>'
-      + renderTeamCompareRadar(m)
+      + renderTeamCompareRadar(ctx.m)
       + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
-      + sectionProjectedLineups(m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true });
+      + (global.MatchupLineupCompare
+        ? MatchupLineupCompare.renderSection(ctx, state)
+        : sectionProjectedLineups(ctx.m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true }));
   }
 
   function renderPaneLvP(ctx, state) {
@@ -622,6 +642,11 @@
       });
     });
     bindSubSelectors(root, ctx, state);
+    if (global.MatchupLineupCompare && MatchupLineupCompare.bindControls) {
+      MatchupLineupCompare.bindControls(root, ctx, state, function(next) {
+        syncCompareUrl(next);
+      });
+    }
   }
 
   function lineupSparkStrip(row, team) {
@@ -702,6 +727,7 @@
       lineupOk: lineupOk,
       teamProfiles: data.teamProfiles || {},
       offenseRankIndex: data.offenseRankIndex || null,
+      batterIndex: data.batterIndex || null,
       h2h: h2h
     };
     _compareCtx = ctx;
@@ -710,7 +736,7 @@
       + sectionHeader(m, weather, stadium)
       + compareNavHtml(state.mode)
       + '<div class="mc-compare-panes">'
-      + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx))
+      + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx, state))
       + paneWrap('lvP', state.mode === 'lvP', renderPaneLvP(ctx, state))
       + paneWrap('lvB', state.mode === 'lvB', renderPaneLvB(ctx, state))
       + paneWrap('bpBp', state.mode === 'bpBp', renderPaneBpBp(ctx))
@@ -944,7 +970,10 @@
       S.fetchSheetTab(T.team_profiles).catch(function() { return []; }),
       S.fetchSheetTab(T.batter_splits_home).catch(function() { return []; }),
       S.fetchSheetTab(T.batter_splits_away).catch(function() { return []; }),
-      S.fetchSheetTab(T.batter_splits_recent).catch(function() { return []; })
+      S.fetchSheetTab(T.batter_splits_recent).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_rhp).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_lhp).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_overall).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
@@ -979,6 +1008,21 @@
           data.offenseRankIndex = splitPack.offenseRankIndex;
         } catch (splitErr) {
           console.warn('[matchup_compare] offense splits unavailable', splitErr);
+        }
+      }
+      if (global.MatchupLineupCompare && MatchupLineupCompare.prepareData) {
+        try {
+          var lineupPack = MatchupLineupCompare.prepareData({
+            batterRhp: res[15] || [],
+            batterLhp: res[16] || [],
+            batterHome: res[12] || [],
+            batterAway: res[13] || [],
+            batterRecent: res[14] || [],
+            batterOverall: res[17] || []
+          });
+          data.batterIndex = lineupPack.batterIndex;
+        } catch (lineupErr) {
+          console.warn('[matchup_compare] lineup compare unavailable', lineupErr);
         }
       }
       if (!m) {

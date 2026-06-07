@@ -515,6 +515,153 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* Lineup card comparison — player stats with split toggles */
+.mc-lcc-block { margin-bottom: 24px; }
+.mc-lcc-hint { margin: 0 0 14px; font-size: 13px; line-height: 1.5; }
+.mc-lcc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  background: var(--bg-4, #1f1f25);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+.mc-lcc-ctrl { margin: 0; }
+.mc-lcc-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 1100px) {
+  .mc-lcc-duo { grid-template-columns: 1fr; gap: 18px; }
+}
+.mc-lineup-col.mc-lcc-card,
+.mc-lcc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 14px 14px;
+  background: var(--bg-4, #1f1f25);
+  border: 1.5px solid color-mix(in srgb, var(--mc-os-team, #7C4DFF) 38%, transparent);
+  border-radius: 14px;
+  min-width: 0;
+}
+.mc-lineups-block .mc-lcc-block { margin-bottom: 0; }
+.mc-lcc-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mc-lcc-head img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.mc-lcc-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.mc-lcc-team {
+  font-family: var(--font-display, var(--font));
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--mc-os-team, var(--text));
+}
+.mc-lcc-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.mc-lcc-split-read {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-align: center;
+}
+.mc-lcc-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.mc-lcc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  table-layout: fixed;
+  min-width: 520px;
+}
+.mc-lcc-table th,
+.mc-lcc-table td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  padding: 7px 5px;
+  vertical-align: middle;
+}
+.mc-lcc-table thead th {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  background: rgba(0, 0, 0, 0.28);
+  padding: 9px 5px;
+}
+.mc-lcc-bo {
+  width: 28px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+.mc-lcc-pos {
+  width: 36px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+.mc-lcc-name {
+  text-align: left;
+  padding-left: 8px !important;
+  min-width: 108px;
+  font-weight: 600;
+}
+.mc-lcc-name a {
+  color: var(--text);
+  text-decoration: none;
+}
+.mc-lcc-name a:hover { color: var(--mc-os-team, var(--accent-l, #C4B0FF)); }
+.mc-lcc-bats { width: 34px; }
+.mc-lcc-stat .ca-val-chip,
+.mc-lcc-stat .val-chip {
+  display: inline-flex;
+  min-width: 48px;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+.mc-lcc-na { color: var(--text-3); font-weight: 500; }
+.mc-lcc-row.lineup-row--platoon-l { background: rgba(248, 113, 113, 0.07); }
+.mc-lcc-row.lineup-row--platoon-r { background: rgba(96, 165, 250, 0.07); }
+.mc-lcc-row.lineup-row--platoon-l .mc-lcc-name { box-shadow: inset 3px 0 0 #F87171; }
+.mc-lcc-row.lineup-row--platoon-r .mc-lcc-name { box-shadow: inset 3px 0 0 #60A5FA; }
+.mc-lcc-empty {
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  padding: 24px 12px;
+}
+
 /* Sub-selectors — lineup vs pitcher / bullpen */
 .mc-subsel {
   margin: 0 0 18px;
@@ -903,6 +1050,22 @@
   .mc-os-win {
     font-size: 9px;
     width: 40px;
+  }
+
+  .mc-lcc-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .mc-lcc-table {
+    min-width: 480px;
+    font-size: 11px;
+  }
+
+  .mc-lcc-team {
+    font-size: 18px;
   }
 
   .mlbma-radar-tip.is-visible {
