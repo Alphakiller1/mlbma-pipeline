@@ -433,6 +433,116 @@
     }).filter(Boolean);
   }
 
+  function slateDateFromRow(row) {
+    return String(pickCol(row, 'Slate_Date', 'Slate Date', 'Slate_Date_ET', 'Date') || '').trim().slice(0, 10);
+  }
+
+  /** Prefer today's slate; fall back to latest sheet date intersecting current matchup keys. */
+  function filterLineupSheetRows(rows, matchupKeys) {
+    if (!rows || !rows.length) return [];
+    var live = global.LIVE_DATA || {};
+    var today = easternDateIso();
+    var dated = rows.filter(function(row) {
+      var d = slateDateFromRow(row);
+      return d && /^\d{4}-\d{2}-\d{2}$/.test(d);
+    });
+    if (!dated.length) {
+      live._slateSheetDate = null;
+      return [];
+    }
+    var todayRows = dated.filter(function(row) { return slateDateFromRow(row) === today; });
+    if (todayRows.length) {
+      live._slateSheetDate = today;
+      return todayRows;
+    }
+    var sheetDays = {};
+    dated.forEach(function(row) {
+      var d = slateDateFromRow(row);
+      sheetDays[d] = (sheetDays[d] || 0) + 1;
+    });
+    var latest = Object.keys(sheetDays).sort().pop();
+    var latestRows = dated.filter(function(row) { return slateDateFromRow(row) === latest; });
+    live._slateSheetDate = latest || null;
+    if (matchupKeys && matchupKeys.length) {
+      var keySet = {};
+      matchupKeys.forEach(function(k) {
+        if (k) keySet[normalizeLineupGameKeyShared(k)] = true;
+      });
+      var matched = latestRows.filter(function(row) {
+        var gk = normalizeLineupGameKeyShared(pickCol(row, 'Game', 'game_key', 'GameKey'));
+        return keySet[gk];
+      });
+      if (matched.length) {
+        if (typeof console !== 'undefined' && console.info) {
+          console.info('[LINEUPS] Using sheet slate', latest, '—', matched.length, 'rows for', matchupKeys.length, 'games');
+        }
+        return matched;
+      }
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[LINEUPS] Sheet slate', latest, 'has no rows matching today\'s', matchupKeys.length, 'games (ET', today + ')');
+      }
+      return [];
+    }
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('[LINEUPS] No rows for ET', today, '— using latest sheet slate', latest);
+    }
+    return latestRows;
+  }
+
+  function syncLiveLineupsFromSheet(rawRows, matchups) {
+    rawRows = rawRows || [];
+    var live = global.LIVE_DATA;
+    if (!live) return [];
+    live._rawLineupSheetRows = rawRows;
+    var keys = (matchups || live.matchups || []).map(function(m) { return matchupGameKey(m); }).filter(Boolean);
+    var filtered = filterLineupSheetRows(rawRows, keys);
+    live.lineups = parseLineupRows(filtered);
+    if (typeof console !== 'undefined' && console.info) {
+      console.info('[LINEUPS] synced', live.lineups.length, 'parsed rows from', filtered.length, 'sheet rows');
+    }
+    return live.lineups;
+  }
+
+  function buildMatchupLineupBlock(m, opts) {
+    opts = opts || {};
+    var expanded = opts.expanded !== false;
+    var hideToggle = !!opts.hideToggle;
+    var live = global.LIVE_DATA || {};
+    var gk = matchupGameKey(m);
+    var lu = live.lineups || [];
+    var awayRows = parseLineup(lu, gk, m.away, 'AWAY');
+    var homeRows = parseLineup(lu, gk, m.home, 'HOME');
+    var awayFaces = normalizePitcherHandShared(m.homeHand);
+    var homeFaces = normalizePitcherHandShared(m.awayHand);
+    var inner;
+    if (!awayRows.length && !homeRows.length) {
+      var slateDay = easternDateIso();
+      var sheetDay = live._slateSheetDate || '';
+      var staleNote = (sheetDay && sheetDay !== slateDay)
+        ? ' Sheet slate is dated <strong>' + esc(sheetDay) + '</strong> (today is <strong>' + esc(slateDay) + '</strong>). Run: <code>python -m scrapers.scrape_lineups</code>.'
+        : ((live.matchups || []).length && !(live.lineups || []).length)
+          ? ' Run: <code>python -m scrapers.scrape_lineups</code> to refresh Today_Lineups.'
+          : '';
+      inner = '<div class="matchup-lineup-empty">No projected lineup in <strong>Today_Lineups</strong> for <span style="font-family:var(--mono)">' + esc(gk) + '</span>.' + staleNote + '</div>';
+    } else {
+      inner = '<div class="matchup-lineup-grid">'
+        + buildLineupColCompact(m.away + ' (away)', awayRows, awayFaces, 'away')
+        + buildLineupColCompact(m.home + ' (home)', homeRows, homeFaces, 'home')
+        + '</div>';
+    }
+    if (hideToggle) {
+      return '<div class="hmc-lineups is-open hmc-lineups--always" onclick="event.stopPropagation()">'
+        + '<div class="hmc-lineups-label">Projected lineups</div>'
+        + '<div class="matchup-lineup-panel is-open">' + inner + '</div></div>';
+    }
+    return '<div class="hmc-lineups' + (expanded ? ' is-open' : '') + '" onclick="event.stopPropagation()">'
+      + '<button type="button" class="hmc-lineup-toggle" aria-expanded="' + (expanded ? 'true' : 'false') + '">'
+      + (expanded ? 'Hide Lineups \u25BE' : 'Show Lineups \u25BE') + '</button>'
+      + '<div class="matchup-lineup-panel' + (expanded ? ' is-open' : '') + '">'
+      + inner
+      + '</div></div>';
+  }
+
   /** @param {Array} lineups - parsed lineup rows @param {string} gameKey @param {string} team @param {string} [side] */
   function parseLineup(lineups, gameKey, team, side) {
     var gk = normalizeLineupGameKeyShared(gameKey);
@@ -2556,6 +2666,9 @@
     parseCsvText: parseCsvText,
     parseLineupRows: parseLineupRows,
     parseLineup: parseLineup,
+    filterLineupSheetRows: filterLineupSheetRows,
+    syncLiveLineupsFromSheet: syncLiveLineupsFromSheet,
+    buildMatchupLineupBlock: buildMatchupLineupBlock,
     platoonHighlight: platoonHighlight,
     platoonHighlightClass: platoonHighlightClass,
     buildLineupTable: buildLineupTable,

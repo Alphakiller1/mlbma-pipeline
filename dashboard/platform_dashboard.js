@@ -446,6 +446,13 @@
       + '</article>';
   }
 
+  function resolveLineupBlockBuilder() {
+    if (typeof global.buildMatchupLineupBlock === 'function') return global.buildMatchupLineupBlock;
+    var shared = global.MLBMASharedMatchup;
+    if (shared && typeof shared.buildMatchupLineupBlock === 'function') return shared.buildMatchupLineupBlock;
+    return null;
+  }
+
   function renderHeroMatchupCard(m, cardIdx, opts) {
     opts = opts || {};
     cardIdx = cardIdx == null ? 0 : cardIdx;
@@ -459,9 +466,9 @@
     var awayEdgeCls = fav === m.away ? ' edge-team' : '';
     var homeEdgeCls = fav === m.home ? ' edge-team' : '';
     var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
+    var buildLineup = resolveLineupBlockBuilder();
     var lineupHtml = opts.lineupHtml != null ? opts.lineupHtml
-      : (typeof global.buildMatchupLineupBlock === 'function'
-        ? global.buildMatchupLineupBlock(m, { expanded: true, hideToggle: true }) : '');
+      : (buildLineup ? buildLineup(m, { expanded: true, hideToggle: true }) : '');
     var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
     return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
       + '<div class="hmc-row hmc-teams">'

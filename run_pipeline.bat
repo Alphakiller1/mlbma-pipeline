@@ -6,4 +6,6 @@ rem scrape_lineups (which left Today_Lineups on a stale slate).
 chcp 65001 >nul
 set PYTHONIOENCODING=utf-8
 set PYTHONUTF8=1
-"%~dp0crawl_env\Scripts\python.exe" pipeline\main.py >> "%~dp0pipeline_log.txt" 2>&1
+rem Use -m so the repo root is on sys.path; `python pipeline\main.py` puts only the
+rem pipeline\ folder on the path and crashes with "No module named 'pipeline'".
+"%~dp0crawl_env\Scripts\python.exe" -u -m pipeline.main >> "%~dp0pipeline_log.txt" 2>&1

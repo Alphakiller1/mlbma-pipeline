@@ -2622,7 +2622,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260621c">
 <link rel="stylesheet" href="theme.css?v=20260619a">
 <link rel="stylesheet" href="chase_nav.css?v=20260618n">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260606a">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260622a">
 <link rel="stylesheet" href="research_lab.css?v=20260605e">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
@@ -2693,11 +2693,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260620b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260606c"></script>
+<script src="matchup_shared.js?v=20260622a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260621c"></script>
+<script src="platform_dashboard.js?v=20260622a"></script>
 <script src="compare_metrics.js?v=20260613b"></script>
 <script src="research_lab.js?v=20260618b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -3439,8 +3439,7 @@ function fetchMatchups() {
     scheduleP
   ]).then(function(parts) {
     var matchupsRows = filterSheetRowsForToday(parts[0] || []);
-    var lineups = parseLineupRows(filterSheetRowsForToday(parts[1] || []));
-    LIVE_DATA.lineups = lineups;
+    var lineups = applyLineupsFromSheetRows(parts[1] || []);
     LIVE_DATA._slateMatchupsRows = matchupsRows;
     LIVE_DATA._slateGamesRows = filterSheetRowsForToday(parts[2] || []);
     LIVE_DATA.todayGames = parseTodayGamesRows(LIVE_DATA._slateGamesRows);
@@ -4363,6 +4362,28 @@ function filterSheetRowsForToday(rows) {
   return [];
 }
 
+function applyLineupsFromSheetRows(rows) {
+  rows = rows || [];
+  LIVE_DATA._rawLineupSheetRows = rows;
+  var S = window.MLBMASharedMatchup;
+  if (S && S.syncLiveLineupsFromSheet) {
+    return S.syncLiveLineupsFromSheet(rows, LIVE_DATA.matchups);
+  }
+  var keys = (LIVE_DATA.matchups || []).map(function(m) { return matchupGameKey(m); });
+  var filtered = filterSheetRowsForToday(rows);
+  if (!filtered.length && keys.length && S && S.filterLineupSheetRows) {
+    filtered = S.filterLineupSheetRows(rows, keys);
+  }
+  LIVE_DATA.lineups = parseLineupRows(filtered);
+  console.info('[LINEUPS] parsed', LIVE_DATA.lineups.length, 'rows from', filtered.length, 'sheet rows');
+  return LIVE_DATA.lineups;
+}
+
+function syncLineupsToMatchupSlate() {
+  if (!LIVE_DATA._rawLineupSheetRows || !LIVE_DATA._rawLineupSheetRows.length) return LIVE_DATA.lineups || [];
+  return applyLineupsFromSheetRows(LIVE_DATA._rawLineupSheetRows);
+}
+
 function pickSpMetric(profVal, sheetVal) {
   if (profVal != null && !isNaN(profVal)) return profVal;
   if (sheetVal != null && !isNaN(sheetVal)) return sheetVal;
@@ -4560,6 +4581,7 @@ function refreshTodayMatchups(liveSchedule) {
     LIVE_DATA._liveSchedule
   );
   LIVE_DATA._matchupsBuiltAt = Date.now();
+  syncLineupsToMatchupSlate();
   enrichMatchupCards();
 }
 
@@ -4692,6 +4714,12 @@ function buildMatchupLineupBlock(m, opts) {
     + '<div class="matchup-lineup-panel">'
     + inner
     + '</div></div>';
+}
+
+if (window.MLBMASharedMatchup && MLBMASharedMatchup.buildMatchupLineupBlock) {
+  window.buildMatchupLineupBlock = MLBMASharedMatchup.buildMatchupLineupBlock;
+} else {
+  window.buildMatchupLineupBlock = buildMatchupLineupBlock;
 }
 
 function toggleMatchupLineup(btn) {
@@ -4899,9 +4927,8 @@ function loadLandingData() {
     }
     LIVE_DATA.pitching = parsePitchingRows(pitchingRows);
     LIVE_DATA.bullpenUnits = parseBullpenUnitRows(bullpenRows);
-    var lineupsFiltered = filterSheetRowsForToday(lineupsRows || []);
-    LIVE_DATA.lineups = parseLineupRows(lineupsFiltered);
-    console.info('[LINEUPS] parsed', LIVE_DATA.lineups.length, 'rows from', lineupsFiltered.length, 'today sheet rows');
+    applyLineupsFromSheetRows(lineupsRows || []);
+    console.info('[LINEUPS] parsed', LIVE_DATA.lineups.length, 'rows from sheet');
     LIVE_DATA.signalsToday = signalsTodayRows || [];
     LIVE_DATA.weather = parseWeatherMap(weatherRows);
     LIVE_DATA.playerRegistry = registryRows || [];
@@ -7570,8 +7597,8 @@ function rebuildTodayMatchupsSlateIfNeeded() {
 function ensureLineupsLoaded() {
   if (LIVE_DATA.lineups && LIVE_DATA.lineups.length) return Promise.resolve(LIVE_DATA.lineups);
   return fetchTabSafe(TABS.today_lineups, []).then(function(rows) {
-    var filtered = filterSheetRowsForToday(rows || []);
-    LIVE_DATA.lineups = parseLineupRows(filtered);
+    applyLineupsFromSheetRows(rows || []);
+    syncLineupsToMatchupSlate();
     console.info('[LINEUPS] lazy reload:', LIVE_DATA.lineups.length, 'rows');
     return LIVE_DATA.lineups;
   }).catch(function() { return []; });

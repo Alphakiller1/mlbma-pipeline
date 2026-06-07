@@ -1212,6 +1212,14 @@ body.view-research .ca-page-identity { display: none; }
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 6px;
 }
+.hmc-lineups--always .matchup-lineup-panel {
+  display: block !important;
+  max-height: none !important;
+  opacity: 1 !important;
+  overflow: visible;
+  padding-top: 6px;
+  margin-top: 0;
+}
 .hmc-lineups .matchup-lineup-panel {
   display: block;
   max-height: none;
