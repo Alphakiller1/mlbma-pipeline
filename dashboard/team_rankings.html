@@ -7,7 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <script>
 window.__MLBMA_EXPECT_HUB_BUILD = '20260611a';
-console.log('[VERSION] team_rankings build 20260623b — lineup_view.js');
+console.log('[VERSION] team_rankings build 20260624a — lineup_view.js');
 </script>
 <meta charset="UTF-8">
 
@@ -205,8 +205,6 @@ body{
   .hub-kpi-val{font-size:32px}
 }
 </style>
-  <link rel="stylesheet" href="mlbma_design_system.css">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
 </head>
 <body class="ca-bg-outfield">
 <div class="loading" id="hubLoading">
@@ -218,6 +216,8 @@ setTimeout(function() {
   if (window.__lineupViewReady || window.__lineupViewMounted) return;
   var l = document.getElementById('hubLoading');
   if (l) l.classList.add('hide');
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
   var body = document.querySelector('.lv-body');
   if (body && !body.querySelector('.lv-table') && !body.querySelector('.lv-note')) {
     body.innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Load timed out — check network and Google Sheet access, then refresh.</div>';
@@ -312,9 +312,9 @@ setTimeout(function() {
 </script>
 <script src="mlbma_config.js?v=20260606b"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
-<script src="mlbma_ui.js?v=20260618b"></script>
+<script src="mlbma_ui.js?v=20260624a" data-page="team_rankings.html"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260623c"></script>
+<script src="matchup_shared.js?v=20260624a"></script>
 <script>
 (function() {
   var _globalErrorHandling = false;
@@ -325,6 +325,8 @@ setTimeout(function() {
     try {
       var hubL = document.getElementById('hubLoading');
       if (hubL) hubL.classList.add('hide');
+      if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+      else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
       if (!_globalErrorShown && document.body) {
         _globalErrorShown = true;
         var safeMsg = String(msg || 'Unknown error')
@@ -346,7 +348,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260622b"></script>
+<script src="lineup_view.js?v=20260624a"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
@@ -381,6 +383,6 @@ setTimeout(function() {
   setTimeout(hardenTeamRankingsUi, 1200);
 })();
 </script>
-<script src="chase_nav.js?v=20260618a"></script>
+<script src="chase_nav.js?v=20260618a" defer></script>
 </body>
 </html>

@@ -144,6 +144,7 @@
   var _sheetTabInflight = {};
   var SHEET_TAB_PERSIST_PREFIX = 'mlbma_tab_v1:';
   var SHEET_TAB_PERSIST_TTL_MS = 45 * 60 * 1000;
+  var LINEUP_MODEL_CORE_CACHE_PREFIX = 'mlbma_lm_core_v1:';
 
   // Persist sheet tabs in localStorage so they survive across tabs and full navigations.
   // (This used to be sessionStorage, which is wiped on every fresh tab/visit — forcing a
@@ -228,6 +229,40 @@
       }
       keys.forEach(function(k) { _tabPersistStore.removeItem(k); });
     } catch (e) { /* ignore */ }
+  }
+
+  function lineupModelCoreCacheKey() {
+    var bust = sheetSyncBust();
+    return LINEUP_MODEL_CORE_CACHE_PREFIX + (bust || 'default');
+  }
+
+  function lineupModelReadCoreCache() {
+    if (!_tabPersistStore) return null;
+    try {
+      var obj = JSON.parse(_tabPersistStore.getItem(lineupModelCoreCacheKey()) || 'null');
+      if (!obj || !obj.raw || !obj.ts || !obj.raw._coreLoaded) return null;
+      if (Date.now() - obj.ts > SHEET_TAB_PERSIST_TTL_MS) return null;
+      return obj.raw;
+    } catch (e) { return null; }
+  }
+
+  function lineupModelWriteCoreCache(raw) {
+    if (!_tabPersistStore || !raw || !raw._coreLoaded) return;
+    try {
+      _tabPersistStore.setItem(lineupModelCoreCacheKey(), JSON.stringify({
+        ts: Date.now(),
+        raw: {
+          rhp: raw.rhp || [],
+          lhp: raw.lhp || [],
+          profiles: raw.profiles || [],
+          teamResults: raw.teamResults || [],
+          _coreLoaded: true,
+          _hasTeamResults: !!raw._hasTeamResults,
+          _hasPitcherSplits: !!raw._hasPitcherSplits,
+          _hasPals: !!raw._hasPals
+        }
+      }));
+    } catch (e) { /* ignore quota */ }
   }
 
   var SLATE_TABS = { Today_Matchups: 1, Today_Lineups: 1, Today_Games: 1 };
@@ -2352,6 +2387,7 @@
         r._hasTeamResults = true;
         _lineupModelRaw = r;
         _lineupModelStore = null;
+        lineupModelWriteCoreCache(r);
         _notifyLineupModelUpdate('teamResults');
         return r;
       });
@@ -2377,6 +2413,7 @@
           raw._coreLoaded = true;
           _lineupModelRaw = raw;
           _lineupModelStore = null;
+          lineupModelWriteCoreCache(raw);
           if (prefetchTeamResults) queueTeamResultsPrefetch(raw);
           return raw;
         });
@@ -2450,6 +2487,10 @@
   function lineupModelFetchAll(options) {
     options = options || {};
     var needs = lineupModelStoreNeeds(options);
+    if (!options.forceRefresh && !_lineupModelRaw) {
+      var cachedCore = lineupModelReadCoreCache();
+      if (cachedCore && cachedCore._coreLoaded) _lineupModelRaw = cachedCore;
+    }
     if (options.forceRefresh) {
       _lineupModelRaw = null;
       _lineupModelStore = null;
@@ -2464,6 +2505,9 @@
       if (palsTab) clearSheetTabCache(palsTab);
     }
     if (!options.forceRefresh && !options.forceRefreshPals && _lineupModelRaw && lineupModelRawReady(_lineupModelRaw, needs, options)) {
+      lineupModelFetchProgressive(_lineupModelRaw, needs, options).catch(function(err) {
+        console.warn('[LineupModel] background revalidate failed', err);
+      });
       return Promise.resolve(_lineupModelRaw);
     }
     var fulfill = function() {

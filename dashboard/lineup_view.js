@@ -515,24 +515,30 @@
     else setTimeout(run, 0);
   }
 
-  function rerender(root, ctx) {
+  function dismissPageLoading() {
     var l = document.getElementById('hubLoading');
+    if (l) l.classList.add('hide');
+    if (global.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+    else if (global.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
+  }
+
+  function rerender(root, ctx, opts) {
+    opts = opts || {};
+    var silent = !!opts.silent;
     if (!LM || !LM.rankAll) {
-      if (l) l.classList.add('hide');
+      dismissPageLoading();
       root.querySelector('.lv-body').innerHTML = '<div class="lv-note">LineupModel not available.</div>';
       return;
     }
     writeUrl(ctx.state);
     var body = root.querySelector('.lv-body');
-    if (!ctx._controlsReady) {
+    if (!ctx._controlsReady || !silent) {
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
       ctx._controlsReady = true;
-    } else {
-      renderControls(root, ctx.state, ctx.teams, ctx.meta);
     }
-    if (l) l.classList.add('hide');
+    dismissPageLoading();
     global.__lineupViewMounted = true;
-    if (body) body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
+    if (!silent && body) body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
     LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true }).then(function(resolved) {
       var rows = (resolved && resolved.rows) ? resolved.rows : (resolved || []);
       ctx.meta = (resolved && resolved.meta) ? resolved.meta : {};
@@ -566,13 +572,13 @@
       ctx._controlsReady = true;
       renderBody(root, ctx.state, rows);
       if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
-      if (l) l.classList.add('hide');
+      dismissPageLoading();
       global.__lineupViewReady = true;
       scheduleLeaguePools(root, ctx, rows);
       return null;
     }).catch(function(err) {
       console.error('[LineupView] render failed', err);
-      if (l) l.classList.add('hide');
+      dismissPageLoading();
       root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
     });
   }
@@ -597,18 +603,10 @@
         if (reason !== 'teamResults' || ctx._teamResultsRefresh) return;
         if (ctx.state.family !== 'surface') return;
         ctx._teamResultsRefresh = true;
-        rerender(shell, ctx);
+        rerender(shell, ctx, { silent: true });
       });
     }
     rerender(shell, ctx);
-    if (LM && LM.ensureStore) {
-      LM.ensureStore({
-        needPitcherSplits: false,
-        needPals: false,
-        allowPartialTeamResults: true,
-        prefetchTeamResults: true
-      }).catch(function() { /* warm cache */ });
-    }
     return {
       rerender: function() { rerender(shell, ctx); },
       getState: function() { return JSON.parse(JSON.stringify(ctx.state)); }

@@ -39,8 +39,11 @@ def main() -> int:
         try:
             page.wait_for_function(
                 """() => {
-                  const el = document.getElementById('hubLoading');
-                  return el && el.classList.contains('hide');
+                  const hub = document.getElementById('hubLoading');
+                  const mlbma = document.getElementById('mlbmaLoading');
+                  const hubHidden = !hub || hub.classList.contains('hide');
+                  const mlbmaHidden = !mlbma || mlbma.classList.contains('hide');
+                  return hubHidden && mlbmaHidden;
                 }""",
                 timeout=int(OVERLAY_BUDGET_S * 1000),
             )
@@ -61,7 +64,10 @@ def main() -> int:
               ready: !!window.__lineupViewReady,
               rows: document.querySelectorAll('.lv-table tbody tr').length,
               family: (new URLSearchParams(location.search).get('family')) || 'surface',
-              coreLoaded: !!(window.LineupModel && window.MLBMASharedMatchup),
+              mlbmaHidden: (() => {
+                const el = document.getElementById('mlbmaLoading');
+                return !el || el.classList.contains('hide');
+              })(),
               bodyText: (document.querySelector('.lv-body') || {}).textContent || ''
             })"""
         )
@@ -76,6 +82,8 @@ def main() -> int:
         issues.append(f"Expected ~30 teams, got {data.get('rows')}")
     if not data.get("ready"):
         issues.append("__lineupViewReady never set")
+    if not data.get("mlbmaHidden"):
+        issues.append("mlbmaLoading overlay still visible")
     if "Render error" in str(data.get("bodyText", "")):
         issues.append("Render error shown in UI")
     if "Load timed out" in str(data.get("bodyText", "")):

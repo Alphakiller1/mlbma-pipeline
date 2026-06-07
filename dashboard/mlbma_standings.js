@@ -33,8 +33,22 @@
   };
 
   var records = {};
+  var recentForm = {};
   var loaded = false;
   var loadPromise = null;
+  var formLoadPromise = null;
+
+  var SEASON_START = '2026-03-27';
+
+  var TEAM_TO_ID = (function() {
+    var out = {};
+    Object.keys(ID_TO_TEAM).forEach(function(id) {
+      out[ID_TO_TEAM[id]] = parseInt(id, 10);
+    });
+    return out;
+  })();
+
+  var FORM_CACHE_KEY = 'mlbma_recent_form_v1_2026';
 
   function teamKey(t) {
     var k = String(t || '').trim().toUpperCase();
@@ -81,6 +95,112 @@
     try {
       sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), records: rec }));
     } catch (e) { /* ignore */ }
+  }
+
+  function writeFormCache() {
+    try {
+      sessionStorage.setItem(FORM_CACHE_KEY, JSON.stringify({ ts: Date.now(), form: recentForm }));
+    } catch (e) { /* ignore */ }
+  }
+
+  function readFormCache() {
+    try {
+      var raw = sessionStorage.getItem(FORM_CACHE_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (obj && obj.form) return obj.form;
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  function parseScheduleForm(data, teamId) {
+    var results = [];
+    (data.dates || []).forEach(function(d) {
+      (d.games || []).forEach(function(g) {
+        if (!g.status || g.status.abstractGameState !== 'Final') return;
+        var away = g.teams && g.teams.away;
+        var home = g.teams && g.teams.home;
+        if (!away || !home || !away.team || !home.team) return;
+        var awayId = away.team.id;
+        var homeId = home.team.id;
+        if (awayId !== teamId && homeId !== teamId) return;
+        var won = awayId === teamId ? !!away.isWinner : !!home.isWinner;
+        results.push({
+          date: g.gameDate || d.date || '',
+          result: won ? 'W' : 'L'
+        });
+      });
+    });
+    results.sort(function(a, b) {
+      if (a.date < b.date) return -1;
+      if (a.date > b.date) return 1;
+      return 0;
+    });
+    return results.map(function(r) { return r.result; });
+  }
+
+  function fetchTeamForm(team) {
+    var t = teamKey(team);
+    var tid = TEAM_TO_ID[t];
+    if (!tid) return Promise.resolve([]);
+    var end = new Date().toISOString().slice(0, 10);
+    var url = 'https://statsapi.mlb.com/api/v1/schedule?teamId=' + tid
+      + '&startDate=' + SEASON_START + '&endDate=' + end
+      + '&sportId=1&gameType=R';
+    return fetch(url, { cache: 'default' })
+      .then(function(r) {
+        if (!r.ok) throw new Error('MLB schedule HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(data) {
+        var form = parseScheduleForm(data, tid);
+        return form.length > 10 ? form.slice(-10) : form;
+      })
+      .catch(function(err) {
+        console.warn('[MLBMA] recent form fetch failed for ' + t + ':', err);
+        return recentForm[t] || [];
+      });
+  }
+
+  function getRecentForm(team) {
+    var t = teamKey(team);
+    return recentForm[t] || [];
+  }
+
+  function loadRecentForm(teams, count) {
+    count = count || 10;
+    var cached = readFormCache();
+    if (cached && Object.keys(cached).length) {
+      recentForm = cached;
+    }
+    var need = (teams || []).map(teamKey).filter(function(t, i, arr) {
+      return t && arr.indexOf(t) === i && (!recentForm[t] || !recentForm[t].length);
+    });
+    if (!need.length) return Promise.resolve(recentForm);
+    if (formLoadPromise) return formLoadPromise;
+    formLoadPromise = Promise.all(need.map(function(t) {
+      return fetchTeamForm(t).then(function(form) {
+        recentForm[t] = form.slice(-count);
+      });
+    })).then(function() {
+      writeFormCache();
+      return recentForm;
+    }).finally(function() {
+      formLoadPromise = null;
+    });
+    return formLoadPromise;
+  }
+
+  function formStripHtml(team, opts) {
+    var form = getRecentForm(team);
+    if (!form || !form.length) return '';
+    var prefix = (opts && opts.classPrefix) || 'mc-form';
+    return '<span class="' + prefix + '-strip" aria-label="Last ' + form.length + ' games">'
+      + form.map(function(r) {
+        var cls = r === 'W' ? prefix + '-w' : prefix + '-l';
+        return '<span class="' + prefix + '-letter ' + cls + '">' + r + '</span>';
+      }).join('')
+      + '</span>';
   }
 
   function load() {
@@ -139,6 +259,9 @@
     getRecord: getRecord,
     formatRecord: formatRecord,
     recordHtml: recordHtml,
-    teamKey: teamKey
+    teamKey: teamKey,
+    loadRecentForm: loadRecentForm,
+    getRecentForm: getRecentForm,
+    formStripHtml: formStripHtml
   };
 })(typeof window !== 'undefined' ? window : this);

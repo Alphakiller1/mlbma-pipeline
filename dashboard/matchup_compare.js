@@ -57,23 +57,7 @@
   }
 
   function parseWeatherMap(rows) {
-    var map = {};
-    (rows || []).forEach(function(row) {
-      var away = S.teamKey(S.pickCol(row, 'Away', 'away'));
-      var home = S.teamKey(S.pickCol(row, 'Home', 'home'));
-      if (!away || !home) return;
-      var key = away + '@' + home;
-      var w = S.parseWeatherRow(row);
-      if (!w.temp && !w.wind && w.raw && w.raw !== '—') {
-        var parsed = S.parseWeatherString(w.raw);
-        w.temp = w.temp != null ? w.temp : parsed.temp;
-        w.wind = w.wind != null ? w.wind : parsed.wind;
-        w.windDir = w.windDir || parsed.windDir;
-        w.dome = w.dome || parsed.dome;
-      }
-      map[key] = w;
-    });
-    return map;
+    return S && S.parseWeatherMap ? S.parseWeatherMap(rows) : {};
   }
 
   function findMatchup(rows, away, home) {
@@ -276,7 +260,9 @@
     }
 
     var gk = S.matchupGameKey(m);
-    var weather = data.weather[gk] || S.parseWeatherString('');
+    var weather = (S.weatherLookup
+      ? S.weatherLookup(data.weather, m.away, m.home, m.stadium)
+      : null) || data.weather[gk] || S.parseWeatherString('');
     var scR = data.scR;
     var scL = data.scL;
     var pals = data.pals;
@@ -327,17 +313,26 @@
       + sectionModel(m, script, f5, h2h, conf, awayRow, homeRow, awayBp, homeBp, awayPs, homePs);
   }
 
-  function teamBlock(team, side) {
-    var logo = S.teamLogo(team, 56);
+  function teamSideBlock(team, align) {
+    var logo = S.teamLogo(team, 52);
     var rec = S.recordHtml(team);
-    return '<a href="' + teamProfileUrl(team) + '" class="mc-team-block">'
+    if (!rec && global.MLBMAStandings) {
+      var wl = MLBMAStandings.formatRecord(team);
+      if (wl) rec = '<span class="team-record-pill">' + esc(wl) + '</span>';
+    }
+    var form = global.MLBMAStandings && MLBMAStandings.formStripHtml
+      ? MLBMAStandings.formStripHtml(team) : '';
+    return '<a href="' + teamProfileUrl(team) + '" class="mc-header-side mc-header-side--' + align + '">'
       + logo
-      + '<div><div class="mc-team-abbr">' + esc(team) + '</div>'
-      + (rec ? '<div class="mc-record">' + rec + '</div>' : '')
+      + '<div class="mc-header-side-text">'
+      + '<div class="mc-team-abbr">' + esc(team) + '</div>'
+      + (rec ? '<div class="mc-record-row">' + rec + '</div>' : '')
+      + (form ? '<div class="mc-form-row">' + form + '</div>' : '')
       + '</div></a>';
   }
 
   function sectionHeader(m, weather, script, f5, stadium) {
+    var wx = S.weatherBadge(weather, m.home);
     return '<div class="compare-page">'
       + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
       + '<a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>'
@@ -345,8 +340,15 @@
       + '<span>' + esc(m.away) + ' @ ' + esc(m.home) + '</span></nav>'
       + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
       + '<header class="mc-header mc-section">'
-      + '<div class="mc-header-teams">' + teamBlock(m.away) + '<span class="mc-at">@</span>' + teamBlock(m.home) + '</div>'
-      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + ' · ' + S.weatherBadge(weather, m.home) + '</div>'
+      + '<div class="mc-header-grid">'
+      + teamSideBlock(m.away, 'away')
+      + '<div class="mc-header-center">'
+      + '<div class="mc-header-matchup">' + esc(m.away) + ' <span class="mc-at">@</span> ' + esc(m.home) + '</div>'
+      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + '</div>'
+      + (wx ? '<div class="mc-header-weather">' + wx + '</div>' : '')
+      + '</div>'
+      + teamSideBlock(m.home, 'home')
+      + '</div>'
       + '</header>';
   }
 
@@ -370,7 +372,7 @@
     var oorCtx = oorContextLabel(oor);
     var xfipStr = stats.xfip != null ? stats.xfip.toFixed(2) : (stats.fip != null ? stats.fip.toFixed(2) : '—');
     return '<div class="mc-sp-card">'
-      + '<div class="mc-sp-top">' + S.headshot(pname, 72, { eager: true })
+      + '<div class="mc-sp-top">' + S.headshot(pname, null, { crop: 'compare', eager: true })
       + '<div><div class="ca-metric-label">' + esc(side) + ' SP · ' + esc(team) + '</div>'
       + '<div class="mc-sp-name">' + nameHtml + ' <span class="hand-pill">' + esc((hand || '?').charAt(0)) + '</span>'
       + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'
@@ -544,10 +546,11 @@
     Promise.all(fetches).then(function(res) {
       if (A && A.parseRegistryRows) A.parseRegistryRows(res[9]);
       var m = findMatchup(res[0], away, home);
+      var weatherMap = parseWeatherMap(res[2]);
       var data = {
         matchup: m,
         lineups: S.parseLineupRows(res[1]),
-        weather: parseWeatherMap(res[2]),
+        weather: weatherMap,
         scR: buildScoreMap(res[3]),
         scL: buildScoreMap(res[4]),
         pitching: S.parsePitchingRows(res[5]),
@@ -556,9 +559,20 @@
         pals: S.parsePalsRows(res[8]),
         spL14: res[10] || []
       };
-      render(data);
-      if (global.MLBMAStandings) MLBMAStandings.load();
-      if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+      if (!m) {
+        render(data);
+        if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+        return;
+      }
+      var extras = [
+        global.MLBMAStandings ? MLBMAStandings.load() : Promise.resolve(),
+        global.MLBMAStandings ? MLBMAStandings.loadRecentForm([m.away, m.home]) : Promise.resolve(),
+        S.enrichMissingWeatherFromApi ? S.enrichMissingWeatherFromApi([m], weatherMap) : Promise.resolve()
+      ];
+      return Promise.all(extras).then(function() {
+        render(data);
+        if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+      });
     }).catch(function(err) {
       console.error(err);
       render({ matchup: null });

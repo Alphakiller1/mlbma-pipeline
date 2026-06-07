@@ -802,7 +802,7 @@ body.view-research .ca-page-identity { display: none; }
   gap: 4px;
   align-content: start;
 }
-.mc-sp-top {
+.mc-sp-block .mc-sp-top {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
