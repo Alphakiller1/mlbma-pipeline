@@ -314,6 +314,7 @@
   }
 
   function teamSideBlock(team, align) {
+    var isHome = align === 'home';
     var logo = S.teamLogo(team, 52);
     var rec = S.recordHtml(team);
     if (!rec && global.MLBMAStandings) {
@@ -321,12 +322,16 @@
       if (wl) rec = '<span class="team-record-pill">' + esc(wl) + '</span>';
     }
     var form = global.MLBMAStandings && MLBMAStandings.formStripHtml
-      ? MLBMAStandings.formStripHtml(team) : '';
+      ? MLBMAStandings.formStripHtml(team, { mirror: isHome }) : '';
+    var role = isHome ? 'Home' : 'Away';
     return '<a href="' + teamProfileUrl(team) + '" class="mc-header-side mc-header-side--' + align + '">'
-      + logo
+      + '<div class="mc-header-logo">' + logo + '</div>'
       + '<div class="mc-header-side-text">'
-      + '<div class="mc-team-abbr">' + esc(team) + '</div>'
-      + (rec ? '<div class="mc-record-row">' + rec + '</div>' : '')
+      + '<div class="mc-header-role">' + esc(role) + '</div>'
+      + '<div class="mc-header-name-row">'
+      + '<span class="mc-team-abbr">' + esc(team) + '</span>'
+      + (rec ? '<span class="mc-record-row">' + rec + '</span>' : '')
+      + '</div>'
       + (form ? '<div class="mc-form-row">' + form + '</div>' : '')
       + '</div></a>';
   }
@@ -340,6 +345,7 @@
       + '<span>' + esc(m.away) + ' @ ' + esc(m.home) + '</span></nav>'
       + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
       + '<header class="mc-header mc-section">'
+      + '<div class="mc-header-kicker">Matchup Analysis</div>'
       + '<div class="mc-header-grid">'
       + teamSideBlock(m.away, 'away')
       + '<div class="mc-header-center">'

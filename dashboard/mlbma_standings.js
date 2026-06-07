@@ -192,15 +192,25 @@
   }
 
   function formStripHtml(team, opts) {
+    opts = opts || {};
     var form = getRecentForm(team);
     if (!form || !form.length) return '';
     var prefix = (opts && opts.classPrefix) || 'mc-form';
-    return '<span class="' + prefix + '-strip" aria-label="Last ' + form.length + ' games">'
-      + form.map(function(r) {
-        var cls = r === 'W' ? prefix + '-w' : prefix + '-l';
-        return '<span class="' + prefix + '-letter ' + cls + '">' + r + '</span>';
-      }).join('')
-      + '</span>';
+    var mirror = !!opts.mirror;
+    var letters = form.map(function(r, i) {
+      var cls = r === 'W' ? prefix + '-w' : prefix + '-l';
+      var recent = i === form.length - 1;
+      return '<span class="' + prefix + '-letter ' + cls + (recent ? ' ' + prefix + '-letter--recent' : '') + '" title="' + (recent ? 'Most recent game' : 'Game ' + (i + 1) + ' of ' + form.length) + '">' + r + '</span>';
+    }).join('');
+    var orderHint = mirror
+      ? '<span class="' + prefix + '-order"><span class="' + prefix + '-order-edge">Recent</span><span class="' + prefix + '-order-arrow" aria-hidden="true">←</span><span class="' + prefix + '-order-mid">Last ' + form.length + '</span><span class="' + prefix + '-order-arrow" aria-hidden="true">←</span><span class="' + prefix + '-order-edge">10 ago</span></span>'
+      : '<span class="' + prefix + '-order"><span class="' + prefix + '-order-edge">10 ago</span><span class="' + prefix + '-order-arrow" aria-hidden="true">→</span><span class="' + prefix + '-order-mid">Last ' + form.length + '</span><span class="' + prefix + '-order-arrow" aria-hidden="true">→</span><span class="' + prefix + '-order-edge">Recent</span></span>';
+    return '<div class="' + prefix + '-block' + (mirror ? ' ' + prefix + '-block--mirror' : '') + '">'
+      + '<div class="' + prefix + '-heading">Last 10 Games</div>'
+      + orderHint
+      + '<div class="' + prefix + '-strip' + (mirror ? ' ' + prefix + '-strip--mirror' : '') + '" aria-label="Last ' + form.length + ' games, oldest to most recent' + (mirror ? ', mirrored toward center' : '') + '">'
+      + letters
+      + '</div></div>';
   }
 
   function load() {
