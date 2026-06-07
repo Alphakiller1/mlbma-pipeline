@@ -36,19 +36,25 @@ console.log('[VERSION] team_rankings build 20260621b — lineup_view.js');
     location.replace('chase_analytics_mlb_oem_v7.html#section-matchups-hero');
   }
 
-  // Kick off the heavy Team Rankings sheet fetches NOW, in parallel with the rest of
-  // the scripts downloading, so the network and the JS load overlap instead of running
-  // back-to-back. matchup_shared.fetchSheetTab() consumes these (keyed by tab name); if
-  // a prefetch fails it transparently falls back to a normal fetch. Best-effort only.
+  // Kick off the Team Rankings data fetch NOW, in parallel with the rest of the scripts
+  // downloading, so the network and the JS load overlap. This is ONE Supabase request for
+  // all four datasets (vs. four Google Sheets gviz round-trips). matchup_shared
+  // .fetchSheetTab() consumes these (keyed by tab name); any failure falls back to
+  // Supabase-per-tab and then Sheets. Best-effort only. (URL + publishable key are public
+  // by design and gated read-only to hub_dataset via RLS.)
   try {
-    var SID = '1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk';
-    var bust = Date.now();
+    var SB_URL = 'https://mvxjcfriirguhjujurhf.supabase.co';
+    var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
+    var tabs = ['Team_Results', 'vs_RHP', 'vs_LHP', 'Team_Profiles'];
     var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
-    ['Team_Results', 'vs_RHP', 'vs_LHP', 'Team_Profiles'].forEach(function (t) {
-      var url = 'https://docs.google.com/spreadsheets/d/' + SID +
-        '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(t) + '&_pf=' + bust;
-      store[t] = fetch(url, { cache: 'no-store' }).then(function (r) {
-        return r.ok ? r.text() : Promise.reject(new Error('prefetch ' + t));
+    var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + tabs.join(',') + ')&select=name,rows',
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+      .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
+      .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
+    tabs.forEach(function (t) {
+      store[t] = batch.then(function (m) {
+        if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
+        return m[t]; // pre-parsed rows array
       });
       store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
     });
@@ -291,11 +297,11 @@ setTimeout(function() {
   window.MLBMA_PAGE_LOAD_BUST = Date.now();
 })();
 </script>
-<script src="mlbma_config.js?v=20260605a"></script>
+<script src="mlbma_config.js?v=20260606b"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_ui.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260606a"></script>
+<script src="matchup_shared.js?v=20260606b"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script>
 (function() {

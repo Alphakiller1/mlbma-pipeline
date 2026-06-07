@@ -297,22 +297,56 @@
       });
     }
 
+    // Supabase is the primary source for the tabs that have been mirrored into
+    // public.hub_dataset (one fast indexed JSON request instead of a Google Sheets gviz
+    // CSV round-trip). Anything not mirrored — and any Supabase failure — falls back to
+    // Sheets, so a Supabase hiccup can never break the dashboard.
+    var sb = global.MLBMA_CONFIG && MLBMA_CONFIG.SUPABASE;
+    var useSupabase = !!(sb && sb.enabled && sb.url && sb.publishable_key
+      && !isSlateTab(tabName) && sb.tabs && sb.tabs.indexOf(String(tabName)) >= 0);
+
+    function doSupabaseFetch() {
+      var base = String(sb.url).replace(/\/$/, '') + '/rest/v1/' + (sb.table || 'hub_dataset')
+        + '?name=eq.' + encodeURIComponent(tabName) + '&select=rows';
+      var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 12000) : null;
+      return fetch(base, {
+        headers: { apikey: sb.publishable_key, Authorization: 'Bearer ' + sb.publishable_key },
+        signal: ctrl ? ctrl.signal : undefined
+      }).then(function(r) {
+        if (!r.ok) throw new Error('supabase ' + tabName + ' ' + r.status);
+        return r.json();
+      }).then(function(arr) {
+        var rows = (arr && arr[0] && arr[0].rows) ? arr[0].rows : null;
+        if (!rows || !rows.length) throw new Error('supabase empty ' + tabName);
+        _sheetTabCache[key] = rows;
+        writePersistedSheetTab(key, rows);
+        return rows;
+      }).finally(function() { if (timer) clearTimeout(timer); });
+    }
+
+    function fetchRemote() {
+      return useSupabase ? doSupabaseFetch().catch(doNetworkFetch) : doNetworkFetch();
+    }
+
     // Consume an early-page prefetch (fired in the HTML <head>, keyed by tab name) so the
-    // heavy data download overlaps script loading. On any failure/empty, transparently
-    // fall back to a normal network fetch — and concurrent callers ride the same promise.
+    // data download overlaps script loading. The prefetch value may be a CSV-text promise
+    // (Sheets) or a pre-parsed rows-array promise (Supabase). On any failure, fall back to
+    // the normal remote fetch — and concurrent callers ride the same promise.
     var pfStore = global.__MLBMA_TAB_PREFETCH;
-    var pfText = (!skipCacheRead && !isSlateTab(tabName) && pfStore) ? pfStore[String(tabName)] : null;
+    var pf = (!skipCacheRead && !isSlateTab(tabName) && pfStore) ? pfStore[String(tabName)] : null;
     var work;
-    if (pfText) {
+    if (pf) {
       delete pfStore[String(tabName)];
-      work = pfText.then(parseCsvText).then(function(rows) {
+      work = Promise.resolve(pf).then(function(val) {
+        var rows = Array.isArray(val) ? val : parseCsvText(val);
         if (!rows || !rows.length) throw new Error('empty prefetch');
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
-      }).catch(doNetworkFetch);
+      }).catch(fetchRemote);
     } else {
-      work = doNetworkFetch();
+      work = fetchRemote();
     }
     _sheetTabInflight[key] = work;
     work.then(function() {}, function() {}).then(function() {

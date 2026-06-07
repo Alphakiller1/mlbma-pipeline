@@ -332,6 +332,20 @@ def run_team_profiles():
         _fn,
     )
 
+    # Mirror the dashboard's datasets into Supabase (public.hub_dataset) after the sheets
+    # are current, so the dashboard can read them in one fast request. Non-fatal: if
+    # Supabase is unreachable the dashboard transparently falls back to Google Sheets.
+    def _supabase_mirror():
+        from outputs.push_supabase import run as run_push_supabase
+
+        run_push_supabase()
+
+    _run_step(
+        "Step 20: mirror dashboard datasets to Supabase (hub_dataset)",
+        "outputs.push_supabase",
+        _supabase_mirror,
+    )
+
 
 def run_instagram_autopost():
     """Optional social publishing step; dry-run unless explicitly enabled."""

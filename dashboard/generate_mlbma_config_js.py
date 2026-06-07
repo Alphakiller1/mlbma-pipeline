@@ -21,6 +21,7 @@ from core.config import (
     PITCHING_TIERS,
     SHEET_ID,
     SHEET_TABS,
+    SUPABASE_DASHBOARD,
 )
 
 ROOT = Path(__file__).resolve().parent
@@ -71,7 +72,8 @@ window.MLBMA_CONFIG = {{
   PITCHING_TIERS: {_js_tiers(PITCHING_TIERS)},
   ARCHETYPE_TIER_CUTOFFS: {archetype_js},
   FIP_CONSTANT: {FIP_CONSTANT:.2f},
-  PARK_FACTORS: {json.dumps(PARK_FACTORS, indent=2)}
+  PARK_FACTORS: {json.dumps(PARK_FACTORS, indent=2)},
+  SUPABASE: {json.dumps(SUPABASE_DASHBOARD, indent=2)}
 }};
 
 /* Legacy aliases */

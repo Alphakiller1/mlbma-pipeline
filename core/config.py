@@ -33,6 +33,20 @@ def check_google_credentials() -> bool:
 
 SHEET_ID = "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk"
 
+# Supabase — dedicated dashboard read-cache project (separate from the betting-brain
+# warehouse). The publishable key is public by design (it ships in the browser) and is
+# gated read-only to public.hub_dataset via RLS, so it is safe to commit. The secret key
+# (pipeline writes) lives only in .env as SUPABASE_SECRET_KEY.
+SUPABASE_DASHBOARD = {
+    "url": "https://mvxjcfriirguhjujurhf.supabase.co",
+    "publishable_key": "sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2",
+    "table": "hub_dataset",
+    "enabled": True,
+    # Tabs mirrored into hub_dataset → read from Supabase. Anything not listed still
+    # reads from Google Sheets until it's backfilled.
+    "tabs": ["Team_Results", "vs_RHP", "vs_LHP", "Team_Profiles"],
+}
+
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",

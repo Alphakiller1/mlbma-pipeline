@@ -85,6 +85,18 @@ window.MLBMA_CONFIG = {
   "SDP": 0.92,
   "CHW": 0.91,
   "ATH": 0.9
+},
+  SUPABASE: {
+  "url": "https://mvxjcfriirguhjujurhf.supabase.co",
+  "publishable_key": "sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2",
+  "table": "hub_dataset",
+  "enabled": true,
+  "tabs": [
+    "Team_Results",
+    "vs_RHP",
+    "vs_LHP",
+    "Team_Profiles"
+  ]
 }
 };
 
