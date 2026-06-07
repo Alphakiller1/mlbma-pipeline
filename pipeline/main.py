@@ -333,6 +333,17 @@ def run_team_profiles():
         _fn,
     )
 
+    def _push_pitch_mix():
+        from outputs.push_pitch_mix import run as run_push_pitch_mix
+
+        run_push_pitch_mix()
+
+    _run_step(
+        "Step 19.5: outputs.push_pitch_mix",
+        "outputs.push_pitch_mix",
+        _push_pitch_mix,
+    )
+
     # Mirror the dashboard's datasets into Supabase (public.hub_dataset) after the sheets
     # are current, so the dashboard can read them in one fast request. Non-fatal: if
     # Supabase is unreachable the dashboard transparently falls back to Google Sheets.

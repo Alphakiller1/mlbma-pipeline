@@ -12,6 +12,7 @@ DATA = Path(DATA_DIR)
 STEP_DEPENDENCIES: dict[str, list[str]] = {
     "scrapers.scrape_fangraphs": [],
     "scrapers.scrape_pitch_mix": [],
+    "outputs.push_pitch_mix": ["pitch_mix_pitcher.csv"],
     "core.compute": [
         "savant_team_leaderboard.csv",
         "vs_RHP_standard.csv",

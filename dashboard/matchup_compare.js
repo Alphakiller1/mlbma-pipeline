@@ -460,7 +460,16 @@
       + '</div>'
       + '<div style="margin-top:16px;">'
       + edgePanel(edgeLabel, row, oppHand, lineupOsi, met.osiAllowed, palsTeam, lineupTeam)
-      + '</div></div>';
+      + '</div>'
+      + '<div id="mcLvPAsync" class="mc-lvp-async"><p class="ca-helper">Loading performance comparison…</p></div>'
+      + '</div>';
+  }
+
+  function hydrateLvP(root, ctx, state) {
+    if (!root || !global.MatchupLvP || !MatchupLvP.hydrate) return;
+    var box = root.querySelector('#mcLvPAsync');
+    if (!box) return;
+    MatchupLvP.hydrate(box, ctx, state.lvpLineup, state.lvpPitcher);
   }
 
   function lineupVsBullpenContent(ctx, lineupSide, bpSide) {
@@ -502,6 +511,7 @@
 
   function renderPaneLvP(ctx, state) {
     return '<h2 class="mc-pane-title">Lineup vs Pitcher</h2>'
+      + '<p class="mc-pane-desc mc-pane-desc--lead">Lineup offense vs tonight\'s starter — recent form, last 10 starts, and head-to-head pitching metrics.</p>'
       + lvPSelectorHtml(ctx.m, state)
       + '<div id="mcLvPContent">' + lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher) + '</div>';
   }
@@ -547,6 +557,7 @@
     requestAnimationFrame(function() {
       box.classList.remove('is-swapping');
       bindSubSelectors(root, ctx, state);
+      hydrateLvP(root, ctx, state);
     });
   }
 
@@ -635,6 +646,7 @@
         syncCompareUrl(state);
         activateComparePane(root, mode);
         mountChartsForMode(mode, ctx);
+        if (mode === 'lvP') hydrateLvP(root, ctx, state);
       });
     });
     bindSubSelectors(root, ctx, state);
@@ -743,6 +755,7 @@
     bindCompareUI(root, ctx, state);
     bindRadarResize();
     mountChartsForMode(state.mode, ctx);
+    if (state.mode === 'lvP') hydrateLvP(root, ctx, state);
     } catch (renderErr) {
       console.error('[matchup_compare] render failed', renderErr);
       renderLoadError(root, renderErr);
@@ -969,7 +982,16 @@
       S.fetchSheetTab(T.batter_splits_recent).catch(function() { return []; }),
       S.fetchSheetTab(T.batter_splits_rhp).catch(function() { return []; }),
       S.fetchSheetTab(T.batter_splits_lhp).catch(function() { return []; }),
-      S.fetchSheetTab(T.batter_splits_overall).catch(function() { return []; })
+      S.fetchSheetTab(T.batter_splits_overall).catch(function() { return []; }),
+      S.fetchSheetTab(T.sp_game_log).catch(function() { return []; }),
+      S.fetchSheetTab(T.team_results).catch(function() { return []; }),
+      S.fetchSheetTab(T.sp_metric_splits).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_vs_sp).catch(function() { return []; }),
+      S.fetchSheetTab(T.pitch_mix_pitcher_l14).catch(function() { return []; }),
+      S.fetchSheetTab(T.pitch_mix_pitcher).catch(function() { return []; }),
+      S.fetchSheetTab(T.pitch_mix_team_batting_l14).catch(function() { return []; }),
+      S.fetchSheetTab(T.pitch_mix_team_batting).catch(function() { return []; }),
+      S.fetchSheetTab(T.pitch_mix_batter_l14).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
@@ -1021,6 +1043,29 @@
           console.warn('[matchup_compare] lineup compare unavailable', lineupErr);
         }
       }
+      if (global.MatchupLvP && MatchupLvP.prepareData) {
+        try {
+          MatchupLvP.prepareData({
+            spGameLog: res[18] || [],
+            spMetricSplits: res[20] || [],
+            pitchMixPitcherL14: res[22] || [],
+            pitchMixPitcher: res[23] || [],
+            pitchMixTeamBattingL14: res[24] || [],
+            pitchMixTeamBatting: res[25] || [],
+            pitchMixBatterL14: res[26] || []
+          });
+        } catch (lvpErr) {
+          console.warn('[matchup_compare] LvP module unavailable', lvpErr);
+        }
+      }
+      data.spGameLog = res[18] || [];
+      data.teamResults = res[19] || [];
+      data.spMetricSplits = res[20] || [];
+      data.pitchMixPitcherL14 = res[22] || [];
+      data.pitchMixPitcher = res[23] || [];
+      data.pitchMixTeamBattingL14 = res[24] || [];
+      data.pitchMixTeamBatting = res[25] || [];
+      data.pitchMixBatterL14 = res[26] || [];
       if (!m) {
         finish(data);
         return;
