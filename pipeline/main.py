@@ -148,9 +148,15 @@ def run_game_results():
         from core.compute_results import run as run_compute_results
 
         run_compute_results()
+        from core.compute_team_l10_sp_hand import run as run_compute_l10_sp_hand
+
+        run_compute_l10_sp_hand()
         from outputs.push_team_results import run as run_push_team_results
 
         run_push_team_results()
+        from outputs.push_team_l10_sp_hand import run as run_push_l10_sp_hand
+
+        run_push_l10_sp_hand()
 
     _run_step(
         "Step Results: scrape_results + compute_results + push_team_results",

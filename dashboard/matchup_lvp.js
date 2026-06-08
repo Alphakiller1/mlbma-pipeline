@@ -8,13 +8,14 @@
   var A = global.MLBMAAssets;
   var CM = global.CompareMetrics;
 
-  var ROLLING_WINDOW = 'L14';
+  var LINEUP_GAMES = 10;
   var STARTS_LIMIT = 10;
 
   var _pack = {
     spGameLog: [],
     spMetricSplits: [],
-    pitchMix: null
+    pitchMix: null,
+    teamL10SpHand: []
   };
   var _hydrateToken = 0;
 
@@ -49,9 +50,69 @@
       + (sub ? '<p class="mc-pane-desc">' + esc(sub) + '</p>' : '');
   }
 
-  function ratePerNine(pct) {
-    if (pct == null || isNaN(pct)) return null;
+  function normalizePct(pct) {
+    var n = num(pct);
+    if (n == null) return null;
+    if (n > 0 && n <= 1.5) return n * 100;
+    return n;
+  }
+
+  function k9FromPct(pct) {
+    pct = normalizePct(pct);
+    if (pct == null) return null;
     return Math.round(pct * 0.385 * 10) / 10;
+  }
+
+  function ratePerNine(pct) {
+    return k9FromPct(pct);
+  }
+
+  function scaleRate(val) {
+    var n = num(val);
+    if (n == null) return null;
+    if (n > 1.5) return null;
+    return n;
+  }
+
+  function wobaFromProfile(row) {
+    var wrc = num(pick(row, ['wRC_faced', 'wrc_faced', 'wRC+_faced', 'wRC+']));
+    if (wrc != null) return Math.round(0.320 * (wrc / 100) * 1000) / 1000;
+    var w = scaleRate(pick(row, ['wOBA_allowed', 'woba_allowed', 'wOBA', 'woba']));
+    if (w != null) return w;
+    var ops = scaleRate(pick(row, ['OPS', 'ops_allowed', 'OPS_allowed']));
+    if (ops != null) return Math.round((ops / 1.280) * 0.320 * 1000) / 1000;
+    return null;
+  }
+
+  function whipFromPitchScore(ps) {
+    ps = num(ps);
+    if (ps == null) return null;
+    return Math.round((1.42 - (ps - 50) * 0.0085) * 100) / 100;
+  }
+
+  function teamResultsRow(ctx, team) {
+    if (!ctx._resultsByTeam && S && S.parseTeamResultsMap) {
+      ctx._resultsByTeam = S.parseTeamResultsMap((ctx.data && ctx.data.teamResults) || []);
+    }
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
+    return ctx._resultsByTeam && ctx._resultsByTeam[tk];
+  }
+
+  function spWinPct(comp, ctx) {
+    var fromLog = winPctFromLog(comp.log);
+    if (fromLog != null) return fromLog;
+    return null;
+  }
+
+  function lineupSplitRow(ctx, team, spHand) {
+    if (!ctx) return null;
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
+    var map = spHandFilter(spHand) === 'l' ? ctx.scL : ctx.scR;
+    if (!map) return null;
+    if (Array.isArray(map)) {
+      return map.find(function(r) { return S.teamKey(r.t) === tk; }) || null;
+    }
+    return map[tk] || null;
   }
 
   function parseIp(raw) {
@@ -77,6 +138,7 @@
     _pack = {
       spGameLog: opts.spGameLog || [],
       spMetricSplits: opts.spMetricSplits || [],
+      teamL10SpHand: opts.teamL10SpHand || [],
       pitchMix: buildPitchMixIndex({
         pitcherL14: opts.pitchMixPitcherL14,
         pitcherYtd: opts.pitchMixPitcher,
@@ -244,9 +306,9 @@
     };
   }
 
-  function pitchMixRowStats(row) {
+  function pitchMixRowStats(row, side) {
     if (!row) return null;
-    return {
+    var stats = {
       label: pitchLabel(row),
       key: pitchTypeKey(row),
       usage: num(pick(row, ['pitch_pct', 'pitch_pct', 'Pitch Pct', 'usage_pct'])),
@@ -255,6 +317,15 @@
       xwoba: num(pick(row, ['xwoba', 'xWOBA', 'xwOBA'])),
       velo: num(pick(row, ['avg_release_speed', 'Avg Release Speed', 'velocity']))
     };
+    if (side === 'bat') {
+      stats.avg = num(pick(row, ['batting_avg', 'Batting Avg', 'avg', 'BA']));
+      if (stats.avg == null) {
+        var hits = num(pick(row, ['hits', 'H', 'is_hit']));
+        var ab = num(pick(row, ['ab', 'AB', 'is_ab']));
+        if (hits != null && ab != null && ab > 0) stats.avg = hits / ab;
+      }
+    }
+    return stats;
   }
 
   function rowsByPitchKey(rows) {
@@ -281,12 +352,18 @@
         var key = pitchTypeKey(row);
         if (!key) return;
         if (!acc[key]) {
-          acc[key] = { pitches: 0, xwobaSum: 0, xwobaN: 0, whiffSum: 0, whiffN: 0, label: pitchLabel(row) };
+          acc[key] = { pitches: 0, hits: 0, ab: 0, xwobaSum: 0, xwobaN: 0, whiffSum: 0, whiffN: 0, label: pitchLabel(row) };
         }
         var pitches = num(pick(row, ['pitches', 'Pitches'])) || 0;
         var xw = num(pick(row, ['xwoba', 'xWOBA']));
         var whiff = num(pick(row, ['whiff_rate', 'Whiff Rate']));
+        var hits = num(pick(row, ['hits', 'H', 'is_hit']));
+        var ab = num(pick(row, ['ab', 'AB', 'is_ab']));
+        var ba = num(pick(row, ['batting_avg', 'Batting Avg', 'avg', 'BA']));
         acc[key].pitches += pitches;
+        if (hits != null && ab != null) { acc[key].hits += hits; acc[key].ab += ab; }
+        else if (ba != null && ab != null && ab > 0) { acc[key].hits += ba * ab; acc[key].ab += ab; }
+        else if (ba != null && pitches > 0) { acc[key].hits += ba * pitches; acc[key].ab += pitches; }
         if (xw != null && pitches > 0) { acc[key].xwobaSum += xw * pitches; acc[key].xwobaN += pitches; }
         if (whiff != null && pitches > 0) { acc[key].whiffSum += whiff * pitches; acc[key].whiffN += pitches; }
       });
@@ -298,7 +375,7 @@
       out[k] = {
         label: a.label,
         key: k,
-        usage: null,
+        avg: a.ab > 0 ? a.hits / a.ab : null,
         whiff: a.whiffN ? a.whiffSum / a.whiffN : null,
         xwoba: a.xwobaN ? a.xwobaSum / a.xwobaN : null
       };
@@ -326,10 +403,10 @@
     });
 
     var rows = keys.map(function(key) {
-      var sp = pitchMixRowStats(spMap[key]);
-      var team = pitchMixRowStats(teamMap[key]);
+      var sp = pitchMixRowStats(spMap[key], 'sp');
+      var team = pitchMixRowStats(teamMap[key], 'bat');
       var lu = lineupMap && lineupMap[key] ? lineupMap[key] : null;
-      var bat = lu || (team ? { label: team.label, usage: team.usage, whiff: team.whiff, xwoba: team.xwoba } : null);
+      var bat = lu || (team ? { label: team.label, avg: team.avg, whiff: team.whiff, xwoba: team.xwoba } : null);
       return { pitch: sp && sp.label, sp: sp, bat: bat };
     }).filter(function(r) {
       return r.sp && (r.sp.usage == null || r.sp.usage >= 2);
@@ -346,7 +423,7 @@
   function pitchMixHtml(comp, ctx) {
     var lineup = comp.lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
     var mix = resolvePitchMix(comp.spName, comp.lineupTeam, lineup);
-    var sub = 'Pitcher usage vs lineup performance by pitch type'
+    var sub = 'Pitcher usage vs lineup avg by pitch type'
       + (mix.window ? ' · ' + mix.window : '')
       + (mix.lineupWeighted ? ' · projected lineup weighted' : ' · team batting mix');
 
@@ -384,7 +461,7 @@
         + '<td class="num">' + metricChip(sp.usage, 'pct', false, 1) + '</td>'
         + '<td class="num">' + metricChip(sp.whiff, 'pitching', false, 1) + '</td>'
         + '<td class="num">' + metricChip(sp.xwoba, 'woba', true, 3) + '</td>'
-        + '<td class="num mc-lvp-pitch-divider">' + metricChip(bat.usage, 'pct', false, 1) + '</td>'
+        + '<td class="num mc-lvp-pitch-divider">' + metricChip(bat.avg, 'avg', false, 3) + '</td>'
         + '<td class="num">' + metricChip(bat.whiff, 'pitching', true, 1) + '</td>'
         + '<td class="num">' + metricChip(bat.xwoba, 'woba', false, 3) + '</td>'
         + '</tr>';
@@ -406,13 +483,75 @@
       + '<th colspan="3" class="mc-lvp-pitchmix-group mc-lvp-pitchmix-group--lu">Lineup / Team</th>'
       + '</tr><tr>'
       + '<th>Usage%</th><th>Whiff%</th><th>xwOBA</th>'
-      + '<th>Usage%</th><th>Whiff%</th><th>xwOBA</th>'
+      + '<th>Avg</th><th>Whiff%</th><th>xwOBA</th>'
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+  }
+
+  function teamL10SpHandMap(rows) {
+    var map = {};
+    (rows || []).forEach(function(row) {
+      if (!row) return;
+      var team = S && S.teamKey
+        ? S.teamKey(pick(row, ['team', 'Tm', 'Team']))
+        : String(pick(row, ['team']) || '').toUpperCase();
+      var hand = String(pick(row, ['opp_starter_hand', 'opp starter hand', 'hand']) || '').trim().toUpperCase();
+      if (!team || (hand !== 'R' && hand !== 'L')) return;
+      map[team + ':' + hand] = row;
+    });
+    return map;
+  }
+
+  function lineupL10Row(ctx, team, spHand) {
+    if (!ctx._l10SpHandMap) {
+      ctx._l10SpHandMap = teamL10SpHandMap(_pack.teamL10SpHand || []);
+    }
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
+    var hand = spHandFilter(spHand) === 'l' ? 'L' : 'R';
+    return ctx._l10SpHandMap[tk + ':' + hand] || null;
+  }
+
+  function pctFromResults(raw) {
+    var n = num(raw);
+    if (n == null) return null;
+    if (n > 0 && n <= 1.5) return Math.round(n * 1000) / 10;
+    return Math.round(n * 10) / 10;
+  }
+
+  function lineupL10FormRow(luSide, ctx, team, spHand) {
+    var base = Object.assign({}, luSide && luSide.row ? luSide.row : {});
+    var l10 = lineupL10Row(ctx, team, spHand);
+    if (!l10) return base;
+    var games = num(pick(l10, ['games', 'Games']));
+    if (games == null || games < 1) return base;
+    var winPct = pctFromResults(pick(l10, ['win_pct', 'win pct', 'Win%']));
+    var qsPct = pctFromResults(pick(l10, ['qs_against_pct', 'qs against pct', 'QS% Allowed']));
+    var wrc = num(pick(l10, ['wrc_plus', 'wrc+', 'wRC+']));
+    var ops = num(pick(l10, ['ops', 'OPS']));
+    var woba = num(pick(l10, ['woba', 'wOBA']));
+    var pitchScore = num(pick(l10, ['pitch_score_against', 'pitch score against', 'Pitch Score Against']));
+    var pa = num(pick(l10, ['vs_sp_pa', 'vs sp pa']));
+    if (winPct != null) base.winPct = winPct;
+    if (qsPct != null) base.qs = qsPct;
+    if (wrc != null) base.wrc = wrc;
+    if (ops != null) base.ops = ops;
+    if (woba != null) base.woba = woba;
+    if (pitchScore != null) base.pitchScore = pitchScore;
+    var k9Faced = num(pick(l10, ['sp_k9_faced', 'sp k9 faced']));
+    var bb9Faced = num(pick(l10, ['sp_bb9_faced', 'sp bb9 faced']));
+    var whipFaced = num(pick(l10, ['sp_whip_faced', 'sp whip faced']));
+    var xfipFaced = num(pick(l10, ['sp_xfip_faced', 'sp xfip faced']));
+    if (k9Faced != null) base.l10K9Faced = k9Faced;
+    if (bb9Faced != null) base.l10Bb9Faced = bb9Faced;
+    if (whipFaced != null) base.l10WhipFaced = whipFaced;
+    if (xfipFaced != null) base.l10XfipFaced = xfipFaced;
+    base.l10Games = games;
+    base.l10VsSpPa = pa;
+    return base;
   }
 
   function lineupFilter(spHand) {
     if (!S || !S.createFilterState) {
-      return { hand: spHandFilter(spHand), location: 'all', pitcher: 'sp', batSide: 'both', segment: 'full', window: ROLLING_WINDOW };
+      return { hand: spHandFilter(spHand), location: 'all', pitcher: 'sp', batSide: 'both', segment: 'full', window: 'YTD' };
     }
     return S.createFilterState({
       hand: spHandFilter(spHand),
@@ -420,26 +559,31 @@
       pitcher: 'sp',
       batSide: 'both',
       segment: 'full',
-      window: ROLLING_WINDOW
+      window: 'YTD'
     });
   }
 
   function pitcherFilter(pitcherSide) {
     var loc = pitcherSide === 'home' ? 'home' : 'away';
     if (!S || !S.createFilterState) {
-      return { batSide: 'both', location: loc, segment: 'full', window: ROLLING_WINDOW };
+      return { batSide: 'both', location: loc, segment: 'full', window: 'L14' };
     }
     return S.createFilterState({
       batSide: 'both',
       location: loc,
       segment: 'full',
-      window: ROLLING_WINDOW
+      window: 'L14'
     });
   }
 
+  function lineupFormCaption(spHand, l10Row) {
+    var handLbl = handLabel(spHand);
+    var games = l10Row && l10Row.l10Games != null ? l10Row.l10Games : LINEUP_GAMES;
+    return 'Last ' + games + ' · vs SP · vs ' + handLbl;
+  }
+
   function filterCaption(f) {
-    if (CM && CM.filterSummary) return CM.filterSummary(f);
-    return ROLLING_WINDOW;
+    return 'L10 vs SP';
   }
 
   function normPitcherName(name) {
@@ -484,52 +628,77 @@
     });
     var n = starts.length;
     var whip = totalIp > 0 ? (totalH + totalBb) / totalIp : null;
+    var hr9 = totalIp > 0 ? (totalHr / totalIp) * 9 : null;
     return {
       starts: n,
-      k9: totalIp > 0 ? (totalK / totalIp) * 9 : null,
-      bb9: totalIp > 0 ? (totalBb / totalIp) * 9 : null,
+      k9: totalIp > 0 ? Math.round((totalK / totalIp) * 9 * 10) / 10 : null,
+      bb9: totalIp > 0 ? Math.round((totalBb / totalIp) * 9 * 10) / 10 : null,
       whip: whip != null ? Math.round(whip * 100) / 100 : null,
-      era: totalIp > 0 ? (totalEr / totalIp) * 9 : null,
-      qsRate: (qs / n) * 100,
-      kPct: totalBf > 0 ? (totalK / totalBf) * 100 : null,
-      bbPct: totalBf > 0 ? (totalBb / totalBf) * 100 : null
+      era: totalIp > 0 ? Math.round((totalEr / totalIp) * 9 * 100) / 100 : null,
+      qsRate: Math.round((qs / n) * 100),
+      kPct: totalBf > 0 ? Math.round((totalK / totalBf) * 1000) / 10 : null,
+      bbPct: totalBf > 0 ? Math.round((totalBb / totalBf) * 1000) / 10 : null,
+      hr9: hr9 != null ? Math.round(hr9 * 100) / 100 : null
     };
   }
 
   function winPctFromLog(log) {
     var w = 0, d = 0;
     (log || []).forEach(function(g) {
-      var dec = String(pick(g, ['dec', 'decision', 'Dec']) || '').trim().charAt(0).toUpperCase();
-      if (dec === 'W') { w++; d++; }
-      else if (dec === 'L') d++;
+      var res = String(pick(g, ['team_result', 'Team_Result', 'result', 'dec', 'decision', 'Dec']) || '')
+        .trim().charAt(0).toUpperCase();
+      if (res === 'W') { w++; d++; }
+      else if (res === 'L') d++;
     });
     return d ? Math.round((w / d) * 1000) / 10 : null;
   }
 
   function extendedPitcherStats(row, met) {
     met = met || {};
+    var kPct = normalizePct(met.kPct != null ? met.kPct : pick(row, ['K_pct', 'K%', 'k_pct']));
+    var bbPct = normalizePct(met.bbPct != null ? met.bbPct : pick(row, ['BB_pct', 'BB%', 'bb_pct']));
     var whip = num(pick(row, ['WHIP', 'whip']));
-    var k9 = num(pick(row, ['K/9', 'K9', 'k9'])) || ratePerNine(met.kPct);
-    var bb9 = num(pick(row, ['BB/9', 'BB9', 'bb9'])) || ratePerNine(met.bbPct);
+    var k9 = num(pick(row, ['K/9', 'K9', 'k9'])) || k9FromPct(kPct);
+    var bb9 = num(pick(row, ['BB/9', 'BB9', 'bb9'])) || k9FromPct(bbPct);
     var xfip = num(pick(row, ['xFIP', 'xfip']));
-    var woba = num(pick(row, ['wOBA_allowed', 'woba_allowed', 'OBR_allowed', 'wOBA']));
-    var ops = num(pick(row, ['OPS_allowed', 'ops_allowed', 'OPS Against']));
-    return { whip: whip, k9: k9, bb9: bb9, xfip: xfip, woba: woba, ops: ops };
+    var fip = num(pick(row, ['FIP', 'fip']));
+    if (xfip == null) xfip = fip;
+    var ops = scaleRate(pick(row, ['OPS', 'ops_allowed', 'OPS_allowed']));
+    var woba = wobaFromProfile(row);
+    return { whip: whip, k9: k9, bb9: bb9, xfip: xfip, fip: fip, woba: woba, ops: ops, kPct: kPct, bbPct: bbPct };
   }
 
-  function lineupPitchingAgainst(ctx, team) {
-    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
-    var prof = (ctx.teamProfiles && ctx.teamProfiles[tk]) || {};
-    var suf = ROLLING_WINDOW === 'L14' ? '_l14' : ROLLING_WINDOW === 'L7' ? '_l7' : '';
-    function col(base) {
-      var keys = [base + suf, base, base.replace(/_/g, ' ')];
-      return num(pick(prof, keys));
+  function lineupPitchingAgainst(ctx, lineupTeam, luRow, spHand) {
+    luRow = luRow || {};
+    if (luRow.l10K9Faced != null || luRow.l10Bb9Faced != null) {
+      return {
+        k9: luRow.l10K9Faced,
+        bb9: luRow.l10Bb9Faced,
+        whip: luRow.l10WhipFaced,
+        xfip: luRow.l10XfipFaced
+      };
     }
+    var split = lineupSplitRow(ctx, lineupTeam, spHand) || {};
+    var tk = S && S.teamKey ? S.teamKey(lineupTeam) : String(lineupTeam || '').toUpperCase();
+    var pals = ctx.pals && ctx.pals[tk];
+    var kPct = split.k;
+    var bbPct = split.bb;
+    var pitchScore = luRow.pitchScore != null ? luRow.pitchScore : null;
+    var xfip = pals && pals.xfip;
     return {
-      k9: col('k9_against') || col('avg_k9_faced'),
-      bb9: col('bb9_against') || col('avg_bb9_faced'),
-      whip: col('whip_against') || col('avg_whip_faced')
+      k9: k9FromPct(kPct),
+      bb9: k9FromPct(bbPct),
+      whip: whipFromPitchScore(pitchScore),
+      xfip: xfip
     };
+  }
+
+  function pitchScoreFromLogSummary(logSum) {
+    if (!logSum || logSum.kPct == null) return null;
+    if (S && S.computePitchScoreFromRates) {
+      return S.computePitchScoreFromRates(logSum.kPct, logSum.bbPct, logSum.hr9, null);
+    }
+    return null;
   }
 
   function metricRow(label, valA, valB, opts) {
@@ -551,30 +720,28 @@
     var mo = (comp.sp && comp.sp.metricsObj) || {};
     var ext = comp.spExt || {};
     var logSum = comp.logSum;
-    var against = lineupPitchingAgainst(ctx, lineupTeam);
+    var against = lineupPitchingAgainst(ctx, lineupTeam, lu, comp.spHand);
 
-    var spK9 = ext.k9 != null ? ext.k9 : (comp.sp && comp.sp.k9);
-    var spBb9 = ext.bb9 != null ? ext.bb9 : (comp.sp && comp.sp.bb9);
-    var spWhip = ext.whip != null ? ext.whip : (logSum && logSum.whip);
-    var spXfip = ext.xfip != null ? ext.xfip : mo.fip;
-    var spWoba = ext.woba != null ? ext.woba : mo.obrAllowed;
+    var spK9 = (logSum && logSum.k9 != null) ? logSum.k9 : (ext.k9 != null ? ext.k9 : k9FromPct(ext.kPct != null ? ext.kPct : mo.kPct));
+    var spBb9 = (logSum && logSum.bb9 != null) ? logSum.bb9 : (ext.bb9 != null ? ext.bb9 : k9FromPct(ext.bbPct != null ? ext.bbPct : mo.bbPct));
+    var spWhip = (logSum && logSum.whip != null) ? logSum.whip : ext.whip;
+    var spXfip = ext.xfip != null ? ext.xfip : (mo.fip != null ? mo.fip : null);
+    var spWoba = ext.woba;
     var spOps = ext.ops;
     var spQs = logSum ? logSum.qsRate : num(pick(comp.sp && comp.sp.row, ['QS_pct', 'qs_pct', 'QS%']));
-    var spWin = winPctFromLog(comp.log);
-
-    var luK9 = against.k9;
-    var luBb9 = against.bb9;
-    var luWhip = against.whip;
+    var spWin = spWinPct(comp, ctx);
+    var spPitchScore = pitchScoreFromLogSummary(logSum);
+    if (spPitchScore == null && comp.sp) spPitchScore = comp.sp.primary;
 
     return [
       metricRow('Win%', lu.winPct, spWin, { ctx: 'pct' }),
       metricRow('QS% Allowed / QS%', lu.qs, spQs, { ctx: 'pct', invertA: true }),
-      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, comp.sp && comp.sp.primary, { ctx: 'pitching', invertA: true }),
-      metricRow('K/9', luK9, spK9, { ctx: 'pitching', invertA: true }),
-      metricRow('BB/9', luBb9, spBb9, { ctx: 'pitching', invertA: true, invertB: true }),
-      metricRow('WHIP', luWhip, spWhip, { ctx: 'whip', invertA: true, invertB: true }),
+      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, spPitchScore, { ctx: 'pitching', invertA: true }),
+      metricRow('K/9', against.k9, spK9, { ctx: 'pitching', invertA: true }),
+      metricRow('BB/9', against.bb9, spBb9, { ctx: 'pitching', invertA: true, invertB: true }),
+      metricRow('WHIP', against.whip, spWhip, { ctx: 'whip', invertA: true, invertB: true }),
       metricRow('OPS / OPS Allowed', lu.ops, spOps, { ctx: 'ops', invertB: true, decimals: 3 }),
-      metricRow('xFIP', lu.xfip, spXfip, { ctx: 'pitching', invertA: true, invertB: true }),
+      metricRow('xFIP', against.xfip, spXfip, { ctx: 'pitching', invertA: true, invertB: true }),
       metricRow('wOBA / wOBA Allowed', lu.woba, spWoba, { ctx: 'woba', invertB: true, decimals: 3 })
     ];
   }
@@ -599,10 +766,9 @@
     }).join('');
   }
 
-  function lineupPerformanceHtml(luSide, spHand, luFilter) {
-    var row = luSide && luSide.row ? luSide.row : {};
-    var handLbl = handLabel(spHand);
-    var cap = filterCaption(luFilter);
+  function lineupPerformanceHtml(luSide, spHand, luFilter, l10Row) {
+    var row = l10Row || (luSide && luSide.row ? luSide.row : {});
+    var cap = lineupFormCaption(spHand, row);
     var cols = [
       { label: 'Win%', key: 'winPct', ctx: 'pct' },
       { label: 'QS% Allowed', key: 'qs', ctx: 'pct', inv: true },
@@ -615,7 +781,7 @@
     var cells = cols.map(function(c) {
       return '<td class="num">' + metricChip(row[c.key], c.ctx, c.inv, c.dec == null ? 1 : c.dec) + '</td>';
     }).join('');
-    return sectionHead('Lineup Recent Form', 'Rolling ' + cap + ' · vs SP · vs ' + handLbl)
+    return sectionHead('Lineup Recent Form', cap)
       + '<div class="mc-lvp-table-wrap"><table class="mc-lvp-table"><thead><tr>' + head + '</tr></thead>'
       + '<tbody><tr>' + cells + '</tr></tbody></table></div>';
   }
@@ -626,19 +792,20 @@
       return sectionHead('Pitcher Last 10 Starts', cap)
         + '<p class="ca-helper mc-lvp-empty">No starts in SP_Game_Log for ' + esc(spName) + '.</p>';
     }
-    var sumCells = summary
-      ? '<tr class="mc-lvp-table-sum"><td colspan="3"><strong>L' + log.length + ' avg</strong></td>'
-        + '<td class="num">' + fmt(summary.era, 2) + '</td>'
-        + '<td class="num">' + fmt(summary.k9, 1) + '</td>'
-        + '<td class="num">' + fmt(summary.bb9, 1) + '</td>'
-        + '<td class="num">' + fmt(summary.whip, 2) + '</td>'
-        + '<td class="num">' + fmt(summary.qsRate, 0) + '%</td>'
-        + '</tr>'
+    var sumFooter = summary
+      ? '<div class="mc-lvp-starts-sum">'
+        + '<span class="mc-lvp-starts-sum-label">L' + log.length + ' avg</span>'
+        + '<span>ERA <strong>' + fmt(summary.era, 2) + '</strong></span>'
+        + '<span>K/9 <strong>' + fmt(summary.k9, 1) + '</strong></span>'
+        + '<span>BB/9 <strong>' + fmt(summary.bb9, 1) + '</strong></span>'
+        + '<span>WHIP <strong>' + fmt(summary.whip, 2) + '</strong></span>'
+        + '<span>QS% <strong>' + fmt(summary.qsRate, 0) + '%</strong></span>'
+        + (winPctFromLog(log) != null ? '<span>Win% <strong>' + fmt(winPctFromLog(log), 1) + '%</strong></span>' : '')
+        + '</div>'
       : '';
     var body = log.map(function(g) {
       var dt = pick(g, ['date', 'Date']);
       var opp = pick(g, ['opponent_team', 'opponent team', 'Opponent']);
-      var dec = pick(g, ['dec', 'decision', 'Dec']) || '—';
       var ip = pick(g, ['IP', 'ip']);
       var er = pick(g, ['ER', 'er']);
       var k = pick(g, ['K']);
@@ -648,7 +815,6 @@
       return '<tr>'
         + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
         + '<td><span class="mc-lvp-opp">' + logo + ' ' + esc(opp) + '</span></td>'
-        + '<td class="num">' + esc(dec) + '</td>'
         + '<td class="num">' + esc(ip) + '</td>'
         + '<td class="num">' + esc(er) + '</td>'
         + '<td class="num">' + esc(k) + '</td>'
@@ -658,8 +824,9 @@
     }).join('');
     return sectionHead('Pitcher Last 10 Starts', cap)
       + '<div class="mc-lvp-table-wrap"><table class="mc-lvp-table mc-lvp-table--starts"><thead><tr>'
-      + '<th>Date</th><th>Opp</th><th>Dec</th><th>IP</th><th>ER</th><th>K</th><th>BB</th><th>HR</th>'
-      + '</tr></thead><tbody>' + body + sumCells + '</tbody></table></div>';
+      + '<th>Date</th><th>Opp</th><th>IP</th><th>ER</th><th>K</th><th>BB</th><th>HR</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table></div>'
+      + sumFooter;
   }
 
   function statCompareHtml(lineupTeam, spName, pitcherTeam, rows) {
@@ -702,6 +869,10 @@
     ).then(function(res) {
       var lu = res.dataA && res.dataA.entity === 'lineup' ? res.dataA : res.dataB;
       var sp = res.dataA && res.dataA.entity === 'pitcher' ? res.dataA : res.dataB;
+      var l10Form = lineupL10FormRow(lu, ctx, lineupTeam, spHand);
+      if (lu) {
+        lu = Object.assign({}, lu, { row: l10Form });
+      }
       var log = pitcherGamelog(spName, STARTS_LIMIT);
       var logSum = summarizeStarts(log);
       var spExt = extendedPitcherStats(sp && sp.row, sp && sp.metricsObj);
@@ -732,9 +903,9 @@
     var metrics = buildDuelMetrics(comp, ctx || {}, comp.lineupTeam);
     return '<div class="mc-lvp-performance ca-board">'
       + '<h3 class="mc-lvp-block-title">Performance Comparison</h3>'
-      + '<p class="mc-pane-desc">Lineup rolling form vs same-handed SPs · pitcher last ' + STARTS_LIMIT + ' starts · head-to-head stat matrix.</p>'
+      + '<p class="mc-pane-desc">Lineup last ' + LINEUP_GAMES + ' games vs same-handed SPs (stats vs starter only) · pitcher last ' + STARTS_LIMIT + ' starts · head-to-head stat matrix.</p>'
       + '<div class="mc-grid-2 mc-lvp-perf-grid">'
-      + '<div class="mc-lvp-perf-panel">' + lineupPerformanceHtml(comp.lu, comp.spHand, comp.luFilter) + '</div>'
+      + '<div class="mc-lvp-perf-panel">' + lineupPerformanceHtml(comp.lu, comp.spHand, comp.luFilter, comp.lu && comp.lu.row) + '</div>'
       + '<div class="mc-lvp-perf-panel">' + pitcherStartsHtml(comp.spName, comp.log, comp.logSum) + '</div>'
       + '</div>'
       + statCompareHtml(comp.lineupTeam, comp.spName, comp.pitcherTeam, metrics)

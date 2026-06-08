@@ -45,6 +45,7 @@ GAMELOG_COLUMNS = [
     "batters_faced",
     "game_pk",
     "f5_er",
+    "team_result",
     "opponent_OSI",
     "opponent_ABQ",
     "opponent_RCV",
@@ -277,6 +278,33 @@ def parse_start(
     }
 
 
+def attach_team_results(df: pd.DataFrame) -> pd.DataFrame:
+    path = DATA_DIR / "game_results.csv"
+    if df.empty or not path.exists():
+        return df
+    try:
+        gr = pd.read_csv(path, usecols=["game_pk", "team", "result"])
+    except Exception:
+        return df
+    gr["team"] = gr["team"].astype(str).str.strip().str.upper()
+    gr["game_pk"] = pd.to_numeric(gr["game_pk"], errors="coerce")
+    lookup = {
+        (int(row.game_pk), row.team): str(row.result or "").strip().upper()
+        for row in gr.dropna(subset=["game_pk", "team"]).itertuples(index=False)
+    }
+    df = df.copy()
+    df["team_result"] = df.apply(
+        lambda row: lookup.get(
+            (int(row["game_pk"]), str(row.get("pitcher_team", "")).strip().upper()),
+            "",
+        )
+        if pd.notna(row.get("game_pk"))
+        else "",
+        axis=1,
+    )
+    return df
+
+
 def run():
     print(f"Scraping SP game logs for {CURRENT_SEASON}...")
     sp_df = load_sp_pitchers()
@@ -323,6 +351,7 @@ def run():
         print("  No starts found -- writing empty gamelog")
         df = pd.DataFrame(columns=GAMELOG_COLUMNS)
     else:
+        df = attach_team_results(df)
         public_cols = [c for c in GAMELOG_COLUMNS if c in df.columns]
         df = df[public_cols]
 

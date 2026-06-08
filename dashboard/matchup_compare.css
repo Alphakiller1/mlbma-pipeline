@@ -765,6 +765,46 @@
   opacity: 0.55;
   transition: opacity 0.18s ease;
 }
+.mc-lvp-lineup-block { margin-bottom: 4px; }
+.mc-lvp-lineup-block .mc-lcc-controls {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border, #28282f);
+  background: var(--bg-3, #18181c);
+}
+#mcLvPLineupCard .mc-lcc-card,
+#mcLvPSpCard .mc-sp-lvp-card { margin: 0; height: 100%; }
+.mc-sp-lvp-card .mc-sp-lvp-head .ca-pitcher-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.mc-sp-lvp-card .mc-sp-lvp-head {
+  align-items: center;
+  gap: 12px;
+}
+.mc-sp-lvp-score {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.mc-sp-lvp-name a { color: inherit; text-decoration: none; }
+.mc-sp-lvp-name a:hover { color: var(--accent-l, #C4B0FF); }
+.mc-lcc-split-label { width: 72px; white-space: nowrap; }
+.mc-sp-split-table { margin-top: 0; }
+.mc-sp-stats--compact {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 11px;
+  gap: 8px 12px;
+}
+.mc-sp-lvp-card .lineup-row--platoon-l .mc-lcc-split-label { box-shadow: inset 3px 0 0 #F87171; }
+.mc-sp-lvp-card .lineup-row--platoon-r .mc-lcc-split-label { box-shadow: inset 3px 0 0 #60A5FA; }
 
 /* LvP performance comparison */
 .mc-lvp-async { margin-top: 20px; }
@@ -828,6 +868,26 @@
   border-top: 1px solid var(--border, #28282f);
   font-weight: 700;
   background: rgba(255, 255, 255, 0.02);
+}
+.mc-lvp-starts-sum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border, #28282f);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 11px;
+  color: var(--text-3, #9ca3af);
+}
+.mc-lvp-starts-sum-label {
+  font-weight: 700;
+  color: var(--text-2, #d1d5db);
+  margin-right: 4px;
+}
+.mc-lvp-starts-sum strong {
+  color: var(--text-1, #f3f4f6);
+  font-variant-numeric: tabular-nums;
 }
 .mc-lvp-date { white-space: nowrap; color: var(--text-3); font-size: 11px; }
 .mc-lvp-opp { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }

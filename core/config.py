@@ -402,6 +402,7 @@ SHEET_TABS = {
     "batter_splits_recent": "Batter_Splits_Recent",
     "team_profiles": "Team_Profiles",
     "team_results": "Team_Results",
+    "team_l10_sp_hand": "Team_L10_SP_Hand",
 }
 
 TEAM_MAP = {

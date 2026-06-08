@@ -19,6 +19,7 @@ SCHEDULE_URL = "https://statsapi.mlb.com/api/v1/schedule"
 FEED_URL = "https://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live"
 BOXSCORE_URL = "https://statsapi.mlb.com/api/v1/game/{game_pk}/boxscore"
 OUTPUT_FILE = DATA_DIR / "game_results.csv"
+REGISTRY_FILE = DATA_DIR / "player_registry.csv"
 
 RESULT_COLUMNS = [
     "game_pk",
@@ -34,6 +35,7 @@ RESULT_COLUMNS = [
     "winning_pitcher_is_starter",
     "save_pitcher_id",
     "opp_starter_id",
+    "opp_starter_hand",
     "opp_starter_ip",
     "opp_starter_er",
     "opp_quality_start",
@@ -45,7 +47,27 @@ RESULT_COLUMNS = [
     "opp_pitches",
     "team_innings_batted",
     "had_opener",
+    "vs_sp_ab",
+    "vs_sp_h",
+    "vs_sp_bb",
+    "vs_sp_ibb",
+    "vs_sp_hbp",
+    "vs_sp_sf",
+    "vs_sp_hr",
+    "vs_sp_2b",
+    "vs_sp_3b",
+    "vs_sp_k",
 ]
+
+_WOBA_WEIGHTS = {
+    "bb": 0.690,
+    "ibb": 0.690,
+    "hbp": 0.722,
+    "1b": 0.880,
+    "2b": 1.242,
+    "3b": 1.569,
+    "hr": 2.015,
+}
 
 
 def _request_json(url: str, params: Optional[dict] = None, retries: int = 3) -> dict:
@@ -175,6 +197,93 @@ def _team_innings_batted(feed: dict, is_home: bool) -> int:
     return total
 
 
+def _load_throws_map() -> dict[int, str]:
+    if not REGISTRY_FILE.exists():
+        return {}
+    try:
+        df = pd.read_csv(REGISTRY_FILE, usecols=["player_id", "throws"])
+    except Exception:
+        return {}
+    out: dict[int, str] = {}
+    for row in df.itertuples(index=False):
+        pid = row.player_id
+        if pd.isna(pid):
+            continue
+        hand = str(row.throws or "").strip().upper()
+        if hand in ("R", "L"):
+            out[int(pid)] = hand
+    return out
+
+
+def _starter_hand(throws_map: dict[int, str], starter_id: Optional[int]) -> str:
+    if not starter_id:
+        return ""
+    return throws_map.get(int(starter_id), "")
+
+
+def _vs_starter_batting_stats(
+    feed: dict, is_home: bool, opp_starter_id: Optional[int]
+) -> dict[str, int]:
+    empty = {k: 0 for k in (
+        "vs_sp_ab", "vs_sp_h", "vs_sp_bb", "vs_sp_ibb", "vs_sp_hbp",
+        "vs_sp_sf", "vs_sp_hr", "vs_sp_2b", "vs_sp_3b", "vs_sp_k",
+    )}
+    if not opp_starter_id:
+        return empty
+    opp_id = int(opp_starter_id)
+    plays = (feed.get("liveData", {}) or {}).get("plays", {}) or {}
+    all_plays = plays.get("allPlays", []) or []
+    stats = dict(empty)
+    ab_events = {
+        "single", "double", "triple", "home_run", "field_out", "force_out",
+        "grounded_into_double_play", "fielders_choice", "fielders_choice_out",
+        "double_play", "triple_play", "strikeout", "strikeout_double_play",
+        "other_out", "sac_fly_double_play", "sac_bunt_double_play",
+    }
+    for play in all_plays:
+        about = play.get("about", {}) or {}
+        top = about.get("isTopInning")
+        if is_home and top:
+            continue
+        if not is_home and not top:
+            continue
+        pitcher = (play.get("matchup", {}) or {}).get("pitcher", {}) or {}
+        if int(pitcher.get("id") or 0) != opp_id:
+            continue
+        ev = str((play.get("result", {}) or {}).get("eventType") or "").strip().lower()
+        if not ev:
+            continue
+        if ev in ("walk",):
+            stats["vs_sp_bb"] += 1
+        elif ev in ("intent_walk",):
+            stats["vs_sp_ibb"] += 1
+        elif ev in ("hit_by_pitch",):
+            stats["vs_sp_hbp"] += 1
+        elif ev in ("sac_fly", "sac_fly_double_play"):
+            stats["vs_sp_sf"] += 1
+        elif ev in ("strikeout", "strikeout_double_play"):
+            stats["vs_sp_k"] += 1
+            stats["vs_sp_ab"] += 1
+        elif ev in ("single",):
+            stats["vs_sp_ab"] += 1
+            stats["vs_sp_h"] += 1
+        elif ev in ("double",):
+            stats["vs_sp_ab"] += 1
+            stats["vs_sp_h"] += 1
+            stats["vs_sp_2b"] += 1
+        elif ev in ("triple",):
+            stats["vs_sp_ab"] += 1
+            stats["vs_sp_h"] += 1
+            stats["vs_sp_3b"] += 1
+        elif ev in ("home_run",):
+            stats["vs_sp_ab"] += 1
+            stats["vs_sp_h"] += 1
+            stats["vs_sp_hr"] += 1
+        elif ev in ab_events:
+            stats["vs_sp_ab"] += 1
+    return stats
+
+
 def _blown_save(team_box: dict) -> bool:
     players = team_box.get("players", {}) or {}
     for pdata in players.values():
@@ -184,7 +293,9 @@ def _blown_save(team_box: dict) -> bool:
     return False
 
 
-def _rows_for_game(game: dict, feed: dict, boxscore: dict) -> List[dict]:
+def _rows_for_game(
+    game: dict, feed: dict, boxscore: dict, throws_map: dict[int, str]
+) -> List[dict]:
     game_pk = int(game.get("gamePk"))
     game_date = game.get("officialDate") or game.get("gameDate", "")[:10]
     teams = game.get("teams", {})
@@ -221,6 +332,7 @@ def _rows_for_game(game: dict, feed: dict, boxscore: dict) -> List[dict]:
         opp_starter_ip = away_starter_ip if is_home else home_starter_ip
         opp_starter_er = away_starter_er if is_home else home_starter_er
         opp_pitches = int(((opp_box.get("teamStats", {}) or {}).get("pitching", {}) or {}).get("pitchesThrown") or 0)
+        vs_sp = _vs_starter_batting_stats(feed, is_home, opp_starter_id)
         return {
             "game_pk": game_pk,
             "date": game_date,
@@ -235,6 +347,7 @@ def _rows_for_game(game: dict, feed: dict, boxscore: dict) -> List[dict]:
             "winning_pitcher_is_starter": bool(winner_id and team_starter_id and int(winner_id) == int(team_starter_id)),
             "save_pitcher_id": save_id,
             "opp_starter_id": opp_starter_id,
+            "opp_starter_hand": _starter_hand(throws_map, opp_starter_id),
             "opp_starter_ip": opp_starter_ip,
             "opp_starter_er": opp_starter_er,
             "opp_quality_start": bool(opp_starter_ip is not None and opp_starter_ip >= 6 and int(opp_starter_er or 0) <= 3),
@@ -246,6 +359,7 @@ def _rows_for_game(game: dict, feed: dict, boxscore: dict) -> List[dict]:
             "opp_pitches": opp_pitches,
             "team_innings_batted": _team_innings_batted(feed, is_home),
             "had_opener": _had_opener(team_box, team_starter_id, team_starter_ip),
+            **vs_sp,
         }
 
     return [make_row(True), make_row(False)]
@@ -270,6 +384,7 @@ def run():
             games.append(game)
     print(f"  Final games in range: {len(games)}")
 
+    throws_map = _load_throws_map()
     existing = _load_existing()
     done_keys = {
         (int(row.game_pk), str(row.team).strip().upper())
@@ -294,7 +409,7 @@ def run():
         try:
             feed = _request_json(FEED_URL.format(game_pk=game_pk))
             box = _request_json(BOXSCORE_URL.format(game_pk=game_pk))
-            new_rows.extend(_rows_for_game(game, feed, box))
+            new_rows.extend(_rows_for_game(game, feed, box, throws_map))
         except Exception as exc:
             failures += 1
             print(f"  WARNING: game {game_pk} parse failed ({exc})")

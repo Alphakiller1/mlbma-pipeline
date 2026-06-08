@@ -36,7 +36,24 @@ RAW_COLUMNS = [
     "pfx_z",
     "estimated_woba_using_speedangle",
     "launch_speed",
+    "events",
 ]
+
+HIT_EVENTS = {"single", "double", "triple", "home_run"}
+AB_EVENTS = HIT_EVENTS | {
+    "field_out",
+    "force_out",
+    "grounded_into_double_play",
+    "fielders_choice",
+    "sac_fly",
+    "sac_bunt",
+    "strikeout",
+    "strikeout_double_play",
+    "double_play",
+    "triple_play",
+    "other_out",
+    "field_error",
+}
 
 SWING_DESCRIPTIONS = {
     "swinging_strike",
@@ -171,6 +188,13 @@ def _load_raw(start_date: str, end_date: str) -> pd.DataFrame:
     df["xwoba_events"] = df["estimated_woba_using_speedangle"].notna().astype(int)
     df["xwoba_sum"] = df["estimated_woba_using_speedangle"].fillna(0.0)
     df["launch_speed_sum"] = df["launch_speed"].fillna(0.0)
+    if "events" in df.columns:
+        ev = df["events"].fillna("").astype(str).str.strip().str.lower()
+        df["is_hit"] = ev.isin(HIT_EVENTS).astype(int)
+        df["is_ab"] = ev.isin(AB_EVENTS).astype(int)
+    else:
+        df["is_hit"] = 0
+        df["is_ab"] = 0
     df["release_speed_sum"] = df["release_speed"].fillna(0.0)
     df["release_speed_n"] = df["release_speed"].notna().astype(int)
     df["spin_sum"] = df["release_spin_rate"].fillna(0.0)
@@ -214,10 +238,13 @@ def _finalize_mix(df: pd.DataFrame, count_col: str) -> pd.DataFrame:
     df["avg_pfx_z"] = _safe_rate(df["pfx_z_sum"], df["pfx_z_n"])
     df["avg_launch_speed"] = _safe_rate(df["launch_speed_sum"], df["batted_ball"])
     df["xwoba"] = _safe_rate(df["xwoba_sum"], df["xwoba_events"])
+    if "is_hit" in df.columns and "is_ab" in df.columns:
+        df["batting_avg"] = _safe_rate(df["is_hit"], df["is_ab"])
     drop_cols = [
         "release_speed_sum", "release_speed_n", "spin_sum", "spin_n",
         "pfx_x_sum", "pfx_x_n", "pfx_z_sum", "pfx_z_n",
         "launch_speed_sum", "xwoba_sum", "xwoba_events",
+        "is_hit", "is_ab",
     ]
     existing = [c for c in drop_cols if c in df.columns]
     return df.drop(columns=existing)
@@ -273,7 +300,7 @@ def _aggregate_batter_mix(raw: pd.DataFrame, registry: pd.DataFrame) -> pd.DataF
         "out_zone_swing", "in_zone_swing", "batted_ball",
         "release_speed_sum", "release_speed_n", "spin_sum", "spin_n",
         "pfx_x_sum", "pfx_x_n", "pfx_z_sum", "pfx_z_n",
-        "launch_speed_sum", "xwoba_sum", "xwoba_events",
+        "launch_speed_sum", "xwoba_sum", "xwoba_events", "is_hit", "is_ab",
     ]].sum().reset_index()
     meta = registry.rename(columns={"player_id": "batter", "bats": "hand"}).copy()
     meta = meta[["batter", "full_name", "team_abbr", "hand"]]
@@ -294,7 +321,7 @@ def _aggregate_batter_mix(raw: pd.DataFrame, registry: pd.DataFrame) -> pd.DataF
         "player_id", "full_name", "team_abbr", "hand", "pitch_name", "pitch_type",
         "pitches", "pitch_pct", "avg_release_speed", "avg_spin_rate", "avg_pfx_x", "avg_pfx_z",
         "whiff_rate", "csw_rate", "zone_rate", "chase_rate", "in_zone_swing_rate",
-        "avg_launch_speed", "xwoba",
+        "avg_launch_speed", "xwoba", "batting_avg",
     ]
     return out[cols].sort_values(["team_abbr", "full_name", "pitches"], ascending=[True, True, False])
 
@@ -305,14 +332,14 @@ def _aggregate_team_mix(raw: pd.DataFrame, team_col: str, out_team_col: str) -> 
         "out_zone_swing", "in_zone_swing", "batted_ball",
         "release_speed_sum", "release_speed_n", "spin_sum", "spin_n",
         "pfx_x_sum", "pfx_x_n", "pfx_z_sum", "pfx_z_n",
-        "launch_speed_sum", "xwoba_sum", "xwoba_events",
+        "launch_speed_sum", "xwoba_sum", "xwoba_events", "is_hit", "is_ab",
     ]].sum().reset_index().rename(columns={team_col: out_team_col})
     out = _finalize_mix(sums, "pitches")
     cols = [
         out_team_col, "pitch_name", "pitch_type", "pitches", "pitch_pct",
         "avg_release_speed", "avg_spin_rate", "avg_pfx_x", "avg_pfx_z",
         "whiff_rate", "csw_rate", "zone_rate", "chase_rate", "in_zone_swing_rate",
-        "avg_launch_speed", "xwoba",
+        "avg_launch_speed", "xwoba", "batting_avg",
     ]
     return out[cols].sort_values([out_team_col, "pitches"], ascending=[True, False])
 

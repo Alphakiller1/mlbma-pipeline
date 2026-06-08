@@ -43,7 +43,8 @@ window.MLBMA_CONFIG = {
   "batter_splits_vs_rp": "Batter_Splits_vsRP",
   "batter_splits_recent": "Batter_Splits_Recent",
   "team_profiles": "Team_Profiles",
-  "team_results": "Team_Results"
+  "team_results": "Team_Results",
+  "team_l10_sp_hand": "Team_L10_SP_Hand"
 },
   DASHBOARD_PAGES: [
     { id: "main", label: "Main Dashboard", file: "chase_analytics_mlb_oem_v7.html", url: "chase_analytics_mlb_oem_v7.html", params: null },

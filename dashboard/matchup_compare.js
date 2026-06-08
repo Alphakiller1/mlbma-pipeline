@@ -435,32 +435,31 @@
       + '</div>';
   }
 
-  function lineupVsPitcherContent(ctx, lineupSide, pitcherSide) {
+  function lineupVsPitcherContent(ctx, lineupSide, pitcherSide, state) {
     var m = ctx.m;
     var lineupTeam = lineupSide === 'home' ? m.home : m.away;
     var pitcherSideLbl = pitcherSide === 'home' ? 'Home' : 'Away';
     var pitcherTeam = pitcherSide === 'home' ? m.home : m.away;
     var spName = pitcherSide === 'home' ? m.homeSP : m.awaySP;
     var spHand = pitcherSide === 'home' ? m.homeHand : m.awayHand;
-    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
-    var row = lineupSide === 'home' ? ctx.homeRow : ctx.awayRow;
     var met = pitcherSide === 'home' ? ctx.homeMet : ctx.awayMet;
     var ps = pitcherSide === 'home' ? ctx.homePs : ctx.awayPs;
-    var lineupOsi = lineupSide === 'home' ? m.homeOSI : m.awayOSI;
-    var spHandLbl = (spHand || '?').charAt(0) === 'L' ? 'LHP' : 'RHP';
-    var oppHand = pitcherSide === 'home' ? m.homeHand : m.awayHand;
-    var palsTeam = ctx.pals[lineupTeam] || {};
-    var edgeLabel = lineupTeam + ' lineup vs ' + spHandLbl + ' (' + spName + ')';
+    state = state || _compareState || { lvWin: 'ytd' };
+    var lineupCard = global.MatchupLineupCompare && MatchupLineupCompare.lineupCardForPitcher
+      ? MatchupLineupCompare.lineupCardForPitcher(ctx, state, lineupSide, spHand)
+      : ('<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">'
+        + S.teamLogo(lineupTeam, 20) + ' <span>' + esc(lineupTeam) + ' Projected Lineup</span></h3>'
+        + S.buildLineupTable(lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup, spHand) + '</div>');
+    var winControls = global.MatchupLineupCompare && MatchupLineupCompare.controlsHtml
+      ? MatchupLineupCompare.controlsHtml(state)
+      : '';
     return '<div class="mc-lvp-body">'
+      + '<div class="mc-lvp-lineup-block">'
+      + winControls
       + '<div class="mc-grid-2 mc-lvp-grid">'
-      + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">'
-      + S.teamLogo(lineupTeam, 20) + ' <span>' + esc(lineupTeam) + ' Projected Lineup</span></h3>'
-      + S.buildLineupTable(lineup, oppHand) + '</div>'
-      + '<div class="mc-card">' + spCard(pitcherSideLbl, spName, spHand, pitcherTeam, m, met, ps, ctx.data.spL14) + '</div>'
-      + '</div>'
-      + '<div style="margin-top:16px;">'
-      + edgePanel(edgeLabel, row, oppHand, lineupOsi, met.osiAllowed, palsTeam, lineupTeam)
-      + '</div>'
+      + '<div id="mcLvPLineupCard">' + lineupCard + '</div>'
+      + '<div id="mcLvPSpCard">' + spCardLvp(pitcherSideLbl, spName, spHand, pitcherTeam, m, met, ps, ctx.data.spL14, ctx.data.spMetricSplits) + '</div>'
+      + '</div></div>'
       + '<div id="mcLvPAsync" class="mc-lvp-async"><p class="ca-helper">Loading performance comparison…</p></div>'
       + '</div>';
   }
@@ -513,7 +512,7 @@
     return '<h2 class="mc-pane-title">Lineup vs Pitcher</h2>'
       + '<p class="mc-pane-desc mc-pane-desc--lead">Lineup offense vs tonight\'s starter — recent form, last 10 starts, and head-to-head pitching metrics.</p>'
       + lvPSelectorHtml(ctx.m, state)
-      + '<div id="mcLvPContent">' + lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher) + '</div>';
+      + '<div id="mcLvPContent">' + lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher, state) + '</div>';
   }
 
   function renderPaneLvB(ctx, state) {
@@ -549,7 +548,7 @@
     var sel = root.querySelector('.mc-subsel--lvp');
     if (!box || !sel) return;
     box.classList.add('is-swapping');
-    box.innerHTML = lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher);
+    box.innerHTML = lineupVsPitcherContent(ctx, state.lvpLineup, state.lvpPitcher, state);
     var tmp = document.createElement('div');
     tmp.innerHTML = lvPSelectorHtml(ctx.m, state);
     var newSel = tmp.querySelector('.mc-subsel--lvp');
@@ -557,6 +556,11 @@
     requestAnimationFrame(function() {
       box.classList.remove('is-swapping');
       bindSubSelectors(root, ctx, state);
+      if (global.MatchupLineupCompare && MatchupLineupCompare.bindControls) {
+        MatchupLineupCompare.bindControls(root, ctx, state, function(next) {
+          syncCompareUrl(next);
+        });
+      }
       hydrateLvP(root, ctx, state);
     });
   }
@@ -807,6 +811,135 @@
       + '</header>';
   }
 
+  function num(v) {
+    if (v == null || v === '' || isNaN(v)) return null;
+    return Number(v);
+  }
+
+  function normSpName(name) {
+    return S && S.normName ? S.normName(name) : String(name || '').toLowerCase().trim();
+  }
+
+  function teamAccentColor(team) {
+    var C = global.MLBMACharts;
+    if (C && typeof C.radarColorForTeam === 'function') return C.radarColorForTeam(team);
+    return '#7C4DFF';
+  }
+
+  function findSpBatHandSplit(rows, name, team, batHand) {
+    var key = normSpName(name);
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
+    var want = String(batHand || '').toUpperCase();
+    function tryFind(dim, val) {
+      var valU = String(val || '').toUpperCase();
+      return (rows || []).find(function(r) {
+        var n = normSpName(S.pickCol(r, ['pitcher_name', 'Name', 'Pitcher']));
+        if (n !== key) return false;
+        var tm = S.teamKey(S.pickCol(r, ['pitcher_team', 'Tm', 'Team']));
+        if (tm && tm !== tk) return false;
+        var d = String(S.pickCol(r, ['split_dimension', 'splitDimension']) || '').toLowerCase();
+        var v = String(S.pickCol(r, ['split_value', 'splitValue']) || '').toUpperCase();
+        return d === dim && v === valU;
+      }) || null;
+    }
+    var hit = tryFind('batter_hand', want);
+    if (hit) return hit;
+    if (want === 'LHH') return tryFind('batter_hand', 'L') || tryFind('vs_lhh', 'LHH');
+    if (want === 'RHH') return tryFind('batter_hand', 'R') || tryFind('vs_rhh', 'RHH');
+    return null;
+  }
+
+  function allowedOffenseFromSplit(row) {
+    if (!row) return null;
+    var wrc = num(S.pickCol(row, ['wRC_faced', 'wrc_faced', 'wRC+_faced', 'wRC+']));
+    var ops = num(S.pickCol(row, ['OPS', 'ops']));
+    var woba = num(S.pickCol(row, ['wOBA', 'woba']));
+    var slg = num(S.pickCol(row, ['SLG', 'slg']));
+    var obp = num(S.pickCol(row, ['OBP', 'obp']));
+    if (wrc == null && ops == null && woba == null) return null;
+    if (woba == null && wrc != null) woba = Math.round(0.320 * (wrc / 100) * 1000) / 1000;
+    if (ops == null && obp != null && slg != null) ops = Math.round((obp + slg) * 1000) / 1000;
+    if (slg == null && ops != null && woba != null) {
+      var obpEst = obp != null ? obp : Math.min(woba * 1.08, ops * 0.95);
+      slg = Math.round((ops - obpEst) * 1000) / 1000;
+      if (slg < 0 || slg > 1.2) slg = Math.round(ops * 0.55 * 1000) / 1000;
+    }
+    return { wrc: wrc, ops: ops, woba: woba, slg: slg };
+  }
+
+  var SP_ALLOWED_COLS = [
+    { key: 'wrc', label: 'wRC+', ctx: 'wrc', dec: 0 },
+    { key: 'ops', label: 'OPS', ctx: 'ops', dec: 3 },
+    { key: 'woba', label: 'wOBA', ctx: 'woba', dec: 3 },
+    { key: 'slg', label: 'SLG', ctx: 'slg', dec: 3 }
+  ];
+
+  function spAllowedSplitTableHtml(splits, name, team) {
+    var lhh = allowedOffenseFromSplit(findSpBatHandSplit(splits, name, team, 'LHH'));
+    var rhh = allowedOffenseFromSplit(findSpBatHandSplit(splits, name, team, 'RHH'));
+    if (!lhh && !rhh) {
+      return '<div class="mc-lcc-empty">Hand splits unavailable — run SP metric splits pipeline.</div>';
+    }
+    var head = SP_ALLOWED_COLS.map(function(c) {
+      return '<th scope="col">' + esc(c.label) + '</th>';
+    }).join('');
+    function rowHtml(label, data, rowCls, pillHand) {
+      data = data || {};
+      var cells = SP_ALLOWED_COLS.map(function(c) {
+        return '<td class="mc-lcc-stat">' + metricChip(data[c.key], c.ctx, true, c.dec) + '</td>';
+      }).join('');
+      return '<tr class="mc-lcc-row' + (rowCls ? ' ' + rowCls : '') + '">'
+        + '<td class="mc-lcc-split-label"><span class="bats-pill hand-' + pillHand + '">' + esc(label) + '</span></td>'
+        + cells + '</tr>';
+    }
+    return '<div class="mc-lcc-split-read">Allowed vs LHH / RHH · YTD</div>'
+      + '<div class="mc-lcc-table-wrap"><table class="mc-lcc-table mc-sp-split-table">'
+      + '<thead><tr><th scope="col">Split</th>' + head + '</tr></thead>'
+      + '<tbody>'
+      + rowHtml('vs LHH', lhh, 'lineup-row--platoon-l', 'l')
+      + rowHtml('vs RHH', rhh, 'lineup-row--platoon-r', 'r')
+      + '</tbody></table></div>';
+  }
+
+  function spCardLvp(side, name, hand, team, m, met, pitchScore, spL14, splits) {
+    var tier = S.pitchTier(pitchScore);
+    var pname = name && name !== 'TBD' ? name : 'TBD';
+    var nameHtml = pname === 'TBD'
+      ? esc(pname)
+      : '<a href="' + pitcherProfileUrl(pname) + '">' + esc(pname) + '</a>';
+    var stats = team === m.away
+      ? { k: m.awayK, bb: m.awayBB, fip: m.awayFIP, xfip: m.awayXFIP, hr9: m.awayHR9 }
+      : { k: m.homeK, bb: m.homeBB, fip: m.homeFIP, xfip: m.homeXFIP, hr9: m.homeHR9 };
+    if (met.kPct != null) stats.k = met.kPct;
+    if (met.bbPct != null) stats.bb = met.bbPct;
+    if (met.fip != null) stats.fip = met.fip;
+    if (met.xfip != null) stats.xfip = met.xfip;
+    if (met.hr9 != null) stats.hr9 = met.hr9;
+    var stale = spL14Stale(spL14, pname, team) || (met.staleness && /stale|true|1/i.test(String(met.staleness)));
+    var xfipStr = stats.xfip != null ? stats.xfip.toFixed(2) : (stats.fip != null ? stats.fip.toFixed(2) : '—');
+    var accent = teamAccentColor(team);
+    var sideLbl = side === 'Home' ? 'Home' : 'Away';
+    return '<div class="mc-card mc-lineup-col mc-lcc-card mc-sp-lvp-card" style="--mc-os-team:' + esc(accent) + '">'
+      + '<div class="mc-lcc-head mc-sp-lvp-head">'
+      + S.headshot(pname, null, { crop: 'compare', eager: true })
+      + '<div class="mc-lcc-head-text">'
+      + '<span class="mc-lcc-team mc-sp-lvp-name">' + nameHtml
+      + ' <span class="hand-pill">' + esc((hand || '?').charAt(0)) + '</span>'
+      + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></span>'
+      + '<span class="mc-lcc-role">' + esc(sideLbl) + ' SP · ' + esc(team) + '</span>'
+      + '<span class="mc-sp-lvp-score">Pitching Score ' + metricChip(pitchScore, 'pitching', false, 1) + '</span>'
+      + '</div></div>'
+      + spAllowedSplitTableHtml(splits, pname, team)
+      + '<div class="mc-sp-stats mc-sp-stats--compact">'
+      + '<span>K% <strong>' + fmt(stats.k) + '</strong></span>'
+      + '<span>BB% <strong>' + fmt(stats.bb) + '</strong></span>'
+      + '<span>FIP/xFIP <strong>' + xfipStr + '</strong></span>'
+      + '<span>HR/9 <strong>' + (stats.hr9 != null ? stats.hr9.toFixed(2) : '—') + '</strong></span>'
+      + '</div>'
+      + (stale ? '<div class="mc-sp-note mc-stale">⚠ L14 form drift detected — metrics may be stale</div>' : '')
+      + '</div>';
+  }
+
   function spCard(side, name, hand, team, m, met, pitchScore, spL14) {
     var tier = S.pitchTier(pitchScore);
     var pname = name && name !== 'TBD' ? name : 'TBD';
@@ -991,7 +1124,8 @@
       S.fetchSheetTab(T.pitch_mix_pitcher).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_team_batting_l14).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_team_batting).catch(function() { return []; }),
-      S.fetchSheetTab(T.pitch_mix_batter_l14).catch(function() { return []; })
+      S.fetchSheetTab(T.pitch_mix_batter_l14).catch(function() { return []; }),
+      S.fetchSheetTab(T.team_l10_sp_hand).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
@@ -1048,6 +1182,7 @@
           MatchupLvP.prepareData({
             spGameLog: res[18] || [],
             spMetricSplits: res[20] || [],
+            teamL10SpHand: res[27] || [],
             pitchMixPitcherL14: res[22] || [],
             pitchMixPitcher: res[23] || [],
             pitchMixTeamBattingL14: res[24] || [],
@@ -1066,6 +1201,7 @@
       data.pitchMixTeamBattingL14 = res[24] || [];
       data.pitchMixTeamBatting = res[25] || [];
       data.pitchMixBatterL14 = res[26] || [];
+      data.teamL10SpHand = res[27] || [];
       if (!m) {
         finish(data);
         return;

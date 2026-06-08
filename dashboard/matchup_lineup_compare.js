@@ -242,6 +242,16 @@
     return String(hand || '').trim().toUpperCase().charAt(0);
   }
 
+  function splitBucketForHand(hand) {
+    return oppHandChar(hand) === 'L' ? 'handL' : 'handR';
+  }
+
+  function splitLabelForPitcher(side, spHand) {
+    var h = oppHandChar(spHand);
+    var loc = side === 'away' ? ' · Road' : ' · Home';
+    return 'vs ' + (h === 'L' ? 'LHP' : 'RHP') + loc;
+  }
+
   function splitBucketForSide(side, splitId, m) {
     if (splitId === 'rhp') return 'handR';
     if (splitId === 'lhp') return 'handL';
@@ -271,10 +281,10 @@
     return pack[bucket] || null;
   }
 
-  function playerRates(index, player, team, side, splitId, window, profs, m) {
+  function playerRates(index, player, team, side, splitId, window, profs, m, bucketOverride) {
     var pack = playerPack(index, player, team);
     if (!pack) return null;
-    var bucket = splitBucketForSide(side, splitId, m);
+    var bucket = bucketOverride || splitBucketForSide(side, splitId, m);
     var ytdRow = pack[bucket] || pack.overall;
     if (window === 'l30' && pack.recent) {
       var recentRates = ratesFromRow(pack.recent);
@@ -340,13 +350,15 @@
       + '</div>';
   }
 
-  function lineupTableHtml(lineup, team, side, ctx, state) {
+  function lineupTableHtml(lineup, team, side, ctx, state, opts) {
+    opts = opts || {};
     var index = ctx.batterIndex || {};
-    var splitId = activeSplitId(state);
+    var splitId = opts.splitId != null ? opts.splitId : activeSplitId(state);
     var window = state.lvWin || 'ytd';
     var m = ctx.m;
-    var oppHand = side === 'away' ? m.homeHand : m.awayHand;
-    var splitLbl = splitLabelForSide(side, splitId, m);
+    var oppHand = opts.oppHand != null ? opts.oppHand : (side === 'away' ? m.homeHand : m.awayHand);
+    var splitLbl = opts.splitLabel != null ? opts.splitLabel : splitLabelForSide(side, splitId, m);
+    var bucket = opts.splitBucket != null ? opts.splitBucket : splitBucketForSide(side, splitId, m);
     var head = STAT_COLS.map(function(st) {
       return '<th scope="col">' + esc(st.label) + '</th>';
     }).join('');
@@ -354,7 +366,7 @@
       return '<div class="mc-lcc-empty">Lineup not yet confirmed</div>';
     }
     var body = lineup.slice(0, 9).map(function(r) {
-      var rates = playerRates(index, r.player, team, side, splitId, window, ctx.teamProfiles, m);
+      var rates = playerRates(index, r.player, team, side, splitId, window, ctx.teamProfiles, m, bucket);
       var bn = batsHand(r.bats);
       var rowCls = platoonRowClass(bn, oppHand);
       var statCells = STAT_COLS.map(function(st) {
@@ -380,18 +392,35 @@
     return role + ' · ' + splitLabelForSide(side, splitId, m);
   }
 
-  function teamCardHtml(team, side, lineup, ctx, state) {
+  function teamCardHtml(team, side, lineup, ctx, state, opts) {
+    opts = opts || {};
     var accent = teamAccentColor(team);
-    var splitId = activeSplitId(state);
+    var splitId = opts.splitId != null ? opts.splitId : activeSplitId(state);
+    var role = opts.roleLabel != null ? opts.roleLabel : cardRoleLabel(side, splitId, ctx.m);
     return '<div class="mc-card mc-lineup-col mc-lcc-card" style="--mc-os-team:' + esc(accent) + '">'
       + '<div class="mc-lcc-head">'
       + teamLogo(team, 44)
       + '<div class="mc-lcc-head-text">'
       + '<span class="mc-lcc-team">' + esc(team) + '</span>'
-      + '<span class="mc-lcc-role">' + esc(cardRoleLabel(side, splitId, ctx.m)) + '</span>'
+      + '<span class="mc-lcc-role">' + esc(role) + '</span>'
       + '</div></div>'
-      + lineupTableHtml(lineup, team, side, ctx, state)
+      + lineupTableHtml(lineup, team, side, ctx, state, opts)
       + '</div>';
+  }
+
+  function lineupCardForPitcher(ctx, state, lineupSide, spHand) {
+    var m = ctx.m;
+    var team = lineupSide === 'home' ? m.home : m.away;
+    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
+    var side = lineupSide === 'home' ? 'home' : 'away';
+    var roleSide = side === 'home' ? 'Home' : 'Away';
+    var handChar = oppHandChar(spHand);
+    return teamCardHtml(team, side, lineup, ctx, state, {
+      oppHand: spHand,
+      splitBucket: splitBucketForHand(spHand),
+      splitLabel: splitLabelForPitcher(side, spHand),
+      roleLabel: roleSide + ' · vs ' + (handChar === 'L' ? 'LHP' : 'RHP') + (side === 'away' ? ' · Road' : ' · Home')
+    });
   }
 
   function renderSection(ctx, state) {
@@ -419,6 +448,11 @@
       + teamCardHtml(m.home, 'home', ctx.homeLineup, ctx, state);
   }
 
+  function refreshTeamCard(container, ctx, state, lineupSide, spHand) {
+    if (!container) return;
+    container.innerHTML = lineupCardForPitcher(ctx, state, lineupSide, spHand);
+  }
+
   function bindControls(root, ctx, state, onChange) {
     root.querySelectorAll('[data-lcc-win]').forEach(function(btn) {
       btn.onclick = function() {
@@ -429,6 +463,12 @@
           b.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
         refreshCards(root, ctx, state);
+        var lvpCard = root.querySelector('#mcLvPLineupCard');
+        if (lvpCard && state.lvpLineup != null && state.lvpPitcher != null) {
+          var m = ctx.m;
+          var spHand = state.lvpPitcher === 'home' ? m.homeHand : m.awayHand;
+          refreshTeamCard(lvpCard, ctx, state, state.lvpLineup, spHand);
+        }
         if (onChange) onChange(state);
       };
     });
@@ -439,6 +479,10 @@
     renderSection: renderSection,
     refreshCards: refreshCards,
     bindControls: bindControls,
+    teamCardHtml: teamCardHtml,
+    lineupCardForPitcher: lineupCardForPitcher,
+    controlsHtml: controlsHtml,
+    refreshTeamCard: refreshTeamCard,
     WINDOW_OPTIONS: WINDOW_OPTIONS
   };
 })(typeof window !== 'undefined' ? window : this);
