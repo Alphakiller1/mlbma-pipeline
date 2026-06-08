@@ -900,6 +900,60 @@
   display: flex;
   flex-direction: column;
 }
+.mc-os-card--bullpen-compact .mc-os-pitcher-split-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc {
+  gap: 14px;
+}
+.mc-os-card-strips--pitcher-hands-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.mc-os-card-strips--pitcher-hands-stack .mc-os-strip {
+  min-width: 0;
+}
+.mc-os-card-strips--pitcher-hands-stack .mc-os-strip:last-child {
+  grid-column: 1 / -1;
+}
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc .mc-os-strip-head,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-hands-stack .mc-os-strip-head {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 8px 10px;
+}
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc .mc-os-table,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-hands-stack .mc-os-table {
+  font-size: 12px;
+}
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc .mc-os-table th,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc .mc-os-table td,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-hands-stack .mc-os-table th,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-hands-stack .mc-os-table td {
+  padding: 8px 6px;
+  line-height: 1.25;
+}
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc .mc-os-table thead th,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-hands-stack .mc-os-table thead th {
+  padding: 8px 6px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-loc .mc-os-win,
+.mc-os-card--bullpen-compact .mc-os-card-strips--pitcher-hands-stack .mc-os-win {
+  width: 36px;
+  padding: 8px 4px;
+  font-size: 9px;
+}
+.mc-os-card--bullpen-compact .mc-os-table--pitcher .mc-os-cell--stat .chip {
+  min-width: 48px;
+  padding: 4px 7px;
+  font-size: 12px;
+}
 .mc-lvp-body .mc-offense-splits,
 .mc-lvb-body .mc-offense-splits {
   margin-bottom: 0;
@@ -1362,33 +1416,33 @@
   font-size: 12px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio {
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack {
   gap: 16px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-strip-head,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-strip-head {
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack .mc-os-strip-head {
   font-size: 10px;
   letter-spacing: 0.1em;
   padding: 8px 8px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table {
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack .mc-os-table {
   font-size: 12px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table th,
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table td,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table th,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table td {
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack .mc-os-table th,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack .mc-os-table td {
   padding: 8px 5px;
   line-height: 1.2;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table thead th,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table thead th {
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack .mc-os-table thead th {
   padding: 8px 5px;
   font-size: 9px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-win,
-.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-win {
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-stack .mc-os-win {
   width: 34px;
   padding: 8px 4px;
   font-size: 9px;
@@ -1439,8 +1493,12 @@
     text-align: left;
     align-items: center;
   }
-  .mc-os-card-strips--pitcher-hands-trio {
+  .mc-os-card-strips--pitcher-hands-trio,
+  .mc-os-card-strips--pitcher-hands-stack {
     grid-template-columns: 1fr;
+  }
+  .mc-os-card-strips--pitcher-hands-stack .mc-os-strip:last-child {
+    grid-column: auto;
   }
 }
 #mcLvPLineupCard .mc-lcc-card,

@@ -415,15 +415,10 @@
     var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
     var side = lineupSide === 'home' ? 'home' : 'away';
     var roleSide = side === 'home' ? 'Home' : 'Away';
-    var handLbl = 'Both';
-    if (global.MatchupLvBControls) {
-      var st = MatchupLvBControls.defaultLvbState(state);
-      handLbl = st.lvbLuHand === 'r' ? 'RHH' : st.lvbLuHand === 'l' ? 'LHH' : 'Both';
-    }
     return teamCardHtml(team, side, lineup, ctx, state, {
       splitBucket: 'vsRp',
-      splitLabel: 'vs Bullpen · ' + handLbl + (side === 'away' ? ' · Road' : ' · Home'),
-      roleLabel: roleSide + ' · vs Relief · ' + handLbl
+      splitLabel: 'vs Bullpen' + (side === 'away' ? ' · Road' : ' · Home'),
+      roleLabel: roleSide + ' · vs Relief'
     });
   }
 

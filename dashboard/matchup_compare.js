@@ -62,22 +62,13 @@
     if (lvbLineup === lvbBp) lvbBp = lvbLineup === 'away' ? 'home' : 'away';
     var lvWin = (qp('lvWin') || 'ytd').toLowerCase();
     if (['l7', 'l14', 'l30', 'ytd'].indexOf(lvWin) < 0) lvWin = 'ytd';
-    var lvbLuHand = qp('lvbLuHand') || 'both';
-    var lvbBpHand = qp('lvbBpHand') || 'both';
     var lvbLoc = qp('lvbLoc') || 'all';
-    var lvbSegment = qp('lvbSegment') || 'full';
     if (global.MatchupLvBControls) {
       var d = MatchupLvBControls.defaultLvbState({
-        lvbLuHand: lvbLuHand,
-        lvbBpHand: lvbBpHand,
         lvbLoc: lvbLoc,
-        lvbSegment: lvbSegment,
         lvWin: lvWin
       });
-      lvbLuHand = d.lvbLuHand;
-      lvbBpHand = d.lvbBpHand;
       lvbLoc = d.lvbLoc;
-      lvbSegment = d.lvbSegment;
       lvWin = d.lvWin;
     }
     return {
@@ -87,10 +78,7 @@
       lvbLineup: lvbLineup,
       lvbBp: lvbBp,
       lvWin: lvWin,
-      lvbLuHand: lvbLuHand,
-      lvbBpHand: lvbBpHand,
-      lvbLoc: lvbLoc,
-      lvbSegment: lvbSegment
+      lvbLoc: lvbLoc
     };
   }
 
@@ -108,16 +96,13 @@
       params.set('lvbLineup', state.lvbLineup);
       params.set('lvbBp', state.lvbBp);
       params.set('lvWin', state.lvWin || 'ytd');
-      params.set('lvbLuHand', state.lvbLuHand || 'both');
-      params.set('lvbBpHand', state.lvbBpHand || 'both');
       params.set('lvbLoc', state.lvbLoc || 'all');
-      params.set('lvbSegment', state.lvbSegment || 'full');
     } else {
       params.delete('lvbLineup');
       params.delete('lvbBp');
+      params.delete('lvbLoc');
       params.delete('lvbLuHand');
       params.delete('lvbBpHand');
-      params.delete('lvbLoc');
       params.delete('lvbSegment');
     }
     if (state.mode === 'lvL' || state.mode === 'lvP') {
@@ -529,10 +514,6 @@
     var bpTeam = bpSide === 'home' ? m.home : m.away;
     var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
     var bp = bpSide === 'home' ? ctx.homeBp : ctx.awayBp;
-    var lineupOsi = lineupSide === 'home' ? m.homeOSI : m.awayOSI;
-    var bpScore = S.bullpenPitchScore(bp);
-    var risk = S.bullpenRisk(bp);
-    var edge = S.lineupEdgeIndicator(lineupOsi, bp && bp.osiAllowed);
     state = state || _compareState || { lvWin: 'ytd' };
     var winControls = global.MatchupLvBControls && MatchupLvBControls.controlsHtml
       ? MatchupLvBControls.controlsHtml(state)
@@ -560,15 +541,6 @@
       )
       : '<header class="mc-lvb-section-head mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Bullpen Splits</h3>'
         + '<p class="mc-lvp-section-head__desc">Lineup vs relief splits · bullpen allowed metrics.</p></header>';
-    var edgeHtml = '<div class="mc-lvb-edge ca-board">'
-      + '<div class="mc-edge-label">' + esc(lineupTeam) + ' lineup OSI vs ' + esc(bpTeam) + ' bullpen</div>'
-      + '<div class="mc-lvb-edge-grid">'
-      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Lineup OSI</span>' + metricChip(lineupOsi, 'osi', false, 1) + '</div>'
-      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Bullpen Pitch Score</span>' + metricChip(bpScore, 'pitching', false, 1) + '</div>'
-      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Bullpen OSI Allowed</span>' + metricChip(bp && bp.osiAllowed, 'osi', true, 1) + '</div>'
-      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Edge</span><span class="' + edge.cls + '">' + esc(edge.label) + '</span></div>'
-      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Risk</span><span class="' + risk.cls + '">' + esc(risk.label) + '</span></div>'
-      + '</div></div>';
     return '<div class="mc-lvb-body">'
       + '<section class="mc-lvb-section mc-lvb-section--matchup ca-board">'
       + matchupHead
@@ -578,7 +550,6 @@
       + '<div id="mcLvBLineupCard">' + lineupCard + '</div>'
       + '<div id="mcLvBBpSplits">' + bpSplitCard + '</div>'
       + '</div></div>'
-      + edgeHtml
       + '</section>'
       + teamRanks
       + '<div id="mcLvBAsync" class="mc-lvb-async"><p class="ca-helper">Loading bullpen comparison…</p></div>'

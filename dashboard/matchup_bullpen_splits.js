@@ -137,12 +137,7 @@
         + 'Bullpen splits unavailable — check Bullpen_Unit sheet.</p></div>';
     }
     var accent = teamAccentColor(bpTeam);
-    var highlightHand = 'both';
-    if (filterState && filterState.lvbBpHand) {
-      highlightHand = filterState.lvbBpHand === 'l' ? 'lhh' : filterState.lvbBpHand === 'r' ? 'rhh' : 'both';
-    } else {
-      highlightHand = dominantBatHand(lineup);
-    }
+    var highlightHand = dominantBatHand(lineup);
     var locHighlight = filterState && filterState.lvbLoc ? filterState.lvbLoc : null;
     var homeRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.home);
     var awayRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.away);
@@ -161,32 +156,20 @@
       + '<span class="mc-os-card-role">FIP · OPS allowed · BB% · K% · relief only</span></div></div>'
       + '<div class="mc-os-pitcher-split-groups">'
       + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-loc">' + locHtml + '</div>'
-      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands-trio">' + handHtml + '</div>'
+      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands-stack">' + handHtml + '</div>'
       + '</div></div>';
   }
 
   function renderLvbTeamRanks(ctx, lineupSide, bpTeam, unitRow, lineup, filterState) {
     if (!ctx || !ctx.m || !ctx.offenseRankIndex || !global.MatchupOffenseSplits) return '';
     var m = ctx.m;
-    var handSlice = 'handR';
-    var handTitle = 'VS RHH';
-    if (filterState && filterState.lvbLuHand === 'l') {
-      handSlice = 'handL';
-      handTitle = 'LHH';
-    } else if (filterState && filterState.lvbLuHand === 'r') {
-      handSlice = 'handR';
-      handTitle = 'RHH';
-    } else if (filterState && filterState.lvbLuHand === 'both') {
-      handSlice = 'overall';
-      handTitle = 'BOTH';
-    }
-    var handLbl = handTitle;
+    var handLbl = 'Both Bats';
     var lineupCard = MatchupOffenseSplits.lineupOffenseCard
       ? MatchupOffenseSplits.lineupOffenseCard(ctx, lineupSide, 'R', ctx.offenseRankIndex, {
-        handSlice: handSlice,
-        handTitle: handTitle,
-        highlightOverall: filterState && filterState.lvbLuHand === 'both',
-        highlightHand: filterState && filterState.lvbLuHand !== 'both'
+        handSlice: 'overall',
+        handTitle: 'BOTH',
+        highlightOverall: true,
+        highlightHand: false
       })
       : '';
     var bpCard = bullpenSplitStatsCard(bpTeam, unitRow, lineup, filterState);

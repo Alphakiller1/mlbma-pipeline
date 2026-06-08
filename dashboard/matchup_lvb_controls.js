@@ -1,21 +1,9 @@
 /**
- * Lineup vs Bullpen — split filter controls (handedness, location, window, F5).
- * Lineup hand = RHH/LHH/Both; bullpen hand = vs RHH/vs LHH/Both; lineup always vs RP.
+ * Lineup vs Bullpen — split filter controls (location, window).
+ * Lineup and bullpen splits use both batters / both hands by default.
  */
 (function(global) {
   'use strict';
-
-  var HAND_OPTIONS = [
-    { id: 'both', label: 'Both' },
-    { id: 'r', label: 'RH' },
-    { id: 'l', label: 'LH' }
-  ];
-
-  var BP_HAND_OPTIONS = [
-    { id: 'both', label: 'Both' },
-    { id: 'r', label: 'vs RHH' },
-    { id: 'l', label: 'vs LHH' }
-  ];
 
   var LOC_OPTIONS = [
     { id: 'all', label: 'Both' },
@@ -30,19 +18,9 @@
     { id: 'ytd', label: 'YTD' }
   ];
 
-  var SEGMENT_OPTIONS = [
-    { id: 'full', label: 'Full Game' },
-    { id: 'f5', label: 'F5' }
-  ];
-
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  function normHand(v) {
-    v = String(v || 'both').toLowerCase();
-    return v === 'r' || v === 'l' ? v : 'both';
   }
 
   function normLoc(v) {
@@ -55,18 +33,10 @@
     return ['l7', 'l14', 'l30', 'ytd'].indexOf(v) >= 0 ? v : 'ytd';
   }
 
-  function normSegment(v) {
-    v = String(v || 'full').toLowerCase();
-    return v === 'f5' ? 'f5' : 'full';
-  }
-
   function defaultLvbState(base) {
     base = base || {};
     return {
-      lvbLuHand: normHand(base.lvbLuHand),
-      lvbBpHand: normHand(base.lvbBpHand),
       lvbLoc: normLoc(base.lvbLoc),
-      lvbSegment: normSegment(base.lvbSegment),
       lvWin: normWin(base.lvWin)
     };
   }
@@ -83,16 +53,10 @@
   function controlsHtml(state) {
     state = defaultLvbState(state);
     return '<div class="mc-lvb-controls hub-control-bar mc-lcc-controls">'
-      + '<div class="hub-ctrl-group mc-lvb-ctrl"><span class="hub-ctrl-label">Lineup Bats</span>'
-      + '<div class="hub-pill-row">' + pillRow(HAND_OPTIONS, 'lvb-lu-hand', state.lvbLuHand) + '</div></div>'
-      + '<div class="hub-ctrl-group mc-lvb-ctrl"><span class="hub-ctrl-label">BP vs</span>'
-      + '<div class="hub-pill-row">' + pillRow(BP_HAND_OPTIONS, 'lvb-bp-hand', state.lvbBpHand) + '</div></div>'
       + '<div class="hub-ctrl-group mc-lvb-ctrl"><span class="hub-ctrl-label">Location</span>'
       + '<div class="hub-pill-row">' + pillRow(LOC_OPTIONS, 'lvb-loc', state.lvbLoc) + '</div></div>'
       + '<div class="hub-ctrl-group mc-lvb-ctrl"><span class="hub-ctrl-label">Window</span>'
       + '<div class="hub-pill-row">' + pillRow(WINDOW_OPTIONS, 'lvb-win', state.lvWin) + '</div></div>'
-      + '<div class="hub-ctrl-group mc-lvb-ctrl"><span class="hub-ctrl-label">Segment</span>'
-      + '<div class="hub-pill-row">' + pillRow(SEGMENT_OPTIONS, 'lvb-segment', state.lvbSegment) + '</div></div>'
       + '</div>'
       + '<p class="ca-helper mc-lvb-filter-hint">Lineup stats vs relief only (excludes starters). Bullpen unit excludes rotation arms.</p>';
   }
@@ -101,10 +65,10 @@
     state = defaultLvbState(state);
     var winMap = { ytd: 'YTD', l7: 'L7', l14: 'L14', l30: 'L30' };
     return {
-      hand: state.lvbLuHand,
+      hand: 'both',
       location: state.lvbLoc,
       pitcher: 'rp',
-      segment: state.lvbSegment,
+      segment: 'full',
       window: winMap[state.lvWin] || 'YTD'
     };
   }
@@ -112,7 +76,7 @@
   function bullpenFilter(state) {
     state = defaultLvbState(state);
     return {
-      batSide: state.lvbBpHand,
+      batSide: 'both',
       location: state.lvbLoc,
       window: 'YTD'
     };
@@ -121,10 +85,7 @@
   function filterSummary(state) {
     state = defaultLvbState(state);
     var parts = [];
-    if (state.lvbLuHand !== 'both') parts.push(state.lvbLuHand === 'r' ? 'RHH' : 'LHH');
-    if (state.lvbBpHand !== 'both') parts.push(state.lvbBpHand === 'r' ? 'vs RHH' : 'vs LHH');
     if (state.lvbLoc !== 'all') parts.push(state.lvbLoc === 'home' ? 'Home' : 'Away');
-    if (state.lvbSegment === 'f5') parts.push('F5');
     parts.push('vs RP');
     if (state.lvWin !== 'ytd') parts.push(String(state.lvWin).toUpperCase());
     return parts.join(' · ');
@@ -148,11 +109,8 @@
         };
       });
     }
-    wire('lvb-lu-hand', 'lvbLuHand', normHand);
-    wire('lvb-bp-hand', 'lvbBpHand', normHand);
     wire('lvb-loc', 'lvbLoc', normLoc);
     wire('lvb-win', 'lvWin', normWin);
-    wire('lvb-segment', 'lvbSegment', normSegment);
   }
 
   global.MatchupLvBControls = {
@@ -162,9 +120,7 @@
     lineupFilter: lineupFilter,
     bullpenFilter: bullpenFilter,
     filterSummary: filterSummary,
-    normHand: normHand,
     normLoc: normLoc,
-    normWin: normWin,
-    normSegment: normSegment
+    normWin: normWin
   };
 })(typeof window !== 'undefined' ? window : this);
