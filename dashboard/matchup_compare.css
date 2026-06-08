@@ -773,8 +773,49 @@
   border: 1px solid var(--border, #28282f);
   background: var(--bg-3, #18181c);
 }
+.mc-lvp-visual-desc {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+.mc-lvp-visual-duo {
+  align-items: stretch;
+  gap: 18px;
+}
+.mc-lvp-visual-duo > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mc-lvp-visual-duo .mc-lcc-card,
+.mc-lvp-visual-duo .mc-os-card--pitcher-panel {
+  flex: 1;
+  min-height: 100%;
+}
+.mc-os-card-strips--pitcher-hands {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.mc-os-card-strips--pitcher-hands .mc-os-strip {
+  min-width: 0;
+}
+.mc-os-card-strips--pitcher-hands .mc-os-strip-head {
+  font-size: 10px;
+  padding: 7px 6px;
+}
+.mc-os-card-strips--pitcher-hands .mc-os-table {
+  font-size: 11px;
+}
+.mc-lvp-team-ranks {
+  margin: 20px 0 8px;
+}
+@media (max-width: 960px) {
+  .mc-os-card-strips--pitcher-hands {
+    grid-template-columns: 1fr;
+  }
+}
 #mcLvPLineupCard .mc-lcc-card,
-#mcLvPSpCard .mc-sp-lvp-card { margin: 0; height: 100%; }
+#mcLvPSpSplits .mc-os-card--pitcher-panel { margin: 0; height: 100%; }
 .mc-sp-lvp-card .mc-sp-lvp-head .ca-pitcher-avatar {
   width: 44px;
   height: 44px;

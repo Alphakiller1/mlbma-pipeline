@@ -337,11 +337,11 @@
     var highlightHand = 'rhh';
     var stripHtml = pitcherAllowedStripTable('lhh', valuePools, spKeyVal, highlightHand === 'lhh')
       + pitcherAllowedStripTable('rhh', valuePools, spKeyVal, highlightHand === 'rhh');
-    return '<div class="mc-os-card mc-os-card--pitcher" style="--mc-os-team:' + esc(accent) + '">'
+    return '<div class="mc-os-card mc-os-card--pitcher mc-os-card--pitcher-panel" style="--mc-os-team:' + esc(accent) + '">'
       + '<div class="mc-os-card-head">' + avatar
       + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(spName) + '</span>'
       + '<span class="mc-os-card-role">Allowed offense vs batter hand · YTD season split</span></div></div>'
-      + '<div class="mc-os-card-strips">' + stripHtml + '</div></div>';
+      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands">' + stripHtml + '</div></div>';
   }
 
   function lineupOffenseCard(ctx, lineupSide, spHand, rankIndex) {
@@ -368,22 +368,27 @@
       + '<div class="mc-os-card-strips">' + stripHtml + '</div></div>';
   }
 
-  function renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam) {
-    if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
-    var splits = (ctx.data && ctx.data.spMetricSplits) || [];
-    if (!ctx.pitcherAllowedValues) {
-      ctx.pitcherAllowedValues = buildPitcherAllowedValues(splits);
+  function ctxPitcherSplitsReady(splits, spName, pitcherTeam) {
+    return !!(findSpBatHandSplit(splits, spName, pitcherTeam, 'LHH')
+      || findSpBatHandSplit(splits, spName, pitcherTeam, 'RHH'));
+  }
+
+  function renderPitcherAllowedPanel(spName, pitcherTeam, splits, spHand) {
+    if (!ctxPitcherSplitsReady(splits, spName, pitcherTeam)) {
+      return '<div class="mc-os-card mc-os-card--pitcher mc-os-card--pitcher-panel"><p class="ca-helper">'
+        + 'Hand splits unavailable — run SP metric splits pipeline.</p></div>';
     }
+    return pitcherAllowedCard(spName, pitcherTeam, splits, buildPitcherAllowedValues(splits), spHand);
+  }
+
+  function renderLvpTeamRanks(ctx, lineupSide, spHand) {
+    if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
     var handLbl = handLabel(spHand);
-    return '<div class="mc-section-block mc-offense-splits mc-lvp-split-jux">'
-      + '<h3 class="mc-lvp-block-title">Split Matchup — Offense vs Allowed</h3>'
-      + '<p class="mc-os-hint ca-helper">Lineup team offensive ranks (left) vs '
-      + esc(spName) + ' allowed-offense stats vs LHH/RHH (right). Highlighted strips = '
-      + handLbl + ' offense vs the platoon row most tied to tonight\'s starter hand.</p>'
-      + '<div class="mc-os-duo mc-lvp-split-duo">'
+    return '<div class="mc-section-block mc-offense-splits mc-lvp-team-ranks">'
+      + '<h3 class="mc-lvp-block-title">Team Offense — League Rank</h3>'
+      + '<p class="mc-os-hint ca-helper">League rank heatmap for the selected lineup — '
+      + handLbl + ' strip matches tonight\'s starter hand.</p>'
       + lineupOffenseCard(ctx, lineupSide, spHand, ctx.offenseRankIndex)
-      + pitcherAllowedCard(spName, pitcherTeam, splits, ctx.pitcherAllowedValues, spHand)
-      + '</div>'
       + '<div class="mc-os-legend mc-os-legend--lineup">'
       + '<span class="mc-os-legend-label">Lineup ranks:</span>'
       + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'
@@ -392,6 +397,10 @@
       + '<span class="mc-os-leg mc-os-cell--weak">#21–25 Weak</span>'
       + '<span class="mc-os-leg mc-os-cell--poor">#26+ Poor</span>'
       + '</div></div>';
+  }
+
+  function renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam) {
+    return renderLvpTeamRanks(ctx, lineupSide, spHand);
   }
 
   function buildRankIndex(data) {
@@ -562,6 +571,8 @@
     buildPitcherAllowedValues: buildPitcherAllowedValues,
     renderSection: renderSection,
     renderLineupTeamCard: renderLineupTeamCard,
-    renderLvpSplitJux: renderLvpSplitJux
+    renderLvpSplitJux: renderLvpSplitJux,
+    renderLvpTeamRanks: renderLvpTeamRanks,
+    renderPitcherAllowedPanel: renderPitcherAllowedPanel
   };
 })(typeof window !== 'undefined' ? window : this);

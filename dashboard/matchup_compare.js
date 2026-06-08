@@ -438,12 +438,9 @@
   function lineupVsPitcherContent(ctx, lineupSide, pitcherSide, state) {
     var m = ctx.m;
     var lineupTeam = lineupSide === 'home' ? m.home : m.away;
-    var pitcherSideLbl = pitcherSide === 'home' ? 'Home' : 'Away';
     var pitcherTeam = pitcherSide === 'home' ? m.home : m.away;
     var spName = pitcherSide === 'home' ? m.homeSP : m.awaySP;
     var spHand = pitcherSide === 'home' ? m.homeHand : m.awayHand;
-    var met = pitcherSide === 'home' ? ctx.homeMet : ctx.awayMet;
-    var ps = pitcherSide === 'home' ? ctx.homePs : ctx.awayPs;
     state = state || _compareState || { lvWin: 'ytd' };
     var lineupCard = global.MatchupLineupCompare && MatchupLineupCompare.lineupCardForPitcher
       ? MatchupLineupCompare.lineupCardForPitcher(ctx, state, lineupSide, spHand)
@@ -453,17 +450,22 @@
     var winControls = global.MatchupLineupCompare && MatchupLineupCompare.controlsHtml
       ? MatchupLineupCompare.controlsHtml(state)
       : '';
-    var splitJux = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLvpSplitJux
-      ? MatchupOffenseSplits.renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam)
+    var splits = (ctx.data && ctx.data.spMetricSplits) || [];
+    var pitcherPanel = global.MatchupOffenseSplits && MatchupOffenseSplits.renderPitcherAllowedPanel
+      ? MatchupOffenseSplits.renderPitcherAllowedPanel(spName, pitcherTeam, splits, spHand)
+      : '';
+    var teamRanks = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLvpTeamRanks
+      ? MatchupOffenseSplits.renderLvpTeamRanks(ctx, lineupSide, spHand)
       : '';
     return '<div class="mc-lvp-body">'
       + '<div class="mc-lvp-lineup-block">'
       + winControls
-      + '<div class="mc-grid-2 mc-lvp-grid">'
+      + '<p class="mc-lvp-visual-desc ca-helper">Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.</p>'
+      + '<div class="mc-grid-2 mc-lvp-grid mc-lvp-visual-duo">'
       + '<div id="mcLvPLineupCard">' + lineupCard + '</div>'
-      + '<div id="mcLvPSpCard">' + spCardLvp(pitcherSideLbl, spName, spHand, pitcherTeam, m, met, ps, ctx.data.spL14, ctx.data.spMetricSplits) + '</div>'
+      + '<div id="mcLvPSpSplits">' + pitcherPanel + '</div>'
       + '</div></div>'
-      + splitJux
+      + teamRanks
       + '<div id="mcLvPAsync" class="mc-lvp-async"><p class="ca-helper">Loading performance comparison…</p></div>'
       + '</div>';
   }
