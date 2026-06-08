@@ -901,6 +901,22 @@
   vertical-align: middle;
   padding: 10px 6px;
 }
+.mc-os-cell--stat {
+  background: rgba(0, 0, 0, 0.22);
+  text-align: center;
+}
+.mc-os-cell--stat .chip {
+  min-width: 52px;
+  justify-content: center;
+}
+.mc-os-legend--lineup .mc-os-legend-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+  margin-right: 4px;
+}
 .mc-sp-split-ref {
   margin: 0 0 10px;
   font-size: 11px;

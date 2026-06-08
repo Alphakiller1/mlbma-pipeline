@@ -279,33 +279,28 @@
     return Number(v).toFixed(dec == null ? 1 : dec);
   }
 
-  function pitcherRankCellHtml(rank, total, value, stat) {
-    if (rank == null) {
-      return '<td class="mc-os-cell mc-os-cell--na">—</td>';
-    }
-    var tone = rankTone(rank, total);
-    var dec = stat.key === 'wrc' ? 0 : 3;
-    var tip = value != null
-      ? (stat.label + ' allowed: ' + fmtVal(value, dec) + (total ? ' · rank #' + rank + ' of ' + total : ''))
-      : ('Rank #' + rank + (total ? ' of ' + total : ''));
-    var valLine = value != null
-      ? '<span class="mc-os-val">' + esc(fmtVal(value, dec)) + '</span>'
-      : '';
-    return '<td class="mc-os-cell mc-os-cell--' + tone + '" title="' + esc(tip) + '">'
-      + '<span class="mc-os-rank">#' + esc(String(rank)) + '</span>' + valLine + '</td>';
+  function metricChip(v, ctx, invert, decimals) {
+    if (A && A.valChipHtml) return A.valChipHtml(v, ctx || 'osi', !!invert, decimals == null ? 1 : decimals);
+    if (v == null || isNaN(v)) return '<span class="mc-os-stat-na">—</span>';
+    return '<strong>' + esc(fmtVal(v, decimals)) + '</strong>';
   }
 
-  function pitcherAllowedStripTable(handKey, rankIndex, spKeyVal, highlight) {
+  function pitcherStatCellHtml(value, stat) {
+    if (value == null || isNaN(value)) {
+      return '<td class="mc-os-cell mc-os-cell--na mc-os-cell--stat">—</td>';
+    }
+    var dec = stat.key === 'wrc' ? 0 : 3;
+    return '<td class="mc-os-cell mc-os-cell--stat">' + metricChip(value, stat.ctx, true, dec) + '</td>';
+  }
+
+  function pitcherAllowedStripTable(handKey, valuePools, spKeyVal, highlight) {
+    var rates = valuePools[handKey] && valuePools[handKey][spKeyVal];
     var head = STATS.map(function(st) {
       return '<th scope="col">' + esc(st.label) + '</th>';
     }).join('');
     var cells = STATS.map(function(st) {
-      var pack = rankIndex[handKey] && rankIndex[handKey].ytd && rankIndex[handKey].ytd[st.key];
-      var rank = pack && pack.ranks ? pack.ranks[spKeyVal] : null;
-      var total = pack ? pack.total : null;
-      var rates = rankIndex.values && rankIndex.values[handKey] && rankIndex.values[handKey][spKeyVal];
       var value = rates ? rates[st.key] : null;
-      return pitcherRankCellHtml(rank, total, value, st);
+      return pitcherStatCellHtml(value, st);
     }).join('');
     var stripCls = 'mc-os-strip' + (highlight ? ' mc-os-strip--matchup' : '');
     var label = handKey === 'lhh' ? 'ALLOWED vs LHH' : 'ALLOWED vs RHH';
@@ -315,23 +310,37 @@
       + '<tbody><tr><th scope="row" class="mc-os-win">YTD</th>' + cells + '</tr></tbody></table></div>';
   }
 
-  function pitcherAllowedCard(spName, pitcherTeam, splits, rankIndex, spHand) {
+  function buildPitcherAllowedValues(splits) {
+    var pools = { lhh: {}, rhh: {} };
+    (splits || []).forEach(function(r) {
+      var hand = parseBatHandFromSplitRow(r);
+      if (!hand) return;
+      var name = pickCol(r, ['pitcher_name', 'Name', 'Pitcher']);
+      var team = pickCol(r, ['pitcher_team', 'Tm', 'Team']);
+      if (!name) return;
+      var rates = allowedRatesFromSplitRow(r);
+      if (!rates) return;
+      pools[hand][spLookupKey(name, team)] = rates;
+    });
+    return pools;
+  }
+
+  function pitcherAllowedCard(spName, pitcherTeam, splits, valuePools, spHand) {
     var accent = teamAccentColor(pitcherTeam);
     var spKeyVal = spLookupKey(spName, pitcherTeam);
     if (!findSpBatHandSplit(splits, spName, pitcherTeam, 'LHH')
-        && !findSpBatHandSplit(splits, spName, pitcherTeam, 'RHH')
-        && !rankIndex) {
+        && !findSpBatHandSplit(splits, spName, pitcherTeam, 'RHH')) {
       return '<div class="mc-os-card mc-os-card--pitcher"><p class="ca-helper">Hand splits unavailable — run SP metric splits pipeline.</p></div>';
     }
-    if (!rankIndex) rankIndex = buildPitcherAllowedRankIndex(splits);
+    if (!valuePools) valuePools = buildPitcherAllowedValues(splits);
     var avatar = S && S.headshot ? S.headshot(spName, null, { crop: 'compare', eager: true }) : '';
     var highlightHand = 'rhh';
-    var stripHtml = pitcherAllowedStripTable('lhh', rankIndex, spKeyVal, highlightHand === 'lhh')
-      + pitcherAllowedStripTable('rhh', rankIndex, spKeyVal, highlightHand === 'rhh');
+    var stripHtml = pitcherAllowedStripTable('lhh', valuePools, spKeyVal, highlightHand === 'lhh')
+      + pitcherAllowedStripTable('rhh', valuePools, spKeyVal, highlightHand === 'rhh');
     return '<div class="mc-os-card mc-os-card--pitcher" style="--mc-os-team:' + esc(accent) + '">'
       + '<div class="mc-os-card-head">' + avatar
       + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(spName) + '</span>'
-      + '<span class="mc-os-card-role">Allowed offense · league rank (#1 = best suppression)</span></div></div>'
+      + '<span class="mc-os-card-role">Allowed offense vs batter hand · YTD season split</span></div></div>'
       + '<div class="mc-os-card-strips">' + stripHtml + '</div></div>';
   }
 
@@ -362,20 +371,21 @@
   function renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam) {
     if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
     var splits = (ctx.data && ctx.data.spMetricSplits) || [];
-    if (!ctx.pitcherAllowedRankIndex) {
-      ctx.pitcherAllowedRankIndex = buildPitcherAllowedRankIndex(splits);
+    if (!ctx.pitcherAllowedValues) {
+      ctx.pitcherAllowedValues = buildPitcherAllowedValues(splits);
     }
     var handLbl = handLabel(spHand);
     return '<div class="mc-section-block mc-offense-splits mc-lvp-split-jux">'
       + '<h3 class="mc-lvp-block-title">Split Matchup — Offense vs Allowed</h3>'
-      + '<p class="mc-os-hint ca-helper">Lineup team offensive ranks (left) juxtaposed with '
-      + esc(spName) + ' allowed-offense ranks vs LHH/RHH (right). Highlighted strips = '
+      + '<p class="mc-os-hint ca-helper">Lineup team offensive ranks (left) vs '
+      + esc(spName) + ' allowed-offense stats vs LHH/RHH (right). Highlighted strips = '
       + handLbl + ' offense vs the platoon row most tied to tonight\'s starter hand.</p>'
       + '<div class="mc-os-duo mc-lvp-split-duo">'
       + lineupOffenseCard(ctx, lineupSide, spHand, ctx.offenseRankIndex)
-      + pitcherAllowedCard(spName, pitcherTeam, splits, ctx.pitcherAllowedRankIndex, spHand)
+      + pitcherAllowedCard(spName, pitcherTeam, splits, ctx.pitcherAllowedValues, spHand)
       + '</div>'
-      + '<div class="mc-os-legend">'
+      + '<div class="mc-os-legend mc-os-legend--lineup">'
+      + '<span class="mc-os-legend-label">Lineup ranks:</span>'
       + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'
       + '<span class="mc-os-leg mc-os-cell--strong">#6–12 Strong</span>'
       + '<span class="mc-os-leg mc-os-cell--mid">#13–20 Average</span>'
@@ -549,6 +559,7 @@
     prepareData: prepareData,
     buildRankIndex: buildRankIndex,
     buildPitcherAllowedRankIndex: buildPitcherAllowedRankIndex,
+    buildPitcherAllowedValues: buildPitcherAllowedValues,
     renderSection: renderSection,
     renderLineupTeamCard: renderLineupTeamCard,
     renderLvpSplitJux: renderLvpSplitJux
