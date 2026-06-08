@@ -91,8 +91,17 @@
 
   var BULLPEN_SPLIT_GROUPS = [
     { key: 'batSide', options: [{ v: 'both', l: 'Both' }, { v: 'r', l: 'vs RHH' }, { v: 'l', l: 'vs LHH' }] },
-    { key: 'location', options: [{ v: 'all', l: 'Both' }, { v: 'home', l: 'Home' }, { v: 'away', l: 'Away' }] }
+    { key: 'location', options: [{ v: 'all', l: 'Both' }, { v: 'home', l: 'Home' }, { v: 'away', l: 'Away' }] },
+    { key: 'window', options: [{ v: 'YTD', l: 'YTD' }, { v: 'L30', l: 'L30' }, { v: 'L14', l: 'L14' }, { v: 'L7', l: 'L7' }] }
   ];
+
+  var BP_PREFIX_MAP = {
+    both: 'overall',
+    home: 'home',
+    away: 'away',
+    r: 'vs_rhh',
+    l: 'vs_lhh'
+  };
 
   function modeEntity(modeId, sideKey) {
     var m = MODES[modeId] || MODES['lineup-lineup'];
@@ -314,6 +323,57 @@
     });
   }
 
+  function bullpenPrefix(filter) {
+    filter = filter || {};
+    var loc = filter.location === 'home' ? 'home' : filter.location === 'away' ? 'away' : null;
+    var hand = filter.batSide === 'r' ? 'vs_rhh' : filter.batSide === 'l' ? 'vs_lhh' : null;
+    if (loc && hand) return loc;
+    if (hand) return hand;
+    if (loc) return loc;
+    return 'overall';
+  }
+
+  function bullpenRawRow(team) {
+    var LD = global.LIVE_DATA || {};
+    var rows = LD.bullpenUnitRows || [];
+    var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
+    return rows.find(function(r) {
+      return S && S.teamKey(S.pickCol(r, 'team', 'Tm', 'Team')) === tk;
+    }) || null;
+  }
+
+  function bullpenPrefixedMetric(rawRow, prefix, metric, pct) {
+    if (!rawRow || !prefix) return null;
+    var keys = [prefix + '_' + metric];
+    if (pct && metric.indexOf('_pct') < 0) {
+      keys.push(prefix + '_' + metric.replace('_pct', '%'));
+      keys.push(prefix + ' ' + metric);
+    }
+    var v = num(S.pickCol(rawRow, keys));
+    if (v == null) return null;
+    if (pct && v <= 1.5 && v >= 0) return Math.round(v * 1000) / 10;
+    return v;
+  }
+
+  function bullpenResolvedMetrics(unit, rawRow, filter) {
+    var f = filter || {};
+    var prefix = bullpenPrefix(f);
+    var osi = bullpenPrefixedMetric(rawRow, prefix, 'OSI_allowed')
+      || bullpenBatMetric(unit, 'osiAllowed', f);
+    return {
+      osiAllowed: osi,
+      fip: bullpenPrefixedMetric(rawRow, prefix, 'FIP') || (unit && unit.fip),
+      bbPct: bullpenPrefixedMetric(rawRow, prefix, 'BB_pct', true) || (unit && unit.bbPct),
+      opsAllowed: bullpenPrefixedMetric(rawRow, prefix, 'OPS_allowed'),
+      era: bullpenPrefixedMetric(rawRow, prefix, 'ERA') || (unit && unit.era),
+      kPct: bullpenPrefixedMetric(rawRow, prefix, 'K_pct', true),
+      apps: bullpenPrefixedMetric(rawRow, prefix, 'apps'),
+      ipPerApp: bullpenPrefixedMetric(rawRow, prefix, 'ip_per_app'),
+      pitchesPerApp: bullpenPrefixedMetric(rawRow, prefix, 'pitches_per_app'),
+      prefix: prefix
+    };
+  }
+
   function bullpenBatMetric(unit, key, filter) {
     var bs = (filter && filter.batSide) || 'both';
     if (key === 'osiAllowed') {
@@ -324,6 +384,64 @@
     return unit[key];
   }
 
+  function resultRaw(R, baseKey, filter) {
+    if (!R || !baseKey) return null;
+    var winSuf = filter && filter.window && filter.window !== 'YTD' ? String(filter.window).toLowerCase() : null;
+    var locSuf = filter && filter.location === 'home' ? 'home'
+      : filter && filter.location === 'away' ? 'away' : null;
+    var candidates = [];
+    if (winSuf && locSuf) {
+      candidates.push(baseKey + '_' + winSuf);
+      candidates.push(baseKey + '_' + locSuf);
+    } else if (winSuf) {
+      candidates.push(baseKey + '_' + winSuf);
+    } else if (locSuf) {
+      candidates.push(baseKey + '_' + locSuf);
+    }
+    candidates.push(baseKey);
+    for (var i = 0; i < candidates.length; i++) {
+      var col = candidates[i];
+      var raw = R[col];
+      if (raw == null || raw === '') raw = S ? S.pickCol(R, col, col.toUpperCase()) : null;
+      var v = num(raw);
+      if (v != null) return v;
+    }
+    return null;
+  }
+
+  function resultMetric(R, baseKey, filter) {
+    var v = resultRaw(R, baseKey, filter);
+    return v != null ? pctFmt(v) : null;
+  }
+
+  function saveConversionPct(R, filter) {
+    if (!R) return null;
+    var blownPct = resultMetric(R, 'blown_save_pct', filter);
+    if (blownPct != null) return Math.round((100 - blownPct) * 10) / 10;
+    var saves = resultRaw(R, 'saves', filter);
+    var blown = resultRaw(R, 'blown_saves', filter);
+    if (saves == null && blown == null) return null;
+    var s = saves != null ? saves : 0;
+    var b = blown != null ? blown : 0;
+    var opps = s + b;
+    if (opps <= 0) return null;
+    return Math.round((s / opps) * 1000) / 10;
+  }
+
+  function blownSavePct(R, filter) {
+    if (!R) return null;
+    var pct = resultMetric(R, 'blown_save_pct', filter);
+    if (pct != null) return pct;
+    var saves = resultRaw(R, 'saves', filter);
+    var blown = resultRaw(R, 'blown_saves', filter);
+    if (saves == null && blown == null) return null;
+    var s = saves != null ? saves : 0;
+    var b = blown != null ? blown : 0;
+    var opps = s + b;
+    if (opps <= 0) return null;
+    return Math.round((b / opps) * 1000) / 10;
+  }
+
   function resolveBullpenSide(team, filter) {
     var LD = global.LIVE_DATA || {};
     var units = LD.bullpenUnits || {};
@@ -331,17 +449,20 @@
     var u = units[tk] || units[team];
     if (!u) return Promise.resolve(null);
     var f = S.createFilterState ? S.createFilterState(filter || {}) : (filter || {});
-    var osi = bullpenBatMetric(u, 'osiAllowed', f);
+    var rawRow = bullpenRawRow(team);
+    var met = bullpenResolvedMetrics(u, rawRow, f);
+    var osi = met.osiAllowed;
     var score = osi != null ? Math.max(0, 100 - osi) : null;
+    var resultsFilter = { window: f.window, location: f.location };
     return teamResultsRow(team).then(function(R) {
-      var winPct = R ? pctFmt(R.win_pct) : null;
-      if (f.location === 'home' && R && R.win_pct_home != null) winPct = pctFmt(R.win_pct_home);
-      else if (f.location === 'away' && R && R.win_pct_away != null) winPct = pctFmt(R.win_pct_away);
+      var winPct = resultMetric(R, 'rp_win_pct', resultsFilter);
       return {
         entity: 'bullpen',
         label: team,
         filterSummary: filterSummary(f),
         row: u,
+        rawRow: rawRow,
+        metrics: met,
         results: R,
         splitOsiAllowed: osi,
         primary: score,
@@ -349,7 +470,9 @@
         filter: f,
         saves: R ? num(R.saves) : null,
         blownSaves: R ? num(R.blown_saves) : null,
-        winPct: winPct
+        winPct: winPct,
+        savePct: saveConversionPct(R, resultsFilter),
+        blownSavePct: blownSavePct(R, resultsFilter)
       };
     });
   }
@@ -381,7 +504,8 @@
       higherBetter: opts.higherBetter !== false,
       invertA: !!opts.invertA,
       invertB: opts.invertB != null ? !!opts.invertB : !!opts.invertA,
-      ctx: opts.ctx || 'osi'
+      ctx: opts.ctx || 'osi',
+      decimals: opts.decimals
     };
   }
 
@@ -445,35 +569,45 @@
     ];
   }
 
-  function lineupBullpenMetrics(lineup, bp, lineupFirst) {
-    var allow = bp.splitOsiAllowed != null ? bp.splitOsiAllowed : bp.row.osiAllowed;
-    var u = bp.row;
-    if (lineupFirst) {
-      return [
-        metricRow('OSI vs BP Allowed', lineup.row.osi, allow, { invertB: true }),
-        metricRow('Win%', lineup.row.winPct, bp.winPct, { ctx: 'pct' }),
-        metricRow('wRC+', lineup.row.wrc, null, { ctx: 'osi' }),
-        metricRow('wOBA', lineup.row.woba, u.woba, { ctx: 'osi' }),
-        metricRow('Saves (team)', null, bp.saves, { ctx: 'osi' }),
-        metricRow('Blown Saves', null, bp.blownSaves, { ctx: 'osi', invertB: true }),
-        metricRow('BB% Allowed', null, u.bbPct, { ctx: 'pitching', invertB: true }),
-        metricRow('FIP', null, u.fip, { ctx: 'pitching', invertB: true }),
-        metricRow('OSI Allowed', null, allow, { invertB: true }),
-        metricRow('ABQ vs Allowed', lineup.row.abq, u.abqAllowed, { invertB: true })
-      ];
-    }
-    return [
-      metricRow('OSI vs BP Allowed', allow, lineup.row.osi, { invertA: true }),
-      metricRow('Win%', bp.winPct, lineup.row.winPct, { ctx: 'pct' }),
-      metricRow('wRC+', null, lineup.row.wrc, { ctx: 'osi' }),
-      metricRow('wOBA', u.woba, lineup.row.woba, { ctx: 'osi' }),
-      metricRow('Saves (team)', bp.saves, null, { ctx: 'osi' }),
-      metricRow('Blown Saves', bp.blownSaves, null, { ctx: 'osi', invertA: true }),
-      metricRow('BB% Allowed', u.bbPct, null, { ctx: 'pitching', invertA: true }),
-      metricRow('FIP', u.fip, null, { ctx: 'pitching', invertA: true }),
-      metricRow('OSI Allowed', allow, null, { invertA: true }),
-      metricRow('ABQ vs Allowed', u.abqAllowed, lineup.row.abq, { invertA: true })
+  function lineupWinPctForCompare(lu, filter) {
+    if (!lu || !lu.row) return null;
+    var f = filter || {};
+    if (f.segment === 'f5' && lu.row.f5WinPct != null) return lu.row.f5WinPct;
+    return lu.row.winPct;
+  }
+
+  function lineupBullpenMetrics(lineup, bp, lineupFirst, extras) {
+    extras = extras || {};
+    var lu = lineup.row || {};
+    var met = bp.metrics || {};
+    var luWin = lineupWinPctForCompare(lineup, lineup.filter);
+    var luSaveAgainst = extras.savesAgainstPct;
+    var luBlownCaused = extras.blownSavesCausedPct;
+    var luFipAllowed = extras.fipAllowed != null ? extras.fipAllowed : lu.xfip;
+    var bpFip = met.fip != null ? met.fip : bp.row.fip;
+    var bpBb = met.bbPct != null ? met.bbPct : bp.row.bbPct;
+    var bpOps = met.opsAllowed;
+    var rows = [
+      metricRow('Win% Against / Win% Earned', luWin, bp.winPct, { ctx: 'pct' }),
+      metricRow('Saves Against % / Saves Earned %', luSaveAgainst, bp.savePct, { ctx: 'pct', invertA: true }),
+      metricRow('BB% / BB% Allowed', lu.bb, bpBb, { ctx: 'pitching', invertB: true }),
+      metricRow('Blown Saves Caused % / Blown Save %', luBlownCaused, bp.blownSavePct, { ctx: 'pct', invertB: true }),
+      metricRow('OPS / OPS Allowed', lu.ops, bpOps, { ctx: 'ops', invertB: true, decimals: 3 }),
+      metricRow('AVG / AVG Allowed', lu.avg, extras.avgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
+      metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'pitching', invertA: true, invertB: true })
     ];
+    if (!lineupFirst) {
+      return rows.map(function(r) {
+        return metricRow(r.label, r.valB, r.valA, {
+          ctx: r.ctx,
+          invertA: r.invertB,
+          invertB: r.invertA,
+          decimals: r.decimals,
+          higherBetter: r.higherBetter
+        });
+      });
+    }
+    return rows;
   }
 
   function pitcherPitcherMetrics(a, b) {
@@ -512,8 +646,8 @@
     }
     if (modeId === 'lineup-bullpen') {
       var lu2 = dataA.entity === 'lineup' ? dataA : dataB;
-      var bp = dataA.entity === 'bullpen' ? dataA : dataB;
-      return lineupBullpenMetrics(lu2, bp, dataA.entity === 'lineup');
+      var bp2 = dataA.entity === 'bullpen' ? dataA : dataB;
+      return lineupBullpenMetrics(lu2, bp2, dataA.entity === 'lineup', global._lvbMetricExtras || {});
     }
     if (modeId === 'pitcher-pitcher') return pitcherPitcherMetrics(dataA, dataB);
     return [];
@@ -526,6 +660,11 @@
     splitGroupsForSide: splitGroupsForSide,
     filterSummary: filterSummary,
     resolveBoth: resolveBoth,
-    buildMetricRows: buildMetricRows
+    buildMetricRows: buildMetricRows,
+    bullpenResolvedMetrics: bullpenResolvedMetrics,
+    bullpenPrefix: bullpenPrefix,
+    saveConversionPct: saveConversionPct,
+    blownSavePct: blownSavePct,
+    resultMetric: resultMetric
   };
 })(typeof window !== 'undefined' ? window : this);

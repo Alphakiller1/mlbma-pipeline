@@ -62,13 +62,35 @@
     if (lvbLineup === lvbBp) lvbBp = lvbLineup === 'away' ? 'home' : 'away';
     var lvWin = (qp('lvWin') || 'ytd').toLowerCase();
     if (['l7', 'l14', 'l30', 'ytd'].indexOf(lvWin) < 0) lvWin = 'ytd';
+    var lvbLuHand = qp('lvbLuHand') || 'both';
+    var lvbBpHand = qp('lvbBpHand') || 'both';
+    var lvbLoc = qp('lvbLoc') || 'all';
+    var lvbSegment = qp('lvbSegment') || 'full';
+    if (global.MatchupLvBControls) {
+      var d = MatchupLvBControls.defaultLvbState({
+        lvbLuHand: lvbLuHand,
+        lvbBpHand: lvbBpHand,
+        lvbLoc: lvbLoc,
+        lvbSegment: lvbSegment,
+        lvWin: lvWin
+      });
+      lvbLuHand = d.lvbLuHand;
+      lvbBpHand = d.lvbBpHand;
+      lvbLoc = d.lvbLoc;
+      lvbSegment = d.lvbSegment;
+      lvWin = d.lvWin;
+    }
     return {
       mode: mode,
       lvpLineup: lvpLineup,
       lvpPitcher: lvpPitcher,
       lvbLineup: lvbLineup,
       lvbBp: lvbBp,
-      lvWin: lvWin
+      lvWin: lvWin,
+      lvbLuHand: lvbLuHand,
+      lvbBpHand: lvbBpHand,
+      lvbLoc: lvbLoc,
+      lvbSegment: lvbSegment
     };
   }
 
@@ -85,13 +107,22 @@
     if (state.mode === 'lvB') {
       params.set('lvbLineup', state.lvbLineup);
       params.set('lvbBp', state.lvbBp);
+      params.set('lvWin', state.lvWin || 'ytd');
+      params.set('lvbLuHand', state.lvbLuHand || 'both');
+      params.set('lvbBpHand', state.lvbBpHand || 'both');
+      params.set('lvbLoc', state.lvbLoc || 'all');
+      params.set('lvbSegment', state.lvbSegment || 'full');
     } else {
       params.delete('lvbLineup');
       params.delete('lvbBp');
+      params.delete('lvbLuHand');
+      params.delete('lvbBpHand');
+      params.delete('lvbLoc');
+      params.delete('lvbSegment');
     }
-    if (state.mode === 'lvL') {
+    if (state.mode === 'lvL' || state.mode === 'lvP') {
       params.set('lvWin', state.lvWin || 'ytd');
-    } else {
+    } else if (state.mode !== 'lvB') {
       params.delete('lvWin');
     }
     params.delete('lvSplit');
@@ -492,32 +523,82 @@
     MatchupLvP.hydrate(box, ctx, state.lvpLineup, state.lvpPitcher);
   }
 
-  function lineupVsBullpenContent(ctx, lineupSide, bpSide) {
+  function lineupVsBullpenContent(ctx, lineupSide, bpSide, state) {
     var m = ctx.m;
     var lineupTeam = lineupSide === 'home' ? m.home : m.away;
     var bpTeam = bpSide === 'home' ? m.home : m.away;
     var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
     var bp = bpSide === 'home' ? ctx.homeBp : ctx.awayBp;
-    var oppHand = lineupSide === 'home' ? m.awayHand : m.homeHand;
     var lineupOsi = lineupSide === 'home' ? m.homeOSI : m.awayOSI;
     var bpScore = S.bullpenPitchScore(bp);
     var risk = S.bullpenRisk(bp);
     var edge = S.lineupEdgeIndicator(lineupOsi, bp && bp.osiAllowed);
-    return '<div class="mc-lvb-body">'
-      + '<div class="mc-grid-2 mc-lvb-grid">'
-      + '<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">'
-      + S.teamLogo(lineupTeam, 20) + ' <span>' + esc(lineupTeam) + ' Projected Lineup</span></h3>'
-      + S.buildLineupTable(lineup, oppHand) + '</div>'
-      + '<div>' + bullpenPanel(bpTeam, bp) + '</div>'
-      + '</div>'
-      + '<div class="mc-card mc-lvb-read" style="margin-top:16px;">'
+    state = state || _compareState || { lvWin: 'ytd' };
+    var winControls = global.MatchupLvBControls && MatchupLvBControls.controlsHtml
+      ? MatchupLvBControls.controlsHtml(state)
+      : (global.MatchupLineupCompare && MatchupLineupCompare.controlsHtml
+        ? MatchupLineupCompare.controlsHtml(state)
+        : '');
+    var lineupCard = global.MatchupLineupCompare && MatchupLineupCompare.lineupCardForBullpen
+      ? MatchupLineupCompare.lineupCardForBullpen(ctx, state, lineupSide)
+      : ('<div class="mc-card mc-lineup-col"><h3 class="mc-lineup-col-head">'
+        + S.teamLogo(lineupTeam, 20) + ' <span>' + esc(lineupTeam) + ' Projected Lineup</span></h3>'
+        + S.buildLineupTable(lineup, 'R') + '</div>');
+    var unitRow = global.MatchupBullpenSplits && MatchupBullpenSplits.findBullpenUnitRow
+      ? MatchupBullpenSplits.findBullpenUnitRow((ctx.data && ctx.data.bullpenRows) || [], bpTeam)
+      : null;
+    var bpSplitCard = global.MatchupBullpenSplits && MatchupBullpenSplits.bullpenSplitStatsCard
+      ? MatchupBullpenSplits.bullpenSplitStatsCard(bpTeam, unitRow, lineup, state)
+      : bullpenPanel(bpTeam, bp);
+    var teamRanks = global.MatchupBullpenSplits && MatchupBullpenSplits.renderLvbTeamRanks
+      ? MatchupBullpenSplits.renderLvbTeamRanks(ctx, lineupSide, bpTeam, unitRow, lineup, state)
+      : '';
+    var matchupHead = global.MatchupLvB && MatchupLvB.lvbSectionHead
+      ? MatchupLvB.lvbSectionHead(
+        'Lineup & Bullpen Splits',
+        'Lineup vs relief splits · bullpen allowed by location and batter hand — excludes starters.'
+      )
+      : '<header class="mc-lvb-section-head mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Bullpen Splits</h3>'
+        + '<p class="mc-lvp-section-head__desc">Lineup vs relief splits · bullpen allowed metrics.</p></header>';
+    var edgeHtml = '<div class="mc-lvb-edge ca-board">'
       + '<div class="mc-edge-label">' + esc(lineupTeam) + ' lineup OSI vs ' + esc(bpTeam) + ' bullpen</div>'
-      + '<div class="mc-edge-osi" style="font-size:28px;margin:8px 0;">' + metricChip(lineupOsi, 'osi', false, 1) + '</div>'
-      + '<div class="mc-bp-metric">Bullpen Pitching Score ' + metricChip(bpScore, 'pitching', false, 1) + '</div>'
-      + '<div class="mc-bp-metric">Bullpen OSI Allowed ' + metricChip(bp && bp.osiAllowed, 'osi', true, 1) + '</div>'
-      + '<div class="' + edge.cls + '" style="margin-top:10px;">' + esc(edge.label) + '</div>'
-      + '<div class="mc-bp-metric" style="margin-top:8px;">Risk: <span class="' + risk.cls + '">' + esc(risk.label) + '</span></div>'
+      + '<div class="mc-lvb-edge-grid">'
+      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Lineup OSI</span>' + metricChip(lineupOsi, 'osi', false, 1) + '</div>'
+      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Bullpen Pitch Score</span>' + metricChip(bpScore, 'pitching', false, 1) + '</div>'
+      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Bullpen OSI Allowed</span>' + metricChip(bp && bp.osiAllowed, 'osi', true, 1) + '</div>'
+      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Edge</span><span class="' + edge.cls + '">' + esc(edge.label) + '</span></div>'
+      + '<div class="mc-lvb-edge-stat"><span class="mc-lvb-edge-lbl">Risk</span><span class="' + risk.cls + '">' + esc(risk.label) + '</span></div>'
       + '</div></div>';
+    return '<div class="mc-lvb-body">'
+      + '<section class="mc-lvb-section mc-lvb-section--matchup ca-board">'
+      + matchupHead
+      + '<div class="mc-lvb-lineup-block">'
+      + winControls
+      + '<div class="mc-grid-2 mc-lvb-grid mc-lvp-visual-duo">'
+      + '<div id="mcLvBLineupCard">' + lineupCard + '</div>'
+      + '<div id="mcLvBBpSplits">' + bpSplitCard + '</div>'
+      + '</div></div>'
+      + edgeHtml
+      + '</section>'
+      + teamRanks
+      + '<div id="mcLvBAsync" class="mc-lvb-async"><p class="ca-helper">Loading bullpen comparison…</p></div>'
+      + '</div>';
+  }
+
+  function hydrateLvB(root, ctx, state) {
+    if (!root) return;
+    if (!global.MatchupLvB || !MatchupLvB.hydrate) return;
+    var box = root.querySelector('#mcLvBAsync');
+    if (!box) return;
+    MatchupLvB.hydrate(box, ctx, state.lvbLineup, state.lvbBp, state);
+  }
+
+  function bindLvbControls(root, ctx, state) {
+    if (!global.MatchupLvBControls || !MatchupLvBControls.bindControls) return;
+    MatchupLvBControls.bindControls(root, state, function(next) {
+      syncCompareUrl(next);
+      refreshLvBContent(root, ctx, next);
+    });
   }
 
   function renderPaneLvL(ctx, state) {
@@ -539,8 +620,9 @@
   function renderPaneLvB(ctx, state) {
     var m = ctx.m;
     return '<h2 class="mc-pane-title">Lineup vs Bullpen</h2>'
+      + '<p class="mc-pane-desc mc-pane-desc--lead">Lineup offense vs opposing relief — split filters, vs-RP stats only, bullpen allowed metrics, and late-game leverage context.</p>'
       + lvBSelectorHtml(m, state)
-      + '<div id="mcLvBContent">' + lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp) + '</div>';
+      + '<div id="mcLvBContent">' + lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp, state) + '</div>';
   }
 
   function renderPaneBpBp(ctx) {
@@ -591,7 +673,7 @@
     var sel = root.querySelector('.mc-subsel--lvb');
     if (!box || !sel) return;
     box.classList.add('is-swapping');
-    box.innerHTML = lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp);
+    box.innerHTML = lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp, state);
     var tmp = document.createElement('div');
     tmp.innerHTML = lvBSelectorHtml(ctx.m, state);
     var newSel = tmp.querySelector('.mc-subsel--lvb');
@@ -599,6 +681,13 @@
     requestAnimationFrame(function() {
       box.classList.remove('is-swapping');
       bindSubSelectors(root, ctx, state);
+      bindLvbControls(root, ctx, state);
+      if (global.MatchupLineupCompare && MatchupLineupCompare.bindControls) {
+        MatchupLineupCompare.bindControls(root, ctx, state, function(next) {
+          syncCompareUrl(next);
+        });
+      }
+      hydrateLvB(root, ctx, state);
     });
   }
 
@@ -672,9 +761,11 @@
         activateComparePane(root, mode);
         mountChartsForMode(mode, ctx);
         if (mode === 'lvP') hydrateLvP(root, ctx, state);
+        if (mode === 'lvB') hydrateLvB(root, ctx, state);
       });
     });
     bindSubSelectors(root, ctx, state);
+    bindLvbControls(root, ctx, state);
     if (global.MatchupLineupCompare && MatchupLineupCompare.bindControls) {
       MatchupLineupCompare.bindControls(root, ctx, state, function(next) {
         syncCompareUrl(next);
@@ -781,6 +872,7 @@
     bindRadarResize();
     mountChartsForMode(state.mode, ctx);
     if (state.mode === 'lvP') hydrateLvP(root, ctx, state);
+    if (state.mode === 'lvB') hydrateLvB(root, ctx, state);
     } catch (renderErr) {
       console.error('[matchup_compare] render failed', renderErr);
       renderLoadError(root, renderErr);
@@ -1147,7 +1239,9 @@
       S.fetchSheetTab(T.pitch_mix_team_batting).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_batter_l14).catch(function() { return []; }),
       S.fetchSheetTab(T.team_l10_sp_hand, { revalidate: true }).catch(function() { return []; }),
-      S.fetchSheetTab(T.team_l10_sp_hand_games, { revalidate: true }).catch(function() { return []; })
+      S.fetchSheetTab(T.team_l10_sp_hand_games, { revalidate: true }).catch(function() { return []; }),
+      S.fetchSheetTab(T.reliever_log).catch(function() { return []; }),
+      S.fetchSheetTab(T.batter_splits_vs_rp).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
@@ -1165,6 +1259,7 @@
         pitching: S.parsePitchingRows(res[5]),
         spProfiles: res[6] || [],
         bullpen: S.parseBullpenUnitRows(res[7]),
+        bullpenRows: res[7] || [],
         pals: S.enrichPalsMap ? S.enrichPalsMap(S.parsePalsRows(res[8])) : S.parsePalsRows(res[8]),
         spL14: res[10] || []
       };
@@ -1192,7 +1287,8 @@
             batterHome: res[12] || [],
             batterAway: res[13] || [],
             batterRecent: res[14] || [],
-            batterOverall: res[17] || []
+            batterOverall: res[17] || [],
+            batterVsRp: res[30] || []
           });
           data.batterIndex = lineupPack.batterIndex;
         } catch (lineupErr) {
@@ -1228,6 +1324,18 @@
       data.pitchMixBatterL14 = res[26] || [];
       data.teamL10SpHand = res[27] || [];
       data.teamL10SpHandGames = res[28] || [];
+      if (global.MatchupLvB && MatchupLvB.prepareData) {
+        try {
+          MatchupLvB.prepareData({
+            relieverLog: res[29] || [],
+            spProfiles: data.spProfiles || res[6] || []
+          });
+        } catch (lvbErr) {
+          console.warn('[matchup_compare] LvB module unavailable', lvbErr);
+        }
+      }
+      data.relieverLog = res[29] || [];
+      data.batterSplitsVsRp = res[30] || [];
       if (!m) {
         finish(data);
         return;

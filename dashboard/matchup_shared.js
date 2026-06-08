@@ -2126,8 +2126,9 @@
         medLevEra: numOrNull(pickCol(row, 'medium_leverage_ERA', 'Medium Leverage ERA')),
         loLevEra: numOrNull(pickCol(row, 'low_leverage_ERA')),
         woba: numOrNull(pickCol(row, 'overall_wOBA', 'wOBA')),
-        vsRhhOsi: numOrNull(pickCol(row, 'vs_RHH_OSI_allowed', 'osi_allowed_vs_rhh')),
-        vsLhhOsi: numOrNull(pickCol(row, 'vs_LHH_OSI_allowed', 'osi_allowed_vs_lhh')),
+        vsRhhOsi: numOrNull(pickCol(row, 'vs_rhh_OSI_allowed', 'vs_RHH_OSI_allowed', 'osi_allowed_vs_rhh')),
+        vsLhhOsi: numOrNull(pickCol(row, 'vs_lhh_OSI_allowed', 'vs_LHH_OSI_allowed', 'osi_allowed_vs_lhh')),
+        opsAllowed: numOrNull(pickCol(row, 'overall_OPS_allowed', 'OPS_allowed')),
         oor: osiAllowed
       };
     });

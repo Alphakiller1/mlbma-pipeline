@@ -599,14 +599,17 @@
       + '</div></div>';
   }
 
-  function lineupOffenseCard(ctx, lineupSide, spHand, rankIndex) {
+  function lineupOffenseCard(ctx, lineupSide, spHand, rankIndex, opts) {
+    opts = opts || {};
     var m = ctx.m;
     var team = lineupSide === 'home' ? m.home : m.away;
     var side = lineupSide === 'home' ? 'home' : 'away';
-    var handSlice = String(spHand || '').trim().toUpperCase().charAt(0) === 'L' ? 'handL' : 'handR';
+    var handSlice = opts.handSlice
+      || (String(spHand || '').trim().toUpperCase().charAt(0) === 'L' ? 'handL' : 'handR');
+    var handTitle = opts.handTitle || handLabel(spHand);
     var strips = [
-      { sliceKey: 'overall', title: 'BATS', highlight: false },
-      { sliceKey: handSlice, title: handLabel(spHand), highlight: true },
+      { sliceKey: 'overall', title: 'BATS', highlight: opts.highlightOverall || false },
+      { sliceKey: handSlice, title: handTitle, highlight: opts.highlightHand !== false },
       { sliceKey: 'locAway', title: 'ON ROAD', highlight: side === 'away' }
     ];
     var accent = teamAccentColor(team);
@@ -865,6 +868,8 @@
     buildPitcherAllowedValues: buildPitcherAllowedValues,
     renderSection: renderSection,
     renderLineupTeamCard: renderLineupTeamCard,
+    lineupOffenseCard: lineupOffenseCard,
+    handLabel: handLabel,
     renderLvpSplitJux: renderLvpSplitJux,
     renderLvpTeamRanks: renderLvpTeamRanks,
     renderPitcherAllowedPanel: renderPitcherAllowedPanel,

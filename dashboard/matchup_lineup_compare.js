@@ -198,6 +198,7 @@
     indexRows(raw.batterAway || [], 'away', index);
     indexRows(raw.batterRecent || [], 'recent', index);
     indexRows(raw.batterOverall || [], 'overall', index);
+    indexRows(raw.batterVsRp || [], 'vsRp', index);
     return { batterIndex: index };
   }
 
@@ -408,6 +409,24 @@
       + '</div>';
   }
 
+  function lineupCardForBullpen(ctx, state, lineupSide) {
+    var m = ctx.m;
+    var team = lineupSide === 'home' ? m.home : m.away;
+    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
+    var side = lineupSide === 'home' ? 'home' : 'away';
+    var roleSide = side === 'home' ? 'Home' : 'Away';
+    var handLbl = 'Both';
+    if (global.MatchupLvBControls) {
+      var st = MatchupLvBControls.defaultLvbState(state);
+      handLbl = st.lvbLuHand === 'r' ? 'RHH' : st.lvbLuHand === 'l' ? 'LHH' : 'Both';
+    }
+    return teamCardHtml(team, side, lineup, ctx, state, {
+      splitBucket: 'vsRp',
+      splitLabel: 'vs Bullpen · ' + handLbl + (side === 'away' ? ' · Road' : ' · Home'),
+      roleLabel: roleSide + ' · vs Relief · ' + handLbl
+    });
+  }
+
   function lineupCardForPitcher(ctx, state, lineupSide, spHand) {
     var m = ctx.m;
     var team = lineupSide === 'home' ? m.home : m.away;
@@ -481,6 +500,7 @@
     bindControls: bindControls,
     teamCardHtml: teamCardHtml,
     lineupCardForPitcher: lineupCardForPitcher,
+    lineupCardForBullpen: lineupCardForBullpen,
     controlsHtml: controlsHtml,
     refreshTeamCard: refreshTeamCard,
     WINDOW_OPTIONS: WINDOW_OPTIONS
