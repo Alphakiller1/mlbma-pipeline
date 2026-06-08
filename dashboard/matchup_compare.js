@@ -453,6 +453,9 @@
     var winControls = global.MatchupLineupCompare && MatchupLineupCompare.controlsHtml
       ? MatchupLineupCompare.controlsHtml(state)
       : '';
+    var offenseSplits = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLineupTeamCard
+      ? MatchupOffenseSplits.renderLineupTeamCard(ctx, lineupSide, spHand)
+      : '';
     return '<div class="mc-lvp-body">'
       + '<div class="mc-lvp-lineup-block">'
       + winControls
@@ -460,6 +463,7 @@
       + '<div id="mcLvPLineupCard">' + lineupCard + '</div>'
       + '<div id="mcLvPSpCard">' + spCardLvp(pitcherSideLbl, spName, spHand, pitcherTeam, m, met, ps, ctx.data.spL14, ctx.data.spMetricSplits) + '</div>'
       + '</div></div>'
+      + offenseSplits
       + '<div id="mcLvPAsync" class="mc-lvp-async"><p class="ca-helper">Loading performance comparison…</p></div>'
       + '</div>';
   }

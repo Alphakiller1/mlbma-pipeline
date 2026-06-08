@@ -51,13 +51,15 @@ GAMES_OUTPUT_COLUMNS = [
     "opp_starter_hand",
     "date",
     "opp",
-    "result",
     "home_away",
+    "opp_starter_id",
+    "opp_starter_name",
     "vs_sp_pa",
     "vs_sp_h",
     "vs_sp_ab",
     "vs_sp_bb",
     "vs_sp_hr",
+    "runs_off_sp",
     "wrc_plus",
     "ops",
     "woba",
@@ -71,6 +73,28 @@ def _safe_rate(num: float, den: float, digits: int = 3):
     if den <= 0:
         return None
     return round(float(num) / float(den), digits)
+
+
+def _load_name_map() -> dict[int, str]:
+    if not REGISTRY_FILE.exists():
+        return {}
+    try:
+        df = pd.read_csv(REGISTRY_FILE, usecols=["player_id", "full_name", "name"])
+    except Exception:
+        try:
+            df = pd.read_csv(REGISTRY_FILE, usecols=["player_id", "full_name"])
+        except Exception:
+            return {}
+    id_col = "player_id"
+    name_col = "full_name" if "full_name" in df.columns else "name"
+    out: dict[int, str] = {}
+    for row in df.itertuples(index=False):
+        if pd.isna(getattr(row, id_col)):
+            continue
+        nm = str(getattr(row, name_col, "") or "").strip()
+        if nm:
+            out[int(getattr(row, id_col))] = nm
+    return out
 
 
 def _load_throws_map() -> dict[int, str]:
@@ -148,6 +172,11 @@ def _prep_games(df: pd.DataFrame, throws_map: dict[int, str]) -> pd.DataFrame:
             out[col] = 0
         out[col] = pd.to_numeric(out[col], errors="coerce").fillna(0)
     out["opp_quality_start"] = out.get("opp_quality_start", False).fillna(False).astype(bool)
+    pa = (
+        out["vs_sp_ab"] + out["vs_sp_bb"] + out["vs_sp_ibb"]
+        + out["vs_sp_hbp"] + out["vs_sp_sf"]
+    )
+    out["vs_sp_pa"] = pa
     return out
 
 
@@ -229,7 +258,7 @@ def _game_totals(g) -> Dict[str, float]:
     }
 
 
-def _single_game_row(team: str, hand: str, g) -> dict:
+def _single_game_row(team: str, hand: str, g, name_map: dict[int, str]) -> dict:
     totals = _game_totals(g)
     pa = totals["ab"] + totals["bb"] + totals["ibb"] + totals["hbp"] + totals["sf"]
     woba = _woba_from_totals(totals)
@@ -238,18 +267,25 @@ def _single_game_row(team: str, hand: str, g) -> dict:
     dt = g["date"]
     date_str = dt.date().isoformat() if hasattr(dt, "date") else str(dt)[:10]
     qs = g.get("opp_quality_start")
+    pid = g.get("opp_starter_id")
+    pid_int = int(pid) if pd.notna(pid) else None
+    pname = name_map.get(pid_int, "") if pid_int else ""
+    er = pd.to_numeric(g.get("opp_starter_er"), errors="coerce")
+    runs_off = int(er) if pd.notna(er) else None
     return {
         "team": team,
         "opp_starter_hand": hand,
         "date": date_str,
         "opp": g.get("opp"),
-        "result": g.get("result"),
         "home_away": g.get("home_away"),
+        "opp_starter_id": pid_int,
+        "opp_starter_name": pname,
         "vs_sp_pa": int(pa) if pa > 0 else 0,
         "vs_sp_h": int(totals["h"]),
         "vs_sp_ab": int(totals["ab"]),
         "vs_sp_bb": int(totals["bb"] + totals["ibb"]),
         "vs_sp_hr": int(totals["hr"]),
+        "runs_off_sp": runs_off,
         "wrc_plus": wrc,
         "ops": ops,
         "woba": woba,
@@ -336,6 +372,7 @@ def run():
         return
 
     throws_map = _load_throws_map()
+    name_map = _load_name_map()
     pitch_scores = _load_pitch_score_map()
     xfip_map = _load_xfip_map()
     df = _prep_games(raw, throws_map)
@@ -348,14 +385,16 @@ def run():
     for team in sorted(official):
         tdf = df[df["team"] == team].sort_values(["date", "game_pk"], ascending=[False, False])
         for hand in ("R", "L"):
-            slice_df = tdf[tdf["opp_starter_hand"] == hand].head(L10_GAMES)
+            hand_df = tdf[tdf["opp_starter_hand"] == hand]
+            hand_df = hand_df[hand_df["vs_sp_pa"] > 0]
+            slice_df = hand_df.head(L10_GAMES)
             if slice_df.empty:
                 rows.append({"team": team, "opp_starter_hand": hand})
                 continue
             pack = _aggregate_slice(slice_df, pitch_scores, xfip_map)
             rows.append({"team": team, "opp_starter_hand": hand, **pack})
             for _, g in slice_df.iterrows():
-                game_rows.append(_single_game_row(team, hand, g))
+                game_rows.append(_single_game_row(team, hand, g, name_map))
 
     out = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
     out = out.where(pd.notnull(out), None).fillna("")

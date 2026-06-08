@@ -265,6 +265,26 @@
     ];
   }
 
+  function renderLineupTeamCard(ctx, lineupSide, spHand) {
+    if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
+    var m = ctx.m;
+    var team = lineupSide === 'home' ? m.home : m.away;
+    var side = lineupSide === 'home' ? 'home' : 'away';
+    var strips = buildStripsForTeam(team, side, spHand);
+    return '<div class="mc-section-block mc-offense-splits mc-lvp-offense-splits">'
+      + '<h3 class="mc-lvp-block-title">Offensive Splits — League Rank</h3>'
+      + '<p class="mc-os-hint ca-helper">Color-coded league rank for the selected lineup — '
+      + handLabel(spHand) + ' strip uses tonight\'s starter hand · L7/L14/L30 scaled from team form.</p>'
+      + teamCard(team, side, strips, ctx.offenseRankIndex)
+      + '<div class="mc-os-legend">'
+      + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'
+      + '<span class="mc-os-leg mc-os-cell--strong">#6–12 Strong</span>'
+      + '<span class="mc-os-leg mc-os-cell--mid">#13–20 Average</span>'
+      + '<span class="mc-os-leg mc-os-cell--weak">#21–25 Weak</span>'
+      + '<span class="mc-os-leg mc-os-cell--poor">#26+ Poor</span>'
+      + '</div></div>';
+  }
+
   function renderSection(ctx) {
     if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
     var m = ctx.m;
@@ -310,6 +330,7 @@
   global.MatchupOffenseSplits = {
     prepareData: prepareData,
     buildRankIndex: buildRankIndex,
-    renderSection: renderSection
+    renderSection: renderSection,
+    renderLineupTeamCard: renderLineupTeamCard
   };
 })(typeof window !== 'undefined' ? window : this);

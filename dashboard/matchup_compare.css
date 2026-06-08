@@ -808,7 +808,32 @@
 
 .mc-lvp-table--summary { margin-bottom: 12px; }
 .mc-lvp-table-wrap--games { margin-top: 4px; }
-.mc-lvp-table--l10games { min-width: 640px; }
+.mc-lvp-table--summary-sp th,
+.mc-lvp-table--summary-sp td.mc-lvp-summary-stat {
+  text-align: center;
+}
+.mc-lvp-table--l10games {
+  table-layout: fixed;
+  min-width: 720px;
+}
+.mc-lvp-table--l10games th,
+.mc-lvp-table--l10games td.num {
+  text-align: center;
+}
+.mc-lvp-table--l10games td.mc-lvp-date,
+.mc-lvp-table--l10games th:first-child {
+  text-align: left;
+}
+.mc-lvp-table--l10games td.mc-lvp-opp,
+.mc-lvp-table--l10games th:nth-child(3) {
+  text-align: left;
+}
+.mc-lvp-table--l10games td.mc-lvp-pitcher,
+.mc-lvp-table--l10games th:nth-child(4) {
+  text-align: left;
+  white-space: nowrap;
+}
+.mc-lvp-loc { font-weight: 700; letter-spacing: 0.04em; }
 .mc-lvp-ha {
   font-size: 10px;
   color: var(--text-3);
@@ -817,6 +842,16 @@
 }
 .mc-lvp-res--w { color: #4ADE80; font-weight: 700; }
 .mc-lvp-res--l { color: #F87171; font-weight: 700; }
+
+.mc-lvp-offense-splits {
+  margin: 18px 0 6px;
+}
+.mc-lvp-offense-splits .mc-os-card {
+  max-width: 100%;
+}
+.mc-lvp-offense-splits .mc-os-hint {
+  margin-bottom: 12px;
+}
 
 /* LvP performance comparison */
 .mc-lvp-async { margin-top: 20px; }
