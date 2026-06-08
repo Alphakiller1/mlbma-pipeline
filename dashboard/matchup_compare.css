@@ -1066,61 +1066,69 @@
 .mc-lvp-team-ranks {
   margin-top: 0;
 }
+.mc-lvp-team-ranks .mc-lvp-section-head {
+  margin-bottom: 14px;
+}
 .mc-lvp-offense-pitcher-duo {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 18px;
   align-items: stretch;
+  min-height: 420px;
 }
 .mc-lvp-offense-pitcher-duo > .mc-os-card {
   min-width: 0;
   height: 100%;
 }
 .mc-os-card--pitcher-compact {
-  padding: 10px 12px 10px;
-  gap: 8px;
+  padding: 16px 18px 18px;
+  gap: 14px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 .mc-os-card--pitcher-compact .mc-os-card-head--compact {
-  gap: 8px;
-  padding-bottom: 6px;
+  gap: 12px;
+  padding-bottom: 10px;
   align-items: center;
 }
 .mc-os-card--pitcher-compact .ca-pitcher-avatar,
 .mc-os-card--pitcher-compact .mc-os-card-head--compact img {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
 .mc-os-card--pitcher-compact .mc-os-card-team--pitcher {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 .mc-os-card--pitcher-compact .mc-os-card-role {
-  font-size: 9px;
-  margin-top: 2px;
+  font-size: 10px;
+  margin-top: 3px;
+  line-height: 1.35;
 }
 .mc-os-card--pitcher-compact .mc-os-card-strips--pitcher-loc,
 .mc-os-card--pitcher-compact .mc-os-card-strips--pitcher-hands-trio {
-  gap: 8px;
+  gap: 12px;
+  flex: 1;
 }
 .mc-lvp-team-ranks .mc-os-card--lineup-compact {
-  padding: 10px 12px 10px;
-  gap: 8px;
+  padding: 16px 18px 18px;
+  gap: 14px;
   border-radius: 12px;
+  flex: 1;
 }
 .mc-lvp-team-ranks .mc-os-card-head--compact {
-  gap: 8px;
-  padding-bottom: 6px;
+  gap: 12px;
+  padding-bottom: 10px;
 }
 .mc-lvp-team-ranks .mc-os-card-head--compact img {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
 }
 .mc-lvp-team-ranks .mc-os-card--lineup-compact .mc-os-card-team {
   font-size: 15px;
@@ -1129,53 +1137,101 @@
 .mc-lvp-team-ranks .mc-os-card--lineup-compact .mc-os-card-role {
   font-size: 10px;
   letter-spacing: 0.02em;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 8px;
+  gap: 12px;
   align-items: stretch;
+  flex: 1;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-strip {
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-strip-head {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.1em;
-  padding: 4px 6px;
+  padding: 9px 8px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table {
-  font-size: 11px;
+  font-size: 13px;
+  flex: 1;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table th,
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table td {
-  padding: 3px 2px;
+  padding: 10px 6px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table thead th {
-  padding: 4px 2px;
-  font-size: 8px;
+  padding: 10px 6px;
+  font-size: 10px;
   letter-spacing: 0.06em;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-win {
-  width: 30px;
-  padding: 3px 2px;
-  font-size: 8px;
+  width: 38px;
+  padding: 10px 6px;
+  font-size: 10px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-rank {
-  font-size: 12px;
+  font-size: 15px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-cell {
-  font-size: 11px;
+  font-size: 13px;
+}
+.mc-lvp-team-ranks .mc-os-card--pitcher-compact .mc-os-strip {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-strip-head,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-strip-head {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 9px 8px;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table {
+  font-size: 13px;
+  flex: 1;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table th,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table td,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table th,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table td {
+  padding: 12px 6px;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-table thead th,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-table thead th {
+  padding: 10px 6px;
+  font-size: 10px;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-win,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-win {
+  width: 38px;
+  padding: 12px 6px;
+  font-size: 10px;
+}
+.mc-lvp-team-ranks .mc-os-table--pitcher .mc-os-cell--stat {
+  min-height: 48px;
+  vertical-align: middle;
+}
+.mc-lvp-team-ranks .mc-os-table--pitcher .mc-os-cell--stat .chip {
+  min-width: 58px;
+  padding: 5px 8px;
+  font-size: 13px;
 }
 .mc-lvp-team-ranks .mc-os-legend--compact {
-  margin-top: 8px;
-  gap: 5px;
+  margin-top: 14px;
+  gap: 8px;
 }
 .mc-lvp-team-ranks .mc-os-legend--compact .mc-os-leg {
-  font-size: 9px;
-  padding: 2px 7px;
-  border-radius: 4px;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 5px;
 }
 .mc-lvp-team-ranks .mc-os-legend--compact .mc-os-legend-label {
   font-size: 9px;
