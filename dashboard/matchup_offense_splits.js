@@ -606,7 +606,8 @@
     var handSlice = String(spHand || '').trim().toUpperCase().charAt(0) === 'L' ? 'handL' : 'handR';
     var strips = [
       { sliceKey: 'overall', title: 'BATS', highlight: false },
-      { sliceKey: handSlice, title: handLabel(spHand), highlight: true }
+      { sliceKey: handSlice, title: handLabel(spHand), highlight: true },
+      { sliceKey: 'locAway', title: 'ON ROAD', highlight: side === 'away' }
     ];
     var accent = teamAccentColor(team);
     var stripHtml = strips.map(function(st) {
@@ -619,7 +620,7 @@
     return '<div class="mc-os-card mc-os-card--lineup mc-os-card--lineup-compact" style="--mc-os-team:' + esc(accent) + '">'
       + '<div class="mc-os-card-head mc-os-card-head--compact">' + logo
       + '<div class="mc-os-card-head-text mc-os-card-head-text--logo-only"></div></div>'
-      + '<div class="mc-os-card-strips mc-os-card-strips--lineup-duo">' + stripHtml + '</div></div>';
+      + '<div class="mc-os-card-strips mc-os-card-strips--lineup-stack">' + stripHtml + '</div></div>';
   }
 
   function ctxPitcherSplitsReady(splits, spName, pitcherTeam, spProfiles) {
@@ -654,9 +655,10 @@
       + '<div class="mc-os-card-head mc-os-card-head--compact">' + avatar
       + '<div class="mc-os-card-head-text"><span class="mc-os-card-team mc-os-card-team--pitcher">' + esc(spName) + '</span>'
       + '<span class="mc-os-card-role">xFIP · K% · BB% · OBP allowed · YTD</span></div></div>'
+      + '<div class="mc-os-pitcher-split-groups">'
       + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-loc">' + locHtml + '</div>'
       + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands-trio">' + handHtml + '</div>'
-      + '</div>';
+      + '</div></div>';
   }
 
   function renderPitcherAllowedPanel(spName, pitcherTeam, splits, spHand) {

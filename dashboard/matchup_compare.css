@@ -1085,11 +1085,12 @@
   margin-top: 0;
 }
 .mc-lvp-team-ranks.ca-board {
-  gap: 22px;
+  gap: 28px;
+  padding-bottom: 30px;
 }
 .mc-lvp-team-ranks .mc-lvp-section-head {
   margin: 0;
-  padding-bottom: 14px;
+  padding-bottom: 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .mc-lvp-team-ranks .mc-lvp-section-head__title {
@@ -1105,16 +1106,16 @@
 }
 .mc-lvp-offense-pitcher-duo {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
+  grid-template-columns: 1fr;
+  gap: 32px;
   align-items: start;
 }
 .mc-lvp-offense-pitcher-duo > .mc-os-card {
   min-width: 0;
 }
 .mc-os-card--pitcher-compact {
-  padding: 18px 20px 20px;
-  gap: 16px;
+  padding: 22px 24px 24px;
+  gap: 22px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -1145,11 +1146,16 @@
 }
 .mc-os-card--pitcher-compact .mc-os-card-strips--pitcher-loc,
 .mc-os-card--pitcher-compact .mc-os-card-strips--pitcher-hands-trio {
-  gap: 12px;
+  gap: 16px;
+}
+.mc-lvp-team-ranks .mc-os-pitcher-split-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 .mc-lvp-team-ranks .mc-os-card--lineup-compact {
-  padding: 18px 20px 20px;
-  gap: 16px;
+  padding: 22px 24px 24px;
+  gap: 22px;
   border-radius: 12px;
 }
 .mc-lvp-team-ranks .mc-os-card-head--compact {
@@ -1170,43 +1176,78 @@
   letter-spacing: 0.02em;
   margin-top: 2px;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 12px;
+  gap: 18px;
   align-items: start;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-strip {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-strip:last-child {
+  grid-column: 1 / -1;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-strip,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-strip,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-strip {
   border-radius: 8px;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-strip-head {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-strip-head,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-strip-head,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-strip-head {
   font-size: 10px;
   letter-spacing: 0.1em;
   padding: 8px 8px;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-table,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-table {
   font-size: 12px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table th,
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table td {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table td,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-table th,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-table td,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-table th,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-table td {
   padding: 7px 5px;
   line-height: 1.2;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table thead th {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-table thead th,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-table thead th,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-table thead th {
   padding: 8px 5px;
   font-size: 9px;
   letter-spacing: 0.06em;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-win {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-win,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-win,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-win {
   width: 34px;
   padding: 7px 4px;
   font-size: 9px;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-rank {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-rank,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-rank,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-rank {
   font-size: 14px;
 }
-.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-cell {
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-duo .mc-os-cell,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-trio .mc-os-cell,
+.mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-cell {
   font-size: 12px;
+}
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc,
+.mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio {
+  gap: 16px;
 }
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-loc .mc-os-strip-head,
 .mc-lvp-team-ranks .mc-os-card-strips--pitcher-hands-trio .mc-os-strip-head {
@@ -1245,9 +1286,9 @@
   font-size: 12px;
 }
 .mc-lvp-team-ranks .mc-os-legend--compact {
-  margin-top: 0;
-  gap: 8px;
-  padding-top: 4px;
+  margin-top: 4px;
+  gap: 10px;
+  padding-top: 8px;
 }
 .mc-lvp-team-ranks .mc-os-legend--compact .mc-os-leg {
   font-size: 10px;
@@ -1258,8 +1299,13 @@
   font-size: 10px;
 }
 @media (max-width: 680px) {
-  .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo {
+  .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo,
+  .mc-lvp-team-ranks .mc-os-card-strips--lineup-trio,
+  .mc-lvp-team-ranks .mc-os-card-strips--lineup-stack {
     grid-template-columns: 1fr;
+  }
+  .mc-lvp-team-ranks .mc-os-card-strips--lineup-stack .mc-os-strip:last-child {
+    grid-column: auto;
   }
   .mc-lvp-offense-pitcher-duo {
     grid-template-columns: 1fr;
