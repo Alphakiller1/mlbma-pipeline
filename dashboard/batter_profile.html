@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="batter_profile.css?v=20260609e">
+<link rel="stylesheet" href="batter_profile.css?v=20260610a">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -123,13 +123,13 @@
 
     <!-- Hero: search + identity + tonight summary -->
     <section class="ca-board tp-section pp-hero-section" id="secHero">
-      <div class="bp-hero-banner-shell pp-hero-banner-shell">
-        <div class="bp-search-bar profile-context-bar">
+      <div class="pp-hero-banner-shell bp-hero-banner-shell">
+        <div class="bp-search-bar pp-hero-search profile-context-bar">
           <label class="bp-search-bar__label" for="playerSearchInput">Search batter</label>
           <input type="text" class="bp-search-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, Soto, Tucker" autocomplete="off">
         </div>
         <div id="batterSnapshot" class="profile-hero"></div>
-        <div class="bp-hero-context" id="heroContext" aria-live="polite"></div>
+        <div class="bp-hero-context pp-hero-context" id="heroContext" aria-live="polite"></div>
       </div>
     </section>
 
@@ -1006,12 +1006,18 @@ function batterHeadshot(key, sizeKey) {
   var idOrName = pickCol(reg || {}, ['player_id', 'playerId'])
     || pickCol(prof || {}, ['player_id', 'playerId'])
     || playerDisplayName(key);
-  if (A.pitcherAvatar) return A.pitcherAvatar(idOrName, sizeKey || 'profile');
+  if (A.pitcherAvatar) {
+    return A.pitcherAvatar(idOrName, {
+      crop: sizeKey || 'profile',
+      className: 'tp-pitcher-banner__avatar',
+      eager: true
+    });
+  }
   if (A.headshotImg && A.resolveMlbId) {
     var mlbId = A.resolveMlbId(idOrName);
     if (!mlbId) return '';
-    var px = (sizeKey === 'matchup' || sizeKey === 48) ? 48 : (sizeKey === 'compare' || sizeKey === 64) ? 64 : 88;
-    return A.headshotImg(mlbId, px, 'batter-headshot', { cropMod: sizeKey === 'matchup' ? 'matchup' : (px >= 88 ? 'profile' : 'compare'), eager: true });
+    var px = (sizeKey === 'matchup' || sizeKey === 48) ? 48 : (sizeKey === 'compare' || sizeKey === 64) ? 64 : 112;
+    return A.headshotImg(mlbId, px, 'tp-pitcher-banner__avatar', { cropMod: sizeKey === 'matchup' ? 'matchup' : 'profile', eager: true });
   }
   return '';
 }
@@ -1063,12 +1069,13 @@ function renderSnapshot(key, p) {
   var prof = overallProfileRow(key);
   var R = activeRaw(key);
   var hs = batterHeadshot(key, 'profile');
-  var logo = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 88, 'tp-team-banner__logo-img snapshot-logo') : '';
-  var watermark = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
+  var logo = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 52, 'tp-team-banner__logo-img snapshot-logo') : '';
+  var watermark = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 200, 'tp-team-banner__watermark-img') : '';
   var accent = teamAccent(team);
+  var batsLabel = bats === 'L' ? 'LHB' : bats === 'R' ? 'RHB' : bats === 'S' ? 'SHB' : bats;
 
   var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Batter headline stats">'
-    + heroStat('', '<span class="tp-hero-stat__num">' + esc(bats) + '</span>', 'neutral', 'Bats ' + bats)
+    + heroStat('', '<span class="tp-hero-stat__num">' + esc(batsLabel) + '</span>', 'neutral', 'Bats ' + batsLabel)
     + heroStat('OSI', heroMetricText(numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1), 'neutral')
     + heroStat('wRC+', heroMetricText(numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0), 'neutral')
     + heroStat('K%', heroMetricText(pct(R, ['K%']), 'kpct', true, 1, { display: pct(R, ['K%']) != null ? fmt(pct(R, ['K%']), 1) + '%' : '—' }), 'neutral')
@@ -1082,7 +1089,7 @@ function renderSnapshot(key, p) {
     + '<div class="tp-pitcher-banner__identity">'
     + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
     + '<div class="tp-team-banner__copy">'
-    + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Prop Hub</p>'
+    + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Profile</p>'
     + '<h1 class="tp-team-banner__title">' + esc(name) + '</h1>'
     + (team ? '<span class="tp-pitcher-banner__today pill pill-today">' + esc(team) + '</span>' : '')
     + '</div></div>'
@@ -1510,8 +1517,12 @@ function renderPitchMix(key, p) {
 
 function renderPlayer(key) {
   STATE.playerKey = key;
-  if (!key) { document.getElementById('profileContent').style.opacity = '0.5'; return; }
-  document.getElementById('profileContent').style.opacity = '1';
+  var shell = document.getElementById('profileContent');
+  if (!key) {
+    if (shell) shell.classList.remove('ready');
+    return;
+  }
+  if (shell) shell.classList.add('ready');
   var p = projectProps(key);
   autoSplitForTonight(p);
   renderSplitTabBar();
@@ -1577,7 +1588,7 @@ function load() {
     indexRawStats(); buildPool();
     renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); buildSearch();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
-      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Prop Hub', subtitle: 'Tonight\'s hitter prop research — model leans, matchup logic, and splits' }); } catch (e) {}
+      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Prop Hub', subtitle: 'Model leans, matchup logic, splits, and prop hit-rates' }); } catch (e) {}
     }
     var urlName = new URLSearchParams(window.location.search).get('player');
     var startKey = null;
