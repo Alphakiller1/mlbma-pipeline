@@ -63,7 +63,6 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
         });
         store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
       });
-      store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
       store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
         { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
         .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })

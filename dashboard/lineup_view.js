@@ -451,6 +451,7 @@
       if (sortTh) {
         var sk = sortTh.getAttribute('data-k');
         if (sk) {
+          ctx._userInteracted = true;
           if (ctx.state.sortKey === sk) ctx.state.sortDir = ctx.state.sortDir === 'desc' ? 'asc' : 'desc';
           else { ctx.state.sortKey = sk; ctx.state.sortDir = 'desc'; }
           rerender(root, ctx);
@@ -461,10 +462,12 @@
       if (btn) {
         var a = btn.dataset.a;
         if (a === 'f' && !btn.disabled) {
+          ctx._userInteracted = true;
           var k = btn.dataset.k; var v = btn.dataset.v;
           ctx.state.filter[k] = v;
           rerender(root, ctx);
         } else if (a === 'family') {
+          ctx._userInteracted = true;
           ctx.state.family = btn.dataset.v;
           normalizeSortState(ctx.state);
           rerender(root, ctx);
@@ -528,6 +531,28 @@
       && f.batSide === 'both' && f.segment === 'full' && f.window === 'YTD';
   }
 
+  function snapshotRowsForState(state) {
+    var snap = global.__MLBMA_RANKINGS_SNAPSHOT;
+    if (!snap || !snap.families || !state || !isDefaultSnapshotFilter(state.filter)) return null;
+    var pack = snap.families[state.family] || snap.families.surface;
+    if (!pack || !pack.rows || !pack.rows.length) return null;
+    return pack.rows.slice();
+  }
+
+  function scheduleLiveHydration(root, ctx) {
+    if (ctx._liveHydrationScheduled || ctx._liveReady) return;
+    ctx._liveHydrationScheduled = true;
+    var run = function() {
+      if (ctx._userInteracted || ctx._liveReady) return;
+      rerender(root, ctx, { silent: true, hydrate: true });
+    };
+    if (global.requestIdleCallback) {
+      global.requestIdleCallback(run, { timeout: 3000 });
+    } else {
+      setTimeout(run, 1800);
+    }
+  }
+
   function rerender(root, ctx, opts) {
     opts = opts || {};
     var silent = !!opts.silent || !!opts.fromBoot;
@@ -546,6 +571,17 @@
     }
     dismissPageLoading();
     global.__lineupViewMounted = true;
+    var snapshotRows = !opts.hydrate ? snapshotRowsForState(ctx.state) : null;
+    if (snapshotRows && (opts.fromBoot || opts.silent)) {
+      ctx.teams = snapshotRows.map(function(r) { return r.t; }).sort();
+      renderControls(root, ctx.state, ctx.teams, ctx.meta);
+      ctx._controlsReady = true;
+      if (!bootTable) renderBody(root, ctx.state, snapshotRows);
+      global.__lineupViewReady = true;
+      scheduleLeaguePools(root, ctx, snapshotRows);
+      scheduleLiveHydration(root, ctx);
+      return;
+    }
     if (!silent && body && !body.querySelector('.lv-table')) {
       body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
     }
@@ -584,6 +620,7 @@
       if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(root);
       dismissPageLoading();
       global.__lineupViewReady = true;
+      ctx._liveReady = true;
       scheduleLeaguePools(root, ctx, rows);
       return null;
     }).catch(function(err) {
