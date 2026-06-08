@@ -40,6 +40,20 @@ OFFENSE = {"osi": "OSI", "abq": "ABQ", "rcv": "RCV", "obr": "OBR", "projosi": "p
 PITCH_SP = {"fip": "FIP", "xfip": "xFIP", "whip": "WHIP", "hr9": "HR/9", "bb9": "BB/9",
             "k9": "K/9", "era": "ERA", "kpct": "K%", "bbpct": "BB%"}
 
+# Aggregate cells must grade against their OWN population, not individual starters --
+# a team/bullpen aggregate clusters ~2.5-3x tighter than individual arms, so reusing the
+# per-pitcher spread washes every aggregate toward amber. Three extra populations:
+#   team_*  : 30 team pitching staffs (sp_standard, IP-weighted per team)
+#   bp_*    : 30 team BULLPEN units (bullpen_unit.csv overall_*)
+#   rp_*    : individual relievers (bullpen_individual.csv overall_*, qualified by apps)
+# raw-rate contexts (ERA/FIP/WHIP/HR9). K%/BB% live as percentage points (matching the
+# pctNorm'd values the bullpen views pass), so bp_/rp_ K%/BB% fix a scale bug too.
+TEAM_STAFF = {"team_era": "ERA", "team_fip": "FIP", "team_whip": "WHIP", "team_hr9": "HR/9"}
+BP_UNIT = {"bp_era": "overall_ERA", "bp_fip": "overall_FIP", "bp_whip": "overall_WHIP",
+           "bp_hr9": "overall_HR9", "bp_kpct": "overall_K_pct", "bp_bbpct": "overall_BB_pct"}
+RP_IND = {"rp_era": "overall_ERA", "rp_fip": "overall_FIP", "rp_whip": "overall_WHIP",
+          "rp_hr9": "overall_HR9", "rp_kpct": "overall_K_pct", "rp_bbpct": "overall_BB_pct"}
+
 
 def _num(series) -> pd.Series:
     return pd.to_numeric(
@@ -80,6 +94,31 @@ def _ms_within_split(rhp: pd.DataFrame, lhp: pd.DataFrame, col: str) -> dict | N
     return {"mean": round(mean, 4), "std": round(std, 4)}
 
 
+def _team_staff_ms(sp: pd.DataFrame, col: str) -> dict | None:
+    """30-team distribution of an IP-weighted staff rate (mirrors calc_pitching_score)."""
+    if col not in sp.columns or "IP" not in sp.columns or "Tm" not in sp.columns:
+        return None
+    d = sp.copy()
+    d["_v"] = _num(d[col]).reindex(d.index)
+    d["_ip"] = pd.to_numeric(d["IP"], errors="coerce")
+    d = d.dropna(subset=["_v", "_ip"])
+    d = d[d["_ip"] > 0]
+    if d.empty:
+        return None
+    team = d.groupby("Tm").apply(
+        lambda x: (x["_v"] * x["_ip"]).sum() / x["_ip"].sum(), include_groups=False
+    )
+    return _ms(team)
+
+
+def _pct_points(series) -> pd.Series:
+    """Force K%/BB% to percentage points (×100 if stored as a fraction)."""
+    s = _num(series)
+    if len(s) and s.dropna().median() <= 1.5:
+        s = s * 100
+    return s
+
+
 def _read(name: str) -> pd.DataFrame | None:
     p = os.path.join(DATA_DIR, name)
     return pd.read_csv(p) if os.path.exists(p) else None
@@ -105,14 +144,40 @@ def run():
             baselines["pitching"] = m
 
     # Pitching rate stats grade individual arms -> qualified-pitcher pool.
-    sp = _read("sp_standard.csv")
-    if sp is not None and "Tm" in sp.columns:
-        sp = sp[~sp["Tm"].astype(str).str.contains("Tms", na=False)].copy()
-        if "IP" in sp.columns:
-            sp = sp[pd.to_numeric(sp["IP"], errors="coerce") >= 20]   # qualified arms only
+    sp_raw = _read("sp_standard.csv")
+    if sp_raw is not None and "Tm" in sp_raw.columns:
+        sp = sp_raw[~sp_raw["Tm"].astype(str).str.contains("Tms", na=False)].copy()
+        spq = sp[pd.to_numeric(sp["IP"], errors="coerce") >= 20] if "IP" in sp.columns else sp
         for ctx, col in PITCH_SP.items():
-            if col in sp.columns:
-                m = _ms(sp[col])
+            if col in spq.columns:
+                m = _ms(spq[col])
+                if m:
+                    baselines[ctx] = m
+        # team_* : whole-staff IP-weighted aggregate across the 30 teams (not the per-arm pool)
+        for ctx, col in TEAM_STAFF.items():
+            m = _team_staff_ms(sp, col)
+            if m:
+                baselines[ctx] = m
+
+    # bp_* : 30 team bullpen units (their own, much tighter distribution).
+    bpu = _read("bullpen_unit.csv")
+    if bpu is not None:
+        for ctx, col in BP_UNIT.items():
+            if col in bpu.columns:
+                series = _pct_points(bpu[col]) if ctx.endswith(("kpct", "bbpct")) else _num(bpu[col])
+                m = _ms(series)
+                if m:
+                    baselines[ctx] = m
+
+    # rp_* : individual relievers (wide like starters but different mean/scale).
+    bpi = _read("bullpen_individual.csv")
+    if bpi is not None:
+        if "appearances" in bpi.columns:
+            bpi = bpi[pd.to_numeric(bpi["appearances"], errors="coerce") >= 10]   # qualified arms
+        for ctx, col in RP_IND.items():
+            if col in bpi.columns:
+                series = _pct_points(bpi[col]) if ctx.endswith(("kpct", "bbpct")) else _num(bpi[col])
+                m = _ms(series)
                 if m:
                     baselines[ctx] = m
 

@@ -99,6 +99,25 @@
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
     ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)
     pitchinn: { mean: 16.65, std: 0.45, hi: true, sens: 1.2 },  // pitches/inning forced (higher = grind = harder lineup); tight cluster, measured from game_results
+    // Aggregate pitching contexts -- own-population baselines so team/bullpen cells aren't
+    // graded against the (2.5-3x wider) individual-pitcher spread. Live-refreshed by
+    // core.compute_baselines; values here are first-paint fallbacks. K%/BB% in pct points.
+    team_era: { mean: 4.09, std: 0.57, hi: false },   // 30 team staffs (IP-weighted)
+    team_fip: { mean: 4.11, std: 0.46, hi: false },
+    team_whip: { mean: 1.30, std: 0.10, hi: false },
+    team_hr9: { mean: 1.09, std: 0.19, hi: false },
+    bp_era: { mean: 3.40, std: 0.65, hi: false },     // 30 team bullpen units
+    bp_fip: { mean: 3.52, std: 0.48, hi: false },
+    bp_whip: { mean: 1.21, std: 0.12, hi: false },
+    bp_hr9: { mean: 0.86, std: 0.19, hi: false },
+    bp_kpct: { mean: 23.7, std: 2.22, hi: true },
+    bp_bbpct: { mean: 9.17, std: 1.71, hi: false },
+    rp_era: { mean: 3.40, std: 1.65, hi: false },     // individual relievers
+    rp_fip: { mean: 3.51, std: 1.17, hi: false },
+    rp_whip: { mean: 1.22, std: 0.29, hi: false },
+    rp_hr9: { mean: 0.86, std: 0.63, hi: false },
+    rp_kpct: { mean: 24.0, std: 5.78, hi: true },
+    rp_bbpct: { mean: 9.28, std: 3.61, hi: false },
     default: { mean: 50, std: 12, hi: true }
   };
 

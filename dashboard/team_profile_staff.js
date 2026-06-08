@@ -311,8 +311,8 @@
     var teamEra = num(pickCol(prof, ['team_era']));
     var cells = [
       staffStatCell('Pitch Score', valChip(ctx, avgPs, 'pitching', false, 0), staffLeagueRank(staffCache, tk, 'avgPs', false)),
-      staffStatCell('Team ERA', valChip(ctx, teamEra, 'era', true, 2), staffLeagueRank(staffCache, tk, 'teamEra', true)),
-      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'era', true, 2), staffLeagueRank(staffCache, tk, 'bpEra', true)),
+      staffStatCell('Team ERA', valChip(ctx, teamEra, 'team_era', true, 2), staffLeagueRank(staffCache, tk, 'teamEra', true)),
+      staffStatCell('Bullpen ERA', valChip(ctx, bpEra, 'bp_era', true, 2), staffLeagueRank(staffCache, tk, 'bpEra', true)),
       staffStatCell('Bullpen OSI Allowed', valChip(ctx, bpOsi, 'osi', true, 1), staffLeagueRank(staffCache, tk, 'bpOsi', true))
     ].join('');
     var body = staffMetricsBand('Staff snapshot', 'Team-level pitching context · league rank on each metric', cells);

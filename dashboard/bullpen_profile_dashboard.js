@@ -39,7 +39,7 @@
 
   function eraColor(era) {
     if (era === null || isNaN(era)) return 'var(--text-3)';
-    return (A && A.metricColor) ? A.metricColor(era, 'era') : 'var(--text-3)';
+    return (A && A.metricColor) ? A.metricColor(era, 'bp_era') : 'var(--text-3)';
   }
 
   function irColor(v) {          // inherited-runners scored %, lower is better
@@ -145,7 +145,7 @@
     var u = String(label || '').toUpperCase();
     if (u.indexOf('IR') >= 0) return { ctx: 'ir', invert: null };
     if (u.indexOf('OSI') >= 0) return { ctx: 'osi', invert: true };
-    if (u.indexOf('ERA') >= 0) return { ctx: 'era', invert: null };
+    if (u.indexOf('ERA') >= 0) return { ctx: 'bp_era', invert: null };
     return { ctx: 'default', invert: null };
   }
 
@@ -222,8 +222,8 @@
     }
     return '<table class="hub-table tp-table pp-pitching-value-metrics-table" aria-label="Bullpen pitching value">'
       + '<thead><tr><th>K%</th><th>BB%</th><th>HR/9</th><th>ERA</th><th>OPS Allowed</th></tr></thead><tbody><tr>'
-      + cell(rk, 'kpct', false, 1) + cell(rbb, 'bbpct', true, 1) + cell(rhr9, 'hr9', true, 2)
-      + cell(rera, 'era', true, 2) + cell(rops, 'ops', true, 3)
+      + cell(rk, 'bp_kpct', false, 1) + cell(rbb, 'bp_bbpct', true, 1) + cell(rhr9, 'bp_hr9', true, 2)
+      + cell(rera, 'bp_era', true, 2) + cell(rops, 'ops', true, 3)
       + '</tr></tbody></table>';
   }
 
@@ -250,11 +250,11 @@
     ];
     var body = rows.map(function(r) {
       return '<tr><th scope="row">' + esc(r.label) + '</th>'
-        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'ERA', pickCol), 'era', true, 2) + '</td>'
-        + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
-        + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'BB_pct', pickCol)), 'bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'ERA', pickCol), 'bp_era', true, 2) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'K_pct', pickCol)), 'bp_kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'BB_pct', pickCol)), 'bp_bbpct', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(unit, r.prefix, 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'HR9', pickCol), 'hr9', true, 2) + '</td></tr>';
+        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'HR9', pickCol), 'bp_hr9', true, 2) + '</td></tr>';
     }).join('');
     return '<table class="hub-table tp-table bp-leverage-table"><thead><tr>'
       + '<th>Split</th><th>ERA</th><th>K%</th><th>BB%</th><th>OSI Allowed</th><th>HR/9</th>'
@@ -300,11 +300,11 @@
       return '<tr>' + labelCell
         + bpTierPlainCell(apps, 0)
         + bpTierPlainCell(colVal(unit, p, 'ip_per_app', pickCol), 1)
-        + bpTierColorCell(colVal(unit, p, 'ERA', pickCol), 'era', true, 2, false)
-        + bpTierColorCell(colVal(unit, p, 'FIP', pickCol), 'fip', true, 2, false)
-        + bpTierColorCell(pctNorm(colVal(unit, p, 'K_pct', pickCol)), 'kpct', false, 1, true)
-        + bpTierColorCell(pctNorm(colVal(unit, p, 'BB_pct', pickCol)), 'bbpct', true, 1, true)
-        + bpTierColorCell(colVal(unit, p, 'HR9', pickCol), 'hr9', true, 2, false)
+        + bpTierColorCell(colVal(unit, p, 'ERA', pickCol), 'bp_era', true, 2, false)
+        + bpTierColorCell(colVal(unit, p, 'FIP', pickCol), 'bp_fip', true, 2, false)
+        + bpTierColorCell(pctNorm(colVal(unit, p, 'K_pct', pickCol)), 'bp_kpct', false, 1, true)
+        + bpTierColorCell(pctNorm(colVal(unit, p, 'BB_pct', pickCol)), 'bp_bbpct', true, 1, true)
+        + bpTierColorCell(colVal(unit, p, 'HR9', pickCol), 'bp_hr9', true, 2, false)
         + bpTierPlainCell(colVal(unit, p, 'pitches_per_app', pickCol), 0)
         + '</tr>';
     }).join('');
@@ -724,14 +724,14 @@
         + '<td class="bp-reliever-name-cell"><strong class="bp-reliever-name">' + esc(name) + '</strong></td>'
         + '<td class="bp-role-cell"><span class="' + rolePillCls + '">' + esc(role.label) + '</span></td>'
         + '<td class="num">' + valChip(ip, 'ip', false, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'overall', 'ERA', pickCol), 'era', true, 2) + '</td>'
-        + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'K_pct', pickCol)), 'kpct', false, 1) + '</td>'
-        + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'BB_pct', pickCol)), 'bbpct', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'overall', 'HR9', pickCol), 'hr9', true, 2) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'ERA', pickCol), 'rp_era', true, 2) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'K_pct', pickCol)), 'rp_kpct', false, 1) + '</td>'
+        + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'BB_pct', pickCol)), 'rp_bbpct', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'HR9', pickCol), 'rp_hr9', true, 2) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'inherited_runners_scored_pct', pickCol), 'ir', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'high_leverage', 'ERA', pickCol), 'era', true, 2) + '</td></tr>';
+        + '<td class="num">' + valChip(colVal(r, 'high_leverage', 'ERA', pickCol), 'rp_era', true, 2) + '</td></tr>';
       if (exp) html += '<tr class="detail-row"><td colspan="' + colCount + '">' + appearanceDetail(pid, name) + '</td></tr>';
     });
 

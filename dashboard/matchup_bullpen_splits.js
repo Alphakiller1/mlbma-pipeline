@@ -9,10 +9,10 @@
   var A = global.MLBMAAssets;
 
   var BP_SPLIT_STATS = [
-    { key: 'fip', label: 'FIP', ctx: 'fip', invert: true, decimals: 2 },
+    { key: 'fip', label: 'FIP', ctx: 'bp_fip', invert: true, decimals: 2 },
     { key: 'ops_allowed', label: 'OPS', ctx: 'ops', invert: true, decimals: 3 },
-    { key: 'bb_pct', label: 'BB%', ctx: 'bbpct', invert: true, decimals: 1 },
-    { key: 'k_pct', label: 'K%', ctx: 'kpct', invert: false, decimals: 1 }
+    { key: 'bb_pct', label: 'BB%', ctx: 'bp_bbpct', invert: true, decimals: 1 },
+    { key: 'k_pct', label: 'K%', ctx: 'bp_kpct', invert: false, decimals: 1 }
   ];
 
   var PREFIX_MAP = {
