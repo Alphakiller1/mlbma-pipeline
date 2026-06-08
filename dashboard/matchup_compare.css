@@ -1066,6 +1066,49 @@
 .mc-lvp-team-ranks {
   margin-top: 0;
 }
+.mc-lvp-offense-pitcher-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+.mc-lvp-offense-pitcher-duo > .mc-os-card {
+  min-width: 0;
+  height: 100%;
+}
+.mc-os-card--pitcher-compact {
+  padding: 10px 12px 10px;
+  gap: 8px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.mc-os-card--pitcher-compact .mc-os-card-head--compact {
+  gap: 8px;
+  padding-bottom: 6px;
+  align-items: center;
+}
+.mc-os-card--pitcher-compact .ca-pitcher-avatar,
+.mc-os-card--pitcher-compact .mc-os-card-head--compact img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.mc-os-card--pitcher-compact .mc-os-card-team--pitcher {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.mc-os-card--pitcher-compact .mc-os-card-role {
+  font-size: 9px;
+  margin-top: 2px;
+}
+.mc-os-card--pitcher-compact .mc-os-card-strips--pitcher-loc,
+.mc-os-card--pitcher-compact .mc-os-card-strips--pitcher-hands-trio {
+  gap: 8px;
+}
 .mc-lvp-team-ranks .mc-os-card--lineup-compact {
   padding: 10px 12px 10px;
   gap: 8px;
@@ -1139,6 +1182,9 @@
 }
 @media (max-width: 680px) {
   .mc-lvp-team-ranks .mc-os-card-strips--lineup-duo {
+    grid-template-columns: 1fr;
+  }
+  .mc-lvp-offense-pitcher-duo {
     grid-template-columns: 1fr;
   }
 }
