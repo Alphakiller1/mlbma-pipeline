@@ -145,7 +145,8 @@ body.batter-profile-page .pp-hero-banner-shell .tp-team-banner {
   border-radius: 0;
 }
 
-body.batter-profile-page .tp-team-banner.tp-pitcher-banner {
+body.batter-profile-page .tp-team-banner.tp-pitcher-banner,
+body.batter-profile-page.team-profile-page .tp-batter-banner.tp-team-banner {
   width: 100%;
   padding: 4px var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 14px);
   margin: 0;
@@ -153,14 +154,20 @@ body.batter-profile-page .tp-team-banner.tp-pitcher-banner {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  overflow: visible;
+  box-sizing: border-box;
 }
 
-body.batter-profile-page .tp-pitcher-banner__inner {
+body.batter-profile-page .tp-pitcher-banner__inner,
+body.batter-profile-page.team-profile-page .tp-team-banner__inner.tp-pitcher-banner__inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
   gap: 16px 20px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body.batter-profile-page .tp-pitcher-banner__photo {
@@ -182,9 +189,13 @@ body.batter-profile-page .tp-team-banner__logo {
 }
 
 body.batter-profile-page .tp-team-banner__logo .snapshot-logo,
-body.batter-profile-page .tp-team-banner__logo img {
+body.batter-profile-page .tp-team-banner__logo img,
+body.batter-profile-page.team-profile-page .tp-team-banner--hero .tp-team-banner__logo .snapshot-logo,
+body.batter-profile-page.team-profile-page .tp-team-banner--hero .tp-team-banner__logo img {
   width: 52px;
   height: 52px;
+  max-width: 52px;
+  max-height: 52px;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
 }
@@ -259,20 +270,41 @@ body.batter-profile-page .tp-batter-banner .tp-team-banner__watermark {
 }
 
 body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 10px 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 8px 10px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Override team_profile block stat layout — batter hero uses inline label/value pills */
+body.batter-profile-page .tp-team-banner__stats.pp-hero-stats .tp-hero-stat__label {
+  display: inline;
+  margin-bottom: 0;
+}
+
+body.batter-profile-page .tp-team-banner__stats.pp-hero-stats .tp-hero-stat__value {
+  display: inline;
+  font-size: 16px;
+  line-height: 1.1;
 }
 
 body.batter-profile-page .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-stat {
   display: inline-flex;
-  flex: 1 1 0;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 8px;
   min-width: 0;
+  width: 100%;
   padding: 6px 10px;
   border: 1px solid rgba(196, 176, 255, 0.16);
   border-radius: 9px;
@@ -301,10 +333,9 @@ body.batter-profile-page .pp-hero-stats .tp-hero-stat__value {
 }
 
 body.batter-profile-page .pp-hero-stats .tp-hero-stat--solo {
-  flex: 0 0 auto;
   justify-content: center;
-  min-width: 52px;
-  max-width: 72px;
+  min-width: 0;
+  max-width: none;
 }
 
 body.batter-profile-page .pp-hero-stats .tp-hero-stat--solo .tp-hero-stat__value {
@@ -329,15 +360,17 @@ body.batter-profile-page .pp-hero-stats .tp-hero-stat__value .tp-hero-stat__num-
 
 @media (max-width: 767px) {
   body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
-  body.batter-profile-page .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-stat {
-    flex: 1 1 calc(50% - 8px);
-  }
-
+  body.batter-profile-page .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-stat,
   body.batter-profile-page .pp-hero-stats .tp-hero-stat--solo {
-    flex: 0 0 auto;
+    flex: none;
+    width: auto;
+    max-width: none;
+    min-width: 0;
   }
 }
 
@@ -652,11 +685,27 @@ body.batter-profile-page .bp-prop-table .bp-prop-market {
   color: var(--text-2, #C4CBD6);
 }
 
+body.batter-profile-page #pitchMixMount {
+  margin-top: 4px;
+  min-width: 0;
+  width: 100%;
+}
+
+body.batter-profile-page #pitchMixMount .bp-pm-empty {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .bp-pm-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: rgba(8, 9, 15, 0.45);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .bp-pm-table {
@@ -796,14 +845,31 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
 
 .bp-driver-bars {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px 12px;
-  align-items: center;
+  align-items: stretch;
   margin-bottom: 12px;
   padding: 10px 12px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.07);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.bp-driver-bars__best {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1100px) {
+  .bp-driver-bars {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    align-items: center;
+  }
+
+  .bp-driver-bars__best {
+    grid-column: auto;
+  }
 }
 
 .bp-edge-row {
@@ -875,10 +941,15 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  min-width: 0;
+  width: 100%;
 }
 
 .bp-prop-card {
   position: relative;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 12px 14px;
   border-radius: 12px;
   background:
@@ -915,8 +986,9 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px 8px;
   margin-bottom: 8px;
+  min-width: 0;
 }
 
 .bp-prop-card__title {
@@ -927,7 +999,15 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text, #F5F6FA);
-  flex: 1 1 auto;
+  flex: 1 1 100%;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.bp-prop-card__head .bp-lean,
+.bp-prop-card__head .bp-prop-card__badge {
+  flex: 0 1 auto;
+  max-width: 100%;
 }
 
 .bp-prop-card__badge {
@@ -1220,6 +1300,9 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
 
 .bp-prop-card__line-input {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 8px 10px;
   border-radius: 8px;
   background: rgba(8, 9, 15, 0.72);
@@ -1241,7 +1324,10 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.35;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .bp-prop-card__note {
@@ -1263,6 +1349,8 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 14px;
+  min-width: 0;
+  width: 100%;
 }
 
 .bp-matchup-panel {
@@ -1270,6 +1358,9 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.07);
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .bp-matchup-panel--wide {
@@ -1387,6 +1478,7 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
 
 @media (max-width: 1099px) {
   .bp-hero-context__strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bp-prop-board { grid-template-columns: 1fr; }
   .bp-driver-bars { grid-template-columns: 1fr 1fr; }
   .bp-driver-bars__best { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
 }
@@ -1507,8 +1599,13 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   }
 
   .bp-pm-table-wrap {
-    margin-left: -4px;
-    margin-right: -4px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  body.batter-profile-page .ca-board.tp-section {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
@@ -1530,10 +1627,42 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
     font-size: 12px;
   }
 
-  body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar--profile {
+  body.batter-profile-page .tp-pitcher-banner__photo {
     width: 96px;
     height: 96px;
-    min-width: 96px;
-    min-height: 96px;
   }
+
+  body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar--profile {
+    transform: scale(0.857);
+    transform-origin: center top;
+  }
+
+  body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Artifact box model — prevent border/padding bleed */
+body.batter-profile-page .ca-board.tp-section,
+body.batter-profile-page .bp-prop-card,
+body.batter-profile-page .bp-hit-strip,
+body.batter-profile-page .bp-context-panel,
+body.batter-profile-page .bp-matchup-panel,
+body.batter-profile-page .bp-metric-strip .profile-decision-card,
+body.batter-profile-page .bp-driver-bars {
+  box-sizing: border-box;
+}
+
+body.batter-profile-page .bp-metric-strip .profile-decision-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.batter-profile-page .bp-metric-strip .profile-decision-card__value {
+  overflow-wrap: anywhere;
+}
+
+body.batter-profile-page .bp-evidence-item__copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
