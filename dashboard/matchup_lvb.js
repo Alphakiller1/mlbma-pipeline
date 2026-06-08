@@ -147,33 +147,71 @@
     };
   }
 
-  function aggregateReliefFipAllowed(log, lineupTeam, windowDays) {
-    var rows = log || [];
-    var tk = teamKey(lineupTeam);
-    var cutoff = null;
-    if (windowDays && windowDays > 0) {
-      var d = new Date();
-      d.setDate(d.getDate() - windowDays);
-      cutoff = d.toISOString().slice(0, 10);
-    }
+  function filterH2hReliefRows(log, bpTeam, lineupTeam, ctx, windowDays) {
+    var luTk = teamKey(lineupTeam);
+    var rows = filterReliefApps(log, bpTeam, ctx, { includeStarters: false }).filter(function(r) {
+      return teamKey(pick(r, ['opponent_team', 'opp', 'Opponent'])) === luTk;
+    });
+    if (!windowDays || windowDays <= 0) return rows;
+    var d = new Date();
+    d.setDate(d.getDate() - windowDays);
+    var cutoff = d.toISOString().slice(0, 10);
+    return rows.filter(function(r) {
+      var dt = String(pick(r, ['date', 'Date']) || '').slice(0, 10);
+      return !dt || dt >= cutoff;
+    });
+  }
+
+  function aggregateReliefRateBlock(rows) {
+    rows = rows || [];
     var ip = 0;
-    var hr = 0;
+    var h = 0;
     var bb = 0;
     var k = 0;
+    var hr = 0;
+    var bf = 0;
     rows.forEach(function(r) {
-      if (teamKey(pick(r, ['opponent_team', 'opp', 'Opponent'])) !== tk) return;
-      var dt = String(pick(r, ['date', 'Date']) || '').slice(0, 10);
-      if (cutoff && dt && dt < cutoff) return;
       var rowIp = num(pick(r, ['IP', 'ip'])) || 0;
-      if (rowIp <= 0) return;
+      var rowH = num(pick(r, ['H', 'hits'])) || 0;
+      var rowBb = num(pick(r, ['BB', 'bb'])) || 0;
+      var rowK = num(pick(r, ['K', 'k'])) || 0;
+      var rowHr = num(pick(r, ['HR', 'hr'])) || 0;
+      var rowBf = num(pick(r, ['batters_faced', 'BF', 'battersFaced']));
+      if (rowBf == null || rowBf <= 0) rowBf = rowK + rowH + rowBb;
+      if (rowIp <= 0 && rowBf <= 0) return;
       ip += rowIp;
-      hr += num(pick(r, ['HR', 'hr'])) || 0;
-      bb += num(pick(r, ['BB', 'bb'])) || 0;
-      k += num(pick(r, ['K', 'k'])) || 0;
+      h += rowH;
+      bb += rowBb;
+      k += rowK;
+      hr += rowHr;
+      bf += rowBf;
     });
-    if (ip <= 0) return null;
-    var fip = ((13 * hr) + (3 * bb) - (2 * k)) / ip + 3.2;
-    return Math.round(fip * 10) / 10;
+    if (bf <= 0 && ip <= 0) return null;
+    var ab = bf - bb;
+    var avgAllowed = ab > 0 ? Math.round(h / ab * 1000) / 1000 : null;
+    var obp = bf > 0 ? (h + bb) / bf : null;
+    var tb = (h - hr) * 1.25 + hr * 4;
+    var slg = ab > 0 ? tb / ab : null;
+    var opsAllowed = (obp != null && slg != null) ? Math.round((obp + slg) * 1000) / 1000 : null;
+    var bbPct = bf > 0 ? Math.round(bb / bf * 1000) / 10 : null;
+    var fip = ip > 0 ? Math.round(((13 * hr) + (3 * bb) - (2 * k)) / ip + 3.2) * 10 / 10 : null;
+    return {
+      apps: rows.length,
+      bf: bf,
+      avgAllowed: avgAllowed,
+      opsAllowed: opsAllowed,
+      bbPct: bbPct,
+      fip: fip
+    };
+  }
+
+  function aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, windowDays) {
+    return aggregateReliefRateBlock(filterH2hReliefRows(log, bpTeam, lineupTeam, ctx, windowDays));
+  }
+
+  function pickSaveRate(block, key) {
+    if (!block || !block.opps) return null;
+    return block[key];
   }
 
   function lvbWindowDays(state) {
@@ -184,25 +222,16 @@
     return 0;
   }
 
-  function bullpenAvgAllowed(log, bpTeam, ctx) {
+  function bullpenAvgAllowed(log, bpTeam, lineupTeam, ctx, windowDays) {
+    var block = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, windowDays);
+    if (block && block.avgAllowed != null) return block.avgAllowed;
+    if (windowDays > 0) {
+      block = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, 0);
+      if (block && block.avgAllowed != null) return block.avgAllowed;
+    }
     var rows = filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
-    var hits = 0;
-    var ab = 0;
-    rows.forEach(function(r) {
-      var bf = num(pick(r, ['batters_faced', 'BF', 'battersFaced']));
-      var bb = num(pick(r, ['BB', 'bb'])) || 0;
-      var h = num(pick(r, ['H', 'hits'])) || 0;
-      if (bf == null || bf <= 0) {
-        bf = (num(pick(r, ['K', 'k'])) || 0) + h + bb;
-      }
-      var rowAb = bf - bb;
-      if (rowAb > 0) {
-        hits += h;
-        ab += rowAb;
-      }
-    });
-    if (ab <= 0) return null;
-    return Math.round((hits / ab) * 1000) / 1000;
+    block = aggregateReliefRateBlock(rows);
+    return block && block.avgAllowed != null ? block.avgAllowed : null;
   }
 
   function lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state) {
@@ -210,11 +239,15 @@
     var filtered = filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
     var against = aggregateSaveRates(filtered, lineupTeam, 'against', winDays);
     var earnedH2h = aggregateSaveRates(filtered, bpTeam, 'earned', winDays, lineupTeam);
+    if ((!against.opps || !earnedH2h.opps) && winDays > 0) {
+      if (!against.opps) against = aggregateSaveRates(filtered, lineupTeam, 'against', 0);
+      if (!earnedH2h.opps) earnedH2h = aggregateSaveRates(filtered, bpTeam, 'earned', 0, lineupTeam);
+    }
     return {
-      savesAgainstPct: against.savePct,
-      blownSavesCausedPct: against.blownPct,
-      savesEarnedPct: earnedH2h.savePct,
-      blownSavePctH2h: earnedH2h.blownPct,
+      savesAgainstPct: pickSaveRate(against, 'savePct'),
+      blownSavesCausedPct: pickSaveRate(against, 'blownPct'),
+      savesEarnedPct: pickSaveRate(earnedH2h, 'savePct'),
+      blownSavePctH2h: pickSaveRate(earnedH2h, 'blownPct'),
       saveOppsH2h: earnedH2h.opps || 0
     };
   }
@@ -283,30 +316,48 @@
     var log = _pack.relieverLog || [];
 
     return ensureLineupStore(ctx).then(function() {
-      var saveExtras = lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state);
       var winDays = lvbWindowDays(state);
-      global._lvbMetricExtras = Object.assign({}, saveExtras, {
-        fipAllowed: aggregateReliefFipAllowed(log, lineupTeam, winDays),
-        avgAllowed: bullpenAvgAllowed(log, bpTeam, ctx)
-      });
+      var saveExtras = lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state);
+      var h2hRates = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, winDays);
+      if ((!h2hRates || !h2hRates.bf) && winDays > 0) {
+        h2hRates = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, 0);
+      }
       return CM.resolveBoth('lineup-bullpen',
         { key: lineupTeam, filter: luF },
         { key: bpTeam, filter: bpF }
-      );
-    }).then(function(res) {
-      var lu = res.dataA && res.dataA.entity === 'lineup' ? res.dataA : res.dataB;
-      var bp = res.dataA && res.dataA.entity === 'bullpen' ? res.dataA : res.dataB;
-      if (!lu || !bp) return null;
-      var metrics = CM.buildMetricRows('lineup-bullpen', lu, bp);
-      return {
-        lu: lu,
-        bp: bp,
-        metrics: metrics,
-        lineupTeam: lineupTeam,
-        bpTeam: bpTeam,
-        filterSummary: LC.filterSummary(state),
-        state: state
-      };
+      ).then(function(res) {
+        var lu = res.dataA && res.dataA.entity === 'lineup' ? res.dataA : res.dataB;
+        var bp = res.dataA && res.dataA.entity === 'bullpen' ? res.dataA : res.dataB;
+        if (!lu || !bp) return null;
+        var luRow = lu.row || {};
+        var met = bp.metrics || {};
+        var bpUnit = bp.row || {};
+        global._lvbMetricExtras = Object.assign({}, saveExtras, {
+          fipAllowed: h2hRates && h2hRates.fip != null ? h2hRates.fip : null,
+          lineupOps: h2hRates && h2hRates.opsAllowed != null ? h2hRates.opsAllowed : luRow.ops,
+          lineupAvg: h2hRates && h2hRates.avgAllowed != null ? h2hRates.avgAllowed : luRow.avg,
+          lineupBbPct: h2hRates && h2hRates.bbPct != null ? h2hRates.bbPct : null,
+          bpFip: (h2hRates && h2hRates.fip != null ? h2hRates.fip : null)
+            || (met.fip != null ? met.fip : bpUnit.fip),
+          bpBbPct: (h2hRates && h2hRates.bbPct != null ? h2hRates.bbPct : null)
+            || (met.bbPct != null ? met.bbPct : bpUnit.bbPct),
+          bpOpsAllowed: (h2hRates && h2hRates.opsAllowed != null ? h2hRates.opsAllowed : null)
+            || met.opsAllowed || bpUnit.opsAllowed,
+          bpAvgAllowed: (h2hRates && h2hRates.avgAllowed != null ? h2hRates.avgAllowed : null)
+            || met.avgAllowed || bpUnit.avgAllowed
+            || bullpenAvgAllowed(log, bpTeam, lineupTeam, ctx, winDays)
+        });
+        var metrics = CM.buildMetricRows('lineup-bullpen', lu, bp);
+        return {
+          lu: lu,
+          bp: bp,
+          metrics: metrics,
+          lineupTeam: lineupTeam,
+          bpTeam: bpTeam,
+          filterSummary: LC.filterSummary(state),
+          state: state
+        };
+      });
     }).catch(function(err) {
       console.warn('[matchup_lvb] resolve failed', err);
       return null;
