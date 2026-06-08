@@ -806,6 +806,18 @@
 .mc-sp-lvp-card .lineup-row--platoon-l .mc-lcc-split-label { box-shadow: inset 3px 0 0 #F87171; }
 .mc-sp-lvp-card .lineup-row--platoon-r .mc-lcc-split-label { box-shadow: inset 3px 0 0 #60A5FA; }
 
+.mc-lvp-table--summary { margin-bottom: 12px; }
+.mc-lvp-table-wrap--games { margin-top: 4px; }
+.mc-lvp-table--l10games { min-width: 640px; }
+.mc-lvp-ha {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mc-lvp-res--w { color: #4ADE80; font-weight: 700; }
+.mc-lvp-res--l { color: #F87171; font-weight: 700; }
+
 /* LvP performance comparison */
 .mc-lvp-async { margin-top: 20px; }
 .mc-lvp-performance {
@@ -965,10 +977,37 @@
   color: var(--text-2);
 }
 .mc-lvp-pitchmix-side--lu { justify-content: flex-end; }
+.mc-lvp-table--pitchmix {
+  table-layout: fixed;
+  min-width: 560px;
+}
+.mc-lvp-table--pitchmix .mc-pm-col-pitch { width: 22%; }
+.mc-lvp-table--pitchmix .mc-pm-col-sp,
+.mc-lvp-table--pitchmix .mc-pm-col-lu { width: 13%; }
 .mc-lvp-table--pitchmix th.mc-lvp-pitchmix-group {
   text-align: center;
   font-size: 10px;
   border-bottom: 1px solid var(--border, #28282f);
+  padding-bottom: 4px;
+}
+.mc-lvp-table--pitchmix tr.mc-lvp-pitchmix-cols th {
+  text-align: center;
+  padding-top: 4px;
+}
+.mc-lvp-table--pitchmix tr.mc-lvp-pitchmix-cols th:first-child {
+  text-align: left;
+}
+.mc-lvp-table--pitchmix td.mc-pm-stat {
+  text-align: center;
+}
+.mc-lvp-table--pitchmix td.mc-pm-stat .chip {
+  display: inline-block;
+  min-width: 2.5em;
+  text-align: center;
+}
+.mc-lvp-table--pitchmix td.mc-lvp-pitch-name {
+  text-align: left;
+  font-weight: 600;
 }
 .mc-lvp-pitchmix-group--sp { color: var(--violet, #A78BFA); }
 .mc-lvp-pitchmix-group--lu { color: var(--text-2); }

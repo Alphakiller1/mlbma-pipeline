@@ -58,6 +58,7 @@ SUPABASE_DASHBOARD = {
         "Batter_Splits_Overall", "Batter_Splits_RHP", "Batter_Splits_LHP",
         "Batter_Splits_Home", "Batter_Splits_Away", "Batter_Splits_vsSP",
         "Batter_Splits_vsRP", "Batter_Splits_Recent",
+        "Team_L10_SP_Hand", "Team_L10_SP_Games",
         "Signals_Today", "Signals_Convergence",
     ],
 }
@@ -403,6 +404,7 @@ SHEET_TABS = {
     "team_profiles": "Team_Profiles",
     "team_results": "Team_Results",
     "team_l10_sp_hand": "Team_L10_SP_Hand",
+    "team_l10_sp_hand_games": "Team_L10_SP_Games",
 }
 
 TEAM_MAP = {

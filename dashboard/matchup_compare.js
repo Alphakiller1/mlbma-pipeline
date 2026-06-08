@@ -1125,7 +1125,8 @@
       S.fetchSheetTab(T.pitch_mix_team_batting_l14).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_team_batting).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_batter_l14).catch(function() { return []; }),
-      S.fetchSheetTab(T.team_l10_sp_hand).catch(function() { return []; })
+      S.fetchSheetTab(T.team_l10_sp_hand).catch(function() { return []; }),
+      S.fetchSheetTab(T.team_l10_sp_hand_games).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
@@ -1183,6 +1184,7 @@
             spGameLog: res[18] || [],
             spMetricSplits: res[20] || [],
             teamL10SpHand: res[27] || [],
+            teamL10SpHandGames: res[28] || [],
             pitchMixPitcherL14: res[22] || [],
             pitchMixPitcher: res[23] || [],
             pitchMixTeamBattingL14: res[24] || [],
@@ -1202,6 +1204,7 @@
       data.pitchMixTeamBatting = res[25] || [];
       data.pitchMixBatterL14 = res[26] || [];
       data.teamL10SpHand = res[27] || [];
+      data.teamL10SpHandGames = res[28] || [];
       if (!m) {
         finish(data);
         return;

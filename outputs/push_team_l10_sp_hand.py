@@ -14,6 +14,7 @@ def run():
         return
 
     path = os.path.join(DATA_DIR, "team_l10_sp_hand.csv")
+    games_path = os.path.join(DATA_DIR, "team_l10_sp_hand_games.csv")
     if not os.path.exists(path):
         print("  WARNING: team_l10_sp_hand.csv not found")
         return
@@ -24,6 +25,11 @@ def run():
         sheet = client.open_by_key(SHEET_ID)
         df = pd.read_csv(path)
         push_df(sheet, SHEET_TABS["team_l10_sp_hand"], df)
+        print(f"  Pushed {SHEET_TABS['team_l10_sp_hand']}: {len(df)} rows")
+        if os.path.exists(games_path):
+            gdf = pd.read_csv(games_path)
+            push_df(sheet, SHEET_TABS["team_l10_sp_hand_games"], gdf)
+            print(f"  Pushed {SHEET_TABS['team_l10_sp_hand_games']}: {len(gdf)} rows")
         print("\nTeam L10 vs SP hand Google Sheets push complete.")
     except Exception as exc:
         print(f"  WARNING: Team_L10_SP_Hand push failed ({exc})")

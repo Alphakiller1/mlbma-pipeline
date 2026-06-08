@@ -13,6 +13,7 @@ GAME_RESULTS = DATA_DIR / "game_results.csv"
 REGISTRY_FILE = DATA_DIR / "player_registry.csv"
 SP_PROFILES = DATA_DIR / "sp_profiles.csv"
 OUTPUT_FILE = DATA_DIR / "team_l10_sp_hand.csv"
+GAMES_OUTPUT_FILE = DATA_DIR / "team_l10_sp_hand_games.csv"
 
 L10_GAMES = 10
 LG_WOBA = 0.320
@@ -43,6 +44,26 @@ OUTPUT_COLUMNS = [
     "sp_bb9_faced",
     "sp_whip_faced",
     "sp_xfip_faced",
+]
+
+GAMES_OUTPUT_COLUMNS = [
+    "team",
+    "opp_starter_hand",
+    "date",
+    "opp",
+    "result",
+    "home_away",
+    "vs_sp_pa",
+    "vs_sp_h",
+    "vs_sp_ab",
+    "vs_sp_bb",
+    "vs_sp_hr",
+    "wrc_plus",
+    "ops",
+    "woba",
+    "opp_starter_ip",
+    "opp_starter_er",
+    "opp_quality_start",
 ]
 
 
@@ -194,6 +215,50 @@ def _load_xfip_map() -> dict[int, float]:
     return out
 
 
+def _game_totals(g) -> Dict[str, float]:
+    return {
+        "ab": float(g["vs_sp_ab"]),
+        "h": float(g["vs_sp_h"]),
+        "bb": float(g["vs_sp_bb"]),
+        "ibb": float(g["vs_sp_ibb"]),
+        "hbp": float(g["vs_sp_hbp"]),
+        "sf": float(g["vs_sp_sf"]),
+        "hr": float(g["vs_sp_hr"]),
+        "d2": float(g["vs_sp_2b"]),
+        "d3": float(g["vs_sp_3b"]),
+    }
+
+
+def _single_game_row(team: str, hand: str, g) -> dict:
+    totals = _game_totals(g)
+    pa = totals["ab"] + totals["bb"] + totals["ibb"] + totals["hbp"] + totals["sf"]
+    woba = _woba_from_totals(totals)
+    ops = _ops_from_totals(totals, woba)
+    wrc = round((woba / LG_WOBA) * 100) if woba is not None else None
+    dt = g["date"]
+    date_str = dt.date().isoformat() if hasattr(dt, "date") else str(dt)[:10]
+    qs = g.get("opp_quality_start")
+    return {
+        "team": team,
+        "opp_starter_hand": hand,
+        "date": date_str,
+        "opp": g.get("opp"),
+        "result": g.get("result"),
+        "home_away": g.get("home_away"),
+        "vs_sp_pa": int(pa) if pa > 0 else 0,
+        "vs_sp_h": int(totals["h"]),
+        "vs_sp_ab": int(totals["ab"]),
+        "vs_sp_bb": int(totals["bb"] + totals["ibb"]),
+        "vs_sp_hr": int(totals["hr"]),
+        "wrc_plus": wrc,
+        "ops": ops,
+        "woba": woba,
+        "opp_starter_ip": g.get("opp_starter_ip"),
+        "opp_starter_er": g.get("opp_starter_er"),
+        "opp_quality_start": bool(qs) if pd.notna(qs) else False,
+    }
+
+
 def _aggregate_slice(
     gdf: pd.DataFrame,
     pitch_scores: dict[int, float],
@@ -261,11 +326,13 @@ def run():
     if not GAME_RESULTS.exists():
         print("  WARNING: game_results.csv not found")
         pd.DataFrame(columns=OUTPUT_COLUMNS).to_csv(OUTPUT_FILE, index=False)
+        pd.DataFrame(columns=GAMES_OUTPUT_COLUMNS).to_csv(GAMES_OUTPUT_FILE, index=False)
         return
 
     raw = pd.read_csv(GAME_RESULTS)
     if raw.empty:
         pd.DataFrame(columns=OUTPUT_COLUMNS).to_csv(OUTPUT_FILE, index=False)
+        pd.DataFrame(columns=GAMES_OUTPUT_COLUMNS).to_csv(GAMES_OUTPUT_FILE, index=False)
         return
 
     throws_map = _load_throws_map()
@@ -277,6 +344,7 @@ def run():
     df = df[df["opp_starter_hand"].isin(["R", "L"])]
 
     rows = []
+    game_rows = []
     for team in sorted(official):
         tdf = df[df["team"] == team].sort_values(["date", "game_pk"], ascending=[False, False])
         for hand in ("R", "L"):
@@ -286,12 +354,19 @@ def run():
                 continue
             pack = _aggregate_slice(slice_df, pitch_scores, xfip_map)
             rows.append({"team": team, "opp_starter_hand": hand, **pack})
+            for _, g in slice_df.iterrows():
+                game_rows.append(_single_game_row(team, hand, g))
 
     out = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
     out = out.where(pd.notnull(out), None).fillna("")
     out.to_csv(OUTPUT_FILE, index=False)
     populated = out[out["games"].astype(str).str.strip() != ""]
     print(f"  Saved {len(out)} rows ({len(populated)} with L10 samples) -> {OUTPUT_FILE}")
+
+    games_out = pd.DataFrame(game_rows, columns=GAMES_OUTPUT_COLUMNS)
+    games_out = games_out.where(pd.notnull(games_out), None).fillna("")
+    games_out.to_csv(GAMES_OUTPUT_FILE, index=False)
+    print(f"  Saved {len(games_out)} game rows -> {GAMES_OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
