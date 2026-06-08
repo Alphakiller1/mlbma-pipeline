@@ -27,6 +27,16 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  function lvpSectionHead(title, desc) {
+    if (global.MatchupLvP && MatchupLvP.lvpSectionHead) {
+      return MatchupLvP.lvpSectionHead(title, desc);
+    }
+    return '<header class="mc-lvp-section-head">'
+      + '<h3 class="mc-lvp-section-head__title">' + esc(title) + '</h3>'
+      + (desc ? '<p class="mc-lvp-section-head__desc">' + esc(desc) + '</p>' : '')
+      + '</header>';
+  }
+
   function num(v) {
     if (v == null || v === '' || isNaN(v)) return null;
     return Number(v);
@@ -441,8 +451,7 @@
       + '<thead><tr>'
       + '<th scope="col">Hitter</th><th scope="col">AB</th><th scope="col">H</th><th scope="col">HR</th>'
       + '<th scope="col">AVG</th><th scope="col">OPS</th>'
-      + '</tr></thead><tbody>' + body + '</tbody></table>'
-      + '<p class="mc-os-bvp-note ca-helper">Career regular-season plate appearances vs ' + esc(spName) + ' · N/A = no prior matchup</p>';
+      + '</tr></thead><tbody>' + body + '</tbody></table>';
   }
 
   function hydrateHitterVsPitcher(root, ctx, lineupSide, pitcherSide) {
@@ -507,7 +516,10 @@
       + '<span class="mc-os-card-role">Allowed offense vs batter hand · YTD season split</span></div></div>'
       + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands">' + stripHtml + '</div>'
       + '<div class="mc-os-bvp-block">'
-      + '<div class="mc-os-bvp-head">Hitter vs Pitcher Stats</div>'
+      + '<header class="mc-lvp-panel-head mc-lvp-panel-head--bvp">'
+      + '<div class="mc-lvp-panel-head__title">Hitter vs Pitcher Stats</div>'
+      + '<p class="mc-lvp-panel-head__desc">Career regular-season plate appearances vs this starter · N/A = no prior matchup</p>'
+      + '</header>'
       + '<div id="mcLvPBvp" class="mc-os-bvp"><p class="ca-helper">Loading career matchup stats…</p></div>'
       + '</div></div>';
   }
@@ -551,10 +563,11 @@
   function renderLvpTeamRanks(ctx, lineupSide, spHand) {
     if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
     var handLbl = handLabel(spHand);
-    return '<div class="mc-section-block mc-offense-splits mc-lvp-team-ranks">'
-      + '<h3 class="mc-lvp-block-title mc-lvp-block-title--compact">Team Offense — League Rank</h3>'
-      + '<p class="mc-os-hint ca-helper">League rank heatmap · '
-      + handLbl + ' matches tonight\'s starter hand</p>'
+    return '<section class="mc-lvp-section mc-lvp-section--ranks mc-offense-splits mc-lvp-team-ranks">'
+      + lvpSectionHead(
+        'Team Offense — League Rank',
+        'League rank heatmap · ' + handLbl + ' matches tonight\'s starter hand.'
+      )
       + lineupOffenseCard(ctx, lineupSide, spHand, ctx.offenseRankIndex)
       + '<div class="mc-os-legend mc-os-legend--lineup mc-os-legend--compact">'
       + '<span class="mc-os-legend-label">Ranks:</span>'
@@ -563,7 +576,7 @@
       + '<span class="mc-os-leg mc-os-cell--mid">#13–20 Average</span>'
       + '<span class="mc-os-leg mc-os-cell--weak">#21–25 Weak</span>'
       + '<span class="mc-os-leg mc-os-cell--poor">#26+ Poor</span>'
-      + '</div></div>';
+      + '</div></section>';
   }
 
   function renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam) {

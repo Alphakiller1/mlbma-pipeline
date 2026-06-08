@@ -46,14 +46,18 @@
     return '<span class="chip c-na">' + fmt(v, decimals) + '</span>';
   }
 
-  function sectionHead(title, sub) {
-    if (A && A.caSectionHeadHtml) return A.caSectionHeadHtml('target', '', title, sub || '');
-    return '<h3 class="mc-lvp-section-title">' + esc(title) + '</h3>'
-      + (sub ? '<p class="mc-pane-desc">' + esc(sub) + '</p>' : '');
+  function lvpSectionHead(title, desc) {
+    return '<header class="mc-lvp-section-head">'
+      + '<h3 class="mc-lvp-section-head__title">' + esc(title) + '</h3>'
+      + (desc ? '<p class="mc-lvp-section-head__desc">' + esc(desc) + '</p>' : '')
+      + '</header>';
   }
 
   function lvpPanelHead(title, purpose) {
-    return sectionHead(title, purpose);
+    return '<header class="mc-lvp-panel-head">'
+      + '<div class="mc-lvp-panel-head__title">' + esc(title) + '</div>'
+      + (purpose ? '<p class="mc-lvp-panel-head__desc">' + esc(purpose) + '</p>' : '')
+      + '</header>';
   }
 
   function normalizePct(pct) {
@@ -647,29 +651,33 @@
       + (mix.lineupWeighted ? ' · projected lineup weighted' : ' · team batting mix');
 
     if (mix.status === 'pending') {
-      return sectionHead('Pitch Mix Breakdown', sub)
-        + '<div class="mc-lvp-pitchmix-empty ca-board">'
+      return '<section class="mc-lvp-section ca-board">'
+        + lvpSectionHead('Pitch Mix Breakdown', sub)
+        + '<div class="mc-lvp-pitchmix-empty">'
         + '<p class="ca-helper">Pitch mix sync pending. After <code>scrape_pitch_mix</code> finishes and rows land in '
         + '<strong>Pitch_Mix_Pitcher_L14</strong> / <strong>Pitch_Mix_Team_Batting_L14</strong> (Sheets + Supabase), reload this page.</p>'
-        + '</div>';
+        + '</div></section>';
     }
     if (mix.status === 'no_pitcher') {
-      return sectionHead('Pitch Mix Breakdown', sub)
-        + '<div class="mc-lvp-pitchmix-empty ca-board">'
+      return '<section class="mc-lvp-section ca-board">'
+        + lvpSectionHead('Pitch Mix Breakdown', sub)
+        + '<div class="mc-lvp-pitchmix-empty">'
         + '<p class="ca-helper">Sheets are synced but no pitch-mix rows matched <strong>' + esc(mix.spName) + '</strong> yet.</p>'
-        + '</div>';
+        + '</div></section>';
     }
     if (mix.status === 'no_lineup') {
-      return sectionHead('Pitch Mix Breakdown', sub)
-        + '<div class="mc-lvp-pitchmix-empty ca-board">'
+      return '<section class="mc-lvp-section ca-board">'
+        + lvpSectionHead('Pitch Mix Breakdown', sub)
+        + '<div class="mc-lvp-pitchmix-empty">'
         + '<p class="ca-helper">Pitcher mix loaded; team batting mix missing for <strong>' + esc(mix.lineupTeam) + '</strong>.</p>'
-        + '</div>';
+        + '</div></section>';
     }
     if (mix.status === 'empty' || !mix.rows.length) {
-      return sectionHead('Pitch Mix Breakdown', sub)
-        + '<div class="mc-lvp-pitchmix-empty ca-board">'
+      return '<section class="mc-lvp-section ca-board">'
+        + lvpSectionHead('Pitch Mix Breakdown', sub)
+        + '<div class="mc-lvp-pitchmix-empty">'
         + '<p class="ca-helper">Matched pitcher and team tabs but no overlapping pitch types above usage threshold.</p>'
-        + '</div>';
+        + '</div></section>';
     }
 
     var body = mix.rows.map(function(r) {
@@ -685,7 +693,8 @@
     var spCols = 9;
     var batCols = 7;
 
-    return sectionHead('Pitch Mix Breakdown', sub)
+    return '<section class="mc-lvp-section ca-board">'
+      + lvpSectionHead('Pitch Mix Breakdown', sub)
       + '<div class="mc-lvp-pitchmix-head">'
       + '<div class="mc-lvp-pitchmix-side mc-lvp-pitchmix-side--sp">' + spLogo
       + '<span>' + esc(comp.spName) + ' · Arsenal</span></div>'
@@ -707,7 +716,8 @@
       + '<th scope="col">Whiff%</th><th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">Chase%</th><th scope="col">xwOBA</th>'
       + '<th scope="col" class="mc-lvp-pitch-divider">Avg</th><th scope="col">Whiff%</th><th scope="col">Chase%</th>'
       + '<th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">EV</th><th scope="col">xwOBA</th>'
-      + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+      + '</tr></thead><tbody>' + body + '</tbody></table></div>'
+      + '</section>';
   }
 
   function teamL10SpHandMap(rows) {
@@ -1234,11 +1244,10 @@
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
-  function statCompareHtml(lineupTeam, spName, pitcherTeam, rows) {
+  function statCompareBody(lineupTeam, spName, pitcherTeam, rows) {
     var luLogo = S && S.teamLogo ? S.teamLogo(lineupTeam, 22) : '';
     var spLogo = S && S.teamLogo ? S.teamLogo(pitcherTeam, 22) : '';
-    return sectionHead('Stat Comparison', 'Lineup offense vs starting pitcher — green favors that side for the metric context.')
-      + '<div class="mc-lvp-stat-head">'
+    return '<div class="mc-lvp-stat-head">'
       + '<div class="mc-lvp-stat-side mc-lvp-stat-side--a">' + luLogo + '<span>' + esc(lineupTeam) + ' Lineup</span></div>'
       + '<div class="mc-lvp-stat-side mc-lvp-stat-side--b">' + spLogo + '<span>' + esc(spName) + '</span></div>'
       + '</div>'
@@ -1328,19 +1337,26 @@
 
   function renderPerformanceBody(comp, ctx) {
     if (!comp) {
-      return '<div class="mc-lvp-performance ca-board">'
-        + '<p class="ca-helper">Performance comparison unavailable — check sheet data and reload.</p></div>';
+      return '<div class="mc-lvp-performance">'
+        + '<section class="mc-lvp-section ca-board">'
+        + '<p class="ca-helper">Performance comparison unavailable — check sheet data and reload.</p>'
+        + '</section></div>';
     }
     var metrics = buildDuelMetrics(comp, ctx || {}, comp.lineupTeam);
-    return '<div class="mc-lvp-performance ca-board">'
-      + statCompareHtml(comp.lineupTeam, comp.spName, comp.pitcherTeam, metrics)
-      + '<h3 class="mc-lvp-block-title mc-lvp-block-title--logs">Recent Form</h3>'
-      + '<p class="mc-pane-desc">Lineup last ' + LINEUP_GAMES + ' games vs ' + handLabel(comp.spHand)
-      + ' starters only (stats vs opposing starter) · pitcher last ' + STARTS_LIMIT + ' starts.</p>'
+    var formDesc = 'Lineup last ' + LINEUP_GAMES + ' games vs ' + handPitcherPhrase(comp.spHand)
+      + ' (stats vs opposing starter) · pitcher last ' + STARTS_LIMIT + ' starts.';
+    return '<div class="mc-lvp-performance">'
+      + '<section class="mc-lvp-section ca-board">'
+      + lvpSectionHead('Stat Comparison', 'Lineup offense vs starting pitcher — green favors that side for the metric context.')
+      + statCompareBody(comp.lineupTeam, comp.spName, comp.pitcherTeam, metrics)
+      + '</section>'
+      + '<section class="mc-lvp-section ca-board">'
+      + lvpSectionHead('Recent Form', formDesc)
       + '<div class="mc-grid-2 mc-lvp-perf-grid">'
       + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--lineup">' + lineupPerformanceHtml(comp.lu, comp.spHand, comp.luFilter, comp.lu && comp.lu.row, ctx, comp.lineupTeam) + '</div>'
       + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--pitcher">' + pitcherStartsHtml(comp.spName, comp.log, comp.logSum) + '</div>'
       + '</div>'
+      + '</section>'
       + pitchMixHtml(comp, ctx)
       + '</div>';
   }
@@ -1386,6 +1402,7 @@
     pitchMixTabKeys: pitchMixTabKeys,
     hydrate: hydrate,
     resolveCompare: resolveCompare,
-    renderPerformanceBody: renderPerformanceBody
+    renderPerformanceBody: renderPerformanceBody,
+    lvpSectionHead: lvpSectionHead
   };
 })(typeof window !== 'undefined' ? window : this);

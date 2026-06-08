@@ -457,14 +457,23 @@
     var teamRanks = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLvpTeamRanks
       ? MatchupOffenseSplits.renderLvpTeamRanks(ctx, lineupSide, spHand)
       : '';
+    var splitHead = global.MatchupLvP && MatchupLvP.lvpSectionHead
+      ? MatchupLvP.lvpSectionHead(
+        'Lineup & Pitcher Splits',
+        'Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.'
+      )
+      : '<header class="mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Pitcher Splits</h3>'
+        + '<p class="mc-lvp-section-head__desc">Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.</p></header>';
     return '<div class="mc-lvp-body">'
+      + '<section class="mc-lvp-section mc-lvp-section--matchup">'
+      + splitHead
       + '<div class="mc-lvp-lineup-block">'
       + winControls
-      + '<p class="mc-lvp-visual-desc ca-helper">Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.</p>'
       + '<div class="mc-grid-2 mc-lvp-grid mc-lvp-visual-duo">'
       + '<div id="mcLvPLineupCard">' + lineupCard + '</div>'
       + '<div id="mcLvPSpSplits">' + pitcherPanel + '</div>'
       + '</div></div>'
+      + '</section>'
       + teamRanks
       + '<div id="mcLvPAsync" class="mc-lvp-async"><p class="ca-helper">Loading performance comparison…</p></div>'
       + '</div>';
