@@ -138,7 +138,7 @@
     }
     var accent = teamAccentColor(bpTeam);
     var highlightHand = dominantBatHand(lineup);
-    var locHighlight = filterState && filterState.lvbLoc ? filterState.lvbLoc : null;
+    var locHighlight = null;
     var homeRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.home);
     var awayRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.away);
     var lhhRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.lhh);

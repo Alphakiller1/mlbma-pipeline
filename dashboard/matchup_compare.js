@@ -62,13 +62,8 @@
     if (lvbLineup === lvbBp) lvbBp = lvbLineup === 'away' ? 'home' : 'away';
     var lvWin = (qp('lvWin') || 'ytd').toLowerCase();
     if (['l7', 'l14', 'l30', 'ytd'].indexOf(lvWin) < 0) lvWin = 'ytd';
-    var lvbLoc = qp('lvbLoc') || 'all';
     if (global.MatchupLvBControls) {
-      var d = MatchupLvBControls.defaultLvbState({
-        lvbLoc: lvbLoc,
-        lvWin: lvWin
-      });
-      lvbLoc = d.lvbLoc;
+      var d = MatchupLvBControls.defaultLvbState({ lvWin: lvWin });
       lvWin = d.lvWin;
     }
     return {
@@ -77,8 +72,7 @@
       lvpPitcher: lvpPitcher,
       lvbLineup: lvbLineup,
       lvbBp: lvbBp,
-      lvWin: lvWin,
-      lvbLoc: lvbLoc
+      lvWin: lvWin
     };
   }
 
@@ -96,14 +90,13 @@
       params.set('lvbLineup', state.lvbLineup);
       params.set('lvbBp', state.lvbBp);
       params.set('lvWin', state.lvWin || 'ytd');
-      params.set('lvbLoc', state.lvbLoc || 'all');
     } else {
       params.delete('lvbLineup');
       params.delete('lvbBp');
-      params.delete('lvbLoc');
       params.delete('lvbLuHand');
       params.delete('lvbBpHand');
       params.delete('lvbSegment');
+      params.delete('lvbLoc');
     }
     if (state.mode === 'lvL' || state.mode === 'lvP') {
       params.set('lvWin', state.lvWin || 'ytd');
