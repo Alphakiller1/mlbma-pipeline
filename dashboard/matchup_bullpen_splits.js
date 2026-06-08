@@ -170,12 +170,16 @@
         highlightHand: false
       })
       : '';
+    var bpCard = bullpenSplitStatsCard(bpTeam, unitRow, lineup, filterState);
     return '<section class="mc-lvb-section mc-lvb-section--ranks mc-offense-splits mc-lvp-team-ranks ca-board">'
       + lvbSectionHead(
         'Team Offense — League Rank',
-        'League rank heatmap · lineup vs relief context.'
+        'League rank heatmap · lineup vs relief · bullpen relief splits (vs RHH/LHH) beside lineup context.'
       )
-      + '<div class="mc-lvp-offense-pitcher-duo mc-lvp-offense-lineup-only">' + lineupCard + '</div>'
+      + '<div class="mc-lvp-offense-pitcher-duo">'
+      + lineupCard
+      + bpCard
+      + '</div>'
       + '<div class="mc-os-legend mc-os-legend--lineup mc-os-legend--compact">'
       + '<span class="mc-os-legend-label">Ranks:</span>'
       + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'

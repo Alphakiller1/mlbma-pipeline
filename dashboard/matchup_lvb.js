@@ -1,5 +1,5 @@
 /**
- * Lineup vs Bullpen — stat comparison, recent relief form, bullpen usage chart.
+ * Lineup vs Bullpen — stat comparison and bullpen usage chart.
  * Relief-only: lineup vs RP splits; bullpen unit excludes rotation arms.
  */
 (function(global) {
@@ -9,7 +9,6 @@
   var A = global.MLBMAAssets;
   var CM = global.CompareMetrics;
   var LC = global.MatchupLvBControls;
-  var RELIEF_LIMIT = 10;
 
   var _pack = {
     relieverLog: [],
@@ -269,83 +268,6 @@
     });
   }
 
-  function formatShortDate(iso) {
-    if (!iso) return '—';
-    var p = String(iso).slice(0, 10).split('-');
-    if (p.length < 3) return esc(iso);
-    return esc(Number(p[1]) + '/' + Number(p[2]));
-  }
-
-  function shortPitcherName(name) {
-    if (!name) return '—';
-    var parts = String(name).trim().split(/\s+/);
-    if (parts.length < 2) return name;
-    return parts[0].charAt(0) + '. ' + parts.slice(1).join(' ');
-  }
-
-  function lastReliefApps(team, ctx, limit) {
-    var apps = filterReliefApps(_pack.relieverLog, team, ctx, { includeStarters: false });
-    apps.sort(function(a, b) {
-      return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
-    });
-    return apps.slice(0, limit || RELIEF_LIMIT);
-  }
-
-  function bullpenAppsTableHtml(team, ctx) {
-    var apps = lastReliefApps(team, ctx, RELIEF_LIMIT);
-    if (!apps.length) {
-      return '<p class="ca-helper mc-lvp-empty">No relief appearances in log for ' + esc(team) + ' — run pipeline step 12.</p>';
-    }
-    var body = apps.map(function(r) {
-      var dt = formatShortDate(pick(r, ['date', 'Date']));
-      var opp = pick(r, ['opponent_team', 'opp', 'Opponent']);
-      var ha = String(pick(r, ['home_away', 'home away']) || '').trim().toUpperCase();
-      var loc = ha === 'HOME' ? 'H' : (ha === 'AWAY' ? 'A' : '—');
-      var ip = pick(r, ['IP', 'ip']);
-      var er = num(pick(r, ['ER', 'er']));
-      var k = num(pick(r, ['K', 'k']));
-      var bb = num(pick(r, ['BB', 'bb']));
-      var lev = String(pick(r, ['leverage_situation', 'leverage']) || '—');
-      var res = String(pick(r, ['result']) || '—');
-      var logo = S && S.teamLogo ? S.teamLogo(opp, 22) : '';
-      return '<tr>'
-        + '<td class="mc-lvp-date">' + dt + '</td>'
-        + '<td class="num mc-lvp-loc">' + esc(loc) + '</td>'
-        + '<td><span class="mc-lvp-opp mc-lvp-opp--logo-only" title="' + esc(opp) + '">' + logo + '</span></td>'
-        + '<td class="mc-lvp-pitcher">' + esc(shortPitcherName(pick(r, ['pitcher_name', 'Name']))) + '</td>'
-        + '<td class="num mc-l10-stat">' + esc(lev) + '</td>'
-        + '<td class="num mc-l10-stat">' + esc(res) + '</td>'
-        + '<td class="num mc-l10-stat">' + (ip != null ? esc(ip) : '—') + '</td>'
-        + '<td class="num mc-l10-stat">' + (er != null ? esc(er) : '—') + '</td>'
-        + '<td class="num mc-l10-stat">' + (k != null ? esc(k) : '—') + '</td>'
-        + '<td class="num mc-l10-stat">' + (bb != null ? esc(bb) : '—') + '</td>'
-        + '</tr>';
-    }).join('');
-    return '<div class="mc-lvp-table-wrap mc-lvp-table-wrap--games">'
-      + '<table class="mc-lvp-table mc-lvp-table--starts">'
-      + '<thead><tr><th>Date</th><th>H/A</th><th>Opp</th><th>Reliever</th><th>Lev</th><th>Res</th><th>IP</th><th>ER</th><th>K</th><th>BB</th></tr></thead>'
-      + '<tbody>' + body + '</tbody></table></div>';
-  }
-
-  function lineupReliefFormHtml(comp, ctx) {
-    var lu = comp.lu && comp.lu.row ? comp.lu.row : {};
-    var chips = [
-      { lbl: 'OSI vs RP', val: lu.osi, ctx: 'osi' },
-      { lbl: 'wRC+', val: lu.wrc, ctx: 'wrc', dec: 0 },
-      { lbl: 'OPS', val: lu.ops, ctx: 'ops', dec: 3 },
-      { lbl: 'BB%', val: lu.bb, ctx: 'bbpct' },
-      { lbl: 'Win%', val: comp.lu ? (comp.lu.row.winPct) : null, ctx: 'pct' }
-    ];
-    var strip = chips.map(function(c) {
-      return '<div class="mc-lvb-form-chip"><span class="mc-lvb-edge-lbl">' + esc(c.lbl) + '</span>'
-        + metricChip(c.val, c.ctx, false, c.dec == null ? 1 : c.dec) + '</div>';
-    }).join('');
-    return '<div class="mc-lvb-form-head">'
-      + (S && S.teamLogo ? S.teamLogo(comp.lineupTeam, 28) : '')
-      + '<span>' + esc(comp.lineupTeam) + ' · vs relief · ' + esc(comp.filterSummary) + '</span></div>'
-      + '<div class="mc-lvb-form-strip">' + strip + '</div>';
-  }
-
   function renderPerformanceBody(comp, ctx) {
     if (!comp) {
       return '<div class="mc-lvb-performance">'
@@ -360,16 +282,6 @@
         comp.filterSummary + ' · green favors that side. Lineup vs relief only; bullpen excludes rotation arms.'
       )
       + statCompareBody(comp.lineupTeam, comp.bpTeam, comp.metrics)
-      + '</section>'
-      + '<section class="mc-lvb-section mc-lvp-section ca-board">'
-      + lvbSectionHead(
-        'Recent Relief Form',
-        comp.lineupTeam + ' split offense vs RP · ' + comp.bpTeam + ' last ' + RELIEF_LIMIT + ' relief apps (non-starters).'
-      )
-      + '<div class="mc-grid-2 mc-lvp-perf-grid">'
-      + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--lineup">' + lineupReliefFormHtml(comp, ctx) + '</div>'
-      + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--pitcher">' + bullpenAppsTableHtml(comp.bpTeam, ctx) + '</div>'
-      + '</div>'
       + '</section>'
       + '<section class="mc-lvb-section mc-lvp-section ca-board">'
       + lvbSectionHead(
@@ -405,7 +317,6 @@
     hydrate: hydrate,
     prepareData: prepareData,
     resolveCompare: resolveCompare,
-    filterReliefApps: filterReliefApps,
-    lastReliefApps: lastReliefApps
+    filterReliefApps: filterReliefApps
   };
 })(typeof window !== 'undefined' ? window : this);

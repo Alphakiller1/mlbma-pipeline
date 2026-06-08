@@ -506,7 +506,6 @@
     var lineupTeam = lineupSide === 'home' ? m.home : m.away;
     var bpTeam = bpSide === 'home' ? m.home : m.away;
     var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
-    var bp = bpSide === 'home' ? ctx.homeBp : ctx.awayBp;
     state = state || _compareState || { lvWin: 'ytd' };
     var winControls = global.MatchupLvBControls && MatchupLvBControls.controlsHtml
       ? MatchupLvBControls.controlsHtml(state)
@@ -521,28 +520,23 @@
     var unitRow = global.MatchupBullpenSplits && MatchupBullpenSplits.findBullpenUnitRow
       ? MatchupBullpenSplits.findBullpenUnitRow((ctx.data && ctx.data.bullpenRows) || [], bpTeam)
       : null;
-    var bpSplitCard = global.MatchupBullpenSplits && MatchupBullpenSplits.bullpenSplitStatsCard
-      ? MatchupBullpenSplits.bullpenSplitStatsCard(bpTeam, unitRow, lineup, state)
-      : bullpenPanel(bpTeam, bp);
     var teamRanks = global.MatchupBullpenSplits && MatchupBullpenSplits.renderLvbTeamRanks
       ? MatchupBullpenSplits.renderLvbTeamRanks(ctx, lineupSide, bpTeam, unitRow, lineup, state)
       : '';
     var matchupHead = global.MatchupLvB && MatchupLvB.lvbSectionHead
       ? MatchupLvB.lvbSectionHead(
-        'Lineup & Bullpen Splits',
-        'Lineup vs relief splits · bullpen allowed by location and batter hand — excludes starters.'
+        'Lineup vs Relief Splits',
+        'Projected lineup vs relief only — use window pills to change the split context.'
       )
-      : '<header class="mc-lvb-section-head mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Bullpen Splits</h3>'
-        + '<p class="mc-lvp-section-head__desc">Lineup vs relief splits · bullpen allowed metrics.</p></header>';
+      : '<header class="mc-lvb-section-head mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup vs Relief Splits</h3>'
+        + '<p class="mc-lvp-section-head__desc">Lineup stats vs bullpen · window toggles L7, L14, L30, YTD.</p></header>';
     return '<div class="mc-lvb-body">'
       + '<section class="mc-lvb-section mc-lvb-section--matchup ca-board">'
       + matchupHead
       + '<div class="mc-lvb-lineup-block">'
       + winControls
-      + '<div class="mc-grid-2 mc-lvb-grid mc-lvp-visual-duo">'
-      + '<div id="mcLvBLineupCard">' + lineupCard + '</div>'
-      + '<div id="mcLvBBpSplits">' + bpSplitCard + '</div>'
-      + '</div></div>'
+      + '<div id="mcLvBLineupCard" class="mc-lvb-lineup-only">' + lineupCard + '</div>'
+      + '</div>'
       + '</section>'
       + teamRanks
       + '<div id="mcLvBAsync" class="mc-lvb-async"><p class="ca-helper">Loading bullpen comparison…</p></div>'

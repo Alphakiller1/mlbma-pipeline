@@ -812,6 +812,12 @@
   gap: 20px;
 }
 .mc-lvb-lineup-block { margin-bottom: 0; }
+.mc-lvb-lineup-only {
+  margin-top: 0;
+}
+.mc-lvb-lineup-only .mc-lcc-card {
+  max-width: 100%;
+}
 .mc-lvb-lineup-block .mc-lcc-controls {
   margin: 0 0 14px;
   padding: 10px 12px;
