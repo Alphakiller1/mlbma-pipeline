@@ -522,23 +522,33 @@
     else if (global.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
   }
 
+  function isDefaultSnapshotFilter(f) {
+    if (!f) return false;
+    return f.hand === 'both' && f.location === 'all' && f.pitcher === 'both'
+      && f.batSide === 'both' && f.segment === 'full' && f.window === 'YTD';
+  }
+
   function rerender(root, ctx, opts) {
     opts = opts || {};
-    var silent = !!opts.silent;
+    var silent = !!opts.silent || !!opts.fromBoot;
+    var body = root.querySelector('.lv-body');
+    var bootTable = body && body.querySelector('.lv-table--boot');
+    if (bootTable) silent = true;
     if (!LM || !LM.rankAll) {
       dismissPageLoading();
-      root.querySelector('.lv-body').innerHTML = '<div class="lv-note">LineupModel not available.</div>';
+      if (body) body.innerHTML = '<div class="lv-note">LineupModel not available.</div>';
       return;
     }
     writeUrl(ctx.state);
-    var body = root.querySelector('.lv-body');
     if (!ctx._controlsReady || !silent) {
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
       ctx._controlsReady = true;
     }
     dismissPageLoading();
     global.__lineupViewMounted = true;
-    if (!silent && body) body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
+    if (!silent && body && !body.querySelector('.lv-table')) {
+      body.innerHTML = '<div class="lv-note">Loading rankings…</div>';
+    }
     LM.rankAll(ctx.state.filter, ctx.state.family, { includeMeta: true }).then(function(resolved) {
       var rows = (resolved && resolved.rows) ? resolved.rows : (resolved || []);
       ctx.meta = (resolved && resolved.meta) ? resolved.meta : {};
@@ -591,11 +601,18 @@
     var state = stateFromUrl();
     state.filter = normalizeFilter(state.filter);
     normalizeSortState(state);
-    var shell = document.createElement('div');
-    shell.className = 'lv-wrap';
-    shell.innerHTML = '<div class="lv-bar"><div class="lv-controls"></div></div><div class="lv-body"></div>';
-    el.innerHTML = '';
-    el.appendChild(shell);
+    var bootShell = el.querySelector('.lv-wrap--boot');
+    var shell;
+    if (bootShell) {
+      shell = bootShell;
+      shell.classList.remove('lv-wrap--boot');
+    } else {
+      shell = document.createElement('div');
+      shell.className = 'lv-wrap';
+      shell.innerHTML = '<div class="lv-bar"><div class="lv-controls"></div></div><div class="lv-body"></div>';
+      el.innerHTML = '';
+      el.appendChild(shell);
+    }
     var ctx = { state: state, teams: [], _didPalsForceRefresh: false, meta: {}, _teamResultsRefresh: false, _controlsReady: false };
     bind(shell, ctx);
     if (LM && LM.onUpdate) {
@@ -606,7 +623,8 @@
         rerender(shell, ctx, { silent: true });
       });
     }
-    rerender(shell, ctx);
+    var fromBoot = !!global.__MLBMA_RANKINGS_BOOT_DONE && isDefaultSnapshotFilter(state.filter);
+    rerender(shell, ctx, { fromBoot: fromBoot, silent: fromBoot });
     return {
       rerender: function() { rerender(shell, ctx); },
       getState: function() { return JSON.parse(JSON.stringify(ctx.state)); }

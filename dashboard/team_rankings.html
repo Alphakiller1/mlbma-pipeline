@@ -7,7 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <script>
 window.__MLBMA_EXPECT_HUB_BUILD = '20260611a';
-console.log('[VERSION] team_rankings build 20260624a — lineup_view.js');
+console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
 </script>
 <meta charset="UTF-8">
 
@@ -19,6 +19,7 @@ console.log('[VERSION] team_rankings build 20260624a — lineup_view.js');
 <link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="team_rankings_snapshot.json?v=20260608a" as="fetch" crossorigin>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
@@ -71,6 +72,8 @@ console.log('[VERSION] team_rankings build 20260624a — lineup_view.js');
     }).then(function(d) {
       if (d) window.__MLBMA_BASELINES = d;
     }).catch(function() { /* optional */ });
+    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260608a')
+      .then(function(r) { if (!r.ok) throw new Error('snapshot ' + r.status); return r.json(); });
   } catch (e) { /* prefetch is best-effort */ }
 })();
 </script>
@@ -300,6 +303,7 @@ setTimeout(function() {
   <div id="teamRankingsPageHeader"></div>
   <section id="lineupViewMount"></section>
 </main>
+<script src="team_rankings_boot.js?v=20260608a"></script>
 
 <script>
 (function() {
@@ -348,7 +352,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260624a"></script>
+<script src="lineup_view.js?v=20260608b"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

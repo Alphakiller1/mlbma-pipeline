@@ -16,11 +16,16 @@ import csv
 import io
 import json
 import os
+import subprocess
+import sys
 import time
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 from core.config import SHEET_ID, SHEET_TABS, SUPABASE_DASHBOARD
+
+ROOT = Path(__file__).resolve().parent.parent
 
 try:
     from dotenv import load_dotenv
@@ -89,9 +94,21 @@ def push_datasets(tabs: list[str] | None = None) -> dict[str, int]:
     return counts
 
 
+def _build_team_rankings_snapshot() -> None:
+    """Regenerate static snapshot for instant Team Rankings first paint."""
+    script = ROOT / "scripts" / "build_team_rankings_snapshot.py"
+    if not script.exists():
+        return
+    try:
+        subprocess.run([sys.executable, str(script)], cwd=str(ROOT), check=True)
+    except Exception as exc:
+        print(f"  WARNING: team rankings snapshot build failed: {exc}")
+
+
 def run() -> None:
     print("Pushing dashboard datasets to Supabase (hub_dataset)...")
     counts = push_datasets()
+    _build_team_rankings_snapshot()
     print("Done:", json.dumps(counts))
 
 

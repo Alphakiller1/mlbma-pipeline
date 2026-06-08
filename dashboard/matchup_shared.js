@@ -472,7 +472,7 @@
     return String(pickCol(row, 'Slate_Date', 'Slate Date', 'Slate_Date_ET', 'Date') || '').trim().slice(0, 10);
   }
 
-  /** Prefer today's slate; never reuse prior-day rows against today's MLB matchups. */
+  /** Prefer today's slate; match by game key when matchups are known. */
   function filterLineupSheetRows(rows, matchupKeys) {
     if (!rows || !rows.length) return [];
     var live = global.LIVE_DATA || {};
@@ -485,25 +485,46 @@
       live._slateSheetDate = null;
       return [];
     }
-    var todayRows = dated.filter(function(row) { return slateDateFromRow(row) === today; });
-    if (todayRows.length) {
-      live._slateSheetDate = today;
-      return todayRows;
-    }
     var sheetDays = {};
     dated.forEach(function(row) {
       var d = slateDateFromRow(row);
       sheetDays[d] = (sheetDays[d] || 0) + 1;
     });
     var latest = Object.keys(sheetDays).sort().pop();
+
+    function rowsForKeys(sourceRows) {
+      if (!matchupKeys || !matchupKeys.length) return sourceRows;
+      var keySet = {};
+      matchupKeys.forEach(function(k) {
+        if (k) keySet[normalizeLineupGameKeyShared(k)] = true;
+      });
+      return sourceRows.filter(function(row) {
+        var gk = normalizeLineupGameKeyShared(pickCol(row, 'Game', 'game_key', 'GameKey'));
+        return keySet[gk];
+      });
+    }
+
+    var todayRows = dated.filter(function(row) { return slateDateFromRow(row) === today; });
+    if (todayRows.length) {
+      live._slateSheetDate = today;
+      return rowsForKeys(todayRows);
+    }
+
     live._slateSheetDate = latest || null;
+    var latestRows = dated.filter(function(row) { return slateDateFromRow(row) === latest; });
     if (matchupKeys && matchupKeys.length) {
+      var matched = rowsForKeys(latestRows);
+      if (matched.length) {
+        if (typeof console !== 'undefined' && console.warn) {
+          console.warn('[LINEUPS] No slate for ET', today, '— using sheet date', latest, 'for', matched.length, 'rows matching today matchups');
+        }
+        return matched;
+      }
       if (typeof console !== 'undefined' && console.warn) {
         console.warn('[LINEUPS] No rows for ET', today, '(sheet has', latest + ') — run: python -m scrapers.scrape_lineups');
       }
       return [];
     }
-    var latestRows = dated.filter(function(row) { return slateDateFromRow(row) === latest; });
     if (typeof console !== 'undefined' && console.warn) {
       console.warn('[LINEUPS] No rows for ET', today, '— using latest sheet slate', latest);
     }
