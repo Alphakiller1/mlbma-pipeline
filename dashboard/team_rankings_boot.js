@@ -148,10 +148,14 @@
 
   function paint(snap) {
     if (global.__MLBMA_RANKINGS_BOOT_DONE) return;
-    var pack = pickPack(snap, stateFromUrl());
-    if (!pack || !pack.rows || !pack.rows.length) return;
     var root = document.getElementById('lineupViewMount');
     if (!root) return;
+    // Never clobber a fully mounted LineupView (boot fetch can finish after mount).
+    if (global.__lineupViewReady || global.__MLBMA_LINEUP_VIEW_ACTIVE) return;
+    if (root.querySelector('.lv-family-grid')) return;
+
+    var pack = pickPack(snap, stateFromUrl());
+    if (!pack || !pack.rows || !pack.rows.length) return;
 
     ensureBootStyles();
     var state = stateFromUrl();
@@ -178,6 +182,7 @@
     var promise = global.__MLBMA_SNAPSHOT_PROMISE;
     if (!promise || !promise.then) return;
     promise.then(function (snap) {
+      global.__MLBMA_RANKINGS_SNAPSHOT = global.__MLBMA_RANKINGS_SNAPSHOT || snap;
       if (document.getElementById('lineupViewMount')) {
         paint(snap);
       } else {

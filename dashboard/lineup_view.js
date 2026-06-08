@@ -632,6 +632,7 @@
 
   function mount(opts) {
     opts = opts || {};
+    global.__MLBMA_LINEUP_VIEW_ACTIVE = true;
     ensureStyles();
     var el = typeof opts.mountId === 'string' ? document.getElementById(opts.mountId) : opts.element;
     if (!el) return null;
