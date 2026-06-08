@@ -46,9 +46,23 @@
   }
 
   function sectionHead(title, sub) {
-    if (A && A.caSectionHeadHtml) return A.caSectionHeadHtml(title, sub);
+    if (A && A.caSectionHeadHtml) return A.caSectionHeadHtml('target', '', title, sub || '');
     return '<h3 class="mc-lvp-section-title">' + esc(title) + '</h3>'
       + (sub ? '<p class="mc-pane-desc">' + esc(sub) + '</p>' : '');
+  }
+
+  function lvpPanelHead(title, purpose) {
+    return sectionHead(title, purpose);
+  }
+
+  function perfSummaryTableHtml(cols, row) {
+    var head = cols.map(function(c) { return '<th>' + esc(c.label) + '</th>'; }).join('');
+    var cells = cols.map(function(c) {
+      var v = row && row[c.key] != null ? row[c.key] : c.val;
+      return '<td class="num mc-lvp-summary-stat">' + metricChip(v, c.ctx, c.inv, c.dec == null ? 1 : c.dec) + '</td>';
+    }).join('');
+    return '<div class="mc-lvp-table-wrap mc-lvp-table-wrap--summary"><table class="mc-lvp-table mc-lvp-table--summary">'
+      + '<thead><tr>' + head + '</tr></thead><tbody><tr>' + cells + '</tr></tbody></table></div>';
   }
 
   function normalizePct(pct) {
@@ -916,9 +930,6 @@
       var bb = num(pick(g, ['vs_sp_bb', 'vs sp bb']));
       var ip = pick(g, ['opp_starter_ip', 'opp starter ip', 'IP']);
       var er = pick(g, ['opp_starter_er', 'opp starter er', 'ER']);
-      var wrc = num(pick(g, ['wrc_plus', 'wrc+', 'wRC+']));
-      var ops = num(pick(g, ['ops', 'OPS']));
-      var woba = num(pick(g, ['woba', 'wOBA']));
       var logo = S && S.teamLogo ? S.teamLogo(opp, 16) : '';
       return '<tr>'
         + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
@@ -930,18 +941,14 @@
         + '<td class="num">' + esc(er != null ? er : '—') + '</td>'
         + '<td class="num">' + (h != null ? esc(h) : '—') + '</td>'
         + '<td class="num">' + (bb != null ? esc(bb) : '—') + '</td>'
-        + '<td class="num">' + metricChip(wrc, 'wrc', false, 0) + '</td>'
-        + '<td class="num">' + metricChip(ops, 'ops', false, 3) + '</td>'
-        + '<td class="num">' + metricChip(woba, 'woba', false, 3) + '</td>'
         + '</tr>';
     }).join('');
     return '<div class="mc-lvp-table-wrap mc-lvp-table-wrap--games"><table class="mc-lvp-table mc-lvp-table--l10games">'
       + '<colgroup><col class="mc-l10-col-date"><col class="mc-l10-col-loc"><col class="mc-l10-col-opp">'
-      + '<col class="mc-l10-col-pitcher"><col span="5" class="mc-l10-col-stat"><col span="3" class="mc-l10-col-rate"></colgroup>'
+      + '<col class="mc-l10-col-pitcher"><col span="5" class="mc-l10-col-stat"></colgroup>'
       + '<thead><tr>'
       + '<th>Date</th><th>Loc</th><th>Opp</th><th>Pitcher</th>'
       + '<th>Runs</th><th>IP</th><th>ER</th><th>H</th><th>BB</th>'
-      + '<th>wRC+</th><th>OPS</th><th>wOBA</th>'
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
@@ -954,45 +961,44 @@
         if (fromGames[k] != null && !isNaN(fromGames[k])) row[k] = fromGames[k];
       });
     }
-    var cap = lineupFormCaption(spHand, row, lineupTeam);
+    var handLbl = handLabel(spHand);
+    var gameCount = games.length || (row.l10Games != null ? row.l10Games : LINEUP_GAMES);
+    var title = lineupTeam ? String(lineupTeam).toUpperCase() + ' bats vs ' + handLbl : ('Lineup vs ' + handLbl);
+    var purpose = 'Stats vs opposing starter only · last ' + gameCount + ' games';
     var cols = [
       { label: 'QS% Allowed', key: 'qs', ctx: 'pct', inv: true },
       { label: 'wRC+', key: 'wrc', ctx: 'wrc', dec: 0 },
       { label: 'OPS', key: 'ops', ctx: 'ops', dec: 3 },
-      { label: 'wOBA', key: 'woba', ctx: 'woba', dec: 3 },
-      { label: 'Pitch Score Against', key: 'pitchScore', ctx: 'pitching', inv: true }
+      { label: 'wOBA', key: 'woba', ctx: 'woba', dec: 3 }
     ];
-    var head = cols.map(function(c) { return '<th>' + esc(c.label) + '</th>'; }).join('');
-    var cells = cols.map(function(c) {
-      return '<td class="num mc-lvp-summary-stat">' + metricChip(row[c.key], c.ctx, c.inv, c.dec == null ? 1 : c.dec) + '</td>';
-    }).join('');
-    var summary = '<div class="mc-lvp-table-wrap"><table class="mc-lvp-table mc-lvp-table--summary mc-lvp-table--summary-sp">'
-      + '<thead><tr>' + head + '</tr></thead><tbody><tr>' + cells + '</tr></tbody></table></div>';
     var gameTable = ctx && lineupTeam
       ? lineupL10GamesTableHtml(ctx, lineupTeam, spHand)
       : '';
-    return sectionHead('Lineup Recent Form', cap)
-      + summary
+    return lvpPanelHead(title, purpose)
+      + perfSummaryTableHtml(cols, row)
       + gameTable;
   }
 
   function pitcherStartsHtml(spName, log, summary) {
-    var cap = 'Last ' + (log && log.length ? log.length : 0) + ' starts';
+    var n = log && log.length ? log.length : 0;
+    var purpose = 'Last ' + n + ' starts';
     if (!log || !log.length) {
-      return sectionHead('Pitcher Last 10 Starts', cap)
+      return lvpPanelHead(spName, purpose)
         + '<p class="ca-helper mc-lvp-empty">No starts in SP_Game_Log for ' + esc(spName) + '.</p>';
     }
-    var sumFooter = summary
-      ? '<div class="mc-lvp-starts-sum">'
-        + '<span class="mc-lvp-starts-sum-label">L' + log.length + ' avg</span>'
-        + '<span>ERA <strong>' + fmt(summary.era, 2) + '</strong></span>'
-        + '<span>K/9 <strong>' + fmt(summary.k9, 1) + '</strong></span>'
-        + '<span>BB/9 <strong>' + fmt(summary.bb9, 1) + '</strong></span>'
-        + '<span>WHIP <strong>' + fmt(summary.whip, 2) + '</strong></span>'
-        + '<span>QS% <strong>' + fmt(summary.qsRate, 0) + '%</strong></span>'
-        + (winPctFromLog(log) != null ? '<span>Win% <strong>' + fmt(winPctFromLog(log), 1) + '%</strong></span>' : '')
-        + '</div>'
-      : '';
+    var sumRow = summary ? {
+      era: summary.era,
+      k9: summary.k9,
+      bb9: summary.bb9,
+      whip: summary.whip,
+      qsRate: summary.qsRate
+    } : {};
+    var sumCols = [
+      { label: 'WHIP', key: 'whip', ctx: 'whip', inv: true, dec: 2 },
+      { label: 'BB/9', key: 'bb9', ctx: 'bb9', inv: true, dec: 1 },
+      { label: 'K/9', key: 'k9', ctx: 'k9', dec: 1 },
+      { label: 'ERA', key: 'era', ctx: 'era', inv: true, dec: 2 }
+    ];
     var body = log.map(function(g) {
       var dt = pick(g, ['date', 'Date']);
       var opp = pick(g, ['opponent_team', 'opponent team', 'Opponent']);
@@ -1003,20 +1009,21 @@
       var hr = pick(g, ['HR']);
       var logo = A && A.teamLogoImg ? A.teamLogoImg(opp, 16) : '';
       return '<tr>'
-        + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
-        + '<td><span class="mc-lvp-opp">' + logo + ' ' + esc(opp) + '</span></td>'
-        + '<td class="num">' + esc(ip) + '</td>'
-        + '<td class="num">' + esc(er) + '</td>'
-        + '<td class="num">' + esc(k) + '</td>'
-        + '<td class="num">' + esc(bb) + '</td>'
         + '<td class="num">' + esc(hr) + '</td>'
+        + '<td class="num">' + esc(bb) + '</td>'
+        + '<td class="num">' + esc(k) + '</td>'
+        + '<td class="num">' + esc(er) + '</td>'
+        + '<td class="num">' + esc(ip) + '</td>'
+        + '<td><span class="mc-lvp-opp">' + logo + ' ' + esc(opp) + '</span></td>'
+        + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
         + '</tr>';
     }).join('');
-    return sectionHead('Pitcher Last 10 Starts', cap)
-      + '<div class="mc-lvp-table-wrap"><table class="mc-lvp-table mc-lvp-table--starts"><thead><tr>'
-      + '<th>Date</th><th>Opp</th><th>IP</th><th>ER</th><th>K</th><th>BB</th><th>HR</th>'
-      + '</tr></thead><tbody>' + body + '</tbody></table></div>'
-      + sumFooter;
+    return lvpPanelHead(spName, purpose)
+      + perfSummaryTableHtml(sumCols, sumRow)
+      + '<div class="mc-lvp-table-wrap mc-lvp-table-wrap--games"><table class="mc-lvp-table mc-lvp-table--starts mc-lvp-table--starts-mirror">'
+      + '<thead><tr>'
+      + '<th>HR</th><th>BB</th><th>K</th><th>ER</th><th>IP</th><th>Opp</th><th>Date</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
   function statCompareHtml(lineupTeam, spName, pitcherTeam, rows) {
@@ -1121,8 +1128,8 @@
       + '<h3 class="mc-lvp-block-title">Performance Comparison</h3>'
       + '<p class="mc-pane-desc">Lineup last ' + LINEUP_GAMES + ' games vs same-handed SPs (stats vs starter only) · pitcher last ' + STARTS_LIMIT + ' starts · head-to-head stat matrix.</p>'
       + '<div class="mc-grid-2 mc-lvp-perf-grid">'
-      + '<div class="mc-lvp-perf-panel">' + lineupPerformanceHtml(comp.lu, comp.spHand, comp.luFilter, comp.lu && comp.lu.row, ctx, comp.lineupTeam) + '</div>'
-      + '<div class="mc-lvp-perf-panel">' + pitcherStartsHtml(comp.spName, comp.log, comp.logSum) + '</div>'
+      + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--lineup">' + lineupPerformanceHtml(comp.lu, comp.spHand, comp.luFilter, comp.lu && comp.lu.row, ctx, comp.lineupTeam) + '</div>'
+      + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--pitcher">' + pitcherStartsHtml(comp.spName, comp.log, comp.logSum) + '</div>'
       + '</div>'
       + statCompareHtml(comp.lineupTeam, comp.spName, comp.pitcherTeam, metrics)
       + pitchMixHtml(comp, ctx)

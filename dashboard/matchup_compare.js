@@ -453,8 +453,8 @@
     var winControls = global.MatchupLineupCompare && MatchupLineupCompare.controlsHtml
       ? MatchupLineupCompare.controlsHtml(state)
       : '';
-    var offenseSplits = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLineupTeamCard
-      ? MatchupOffenseSplits.renderLineupTeamCard(ctx, lineupSide, spHand)
+    var splitJux = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLvpSplitJux
+      ? MatchupOffenseSplits.renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam)
       : '';
     return '<div class="mc-lvp-body">'
       + '<div class="mc-lvp-lineup-block">'
@@ -463,7 +463,7 @@
       + '<div id="mcLvPLineupCard">' + lineupCard + '</div>'
       + '<div id="mcLvPSpCard">' + spCardLvp(pitcherSideLbl, spName, spHand, pitcherTeam, m, met, ps, ctx.data.spL14, ctx.data.spMetricSplits) + '</div>'
       + '</div></div>'
-      + offenseSplits
+      + splitJux
       + '<div id="mcLvPAsync" class="mc-lvp-async"><p class="ca-helper">Loading performance comparison…</p></div>'
       + '</div>';
   }
@@ -933,7 +933,7 @@
       + '<span class="mc-lcc-role">' + esc(sideLbl) + ' SP · ' + esc(team) + '</span>'
       + '<span class="mc-sp-lvp-score">Pitching Score ' + metricChip(pitchScore, 'pitching', false, 1) + '</span>'
       + '</div></div>'
-      + spAllowedSplitTableHtml(splits, pname, team)
+      + '<div class="mc-sp-split-ref ca-helper">Platoon allowed ranks vs lineup offense — see Split Matchup below.</div>'
       + '<div class="mc-sp-stats mc-sp-stats--compact">'
       + '<span>K% <strong>' + fmt(stats.k) + '</strong></span>'
       + '<span>BB% <strong>' + fmt(stats.bb) + '</strong></span>'

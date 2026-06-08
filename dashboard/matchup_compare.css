@@ -807,14 +807,15 @@
 .mc-sp-lvp-card .lineup-row--platoon-r .mc-lcc-split-label { box-shadow: inset 3px 0 0 #60A5FA; }
 
 .mc-lvp-table--summary { margin-bottom: 12px; }
-.mc-lvp-table-wrap--games { margin-top: 4px; }
-.mc-lvp-table--summary-sp th,
-.mc-lvp-table--summary-sp td.mc-lvp-summary-stat {
+.mc-lvp-table-wrap--summary { margin-top: 0; margin-bottom: 12px; }
+.mc-lvp-table-wrap--games { margin-top: 0; flex: 1; min-height: 0; }
+.mc-lvp-table--summary th,
+.mc-lvp-table--summary td.mc-lvp-summary-stat {
   text-align: center;
 }
 .mc-lvp-table--l10games {
   table-layout: fixed;
-  min-width: 720px;
+  width: 100%;
 }
 .mc-lvp-table--l10games th,
 .mc-lvp-table--l10games td.num {
@@ -845,6 +846,66 @@
 
 .mc-lvp-offense-splits {
   margin: 18px 0 6px;
+}
+.mc-lvp-split-jux {
+  margin: 20px 0 8px;
+}
+.mc-lvp-split-duo {
+  align-items: stretch;
+}
+.mc-lvp-split-jux .mc-os-card-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.mc-os-card-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3, #71717A);
+}
+.mc-os-card--pitcher .mc-os-card-head {
+  align-items: center;
+}
+.mc-os-card--pitcher .mc-os-card-head .ca-pitcher-avatar,
+.mc-os-card--pitcher .mc-os-card-head img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.mc-os-strip--matchup {
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--mc-os-team, #7C4DFF) 55%, transparent),
+    0 0 18px rgba(124, 77, 255, 0.14);
+}
+.mc-os-strip--matchup .mc-os-strip-head {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mc-os-team, #7C4DFF) 88%, #fff),
+    var(--mc-os-team, #7C4DFF)
+  );
+}
+.mc-os-val {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.1;
+}
+.mc-os-table--pitcher .mc-os-cell {
+  vertical-align: middle;
+  padding: 10px 6px;
+}
+.mc-sp-split-ref {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-3, #71717A);
 }
 .mc-lvp-offense-splits .mc-os-card {
   max-width: 100%;
@@ -879,15 +940,37 @@
   color: var(--text-2, #A1A1AA);
   margin: 0 0 4px;
 }
-.mc-lvp-perf-grid { margin-top: 14px; }
+.mc-lvp-perf-grid { margin-top: 14px; align-items: stretch; }
 .mc-lvp-perf-panel {
   min-width: 0;
   padding: 14px;
   border-radius: 10px;
   border: 1px solid var(--border, #28282f);
   background: rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+}
+.mc-lvp-perf-panel .ca-section-head {
+  margin-bottom: 10px;
+}
+.mc-lvp-perf-panel .ca-section-head .title {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mc-lvp-perf-panel .ca-section-head .purpose {
+  font-size: 11px;
+  color: var(--text-3, #71717A);
+}
+.mc-lvp-perf-panel--pitcher .ca-section-head {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.mc-lvp-perf-panel--pitcher .ca-section-head__body {
+  align-items: flex-end;
 }
 .mc-lvp-table-wrap { overflow-x: auto; margin-top: 10px; }
+.mc-lvp-table-wrap--summary { overflow-x: visible; }
 .mc-lvp-table {
   width: 100%;
   border-collapse: collapse;
@@ -938,6 +1021,30 @@
 }
 .mc-lvp-date { white-space: nowrap; color: var(--text-3); font-size: 11px; }
 .mc-lvp-opp { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.mc-lvp-table--starts-mirror th,
+.mc-lvp-table--starts-mirror td.num {
+  text-align: center;
+}
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--starts-mirror td.mc-lvp-opp,
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--starts-mirror th:nth-child(6) {
+  text-align: right;
+}
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--starts-mirror td.mc-lvp-date,
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--starts-mirror th:last-child {
+  text-align: right;
+}
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--summary {
+  direction: rtl;
+}
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--summary th,
+.mc-lvp-perf-panel--pitcher .mc-lvp-table--summary td {
+  direction: ltr;
+}
+.mc-lvp-perf-panel--pitcher .mc-lvp-opp {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  width: 100%;
+}
 .mc-lvp-empty { margin-top: 8px; }
 .mc-lvp-stat-head {
   display: grid;

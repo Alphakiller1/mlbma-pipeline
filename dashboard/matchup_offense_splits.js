@@ -166,6 +166,224 @@
     return { ranks: ranks, total: entries.length };
   }
 
+  function rankLeagueLowerBetter(valueMap, statKey) {
+    var entries = Object.keys(valueMap || {}).map(function(k) {
+      return { k: k, v: valueMap[k] && valueMap[k][statKey] };
+    }).filter(function(e) { return e.v != null && !isNaN(e.v); });
+    entries.sort(function(a, b) {
+      if (a.v === b.v) return a.k.localeCompare(b.k);
+      return a.v - b.v;
+    });
+    var ranks = {};
+    entries.forEach(function(e, i) { ranks[e.k] = i + 1; });
+    return { ranks: ranks, total: entries.length };
+  }
+
+  function pickCol(row, keys) {
+    if (S && S.pickCol) return S.pickCol(row, keys);
+    keys = keys || [];
+    for (var i = 0; i < keys.length; i++) {
+      if (row && row[keys[i]] != null && row[keys[i]] !== '') return row[keys[i]];
+    }
+    return null;
+  }
+
+  function normSpName(name) {
+    return S && S.normName ? S.normName(name) : String(name || '').toLowerCase().trim();
+  }
+
+  function spLookupKey(name, team) {
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
+    return normSpName(name) + '|' + tk;
+  }
+
+  function allowedRatesFromSplitRow(row) {
+    if (!row) return null;
+    var wrc = num(pickCol(row, ['wRC_faced', 'wrc_faced', 'wRC+_faced', 'wRC+']));
+    var ops = num(pickCol(row, ['OPS', 'ops']));
+    var woba = num(pickCol(row, ['wOBA', 'woba']));
+    var slg = num(pickCol(row, ['SLG', 'slg']));
+    var obp = num(pickCol(row, ['OBP', 'obp']));
+    if (wrc == null && ops == null && woba == null) return null;
+    if (woba == null && wrc != null) woba = Math.round(0.320 * (wrc / 100) * 1000) / 1000;
+    if (ops == null && obp != null && slg != null) ops = Math.round((obp + slg) * 1000) / 1000;
+    if (slg == null && ops != null && woba != null) {
+      var obpEst = obp != null ? obp : Math.min(woba * 1.08, ops * 0.95);
+      slg = Math.round((ops - obpEst) * 1000) / 1000;
+      if (slg < 0 || slg > 1.2) slg = Math.round(ops * 0.55 * 1000) / 1000;
+    }
+    return { wrc: wrc, ops: ops, woba: woba, slg: slg };
+  }
+
+  function findSpBatHandSplit(rows, name, team, batHand) {
+    var key = normSpName(name);
+    var tk = S && S.teamKey ? S.teamKey(team) : String(team || '').toUpperCase();
+    var want = String(batHand || '').toUpperCase();
+    function tryFind(dim, val) {
+      var valU = String(val || '').toUpperCase();
+      return (rows || []).find(function(r) {
+        var n = normSpName(pickCol(r, ['pitcher_name', 'Name', 'Pitcher']));
+        if (n !== key) return false;
+        var tm = S.teamKey(pickCol(r, ['pitcher_team', 'Tm', 'Team']));
+        if (tm && tm !== tk) return false;
+        var d = String(pickCol(r, ['split_dimension', 'splitDimension']) || '').toLowerCase();
+        var v = String(pickCol(r, ['split_value', 'splitValue']) || '').toUpperCase();
+        return d === dim && v === valU;
+      }) || null;
+    }
+    var hit = tryFind('batter_hand', want);
+    if (hit) return hit;
+    if (want === 'LHH') return tryFind('batter_hand', 'L') || tryFind('vs_lhh', 'LHH');
+    if (want === 'RHH') return tryFind('batter_hand', 'R') || tryFind('vs_rhh', 'RHH');
+    return null;
+  }
+
+  function parseBatHandFromSplitRow(r) {
+    var dim = String(pickCol(r, ['split_dimension', 'splitDimension']) || '').toLowerCase();
+    var val = String(pickCol(r, ['split_value', 'splitValue']) || '').toUpperCase();
+    if (dim === 'batter_hand') {
+      if (val === 'L' || val === 'LHH') return 'lhh';
+      if (val === 'R' || val === 'RHH') return 'rhh';
+    }
+    if (val === 'LHH' || val === 'VS_LHH') return 'lhh';
+    if (val === 'RHH' || val === 'VS_RHH') return 'rhh';
+    return null;
+  }
+
+  function buildPitcherAllowedRankIndex(splits) {
+    var pools = { lhh: {}, rhh: {} };
+    (splits || []).forEach(function(r) {
+      var hand = parseBatHandFromSplitRow(r);
+      if (!hand) return;
+      var name = pickCol(r, ['pitcher_name', 'Name', 'Pitcher']);
+      var team = pickCol(r, ['pitcher_team', 'Tm', 'Team']);
+      if (!name) return;
+      var rates = allowedRatesFromSplitRow(r);
+      if (!rates) return;
+      pools[hand][spLookupKey(name, team)] = rates;
+    });
+    var index = { lhh: { ytd: {} }, rhh: { ytd: {} } };
+    STATS.forEach(function(st) {
+      index.lhh.ytd[st.key] = rankLeagueLowerBetter(pools.lhh, st.key);
+      index.rhh.ytd[st.key] = rankLeagueLowerBetter(pools.rhh, st.key);
+    });
+    index.values = {
+      lhh: pools.lhh,
+      rhh: pools.rhh
+    };
+    return index;
+  }
+
+  function fmtVal(v, dec) {
+    if (v == null || isNaN(v)) return '—';
+    return Number(v).toFixed(dec == null ? 1 : dec);
+  }
+
+  function pitcherRankCellHtml(rank, total, value, stat) {
+    if (rank == null) {
+      return '<td class="mc-os-cell mc-os-cell--na">—</td>';
+    }
+    var tone = rankTone(rank, total);
+    var dec = stat.key === 'wrc' ? 0 : 3;
+    var tip = value != null
+      ? (stat.label + ' allowed: ' + fmtVal(value, dec) + (total ? ' · rank #' + rank + ' of ' + total : ''))
+      : ('Rank #' + rank + (total ? ' of ' + total : ''));
+    var valLine = value != null
+      ? '<span class="mc-os-val">' + esc(fmtVal(value, dec)) + '</span>'
+      : '';
+    return '<td class="mc-os-cell mc-os-cell--' + tone + '" title="' + esc(tip) + '">'
+      + '<span class="mc-os-rank">#' + esc(String(rank)) + '</span>' + valLine + '</td>';
+  }
+
+  function pitcherAllowedStripTable(handKey, rankIndex, spKeyVal, highlight) {
+    var head = STATS.map(function(st) {
+      return '<th scope="col">' + esc(st.label) + '</th>';
+    }).join('');
+    var cells = STATS.map(function(st) {
+      var pack = rankIndex[handKey] && rankIndex[handKey].ytd && rankIndex[handKey].ytd[st.key];
+      var rank = pack && pack.ranks ? pack.ranks[spKeyVal] : null;
+      var total = pack ? pack.total : null;
+      var rates = rankIndex.values && rankIndex.values[handKey] && rankIndex.values[handKey][spKeyVal];
+      var value = rates ? rates[st.key] : null;
+      return pitcherRankCellHtml(rank, total, value, st);
+    }).join('');
+    var stripCls = 'mc-os-strip' + (highlight ? ' mc-os-strip--matchup' : '');
+    var label = handKey === 'lhh' ? 'ALLOWED vs LHH' : 'ALLOWED vs RHH';
+    return '<div class="' + stripCls + '">'
+      + '<div class="mc-os-strip-head">' + esc(label) + '</div>'
+      + '<table class="mc-os-table mc-os-table--pitcher"><thead><tr><th scope="col"></th>' + head + '</tr></thead>'
+      + '<tbody><tr><th scope="row" class="mc-os-win">YTD</th>' + cells + '</tr></tbody></table></div>';
+  }
+
+  function pitcherAllowedCard(spName, pitcherTeam, splits, rankIndex, spHand) {
+    var accent = teamAccentColor(pitcherTeam);
+    var spKeyVal = spLookupKey(spName, pitcherTeam);
+    if (!findSpBatHandSplit(splits, spName, pitcherTeam, 'LHH')
+        && !findSpBatHandSplit(splits, spName, pitcherTeam, 'RHH')
+        && !rankIndex) {
+      return '<div class="mc-os-card mc-os-card--pitcher"><p class="ca-helper">Hand splits unavailable — run SP metric splits pipeline.</p></div>';
+    }
+    if (!rankIndex) rankIndex = buildPitcherAllowedRankIndex(splits);
+    var avatar = S && S.headshot ? S.headshot(spName, null, { crop: 'compare', eager: true }) : '';
+    var highlightHand = 'rhh';
+    var stripHtml = pitcherAllowedStripTable('lhh', rankIndex, spKeyVal, highlightHand === 'lhh')
+      + pitcherAllowedStripTable('rhh', rankIndex, spKeyVal, highlightHand === 'rhh');
+    return '<div class="mc-os-card mc-os-card--pitcher" style="--mc-os-team:' + esc(accent) + '">'
+      + '<div class="mc-os-card-head">' + avatar
+      + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(spName) + '</span>'
+      + '<span class="mc-os-card-role">Allowed offense · league rank (#1 = best suppression)</span></div></div>'
+      + '<div class="mc-os-card-strips">' + stripHtml + '</div></div>';
+  }
+
+  function lineupOffenseCard(ctx, lineupSide, spHand, rankIndex) {
+    var m = ctx.m;
+    var team = lineupSide === 'home' ? m.home : m.away;
+    var side = lineupSide === 'home' ? 'home' : 'away';
+    var handSlice = String(spHand || '').trim().toUpperCase().charAt(0) === 'L' ? 'handL' : 'handR';
+    var strips = [
+      { sliceKey: 'overall', title: team + ' BATS', highlight: false },
+      { sliceKey: handSlice, title: handLabel(spHand), highlight: true }
+    ];
+    var accent = teamAccentColor(team);
+    var stripHtml = strips.map(function(st) {
+      var stripCls = 'mc-os-strip' + (st.highlight ? ' mc-os-strip--matchup' : '');
+      return '<div class="' + stripCls + '"><div class="mc-os-strip-head">' + esc(st.title) + '</div>'
+        + stripTable(st.sliceKey, rankIndex, team, WINDOWS)
+        + '</div>';
+    }).join('');
+    var logo = A && A.teamLogoImg ? A.teamLogoImg(team, 48) : '';
+    return '<div class="mc-os-card mc-os-card--lineup" style="--mc-os-team:' + esc(accent) + '">'
+      + '<div class="mc-os-card-head">' + logo
+      + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(team) + '</span>'
+      + '<span class="mc-os-card-role">Offensive league rank (#1 = best offense)</span></div></div>'
+      + '<div class="mc-os-card-strips">' + stripHtml + '</div></div>';
+  }
+
+  function renderLvpSplitJux(ctx, lineupSide, spHand, spName, pitcherTeam) {
+    if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
+    var splits = (ctx.data && ctx.data.spMetricSplits) || [];
+    if (!ctx.pitcherAllowedRankIndex) {
+      ctx.pitcherAllowedRankIndex = buildPitcherAllowedRankIndex(splits);
+    }
+    var handLbl = handLabel(spHand);
+    return '<div class="mc-section-block mc-offense-splits mc-lvp-split-jux">'
+      + '<h3 class="mc-lvp-block-title">Split Matchup — Offense vs Allowed</h3>'
+      + '<p class="mc-os-hint ca-helper">Lineup team offensive ranks (left) juxtaposed with '
+      + esc(spName) + ' allowed-offense ranks vs LHH/RHH (right). Highlighted strips = '
+      + handLbl + ' offense vs the platoon row most tied to tonight\'s starter hand.</p>'
+      + '<div class="mc-os-duo mc-lvp-split-duo">'
+      + lineupOffenseCard(ctx, lineupSide, spHand, ctx.offenseRankIndex)
+      + pitcherAllowedCard(spName, pitcherTeam, splits, ctx.pitcherAllowedRankIndex, spHand)
+      + '</div>'
+      + '<div class="mc-os-legend">'
+      + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'
+      + '<span class="mc-os-leg mc-os-cell--strong">#6–12 Strong</span>'
+      + '<span class="mc-os-leg mc-os-cell--mid">#13–20 Average</span>'
+      + '<span class="mc-os-leg mc-os-cell--weak">#21–25 Weak</span>'
+      + '<span class="mc-os-leg mc-os-cell--poor">#26+ Poor</span>'
+      + '</div></div>';
+  }
+
   function buildRankIndex(data) {
     var ytd = buildSliceYtdMaps(data);
     var profs = data.teamProfiles || {};
@@ -330,7 +548,9 @@
   global.MatchupOffenseSplits = {
     prepareData: prepareData,
     buildRankIndex: buildRankIndex,
+    buildPitcherAllowedRankIndex: buildPitcherAllowedRankIndex,
     renderSection: renderSection,
-    renderLineupTeamCard: renderLineupTeamCard
+    renderLineupTeamCard: renderLineupTeamCard,
+    renderLvpSplitJux: renderLvpSplitJux
   };
 })(typeof window !== 'undefined' ? window : this);
