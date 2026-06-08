@@ -1237,9 +1237,10 @@
       }
       return Math.round((0.4 * (nk[idx] || 50) + 0.35 * (nbb[idx] || 50) + 0.25 * (nhr[idx] || 50)) * 10) / 10;
     }
+    var kPts = k * 100;
     var bbInv = (1 - bb) * 100;
     var hrInv = (1 - Math.min(hr / 3, 1)) * 100;
-    var raw = k * 0.4 + bbInv * 0.35 + hrInv * 0.25;
+    var raw = kPts * 0.4 + bbInv * 0.35 + hrInv * 0.25;
     return Math.max(0, Math.min(100, Math.round(raw * 10) / 10));
   }
 

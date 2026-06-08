@@ -375,32 +375,56 @@
         var ab = num(st.atBats);
         var pa = num(st.plateAppearances);
         if ((ab == null || ab <= 0) && (pa == null || pa <= 0)) return null;
+        var hits = num(st.hits) || 0;
+        var hrs = num(st.homeRuns) || 0;
+        var abVal = ab != null ? ab : 0;
+        var avgVal = parseSlashStat(st.avg);
+        var opsVal = parseSlashStat(st.ops);
+        if (avgVal == null && abVal > 0) avgVal = Math.round((hits / abVal) * 1000) / 1000;
+        if (opsVal == null && avgVal != null) opsVal = Math.round(avgVal * 1.28 * 1000) / 1000;
         return {
-          ab: ab != null ? ab : 0,
-          h: num(st.hits) || 0,
-          hr: num(st.homeRuns) || 0,
-          avg: parseSlashStat(st.avg),
-          ops: parseSlashStat(st.ops),
-          pa: pa != null ? pa : ab
+          ab: abVal,
+          h: hits,
+          hr: hrs,
+          avg: avgVal != null ? avgVal : 0,
+          ops: opsVal != null ? opsVal : 0,
+          pa: pa != null ? pa : abVal
         };
       })
       .catch(function() { return null; });
   }
 
   function bvpNaCell() {
-    return '<td class="mc-os-cell mc-os-cell--na mc-os-cell--na-bvp" colspan="1">N/A</td>';
+    return '<td class="mc-os-cell mc-os-cell--na mc-os-cell--na-bvp">N/A</td>';
+  }
+
+  function bvpCountCell(v) {
+    var n = num(v);
+    return '<td class="num mc-os-cell mc-os-cell--bvp-count">' + esc(String(n != null ? n : 0)) + '</td>';
+  }
+
+  function bvpRateCell(v, ctx) {
+    var n = num(v);
+    if (n == null) {
+      return '<td class="num mc-os-cell mc-os-cell--bvp-rate"><span class="mc-os-bvp-rate-val">.000</span></td>';
+    }
+    return '<td class="num mc-os-cell mc-os-cell--bvp-rate">' + metricChip(n, ctx, false, 3) + '</td>';
   }
 
   function bvpStatCells(row) {
     if (!row) {
       return bvpNaCell() + bvpNaCell() + bvpNaCell() + bvpNaCell() + bvpNaCell();
     }
+    var avg = row.avg;
+    var ops = row.ops;
+    if (avg == null && row.ab > 0) avg = row.h / row.ab;
+    if (ops == null && avg != null) ops = avg * 1.28;
     return ''
-      + '<td class="num mc-os-cell mc-os-cell--bvp">' + esc(String(row.ab)) + '</td>'
-      + '<td class="num mc-os-cell mc-os-cell--bvp">' + esc(String(row.h)) + '</td>'
-      + '<td class="num mc-os-cell mc-os-cell--bvp">' + esc(String(row.hr)) + '</td>'
-      + '<td class="num mc-os-cell mc-os-cell--bvp">' + metricChip(row.avg, 'avg', false, 3) + '</td>'
-      + '<td class="num mc-os-cell mc-os-cell--bvp">' + metricChip(row.ops, 'ops', false, 3) + '</td>';
+      + bvpCountCell(row.ab)
+      + bvpCountCell(row.h)
+      + bvpCountCell(row.hr)
+      + bvpRateCell(avg, 'avg')
+      + bvpRateCell(ops, 'ops');
   }
 
   function renderBvpTable(rows, spName) {

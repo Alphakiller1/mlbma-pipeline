@@ -133,6 +133,10 @@
     return spHandFilter(hand) === 'l' ? 'LHP' : 'RHP';
   }
 
+  function handPitcherPhrase(hand) {
+    return spHandFilter(hand) === 'l' ? 'left-handed pitchers' : 'right-handed pitchers';
+  }
+
   function normalizeStarterHand(raw) {
     var h = String(raw || '').trim().toUpperCase();
     if (h === 'R' || h === 'RHP' || h === 'RIGHT') return 'R';
@@ -164,6 +168,37 @@
       return _pack.starterHandById[id];
     }
     return normalizeStarterHand(pick(g, ['opp_starter_hand', 'opp starter hand', 'hand']));
+  }
+
+  function gameVsSpPa(g) {
+    var pa = num(pick(g, ['vs_sp_pa', 'vs sp pa', 'Vs SP PA']));
+    if (pa != null && pa > 0) return pa;
+    var ab = num(pick(g, ['vs_sp_ab', 'vs sp ab', 'Vs SP AB']));
+    var bb = num(pick(g, ['vs_sp_bb', 'vs sp bb', 'Vs SP BB']));
+    var ibb = num(pick(g, ['vs_sp_ibb', 'vs sp ibb']));
+    var hbp = num(pick(g, ['vs_sp_hbp', 'vs sp hbp']));
+    var sf = num(pick(g, ['vs_sp_sf', 'vs sp sf']));
+    if (ab != null || bb != null || ibb != null || hbp != null || sf != null) {
+      pa = (ab || 0) + (bb || 0) + (ibb || 0) + (hbp || 0) + (sf || 0);
+      if (pa > 0) return pa;
+    }
+    var h = num(pick(g, ['vs_sp_h', 'vs sp h', 'Vs SP H']));
+    if (h != null && h > 0) return h;
+    return null;
+  }
+
+  function gameMatchesRequiredHand(g, hand) {
+    var rowHand = normalizeStarterHand(pick(g, ['opp_starter_hand', 'opp starter hand', 'hand']));
+    if (rowHand) {
+      if (rowHand !== hand) return false;
+      var id = num(pick(g, ['opp_starter_id', 'opp starter id', 'starter_id']));
+      if (id && _pack.starterHandById && _pack.starterHandById[id]) {
+        var mlbHand = _pack.starterHandById[id];
+        if (mlbHand && mlbHand !== hand) return false;
+      }
+      return true;
+    }
+    return resolveGameStarterHand(g) === hand;
   }
 
   function collectStarterIdsFromGames(games) {
@@ -552,65 +587,6 @@
       + '<td class="num mc-pm-stat">' + metricChip(bat.xwoba, 'woba', false, 3) + '</td>';
   }
 
-  function pitchMixBlendRow(rows) {
-    if (!rows || !rows.length) return null;
-    var wSum = 0;
-    var acc = {
-      velo: 0, spin: 0, whiff: 0, csw: 0, zone: 0, chase: 0, xwoba: 0,
-      avg: 0, batWhiff: 0, batChase: 0, batCsw: 0, batZone: 0, ev: 0, batXwoba: 0
-    };
-    rows.forEach(function(r) {
-      var w = r.sp && r.sp.usage;
-      if (w == null || isNaN(w) || w <= 0) return;
-      wSum += w;
-      function add(key, val) {
-        if (val != null && !isNaN(val)) acc[key] += val * w;
-      }
-      add('velo', r.sp.velo);
-      add('spin', r.sp.spin);
-      add('whiff', r.sp.whiff);
-      add('csw', r.sp.csw);
-      add('zone', r.sp.zone);
-      add('chase', r.sp.chase);
-      add('xwoba', r.sp.xwoba);
-      if (r.bat) {
-        add('avg', r.bat.avg);
-        add('batWhiff', r.bat.whiff);
-        add('batChase', r.bat.chase);
-        add('batCsw', r.bat.csw);
-        add('batZone', r.bat.zone);
-        add('ev', r.bat.ev);
-        add('batXwoba', r.bat.xwoba);
-      }
-    });
-    if (wSum <= 0) return null;
-    function avg(key) {
-      var v = acc[key] / wSum;
-      return isNaN(v) ? null : Math.round(v * 1000) / 1000;
-    }
-    return {
-      sp: {
-        usage: 100,
-        velo: avg('velo'),
-        spin: avg('spin'),
-        whiff: avg('whiff'),
-        csw: avg('csw'),
-        zone: avg('zone'),
-        chase: avg('chase'),
-        xwoba: avg('xwoba')
-      },
-      bat: {
-        avg: avg('avg'),
-        whiff: avg('batWhiff'),
-        chase: avg('batChase'),
-        csw: avg('batCsw'),
-        zone: avg('batZone'),
-        ev: avg('ev'),
-        xwoba: avg('batXwoba')
-      }
-    };
-  }
-
   function pitchMixInsightLine(rows, spName, lineupTeam) {
     if (!rows || !rows.length) return '';
     var top = rows[0];
@@ -704,16 +680,6 @@
         + '</tr>';
     }).join('');
 
-    var blend = pitchMixBlendRow(mix.rows);
-    if (blend) {
-      blend.sp.usage = null;
-      body += '<tr class="mc-lvp-pitchmix-blend">'
-        + '<td class="mc-lvp-pitch-name">Usage-weighted blend</td>'
-        + pitchMixSpCells(blend.sp)
-        + pitchMixBatCells(blend.bat)
-        + '</tr>';
-    }
-
     var luLogo = S && S.teamLogo ? S.teamLogo(comp.lineupTeam, 18) : '';
     var spLogo = S && S.teamLogo ? S.teamLogo(comp.pitcherTeam, 18) : '';
     var spCols = 9;
@@ -776,9 +742,8 @@
         ? S.teamKey(pick(g, ['team', 'Tm', 'Team']))
         : String(pick(g, ['team']) || '').toUpperCase();
       if (gt !== tk) return false;
-      if (resolveGameStarterHand(g) !== hand) return false;
-      var pa = num(pick(g, ['vs_sp_pa', 'vs sp pa']));
-      return pa != null && pa > 0;
+      if (!gameMatchesRequiredHand(g, hand)) return false;
+      return gameVsSpPa(g) > 0;
     });
     rows.sort(function(a, b) {
       return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
@@ -794,8 +759,8 @@
       raw = parts.slice(1).join(',').trim() + ' ' + parts[0].trim();
     }
     var bits = raw.split(/\s+/).filter(Boolean);
-    if (bits.length < 2) return raw.toUpperCase();
-    return bits[0].charAt(0).toUpperCase() + '. ' + bits[bits.length - 1].toUpperCase();
+    if (!bits.length) return '—';
+    return bits[bits.length - 1].toUpperCase();
   }
 
   function formatShortDate(raw) {
@@ -1103,22 +1068,10 @@
     };
   }
 
-  function pitchScoreFromLogSummary(logSum) {
-    if (!logSum || logSum.kPct == null) return null;
-    if (S && S.computePitchScoreFromRates) {
-      return S.computePitchScoreFromRates(logSum.kPct, logSum.bbPct, logSum.hr9, null);
-    }
-    return null;
-  }
-
   function pitcherSeasonPitchScore(spEntity) {
-    if (!spEntity) return null;
+    if (!spEntity || !spEntity.row) return null;
     var spRow = spEntity.row;
-    if (S && S.spProfileMetrics && spRow) {
-      var met = S.spProfileMetrics(spRow);
-      if (met && met.pitchScore != null) return met.pitchScore;
-    }
-    if (S && S.computePitchScoreFromRates && spRow) {
+    if (S && S.computePitchScoreFromRates) {
       return S.computePitchScoreFromRates(
         num(pick(spRow, ['K_pct', 'K%', 'k_pct'])),
         num(pick(spRow, ['BB_pct', 'BB%', 'bb_pct'])),
@@ -1126,7 +1079,7 @@
         null
       );
     }
-    return spEntity.primary != null ? spEntity.primary : null;
+    return null;
   }
 
   function metricRow(label, valA, valB, opts) {
@@ -1158,7 +1111,6 @@
     var spOps = ext.ops;
     var spQs = logSum ? logSum.qsRate : num(pick(comp.sp && comp.sp.row, ['QS_pct', 'qs_pct', 'QS%']));
     var spPitchScore = pitcherSeasonPitchScore(comp.sp);
-    if (spPitchScore == null) spPitchScore = pitchScoreFromLogSummary(logSum);
 
     return [
       metricRow('QS% Allowed / QS%', lu.qs, spQs, { ctx: 'qspct', invertA: true, invertB: false }),
@@ -1208,10 +1160,6 @@
       var ha = String(pick(g, ['home_away', 'home away']) || '').trim().toUpperCase();
       var loc = ha === 'HOME' ? 'H' : (ha === 'AWAY' ? 'A' : '—');
       var pitcher = shortPitcherName(pick(g, ['opp_starter_name', 'opp starter name', 'pitcher_name']));
-      var spHandTag = resolveGameStarterHand(g);
-      var handBadge = spHandTag
-        ? '<span class="mc-lvp-hand-tag mc-lvp-hand-tag--' + spHandTag.toLowerCase() + '">' + spHandTag + '</span>'
-        : '';
       var runs = num(pick(g, ['runs_off_sp', 'runs off sp']));
       if (runs == null) runs = num(pick(g, ['opp_starter_er', 'opp starter er', 'ER']));
       var h = num(pick(g, ['vs_sp_h', 'vs sp h']));
@@ -1223,7 +1171,7 @@
         + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
         + '<td class="num mc-lvp-loc">' + esc(loc) + '</td>'
         + '<td><span class="mc-lvp-opp">' + logo + ' ' + esc(opp) + '</span></td>'
-        + '<td class="mc-lvp-pitcher">' + esc(pitcher) + handBadge + '</td>'
+        + '<td class="mc-lvp-pitcher">' + esc(pitcher) + '</td>'
         + '<td class="num">' + (runs != null ? esc(runs) : '—') + '</td>'
         + '<td class="num">' + esc(formatIpCell(ip)) + '</td>'
         + '<td class="num">' + esc(er != null ? er : '—') + '</td>'
@@ -1244,9 +1192,8 @@
     var games = ctx && lineupTeam ? lineupL10GamesList(ctx, lineupTeam, spHand) : [];
     var row = l10Row || (luSide && luSide.row ? luSide.row : {});
     var handLbl = handLabel(spHand);
-    var gameCount = games.length || (row.l10Games != null ? row.l10Games : LINEUP_GAMES);
     var title = lineupTeam ? String(lineupTeam).toUpperCase() + ' bats vs ' + handLbl : ('Lineup vs ' + handLbl);
-    var purpose = 'Stats vs opposing starter only · last ' + gameCount + ' games';
+    var purpose = 'Stats vs opposing starter only · last ' + LINEUP_GAMES + ' games vs ' + handPitcherPhrase(spHand);
     var gameTable = ctx && lineupTeam
       ? lineupL10GamesTableHtml(ctx, lineupTeam, spHand)
       : '';

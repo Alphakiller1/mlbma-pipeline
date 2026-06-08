@@ -842,15 +842,29 @@
 .mc-os-table--bvp th {
   padding: 3px 3px;
 }
-.mc-os-cell--bvp .chip {
+.mc-os-table--bvp .mc-os-cell--bvp-count {
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.05);
+}
+.mc-os-table--bvp .mc-os-cell--bvp-rate .chip {
   font-size: 10px;
-  min-width: 2.2em;
+  min-width: 2.4em;
   padding: 1px 4px;
+}
+.mc-os-table--bvp .mc-os-bvp-rate-val {
+  color: #fff;
+  font-weight: 800;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 .mc-os-cell--na-bvp {
   font-size: 10px;
   font-weight: 600;
   color: var(--text-3);
+  background: rgba(255, 255, 255, 0.04);
 }
 .mc-os-bvp-note {
   margin: 6px 0 0;
@@ -1458,16 +1472,6 @@
   color: var(--text-2);
 }
 .mc-pm-move-sep { opacity: 0.45; padding: 0 1px; }
-.mc-lvp-table--pitchmix tr.mc-lvp-pitchmix-blend td {
-  border-top: 1px solid var(--border, #28282f);
-  background: rgba(124, 77, 255, 0.06);
-}
-.mc-lvp-table--pitchmix tr.mc-lvp-pitchmix-blend .mc-lvp-pitch-name {
-  color: var(--violet, #A78BFA);
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
 .mc-lvp-table--pitchmix .mc-pm-stat--plain .chip { background: transparent; border-color: transparent; box-shadow: none; }
 @media (max-width: 720px) {
   .mc-lvp-metric-row {
