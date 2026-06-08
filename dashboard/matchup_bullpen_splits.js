@@ -138,55 +138,25 @@
     }
     var accent = teamAccentColor(bpTeam);
     var highlightHand = dominantBatHand(lineup);
+    var homeRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.home);
+    var awayRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.away);
     var lhhRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.lhh);
     var rhhRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.rhh);
+    var bothRates = ratesFromPrefixRow(unitRow, PREFIX_MAP.both);
     var logo = A && A.teamLogoImg ? A.teamLogoImg(bpTeam, 48) : '';
+    var locHtml = bullpenSplitStripTable('HOME', homeRates, false)
+      + bullpenSplitStripTable('AWAY', awayRates, false);
     var handHtml = bullpenSplitStripTable('VS LHH', lhhRates, highlightHand === 'lhh')
-      + bullpenSplitStripTable('VS RHH', rhhRates, highlightHand === 'rhh');
+      + bullpenSplitStripTable('VS RHH', rhhRates, highlightHand === 'rhh')
+      + bullpenSplitStripTable('BOTH', bothRates, highlightHand === 'both');
     return '<div class="mc-os-card mc-os-card--pitcher mc-os-card--bullpen-compact" style="--mc-os-team:' + esc(accent) + '">'
       + '<div class="mc-os-card-head mc-os-card-head--compact">' + logo
       + '<div class="mc-os-card-head-text"><span class="mc-os-card-team mc-os-card-team--pitcher">' + esc(bpTeam) + ' Bullpen</span>'
-      + '<span class="mc-os-card-role">FIP · OPS allowed · BB% · K% · relief only · vs batter hand</span></div></div>'
+      + '<span class="mc-os-card-role">FIP · OPS allowed · BB% · K% · relief only</span></div></div>'
       + '<div class="mc-os-pitcher-split-groups">'
-      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands-duo">' + handHtml + '</div>'
-      + '</div>'
-      + '<div id="mc-lvb-bp-usage-mount" class="mc-lvb-bp-usage-mount">'
-      + '<p class="ca-helper">Loading bullpen usage chart…</p></div>'
-      + '</div>';
-  }
-
-  var _usageToken = 0;
-
-  function mountUsageChart(root, ctx, state) {
-    var mount = root && root.querySelector ? root.querySelector('#mc-lvb-bp-usage-mount') : null;
-    var BU = global.BullpenUsage;
-    var LvB = global.MatchupLvB;
-    if (!mount || !BU || !BU.loadForTeam || !BU.renderUsageChart || !ctx || !ctx.m) return;
-    var bpTeam = state && state.lvbBp === 'home' ? ctx.m.home : ctx.m.away;
-    var log = (ctx.data && ctx.data.relieverLog) || [];
-    if (LvB && LvB.filterReliefApps) {
-      log = LvB.filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
-    }
-    var token = ++_usageToken;
-    mount.innerHTML = '<p class="ca-helper">Loading bullpen usage chart…</p>';
-    BU.loadForTeam(bpTeam, { log: log, live: true, days: 7 }).then(function(model) {
-      if (token !== _usageToken) return;
-      var el = root.querySelector('#mc-lvb-bp-usage-mount');
-      if (!el) return;
-      el.innerHTML = BU.renderUsageChart(model, {
-        compact: true,
-        emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.'
-      });
-    }).catch(function() {
-      if (token !== _usageToken) return;
-      var el = root.querySelector('#mc-lvb-bp-usage-mount');
-      if (!el || !BU.buildUsageModel) return;
-      var fallback = BU.buildUsageModel({ team: bpTeam, log: log, days: 7 });
-      el.innerHTML = BU.renderUsageChart(fallback, {
-        compact: true,
-        emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.'
-      });
-    });
+      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-loc">' + locHtml + '</div>'
+      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands-stack">' + handHtml + '</div>'
+      + '</div></div>';
   }
 
   function renderLvbTeamRanks(ctx, lineupSide, bpTeam, unitRow, lineup, filterState) {
@@ -219,7 +189,6 @@
   global.MatchupBullpenSplits = {
     findBullpenUnitRow: findBullpenUnitRow,
     bullpenSplitStatsCard: bullpenSplitStatsCard,
-    renderLvbTeamRanks: renderLvbTeamRanks,
-    mountUsageChart: mountUsageChart
+    renderLvbTeamRanks: renderLvbTeamRanks
   };
 })(typeof window !== 'undefined' ? window : this);

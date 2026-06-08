@@ -959,16 +959,14 @@
 .mc-os-card-strips--pitcher-hands-stack .mc-os-strip:last-child {
   grid-column: 1 / -1;
 }
-.mc-lvb-bp-usage-mount {
-  margin-top: 2px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(124, 77, 255, 0.18);
+.mc-lvb-usage-mount {
+  margin-top: 4px;
 }
-.mc-lvb-bp-usage-mount .bp-usage-chart {
+.mc-lvb-usage-mount .bp-usage-chart {
   border: 1.5px solid rgba(124, 77, 255, 0.28);
   box-shadow: 0 0 24px rgba(124, 77, 255, 0.08);
 }
-.mc-lvb-bp-usage-mount .bp-usage-meta {
+.mc-lvb-usage-mount .bp-usage-meta {
   margin: 10px 0 0;
   font-size: 11px;
   color: var(--text-3, #71717A);

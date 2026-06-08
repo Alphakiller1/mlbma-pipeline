@@ -1,5 +1,5 @@
 /**
- * Lineup vs Bullpen — stat comparison, recent relief form.
+ * Lineup vs Bullpen — stat comparison, recent relief form, bullpen usage chart.
  * Relief-only: lineup vs RP splits; bullpen unit excludes rotation arms.
  */
 (function(global) {
@@ -16,6 +16,39 @@
     spProfiles: []
   };
   var _hydrateToken = 0;
+  var _usageToken = 0;
+
+  function mountUsageChart(container, comp, ctx, token) {
+    var mount = container && container.querySelector
+      ? container.querySelector('#mc-lvb-usage-mount') : null;
+    var BU = global.BullpenUsage;
+    if (!mount || !comp || !BU || !BU.loadForTeam || !BU.renderUsageChart) {
+      if (mount) mount.innerHTML = '<p class="ca-helper mc-lvp-empty">Bullpen usage chart unavailable.</p>';
+      return;
+    }
+    var bpTeam = comp.bpTeam;
+    var filteredLog = filterReliefApps(_pack.relieverLog, bpTeam, ctx, { includeStarters: false });
+    var usageToken = ++_usageToken;
+    mount.innerHTML = '<p class="ca-helper">Loading bullpen usage chart…</p>';
+    BU.loadForTeam(bpTeam, { log: filteredLog, live: true, days: 7 }).then(function(model) {
+      if (token !== _hydrateToken || usageToken !== _usageToken) return;
+      var el = container.querySelector('#mc-lvb-usage-mount');
+      if (!el) return;
+      el.innerHTML = BU.renderUsageChart(model, {
+        compact: true,
+        emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.'
+      });
+    }).catch(function() {
+      if (token !== _hydrateToken || usageToken !== _usageToken) return;
+      var el = container.querySelector('#mc-lvb-usage-mount');
+      if (!el || !BU.buildUsageModel) return;
+      var fallback = BU.buildUsageModel({ team: bpTeam, log: filteredLog, days: 7 });
+      el.innerHTML = BU.renderUsageChart(fallback, {
+        compact: true,
+        emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.'
+      });
+    });
+  }
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -338,6 +371,14 @@
       + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--pitcher">' + bullpenAppsTableHtml(comp.bpTeam, ctx) + '</div>'
       + '</div>'
       + '</section>'
+      + '<section class="mc-lvb-section mc-lvp-section ca-board">'
+      + lvbSectionHead(
+        'Bullpen Usage',
+        comp.bpTeam + ' · last 7-day pitch matrix and availability — relief corps only (excludes rotation arms).'
+      )
+      + '<div id="mc-lvb-usage-mount" class="mc-lvb-usage-mount">'
+      + '<p class="ca-helper">Loading bullpen usage chart…</p></div>'
+      + '</section>'
       + '</div>';
   }
 
@@ -355,6 +396,7 @@
     resolveCompare(ctx, lineupSide, bpSide, state).then(function(comp) {
       if (token !== _hydrateToken) return;
       container.innerHTML = renderPerformanceBody(comp, ctx);
+      mountUsageChart(container, comp, ctx, token);
     });
   }
 
