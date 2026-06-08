@@ -467,7 +467,7 @@
       : '<header class="mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Pitcher Splits</h3>'
         + '<p class="mc-lvp-section-head__desc">Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.</p></header>';
     return '<div class="mc-lvp-body">'
-      + '<section class="mc-lvp-section mc-lvp-section--matchup">'
+      + '<section class="mc-lvp-section mc-lvp-section--matchup ca-board">'
       + splitHead
       + '<div class="mc-lvp-lineup-block">'
       + winControls

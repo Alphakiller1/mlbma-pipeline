@@ -672,7 +672,7 @@
     if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
     var handLbl = handLabel(spHand);
     var pitcherCard = pitcherSplitStatsCard(spName, pitcherTeam, splits || [], spProfiles, lineup);
-    return '<section class="mc-lvp-section mc-lvp-section--ranks mc-offense-splits mc-lvp-team-ranks">'
+    return '<section class="mc-lvp-section mc-lvp-section--ranks mc-offense-splits mc-lvp-team-ranks ca-board">'
       + lvpSectionHead(
         'Team Offense — League Rank',
         'League rank heatmap · ' + handLbl + ' matches tonight\'s starter hand · pitcher season splits beside lineup context.'
