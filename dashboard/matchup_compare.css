@@ -811,6 +811,86 @@
 .mc-lvp-panel-head--bvp {
   text-align: center;
 }
+.mc-lvp-panel-head--lineup {
+  margin-bottom: 14px;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__hero {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__copy {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__logo {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__logo img,
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__logo .team-logo,
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__logo .team-logo-fallback {
+  width: 40px !important;
+  height: 40px !important;
+  flex-shrink: 0;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--text, #F4F4F7);
+  line-height: 1.2;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__desc {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-2, #A1A1AA);
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.mc-lvp-panel-head--lineup .mc-lvp-panel-head__desc--sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-3, #71717A);
+}
+.mc-lvp-panel-head--pitcher {
+  margin-bottom: 14px;
+}
+.mc-lvp-panel-head--pitcher .mc-lvp-panel-head__hero {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+}
+.mc-lvp-panel-head--pitcher .mc-lvp-panel-head__copy {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+}
+.mc-lvp-panel-head--pitcher .mc-lvp-panel-head__title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--text, #F4F4F7);
+  line-height: 1.2;
+}
+.mc-lvp-panel-head--pitcher .mc-lvp-panel-head__desc {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-2, #A1A1AA);
+}
+.mc-lvp-panel-head--pitcher .mc-lvp-panel-head__avatar {
+  flex: none;
+}
+.mc-lvp-panel-head--pitcher .mc-lvp-pitcher-avatar-wrap,
+.mc-lvp-panel-head--pitcher .ca-pitcher-avatar {
+  flex-shrink: 0;
+}
 .mc-lvp-lineup-block { margin-bottom: 0; }
 .mc-lvp-lineup-block .mc-lcc-controls {
   margin: 0 0 14px;
@@ -863,47 +943,48 @@
   margin-bottom: 6px;
 }
 .mc-os-table--bvp {
-  font-size: 11px;
+  font-size: 13px;
 }
 .mc-os-table--bvp .mc-os-bvp-name {
   text-align: left;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  max-width: 92px;
+  max-width: 104px;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-left: 6px;
+  padding-left: 8px;
 }
 .mc-os-table--bvp thead th {
-  font-size: 8px;
-  padding: 4px 3px;
+  font-size: 10px;
+  padding: 8px 5px;
 }
 .mc-os-table--bvp td,
 .mc-os-table--bvp th {
-  padding: 3px 3px;
+  padding: 7px 5px;
 }
 .mc-os-table--bvp .mc-os-cell--bvp-count {
   color: #fff;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
   background: rgba(255, 255, 255, 0.05);
 }
 .mc-os-table--bvp .mc-os-cell--bvp-rate .chip {
-  font-size: 10px;
-  min-width: 2.4em;
-  padding: 1px 4px;
+  font-size: 14px;
+  font-weight: 800;
+  min-width: 3.2em;
+  padding: 3px 6px;
 }
 .mc-os-table--bvp .mc-os-bvp-rate-val {
   color: #fff;
   font-weight: 800;
-  font-size: 11px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
 .mc-os-cell--na-bvp {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-3);
   background: rgba(255, 255, 255, 0.04);
@@ -1038,26 +1119,14 @@
 .mc-lvp-table--summary td.mc-lvp-summary-stat {
   text-align: center;
 }
-.mc-lvp-table--l10games {
-  table-layout: fixed;
+.mc-lvp-opp--logo-only {
+  justify-content: center;
   width: 100%;
 }
-.mc-lvp-table--l10games th,
-.mc-lvp-table--l10games td.num {
-  text-align: center;
-}
-.mc-lvp-table--l10games td.mc-lvp-date,
-.mc-lvp-table--l10games th:first-child {
-  text-align: left;
-}
-.mc-lvp-table--l10games td.mc-lvp-opp,
-.mc-lvp-table--l10games th:nth-child(3) {
-  text-align: left;
-}
-.mc-lvp-table--l10games td.mc-lvp-pitcher,
-.mc-lvp-table--l10games th:nth-child(4) {
-  text-align: left;
-  white-space: nowrap;
+.mc-lvp-opp--logo-only img,
+.mc-lvp-opp--logo-only .team-logo,
+.mc-lvp-opp--logo-only .team-logo-fallback {
+  margin: 0;
 }
 .mc-lvp-hand-tag {
   display: inline-flex;
@@ -1205,9 +1274,6 @@
   display: flex;
   flex-direction: column;
 }
-.mc-lvp-perf-panel--pitcher .mc-lvp-panel-head {
-  text-align: right;
-}
 .mc-lvp-perf-panel .mc-lvp-table--l10games,
 .mc-lvp-perf-panel .mc-lvp-table--starts-mirror {
   font-size: 14px;
@@ -1275,6 +1341,46 @@
   vertical-align: middle;
 }
 .mc-lvp-table td.num { text-align: right; }
+
+/* L10 lineup game log — fixed columns; must follow generic .mc-lvp-table th/td rules */
+.mc-lvp-table--l10games {
+  table-layout: fixed;
+  width: 100%;
+}
+.mc-lvp-table--l10games .mc-l10-col-date { width: 11%; }
+.mc-lvp-table--l10games .mc-l10-col-loc { width: 6%; }
+.mc-lvp-table--l10games .mc-l10-col-opp { width: 8%; }
+.mc-lvp-table--l10games .mc-l10-col-pitcher { width: 21%; }
+.mc-lvp-table--l10games .mc-l10-col-stat { width: 10.8%; }
+.mc-lvp-table--l10games .mc-l10-th,
+.mc-lvp-table--l10games td {
+  padding: 8px 6px;
+}
+.mc-lvp-table--l10games .mc-l10-th-date,
+.mc-lvp-table--l10games td.mc-lvp-date {
+  text-align: left;
+}
+.mc-lvp-table--l10games .mc-l10-th-loc,
+.mc-lvp-table--l10games td.mc-lvp-loc {
+  text-align: center;
+}
+.mc-lvp-table--l10games .mc-l10-th-opp,
+.mc-lvp-table--l10games td.mc-lvp-opp {
+  text-align: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.mc-lvp-table--l10games .mc-l10-th-pitcher,
+.mc-lvp-table--l10games td.mc-lvp-pitcher {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-lvp-table--l10games .mc-l10-th-stat,
+.mc-lvp-table--l10games td.mc-l10-stat {
+  text-align: center;
+}
 .mc-lvp-table-sum td {
   border-top: 1px solid var(--border, #28282f);
   font-weight: 700;

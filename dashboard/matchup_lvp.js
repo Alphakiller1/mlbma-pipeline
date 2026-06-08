@@ -60,6 +60,33 @@
       + '</header>';
   }
 
+  function lvpLineupPanelHead(lineupTeam, spHand) {
+    var handLbl = handLabel(spHand);
+    var logo = S && S.teamLogo ? S.teamLogo(lineupTeam, 40) : (A && A.teamLogoImg ? A.teamLogoImg(lineupTeam, 40) : '');
+    return '<header class="mc-lvp-panel-head mc-lvp-panel-head--lineup">'
+      + '<div class="mc-lvp-panel-head__hero">'
+      + (logo ? '<div class="mc-lvp-panel-head__logo">' + logo + '</div>' : '')
+      + '<div class="mc-lvp-panel-head__copy">'
+      + '<div class="mc-lvp-panel-head__title">Bats vs ' + esc(handLbl) + '</div>'
+      + '<p class="mc-lvp-panel-head__desc">Last ' + LINEUP_GAMES + ' games vs ' + esc(handLbl) + ' starters</p>'
+      + '<p class="mc-lvp-panel-head__desc mc-lvp-panel-head__desc--sub">Stats vs opposing starter only</p>'
+      + '</div></div></header>';
+  }
+
+  function lvpPitcherPanelHead(spName, purpose) {
+    var avatar = A && A.pitcherAvatar
+      ? A.pitcherAvatar(spName, 'compare', { eager: true, className: 'mc-lvp-pitcher-avatar' })
+      : (S && S.headshot ? S.headshot(spName, 64, { crop: 'compare', className: 'mc-lvp-pitcher-avatar' }) : '');
+    return '<header class="mc-lvp-panel-head mc-lvp-panel-head--pitcher">'
+      + '<div class="mc-lvp-panel-head__hero">'
+      + '<div class="mc-lvp-panel-head__copy">'
+      + '<div class="mc-lvp-panel-head__title">' + esc(spName) + '</div>'
+      + (purpose ? '<p class="mc-lvp-panel-head__desc">' + esc(purpose) + '</p>' : '')
+      + '</div>'
+      + (avatar ? '<div class="mc-lvp-panel-head__avatar">' + avatar + '</div>' : '')
+      + '</div></header>';
+  }
+
   function normalizePct(pct) {
     var n = num(pct);
     if (n == null) return null;
@@ -189,20 +216,6 @@
     var h = num(pick(g, ['vs_sp_h', 'vs sp h', 'Vs SP H']));
     if (h != null && h > 0) return h;
     return null;
-  }
-
-  function gameMatchesRequiredHand(g, hand) {
-    var rowHand = normalizeStarterHand(pick(g, ['opp_starter_hand', 'opp starter hand', 'hand']));
-    if (rowHand) {
-      if (rowHand !== hand) return false;
-      var id = num(pick(g, ['opp_starter_id', 'opp starter id', 'starter_id']));
-      if (id && _pack.starterHandById && _pack.starterHandById[id]) {
-        var mlbHand = _pack.starterHandById[id];
-        if (mlbHand && mlbHand !== hand) return false;
-      }
-      return true;
-    }
-    return resolveGameStarterHand(g) === hand;
   }
 
   function collectStarterIdsFromGames(games) {
@@ -752,7 +765,8 @@
         ? S.teamKey(pick(g, ['team', 'Tm', 'Team']))
         : String(pick(g, ['team']) || '').toUpperCase();
       if (gt !== tk) return false;
-      if (!gameMatchesRequiredHand(g, hand)) return false;
+      // Resolve true starter hand (registry + SP profiles + MLB) — ignore stale bucket tags.
+      if (resolveGameStarterHand(g) !== hand) return false;
       return gameVsSpPa(g) > 0;
     });
     rows.sort(function(a, b) {
@@ -1180,34 +1194,35 @@
       return '<tr>'
         + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
         + '<td class="num mc-lvp-loc">' + esc(loc) + '</td>'
-        + '<td><span class="mc-lvp-opp">' + logo + ' ' + esc(opp) + '</span></td>'
+        + '<td><span class="mc-lvp-opp mc-lvp-opp--logo-only" title="' + esc(opp) + '">' + logo + '</span></td>'
         + '<td class="mc-lvp-pitcher">' + esc(pitcher) + '</td>'
-        + '<td class="num">' + (runs != null ? esc(runs) : '—') + '</td>'
-        + '<td class="num">' + esc(formatIpCell(ip)) + '</td>'
-        + '<td class="num">' + esc(er != null ? er : '—') + '</td>'
-        + '<td class="num">' + (h != null ? esc(h) : '—') + '</td>'
-        + '<td class="num">' + (bb != null ? esc(bb) : '—') + '</td>'
+        + '<td class="num mc-l10-stat">' + (runs != null ? esc(runs) : '—') + '</td>'
+        + '<td class="num mc-l10-stat">' + esc(formatIpCell(ip)) + '</td>'
+        + '<td class="num mc-l10-stat">' + (er != null ? esc(er) : '—') + '</td>'
+        + '<td class="num mc-l10-stat">' + (h != null ? esc(h) : '—') + '</td>'
+        + '<td class="num mc-l10-stat">' + (bb != null ? esc(bb) : '—') + '</td>'
         + '</tr>';
     }).join('');
     return '<div class="mc-lvp-table-wrap mc-lvp-table-wrap--games"><table class="mc-lvp-table mc-lvp-table--l10games">'
-      + '<colgroup><col class="mc-l10-col-date"><col class="mc-l10-col-loc"><col class="mc-l10-col-opp">'
-      + '<col class="mc-l10-col-pitcher"><col span="5" class="mc-l10-col-stat"></colgroup>'
+      + '<colgroup>'
+      + '<col class="mc-l10-col mc-l10-col-date"><col class="mc-l10-col mc-l10-col-loc"><col class="mc-l10-col mc-l10-col-opp">'
+      + '<col class="mc-l10-col mc-l10-col-pitcher"><col class="mc-l10-col mc-l10-col-stat"><col class="mc-l10-col mc-l10-col-stat">'
+      + '<col class="mc-l10-col mc-l10-col-stat"><col class="mc-l10-col mc-l10-col-stat"><col class="mc-l10-col mc-l10-col-stat">'
+      + '</colgroup>'
       + '<thead><tr>'
-      + '<th>Date</th><th>Loc</th><th>Opp</th><th>Pitcher</th>'
-      + '<th>Runs</th><th>IP</th><th>ER</th><th>H</th><th>BB</th>'
+      + '<th class="mc-l10-th mc-l10-th-date">Date</th><th class="mc-l10-th mc-l10-th-loc">Loc</th>'
+      + '<th class="mc-l10-th mc-l10-th-opp">Opp</th><th class="mc-l10-th mc-l10-th-pitcher">Pitcher</th>'
+      + '<th class="mc-l10-th mc-l10-th-stat">Runs</th><th class="mc-l10-th mc-l10-th-stat">IP</th>'
+      + '<th class="mc-l10-th mc-l10-th-stat">ER</th><th class="mc-l10-th mc-l10-th-stat">H</th>'
+      + '<th class="mc-l10-th mc-l10-th-stat">BB</th>'
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
   function lineupPerformanceHtml(luSide, spHand, luFilter, l10Row, ctx, lineupTeam) {
-    var games = ctx && lineupTeam ? lineupL10GamesList(ctx, lineupTeam, spHand) : [];
-    var row = l10Row || (luSide && luSide.row ? luSide.row : {});
-    var handLbl = handLabel(spHand);
-    var title = lineupTeam ? String(lineupTeam).toUpperCase() + ' bats vs ' + handLbl : ('Lineup vs ' + handLbl);
-    var purpose = 'Stats vs opposing starter only · last ' + LINEUP_GAMES + ' games vs ' + handPitcherPhrase(spHand);
     var gameTable = ctx && lineupTeam
       ? lineupL10GamesTableHtml(ctx, lineupTeam, spHand)
       : '';
-    return lvpPanelHead(title, purpose)
+    return lvpLineupPanelHead(lineupTeam, spHand)
       + gameTable;
   }
 
@@ -1215,7 +1230,7 @@
     var n = log && log.length ? log.length : 0;
     var purpose = 'Last ' + n + ' starts';
     if (!log || !log.length) {
-      return lvpPanelHead(spName, purpose)
+      return lvpPitcherPanelHead(spName, purpose)
         + '<p class="ca-helper mc-lvp-empty">No starts in SP_Game_Log for ' + esc(spName) + '.</p>';
     }
     var body = log.map(function(g) {
@@ -1233,11 +1248,11 @@
         + '<td class="num">' + esc(k) + '</td>'
         + '<td class="num">' + esc(er) + '</td>'
         + '<td class="num">' + esc(ip) + '</td>'
-        + '<td><span class="mc-lvp-opp">' + logo + ' ' + esc(opp) + '</span></td>'
+        + '<td><span class="mc-lvp-opp mc-lvp-opp--logo-only" title="' + esc(opp) + '">' + logo + '</span></td>'
         + '<td class="mc-lvp-date">' + esc(dt) + '</td>'
         + '</tr>';
     }).join('');
-    return lvpPanelHead(spName, purpose)
+    return lvpPitcherPanelHead(spName, purpose)
       + '<div class="mc-lvp-table-wrap mc-lvp-table-wrap--games"><table class="mc-lvp-table mc-lvp-table--starts mc-lvp-table--starts-mirror">'
       + '<thead><tr>'
       + '<th>HR</th><th>BB</th><th>K</th><th>ER</th><th>IP</th><th>Opp</th><th>Date</th>'

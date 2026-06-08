@@ -1144,8 +1144,8 @@
       S.fetchSheetTab(T.pitch_mix_team_batting_l14).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_team_batting).catch(function() { return []; }),
       S.fetchSheetTab(T.pitch_mix_batter_l14).catch(function() { return []; }),
-      S.fetchSheetTab(T.team_l10_sp_hand).catch(function() { return []; }),
-      S.fetchSheetTab(T.team_l10_sp_hand_games).catch(function() { return []; })
+      S.fetchSheetTab(T.team_l10_sp_hand, { revalidate: true }).catch(function() { return []; }),
+      S.fetchSheetTab(T.team_l10_sp_hand_games, { revalidate: true }).catch(function() { return []; })
     ];
 
     Promise.all(fetches).then(function(res) {
