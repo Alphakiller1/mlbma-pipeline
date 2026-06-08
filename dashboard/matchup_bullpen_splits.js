@@ -132,8 +132,10 @@
         + rank + (total ? ' of ' + total : '') + '">#' + esc(String(rank)) + '</span>'
       : '';
     return '<td class="mc-os-cell mc-os-cell--stat mc-os-cell--stat-rank">'
+      + '<div class="mc-bp-stat-cell-inner">'
       + metricChip(value, stat.ctx, stat.invert, stat.decimals)
-      + rankHtml + '</td>';
+      + rankHtml
+      + '</div></td>';
   }
 
   function bullpenSplitStripTable(label, rates, highlight, sliceKey, rankIndex, team) {

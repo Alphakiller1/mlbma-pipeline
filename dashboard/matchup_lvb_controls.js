@@ -61,10 +61,11 @@
 
   function bullpenFilter(state) {
     state = defaultLvbState(state);
+    var winMap = { ytd: 'YTD', l7: 'L7', l14: 'L14', l30: 'L30' };
     return {
       batSide: 'both',
       location: 'all',
-      window: 'YTD'
+      window: winMap[state.lvWin] || 'YTD'
     };
   }
 

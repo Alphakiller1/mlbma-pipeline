@@ -1022,12 +1022,16 @@
   font-size: 12px;
 }
 .mc-os-cell--stat-rank {
+  padding: 6px 4px 7px;
+  vertical-align: middle;
+  text-align: center;
+}
+.mc-bp-stat-cell-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 6px 4px 7px;
 }
 .mc-bp-stat-rank {
   display: inline-block;

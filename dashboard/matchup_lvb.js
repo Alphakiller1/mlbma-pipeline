@@ -109,9 +109,10 @@
     });
   }
 
-  function aggregateSaveRates(log, team, role, windowDays) {
+  function aggregateSaveRates(log, team, role, windowDays, opponent) {
     var rows = log || [];
     var tk = teamKey(team);
+    var oppTk = opponent ? teamKey(opponent) : null;
     var cutoff = null;
     if (windowDays && windowDays > 0) {
       var d = new Date();
@@ -125,22 +126,62 @@
       if (cutoff && dt && dt < cutoff) return;
       var result = String(pick(r, ['result']) || '').toLowerCase();
       if (result !== 'save' && result !== 'blown_save') return;
+      var opp = teamKey(pick(r, ['opponent_team', 'opp', 'Opponent']));
       if (role === 'earned') {
         if (teamKey(pick(r, ['pitcher_team', 'team'])) !== tk) return;
+        if (oppTk && opp !== oppTk) return;
       } else {
-        if (teamKey(pick(r, ['opponent_team', 'opp', 'Opponent'])) !== tk) return;
+        if (opp !== tk) return;
       }
       if (result === 'save') saves++;
       else blown++;
     });
     var opps = saves + blown;
-    if (opps <= 0) return { saves: null, blown: null, savePct: null, blownPct: null };
+    if (opps <= 0) return { saves: null, blown: null, savePct: null, blownPct: null, opps: 0 };
     return {
       saves: saves,
       blown: blown,
       savePct: Math.round((saves / opps) * 1000) / 10,
-      blownPct: Math.round((blown / opps) * 1000) / 10
+      blownPct: Math.round((blown / opps) * 1000) / 10,
+      opps: opps
     };
+  }
+
+  function aggregateReliefFipAllowed(log, lineupTeam, windowDays) {
+    var rows = log || [];
+    var tk = teamKey(lineupTeam);
+    var cutoff = null;
+    if (windowDays && windowDays > 0) {
+      var d = new Date();
+      d.setDate(d.getDate() - windowDays);
+      cutoff = d.toISOString().slice(0, 10);
+    }
+    var ip = 0;
+    var hr = 0;
+    var bb = 0;
+    var k = 0;
+    rows.forEach(function(r) {
+      if (teamKey(pick(r, ['opponent_team', 'opp', 'Opponent'])) !== tk) return;
+      var dt = String(pick(r, ['date', 'Date']) || '').slice(0, 10);
+      if (cutoff && dt && dt < cutoff) return;
+      var rowIp = num(pick(r, ['IP', 'ip'])) || 0;
+      if (rowIp <= 0) return;
+      ip += rowIp;
+      hr += num(pick(r, ['HR', 'hr'])) || 0;
+      bb += num(pick(r, ['BB', 'bb'])) || 0;
+      k += num(pick(r, ['K', 'k'])) || 0;
+    });
+    if (ip <= 0) return null;
+    var fip = ((13 * hr) + (3 * bb) - (2 * k)) / ip + 3.2;
+    return Math.round(fip * 10) / 10;
+  }
+
+  function lvbWindowDays(state) {
+    state = LC ? LC.defaultLvbState(state) : (state || {});
+    if (state.lvWin === 'l7') return 7;
+    if (state.lvWin === 'l14') return 14;
+    if (state.lvWin === 'l30') return 30;
+    return 0;
   }
 
   function bullpenAvgAllowed(log, bpTeam, ctx) {
@@ -165,12 +206,16 @@
   }
 
   function lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state) {
-    var winDays = state.lvWin === 'l7' ? 7 : state.lvWin === 'l14' ? 14 : state.lvWin === 'l30' ? 30 : 0;
+    var winDays = lvbWindowDays(state);
     var filtered = filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
     var against = aggregateSaveRates(filtered, lineupTeam, 'against', winDays);
+    var earnedH2h = aggregateSaveRates(filtered, bpTeam, 'earned', winDays, lineupTeam);
     return {
       savesAgainstPct: against.savePct,
-      blownSavesCausedPct: against.blownPct
+      blownSavesCausedPct: against.blownPct,
+      savesEarnedPct: earnedH2h.savePct,
+      blownSavePctH2h: earnedH2h.blownPct,
+      saveOppsH2h: earnedH2h.opps || 0
     };
   }
 
@@ -239,9 +284,9 @@
 
     return ensureLineupStore(ctx).then(function() {
       var saveExtras = lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state);
-      var pals = ctx.data && ctx.data.pals ? ctx.data.pals[teamKey(lineupTeam)] : null;
+      var winDays = lvbWindowDays(state);
       global._lvbMetricExtras = Object.assign({}, saveExtras, {
-        fipAllowed: pals && pals.xfip != null ? pals.xfip : null,
+        fipAllowed: aggregateReliefFipAllowed(log, lineupTeam, winDays),
         avgAllowed: bullpenAvgAllowed(log, bpTeam, ctx)
       });
       return CM.resolveBoth('lineup-bullpen',

@@ -577,27 +577,41 @@
     return lu.row.winPct;
   }
 
+  function bbPctPoints(v) {
+    if (S && S.rateAsPctPoints) {
+      var pts = S.rateAsPctPoints(v);
+      return pts != null ? Math.round(pts * 10) / 10 : null;
+    }
+    v = num(v);
+    if (v == null) return null;
+    if (v > 0 && v <= 1.5) return Math.round(v * 1000) / 10;
+    return Math.round(v * 10) / 10;
+  }
+
   function lineupBullpenMetrics(lineup, bp, lineupFirst, extras) {
     extras = extras || {};
     var lu = lineup.row || {};
     var met = bp.metrics || {};
-    var luWin = lineupWinPctForCompare(lineup, lineup.filter);
+    var luWin = extras.winAgainstPct != null ? extras.winAgainstPct : lineupWinPctForCompare(lineup, lineup.filter);
     var luSaveAgainst = extras.savesAgainstPct;
     var luBlownCaused = extras.blownSavesCausedPct;
-    var luFipAllowed = extras.fipAllowed != null ? extras.fipAllowed : lu.xfip;
+    var luFipAllowed = extras.fipAllowed != null ? extras.fipAllowed : null;
     var bpFip = met.fip != null ? met.fip : bp.row.fip;
-    var bpBb = met.bbPct != null ? met.bbPct : bp.row.bbPct;
+    var luBb = bbPctPoints(lu.bb);
+    var bpBb = bbPctPoints(met.bbPct != null ? met.bbPct : bp.row.bbPct);
+    var bpSavePct = extras.savesEarnedPct != null ? extras.savesEarnedPct : bp.savePct;
+    var bpBlownSavePct = extras.blownSavePctH2h != null ? extras.blownSavePctH2h : bp.blownSavePct;
     var bpOps = met.opsAllowed;
     var bpAvgAllowed = met.avgAllowed != null ? met.avgAllowed
       : (extras.avgAllowed != null ? extras.avgAllowed : (bp.row && bp.row.avgAllowed != null ? bp.row.avgAllowed : null));
     var rows = [
       metricRow('Win% Against / Win% Earned', luWin, bp.winPct, { ctx: 'pct' }),
-      metricRow('Saves Against % / Saves Earned %', luSaveAgainst, bp.savePct, { ctx: 'pct', invertA: true }),
-      metricRow('BB% / BB% Allowed', lu.bb, bpBb, { ctx: 'pitching', invertB: true }),
-      metricRow('Blown Saves Caused % / Blown Save %', luBlownCaused, bp.blownSavePct, { ctx: 'pct', invertB: true }),
+      metricRow('Saves Against % / Saves Earned %', luSaveAgainst, bpSavePct, { ctx: 'pct', invertA: true }),
+      metricRow('BB% / BB% Allowed', luBb, bpBb, { ctx: 'bbpct', invertA: true, invertB: false }),
+      metricRow('Blown Saves Caused % / Blown Save %', luBlownCaused, bpBlownSavePct, { ctx: 'pct', invertB: true }),
       metricRow('OPS / OPS Allowed', lu.ops, bpOps, { ctx: 'ops', invertB: true, decimals: 3 }),
       metricRow('AVG / AVG Allowed', lu.avg, bpAvgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
-      metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'pitching', invertA: true, invertB: true })
+      metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'fip', invertA: false, invertB: true })
     ];
     if (!lineupFirst) {
       return rows.map(function(r) {

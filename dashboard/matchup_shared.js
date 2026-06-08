@@ -1471,7 +1471,9 @@
       var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
       var obp = numOrNull(pickCol(row, 'OBP', 'obp'));
       var avg = numOrNull(pickCol(row, 'AVG', 'avg'));
-      var bb = numOrNull(pickCol(row, 'BB%', 'BB_pct', 'bb_pct'));
+      var bbRaw = numOrNull(pickCol(row, 'BB%', 'BB_pct', 'bb_pct'));
+      var bb = bbRaw != null ? rateAsPctPoints(bbRaw) : null;
+      if (bb != null) bb = Math.round(bb * 10) / 10;
       if (wrc != null) {
         d.wrc += wrc * pa;
         d.woba += (woba != null ? woba : 0) * pa;
