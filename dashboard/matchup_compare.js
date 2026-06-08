@@ -451,8 +451,10 @@
       ? MatchupLineupCompare.controlsHtml(state)
       : '';
     var splits = (ctx.data && ctx.data.spMetricSplits) || [];
+    var spProfiles = (ctx.data && ctx.data.spProfiles) || [];
+    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
     var pitcherPanel = global.MatchupOffenseSplits && MatchupOffenseSplits.renderPitcherAllowedPanel
-      ? MatchupOffenseSplits.renderPitcherAllowedPanel(spName, pitcherTeam, splits, spHand)
+      ? MatchupOffenseSplits.renderPitcherAllowedPanel(spName, pitcherTeam, splits, spHand, spProfiles, lineup)
       : '';
     var teamRanks = global.MatchupOffenseSplits && MatchupOffenseSplits.renderLvpTeamRanks
       ? MatchupOffenseSplits.renderLvpTeamRanks(ctx, lineupSide, spHand)
@@ -460,10 +462,10 @@
     var splitHead = global.MatchupLvP && MatchupLvP.lvpSectionHead
       ? MatchupLvP.lvpSectionHead(
         'Lineup & Pitcher Splits',
-        'Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.'
+        'Lineup split stats vs opposing starter hand · pitcher season splits by location and batter hand.'
       )
       : '<header class="mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Pitcher Splits</h3>'
-        + '<p class="mc-lvp-section-head__desc">Lineup split stats vs opposing starter hand · pitcher allowed offense vs LHH/RHH.</p></header>';
+        + '<p class="mc-lvp-section-head__desc">Lineup split stats vs opposing starter hand · pitcher season splits by location and batter hand.</p></header>';
     return '<div class="mc-lvp-body">'
       + '<section class="mc-lvp-section mc-lvp-section--matchup">'
       + splitHead
