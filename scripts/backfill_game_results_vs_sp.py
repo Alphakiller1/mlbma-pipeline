@@ -80,7 +80,12 @@ def run(limit: int | None = 500, sleep_s: float = 0.12) -> None:
             vs_sp = _vs_starter_batting_stats(feed, side == "home", opp_starter_id)
             for key, val in vs_sp.items():
                 df.loc[mask, key] = val
-            df.loc[mask, "opp_starter_hand"] = _starter_hand(throws_map, opp_starter_id)
+            opp_box = (box.get("teams", {}) or {}).get(
+                "away" if side == "home" else "home", {}
+            ) or {}
+            df.loc[mask, "opp_starter_hand"] = _starter_hand(
+                throws_map, opp_starter_id, opp_box
+            )
             updated += int(mask.sum())
 
         time.sleep(sleep_s)

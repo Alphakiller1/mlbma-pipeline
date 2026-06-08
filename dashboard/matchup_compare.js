@@ -471,7 +471,11 @@
   }
 
   function hydrateLvP(root, ctx, state) {
-    if (!root || !global.MatchupLvP || !MatchupLvP.hydrate) return;
+    if (!root) return;
+    if (global.MatchupOffenseSplits && MatchupOffenseSplits.hydrateHitterVsPitcher) {
+      MatchupOffenseSplits.hydrateHitterVsPitcher(root, ctx, state.lvpLineup, state.lvpPitcher);
+    }
+    if (!global.MatchupLvP || !MatchupLvP.hydrate) return;
     var box = root.querySelector('#mcLvPAsync');
     if (!box) return;
     MatchupLvP.hydrate(box, ctx, state.lvpLineup, state.lvpPitcher);
@@ -1191,6 +1195,8 @@
             spMetricSplits: res[20] || [],
             teamL10SpHand: res[27] || [],
             teamL10SpHandGames: res[28] || [],
+            playerRegistry: res[9] || [],
+            spProfiles: data.spProfiles || res[6] || [],
             pitchMixPitcherL14: res[22] || [],
             pitchMixPitcher: res[23] || [],
             pitchMixTeamBattingL14: res[24] || [],

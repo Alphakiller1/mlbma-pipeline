@@ -158,12 +158,17 @@ def _prep_games(df: pd.DataFrame, throws_map: dict[int, str]) -> pd.DataFrame:
     if "opp_starter_hand" not in out.columns:
         out["opp_starter_hand"] = ""
     out["opp_starter_hand"] = out["opp_starter_hand"].fillna("").astype(str).str.strip().str.upper()
-    blank = out["opp_starter_hand"].isin(["", "NAN", "NONE"])
-    if blank.any():
-        out.loc[blank, "opp_starter_hand"] = out.loc[blank, "opp_starter_id"].map(
-            lambda pid: throws_map.get(int(pid), "") if pd.notna(pid) else ""
-        )
-    out["opp_starter_hand"] = out["opp_starter_hand"].replace({"NAN": "", "NONE": ""})
+
+    def _resolve_starter_hand(row) -> str:
+        pid = row.get("opp_starter_id")
+        if pd.notna(pid):
+            mapped = throws_map.get(int(pid))
+            if mapped in ("R", "L"):
+                return mapped
+        hand = str(row.get("opp_starter_hand") or "").strip().upper()
+        return hand if hand in ("R", "L") else ""
+
+    out["opp_starter_hand"] = out.apply(_resolve_starter_hand, axis=1)
     for col in (
         "vs_sp_ab", "vs_sp_h", "vs_sp_bb", "vs_sp_ibb", "vs_sp_hbp", "vs_sp_sf",
         "vs_sp_hr", "vs_sp_2b", "vs_sp_3b", "vs_sp_k",

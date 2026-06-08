@@ -215,9 +215,29 @@ def _load_throws_map() -> dict[int, str]:
     return out
 
 
-def _starter_hand(throws_map: dict[int, str], starter_id: Optional[int]) -> str:
+def _starter_throws_from_boxscore(team_box: dict, starter_id: Optional[int]) -> str:
     if not starter_id:
         return ""
+    players = team_box.get("players", {}) or {}
+    pdata = players.get(f"ID{int(starter_id)}", {}) or {}
+    code = ((pdata.get("person") or {}).get("pitchHand") or {}).get("code")
+    if not code:
+        return ""
+    hand = str(code).strip().upper()
+    return hand if hand in ("R", "L") else ""
+
+
+def _starter_hand(
+    throws_map: dict[int, str],
+    starter_id: Optional[int],
+    team_box: Optional[dict] = None,
+) -> str:
+    if not starter_id:
+        return ""
+    if team_box:
+        box_hand = _starter_throws_from_boxscore(team_box, starter_id)
+        if box_hand:
+            return box_hand
     return throws_map.get(int(starter_id), "")
 
 
@@ -347,7 +367,7 @@ def _rows_for_game(
             "winning_pitcher_is_starter": bool(winner_id and team_starter_id and int(winner_id) == int(team_starter_id)),
             "save_pitcher_id": save_id,
             "opp_starter_id": opp_starter_id,
-            "opp_starter_hand": _starter_hand(throws_map, opp_starter_id),
+            "opp_starter_hand": _starter_hand(throws_map, opp_starter_id, opp_box),
             "opp_starter_ip": opp_starter_ip,
             "opp_starter_er": opp_starter_er,
             "opp_quality_start": bool(opp_starter_ip is not None and opp_starter_ip >= 6 and int(opp_starter_er or 0) <= 3),

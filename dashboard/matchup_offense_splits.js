@@ -325,6 +325,146 @@
     return pools;
   }
 
+  var _bvpHydrateToken = 0;
+
+  function shortBatterName(name) {
+    var raw = String(name || '').trim();
+    if (!raw) return '—';
+    if (raw.indexOf(',') >= 0) {
+      var parts = raw.split(',');
+      raw = parts.slice(1).join(',').trim() + ' ' + parts[0].trim();
+    }
+    var bits = raw.split(/\s+/).filter(Boolean);
+    if (bits.length < 2) return raw;
+    return bits[0].charAt(0).toUpperCase() + '. ' + bits[bits.length - 1];
+  }
+
+  function parseSlashStat(raw) {
+    if (raw == null || raw === '' || raw === '.---' || raw === '-.--') return null;
+    var s = String(raw).trim();
+    if (s.charAt(0) === '.') s = '0' + s;
+    var n = Number(s);
+    return isNaN(n) ? null : n;
+  }
+
+  function resolvePitcherId(spName, pitcherTeam, spProfiles) {
+    var sp = S && S.findSpProfile ? S.findSpProfile(spProfiles || [], spName, pitcherTeam) : null;
+    if (sp) {
+      var id = num(pickCol(sp, ['pitcher_id', 'player_id', 'Player ID']));
+      if (id) return id;
+    }
+    var reg = A && A.lookupPlayer ? A.lookupPlayer(spName) : null;
+    return reg && reg.id ? num(reg.id) : null;
+  }
+
+  function resolveBatterId(name) {
+    var reg = A && A.lookupPlayer ? A.lookupPlayer(name) : null;
+    return reg && reg.id ? num(reg.id) : null;
+  }
+
+  function fetchBvpCareer(batterId, pitcherId) {
+    if (!batterId || !pitcherId || typeof fetch !== 'function') return Promise.resolve(null);
+    var url = 'https://statsapi.mlb.com/api/v1/people/' + encodeURIComponent(batterId)
+      + '/stats?stats=vsPlayerTotal&opposingPlayerId=' + encodeURIComponent(pitcherId) + '&group=hitting';
+    return fetch(url)
+      .then(function(resp) { return resp.ok ? resp.json() : null; })
+      .then(function(data) {
+        var splits = data && data.stats && data.stats[0] && data.stats[0].splits;
+        if (!splits || !splits.length) return null;
+        var st = splits[0].stat || {};
+        var ab = num(st.atBats);
+        var pa = num(st.plateAppearances);
+        if ((ab == null || ab <= 0) && (pa == null || pa <= 0)) return null;
+        return {
+          ab: ab != null ? ab : 0,
+          h: num(st.hits) || 0,
+          hr: num(st.homeRuns) || 0,
+          avg: parseSlashStat(st.avg),
+          ops: parseSlashStat(st.ops),
+          pa: pa != null ? pa : ab
+        };
+      })
+      .catch(function() { return null; });
+  }
+
+  function bvpNaCell() {
+    return '<td class="mc-os-cell mc-os-cell--na mc-os-cell--na-bvp" colspan="1">N/A</td>';
+  }
+
+  function bvpStatCells(row) {
+    if (!row) {
+      return bvpNaCell() + bvpNaCell() + bvpNaCell() + bvpNaCell() + bvpNaCell();
+    }
+    return ''
+      + '<td class="num mc-os-cell mc-os-cell--bvp">' + esc(String(row.ab)) + '</td>'
+      + '<td class="num mc-os-cell mc-os-cell--bvp">' + esc(String(row.h)) + '</td>'
+      + '<td class="num mc-os-cell mc-os-cell--bvp">' + esc(String(row.hr)) + '</td>'
+      + '<td class="num mc-os-cell mc-os-cell--bvp">' + metricChip(row.avg, 'avg', false, 3) + '</td>'
+      + '<td class="num mc-os-cell mc-os-cell--bvp">' + metricChip(row.ops, 'ops', false, 3) + '</td>';
+  }
+
+  function renderBvpTable(rows, spName) {
+    if (!rows || !rows.length) {
+      return '<p class="ca-helper">No projected lineup rows for hitter vs pitcher lookup.</p>';
+    }
+    var body = rows.map(function(r) {
+      return '<tr>'
+        + '<th scope="row" class="mc-os-bvp-name">' + esc(shortBatterName(r.name)) + '</th>'
+        + bvpStatCells(r.stats)
+        + '</tr>';
+    }).join('');
+    return '<table class="mc-os-table mc-os-table--bvp" aria-label="Hitter vs ' + esc(spName) + ' career stats">'
+      + '<thead><tr>'
+      + '<th scope="col">Hitter</th><th scope="col">AB</th><th scope="col">H</th><th scope="col">HR</th>'
+      + '<th scope="col">AVG</th><th scope="col">OPS</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table>'
+      + '<p class="mc-os-bvp-note ca-helper">Career regular-season plate appearances vs ' + esc(spName) + ' · N/A = no prior matchup</p>';
+  }
+
+  function hydrateHitterVsPitcher(root, ctx, lineupSide, pitcherSide) {
+    var box = root && root.querySelector('#mcLvPBvp');
+    if (!box || !ctx || !ctx.m) return;
+    var token = ++_bvpHydrateToken;
+    var m = ctx.m;
+    var spName = pitcherSide === 'home' ? m.homeSP : m.awaySP;
+    var pitcherTeam = pitcherSide === 'home' ? m.home : m.away;
+    var lineup = lineupSide === 'home' ? ctx.homeLineup : ctx.awayLineup;
+    var spProfiles = (ctx.data && ctx.data.spProfiles) || [];
+    var pitcherId = resolvePitcherId(spName, pitcherTeam, spProfiles);
+
+    box.innerHTML = '<p class="ca-helper">Loading hitter vs pitcher stats…</p>';
+    if (!spName || !lineup || !lineup.length) {
+      box.innerHTML = '<p class="ca-helper">Projected lineup unavailable for hitter vs pitcher stats.</p>';
+      return;
+    }
+    if (!pitcherId) {
+      box.innerHTML = '<p class="ca-helper">Pitcher ID unavailable — cannot load hitter vs pitcher stats.</p>';
+      return;
+    }
+
+    var slots = lineup.slice().sort(function(a, b) {
+      return (a.batOrder || 99) - (b.batOrder || 99);
+    }).slice(0, 9).map(function(slot) {
+      return {
+        name: slot.player || slot.name,
+        batterId: resolveBatterId(slot.player || slot.name)
+      };
+    }).filter(function(s) { return s.name; });
+
+    Promise.all(slots.map(function(slot) {
+      if (!slot.batterId) return Promise.resolve({ name: slot.name, stats: null });
+      return fetchBvpCareer(slot.batterId, pitcherId).then(function(stats) {
+        return { name: slot.name, stats: stats };
+      });
+    })).then(function(rows) {
+      if (token !== _bvpHydrateToken) return;
+      box.innerHTML = renderBvpTable(rows, spName);
+    }).catch(function() {
+      if (token !== _bvpHydrateToken) return;
+      box.innerHTML = '<p class="ca-helper">Hitter vs pitcher stats unavailable right now.</p>';
+    });
+  }
+
   function pitcherAllowedCard(spName, pitcherTeam, splits, valuePools, spHand) {
     var accent = teamAccentColor(pitcherTeam);
     var spKeyVal = spLookupKey(spName, pitcherTeam);
@@ -341,7 +481,11 @@
       + '<div class="mc-os-card-head">' + avatar
       + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(spName) + '</span>'
       + '<span class="mc-os-card-role">Allowed offense vs batter hand · YTD season split</span></div></div>'
-      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands">' + stripHtml + '</div></div>';
+      + '<div class="mc-os-card-strips mc-os-card-strips--pitcher-hands">' + stripHtml + '</div>'
+      + '<div class="mc-os-bvp-block">'
+      + '<div class="mc-os-bvp-head">Hitter vs Pitcher Stats</div>'
+      + '<div id="mcLvPBvp" class="mc-os-bvp"><p class="ca-helper">Loading career matchup stats…</p></div>'
+      + '</div></div>';
   }
 
   function lineupOffenseCard(ctx, lineupSide, spHand, rankIndex) {
@@ -350,7 +494,7 @@
     var side = lineupSide === 'home' ? 'home' : 'away';
     var handSlice = String(spHand || '').trim().toUpperCase().charAt(0) === 'L' ? 'handL' : 'handR';
     var strips = [
-      { sliceKey: 'overall', title: team + ' BATS', highlight: false },
+      { sliceKey: 'overall', title: 'BATS', highlight: false },
       { sliceKey: handSlice, title: handLabel(spHand), highlight: true }
     ];
     var accent = teamAccentColor(team);
@@ -360,12 +504,11 @@
         + stripTable(st.sliceKey, rankIndex, team, WINDOWS)
         + '</div>';
     }).join('');
-    var logo = A && A.teamLogoImg ? A.teamLogoImg(team, 48) : '';
-    return '<div class="mc-os-card mc-os-card--lineup" style="--mc-os-team:' + esc(accent) + '">'
-      + '<div class="mc-os-card-head">' + logo
-      + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(team) + '</span>'
-      + '<span class="mc-os-card-role">Offensive league rank (#1 = best offense)</span></div></div>'
-      + '<div class="mc-os-card-strips">' + stripHtml + '</div></div>';
+    var logo = A && A.teamLogoImg ? A.teamLogoImg(team, 36) : '';
+    return '<div class="mc-os-card mc-os-card--lineup mc-os-card--lineup-compact" style="--mc-os-team:' + esc(accent) + '">'
+      + '<div class="mc-os-card-head mc-os-card-head--compact">' + logo
+      + '<div class="mc-os-card-head-text"><span class="mc-os-card-team">' + esc(team) + '</span></div></div>'
+      + '<div class="mc-os-card-strips mc-os-card-strips--lineup-duo">' + stripHtml + '</div></div>';
   }
 
   function ctxPitcherSplitsReady(splits, spName, pitcherTeam) {
@@ -385,12 +528,12 @@
     if (!ctx || !ctx.m || !ctx.offenseRankIndex) return '';
     var handLbl = handLabel(spHand);
     return '<div class="mc-section-block mc-offense-splits mc-lvp-team-ranks">'
-      + '<h3 class="mc-lvp-block-title">Team Offense — League Rank</h3>'
-      + '<p class="mc-os-hint ca-helper">League rank heatmap for the selected lineup — '
-      + handLbl + ' strip matches tonight\'s starter hand.</p>'
+      + '<h3 class="mc-lvp-block-title mc-lvp-block-title--compact">Team Offense — League Rank</h3>'
+      + '<p class="mc-os-hint ca-helper">League rank heatmap · '
+      + handLbl + ' matches tonight\'s starter hand</p>'
       + lineupOffenseCard(ctx, lineupSide, spHand, ctx.offenseRankIndex)
-      + '<div class="mc-os-legend mc-os-legend--lineup">'
-      + '<span class="mc-os-legend-label">Lineup ranks:</span>'
+      + '<div class="mc-os-legend mc-os-legend--lineup mc-os-legend--compact">'
+      + '<span class="mc-os-legend-label">Ranks:</span>'
       + '<span class="mc-os-leg mc-os-cell--elite">#1–5 Elite</span>'
       + '<span class="mc-os-leg mc-os-cell--strong">#6–12 Strong</span>'
       + '<span class="mc-os-leg mc-os-cell--mid">#13–20 Average</span>'
@@ -573,6 +716,7 @@
     renderLineupTeamCard: renderLineupTeamCard,
     renderLvpSplitJux: renderLvpSplitJux,
     renderLvpTeamRanks: renderLvpTeamRanks,
-    renderPitcherAllowedPanel: renderPitcherAllowedPanel
+    renderPitcherAllowedPanel: renderPitcherAllowedPanel,
+    hydrateHitterVsPitcher: hydrateHitterVsPitcher
   };
 })(typeof window !== 'undefined' ? window : this);
