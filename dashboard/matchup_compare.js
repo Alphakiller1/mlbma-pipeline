@@ -41,9 +41,7 @@
   var COMPARE_MODES = [
     { id: 'lvL', label: 'Lineup vs Lineup' },
     { id: 'lvP', label: 'Lineup vs Pitcher' },
-    { id: 'lvB', label: 'Lineup vs Bullpen' },
-    { id: 'bpBp', label: 'Bullpen vs Bullpen' },
-    { id: 'spSp', label: 'Pitcher vs Pitcher' }
+    { id: 'lvB', label: 'Lineup vs Bullpen' }
   ];
   var COMPARE_IDS = COMPARE_MODES.map(function(x) { return x.id; });
   var _compareCtx = null;
@@ -583,24 +581,10 @@
       + '<div id="mcLvBContent">' + lineupVsBullpenContent(ctx, state.lvbLineup, state.lvbBp, state) + '</div>';
   }
 
-  function renderPaneBpBp(ctx) {
-    var m = ctx.m;
-    return '<h2 class="mc-pane-title">Bullpen vs Bullpen</h2>'
-      + '<p class="mc-pane-desc">Relief corps comparison for late-game leverage.</p>'
-      + sectionBullpen(m, ctx.awayBp, ctx.homeBp, { bare: true });
-  }
-
-  function renderPaneSpSp(ctx) {
-    return '<h2 class="mc-pane-title">Pitcher vs Pitcher</h2>'
-      + '<p class="mc-pane-desc">Starting pitcher duel — stats, radar, and head-to-head edge.</p>'
-      + sectionSP(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayProf, ctx.homeProf, ctx.awayPs, ctx.homePs, ctx.h2h, ctx.data.spL14, { bare: true });
-  }
-
   function mountChartsForMode(mode, ctx) {
     _lastRadarSize = radarChartSize();
     requestAnimationFrame(function() {
       if (mode === 'lvL') mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL, ctx.pals);
-      if (mode === 'spSp') mountPitcherRadar(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayPs, ctx.homePs);
     });
   }
 
@@ -821,8 +805,6 @@
       + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx, state))
       + paneWrap('lvP', state.mode === 'lvP', renderPaneLvP(ctx, state))
       + paneWrap('lvB', state.mode === 'lvB', renderPaneLvB(ctx, state))
-      + paneWrap('bpBp', state.mode === 'bpBp', renderPaneBpBp(ctx))
-      + paneWrap('spSp', state.mode === 'spSp', renderPaneSpSp(ctx))
       + '</div></div>';
 
     _compareState = state;
@@ -1163,7 +1145,7 @@
       }).catch(function(err) {
         console.error('[matchup_compare] slate load failed', err);
         if (root) renderLoadError(root, err);
-        if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+      if (global.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
       });
       return;
     }
