@@ -355,10 +355,18 @@
   function loadForTeam(team, opts) {
     opts = opts || {};
     var dayCols = buildDayColumns(opts.days || 7);
+    var startIso = dayCols[0].iso;
+    var endIso = dayCols[dayCols.length - 1].iso;
+    // Role labels (CLOSE/SETUP/MID/LONG) are derived from saves/holds/blown within the *window*.
+    // If we pass full-season logs, old saves/holds can mislabel bullpen roles on the chart.
+    var windowedLog = (opts.log || []).filter(function(g) {
+      var dt = normalizeDate(pickCol(g, ['date', 'Date']));
+      return dt && dt >= startIso && dt <= endIso;
+    });
     var base = buildUsageModel({
       team: team,
       dayCols: dayCols,
-      log: opts.log || [],
+      log: windowedLog,
       individuals: opts.individuals || [],
       source: 'log'
     });
@@ -382,7 +390,7 @@
         }
       });
       var mergedRows = Object.keys(merged).map(function(k) { return merged[k]; });
-      var logRows = opts.log || [];
+      var logRows = windowedLog;
       mergedRows.forEach(function(r) {
         r.log = logRows.filter(function(g) {
           return String(pickCol(g, ['pitcher_id'])) === String(r.id) || pickCol(g, ['pitcher_name']) === r.name;
