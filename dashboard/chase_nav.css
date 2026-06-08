@@ -418,7 +418,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .chase-nav-links,
   .chase-status .chase-timestamp {
     display: none;
