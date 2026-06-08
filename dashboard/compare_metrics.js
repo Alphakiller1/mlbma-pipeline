@@ -611,11 +611,11 @@
     var rows = [
       metricRow('Win% Against / Win% Earned', luWin, bp.winPct, { ctx: 'rpwin' }),
       metricRow('Saves Against % / Saves Earned %', luSaveAgainst, bpSavePct, { ctx: 'qspct' }),
-      metricRow('BB% / BB% Allowed', luBb, bpBb, { ctx: 'bbpct', invertA: true, invertB: false }),
+      metricRow('BB% / BB% Allowed', luBb, bpBb, { ctx: 'bp_bbpct', invertA: true, invertB: false }),
       metricRow('Blown Saves Caused % / Blown Save %', luBlownCaused, bpBlownSavePct, { ctx: 'qspct', invertA: false, invertB: true }),
       metricRow('OPS / OPS Allowed', lu.ops, bpOps, { ctx: 'ops', invertB: true, decimals: 3 }),
       metricRow('AVG / AVG Allowed', lu.avg, bpAvgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
-      metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'fip', invertA: false, invertB: true })
+      metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'bp_fip', invertA: false, invertB: true })
     ];
     if (!lineupFirst) {
       return rows.map(function(r) {
