@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="batter_profile.css?v=20260608c">
+<link rel="stylesheet" href="batter_profile.css?v=20260608e">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -241,6 +241,58 @@ function pct(v, names) {
 }
 function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function normalizeName(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim(); }
+function canonicalName(n) {
+  var raw = String(n || '').trim();
+  if (raw.indexOf(',') >= 0) {
+    var parts = raw.split(',');
+    if (parts.length >= 2) raw = parts.slice(1).join(',').trim() + ' ' + parts[0].trim();
+  }
+  var S = window.MLBMASharedMatchup;
+  return S && S.normName ? S.normName(raw) : normalizeName(raw);
+}
+function lastName(n) {
+  var parts = String(n || '').replace(/\./g, ' ').trim().split(/\s+/);
+  while (parts.length > 1 && /^(jr|sr|ii|iii|iv|v)$/i.test(parts[parts.length - 1])) parts.pop();
+  return parts.length ? parts[parts.length - 1].toLowerCase() : '';
+}
+function firstInitial(n) {
+  var s = String(n || '').trim();
+  var m = s.match(/^([A-Za-z])\./);
+  if (m) return m[1].toLowerCase();
+  return s.replace(/\./g, ' ').trim().split(/\s+/)[0].charAt(0).toLowerCase();
+}
+function findRegistryByName(name, team) {
+  if (!name) return null;
+  var canon = canonicalName(name);
+  var direct = DATA.registry.find(function(r) {
+    return canonicalName(pickCol(r, ['full_name', 'fullName', 'name'])) === canon;
+  });
+  if (direct) return direct;
+  var ln = lastName(name);
+  if (!ln) return null;
+  var init = firstInitial(name);
+  var t = String(team || '').toUpperCase();
+  var hits = DATA.registry.filter(function(r) {
+    var full = pickCol(r, ['full_name', 'fullName', 'name']);
+    if (!full || lastName(full) !== ln) return false;
+    if (init) {
+      var fi = firstInitial(full);
+      if (fi && fi !== init) return false;
+    }
+    var rt = String(pickCol(r, ['team_abbr', 'team'])).toUpperCase();
+    return !t || !rt || rt === t;
+  });
+  if (hits.length === 1) return hits[0];
+  if (hits.length > 1 && t) {
+    var teamHit = hits.filter(function(r) { return String(pickCol(r, ['team_abbr', 'team'])).toUpperCase() === t; });
+    if (teamHit.length === 1) return teamHit[0];
+  }
+  return null;
+}
+function splitSourceLabel(s) {
+  var labels = { overall: 'Overall', recent: 'Recent', vs_RHP: 'vs RHP', vs_LHP: 'vs LHP', home: 'Home', away: 'Away', vs_SP: 'vs SP', vs_RP: 'vs RP' };
+  return labels[s] || s;
+}
 function metricColor(score, ctx, invert) {
   return (A && A.metricColor) ? A.metricColor(score, ctx || 'osi', !!invert) : 'var(--text-3)';
 }
@@ -260,14 +312,18 @@ function sectionHeaderHtml(title, subtitle, iconKey) {
 function playerKey(row) {
   var id = pickCol(row, ['player_id', 'playerId']);
   if (id) return 'id:' + id;
-  return 'name:' + normalizeName(pickCol(row, ['player_name', 'playerName', 'Name']));
+  return 'name:' + canonicalName(pickCol(row, ['player_name', 'playerName', 'Name']));
 }
 function getRegistry(key) {
   var hit = DATA.registry.find(function(r) { return playerKey(r) === key; });
   if (hit) return hit;
-  var target = normalizeName(String(key || '').replace(/^name:|^id:/, ''));
+  if (String(key || '').indexOf('id:') === 0) {
+    var pid = String(key).replace(/^id:/, '');
+    return DATA.registry.find(function(r) { return String(pickCol(r, ['player_id', 'playerId'])) === pid; }) || null;
+  }
+  var target = canonicalName(String(key || '').replace(/^name:/, ''));
   if (!target) return null;
-  return DATA.registry.find(function(r) { return normalizeName(pickCol(r, ['full_name', 'fullName', 'name'])) === target; }) || null;
+  return DATA.registry.find(function(r) { return canonicalName(pickCol(r, ['full_name', 'fullName', 'name'])) === target; }) || null;
 }
 function playerDisplayName(key) {
   var reg = getRegistry(key);
@@ -278,9 +334,11 @@ function playerDisplayName(key) {
 function getProfileRows(key) {
   var direct = DATA.profiles.filter(function(p) { return playerKey(p) === key; });
   if (direct.length) return direct;
-  var target = normalizeName(playerDisplayName(key));
+  var target = canonicalName(playerDisplayName(key));
   if (!target) return [];
-  return DATA.profiles.filter(function(p) { return normalizeName(pickCol(p, ['player_name', 'playerName', 'Name'])) === target; });
+  return DATA.profiles.filter(function(p) {
+    return canonicalName(pickCol(p, ['player_name', 'playerName', 'Name'])) === target;
+  });
 }
 function normalizeSplitKey(s) {
   return String(s || '').toLowerCase().replace(/\s+/g, '_').trim();
@@ -306,14 +364,80 @@ function storeRawSplit(bucketKey, split, row) {
   if (!DATA.rawStats[bucketKey]) DATA.rawStats[bucketKey] = {};
   DATA.rawStats[bucketKey][split] = row;
 }
+function playerBucketKeys(key) {
+  var keys = [];
+  if (String(key || '').indexOf('id:') === 0) keys.push(String(key));
+  var reg = getRegistry(key);
+  if (reg) {
+    var pid = pickCol(reg, ['player_id', 'playerId']);
+    if (pid) keys.push('id:' + pid);
+    var full = pickCol(reg, ['full_name', 'fullName', 'name']);
+    if (full) {
+      keys.push(canonicalName(full));
+      keys.push(normalizeName(full));
+    }
+  }
+  var display = playerDisplayName(key);
+  if (display) {
+    keys.push(canonicalName(display));
+    keys.push(normalizeName(display));
+  }
+  var out = [];
+  keys.forEach(function(k) { if (k && out.indexOf(k) < 0) out.push(k); });
+  return out;
+}
 function rawBucketForKey(key) {
-  if (!key) return {};
-  var direct = String(key);
-  if (DATA.rawStats[direct]) return DATA.rawStats[direct];
-  var pid = direct.replace(/^id:/, '');
-  if (pid !== direct && DATA.rawStats['id:' + pid]) return DATA.rawStats['id:' + pid];
-  var nk = normalizeName(playerDisplayName(key));
-  return (nk && DATA.rawStats[nk]) ? DATA.rawStats[nk] : {};
+  var keys = playerBucketKeys(key);
+  for (var i = 0; i < keys.length; i++) {
+    if (DATA.rawStats[keys[i]]) return DATA.rawStats[keys[i]];
+  }
+  return {};
+}
+function hasRateRow(row) {
+  if (!row || !Object.keys(row).length) return false;
+  return numOrNull(pickCol(row, ['wRC+', 'wRC'])) != null
+    || numOrNull(pickCol(row, ['AVG'])) != null
+    || numOrNull(pickCol(row, ['OPS'])) != null;
+}
+function hasProfileRow(row) {
+  return !!(row && numOrNull(pickCol(row, ['OSI'])) != null);
+}
+function splitFallbackChain(split, p) {
+  var chain = [split];
+  if (split === 'vs_RP' || split === 'vs_SP') {
+    if (p && p.lineup && p.lineup.inLineup) {
+      var hand = p.lineup.oppHand === 'L' ? 'vs_LHP' : 'vs_RHP';
+      chain.push(hand, hand === 'vs_RHP' ? 'vs_LHP' : 'vs_RHP');
+    } else {
+      chain.push('vs_RHP', 'vs_LHP');
+    }
+    chain.push('overall');
+  } else if (split === 'home' || split === 'away' || split === 'vs_RHP' || split === 'vs_LHP') {
+    chain.push('overall');
+  } else if (split === 'recent') {
+    chain.push('overall');
+  }
+  var seen = {};
+  return chain.filter(function(s) { if (seen[s]) return false; seen[s] = 1; return true; });
+}
+function resolveRawSplit(key, split, p) {
+  var bucket = rawBucketForKey(key);
+  var chain = splitFallbackChain(split, p);
+  for (var i = 0; i < chain.length; i++) {
+    var row = bucket[chain[i]];
+    if (hasRateRow(row)) return { row: row, source: chain[i], requested: split };
+  }
+  return { row: {}, source: null, requested: split };
+}
+function resolveProfileSplit(key, split, p) {
+  var chain = splitFallbackChain(split, p);
+  for (var i = 0; i < chain.length; i++) {
+    var row = getSplitRow(key, chain[i]);
+    if (hasProfileRow(row)) return { row: row, source: chain[i], requested: split };
+  }
+  var overall = overallProfileRow(key);
+  if (hasProfileRow(overall)) return { row: overall, source: 'overall', requested: split };
+  return { row: null, source: null, requested: split };
 }
 
 function indexRawStats() {
@@ -322,21 +446,33 @@ function indexRawStats() {
     (DATA['_raw_' + pair[1]] || []).forEach(function(row) {
       var split = pair[1];
       var keys = {};
-      var name = pickCol(row, ['Name', 'player_name', 'full_name']);
-      var full = pickCol(row, ['full_name', 'fullName']);
+      var pname = pickCol(row, ['player_name', 'Name', 'full_name']);
+      if (pname) {
+        keys[canonicalName(pname)] = 1;
+        keys[normalizeName(pname)] = 1;
+      }
+      var team = String(pickCol(row, ['team', 'Tm', 'team_abbr'])).toUpperCase();
+      var reg = findRegistryByName(pname, team);
+      if (reg) {
+        var pid = pickCol(reg, ['player_id', 'playerId']);
+        if (pid) keys['id:' + pid] = 1;
+        var full = pickCol(reg, ['full_name', 'fullName']);
+        if (full) keys[canonicalName(full)] = 1;
+      }
       var pid = pickCol(row, ['player_id', 'playerId', 'mlbam_id', 'MLBAMID']);
-      if (name) keys[normalizeName(name)] = 1;
-      if (full) keys[normalizeName(full)] = 1;
       if (pid) keys['id:' + pid] = 1;
       Object.keys(keys).forEach(function(k) { storeRawSplit(k, split, row); });
     });
   });
 }
-function rawFor(key, split) {
-  var raw = rawBucketForKey(key);
-  if (!split || split === 'overall') return raw.overall || {};
-  if (raw[split]) return raw[split];
-  return {};
+function rawFor(key, split, p) {
+  var sk = split || 'overall';
+  if (sk === 'recent') {
+    var recent = resolveRawSplit(key, 'recent', p).row;
+    if (hasRateRow(recent)) return recent;
+    return resolveRawSplit(key, 'overall', p).row;
+  }
+  return resolveRawSplit(key, sk, p).row;
 }
 function activeRaw(key) {
   // Season/Recent toggle is the only window the data actually supports.
@@ -361,11 +497,13 @@ function opsFromRow(row) {
 function findLineupContext(key) {
   var reg = getRegistry(key);
   var team = String(pickCol(reg || {}, ['team_abbr', 'team'])).toUpperCase();
-  var pname = normalizeName(playerDisplayName(key));
+  var pname = canonicalName(playerDisplayName(key));
   var slot = null;
   DATA.lineups.forEach(function(row) {
-    var player = normalizeName(pickCol(row, ['Player', 'player']));
+    var lineupName = pickCol(row, ['Player', 'player']);
     var t = String(pickCol(row, ['Team', 'team'])).toUpperCase();
+    var resolved = findRegistryByName(lineupName, t);
+    var player = resolved ? canonicalName(pickCol(resolved, ['full_name', 'fullName'])) : canonicalName(lineupName);
     if (player === pname && (!team || t === team)) slot = row;
   });
   if (!slot) return { inLineup: false, team: team };
@@ -608,34 +746,59 @@ function renderDriverStrip(p) {
     + decisionCard('Best Angle', valChip(bestScore, 'osi', false, 0), best);
 }
 
+function propLineLabel(line) {
+  if (line == null || isNaN(line)) return '—';
+  return Number(line) % 1 === 0 ? String(line) : fmt(line, 1);
+}
+
+function propLeanCell(proj, line, invert, prob) {
+  if (line == null) return '<td class="bp-prop-line bp-prop-line--na"><span class="bp-prop-line__na">—</span></td>';
+  if (prob) {
+    var pc = proj != null ? Math.round(proj * 100) : null;
+    if (pc == null) return '<td class="bp-prop-line bp-prop-line--na"><span class="bp-prop-line__na">—</span></td>';
+    var lean = pc >= 16 ? 'over' : (pc <= 8 ? 'under' : 'pass');
+    var leanTxt = lean === 'over' ? 'Over' : (lean === 'under' ? 'Under' : 'Pass');
+    return '<td class="bp-prop-line"><span class="bp-prop-line__book">' + propLineLabel(line) + '</span>'
+      + '<span class="bp-lean bp-lean--' + lean + '">' + leanTxt + '</span></td>';
+  }
+  var ln = leanFor(proj, line);
+  var cls = invert ? (ln.lean === 'over' ? 'under' : ln.lean === 'under' ? 'over' : 'pass') : ln.lean;
+  var leanTxt = cls === 'over' ? 'Over' : (cls === 'under' ? 'Under' : 'Pass');
+  return '<td class="bp-prop-line"><span class="bp-prop-line__book">' + propLineLabel(line) + '</span>'
+    + '<span class="bp-lean bp-lean--' + cls + '">' + leanTxt + '</span></td>';
+}
+
+function propEstCell(r) {
+  if (r.proj == null) return '<td class="bp-prop-est"><span class="bp-prop-est__na">—</span></td>';
+  if (r.prob) {
+    return '<td class="bp-prop-est"><span class="bp-prop-est__val">' + fmt(r.proj, r.dec) + '</span>'
+      + '<span class="bp-prop-est__sub">' + Math.round(r.proj * 100) + '% HR</span></td>';
+  }
+  return '<td class="bp-prop-est"><span class="bp-prop-est__val">' + fmt(r.proj, r.dec) + '</span></td>';
+}
+
 function renderPropTable(p) {
   var rows = [
     { m: 'Hits', proj: p.hits, lines: [0.5, 1.5], dec: 2 },
     { m: 'Total Bases', proj: p.tb, lines: [1.5, 2.5], dec: 2 },
-    { m: 'Home Run', proj: p.hr, lines: [0.5], dec: 2, prob: true },
+    { m: 'Home Run', proj: p.hr, lines: [0.5, null], dec: 2, prob: true },
     { m: 'Strikeouts', proj: p.k, lines: [0.5, 1.5], dec: 2, invert: true },
-    { m: 'Walks', proj: p.bb, lines: [0.5], dec: 2 },
-    { m: 'Hits+R+RBI', proj: p.runsRbi, lines: [1.5, 2.5], dec: 2 }
+    { m: 'Walks', proj: p.bb, lines: [0.5, null], dec: 2 },
+    { m: 'Hits + R + RBI', proj: p.runsRbi, lines: [1.5, 2.5], dec: 2 }
   ];
   var body = rows.map(function(r) {
-    var leanCells = r.lines.map(function(L) {
-      if (r.prob) {
-        var pc = r.proj != null ? Math.round(r.proj * 100) : null;
-        return '<td class="num">' + (pc != null ? pc + '% HR' : '—') + '</td>';
-      }
-      var ln = leanFor(r.proj, L);
-      var cls = r.invert ? (ln.lean === 'over' ? 'under' : ln.lean === 'under' ? 'over' : 'pass') : ln.lean;
-      var txt = r.invert ? (ln.lean === 'over' ? 'Under ' + L : ln.lean === 'under' ? 'Over ' + L : 'Lean ' + L) : ln.label;
-      return '<td class="num"><span class="bp-lean bp-lean--' + cls + '">' + esc(txt) + '</span></td>';
-    });
-    while (leanCells.length < 2) leanCells.push('<td class="num">—</td>');
-    var projCell = (r.proj != null)
-      ? (r.prob ? '<strong>' + fmt(r.proj, r.dec) + '</strong> (' + Math.round(r.proj * 100) + '%)' : '<strong>' + fmt(r.proj, r.dec) + '</strong>')
-      : '—';
-    return '<tr><th scope="row">' + esc(r.m) + '</th><td class="num">' + projCell + '</td>' + leanCells.join('') + '</tr>';
+    return '<tr class="hub-row">'
+      + '<th scope="row" class="bp-prop-market">' + esc(r.m) + '</th>'
+      + propEstCell(r)
+      + propLeanCell(r.proj, r.lines[0], r.invert, r.prob)
+      + propLeanCell(r.proj, r.lines[1], r.invert, r.prob)
+      + '</tr>';
   }).join('');
   document.getElementById('propTableWrap').innerHTML =
-    '<table class="hub-table tp-table bp-prop-table"><thead><tr><th>Market</th><th>Estimate</th><th>Line A</th><th>Line B</th></tr></thead><tbody>' + body + '</tbody></table>'
+    '<table class="hub-table bp-prop-table" aria-label="Prop projections">'
+    + '<colgroup><col class="bp-col-market"><col class="bp-col-est"><col class="bp-col-line"><col class="bp-col-line"></colgroup>'
+    + '<thead><tr><th class="bp-prop-market">Market</th><th>Model</th><th>Book Line · Lean</th><th>Alt Line · Lean</th></tr></thead>'
+    + '<tbody>' + body + '</tbody></table>'
     + '<p class="bp-prop-note">Platoon rate line × expected PA, SP-adjusted. Standard book thresholds — research leans only.</p>';
 }
 
@@ -669,11 +832,15 @@ function renderPropFlags(p) {
     : '<div class="bp-flag"><span>No regression or matchup flags — profile and results are aligned.</span></div>';
 }
 
-function metricStripHtml(key, splitKey) {
+function metricStripHtml(key, splitKey, p) {
   var sk = splitKey || 'overall';
-  var R = rawFor(key, sk);
-  if ((!R || !Object.keys(R).length) && (sk === 'overall' || sk === 'recent')) R = activeRaw(key);
-  var prof = (sk === 'overall' || sk === 'recent') ? overallProfileRow(key) : profileRowForSplit(key, sk);
+  var rawPack = resolveRawSplit(key, sk, p);
+  var profPack = resolveProfileSplit(key, sk, p);
+  var R = rawPack.row;
+  var prof = profPack.row || overallProfileRow(key);
+  STATE._splitSource = null;
+  if (rawPack.source && rawPack.source !== sk) STATE._splitSource = rawPack.source;
+  else if (profPack.source && profPack.source !== sk) STATE._splitSource = profPack.source;
   var cells = [
     ['OSI', numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1],
     ['wRC+', numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0],
@@ -692,25 +859,31 @@ function metricStripHtml(key, splitKey) {
 }
 
 function splitTabNote(tab, p) {
+  var parts = [];
+  if (STATE._splitSource) {
+    parts.push('No qualified ' + splitSourceLabel(tab) + ' sample — showing ' + splitSourceLabel(STATE._splitSource) + ' line.');
+  }
   if (tab === 'vs_RHP' || tab === 'vs_LHP') {
     var rhp = numOrNull(pickCol(preferredProfileRow(STATE.playerKey, 'vs_RHP') || {}, ['OSI']));
     var lhp = numOrNull(pickCol(preferredProfileRow(STATE.playerKey, 'vs_LHP') || {}, ['OSI']));
-    if (rhp != null && lhp != null) return Math.abs(rhp - lhp) < 6 ? 'Balanced platoon — minimal hand edge.' : (rhp > lhp ? 'Stronger vs RHP (OSI ' + fmt(rhp, 1) + ' vs ' + fmt(lhp, 1) + ').' : 'Stronger vs LHP (OSI ' + fmt(lhp, 1) + ' vs ' + fmt(rhp, 1) + ').');
+    if (rhp != null && lhp != null) {
+      parts.push(Math.abs(rhp - lhp) < 6 ? 'Balanced platoon — minimal hand edge.' : (rhp > lhp ? 'Stronger vs RHP (OSI ' + fmt(rhp, 1) + ' vs ' + fmt(lhp, 1) + ').' : 'Stronger vs LHP (OSI ' + fmt(lhp, 1) + ' vs ' + fmt(rhp, 1) + ').'));
+    }
   }
   if (tab === 'overall' || tab === 'recent') {
-    var ow = numOrNull(pickCol(rawFor(STATE.playerKey, 'overall'), ['wRC+']));
-    var rw = numOrNull(pickCol(rawFor(STATE.playerKey, 'recent'), ['wRC+']));
+    var ow = numOrNull(pickCol(rawFor(STATE.playerKey, 'overall', p), ['wRC+']));
+    var rw = numOrNull(pickCol(rawFor(STATE.playerKey, 'recent', p), ['wRC+']));
     if (ow != null && rw != null) {
       var d = rw - ow;
-      return Math.abs(d) < 8 ? 'Recent form (' + fmt(rw, 0) + ' wRC+) tracks the season line (' + fmt(ow, 0) + ').'
+      parts.push(Math.abs(d) < 8 ? 'Recent form (' + fmt(rw, 0) + ' wRC+) tracks the season line (' + fmt(ow, 0) + ').'
         : (d > 0 ? 'Heating up: recent wRC+ ' + fmt(rw, 0) + ' vs season ' + fmt(ow, 0) + ' (+' + fmt(d, 0) + ').'
-                 : 'Cooling: recent wRC+ ' + fmt(rw, 0) + ' vs season ' + fmt(ow, 0) + ' (' + fmt(d, 0) + ').');
+                 : 'Cooling: recent wRC+ ' + fmt(rw, 0) + ' vs season ' + fmt(ow, 0) + ' (' + fmt(d, 0) + ').'));
     }
   }
   if (tab === 'vs_SP' && p && p.lineup.inLineup && p.lineup.oppSp && p.lineup.oppSp !== 'TBD') {
-    return 'Tonight vs ' + p.lineup.oppSp + ' (' + p.lineup.oppHand + 'HP). Full pitch-type overlap in Pitch Mix below.';
+    parts.push('Tonight vs ' + p.lineup.oppSp + ' (' + p.lineup.oppHand + 'HP). Full pitch-type overlap in Pitch Mix below.');
   }
-  return '';
+  return parts.join(' ');
 }
 
 function renderSplitTabBar() {
@@ -748,12 +921,12 @@ function bindSplitTabs() {
 function renderSplits(key, p) {
   var tab = STATE.splitTab;
   var sk = tab === 'overall' ? 'overall' : tab;
-  document.getElementById('splitStats').innerHTML = metricStripHtml(key, sk);
+  document.getElementById('splitStats').innerHTML = metricStripHtml(key, sk, p);
   var chartEl = document.getElementById('splitFormChart');
   var insightEl = document.getElementById('splitInsight');
   var C = window.MLBMACharts;
-  var ow = numOrNull(pickCol(rawFor(key, 'overall'), ['wRC+']));
-  var rw = numOrNull(pickCol(rawFor(key, 'recent'), ['wRC+']));
+  var ow = numOrNull(pickCol(rawFor(key, 'overall', p), ['wRC+']));
+  var rw = numOrNull(pickCol(rawFor(key, 'recent', p), ['wRC+']));
   if (C && C.buildTrendLineChart && ow != null && rw != null && tab === 'recent') {
     chartEl.innerHTML = C.buildTrendLineChart('wRC+ — season vs recent', [ow, rw], 480, 110, { labels: ['Season', 'Recent'], metricCtx: 'wrc', invertTrend: false });
     chartEl.style.display = '';
@@ -816,9 +989,9 @@ function buildSearch() {
   input.addEventListener('keydown', function(e) { if (e.key === 'Enter') selectByName(input.value); });
 }
 function selectByName(name) {
-  var nk = normalizeName(name);
-  var hit = DATA.profiles.find(function(p) { return normalizeName(pickCol(p, ['player_name', 'Name'])) === nk; })
-    || DATA.registry.find(function(r) { return normalizeName(pickCol(r, ['full_name', 'name'])) === nk; });
+  var nk = canonicalName(name);
+  var hit = DATA.profiles.find(function(p) { return canonicalName(pickCol(p, ['player_name', 'Name'])) === nk; })
+    || findRegistryByName(name, '');
   if (hit) { var key = playerKey(hit); renderPlayer(key); var u = new URLSearchParams(window.location.search); u.set('player', name); history.replaceState(null, '', '?' + u.toString()); }
 }
 
@@ -847,7 +1020,12 @@ function load() {
     }
     var urlName = new URLSearchParams(window.location.search).get('player');
     var startKey = null;
-    if (urlName) { var nk = normalizeName(urlName); var hit = DATA.profiles.find(function(p) { return normalizeName(pickCol(p, ['player_name', 'Name'])) === nk; }); if (hit) startKey = playerKey(hit); }
+    if (urlName) {
+      var nk = canonicalName(urlName);
+      var hit = DATA.profiles.find(function(p) { return canonicalName(pickCol(p, ['player_name', 'Name'])) === nk; })
+        || findRegistryByName(urlName, '');
+      if (hit) startKey = playerKey(hit);
+    }
     if (!startKey && DATA.profiles.length) startKey = playerKey(overallFirst());
     if (startKey) { renderPlayer(startKey); var inp = document.getElementById('playerSearchInput'); if (inp) inp.value = playerDisplayName(startKey); }
   }).catch(function(err) {
