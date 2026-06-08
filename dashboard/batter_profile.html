@@ -11,12 +11,13 @@
 <link rel="stylesheet" href="team_profile.css?v=20260605a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260604b">
 <link rel="stylesheet" href="profile_shell.css?v=20260604b">
-<link rel="stylesheet" href="batter_profile.css?v=20260619c">
+<link rel="stylesheet" href="batter_profile.css?v=20260608b">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260606c"></script>
+<script src="matchup_shared.js?v=20260608a"></script>
+<script src="pitch_mix_shared.js?v=20260608a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260606d" data-page="batter_profile.html"></script>
@@ -111,25 +112,27 @@
 
   <div class="tp-identity-stack profile-shell" id="profileContent">
 
-    <!-- Hero: search + identity + prop anchor -->
+    <!-- Hero: search + identity + tonight context + prop hub -->
     <section class="ca-board tp-section bp-hero-section" id="secHero">
       <div class="bx-hero-shell">
-        <div class="bx-hero-search">
+        <div class="bx-hero-top">
           <div class="bx-search-group">
-            <label class="selector-label" for="playerSearchInput">Search batter</label>
+            <label class="bx-field-label" for="playerSearchInput">Search batter</label>
             <input type="text" class="bx-search-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, Soto, Tucker" autocomplete="off">
-    </div>
-    </div>
-        <div class="bx-identity" id="batterIdentity"></div>
-        <div class="bx-context-strip" id="contextStrip"></div>
+            <p class="bx-hero-hint">Tonight's props, platoon splits, and pitch-mix overlap vs the listed starter.</p>
+          </div>
+          <div class="bx-identity" id="batterIdentity"></div>
+        </div>
+        <div class="bx-metric-band" id="heroMetrics"></div>
+        <div class="bx-tonight-band" id="contextStrip"></div>
         <div class="bx-prop-grid">
           <div class="bx-prop-main">
             <div class="bx-anchor" id="propAnchor"></div>
             <div class="bx-prop-cards" id="propCards"></div>
-    </div>
+          </div>
           <div class="bx-drivers" id="propDrivers"></div>
+        </div>
       </div>
-    </div>
     </section>
 
     <!-- Prop lines: model estimates vs standard book numbers -->
@@ -149,6 +152,12 @@
       <div class="bx-insight" id="splitInsight"></div>
     </section>
 
+    <!-- Pitch-type profile + listed-starter arsenal overlap -->
+    <section class="ca-board tp-section" id="secPitchMix">
+      <div id="bxHdrPitchMix"></div>
+      <div id="pitchMixMount"></div>
+    </section>
+
   </div>
 </main>
 
@@ -163,19 +172,15 @@ var A = window.MLBMAAssets;
 
 var DATA = {
   profiles: [], registry: [], lineups: [], matchups: [], spProfiles: [],
-  rawStats: {}, pool: { vs_RHP: [] }
+  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null
 };
 var STATE = { playerKey: null, window: 'season', splitTab: 'overall' };
 
-var SPLIT_TABS = [
-  ['overall', 'Overall'],
-  ['recent', 'Recent'],
-  ['vs_RHP', 'vs RHP'],
-  ['vs_LHP', 'vs LHP'],
-  ['home', 'Home'],
-  ['away', 'Away'],
-  ['vs_SP', 'vs SP'],
-  ['vs_RP', 'vs RP']
+var SPLIT_GROUPS = [
+  { label: 'Window', tabs: [['overall', 'Overall'], ['recent', 'Recent']] },
+  { label: 'Platoon', tabs: [['vs_RHP', 'vs RHP'], ['vs_LHP', 'vs LHP']] },
+  { label: 'Venue', tabs: [['home', 'Home'], ['away', 'Away']] },
+  { label: 'Staff', tabs: [['vs_SP', 'vs SP'], ['vs_RP', 'vs RP']] }
 ];
 
 var RAW_TABS = [
@@ -239,9 +244,9 @@ function valChip(val, ctx, invert, dec) {
   if (A && A.valChipHtml) return A.valChipHtml(val, ctx || 'osi', !!invert, dec == null ? 1 : dec);
   return '<span class="chip c-na">' + (val == null ? '—' : esc(val)) + '</span>';
 }
-function sectionHeaderHtml(title, subtitle, icon) {
+function sectionHeaderHtml(title, subtitle, iconKey) {
   if (A && A.sectionHeaderHtml) {
-    return A.sectionHeaderHtml({ title: title, subtitle: subtitle || '', icon: (window.MLBMAIcons && MLBMAIcons.profileIcon) ? MLBMAIcons.profileIcon(icon) : icon, kicker: 'Batter Profile' });
+    return A.sectionHeaderHtml({ title: title, subtitle: subtitle || '', iconKey: iconKey || 'circle-dot', kicker: 'Batter Profile' });
   }
   return '<header class="ca-section-header"><h2 class="ca-section-title">' + esc(title) + '</h2>'
     + (subtitle ? '<p class="ca-helper">' + esc((MLBMAAssets && MLBMAAssets.titleCaseLabel) ? MLBMAAssets.titleCaseLabel(subtitle) : subtitle) + '</p>' : '') + '</header>';
@@ -490,27 +495,44 @@ function batterHeadshot(key, sizeKey) {
 }
 
 /* ---------- renderers ---------- */
+function renderHeroMetrics(key, p) {
+  var el = document.getElementById('heroMetrics');
+  if (!el) return;
+  var prof = overallProfileRow(key);
+  var R = activeRaw(key);
+  var cells = [
+    ['OSI', numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1],
+    ['wRC+', numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0],
+    ['K%', pct(R, ['K%']), 'kpct', true, 1],
+    ['HardHit%', pct(R, ['HardHit%', 'Hard%']), 'barrel', false, 1]
+  ];
+  el.innerHTML = cells.map(function(c) {
+    var v = c[1];
+    var disp = (v == null) ? '<span class="chip c-na">—</span>' : valChip(v, c[2], c[3], c[4]);
+    return '<div class="bx-metric-band__cell"><span class="bx-metric-band__label">' + esc(c[0]) + '</span><span class="bx-metric-band__val">' + disp + '</span></div>';
+  }).join('');
+}
+
 function renderIdentity(key, p) {
   var name = playerDisplayName(key);
   var reg = getRegistry(key);
   var team = String(pickCol(reg || {}, ['team_abbr', 'team']) || (p.lineup && p.lineup.team) || '').toUpperCase();
   var bats = pickCol(reg || {}, ['bats']) || pickCol(p.R || {}, ['bats']) || '';
   var avatar = batterHeadshot(key, 'profile');
-  var logo = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 32, 'bx-identity__logo') : '';
+  var logo = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 34, 'bx-identity__logo') : '';
   var pills = '';
   if (bats) pills += '<span class="bx-pill">Bats ' + esc(bats) + '</span>';
   if (team) pills += '<span class="bx-pill">' + esc(team) + '</span>';
   if (p.lineup && p.lineup.inLineup) {
-    pills += '<span class="bx-pill bx-pill--today">Batting ' + esc(p.lineup.batOrder) + ' · ' + esc(p.lineup.side) + '</span>';
-    if (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') pills += '<span class="bx-pill bx-pill--today">vs ' + esc(p.lineup.oppSp) + ' (' + esc(p.lineup.oppHand) + 'HP)</span>';
+    pills += '<span class="bx-pill bx-pill--today">Tonight · #' + esc(p.lineup.batOrder) + '</span>';
   } else {
-    pills += '<span class="bx-pill">Not in a posted lineup</span>';
+    pills += '<span class="bx-pill bx-pill--muted">No posted lineup</span>';
   }
   document.getElementById('batterIdentity').innerHTML =
     (avatar ? '<div class="bx-identity__avatar">' + avatar + '</div>' : '') +
     '<div class="bx-identity__body">' +
       (logo ? '<div class="bx-identity__team">' + logo + '</div>' : '') +
-      '<div class="bx-identity__eyebrow">Batter Prop Hub</div>' +
+      '<div class="bx-identity__eyebrow">Batter Profile</div>' +
       '<div class="bx-identity__name">' + esc(name) + '</div>' +
       '<div class="bx-identity__meta">' + pills + '</div>' +
     '</div>';
@@ -519,28 +541,31 @@ function renderIdentity(key, p) {
 function renderContextStrip(p) {
   var el = document.getElementById('contextStrip');
   if (!el) return;
-  if (!p.lineup.inLineup) { el.innerHTML = ''; el.style.display = 'none'; return; }
-  el.style.display = '';
-  var best = (p.tb != null && p.hits != null && p.tb / 1.6 >= p.hits / 1.0) ? 'Total Bases' : 'Hits';
+  if (!p.lineup.inLineup) {
+    el.className = 'bx-tonight-band bx-tonight-band--empty';
+    el.innerHTML = '<div class="bx-context-box"><div class="bx-context-box__label">Tonight</div><div class="bx-context-box__value">No posted lineup</div><div class="bx-context-box__sub">Props use ~4.0 PA until the card is confirmed.</div></div>';
+    return;
+  }
+  el.className = 'bx-tonight-band';
   var spLabel = (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp + ' (' + p.lineup.oppHand + 'HP)' : 'Starter TBD';
   var spSub = p.spK != null ? fmt(p.spK, 1) + '% K · ' + (p.spHr9 != null ? fmt(p.spHr9, 2) + ' HR/9' : 'SP profile') : 'Awaiting starter profile';
-  var runEnv = p.drivers.lineupCtx;
+  var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
   var risk = p.drivers.kRisk >= 58 ? 'K pressure up' : (p.drivers.power >= 62 ? 'Power ceiling live' : 'Contact-first path');
   el.innerHTML =
-    '<div class="bx-context-box"><div class="bx-context-box__label">Best Angle</div><div class="bx-context-box__value">' + esc(best) + '</div></div>' +
     '<div class="bx-context-box"><div class="bx-context-box__label">Opponent SP</div><div class="bx-context-box__value">' + esc(spLabel) + '</div><div class="bx-context-box__sub">' + esc(spSub) + '</div></div>' +
-    '<div class="bx-context-box"><div class="bx-context-box__label">Lineup Spot</div><div class="bx-context-box__value">' + esc(String(p.lineup.batOrder)) + '</div><div class="bx-context-box__sub">~' + fmt(p.pa, 1) + ' PA projected</div></div>' +
-    '<div class="bx-context-box"><div class="bx-context-box__label">Risk Lens</div><div class="bx-context-box__value">' + esc(risk) + '</div><div class="bx-context-box__sub">Context score ' + runEnv + '</div></div>';
+    '<div class="bx-context-box"><div class="bx-context-box__label">Lineup Spot</div><div class="bx-context-box__value">#' + esc(String(p.lineup.batOrder)) + ' · ' + esc(p.lineup.side) + '</div><div class="bx-context-box__sub">~' + fmt(p.pa, 1) + ' PA projected</div></div>' +
+    '<div class="bx-context-box"><div class="bx-context-box__label">Platoon Read</div><div class="bx-context-box__value">' + esc(platoon) + '</div><div class="bx-context-box__sub">Rates pulled from ' + esc(platoon) + ' split.</div></div>' +
+    '<div class="bx-context-box"><div class="bx-context-box__label">Risk Lens</div><div class="bx-context-box__value">' + esc(risk) + '</div><div class="bx-context-box__sub">Context score ' + p.drivers.lineupCtx + '</div></div>';
 }
 
 function renderPropHub(key, p) {
   var best = (p.tb != null && p.hits != null && p.tb / 1.6 >= p.hits / 1.0) ? 'Total Bases' : 'Hits';
   var bestScore = best === 'Total Bases' ? p.drivers.power : p.drivers.contact;
   document.getElementById('propAnchor').innerHTML =
-    '<div><div class="bx-anchor__eyebrow">Best Angle</div>' +
-    '<div class="bx-anchor__score" style="color:' + metricColor(bestScore) + '">' + bestScore + '</div></div>' +
+    '<div class="bx-anchor__score-wrap"><div class="bx-anchor__eyebrow">Best Angle</div>' +
+    '<div class="bx-anchor__score">' + valChip(bestScore, 'osi', false, 0) + '</div></div>' +
     '<div class="bx-anchor__copy"><strong>' + esc(best) + '</strong> is the lead read' +
-    (p.lineup.inLineup ? ' batting <strong>' + esc(p.lineup.batOrder) + '</strong> vs <strong>' + esc(p.lineup.oppSp) + '</strong> (' + esc(p.lineup.oppHand) + 'HP).' : '. Lineup not posted yet — projections use ~4.0 PA.') +
+    (p.lineup.inLineup ? ' batting <strong>#' + esc(p.lineup.batOrder) + '</strong> vs <strong>' + esc(p.lineup.oppSp) + '</strong> (' + esc(p.lineup.oppHand) + 'HP).' : '. Lineup not posted yet — projections use ~4.0 PA.') +
     '</div>';
 
   var cards = [
@@ -553,10 +578,13 @@ function renderPropHub(key, p) {
     var ln = c.label === 'Home Run'
       ? (c.proj != null ? { lean: c.proj >= 0.16 ? 'over' : (c.proj <= 0.08 ? 'under' : 'pass'), label: (Math.round(c.proj * 100)) + '% to go yard' } : { lean: 'pass', label: 'No data' })
       : leanFor(c.proj, c.line);
+    var projDisp = (c.proj != null)
+      ? valChip(c.proj, c.label === 'Home Run' ? 'hr9' : 'osi', false, c.dec)
+      : '<span class="chip c-na">—</span>';
     return '<div class="bx-prop-card">' +
       '<div class="bx-prop-card__label">' + esc(c.label) + '</div>' +
       '<div class="bx-prop-card__line">' +
-        '<span class="bx-prop-card__proj" style="color:' + metricColor(c.proj != null ? clamp((c.proj / (c.line * 1.3)) * 100, 0, 100) : 50) + '">' + (c.proj != null ? fmt(c.proj, c.dec) : '—') + '</span>' +
+        '<span class="bx-prop-card__proj">' + projDisp + '</span>' +
         '<span class="bx-prop-card__lean bx-lean--' + ln.lean + '">' + esc(ln.label) + '</span>' +
       '</div>' +
       '<div class="bx-prop-card__note">' + esc(c.note) + '</div>' +
@@ -691,8 +719,11 @@ function splitTabNote(tab, p) {
 }
 
 function renderSplitTabBar() {
-  document.getElementById('splitTabBar').innerHTML = '<div class="hub-pill-row bx-split-tabs">' + SPLIT_TABS.map(function(t) {
-    return '<button type="button" class="hub-pill' + (STATE.splitTab === t[0] ? ' active' : '') + '" data-split="' + t[0] + '">' + t[1] + '</button>';
+  document.getElementById('splitTabBar').innerHTML = '<div class="bx-split-nav">' + SPLIT_GROUPS.map(function(g) {
+    return '<div class="bx-split-nav__group"><span class="bx-split-nav__label">' + esc(g.label) + '</span>' +
+      '<div class="hub-pill-row">' + g.tabs.map(function(t) {
+        return '<button type="button" class="hub-pill' + (STATE.splitTab === t[0] ? ' active' : '') + '" data-split="' + t[0] + '">' + esc(t[1]) + '</button>';
+      }).join('') + '</div></div>';
   }).join('') + '</div>';
 }
 
@@ -709,9 +740,11 @@ function bindSplitTabs() {
     renderSplitTabBar();
     if (STATE.playerKey) {
       var p = projectProps(STATE.playerKey);
+      renderHeroMetrics(STATE.playerKey, p);
       renderPropHub(STATE.playerKey, p);
       renderContextStrip(p);
       renderSplits(STATE.playerKey, p);
+      renderPitchMix(STATE.playerKey, p);
     }
   });
 }
@@ -742,15 +775,31 @@ function renderSplits(key, p) {
     chartEl.style.display = 'none';
     var note = (tab === 'vs_RHP' && domHand === 'vs RHP') || (tab === 'vs_LHP' && domHand === 'vs LHP') ? 'Active matchup today' : (tab === 'vs_SP' ? 'Early-game read' : (tab === 'vs_RP' ? 'Late-game read' : ''));
     panelEl.innerHTML = splitPanel(titles[tab] || tab, note, profileRowForSplit(key, tab), rawFor(key, tab));
-    if (tab === 'vs_SP' && p.lineup.inLineup && p.lineup.oppSp && p.lineup.oppSp !== 'TBD' && p.sp) {
-      panelEl.innerHTML += '<div class="bx-split-panel bx-sp-matchup" style="margin-top:12px;"><h4>Listed Starter — ' + esc(p.lineup.oppSp) + '</h4>' +
-        '<div class="bx-mini-grid">' + miniHtml('Pitch Score', numOrNull(pickCol(p.sp, ['PitchScore', 'pitch_score', 'Pitching Score'])), 'pitching', false) +
-        miniHtml('K%', p.spK, 'kpct', false, true) + miniHtml('HR/9', p.spHr9, 'hr9', true) + '</div></div>';
+    if (tab === 'vs_SP' && p.lineup.inLineup && p.lineup.oppSp && p.lineup.oppSp !== 'TBD') {
+      panelEl.innerHTML += '<div class="bx-split-jump">Full pitch-type overlap vs <strong>' + esc(p.lineup.oppSp) + '</strong> in <a href="#secPitchMix">Pitch Mix</a>.</div>';
     }
   }
   var note = splitTabNote(tab, p);
   insightEl.innerHTML = note ? esc(note) : '';
   insightEl.style.display = note ? '' : 'none';
+}
+
+function renderPitchMix(key, p) {
+  var mount = document.getElementById('pitchMixMount');
+  if (!mount) return;
+  var PM = window.MLBMAPitchMix;
+  if (!PM || !DATA.pitchMix) {
+    mount.innerHTML = '<div class="bp-pm-empty"><p class="ca-helper">Pitch mix data unavailable.</p></div>';
+    return;
+  }
+  var batterName = playerDisplayName(key);
+  var spName = (p.lineup && p.lineup.inLineup) ? p.lineup.oppSp : '';
+  var pack = PM.resolveBatterPitchMix(DATA.pitchMix, batterName, spName);
+  mount.innerHTML = PM.renderBatterProfileSection(pack, {
+    batterName: batterName,
+    spName: spName,
+    mix: DATA.pitchMix
+  });
 }
 
 function renderPlayer(key) {
@@ -759,16 +808,19 @@ function renderPlayer(key) {
   document.getElementById('profileContent').style.opacity = '1';
   var p = projectProps(key);
   renderIdentity(key, p);
+  renderHeroMetrics(key, p);
   renderContextStrip(p);
   renderPropHub(key, p);
   renderPropLines(p);
   renderSplits(key, p);
+  renderPitchMix(key, p);
 }
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
-  document.getElementById('bxHdrLines').innerHTML = sectionHeaderHtml('Prop Lines · Estimates', 'Model projections vs standard book lines — over/under leans and regression flags', 'target');
-  document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Rate Lines · Splits', 'Season rates, platoon, venue, and staff context — switch views with the split tools', 'split');
+  document.getElementById('bxHdrLines').innerHTML = sectionHeaderHtml('Prop Lines', 'Model estimates vs standard book thresholds with over/under leans', 'target');
+  document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Rate Splits', 'Season, platoon, venue, and staff-facing rate lines', 'split');
+  document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Pitch Mix', 'L14 pitch-type contact vs listed starter arsenal', 'pitching');
 }
 function buildSearch() {
   var seen = {};
@@ -795,11 +847,19 @@ function fetchTab(tab) { return MLBMASharedMatchup.fetchSheetTab(tab).catch(func
 
 function load() {
   var tabs = [TABS.batter_profiles, TABS.player_registry, TABS.today_lineups, TABS.today_matchups, TABS.sp_profiles]
-    .concat(RAW_TABS.map(function(p) { return p[0]; }));
+    .concat(RAW_TABS.map(function(p) { return p[0]; }))
+    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14]);
   Promise.all(tabs.map(fetchTab)).then(function(res) {
     DATA.profiles = res[0] || []; DATA.registry = res[1] || []; DATA.lineups = res[2] || [];
     DATA.matchups = res[3] || []; DATA.spProfiles = res[4] || [];
     RAW_TABS.forEach(function(pair, i) { DATA['_raw_' + pair[1]] = res[5 + i] || []; });
+    var pmOff = 5 + RAW_TABS.length;
+    if (window.MLBMAPitchMix && MLBMAPitchMix.buildIndex) {
+      DATA.pitchMix = MLBMAPitchMix.buildIndex({
+        pitcherL14: res[pmOff] || [],
+        batterL14: res[pmOff + 1] || []
+      });
+    }
     indexRawStats(); buildPool();
     renderSplitTabBar(); bindSplitTabs(); mountHeaders(); buildSearch();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

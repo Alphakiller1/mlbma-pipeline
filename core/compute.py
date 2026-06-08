@@ -2,13 +2,15 @@
 
 import os
 
+import pandas as pd
+
 from core.compute_abq import calc_abq
 from core.compute_obr import calc_obr
 from core.compute_oor import calc_oor
 from core.compute_osi import calc_osi
 from core.compute_pitching import calc_pitching_score
 from core.compute_rcv import calc_rcv
-from core.config import DATA_DIR
+from core.config import DATA_DIR, SAVANT_TEAM_ALIASES, XWOBA_SPLIT_WEIGHT
 from core.metrics_utils import load, load_all
 
 
@@ -49,13 +51,25 @@ def compute_split(std, bb, savant, label, traditional=None):
 
 
 def _with_split_xwoba(base, split):
-    """Override xwOBA in the season leaderboard with the handedness-specific xwOBA
-    (the only split-available Savant column) so OBR/RCV reflect how a lineup hits vs
-    RHP vs LHP. Discipline/batted-ball stats stay season-level (not split-available)."""
-    if split is None or "Tm" not in getattr(split, "columns", []) or "xwOBA" not in split.columns:
+    """Blend the season-level Savant xwOBA toward the handedness-specific xwOBA so OBR/RCV
+    can reflect how a lineup hits vs RHP vs LHP -- WITHOUT letting thin split samples
+    corrupt the signal.
+
+    Season xwOBA tracks team run-scoring strongly (r=+0.61); the raw split xwOBA is noise
+    at current sample sizes (r=-0.12, see scripts/calibration_audit.py). So we regress the
+    split toward season by XWOBA_SPLIT_WEIGHT (default 0.0 = season only). The team-key
+    aliases ensure all 30 teams join; before this, KC/SF/etc. silently dropped out.
+    """
+    w = XWOBA_SPLIT_WEIGHT
+    if w <= 0 or split is None or "Tm" not in getattr(split, "columns", []) or "xwOBA" not in split.columns:
         return base
+    split = split.copy()
+    split["Tm"] = split["Tm"].astype(str).str.upper().replace(SAVANT_TEAM_ALIASES)
     m = base.merge(split[["Tm", "xwOBA"]].rename(columns={"xwOBA": "_xsplit"}), on="Tm", how="left")
-    m["xwOBA"] = m["_xsplit"].where(m["_xsplit"].notna(), m["xwOBA"])
+    season = pd.to_numeric(m["xwOBA"], errors="coerce")
+    sp = pd.to_numeric(m["_xsplit"], errors="coerce")
+    blended = (1 - w) * season + w * sp
+    m["xwOBA"] = blended.where(sp.notna(), season)   # fall back to season where no split
     return m.drop(columns=["_xsplit"])
 
 

@@ -59,9 +59,9 @@
   var CONTEXT_DEFAULTS = {
     // composite proprietary metrics (already 0-100, higher = better)
     osi: { mean: 50, std: 12, hi: true },
-    // abq teams cluster tightly around average; sens>1 widens the color spread so
-    // near-average differences are still legible (otherwise everything reads amber).
-    abq: { mean: 50, std: 12, hi: true, sens: 1.5 },
+    // ABQ no longer needs a sens widener: the league baseline now uses ABQ's true (tighter)
+    // 30-team std instead of an inflated pooled one, so near-average gaps already separate.
+    abq: { mean: 50, std: 12, hi: true },
     rcv: { mean: 50, std: 12, hi: true },
     obr: { mean: 50, std: 12, hi: true },
     projosi: { mean: 50, std: 12, hi: true },
@@ -77,7 +77,7 @@
     iso: { mean: 0.165, std: 0.055, hi: true },
     slg: { mean: 0.410, std: 0.050, hi: true },
     avg: { mean: 0.248, std: 0.022, hi: true },
-    hr: { mean: 140, std: 45, hi: true },
+    hr: { mean: 34, std: 8, hi: true },   // split-level team HR (vs a hand), not full-season
     wrc: { mean: 100, std: 15, hi: true },
     rpg: { mean: 4.40, std: 0.40, hi: true },       // runs scored / game (offense)
     barrel: { mean: 8.0, std: 2.0, hi: true },       // Barrel% (offense)
@@ -539,10 +539,12 @@
     return GRADIENT_STOPS[GRADIENT_STOPS.length - 1].c.slice();
   }
 
-  /** Direction-adjusted z-score -> gradient position [0,1]. +/-2.5 sigma spans the scale. */
+  /** Direction-adjusted z-score -> gradient position [0,1]. +/-2 sigma spans the scale.
+   * Tightened from +/-2.5: with only 30 teams the best/worst sit near +/-2 sigma, so a
+   * 2.5-sigma span never let the extremes reach full red/green. */
   function _zToGradient(z, invert) {
     if (invert) z = -z;
-    return (z + 2.5) / 5;
+    return (z + 2) / 4;
   }
 
   function gradientColor(value, context, invert) {
@@ -551,14 +553,18 @@
     return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
   }
 
+  // Bucket edges tuned for an n=30 league. With ~normal team data, z>1.5 is ~top 2-3
+  // teams (elite), z>0.85 the next ~4 (strong), the +/-0.30 core ~7 teams (average), and
+  // symmetric on the low side -- so all seven colors get used instead of everyone reading
+  // amber. (Old +/-2 / +/-1 edges left 'elite'/'veryWeak' essentially unreachable.)
   function gradeKeyFromZ(z, invert) {
     if (invert) z = -z;
-    if (z <= -2) return 'veryWeak';
-    if (z <= -1) return 'weak';
-    if (z <= -0.35) return 'belowAvg';
-    if (z <= 0.35) return 'average';
-    if (z <= 1) return 'aboveAvg';
-    if (z <= 2) return 'strong';
+    if (z <= -1.5) return 'veryWeak';
+    if (z <= -0.85) return 'weak';
+    if (z <= -0.30) return 'belowAvg';
+    if (z <= 0.30) return 'average';
+    if (z <= 0.85) return 'aboveAvg';
+    if (z <= 1.5) return 'strong';
     return 'elite';
   }
 

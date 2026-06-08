@@ -214,10 +214,34 @@ OBR_WEIGHTS = {
     "bb_pct": 0.35,
 }
 
+# xwOBA source blend: 0.0 = season-level Savant xwOBA only, 1.0 = handedness-split only.
+# Calibration audit (scripts/calibration_audit.py) showed split xwOBA is pure noise at
+# current sample sizes — it correlates -0.12 with team runs/game (and -0.38 with wOBA),
+# while season xwOBA correlates +0.61. Blending in ANY split weight monotonically degrades
+# the signal (OBR~runs: 0.0->+0.67, 0.5->+0.35, 1.0->+0.14). Keep at 0.0 until split
+# samples mature enough for PA-based shrinkage; raise toward ~0.15 only once they do.
+XWOBA_SPLIT_WEIGHT = 0.0
+
+# Savant team abbreviations -> the FanGraphs abbreviations used across the metric files,
+# so the split-xwOBA merge actually joins all 30 teams (KC/SF etc. otherwise drop out).
+SAVANT_TEAM_ALIASES = {
+    "KC": "KCR", "SF": "SFG", "TB": "TBR", "SD": "SDP",
+    "WSH": "WSN", "CWS": "CHW", "AZ": "ARI",
+}
+
+# Rebalanced 2026-06 after the xwOBA fix + validity audit (scripts/osi_reweight_sweep.py).
+# Each component's validated correlation with outcomes (30 teams, this season):
+#   OBR  runs +0.66 / win +0.64  -- strongest, was underweighted at 0.20
+#   RCV  runs +0.46 / win +0.49  -- power/damage, core to run scoring
+#   ABQ  runs +0.16 / win +0.44  -- plate discipline/process: weak for runs BY DESIGN
+#                                    but a real win signal; trimmed from 0.37 so it no
+#                                    longer dominates an offensive-output index.
+# Net: OSI~runs 0.55->0.61, OSI~win 0.65->0.66. (Avoided the in-sample win optimum
+# 0.10/0.45/0.40 which overfits ABQ against its near-zero runs signal.)
 OSI_WEIGHTS = {
-    "rcv": 0.43,
-    "abq": 0.37,
-    "obr": 0.20,
+    "rcv": 0.35,
+    "abq": 0.25,
+    "obr": 0.40,
 }
 
 PROJ_OSI_REG_SCALE = 450
@@ -225,10 +249,16 @@ PROJ_OSI_REG_CLIP = 8
 REG_SCALE = PROJ_OSI_REG_SCALE
 REG_CLIP = PROJ_OSI_REG_CLIP
 
+# Re-evaluated 2026-06 (scripts/pitching_validity.py). The old K/BB/HR-only score (FIP-style)
+# correlated -0.72 with runs allowed/game and +0.48 with win% -- but reweighting within those
+# three barely moved it (they're collinear). Folding in WHIP (baserunner/hit suppression that
+# K/BB/HR ignore) lifts it to -0.78 RA / +0.56 win, robustly across weightings. We stop short
+# of ERA-chasing: ERA's 0.87 is near-tautological with runs allowed, not predictive lift.
 PITCHING_WEIGHTS = {
-    "k_pct": 0.40,
-    "inv_bb_pct": 0.35,
-    "inv_hr9": 0.25,
+    "k_pct": 0.30,
+    "inv_bb_pct": 0.20,
+    "inv_hr9": 0.20,
+    "inv_whip": 0.30,
 }
 
 # Combined staff pitching score (dashboard -- SP + bullpen)

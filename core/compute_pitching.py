@@ -1,7 +1,9 @@
 """
-Pitching Score -- IP-weighted team pitching composite from starter stats.
+Pitching Score -- IP-weighted team pitching composite from the full staff (sp_standard
+covers ~all team innings, starters + relievers, weighted by IP).
 
-Pitching Score = 0.40 x K% + 0.35 x inv(BB%) + 0.25 x inv(HR/9)
+Pitching Score = 0.30 x K% + 0.20 x inv(BB%) + 0.20 x inv(HR/9) + 0.30 x inv(WHIP)
+  (weights in config.PITCHING_WEIGHTS; WHIP added 2026-06 -- see config note.)
 
 Also provides L14 vs season staleness detection for SP profiles and terminal.
 """
@@ -29,6 +31,7 @@ from core.metrics_utils import clean_pct, invert, normalize
 W_K = PITCHING_WEIGHTS["k_pct"]
 W_BB = PITCHING_WEIGHTS["inv_bb_pct"]
 W_HR9 = PITCHING_WEIGHTS["inv_hr9"]
+W_WHIP = PITCHING_WEIGHTS["inv_whip"]
 
 
 def _pct_points(raw) -> float | None:
@@ -201,14 +204,15 @@ def park_adjust_allowed_value(value, pitcher_team: str, home_away: str) -> float
 
 
 def calc_pitching_score(sp_std):
-    df = sp_std[["Tm", "K%", "BB%", "HR/9", "IP"]].copy()
+    df = sp_std[["Tm", "K%", "BB%", "HR/9", "WHIP", "IP"]].copy()
     df = df[df["Tm"].notna()]
     df = df[~df["Tm"].str.contains("Tms", na=False)]
     df["K%"] = clean_pct(df["K%"])
     df["BB%"] = clean_pct(df["BB%"])
     df["HR/9"] = pd.to_numeric(df["HR/9"], errors="coerce")
+    df["WHIP"] = pd.to_numeric(df["WHIP"], errors="coerce")
     df["IP"] = pd.to_numeric(df["IP"], errors="coerce")
-    df = df.dropna(subset=["K%", "BB%", "HR/9", "IP"])
+    df = df.dropna(subset=["K%", "BB%", "HR/9", "WHIP", "IP"])
     df = df[df["IP"] > 0]
 
     team = df.groupby("Tm").apply(
@@ -216,6 +220,7 @@ def calc_pitching_score(sp_std):
             "K%": np.average(x["K%"], weights=x["IP"]),
             "BB%": np.average(x["BB%"], weights=x["IP"]),
             "HR/9": np.average(x["HR/9"], weights=x["IP"]),
+            "WHIP": np.average(x["WHIP"], weights=x["IP"]),
         })
     ).reset_index()
 
@@ -223,15 +228,17 @@ def calc_pitching_score(sp_std):
         W_K * normalize(team["K%"])
         + W_BB * invert(team["BB%"])
         + W_HR9 * invert(team["HR/9"])
+        + W_WHIP * invert(team["WHIP"])
     )
 
-    ps_sorted = team[["Tm", "K%", "BB%", "HR/9", "PitchScore"]].sort_values(
+    ps_sorted = team[["Tm", "K%", "BB%", "HR/9", "WHIP", "PitchScore"]].sort_values(
         "PitchScore", ascending=False
     ).reset_index(drop=True)
     ps_sorted.index += 1
     ps_sorted["K%"] = (ps_sorted["K%"] * 100).round(1)
     ps_sorted["BB%"] = (ps_sorted["BB%"] * 100).round(1)
     ps_sorted["HR/9"] = ps_sorted["HR/9"].round(2)
+    ps_sorted["WHIP"] = ps_sorted["WHIP"].round(3)
 
     print()
     print("Pitching Score")
