@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260605a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260605a">
-<link rel="stylesheet" href="batter_profile.css?v=20260610a">
+<link rel="stylesheet" href="batter_profile.css?v=20260610b">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -1000,26 +1000,17 @@ function autoSplitForTonight(p) {
 }
 
 function batterHeadshot(key, sizeKey) {
-  if (!A) return '';
+  if (!A || !A.pitcherAvatar) return '';
   var reg = getRegistry(key);
   var prof = overallProfileRow(key);
-  var idOrName = pickCol(reg || {}, ['player_id', 'playerId'])
-    || pickCol(prof || {}, ['player_id', 'playerId'])
-    || playerDisplayName(key);
-  if (A.pitcherAvatar) {
-    return A.pitcherAvatar(idOrName, {
-      crop: sizeKey || 'profile',
-      className: 'tp-pitcher-banner__avatar',
-      eager: true
-    });
-  }
-  if (A.headshotImg && A.resolveMlbId) {
-    var mlbId = A.resolveMlbId(idOrName);
-    if (!mlbId) return '';
-    var px = (sizeKey === 'matchup' || sizeKey === 48) ? 48 : (sizeKey === 'compare' || sizeKey === 64) ? 64 : 112;
-    return A.headshotImg(mlbId, px, 'tp-pitcher-banner__avatar', { cropMod: sizeKey === 'matchup' ? 'matchup' : 'profile', eager: true });
-  }
-  return '';
+  var pid = pickCol(reg || {}, ['player_id', 'playerId'])
+    || pickCol(prof || {}, ['player_id', 'playerId']);
+  var idOrName = pid ? String(pid) : playerDisplayName(key);
+  return A.pitcherAvatar(idOrName, {
+    crop: sizeKey || 'profile',
+    className: 'tp-pitcher-banner__avatar',
+    eager: true
+  });
 }
 
 /* ---------- renderers ---------- */
@@ -1089,10 +1080,11 @@ function renderSnapshot(key, p) {
     + '<div class="tp-pitcher-banner__identity">'
     + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
     + '<div class="tp-team-banner__copy">'
-    + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Profile</p>'
+    + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Prop Hub</p>'
+    + '<div class="bp-hero-name-row">'
     + '<h1 class="tp-team-banner__title">' + esc(name) + '</h1>'
     + (team ? '<span class="tp-pitcher-banner__today pill pill-today">' + esc(team) + '</span>' : '')
-    + '</div></div>'
+    + '</div></div></div>'
     + statRow
     + '</div></section>';
   renderHeroContext(key, p);
