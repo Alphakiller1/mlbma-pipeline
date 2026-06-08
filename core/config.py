@@ -431,6 +431,7 @@ SHEET_TABS = {
     "batter_splits_vs_sp": "Batter_Splits_vsSP",
     "batter_splits_vs_rp": "Batter_Splits_vsRP",
     "batter_splits_recent": "Batter_Splits_Recent",
+    "batter_prop_hitrates": "Batter_Prop_HitRates",
     "team_profiles": "Team_Profiles",
     "team_results": "Team_Results",
     "team_l10_sp_hand": "Team_L10_SP_Hand",

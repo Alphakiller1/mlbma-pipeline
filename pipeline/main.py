@@ -167,7 +167,7 @@ def run_game_results():
 
 def run():
     """
-    Pipeline order (19 logical steps):
+    Pipeline order (22 logical steps):
       1 scrape_savant (required)
       2 scrape_fangraphs (optional)
       3 core.compute (optional, needs Savant + FanGraphs)
@@ -183,8 +183,10 @@ def run():
      13 bullpen compute + push (optional)
      14 scrape_player_registry (optional)
      15 scrape_batter_splits (optional)
-     16-17 batter compute + push (optional)
-     18-19 team compute + push (optional)
+     16 scrape_batter_gamelog (optional)
+     17-18 batter profile compute + push (optional)
+     19-20 batter prop hit-rates compute + push (optional)
+     21-22 team compute + push (optional)
     """
     pipeline_t0 = time.perf_counter()
     print(f"MLBMA Pipeline starting at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -214,7 +216,9 @@ def run():
 
     run_player_registry()
     run_batter_splits()
+    run_batter_gamelog()
     run_batter_profiles()
+    run_batter_prop_hitrates()
     run_team_profiles()
     run_instagram_autopost()
 
@@ -304,8 +308,19 @@ def run_batter_splits():
     _run_step("Step 15: scrapers.scrape_batter_splits", "scrapers.scrape_batter_splits", _fn)
 
 
+def run_batter_gamelog():
+    """Step 16: batter game logs from MLB Stats API; non-fatal on failure."""
+
+    def _fn():
+        from scrapers.scrape_batter_gamelog import run as run_batter_gamelog_module
+
+        run_batter_gamelog_module()
+
+    _run_step("Step 16: scrapers.scrape_batter_gamelog", "scrapers.scrape_batter_gamelog", _fn)
+
+
 def run_batter_profiles():
-    """Step 16-17: batter metrics + Sheets push; non-fatal on failure."""
+    """Step 17-18: batter metrics + Sheets push; non-fatal on failure."""
 
     def _fn():
         from core.compute_batter_profile import run as run_compute_batter
@@ -316,8 +331,26 @@ def run_batter_profiles():
         run_push_batter()
 
     _run_step(
-        "Step 16-17: compute_batter_profile + push_batter_profiles",
+        "Step 17-18: compute_batter_profile + push_batter_profiles",
         "core.compute_batter_profile",
+        _fn,
+    )
+
+
+def run_batter_prop_hitrates():
+    """Step 19-20: rolling prop hit-rates + Sheets push; non-fatal on failure."""
+
+    def _fn():
+        from core.compute_batter_prop_hitrates import run as run_compute_hitrates
+
+        run_compute_hitrates()
+        from outputs.push_batter_prop_hitrates import run as run_push_hitrates
+
+        run_push_hitrates()
+
+    _run_step(
+        "Step 19-20: compute_batter_prop_hitrates + push_batter_prop_hitrates",
+        "core.compute_batter_prop_hitrates",
         _fn,
     )
 
