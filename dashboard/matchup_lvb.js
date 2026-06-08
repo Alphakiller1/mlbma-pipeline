@@ -1,5 +1,5 @@
 /**
- * Lineup vs Bullpen — stat comparison, recent relief form, bullpen usage.
+ * Lineup vs Bullpen — stat comparison, recent relief form.
  * Relief-only: lineup vs RP splits; bullpen unit excludes rotation arms.
  */
 (function(global) {
@@ -111,6 +111,27 @@
     };
   }
 
+  function bullpenAvgAllowed(log, bpTeam, ctx) {
+    var rows = filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
+    var hits = 0;
+    var ab = 0;
+    rows.forEach(function(r) {
+      var bf = num(pick(r, ['batters_faced', 'BF', 'battersFaced']));
+      var bb = num(pick(r, ['BB', 'bb'])) || 0;
+      var h = num(pick(r, ['H', 'hits'])) || 0;
+      if (bf == null || bf <= 0) {
+        bf = (num(pick(r, ['K', 'k'])) || 0) + h + bb;
+      }
+      var rowAb = bf - bb;
+      if (rowAb > 0) {
+        hits += h;
+        ab += rowAb;
+      }
+    });
+    if (ab <= 0) return null;
+    return Math.round((hits / ab) * 1000) / 1000;
+  }
+
   function lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state) {
     var winDays = state.lvWin === 'l7' ? 7 : state.lvWin === 'l14' ? 14 : state.lvWin === 'l30' ? 30 : 0;
     var filtered = filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
@@ -189,7 +210,7 @@
       var pals = ctx.data && ctx.data.pals ? ctx.data.pals[teamKey(lineupTeam)] : null;
       global._lvbMetricExtras = Object.assign({}, saveExtras, {
         fipAllowed: pals && pals.xfip != null ? pals.xfip : null,
-        avgAllowed: null
+        avgAllowed: bullpenAvgAllowed(log, bpTeam, ctx)
       });
       return CM.resolveBoth('lineup-bullpen',
         { key: lineupTeam, filter: luF },
@@ -292,41 +313,6 @@
       + '<div class="mc-lvb-form-strip">' + strip + '</div>';
   }
 
-  function usagePanelHtml(comp, ctx) {
-    var bp = comp.bp;
-    var met = bp && bp.metrics ? bp.metrics : (CM && CM.bullpenResolvedMetrics
-      ? CM.bullpenResolvedMetrics(bp.row, bp.rawRow, comp.state && LC ? LC.bullpenFilter(comp.state) : {})
-      : {});
-    var apps = lastReliefApps(comp.bpTeam, ctx, 9999);
-    var high = 0;
-    var low = 0;
-    var med = 0;
-    apps.forEach(function(r) {
-      var lev = String(pick(r, ['leverage_situation', 'leverage']) || '').toLowerCase();
-      if (lev.indexOf('high') >= 0) high++;
-      else if (lev.indexOf('low') >= 0) low++;
-      else med++;
-    });
-    var total = apps.length || 1;
-    var chips = [
-      { lbl: 'Apps (YTD)', val: met.apps != null ? met.apps : apps.length, ctx: 'osi', dec: 0 },
-      { lbl: 'IP / App', val: met.ipPerApp, ctx: 'whip', dec: 2 },
-      { lbl: 'Pit / App', val: met.pitchesPerApp, ctx: 'osi', dec: 1 },
-      { lbl: 'High Lev %', val: Math.round((high / total) * 1000) / 10, ctx: 'pct' },
-      { lbl: 'Med Lev %', val: Math.round((med / total) * 1000) / 10, ctx: 'pct' },
-      { lbl: 'Low Lev %', val: Math.round((low / total) * 1000) / 10, ctx: 'pct' }
-    ];
-    var strip = chips.map(function(c) {
-      return '<div class="mc-lvb-usage-chip"><span class="mc-lvb-edge-lbl">' + esc(c.lbl) + '</span>'
-        + metricChip(c.val, c.ctx, false, c.dec == null ? 1 : c.dec) + '</div>';
-    }).join('');
-    return '<div class="mc-lvb-usage">'
-      + '<div class="mc-lvb-form-head">'
-      + (S && S.teamLogo ? S.teamLogo(comp.bpTeam, 28) : '')
-      + '<span>' + esc(comp.bpTeam) + ' bullpen usage · relief corps only</span></div>'
-      + '<div class="mc-lvb-usage-grid">' + strip + '</div></div>';
-  }
-
   function renderPerformanceBody(comp, ctx) {
     if (!comp) {
       return '<div class="mc-lvb-performance">'
@@ -351,10 +337,6 @@
       + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--lineup">' + lineupReliefFormHtml(comp, ctx) + '</div>'
       + '<div class="mc-lvp-perf-panel mc-lvp-perf-panel--pitcher">' + bullpenAppsTableHtml(comp.bpTeam, ctx) + '</div>'
       + '</div>'
-      + '</section>'
-      + '<section class="mc-lvb-section mc-lvp-section ca-board">'
-      + lvbSectionHead('Bullpen Usage', 'Season workload and leverage mix from reliever log — excludes listed rotation arms.')
-      + usagePanelHtml(comp, ctx)
       + '</section>'
       + '</div>';
   }

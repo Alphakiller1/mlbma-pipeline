@@ -530,7 +530,7 @@
     var matchupHead = global.MatchupLvB && MatchupLvB.lvbSectionHead
       ? MatchupLvB.lvbSectionHead(
         'Lineup & Bullpen Splits',
-        'Lineup vs relief splits · bullpen allowed by location and batter hand — excludes starters.'
+        'Lineup vs relief splits · bullpen vs batter hand · L7 usage below excludes starters.'
       )
       : '<header class="mc-lvb-section-head mc-lvp-section-head"><h3 class="mc-lvp-section-head__title">Lineup &amp; Bullpen Splits</h3>'
         + '<p class="mc-lvp-section-head__desc">Lineup vs relief splits · bullpen allowed metrics.</p></header>';
@@ -555,6 +555,9 @@
     var box = root.querySelector('#mcLvBAsync');
     if (!box) return;
     MatchupLvB.hydrate(box, ctx, state.lvbLineup, state.lvbBp, state);
+    if (global.MatchupBullpenSplits && MatchupBullpenSplits.mountUsageChart) {
+      MatchupBullpenSplits.mountUsageChart(root, ctx, state);
+    }
   }
 
   function bindLvbControls(root, ctx, state) {

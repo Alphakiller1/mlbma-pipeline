@@ -365,6 +365,7 @@
       fip: bullpenPrefixedMetric(rawRow, prefix, 'FIP') || (unit && unit.fip),
       bbPct: bullpenPrefixedMetric(rawRow, prefix, 'BB_pct', true) || (unit && unit.bbPct),
       opsAllowed: bullpenPrefixedMetric(rawRow, prefix, 'OPS_allowed'),
+      avgAllowed: bullpenPrefixedMetric(rawRow, prefix, 'AVG_allowed'),
       era: bullpenPrefixedMetric(rawRow, prefix, 'ERA') || (unit && unit.era),
       kPct: bullpenPrefixedMetric(rawRow, prefix, 'K_pct', true),
       apps: bullpenPrefixedMetric(rawRow, prefix, 'apps'),
@@ -587,13 +588,15 @@
     var bpFip = met.fip != null ? met.fip : bp.row.fip;
     var bpBb = met.bbPct != null ? met.bbPct : bp.row.bbPct;
     var bpOps = met.opsAllowed;
+    var bpAvgAllowed = met.avgAllowed != null ? met.avgAllowed
+      : (extras.avgAllowed != null ? extras.avgAllowed : (bp.row && bp.row.avgAllowed != null ? bp.row.avgAllowed : null));
     var rows = [
       metricRow('Win% Against / Win% Earned', luWin, bp.winPct, { ctx: 'pct' }),
       metricRow('Saves Against % / Saves Earned %', luSaveAgainst, bp.savePct, { ctx: 'pct', invertA: true }),
       metricRow('BB% / BB% Allowed', lu.bb, bpBb, { ctx: 'pitching', invertB: true }),
       metricRow('Blown Saves Caused % / Blown Save %', luBlownCaused, bp.blownSavePct, { ctx: 'pct', invertB: true }),
       metricRow('OPS / OPS Allowed', lu.ops, bpOps, { ctx: 'ops', invertB: true, decimals: 3 }),
-      metricRow('AVG / AVG Allowed', lu.avg, extras.avgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
+      metricRow('AVG / AVG Allowed', lu.avg, bpAvgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
       metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'pitching', invertA: true, invertB: true })
     ];
     if (!lineupFirst) {

@@ -1446,6 +1446,7 @@
           t: team, paSum: 0,
           osi: 0, abq: 0, rcv: 0, obr: 0,
           wrc: 0, woba: 0, xwoba: 0, slg: 0, obp: 0,
+          avg: 0, bb: 0, avgPa: 0, bbPa: 0,
           hasOsi: false, hasRate: false
         };
       }
@@ -1469,12 +1470,22 @@
       var xwoba = numOrNull(pickCol(row, 'xwOBA', 'xwoba'));
       var slg = numOrNull(pickCol(row, 'SLG', 'slg'));
       var obp = numOrNull(pickCol(row, 'OBP', 'obp'));
+      var avg = numOrNull(pickCol(row, 'AVG', 'avg'));
+      var bb = numOrNull(pickCol(row, 'BB%', 'BB_pct', 'bb_pct'));
       if (wrc != null) {
         d.wrc += wrc * pa;
         d.woba += (woba != null ? woba : 0) * pa;
         d.xwoba += (xwoba != null ? xwoba : woba != null ? woba : 0) * pa;
         d.slg += (slg != null ? slg : 0) * pa;
         d.obp += (obp != null ? obp : 0) * pa;
+        if (avg != null) {
+          d.avg += avg * pa;
+          d.avgPa += pa;
+        }
+        if (bb != null) {
+          d.bb += bb * pa;
+          d.bbPa += pa;
+        }
         d.hasRate = true;
         if (!d.hasOsi) d.paSum += pa;
       }
@@ -1501,6 +1512,8 @@
         if (out.obp != null && out.slg != null) {
           out.ops = Math.round((out.obp + out.slg) * 1000) / 1000;
         }
+        if (d.avgPa > 0) out.avg = Math.round(d.avg / d.avgPa * 1000) / 1000;
+        if (d.bbPa > 0) out.bb = Math.round(d.bb / d.bbPa * 10) / 10;
       }
       if (out.osi == null && out.wrc != null) {
         // Phase 0 proxy: when split tabs provide only rate stats, map headline process metrics
@@ -1583,7 +1596,9 @@
         xwoba: b('xwoba'),
         slg: b('slg'),
         obp: b('obp'),
-        ops: b('ops')
+        ops: b('ops'),
+        avg: b('avg'),
+        bb: b('bb')
       };
       if (row.ops == null && row.obp != null && row.slg != null) {
         row.ops = Math.round((row.obp + row.slg) * 1000) / 1000;
@@ -1903,8 +1918,21 @@
                 d[m] = d[m] * ratioBase;
               }
             });
+            ['bb', 'avg', 'ops', 'obp'].forEach(function(m) {
+              var pv = _num(pitchRow[m]);
+              if (pv != null) d[m] = pv;
+            });
             if (d.abq != null && d.rcv != null) d.ppGap = d.abq - d.rcv;
           }
+        }
+      }
+
+      if (f.pitcher === 'sp' || f.pitcher === 'rp') {
+        var rpOrSpRow = f.pitcher === 'rp' ? rpMap[tk] : spMap[tk];
+        if (rpOrSpRow) {
+          if (_num(d.bb) == null) d.bb = _num(rpOrSpRow.bb);
+          if (_num(d.avg) == null) d.avg = _num(rpOrSpRow.avg);
+          if (_num(d.ops) == null) d.ops = _num(rpOrSpRow.ops);
         }
       }
 
@@ -2129,6 +2157,7 @@
         vsRhhOsi: numOrNull(pickCol(row, 'vs_rhh_OSI_allowed', 'vs_RHH_OSI_allowed', 'osi_allowed_vs_rhh')),
         vsLhhOsi: numOrNull(pickCol(row, 'vs_lhh_OSI_allowed', 'vs_LHH_OSI_allowed', 'osi_allowed_vs_lhh')),
         opsAllowed: numOrNull(pickCol(row, 'overall_OPS_allowed', 'OPS_allowed')),
+        avgAllowed: numOrNull(pickCol(row, 'overall_AVG_allowed', 'AVG_allowed')),
         oor: osiAllowed
       };
     });

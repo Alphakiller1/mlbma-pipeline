@@ -17,6 +17,7 @@ METRIC_FIELDS = [
     "BB_pct",
     "HR9",
     "OPS_allowed",
+    "AVG_allowed",
     "inherited_runners_scored_pct",
     "ABQ_allowed",
     "RCV_allowed",
@@ -112,6 +113,7 @@ def _agg_block(df: pd.DataFrame) -> Dict[str, Optional[float]]:
     opp_tb = (total_h - total_hr) * 1.25 + total_hr * 4
     opp_slg = opp_tb / opp_ab if opp_ab > 0 else None
     opp_ops = round(opp_obp + opp_slg, 3) if (opp_obp is not None and opp_slg is not None) else None
+    opp_avg = round(total_h / opp_ab, 3) if opp_ab > 0 else None
 
     return {
         "ERA": round(total_er / total_ip * 9, 2) if total_ip > 0 else None,
@@ -121,6 +123,7 @@ def _agg_block(df: pd.DataFrame) -> Dict[str, Optional[float]]:
         "BB_pct": round(df["BB"].sum() / total_bf * 100, 1) if total_bf > 0 else None,
         "HR9": round(df["HR"].sum() / total_ip * 9, 2) if total_ip > 0 else None,
         "OPS_allowed": opp_ops,
+        "AVG_allowed": opp_avg,
         "inherited_runners_scored_pct": round(irs / ir * 100, 1) if ir > 0 else None,
         "ABQ_allowed": round(df["opponent_ABQ"].mean(), 1) if "opponent_ABQ" in df.columns else None,
         "RCV_allowed": round(df["opponent_RCV"].mean(), 1) if "opponent_RCV" in df.columns else None,
