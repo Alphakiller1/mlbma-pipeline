@@ -1,0 +1,374 @@
+/**
+ * MLBMA shared responsive contract — mobile / tablet / desktop.
+ * Breakpoints: mobile 0–767, tablet 768–1099, desktop 1100+.
+ * Optional compact: 0–479.
+ */
+
+:root {
+  --bp-mobile-max: 767px;
+  --bp-tablet-max: 1099px;
+  --bp-compact-max: 479px;
+  --shell-pad-mobile: 12px;
+  --shell-pad-tablet: 18px;
+  --section-gap-mobile: 10px;
+  --touch-target-min: 40px;
+}
+
+/* Prevent horizontal page scroll on small viewports */
+@media (max-width: 767px) {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .container,
+  .ca-page-shell {
+    padding-left: var(--shell-pad-mobile) !important;
+    padding-right: var(--shell-pad-mobile) !important;
+    max-width: 100% !important;
+  }
+
+  .ca-board {
+    padding: 14px 12px 16px;
+    border-radius: 14px;
+  }
+
+  .ca-board.tp-section {
+    scroll-margin-top: 72px;
+  }
+
+  .ca-page-header {
+    margin-bottom: 12px;
+  }
+
+  .ca-page-title {
+    font-size: clamp(1.25rem, 5.5vw, 1.65rem) !important;
+    line-height: 1.15;
+  }
+
+  .ca-page-header__sub,
+  .ca-page-header .ca-helper {
+    font-size: 12.5px;
+    line-height: 1.45;
+    max-width: 100%;
+  }
+
+  .ca-platform-cta {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .ca-platform-cta__item {
+    padding: 12px 14px;
+    min-height: var(--touch-target-min);
+  }
+
+  .ca-section-header {
+    margin-bottom: 10px;
+  }
+
+  .ca-section-head {
+    gap: 10px;
+  }
+
+  .ca-section-head .title {
+    font-size: 0.95rem;
+  }
+
+  .ca-section-head .purpose {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  /* Hub controls — wrap, touch-friendly */
+  .hub-control-bar,
+  .hub-pill-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .hub-pill {
+    min-height: 34px;
+    padding: 6px 11px;
+    font-size: 10.5px;
+  }
+
+  .hub-pill-sep {
+    display: none;
+  }
+
+  /* Tables — horizontal scroll container */
+  .ca-table-scroll,
+  .bp-prop-table-wrap,
+  .bp-pm-table-wrap,
+  .table-scroll,
+  .lv-table-wrap,
+  .mc-lcc-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    margin-left: -2px;
+    margin-right: -2px;
+    padding-bottom: 4px;
+  }
+
+  .ca-table-scroll > table,
+  .table-scroll > table {
+    min-width: min(100%, 520px);
+  }
+
+  /* Metric chips — legible on small screens */
+  .chip,
+  .val-chip {
+    font-size: 11px;
+    padding: 3px 7px;
+  }
+
+  /* Profile shells */
+  .profile-shell,
+  .tp-identity-stack {
+    gap: var(--section-gap-mobile);
+  }
+
+  .profile-decision-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .profile-decision-card {
+    padding: 10px 11px;
+  }
+
+  .profile-decision-card__value {
+    font-size: 15px;
+  }
+
+  /* Hero banners — stack photo + identity */
+  .tp-pitcher-banner__inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .tp-pitcher-banner__photo {
+    align-self: center;
+  }
+
+  .tp-pitcher-banner__identity {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-wrap: wrap;
+  }
+
+  .tp-team-banner__copy {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .tp-team-banner--hero .tp-team-banner__title {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .pp-hero-stats.tp-hero-stat-row {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-stat {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .pp-hero-stats .tp-hero-stat--solo {
+    flex: 1 1 calc(50% - 6px);
+    max-width: none;
+  }
+
+  /* Team profile density */
+  .tp-section-filter-bar {
+    padding: 10px 12px;
+  }
+
+  .tp-section-filter-bar .hub-pill-row {
+    width: 100%;
+  }
+
+  /* Opening dashboard matchup cards */
+  .mc-card,
+  .ca-matchup-card {
+    max-width: 100%;
+  }
+
+  /* Compare page header */
+  .mc-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .mc-compare-nav-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    max-width: 100%;
+  }
+
+  /* Sticky nav offset */
+  #chaseHeader {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+
+  /* Team rankings */
+  .lv-body,
+  .hub-table-wrap,
+  .table-wrap,
+  .rl-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  .hub-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hub-expand-inner {
+    grid-template-columns: 1fr;
+    padding: 14px 12px;
+  }
+
+  .hub-expand-right {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Research lab dense panels */
+  .rl-panel,
+  .rl-scorecard-grid,
+  .rl-compare-grid {
+    min-width: 0;
+  }
+
+  .rl-table-wrap {
+    margin-left: -2px;
+    margin-right: -2px;
+  }
+
+  /* Bullpen / pitcher metric bands */
+  .metric-band,
+  .pp-metric-strip,
+  .bp-metric-strip {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .metric-band .chip,
+  .pp-metric-strip .chip {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    justify-content: center;
+  }
+
+  /* Glossary / long-form */
+  .glossary-grid,
+  .education-card {
+    min-width: 0;
+  }
+}
+
+/* Tablet — selective two-column retention */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .container,
+  .ca-page-shell {
+    padding-left: var(--shell-pad-tablet);
+    padding-right: var(--shell-pad-tablet);
+  }
+
+  .ca-board {
+    padding: 16px 16px 18px;
+  }
+
+  .profile-decision-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Mobile compact — single column, tighter type */
+@media (max-width: 479px) {
+  .container,
+  .ca-page-shell {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .ca-board {
+    padding: 12px 10px 14px;
+    border-radius: 12px;
+  }
+
+  .profile-decision-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-stat,
+  .pp-hero-stats .tp-hero-stat--solo {
+    flex: 1 1 100%;
+  }
+
+  .hub-pill {
+    flex: 1 1 auto;
+    text-align: center;
+    min-width: calc(50% - 6px);
+  }
+
+  .ca-platform-cta__label {
+    font-size: 14px;
+  }
+
+  .hub-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-expand-right {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-band .chip,
+  .pp-metric-strip .chip {
+    flex: 1 1 100%;
+  }
+
+  .mobile-card-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Touch — larger radar / chart hit targets */
+@media (hover: none) and (pointer: coarse) {
+  .hub-pill,
+  .chase-nav-link,
+  .chase-dropdown-item {
+    min-height: var(--touch-target-min);
+  }
+
+  button,
+  .hub-pill,
+  input[type="number"],
+  input[type="text"],
+  select {
+    font-size: 16px;
+  }
+
+  input.bp-search-input,
+  input.bp-prop-card__line-input {
+    font-size: 16px;
+  }
+}

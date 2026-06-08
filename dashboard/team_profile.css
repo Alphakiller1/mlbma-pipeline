@@ -557,7 +557,7 @@ body.team-profile-page {
 .tp-team-banner__stats .tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
 .tp-team-banner__stats .tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .tp-team-banner__head {
     flex-wrap: wrap;
   }
@@ -1055,7 +1055,7 @@ body.team-profile-page :is(
   gap: 12px;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .tp-unit-snapshot-row {
     grid-template-columns: 1fr;
   }
@@ -1366,7 +1366,7 @@ body.team-profile-page :is(
   color: var(--text-3, #71717A);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .tp-team-picker-group {
     max-width: none;
   }
@@ -1994,7 +1994,7 @@ body.team-profile-page :is(
   gap: 10px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .tp-window-row {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -3204,7 +3204,7 @@ body.team-profile-page :is(
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .tp-metric-tile-grid--5,
   .tp-metric-tile-grid--4,
   .tp-metric-tile-grid--3,
@@ -3897,7 +3897,7 @@ body.team-profile-page :is(
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .tp-intel-takeaways { grid-template-columns: 1fr; }
 }
 .tp-intel-takeaway {

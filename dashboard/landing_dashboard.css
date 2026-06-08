@@ -1889,3 +1889,116 @@ body.opening-dashboard .opening-layer .ca-hero__title-accent {
   box-shadow: 0 0 0 1px rgba(124,77,255,0.15), 0 0 24px rgba(124,77,255,0.27);
 }
 
+/* Mobile contract — 767px (opening dashboard + matchups hero) */
+@media (max-width: 767px) {
+  body.opening-dashboard.view-opening > .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .layer-main {
+    padding: 0 12px;
+  }
+
+  .platform-section {
+    padding: 16px 12px;
+  }
+
+  #matchupsHeroGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .hero-matchup-card {
+    padding: 14px 12px;
+  }
+
+  .hmc-pitchers {
+    grid-template-columns: 1fr;
+  }
+
+  .hmc-meta {
+    grid-template-columns: 1fr;
+    margin-left: 0;
+    width: 100%;
+    justify-items: start;
+    gap: 5px;
+  }
+
+  .hmc-meta .hmc-stadium {
+    max-width: none;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .hmc-weather-group {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .matchup-lineup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchup-lineup-col--home .matchup-lineup-col-head {
+    text-align: left;
+  }
+
+  .matchup-lineup-col--home .lineup-row {
+    grid-template-columns: 16px 24px minmax(0, 1fr) auto;
+  }
+
+  .matchup-lineup-col--home .lineup-bo {
+    text-align: right;
+  }
+
+  .ca-trend-insight-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ca-opening-hero {
+    padding: 20px 14px;
+    margin: 8px 0 24px;
+  }
+
+  #signalChips {
+    flex-direction: column;
+  }
+
+  .signal-chip {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .opening-layer .ca-tools__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opening-layer .ca-features__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchups-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 479px) {
+  .layer-main,
+  body.opening-dashboard.view-opening > .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .hero-matchup-card .hmc-osi-bar {
+    grid-template-columns: minmax(0, 1fr) minmax(44px, 2fr) minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .hero-matchup-card .hmc-osi-num {
+    font-size: 15px;
+  }
+}
+

@@ -441,24 +441,37 @@ body.player-profile-page #pitcherIntelPanel:not(:empty) + .pp-intel-follow:empty
   display: none;
 }
 
-@media (max-width: 640px) {
-  body.player-profile-page .tp-offense-metrics__row--inline {
-    gap: 8px 14px;
-  }
-}
-
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   body.player-profile-page .container {
     padding: 12px 12px 48px;
+  }
+
+  body.player-profile-page .tp-offense-metrics__row--inline {
+    gap: 8px 12px;
+    flex-wrap: wrap;
   }
 
   body.player-profile-page .metric-grid,
   body.player-profile-page .stat-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  body.player-profile-page .pp-hero-banner-shell {
+    border-radius: 12px;
+  }
+
+  body.player-profile-page .tp-pitcher-banner__inner {
+    align-items: center;
+  }
+
+  body.player-profile-page h1.page-title,
+  body.player-profile-page .header h1 {
+    font-size: clamp(1.2rem, 5.5vw, 1.5rem);
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 479px) {
   body.player-profile-page .metric-grid,
   body.player-profile-page .stat-bar {
     grid-template-columns: 1fr;

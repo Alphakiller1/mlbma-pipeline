@@ -168,6 +168,39 @@
   gap: 14px;
 }
 
+@media (max-width: 767px) {
+  .profile-decision-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .profile-decision-card__value {
+    font-size: 15px;
+  }
+
+  .profile-verdict-card {
+    padding: 12px;
+  }
+
+  .profile-verdict-card__value {
+    font-size: 16px;
+  }
+
+  .profile-context-bar {
+    padding: 10px 12px;
+  }
+
+  .profile-analyst-take {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 479px) {
+  .profile-decision-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
 .profile-deep-sections .section,
 .profile-deep-sections .profile-section {
   margin-bottom: 0;

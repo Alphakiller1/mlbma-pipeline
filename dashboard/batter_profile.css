@@ -327,7 +327,7 @@ body.batter-profile-page .pp-hero-stats .tp-hero-stat__value .tp-hero-stat__num-
   color: var(--text-3, #9CA3AF);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
     flex-wrap: wrap;
   }
@@ -1385,20 +1385,155 @@ body.batter-profile-page .pp-hero-banner-shell .bp-hero-context {
   color: var(--text-2, #C4CBD6);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1099px) {
   .bp-hero-context__strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bp-driver-bars { grid-template-columns: 1fr 1fr; }
   .bp-driver-bars__best { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
+  body.batter-profile-page .container {
+    padding: 12px 12px 56px;
+  }
+
+  body.bp-prop-hub-page .bp-hub-nav {
+    padding: 8px;
+    gap: 5px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.bp-prop-hub-page .bp-hub-nav .hub-pill {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  body.batter-profile-page .pp-hero-search.bp-search-bar {
+    padding: 8px 12px 4px;
+  }
+
+  body.batter-profile-page .bp-search-input {
+    max-width: none;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner__identity {
+    align-items: center;
+    text-align: center;
+  }
+
+  body.batter-profile-page .bp-hero-name-row {
+    justify-content: center;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner .tp-team-banner__stats--hero {
+    padding-top: 10px;
+  }
+
+  .bp-hero-context__strip,
   .bp-prop-board,
   .bp-matchup-grid,
   .bp-context-grid,
-  .bp-hero-context__strip {
+  .bp-metric-strip {
     grid-template-columns: 1fr;
   }
-  .bp-driver-bars { grid-template-columns: 1fr; }
-  .bp-evidence-item { grid-template-columns: 1fr; }
-  .bp-matchup-stats { grid-template-columns: 1fr; }
+
+  .bp-driver-bars {
+    grid-template-columns: 1fr;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .bp-driver-bars__best {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .bp-edge-row {
+    grid-template-columns: 72px 1fr 32px;
+  }
+
+  .bp-prop-card {
+    padding: 12px;
+  }
+
+  .bp-prop-card__title {
+    font-size: 14px;
+    flex: 1 1 100%;
+  }
+
+  .bp-prop-card__head {
+    gap: 6px;
+  }
+
+  .bp-prop-card__proj strong {
+    font-size: 18px;
+  }
+
+  .bp-prop-card__line {
+    grid-template-columns: 1fr;
+  }
+
+  .bp-prop-card__line-lean {
+    grid-column: 1 / -1;
+  }
+
+  .bp-hit-strip__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bp-hit-strip__head {
+    gap: 6px;
+  }
+
+  .bp-hit-strip__streak {
+    margin-left: 0;
+    flex: 1 1 100%;
+  }
+
+  .bp-evidence-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .bp-evidence-item__score {
+    justify-self: start;
+  }
+
+  .bp-matchup-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bp-pm-table-wrap {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+}
+
+@media (max-width: 479px) {
+  .bp-hit-strip__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bp-hit-spark__pip {
+    max-width: 10px;
+    height: 8px;
+  }
+
+  .bp-matchup-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .bp-hero-context__value {
+    font-size: 12px;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar--profile {
+    width: 96px;
+    height: 96px;
+    min-width: 96px;
+    min-height: 96px;
+  }
 }

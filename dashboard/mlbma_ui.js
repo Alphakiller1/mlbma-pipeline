@@ -247,9 +247,21 @@
     }, 14000);
   }
 
+  function loadViewportHelper() {
+    if (global.MLBMAViewport) return;
+    var s = document.createElement('script');
+    s.src = 'platform_viewport.js?v=20260610';
+    s.async = true;
+    document.head.appendChild(s);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', function() {
+      loadViewportHelper();
+      init();
+    });
   } else {
+    loadViewportHelper();
     init();
   }
 

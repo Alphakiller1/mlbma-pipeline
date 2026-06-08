@@ -39,47 +39,54 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
     location.replace('chase_analytics_mlb_oem_v7.html#section-matchups-hero');
   }
 
-  // Kick off the Team Rankings data fetch NOW, in parallel with the rest of the scripts
-  // downloading. Critical tabs (vs splits + profiles) resolve in one Supabase batch;
-  // Team_Results prefetches separately so it never blocks the first table paint.
+  // Fetch the tiny static snapshot immediately for first paint, then warm live data
+  // after the page has had a chance to render. The live Supabase requests used to start
+  // here in the head; on slow connections they could compete with CSS/scripts even
+  // though the snapshot is enough to render the default Team Rankings view.
   try {
-    var SB_URL = 'https://mvxjcfriirguhjujurhf.supabase.co';
-    var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
-    var criticalTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
-    var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
-    var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows',
-      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
-      .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
-      .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
-    criticalTabs.forEach(function (t) {
-      store[t] = batch.then(function (m) {
-        if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
-        return m[t];
-      });
-      store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
-    });
-    store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
-      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
-      .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })
-      .then(function (arr) {
-        var rows = arr && arr[0] && arr[0].rows;
-        if (!rows || !rows.length) throw new Error('prefetch miss Team_Results');
-        return rows;
-      });
-    store['Team_Results'].catch(function () { /* fall back handled in fetchSheetTab */ });
-    fetch('league_baselines.json?_=' + Date.now()).then(function(r) {
-      return r.ok ? r.json() : null;
-    }).then(function(d) {
-      if (d) window.__MLBMA_BASELINES = d;
-    }).catch(function() { /* optional */ });
     window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260608a')
       .then(function(r) { if (!r.ok) throw new Error('snapshot ' + r.status); return r.json(); });
+
+    var prefetchLiveData = function() {
+      var SB_URL = 'https://mvxjcfriirguhjujurhf.supabase.co';
+      var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
+      var criticalTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
+      var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
+      var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows',
+        { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+        .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
+        .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
+      criticalTabs.forEach(function (t) {
+        store[t] = batch.then(function (m) {
+          if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
+          return m[t];
+        });
+        store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
+      });
+      store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
+      store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
+        { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+        .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })
+        .then(function (arr) {
+          var rows = arr && arr[0] && arr[0].rows;
+          if (!rows || !rows.length) throw new Error('prefetch miss Team_Results');
+          return rows;
+        });
+      store['Team_Results'].catch(function () { /* fall back handled in fetchSheetTab */ });
+      fetch('league_baselines.json?_=' + Date.now()).then(function(r) {
+        return r.ok ? r.json() : null;
+      }).then(function(d) {
+        if (d) window.__MLBMA_BASELINES = d;
+      }).catch(function() { /* optional */ });
+    };
+    if (window.requestIdleCallback) requestIdleCallback(prefetchLiveData, { timeout: 2500 });
+    else setTimeout(prefetchLiveData, 900);
   } catch (e) { /* prefetch is best-effort */ }
 })();
 </script>
 <title>Chase Analytics - Team Rankings v20260604</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260606b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
 <link rel="stylesheet" href="theme.css?v=20260606b">
 <link rel="stylesheet" href="chase_nav.css?v=20260618n">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -198,7 +205,7 @@ body{
   opacity: 0 !important;
   pointer-events: none !important;
 }
-@media(max-width:760px){
+@media(max-width:767px){
   .container{padding:16px 14px 56px}
   .hub-control-bar{padding:12px}
   .hub-control-row{gap:10px 12px}
@@ -316,8 +323,8 @@ setTimeout(function() {
 </script>
 <script src="mlbma_config.js?v=20260606b"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
+<script id="mlbma-icons-script" src="mlbma_icons.js?v=20260606c"></script>
 <script src="mlbma_ui.js?v=20260624a" data-page="team_rankings.html"></script>
-<script src="mlbma_icons.js?v=20260606c"></script>
 <script src="matchup_shared.js?v=20260624a"></script>
 <script>
 (function() {
@@ -352,7 +359,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260608b"></script>
+<script src="lineup_view.js?v=20260608c"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
