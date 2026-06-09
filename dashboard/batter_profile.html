@@ -18,6 +18,7 @@
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="matchup_shared.js?v=20260609a"></script>
+<script src="pitch_mix_shared.js?v=20260608a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="batter_profile.html"></script>
@@ -126,6 +127,12 @@
       <p class="bp-prop-footnote" id="propFootnote"></p>
     </section>
 
+    <!-- Pitch-type overlap vs tonight's starter -->
+    <section class="ca-board tp-section" id="secPitchMix">
+      <div id="bxHdrPitchMix"></div>
+      <div id="pitchMixMount"></div>
+    </section>
+
     <!-- Rate splits + form -->
     <section class="ca-board tp-section" id="secSplits">
       <div id="bxHdrSplits"></div>
@@ -150,7 +157,7 @@ var A = window.MLBMAAssets;
 var DATA = {
   profiles: [], registry: [], lineupsRaw: [], lineupsParsed: [], matchupsRaw: [], matchupsParsed: [],
   lineups: [], matchups: [], spProfiles: [],
-  rawStats: {}, pool: { vs_RHP: [] }, hitRates: {}
+  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}
 };
 
 /* Maps prop-card id → batter_prop_hitrates.prop key (tidy long CSV) */
@@ -1571,6 +1578,24 @@ function renderSplits(key, p) {
   insightEl.textContent = note || '';
 }
 
+function renderPitchMix(key, p) {
+  var mount = document.getElementById('pitchMixMount');
+  if (!mount) return;
+  var PM = window.MLBMAPitchMix;
+  if (!PM || !DATA.pitchMix) {
+    mount.innerHTML = '<div class="bp-pm-empty"><p class="ca-helper">Pitch mix data unavailable.</p></div>';
+    return;
+  }
+  var batterName = playerDisplayName(key);
+  var spName = (p.lineup && p.lineup.inLineup) ? p.lineup.oppSp : '';
+  var pack = PM.resolveBatterPitchMix(DATA.pitchMix, batterName, spName);
+  mount.innerHTML = PM.renderBatterProfileSection(pack, {
+    batterName: batterName,
+    spName: spName,
+    mix: DATA.pitchMix
+  });
+}
+
 function renderPlayer(key) {
   STATE.playerKey = key;
   var shell = document.getElementById('profileContent');
@@ -1584,6 +1609,7 @@ function renderPlayer(key) {
   renderSplitTabBar();
   renderSnapshot(key, p);
   renderPropBoard(p);
+  renderPitchMix(key, p);
   renderSplits(key, p);
   bindBatterProfileControls();
 }
@@ -1591,6 +1617,7 @@ function renderPlayer(key) {
 /* ---------- controls + search ---------- */
 function mountHeaders() {
   document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Selected Player Prop Angles', 'Ranked model projections, real hit-rate history, and optional book-line compare', 'target');
+  document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Pitch Mix', 'Arsenal overlap vs tonight\'s starter and batter contact by pitch type', 'matchups');
   document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Auto-selects platoon split when lineup is posted', 'split');
   if (A && A.metricLegendHtml) {
     var leg = document.getElementById('bxHdrProps');
@@ -1684,7 +1711,7 @@ function hydrateSlateContext(lineupRows, matchupRows, schedule) {
 function load() {
   var tabs = [TABS.batter_profiles, TABS.player_registry, TABS.today_lineups, TABS.today_matchups, TABS.sp_profiles]
     .concat(RAW_TABS.map(function(p) { return p[0]; }))
-    .concat([TABS.batter_prop_hitrates]);
+    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates]);
   var S = window.MLBMASharedMatchup;
   var schedP = (S && S.fetchMlbTodaySchedule)
     ? S.fetchMlbTodaySchedule().catch(function() { return { games: [] }; })
@@ -1695,11 +1722,18 @@ function load() {
     hydrateSlateContext(res[2] || [], res[3] || [], sched);
     DATA.spProfiles = res[4] || [];
     RAW_TABS.forEach(function(pair, i) { DATA['_raw_' + pair[1]] = res[5 + i] || []; });
-    DATA.hitRates = indexHitRates(res[5 + RAW_TABS.length] || []);
+    var pmOff = 5 + RAW_TABS.length;
+    if (window.MLBMAPitchMix && MLBMAPitchMix.buildIndex) {
+      DATA.pitchMix = MLBMAPitchMix.buildIndex({
+        pitcherL14: res[pmOff] || [],
+        batterL14: res[pmOff + 1] || []
+      });
+    }
+    DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
     indexRawStats(); buildPool();
     renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); bindBatterProfileControls();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
-      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Player-specific prop angles, splits, and hit-rate history' }); } catch (e) {}
+      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Player-specific prop angles, pitch mix, splits, and hit-rate history' }); } catch (e) {}
     }
     var urlName = new URLSearchParams(window.location.search).get('player');
     var startKey = null;
