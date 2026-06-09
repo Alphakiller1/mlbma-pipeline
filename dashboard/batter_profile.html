@@ -12,13 +12,12 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260610e">
+<link rel="stylesheet" href="batter_profile.css?v=20260610f">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="matchup_shared.js?v=20260609a"></script>
-<script src="pitch_mix_shared.js?v=20260608a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="batter_profile.html"></script>
@@ -109,19 +108,13 @@
 <main class="container ca-page-shell">
   <div id="profilePageHeader"></div>
   <div class="tp-data-banner data-banner" id="dataBanner"></div>
-  <datalist id="playerList"></datalist>
-
   <div class="tp-identity-stack profile-shell" id="profileContent">
 
-    <!-- Hero: search + identity + tonight summary -->
+    <!-- Hero: search + identity + decision strip -->
     <section class="ca-board tp-section pp-hero-section" id="secHero">
-      <div class="pp-hero-banner-shell bp-hero-banner-shell">
-        <div class="bp-search-bar pp-hero-search profile-context-bar">
-          <label class="bp-search-bar__label" for="playerSearchInput">Search batter</label>
-          <input type="text" class="bp-search-input" id="playerSearchInput" list="playerList" placeholder="e.g. Judge, Soto, Tucker" autocomplete="off">
-        </div>
+      <div class="pp-hero-banner-shell">
+        <div id="batterControlBar" class="pp-hero-search profile-context-bar tp-context-picker"></div>
         <div id="batterSnapshot" class="profile-hero"></div>
-        <div class="bp-hero-context pp-hero-context" id="heroContext" aria-live="polite"></div>
       </div>
     </section>
 
@@ -133,13 +126,6 @@
       <p class="bp-prop-footnote" id="propFootnote"></p>
     </section>
 
-    <!-- Matchup logic vs tonight's starter + pitch-mix overlap -->
-    <section class="ca-board tp-section" id="secMatchup">
-      <div id="bxHdrMatchup"></div>
-      <div id="matchupLogic"></div>
-      <div id="pitchMixMount"></div>
-    </section>
-
     <!-- Rate splits + form -->
     <section class="ca-board tp-section" id="secSplits">
       <div id="bxHdrSplits"></div>
@@ -147,13 +133,6 @@
       <div class="bp-metric-strip" id="splitStats"></div>
       <div class="bp-form-chart" id="splitFormChart"></div>
       <div class="bp-split-insight" id="splitInsight"></div>
-    </section>
-
-    <!-- Context, risk flags, regression notes -->
-    <section class="ca-board tp-section" id="secContext">
-      <div id="bxHdrContext"></div>
-      <div class="bp-context-grid" id="contextPanels"></div>
-      <div class="bp-flags" id="propFlags"></div>
     </section>
 
   </div>
@@ -171,7 +150,7 @@ var A = window.MLBMAAssets;
 var DATA = {
   profiles: [], registry: [], lineupsRaw: [], lineupsParsed: [], matchupsRaw: [], matchupsParsed: [],
   lineups: [], matchups: [], spProfiles: [],
-  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}
+  rawStats: {}, pool: { vs_RHP: [] }, hitRates: {}
 };
 
 /* Maps prop-card id → batter_prop_hitrates.prop key (tidy long CSV) */
@@ -1267,6 +1246,35 @@ function decisionCard(label, valueHtml, hint) {
     + '</div>';
 }
 
+function buildHeroDecisionStrip(key, p) {
+  var PS = window.ProfileShell;
+  if (!PS || !PS.decisionStrip) return '';
+  var reg = getRegistry(key);
+  var bats = String(pickCol(reg || {}, ['bats']) || pickCol(p.R || {}, ['bats']) || '—').toUpperCase();
+  var prof = p.prof || overallProfileRow(key);
+  var trend = String(pickCol(prof || {}, ['trend', 'Trend']) || '').trim();
+  var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
+  var handVal = bats + ' · ' + platoon;
+  var best = bestAngleLabel(p);
+  var spLabel = (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD';
+  var opp = p.lineup.oppTeam || 'OPP';
+  var tonight = p.lineup.inLineup
+    ? 'Tonight vs ' + opp + ' · ' + spLabel + ' (' + p.lineup.oppHand + 'HP) · #' + p.lineup.batOrder + ' · ~' + fmt(p.pa, 1) + ' PA'
+    : 'Not in posted lineup — props assume ~4.0 PA against ' + platoon + ' rates.';
+  var formTone = 'watch';
+  if (trend) {
+    var tl = trend.toLowerCase();
+    if (tl.indexOf('improv') >= 0 || tl.indexOf('heat') >= 0 || tl.indexOf('up') >= 0) formTone = 'elite';
+    else if (tl.indexOf('cool') >= 0 || tl.indexOf('down') >= 0 || tl.indexOf('fade') >= 0) formTone = 'risk';
+  }
+  return PS.decisionStrip([
+    PS.decisionCard('Tonight', tonight, '', ''),
+    PS.decisionCard('Best Angle', best, '', 'elite'),
+    PS.decisionCard('Hand Path', handVal, '', ''),
+    PS.decisionCard('Form', trend || 'Season line', '', formTone)
+  ]);
+}
+
 function renderSnapshot(key, p) {
   var el = document.getElementById('batterSnapshot');
   if (!el) return;
@@ -1277,10 +1285,11 @@ function renderSnapshot(key, p) {
   var prof = overallProfileRow(key);
   var R = activeRaw(key);
   var hs = batterHeadshot(key, 'profile');
-  var logo = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 52, 'tp-team-banner__logo-img snapshot-logo') : '';
-  var watermark = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 200, 'tp-team-banner__watermark-img') : '';
+  var logo = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 88, 'tp-team-banner__logo-img snapshot-logo') : '';
+  var watermark = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
   var accent = teamAccent(team);
   var batsLabel = bats === 'L' ? 'LHB' : bats === 'R' ? 'RHB' : bats === 'S' ? 'SHB' : bats;
+  var decisionStrip = buildHeroDecisionStrip(key, p);
 
   var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Batter headline stats">'
     + heroStat('', '<span class="tp-hero-stat__num">' + esc(batsLabel) + '</span>', 'neutral', 'Bats ' + batsLabel)
@@ -1298,43 +1307,12 @@ function renderSnapshot(key, p) {
     + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
     + '<div class="tp-team-banner__copy">'
     + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Profile</p>'
-    + '<div class="bp-hero-name-row">'
     + '<h1 class="tp-team-banner__title">' + esc(name) + '</h1>'
-    + (team ? '<span class="tp-pitcher-banner__today pill pill-today">' + esc(team) + '</span>' : '')
-    + '</div></div></div>'
+    + (p.lineup.inLineup ? '<span class="tp-pitcher-banner__today pill pill-today">In tonight\'s lineup</span>' : '')
+    + '</div></div>'
     + statRow
+    + decisionStrip
     + '</div></section>';
-  renderHeroContext(key, p);
-}
-
-function renderHeroContext(key, p) {
-  var el = document.getElementById('heroContext');
-  if (!el) return;
-  var reg = getRegistry(key);
-  var bats = String(pickCol(reg || {}, ['bats']) || pickCol(p.R || {}, ['bats']) || '—').toUpperCase();
-  var prof = p.prof || overallProfileRow(key);
-  var trend = pickCol(prof || {}, ['trend', 'Trend']) || '';
-  var trendHtml = trend
-    ? '<span class="bp-hero-chip bp-hero-chip--trend" style="color:' + esc((A && A.trendColor) ? A.trendColor(trend) : 'var(--text-2)') + '">' + esc(trend) + '</span>'
-    : '';
-  var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
-  var handChip = bats + ' · ' + platoon;
-  var best = bestAngleLabel(p);
-  var spLabel = (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD';
-  var opp = p.lineup.oppTeam || 'OPP';
-  var summary = p.lineup.inLineup
-    ? 'Tonight vs ' + opp + ' · ' + spLabel + ' (' + p.lineup.oppHand + 'HP) · #' + p.lineup.batOrder + ' · ~' + fmt(p.pa, 1) + ' PA'
-    : 'Not in posted lineup — props assume ~4.0 PA against ' + platoon + ' rates.';
-  el.innerHTML = '<div class="bp-hero-context__strip">'
-    + '<div class="bp-hero-context__box"><span class="bp-hero-context__label">Tonight</span>'
-    + '<span class="bp-hero-context__value">' + esc(summary) + '</span></div>'
-    + '<div class="bp-hero-context__box"><span class="bp-hero-context__label">Best Angle</span>'
-    + '<span class="bp-hero-context__value">' + esc(best) + '</span></div>'
-    + '<div class="bp-hero-context__box"><span class="bp-hero-context__label">Hand Path</span>'
-    + '<span class="bp-hero-context__value">' + esc(handChip) + '</span></div>'
-    + '<div class="bp-hero-context__box"><span class="bp-hero-context__label">Form</span>'
-    + '<span class="bp-hero-context__value">' + (trendHtml || '<span class="bp-hero-context__muted">Season line</span>') + '</span></div>'
-    + '</div>';
 }
 
 function renderDriverBars(p) {
@@ -1489,149 +1467,6 @@ function bindPropBoardEvents() {
   });
 }
 
-function renderMatchupLogic(key, p) {
-  var el = document.getElementById('matchupLogic');
-  if (!el) return;
-  var R = p.R || {};
-  var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
-  var spLabel = p.spLabel || ((p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD');
-  var spK = p.spK;
-  var spBb = p.spBb;
-  var spHr9 = p.spHr9;
-  var spSource = p.spSource || (p.sp ? 'sp_profile' : 'league');
-  var kCopy = spK != null
-    ? (spSource === 'league'
-      ? 'No listed starter — league-avg SP K% (' + fmt(spK, 1) + ').'
-      : 'Opposing starter at ' + fmt(spK, 1) + '% K.')
-    : 'Starter K% unknown.';
-  var hrCopy = spHr9 != null
-    ? (spSource === 'league'
-      ? 'No listed starter — league-avg HR/9 (' + fmt(spHr9, 2) + ').'
-      : 'SP allows ' + fmt(spHr9, 2) + ' HR/9.')
-    : 'HR environment neutral.';
-  var starterHelper = spSource === 'league'
-    ? 'League-average SP proxy — updates when starter is posted.'
-    : (spSource === 'matchup_sheet'
-      ? 'Tonight\'s listed SP rates from matchup sheet.'
-      : '');
-  var items = [
-    { tag: 'Hand Edge', copy: batsHandNote(key, p), score: platoonOsiEdge(key, p), ctx: 'osi' },
-    { tag: 'K Pressure', copy: kCopy, score: spK != null ? clamp(100 - spK, 0, 100) : null, ctx: 'kpct', inv: true },
-    { tag: 'Damage Path', copy: hrCopy, score: spHr9 != null ? clamp(50 + (spHr9 - LG.HR9) * 22, 0, 100) : null, ctx: 'hr9', inv: false }
-  ];
-  var evidence = items.map(function(it) {
-    var scoreHtml = it.score != null ? valChip(it.score, it.ctx || 'osi', !!it.inv, 0) : '<span class="chip c-na">—</span>';
-    return '<div class="bp-evidence-item"><span class="bp-evidence-item__tag">' + esc(it.tag) + '</span>'
-      + '<span class="bp-evidence-item__copy">' + esc(it.copy) + '</span>'
-      + '<span class="bp-evidence-item__score">' + scoreHtml + '</span></div>';
-  }).join('');
-  var rateCells = [
-    ['wRC+', numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0],
-    ['K%', pct(R, ['K%']), 'kpct', true, 1],
-    ['BB%', pct(R, ['BB%']), 'bbpct', false, 1],
-    ['HardHit%', pct(R, ['HardHit%', 'Hard%']), 'barrel', false, 1]
-  ].map(function(c) {
-    return '<div class="bp-matchup-stat"><span class="bp-matchup-stat__label">' + esc(c[0]) + ' · ' + esc(platoon) + '</span>'
-      + '<span class="bp-matchup-stat__val">' + (c[1] == null ? '<span class="chip c-na">—</span>' : valChip(c[1], c[2], c[3], c[4])) + '</span></div>';
-  }).join('');
-  el.innerHTML = '<div class="bp-matchup-grid">'
-    + '<div class="bp-matchup-panel"><h4 class="bp-panel-title">Tonight vs ' + esc(spLabel) + '</h4>'
-    + '<p class="ca-helper">Batter ' + esc(platoon) + ' rates against listed starter shape.</p>'
-    + '<div class="bp-matchup-stats">' + rateCells + '</div></div>'
-    + '<div class="bp-matchup-panel"><h4 class="bp-panel-title">Starter Profile</h4>'
-    + (starterHelper ? '<p class="ca-helper">' + esc(starterHelper) + '</p>' : '')
-    + '<div class="bp-matchup-stats">'
-    + '<div class="bp-matchup-stat"><span class="bp-matchup-stat__label">K%</span><span class="bp-matchup-stat__val">'
-    + (spK != null ? valChip(spK, 'kpct', false, 1) : '<span class="chip c-na">—</span>') + '</span></div>'
-    + '<div class="bp-matchup-stat"><span class="bp-matchup-stat__label">BB%</span><span class="bp-matchup-stat__val">'
-    + (spBb != null ? valChip(spBb, 'bbpct', false, 1) : '<span class="chip c-na">—</span>') + '</span></div>'
-    + '<div class="bp-matchup-stat"><span class="bp-matchup-stat__label">HR/9</span><span class="bp-matchup-stat__val">'
-    + (spHr9 != null ? valChip(spHr9, 'hr9', true, 2) : '<span class="chip c-na">—</span>') + '</span></div>'
-    + '</div></div>'
-    + '<div class="bp-matchup-panel bp-matchup-panel--wide"><h4 class="bp-panel-title">Matchup Logic</h4>'
-    + '<div class="bp-evidence-list">' + evidence + '</div></div></div>';
-}
-
-function batsHandNote(key, p) {
-  var reg = getRegistry(key);
-  var bats = String(pickCol(reg || {}, ['bats']) || 'R').toUpperCase();
-  var hand = p.lineup.oppHand === 'L' ? 'LHP' : 'RHP';
-  return bats + ' bat facing ' + hand + ' — using ' + ((p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP') + ' rate line.';
-}
-
-function platoonOsiEdge(key, p) {
-  var rhp = numOrNull(pickCol(preferredProfileRow(key, 'vs_RHP') || {}, ['OSI']));
-  var lhp = numOrNull(pickCol(preferredProfileRow(key, 'vs_LHP') || {}, ['OSI']));
-  if (p.lineup.oppHand === 'L' && lhp != null) return lhp;
-  if (p.lineup.oppHand !== 'L' && rhp != null) return rhp;
-  return numOrNull(pickCol(p.prof || {}, ['OSI']));
-}
-
-function renderContextPanels(key, p) {
-  var el = document.getElementById('contextPanels');
-  if (!el) return;
-  var prof = p.prof || overallProfileRow(key);
-  var ppGap = numOrNull(pickCol(prof || {}, ['PP_Gap']));
-  var trend = pickCol(prof || {}, ['trend', 'Trend']) || '—';
-  var order = p.lineup.inLineup ? parseInt(p.lineup.batOrder, 10) : null;
-  var lateOrder = order != null && order >= 7;
-  var stadium = p.lineup.stadium || '—';
-  var riskNote = buildRiskNote(p, prof);
-  el.innerHTML = '<div class="bp-context-panel"><span class="bp-context-panel__label">Park / Venue</span>'
-    + '<span class="bp-context-panel__value">' + esc(stadium) + '</span>'
-    + '<span class="bp-context-panel__hint">' + (stadium !== '—' ? 'From tonight\'s matchup card.' : 'Venue populates when lineup is posted.') + '</span></div>'
-    + '<div class="bp-context-panel"><span class="bp-context-panel__label">PA Volume</span>'
-    + '<span class="bp-context-panel__value">~' + fmt(p.pa, 1) + ' PA</span>'
-    + '<span class="bp-context-panel__hint">' + (p.lineup.inLineup ? '#' + p.lineup.batOrder + ' in order' : 'Assumed mid-order') + '</span></div>'
-    + '<div class="bp-context-panel"><span class="bp-context-panel__label">Bullpen Exposure</span>'
-    + '<span class="bp-context-panel__value">' + (lateOrder ? 'Elevated' : 'Moderate') + '</span>'
-    + '<span class="bp-context-panel__hint">' + (lateOrder ? 'Bottom-third slot — more RP volume late.' : 'Top/mid order — fewer late bullpen PAs.') + '</span></div>'
-    + '<div class="bp-context-panel"><span class="bp-context-panel__label">Luck / Trend</span>'
-    + '<span class="bp-context-panel__value">' + (ppGap != null ? valChip(ppGap, 'ppGap', false, 1) : esc(trend)) + '</span>'
-    + '<span class="bp-context-panel__hint">PP-Gap &amp; trend from batter profile composites.</span></div>'
-    + '<div class="bp-context-panel bp-context-panel--wide"><span class="bp-context-panel__label">Risk Read</span>'
-    + '<p class="bp-context-panel__risk">' + esc(riskNote) + '</p></div>';
-}
-
-function buildRiskNote(p, prof) {
-  var parts = [];
-  var trend = pickCol(prof || {}, ['trend', 'Trend']);
-  if (trend) parts.push('Form tag: ' + trend + '.');
-  var ppGap = numOrNull(pickCol(prof || {}, ['PP_Gap']));
-  if (ppGap != null && Math.abs(ppGap) >= 4) {
-    parts.push(ppGap > 0 ? 'Results trail underlying quality — buy-low setup.' : 'Results ahead of underlying quality — fade overs.');
-  }
-  if (p.babip != null && (p.babip > 0.330 || p.babip < 0.265)) {
-    parts.push('BABIP at ' + fmt(p.babip, 3) + ' vs ~.295 league — hit props carry regression risk.');
-  }
-  if (!p.lineup.inLineup) parts.push('Lineup not posted — volume and matchup context are provisional.');
-  return parts.length ? parts.join(' ') : 'Profile and results are broadly aligned — no major volatility flags.';
-}
-
-function renderPropFlags(p) {
-  var flags = [];
-  if (p.babip != null) {
-    if (p.babip > 0.330) flags.push({ t: 'risk', x: 'AVG is BABIP-inflated (' + fmt(p.babip, 3) + ' vs ~.295 league) — hits/AVG props lean toward regression down.' });
-    else if (p.babip < 0.265) flags.push({ t: 'good', x: 'Low BABIP (' + fmt(p.babip, 3) + ') — some hit suppression is bad luck; buy-low on hits.' });
-  }
-  var ppGap = numOrNull(pickCol(p.prof || {}, ['PP_Gap']));
-  if (ppGap != null) {
-    if (ppGap <= -4) flags.push({ t: 'risk', x: 'Underlying quality trails results (PP-Gap ' + fmt(ppGap, 1) + ') — sell-high / fade overs.' });
-    else if (ppGap >= 4) flags.push({ t: 'good', x: 'Results trail underlying quality (PP-Gap +' + fmt(ppGap, 1) + ') — buy-low candidate.' });
-  }
-  if (p.spK != null) {
-    if (p.spK >= 26) flags.push({ t: 'watch', x: 'Faces a high-K starter (' + fmt(p.spK, 1) + '% K) — contact props down, strikeout over live.' });
-    else if (p.spK <= 18) flags.push({ t: 'good', x: 'Faces a low-K starter (' + fmt(p.spK, 1) + '% K) — ball-in-play volume favors hits/TB.' });
-  }
-  if (p.spHr9 != null && p.spHr9 >= 1.5) flags.push({ t: 'watch', x: 'Starter is HR-prone (' + fmt(p.spHr9, 2) + ' HR/9) — HR/TB ceiling rises.' });
-  if (!p.lineup.inLineup) flags.push({ t: 'watch', x: 'No posted lineup — volume assumed ~4.0 PA; revisit once the card is confirmed.' });
-  var el = document.getElementById('propFlags');
-  if (!el) return;
-  el.innerHTML = flags.length
-    ? flags.map(function(f) { return '<div class="bp-flag bp-flag--' + f.t + '"><span class="bp-flag__icon">' + (f.t === 'risk' ? '▼' : f.t === 'good' ? '▲' : '!') + '</span><span>' + esc(f.x) + '</span></div>'; }).join('')
-    : '<div class="bp-flag"><span>No regression or matchup flags — profile and results are aligned.</span></div>';
-}
-
 function metricStripHtml(key, splitKey, p) {
   var sk = splitKey || 'overall';
   var rawPack = resolveRawSplit(key, sk, p);
@@ -1681,7 +1516,7 @@ function splitTabNote(tab, p) {
     }
   }
   if (tab === 'vs_SP' && p && p.lineup.inLineup && p.lineup.oppSp && p.lineup.oppSp !== 'TBD') {
-    parts.push('Tonight vs ' + p.lineup.oppSp + ' (' + p.lineup.oppHand + 'HP). Full pitch-type overlap in Pitch Mix below.');
+    parts.push('Tonight vs ' + p.lineup.oppSp + ' (' + p.lineup.oppHand + 'HP).');
   }
   return parts.join(' ');
 }
@@ -1711,11 +1546,7 @@ function bindSplitTabs() {
       var p = projectProps(STATE.playerKey);
       renderSnapshot(STATE.playerKey, p);
       renderPropBoard(p);
-      renderMatchupLogic(STATE.playerKey, p);
       renderSplits(STATE.playerKey, p);
-      renderPitchMix(STATE.playerKey, p);
-      renderContextPanels(STATE.playerKey, p);
-      renderPropFlags(p);
     }
   });
 }
@@ -1740,24 +1571,6 @@ function renderSplits(key, p) {
   insightEl.textContent = note || '';
 }
 
-function renderPitchMix(key, p) {
-  var mount = document.getElementById('pitchMixMount');
-  if (!mount) return;
-  var PM = window.MLBMAPitchMix;
-  if (!PM || !DATA.pitchMix) {
-    mount.innerHTML = '<div class="bp-pm-empty"><p class="ca-helper">Pitch mix data unavailable.</p></div>';
-    return;
-  }
-  var batterName = playerDisplayName(key);
-  var spName = (p.lineup && p.lineup.inLineup) ? p.lineup.oppSp : '';
-  var pack = PM.resolveBatterPitchMix(DATA.pitchMix, batterName, spName);
-  mount.innerHTML = PM.renderBatterProfileSection(pack, {
-    batterName: batterName,
-    spName: spName,
-    mix: DATA.pitchMix
-  });
-}
-
 function renderPlayer(key) {
   STATE.playerKey = key;
   var shell = document.getElementById('profileContent');
@@ -1771,45 +1584,77 @@ function renderPlayer(key) {
   renderSplitTabBar();
   renderSnapshot(key, p);
   renderPropBoard(p);
-  renderMatchupLogic(key, p);
   renderSplits(key, p);
-  renderPitchMix(key, p);
-  renderContextPanels(key, p);
-  renderPropFlags(p);
+  bindBatterProfileControls();
 }
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
   document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Selected Player Prop Angles', 'Ranked model projections, real hit-rate history, and optional book-line compare', 'target');
-  document.getElementById('bxHdrMatchup').innerHTML = sectionHeaderHtml('Matchup Logic', 'Platoon rates vs tonight\'s starter and pitch-type arsenal overlap', 'matchups');
   document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Auto-selects platoon split when lineup is posted', 'split');
-  document.getElementById('bxHdrContext').innerHTML = sectionHeaderHtml('Context & Risk', 'Volume, luck flags, and plain-language risk read', 'intel');
   if (A && A.metricLegendHtml) {
     var leg = document.getElementById('bxHdrProps');
     if (leg) leg.insertAdjacentHTML('beforeend', A.metricLegendHtml({ title: 'Colors vs league baseline' }));
   }
 }
-function buildSearch() {
+function bindBatterProfileControls() {
+  var mount = document.getElementById('batterControlBar');
+  if (!mount) return;
+  var batters = [];
   var seen = {};
-  var names = [];
   DATA.profiles.concat(DATA.registry).forEach(function(r) {
-    var n = pickCol(r, ['full_name', 'player_name', 'Name']);
-    if (n && !seen[n]) { seen[n] = 1; names.push(n); }
+    var key = playerKey(r);
+    if (seen[key]) return;
+    seen[key] = 1;
+    var name = playerDisplayName(key) || pickCol(r, ['full_name', 'player_name', 'Name']);
+    var reg = getRegistry(key);
+    var team = String(pickCol(reg || r, ['team_abbr', 'team']) || '').toUpperCase();
+    batters.push({ key: key, label: name + (team ? ' (' + team + ')' : ''), name: name, team: team });
   });
-  names.sort();
-  document.getElementById('playerList').innerHTML = names.map(function(n) { return '<option value="' + esc(n) + '"></option>'; }).join('');
-  var input = document.getElementById('playerSearchInput');
-  input.addEventListener('change', function() { selectByName(input.value); });
-  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') selectByName(input.value); });
+  batters.sort(function(a, b) { return a.name.localeCompare(b.name); });
+  var displayName = STATE.playerKey ? playerDisplayName(STATE.playerKey) : '';
+  mount.innerHTML = '<div class="tp-team-picker tp-team-picker--inline tp-batter-picker">'
+    + '<div class="tp-team-picker__panel tp-team-picker__panel--inline">'
+    + '<div class="tp-team-picker__search-wrap tp-team-picker__search-wrap--inline">'
+    + '<svg class="tp-team-picker__search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+    + '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
+    + '<input type="search" class="tp-team-picker__search" id="bcBatterSearch" list="bcBatterList" '
+    + 'placeholder="Search batter or team…" value="' + esc(displayName) + '" autocomplete="off" spellcheck="false" aria-label="Search batters">'
+    + '<datalist id="bcBatterList">' + batters.map(function(b) {
+      return '<option value="' + esc(b.label) + '" data-key="' + esc(b.key) + '"></option>';
+    }).join('') + '</datalist>'
+    + '</div></div></div>';
+
+  var search = mount.querySelector('#bcBatterSearch');
+  if (!search || search._bpSearchBound) return;
+  search._bpSearchBound = true;
+
+  function pickBatter(hit) {
+    if (!hit) return;
+    selectPlayerKey(hit.key);
+  }
+
+  search.addEventListener('change', function() {
+    var val = search.value.trim();
+    var hit = batters.find(function(b) { return b.label === val || b.key === val || b.name === val; });
+    pickBatter(hit);
+  });
+  search.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    var val = search.value.trim().toLowerCase();
+    var hit = batters.find(function(b) {
+      return b.label.toLowerCase() === val || b.key.toLowerCase() === val
+        || b.name.toLowerCase() === val || (b.team && b.team.toLowerCase() === val);
+    });
+    if (!hit) selectByName(search.value.trim());
+    else pickBatter(hit);
+  });
 }
 function selectPlayerKey(key) {
   if (!key) return;
   renderPlayer(key);
-  var name = playerDisplayName(key);
-  var inp = document.getElementById('playerSearchInput');
-  if (inp) inp.value = name;
   var u = new URLSearchParams(window.location.search);
-  u.set('player', name);
+  u.set('player', playerDisplayName(key));
   history.replaceState(null, '', '?' + u.toString());
 }
 function selectByName(name) {
@@ -1839,7 +1684,7 @@ function hydrateSlateContext(lineupRows, matchupRows, schedule) {
 function load() {
   var tabs = [TABS.batter_profiles, TABS.player_registry, TABS.today_lineups, TABS.today_matchups, TABS.sp_profiles]
     .concat(RAW_TABS.map(function(p) { return p[0]; }))
-    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates]);
+    .concat([TABS.batter_prop_hitrates]);
   var S = window.MLBMASharedMatchup;
   var schedP = (S && S.fetchMlbTodaySchedule)
     ? S.fetchMlbTodaySchedule().catch(function() { return { games: [] }; })
@@ -1850,18 +1695,11 @@ function load() {
     hydrateSlateContext(res[2] || [], res[3] || [], sched);
     DATA.spProfiles = res[4] || [];
     RAW_TABS.forEach(function(pair, i) { DATA['_raw_' + pair[1]] = res[5 + i] || []; });
-    var pmOff = 5 + RAW_TABS.length;
-    if (window.MLBMAPitchMix && MLBMAPitchMix.buildIndex) {
-      DATA.pitchMix = MLBMAPitchMix.buildIndex({
-        pitcherL14: res[pmOff] || [],
-        batterL14: res[pmOff + 1] || []
-      });
-    }
-    DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
+    DATA.hitRates = indexHitRates(res[5 + RAW_TABS.length] || []);
     indexRawStats(); buildPool();
-    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); buildSearch();
+    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); bindBatterProfileControls();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
-      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Player-specific prop angles, matchup logic, splits, and hit-rate history' }); } catch (e) {}
+      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Player-specific prop angles, splits, and hit-rate history' }); } catch (e) {}
     }
     var urlName = new URLSearchParams(window.location.search).get('player');
     var startKey = null;
@@ -1872,7 +1710,7 @@ function load() {
       if (hit) startKey = playerKey(hit);
     }
     if (!startKey && DATA.profiles.length) startKey = playerKey(overallFirst());
-    if (startKey) { renderPlayer(startKey); var inp = document.getElementById('playerSearchInput'); if (inp) inp.value = playerDisplayName(startKey); }
+    if (startKey) renderPlayer(startKey);
   }).catch(function(err) {
     var b = document.getElementById('dataBanner'); if (b) { b.textContent = 'Could not load sheets: ' + (err && err.message ? err.message : err); b.classList.add('show'); }
   }).finally(function() {
