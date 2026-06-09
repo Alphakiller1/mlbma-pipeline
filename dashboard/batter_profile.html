@@ -119,20 +119,6 @@
       </div>
     </section>
 
-    <!-- Selected-player prop angles -->
-    <section class="ca-board tp-section bp-prop-section" id="secProps">
-      <div id="bxHdrProps"></div>
-      <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
-      <div class="bp-prop-board" id="propBoard" role="list" aria-label="Prop research cards"></div>
-      <p class="bp-prop-footnote" id="propFootnote"></p>
-    </section>
-
-    <!-- Pitch-type overlap vs tonight's starter -->
-    <section class="ca-board tp-section" id="secPitchMix">
-      <div id="bxHdrPitchMix"></div>
-      <div id="pitchMixMount"></div>
-    </section>
-
     <!-- Rate splits + form -->
     <section class="ca-board tp-section" id="secSplits">
       <div id="bxHdrSplits"></div>
@@ -140,6 +126,20 @@
       <div class="bp-split-board" id="splitStats"></div>
       <div class="bp-form-chart" id="splitFormChart"></div>
       <div class="bp-split-insight" id="splitInsight"></div>
+    </section>
+
+    <!-- Tonight's starter overlap + pitch-type table -->
+    <section class="ca-board tp-section bp-matchup-section" id="secPitchMix">
+      <div id="bxHdrPitchMix"></div>
+      <div id="pitchMixMount"></div>
+    </section>
+
+    <!-- Selected-player prop angles -->
+    <section class="ca-board tp-section bp-prop-section" id="secProps">
+      <div id="bxHdrProps"></div>
+      <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
+      <div class="bp-prop-board" id="propBoard" role="list" aria-label="Prop research cards"></div>
+      <p class="bp-prop-footnote" id="propFootnote"></p>
     </section>
 
   </div>
@@ -1690,9 +1690,9 @@ function renderPlayer(key) {
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
-  document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Selected Player Prop Angles', 'Ranked model projections, real hit-rate history, and optional book-line compare', 'target');
-  document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Pitch Mix', 'Arsenal overlap vs tonight\'s starter and batter contact by pitch type', 'matchups');
   document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Full rate table by split — discipline, power, MLBMA scores, and batted-ball shape', 'split');
+  document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Matchup & Pitch Mix', 'Tonight\'s starter arsenal vs this batter\'s contact and discipline by pitch type', 'matchups');
+  document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Selected Player Prop Angles', 'Ranked model projections, real hit-rate history, and optional book-line compare', 'target');
   if (A && A.metricLegendHtml) {
     var leg = document.getElementById('bxHdrProps');
     if (leg) leg.insertAdjacentHTML('beforeend', A.metricLegendHtml({ title: 'Colors vs league baseline' }));
@@ -1807,7 +1807,7 @@ function load() {
     indexRawStats(); buildPool();
     renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); bindBatterProfileControls();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
-      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Player-specific prop angles, pitch mix, splits, and hit-rate history' }); } catch (e) {}
+      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Splits and form, matchup pitch mix, then ranked prop angles for the selected hitter' }); } catch (e) {}
     }
     var urlName = new URLSearchParams(window.location.search).get('player');
     var startKey = null;
