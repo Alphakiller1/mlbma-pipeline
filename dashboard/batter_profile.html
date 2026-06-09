@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260610g">
+<link rel="stylesheet" href="batter_profile.css?v=20260610h">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_config.js?v=20260606c"></script>
+<script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="matchup_shared.js?v=20260609a"></script>
@@ -157,7 +157,7 @@ var A = window.MLBMAAssets;
 var DATA = {
   profiles: [], registry: [], lineupsRaw: [], lineupsParsed: [], matchupsRaw: [], matchupsParsed: [],
   lineups: [], matchups: [], spProfiles: [],
-  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}
+  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}, savantRates: {}
 };
 
 /* Maps prop-card id → batter_prop_hitrates.prop key (tidy long CSV) */
@@ -518,10 +518,50 @@ function tbPerPaFromRow(row) {
   var abEst = pa * Math.max(0, 1 - (bb || 0) / 100 - (kp || 0) / 100);
   return abEst > 0 ? (slg * abEst / pa) : null;
 }
-function launchAngleFromRow(row) {
-  return numOrNull(pickCol(row || {}, [
+function launchAngleFromRow(row, key, splitKey) {
+  var v = numOrNull(pickCol(row || {}, [
     'Launch Angle', 'LA', 'launch_angle', 'Avg Launch Angle', 'avg_launch_angle', 'LA°'
   ]));
+  if (v != null) return v;
+  var s = savantRateForKey(key);
+  if (s && s.launch_angle != null) return s.launch_angle;
+  if (splitKey && splitKey !== 'overall') {
+    var overall = resolveRawSplit(key, 'overall', null).row || {};
+    v = numOrNull(pickCol(overall, ['Launch Angle', 'LA', 'launch_angle']));
+    if (v != null) return v;
+  }
+  return null;
+}
+function savantRateForKey(key) {
+  if (!DATA.savantRates) return null;
+  var reg = getRegistry(key);
+  var pid = pickCol(reg || {}, ['player_id', 'playerId']);
+  if (pid && DATA.savantRates['id:' + pid]) return DATA.savantRates['id:' + pid];
+  var nk = canonicalName(playerDisplayName(key));
+  return nk ? DATA.savantRates[nk] || null : null;
+}
+function xwobaFromRow(row, key) {
+  var v = numOrNull(pickCol(row || {}, ['xwOBA', 'xWOBA', 'xwoba']));
+  if (v != null) return v;
+  v = numOrNull(pickCol(row || {}, ['wOBA', 'woba']));
+  if (v != null) return v;
+  var s = savantRateForKey(key);
+  return s && s.xwoba != null ? s.xwoba : null;
+}
+function indexSavantRates(rows) {
+  DATA.savantRates = {};
+  (rows || []).forEach(function(r) {
+    var xw = numOrNull(pickCol(r, ['xwOBA', 'xwoba', 'xWOBA']));
+    var la = numOrNull(pickCol(r, ['Launch Angle', 'launch_angle', 'LA']));
+    var rec = { xwoba: xw, launch_angle: la };
+    var pid = pickCol(r, ['player_id', 'playerId']);
+    if (pid) DATA.savantRates['id:' + pid] = rec;
+    var nm = pickCol(r, ['player_name', 'Name', 'last_name, first_name']);
+    if (nm) {
+      var nk = canonicalName(String(nm).replace(/,/g, ' '));
+      if (nk) DATA.savantRates[nk] = rec;
+    }
+  });
 }
 function splitStatValueHtml(val, ctx, invert, dec, opts) {
   opts = opts || {};
@@ -1526,7 +1566,8 @@ function splitMetricsHtml(key, splitKey, p) {
 
   var pa = numOrNull(pickCol(R, ['PA']));
   var tbPa = tbPerPaFromRow(R);
-  var la = launchAngleFromRow(R);
+  var la = launchAngleFromRow(R, key, sk);
+  var xwoba = xwobaFromRow(R, key);
 
   var meta = '<div class="bp-split-meta" role="status">'
     + '<span class="bp-split-meta__chip">' + esc(splitSourceLabel(sk)) + '</span>'
@@ -1545,7 +1586,7 @@ function splitMetricsHtml(key, splitKey, p) {
   ].join('');
 
   var band2 = [
-    splitStatCell('xwOBA', splitStatValueHtml(numOrNull(pickCol(R, ['xwOBA', 'xWOBA'])), 'xwoba', false, 3)),
+    splitStatCell('xwOBA', splitStatValueHtml(xwoba, 'xwoba', false, 3)),
     splitStatCell('OPS', splitStatValueHtml(opsFromRow(R), 'ops', false, 3)),
     splitStatCell('SLG', splitStatValueHtml(numOrNull(pickCol(R, ['SLG'])), 'slg', false, 3)),
     splitStatCell('Total Bases', splitStatValueHtml(tbPa, 'slg', false, 2, { display: tbPa != null ? fmt(tbPa, 2) + '/PA' : undefined })),
@@ -1785,7 +1826,7 @@ function hydrateSlateContext(lineupRows, matchupRows, schedule) {
 function load() {
   var tabs = [TABS.batter_profiles, TABS.player_registry, TABS.today_lineups, TABS.today_matchups, TABS.sp_profiles]
     .concat(RAW_TABS.map(function(p) { return p[0]; }))
-    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates]);
+    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates, TABS.batter_savant_rates]);
   var S = window.MLBMASharedMatchup;
   var schedP = (S && S.fetchMlbTodaySchedule)
     ? S.fetchMlbTodaySchedule().catch(function() { return { games: [] }; })
@@ -1804,6 +1845,7 @@ function load() {
       });
     }
     DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
+    indexSavantRates(res[pmOff + 3] || []);
     indexRawStats(); buildPool();
     renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); bindBatterProfileControls();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

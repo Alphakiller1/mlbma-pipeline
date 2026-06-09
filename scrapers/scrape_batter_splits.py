@@ -44,11 +44,15 @@ COLUMN_ALIASES = {
     "Hard%": "HardHit%",
     "Hard Hit%": "HardHit%",
     "HardHit%": "HardHit%",
+    "LA": "Launch Angle",
+    "xWOBA": "xwOBA",
+    "xwoba": "xwOBA",
 }
 
 OUTPUT_STATS = [
-    "PA", "AVG", "OBP", "SLG", "BB%", "K%", "wOBA", "xwOBA", "wRC+",
+    "PA", "AB", "AVG", "OBP", "SLG", "BB%", "K%", "wOBA", "xwOBA", "wRC+",
     "ISO", "BABIP", "Chase%", "ZCon%", "OCon%", "SwStr%", "Barrel%", "HardHit%",
+    "Launch Angle",
 ]
 
 # Window splits first — they power Team_Profiles L30/L14/L7 and fail if Chrome session dies late

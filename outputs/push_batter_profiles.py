@@ -27,6 +27,7 @@ RATE_STAT_COLUMNS = [
     "ZCon%",
     "OCon%",
     "SwStr%",
+    "Launch Angle",
     "Barrel%",
     "HardHit%",
 ]
@@ -111,8 +112,17 @@ def run():
                 rate_df = _to_rate_stats_df(raw)
                 push_df(sheet, tab_name, rate_df)
                 print(f"  Pushed {len(rate_df)} rows -> {tab_name}")
-            else:
-                print(f"  WARNING: {filename} not found -- skipping {tab_name}")
+        else:
+            print(f"  WARNING: {filename} not found -- skipping {tab_name}")
+
+        savant_path = os.path.join(DATA_DIR, "batter_savant_rates.csv")
+        savant_tab = SHEET_TABS.get("batter_savant_rates")
+        if savant_tab and os.path.exists(savant_path):
+            savant_df = pd.read_csv(savant_path)
+            push_df(sheet, savant_tab, savant_df)
+            print(f"  Pushed {len(savant_df)} rows -> {savant_tab}")
+        elif savant_tab:
+            print("  WARNING: batter_savant_rates.csv not found -- skipping Batter_Savant_Rates")
 
         print("\nBatter profiles Google Sheets push complete.")
     except Exception as exc:

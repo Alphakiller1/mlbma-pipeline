@@ -120,9 +120,42 @@ def fetch_savant_splits(pitcher_hand=None):
     print(f"  Saved: {fname}")
     return team_df
 
+def fetch_savant_batter_rates(min_pa: int = 10) -> pd.DataFrame:
+    """Player-level season xwOBA + launch angle for batter profile split fallbacks."""
+    url = "https://baseballsavant.mlb.com/leaderboard/custom"
+    params = {
+        "year": str(CURRENT_SEASON),
+        "type": "batter",
+        "filter": "",
+        "min": str(min_pa),
+        "selections": "xwoba,launch_angle,hard_hit_percent,barrel_batted_rate",
+        "chart": "false",
+        "csv": "true",
+    }
+    print(f"Fetching Savant batter rates (min PA {min_pa})...")
+    r = requests.get(url, params=params, headers=HEADERS, timeout=60)
+    print(f"  Status: {r.status_code}")
+    r.raise_for_status()
+    df = pd.read_csv(StringIO(r.text))
+    print(f"  Players: {len(df)}")
+    out = pd.DataFrame()
+    out["player_id"] = pd.to_numeric(df["player_id"], errors="coerce")
+    name_col = "last_name, first_name" if "last_name, first_name" in df.columns else "player_name"
+    out["player_name"] = (
+        df[name_col].astype(str).str.replace(",", "", regex=False).str.replace(r"\s+", " ", regex=True).str.strip()
+    )
+    out["xwOBA"] = pd.to_numeric(df.get("xwoba"), errors="coerce").round(3)
+    out["Launch Angle"] = pd.to_numeric(df.get("launch_angle"), errors="coerce").round(1)
+    out = out.dropna(subset=["player_id"]).reset_index(drop=True)
+    fname = os.path.join(DATA_DIR, "batter_savant_rates.csv")
+    out.to_csv(fname, index=False)
+    print(f"  Saved: {fname} ({len(out)} rows)")
+    return out
+
 def run():
     player_team_map = fetch_player_team_map()
     fetch_savant_leaderboard(player_team_map)
+    fetch_savant_batter_rates()
     fetch_savant_splits("R")
     fetch_savant_splits("L")
     print("Savant scrape complete.")
