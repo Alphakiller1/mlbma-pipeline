@@ -113,6 +113,7 @@
 
   <nav class="bp-hub-nav hub-control-bar" id="hubNav" aria-label="Research sections">
     <a href="#secHero" class="hub-pill">Identity</a>
+    <a href="#secSlate" class="hub-pill hub-pill--accent">Slate Board</a>
     <a href="#secProps" class="hub-pill hub-pill--accent">Prop Board</a>
     <a href="#secMatchup" class="hub-pill">Matchup</a>
     <a href="#secSplits" class="hub-pill">Splits &amp; Form</a>
@@ -134,6 +135,12 @@
     </section>
 
     <!-- Prop board — centerpiece -->
+    <section class="ca-board tp-section bp-slate-section" id="secSlate">
+      <div id="bxHdrSlate"></div>
+      <div class="bp-slate-summary" id="slateSummary"></div>
+      <div class="bp-slate-board" id="slateBoard" aria-label="Today's batter prop candidates"></div>
+    </section>
+
     <section class="ca-board tp-section bp-prop-hub-section" id="secProps">
       <div id="bxHdrProps"></div>
       <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
@@ -717,7 +724,8 @@ function projectProps(key) {
   } else if (iso != null) {
     hrPerPa = clamp(iso * 0.16, 0, 0.09);
   }
-  var projHR = (hrPerPa != null) ? hrPerPa * pa * hrMult : null;
+  var hrLambda = (hrPerPa != null) ? hrPerPa * pa * hrMult : null;
+  var projHR = (hrLambda != null) ? (1 - Math.exp(-Math.max(0, hrLambda))) : null;
   var projK = (kPct != null) ? (kPct / 100) * pa * kMult : null;
   var projBB = (bbPct != null) ? (bbPct / 100) * pa : null;
   var projRuns = (obp != null) ? obp * pa * 0.34 : null;       // rough: reach * scoring environment
@@ -728,7 +736,7 @@ function projectProps(key) {
   return {
     lineup: lineup, sp: sp, spSource: spShape.source, spLabel: spShape.spLabel, R: R, prof: prof, pa: pa, ab: ab, order: order,
     avg: avg, obp: obp, slg: slg, iso: iso, kPct: kPct, bbPct: bbPct, babip: babip,
-    hardPct: hardPct, wrc: wrc, spK: spK, spHr9: spHr9, spBb: spBb,
+    hardPct: hardPct, wrc: wrc, spK: spK, spHr9: spHr9, spBb: spBb, hrLambda: hrLambda,
     hits: projHits, tb: projTB, hr: projHR, k: projK, bb: projBB, runsRbi: projRR,
     drivers: driverScores(prof, R, lineup, spK)
   };
@@ -771,9 +779,9 @@ function getManualLine(propId) {
 }
 
 /** Available integer line thresholds in hit-rates CSV for this prop */
-function availableHitRateLines(propId) {
+function availableHitRateLinesForKey(key, propId) {
   var map = PROP_HITRATE_MAP[propId];
-  var pid = playerIdForKey(STATE.playerKey);
+  var pid = playerIdForKey(key);
   if (!map || !pid || !DATA.hitRates[pid] || !DATA.hitRates[pid][map.prop]) return [];
   return Object.keys(DATA.hitRates[pid][map.prop])
     .map(function(k) { return Number(k); })
@@ -781,10 +789,14 @@ function availableHitRateLines(propId) {
     .sort(function(a, b) { return a - b; });
 }
 
+function availableHitRateLines(propId) {
+  return availableHitRateLinesForKey(STATE.playerKey, propId);
+}
+
 /** Snap typed book line to nearest line row in batter_prop_hitrates.csv */
-function snapToNearestHitRateLine(propId, bookLine) {
+function snapToNearestHitRateLineForKey(key, propId, bookLine) {
   var map = PROP_HITRATE_MAP[propId];
-  var available = availableHitRateLines(propId);
+  var available = availableHitRateLinesForKey(key, propId);
   if (!available.length) return hitRateLineFor(bookLine, map ? map.defaultLine : 1);
   var bl = Number(bookLine);
   if (isNaN(bl)) return available[0];
@@ -809,20 +821,24 @@ function snapToNearestHitRateLine(propId, bookLine) {
   return best;
 }
 
+function snapToNearestHitRateLine(propId, bookLine) {
+  return snapToNearestHitRateLineForKey(STATE.playerKey, propId, bookLine);
+}
+
 /** Model-only qualitative lean (no book line entered) */
 function propLeanQualitative(proj, line, invert, prob) {
   if (proj == null) return { lean: 'pass', label: 'No data', edge: null, strength: 0 };
   if (line == null || isNaN(line)) return { lean: 'pass', label: 'Set line', edge: null, strength: 0 };
   if (prob) {
     var hrPct = proj * 100;
-    var edge = hrPct - 50;
-    if (edge >= 12) return { lean: 'over', label: 'Strong Over', edge: edge / 100, strength: 2 };
-    if (edge >= 4) return { lean: 'over', label: 'Lean Over', edge: edge / 100, strength: 1 };
-    if (edge <= -12) return { lean: 'under', label: 'Strong Under', edge: edge / 100, strength: 2 };
-    if (edge <= -4) return { lean: 'under', label: 'Lean Under', edge: edge / 100, strength: 1 };
+    var edge = hrPct - 16;
+    if (hrPct >= 26) return { lean: 'over', label: 'Strong Over', edge: edge / 100, strength: 2 };
+    if (hrPct >= 16) return { lean: 'over', label: 'Lean Over', edge: edge / 100, strength: 1 };
+    if (hrPct <= 6) return { lean: 'under', label: 'Strong Under', edge: edge / 100, strength: 2 };
+    if (hrPct <= 10) return { lean: 'under', label: 'Lean Under', edge: edge / 100, strength: 1 };
     return { lean: 'pass', label: 'Pass', edge: edge / 100, strength: 0 };
   }
-  var edge = invert ? (line - proj) : (proj - line);
+  var edge = proj - line;
   var rel = line > 0 ? edge / line : edge;
   if (rel >= 0.18) return { lean: 'over', label: 'Strong Over', edge: edge, strength: 2 };
   if (rel >= 0.08) return { lean: 'over', label: 'Lean Over', edge: edge, strength: 1 };
@@ -838,13 +854,13 @@ function propLeanBook(proj, bookLine, invert, prob) {
   }
   if (prob) {
     var hrPct = proj * 100;
-    var edge = hrPct - 50;
-    if (edge >= 8) return { lean: 'over', label: 'Over', edge: edge / 100, strength: edge >= 14 ? 2 : 1 };
-    if (edge <= -8) return { lean: 'under', label: 'Under', edge: edge / 100, strength: edge <= -14 ? 2 : 1 };
+    var edge = hrPct - 16;
+    if (hrPct >= 20) return { lean: 'over', label: 'Over', edge: edge / 100, strength: hrPct >= 28 ? 2 : 1 };
+    if (hrPct <= 9) return { lean: 'under', label: 'Under', edge: edge / 100, strength: hrPct <= 5 ? 2 : 1 };
     return { lean: 'pass', label: 'Pass', edge: edge / 100, strength: 0 };
   }
   var margin = Math.max(0.08 * Math.max(bookLine, 0.5), 0.06);
-  var edge = invert ? (bookLine - proj) : (proj - bookLine);
+  var edge = proj - bookLine;
   if (edge >= margin) {
     return { lean: 'over', label: 'Over', edge: edge, strength: edge >= margin * 2 ? 2 : 1 };
   }
@@ -955,14 +971,18 @@ function lookupHitRate(playerId, prop, line) {
   return bucket[propKey][lineKey] || null;
 }
 
-function resolveHitRateRow(propId, bookLine, hasManualLine) {
+function resolveHitRateRowForKey(key, propId, bookLine, hasManualLine) {
   var map = PROP_HITRATE_MAP[propId];
   if (!map) return null;
-  var pid = playerIdForKey(STATE.playerKey);
+  var pid = playerIdForKey(key);
   if (!pid) return null;
   var refLine = bookLine != null ? bookLine : map.defaultLine;
-  var snapped = snapToNearestHitRateLine(propId, refLine);
+  var snapped = snapToNearestHitRateLineForKey(key, propId, refLine);
   return { row: lookupHitRate(pid, map.prop, snapped), snapped: snapped, bookLine: refLine };
+}
+
+function resolveHitRateRow(propId, bookLine, hasManualLine) {
+  return resolveHitRateRowForKey(STATE.playerKey, propId, bookLine, hasManualLine);
 }
 
 function hitRateCount(rate, games) {
@@ -1031,8 +1051,8 @@ function hitRateStripHtml(propId, p, bookLine, hasManualLine) {
   var row = pack.row;
   var snapped = pack.snapped;
   var propLabel = hitRatePropLabel(map.prop, snapped);
-  var ctx = propId === 'k' ? 'kpct' : 'avg';
-  var inv = propId === 'k';
+  var ctx = 'avg';
+  var inv = false;
 
   var pills = hitRatePill('L5', numOrNull(pickCol(row, ['hit_l5'])), numOrNull(pickCol(row, ['games_l5'])), ctx, inv)
     + hitRatePill('L10', numOrNull(pickCol(row, ['hit_l10'])), numOrNull(pickCol(row, ['games_l10'])), ctx, inv)
@@ -1077,6 +1097,83 @@ function hitRateStripHtml(propId, p, bookLine, hasManualLine) {
         + (lastDate ? 'Last game ' + lastDate : '')
         + '</span>'
       : '')
+    + '</div>';
+}
+
+function hitRateWindowText(pack, windowKey) {
+  if (!pack || !pack.row) return 'No history';
+  var suffix = windowKey || 'l10';
+  var rate = numOrNull(pickCol(pack.row, ['hit_' + suffix]));
+  var games = numOrNull(pickCol(pack.row, ['games_' + suffix]));
+  if (rate == null || !games) return 'No history';
+  return Math.round(rate * 100) + '% (' + hitRateCount(rate, games) + '/' + Math.round(games) + ')';
+}
+
+function propProjectionText(def, p) {
+  var proj = p[def.projKey];
+  if (proj == null) return 'N/A';
+  if (def.prob) return Math.round(proj * 100) + '%';
+  return fmt(proj, def.dec);
+}
+
+function propDeltaText(def, p, line) {
+  var proj = p[def.projKey];
+  if (proj == null || line == null || isNaN(line)) return 'N/A';
+  if (def.prob) return 'HR prob ' + Math.round(proj * 100) + '%';
+  var edge = proj - line;
+  var sign = edge > 0 ? '+' : '';
+  return sign + fmt(edge, 2) + ' vs ' + propLineLabel(line);
+}
+
+function propGradeScore(def, p, qual, hitRow) {
+  var d = p.drivers || {};
+  var kSafety = 100 - (d.kRisk == null ? 50 : d.kRisk);
+  var score = 50;
+  if (def.id === 'hits') {
+    score = (d.contact || 50) * 0.46 + kSafety * 0.24 + (d.lineupCtx || 50) * 0.30;
+  } else if (def.id === 'tb') {
+    score = (d.power || 50) * 0.48 + (d.contact || 50) * 0.24 + (d.lineupCtx || 50) * 0.18 + kSafety * 0.10;
+  } else if (def.id === 'hr') {
+    score = (d.power || 50) * 0.62 + (p.spHr9 != null ? clamp(50 + (p.spHr9 - LG.HR9) * 22, 0, 100) : 50) * 0.23 + (d.lineupCtx || 50) * 0.15;
+  } else if (def.id === 'k') {
+    score = (d.kRisk || 50) * 0.72 + (p.spK != null ? clamp(50 + (p.spK - LG.SP_K) * 2.4, 0, 100) : 50) * 0.28;
+  } else if (def.id === 'bb') {
+    score = (p.bbPct != null ? clamp(p.bbPct * 7.5, 0, 100) : 50) * 0.45 + (p.spBb != null ? clamp(p.spBb * 8.2, 0, 100) : 50) * 0.25 + (d.lineupCtx || 50) * 0.30;
+  } else if (def.id === 'hrr') {
+    score = (d.lineupCtx || 50) * 0.38 + (d.contact || 50) * 0.32 + (d.power || 50) * 0.30;
+  }
+  if (qual && qual.lean === 'under') {
+    score = 100 - score;
+  } else if (!qual || qual.lean === 'pass') {
+    score = 50 + (score - 50) * 0.35;
+  }
+  if (hitRow) {
+    var l10 = numOrNull(pickCol(hitRow, ['hit_l10']));
+    if (l10 != null) {
+      var histScore = clamp(l10 * 100, 0, 100);
+      if (qual && qual.lean === 'under') histScore = 100 - histScore;
+      if (!qual || qual.lean === 'pass') histScore = 50 + (histScore - 50) * 0.25;
+      score = score * 0.78 + histScore * 0.22;
+    }
+  }
+  if (qual && qual.lean !== 'pass') score += qual.strength ? qual.strength * 5 : 2;
+  return clamp(Math.round(score), 0, 100);
+}
+
+function propGradeLabel(score) {
+  if (score >= 82) return 'A';
+  if (score >= 70) return 'B';
+  if (score >= 58) return 'C';
+  if (score >= 46) return 'D';
+  return 'Fade';
+}
+
+function propKpisHtml(def, p, qual, line, hitPack, grade) {
+  return '<div class="bp-prop-card__kpis" data-prop-kpis="' + esc(def.id) + '">'
+    + '<div class="bp-prop-kpi bp-prop-kpi--grade"><span>Grade</span><strong data-prop-grade="' + esc(def.id) + '">' + esc(propGradeLabel(grade)) + '</strong></div>'
+    + '<div class="bp-prop-kpi"><span>Projection</span><strong>' + esc(propProjectionText(def, p)) + '</strong></div>'
+    + '<div class="bp-prop-kpi"><span>Line Edge</span><strong data-prop-kpi="delta">' + esc(propDeltaText(def, p, line)) + '</strong></div>'
+    + '<div class="bp-prop-kpi"><span>L10 History</span><strong data-prop-kpi="history">' + esc(hitRateWindowText(hitPack, 'l10')) + '</strong></div>'
     + '</div>';
 }
 
@@ -1242,7 +1339,7 @@ function propLeanCell(proj, line, invert, prob) {
       + '<span class="bp-lean bp-lean--' + lean + '">' + leanTxt + '</span></td>';
   }
   var ln = leanFor(proj, line);
-  var cls = invert ? (ln.lean === 'over' ? 'under' : ln.lean === 'under' ? 'over' : 'pass') : ln.lean;
+  var cls = ln.lean;
   var leanTxt = cls === 'over' ? 'Over' : (cls === 'under' ? 'Under' : 'Pass');
   return '<td class="bp-prop-line"><span class="bp-prop-line__book">' + propLineLabel(line) + '</span>'
     + '<span class="bp-lean bp-lean--' + cls + '">' + leanTxt + '</span></td>';
@@ -1264,17 +1361,18 @@ function propCardHtml(def, p) {
   var hasManual = manualLine != null;
   var qual = propCardLean(def, proj, manualLine);
   var best = bestAngleLabel(p) === def.label;
-  var edgeScore = def.drivers.reduce(function(acc, k) { return acc + (p.drivers[k] || 50); }, 0) / def.drivers.length;
-  if (qual.strength) edgeScore = clamp(edgeScore + qual.strength * 6 * (qual.lean === 'over' ? 1 : -1), 5, 95);
-  var projDisp = def.prob
-    ? fmt(proj, def.dec) + ' <span class="bp-prop-card__sub">(' + Math.round(proj * 100) + '% HR)</span>'
-    : fmt(proj, def.dec);
+  var hitRefLine = hasManual ? manualLine : def.defaultLine;
+  var hitPack = resolveHitRateRow(def.id, hitRefLine, hasManual);
+  var edgeScore = propGradeScore(def, p, qual, hitPack && hitPack.row);
+  var projDisp = propProjectionText(def, p);
+  if (def.prob && p.hrLambda != null) {
+    projDisp += ' <span class="bp-prop-card__sub">(' + fmt(p.hrLambda, 2) + ' exp HR)</span>';
+  }
   var driverBits = (def.drivers || []).slice(0, 3).map(function(k) {
     return '<li><strong>' + esc(driverLabel(k)) + '</strong> — ' + esc(driverNote(k, p)) + '</li>';
   }).join('');
   var inputId = 'bp-line-' + def.id;
   var stored = STATE.manualLines[def.id] != null ? String(STATE.manualLines[def.id]) : '';
-  var hitRefLine = hasManual ? manualLine : def.defaultLine;
   return '<article class="bp-prop-card' + (best ? ' bp-prop-card--best' : '') + (hasManual ? ' bp-prop-card--book' : '') + '" role="listitem" tabindex="0" data-prop="' + esc(def.id) + '">'
     + '<div class="bp-prop-card__head">'
     + '<h3 class="bp-prop-card__title">' + esc(def.label) + '</h3>'
@@ -1282,7 +1380,8 @@ function propCardHtml(def, p) {
     + '<span class="bp-lean ' + leanChipClass(qual.lean, qual.strength) + '">' + esc(qual.label) + '</span>'
     + '</div>'
     + '<div class="bp-prop-card__proj">Model <strong>' + projDisp + '</strong></div>'
-    + '<div class="bp-prop-card__edge">' + edgeBarHtml(edgeScore, def.invert ? 'kpct' : 'osi', def.invert, 'Edge') + '</div>'
+    + propKpisHtml(def, p, qual, hitRefLine, hitPack, edgeScore)
+    + '<div class="bp-prop-card__edge">' + edgeBarHtml(edgeScore, 'osi', false, 'Prop Grade') + '</div>'
     + '<ul class="bp-prop-card__drivers">' + driverBits + '</ul>'
     + '<div class="bp-prop-card__hitrate" data-hitrate-mount="' + esc(def.id) + '">' + hitRateStripHtml(def.id, p, hitRefLine, hasManual) + '</div>'
     + '<div class="bp-prop-card__line">'
@@ -1304,8 +1403,153 @@ function renderPropBoard(p) {
   board.innerHTML = cards || '<p class="ca-helper">Insufficient rate data for prop projections.</p>';
   var foot = document.getElementById('propFootnote');
   if (foot) {
-    foot.textContent = 'Platoon rate line × expected PA, SP K/HR-adjusted. Leans are model research only — not sportsbook odds.';
+    foot.textContent = 'Model projection plus real L5/L10/L20/season hit-rate history. Optional book lines snap to the nearest tracked prop threshold; no live sportsbook odds feed is attached.';
   }
+}
+
+function keyForLineupRow(row) {
+  var pname = pickCol(row, ['Player', 'player', 'player_name', 'Name']);
+  var team = teamKeyAbbr(pickCol(row, ['Team', 'team', 'team_abbr']));
+  var reg = findRegistryByName(pname, team);
+  if (reg) return playerKey(reg);
+  var target = canonicalName(pname);
+  var prof = DATA.profiles.find(function(p) {
+    return String(pickCol(p, ['split_type'])).toLowerCase() === 'overall'
+      && canonicalName(pickCol(p, ['player_name', 'Name'])) === target;
+  });
+  return prof ? playerKey(prof) : '';
+}
+
+function slatePlayerKeys() {
+  var seen = {};
+  var keys = [];
+  (DATA.lineups || []).forEach(function(row) {
+    var key = keyForLineupRow(row);
+    if (key && !seen[key]) {
+      seen[key] = 1;
+      keys.push(key);
+    }
+  });
+  if (keys.length) return keys;
+  DATA.profiles.forEach(function(row) {
+    if (keys.length >= 80) return;
+    if (String(pickCol(row, ['split_type'])).toLowerCase() !== 'overall') return;
+    var key = playerKey(row);
+    if (key && !seen[key]) {
+      seen[key] = 1;
+      keys.push(key);
+    }
+  });
+  return keys;
+}
+
+function slateCandidateFor(key, def) {
+  var p = projectProps(key);
+  var proj = p[def.projKey];
+  if (proj == null) return null;
+  var line = def.defaultLine;
+  var qual = propCardLean(def, proj, null);
+  var hitPack = resolveHitRateRowForKey(key, def.id, line, false);
+  var grade = propGradeScore(def, p, qual, hitPack && hitPack.row);
+  var reg = getRegistry(key);
+  var team = String(pickCol(reg || {}, ['team_abbr', 'team']) || p.lineup.team || '').toUpperCase();
+  var score = grade + (qual.lean !== 'pass' ? 4 : 0) + (p.lineup.inLineup ? 4 : 0);
+  return {
+    key: key,
+    name: playerDisplayName(key),
+    team: team,
+    def: def,
+    p: p,
+    line: line,
+    qual: qual,
+    hitPack: hitPack,
+    grade: grade,
+    score: score
+  };
+}
+
+function buildSlateCandidates() {
+  var out = [];
+  slatePlayerKeys().forEach(function(key) {
+    PROP_DEFS.forEach(function(def) {
+      var cand = slateCandidateFor(key, def);
+      if (!cand) return;
+      if (cand.qual.lean === 'pass' && cand.grade < 64) return;
+      out.push(cand);
+    });
+  });
+  out.sort(function(a, b) {
+    if (b.score !== a.score) return b.score - a.score;
+    return b.grade - a.grade;
+  });
+  return out.slice(0, 14);
+}
+
+function slateMatchupText(c) {
+  var p = c.p;
+  if (!p || !p.lineup || !p.lineup.inLineup) return 'Lineup pending';
+  var opp = p.lineup.oppTeam || 'OPP';
+  var sp = p.lineup.oppSp && p.lineup.oppSp !== 'TBD' ? p.lineup.oppSp : 'Starter TBD';
+  return opp + ' / ' + sp + ' (' + p.lineup.oppHand + 'HP) #' + p.lineup.batOrder;
+}
+
+function slateSpotlightHtml(c, idx) {
+  return '<button type="button" class="bp-slate-spotlight" data-slate-key="' + esc(c.key) + '">'
+    + '<span class="bp-slate-spotlight__rank">0' + (idx + 1) + '</span>'
+    + '<span class="bp-slate-spotlight__meta">' + esc(c.team || 'MLB') + ' / ' + esc(c.def.label) + '</span>'
+    + '<strong>' + esc(c.name) + '</strong>'
+    + '<span class="bp-slate-spotlight__read"><span class="bp-lean ' + leanChipClass(c.qual.lean, c.qual.strength) + '">' + esc(c.qual.label) + '</span>'
+      + '<span class="bp-slate-grade">' + esc(propGradeLabel(c.grade)) + '</span></span>'
+    + '<span class="bp-slate-spotlight__sub">' + esc(propDeltaText(c.def, c.p, c.line)) + ' / L10 ' + esc(hitRateWindowText(c.hitPack, 'l10')) + '</span>'
+    + '</button>';
+}
+
+function slateRowHtml(c) {
+  var active = STATE.playerKey === c.key ? ' is-active' : '';
+  return '<button type="button" class="bp-slate-row' + active + '" data-slate-key="' + esc(c.key) + '">'
+    + '<span class="bp-slate-row__player"><strong>' + esc(c.name) + '</strong><em>' + esc(c.team || 'MLB') + '</em></span>'
+    + '<span class="bp-slate-row__prop">' + esc(c.def.label) + '<em>' + esc(slateMatchupText(c)) + '</em></span>'
+    + '<span class="bp-slate-row__line">' + esc(propLineLabel(c.line)) + '</span>'
+    + '<span class="bp-slate-row__proj">' + esc(propProjectionText(c.def, c.p)) + '</span>'
+    + '<span class="bp-slate-row__hist">' + esc(hitRateWindowText(c.hitPack, 'l10')) + '</span>'
+    + '<span class="bp-lean ' + leanChipClass(c.qual.lean, c.qual.strength) + '">' + esc(c.qual.label) + '</span>'
+    + '<span class="bp-slate-grade">' + esc(propGradeLabel(c.grade)) + '</span>'
+    + '</button>';
+}
+
+function renderSlateBoard() {
+  var board = document.getElementById('slateBoard');
+  var summary = document.getElementById('slateSummary');
+  if (!board) return;
+  var candidates = buildSlateCandidates();
+  if (summary) {
+    var lineupCount = slatePlayerKeys().length;
+    summary.innerHTML = '<div class="bp-slate-summary__item"><span>Pool</span><strong>' + lineupCount + '</strong><em>' + (DATA.lineups && DATA.lineups.length ? 'posted lineup hitters' : 'profile fallback') + '</em></div>'
+      + '<div class="bp-slate-summary__item"><span>Live History</span><strong>' + Object.keys(DATA.hitRates || {}).length + '</strong><em>players with prop logs</em></div>'
+      + '<div class="bp-slate-summary__item"><span>Model</span><strong>6</strong><em>supported prop lanes</em></div>';
+  }
+  if (!candidates.length) {
+    board.innerHTML = '<p class="ca-helper">Slate candidates unavailable until batter profiles and hit-rate history load.</p>';
+    return;
+  }
+  var spotlights = candidates.slice(0, 3).map(slateSpotlightHtml).join('');
+  var rows = candidates.slice(3).map(slateRowHtml).join('');
+  board.innerHTML = '<div class="bp-slate-spotlights">' + spotlights + '</div>'
+    + '<div class="bp-slate-table" role="list">'
+    + '<div class="bp-slate-table__head"><span>Player</span><span>Prop / Matchup</span><span>Line</span><span>Proj</span><span>L10</span><span>Lean</span><span>Grade</span></div>'
+    + rows
+    + '</div>';
+}
+
+function bindSlateBoardEvents() {
+  var board = document.getElementById('slateBoard');
+  if (!board || board.dataset.bound) return;
+  board.dataset.bound = '1';
+  board.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-slate-key]');
+    if (!btn) return;
+    selectPlayerKey(btn.getAttribute('data-slate-key'));
+  });
 }
 
 function bindPropBoardEvents() {
@@ -1326,6 +1570,9 @@ function bindPropBoardEvents() {
     var manualLine = getManualLine(id);
     var hasManual = manualLine != null;
     var qual = propCardLean(def, p[def.projKey], manualLine);
+    var hitRefLine = hasManual ? manualLine : def.defaultLine;
+    var hitPack = resolveHitRateRow(id, hitRefLine, hasManual);
+    var edgeScore = propGradeScore(def, p, qual, hitPack && hitPack.row);
     var card = inp.closest('.bp-prop-card');
     var hint = inp.parentElement && inp.parentElement.querySelector('.bp-prop-card__line-lean');
     var headLean = card && card.querySelector('.bp-prop-card__head .bp-lean');
@@ -1339,11 +1586,18 @@ function bindPropBoardEvents() {
     }
     if (card) {
       card.classList.toggle('bp-prop-card--book', hasManual);
+      var grade = card.querySelector('[data-prop-grade="' + id + '"]');
+      var delta = card.querySelector('[data-prop-kpi="delta"]');
+      var history = card.querySelector('[data-prop-kpi="history"]');
+      var edgeMount = card.querySelector('.bp-prop-card__edge');
+      if (grade) grade.textContent = propGradeLabel(edgeScore);
+      if (delta) delta.textContent = propDeltaText(def, p, hitRefLine);
+      if (history) history.textContent = hitRateWindowText(hitPack, 'l10');
+      if (edgeMount) edgeMount.innerHTML = edgeBarHtml(edgeScore, 'osi', false, 'Prop Grade');
     }
     var mount = card && card.querySelector('[data-hitrate-mount="' + id + '"]');
     if (mount) {
-      var refLine = hasManual ? manualLine : def.defaultLine;
-      mount.innerHTML = hitRateStripHtml(id, p, refLine, hasManual);
+      mount.innerHTML = hitRateStripHtml(id, p, hitRefLine, hasManual);
     }
   });
 }
@@ -1635,10 +1889,12 @@ function renderPlayer(key) {
   renderPitchMix(key, p);
   renderContextPanels(key, p);
   renderPropFlags(p);
+  renderSlateBoard();
 }
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
+  document.getElementById('bxHdrSlate').innerHTML = sectionHeaderHtml('Today\'s Prop Board', 'Best model-plus-history candidates from posted lineups', 'target');
   document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Prop Board', 'Model projections, driver-backed leans, and optional book-line compare', 'target');
   document.getElementById('bxHdrMatchup').innerHTML = sectionHeaderHtml('Matchup Logic', 'Platoon rates vs tonight\'s starter and pitch-type arsenal overlap', 'matchups');
   document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Auto-selects platoon split when lineup is posted', 'split');
@@ -1661,11 +1917,21 @@ function buildSearch() {
   input.addEventListener('change', function() { selectByName(input.value); });
   input.addEventListener('keydown', function(e) { if (e.key === 'Enter') selectByName(input.value); });
 }
+function selectPlayerKey(key) {
+  if (!key) return;
+  renderPlayer(key);
+  var name = playerDisplayName(key);
+  var inp = document.getElementById('playerSearchInput');
+  if (inp) inp.value = name;
+  var u = new URLSearchParams(window.location.search);
+  u.set('player', name);
+  history.replaceState(null, '', '?' + u.toString());
+}
 function selectByName(name) {
   var nk = canonicalName(name);
   var hit = DATA.profiles.find(function(p) { return canonicalName(pickCol(p, ['player_name', 'Name'])) === nk; })
     || findRegistryByName(name, '');
-  if (hit) { var key = playerKey(hit); renderPlayer(key); var u = new URLSearchParams(window.location.search); u.set('player', name); history.replaceState(null, '', '?' + u.toString()); }
+  if (hit) selectPlayerKey(playerKey(hit));
 }
 
 /* ---------- load ---------- */
@@ -1688,7 +1954,7 @@ function load() {
     }
     DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
     indexRawStats(); buildPool();
-    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); buildSearch();
+    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); bindSlateBoardEvents(); mountHeaders(); buildSearch(); renderSlateBoard();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
       try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Prop Hub', subtitle: 'Model leans, matchup logic, splits, and prop hit-rates' }); } catch (e) {}
     }

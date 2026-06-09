@@ -35,9 +35,12 @@ MODULES = [
     "core.dashboard_terminal",
     "scrapers.scrape_player_registry",
     "scrapers.scrape_batter_splits",
+    "scrapers.scrape_batter_gamelog",
     "scrapers.fangraphs_session",
     "core.compute_batter_profile",
     "outputs.push_batter_profiles",
+    "core.compute_batter_prop_hitrates",
+    "outputs.push_batter_prop_hitrates",
     "core.compute_team_profile",
     "outputs.push_team_profiles",
 ]

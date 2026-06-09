@@ -356,7 +356,7 @@ def run_batter_prop_hitrates():
 
 
 def run_team_profiles():
-    """Step 18-19: team profiles + Sheets push; non-fatal on failure."""
+    """Step 21-22: team profiles + Sheets push; non-fatal on failure."""
 
     def _fn():
         from core.compute_team_profile import run as run_compute_team
