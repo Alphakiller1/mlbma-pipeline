@@ -531,18 +531,26 @@
     return latestRows;
   }
 
-  function syncLiveLineupsFromSheet(rawRows, matchups) {
+  function syncLiveLineupsFromSheet(rawRows, matchups, liveSchedule) {
     rawRows = rawRows || [];
-    var live = global.LIVE_DATA;
-    if (!live) return [];
+    var live = global.LIVE_DATA || {};
     live._rawLineupSheetRows = rawRows;
-    var keys = (matchups || live.matchups || []).map(function(m) { return matchupGameKey(m); }).filter(Boolean);
+    var mlist = matchups && matchups.length ? matchups : (live.matchups || []);
+    var keys = collectLineupMatchupKeys(mlist, liveSchedule || live._liveSchedule, rawRows);
     var filtered = filterLineupSheetRows(rawRows, keys);
-    live.lineups = parseLineupRows(filtered);
+    var parsed = parseLineupRows(filtered);
+    live.lineups = parsed;
+    live._lineupGameCount = keys.length
+      ? Object.keys(filtered.reduce(function(acc, row) {
+          acc[normalizeLineupGameKeyShared(pickCol(row, 'Game', 'game_key', 'GameKey'))] = 1;
+          return acc;
+        }, {})).length
+      : 0;
     if (typeof console !== 'undefined' && console.info) {
-      console.info('[LINEUPS] synced', live.lineups.length, 'parsed rows from', filtered.length, 'sheet rows');
+      console.info('[LINEUPS] synced', parsed.length, 'parsed rows from', filtered.length, 'sheet rows across',
+        live._lineupGameCount, 'game(s);', keys.length, 'matchup key(s)');
     }
-    return live.lineups;
+    return parsed;
   }
 
   function buildMatchupLineupBlock(m, opts) {
@@ -2121,10 +2129,40 @@
     });
   }
 
+  function collectLineupMatchupKeys(matchups, liveSchedule, rawRows) {
+    var keySet = {};
+    function addKey(k) {
+      k = normalizeLineupGameKeyShared(k);
+      if (k) keySet[k] = true;
+    }
+    (matchups || []).forEach(function(m) { addKey(matchupGameKey(m)); });
+    if (liveSchedule && liveSchedule.games) {
+      liveSchedule.games.forEach(function(g) { addKey(matchupGameKey(g)); });
+    }
+    if (!Object.keys(keySet).length && rawRows && rawRows.length) {
+      var today = easternDateIso();
+      var dated = rawRows.filter(function(row) {
+        var d = slateDateFromRow(row);
+        return d && /^\d{4}-\d{2}-\d{2}$/.test(d);
+      });
+      var source = dated.filter(function(row) { return slateDateFromRow(row) === today; });
+      if (!source.length && dated.length) {
+        var sheetDays = {};
+        dated.forEach(function(row) { sheetDays[slateDateFromRow(row)] = 1; });
+        var latest = Object.keys(sheetDays).sort().pop();
+        source = dated.filter(function(row) { return slateDateFromRow(row) === latest; });
+      }
+      source.forEach(function(row) {
+        addKey(pickCol(row, 'Game', 'game_key', 'GameKey'));
+      });
+    }
+    return Object.keys(keySet);
+  }
+
   function parseMatchupRows(rows) {
     return (rows || []).map(function(row) {
-      var away = normalizeTeamAbbrShared(pickCol(row, 'Away'));
-      var home = normalizeTeamAbbrShared(pickCol(row, 'Home'));
+      var away = normalizeTeamAbbrShared(pickCol(row, 'Away', 'Away_Team', 'away_team'));
+      var home = normalizeTeamAbbrShared(pickCol(row, 'Home', 'Home_Team', 'home_team'));
       if (!away && !home) return null;
       return {
         time: String(pickCol(row, 'Time', 'Game_Time')).trim(),
@@ -2846,6 +2884,7 @@
     parseLineup: parseLineup,
     filterLineupSheetRows: filterLineupSheetRows,
     syncLiveLineupsFromSheet: syncLiveLineupsFromSheet,
+    collectLineupMatchupKeys: collectLineupMatchupKeys,
     buildMatchupLineupBlock: buildMatchupLineupBlock,
     platoonHighlight: platoonHighlight,
     platoonHighlightClass: platoonHighlightClass,

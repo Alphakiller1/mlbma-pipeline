@@ -17,7 +17,7 @@
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260608a"></script>
+<script src="matchup_shared.js?v=20260609a"></script>
 <script src="pitch_mix_shared.js?v=20260608a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_shell.js?v=20260603a"></script>
@@ -169,7 +169,8 @@ var TABS = MLBMA_CONFIG.SHEET_TABS;
 var A = window.MLBMAAssets;
 
 var DATA = {
-  profiles: [], registry: [], lineups: [], matchups: [], spProfiles: [],
+  profiles: [], registry: [], lineupsRaw: [], lineupsParsed: [], matchupsRaw: [], matchupsParsed: [],
+  lineups: [], matchups: [], spProfiles: [],
   rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}
 };
 
@@ -526,7 +527,19 @@ function teamKeyAbbr(t) {
   var S = window.MLBMASharedMatchup;
   return S && S.teamKey ? S.teamKey(t) : String(t || '').trim().toUpperCase();
 }
+function lineupRowsActive() {
+  return (DATA.lineupsParsed && DATA.lineupsParsed.length) ? DATA.lineupsParsed : (DATA.lineups || []);
+}
+function parsedMatchups() {
+  if (DATA.matchupsParsed && DATA.matchupsParsed.length) return DATA.matchupsParsed;
+  var S = window.MLBMASharedMatchup;
+  return S && S.parseMatchupRows ? S.parseMatchupRows(DATA.matchupsRaw || DATA.matchups || []) : [];
+}
 function matchupTeams(g) {
+  if (!g) return { away: '', home: '' };
+  if (g.away != null && g.home != null && !pickCol(g, ['Away', 'Away_Team', 'away'])) {
+    return { away: teamKeyAbbr(g.away), home: teamKeyAbbr(g.home) };
+  }
   return {
     away: teamKeyAbbr(pickCol(g, ['Away', 'away', 'Away_Team', 'away_team'])),
     home: teamKeyAbbr(pickCol(g, ['Home', 'home', 'Home_Team', 'home_team']))
@@ -536,7 +549,8 @@ function findMatchupRow(team, side, gameKey) {
   var tk = teamKeyAbbr(team);
   if (!tk) return null;
   var hit = null;
-  DATA.matchups.forEach(function(g) {
+  var list = parsedMatchups();
+  list.forEach(function(g) {
     var th = matchupTeams(g);
     if (side === 'AWAY' && th.away === tk) hit = g;
     if (side === 'HOME' && th.home === tk) hit = g;
@@ -546,7 +560,7 @@ function findMatchupRow(team, side, gameKey) {
   if (parts.length !== 2) return hit;
   var awayKey = teamKeyAbbr(parts[0]);
   var homeKey = teamKeyAbbr(parts[1]);
-  DATA.matchups.forEach(function(g) {
+  list.forEach(function(g) {
     var th = matchupTeams(g);
     if (th.away === awayKey && th.home === homeKey) hit = g;
   });
@@ -557,32 +571,33 @@ function findLineupContext(key) {
   var team = teamKeyAbbr(pickCol(reg || {}, ['team_abbr', 'team']));
   var pname = canonicalName(playerDisplayName(key));
   var slot = null;
-  DATA.lineups.forEach(function(row) {
-    var lineupName = pickCol(row, ['Player', 'player']);
-    var t = teamKeyAbbr(pickCol(row, ['Team', 'team']));
+  lineupRowsActive().forEach(function(row) {
+    var lineupName = pickCol(row, ['Player', 'player', 'player_name']);
+    var t = teamKeyAbbr(pickCol(row, ['Team', 'team']) || row.team);
     var resolved = findRegistryByName(lineupName, t);
     var player = resolved ? canonicalName(pickCol(resolved, ['full_name', 'fullName'])) : canonicalName(lineupName);
     if (player === pname && (!team || t === team)) slot = row;
   });
   if (!slot) return { inLineup: false, team: team };
-  var side = String(pickCol(slot, ['Side', 'side'])).toUpperCase();
+  var side = String(pickCol(slot, ['Side', 'side']) || slot.side || '').toUpperCase();
   var order = pickCol(slot, ['Bat_Order', 'Bat Order', 'bat_order']);
-  var game = pickCol(slot, ['Game', 'game']);
+  if ((order === '' || order == null) && slot.batOrder != null) order = slot.batOrder;
+  var game = pickCol(slot, ['Game', 'game']) || slot.game || '';
   var oppSp = 'TBD', oppHand = 'R', oppTeam = '', stadium = '';
-  if (!team) team = teamKeyAbbr(pickCol(slot, ['Team', 'team']));
+  if (!team) team = teamKeyAbbr(pickCol(slot, ['Team', 'team']) || slot.team);
   var g = findMatchupRow(team, side, game);
   if (g) {
     var th = matchupTeams(g);
     if (side === 'AWAY') {
-      oppSp = pickCol(g, ['Home_SP', 'Home SP', 'home_sp']) || oppSp;
-      oppHand = pickCol(g, ['Home_Hand', 'Home SP Hand', 'Home_SP_Hand', 'home_hand']) || oppHand;
+      oppSp = pickCol(g, ['Home_SP', 'Home SP', 'home_sp']) || g.homeSP || oppSp;
+      oppHand = pickCol(g, ['Home_Hand', 'Home SP Hand', 'Home_SP_Hand', 'home_hand']) || g.homeHand || oppHand;
       oppTeam = th.home;
     } else {
-      oppSp = pickCol(g, ['Away_SP', 'Away SP', 'away_sp']) || oppSp;
-      oppHand = pickCol(g, ['Away_Hand', 'Away SP Hand', 'Away_SP_Hand', 'away_hand']) || oppHand;
+      oppSp = pickCol(g, ['Away_SP', 'Away SP', 'away_sp']) || g.awaySP || oppSp;
+      oppHand = pickCol(g, ['Away_Hand', 'Away SP Hand', 'Away_SP_Hand', 'away_hand']) || g.awayHand || oppHand;
       oppTeam = th.away;
     }
-    stadium = pickCol(g, ['stadium_name', 'Stadium', 'Venue', 'Ballpark']) || stadium;
+    stadium = pickCol(g, ['stadium_name', 'Stadium', 'Venue', 'Ballpark']) || g.stadium || stadium;
   }
   return {
     inLineup: true, side: side, batOrder: order, game: game,
@@ -1807,13 +1822,33 @@ function selectByName(name) {
 /* ---------- load ---------- */
 function fetchTab(tab) { return MLBMASharedMatchup.fetchSheetTab(tab).catch(function() { return []; }); }
 
+function hydrateSlateContext(lineupRows, matchupRows, schedule) {
+  var S = window.MLBMASharedMatchup;
+  DATA.lineupsRaw = lineupRows || [];
+  DATA.matchupsRaw = matchupRows || [];
+  DATA.matchupsParsed = S && S.parseMatchupRows ? S.parseMatchupRows(DATA.matchupsRaw) : [];
+  DATA.matchups = DATA.matchupsRaw;
+  if (S && S.syncLiveLineupsFromSheet) {
+    DATA.lineupsParsed = S.syncLiveLineupsFromSheet(DATA.lineupsRaw, DATA.matchupsParsed, schedule);
+  } else {
+    DATA.lineupsParsed = S && S.parseLineupRows ? S.parseLineupRows(DATA.lineupsRaw) : DATA.lineupsRaw;
+  }
+  DATA.lineups = DATA.lineupsParsed;
+}
+
 function load() {
   var tabs = [TABS.batter_profiles, TABS.player_registry, TABS.today_lineups, TABS.today_matchups, TABS.sp_profiles]
     .concat(RAW_TABS.map(function(p) { return p[0]; }))
     .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates]);
-  Promise.all(tabs.map(fetchTab)).then(function(res) {
-    DATA.profiles = res[0] || []; DATA.registry = res[1] || []; DATA.lineups = res[2] || [];
-    DATA.matchups = res[3] || []; DATA.spProfiles = res[4] || [];
+  var S = window.MLBMASharedMatchup;
+  var schedP = (S && S.fetchMlbTodaySchedule)
+    ? S.fetchMlbTodaySchedule().catch(function() { return { games: [] }; })
+    : Promise.resolve({ games: [] });
+  Promise.all(tabs.map(fetchTab).concat([schedP])).then(function(res) {
+    var sched = res[res.length - 1];
+    DATA.profiles = res[0] || []; DATA.registry = res[1] || [];
+    hydrateSlateContext(res[2] || [], res[3] || [], sched);
+    DATA.spProfiles = res[4] || [];
     RAW_TABS.forEach(function(pair, i) { DATA['_raw_' + pair[1]] = res[5 + i] || []; });
     var pmOff = 5 + RAW_TABS.length;
     if (window.MLBMAPitchMix && MLBMAPitchMix.buildIndex) {

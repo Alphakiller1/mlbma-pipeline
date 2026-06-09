@@ -29,7 +29,7 @@
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260606c"></script>
+<script src="matchup_shared.js?v=20260609a"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
@@ -1184,10 +1184,28 @@ function enrichProfileMatchups() {
       if (hp) m.homeOSI = num(pickCol(hp, ['osi', 'OSI']));
     }
   });
-  DATA.lineupsParsed = S.parseLineupRows ? S.parseLineupRows(DATA.lineups || []) : [];
+  var schedP = (S.fetchMlbTodaySchedule)
+    ? S.fetchMlbTodaySchedule().catch(function() { return LIVE_DATA._liveSchedule || { games: [] }; })
+    : Promise.resolve(LIVE_DATA._liveSchedule || { games: [] });
+  DATA.lineupsParsed = S.syncLiveLineupsFromSheet
+    ? S.syncLiveLineupsFromSheet(DATA.lineups || [], DATA.matchupsEnriched, LIVE_DATA._liveSchedule || null)
+    : (S.parseLineupRows ? S.parseLineupRows(DATA.lineups || []) : []);
+  schedP.then(function(sched) {
+    DATA.lineupsParsed = S.syncLiveLineupsFromSheet
+      ? S.syncLiveLineupsFromSheet(DATA.lineups || [], DATA.matchupsEnriched, sched)
+      : DATA.lineupsParsed;
+    window.LIVE_DATA = window.LIVE_DATA || {};
+    LIVE_DATA.matchups = DATA.matchupsEnriched;
+    LIVE_DATA.lineups = DATA.lineupsParsed;
+    LIVE_DATA._liveSchedule = sched;
+    LIVE_DATA.spProfiles = DATA.sps || [];
+    if (window._teamProfileRendered && typeof renderTeam === 'function') {
+      try { renderTeam(STATE.team); } catch (e) { console.warn('[MLBMA] lineup refresh render failed', e); }
+    }
+  });
   window.LIVE_DATA = window.LIVE_DATA || {};
   LIVE_DATA.matchups = DATA.matchupsEnriched;
-  LIVE_DATA.lineups = DATA.lineupsParsed;
+  LIVE_DATA.lineups = DATA.lineupsParsed || [];
   LIVE_DATA.spProfiles = DATA.sps || [];
 }
 

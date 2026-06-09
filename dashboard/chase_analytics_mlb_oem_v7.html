@@ -2749,7 +2749,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260610b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260608a"></script>
+<script src="matchup_shared.js?v=20260609a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
@@ -4429,7 +4429,7 @@ function applyLineupsFromSheetRows(rows) {
   LIVE_DATA._rawLineupSheetRows = rows;
   var S = window.MLBMASharedMatchup;
   if (S && S.syncLiveLineupsFromSheet) {
-    return S.syncLiveLineupsFromSheet(rows, LIVE_DATA.matchups);
+    return S.syncLiveLineupsFromSheet(rows, LIVE_DATA.matchups, LIVE_DATA._liveSchedule);
   }
   var keys = (LIVE_DATA.matchups || []).map(function(m) { return matchupGameKey(m); });
   var filtered = filterSheetRowsForToday(rows);
