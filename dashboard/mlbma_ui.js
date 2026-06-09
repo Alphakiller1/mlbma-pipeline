@@ -174,9 +174,17 @@
     fetch(url, { cache: 'no-store' })
       .then(function (r) { return r.text(); })
       .then(function (t) {
-        var line = (t || '').trim().split('\n')[1] || '';
-        var val = line.split(',')[0].replace(/^"|"$/g, '').trim();
-        el.textContent = val || '?';
+        // Last_Updated is key/value rows, e.g. "Last Updated","2026-06-09 17:49:32"
+        var lines = (t || '').trim().split('\n');
+        var target = '';
+        for (var i = 0; i < lines.length; i++) {
+          if (/last\s*updated/i.test(lines[i])) { target = lines[i]; break; }
+        }
+        if (!target) target = lines[0] || '';
+        var cells = target.split(',').map(function (c) {
+          return c.replace(/^"|"$/g, '').trim();
+        });
+        el.textContent = cells[1] || cells[0] || '?';
       })
       .catch(function () { el.textContent = '?'; });
   }
@@ -187,7 +195,7 @@
     ft.className = 'mlbma-footer';
     ft.id = 'mlbmaFooter';
     ft.innerHTML =
-      '<div>Chase Analytics ? MLBMA Pipeline v2.0</div>' +
+      '<div>Chase Analytics &middot; MLBMA Pipeline v2.0</div>' +
       '<div class="mlbma-footer-center">Data refreshes daily after 9am ET pipeline run</div>' +
       '<div class="mlbma-footer-right">Updated: <span id="mlbmaFooterUpdated">?</span></div>';
     document.body.appendChild(ft);

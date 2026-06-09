@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260610i">
+<link rel="stylesheet" href="batter_profile.css?v=20260611a">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -21,7 +21,7 @@
 <script src="pitch_mix_shared.js?v=20260608a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="mlbma_ui.js?v=20260610b" data-page="batter_profile.html"></script>
+<script src="mlbma_ui.js?v=20260611a" data-page="batter_profile.html"></script>
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
 </head>
 <body class="player-profile-page batter-profile-page team-profile-page">
@@ -119,6 +119,14 @@
       </div>
     </section>
 
+    <!-- Selected-player prop angles — the decision section, kept right under the hero -->
+    <section class="ca-board tp-section bp-prop-section" id="secProps">
+      <div id="bxHdrProps"></div>
+      <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
+      <div class="bp-prop-board" id="propBoard" role="list" aria-label="Prop research cards"></div>
+      <p class="bp-prop-footnote" id="propFootnote"></p>
+    </section>
+
     <!-- Rate splits + form -->
     <section class="ca-board tp-section" id="secSplits">
       <div id="bxHdrSplits"></div>
@@ -132,14 +140,6 @@
     <section class="ca-board tp-section bp-matchup-section" id="secPitchMix">
       <div id="bxHdrPitchMix"></div>
       <div id="pitchMixMount"></div>
-    </section>
-
-    <!-- Selected-player prop angles -->
-    <section class="ca-board tp-section bp-prop-section" id="secProps">
-      <div id="bxHdrProps"></div>
-      <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
-      <div class="bp-prop-board" id="propBoard" role="list" aria-label="Prop research cards"></div>
-      <p class="bp-prop-footnote" id="propFootnote"></p>
     </section>
 
   </div>
@@ -157,7 +157,7 @@ var A = window.MLBMAAssets;
 var DATA = {
   profiles: [], registry: [], lineupsRaw: [], lineupsParsed: [], matchupsRaw: [], matchupsParsed: [],
   lineups: [], matchups: [], spProfiles: [],
-  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}, savantRates: {}
+  rawStats: {}, pool: { vs_RHP: [] }, pitchMix: null, hitRates: {}, savantRates: {}, weather: []
 };
 
 /* Maps prop-card id → batter_prop_hitrates.prop key (tidy long CSV) */
@@ -167,7 +167,10 @@ var PROP_HITRATE_MAP = {
   hr: { prop: 'home_runs', defaultLine: 0.5 },
   k: { prop: 'strikeouts', defaultLine: 0.5 },
   bb: { prop: 'walks', defaultLine: 0.5 },
-  hrr: { prop: 'hits_runs_rbi', defaultLine: 1.5 }
+  hrr: { prop: 'hits_runs_rbi', defaultLine: 1.5 },
+  rbi: { prop: 'rbi', defaultLine: 0.5 },
+  runs: { prop: 'runs', defaultLine: 0.5 },
+  sb: { prop: 'stolen_bases', defaultLine: 0.5 }
 };
 
 var HITRATE_PROP_ALIASES = {
@@ -183,7 +186,10 @@ var PROP_DEFS = [
   { id: 'hr', label: 'Home Runs', projKey: 'hr', dec: 2, defaultLine: 0.5, invert: false, prob: true, drivers: ['power'], note: 'HR probability from batted-ball or ISO proxy' },
   { id: 'k', label: 'Strikeouts', projKey: 'k', dec: 2, defaultLine: 0.5, invert: true, drivers: ['kRisk'], note: 'K% × PA, SP K-adjusted' },
   { id: 'bb', label: 'Walks', projKey: 'bb', dec: 2, defaultLine: 0.5, invert: false, drivers: ['lineupCtx', 'contact'], note: 'Plate-discipline path' },
-  { id: 'hrr', label: 'H + R + RBI', projKey: 'runsRbi', dec: 2, defaultLine: 1.5, invert: false, drivers: ['contact', 'power'], note: 'Composite run-production proxy' }
+  { id: 'hrr', label: 'H + R + RBI', projKey: 'runsRbi', dec: 2, defaultLine: 1.5, invert: false, drivers: ['contact', 'power'], note: 'Composite run-production proxy' },
+  { id: 'rbi', label: 'RBI', projKey: 'rbi', dec: 2, defaultLine: 0.5, invert: false, drivers: ['power', 'lineupCtx'], note: 'Slug-driven run production' },
+  { id: 'runs', label: 'Runs', projKey: 'runs', dec: 2, defaultLine: 0.5, invert: false, drivers: ['lineupCtx', 'contact'], note: 'On-base times lineup scoring environment' },
+  { id: 'sb', label: 'Stolen Bases', projKey: 'sb', dec: 2, defaultLine: 0.5, invert: false, prob: true, drivers: ['lineupCtx'], note: 'Season SB 1+ rate; no per-split model behind this one' }
 ];
 
 var SPLIT_TABS = [
@@ -798,12 +804,16 @@ function projectProps(key) {
   var projRbi = (slg != null && avg != null) ? (slg) * ab * 0.30 : null;
   // "Hits + Runs + RBIs" market = projected hits + runs + RBIs.
   var projRR = (projHits != null && projRuns != null && projRbi != null) ? projHits + projRuns + projRbi : null;
+  // SB has no per-split rate model — use the season SB 1+ hit rate as a probability read.
+  var sbRow = lookupHitRate(playerIdForKey(key), 'stolen_bases', 1);
+  var projSB = sbRow ? numOrNull(pickCol(sbRow, ['hit_season'])) : null;
 
   return {
     lineup: lineup, sp: sp, spSource: spShape.source, spLabel: spShape.spLabel, R: R, prof: prof, pa: pa, ab: ab, order: order,
     avg: avg, obp: obp, slg: slg, iso: iso, kPct: kPct, bbPct: bbPct, babip: babip,
     hardPct: hardPct, wrc: wrc, spK: spK, spHr9: spHr9, spBb: spBb, hrLambda: hrLambda,
     hits: projHits, tb: projTB, hr: projHR, k: projK, bb: projBB, runsRbi: projRR,
+    runs: projRuns, rbi: projRbi, sb: projSB,
     drivers: driverScores(prof, R, lineup, spK)
   };
 }
@@ -1056,6 +1066,57 @@ function hitRateCount(rate, games) {
   return Math.round(rate * games);
 }
 
+function weatherForLineup(lineup) {
+  if (!lineup || !lineup.inLineup || !DATA.weather || !DATA.weather.length) return null;
+  var t = teamKeyAbbr(lineup.team), o = teamKeyAbbr(lineup.oppTeam);
+  if (!t || !o) return null;
+  var row = DATA.weather.find(function(w) {
+    var a = teamKeyAbbr(pickCol(w, ['away_team', 'Away'])), h = teamKeyAbbr(pickCol(w, ['home_team', 'Home']));
+    return (a === t && h === o) || (a === o && h === t);
+  });
+  if (!row) return null;
+  if (String(pickCol(row, ['is_dome'])).toLowerCase() === 'true') return 'Dome';
+  var temp = numOrNull(pickCol(row, ['temperature_f']));
+  var wind = numOrNull(pickCol(row, ['wind_speed_mph']));
+  var dir = String(pickCol(row, ['wind_direction']) || '').trim();
+  var cond = String(pickCol(row, ['conditions']) || '').trim();
+  var bits = [];
+  if (temp != null) bits.push(Math.round(temp) + '°');
+  if (wind != null) bits.push(Math.round(wind) + ' mph' + (dir ? ' ' + dir : ''));
+  if (cond && cond.toLowerCase() !== 'dome') bits.push(cond);
+  return bits.length ? bits.join(' · ') : null;
+}
+
+/** Does the L10 hit-rate history back the model lean? Null when there's no clear read. */
+function propHistoryAgreement(qual, hitPack) {
+  if (!qual || qual.lean === 'pass' || !hitPack || !hitPack.row) return null;
+  var l10 = numOrNull(pickCol(hitPack.row, ['hit_l10']));
+  if (l10 == null) return null;
+  var pctTxt = 'L10 ' + Math.round(l10 * 100) + '%';
+  if (qual.lean === 'over') {
+    if (l10 >= 0.6) return { ok: true, text: 'History agrees · ' + pctTxt };
+    if (l10 <= 0.45) return { ok: false, text: 'History conflicts · ' + pctTxt };
+  } else {
+    if (l10 <= 0.4) return { ok: true, text: 'History agrees · ' + pctTxt };
+    if (l10 >= 0.55) return { ok: false, text: 'History conflicts · ' + pctTxt };
+  }
+  return null;
+}
+
+function homeAwayHitRateSplit(row, p) {
+  if (!row || !p || !p.lineup || !p.lineup.inLineup) return null;
+  var side = String(p.lineup.side || '').toUpperCase();
+  if (side === 'HOME') {
+    var vH = numOrNull(pickCol(row, ['hit_home']));
+    return vH != null ? { label: 'Home', rate: vH } : null;
+  }
+  if (side === 'AWAY') {
+    var vA = numOrNull(pickCol(row, ['hit_away']));
+    return vA != null ? { label: 'Away', rate: vA } : null;
+  }
+  return null;
+}
+
 function platoonHitRateSplit(row, p) {
   if (!row) return null;
   var vsR = numOrNull(pickCol(row, ['hit_vs_rhp']));
@@ -1143,6 +1204,13 @@ function hitRateStripHtml(propId, p, bookLine, hasManualLine, compact) {
       + '</span>'
     : '';
 
+  var homeAway = homeAwayHitRateSplit(row, p);
+  var homeAwayHtml = homeAway
+    ? '<span class="bp-hit-strip__platoon">' + esc(homeAway.label) + ' '
+      + hitRatePctHtml(homeAway.rate, 1, ctx, inv, 'bp-hit-strip__platoon-pct')
+      + '</span>'
+    : '';
+
   var snapNote = '';
   if (hasManualLine && bookLine != null && Number(snapped) !== Number(bookLine)) {
     snapNote = 'Book ' + propLineLabel(bookLine) + ' → ' + snapped + '+ row';
@@ -1153,6 +1221,7 @@ function hitRateStripHtml(propId, p, bookLine, hasManualLine, compact) {
     + '<div class="bp-hit-strip__head">'
     + '<span class="bp-hit-strip__title">' + esc(propLabel) + '</span>'
     + platoonHtml
+    + homeAwayHtml
     + streakHtml
     + '</div>'
     + '<div class="bp-hit-strip__grid">' + pills + '</div>'
@@ -1185,7 +1254,7 @@ function propProjectionText(def, p) {
 function propDeltaText(def, p, line) {
   var proj = p[def.projKey];
   if (proj == null || line == null || isNaN(line)) return 'N/A';
-  if (def.prob) return 'HR prob ' + Math.round(proj * 100) + '%';
+  if (def.prob) return (def.id === 'hr' ? 'HR prob ' : 'Prob ') + Math.round(proj * 100) + '%';
   var edge = proj - line;
   var sign = edge > 0 ? '+' : '';
   return sign + fmt(edge, 2) + ' vs ' + propLineLabel(line);
@@ -1207,6 +1276,12 @@ function propGradeScore(def, p, qual, hitRow) {
     score = (p.bbPct != null ? clamp(p.bbPct * 7.5, 0, 100) : 50) * 0.45 + (p.spBb != null ? clamp(p.spBb * 8.2, 0, 100) : 50) * 0.25 + (d.lineupCtx || 50) * 0.30;
   } else if (def.id === 'hrr') {
     score = (d.lineupCtx || 50) * 0.38 + (d.contact || 50) * 0.32 + (d.power || 50) * 0.30;
+  } else if (def.id === 'rbi') {
+    score = (d.power || 50) * 0.42 + (d.lineupCtx || 50) * 0.38 + (d.contact || 50) * 0.20;
+  } else if (def.id === 'runs') {
+    score = (d.lineupCtx || 50) * 0.45 + (d.contact || 50) * 0.35 + kSafety * 0.20;
+  } else if (def.id === 'sb') {
+    score = (d.lineupCtx || 50) * 0.40 + (p.sb != null ? clamp(p.sb * 320, 0, 100) : 50) * 0.60;
   }
   if (qual && qual.lean === 'under') {
     score = 100 - score;
@@ -1326,6 +1401,19 @@ function bestAngleLabel(p) {
   return ranked.length ? ranked[0].def.label : ((p.tb != null && p.hits != null && p.tb / 1.6 >= p.hits / 1.0) ? 'Total Bases' : 'Hits');
 }
 
+/** Best angle with direction + line, e.g. "Strikeouts · Over 0.5" */
+function bestAngleDetail(p) {
+  var ranked = rankedPropItems(p);
+  if (!ranked.length) return { label: bestAngleLabel(p), lean: 'pass' };
+  var top = ranked[0];
+  var manual = getManualLine(top.def.id);
+  var line = manual != null ? manual : top.def.defaultLine;
+  if (top.lean === 'over' || top.lean === 'under') {
+    return { label: top.def.label + ' · ' + (top.lean === 'over' ? 'Over' : 'Under') + ' ' + propLineLabel(line), lean: top.lean };
+  }
+  return { label: top.def.label + ' · no strong lean', lean: 'pass' };
+}
+
 function decisionCard(label, valueHtml, hint) {
   return '<div class="profile-decision-card"><span class="profile-decision-card__label">' + esc(label) + '</span>'
     + '<span class="profile-decision-card__value">' + valueHtml + '</span>'
@@ -1342,11 +1430,12 @@ function buildHeroDecisionStrip(key, p) {
   var trend = String(pickCol(prof || {}, ['trend', 'Trend']) || '').trim();
   var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
   var handVal = bats + ' · ' + platoon;
-  var best = bestAngleLabel(p);
+  var bestD = bestAngleDetail(p);
   var spLabel = (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD';
   var opp = p.lineup.oppTeam || 'OPP';
+  var wx = weatherForLineup(p.lineup);
   var tonight = p.lineup.inLineup
-    ? 'Tonight vs ' + opp + ' · ' + spLabel + ' (' + p.lineup.oppHand + 'HP) · #' + p.lineup.batOrder + ' · ~' + fmt(p.pa, 1) + ' PA'
+    ? 'Tonight vs ' + opp + ' · ' + spLabel + ' (' + p.lineup.oppHand + 'HP) · #' + p.lineup.batOrder + ' · ~' + fmt(p.pa, 1) + ' PA' + (wx ? ' · ' + wx : '')
     : 'Not in posted lineup — props assume ~4.0 PA against ' + platoon + ' rates.';
   var formTone = 'watch';
   if (trend) {
@@ -1356,7 +1445,7 @@ function buildHeroDecisionStrip(key, p) {
   }
   return PS.decisionStrip([
     PS.decisionCard('Tonight', tonight, '', ''),
-    PS.decisionCard('Best Angle', best, '', 'elite'),
+    PS.decisionCard('Best Angle', bestD.label, '', bestD.lean === 'pass' ? '' : 'elite'),
     PS.decisionCard('Hand Path', handVal, '', ''),
     PS.decisionCard('Form', trend || 'Season line', '', formTone)
   ]);
@@ -1378,11 +1467,20 @@ function renderSnapshot(key, p) {
   var batsLabel = bats === 'L' ? 'LHB' : bats === 'R' ? 'RHB' : bats === 'S' ? 'SHB' : bats;
   var decisionStrip = buildHeroDecisionStrip(key, p);
 
+  var ppGap = numOrNull(pickCol(prof || {}, ['PP_Gap']));
+  var ppColor = ppGap == null ? '' : (ppGap >= 2 ? '#4ADE80' : ppGap <= -2 ? '#FCA5A5' : '');
+  var ppDisp = ppGap == null ? '—' : (ppGap > 0 ? '+' : '') + fmt(ppGap, 1);
+  var ppHtml = '<span class="tp-hero-stat__num' + (ppGap == null ? ' tp-hero-stat__num--na' : '') + '"'
+    + (ppColor ? ' style="color:' + ppColor + '"' : '')
+    + ' title="projOSI minus OSI. Positive: results trail contact quality (positive-regression candidate). Negative: running hot.">'
+    + esc(ppDisp) + '</span>';
+
   var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Batter headline stats">'
     + heroStat('', '<span class="tp-hero-stat__num">' + esc(batsLabel) + '</span>', 'neutral', 'Bats ' + batsLabel)
     + heroStat('OSI', heroMetricText(numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1), 'neutral')
     + heroStat('wRC+', heroMetricText(numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0), 'neutral')
     + heroStat('K%', heroMetricText(pct(R, ['K%']), 'kpct', true, 1, { display: pct(R, ['K%']) != null ? fmt(pct(R, ['K%']), 1) + '%' : '—' }), 'neutral')
+    + heroStat('PP Gap', ppHtml, 'neutral')
     + '</div>';
 
   el.innerHTML = '<section class="tp-team-banner tp-team-banner--hero tp-pitcher-banner tp-batter-banner" style="--tp-accent:' + esc(accent) + '">'
@@ -1405,13 +1503,13 @@ function renderSnapshot(key, p) {
 function renderDriverBars(p) {
   var el = document.getElementById('driverBars');
   if (!el) return;
-  var best = bestAngleLabel(p);
+  var bestD = bestAngleDetail(p);
   el.innerHTML = edgeBarHtml(100 - p.drivers.kRisk, 'kpct', false, 'K Safety')
     + edgeBarHtml(p.drivers.contact, 'abq', false, 'Contact Edge')
     + edgeBarHtml(p.drivers.power, 'rcv', false, 'Power Edge')
     + edgeBarHtml(p.drivers.lineupCtx, 'osi', false, 'Volume / Spot')
     + '<div class="bp-driver-bars__best"><span class="bp-driver-bars__best-label">Lead Read</span>'
-    + '<strong>' + esc(best) + '</strong></div>';
+    + '<strong>' + esc(bestD.label) + '</strong></div>';
 }
 
 function propLineLabel(line) {
@@ -1458,7 +1556,7 @@ function propCardHtml(def, p, opts) {
   var hitPack = resolveHitRateRow(def.id, hitRefLine, hasManual);
   var edgeScore = propGradeScore(def, p, qual, hitPack && hitPack.row);
   var projDisp = propProjectionText(def, p);
-  if (def.prob && p.hrLambda != null) {
+  if (def.id === 'hr' && def.prob && p.hrLambda != null) {
     projDisp += ' <span class="bp-prop-card__sub">(' + fmt(p.hrLambda, 2) + ' exp HR)</span>';
   }
   var driverBits = (def.drivers || []).slice(0, 3).map(function(k) {
@@ -1466,12 +1564,14 @@ function propCardHtml(def, p, opts) {
   }).join('');
   var inputId = 'bp-line-' + def.id;
   var stored = STATE.manualLines[def.id] != null ? String(STATE.manualLines[def.id]) : '';
+  var agree = propHistoryAgreement(qual, hitPack);
   return '<article class="bp-prop-card' + (opts.featured ? ' bp-prop-card--featured' : '') + (compact ? ' bp-prop-card--compact' : '') + (best ? ' bp-prop-card--best' : '') + (hasManual ? ' bp-prop-card--book' : '') + '" role="listitem" tabindex="0" data-prop="' + esc(def.id) + '">'
     + '<div class="bp-prop-card__head">'
     + '<h3 class="bp-prop-card__title">' + esc(def.label) + '</h3>'
     + (best ? '<span class="bp-prop-card__badge">Best Angle</span>' : '')
     + '<span class="bp-lean ' + leanChipClass(qual.lean, qual.strength) + '">' + esc(qual.label) + '</span>'
     + '</div>'
+    + (agree ? '<div class="bp-prop-card__agree ' + (agree.ok ? 'bp-prop-card__agree--ok' : 'bp-prop-card__agree--warn') + '">' + esc(agree.text) + '</div>' : '')
     + '<div class="bp-prop-card__proj">Model <strong>' + projDisp + '</strong></div>'
     + propKpisHtml(def, p, qual, hitRefLine, hitPack, edgeScore, compact)
     + (compact ? '' : '<div class="bp-prop-card__edge">' + edgeBarHtml(edgeScore, 'osi', false, 'Prop Grade') + '</div>')
@@ -1507,50 +1607,26 @@ function bindPropBoardEvents() {
   var board = document.getElementById('propBoard');
   if (!board || board.dataset.bound) return;
   board.dataset.bound = '1';
+  var rerankTimer = null;
   board.addEventListener('input', function(e) {
     var inp = e.target.closest('[data-prop-line]');
     if (!inp || !STATE.playerKey) return;
     var id = inp.getAttribute('data-prop-line');
     STATE.manualLines[id] = inp.value;
-    var def = null;
-    for (var di = 0; di < PROP_DEFS.length; di++) {
-      if (PROP_DEFS[di].id === id) { def = PROP_DEFS[di]; break; }
-    }
-    if (!def) return;
-    var p = projectProps(STATE.playerKey);
-    var manualLine = getManualLine(id);
-    var hasManual = manualLine != null;
-    var qual = propCardLean(def, p[def.projKey], manualLine);
-    var hitRefLine = hasManual ? manualLine : def.defaultLine;
-    var hitPack = resolveHitRateRow(id, hitRefLine, hasManual);
-    var edgeScore = propGradeScore(def, p, qual, hitPack && hitPack.row);
-    var card = inp.closest('.bp-prop-card');
-    var compact = !!(card && card.classList.contains('bp-prop-card--compact'));
-    var hint = inp.parentElement && inp.parentElement.querySelector('.bp-prop-card__line-lean');
-    var headLean = card && card.querySelector('.bp-prop-card__head .bp-lean');
-    if (hint) {
-      hint.className = 'bp-prop-card__line-lean ' + leanChipClass(qual.lean, qual.strength);
-      hint.textContent = propCardHintText(def, qual, manualLine, compact);
-    }
-    if (headLean) {
-      headLean.className = 'bp-lean ' + leanChipClass(qual.lean, qual.strength);
-      headLean.textContent = qual.label;
-    }
-    if (card) {
-      card.classList.toggle('bp-prop-card--book', hasManual);
-      var grade = card.querySelector('[data-prop-grade="' + id + '"]');
-      var delta = card.querySelector('[data-prop-kpi="delta"]');
-      var history = card.querySelector('[data-prop-kpi="history"]');
-      var edgeMount = card.querySelector('.bp-prop-card__edge');
-      if (grade) grade.textContent = propGradeLabel(edgeScore);
-      if (delta) delta.textContent = propDeltaText(def, p, hitRefLine);
-      if (history) history.textContent = hitRateWindowText(hitPack, 'l10');
-      if (edgeMount) edgeMount.innerHTML = edgeBarHtml(edgeScore, 'osi', false, 'Prop Grade');
-    }
-    var mount = card && card.querySelector('[data-hitrate-mount="' + id + '"]');
-    if (mount) {
-      mount.innerHTML = hitRateStripHtml(id, p, hitRefLine, hasManual, compact);
-    }
+    // Debounced full refresh so the board re-ranks and the hero Best Angle /
+    // Lead Read / agreement flags stay in sync with the entered book line.
+    if (rerankTimer) clearTimeout(rerankTimer);
+    rerankTimer = setTimeout(function() {
+      if (!STATE.playerKey) return;
+      var hadFocus = document.activeElement === inp;
+      var p = projectProps(STATE.playerKey);
+      renderSnapshot(STATE.playerKey, p);
+      renderPropBoard(p);
+      if (hadFocus) {
+        var again = document.querySelector('[data-prop-line="' + id + '"]');
+        if (again) again.focus();
+      }
+    }, 650);
   });
 }
 
@@ -1589,7 +1665,7 @@ function splitMetricsHtml(key, splitKey, p) {
     splitStatCell('xwOBA', splitStatValueHtml(xwoba, 'xwoba', false, 3)),
     splitStatCell('OPS', splitStatValueHtml(opsFromRow(R), 'ops', false, 3)),
     splitStatCell('SLG', splitStatValueHtml(numOrNull(pickCol(R, ['SLG'])), 'slg', false, 3)),
-    splitStatCell('Total Bases', splitStatValueHtml(tbPa, 'slg', false, 2, { display: tbPa != null ? fmt(tbPa, 2) + '/PA' : undefined })),
+    splitStatCell('Total Bases', splitStatValueHtml(tbPa, 'slg', false, 2, { display: tbPa != null ? fmt(tbPa, 2) + '/PA' : undefined, plain: true })),
     splitStatCell('wRC+', splitStatValueHtml(numOrNull(pickCol(R, ['wRC+', 'wRC'])), 'wrc', false, 0))
   ].join('');
 
@@ -1826,7 +1902,7 @@ function hydrateSlateContext(lineupRows, matchupRows, schedule) {
 function load() {
   var tabs = [TABS.batter_profiles, TABS.player_registry, TABS.today_lineups, TABS.today_matchups, TABS.sp_profiles]
     .concat(RAW_TABS.map(function(p) { return p[0]; }))
-    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates, TABS.batter_savant_rates]);
+    .concat([TABS.pitch_mix_pitcher_l14, TABS.pitch_mix_batter_l14, TABS.batter_prop_hitrates, TABS.batter_savant_rates, TABS.weather]);
   var S = window.MLBMASharedMatchup;
   var schedP = (S && S.fetchMlbTodaySchedule)
     ? S.fetchMlbTodaySchedule().catch(function() { return { games: [] }; })
@@ -1846,6 +1922,7 @@ function load() {
     }
     DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
     indexSavantRates(res[pmOff + 3] || []);
+    DATA.weather = res[pmOff + 4] || [];
     indexRawStats(); buildPool();
     renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); bindBatterProfileControls();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
