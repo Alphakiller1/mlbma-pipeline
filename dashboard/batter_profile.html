@@ -235,7 +235,7 @@ var RAW_TABS = [
 ];
 // Expected plate appearances by lineup slot (1-9); used for prop projection volume.
 var PA_BY_ORDER = { 1: 4.6, 2: 4.5, 3: 4.4, 4: 4.3, 5: 4.1, 6: 4.0, 7: 3.9, 8: 3.8, 9: 3.7 };
-var LG = { BABIP: 0.295, K: 22.0, BB: 8.5, HR9: 1.20, SP_K: 22.0 };
+var LG = { BABIP: 0.295, K: 22.0, BB: 8.5, HR9: 1.20, SP_K: 22.0, SP_BB: 7.8 };
 
 /* ---------- helpers (ported) ---------- */
 function pickCol(row, names) {
@@ -530,14 +530,44 @@ function opsFromRow(row) {
 }
 
 /* ---------- today's matchup context ---------- */
+function teamKeyAbbr(t) {
+  var S = window.MLBMASharedMatchup;
+  return S && S.teamKey ? S.teamKey(t) : String(t || '').trim().toUpperCase();
+}
+function matchupTeams(g) {
+  return {
+    away: teamKeyAbbr(pickCol(g, ['Away', 'away', 'Away_Team', 'away_team'])),
+    home: teamKeyAbbr(pickCol(g, ['Home', 'home', 'Home_Team', 'home_team']))
+  };
+}
+function findMatchupRow(team, side, gameKey) {
+  var tk = teamKeyAbbr(team);
+  if (!tk) return null;
+  var hit = null;
+  DATA.matchups.forEach(function(g) {
+    var th = matchupTeams(g);
+    if (side === 'AWAY' && th.away === tk) hit = g;
+    if (side === 'HOME' && th.home === tk) hit = g;
+  });
+  if (hit || !gameKey) return hit;
+  var parts = String(gameKey).split('@');
+  if (parts.length !== 2) return hit;
+  var awayKey = teamKeyAbbr(parts[0]);
+  var homeKey = teamKeyAbbr(parts[1]);
+  DATA.matchups.forEach(function(g) {
+    var th = matchupTeams(g);
+    if (th.away === awayKey && th.home === homeKey) hit = g;
+  });
+  return hit;
+}
 function findLineupContext(key) {
   var reg = getRegistry(key);
-  var team = String(pickCol(reg || {}, ['team_abbr', 'team'])).toUpperCase();
+  var team = teamKeyAbbr(pickCol(reg || {}, ['team_abbr', 'team']));
   var pname = canonicalName(playerDisplayName(key));
   var slot = null;
   DATA.lineups.forEach(function(row) {
     var lineupName = pickCol(row, ['Player', 'player']);
-    var t = String(pickCol(row, ['Team', 'team'])).toUpperCase();
+    var t = teamKeyAbbr(pickCol(row, ['Team', 'team']));
     var resolved = findRegistryByName(lineupName, t);
     var player = resolved ? canonicalName(pickCol(resolved, ['full_name', 'fullName'])) : canonicalName(lineupName);
     if (player === pname && (!team || t === team)) slot = row;
@@ -547,33 +577,95 @@ function findLineupContext(key) {
   var order = pickCol(slot, ['Bat_Order', 'Bat Order', 'bat_order']);
   var game = pickCol(slot, ['Game', 'game']);
   var oppSp = 'TBD', oppHand = 'R', oppTeam = '', stadium = '';
-  if (!team) team = String(pickCol(slot, ['Team', 'team'])).toUpperCase();
-  DATA.matchups.forEach(function(g) {
-    var away = String(pickCol(g, ['Away', 'away'])).toUpperCase();
-    var home = String(pickCol(g, ['Home', 'home'])).toUpperCase();
-    if (side === 'AWAY' && away === team) {
-      oppSp = pickCol(g, ['Home_SP', 'home_sp']) || oppSp;
-      oppHand = pickCol(g, ['Home_Hand', 'Home_SP_Hand', 'home_hand']) || oppHand;
-      oppTeam = home;
-      stadium = pickCol(g, ['stadium_name', 'Stadium', 'Venue', 'Ballpark']) || stadium;
+  if (!team) team = teamKeyAbbr(pickCol(slot, ['Team', 'team']));
+  var g = findMatchupRow(team, side, game);
+  if (g) {
+    var th = matchupTeams(g);
+    if (side === 'AWAY') {
+      oppSp = pickCol(g, ['Home_SP', 'Home SP', 'home_sp']) || oppSp;
+      oppHand = pickCol(g, ['Home_Hand', 'Home SP Hand', 'Home_SP_Hand', 'home_hand']) || oppHand;
+      oppTeam = th.home;
+    } else {
+      oppSp = pickCol(g, ['Away_SP', 'Away SP', 'away_sp']) || oppSp;
+      oppHand = pickCol(g, ['Away_Hand', 'Away SP Hand', 'Away_SP_Hand', 'away_hand']) || oppHand;
+      oppTeam = th.away;
     }
-    if (side === 'HOME' && home === team) {
-      oppSp = pickCol(g, ['Away_SP', 'away_sp']) || oppSp;
-      oppHand = pickCol(g, ['Away_Hand', 'Away_SP_Hand', 'away_hand']) || oppHand;
-      oppTeam = away;
-      stadium = pickCol(g, ['stadium_name', 'Stadium', 'Venue', 'Ballpark']) || stadium;
-    }
-  });
+    stadium = pickCol(g, ['stadium_name', 'Stadium', 'Venue', 'Ballpark']) || stadium;
+  }
   return {
     inLineup: true, side: side, batOrder: order, game: game,
     oppSp: oppSp, oppHand: String(oppHand).charAt(0).toUpperCase() || 'R',
-    oppTeam: oppTeam, stadium: stadium, team: team
+    oppTeam: oppTeam, stadium: stadium, team: team,
+    matchupRow: g || null
   };
 }
 function spProfileFor(name) {
   if (!name || name === 'TBD') return null;
   var nk = normalizeName(name);
-  return DATA.spProfiles.find(function(s) { return normalizeName(pickCol(s, ['pitcher_name', 'Name'])) === nk; }) || null;
+  var direct = DATA.spProfiles.find(function(s) { return normalizeName(pickCol(s, ['pitcher_name', 'Name'])) === nk; });
+  if (direct) return direct;
+  var ln = lastName(name);
+  if (!ln) return null;
+  var init = firstInitial(name);
+  var hits = DATA.spProfiles.filter(function(s) {
+    var full = pickCol(s, ['pitcher_name', 'Name']);
+    if (!full || lastName(full) !== ln) return false;
+    if (init) {
+      var fi = firstInitial(full);
+      if (fi && fi !== init) return false;
+    }
+    return true;
+  });
+  return hits.length === 1 ? hits[0] : null;
+}
+function starterStatsFromMatchupRow(lineup) {
+  var g = lineup.matchupRow || findMatchupRow(lineup.team, lineup.side, lineup.game);
+  if (!g) return null;
+  var facingHomeSp = lineup.side === 'AWAY';
+  var spK = numOrNull(pickCol(g, facingHomeSp
+    ? ['Home_K%', 'Home K%', 'home_k%']
+    : ['Away_K%', 'Away K%', 'away_k%']));
+  var spBb = numOrNull(pickCol(g, facingHomeSp
+    ? ['Home_BB%', 'Home BB%', 'home_bb%']
+    : ['Away_BB%', 'Away BB%', 'away_bb%']));
+  var spHr9 = numOrNull(pickCol(g, facingHomeSp
+    ? ['Home_HR9', 'Home HR/9', 'home_hr9']
+    : ['Away_HR9', 'Away HR/9', 'away_hr9']));
+  if (spK == null && spBb == null && spHr9 == null) return null;
+  return { spK: spK, spBb: spBb, spHr9: spHr9 };
+}
+function resolveStarterShape(lineup) {
+  var name = String(lineup.oppSp || '').trim();
+  var sp = spProfileFor(name);
+  if (sp) {
+    return {
+      sp: sp,
+      spK: pct(sp, ['K_pct', 'K%']),
+      spBb: pct(sp, ['BB_pct', 'BB%']),
+      spHr9: numOrNull(pickCol(sp, ['HR9', 'HR/9'])),
+      source: 'sp_profile',
+      spLabel: name
+    };
+  }
+  var sheet = starterStatsFromMatchupRow(lineup);
+  if (sheet) {
+    return {
+      sp: null,
+      spK: sheet.spK,
+      spBb: sheet.spBb,
+      spHr9: sheet.spHr9,
+      source: 'matchup_sheet',
+      spLabel: (name && name !== 'TBD') ? name : 'Listed SP shape'
+    };
+  }
+  return {
+    sp: null,
+    spK: LG.SP_K,
+    spBb: LG.SP_BB,
+    spHr9: LG.HR9,
+    source: 'league',
+    spLabel: (name && name !== 'TBD') ? name : 'Starter TBD'
+  };
 }
 
 /* ---------- prop projection engine (NEW) ---------- */
@@ -605,9 +697,11 @@ function projectProps(key) {
   var ab = pa * (1 - bbRate - 0.02);   // remove walks + ~2% HBP/SF
 
   // opposing SP adjustment (SP K_pct already percent scale)
-  var sp = spProfileFor(lineup.oppSp);
-  var spK = sp ? pct(sp, ['K_pct', 'K%']) : null;
-  var spHr9 = sp ? numOrNull(pickCol(sp, ['HR9', 'HR/9'])) : null;
+  var spShape = resolveStarterShape(lineup);
+  var sp = spShape.sp;
+  var spK = spShape.spK;
+  var spHr9 = spShape.spHr9;
+  var spBb = spShape.spBb;
   var kMult = (spK != null) ? clamp(1 + (spK - LG.SP_K) / 110, 0.82, 1.22) : 1;     // tougher SP K -> batter K up, contact down
   var contactMult = (spK != null) ? clamp(1 - (spK - LG.SP_K) / 200, 0.88, 1.10) : 1;
   var hrMult = (spHr9 != null) ? clamp(1 + (spHr9 - LG.HR9) / 2.4, 0.75, 1.35) : 1;
@@ -632,9 +726,9 @@ function projectProps(key) {
   var projRR = (projHits != null && projRuns != null && projRbi != null) ? projHits + projRuns + projRbi : null;
 
   return {
-    lineup: lineup, sp: sp, R: R, prof: prof, pa: pa, ab: ab, order: order,
+    lineup: lineup, sp: sp, spSource: spShape.source, spLabel: spShape.spLabel, R: R, prof: prof, pa: pa, ab: ab, order: order,
     avg: avg, obp: obp, slg: slg, iso: iso, kPct: kPct, bbPct: bbPct, babip: babip,
-    hardPct: hardPct, wrc: wrc, spK: spK, spHr9: spHr9,
+    hardPct: hardPct, wrc: wrc, spK: spK, spHr9: spHr9, spBb: spBb,
     hits: projHits, tb: projTB, hr: projHR, k: projK, bb: projBB, runsRbi: projRR,
     drivers: driverScores(prof, R, lineup, spK)
   };
@@ -1258,16 +1352,31 @@ function renderMatchupLogic(key, p) {
   var el = document.getElementById('matchupLogic');
   if (!el) return;
   var R = p.R || {};
-  var sp = p.sp;
   var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
-  var spLabel = (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD';
+  var spLabel = p.spLabel || ((p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD');
   var spK = p.spK;
-  var spBb = sp ? pct(sp, ['BB_pct', 'BB%']) : null;
+  var spBb = p.spBb;
   var spHr9 = p.spHr9;
+  var spSource = p.spSource || (p.sp ? 'sp_profile' : 'league');
+  var kCopy = spK != null
+    ? (spSource === 'league'
+      ? 'No listed starter — league-avg SP K% (' + fmt(spK, 1) + ').'
+      : 'Opposing starter at ' + fmt(spK, 1) + '% K.')
+    : 'Starter K% unknown.';
+  var hrCopy = spHr9 != null
+    ? (spSource === 'league'
+      ? 'No listed starter — league-avg HR/9 (' + fmt(spHr9, 2) + ').'
+      : 'SP allows ' + fmt(spHr9, 2) + ' HR/9.')
+    : 'HR environment neutral.';
+  var starterHelper = spSource === 'league'
+    ? 'League-average SP proxy — updates when starter is posted.'
+    : (spSource === 'matchup_sheet'
+      ? 'Tonight\'s listed SP rates from matchup sheet.'
+      : '');
   var items = [
     { tag: 'Hand Edge', copy: batsHandNote(key, p), score: platoonOsiEdge(key, p), ctx: 'osi' },
-    { tag: 'K Pressure', copy: spK != null ? 'Opposing starter at ' + fmt(spK, 1) + '% K.' : 'Starter K% unknown.', score: spK != null ? clamp(100 - spK, 0, 100) : null, ctx: 'kpct', inv: true },
-    { tag: 'Damage Path', copy: spHr9 != null ? 'SP allows ' + fmt(spHr9, 2) + ' HR/9.' : 'HR environment neutral.', score: spHr9 != null ? clamp(50 + (spHr9 - LG.HR9) * 22, 0, 100) : null, ctx: 'hr9', inv: false }
+    { tag: 'K Pressure', copy: kCopy, score: spK != null ? clamp(100 - spK, 0, 100) : null, ctx: 'kpct', inv: true },
+    { tag: 'Damage Path', copy: hrCopy, score: spHr9 != null ? clamp(50 + (spHr9 - LG.HR9) * 22, 0, 100) : null, ctx: 'hr9', inv: false }
   ];
   var evidence = items.map(function(it) {
     var scoreHtml = it.score != null ? valChip(it.score, it.ctx || 'osi', !!it.inv, 0) : '<span class="chip c-na">—</span>';
@@ -1289,6 +1398,7 @@ function renderMatchupLogic(key, p) {
     + '<p class="ca-helper">Batter ' + esc(platoon) + ' rates against listed starter shape.</p>'
     + '<div class="bp-matchup-stats">' + rateCells + '</div></div>'
     + '<div class="bp-matchup-panel"><h4 class="bp-panel-title">Starter Profile</h4>'
+    + (starterHelper ? '<p class="ca-helper">' + esc(starterHelper) + '</p>' : '')
     + '<div class="bp-matchup-stats">'
     + '<div class="bp-matchup-stat"><span class="bp-matchup-stat__label">K%</span><span class="bp-matchup-stat__val">'
     + (spK != null ? valChip(spK, 'kpct', false, 1) : '<span class="chip c-na">—</span>') + '</span></div>'
