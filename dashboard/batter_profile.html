@@ -203,7 +203,7 @@ var HITRATE_PROP_ALIASES = {
   'h+r+rbi': 'hits_runs_rbi',
   'hrr': 'hits_runs_rbi'
 };
-var STATE = { playerKey: null, window: 'season', splitTab: 'overall', manualLines: {} };
+var STATE = { playerKey: null, window: 'season', splitTab: 'overall', manualLines: {}, slateTimer: null };
 
 var PROP_DEFS = [
   { id: 'tb', label: 'Total Bases', projKey: 'tb', dec: 2, defaultLine: 1.5, invert: false, drivers: ['power', 'contact'], note: 'Damage ceiling × contact volume' },
@@ -1424,6 +1424,7 @@ function slatePlayerKeys() {
   var seen = {};
   var keys = [];
   (DATA.lineups || []).forEach(function(row) {
+    if (keys.length >= 54) return;
     var key = keyForLineupRow(row);
     if (key && !seen[key]) {
       seen[key] = 1;
@@ -1470,7 +1471,8 @@ function slateCandidateFor(key, def) {
 
 function buildSlateCandidates() {
   var out = [];
-  slatePlayerKeys().forEach(function(key) {
+  var keys = slatePlayerKeys();
+  keys.forEach(function(key) {
     PROP_DEFS.forEach(function(def) {
       var cand = slateCandidateFor(key, def);
       if (!cand) return;
@@ -1521,24 +1523,37 @@ function renderSlateBoard() {
   var board = document.getElementById('slateBoard');
   var summary = document.getElementById('slateSummary');
   if (!board) return;
-  var candidates = buildSlateCandidates();
-  if (summary) {
-    var lineupCount = slatePlayerKeys().length;
-    summary.innerHTML = '<div class="bp-slate-summary__item"><span>Pool</span><strong>' + lineupCount + '</strong><em>' + (DATA.lineups && DATA.lineups.length ? 'posted lineup hitters' : 'profile fallback') + '</em></div>'
-      + '<div class="bp-slate-summary__item"><span>Live History</span><strong>' + Object.keys(DATA.hitRates || {}).length + '</strong><em>players with prop logs</em></div>'
-      + '<div class="bp-slate-summary__item"><span>Model</span><strong>6</strong><em>supported prop lanes</em></div>';
+  try {
+    var keys = slatePlayerKeys();
+    var candidates = buildSlateCandidates();
+    if (summary) {
+      summary.innerHTML = '<div class="bp-slate-summary__item"><span>Pool</span><strong>' + keys.length + '</strong><em>' + (DATA.lineups && DATA.lineups.length ? 'posted lineup hitters' : 'profile fallback') + '</em></div>'
+        + '<div class="bp-slate-summary__item"><span>Live History</span><strong>' + Object.keys(DATA.hitRates || {}).length + '</strong><em>players with prop logs</em></div>'
+        + '<div class="bp-slate-summary__item"><span>Model</span><strong>6</strong><em>supported prop lanes</em></div>';
+    }
+    if (!candidates.length) {
+      board.innerHTML = '<p class="ca-helper">Slate candidates unavailable until batter profiles and hit-rate history load.</p>';
+      return;
+    }
+    var spotlights = candidates.slice(0, 3).map(slateSpotlightHtml).join('');
+    var rows = candidates.slice(3).map(slateRowHtml).join('');
+    board.innerHTML = '<div class="bp-slate-spotlights">' + spotlights + '</div>'
+      + '<div class="bp-slate-table" role="list">'
+      + '<div class="bp-slate-table__head"><span>Player</span><span>Prop / Matchup</span><span>Line</span><span>Proj</span><span>L10</span><span>Lean</span><span>Grade</span></div>'
+      + rows
+      + '</div>';
+  } catch (err) {
+    board.innerHTML = '<p class="ca-helper">Slate board could not render. Player profile tools remain available.</p>';
+    if (window.console && console.warn) console.warn('Slate board render failed', err);
   }
-  if (!candidates.length) {
-    board.innerHTML = '<p class="ca-helper">Slate candidates unavailable until batter profiles and hit-rate history load.</p>';
-    return;
-  }
-  var spotlights = candidates.slice(0, 3).map(slateSpotlightHtml).join('');
-  var rows = candidates.slice(3).map(slateRowHtml).join('');
-  board.innerHTML = '<div class="bp-slate-spotlights">' + spotlights + '</div>'
-    + '<div class="bp-slate-table" role="list">'
-    + '<div class="bp-slate-table__head"><span>Player</span><span>Prop / Matchup</span><span>Line</span><span>Proj</span><span>L10</span><span>Lean</span><span>Grade</span></div>'
-    + rows
-    + '</div>';
+}
+
+function scheduleSlateBoardRender() {
+  if (STATE.slateTimer) window.clearTimeout(STATE.slateTimer);
+  STATE.slateTimer = window.setTimeout(function() {
+    STATE.slateTimer = null;
+    renderSlateBoard();
+  }, 80);
 }
 
 function bindSlateBoardEvents() {
@@ -1889,7 +1904,7 @@ function renderPlayer(key) {
   renderPitchMix(key, p);
   renderContextPanels(key, p);
   renderPropFlags(p);
-  renderSlateBoard();
+  scheduleSlateBoardRender();
 }
 
 /* ---------- controls + search ---------- */
@@ -1954,7 +1969,7 @@ function load() {
     }
     DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
     indexRawStats(); buildPool();
-    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); bindSlateBoardEvents(); mountHeaders(); buildSearch(); renderSlateBoard();
+    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); bindSlateBoardEvents(); mountHeaders(); buildSearch();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
       try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Prop Hub', subtitle: 'Model leans, matchup logic, splits, and prop hit-rates' }); } catch (e) {}
     }
@@ -1968,6 +1983,7 @@ function load() {
     }
     if (!startKey && DATA.profiles.length) startKey = playerKey(overallFirst());
     if (startKey) { renderPlayer(startKey); var inp = document.getElementById('playerSearchInput'); if (inp) inp.value = playerDisplayName(startKey); }
+    else scheduleSlateBoardRender();
   }).catch(function(err) {
     var b = document.getElementById('dataBanner'); if (b) { b.textContent = 'Could not load sheets: ' + (err && err.message ? err.message : err); b.classList.add('show'); }
   }).finally(function() {
