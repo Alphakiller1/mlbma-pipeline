@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260610h">
+<link rel="stylesheet" href="batter_profile.css?v=20260610i">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -1683,7 +1683,7 @@ function renderSplits(key, p) {
   var ow = numOrNull(pickCol(rawFor(key, 'overall', p), ['wRC+']));
   var rw = numOrNull(pickCol(rawFor(key, 'recent', p), ['wRC+']));
   if (C && C.buildTrendLineChart && ow != null && rw != null && tab === 'recent') {
-    chartEl.innerHTML = C.buildTrendLineChart('wRC+ — season vs recent', [ow, rw], 480, 110, { labels: ['Season', 'Recent'], metricCtx: 'wrc', invertTrend: false });
+    chartEl.innerHTML = C.buildTrendLineChart('wRC+ — season vs recent', [ow, rw], 480, 120, { labels: ['Season', 'Recent'], metricCtx: 'wrc', invertTrend: false });
     chartEl.style.display = '';
   } else {
     chartEl.innerHTML = '';
