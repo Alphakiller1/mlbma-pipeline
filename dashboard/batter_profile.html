@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chase Analytics — Batter Prop Hub</title>
+<title>Chase Analytics — Batter Profile</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
 <link rel="stylesheet" href="theme.css?v=20260619b">
@@ -24,7 +24,7 @@
 <script src="mlbma_ui.js?v=20260610b" data-page="batter_profile.html"></script>
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
 </head>
-<body class="player-profile-page batter-profile-page team-profile-page bp-prop-hub-page">
+<body class="player-profile-page batter-profile-page team-profile-page">
 
 <div class="loading-text" id="loadingText">Loading batter profiles from Google Sheets—</div>
 <!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
@@ -111,15 +111,6 @@
   <div class="tp-data-banner data-banner" id="dataBanner"></div>
   <datalist id="playerList"></datalist>
 
-  <nav class="bp-hub-nav hub-control-bar" id="hubNav" aria-label="Research sections">
-    <a href="#secHero" class="hub-pill">Identity</a>
-    <a href="#secSlate" class="hub-pill hub-pill--accent">Slate Board</a>
-    <a href="#secProps" class="hub-pill hub-pill--accent">Prop Board</a>
-    <a href="#secMatchup" class="hub-pill">Matchup</a>
-    <a href="#secSplits" class="hub-pill">Splits &amp; Form</a>
-    <a href="#secContext" class="hub-pill">Context &amp; Risk</a>
-  </nav>
-
   <div class="tp-identity-stack profile-shell" id="profileContent">
 
     <!-- Hero: search + identity + tonight summary -->
@@ -134,14 +125,8 @@
       </div>
     </section>
 
-    <!-- Prop board — centerpiece -->
-    <section class="ca-board tp-section bp-slate-section" id="secSlate">
-      <div id="bxHdrSlate"></div>
-      <div class="bp-slate-summary" id="slateSummary"></div>
-      <div class="bp-slate-board" id="slateBoard" aria-label="Today's batter prop candidates"></div>
-    </section>
-
-    <section class="ca-board tp-section bp-prop-hub-section" id="secProps">
+    <!-- Selected-player prop angles -->
+    <section class="ca-board tp-section bp-prop-section" id="secProps">
       <div id="bxHdrProps"></div>
       <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
       <div class="bp-prop-board" id="propBoard" role="list" aria-label="Prop research cards"></div>
@@ -203,7 +188,7 @@ var HITRATE_PROP_ALIASES = {
   'h+r+rbi': 'hits_runs_rbi',
   'hrr': 'hits_runs_rbi'
 };
-var STATE = { playerKey: null, window: 'season', splitTab: 'overall', manualLines: {}, slateTimer: null };
+var STATE = { playerKey: null, window: 'season', splitTab: 'overall', manualLines: {} };
 
 var PROP_DEFS = [
   { id: 'tb', label: 'Total Bases', projKey: 'tb', dec: 2, defaultLine: 1.5, invert: false, drivers: ['power', 'contact'], note: 'Damage ceiling × contact volume' },
@@ -1042,7 +1027,7 @@ function last10SparklineHtml(pipe) {
     + '</div>';
 }
 
-function hitRateStripHtml(propId, p, bookLine, hasManualLine) {
+function hitRateStripHtml(propId, p, bookLine, hasManualLine, compact) {
   var map = PROP_HITRATE_MAP[propId];
   if (!map) return '';
   var pack = resolveHitRateRow(propId, bookLine, hasManualLine);
@@ -1082,7 +1067,7 @@ function hitRateStripHtml(propId, p, bookLine, hasManualLine) {
     snapNote = 'Book ' + propLineLabel(bookLine) + ' → ' + snapped + '+ row';
   }
 
-  return '<div class="bp-hit-strip' + (hasManualLine ? ' bp-hit-strip--book' : '') + '" aria-label="Hit-rate history for ' + esc(propLabel) + '"'
+  return '<div class="bp-hit-strip' + (compact ? ' bp-hit-strip--compact' : '') + (hasManualLine ? ' bp-hit-strip--book' : '') + '" aria-label="Hit-rate history for ' + esc(propLabel) + '"'
     + ' data-hitrate-prop="' + esc(map.prop) + '" data-hitrate-line="' + esc(String(snapped)) + '">'
     + '<div class="bp-hit-strip__head">'
     + '<span class="bp-hit-strip__title">' + esc(propLabel) + '</span>'
@@ -1168,7 +1153,14 @@ function propGradeLabel(score) {
   return 'Fade';
 }
 
-function propKpisHtml(def, p, qual, line, hitPack, grade) {
+function propKpisHtml(def, p, qual, line, hitPack, grade, compact) {
+  if (compact) {
+    return '<div class="bp-prop-card__kpis" data-prop-kpis="' + esc(def.id) + '">'
+      + '<div class="bp-prop-kpi bp-prop-kpi--grade"><span>Grade</span><strong data-prop-grade="' + esc(def.id) + '">' + esc(propGradeLabel(grade)) + '</strong></div>'
+      + '<div class="bp-prop-kpi"><span>Line Edge</span><strong data-prop-kpi="delta">' + esc(propDeltaText(def, p, line)) + '</strong></div>'
+      + '<div class="bp-prop-kpi"><span>L10 History</span><strong data-prop-kpi="history">' + esc(hitRateWindowText(hitPack, 'l10')) + '</strong></div>'
+      + '</div>';
+  }
   return '<div class="bp-prop-card__kpis" data-prop-kpis="' + esc(def.id) + '">'
     + '<div class="bp-prop-kpi bp-prop-kpi--grade"><span>Grade</span><strong data-prop-grade="' + esc(def.id) + '">' + esc(propGradeLabel(grade)) + '</strong></div>'
     + '<div class="bp-prop-kpi"><span>Projection</span><strong>' + esc(propProjectionText(def, p)) + '</strong></div>'
@@ -1177,10 +1169,11 @@ function propKpisHtml(def, p, qual, line, hitPack, grade) {
     + '</div>';
 }
 
-function propCardHintText(def, qual, manualLine) {
+function propCardHintText(def, qual, manualLine, compact) {
   if (manualLine != null) {
     return qual.label + ' vs book ' + propLineLabel(manualLine);
   }
+  if (compact) return 'Enter book line to compare';
   return 'Model ' + qual.label.toLowerCase() + ' vs ' + propLineLabel(def.defaultLine) + ' · enter book line to compare';
 }
 
@@ -1230,8 +1223,26 @@ function heroMetricText(val, ctx, invert, dec, opts) {
   return '<span class="tp-hero-stat__num"' + style + '>' + esc(display) + '</span>';
 }
 
+function rankedPropItems(p) {
+  return PROP_DEFS.map(function(def) {
+    var proj = p[def.projKey];
+    if (proj == null) return null;
+    var manualLine = getManualLine(def.id);
+    var line = manualLine != null ? manualLine : def.defaultLine;
+    var qual = propCardLean(def, proj, manualLine);
+    var hitPack = resolveHitRateRow(def.id, line, manualLine != null);
+    var grade = propGradeScore(def, p, qual, hitPack && hitPack.row);
+    return { def: def, grade: grade, strength: qual.strength || 0, lean: qual.lean };
+  }).filter(Boolean).sort(function(a, b) {
+    if (b.strength !== a.strength) return b.strength - a.strength;
+    if (b.grade !== a.grade) return b.grade - a.grade;
+    return a.def.label.localeCompare(b.def.label);
+  });
+}
+
 function bestAngleLabel(p) {
-  return (p.tb != null && p.hits != null && p.tb / 1.6 >= p.hits / 1.0) ? 'Total Bases' : 'Hits';
+  var ranked = rankedPropItems(p);
+  return ranked.length ? ranked[0].def.label : ((p.tb != null && p.hits != null && p.tb / 1.6 >= p.hits / 1.0) ? 'Total Bases' : 'Hits');
 }
 
 function decisionCard(label, valueHtml, hint) {
@@ -1271,7 +1282,7 @@ function renderSnapshot(key, p) {
     + '<div class="tp-pitcher-banner__identity">'
     + (logo ? '<div class="tp-team-banner__logo">' + logo + '</div>' : '')
     + '<div class="tp-team-banner__copy">'
-    + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Prop Hub</p>'
+    + '<p class="ca-eyebrow tp-team-banner__eyebrow">Batter Profile</p>'
     + '<div class="bp-hero-name-row">'
     + '<h1 class="tp-team-banner__title">' + esc(name) + '</h1>'
     + (team ? '<span class="tp-pitcher-banner__today pill pill-today">' + esc(team) + '</span>' : '')
@@ -1354,7 +1365,9 @@ function propEstCell(r) {
   return '<td class="bp-prop-est"><span class="bp-prop-est__val">' + fmt(r.proj, r.dec) + '</span></td>';
 }
 
-function propCardHtml(def, p) {
+function propCardHtml(def, p, opts) {
+  opts = opts || {};
+  var compact = !!opts.compact;
   var proj = p[def.projKey];
   if (proj == null) return '';
   var manualLine = getManualLine(def.id);
@@ -1373,25 +1386,25 @@ function propCardHtml(def, p) {
   }).join('');
   var inputId = 'bp-line-' + def.id;
   var stored = STATE.manualLines[def.id] != null ? String(STATE.manualLines[def.id]) : '';
-  return '<article class="bp-prop-card' + (best ? ' bp-prop-card--best' : '') + (hasManual ? ' bp-prop-card--book' : '') + '" role="listitem" tabindex="0" data-prop="' + esc(def.id) + '">'
+  return '<article class="bp-prop-card' + (opts.featured ? ' bp-prop-card--featured' : '') + (compact ? ' bp-prop-card--compact' : '') + (best ? ' bp-prop-card--best' : '') + (hasManual ? ' bp-prop-card--book' : '') + '" role="listitem" tabindex="0" data-prop="' + esc(def.id) + '">'
     + '<div class="bp-prop-card__head">'
     + '<h3 class="bp-prop-card__title">' + esc(def.label) + '</h3>'
     + (best ? '<span class="bp-prop-card__badge">Best Angle</span>' : '')
     + '<span class="bp-lean ' + leanChipClass(qual.lean, qual.strength) + '">' + esc(qual.label) + '</span>'
     + '</div>'
     + '<div class="bp-prop-card__proj">Model <strong>' + projDisp + '</strong></div>'
-    + propKpisHtml(def, p, qual, hitRefLine, hitPack, edgeScore)
-    + '<div class="bp-prop-card__edge">' + edgeBarHtml(edgeScore, 'osi', false, 'Prop Grade') + '</div>'
-    + '<ul class="bp-prop-card__drivers">' + driverBits + '</ul>'
-    + '<div class="bp-prop-card__hitrate" data-hitrate-mount="' + esc(def.id) + '">' + hitRateStripHtml(def.id, p, hitRefLine, hasManual) + '</div>'
+    + propKpisHtml(def, p, qual, hitRefLine, hitPack, edgeScore, compact)
+    + (compact ? '' : '<div class="bp-prop-card__edge">' + edgeBarHtml(edgeScore, 'osi', false, 'Prop Grade') + '</div>')
+    + (compact ? '' : '<ul class="bp-prop-card__drivers">' + driverBits + '</ul>')
+    + '<div class="bp-prop-card__hitrate" data-hitrate-mount="' + esc(def.id) + '">' + hitRateStripHtml(def.id, p, hitRefLine, hasManual, compact) + '</div>'
     + '<div class="bp-prop-card__line">'
     + '<label class="bp-prop-card__line-label" for="' + inputId + '">Book line (optional)</label>'
     + '<input type="number" class="bp-prop-card__line-input" id="' + inputId + '" data-prop-line="' + esc(def.id) + '"'
     + ' inputmode="decimal" step="0.5" min="0" placeholder="' + esc(String(def.defaultLine)) + '" value="' + esc(stored) + '" aria-describedby="' + inputId + '-hint">'
     + '<span class="bp-prop-card__line-lean ' + leanChipClass(qual.lean, qual.strength) + '" id="' + inputId + '-hint">'
-    + esc(propCardHintText(def, qual, manualLine))
+    + esc(propCardHintText(def, qual, manualLine, compact))
     + '</span></div>'
-    + '<p class="bp-prop-card__note">' + esc(def.note) + '</p>'
+    + (compact ? '' : '<p class="bp-prop-card__note">' + esc(def.note) + '</p>')
     + '</article>';
 }
 
@@ -1399,172 +1412,15 @@ function renderPropBoard(p) {
   renderDriverBars(p);
   var board = document.getElementById('propBoard');
   if (!board) return;
-  var cards = PROP_DEFS.map(function(def) { return propCardHtml(def, p); }).filter(Boolean).join('');
+  var ranked = rankedPropItems(p);
+  var cards = ranked.map(function(item, idx) {
+    return propCardHtml(item.def, p, { featured: idx === 0, compact: idx > 0 });
+  }).filter(Boolean).join('');
   board.innerHTML = cards || '<p class="ca-helper">Insufficient rate data for prop projections.</p>';
   var foot = document.getElementById('propFootnote');
   if (foot) {
     foot.textContent = 'Model projection plus real L5/L10/L20/season hit-rate history. Optional book lines snap to the nearest tracked prop threshold; no live sportsbook odds feed is attached.';
   }
-}
-
-function keyForLineupRow(row) {
-  var pname = pickCol(row, ['Player', 'player', 'player_name', 'Name']);
-  var team = teamKeyAbbr(pickCol(row, ['Team', 'team', 'team_abbr']));
-  var reg = findRegistryByName(pname, team);
-  if (reg) return playerKey(reg);
-  var target = canonicalName(pname);
-  var prof = DATA.profiles.find(function(p) {
-    return String(pickCol(p, ['split_type'])).toLowerCase() === 'overall'
-      && canonicalName(pickCol(p, ['player_name', 'Name'])) === target;
-  });
-  return prof ? playerKey(prof) : '';
-}
-
-function slatePlayerKeys() {
-  var seen = {};
-  var keys = [];
-  (DATA.lineups || []).forEach(function(row) {
-    if (keys.length >= 54) return;
-    var key = keyForLineupRow(row);
-    if (key && !seen[key]) {
-      seen[key] = 1;
-      keys.push(key);
-    }
-  });
-  if (keys.length) return keys;
-  DATA.profiles.forEach(function(row) {
-    if (keys.length >= 80) return;
-    if (String(pickCol(row, ['split_type'])).toLowerCase() !== 'overall') return;
-    var key = playerKey(row);
-    if (key && !seen[key]) {
-      seen[key] = 1;
-      keys.push(key);
-    }
-  });
-  return keys;
-}
-
-function slateCandidateFor(key, def) {
-  var p = projectProps(key);
-  var proj = p[def.projKey];
-  if (proj == null) return null;
-  var line = def.defaultLine;
-  var qual = propCardLean(def, proj, null);
-  var hitPack = resolveHitRateRowForKey(key, def.id, line, false);
-  var grade = propGradeScore(def, p, qual, hitPack && hitPack.row);
-  var reg = getRegistry(key);
-  var team = String(pickCol(reg || {}, ['team_abbr', 'team']) || p.lineup.team || '').toUpperCase();
-  var score = grade + (qual.lean !== 'pass' ? 4 : 0) + (p.lineup.inLineup ? 4 : 0);
-  return {
-    key: key,
-    name: playerDisplayName(key),
-    team: team,
-    def: def,
-    p: p,
-    line: line,
-    qual: qual,
-    hitPack: hitPack,
-    grade: grade,
-    score: score
-  };
-}
-
-function buildSlateCandidates() {
-  var out = [];
-  var keys = slatePlayerKeys();
-  keys.forEach(function(key) {
-    PROP_DEFS.forEach(function(def) {
-      var cand = slateCandidateFor(key, def);
-      if (!cand) return;
-      if (cand.qual.lean === 'pass' && cand.grade < 64) return;
-      out.push(cand);
-    });
-  });
-  out.sort(function(a, b) {
-    if (b.score !== a.score) return b.score - a.score;
-    return b.grade - a.grade;
-  });
-  return out.slice(0, 14);
-}
-
-function slateMatchupText(c) {
-  var p = c.p;
-  if (!p || !p.lineup || !p.lineup.inLineup) return 'Lineup pending';
-  var opp = p.lineup.oppTeam || 'OPP';
-  var sp = p.lineup.oppSp && p.lineup.oppSp !== 'TBD' ? p.lineup.oppSp : 'Starter TBD';
-  return opp + ' / ' + sp + ' (' + p.lineup.oppHand + 'HP) #' + p.lineup.batOrder;
-}
-
-function slateSpotlightHtml(c, idx) {
-  return '<button type="button" class="bp-slate-spotlight" data-slate-key="' + esc(c.key) + '">'
-    + '<span class="bp-slate-spotlight__rank">0' + (idx + 1) + '</span>'
-    + '<span class="bp-slate-spotlight__meta">' + esc(c.team || 'MLB') + ' / ' + esc(c.def.label) + '</span>'
-    + '<strong>' + esc(c.name) + '</strong>'
-    + '<span class="bp-slate-spotlight__read"><span class="bp-lean ' + leanChipClass(c.qual.lean, c.qual.strength) + '">' + esc(c.qual.label) + '</span>'
-      + '<span class="bp-slate-grade">' + esc(propGradeLabel(c.grade)) + '</span></span>'
-    + '<span class="bp-slate-spotlight__sub">' + esc(propDeltaText(c.def, c.p, c.line)) + ' / L10 ' + esc(hitRateWindowText(c.hitPack, 'l10')) + '</span>'
-    + '</button>';
-}
-
-function slateRowHtml(c) {
-  var active = STATE.playerKey === c.key ? ' is-active' : '';
-  return '<button type="button" class="bp-slate-row' + active + '" data-slate-key="' + esc(c.key) + '">'
-    + '<span class="bp-slate-row__player"><strong>' + esc(c.name) + '</strong><em>' + esc(c.team || 'MLB') + '</em></span>'
-    + '<span class="bp-slate-row__prop">' + esc(c.def.label) + '<em>' + esc(slateMatchupText(c)) + '</em></span>'
-    + '<span class="bp-slate-row__line">' + esc(propLineLabel(c.line)) + '</span>'
-    + '<span class="bp-slate-row__proj">' + esc(propProjectionText(c.def, c.p)) + '</span>'
-    + '<span class="bp-slate-row__hist">' + esc(hitRateWindowText(c.hitPack, 'l10')) + '</span>'
-    + '<span class="bp-lean ' + leanChipClass(c.qual.lean, c.qual.strength) + '">' + esc(c.qual.label) + '</span>'
-    + '<span class="bp-slate-grade">' + esc(propGradeLabel(c.grade)) + '</span>'
-    + '</button>';
-}
-
-function renderSlateBoard() {
-  var board = document.getElementById('slateBoard');
-  var summary = document.getElementById('slateSummary');
-  if (!board) return;
-  try {
-    var keys = slatePlayerKeys();
-    var candidates = buildSlateCandidates();
-    if (summary) {
-      summary.innerHTML = '<div class="bp-slate-summary__item"><span>Pool</span><strong>' + keys.length + '</strong><em>' + (DATA.lineups && DATA.lineups.length ? 'posted lineup hitters' : 'profile fallback') + '</em></div>'
-        + '<div class="bp-slate-summary__item"><span>Live History</span><strong>' + Object.keys(DATA.hitRates || {}).length + '</strong><em>players with prop logs</em></div>'
-        + '<div class="bp-slate-summary__item"><span>Model</span><strong>6</strong><em>supported prop lanes</em></div>';
-    }
-    if (!candidates.length) {
-      board.innerHTML = '<p class="ca-helper">Slate candidates unavailable until batter profiles and hit-rate history load.</p>';
-      return;
-    }
-    var spotlights = candidates.slice(0, 3).map(slateSpotlightHtml).join('');
-    var rows = candidates.slice(3).map(slateRowHtml).join('');
-    board.innerHTML = '<div class="bp-slate-spotlights">' + spotlights + '</div>'
-      + '<div class="bp-slate-table" role="list">'
-      + '<div class="bp-slate-table__head"><span>Player</span><span>Prop / Matchup</span><span>Line</span><span>Proj</span><span>L10</span><span>Lean</span><span>Grade</span></div>'
-      + rows
-      + '</div>';
-  } catch (err) {
-    board.innerHTML = '<p class="ca-helper">Slate board could not render. Player profile tools remain available.</p>';
-    if (window.console && console.warn) console.warn('Slate board render failed', err);
-  }
-}
-
-function scheduleSlateBoardRender() {
-  if (STATE.slateTimer) window.clearTimeout(STATE.slateTimer);
-  STATE.slateTimer = window.setTimeout(function() {
-    STATE.slateTimer = null;
-    renderSlateBoard();
-  }, 80);
-}
-
-function bindSlateBoardEvents() {
-  var board = document.getElementById('slateBoard');
-  if (!board || board.dataset.bound) return;
-  board.dataset.bound = '1';
-  board.addEventListener('click', function(e) {
-    var btn = e.target.closest('[data-slate-key]');
-    if (!btn) return;
-    selectPlayerKey(btn.getAttribute('data-slate-key'));
-  });
 }
 
 function bindPropBoardEvents() {
@@ -1589,11 +1445,12 @@ function bindPropBoardEvents() {
     var hitPack = resolveHitRateRow(id, hitRefLine, hasManual);
     var edgeScore = propGradeScore(def, p, qual, hitPack && hitPack.row);
     var card = inp.closest('.bp-prop-card');
+    var compact = !!(card && card.classList.contains('bp-prop-card--compact'));
     var hint = inp.parentElement && inp.parentElement.querySelector('.bp-prop-card__line-lean');
     var headLean = card && card.querySelector('.bp-prop-card__head .bp-lean');
     if (hint) {
       hint.className = 'bp-prop-card__line-lean ' + leanChipClass(qual.lean, qual.strength);
-      hint.textContent = propCardHintText(def, qual, manualLine);
+      hint.textContent = propCardHintText(def, qual, manualLine, compact);
     }
     if (headLean) {
       headLean.className = 'bp-lean ' + leanChipClass(qual.lean, qual.strength);
@@ -1612,7 +1469,7 @@ function bindPropBoardEvents() {
     }
     var mount = card && card.querySelector('[data-hitrate-mount="' + id + '"]');
     if (mount) {
-      mount.innerHTML = hitRateStripHtml(id, p, hitRefLine, hasManual);
+      mount.innerHTML = hitRateStripHtml(id, p, hitRefLine, hasManual, compact);
     }
   });
 }
@@ -1904,13 +1761,11 @@ function renderPlayer(key) {
   renderPitchMix(key, p);
   renderContextPanels(key, p);
   renderPropFlags(p);
-  scheduleSlateBoardRender();
 }
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
-  document.getElementById('bxHdrSlate').innerHTML = sectionHeaderHtml('Today\'s Prop Board', 'Best model-plus-history candidates from posted lineups', 'target');
-  document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Prop Board', 'Model projections, driver-backed leans, and optional book-line compare', 'target');
+  document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Selected Player Prop Angles', 'Ranked model projections, real hit-rate history, and optional book-line compare', 'target');
   document.getElementById('bxHdrMatchup').innerHTML = sectionHeaderHtml('Matchup Logic', 'Platoon rates vs tonight\'s starter and pitch-type arsenal overlap', 'matchups');
   document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Auto-selects platoon split when lineup is posted', 'split');
   document.getElementById('bxHdrContext').innerHTML = sectionHeaderHtml('Context & Risk', 'Volume, luck flags, and plain-language risk read', 'intel');
@@ -1969,9 +1824,9 @@ function load() {
     }
     DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
     indexRawStats(); buildPool();
-    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); bindSlateBoardEvents(); mountHeaders(); buildSearch();
+    renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); buildSearch();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
-      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Prop Hub', subtitle: 'Model leans, matchup logic, splits, and prop hit-rates' }); } catch (e) {}
+      try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Player-specific prop angles, matchup logic, splits, and hit-rate history' }); } catch (e) {}
     }
     var urlName = new URLSearchParams(window.location.search).get('player');
     var startKey = null;
@@ -1983,7 +1838,6 @@ function load() {
     }
     if (!startKey && DATA.profiles.length) startKey = playerKey(overallFirst());
     if (startKey) { renderPlayer(startKey); var inp = document.getElementById('playerSearchInput'); if (inp) inp.value = playerDisplayName(startKey); }
-    else scheduleSlateBoardRender();
   }).catch(function(err) {
     var b = document.getElementById('dataBanner'); if (b) { b.textContent = 'Could not load sheets: ' + (err && err.message ? err.message : err); b.classList.add('show'); }
   }).finally(function() {
