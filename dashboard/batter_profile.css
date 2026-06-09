@@ -409,6 +409,150 @@ body.batter-profile-page .profile-decision-strip {
   margin-bottom: 12px;
 }
 
+.bp-split-board {
+  margin: 4px 0 0;
+}
+
+.bp-split-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 10px;
+}
+
+.bp-split-meta__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v-light, #C4B0FF);
+  background: rgba(124, 77, 255, 0.12);
+  border: 1px solid rgba(154, 107, 255, 0.24);
+}
+
+.bp-split-meta__note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-2, #A4A8B6);
+}
+
+.bp-split-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bp-split-metrics__band {
+  padding: 12px 14px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(154, 107, 255, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 28%),
+    linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
+}
+
+.bp-split-metrics__band-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.bp-split-metrics__band-title {
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-1, #F3F4F6);
+}
+
+.bp-split-metrics__band-hint {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--text-3, #9CA3AF);
+}
+
+.bp-split-metrics__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bp-split-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(196, 176, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 32%),
+    linear-gradient(180deg, rgba(18, 21, 33, 0.92), rgba(6, 7, 13, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  text-align: center;
+}
+
+.bp-split-stat__label {
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3, #9CA3AF);
+  line-height: 1.2;
+}
+
+.bp-split-stat__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  width: 100%;
+}
+
+.bp-split-stat__value .chip {
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  min-width: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.bp-split-stat__plain {
+  color: var(--text-1, #F3F4F6) !important;
+}
+
+@media (max-width: 1100px) {
+  .bp-split-metrics__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .bp-split-metrics__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .bp-split-metrics__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .bp-metric-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1730,6 +1874,8 @@ body.batter-profile-page .bp-prop-card,
 body.batter-profile-page .bp-hit-strip,
 body.batter-profile-page .bp-context-panel,
 body.batter-profile-page .bp-matchup-panel,
+body.batter-profile-page .bp-split-stat,
+body.batter-profile-page .bp-split-metrics__band,
 body.batter-profile-page .bp-metric-strip .profile-decision-card,
 body.batter-profile-page .bp-driver-bars {
   box-sizing: border-box;
@@ -1740,6 +1886,7 @@ body.batter-profile-page .bp-metric-strip .profile-decision-card {
   overflow: hidden;
 }
 
+body.batter-profile-page .bp-split-stat__value .chip,
 body.batter-profile-page .bp-metric-strip .profile-decision-card__value {
   overflow-wrap: anywhere;
 }

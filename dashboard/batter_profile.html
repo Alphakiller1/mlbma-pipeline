@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260610f">
+<link rel="stylesheet" href="batter_profile.css?v=20260610g">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -137,7 +137,7 @@
     <section class="ca-board tp-section" id="secSplits">
       <div id="bxHdrSplits"></div>
       <div class="hub-control-bar bp-split-bar" id="splitTabBar"></div>
-      <div class="bp-metric-strip" id="splitStats"></div>
+      <div class="bp-split-board" id="splitStats"></div>
       <div class="bp-form-chart" id="splitFormChart"></div>
       <div class="bp-split-insight" id="splitInsight"></div>
     </section>
@@ -311,8 +311,8 @@ function splitSourceLabel(s) {
 function metricColor(score, ctx, invert) {
   return (A && A.metricColor) ? A.metricColor(score, ctx || 'osi', !!invert) : 'var(--text-3)';
 }
-function valChip(val, ctx, invert, dec) {
-  if (A && A.valChipHtml) return A.valChipHtml(val, ctx || 'osi', !!invert, dec == null ? 1 : dec);
+function valChip(val, ctx, invert, dec, opts) {
+  if (A && A.valChipHtml) return A.valChipHtml(val, ctx || 'osi', !!invert, dec == null ? 1 : dec, opts || {});
   return '<span class="chip c-na">' + (val == null ? '—' : esc(val)) + '</span>';
 }
 function sectionHeaderHtml(title, subtitle, iconKey) {
@@ -506,6 +506,46 @@ function buildPool() {
 function opsFromRow(row) {
   var obp = numOrNull(pickCol(row, ['OBP'])); var slg = numOrNull(pickCol(row, ['SLG']));
   return (obp === null || slg === null) ? null : obp + slg;
+}
+function tbPerPaFromRow(row) {
+  var slg = numOrNull(pickCol(row, ['SLG']));
+  var pa = numOrNull(pickCol(row, ['PA']));
+  var ab = numOrNull(pickCol(row, ['AB']));
+  if (slg == null || pa == null || pa <= 0) return null;
+  if (ab != null && ab > 0) return slg * ab / pa;
+  var bb = pct(row, ['BB%']);
+  var kp = pct(row, ['K%']);
+  var abEst = pa * Math.max(0, 1 - (bb || 0) / 100 - (kp || 0) / 100);
+  return abEst > 0 ? (slg * abEst / pa) : null;
+}
+function launchAngleFromRow(row) {
+  return numOrNull(pickCol(row || {}, [
+    'Launch Angle', 'LA', 'launch_angle', 'Avg Launch Angle', 'avg_launch_angle', 'LA°'
+  ]));
+}
+function splitStatValueHtml(val, ctx, invert, dec, opts) {
+  opts = opts || {};
+  if (val == null || isNaN(val)) {
+    return '<span class="chip c-na">—</span>';
+  }
+  if (opts.plain) {
+    return '<span class="chip bp-split-stat__plain">' + esc(opts.display != null ? opts.display : fmt(val, dec == null ? 1 : dec)) + '</span>';
+  }
+  return valChip(val, ctx, invert, dec, opts);
+}
+function splitStatCell(label, valueHtml) {
+  return '<div class="bp-split-stat" role="group" aria-label="' + esc(label) + '">'
+    + '<span class="bp-split-stat__label">' + esc(label) + '</span>'
+    + '<span class="bp-split-stat__value">' + valueHtml + '</span></div>';
+}
+function splitMetricsBand(title, hint, cellsHtml) {
+  return '<div class="bp-split-metrics__band">'
+    + '<div class="bp-split-metrics__band-head">'
+    + '<span class="bp-split-metrics__band-title">' + esc(title) + '</span>'
+    + (hint ? '<span class="bp-split-metrics__band-hint">' + esc(hint) + '</span>' : '')
+    + '</div>'
+    + '<div class="bp-split-metrics__grid">' + cellsHtml + '</div>'
+    + '</div>';
 }
 
 /* ---------- today's matchup context ---------- */
@@ -1474,30 +1514,64 @@ function bindPropBoardEvents() {
   });
 }
 
-function metricStripHtml(key, splitKey, p) {
+function splitMetricsHtml(key, splitKey, p) {
   var sk = splitKey || 'overall';
   var rawPack = resolveRawSplit(key, sk, p);
   var profPack = resolveProfileSplit(key, sk, p);
-  var R = rawPack.row;
+  var R = rawPack.row || {};
   var prof = profPack.row || overallProfileRow(key);
   STATE._splitSource = null;
   if (rawPack.source && rawPack.source !== sk) STATE._splitSource = rawPack.source;
   else if (profPack.source && profPack.source !== sk) STATE._splitSource = profPack.source;
-  var cells = [
-    ['OSI', numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1],
-    ['wRC+', numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0],
-    ['OPS', opsFromRow(R), 'ops', false, 3],
-    ['AVG', numOrNull(pickCol(R, ['AVG'])), 'avg', false, 3],
-    ['OBP', numOrNull(pickCol(R, ['OBP'])), 'obp', false, 3],
-    ['SLG', numOrNull(pickCol(R, ['SLG'])), 'slg', false, 3],
-    ['BB%', pct(R, ['BB%']), 'bbpct', false, 1],
-    ['K%', pct(R, ['K%']), 'kpct', true, 1]
-  ];
-  return cells.map(function(c) {
-    var v = c[1];
-    var disp = (v == null) ? '<span class="chip c-na">—</span>' : valChip(v, c[2], c[3], c[4]);
-    return decisionCard(c[0], disp, '');
-  }).join('');
+
+  var pa = numOrNull(pickCol(R, ['PA']));
+  var tbPa = tbPerPaFromRow(R);
+  var la = launchAngleFromRow(R);
+
+  var meta = '<div class="bp-split-meta" role="status">'
+    + '<span class="bp-split-meta__chip">' + esc(splitSourceLabel(sk)) + '</span>'
+    + (pa != null ? '<span class="bp-split-meta__chip">PA ' + esc(String(Math.round(pa))) + '</span>' : '')
+    + (STATE._splitSource && STATE._splitSource !== sk
+      ? '<span class="bp-split-meta__note">Showing ' + esc(splitSourceLabel(STATE._splitSource)) + ' rates (qualified sample unavailable).</span>'
+      : '')
+    + '</div>';
+
+  var band1 = [
+    splitStatCell('K%', splitStatValueHtml(pct(R, ['K%']), 'kpct', true, 1)),
+    splitStatCell('BB%', splitStatValueHtml(pct(R, ['BB%']), 'bbpct', false, 1)),
+    splitStatCell('AVG', splitStatValueHtml(numOrNull(pickCol(R, ['AVG'])), 'avg', false, 3)),
+    splitStatCell('OBP', splitStatValueHtml(numOrNull(pickCol(R, ['OBP'])), 'obp', false, 3)),
+    splitStatCell('ISO', splitStatValueHtml(numOrNull(pickCol(R, ['ISO'])), 'iso', false, 3))
+  ].join('');
+
+  var band2 = [
+    splitStatCell('xwOBA', splitStatValueHtml(numOrNull(pickCol(R, ['xwOBA', 'xWOBA'])), 'xwoba', false, 3)),
+    splitStatCell('OPS', splitStatValueHtml(opsFromRow(R), 'ops', false, 3)),
+    splitStatCell('SLG', splitStatValueHtml(numOrNull(pickCol(R, ['SLG'])), 'slg', false, 3)),
+    splitStatCell('Total Bases', splitStatValueHtml(tbPa, 'slg', false, 2, { display: tbPa != null ? fmt(tbPa, 2) + '/PA' : undefined })),
+    splitStatCell('wRC+', splitStatValueHtml(numOrNull(pickCol(R, ['wRC+', 'wRC'])), 'wrc', false, 0))
+  ].join('');
+
+  var band3 = [
+    splitStatCell('OSI', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1)),
+    splitStatCell('RCV', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['RCV'])), 'rcv', false, 1)),
+    splitStatCell('ABQ', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['ABQ'])), 'abq', false, 1)),
+    splitStatCell('OBR', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['OBR'])), 'obr', false, 1)),
+    splitStatCell('Launch Angle', la != null
+      ? splitStatValueHtml(la, 'iso', false, 1, { display: fmt(la, 1) + '°', plain: true })
+      : splitStatValueHtml(null, 'iso', false, 1))
+  ].join('');
+
+  return meta
+    + '<div class="bp-split-metrics">'
+    + splitMetricsBand('Discipline & Contact', 'Plate approach and batting average', band1)
+    + splitMetricsBand('Power & Quality', 'Expected and slugging production', band2)
+    + splitMetricsBand('MLBMA & Batted Ball', 'Composite scores and contact shape', band3)
+    + '</div>';
+}
+
+function metricStripHtml(key, splitKey, p) {
+  return splitMetricsHtml(key, splitKey, p);
 }
 
 function splitTabNote(tab, p) {
@@ -1618,7 +1692,7 @@ function renderPlayer(key) {
 function mountHeaders() {
   document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Selected Player Prop Angles', 'Ranked model projections, real hit-rate history, and optional book-line compare', 'target');
   document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Pitch Mix', 'Arsenal overlap vs tonight\'s starter and batter contact by pitch type', 'matchups');
-  document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Auto-selects platoon split when lineup is posted', 'split');
+  document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Full rate table by split — discipline, power, MLBMA scores, and batted-ball shape', 'split');
   if (A && A.metricLegendHtml) {
     var leg = document.getElementById('bxHdrProps');
     if (leg) leg.insertAdjacentHTML('beforeend', A.metricLegendHtml({ title: 'Colors vs league baseline' }));
