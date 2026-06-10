@@ -1219,6 +1219,25 @@ body.batter-profile-page #pitchMixMount .bp-pm-empty {
 
 .bp-pm-table tbody tr:hover td { background: rgba(124, 77, 255, 0.06); }
 
+/* Freeze the pitch-name column so the 13 stat columns scroll without losing
+   which pitch each row is. Backgrounds must stay opaque to cover scrolled cells;
+   the body rule is placed after striping/hover so it wins on equal specificity. */
+.bp-pm-table thead th:first-child,
+.bp-pm-table tbody tr td.bp-pm-pitch-name {
+  position: sticky;
+  left: 0;
+}
+
+.bp-pm-table thead th:first-child { z-index: 3; }
+
+.bp-pm-table tbody tr td.bp-pm-pitch-name {
+  z-index: 2;
+  background: #0B0D16;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.07);
+}
+
+.bp-pm-table tbody tr:hover td.bp-pm-pitch-name { background: #171A26; }
+
 /* Batter profile research surface */
 
 .bp-edge-row {

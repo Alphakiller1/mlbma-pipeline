@@ -307,10 +307,14 @@
   background: rgba(0, 0, 0, 0.65);
   z-index: 998;
   opacity: 0;
+  /* Closed overlay must never intercept taps. On mobile the media query below
+     renders it (display:flex) even when closed, so without this an invisible
+     full-viewport layer swallows every tap until the menu is opened+closed once. */
+  pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
-.chase-mobile-overlay.open { opacity: 1; }
+.chase-mobile-overlay.open { opacity: 1; pointer-events: auto; }
 
 .chase-mobile-menu {
   display: none;

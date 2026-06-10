@@ -353,26 +353,28 @@
 
 /* ──────────────────────────────────────────────────────────────────────────
    Card-ified data tables (mobile).
-   Dense desktop tables (Team Rankings .lv-table, Trends Heat Map .thm-table, or
-   any table opted-in with .ca-cardify) are tagged by mobile_cardify.js with
-   .ca-cardified + per-cell data-label + a .ca-card-team header cell. Below 768px
-   each <tr> becomes a stacked stat card so NO column hides behind a horizontal
-   scroll. Desktop DOM is untouched — these rules only apply at mobile width.
+   Dense "entity rows × metric columns" tables are tagged by mobile_cardify.js
+   with .ca-cardified and each cell gets .ca-card-team (header), .ca-card-rank, or
+   .ca-card-stat (+ data-label). Below 768px each <tr> becomes a stacked stat card
+   so NO column hides behind a horizontal scroll. Class-driven so it works for both
+   <td> and <th scope=row> cells. Desktop DOM/layout is untouched.
+   Applies to: Team Rankings, Trends Heat Map, tp-trend-table, pp-tier-split-table,
+   bp-reliever-rank-table, and any table opted-in with .ca-cardify.
    ────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .lv-table.ca-cardified,
-  .thm-table.ca-cardified,
-  table.ca-cardify.ca-cardified {
-    display: block;
-    width: 100%;
+  .ca-cardified {
+    /* !important so card layout wins over per-table desktop rules that some
+       profile CSS re-asserts at <900px (e.g. .tp-trend-table{min-width:720px}). */
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
     border-collapse: separate;
     border-spacing: 0;
   }
 
   /* keep headers in the a11y tree but out of the visual flow */
-  .lv-table.ca-cardified thead,
-  .thm-table.ca-cardified thead,
-  table.ca-cardify.ca-cardified thead {
+  .ca-cardified thead {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -381,15 +383,9 @@
     white-space: nowrap;
   }
 
-  .lv-table.ca-cardified tbody,
-  .thm-table.ca-cardified tbody,
-  table.ca-cardify.ca-cardified tbody {
-    display: block;
-  }
+  .ca-cardified tbody { display: block; }
 
-  .lv-table.ca-cardified tbody tr,
-  .thm-table.ca-cardified tbody tr,
-  table.ca-cardify.ca-cardified tbody tr {
+  .ca-cardified tbody tr {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 9px 12px;
@@ -399,21 +395,17 @@
     border-radius: 13px;
     background: #10131F;
   }
+  .ca-cardified tbody tr:nth-child(even) { background: #10131F; }
+  .ca-cardified tbody tr:hover { box-shadow: none; }
 
-  /* strip desktop zebra / hover / sticky treatments inside a card */
-  .lv-table.ca-cardified tbody tr:nth-child(even),
-  .thm-table.ca-cardified tbody tr:nth-child(even) { background: #10131F; }
-  .lv-table.ca-cardified tbody tr:hover,
-  .thm-table.ca-cardified tbody tr:hover { box-shadow: none; }
-
-  .lv-table.ca-cardified td,
-  .thm-table.ca-cardified td,
-  table.ca-cardify.ca-cardified td {
+  /* reset every cell out of its desktop table treatment (sticky/zebra/width/etc) */
+  .ca-cardified tbody tr > * {
     position: static !important;
     left: auto !important;
     width: auto !important;
     min-width: 0 !important;
     height: auto !important;
+    min-height: 0 !important;
     border: 0 !important;
     padding: 0 !important;
     text-align: left !important;
@@ -421,10 +413,8 @@
     background: transparent !important;
   }
 
-  /* team cell = full-width card header, with a rank badge when present */
-  .lv-table.ca-cardified td.ca-card-team,
-  .thm-table.ca-cardified td.ca-card-team,
-  table.ca-cardify.ca-cardified td.ca-card-team {
+  /* header cell = full-width card title, with a rank badge when present */
+  .ca-cardified .ca-card-team {
     grid-column: 1 / -1;
     display: flex;
     align-items: center;
@@ -435,8 +425,7 @@
     margin-bottom: 1px;
     border-bottom: 1px solid var(--border, #262A38) !important;
   }
-  .lv-table.ca-cardified td.ca-card-team[data-cardrank]::before,
-  .thm-table.ca-cardified td.ca-card-team[data-cardrank]::before {
+  .ca-cardified .ca-card-team[data-cardrank]::before {
     content: attr(data-cardrank);
     flex: 0 0 auto;
     min-width: 22px;
@@ -449,22 +438,16 @@
     text-align: center;
   }
 
-  /* the standalone rank cell is now redundant */
-  .lv-table.ca-cardified td.ca-card-rank,
-  .thm-table.ca-cardified td.ca-card-rank { display: none; }
+  .ca-cardified .ca-card-rank { display: none !important; }
 
-  /* every other cell = label above value */
-  .lv-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank),
-  .thm-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank),
-  table.ca-cardify.ca-cardified td:not(.ca-card-team):not(.ca-card-rank) {
+  /* stat cell = label above value */
+  .ca-cardified .ca-card-stat {
     display: flex;
     flex-direction: column;
     gap: 3px;
     min-width: 0;
   }
-  .lv-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before,
-  .thm-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before,
-  table.ca-cardify.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before {
+  .ca-cardified .ca-card-stat::before {
     content: attr(data-label);
     font-size: 9.5px;
     font-weight: 700;
@@ -476,11 +459,121 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .lv-table.ca-cardified td .chip,
-  .thm-table.ca-cardified td .chip,
-  .thm-table.ca-cardified td .thm-rel {
+  .ca-cardified .ca-card-stat .chip,
+  .ca-cardified .ca-card-stat .thm-rel {
     align-self: flex-start;
     font-size: 14px;
+  }
+
+  /* Sortable card-ified tables (Rankings, Trends): reveal the header row as a
+     tappable "sort pills" strip instead of hiding it. Taps hit the original
+     <th> sort handlers, so re-sorting still works on a phone. */
+  .ca-cardified.ca-cardify-sortable thead {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .ca-cardified.ca-cardify-sortable thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .ca-cardified.ca-cardify-sortable thead tr::before {
+    content: "Sort";
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3, #6E7383);
+    margin-right: 2px;
+  }
+  /* only the sortable columns become pills */
+  .ca-cardified.ca-cardify-sortable thead th:not([data-a="sort"]):not(.lv-sortable):not(.sortable) {
+    display: none;
+  }
+  .ca-cardified.ca-cardify-sortable thead th {
+    position: static !important;
+    flex: 0 0 auto;
+    font-size: 10.5px !important;
+    font-weight: 700;
+    padding: 6px 10px !important;
+    border: 1px solid var(--border, #262A38) !important;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: var(--text-3, #6E7383) !important;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .ca-cardified.ca-cardify-sortable thead th.sorted,
+  .ca-cardified.ca-cardify-sortable thead th[aria-sort]:not([aria-sort="none"]) {
+    background: rgba(124, 77, 255, 0.16) !important;
+    color: #B79CFF !important;
+    border-color: rgba(124, 77, 255, 0.4) !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Pitch-mix table (mobile): freeze the pitch-name column.
+   .bp-pm-table is a grouped 14-column spreadsheet (Pitcher vs Batter metric
+   groups, repeated column names) that doesn't card-ify cleanly, so instead the
+   wrap scrolls (set above) and the first column stays pinned so you never lose
+   which pitch a row is. The right-edge shadow sells the frozen column.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .bp-pm-table th:first-child,
+  .bp-pm-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #0E1018;
+    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.6);
+  }
+  .bp-pm-table tbody tr:nth-child(even) td:first-child { background: #0E1018; }
+  .bp-pm-table tbody tr:hover td:first-child { background: #14121E; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Matchups view (mobile): collapse each card's projected lineups.
+   The Matchups page stacks 15 cards, each with two 9-man lineups that balloon
+   to ~1100px on a phone (~18000px total). Below 768px the lineups collapse
+   behind a tap on the "Projected lineups" label (toggled by mobile_cardify.js,
+   which adds .is-mobile-open). The decision summary — teams, both pitchers,
+   the lineup-edge bar — stays inline. Desktop is unaffected.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* !important + higher specificity beats landing_dashboard.css's
+     `.hmc-lineups--always .matchup-lineup-panel { display:block !important }` */
+  .hero-matchup-card .hmc-lineups--always .matchup-lineup-panel.is-open {
+    display: none !important;
+  }
+  .hero-matchup-card .hmc-lineups--always.is-mobile-open .matchup-lineup-panel.is-open {
+    display: block !important;
+  }
+  .hero-matchup-card .hmc-lineups--always .hmc-lineups-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 4px 0 0;
+    border: 1px solid var(--border, #262A38);
+    border-radius: 10px;
+    background: rgba(124, 77, 255, 0.07);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hero-matchup-card .hmc-lineups--always .hmc-lineups-label::after {
+    content: "\25BE"; /* ▾ */
+    font-size: 11px;
+    color: #B79CFF;
+  }
+  .hero-matchup-card .hmc-lineups--always.is-mobile-open .hmc-lineups-label::after {
+    content: "\25B4"; /* ▴ */
   }
 }
 
