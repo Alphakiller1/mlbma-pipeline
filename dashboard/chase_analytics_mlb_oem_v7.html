@@ -2630,7 +2630,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="theme.css?v=20260619a">
 <link rel="stylesheet" href="chase_nav.css?v=20260626a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260610">
-<link rel="stylesheet" href="research_lab.css?v=20260605e">
+<link rel="stylesheet" href="research_lab.css?v=20260608a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
@@ -2754,8 +2754,8 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260624i"></script>
-<script src="compare_metrics.js?v=20260702d"></script>
-<script src="research_lab.js?v=20260618b"></script>
+<script src="compare_metrics.js?v=20260608d"></script>
+<script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
 <script src="trends_heatmap.js?v=20260620c"></script>
 <script src="bullpen_usage.js?v=20260617a"></script>
@@ -3988,11 +3988,13 @@ function updateWindowDataBanners() {
 
 
 function parseBullpenUnitRows(rows) {
+  var MS = window.MLBMASharedMatchup || window.MatchupShared;
+  if (MS && MS.parseBullpenUnitRows) return MS.parseBullpenUnitRows(rows);
   var map = {};
   (rows || []).forEach(function(row) {
     var t = String(pickCol(row, ['team', 'Tm', 'Team'])).trim().toUpperCase();
     if (!t) return;
-    var osiAllowed = numOrNull(pickCol(row, ['overall_OSI_allowed']));
+    var osiAllowed = numOrNull(pickCol(row, ['overall_OSI_allowed', 'OSI_allowed']));
     map[t] = {
       t: t,
       osiAllowed: osiAllowed,
@@ -4000,6 +4002,11 @@ function parseBullpenUnitRows(rows) {
       abqAllowed: numOrNull(pickCol(row, ['overall_ABQ_allowed'])),
       rcvAllowed: numOrNull(pickCol(row, ['overall_RCV_allowed'])),
       obrAllowed: numOrNull(pickCol(row, ['overall_OBR_allowed'])),
+      bbPct: numOrNull(pickCol(row, ['overall_BB_pct', 'BB%', 'BB_pct'])),
+      fip: numOrNull(pickCol(row, ['overall_FIP', 'FIP', 'fip'])),
+      era: numOrNull(pickCol(row, ['overall_ERA', 'ERA', 'era'])),
+      opsAllowed: numOrNull(pickCol(row, ['overall_OPS_allowed', 'OPS_allowed'])),
+      avgAllowed: numOrNull(pickCol(row, ['overall_AVG_allowed', 'AVG_allowed'])),
       hiLevEra: numOrNull(pickCol(row, ['high_leverage_ERA'])),
       loLevEra: numOrNull(pickCol(row, ['low_leverage_ERA'])),
       eraOverall: numOrNull(pickCol(row, ['overall_ERA'])),
@@ -4946,13 +4953,19 @@ function loadLandingExtras() {
     fetchTabSafe(TABS.pitching_score),
     fetchTabSafe(TABS.bullpen_unit),
     fetchTabSafe(TABS.player_registry),
-    fetchTabSafe(TABS.signals_today, [])
+    fetchTabSafe(TABS.signals_today, []),
+    fetchTabSafe(TABS.reliever_log, [])
   ]).then(function(results) {
     LIVE_DATA.weather = parseWeatherMap(results[0]);
     LIVE_DATA.pitching = parsePitchingRows(results[1]);
-    LIVE_DATA.bullpenUnits = parseBullpenUnitRows(results[2]);
+    LIVE_DATA.bullpenUnitRows = results[2] || [];
+    var MS = window.MLBMASharedMatchup || window.MatchupShared;
+    LIVE_DATA.bullpenUnits = (MS && MS.parseBullpenUnitRows)
+      ? MS.parseBullpenUnitRows(results[2])
+      : parseBullpenUnitRows(results[2]);
     LIVE_DATA.playerRegistry = results[3] || [];
     LIVE_DATA.signalsToday = results[4] || [];
+    LIVE_DATA.relieverLog = results[5] || [];
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(parseRegistrySheet(LIVE_DATA.playerRegistry));
     }
@@ -5105,7 +5118,9 @@ function loadResearchData() {
     fetchTabSafe(TABS.batter_splits_home, []),
     fetchTabSafe(TABS.batter_splits_away, []),
     fetchTabSafe(TABS.sp_metric_splits, []),
-    fetchTabSafe(TABS.sp_game_log, [])
+    fetchTabSafe(TABS.sp_game_log, []),
+    fetchTabSafe(TABS.reliever_log, []),
+    fetchTabSafe(TABS.bullpen_unit, [])
   ]).then(function(results) {
     LIVE_DATA.oor = parseOorRows(results[0]);
     LIVE_DATA.pals = parsePalsRows(results[1]);
@@ -5117,6 +5132,16 @@ function loadResearchData() {
     LIVE_DATA.batterSplitsAway = results[8] || [];
     LIVE_DATA.spMetricSplits = results[9] || [];
     LIVE_DATA.spGameLog = results[10] || [];
+    LIVE_DATA.relieverLog = results[11] || [];
+    if (!LIVE_DATA.bullpenUnitRows || !LIVE_DATA.bullpenUnitRows.length) {
+      LIVE_DATA.bullpenUnitRows = results[12] || [];
+    }
+    if (!LIVE_DATA.bullpenUnits || !Object.keys(LIVE_DATA.bullpenUnits).length) {
+      var MS = window.MLBMASharedMatchup || window.MatchupShared;
+      LIVE_DATA.bullpenUnits = (MS && MS.parseBullpenUnitRows)
+        ? MS.parseBullpenUnitRows(LIVE_DATA.bullpenUnitRows)
+        : parseBullpenUnitRows(LIVE_DATA.bullpenUnitRows);
+    }
     console.log('[DATA] spMetricSplits loaded:', LIVE_DATA.spMetricSplits ? LIVE_DATA.spMetricSplits.length : 0, 'rows');
     console.log('[DATA] spGameLog loaded:', LIVE_DATA.spGameLog ? LIVE_DATA.spGameLog.length : 0, 'rows');
     console.log('[TRENDS] Team_Profiles fetch result:', LIVE_DATA.teamProfiles ? LIVE_DATA.teamProfiles.length : 'null or undefined');

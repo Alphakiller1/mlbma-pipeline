@@ -1177,7 +1177,7 @@ body.batter-profile-page #pitchMixMount .bp-pm-empty {
 .bp-pm-group--sp { color: #A78BFA; }
 
 .bp-pm-table td {
-  padding: 10px 8px;
+  padding: 11px 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   text-align: center;
   vertical-align: middle;
@@ -1186,6 +1186,7 @@ body.batter-profile-page #pitchMixMount .bp-pm-empty {
 .bp-pm-pitch-name {
   text-align: left !important;
   padding-left: 12px !important;
+  font-size: var(--bp-body, 13px);
   font-weight: 700;
   color: var(--text, #F5F6FA);
   white-space: nowrap;
@@ -1193,9 +1194,18 @@ body.batter-profile-page #pitchMixMount .bp-pm-empty {
 
 .bp-pm-pitch-divider { border-left: 1px solid rgba(124, 77, 255, 0.35); }
 
-.bp-pm-stat .chip { font-size: var(--bp-num, 15px); font-weight: 800; }
+.bp-pm-table .bp-pm-stat .chip {
+  font-size: var(--bp-stat, 18px);
+  font-weight: 800;
+  line-height: 1.15;
+}
 
-.bp-pm-plain { font-weight: 700; font-size: var(--bp-num, 15px); color: var(--text, #F5F6FA); }
+.bp-pm-table .bp-pm-plain {
+  font-weight: 700;
+  font-size: var(--bp-stat, 18px);
+  line-height: 1.15;
+  color: var(--text, #F5F6FA);
+}
 
 .bp-pm-move { font-weight: 700; font-variant-numeric: tabular-nums; }
 

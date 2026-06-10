@@ -316,12 +316,6 @@
     var log = _pack.relieverLog || [];
 
     return ensureLineupStore(ctx).then(function() {
-      var winDays = lvbWindowDays(state);
-      var saveExtras = lineupSaveExtras(log, lineupTeam, bpTeam, ctx, state);
-      var h2hRates = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, winDays);
-      if ((!h2hRates || !h2hRates.bf) && winDays > 0) {
-        h2hRates = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, 0);
-      }
       return CM.resolveBoth('lineup-bullpen',
         { key: lineupTeam, filter: luF },
         { key: bpTeam, filter: bpF }
@@ -329,24 +323,12 @@
         var lu = res.dataA && res.dataA.entity === 'lineup' ? res.dataA : res.dataB;
         var bp = res.dataA && res.dataA.entity === 'bullpen' ? res.dataA : res.dataB;
         if (!lu || !bp) return null;
-        var luRow = lu.row || {};
-        var met = bp.metrics || {};
-        var bpUnit = bp.row || {};
-        global._lvbMetricExtras = Object.assign({}, saveExtras, {
-          fipAllowed: h2hRates && h2hRates.fip != null ? h2hRates.fip : null,
-          lineupOps: h2hRates && h2hRates.opsAllowed != null ? h2hRates.opsAllowed : luRow.ops,
-          lineupAvg: h2hRates && h2hRates.avgAllowed != null ? h2hRates.avgAllowed : luRow.avg,
-          lineupBbPct: h2hRates && h2hRates.bbPct != null ? h2hRates.bbPct : null,
-          bpFip: (h2hRates && h2hRates.fip != null ? h2hRates.fip : null)
-            || (met.fip != null ? met.fip : bpUnit.fip),
-          bpBbPct: (h2hRates && h2hRates.bbPct != null ? h2hRates.bbPct : null)
-            || (met.bbPct != null ? met.bbPct : bpUnit.bbPct),
-          bpOpsAllowed: (h2hRates && h2hRates.opsAllowed != null ? h2hRates.opsAllowed : null)
-            || met.opsAllowed || bpUnit.opsAllowed,
-          bpAvgAllowed: (h2hRates && h2hRates.avgAllowed != null ? h2hRates.avgAllowed : null)
-            || met.avgAllowed || bpUnit.avgAllowed
-            || bullpenAvgAllowed(log, bpTeam, lineupTeam, ctx, winDays)
-        });
+        var winDays = lvbWindowDays(state);
+        global._lvbCompareOpts = {
+          relieverLog: log,
+          ctx: ctx,
+          windowDays: winDays
+        };
         var metrics = CM.buildMetricRows('lineup-bullpen', lu, bp);
         return {
           lu: lu,

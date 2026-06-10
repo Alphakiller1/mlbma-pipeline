@@ -240,18 +240,105 @@
   function teamResultsRow(team) {
     return new Promise(function(resolve) {
       if (!LM || !LM.ensureStore) { resolve(null); return; }
-      LM.ensureStore().then(function(store) {
+      LM.ensureStore({ needTeamResults: true }).then(function(store) {
         var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
         resolve((store && store.resultsByTeam && store.resultsByTeam[tk]) || null);
       }).catch(function() { resolve(null); });
     });
   }
 
+  function teamProfileForTeam(team) {
+    var profs = (global.LIVE_DATA && LIVE_DATA.teamProfilesByTeam) || {};
+    var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
+    return profs[tk] || null;
+  }
+
+  function pitchScoreFromTeamProfile(team) {
+    var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
+    var profRows = (global.LIVE_DATA && LIVE_DATA.teamProfiles) || [];
+    var row = profRows.find(function(r) {
+      return S && S.teamKey(S.pickCol(r, 'team', 'Tm', 'Team')) === tk;
+    });
+    if (row && S) {
+      var fromRow = num(S.pickCol(row, 'avg_pitching_score', 'avg pitching score', 'avg_pitchscore', 'Avg Pitching Score', 'Pitch Score Against'));
+      if (fromRow != null) return fromRow;
+    }
+    var prof = teamProfileForTeam(team);
+    if (!prof || !S) return null;
+    return num(S.pickCol(prof, 'avg_pitching_score', 'avg pitching score', 'avg_pitchscore', 'Avg Pitching Score'));
+  }
+
+  function normalizeRateStat(v) {
+    v = num(v);
+    if (v == null) return null;
+    if (v > 1.5 && v <= 100) return Math.round(v * 10) / 1000;
+    return v;
+  }
+
+  function ensureCompareDataReady(modeId, deps) {
+    deps = deps || {};
+    var LD = global.LIVE_DATA || (global.LIVE_DATA = {});
+    var tabs = global.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
+    var chain = Promise.resolve();
+
+    if (typeof global.deferResearchDataLoad === 'function') {
+      chain = chain.then(function() { return global.deferResearchDataLoad(); });
+    }
+
+    if (typeof deps.fetchSpProfiles === 'function') {
+      chain = chain.then(function() { return deps.fetchSpProfiles(); });
+    }
+
+    if (LM && LM.ensureStore) {
+      var storeOpts = { needPals: true, needTeamResults: true };
+      if (modeId === 'lineup-sp' || modeId === 'lineup-bullpen') storeOpts.needPitcherSplits = true;
+      chain = chain.then(function() { return LM.ensureStore(storeOpts); });
+    }
+
+    if (!S || !tabs) return chain;
+
+    return chain.then(function() {
+      var jobs = [];
+      if (modeId === 'lineup-bullpen' || modeId === 'lineup-sp') {
+        if (!LD.relieverLog || !LD.relieverLog.length) {
+          jobs.push(S.fetchSheetTab(tabs.reliever_log).catch(function() { return []; }).then(function(rows) {
+            LD.relieverLog = rows || [];
+          }));
+        }
+      }
+      if (modeId === 'lineup-bullpen') {
+        if (!LD.bullpenUnitRows || !LD.bullpenUnitRows.length) {
+          jobs.push(S.fetchSheetTab(tabs.bullpen_unit).catch(function() { return []; }).then(function(rows) {
+            LD.bullpenUnitRows = rows || [];
+            if (S.parseBullpenUnitRows) LD.bullpenUnits = S.parseBullpenUnitRows(rows);
+          }));
+        }
+      }
+      if (modeId === 'lineup-sp' || modeId === 'pitcher-pitcher') {
+        if (!LD.spGameLog || !LD.spGameLog.length) {
+          jobs.push(S.fetchSheetTab(tabs.sp_game_log).catch(function() { return []; }).then(function(rows) {
+            LD.spGameLog = rows || [];
+          }));
+        }
+        if (!LD.spMetricSplits || !LD.spMetricSplits.length) {
+          jobs.push(ensureSpMetricSplits());
+        }
+      }
+      if (modeId === 'lineup-lineup' && (!LD.pitching || !LD.pitching.length) && tabs.pitching_score) {
+        jobs.push(S.fetchSheetTab(tabs.pitching_score).catch(function() { return []; }).then(function(rows) {
+          if (S.parsePitchingRows) LD.pitching = S.parsePitchingRows(rows);
+        }));
+      }
+      return Promise.all(jobs);
+    });
+  }
+
   function resolveLineupSide(team, filter) {
     if (!LM || !LM.resolve) return Promise.resolve(null);
     var f = S ? S.createFilterState(filter) : filter;
-    return LM.resolve(team, f).then(function(row) {
+    return LM.resolve(team, f, { needPals: true, needTeamResults: true }).then(function(row) {
       if (!row) return null;
+      row = enrichLineupRow(row);
       return {
         entity: 'lineup',
         label: row.t,
@@ -262,6 +349,24 @@
         filter: f
       };
     });
+  }
+
+  function enrichLineupRow(row) {
+    if (!row) return row;
+    var out = Object.assign({}, row);
+    if (out.pals == null) out.pals = palsValueForTeam(out.t);
+    if (out.pitchScore == null) out.pitchScore = pitchScoreFromTeamProfile(out.t);
+    if (out.pitchScore == null) {
+      var palsEntry = palsForTeam(out.t);
+      if (palsEntry) {
+        out.pitchScore = num(palsEntry.pitchScoreFaced || palsEntry.avg_pitch_score_faced);
+      }
+    }
+    out.woba = normalizeRateStat(out.woba);
+    out.xwoba = normalizeRateStat(out.xwoba);
+    out.slg = normalizeRateStat(out.slg);
+    out.ops = normalizeRateStat(out.ops);
+    return out;
   }
 
   function pitcherBatSplitValue(sp, met, filter) {
@@ -364,8 +469,10 @@
       osiAllowed: osi,
       fip: bullpenPrefixedMetric(rawRow, prefix, 'FIP') || (unit && unit.fip),
       bbPct: bullpenPrefixedMetric(rawRow, prefix, 'BB_pct', true) || (unit && unit.bbPct),
-      opsAllowed: bullpenPrefixedMetric(rawRow, prefix, 'OPS_allowed'),
-      avgAllowed: bullpenPrefixedMetric(rawRow, prefix, 'AVG_allowed'),
+      opsAllowed: bullpenPrefixedMetric(rawRow, prefix, 'OPS_allowed')
+        || (unit && unit.opsAllowed),
+      avgAllowed: bullpenPrefixedMetric(rawRow, prefix, 'AVG_allowed')
+        || (unit && unit.avgAllowed),
       era: bullpenPrefixedMetric(rawRow, prefix, 'ERA') || (unit && unit.era),
       kPct: bullpenPrefixedMetric(rawRow, prefix, 'K_pct', true),
       apps: bullpenPrefixedMetric(rawRow, prefix, 'apps'),
@@ -488,10 +595,12 @@
   }
 
   function resolveBoth(modeId, sideA, sideB, deps) {
-    return Promise.all([
-      resolveSide(modeId, 'A', sideA, deps),
-      resolveSide(modeId, 'B', sideB, deps)
-    ]).then(function(res) {
+    return ensureCompareDataReady(modeId, deps || {}).then(function() {
+      return Promise.all([
+        resolveSide(modeId, 'A', sideA, deps),
+        resolveSide(modeId, 'B', sideB, deps)
+      ]);
+    }).then(function(res) {
       return { dataA: res[0], dataB: res[1] };
     });
   }
@@ -510,6 +619,11 @@
     };
   }
 
+  function lineupPals(row) {
+    if (row && row.pals != null) return row.pals;
+    return palsValueForTeam(row && row.t);
+  }
+
   function lineupLineupMetrics(a, b) {
     var hrA = teamPitchingHr9(a.row.t);
     var hrB = teamPitchingHr9(b.row.t);
@@ -522,52 +636,173 @@
       metricRow('OSI', a.row.osi, b.row.osi, { ctx: 'osi' }),
       metricRow('ABQ', a.row.abq, b.row.abq, { ctx: 'osi' }),
       metricRow('RCV', a.row.rcv, b.row.rcv, { ctx: 'osi' }),
-      metricRow('PALS', a.row.pals, b.row.pals, { ctx: 'osi' }),
+      metricRow('PALS', lineupPals(a.row), lineupPals(b.row), { ctx: 'osi' }),
       metricRow('Pitch Score Allowed', a.row.pitchScore, b.row.pitchScore, { ctx: 'pitching', invertA: true, invertB: true }),
       metricRow('Staff HR/9', hrA, hrB, { ctx: 'pitching', invertA: true, invertB: true }),
       metricRow('Proj OSI', a.row.projOSI, b.row.projOSI, { ctx: 'osi' })
     ];
   }
 
-  function lineupSpMetrics(lineup, pitcher, lineupFirst) {
-    var lu = lineup;
-    var sp = pitcher;
-    var allow = sp.splitOsiAllowed != null ? sp.splitOsiAllowed : (sp.metricsObj && sp.metricsObj.osiAllowed);
-    var mo = sp.metricsObj || {};
-    if (lineupFirst) {
-      return [
-        metricRow('OSI vs Allowed', lu.row.osi, allow, { invertB: true }),
-        metricRow('Win%', lu.row.winPct, null, { ctx: 'pct' }),
-        metricRow('QS% Allowed', lu.row.qs, null, { ctx: 'pct' }),
-        metricRow('wRC+', lu.row.wrc, null, { ctx: 'osi' }),
-        metricRow('wOBA', lu.row.woba, null, { ctx: 'osi' }),
-        metricRow('xwOBA', lu.row.xwoba, null, { ctx: 'osi' }),
-        metricRow('SLG', lu.row.slg, null, { ctx: 'osi' }),
-        metricRow('Pitching Score', null, sp.primary, { ctx: 'pitching' }),
-        metricRow('K/9', null, sp.k9, { ctx: 'pitching' }),
-        metricRow('BB/9', null, sp.bb9, { ctx: 'pitching', invertB: true }),
-        metricRow('OSI Allowed', null, allow, { invertB: true }),
-        metricRow('ABQ Allowed', lu.row.abq, mo.abqAllowed, { invertB: true }),
-        metricRow('RCV vs Allowed', lu.row.rcv, mo.rcvAllowed, { invertB: true }),
-        metricRow('HR/9', null, mo.hr9, { ctx: 'pitching', invertB: true })
-      ];
+  function normalizePct(v) {
+    v = num(v);
+    if (v == null) return null;
+    if (v > 0 && v <= 1.5) return Math.round(v * 1000) / 10;
+    return v;
+  }
+
+  function scaleRate(v) {
+    v = num(v);
+    if (v == null) return null;
+    if (v > 0 && v <= 1.5) return v;
+    return null;
+  }
+
+  function wobaFromSpProfile(row) {
+    if (!row || !S) return null;
+    var wrc = num(S.pickCol(row, 'wRC_faced', 'wrc_faced', 'wRC+_faced', 'wRC+'));
+    if (wrc != null) return Math.round(0.320 * (wrc / 100) * 1000) / 1000;
+    var w = scaleRate(S.pickCol(row, 'wOBA_allowed', 'woba_allowed', 'wOBA', 'woba'));
+    if (w != null) return w;
+    var ops = scaleRate(S.pickCol(row, 'OPS', 'ops_allowed', 'OPS_allowed'));
+    if (ops != null) return Math.round((ops / 1.280) * 0.320 * 1000) / 1000;
+    return null;
+  }
+
+  function whipFromPitchScore(ps) {
+    ps = num(ps);
+    if (ps == null) return null;
+    return Math.round((1.42 - (ps - 50) * 0.0085) * 100) / 100;
+  }
+
+  function spQsFromLog(name) {
+    if (!name || !S) return null;
+    var log = (global.LIVE_DATA && LIVE_DATA.spGameLog) || [];
+    var key = S.normName(name);
+    var qs = 0;
+    var n = 0;
+    log.forEach(function(g) {
+      var rowName = S.normName(S.pickCol(g, 'pitcher_name', 'Name', 'Pitcher'));
+      if (rowName !== key) return;
+      n++;
+      var ip = num(S.pickCol(g, 'IP', 'ip')) || 0;
+      var er = num(S.pickCol(g, 'ER', 'er')) || 0;
+      if (ip >= 6 && er <= 3) qs++;
+    });
+    return n ? Math.round((qs / n) * 1000) / 10 : null;
+  }
+
+  function pitcherExtendedStats(spRow, mo) {
+    mo = mo || {};
+    spRow = spRow || {};
+    var kPct = normalizePct(mo.kPct != null ? mo.kPct : S.pickCol(spRow, 'K_pct', 'K%', 'k_pct'));
+    var bbPct = normalizePct(mo.bbPct != null ? mo.bbPct : S.pickCol(spRow, 'BB_pct', 'BB%', 'bb_pct'));
+    var whip = num(S.pickCol(spRow, 'WHIP', 'whip'));
+    var k9 = num(S.pickCol(spRow, 'K/9', 'K9', 'k9')) || ratePerNine(kPct);
+    var bb9 = num(S.pickCol(spRow, 'BB/9', 'BB9', 'bb9')) || ratePerNine(bbPct);
+    var xfip = num(S.pickCol(spRow, 'xFIP', 'xfip'));
+    var fip = num(S.pickCol(spRow, 'FIP', 'fip')) || mo.fip;
+    if (xfip == null) xfip = fip;
+    var ops = scaleRate(S.pickCol(spRow, 'OPS_allowed', 'OPS Allowed', 'ops_allowed', 'OPS'));
+    var woba = wobaFromSpProfile(spRow);
+    var qsRaw = S.pickCol(spRow, 'QS_pct', 'qs_pct', 'QS%');
+    var qs = pctFmt(qsRaw);
+    var pitchScore = mo.pitchScore != null ? mo.pitchScore : num(S.pickCol(spRow, 'PitchScore'));
+    var name = S.pickCol(spRow, 'Name', 'pitcher_name', 'Pitcher');
+    if (qs == null && name) qs = spQsFromLog(name);
+    return { k9: k9, bb9: bb9, whip: whip, xfip: xfip, fip: fip, ops: ops, woba: woba, qs: qs, pitchScore: pitchScore };
+  }
+
+  function palsForTeam(team) {
+    var LD = global.LIVE_DATA || {};
+    var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
+    if (LD.pals && !Array.isArray(LD.pals) && LD.pals[tk]) return LD.pals[tk];
+    return (LD.pals || []).find(function(p) {
+      return S && S.teamKey(p.t || p.Tm || p.team) === tk;
+    }) || null;
+  }
+
+  function palsValueForTeam(team) {
+    var entry = palsForTeam(team);
+    if (!entry) return null;
+    return num(entry.pals != null ? entry.pals : entry.PALS);
+  }
+
+  function lineupPitchingFaced(luRow, team) {
+    luRow = luRow || {};
+    if (luRow.l10K9Faced != null || luRow.l10Bb9Faced != null) {
+      return {
+        k9: luRow.l10K9Faced,
+        bb9: luRow.l10Bb9Faced,
+        whip: luRow.l10WhipFaced,
+        xfip: luRow.l10XfipFaced
+      };
     }
-    return [
-      metricRow('OSI vs Allowed', allow, lu.row.osi, { invertA: true }),
-      metricRow('Win%', null, lu.row.winPct, { ctx: 'pct' }),
-      metricRow('QS% Allowed', null, lu.row.qs, { ctx: 'pct' }),
-      metricRow('wRC+', null, lu.row.wrc, { ctx: 'osi' }),
-      metricRow('wOBA', null, lu.row.woba, { ctx: 'osi' }),
-      metricRow('xwOBA', null, lu.row.xwoba, { ctx: 'osi' }),
-      metricRow('SLG', null, lu.row.slg, { ctx: 'osi' }),
-      metricRow('Pitching Score', sp.primary, null, { ctx: 'pitching' }),
-      metricRow('K/9', sp.k9, null, { ctx: 'pitching' }),
-      metricRow('BB/9', sp.bb9, null, { ctx: 'pitching', invertA: true }),
-      metricRow('OSI Allowed', allow, null, { invertA: true }),
-      metricRow('ABQ Allowed', mo.abqAllowed, lu.row.abq, { invertA: true }),
-      metricRow('RCV vs Allowed', mo.rcvAllowed, lu.row.rcv, { invertA: true }),
-      metricRow('HR/9', mo.hr9, null, { ctx: 'pitching', invertA: true })
+    var pals = palsForTeam(team || luRow.t);
+    var pitchScore = luRow.pitchScore;
+    return {
+      k9: ratePerNine(luRow.k),
+      bb9: ratePerNine(luRow.bb),
+      whip: whipFromPitchScore(pitchScore),
+      xfip: pals && pals.xfip != null ? pals.xfip : null
+    };
+  }
+
+  function spWinPctFromLog(name) {
+    if (!name || !S) return null;
+    var log = (global.LIVE_DATA && LIVE_DATA.spGameLog) || [];
+    var key = S.normName(name);
+    var w = 0;
+    var d = 0;
+    log.forEach(function(g) {
+      var rowName = S.normName(S.pickCol(g, 'pitcher_name', 'Name', 'Pitcher'));
+      if (rowName !== key) return;
+      var res = String(S.pickCol(g, 'team_result', 'Team_Result', 'result', 'dec', 'Dec') || '').trim().toUpperCase();
+      if (!res) return;
+      if (res.charAt(0) === 'W') { w++; d++; }
+      else if (res.charAt(0) === 'L') d++;
+    });
+    return d ? Math.round((w / d) * 1000) / 10 : null;
+  }
+
+  function swapMetricRow(r) {
+    return metricRow(r.label, r.valB, r.valA, {
+      ctx: r.ctx,
+      invertA: r.invertB,
+      invertB: r.invertA,
+      decimals: r.decimals,
+      higherBetter: r.higherBetter
+    });
+  }
+
+  function lineupSpMetrics(lineup, pitcher, lineupFirst) {
+    var lu = lineup.row || {};
+    var mo = pitcher.metricsObj || {};
+    var allow = pitcher.splitOsiAllowed != null ? pitcher.splitOsiAllowed : mo.osiAllowed;
+    var ext = pitcherExtendedStats(pitcher.row, mo);
+    var against = lineupPitchingFaced(lu, lineup.label || lu.t);
+    var spK9 = ext.k9 != null ? ext.k9 : pitcher.k9;
+    var spBb9 = ext.bb9 != null ? ext.bb9 : pitcher.bb9;
+    var spPitchScore = ext.pitchScore != null ? ext.pitchScore : pitcher.primary;
+    var spWin = spWinPctFromLog(pitcher.label);
+    var luWin = lineupWinPctForCompare(lineup, lineup.filter);
+    var rows = [
+      metricRow('OSI / OSI Allowed', lu.osi, allow, { invertB: true }),
+      metricRow('Win% / SP Win%', luWin, spWin, { ctx: 'pct' }),
+      metricRow('QS% / QS%', lu.qs, ext.qs, { ctx: 'qspct' }),
+      metricRow('wRC+ / RCV Allowed', lu.wrc, mo.rcvAllowed, { invertB: true }),
+      metricRow('wOBA / wOBA Allowed', lu.woba, ext.woba, { ctx: 'woba', invertB: true, decimals: 3 }),
+      metricRow('xwOBA / xFIP', lu.xwoba, ext.xfip, { ctx: 'pitching', invertB: true, decimals: 3 }),
+      metricRow('SLG / OPS Allowed', lu.slg, ext.ops, { ctx: 'ops', invertB: true, decimals: 3 }),
+      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, spPitchScore, { ctx: 'pitching', invertA: true }),
+      metricRow('K/9', against.k9, spK9, { ctx: 'pitching', invertA: true }),
+      metricRow('BB/9', against.bb9, spBb9, { ctx: 'pitching', invertA: true, invertB: true }),
+      metricRow('WHIP', against.whip, ext.whip, { ctx: 'whip', invertA: true, invertB: true }),
+      metricRow('ABQ / ABQ Allowed', lu.abq, mo.abqAllowed, { invertB: true }),
+      metricRow('RCV / RCV Allowed', lu.rcv, mo.rcvAllowed, { invertB: true }),
+      metricRow('HR/9 Faced / HR/9', teamPitchingHr9(lu.t), mo.hr9, { ctx: 'pitching', invertA: true, invertB: true })
     ];
+    if (!lineupFirst) return rows.map(swapMetricRow);
+    return rows;
   }
 
   function lineupWinPctForCompare(lu, filter) {
@@ -589,6 +824,196 @@
     return Math.round(v * 10) / 10;
   }
 
+  function windowDaysFromFilter(filter) {
+    var w = filter && filter.window;
+    if (w === 'L7') return 7;
+    if (w === 'L14') return 14;
+    if (w === 'L30') return 30;
+    return 0;
+  }
+
+  function normSpNameSet(ctx) {
+    var names = {};
+    var profiles = (ctx && ctx.spProfiles)
+      || (global.LIVE_DATA && LIVE_DATA.spProfiles)
+      || [];
+    profiles.forEach(function(p) {
+      var n = S ? S.pickCol(p, 'Name', 'pitcher_name', 'Pitcher') : null;
+      if (n && S && S.normName) names[S.normName(n)] = true;
+    });
+    return names;
+  }
+
+  function isStarterArm(name, ctx) {
+    if (!name) return false;
+    var key = S && S.normName ? S.normName(name) : String(name).toLowerCase().trim();
+    return !!normSpNameSet(ctx)[key];
+  }
+
+  function filterReliefApps(log, team, ctx, opts) {
+    opts = opts || {};
+    log = log || [];
+    var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
+    return log.filter(function(r) {
+      if (S.teamKey(S.pickCol(r, 'pitcher_team', 'team')) !== tk) return false;
+      var name = S.pickCol(r, 'pitcher_name', 'Name');
+      if (!opts.includeStarters && isStarterArm(name, ctx)) return false;
+      return true;
+    });
+  }
+
+  function aggregateSaveRates(log, team, role, windowDays, opponent) {
+    var rows = log || [];
+    var tk = S ? S.teamKey(team) : String(team || '').toUpperCase();
+    var oppTk = opponent ? S.teamKey(opponent) : null;
+    var cutoff = null;
+    if (windowDays && windowDays > 0) {
+      var d = new Date();
+      d.setDate(d.getDate() - windowDays);
+      cutoff = d.toISOString().slice(0, 10);
+    }
+    var saves = 0;
+    var blown = 0;
+    rows.forEach(function(r) {
+      var dt = String(S.pickCol(r, 'date', 'Date') || '').slice(0, 10);
+      if (cutoff && dt && dt < cutoff) return;
+      var result = String(S.pickCol(r, 'result') || '').toLowerCase();
+      if (result !== 'save' && result !== 'blown_save') return;
+      var opp = S.teamKey(S.pickCol(r, 'opponent_team', 'opp', 'Opponent'));
+      if (role === 'earned') {
+        if (S.teamKey(S.pickCol(r, 'pitcher_team', 'team')) !== tk) return;
+        if (oppTk && opp !== oppTk) return;
+      } else if (opp !== tk) return;
+      if (result === 'save') saves++;
+      else blown++;
+    });
+    var opps = saves + blown;
+    if (opps <= 0) return { saves: null, blown: null, savePct: null, blownPct: null, opps: 0 };
+    return {
+      saves: saves,
+      blown: blown,
+      savePct: Math.round((saves / opps) * 1000) / 10,
+      blownPct: Math.round((blown / opps) * 1000) / 10,
+      opps: opps
+    };
+  }
+
+  function filterH2hReliefRows(log, bpTeam, lineupTeam, ctx, windowDays) {
+    var luTk = S ? S.teamKey(lineupTeam) : String(lineupTeam || '').toUpperCase();
+    var rows = filterReliefApps(log, bpTeam, ctx, { includeStarters: false }).filter(function(r) {
+      return S.teamKey(S.pickCol(r, 'opponent_team', 'opp', 'Opponent')) === luTk;
+    });
+    if (!windowDays || windowDays <= 0) return rows;
+    var d = new Date();
+    d.setDate(d.getDate() - windowDays);
+    var cutoff = d.toISOString().slice(0, 10);
+    return rows.filter(function(r) {
+      var dt = String(S.pickCol(r, 'date', 'Date') || '').slice(0, 10);
+      return !dt || dt >= cutoff;
+    });
+  }
+
+  function aggregateReliefRateBlock(rows) {
+    rows = rows || [];
+    var ip = 0;
+    var h = 0;
+    var bb = 0;
+    var k = 0;
+    var hr = 0;
+    var bf = 0;
+    rows.forEach(function(r) {
+      var rowIp = num(S.pickCol(r, 'IP', 'ip')) || 0;
+      var rowH = num(S.pickCol(r, 'H', 'hits')) || 0;
+      var rowBb = num(S.pickCol(r, 'BB', 'bb')) || 0;
+      var rowK = num(S.pickCol(r, 'K', 'k')) || 0;
+      var rowHr = num(S.pickCol(r, 'HR', 'hr')) || 0;
+      var rowBf = num(S.pickCol(r, 'batters_faced', 'BF', 'battersFaced'));
+      if (rowBf == null || rowBf <= 0) rowBf = rowK + rowH + rowBb;
+      if (rowIp <= 0 && rowBf <= 0) return;
+      ip += rowIp;
+      h += rowH;
+      bb += rowBb;
+      k += rowK;
+      hr += rowHr;
+      bf += rowBf;
+    });
+    if (bf <= 0 && ip <= 0) return null;
+    var ab = bf - bb;
+    var avgAllowed = ab > 0 ? Math.round(h / ab * 1000) / 1000 : null;
+    var obp = bf > 0 ? (h + bb) / bf : null;
+    var tb = (h - hr) * 1.25 + hr * 4;
+    var slg = ab > 0 ? tb / ab : null;
+    var opsAllowed = (obp != null && slg != null) ? Math.round((obp + slg) * 1000) / 1000 : null;
+    var bbPct = bf > 0 ? Math.round(bb / bf * 1000) / 10 : null;
+    var fip = ip > 0 ? Math.round(((13 * hr) + (3 * bb) - (2 * k)) / ip + 3.2) * 10 / 10 : null;
+    return { apps: rows.length, bf: bf, avgAllowed: avgAllowed, opsAllowed: opsAllowed, bbPct: bbPct, fip: fip };
+  }
+
+  function aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, windowDays) {
+    return aggregateReliefRateBlock(filterH2hReliefRows(log, bpTeam, lineupTeam, ctx, windowDays));
+  }
+
+  function pickSaveRate(block, key) {
+    if (!block || !block.opps) return null;
+    return block[key];
+  }
+
+  function bullpenSeasonAvgAllowed(log, bpTeam, ctx) {
+    var block = aggregateReliefRateBlock(filterReliefApps(log, bpTeam, ctx, { includeStarters: false }));
+    return block && block.avgAllowed != null ? block.avgAllowed : null;
+  }
+
+  function buildLineupBullpenExtras(lineupTeam, bpTeam, lineupData, bpData, opts) {
+    opts = opts || {};
+    var LD = global.LIVE_DATA || {};
+    var log = opts.relieverLog || LD.relieverLog || [];
+    var ctx = opts.ctx || { spProfiles: LD.spProfiles || [] };
+    var luRow = (lineupData && lineupData.row) || {};
+    var met = (bpData && bpData.metrics) || {};
+    var bpUnit = (bpData && bpData.row) || {};
+    var filter = (lineupData && lineupData.filter) || opts.filter || {};
+    var winDays = opts.windowDays != null ? opts.windowDays : windowDaysFromFilter(filter);
+    var filtered = filterReliefApps(log, bpTeam, ctx, { includeStarters: false });
+    var against = aggregateSaveRates(filtered, lineupTeam, 'against', winDays);
+    var earnedH2h = aggregateSaveRates(filtered, bpTeam, 'earned', winDays, lineupTeam);
+    if ((!against.opps || !earnedH2h.opps) && winDays > 0) {
+      if (!against.opps) against = aggregateSaveRates(filtered, lineupTeam, 'against', 0);
+      if (!earnedH2h.opps) earnedH2h = aggregateSaveRates(filtered, bpTeam, 'earned', 0, lineupTeam);
+    }
+    var h2hRates = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, winDays);
+    if ((!h2hRates || !h2hRates.bf) && winDays > 0) {
+      h2hRates = aggregateH2hReliefStats(log, bpTeam, lineupTeam, ctx, 0);
+    }
+    var seasonBlock = (!h2hRates || !h2hRates.bf)
+      ? aggregateReliefRateBlock(filterReliefApps(log, bpTeam, ctx, { includeStarters: false }))
+      : null;
+    return {
+      savesAgainstPct: pickSaveRate(against, 'savePct'),
+      blownSavesCausedPct: pickSaveRate(against, 'blownPct'),
+      savesEarnedPct: pickSaveRate(earnedH2h, 'savePct'),
+      blownSavePctH2h: pickSaveRate(earnedH2h, 'blownPct'),
+      fipAllowed: (h2hRates && h2hRates.fip != null ? h2hRates.fip : null)
+        || (seasonBlock && seasonBlock.fip != null ? seasonBlock.fip : null)
+        || (met.fip != null ? met.fip : bpUnit.fip),
+      lineupOps: h2hRates && h2hRates.opsAllowed != null ? h2hRates.opsAllowed : luRow.ops,
+      lineupAvg: h2hRates && h2hRates.avgAllowed != null ? h2hRates.avgAllowed : luRow.avg,
+      lineupBbPct: h2hRates && h2hRates.bbPct != null ? h2hRates.bbPct : null,
+      bpFip: (h2hRates && h2hRates.fip != null ? h2hRates.fip : null)
+        || (seasonBlock && seasonBlock.fip != null ? seasonBlock.fip : null)
+        || (met.fip != null ? met.fip : bpUnit.fip),
+      bpBbPct: (h2hRates && h2hRates.bbPct != null ? h2hRates.bbPct : null)
+        || (seasonBlock && seasonBlock.bbPct != null ? seasonBlock.bbPct : null)
+        || (met.bbPct != null ? met.bbPct : bpUnit.bbPct),
+      bpOpsAllowed: (h2hRates && h2hRates.opsAllowed != null ? h2hRates.opsAllowed : null)
+        || (seasonBlock && seasonBlock.opsAllowed != null ? seasonBlock.opsAllowed : null)
+        || met.opsAllowed || bpUnit.opsAllowed,
+      bpAvgAllowed: (h2hRates && h2hRates.avgAllowed != null ? h2hRates.avgAllowed : null)
+        || (seasonBlock && seasonBlock.avgAllowed != null ? seasonBlock.avgAllowed : null)
+        || met.avgAllowed || bpUnit.avgAllowed
+        || bullpenSeasonAvgAllowed(log, bpTeam, ctx)
+    };
+  }
+
   function lineupBullpenMetrics(lineup, bp, lineupFirst, extras) {
     extras = extras || {};
     var lu = lineup.row || {};
@@ -608,13 +1033,18 @@
     var bpOps = extras.bpOpsAllowed != null ? extras.bpOpsAllowed : met.opsAllowed;
     var bpAvgAllowed = extras.bpAvgAllowed != null ? extras.bpAvgAllowed
       : (met.avgAllowed != null ? met.avgAllowed : (bp.row && bp.row.avgAllowed != null ? bp.row.avgAllowed : null));
+    var bpAbq = (bp.row && bp.row.abqAllowed != null) ? bp.row.abqAllowed : null;
+    var bpRcv = (bp.row && bp.row.rcvAllowed != null) ? bp.row.rcvAllowed : null;
     var rows = [
+      metricRow('OSI / OSI Allowed', lu.osi, met.osiAllowed, { invertB: true }),
       metricRow('Win% Against / Win% Earned', luWin, bp.winPct, { ctx: 'rpwin' }),
       metricRow('Saves Against % / Saves Earned %', luSaveAgainst, bpSavePct, { ctx: 'qspct' }),
       metricRow('BB% / BB% Allowed', luBb, bpBb, { ctx: 'bp_bbpct', invertA: true, invertB: false }),
       metricRow('Blown Saves Caused % / Blown Save %', luBlownCaused, bpBlownSavePct, { ctx: 'qspct', invertA: false, invertB: true }),
-      metricRow('OPS / OPS Allowed', lu.ops, bpOps, { ctx: 'ops', invertB: true, decimals: 3 }),
-      metricRow('AVG / AVG Allowed', lu.avg, bpAvgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
+      metricRow('OPS / OPS Allowed', luOps, bpOps, { ctx: 'ops', invertB: true, decimals: 3 }),
+      metricRow('AVG / AVG Allowed', luAvg, bpAvgAllowed, { ctx: 'avg', invertB: true, decimals: 3 }),
+      metricRow('ABQ / ABQ Allowed', lu.abq, bpAbq, { invertB: true }),
+      metricRow('RCV / RCV Allowed', lu.rcv, bpRcv, { invertB: true }),
       metricRow('FIP Allowed / FIP', luFipAllowed, bpFip, { ctx: 'bp_fip', invertA: false, invertB: true })
     ];
     if (!lineupFirst) {
@@ -668,10 +1098,28 @@
     if (modeId === 'lineup-bullpen') {
       var lu2 = dataA.entity === 'lineup' ? dataA : dataB;
       var bp2 = dataA.entity === 'bullpen' ? dataA : dataB;
-      return lineupBullpenMetrics(lu2, bp2, dataA.entity === 'lineup', global._lvbMetricExtras || {});
+      var extras = buildLineupBullpenExtras(
+        lu2.label,
+        bp2.label,
+        lu2,
+        bp2,
+        global._lvbCompareOpts || {}
+      );
+      return lineupBullpenMetrics(lu2, bp2, dataA.entity === 'lineup', extras);
     }
     if (modeId === 'pitcher-pitcher') return pitcherPitcherMetrics(dataA, dataB);
     return [];
+  }
+
+  function metricCoverage(rows) {
+    rows = rows || [];
+    var total = rows.length * 2;
+    var filled = 0;
+    rows.forEach(function(r) {
+      if (r.valA != null && !isNaN(r.valA)) filled++;
+      if (r.valB != null && !isNaN(r.valB)) filled++;
+    });
+    return { total: total, filled: filled, pct: total ? Math.round((filled / total) * 100) : 100 };
   }
 
   global.CompareMetrics = {
@@ -686,6 +1134,9 @@
     bullpenPrefix: bullpenPrefix,
     saveConversionPct: saveConversionPct,
     blownSavePct: blownSavePct,
-    resultMetric: resultMetric
+    resultMetric: resultMetric,
+    buildLineupBullpenExtras: buildLineupBullpenExtras,
+    ensureCompareDataReady: ensureCompareDataReady,
+    metricCoverage: metricCoverage
   };
 })(typeof window !== 'undefined' ? window : this);

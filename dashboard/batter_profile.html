@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260612e">
+<link rel="stylesheet" href="batter_profile.css?v=20260612f">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -1708,18 +1708,15 @@ function splitMetricsHtml(key, splitKey, p) {
   if (rawPack.source && rawPack.source !== sk) STATE._splitSource = rawPack.source;
   else if (profPack.source && profPack.source !== sk) STATE._splitSource = profPack.source;
 
-  var pa = numOrNull(pickCol(R, ['PA']));
   var tbPa = tbPerPaFromRow(R);
   var la = launchAngleFromRow(R, key, sk);
   var xwoba = xwobaFromRow(R, key);
 
-  var meta = '<div class="bp-split-meta" role="status">'
-    + '<span class="bp-split-meta__chip">' + esc(splitSourceLabel(sk)) + '</span>'
-    + (pa != null ? '<span class="bp-split-meta__chip">PA ' + esc(String(Math.round(pa))) + '</span>' : '')
-    + (STATE._splitSource && STATE._splitSource !== sk
-      ? '<span class="bp-split-meta__note">Showing ' + esc(splitSourceLabel(STATE._splitSource)) + ' rates (qualified sample unavailable).</span>'
-      : '')
-    + '</div>';
+  var meta = (STATE._splitSource && STATE._splitSource !== sk)
+    ? '<div class="bp-split-meta" role="status">'
+      + '<span class="bp-split-meta__note">Showing ' + esc(splitSourceLabel(STATE._splitSource)) + ' rates (qualified sample unavailable).</span>'
+      + '</div>'
+    : '';
 
   var band1 = [
     splitStatCell('K%', splitStatValueHtml(pct(R, ['K%']), 'kpct', true, 1)),

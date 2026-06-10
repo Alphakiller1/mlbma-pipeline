@@ -966,19 +966,63 @@ function profileWindowFieldsFromRow(row) {
     return [];
   }
 
+  function compareMetricLabelHtml(label) {
+    var parts = String(label || '').split(' / ');
+    if (parts.length < 2) return esc(label);
+    return '<span class="rl-compare-metric-label-pair">'
+      + '<span class="rl-compare-metric-label-a">' + esc(parts[0]) + '</span>'
+      + '<span class="rl-compare-metric-label-sep">/</span>'
+      + '<span class="rl-compare-metric-label-b">' + esc(parts.slice(1).join(' / ')) + '</span>'
+      + '</span>';
+  }
+
+  function compareMetricValHtml(v, row, side, winner) {
+    var d = row.decimals == null ? 1 : row.decimals;
+    var invert = side === 'a' ? row.invertA : row.invertB;
+    var cls = 'rl-compare-metric-val rl-compare-metric-val--' + side;
+    if (winner === side) cls += ' rl-compare-metric-val--win';
+    if (v == null || v === '' || isNaN(v)) {
+      return '<span class="' + cls + ' rl-compare-metric-val--empty"><span class="rl-compare-na">—</span></span>';
+    }
+    return '<span class="' + cls + '">' + metricChip(v, row.ctx || 'osi', invert, d) + '</span>';
+  }
+
+  function compareMetricsHeadHtml(dataA, dataB) {
+    return '<div class="rl-compare-metrics-head">'
+      + '<span class="rl-compare-metrics-head-a">' + esc(dataA.label) + '</span>'
+      + '<span class="rl-compare-metrics-head-center">Metric</span>'
+      + '<span class="rl-compare-metrics-head-b">' + esc(dataB.label) + '</span>'
+      + '</div>';
+  }
+
+  function compareCoverageHtml(metricRows) {
+    var cm = CM();
+    if (!cm || !cm.metricCoverage) return '';
+    var cov = cm.metricCoverage(metricRows);
+    if (!cov || cov.filled >= cov.total) return '';
+    return '<p class="rl-compare-coverage ca-helper">Data coverage '
+      + cov.filled + '/' + cov.total + ' cells (' + cov.pct + '%). '
+      + 'Missing values reflect unavailable splits or pipeline gaps — run the daily pipeline if a tab was recently added.</p>';
+  }
+
   function compareMetricRowsHtml(rows) {
     return rows.map(function(row) {
       var va = row.valA;
       var vb = row.valB;
+      var d = row.decimals == null ? 1 : row.decimals;
       var winner = 'none';
-      if (va != null && vb != null && !isNaN(va) && !isNaN(vb) && Math.abs(va - vb) >= 0.5) {
-        var aWins = row.higherBetter ? va > vb : va < vb;
-        winner = aWins ? 'a' : 'b';
+      if (va != null && vb != null && !isNaN(va) && !isNaN(vb) && Math.abs(va - vb) >= (d >= 3 ? 0.001 : 0.5)) {
+        var aWins = row.higherBetter !== false ? va > vb : va < vb;
+        if (row.invertA) aWins = !aWins;
+        var bWins = row.higherBetter !== false ? vb > va : vb < va;
+        if (row.invertB) bWins = !bWins;
+        if (aWins && !bWins) winner = 'a';
+        else if (bWins && !aWins) winner = 'b';
       }
       return '<div class="rl-compare-metric-row">'
-        + '<span class="rl-compare-metric-val rl-compare-metric-val--a' + (winner === 'a' ? ' rl-compare-metric-val--win' : '') + '">' + metricChip(va, row.ctx || 'osi', row.invertA, 1) + '</span>'
-        + '<span class="rl-compare-metric-label">' + esc(row.label) + '</span>'
-        + '<span class="rl-compare-metric-val rl-compare-metric-val--b' + (winner === 'b' ? ' rl-compare-metric-val--win' : '') + '">' + metricChip(vb, row.ctx || 'osi', row.invertB, 1) + '</span>'
+        + compareMetricValHtml(va, row, 'a', winner)
+        + '<span class="rl-compare-metric-label">' + compareMetricLabelHtml(row.label) + '</span>'
+        + compareMetricValHtml(vb, row, 'b', winner)
         + '</div>';
     }).join('');
   }
@@ -1088,12 +1132,16 @@ function profileWindowFieldsFromRow(row) {
     var cm = CM();
     var pair = deriveComparePair();
     var resolveFn = cm && cm.resolveBoth
-      ? cm.resolveBoth(pair, RL.compareSideA, RL.compareSideB, { findSpProfile: findSpProfile })
+      ? cm.resolveBoth(pair, RL.compareSideA, RL.compareSideB, {
+        findSpProfile: findSpProfile,
+        fetchSpProfiles: fetchSpProfiles
+      })
       : Promise.resolve({ dataA: null, dataB: null });
 
     resolveFn.then(function(res) {
       var dataA = res.dataA;
       var dataB = res.dataB;
+      if (pair === 'lineup-bullpen' && global._lvbCompareOpts) global._lvbCompareOpts = null;
       if (!dataA || !dataB) {
         out.innerHTML = '<div class="rl-pane-card ca-card"><p class="ca-helper">Data not available for one or both selections.</p></div>';
         return;
@@ -1121,7 +1169,8 @@ function profileWindowFieldsFromRow(row) {
 
       out.innerHTML = '<div class="rl-compare-output">'
         + '<div class="rl-compare-identities">' + compareIdentityHtml(dataA) + compareIdentityHtml(dataB) + '</div>'
-        + '<div class="rl-compare-metrics">' + compareMetricRowsHtml(metricRows) + '</div>'
+        + compareCoverageHtml(metricRows)
+        + '<div class="rl-compare-metrics">' + compareMetricsHeadHtml(dataA, dataB) + compareMetricRowsHtml(metricRows) + '</div>'
         + chartHtml
         + compareInsightRailHtml(dataA, dataB, metricRows)
         + compareEdgeSummaryHtml(dataA, dataB, pair, metricRows)
