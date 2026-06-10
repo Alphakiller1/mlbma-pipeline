@@ -316,17 +316,21 @@
 
 /* ── Profile research layout: unified typography + flat inner surfaces (PC) ── */
 body.team-profile-page,
-body.player-profile-page {
+body.player-profile-page,
+body.pitcher-profile-page,
+body.bullpen-profile-page {
   --profile-section-gap: 10px;
   --profile-text-section: 14px;
   --profile-text-helper: 12px;
-  --profile-text-th: 10px;
-  --profile-text-td: 13px;
-  --profile-text-chip: 13px;
-  --pp-table-size: 13px;
-  --pp-table-num-size: 13px;
-  --pp-table-head-size: 10px;
-  --pp-table-chip-size: 13px;
+  --profile-text-th: 12px;
+  --profile-text-td: 16px;
+  --profile-text-chip: 18px;
+  --pp-table-size: 16px;
+  --pp-table-num-size: 18px;
+  --pp-table-head-size: 12px;
+  --pp-table-chip-size: 18px;
+  --tp-stat-chip-size: 18px;
+  --tp-stat-value-size: 18px;
 }
 
 body.team-profile-page .ca-section-title,
@@ -450,7 +454,7 @@ body.team-profile-page .tp-metric-slot .chip {
 }
 
 body.team-profile-page .tp-metric-slot .chip {
-  font-size: 13px !important;
+  font-size: 18px !important;
 }
 
 body.team-profile-page .hub-pill,
@@ -514,4 +518,45 @@ body.player-profile-page .bp-usage-table .bp-label,
 body.player-profile-page .bp-usage-table .bp-meta,
 body.player-profile-page .bp-usage-table .bp-tag {
   font-size: 11px !important;
+}
+
+/* Profile tables — broadcast stat numerals (team / pitcher / bullpen) */
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  :is(.tp-table, .hub-table, .pp-data-table, .pp-startlog, .pp-tier-split-table, .bp-leverage-table, .bp-reliever-rank-table, .tp-trend-table)
+  tbody td.num,
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  :is(.tp-table, .hub-table, .pp-data-table, .pp-startlog, .pp-tier-split-table, .bp-leverage-table, .bp-reliever-rank-table, .tp-trend-table)
+  tbody td .chip,
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  :is(.tp-table, .hub-table, .pp-data-table, .pp-startlog, .pp-tier-split-table, .bp-leverage-table, .bp-reliever-rank-table, .tp-trend-table)
+  tbody td .val-chip {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+}
+
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  :is(.tp-table, .hub-table, .pp-data-table, .pp-startlog, .pp-tier-split-table, .bp-leverage-table, .bp-reliever-rank-table, .tp-trend-table)
+  tbody td {
+  font-size: 16px !important;
+}
+
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  :is(.tp-table, .hub-table, .pp-data-table, .pp-startlog, .pp-tier-split-table, .bp-leverage-table, .bp-reliever-rank-table, .tp-trend-table)
+  thead th {
+  font-size: 12px !important;
+  letter-spacing: 0.05em !important;
+}
+
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  .tp-kpi-card .m-val .chip,
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  .tp-window-cell .w-val .chip,
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  .tp-metric-slot .chip,
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  .stat-cell .s-val,
+:is(.team-profile-page, .pitcher-profile-page, .bullpen-profile-page, .player-profile-page)
+  .metric-card .m-val {
+  font-size: 18px !important;
+  font-weight: 800 !important;
 }

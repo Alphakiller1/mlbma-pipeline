@@ -238,12 +238,12 @@ body.bullpen-profile-page .table-wrap {
 
 body.bullpen-profile-page table,
 body.bullpen-profile-page .tp-table.hub-table {
-  font-size: 13px;
+  font-size: 16px;
 }
 
 body.bullpen-profile-page table thead th,
 body.bullpen-profile-page .tp-table.hub-table thead th {
-  font-size: 10px;
+  font-size: 12px;
   padding: 8px 10px;
   letter-spacing: 0.08em;
   font-family: var(--font-display, var(--display));
@@ -257,7 +257,7 @@ body.bullpen-profile-page .tp-table.hub-table thead th {
 body.bullpen-profile-page table tbody td,
 body.bullpen-profile-page .tp-table.hub-table tbody td {
   padding: 8px 10px;
-  font-size: 13px;
+  font-size: 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -764,8 +764,8 @@ body.bullpen-profile-page .bp-reliever-rank-table tbody td.bp-role-cell {
 }
 
 body.bullpen-profile-page .bp-reliever-rank-table tbody td.num .chip {
-  font-size: 13px !important;
-  padding: 3px 8px;
+  font-size: 18px !important;
+  padding: 0;
 }
 
 body.bullpen-profile-page .bp-role-pill {

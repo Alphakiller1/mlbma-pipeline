@@ -3,7 +3,7 @@
  * Global identity aligns with design_comp_v2 / visual spec.
  */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
-@import url('responsive.css?v=20260610b');
+@import url('responsive.css?v=20260610c');
 
 html {
   -webkit-font-smoothing: antialiased;

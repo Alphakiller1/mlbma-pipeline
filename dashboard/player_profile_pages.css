@@ -18,7 +18,7 @@ body.pitcher-profile-page.team-profile-page .pp-intel-section .pp-intel-panel__m
 }
 
 body.pitcher-profile-page.team-profile-page {
-  --tp-stat-chip-size: 13px;
+  --tp-stat-chip-size: 18px;
   --tp-stat-label-size: 11px;
 }
 

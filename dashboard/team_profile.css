@@ -41,7 +41,7 @@ body.team-profile-page {
   --tp-filter-pad: 12px 14px;
   --tp-filter-gap: 12px;
   --tp-header-gap: 12px;
-  --tp-stat-chip-size: 13px;
+  --tp-stat-chip-size: 18px;
   /* Split / window / filter toggle buttons — one size everywhere */
   --tp-pill-font-size: 12px;
   --tp-pill-font-weight: 600;

@@ -351,6 +351,139 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Card-ified data tables (mobile).
+   Dense desktop tables (Team Rankings .lv-table, Trends Heat Map .thm-table, or
+   any table opted-in with .ca-cardify) are tagged by mobile_cardify.js with
+   .ca-cardified + per-cell data-label + a .ca-card-team header cell. Below 768px
+   each <tr> becomes a stacked stat card so NO column hides behind a horizontal
+   scroll. Desktop DOM is untouched — these rules only apply at mobile width.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .lv-table.ca-cardified,
+  .thm-table.ca-cardified,
+  table.ca-cardify.ca-cardified {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  /* keep headers in the a11y tree but out of the visual flow */
+  .lv-table.ca-cardified thead,
+  .thm-table.ca-cardified thead,
+  table.ca-cardify.ca-cardified thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .lv-table.ca-cardified tbody,
+  .thm-table.ca-cardified tbody,
+  table.ca-cardify.ca-cardified tbody {
+    display: block;
+  }
+
+  .lv-table.ca-cardified tbody tr,
+  .thm-table.ca-cardified tbody tr,
+  table.ca-cardify.ca-cardified tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 12px;
+    padding: 12px 13px 13px;
+    margin: 0 0 10px;
+    border: 1px solid var(--border, #262A38);
+    border-radius: 13px;
+    background: #10131F;
+  }
+
+  /* strip desktop zebra / hover / sticky treatments inside a card */
+  .lv-table.ca-cardified tbody tr:nth-child(even),
+  .thm-table.ca-cardified tbody tr:nth-child(even) { background: #10131F; }
+  .lv-table.ca-cardified tbody tr:hover,
+  .thm-table.ca-cardified tbody tr:hover { box-shadow: none; }
+
+  .lv-table.ca-cardified td,
+  .thm-table.ca-cardified td,
+  table.ca-cardify.ca-cardified td {
+    position: static !important;
+    left: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    border: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    background: transparent !important;
+  }
+
+  /* team cell = full-width card header, with a rank badge when present */
+  .lv-table.ca-cardified td.ca-card-team,
+  .thm-table.ca-cardified td.ca-card-team,
+  table.ca-cardify.ca-cardified td.ca-card-team {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 15px;
+    font-weight: 800;
+    padding-bottom: 9px !important;
+    margin-bottom: 1px;
+    border-bottom: 1px solid var(--border, #262A38) !important;
+  }
+  .lv-table.ca-cardified td.ca-card-team[data-cardrank]::before,
+  .thm-table.ca-cardified td.ca-card-team[data-cardrank]::before {
+    content: attr(data-cardrank);
+    flex: 0 0 auto;
+    min-width: 22px;
+    padding: 2px 7px;
+    border-radius: 7px;
+    background: rgba(124, 77, 255, 0.16);
+    color: #B79CFF;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  /* the standalone rank cell is now redundant */
+  .lv-table.ca-cardified td.ca-card-rank,
+  .thm-table.ca-cardified td.ca-card-rank { display: none; }
+
+  /* every other cell = label above value */
+  .lv-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank),
+  .thm-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank),
+  table.ca-cardify.ca-cardified td:not(.ca-card-team):not(.ca-card-rank) {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+  .lv-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before,
+  .thm-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before,
+  table.ca-cardify.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before {
+    content: attr(data-label);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-3, #6E7383);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lv-table.ca-cardified td .chip,
+  .thm-table.ca-cardified td .chip,
+  .thm-table.ca-cardified td .thm-rel {
+    align-self: flex-start;
+    font-size: 14px;
+  }
+}
+
 /* Touch — larger radar / chart hit targets */
 @media (hover: none) and (pointer: coarse) {
   .hub-pill,
