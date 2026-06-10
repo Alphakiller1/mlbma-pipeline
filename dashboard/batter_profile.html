@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260611b">
+<link rel="stylesheet" href="batter_profile.css?v=20260611c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -1574,16 +1574,13 @@ function propRowHtml(def, p, opts) {
   var conflictFlag = (agree && !agree.ok)
     ? '<span class="bp-pt__flag" title="' + esc(agree.text) + '">!</span>'
     : '';
-  var threshTxt = (hitPack && hitPack.snapped != null && PROP_HITRATE_MAP[def.id])
-    ? hitRatePropLabel(PROP_HITRATE_MAP[def.id].prop, hitPack.snapped)
-    : '';
 
   return '<div class="bp-pt__item' + (opts.best ? ' bp-pt__item--best' : '') + (expanded ? ' bp-pt__item--expanded' : '') + '" data-prop="' + esc(def.id) + '">'
     + '<div class="bp-pt__row" role="button" tabindex="0" aria-expanded="' + (expanded ? 'true' : 'false') + '" data-prop-toggle="' + esc(def.id) + '" aria-label="' + esc(def.label) + ' details">'
-    + '<span class="bp-pt__c bp-pt__c-prop"><strong>' + esc(def.label) + '</strong>'
+    + '<span class="bp-pt__c bp-pt__c-prop"><span class="bp-pt__prop-line">'
+    + '<strong class="bp-pt__prop-name">' + esc(def.label) + '</strong>'
     + (opts.best ? '<span class="bp-pt__best">Best</span>' : '')
-    + (threshTxt ? '<span class="bp-pt__thresh">History row: ' + esc(threshTxt) + '</span>' : '')
-    + '</span>'
+    + '</span></span>'
     + '<span class="bp-pt__c bp-pt__c-lean"><span class="bp-lean bp-lean--sm ' + leanChipClass(qual.lean, qual.strength) + '">' + esc(qual.label) + '</span></span>'
     + '<span class="bp-pt__c bp-pt__c-grade" style="color:' + gradeTextColor(grade) + '">' + esc(propGradeLabel(grade)) + '</span>'
     + '<span class="bp-pt__c bp-pt__c-model">' + esc(propProjectionText(def, p)) + '</span>'
@@ -1629,7 +1626,7 @@ function renderPropBoard(p) {
     return propRowHtml(item.def, p, { best: idx === 0 });
   }).filter(Boolean).join('');
   board.innerHTML = rows
-    ? '<div class="bp-prop-table">' + head + rows + '</div>'
+    ? '<div class="bp-pt-board">' + head + rows + '</div>'
     : '<p class="ca-helper">Insufficient rate data for prop projections.</p>';
   var foot = document.getElementById('propFootnote');
   if (foot) {
@@ -1874,8 +1871,13 @@ function mountHeaders() {
   document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Matchup & Pitch Mix', 'Tonight\'s starter arsenal vs this batter\'s contact and discipline by pitch type', 'matchups');
   document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Prop Board', 'Ranked angles for tonight — click a row for hit-rate evidence and drivers', 'target');
   if (A && A.metricLegendHtml) {
-    var leg = document.getElementById('bxHdrProps');
-    if (leg) leg.insertAdjacentHTML('beforeend', A.metricLegendHtml({ title: 'Colors vs league baseline' }));
+    var legHost = document.getElementById('bxHdrProps');
+    if (legHost) {
+      var legWrap = document.createElement('div');
+      legWrap.className = 'bp-section-legend';
+      legWrap.innerHTML = A.metricLegendHtml({ title: 'Colors vs league baseline' });
+      legHost.appendChild(legWrap);
+    }
   }
 }
 function bindBatterProfileControls() {
