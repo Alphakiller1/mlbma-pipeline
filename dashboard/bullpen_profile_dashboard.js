@@ -42,11 +42,6 @@
     return (A && A.metricColor) ? A.metricColor(era, 'bp_era') : 'var(--text-3)';
   }
 
-  function irColor(v) {          // inherited-runners scored %, lower is better
-    if (v === null || isNaN(v)) return 'var(--text-3)';
-    return (A && A.metricColor) ? A.metricColor(v, 'ir') : 'var(--text-3)';
-  }
-
   function percentileRank(value, values, lowerIsBetter) {
     var nums = values.filter(function(v) { return v != null && !isNaN(v); });
     if (value == null || isNaN(value) || !nums.length) return null;
@@ -122,12 +117,6 @@
   // matching the team-profile banner style (tp-hero-stat--{tone}).
   function bpStatTone(label, v) {
     if (v == null || isNaN(v)) return 'neutral';
-    if (label.indexOf('IR') >= 0) {        // IR Scored % - lower better
-      if (v <= 25) return 'elite';
-      if (v <= 30) return 'strong';
-      if (v <= 36) return 'mid';
-      return 'weak';
-    }
     if (label.indexOf('OSI') >= 0) {       // OSI Allowed - lower better
       if (v <= 45) return 'elite';
       if (v <= 50) return 'strong';
@@ -143,7 +132,6 @@
 
   function bannerMetricMeta(label) {
     var u = String(label || '').toUpperCase();
-    if (u.indexOf('IR') >= 0) return { ctx: 'ir', invert: null };
     if (u.indexOf('OSI') >= 0) return { ctx: 'osi', invert: true };
     if (u.indexOf('ERA') >= 0) return { ctx: 'bp_era', invert: null };
     return { ctx: 'default', invert: null };
@@ -171,14 +159,12 @@
     var logo = A ? A.teamLogoImg(team, 52, 'tp-team-banner__logo') : '';
     var era = colVal(unit, 'overall', 'ERA', pickCol);
     var osi = colVal(unit, 'overall', 'OSI_allowed', pickCol);
-    var irp = colVal(unit, 'overall', 'inherited_runners_scored_pct', pickCol);
     var hiEra = colVal(unit, 'high_leverage', 'ERA', pickCol);
     var badges = (ctx.isToday ? '<span class="pill pill-today">Playing Today</span>' : '');
 
     var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Bullpen headline stats">'
       + statPill('ERA', era, fmt(era, 2))
       + statPill('OSI Allowed', osi, fmt(osi, 1))
-      + statPill('IR Scored %', irp, fmtPct(irp))
       + statPill('Hi Lev ERA', hiEra, fmt(hiEra, 2))
       + '</div>';
 
@@ -677,7 +663,7 @@
     var appearanceDetail = ctx.appearanceDetail;
     var sortKey = ctx.sortKey || 'ip';
     var sortDir = ctx.sortDir === 'asc' ? 1 : -1;
-    var colCount = 11;
+    var colCount = 10;
 
     function sortVal(r) {
       if (sortKey === 'era') return colVal(r, 'overall', 'ERA', pickCol);
@@ -709,7 +695,7 @@
       + thCell('IP', 'ip', true) + thCell('ERA', 'era', true) + thCell('K%', 'k', true)
       + thCell('BB%', null, true) + thCell('HR/9', null, true)
       + thCell('OSI All.', 'osi', true) + thCell('ABQ All.', null, true)
-      + thCell('IR Scored%', null, true) + thCell('Hi Lev ERA', null, true)
+      + thCell('Hi Lev ERA', null, true)
       + '</tr></thead><tbody>';
 
     sorted.forEach(function(r) {
@@ -730,7 +716,6 @@
         + '<td class="num">' + valChip(colVal(r, 'overall', 'HR9', pickCol), 'rp_hr9', true, 2) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'overall', 'inherited_runners_scored_pct', pickCol), 'ir', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'high_leverage', 'ERA', pickCol), 'rp_era', true, 2) + '</td></tr>';
       if (exp) html += '<tr class="detail-row"><td colspan="' + colCount + '">' + appearanceDetail(pid, name) + '</td></tr>';
     });
