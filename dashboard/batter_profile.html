@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260612h">
+<link rel="stylesheet" href="batter_profile.css?v=20260612i">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -1236,6 +1236,47 @@ function hitRateStripHtml(propId, p, bookLine, hasManualLine, compact) {
     + '</div>';
 }
 
+/** Alt-line ladder: season clear% (and L10) for every tracked threshold of this
+    prop, so the bettor can weigh 1.5 vs 2.5 at a glance. Skipped when only one
+    line exists. The user's current/snapped line is highlighted. */
+function altLineLadderHtml(propId, p, bookLine, hasManualLine) {
+  var map = PROP_HITRATE_MAP[propId];
+  if (!map) return '';
+  var key = STATE.playerKey;
+  var pid = playerIdForKey(key);
+  if (!pid) return '';
+  var lines = availableHitRateLinesForKey(key, propId);
+  if (!lines || lines.length < 2) return '';
+  var refLine = bookLine != null ? bookLine : map.defaultLine;
+  var snapped = snapToNearestHitRateLineForKey(key, propId, refLine);
+  var rows = lines.map(function(ln) {
+    var row = lookupHitRate(pid, map.prop, ln);
+    var szn = row ? numOrNull(pickCol(row, ['hit_season'])) : null;
+    var gms = row ? numOrNull(pickCol(row, ['games_season'])) : null;
+    var l10 = row ? numOrNull(pickCol(row, ['hit_l10'])) : null;
+    var pctV = szn != null ? Math.round(szn * 100) : null;
+    var w = pctV != null ? clamp(pctV, 0, 100) : 0;
+    var fill = (A && A.heatColor) ? A.heatColor(pctV, 'avg', false) : 'rgba(124, 77, 255, 0.55)';
+    var txtColor = (pctV != null && A && A.metricTextColor) ? A.metricTextColor(pctV, 'avg', false) : '';
+    var l10Txt = l10 != null ? 'L10 ' + Math.round(l10 * 100) + '%' : '';
+    var frac = (pctV != null && gms) ? ' title="' + hitRateCount(szn, gms) + '/' + Math.round(gms) + ' games"' : '';
+    var isBook = Number(ln) === Number(snapped);
+    return '<div class="bp-altline__row' + (isBook ? ' bp-altline__row--book' : '') + '"' + frac + '>'
+      + '<span class="bp-altline__tag">' + esc(ln + '+') + '</span>'
+      + '<div class="bp-altline__track"><div class="bp-altline__fill" style="width:' + w + '%;background:' + fill + '"></div></div>'
+      + '<span class="bp-altline__pct"' + (txtColor ? ' style="color:' + txtColor + '"' : '') + '>' + (pctV != null ? pctV + '%' : '—') + '</span>'
+      + '<span class="bp-altline__l10">' + esc(l10Txt) + '</span>'
+      + '</div>';
+  }).join('');
+  return '<div class="bp-altline" aria-label="Hit rate by alternate line">'
+    + '<div class="bp-altline__head">'
+    + '<span class="bp-altline__title">Alt lines · season clear%</span>'
+    + '<span class="bp-altline__hint">your line highlighted</span>'
+    + '</div>'
+    + '<div class="bp-altline__rows">' + rows + '</div>'
+    + '</div>';
+}
+
 /* ---------- ranked prop table cells ---------- */
 function ptPctCell(row, suffix) {
   var rate = row ? numOrNull(pickCol(row, ['hit_' + suffix])) : null;
@@ -1328,7 +1369,7 @@ function propRowDetailHtml(def, p, qual, line, hasManual, hitPack, grade, agree)
   }).join('');
   return (agree ? '<div class="bp-prop-card__agree ' + (agree.ok ? 'bp-prop-card__agree--ok' : 'bp-prop-card__agree--warn') + '">' + esc(agree.text) + '</div>' : '')
     + '<div class="bp-pt__detail-grid">'
-    + '<div class="bp-pt__detail-col">' + hitRateStripHtml(def.id, p, line, hasManual, false) + '</div>'
+    + '<div class="bp-pt__detail-col">' + hitRateStripHtml(def.id, p, line, hasManual, false) + altLineLadderHtml(def.id, p, line, hasManual) + '</div>'
     + '<div class="bp-pt__detail-col">'
     + edgeBarHtml(grade, 'osi', false, 'Prop Grade')
     + (driverBits ? '<ul class="bp-prop-card__drivers">' + driverBits + '</ul>' : '')
