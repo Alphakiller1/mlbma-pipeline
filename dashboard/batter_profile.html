@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260611f">
+<link rel="stylesheet" href="batter_profile.css?v=20260611h">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -122,6 +122,7 @@
     <!-- Selected-player prop angles — the decision section, kept right under the hero -->
     <section class="ca-board tp-section bp-prop-section" id="secProps">
       <div id="bxHdrProps"></div>
+      <div id="quickRead" class="bp-quick-read-host" aria-label="Prop context summary"></div>
       <div class="bp-driver-bars" id="driverBars" aria-label="Driver edge bars"></div>
       <div class="bp-prop-board" id="propBoard" aria-label="Ranked prop board"></div>
       <p class="bp-prop-footnote" id="propFootnote"></p>
@@ -1438,41 +1439,43 @@ function bestAngleDetail(p) {
   return { label: top.def.label + ' · no strong lean', lean: 'pass' };
 }
 
-function decisionCard(label, valueHtml, hint) {
-  return '<div class="profile-decision-card"><span class="profile-decision-card__label">' + esc(label) + '</span>'
-    + '<span class="profile-decision-card__value">' + valueHtml + '</span>'
-    + (hint ? '<span class="profile-decision-card__hint">' + esc(hint) + '</span>' : '')
+function formToneFromTrend(trend) {
+  if (!trend) return '';
+  var tl = String(trend).toLowerCase();
+  if (tl.indexOf('improv') >= 0 || tl.indexOf('heat') >= 0 || tl.indexOf('up') >= 0) return 'elite';
+  if (tl.indexOf('cool') >= 0 || tl.indexOf('down') >= 0 || tl.indexOf('fade') >= 0) return 'risk';
+  return 'watch';
+}
+
+function formatFormLabel(trend) {
+  if (!trend) return 'Season line';
+  var t = String(trend).trim();
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function quickReadTile(label, value, tone) {
+  var toneCls = tone ? ' bp-quick-read__value--' + tone : '';
+  return '<div class="bp-quick-read__tile">'
+    + '<span class="bp-quick-read__label">' + esc(label) + '</span>'
+    + '<strong class="bp-quick-read__value' + toneCls + '">' + esc(value) + '</strong>'
     + '</div>';
 }
 
-function buildHeroDecisionStrip(key, p) {
-  var PS = window.ProfileShell;
-  if (!PS || !PS.decisionStrip) return '';
+function renderQuickRead(key, p) {
+  var el = document.getElementById('quickRead');
+  if (!el) return;
   var reg = getRegistry(key);
-  var bats = String(pickCol(reg || {}, ['bats']) || pickCol(p.R || {}, ['bats']) || '—').toUpperCase();
   var prof = p.prof || overallProfileRow(key);
+  var bats = String(pickCol(reg || {}, ['bats']) || pickCol(p.R || {}, ['bats']) || '—').toUpperCase();
   var trend = String(pickCol(prof || {}, ['trend', 'Trend']) || '').trim();
   var platoon = (p.lineup.oppHand === 'L') ? 'vs LHP' : 'vs RHP';
-  var handVal = bats + ' · ' + platoon;
   var bestD = bestAngleDetail(p);
-  var spLabel = (p.lineup.oppSp && p.lineup.oppSp !== 'TBD') ? p.lineup.oppSp : 'Starter TBD';
-  var opp = p.lineup.oppTeam || 'OPP';
-  var wx = weatherForLineup(p.lineup);
-  var tonight = p.lineup.inLineup
-    ? 'Tonight vs ' + opp + ' · ' + spLabel + ' (' + p.lineup.oppHand + 'HP) · #' + p.lineup.batOrder + ' · ~' + fmt(p.pa, 1) + ' PA' + (wx ? ' · ' + wx : '')
-    : 'Not in posted lineup — props assume ~4.0 PA against ' + platoon + ' rates.';
-  var formTone = 'watch';
-  if (trend) {
-    var tl = trend.toLowerCase();
-    if (tl.indexOf('improv') >= 0 || tl.indexOf('heat') >= 0 || tl.indexOf('up') >= 0) formTone = 'elite';
-    else if (tl.indexOf('cool') >= 0 || tl.indexOf('down') >= 0 || tl.indexOf('fade') >= 0) formTone = 'risk';
-  }
-  return PS.decisionStrip([
-    PS.decisionCard('Tonight', tonight, '', ''),
-    PS.decisionCard('Best Angle', bestD.label, '', bestD.lean === 'pass' ? '' : 'elite'),
-    PS.decisionCard('Hand Path', handVal, '', ''),
-    PS.decisionCard('Form', trend || 'Season line', '', formTone)
-  ]);
+  var bestTone = bestD.lean === 'pass' ? '' : (bestD.lean === 'under' ? 'risk' : 'elite');
+  el.innerHTML = '<div class="bp-quick-read" role="group">'
+    + quickReadTile('Best Angle', bestD.label, bestTone)
+    + quickReadTile('Hand Path', bats + ' · ' + platoon, '')
+    + quickReadTile('Form', formatFormLabel(trend), formToneFromTrend(trend))
+    + '</div>';
 }
 
 function renderSnapshot(key, p) {
@@ -1489,7 +1492,6 @@ function renderSnapshot(key, p) {
   var watermark = (A && A.teamLogoImg && team) ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
   var accent = teamAccent(team);
   var batsLabel = bats === 'L' ? 'LHB' : bats === 'R' ? 'RHB' : bats === 'S' ? 'SHB' : bats;
-  var decisionStrip = buildHeroDecisionStrip(key, p);
 
   var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Batter headline stats">'
     + heroStat('', '<span class="tp-hero-stat__num">' + esc(batsLabel) + '</span>', 'neutral', 'Bats ' + batsLabel)
@@ -1511,20 +1513,16 @@ function renderSnapshot(key, p) {
     + (p.lineup.inLineup ? '<span class="tp-pitcher-banner__today pill pill-today">In tonight\'s lineup</span>' : '')
     + '</div></div>'
     + statRow
-    + decisionStrip
     + '</div></section>';
 }
 
 function renderDriverBars(p) {
   var el = document.getElementById('driverBars');
   if (!el) return;
-  var bestD = bestAngleDetail(p);
   el.innerHTML = edgeBarHtml(100 - p.drivers.kRisk, 'kpct', false, 'K Safety')
     + edgeBarHtml(p.drivers.contact, 'abq', false, 'Contact Edge')
     + edgeBarHtml(p.drivers.power, 'rcv', false, 'Power Edge')
-    + edgeBarHtml(p.drivers.lineupCtx, 'osi', false, 'Volume / Spot')
-    + '<div class="bp-driver-bars__best"><span class="bp-driver-bars__best-label">Lead Read</span>'
-    + '<strong>' + esc(bestD.label) + '</strong></div>';
+    + edgeBarHtml(p.drivers.lineupCtx, 'osi', false, 'Volume / Spot');
 }
 
 function propLineLabel(line) {
@@ -1612,6 +1610,7 @@ function propRowHtml(def, p, opts) {
 }
 
 function renderPropBoard(p) {
+  renderQuickRead(STATE.playerKey, p);
   renderDriverBars(p);
   var board = document.getElementById('propBoard');
   if (!board) return;
