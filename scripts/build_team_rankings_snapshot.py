@@ -183,6 +183,7 @@ def pals_map(rows: list[dict]) -> dict[str, dict]:
         out[t] = {
             "pals": num(row.get("PALS")),
             "xfip": num(row.get("avg_xFIP_faced")),
+            "pitchScoreFaced": num(row.get("avg_pitch_score_faced")),
         }
     return out
 
@@ -214,7 +215,8 @@ def enrich_row(base: dict, prof: dict, pals: dict, results: dict) -> dict:
     if d.get("xfip") is None and pal.get("xfip") is not None:
         d["xfip"] = pal["xfip"]
 
-    d["pitchScore"] = p.get("avg_pitching_score")
+    d["pitchScoreFaced"] = pal.get("pitchScoreFaced") or p.get("avg_pitching_score")
+    d["pitchScore"] = d["pitchScoreFaced"]
     ip = p.get("avg_ip_per_start")
     ip_per_start = None
     if ip is not None:

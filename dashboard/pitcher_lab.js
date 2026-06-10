@@ -248,6 +248,24 @@
     }).join('');
   }
 
+  function sortThHtml(k, label, opts) {
+    opts = opts || {};
+    var sortKey = opts.bp ? CACHE.bpSortKey : CACHE.sortKey;
+    var sortDir = opts.bp ? CACHE.bpSortDir : CACHE.sortDir;
+    var dataAttr = opts.bp ? 'data-bpsort' : 'data-plsort';
+    var sorted = sortKey === k;
+    var arrow = sorted ? (sortDir < 0 ? '↓' : '↑') : '';
+    var textKeys = { name: 1, team: 1, hand: 1 };
+    var isNum = opts.numeric !== false && !textKeys[k];
+    return '<th class="pl-sort-th' + (sorted ? ' sorted' : '')
+      + (isNum ? ' pl-sort-th--num' : (k === 'hand' ? ' pl-sort-th--hand' : ''))
+      + '" ' + dataAttr + '="' + esc(k) + '">'
+      + '<span class="pl-sort-inner">'
+      + '<span class="pl-sort-label">' + esc(label) + '</span>'
+      + (arrow ? '<span class="pl-sort-arrow" aria-hidden="true">' + arrow + '</span>' : '')
+      + '</span></th>';
+  }
+
   /** Match abbreviated slate names (e.g. "Y. Yamamoto") to full SP_Profiles names. */
   function pitcherNamesMatch(a, b) {
     if (!a || !b) return false;
@@ -929,16 +947,8 @@
       ? '<p class="pl-platoon-soon">SP platoon splits coming soon — table shows overall metrics until pipeline adds vs-RHB/vs-LHB columns.</p>'
       : '';
     var segmentNote = segment === 'f5' ? f5WarningBlock() : '';
-    var tonight = todayStarterRawNames();
-    var todayHint = !tonight.length
-      ? '<span class="pl-intel-hint">Projected starters unavailable — load matchups or check back on game day</span>'
-      : '<span class="pl-intel-hint">' + tonight.length + ' projected starter' + (tonight.length === 1 ? '' : 's') + ' today</span>';
 
     mount.innerHTML = '<div class="pl-intel-toolbar">'
-      + '<div class="pl-intel-group">'
-      + '<span class="ca-metric-label">Today</span>'
-      + '<div class="rl-pill-row">' + todayHint + '</div>'
-      + '</div>'
       + '<div class="pl-intel-group">'
       + '<span class="ca-metric-label">Segment</span>'
       + '<div class="rl-pill-row">'
@@ -1264,9 +1274,7 @@
       { k: 'bbPct', label: 'BB%' }
     ];
     function th(k, label) {
-      var sorted = CACHE.bpSortKey === k;
-      var arrow = sorted ? (CACHE.bpSortDir < 0 ? ' ↓' : ' ↑') : '';
-      return '<th class="pl-sort-th' + (sorted ? ' sorted' : '') + '" data-bpsort="' + k + '">' + esc(label) + arrow + '</th>';
+      return sortThHtml(k, label, { bp: true, numeric: k !== 'team' });
     }
     function tdNum(val, d, invert, ctx) {
       if (val == null || isNaN(val)) return '<td class="num">—</td>';
@@ -1393,9 +1401,7 @@
       { k: 'oor', label: 'OOR' }
     ];
     function th(k, label) {
-      var sorted = CACHE.sortKey === k;
-      var arrow = sorted ? (CACHE.sortDir < 0 ? ' ↓' : ' ↑') : '';
-      return '<th class="pl-sort-th' + (sorted ? ' sorted' : '') + '" data-plsort="' + k + '">' + esc(label) + arrow + '</th>';
+      return sortThHtml(k, label, { numeric: true });
     }
     function tdNum(val, d, invert, ctx) {
       if (val == null || isNaN(val)) return '<td class="num">—</td>';
@@ -1435,14 +1441,17 @@
         + '<td class="num pl-rank-idx">' + (i + 1) + '</td>'
         + '<td class="pl-rank-name-select"><span class="pl-rank-pitcher-cell">'
         + piPitcherAvatar(pid || n, 'rank')
+        + '<span class="pl-rank-pitcher-meta">'
+        + '<span class="pl-rank-pitcher-name-row">'
         + '<span class="pl-rank-pitcher-text">' + esc(n) + '</span>'
-        + '<span class="pl-profile-link-hint">Profile →</span>'
         + staleBadge
-        + ' <span class="pl-tonight-badge">START</span>'
-        + '</span></td>'
+        + '</span>'
+        + '<span class="pl-profile-link-hint">Profile →</span>'
+        + '</span></span></td>'
         + '<td class="pl-rank-team"><span class="pl-rank-team-inner">'
-        + (A ? A.teamLogoImg(t, 24) : '') + ' <span class="pl-rank-team-abbr">' + esc(t) + '</span></span></td>'
-        + '<td class="num">' + esc(handP) + '</td>'
+        + (A ? A.teamLogoImg(t, 24) : '')
+        + '<span class="pl-rank-team-abbr">' + esc(t) + '</span></span></td>'
+        + '<td class="num pl-rank-hand">' + esc(handP) + '</td>'
         + '<td class="pl-rank-flags">' + renderFlagPills(flags) + '</td>'
         + vals
         + '<td class="pl-rank-chevron" aria-hidden="true">' + (exp ? '▾' : '▸') + '</td>'
@@ -1457,9 +1466,10 @@
       + '<p class="pl-section-sub">Projected starters only · sort any column · click pitcher name for full profile · click row for allowed-metrics depth</p></div>'
       + '<div class="rl-table-wrap pl-rank-wrap rl-sticky-table pl-rank-table-wrap"><table class="rl-table-premium pl-rank-table rl-sp-rank-table hub-table"><thead><tr>'
       + '<th class="pl-rank-idx">#</th>'
-      + '<th class="pl-sort-th' + (CACHE.sortKey === 'name' ? ' sorted' : '') + '" data-plsort="name">Pitcher' + (CACHE.sortKey === 'name' ? (CACHE.sortDir < 0 ? ' ↓' : ' ↑') : '') + '</th>'
-      + th('team', 'Team') + th('hand', 'Hand')
-      + '<th>Flags</th>'
+      + sortThHtml('name', 'Pitcher', { numeric: false })
+      + sortThHtml('team', 'Team', { numeric: false })
+      + sortThHtml('hand', 'Hand', { numeric: false })
+      + '<th class="pl-rank-flags-head">Flags</th>'
       + COLS.map(function(c) { return th(c.k, c.label); }).join('')
       + '<th></th>'
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';

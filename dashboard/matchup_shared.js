@@ -1748,6 +1748,115 @@
     return map;
   }
 
+  function parseL10SpHandMap(rows) {
+    var map = {};
+    (rows || []).forEach(function(row) {
+      if (!row) return;
+      var team = teamKey(pickCol(row, 'team', 'Tm', 'Team'));
+      var hand = String(pickCol(row, 'opp_starter_hand', 'opp starter hand', 'Opp_Starter_Hand') || '').trim().toUpperCase();
+      if (!team || (hand !== 'R' && hand !== 'L')) return;
+      map[team + ':' + hand] = row;
+    });
+    return map;
+  }
+
+  function buildSpPitchScoreById(rows) {
+    var list = (rows || []).slice();
+    if (!list.length) return {};
+    enrichSpProfiles(list, null);
+    var map = {};
+    list.forEach(function(row) {
+      var pid = pickCol(row, 'pitcher_id', 'pitcher id', 'Pitcher_ID');
+      if (pid == null || pid === '') return;
+      var ps = numOrNull(pickCol(row, 'PitchScore', 'Pitching Score'));
+      if (ps != null) map[String(pid)] = ps;
+    });
+    return map;
+  }
+
+  function _l10PitchScoreFromRow(row) {
+    if (!row) return null;
+    return _num(pickCol(row, 'pitch_score_against', 'pitch score against', 'Pitch Score Against'));
+  }
+
+  function _filterL10GamesForPitchScore(games, tk, f) {
+    return (games || []).filter(function(g) {
+      if (!g) return false;
+      if (teamKey(pickCol(g, 'team', 'Tm', 'Team')) !== tk) return false;
+      if (f.hand === 'r' || f.hand === 'l') {
+        var hand = String(pickCol(g, 'opp_starter_hand', 'opp starter hand', 'Opp_Starter_Hand') || '').trim().toUpperCase();
+        if (f.hand === 'r' && hand !== 'R') return false;
+        if (f.hand === 'l' && hand !== 'L') return false;
+      }
+      if (f.location === 'home' || f.location === 'away') {
+        var loc = String(pickCol(g, 'home_away', 'home away', 'Home_Away') || '').trim().toLowerCase();
+        if (f.location === 'home' && loc !== 'home') return false;
+        if (f.location === 'away' && loc !== 'away') return false;
+      }
+      var pa = _num(pickCol(g, 'vs_sp_pa', 'vs sp pa', 'Vs_SP_PA'));
+      return pa != null && pa > 0;
+    }).sort(function(a, b) {
+      return String(pickCol(b, 'date', 'Date')).localeCompare(String(pickCol(a, 'date', 'Date')));
+    });
+  }
+
+  function _windowGameCount(windowKey) {
+    if (windowKey === 'L7') return 7;
+    if (windowKey === 'L14') return 14;
+    if (windowKey === 'L30') return 30;
+    return null;
+  }
+
+  function _pitchScoreFromGames(games, spPitchById, maxN) {
+    var slice = maxN ? games.slice(0, maxN) : games;
+    var vals = [];
+    slice.forEach(function(g) {
+      var pid = pickCol(g, 'opp_starter_id', 'opp starter id', 'Opp_Starter_ID');
+      if (pid == null || pid === '') return;
+      var ps = spPitchById[String(pid)];
+      if (ps == null) ps = spPitchById[String(Number(pid))];
+      if (ps != null) vals.push(ps);
+    });
+    if (!vals.length) return null;
+    return Math.round(vals.reduce(function(s, v) { return s + v; }, 0) / vals.length * 10) / 10;
+  }
+
+  function resolvePitchScoreFaced(tk, f, prof, palsRow, store) {
+    var l10Map = (store && store.l10SpHandMap) || {};
+    var games = (store && store.l10SpHandGames) || [];
+    var spPitchById = (store && store.spPitchById) || {};
+    var wantsLocation = f.location === 'home' || f.location === 'away';
+    var wantsWindow = f.window && f.window !== 'YTD';
+
+    if (wantsLocation || wantsWindow || f.hand === 'r' || f.hand === 'l') {
+      var filtered = _filterL10GamesForPitchScore(games, tk, f);
+      var n = wantsWindow ? _windowGameCount(f.window) : null;
+      var fromGames = _pitchScoreFromGames(filtered, spPitchById, n);
+      if (fromGames != null) return fromGames;
+    }
+
+    if (f.hand === 'r' || f.hand === 'l') {
+      var handChar = f.hand === 'l' ? 'L' : 'R';
+      var handPs = _l10PitchScoreFromRow(l10Map[tk + ':' + handChar]);
+      if (handPs != null) return handPs;
+    } else if (f.hand === 'both') {
+      var rRow = l10Map[tk + ':R'];
+      var lRow = l10Map[tk + ':L'];
+      var rPs = _l10PitchScoreFromRow(rRow);
+      var lPs = _l10PitchScoreFromRow(lRow);
+      var rGames = rRow ? _num(rRow.games) : null;
+      var lGames = lRow ? _num(lRow.games) : null;
+      if (rPs != null && lPs != null && rGames != null && lGames != null && (rGames + lGames) > 0) {
+        return Math.round(((rPs * rGames) + (lPs * lGames)) / (rGames + lGames) * 10) / 10;
+      }
+      if (rPs != null && lPs == null) return rPs;
+      if (lPs != null && rPs == null) return lPs;
+    }
+
+    if (palsRow && _num(palsRow.pitchScoreFaced) != null) return _num(palsRow.pitchScoreFaced);
+    return _num(prof.avg_pitching_score);
+  }
+
   function resolveLineupRows(store, filter, options) {
     var f = normalizeHubFilter(filter);
     var data = store || {};
@@ -1822,7 +1931,8 @@
       d.l30OSI = _num(prof.osi_l30);
       d.l14OSI = _num(prof.osi_l14);
       d.l7OSI = _num(prof.osi_l7);
-      d.pitchScore = _num(prof.avg_pitching_score);
+      d.pitchScoreFaced = resolvePitchScoreFaced(tk, f, prof, palsRow, data);
+      d.pitchScore = d.pitchScoreFaced != null ? d.pitchScoreFaced : _num(prof.avg_pitching_score);
       var ipNorm = _num(prof.avg_ip_per_start);
       var ipPerStart = ipNorm != null ? (ipNorm > 0 && ipNorm < 1.5 ? ipNorm * 9 : ipNorm) : null;
       var difSuf = f.window !== 'YTD' ? _windowSuffix(f.window) : null;
@@ -2502,7 +2612,9 @@
   function _emptyLineupModelRaw() {
     return {
       rhp: [], lhp: [], profiles: [], splitVsSp: [], splitVsRp: [], pals: [], teamResults: [],
-      _coreLoaded: false, _hasTeamResults: false, _hasPitcherSplits: false, _hasPals: false
+      l10SpHand: [], l10SpHandGames: [], spProfiles: [],
+      _coreLoaded: false, _hasTeamResults: false, _hasPitcherSplits: false, _hasPals: false,
+      _hasL10SpHand: false
     };
   }
 
@@ -2520,7 +2632,8 @@
     return {
       needPitcherSplits: !!options.needPitcherSplits,
       needPals: !!options.needPals,
-      needTeamResults: !!options.needTeamResults
+      needTeamResults: !!options.needTeamResults,
+      needL10SpHand: !!options.needL10SpHand
     };
   }
 
@@ -2532,7 +2645,8 @@
   function lineupModelRankNeeds(filter, family) {
     var fam = String(family || 'scoring').toLowerCase();
     return Object.assign({}, lineupModelFilterNeeds(filter), {
-      needPals: fam === 'status',
+      needPals: fam === 'status' || fam === 'difficulty',
+      needL10SpHand: fam === 'difficulty',
       needTeamResults: fam === 'surface'
     });
   }
@@ -2542,6 +2656,7 @@
     if (!raw || !raw._coreLoaded) return false;
     if (needs.needPitcherSplits && !raw._hasPitcherSplits) return false;
     if (needs.needPals && !raw._hasPals) return false;
+    if (needs.needL10SpHand && !raw._hasL10SpHand) return false;
     if (needs.needTeamResults && !raw._hasTeamResults && !options.allowPartialTeamResults) return false;
     return true;
   }
@@ -2554,7 +2669,11 @@
     var scVsRp = aggregateTeamOffenseFromBatterRows(raw.splitVsRp || []);
     var palsByTeam = parsePalsRows(raw.pals || []);
     var resultsByTeam = parseTeamResultsMap(raw.teamResults || []);
-    return lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp, palsByTeam, resultsByTeam);
+    var store = lineupStoreFromScored(scR, scL, profiles, scVsSp, scVsRp, palsByTeam, resultsByTeam);
+    store.l10SpHandMap = parseL10SpHandMap(raw.l10SpHand || []);
+    store.l10SpHandGames = raw.l10SpHandGames || [];
+    store.spPitchById = buildSpPitchScoreById(raw.spProfiles || []);
+    return store;
   }
 
   function lineupModelFetchProgressive(existing, needs, options) {
@@ -2565,6 +2684,9 @@
 
     var prefetchTeamResults = !!options.prefetchTeamResults
       || (isTeamRankingsPage() && needs.needTeamResults);
+    var prefetchL10SpHand = !!options.prefetchL10SpHand
+      || (isTeamRankingsPage() && !needs.needL10SpHand);
+    var prefetchPalsOnRankings = isTeamRankingsPage() && !needs.needPals;
 
     function fetchTeamResultsRows(r) {
       return fetchSheetTab(tabs.team_results, options).catch(function() { return []; }).then(function(rows) {
@@ -2635,19 +2757,59 @@
       });
     }
 
+    function fetchPalsRows(r) {
+      if (!tabs.pals) {
+        r._hasPals = true;
+        return Promise.resolve(r);
+      }
+      return fetchSheetTab(tabs.pals, options).catch(function() { return []; }).then(function(rows) {
+        r.pals = rows || [];
+        r._hasPals = true;
+        _lineupModelRaw = r;
+        _lineupModelStore = null;
+        _notifyLineupModelUpdate('pals');
+        return r;
+      });
+    }
+
     if (needs.needPals && !raw._hasPals) {
+      chain = chain.then(fetchPalsRows);
+    } else if (prefetchPalsOnRankings && !raw._hasPals) {
       chain = chain.then(function(r) {
-        if (!tabs.pals) {
-          r._hasPals = true;
-          return r;
-        }
-        return fetchSheetTab(tabs.pals, options).catch(function() { return []; }).then(function(rows) {
-          r.pals = rows || [];
-          r._hasPals = true;
-          _lineupModelRaw = r;
-          _lineupModelStore = null;
-          return r;
-        });
+        fetchPalsRows(r);
+        return r;
+      });
+    }
+
+    function fetchL10SpHandRows(r) {
+      var jobs = [];
+      if (tabs.team_l10_sp_hand) {
+        jobs.push(fetchSheetTab(tabs.team_l10_sp_hand, options).catch(function() { return []; }));
+      } else jobs.push(Promise.resolve([]));
+      if (tabs.team_l10_sp_hand_games) {
+        jobs.push(fetchSheetTab(tabs.team_l10_sp_hand_games, options).catch(function() { return []; }));
+      } else jobs.push(Promise.resolve([]));
+      if (tabs.sp_profiles) {
+        jobs.push(fetchSheetTab(tabs.sp_profiles, options).catch(function() { return []; }));
+      } else jobs.push(Promise.resolve([]));
+      return Promise.all(jobs).then(function(res) {
+        r.l10SpHand = res[0] || [];
+        r.l10SpHandGames = res[1] || [];
+        r.spProfiles = res[2] || [];
+        r._hasL10SpHand = true;
+        _lineupModelRaw = r;
+        _lineupModelStore = null;
+        _notifyLineupModelUpdate('l10SpHand');
+        return r;
+      });
+    }
+
+    if (needs.needL10SpHand && !raw._hasL10SpHand) {
+      chain = chain.then(fetchL10SpHandRows);
+    } else if (prefetchL10SpHand && !raw._hasL10SpHand) {
+      chain = chain.then(function(r) {
+        fetchL10SpHandRows(r);
+        return r;
       });
     }
 
@@ -2804,7 +2966,7 @@
   var _leaguePoolsInflight = null;
 
   function lineupModelBuildLeaguePools(rows) {
-    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'];
+    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'];
     var pools = {};
     metrics.forEach(function(metric) {
       var vals = (rows || []).map(function(r) { return numOrNull(r[metric]); }).filter(function(v) { return v != null && !isNaN(v); });

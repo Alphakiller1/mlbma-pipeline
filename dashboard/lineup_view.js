@@ -478,7 +478,7 @@
 
   function registerLeaguePoolsFromRows(dataRows) {
     if (!A || !A.registerLeaguePool || !dataRows || !dataRows.length) return false;
-    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap'];
+    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'];
     var registered = false;
     metrics.forEach(function(k) {
       var vals = dataRows.map(function(r) { return num(r[k]); }).filter(function(v) { return v != null && !isNaN(v); });
@@ -556,9 +556,13 @@
   function rerender(root, ctx, opts) {
     opts = opts || {};
     var silent = !!opts.silent || !!opts.fromBoot;
+    var splitActive = ctx.state.filter.hand !== 'both'
+      || (ctx.state.filter.location !== 'all' && ctx.state.filter.location !== 'both')
+      || ctx.state.filter.window !== 'YTD'
+      || ctx.state.filter.pitcher !== 'both';
     var body = root.querySelector('.lv-body');
     var bootTable = body && body.querySelector('.lv-table--boot');
-    if (bootTable) silent = true;
+    if (bootTable && !splitActive && !ctx._userInteracted) silent = true;
     if (!LM || !LM.rankAll) {
       dismissPageLoading();
       if (body) body.innerHTML = '<div class="lv-note">LineupModel not available.</div>';
@@ -571,7 +575,8 @@
     }
     dismissPageLoading();
     global.__lineupViewMounted = true;
-    var snapshotRows = !opts.hydrate ? snapshotRowsForState(ctx.state) : null;
+    var snapshotRows = !opts.hydrate && !splitActive && !ctx._userInteracted
+      ? snapshotRowsForState(ctx.state) : null;
     if (snapshotRows && (opts.fromBoot || opts.silent)) {
       ctx.teams = snapshotRows.map(function(r) { return r.t; }).sort();
       renderControls(root, ctx.state, ctx.teams, ctx.meta);
@@ -655,11 +660,20 @@
     bind(shell, ctx);
     if (LM && LM.onUpdate) {
       LM.onUpdate(function(reason) {
-        if (reason !== 'teamResults' || ctx._teamResultsRefresh) return;
-        if (ctx.state.family !== 'surface') return;
-        ctx._teamResultsRefresh = true;
-        rerender(shell, ctx, { silent: true });
+        if (reason === 'teamResults') {
+          if (ctx._teamResultsRefresh || ctx.state.family !== 'surface') return;
+          ctx._teamResultsRefresh = true;
+          rerender(shell, ctx, { silent: true });
+          return;
+        }
+        if (reason === 'l10SpHand' || reason === 'pals') {
+          if (ctx.state.family !== 'difficulty' && ctx.state.family !== 'status') return;
+          rerender(shell, ctx);
+        }
       });
+    }
+    if (LM && LM.fetchAll) {
+      LM.fetchAll({ needL10SpHand: true, needPals: true, allowPartialTeamResults: true });
     }
     var fromBoot = !!global.__MLBMA_RANKINGS_BOOT_DONE && isDefaultSnapshotFilter(state.filter);
     rerender(shell, ctx, { fromBoot: fromBoot, silent: fromBoot });

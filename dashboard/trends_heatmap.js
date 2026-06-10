@@ -19,7 +19,7 @@
   var METRICS = [
     { key: 'winPct', sourceKey: 'winPct', label: 'Win%', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
     { key: 'f5WinPct', sourceKey: 'f5WinPct', label: 'F5 Win%', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
-    { key: 'pitchScoreFaced', sourceKey: 'pitchScore', label: 'Pitching Score Faced', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
+    { key: 'pitchScoreFaced', sourceKey: 'pitchScoreFaced', label: 'Pitching Score Faced', disabled: false, colorCtx: 'pitching', invert: true },
     { key: 'rcv', sourceKey: 'rcv', label: 'RCV', disabled: false, colorCtx: 'rcv' },
     { key: 'obr', sourceKey: 'obr', label: 'OBR', disabled: false, colorCtx: 'obr' }
   ];
@@ -113,6 +113,20 @@
     return 'all';
   }
 
+  function rankFamilyForMetric(metricKey) {
+    if (metricKey === 'winPct' || metricKey === 'f5WinPct') return 'surface';
+    if (metricKey === 'pitchScoreFaced') return 'difficulty';
+    return 'scoring';
+  }
+
+  function ensureHeatmapStore(state) {
+    if (!LM || !LM.fetchAll) return Promise.resolve();
+    var fam = rankFamilyForMetric(state && state.metric);
+    var opts = { needPals: fam === 'difficulty' || fam === 'status', needL10SpHand: fam === 'difficulty' };
+    if (fam === 'surface') opts.needTeamResults = true;
+    return LM.fetchAll(opts);
+  }
+
   function fetchWindowRows(state, windowKey) {
     var filter = {
       hand: mapHand(state.hand),
@@ -122,7 +136,10 @@
       segment: 'full',
       window: windowKey
     };
-    return LM.rankAll(filter, 'scoring').then(function(rows) { return rows || []; });
+    var family = rankFamilyForMetric(state.metric);
+    return ensureHeatmapStore(state).then(function() {
+      return LM.rankAll(filter, family).then(function(rows) { return rows || []; });
+    });
   }
 
   function buildRows(state) {
@@ -152,10 +169,10 @@
         var a = (l30 || []).find(function(r) { return teamKey(r.t) === t; }) || {};
         var b = (l14 || []).find(function(r) { return teamKey(r.t) === t; }) || {};
         var c = (l7 || []).find(function(r) { return teamKey(r.t) === t; }) || {};
-        by[t].ytd = num(y[sourceKey]);
-        by[t].l30 = num(a[sourceKey]);
-        by[t].l14 = num(b[sourceKey]);
-        by[t].l7 = num(c[sourceKey]);
+        by[t].ytd = num(y[sourceKey]) != null ? num(y[sourceKey]) : num(y.pitchScore);
+        by[t].l30 = num(a[sourceKey]) != null ? num(a[sourceKey]) : num(a.pitchScore);
+        by[t].l14 = num(b[sourceKey]) != null ? num(b[sourceKey]) : num(b.pitchScore);
+        by[t].l7 = num(c[sourceKey]) != null ? num(c[sourceKey]) : num(c.pitchScore);
         by[t].delta = by[t].ytd != null && by[t].l7 != null ? by[t].l7 - by[t].ytd : null;
         by[t].velocity = computeVelocity(by[t]);
         by[t].trend = trendLabel(by[t]);
@@ -241,10 +258,10 @@
     if (key === 'Stable' || key === 'Stable Elite') return 'thm-rel--stable';
     return 'thm-rel--noisy';
   }
-  function metricColor(value, metricKey) {
+  function metricColor(value, metricKey, invert) {
     var n = num(value);
     if (n == null) return null;
-    if (A && A.metricColor) return A.metricColor(n, metricKey || 'osi', false);
+    if (A && A.metricColor) return A.metricColor(n, metricKey || 'osi', !!invert);
     return null;
   }
 
@@ -293,7 +310,7 @@
     }
     var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || null;
     var phase1Mode = !!(metricDef && metricDef.phase);
-      var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
+    var splitWarn = (state.metric === 'rcv' || state.metric === 'obr') && (state.hand !== 'both' || state.location !== 'both');
     root.innerHTML = '<div class="thm-wrap"><h3 class="thm-title">Trends Heat Map</h3><div class="thm-bar">'
       + '<div class="thm-row">'
       + '<div class="thm-group"><span class="thm-label">Hand</span><div class="thm-pills">'
@@ -323,6 +340,7 @@
       var sorted = sortedRows(rows, state);
       var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || {};
       var colorKey = metricDef.colorCtx || metricDef.sourceKey || state.metric;
+      var colorInvert = !!metricDef.invert;
       var head = '<table class="thm-table"><thead><tr>'
         + '<th class="sortable" data-a="sort" data-k="team">Team' + sortArrow(state, 'team') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="ytd">YTD' + sortArrow(state, 'ytd') + '</th>'
@@ -336,7 +354,7 @@
       var body = sorted.map(function(r) {
         function cell(v, digits) {
           if (A && A.valChipHtml) {
-            return '<td class="numcol">' + A.valChipHtml(v, colorKey, false, digits == null ? 1 : digits) + '</td>';
+            return '<td class="numcol">' + A.valChipHtml(v, colorKey, colorInvert, digits == null ? 1 : digits) + '</td>';
           }
           if (v == null) return '<td class="numcol"><span class="chip c-na">—</span></td>';
           return '<td class="numcol"><span class="chip c-mid">' + Number(v).toFixed(digits == null ? 1 : digits) + '</span></td>';
@@ -409,6 +427,11 @@
     el.innerHTML = '';
     bind(el, state);
     render(el, state);
+    if (LM && LM.onUpdate) {
+      LM.onUpdate(function(reason) {
+        if (reason === 'l10SpHand' || reason === 'pals') render(el, state);
+      });
+    }
     _mounted = {
       rerender: function() { render(el, state); },
       getState: function() { return JSON.parse(JSON.stringify(state)); }

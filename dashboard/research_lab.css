@@ -550,9 +550,26 @@ html.view-research #oorSection { display: none !important; }
 .pl-rank-wrap { max-height: 520px; overflow: auto; }
 /* Pitcher Intelligence avatars — same 48px HD circles as Opening Dashboard matchups */
 .pl-rank-pitcher-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+.pl-rank-pitcher-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.pl-rank-pitcher-name-row {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 6px 8px;
   min-width: 0;
 }
 .pl-rank-pitcher-cell .mc-sp-photo,
@@ -604,8 +621,9 @@ html.view-research #oorSection { display: none !important; }
   font-stretch: 110%;
   font-size: 13px;
   letter-spacing: 0.01em;
+  line-height: 1.25;
 }
-.pl-rank-team { white-space: nowrap; }
+.pl-rank-team { white-space: nowrap; vertical-align: middle; }
 .pl-rank-team-inner { display: inline-flex; align-items: center; gap: 8px; }
 .pl-rank-team-abbr {
   font-family: var(--display, var(--font-display, "Roboto Condensed", sans-serif));
@@ -659,7 +677,11 @@ html.view-research #oorSection { display: none !important; }
   text-align: left;
   white-space: nowrap;
 }
-.pl-rank-table.rl-sp-rank-table thead th.pl-rank-idx { width: 44px; }
+.pl-rank-table.rl-sp-rank-table thead th.pl-rank-idx,
+.pl-rank-table.rl-bp-rank-table thead th.pl-rank-idx {
+  width: 44px;
+  text-align: center;
+}
 .pl-rank-table.rl-sp-rank-table tbody td {
   padding: 7px 12px;
   height: 46px;
@@ -667,9 +689,69 @@ html.view-research #oorSection { display: none !important; }
   vertical-align: middle;
 }
 .pl-rank-table.rl-sp-rank-table tbody tr.pl-rank-row:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
-.pl-rank-idx { font-family: var(--display); font-weight: 800; font-size: 13px; color: var(--text-2); }
+.pl-rank-idx {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: center;
+}
 .rl-sp-rank-table thead th { white-space: nowrap; }
-.rl-sp-rank-table td.num { text-align: right; white-space: nowrap; }
+.pl-rank-table.rl-sp-rank-table tbody td.num:not(.pl-rank-hand),
+.pl-rank-table.rl-bp-rank-table tbody td.num:not(.pl-rank-idx) {
+  text-align: center;
+  white-space: nowrap;
+}
+.pl-rank-table.rl-sp-rank-table tbody td.pl-rank-hand,
+.pl-rank-table.rl-sp-rank-table thead th.pl-sort-th--hand {
+  text-align: center;
+  width: 52px;
+}
+.pl-rank-table.rl-sp-rank-table tbody td.pl-rank-flags,
+.pl-rank-table.rl-sp-rank-table thead th.pl-rank-flags-head {
+  text-align: left;
+  min-width: 148px;
+}
+.pl-rank-flags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 24px;
+}
+.pl-rank-flags .pl-flag-pill { margin: 0; }
+.pl-sort-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pl-rank-table thead th.pl-sort-th--num .pl-sort-inner,
+.pl-rank-table thead th.pl-rank-idx .pl-sort-inner {
+  justify-content: center;
+  width: 100%;
+}
+.pl-rank-table thead th.pl-sort-th:not(.pl-sort-th--num):not(.pl-sort-th--hand) .pl-sort-inner {
+  justify-content: flex-start;
+}
+.pl-rank-table thead th.pl-sort-th--num,
+.pl-rank-table thead th.pl-sort-th--hand {
+  text-align: center;
+}
+.pl-sort-arrow {
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+.pl-rank-table.rl-sp-rank-table td.num .chip,
+.pl-rank-table.rl-bp-rank-table td.num .chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
 .pl-rank-name a { color: var(--accent-l, #c4b5fd); text-decoration: none; font-weight: 500; }
 .pl-rank-row { cursor: pointer; transition: background 0.12s; }
 .pl-rank-row:hover { background: rgba(124, 77, 255, 0.09); box-shadow: inset 2px 0 0 var(--purple, #7C4DFF); }
@@ -745,14 +827,18 @@ html.view-research #oorSection { display: none !important; }
   border: 0.5px solid color-mix(in srgb, var(--warn, #f59e0b) 25%, transparent);
 }
 .pl-tonight-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  padding: 2px 6px;
-  margin-left: 6px;
+  padding: 0 6px;
+  height: 18px;
+  margin: 0;
   border-radius: 4px;
-  vertical-align: middle;
+  flex-shrink: 0;
+  line-height: 1;
   color: var(--accent-l, #c4b5fd);
   background: rgba(124, 77, 255, 0.18);
   border: 0.5px solid color-mix(in srgb, var(--accent, #8b5cf6) 40%, transparent);
@@ -1005,14 +1091,26 @@ html.view-research #oorSection { display: none !important; }
 @media (max-width: 720px) { .pl-rank-expand-grid { grid-template-columns: repeat(2, 1fr); } }
 .pl-expand-metric .ca-metric-label { margin-bottom: 6px; }
 .pl-expand-flags { margin-bottom: 10px; }
-.pl-rank-chevron { width: 28px; text-align: center; color: var(--text-3); font-size: 11px; }
+.pl-rank-chevron {
+  width: 32px;
+  min-width: 32px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
 .pl-rank-name-select { cursor: pointer; }
 .pl-rank-name-select:hover .pl-rank-pitcher-text { color: var(--accent-l, #c4b5fd); }
 .pl-rank-team-select { cursor: pointer; }
 .pl-rank-team-select:hover .pl-rank-team-link { color: var(--accent-l, #c4b5fd); }
+.pl-rank-pitcher-meta .pl-profile-link-hint,
+.pl-rank-team-inner .pl-profile-link-hint {
+  margin-left: 0;
+}
 .pl-profile-link-hint {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 0;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
