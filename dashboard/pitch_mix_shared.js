@@ -214,22 +214,11 @@
     return '<span class="bp-pm-plain">' + Number(v).toFixed(decimals == null ? 1 : decimals) + '</span>';
   }
 
-  function pitchMixMoveCell(ivb, hb) {
-    if ((ivb == null || isNaN(ivb)) && (hb == null || isNaN(hb))) {
-      return '<span class="chip c-na">—</span>';
-    }
-    var ivbTxt = ivb != null && !isNaN(ivb) ? Number(ivb).toFixed(1) : '—';
-    var hbTxt = hb != null && !isNaN(hb) ? Number(hb).toFixed(1) : '—';
-    return '<span class="bp-pm-move" title="IVB / HB (in)">' + ivbTxt + '<span class="bp-pm-move-sep">/</span>' + hbTxt + '</span>';
-  }
-
   function pitchMixSpCells(sp) {
     sp = sp || {};
     return ''
       + '<td class="num bp-pm-stat">' + metricChip(sp.usage, 'pct', false, 1) + '</td>'
       + '<td class="num bp-pm-stat bp-pm-stat--plain">' + pitchMixPlainVal(sp.velo, 1) + '</td>'
-      + '<td class="num bp-pm-stat bp-pm-stat--plain">' + pitchMixPlainVal(sp.spin, 0) + '</td>'
-      + '<td class="num bp-pm-stat bp-pm-stat--plain">' + pitchMixMoveCell(sp.ivb, sp.hb) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(sp.whiff, 'swstr', false, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(sp.csw, 'swstr', false, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(sp.zone, 'default', false, 1) + '</td>'
@@ -245,7 +234,6 @@
       + '<td class="num bp-pm-stat">' + metricChip(bat.chase, 'bbpct', true, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(bat.csw, 'swstr', true, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(bat.zone, 'default', false, 1) + '</td>'
-      + '<td class="num bp-pm-stat bp-pm-stat--plain">' + pitchMixPlainVal(bat.ev, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(bat.xwoba, 'woba', false, 3) + '</td>';
   }
 
@@ -259,7 +247,6 @@
       + '<td class="num bp-pm-stat">' + metricChip(bat.chase, 'bbpct', true, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(bat.csw, 'swstr', true, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(bat.zone, 'default', false, 1) + '</td>'
-      + '<td class="num bp-pm-stat bp-pm-stat--plain">' + pitchMixPlainVal(bat.ev, 1) + '</td>'
       + '<td class="num bp-pm-stat">' + metricChip(bat.xwoba, 'woba', false, 3) + '</td>';
   }
 
@@ -350,8 +337,8 @@
         + pitchMixBatCells(r.bat || {})
         + '</tr>';
     }).join('');
-    var spCols = 9;
-    var batCols = 7;
+    var spCols = 7;
+    var batCols = 6;
     return '<div class="bp-pm-table-wrap"><table class="bp-pm-table"><colgroup>'
       + '<col class="bp-pm-col-pitch"><col span="' + spCols + '"><col span="' + batCols + '">'
       + '</colgroup><thead>'
@@ -361,10 +348,10 @@
       + '<th colspan="' + batCols + '" class="bp-pm-group bp-pm-group--bat">Batter · Contact &amp; Discipline</th>'
       + '</tr><tr class="bp-pm-cols">'
       + '<th scope="col">Pitch</th>'
-      + '<th scope="col">Usage%</th><th scope="col">Velo</th><th scope="col">Spin</th><th scope="col">IVB/HB</th>'
+      + '<th scope="col">Usage%</th><th scope="col">Velo</th>'
       + '<th scope="col">Whiff%</th><th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">Chase%</th><th scope="col">xwOBA</th>'
       + '<th scope="col" class="bp-pm-pitch-divider">Avg</th><th scope="col">Whiff%</th><th scope="col">Chase%</th>'
-      + '<th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">EV</th><th scope="col">xwOBA</th>'
+      + '<th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">xwOBA</th>'
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
@@ -376,7 +363,7 @@
     return '<div class="bp-pm-table-wrap"><table class="bp-pm-table bp-pm-table--solo"><thead><tr>'
       + '<th scope="col">Pitch</th><th scope="col">Seen%</th><th scope="col">Pitches</th>'
       + '<th scope="col">Avg</th><th scope="col">Whiff%</th><th scope="col">Chase%</th>'
-      + '<th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">EV</th><th scope="col">xwOBA</th>'
+      + '<th scope="col">CSW%</th><th scope="col">Zone%</th><th scope="col">xwOBA</th>'
       + '</tr></thead><tbody>' + body + '</tbody></table></div>';
   }
 
