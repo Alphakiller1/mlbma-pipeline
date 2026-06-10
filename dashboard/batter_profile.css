@@ -38,8 +38,8 @@ body.batter-profile-page #profilePageHeader .ca-page-header__sub {
   display: block;
   max-width: 680px;
   margin: 10px 0 0;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 500;
   line-height: 1.55;
   color: var(--text-2, #A4A8B6);
 }
@@ -203,11 +203,17 @@ body.batter-profile-page .pp-hero-search .tp-team-picker--inline.tp-batter-picke
   max-width: none;
 }
 
-body.batter-profile-page .pp-hero-search .tp-team-picker__panel--inline {
+body.batter-profile-page .pp-hero-search .tp-team-picker__panel--inline,
+body.batter-profile-page .tp-team-picker__panel--inline {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
   border: none;
   box-shadow: none;
   background: transparent;
   border-radius: 0;
+  overflow: visible;
 }
 
 body.batter-profile-page .pp-hero-search .tp-team-picker__search-wrap--inline,
