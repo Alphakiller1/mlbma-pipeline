@@ -81,34 +81,52 @@
     return out;
   }
 
-  function readCache() {
+  // Persist standings in localStorage (falls back to sessionStorage) so W-L survives
+  // across visits instead of re-fetching the MLB Stats API on every page load. A short
+  // TTL keeps it fresh — records only change after a day's games complete.
+  var STANDINGS_TTL_MS = 3 * 3600 * 1000; // 3 hours
+  var _store = (function() {
     try {
-      var raw = sessionStorage.getItem(CACHE_KEY);
+      var ls = global.localStorage;
+      ls.setItem(CACHE_KEY + '__probe', '1');
+      ls.removeItem(CACHE_KEY + '__probe');
+      return ls;
+    } catch (e) { /* fall through */ }
+    try { return global.sessionStorage; } catch (e2) { return null; }
+  })();
+
+  function readCache() {
+    if (!_store) return null;
+    try {
+      var raw = _store.getItem(CACHE_KEY);
       if (!raw) return null;
       var obj = JSON.parse(raw);
-      if (obj && obj.records) return obj.records;
+      if (obj && obj.records && (Date.now() - (obj.ts || 0)) < STANDINGS_TTL_MS) return obj.records;
     } catch (e) { /* ignore */ }
     return null;
   }
 
   function writeCache(rec) {
+    if (!_store) return;
     try {
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), records: rec }));
+      _store.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), records: rec }));
     } catch (e) { /* ignore */ }
   }
 
   function writeFormCache() {
+    if (!_store) return;
     try {
-      sessionStorage.setItem(FORM_CACHE_KEY, JSON.stringify({ ts: Date.now(), form: recentForm }));
+      _store.setItem(FORM_CACHE_KEY, JSON.stringify({ ts: Date.now(), form: recentForm }));
     } catch (e) { /* ignore */ }
   }
 
   function readFormCache() {
+    if (!_store) return null;
     try {
-      var raw = sessionStorage.getItem(FORM_CACHE_KEY);
+      var raw = _store.getItem(FORM_CACHE_KEY);
       if (!raw) return null;
       var obj = JSON.parse(raw);
-      if (obj && obj.form) return obj.form;
+      if (obj && obj.form && (Date.now() - (obj.ts || 0)) < STANDINGS_TTL_MS) return obj.form;
     } catch (e) { /* ignore */ }
     return null;
   }

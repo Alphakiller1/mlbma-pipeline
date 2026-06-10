@@ -872,6 +872,49 @@
   var _weatherGeoCache = {};
   var _weatherMeteoCache = {};
 
+  // Persist geocode + weather across reloads so a fresh visit doesn't re-hit Open-Meteo
+  // (free tier rate-limits bursts -> 429). Geocodes are effectively static (long TTL);
+  // current weather drifts, so it gets a short TTL. Reuses the shared persist store.
+  var WEATHER_LS_PREFIX = 'mlbma_wx|';
+  var GEO_TTL_MS = 30 * 24 * 3600 * 1000;   // 30 days
+  var WX_TTL_MS = 30 * 60 * 1000;           // 30 minutes
+  function _wxCacheGet(key, maxAgeMs) {
+    if (!_tabPersistStore) return null;
+    try {
+      var raw = _tabPersistStore.getItem(WEATHER_LS_PREFIX + key);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (!obj || (Date.now() - obj.t) > maxAgeMs) return null;
+      return obj.v;
+    } catch (e) { return null; }
+  }
+  function _wxCacheSet(key, val) {
+    if (!_tabPersistStore || val == null) return;
+    try {
+      _tabPersistStore.setItem(WEATHER_LS_PREFIX + key, JSON.stringify({ t: Date.now(), v: val }));
+    } catch (e) { /* quota / private mode — non-fatal */ }
+  }
+
+  // Run lazy task functions with bounded concurrency so a full slate doesn't fire
+  // dozens of simultaneous API calls at once. Per-task errors are swallowed so one
+  // failure doesn't abort the rest.
+  function runLimited(taskFns, limit) {
+    limit = Math.max(1, limit || 3);
+    var idx = 0, active = 0;
+    return new Promise(function(resolve) {
+      function pump() {
+        if (idx >= taskFns.length && active === 0) { resolve(); return; }
+        while (active < limit && idx < taskFns.length) {
+          active++;
+          Promise.resolve().then(taskFns[idx++]).catch(function() {}).then(function() {
+            active--; pump();
+          });
+        }
+      }
+      pump();
+    });
+  }
+
   function isDomeStadium(home, stadium) {
     var h = normalizeTeamAbbrShared(home);
     if (FIXED_DOME_HOME[h]) return true;
@@ -905,6 +948,8 @@
 
   function geocodeWeatherCity(city) {
     if (_weatherGeoCache[city]) return Promise.resolve(_weatherGeoCache[city]);
+    var persisted = _wxCacheGet('geo|' + city, GEO_TTL_MS);
+    if (persisted) { _weatherGeoCache[city] = persisted; return Promise.resolve(persisted); }
     var url = 'https://geocoding-api.open-meteo.com/v1/search?name='
       + encodeURIComponent(city) + '&count=1&language=en&format=json';
     return fetch(url, { cache: 'no-store' }).then(function(r) {
@@ -915,6 +960,7 @@
       if (!hit) return null;
       var coords = { lat: hit.latitude, lon: hit.longitude };
       _weatherGeoCache[city] = coords;
+      _wxCacheSet('geo|' + city, coords);
       return coords;
     }).catch(function() { return null; });
   }
@@ -922,6 +968,8 @@
   function fetchOpenMeteoWeather(lat, lon) {
     var key = lat + ',' + lon;
     if (_weatherMeteoCache[key]) return Promise.resolve(_weatherMeteoCache[key]);
+    var persisted = _wxCacheGet('wx|' + key, WX_TTL_MS);
+    if (persisted) { _weatherMeteoCache[key] = persisted; return Promise.resolve(persisted); }
     var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + encodeURIComponent(lat)
       + '&longitude=' + encodeURIComponent(lon)
       + '&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code'
@@ -941,6 +989,7 @@
         source: 'open-meteo'
       };
       _weatherMeteoCache[key] = w;
+      _wxCacheSet('wx|' + key, w);
       return w;
     }).catch(function() { return null; });
   }
@@ -960,29 +1009,33 @@
     });
     var homes = Object.keys(byHome);
     if (!homes.length) return Promise.resolve(weatherMap);
-    var tasks = homes.map(function(home) {
-      var sample = byHome[home][0];
-      if (isDomeStadium(home, sample.stadium)) {
-        var domeWx = { dome: true, conditions: 'dome', stadium: sample.stadium || '' };
-        byHome[home].forEach(function(m) {
-          assignWeatherToMatchup(weatherMap, m.away, m.home, domeWx);
-        });
-        return Promise.resolve();
-      }
-      var city = TEAM_WEATHER_CITY[home];
-      if (!city) return Promise.resolve();
-      return geocodeWeatherCity(city).then(function(coords) {
-        if (!coords) return;
-        return fetchOpenMeteoWeather(coords.lat, coords.lon).then(function(wx) {
-          if (!wx || !weatherHasData(wx)) return;
-          wx.stadium = sample.stadium || '';
+    // Lazy task per home stadium, run with bounded concurrency (not all at once) so a
+    // full slate of games doesn't burst dozens of Open-Meteo calls and trip a 429.
+    var taskFns = homes.map(function(home) {
+      return function() {
+        var sample = byHome[home][0];
+        if (isDomeStadium(home, sample.stadium)) {
+          var domeWx = { dome: true, conditions: 'dome', stadium: sample.stadium || '' };
           byHome[home].forEach(function(m) {
-            assignWeatherToMatchup(weatherMap, m.away, m.home, wx);
+            assignWeatherToMatchup(weatherMap, m.away, m.home, domeWx);
+          });
+          return Promise.resolve();
+        }
+        var city = TEAM_WEATHER_CITY[home];
+        if (!city) return Promise.resolve();
+        return geocodeWeatherCity(city).then(function(coords) {
+          if (!coords) return;
+          return fetchOpenMeteoWeather(coords.lat, coords.lon).then(function(wx) {
+            if (!wx || !weatherHasData(wx)) return;
+            wx.stadium = sample.stadium || '';
+            byHome[home].forEach(function(m) {
+              assignWeatherToMatchup(weatherMap, m.away, m.home, wx);
+            });
           });
         });
-      });
+      };
     });
-    return Promise.all(tasks).then(function() { return weatherMap; });
+    return runLimited(taskFns, 3).then(function() { return weatherMap; });
   }
 
   /** Approximate center-field bearing from home plate (degrees clockwise from north). */
