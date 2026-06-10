@@ -34,6 +34,20 @@
     return TEAM_ABBR_CANON[u] || u;
   }
 
+  function normPitcherName(name) {
+    return String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  function pitcherMergeKey(row) {
+    var id = String(row && row.id != null ? row.id : '').trim();
+    if (id) return 'id:' + id;
+    return 'name:' + normPitcherName(row && row.name);
+  }
+
+  function isPlayableGameState(st) {
+    return st === 'Final' || st === 'Live' || st === 'Game Over' || st === 'In Progress' || st === 'Completed';
+  }
+
   function pickCol(row, names) {
     if (!row) return '';
     for (var i = 0; i < names.length; i++) {
@@ -240,6 +254,29 @@
     });
   }
 
+  function ingestBoxscoreRelievers(box, dayIdx, tk, dayCols, byPitcher) {
+    if (dayIdx < 0 || !box) return;
+    ['home', 'away'].forEach(function(side) {
+      var sideTeam = box.teams && box.teams[side];
+      var sideAbbr = sideTeam && sideTeam.team && sideTeam.team.abbreviation;
+      if (!sideTeam || canonTeamAbbr(sideAbbr || '') !== tk) return;
+      Object.keys(sideTeam.players || {}).forEach(function(k) {
+        var pl = sideTeam.players[k];
+        var pitching = pl.stats && pl.stats.pitching;
+        if (!pitching || !pitching.inningsPitched) return;
+        if (parseInt(pitching.gamesStarted, 10) >= 1) return;
+        var pid = String(pl.person && pl.person.id);
+        var name = pl.person && pl.person.fullName;
+        if (!pid || !name) return;
+        var pitches = num(pitching.numberOfPitches) || 0;
+        if (!byPitcher[pid]) {
+          byPitcher[pid] = { id: pid, name: name, pitchesByDay: dayCols.map(function() { return null; }), log: [] };
+        }
+        byPitcher[pid].pitchesByDay[dayIdx] = (byPitcher[pid].pitchesByDay[dayIdx] || 0) + pitches;
+      });
+    });
+  }
+
   function fetchLiveTeamUsage(team, dayCols) {
     var tk = canonTeamAbbr(team);
     var teamId = MLB_TEAM_IDS[tk] || MLB_TEAM_IDS[teamKey(team)];
@@ -250,7 +287,7 @@
     var season = start.slice(0, 4);
     var rosterMeta = {};
 
-    return fetchJson('https://statsapi.mlb.com/api/v1/teams/' + teamId + '/roster?rosterType=active&season=' + season)
+    var rosterP = fetchJson('https://statsapi.mlb.com/api/v1/teams/' + teamId + '/roster?rosterType=active&season=' + season)
       .then(function(roster) {
         (roster.roster || []).forEach(function(entry) {
           var pos = entry.position && entry.position.abbreviation;
@@ -261,56 +298,79 @@
             status: (entry.status && entry.status.code) || 'A'
           };
         });
-        return fetchJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=' + teamId
-          + '&startDate=' + start + '&endDate=' + end + '&gameType=R');
-      })
-      .then(function(sched) {
-        var pks = [];
-        var gameDates = {};
-        (sched.dates || []).forEach(function(d) {
-          var slateDate = normalizeDate(d.date || '');
-          (d.games || []).forEach(function(g) {
-            var st = g.status && g.status.abstractGameState;
-            if (st === 'Final' || st === 'Live' || st === 'Game Over') {
-              pks.push(g.gamePk);
-              gameDates[g.gamePk] = normalizeDate(g.officialDate || slateDate);
-            }
-          });
-        });
-        var byPitcher = {};
-        return Promise.all(pks.map(function(pk) {
-          return fetchJson('https://statsapi.mlb.com/api/v1/game/' + pk + '/boxscore').then(function(box) {
-            // Boxscore responses no longer include gameDate; use schedule officialDate.
-            var gameDate = gameDates[pk] || '';
-            var dayIdx = -1;
-            for (var i = 0; i < dayCols.length; i++) {
-              if (dayCols[i].iso === gameDate) { dayIdx = i; break; }
-            }
-            if (dayIdx < 0) return;
-            ['home', 'away'].forEach(function(side) {
-              var sideTeam = box.teams && box.teams[side];
-              var sideAbbr = sideTeam && sideTeam.team && sideTeam.team.abbreviation;
-              if (!sideTeam || canonTeamAbbr(sideAbbr || '') !== tk) return;
-              Object.keys(sideTeam.players || {}).forEach(function(k) {
-                var pl = sideTeam.players[k];
-                var pitching = pl.stats && pl.stats.pitching;
-                if (!pitching || !pitching.inningsPitched) return;
-                if (parseInt(pitching.gamesStarted, 10) >= 1) return;
-                var pid = String(pl.person && pl.person.id);
-                var name = pl.person && pl.person.fullName;
-                if (!pid || !name) return;
-                var pitches = num(pitching.numberOfPitches) || 0;
-                if (!byPitcher[pid]) {
-                  byPitcher[pid] = { id: pid, name: name, pitchesByDay: dayCols.map(function() { return null; }), log: [] };
-                }
-                byPitcher[pid].pitchesByDay[dayIdx] = (byPitcher[pid].pitchesByDay[dayIdx] || 0) + pitches;
-              });
-            });
-          }).catch(function() { /* skip bad boxscore */ });
-        })).then(function() {
-          return { rows: Object.keys(byPitcher).map(function(k) { return byPitcher[k]; }), rosterMeta: rosterMeta };
+      }).catch(function() { /* roster optional — IL tags only */ });
+
+    var schedP = fetchJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=' + teamId
+      + '&startDate=' + start + '&endDate=' + end + '&gameType=R');
+
+    return Promise.all([rosterP, schedP]).then(function(res) {
+      var sched = res[1];
+      var pks = [];
+      var gameDates = {};
+      (sched.dates || []).forEach(function(d) {
+        var slateDate = normalizeDate(d.date || '');
+        (d.games || []).forEach(function(g) {
+          var st = g.status && g.status.abstractGameState;
+          if (!isPlayableGameState(st)) return;
+          pks.push(g.gamePk);
+          gameDates[g.gamePk] = normalizeDate(g.officialDate || g.gameDate || slateDate);
         });
       });
+      var byPitcher = {};
+      return Promise.all(pks.map(function(pk) {
+        return fetchJson('https://statsapi.mlb.com/api/v1/game/' + pk + '/boxscore').then(function(box) {
+          var gameDate = gameDates[pk] || '';
+          var dayIdx = -1;
+          for (var i = 0; i < dayCols.length; i++) {
+            if (dayCols[i].iso === gameDate) { dayIdx = i; break; }
+          }
+          ingestBoxscoreRelievers(box, dayIdx, tk, dayCols, byPitcher);
+        }).catch(function() { /* skip bad boxscore */ });
+      })).then(function() {
+        return { rows: Object.keys(byPitcher).map(function(k) { return byPitcher[k]; }), rosterMeta: rosterMeta };
+      });
+    });
+  }
+
+  function mergeLiveWithBase(base, live, windowedLog, dayCols, rosterMeta, team) {
+    if (!live || !live.rows.length) {
+      return Object.assign({}, base, { liveAttempted: true, liveOk: false });
+    }
+    var merged = {};
+    base.rows.forEach(function(r) {
+      merged[pitcherMergeKey(r)] = Object.assign({}, r);
+    });
+    live.rows.forEach(function(r) {
+      var key = pitcherMergeKey(r);
+      if (!merged[key]) {
+        merged[key] = Object.assign({}, r, { log: [] });
+        return;
+      }
+      var baseP = merged[key].pitchesByDay || [];
+      var liveP = r.pitchesByDay || [];
+      merged[key].pitchesByDay = dayCols.map(function(_, i) {
+        var lv = liveP[i];
+        if (lv != null && lv > 0) return lv;
+        return baseP[i] != null ? baseP[i] : null;
+      });
+      merged[key].name = merged[key].name || r.name;
+      merged[key].id = merged[key].id || r.id;
+    });
+    var mergedRows = Object.keys(merged).map(function(k) { return merged[k]; });
+    mergedRows.forEach(function(r) {
+      r.log = windowedLog.filter(function(g) {
+        return String(pickCol(g, ['pitcher_id'])) === String(r.id)
+          || normPitcherName(pickCol(g, ['pitcher_name'])) === normPitcherName(r.name);
+      });
+    });
+    return {
+      team: teamKey(team),
+      dayCols: dayCols,
+      rows: enrichRows(mergedRows, dayCols, live.rosterMeta || rosterMeta || {}),
+      source: 'mlb-live',
+      liveAttempted: true,
+      liveOk: true
+    };
   }
 
   function buildUsageModel(opts) {
@@ -330,9 +390,14 @@
     }
     var team = model.team;
     var logo = A ? A.teamLogoImg(team, 40, 'bp-usage-logo') : '';
+    var windowEnd = model.dayCols && model.dayCols.length
+      ? model.dayCols[model.dayCols.length - 1].iso
+      : '';
     var sourceNote = model.source === 'mlb-live'
-      ? 'MLB Stats API · refreshed live'
-      : 'Reliever_Log · run pipeline step 12 to update';
+      ? 'MLB Stats API · through ' + windowEnd
+      : (model.liveAttempted
+        ? 'Reliever_Log · live sync unavailable — showing sheet cache'
+        : 'Reliever_Log · run pipeline step 12 to update');
 
     // Display newest -> oldest so the most recent dates sit next to the Avail column.
     // The model stays chronological (availability math relies on it); only display flips.
@@ -392,39 +457,54 @@
       source: 'log'
     });
 
+    if (typeof opts.onBase === 'function') {
+      try { opts.onBase(base); } catch (e) { /* ignore paint errors */ }
+    }
+
     if (opts.live === false) return Promise.resolve(base);
 
     return fetchLiveTeamUsage(team, dayCols).then(function(live) {
-      if (!live || !live.rows.length) return base;
-      var merged = {};
-      base.rows.forEach(function(r) {
-        merged[r.id || r.name] = Object.assign({}, r);
-      });
-      live.rows.forEach(function(r) {
-        var key = r.id || r.name;
-        if (!merged[key]) {
-          merged[key] = Object.assign({}, r, { log: [] });
-        } else {
-          merged[key].pitchesByDay = r.pitchesByDay.slice();
-          merged[key].name = merged[key].name || r.name;
-          merged[key].id = merged[key].id || r.id;
-        }
-      });
-      var mergedRows = Object.keys(merged).map(function(k) { return merged[k]; });
-      var logRows = windowedLog;
-      mergedRows.forEach(function(r) {
-        r.log = logRows.filter(function(g) {
-          return String(pickCol(g, ['pitcher_id'])) === String(r.id) || pickCol(g, ['pitcher_name']) === r.name;
-        });
-      });
-      return {
-        team: teamKey(team),
-        dayCols: dayCols,
-        rows: enrichRows(mergedRows, dayCols, live.rosterMeta),
-        source: 'mlb-live'
-      };
+      return mergeLiveWithBase(base, live, windowedLog, dayCols, live && live.rosterMeta, team);
     }).catch(function() {
-      return base;
+      return Object.assign({}, base, { liveAttempted: true, liveOk: false });
+    });
+  }
+
+  function resolveMount(mountOrId) {
+    if (!mountOrId) return null;
+    if (typeof mountOrId === 'string') return document.getElementById(mountOrId);
+    return mountOrId;
+  }
+
+  function paintForTeam(mountOrId, team, opts) {
+    opts = opts || {};
+    var mount = resolveMount(mountOrId);
+    if (!mount || !team) return Promise.resolve(null);
+    function stale() { return opts.isStale ? opts.isStale() : false; }
+    function paint(model, renderOpts) {
+      if (stale()) return;
+      var el = resolveMount(mountOrId);
+      if (!el) return;
+      el.innerHTML = renderUsageChart(model, Object.assign({
+        compact: !!opts.compact,
+        emptyText: opts.emptyText
+      }, renderOpts || {}));
+    }
+    mount.innerHTML = '<div class="bp-usage-empty">' + esc(opts.loadingText || 'Loading bullpen usage…') + '</div>';
+    return loadForTeam(team, Object.assign({}, opts, {
+      onBase: function(base) { paint(base, { refreshing: opts.live !== false }); }
+    })).then(function(model) {
+      paint(model, {});
+      return model;
+    }).catch(function() {
+      var fallback = buildUsageModel({
+        team: team,
+        log: opts.log || [],
+        individuals: opts.individuals || [],
+        days: opts.days
+      });
+      paint(fallback, { emptyText: opts.emptyText || 'Usage data unavailable — run pipeline step 12.' });
+      return fallback;
     });
   }
 
@@ -433,6 +513,7 @@
     buildUsageModel: buildUsageModel,
     renderUsageChart: renderUsageChart,
     loadForTeam: loadForTeam,
+    paintForTeam: paintForTeam,
     fetchLiveTeamUsage: fetchLiveTeamUsage,
     computeAvailability: computeAvailability
   };

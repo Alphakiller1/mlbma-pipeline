@@ -872,21 +872,12 @@
   }
 
   function paintBullpenUsage(team) {
-    var el = document.getElementById('plBpUsageMount');
-    if (!el || !window.BullpenUsage) return;
-    BullpenUsage.loadForTeam(team, {
+    if (!window.BullpenUsage || !BullpenUsage.paintForTeam) return;
+    BullpenUsage.paintForTeam('plBpUsageMount', team, {
       log: CACHE.relieverLog || [],
       individuals: CACHE.relievers || [],
-      live: true
-    }).then(function(model) {
-      el.outerHTML = BullpenUsage.renderUsageChart(model, { compact: true });
-    }).catch(function() {
-      var model = BullpenUsage.buildUsageModel({
-        team: team,
-        log: CACHE.relieverLog || [],
-        individuals: CACHE.relievers || []
-      });
-      el.outerHTML = BullpenUsage.renderUsageChart(model, { compact: true });
+      live: true,
+      compact: true
     });
   }
 

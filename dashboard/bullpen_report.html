@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
 <link rel="stylesheet" href="theme.css?v=20260606b">
-<link rel="stylesheet" href="chase_nav.css?v=20260626a">
+<link rel="stylesheet" href="chase_nav.css?v=20260626b">
 <link rel="stylesheet" href="team_profile.css?v=20260624a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260624a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
@@ -22,7 +22,7 @@
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
 <script src="bullpen_profile_dashboard.js?v=20260609d"></script>
-<script src="bullpen_usage.js?v=20260609a"></script>
+<script src="bullpen_usage.js?v=20260610b"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260602w"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="bullpen_report.html"></script>
@@ -189,6 +189,8 @@ var STATE = {
   tierDim: 'osi',
   window: 'YTD', view: 'summary', relieverSort: 'ip', relieverSortDir: 'desc'
 };
+
+var _bpUsageLoadToken = 0;
 
 var ALL_MLB_TEAMS = [
   'ARI', 'ATL', 'BAL', 'BOS', 'CHC', 'CHW', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KC',
@@ -837,18 +839,17 @@ function bindRelieverSortHeaders() {
 }
 
 function renderBullpenUsage(team) {
-  var wrap = document.getElementById('bullpenUsageWrap');
-  if (!wrap || !window.BullpenUsage) return;
-  wrap.innerHTML = '<div class="bp-usage-empty">Loading bullpen usage…</div>';
-  BullpenUsage.loadForTeam(team, {
-    log: DATA.log,
-    individuals: DATA.individuals,
-    live: true
-  }).then(function(model) {
-    wrap.innerHTML = BullpenUsage.renderUsageChart(model);
-  }).catch(function() {
-    var model = BullpenUsage.buildUsageModel({ team: team, log: DATA.log, individuals: DATA.individuals });
-    wrap.innerHTML = BullpenUsage.renderUsageChart(model, { emptyText: 'Usage data unavailable — run pipeline step 12.' });
+  if (!window.BullpenUsage || !BullpenUsage.paintForTeam) return;
+  var token = (_bpUsageLoadToken = (_bpUsageLoadToken || 0) + 1);
+  var refreshLog = fetchSheetTab(TABS.reliever_log, { revalidate: true }).catch(function() { return DATA.log || []; });
+  refreshLog.then(function(rows) {
+    if (rows && rows.length) DATA.log = rows;
+    return BullpenUsage.paintForTeam('bullpenUsageWrap', team, {
+      log: DATA.log,
+      individuals: DATA.individuals,
+      live: true,
+      isStale: function() { return token !== _bpUsageLoadToken; }
+    });
   });
 }
 

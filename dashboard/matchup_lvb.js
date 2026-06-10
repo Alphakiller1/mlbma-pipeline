@@ -21,31 +21,21 @@
     var mount = container && container.querySelector
       ? container.querySelector('#mc-lvb-usage-mount') : null;
     var BU = global.BullpenUsage;
-    if (!mount || !comp || !BU || !BU.loadForTeam || !BU.renderUsageChart) {
+    if (!mount || !comp || !BU || !BU.paintForTeam) {
       if (mount) mount.innerHTML = '<p class="ca-helper mc-lvp-empty">Bullpen usage chart unavailable.</p>';
       return;
     }
     var bpTeam = comp.bpTeam;
     var filteredLog = filterReliefApps(_pack.relieverLog, bpTeam, ctx, { includeStarters: false });
     var usageToken = ++_usageToken;
-    mount.innerHTML = '<p class="ca-helper">Loading bullpen usage chart…</p>';
-    BU.loadForTeam(bpTeam, { log: filteredLog, live: true, days: 7 }).then(function(model) {
-      if (token !== _hydrateToken || usageToken !== _usageToken) return;
-      var el = container.querySelector('#mc-lvb-usage-mount');
-      if (!el) return;
-      el.innerHTML = BU.renderUsageChart(model, {
-        compact: true,
-        emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.'
-      });
-    }).catch(function() {
-      if (token !== _hydrateToken || usageToken !== _usageToken) return;
-      var el = container.querySelector('#mc-lvb-usage-mount');
-      if (!el || !BU.buildUsageModel) return;
-      var fallback = BU.buildUsageModel({ team: bpTeam, log: filteredLog, days: 7 });
-      el.innerHTML = BU.renderUsageChart(fallback, {
-        compact: true,
-        emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.'
-      });
+    BU.paintForTeam(mount, bpTeam, {
+      log: filteredLog,
+      live: true,
+      days: 7,
+      compact: true,
+      loadingText: 'Loading bullpen usage chart…',
+      emptyText: 'No bullpen usage data for ' + bpTeam + ' — run pipeline step 12.',
+      isStale: function() { return token !== _hydrateToken || usageToken !== _usageToken; }
     });
   }
 

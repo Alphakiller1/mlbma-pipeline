@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
 <link rel="stylesheet" href="theme.css?v=20260606b">
-<link rel="stylesheet" href="chase_nav.css?v=20260626a">
+<link rel="stylesheet" href="chase_nav.css?v=20260626b">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260610">
 <link rel="stylesheet" href="team_profile.css?v=20260624a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260624a">
@@ -40,7 +40,7 @@
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="platform_dashboard.js?v=20260618a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
-<script src="bullpen_usage.js?v=20260609a"></script>
+<script src="bullpen_usage.js?v=20260610b"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="team_profile.html"></script>
   <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
 </head>
@@ -1956,22 +1956,20 @@ function mountBullpenUsage(team) {
     clearBullpenUsageMount();
     return;
   }
-  var mount = document.getElementById('tpBpUsageMount');
-  if (!mount || !window.BullpenUsage) return;
+  if (!window.BullpenUsage || !BullpenUsage.paintForTeam) return;
   var token = ++_bpUsageLoadToken;
-  mount.innerHTML = '<div class="tp-empty">Loading bullpen usage…</div>';
-  BullpenUsage.loadForTeam(team, { log: DATA.log || [], individuals: DATA.bullpen || [] })
-    .then(function(model) {
-      if (token !== _bpUsageLoadToken || STATE.category !== 'bullpen') return;
-      var el = document.getElementById('tpBpUsageMount');
-      if (!el) return;
-      el.innerHTML = BullpenUsage.renderUsageChart(model, { compact: true });
-    })
-    .catch(function() {
-      if (token !== _bpUsageLoadToken || STATE.category !== 'bullpen') return;
-      var el = document.getElementById('tpBpUsageMount');
-      if (el) el.innerHTML = '<div class="tp-empty">Bullpen usage unavailable</div>';
+  var logP = fetchSheetTab(TABS.reliever_log, { revalidate: true }).catch(function() { return DATA.log || []; });
+  logP.then(function(rows) {
+    if (rows && rows.length) DATA.log = rows;
+    return BullpenUsage.paintForTeam('tpBpUsageMount', team, {
+      log: DATA.log || [],
+      individuals: DATA.bullpen || [],
+      live: true,
+      compact: true,
+      loadingText: 'Loading bullpen usage…',
+      isStale: function() { return token !== _bpUsageLoadToken || STATE.category !== 'bullpen'; }
     });
+  });
 }
 
 function computeOsiRank(team) {
@@ -2005,7 +2003,6 @@ function renderStaffBlock(prof) {
     return;
   }
   el.hidden = false;
-  _bpUsageLoadToken++;
   var ctx = buildStaffCtx();
   el.innerHTML = TeamProfileStaff.renderAll(prof, STATE.team, ctx);
   if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
