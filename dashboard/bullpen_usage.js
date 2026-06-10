@@ -23,6 +23,17 @@
     return String(t || '').trim().toUpperCase();
   }
 
+  var TEAM_ABBR_CANON = {
+    TB: 'TBR', TBR: 'TBR', KC: 'KCR', KCR: 'KCR', SD: 'SDP', SDP: 'SDP',
+    SF: 'SFG', SFG: 'SFG', WSH: 'WSN', WAS: 'WSN', WSN: 'WSN',
+    OAK: 'ATH', ATH: 'ATH', CWS: 'CHW', CHW: 'CHW', AZ: 'ARI', ARI: 'ARI'
+  };
+
+  function canonTeamAbbr(t) {
+    var u = teamKey(t);
+    return TEAM_ABBR_CANON[u] || u;
+  }
+
   function pickCol(row, names) {
     if (!row) return '';
     for (var i = 0; i < names.length; i++) {
@@ -46,8 +57,15 @@
   function buildDayColumns(days) {
     days = days || 7;
     var cols = [];
-    var today = new Date();
-    today.setHours(12, 0, 0, 0);
+    var today;
+    if (global.MLBMASharedMatchup && MLBMASharedMatchup.easternDateIso) {
+      var iso = MLBMASharedMatchup.easternDateIso();
+      var parts = iso.split('-').map(Number);
+      today = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
+    } else {
+      today = new Date();
+      today.setHours(12, 0, 0, 0);
+    }
     for (var i = days - 1; i >= 0; i--) {
       var d = new Date(today);
       d.setDate(today.getDate() - i);
@@ -149,10 +167,10 @@
   }
 
   function buildFromLog(logRows, team, dayCols) {
-    var tk = teamKey(team);
+    var tk = canonTeamAbbr(team);
     var byPitcher = {};
     (logRows || []).forEach(function(g) {
-      if (teamKey(pickCol(g, ['pitcher_team', 'pitcher team'])) !== tk) return;
+      if (canonTeamAbbr(pickCol(g, ['pitcher_team', 'pitcher team'])) !== tk) return;
       var pid = String(pickCol(g, ['pitcher_id']) || '');
       var name = pickCol(g, ['pitcher_name']);
       if (!name) return;
@@ -172,11 +190,11 @@
   }
 
   function mergeIndividuals(rows, individuals, team, dayCols) {
-    var tk = teamKey(team);
+    var tk = canonTeamAbbr(team);
     var seen = {};
     rows.forEach(function(r) { seen[r.id || r.name] = true; });
     (individuals || []).forEach(function(ind) {
-      if (teamKey(pickCol(ind, ['pitcher_team', 'pitcher team'])) !== tk) return;
+      if (canonTeamAbbr(pickCol(ind, ['pitcher_team', 'pitcher team'])) !== tk) return;
       var pid = String(pickCol(ind, ['pitcher_id']) || '');
       var name = pickCol(ind, ['pitcher_name']);
       var key = pid || name;
@@ -223,8 +241,8 @@
   }
 
   function fetchLiveTeamUsage(team, dayCols) {
-    var tk = teamKey(team);
-    var teamId = MLB_TEAM_IDS[tk];
+    var tk = canonTeamAbbr(team);
+    var teamId = MLB_TEAM_IDS[tk] || MLB_TEAM_IDS[teamKey(team)];
     if (!teamId) return Promise.resolve(null);
 
     var start = dayCols[0].iso;
@@ -248,45 +266,48 @@
       })
       .then(function(sched) {
         var pks = [];
+        var gameDates = {};
         (sched.dates || []).forEach(function(d) {
+          var slateDate = normalizeDate(d.date || '');
           (d.games || []).forEach(function(g) {
             var st = g.status && g.status.abstractGameState;
-            if (st === 'Final' || st === 'Live' || st === 'Game Over') pks.push(g.gamePk);
+            if (st === 'Final' || st === 'Live' || st === 'Game Over') {
+              pks.push(g.gamePk);
+              gameDates[g.gamePk] = normalizeDate(g.officialDate || slateDate);
+            }
           });
         });
         var byPitcher = {};
-        var chain = Promise.resolve();
-        pks.forEach(function(pk) {
-          chain = chain.then(function() {
-            return fetchJson('https://statsapi.mlb.com/api/v1/game/' + pk + '/boxscore').then(function(box) {
-              var gameDate = normalizeDate(box.gameDate || '');
-              var dayIdx = -1;
-              for (var i = 0; i < dayCols.length; i++) {
-                if (dayCols[i].iso === gameDate) { dayIdx = i; break; }
-              }
-              if (dayIdx < 0) return;
-              ['home', 'away'].forEach(function(side) {
-                var sideTeam = box.teams && box.teams[side];
-                if (!sideTeam || teamKey((sideTeam.team && sideTeam.team.abbreviation) || '') !== tk) return;
-                Object.keys(sideTeam.players || {}).forEach(function(k) {
-                  var pl = sideTeam.players[k];
-                  var pitching = pl.stats && pl.stats.pitching;
-                  if (!pitching || !pitching.inningsPitched) return;
-                  if (parseInt(pitching.gamesStarted, 10) >= 1) return;
-                  var pid = String(pl.person && pl.person.id);
-                  var name = pl.person && pl.person.fullName;
-                  if (!pid || !name) return;
-                  var pitches = num(pitching.numberOfPitches) || 0;
-                  if (!byPitcher[pid]) {
-                    byPitcher[pid] = { id: pid, name: name, pitchesByDay: dayCols.map(function() { return null; }), log: [] };
-                  }
-                  byPitcher[pid].pitchesByDay[dayIdx] = (byPitcher[pid].pitchesByDay[dayIdx] || 0) + pitches;
-                });
+        return Promise.all(pks.map(function(pk) {
+          return fetchJson('https://statsapi.mlb.com/api/v1/game/' + pk + '/boxscore').then(function(box) {
+            // Boxscore responses no longer include gameDate; use schedule officialDate.
+            var gameDate = gameDates[pk] || '';
+            var dayIdx = -1;
+            for (var i = 0; i < dayCols.length; i++) {
+              if (dayCols[i].iso === gameDate) { dayIdx = i; break; }
+            }
+            if (dayIdx < 0) return;
+            ['home', 'away'].forEach(function(side) {
+              var sideTeam = box.teams && box.teams[side];
+              var sideAbbr = sideTeam && sideTeam.team && sideTeam.team.abbreviation;
+              if (!sideTeam || canonTeamAbbr(sideAbbr || '') !== tk) return;
+              Object.keys(sideTeam.players || {}).forEach(function(k) {
+                var pl = sideTeam.players[k];
+                var pitching = pl.stats && pl.stats.pitching;
+                if (!pitching || !pitching.inningsPitched) return;
+                if (parseInt(pitching.gamesStarted, 10) >= 1) return;
+                var pid = String(pl.person && pl.person.id);
+                var name = pl.person && pl.person.fullName;
+                if (!pid || !name) return;
+                var pitches = num(pitching.numberOfPitches) || 0;
+                if (!byPitcher[pid]) {
+                  byPitcher[pid] = { id: pid, name: name, pitchesByDay: dayCols.map(function() { return null; }), log: [] };
+                }
+                byPitcher[pid].pitchesByDay[dayIdx] = (byPitcher[pid].pitchesByDay[dayIdx] || 0) + pitches;
               });
-            }).catch(function() { /* skip bad boxscore */ });
-          });
-        });
-        return chain.then(function() {
+            });
+          }).catch(function() { /* skip bad boxscore */ });
+        })).then(function() {
           return { rows: Object.keys(byPitcher).map(function(k) { return byPitcher[k]; }), rosterMeta: rosterMeta };
         });
       });
