@@ -601,7 +601,10 @@
       : avgOor <= 45 ? 'Soft schedule — headline bullpen ERA may be inflated'
       : 'Near-average competition faced';
 
-    var oorColor = avgOor >= 55 ? 'var(--red-l)' : avgOor <= 45 ? 'var(--green)' : 'var(--text-2)';
+    // Color matches the legitimacy framing of oorLabel, not the raw OOR value:
+    // tough competition (>=55) means the bullpen's ERA is trustworthy -> green;
+    // soft schedule (<=45) means the headline ERA may be inflated -> gold caution.
+    var oorColor = avgOor >= 55 ? 'var(--green)' : avgOor <= 45 ? 'var(--gold)' : 'var(--text-2)';
     var tonightOsi = ctx.tonightOsi;
     var tonightLabel = '';
     if (tonightOsi != null && avgOor != null) {

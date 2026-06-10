@@ -26,6 +26,18 @@
   --d-mid: #E8C24A;
   --d-weak: #F0935B;
   --d-poor: #F2545B;
+  /* Semantic status colors — single source of truth, mirroring the --d-* palette.
+     The profile/compare pages previously left these undefined, so bare `var(--green)`
+     (no fallback) rendered colorless and CSS fallbacks disagreed (3 different greens
+     on one page). theme.css is linked after the per-page inline <style> blocks, so
+     these become the effective values everywhere — unifying the previously divergent
+     greens/reds (#4ADE80 vs #3CCB7F vs #22C55E) onto one consistent palette. */
+  --green: #3CCB7F;
+  --red: #F2545B;
+  --red-l: #FCA5A5;
+  --gold: #E8C24A;
+  --amber: #FBBF24;
+  --blue: #60A5FA;
   --metal-silver: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%);
   --metal-violet: linear-gradient(180deg, #C4B0FF 0%, #7C4DFF 55%, #5B2BE0 100%);
   --display: "Roboto Condensed", "DM Sans", -apple-system, system-ui, sans-serif;
