@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260612j">
+<link rel="stylesheet" href="batter_profile.css?v=20260612k">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -581,10 +581,53 @@ function splitStatValueHtml(val, ctx, invert, dec, opts) {
   }
   return valChip(val, ctx, invert, dec, opts);
 }
-function splitStatCell(label, valueHtml) {
+/* League percentile context for split metrics. Pools are built once from the
+   overall split population (lightly PA-qualified) so each split value earns a
+   Savant-style rank bar. Direction-aware: inverted metrics (K%) report
+   "good = high percentile". */
+var SPLIT_PCTL = {};
+function buildSplitPctlPools() {
+  SPLIT_PCTL = {};
+  function add(m, v) { if (v == null || isNaN(v)) return; (SPLIT_PCTL[m] = SPLIT_PCTL[m] || []).push(v); }
+  (DATA._raw_overall || []).forEach(function(r) {
+    var pa = numOrNull(pickCol(r, ['PA']));
+    if (pa != null && pa < 50) return;
+    add('K%', pct(r, ['K%'])); add('BB%', pct(r, ['BB%']));
+    add('AVG', numOrNull(pickCol(r, ['AVG']))); add('OBP', numOrNull(pickCol(r, ['OBP'])));
+    add('ISO', numOrNull(pickCol(r, ['ISO']))); add('SLG', numOrNull(pickCol(r, ['SLG'])));
+    add('OPS', opsFromRow(r)); add('wRC+', numOrNull(pickCol(r, ['wRC+', 'wRC'])));
+    add('xwOBA', numOrNull(pickCol(r, ['xwOBA', 'xWOBA', 'xwoba', 'wOBA', 'woba'])));
+    add('TBpa', tbPerPaFromRow(r));
+  });
+  DATA.profiles.forEach(function(p) {
+    if (String(pickCol(p, ['split_type', 'split'])).toLowerCase().replace(/\s+/g, '_') !== 'overall') return;
+    add('OSI', numOrNull(pickCol(p, ['OSI']))); add('RCV', numOrNull(pickCol(p, ['RCV'])));
+    add('ABQ', numOrNull(pickCol(p, ['ABQ']))); add('OBR', numOrNull(pickCol(p, ['OBR'])));
+  });
+}
+function splitPctl(metric, value, invert) {
+  var pool = SPLIT_PCTL[metric];
+  if (!pool || pool.length < 20 || value == null || isNaN(value)) return null;
+  var p = percentile(pool, value);
+  if (p == null) return null;
+  return invert ? 100 - p : p;
+}
+function splitPctlBarHtml(metric, value, invert) {
+  var p = splitPctl(metric, value, invert);
+  if (p == null) return '';
+  var color = (A && A.heatColor) ? A.heatColor(p, 'osi', false) : 'rgba(124, 77, 255, 0.6)';
+  var rankColor = (A && A.metricTextColor) ? A.metricTextColor(p, 'osi', false) : '';
+  return '<div class="bp-split-stat__pctl" title="' + p + 'th percentile vs league">'
+    + '<div class="bp-split-stat__pctl-track"><div class="bp-split-stat__pctl-fill" style="width:' + clamp(p, 2, 100) + '%;background:' + color + '"></div></div>'
+    + '<span class="bp-split-stat__pctl-rank"' + (rankColor ? ' style="color:' + rankColor + '"' : '') + '>' + p + '</span>'
+    + '</div>';
+}
+function splitStatCell(label, valueHtml, pctlHtml) {
   return '<div class="bp-split-stat" role="group" aria-label="' + esc(label) + '">'
     + '<span class="bp-split-stat__label">' + esc(label) + '</span>'
-    + '<span class="bp-split-stat__value">' + valueHtml + '</span></div>';
+    + '<span class="bp-split-stat__value">' + valueHtml + '</span>'
+    + (pctlHtml || '')
+    + '</div>';
 }
 function splitMetricsBand(title, hint, cellsHtml) {
   return '<div class="bp-split-metrics__band">'
@@ -1760,27 +1803,33 @@ function splitMetricsHtml(key, splitKey, p) {
       + '</div>'
     : '';
 
+  var kp = pct(R, ['K%']), bbp = pct(R, ['BB%']);
+  var avg = numOrNull(pickCol(R, ['AVG'])), obp = numOrNull(pickCol(R, ['OBP'])), iso = numOrNull(pickCol(R, ['ISO']));
+  var slg = numOrNull(pickCol(R, ['SLG'])), ops = opsFromRow(R), wrc = numOrNull(pickCol(R, ['wRC+', 'wRC']));
+  var osi = numOrNull(pickCol(prof || {}, ['OSI'])), rcv = numOrNull(pickCol(prof || {}, ['RCV']));
+  var abq = numOrNull(pickCol(prof || {}, ['ABQ'])), obr = numOrNull(pickCol(prof || {}, ['OBR']));
+
   var band1 = [
-    splitStatCell('K%', splitStatValueHtml(pct(R, ['K%']), 'kpct', true, 1)),
-    splitStatCell('BB%', splitStatValueHtml(pct(R, ['BB%']), 'bbpct', false, 1)),
-    splitStatCell('AVG', splitStatValueHtml(numOrNull(pickCol(R, ['AVG'])), 'avg', false, 3)),
-    splitStatCell('OBP', splitStatValueHtml(numOrNull(pickCol(R, ['OBP'])), 'obp', false, 3)),
-    splitStatCell('ISO', splitStatValueHtml(numOrNull(pickCol(R, ['ISO'])), 'iso', false, 3))
+    splitStatCell('K%', splitStatValueHtml(kp, 'kpct', true, 1), splitPctlBarHtml('K%', kp, true)),
+    splitStatCell('BB%', splitStatValueHtml(bbp, 'bbpct', false, 1), splitPctlBarHtml('BB%', bbp, false)),
+    splitStatCell('AVG', splitStatValueHtml(avg, 'avg', false, 3), splitPctlBarHtml('AVG', avg, false)),
+    splitStatCell('OBP', splitStatValueHtml(obp, 'obp', false, 3), splitPctlBarHtml('OBP', obp, false)),
+    splitStatCell('ISO', splitStatValueHtml(iso, 'iso', false, 3), splitPctlBarHtml('ISO', iso, false))
   ].join('');
 
   var band2 = [
-    splitStatCell('xwOBA', splitStatValueHtml(xwoba, 'xwoba', false, 3)),
-    splitStatCell('OPS', splitStatValueHtml(opsFromRow(R), 'ops', false, 3)),
-    splitStatCell('SLG', splitStatValueHtml(numOrNull(pickCol(R, ['SLG'])), 'slg', false, 3)),
-    splitStatCell('Total Bases', splitStatValueHtml(tbPa, 'slg', false, 2, { display: tbPa != null ? fmt(tbPa, 2) + '/PA' : undefined, plain: true })),
-    splitStatCell('wRC+', splitStatValueHtml(numOrNull(pickCol(R, ['wRC+', 'wRC'])), 'wrc', false, 0))
+    splitStatCell('xwOBA', splitStatValueHtml(xwoba, 'xwoba', false, 3), splitPctlBarHtml('xwOBA', xwoba, false)),
+    splitStatCell('OPS', splitStatValueHtml(ops, 'ops', false, 3), splitPctlBarHtml('OPS', ops, false)),
+    splitStatCell('SLG', splitStatValueHtml(slg, 'slg', false, 3), splitPctlBarHtml('SLG', slg, false)),
+    splitStatCell('Total Bases', splitStatValueHtml(tbPa, 'slg', false, 2, { display: tbPa != null ? fmt(tbPa, 2) + '/PA' : undefined, plain: true }), splitPctlBarHtml('TBpa', tbPa, false)),
+    splitStatCell('wRC+', splitStatValueHtml(wrc, 'wrc', false, 0), splitPctlBarHtml('wRC+', wrc, false))
   ].join('');
 
   var band3 = [
-    splitStatCell('OSI', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1)),
-    splitStatCell('RCV', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['RCV'])), 'rcv', false, 1)),
-    splitStatCell('ABQ', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['ABQ'])), 'abq', false, 1)),
-    splitStatCell('OBR', splitStatValueHtml(numOrNull(pickCol(prof || {}, ['OBR'])), 'obr', false, 1)),
+    splitStatCell('OSI', splitStatValueHtml(osi, 'osi', false, 1), splitPctlBarHtml('OSI', osi, false)),
+    splitStatCell('RCV', splitStatValueHtml(rcv, 'rcv', false, 1), splitPctlBarHtml('RCV', rcv, false)),
+    splitStatCell('ABQ', splitStatValueHtml(abq, 'abq', false, 1), splitPctlBarHtml('ABQ', abq, false)),
+    splitStatCell('OBR', splitStatValueHtml(obr, 'obr', false, 1), splitPctlBarHtml('OBR', obr, false)),
     splitStatCell('Launch Angle', la != null
       ? splitStatValueHtml(la, 'iso', false, 1, { display: fmt(la, 1) + '°', plain: true })
       : splitStatValueHtml(null, 'iso', false, 1))
@@ -1919,7 +1968,7 @@ function renderPlayer(key) {
 
 /* ---------- controls + search ---------- */
 function mountHeaders() {
-  document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Full rate table by split — discipline, power, MLBMA scores, and batted-ball shape', 'split');
+  document.getElementById('bxHdrSplits').innerHTML = sectionHeaderHtml('Splits & Form', 'Full rate table by split — bars show percentile vs league', 'split');
   document.getElementById('bxHdrPitchMix').innerHTML = sectionHeaderHtml('Matchup & Pitch Mix', 'Tonight\'s starter arsenal vs this batter\'s contact and discipline by pitch type', 'matchups');
   document.getElementById('bxHdrProps').innerHTML = sectionHeaderHtml('Prop Board', 'Ranked angles for tonight — click a row for hit-rate evidence and drivers', 'target');
   if (A && A.metricLegendHtml) {
@@ -2041,7 +2090,7 @@ function load() {
     DATA.hitRates = indexHitRates(res[pmOff + 2] || []);
     indexSavantRates(res[pmOff + 3] || []);
     DATA.weather = res[pmOff + 4] || [];
-    indexRawStats(); buildPool();
+    indexRawStats(); buildPool(); buildSplitPctlPools();
     renderSplitTabBar(); bindSplitTabs(); bindPropBoardEvents(); mountHeaders(); bindBatterProfileControls();
     if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
       try { MLBMAAssets.mountPlatformHeader('profilePageHeader', { title: 'Batter Profile', subtitle: 'Ranked prop board for the selected hitter, with splits and matchup pitch mix as evidence', showPlatformNav: false }); } catch (e) {}
