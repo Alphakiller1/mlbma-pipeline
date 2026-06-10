@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="player_profile_pages.css?v=20260610">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260605a">
 <link rel="stylesheet" href="profile_shell.css?v=20260610">
-<link rel="stylesheet" href="batter_profile.css?v=20260611c">
+<link rel="stylesheet" href="batter_profile.css?v=20260611f">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script src="mlbma_config.js?v=20260609b"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
@@ -1252,7 +1252,7 @@ function ptPipsHtml(pipe) {
   if (!bits.length) return '<span class="bp-pt__na">—</span>';
   return '<span class="bp-pt__pips" aria-label="Last 10 games, oldest to newest">'
     + bits.map(function(b) {
-      return '<i class="bp-pt__pip' + (b === '1' ? ' bp-pt__pip--hit' : '') + '" aria-hidden="true"></i>';
+      return '<span class="bp-pt__pip' + (b === '1' ? ' bp-pt__pip--hit' : '') + '" aria-hidden="true"></span>';
     }).join('')
     + '</span>';
 }
@@ -1345,14 +1345,36 @@ function batterHeadshot(key, sizeKey) {
   if (!A || !A.pitcherAvatar) return '';
   var reg = getRegistry(key);
   var prof = overallProfileRow(key);
-  var pid = pickCol(reg || {}, ['player_id', 'playerId'])
-    || pickCol(prof || {}, ['player_id', 'playerId']);
+  var pid = pickCol(reg || {}, ['player_id', 'playerId', 'mlbam_id', 'MLBAMID'])
+    || pickCol(prof || {}, ['player_id', 'playerId', 'mlbam_id', 'MLBAMID']);
+  if (!pid && A.lookupMlbId) pid = A.lookupMlbId(playerDisplayName(key));
   var idOrName = pid ? String(pid) : playerDisplayName(key);
   return A.pitcherAvatar(idOrName, {
     crop: sizeKey || 'profile',
     className: 'tp-pitcher-banner__avatar',
     eager: true
   });
+}
+
+function resolveSpMlbId(spName) {
+  if (!spName || spName === 'TBD') return null;
+  if (/^\d+$/.test(String(spName))) return String(spName);
+  var want = canonicalName(spName);
+  var spHit = (DATA.spProfiles || []).find(function(r) {
+    return canonicalName(pickCol(r, ['pitcher_name', 'Pitcher', 'name', 'player_name'])) === want;
+  });
+  if (spHit) {
+    var id = pickCol(spHit, ['player_id', 'playerId', 'mlbam_id', 'MLBAMID']);
+    if (id) return String(id);
+  }
+  var regHit = (DATA.registry || []).find(function(r) {
+    return canonicalName(pickCol(r, ['full_name', 'fullName', 'name'])) === want;
+  });
+  if (regHit) {
+    var rid = pickCol(regHit, ['player_id', 'playerId', 'mlbam_id', 'MLBAMID']);
+    if (rid) return String(rid);
+  }
+  return (A && A.lookupMlbId) ? A.lookupMlbId(spName) : null;
 }
 
 /* ---------- renderers ---------- */
@@ -1469,20 +1491,11 @@ function renderSnapshot(key, p) {
   var batsLabel = bats === 'L' ? 'LHB' : bats === 'R' ? 'RHB' : bats === 'S' ? 'SHB' : bats;
   var decisionStrip = buildHeroDecisionStrip(key, p);
 
-  var ppGap = numOrNull(pickCol(prof || {}, ['PP_Gap']));
-  var ppColor = ppGap == null ? '' : (ppGap >= 2 ? '#4ADE80' : ppGap <= -2 ? '#FCA5A5' : '');
-  var ppDisp = ppGap == null ? '—' : (ppGap > 0 ? '+' : '') + fmt(ppGap, 1);
-  var ppHtml = '<span class="tp-hero-stat__num' + (ppGap == null ? ' tp-hero-stat__num--na' : '') + '"'
-    + (ppColor ? ' style="color:' + ppColor + '"' : '')
-    + ' title="projOSI minus OSI. Positive: results trail contact quality (positive-regression candidate). Negative: running hot.">'
-    + esc(ppDisp) + '</span>';
-
   var statRow = '<div class="tp-team-banner__stats tp-team-banner__stats--hero pp-hero-stats tp-hero-stat-row" role="group" aria-label="Batter headline stats">'
     + heroStat('', '<span class="tp-hero-stat__num">' + esc(batsLabel) + '</span>', 'neutral', 'Bats ' + batsLabel)
     + heroStat('OSI', heroMetricText(numOrNull(pickCol(prof || {}, ['OSI'])), 'osi', false, 1), 'neutral')
     + heroStat('wRC+', heroMetricText(numOrNull(pickCol(R, ['wRC+'])), 'wrc', false, 0), 'neutral')
     + heroStat('K%', heroMetricText(pct(R, ['K%']), 'kpct', true, 1, { display: pct(R, ['K%']) != null ? fmt(pct(R, ['K%']), 1) + '%' : '—' }), 'neutral')
-    + heroStat('PP Gap', ppHtml, 'neutral')
     + '</div>';
 
   el.innerHTML = '<section class="tp-team-banner tp-team-banner--hero tp-pitcher-banner tp-batter-banner" style="--tp-accent:' + esc(accent) + '">'
@@ -1608,20 +1621,20 @@ function renderPropBoard(p) {
     if (ranked.length) STATE.expandedProps[ranked[0].def.id] = true;
     STATE._expandDefault = false;
   }
-  var head = '<div class="bp-pt__row bp-pt__row--head" aria-hidden="true">'
+  var head = '<div class="bp-pt__head"><div class="bp-pt__row bp-pt__row--head" aria-hidden="true">'
     + '<span class="bp-pt__c bp-pt__c-prop">Prop</span>'
     + '<span class="bp-pt__c bp-pt__c-lean">Lean</span>'
     + '<span class="bp-pt__c bp-pt__c-grade">Grade</span>'
     + '<span class="bp-pt__c bp-pt__c-model">Model</span>'
-    + '<span class="bp-pt__c bp-pt__c-line">Book Line</span>'
+    + '<span class="bp-pt__c bp-pt__c-line">Line</span>'
     + '<span class="bp-pt__c bp-pt__c-edge">Edge</span>'
     + '<span class="bp-pt__c bp-pt__c-l5">L5</span>'
     + '<span class="bp-pt__c bp-pt__c-l10">L10</span>'
     + '<span class="bp-pt__c bp-pt__c-l20">L20</span>'
-    + '<span class="bp-pt__c bp-pt__c-szn">Szn</span>'
+    + '<span class="bp-pt__c bp-pt__c-szn">Season</span>'
     + '<span class="bp-pt__c bp-pt__c-pips">Last 10</span>'
     + '<span class="bp-pt__c bp-pt__c-chev"></span>'
-    + '</div>';
+    + '</div></div>';
   var rows = ranked.map(function(item, idx) {
     return propRowHtml(item.def, p, { best: idx === 0 });
   }).filter(Boolean).join('');
@@ -1839,6 +1852,7 @@ function renderPitchMix(key, p) {
   mount.innerHTML = PM.renderBatterProfileSection(pack, {
     batterName: batterName,
     spName: spName,
+    spId: resolveSpMlbId(spName),
     mix: DATA.pitchMix
   });
 }
@@ -1975,6 +1989,7 @@ function load() {
   Promise.all(tabs.map(fetchTab).concat([schedP])).then(function(res) {
     var sched = res[res.length - 1];
     DATA.profiles = res[0] || []; DATA.registry = res[1] || [];
+    if (A && A.parseRegistryRows) A.parseRegistryRows(DATA.registry);
     hydrateSlateContext(res[2] || [], res[3] || [], sched);
     DATA.spProfiles = res[4] || [];
     RAW_TABS.forEach(function(pair, i) { DATA['_raw_' + pair[1]] = res[5 + i] || []; });

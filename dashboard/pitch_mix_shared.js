@@ -409,7 +409,7 @@
     }
 
     var spAvatar = A && A.pitcherAvatar
-      ? A.pitcherAvatar(spName, 'compare', { eager: true, className: 'bp-pm-sp-avatar' })
+      ? A.pitcherAvatar(opts.spId || spName, 'compare', { eager: true, className: 'bp-pm-sp-avatar' })
       : '';
     return '<div class="bp-pm-head">'
       + '<div class="bp-pm-head__sp">' + spAvatar + '<span>' + esc(spName) + ' · Arsenal</span></div>'
