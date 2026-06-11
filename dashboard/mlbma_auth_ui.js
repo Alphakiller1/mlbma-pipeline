@@ -13,6 +13,8 @@
 
   var MOUNT_SELECTOR = '[data-mlbma-auth-panel]';
   var STYLE_ID = 'mlbma-auth-ui-style';
+  var PATREON_URL = 'https://www.patreon.com/ChaseAnalytics';
+  var DISCORD_INVITE_URL = 'https://discord.gg/Fb3fHrqK';
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -70,7 +72,16 @@
       '.mlbma-auth-billing{margin:0 0 14px;padding:0 0 14px;border-bottom:1px solid var(--border,#28282f);}' +
       '.mlbma-auth-billing__status{font-size:13.5px;font-weight:600;color:var(--text,#F5F6FA);}' +
       '.mlbma-auth-billing__status--off{color:var(--text-3,#6E7383);font-weight:500;}' +
-      '.mlbma-auth-billing__icon{width:30px;height:30px;flex:0 0 auto;color:var(--gold,#E8C24A);}';
+      '.mlbma-auth-billing__icon{width:30px;height:30px;flex:0 0 auto;color:var(--gold,#E8C24A);}' +
+      '.mlbma-auth-patreon{display:block;margin-top:14px;text-align:center;font-size:12.5px;' +
+      'font-weight:600;color:var(--gold,#E8C24A);text-decoration:none;}' +
+      '.mlbma-auth-patreon:hover{text-decoration:underline;}' +
+      '.mlbma-auth-community{margin-top:16px;padding-top:16px;border-top:1px solid var(--border,#28282f);' +
+      'display:flex;flex-direction:column;gap:6px;}' +
+      '.mlbma-auth-community .mlbma-auth-patreon{margin-top:2px;}' +
+      '.mlbma-auth-join-link{display:block;margin-top:8px;text-align:center;font-size:12px;' +
+      'font-weight:600;color:var(--v,#9A6BFF);text-decoration:none;}' +
+      '.mlbma-auth-join-link:hover{text-decoration:underline;}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
@@ -112,7 +123,7 @@
     panel.innerHTML =
       '<div class="mlbma-auth-card">' +
       '<h2 class="mlbma-auth-card__title">Sign in to Chase Analytics</h2>' +
-      '<p class="mlbma-auth-card__sub">Create a free account to save preferences and (soon) link Discord. ' +
+      '<p class="mlbma-auth-card__sub">Create a free account to save preferences and link Discord. ' +
       'The dashboard stays open either way.</p>' +
       '<button type="button" class="mlbma-auth-btn mlbma-auth-btn--google" data-mlbma-action="google">' +
       googleIcon() + '<span>Continue with Google</span></button>' +
@@ -133,6 +144,12 @@
       'Verify code &amp; sign in</button>' +
       '</form>' +
       '<p class="mlbma-auth-status" role="status" aria-live="polite"></p>' +
+      '<div class="mlbma-auth-community">' +
+      '<a class="mlbma-auth-btn mlbma-auth-btn--discord" href="' + esc(DISCORD_INVITE_URL) + '" ' +
+      'target="_blank" rel="noopener">Join our Discord</a>' +
+      '<a class="mlbma-auth-patreon" href="' + esc(PATREON_URL) + '" target="_blank" rel="noopener">' +
+      '★ Premium picks on Patreon →</a>' +
+      '</div>' +
       '</div>';
   }
 
@@ -163,16 +180,19 @@
       // Cloudflare Pages deployment; degrades gracefully where /api/* doesn't exist.
       '<button type="button" class="mlbma-auth-btn mlbma-auth-btn--discord" ' +
       'data-mlbma-action="connect-discord">Connect Discord</button>' +
+      '<a class="mlbma-auth-join-link" href="' + esc(DISCORD_INVITE_URL) + '" target="_blank" rel="noopener">' +
+      'Join our Discord server →</a>' +
       '</div>' +
-      // Subscription / billing (Phase 4). Status + an Upgrade or Manage-billing button are
-      // filled in from the profile by updateAccountFromProfile().
+      // Premium = Patreon membership (which auto-grants the Discord role). Static CTA while
+      // the paywall lives on Patreon — no Stripe / subscription_status dependency.
       '<div class="mlbma-auth-billing">' +
       '<div class="mlbma-auth-discord__row">' + billingIcon() +
       '<div class="mlbma-auth-discord__meta">' +
-      '<div class="mlbma-auth-id__label">Subscription</div>' +
-      '<div class="mlbma-auth-billing__status mlbma-auth-billing__status--off" data-mlbma-sub-status>Checking…</div>' +
+      '<div class="mlbma-auth-id__label">Premium</div>' +
+      '<div class="mlbma-auth-billing__status mlbma-auth-billing__status--off">Daily signals + private Discord</div>' +
       '</div></div>' +
-      '<div data-mlbma-billing-action></div>' +
+      '<a class="mlbma-auth-btn mlbma-auth-btn--primary" href="' + esc(PATREON_URL) + '" target="_blank" rel="noopener">' +
+      'Join Premium on Patreon</a>' +
       '</div>' +
       '<button type="button" class="mlbma-auth-btn" data-mlbma-action="signout">Sign out</button>' +
       '<p class="mlbma-auth-status" role="status" aria-live="polite"></p>' +
