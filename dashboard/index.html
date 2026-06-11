@@ -33,16 +33,43 @@
 <script src="mlbma_icons.js?v=20260606c"></script>
 <style>
 body { min-height: 100vh; color: var(--text, #F4F4F7); }
-.index-wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
-.index-secondary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 28px; text-align: left; }
-.index-card {
-  display: flex; flex-direction: column; padding: 18px 20px; border-radius: 12px; text-decoration: none; color: inherit;
-  background: var(--bg-3, #18181c); border: 1px solid var(--border, #28282f); transition: border-color 0.15s;
-}
+.index-wrap { max-width: 1060px; margin: 0 auto; padding: 32px 24px 72px; }
+
+/* Landing hero — intro + value props on the left, the signup card integrated on the right */
+.landing-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, 400px); gap: 36px; align-items: start; }
+.landing-hero__lead { margin: 16px 0 0; font-size: 15px; line-height: 1.6; color: var(--text-2, #A4A8B6); max-width: 54ch; }
+.landing-points { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 9px; }
+.landing-points li { position: relative; padding-left: 24px; font-size: 13.5px; line-height: 1.4; color: var(--text, #F5F6FA); }
+.landing-points li::before { content: ""; position: absolute; left: 0; top: 5px; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--v-grad, linear-gradient(135deg, #9A6BFF, #5B2BE0)); box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.16); }
+.landing-cta-row { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 26px; }
+.landing-cta { display: inline-flex; align-items: center; justify-content: center; padding: 11px 18px; border-radius: 10px;
+  font-size: 13.5px; font-weight: 700; text-decoration: none; border: 1px solid var(--border, #28282f); color: var(--text, #F5F6FA);
+  transition: border-color .15s, background .15s, transform .15s; }
+.landing-cta:hover { transform: translateY(-1px); border-color: var(--v, #9A6BFF); }
+.landing-cta--primary { background: var(--v-grad, linear-gradient(135deg, #9A6BFF, #5B2BE0)); border-color: transparent; color: #fff; }
+.landing-cta--discord { background: #5865F2; border-color: #5865F2; color: #fff; }
+.landing-cta--discord:hover { background: #4752c4; border-color: #4752c4; }
+.landing-cta--patreon { color: var(--gold, #E8C24A); border-color: rgba(232, 194, 74, 0.45); }
+.landing-cta--patreon:hover { border-color: var(--gold, #E8C24A); }
+.landing-hero__account { position: sticky; top: 86px; }
+
+.landing-tools { margin-top: 52px; }
+.landing-section-title { margin: 0 0 16px; font-size: 12px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--text-3, #6E7383); }
+.index-secondary { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; text-align: left; }
+.index-card { display: flex; flex-direction: column; padding: 18px 20px; border-radius: 14px; text-decoration: none; color: inherit;
+  background: var(--card, #12141D); border: 1px solid var(--border, #28282f); transition: border-color .15s, transform .15s; }
+.index-card:hover { border-color: var(--v, #9A6BFF); transform: translateY(-2px); }
 .index-card-icon { margin-bottom: 12px; }
-.index-card:hover { border-color: var(--ca-purple, #9A6BFF); }
-.index-card h2 { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: #9A6BFF; }
+.index-card h2 { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: var(--v, #9A6BFF); }
 .index-card p { margin: 0; font-size: 12px; color: var(--text-2); line-height: 1.45; }
+
+@media (max-width: 860px) {
+  .landing-hero { grid-template-columns: 1fr; gap: 26px; }
+  .landing-hero__account { position: static; }
+}
+/* The landing loads no live data — suppress the dashboard's "Loading live data" overlay. */
+#mlbmaLoading, .mlbma-loading { display: none !important; }
 </style>
 <script>document.documentElement.classList.add('view-opening');</script>
 </head>
@@ -131,19 +158,59 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 </div>
 
 <main class="index-wrap ca-page-shell">
-  <div id="indexPageHeader"></div>
-  <section class="index-auth" id="account" aria-label="Account" style="margin-top:24px">
-    <!-- Auth panel (Phase 1): non-blocking. Signed-out shows Google + magic-link;
-         signed-in shows email + sign out. See dashboard/mlbma_auth_ui.js. -->
-    <div data-mlbma-auth-panel></div>
+  <section class="landing-hero">
+    <div class="landing-hero__intro">
+      <div id="indexPageHeader"></div>
+      <p class="landing-hero__lead">A free, open MLB dashboard — daily matchup signals, team rankings, and
+        pitcher/batter research built on proprietary offensive metrics, refreshed every morning. Premium
+        signals and the community live in our Discord.</p>
+      <ul class="landing-points">
+        <li>Daily matchup signals &amp; lineup edges</li>
+        <li>League-wide team rankings on proprietary metrics (OSI)</li>
+        <li>Pitcher, batter, team &amp; bullpen research profiles</li>
+        <li>Private Discord community + premium perks</li>
+      </ul>
+      <div class="landing-cta-row">
+        <a class="landing-cta landing-cta--primary" href="chase_analytics_mlb_oem_v7.html">Open the dashboard</a>
+        <a class="landing-cta landing-cta--discord" href="https://discord.gg/Fb3fHrqK" target="_blank" rel="noopener">Join our Discord</a>
+        <a class="landing-cta landing-cta--patreon" href="https://www.patreon.com/ChaseAnalytics" target="_blank" rel="noopener">Premium on Patreon</a>
+      </div>
+    </div>
+    <!-- Signup card — integrated into the hero (not a standalone page). See mlbma_auth_ui.js. -->
+    <aside class="landing-hero__account" id="account" aria-label="Account">
+      <div data-mlbma-auth-panel></div>
+    </aside>
   </section>
-  <nav class="index-secondary" aria-label="More tools">
-    <a class="index-card" href="glossary.html">
-      <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="book-open"></i></span>
-      <h2>Glossary</h2>
-      <p>Metric definitions and formulas.</p>
-    </a>
-  </nav>
+
+  <section class="landing-tools" aria-label="Explore the platform">
+    <h2 class="landing-section-title">Explore the platform</h2>
+    <nav class="index-secondary">
+      <a class="index-card" href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="swords"></i></span>
+        <h2>Matchups</h2><p>Every game's offensive matchup, lineup edges &amp; weather/park context.</p>
+      </a>
+      <a class="index-card" href="team_rankings.html">
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="bar-chart-3"></i></span>
+        <h2>Team Rankings</h2><p>League-wide offensive rankings with recent-form (L14) movement.</p>
+      </a>
+      <a class="index-card" href="batter_profile.html">
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="user"></i></span>
+        <h2>Player Profiles</h2><p>Batter, pitcher &amp; team pages — splits, percentile bars, pitch mix.</p>
+      </a>
+      <a class="index-card" href="bullpen_report.html">
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="shield-alert"></i></span>
+        <h2>Bullpen Intel</h2><p>Unit &amp; reliever profiles, usage and strength-of-schedule.</p>
+      </a>
+      <a class="index-card" href="chase_analytics_mlb_oem_v7.html#section-research-lab">
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="flask-conical"></i></span>
+        <h2>Research Lab</h2><p>Daily convergence plays where multiple model signals agree.</p>
+      </a>
+      <a class="index-card" href="glossary.html">
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="book-open"></i></span>
+        <h2>Glossary</h2><p>Metric definitions and formulas.</p>
+      </a>
+    </nav>
+  </section>
 </main>
 <script src="chase_nav.js"></script>
 <!-- Central outbound links (domain/discord/patreon/signup) — single source of truth. -->
@@ -153,7 +220,7 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 <!-- Auth shell (Phase 1) — logic then UI panel. Inert unless a [data-mlbma-auth-panel]
      element is present; does not gate the dashboard or its data loading. -->
 <script src="mlbma_auth.js?v=20260611b"></script>
-<script src="mlbma_auth_ui.js?v=20260611b"></script>
+<script src="mlbma_auth_ui.js?v=20260611d"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
@@ -164,8 +231,15 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
       showPlatformNav: false
     });
   }
-  if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(document.body);
-  if (window.MLBMA_UI) MLBMA_UI.hideLoadingOverlay();
+  // The overlay can be (re)created on DOMContentLoaded after this inline script, so settle
+  // it again on load + a short delay, and (re)render the card icons.
+  function _settle() {
+    if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(document.body);
+  }
+  _settle();
+  window.addEventListener('load', _settle);
+  setTimeout(_settle, 300);
 })();
 </script>
 </body>

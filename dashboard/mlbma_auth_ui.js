@@ -28,8 +28,9 @@
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
     var css =
-      '.mlbma-auth-card{background:var(--bg-3,var(--card,#18181c));border:1px solid var(--border,#28282f);' +
-      'border-radius:14px;padding:20px 22px;max-width:420px;}' +
+      '.mlbma-auth-card{background:var(--card,#12141D);border:1px solid var(--border,#28282f);' +
+      'border-radius:16px;padding:22px;width:100%;max-width:420px;' +
+      'box-shadow:0 24px 60px -30px rgba(0,0,0,.6);}' +
       '.mlbma-auth-card__title{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text,#F5F6FA);}' +
       '.mlbma-auth-card__sub{font-size:12.5px;line-height:1.45;color:var(--text-2,#A4A8B6);margin:0 0 16px;}' +
       '.mlbma-auth-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;' +
@@ -62,6 +63,7 @@
       '.mlbma-auth-id__email{font-size:14px;font-weight:600;color:var(--text,#F5F6FA);' +
       'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
       '.mlbma-auth-otp{margin-top:12px;}' +
+      '.mlbma-auth-otp[hidden]{display:none;}' +
       '.mlbma-auth-discord{margin:14px 0;padding:14px 0;border-top:1px solid var(--border,#28282f);' +
       'border-bottom:1px solid var(--border,#28282f);}' +
       '.mlbma-auth-discord__row{display:flex;align-items:center;gap:11px;margin-bottom:10px;}' +
