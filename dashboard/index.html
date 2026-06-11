@@ -17,20 +17,15 @@
 <meta name="twitter:title" content="Chase Analytics — MLB Offensive Intelligence">
 <meta name="twitter:description" content="Matchups, team rankings, and research tools built on proprietary MLB offensive metrics.">
 <meta name="twitter:image" content="https://chase-analytics.com/assets/chase-logo-horizontal.png">
-<!-- Warm the Supabase API connection + preload the self-hosted auth SDK (same-origin, so
-     it's fast and not blocked by browser tracking-prevention). -->
+<!-- Warm the only remote API needed for the account card. -->
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
+<link rel="preload" href="assets/backgrounds/stadium-outfield-night.jpg" as="image">
+<link rel="preload" href="assets/chase-logo-horizontal.png" as="image">
 <link rel="prefetch" href="vendor/supabase.min.js" as="script">
-<link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
-<link rel="stylesheet" href="theme.css?v=20260619a">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
+<link rel="stylesheet" href="landing.css?v=20260611a">
 <link rel="stylesheet" href="chase_nav.css?v=20260626b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-<script src="mlbma_config.js?v=20260606c"></script>
-<script src="mlbma_assets.js?v=20260618b"></script>
-<script src="mlbma_icons.js?v=20260606c"></script>
 <style>
 body { min-height: 100vh; color: var(--text, #F4F4F7); }
 .index-wrap { max-width: 1060px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -63,6 +58,8 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 .index-card-icon { margin-bottom: 12px; }
 .index-card h2 { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: var(--v, #9A6BFF); }
 .index-card p { margin: 0; font-size: 12px; color: var(--text-2); line-height: 1.45; }
+/* Inline card icons need stroke/fill (theme.css is no longer linked on this page). */
+.ca-icon-circle svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 @media (max-width: 860px) {
   .landing-hero { grid-template-columns: 1fr; gap: 26px; }
@@ -74,7 +71,6 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 <script>document.documentElement.classList.add('view-opening');</script>
 </head>
 <body class="platform-dashboard opening-dashboard ca-bg-outfield">
-<script src="mlbma_ui.js?v=20260610b" data-page="index.html"></script>
 ﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
 <meta charset="UTF-8">
@@ -160,7 +156,11 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 <main class="index-wrap ca-page-shell">
   <section class="landing-hero">
     <div class="landing-hero__intro">
-      <div id="indexPageHeader"></div>
+      <header class="ca-page-header">
+        <p class="ca-eyebrow">Chase Analytics</p>
+        <h1 class="ca-page-title">MLB Offensive Intelligence</h1>
+        <p class="ca-page-header__sub">Matchups, team rankings, and research tools built on proprietary metrics.</p>
+      </header>
       <p class="landing-hero__lead">A free, open MLB dashboard — daily matchup signals, team rankings, and
         pitcher/batter research built on proprietary offensive metrics, refreshed every morning. Premium
         signals and the community live in our Discord.</p>
@@ -186,61 +186,39 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
     <h2 class="landing-section-title">Explore the platform</h2>
     <nav class="index-secondary">
       <a class="index-card" href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">
-        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="swords"></i></span>
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m14.5 17.5 3 3 3-3-3-3"/><path d="m3 21 7.5-7.5"/><path d="m14 4 6 6"/><path d="m4 14 6 6"/><path d="M20 4 4 20"/></svg></span>
         <h2>Matchups</h2><p>Every game's offensive matchup, lineup edges &amp; weather/park context.</p>
       </a>
       <a class="index-card" href="team_rankings.html">
-        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="bar-chart-3"></i></span>
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-5"/><path d="M12 16V7"/><path d="M17 16v-8"/></svg></span>
         <h2>Team Rankings</h2><p>League-wide offensive rankings with recent-form (L14) movement.</p>
       </a>
       <a class="index-card" href="batter_profile.html">
-        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="user"></i></span>
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
         <h2>Player Profiles</h2><p>Batter, pitcher &amp; team pages — splits, percentile bars, pitch mix.</p>
       </a>
       <a class="index-card" href="bullpen_report.html">
-        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="shield-alert"></i></span>
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
         <h2>Bullpen Intel</h2><p>Unit &amp; reliever profiles, usage and strength-of-schedule.</p>
       </a>
       <a class="index-card" href="chase_analytics_mlb_oem_v7.html#section-research-lab">
-        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="flask-conical"></i></span>
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 2v6L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L14 8V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></span>
         <h2>Research Lab</h2><p>Daily convergence plays where multiple model signals agree.</p>
       </a>
       <a class="index-card" href="glossary.html">
-        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><i data-lucide="book-open"></i></span>
+        <span class="ca-icon-circle ca-icon-circle--sm index-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
         <h2>Glossary</h2><p>Metric definitions and formulas.</p>
       </a>
     </nav>
   </section>
 </main>
+<script src="mlbma_config.js?v=20260606c"></script>
 <script src="chase_nav.js"></script>
 <!-- Central outbound links (domain/discord/patreon/signup) — single source of truth. -->
 <script src="chase_links.js?v=20260611c"></script>
-<!-- Tiered-access scaffold (Phase 4) — classification + canAccess() only; NOT enforced yet. -->
-<script src="mlbma_access.js?v=20260611b"></script>
 <!-- Auth shell (Phase 1) — logic then UI panel. Inert unless a [data-mlbma-auth-panel]
      element is present; does not gate the dashboard or its data loading. -->
 <script src="mlbma_auth.js?v=20260611b"></script>
 <script src="mlbma_auth_ui.js?v=20260611f"></script>
-<script>
-(function() {
-  if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
-    MLBMAAssets.mountPlatformHeader('indexPageHeader', {
-      eyebrow: 'Chase Analytics',
-      title: 'MLB Offensive Intelligence',
-      subtitle: 'Matchups, team rankings, and research tools built on proprietary metrics.',
-      showPlatformNav: false
-    });
-  }
-  // The overlay can be (re)created on DOMContentLoaded after this inline script, so settle
-  // it again on load + a short delay, and (re)render the card icons.
-  function _settle() {
-    if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
-    if (window.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(document.body);
-  }
-  _settle();
-  window.addEventListener('load', _settle);
-  setTimeout(_settle, 300);
-})();
-</script>
 </body>
 </html>

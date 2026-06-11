@@ -1,0 +1,302 @@
+/* Chase Analytics landing/signup page: lean first-paint path. */
+:root {
+  --bg: #08090f;
+  --bg-2: #0e1018;
+  --card: #12141d;
+  --border: #262a38;
+  --text: #f5f6fa;
+  --text-2: #a4a8b6;
+  --text-3: #6e7383;
+  --v: #9a6bff;
+  --v-mid: #7c4dff;
+  --v-light: #c4b0ff;
+  --v-grad: linear-gradient(135deg, #9a6bff 0%, #5b2be0 100%);
+  --gold: #e8c24a;
+  --green: #3ccb7f;
+  --red: #f2545b;
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --display: "Arial Narrow", "Roboto Condensed", "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(180deg, rgba(5, 6, 14, 0.58) 0%, rgba(8, 9, 15, 0.34) 38%, rgba(8, 9, 15, 0.44) 68%, rgba(5, 5, 12, 0.68) 100%),
+    radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124, 77, 255, 0.12), transparent 62%),
+    radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91, 43, 224, 0.08), transparent 60%),
+    url("assets/backgrounds/stadium-outfield-night.jpg");
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center top;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+a { color: inherit; }
+
+.index-wrap {
+  width: min(1060px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 32px 0 72px;
+}
+
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 400px);
+  gap: 36px;
+  align-items: start;
+}
+
+.landing-hero__account {
+  position: sticky;
+  top: 86px;
+}
+
+.ca-page-header {
+  margin: 0 0 26px;
+  padding-top: 8px;
+}
+
+.ca-eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.ca-page-title {
+  margin: 10px 0 0;
+  font-family: var(--display);
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 900;
+  line-height: 0.96;
+  letter-spacing: 0;
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.42), 0 18px 28px rgba(0, 0, 0, 0.45);
+}
+
+.ca-page-header__sub,
+.landing-hero__lead {
+  max-width: 58ch;
+  color: var(--text-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.ca-page-header__sub {
+  margin: 12px 0 0;
+  font-weight: 600;
+}
+
+.landing-hero__lead { margin: 16px 0 0; }
+
+.landing-points {
+  display: grid;
+  gap: 9px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-points li {
+  position: relative;
+  padding-left: 24px;
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.landing-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--v-grad);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.16);
+}
+
+.landing-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-top: 26px;
+}
+
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 11px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 800;
+  text-decoration: none;
+  background: rgba(18, 20, 29, 0.74);
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.landing-cta:hover {
+  transform: translateY(-1px);
+  border-color: var(--v);
+}
+
+.landing-cta--primary {
+  color: #fff;
+  border-color: transparent;
+  background: var(--v-grad);
+}
+
+.landing-cta--discord {
+  color: #fff;
+  border-color: #5865f2;
+  background: #5865f2;
+}
+
+.landing-cta--patreon {
+  color: #1f2330;
+  border-color: var(--gold);
+  background: var(--gold);
+}
+
+.landing-tools { margin-top: 52px; }
+
+.landing-section-title {
+  margin: 0 0 16px;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.index-secondary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.index-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 148px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  background: rgba(18, 20, 29, 0.88);
+  box-shadow: 0 24px 60px -42px rgba(0, 0, 0, 0.75);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.index-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--v);
+}
+
+.index-card-icon { margin-bottom: 12px; }
+
+.index-card h2 {
+  margin: 0 0 6px;
+  color: var(--v);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.index-card p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.ca-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(154, 107, 255, 0.72);
+  border-radius: 50%;
+  color: var(--v-light);
+  background: radial-gradient(circle at 35% 25%, rgba(196, 176, 255, 0.28), rgba(124, 77, 255, 0.12) 56%, rgba(8, 9, 15, 0.88));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 22px rgba(124, 77, 255, 0.3);
+}
+
+.ca-icon-circle svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ca-neon-icon,
+.ca-neon-icon--sm {
+  display: inline-flex;
+  flex: none;
+  line-height: 0;
+}
+
+.ca-neon-icon .ca-icon-img,
+.ca-neon-icon--sm .ca-icon-img {
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+#mlbmaLoading,
+.mlbma-loading,
+.mlbma-load-progress,
+.mlbma-footer {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .index-wrap {
+    width: min(100% - 32px, 680px);
+    padding-top: 24px;
+  }
+
+  .landing-hero {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .landing-hero__account { position: static; }
+}
+
+@media (max-width: 520px) {
+  .index-wrap {
+    width: min(100% - 24px, 680px);
+    padding-bottom: 48px;
+  }
+
+  .ca-page-title { font-size: 40px; }
+
+  .landing-cta { width: 100%; }
+}
