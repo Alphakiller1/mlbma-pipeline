@@ -13,8 +13,11 @@
 
   var MOUNT_SELECTOR = '[data-mlbma-auth-panel]';
   var STYLE_ID = 'mlbma-auth-ui-style';
-  var PATREON_URL = 'https://www.patreon.com/ChaseAnalytics';
-  var DISCORD_INVITE_URL = 'https://discord.gg/Fb3fHrqK';
+  // Outbound links come from the central config (dashboard/chase_links.js); fall back to
+  // literals so the panel still works if that file isn't loaded on a given page.
+  var _LINKS = global.CHASE_LINKS || {};
+  var PATREON_URL = _LINKS.PATREON || 'https://www.patreon.com/ChaseAnalytics';
+  var DISCORD_INVITE_URL = _LINKS.DISCORD_INVITE || 'https://discord.gg/Fb3fHrqK';
 
   function esc(s) {
     return String(s == null ? '' : s)

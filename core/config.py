@@ -33,6 +33,13 @@ def check_google_credentials() -> bool:
 
 SHEET_ID = "1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk"
 
+# ── Public site / brand links (canonical) ───────────────────────────────────────
+# Single source of truth for outbound links on the Python side. The frontend mirror is
+# dashboard/chase_links.js. Keep the two in sync.
+CHASE_ANALYTICS_DOMAIN = "https://chase-analytics.com"
+DISCORD_INVITE_URL = "https://discord.gg/Fb3fHrqK"
+PATREON_URL = "https://www.patreon.com/ChaseAnalytics"
+
 # Supabase — dedicated dashboard read-cache project (separate from the betting-brain
 # warehouse). The publishable key is public by design (it ships in the browser) and is
 # gated read-only to public.hub_dataset via RLS, so it is safe to commit. The secret key
