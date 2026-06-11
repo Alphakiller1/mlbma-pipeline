@@ -50,8 +50,8 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 .landing-cta--primary { background: var(--v-grad, linear-gradient(135deg, #9A6BFF, #5B2BE0)); border-color: transparent; color: #fff; }
 .landing-cta--discord { background: #5865F2; border-color: #5865F2; color: #fff; }
 .landing-cta--discord:hover { background: #4752c4; border-color: #4752c4; }
-.landing-cta--patreon { color: var(--gold, #E8C24A); border-color: rgba(232, 194, 74, 0.45); }
-.landing-cta--patreon:hover { border-color: var(--gold, #E8C24A); }
+.landing-cta--patreon { background: var(--gold, #E8C24A); border-color: var(--gold, #E8C24A); color: #1f2330; }
+.landing-cta--patreon:hover { background: #d9b43e; border-color: #d9b43e; }
 .landing-hero__account { position: sticky; top: 86px; }
 
 .landing-tools { margin-top: 52px; }
@@ -220,7 +220,7 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 <!-- Auth shell (Phase 1) — logic then UI panel. Inert unless a [data-mlbma-auth-panel]
      element is present; does not gate the dashboard or its data loading. -->
 <script src="mlbma_auth.js?v=20260611b"></script>
-<script src="mlbma_auth_ui.js?v=20260611d"></script>
+<script src="mlbma_auth_ui.js?v=20260611e"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {

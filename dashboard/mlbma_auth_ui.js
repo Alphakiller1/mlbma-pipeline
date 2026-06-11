@@ -31,6 +31,7 @@
       '.mlbma-auth-card{background:var(--card,#12141D);border:1px solid var(--border,#28282f);' +
       'border-radius:16px;padding:22px;width:100%;max-width:420px;' +
       'box-shadow:0 24px 60px -30px rgba(0,0,0,.6);}' +
+      '.mlbma-auth-card,.mlbma-auth-card *{box-sizing:border-box;}' +
       '.mlbma-auth-card__title{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text,#F5F6FA);}' +
       '.mlbma-auth-card__sub{font-size:12.5px;line-height:1.45;color:var(--text-2,#A4A8B6);margin:0 0 16px;}' +
       '.mlbma-auth-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;' +
@@ -74,6 +75,8 @@
       '.mlbma-auth-discord__icon{width:32px;height:32px;flex:0 0 auto;color:#5865F2;}' +
       '.mlbma-auth-btn--discord{background:#5865F2;border-color:#5865F2;color:#fff;}' +
       '.mlbma-auth-btn--discord:hover{background:#4752c4;border-color:#4752c4;}' +
+      '.mlbma-auth-btn--patreon{background:var(--gold,#E8C24A);border-color:var(--gold,#E8C24A);color:#1f2330;font-weight:700;}' +
+      '.mlbma-auth-btn--patreon:hover{background:#d9b43e;border-color:#d9b43e;}' +
       '.mlbma-auth-billing{margin:0 0 14px;padding:0 0 14px;border-bottom:1px solid var(--border,#28282f);}' +
       '.mlbma-auth-billing__status{font-size:13.5px;font-weight:600;color:var(--text,#F5F6FA);}' +
       '.mlbma-auth-billing__status--off{color:var(--text-3,#6E7383);font-weight:500;}' +
@@ -150,10 +153,10 @@
       '</form>' +
       '<p class="mlbma-auth-status" role="status" aria-live="polite"></p>' +
       '<div class="mlbma-auth-community">' +
+      '<a class="mlbma-auth-btn mlbma-auth-btn--patreon" href="' + esc(PATREON_URL) + '" ' +
+      'target="_blank" rel="noopener">★ Get Premium on Patreon</a>' +
       '<a class="mlbma-auth-btn mlbma-auth-btn--discord" href="' + esc(DISCORD_INVITE_URL) + '" ' +
       'target="_blank" rel="noopener">Join our Discord</a>' +
-      '<a class="mlbma-auth-patreon" href="' + esc(PATREON_URL) + '" target="_blank" rel="noopener">' +
-      '★ Premium picks on Patreon →</a>' +
       '</div>' +
       '</div>';
   }
@@ -196,8 +199,8 @@
       '<div class="mlbma-auth-id__label">Premium</div>' +
       '<div class="mlbma-auth-billing__status mlbma-auth-billing__status--off">Daily signals + private Discord</div>' +
       '</div></div>' +
-      '<a class="mlbma-auth-btn mlbma-auth-btn--primary" href="' + esc(PATREON_URL) + '" target="_blank" rel="noopener">' +
-      'Join Premium on Patreon</a>' +
+      '<a class="mlbma-auth-btn mlbma-auth-btn--patreon" href="' + esc(PATREON_URL) + '" target="_blank" rel="noopener">' +
+      '★ Join Premium on Patreon</a>' +
       '</div>' +
       '<button type="button" class="mlbma-auth-btn" data-mlbma-action="signout">Sign out</button>' +
       '<p class="mlbma-auth-status" role="status" aria-live="polite"></p>' +
