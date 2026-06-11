@@ -1,0 +1,12 @@
+# Cloudflare Pages config (Phase 3).
+#
+# The static dashboard is served from dashboard/; serverless routes live in functions/
+# (mapped to /api/*). This is an ADDITIONAL, independent deploy target — the existing
+# GitHub Pages workflow (.github/workflows/pages.yml) is untouched and keeps working.
+#
+# Secrets are NOT stored here (this file is committed). Set them in the Cloudflare
+# dashboard (Pages → Settings → Environment variables / Secrets) or via
+# `wrangler pages secret put <NAME>`. See docs/CLOUDFLARE_DISCORD_SETUP.md.
+name = "mlbma-pipeline"
+pages_build_output_dir = "dashboard"
+compatibility_date = "2024-09-23"

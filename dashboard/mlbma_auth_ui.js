@@ -3,7 +3,8 @@
  *
  * Drop a `<div data-mlbma-auth-panel></div>` anywhere and include this script (after
  * mlbma_auth.js). It self-mounts: signed-out shows "Continue with Google" + an email
- * magic-link form; signed-in shows the current email + "Sign out". It is purely
+ * sign-in form (magic link, with a 6-digit code fallback); signed-in shows the current
+ * email, a Discord connection status (Phase 2 prep), and "Sign out". It is purely
  * additive — it never blocks the dashboard or its data loading. Styling reuses the
  * existing design-system CSS variables so it matches the rest of the site.
  */
@@ -54,7 +55,22 @@
       '.mlbma-auth-id__meta{min-width:0;}' +
       '.mlbma-auth-id__label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3,#6E7383);}' +
       '.mlbma-auth-id__email{font-size:14px;font-weight:600;color:var(--text,#F5F6FA);' +
-      'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}';
+      'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.mlbma-auth-otp{margin-top:12px;}' +
+      '.mlbma-auth-discord{margin:14px 0;padding:14px 0;border-top:1px solid var(--border,#28282f);' +
+      'border-bottom:1px solid var(--border,#28282f);}' +
+      '.mlbma-auth-discord__row{display:flex;align-items:center;gap:11px;margin-bottom:10px;}' +
+      '.mlbma-auth-discord__meta{min-width:0;}' +
+      '.mlbma-auth-discord__status{font-size:13.5px;font-weight:600;color:var(--text,#F5F6FA);' +
+      'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.mlbma-auth-discord__status--off{color:var(--text-3,#6E7383);font-weight:500;}' +
+      '.mlbma-auth-discord__icon{width:32px;height:32px;flex:0 0 auto;color:#5865F2;}' +
+      '.mlbma-auth-btn--discord{background:#5865F2;border-color:#5865F2;color:#fff;}' +
+      '.mlbma-auth-btn--discord:hover{background:#4752c4;border-color:#4752c4;}' +
+      '.mlbma-auth-billing{margin:0 0 14px;padding:0 0 14px;border-bottom:1px solid var(--border,#28282f);}' +
+      '.mlbma-auth-billing__status{font-size:13.5px;font-weight:600;color:var(--text,#F5F6FA);}' +
+      '.mlbma-auth-billing__status--off{color:var(--text-3,#6E7383);font-weight:500;}' +
+      '.mlbma-auth-billing__icon{width:30px;height:30px;flex:0 0 auto;color:var(--gold,#E8C24A);}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
@@ -69,6 +85,21 @@
       '<path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>' +
       '</svg>';
   }
+
+  function discordIcon() {
+    return '<svg class="mlbma-auth-discord__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+      '<path d="M20.32 4.37A19.8 19.8 0 0 0 15.4 2.84a.07.07 0 0 0-.08.04c-.21.38-.45.88-.62 1.27a18.3 18.3 0 0 0-5.42 0c-.17-.4-.42-.89-.63-1.27a.08.08 0 0 0-.08-.04A19.7 19.7 0 0 0 3.68 4.37a.07.07 0 0 0-.03.03C.53 9.05-.32 13.6.1 18.1a.08.08 0 0 0 .03.05 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.23-2a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1 0-.13l.37-.29a.07.07 0 0 1 .08-.01 14.2 14.2 0 0 0 12.06 0 .07.07 0 0 1 .08 0l.37.3a.08.08 0 0 1 0 .13c-.6.35-1.22.65-1.87.89a.08.08 0 0 0-.04.11c.36.7.78 1.36 1.23 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.02-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.7-3.55-13.7a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42s.95-2.42 2.16-2.42c1.2 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42s.95-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42Z"/>' +
+      '</svg>';
+  }
+
+  function billingIcon() {
+    return '<svg class="mlbma-auth-billing__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+      '<path d="M12 2l2.9 6.26L21.6 9l-4.8 4.6 1.2 6.7L12 17.1 5.99 20.3l1.2-6.7L2.4 9l6.7-.74L12 2z"/>' +
+      '</svg>';
+  }
+
+  // Compact error-message extractor used by the form handlers.
+  function msg(e) { return (e && e.message) ? e.message : e; }
 
   function setStatus(panel, msg, kind) {
     var s = panel.querySelector('.mlbma-auth-status');
@@ -90,7 +121,16 @@
       '<input class="mlbma-auth-input" type="email" name="email" autocomplete="email" ' +
       'placeholder="you@example.com" aria-label="Email address" required>' +
       '<button type="submit" class="mlbma-auth-btn mlbma-auth-btn--primary" data-mlbma-action="magiclink">' +
-      'Email me a magic link</button>' +
+      'Email me a sign-in link</button>' +
+      '</form>' +
+      // Revealed after the email sends — lets a user who can't open the link (e.g. an email
+      // scanner pre-consumed the one-time link) finish sign-in by typing the 6-digit code.
+      '<form class="mlbma-auth-field mlbma-auth-otp" data-mlbma-form="otp" novalidate hidden>' +
+      '<input class="mlbma-auth-input" type="text" name="code" inputmode="numeric" ' +
+      'autocomplete="one-time-code" maxlength="8" placeholder="6-digit code from email" ' +
+      'aria-label="Email sign-in code">' +
+      '<button type="submit" class="mlbma-auth-btn mlbma-auth-btn--primary" data-mlbma-action="verifyotp">' +
+      'Verify code &amp; sign in</button>' +
       '</form>' +
       '<p class="mlbma-auth-status" role="status" aria-live="polite"></p>' +
       '</div>';
@@ -111,6 +151,29 @@
       '<div class="mlbma-auth-id__label">Signed in as</div>' +
       '<div class="mlbma-auth-id__email" title="' + esc(email) + '">' + esc(email) + '</div>' +
       '</div></div>' +
+      // Discord connection status (Phase 2 prep — real OAuth lands in Phase 3).
+      '<div class="mlbma-auth-discord">' +
+      '<div class="mlbma-auth-discord__row">' + discordIcon() +
+      '<div class="mlbma-auth-discord__meta">' +
+      '<div class="mlbma-auth-id__label">Discord</div>' +
+      '<div class="mlbma-auth-discord__status mlbma-auth-discord__status--off" data-mlbma-discord-status>Checking…</div>' +
+      '</div></div>' +
+      // Starts Discord OAuth at the Cloudflare Function /api/discord/connect (sends the
+      // Supabase JWT; the server does the code exchange + profile write). Works on the
+      // Cloudflare Pages deployment; degrades gracefully where /api/* doesn't exist.
+      '<button type="button" class="mlbma-auth-btn mlbma-auth-btn--discord" ' +
+      'data-mlbma-action="connect-discord">Connect Discord</button>' +
+      '</div>' +
+      // Subscription / billing (Phase 4). Status + an Upgrade or Manage-billing button are
+      // filled in from the profile by updateAccountFromProfile().
+      '<div class="mlbma-auth-billing">' +
+      '<div class="mlbma-auth-discord__row">' + billingIcon() +
+      '<div class="mlbma-auth-discord__meta">' +
+      '<div class="mlbma-auth-id__label">Subscription</div>' +
+      '<div class="mlbma-auth-billing__status mlbma-auth-billing__status--off" data-mlbma-sub-status>Checking…</div>' +
+      '</div></div>' +
+      '<div data-mlbma-billing-action></div>' +
+      '</div>' +
       '<button type="button" class="mlbma-auth-btn" data-mlbma-action="signout">Sign out</button>' +
       '<p class="mlbma-auth-status" role="status" aria-live="polite"></p>' +
       '</div>';
@@ -119,6 +182,122 @@
   function render(panel, session) {
     if (session) renderSignedIn(panel, session);
     else renderSignedOut(panel);
+  }
+
+  // Fetch the profile once and fill in BOTH the Discord status and the billing controls in
+  // any signed-in panel. Best-effort and non-blocking — the panel is usable without it.
+  function updateAccountFromProfile() {
+    if (!global.MLBMA_AUTH || typeof global.MLBMA_AUTH.getProfile !== 'function') return;
+    global.MLBMA_AUTH.getProfile().then(function (profile) {
+      applyDiscord(profile);
+      applyBilling(profile);
+    }).catch(function () { /* leave placeholders on any error */ });
+  }
+
+  function applyDiscord(profile) {
+    var nodes = document.querySelectorAll('[data-mlbma-discord-status]');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (profile && profile.discord_user_id) {
+        el.textContent = profile.discord_username ? ('@' + profile.discord_username) : 'Connected';
+        el.className = 'mlbma-auth-discord__status';
+      } else {
+        el.textContent = 'Not connected';
+        el.className = 'mlbma-auth-discord__status mlbma-auth-discord__status--off';
+      }
+    }
+  }
+
+  var SUB_LABELS = { active: 'Active', past_due: 'Past due', incomplete: 'Incomplete', inactive: 'Inactive', free: 'Free' };
+
+  function applyBilling(profile) {
+    var status = (profile && profile.subscription_status) || 'free';
+    var active = status === 'active';
+    var statusNodes = document.querySelectorAll('[data-mlbma-sub-status]');
+    for (var i = 0; i < statusNodes.length; i++) {
+      statusNodes[i].textContent = SUB_LABELS[status] || status;
+      statusNodes[i].className = 'mlbma-auth-billing__status' + (active ? '' : ' mlbma-auth-billing__status--off');
+    }
+    var actionHtml = active
+      ? '<button type="button" class="mlbma-auth-btn" data-mlbma-action="manage-billing">Manage billing</button>'
+      : '<button type="button" class="mlbma-auth-btn mlbma-auth-btn--primary" data-mlbma-action="upgrade">Upgrade to Premium</button>';
+    var actionNodes = document.querySelectorAll('[data-mlbma-billing-action]');
+    for (var j = 0; j < actionNodes.length; j++) actionNodes[j].innerHTML = actionHtml;
+  }
+
+  // Kick off Discord linking: ask the Cloudflare Function for an authorize URL (authenticated
+  // with the Supabase JWT), then navigate there. Degrades gracefully where /api/* doesn't
+  // exist (localhost, GitHub Pages) — those deployments have no Functions.
+  function startDiscordConnect(panel) {
+    setStatus(panel, 'Starting Discord connection…', 'muted');
+    var getToken = (global.MLBMA_AUTH && global.MLBMA_AUTH.getAccessToken)
+      ? global.MLBMA_AUTH.getAccessToken() : Promise.resolve(null);
+    getToken.then(function (token) {
+      if (!token) { setStatus(panel, 'Please sign in first.', 'err'); return; }
+      return fetch('/api/discord/connect', { headers: { Authorization: 'Bearer ' + token } })
+        .then(function (r) {
+          if (!r.ok) throw new Error('connect ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (data && data.url) { global.location.href = data.url; }
+          else throw new Error('no url');
+        });
+    }).catch(function () {
+      setStatus(panel, 'Discord linking is only available on the deployed app (Cloudflare Functions) — not on localhost or GitHub Pages.', 'err');
+    });
+  }
+
+  // Shared: ask an authenticated billing endpoint (POST) for a URL, then navigate there.
+  // Degrades gracefully where /api/* or Stripe env vars don't exist.
+  function startBillingRedirect(panel, path, startMsg) {
+    setStatus(panel, startMsg, 'muted');
+    var getToken = (global.MLBMA_AUTH && global.MLBMA_AUTH.getAccessToken)
+      ? global.MLBMA_AUTH.getAccessToken() : Promise.resolve(null);
+    getToken.then(function (token) {
+      if (!token) { setStatus(panel, 'Please sign in first.', 'err'); return; }
+      return fetch(path, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+        .then(function (r) {
+          return r.json().catch(function () { return {}; }).then(function (data) {
+            if (!r.ok) throw new Error((data && data.message) || ('HTTP ' + r.status));
+            if (data && data.url) { global.location.href = data.url; }
+            else throw new Error('no url');
+          });
+        });
+    }).catch(function (err) {
+      setStatus(panel, 'Billing needs the deployed app (Cloudflare Functions + Stripe). '
+        + (err && err.message ? '(' + err.message + ')' : ''), 'err');
+    });
+  }
+  function startCheckout(panel) { startBillingRedirect(panel, '/api/billing/create-checkout-session', 'Opening checkout…'); }
+  function startPortal(panel) { startBillingRedirect(panel, '/api/billing/create-portal-session', 'Opening billing portal…'); }
+
+  // On returning from a Discord (?discord=) or Stripe (?billing=) redirect, show a status
+  // message, refresh the account panel, and strip the params so a reload doesn't repeat them.
+  function handleReturnFlags() {
+    try {
+      var params = new URLSearchParams(global.location.search);
+      var d = params.get('discord');
+      var bill = params.get('billing');
+      if (!d && !bill) return;
+      params.delete('discord'); params.delete('billing'); params.delete('reason');
+      var qs = params.toString();
+      var clean = global.location.pathname + (qs ? '?' + qs : '') + global.location.hash;
+      if (global.history && global.history.replaceState) global.history.replaceState(null, '', clean);
+      setTimeout(function () {
+        var panels = document.querySelectorAll(MOUNT_SELECTOR);
+        var text, kind;
+        if (d) {
+          text = d === 'connected' ? 'Discord connected.' : 'Discord connection failed — please try again.';
+          kind = d === 'connected' ? 'ok' : 'err';
+        } else {
+          text = bill === 'success' ? 'Subscription updated — thank you!' : 'Checkout canceled.';
+          kind = bill === 'success' ? 'ok' : 'muted';
+        }
+        for (var i = 0; i < panels.length; i++) setStatus(panels[i], text, kind);
+        updateAccountFromProfile();
+      }, 900);
+    } catch (e) { /* ignore */ }
   }
 
   function wire(panel) {
@@ -140,25 +319,52 @@
         global.MLBMA_AUTH.signOut().catch(function (err) {
           setStatus(panel, 'Sign out failed: ' + (err && err.message ? err.message : err), 'err');
         });
+      } else if (action === 'connect-discord') {
+        startDiscordConnect(panel);
+      } else if (action === 'upgrade') {
+        startCheckout(panel);
+      } else if (action === 'manage-billing') {
+        startPortal(panel);
       }
     });
 
     panel.addEventListener('submit', function (e) {
-      var form = e.target.closest('[data-mlbma-form="magiclink"]');
-      if (!form) return;
+      var form = e.target.closest('form[data-mlbma-form]');
+      if (!form || !panel.contains(form)) return;
       e.preventDefault();
-      var input = form.querySelector('input[name="email"]');
-      var email = input ? input.value.trim() : '';
-      if (!email || email.indexOf('@') < 1) {
-        setStatus(panel, 'Enter a valid email address.', 'err');
-        return;
+      var kind = form.getAttribute('data-mlbma-form');
+
+      if (kind === 'magiclink') {
+        var input = form.querySelector('input[name="email"]');
+        var email = input ? input.value.trim() : '';
+        if (!email || email.indexOf('@') < 1) {
+          setStatus(panel, 'Enter a valid email address.', 'err');
+          return;
+        }
+        setStatus(panel, 'Sending sign-in email…', 'muted');
+        global.MLBMA_AUTH.signInWithMagicLink(email).then(function () {
+          panel.setAttribute('data-mlbma-email', email);
+          var otp = panel.querySelector('.mlbma-auth-otp');
+          if (otp) otp.hidden = false;
+          setStatus(panel, 'Emailed ' + email + '. Click the link, or enter the 6-digit code below.', 'ok');
+        }).catch(function (err) {
+          setStatus(panel, 'Could not send email: ' + msg(err), 'err');
+        });
+      } else if (kind === 'otp') {
+        var savedEmail = panel.getAttribute('data-mlbma-email') || '';
+        var codeInput = form.querySelector('input[name="code"]');
+        var code = codeInput ? codeInput.value.trim() : '';
+        if (!savedEmail) { setStatus(panel, 'Request a sign-in email first.', 'err'); return; }
+        if (!code) { setStatus(panel, 'Enter the code from your email.', 'err'); return; }
+        setStatus(panel, 'Verifying code…', 'muted');
+        global.MLBMA_AUTH.verifyEmailOtp(savedEmail, code).then(function () {
+          setStatus(panel, 'Signed in!', 'ok'); // onAuthStateChange repaints the panel
+        }).catch(function () {
+          // Most failures here are an expired code, or codes not enabled in the email
+          // template — the link in the same email always works, so steer there.
+          setStatus(panel, 'That code didn\'t verify (expired, or codes not enabled yet). Click the link in the email instead.', 'err');
+        });
       }
-      setStatus(panel, 'Sending magic link…', 'muted');
-      global.MLBMA_AUTH.signInWithMagicLink(email).then(function () {
-        setStatus(panel, 'Check ' + email + ' for your sign-in link.', 'ok');
-      }).catch(function (err) {
-        setStatus(panel, 'Could not send link: ' + (err && err.message ? err.message : err), 'err');
-      });
     });
   }
 
@@ -186,10 +392,13 @@
     function paint(session) {
       var list = document.querySelectorAll(MOUNT_SELECTOR);
       for (var k = 0; k < list.length; k++) { wire(list[k]); render(list[k], session); }
+      if (session) updateAccountFromProfile();
     }
 
     global.MLBMA_AUTH.getSession().then(paint).catch(function () { paint(null); });
     global.MLBMA_AUTH.onAuthStateChange(function (_event, session) { paint(session); });
+
+    handleReturnFlags();
   }
 
   if (document.readyState === 'loading') {

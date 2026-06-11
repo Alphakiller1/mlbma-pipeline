@@ -6,6 +6,29 @@
 
   var A = global.MLBMAAssets;
 
+  // hub_dataset request headers — anonymous publishable key, upgraded to the signed-in
+  // user's JWT when a Supabase Auth session is persisted (storageKey 'mlbma-auth'). This
+  // is a guarded fallback copy of dashboard/mlbma_supabase_headers.js so that data pages
+  // which don't load that file still send the token. Keep the two implementations in sync.
+  if (!global.MLBMA_supabaseHeaders) {
+    global.MLBMA_supabaseHeaders = function (publishableKey) {
+      var token = null;
+      try {
+        var raw = global.localStorage && localStorage.getItem('mlbma-auth');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          var session = parsed && (parsed.access_token ? parsed
+            : (parsed.currentSession || parsed.session || null));
+          if (session && session.access_token
+            && !(session.expires_at && session.expires_at * 1000 <= Date.now() + 10000)) {
+            token = session.access_token;
+          }
+        }
+      } catch (e) { token = null; }
+      return { apikey: publishableKey, Authorization: 'Bearer ' + (token || publishableKey) };
+    };
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
@@ -346,7 +369,7 @@
       var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
       var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 12000) : null;
       return fetch(base, {
-        headers: { apikey: sb.publishable_key, Authorization: 'Bearer ' + sb.publishable_key },
+        headers: global.MLBMA_supabaseHeaders(sb.publishable_key),
         signal: ctrl ? ctrl.signal : undefined
       }).then(function(r) {
         if (!r.ok) throw new Error('supabase ' + tabName + ' ' + r.status);

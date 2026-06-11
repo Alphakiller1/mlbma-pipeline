@@ -103,6 +103,21 @@
     return getSession().then(function (s) { return s ? s.user : null; });
   }
 
+  // Fetch the signed-in user's own profiles row (RLS restricts it to their row). Resolves
+  // null when signed out or if the row isn't present yet; never rejects.
+  function getProfile() {
+    return getSession().then(function (s) {
+      if (!s || !s.user) return null;
+      return withClient(function (c) {
+        return c.from('profiles')
+          .select('id, email, full_name, avatar_url, role, subscription_status, discord_user_id, discord_username, discord_avatar')
+          .eq('id', s.user.id)
+          .maybeSingle();
+      }).then(function (res) { return (res && res.data) || null; })
+        .catch(function () { return null; });
+    });
+  }
+
   function getAccessToken() {
     return getSession().then(function (s) { return s ? s.access_token : null; });
   }
@@ -133,6 +148,18 @@
     });
   }
 
+  // Verify the 6-digit email code (the robust alternative to clicking the magic link —
+  // email link-scanners often pre-consume one-time links, but a typed code can't be).
+  // Requires the Supabase email template to include {{ .Token }} so a code is present.
+  function verifyEmailOtp(email, token) {
+    email = (email || '').trim();
+    token = (token || '').trim();
+    if (!email || !token) return Promise.reject(new Error('email and code are required'));
+    return withClient(function (c) {
+      return c.auth.verifyOtp({ email: email, token: token, type: 'email' });
+    });
+  }
+
   function signOut() {
     return withClient(function (c) { return c.auth.signOut(); });
   }
@@ -152,9 +179,11 @@
     isConfigured: isConfigured,
     getSession: getSession,
     getUser: getUser,
+    getProfile: getProfile,
     getAccessToken: getAccessToken,
     signInWithGoogle: signInWithGoogle,
     signInWithMagicLink: signInWithMagicLink,
+    verifyEmailOtp: verifyEmailOtp,
     signOut: signOut,
     onAuthStateChange: onAuthStateChange,
     // escape hatch for advanced callers (e.g. profile reads); may be null before init()
