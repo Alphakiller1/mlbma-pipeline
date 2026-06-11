@@ -2926,6 +2926,38 @@ body.view-research .ca-lab { display: block; }
   </div>
 </section>
 
+<!-- Signup / account integrated on the dashboard home; collapses once signed in. -->
+<style>
+.dash-signup { max-width: 1180px; margin: 6px auto 24px; padding: 0 20px; }
+.dash-signup__inner { display: grid; grid-template-columns: 1fr minmax(300px, 380px); gap: 30px; align-items: center;
+  background: var(--card, #12141D); border: 1px solid var(--border, #28282f); border-radius: 18px; padding: 26px 30px;
+  box-shadow: 0 26px 70px -36px rgba(0,0,0,.7); }
+.dash-signup__title { font-family: var(--display, inherit); font-size: 22px; font-weight: 800; margin: 0 0 8px;
+  color: var(--text, #F5F6FA); letter-spacing: -.01em; }
+.dash-signup__sub { font-size: 14px; line-height: 1.55; color: var(--text-2, #A4A8B6); margin: 0; max-width: 50ch; }
+.dash-signup__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.dash-signup__chip { font-size: 12px; font-weight: 600; color: var(--text-2, #A4A8B6); border: 1px solid var(--border, #28282f);
+  border-radius: 999px; padding: 5px 12px; }
+/* Auth panel sets data-mlbma-state="in" once signed in — collapse the whole banner then. */
+.dash-signup:has([data-mlbma-state="in"]) { display: none; }
+@media (max-width: 820px) { .dash-signup__inner { grid-template-columns: 1fr; gap: 18px; } }
+</style>
+<section class="dash-signup" id="account" aria-label="Create your account">
+  <div class="dash-signup__inner">
+    <div class="dash-signup__copy">
+      <h2 class="dash-signup__title">Create your free Chase Analytics account</h2>
+      <p class="dash-signup__sub">Save preferences, link your Discord, and unlock premium perks. The dashboard stays
+        open either way — signing up just keeps you in the loop.</p>
+      <div class="dash-signup__chips">
+        <span class="dash-signup__chip">Daily signals</span>
+        <span class="dash-signup__chip">Discord community</span>
+        <span class="dash-signup__chip">Premium on Patreon</span>
+      </div>
+    </div>
+    <div data-mlbma-auth-panel></div>
+  </div>
+</section>
+
 <section class="ca-tools" id="section-opening-workflows">
   <div class="ca-tools__inner">
     <header class="ca-page-header">
@@ -8522,6 +8554,11 @@ if (document.readyState === 'loading') {
 </footer>
   <script src="oem_overhaul.js?v=20260603m"></script>
   <script src="mlbma_standings.js?v=20260703a"></script>
+  <!-- Account/signup integrated on the dashboard home (mounts into [data-mlbma-auth-panel]). -->
+  <script src="chase_links.js?v=20260611c"></script>
+  <script src="mlbma_access.js?v=20260611b"></script>
+  <script src="mlbma_auth.js?v=20260611b"></script>
+  <script src="mlbma_auth_ui.js?v=20260611f"></script>
   <script src="chase_nav.js?v=20260618a"></script>
 </body>
 </html>

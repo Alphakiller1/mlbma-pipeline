@@ -421,7 +421,13 @@
 
     function paint(session) {
       var list = document.querySelectorAll(MOUNT_SELECTOR);
-      for (var k = 0; k < list.length; k++) { wire(list[k]); render(list[k], session); }
+      for (var k = 0; k < list.length; k++) {
+        wire(list[k]);
+        render(list[k], session);
+        // Lets host pages react to auth state (e.g. collapse a dashboard signup banner once
+        // signed in via CSS: .dash-signup:has([data-mlbma-state="in"]){display:none}).
+        list[k].setAttribute('data-mlbma-state', session ? 'in' : 'out');
+      }
       if (session) updateAccountFromProfile();
     }
 
