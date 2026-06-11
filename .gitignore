@@ -20,3 +20,6 @@ pipeline_log.txt
 pipeline_smoke_log.txt
 outputs/instagram_post_manifest.json
 cursor
+
+# generated daily social posting queue
+outputs/social_queue/

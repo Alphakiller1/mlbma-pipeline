@@ -416,5 +416,23 @@ def run_instagram_autopost():
     _run_step("Optional: outputs.push_instagram", "outputs.push_instagram", _fn)
 
 
+def run_discord_autopost():
+    """Optional: post the daily signals embed to Discord after the pipeline run.
+
+    Off unless DISCORD_AUTO_POST is truthy; also requires DISCORD_WEBHOOK_URL (or the bot
+    token) in .env. Non-fatal. See outputs/push_discord.py and docs/DISCORD_BOT_UPDATE_PLAN.md.
+    """
+    if os.getenv("DISCORD_AUTO_POST", "").strip().lower() not in {"1", "true", "yes"}:
+        return
+
+    def _fn():
+        from outputs.push_discord import post_daily_signals
+
+        post_daily_signals(send=True)
+
+    _run_step("Optional: outputs.push_discord (daily signals)", "outputs.push_discord", _fn)
+
+
 if __name__ == "__main__":
     run()
+    run_discord_autopost()
