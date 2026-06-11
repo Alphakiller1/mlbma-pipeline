@@ -21,7 +21,7 @@
      it's fast and not blocked by browser tracking-prevention). -->
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
-<link rel="preload" href="vendor/supabase.min.js" as="script">
+<link rel="prefetch" href="vendor/supabase.min.js" as="script">
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
 <link rel="stylesheet" href="theme.css?v=20260619a">
@@ -132,7 +132,7 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 
 <main class="index-wrap ca-page-shell">
   <div id="indexPageHeader"></div>
-  <section class="index-auth" aria-label="Account" style="margin-top:24px">
+  <section class="index-auth" id="account" aria-label="Account" style="margin-top:24px">
     <!-- Auth panel (Phase 1): non-blocking. Signed-out shows Google + magic-link;
          signed-in shows email + sign out. See dashboard/mlbma_auth_ui.js. -->
     <div data-mlbma-auth-panel></div>

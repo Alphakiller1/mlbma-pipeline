@@ -408,7 +408,9 @@
     injectStyles();
     for (var i = 0; i < panels.length; i++) {
       var p = panels[i];
-      p.innerHTML = '<div class="mlbma-auth-card"><p class="mlbma-auth-status mlbma-auth-status--muted" style="margin:0">Loading…</p></div>';
+      // Paint the signed-out/signup UI immediately. Most first-time visitors are signed
+      // out, so waiting for the SDK + session check makes the page feel slower than it is.
+      renderSignedOut(p);
       wire(p);
     }
 
@@ -418,7 +420,9 @@
       if (session) updateAccountFromProfile();
     }
 
-    global.MLBMA_AUTH.getSession().then(paint).catch(function () { paint(null); });
+    global.MLBMA_AUTH.getSession().then(function (session) {
+      if (session) paint(session);
+    }).catch(function () { /* keep the already-rendered signup form */ });
     global.MLBMA_AUTH.onAuthStateChange(function (_event, session) { paint(session); });
 
     handleReturnFlags();
