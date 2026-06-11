@@ -21,9 +21,11 @@
 (function (global) {
   'use strict';
 
-  // Pinned UMD build so a CDN "latest" change can't silently break auth.
-  var SUPABASE_CDN =
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
+  // Self-hosted (same-origin) supabase-js UMD build. Loading it from our own domain instead
+  // of a third-party CDN makes the auth panel initialize fast and immune to browser
+  // tracking-prevention blocking cross-site requests. To upgrade, replace
+  // dashboard/vendor/supabase.min.js with a newer pinned UMD build.
+  var SUPABASE_CDN = 'vendor/supabase.min.js';
   var STORAGE_KEY = 'mlbma-auth'; // isolated from the dashboard's raw hub_dataset fetches
 
   var _client = null;

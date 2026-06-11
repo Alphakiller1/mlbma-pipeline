@@ -4,12 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — MLB Offensive Intelligence</title>
-<!-- Phase 2: warm the auth connections and preload the Supabase SDK so the first sign-in
-     click doesn't pay DNS/TLS setup + a cold CDN download. Keeps signup snappy. -->
+<!-- Warm the Supabase API connection + preload the self-hosted auth SDK (same-origin, so
+     it's fast and not blocked by browser tracking-prevention). -->
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" as="script" crossorigin>
+<link rel="preload" href="vendor/supabase.min.js" as="script">
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
 <link rel="stylesheet" href="theme.css?v=20260619a">
