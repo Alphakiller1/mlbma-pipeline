@@ -1,6 +1,6 @@
-// v20260523d — three-view nav: opening / matchups / research
+// v20260523d ï¿½ three-view nav: opening / matchups / research
 /**
- * Chase Analytics navigation — dropdowns, mobile menu, active page, pipeline timestamp.
+ * Chase Analytics navigation ï¿½ dropdowns, mobile menu, active page, pipeline timestamp.
  */
 (function () {
   'use strict';
@@ -96,6 +96,13 @@
     return parts.length ? parts[parts.length - 1] : 'index.html';
   }
 
+  // The opening dashboard is the site home. Recognise it whether served at the
+  // clean root (index.html / "") or via the legacy filename URL.
+  function isOpeningPage(page) {
+    return page === 'index.html' || page === '' ||
+           page === 'chase_analytics_mlb_oem_v7.html' || page === 'chase_analytics_mlb_oem_v7';
+  }
+
   function navTargetKey(href) {
     if (!href) return '';
     var hash = '';
@@ -106,7 +113,7 @@
       pathPart = href.slice(0, hi);
     }
     var page = pathPart.split('/').pop() || '';
-  if (page === 'chase_analytics_mlb_oem_v7.html' || page === '') {
+    if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       if (!hash) return 'opening';
@@ -120,7 +127,7 @@
   function currentNavKey() {
     var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
-    if (page === 'chase_analytics_mlb_oem_v7.html') {
+    if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       return 'opening';
@@ -180,7 +187,7 @@
   window.addEventListener('hashchange', setActivePage);
 
   function syncDashboardViewFromNav(hash) {
-    if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
+    if (!isOpeningPage(currentPageName())) return;
     if (hash) window.location.hash = hash;
     var sync = window.syncDashboardView;
     if (typeof sync === 'function') sync();
@@ -197,7 +204,7 @@
       var pathPart = href.slice(0, hashIdx);
       var targetPage = pathPart.split('/').pop() || 'chase_analytics_mlb_oem_v7.html';
       if (targetPage !== 'chase_analytics_mlb_oem_v7.html') return;
-      if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
+      if (!isOpeningPage(currentPageName())) return;
       e.preventDefault();
       window.location.hash = hash;
       syncDashboardViewFromNav(hash);
@@ -211,7 +218,7 @@
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');
     var mobile = document.getElementById('mobileLastUpdated');
-    var display = (!text || text === '--' || text === '—') ? 'syncing…' : text;
+    var display = (!text || text === '--' || text === 'ï¿½') ? 'syncingï¿½' : text;
     if (el) el.textContent = display;
     if (mobile) mobile.textContent = display;
     if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {

@@ -5,7 +5,7 @@
   'use strict';
 
   var NAV = [
-    [{ file: 'chase_analytics_mlb_oem_v7.html', label: 'Main' }],
+    [{ file: 'index.html', label: 'Main' }],
     [
       { file: 'team_rankings.html', label: 'Matchups' },
       { file: 'glossary.html', label: 'Glossary' },
@@ -25,7 +25,7 @@
     }
     var path = global.location.pathname || '';
     var parts = path.split('/');
-    return parts[parts.length - 1] || 'chase_analytics_mlb_oem_v7.html';
+    return parts[parts.length - 1] || 'index.html';
   }
 
   function renderNav(container, page) {
