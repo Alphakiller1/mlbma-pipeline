@@ -8,7 +8,7 @@
 (function(global) {
   'use strict';
 
-  var ICON_VER = '20260606c';
+  var ICON_VER = '20260612a';
   var ICON_BASE = 'assets/icons/';
   var MICRO_PX = 18;
 

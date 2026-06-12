@@ -7,12 +7,11 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Fonts load async (print->all swap) so text paints immediately on system fonts. -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <meta name="description" content="Matchups, team rankings, and research tools built on proprietary MLB offensive metrics. Plus a private Discord community.">
 <link rel="canonical" href="https://chase-analytics.com/">
 <meta property="og:type" content="website">
@@ -25,7 +24,7 @@
 <meta name="twitter:title" content="Chase Analytics — MLB Offensive Intelligence">
 <meta name="twitter:description" content="Matchups, team rankings, and research tools built on proprietary MLB offensive metrics.">
 <meta name="twitter:image" content="https://chase-analytics.com/assets/chase-logo-horizontal.png">
-<title>Chase Analytics ? Offensive Dashboard</title>
+<title>Chase Analytics — MLB Matchup &amp; Offensive Intelligence</title>
 <style>
 :root {
   --bg: #08090F;
@@ -2761,9 +2760,9 @@ body.view-research .ca-lab { display: block; }
 })();
 </script>
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="mlbma_ui.js?v=20260610b" data-page="index.html"></script>
-<script src="mlbma_assets.js?v=20260618b"></script>
-<script src="mlbma_icons.js?v=20260606c"></script>
+<script src="mlbma_ui.js?v=20260612a" data-page="index.html"></script>
+<script src="mlbma_assets.js?v=20260612a"></script>
+<script src="mlbma_icons.js?v=20260612a"></script>
 <script src="matchup_shared.js?v=20260703a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
@@ -2943,7 +2942,12 @@ body.view-research .ca-lab { display: block; }
 .dash-signup { max-width: 1180px; margin: 6px auto 24px; padding: 0 20px; }
 .dash-signup__inner { display: grid; grid-template-columns: 1fr minmax(300px, 380px); gap: 30px; align-items: center;
   background: var(--card, #12141D); border: 1px solid var(--border, #28282f); border-radius: 18px; padding: 26px 30px;
-  box-shadow: 0 26px 70px -36px rgba(0,0,0,.7); }
+  box-shadow: 0 26px 70px -36px rgba(0,0,0,.7); position: relative; overflow: hidden; }
+/* Violet top-edge glint — matches the premium board treatment used across the dashboard. */
+.dash-signup__inner::before { content: ""; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent, #9A6BFF) 35%, var(--accent-l, #C4B0FF) 50%, var(--accent, #9A6BFF) 65%, transparent); opacity: .65; }
+.dash-signup__eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent, #9A6BFF); margin: 0 0 8px; }
 .dash-signup__title { font-family: var(--display, inherit); font-size: 22px; font-weight: 800; margin: 0 0 8px;
   color: var(--text, #F5F6FA); letter-spacing: -.01em; }
 .dash-signup__sub { font-size: 14px; line-height: 1.55; color: var(--text-2, #A4A8B6); margin: 0; max-width: 50ch; }
@@ -2957,6 +2961,7 @@ body.view-research .ca-lab { display: block; }
 <section class="dash-signup" id="account" aria-label="Create your account">
   <div class="dash-signup__inner">
     <div class="dash-signup__copy">
+      <p class="dash-signup__eyebrow">Free Account</p>
       <h2 class="dash-signup__title">Create your free Chase Analytics account</h2>
       <p class="dash-signup__sub">Save preferences, link your Discord, and unlock premium perks. The dashboard stays
         open either way — signing up just keeps you in the loop.</p>
@@ -3583,7 +3588,7 @@ function syncHeroStats() {
     gc.textContent = (LIVE_DATA.matchups && LIVE_DATA.matchups.length) ? String(LIVE_DATA.matchups.length) : '?';
   }
   if (st) {
-    st.textContent = LIVE_DATA.lastUpdated || '?';
+    st.textContent = LIVE_DATA.lastUpdated || '—';
   }
 }
 
@@ -4136,14 +4141,14 @@ function bullpenVsLineupBadge(defenseTeam, oppLineupOsi) {
 function buildBullpenQualityHtml(team, oppOsi) {
   var u = getBullpenUnit(team);
   if (!u) {
-    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit data ? run pipeline steps 12?13.</div>';
+    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit data &mdash; run pipeline steps 12&ndash;13.</div>';
   }
   var tier = osiTierFromValue(oppOsi);
   var tierEra = bullpenTierEra(u, tier);
   var flag = bullpenStrugglesVsTier(u, tier);
   var note = '';
   if (flag && tier) {
-    note = 'Flag: bullpen has struggled vs ' + tier + ' OSI lineups (ERA ' + (tierEra != null ? tierEra.toFixed(2) : '?') + ').';
+    note = 'Flag: bullpen has struggled vs ' + tier + ' OSI lineups (ERA ' + (tierEra != null ? tierEra.toFixed(2) : '&mdash;') + ').';
   } else if (u.hiLevEra != null && u.loLevEra != null && u.hiLevEra > u.loLevEra + 1.5) {
     note = 'High-leverage ERA (' + u.hiLevEra.toFixed(2) + ') worse than low-leverage ? late-inning fade risk.';
   } else if (u.osiAllowed !== null && u.osiAllowed <= 52) {
@@ -4155,9 +4160,9 @@ function buildBullpenQualityHtml(team, oppOsi) {
     ? '<span class="bullpen-tier-flag warn">Struggles vs ' + tier + ' OSI</span>' : '';
   return '<div class="bullpen-quality-block">' +
     '<div class="bq-title">Bullpen Quality</div>' +
-    '<div class="bq-row"><span>OSI Allowed</span><span class="bq-val" style="color:' + osiGradeColor(u.osiAllowed) + '">' + (u.osiAllowed != null ? u.osiAllowed.toFixed(1) : '?') + '</span></div>' +
-    '<div class="bq-row"><span>High Lev ERA</span><span class="bq-val">' + (u.hiLevEra != null ? u.hiLevEra.toFixed(2) : '?') + '</span></div>' +
-    '<div class="bq-row"><span>vs ' + (tier || '?') + ' OSI tier</span><span class="bq-val">' + (tierEra != null ? tierEra.toFixed(2) + ' ERA' : '?') + '</span></div>' +
+    '<div class="bq-row"><span>OSI Allowed</span><span class="bq-val" style="color:' + osiGradeColor(u.osiAllowed) + '">' + (u.osiAllowed != null ? u.osiAllowed.toFixed(1) : '&mdash;') + '</span></div>' +
+    '<div class="bq-row"><span>High Lev ERA</span><span class="bq-val">' + (u.hiLevEra != null ? u.hiLevEra.toFixed(2) : '&mdash;') + '</span></div>' +
+    '<div class="bq-row"><span>vs ' + (tier || '&mdash;') + ' OSI tier</span><span class="bq-val">' + (tierEra != null ? tierEra.toFixed(2) + ' ERA' : '&mdash;') + '</span></div>' +
     flagHtml +
     '<div style="margin-top:8px;font-size:10.5px;color:var(--text-2);">' + note + '</div>' +
     '<a class="bullpen-report-link" href="bullpen_report.html">Full Bullpen Profile →</a>' +
@@ -4951,7 +4956,7 @@ function updateBrandPill() {
     pill.style.color = 'var(--red-l)';
     pill.style.borderColor = 'rgba(248, 113, 113, 0.35)';
   } else {
-    pill.textContent = 'Loading?';
+    pill.textContent = 'Loading…';
   }
 }
 
@@ -5001,8 +5006,9 @@ function loadLandingExtras() {
     fetchTabSafe(TABS.pitching_score),
     fetchTabSafe(TABS.bullpen_unit),
     fetchTabSafe(TABS.player_registry),
-    fetchTabSafe(TABS.signals_today, []),
-    fetchTabSafe(TABS.reliever_log, [])
+    fetchTabSafe(TABS.signals_today, [])
+    // Reliever_Log (~2.8MB) intentionally NOT loaded here — the compare view and the
+    // research bundle fetch it on demand, so the landing path stays light.
   ]).then(function(results) {
     LIVE_DATA.weather = parseWeatherMap(results[0]);
     LIVE_DATA.pitching = parsePitchingRows(results[1]);
@@ -5013,7 +5019,7 @@ function loadLandingExtras() {
       : parseBullpenUnitRows(results[2]);
     LIVE_DATA.playerRegistry = results[3] || [];
     LIVE_DATA.signalsToday = results[4] || [];
-    LIVE_DATA.relieverLog = results[5] || [];
+    LIVE_DATA.relieverLog = LIVE_DATA.relieverLog || [];
     if (window.MLBMAAssets && MLBMAAssets.parseRegistryRows) {
       MLBMAAssets.parseRegistryRows(parseRegistrySheet(LIVE_DATA.playerRegistry));
     }
@@ -5255,8 +5261,31 @@ function deferResearchDataLoad() {
       console.warn('[MLBMA] deferred research load failed', err);
     });
   };
-  if (window.requestIdleCallback) window.requestIdleCallback(run, { timeout: 12000 });
-  else setTimeout(run, 400);
+  // The research bundle is heavy (~6MB of splits/logs). Keep it OFF the landing
+  // window: only auto-warm well after the page has settled, never on data-saver or
+  // slow connections, and warm early when the visitor shows intent (hovers/taps a
+  // Research Lab nav link). Opening the research view still loads it immediately.
+  var conn = navigator.connection || {};
+  var slowNet = !!conn.saveData || /(^|-)2g$/.test(String(conn.effectiveType || ''));
+  var warmOnIntent = function(e) {
+    var link = e.target && e.target.closest && e.target.closest('a[href*="section-research-lab"]');
+    if (!link) return;
+    document.removeEventListener('pointerover', warmOnIntent, true);
+    document.removeEventListener('touchstart', warmOnIntent, true);
+    run();
+  };
+  document.addEventListener('pointerover', warmOnIntent, true);
+  document.addEventListener('touchstart', warmOnIntent, true);
+  if (!slowNet) {
+    var scheduleWarm = function() {
+      setTimeout(function() {
+        if (window.requestIdleCallback) window.requestIdleCallback(run, { timeout: 10000 });
+        else run();
+      }, 15000);
+    };
+    if (document.readyState === 'complete') scheduleWarm();
+    else window.addEventListener('load', scheduleWarm, { once: true });
+  }
   return Promise.resolve(true);
 }
 
@@ -6669,7 +6698,7 @@ function renderMasterTable(target){
   var baseRows = currentRows();
   var rows = applyFilter((baseRows && baseRows.length) ? baseRows.slice() : []);
   if (!baseRows || !baseRows.length) {
-    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">Pipeline data not loaded ? ensure Google Sheets is accessible</td></tr>';
+    body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">Pipeline data not loaded &mdash; ensure Google Sheets is accessible</td></tr>';
     if (mobile) mobile.innerHTML = '';
     return;
   }
@@ -7218,7 +7247,7 @@ function setModalMetric(m){
   var guides = {
     'projOSI':'Adds capped (?8) regression adjustment to base OSI. Values <em>higher</em> than base OSI indicate xStat support; <em>lower</em> indicate inflated current output.',
     'currentFormOSI':'Recency-weighted OSI blending all four timeframes. Best single number for current state.',
-    'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = process exceeds output ? buy-low candidate. <span style="color:#FBBF24;">Negative (gold)</span> = output exceeds process ? sell-high / fade risk.',
+    'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = process exceeds output &rarr; buy-low candidate. <span style="color:#FBBF24;">Negative (gold)</span> = output exceeds process &rarr; sell-high / fade risk.',
     'dfGap':'<span style="color:#FB923C;">Positive (orange)</span> = damage-heavy power offense (boom/bust). <span style="color:#86EFAC;">Negative (green)</span> = on-base/grind floor offense.',
     'reg':'5-tier signal: <span style="color:#4ADE80;">?? =+20</span> Strong Positive ? <span style="color:#86EFAC;">? +10/+19</span> Mild Positive ? <span style="color:#71717A;">? ?9</span> Stable ? <span style="color:#FCA5A5;">? -10/-19</span> Mild Negative ? <span style="color:#F87171;">?? =-20</span> Strong Negative.',
     'pitchScore':'Composite staff score from K%, BB%, and HR/9. Higher PitchScore = stronger pitching profile.'
@@ -7490,7 +7519,7 @@ function renderComparePane(){
   var tableEl = document.getElementById('compareTable');
   if (!bar || !chartEl || !tableEl) return;
   if(STATE.compareTeams.length === 0) {
-    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected ? toggle Compare in the toolbar, then click rows in the Rankings table (Daily Read).</span>';
+    bar.innerHTML = '<span style="color:var(--text-3);font-size:11px;">No teams selected &mdash; toggle Compare in the toolbar, then click rows in the Rankings table (Daily Read).</span>';
     chartEl.innerHTML = '<div class="empty-msg">Pick 2?4 teams to see radar comparison. Enable Compare mode, then select teams from the master rankings table.</div>';
     tableEl.innerHTML = '';
     return;
@@ -7949,7 +7978,7 @@ function renderResearchLabWhenReady() {
       banner = document.createElement('div');
       banner.id = 'rlDataLoadingBanner';
       banner.className = 'rl-loading-banner';
-      banner.textContent = 'Loading research data?';
+      banner.textContent = 'Loading research data…';
       var header = document.getElementById('researchLabHeader');
       if (header && header.parentNode) header.parentNode.insertBefore(banner, header.nextSibling);
       else rl.insertBefore(banner, rl.firstChild);
@@ -7963,7 +7992,7 @@ function renderResearchLabWhenReady() {
           renderResearchLab();
         }
       }).catch(function() {
-        if (banner) banner.textContent = 'Research data failed to load ? retrying when sheets refresh?';
+        if (banner) banner.textContent = 'Research data failed to load — retrying when sheets refresh…';
       });
     }
     return;
@@ -8203,9 +8232,9 @@ function renderPitchingScore() {
     var cl = ps >= 65 ? 'var(--green)' : ps >= 50 ? 'var(--purple-2)' : ps >= 35 ? 'var(--gold)' : 'var(--red-l)';
     return '<tr><td class="rank-cell">' + (i + 1) + '</td>'
       + '<td class="team-cell" style="color:var(--purple)">' + r.t + '</td>'
-      + '<td class="num">' + (r.kPct != null ? r.kPct.toFixed(1) : '?') + '</td>'
-      + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : '?') + '</td>'
-      + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : '?') + '</td>'
+      + '<td class="num">' + (r.kPct != null ? r.kPct.toFixed(1) : '&mdash;') + '</td>'
+      + '<td class="num">' + (r.bbPct != null ? r.bbPct.toFixed(1) : '&mdash;') + '</td>'
+      + '<td class="num">' + (r.hr9 != null ? r.hr9.toFixed(2) : '&mdash;') + '</td>'
       + '<td class="num">' + metricChipHtml(ps, ps != null ? ps.toFixed(1) : '?', 'pitching', false, cl) + '</td></tr>';
   }).join('');
 }

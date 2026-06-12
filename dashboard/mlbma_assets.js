@@ -152,15 +152,23 @@
     return 'https://a.espncdn.com/i/teamlogos/mlb/' + size + '/' + getEspnAbbr(team) + '.png';
   }
 
+  /** Resized logo via ESPN's combiner (~3KB at 64px vs ~37KB for the raw 500px asset). */
+  function teamLogoUrlSized(team, px) {
+    var w = Math.min(256, Math.max(32, 2 * (px || 24)));
+    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + getEspnAbbr(team) + '.png&w=' + w + '&h=' + w;
+  }
+
   function teamLogoImg(team, px, cls) {
     px = px || 24;
     cls = cls || 'team-logo';
     var ab = String(team || '').toUpperCase();
     var initials = ab.slice(0, 2);
-    return '<img class="' + cls + '" src="' + teamLogoUrl(team, px >= 40 ? 500 : 500) + '" '
-      + 'width="' + px + '" height="' + px + '" alt="' + ab + '" loading="lazy" '
-      + 'onerror="this.onerror=null;this.src=\'\';this.style.display=\'none\';'
-      + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');">'
+    // onerror chain: resized combiner -> raw 500px asset -> hide + initials fallback.
+    return '<img class="' + cls + '" src="' + teamLogoUrlSized(team, px) + '" '
+      + 'width="' + px + '" height="' + px + '" alt="' + ab + '" loading="lazy" decoding="async" '
+      + 'onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + teamLogoUrl(team, 500) + '\';}'
+      + 'else{this.onerror=null;this.src=\'\';this.style.display=\'none\';'
+      + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');}">'
       + '<span class="team-logo-fallback" style="display:none;width:' + px + 'px;height:' + px + 'px;">'
       + initials + '</span>';
   }
@@ -973,6 +981,7 @@
     getEspnAbbr: getEspnAbbr,
     espnAbbr: getEspnAbbr,
     teamLogoUrl: teamLogoUrl,
+    teamLogoUrlSized: teamLogoUrlSized,
     teamLogoImg: teamLogoImg,
     headshotUrl: headshotUrl,
     headshotImg: headshotImg,

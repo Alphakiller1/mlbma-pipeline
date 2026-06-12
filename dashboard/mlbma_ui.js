@@ -168,7 +168,7 @@
       global.MLBMA_CONFIG.SHEET_TABS.last_updated;
     var url = tab ? sheetCsvUrl(tab) : null;
     if (!url) {
-      el.textContent = '?';
+      el.textContent = '—';
       return;
     }
     fetch(url, { cache: 'no-store' })
@@ -184,9 +184,9 @@
         var cells = target.split(',').map(function (c) {
           return c.replace(/^"|"$/g, '').trim();
         });
-        el.textContent = cells[1] || cells[0] || '?';
+        el.textContent = cells[1] || cells[0] || '—';
       })
-      .catch(function () { el.textContent = '?'; });
+      .catch(function () { el.textContent = '—'; });
   }
 
   function injectFooter() {
