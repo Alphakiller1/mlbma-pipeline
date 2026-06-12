@@ -352,7 +352,10 @@
     if (!msgs.length) return '';
     return '<div class="lv-banner warn">' + esc(msgs.join(' ')) + '</div>';
   }
+  var SURFACE_LOCK_TIP = 'Not available for Surface Level Wins — win results are team-level, not split by platoon.';
+
   function renderControls(root, state, teams, meta) {
+    var surfaceLock = state.family === 'surface';
     var rows = ''
       + lvSec('Metric family', 'bar-chart-3')
       + '<div class="lv-family-grid">'
@@ -365,7 +368,9 @@
       + '<div class="lv-lens">'
       + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills">'
-      + pill('hand', 'both', 'Both', state, false) + pill('hand', 'r', 'vs RHP', state, false) + pill('hand', 'l', 'vs LHP', state, false) + '</div></div>'
+      // Win results are team-level — platoon and batter-side splits don't exist for the
+      // Surface family, so disable those pills (with a tooltip) instead of no-op clicks.
+      + pill('hand', 'both', 'Both', state, surfaceLock, SURFACE_LOCK_TIP) + pill('hand', 'r', 'vs RHP', state, surfaceLock, SURFACE_LOCK_TIP) + pill('hand', 'l', 'vs LHP', state, surfaceLock, SURFACE_LOCK_TIP) + '</div></div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills">'
       + pill('pitcher', 'both', 'Both', state, false) + pill('pitcher', 'sp', 'SP', state, false) + pill('pitcher', 'rp', 'RP', state, false) + '</div></div>'
       + '</div>'
@@ -377,7 +382,7 @@
       + '</div>'
       + '<div class="lv-cat"><div class="lv-cat-h">Lineup side</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Bats</span><div class="lv-pills">'
-      + pill('batSide', 'both', 'Both', state, false) + pill('batSide', 'rhb', 'RHB', state, false) + pill('batSide', 'lhb', 'LHB', state, false) + '</div></div>'
+      + pill('batSide', 'both', 'Both', state, surfaceLock, SURFACE_LOCK_TIP) + pill('batSide', 'rhb', 'RHB', state, surfaceLock, SURFACE_LOCK_TIP) + pill('batSide', 'lhb', 'LHB', state, surfaceLock, SURFACE_LOCK_TIP) + '</div></div>'
       + '</div>'
       + '<div class="lv-cat"><div class="lv-cat-h">Time window</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Range</span><div class="lv-pills">'
@@ -388,9 +393,11 @@
       + renderContextBanner(meta, state);
     root.querySelector('.lv-controls').innerHTML = rows;
   }
-  function pill(key, val, label, state, disabled) {
+  function pill(key, val, label, state, disabled, tip) {
     var on = state.filter[key] === val;
-    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"' + (disabled ? ' disabled' : '') + '>' + esc(label) + '</button>';
+    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"'
+      + (disabled ? ' disabled' : '') + (disabled && tip ? ' title="' + esc(tip) + '"' : '')
+      + '>' + esc(label) + '</button>';
   }
   function titleCaseDesc(s) {
     var A = global.MLBMAAssets;
@@ -469,6 +476,12 @@
         } else if (a === 'family') {
           ctx._userInteracted = true;
           ctx.state.family = btn.dataset.v;
+          if (ctx.state.family === 'surface') {
+            // Surface win results carry no platoon/batter-side splits — reset those
+            // lenses so the disabled pills never show a stale active selection.
+            ctx.state.filter.hand = 'both';
+            ctx.state.filter.batSide = 'both';
+          }
           normalizeSortState(ctx.state);
           rerender(root, ctx);
         }
