@@ -504,7 +504,8 @@
     var map = { ARI: 'ari', AZ: 'ari', ATH: 'ath', OAK: 'ath', SF: 'sf', SFG: 'sf', TB: 'tb', TBR: 'tb', WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', CHW: 'chw', CWS: 'chw', KCR: 'kc', KC: 'kc', SDP: 'sd', SD: 'sd' };
     var key = String(t || '').trim().toUpperCase();
     var slug = map[key] || key.toLowerCase();
-    return 'https://a.espncdn.com/i/teamlogos/mlb/500/' + slug + '.png';
+    // Resized via ESPN combiner: bubbles render at 22px, the raw 500px asset is ~37KB each.
+    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + slug + '.png&w=64&h=64';
   }
 
   function quadrantBubbleMarkup(d, cx, cy, meta) {

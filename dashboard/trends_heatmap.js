@@ -289,7 +289,7 @@
     var t = teamKey(team);
     var map = { TB: 'tb', TBR: 'tb', WSH: 'wsh', WSN: 'wsh', KC: 'kc', KCR: 'kc', CWS: 'chw', CHW: 'chw', SD: 'sd', SDP: 'sd', SF: 'sf', SFG: 'sf', OAK: 'oak', ATH: 'oak', AZ: 'ari' };
     var espn = (map[t] || t || 'mlb').toLowerCase();
-    return '<img class="thm-team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/' + espn + '.png" alt="' + esc(t) + '" loading="lazy" onerror="this.style.display=\'none\'">';
+    return '<img class="thm-team-logo" src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + espn + '.png&w=64&h=64" width="28" height="28" alt="' + esc(t) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">';
   }
 
   function metricPill(metric, state) {
