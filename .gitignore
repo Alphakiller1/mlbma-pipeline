@@ -26,3 +26,10 @@ outputs/social_queue/
 
 # Local design exploration — not for the public production domain
 dashboard/mockups/
+
+# Build / run artifacts — never belong in the public Pages repo
+dashboard/_mc_live.png
+node_modules/
+tmp_*
+pipeline_run_*.log
+outputs/reading_list/
