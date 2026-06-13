@@ -422,7 +422,12 @@
   }
 }
 
-@media (max-width: 767px) {
+/* 768px sat in a dead zone between this block (was max-width:767) and the
+   desktop block (min-width:769), so at exactly 768 the desktop nav + its
+   right-aligned status timestamp rendered and overflowed the viewport. Use 768
+   here so the tablet-portrait width gets the mobile hamburger nav (matching the
+   mobile matchup layout, which also activates <=768). Desktop (>=769) unchanged. */
+@media (max-width: 768px) {
   .chase-nav-links,
   .chase-status .chase-timestamp {
     display: none;
