@@ -598,3 +598,138 @@
     font-size: 16px;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Matchup hero card — mobile-first refinements (2026-06 pass).
+   Builds on landing_dashboard.css's @media(max-width:520px) base (which already
+   stacks the two pitchers and single-columns the meta). responsive.css loads
+   AFTER it, so these win ties. Everything is gated <=767px / <=520px, so the
+   desktop and side-by-side tablet card are untouched. Goal: make the two-pitcher
+   comparison + projected lineups genuinely scannable on a phone.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Pitcher stat tiles (K% / BB% / ERA): bump the value, clarify the label, so
+     each arm reads like a mini box score instead of fine print. */
+  .hero-matchup-card .mc-sp-stat em {
+    font-size: 9.5px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-3, #6E7383);
+  }
+  .hero-matchup-card .mc-sp-stat strong {
+    font-size: 14.5px;
+    font-weight: 800;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Lineup-edge (OSI) bar — legible team labels + values. */
+  .hero-matchup-card .hmc-osi-num { font-size: 16px; font-weight: 800; }
+  .hero-matchup-card .hmc-osi-team { font-size: 10.5px; letter-spacing: 0.04em; }
+  .hero-matchup-card .hmc-edge-label { font-size: 10.5px; letter-spacing: 0.05em; }
+
+  /* Projected-lineup rows: taller (tap-friendly) + more legible names, with
+     the batting-order / position / bats markers kept compact and aligned. */
+  .hero-matchup-card .lineup-row {
+    min-height: 30px;
+    padding: 4px 0;
+    gap: 4px 9px;
+  }
+  .hero-matchup-card .lineup-bo,
+  .hero-matchup-card .lineup-pos { font-size: 11.5px; }
+  .hero-matchup-card .lineup-name { font-size: 13.5px; }
+  .hero-matchup-card .lineup-name-link { display: inline-block; padding: 2px 0; }
+  .hero-matchup-card .bats-pill {
+    font-size: 10px;
+    padding: 2px 6px;
+    min-width: 20px;
+  }
+
+  /* Home lineup fix: it ships in mirrored DOM order (bats, name, pos, bo) for the
+     desktop "facing" layout. landing_dashboard.css's <=520 un-mirror swapped the
+     column template to the AWAY order (16px 24px 1fr auto) without changing the
+     DOM, so the NAME landed in the 24px slot and every home batter was clipped
+     ("Byr…", "Bro…"). Fix: size the columns to the home row's NATURAL DOM order
+     so the name column is the wide one — bats | name | pos | order. Names never
+     clip and rows stay on one line. Higher specificity beats the base rule. */
+  .hero-matchup-card .matchup-lineup-col--home .lineup-row {
+    grid-template-columns: auto minmax(0, 1fr) 24px 18px;
+  }
+  .hero-matchup-card .matchup-lineup-col--home .lineup-bo { text-align: right; }
+
+  /* The lineups column heads (team + projected/confirmed status) stand out. */
+  .hero-matchup-card .matchup-lineup-col-head__meta { font-size: 10.5px; }
+
+  /* "View Full Analysis" is the deep-dive CTA — make it a clear, tappable target
+     instead of a thin inline link lost at the card's bottom edge. */
+  .hero-matchup-card .hmc-view-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    margin-top: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--accent-ring, rgba(124, 77, 255, 0.45));
+    border-radius: 10px;
+    background: rgba(124, 77, 255, 0.08);
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Stacked pitcher block (full card width): even, centered 3-up stat row with a
+     hairline divider under the pitch score — a clean mini box score. The desktop
+     away/home mirrored alignment (left/center/right) would spread oddly at full
+     width, so center all three here. */
+  .hero-matchup-card .mc-sp-stats--grid {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding-top: 8px;
+    margin-top: 4px;
+    gap: 8px;
+  }
+  .hero-matchup-card .mc-sp-block--away .mc-sp-stat,
+  .hero-matchup-card .mc-sp-block--home .mc-sp-stat {
+    align-items: center;
+    text-align: center;
+  }
+  .hero-matchup-card .mc-sp-stat strong { font-size: 16px; }
+  .hero-matchup-card .hmc-pitchers { gap: 9px; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Opening / landing home — keep the product reachable on a phone: trim the hero,
+   single-column the workflow CTAs, and right-size the section copy so the actual
+   matchups/rankings aren't pushed below two screens of marketing.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ca-opening-hero,
+  .hero-cta-band {
+    padding: 22px 16px !important;
+    margin-bottom: 18px !important;
+  }
+
+  /* Workflow / CTA cards: full-width, comfortable tap height, tighter padding. */
+  .ca-platform-cta,
+  .platform-workflow-grid,
+  #section-opening-workflows .ca-card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Primary CTA buttons reachable, not dominating. */
+  .hero-cta-actions,
+  .ca-opening-hero .ca-btn-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ca-opening-hero .ca-btn,
+  .hero-cta-actions .ca-btn {
+    flex: 1 1 auto;
+    min-height: 44px;
+    justify-content: center;
+  }
+}

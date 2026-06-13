@@ -2644,6 +2644,12 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="research_lab.css?v=20260624a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
+<!-- Shared mobile/tablet responsive layer. Loaded LAST so its @media (max-width)
+     overrides win the cascade. All rules are gated behind max-width / hover:none,
+     so desktop layout is untouched. Drives the mobile table->card transform
+     (mobile_cardify.js stamps the classes this styles) and the matchup-card
+     mobile redesign. -->
+<link rel="stylesheet" href="responsive.css?v=20260613m">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
@@ -8593,8 +8599,8 @@ if (document.readyState === 'loading') {
 </div><!-- /#dashboard-data-templates -->
 
 <footer class="ca-platform-footer" style="text-align:center;padding:24px;color:var(--text-3);font-size:12px;border-top:1px solid var(--border);margin-top:32px;">
-  <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
-  Chase Analytics ? MLB Offensive Intelligence
+  <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" loading="lazy" decoding="async" style="opacity:0.5;vertical-align:middle;margin-right:6px">
+  Chase Analytics — MLB Offensive Intelligence
 </footer>
   <script src="oem_overhaul.js?v=20260603m"></script>
   <script src="mlbma_standings.js?v=20260703a"></script>
