@@ -23,3 +23,6 @@ cursor
 
 # generated daily social posting queue
 outputs/social_queue/
+
+# Local design exploration — not for the public production domain
+dashboard/mockups/
