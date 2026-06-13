@@ -139,6 +139,51 @@ def build_queue(d: str):
     return rows
 
 
+# ── scheduler-import bridge (stage 4: Buffer / Publer / Metricool) ────────────
+
+# Default ET time slots, staggered through the day; adjust freely in the scheduler.
+SCHEDULE_SLOTS_ET = ["11:00", "13:30", "16:00", "18:30", "20:00"]
+SCHEDULE_PLATFORMS = ["instagram", "twitter"]
+X_HASHTAGS = "#MLB #MLBPicks"
+
+
+def _trim_for_x(caption: str, limit: int = 270) -> str:
+    """A 280-safe X variant: hook + body, then link + 2 hashtags."""
+    parts = [p.strip() for p in caption.split("\n\n") if p.strip()]
+    hook = parts[0] if parts else ""
+    body = parts[1] if len(parts) > 1 else ""
+    base = f"{hook} {body}".strip()
+    tail = f" {LINK} {X_HASHTAGS}"
+    room = limit - len(tail)
+    if len(base) > room:
+        base = base[:max(0, room - 1)].rstrip() + "…"
+    return base + tail
+
+
+def write_schedule(rows, d: str, cards: dict | None = None):
+    """Emit schedule_<date>.csv — one row per (post, platform), with time slots and
+    card paths. Directly importable by Publer / Metricool / SocialBee bulk upload."""
+    cards = cards or {}
+    cols = ["date", "time", "platform", "text", "link", "media_path", "post_type", "status"]
+    out = []
+    for i, r in enumerate(rows):
+        time_et = SCHEDULE_SLOTS_ET[i % len(SCHEDULE_SLOTS_ET)]
+        media = str(cards.get(r["type"]) or r.get("image_path") or "")
+        for plat in SCHEDULE_PLATFORMS:
+            text = _trim_for_x(r["caption"]) if plat == "twitter" \
+                else (r["caption"] + "\n\n" + r["hashtags"]).strip()
+            out.append({"date": d, "time": time_et, "platform": plat, "text": text,
+                        "link": r["link"], "media_path": media,
+                        "post_type": r["type"], "status": "draft"})
+    QUEUE_DIR.mkdir(parents=True, exist_ok=True)
+    path = QUEUE_DIR / f"schedule_{d}.csv"
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=cols)
+        writer.writeheader()
+        writer.writerows(out)
+    return path
+
+
 def write_queue(rows, d: str):
     QUEUE_DIR.mkdir(parents=True, exist_ok=True)
     (QUEUE_DIR / "cards").mkdir(parents=True, exist_ok=True)
@@ -156,14 +201,34 @@ def write_queue(rows, d: str):
 def main():
     parser = argparse.ArgumentParser(description="Build a daily social posting queue (no API).")
     parser.add_argument("--date", default=date_cls.today().isoformat(), help="YYYY-MM-DD (default: today).")
+    parser.add_argument("--render", action="store_true",
+                        help="Also render branded PNG cards (Pillow) and link them in the queue/schedule.")
+    parser.add_argument("--no-schedule", action="store_true",
+                        help="Skip the scheduler-import CSV (schedule_<date>.csv).")
     args = parser.parse_args()
     rows = build_queue(args.date)
+
+    cards = {}
+    if args.render:
+        try:
+            from outputs.render_cards import render_all
+            cards = render_all(args.date)
+            for r in rows:
+                if r["type"] in cards:
+                    r["image_path"] = str(cards[r["type"]])
+            print(f"Rendered {len(cards)} card(s).")
+        except Exception as exc:  # card rendering is optional — never block the queue
+            print(f"  ! card render skipped: {exc}")
+
     csv_path, json_path = write_queue(rows, args.date)
     print(f"Queued {len(rows)} posts for {args.date}:")
     for r in rows:
         print(f"  [{r['slot']}] {r['type']}")
     print(f"CSV:  {csv_path}")
     print(f"JSON: {json_path}")
+    if not args.no_schedule:
+        sched = write_schedule(rows, args.date, cards)
+        print(f"SCHED: {sched}  (import into Publer / Metricool / SocialBee)")
 
 
 if __name__ == "__main__":

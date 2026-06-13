@@ -87,9 +87,30 @@ Lead with the insight, 1–2 short lines, 3–6 hashtags, always close with:
 - [ ] Scheduled (Buffer/Metricool/Later) or posted manually.
 - [ ] Marked `status = posted`.
 
+## One-command daily build (stages 4–5)
+
+```
+python -m outputs.social_queue --render
+```
+
+This now does the whole pre-scheduling pass:
+1. **Captions** → `outputs/social_queue/queue_<date>.csv|.json` (5 post types).
+2. **Cards** (`--render`) → `outputs/social_queue/cards/card_<date>_<type>.png` — branded
+   1080×1350 PNGs drawn with Pillow from the same pipeline CSVs (no browser needed).
+   Render alone: `python -m outputs.render_cards`.
+3. **Scheduler import** → `outputs/social_queue/schedule_<date>.csv` — one row per
+   (post × platform: instagram, twitter) with default ET time slots, platform-trimmed
+   text (X kept < 280), the card path in `media_path`, and the link. Drop straight into
+   **Publer / Metricool / SocialBee** bulk upload.
+
+All three live under `outputs/social_queue/` (gitignored — regenerated daily). Review
+captions, tweak times/media in the scheduler, schedule. ~10 minutes, one person.
+
 ## Tool options (pick one)
-- **Buffer / Later / Metricool** — import the CSV, bulk-schedule. Easiest, free tiers exist.
-- **Manual** — copy caption + image into the IG app. Zero setup.
+- **Publer / Metricool / SocialBee** — import `schedule_<date>.csv` directly (columns
+  already match their bulk format). Recommended.
+- **Buffer / Later** — import `queue_<date>.csv`, bulk-schedule. Free tiers exist.
+- **Manual** — copy caption + card image into the IG app. Zero setup.
 - **Zapier / Make** — watch the JSON/Sheet → push to a scheduler. More automation, optional.
 - **Meta Graph API (`push_instagram.py`)** — full auto-publish; needs the Meta dev app +
   `INSTAGRAM_ACCESS_TOKEN`/`INSTAGRAM_USER_ID`. Deferred — not needed now.
