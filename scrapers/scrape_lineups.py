@@ -147,6 +147,20 @@ def reconcile_slate_with_api(lineup_df, games_df):
 
     # Add API games Rotowire is missing (no lineups yet, but slate must be complete)
     present = {f"{r.Away}@{r.Home}" for r in games_df.itertuples()} if not games_df.empty else set()
+    if not games_df.empty:
+        api_by_key = {f"{r.Away_Team}@{r.Home_Team}": r for r in api_df.itertuples()}
+        for idx, row in games_df.iterrows():
+            key = f"{row['Away']}@{row['Home']}"
+            api = api_by_key.get(key)
+            if api is None:
+                continue
+            away_sp = str(getattr(api, "Away_SP", "") or "").strip()
+            home_sp = str(getattr(api, "Home_SP", "") or "").strip()
+            if away_sp and away_sp.upper() != "TBD":
+                games_df.at[idx, "Away_SP"] = away_sp
+            if home_sp and home_sp.upper() != "TBD":
+                games_df.at[idx, "Home_SP"] = home_sp
+
     add_rows = []
     for r in api_df.itertuples():
         key = f"{r.Away_Team}@{r.Home_Team}"

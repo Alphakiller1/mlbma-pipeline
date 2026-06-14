@@ -188,7 +188,12 @@ def schedule_game_keys(games_df):
 
 
 def enrich_games_with_api_pitchers(games_df, api_games):
-    """Fill SP names/hands from MLB API when Rotowire rows are TBD or default R."""
+    """Apply MLB API probable pitchers to the reconciled slate.
+
+    Rotowire lineup cards can carry stale probable-pitcher names for a real
+    same-day matchup. The MLB Stats API is the authoritative source for the
+    current probable pitcher; Rotowire is only a fallback when the API has TBD.
+    """
     if games_df is None or games_df.empty:
         return games_df
     if api_games is None or api_games.empty:
@@ -209,8 +214,10 @@ def enrich_games_with_api_pitchers(games_df, api_games):
             api_sp = str(api.get(sp_col, "TBD")).strip()
             api_hand = str(api.get(hand_col, "R")).strip() or "R"
             cur_sp = str(rec.get(sp_col, "TBD")).strip()
-            if cur_sp in ("", "TBD", "nan", "None") and api_sp not in ("", "TBD"):
+            if api_sp not in ("", "TBD", "nan", "None"):
                 rec[sp_col] = api_sp
+            elif cur_sp in ("", "nan", "None"):
+                rec[sp_col] = "TBD"
             if api_hand in ("L", "R"):
                 rec[hand_col] = api_hand
         records.append(rec)
