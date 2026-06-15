@@ -12,17 +12,88 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
 }
 
+ABBR_FIX = {
+    "TB": "TBR",
+    "WSH": "WSN",
+    "KC": "KCR",
+    "CWS": "CHW",
+    "SD": "SDP",
+    "SF": "SFG",
+    "OAK": "ATH",
+    "AZ": "ARI",
+    "FLA": "MIA",
+}
+
+
+def _norm_abbr(abbr):
+    return ABBR_FIX.get(str(abbr).strip(), str(abbr).strip())
+
+
+def _authoritative_game_keys():
+    try:
+        from scrapers.scrape_matchups import get_today_schedule
+        api_df = get_today_schedule()
+    except Exception as e:
+        print(f"  WARNING: could not pre-check MLB schedule for Rotowire view selection ({e})")
+        return set()
+    if api_df is None or api_df.empty:
+        return set()
+    return {f"{r.Away_Team}@{r.Home_Team}" for r in api_df.itertuples()}
+
+
+def _rotowire_candidates(slate_date):
+    base = "https://www.rotowire.com/baseball/daily-lineups.php"
+    return [
+        ("default", base),
+        ("today", f"{base}?date=today"),
+        ("tomorrow", f"{base}?date=tomorrow"),
+        (slate_date, f"{base}?date={slate_date}"),
+    ]
+
+
+def _fetch_rotowire_soup(label, url):
+    print(f"  Trying Rotowire {label}: {url}")
+    r = requests.get(url, headers=HEADERS, timeout=30)
+    r.raise_for_status()
+    return r.status_code, BeautifulSoup(r.text, "html.parser")
+
+
+def _lineup_card_keys(lineup_divs):
+    keys = []
+    for div in lineup_divs:
+        abbrs = div.find_all("div", class_="lineup__abbr")
+        if len(abbrs) < 2:
+            continue
+        keys.append(f"{_norm_abbr(abbrs[0].text)}@{_norm_abbr(abbrs[1].text)}")
+    return keys
+
+
+def _select_rotowire_soup(slate_date):
+    api_keys = _authoritative_game_keys()
+    best = None
+    for label, url in _rotowire_candidates(slate_date):
+        status, soup = _fetch_rotowire_soup(label, url)
+        lineup_divs = soup.find_all("div", class_="lineup")
+        keys = set(_lineup_card_keys(lineup_divs))
+        overlap = len(keys & api_keys) if api_keys else len(keys)
+        print(f"    Status {status}; {len(lineup_divs)} cards; {overlap} match today's MLB slate")
+        candidate = (overlap, len(keys), label, soup)
+        if best is None or candidate[:2] > best[:2]:
+            best = candidate
+    if best is None:
+        raise RuntimeError("No Rotowire lineup view could be fetched")
+    overlap, _, label, soup = best
+    if api_keys and overlap == 0:
+        print("  WARNING: no Rotowire view matched today's MLB schedule; slate reconcile will clear stale cards")
+    else:
+        print(f"  Selected Rotowire {label} view")
+    return soup
+
+
 def scrape_lineups():
     slate_date = eastern_slate_date_iso()
     print("Fetching Rotowire lineups...")
-    r = requests.get(
-        "https://www.rotowire.com/baseball/daily-lineups.php",
-        headers=HEADERS,
-        timeout=30,
-    )
-    r.raise_for_status()
-    print(f"  Status: {r.status_code}")
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = _select_rotowire_soup(slate_date)
     lineup_divs = soup.find_all("div", class_="lineup")
     print(f"  Found {len(lineup_divs)} lineup cards")
 
@@ -35,22 +106,8 @@ def scrape_lineups():
             abbrs = div.find_all("div", class_="lineup__abbr")
             if len(abbrs) < 2:
                 continue
-            away_abbr = abbrs[0].text.strip()
-            home_abbr = abbrs[1].text.strip()
-            # Normalize to our standard abbreviations
-            abbr_fix = {
-                "TB": "TBR",
-                "WSH": "WSN",
-                "KC": "KCR",
-                "CWS": "CHW",
-                "SD": "SDP",
-                "SF": "SFG",
-                "OAK": "ATH",
-                "AZ": "ARI",
-                "FLA": "MIA",
-            }
-            away_abbr = abbr_fix.get(away_abbr, away_abbr)
-            home_abbr = abbr_fix.get(home_abbr, home_abbr)
+            away_abbr = _norm_abbr(abbrs[0].text)
+            home_abbr = _norm_abbr(abbrs[1].text)
 
             # Get game time
             time_el = div.find("div", class_="lineup__time")
