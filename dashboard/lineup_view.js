@@ -218,7 +218,7 @@
     if (key === 'pitchScore') return A.metricColor(value, 'pitching', true);
     if (key === 'pitchInn') return A.metricColor(value, 'pitchinn', false);
     if (key === 'qs') return A.metricColor(value, 'pitching', true);
-    if (key === 'xfip') return A.metricColor(value, 'xfip', true);
+    if (key === 'xfip') return A.metricColor(value, 'xfipFaced', true);
     if (key === 'ppGap') return A.metricColor(value, 'ppGap', false);
     return A.metricColor(value, key, false);
   }
@@ -243,7 +243,7 @@
     if (ctx === 'pitchScore') { ctx = 'pitching'; invert = true; }  // high = easy lineup = red
     if (ctx === 'pitchInn') ctx = 'pitchinn';
     if (ctx === 'qs') { ctx = 'pitching'; invert = true; }
-    if (ctx === 'xfip') { ctx = 'xfip'; invert = true; }
+    if (ctx === 'xfip') { ctx = 'xfipFaced'; invert = true; }
     if (ctx === 'xwoba') ctx = 'woba';
     if (ctx === 'ppGap') ctx = 'ppGap';
     if (A && A.valChipHtml) return A.valChipHtml(safe, ctx, invert, def.digits);
@@ -505,6 +505,11 @@
         registered = true;
       }
     });
+    var xfipFaced = dataRows.map(function(r) { return num(r.xfip); }).filter(function(v) { return v != null && !isNaN(v); });
+    if (xfipFaced.length >= 2) {
+      A.registerLeaguePool('xfipFaced', xfipFaced);
+      registered = true;
+    }
     return registered;
   }
 
