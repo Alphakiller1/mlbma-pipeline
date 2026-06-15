@@ -212,7 +212,7 @@
     if (!A || !A.metricColor) return 'var(--text,#f4f4f7)';
     if (key === 'wrc') return A.metricColor(value, 'wrc', false);
     if (key === 'woba' || key === 'xwoba') return A.metricColor(value, 'woba', false);
-    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, 'osi', false);
+    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, key, false);
     // Pitch Score Against: high = pitchers did WELL = lineup was EASY = bad for the
     // lineup, so invert (high -> red), same as QS% Allowed.
     if (key === 'pitchScore') return A.metricColor(value, 'pitching', true);
@@ -417,6 +417,7 @@
   function renderBody(root, state, rows) {
     var mount = root.querySelector('.lv-body');
     var defs = visibleDefsForDensity(familyDefs(state.family));
+    applyLeaguePoolsFromRows(rows);
     var ranges = rangeMapForDefs(rows, defs);
 
     var sortedRows = (rows || []).slice();
@@ -491,7 +492,11 @@
 
   function registerLeaguePoolsFromRows(dataRows) {
     if (!A || !A.registerLeaguePool || !dataRows || !dataRows.length) return false;
-    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'];
+    var metrics = [
+      'winPct', 'f5WinPct', 'pitcherWinPct',
+      'osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip',
+      'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'
+    ];
     var registered = false;
     metrics.forEach(function(k) {
       var vals = dataRows.map(function(r) { return num(r[k]); }).filter(function(v) { return v != null && !isNaN(v); });
