@@ -1089,7 +1089,7 @@
     var logo = S.teamLogo(team, 28);
     return '<div class="mc-card">'
       + '<div class="mc-bp-team"><a href="' + teamProfileUrl(team) + '">' + logo + '<strong>' + esc(team) + '</strong></a></div>'
-      + '<div class="mc-bp-metric">Bullpen Pitching Score <a href="' + bullpenReportUrl(team) + '">' + metricChip(ps, 'pitching', false, 1) + '</a>'
+      + '<div class="mc-bp-metric">Bullpen Pitching Score <a href="' + bullpenReportUrl(team) + '">' + metricChip(ps, 'bp_score', false, 1) + '</a>'
       + ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span></div>'
       + '<div class="mc-bp-metric">OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'osi', true, 1) + '</div>'
       + '<div class="mc-bp-metric">ABQ Allowed <strong>' + fmt(unit && unit.abqAllowed) + '</strong></div>'

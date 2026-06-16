@@ -918,7 +918,7 @@ function profileWindowFieldsFromRow(row) {
     var logo = A ? A.teamLogoImg(team, 40) : '';
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(team) + ' Bullpen</div>'
-      + '<div class="ca-helper">Bullpen Score ' + metricChip(score, 'pitching', false, 1)
+      + '<div class="ca-helper">Bullpen Score ' + metricChip(score, 'bp_score', false, 1)
       + ' � OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'osi', true, 1) + '</div></div></div>';
   }
 
@@ -1331,7 +1331,7 @@ function profileWindowFieldsFromRow(row) {
     out.innerHTML = '<div class="rl-pvl-grid" style="margin-top:16px;">'
       + snap('Lineup Snapshot', RL.pvlTeam, 'OSI vs ' + hand + 'HP', splitRow ? splitRow.osi : team.osi, false, 'osi')
       + snap('SP Snapshot', RL.pvlPitcher || '�', 'Pitching Score', ps, false, 'pitching')
-      + snap('Bullpen Snapshot', RL.pvlBpTeam || '�', 'Bullpen Score', bpScore, false, 'pitching')
+      + snap('Bullpen Snapshot', RL.pvlBpTeam || '�', 'Bullpen Score', bpScore, false, 'bp_score')
       + '</div>'
       + '<div class="rl-edge-card ca-card" style="margin-top:14px;"><strong>Edge Read</strong> � '
       + (splitRow && sm.osiAllowed && splitRow.osi > 100 - sm.osiAllowed ? 'Lineup carries platoon split edge vs SP.' : 'Pitching profile suppresses lineup split.')

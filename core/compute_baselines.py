@@ -168,6 +168,10 @@ def run():
                 m = _ms(series)
                 if m:
                     baselines[ctx] = m
+        if "overall_OSI_allowed" in bpu.columns:
+            m = _ms(100 - _num(bpu["overall_OSI_allowed"]))
+            if m:
+                baselines["bp_score"] = m
 
     # rp_* : individual relievers (wide like starters but different mean/scale).
     bpi = _read("bullpen_individual.csv")

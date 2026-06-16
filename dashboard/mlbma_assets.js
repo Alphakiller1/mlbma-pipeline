@@ -112,6 +112,7 @@
     bp_hr9: { mean: 0.86, std: 0.19, hi: false },
     bp_kpct: { mean: 23.7, std: 2.22, hi: true },
     bp_bbpct: { mean: 9.17, std: 1.71, hi: false },
+    bp_score: { mean: 51.9, std: 2.45, hi: true },
     rp_era: { mean: 3.40, std: 1.65, hi: false },     // individual relievers
     rp_fip: { mean: 3.51, std: 1.17, hi: false },
     rp_whip: { mean: 1.22, std: 0.29, hi: false },
@@ -779,7 +780,7 @@
     }
     if (context === 'ppGap' || context === 'PP_GAP') return ppGapColor(value);
     if (context === 'dfGap' || context === 'POWER_FLOOR') return dfGapColor(value);
-    return metricColor(value, context, !!invert);
+    return metricColor(value, context, invert);
   }
 
   /** @deprecated Inline styles replaced by solid .chip classes — kept for legacy call sites. */

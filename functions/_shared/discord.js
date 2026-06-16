@@ -64,19 +64,45 @@ export function discordRoleSyncConfigured(env) {
   return !!(env.DISCORD_BOT_TOKEN && env.DISCORD_GUILD_ID && env.DISCORD_PAID_ROLE_ID);
 }
 
+// Base "signed-up member" role gate. Granted to anyone who links Discord to a Chase
+// Analytics account, independent of whether they pay. Configured separately so the free
+// access gate can ship without a paid role existing.
+export function discordMemberRoleConfigured(env) {
+  return !!(env.DISCORD_BOT_TOKEN && env.DISCORD_GUILD_ID && env.DISCORD_MEMBER_ROLE_ID);
+}
+
+/**
+ * Add or remove a single guild role for a Discord user. Returns { ok, status }. Never throws
+ * on a Discord HTTP error — callers log and move on. Requires the bot to have MANAGE_ROLES and
+ * to sit ABOVE the target role in the guild hierarchy.
+ */
+async function setGuildRole(env, discordUserId, roleId, add) {
+  const url = `${DISCORD_API_V10}/guilds/${env.DISCORD_GUILD_ID}/members/${discordUserId}/roles/${roleId}`;
+  const res = await fetch(url, {
+    method: add ? 'PUT' : 'DELETE',
+    headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`, 'Content-Type': 'application/json', 'Content-Length': '0' }
+  });
+  // 204 No Content = success. 404 on DELETE/PUT can mean the member isn't in the guild.
+  return { ok: res.status === 204, status: res.status };
+}
+
 /**
  * Add (isPaid) or remove the paid role for a Discord user. Returns { action, ok, status }.
- * Never throws on a Discord HTTP error — returns ok:false so callers can log and move on.
  */
 export async function syncPaidRole(env, discordUserId, isPaid) {
   if (!discordRoleSyncConfigured(env)) return { action: 'skipped', reason: 'discord_not_configured', ok: false };
   if (!discordUserId) return { action: 'skipped', reason: 'no_discord_user', ok: false };
+  const r = await setGuildRole(env, discordUserId, env.DISCORD_PAID_ROLE_ID, isPaid);
+  return { action: isPaid ? 'added' : 'removed', ok: r.ok, status: r.status };
+}
 
-  const url = `${DISCORD_API_V10}/guilds/${env.DISCORD_GUILD_ID}/members/${discordUserId}/roles/${env.DISCORD_PAID_ROLE_ID}`;
-  const res = await fetch(url, {
-    method: isPaid ? 'PUT' : 'DELETE',
-    headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`, 'Content-Type': 'application/json', 'Content-Length': '0' }
-  });
-  // 204 No Content = success. 404 on DELETE/PUT can mean the member isn't in the guild.
-  return { action: isPaid ? 'added' : 'removed', ok: res.status === 204, status: res.status };
+/**
+ * Add (isMember) or remove the base signed-up Member role for a Discord user.
+ * Returns { action, ok, status }.
+ */
+export async function syncMemberRole(env, discordUserId, isMember) {
+  if (!discordMemberRoleConfigured(env)) return { action: 'skipped', reason: 'member_role_not_configured', ok: false };
+  if (!discordUserId) return { action: 'skipped', reason: 'no_discord_user', ok: false };
+  const r = await setGuildRole(env, discordUserId, env.DISCORD_MEMBER_ROLE_ID, isMember);
+  return { action: isMember ? 'added' : 'removed', ok: r.ok, status: r.status };
 }

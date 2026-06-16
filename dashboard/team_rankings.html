@@ -19,7 +19,7 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
 <link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="team_rankings_snapshot.json?v=20260608a" as="fetch" crossorigin>
+<link rel="preload" href="team_rankings_snapshot.json?v=20260616a" as="fetch" crossorigin>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Phase 2: decides hub_dataset auth headers (anon key, or the signed-in user's JWT).
@@ -47,7 +47,7 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
   // here in the head; on slow connections they could compete with CSS/scripts even
   // though the snapshot is enough to render the default Team Rankings view.
   try {
-    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260608a')
+    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260616a')
       .then(function(r) { if (!r.ok) throw new Error('snapshot ' + r.status); return r.json(); });
 
     var prefetchLiveData = function() {
@@ -326,7 +326,7 @@ setTimeout(function() {
 })();
 </script>
 <script src="mlbma_config.js?v=20260606b"></script>
-<script src="mlbma_assets.js?v=20260612a"></script>
+<script src="mlbma_assets.js?v=20260615b"></script>
 <script id="mlbma-icons-script" src="mlbma_icons.js?v=20260612b"></script>
 <script src="mlbma_ui.js?v=20260612a" data-page="team_rankings.html"></script>
 <script src="matchup_shared.js?v=20260703a"></script>
@@ -363,7 +363,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260615b"></script>
+<script src="lineup_view.js?v=20260615c"></script>
 <script src="mobile_cardify.js?v=20260610c"></script>
 <script>
 (function() {

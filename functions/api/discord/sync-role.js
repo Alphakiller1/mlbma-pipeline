@@ -8,7 +8,7 @@
  */
 import { getUserFromRequest, getProfile } from '../../_shared/supabase.js';
 import { json, errorResponse, requireEnv } from '../../_shared/http.js';
-import { syncPaidRole, discordRoleSyncConfigured } from '../../_shared/discord.js';
+import { syncPaidRole, syncMemberRole, discordRoleSyncConfigured } from '../../_shared/discord.js';
 
 async function handle(request, env) {
   try {
@@ -23,11 +23,14 @@ async function handle(request, env) {
       return json({ ok: false, action: 'skipped', reason: 'discord_not_configured' }, 503);
     }
 
+    // A linked account is always a member (free gate); paid layers on top for subscribers.
+    const member = await syncMemberRole(env, profile.discord_user_id, true);
     const isPaid = profile.subscription_status === 'active';
     const result = await syncPaidRole(env, profile.discord_user_id, isPaid);
     return json({
-      ok: result.ok,
+      ok: result.ok || member.ok,
       action: result.action,
+      member_action: member.action,
       is_paid: isPaid,
       subscription_status: profile.subscription_status,
       discord_status: result.status

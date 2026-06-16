@@ -696,7 +696,11 @@
       });
     }
     if (LM && LM.fetchAll) {
-      LM.fetchAll({ needL10SpHand: true, needPals: true, allowPartialTeamResults: true });
+      LM.fetchAll({
+        allowPartialTeamResults: true,
+        prefetchTeamResults: true,
+        prefetchL10SpHand: true
+      });
     }
     var fromBoot = !!global.__MLBMA_RANKINGS_BOOT_DONE && isDefaultSnapshotFilter(state.filter);
     rerender(shell, ctx, { fromBoot: fromBoot, silent: fromBoot });

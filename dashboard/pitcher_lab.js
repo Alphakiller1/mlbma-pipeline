@@ -1,4 +1,4 @@
-// v20260531d
+// v20260531e
 /**
  * Research Lab — Pitcher Intelligence tab
  */
@@ -314,16 +314,71 @@
     });
   }
 
+  function splitLabel(split) {
+    return {
+      overall: 'Overall',
+      rhh: 'vs RHB',
+      lhh: 'vs LHB',
+      home: 'Home',
+      away: 'Away'
+    }[split] || 'Overall';
+  }
+
+  function hasMetricSplitData(split) {
+    if (!split || split === 'overall') return true;
+    if ((split === 'rhh' || split === 'lhh') && leagueHasSpPlatoon(CACHE.profiles || [])) return true;
+    return (splitsRows() || []).some(function(r) {
+      return splitRowMatchesView(r, split);
+    });
+  }
+
+  function splitRowMatchesView(row, splitView) {
+    if (!row || !splitView || splitView === 'overall' || splitView === 'f5') return false;
+    var spec = SNAP_SPLIT_DIM[splitView];
+    var dim = String(pickCol(row, ['split_dimension', 'splitDimension'])).toLowerCase();
+    var val = String(pickCol(row, ['split_value', 'splitValue'])).toLowerCase();
+    if (spec) {
+      return dim === spec.dim && val === spec.val;
+    }
+    if (splitView === 'rhh' || splitView === 'lhh') {
+      var wantedHand = splitView === 'rhh' ? 'r' : 'l';
+      if ((dim === 'batter_hand' || dim === 'bat_hand' || dim === 'handedness') && val.charAt(0) === wantedHand) {
+        return true;
+      }
+    }
+    var st = String(pickCol(row, ['split_type', 'splitType', 'split', 'Split'])).toLowerCase().replace(/\s+/g, '_');
+    var legacy = splitView === 'rhh' ? ['vs_rhh', 'rhh', 'vs_rhb', 'rhb']
+      : splitView === 'lhh' ? ['vs_lhh', 'lhh', 'vs_lhb', 'lhb']
+      : [splitView];
+    for (var i = 0; i < legacy.length; i++) {
+      if (st === legacy[i] || st.indexOf(legacy[i]) >= 0) return true;
+    }
+    return false;
+  }
+
+  function rankMetricBundle(row, split, segment) {
+    var name = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
+    var met = profileMetrics(row);
+    var stats = extendedStats(row, met);
+    var splitRow = findMetricSplitRow(name, split);
+    var over = overlaySplitRowMetrics(met, stats, splitRow);
+    met = over.met;
+    stats = over.stats;
+    if (segment === 'f5') stats = applyF5Context(stats, row, splitRow);
+    return { met: met, stats: stats, splitRow: splitRow };
+  }
+
   function tableMetric(row, hand, key, met, stats) {
     if (CACHE.tableSegment === 'f5' && (key === 'era' || key === 'fip')) {
       return stats.f5Era != null ? stats.f5Era : stats.era;
     }
-    if (hand === 'overall') {
-      if (key === 'era' || key === 'fip' || key === 'hr9' || key === 'f5Era') return stats[key];
-      return met[key];
+    if (hand === 'rhh' || hand === 'lhh') {
+      var plat = readPlatoonMetric(row, hand, key);
+      if (plat != null) return plat;
     }
-    var plat = readPlatoonMetric(row, hand, key);
-    return plat != null ? plat : null;
+    if (key === 'hr9') return met.hr9 != null ? met.hr9 : stats.hr9;
+    if (key === 'era' || key === 'fip' || key === 'f5Era' || key === 'xfip' || key === 'woba') return stats[key];
+    return met[key];
   }
 
   function todayRankingsProfiles() {
@@ -469,20 +524,9 @@
     if (!splitView || splitView === 'overall' || splitView === 'f5') return null;
     var key = normName(name);
     var rows = (global.LIVE_DATA && LIVE_DATA.spMetricSplits) || CACHE.splits || [];
-    var spec = SNAP_SPLIT_DIM[splitView];
     return rows.find(function(r) {
       if (normName(pickCol(r, ['pitcher_name', 'Name', 'Pitcher'])) !== key) return false;
-      if (spec) {
-        var dim = String(pickCol(r, ['split_dimension', 'splitDimension'])).toLowerCase();
-        var val = String(pickCol(r, ['split_value', 'splitValue'])).toLowerCase();
-        return dim === spec.dim && val === spec.val;
-      }
-      var st = String(pickCol(r, ['split_type', 'splitType', 'split', 'Split'])).toLowerCase().replace(/\s+/g, '_');
-      var legacy = splitView === 'rhh' ? ['vs_rhh', 'rhh'] : splitView === 'lhh' ? ['vs_lhh', 'lhh'] : [splitView];
-      for (var i = 0; i < legacy.length; i++) {
-        if (st === legacy[i] || st.indexOf(legacy[i]) >= 0) return true;
-      }
-      return false;
+      return splitRowMatchesView(r, splitView);
     }) || null;
   }
 
@@ -491,13 +535,16 @@
     var m = Object.assign({}, met);
     var s = Object.assign({}, stats);
     var era = numOrNull(pickCol(splitRow, ['ERA', 'era']));
+    var fip = numOrNull(pickCol(splitRow, ['FIP', 'fip']));
     var kPct = numOrNull(pickCol(splitRow, ['K_pct', 'K%']));
     var bbPct = numOrNull(pickCol(splitRow, ['BB_pct', 'BB%']));
     var hr9 = numOrNull(pickCol(splitRow, ['HR9', 'HR/9']));
     if (kPct != null) m.kPct = kPct;
     if (bbPct != null) m.bbPct = bbPct;
     if (hr9 != null) m.hr9 = hr9;
-    if (era != null) { s.era = era; s.fip = era; m.era = era; m.fip = era; }
+    if (era != null) { s.era = era; m.era = era; }
+    if (fip != null) { s.fip = fip; m.fip = fip; }
+    else if (era != null) { s.fip = era; m.fip = era; }
     var abq = numOrNull(pickCol(splitRow, ['ABQ_allowed', 'ABQ Allowed']));
     var rcv = numOrNull(pickCol(splitRow, ['RCV_allowed', 'RCV Allowed']));
     var obr = numOrNull(pickCol(splitRow, ['OBR_allowed', 'OBR Allowed']));
@@ -933,11 +980,18 @@
     }
     var hand = CACHE.tableHand || 'overall';
     var segment = CACHE.tableSegment || 'full';
-    var hasPlatoon = leagueHasSpPlatoon(CACHE.profiles || []);
-    var platoonNote = (hand !== 'overall' && !hasPlatoon)
-      ? '<p class="pl-platoon-soon">SP platoon splits coming soon — table shows overall metrics until pipeline adds vs-RHB/vs-LHB columns.</p>'
-      : '';
+    var hasSplit = hasMetricSplitData(hand);
+    var splitOptions = [
+      { id: 'overall', label: 'Overall' },
+      { id: 'rhh', label: 'vs RHB' },
+      { id: 'lhh', label: 'vs LHB' },
+      { id: 'home', label: 'Home' },
+      { id: 'away', label: 'Away' }
+    ];
     var segmentNote = segment === 'f5' ? f5WarningBlock() : '';
+    var platoonNote = (hand !== 'overall' && !hasSplit)
+      ? '<p class="pl-platoon-soon">' + esc(splitLabel(hand)) + ' split data is not loaded yet; table falls back to overall pitcher metrics.</p>'
+      : '';
 
     mount.innerHTML = '<div class="pl-intel-toolbar">'
       + '<div class="pl-intel-group">'
@@ -947,11 +1001,10 @@
       + '<button type="button" class="ca-pill-btn' + (segment === 'f5' ? ' active' : '') + '" data-pi-segment="f5">F5</button>'
       + '</div></div>'
       + '<div class="pl-intel-group">'
-      + '<span class="ca-metric-label">Handedness</span>'
+      + '<span class="ca-metric-label">Split</span>'
       + '<div class="rl-pill-row">'
-      + ['overall', 'rhh', 'lhh'].map(function(h) {
-        var lbl = { overall: 'Overall', rhh: 'vs RHB', lhh: 'vs LHB' }[h];
-        return '<button type="button" class="ca-pill-btn' + (hand === h ? ' active' : '') + '" data-pi-hand="' + h + '">' + lbl + '</button>';
+      + splitOptions.map(function(opt) {
+        return '<button type="button" class="ca-pill-btn' + (hand === opt.id ? ' active' : '') + '" data-pi-hand="' + opt.id + '">' + opt.label + '</button>';
       }).join('')
       + '</div></div></div>'
       + platoonNote + segmentNote;
@@ -970,7 +1023,7 @@
         } else if (CACHE.tableSegment === 'full' && CACHE.sortKey === 'f5Era') {
           CACHE.sortKey = 'era';
         }
-        renderRankings();
+        renderRankings(CACHE.tableSegment);
       });
     });
   }
@@ -1278,7 +1331,7 @@
       var vals = COLS.map(function(c) {
         var v = bpSortValue(row, c.k);
         var inv = c.k !== 'bullpenScore' && c.k !== 'kPct';
-        var ctx = c.k === 'bullpenScore' ? 'pitching'
+        var ctx = c.k === 'bullpenScore' ? 'bp_score'
           : c.k === 'era' ? 'era' : c.k === 'fip' ? 'fip'
           : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';
         var d = c.k === 'bullpenScore' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);
@@ -1338,13 +1391,13 @@
   function sortProfiles(rows) {
     var key = CACHE.sortKey;
     var dir = CACHE.sortDir;
+    var split = CACHE.tableHand || 'overall';
+    var segment = CACHE.tableSegment === 'f5' ? 'f5' : 'full';
     return rows.slice().sort(function(a, b) {
-      var ma = profileMetrics(a);
-      var mb = profileMetrics(b);
-      var sa = extendedStats(a, ma);
-      var sb = extendedStats(b, mb);
-      var av = sortValue(a, key, ma, sa);
-      var bv = sortValue(b, key, mb, sb);
+      var ba = rankMetricBundle(a, split, segment);
+      var bb = rankMetricBundle(b, split, segment);
+      var av = sortValue(a, key, ba.met, ba.stats);
+      var bv = sortValue(b, key, bb.met, bb.stats);
       if (key === 'name' || key === 'team' || key === 'hand') {
         return dir * String(av || '').localeCompare(String(bv || ''));
       }
@@ -1354,7 +1407,7 @@
     });
   }
 
-  function renderRankings() {
+  function renderRankings(forceSegment) {
     var mount = document.getElementById('plRankingsMount');
     if (!mount || CACHE.intelTab !== 'rankings') {
       if (mount) mount.innerHTML = '';
@@ -1371,8 +1424,9 @@
       return;
     }
     var hand = CACHE.tableHand || 'overall';
-    var segment = CACHE.tableSegment || 'full';
-    var hasPlatoon = leagueHasSpPlatoon(CACHE.profiles || []);
+    var segment = forceSegment === 'f5' ? 'f5' : (CACHE.tableSegment === 'f5' ? 'f5' : 'full');
+    CACHE.tableSegment = segment;
+    var hasSplit = hasMetricSplitData(hand);
     var rows = sortProfiles(todayRankingsProfiles());
     if (!rows.length) {
       mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Today\'s Starters Rankings</h4>'
@@ -1403,9 +1457,9 @@
       var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
       var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
       var handP = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || '?').charAt(0);
-      var m = profileMetrics(row);
-      var st = extendedStats(row, m);
-      if (segment === 'f5') st = applyF5Context(st, row, null);
+      var bundle = rankMetricBundle(row, hand, segment);
+      var m = bundle.met;
+      var st = bundle.stats;
       var flags = spFlags(m);
       var sel = CACHE.selected === n ? ' pl-rank-row--selected' : '';
       var exp = CACHE.expandedPitcher === n ? ' pl-rank-row--expanded' : '';
@@ -1417,7 +1471,7 @@
           : c.k === 'era' ? 'era' : c.k === 'fip' ? 'fip'
           : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';
         var d = c.k === 'pitchScore' || c.k === 'oor' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);
-        if (hand !== 'overall' && !hasPlatoon) {
+        if (hand !== 'overall' && !hasSplit) {
           v = (c.k === 'era' || c.k === 'fip' || c.k === 'f5Era') ? st[c.k === 'f5Era' ? 'f5Era' : c.k] : m[c.k];
         }
         if (c.k === 'era' || c.k === 'fip' || c.k === 'f5Era') {

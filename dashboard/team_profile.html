@@ -27,16 +27,16 @@
 })();
 </script>
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="mlbma_assets.js?v=20260612a"></script>
+<script src="mlbma_assets.js?v=20260615b"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
 <script src="matchup_shared.js?v=20260703a"></script>
-<script src="mlbma_standings.js?v=20260703a"></script>
+<script src="mlbma_standings.js?v=20260703b"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
 <script src="team_profile_mini.js?v=20260605a"></script>
 <script src="team_profile_sections.js?v=20260618e"></script>
 <script src="team_profile_staff.js?v=20260608s"></script>
-<script src="team_profile_intel.js?v=20260618g"></script>
+<script src="team_profile_intel.js?v=20260618h"></script>
 <script src="mlbma_charts.js?v=20260612a"></script>
 <script src="platform_dashboard.js?v=20260618a"></script>
 <script src="profile_controls.js?v=20260602w"></script>
@@ -1753,7 +1753,7 @@ function renderUnitSnapshotStrip(prof, baseCtx) {
     if (snapBpEra == null) snapBpEra = num(pickCol(prof, ['bullpen_era']));
     var snapBpWin = bpEntry.bpWinPct;
     var bpRank = Staff && Staff.staffLeagueRank ? Staff.staffLeagueRank.bind(Staff) : function() { return { rank: null, total: null }; };
-    var bpChips = unitSnapshotChipRanked('Bullpen Pitch Score', snapBpScore, bpRank(bpCache, bpTk, 'bpScore', false), 'pitching', false, 0)
+    var bpChips = unitSnapshotChipRanked('Bullpen Pitch Score', snapBpScore, bpRank(bpCache, bpTk, 'bpScore', false), 'bp_score', false, 0)
       + unitSnapshotChipRanked('Bullpen ERA', snapBpEra, bpRank(bpCache, bpTk, 'bpEra', true), 'era', true, 2)
       + unitSnapshotChipRanked('Bullpen Win%', snapBpWin, bpRank(bpCache, bpTk, 'bpWinPct', false), 'rpwin', false, 1);
     el.innerHTML = bpIntel + unitSnapshotMetricsRow(bpChips);

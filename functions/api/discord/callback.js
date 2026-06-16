@@ -12,7 +12,7 @@
  */
 import { setDiscordIdentity } from '../../_shared/supabase.js';
 import { requireEnv, verifyPayload, readCookie, clearCookie, stateSecret } from '../../_shared/http.js';
-import { exchangeCode, fetchDiscordUser } from '../../_shared/discord.js';
+import { exchangeCode, fetchDiscordUser, syncMemberRole } from '../../_shared/discord.js';
 
 const STATE_COOKIE = 'discord_oauth_state';
 
@@ -45,6 +45,13 @@ export async function onRequestGet({ request, env }) {
     if (!discordUser.id) return fail('no_identity');
 
     await setDiscordIdentity(env, payload.uid, discordUser);
+
+    // Grant the base "signed-up member" role immediately on link so any account holder
+    // gets server access. Best-effort: a Discord role failure (member not in guild yet,
+    // role/hierarchy not configured) must not fail the link — they can re-trigger via the
+    // bot's /verify or the sync-role endpoint once they've joined.
+    try { await syncMemberRole(env, discordUser.id, true); } catch (_e) { /* non-fatal */ }
+
     return redirect(`${appBase}?discord=connected`, { 'Set-Cookie': clearCookie(STATE_COOKIE) });
   } catch (err) {
     return fail('server');

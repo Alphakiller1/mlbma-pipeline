@@ -1019,7 +1019,7 @@
     }
     var status = {
       label: 'League-average bullpen',
-      cls: statusClassFromMetric(pack.bpScore, 'osi', false)
+      cls: statusClassFromMetric(pack.bpScore, 'bp_score', false)
     };
     if (pack.bpScore != null && pack.bpScore >= 72) {
       status = { label: 'Elite leverage unit', cls: 'tp-intel-status--elite' };
@@ -1030,7 +1030,7 @@
     } else if (pack.hiEra != null && pack.era != null && pack.hiEra > pack.era + 1.2) {
       status = { label: 'High-leverage concern', cls: 'tp-intel-status--volatile' };
     } else if (pack.bpScore != null) {
-      status.cls = statusClassFromMetric(pack.bpScore, 'osi', false);
+      status.cls = statusClassFromMetric(pack.bpScore, 'bp_score', false);
     }
     var identity = pack.relieverCount
       ? pack.relieverCount + ' profiled reliever' + (pack.relieverCount === 1 ? '' : 's')
