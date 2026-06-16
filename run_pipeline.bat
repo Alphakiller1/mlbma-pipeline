@@ -18,4 +18,6 @@ if not exist "%PYEXE%" set "PYEXE=python"
 
 rem Use -m so the repo root is on sys.path; `python pipeline\main.py` puts only the
 rem pipeline\ folder on the path and crashes with "No module named 'pipeline'".
+rem pipeline.main also publishes bet-evaluator + sharp-money-tracker at the end.
+rem For the alternate entry that skips MLBMA scrape: run_full_pipeline.bat --skip-scrape
 "%PYEXE%" -u -m pipeline.main >> "%~dp0pipeline_log.txt" 2>&1

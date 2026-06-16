@@ -2188,15 +2188,15 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 }
 
 .ca-market__chart-stage {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding: 0 clamp(12px, 2.5vw, 40px);
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
   box-sizing: border-box;
 }
 
 .ca-market__chart-stage .ca-market__card {
-  max-width: min(1680px, 100%);
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -2259,10 +2259,11 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 .ca-market__chart {
   position: relative;
-  min-height: clamp(520px, 58vh, 760px);
+  min-height: clamp(560px, 62vh, 820px);
   background: linear-gradient(180deg, rgba(10,6,18,0.7) 0%, #050509 100%);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
+  padding: 8px 4px 4px;
 }
 
 .ca-market__chart .mlbma-quad-legend { display: none; }
@@ -2271,12 +2272,20 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   min-height: inherit;
 }
 .ca-market__chart .mlbma-quad-chart-wrap {
-  min-height: clamp(500px, 56vh, 720px);
+  min-height: clamp(540px, 60vh, 780px);
   height: 100%;
 }
 .ca-market__chart .mlbma-market-quad {
   display: block;
   min-height: inherit;
+  overflow: visible;
+}
+.ca-market__chart .mlbma-quad-team {
+  font-size: 10px;
+  fill: #E4E4E7;
+}
+.ca-market__chart .mlbma-quad-anchor {
+  pointer-events: none;
 }
 .ca-market__chart .mlbma-quad-hint {
   margin: 10px 16px 14px;
@@ -2807,7 +2816,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_icons.js?v=20260612b"></script>
 <script src="matchup_shared.js?v=20260703a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
-<script src="mlbma_charts.js?v=20260616b"></script>
+<script src="mlbma_charts.js?v=20260616c"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260624i"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
@@ -7060,7 +7069,10 @@ function renderLandingMarketQuadrant(split) {
     renderFn('landingMarketQuadrant', rows, {
       tipId: 'landingMarketQuadrantTip',
       variant: 'landing',
-      showBubbleLabels: false
+      showBubbleLabels: true,
+      showPosLabels: false,
+      bubbleRadius: 24,
+      spreadCollisions: true
     });
   } else {
     el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map module failed to load.</p></div>';

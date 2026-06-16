@@ -416,6 +416,50 @@ def run_instagram_autopost():
     _run_step("Optional: outputs.push_instagram", "outputs.push_instagram", _fn)
 
 
+def run_ecosystem_publish():
+    """After MLBMA, export + push bet-evaluator and sharp-money-tracker (default on).
+
+    Skipped when:
+      - MLBMA_SKIP_ECOSYSTEM=1 (run_full_pipeline.py handles publish itself)
+      - ECOSYSTEM_PUBLISH=0|false|no|skip
+    """
+    if os.getenv("MLBMA_SKIP_ECOSYSTEM", "").strip().lower() in {"1", "true", "yes"}:
+        return
+    if os.getenv("ECOSYSTEM_PUBLISH", "1").strip().lower() in {"0", "false", "no", "skip"}:
+        print("\n  ECOSYSTEM_PUBLISH disabled — skipping bet-evaluator + sharp-money-tracker")
+        return
+
+    script = ROOT / "run_full_pipeline.py"
+    if not script.exists():
+        print("\n  WARNING: run_full_pipeline.py not found — skipping ecosystem publish")
+        return
+
+    fetch_odds = os.getenv("FETCH_ODDS", "").strip().lower() in {"1", "true", "yes"}
+    print(f"\n{'='*50}")
+    print("Ecosystem publish (bet-evaluator + sharp-money-tracker)")
+    print(f"{'='*50}")
+
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("run_full_pipeline", script)
+    if spec is None or spec.loader is None:
+        print("  WARNING: could not load run_full_pipeline.py — skipping ecosystem publish")
+        return
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    publish = getattr(mod, "publish_ecosystem", None)
+    if not callable(publish):
+        print("  WARNING: publish_ecosystem missing — skipping ecosystem publish")
+        return
+
+    results = publish(commit=True, push=True, fetch_odds=fetch_odds, dry=False)
+    failed = [k for k, v in results.items() if v in ("FAILED", "missing")]
+    if failed:
+        print(f"  WARNING: ecosystem publish issues: {', '.join(failed)}")
+    else:
+        print("  Ecosystem publish complete.")
+
+
 def run_discord_autopost():
     """Optional: post the daily signals embed to Discord after the pipeline run.
 
@@ -435,4 +479,5 @@ def run_discord_autopost():
 
 if __name__ == "__main__":
     run()
+    run_ecosystem_publish()
     run_discord_autopost()

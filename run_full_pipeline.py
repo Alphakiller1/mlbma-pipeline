@@ -74,7 +74,8 @@ def step(text: str) -> None:
 
 
 # ── Subprocess wrapper ───────────────────────────────────────────────────────
-def run_cmd(cmd: list[str], cwd: Path, label: str, dry: bool) -> bool:
+def run_cmd(cmd: list[str], cwd: Path, label: str, dry: bool,
+            extra_env: dict | None = None) -> bool:
     pretty = " ".join(Path(c).name if c == PYTHON else c for c in cmd)
     step(f"{label}: {pretty}   (cwd={cwd.name})")
     if dry:
@@ -83,8 +84,9 @@ def run_cmd(cmd: list[str], cwd: Path, label: str, dry: bool) -> bool:
     if not cwd.exists():
         print(f"        ! {cwd} does not exist - skipping {label}", flush=True)
         return False
+    env = {**ENV, **(extra_env or {})}
     try:
-        proc = subprocess.run(cmd, cwd=str(cwd), env=ENV, text=True,
+        proc = subprocess.run(cmd, cwd=str(cwd), env=env, text=True,
                               capture_output=True, timeout=60 * 30)
     except Exception as e:  # noqa
         print(f"        ! {label} failed to launch: {e}", flush=True)
@@ -140,6 +142,34 @@ def git_publish(repo: Path, add_paths: list[str], message: str,
 
 
 # ── Orchestration ────────────────────────────────────────────────────────────
+def publish_ecosystem(*, commit: bool = True, push: bool = True,
+                      fetch_odds: bool = False, dry: bool = False) -> dict[str, str]:
+    """Stages 2-3: export + git publish bet-evaluator and sharp-money-tracker."""
+    today = _dt.date.today().isoformat()
+    results: dict[str, str] = {}
+
+    banner("Bet Evaluator  (docs/data/site.json)")
+    ok = run_cmd([PYTHON, "export_web_data.py"], BET_EVAL, "export site.json", dry)
+    results["bet-eval export"] = "ok" if ok else "FAILED"
+    results["bet-eval publish"] = git_publish(
+        BET_EVAL, ["docs"], f"Daily refresh {today}: bet-evaluator site data", commit, push, dry)
+
+    banner("Sharp Money Tracker  (docs/data.json)")
+    if fetch_odds:
+        step("fetch_odds set: refreshing the live market (this spends Odds-API credits)")
+        ok = run_cmd([PYTHON, "sharp_tracker.py"], SHARP, "fetch sharp odds", dry)
+        results["sharp fetch"] = "ok" if ok else "FAILED"
+    else:
+        step("paid fetch OFF - exporting from the warehouse only (pass --fetch-odds to refresh the market)")
+        results["sharp fetch"] = "skipped"
+    ok1 = run_cmd([PYTHON, "export_dashboard.py"], SHARP, "export data.json (signals/edges)", dry)
+    ok2 = run_cmd([PYTHON, "export_boards.py"], SHARP, "export boards (pitchers/markets)", dry)
+    results["sharp export"] = "ok" if (ok1 and ok2) else "FAILED"
+    results["sharp publish"] = git_publish(
+        SHARP, ["docs"], f"Daily refresh {today}: sharp-tracker dashboard data", commit, push, dry)
+    return results
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Refresh + publish the whole Chase Analytics stack.")
     ap.add_argument("--skip-scrape", action="store_true",
@@ -169,34 +199,17 @@ def main() -> None:
         step("--skip-scrape set: leaving data/ as-is")
         results["mlbma scrape"] = "skipped"
     else:
-        ok = run_cmd([PYTHON, "-u", "-m", "pipeline.main"], MLBMA, "scrape", dry)
+        ok = run_cmd(
+            [PYTHON, "-u", "-m", "pipeline.main"], MLBMA, "scrape", dry,
+            extra_env={"MLBMA_SKIP_ECOSYSTEM": "1"},
+        )
         results["mlbma scrape"] = "ok" if ok else "FAILED"
     results["mlbma publish"] = git_publish(
         MLBMA, ["dashboard"], f"Daily refresh {today}: dashboard data", commit, push, dry)
 
-    # 2 ── Bet Evaluator site data ─────────────────────────────────────────────
-    banner("2/3  Bet Evaluator  (docs/data/site.json)")
-    ok = run_cmd([PYTHON, "export_web_data.py"], BET_EVAL, "export site.json", dry)
-    results["bet-eval export"] = "ok" if ok else "FAILED"
-    results["bet-eval publish"] = git_publish(
-        BET_EVAL, ["docs"], f"Daily refresh {today}: bet-evaluator site data", commit, push, dry)
-
-    # 3 ── Sharp Money Tracker dashboard ───────────────────────────────────────
-    banner("3/3  Sharp Money Tracker  (docs/data.json)")
-    if a.fetch_odds:
-        step("--fetch-odds set: refreshing the live market (this spends Odds-API credits)")
-        ok = run_cmd([PYTHON, "sharp_tracker.py"], SHARP, "fetch sharp odds", dry)
-        results["sharp fetch"] = "ok" if ok else "FAILED"
-    else:
-        step("paid fetch OFF - exporting from the warehouse only (pass --fetch-odds to refresh the market)")
-        results["sharp fetch"] = "skipped"
-    # export_dashboard writes the base (signals / edges / cross-venue from Supabase);
-    # export_boards then MERGES the pitcher + general-markets boards on top. Order matters.
-    ok1 = run_cmd([PYTHON, "export_dashboard.py"], SHARP, "export data.json (signals/edges)", dry)
-    ok2 = run_cmd([PYTHON, "export_boards.py"], SHARP, "export boards (pitchers/markets)", dry)
-    results["sharp export"] = "ok" if (ok1 and ok2) else "FAILED"
-    results["sharp publish"] = git_publish(
-        SHARP, ["docs"], f"Daily refresh {today}: sharp-tracker dashboard data", commit, push, dry)
+    banner("2-3/3  Ecosystem publish (bet-evaluator + sharp-money-tracker)")
+    results.update(publish_ecosystem(
+        commit=commit, push=push, fetch_odds=a.fetch_odds, dry=dry))
 
     # ── Summary ────────────────────────────────────────────────────────────────
     banner("Summary")

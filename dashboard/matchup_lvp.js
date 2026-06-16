@@ -733,6 +733,10 @@
       + '</section>';
   }
 
+  function sheetGameStarterHand(g) {
+    return normalizeStarterHand(pick(g, ['opp_starter_hand', 'opp starter hand', 'hand']));
+  }
+
   function teamL10SpHandMap(rows) {
     var map = {};
     (rows || []).forEach(function(row) {
@@ -740,7 +744,7 @@
       var team = S && S.teamKey
         ? S.teamKey(pick(row, ['team', 'Tm', 'Team']))
         : String(pick(row, ['team']) || '').toUpperCase();
-      var hand = resolveGameStarterHand(row);
+      var hand = sheetGameStarterHand(row);
       if (!team || !hand) return;
       map[team + ':' + hand] = row;
     });
@@ -765,9 +769,10 @@
         ? S.teamKey(pick(g, ['team', 'Tm', 'Team']))
         : String(pick(g, ['team']) || '').toUpperCase();
       if (gt !== tk) return false;
-      // Resolve true starter hand (registry + SP profiles + MLB) — ignore stale bucket tags.
-      if (resolveGameStarterHand(g) !== hand) return false;
-      return gameVsSpPa(g) > 0;
+      // Trust pipeline hand bucket (Team_L10_SP_Games) so all 10 published games display.
+      if (sheetGameStarterHand(g) !== hand) return false;
+      var pa = gameVsSpPa(g);
+      return pa == null || pa > 0;
     });
     rows.sort(function(a, b) {
       return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
@@ -981,19 +986,54 @@
     return S && S.normName ? S.normName(name) : String(name || '').toLowerCase().trim();
   }
 
-  function pitcherGamelog(name, limit) {
+  function pitcherTeamKey(row) {
+    return S && S.teamKey
+      ? S.teamKey(pick(row, ['pitcher_team', 'pitcher team', 'Team', 'Tm']))
+      : String(pick(row, ['pitcher_team', 'pitcher team', 'Team']) || '').toUpperCase();
+  }
+
+  function pitcherIdForSide(ctx, pitcherSide) {
+    var m = ctx && ctx.m;
+    if (!m) return null;
+    if (pitcherSide === 'home') return m.homeSPId != null ? m.homeSPId : null;
+    if (pitcherSide === 'away') return m.awaySPId != null ? m.awaySPId : null;
+    return null;
+  }
+
+  function pitcherGamelog(name, limit, opts) {
+    opts = opts || {};
+    var lim = limit == null ? STARTS_LIMIT : limit;
+    var pid = num(opts.pitcherId);
+    var team = opts.team
+      ? (S && S.teamKey ? S.teamKey(opts.team) : String(opts.team || '').toUpperCase())
+      : '';
     var key = canonicalPlayerName(name);
-    if (!key) return [];
+    if (!pid && !key) return [];
     var rows = (_pack.spGameLog || []).filter(function(r) {
+      if (pid) {
+        var rowPid = num(pick(r, ['pitcher_id', 'player_id', 'Player ID', 'mlb_id']));
+        if (rowPid === pid) return true;
+      }
+      if (!key) return false;
       var rowName = canonicalPlayerName(pick(r, ['pitcher_name', 'Name', 'Pitcher']));
-      if (rowName === key) return true;
+      if (rowName === key) {
+        if (team) {
+          var rt = pitcherTeamKey(r);
+          if (rt && rt !== team) return false;
+        }
+        return true;
+      }
+      if (team) {
+        var rowTeam = pitcherTeamKey(r);
+        if (rowTeam && rowTeam !== team) return false;
+      }
       var last = key.split(' ').pop();
       if (!last || last.length < 3) return false;
       return rowName.split(' ').pop() === last && rowName.charAt(0) === key.charAt(0);
     });
     return rows.slice().sort(function(a, b) {
       return String(pick(b, ['date', 'Date'])).localeCompare(String(pick(a, ['date', 'Date'])));
-    }).slice(0, limit == null ? STARTS_LIMIT : limit);
+    }).slice(0, lim);
   }
 
   function summarizeStarts(starts) {
@@ -1228,7 +1268,10 @@
 
   function pitcherStartsHtml(spName, log, summary) {
     var n = log && log.length ? log.length : 0;
-    var purpose = 'Last ' + n + ' starts';
+    var purpose = 'Last ' + STARTS_LIMIT + ' starts';
+    if (n > 0 && n < STARTS_LIMIT) {
+      purpose += ' (' + n + ' in log)';
+    }
     if (!log || !log.length) {
       return lvpPitcherPanelHead(spName, purpose)
         + '<p class="ca-helper mc-lvp-empty">No starts in SP_Game_Log for ' + esc(spName) + '.</p>';
@@ -1277,7 +1320,8 @@
     var spHand = pitcherSide === 'home' ? m.homeHand : m.awayHand;
     var luF = lineupFilter(spHand);
     var l10Form = lineupL10FormRow({ row: {} }, ctx, lineupTeam, spHand);
-    var log = pitcherGamelog(spName, STARTS_LIMIT);
+    var pitcherId = pitcherIdForSide(ctx, pitcherSide);
+    var log = pitcherGamelog(spName, STARTS_LIMIT, { pitcherId: pitcherId, team: pitcherTeam });
     var logSum = summarizeStarts(log);
     return {
       lu: { entity: 'lineup', row: l10Form },
@@ -1291,6 +1335,8 @@
       pitcherTeam: pitcherTeam,
       spName: spName,
       lineupSide: lineupSide,
+      pitcherSide: pitcherSide,
+      pitcherId: pitcherId,
       fallback: true
     };
   }
@@ -1328,7 +1374,8 @@
       if (lu) {
         lu = Object.assign({}, lu, { row: l10Form });
       }
-      var log = pitcherGamelog(spName, STARTS_LIMIT);
+      var pitcherId = pitcherIdForSide(ctx, pitcherSide);
+      var log = pitcherGamelog(spName, STARTS_LIMIT, { pitcherId: pitcherId, team: pitcherTeam });
       var logSum = summarizeStarts(log);
       var spExt = extendedPitcherStats(sp && sp.row, sp && sp.metricsObj);
       return {
@@ -1342,7 +1389,9 @@
         lineupTeam: lineupTeam,
         pitcherTeam: pitcherTeam,
         spName: spName,
-        lineupSide: lineupSide
+        lineupSide: lineupSide,
+        pitcherSide: pitcherSide,
+        pitcherId: pitcherId
       };
     }).catch(function(err) {
       console.warn('[matchup_lvp] resolve failed', err);
