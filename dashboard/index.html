@@ -2187,6 +2187,19 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   margin: 0 auto;
 }
 
+.ca-market__chart-stage {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0 clamp(12px, 2.5vw, 40px);
+  box-sizing: border-box;
+}
+
+.ca-market__chart-stage .ca-market__card {
+  max-width: min(1680px, 100%);
+  margin: 0 auto;
+}
+
 .ca-market__header {
   display: flex;
   align-items: flex-end;
@@ -2246,14 +2259,34 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 .ca-market__chart {
   position: relative;
-  min-height: 480px;
+  min-height: clamp(520px, 58vh, 760px);
   background: linear-gradient(180deg, rgba(10,6,18,0.7) 0%, #050509 100%);
   border-radius: 14px;
   overflow: hidden;
 }
 
 .ca-market__chart .mlbma-quad-legend { display: none; }
-.ca-market__chart .mlbma-quad-chart-wrap { min-height: 460px; }
+.ca-market__chart .mlbma-quad-wrap--landing {
+  height: 100%;
+  min-height: inherit;
+}
+.ca-market__chart .mlbma-quad-chart-wrap {
+  min-height: clamp(500px, 56vh, 720px);
+  height: 100%;
+}
+.ca-market__chart .mlbma-market-quad {
+  display: block;
+  min-height: inherit;
+}
+.ca-market__chart .mlbma-quad-hint {
+  margin: 10px 16px 14px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(245, 243, 255, 0.55);
+}
+.ca-market__chart .mlbma-quad-dot--compact .mlbma-quad-logo {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
+}
 .ca-market__chart .mlbma-quad-dot {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
   cursor: pointer;
@@ -2349,7 +2382,10 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     text-align: center;
   }
   .ca-market__chart {
-    min-height: 320px;
+    min-height: 420px;
+  }
+  .ca-market__chart .mlbma-quad-chart-wrap {
+    min-height: 400px;
   }
 }
 
@@ -2771,7 +2807,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_icons.js?v=20260612b"></script>
 <script src="matchup_shared.js?v=20260703a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
-<script src="mlbma_charts.js?v=20260612a"></script>
+<script src="mlbma_charts.js?v=20260616b"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260624i"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
@@ -2779,7 +2815,7 @@ body.view-research .ca-lab { display: block; }
 <script src="lineup_view.js?v=20260612b"></script>
 <script src="trends_heatmap.js?v=20260612a"></script>
 <script src="bullpen_usage.js?v=20260610b"></script>
-<script src="pitcher_lab.js?v=20260624k"></script>
+<script src="pitcher_lab.js?v=20260616a"></script>
 <script src="mobile_cardify.js?v=20260610c"></script>
 <script src="mobile_matchup_card.js?v=20260613a"></script>
 </head>
@@ -3089,8 +3125,10 @@ body.view-research .ca-lab { display: block; }
       </div>
     </header>
 
-    <div class="ca-market__card">
-      <div class="ca-market__chart" id="landingMarketQuadrant"></div>
+    <div class="ca-market__chart-stage">
+      <div class="ca-market__card">
+        <div class="ca-market__chart" id="landingMarketQuadrant"></div>
+      </div>
     </div>
 
     <div class="ca-market__legend">
@@ -3650,6 +3688,7 @@ function applyLiveData() {
     refreshTodayMatchups(LIVE_DATA._liveSchedule);
     syncLineupsToMatchupSlate();
     enrichMatchupCards();
+    if (window.PitcherLab && PitcherLab.refreshRankings) PitcherLab.refreshRankings();
     syncHeroStats();
     if (shouldRenderMatchupsView()) {
       showSlateFreshnessBanner();
@@ -7018,7 +7057,11 @@ function renderLandingMarketQuadrant(split) {
   }
   var renderFn = window.MLBMACharts && MLBMACharts.renderMarketQuadrant;
   if (renderFn) {
-    renderFn('landingMarketQuadrant', rows, { tipId: 'landingMarketQuadrantTip' });
+    renderFn('landingMarketQuadrant', rows, {
+      tipId: 'landingMarketQuadrantTip',
+      variant: 'landing',
+      showBubbleLabels: false
+    });
   } else {
     el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map module failed to load.</p></div>';
   }

@@ -1,4 +1,4 @@
-// v20260531e
+// v20260616a
 /**
  * Research Lab — Pitcher Intelligence tab
  */
@@ -273,32 +273,117 @@
     var nb = normName(b);
     if (!na || !nb || na === 'tbd' || nb === 'tbd') return false;
     if (na === nb) return true;
-    var la = na.split(' ').pop();
-    var lb = nb.split(' ').pop();
-    return la.length > 2 && la === lb;
+    var pa = String(a).trim().split(/\s+/);
+    var pb = String(b).trim().split(/\s+/);
+    var la = pa[pa.length - 1].toLowerCase();
+    var lb = pb[pb.length - 1].toLowerCase();
+    if (la.length <= 2 || la !== lb) return false;
+    var initA = pa[0].charAt(0).toLowerCase();
+    var initB = pb[0].charAt(0).toLowerCase();
+    var abbrA = pa[0].length <= 2 || pa[0].indexOf('.') >= 0;
+    var abbrB = pb[0].length <= 2 || pb[0].indexOf('.') >= 0;
+    if (abbrA || abbrB) return initA === initB;
+    return true;
+  }
+
+  function profilePitcherId(row) {
+    var id = pickCol(row, ['pitcher_id', 'playerId', 'mlb_id', 'player_id']);
+    if (id == null || id === '') return null;
+    return String(id).trim();
+  }
+
+  function teamsMatch(a, b) {
+    if (!a || !b) return true;
+    return teamKey(a) === teamKey(b);
+  }
+
+  /** Today's projected starters from the live matchup slate (team + optional MLB id). */
+  function todaySlateStarters() {
+    var out = [];
+    var seen = {};
+    var matchups = (global.LIVE_DATA && LIVE_DATA.matchups) || [];
+    matchups.forEach(function(m) {
+      if (!m) return;
+      [
+        { name: m.awaySP, team: m.away, id: m.awaySPId },
+        { name: m.homeSP, team: m.home, id: m.homeSPId }
+      ].forEach(function(slot) {
+        if (!slot.name || String(slot.name).toUpperCase() === 'TBD') return;
+        var key = teamKey(slot.team) + '|' + normName(slot.name);
+        if (seen[key]) return;
+        seen[key] = true;
+        out.push({
+          name: String(slot.name).trim(),
+          team: slot.team,
+          id: slot.id != null ? String(slot.id).trim() : null
+        });
+      });
+    });
+    return out;
   }
 
   function todayStarterRawNames() {
-    var names = [];
-    var matchups = (global.LIVE_DATA && LIVE_DATA.matchups) || [];
-    matchups.forEach(function(m) {
-      if (m.awaySP && String(m.awaySP).toUpperCase() !== 'TBD') names.push(String(m.awaySP).trim());
-      if (m.homeSP && String(m.homeSP).toUpperCase() !== 'TBD') names.push(String(m.homeSP).trim());
+    return todaySlateStarters().map(function(s) { return s.name; });
+  }
+
+  function spProfilePool() {
+    if (global.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length) {
+      return LIVE_DATA.spProfiles;
+    }
+    if (CACHE.profiles && CACHE.profiles.length) return CACHE.profiles;
+    return [];
+  }
+
+  function resolveSlateStarterProfile(slot, profiles) {
+    if (!slot || !slot.name || String(slot.name).toUpperCase() === 'TBD') return null;
+    profiles = profiles || spProfilePool();
+    if (!profiles.length) return null;
+
+    var id = slot.id ? String(slot.id).trim() : '';
+    if (id) {
+      var byId = profiles.find(function(row) {
+        return profilePitcherId(row) === id;
+      });
+      if (byId) return byId;
+    }
+
+    if (S && S.findSpProfile) {
+      var exact = S.findSpProfile(profiles, slot.name, slot.team);
+      if (exact) return exact;
+    }
+
+    var candidates = profiles.filter(function(row) {
+      if (pitcherRole(row) === 'RP') return false;
+      if (!teamsMatch(pickCol(row, ['pitcher_team', 'Team', 'Tm']), slot.team)) return false;
+      return pitcherNamesMatch(slot.name, pickCol(row, ['pitcher_name', 'Name', 'Pitcher']));
     });
-    return names;
+    if (!candidates.length) return null;
+    if (candidates.length === 1) return candidates[0];
+
+    var slateParts = String(slot.name).trim().split(/\s+/);
+    var slateInitial = slateParts[0].charAt(0).toLowerCase();
+    var slateLast = slateParts.length > 1 ? slateParts[slateParts.length - 1].toLowerCase() : '';
+    var best = candidates.find(function(row) {
+      var pn = String(pickCol(row, ['pitcher_name', 'Name', 'Pitcher']) || '').trim().split(/\s+/);
+      var pi = pn[0].charAt(0).toLowerCase();
+      var pl = pn.length > 1 ? pn[pn.length - 1].toLowerCase() : '';
+      return pi === slateInitial && pl === slateLast;
+    });
+    return best || candidates[0];
   }
 
   function todayStarterSet() {
     var set = new Set();
-    todayRankingsProfiles().forEach(function(row) {
-      var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-      if (n) set.add(normName(n));
+    todaySlateStarters().forEach(function(slot) {
+      set.add(normName(slot.name));
     });
     return set;
   }
 
   function isTonightStarter(name) {
-    return todayStarterRawNames().some(function(s) { return pitcherNamesMatch(s, name); });
+    return todaySlateStarters().some(function(slot) {
+      return pitcherNamesMatch(slot.name, name);
+    });
   }
 
   function readPlatoonMetric(row, hand, field) {
@@ -382,12 +467,20 @@
   }
 
   function todayRankingsProfiles() {
-    var starters = todayStarterRawNames();
-    if (!starters.length) return [];
-    return starterProfiles().filter(function(row) {
-      var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-      return starters.some(function(s) { return pitcherNamesMatch(s, n); });
+    var slots = todaySlateStarters();
+    if (!slots.length) return [];
+    var profiles = spProfilePool();
+    var seen = {};
+    var rows = [];
+    slots.forEach(function(slot) {
+      var row = resolveSlateStarterProfile(slot, profiles);
+      if (!row) return;
+      var key = normName(pickCol(row, ['pitcher_name', 'Name', 'Pitcher']));
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      rows.push(row);
     });
+    return rows;
   }
 
   function ratePerNine(pct) {
@@ -1508,7 +1601,8 @@
     }).join('');
 
     mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Today\'s Starters Rankings</h4>'
-      + '<p class="pl-section-sub">Projected starters only · sort any column · click pitcher name for full profile · click row for allowed-metrics depth</p></div>'
+      + '<p class="pl-section-sub">' + rows.length + ' projected starter' + (rows.length === 1 ? '' : 's')
+      + ' on today\'s slate · sort any column · click pitcher name for full profile · click row for allowed-metrics depth</p></div>'
       + '<div class="rl-table-wrap pl-rank-wrap rl-sticky-table pl-rank-table-wrap"><table class="rl-table-premium pl-rank-table rl-sp-rank-table hub-table"><thead><tr>'
       + '<th class="pl-rank-idx">#</th>'
       + sortThHtml('name', 'Pitcher', { numeric: false })
@@ -1543,6 +1637,16 @@
     });
   }
 
+  function refreshRankings() {
+    var mount = document.getElementById('rlPitcherLabRoot');
+    if (!mount || !mount.querySelector('#plRankingsMount')) return Promise.resolve();
+    CACHE.profiles = null;
+    return loadProfiles().then(function() {
+      renderRankings();
+      return null;
+    });
+  }
+
   function mount(rootId) {
     var root = document.getElementById(rootId || 'rlPitcherLabRoot');
     if (!root) return;
@@ -1570,6 +1674,7 @@
   global.PitcherLab = {
     mount: mount,
     loadProfiles: loadProfiles,
+    refreshRankings: refreshRankings,
     renderPitcherSnapshot: renderPitcherSnapshot,
     selectPitcher: selectPitcher,
     spFlags: spFlags

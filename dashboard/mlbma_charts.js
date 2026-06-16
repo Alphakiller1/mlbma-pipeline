@@ -508,19 +508,27 @@
     return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + slug + '.png&w=64&h=64';
   }
 
-  function quadrantBubbleMarkup(d, cx, cy, meta) {
+  function quadrantBubbleMarkup(d, cx, cy, meta, bubbleOpts) {
+    bubbleOpts = bubbleOpts || {};
+    var r = bubbleOpts.bubbleRadius != null ? bubbleOpts.bubbleRadius : 28;
+    var logoR = Math.max(10, Math.round(r * 0.78));
+    var logoSize = logoR * 2;
+    var showLabels = bubbleOpts.showBubbleLabels !== false;
     var logoUrl = teamEspnLogoUrl(d.t);
     var gid = 'qb_' + String(d.t).replace(/[^a-z0-9]/gi, '');
-    var teamY = cy + 38;
-    var posY = cy + 50;
-    return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" data-map-pos="' + esc(meta.short || meta.label) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + ' · ' + esc(meta.label) + '">'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" fill-opacity=".18"/>'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
-      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="22"/></clipPath>'
-      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 11) + '" y="' + (cy - 11) + '" width="22" height="22" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
+    var teamY = cy + r + 10;
+    var posY = cy + r + 22;
+    var labelHtml = showLabels
+      ? '<text class="mlbma-quad-team" x="' + cx + '" y="' + teamY + '" text-anchor="middle" fill="#D4D4D8" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
+        + '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
+      : '';
+    return '<g class="mlbma-quad-dot' + (showLabels ? '' : ' mlbma-quad-dot--compact') + '" data-team="' + esc(d.t) + '" data-map-pos="' + esc(meta.short || meta.label) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + ' · ' + esc(meta.label) + '">'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + meta.color + '" fill-opacity=".18"/>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
+      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="' + logoR + '"/></clipPath>'
+      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - logoR) + '" y="' + (cy - logoR) + '" width="' + logoSize + '" height="' + logoSize + '" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
       + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
-      + '<text class="mlbma-quad-team" x="' + cx + '" y="' + teamY + '" text-anchor="middle" fill="#D4D4D8" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
-      + '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
+      + labelHtml
       + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · PP Gap ' + quadYValue(d, "ppGap").toFixed(1) + '</title>'
       + '</g>';
   }
@@ -635,6 +643,9 @@
     var el = opts.el || document.getElementById(containerId);
     if (!el) return null;
     var yMode = (opts.mode || 'ppGap');
+    var isLanding = opts.variant === 'landing';
+    var showBubbleLabels = opts.showBubbleLabels != null ? !!opts.showBubbleLabels : !isLanding;
+    var bubbleRadius = opts.bubbleRadius != null ? opts.bubbleRadius : (isLanding ? 22 : 28);
     var data = (rows || []).filter(function(d) {
       return d && d.osi != null && !isNaN(d.osi) && quadYValue(d, yMode) != null;
     });
@@ -642,11 +653,19 @@
       el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map loads when team offense data is available (vs_RHP scores).</p></div>';
       return el;
     }
-    var W = opts.width || Math.min(1200, el.clientWidth || 900);
-    var H = opts.height || Math.max(520, W < 700 ? 520 : 560);
-    var ml = 80, mr = 60, mt = 60, mb = 88;
+    var containerW = el.clientWidth || 900;
+    var maxW = isLanding ? 1680 : 1200;
+    var W = opts.width || Math.min(maxW, Math.max(containerW, isLanding ? 960 : 900));
+    var H = opts.height || (isLanding
+      ? Math.max(560, Math.round(W * 0.58))
+      : Math.max(520, W < 700 ? 520 : 560));
+    var ml = isLanding ? 52 : 80;
+    var mr = isLanding ? 36 : 60;
+    var mt = isLanding ? 40 : 60;
+    var mb = showBubbleLabels ? (isLanding ? 72 : 88) : 48;
     var cw = W - ml - mr;
     var ch = H - mt - mb;
+    var bubbleOpts = { bubbleRadius: bubbleRadius, showBubbleLabels: showBubbleLabels };
 
     // Fit the domain so every bubble (radius ~28px, with a team/pos label below)
     // sits fully inside the plot. We expand the data range by the pixel inset each
@@ -670,10 +689,10 @@
     var xMax = Math.max.apply(null, xVals);
     var yMin = Math.min.apply(null, yVals);
     var yMax = Math.max.apply(null, yVals);
-    // Insets: bubble radius ~28 on every side; bottom needs extra ~28 for the
-    // team + position labels that render below each bubble.
-    var xd = fitDomain(xMin, xMax, cw, 34, 34, 20);
-    var yd = fitDomain(yMin, yMax, ch, 58, 34, 8);
+    var edgeInset = bubbleRadius + 6;
+    var bottomInset = showBubbleLabels ? bubbleRadius + 30 : edgeInset;
+    var xd = fitDomain(xMin, xMax, cw, edgeInset, edgeInset, 20);
+    var yd = fitDomain(yMin, yMax, ch, bottomInset, edgeInset, 8);
     var xMn = xd[0], xMx = xd[1];
     var yMn = yd[0], yMx = yd[1];
     var xRng = xMx - xMn;
@@ -728,16 +747,20 @@
       var xVal = d.osi;
       var yVal = quadYValue(d, yMode);
       var meta = marketQuadrantMeta(xVal, yVal);
-      svg += quadrantBubbleMarkup(d, xs(xVal), ys(yVal), meta);
+      svg += quadrantBubbleMarkup(d, xs(xVal), ys(yVal), meta, bubbleOpts);
     });
 
     svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">OSI</text>';
     svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">PP Gap (ABQ − RCV)</text>';
     svg += '</svg>';
 
-    el.innerHTML = '<div class="mlbma-quad-wrap">' + legend
+    var hintHtml = isLanding && !showBubbleLabels
+      ? '<p class="mlbma-quad-hint ca-helper">Hover or tap a team logo for full metrics and quadrant read.</p>'
+      : '';
+    el.innerHTML = '<div class="mlbma-quad-wrap' + (isLanding ? ' mlbma-quad-wrap--landing' : '') + '">' + legend
       + '<div class="mlbma-quad-chart-wrap chart-wrap">' + svg
-      + '<div id="' + esc(tipId) + '" class="tooltip chart-tip mlbma-quad-tip" role="tooltip"></div></div></div>';
+      + '<div id="' + esc(tipId) + '" class="tooltip chart-tip mlbma-quad-tip" role="tooltip"></div></div>'
+      + hintHtml + '</div>';
 
     var tip = document.getElementById(tipId);
     var wrap = el.querySelector('.mlbma-quad-chart-wrap');
@@ -800,6 +823,20 @@
         if (tip) tip.classList.remove('show');
       });
     });
+
+    el._quadRows = rows;
+    el._quadOpts = opts;
+    if (!el._quadResizeBound && typeof ResizeObserver !== 'undefined') {
+      el._quadResizeBound = true;
+      var ro = new ResizeObserver(function() {
+        if (el._quadResizeTimer) clearTimeout(el._quadResizeTimer);
+        el._quadResizeTimer = setTimeout(function() {
+          if (!el._quadRows || !el.isConnected) return;
+          renderMarketQuadrant(containerId, el._quadRows, el._quadOpts);
+        }, 120);
+      });
+      ro.observe(el);
+    }
     return el;
   }
 
