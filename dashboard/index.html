@@ -3132,6 +3132,15 @@ body.view-research .ca-lab { display: block; }
           LHP
         </button>
       </div>
+
+      <div class="ca-market__toggle-group" role="group" aria-label="Y-axis mode">
+        <button type="button" id="marketTogglePPGap" class="ca-toggle ca-toggle--active" aria-pressed="true" title="ABQ − RCV">
+          PP Gap
+        </button>
+        <button type="button" id="marketToggleRegGap" class="ca-toggle" aria-pressed="false" title="(xwOBA − wOBA) × 450">
+          Reg Gap
+        </button>
+      </div>
     </header>
 
     <div class="ca-market__chart-stage">
@@ -7054,6 +7063,9 @@ function renderLandingMarketQuadrant(split) {
   var el = document.getElementById('landingMarketQuadrant');
   if (!el) return;
   var hand = split === 'lhp' ? 'lhp' : 'rhp';
+  var mode = (window.LANDING_MARKET_YMODE === 'reg' || window.LANDING_MARKET_YMODE === 'regression')
+    ? 'reg'
+    : 'ppGap';
   var rows = [];
   if (window.MLBMACharts && MLBMACharts.getQuadrantRows) {
     rows = MLBMACharts.getQuadrantRows(hand);
@@ -7066,13 +7078,34 @@ function renderLandingMarketQuadrant(split) {
   }
   var renderFn = window.MLBMACharts && MLBMACharts.renderMarketQuadrant;
   if (renderFn) {
-    renderFn('landingMarketQuadrant', rows, {
+    // Landing enhancement: highlight today's slate teams + include opponent/hand in tooltip.
+    var todayCtx = {};
+    try {
+      (LIVE_DATA.matchups || []).forEach(function(m) {
+        var a = String(m.Away || m.away || '').trim().toUpperCase();
+        var h = String(m.Home || m.home || '').trim().toUpperCase();
+        if (!a || !h) return;
+        var ah = String(m.Away_Hand || m.away_hand || m.awayHand || '').trim().toUpperCase();
+        var hh = String(m.Home_Hand || m.home_hand || m.homeHand || '').trim().toUpperCase();
+        todayCtx[a] = { opp: h, vsHand: hh === 'L' ? 'lhp' : 'rhp' };
+        todayCtx[h] = { opp: a, vsHand: ah === 'L' ? 'lhp' : 'rhp' };
+      });
+    } catch (e) { /* ignore */ }
+    var outRows = (rows || []).map(function(r) {
+      var t = String(r && r.t || '').trim().toUpperCase();
+      var ctx = todayCtx[t];
+      if (!ctx) return r;
+      return Object.assign({}, r, { today: true, todayOpp: ctx.opp, todayVsHand: ctx.vsHand });
+    });
+    renderFn('landingMarketQuadrant', outRows, {
       tipId: 'landingMarketQuadrantTip',
       variant: 'landing',
       showBubbleLabels: true,
       showPosLabels: false,
       bubbleRadius: 24,
-      spreadCollisions: true
+      spreadCollisions: true,
+      mode: mode,
+      _landingHand: hand
     });
   } else {
     el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map module failed to load.</p></div>';
@@ -7101,6 +7134,28 @@ function initLandingMarketMapToggle() {
   });
 }
 
+function initLandingMarketYAxisToggle() {
+  var pp = document.getElementById('marketTogglePPGap');
+  var reg = document.getElementById('marketToggleRegGap');
+  if (!pp || !reg || pp.dataset.bound) return;
+  pp.dataset.bound = '1';
+  reg.dataset.bound = '1';
+  window.LANDING_MARKET_YMODE = window.LANDING_MARKET_YMODE || 'ppGap';
+  function applyActive(mode) {
+    var isReg = mode === 'reg' || mode === 'regression';
+    window.LANDING_MARKET_YMODE = isReg ? 'reg' : 'ppGap';
+    pp.classList.toggle('ca-toggle--active', !isReg);
+    pp.setAttribute('aria-pressed', (!isReg) ? 'true' : 'false');
+    reg.classList.toggle('ca-toggle--active', isReg);
+    reg.setAttribute('aria-pressed', isReg ? 'true' : 'false');
+    var lhpActive = document.getElementById('marketToggleLHP') && document.getElementById('marketToggleLHP').classList.contains('ca-toggle--active');
+    renderLandingMarketQuadrant(lhpActive ? 'lhp' : 'rhp');
+  }
+  pp.addEventListener('click', function() { applyActive('ppGap'); });
+  reg.addEventListener('click', function() { applyActive('reg'); });
+  applyActive(window.LANDING_MARKET_YMODE);
+}
+
 function scheduleLandingMarketMapFallback() {
   setTimeout(function() {
     var el = document.getElementById('landingMarketQuadrant');
@@ -7118,6 +7173,7 @@ function renderMarketMapCharts() {
     ResearchLab.syncResearchGlobalsFromLiveData();
   }
   if (document.getElementById('landingMarketQuadrant')) {
+    initLandingMarketYAxisToggle();
     var lhpActive = document.getElementById('marketToggleLHP') && document.getElementById('marketToggleLHP').classList.contains('ca-toggle--active');
     renderLandingMarketQuadrant(lhpActive ? 'lhp' : 'rhp');
   }

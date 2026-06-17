@@ -87,7 +87,7 @@ def run_cmd(cmd: list[str], cwd: Path, label: str, dry: bool,
     env = {**ENV, **(extra_env or {})}
     try:
         proc = subprocess.run(cmd, cwd=str(cwd), env=env, text=True,
-                              capture_output=True, timeout=60 * 30)
+                              capture_output=True, timeout=60 * 120)
     except Exception as e:  # noqa
         print(f"        ! {label} failed to launch: {e}", flush=True)
         return False

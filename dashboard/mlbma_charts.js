@@ -556,6 +556,7 @@
 
   function quadrantBubbleMarkup(d, cx, cy, meta, bubbleOpts) {
     bubbleOpts = bubbleOpts || {};
+    var mode = String(bubbleOpts.mode || 'ppGap').toLowerCase();
     var r = bubbleOpts.bubbleRadius != null ? bubbleOpts.bubbleRadius : 28;
     var logoR = Math.max(10, Math.round(r * 0.78));
     var logoSize = logoR * 2;
@@ -572,14 +573,20 @@
           ? '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
           : '')
       : '';
+    var todayRing = d && d.today
+      ? '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 3) + '" fill="none" stroke="rgba(154,107,255,.9)" stroke-width="2" opacity="0.9"/>'
+      : '';
+    var yLab = mode === 'reg' || mode === 'regression' ? 'Reg Gap' : 'PP Gap';
+    var yVal = quadYValue(d, mode);
     return '<g class="mlbma-quad-dot' + (showLabels ? '' : ' mlbma-quad-dot--compact') + '" data-team="' + esc(d.t) + '" data-map-pos="' + esc(meta.short || meta.label) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + ' · ' + esc(meta.label) + '">'
+      + todayRing
       + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + meta.color + '" fill-opacity=".18"/>'
       + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
       + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="' + logoR + '"/></clipPath>'
       + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - logoR) + '" y="' + (cy - logoR) + '" width="' + logoSize + '" height="' + logoSize + '" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
       + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
       + labelHtml
-      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · PP Gap ' + quadYValue(d, "ppGap").toFixed(1) + '</title>'
+      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + esc(yLab) + ' ' + (yVal != null && !isNaN(yVal) ? (Math.round(yVal * 2) / 2).toFixed(1).replace(/\\.0$/, '') : '—') + '</title>'
       + '</g>';
   }
 
@@ -624,7 +631,8 @@
     return '<div class="tt-row"><span class="lab">' + esc(label) + '</span><span class="val">' + valHtml + '</span></div>';
   }
 
-  function buildMarketQuadrantTipHtml(d) {
+  function buildMarketQuadrantTipHtml(d, mode) {
+    mode = String(mode || 'ppGap').toLowerCase();
     d = resolveQuadrantTipRow(d);
     if (!d) return '';
 
@@ -661,14 +669,23 @@
 
     var regHtml = '<span style="color:' + reg[1] + '">' + esc(reg[0]) + '</span>';
 
-    var gapVal = quadYValue(d, 'ppGap');
+    var gapVal = quadYValue(d, mode);
     var mapMeta = (d.osi != null && gapVal != null) ? marketQuadrantMeta(d.osi, gapVal) : null;
     var mapPosHtml = mapMeta
       ? '<div class="tt-map-pos" style="color:' + mapMeta.color + '">' + esc(mapMeta.label) + '</div>'
       : '';
 
+    var todayHtml = (d.today && d.todayOpp)
+      ? '<div class="tt-map-pos" style="color:rgba(154,107,255,.92)">Today: vs ' + esc(d.todayOpp) + (d.todayVsHand ? (' · vs ' + esc(String(d.todayVsHand).toUpperCase())) : '') + '</div>'
+      : '';
+
+    var yRow = (mode === 'reg' || mode === 'regression')
+      ? ttRow('Reg Gap (xwOBA–wOBA)', '<span style="color:' + metricColor(quadYValue(d, "reg"), 'reg', false) + '">' + fmtSigned(quadYValue(d, "reg")) + '</span>')
+      : ttRow('PP Gap (ABQ–RCV)', '<span style="color:' + metricColor(pp, 'ppGap') + '">' + fmtSigned(pp) + '</span>');
+
     return '<div class="tt-team">' + esc(d.t) + '</div>'
       + mapPosHtml
+      + todayHtml
       + '<div class="tt-sep"></div>'
       + ttRow('OSI', '<span style="color:' + metricColor(osi, 'osi') + '">' + fmtMetric(osi) + '</span>')
       + ttRow('Projected OSI', projHtml)
@@ -678,7 +695,7 @@
       + ttRow('ABQ', '<span style="color:' + metricColor(d.abq, 'abq') + '">' + fmtMetric(d.abq) + '</span>')
       + ttRow('OBR', '<span style="color:' + metricColor(d.obr, 'obr') + '">' + fmtMetric(d.obr) + '</span>')
       + '<div class="tt-sep"></div>'
-      + ttRow('PP Gap (ABQ–RCV)', '<span style="color:' + metricColor(pp, 'ppGap') + '">' + fmtSigned(pp) + '</span>')
+      + yRow
       + ttRow('DF Gap (RCV–OBR)', '<span style="color:' + metricColor(df, 'dfGap') + '">' + fmtSigned(df) + '</span>')
       + '<div class="tt-sep"></div>'
       + ttRow('Sustainability', susHtml)
@@ -845,7 +862,11 @@
     });
 
     svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">OSI</text>';
-    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">PP Gap (ABQ − RCV)</text>';
+    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">'
+      + (String(yMode).toLowerCase() === 'reg' || String(yMode).toLowerCase() === 'regression'
+        ? 'Reg Gap (xwOBA − wOBA) × 450'
+        : 'PP Gap (ABQ − RCV)')
+      + '</text>';
     svg += '</svg>';
 
     var hintHtml = isLanding
@@ -875,7 +896,7 @@
         var t = g.getAttribute('data-team');
         var d = data.find(function(r) { return r.t === t; });
         if (!d || !tip) return;
-        tip.innerHTML = buildMarketQuadrantTipHtml(d);
+        tip.innerHTML = buildMarketQuadrantTipHtml(d, yMode);
         tip.classList.add('show');
       });
       g.addEventListener('mousemove', function(e) {
@@ -899,7 +920,7 @@
         var t = g.getAttribute('data-team');
         var d = data.find(function(r) { return r.t === t; });
         if (!d || !tip) return;
-        tip.innerHTML = buildMarketQuadrantTipHtml(d);
+        tip.innerHTML = buildMarketQuadrantTipHtml(d, yMode);
         tip.classList.add('show');
         var circle = g.querySelector('circle');
         if (circle && wrap) {
