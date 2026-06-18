@@ -733,10 +733,14 @@ table.ca-table,
 .rl-table-premium,
 .rankings-table,
 .hub-table,
-.lv-table,
 .thm-table {
   width: 100%;
   border-collapse: collapse;
+}
+.lv-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 table.ca-table thead th,
 .rl-table-premium thead th,
@@ -776,10 +780,13 @@ table.ca-table tbody td,
 .hub-rank-num,
 .rl-table-premium td.num,
 table.ca-table td.num,
-.lv-table td.num,
 .thm-table td.numcol {
   text-align: center;
   width: 1%;
+  white-space: nowrap;
+}
+.lv-table td.num {
+  text-align: center;
   white-space: nowrap;
 }
 .hub-table thead th.sorted,
