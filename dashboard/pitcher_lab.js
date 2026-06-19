@@ -1222,8 +1222,8 @@
       + '<header class="pl-expand-panel-head"><span class="pl-expand-panel-title">Offense Allowed</span>'
       + '<span class="pl-expand-panel-sub">How dangerous is the offense this arm gives up?</span></header>'
       + '<div class="pl-expand-stat-grid pl-expand-stat-grid--4">'
-      + expandStatTile('OSI Allowed', m.osiAllowed, true, 'osi', 1)
-      + expandStatTile('ABQ Allowed', m.abqAllowed, true, 'osi', 1)
+      + expandStatTile('OSI Allowed', m.osiAllowed, true, 'sp_osi_allowed', 1)
+      + expandStatTile('ABQ Allowed', m.abqAllowed, true, 'sp_abq_allowed', 1)
       + expandStatTile('RCV Allowed', m.rcvAllowed, true, 'osi', 1)
       + expandStatTile('OBR Allowed', m.obrAllowed, true, 'osi', 1)
       + '</div></section>'
@@ -1561,6 +1561,7 @@
         var v = tableMetric(row, hand, c.k, m, st);
         var inv = c.k === 'osiAllowed' || c.k === 'abqAllowed' || c.k === 'bbPct' || c.k === 'era' || c.k === 'fip';
         var ctx = c.k === 'pitchScore' ? 'pitching' : c.k === 'oor' ? 'oor'
+          : c.k === 'osiAllowed' ? 'sp_osi_allowed' : c.k === 'abqAllowed' ? 'sp_abq_allowed'
           : c.k === 'era' ? 'era' : c.k === 'fip' ? 'fip'
           : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';
         var d = c.k === 'pitchScore' || c.k === 'oor' ? 0 : (c.k === 'era' || c.k === 'fip' ? 2 : 1);

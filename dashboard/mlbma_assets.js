@@ -92,6 +92,8 @@
     bbpct: { mean: 8.0, std: 1.8, hi: false },        // BB% in percent points (lower better)
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
+    sp_osi_allowed: { mean: 46.6, std: 4.9, hi: false }, // qualified starters; lower allowed is better
+    sp_abq_allowed: { mean: 47.4, std: 3.9, hi: false }, // qualified starters; lower allowed is better
     qspct: { mean: 35, std: 8, hi: true },             // quality-start rate % (higher better)
     ipstart: { mean: 5.10, std: 0.40, hi: true },      // avg IP per SP start (higher = deeper outings)
     rpwin: { mean: 20, std: 5, hi: true },             // reliever win % of team games (higher = better)

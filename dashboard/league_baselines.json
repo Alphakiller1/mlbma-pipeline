@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T19:48:12+00:00",
+  "generated_at": "2026-06-19T19:53:18+00:00",
   "baselines": {
     "osi": {
       "mean": 45.3828,
@@ -120,6 +120,14 @@
     "team_hr9": {
       "mean": 1.1276,
       "std": 0.1659
+    },
+    "sp_osi_allowed": {
+      "mean": 46.565,
+      "std": 4.9023
+    },
+    "sp_abq_allowed": {
+      "mean": 47.3525,
+      "std": 3.9171
     },
     "bp_era": {
       "mean": 3.4697,
