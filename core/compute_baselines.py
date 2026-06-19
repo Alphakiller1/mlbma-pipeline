@@ -150,7 +150,11 @@ def run():
         spq = sp[pd.to_numeric(sp["IP"], errors="coerce") >= 20] if "IP" in sp.columns else sp
         for ctx, col in PITCH_SP.items():
             if col in spq.columns:
-                m = _ms(spq[col])
+                # Ranking/profile views display K% and BB% in percentage points.
+                # Grade against the same scale even when FanGraphs stores rates as
+                # fractions (0.229 / 0.091) in sp_standard.csv.
+                series = _pct_points(spq[col]) if ctx in ("kpct", "bbpct") else _num(spq[col])
+                m = _ms(series)
                 if m:
                     baselines[ctx] = m
         # team_* : whole-staff IP-weighted aggregate across the 30 teams (not the per-arm pool)
