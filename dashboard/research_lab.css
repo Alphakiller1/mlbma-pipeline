@@ -712,7 +712,7 @@ html.view-research #oorSection { display: none !important; }
   text-align: left;
   min-width: 148px;
 }
-.pl-rank-flags {
+.pl-rank-flags-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -721,7 +721,7 @@ html.view-research #oorSection { display: none !important; }
   gap: 4px;
   min-height: 24px;
 }
-.pl-rank-flags .pl-flag-pill { margin: 0; }
+.pl-rank-flags-inner .pl-flag-pill { margin: 0; }
 .pl-sort-inner {
   display: inline-flex;
   align-items: center;

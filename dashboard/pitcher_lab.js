@@ -1590,7 +1590,7 @@
         + (A ? A.teamLogoImg(t, 24) : '')
         + '<span class="pl-rank-team-abbr">' + esc(t) + '</span></span></td>'
         + '<td class="num pl-rank-hand">' + esc(handP) + '</td>'
-        + '<td class="pl-rank-flags">' + renderFlagPills(flags) + '</td>'
+        + '<td class="pl-rank-flags"><div class="pl-rank-flags-inner">' + renderFlagPills(flags) + '</div></td>'
         + vals
         + '<td class="pl-rank-chevron" aria-hidden="true">' + (exp ? '▾' : '▸') + '</td>'
         + '</tr>';
