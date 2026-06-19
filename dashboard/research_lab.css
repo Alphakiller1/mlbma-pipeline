@@ -712,6 +712,10 @@ html.view-research #oorSection { display: none !important; }
   text-align: left;
   min-width: 148px;
 }
+.pl-rank-table.rl-sp-rank-table tbody td.pl-rank-flags {
+  display: table-cell;
+  vertical-align: middle;
+}
 .pl-rank-flags-inner {
   display: flex;
   flex-wrap: wrap;
