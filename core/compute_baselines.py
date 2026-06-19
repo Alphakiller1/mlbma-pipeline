@@ -39,7 +39,11 @@ OFFENSE = {"osi": "OSI", "abq": "ABQ", "rcv": "RCV", "obr": "OBR", "projosi": "p
 # Pitching rate stats graded per-pitcher -> qualified-pitcher pool from sp_standard.
 PITCH_SP = {"fip": "FIP", "xfip": "xFIP", "whip": "WHIP", "hr9": "HR/9", "bb9": "BB/9",
             "k9": "K/9", "era": "ERA", "kpct": "K%", "bbpct": "BB%"}
-PITCH_SP_ALLOWED = {"sp_osi_allowed": "OSI_allowed", "sp_abq_allowed": "ABQ_allowed"}
+PITCH_SP_ALLOWED = {
+    "sp_osi_allowed": "OSI_allowed",
+    "sp_abq_allowed": "ABQ_allowed",
+    "sp_oor_faced": "OOR_faced",
+}
 
 # Aggregate cells must grade against their OWN population, not individual starters --
 # a team/bullpen aggregate clusters ~2.5-3x tighter than individual arms, so reusing the

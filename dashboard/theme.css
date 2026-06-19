@@ -158,6 +158,9 @@ body::after,
 .chip.c-weak,  .val-chip.c-weak  { color: #FB923C; }
 .chip.c-poor,  .val-chip.c-poor  { color: #F87171; }
 .chip.c-na,    .val-chip.c-na    { color: #6E7383; font-size: 14px; }
+.chip.c-oor-hard, .val-chip.c-oor-hard { color: #60A5FA; }
+.chip.c-oor-mid,  .val-chip.c-oor-mid  { color: #8B93A7; }
+.chip.c-oor-soft, .val-chip.c-oor-soft { color: #A78BFA; }
 
 /* ---- Profile banners: large graded text values (not filled chips) ---- */
 :is(.tp-team-banner__stats, .pp-hero-stats, .bp-hero-banner-shell, #bullpenSnapshot)

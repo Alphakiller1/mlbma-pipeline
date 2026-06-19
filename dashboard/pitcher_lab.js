@@ -1237,7 +1237,7 @@
       + expandPlainStat('FIP', st.fip, 2)
       + expandStatTile('HR/9', m.hr9, true, 'hr9', 2)
       + expandPlainStat('WHIP', st.whip, 2)
-      + expandStatTile('OOR', m.oor, false, 'oor', 0)
+      + expandStatTile('OOR', m.oor, false, 'sp_oor_faced', 0)
       + expandPlainStat('xFIP', st.xfip, 2)
       + '</div></section>'
       + '<section class="pl-expand-panel pl-expand-panel--intel">'
@@ -1560,7 +1560,7 @@
       var vals = COLS.map(function(c) {
         var v = tableMetric(row, hand, c.k, m, st);
         var inv = c.k === 'osiAllowed' || c.k === 'abqAllowed' || c.k === 'bbPct' || c.k === 'era' || c.k === 'fip';
-        var ctx = c.k === 'pitchScore' ? 'pitching' : c.k === 'oor' ? 'oor'
+        var ctx = c.k === 'pitchScore' ? 'pitching' : c.k === 'oor' ? 'sp_oor_faced'
           : c.k === 'osiAllowed' ? 'sp_osi_allowed' : c.k === 'abqAllowed' ? 'sp_abq_allowed'
           : c.k === 'era' ? 'era' : c.k === 'fip' ? 'fip'
           : c.k === 'kPct' ? 'kpct' : c.k === 'bbPct' ? 'bbpct' : c.k === 'hr9' ? 'hr9' : 'osi';

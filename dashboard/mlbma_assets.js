@@ -94,6 +94,7 @@
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
     sp_osi_allowed: { mean: 46.6, std: 4.9, hi: false }, // qualified starters; lower allowed is better
     sp_abq_allowed: { mean: 47.4, std: 3.9, hi: false }, // qualified starters; lower allowed is better
+    sp_oor_faced: { mean: 46.4, std: 6.8, hi: true }, // competition difficulty; contextual, not good/bad
     qspct: { mean: 35, std: 8, hi: true },             // quality-start rate % (higher better)
     ipstart: { mean: 5.10, std: 0.40, hi: true },      // avg IP per SP start (higher = deeper outings)
     rpwin: { mean: 20, std: 5, hi: true },             // reliever win % of team games (higher = better)
@@ -634,6 +635,12 @@
       if (value >= 55) return 'c-good';
       if (value <= 45) return 'c-mid';
       return 'c-mid';
+    }
+    if (context === 'sp_oor_faced') {
+      var oorZ = zScore(value, context);
+      if (oorZ >= 0.85) return 'c-oor-hard';
+      if (oorZ <= -0.85) return 'c-oor-soft';
+      return 'c-oor-mid';
     }
     if (context === 'ppGap' || context === 'PP_GAP') {
       if (value > 0) return 'c-good';
