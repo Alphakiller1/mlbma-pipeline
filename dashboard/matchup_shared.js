@@ -1377,7 +1377,12 @@
     return map;
   }
 
-  /** Enrich SP_Profiles rows with PitchScore, OOR proxy, FIP fallback — mutates rows in place. */
+  /**
+   * Enrich SP_Profiles rows with PitchScore and FIP fallback. Preserve OOR because
+   * it is the pitcher's average opponent quality faced.
+   * Deriving OOR from pitcher_team grades the pitcher's own offense and makes the
+   * ranking color represent the wrong context.
+   */
   function enrichSpProfiles(rows, oorByTeam) {
     if (!rows || !rows.length) return rows;
     var pool = rows.map(function(row) {
@@ -1398,10 +1403,8 @@
       row.FIP = fip != null ? fip : era;
       row.FIP_na = fip == null && era == null;
       row.xFIP = null;
-      var team = pickCol(row, 'pitcher_team', 'Team', 'Tm');
-      var hand = pickCol(row, 'pitcher_hand', 'Hand', 'hand');
-      var oor = pitcherOorFromTeamHand(team, hand, oorByTeam);
-      if (oor != null) row.OOR = oor;
+      var oorFaced = numOrNull(pickCol(row, 'OOR_faced', 'avg_opponent_OOR', 'OOR', 'oor'));
+      if (oorFaced != null) row.OOR = oorFaced;
       var staleRaw = pickCol(row, 'stale', 'staleness_flag', 'Staleness');
       row.stale = staleRaw === true || staleRaw === 'True' || staleRaw === 'true' || staleRaw === '1';
       row.staleness_flag = row.stale;
@@ -2510,7 +2513,7 @@
       rcvAllowed: numOrNull(pickCol(profile, 'RCV_allowed', 'RCV Allowed')),
       obrAllowed: numOrNull(pickCol(profile, 'OBR_allowed', 'OBR Allowed')),
       pitchScore: pitchScore,
-      oor: numOrNull(pickCol(profile, 'OOR', 'oor')),
+      oor: numOrNull(pickCol(profile, 'OOR_faced', 'avg_opponent_OOR', 'OOR', 'oor')),
       stale: stale,
       l14Drift: stale ? 'Stale' : null,
       l14Note: 'L14 requires pipeline data'

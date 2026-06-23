@@ -12,11 +12,11 @@
       sample: 72,
       invert: false,
       terms: ['abq', 'discipline', 'contact', 'chase', 'at-bat quality'],
-      def: 'Composite plate-process score: discipline, contact quality, pitch pressure, and strikeout avoidance — pool-normalized 0–100.',
+      def: 'Plate-process score for discipline, contact, pitch pressure, and strikeout avoidance. Scaled 0–100.',
       components: '30% discipline (BB%, inv Chase%) · 35% contact (ZCon%, OCon%) · 20% pitch pressure · 15% K avoidance',
-      read: 'High ABQ = patient, quality decisions. Low = chase-heavy, weak process.',
-      research: 'Unders when weak ABQ faces elite pitching; platoon splits when ABQ gap is wide.',
-      limits: 'No single-game guarantee; small L7 windows are momentum-only.'
+      read: 'High = patient, clean decisions. Low = chase-heavy or contact-fragile.',
+      research: 'Use for platoon/process checks and when weak ABQ faces elite pitching.',
+      limits: 'Small L7 windows are momentum only.'
     },
     {
       id: 'rcv',
@@ -25,10 +25,10 @@
       sample: 68,
       invert: false,
       terms: ['rcv', 'damage', 'barrel', 'power', 'run creation'],
-      def: 'Damage and scoring pressure from wRC+, barrels, ISO, and hard contact — park-adjusted where applicable.',
+      def: 'Damage and scoring pressure from wRC+, barrels, ISO, and hard contact.',
       components: '35% wRC+ · 32% Barrel% (park-adj) · 20% ISO (park-adj) · 13% HardHit% (park-adj)',
-      read: 'High RCV = real slug and run paths. Low = limited hard contact.',
-      research: 'Overs when RCV leads process gaps; archetype axis with OBR.',
+      read: 'High = real slug paths. Low = limited hard contact.',
+      research: 'Use for damage upside, HR/total context, and archetype shape.',
       limits: 'Park factors apply to contact components, not wRC+ directly.'
     },
     {
@@ -40,8 +40,8 @@
       terms: ['obr', 'on base', 'xwoba', 'walks', 'traffic'],
       def: 'On-base floor from expected production and walk rate.',
       components: '65% xwOBA · 35% BB%',
-      read: 'High OBR = table-setters and traffic. Low = thin on-base paths.',
-      research: 'Team totals vs soft K% arms; pairs with Signal 1 and Signal 6.',
+      read: 'High = traffic and table setters. Low = thin base-runner paths.',
+      research: 'Use against low-K or high-BB arms; pairs with Signals 1 and 6.',
       limits: 'Does not capture baserunning or sequencing luck.'
     },
     {
@@ -51,10 +51,10 @@
       sample: 74,
       invert: false,
       terms: ['osi', 'offensive strength', 'composite offense'],
-      def: 'Headline offensive composite blending damage, process, and on-base floor.',
+      def: 'Headline offense score blending damage, process, and on-base floor.',
       components: '43% RCV · 37% ABQ · 20% OBR',
       read: '85+ elite · 75–84 high · 65–74 dangerous · 50–64 inconsistent · <50 weak.',
-      research: 'Primary team offensive ranking; compare vs opposing Pitching Score.',
+      research: 'Primary offense ranking; compare with opposing Pitching Score.',
       limits: 'Pool-normalized within active leaderboard sample.'
     },
     {
@@ -64,9 +64,9 @@
       sample: 71,
       invert: false,
       terms: ['projosi', 'projected osi', 'regression'],
-      def: 'OSI adjusted for xwOBA vs wOBA regression signal.',
+      def: 'OSI adjusted by the xwOBA vs wOBA regression signal.',
       components: 'OSI + clip((xwOBA − wOBA) × 450, −8, +8)',
-      read: 'Above OSI → buy-low lean. Below OSI → fade lean.',
+      read: 'Above OSI = buy-low support. Below OSI = fade/cooling risk.',
       research: 'Pairs with PALS for process vs results alignment (Signal 5).',
       limits: 'Regression clip caps extreme BABIP/luck swings at ±8 pts.'
     },
@@ -77,10 +77,10 @@
       sample: 4,
       invert: false,
       terms: ['pp gap', 'pp-gap', 'process production'],
-      def: 'ABQ minus RCV — positive means process ahead of results.',
+      def: 'ABQ minus RCV. Positive means process is ahead of results.',
       components: 'ABQ − RCV (same pool scale)',
-      read: '+4 or more: buy-low. −4 or less: regression risk.',
-      research: 'Convergence votes count PP-Gap at double weight.',
+      read: '+4 or more = buy-low. −4 or less = regression risk.',
+      research: 'Use as a process-vs-production check; counts double in convergence.',
       limits: 'Not a standalone play flag; use with signal stack.'
     },
     {
@@ -90,10 +90,10 @@
       sample: 66,
       invert: false,
       terms: ['pals', 'pitching adjusted', 'schedule'],
-      def: 'Lineup strength adjusted for starting-pitcher quality faced.',
+      def: 'Lineup strength adjusted for the quality of starting pitchers faced.',
       components: '(BA+ + PTF+) / 2',
-      read: 'High = production vs tough SPs. Low = weak schedule context.',
-      research: 'Confirm raw OSI with schedule truth; Signal 5 pairing.',
+      read: 'High = production has held up vs tougher SPs. Low = softer context.',
+      research: 'Use to confirm raw OSI; pairs with projOSI in Signal 5.',
       limits: 'Requires PALS export from pipeline; may be empty on stale runs.'
     },
     {
@@ -103,10 +103,10 @@
       sample: 78,
       invert: false,
       terms: ['pitching score', 'pitch score', 'k bb hr9'],
-      def: 'Staff quality from strikeouts, walk suppression, and homer prevention.',
+      def: 'Pitching quality from strikeouts, walk suppression, and homer prevention.',
       components: '40% K% · 35% inv(BB%) · 25% inv(HR/9)',
       read: '85+ ace tier · 70–84 solid · 55–69 average · <55 volatile.',
-      research: 'OSI vs Pitching Score gap (Signal 4); SP/bullpen unit splits on profiles.',
+      research: 'Use against OSI for matchup gap; profile pages split starter and bullpen context.',
       limits: 'Combined staff uses 70% SP / 30% bullpen when both present.'
     },
     {
@@ -116,11 +116,11 @@
       sample: 63,
       invert: false,
       terms: ['oor', 'opponent', 'hvr', 'hvl', 'pitcher oor', 'bullpen oor'],
-      def: 'Split offensive strength vs RHP and LHP — used as Pitcher OOR or Bullpen Unit OOR only (no team-level OOR).',
+      def: 'Opponent offensive difficulty by handedness. Shown only as Pitcher OOR or Bullpen Unit OOR.',
       components: '55% HvR · 45% HvL',
-      read: 'High = dangerous opposing lineups for the pitcher hand faced.',
-      research: 'Pitcher matchup environment; schedule OOR (Signal 9).',
-      limits: 'Platoon sample size varies by team usage; not shown as a team headline metric.'
+      read: 'High = tougher lineup faced. Low = softer lineup faced.',
+      research: 'Use for pitcher/bullpen matchup context and Signal 9.',
+      limits: 'Not a team headline metric; it describes the offense a pitcher or bullpen faced.'
     },
     {
       id: 'wrc-plus',
@@ -131,7 +131,7 @@
       terms: ['wrc+', 'wrc plus', 'runs created'],
       def: 'Park-adjusted offensive production index; 100 = league average.',
       components: 'FanGraphs wRC+ (input to RCV weighting)',
-      read: '110+ strong · 90–109 average band · <90 below average.',
+      read: '110+ strong · 90–109 average · <90 below average.',
       research: 'Context for RCV; not duplicated as headline composite.',
       limits: 'External stat — refresh depends on FanGraphs/Savant pipeline.'
     },
@@ -143,7 +143,7 @@
       invert: false,
       decimals: 3,
       terms: ['woba', 'weighted on base'],
-      def: 'Observed weighted on-base average — results to date.',
+      def: 'Observed weighted on-base average: results to date.',
       components: 'Standard wOBA weights on outcomes',
       read: 'Compare to xwOBA for sustainability read on Team Profile.',
       research: 'Regression signal when wOBA diverges from xwOBA.',
@@ -157,9 +157,9 @@
       invert: false,
       decimals: 3,
       terms: ['xwoba', 'expected woba'],
-      def: 'Expected production from contact quality — process anchor for OBR and projOSI.',
+      def: 'Expected production from contact quality; process anchor for OBR and projOSI.',
       components: 'Statcast xwOBA (input to OBR and projOSI)',
-      read: 'Above wOBA → likely cooling. Below wOBA → likely heating.',
+      read: 'Above wOBA = positive regression/buy-low support. Below wOBA = fade/cooling risk.',
       research: 'projOSI regression clip uses (xwOBA − wOBA) × 450.',
       limits: 'Not available for all small-sample splits on profiles.'
     },
@@ -170,9 +170,9 @@
       sample: 6,
       invert: false,
       terms: ['power floor gap', 'df gap', 'rcv obr'],
-      def: 'RCV minus OBR — power vs on-base floor split.',
+      def: 'RCV minus OBR: power versus on-base floor.',
       components: 'RCV − OBR',
-      read: '+8: boom-or-bust slug. Negative: OBP-first shape.',
+      read: '+8 = boom-or-bust slug. Negative = OBP-first shape.',
       research: 'Run-line volatility; archetype classification aid.',
       limits: 'Derived from composites, not independent measurement.'
     }
@@ -187,11 +187,11 @@
       invert: false,
       decimals: 3,
       terms: ['win pct', 'win%', 'win percent', 'surface wins', 'team results'],
-      def: 'Share of team games won — YTD or windowed (L30/L14/L7) from game-results pipeline.',
+      def: 'Share of team games won, either YTD or by window.',
       components: 'Wins ÷ games played (Team_Results / game_results.csv)',
       read: 'High = winning record. Low = losing record.',
       research: 'Surface-outcome context for lineup strength; compare to OSI/process for buy-low or fade.',
-      limits: 'Results stat — does not isolate luck or run differential; window columns need game_results coverage.'
+      limits: 'Surface result; does not isolate luck, schedule, or run differential.'
     },
     {
       id: 'f5-win-pct',
@@ -201,7 +201,7 @@
       invert: false,
       decimals: 3,
       terms: ['f5 win', 'f5 win pct', 'first five', 'f5'],
-      def: 'Share of games where the team held the lead after five innings (W/L on lead_after_5; ties excluded from denominator).',
+      def: 'Share of games where the team led after five innings; ties are excluded.',
       components: 'F5 wins ÷ (F5 wins + F5 losses) from Team_Results',
       read: 'High = often ahead through five. Low = slow starters or early deficits.',
       research: 'F5 totals and SP prop context; pairs with Pitcher Intelligence F5 ER columns.',
@@ -215,7 +215,7 @@
       invert: false,
       decimals: 3,
       terms: ['sp win', 'pitcher win', 'starter win', 'sp win pct'],
-      def: 'Share of team wins credited to the starting pitcher (winning_pitcher_is_starter = true).',
+      def: 'Share of team games where the starter was credited with the win.',
       components: 'SP wins ÷ games from Team_Results',
       read: 'High = rotation frequently picking up the W. Low = bullpen or offense carrying wins.',
       research: 'SP prop and moneyline context; not the same as pitcher game score or QS%.',
@@ -229,7 +229,7 @@
       invert: false,
       decimals: 3,
       terms: ['rp win', 'reliever win', 'bullpen win', 'rp win pct'],
-      def: 'Share of team wins credited to a reliever (not the starter).',
+      def: 'Share of team games where a reliever was credited with the win.',
       components: 'RP wins ÷ games from Team_Results',
       read: 'High = bullpen frequently vulturing or holding leads late.',
       research: 'Bullpen usage and team win-style context.',
@@ -243,7 +243,7 @@
       invert: false,
       decimals: 3,
       terms: ['qs', 'qs pct', 'quality start', 'quality starts'],
-      def: 'Share of team games where the starter threw a quality start: 6+ IP and ≤3 ER.',
+      def: 'Share of team games with a quality start: 6+ IP and 3 ER or fewer.',
       components: 'team_quality_start count ÷ games (game_results scrape)',
       read: 'High = rotation length and run suppression. Low = short outings or blow-ups.',
       research: 'SP length props and team under/over environment.',
@@ -257,7 +257,7 @@
       invert: true,
       decimals: 3,
       terms: ['qs against', 'qs allowed', 'qs% allowed', 'quality start allowed'],
-      def: 'Share of team games where the opposing starter recorded a quality start (6+ IP, ≤3 ER).',
+      def: 'Share of team games where the opposing starter recorded a quality start.',
       components: 'opp_quality_start count ÷ games',
       read: 'Low (green when inverted) = staff rarely lets opposing SPs go deep. High = opponent starters working deep often.',
       research: 'Lineup difficulty and opposing SP prop unders when QS% Allowed is low.',
@@ -273,7 +273,7 @@
       sample: 24.5,
       invert: false,
       terms: ['k pct', 'k%', 'strikeout rate', 'strikeouts'],
-      def: 'Strikeouts per plate appearance faced — primary SP stuff indicator.',
+      def: 'Strikeouts per plate appearance faced; primary SP stuff indicator.',
       components: 'FanGraphs / SP_Profiles season rate',
       read: 'High = swing-and-miss arsenal. Low = contact-heavy profile.',
       research: 'K props; core input to Pitching Score (40% weight).',
@@ -286,7 +286,7 @@
       sample: 7.2,
       invert: true,
       terms: ['bb pct', 'bb%', 'walk rate', 'walks'],
-      def: 'Walks per plate appearance faced — command and traffic risk.',
+      def: 'Walks per plate appearance faced; command and traffic risk.',
       components: 'FanGraphs / SP_Profiles; inverted in Pitching Score (35% weight).',
       read: 'Low (green) = sharp command. High (red) = free baserunners.',
       research: 'OBR/ABQ matchups; totals when BB% is elevated vs patient lineups.',
@@ -299,7 +299,7 @@
       sample: 1.05,
       invert: true,
       terms: ['hr9', 'hr/9', 'homer rate', 'home runs'],
-      def: 'Home runs allowed per nine innings — fly-ball damage risk.',
+      def: 'Home runs allowed per nine innings; fly-ball damage risk.',
       components: 'SP_Profiles; inverted in Pitching Score (25% weight).',
       read: 'Low (green) = suppresses long ball. High (red) = HR prop and total risk.',
       research: 'HR props and RCV-heavy lineups.',
@@ -313,7 +313,7 @@
       invert: true,
       decimals: 2,
       terms: ['era', 'earned run average'],
-      def: 'Earned runs per nine innings — headline results stat for starters.',
+      def: 'Earned runs per nine innings; headline results stat for starters.',
       components: 'Standard ERA from FanGraphs / SP_Profiles',
       read: 'Low (green) = run suppression. High (red) = runs allowed.',
       research: 'Validate vs OOR and OSI Allowed; compare to FIP for regression (Pitcher Intelligence flags).',
@@ -327,7 +327,7 @@
       invert: true,
       decimals: 2,
       terms: ['fip', 'fielding independent'],
-      def: 'ERA estimator from K, BB, and HR only — strips defensive luck.',
+      def: 'ERA estimator from K, BB, and HR; strips out more defensive noise.',
       components: 'Standard FIP constant formula',
       read: 'Low (green) = strong underlying skill. High (red) = contact or HR issues.',
       research: 'Regression risk flag when FIP − ERA ≥ 0.50 (Pitcher Intelligence).',
@@ -344,7 +344,7 @@
       invert: true,
       decimals: 2,
       terms: ['hi leverage', 'high leverage era', 'leverage era', 'bullpen leverage'],
-      def: 'ERA in high-leverage relief appearances for the bullpen unit.',
+      def: 'Bullpen ERA in high-leverage relief appearances.',
       components: 'Bullpen_Unit high_leverage_ERA from pipeline',
       read: 'Low (green) = closes tight spots. High (red) = late-inning damage.',
       research: 'Save/blown-save context; compare to medium-leverage ERA.',
@@ -358,7 +358,7 @@
       invert: true,
       decimals: 2,
       terms: ['med leverage', 'medium leverage era'],
-      def: 'ERA in medium-leverage relief innings.',
+      def: 'Bullpen ERA in medium-leverage relief innings.',
       components: 'Bullpen_Unit medium_leverage_ERA',
       read: 'Bridge between mop-up and high-leverage performance.',
       research: 'Unit depth read on Bullpen Profile.',
@@ -372,7 +372,7 @@
       invert: false,
       decimals: 3,
       terms: ['save pct', 'save rate', 'saves'],
-      def: 'Saves ÷ save opportunities (saves + blown saves) — team-level from game results.',
+      def: 'Saves divided by save opportunities: saves / (saves + blown saves).',
       components: 'Team_Results: saves / (saves + blown_saves)',
       read: 'High = bullpen converting leads. Low = late-inning leaks.',
       research: 'Team win style; not a single-closer stat on team rows.',
@@ -403,7 +403,7 @@
       invert: false,
       decimals: 1,
       terms: ['velocity', 'trend velocity', 'momentum', 'heat map'],
-      def: 'Linear slope of a metric across YTD → L30 → L14 → L7 windows on the Trends heat map. Positive = improving left-to-right.',
+      def: 'Slope across YTD → L30 → L14 → L7 on the Trends heat map. Positive means improving.',
       components: 'Least-squares slope on available window points (trends_heatmap.js)',
       read: '≥ +0.6 Rising · ≤ −0.6 Cooling · else Stable.',
       research: 'Pair with Δ L7−YTD; L7 alone is a momentum flag, not a standalone predictor.',
@@ -417,9 +417,9 @@
       invert: false,
       decimals: 1,
       terms: ['delta', 'l7 ytd', 'form delta', 'recent form'],
-      def: 'L7 metric value minus YTD baseline — short-window deviation from season norm.',
+      def: 'L7 value minus YTD baseline; short-window deviation from season norm.',
       components: 'L7 column − YTD column on Trends heat map',
-      read: '+4 with positive velocity → Momentum Up. −4 with negative velocity → Momentum Down.',
+      read: '+4 with positive velocity = momentum up. −4 with negative velocity = momentum down.',
       research: 'Team Profile window strips and Research Lab trends tab.',
       limits: 'L7 is high-variance; confirm with L14/L30.'
     },
@@ -430,7 +430,7 @@
       sample: null,
       invert: false,
       terms: ['l30', 'l14', 'l7', 'windows', 'ytd', 'form trend'],
-      def: 'Rolling calendar windows from Team_Profiles / game results — YTD is full season; L30/L14/L7 are trailing day cuts.',
+      def: 'Rolling calendar windows. YTD is full season; L30/L14/L7 are trailing day cuts.',
       components: 'compute_team_profile window_trend + Team_Results window suffixes',
       read: 'L30 = form · L14 = recent · L7 = momentum (small sample).',
       research: 'Compare window OSI to YTD for heating/cooling offenses.',
@@ -446,7 +446,7 @@
       sample: null,
       invert: false,
       terms: ['regression', 'regression risk', 'fip era gap'],
-      def: 'SP flag when FIP − ERA ≥ 0.50 — results likely ahead of underlying skill.',
+      def: 'SP flag when FIP − ERA ≥ 0.50; results may be ahead of skill.',
       components: 'pitcher_lab.js SP_FLAG_RULES.regressionFipGap',
       read: 'Fade overs on ERA-driven narrative; skill may regress.',
       research: 'Prop and total lean toward correction.',
@@ -459,7 +459,7 @@
       sample: null,
       invert: false,
       terms: ['vulnerable', 'vulnerable starter'],
-      def: 'ERA ≤ 4.50 but (K%−BB% ≤ 10 or HR/9 ≥ 1.3) — pretty ERA with underlying risk.',
+      def: 'ERA ≤ 4.50 but weak K−BB% or elevated HR/9; pretty ERA with underlying risk.',
       components: 'SP_FLAG_RULES vulnerableKbbMax / vulnerableHr9Min',
       read: 'Over lean vs weak offenses; fragile vs patient/damage lineups.',
       research: 'Team totals and SP ER props.',
@@ -472,7 +472,7 @@
       sample: null,
       invert: false,
       terms: ['elite stuff', 'elite pitcher flag'],
-      def: 'Pitch Score ≥ 70, K% ≥ 22, OSI Allowed ≤ 55 — process and results aligned.',
+      def: 'Pitch Score ≥ 70, K% ≥ 22, and OSI Allowed ≤ 55; process and results aligned.',
       components: 'SP_FLAG_RULES elitePitchScoreMin / eliteKpctMin / eliteOsiAllowedMax',
       read: 'K prop and under lean in tough matchups.',
       research: 'Quick Angles cards on Pitcher Intelligence.',
@@ -500,6 +500,18 @@
     .concat(TREND_METRICS)
     .concat(ANALYST_FLAGS);
 
+  var EXTRA_GLOSSARY = [
+    { name: 'Archetype', def: 'RCV/OBR profile label that describes how an offense creates runs.' },
+    { name: 'Barrel%', def: 'Share of batted balls with ideal exit velocity and launch angle.' },
+    { name: 'Chase%', def: 'Rate of swings at pitches outside the strike zone; lower is better for hitters.' },
+    { name: 'Convergence', def: 'Weighted count of fired matchup signals; PP-Gap carries extra weight.' },
+    { name: 'Park factor', def: 'Home environment adjustment for run and power conditions.' },
+    { name: 'Regression signal', def: 'Direction implied by xwOBA versus wOBA.' },
+    { name: 'SwStr%', def: 'Swinging-strike rate; pitcher whiff ability or hitter swing-miss risk.' },
+    { name: 'Trend', def: 'Rising, stable, cooling, or noisy form label from rolling-window movement.' },
+    { name: 'ZCon%', def: 'Zone-contact rate; hitter contact ability on strikes.' }
+  ];
+
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
@@ -526,11 +538,30 @@
       + '<div class="gloss-metric-card__full">' + esc(m.full) + '</div>'
       + '<p class="gloss-metric-card__def">' + esc(m.def) + '</p>'
       + '<div class="gloss-metric-card__grid">'
-      + '<div class="gloss-metric-card__cell"><strong>Components</strong><span>' + esc(m.components) + '</span></div>'
+      + '<div class="gloss-metric-card__cell"><strong>Formula / source</strong><span>' + esc(m.components) + '</span></div>'
       + '<div class="gloss-metric-card__cell"><strong>How to read</strong><span>' + esc(m.read) + '</span></div>'
-      + '<div class="gloss-metric-card__cell"><strong>Research use</strong><span>' + esc(m.research) + '</span></div>'
-      + '<div class="gloss-metric-card__cell"><strong>Limitations</strong><span>' + esc(m.limits) + '</span></div>'
+      + '<div class="gloss-metric-card__cell"><strong>Best use</strong><span>' + esc(m.research) + '</span></div>'
+      + '<div class="gloss-metric-card__cell"><strong>Watch-outs</strong><span>' + esc(m.limits) + '</span></div>'
       + '</div></article>';
+  }
+
+  function renderAlphaGlossary() {
+    var root = document.getElementById('alphaGlossary');
+    if (!root) return;
+    var entries = ALL_METRICS.map(function(m) {
+      return {
+        name: m.name,
+        id: m.id,
+        def: m.full && m.full !== m.name ? m.full + ' — ' + m.def : m.def
+      };
+    }).concat(EXTRA_GLOSSARY);
+    entries.sort(function(a, b) {
+      return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+    });
+    root.innerHTML = entries.map(function(e) {
+      var label = e.id ? '<a href="#' + esc(e.id) + '">' + esc(e.name) + '</a>' : esc(e.name);
+      return '<li class="glossary-term" data-term="' + esc(e.name + ' ' + e.def) + '"><b>' + label + '</b> — ' + esc(e.def) + '</li>';
+    }).join('');
   }
 
   function mountSectionHead(mountId, icon, kicker, title, purpose) {
@@ -558,10 +589,10 @@
         + '<span class="gloss-swatch gloss-swatch--poor">Poor</span></div>';
     return '<div class="gloss-convention ca-board">'
       + '<div id="glossaryColorHead"></div>'
-      + '<p class="gloss-convention__lead">Every metric chip and heat-map cell uses the same <strong>green = elite → red = poor</strong> grading. Each stat is graded against its <strong>current-season league average</strong> (the neutral midpoint of the scale) — so the same value always gets the same color, never rescaled to whatever rows are visible in a filtered table.</p>'
+      + '<p class="gloss-convention__lead">Every metric chip and heat-map cell follows the same rule: <strong>green = strong, red = weak</strong>. Values are graded against the current-season league pool, so a value keeps the same meaning across tables, profiles, and heat maps.</p>'
       + legend
       + '<ul class="gloss-convention__list">'
-      + '<li><strong>Uniform:</strong> A green OSI chip on Team Rankings means the same thing on Team Profile or Compare.</li>'
+      + '<li><strong>Uniform:</strong> A green OSI chip means the same thing on Team Rankings, Team Profile, and Compare.</li>'
       + '<li><strong>Purple (#7C4DFF):</strong> brand chrome, section headers, and nav — never a data value color.</li>'
       + '<li><strong>Teal / orange split accents:</strong> framing for home/away or handedness — not metric grades.</li>'
       + '<li><strong>Inverted metrics:</strong> ERA, BB%, HR/9, and Allowed composites flip the scale (lower = greener). See Allowed note below.</li>'
@@ -571,7 +602,7 @@
   function renderAllowedSection() {
     return '<div class="gloss-convention ca-board">'
       + '<div id="glossaryAllowedHead"></div>'
-      + '<p class="gloss-convention__lead"><strong>Allowed metrics</strong> (OSI Allowed, ABQ Allowed, RCV Allowed, OBR Allowed) and pitcher rate stats (ERA, FIP, BB%, HR/9) use <strong>inverted</strong> coloring: <strong>lower = better = greener</strong>.</p>'
+      + '<p class="gloss-convention__lead"><strong>Allowed metrics</strong> (OSI Allowed, ABQ Allowed, RCV Allowed, OBR Allowed) and run-prevention stats (ERA, FIP, BB%, HR/9) use <strong>inverted</strong> coloring: <strong>lower = better = greener</strong>.</p>'
       + '<p class="gloss-convention__note">Example: a green <em>OSI Allowed</em> chip means the pitcher suppresses opposing offense well — do not read green as “high allowed.”</p>'
       + '</div>';
   }
@@ -579,9 +610,9 @@
   function renderUnitSection() {
     return '<div class="gloss-convention ca-board">'
       + '<div id="glossaryUnitHead"></div>'
-      + '<p class="gloss-convention__lead">Team Profile is organized by three units: <strong>Lineup</strong>, <strong>Starting Pitchers</strong>, and <strong>Bullpen</strong>. Each unit has its own split controls and snapshot strip.</p>'
+      + '<p class="gloss-convention__lead">Team Profile is organized by three units: <strong>Lineup</strong>, <strong>Starting Pitchers</strong>, and <strong>Bullpen</strong>. Each unit keeps its own split controls, color rules, and snapshot strip.</p>'
       + '<ul class="gloss-convention__list">'
-      + '<li><strong>OOR</strong> appears only as <em>Pitcher OOR</em> or <em>Bullpen Unit OOR</em> — there is no team-level OOR headline.</li>'
+      + '<li><strong>OOR</strong> appears only as <em>Pitcher OOR</em> or <em>Bullpen Unit OOR</em>; it is not a team headline metric.</li>'
       + '<li><strong>Surface wins</strong> (Win%, F5 Win%, SP Win%, QS%) live on Team Rankings and Team Profile lineup/rotation strips from <code>Team_Results</code>.</li>'
       + '<li><strong>Pitcher Intelligence</strong> = SP prop research (recent starts). <strong>Bullpen View</strong> + Bullpen Profile = relievers.</li>'
       + '</ul></div>';
@@ -604,7 +635,7 @@
       icon: 'book-open',
       kicker: 'Reference',
       title: 'Metric Glossary & Methodology',
-      subtitle: 'All definitions, formulas, and methodology in one place.'
+      subtitle: 'Concise definitions, formulas, color rules, and model usage notes.'
     });
     if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
   }
@@ -624,6 +655,7 @@
     mountMetricGrid('glossaryTrendCards', TREND_METRICS);
     mountSectionHead('glossaryFlagsHead', 'clipboard-list', 'Analyst', 'Flags & Sustainability', 'Pitcher Intelligence heuristics and Team Profile trend verdicts.');
     mountMetricGrid('glossaryFlagsCards', ANALYST_FLAGS);
+    renderAlphaGlossary();
   }
 
   global.MLBMAGlossary = {

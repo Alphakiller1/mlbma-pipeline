@@ -2178,7 +2178,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
     linear-gradient(180deg, #050509 0%, #0a0612 100%);
   color: #f5f3ff;
   font-family: var(--font-body);
-  padding: clamp(64px, 8vw, 120px) clamp(20px, 5vw, 64px);
+  padding: clamp(52px, 6vw, 88px) clamp(20px, 5vw, 64px);
   border-bottom: 1px solid rgba(124,58,237,0.10);
 }
 
@@ -2204,11 +2204,19 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 20px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
+.ca-market__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-left: auto;
+}
 
 .ca-market__toggle-group {
   display: inline-flex;
@@ -2385,6 +2393,10 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   .ca-market__toggle-group {
     width: 100%;
     justify-content: stretch;
+  }
+  .ca-market__controls {
+    width: 100%;
+    margin-left: 0;
   }
   .ca-toggle {
     flex: 1;
@@ -2814,15 +2826,15 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260612a" data-page="index.html"></script>
 <script src="mlbma_assets.js?v=20260619d"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
-<script src="matchup_shared.js?v=20260703a"></script>
+<script src="matchup_shared.js?v=20260703c"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
-<script src="mlbma_charts.js?v=20260616c"></script>
+<script src="mlbma_charts.js?v=20260622d"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260624i"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260615b"></script>
 <script src="lineup_view.js?v=20260612b"></script>
-<script src="trends_heatmap.js?v=20260612a"></script>
+<script src="trends_heatmap.js?v=20260622e"></script>
 <script src="bullpen_usage.js?v=20260610b"></script>
 <script src="pitcher_lab.js?v=20260619d"></script>
 <script src="mobile_cardify.js?v=20260610c"></script>
@@ -3124,22 +3136,24 @@ body.view-research .ca-lab { display: block; }
         <p class="ca-page-header__sub ca-helper">Plot every team by OSI vs either PP Gap (ABQ−RCV) or Reg Gap ((xwOBA−wOBA)×450). Violet rings mark today’s slate; toggle RHP/LHP to view platoon-specific context.</p>
       </div>
 
-      <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
-        <button type="button" id="marketToggleRHP" class="ca-toggle ca-toggle--active" aria-pressed="true">
-          RHP
-        </button>
-        <button type="button" id="marketToggleLHP" class="ca-toggle" aria-pressed="false">
-          LHP
-        </button>
-      </div>
+      <div class="ca-market__controls">
+        <div class="ca-market__toggle-group" role="group" aria-label="Pitcher hand toggle">
+          <button type="button" id="marketToggleRHP" class="ca-toggle ca-toggle--active" aria-pressed="true">
+            RHP
+          </button>
+          <button type="button" id="marketToggleLHP" class="ca-toggle" aria-pressed="false">
+            LHP
+          </button>
+        </div>
 
-      <div class="ca-market__toggle-group" role="group" aria-label="Y-axis mode">
-        <button type="button" id="marketTogglePPGap" class="ca-toggle ca-toggle--active" aria-pressed="true" title="ABQ − RCV">
-          PP Gap
-        </button>
-        <button type="button" id="marketToggleRegGap" class="ca-toggle" aria-pressed="false" title="(xwOBA − wOBA) × 450">
-          Reg Gap
-        </button>
+        <div class="ca-market__toggle-group" role="group" aria-label="Y-axis mode">
+          <button type="button" id="marketTogglePPGap" class="ca-toggle ca-toggle--active" aria-pressed="true" title="ABQ − RCV">
+            PP Gap
+          </button>
+          <button type="button" id="marketToggleRegGap" class="ca-toggle" aria-pressed="false" title="(xwOBA − wOBA) × 450">
+            Reg Gap
+          </button>
+        </div>
       </div>
     </header>
 

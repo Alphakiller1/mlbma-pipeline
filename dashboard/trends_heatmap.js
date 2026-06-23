@@ -19,7 +19,7 @@
   var METRICS = [
     { key: 'winPct', sourceKey: 'winPct', label: 'Win%', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
     { key: 'f5WinPct', sourceKey: 'f5WinPct', label: 'F5 Win%', disabled: false, phase: true, reason: 'Proxy until Phase 1 feed' },
-    { key: 'pitchScoreFaced', sourceKey: 'pitchScoreFaced', label: 'Pitching Score Faced', disabled: false, colorCtx: 'pitching', invert: true },
+    { key: 'pitchScoreFaced', sourceKey: 'pitchScoreFaced', label: 'Pitching Score Faced', disabled: false, colorCtx: 'pitch_score_faced', invert: false },
     { key: 'rcv', sourceKey: 'rcv', label: 'RCV', disabled: false, colorCtx: 'rcv' },
     { key: 'obr', sourceKey: 'obr', label: 'OBR', disabled: false, colorCtx: 'obr' }
   ];
@@ -176,10 +176,20 @@
         by[t].delta = by[t].ytd != null && by[t].l7 != null ? by[t].l7 - by[t].ytd : null;
         by[t].velocity = computeVelocity(by[t]);
         by[t].trend = trendLabel(by[t]);
-        by[t].reliability = reliabilityLabel(by[t]);
-        by[t].reliabilityScore = reliabilityRank(by[t].reliability);
       });
-      return Object.keys(by).sort().map(function(t) { return by[t]; });
+      var built = Object.keys(by).sort().map(function(t) { return by[t]; });
+      var ytdVals = built.map(function(r) { return num(r.ytd); }).filter(function(v) { return v != null; });
+      var mean = ytdVals.length ? ytdVals.reduce(function(sum, v) { return sum + v; }, 0) / ytdVals.length : 0;
+      var variance = ytdVals.length ? ytdVals.reduce(function(sum, v) {
+        var d = v - mean;
+        return sum + d * d;
+      }, 0) / ytdVals.length : 0;
+      var scale = Math.sqrt(variance);
+      built.forEach(function(r) {
+        r.reliability = reliabilityLabel(r, scale);
+        r.reliabilityScore = reliabilityRank(r.reliability);
+      });
+      return built;
     });
   }
 
@@ -235,15 +245,30 @@
     if (v <= -0.6) return 'Cooling';
     return 'Stable';
   }
-  function reliabilityLabel(row) {
-    if (global.OEMOverhaul && typeof global.OEMOverhaul.trendReliabilityLabel === 'function') {
-      return global.OEMOverhaul.trendReliabilityLabel({
-        l7OSI: num(row.l7),
-        ytdOSI: num(row.ytd),
-        l30OSI: num(row.l30),
-        trend: trendLabel(row)
-      });
-    }
+  function reliabilityLabel(row, scale) {
+    var ytd = num(row.ytd), l30 = num(row.l30), l14 = num(row.l14), l7 = num(row.l7);
+    if (ytd == null || l30 == null || l14 == null || l7 == null) return 'Noisy';
+
+    // Normalize confirmation thresholds to the selected metric's 30-team spread.
+    // A reliable trend must be present across L30, L14, and L7—not merely produce
+    // a steep regression slope or a tiny same-direction L30 move.
+    var s = isFinite(scale) && scale > 0 ? scale : 1;
+    var stableTol = Math.max(0.5, s * 0.10);
+    var confirmTol = Math.max(1.0, s * 0.25);
+    var strongTol = Math.max(2.0, s * 0.35);
+    var d30 = l30 - ytd, d14 = l14 - ytd, d7 = l7 - ytd;
+    var sustainedRise = d30 >= confirmTol && d14 >= confirmTol && d7 >= strongTol;
+    var sustainedDrop = d30 <= -confirmTol && d14 <= -confirmTol && d7 <= -strongTol;
+    if (sustainedRise) return 'Sustained Rise';
+    if (sustainedDrop) return 'Declining';
+
+    var maxDrift = Math.max(Math.abs(d30), Math.abs(d14), Math.abs(d7));
+    var windowRange = Math.max(l30, l14, l7) - Math.min(l30, l14, l7);
+    if (maxDrift <= stableTol && windowRange <= stableTol) return 'Stable';
+
+    var earlierConfirmed = (d7 > 0 && d30 >= confirmTol && d14 >= confirmTol)
+      || (d7 < 0 && d30 <= -confirmTol && d14 <= -confirmTol);
+    if (Math.abs(d7) >= strongTol && !earlierConfirmed) return 'Short Spike';
     return 'Noisy';
   }
   function reliabilityRank(label) {
@@ -341,6 +366,12 @@
       var metricDef = METRICS.find(function(m) { return m.key === state.metric; }) || {};
       var colorKey = metricDef.colorCtx || metricDef.sourceKey || state.metric;
       var colorInvert = !!metricDef.invert;
+      // Pitching Score Faced is a schedule-difficulty distribution, not the much
+      // wider raw Pitch Score population. Anchor every window to this view's 30-team
+      // YTD pool so higher/tougher stays green and left-to-right colors are comparable.
+      if (state.metric === 'pitchScoreFaced' && A && A.registerLeaguePool) {
+        A.registerLeaguePool(colorKey, rows.map(function(r) { return num(r.ytd); }));
+      }
       var head = '<table class="thm-table"><thead><tr>'
         + '<th class="sortable" data-a="sort" data-k="team">Team' + sortArrow(state, 'team') + '</th>'
         + '<th class="sortable" data-a="sort" data-k="ytd">YTD' + sortArrow(state, 'ytd') + '</th>'

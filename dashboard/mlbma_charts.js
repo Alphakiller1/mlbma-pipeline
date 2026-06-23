@@ -726,12 +726,12 @@
     var maxW = isLanding ? 1400 : 1200;
     var W = opts.width || Math.min(maxW, Math.max(containerW, isLanding ? 920 : 900));
     var H = opts.height || (isLanding
-      ? Math.max(640, Math.round(W * 0.68))
+      ? Math.max(560, Math.round(W * 0.60))
       : Math.max(520, W < 700 ? 520 : 560));
     var ml = isLanding ? 68 : 80;
     var mr = isLanding ? 44 : 60;
-    var mt = isLanding ? 52 : 60;
-    var mb = showBubbleLabels ? (isLanding ? 56 : 88) : 48;
+    var mt = isLanding ? 44 : 60;
+    var mb = showBubbleLabels ? (isLanding ? 50 : 88) : 48;
     var cw = W - ml - mr;
     var ch = H - mt - mb;
     var tickFont = isLanding ? 11 : 10;
@@ -764,7 +764,7 @@
     var xMax = Math.max.apply(null, xVals);
     var yMin = Math.min.apply(null, yVals);
     var yMax = Math.max.apply(null, yVals);
-    var nudgePad = spreadCollisions ? (isLanding ? 88 : 52) : 0;
+    var nudgePad = spreadCollisions ? (isLanding ? 76 : 52) : 0;
     var edgeInset = bubbleRadius + 8 + nudgePad;
     var bottomInset = showBubbleLabels
       ? bubbleRadius + (showPosLabels ? 34 : 22) + nudgePad
@@ -841,7 +841,7 @@
         bottom: H - mb - bubbleRadius - labelPad
       }, {
         minSep: bubbleRadius * 2 + (showBubbleLabels ? 22 : 8),
-        maxNudge: isLanding ? 96 : 56
+        maxNudge: isLanding ? 84 : 56
       });
     } else {
       bubbleItems.forEach(function(it) {
