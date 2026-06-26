@@ -5,7 +5,8 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from io import StringIO
 import pandas as pd
-import requests
+
+from core.http_retry import get_with_retry
 
 from core.config import CURRENT_SEASON, DATA_DIR, SEASON_END, SEASON_START
 from scrapers.scrape_player_registry import build_registry
@@ -126,8 +127,7 @@ def _fetch_window(start_date: str, end_date: str) -> pd.DataFrame:
         "type": "details",
     }
     print(f"Fetching Statcast pitch data {start_date} to {end_date}...")
-    r = requests.get(STATCAST_CSV_URL, params=params, headers=HEADERS, timeout=180)
-    r.raise_for_status()
+    r = get_with_retry(STATCAST_CSV_URL, params=params, headers=HEADERS, timeout=180, retries=4)
     df = pd.read_csv(StringIO(r.text), usecols=lambda c: c in RAW_COLUMNS, low_memory=False)
     print(f"  Rows: {len(df)}")
     return df
