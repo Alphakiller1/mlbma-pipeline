@@ -11,6 +11,7 @@ import pandas as pd
 import requests
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
+from core.http_retry import get_with_retry
 
 HEADERS = {
     "User-Agent": "curl/8.0 (compatible; MLBMA-Pipeline/1.0)",
@@ -57,7 +58,7 @@ def get_today_games():
     )
     print(f"Fetching schedule for {today}...")
     try:
-        r = requests.get(url, headers=HEADERS, timeout=30)
+        r = get_with_retry(url, headers=HEADERS, timeout=30)
         r.raise_for_status()
         data = r.json()
     except requests.RequestException as e:
@@ -91,7 +92,7 @@ def fetch_venue_detail(game_id: int, cache: dict) -> dict:
         return cache[game_id]
     url = f"https://statsapi.mlb.com/api/v1.1/game/{game_id}/feed/live"
     try:
-        r = requests.get(url, headers=HEADERS, timeout=30)
+        r = get_with_retry(url, headers=HEADERS, timeout=30)
         r.raise_for_status()
         venue = r.json().get("gameData", {}).get("venue", {}) or {}
     except requests.RequestException as e:
@@ -113,12 +114,18 @@ def venue_city_query(venue: dict) -> str:
 def fetch_weather(city_query: str) -> dict:
     loc = city_query.replace(",", " ").replace(" ", "+")
     url = f"https://wttr.in/{loc}?format=j1"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=20)
-        r.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"wttr.in request failed for {city_query}: {e}") from e
-    data = r.json()
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            r = get_with_retry(url, headers=HEADERS, timeout=35, retries=2)
+            data = r.json()
+            break
+        except Exception as exc:
+            last_exc = exc
+            if attempt < 2:
+                time.sleep(3 * (attempt + 1))
+    else:
+        raise RuntimeError(f"wttr.in request failed for {city_query}: {last_exc}") from last_exc
     current = (data.get("current_condition") or [{}])[0]
     desc = ""
     wdesc = current.get("weatherDesc")

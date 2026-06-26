@@ -7,9 +7,13 @@ import contextlib
 import io
 import os
 import sys
+import threading
 import time
 from io import StringIO
 from urllib.parse import unquote
+
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def _suppress_chrome_cleanup_errors():
@@ -49,6 +53,11 @@ load_dotenv(ENV_FILE)
 EMAIL = os.getenv("FANGRAPHS_EMAIL")
 PASSWORD = os.getenv("FANGRAPHS_PASSWORD")
 
+LOGIN_URL = "https://blogs.fangraphs.com/wp-login.php"
+LOGIN_FORM_TIMEOUT = 25
+LOGIN_NAV_TIMEOUT = 20
+DRIVER_QUIT_TIMEOUT = 12
+
 
 def get_driver():
     if uc is None:
@@ -60,38 +69,106 @@ def get_driver():
             f"Chrome not found at {CHROME_PATH}. "
             "Install Google Chrome or set CHROME_PATH in .env to your chrome.exe path."
         )
+    print(f"  Starting Chrome (version_main={CHROME_VERSION})...", flush=True)
     options = uc.ChromeOptions()
     options.add_argument("--start-maximized")
-    return uc.Chrome(
+    driver = uc.Chrome(
         options=options,
         browser_executable_path=CHROME_PATH,
         version_main=CHROME_VERSION,
     )
+    driver.set_page_load_timeout(180)
+    driver.set_script_timeout(120)
+    print("  Chrome ready.", flush=True)
+    return driver
 
 
-def safe_quit_driver(driver) -> None:
-    """Quit Chrome without raising on Windows undetected-chromedriver cleanup bugs."""
+def safe_quit_driver(driver, timeout: float = DRIVER_QUIT_TIMEOUT) -> None:
+    """Quit Chrome without hanging on Windows undetected-chromedriver cleanup bugs."""
     if driver is None:
         return
+
+    def _quit():
+        try:
+            driver.quit()
+        except Exception:
+            pass
+
+    t = threading.Thread(target=_quit, daemon=True)
+    t.start()
+    t.join(timeout)
+    if t.is_alive():
+        try:
+            proc = getattr(getattr(driver, "service", None), "process", None)
+            if proc is not None:
+                proc.kill()
+        except Exception:
+            pass
+
+
+def _login_error_text(driver) -> str:
     try:
-        driver.quit()
+        err = driver.find_element(By.ID, "login_error")
+        return (err.text or "").strip()
+    except Exception:
+        return ""
+
+
+def _try_login_once(driver) -> bool:
+    print("Logging in to FanGraphs...", flush=True)
+    driver.get(LOGIN_URL)
+    wait = WebDriverWait(driver, LOGIN_FORM_TIMEOUT)
+    try:
+        user_el = wait.until(EC.presence_of_element_located((By.ID, "user_login")))
+        pass_el = driver.find_element(By.ID, "user_pass")
+        submit = driver.find_element(By.ID, "wp-submit")
+    except Exception as exc:
+        print(f"  Login form not found: {exc}", flush=True)
+        return False
+
+    user_el.clear()
+    pass_el.clear()
+    user_el.send_keys(EMAIL or "")
+    pass_el.send_keys(PASSWORD or "")
+    submit.click()
+
+    try:
+        WebDriverWait(driver, LOGIN_NAV_TIMEOUT).until(
+            lambda d: "wp-login.php" not in str(d.current_url or "")
+        )
     except Exception:
         pass
 
-
-def login(driver) -> bool:
-    print("Logging in to FanGraphs...")
-    driver.get("https://blogs.fangraphs.com/wp-login.php")
-    time.sleep(8)
-    driver.find_element(By.ID, "user_login").send_keys(EMAIL)
-    driver.find_element(By.ID, "user_pass").send_keys(PASSWORD)
-    driver.find_element(By.ID, "wp-submit").click()
-    time.sleep(10)
-    print(f"  Login URL: {driver.current_url}")
     url = str(driver.current_url or "")
+    print(f"  Login URL: {url}", flush=True)
     if "wp-login.php" in url:
+        err = _login_error_text(driver)
+        if err:
+            print(f"  Login error: {err}", flush=True)
         return False
     return "wp-admin" in url or "fangraphs.com" in url
+
+
+def login(driver, max_attempts: int = 3) -> bool:
+    if not EMAIL or not PASSWORD:
+        print(
+            "ERROR: FANGRAPHS_EMAIL / FANGRAPHS_PASSWORD not set in .env",
+            flush=True,
+        )
+        return False
+
+    for attempt in range(1, max_attempts + 1):
+        if attempt > 1:
+            print(f"  Login retry {attempt}/{max_attempts}...", flush=True)
+        if _try_login_once(driver):
+            return True
+        try:
+            driver.delete_all_cookies()
+        except Exception:
+            pass
+        if attempt < max_attempts:
+            time.sleep(5)
+    return False
 
 
 def get_export_csv(driver) -> pd.DataFrame | None:
@@ -110,5 +187,5 @@ def get_export_csv(driver) -> pd.DataFrame | None:
         csv_text = unquote(href.replace("data:application/csv;charset=utf-8,", ""))
         return pd.read_csv(StringIO(csv_text))
     except Exception as exc:
-        print(f"  Export error: {exc}")
+        print(f"  Export error: {exc}", flush=True)
         return None

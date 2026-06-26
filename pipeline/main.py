@@ -58,9 +58,14 @@ def run_script(module: str, required: bool = True) -> bool:
     # Force UTF-8 stdout/stderr in child processes so a single non-ASCII print
     # (em-dash, box-drawing, check-mark) can't crash a scraper on a cp1252 console
     # (the WinError 6 / UnicodeEncodeError cascade seen in pipeline_log.txt).
-    child_env = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    child_env = {
+        **os.environ,
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+    }
     result = subprocess.run(
-        [str(PYTHON), "-m", module],
+        [str(PYTHON), "-u", "-m", module],
         cwd=str(ROOT),
         env=child_env,
     )
@@ -166,28 +171,8 @@ def run_game_results():
 
 
 def run():
-    """
-    Pipeline order (22 logical steps):
-      1 scrape_savant (required)
-      2 scrape_fangraphs (optional)
-      3 core.compute (optional, needs Savant + FanGraphs)
-      4 push_sheets core metrics (optional)
-      5 scrape_lineups (Today_Games/Today_Lineups + Today_Matchups refresh)
-      6 scrape_matchups (authoritative Today_Matchups rebuild — always runs)
-      7 scrape_weather (optional)
-      8 scrape_pals (optional)
-      9 compute_signals (optional)
-     10 scrape_sp_gamelog (optional)
-     11 compute_sp_splits + push (optional)
-     12 scrape_reliever_gamelog (optional)
-     13 bullpen compute + push (optional)
-     14 scrape_player_registry (optional)
-     15 scrape_batter_splits (optional)
-     16 scrape_batter_gamelog (optional)
-     17-18 batter profile compute + push (optional)
-     19-20 batter prop hit-rates compute + push (optional)
-     21-22 team compute + push (optional)
-    """
+    """Run the full MLBMA pipeline (22 logical steps)."""
+    os.environ.setdefault("PYTHONUNBUFFERED", "1")
     pipeline_t0 = time.perf_counter()
     print(f"MLBMA Pipeline starting at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 

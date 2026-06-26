@@ -465,15 +465,15 @@ def run(
         print(f"Mode: custom splits {split_keys}")
     else:
         groups = SPLIT_GROUPS
-        print("Mode: full batter splits scrape")
+        print("Mode: full batter splits scrape", flush=True)
 
-    print(f"Batter splits scrape (Chrome version_main={CHROME_VERSION})")
+    print(f"Batter splits scrape (Chrome version_main={CHROME_VERSION})", flush=True)
     driver = get_driver()
     try:
         if not login(driver):
-            print("FanGraphs login failed")
+            print("FanGraphs login failed", flush=True)
             return
-        print("FanGraphs login successful.")
+        print("FanGraphs login successful.", flush=True)
 
         for group_idx, group_keys in enumerate(groups):
             for split_key in group_keys:

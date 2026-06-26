@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 
 from core.config import CURRENT_SEASON, DATA_DIR, TEAM_MAP, TEAM_MAP_BY_ID
+from core.http_retry import get_with_retry
 from scrapers.scrape_sp_gamelog import (
     fetch_game_feed,
     load_team_metrics,
@@ -63,7 +64,7 @@ def _normalize_name(name: str) -> str:
 
 def fetch_team_ids(season: int) -> Dict[int, str]:
     """Return active MLB team id -> abbreviation (30 teams)."""
-    r = requests.get(
+    r = get_with_retry(
         MLB_TEAMS_URL,
         params={"sportId": 1, "season": str(season)},
         headers=HEADERS,
@@ -88,7 +89,7 @@ def fetch_team_ids(season: int) -> Dict[int, str]:
 
 
 def fetch_team_pitchers(team_id: int, season: int) -> List[dict]:
-    r = requests.get(
+    r = get_with_retry(
         MLB_ROSTER_URL.format(team_id=team_id),
         params={"rosterType": "active", "season": str(season)},
         headers=HEADERS,
@@ -121,7 +122,7 @@ def fetch_team_pitchers(team_id: int, season: int) -> List[dict]:
 
 
 def fetch_pitcher_gamelog(player_id: int, season: int) -> list:
-    r = requests.get(
+    r = get_with_retry(
         MLB_STATS_URL.format(player_id=player_id),
         params={
             "stats": "gameLog",
@@ -345,7 +346,11 @@ def run():
     seen: set = set()
 
     for team_id, team_abbr in sorted(team_ids.items(), key=lambda x: x[1]):
-        pitchers = fetch_team_pitchers(team_id, CURRENT_SEASON)
+        try:
+            pitchers = fetch_team_pitchers(team_id, CURRENT_SEASON)
+        except Exception as exc:
+            print(f"  WARNING: roster failed for {team_abbr}: {exc}")
+            continue
         print(f"  {team_abbr}: {len(pitchers)} pitchers on roster")
         for p in pitchers:
             pid = p["id"]

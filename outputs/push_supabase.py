@@ -34,7 +34,9 @@ try:
 except Exception:  # pragma: no cover
     pass
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
+SUPABASE_URL = os.getenv(
+    "SUPABASE_URL", SUPABASE_DASHBOARD.get("url", "")
+).rstrip("/")
 SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "")
 HUB_TABLE = "hub_dataset"
 
@@ -106,6 +108,12 @@ def _build_team_rankings_snapshot() -> None:
 
 
 def run() -> None:
+    if not SUPABASE_URL or not SUPABASE_SECRET_KEY:
+        print(
+            "WARNING: Skipping Supabase mirror — set SUPABASE_URL and "
+            "SUPABASE_SECRET_KEY in .env (dashboard will use Google Sheets)."
+        )
+        return
     print("Pushing dashboard datasets to Supabase (hub_dataset)...")
     counts = push_datasets()
     _build_team_rankings_snapshot()

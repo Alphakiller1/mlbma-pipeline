@@ -66,7 +66,15 @@ def scrape_one(driver, split_label, split_code, sg_name, sg_num):
         f"&minPAf=0&pageSize=30"
     )
     print(f"  Loading {split_label} {sg_name}...")
-    driver.get(url)
+    for attempt in range(1, 4):
+        try:
+            driver.get(url)
+            break
+        except Exception as exc:
+            if attempt >= 3:
+                raise
+            print(f"  Page load retry {attempt}/3: {exc}")
+            time.sleep(8)
     _wait_export(driver)
     df = get_export_csv(driver)
     if df is not None:

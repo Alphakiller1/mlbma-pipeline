@@ -7,7 +7,8 @@ import time
 from typing import Dict, Optional
 
 import pandas as pd
-import requests
+
+from core.http_retry import get_with_retry
 
 from core.config import (
     CURRENT_SEASON,
@@ -95,7 +96,7 @@ def team_metrics_lookup(df: pd.DataFrame) -> Dict[str, dict]:
 
 def fetch_mlb_player_index(season: int) -> Dict[str, int]:
     print("Fetching MLB player index...")
-    r = requests.get(
+    r = get_with_retry(
         MLB_PLAYERS_URL,
         params={"season": str(season), "gameType": "R"},
         headers=HEADERS,
@@ -154,7 +155,7 @@ def load_sp_pitchers() -> pd.DataFrame:
 def fetch_game_feed(game_pk: int) -> dict:
     if game_pk in _feed_cache:
         return _feed_cache[game_pk]
-    r = requests.get(
+    r = get_with_retry(
         MLB_GAME_FEED_URL.format(game_pk=game_pk),
         headers=HEADERS,
         timeout=30,
@@ -186,7 +187,7 @@ def f5_runs_allowed(game_pk: int, pitcher_is_home: bool) -> Optional[int]:
 
 
 def fetch_pitcher_gamelog(player_id: int, season: int) -> list:
-    r = requests.get(
+    r = get_with_retry(
         MLB_STATS_URL.format(player_id=player_id),
         params={
             "stats": "gameLog",
