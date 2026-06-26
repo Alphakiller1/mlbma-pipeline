@@ -2,11 +2,49 @@
 
 Single reference for daily scrapes, full pipeline, partial reruns, and diagnostics.
 
-**Project root:** `C:\Users\chase\mlbma_pipeline`  
-**Python (venv):** `C:\Users\chase\crawl_env\Scripts\python.exe`  
-**Local CSV output:** `C:\Users\chase\mlbma_pipeline\data\`  
+**Project root:** `C:\Users\user\Documents\mlbma-pipeline`  
+**Python (venv):** `C:\Users\user\Documents\mlbma-pipeline\crawl_env\Scripts\python.exe`  
+**Local CSV output:** `C:\Users\user\Documents\mlbma-pipeline\data\`  
 **Google Sheet ID:** `1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk`  
 **Live dashboard:** https://alphakiller1.github.io/mlbma-pipeline/
+
+---
+
+## Fast daily (reuse fresh `data/` CSVs — recommended)
+
+Skips scrapes whose outputs are already dated **today**. Use instead of `pipeline.main` on routine mornings.
+
+```powershell
+cd C:\Users\user\Documents\mlbma-pipeline
+crawl_env\Scripts\python.exe -m scripts.sync_from_cache          # audit + compute-only / targeted scrapes
+crawl_env\Scripts\python.exe -m scripts.finish_pipeline_smart    # full smart finish + Sheets push
+```
+
+**Audit only** (no scrapes):
+
+```powershell
+crawl_env\Scripts\python.exe -m scripts.sync_from_cache --audit-only
+```
+
+**Sharp-money boards** (slate scrapes only if stale; never re-scrapes pitch_mix / gamelog / batter_splits):
+
+```powershell
+crawl_env\Scripts\python.exe -m scripts.refresh_sharp_money
+crawl_env\Scripts\python.exe -m scripts.refresh_sharp_money --export-only   # boards only
+```
+
+| Smart skip | When |
+|------------|------|
+| `core.compute_sp_splits` | `sp_gamelog.csv` fresh but `sp_profiles.csv` stale |
+| `scrapers.scrape_pitch_mix --l14-only` | season pitch mix fresh, L14 missing/stale |
+| `scrapers.scrape_batter_splits --splits l14` | overall fresh, L14 stale |
+| Slate scrapers + signals | output CSV mtime is today |
+
+**Full cold start** — use only when season files are missing or multiple days stale:
+
+```powershell
+crawl_env\Scripts\python.exe -m pipeline.main
+```
 
 ---
 
@@ -344,4 +382,4 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 ---
 
-*Last updated: 2026-05-31. Source of truth for step order: `pipeline/main.py`.*
+*Last updated: 2026-06-26. Source of truth for step order: `pipeline/main.py`; smart skips: `scripts/finish_pipeline_smart.py`, `scripts/sync_from_cache.py`.*

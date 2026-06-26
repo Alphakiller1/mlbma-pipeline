@@ -6,18 +6,14 @@ import os
 import subprocess
 import sys
 import time
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 
-import pandas as pd
-
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data"
 PYTHON = ROOT / "crawl_env" / "Scripts" / "python.exe"
 if not PYTHON.exists():
     PYTHON = Path(sys.executable)
 
-TODAY = date.today()
 ENV = {
     **os.environ,
     "PYTHONUTF8": "1",
@@ -32,42 +28,55 @@ def _fmt_elapsed(seconds: float) -> str:
     return f"{int(seconds // 60)}m {seconds % 60:.0f}s"
 
 
-def file_fresh(name: str, min_rows: int = 1) -> bool:
-    path = DATA / name
-    if not path.exists():
-        return False
-    if datetime.fromtimestamp(path.stat().st_mtime).date() < TODAY:
-        return False
-    if min_rows <= 0:
-        return True
-    try:
-        return len(pd.read_csv(path)) >= min_rows
-    except Exception:
-        return False
+def _freshness():
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from scripts.pipeline_freshness import file_fresh, needs_recompute
+
+    return file_fresh, needs_recompute
 
 
-def run_module(module: str, *, required: bool = False) -> bool:
-    if module == "scrapers.scrape_pitch_mix" and file_fresh("pitch_mix_pitcher.csv", 10):
-        print(f"  [SKIP] {module} — pitch_mix_pitcher.csv already fresh today")
-        return True
+def run_module(module: str, *extra_args: str, required: bool = False) -> bool:
+    file_fresh, _ = _freshness()
+    label = module + (" " + " ".join(extra_args) if extra_args else "")
+
+    if module == "scrapers.scrape_pitch_mix" and not extra_args:
+        season_ok = file_fresh("pitch_mix_pitcher.csv", 10)
+        l14_ok = file_fresh("pitch_mix_pitcher_l14.csv", 10)
+        if season_ok and l14_ok:
+            print(f"  [SKIP] {module} — season + L14 pitch mix fresh today")
+            return True
+        if season_ok and not l14_ok:
+            return run_module("scrapers.scrape_pitch_mix", "--l14-only", required=required)
+    if module == "scrapers.scrape_pitch_mix" and extra_args == ("--l14-only",):
+        if file_fresh("pitch_mix_pitcher_l14.csv", 10):
+            print(f"  [SKIP] {module} — pitch_mix_pitcher_l14.csv already fresh today")
+            return True
     if module == "scrapers.scrape_reliever_gamelog" and file_fresh("reliever_gamelog.csv", 500):
         print(f"  [SKIP] {module} — reliever_gamelog.csv already fresh today")
         return True
     if module == "scrapers.scrape_fangraphs" and file_fresh("vs_RHP_standard.csv", 20):
         print(f"  [SKIP] {module} — FanGraphs team exports fresh today")
         return True
-    if module == "scrapers.scrape_batter_splits" and file_fresh("batter_splits_overall.csv", 200):
-        mtime = datetime.fromtimestamp((DATA / "batter_splits_overall.csv").stat().st_mtime).date()
-        if mtime >= TODAY:
+    if module == "scrapers.scrape_batter_splits" and not extra_args:
+        overall_ok = file_fresh("batter_splits_overall.csv", 200)
+        l14_ok = file_fresh("batter_splits_l14.csv", 50)
+        if overall_ok and l14_ok:
             print(f"  [SKIP] {module} — batter splits fresh today")
             return True
+        if overall_ok and not l14_ok:
+            return run_module("scrapers.scrape_batter_splits", "--splits", "l14", required=required)
 
-    print(f"\n{'=' * 50}\nRunning {module}...\n{'=' * 50}")
+    print(f"\n{'=' * 50}\nRunning {label}...\n{'=' * 50}")
     t0 = time.perf_counter()
-    result = subprocess.run([str(PYTHON), "-u", "-m", module], cwd=str(ROOT), env=ENV)
+    result = subprocess.run(
+        [str(PYTHON), "-u", "-m", module, *extra_args],
+        cwd=str(ROOT),
+        env=ENV,
+    )
     ok = result.returncode == 0
     tag = "OK" if ok else ("ERROR" if required else "WARNING")
-    print(f"  [{tag}] {module} finished in {_fmt_elapsed(time.perf_counter() - t0)}")
+    print(f"  [{tag}] {label} finished in {_fmt_elapsed(time.perf_counter() - t0)}")
     return ok
 
 
@@ -83,27 +92,46 @@ def run_callable(label: str, fn) -> bool:
         return False
 
 
-def popen_module(module: str) -> subprocess.Popen:
-    print(f"  [PARALLEL] starting {module}")
+def popen_module(module: str, *extra_args: str) -> subprocess.Popen:
+    label = module + (" " + " ".join(extra_args) if extra_args else "")
+    print(f"  [PARALLEL] starting {label}")
     return subprocess.Popen(
-        [str(PYTHON), "-u", "-m", module],
+        [str(PYTHON), "-u", "-m", module, *extra_args],
         cwd=str(ROOT),
         env=ENV,
     )
 
 
 def main() -> int:
-    if str(ROOT) not in sys.path:
-        sys.path.insert(0, str(ROOT))
+    file_fresh, needs_recompute = _freshness()
     print(f"Smart pipeline finish at {datetime.now():%Y-%m-%d %H:%M:%S}")
     failures: list[str] = []
     parallel: list[tuple[str, subprocess.Popen]] = []
 
+    # ── Phase 0: compute-only from fresh gamelog ───────────────────────────
+    if needs_recompute("sp_profiles.csv", "sp_gamelog.csv", min_rows=1):
+
+        def sp_profiles():
+            from core.compute_sp_splits import run
+
+            run()
+
+        if not run_callable("core.compute_sp_splits (gamelog fresh)", sp_profiles):
+            failures.append("core.compute_sp_splits")
+    else:
+        print("  [SKIP] core.compute_sp_splits — sp_profiles fresh vs sp_gamelog")
+
     # ── Phase A: long independent scrapers in parallel ─────────────────────
-    need_pitch_mix = not file_fresh("pitch_mix_pitcher.csv", 10)
+    season_ok = file_fresh("pitch_mix_pitcher.csv", 10)
+    l14_ok = file_fresh("pitch_mix_pitcher_l14.csv", 10)
     need_reliever = not file_fresh("reliever_gamelog.csv", 500)
 
-    pitch_proc = popen_module("scrapers.scrape_pitch_mix") if need_pitch_mix else None
+    pitch_proc = None
+    if not season_ok:
+        pitch_proc = popen_module("scrapers.scrape_pitch_mix")
+    elif not l14_ok:
+        pitch_proc = popen_module("scrapers.scrape_pitch_mix", "--l14-only")
+
     relief_proc = popen_module("scrapers.scrape_reliever_gamelog") if need_reliever else None
 
     if pitch_proc:
@@ -119,7 +147,7 @@ def main() -> int:
             failures.append(name)
 
     # ── Phase B: pitch-mix push + FanGraphs (Chrome) ───────────────────────
-    if need_pitch_mix or file_fresh("pitch_mix_pitcher.csv", 10):
+    if file_fresh("pitch_mix_pitcher.csv", 10):
         if not run_module("outputs.push_pitch_mix"):
             failures.append("outputs.push_pitch_mix")
 
@@ -174,15 +202,20 @@ def main() -> int:
 
     # ── Phase E: today's slate + sharp-money signals ───────────────────────
     slate = [
-        "scrapers.scrape_lineups",
-        "scrapers.scrape_matchups",
-        "scrapers.scrape_weather",
+        ("scrapers.scrape_lineups", "today_lineups.csv", 1),
+        ("scrapers.scrape_matchups", "today_matchups.csv", 1),
+        ("scrapers.scrape_weather", "today_weather.csv", 1),
     ]
-    for mod in slate:
-        if not run_module(mod):
+    for mod, csv_name, min_rows in slate:
+        if file_fresh(csv_name, min_rows):
+            print(f"  [SKIP] {mod} — {csv_name} already fresh today")
+            continue
+        if not run_module(mod, required=True):
             failures.append(mod)
 
-    if not run_module("core.compute_signals"):
+    if file_fresh("signals_today.csv", 1):
+        print("  [SKIP] core.compute_signals — signals_today.csv already fresh today")
+    elif not run_module("core.compute_signals", required=True):
         failures.append("core.compute_signals")
 
     if not run_module("outputs.push_supabase"):

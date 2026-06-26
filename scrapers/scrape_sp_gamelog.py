@@ -18,6 +18,7 @@ from core.config import (
     TEAM_MAP,
 )
 from core.metrics_utils import parse_ip
+from core.name_utils import normalize_player_name
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 MLB_PLAYERS_URL = "https://statsapi.mlb.com/api/v1/sports/1/players"
@@ -59,7 +60,7 @@ _feed_cache: Dict[int, dict] = {}
 
 
 def _normalize_name(name: str) -> str:
-    return re.sub(r"[^a-z0-9 ]", "", str(name).lower()).strip()
+    return normalize_player_name(name)
 
 
 def calc_game_score(ip: float, h: int, er: int, bb: int, hr: int, hbp: int = 0) -> float:

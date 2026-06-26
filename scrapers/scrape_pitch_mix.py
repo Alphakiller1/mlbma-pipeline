@@ -363,14 +363,30 @@ def _run_window(start_date: str, end_date: str, suffix: str) -> None:
     _write(team_batting_mix, f"pitch_mix_team_batting{suffix}.csv")
 
 
-def run() -> None:
-    print(f"Building pitch-mix datasets for {CURRENT_SEASON}...")
+def run(*, l14_only: bool = False) -> None:
     today_cap = _today_cap()
+    l14_start = (
+        datetime.strptime(today_cap, "%Y-%m-%d").date() - timedelta(days=WINDOW_RECENT_DAYS - 1)
+    ).strftime("%Y-%m-%d")
+    if l14_only:
+        print(f"Building L14 pitch-mix window ({l14_start} -> {today_cap})...")
+        _run_window(l14_start, today_cap, "_l14")
+        print("Pitch mix L14 scrape complete.")
+        return
+    print(f"Building pitch-mix datasets for {CURRENT_SEASON}...")
     _run_window(SEASON_START, today_cap, "")
-    l14_start = (datetime.strptime(today_cap, "%Y-%m-%d").date() - timedelta(days=WINDOW_RECENT_DAYS - 1)).strftime("%Y-%m-%d")
     _run_window(l14_start, today_cap, "_l14")
     print("Pitch mix scrape complete.")
 
 
 if __name__ == "__main__":
-    run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Build pitch-mix datasets from Statcast")
+    parser.add_argument(
+        "--l14-only",
+        action="store_true",
+        help="Only rebuild pitch_mix_*_l14.csv (skip full-season scrape).",
+    )
+    args = parser.parse_args()
+    run(l14_only=args.l14_only)
