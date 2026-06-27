@@ -391,6 +391,35 @@ def clear_matchups_sheet():
         pass
 
 
+def push_to_hub(df):
+    """Mirror the freshly-built slate straight into Supabase hub_dataset.
+
+    The dashboard reads Today_Matchups from the hub first (Google Sheets is the fallback),
+    so this keeps the slate current even when the Sheets service-account write is missing
+    or fails — the silent failure mode that left chase-analytics stuck on the prior day's
+    pitchers. Runs independently of push_to_sheets: either path can fail without taking the
+    slate stale. Best-effort: a hub miss is logged, never fatal here (the end-of-run
+    guardrail in pipeline.main is what makes a truly stale slate loud).
+    """
+    if df.empty:
+        return
+    try:
+        from outputs.push_supabase import upsert_dataset
+    except Exception as exc:
+        print(f"  WARNING: hub slate push unavailable ({exc}); slate will rely on Sheets")
+        return
+    rows = [
+        {str(k): ("" if v is None else str(v)) for k, v in record.items()}
+        for record in df.fillna("--").to_dict("records")
+    ]
+    tab = SHEET_TABS["today_matchups"]
+    try:
+        upsert_dataset(tab, rows)
+        print(f"  Pushed hub_dataset[{tab}]: {len(rows)} games (slate decoupled from Sheets)")
+    except Exception as exc:
+        print(f"  WARNING: hub slate push failed ({exc}); slate will rely on Sheets")
+
+
 def run(touch_sync: bool = True):
     df = build_matchups()
     if not df.empty:
@@ -398,6 +427,7 @@ def run(touch_sync: bool = True):
         df.to_csv(fname, index=False)
         print(f"  Saved: {fname}")
         push_to_sheets(df)
+        push_to_hub(df)
         print("\nMatchup sheet:")
         print(df[["Time", "Away", "Home", "Away_SP", "Away_Hand", "Home_SP", "Home_Hand", "Away_OSI", "Home_OSI", "Lineup_Edge"]].to_string())
     else:

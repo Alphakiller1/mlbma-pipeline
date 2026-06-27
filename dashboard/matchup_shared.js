@@ -288,10 +288,19 @@
   }
 
   var SLATE_TABS = { Today_Matchups: 1, Today_Lineups: 1, Today_Games: 1 };
+  // Slate tabs are normally Sheets-only (they change intraday), but Today_Matchups is now
+  // pushed straight to the hub by the pipeline — decoupled from the Google Sheets write —
+  // so it may read hub-first and fall back to Sheets. This is what keeps the slate current
+  // even when the Sheets service-account write is missing.
+  var HUB_BACKED_SLATE_TABS = { Today_Matchups: 1 };
 
   function isSlateTab(tabName) {
     var t = String(tabName || '');
     return !!(SLATE_TABS[t] || t.indexOf('Today_') === 0);
+  }
+
+  function slateTabAllowsSupabase(tabName) {
+    return !!HUB_BACKED_SLATE_TABS[String(tabName || '')];
   }
 
   function isTeamRankingsPage() {
@@ -360,7 +369,8 @@
     // Sheets, so a Supabase hiccup can never break the dashboard.
     var sb = global.MLBMA_CONFIG && MLBMA_CONFIG.SUPABASE;
     var useSupabase = !!(sb && sb.enabled && sb.url && sb.publishable_key
-      && !isSlateTab(tabName) && sb.tabs && sb.tabs.indexOf(String(tabName)) >= 0);
+      && (!isSlateTab(tabName) || slateTabAllowsSupabase(tabName))
+      && sb.tabs && sb.tabs.indexOf(String(tabName)) >= 0);
 
     function doSupabaseFetch() {
       var base = String(sb.url).replace(/\/$/, '') + '/rest/v1/' + (sb.table || 'hub_dataset')

@@ -51,8 +51,12 @@ HUB_TABLE = "hub_dataset"
 
 # Research tabs feed the dashboard. Slate/run tabs also feed downstream consumers such as
 # the unified MLB Model, while the browser remains free to read the live Sheets copies.
+#
+# Today_Matchups is intentionally NOT mirrored here: scrapers.scrape_matchups pushes it to
+# the hub DIRECTLY from the freshly-built slate (decoupled from the Google Sheets write).
+# Re-mirroring it from gviz would re-read the sheet — which may be stale when the Sheets
+# write failed — and clobber that fresh copy with yesterday's slate.
 SLATE_TABS = [
-    SHEET_TABS["today_matchups"],
     SHEET_TABS["today_lineups"],
     SHEET_TABS["last_updated"],
 ]

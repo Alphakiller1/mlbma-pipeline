@@ -115,6 +115,7 @@ window.MLBMA_CONFIG = {
   "table": "hub_dataset",
   "enabled": true,
   "tabs": [
+    "Today_Matchups",
     "Team_Results",
     "vs_RHP",
     "vs_LHP",
