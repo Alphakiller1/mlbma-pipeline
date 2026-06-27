@@ -204,7 +204,10 @@ def run():
     run_batter_gamelog()
     run_batter_profiles()
     run_batter_prop_hitrates()
-    run_team_profiles()
+    if run_team_profiles():
+        run_model_deployment_sync()
+    else:
+        print("WARNING: MLB Model deployment not dispatched because hub mirror failed")
     run_instagram_autopost()
 
     total = time.perf_counter() - pipeline_t0
@@ -376,10 +379,25 @@ def run_team_profiles():
 
         run_push_supabase()
 
-    _run_step(
+    return _run_step(
         "Step 20: mirror dashboard datasets to Supabase (hub_dataset)",
         "outputs.push_supabase",
         _supabase_mirror,
+    )
+
+
+def run_model_deployment_sync():
+    """Notify the unified MLB Model only after sheets and the hub mirror are current."""
+
+    def _notify():
+        from outputs.notify_mlb_model import run as run_notify_model
+
+        run_notify_model()
+
+    _run_step(
+        "Step 21: dispatch synchronized MLB Model deployment",
+        "outputs.notify_mlb_model",
+        _notify,
     )
 
 

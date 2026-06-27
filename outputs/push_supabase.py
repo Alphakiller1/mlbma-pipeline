@@ -49,9 +49,17 @@ SUPABASE_SECRET_KEY = (
 )
 HUB_TABLE = "hub_dataset"
 
-# Single source of truth: the tabs the dashboard is configured to read from Supabase
-# (core.config.SUPABASE_DASHBOARD["tabs"]). Extend coverage by editing that list.
-DEFAULT_TABS = list(SUPABASE_DASHBOARD.get("tabs", []))
+# Research tabs feed the dashboard. Slate/run tabs also feed downstream consumers such as
+# the unified MLB Model, while the browser remains free to read the live Sheets copies.
+SLATE_TABS = [
+    SHEET_TABS["today_matchups"],
+    SHEET_TABS["today_lineups"],
+    SHEET_TABS["last_updated"],
+]
+DEFAULT_TABS = list(dict.fromkeys([
+    *SUPABASE_DASHBOARD.get("tabs", []),
+    *SLATE_TABS,
+]))
 
 
 def _gviz_csv_url(tab: str) -> str:

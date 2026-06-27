@@ -150,6 +150,9 @@ Replace `C:\Users\chase\crawl_env\Scripts\python.exe` with `$PY` if you set the 
 PALS is pushed inside `scrapers.scrape_pals` → tab `PALS`.  
 Signals are pushed inside `core.compute_signals` → `Signals_Today`, `Signals_Convergence`.  
 Matchups/lineups are pushed from their scrapers → `Today_Matchups`, `Today_Lineups`.
+After the full run, `outputs.push_supabase` mirrors those slate tabs and `Last_Updated`
+into `hub_dataset`, then `outputs.notify_mlb_model` dispatches the MLB Model Pages build.
+Authenticate `gh` or configure `MLB_MODEL_GITHUB_TOKEN` as shown in `.env.example`.
 
 ---
 
