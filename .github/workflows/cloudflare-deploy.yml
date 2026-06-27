@@ -1,8 +1,9 @@
-name: Deploy to Cloudflare (Workers)
+name: Deploy to Cloudflare (chase-analytics.com)
 
-# Deploys the dashboard (wrangler.jsonc, assets.directory ".") to the "mlbma-pipeline"
-# Worker on every push to master, so chase-analytics.com always serves current code.
-# Requires two repo secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (see README).
+# Deploys the dashboard to the Cloudflare PAGES project "mlbma-pipeline-b" (the one
+# chase-analytics.com is attached to) on every push to master — bypassing that project's
+# broken Git build. Builds a clean web-only directory (no node_modules / Python source).
+# Requires repo secrets CLOUDFLARE_API_TOKEN (with Pages:Edit) + CLOUDFLARE_ACCOUNT_ID.
 
 on:
   push:
@@ -14,10 +15,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy with Wrangler
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4.40.0"
-          command: deploy
+
+      - name: Build clean web-only directory
+        run: |
+          mkdir -p _site
+          rsync -a --delete \
+            --exclude='.git' --exclude='.github' --exclude='node_modules' \
+            --exclude='core' --exclude='outputs' --exclude='pipeline' \
+            --exclude='scripts' --exclude='tests' --exclude='__pycache__' \
+            --exclude='*.py' --exclude='*.pyc' --exclude='requirements.txt' \
+            --exclude='*.md' --exclude='.env*' --exclude='wrangler.jsonc' \
+            --exclude='.assetsignore' --exclude='_site' \
+            ./ _site/
+          echo "files to publish: $(find _site -type f | wc -l)"
+
+      - name: Deploy to the Pages project (production)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          BR=$(curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/mlbma-pipeline-b" \
+            | python3 -c "import sys,json; print((json.load(sys.stdin).get('result') or {}).get('production_branch','master'))" 2>/dev/null || echo master)
+          echo "Pages production branch: $BR"
+          cd _site
+          npx --yes wrangler@4.40.0 pages deploy . \
+            --project-name=mlbma-pipeline-b --branch="$BR" --commit-dirty=true
