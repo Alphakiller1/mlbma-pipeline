@@ -21,3 +21,9 @@ pipeline_smoke_log.txt
 pipeline_*.log
 outputs/instagram_post_manifest.json
 cursor
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
