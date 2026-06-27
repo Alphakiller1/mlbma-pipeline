@@ -1,0 +1,22 @@
+name: Deploy to Cloudflare (Workers)
+
+# Deploys the dashboard (wrangler.jsonc, assets.directory ".") to the "mlbma-pipeline"
+# Worker on every push to master, so chase-analytics.com always serves current code.
+# Requires two repo secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (see README).
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy with Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
