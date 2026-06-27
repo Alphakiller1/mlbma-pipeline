@@ -1,0 +1,23 @@
+# Files NOT published as Cloudflare Workers static assets (assets.directory = ".").
+# Keeps the dashboard (/, /dashboard/...) while excluding the build node_modules
+# (workerd is 109 MiB > the 25 MiB asset limit) and the Python pipeline source.
+node_modules
+.git
+.github
+.wrangler
+__pycache__
+*.pyc
+*.py
+core
+outputs
+pipeline
+scripts
+tests
+requirements.txt
+.env
+.env.example
+.env.local
+.gitignore
+.assetsignore
+wrangler.jsonc
+*.md
