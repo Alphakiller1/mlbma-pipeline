@@ -37,7 +37,16 @@ except Exception:  # pragma: no cover
 SUPABASE_URL = os.getenv(
     "SUPABASE_URL", SUPABASE_DASHBOARD.get("url", "")
 ).rstrip("/")
-SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "")
+# Write key for the hub mirror. Accept the common env names so a naming mismatch can't
+# silently skip the mirror (the bug that froze hub_dataset at 2026-06-22):
+#   SUPABASE_SECRET_KEY (new sb_secret_…) · SUPABASE_SERVICE_KEY · SUPABASE_KEY (service_role)
+SUPABASE_SECRET_KEY = (
+    os.getenv("SUPABASE_SECRET_KEY")
+    or os.getenv("SUPABASE_SERVICE_KEY")
+    or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    or os.getenv("SUPABASE_KEY")
+    or ""
+)
 HUB_TABLE = "hub_dataset"
 
 # Single source of truth: the tabs the dashboard is configured to read from Supabase
