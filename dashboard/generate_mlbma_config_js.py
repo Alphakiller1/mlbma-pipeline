@@ -17,8 +17,10 @@ from core.config import (
     DASHBOARD_PAGES,
     FIP_CONSTANT,
     OSI_TIERS,
+    OSI_WEIGHTS,
     PARK_FACTORS,
     PITCHING_TIERS,
+    PITCHING_WEIGHTS,
     SHEET_ID,
     SHEET_TABS,
     SUPABASE_DASHBOARD,
@@ -72,6 +74,8 @@ window.MLBMA_CONFIG = {{
   PITCHING_TIERS: {_js_tiers(PITCHING_TIERS)},
   ARCHETYPE_TIER_CUTOFFS: {archetype_js},
   FIP_CONSTANT: {FIP_CONSTANT:.2f},
+  OSI_WEIGHTS: {json.dumps(OSI_WEIGHTS, indent=2)},
+  PITCHING_WEIGHTS: {json.dumps(PITCHING_WEIGHTS, indent=2)},
   PARK_FACTORS: {json.dumps(PARK_FACTORS, indent=2)},
   SUPABASE: {json.dumps(SUPABASE_DASHBOARD, indent=2)}
 }};

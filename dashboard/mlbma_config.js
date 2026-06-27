@@ -66,6 +66,17 @@ window.MLBMA_CONFIG = {
   "low_max": 58.0
 },
   FIP_CONSTANT: 3.10,
+  OSI_WEIGHTS: {
+  "rcv": 0.35,
+  "abq": 0.25,
+  "obr": 0.4
+},
+  PITCHING_WEIGHTS: {
+  "k_pct": 0.3,
+  "inv_bb_pct": 0.2,
+  "inv_hr9": 0.2,
+  "inv_whip": 0.3
+},
   PARK_FACTORS: {
   "COL": 1.38,
   "BOS": 1.12,

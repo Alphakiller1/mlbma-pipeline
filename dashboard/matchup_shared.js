@@ -171,6 +171,28 @@
     return '';
   }
 
+  /** Parse sheet Last_Updated or Supabase updated_at into epoch ms. */
+  function parseSyncTimestampMs(raw) {
+    if (raw == null || raw === '') return null;
+    var s = String(raw).trim();
+    if (!s) return null;
+    var direct = Date.parse(s);
+    if (!isNaN(direct)) return direct;
+    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+    if (!m) return null;
+    return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+  }
+
+  /** True when hub_dataset updated_at is older than the live sheet Last_Updated probe. */
+  function isSupabaseDatasetStale(updatedAt) {
+    var bust = sheetSyncBust();
+    if (!bust || !updatedAt) return false;
+    var sheetMs = parseSyncTimestampMs(bust);
+    var sbMs = parseSyncTimestampMs(updatedAt);
+    if (sheetMs == null || sbMs == null) return false;
+    return sbMs + 60000 < sheetMs;
+  }
+
   function sheetTabPersistKey(cacheKey) {
     return SHEET_TAB_PERSIST_PREFIX + cacheKey + '|' + sheetSyncBust();
   }
@@ -342,7 +364,7 @@
 
     function doSupabaseFetch() {
       var base = String(sb.url).replace(/\/$/, '') + '/rest/v1/' + (sb.table || 'hub_dataset')
-        + '?name=eq.' + encodeURIComponent(tabName) + '&select=rows';
+        + '?name=eq.' + encodeURIComponent(tabName) + '&select=rows,updated_at';
       var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
       var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 12000) : null;
       return fetch(base, {
@@ -352,8 +374,12 @@
         if (!r.ok) throw new Error('supabase ' + tabName + ' ' + r.status);
         return r.json();
       }).then(function(arr) {
-        var rows = (arr && arr[0] && arr[0].rows) ? arr[0].rows : null;
+        var entry = arr && arr[0];
+        var rows = entry && entry.rows;
         if (!rows || !rows.length) throw new Error('supabase empty ' + tabName);
+        if (isSupabaseDatasetStale(entry.updated_at)) {
+          throw new Error('supabase stale ' + tabName);
+        }
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
@@ -361,6 +387,9 @@
     }
 
     function fetchRemote() {
+      if (options.preferSheets || options.revalidate) {
+        return doNetworkFetch();
+      }
       return useSupabase ? doSupabaseFetch().catch(doNetworkFetch) : doNetworkFetch();
     }
 
@@ -374,8 +403,10 @@
     if (pf) {
       delete pfStore[String(tabName)];
       work = Promise.resolve(pf).then(function(val) {
-        var rows = Array.isArray(val) ? val : parseCsvText(val);
+        var rows = Array.isArray(val) ? val : (val && val.rows ? val.rows : parseCsvText(val));
+        var updatedAt = val && val.updated_at;
         if (!rows || !rows.length) throw new Error('empty prefetch');
+        if (updatedAt && isSupabaseDatasetStale(updatedAt)) throw new Error('prefetch stale ' + tabName);
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
@@ -1239,7 +1270,7 @@
     });
   }
 
-  /** Client-side PitchScore — mirrors Python pool normalize (0.40 K + 0.35 inv BB + 0.25 inv HR/9). */
+  /** Client-side PitchScore fallback when sheet value missing (K/BB/HR only — team tab uses pipeline WHIP). */
   function computePitchScoreFromRates(kPct, bbPct, hr9, pool) {
     var k = pctDecimal(kPct);
     var bb = pctDecimal(bbPct);

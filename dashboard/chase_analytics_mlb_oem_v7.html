@@ -2644,13 +2644,17 @@ body.view-research .ca-lab { display: block; }
     var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
     var coreTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
     var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
-    var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + coreTabs.join(',') + ')&select=name,rows',
+    var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + coreTabs.join(',') + ')&select=name,rows,updated_at',
       { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
       .then(function(r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
-      .then(function(arr) { var m = {}; arr.forEach(function(d) { m[d.name] = d.rows; }); return m; });
+      .then(function(arr) {
+        var m = {};
+        arr.forEach(function(d) { m[d.name] = { rows: d.rows, updated_at: d.updated_at }; });
+        return m;
+      });
     coreTabs.forEach(function(t) {
       store[t] = batch.then(function(m) {
-        if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
+        if (!m[t] || !m[t].rows || !m[t].rows.length) throw new Error('prefetch miss ' + t);
         return m[t];
       });
       store[t].catch(function() { /* fetchSheetTab fallback */ });
@@ -5063,6 +5067,7 @@ function loadLandingData() {
     console.warn('[MLBMA] sheet sync probe failed (non-blocking)', err);
     return null;
   });
+  return syncP.then(function(sheetSyncProbeTs) {
   var fetchP = Promise.all([
     fetchTabSafe(TABS.today_matchups),
     fetchTabSafe(TABS.today_lineups),
@@ -5073,9 +5078,8 @@ function loadLandingData() {
     fetchTabSafe(TABS.today_games, []),
     scheduleP
   ]);
-  return Promise.all([syncP, fetchP]).then(function(bundle) {
-    sheetSyncProbeTs = bundle[0] || null;
-    var results = bundle[1];
+  return fetchP.then(function(results) {
+    sheetSyncProbeTs = sheetSyncProbeTs || null;
     var matchupsRows = results[0], lineupsRows = results[1], vsRhpRows = results[2], vsLhpRows = results[3],
         tsText = results[4], spProfileRows = results[5], gamesRows = results[6], liveSchedule = results[7];
     var scR = [];
@@ -5161,6 +5165,7 @@ function loadLandingData() {
       ]);
     }
     return Promise.resolve();
+  });
   });
 }
 
@@ -5590,7 +5595,7 @@ function buildOne(d, splitTab, timeframe) {
 
    OBR = 65% xwOBA + 35% BB%  (pure floor, expected quality)
 
-   OSI = 43% RCV + 37% ABQ + 20% OBR  (final composite)
+   OSI = 40% OBR + 35% RCV + 25% ABQ  (final composite — mirrors core.config OSI_WEIGHTS)
    projOSI = OSI + clip((xwOBA-wOBA)?450, -8, +8)  (regression-adjusted)
 
    OOR = 55% HvR + 45% HvL  (opponent offensive threat by handedness)
@@ -5636,7 +5641,8 @@ function scoreRows(rows) {
     var xwobaN = (d.x !== null && d.x !== undefined) ? nm(d.x,'w') : nm(d.o,'o');
     var obr = 0.65*xwobaN + 0.35*nm(d.bb,'bb');
 
-    var osi = 0.43*rcv + 0.37*abq + 0.20*obr;
+    var osiW = (window.MLBMA_CONFIG && MLBMA_CONFIG.OSI_WEIGHTS) || { obr: 0.40, rcv: 0.35, abq: 0.25 };
+    var osi = (osiW.obr || 0.40) * obr + (osiW.rcv || 0.35) * rcv + (osiW.abq || 0.25) * abq;
     var ppGap = abq - rcv;
     var dfGap = rcv - obr;
 

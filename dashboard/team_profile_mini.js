@@ -569,7 +569,7 @@
 
     proj = proj != null ? proj : pf(['proj_osi', 'projOSI']);
     var ppGap = pf(['pp_gap', 'ppGap']);
-    if (ppGap == null && proj != null && osi != null) ppGap = proj - osi;
+    if (ppGap == null && abq != null && rcv != null) ppGap = abq - rcv;
     var pals = pf(['pals']);
     var oor = pf(['oor']);
 
