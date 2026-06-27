@@ -843,7 +843,7 @@
       rows.push({
         icon: m.ppGap >= 4 ? 'process-upside' : 'regression-watch',
         label: m.ppGap >= 4 ? 'Process Upside' : 'Regression Watch',
-        text: 'PP-Gap ' + (m.ppGap >= 0 ? '+' : '') + m.ppGap.toFixed(1) + ' — projOSI vs current OSI spread.'
+        text: 'PP-Gap ' + (m.ppGap >= 0 ? '+' : '') + m.ppGap.toFixed(1) + ' — process (ABQ) vs production (RCV).'
       });
     }
     rows = rows.filter(Boolean).slice(0, 3);

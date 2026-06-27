@@ -130,15 +130,18 @@ def _row_metric(row: pd.Series, col: str) -> Optional[float]:
 
 
 def _pp_gap(row: pd.Series) -> Optional[float]:
-    """Regression gap (projOSI - OSI). Dashboard 'process gap' is ABQ - RCV — see docs/ECOSYSTEM.md."""
-    osi = _row_metric(row, "OSI")
-    proj = _row_metric(row, "projOSI")
-    if osi is None or proj is None:
-        pg = _row_metric(row, "PP_Gap")
-        if pg is not None:
-            return pg
-        return None
-    return round(proj - osi, 1)
+    """Process-production gap (ABQ - RCV) — matches dashboard glossary and signals."""
+    abq = _row_metric(row, "ABQ")
+    rcv = _row_metric(row, "RCV")
+    if abq is not None and rcv is not None:
+        return round(abq - rcv, 1)
+    pg = _row_metric(row, "PP-Gap")
+    if pg is not None:
+        return pg
+    pg = _row_metric(row, "PP_Gap")
+    if pg is not None:
+        return pg
+    return None
 
 
 def offense_from_splits(

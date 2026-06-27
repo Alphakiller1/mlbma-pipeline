@@ -52,24 +52,29 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
       var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
       var criticalTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
       var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
-      var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows',
+      var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows,updated_at',
         { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
         .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
-        .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
+        .then(function (arr) {
+          var m = {};
+          arr.forEach(function (d) { m[d.name] = { rows: d.rows, updated_at: d.updated_at }; });
+          return m;
+        });
       criticalTabs.forEach(function (t) {
         store[t] = batch.then(function (m) {
-          if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
+          if (!m[t] || !m[t].rows || !m[t].rows.length) throw new Error('prefetch miss ' + t);
           return m[t];
         });
         store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
       });
-      store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
+      store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows,updated_at',
         { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
         .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })
         .then(function (arr) {
-          var rows = arr && arr[0] && arr[0].rows;
+          var entry = arr && arr[0];
+          var rows = entry && entry.rows;
           if (!rows || !rows.length) throw new Error('prefetch miss Team_Results');
-          return rows;
+          return { rows: rows, updated_at: entry.updated_at };
         });
       store['Team_Results'].catch(function () { /* fall back handled in fetchSheetTab */ });
       fetch('league_baselines.json?_=' + Date.now()).then(function(r) {
