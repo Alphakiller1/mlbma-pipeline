@@ -2422,11 +2422,18 @@
     return map;
   }
 
-  function findSpProfile(profiles, pitcherName, team) {
+  function findSpProfile(profiles, pitcherName, team, pitcherId) {
+    var list = profiles || [];
+    if (pitcherId != null && pitcherId !== '') {
+      var idStr = String(pitcherId);
+      var byId = list.find(function(p) {
+        return String(pickCol(p, 'pitcher_id', 'pitcherId', 'Pitcher_ID', 'id') || '') === idStr;
+      });
+      if (byId) return byId;
+    }
     var key = normName(pitcherName);
     if (!key || key === 'tbd') return null;
     var tm = teamKey(team);
-    var list = profiles || [];
 
     function rowTeam(p) {
       return teamKey(pickCol(p, 'pitcher_team', 'Team', 'Tm'));
@@ -2465,6 +2472,84 @@
       return byLast[0];
     }
     return null;
+  }
+
+  function parseMlbPitcherSeasonStat(stat) {
+    if (!stat) return null;
+    var bf = numOrNull(stat.battersFaced);
+    var k = numOrNull(stat.strikeOuts);
+    var bb = numOrNull(stat.baseOnBalls);
+    var era = numOrNull(stat.era);
+    var hr9 = numOrNull(stat.homeRunsPer9);
+    var ip = numOrNull(stat.inningsPitched);
+    var kPct = (bf && k != null) ? (k / bf) * 100 : null;
+    var bbPct = (bf && bb != null) ? (bb / bf) * 100 : null;
+    if (hr9 == null && ip && stat.homeRuns != null) {
+      hr9 = (Number(stat.homeRuns) / ip) * 9;
+    }
+    var fip = null;
+    if (ip && k != null && bb != null && stat.homeRuns != null) {
+      fip = ((13 * Number(stat.homeRuns)) + (3 * bb) - (2 * k)) / ip + 3.1;
+      if (!isNaN(fip)) fip = Math.round(fip * 100) / 100;
+    }
+    return { kPct: kPct, bbPct: bbPct, hr9: hr9, era: era, fip: fip };
+  }
+
+  function fetchMlbPitcherSeasonStats(personIds) {
+    var ids = (personIds || []).map(function(id) { return String(id); }).filter(Boolean);
+    ids = ids.filter(function(id, i) { return ids.indexOf(id) === i; });
+    if (!ids.length) return Promise.resolve({});
+    var url = 'https://statsapi.mlb.com/api/v1/people?personIds=' + encodeURIComponent(ids.join(','))
+      + '&hydrate=stats(group=%5Bpitching%5D,type=%5Bseason%5D)';
+    return fetchJsonWithTimeout(url, 12000).then(function(data) {
+      var map = {};
+      (data.people || []).forEach(function(person) {
+        var stat = null;
+        (person.stats || []).forEach(function(block) {
+          if (stat) return;
+          var split = block.splits && block.splits[0];
+          if (split && split.stat) stat = split.stat;
+        });
+        var parsed = parseMlbPitcherSeasonStat(stat);
+        if (parsed) map[String(person.id)] = parsed;
+      });
+      return map;
+    }).catch(function(err) {
+      console.warn('[MATCHUPS] MLB pitcher stats fetch failed', err);
+      return {};
+    });
+  }
+
+  function matchupPitcherSideNeedsStats(m, side) {
+    var sp = m[side + 'SP'];
+    if (!sp || String(sp).trim().toUpperCase() === 'TBD') return false;
+    return m[side + 'K'] == null || m[side + 'BB'] == null || m[side + 'ERA'] == null;
+  }
+
+  function applyMlbPitcherRatesToMatchup(m, side, rates) {
+    if (!m || !rates) return;
+    var px = side;
+    if (m[px + 'K'] == null && rates.kPct != null) m[px + 'K'] = rates.kPct;
+    if (m[px + 'BB'] == null && rates.bbPct != null) m[px + 'BB'] = rates.bbPct;
+    if (m[px + 'HR9'] == null && rates.hr9 != null) m[px + 'HR9'] = rates.hr9;
+    if (m[px + 'ERA'] == null && rates.era != null) m[px + 'ERA'] = rates.era;
+    if (m[px + 'FIP'] == null && rates.fip != null) m[px + 'FIP'] = rates.fip;
+  }
+
+  function hydrateMatchupPitcherStatsFromMlb(matchups) {
+    var ids = [];
+    (matchups || []).forEach(function(m) {
+      if (m.awaySPId && matchupPitcherSideNeedsStats(m, 'away')) ids.push(m.awaySPId);
+      if (m.homeSPId && matchupPitcherSideNeedsStats(m, 'home')) ids.push(m.homeSPId);
+    });
+    if (!ids.length) return Promise.resolve(matchups);
+    return fetchMlbPitcherSeasonStats(ids).then(function(map) {
+      (matchups || []).forEach(function(m) {
+        applyMlbPitcherRatesToMatchup(m, 'away', map[String(m.awaySPId)]);
+        applyMlbPitcherRatesToMatchup(m, 'home', map[String(m.homeSPId)]);
+      });
+      return matchups;
+    });
   }
 
   function spProfileMetrics(profile) {
@@ -3156,6 +3241,8 @@
     parsePitchingRows: parsePitchingRows,
     findSpProfile: findSpProfile,
     spProfileMetrics: spProfileMetrics,
+    hydrateMatchupPitcherStatsFromMlb: hydrateMatchupPitcherStatsFromMlb,
+    fetchMlbPitcherSeasonStats: fetchMlbPitcherSeasonStats,
     palsStatus: palsStatus,
     metricColor: metricColor,
     osiTierLabel: osiTierLabel,

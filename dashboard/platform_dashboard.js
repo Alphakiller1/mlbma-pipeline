@@ -177,19 +177,19 @@
     return '<span class="hmc-osi-num" style="color:' + col + '">' + n + '</span>';
   }
 
-  function spPitchScoreFromProfile(pitcherName, team) {
+  function spPitchScoreFromProfile(pitcherName, team, pitcherId) {
     var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
     if (!profiles.length || !S || !S.findSpProfile) return null;
-    var p = S.findSpProfile(profiles, pitcherName, team);
+    var p = S.findSpProfile(profiles, pitcherName, team, pitcherId);
     if (!p || !S.spProfileMetrics) return null;
     var m = S.spProfileMetrics(p);
     return m && m.pitchScore != null ? m.pitchScore : null;
   }
 
-  function spEraFromProfile(pitcherName, team) {
+  function spEraFromProfile(pitcherName, team, pitcherId) {
     var profiles = (global.LIVE_DATA && LIVE_DATA.spProfiles) || [];
     if (!profiles.length || !S || !S.findSpProfile) return null;
-    var p = S.findSpProfile(profiles, pitcherName, team);
+    var p = S.findSpProfile(profiles, pitcherName, team, pitcherId);
     if (!p) return null;
     if (S.spProfileMetrics) {
       var m = S.spProfileMetrics(p);
@@ -217,8 +217,8 @@
       : (A && A.resolveMlbId ? A.resolveMlbId(name) : (A ? A.lookupMlbId(name) : null));
     var hs = A ? A.pitcherAvatar(pid || name, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
       : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
-    var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team);
-    if (ps == null) ps = spPitchScore(team);
+    var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team, opts.mlbId);
+    if (ps == null && pname === 'TBD') ps = spPitchScore(team);
     var pt = pitchTier(ps);
     var psColor = ps != null ? pitcherStatColor('pitchScore', ps) : 'var(--text-3, #9CA3AF)';
     var psVal = ps != null ? Number(ps).toFixed(0) : '—';
@@ -230,7 +230,7 @@
     var handLbl = normalizePitchHand(hand) === 'L' ? 'LHP' : normalizePitchHand(hand) === 'R' ? 'RHP' : '?';
     var kVal = fmtRatePct(stats.k);
     var bbVal = fmtRatePct(stats.bb);
-    var eraRaw = stats.era != null ? stats.era : spEraFromProfile(name, team);
+    var eraRaw = stats.era != null ? stats.era : spEraFromProfile(name, team, opts.mlbId);
     if (eraRaw == null) eraRaw = stats.fip;
     var fipRaw = stats.fip != null ? stats.fip : null;
     var hr9Raw = stats.hr9 != null ? stats.hr9 : null;
@@ -573,14 +573,20 @@
     }
     if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
     var sorted = sortGames(games);
-
-    grid.innerHTML = sorted.map(function(m, cardIdx) {
-      return renderHeroMatchupCard(m, cardIdx);
-    }).join('').replace(/<\/?motion>/g, '');
-
-    bindCardNavigation();
-    grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
-    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
+    var paint = function() {
+      grid.innerHTML = sorted.map(function(m, cardIdx) {
+        return renderHeroMatchupCard(m, cardIdx);
+      }).join('').replace(/<\/?motion>/g, '');
+      bindCardNavigation();
+      grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
+      if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
+    };
+    var S = global.MLBMASharedMatchup;
+    if (S && S.hydrateMatchupPitcherStatsFromMlb) {
+      S.hydrateMatchupPitcherStatsFromMlb(games).then(paint).catch(paint);
+      return;
+    }
+    paint();
   }
 
   function signalConfClass(conf) {

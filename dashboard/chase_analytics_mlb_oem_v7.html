@@ -2753,11 +2753,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260610b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260624c"></script>
+<script src="matchup_shared.js?v=20260628a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260624i"></script>
+<script src="platform_dashboard.js?v=20260628a"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -4370,10 +4370,10 @@ function pitcherHandFromProfiles(name, team) {
   return null;
 }
 
-function spStatsFromProfile(name, team) {
+function spStatsFromProfile(name, team, pitcherId) {
   var S = window.MLBMASharedMatchup;
   if (!S || !S.findSpProfile || !S.spProfileMetrics) return null;
-  var p = S.findSpProfile(LIVE_DATA.spProfiles || [], name, team);
+  var p = S.findSpProfile(LIVE_DATA.spProfiles || [], name, team, pitcherId);
   if (!p) return null;
   var m = S.spProfileMetrics(p);
   if (!m) return null;
@@ -4393,8 +4393,8 @@ function enrichMatchupCards() {
     if (m.homeHand === '?' && m.homeSP) m.homeHand = pitcherHandFromProfiles(m.homeSP, m.home) || '?';
     if (m.awayHand === '?') m.awayHand = 'R';
     if (m.homeHand === '?') m.homeHand = 'R';
-    var awayProf = spStatsFromProfile(m.awaySP, m.away);
-    var homeProf = spStatsFromProfile(m.homeSP, m.home);
+    var awayProf = spStatsFromProfile(m.awaySP, m.away, m.awaySPId);
+    var homeProf = spStatsFromProfile(m.homeSP, m.home, m.homeSPId);
     if (awayProf) {
       if (m.awayK == null) m.awayK = awayProf.k;
       if (m.awayBB == null) m.awayBB = awayProf.bb;
@@ -4618,8 +4618,8 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
     : (pitcherHandFromProfiles(homeSP, home) || '?');
   if (awayHand === '?') awayHand = 'R';
   if (homeHand === '?') homeHand = 'R';
-  var awayProf = spStatsFromProfile(awaySP, away);
-  var homeProf = spStatsFromProfile(homeSP, home);
+  var awayProf = spStatsFromProfile(awaySP, away, g.awaySPId);
+  var homeProf = spStatsFromProfile(homeSP, home, g.homeSPId);
   var awayOsi = (scR.length && scL.length)
     ? teamOsiVsPitcherHand(away, homeHand, scR, scL)
     : (ex && ex.awayOSI != null ? ex.awayOSI : null);
@@ -4751,6 +4751,14 @@ function refreshTodayMatchups(liveSchedule) {
   LIVE_DATA._matchupsBuiltAt = Date.now();
   syncLineupsToMatchupSlate();
   enrichMatchupCards();
+  var S = window.MLBMASharedMatchup;
+  if (S && S.hydrateMatchupPitcherStatsFromMlb) {
+    return S.hydrateMatchupPitcherStatsFromMlb(LIVE_DATA.matchups).then(function() {
+      if (typeof repaintMatchupHeroCards === 'function') repaintMatchupHeroCards();
+      return LIVE_DATA.matchups;
+    });
+  }
+  return Promise.resolve(LIVE_DATA.matchups);
 }
 
 function normalizeBatsHand(bats) {
@@ -5143,7 +5151,7 @@ function loadLandingData() {
     LIVE_DATA._slateMatchupsRows = filterSheetRowsForToday(matchupsRows || []);
     LIVE_DATA.todayGames = parseTodayGamesRows(LIVE_DATA._slateGamesRows);
     LIVE_DATA._liveSchedule = liveSchedule || { games: [] };
-    refreshTodayMatchups(LIVE_DATA._liveSchedule);
+    return refreshTodayMatchups(LIVE_DATA._liveSchedule).then(function() {
     console.info('[LINEUPS] parsed', (LIVE_DATA.lineups || []).length, 'rows from sheet');
     console.info('[MATCHUPS] today slate:', LIVE_DATA.matchups.length, 'games —',
       LIVE_DATA.matchups.slice(0, 4).map(function(m) { return m.away + '@' + m.home; }).join(', '));
@@ -5182,6 +5190,7 @@ function loadLandingData() {
       ]);
     }
     return Promise.resolve();
+    });
   });
   });
 }
