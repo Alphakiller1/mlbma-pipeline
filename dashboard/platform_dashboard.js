@@ -120,6 +120,11 @@
     return Math.round(n) + '%';
   }
 
+  function fmtDecimalStat(v, digits) {
+    if (v == null || v === '' || isNaN(v)) return '—';
+    return Number(v).toFixed(digits == null ? 2 : digits);
+  }
+
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
     if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
@@ -227,10 +232,16 @@
     var bbVal = fmtRatePct(stats.bb);
     var eraRaw = stats.era != null ? stats.era : spEraFromProfile(name, team);
     if (eraRaw == null) eraRaw = stats.fip;
+    var fipRaw = stats.fip != null ? stats.fip : null;
+    var hr9Raw = stats.hr9 != null ? stats.hr9 : null;
     var kColor = pitcherStatColor('k', stats.k);
     var bbColor = pitcherStatColor('bb', stats.bb);
     var eraColor = pitcherStatColor('era', eraRaw);
-    var eraVal = eraRaw != null ? Number(eraRaw).toFixed(2) : '—';
+    var fipColor = pitcherStatColor('fip', fipRaw);
+    var hr9Color = pitcherStatColor('era', hr9Raw);
+    var eraVal = eraRaw != null ? fmtDecimalStat(eraRaw, 2) : '—';
+    var fipVal = fipRaw != null ? fmtDecimalStat(fipRaw, 2) : '—';
+    var hr9Val = hr9Raw != null ? fmtDecimalStat(hr9Raw, 2) : '—';
     return '<div class="mc-sp-block' + sideCls + '" onclick="event.stopPropagation()">'
       + '<div class="mc-sp-photo">' + hs + '</div>'
       + '<div class="mc-sp-info">'
@@ -246,10 +257,12 @@
       + '<span class="mc-ps-badge__label">Pitch Score</span>'
       + '<strong class="mc-ps-badge__val" style="color:' + psColor + '">' + psVal + '</strong>'
       + '</div>'
-      + '<div class="mc-sp-stats mc-sp-stats--grid">'
+      + '<div class="mc-sp-stats mc-sp-stats--grid mc-sp-stats--five">'
       + '<span class="mc-sp-stat mc-sp-stat--k" style="--stat-color:' + kColor + '"><em>K%</em><strong style="color:' + kColor + '">' + esc(kVal) + '</strong></span>'
       + '<span class="mc-sp-stat mc-sp-stat--bb" style="--stat-color:' + bbColor + '"><em>BB%</em><strong style="color:' + bbColor + '">' + esc(bbVal) + '</strong></span>'
       + '<span class="mc-sp-stat mc-sp-stat--era" style="--stat-color:' + eraColor + '"><em>ERA</em><strong style="color:' + eraColor + '">' + esc(eraVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--fip" style="--stat-color:' + fipColor + '"><em>FIP</em><strong style="color:' + fipColor + '">' + esc(fipVal) + '</strong></span>'
+      + '<span class="mc-sp-stat mc-sp-stat--hr9" style="--stat-color:' + hr9Color + '"><em>HR/9</em><strong style="color:' + hr9Color + '">' + esc(hr9Val) + '</strong></span>'
       + '</div></div></div>';
   }
 
@@ -480,8 +493,8 @@
       + gameMetaHtml(m)
       + '</div>'
       + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, era: m.awayERA, fip: m.awayFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars, mlbId: m.awaySPId })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, era: m.homeERA, fip: m.homeFIP }, { eager: cardIdx < 3 || !!opts.eagerAvatars, mlbId: m.homeSPId })
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, era: m.awayERA, fip: m.awayFIP, hr9: m.awayHR9 }, { eager: cardIdx < 3, pitchScore: m.awayPitchScore, mlbId: m.awaySPId })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, era: m.homeERA, fip: m.homeFIP, hr9: m.homeHR9 }, { eager: cardIdx < 3, pitchScore: m.homePitchScore, mlbId: m.homeSPId })
       + '</div>'
       + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
       + '<div class="hmc-osi-bar">'
@@ -558,6 +571,7 @@
         : '<div class="empty-msg">No matchups loaded for today.</div>';
       return;
     }
+    if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
     var sorted = sortGames(games);
 
     grid.innerHTML = sorted.map(function(m, cardIdx) {

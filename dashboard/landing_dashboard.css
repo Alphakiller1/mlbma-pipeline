@@ -962,8 +962,6 @@ body.view-research .ca-page-identity { display: none; }
 }
 .mc-sp-stats--grid {
   display: grid;
-  /* minmax(0,1fr) (not 2.75rem) so the three stat columns shrink to fit the narrow
-     pitcher column instead of overflowing it and getting clipped by the card edge. */
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   align-self: end;
@@ -974,6 +972,10 @@ body.view-research .ca-page-identity { display: none; }
   padding: 0 4px 2px;
   overflow: visible;
   width: 100%;
+}
+.mc-sp-stats--grid.mc-sp-stats--five {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-height: 56px;
 }
 .mc-sp-stat {
   display: flex;
@@ -1725,8 +1727,13 @@ body.view-research .ca-page-identity { display: none; }
     padding: 0 2px 2px;
   }
 
+  .mc-sp-stats--grid.mc-sp-stats--five {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1px;
+  }
+
   .mc-sp-stat strong {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .mc-sp-stat em {

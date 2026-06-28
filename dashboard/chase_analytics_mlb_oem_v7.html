@@ -4338,6 +4338,7 @@ function parseMatchupRows(rows) {
       awayHR9: numOrNull(matchupCol(row, 'Away_HR9')),
       awayERA: numOrNull(matchupCol(row, 'Away_ERA', 'Away ERA')),
       awayFIP: numOrNull(matchupCol(row, 'Away_FIP')),
+      awayPitchScore: numOrNull(matchupCol(row, 'Away_PitchScore', 'Away PitchScore')),
       homeSP: String(matchupCol(row, 'Home_SP')).trim(),
       homeHand: normalizePitcherHand(matchupCol(row, 'Home_Hand', 'Home Hand', 'Home_SP_Hand')),
       homeK: numOrNull(matchupCol(row, 'Home_K%')),
@@ -4345,6 +4346,7 @@ function parseMatchupRows(rows) {
       homeHR9: numOrNull(matchupCol(row, 'Home_HR9')),
       homeERA: numOrNull(matchupCol(row, 'Home_ERA', 'Home ERA')),
       homeFIP: numOrNull(matchupCol(row, 'Home_FIP')),
+      homePitchScore: numOrNull(matchupCol(row, 'Home_PitchScore', 'Home PitchScore')),
       awayOSI: numOrNull(matchupCol(row, 'Away_OSI')),
       homeOSI: numOrNull(matchupCol(row, 'Home_OSI')),
       lineupEdge: String(matchupCol(row, 'Lineup_Edge')).trim(),
@@ -4375,7 +4377,10 @@ function spStatsFromProfile(name, team) {
   if (!p) return null;
   var m = S.spProfileMetrics(p);
   if (!m) return null;
-  return { k: m.kPct, bb: m.bbPct, hr9: m.hr9, fip: m.fip, era: m.era };
+  return {
+    k: m.kPct, bb: m.bbPct, hr9: m.hr9, fip: m.fip, era: m.era,
+    pitchScore: m.pitchScore, xfip: m.xfip, osiAllowed: m.osiAllowed
+  };
 }
 
 function enrichMatchupCards() {
@@ -4396,6 +4401,9 @@ function enrichMatchupCards() {
       if (m.awayHR9 == null) m.awayHR9 = awayProf.hr9;
       if (m.awayFIP == null) m.awayFIP = awayProf.fip;
       if (m.awayERA == null) m.awayERA = awayProf.era;
+      if (m.awayPitchScore == null) m.awayPitchScore = awayProf.pitchScore;
+      if (m.awayXFIP == null) m.awayXFIP = awayProf.xfip;
+      if (m.awayOsiAllowed == null) m.awayOsiAllowed = awayProf.osiAllowed;
     }
     if (homeProf) {
       if (m.homeK == null) m.homeK = homeProf.k;
@@ -4403,6 +4411,9 @@ function enrichMatchupCards() {
       if (m.homeHR9 == null) m.homeHR9 = homeProf.hr9;
       if (m.homeFIP == null) m.homeFIP = homeProf.fip;
       if (m.homeERA == null) m.homeERA = homeProf.era;
+      if (m.homePitchScore == null) m.homePitchScore = homeProf.pitchScore;
+      if (m.homeXFIP == null) m.homeXFIP = homeProf.xfip;
+      if (m.homeOsiAllowed == null) m.homeOsiAllowed = homeProf.osiAllowed;
     }
     var scR = LIVE_DATA.scYtdR || (typeof SCO_YTD_R !== 'undefined' ? SCO_YTD_R : []);
     var scL = LIVE_DATA.scYtdL || (typeof SCO_YTD_L !== 'undefined' ? SCO_YTD_L : []);
@@ -4630,11 +4641,17 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
     awayHR9: pickSpMetric(awayProf ? awayProf.hr9 : null, ex ? ex.awayHR9 : null),
     awayFIP: pickSpMetric(awayProf ? awayProf.fip : null, ex ? ex.awayFIP : null),
     awayERA: pickSpMetric(awayProf ? awayProf.era : null, ex ? ex.awayERA : null),
+    awayPitchScore: pickSpMetric(awayProf ? awayProf.pitchScore : null, ex ? ex.awayPitchScore : null),
+    awayXFIP: pickSpMetric(awayProf ? awayProf.xfip : null, ex ? ex.awayXFIP : null),
+    awayOsiAllowed: pickSpMetric(awayProf ? awayProf.osiAllowed : null, ex ? ex.awayOsiAllowed : null),
     homeK: pickSpMetric(homeProf ? homeProf.k : null, ex ? ex.homeK : null),
     homeBB: pickSpMetric(homeProf ? homeProf.bb : null, ex ? ex.homeBB : null),
     homeHR9: pickSpMetric(homeProf ? homeProf.hr9 : null, ex ? ex.homeHR9 : null),
     homeFIP: pickSpMetric(homeProf ? homeProf.fip : null, ex ? ex.homeFIP : null),
     homeERA: pickSpMetric(homeProf ? homeProf.era : null, ex ? ex.homeERA : null),
+    homePitchScore: pickSpMetric(homeProf ? homeProf.pitchScore : null, ex ? ex.homePitchScore : null),
+    homeXFIP: pickSpMetric(homeProf ? homeProf.xfip : null, ex ? ex.homeXFIP : null),
+    homeOsiAllowed: pickSpMetric(homeProf ? homeProf.osiAllowed : null, ex ? ex.homeOsiAllowed : null),
     awayOSI: awayOsi,
     homeOSI: homeOsi,
     lineupEdge: ex && ex.lineupEdge ? ex.lineupEdge : '',

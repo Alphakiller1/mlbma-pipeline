@@ -2425,15 +2425,46 @@
   function findSpProfile(profiles, pitcherName, team) {
     var key = normName(pitcherName);
     if (!key || key === 'tbd') return null;
-    return (profiles || []).find(function(p) {
-      var n = normName(pickCol(p, 'pitcher_name', 'Pitcher', 'Name'));
-      var tm = teamKey(pickCol(p, 'pitcher_team', 'Team', 'Tm'));
-      if (n === key) {
-        if (!team || !tm) return true;
-        return tm === teamKey(team);
+    var tm = teamKey(team);
+    var list = profiles || [];
+
+    function rowTeam(p) {
+      return teamKey(pickCol(p, 'pitcher_team', 'Team', 'Tm'));
+    }
+    function rowName(p) {
+      return normName(pickCol(p, 'pitcher_name', 'Pitcher', 'Name'));
+    }
+    function teamOk(pt) {
+      return !tm || !pt || pt === tm;
+    }
+
+    var exact = list.find(function(p) {
+      return rowName(p) === key && teamOk(rowTeam(p));
+    });
+    if (exact) return exact;
+
+    var lastKey = key.split(/\s+/).pop();
+    if (!lastKey || lastKey.length < 2) return null;
+    var byLast = list.filter(function(p) {
+      var n = rowName(p);
+      if (!n) return false;
+      if (n.split(/\s+/).pop() !== lastKey) return false;
+      return teamOk(rowTeam(p));
+    });
+    if (byLast.length === 1) return byLast[0];
+    if (byLast.length > 1) {
+      var firstTok = key.split(/\s+/)[0];
+      if (firstTok && firstTok.length <= 2) {
+        var initial = firstTok.charAt(0);
+        var byInit = byLast.find(function(p) {
+          var n = rowName(p);
+          return n && n.charAt(0) === initial;
+        });
+        if (byInit) return byInit;
       }
-      return false;
-    }) || null;
+      return byLast[0];
+    }
+    return null;
   }
 
   function spProfileMetrics(profile) {
@@ -2448,6 +2479,7 @@
     var era = numOrNull(pickCol(profile, 'ERA', 'era'));
     var fip = numOrNull(pickCol(profile, 'FIP', 'fip'));
     if (fip == null) fip = era;
+    var xfip = numOrNull(pickCol(profile, 'xFIP', 'xfip', 'XFIP'));
     var staleRaw = pickCol(profile, 'stale', 'staleness_flag', 'Staleness');
     var stale = staleRaw === true || staleRaw === 'True' || staleRaw === 'true' || staleRaw === '1';
     return {
@@ -2456,7 +2488,7 @@
       hr9: hr9,
       fip: fip,
       fipNa: profile.FIP_na === true,
-      xfip: null,
+      xfip: xfip,
       era: era,
       osiAllowed: numOrNull(pickCol(profile, 'OSI_allowed', 'OSI Allowed', 'osi_allowed')),
       osiAllowedL30: null,
