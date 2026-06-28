@@ -41,22 +41,78 @@ jobs:
           test -f _site/dashboard/matchup_shared.js
           grep -q hydrateMatchupPitcherStatsFromMlb _site/dashboard/matchup_shared.js
 
-      - name: Point Pages production branch at master
+      - name: Point Pages production branch at master and pause Git builds
         run: |
           RESP=$(curl -sS -X PATCH \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT" \
-            -d "{\"production_branch\":\"$PRODUCTION_BRANCH\"}")
-          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print('production_branch now:', (d.get('result') or {}).get('production_branch')); sys.exit(0 if d.get('success') else 1)"
+            -d "{\"production_branch\":\"$PRODUCTION_BRANCH\",\"source\":{\"config\":{\"deployments_enabled\":false,\"production_deployments_enabled\":false}}}")
+          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or {}; print('production_branch:', r.get('production_branch')); cfg=((r.get('source') or {}).get('config') or {}); print('git deployments_enabled:', cfg.get('deployments_enabled')); print('git production_deployments_enabled:', cfg.get('production_deployments_enabled')); sys.exit(0 if d.get('success') else 1)"
 
       - name: Deploy to the Pages project (production)
+        id: pages_deploy
         run: |
           cd _site
+          DEPLOY_LOG=$(mktemp)
+          set -o pipefail
           npx --yes wrangler@4.40.0 pages deploy . \
             --project-name="$PAGES_PROJECT" \
             --branch="$PRODUCTION_BRANCH" \
-            --commit-dirty=true
+            --commit-dirty=true 2>&1 | tee "$DEPLOY_LOG"
+          DEPLOY_SHORT=$(grep -oE 'https://[a-f0-9]{8}\.' "$DEPLOY_LOG" | head -1 | sed -E 's|https://([a-f0-9]{8})\..*|\1|')
+          echo "wrangler deployment short id: $DEPLOY_SHORT"
+          echo "deploy_short=$DEPLOY_SHORT" >> "$GITHUB_OUTPUT"
+
+      - name: Promote wrangler deployment to production
+        run: |
+          python3 <<'PY'
+          import json, os, sys, urllib.request
+
+          token = os.environ["CLOUDFLARE_API_TOKEN"]
+          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          project = os.environ["PAGES_PROJECT"]
+          short = os.environ.get("DEPLOY_SHORT", "").strip()
+
+          def api(method, path, body=None):
+              data = None if body is None else json.dumps(body).encode()
+              req = urllib.request.Request(
+                  f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/{project}{path}",
+                  data=data,
+                  method=method,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Content-Type": "application/json",
+                  },
+              )
+              with urllib.request.urlopen(req) as resp:
+                  return json.load(resp)
+
+          deployments = api("GET", "/deployments").get("result") or []
+          chosen = None
+          for dep in deployments:
+              dep_id = dep.get("id") or ""
+              aliases = dep.get("aliases") or []
+              url = dep.get("url") or ""
+              if short and (short in dep_id or short in url or any(short in a for a in aliases)):
+                  chosen = dep
+                  break
+          if not chosen and deployments:
+              chosen = deployments[0]
+          if not chosen:
+              print("No deployments found to promote", file=sys.stderr)
+              sys.exit(1)
+
+          dep_id = chosen["id"]
+          print("Promoting deployment:", dep_id, chosen.get("url"))
+          result = api("POST", f"/deployments/{dep_id}/rollback")
+          if not result.get("success"):
+              print(json.dumps(result, indent=2), file=sys.stderr)
+              sys.exit(1)
+          print("Production promotion OK:", (result.get("result") or {}).get("url"))
+          PY
+        env:
+          DEPLOY_SHORT: ${{ steps.pages_deploy.outputs.deploy_short }}
 
       - name: Verify chase-analytics.com serves fresh assets
         run: |
