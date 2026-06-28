@@ -5,10 +5,10 @@ name: Deploy to Cloudflare (chase-analytics.com)
 # broken Git build. Builds a clean web-only directory (no node_modules / Python source).
 # Requires repo secrets CLOUDFLARE_API_TOKEN (with Pages:Edit) + CLOUDFLARE_ACCOUNT_ID.
 #
-# IMPORTANT: chase-analytics.com must serve the *production* deployment. The project was
-# previously configured with production_branch=batter-profile-prop-rework while CI deploys
-# from master, so wrangler uploads landed on master.*.pages.dev but the custom domain
-# kept serving the stale default production URL. This workflow forces production_branch=master.
+# Git-integrated Pages projects treat wrangler direct uploads as branch previews, so
+# chase-analytics.com (bound to canonical production) stayed on a stale Git build while
+# master.mlbma-pipeline-b.pages.dev received fresh uploads. This workflow uploads to the
+# master branch alias and points chase-analytics.com DNS at that alias.
 
 on:
   push:
@@ -23,6 +23,8 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PAGES_PROJECT: mlbma-pipeline-b
       PRODUCTION_BRANCH: master
+      LIVE_DOMAIN: chase-analytics.com
+      BRANCH_ALIAS: master.mlbma-pipeline-b.pages.dev
     steps:
       - uses: actions/checkout@v4
 
@@ -41,43 +43,36 @@ jobs:
           test -f _site/dashboard/matchup_shared.js
           grep -q hydrateMatchupPitcherStatsFromMlb _site/dashboard/matchup_shared.js
 
-      - name: Point Pages production branch at master and pause Git builds
+      - name: Pause Git auto-deploys and set production branch to master
         run: |
           RESP=$(curl -sS -X PATCH \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT" \
             -d "{\"production_branch\":\"$PRODUCTION_BRANCH\",\"source\":{\"config\":{\"deployments_enabled\":false,\"production_deployments_enabled\":false}}}")
-          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or {}; print('production_branch:', r.get('production_branch')); cfg=((r.get('source') or {}).get('config') or {}); print('git deployments_enabled:', cfg.get('deployments_enabled')); print('git production_deployments_enabled:', cfg.get('production_deployments_enabled')); sys.exit(0 if d.get('success') else 1)"
+          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or {}; print('production_branch:', r.get('production_branch')); sys.exit(0 if d.get('success') else 1)"
 
-      - name: Deploy to the Pages project (production)
-        id: pages_deploy
+      - name: Upload build to master branch alias
         run: |
           cd _site
-          DEPLOY_LOG=$(mktemp)
-          set -o pipefail
           npx --yes wrangler@4.40.0 pages deploy . \
             --project-name="$PAGES_PROJECT" \
             --branch="$PRODUCTION_BRANCH" \
-            --commit-dirty=true 2>&1 | tee "$DEPLOY_LOG"
-          DEPLOY_SHORT=$(grep -oE 'https://[a-f0-9]{8}\.' "$DEPLOY_LOG" | head -1 | sed -E 's|https://([a-f0-9]{8})\..*|\1|')
-          echo "wrangler deployment short id: $DEPLOY_SHORT"
-          echo "deploy_short=$DEPLOY_SHORT" >> "$GITHUB_OUTPUT"
+            --commit-dirty=true
 
-      - name: Promote wrangler deployment to production
+      - name: Point chase-analytics.com DNS at master branch alias
         run: |
           python3 <<'PY'
-          import json, os, sys, urllib.request
+          import json, os, sys, urllib.parse, urllib.request
 
           token = os.environ["CLOUDFLARE_API_TOKEN"]
-          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
-          project = os.environ["PAGES_PROJECT"]
-          short = os.environ.get("DEPLOY_SHORT", "").strip()
+          domain = os.environ["LIVE_DOMAIN"]
+          target = os.environ["BRANCH_ALIAS"]
 
-          def api(method, path, body=None):
+          def api(method, url, body=None):
               data = None if body is None else json.dumps(body).encode()
               req = urllib.request.Request(
-                  f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/{project}{path}",
+                  url,
                   data=data,
                   method=method,
                   headers={
@@ -85,42 +80,73 @@ jobs:
                       "Content-Type": "application/json",
                   },
               )
-              with urllib.request.urlopen(req) as resp:
-                  return json.load(resp)
+              try:
+                  with urllib.request.urlopen(req) as resp:
+                      return json.load(resp)
+              except urllib.error.HTTPError as exc:
+                  print(exc.read().decode(), file=sys.stderr)
+                  raise
 
-          deployments = api("GET", "/deployments").get("result") or []
-          chosen = None
-          for dep in deployments:
-              dep_id = dep.get("id") or ""
-              aliases = dep.get("aliases") or []
-              url = dep.get("url") or ""
-              if short and (short in dep_id or short in url or any(short in a for a in aliases)):
-                  chosen = dep
-                  break
-          if not chosen and deployments:
-              chosen = deployments[0]
-          if not chosen:
-              print("No deployments found to promote", file=sys.stderr)
-              sys.exit(1)
+          zones = api("GET", f"https://api.cloudflare.com/client/v4/zones?name={urllib.parse.quote(domain)}")
+          zone_list = zones.get("result") or []
+          if not zone_list:
+              print(f"No Cloudflare zone found for {domain}; skipping DNS update")
+              sys.exit(0)
+          zone_id = zone_list[0]["id"]
+          print("zone:", zone_id)
 
-          dep_id = chosen["id"]
-          print("Promoting deployment:", dep_id, chosen.get("url"))
-          result = api("POST", f"/deployments/{dep_id}/rollback")
-          if not result.get("success"):
-              print(json.dumps(result, indent=2), file=sys.stderr)
-              sys.exit(1)
-          print("Production promotion OK:", (result.get("result") or {}).get("url"))
+          records = api(
+              "GET",
+              f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records?name={urllib.parse.quote(domain)}",
+          ).get("result") or []
+          if not records:
+              print(f"No DNS records found for {domain}; skipping DNS update")
+              sys.exit(0)
+
+          updated = 0
+          for rec in records:
+              name = rec.get("name") or ""
+              if name not in {domain, f"www.{domain}"}:
+                  continue
+              rec_type = rec.get("type")
+              rec_id = rec.get("id")
+              content = rec.get("content")
+              if rec_type == "CNAME" and content == target:
+                  print(f"already correct: {name} -> {target}")
+                  continue
+              if rec_type not in {"CNAME", "A", "AAAA"}:
+                  print(f"skip unsupported record type {rec_type} for {name}")
+                  continue
+              body = {
+                  "type": "CNAME",
+                  "name": name,
+                  "content": target,
+                  "proxied": True,
+                  "ttl": 1,
+              }
+              result = api(
+                  "PATCH",
+                  f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{rec_id}",
+                  body,
+              )
+              if not result.get("success"):
+                  print(json.dumps(result, indent=2), file=sys.stderr)
+                  sys.exit(1)
+              print(f"updated {name}: {rec_type} {content} -> CNAME {target}")
+              updated += 1
+
+          if updated == 0:
+              print("No DNS records needed changes (or zone not managed here)")
           PY
-        env:
-          DEPLOY_SHORT: ${{ steps.pages_deploy.outputs.deploy_short }}
 
       - name: Verify chase-analytics.com serves fresh assets
         run: |
-          URL="https://chase-analytics.com/dashboard/matchup_shared.js"
-          for i in 1 2 3 4 5 6; do
-            sleep 10
-            BYTES=$(curl -fsSL "$URL" | wc -c | tr -d ' ')
-            HAS=$(curl -fsSL "$URL" | grep -c hydrateMatchupPitcherStatsFromMlb || true)
+          URL="https://${LIVE_DOMAIN}/dashboard/matchup_shared.js"
+          for i in 1 2 3 4 5 6 8 10; do
+            sleep "$i"
+            BODY=$(curl -fsSL "$URL" || true)
+            BYTES=$(printf '%s' "$BODY" | wc -c | tr -d ' ')
+            HAS=$(printf '%s' "$BODY" | grep -c hydrateMatchupPitcherStatsFromMlb || true)
             echo "attempt $i: bytes=$BYTES hydrate=$HAS"
             if [ "$BYTES" -gt 130000 ] && [ "$HAS" -ge 1 ]; then
               echo "Live site updated."
