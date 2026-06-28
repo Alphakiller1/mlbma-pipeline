@@ -44,6 +44,7 @@ except Exception as exc:
 
 import pandas as pd
 from dotenv import load_dotenv
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 
 from core.config import CHROME_PATH, CHROME_VERSION, ENV_FILE
@@ -106,6 +107,14 @@ def safe_quit_driver(driver, timeout: float = DRIVER_QUIT_TIMEOUT) -> None:
             pass
 
 
+def _driver_alive(driver) -> bool:
+    try:
+        _ = driver.current_url
+        return True
+    except Exception:
+        return False
+
+
 def _login_error_text(driver) -> str:
     try:
         err = driver.find_element(By.ID, "login_error")
@@ -116,7 +125,11 @@ def _login_error_text(driver) -> str:
 
 def _try_login_once(driver) -> bool:
     print("Logging in to FanGraphs...", flush=True)
-    driver.get(LOGIN_URL)
+    try:
+        driver.get(LOGIN_URL)
+    except WebDriverException as exc:
+        print(f"  Login navigation failed: {exc}", flush=True)
+        return False
     wait = WebDriverWait(driver, LOGIN_FORM_TIMEOUT)
     try:
         user_el = wait.until(EC.presence_of_element_located((By.ID, "user_login")))
@@ -130,7 +143,18 @@ def _try_login_once(driver) -> bool:
     pass_el.clear()
     user_el.send_keys(EMAIL or "")
     pass_el.send_keys(PASSWORD or "")
-    submit.click()
+    if not (user_el.get_attribute("value") or "").strip():
+        driver.execute_script(
+            """
+            document.getElementById('user_login').value = arguments[0];
+            document.getElementById('user_pass').value = arguments[1];
+            document.getElementById('loginform').submit();
+            """,
+            EMAIL or "",
+            PASSWORD or "",
+        )
+    else:
+        submit.click()
 
     try:
         WebDriverWait(driver, LOGIN_NAV_TIMEOUT).until(
@@ -149,26 +173,34 @@ def _try_login_once(driver) -> bool:
     return "wp-admin" in url or "fangraphs.com" in url
 
 
-def login(driver, max_attempts: int = 3) -> bool:
+def login(driver, max_attempts: int = 3):
     if not EMAIL or not PASSWORD:
         print(
             "ERROR: FANGRAPHS_EMAIL / FANGRAPHS_PASSWORD not set in .env",
             flush=True,
         )
-        return False
+        return False, driver
 
+    drv = driver
     for attempt in range(1, max_attempts + 1):
         if attempt > 1:
             print(f"  Login retry {attempt}/{max_attempts}...", flush=True)
-        if _try_login_once(driver):
-            return True
-        try:
-            driver.delete_all_cookies()
-        except Exception:
-            pass
+        if not _driver_alive(drv):
+            safe_quit_driver(drv)
+            drv = get_driver()
+        if _try_login_once(drv):
+            return True, drv
+        if _driver_alive(drv):
+            try:
+                drv.delete_all_cookies()
+            except Exception:
+                pass
+        else:
+            safe_quit_driver(drv)
+            drv = get_driver()
         if attempt < max_attempts:
             time.sleep(5)
-    return False
+    return False, drv
 
 
 def get_export_csv(driver) -> pd.DataFrame | None:

@@ -170,7 +170,8 @@ def run():
     print(f"FanGraphs scrape (Chrome version_main={CHROME_VERSION})")
     driver = get_driver()
     try:
-        if not login(driver):
+        ok, driver = login(driver)
+        if not ok:
             print("Login failed")
             return
         print("Login successful!")

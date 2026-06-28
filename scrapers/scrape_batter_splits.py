@@ -140,7 +140,8 @@ def reconnect_driver(driver):
     print("  Chrome session lost -- reconnecting and re-logging in...")
     safe_quit_driver(driver)
     new_driver = get_driver()
-    if not login(new_driver):
+    ok, new_driver = login(new_driver)
+    if not ok:
         raise RuntimeError("FanGraphs re-login failed after session drop")
     print("  Reconnected successfully.")
     return new_driver
@@ -442,7 +443,8 @@ def run(
         driver = get_driver()
         reconnect_state: dict = {"count": 0}
         try:
-            if not login(driver):
+            ok, driver = login(driver)
+            if not ok:
                 print("FanGraphs login failed")
                 return
             print("FanGraphs login successful.")
@@ -470,7 +472,8 @@ def run(
     print(f"Batter splits scrape (Chrome version_main={CHROME_VERSION})", flush=True)
     driver = get_driver()
     try:
-        if not login(driver):
+        ok, driver = login(driver)
+        if not ok:
             print("FanGraphs login failed", flush=True)
             return
         print("FanGraphs login successful.", flush=True)
@@ -501,8 +504,9 @@ def run(
                 print(f"  Group cooldown {GROUP_COOLDOWN}s...")
                 time.sleep(GROUP_COOLDOWN)
 
-        reconnect_state = {"count": 0}
-        driver = fill_lineup_gaps(driver, registry, reconnect_state)
+        if not split_keys:
+            reconnect_state = {"count": 0}
+            driver = fill_lineup_gaps(driver, registry, reconnect_state)
     finally:
         safe_quit_driver(driver)
 

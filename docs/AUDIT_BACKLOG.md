@@ -2,7 +2,7 @@
 
 Prioritized from codebase review (Team Rankings + Research Lab + pipeline). Pair with **`docs/ECOSYSTEM.md`** when writing your target UX spec.
 
-**Last updated:** 2026-06-26
+**Last updated:** 2026-06-28
 
 ---
 
@@ -20,22 +20,22 @@ Prioritized from codebase review (Team Rankings + Research Lab + pipeline). Pair
 | `push_supabase` upsert | Done | Upsert path hardened in partial-run commits |
 | `docs/ECOSYSTEM.md` | Done | Ecosystem map added |
 
-### Batter splits refresh (2026-06-26)
+### Batter splits refresh (2026-06-28)
 
 | File | mtime | Rows | Notes |
 |------|-------|------|-------|
-| `batter_splits_overall.csv` | today | 346 | Fresh |
-| `batter_splits_recent.csv` (L30) | today | 346 | Fresh |
-| `batter_splits_l14.csv` | today | 342 | Fresh |
-| `batter_splits_rhp.csv` | today | 342 | Fresh |
-| `batter_splits_l7.csv` | 2026-05-27 | 305 | Populated but **stale mtime** — re-scrape when smart pipeline picks it up |
-| `batter_splits_home.csv` | 2026-05-27 | — | Legacy split; not refreshed today |
-| `batter_splits_away.csv` | 2026-05-27 | — | Legacy split; not refreshed today |
-| `batter_splits_lhp.csv` | 2026-05-27 | — | Legacy split; not refreshed today |
-| `batter_splits_vsRP.csv` | 2026-05-27 | — | Legacy split; not refreshed today |
-| `batter_splits_vsSP.csv` | 2026-05-27 | — | Legacy split; not refreshed today |
+| `batter_splits_overall.csv` | 2026-06-26 | 346 | Fresh |
+| `batter_splits_recent.csv` (L30) | 2026-06-26 | 346 | Fresh |
+| `batter_splits_l14.csv` | 2026-06-26 | 342 | Fresh |
+| `batter_splits_rhp.csv` | 2026-06-26 | 318 | Fresh |
+| `batter_splits_lhp.csv` | 2026-06-26 | 219 | Fresh |
+| `batter_splits_l7.csv` | 2026-06-26 | 344 | Refreshed |
+| `batter_splits_home.csv` | 2026-06-26 | 253 | Refreshed |
+| `batter_splits_away.csv` | 2026-06-28 | 240 | Refreshed |
+| `batter_splits_vsRP.csv` | 2026-06-28 | 50 | Refreshed |
+| `batter_splits_vsSP.csv` | 2026-06-28 | 53 | Refreshed |
 
-`verify_window_data` passes: L30/L14/L7 row counts differ (346 / 342 / 305) — no longer the empty-CSV `_blend_metric` copy bug. **Remaining:** refresh L7 + legacy home/away/LHP/vsRP/vsSP when full scrape cycle runs; then `push_team_profiles` and spot-check LAD L30 ≠ L14 ≠ L7 on Team Rankings.
+`verify_window_data` passes (346 / 342 / 344). `compute_batter_profile` + `compute_team_profile` re-run; `refresh_sharp_money --export-only` updated boards.
 
 ---
 
@@ -43,7 +43,7 @@ Prioritized from codebase review (Team Rankings + Research Lab + pipeline). Pair
 
 | # | Item | Current | Recommended |
 |---|------|---------|-------------|
-| 1 | **Rolling window freshness** | ~~Empty L7/L14/recent~~ → **partially fixed** — CSVs populated and distinct; L7 + legacy splits still May 27 mtimes | Finish smart scrape for `batter_splits_l7` + home/away/lhp/vsRP/vsSP; run `verify_window_data` → `push_team_profiles`; confirm hub windows diverge |
+| 1 | **Rolling window freshness** | **Resolved (2026-06-28)** — all `batter_splits_*.csv` refreshed; `verify_window_data` OK | Spot-check LAD L30/L14/L7 on Team Rankings after next slate; `push_team_profiles` when sheet push is due |
 | 2 | **PP-Gap semantics** | Sheet: `projOSI−OSI`; Hub/glossary: `ABQ−RCV` | Add both columns OR rename; one definition in UI |
 | 3 | **Team Rankings build-tag drift** | Shared assets aligned with OEM; page still mixes `20260605a` / `20260608b` / `20260611a` comment tags | Cosmetic — align BUILD / `__MLBMA_EXPECT_HUB_BUILD` / console version strings (see P3 #18) |
 

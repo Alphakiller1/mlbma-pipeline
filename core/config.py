@@ -534,7 +534,7 @@ def _resolve_chrome_path() -> str:
 
 
 CHROME_PATH = _resolve_chrome_path()
-CHROME_VERSION = 148  # Chrome major version for undetected-chromedriver version_main
+CHROME_VERSION = 149  # Chrome major version for undetected-chromedriver version_main
 
 PAGE_DELAY = 20
 TAB_DELAY = 10
