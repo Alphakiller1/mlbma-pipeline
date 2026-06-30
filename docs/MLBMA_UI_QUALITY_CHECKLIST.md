@@ -14,6 +14,8 @@ verify it."
 - [ ] No hard-coded colors. Every color comes from a token in `dashboard/mlbma_design_system.css`.
 - [ ] No new `:root` token defined outside `mlbma_design_system.css`. If you need a value, add it
       there once and consume it — never redefine `--bg`, `--text`, `--v-bg`, etc. in a second file.
+      **Machine-enforced:** `scripts/check_tokens.py` runs in CI (`pages.yml` → `token-guard`) and
+      fails the build if any other CSS file redefines a canonical token. Run it locally before you push.
 - [ ] Used the correct **semantic family** (§5.2) — surface/border/text/brand — not a raw hex or a
       neighbor's per-page token.
 - [ ] Violet accent (`--ca-brand` #9A6BFF) used per the §5.4 violet rule (accent, not flood).

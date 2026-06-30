@@ -15,6 +15,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  token-guard:
+    # Fast, no-browser guard: mlbma_design_system.css must stay the single source
+    # of every global design token (design contract §5 / UI checklist §1).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Enforce single token source
+        run: python scripts/check_tokens.py
+
   runtime-smoke:
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +46,7 @@ jobs:
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
 
   deploy:
-    needs: runtime-smoke
+    needs: [token-guard, runtime-smoke]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
