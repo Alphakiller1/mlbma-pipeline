@@ -21,6 +21,25 @@ from typing import Any, Iterable, Sequence
 _SUSPECT_HEADER_TOKENS = ("<!doctype", "<html", "error", "google.visualization")
 
 
+def _is_blank(value: Any) -> bool:
+    if value is None:
+        return True
+    try:
+        if value != value:  # NaN without importing pandas.
+            return True
+    except Exception:
+        pass
+    return not str(value).strip()
+
+
+def _header_problem(name: str, columns: Iterable[Any]) -> str | None:
+    keys = {str(column or "").strip() for column in columns}
+    lowered = " ".join(keys).lower()
+    if any(token in lowered for token in _SUSPECT_HEADER_TOKENS):
+        return f"{name}: header looks like an error/HTML page, not data ({sorted(keys)[:4]})"
+    return None
+
+
 def check_rows(
     name: str,
     rows: Sequence[dict] | None,
@@ -38,14 +57,15 @@ def check_rows(
     if n == 0:
         return problems  # nothing else to check on an empty set
 
-    first = rows[0]
-    if not isinstance(first, dict):
-        return [f"{name}: rows are not dict objects (got {type(first).__name__})"]
+    invalid = next((row for row in rows if not isinstance(row, dict)), None)
+    if invalid is not None:
+        return [f"{name}: rows are not dict objects (got {type(invalid).__name__})"]
 
-    keys = {(k or "").strip() for k in first.keys()}
-    lowered = " ".join(keys).lower()
-    if any(tok in lowered for tok in _SUSPECT_HEADER_TOKENS):
-        problems.append(f"{name}: header looks like an error/HTML page, not data ({sorted(keys)[:4]})")
+    first = rows[0]
+    keys = {str(k or "").strip() for k in first.keys()}
+    header_problem = _header_problem(name, keys)
+    if header_problem:
+        problems.append(header_problem)
 
     if required_keys:
         missing = [c for c in required_keys if c not in keys]
@@ -54,7 +74,7 @@ def check_rows(
 
     # All-blank dataset: rows exist but every value is empty -> a failed scrape shaped
     # like a real table. Treat as corrupt.
-    if not any(any(str(v).strip() for v in r.values()) for r in rows):
+    if not any(any(not _is_blank(value) for value in row.values()) for row in rows):
         problems.append(f"{name}: every cell is blank ({n} empty rows)")
 
     return problems
@@ -82,11 +102,33 @@ def check_dataframe(
     if len(columns) == 0:
         problems.append(f"{name}: no columns")
 
+    header_problem = _header_problem(name, columns)
+    if header_problem:
+        problems.append(header_problem)
+
     if required_cols:
         have = {str(c).strip() for c in columns}
         missing = [c for c in required_cols if c not in have]
         if missing:
             problems.append(f"{name}: missing required column(s): {missing}")
+
+    if n:
+        try:
+            records = df.to_dict(orient="records")
+        except Exception:
+            records = None
+        if isinstance(records, list) and records:
+            invalid = next((row for row in records if not isinstance(row, dict)), None)
+            if invalid is not None:
+                problems.append(
+                    f"{name}: dataframe records are not dict objects "
+                    f"(got {type(invalid).__name__})"
+                )
+            elif not any(
+                any(not _is_blank(value) for value in row.values())
+                for row in records
+            ):
+                problems.append(f"{name}: every cell is blank ({n} empty rows)")
 
     return problems
 

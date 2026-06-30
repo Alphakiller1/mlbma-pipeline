@@ -3,6 +3,8 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -27,6 +29,28 @@ jobs:
       - name: Enforce single token source
         run: python scripts/check_tokens.py
 
+  foundation-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pipeline dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run validate-before-push unit tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Compile changed pipeline modules
+        run: |
+          python -m py_compile \
+            outputs/notify_mlb_model.py \
+            outputs/push_sheets.py \
+            outputs/push_supabase.py \
+            outputs/validate.py \
+            pipeline/main.py \
+            scrapers/scrape_matchups.py \
+            scrapers/scrape_player_registry.py
+
   runtime-smoke:
     runs-on: ubuntu-latest
     steps:
@@ -44,16 +68,15 @@ jobs:
           python -m http.server 8765 >/tmp/mlbma-http.log 2>&1 &
           sleep 2
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
-      - name: 375px mobile overflow audit (informational)
-        # Report mode: surfaces horizontal-overflow / tap-target findings at 375px on
-        # every run without blocking deploys. Flip to --strict once pages are clean.
+      - name: Enforce 375px mobile contract
         run: |
           python -m http.server 8766 >/tmp/mlbma-http-mobile.log 2>&1 &
           sleep 2
-          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000
+          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --strict
 
   deploy:
-    needs: [token-guard, runtime-smoke]
+    if: github.event_name != 'pull_request'
+    needs: [token-guard, foundation-tests, runtime-smoke]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

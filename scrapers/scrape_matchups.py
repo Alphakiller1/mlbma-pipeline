@@ -347,29 +347,26 @@ def build_matchups():
 def push_to_sheets(df):
     if df.empty:
         print("No data to push")
-        return
+        return False
     if not check_google_credentials():
         print("  Skipping Today_Matchups push (credentials unavailable).")
-        return
+        return False
 
     from core.config import CREDS_FILE, SCOPES
     from google.oauth2.service_account import Credentials
+    from outputs.push_sheets import push_df
 
     creds = Credentials.from_service_account_file(str(CREDS_FILE), scopes=SCOPES)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SHEET_ID)
 
     tab = SHEET_TABS["today_matchups"]
-    try:
-        ws = sheet.worksheet(tab)
-        ws.clear()
-    except gspread.exceptions.WorksheetNotFound:
-        ws = sheet.add_worksheet(title=tab, rows=50, cols=25)
-
-    df = df.fillna("--")
-    data = [df.columns.tolist()] + df.values.tolist()
-    ws.update(data)
-    print(f"  Pushed {tab}: {len(df)} games")
+    return push_df(
+        sheet,
+        tab,
+        df,
+        required_cols=["Slate_Date", "Away", "Home", "Away_SP", "Home_SP"],
+    )
 
 def clear_matchups_sheet():
     if not check_google_credentials():
@@ -402,22 +399,33 @@ def push_to_hub(df):
     guardrail in pipeline.main is what makes a truly stale slate loud).
     """
     if df.empty:
-        return
+        return False
     try:
         from outputs.push_supabase import upsert_dataset
+        from outputs.validate import check_rows, reject
     except Exception as exc:
         print(f"  WARNING: hub slate push unavailable ({exc}); slate will rely on Sheets")
-        return
+        return False
     rows = [
         {str(k): ("" if v is None else str(v)) for k, v in record.items()}
         for record in df.fillna("--").to_dict("records")
     ]
     tab = SHEET_TABS["today_matchups"]
+    problems = check_rows(
+        tab,
+        rows,
+        required_keys=["Slate_Date", "Away", "Home", "Away_SP", "Home_SP"],
+    )
+    if problems:
+        reject(f"hub_dataset[{tab}]", problems)
+        return False
     try:
         upsert_dataset(tab, rows)
         print(f"  Pushed hub_dataset[{tab}]: {len(rows)} games (slate decoupled from Sheets)")
+        return True
     except Exception as exc:
         print(f"  WARNING: hub slate push failed ({exc}); slate will rely on Sheets")
+        return False
 
 
 def run(touch_sync: bool = True):

@@ -138,17 +138,22 @@ def _build_team_rankings_snapshot() -> None:
         print(f"  WARNING: team rankings snapshot build failed: {exc}")
 
 
-def run() -> None:
+def run() -> bool:
     if not SUPABASE_URL or not SUPABASE_SECRET_KEY:
         print(
             "WARNING: Skipping Supabase mirror — set SUPABASE_URL and "
             "SUPABASE_SECRET_KEY in .env (dashboard will use Google Sheets)."
         )
-        return
+        return False
     print("Pushing dashboard datasets to Supabase (hub_dataset)...")
     counts = push_datasets()
     _build_team_rankings_snapshot()
     print("Done:", json.dumps(counts))
+    missing = [tab for tab in DEFAULT_TABS if tab not in counts]
+    if missing:
+        print(f"WARNING: Supabase mirror incomplete; rejected/missing tabs: {missing}")
+        return False
+    return True
 
 
 if __name__ == "__main__":

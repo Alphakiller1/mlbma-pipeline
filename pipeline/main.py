@@ -439,7 +439,8 @@ def run_team_profiles():
     def _supabase_mirror():
         from outputs.push_supabase import run as run_push_supabase
 
-        run_push_supabase()
+        if not run_push_supabase():
+            raise RuntimeError("Supabase mirror skipped or incomplete")
 
     return _run_step(
         "Step 20: mirror dashboard datasets to Supabase (hub_dataset)",
@@ -454,7 +455,8 @@ def run_model_deployment_sync():
     def _notify():
         from outputs.notify_mlb_model import run as run_notify_model
 
-        run_notify_model()
+        if not run_notify_model():
+            raise RuntimeError("MLB Model deployment dispatch skipped")
 
     _run_step(
         "Step 21: dispatch synchronized MLB Model deployment",
