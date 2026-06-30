@@ -40,6 +40,8 @@ verify it."
 
 ## 5. Mobile is first-class (Contract §8.8)
 - [ ] Verified at **375px**: no horizontal overflow, readable type, tap targets ≥ 44px.
+      Run `scripts/mobile_overflow_audit.py` (the same audit `pages.yml` runs informationally)
+      against the page you changed — overflow must not increase, ideally hit 0.
 - [ ] Dense tables/grids degrade correctly (via `mobile_cardify.js`) — not just shrunk-to-unreadable.
 
 ## 6. Website surfaces (Contract §8, only if you touched the public site)

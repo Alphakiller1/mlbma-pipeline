@@ -44,6 +44,13 @@ jobs:
           python -m http.server 8765 >/tmp/mlbma-http.log 2>&1 &
           sleep 2
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
+      - name: 375px mobile overflow audit (informational)
+        # Report mode: surfaces horizontal-overflow / tap-target findings at 375px on
+        # every run without blocking deploys. Flip to --strict once pages are clean.
+        run: |
+          python -m http.server 8766 >/tmp/mlbma-http-mobile.log 2>&1 &
+          sleep 2
+          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000
 
   deploy:
     needs: [token-guard, runtime-smoke]
