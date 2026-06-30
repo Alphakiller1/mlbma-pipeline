@@ -39,8 +39,17 @@ product. A change that ships stale/garbage data or a broken layout is worse than
   tokens — never hard-code colors and never redefine a token in another file.** A few duplicate
   definitions exist (`--text`, `--bg`, `--v-bg`); the direction is to *consolidate toward the
   design system*, not add more.
-- The visual + structural contract is `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` — the working
-  source of truth for layout, section order, metric coloring, value chips, empty/loading states.
+- **`design/MLBMA_CURSOR_DESIGN_CONTRACT.md` is the detailed visual law — and it is deep.** It
+  already specifies more than a generic design system does; defer to it, don't reinvent it:
+  - §4 Visual Direction (glossy-infographic target, icon standard, product feeling)
+  - §5 Design Tokens (token policy, the required semantic **token families**, color + violet rules)
+  - §6 Typography (display, UI/number type, **copy tone**)
+  - §7 Dashboard **Component Contract** (layout, section containers, metric chips, metric rows,
+    tabs, insight rail / analyst take, empty states, loading states)
+  - §8 **Website Contract** (goal, first viewport, dashboard↔site relationship, sections, copy,
+    cards, nav, mobile)
+  Your job is to *fulfill* this contract consistently across the mature codebase — the gate that
+  checks you did is `docs/MLBMA_UI_QUALITY_CHECKLIST.md`.
 - **Metric coloring / grading chips** (`c-elite … c-poor` percentile chips) are shared brand
   lineage with SCL — keep them consistent.
 - **Mobile.** `mobile_cardify.js` + `platform_viewport.js` adapt dense desktop layouts to
