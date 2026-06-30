@@ -25,14 +25,17 @@ def _parse_num(text: str) -> Optional[float]:
     return float(m.group(0)) if m else None
 
 
-def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
+def run_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> List[CheckResult]:
     results: List[CheckResult] = []
 
     def check(name: str, ok: bool, note: str = "") -> None:
         results.append(CheckResult(name=name, ok=bool(ok), note=note))
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        launch_kwargs = {"headless": True}
+        if channel:
+            launch_kwargs["channel"] = channel
+        browser = p.chromium.launch(**launch_kwargs)
         page = browser.new_page()
         console_errors: List[str] = []
         page_errors: List[str] = []
@@ -193,9 +196,14 @@ def main() -> int:
         help="Full URL to the team_rankings page.",
     )
     parser.add_argument("--timeout-ms", type=int, default=45000)
+    parser.add_argument(
+        "--channel",
+        default="",
+        help='browser channel, e.g. "chrome" for a locally installed Google Chrome',
+    )
     args = parser.parse_args()
 
-    results = run_diagnostic(args.base_url, args.timeout_ms)
+    results = run_diagnostic(args.base_url, args.timeout_ms, args.channel)
     failures = [r for r in results if not r.ok]
     print("RUNTIME_DIAGNOSTIC")
     for r in results:

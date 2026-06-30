@@ -170,6 +170,63 @@ def run_game_results():
     )
 
 
+def assert_slate_fresh():
+    """Hard guardrail against the silent stale-slate failure.
+
+    The dashboard reads Today_Matchups from the Supabase hub first, so a run is only truly
+    healthy if the hub slate is *today's*. A stale slate previously masqueraded as a
+    successful run: analytics refreshed via Supabase while the Sheets-gated slate write
+    silently skipped, leaving chase-analytics on yesterday's pitchers. Verify the hub slate
+    date and fail loudly. Returns True (fresh), False (stale -> exit non-zero), or None
+    (could not verify; non-fatal).
+    """
+    from core.slate_date import eastern_slate_date_iso
+
+    today = eastern_slate_date_iso()
+    try:
+        import json
+        import urllib.request
+
+        from outputs.push_supabase import SUPABASE_SECRET_KEY, SUPABASE_URL
+
+        if not SUPABASE_URL or not SUPABASE_SECRET_KEY:
+            print("  [WARNING] slate guardrail skipped — Supabase env not set")
+            return None
+        url = (
+            f"{SUPABASE_URL}/rest/v1/hub_dataset"
+            "?name=eq.Today_Matchups&select=rows,updated_at"
+        )
+        req = urllib.request.Request(
+            url,
+            headers={
+                "apikey": SUPABASE_SECRET_KEY,
+                "Authorization": f"Bearer {SUPABASE_SECRET_KEY}",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode())
+        rows = (data[0].get("rows") if data else None) or []
+        slate_dates = {
+            str(r.get("Slate_Date", ""))[:10] for r in rows if r.get("Slate_Date")
+        }
+    except Exception as exc:
+        print(f"  [WARNING] slate guardrail could not verify hub slate: {exc}")
+        return None
+
+    if rows and today in slate_dates:
+        print(f"  [OK] slate guardrail: hub Today_Matchups is {today} ({len(rows)} games)")
+        return True
+    bar = "!" * 68
+    print("\n" + bar)
+    print(f"  STALE SLATE GUARDRAIL FAILED — expected {today}")
+    print(f"  hub Today_Matchups slate date(s): {sorted(slate_dates) or 'EMPTY'} ({len(rows)} games)")
+    print("  chase-analytics will show the WRONG day's matchups.")
+    print("  Almost always the Google Sheets service-account write or the API schedule")
+    print("  fetch failing in scrapers.scrape_matchups. Re-run: python3 -m scrapers.scrape_matchups")
+    print(bar + "\n")
+    return False
+
+
 def run():
     """Run the full MLBMA pipeline (22 logical steps)."""
     os.environ.setdefault("PYTHONUNBUFFERED", "1")
@@ -204,13 +261,21 @@ def run():
     run_batter_gamelog()
     run_batter_profiles()
     run_batter_prop_hitrates()
-    run_team_profiles()
+    if run_team_profiles():
+        run_model_deployment_sync()
+    else:
+        print("WARNING: MLB Model deployment not dispatched because hub mirror failed")
     run_instagram_autopost()
+
+    slate_ok = assert_slate_fresh()
 
     total = time.perf_counter() - pipeline_t0
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Total elapsed: {_fmt_elapsed(total)}")
     print("All metrics pushed to Google Sheets")
+    if slate_ok is False:
+        print("EXIT 1: stale slate — see the guardrail banner above.")
+        sys.exit(1)
 
 
 def run_sp_gamelog():
@@ -374,12 +439,29 @@ def run_team_profiles():
     def _supabase_mirror():
         from outputs.push_supabase import run as run_push_supabase
 
-        run_push_supabase()
+        if not run_push_supabase():
+            raise RuntimeError("Supabase mirror skipped or incomplete")
 
-    _run_step(
+    return _run_step(
         "Step 20: mirror dashboard datasets to Supabase (hub_dataset)",
         "outputs.push_supabase",
         _supabase_mirror,
+    )
+
+
+def run_model_deployment_sync():
+    """Notify the unified MLB Model only after sheets and the hub mirror are current."""
+
+    def _notify():
+        from outputs.notify_mlb_model import run as run_notify_model
+
+        if not run_notify_model():
+            raise RuntimeError("MLB Model deployment dispatch skipped")
+
+    _run_step(
+        "Step 21: dispatch synchronized MLB Model deployment",
+        "outputs.notify_mlb_model",
+        _notify,
     )
 
 

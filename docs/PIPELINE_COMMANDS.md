@@ -150,6 +150,11 @@ Replace `C:\Users\chase\crawl_env\Scripts\python.exe` with `$PY` if you set the 
 PALS is pushed inside `scrapers.scrape_pals` → tab `PALS`.  
 Signals are pushed inside `core.compute_signals` → `Signals_Today`, `Signals_Convergence`.  
 Matchups/lineups are pushed from their scrapers → `Today_Matchups`, `Today_Lineups`.
+`scrapers.scrape_matchups` pushes the freshly built `Today_Matchups` slate directly into
+`hub_dataset`; the end-of-run `outputs.push_supabase` mirror publishes `Today_Lineups`,
+`Last_Updated`, and the configured research datasets without re-reading and overwriting the
+direct slate. The MLB Model Pages build is dispatched only after that hub mirror completes.
+Authenticate `gh` or configure `MLB_MODEL_GITHUB_TOKEN` as shown in `.env.example`.
 
 ---
 

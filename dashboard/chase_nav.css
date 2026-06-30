@@ -269,9 +269,9 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  width: 36px;
-  height: 36px;
-  padding: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -338,8 +338,8 @@
 }
 
 .chase-mobile-close {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -368,7 +368,9 @@
 }
 
 .chase-mobile-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   padding: 10px 12px;
   border-radius: 8px;
   font-size: 15px;

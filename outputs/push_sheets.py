@@ -14,6 +14,7 @@ from core.config import (
     check_google_credentials,
 )
 from core.slate_date import eastern_slate_date_iso
+from outputs.validate import check_dataframe, reject
 
 
 def get_client():
@@ -51,7 +52,14 @@ def touch_last_updated(source: str = "MLBMA pipeline") -> None:
     print("  Touched Last_Updated timestamp")
 
 
-def push_df(sheet, tab_name, df):
+def push_df(sheet, tab_name, df, *, min_rows: int = 1, required_cols=None) -> bool:
+    # Validate BEFORE the destructive clear(): a bad/empty scrape must never wipe a
+    # healthy tab. Reject + keep the existing data instead. Returns False when skipped.
+    problems = check_dataframe(tab_name, df, min_rows=min_rows, required_cols=required_cols)
+    if problems:
+        reject(tab_name, problems)
+        return False
+
     nrows = max(int(len(df)) + 10, 50)
     ncols = max(int(len(df.columns)) + 2, 20)
     try:
@@ -65,6 +73,7 @@ def push_df(sheet, tab_name, df):
     data = [df.columns.tolist()] + df.values.tolist()
     worksheet.update(data)
     print(f"  Pushed {tab_name}: {len(df)} rows")
+    return True
 
 def verify_sheet_tabs(sheet) -> None:
     """Pre-flight: warn if expected SHEET_TABS worksheets are missing."""

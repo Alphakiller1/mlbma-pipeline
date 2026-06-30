@@ -33,6 +33,9 @@ REGISTRY_COLUMNS = [
     "throws",
     "jersey_number",
     "status",
+    "status_code",
+    "status_description",
+    "injury_note",
 ]
 
 FIELD_POSITION_TYPES = {
@@ -106,6 +109,7 @@ def parse_roster_entries(team_name: str, team_abbr: str, roster: list, status: s
         throws = (pitch_hand.get("code") or "R").upper()[:1]
         if throws not in ("L", "R"):
             throws = "R"
+        roster_status = entry.get("status", {}) or {}
 
         rows.append(
             {
@@ -119,6 +123,9 @@ def parse_roster_entries(team_name: str, team_abbr: str, roster: list, status: s
                 "throws": throws,
                 "jersey_number": entry.get("jerseyNumber", ""),
                 "status": status,
+                "status_code": roster_status.get("code", ""),
+                "status_description": roster_status.get("description", ""),
+                "injury_note": entry.get("note", ""),
             }
         )
     return rows
@@ -127,7 +134,11 @@ def parse_roster_entries(team_name: str, team_abbr: str, roster: list, status: s
 def fetch_team_roster(team_id: int, season: int, roster_type: str) -> list:
     r = requests.get(
         MLB_ROSTER_URL.format(team_id=team_id),
-        params={"rosterType": roster_type, "season": str(season)},
+        params={
+            "rosterType": roster_type,
+            "season": str(season),
+            "hydrate": "person",
+        },
         headers=HEADERS,
         timeout=30,
     )
@@ -146,8 +157,14 @@ def build_registry(season: int) -> pd.DataFrame:
 
     for team_id, abbr in sorted(team_ids.items(), key=lambda x: x[1]):
         team_name = id_to_name.get(abbr, abbr)
-        for roster_type, status in (("active", "active"), ("injured", "IL")):
-            roster = fetch_team_roster(team_id, season, roster_type)
+        active = fetch_team_roster(team_id, season, "active")
+        injured = [
+            entry
+            for entry in fetch_team_roster(team_id, season, "40Man")
+            if str((entry.get("status") or {}).get("code") or "").startswith("D")
+            or str((entry.get("status") or {}).get("code") or "") == "ILF"
+        ]
+        for roster, status in ((active, "active"), (injured, "IL")):
             for row in parse_roster_entries(team_name, abbr, roster, status):
                 if row["player_id"] in seen_ids:
                     continue
