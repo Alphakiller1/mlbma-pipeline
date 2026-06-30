@@ -24,6 +24,7 @@ import urllib.request
 from pathlib import Path
 
 from core.config import SHEET_ID, SHEET_TABS, SUPABASE_DASHBOARD
+from outputs.validate import check_rows, reject
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -106,11 +107,20 @@ def upsert_dataset(name: str, rows: list[dict]) -> None:
 
 
 def push_datasets(tabs: list[str] | None = None) -> dict[str, int]:
-    """Backfill / refresh the given tabs into hub_dataset. Returns {tab: row_count}."""
+    """Backfill / refresh the given tabs into hub_dataset. Returns {tab: row_count}.
+
+    Each fetch is validated before the upsert: an empty or error-page gviz response
+    must not overwrite a healthy hub_dataset row (the failure mode that once froze
+    hub_dataset). Rejected tabs are skipped and logged, never written.
+    """
     tabs = tabs or DEFAULT_TABS
     counts: dict[str, int] = {}
     for tab in tabs:
         rows = fetch_csv_rows(tab)
+        problems = check_rows(tab, rows, min_rows=1)
+        if problems:
+            reject(f"hub_dataset[{tab}]", problems)
+            continue
         upsert_dataset(tab, rows)
         counts[tab] = len(rows)
         print(f"  Pushed hub_dataset[{tab}]: {len(rows)} rows")

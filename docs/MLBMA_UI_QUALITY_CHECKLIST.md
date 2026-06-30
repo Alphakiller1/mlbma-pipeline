@@ -59,6 +59,9 @@ verify it."
 ## 8. Data-driven views (when the change depends on pipeline data)
 - [ ] The columns/shape you read still match what `outputs/push_*.py` writes (the table is a
       contract). If you needed a new field, the pipeline push was updated **and validated** first.
+- [ ] Any destructive write (Sheets `clear()`+`update`, Supabase upsert) is gated by
+      `outputs/validate.py` (`check_dataframe` / `check_rows`) so an empty or error-page scrape
+      is **rejected**, never overwriting a healthy table.
 
 ---
 
