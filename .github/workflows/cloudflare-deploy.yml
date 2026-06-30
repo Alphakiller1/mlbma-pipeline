@@ -57,7 +57,7 @@ jobs:
             --project-name="$PAGES_PROJECT" \
             --branch="$PRODUCTION_BRANCH" \
             --commit-hash="${{ github.sha }}" \
-            --commit-message="${{ github.event.head_commit.message }}" \
+            --commit-message="$(git -C .. log -1 --pretty=%s)" \
             --commit-dirty=true
 
       - name: Trigger production deployment from master
