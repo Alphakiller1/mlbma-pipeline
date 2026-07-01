@@ -179,7 +179,7 @@ body.batter-profile-page .pp-hero-search {
   position: relative;
   z-index: 2;
   width: 100%;
-  padding: 14px 18px 12px;
+  padding: 10px 14px;
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   background: transparent;
@@ -196,7 +196,7 @@ body.batter-profile-page .pp-hero-search.profile-context-bar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow: none;
   background: transparent;
-  padding: 14px 18px 12px;
+  padding: 10px 14px;
 }
 
 body.batter-profile-page .pp-hero-search .tp-team-picker--inline.tp-batter-picker {
@@ -293,7 +293,7 @@ body.batter-profile-page .pp-hero-banner-shell .tp-team-banner {
 body.batter-profile-page .tp-team-banner.tp-pitcher-banner,
 body.batter-profile-page.team-profile-page .tp-batter-banner.tp-team-banner {
   width: 100%;
-  padding: var(--tp-section-pad-y, 14px) var(--tp-section-pad-x, 16px) var(--tp-section-pad-bottom, 14px);
+  padding: 12px 14px;
   margin: 0;
   border: none;
   border-radius: 0;
@@ -306,10 +306,10 @@ body.batter-profile-page.team-profile-page .tp-batter-banner.tp-team-banner {
 body.batter-profile-page .tp-pitcher-banner__inner,
 body.batter-profile-page.team-profile-page .tp-team-banner__inner.tp-pitcher-banner__inner {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  flex-wrap: nowrap;
+  align-items: center;
   justify-content: flex-start;
-  gap: 16px 20px;
+  gap: 12px 16px;
   min-width: 0;
   width: 100%;
   box-sizing: border-box;
@@ -326,9 +326,9 @@ body.batter-profile-page .tp-pitcher-banner__photo {
   flex: 0 0 auto;
   align-self: flex-start;
   line-height: 0;
-  width: 112px;
-  min-width: 112px;
-  max-width: 112px;
+  width: 88px;
+  min-width: 88px;
+  max-width: 88px;
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -337,10 +337,10 @@ body.batter-profile-page .tp-pitcher-banner__photo {
 body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar,
 body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar--profile {
   display: block;
-  width: 112px;
-  height: 112px;
-  min-width: 112px;
-  min-height: 112px;
+  width: 88px;
+  height: 88px;
+  min-width: 88px;
+  min-height: 88px;
   border-radius: 50%;
   overflow: hidden;
   border: 1.5px solid color-mix(in srgb, var(--tp-accent, #7C4DFF) 55%, transparent);
@@ -375,6 +375,12 @@ body.batter-profile-page .tp-team-banner__logo {
   flex-shrink: 0;
 }
 
+body.batter-profile-page .tp-team-banner__logo-img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: contain;
+}
+
 body.batter-profile-page .tp-pitcher-banner__identity {
   display: flex;
   flex-wrap: wrap;
@@ -401,7 +407,7 @@ body.batter-profile-page .tp-team-banner__eyebrow {
 
 body.batter-profile-page .tp-pitcher-banner .tp-team-banner__title {
   font-family: var(--font-display, "Roboto Condensed", sans-serif);
-  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-size: clamp(1.55rem, 2.8vw, 2.15rem);
   font-weight: 800;
   margin: 0;
   color: #FFFFFF !important;
@@ -424,11 +430,12 @@ body.batter-profile-page .tp-pitcher-banner__tonight {
 }
 
 body.batter-profile-page .tp-pitcher-banner .tp-team-banner__stats--hero {
-  flex: 1 1 100%;
-  width: 100%;
-  margin-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  padding-top: var(--tp-header-gap, 12px);
+  flex: 0 1 520px;
+  width: auto;
+  margin: 0 0 0 auto;
+  border-top: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0 0 0 16px;
   grid-template-columns: none;
 }
 
@@ -446,8 +453,8 @@ body.batter-profile-page .tp-batter-banner .tp-team-banner__watermark {
 body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 14px;
-  width: 100%;
+  gap: 8px;
+  width: auto;
   min-width: 0;
   box-sizing: border-box;
 }
@@ -471,7 +478,7 @@ body.batter-profile-page .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-sta
   justify-content: center;
   gap: 8px;
   min-width: 0;
-  padding: 6px 10px;
+  padding: 6px 9px;
   border: 1px solid rgba(196, 176, 255, 0.16);
   border-radius: 9px;
   background:
@@ -523,7 +530,81 @@ body.batter-profile-page .pp-hero-stats .tp-hero-stat__value .tp-hero-stat__num-
   color: var(--text-3, #9CA3AF);
 }
 
+@media (max-width: 960px) {
+  body.batter-profile-page .tp-pitcher-banner__inner,
+  body.batter-profile-page.team-profile-page .tp-team-banner__inner.tp-pitcher-banner__inner {
+    flex-wrap: wrap;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner .tp-team-banner__stats--hero {
+    flex: 1 1 100%;
+    width: 100%;
+    margin: 0;
+    padding: 10px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: 0;
+  }
+}
+
 @media (max-width: 767px) {
+  body.batter-profile-page .tp-pitcher-banner__inner,
+  body.batter-profile-page.team-profile-page .tp-team-banner__inner.tp-pitcher-banner__inner {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner__photo {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner__identity {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    width: auto;
+    min-height: 0;
+    text-align: left;
+  }
+
+  body.batter-profile-page .tp-team-banner__logo {
+    width: 44px;
+    height: 44px;
+    min-height: 0;
+  }
+
+  body.batter-profile-page .tp-team-banner__copy {
+    align-items: flex-start;
+    min-height: 0;
+    height: auto;
+    text-align: left;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner .tp-team-banner__title {
+    font-size: 1.55rem;
+    line-height: 1.05;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner .tp-team-banner__stats--hero,
+  body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 7px;
+  }
+
+  body.batter-profile-page .pp-hero-stats.tp-team-banner__stats--hero .tp-hero-stat,
+  body.batter-profile-page .pp-hero-stats .tp-hero-stat--solo {
+    width: 100%;
+  }
+
   body.batter-profile-page .pp-hero-stats.tp-hero-stat-row {
     gap: 8px;
   }
@@ -534,6 +615,25 @@ body.batter-profile-page .pp-hero-stats .tp-hero-stat__value .tp-hero-stat__num-
     width: auto;
     max-width: none;
     min-width: 0;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner__photo {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+  }
+
+  body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar,
+  body.batter-profile-page .tp-pitcher-banner__photo .ca-pitcher-avatar--profile {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+  }
+
+  body.batter-profile-page .tp-team-banner__logo-img {
+    width: 44px !important;
+    height: 44px !important;
   }
 }
 
@@ -2488,7 +2588,7 @@ body.batter-profile-page .bp-prop-section .bp-driver-bars {
 
   body.batter-profile-page .tp-pitcher-banner__identity {
     align-items: center;
-    text-align: center;
+    text-align: left;
   }
 
   body.batter-profile-page .tp-pitcher-banner .tp-team-banner__stats--hero {

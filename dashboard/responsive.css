@@ -360,6 +360,110 @@
    scroll. Desktop DOM is untouched — these rules only apply at mobile width.
    ────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
+  body.team-rankings-page .container {
+    padding: 18px 12px 56px;
+  }
+
+  body.team-rankings-page #teamRankingsPageHeader .ca-page-header {
+    margin-bottom: 18px;
+    padding-top: 4px;
+  }
+
+  body.team-rankings-page #teamRankingsPageHeader .ca-page-title {
+    font-size: 30px;
+    line-height: 1.05;
+  }
+
+  body.team-rankings-page .lv-bar {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  body.team-rankings-page .lv-family-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  body.team-rankings-page .lv-family {
+    min-height: 76px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  body.team-rankings-page .lv-family-top {
+    display: block;
+    min-height: 0;
+  }
+
+  body.team-rankings-page .lv-family-name {
+    display: block;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  body.team-rankings-page .lv-family-n,
+  body.team-rankings-page .lv-family-desc,
+  body.team-rankings-page .lv-family-chips {
+    display: none;
+  }
+
+  body.team-rankings-page .lv-lens {
+    display: grid;
+    grid-template-columns: none !important;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(286px, 88%);
+    gap: 8px;
+    padding: 8px;
+    border-radius: 10px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  body.team-rankings-page .lv-lens::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.team-rankings-page .lv-cat {
+    padding: 12px;
+    border-radius: 8px;
+    scroll-snap-align: start;
+  }
+
+  body.team-rankings-page .lv-cat-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  body.team-rankings-page .lv-cat-k {
+    min-width: 0;
+  }
+
+  body.team-rankings-page .lv-pills {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    width: 100%;
+    gap: 7px;
+  }
+
+  body.team-rankings-page .lv-pill {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.team-rankings-page .lv-query {
+    margin-top: 14px;
+    font-size: 12px;
+  }
+
+  body.team-rankings-page .lv-table-wrap {
+    overflow: visible;
+  }
+
   .lv-table.ca-cardified,
   .thm-table.ca-cardified,
   table.ca-cardify.ca-cardified {
@@ -396,13 +500,13 @@
     padding: 12px 13px 13px;
     margin: 0 0 10px;
     border: 1px solid var(--border, #262A38);
-    border-radius: 13px;
-    background: #10131F;
+    border-radius: 10px;
+    background: var(--bg-2, #10131F);
   }
 
   /* strip desktop zebra / hover / sticky treatments inside a card */
   .lv-table.ca-cardified tbody tr:nth-child(even),
-  .thm-table.ca-cardified tbody tr:nth-child(even) { background: #10131F; }
+  .thm-table.ca-cardified tbody tr:nth-child(even) { background: var(--bg-2, #10131F); }
   .lv-table.ca-cardified tbody tr:hover,
   .thm-table.ca-cardified tbody tr:hover { box-shadow: none; }
 
@@ -481,6 +585,17 @@
   .thm-table.ca-cardified td .thm-rel {
     align-self: flex-start;
     font-size: 14px;
+  }
+}
+
+@media (max-width: 390px) {
+  body.team-rankings-page .lv-family-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  body.team-rankings-page .lv-family {
+    min-height: 72px;
+    padding: 10px;
   }
 }
 

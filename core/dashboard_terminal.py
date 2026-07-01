@@ -582,13 +582,12 @@ class DataStore:
         staleness = st["staleness_warning"]
 
         ps = None
-        if tm:
+        if all(v is not None for v in (k, bb, hr9)):
+            ps = _pitcher_individual_score(sp, matched)
+        if ps is None and tm:
             pr = self.row(self.pitch_df(), tm)
             if pr:
                 ps = num_value(pr.get("PitchScore"))
-
-        if ps is None and all(v is not None for v in (k, bb, hr9)):
-            ps = _pitcher_individual_score(sp, matched)
 
         vs_lhh, vs_rhh = _pitcher_platoon_rows(sp, matched)
 
@@ -753,26 +752,13 @@ def _merge_snap_into_metrics(tm: TeamMetrics, snap: TeamSnapshot) -> None:
 
 
 def _pitcher_individual_score(sp: pd.DataFrame, name: str) -> float | None:
-    from core.config import PITCHING_WEIGHTS
-    from core.metrics_utils import invert, normalize
+    from core.compute_pitching import calc_individual_pitching_scores
 
-    df = sp.copy()
-    df = df[~df["Tm"].astype(str).str.contains("Tms", na=False)]
-    df["K%"] = clean_pct(df["K%"])
-    df["BB%"] = clean_pct(df["BB%"])
-    df["HR/9"] = pd.to_numeric(df["HR/9"], errors="coerce")
-    df = df.dropna(subset=["K%", "BB%", "HR/9"])
-    if df.empty:
-        return None
-    df["k_n"] = normalize(df["K%"])
-    df["bb_n"] = invert(df["BB%"])
-    df["hr_n"] = invert(df["HR/9"])
-    w = PITCHING_WEIGHTS
-    df["ps"] = w["k_pct"] * df["k_n"] + w["inv_bb_pct"] * df["bb_n"] + w["inv_hr9"] * df["hr_n"]
-    m = df[df["Name"] == name]
+    scores = calc_individual_pitching_scores(sp)
+    m = scores[scores["Name"] == name]
     if m.empty:
         return None
-    return round(float(m.iloc[0]["ps"]), 1)
+    return round(float(m.iloc[0]["PitchScore"]), 1)
 
 
 def _pitcher_platoon_rows(sp: pd.DataFrame, name: str) -> tuple[dict, dict]:

@@ -7,7 +7,11 @@ from typing import List, Optional
 import pandas as pd
 
 from core.config import DATA_DIR, OPPONENT_TIER_HIGH_MIN, OPPONENT_TIER_MID_MIN
-from core.compute_pitching import build_pitcher_staleness_df, park_adjust_allowed_value
+from core.compute_pitching import (
+    build_pitcher_staleness_df,
+    calc_individual_pitching_scores,
+    park_adjust_allowed_value,
+)
 from core.metrics_utils import parse_ip
 from core.name_utils import normalize_player_name
 
@@ -144,6 +148,8 @@ PROFILE_COLUMNS = [
     "K_pct",
     "BB_pct",
     "HR9",
+    "WHIP",
+    "PitchScore",
     "avg_pitches",
     "ABQ_allowed",
     "RCV_allowed",
@@ -315,23 +321,36 @@ def profile_ops_from_splits(splits: pd.DataFrame, pname_key: str) -> Optional[fl
 
 
 def season_advanced_lookup() -> dict:
-    """{normalized pitcher name: {FIP, xFIP, OPS}} from the FanGraphs season export."""
+    """Season rates and individual Pitch Score keyed by normalized pitcher name."""
     out: dict[str, dict] = {}
     p = DATA_DIR / "sp_standard.csv"
     if p.exists():
         df = pd.read_csv(p)
+        score_rows = calc_individual_pitching_scores(df)
+        scores = {
+            _norm(row["Name"]): _num(row["PitchScore"])
+            for _, row in score_rows.iterrows()
+        }
         name_col = "Name" if "Name" in df.columns else None
         if name_col:
             for _, r in df.iterrows():
                 out[_norm(r[name_col])] = {
                     "FIP": _num(r.get("FIP")),
                     "xFIP": _num(r.get("xFIP")),
+                    "WHIP": _num(r.get("WHIP")),
+                    "PitchScore": scores.get(_norm(r[name_col])),
                     "OPS": _ops_from_fg_row(r),
                 }
     hand_ops = hand_ops_blend_lookup()
     for key, ops in hand_ops.items():
         if key not in out:
-            out[key] = {"FIP": None, "xFIP": None, "OPS": ops}
+            out[key] = {
+                "FIP": None,
+                "xFIP": None,
+                "WHIP": None,
+                "PitchScore": None,
+                "OPS": ops,
+            }
         elif out[key].get("OPS") is None:
             out[key]["OPS"] = ops
     return out
@@ -474,6 +493,8 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
                 **block,
                 "FIP": a.get("FIP") if a.get("FIP") is not None else block.get("FIP"),
                 "xFIP": a.get("xFIP"),
+                "WHIP": a.get("WHIP"),
+                "PitchScore": a.get("PitchScore"),
                 "OPS": a.get("OPS") if a.get("OPS") is not None else split_ops if split_ops is not None else block.get("OPS"),
                 "high_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "High"),
                 "low_osi_ERA": _split_era(pdf, "opponent_OSI_tier", "Low"),

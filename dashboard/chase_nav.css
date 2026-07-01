@@ -440,7 +440,7 @@
   }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 901px) {
   .chase-mobile-overlay,
   .chase-mobile-menu {
     display: none !important;
@@ -453,7 +453,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .chase-wordmark {
     font-size: 18px;
   }

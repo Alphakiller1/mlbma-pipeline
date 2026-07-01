@@ -52,7 +52,7 @@
       invert: false,
       terms: ['osi', 'offensive strength', 'composite offense'],
       def: 'Headline offensive composite blending damage, process, and on-base floor.',
-      components: '43% RCV · 37% ABQ · 20% OBR',
+      components: '35% RCV · 25% ABQ · 40% OBR',
       read: '85+ elite · 75–84 high · 65–74 dangerous · 50–64 inconsistent · <50 weak.',
       research: 'Primary team offensive ranking; compare vs opposing Pitching Score.',
       limits: 'Pool-normalized within active leaderboard sample.'
@@ -102,12 +102,12 @@
       full: 'Pitching Score',
       sample: 78,
       invert: false,
-      terms: ['pitching score', 'pitch score', 'k bb hr9'],
-      def: 'Staff quality from strikeouts, walk suppression, and homer prevention.',
-      components: '40% K% · 35% inv(BB%) · 25% inv(HR/9)',
+      terms: ['pitching score', 'pitch score', 'k bb hr9 whip'],
+      def: 'IP-weighted staff quality from strikeouts, traffic suppression, command, and homer prevention.',
+      components: '30% K% · 20% inv(BB%) · 20% inv(HR/9) · 30% inv(WHIP)',
       read: '85+ ace tier · 70–84 solid · 55–69 average · <55 volatile.',
       research: 'OSI vs Pitching Score gap (Signal 4); SP/bullpen unit splits on profiles.',
-      limits: 'Combined staff uses 70% SP / 30% bullpen when both present.'
+      limits: 'Uses season staff rates; combined dashboard context uses 70% SP / 30% bullpen when both are present.'
     },
     {
       id: 'oor',
@@ -276,7 +276,7 @@
       def: 'Strikeouts per plate appearance faced — primary SP stuff indicator.',
       components: 'FanGraphs / SP_Profiles season rate',
       read: 'High = swing-and-miss arsenal. Low = contact-heavy profile.',
-      research: 'K props; core input to Pitching Score (40% weight).',
+      research: 'K props; core input to Pitching Score (30% weight).',
       limits: 'Platoon splits limited until SP scraper adds vs-RHH/vs-LHH columns.'
     },
     {
@@ -287,7 +287,7 @@
       invert: true,
       terms: ['bb pct', 'bb%', 'walk rate', 'walks'],
       def: 'Walks per plate appearance faced — command and traffic risk.',
-      components: 'FanGraphs / SP_Profiles; inverted in Pitching Score (35% weight).',
+      components: 'FanGraphs / SP_Profiles; inverted in Pitching Score (20% weight).',
       read: 'Low (green) = sharp command. High (red) = free baserunners.',
       research: 'OBR/ABQ matchups; totals when BB% is elevated vs patient lineups.',
       limits: 'Inverted coloring on pitcher tables.'
@@ -300,10 +300,24 @@
       invert: true,
       terms: ['hr9', 'hr/9', 'homer rate', 'home runs'],
       def: 'Home runs allowed per nine innings — fly-ball damage risk.',
-      components: 'SP_Profiles; inverted in Pitching Score (25% weight).',
+      components: 'SP_Profiles; inverted in Pitching Score (20% weight).',
       read: 'Low (green) = suppresses long ball. High (red) = HR prop and total risk.',
       research: 'HR props and RCV-heavy lineups.',
       limits: 'Park and weather context not embedded in the rate itself.'
+    },
+    {
+      id: 'whip',
+      name: 'WHIP',
+      full: 'Walks Plus Hits per Inning Pitched',
+      sample: 1.18,
+      invert: true,
+      decimals: 2,
+      terms: ['whip', 'walks hits innings', 'traffic suppression'],
+      def: 'Baserunners allowed per inning from hits and walks.',
+      components: '(Hits + Walks) / Innings Pitched; inverted in Pitching Score (30% weight).',
+      read: 'Low (green) = suppresses traffic. High (red) = repeated run-scoring pressure.',
+      research: 'Run prevention, earned-runs props, and lineup traffic context.',
+      limits: 'Includes hit outcomes and therefore carries more defense and batted-ball variance than K% or BB%.'
     },
     {
       id: 'era',
@@ -599,14 +613,51 @@
   function mountPageHeader() {
     var el = document.getElementById('glossaryPageHeader');
     var A = global.MLBMAAssets;
-    if (!el || !A || !A.sectionHeaderHtml) return;
-    el.innerHTML = A.sectionHeaderHtml({
-      icon: 'book-open',
-      kicker: 'Reference',
+    if (!el || !A || !A.mountPlatformHeader) return;
+    A.mountPlatformHeader(el, {
+      eyebrow: 'Reference',
       title: 'Metric Glossary & Methodology',
-      subtitle: 'All definitions, formulas, and methodology in one place.'
+      subtitle: 'All Definitions, Formulas, And Methodology In One Place.',
+      showPlatformNav: false
     });
-    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
+  }
+
+  function filterGlossary(value) {
+    var input = document.getElementById('glossarySearch');
+    var q = String(value != null ? value : (input ? input.value : '')).toLowerCase().trim();
+    var terms = document.querySelectorAll('.glossary-term');
+    var visibleTerms = 0;
+    terms.forEach(function(el) {
+      var hay = ((el.getAttribute('data-term') || '') + ' ' + (el.textContent || '')).toLowerCase();
+      var hiddenSearchSection = !!q && !!el.closest('#glossaryStaticReference');
+      var visible = !q || (!hiddenSearchSection && hay.indexOf(q) >= 0);
+      el.classList.toggle('hidden', !visible);
+      if (visible) visibleTerms += 1;
+    });
+
+    var alphaVisible = 0;
+    document.querySelectorAll('#alphaGlossary li').forEach(function(li) {
+      var visible = !q || String(li.textContent || '').toLowerCase().indexOf(q) >= 0;
+      li.hidden = !visible;
+      if (visible) alphaVisible += 1;
+    });
+
+    document.querySelectorAll('.gloss-section-block').forEach(function(block) {
+      var hasVisible = !!block.querySelector('.glossary-term:not(.hidden)');
+      block.hidden = !!q && !hasVisible;
+    });
+
+    ['glossaryConventions', 'glossaryReadingLabel', 'glossaryStaticReference'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = !!q;
+    });
+
+    var status = document.getElementById('glossarySearchStatus');
+    if (status) {
+      if (!q) status.textContent = 'Search Across Metrics, Formulas, And Research Uses.';
+      else if (visibleTerms || alphaVisible) status.textContent = (visibleTerms + alphaVisible) + ' Matching Reference Items';
+      else status.textContent = 'No Glossary Terms Match "' + q + '"';
+    }
   }
 
   function initGlossaryPage() {
@@ -624,14 +675,21 @@
     mountMetricGrid('glossaryTrendCards', TREND_METRICS);
     mountSectionHead('glossaryFlagsHead', 'clipboard-list', 'Analyst', 'Flags & Sustainability', 'Pitcher Intelligence heuristics and Team Profile trend verdicts.');
     mountMetricGrid('glossaryFlagsCards', ANALYST_FLAGS);
+    var search = document.getElementById('glossarySearch');
+    if (search) {
+      search.addEventListener('input', function() { filterGlossary(search.value); });
+      filterGlossary(search.value);
+    }
   }
 
   global.MLBMAGlossary = {
     METRICS: ALL_METRICS,
     CORE_METRICS: CORE_METRICS,
     mountGlossaryMetrics: function(id) { mountMetricGrid(id || 'glossaryMetricCards', CORE_METRICS); },
-    renderMetricCard: renderMetricCard
+    renderMetricCard: renderMetricCard,
+    filterGlossary: filterGlossary
   };
+  global.filterGlossary = filterGlossary;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initGlossaryPage);

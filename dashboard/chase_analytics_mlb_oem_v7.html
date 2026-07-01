@@ -1794,18 +1794,22 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   flex: 0 0 auto; font-size: 10px; padding: 3px 7px; line-height: 1.1;
 }
 .mc-sp-stats { font-family: var(--mono); color: var(--text-3); font-size: 12px; margin-top: 2px; }
-.mc-sp-stats--grid { display: grid; grid-template-columns: repeat(3, minmax(2.75rem, 1fr)); gap: 4px; align-self: end; padding: 0 4px 2px; overflow: visible; width: 100%; }
+.mc-sp-stats--grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px; align-self: end; padding: 0 4px 2px; overflow: hidden; width: 100%; }
 .mc-sp-stat {
   display: flex; flex-direction: column; gap: 2px; padding: 4px 4px 2px;
-  border-radius: 0; background: transparent; border: 0; text-align: center; min-width: 2.75rem;
-  color: var(--text); overflow: visible;
+  border-radius: 0; background: transparent; border: 0; text-align: center; min-width: 0;
+  align-items: center; justify-content: center; color: var(--text); overflow: hidden;
+}
+.mc-sp-stats--score-inputs .mc-sp-stat--hr9,
+.mc-sp-stats--score-inputs .mc-sp-stat--whip {
+  padding-top: 8px; border-top: 1px solid rgba(255,255,255,.065);
 }
 .mc-sp-stat em {
   font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
   color: var(--text-3);
 }
-.mc-sp-stat strong { color: var(--text); font-size: 15px; font-weight: 900; line-height: 1.1; white-space: nowrap; overflow: visible; }
-.mc-sp-stat em { white-space: nowrap; overflow: visible; }
+.mc-sp-stat strong { color: var(--text); font-size: 15px; font-weight: 900; line-height: 1.1; white-space: nowrap; overflow: hidden; max-width: 100%; text-overflow: ellipsis; }
+.mc-sp-stat em { white-space: nowrap; overflow: hidden; max-width: 100%; text-overflow: ellipsis; }
 .mc-sp-name-text { font-size: 15.5px; font-weight: 800; letter-spacing: 0; }
 .mc-ps-badge--defined {
   display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline; column-gap: 10px;
@@ -2033,7 +2037,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 }
 
 /* CTA */
-.ca-hero__cta { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 56px; max-width: 540px; }
+.ca-hero__cta { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 0; max-width: 540px; }
 .ca-hero__cta .ca-btn--primary {
   flex: 1 1 100%;
   justify-content: center;
@@ -2061,31 +2065,6 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   border-color: rgba(124,77,255,0.4);
 }
 .ca-btn--ghost:hover { background: rgba(124,77,255,0.12); border-color: #C4B0FF; }
-
-/* Stats */
-.ca-hero__stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  background: rgba(124,77,255,0.18);
-  border: 1px solid rgba(124,77,255,0.22);
-  border-radius: 18px; overflow: hidden;
-}
-.ca-stat {
-  padding: 20px 22px;
-  background: linear-gradient(180deg, rgba(20,12,38,0.7), rgba(10,6,18,0.7));
-  display: flex; flex-direction: column; gap: 6px;
-}
-.ca-stat__value {
-  font-size: clamp(28px, 3vw, 40px);
-  font-weight: 700; letter-spacing: -0.02em; color: #fff;
-  font-variant-numeric: tabular-nums;
-}
-.ca-stat__value--small { font-size: clamp(13px, 1vw, 16px); font-weight: 600; color: #c4b5fd; }
-.ca-stat__label {
-  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
-  color: #7a778f; font-weight: 500;
-}
 
 /* RIGHT mark */
 .ca-hero__mark {
@@ -2150,10 +2129,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 @media (max-width: 960px) {
   .ca-hero__inner { grid-template-columns: 1fr; }
   .ca-hero__mark { order: -1; max-width: 320px; margin: 0 auto; }
-  .ca-hero__stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 520px) {
-  .ca-hero__stats { grid-template-columns: 1fr 1fr; }
   .ca-btn { width: 100%; justify-content: center; }
 }
 
@@ -2643,14 +2620,16 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_ui.css?v=20260602n">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260701a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260610">
+<link rel="stylesheet" href="chase_nav.css?v=20260701c">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260701c">
 <link rel="stylesheet" href="research_lab.css?v=20260624a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701a">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
+<link rel="prefetch" href="team_rankings.html" as="document">
+<link rel="prefetch" href="team_rankings_snapshot.json?v=20260608a" as="fetch" crossorigin>
 <script>
 (function() {
   // Prefetch core split tabs (Supabase) + slate lineups/matchups (Sheets) while scripts download.
@@ -2768,11 +2747,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260610b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260628b"></script>
+<script src="matchup_shared.js?v=20260701c"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260628b"></script>
+<script src="platform_dashboard.js?v=20260701c"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -2907,24 +2886,6 @@ body.view-research .ca-lab { display: block; }
         </a>
       </div>
 
-      <div class="ca-hero__stats">
-        <div class="ca-stat">
-          <div class="ca-stat__value" id="games-today">?</div>
-          <div class="ca-stat__label">Games Today</div>
-        </div>
-        <div class="ca-stat">
-          <div class="ca-stat__value" id="teams-tracked">30</div>
-          <div class="ca-stat__label">Teams Tracked</div>
-        </div>
-        <div class="ca-stat">
-          <div class="ca-stat__value" id="metrics-count">9</div>
-          <div class="ca-stat__label">Proprietary Metrics</div>
-        </div>
-        <div class="ca-stat ca-stat--wide">
-          <div class="ca-stat__value ca-stat__value--small" id="last-synced">?</div>
-          <div class="ca-stat__label">Last Synced</div>
-        </div>
-      </div>
     </div>
 
     <div class="ca-hero__mark" aria-hidden="true">
@@ -4284,6 +4245,7 @@ function parseMatchupRows(rows) {
       awayK: numOrNull(matchupCol(row, 'Away_K%')),
       awayBB: numOrNull(matchupCol(row, 'Away_BB%')),
       awayHR9: numOrNull(matchupCol(row, 'Away_HR9')),
+      awayWHIP: numOrNull(matchupCol(row, 'Away_WHIP', 'Away WHIP')),
       awayERA: numOrNull(matchupCol(row, 'Away_ERA', 'Away ERA')),
       awayFIP: numOrNull(matchupCol(row, 'Away_FIP')),
       awayPitchScore: numOrNull(matchupCol(row, 'Away_PitchScore', 'Away PitchScore')),
@@ -4292,6 +4254,7 @@ function parseMatchupRows(rows) {
       homeK: numOrNull(matchupCol(row, 'Home_K%')),
       homeBB: numOrNull(matchupCol(row, 'Home_BB%')),
       homeHR9: numOrNull(matchupCol(row, 'Home_HR9')),
+      homeWHIP: numOrNull(matchupCol(row, 'Home_WHIP', 'Home WHIP')),
       homeERA: numOrNull(matchupCol(row, 'Home_ERA', 'Home ERA')),
       homeFIP: numOrNull(matchupCol(row, 'Home_FIP')),
       homePitchScore: numOrNull(matchupCol(row, 'Home_PitchScore', 'Home PitchScore')),
@@ -4326,7 +4289,7 @@ function spStatsFromProfile(name, team, pitcherId) {
   var m = S.spProfileMetrics(p);
   if (!m) return null;
   return {
-    k: m.kPct, bb: m.bbPct, hr9: m.hr9, fip: m.fip, era: m.era,
+    k: m.kPct, bb: m.bbPct, hr9: m.hr9, whip: m.whip, fip: m.fip, era: m.era,
     pitchScore: m.pitchScore, xfip: m.xfip, osiAllowed: m.osiAllowed
   };
 }
@@ -4347,6 +4310,7 @@ function enrichMatchupCards() {
       if (m.awayK == null) m.awayK = awayProf.k;
       if (m.awayBB == null) m.awayBB = awayProf.bb;
       if (m.awayHR9 == null) m.awayHR9 = awayProf.hr9;
+      if (m.awayWHIP == null) m.awayWHIP = awayProf.whip;
       if (m.awayFIP == null) m.awayFIP = awayProf.fip;
       if (m.awayERA == null) m.awayERA = awayProf.era;
       if (m.awayPitchScore == null) m.awayPitchScore = awayProf.pitchScore;
@@ -4357,6 +4321,7 @@ function enrichMatchupCards() {
       if (m.homeK == null) m.homeK = homeProf.k;
       if (m.homeBB == null) m.homeBB = homeProf.bb;
       if (m.homeHR9 == null) m.homeHR9 = homeProf.hr9;
+      if (m.homeWHIP == null) m.homeWHIP = homeProf.whip;
       if (m.homeFIP == null) m.homeFIP = homeProf.fip;
       if (m.homeERA == null) m.homeERA = homeProf.era;
       if (m.homePitchScore == null) m.homePitchScore = homeProf.pitchScore;
@@ -4587,6 +4552,7 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
     awayK: pickSpMetric(awayProf ? awayProf.k : null, ex ? ex.awayK : null),
     awayBB: pickSpMetric(awayProf ? awayProf.bb : null, ex ? ex.awayBB : null),
     awayHR9: pickSpMetric(awayProf ? awayProf.hr9 : null, ex ? ex.awayHR9 : null),
+    awayWHIP: pickSpMetric(awayProf ? awayProf.whip : null, ex ? ex.awayWHIP : null),
     awayFIP: pickSpMetric(awayProf ? awayProf.fip : null, ex ? ex.awayFIP : null),
     awayERA: pickSpMetric(awayProf ? awayProf.era : null, ex ? ex.awayERA : null),
     awayPitchScore: pickSpMetric(awayProf ? awayProf.pitchScore : null, ex ? ex.awayPitchScore : null),
@@ -4595,6 +4561,7 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
     homeK: pickSpMetric(homeProf ? homeProf.k : null, ex ? ex.homeK : null),
     homeBB: pickSpMetric(homeProf ? homeProf.bb : null, ex ? ex.homeBB : null),
     homeHR9: pickSpMetric(homeProf ? homeProf.hr9 : null, ex ? ex.homeHR9 : null),
+    homeWHIP: pickSpMetric(homeProf ? homeProf.whip : null, ex ? ex.homeWHIP : null),
     homeFIP: pickSpMetric(homeProf ? homeProf.fip : null, ex ? ex.homeFIP : null),
     homeERA: pickSpMetric(homeProf ? homeProf.era : null, ex ? ex.homeERA : null),
     homePitchScore: pickSpMetric(homeProf ? homeProf.pitchScore : null, ex ? ex.homePitchScore : null),

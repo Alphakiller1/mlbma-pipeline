@@ -172,6 +172,7 @@
     global.__MLBMA_RANKINGS_SNAPSHOT = snap;
     global.__MLBMA_RANKINGS_BOOT_DONE = true;
     global.__lineupViewMounted = true;
+    global.__lineupViewReady = true;
     dismissLoading();
     if (global.console && console.info) {
       console.info('[PERF] Team Rankings boot snapshot painted', pack.rows.length, 'rows');

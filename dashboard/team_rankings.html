@@ -44,7 +44,7 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
   // here in the head; on slow connections they could compete with CSS/scripts even
   // though the snapshot is enough to render the default Team Rankings view.
   try {
-    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260608a')
+    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260608a', { cache: 'force-cache' })
       .then(function(r) { if (!r.ok) throw new Error('snapshot ' + r.status); return r.json(); });
 
     var prefetchLiveData = function() {
@@ -92,8 +92,9 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260701a">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701a">
+<link rel="stylesheet" href="chase_nav.css?v=20260701c">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
+<link rel="stylesheet" href="responsive.css?v=20260701d">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <style>
 :root {
@@ -202,14 +203,7 @@ body{
 .col-adv.show{display:table-cell}
 .th-info{margin-left:4px;opacity:.55;font-size:9px;cursor:help}
 .hub-takeaway{font-size:11px;color:var(--text-2);max-width:220px;line-height:1.35}
-.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
-.loading.hide{display:none}
-#hubLoading.hide {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
+.rankings-initial{margin-top:14px;padding:18px;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);color:var(--text-2);font-size:13px}
 @media(max-width:767px){
   .container{padding:16px 14px 56px}
   .hub-control-bar{padding:12px}
@@ -222,25 +216,7 @@ body{
 </style>
 
 </head>
-<body class="ca-bg-outfield">
-<div class="loading" id="hubLoading">
-  <span class="subtitle">Loading lineup offense data...</span>
-</div>
-<script>
-/* Dismiss loading overlay if lineup view never finishes (network/sheet failure) */
-setTimeout(function() {
-  if (window.__lineupViewReady || window.__lineupViewMounted) return;
-  var l = document.getElementById('hubLoading');
-  if (l) l.classList.add('hide');
-  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
-  else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
-  var body = document.querySelector('.lv-body');
-  if (body && !body.querySelector('.lv-table') && !body.querySelector('.lv-note')) {
-    body.innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Load timed out — check network and Google Sheet access, then refresh.</div>';
-  }
-  console.warn('[LINEUP VIEW] still loading after 20s — hard refresh and verify shared scripts');
-}, 20000);
-</script>
+<body class="ca-bg-outfield team-rankings-page">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -322,9 +298,11 @@ setTimeout(function() {
 </div>
 <main class="container ca-page-shell">
   <div id="teamRankingsPageHeader"></div>
-  <section id="lineupViewMount"></section>
+  <section id="lineupViewMount">
+    <div class="rankings-initial" role="status">Loading Team Rankings...</div>
+  </section>
 </main>
-<script src="team_rankings_boot.js?v=20260608b"></script>
+<script src="team_rankings_boot.js?v=20260701c"></script>
 
 <script>
 (function() {
@@ -339,7 +317,7 @@ setTimeout(function() {
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script id="mlbma-icons-script" src="mlbma_icons.js?v=20260606c"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="team_rankings.html"></script>
-<script src="matchup_shared.js?v=20260628b"></script>
+<script src="matchup_shared.js?v=20260701c"></script>
 <script>
 (function() {
   var _globalErrorHandling = false;
@@ -373,7 +351,7 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260624a"></script>
+<script src="lineup_view.js?v=20260701a"></script>
 <script src="mobile_cardify.js?v=20260610a"></script>
 <script>
 (function() {
@@ -384,7 +362,20 @@ setTimeout(function() {
       showPlatformNav: false
     });
   }
-  if (window.LineupView && LineupView.mount) LineupView.mount({ mountId: 'lineupViewMount' });
+  function mountTeamRankings() {
+    if (window.__MLBMA_TEAM_RANKINGS_MOUNTED) return;
+    window.__MLBMA_TEAM_RANKINGS_MOUNTED = true;
+    if (window.LineupView && LineupView.mount) LineupView.mount({ mountId: 'lineupViewMount' });
+  }
+  var snap = window.__MLBMA_SNAPSHOT_PROMISE;
+  if (snap && typeof snap.then === 'function') {
+    Promise.race([
+      snap.catch(function() { return null; }),
+      new Promise(function(resolve) { setTimeout(resolve, 1200); })
+    ]).then(mountTeamRankings);
+  } else {
+    mountTeamRankings();
+  }
 })();
 </script>
 <script>
