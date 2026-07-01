@@ -26,7 +26,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .glossary-page-header .ca-section-head .kicker{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ca-purple-light,#C4B0FF);margin:0 0 6px;line-height:1.35}
 .glossary-page-header .ca-section-head .title{font-family:var(--font-display);font-size:20px!important;font-weight:800;letter-spacing:-.012em;line-height:1.2;margin:0 0 2px;background:linear-gradient(180deg,#fff 0%,#e9eaf0 38%,#9da0ae 56%,#d7d9e2 72%,#fff 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important}
 .glossary-page-header .ca-section-head .purpose{font-size:16px;font-weight:600;line-height:1.55;color:var(--text-2);max-width:720px;margin-top:4px}
-.glossary-search{width:100%;max-width:420px;margin:20px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-size:15px}
+.glossary-search{width:100%;min-height:44px;max-width:420px;margin:20px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-size:15px}
 .layer-label{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin:28px 0 12px}
 .section{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
 .section h2{font-size:22px;margin-bottom:12px;font-family:var(--font-display);font-variation-settings:"wdth" 125;letter-spacing:-.01em;font-weight:800}
@@ -60,143 +60,77 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .gloss-section-block .ca-section-head{margin-bottom:14px}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
-<link rel="stylesheet" href="theme.css?v=20260619b">
-<link rel="stylesheet" href="chase_nav.css?v=20260626a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
+<link rel="stylesheet" href="theme.css?v=20260630a">
+<link rel="stylesheet" href="chase_nav.css?v=20260701a">
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="glossary.html"></script>
 <script src="glossary.js?v=20260609e"></script>
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
-  <link rel="stylesheet" href="mlbma_design_system.css">
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701a">
+
 </head>
 <body class="ca-bg-outfield glossary-page">
-﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
-
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
-
 <header class="chase-header" id="chaseHeader">
-
-<meta charset="UTF-8">
-
-
-
-
-
   <nav class="chase-nav">
-
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-
-      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
-
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
+      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
-
     <div class="chase-nav-links">
-
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
-
       <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
-
       <a href="team_rankings.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
-
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
-
       <div class="chase-dropdown">
-
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-
           Profiles
-
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-
           </svg>
-
         </button>
-
         <div class="chase-dropdown-menu">
-
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
-
           <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-
           <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Profile</a>
-
           <div class="chase-dropdown-divider"></div>
-
           <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
-
         </div>
-
       </div>
-
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
-
     </div>
-
     <div class="chase-status">
-
       <div class="chase-timestamp">
-
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-
-        <span id="lastUpdated">syncing…</span>
-
+        <span id="lastUpdated">Syncing</span>
       </div>
-
-      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
-
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open Menu"
+        aria-controls="mobileMenu" aria-expanded="false" aria-haspopup="dialog">
         <span></span><span></span><span></span>
-
       </button>
-
     </div>
-
   </nav>
-
 </header>
-
-<div class="chase-mobile-overlay" id="mobileOverlay"></div>
-
-<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
-
+<div class="chase-mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+<div class="chase-mobile-menu" id="mobileMenu" role="dialog" aria-modal="true"
+  aria-label="Main Menu" aria-hidden="true">
   <div class="chase-mobile-header">
-
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-
-      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
-
+      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
-
-    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
-
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close Menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-
         <line x1="18" y1="6" x2="6" y2="18"></line>
-
         <line x1="6" y1="6" x2="18" y2="18"></line>
-
       </svg>
-
     </button>
-
   </div>
-
   <div class="chase-mobile-brand" aria-hidden="true">
-
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-
   </div>
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
@@ -214,11 +148,10 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncing…</span>
+      <span id="mobileLastUpdated">Syncing</span>
     </div>
   </div>
 </div>
-
   <div class="container">
   <div class="ca-brand-badge-light" style="margin:0 auto 16px;">
     <img src="assets/chase-logo-stacked-light.png" alt="Chase Analytics" style="height:100px;width:auto;object-fit:contain"
@@ -410,6 +343,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-  <script src="chase_nav.js"></script>
+  <script src="chase_nav.js?v=20260701a"></script>
 </body>
 </html>

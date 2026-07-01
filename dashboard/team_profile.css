@@ -4028,3 +4028,12 @@ body.team-profile-page :is(
 .tp-tonight-compare__cta {
   display: inline-flex;
 }
+
+@media (max-width: 767px) {
+  .tp-batter-player-link,
+  .tp-sp-player-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}

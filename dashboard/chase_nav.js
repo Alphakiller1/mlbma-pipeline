@@ -1,6 +1,6 @@
-// v20260523d — three-view nav: opening / matchups / research
+// Three-view navigation: opening, matchups, and research.
 /**
- * Chase Analytics navigation — dropdowns, mobile menu, active page, pipeline timestamp.
+ * Chase Analytics navigation: dropdowns, mobile menu, active page, pipeline timestamp.
  */
 (function () {
   'use strict';
@@ -44,50 +44,100 @@
   var mobileOverlay = document.getElementById('mobileOverlay');
   var mobileMenu = document.getElementById('mobileMenu');
   var mobileClose = document.getElementById('mobileClose');
+  var lastFocusedElement = null;
+
+  function mobileMenuFocusables() {
+    if (!mobileMenu) return [];
+    return Array.prototype.slice.call(
+      mobileMenu.querySelectorAll('a[href], button:not([disabled])')
+    ).filter(function (el) {
+      return el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null;
+    });
+  }
+
+  function mobileMenuIsOpen() {
+    return !!(mobileMenu && mobileMenu.classList.contains('open'));
+  }
 
   function openMobileMenu() {
     if (!hamburger || !mobileOverlay || !mobileMenu) return;
+    lastFocusedElement = document.activeElement;
     hamburger.classList.add('open');
     hamburger.setAttribute('aria-expanded', 'true');
     mobileOverlay.style.display = 'block';
+    mobileOverlay.setAttribute('aria-hidden', 'false');
     mobileMenu.style.display = 'block';
     mobileMenu.setAttribute('aria-hidden', 'false');
     void mobileOverlay.offsetHeight;
     mobileOverlay.classList.add('open');
     mobileMenu.classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (mobileClose) mobileClose.focus();
   }
 
-  function closeMobileMenu() {
+  function closeMobileMenu(restoreFocus) {
     if (!hamburger || !mobileOverlay || !mobileMenu) return;
     hamburger.classList.remove('open');
     hamburger.setAttribute('aria-expanded', 'false');
     mobileOverlay.classList.remove('open');
+    mobileOverlay.setAttribute('aria-hidden', 'true');
     mobileMenu.classList.remove('open');
     mobileMenu.setAttribute('aria-hidden', 'true');
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
     setTimeout(function () {
       mobileOverlay.style.display = 'none';
+      mobileMenu.style.display = '';
     }, 200);
+    if (restoreFocus !== false && lastFocusedElement && lastFocusedElement.focus) {
+      lastFocusedElement.focus();
+    }
   }
 
   if (hamburger) {
     hamburger.setAttribute('aria-expanded', 'false');
     hamburger.addEventListener('click', openMobileMenu);
   }
-  if (mobileClose) mobileClose.addEventListener('click', closeMobileMenu);
-  if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
+  if (mobileClose) mobileClose.addEventListener('click', function () { closeMobileMenu(); });
+  if (mobileOverlay) mobileOverlay.addEventListener('click', function () { closeMobileMenu(); });
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll('a[href]').forEach(function (link) {
+      link.addEventListener('click', function () { closeMobileMenu(false); });
+    });
+  }
 
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab' && mobileMenuIsOpen()) {
+      var focusables = mobileMenuFocusables();
+      if (!focusables.length) {
+        e.preventDefault();
+        return;
+      }
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
     if (e.key === 'Escape') {
       dropdowns.forEach(function (dropdown) {
         dropdown.classList.remove('open');
         var t = dropdown.querySelector('.chase-nav-link');
         if (t) t.setAttribute('aria-expanded', 'false');
       });
-      closeMobileMenu();
+      if (mobileMenuIsOpen()) {
+        e.preventDefault();
+        closeMobileMenu();
+      }
     }
+  });
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= 768 && mobileMenuIsOpen()) closeMobileMenu(false);
   });
 
   function currentPageName() {
@@ -141,8 +191,10 @@
       var key = dataNav || navTargetKey(href);
       if (key && key === currentKey) {
         link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
       } else {
         link.classList.remove('active');
+        link.removeAttribute('aria-current');
       }
     });
 
@@ -153,9 +205,11 @@
       var href = link.getAttribute('href');
       link.style.background = '';
       link.style.color = '';
+      link.removeAttribute('aria-current');
       if (href && href.split('/').pop().split('?')[0] === profilePage) {
         link.style.background = 'rgba(124, 58, 237, 0.15)';
         link.style.color = '#9A6BFF';
+        link.setAttribute('aria-current', 'page');
         var dropdown = link.closest('.chase-dropdown');
         if (dropdown) {
           var trig = dropdown.querySelector('.chase-nav-link');
@@ -170,8 +224,10 @@
       var key = dataNav || navTargetKey(href);
       if (key && key === currentKey) {
         link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
       } else {
         link.classList.remove('active');
+        link.removeAttribute('aria-current');
       }
     });
   }
@@ -202,7 +258,7 @@
       window.location.hash = hash;
       syncDashboardViewFromNav(hash);
       setActivePage();
-      closeMobileMenu();
+      closeMobileMenu(false);
     });
   }
 
@@ -211,7 +267,7 @@
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');
     var mobile = document.getElementById('mobileLastUpdated');
-    var display = (!text || text === '--' || text === '—') ? 'syncing…' : text;
+    var display = (!text || text === '--') ? 'Syncing' : text;
     if (el) el.textContent = display;
     if (mobile) mobile.textContent = display;
     if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {

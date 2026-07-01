@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-<title>Chase Analytics ? Offensive Dashboard</title>
+<title>Chase Analytics - Offensive Dashboard</title>
 <style>
 :root {
   --bg: #08090F;
@@ -2204,6 +2204,7 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
+  min-height: 44px;
   padding: 8px 18px;
   border-radius: 10px;
   cursor: pointer;
@@ -2339,6 +2340,20 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   }
   .ca-market__chart {
     min-height: 320px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-hero__pulse,
+  .ca-hero__mark-ring,
+  .skel {
+    animation: none !important;
+  }
+
+  .ca-btn,
+  .ca-toggle,
+  .ca-legend__pill {
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -2626,13 +2641,13 @@ body.view-research .ca-lab { display: block; }
 
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260602n">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
-<link rel="stylesheet" href="theme.css?v=20260619a">
-<link rel="stylesheet" href="chase_nav.css?v=20260626b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
+<link rel="stylesheet" href="theme.css?v=20260630a">
+<link rel="stylesheet" href="chase_nav.css?v=20260701a">
 <link rel="stylesheet" href="landing_dashboard.css?v=20260610">
 <link rel="stylesheet" href="research_lab.css?v=20260624a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260619a">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701a">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
@@ -2765,133 +2780,67 @@ body.view-research .ca-lab { display: block; }
 <script src="bullpen_usage.js?v=20260610b"></script>
 <script src="pitcher_lab.js?v=20260624c"></script>
 <script src="mobile_cardify.js?v=20260610b"></script>
-  <link rel="stylesheet" href="mlbma_design_system.css">
+
 </head>
 <body class="view-pending view-opening platform-dashboard opening-dashboard ca-bg-outfield">
-﻿﻿﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
-
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
-
 <header class="chase-header" id="chaseHeader">
-
-<meta charset="UTF-8">
-
-
-
-
-
   <nav class="chase-nav">
-
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-
-      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
-
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
+      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
-
     <div class="chase-nav-links">
-
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
-
       <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
-
       <a href="team_rankings.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
-
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
-
       <div class="chase-dropdown">
-
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-
           Profiles
-
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-
           </svg>
-
         </button>
-
         <div class="chase-dropdown-menu">
-
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
-
           <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-
           <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Profile</a>
-
           <div class="chase-dropdown-divider"></div>
-
           <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
-
         </div>
-
       </div>
-
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
-
     </div>
-
     <div class="chase-status">
-
       <div class="chase-timestamp">
-
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-
-        <span id="lastUpdated">syncing…</span>
-
+        <span id="lastUpdated">Syncing</span>
       </div>
-
-      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
-
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open Menu"
+        aria-controls="mobileMenu" aria-expanded="false" aria-haspopup="dialog">
         <span></span><span></span><span></span>
-
       </button>
-
     </div>
-
   </nav>
-
 </header>
-
-<div class="chase-mobile-overlay" id="mobileOverlay"></div>
-
-<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
-
+<div class="chase-mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+<div class="chase-mobile-menu" id="mobileMenu" role="dialog" aria-modal="true"
+  aria-label="Main Menu" aria-hidden="true">
   <div class="chase-mobile-header">
-
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-
-      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
-
+      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
-
-    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
-
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close Menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-
         <line x1="18" y1="6" x2="6" y2="18"></line>
-
         <line x1="6" y1="6" x2="18" y2="18"></line>
-
       </svg>
-
     </button>
-
   </div>
-
   <div class="chase-mobile-brand" aria-hidden="true">
-
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
-
   </div>
   <div class="chase-mobile-nav">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
@@ -2909,11 +2858,10 @@ body.view-research .ca-lab { display: block; }
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">syncing…</span>
+      <span id="mobileLastUpdated">Syncing</span>
     </div>
   </div>
 </div>
-
 <div class="container">
 
 <div class="ca-page-identity" id="pageIdentityStrip">
@@ -2937,7 +2885,7 @@ body.view-research .ca-lab { display: block; }
     <div class="ca-hero__content">
       <div class="ca-hero__eyebrow">
         <span class="ca-hero__pulse"></span>
-        CHASE ANALYTICS ? MLB INTELLIGENCE
+        CHASE ANALYTICS | MLB INTELLIGENCE
       </div>
 
       <h1 class="ca-hero__title">
@@ -3199,7 +3147,7 @@ body.view-research .ca-lab { display: block; }
       <div>
         <div class="section-eyebrow">Leaderboards</div>
         <div class="section-title">Team Offensive Rankings</div>
-        <div class="section-subtitle">YTD from vs RHP / vs LHP ? shorter windows require pipeline run.</div>
+        <div class="section-subtitle">YTD From Vs RHP / Vs LHP. Shorter Windows Require A Pipeline Run.</div>
       </div>
     </div>
     <div class="rankings-controls">
@@ -4039,7 +3987,7 @@ function windowDataMessage(timeframe) {
   if (avail[timeframe]) {
     return 'L30/L14/L7 from Team_Profiles (OSI, ABQ, RCV, OBR when pipeline has run).';
   }
-  return 'Window data requires compute_team_profile + push ? showing YTD.';
+  return 'Window Data Requires compute_team_profile + Push. Showing YTD.';
 }
 
 function updateWindowDataBanners() {
@@ -4158,7 +4106,7 @@ function bullpenVsLineupBadge(defenseTeam, oppLineupOsi) {
 function buildBullpenQualityHtml(team, oppOsi) {
   var u = getBullpenUnit(team);
   if (!u) {
-    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit data ? run pipeline steps 12?13.</div>';
+    return '<div class="bullpen-quality-block"><div class="bq-title">Bullpen Quality</div>No Bullpen_Unit Data. Run Pipeline Steps 12-13.</div>';
   }
   var tier = osiTierFromValue(oppOsi);
   var tierEra = bullpenTierEra(u, tier);
@@ -4167,9 +4115,9 @@ function buildBullpenQualityHtml(team, oppOsi) {
   if (flag && tier) {
     note = 'Flag: bullpen has struggled vs ' + tier + ' OSI lineups (ERA ' + (tierEra != null ? tierEra.toFixed(2) : '?') + ').';
   } else if (u.hiLevEra != null && u.loLevEra != null && u.hiLevEra > u.loLevEra + 1.5) {
-    note = 'High-leverage ERA (' + u.hiLevEra.toFixed(2) + ') worse than low-leverage ? late-inning fade risk.';
+    note = 'High-Leverage ERA (' + u.hiLevEra.toFixed(2) + ') Is Worse Than Low-Leverage ERA. Late-Inning Fade Risk.';
   } else if (u.osiAllowed !== null && u.osiAllowed <= 52) {
-    note = 'Strong bullpen profile vs average opponent quality ? supports unders in close games.';
+    note = 'Strong Bullpen Profile Vs Average Opponent Quality. Supports Unders In Close Games.';
   } else {
     note = 'Neutral bullpen read vs tonight\'s opponent OSI tier.';
   }
@@ -5907,8 +5855,8 @@ function trendArrow(d){
 
 function oneLineTakeaway(d){
   var s = statusLabel(d);
-  if(s === 'Undervalued') return 'Process and PALS confirm ? market may lag true strength.';
-  if(s === 'Regression Risk') return 'Production ahead of process ? fade lean without matchup proof.';
+  if(s === 'Undervalued') return 'Process And PALS Confirm The Signal. The Market May Lag True Strength.';
+  if(s === 'Regression Risk') return 'Production Is Ahead Of Process. Fade Lean Without Matchup Proof.';
   if(s === 'Strong') return tier(d.osi).l + ' offense with ' + (d.trend || 'stable') + ' trend context.';
   if(s === 'Weak') return 'Limited offensive ceiling in current view.';
   return takeaway(d).split(',')[0].slice(0, 72);
@@ -6015,13 +5963,13 @@ function syncFreshnessIndicator(ts) {
     dot.classList.toggle('fresh', !stale);
   }
   if (meta) {
-    meta.textContent = stale ? 'Data may be stale (>24h) ? re-run pipeline' : 'Fresh pipeline sync';
+    meta.textContent = stale ? 'Data May Be Stale (>24h). Re-Run The Pipeline.' : 'Fresh Pipeline Sync';
   }
   if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
-    PlatformDashboard.setOpeningHeroSync(displayTs === '?' ? 'syncing?' : displayTs);
+    PlatformDashboard.setOpeningHeroSync(displayTs === '?' ? 'Syncing' : displayTs);
   }
   if (window.ChaseNav) {
-    ChaseNav.setLastUpdated(displayTs === '?' ? 'syncing?' : displayTs);
+    ChaseNav.setLastUpdated(displayTs === '?' ? 'Syncing' : displayTs);
     ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
   }
 }
@@ -6087,17 +6035,17 @@ function summaryLabelColor(label) {
 function summaryInterpretation(d) {
   var s = getSummaryLabel(d.osi, d.ppGap, d.abq, d.rcv, d.obr, d);
   if (s.label === 'Buy-Low Candidate') return 'Process is stronger than production. Projection points upward.';
-  if (s.label === 'Strong + Supported') return 'Elite output backed by process ? sustainable lean.';
-  if (s.label === 'Cooling / Fade Risk') return 'High output but process lagging ? fade momentum without proof.';
+  if (s.label === 'Strong + Supported') return 'Elite Output Backed By Process. Sustainable Lean.';
+  if (s.label === 'Cooling / Fade Risk') return 'High Output With Lagging Process. Fade Momentum Without Proof.';
   if (s.label === 'Monitor Closely') return 'Production may be running ahead of underlying process.';
-  if (s.label === 'Speculative Upside') return 'Process ahead of box score ? upside if results catch up.';
+  if (s.label === 'Speculative Upside') return 'Process Is Ahead Of The Box Score. Upside If Results Catch Up.';
   if (s.label === 'Avoid / Under Lean') return 'Weak composite with production not supported by process.';
   return takeaway(d).split('.')[0] + '.';
 }
 
 function getWhatThisMeans(d) {
-  if (d.ppGap != null && d.ppGap >= 4) return 'What this means: Process is ahead of production ? potential buy-low.';
-  if (d.ppGap != null && d.ppGap <= -4) return 'What this means: Production running ahead of process ? monitor for cooling.';
+  if (d.ppGap != null && d.ppGap >= 4) return 'What This Means: Process Is Ahead Of Production. Potential Buy-Low.';
+  if (d.ppGap != null && d.ppGap <= -4) return 'What This Means: Production Is Ahead Of Process. Monitor For Cooling.';
   if (d.dfGap != null && d.dfGap >= 8) return 'What this means: Power upside but inning-to-inning volatility risk.';
   return '';
 }
@@ -6726,7 +6674,7 @@ function renderMasterTable(target){
   if (!rows.length) {
     var filterMsg = STATE.searchQuery
       ? 'No teams match filter: <code style="color:var(--purple);">' + STATE.searchQuery + '</code>'
-      : 'No team data for this view ? switch to YTD ? Both splits.';
+      : 'No Team Data For This View. Switch To YTD And Both Splits.';
     body.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--text-2);">' + filterMsg + '</td></tr>';
     if (mobile) mobile.innerHTML = '';
     return;
@@ -6838,7 +6786,7 @@ function renderMasterTable(target){
       var palsGap = Math.abs(d.osi - d.pals);
       palsHtml = '<span class="pals-badge ' + (palsGap < 4 ? 'ok' : 'warn') + '">' + d.pals.toFixed(1) + '</span>';
     }
-    var projArrow = projDelta > 1.5 ? ' ?' : projDelta < -1.5 ? ' ?' : '';
+    var projArrow = projDelta > 1.5 ? ' \u25B2' : projDelta < -1.5 ? ' \u25BC' : '';
     html += '<tr class="'+highlightCls+pinnedCls+compareCls+(STATE.expandedTeam===d.t?' rank-row-expanded':'')+'" data-team="'+d.t+'" onmouseover="highlightTeam(\''+d.t+'\')" onmouseout="highlightTeam(null)" onclick="onRowClick(event,\''+d.t+'\')" style="cursor:pointer;">'+
       '<td class="rank-cell">'+pinBtn+(i+1)+(STATE.expandedTeam===d.t?' ?':' ?')+'</td>'+
       '<td class="team-cell" style="color:var(--purple);">'+logoFn(d.t)+d.t+paBadge+'</td>'+
@@ -6909,19 +6857,19 @@ function renderMasterTable(target){
   if(activeTh){
     activeTh.classList.add('sorted');
     var ind = activeTh.querySelector('.sort-ind');
-    if(ind) ind.textContent = STATE.sortDir==='desc' ? '?' : '?';
+    if(ind) ind.textContent = STATE.sortDir==='desc' ? '\u25BC' : '\u25B2';
   }
 
   var keyLabel = {'osi':'OSI','abq':'ABQ','rcv':'RCV','obr':'OBR','sus':'Sustainability','reg':'Regression','rhpOSI':'vs RHP OSI','lhpOSI':'vs LHP OSI','splitEdge':'Split Edge','t':'Team','trend':'Trend','projOSI':'Projected OSI','ppGap':'Process-Production Gap','dfGap':'Power-Floor Gap','currentFormOSI':'Current Form OSI','velocity':'Trend Velocity'};
   var sortInfo = (keyLabel[key]||key) + ' ('+STATE.sortDir+')';
-  if(STATE.watchlist.length) sortInfo += ' ? '+STATE.watchlist.length+' pinned';
-  if(STATE.searchQuery) sortInfo += ' ? filter active ('+rows.length+' shown)';
+  if(STATE.watchlist.length) sortInfo += ' | '+STATE.watchlist.length+' Pinned';
+  if(STATE.searchQuery) sortInfo += ' | Filter Active ('+rows.length+' Shown)';
   var sortLabel = document.getElementById('sortLabel');
   if (sortLabel) sortLabel.textContent = sortInfo;
 
   var splitLabel = STATE.split==='b'?'Both':(STATE.split==='r'?'vs RHP':'vs LHP');
   var tableTitle = document.getElementById('tableTitle');
-  if (tableTitle) tableTitle.textContent = 'All 30 Teams ? '+STATE.time+' ? '+splitLabel+' ? Click any header to sort, click any row to expand';
+  if (tableTitle) tableTitle.textContent = 'All 30 Teams | '+STATE.time+' | '+splitLabel+' | Click Any Header To Sort; Click Any Row To Expand';
 }
 
 function onRowClick(e, team){
@@ -6959,13 +6907,13 @@ function togglePinMode(){
   var pinBtn = document.getElementById('pinToggleBtn');
   if (pinBtn) pinBtn.classList.toggle('active', STATE.pinMode);
   renderMasterTable();
-  if(STATE.pinMode) showToast('Pin mode on ? click ? next to rank to add to watchlist');
+  if(STATE.pinMode) showToast('Pin Mode On. Select The Pin Beside A Rank To Add It To The Watchlist.');
 }
 function toggleCompareMode(){
   STATE.compareMode = !STATE.compareMode;
   var cmpBtn = document.getElementById('compareToggleBtn');
   if (cmpBtn) cmpBtn.classList.toggle('active', STATE.compareMode);
-  if(STATE.compareMode) showToast('Compare mode on ? click rows to add up to 4 teams');
+  if(STATE.compareMode) showToast('Compare Mode On. Select Rows To Add Up To Four Teams.');
   renderMasterTable();
   if (STATE.oemMode === 'research') initCompare();
 }
@@ -7138,7 +7086,7 @@ function renderSplitBar(rows){
   document.getElementById('mainChart').innerHTML=s;
 
   var splitLabel = STATE.split==='r'?'vs RHP':'vs LHP';
-  document.getElementById('chartTitle').textContent = 'OSI Rankings ? '+STATE.time+' ? '+splitLabel;
+  document.getElementById('chartTitle').textContent = 'OSI Rankings | '+STATE.time+' | '+splitLabel;
 }
 
 /* Split bars (always RHP+LHP YTD) */
@@ -7185,13 +7133,13 @@ function renderStrats(){
   if (!targets.length) return;
   function count(filt){ return (SCO_YTD_B || []).filter(filt).length; }
   var blocks=[
-    {tag:'Elite Confirmed', bc:'#4ADE80', filterFn:function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}, n:count(function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}), d:'High OSI with PALS confirmation ? stable elite profiles.'},
-    {tag:'Buy-Low', bc:'#60A5FA', filterFn:function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}, n:count(function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}), d:'Process ahead of production with PALS aligned ? undervalued lean.'},
+    {tag:'Elite Confirmed', bc:'#4ADE80', filterFn:function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}, n:count(function(d){return d.osi>=75 && d.pals!=null && Math.abs(d.osi-d.pals)<5 && d.ppGap>-2;}), d:'High OSI With PALS Confirmation. Stable Elite Profiles.'},
+    {tag:'Buy-Low', bc:'#60A5FA', filterFn:function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}, n:count(function(d){return d.ppGap>=4 && d.pals!=null && Math.abs(d.osi-d.pals)<4;}), d:'Process Ahead Of Production With PALS Aligned. Undervalued Lean.'},
     {tag:'Cooling Risk', bc:'#F87171', filterFn:function(d){return d.ppGap<=-4 || d.trend==='Cooling' || d.trend==='Reg. Risk';}, n:count(function(d){return d.ppGap<=-4 || d.trend==='Cooling' || d.trend==='Reg. Risk';}), d:'Production ahead of process or negative recent trend.'},
-    {tag:'Volatile Power', bc:'#A78BFA', filterFn:function(d){return d.dfGap>=10;}, n:count(function(d){return d.dfGap>=10;}), d:'Damage materially ahead of floor ? boom/bust scoring paths.'},
+    {tag:'Volatile Power', bc:'#A78BFA', filterFn:function(d){return d.dfGap>=10;}, n:count(function(d){return d.dfGap>=10;}), d:'Damage Materially Ahead Of Floor. Boom-Or-Bust Scoring Paths.'},
     {tag:'Process-Forward', bc:'#22d3ee', filterFn:function(d){return d.ppGap>=6 && d.abq>=60;}, n:count(function(d){return d.ppGap>=6 && d.abq>=60;}), d:'Strong process without matching RCV yet.'},
     {tag:'Weak Unsupported', bc:'#FB923C', filterFn:function(d){return d.osi<50 && (d.sus==null || d.sus<55);}, n:count(function(d){return d.osi<50 && (d.sus==null || d.sus<55);}), d:'Low composite with weak sustainability support.'},
-    {tag:'Platoon Sensitive', bc:'#9A6BFF', filterFn:function(d){return d.exploit>=10;}, n:count(function(d){return d.exploit>=10;}), d:'Large RHP/LHP split ? lineup construction matters.'},
+    {tag:'Platoon Sensitive', bc:'#9A6BFF', filterFn:function(d){return d.exploit>=10;}, n:count(function(d){return d.exploit>=10;}), d:'Large RHP/LHP Split. Lineup Construction Matters.'},
   ];
   var html='';
   blocks.forEach(function(b, bi){
@@ -7262,15 +7210,15 @@ function setModalMetric(m){
     'reg':'Regression Gap (xwOBA-wOBA, ?1000)',
     'pitchScore':'Pitching Score (staff composite)'
   };
-  document.getElementById('modalTitle').textContent = 'Full Rankings ? '+(labels[m]||m);
+  document.getElementById('modalTitle').textContent = 'Full Rankings - '+(labels[m]||m);
 
   // Subtitle/interpretation guide per metric
   var guides = {
     'projOSI':'Adds capped (?8) regression adjustment to base OSI. Values <em>higher</em> than base OSI indicate xStat support; <em>lower</em> indicate inflated current output.',
     'currentFormOSI':'Recency-weighted OSI blending all four timeframes. Best single number for current state.',
-    'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = process exceeds output ? buy-low candidate. <span style="color:#FBBF24;">Negative (gold)</span> = output exceeds process ? sell-high / fade risk.',
+    'ppGap':'<span style="color:#60A5FA;">Positive (blue)</span> = Process Exceeds Output; Buy-Low Candidate. <span style="color:#FBBF24;">Negative (gold)</span> = Output Exceeds Process; Sell-High / Fade Risk.',
     'dfGap':'<span style="color:#FB923C;">Positive (orange)</span> = damage-heavy power offense (boom/bust). <span style="color:#86EFAC;">Negative (green)</span> = on-base/grind floor offense.',
-    'reg':'5-tier signal: <span style="color:#4ADE80;">?? =+20</span> Strong Positive ? <span style="color:#86EFAC;">? +10/+19</span> Mild Positive ? <span style="color:#71717A;">? ?9</span> Stable ? <span style="color:#FCA5A5;">? -10/-19</span> Mild Negative ? <span style="color:#F87171;">?? =-20</span> Strong Negative.',
+    'reg':'5-Tier Signal: <span style="color:#4ADE80;">20+</span> Strong Positive; <span style="color:#86EFAC;">10 To 19</span> Mild Positive; <span style="color:#71717A;">-9 To 9</span> Stable; <span style="color:#FCA5A5;">-10 To -19</span> Mild Negative; <span style="color:#F87171;">-20 Or Lower</span> Strong Negative.',
     'pitchScore':'Composite staff score from K%, BB%, and HR/9. Higher PitchScore = stronger pitching profile.'
   };
   var guideHtml = guides[m] ? '<div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11.5px;color:var(--text-2);line-height:1.5;">'+guides[m]+'</div>' : '';
@@ -7486,8 +7434,8 @@ function detailSparkline(team, metric, label) {
 
 function dfGapInterpretLabel(gap) {
   if (gap == null || isNaN(gap)) return 'Unavailable';
-  if (gap >= 8) return 'Power-heavy ? volatile floor';
-  if (gap <= -4) return 'Floor-driven ? limited ceiling';
+  if (gap >= 8) return 'Power-Heavy With A Volatile Floor';
+  if (gap <= -4) return 'Floor-Driven With A Limited Ceiling';
   return 'Balanced power/floor mix';
 }
 
@@ -7714,12 +7662,12 @@ function renderMatchupOutput(){
 function matchupTakeaway(master, split, splitLabel){
   if(!split) return 'No '+splitLabel+' split data available.';
   var delta = split.osi - master.osi;
-  if(delta > 5) return 'Performs significantly better '+splitLabel+' than overall ? exploit this matchup.';
-  if(delta < -5) return 'Performs significantly worse '+splitLabel+' than overall ? fade in this matchup.';
+  if(delta > 5) return 'Performs Significantly Better '+splitLabel+' Than Overall. Exploit This Matchup.';
+  if(delta < -5) return 'Performs Significantly Worse '+splitLabel+' Than Overall. Fade In This Matchup.';
   if(master.trend === 'Rising') return 'Trending up; lean into recent form.';
   if(master.trend === 'Cooling') return 'Trending down; results may not match season profile.';
-  if(master.ppGap > 5) return 'Process exceeds output ? possible buy-low.';
-  if(master.ppGap < -5) return 'Output exceeds process ? possible sell-high.';
+  if(master.ppGap > 5) return 'Process Exceeds Output. Possible Buy-Low.';
+  if(master.ppGap < -5) return 'Output Exceeds Process. Possible Sell-High.';
   return 'Neutral matchup profile.';
 }
 function verdictReason(away, home, splitTab){
@@ -7738,7 +7686,7 @@ function verdictReason(away, home, splitTab){
     var owin = aw.obr > hm.obr ? away.t : home.t;
     reasons.push(owin+' wins on-base by '+Math.abs(aw.obr-hm.obr).toFixed(0)+' OBR pts');
   }
-  return reasons.length ? reasons.join(' ? ') : 'Components close across the board.';
+  return reasons.length ? reasons.join(' | ') : 'Components Close Across The Board.';
 }
 
 /* ============================================================
@@ -8013,7 +7961,7 @@ function renderResearchLabWhenReady() {
           renderResearchLab();
         }
       }).catch(function() {
-        if (banner) banner.textContent = 'Research data failed to load ? retrying when sheets refresh?';
+        if (banner) banner.textContent = 'Research Data Failed To Load. Retrying When Sheets Refresh.';
       });
     }
     return;
@@ -8120,7 +8068,7 @@ function syncDashboardView() {
     renderHomePage();
   }, 'opening view sync');
 
-  var scrollId = hash || 'section-opening-workflows';
+  var scrollId = hash;
   if (scrollId === 'section-opening-workflows' || scrollId === 'section-opening-research-cards' || scrollId === 'section-opening-market-map' || scrollId === 'opening') {
     setTimeout(function() {
       var target = document.getElementById(scrollId === 'opening' ? 'section-opening-hero' : scrollId);
@@ -8330,7 +8278,7 @@ var hideLoadingScreen = hideLoadingOverlay;
 function showDelayedLoadBanner() {
   if (LIVE_DATA.loaded) return;
   console.warn('[MLBMA] load watchdog ? showing delayed banner');
-  showDataError('Data load delayed ? retrying? Showing cached or fallback data where available.');
+  showDataError('Data Load Delayed. Retrying. Showing Cached Or Fallback Data Where Available.');
   try {
     if (!SCO_YTD_B || !SCO_YTD_B.length) recomputeAllScores();
     runPostLoadUI();
@@ -8591,9 +8539,9 @@ if (document.readyState === 'loading') {
           <th>#</th>
           <th>Team</th>
           <th title="Unadjusted composite lineup quality (0?100 scale)">OSI</th>
-          <th title="Average xFIP of opposing starters faced ? lower = tougher schedule">Avg xFIP Faced</th>
+          <th title="Average xFIP of opposing starters faced; lower means a tougher schedule">Avg xFIP Faced</th>
           <th title="Normalized OSI (BA++)">BA++</th>
-          <th title="Normalized, inverted avg xFIP faced ? higher = easier SP schedule">PTF+</th>
+          <th title="Normalized, inverted average xFIP faced; higher means an easier SP schedule">PTF+</th>
           <th title="Pitching-Adjusted Lineup Score">PALS</th>
         </tr>
       </thead>
@@ -8612,10 +8560,10 @@ if (document.readyState === 'loading') {
 
 <footer class="ca-platform-footer" style="text-align:center;padding:24px;color:var(--text-3);font-size:12px;border-top:1px solid var(--border);margin-top:32px;">
   <img src="assets/chase-icon-filled.png" alt="" width="20" height="20" style="opacity:0.5;vertical-align:middle;margin-right:6px">
-  Chase Analytics ? MLB Offensive Intelligence
+  Chase Analytics | MLB Offensive Intelligence
 </footer>
   <script src="oem_overhaul.js?v=20260603m"></script>
   <script src="mlbma_standings.js?v=20260527s"></script>
-  <script src="chase_nav.js?v=20260618a"></script>
+  <script src="chase_nav.js?v=20260701a"></script>
 </body>
 </html>

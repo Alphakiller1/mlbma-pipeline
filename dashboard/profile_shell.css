@@ -560,3 +560,20 @@ body.player-profile-page .bp-usage-table .bp-tag {
   font-size: 18px !important;
   font-weight: 800 !important;
 }
+
+@media (max-width: 767px) {
+  body.team-profile-page .hub-pill,
+  body.team-profile-page .tp-unit-nav .hub-pill,
+  body.team-profile-page .tp-unit-nav .tp-unit-tab,
+  body.player-profile-page .hub-pill,
+  body.player-profile-page .window-pill {
+    min-height: 44px !important;
+    padding: 8px 14px !important;
+  }
+
+  body.pitcher-profile-page
+    .pp-hero-search
+    .tp-team-picker__search {
+    min-height: 44px;
+  }
+}

@@ -9,6 +9,7 @@ and environment variables to predict what a real run would do.
 from __future__ import annotations
 
 import os
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -21,7 +22,8 @@ class Step:
     n: str
     label: str
     dep_key: str = ""
-    category: str = "none"  # none | fangraphs | sheets_push | sheets_partial | supabase
+    # none | fangraphs | sheets_push | sheets_partial | supabase | model_sync | slate_guardrail
+    category: str = "none"
     produces: list[str] = field(default_factory=list)
 
 
@@ -69,9 +71,11 @@ STEPS: list[Step] = [
          category="sheets_partial", produces=["team_profiles.csv"]),
     Step("21b", "outputs.push_pitch_mix", dep_key="outputs.push_pitch_mix", category="sheets_push"),
     Step("21c", "outputs.push_supabase (hub_dataset mirror)", category="supabase"),
+    Step("22", "outputs.notify_mlb_model (dispatch MLB Model deployment)", category="model_sync"),
 ]
 
 INSTAGRAM_STEP = Step("opt", "outputs.push_instagram (Instagram auto-post)", category="sheets_push")
+GUARDRAIL_STEP = Step("guard", "assert_slate_fresh (stale-slate guardrail, end of run)", category="slate_guardrail")
 
 
 def fangraphs_readiness() -> tuple[bool, str]:
@@ -96,14 +100,25 @@ def supabase_readiness() -> bool:
     return bool(url and key)
 
 
+def model_sync_readiness() -> bool:
+    token = (
+        os.getenv("MLB_MODEL_GITHUB_TOKEN")
+        or os.getenv("GH_TOKEN")
+        or os.getenv("GITHUB_TOKEN")
+        or ""
+    ).strip()
+    return bool(token) or shutil.which("gh") is not None
+
+
 def build_plan(
     skip_fangraphs: bool,
     google_ok: bool,
     fg_ready: bool,
     fg_reason: str,
     supabase_ok: bool,
+    model_sync_ok: bool,
 ) -> list[tuple[str, str, str, str]]:
-    """Return (number, label, status, reason) for each step + the Instagram bonus row.
+    """Return (number, label, status, reason) for each step + the Instagram/guardrail bonus rows.
 
     Simulates the run in order: a step predicted RUN is assumed to produce its
     normal output files, which then satisfy later steps' file dependencies --
@@ -111,8 +126,9 @@ def build_plan(
     """
     virtual_files = {p.name for p in Path(DATA_DIR).glob("*.csv")}
     rows: list[tuple[str, str, str, str]] = []
+    supabase_mirror_ran = False
 
-    for step in STEPS + [INSTAGRAM_STEP]:
+    for step in STEPS + [INSTAGRAM_STEP, GUARDRAIL_STEP]:
         status, reason = "RUN", ""
 
         if step is INSTAGRAM_STEP and os.getenv("INSTAGRAM_AUTO_POST", "").strip().lower() not in {"1", "true", "yes"}:
@@ -139,6 +155,21 @@ def build_plan(
         if status == "RUN" and step.category == "sheets_partial" and not google_ok:
             reason = "Sheets push portion will skip (no google_credentials.json)"
 
+        if step.category == "supabase":
+            supabase_mirror_ran = status == "RUN"
+
+        if status == "RUN" and step.category == "model_sync":
+            if not supabase_mirror_ran:
+                status, reason = "SKIP", "hub mirror (step 21c) did not run/succeed"
+            elif not model_sync_ok:
+                status, reason = "SKIP", "MLB_MODEL_GITHUB_TOKEN/GH_TOKEN not set and gh CLI not on PATH"
+
+        if step.category == "slate_guardrail":
+            if not supabase_ok:
+                status, reason = "SKIP", "Supabase env not set -- guardrail can't verify hub slate (non-fatal)"
+            else:
+                status, reason = "RUN", "outcome depends on live hub data at runtime, not preflight-predictable"
+
         if status == "RUN":
             virtual_files.update(step.produces)
 
@@ -151,6 +182,7 @@ def print_report(python_path: Path, skip_fangraphs: bool = False, full: bool = T
     google_ok = check_google_credentials()
     fg_ready, fg_reason = fangraphs_readiness()
     supabase_ok = supabase_readiness()
+    model_sync_ok = model_sync_readiness()
 
     print("=" * 64)
     print("MLBMA Pipeline Doctor")
@@ -168,7 +200,7 @@ def print_report(python_path: Path, skip_fangraphs: bool = False, full: bool = T
         print(f"  Chrome:              {'found: ' + CHROME_PATH if chrome_ok else 'NOT FOUND (' + CHROME_PATH + ')'}")
 
     print("\n-- Step plan (RUN / SKIP / FAIL) --")
-    rows = build_plan(skip_fangraphs, google_ok, fg_ready, fg_reason, supabase_ok)
+    rows = build_plan(skip_fangraphs, google_ok, fg_ready, fg_reason, supabase_ok, model_sync_ok)
     for n, label, status, reason in rows:
         suffix = f"  -- {reason}" if reason else ""
         print(f"  [{status:4}] {n:>4}  {label}{suffix}")

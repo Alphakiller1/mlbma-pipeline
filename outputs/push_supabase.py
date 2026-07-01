@@ -24,6 +24,7 @@ import urllib.request
 from pathlib import Path
 
 from core.config import SHEET_ID, SHEET_TABS, SUPABASE_DASHBOARD
+from outputs.validate import check_rows, reject
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -49,9 +50,21 @@ SUPABASE_SECRET_KEY = (
 )
 HUB_TABLE = "hub_dataset"
 
-# Single source of truth: the tabs the dashboard is configured to read from Supabase
-# (core.config.SUPABASE_DASHBOARD["tabs"]). Extend coverage by editing that list.
-DEFAULT_TABS = list(SUPABASE_DASHBOARD.get("tabs", []))
+# Research tabs feed the dashboard. Slate/run tabs also feed downstream consumers such as
+# the unified MLB Model, while the browser remains free to read the live Sheets copies.
+#
+# Today_Matchups is intentionally NOT mirrored here: scrapers.scrape_matchups pushes it to
+# the hub DIRECTLY from the freshly-built slate (decoupled from the Google Sheets write).
+# Re-mirroring it from gviz would re-read the sheet — which may be stale when the Sheets
+# write failed — and clobber that fresh copy with yesterday's slate.
+SLATE_TABS = [
+    SHEET_TABS["today_lineups"],
+    SHEET_TABS["last_updated"],
+]
+DEFAULT_TABS = list(dict.fromkeys([
+    *SUPABASE_DASHBOARD.get("tabs", []),
+    *SLATE_TABS,
+]))
 
 
 def _gviz_csv_url(tab: str) -> str:
@@ -94,11 +107,20 @@ def upsert_dataset(name: str, rows: list[dict]) -> None:
 
 
 def push_datasets(tabs: list[str] | None = None) -> dict[str, int]:
-    """Backfill / refresh the given tabs into hub_dataset. Returns {tab: row_count}."""
+    """Backfill / refresh the given tabs into hub_dataset. Returns {tab: row_count}.
+
+    Each fetch is validated before the upsert: an empty or error-page gviz response
+    must not overwrite a healthy hub_dataset row (the failure mode that once froze
+    hub_dataset). Rejected tabs are skipped and logged, never written.
+    """
     tabs = tabs or DEFAULT_TABS
     counts: dict[str, int] = {}
     for tab in tabs:
         rows = fetch_csv_rows(tab)
+        problems = check_rows(tab, rows, min_rows=1)
+        if problems:
+            reject(f"hub_dataset[{tab}]", problems)
+            continue
         upsert_dataset(tab, rows)
         counts[tab] = len(rows)
         print(f"  Pushed hub_dataset[{tab}]: {len(rows)} rows")
@@ -116,17 +138,22 @@ def _build_team_rankings_snapshot() -> None:
         print(f"  WARNING: team rankings snapshot build failed: {exc}")
 
 
-def run() -> None:
+def run() -> bool:
     if not SUPABASE_URL or not SUPABASE_SECRET_KEY:
         print(
             "WARNING: Skipping Supabase mirror — set SUPABASE_URL and "
             "SUPABASE_SECRET_KEY in .env (dashboard will use Google Sheets)."
         )
-        return
+        return False
     print("Pushing dashboard datasets to Supabase (hub_dataset)...")
     counts = push_datasets()
     _build_team_rankings_snapshot()
     print("Done:", json.dumps(counts))
+    missing = [tab for tab in DEFAULT_TABS if tab not in counts]
+    if missing:
+        print(f"WARNING: Supabase mirror incomplete; rejected/missing tabs: {missing}")
+        return False
+    return True
 
 
 if __name__ == "__main__":
