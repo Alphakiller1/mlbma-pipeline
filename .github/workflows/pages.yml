@@ -68,11 +68,14 @@ jobs:
           python -m http.server 8765 >/tmp/mlbma-http.log 2>&1 &
           sleep 2
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
-      - name: Enforce 375px mobile contract
+          python scripts/platform_ui_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
+      - name: Enforce 360px, 375px, and 390px mobile contract
         run: |
           python -m http.server 8766 >/tmp/mlbma-http-mobile.log 2>&1 &
           sleep 2
+          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --width 360 --height 800 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --strict
+          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --width 390 --height 844 --strict
 
   deploy:
     if: github.event_name != 'pull_request'

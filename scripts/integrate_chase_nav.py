@@ -21,31 +21,31 @@ PAGES = [
     "glossary.html",
 ]
 
-CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css">'
-DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css">'
+CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css?v=20260701a">'
+DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">'
 RESEARCH_CSS = '<link rel="stylesheet" href="research_lab.css">'
 FAVICON = '<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">'
-CHASE_JS = '<script src="chase_nav.js"></script>'
+CHASE_JS = '<script src="chase_nav.js?v=20260701a"></script>'
 ASSETS_JS = '<script src="mlbma_assets.js"></script>'
 
 NAV_BLOCK_RE = re.compile(
-    r'(?:<!-- Chase Analytics navigation[^\n]*\n)?'
+    r'(?:\ufeff*\s*<!-- Chase Analytics navigation[^\n]*-->\s*)*'
     r'<header class="chase-header" id="chaseHeader">[\s\S]*?'
     r'</header>\s*\n'
     r'<div class="chase-mobile-overlay"[\s\S]*?'
     r'<span id="mobileLastUpdated">[^<]*</span>[\s\S]*?'
-    r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+    r'(?=\s*<script|\s*<select|\s*<datalist|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
     re.MULTILINE,
 )
 
 # Truncated drawer — mobile menu never closed (content nested inside hidden panel).
 NAV_BLOCK_TRUNCATED_RE = re.compile(
-    r'(?:<!-- Chase Analytics navigation[^\n]*\n)?'
+    r'(?:\ufeff*\s*<!-- Chase Analytics navigation[^\n]*-->\s*)*'
     r'<header class="chase-header" id="chaseHeader">[\s\S]*?'
     r'</header>\s*\n'
     r'<div class="chase-mobile-overlay"[\s\S]*?'
     r'<div class="chase-mobile-brand"[\s\S]*?</div>\s*\n'
-    r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+    r'(?=\s*<script|\s*<select|\s*<datalist|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
     re.MULTILINE,
 )
 
@@ -66,7 +66,7 @@ MOBILE_DRAWER_TAIL = (
     "  <div class=\"chase-mobile-status\">\n"
     "    <div class=\"chase-timestamp\">\n"
     "      <span class=\"chase-pipeline-dot\" title=\"Pipeline: Fresh\"></span>\n"
-    "      <span id=\"mobileLastUpdated\">syncing…</span>\n"
+    "      <span id=\"mobileLastUpdated\">Syncing</span>\n"
     "    </div>\n"
     "  </div>\n"
     "</div>\n\n"
@@ -86,7 +86,7 @@ ORPHAN_MOBILE_NAV_RE = re.compile(
 
 
 def ensure_head_links(html: str) -> str:
-    if DESIGN_CSS not in html:
+    if "mlbma_design_system.css" not in html:
         if '<link rel="stylesheet" href="mlbma_ui.css">' in html:
             html = html.replace(
                 '<link rel="stylesheet" href="mlbma_ui.css">',
@@ -125,6 +125,33 @@ def ensure_body_script(html: str) -> str:
     return html
 
 
+def sync_nav_asset_versions(html: str) -> str:
+    design_seen = False
+
+    def design_replacement(_match: re.Match[str]) -> str:
+        nonlocal design_seen
+        if design_seen:
+            return ""
+        design_seen = True
+        return DESIGN_CSS
+
+    html = re.sub(
+        r'<link rel="stylesheet" href="mlbma_design_system\.css(?:\?v=[^"]+)?">',
+        design_replacement,
+        html,
+    )
+    html = re.sub(
+        r'<link rel="stylesheet" href="chase_nav\.css(?:\?v=[^"]+)?">',
+        CHASE_CSS,
+        html,
+    )
+    return re.sub(
+        r'<script src="chase_nav\.js(?:\?v=[^"]+)?"( defer)?></script>',
+        lambda match: CHASE_JS.replace("></script>", f"{match.group(1) or ''}></script>"),
+        html,
+    )
+
+
 def replace_nav_wrap(html: str) -> str:
     for old in (
         '  <div class="mlbma-nav-wrap" data-mlbma-nav></div>\n',
@@ -135,9 +162,9 @@ def replace_nav_wrap(html: str) -> str:
     return html
 
 
-NAV_COMMENT = "<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->\n"
+NAV_COMMENT = "<!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->\n"
 NAV_COMMENT_RE = re.compile(
-    r"(?:<!-- Chase Analytics navigation[^\n]*\n)+",
+    r"(?:\ufeff*<!-- Chase Analytics navigation[^\n]*-->\s*)+",
     re.MULTILINE,
 )
 
@@ -145,7 +172,8 @@ NAV_COMMENT_RE = re.compile(
 def dedupe_nav_comments(html: str) -> str:
     if 'id="chaseHeader"' not in html:
         return html
-    return NAV_COMMENT_RE.sub(NAV_COMMENT, html, count=1)
+    html = NAV_COMMENT_RE.sub(NAV_COMMENT, html, count=1)
+    return html.replace("><!-- Chase Analytics navigation", ">\n<!-- Chase Analytics navigation", 1)
 
 
 def strip_orphan_mobile_nav(html: str) -> str:
@@ -178,12 +206,10 @@ def sync_nav_block(html: str) -> str:
     if 'id="chaseHeader"' not in html:
         return html
     html = dedupe_nav_comments(html)
-    html = strip_orphan_mobile_nav(html)
     if NAV_BLOCK_RE.search(html):
         html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
     elif NAV_BLOCK_TRUNCATED_RE.search(html):
         html = NAV_BLOCK_TRUNCATED_RE.sub(NAV_HTML + "\n", html, count=1)
-    html = strip_orphan_mobile_nav(html)
     html = ensure_mobile_nav_complete(html)
     return dedupe_nav_comments(html)
 
@@ -216,13 +242,15 @@ def main() -> None:
         text = path.read_text(encoding="utf-8")
         orig = text
         text = ensure_head_links(text)
+        text = sync_nav_asset_versions(text)
         text = replace_nav_wrap(text)
         text = strip_orphan_mobile_nav(text)
         text = sync_nav_block(text)
         text = insert_nav_at_body(text)
         text = ensure_body_script(text)
         if text != orig:
-            path.write_text(text, encoding="utf-8", newline="\n")
+            with path.open("w", encoding="utf-8", newline="\n") as handle:
+                handle.write(text)
             print(f"OK {name}")
         else:
             print(f"UNCHANGED {name}")

@@ -11,7 +11,7 @@
   --shell-pad-mobile: 12px;
   --shell-pad-tablet: 18px;
   --section-gap-mobile: 10px;
-  --touch-target-min: 40px;
+  --touch-target-min: 44px;
 }
 
 /* Prevent horizontal page scroll on small viewports */
@@ -484,9 +484,19 @@
   }
 }
 
+@media (max-width: 767px) {
+  .hub-pill,
+  .lv-pill,
+  .ca-pill-btn,
+  .bp-pt__line-input {
+    min-height: var(--touch-target-min, 44px);
+  }
+}
+
 /* Touch — larger radar / chart hit targets */
 @media (hover: none) and (pointer: coarse) {
   .hub-pill,
+  .lv-pill,
   .chase-nav-link,
   .chase-dropdown-item {
     min-height: var(--touch-target-min);

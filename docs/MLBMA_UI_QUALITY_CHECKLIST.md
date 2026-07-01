@@ -39,10 +39,11 @@ verify it."
 - [ ] Change is **scoped** — no parallel implementation of an existing view, no dead code.
 
 ## 5. Mobile is first-class (Contract §8.8)
-- [ ] Verified at **375px**: no horizontal overflow, readable type, tap targets ≥ 44px.
-      Run `scripts/mobile_overflow_audit.py --strict` (the same blocking audit `pages.yml` runs)
-      against the page you changed. Page errors, horizontal overflow, and visible non-inline
-      interactive targets below 44px must all remain at 0.
+- [ ] Verified at **360px, 375px, and 390px**: no horizontal overflow, readable type, tap targets
+      >= 44px. Run `scripts/mobile_overflow_audit.py --strict` with the relevant `--width` and
+      `--height` values (the same three blocking audits `pages.yml` runs) against the page you
+      changed. Page errors, horizontal overflow, and rendered non-inline interactive targets
+      below 44px must all remain at 0.
 - [ ] Dense tables/grids degrade correctly (via `mobile_cardify.js`) — not just shrunk-to-unreadable.
 
 ## 6. Website surfaces (Contract §8, only if you touched the public site)

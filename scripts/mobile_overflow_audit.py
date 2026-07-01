@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-"""375px mobile audit — horizontal overflow & tap-target check (design contract §8.8).
+"""Mobile audit for horizontal overflow and tap targets (design contract section 8.8).
 
 The dashboards are dense desktop layouts; the contract makes 375px a first-class
-viewport (no horizontal overflow, tap targets >= 44px). A manual eyeball doesn't
-scale and silently regresses. This harness loads each real page at an iPhone-class
-375x812 viewport and measures, per page:
+viewport (no horizontal overflow, tap targets >= 44px). A manual eyeball does not
+scale and silently regresses. This harness loads each real page at a configurable
+mobile viewport and measures, per page:
 
   * horizontal overflow: documentElement.scrollWidth vs innerWidth, plus the worst
     offending elements (the ones whose right edge spills past the viewport), so a
@@ -44,7 +44,7 @@ DEFAULT_PAGES = [
     "dashboard/index.html",
 ]
 
-VIEWPORT = {"width": 375, "height": 812}
+DEFAULT_VIEWPORT = {"width": 375, "height": 812}
 TAP_MIN = 44
 SETTLE_MS = 1800
 
@@ -79,8 +79,8 @@ _TAP_JS = """
     const r = el.getBoundingClientRect();
     const style = getComputedStyle(el);
     if (r.width === 0 || r.height === 0) continue;
-    if (r.right <= 0 || r.left >= innerWidth || r.bottom <= 0 || r.top >= innerHeight) continue;
     if (style.visibility === 'hidden' || style.pointerEvents === 'none') continue;
+    if (el.closest('[aria-hidden="true"]')) continue;
     if (el.disabled || el.getAttribute('aria-disabled') === 'true') continue;
     if (el.matches('input[type="hidden"]')) continue;
 
@@ -119,7 +119,14 @@ class PageAudit:
     error: str = ""
 
 
-def audit(base_url: str, pages: List[str], timeout_ms: int, channel: str = "") -> List[PageAudit]:
+def audit(
+    base_url: str,
+    pages: List[str],
+    timeout_ms: int,
+    channel: str = "",
+    width: int = DEFAULT_VIEWPORT["width"],
+    height: int = DEFAULT_VIEWPORT["height"],
+) -> List[PageAudit]:
     results: List[PageAudit] = []
     with sync_playwright() as p:
         # channel="chrome" drives a locally-installed Google Chrome (no Chromium
@@ -128,7 +135,11 @@ def audit(base_url: str, pages: List[str], timeout_ms: int, channel: str = "") -
         if channel:
             launch_kwargs["channel"] = channel
         browser = p.chromium.launch(**launch_kwargs)
-        ctx = browser.new_context(viewport=VIEWPORT, device_scale_factor=2, is_mobile=True)
+        ctx = browser.new_context(
+            viewport={"width": width, "height": height},
+            device_scale_factor=2,
+            is_mobile=True,
+        )
         page = ctx.new_page()
         for path in pages:
             res = PageAudit(path=path)
@@ -143,7 +154,7 @@ def audit(base_url: str, pages: List[str], timeout_ms: int, channel: str = "") -
                 taps = page.evaluate(_TAP_JS, TAP_MIN)
                 hamburger = page.locator("#hamburgerBtn")
                 if hamburger.count() and hamburger.is_visible():
-                    page.evaluate("document.getElementById('hamburgerBtn').click()")
+                    hamburger.click(force=True, timeout=2000)
                     page.wait_for_timeout(300)
                     taps.extend(page.evaluate(_TAP_JS, TAP_MIN))
 
@@ -165,9 +176,11 @@ def audit(base_url: str, pages: List[str], timeout_ms: int, channel: str = "") -
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="375px horizontal-overflow / tap-target audit.")
+    ap = argparse.ArgumentParser(description="Mobile horizontal-overflow / tap-target audit.")
     ap.add_argument("--base-url", default="http://127.0.0.1:8765")
     ap.add_argument("--timeout-ms", type=int, default=45000)
+    ap.add_argument("--width", type=int, default=DEFAULT_VIEWPORT["width"])
+    ap.add_argument("--height", type=int, default=DEFAULT_VIEWPORT["height"])
     ap.add_argument(
         "--strict",
         action="store_true",
@@ -177,9 +190,16 @@ def main() -> int:
     ap.add_argument("--channel", default="", help='browser channel, e.g. "chrome" for system Chrome')
     args = ap.parse_args()
 
-    results = audit(args.base_url, args.pages, args.timeout_ms, args.channel)
+    results = audit(
+        args.base_url,
+        args.pages,
+        args.timeout_ms,
+        args.channel,
+        args.width,
+        args.height,
+    )
 
-    print("MOBILE_375_AUDIT")
+    print(f"MOBILE_{args.width}x{args.height}_AUDIT")
     overflowing = 0
     undersized = 0
     errors = 0

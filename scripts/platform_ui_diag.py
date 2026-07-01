@@ -30,15 +30,25 @@ PAGES = [
     "dashboard/glossary.html",
 ]
 
+OPTIONAL_LOCAL_CSVS = (
+    "/data/sp_vs_LHH.csv",
+    "/data/sp_vs_RHH.csv",
+    "/data/sp_standard.csv",
+    "/data/sp_gamelog.csv",
+)
 
-def run(base_url: str, timeout_ms: int) -> List[Check]:
+
+def run(base_url: str, timeout_ms: int, channel: str = "") -> List[Check]:
     results: List[Check] = []
 
     def add(page: str, name: str, ok: bool, note: str = "") -> None:
         results.append(Check(page=page, name=name, ok=bool(ok), note=note))
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        launch_kwargs = {"headless": True}
+        if channel:
+            launch_kwargs["channel"] = channel
+        browser = p.chromium.launch(**launch_kwargs)
         for rel in PAGES:
             page = browser.new_page()
             page.set_default_timeout(timeout_ms)
@@ -46,7 +56,15 @@ def run(base_url: str, timeout_ms: int) -> List[Check]:
             page_name = rel.split("?")[0]
             console_errors: List[str] = []
             page_errors: List[str] = []
-            page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+
+            def capture_console(msg) -> None:
+                if msg.type != "error":
+                    return
+                location = msg.location or {}
+                source = location.get("url", "")
+                console_errors.append(f"{msg.text} [{source}]" if source else msg.text)
+
+            page.on("console", capture_console)
             page.on("pageerror", lambda err: page_errors.append(str(err)))
 
             try:
@@ -130,6 +148,7 @@ def run(base_url: str, timeout_ms: int) -> List[Check]:
             hard_console = [
                 e for e in console_errors
                 if any(sig in e for sig in ("ReferenceError", "SyntaxError", "TypeError", "Failed to load resource"))
+                and not ("404" in e and any(path in e for path in OPTIONAL_LOCAL_CSVS))
             ]
             add(page_name, "no console errors", len(hard_console) == 0, " | ".join(hard_console[:4]))
             page.close()
@@ -143,9 +162,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run platform-wide UI diagnostics.")
     parser.add_argument("--base-url", default="http://127.0.0.1:8765")
     parser.add_argument("--timeout-ms", type=int, default=30000)
+    parser.add_argument(
+        "--channel",
+        default="",
+        help='browser channel, e.g. "chrome" for a locally installed Google Chrome',
+    )
     args = parser.parse_args()
 
-    checks = run(args.base_url, args.timeout_ms)
+    checks = run(args.base_url, args.timeout_ms, args.channel)
     fail = [c for c in checks if not c.ok]
     print("PLATFORM_UI_DIAGNOSTIC")
     for c in checks:
@@ -160,4 +184,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
