@@ -21,7 +21,7 @@ PAGES = [
     "glossary.html",
 ]
 
-CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css?v=20260701a">'
+CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css?v=20260701c">'
 DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">'
 RESEARCH_CSS = '<link rel="stylesheet" href="research_lab.css">'
 FAVICON = '<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">'

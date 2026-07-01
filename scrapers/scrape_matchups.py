@@ -5,6 +5,8 @@ import os
 import gspread
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
+from core.compute_pitching import calc_individual_pitching_scores
+from core.name_utils import normalize_player_name, player_last_name
 from core.slate_date import eastern_slate_date_iso
 
 HEADERS = {
@@ -66,6 +68,11 @@ def load_sp_stats():
         return pd.DataFrame()
     df = pd.read_csv(path)
     df = df[~df["Tm"].str.contains("Tms", na=False)]
+    scores = calc_individual_pitching_scores(df)
+    if not scores.empty:
+        score_map = scores.set_index("Name")["PitchScore"]
+        df = df.copy()
+        df["PitchScore"] = df["Name"].map(score_map)
     return df
 
 def load_pitching_scores():
@@ -83,19 +90,40 @@ def load_osi():
         return pd.DataFrame(), pd.DataFrame()
     return pd.read_csv(rhp_path), pd.read_csv(lhp_path)
 
-def get_sp_stats(sp_name, sp_df):
+def _empty_sp_stats():
+    return {
+        "K%": "--", "BB%": "--", "HR/9": "--", "WHIP": "--",
+        "FIP": "--", "IP": "--", "PitchScore": None,
+    }
+
+
+def get_sp_stats(sp_name, sp_df, team=None):
     if sp_df.empty or sp_name == "TBD":
-        return {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
-    match = sp_df[sp_df["Name"].str.contains(sp_name.split()[-1], case=False, na=False)]
+        return _empty_sp_stats()
+
+    target = normalize_player_name(sp_name)
+    names = sp_df["Name"].map(normalize_player_name)
+    match = sp_df[names == target]
     if match.empty:
-        return {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
+        last = player_last_name(sp_name)
+        match = sp_df[sp_df["Name"].map(player_last_name) == last]
+        if team and "Tm" in match.columns:
+            team_match = match[match["Tm"].astype(str).str.upper() == str(team).upper()]
+            if not team_match.empty:
+                match = team_match
+    if match.empty:
+        return _empty_sp_stats()
+    if len(match) > 1:
+        return _empty_sp_stats()
     row = match.iloc[0]
     return {
         "K%": row.get("K%", "--"),
         "BB%": row.get("BB%", "--"),
         "HR/9": row.get("HR/9", "--"),
+        "WHIP": row.get("WHIP", "--"),
         "FIP": row.get("FIP", "--"),
         "IP": row.get("IP", "--"),
+        "PitchScore": row.get("PitchScore"),
     }
 
 def get_team_osi(team, hand, rhp_df, lhp_df):
@@ -285,16 +313,18 @@ def build_matchups():
 
     rows = []
     for _, g in games.iterrows():
-        away_stats = get_sp_stats(g["Away_SP"], sp_df)
-        home_stats = get_sp_stats(g["Home_SP"], sp_df)
+        away_stats = get_sp_stats(g["Away_SP"], sp_df, g["Away_Team"])
+        home_stats = get_sp_stats(g["Home_SP"], sp_df, g["Home_Team"])
 
         # Lineup OSI vs opposing SP handedness
         away_lineup_osi = get_team_osi(g["Away_Team"], g["Home_SP_Hand"], rhp_df, lhp_df)
         home_lineup_osi = get_team_osi(g["Home_Team"], g["Away_SP_Hand"], rhp_df, lhp_df)
 
-        # Team pitching score (composite SP/staff quality)
-        away_pitch_score = get_pitch_score(g["Away_Team"], ps_df)
-        home_pitch_score = get_pitch_score(g["Home_Team"], ps_df)
+        # Keep full-staff strength separate from each probable starter's score.
+        away_team_pitch_score = get_pitch_score(g["Away_Team"], ps_df)
+        home_team_pitch_score = get_pitch_score(g["Home_Team"], ps_df)
+        away_pitch_score = away_stats["PitchScore"]
+        home_pitch_score = home_stats["PitchScore"]
 
         # Edge
         if away_lineup_osi and home_lineup_osi:
@@ -314,15 +344,19 @@ def build_matchups():
             "Away_K%": away_stats["K%"],
             "Away_BB%": away_stats["BB%"],
             "Away_HR9": away_stats["HR/9"],
+            "Away_WHIP": away_stats["WHIP"],
             "Away_FIP": away_stats["FIP"],
             "Away_PitchScore": away_pitch_score,
+            "Away_Team_PitchScore": away_team_pitch_score,
             "Home_SP": g["Home_SP"],
             "Home_Hand": g["Home_SP_Hand"],
             "Home_K%": home_stats["K%"],
             "Home_BB%": home_stats["BB%"],
             "Home_HR9": home_stats["HR/9"],
+            "Home_WHIP": home_stats["WHIP"],
             "Home_FIP": home_stats["FIP"],
             "Home_PitchScore": home_pitch_score,
+            "Home_Team_PitchScore": home_team_pitch_score,
             "Away_OSI": away_lineup_osi,
             "Home_OSI": home_lineup_osi,
             "Lineup_Edge": edge,

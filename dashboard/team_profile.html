@@ -10,8 +10,8 @@
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260701a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260610">
+<link rel="stylesheet" href="chase_nav.css?v=20260701c">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260701c">
 <link rel="stylesheet" href="team_profile.css?v=20260630a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260624a">
 <link rel="stylesheet" href="profile_shell.css?v=20260630c">
@@ -29,7 +29,7 @@
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260605c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260609a"></script>
+<script src="matchup_shared.js?v=20260701c"></script>
 <script src="mlbma_standings.js?v=20260618e"></script>
 <script src="team_profile_picker.js?v=20260618b"></script>
 <script src="profile_shell.js?v=20260531p"></script>
@@ -38,11 +38,11 @@
 <script src="team_profile_staff.js?v=20260608s"></script>
 <script src="team_profile_intel.js?v=20260618g"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
-<script src="platform_dashboard.js?v=20260618a"></script>
+<script src="platform_dashboard.js?v=20260701c"></script>
 <script src="profile_controls.js?v=20260602w"></script>
 <script src="bullpen_usage.js?v=20260610b"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="team_profile.html"></script>
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701a">
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
 
 </head>
 <body class="team-profile-page">
@@ -1105,7 +1105,8 @@ function rebuildSpPitchPool() {
     return {
       k: pickCol(row, ['K_pct']),
       bb: pickCol(row, ['BB_pct']),
-      hr: num(pickCol(row, ['HR9', 'HR/9']))
+      hr: num(pickCol(row, ['HR9', 'HR/9'])),
+      whip: num(pickCol(row, ['WHIP', 'whip']))
     };
   });
   if (S && S.computePitchScoreFromRates && SP_PITCH_POOL.length) {
@@ -1115,7 +1116,8 @@ function rebuildSpPitchPool() {
         pickCol(row, ['K_pct']),
         pickCol(row, ['BB_pct']),
         num(pickCol(row, ['HR9', 'HR/9'])),
-        SP_PITCH_POOL
+        SP_PITCH_POOL,
+        num(pickCol(row, ['WHIP', 'whip']))
       );
       if (ps != null) row.PitchScore = ps;
     });
@@ -1132,7 +1134,8 @@ function poolPitchScore(sp) {
     pickCol(sp, ['K_pct']),
     pickCol(sp, ['BB_pct']),
     num(pickCol(sp, ['HR9', 'HR/9'])),
-    SP_PITCH_POOL
+    SP_PITCH_POOL,
+    num(pickCol(sp, ['WHIP', 'whip']))
   );
 }
 

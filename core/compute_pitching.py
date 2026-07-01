@@ -203,6 +203,47 @@ def park_adjust_allowed_value(value, pitcher_team: str, home_away: str) -> float
     return float(value) / pf
 
 
+def calc_individual_pitching_scores(sp_std: pd.DataFrame | None) -> pd.DataFrame:
+    """Return one calibrated four-input Pitch Score per pitcher."""
+    columns = ["Name", "Tm", "K%", "BB%", "HR/9", "WHIP", "PitchScore"]
+    if sp_std is None or sp_std.empty:
+        return pd.DataFrame(columns=columns)
+
+    required = {"Name", "K%", "BB%", "HR/9", "WHIP"}
+    if not required.issubset(sp_std.columns):
+        return pd.DataFrame(columns=columns)
+
+    keep = [
+        col
+        for col in ("Name", "Tm", "K%", "BB%", "HR/9", "WHIP", "IP")
+        if col in sp_std.columns
+    ]
+    df = sp_std[keep].copy()
+    if "Tm" in df.columns:
+        df = df[~df["Tm"].astype(str).str.contains("Tms", na=False)]
+    if "IP" in df.columns:
+        df["IP"] = pd.to_numeric(df["IP"], errors="coerce")
+        df = df[df["IP"] > 0]
+
+    df["K%"] = clean_pct(df["K%"])
+    df["BB%"] = clean_pct(df["BB%"])
+    df["HR/9"] = pd.to_numeric(df["HR/9"], errors="coerce")
+    df["WHIP"] = pd.to_numeric(df["WHIP"], errors="coerce")
+    df = df.dropna(subset=["Name", "K%", "BB%", "HR/9", "WHIP"])
+    if df.empty:
+        return pd.DataFrame(columns=columns)
+
+    df["PitchScore"] = (
+        W_K * normalize(df["K%"])
+        + W_BB * invert(df["BB%"])
+        + W_HR9 * invert(df["HR/9"])
+        + W_WHIP * invert(df["WHIP"])
+    ).round(1)
+    if "Tm" not in df.columns:
+        df["Tm"] = None
+    return df[columns].reset_index(drop=True)
+
+
 def calc_pitching_score(sp_std):
     df = sp_std[["Tm", "K%", "BB%", "HR/9", "WHIP", "IP"]].copy()
     df = df[df["Tm"].notna()]

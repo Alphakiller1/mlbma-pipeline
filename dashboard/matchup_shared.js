@@ -1280,21 +1280,33 @@
     });
   }
 
-  /** Client-side PitchScore fallback when sheet value missing (K/BB/HR only — team tab uses pipeline WHIP). */
-  function computePitchScoreFromRates(kPct, bbPct, hr9, pool) {
+  function scoreComponent(values, index) {
+    var value = values && values[index];
+    return value == null || isNaN(value) ? 50 : value;
+  }
+
+  /** Client fallback mirrors the pipeline's four-input score when a WHIP pool is available. */
+  function computePitchScoreFromRates(kPct, bbPct, hr9, pool, whip) {
     var k = pctDecimal(kPct);
     var bb = pctDecimal(bbPct);
     var hr = hr9 != null && !isNaN(hr9) ? Number(hr9) : null;
+    var wp = whip != null && !isNaN(whip) ? Number(whip) : null;
     if (k == null || bb == null || hr == null) return null;
     if (pool && pool.length) {
       var kArr = pool.map(function(p) { return pctDecimal(p.k); });
       var bbArr = pool.map(function(p) { return pctDecimal(p.bb); });
       var hrArr = pool.map(function(p) { return p.hr; });
+      var whipArr = pool.map(function(p) {
+        return p.whip != null && !isNaN(p.whip) ? Number(p.whip) : null;
+      });
+      var useWhip = wp != null && whipArr.filter(function(v) { return v != null; }).length >= 2;
       var nk = normalizePool(kArr);
       var nbb = invertPool(normalizePool(bbArr));
       var nhr = invertPool(normalizePool(hrArr));
+      var nwhip = useWhip ? invertPool(normalizePool(whipArr)) : null;
       var idx = pool.findIndex(function(p) {
-        return pctDecimal(p.k) === k && pctDecimal(p.bb) === bb && p.hr === hr;
+        var sameCore = pctDecimal(p.k) === k && pctDecimal(p.bb) === bb && p.hr === hr;
+        return sameCore && (!useWhip || Number(p.whip) === wp);
       });
       if (idx < 0) {
         var allK = kArr.concat([k]);
@@ -1303,9 +1315,22 @@
         nk = normalizePool(allK);
         nbb = invertPool(normalizePool(allBB));
         nhr = invertPool(normalizePool(allHR));
+        if (useWhip) nwhip = invertPool(normalizePool(whipArr.concat([wp])));
         idx = allK.length - 1;
       }
-      return Math.round((0.4 * (nk[idx] || 50) + 0.35 * (nbb[idx] || 50) + 0.25 * (nhr[idx] || 50)) * 10) / 10;
+      if (useWhip) {
+        return Math.round((
+          0.30 * scoreComponent(nk, idx)
+          + 0.20 * scoreComponent(nbb, idx)
+          + 0.20 * scoreComponent(nhr, idx)
+          + 0.30 * scoreComponent(nwhip, idx)
+        ) * 10) / 10;
+      }
+      return Math.round((
+        0.4 * scoreComponent(nk, idx)
+        + 0.35 * scoreComponent(nbb, idx)
+        + 0.25 * scoreComponent(nhr, idx)
+      ) * 10) / 10;
     }
     var kPts = k * 100;
     var bbInv = (1 - bb) * 100;
@@ -1349,14 +1374,16 @@
       return {
         k: pickCol(row, 'K_pct', 'K%', 'k_pct'),
         bb: pickCol(row, 'BB_pct', 'BB%', 'bb_pct'),
-        hr: numOrNull(pickCol(row, 'HR9', 'HR/9', 'hr9'))
+        hr: numOrNull(pickCol(row, 'HR9', 'HR/9', 'hr9')),
+        whip: numOrNull(pickCol(row, 'WHIP', 'whip'))
       };
     });
     rows.forEach(function(row, i) {
       var kPct = pickCol(row, 'K_pct', 'K%', 'k_pct');
       var bbPct = pickCol(row, 'BB_pct', 'BB%', 'bb_pct');
       var hr9 = numOrNull(pickCol(row, 'HR9', 'HR/9', 'hr9'));
-      var ps = computePitchScoreFromRates(kPct, bbPct, hr9, pool);
+      var whip = numOrNull(pickCol(row, 'WHIP', 'whip'));
+      var ps = computePitchScoreFromRates(kPct, bbPct, hr9, pool, whip);
       if (ps != null) row.PitchScore = ps;
       var era = numOrNull(pickCol(row, 'ERA', 'era'));
       var fip = numOrNull(pickCol(row, 'FIP', 'fip'));
@@ -2324,6 +2351,7 @@
         awayK: numOrNull(pickCol(row, 'Away_K%', 'Away K%')),
         awayBB: numOrNull(pickCol(row, 'Away_BB%', 'Away BB%')),
         awayHR9: numOrNull(pickCol(row, 'Away_HR9', 'Away HR/9')),
+        awayWHIP: numOrNull(pickCol(row, 'Away_WHIP', 'Away WHIP')),
         awayERA: numOrNull(pickCol(row, 'Away_ERA', 'Away ERA')),
         awayFIP: numOrNull(pickCol(row, 'Away_FIP', 'Away FIP')),
         awayXFIP: numOrNull(pickCol(row, 'Away_xFIP', 'Away xFIP')),
@@ -2332,6 +2360,7 @@
         homeK: numOrNull(pickCol(row, 'Home_K%', 'Home K%')),
         homeBB: numOrNull(pickCol(row, 'Home_BB%', 'Home BB%')),
         homeHR9: numOrNull(pickCol(row, 'Home_HR9', 'Home HR/9')),
+        homeWHIP: numOrNull(pickCol(row, 'Home_WHIP', 'Home WHIP')),
         homeERA: numOrNull(pickCol(row, 'Home_ERA', 'Home ERA')),
         homeFIP: numOrNull(pickCol(row, 'Home_FIP', 'Home FIP')),
         homeXFIP: numOrNull(pickCol(row, 'Home_xFIP', 'Home xFIP')),
@@ -2502,7 +2531,14 @@
       fip = ((13 * Number(stat.homeRuns)) + (3 * bb) - (2 * k)) / ip + 3.1;
       if (!isNaN(fip)) fip = Math.round(fip * 100) / 100;
     }
-    return { kPct: kPct, bbPct: bbPct, hr9: hr9, era: era, fip: fip };
+    return {
+      kPct: kPct,
+      bbPct: bbPct,
+      hr9: hr9,
+      whip: numOrNull(stat.whip),
+      era: era,
+      fip: fip
+    };
   }
 
   function fetchMlbPitcherSeasonStats(personIds) {
@@ -2533,7 +2569,11 @@
   function matchupPitcherSideNeedsStats(m, side) {
     var sp = m[side + 'SP'];
     if (!sp || String(sp).trim().toUpperCase() === 'TBD') return false;
-    return m[side + 'K'] == null || m[side + 'BB'] == null || m[side + 'ERA'] == null;
+    return m[side + 'K'] == null
+      || m[side + 'BB'] == null
+      || m[side + 'HR9'] == null
+      || m[side + 'WHIP'] == null
+      || m[side + 'ERA'] == null;
   }
 
   function applyMlbPitcherRatesToMatchup(m, side, rates) {
@@ -2542,6 +2582,7 @@
     if (m[px + 'K'] == null && rates.kPct != null) m[px + 'K'] = rates.kPct;
     if (m[px + 'BB'] == null && rates.bbPct != null) m[px + 'BB'] = rates.bbPct;
     if (m[px + 'HR9'] == null && rates.hr9 != null) m[px + 'HR9'] = rates.hr9;
+    if (m[px + 'WHIP'] == null && rates.whip != null) m[px + 'WHIP'] = rates.whip;
     if (m[px + 'ERA'] == null && rates.era != null) m[px + 'ERA'] = rates.era;
     if (m[px + 'FIP'] == null && rates.fip != null) m[px + 'FIP'] = rates.fip;
   }
@@ -2567,9 +2608,10 @@
     var kPct = numOrNull(pickCol(profile, 'K_pct', 'K%', 'k_pct'));
     var bbPct = numOrNull(pickCol(profile, 'BB_pct', 'BB%', 'bb_pct'));
     var hr9 = numOrNull(pickCol(profile, 'HR9', 'HR/9', 'hr9'));
+    var whip = numOrNull(pickCol(profile, 'WHIP', 'whip'));
     var pitchScore = numOrNull(profile.PitchScore);
     if (pitchScore == null) {
-      pitchScore = computePitchScoreFromRates(kPct, bbPct, hr9, null);
+      pitchScore = computePitchScoreFromRates(kPct, bbPct, hr9, null, whip);
     }
     var era = numOrNull(pickCol(profile, 'ERA', 'era'));
     var fip = numOrNull(pickCol(profile, 'FIP', 'fip'));
@@ -2581,6 +2623,7 @@
       kPct: kPct,
       bbPct: bbPct,
       hr9: hr9,
+      whip: whip,
       fip: fip,
       fipNa: profile.FIP_na === true,
       xfip: xfip,

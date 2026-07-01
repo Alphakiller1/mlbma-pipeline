@@ -973,9 +973,11 @@ body.view-research .ca-page-identity { display: none; }
   overflow: visible;
   width: 100%;
 }
-.mc-sp-stats--grid.mc-sp-stats--five {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  min-height: 56px;
+.mc-sp-stats--grid.mc-sp-stats--score-inputs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  min-height: 92px;
+  align-content: end;
 }
 .mc-sp-stat {
   display: flex;
@@ -997,6 +999,19 @@ body.view-research .ca-page-identity { display: none; }
 .mc-sp-block--home .mc-sp-stat--era { align-items: flex-start; text-align: left; }
 .mc-sp-block--home .mc-sp-stat--bb { align-items: center; text-align: center; }
 .mc-sp-block--home .mc-sp-stat--k { align-items: flex-end; text-align: right; }
+.mc-sp-stats--score-inputs .mc-sp-stat {
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5px 3px;
+  overflow: hidden;
+}
+.mc-sp-stats--score-inputs .mc-sp-stat--hr9,
+.mc-sp-stats--score-inputs .mc-sp-stat--whip {
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.065);
+}
 .mc-sp-stat em {
   font-style: normal;
   font-size: 9.5px;
@@ -1017,7 +1032,9 @@ body.view-research .ca-page-identity { display: none; }
   font-variant-numeric: tabular-nums;
   padding: 0 1px;
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
 }
 .hero-matchup-card .pitch-tier.tier-vol {
   background: color-mix(in srgb, #C8201C 24%, transparent);
@@ -1727,17 +1744,18 @@ body.view-research .ca-page-identity { display: none; }
     padding: 0 2px 2px;
   }
 
-  .mc-sp-stats--grid.mc-sp-stats--five {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 1px;
+  .mc-sp-stats--grid.mc-sp-stats--score-inputs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 8px;
+    padding: 2px 0 0;
   }
 
   .mc-sp-stat strong {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .mc-sp-stat em {
-    font-size: 8px;
+    font-size: 9px;
   }
 
   .mc-ps-badge--defined {
@@ -1868,7 +1886,6 @@ body.opening-dashboard .opening-layer .ca-hero__title-accent {
   text-shadow: 0 0 14px rgba(240, 194, 74, 0.17);
 }
 
-.opening-layer .ca-stat,
 .opening-layer .ca-market__card,
 .opening-layer .ca-tool-card,
 .opening-layer .ca-hero__mark-card {
@@ -2008,4 +2025,3 @@ body.opening-dashboard .opening-layer .ca-hero__title-accent {
     font-size: 15px;
   }
 }
-

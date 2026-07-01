@@ -22,11 +22,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65;min-height:100vh}
 .container{max-width:1100px;margin:0 auto;padding:32px 24px 80px}
-.glossary-page-header .ca-section-header{margin:0 0 18px}
-.glossary-page-header .ca-section-head .kicker{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ca-purple-light,#C4B0FF);margin:0 0 6px;line-height:1.35}
-.glossary-page-header .ca-section-head .title{font-family:var(--font-display);font-size:20px!important;font-weight:800;letter-spacing:-.012em;line-height:1.2;margin:0 0 2px;background:linear-gradient(180deg,#fff 0%,#e9eaf0 38%,#9da0ae 56%,#d7d9e2 72%,#fff 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important}
-.glossary-page-header .ca-section-head .purpose{font-size:16px;font-weight:600;line-height:1.55;color:var(--text-2);max-width:720px;margin-top:4px}
-.glossary-search{width:100%;min-height:44px;max-width:420px;margin:20px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-size:15px}
+#glossaryPageHeader{border:0;background:none;box-shadow:none;padding:0;margin:0}
+#glossaryPageHeader .ca-page-header{margin:0 0 22px;padding:8px 0 0;border:0;background:none;box-shadow:none}
+.glossary-search-wrap{max-width:620px;margin:0 0 26px}
+.glossary-search-label{display:block;margin-bottom:7px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)}
+.glossary-search{width:100%;min-height:48px;margin:0;padding:12px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-size:15px}
+.glossary-search:focus{outline:2px solid color-mix(in srgb,var(--purple) 55%,transparent);outline-offset:2px;border-color:var(--purple)}
+.glossary-search-status{min-height:20px;margin:7px 0 0;font-size:12px;color:var(--text-3)}
 .layer-label{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin:28px 0 12px}
 .section{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
 .section h2{font-size:22px;margin-bottom:12px;font-family:var(--font-display);font-variation-settings:"wdth" 125;letter-spacing:-.01em;font-weight:800}
@@ -58,18 +60,26 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .gloss-convention .ca-metric-legend{margin:14px 0}
 .gloss-section-block{margin-bottom:20px}
 .gloss-section-block .ca-section-head{margin-bottom:14px}
+@media(max-width:767px){
+  .container{padding:20px 12px 60px}
+  #glossaryPageHeader .ca-page-title{font-size:30px;line-height:1.05}
+  .glossary-search-wrap{max-width:none;margin-bottom:20px}
+  .metric-grid,.glossary-grid{grid-template-columns:1fr}
+  .section,.gloss-section{padding:14px!important}
+  .alpha-list{columns:1}
+}
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260701a">
+<link rel="stylesheet" href="chase_nav.css?v=20260701c">
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="mlbma_ui.js?v=20260610b" data-page="glossary.html"></script>
-<script src="glossary.js?v=20260609e"></script>
+<script src="glossary.js?v=20260701d"></script>
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701a">
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
 
 </head>
 <body class="ca-bg-outfield glossary-page">
@@ -153,17 +163,17 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
   </div>
 </div>
   <div class="container">
-  <div class="ca-brand-badge-light" style="margin:0 auto 16px;">
-    <img src="assets/chase-logo-stacked-light.png" alt="Chase Analytics" style="height:100px;width:auto;object-fit:contain"
-      onerror="this.parentElement.innerHTML=''">
-  </div>
   <div id="glossaryPageHeader" class="glossary-page-header"></div>
-  <input type="search" class="glossary-search" id="glossarySearch" placeholder="Search glossary terms..." oninput="filterGlossary()">
+  <div class="glossary-search-wrap">
+    <label class="glossary-search-label" for="glossarySearch">Search The Glossary</label>
+    <input type="search" class="glossary-search" id="glossarySearch" placeholder="Search Metrics, Formulas, Or Research Uses">
+    <p class="glossary-search-status" id="glossarySearchStatus" role="status" aria-live="polite"></p>
+  </div>
 
   <div id="glossaryConventions"></div>
 
-  <div class="layer-label">How to Read the Model</div>
-  <div class="section glossary-term" data-term="reading order status map pals archetype">
+  <div class="layer-label" id="glossaryReadingLabel">How to Read the Model</div>
+  <div class="section glossary-term" id="glossaryReadingSection" data-term="reading order status map pals archetype">
     <div id="glossaryReadingHead"></div>
     <div class="reading-grid">
       <div class="reading-step"><strong>1. Status map</strong>Scan quadrants for undervalued vs cooling offenses.</div>
@@ -216,9 +226,10 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
     </div>
   </div>
 
+  <div id="glossaryStaticReference">
   <div class="layer-label">Numerical Interpretation</div>
   <div class="section">
-    <h2>OSI tiers</h2>
+    <h2>OSI Tiers</h2>
     <table class="tier-table"><thead><tr><th>Tier</th><th>Range</th><th>Read</th></tr></thead><tbody>
       <tr class="tier-elite"><td>Elite</td><td>85+</td><td>Complete offensive weapon</td></tr>
       <tr><td>High Level</td><td>75—84</td><td>Reliable top-tier unit</td></tr>
@@ -226,7 +237,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <tr><td>Inconsistent</td><td>50—64</td><td>Matchup-dependent</td></tr>
       <tr class="tier-weak"><td>Weak</td><td>&lt;50</td><td>Limited run paths</td></tr>
     </tbody></table>
-    <h2 style="margin-top:16px">Pitching Score tiers</h2>
+    <h2 style="margin-top:16px">Pitching Score Tiers</h2>
     <table class="tier-table"><thead><tr><th>Tier</th><th>Range</th></tr></thead><tbody>
       <tr class="tier-elite"><td>Ace</td><td>85+</td></tr><tr><td>Solid</td><td>70—84</td></tr>
       <tr class="tier-mid"><td>Average</td><td>55—69</td></tr><tr class="tier-weak"><td>Volatile</td><td>&lt;55</td></tr>
@@ -239,8 +250,9 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
     <div class="formula"><strong>ABQ</strong> = 30% Discipline + 35% Contact + 20% Pitch Pressure + 15% K Avoidance</div>
     <div class="formula"><strong>RCV</strong> = 35% wRC+ + 32% Barrel/park + 20% ISO/park + 13% HardHit/park</div>
     <div class="formula"><strong>OBR</strong> = 65% xwOBA + 35% BB%</div>
-    <div class="formula"><strong>OSI</strong> = 43% RCV + 37% ABQ + 20% OBR</div>
-    <div class="formula"><strong>projOSI</strong> = OSI + clip((xwOBA - wOBA) — 450, -8, +8)</div>
+    <div class="formula"><strong>OSI</strong> = 35% RCV + 25% ABQ + 40% OBR</div>
+    <div class="formula"><strong>projOSI</strong> = OSI + clip((xwOBA - wOBA) * 450, -8, +8)</div>
+    <div class="formula"><strong>Pitching Score</strong> = 30% K% + 20% inv(BB%) + 20% inv(HR/9) + 30% inv(WHIP)</div>
     <div class="formula"><strong>OOR</strong> = 55% HvR + 45% HvL — <strong>PALS</strong> = (BA+ + PTF+) / 2</div>
     <p style="font-size:12px;color:var(--text-2);margin-top:8px">Metrics are pool-normalized to 0—100 within the active leaderboard sample. Park factors adjust barrel/ISO/hard-hit for home environment.</p>
   </div>
@@ -271,6 +283,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
     <div class="card glossary-term" data-term="glove line"><div class="term">Glove Line</div><p>Low/Mid — weak damage.</p></div>
     <div class="card glossary-term" data-term="cold profile"><div class="term">Cold Profile</div><p>Low/Low — under lean.</p></div>
   </div>
+  </div>
 
   <div class="layer-label">Searchable Glossary (A—Z)</div>
   <div class="section">
@@ -285,11 +298,12 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <li><b><a href="#form-windows">Form Windows</a></b> — L30 / L14 / L7 cuts</li>
       <li><b><a href="#hi-leverage-era">Hi-Leverage ERA</a></b> — Bullpen high-leverage ERA</li>
       <li><b><a href="#hr9">HR/9</a></b> — Homers per nine (inverted)</li>
+      <li><b><a href="#whip">WHIP</a></b> — Walks plus hits per inning (inverted)</li>
       <li><b><a href="#k-pct">K%</a></b> — Strikeout rate</li>
-      <li><b><a href="#delta-l7-ytd">? L7?YTD</a></b> — Short-window form delta</li>
+      <li><b><a href="#delta-l7-ytd">Delta L7-YTD</a></b> — Short-window form delta</li>
       <li><b><a href="#velocity">Velocity</a></b> — Trend slope on heat map</li>
       <li><b><a href="#win-pct">Win%</a></b> — Team win percentage</li>
-      <li><b><a href="#qs-pct">QS%</a></b> — Quality start rate (6+ IP, ?3 ER)</li>
+      <li><b><a href="#qs-pct">QS%</a></b> — Quality start rate (6+ IP, 3 ER or fewer)</li>
       <li><b><a href="#qs-against-pct">QS% Allowed</a></b> — Opponent quality starts (inverted)</li>
       <li><b><a href="#sp-win-pct">SP Win%</a></b> — Wins credited to starters</li>
       <li><b><a href="#rp-win-pct">RP Win%</a></b> — Wins credited to relievers</li>
@@ -307,7 +321,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <li><b><a href="#osi">OSI</a></b> — Offensive strength index</li>
       <li><b><a href="#pals">PALS</a></b> — Pitching-adjusted lineup score</li>
       <li><b>Park factor</b> — Home run environment adjustment</li>
-      <li><b><a href="#pitching-score">Pitching Score</a></b> — Staff K/BB/HR blend</li>
+      <li><b><a href="#pitching-score">Pitching Score</a></b> — IP-weighted K/BB/HR/WHIP blend</li>
       <li><b><a href="#pp-gap">PP-Gap</a></b> — ABQ minus RCV</li>
       <li><b><a href="#projosi">projOSI</a></b> — Regression-adjusted OSI</li>
       <li><b><a href="#rcv">RCV</a></b> — Run creation value</li>
@@ -319,17 +333,9 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <li><b><a href="#xwoba">xwOBA</a></b> — Expected weighted on-base</li>
       <li><b>ZCon%</b> — Zone contact rate</li>
     </ul>
-  <script>
-function filterGlossary() {
-  var q = (document.getElementById('glossarySearch').value || '').toLowerCase().trim();
-  document.querySelectorAll('.glossary-term').forEach(function(el) {
-    var hay = (el.getAttribute('data-term') || '') + ' ' + el.textContent;
-    el.classList.toggle('hidden', q && hay.toLowerCase().indexOf(q) < 0);
-  });
-  document.querySelectorAll('#alphaGlossary li').forEach(function(li) {
-    li.style.display = (!q || li.textContent.toLowerCase().indexOf(q) >= 0) ? '' : 'none';
-  });
-}
+  </div>
+</div>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
   var readHead = document.getElementById('glossaryReadingHead');
   if (readHead && window.MLBMAAssets && MLBMAAssets.caSectionHeadHtml) {

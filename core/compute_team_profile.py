@@ -223,32 +223,12 @@ def offense_from_splits(
 
 def _sp_pitch_scores(sp_std: Optional[pd.DataFrame]) -> Dict[str, float]:
     """Per-starter PitchScore keyed by pitcher name."""
-    if sp_std is None or sp_std.empty:
-        return {}
-    from core.config import PITCHING_WEIGHTS
-    from core.metrics_utils import clean_pct, invert, normalize
+    from core.compute_pitching import calc_individual_pitching_scores
 
-    w_k = PITCHING_WEIGHTS["k_pct"]
-    w_bb = PITCHING_WEIGHTS["inv_bb_pct"]
-    w_hr = PITCHING_WEIGHTS["inv_hr9"]
-
-    df = sp_std.copy()
-    name_col = "Name" if "Name" in df.columns else df.columns[0]
-    if "IP" in df.columns:
-        df["IP"] = pd.to_numeric(df["IP"], errors="coerce")
-        df = df[df["IP"] > 0]
-    if df.empty:
+    scores = calc_individual_pitching_scores(sp_std)
+    if scores.empty:
         return {}
-    df["K%"] = clean_pct(df["K%"]) if "K%" in df.columns else 0
-    df["BB%"] = clean_pct(df["BB%"]) if "BB%" in df.columns else 0
-    df["HR/9"] = pd.to_numeric(df["HR/9"], errors="coerce")
-    df = df.dropna(subset=["K%", "BB%", "HR/9"])
-    df["PitchScore"] = (
-        w_k * normalize(df["K%"])
-        + w_bb * invert(df["BB%"])
-        + w_hr * invert(df["HR/9"])
-    )
-    return df.set_index(name_col)["PitchScore"].round(1).to_dict()
+    return scores.set_index("Name")["PitchScore"].to_dict()
 
 
 def rotation_summary(
@@ -276,10 +256,15 @@ def rotation_summary(
             if not tm:
                 continue
             pname = str(row.get("pitcher_name", ""))
+            pitcher_score = score_by_name.get(pname)
             sp_by_team.setdefault(tm, []).append(
                 {
                     "name": pname,
-                    "pitch_score": score_by_name.get(pname) or _num(row.get("PitchScore")),
+                    "pitch_score": (
+                        pitcher_score
+                        if pitcher_score is not None
+                        else _num(row.get("PitchScore"))
+                    ),
                     "k_pct": _num(row.get("K_pct")),
                     "bb_pct": _num(row.get("BB_pct")),
                     "era": _num(row.get("ERA")),
