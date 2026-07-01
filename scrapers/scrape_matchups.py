@@ -13,6 +13,32 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 
+
+def fetch_pitch_hands(person_ids):
+    """Resolve pitcher throwing hand (L/R) from the MLB people endpoint.
+
+    The schedule endpoint's ``probablePitcher`` hydration returns only id/fullName -- pitchHand
+    is never present there (nor via ``probablePitcher(pitchHand)``), so every hand silently
+    defaulted to 'R' and every lineup was shown its vs-RHP split. The people endpoint returns the
+    real ``pitchHand.code``. Best-effort: any failure leaves hands to the caller's 'R' fallback.
+    """
+    ids = [str(pid) for pid in person_ids if pid]
+    if not ids:
+        return {}
+    hands = {}
+    url = "https://statsapi.mlb.com/api/v1/people?personIds=" + ",".join(dict.fromkeys(ids))
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+        for person in r.json().get("people", []):
+            code = (person.get("pitchHand") or {}).get("code")
+            if person.get("id") is not None and code in ("L", "R"):
+                hands[str(person["id"])] = code
+    except Exception as e:
+        print(f"  WARNING: pitch-hand lookup failed ({e}); hands fall back to R")
+    return hands
+
+
 def get_today_schedule():
     today = eastern_slate_date_iso()
     url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=probablePitcher,lineups,team"
@@ -39,24 +65,36 @@ def get_today_schedule():
                 else:
                     game_time_str = "TBD"
 
-                away_sp = game["teams"]["away"].get("probablePitcher", {}).get("fullName", "TBD")
-                home_sp = game["teams"]["home"].get("probablePitcher", {}).get("fullName", "TBD")
+                away_pp = game["teams"]["away"].get("probablePitcher", {}) or {}
+                home_pp = game["teams"]["home"].get("probablePitcher", {}) or {}
+                away_sp = away_pp.get("fullName", "TBD")
+                home_sp = home_pp.get("fullName", "TBD")
 
-                away_sp_hand = game["teams"]["away"].get("probablePitcher", {}).get("pitchHand", {}).get("code", "R")
-                home_sp_hand = game["teams"]["home"].get("probablePitcher", {}).get("pitchHand", {}).get("code", "R")
-
+                # pitchHand is never present on the schedule's probablePitcher, so keep the id and
+                # resolve the real hand from the people endpoint after the loop (fetch_pitch_hands);
+                # the inline read is only a best-effort in case the API ever starts returning it.
                 games.append({
                     "Game_Time": game_time_str,
                     "Away_Team": away_abbr,
                     "Home_Team": home_abbr,
                     "Away_SP": away_sp,
-                    "Away_SP_Hand": away_sp_hand,
+                    "Away_SP_Id": away_pp.get("id"),
+                    "Away_SP_Hand": (away_pp.get("pitchHand") or {}).get("code", "R"),
                     "Home_SP": home_sp,
-                    "Home_SP_Hand": home_sp_hand,
+                    "Home_SP_Id": home_pp.get("id"),
+                    "Home_SP_Hand": (home_pp.get("pitchHand") or {}).get("code", "R"),
                 })
             except Exception as e:
                 print(f"  Error parsing game: {e}")
                 continue
+
+    hand_map = fetch_pitch_hands(
+        [g.get("Away_SP_Id") for g in games] + [g.get("Home_SP_Id") for g in games]
+    )
+    if hand_map:
+        for g in games:
+            g["Away_SP_Hand"] = hand_map.get(str(g.get("Away_SP_Id")), g.get("Away_SP_Hand") or "R")
+            g["Home_SP_Hand"] = hand_map.get(str(g.get("Home_SP_Id")), g.get("Home_SP_Hand") or "R")
 
     print(f"  Found {len(games)} games")
     return pd.DataFrame(games)
