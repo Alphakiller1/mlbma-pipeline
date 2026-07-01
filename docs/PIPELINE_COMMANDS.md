@@ -3,10 +3,131 @@
 Single reference for daily scrapes, full pipeline, partial reruns, and diagnostics.
 
 **Project root:** `C:\Users\user\Documents\mlbma-pipeline`  
-**Python (venv):** `C:\Users\user\Documents\mlbma-pipeline\crawl_env\Scripts\python.exe`  
-**Local CSV output:** `C:\Users\user\Documents\mlbma-pipeline\data\`  
+**Python (venv, Windows):** `C:\Users\user\Documents\mlbma-pipeline\crawl_env\Scripts\python.exe`  
+**Python (venv, macOS/Linux):** `crawl_env/bin/python`  
+**Local CSV output:** `data/` (repo root)  
 **Google Sheet ID:** `1D28pC1lqMbsCcTBP67WhJPzYHn2UdtveMEv6RsUSczk`  
 **Live dashboard:** https://alphakiller1.github.io/mlbma-pipeline/
+
+Commands below are shown as PowerShell (Windows, the primary dev machine). Every
+command has a direct macOS/Linux (bash/zsh) equivalent — swap
+`crawl_env\Scripts\python.exe` for `crawl_env/bin/python` and backslash paths for
+forward slashes. `pipeline/main.py` and `core/config.py` resolve both venv layouts
+and both Chrome locations automatically (`_resolve_python()` / `_resolve_chrome_path()`),
+so the same `-m module` commands work unchanged on either OS.
+
+---
+
+## Cross-platform setup (macOS / Linux)
+
+```bash
+cd ~/mlbma-pipeline
+python3 -m venv crawl_env
+crawl_env/bin/pip install -r requirements.txt
+cp .env.example .env               # fill in FanGraphs + Supabase creds
+# copy google_credentials.json into the repo root (see "Bringing credentials to
+# another machine" below -- never via git)
+```
+
+Optional one-time editable install (`pyproject.toml`) puts the repo root on
+`sys.path` and adds a single `mlbma-pipeline` entrypoint that mirrors
+`python -m pipeline.main`:
+
+```bash
+crawl_env/bin/pip install -e .
+mlbma-pipeline --check
+```
+
+**Full daily pipeline (macOS/Linux):**
+
+```bash
+cd ~/mlbma-pipeline
+crawl_env/bin/python -m pipeline.main
+```
+
+**Shell script alternative** (mirrors `run_pipeline.bat`; logs to `pipeline_log.txt`):
+
+```bash
+./run_pipeline.sh
+```
+
+---
+
+## Preflight / doctor — `--check`, `--dry-run`, `--skip-fangraphs`
+
+Run this **before** a full pipeline run on any machine (with or without creds) to
+see what will actually happen. It never scrapes or pushes anything.
+
+```powershell
+crawl_env\Scripts\python.exe -m pipeline.main --check
+```
+
+```bash
+crawl_env/bin/python -m pipeline.main --check
+```
+
+Prints a readiness table (Python/venv resolved, `.env` present + which keys are
+set, `google_credentials.json` present + valid JSON, Chrome found) followed by a
+RUN / SKIP / FAIL plan for all 22 steps given the current creds and `data/`
+contents.
+
+- `--dry-run` — same step plan, without the environment/readiness section.
+- `--skip-fangraphs` — skip the two FanGraphs Selenium steps
+  (`scrapers.scrape_fangraphs`, `scrapers.scrape_batter_splits`); combine with
+  `--check`/`--dry-run` to preview, or pass alone to a real run:
+
+```powershell
+crawl_env\Scripts\python.exe -m pipeline.main --skip-fangraphs
+```
+
+The no-arg `python -m pipeline.main` behavior (full 22-step run) is unchanged.
+
+---
+
+## Bringing credentials to another machine (e.g. a Mac)
+
+`.env` and `google_credentials.json` are gitignored and must **never** go through
+git, GitHub, or any other tracked/shared channel. Move them out-of-band instead:
+
+1. AirDrop, a USB drive, or a password manager's secure-note/file attachment
+   (1Password, Bitwarden, etc.) from this machine to the target machine.
+2. Drop both files directly into the target repo root (same filenames:
+   `.env`, `google_credentials.json`) after cloning the repo there.
+3. Run `python -m pipeline.main --check` (or `crawl_env/bin/python -m pipeline.main --check`
+   after the venv/setup steps above) to confirm both files are detected and valid
+   before doing a real run.
+
+For GitHub Actions / CI, don't copy files at all — use repository secrets (see below).
+
+## Running on GitHub Actions (CI)
+
+The pipeline can run on any GitHub-hosted runner via
+`.github/workflows/run-pipeline.yml`, without FanGraphs (headless Selenium
+bot-login is unreliable in CI, so the workflow always passes `--skip-fangraphs`;
+run FanGraphs scrapes locally instead).
+
+**One-time setup** — push this machine's real credentials to the repo's Actions
+secrets (values are never printed or committed):
+
+```powershell
+gh secret set SUPABASE_SECRET_KEY
+gh secret set FANGRAPHS_EMAIL
+gh secret set FANGRAPHS_PASSWORD
+gh secret set GOOGLE_CREDENTIALS < google_credentials.json
+```
+
+**Trigger a run:**
+
+```powershell
+gh workflow run run-pipeline.yml
+gh run watch                      # follow the latest run
+```
+
+The workflow also runs on a daily schedule (`workflow_dispatch` + `schedule`). It
+reconstructs `google_credentials.json` from the `GOOGLE_CREDENTIALS` secret at
+runtime, exports the Supabase/FanGraphs env vars from secrets, and runs
+`python -m pipeline.main --skip-fangraphs` — publishing to Google Sheets and the
+Supabase `hub_dataset` mirror exactly like a local run, minus FanGraphs.
 
 ---
 
@@ -67,15 +188,16 @@ cd C:\Users\chase\mlbma_pipeline
 
 | File | Purpose |
 |------|---------|
-| `google_credentials.json` | Google Sheets API — push steps fail without it |
-| `.env` | FanGraphs login for Selenium scrapers |
+| `google_credentials.json` | Google Sheets API — push steps skip gracefully without it |
+| `.env` | FanGraphs login (Selenium scrapers) + Supabase write key (hub_dataset mirror) |
 
-`.env` example:
+Copy `.env.example` to `.env` and fill in the real values — it documents every
+variable the pipeline reads (Supabase, FanGraphs, optional Chrome/Instagram
+overrides). Both files are gitignored; **never commit them**.
 
-```
-FANGRAPHS_EMAIL=your@email
-FANGRAPHS_PASSWORD=yourpassword
-```
+Both are loaded centrally by `core/config.py` (`load_dotenv(ENV_FILE)` at import
+time), so every module sees the same environment regardless of which script runs
+first.
 
 ---
 
@@ -88,14 +210,17 @@ cd C:\Users\chase\mlbma_pipeline
 C:\Users\chase\crawl_env\Scripts\python.exe -m pipeline.main
 ```
 
-**Batch alternative** (logs to `pipeline_log.txt`; uses repo-local `crawl_env` if present):
+**Batch/shell alternative** (logs to `pipeline_log.txt`; uses repo-local `crawl_env` if present):
 
 ```powershell
-cd C:\Users\chase\mlbma_pipeline
 .\run_pipeline.bat
 ```
 
-**Log file:** `C:\Users\chase\mlbma_pipeline\pipeline_log.txt`
+```bash
+./run_pipeline.sh
+```
+
+**Log file:** `pipeline_log.txt` (repo root)
 
 ---
 
@@ -382,4 +507,4 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 ---
 
-*Last updated: 2026-06-26. Source of truth for step order: `pipeline/main.py`; smart skips: `scripts/finish_pipeline_smart.py`, `scripts/sync_from_cache.py`.*
+*Last updated: 2026-07-01. Source of truth for step order: `pipeline/main.py`; smart skips: `scripts/finish_pipeline_smart.py`, `scripts/sync_from_cache.py`.*

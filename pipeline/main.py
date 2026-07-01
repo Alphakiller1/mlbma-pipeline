@@ -1,3 +1,4 @@
+import argparse
 import os
 import subprocess
 import sys
@@ -15,6 +16,10 @@ def _resolve_python() -> Path:
         Path((Path.cwd() / "crawl_env" / "Scripts" / "python.exe")),
         Path((ROOT / "crawl_env" / "Scripts" / "python.exe")),
         Path((ROOT.parent / "crawl_env" / "Scripts" / "python.exe")),
+        # POSIX venv layout (macOS/Linux)
+        Path((Path.cwd() / "crawl_env" / "bin" / "python")),
+        Path((ROOT / "crawl_env" / "bin" / "python")),
+        Path((ROOT.parent / "crawl_env" / "bin" / "python")),
         Path(sys.executable),
     ]
     for c in candidates:
@@ -170,7 +175,7 @@ def run_game_results():
     )
 
 
-def run():
+def run(skip_fangraphs: bool = False):
     """Run the full MLBMA pipeline (22 logical steps)."""
     os.environ.setdefault("PYTHONUNBUFFERED", "1")
     pipeline_t0 = time.perf_counter()
@@ -181,6 +186,9 @@ def run():
             sys.exit(1)
 
     for script in SCRIPTS_OPTIONAL:
+        if script == "scrapers.scrape_fangraphs" and skip_fangraphs:
+            print("\n  [SKIP] scrapers.scrape_fangraphs (--skip-fangraphs)")
+            continue
         run_script(script, required=False)
 
     run_lineups()
@@ -200,7 +208,7 @@ def run():
     run_bullpen_profiles()
 
     run_player_registry()
-    run_batter_splits()
+    run_batter_splits(skip_fangraphs=skip_fangraphs)
     run_batter_gamelog()
     run_batter_profiles()
     run_batter_prop_hitrates()
@@ -282,8 +290,11 @@ def run_player_registry():
     _run_step("Step 14: scrapers.scrape_player_registry", "scrapers.scrape_player_registry", _fn)
 
 
-def run_batter_splits():
+def run_batter_splits(skip_fangraphs: bool = False):
     """Step 15: FanGraphs batter splits; non-fatal on failure."""
+    if skip_fangraphs:
+        print("\n  [SKIP] scrapers.scrape_batter_splits (--skip-fangraphs)")
+        return
 
     def _fn():
         from scrapers.scrape_batter_splits import run as run_batter_splits_module
@@ -401,5 +412,44 @@ def run_instagram_autopost():
     _run_step("Optional: outputs.push_instagram", "outputs.push_instagram", _fn)
 
 
+def _build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="python -m pipeline.main",
+        description="Run the full MLBMA pipeline, or preflight-check readiness.",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Print a readiness report (python/env/creds/Chrome + step plan) and exit without scraping.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the step execution plan (RUN/SKIP/FAIL) and exit without scraping.",
+    )
+    parser.add_argument(
+        "--skip-fangraphs",
+        action="store_true",
+        help="Skip FanGraphs Selenium steps (scrape_fangraphs, scrape_batter_splits). "
+        "Useful in CI where headless bot-login is unreliable.",
+    )
+    return parser
+
+
+def main() -> None:
+    args = _build_arg_parser().parse_args()
+
+    if args.check:
+        from pipeline.doctor import print_report
+
+        print_report(PYTHON, skip_fangraphs=args.skip_fangraphs, full=True)
+    elif args.dry_run:
+        from pipeline.doctor import print_report
+
+        print_report(PYTHON, skip_fangraphs=args.skip_fangraphs, full=False)
+    else:
+        run(skip_fangraphs=args.skip_fangraphs)
+
+
 if __name__ == "__main__":
-    run()
+    main()

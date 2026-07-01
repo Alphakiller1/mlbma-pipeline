@@ -2,6 +2,8 @@ import json
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # ── Project paths ────────────────────────────────────────────────────────────
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -9,6 +11,11 @@ DATA_DIR = PROJECT_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 CREDS_FILE = PROJECT_ROOT / "google_credentials.json"
 ENV_FILE = PROJECT_ROOT / ".env"
+
+# Load once here so every module sees the same env, regardless of which one is
+# imported first (previously only fangraphs_session.py / push_supabase.py loaded it,
+# so keys were invisible to steps that didn't scrape FanGraphs or push to Supabase).
+load_dotenv(ENV_FILE)
 
 CREDS_ERROR_MESSAGE = (
     "ERROR: google_credentials.json not found at {path}. "
@@ -526,6 +533,15 @@ def _resolve_chrome_path() -> str:
         Path(os.environ.get("LOCALAPPDATA", "")) / "Google/Chrome/Application/chrome.exe",
         Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe"),
         Path(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"),
+        # macOS
+        Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+        Path.home() / "Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        # Linux
+        Path("/usr/bin/google-chrome"),
+        Path("/usr/bin/google-chrome-stable"),
+        Path("/usr/bin/chromium-browser"),
+        Path("/usr/bin/chromium"),
+        Path("/snap/bin/chromium"),
     ]
     for path in candidates:
         if path.is_file():
