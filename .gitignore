@@ -9,6 +9,9 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Packaging build artifact (pip install -e .)
+*.egg-info/
+
 # Virtual environment
 crawl_env/
 

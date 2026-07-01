@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlbma-pipeline"
+version = "0.1.0"
+description = "MLBMA scrape/compute/push pipeline"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+    "numpy",
+    "requests",
+    "gspread",
+    "google-auth",
+    "python-dotenv",
+    "beautifulsoup4",
+    "selenium",
+    "undetected-chromedriver",
+    "setuptools",
+    "tzdata; platform_system == 'Windows'",
+]
+
+[project.scripts]
+mlbma-pipeline = "pipeline.main:main"
+
+[tool.setuptools]
+packages = ["core", "scrapers", "outputs", "pipeline", "scripts"]
