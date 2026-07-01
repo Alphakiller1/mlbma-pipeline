@@ -52,7 +52,7 @@ body.ca-bg-outfield {
   background-size: auto, auto, auto, cover !important;
   background-position: center, center, center, center center !important;
   background-repeat: no-repeat !important;
-  background-attachment: scroll, scroll, scroll, fixed !important;
+  background-attachment: scroll !important;
 }
 
 /* Opening landing — lighter scrim so stadium photo reads through panels */
@@ -68,7 +68,7 @@ html.view-opening body.platform-dashboard.ca-bg-outfield {
   background-size: auto, auto, auto, cover !important;
   background-position: center, center, center, center top !important;
   background-repeat: no-repeat !important;
-  background-attachment: scroll, scroll, scroll, fixed !important;
+  background-attachment: scroll !important;
 }
 
 /* Team / org — catcher view */
@@ -85,7 +85,7 @@ body.ca-bg-compare {
   background-size: auto, auto, auto, cover !important;
   background-position: center, center, center, center center !important;
   background-repeat: no-repeat !important;
-  background-attachment: scroll, scroll, scroll, fixed !important;
+  background-attachment: scroll !important;
 }
 
 /* Player profiles — plate POV */
@@ -101,7 +101,7 @@ body.ca-bg-plate {
   background-size: auto, auto, auto, cover !important;
   background-position: center, center, center, center center !important;
   background-repeat: no-repeat !important;
-  background-attachment: scroll, scroll, scroll, fixed !important;
+  background-attachment: scroll !important;
 }
 
 @media (max-width: 768px) {
