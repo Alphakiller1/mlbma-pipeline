@@ -12,13 +12,13 @@
 .loading-text { color: var(--text-3, #71717A); font-size: 13px; padding: 12px 24px; }
 </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260610b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260630c">
-<link rel="stylesheet" href="team_profile.css?v=20260624a">
+<link rel="stylesheet" href="chase_nav.css?v=20260701a">
+<link rel="stylesheet" href="team_profile.css?v=20260630a">
 <link rel="stylesheet" href="player_profile_pages.css?v=20260624a">
 <link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260624a">
-<link rel="stylesheet" href="profile_shell.css?v=20260630b">
+<link rel="stylesheet" href="profile_shell.css?v=20260630c">
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260609c"></script>
@@ -32,21 +32,17 @@
 <link rel="stylesheet" href="pitcher_profile.css?v=20260618j">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
   <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
-  <link rel="stylesheet" href="mlbma_design_system.css">
+
 </head>
 <body class="player-profile-page pitcher-profile-page team-profile-page">
 
 <div class="loading-text" id="loadingText">Loading pitcher intelligence from Google Sheets—</div>
-﻿﻿﻿﻿<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
-<meta charset="UTF-8">
-
-
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics — Opening Dashboard">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
+      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
@@ -73,23 +69,24 @@
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">syncing…</span>
+        <span id="lastUpdated">Syncing</span>
       </div>
-      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu">
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open Menu"
+        aria-controls="mobileMenu" aria-expanded="false" aria-haspopup="dialog">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
 </header>
-<div class="chase-mobile-overlay" id="mobileOverlay"></div>
-<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
+<div class="chase-mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+<div class="chase-mobile-menu" id="mobileMenu" role="dialog" aria-modal="true"
+  aria-label="Main Menu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
-        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
-      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
+      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
-    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close Menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -99,6 +96,26 @@
   <div class="chase-mobile-brand" aria-hidden="true">
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
   </div>
+  <div class="chase-mobile-nav">
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
+    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
+    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Profile</a>
+    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
+    <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+  </div>
+  <div class="chase-mobile-status">
+    <div class="chase-timestamp">
+      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
+      <span id="mobileLastUpdated">Syncing</span>
+    </div>
+  </div>
+</div>
 <select class="selector-select" id="pitcherSelect" style="display:none" aria-hidden="true">
   <option value="">— Choose a starter —</option>
 </select>
@@ -1796,6 +1813,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- pitcher-profile build: 20260604a -->
-  <script src="chase_nav.js"></script>
+  <script src="chase_nav.js?v=20260701a"></script>
 </body>
 </html>
