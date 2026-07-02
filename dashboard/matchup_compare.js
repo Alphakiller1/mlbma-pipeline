@@ -855,7 +855,7 @@
       + '<div class="mc-header-grid">'
       + teamSideBlock(m.away, 'away')
       + '<div class="mc-header-center">'
-      + '<div class="mc-header-matchup">' + esc(m.away) + ' <span class="mc-at">@</span> ' + esc(m.home) + '</div>'
+      + '<div class="mc-header-matchup"><span class="mc-at">@</span></div>'
       + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + '</div>'
       + (wx ? '<div class="mc-header-weather">' + wx + '</div>' : '')
       + '</div>'
