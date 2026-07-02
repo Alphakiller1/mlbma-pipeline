@@ -175,7 +175,7 @@ def run_game_results():
     )
 
 
-def assert_slate_fresh():
+def assert_slate_fresh(expected_date: str | None = None):
     """Hard guardrail against the silent stale-slate failure.
 
     The dashboard reads Today_Matchups from the Supabase hub first, so a run is only truly
@@ -184,10 +184,15 @@ def assert_slate_fresh():
     silently skipped, leaving chase-analytics on yesterday's pitchers. Verify the hub slate
     date and fail loudly. Returns True (fresh), False (stale -> exit non-zero), or None
     (could not verify; non-fatal).
+
+    ``expected_date`` should be the slate date captured when the run started (see ``run()``).
+    A full run can take well over an hour; recomputing "today" fresh at the end falsely
+    flags a perfectly good slate as stale if the run happens to cross local midnight. Callers
+    that just want a standalone check (e.g. from a shell) can omit it to use the current date.
     """
     from core.slate_date import eastern_slate_date_iso
 
-    today = eastern_slate_date_iso()
+    today = expected_date or eastern_slate_date_iso()
     try:
         import json
         import urllib.request
@@ -236,7 +241,16 @@ def run(skip_fangraphs: bool = False):
     """Run the full MLBMA pipeline (22 logical steps)."""
     os.environ.setdefault("PYTHONUNBUFFERED", "1")
     pipeline_t0 = time.perf_counter()
-    print(f"MLBMA Pipeline starting at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    from core.slate_date import eastern_slate_date_iso
+
+    # Captured once, up front: a full run can take well over an hour (FanGraphs retries,
+    # Statcast pagination), so recomputing "today" at the end would falsely flag a perfectly
+    # fresh slate as stale if the run happens to cross local midnight.
+    run_slate_date = eastern_slate_date_iso()
+    print(
+        f"MLBMA Pipeline starting at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        f"(slate date {run_slate_date})"
+    )
 
     for script in SCRIPTS_REQUIRED:
         if not run_script(script, required=True):
@@ -275,7 +289,7 @@ def run(skip_fangraphs: bool = False):
         print("WARNING: MLB Model deployment not dispatched because hub mirror failed")
     run_instagram_autopost()
 
-    slate_ok = assert_slate_fresh()
+    slate_ok = assert_slate_fresh(expected_date=run_slate_date)
 
     total = time.perf_counter() - pipeline_t0
     print(f"\nPipeline complete at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
