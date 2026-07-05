@@ -14,6 +14,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from core.name_utils import normalize_player_name
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 DASH = ROOT / "dashboard"
@@ -62,8 +64,8 @@ def pick_col(row: dict, names: list[str]) -> str:
 
 
 def names_match(a: str, b: str) -> bool:
-    a = a.strip().lower()
-    b = b.strip().lower()
+    a = normalize_player_name(a)
+    b = normalize_player_name(b)
     if not a or not b or a == "tbd" or b == "tbd":
         return False
     if a == b:
@@ -148,14 +150,6 @@ def run_playwright() -> list[str]:
     issues: list[str] = []
     ok: list[str] = []
     base = "http://127.0.0.1:8765/dashboard"
-
-    steps = [
-        ("Opening Dashboard loads matchups", f"{base}/chase_analytics_mlb_oem_v7.html", "#opening-dashboard, .matchup-card, .ca-matchup-card", None),
-        ("Research Lab tab", f"{base}/chase_analytics_mlb_oem_v7.html#section-research-lab", ".ca-lab__tab, .subtab", None),
-        ("Pitcher Intelligence sub-tabs", f"{base}/chase_analytics_mlb_oem_v7.html#section-research-lab", "[data-pl-intel-tab]", "pitcher"),
-        ("Team Profile page", f"{base}/team_profile.html?team=NYY", "#profilePageHeader, .tp-unit-tab", None),
-        ("Glossary page", f"{base}/glossary.html", "#glossaryRoot, .glossary-section", None),
-    ]
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)

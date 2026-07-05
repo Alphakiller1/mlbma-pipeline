@@ -274,8 +274,9 @@ def enrich_games_with_api_pitchers(games_df, api_games):
             hand_col = f"{side}_SP_Hand"
             api_sp = str(api.get(sp_col, "TBD")).strip()
             api_hand = str(api.get(hand_col, "R")).strip() or "R"
-            cur_sp = str(rec.get(sp_col, "TBD")).strip()
-            if cur_sp in ("", "TBD", "nan", "None") and api_sp not in ("", "TBD"):
+            # Probables change throughout the day. The live MLB schedule must replace
+            # a stale Rotowire name, not merely fill a blank one.
+            if api_sp not in ("", "TBD", "nan", "None"):
                 rec[sp_col] = api_sp
             if api_hand in ("L", "R"):
                 rec[hand_col] = api_hand
