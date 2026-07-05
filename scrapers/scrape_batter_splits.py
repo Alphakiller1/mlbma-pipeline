@@ -8,6 +8,10 @@ import time
 from datetime import datetime, timedelta
 
 import pandas as pd
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from core.config import (
     BATTER_LINEUP_MIN_PA,
@@ -26,7 +30,8 @@ from core.config import (
 from core.name_utils import lineup_full_names, normalize_player_name
 from scrapers.fangraphs_session import get_driver, get_export_csv, login, safe_quit_driver
 
-PAGE_DELAY = 22
+PAGE_LOAD_TIMEOUT = 60
+EXPORT_TIMEOUT = 45
 COOLDOWN = 15
 SPLIT_COOLDOWN = 45
 GROUP_COOLDOWN = 60
@@ -64,6 +69,10 @@ SPLIT_GROUPS = [
 ]
 
 WINDOW_SPLIT_KEYS = ("overall", "recent", "l14", "l7")
+_EXPORT_XPATH = (
+    "//a[contains(text(),'Export Data') or contains(text(),'Data Export') "
+    "or starts-with(@href,'data:application/csv')]"
+)
 
 
 class SessionGiveUp(Exception):
@@ -166,6 +175,27 @@ def _split_arr_candidates(split_key: str, primary_arr: str) -> list[str]:
     return [c for c in codes if c is not None]
 
 
+def _load_export(driver, url: str) -> pd.DataFrame | None:
+    """Load a JS leaderboard without waiting forever for every page resource."""
+    driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
+    try:
+        driver.get(url)
+    except TimeoutException:
+        print(
+            f"      Page still loading after {PAGE_LOAD_TIMEOUT}s; "
+            "stopping background resources and reading the rendered table..."
+        )
+        driver.execute_script("window.stop();")
+
+    try:
+        WebDriverWait(driver, EXPORT_TIMEOUT).until(
+            EC.presence_of_element_located((By.XPATH, _EXPORT_XPATH))
+        )
+    except Exception:
+        return None
+    return get_export_csv(driver)
+
+
 def scrape_batter_split(
     driver,
     split_key: str,
@@ -186,9 +216,7 @@ def scrape_batter_split(
             print(f"    URL: {url}")
         print(f"    Loading {split_key} / {sg_name}...")
         driver = ensure_session(driver, reconnect_state)
-        driver.get(url)
-        time.sleep(PAGE_DELAY)
-        df = get_export_csv(driver)
+        df = _load_export(driver, url)
         if df is not None and not df.empty:
             print(f"      OK {len(df)} rows")
             if sg_name in REQUIRED_STAT_GROUPS:
