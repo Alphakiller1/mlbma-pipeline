@@ -4419,6 +4419,10 @@ function filterSheetRowsForToday(rows) {
     sheetDays[d] = (sheetDays[d] || 0) + 1;
   });
   var latest = Object.keys(sheetDays).sort().pop();
+  if (latest > today) {
+    if (LIVE_DATA) LIVE_DATA._slateSheetDate = latest;
+    return dated.filter(function(row) { return slateDateFromRow(row) === latest; });
+  }
   if (LIVE_DATA) LIVE_DATA._slateSheetDate = latest || null;
   console.warn('[MATCHUPS] Sheet rows have Slate_Date but none match today (' + today + ') — sheet shows '
     + latest + '; run: python -m scrapers.scrape_lineups');

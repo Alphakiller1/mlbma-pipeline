@@ -2215,13 +2215,23 @@
     return y + '-' + m + '-' + day;
   }
 
-  /** MLB slate day is Eastern Time; avoid browser-local "yesterday" mismatch. */
+  /** MLB slate day is Eastern Time; after 5 PM ET the board rolls to tomorrow. */
   function easternDateIso(d) {
     d = d || new Date();
     try {
-      // en-CA returns YYYY-MM-DD
       var iso = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+      if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return localDateIso(d);
+      var hour = parseInt(d.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        hour12: false
+      }), 10);
+      if (hour >= 17) {
+        var parts = iso.split('-').map(Number);
+        var next = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + 1));
+        return next.toISOString().slice(0, 10);
+      }
+      return iso;
     } catch (e) { /* ignore */ }
     return localDateIso(d);
   }
