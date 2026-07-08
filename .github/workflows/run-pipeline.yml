@@ -9,6 +9,11 @@ name: Run MLBMA Pipeline
 
 on:
   workflow_dispatch:
+    inputs:
+      run_fangraphs:
+        description: "Also run FanGraphs Selenium scrapers (headless bot-login is unreliable on CI)"
+        type: boolean
+        default: false
   schedule:
     # 11:00 UTC ~= 6-7am US/Eastern (DST-dependent), matching the routine morning run.
     - cron: "0 11 * * *"
@@ -47,9 +52,17 @@ jobs:
             python -c "import json; json.load(open('google_credentials.json')); print('google_credentials.json OK')"
           fi
 
-      - name: Run pipeline (--skip-fangraphs)
+      - name: Run pipeline
         env:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           FANGRAPHS_EMAIL: ${{ secrets.FANGRAPHS_EMAIL }}
           FANGRAPHS_PASSWORD: ${{ secrets.FANGRAPHS_PASSWORD }}
-        run: python -u -m pipeline.main --skip-fangraphs
+        # Scheduled runs skip FanGraphs (Selenium bot-login unreliable on CI). A manual
+        # dispatch with run_fangraphs=true attempts the full credentialed pipeline.
+        run: |
+          if [ "${{ inputs.run_fangraphs }}" = "true" ]; then
+            echo "Running FULL pipeline (FanGraphs enabled)"
+            python -u -m pipeline.main
+          else
+            python -u -m pipeline.main --skip-fangraphs
+          fi
