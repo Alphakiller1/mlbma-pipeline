@@ -57,6 +57,10 @@ jobs:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           FANGRAPHS_EMAIL: ${{ secrets.FANGRAPHS_EMAIL }}
           FANGRAPHS_PASSWORD: ${{ secrets.FANGRAPHS_PASSWORD }}
+          # Fine-grained PAT with Actions: write on Alphakiller1/mlb-model, so Step 21 can
+          # cross-repo dispatch the model deploy. Empty until the secret is added -> Step 21
+          # just logs a WARNING (non-fatal), same as before.
+          MLB_MODEL_GITHUB_TOKEN: ${{ secrets.MLB_MODEL_GITHUB_TOKEN }}
         # Scheduled runs skip FanGraphs (Selenium bot-login unreliable on CI). A manual
         # dispatch with run_fangraphs=true attempts the full credentialed pipeline.
         run: |
