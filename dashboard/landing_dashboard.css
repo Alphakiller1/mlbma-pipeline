@@ -556,6 +556,19 @@ body.view-research .ca-page-identity { display: none; }
   white-space: nowrap;
   font-size: 13px;
 }
+.hmc-meta .hmc-gm-pill {
+  flex: 0 0 auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--ca-brand-border, rgba(124, 77, 255, 0.32));
+  background: var(--ca-brand-dim, rgba(124, 77, 255, 0.11));
+  color: var(--ca-purple-light, #C4B0FF);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .hmc-meta .hmc-stadium {
   min-width: 0;
   overflow: hidden;
