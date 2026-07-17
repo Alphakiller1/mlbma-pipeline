@@ -622,9 +622,11 @@
         : '<div class="empty-msg">No matchups loaded for today.</div>');
       return;
     }
-    if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
     var paint = function() {
-      // Sort inside paint: pitcher hydration can land between call and paint.
+      // Enrich inside paint, AFTER pitcher hydration: enrich recomputes OSI
+      // splits from the (possibly MLB-corrected) throwing hands, and sorting
+      // re-runs because hydration can land between call and paint.
+      if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
       var changed = applyGridHtml(grid, sortGames(games).map(function(m, cardIdx) {
         return renderHeroMatchupCard(m, cardIdx);
       }).join('').replace(/<\/?motion>/g, ''));
