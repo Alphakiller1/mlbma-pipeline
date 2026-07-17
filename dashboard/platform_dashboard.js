@@ -268,22 +268,65 @@
   function parseGameTimeSortKey(timeStr) {
     var s = String(timeStr || '').trim().toUpperCase();
     if (!s || s === 'TBD') return 9999;
-    var m = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/);
+    var m = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM|A|P)?/);
     if (!m) return 5000 + s.charCodeAt(0);
     var h = parseInt(m[1], 10);
     var min = parseInt(m[2], 10);
-    var ap = m[3];
-    if (ap === 'PM' && h < 12) h += 12;
-    if (ap === 'AM' && h === 12) h = 0;
+    var ap = (m[3] || '').charAt(0);
+    if (ap === 'P' && h < 12) h += 12;
+    if (ap === 'A' && h === 12) h = 0;
+    // No AM/PM marker: MLB first pitches never land 1:00–7:59 AM, so a bare
+    // "7:05" means evening. Bare 8–12 stays as-is (11:35 day games).
+    if (!ap && h < 8) h += 12;
     return h * 60 + min;
   }
 
   function sortGames(games) {
     var list = games.slice();
     list.sort(function(a, b) {
-      return parseGameTimeSortKey(a.time) - parseGameTimeSortKey(b.time);
+      // Chronological first; alphabetical matchup key as a DETERMINISTIC
+      // tiebreak. Without it, games sharing a start time keep whatever order
+      // the last data source (sheet vs live schedule vs enrichment) produced,
+      // so cards visibly swap between repaints.
+      var d = parseGameTimeSortKey(a.time) - parseGameTimeSortKey(b.time);
+      if (d) return d;
+      var ka = String(a.away || '') + '@' + String(a.home || '');
+      var kb = String(b.away || '') + '@' + String(b.home || '');
+      return ka < kb ? -1 : ka > kb ? 1 : 0;
     });
     return list;
+  }
+
+  function applyGridHtml(grid, htmlStr) {
+    // Repaint only when the rendered slate actually changed. The matchups view
+    // is repainted by several async loaders (registry, lineups, weather,
+    // standings); rebuilding identical DOM each time made every card flash and
+    // collapsed any open lineup panels.
+    if (grid._lastRenderedHtml === htmlStr) return false;
+    var openKeys = {};
+    grid.querySelectorAll('.hero-matchup-card').forEach(function(card) {
+      var openWrap = card.querySelector('.hmc-lineups.is-open, .hmc-lineups.is-mobile-open');
+      if (openWrap) {
+        openKeys[card.getAttribute('data-away') + '@' + card.getAttribute('data-home')] =
+          openWrap.classList.contains('is-mobile-open') ? 'is-mobile-open' : 'is-open';
+      }
+    });
+    grid.innerHTML = htmlStr;
+    grid._lastRenderedHtml = htmlStr;
+    grid.querySelectorAll('.hero-matchup-card').forEach(function(card) {
+      var key = card.getAttribute('data-away') + '@' + card.getAttribute('data-home');
+      var cls = openKeys[key];
+      if (!cls) return;
+      var wrap = card.querySelector('.hmc-lineups');
+      if (!wrap) return;
+      wrap.classList.add(cls);
+      var btn = wrap.querySelector('.hmc-lineup-toggle');
+      if (btn && cls === 'is-open') {
+        btn.setAttribute('aria-expanded', 'true');
+        btn.textContent = 'Hide Lineups ▴';
+      }
+    });
+    return true;
   }
 
   function bindCardNavigation() {
@@ -539,16 +582,14 @@
     if (!document.documentElement.classList.contains('view-matchups')) return;
     var matchupsSection = document.getElementById('section-matchups-hero');
     if (!matchupsSection || matchupsSection.closest('#opening-dashboard')) return;
-    grid.innerHTML = '';
     renderOpeningHero();
 
     if (MATCH_DAY === 'tomorrow') {
       var renderTomorrow = function(games) {
-        if (!games.length) {
-          grid.innerHTML = '<div class="empty-msg">No games scheduled for tomorrow.</div>';
-          return;
-        }
-        grid.innerHTML = games.map(function(m, i) { return renderTomorrowCard(m, i); }).join('');
+        var htmlStr = !games.length
+          ? '<div class="empty-msg">No games scheduled for tomorrow.</div>'
+          : sortGames(games).map(function(m, i) { return renderTomorrowCard(m, i); }).join('');
+        applyGridHtml(grid, htmlStr);
       };
       var loadTomorrow = function() {
         return fetchTomorrowMatchups(true).then(renderTomorrow);
@@ -565,17 +606,18 @@
     var games = live.matchups || [];
     if (!games.length) {
       var stillLoading = !live.loaded && !live.error;
-      grid.innerHTML = stillLoading
+      applyGridHtml(grid, stillLoading
         ? '<div class="empty-msg">Loading today\u2019s matchups\u2026</div>'
-        : '<div class="empty-msg">No matchups loaded for today.</div>';
+        : '<div class="empty-msg">No matchups loaded for today.</div>');
       return;
     }
     if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
-    var sorted = sortGames(games);
     var paint = function() {
-      grid.innerHTML = sorted.map(function(m, cardIdx) {
+      // Sort inside paint: pitcher hydration can land between call and paint.
+      var changed = applyGridHtml(grid, sortGames(games).map(function(m, cardIdx) {
         return renderHeroMatchupCard(m, cardIdx);
-      }).join('').replace(/<\/?motion>/g, '');
+      }).join('').replace(/<\/?motion>/g, ''));
+      if (!changed) return;
       bindCardNavigation();
       grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
       if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);

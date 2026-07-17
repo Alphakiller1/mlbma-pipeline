@@ -2751,7 +2751,7 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260701c"></script>
+<script src="platform_dashboard.js?v=20260717a"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -7997,7 +7997,7 @@ function syncDashboardView() {
     body.classList.add('view-research', 'research-lab-active');
     root.classList.add('view-research');
     var heroGrid = document.getElementById('matchupsHeroGrid');
-    if (heroGrid) heroGrid.innerHTML = '';
+    if (heroGrid) { heroGrid.innerHTML = ''; heroGrid._lastRenderedHtml = ''; }
     var rl = document.getElementById('section-research-lab');
     if (rl) {
       rl.setAttribute('aria-hidden', 'false');
