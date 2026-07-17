@@ -106,6 +106,9 @@
   function gameMetaHtml(m) {
     var parts = [];
     if (m.time) parts.push('<span class="hmc-time">' + esc(m.time) + '</span>');
+    if (m.doubleHeader) {
+      parts.push('<span class="hmc-gm-pill">Gm ' + (m.gameNumber || 1) + '</span>');
+    }
     if (m.stadium) parts.push('<span class="hmc-stadium">' + esc(m.stadium) + '</span>');
     var wh = weatherHtml(m);
     if (wh) parts.push(wh);
@@ -280,7 +283,9 @@
       if (d) return d;
       var ka = String(a.away || '') + '@' + String(a.home || '');
       var kb = String(b.away || '') + '@' + String(b.home || '');
-      return ka < kb ? -1 : ka > kb ? 1 : 0;
+      if (ka !== kb) return ka < kb ? -1 : 1;
+      // Same matchup twice = doubleheader; game 1 before game 2.
+      return (a.gameNumber || 1) - (b.gameNumber || 1);
     });
     return list;
   }
@@ -291,18 +296,22 @@
     // standings); rebuilding identical DOM each time made every card flash and
     // collapsed any open lineup panels.
     if (grid._lastRenderedHtml === htmlStr) return false;
+    var cardStateKey = function(card) {
+      return card.getAttribute('data-away') + '@' + card.getAttribute('data-home')
+        + '#' + (card.getAttribute('data-gn') || '1');
+    };
     var openKeys = {};
     grid.querySelectorAll('.hero-matchup-card').forEach(function(card) {
       var openWrap = card.querySelector('.hmc-lineups.is-open, .hmc-lineups.is-mobile-open');
       if (openWrap) {
-        openKeys[card.getAttribute('data-away') + '@' + card.getAttribute('data-home')] =
+        openKeys[cardStateKey(card)] =
           openWrap.classList.contains('is-mobile-open') ? 'is-mobile-open' : 'is-open';
       }
     });
     grid.innerHTML = htmlStr;
     grid._lastRenderedHtml = htmlStr;
     grid.querySelectorAll('.hero-matchup-card').forEach(function(card) {
-      var key = card.getAttribute('data-away') + '@' + card.getAttribute('data-home');
+      var key = cardStateKey(card);
       var cls = openKeys[key];
       if (!cls) return;
       var wrap = card.querySelector('.hmc-lineups');
@@ -458,6 +467,8 @@
             homeSP: homeSp.fullName || 'TBD',
             homeSPId: homeSp.id || null,
             homeHand: (homeSp.pitchHand && homeSp.pitchHand.code) || 'R',
+            gameNumber: g.gameNumber || 1,
+            doubleHeader: g.doubleHeader === 'Y' || g.doubleHeader === 'S',
             isTomorrow: true
           });
         });
@@ -475,7 +486,7 @@
     var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
     var awayPs = spPitchScoreFromProfile(m.awaySP, m.away);
     var homePs = spPitchScoreFromProfile(m.homeSP, m.home);
-    return '<article class="hero-matchup-card hero-matchup-card--tomorrow" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '">'
+    return '<article class="hero-matchup-card hero-matchup-card--tomorrow" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" data-gn="' + (m.gameNumber || 1) + '">'
       + '<div class="hmc-row hmc-teams">'
       + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '', 'away') + '</div>'
       + '<span class="hmc-at">@</span>'
@@ -515,7 +526,7 @@
     var lineupHtml = opts.lineupHtml != null ? opts.lineupHtml
       : (buildLineup ? buildLineup(m, { expanded: true, hideToggle: true }) : '');
     var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
-    return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" role="link" tabindex="0">'
+    return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" data-gn="' + (m.gameNumber || 1) + '" role="link" tabindex="0">'
       + '<div class="hmc-row hmc-teams">'
       + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '', 'away') + '</div>'
       + '<span class="hmc-at">@</span>'
