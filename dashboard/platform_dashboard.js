@@ -13,8 +13,11 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function compareUrl(away, home) {
-    return 'matchup_compare.html?away=' + encodeURIComponent(away || '') + '&home=' + encodeURIComponent(home || '');
+  function compareUrl(away, home, gameNumber) {
+    var url = 'matchup_compare.html?away=' + encodeURIComponent(away || '') + '&home=' + encodeURIComponent(home || '');
+    // Doubleheaders: the analysis page needs to know WHICH game.
+    if (gameNumber && Number(gameNumber) > 1) url += '&gn=' + encodeURIComponent(gameNumber);
+    return url;
   }
 
   function teamProfileUrl(team) {
@@ -336,7 +339,7 @@
       if (!card) return;
       var away = card.getAttribute('data-away');
       var home = card.getAttribute('data-home');
-      if (away && home) global.location.href = compareUrl(away, home);
+      if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'));
     });
     grid.addEventListener('click', function(e) {
       var btn = e.target.closest('.hmc-lineup-toggle');
@@ -548,7 +551,7 @@
       + '<span class="hmc-spark">' + teamOsiSparkline(m.home, m.awayHand) + '</span>'
       + '</div>'
       + lineupHtml
-      + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
+      + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home, m.gameNumber) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
       + '</article>';
   }
 
@@ -559,14 +562,14 @@
       if (e.target.closest('a, button, .hmc-lineup-toggle')) return;
       var away = card.getAttribute('data-away');
       var home = card.getAttribute('data-home');
-      if (away && home) global.location.href = compareUrl(away, home);
+      if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'));
     });
     card.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         var away = card.getAttribute('data-away');
         var home = card.getAttribute('data-home');
-        if (away && home) global.location.href = compareUrl(away, home);
+        if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'));
       }
     });
   }
