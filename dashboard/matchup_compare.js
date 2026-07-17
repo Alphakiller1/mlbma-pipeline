@@ -1181,13 +1181,49 @@
       S.fetchSheetTab(T.team_l10_sp_hand, { revalidate: true }).catch(function() { return []; }),
       S.fetchSheetTab(T.team_l10_sp_hand_games, { revalidate: true }).catch(function() { return []; }),
       S.fetchSheetTab(T.reliever_log).catch(function() { return []; }),
-      S.fetchSheetTab(T.batter_splits_vs_rp).catch(function() { return []; })
+      S.fetchSheetTab(T.batter_splits_vs_rp).catch(function() { return []; }),
+      (S.fetchMlbTodaySchedule
+        ? S.fetchMlbTodaySchedule().catch(function() { return { games: [] }; })
+        : Promise.resolve({ games: [] }))
     ];
 
     Promise.all(fetches).then(function(res) {
       if (A && A.parseRegistryRows) A.parseRegistryRows(res[9]);
       var slateRows = filterSlateMatchupRows(res[0]);
       var m = findMatchup(slateRows, away, home) || findMatchup(res[0], away, home);
+
+      // The sheet snapshot goes stale (it showed Seymour/Sandoval while MLB's
+      // posted Gm 1 probables were Jax/Bennett) and one sheet row cannot
+      // represent both games of a doubleheader. MLB's live schedule is the
+      // source of truth for starters, time, and game selection — same
+      // precedence the matchup cards use. ?gn=2 selects a DH game 2.
+      if (m) {
+        var liveGames = (res[31] && res[31].games) ? res[31].games : [];
+        var gnWant = parseInt(qp('gn') || '1', 10) || 1;
+        var tk = S.teamKey || function(t) { return String(t || '').trim().toUpperCase(); };
+        var liveGame = null;
+        for (var li = 0; li < liveGames.length; li++) {
+          var lg = liveGames[li];
+          if (tk(lg.away) !== tk(m.away) || tk(lg.home) !== tk(m.home)) continue;
+          if ((lg.gameNumber || 1) === gnWant) { liveGame = lg; break; }
+          if (!liveGame) liveGame = lg;
+        }
+        if (liveGame) {
+          if (liveGame.awaySP && liveGame.awaySP !== 'TBD') {
+            m.awaySP = liveGame.awaySP;
+            if (liveGame.awaySPId) m.awaySPId = liveGame.awaySPId;
+          }
+          if (liveGame.homeSP && liveGame.homeSP !== 'TBD') {
+            m.homeSP = liveGame.homeSP;
+            if (liveGame.homeSPId) m.homeSPId = liveGame.homeSPId;
+          }
+          if (liveGame.awayHand === 'L' || liveGame.awayHand === 'R') m.awayHand = liveGame.awayHand;
+          if (liveGame.homeHand === 'L' || liveGame.homeHand === 'R') m.homeHand = liveGame.homeHand;
+          if (liveGame.time) m.time = liveGame.time;
+          m.gameNumber = liveGame.gameNumber || 1;
+          m.doubleHeader = !!liveGame.doubleHeader;
+        }
+      }
       var weatherMap = parseWeatherMap(res[2]);
       var data = {
         matchup: m,
@@ -1283,7 +1319,12 @@
       var extras = [
         global.MLBMAStandings ? MLBMAStandings.load() : Promise.resolve(),
         global.MLBMAStandings ? MLBMAStandings.loadRecentForm([m.away, m.home]) : Promise.resolve(),
-        S.enrichMissingWeatherFromApi ? S.enrichMissingWeatherFromApi([m], weatherMap) : Promise.resolve()
+        S.enrichMissingWeatherFromApi ? S.enrichMissingWeatherFromApi([m], weatherMap) : Promise.resolve(),
+        // MLB-verified throwing hands (the sheet/profile chain defaulted
+        // unknowns to RHP — Chris Sale). Never blocks render on failure.
+        S.hydrateMatchupPitcherStatsFromMlb
+          ? S.hydrateMatchupPitcherStatsFromMlb([m]).catch(function() { return null; })
+          : Promise.resolve()
       ];
       return Promise.all(extras).then(function() {
         finish(data);
