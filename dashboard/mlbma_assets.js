@@ -89,9 +89,14 @@
     whip: { mean: 1.28, std: 0.12, hi: false },
     hr9: { mean: 1.20, std: 0.28, hi: false },       // HR/9 allowed
     bb9: { mean: 3.20, std: 0.60, hi: false },        // BB/9 allowed
-    bbpct: { mean: 8.0, std: 1.8, hi: false },        // BB% in percent points (lower better)
+    bbpct: { mean: 8.0, std: 1.8, hi: false },        // pitcher BB% in percent points (lower better)
+    bb_pct: { mean: 8.0, std: 1.8, hi: false },       // alias used by glossary / legacy call sites
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
+    k_pct: { mean: 22.5, std: 4.5, hi: true },        // alias
+    sp_osi_allowed: { mean: 46.6, std: 4.9, hi: false }, // qualified starters; lower allowed is better
+    sp_abq_allowed: { mean: 47.4, std: 3.9, hi: false }, // qualified starters; lower allowed is better
+    sp_oor_faced: { mean: 46.4, std: 6.8, hi: true }, // competition difficulty; contextual, not good/bad
     qspct: { mean: 35, std: 8, hi: true },             // quality-start rate % (higher better)
     ipstart: { mean: 5.10, std: 0.40, hi: true },      // avg IP per SP start (higher = deeper outings)
     rpwin: { mean: 20, std: 5, hi: true },             // reliever win % of team games (higher = better)
@@ -112,6 +117,7 @@
     bp_hr9: { mean: 0.86, std: 0.19, hi: false },
     bp_kpct: { mean: 23.7, std: 2.22, hi: true },
     bp_bbpct: { mean: 9.17, std: 1.71, hi: false },
+    bp_score: { mean: 51.9, std: 2.45, hi: true },
     rp_era: { mean: 3.40, std: 1.65, hi: false },     // individual relievers
     rp_fip: { mean: 3.51, std: 1.17, hi: false },
     rp_whip: { mean: 1.22, std: 0.29, hi: false },
@@ -152,15 +158,23 @@
     return 'https://a.espncdn.com/i/teamlogos/mlb/' + size + '/' + getEspnAbbr(team) + '.png';
   }
 
+  /** Resized logo via ESPN's combiner (~3KB at 64px vs ~37KB for the raw 500px asset). */
+  function teamLogoUrlSized(team, px) {
+    var w = Math.min(256, Math.max(32, 2 * (px || 24)));
+    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + getEspnAbbr(team) + '.png&w=' + w + '&h=' + w;
+  }
+
   function teamLogoImg(team, px, cls) {
     px = px || 24;
     cls = cls || 'team-logo';
     var ab = String(team || '').toUpperCase();
     var initials = ab.slice(0, 2);
-    return '<img class="' + cls + '" src="' + teamLogoUrl(team, px >= 40 ? 500 : 500) + '" '
-      + 'width="' + px + '" height="' + px + '" alt="' + ab + '" loading="lazy" '
-      + 'onerror="this.onerror=null;this.src=\'\';this.style.display=\'none\';'
-      + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');">'
+    // onerror chain: resized combiner -> raw 500px asset -> hide + initials fallback.
+    return '<img class="' + cls + '" src="' + teamLogoUrlSized(team, px) + '" '
+      + 'width="' + px + '" height="' + px + '" alt="' + ab + '" loading="lazy" decoding="async" '
+      + 'onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + teamLogoUrl(team, 500) + '\';}'
+      + 'else{this.onerror=null;this.src=\'\';this.style.display=\'none\';'
+      + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');}">'
       + '<span class="team-logo-fallback" style="display:none;width:' + px + 'px;height:' + px + 'px;">'
       + initials + '</span>';
   }
@@ -624,6 +638,12 @@
       if (value <= 45) return 'c-mid';
       return 'c-mid';
     }
+    if (context === 'sp_oor_faced') {
+      var oorZ = zScore(value, context);
+      if (oorZ >= 0.85) return 'c-oor-hard';
+      if (oorZ <= -0.85) return 'c-oor-soft';
+      return 'c-oor-mid';
+    }
     if (context === 'ppGap' || context === 'PP_GAP') {
       if (value > 0) return 'c-good';
       if (value < 0) return 'c-poor';
@@ -771,7 +791,7 @@
     }
     if (context === 'ppGap' || context === 'PP_GAP') return ppGapColor(value);
     if (context === 'dfGap' || context === 'POWER_FLOOR') return dfGapColor(value);
-    return metricColor(value, context, !!invert);
+    return metricColor(value, context, invert);
   }
 
   /** @deprecated Inline styles replaced by solid .chip classes — kept for legacy call sites. */
@@ -943,20 +963,35 @@
     if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
   }
 
+  /** Rate contexts the UI colors in percentage points (22.5 / 8.0), never 0–1 fractions. */
+  var PCT_POINT_CONTEXTS = {
+    kpct: 1, k_pct: 1, bbpct: 1, bb_pct: 1,
+    bp_kpct: 1, bp_bbpct: 1, rp_kpct: 1, rp_bbpct: 1
+  };
+
   /**
    * Live league-average baselines (written by core.compute_baselines -> the pipeline).
    * Updates the registry mean/std with the current season's full-league averages while
    * KEEPING each metric's direction (hi). Falls back silently to the built-in defaults.
+   *
+   * Guard: K%/BB% chips grade on percent points. A fraction-scale export (mean≈0.09)
+   * against percent values (6–12) paints every walk rate deep red — auto ×100 if needed.
    */
   function applyLeagueBaselines(data) {
     var b = data && data.baselines;
     if (!b) return;
     Object.keys(b).forEach(function(ctx) {
       var live = b[ctx];
-      if (CONTEXT_DEFAULTS[ctx] && live && live.mean != null && live.std) {
-        CONTEXT_DEFAULTS[ctx].mean = live.mean;
-        CONTEXT_DEFAULTS[ctx].std = live.std;   // direction (hi) preserved
+      if (!CONTEXT_DEFAULTS[ctx] || !live || live.mean == null || !live.std) return;
+      var mean = Number(live.mean);
+      var std = Number(live.std);
+      if (!isFinite(mean) || !isFinite(std) || std <= 0) return;
+      if (PCT_POINT_CONTEXTS[ctx] && mean > 0 && mean < 1.5) {
+        mean *= 100;
+        std *= 100;
       }
+      CONTEXT_DEFAULTS[ctx].mean = mean;
+      CONTEXT_DEFAULTS[ctx].std = std;   // direction (hi) preserved
     });
   }
 
@@ -973,6 +1008,7 @@
     getEspnAbbr: getEspnAbbr,
     espnAbbr: getEspnAbbr,
     teamLogoUrl: teamLogoUrl,
+    teamLogoUrlSized: teamLogoUrlSized,
     teamLogoImg: teamLogoImg,
     headshotUrl: headshotUrl,
     headshotImg: headshotImg,
