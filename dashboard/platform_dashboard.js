@@ -610,16 +610,25 @@
         : '<div class="empty-msg">No matchups loaded for today.</div>');
       return;
     }
-    var sorted = sortGames(games);
-
-    var changed = applyGridHtml(grid, sorted.map(function(m, cardIdx) {
-      return renderHeroMatchupCard(m, cardIdx);
-    }).join('').replace(/<\/?motion>/g, ''));
-    if (!changed) return;
-
-    bindCardNavigation();
-    grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
-    if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
+    var paint = function() {
+      // Enrich inside paint, AFTER pitcher hydration: enrich recomputes OSI
+      // splits from the (possibly MLB-corrected) throwing hands, and sorting
+      // re-runs because hydration can land between call and paint.
+      if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
+      var changed = applyGridHtml(grid, sortGames(games).map(function(m, cardIdx) {
+        return renderHeroMatchupCard(m, cardIdx);
+      }).join('').replace(/<\/?motion>/g, ''));
+      if (!changed) return;
+      bindCardNavigation();
+      grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
+      if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
+    };
+    var S = global.MLBMASharedMatchup;
+    if (S && S.hydrateMatchupPitcherStatsFromMlb) {
+      S.hydrateMatchupPitcherStatsFromMlb(games).then(paint).catch(paint);
+      return;
+    }
+    paint();
   }
 
   function signalConfClass(conf) {

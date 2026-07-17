@@ -2323,6 +2323,41 @@
     });
   }
 
+  /** Resolve starter throwing hands from the MLB people endpoint.
+   *
+   * The schedule hydrate does not reliably include pitchHand, and the
+   * sheet/profile fallbacks default unknowns to 'R' (Chris Sale rendered as
+   * RHP). The people endpoint always carries pitchHand, so it is authoritative;
+   * hands it sets are marked HandMlb so later enrich passes don't second-guess
+   * them, and enrich recomputes OSI-vs-hand splits from the corrected hand. */
+  function hydrateMatchupPitcherStatsFromMlb(matchups) {
+    var ids = [];
+    (matchups || []).forEach(function(m) {
+      if (m.awaySPId && !m.awayHandMlb) ids.push(String(m.awaySPId));
+      if (m.homeSPId && !m.homeHandMlb) ids.push(String(m.homeSPId));
+    });
+    ids = ids.filter(function(id, i) { return ids.indexOf(id) === i; });
+    if (!ids.length) return Promise.resolve(matchups);
+    var url = 'https://statsapi.mlb.com/api/v1/people?personIds=' + encodeURIComponent(ids.join(','));
+    return fetchJsonWithTimeout(url, 12000).then(function(data) {
+      var hands = {};
+      (data.people || []).forEach(function(person) {
+        var code = person.pitchHand && person.pitchHand.code;
+        if (code === 'L' || code === 'R') hands[String(person.id)] = code;
+      });
+      (matchups || []).forEach(function(m) {
+        var ah = hands[String(m.awaySPId)];
+        var hh = hands[String(m.homeSPId)];
+        if (ah) { m.awayHand = ah; m.awayHandMlb = true; }
+        if (hh) { m.homeHand = hh; m.homeHandMlb = true; }
+      });
+      return matchups;
+    }).catch(function(err) {
+      console.warn('[MATCHUPS] pitcher hand fetch failed', err);
+      return matchups;
+    });
+  }
+
   function collectLineupMatchupKeys(matchups, liveSchedule, rawRows) {
     var keySet = {};
     function addKey(k) {
@@ -3192,6 +3227,7 @@
     matchupGameKey: matchupGameKey,
     normalizeGameKey: normalizeGameKey,
     fetchMlbTodaySchedule: fetchMlbTodaySchedule,
+    hydrateMatchupPitcherStatsFromMlb: hydrateMatchupPitcherStatsFromMlb,
     localDateIso: localDateIso,
     easternDateIso: easternDateIso,
     formatGameTimeEt: formatGameTimeEt
