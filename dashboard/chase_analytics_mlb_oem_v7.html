@@ -2747,11 +2747,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260610b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260717b"></script>
+<script src="matchup_shared.js?v=20260717c"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260717b"></script>
+<script src="platform_dashboard.js?v=20260717c"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -4612,8 +4612,15 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
       // The MLB Stats API is the source of truth for first-pitch times; the
       // sheet's Time column can be stale (and cannot represent both DH games).
       time: g.time || existing.time || '',
-      awaySP: (existing.awaySP && existing.awaySP !== 'TBD') ? existing.awaySP : (g.awaySP || 'TBD'),
-      homeSP: (existing.homeSP && existing.homeSP !== 'TBD') ? existing.homeSP : (g.homeSP || 'TBD'),
+      // MLB's posted probables are authoritative for starter NAMES too — the
+      // sheet's single row goes stale (and cannot represent both DH games'
+      // starters: it showed Seymour/Sandoval while MLB listed Jax/Bennett for
+      // Gm 1). Sheet remains the fallback when MLB still says TBD. This also
+      // keeps the name coherent with awaySPId/homeSPId, which already prefer
+      // the live id — stats were hydrating for the live pitcher while the card
+      // displayed the sheet's name.
+      awaySP: (g.awaySP && g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP || 'TBD'),
+      homeSP: (g.homeSP && g.homeSP !== 'TBD') ? g.homeSP : (existing.homeSP || 'TBD'),
       awaySPId: g.awaySPId || existing.awaySPId || null,
       homeSPId: g.homeSPId || existing.homeSPId || null,
       awayHand: g.awayHand || existing.awayHand || '?',

@@ -2571,8 +2571,12 @@
           var split = block.splits && block.splits[0];
           if (split && split.stat) stat = split.stat;
         });
-        var parsed = parseMlbPitcherSeasonStat(stat);
-        if (parsed) map[String(person.id)] = parsed;
+        var parsed = parseMlbPitcherSeasonStat(stat) || {};
+        // The people endpoint always carries pitchHand — the schedule hydrate
+        // does not reliably — so this is the authoritative throwing-hand source.
+        var handCode = person.pitchHand && person.pitchHand.code;
+        if (handCode === 'L' || handCode === 'R') parsed.hand = handCode;
+        if (parsed.hand || Object.keys(parsed).length) map[String(person.id)] = parsed;
       });
       return map;
     }).catch(function(err) {
@@ -2594,6 +2598,13 @@
   function applyMlbPitcherRatesToMatchup(m, side, rates) {
     if (!m || !rates) return;
     var px = side;
+    // MLB-verified throwing hand beats sheet/profile guesses and the 'R'
+    // default (Chris Sale was rendering as RHP). enrich recomputes OSI splits
+    // from the corrected hand on the next pass.
+    if (rates.hand === 'L' || rates.hand === 'R') {
+      m[px + 'Hand'] = rates.hand;
+      m[px + 'HandMlb'] = true;
+    }
     if (m[px + 'K'] == null && rates.kPct != null) m[px + 'K'] = rates.kPct;
     if (m[px + 'BB'] == null && rates.bbPct != null) m[px + 'BB'] = rates.bbPct;
     if (m[px + 'HR9'] == null && rates.hr9 != null) m[px + 'HR9'] = rates.hr9;
@@ -2605,8 +2616,8 @@
   function hydrateMatchupPitcherStatsFromMlb(matchups) {
     var ids = [];
     (matchups || []).forEach(function(m) {
-      if (m.awaySPId && matchupPitcherSideNeedsStats(m, 'away')) ids.push(m.awaySPId);
-      if (m.homeSPId && matchupPitcherSideNeedsStats(m, 'home')) ids.push(m.homeSPId);
+      if (m.awaySPId && (matchupPitcherSideNeedsStats(m, 'away') || !m.awayHandMlb)) ids.push(m.awaySPId);
+      if (m.homeSPId && (matchupPitcherSideNeedsStats(m, 'home') || !m.homeHandMlb)) ids.push(m.homeSPId);
     });
     if (!ids.length) return Promise.resolve(matchups);
     return fetchMlbPitcherSeasonStats(ids).then(function(map) {
