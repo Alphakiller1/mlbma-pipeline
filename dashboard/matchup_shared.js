@@ -2293,6 +2293,8 @@
           var homeHand = normalizePitcherHandShared(
             homeProb.pitchHand && homeProb.pitchHand.code
           );
+          var gameNumber = game.gameNumber || 1;
+          var isDoubleHeader = game.doubleHeader === 'Y' || game.doubleHeader === 'S';
           games.push({
             away: away,
             home: home,
@@ -2304,7 +2306,10 @@
             awayHand: awayHand,
             homeHand: homeHand,
             stadium: (game.venue && game.venue.name) || '',
-            gameKey: away + '@' + home,
+            // Doubleheader game 2 gets its own key so it can't overwrite game 1.
+            gameKey: away + '@' + home + (gameNumber > 1 ? '#' + gameNumber : ''),
+            gameNumber: gameNumber,
+            doubleHeader: isDoubleHeader,
             source: 'mlb-api'
           });
         });

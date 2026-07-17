@@ -2621,7 +2621,7 @@ body.view-research .ca-lab { display: block; }
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260630a">
 <link rel="stylesheet" href="chase_nav.css?v=20260701c">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260701c">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260717b">
 <link rel="stylesheet" href="research_lab.css?v=20260624a">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260617a">
 <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
@@ -2747,11 +2747,11 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260610b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260701c"></script>
+<script src="matchup_shared.js?v=20260717b"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260717a"></script>
+<script src="platform_dashboard.js?v=20260717b"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
@@ -4574,7 +4574,9 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
     awayOSI: awayOsi,
     homeOSI: homeOsi,
     lineupEdge: ex && ex.lineupEdge ? ex.lineupEdge : '',
-    stadium: g.stadium || (ex && ex.stadium) || ''
+    stadium: g.stadium || (ex && ex.stadium) || '',
+    gameNumber: g.gameNumber || 1,
+    doubleHeader: !!g.doubleHeader
   };
 }
 
@@ -4597,14 +4599,19 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
   var liveGames = (liveSchedule && liveSchedule.games) ? liveSchedule.games : [];
   var liveByKey = {};
   liveGames.forEach(function(g) {
-    var key = matchupGameKey(g);
-    if (!key) return;
+    var baseKey = matchupGameKey(g);
+    if (!baseKey) return;
+    // Doubleheader-aware key: game 2 must not overwrite game 1 (TBR@BOS twins).
+    var gameNumber = g.gameNumber || 1;
+    var key = baseKey + (gameNumber > 1 ? '#' + gameNumber : '');
     liveByKey[key] = g;
     var existing = gamesByKey[key] || {};
     gamesByKey[key] = {
       away: g.away,
       home: g.home,
-      time: existing.time || g.time || '',
+      // The MLB Stats API is the source of truth for first-pitch times; the
+      // sheet's Time column can be stale (and cannot represent both DH games).
+      time: g.time || existing.time || '',
       awaySP: (existing.awaySP && existing.awaySP !== 'TBD') ? existing.awaySP : (g.awaySP || 'TBD'),
       homeSP: (existing.homeSP && existing.homeSP !== 'TBD') ? existing.homeSP : (g.homeSP || 'TBD'),
       awaySPId: g.awaySPId || existing.awaySPId || null,
@@ -4612,7 +4619,9 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
       awayHand: g.awayHand || existing.awayHand || '?',
       homeHand: g.homeHand || existing.homeHand || '?',
       stadium: g.stadium || existing.stadium || '',
-      gameKey: key
+      gameKey: key,
+      gameNumber: gameNumber,
+      doubleHeader: !!g.doubleHeader
     };
   });
   var liveKeyList = Object.keys(liveByKey).sort();
@@ -4622,11 +4631,32 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
   var slateSource = '';
   var slateDay = mlbSlateDayIso();
 
+  function appendDoubleheaderKeys(keys) {
+    // The sheet carries one row per matchup; a doubleheader's extra game only
+    // exists in the live schedule (key "AWAY@HOME#2"). Include it whenever its
+    // base matchup is on the slate so both games render as cards.
+    var have = {};
+    keys.forEach(function(k) { have[k] = true; });
+    liveKeyList.forEach(function(k) {
+      var hashAt = k.indexOf('#');
+      if (hashAt < 0 || have[k]) return;
+      if (have[k.slice(0, hashAt)]) {
+        keys.push(k);
+        have[k] = true;
+      }
+    });
+    return keys;
+  }
+
   if (games.length) {
-    useKeys = games.map(function(g) { return matchupGameKey(g); }).filter(Boolean).sort();
+    useKeys = appendDoubleheaderKeys(
+      games.map(function(g) { return matchupGameKey(g); }).filter(Boolean).sort()
+    );
     slateSource = 'Today_Games (ET ' + slateDay + ')';
   } else if (sheetMatchups.length) {
-    useKeys = sheetMatchups.map(function(m) { return matchupGameKey(m); }).filter(Boolean).sort();
+    useKeys = appendDoubleheaderKeys(
+      sheetMatchups.map(function(m) { return matchupGameKey(m); }).filter(Boolean).sort()
+    );
     slateSource = 'Today_Matchups (ET ' + slateDay + ')';
   } else if (liveKeyList.length) {
     useKeys = liveKeyList.slice();
@@ -4647,7 +4677,7 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
     var g = gamesByKey[key];
     if (!g) {
       var live = liveByKey[key];
-      var p = key.split('@');
+      var p = key.split('#')[0].split('@');
       g = live || { away: p[0], home: p[1], time: '', awaySP: 'TBD', homeSP: 'TBD', gameKey: key };
     }
     return buildMatchupFromSlateGame(g, luKeysForBuild, byMatchup, scR, scL);
