@@ -602,8 +602,8 @@
         hint: 'Discipline & contact',
         icon: 'plate-skills',
         slots: [
-          ['K%', rates.k, 'pitching', true, 1],
-          ['BB%', rates.bb, 'obr', false, 1],
+          ['K%', rates.k, 'kpct', true, 1],
+          ['BB%', rates.bb, 'bbpct', false, 1],
           ['OBP', rates.obp, 'obr', false, 3],
           ['Barrel%', rates.barrel, 'rcv', false, 1],
           ['HardHit%', rates.hard, 'rcv', false, 1]

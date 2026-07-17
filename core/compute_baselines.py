@@ -39,6 +39,11 @@ OFFENSE = {"osi": "OSI", "abq": "ABQ", "rcv": "RCV", "obr": "OBR", "projosi": "p
 # Pitching rate stats graded per-pitcher -> qualified-pitcher pool from sp_standard.
 PITCH_SP = {"fip": "FIP", "xfip": "xFIP", "whip": "WHIP", "hr9": "HR/9", "bb9": "BB/9",
             "k9": "K/9", "era": "ERA", "kpct": "K%", "bbpct": "BB%"}
+PITCH_SP_ALLOWED = {
+    "sp_osi_allowed": "OSI_allowed",
+    "sp_abq_allowed": "ABQ_allowed",
+    "sp_oor_faced": "OOR_faced",
+}
 
 # Aggregate cells must grade against their OWN population, not individual starters --
 # a team/bullpen aggregate clusters ~2.5-3x tighter than individual arms, so reusing the
@@ -112,9 +117,17 @@ def _team_staff_ms(sp: pd.DataFrame, col: str) -> dict | None:
 
 
 def _pct_points(series) -> pd.Series:
-    """Force K%/BB% to percentage points (×100 if stored as a fraction)."""
+    """Force K%/BB% to percentage points (×100 if stored as a fraction).
+
+    Dashboard chips grade these on the percent-point scale (league BB% ≈ 8–9,
+    K% ≈ 22). A fraction-scale baseline (mean ≈ 0.09) against percent values
+    paints every walk rate deep red — never emit that scale.
+    """
     s = _num(series)
-    if len(s) and s.dropna().median() <= 1.5:
+    if not len(s):
+        return s
+    med = float(s.dropna().median())
+    if med <= 1.5:
         s = s * 100
     return s
 
@@ -150,7 +163,11 @@ def run():
         spq = sp[pd.to_numeric(sp["IP"], errors="coerce") >= 20] if "IP" in sp.columns else sp
         for ctx, col in PITCH_SP.items():
             if col in spq.columns:
-                m = _ms(spq[col])
+                # Ranking/profile views display K% and BB% in percentage points.
+                # Grade against the same scale even when FanGraphs stores rates as
+                # fractions (0.229 / 0.091) in sp_standard.csv.
+                series = _pct_points(spq[col]) if ctx in ("kpct", "bbpct") else _num(spq[col])
+                m = _ms(series)
                 if m:
                     baselines[ctx] = m
         # team_* : whole-staff IP-weighted aggregate across the 30 teams (not the per-arm pool)
@@ -158,6 +175,21 @@ def run():
             m = _team_staff_ms(sp, col)
             if m:
                 baselines[ctx] = m
+
+    # Starter allowed metrics grade against other qualified starters, not the
+    # 30-team offensive distributions. Approximate 20+ IP from starts * avg IP.
+    spp = _read("sp_profiles.csv")
+    if spp is not None:
+        if "starts" in spp.columns and "avg_IP" in spp.columns:
+            estimated_ip = pd.to_numeric(spp["starts"], errors="coerce") * pd.to_numeric(
+                spp["avg_IP"], errors="coerce"
+            )
+            spp = spp[estimated_ip >= 20]
+        for ctx, col in PITCH_SP_ALLOWED.items():
+            if col in spp.columns:
+                m = _ms(spp[col])
+                if m:
+                    baselines[ctx] = m
 
     # bp_* : 30 team bullpen units (their own, much tighter distribution).
     bpu = _read("bullpen_unit.csv")
@@ -168,6 +200,10 @@ def run():
                 m = _ms(series)
                 if m:
                     baselines[ctx] = m
+        if "overall_OSI_allowed" in bpu.columns:
+            m = _ms(100 - _num(bpu["overall_OSI_allowed"]))
+            if m:
+                baselines["bp_score"] = m
 
     # rp_* : individual relievers (wide like starters but different mean/scale).
     bpi = _read("bullpen_individual.csv")
