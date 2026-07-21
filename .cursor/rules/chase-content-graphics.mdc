@@ -1,37 +1,34 @@
 ---
-description: Chase content/social graphics — template-locked process, no freehand AI art
-globs: docs/CHASE_CONTENT_PLAN.md,design/**,docs/**/*CONTENT*
+description: Chase social graphics — defer to chase-content-engine; no freehand AI finals
+globs: docs/CHASE_CONTENT_PLAN.md,outputs/push_instagram.py,design/**
 alwaysApply: false
 ---
 
 # Chase Content Graphics
 
-**Source of truth:** [`docs/CHASE_CONTENT_PLAN.md`](../../docs/CHASE_CONTENT_PLAN.md)
+**Canonical system:** [`Alphakiller1/chase-content-engine`](https://github.com/Alphakiller1/chase-content-engine)
 
-## North star
+**Bridge doc in this repo:** [`docs/CHASE_CONTENT_PLAN.md`](../../docs/CHASE_CONTENT_PLAN.md)
 
-Chase is an **authentic sports information brand**. Graphics must look like exports of the product system — not generic AI sports posters. Freehand AI image generation (ChatGPT/Midjourney “make an infographic”) is **not** an acceptable final route.
+## Authority
 
-## Process lock
+| Concern | Where |
+|---------|--------|
+| Daily schedule, report contracts, PNG renderer, opinion overlays | `chase-content-engine` |
+| Design law for social PNGs | `chase-content-engine/design/CONTENT_DESIGN_CONTRACT.md` |
+| AI concept mockups only | `chase-content-engine/design/CHATGPT_IMAGE_MOCKUP_PROMPT.md` |
+| Slate / offense / trajectory CSVs | this repo (`mlbma-pipeline/data`) |
+| Dashboard UI tokens | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` (this repo) |
 
-1. Complete a brief (pillar + template T1–T5 + one claim + real hero metric).
-2. Pull numbers from dashboard/pipeline — never invent.
-3. Assemble on a **locked template** (Figma/HTML export/screenshot). Zones, fonts, chips, brand marks stay fixed.
-4. AI may draft captions or fill slots from pasted data. AI must **not** invent final pixels, faces, stadiums, or a new visual style.
-5. Pass authenticity tests: Product / Logo-off / Trust (see content plan §1).
-6. QA checklist in content plan §6 before publish.
+## Rules
 
-## Asset rules
+1. Do **not** invent a parallel template catalog (T1–T5, etc.) in mlbma-pipeline.
+2. Final graphics = `chase_content/render.py` + live bundle + approved logo files. Not Midjourney/ChatGPT image finals.
+3. Image models may produce **concept mockups** with logo placeholders only — never drawn Chase/MLB marks, never publish those as posts.
+4. Fix renderer conflicts listed in the content-engine design contract §14; do not weaken the contract.
+5. `outputs/push_instagram.py` may publish captions/URLs; it must not invent layout. Image URLs should be engine-built PNGs.
+6. Opinions are human editorial overlays (`MY BET` / `LEAN` / `WATCH` / `PASS` / `NO OPINION`) — never auto-inherited from model projections.
 
-- Logos/avatars: follow `chase-brand-and-avatars.mdc`.
-- Visual tokens/type/chips: follow `MLBMA_CURSOR_DESIGN_CONTRACT.md` §4–§6.
-- Icons: `mlbma_icons.js` poster marks for heroes; no thin Lucide as the main mark.
-- Metric color: green=elite → red=poor only.
+## When asked to “make a graphic” here
 
-## Reject
-
-New layouts per post, AI backgrounds, fake players, rainbow per-stat palettes, hype “AI synergy” copy, invented stats.
-
-## When asked to “generate a graphic”
-
-Deliver brief + template slot fill + caption + QA — not a synthetic AI poster. If the user insists on freehand AI art, warn it conflicts with brand authenticity and propose template assembly.
+Point at the content engine, outline migrate → validate → build → human QA, and only change this repo if the **data contract** (CSV fields / freshness) needs work.
