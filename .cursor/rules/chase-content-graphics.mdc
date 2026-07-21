@@ -1,0 +1,37 @@
+---
+description: Chase content/social graphics — template-locked process, no freehand AI art
+globs: docs/CHASE_CONTENT_PLAN.md,design/**,docs/**/*CONTENT*
+alwaysApply: false
+---
+
+# Chase Content Graphics
+
+**Source of truth:** [`docs/CHASE_CONTENT_PLAN.md`](../../docs/CHASE_CONTENT_PLAN.md)
+
+## North star
+
+Chase is an **authentic sports information brand**. Graphics must look like exports of the product system — not generic AI sports posters. Freehand AI image generation (ChatGPT/Midjourney “make an infographic”) is **not** an acceptable final route.
+
+## Process lock
+
+1. Complete a brief (pillar + template T1–T5 + one claim + real hero metric).
+2. Pull numbers from dashboard/pipeline — never invent.
+3. Assemble on a **locked template** (Figma/HTML export/screenshot). Zones, fonts, chips, brand marks stay fixed.
+4. AI may draft captions or fill slots from pasted data. AI must **not** invent final pixels, faces, stadiums, or a new visual style.
+5. Pass authenticity tests: Product / Logo-off / Trust (see content plan §1).
+6. QA checklist in content plan §6 before publish.
+
+## Asset rules
+
+- Logos/avatars: follow `chase-brand-and-avatars.mdc`.
+- Visual tokens/type/chips: follow `MLBMA_CURSOR_DESIGN_CONTRACT.md` §4–§6.
+- Icons: `mlbma_icons.js` poster marks for heroes; no thin Lucide as the main mark.
+- Metric color: green=elite → red=poor only.
+
+## Reject
+
+New layouts per post, AI backgrounds, fake players, rainbow per-stat palettes, hype “AI synergy” copy, invented stats.
+
+## When asked to “generate a graphic”
+
+Deliver brief + template slot fill + caption + QA — not a synthetic AI poster. If the user insists on freehand AI art, warn it conflicts with brand authenticity and propose template assembly.
