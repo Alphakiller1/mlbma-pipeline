@@ -52,6 +52,12 @@ WARNING = "#E8C24A"
 RISK = "#F2545B"
 VIOLET_BORDER = (154, 107, 255, 104)  # rgba(154,107,255,0.41) ≈ a=104
 
+# Sanctioned light brand plate for the dark-ink horizontal mark on a dark canvas.
+# Values fixed by .cursor/rules/chase-brand-and-avatars.mdc (.ca-brand-badge-light); the mark is
+# never recolored/traced (§2.13) — it is placed inside this approved plate instead.
+BRAND_PLATE = "#E5E7EB"
+BRAND_PLATE_BORDER = "#D1D5DB"
+
 # §1.3 League-anchored metric scale
 METRIC_STEPS = {
     "veryWeak": "#F2545B",
@@ -189,15 +195,39 @@ def _paste_logo(image: Image.Image, path: Path, box: tuple[int, int, int, int]) 
     image.paste(logo, (ox, oy), logo)
 
 
-def _chase_logo(image: Image.Image, *, x: int, y: int, width: int = 210) -> int:
+def _load_brand_logo() -> Image.Image:
+    """Approved Chase mark, trimmed to its content box (padding trim is not a mark crop)."""
     if not BRAND_LOGO.exists():
         raise RenderError(f"Chase logo missing: {BRAND_LOGO}")
     logo = Image.open(BRAND_LOGO).convert("RGBA")
+    bbox = logo.getbbox()
+    return logo.crop(bbox) if bbox else logo
+
+
+def _chase_logo(image: Image.Image, draw: ImageDraw.ImageDraw, *, x: int, y: int, width: int = 196) -> tuple[int, int]:
+    """Approved horizontal mark inside the sanctioned light brand plate.
+
+    The approved horizontal artwork is a dark-ink wordmark (for light surfaces); brand policy
+    (`.cursor/rules/chase-brand-and-avatars.mdc`) requires such marks to sit inside the soft-grey
+    `.ca-brand-badge-light` plate rather than being recolored/traced (§2.13). Returns the plate
+    box size so the header can lay out around it.
+    """
+    logo = _load_brand_logo()
     ratio = width / logo.width
     height = max(1, int(logo.height * ratio))
     logo = logo.resize((width, height), Image.Resampling.LANCZOS)
-    image.paste(logo, (x, y), logo)
-    return height
+    pad_x, pad_y = 16, 12
+    plate_w = width + pad_x * 2
+    plate_h = height + pad_y * 2
+    draw.rounded_rectangle(
+        (x, y, x + plate_w, y + plate_h),
+        radius=12,
+        fill=BRAND_PLATE,
+        outline=BRAND_PLATE_BORDER,
+        width=1,
+    )
+    image.paste(logo, (x + pad_x, y + pad_y), logo)
+    return plate_w, plate_h
 
 
 def metric_color(value: float | None, context: str = "osi", *, invert: bool | None = None) -> str:
@@ -236,7 +266,7 @@ def _draw_metallic_text(
     *,
     anchor: str | None = None,
 ) -> None:
-    """Vertical metallic-silver fill per §1.5."""
+    """Vertical metallic-silver fill per §1.5, embossed on dark for a true chrome read."""
     scratch = Image.new("L", (WIDTH, HEIGHT), 0)
     scratch_draw = ImageDraw.Draw(scratch)
     scratch_draw.text(xy, text, font=font, fill=255, anchor=anchor)
@@ -244,7 +274,17 @@ def _draw_metallic_text(
     if bbox is None:
         return
     x1, y1, x2, y2 = bbox
-    band = Image.new("RGB", (max(1, x2 - x1), max(1, y2 - y1)))
+    mask = scratch.crop(bbox)
+    height = max(1, y2 - y1)
+    width = max(1, x2 - x1)
+
+    # Depth: a soft dark cast below/behind lifts the light gradient off the near-black canvas
+    # so the metallic band reads as machined metal instead of flat off-white.
+    shadow = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    shadow.paste((3, 4, 9, 210), (x1, y1 + 2), mask)
+    image.alpha_composite(shadow)
+
+    # §1.5 fixed vertical fill — the specular white/gray/white banding IS the metal.
     stops = [
         (0.00, (255, 255, 255)),
         (0.38, (233, 234, 240)),
@@ -252,18 +292,18 @@ def _draw_metallic_text(
         (0.72, (215, 217, 226)),
         (1.00, (255, 255, 255)),
     ]
-    for row in range(band.height):
-        t = row / max(1, band.height - 1)
+    column = Image.new("RGB", (1, height))
+    for row in range(height):
+        t = row / max(1, height - 1)
         for i in range(1, len(stops)):
             t1, c1 = stops[i - 1]
             t2, c2 = stops[i]
             if t <= t2:
                 f = (t - t1) / ((t2 - t1) or 1)
-                color = tuple(int(c1[j] + (c2[j] - c1[j]) * f) for j in range(3))
-                for col in range(band.width):
-                    band.putpixel((col, row), color)
+                column.putpixel((0, row), tuple(int(c1[j] + (c2[j] - c1[j]) * f) for j in range(3)))
                 break
-    image.paste(band, (x1, y1), scratch.crop(bbox))
+    band = column.resize((width, height))
+    image.paste(band, (x1, y1), mask)
 
 
 def _canvas() -> tuple[Image.Image, ImageDraw.ImageDraw]:
@@ -289,6 +329,15 @@ def _draw_card(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> Non
     draw.line((x1 + 18, y1 + 2, x2 - 18, y1 + 2), fill=PURPLE_LIGHT, width=2)
 
 
+def _draw_arrow(draw: ImageDraw.ImageDraw, cx: int, cy: int, fill: str, *, length: int = 16) -> None:
+    """Right-pointing arrow drawn as vectors (bundled fonts lack U+2192)."""
+    half = length // 2
+    x1, x2 = cx - half, cx + half
+    draw.line((x1, cy, x2, cy), fill=fill, width=2)
+    head = 4
+    draw.polygon([(x2, cy), (x2 - head, cy - head), (x2 - head, cy + head)], fill=fill)
+
+
 def _header(
     image: Image.Image,
     draw: ImageDraw.ImageDraw,
@@ -299,14 +348,16 @@ def _header(
     page: str | None = None,
     state: str = "live",
 ) -> None:
-    logo_h = _chase_logo(image, x=SAFE_LEFT, y=42, width=210)
-    title_x = SAFE_LEFT + 230
-    title_y = 42 + max(0, (logo_h - 44) // 2)
-    _draw_metallic_text(image, (title_x, title_y), title, FONTS["title"])
+    plate_y = 44
+    plate_w, plate_h = _chase_logo(image, draw, x=SAFE_LEFT, y=plate_y, width=196)
+    plate_cy = plate_y + plate_h // 2
+    title_x = SAFE_LEFT + plate_w + 26
+    _draw_metallic_text(image, (title_x, plate_cy), title, FONTS["title"], anchor="lm")
     meta = f"{date} · {updated} · {state}"
     if page:
         meta = f"{meta} · {page}"
-    draw.text((SAFE_LEFT, 42 + logo_h + 10), meta, font=FONTS["meta"], fill=TEXT_META)
+    meta_y = plate_y + plate_h + 16
+    draw.text((SAFE_LEFT, meta_y), meta, font=FONTS["meta"], fill=TEXT_META)
     draw.line((SAFE_LEFT, HEADER_BOTTOM, SAFE_RIGHT, HEADER_BOTTOM), fill=BORDER_STRONG, width=2)
 
 
@@ -441,57 +492,63 @@ def _draw_game_card(
     home_runs = number(projection.get("home_runs"))
     sep = _run_separation(game)
     label, tone = _separation_label(sep if sep >= 0 else 0.0)
-
-    # Tight vertical rhythm so 190–220 px cards stay readable (§5.1)
     mid = (x1 + x2) // 2
-    logo_size = 34 if compact else 38
+
+    # Layout constants tuned so both the 220 px standard card and the sub-190 px compact card
+    # stack (header · teams · run projection · pitchers · opinion rail) without overlap (§5.1).
+    if compact:
+        logo_size, logo_y = 30, y1 + 44
+        proj_label_y, proj_val_y = y1 + 82, y1 + 98
+        proj_font, dash_font = FONTS["metric_sm"], FONTS["body"]
+        pitch_y, pitch_lh, pitch_font = y1 + 130, 14, FONTS["tiny"]
+    else:
+        logo_size, logo_y = 38, y1 + 52
+        proj_label_y, proj_val_y = y1 + 100, y1 + 118
+        proj_font, dash_font = FONTS["metric"], FONTS["body"]
+        pitch_y, pitch_lh, pitch_font = y1 + 156, 16, FONTS["meta"]
 
     draw.text((x1 + 18, y1 + 12), f"#{rank}", font=FONTS["rank"], fill=PURPLE)
-    draw.text((x2 - 18, y1 + 14), str(game.get("time") or "TBD"), font=FONTS["meta"], fill=TEXT_META, anchor="ra")
-    draw.text((x2 - 18, y1 + 32), label, font=FONTS["label"], fill=tone, anchor="ra")
+    draw.text((x2 - 18, y1 + 12), str(game.get("time") or "TBD"), font=FONTS["meta"], fill=TEXT_META, anchor="ra")
+    draw.text((x2 - 18, y1 + 30), label, font=FONTS["label"], fill=tone, anchor="ra")
 
-    logo_y = y1 + 52
+    abbr_dy = (logo_size - 24) // 2
     away_logo_box = (x1 + 18, logo_y, x1 + 18 + logo_size, logo_y + logo_size)
     home_logo_box = (x2 - 18 - logo_size, logo_y, x2 - 18, logo_y + logo_size)
     _paste_logo(image, team_logo_path(away), away_logo_box)
     _paste_logo(image, team_logo_path(home), home_logo_box)
-    draw.text((x1 + 26 + logo_size, logo_y + 8), away, font=FONTS["team"], fill=TEXT)
-    draw.text((x2 - 26 - logo_size, logo_y + 8), home, font=FONTS["team"], fill=TEXT, anchor="ra")
+    draw.text((x1 + 26 + logo_size, logo_y + abbr_dy), away, font=FONTS["team"], fill=TEXT)
+    draw.text((x2 - 26 - logo_size, logo_y + abbr_dy), home, font=FONTS["team"], fill=TEXT, anchor="ra")
 
     med_w, med_h = 32, 24
-    med_box = (mid - med_w // 2, logo_y + 7, mid + med_w // 2, logo_y + 7 + med_h)
+    med_cy = logo_y + logo_size // 2
+    med_box = (mid - med_w // 2, med_cy - med_h // 2, mid + med_w // 2, med_cy + med_h // 2)
     draw.rounded_rectangle(med_box, radius=12, fill=SURFACE_RAISED, outline=BORDER_STRONG, width=1)
-    draw.text((mid, logo_y + 19), "@", font=FONTS["label"], fill=TEXT_SECONDARY, anchor="mm")
+    draw.text((mid, med_cy), "@", font=FONTS["label"], fill=TEXT_SECONDARY, anchor="mm")
 
-    proj_y = logo_y + logo_size + 10
-    draw.text((x1 + 18, proj_y), "RUN PROJECTION", font=FONTS["label"], fill=TEXT_SECONDARY)
+    draw.text((x1 + 18, proj_label_y), "RUN PROJECTION", font=FONTS["label"], fill=TEXT_SECONDARY)
     if away_runs is not None and home_runs is not None:
-        away_color = metric_color(away_runs, "runs")
-        home_color = metric_color(home_runs, "runs")
-        draw.text((x1 + 18, proj_y + 18), f"{away_runs:.1f}", font=FONTS["metric"], fill=away_color)
-        draw.text((mid, proj_y + 22), "—", font=FONTS["body"], fill=TEXT_META, anchor="mm")
-        draw.text((x2 - 18, proj_y + 18), f"{home_runs:.1f}", font=FONTS["metric"], fill=home_color, anchor="ra")
+        draw.text((x1 + 18, proj_val_y), f"{away_runs:.1f}", font=proj_font, fill=metric_color(away_runs, "runs"))
+        draw.text((mid, proj_val_y + 4), "—", font=dash_font, fill=TEXT_META, anchor="mm")
+        draw.text((x2 - 18, proj_val_y), f"{home_runs:.1f}", font=proj_font, fill=metric_color(home_runs, "runs"), anchor="ra")
     else:
-        draw.text((x1 + 18, proj_y + 20), "unavailable", font=FONTS["body"], fill=TEXT_DISABLED)
+        draw.text((x1 + 18, proj_val_y + 2), "unavailable", font=FONTS["body"], fill=TEXT_DISABLED)
 
-    pitcher_y = proj_y + 52
-    font = FONTS["tiny"] if compact else FONTS["meta"]
     draw.text(
-        (x1 + 18, pitcher_y),
+        (x1 + 18, pitch_y),
         _pitcher_text(game.get("away_pitcher") or {}, compact=True),
-        font=font,
+        font=pitch_font,
         fill=TEXT,
     )
     draw.text(
-        (x1 + 18, pitcher_y + 16),
+        (x1 + 18, pitch_y + pitch_lh),
         _pitcher_text(game.get("home_pitcher") or {}, compact=True),
-        font=font,
+        font=pitch_font,
         fill=TEXT,
     )
 
     opinion = game.get("opinion") or {}
     tag = str(opinion.get("tag") or "NO OPINION").upper()
-    opinion_text = truncate(opinion.get("text"), 34 if compact else 40)
+    opinion_text = truncate(opinion.get("text"), 30 if compact else 40)
     rail_y = y2 - 30
     chip_w = 108 if tag == "NO OPINION" else 90
     draw.rounded_rectangle(
@@ -605,12 +662,13 @@ def _draw_rank_panel(
         if metric == "delta":
             ytd = number(row.get("osi_ytd"))
             l7 = number(row.get("osi_l7"))
-            note = (
-                f"YTD {ytd:.1f} → L7 {l7:.1f}"
-                if ytd is not None and l7 is not None
-                else "YTD → L7"
-            )
-            draw.text((x1 + 78, y + 30), note, font=FONTS["tiny"], fill=TEXT_META)
+            note_x, ny = x1 + 78, y + 30
+            left = f"YTD {ytd:.1f}" if ytd is not None else "YTD"
+            right = f"L7 {l7:.1f}" if l7 is not None else "L7"
+            draw.text((note_x, ny), left, font=FONTS["tiny"], fill=TEXT_META)
+            arrow_x = int(note_x + draw.textlength(left, font=FONTS["tiny"]) + 11)
+            _draw_arrow(draw, arrow_x, ny + 7, TEXT_META, length=12)
+            draw.text((arrow_x + 11, ny), right, font=FONTS["tiny"], fill=TEXT_META)
         else:
             draw.text((x1 + 78, y + 30), "OSI · league scale", font=FONTS["tiny"], fill=TEXT_META)
 
@@ -666,7 +724,11 @@ def _draw_market_panel(
     x1, y1, x2, y2 = box
     _draw_card(draw, box)
     _draw_metallic_text(image, (x1 + 22, y1 + 16), _market_title(category), FONTS["section"])
-    draw.text((x2 - 22, y1 + 24), "PUBLIC  →  SHARP", font=FONTS["label"], fill=PURPLE_LIGHT, anchor="ra")
+    # Legend: public neutral, sharp purple (§8.2) — identities, not a recommendation.
+    draw.text((x2 - 22, y1 + 24), "SHARP", font=FONTS["label"], fill=PURPLE_LIGHT, anchor="ra")
+    sharp_w = draw.textlength("SHARP", font=FONTS["label"])
+    _draw_arrow(draw, int(x2 - 22 - sharp_w - 16), y1 + 32, TEXT_META, length=14)
+    draw.text((x2 - 22 - sharp_w - 34, y1 + 24), "PUBLIC", font=FONTS["label"], fill=TEXT_SECONDARY, anchor="ra")
     draw.line((x1 + 22, y1 + 54, x2 - 22, y1 + 54), fill=BORDER, width=1)
     if not rows:
         draw.text(
@@ -695,7 +757,7 @@ def _draw_market_panel(
         draw.text((text_x, y), label or "Market observation", font=FONTS["body"], fill=TEXT)
         # Public neutral, sharp purple; divergence magnitude ≠ green "bet" (§8.2)
         draw.text((x2 - 210, y + 2), f"{public:.1f}%", font=FONTS["body"], fill=TEXT_SECONDARY, anchor="ra")
-        draw.text((x2 - 150, y + 2), "→", font=FONTS["body"], fill=TEXT_META, anchor="ra")
+        _draw_arrow(draw, x2 - 175, y + 12, TEXT_META, length=16)
         draw.text((x2 - 78, y + 2), f"{sharp:.1f}%", font=FONTS["body"], fill=PURPLE_LIGHT, anchor="ra")
         draw.text(
             (x2 - 22, y + 2),
@@ -711,8 +773,11 @@ def _draw_market_panel(
         shp_w = int((bar_x2 - bar_x1) * min(1.0, sharp / 100))
         draw.rounded_rectangle((bar_x1, bar_y, bar_x1 + pub_w, bar_y + 6), radius=3, fill=BORDER_STRONG)
         draw.rounded_rectangle((bar_x1, bar_y, bar_x1 + shp_w, bar_y + 6), radius=3, outline=PURPLE_LIGHT, width=1)
-        snap = str(row.get("snapshot_time") or "").replace("T", " ").replace("+00:00", " UTC")[:22]
-        draw.text((text_x, y + 40), snap or "timestamp unavailable", font=FONTS["tiny"], fill=TEXT_META)
+        raw_snap = str(row.get("snapshot_time") or "")
+        snap = raw_snap.replace("T", " ").replace("+00:00", " UTC").replace("Z", " UTC")
+        if len(snap) > 26:
+            snap = snap[:26]
+        draw.text((text_x, y + 40), f"observed {snap}" if snap else "timestamp unavailable", font=FONTS["tiny"], fill=TEXT_META)
 
 
 def render_public_vs_sharp(bundle: dict, out_dir: Path) -> list[Path]:

@@ -5,7 +5,9 @@ This agent **cannot push** to [`Alphakiller1/chase-content-engine`](https://gith
 
 ## What changed
 
-`chase_content/render.py` now matches `design/CONTENT_DESIGN_CONTRACT.md` §14:
+`chase_content/render.py` now matches `design/CONTENT_DESIGN_CONTRACT.md` §14 (two commits:
+`Align render.py with CONTENT_DESIGN_CONTRACT §14` + `Refine content renderer for brand
+authenticity`):
 
 - Real `chase-logo-horizontal-light.png` header (no typeset eyebrow)
 - Metallic-silver report titles; compact 150–190 px utility header
@@ -15,6 +17,22 @@ This agent **cannot push** to [`Alphakiller1/chase-content-engine`](https://gith
 - Bundled DM Sans + Roboto Condensed (no Arial/DejaVu)
 - Fail-closed integrity + logo resolution before any PNG save
 - Tests for sort, dimensions, metric colors, missing-logo fail
+
+Authenticity refinements (commit 2):
+
+- Chase mark sits in the sanctioned soft-grey brand plate (`.ca-brand-badge-light`) so the
+  dark-ink wordmark reads on the near-black canvas — the mark is never recolored/traced (§2.13).
+  Padding is trimmed and the single metadata line now sits above the divider (header ≤ 190 px).
+- Report titles / section headings embossed on dark for a true metallic (chrome) read, using the
+  fixed §1.5 fill.
+- Compact Morning Slate (5/page) card layout reflowed so pitcher lines + opinion rail never
+  overlap in sub-190 px cards.
+- Public-vs-Sharp + Risers/Fallers arrows drawn as vectors (bundled fonts lack `→`/U+2192, which
+  rendered as tofu); public = neutral, sharp = purple legend; full `observed … UTC` timestamp.
+
+> **Pending art:** when a true transparent light/metallic-wordmark Chase logo is supplied, drop it
+> in under `assets/brand/chase-logo-horizontal-light.png` and the header can render it bare per
+> §3.4 (the light plate is the compliant fallback for the current dark-ink artwork).
 
 Sample PNGs (from `examples/sample_bundle.json`) were generated during the agent run under
 `/opt/cursor/artifacts/chase-content-sample/`.
@@ -30,9 +48,8 @@ git checkout main
 git pull
 git bundle unbundle path/to/mlbma-pipeline/docs/external/chase-content-engine/render-contract.bundle
 git checkout cursor/render-contract-compliance-4fea
-# Or merge the commit onto a new branch:
-# git checkout -b cursor/render-contract-compliance-4fea
-# git cherry-pick 1773b88   # sha from bundle if needed
+# The bundle carries ref refs/heads/cursor/render-contract-compliance-4fea (tip 860b81b,
+# two commits on top of main).
 
 python -m venv .venv
 .venv/bin/pip install -e ".[dev]"
