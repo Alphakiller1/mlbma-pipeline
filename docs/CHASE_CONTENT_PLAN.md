@@ -117,7 +117,21 @@ Do this every publishing day — in the **content-engine** repo:
 
 ---
 
-## 7. One-line policy
+## 7. Renderer §14 update (ready to land)
+
+The content-engine design contract already listed why shipped PNGs looked generic
+(`CONTENT_DESIGN_CONTRACT.md` §14). That renderer work is **implemented** and packaged here
+because this agent cannot push to `chase-content-engine` (GitHub 403):
+
+→ [`docs/external/chase-content-engine/APPLY.md`](external/chase-content-engine/APPLY.md)
+
+Includes `render.py`, tests, contract status update, fonts/logo assets (via git bundle/patch),
+and apply instructions. After you push that branch on the content-engine repo, daily graphics
+use the locked Chase system instead of the old Arial/win-prob layout.
+
+---
+
+## 8. One-line policy
 
 **Data is produced here; branded daily graphics are manufactured in `chase-content-engine` from locked contracts and `render.py`. AI drafts mockups and copy — it does not invent Chase’s published face.**
 
