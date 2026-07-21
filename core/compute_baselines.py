@@ -117,9 +117,17 @@ def _team_staff_ms(sp: pd.DataFrame, col: str) -> dict | None:
 
 
 def _pct_points(series) -> pd.Series:
-    """Force K%/BB% to percentage points (×100 if stored as a fraction)."""
+    """Force K%/BB% to percentage points (×100 if stored as a fraction).
+
+    Dashboard chips grade these on the percent-point scale (league BB% ≈ 8–9,
+    K% ≈ 22). A fraction-scale baseline (mean ≈ 0.09) against percent values
+    paints every walk rate deep red — never emit that scale.
+    """
     s = _num(series)
-    if len(s) and s.dropna().median() <= 1.5:
+    if not len(s):
+        return s
+    med = float(s.dropna().median())
+    if med <= 1.5:
         s = s * 100
     return s
 

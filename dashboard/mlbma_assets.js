@@ -89,9 +89,11 @@
     whip: { mean: 1.28, std: 0.12, hi: false },
     hr9: { mean: 1.20, std: 0.28, hi: false },       // HR/9 allowed
     bb9: { mean: 3.20, std: 0.60, hi: false },        // BB/9 allowed
-    bbpct: { mean: 8.0, std: 1.8, hi: false },        // BB% in percent points (lower better)
+    bbpct: { mean: 8.0, std: 1.8, hi: false },        // pitcher BB% in percent points (lower better)
+    bb_pct: { mean: 8.0, std: 1.8, hi: false },       // alias used by glossary / legacy call sites
     k9: { mean: 8.70, std: 1.30, hi: true },          // K/9 (pitcher, higher better)
     kpct: { mean: 22.5, std: 4.5, hi: true },         // K% in percent points (higher better)
+    k_pct: { mean: 22.5, std: 4.5, hi: true },        // alias
     sp_osi_allowed: { mean: 46.6, std: 4.9, hi: false }, // qualified starters; lower allowed is better
     sp_abq_allowed: { mean: 47.4, std: 3.9, hi: false }, // qualified starters; lower allowed is better
     sp_oor_faced: { mean: 46.4, std: 6.8, hi: true }, // competition difficulty; contextual, not good/bad
@@ -961,20 +963,35 @@
     if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(el);
   }
 
+  /** Rate contexts the UI colors in percentage points (22.5 / 8.0), never 0–1 fractions. */
+  var PCT_POINT_CONTEXTS = {
+    kpct: 1, k_pct: 1, bbpct: 1, bb_pct: 1,
+    bp_kpct: 1, bp_bbpct: 1, rp_kpct: 1, rp_bbpct: 1
+  };
+
   /**
    * Live league-average baselines (written by core.compute_baselines -> the pipeline).
    * Updates the registry mean/std with the current season's full-league averages while
    * KEEPING each metric's direction (hi). Falls back silently to the built-in defaults.
+   *
+   * Guard: K%/BB% chips grade on percent points. A fraction-scale export (mean≈0.09)
+   * against percent values (6–12) paints every walk rate deep red — auto ×100 if needed.
    */
   function applyLeagueBaselines(data) {
     var b = data && data.baselines;
     if (!b) return;
     Object.keys(b).forEach(function(ctx) {
       var live = b[ctx];
-      if (CONTEXT_DEFAULTS[ctx] && live && live.mean != null && live.std) {
-        CONTEXT_DEFAULTS[ctx].mean = live.mean;
-        CONTEXT_DEFAULTS[ctx].std = live.std;   // direction (hi) preserved
+      if (!CONTEXT_DEFAULTS[ctx] || !live || live.mean == null || !live.std) return;
+      var mean = Number(live.mean);
+      var std = Number(live.std);
+      if (!isFinite(mean) || !isFinite(std) || std <= 0) return;
+      if (PCT_POINT_CONTEXTS[ctx] && mean > 0 && mean < 1.5) {
+        mean *= 100;
+        std *= 100;
       }
+      CONTEXT_DEFAULTS[ctx].mean = mean;
+      CONTEXT_DEFAULTS[ctx].std = std;   // direction (hi) preserved
     });
   }
 

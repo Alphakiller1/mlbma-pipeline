@@ -128,9 +128,9 @@
 
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
-    if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
+    if (score >= 78) return { label: 'Elite', cls: 'tier-elite' };
     if (score >= 55) return { label: 'Solid', cls: 'tier-solid' };
-    if (score >= 40) return { label: 'Avg', cls: 'tier-mid' };
+    if (score >= 32) return { label: 'Avg', cls: 'tier-mid' };
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
@@ -219,7 +219,8 @@
     var hs = A ? A.pitcherAvatar(pid || name, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
       : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
     var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team);
-    if (ps == null) ps = spPitchScore(team);
+    // No team-staff fallback here: that metric is a different scale, and it was
+    // rendering a confident-looking score under TBD pitchers. Honest em dash.
     var pt = pitchTier(ps);
     var psColor = ps != null ? pitcherStatColor('pitchScore', ps) : 'var(--text-3, #9CA3AF)';
     var psVal = ps != null ? Number(ps).toFixed(0) : '—';

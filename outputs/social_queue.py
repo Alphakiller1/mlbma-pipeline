@@ -211,8 +211,13 @@ def main():
     cards = {}
     if args.render:
         try:
-            from outputs.render_cards import render_all
+            from outputs.render_rich_cards import render_all
             cards = render_all(args.date)
+            # Fall back to legacy Pillow posters for any types rich renderer skipped.
+            if len(cards) < 2:
+                from outputs.render_cards import render_all as render_legacy
+                for key, path in render_legacy(args.date).items():
+                    cards.setdefault(key, path)
             for r in rows:
                 if r["type"] in cards:
                     r["image_path"] = str(cards[r["type"]])

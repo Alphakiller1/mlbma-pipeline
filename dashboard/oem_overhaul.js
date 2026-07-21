@@ -33,9 +33,9 @@
 
   function pitchTierBadge(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'pitch-tier-mid' };
-    if (score >= 70) return { label: 'Elite', cls: 'pitch-tier-elite' };
+    if (score >= 78) return { label: 'Elite', cls: 'pitch-tier-elite' };
     if (score >= 55) return { label: 'Solid', cls: 'pitch-tier-solid' };
-    if (score >= 40) return { label: 'Avg', cls: 'pitch-tier-mid' };
+    if (score >= 32) return { label: 'Avg', cls: 'pitch-tier-mid' };
     return { label: 'Volatile', cls: 'pitch-tier-vol' };
   }
 

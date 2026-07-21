@@ -1166,9 +1166,9 @@
 
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
-    if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
+    if (score >= 78) return { label: 'Elite', cls: 'tier-elite' };
     if (score >= 55) return { label: 'Solid', cls: 'tier-solid' };
-    if (score >= 40) return { label: 'Avg', cls: 'tier-mid' };
+    if (score >= 32) return { label: 'Avg', cls: 'tier-mid' };
     return { label: 'Volatile', cls: 'tier-vol' };
   }
 
@@ -1316,37 +1316,74 @@
   }
 
   /** Client-side PitchScore — mirrors Python pool normalize (0.40 K + 0.35 inv BB + 0.25 inv HR/9). */
-  function computePitchScoreFromRates(kPct, bbPct, hr9, pool) {
+  /* League-anchored Pitch Score recalibration.
+   *
+   * The old formula (K%*0.4 + (1-BB%)*0.35 + (1-HR9/3)*0.25, all x100) was
+   * dominated by the near-constant BB term (league BB% only spans ~5-12%, so
+   * (1-BB%) contributed ~31 of its 35 points for everyone). Every starter
+   * landed ~56 +/- 6: the slate read as wall-to-wall "Solid", 70+ "Elite" was
+   * nearly unreachable, and a separate pool-percentile path used a different
+   * scale for the same label.
+   *
+   * Now: one scale everywhere. Each rate is z-scored against qualified-starter
+   * norms (derived from the passed pool when big enough, else the season
+   * anchors below, measured from sp_profiles with starts >= 5), blended
+   * K 45% / BB 25% / HR9 30% (+WHIP 15% renormalized when available), and
+   * mapped through the normal CDF: the score approximates the pitcher's league
+   * percentile (median SP = 50, p10 ~ 17, p90 ~ 85). Tier cuts are percentile
+   * cuts: Elite >= 78, Solid >= 55, Avg >= 32, Volatile < 32.
+   */
+  var PS_ANCHORS = {
+    k: { m: 0.217, sd: 0.051 },
+    bb: { m: 0.085, sd: 0.028 },
+    hr: { m: 1.30, sd: 0.56 },
+    whip: { m: 1.28, sd: 0.18 }
+  };
+  // Blend z has sd ~0.69 on real data (metrics correlate); dividing by it and
+  // applying a 0.85 spread keeps the CDF output honestly percentile-shaped.
+  var PS_Z_SCALE = 0.85 / 0.69;
+
+  function psNormCdf(z) {
+    var t = 1 / (1 + 0.2316419 * Math.abs(z));
+    var d = 0.3989423 * Math.exp(-z * z / 2);
+    var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+    return z > 0 ? 1 - p : p;
+  }
+
+  function psPoolAnchor(values, fallback) {
+    var nums = (values || []).filter(function(v) { return v != null && !isNaN(v); }).map(Number);
+    if (nums.length < 12) return fallback;
+    var m = nums.reduce(function(a, b) { return a + b; }, 0) / nums.length;
+    var varSum = nums.reduce(function(a, b) { return a + (b - m) * (b - m); }, 0);
+    var sd = Math.sqrt(varSum / Math.max(nums.length - 1, 1));
+    if (!sd || isNaN(sd)) return fallback;
+    return { m: m, sd: sd };
+  }
+
+  function computePitchScoreFromRates(kPct, bbPct, hr9, pool, whip) {
     var k = pctDecimal(kPct);
     var bb = pctDecimal(bbPct);
     var hr = hr9 != null && !isNaN(hr9) ? Number(hr9) : null;
+    var wh = whip != null && !isNaN(whip) ? Number(whip) : null;
     if (k == null || bb == null || hr == null) return null;
-    if (pool && pool.length) {
-      var kArr = pool.map(function(p) { return pctDecimal(p.k); });
-      var bbArr = pool.map(function(p) { return pctDecimal(p.bb); });
-      var hrArr = pool.map(function(p) { return p.hr; });
-      var nk = normalizePool(kArr);
-      var nbb = invertPool(normalizePool(bbArr));
-      var nhr = invertPool(normalizePool(hrArr));
-      var idx = pool.findIndex(function(p) {
-        return pctDecimal(p.k) === k && pctDecimal(p.bb) === bb && p.hr === hr;
-      });
-      if (idx < 0) {
-        var allK = kArr.concat([k]);
-        var allBB = bbArr.concat([bb]);
-        var allHR = hrArr.concat([hr]);
-        nk = normalizePool(allK);
-        nbb = invertPool(normalizePool(allBB));
-        nhr = invertPool(normalizePool(allHR));
-        idx = allK.length - 1;
-      }
-      return Math.round((0.4 * (nk[idx] || 50) + 0.35 * (nbb[idx] || 50) + 0.25 * (nhr[idx] || 50)) * 10) / 10;
+
+    var aK = PS_ANCHORS.k, aBB = PS_ANCHORS.bb, aHR = PS_ANCHORS.hr;
+    if (pool && pool.length >= 12) {
+      aK = psPoolAnchor(pool.map(function(p) { return pctDecimal(p.k); }), aK);
+      aBB = psPoolAnchor(pool.map(function(p) { return pctDecimal(p.bb); }), aBB);
+      aHR = psPoolAnchor(pool.map(function(p) { return p.hr; }), aHR);
     }
-    var kPts = k * 100;
-    var bbInv = (1 - bb) * 100;
-    var hrInv = (1 - Math.min(hr / 3, 1)) * 100;
-    var raw = kPts * 0.4 + bbInv * 0.35 + hrInv * 0.25;
-    return Math.max(0, Math.min(100, Math.round(raw * 10) / 10));
+
+    var zSum = 0.45 * ((k - aK.m) / aK.sd)
+      + 0.25 * ((aBB.m - bb) / aBB.sd)
+      + 0.30 * ((aHR.m - hr) / aHR.sd);
+    var wSum = 1;
+    if (wh != null) {
+      zSum += 0.15 * ((PS_ANCHORS.whip.m - wh) / PS_ANCHORS.whip.sd);
+      wSum += 0.15;
+    }
+    var score = 100 * psNormCdf((zSum / wSum) * PS_Z_SCALE);
+    return Math.max(1, Math.min(99, Math.round(score * 10) / 10));
   }
 
   function pitcherOorFromTeamHand(team, hand, oorByTeam) {

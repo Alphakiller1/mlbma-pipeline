@@ -1066,23 +1066,23 @@
     var mb = b.metricsObj || {};
     var rows = [
       metricRow('Pitching Score', a.primary, b.primary, { ctx: 'pitching' }),
-      metricRow('OOR', ma.oor, mb.oor, { ctx: 'osi' }),
-      metricRow('K%', ma.kPct, mb.kPct, { ctx: 'pitching' }),
-      metricRow('BB%', ma.bbPct, mb.bbPct, { ctx: 'pitching', invertA: true, invertB: true }),
-      metricRow('K/9', a.k9, b.k9, { ctx: 'pitching' }),
-      metricRow('BB/9', a.bb9, b.bb9, { ctx: 'pitching', invertA: true, invertB: true }),
-      metricRow('HR/9', ma.hr9, mb.hr9, { ctx: 'pitching', invertA: true, invertB: true }),
-      metricRow('ABQ Allowed', ma.abqAllowed, mb.abqAllowed, { ctx: 'osi', invertA: true, invertB: true }),
-      metricRow('OSI Allowed', a.splitOsiAllowed, b.splitOsiAllowed, { ctx: 'osi', invertA: true, invertB: true }),
+      metricRow('OOR', ma.oor, mb.oor, { ctx: 'sp_oor_faced' }),
+      metricRow('K%', ma.kPct, mb.kPct, { ctx: 'kpct' }),
+      metricRow('BB%', ma.bbPct, mb.bbPct, { ctx: 'bbpct', invertA: true, invertB: true }),
+      metricRow('K/9', a.k9, b.k9, { ctx: 'k9' }),
+      metricRow('BB/9', a.bb9, b.bb9, { ctx: 'bb9', invertA: true, invertB: true }),
+      metricRow('HR/9', ma.hr9, mb.hr9, { ctx: 'hr9', invertA: true, invertB: true }),
+      metricRow('ABQ Allowed', ma.abqAllowed, mb.abqAllowed, { ctx: 'sp_abq_allowed', invertA: true, invertB: true }),
+      metricRow('OSI Allowed', a.splitOsiAllowed, b.splitOsiAllowed, { ctx: 'sp_osi_allowed', invertA: true, invertB: true }),
       metricRow('RCV Allowed', ma.rcvAllowed, mb.rcvAllowed, { ctx: 'osi', invertA: true, invertB: true }),
-      metricRow('Pitches / Inning', ma.pitchesPerInning, mb.pitchesPerInning, { ctx: 'osi' }),
-      metricRow('ERA', ma.era, mb.era, { ctx: 'pitching', invertA: true, invertB: true }),
-      metricRow('FIP', ma.fip, mb.fip, { ctx: 'pitching', invertA: true, invertB: true })
+      metricRow('Pitches / Inning', ma.pitchesPerInning, mb.pitchesPerInning, { ctx: 'pitchinn' }),
+      metricRow('ERA', ma.era, mb.era, { ctx: 'era', invertA: true, invertB: true }),
+      metricRow('FIP', ma.fip, mb.fip, { ctx: 'fip', invertA: true, invertB: true })
     ];
     var f5A = a.filter && a.filter.segment === 'f5';
     var f5B = b.filter && b.filter.segment === 'f5';
     if (f5A || f5B) {
-      rows.splice(12, 0, metricRow('F5 ERA', f5A ? ma.era : null, f5B ? mb.era : null, { ctx: 'pitching', invertA: true, invertB: true }));
+      rows.splice(12, 0, metricRow('F5 ERA', f5A ? ma.era : null, f5B ? mb.era : null, { ctx: 'era', invertA: true, invertB: true }));
     }
     return rows;
   }
