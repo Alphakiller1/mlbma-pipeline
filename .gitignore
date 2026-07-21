@@ -24,3 +24,4 @@ pipeline_smoke_log.txt
 pipeline_*.log
 outputs/instagram_post_manifest.json
 cursor
+chase-content-engine/
