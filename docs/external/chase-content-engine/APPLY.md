@@ -5,9 +5,34 @@ This agent **cannot push** to [`Alphakiller1/chase-content-engine`](https://gith
 
 ## What changed
 
-`chase_content/render.py` now matches `design/CONTENT_DESIGN_CONTRACT.md` §14 (two commits:
-`Align render.py with CONTENT_DESIGN_CONTRACT §14` + `Refine content renderer for brand
-authenticity`):
+**Three commits** on `cursor/render-contract-compliance-4fea` on top of `main` (tip `3250f6e`):
+`Align render.py with CONTENT_DESIGN_CONTRACT §14`, `Refine content renderer for brand
+authenticity`, and `Add HTML backend: screenshot website export frames as visual SSOT`.
+
+### Commit 3 — HTML backend (website artifacts are the visual SSOT)
+
+The mlbma-pipeline dashboard is more polished than the Pillow renderer, so daily finals should
+reuse the **live product CSS** instead of reinventing the look in PIL. mlbma-pipeline now ships
+export frames (`dashboard/content_export/morning_slate_frame.html`,
+`offensive_report_frame.html`) that render the report canvases from a bundle using the real
+website classes/tokens. This engine gains an optional HTML backend that screenshots them:
+
+- `chase_content/html_render.py` — static-serve the pipeline `dashboard/` dir, open each frame
+  with `?bundle=<url>` in Playwright Chromium at **1080×1350 @2×**, wait for `data-ce-ready`, and
+  write `morning-slate-01.png` / `offensive-report.png`. Fails closed if Playwright or the frames
+  dir is missing.
+- `cli.py` — `build --backend {pillow,html}` + `--frames-dir`.
+- `pyproject.toml` — optional `[html]` extra (`playwright`); the default Pillow backend keeps no
+  browser requirement.
+- `docs/WEBSITE_ARTIFACT_RENDER.md` — the visual-SSOT flow and report→surface map.
+
+`render.py` remains the **transitional / offline fallback**; the contract still governs the
+rules and both backends must satisfy it.
+
+### Commits 1–2 — renderer §14 compliance
+
+`chase_content/render.py` now matches `design/CONTENT_DESIGN_CONTRACT.md` §14 (`Align render.py
+with CONTENT_DESIGN_CONTRACT §14` + `Refine content renderer for brand authenticity`):
 
 - Real `chase-logo-horizontal-light.png` header (no typeset eyebrow)
 - Metallic-silver report titles; compact 150–190 px utility header
@@ -48,8 +73,8 @@ git checkout main
 git pull
 git bundle unbundle path/to/mlbma-pipeline/docs/external/chase-content-engine/render-contract.bundle
 git checkout cursor/render-contract-compliance-4fea
-# The bundle carries ref refs/heads/cursor/render-contract-compliance-4fea (tip 860b81b,
-# two commits on top of main).
+# The bundle carries ref refs/heads/cursor/render-contract-compliance-4fea (tip 3250f6e,
+# three commits on top of main).
 
 python -m venv .venv
 .venv/bin/pip install -e ".[dev]"
@@ -76,6 +101,10 @@ Copy from this folder:
 | Source in this package | Destination in content-engine |
 |------------------------|-------------------------------|
 | `chase_content/render.py` | `chase_content/render.py` |
+| `chase_content/html_render.py` | `chase_content/html_render.py` |
+| `chase_content/cli.py` | `chase_content/cli.py` |
+| `pyproject.toml` | `pyproject.toml` |
+| `docs/WEBSITE_ARTIFACT_RENDER.md` | `docs/WEBSITE_ARTIFACT_RENDER.md` |
 | `tests/test_content_engine.py` | `tests/test_content_engine.py` |
 | `design/CONTENT_DESIGN_CONTRACT.md` | `design/CONTENT_DESIGN_CONTRACT.md` |
 | `assets/README.md` | `assets/README.md` |
@@ -86,6 +115,13 @@ Then recreate `assets/brand/`, `assets/fonts/`, `assets/team_logos/` per `assets
 ## Verify
 
 ```bash
+# Pillow (offline fallback)
 chase-content build --bundle examples/sample_bundle.json --report all --out dist/sample
 # Expect: morning-slate-01.png, offensive-report.png, public-vs-sharp.png at 1080×1350
+
+# HTML backend (visual SSOT — needs Playwright + the pipeline dashboard dir)
+pip install -e ".[html]" && python -m playwright install chromium
+chase-content build --bundle examples/sample_bundle.json --report all --backend html \
+  --frames-dir ../mlbma-pipeline/dashboard --out dist/sample-html
+# Expect: morning-slate-01.png, offensive-report.png (screenshots of the live website frames)
 ```

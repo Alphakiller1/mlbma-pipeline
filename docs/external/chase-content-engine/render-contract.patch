@@ -1,7 +1,7 @@
 From 1773b88a0c49dce518f4d1d1a0b0ad09768a3ba0 Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
 Date: Tue, 21 Jul 2026 23:33:01 +0000
-Subject: [PATCH 1/2] =?UTF-8?q?Align=20render.py=20with=20CONTENT=5FDESIGN?=
+Subject: [PATCH 1/3] =?UTF-8?q?Align=20render.py=20with=20CONTENT=5FDESIGN?=
  =?UTF-8?q?=5FCONTRACT=20=C2=A714.?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -14282,7 +14282,7 @@ index 084eb5c..76efbc4 100644
 From 860b81b3c19ec4e99154477ea584f9447eaed302 Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
 Date: Tue, 21 Jul 2026 23:47:46 +0000
-Subject: [PATCH 2/2] Refine content renderer for brand authenticity
+Subject: [PATCH 2/3] Refine content renderer for brand authenticity
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -29511,6 +29511,335 @@ index 4e6b3ab..18f8234 100644
  
  
  def render_public_vs_sharp(bundle: dict, out_dir: Path) -> list[Path]:
+-- 
+2.43.0
+
+
+From 3250f6e5ea775829721304be5bb848571adb4743 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Wed, 22 Jul 2026 00:20:19 +0000
+Subject: [PATCH 3/3] Add HTML backend: screenshot website export frames as
+ visual SSOT
+
+The mlbma-pipeline dashboard is more polished than the Pillow renderer. Add an
+optional 'html' build backend that screenshots the live website export frames
+(dashboard/content_export/*_frame.html) at 1080x1350 @2x via Playwright, so daily
+graphics inherit the exact product CSS. render.py stays as the offline fallback.
+
+- chase_content/html_render.py: static-serve frames-dir, Playwright screenshot,
+  wait on data-ce-ready, fail-closed on missing Playwright/frames
+- cli.py: build --backend {pillow,html} + --frames-dir
+- pyproject: optional [html] extra (playwright)
+- docs/WEBSITE_ARTIFACT_RENDER.md: visual-SSOT flow + report/surface map
+---
+ chase_content/cli.py            |  32 ++++++-
+ chase_content/html_render.py    | 150 ++++++++++++++++++++++++++++++++
+ docs/WEBSITE_ARTIFACT_RENDER.md |  74 ++++++++++++++++
+ pyproject.toml                  |   3 +
+ 4 files changed, 258 insertions(+), 1 deletion(-)
+ create mode 100644 chase_content/html_render.py
+ create mode 100644 docs/WEBSITE_ARTIFACT_RENDER.md
+
+diff --git a/chase_content/cli.py b/chase_content/cli.py
+index c9a3ac6..564adc0 100644
+--- a/chase_content/cli.py
++++ b/chase_content/cli.py
+@@ -64,7 +64,26 @@ def _build(args: argparse.Namespace) -> int:
+     if problems:
+         _print_problems(problems)
+         return 1
+-    paths = render_reports(bundle, Path(args.out), args.report)
++    backend = getattr(args, "backend", "pillow")
++    if backend == "html":
++        # Visual SSOT: screenshot the live website export frames (see
++        # docs/WEBSITE_ARTIFACT_RENDER.md). Pillow stays the offline fallback.
++        from chase_content.html_render import HtmlBackendError, render_via_html
++
++        if not args.frames_dir:
++            _print_problems([
++                "--backend html requires --frames-dir (the mlbma-pipeline 'dashboard' directory)."
++            ])
++            return 1
++        try:
++            paths = render_via_html(
++                Path(args.bundle), Path(args.out), Path(args.frames_dir), args.report
++            )
++        except HtmlBackendError as exc:
++            _print_problems([str(exc)])
++            return 1
++    else:
++        paths = render_reports(bundle, Path(args.out), args.report)
+     for path in paths:
+         print(f"Wrote graphic: {path}")
+     return 0
+@@ -119,6 +138,17 @@ def build_parser() -> argparse.ArgumentParser:
+     build.add_argument("--bundle", required=True)
+     build.add_argument("--report", choices=REPORTS, default="all")
+     build.add_argument("--out", required=True)
++    build.add_argument(
++        "--backend",
++        choices=("pillow", "html"),
++        default="pillow",
++        help="pillow = offline PIL fallback; html = screenshot the live website export frames "
++        "(visual SSOT, needs --frames-dir + Playwright). See docs/WEBSITE_ARTIFACT_RENDER.md.",
++    )
++    build.add_argument(
++        "--frames-dir",
++        help="Path to the mlbma-pipeline 'dashboard' directory (required for --backend html).",
++    )
+     build.set_defaults(handler=_build)
+ 
+     daily = sub.add_parser("daily", help="Migrate, validate, and render all daily reports")
+diff --git a/chase_content/html_render.py b/chase_content/html_render.py
+new file mode 100644
+index 0000000..5c6b342
+--- /dev/null
++++ b/chase_content/html_render.py
+@@ -0,0 +1,150 @@
++"""HTML backend — render finals by screenshotting the live website export frames.
++
++The visual source of truth for Chase daily graphics is the deployed product CSS, exposed as
++1080×1350 export frames in the mlbma-pipeline repo:
++
++    dashboard/content_export/morning_slate_frame.html
++    dashboard/content_export/offensive_report_frame.html
++
++Those frames read the same bundle shape this engine produces (see examples/sample_bundle.json),
++so we simply serve the pipeline ``dashboard/`` directory over a local static server, open each
++frame with ``?bundle=<url>`` in Playwright Chromium at deviceScaleFactor 2, wait for the frame's
++``data-ce-ready`` flag, and screenshot.
++
++This backend is intentionally thin and its browser dependency is OPTIONAL: the default Pillow
++backend (chase_content/render.py) has no browser requirement. If Playwright or the frames dir is
++unavailable, this backend fails closed with an actionable message.
++
++See docs/WEBSITE_ARTIFACT_RENDER.md.
++"""
++
++from __future__ import annotations
++
++import contextlib
++import functools
++import http.server
++import socket
++import socketserver
++import threading
++from pathlib import Path
++from urllib.parse import quote
++
++# report key -> (frame path under <frames-dir>, output filename)
++FRAMES: dict[str, tuple[str, str]] = {
++    "morning-slate": ("content_export/morning_slate_frame.html", "morning-slate-01.png"),
++    "offensive-report": ("content_export/offensive_report_frame.html", "offensive-report.png"),
++    # public-vs-sharp has no website frame yet — use the Pillow fallback backend for it.
++}
++
++VIEWPORT = {"width": 1080, "height": 1350}
++DEVICE_SCALE_FACTOR = 2
++READY_FLAG = "document.documentElement.dataset.ceReady === '1'"
++
++
++class HtmlBackendError(RuntimeError):
++    """Raised when the HTML backend cannot run (missing deps, frames, or reports)."""
++
++
++def _require_playwright():
++    try:
++        from playwright.sync_api import sync_playwright  # noqa: WPS433 (optional import)
++    except ImportError as exc:  # pragma: no cover - environment dependent
++        raise HtmlBackendError(
++            "The HTML backend needs Playwright. Install it with:\n"
++            '    pip install -e ".[html]"\n'
++            "    python -m playwright install chromium\n"
++            "Or fall back to the Pillow backend (drop --backend html)."
++        ) from exc
++    return sync_playwright
++
++
++@contextlib.contextmanager
++def _static_server(root: Path):
++    """Serve ``root`` on an ephemeral localhost port for the duration of the context."""
++    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(root))
++
++    class _Quiet(socketserver.ThreadingTCPServer):
++        allow_reuse_address = True
++        daemon_threads = True
++
++        def log_message(self, *_args):  # noqa: D401 - silence access log
++            pass
++
++    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
++        probe.bind(("127.0.0.1", 0))
++        port = probe.getsockname()[1]
++
++    server = _Quiet(("127.0.0.1", port), handler)
++    thread = threading.Thread(target=server.serve_forever, daemon=True)
++    thread.start()
++    try:
++        yield f"http://127.0.0.1:{port}"
++    finally:
++        server.shutdown()
++        server.server_close()
++
++
++def _reports_for(report: str) -> list[str]:
++    if report == "all":
++        return list(FRAMES)
++    if report not in FRAMES:
++        raise HtmlBackendError(
++            f"No website frame for report '{report}'. "
++            f"Available: {', '.join(FRAMES)} (use the Pillow backend for others)."
++        )
++    return [report]
++
++
++def render_via_html(
++    bundle_path: Path,
++    out_dir: Path,
++    frames_dir: Path,
++    report: str = "all",
++) -> list[Path]:
++    """Screenshot the website export frames into ``out_dir``.
++
++    Parameters
++    ----------
++    bundle_path: the canonical bundle JSON (output of ``chase-content migrate``).
++    out_dir: directory to write PNGs into.
++    frames_dir: the mlbma-pipeline ``dashboard/`` directory (contains ``content_export/``).
++    report: ``all`` or a specific report key in :data:`FRAMES`.
++    """
++    frames_dir = frames_dir.resolve()
++    bundle_path = bundle_path.resolve()
++    out_dir.mkdir(parents=True, exist_ok=True)
++
++    for rel, _ in FRAMES.values():
++        if not (frames_dir / rel).exists():
++            raise HtmlBackendError(
++                f"Export frame not found: {frames_dir / rel}. "
++                "Point --frames-dir at the mlbma-pipeline 'dashboard' directory."
++            )
++
++    # Bundle must be reachable by the browser. Serve it from the frames dir so the frame can
++    # fetch it via a same-origin relative URL.
++    served_bundle = frames_dir / "content_export" / "_bundle_render.json"
++    served_bundle.write_text(bundle_path.read_text(encoding="utf-8"), encoding="utf-8")
++
++    sync_playwright = _require_playwright()
++    written: list[Path] = []
++    try:
++        with _static_server(frames_dir) as base_url, sync_playwright() as pw:
++            browser = pw.chromium.launch()
++            page = browser.new_page(
++                viewport=VIEWPORT, device_scale_factor=DEVICE_SCALE_FACTOR
++            )
++            bundle_url = base_url + "/content_export/" + quote(served_bundle.name)
++            for key in _reports_for(report):
++                rel, out_name = FRAMES[key]
++                url = f"{base_url}/{rel}?bundle={quote(bundle_url, safe='')}"
++                page.goto(url, wait_until="networkidle")
++                page.wait_for_function(READY_FLAG, timeout=15000)
++                target = out_dir / out_name
++                page.screenshot(path=str(target))
++                written.append(target)
++            browser.close()
++    finally:
++        with contextlib.suppress(FileNotFoundError):
++            served_bundle.unlink()
++    return written
+diff --git a/docs/WEBSITE_ARTIFACT_RENDER.md b/docs/WEBSITE_ARTIFACT_RENDER.md
+new file mode 100644
+index 0000000..28159c7
+--- /dev/null
++++ b/docs/WEBSITE_ARTIFACT_RENDER.md
+@@ -0,0 +1,74 @@
++# Website-artifact rendering (visual source of truth)
++
++**Polished finals are produced by screenshotting the live product, not by drawing in Pillow.**
++
++The ChaseAnalytics.com dashboard is more refined than this engine's `render.py`, and it already
++encodes the locked brand (design tokens, metallic headings, dimensional cards, league-anchored
++metric colors, real logos). To stop reinventing that look in PIL, the **mlbma-pipeline** repo
++ships *social export frames* that reuse the live CSS/components:
++
++```
++mlbma-pipeline/dashboard/content_export/
++  morning_slate_frame.html      # 1080×1350 Morning Slate (real .hero-matchup-card chrome)
++  offensive_report_frame.html   # 1080×1350 Offensive Report (real .ca-board + valChipHtml chips)
++  content_export.css            # export-frame chrome only (canvas lock, safe margins)
++  content_export.js             # bundle → cards via MLBMAAssets (metricColor / valChipHtml / logos)
++  README.md                     # open + inject bundle + screenshot instructions
++```
++
++These frames read a **content bundle** whose shape matches this engine's
++[`examples/sample_bundle.json`](../examples/sample_bundle.json) — i.e. the exact output of
++`chase-content migrate`. So the two systems compose cleanly.
++
++## Relationship to this engine
++
++| Concern | Owner |
++|---------|-------|
++| Report **rules** (canvas 1080×1350, compact header, no win-prob on Morning Slate, opinion tags, fail-closed data) | `design/CONTENT_DESIGN_CONTRACT.md` (this repo) |
++| Canonical bundle (`migrate` / `validate`) | this repo |
++| **Visual chrome for finals** | mlbma-pipeline `dashboard/content_export/*_frame.html` (live website CSS) |
++| **Transitional / offline fallback renderer** | `chase_content/render.py` (Pillow) |
++
++`render.py` stays as a headless/offline fallback (no browser needed). New visual polish goes
++into the website frames + shared CSS — never into a parallel PIL brand.
++
++## Preferred daily flow
++
++```bash
++# 1) Build + validate the canonical bundle (this repo)
++chase-content migrate --pipeline-data ../mlbma-pipeline/data \
++  --model-repo ../mlb-model --sharp-json ../sharp-money-tracker/docs/data.json \
++  --opinions opinions/YYYY-MM-DD.json --out dist/YYYY-MM-DD/bundle.json
++chase-content validate --bundle dist/YYYY-MM-DD/bundle.json --require-today
++
++# 2) Render finals by screenshotting the website frames (visual SSOT)
++chase-content build --bundle dist/YYYY-MM-DD/bundle.json --report all \
++  --backend html \
++  --frames-dir ../mlbma-pipeline/dashboard \
++  --out dist/YYYY-MM-DD
++
++# (fallback, offline / no browser)
++chase-content build --bundle dist/YYYY-MM-DD/bundle.json --report all --out dist/YYYY-MM-DD
++```
++
++`--backend html` is implemented in [`chase_content/html_render.py`](../chase_content/html_render.py).
++It serves `--frames-dir` (the pipeline `dashboard/` directory) over a local static server, opens
++each `content_export/*_frame.html?bundle=<bundle>` in Playwright Chromium at **1080×1350,
++deviceScaleFactor 2**, waits for `document.documentElement.dataset.ceReady === '1'`, and writes
++`morning-slate-01.png` / `offensive-report.png`.
++
++## Requirements for the HTML backend
++
++The HTML backend needs Playwright (an **optional** dependency — the default Pillow backend has
++no browser requirement):
++
++```bash
++pip install -e ".[html]"      # installs playwright
++python -m playwright install chromium
++```
++
++If Playwright (or the frames dir) is missing, `--backend html` fails closed with a clear
++message and you can fall back to the Pillow backend.
++
++See `mlbma-pipeline/dashboard/content_export/README.md` for the raw screenshot recipes
++(Playwright and headless-Chrome).
+diff --git a/pyproject.toml b/pyproject.toml
+index 0cfd8db..6a058ea 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -11,6 +11,9 @@ dependencies = ["Pillow>=10.0"]
+ 
+ [project.optional-dependencies]
+ dev = ["pytest>=8", "ruff>=0.6"]
++# HTML backend (visual SSOT): screenshot the mlbma-pipeline website export frames.
++# Optional — the default Pillow backend has no browser requirement.
++html = ["playwright>=1.40"]
+ 
+ [project.scripts]
+ chase-content = "chase_content.cli:main"
 -- 
 2.43.0
 
