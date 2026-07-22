@@ -5,9 +5,10 @@ This agent **cannot push** to [`Alphakiller1/chase-content-engine`](https://gith
 
 ## What changed
 
-**Three commits** on `cursor/render-contract-compliance-4fea` on top of `main` (tip `3250f6e`):
+**Four commits** on `cursor/render-contract-compliance-4fea` on top of `main` (tip `3d79a3d`):
 `Align render.py with CONTENT_DESIGN_CONTRACT §14`, `Refine content renderer for brand
-authenticity`, and `Add HTML backend: screenshot website export frames as visual SSOT`.
+authenticity`, `Add HTML backend: screenshot website export frames as visual SSOT`, and
+`html backend: fail closed before writing temp bundle`.
 
 ### Commit 3 — HTML backend (website artifacts are the visual SSOT)
 
@@ -73,8 +74,8 @@ git checkout main
 git pull
 git bundle unbundle path/to/mlbma-pipeline/docs/external/chase-content-engine/render-contract.bundle
 git checkout cursor/render-contract-compliance-4fea
-# The bundle carries ref refs/heads/cursor/render-contract-compliance-4fea (tip 3250f6e,
-# three commits on top of main).
+# The bundle carries ref refs/heads/cursor/render-contract-compliance-4fea (tip 3d79a3d,
+# four commits on top of main).
 
 python -m venv .venv
 .venv/bin/pip install -e ".[dev]"

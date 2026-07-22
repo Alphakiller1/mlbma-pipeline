@@ -114,6 +114,9 @@ def render_via_html(
     bundle_path = bundle_path.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Fail closed BEFORE touching the frames dir: missing deps / frames must not leave any
+    # temp artifact behind in the source tree.
+    sync_playwright = _require_playwright()
     for rel, _ in FRAMES.values():
         if not (frames_dir / rel).exists():
             raise HtmlBackendError(
@@ -126,7 +129,6 @@ def render_via_html(
     served_bundle = frames_dir / "content_export" / "_bundle_render.json"
     served_bundle.write_text(bundle_path.read_text(encoding="utf-8"), encoding="utf-8")
 
-    sync_playwright = _require_playwright()
     written: list[Path] = []
     try:
         with _static_server(frames_dir) as base_url, sync_playwright() as pw:

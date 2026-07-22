@@ -1,7 +1,7 @@
 From 1773b88a0c49dce518f4d1d1a0b0ad09768a3ba0 Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
 Date: Tue, 21 Jul 2026 23:33:01 +0000
-Subject: [PATCH 1/3] =?UTF-8?q?Align=20render.py=20with=20CONTENT=5FDESIGN?=
+Subject: [PATCH 1/4] =?UTF-8?q?Align=20render.py=20with=20CONTENT=5FDESIGN?=
  =?UTF-8?q?=5FCONTRACT=20=C2=A714.?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -14282,7 +14282,7 @@ index 084eb5c..76efbc4 100644
 From 860b81b3c19ec4e99154477ea584f9447eaed302 Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
 Date: Tue, 21 Jul 2026 23:47:46 +0000
-Subject: [PATCH 2/3] Refine content renderer for brand authenticity
+Subject: [PATCH 2/4] Refine content renderer for brand authenticity
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -29518,7 +29518,7 @@ index 4e6b3ab..18f8234 100644
 From 3250f6e5ea775829721304be5bb848571adb4743 Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
 Date: Wed, 22 Jul 2026 00:20:19 +0000
-Subject: [PATCH 3/3] Add HTML backend: screenshot website export frames as
+Subject: [PATCH 3/4] Add HTML backend: screenshot website export frames as
  visual SSOT
 
 The mlbma-pipeline dashboard is more polished than the Pillow renderer. Add an
@@ -29840,6 +29840,43 @@ index 0cfd8db..6a058ea 100644
  
  [project.scripts]
  chase-content = "chase_content.cli:main"
+-- 
+2.43.0
+
+
+From 3d79a3dfa43269397baabef5c1b68384a7323200 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Wed, 22 Jul 2026 00:24:11 +0000
+Subject: [PATCH 4/4] html backend: fail closed before writing temp bundle
+
+Require Playwright and validate frames before writing the served bundle so a missing
+dependency never leaves a _bundle_render.json in the source tree.
+---
+ chase_content/html_render.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/chase_content/html_render.py b/chase_content/html_render.py
+index 5c6b342..06afb78 100644
+--- a/chase_content/html_render.py
++++ b/chase_content/html_render.py
+@@ -114,6 +114,9 @@ def render_via_html(
+     bundle_path = bundle_path.resolve()
+     out_dir.mkdir(parents=True, exist_ok=True)
+ 
++    # Fail closed BEFORE touching the frames dir: missing deps / frames must not leave any
++    # temp artifact behind in the source tree.
++    sync_playwright = _require_playwright()
+     for rel, _ in FRAMES.values():
+         if not (frames_dir / rel).exists():
+             raise HtmlBackendError(
+@@ -126,7 +129,6 @@ def render_via_html(
+     served_bundle = frames_dir / "content_export" / "_bundle_render.json"
+     served_bundle.write_text(bundle_path.read_text(encoding="utf-8"), encoding="utf-8")
+ 
+-    sync_playwright = _require_playwright()
+     written: list[Path] = []
+     try:
+         with _static_server(frames_dir) as base_url, sync_playwright() as pw:
 -- 
 2.43.0
 
