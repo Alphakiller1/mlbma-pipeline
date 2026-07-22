@@ -16,13 +16,21 @@ fail-closed data) — these frames *fulfill* those rules with website chrome.
 
 | File | Role |
 |------|------|
-| `morning_slate_frame.html` | 1080×1350 Morning Slate — stacked `.hero-matchup-card` matchups (run projection primary, **no win-prob bar**) |
-| `offensive_report_frame.html` | 1080×1350 Offensive Report — 2×2 `.ca-board` panels (Top vs RHP/LHP, Risers, Fallers) with `valChipHtml` OSI chips |
-| `content_export.css` | Export-frame chrome **only** (canvas lock, safe margins, compact header, opinion rail). Consumes design tokens; never redefines them. |
-| `content_export.js` | Parses the bundle and renders cards using `MLBMAAssets` helpers (`metricColor`, `heatColor`, `valChipHtml`, `teamLogoImg`, brand logo) |
+| `matchup_analysis_frame.html` | **Primary deep graphic** — live Matchup Analysis chrome (`.mc-header`, `.mc-sp-card`, `.mc-edge-panel`, `.mc-lineup-bar-*`, `.mc-h2h`) |
+| `morning_slate_frame.html` | Multi-game slate — Opening `.hero-matchup-card` + Analysis SP badges/tiers/hand pills (`matchup_compare.css`) |
+| `offensive_report_frame.html` | 2×2 `.ca-board` panels with `valChipHtml` OSI chips |
+| `content_export.css` | Export-frame chrome **only** (canvas lock, safe margins, analysis density tweaks). Consumes design tokens. |
+| `content_export.js` | Bundle → render; prefers `MLBMASharedMatchup` + `MLBMAAssets` |
 
-Each frame uses `<base href="../">` so relative paths resolve against `dashboard/`,
-exactly like the other dashboard HTML.
+## Visual SSOT
+
+| Report | Website surface reused |
+|--------|------------------------|
+| **Matchup Analysis** | `matchup_compare.css` / `matchup_compare.js` patterns — `.mc-header`, `.mc-sp-compare`, `.mc-edge-panel`, run bar via `.mc-lineup-bar-*` |
+| Morning Slate | Opening `.hero-matchup-card` + Analysis `.hand-pill` / `.tier-badge` / Pitch Score badge |
+| Offensive Report | `.ca-board` + graded chips |
+
+Optional `?game=NYY@BOS` selects which slate game the Matchup Analysis frame features (default = largest run separation).
 
 ## Data (bundle)
 
@@ -48,6 +56,8 @@ Serve the `dashboard/` directory over static HTTP (needed so `?bundle=` fetches 
 cd dashboard
 python3 -m http.server 8099
 # then open:
+#   http://localhost:8099/content_export/matchup_analysis_frame.html
+#   http://localhost:8099/content_export/matchup_analysis_frame.html?game=NYY@BOS
 #   http://localhost:8099/content_export/morning_slate_frame.html
 #   http://localhost:8099/content_export/offensive_report_frame.html
 ```
@@ -60,6 +70,7 @@ python3 -m http.server 8099
 from playwright.sync_api import sync_playwright
 
 FRAMES = {
+    "matchup-analysis": "http://localhost:8099/content_export/matchup_analysis_frame.html",
     "morning-slate": "http://localhost:8099/content_export/morning_slate_frame.html",
     "offensive-report": "http://localhost:8099/content_export/offensive_report_frame.html",
 }

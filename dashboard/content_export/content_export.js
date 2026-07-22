@@ -1,22 +1,19 @@
 /**
- * content_export.js — renders locked 1080×1350 social export frames from a content
- * bundle, reusing the LIVE product's CSS/components (design tokens, .hero-matchup-card /
- * .hmc-* / .mc-sp-* classes, .ca-board, and MLBMAAssets helpers).
+ * content_export.js — locked 1080×1350 social frames that reuse LIVE product chrome.
  *
- * This is the visual bridge described in docs/CHASE_CONTENT_PLAN.md: instead of
- * reinventing the Chase look in Pillow, daily graphics screenshot these frames so the
- * finals inherit the exact website chrome. The content-engine design contract still
- * governs the layout rules (1080×1350, compact header, NO win-prob on Morning Slate,
- * opinion tags, fail-closed data) — this file just fulfills them with website CSS.
+ * Visual SSOT priority:
+ *   1. Matchup Analysis page (matchup_compare.css / .mc-*) — deepest polish
+ *   2. Opening Dashboard hero cards (landing_dashboard.css / .hero-matchup-card)
+ *   3. Shared tokens + MLBMAAssets helpers
  *
- * Bundle shape matches chase-content-engine/examples/sample_bundle.json (games[],
- * offense{}, meta{}). Data comes from ?bundle=<url> (fetched) or an embedded
- * <script type="application/json" id="bundle-data"> tag.
+ * Reports: morning_slate | offensive_report | matchup_analysis
+ * Bundle: chase-content-engine sample shape (+ optional analysis metrics on games[]).
  */
 (function (global) {
   'use strict';
 
   var A = global.MLBMAAssets || null;
+  var S = global.MLBMASharedMatchup || null;
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -27,7 +24,13 @@
     return v == null || v === '' || isNaN(v) ? null : Number(v);
   }
 
+  function fmt(v, d) {
+    if (v == null || isNaN(v)) return '—';
+    return Number(v).toFixed(d != null ? d : 1);
+  }
+
   function teamLogo(team, px) {
+    if (S && S.teamLogo) return S.teamLogo(team, px || 40);
     if (A && A.teamLogoImg) return A.teamLogoImg(team, px || 40, 'ce-team-logo');
     return '<span class="ce-team-logo ce-team-logo--fallback">' + esc(String(team || '').slice(0, 3)) + '</span>';
   }
@@ -50,7 +53,26 @@
     return '<span class="chip ' + (opts.chipClass || 'c-mid') + '">' + esc(disp) + '</span>';
   }
 
-  // ── bundle loading ────────────────────────────────────────────────────────
+  function pitchTier(score) {
+    if (S && S.pitchTiers) return S.pitchTiers(score);
+    var v = num(score);
+    if (v == null) return { label: '—', cls: 'tier-mid' };
+    if (v >= 70) return { label: 'Elite', cls: 'tier-elite' };
+    if (v >= 55) return { label: 'Solid', cls: 'tier-solid' };
+    if (v >= 40) return { label: 'Mid', cls: 'tier-mid' };
+    return { label: 'Vol', cls: 'tier-vol' };
+  }
+
+  function osiTierLabel(osi) {
+    if (S && S.osiTierLabel) return S.osiTierLabel(osi);
+    var v = num(osi);
+    if (v == null) return '—';
+    if (v >= 65) return 'Elite offense';
+    if (v >= 55) return 'Above average';
+    if (v >= 45) return 'League average';
+    return 'Below average';
+  }
+
   function getParam(name) {
     var m = new RegExp('[?&]' + name + '=([^&]*)').exec(global.location.search || '');
     return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : null;
@@ -83,7 +105,6 @@
     return Promise.resolve(readEmbeddedBundle());
   }
 
-  // ── formatting ──────────────────────────────────────────────────────────────
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   function fmtSlateDate(iso) {
@@ -107,7 +128,6 @@
     }
   }
 
-  // ── shared compact Chase header (content contract §3.4) ──────────────────────
   function headerHtml(meta, title, pageInfo) {
     meta = meta || {};
     var brand = (A && A.brandLogoLightBadgeHtml)
@@ -139,7 +159,7 @@
       '</footer>';
   }
 
-  // ── Morning Slate ────────────────────────────────────────────────────────────
+  // ── Morning Slate (Opening card + Matchup Analysis SP chrome) ──────────────
   function separation(homeRuns, awayRuns) {
     var h = num(homeRuns), a = num(awayRuns);
     if (h == null || a == null) return { sep: null, label: 'RUN PROJECTION', cls: 'tossup' };
@@ -153,41 +173,64 @@
   }
 
   function handPill(hand) {
-    var h = String(hand || '').toUpperCase();
-    var label = h === 'L' ? 'LHP' : h === 'R' ? 'RHP' : 'SP';
+    var h = String(hand || '').toUpperCase().charAt(0);
+    var label = h === 'L' ? 'L' : h === 'R' ? 'R' : '?';
     return '<span class="hand-pill">' + label + '</span>';
   }
 
-  // Compact, portrait-off SP line reusing .mc-sp-block chrome (contract §5.4 / §7:
-  // portraits OFF by default on Morning Slate — text pitcher line only).
   function spBlock(side, pitcher) {
     pitcher = pitcher || {};
     var sideCls = side === 'home' ? 'mc-sp-block--home' : 'mc-sp-block--away';
     var sideLabel = side === 'home' ? 'HOME SP' : 'AWAY SP';
-    var ip = num(pitcher.projected_ip);
-    var er = num(pitcher.projected_er);
-    var k = num(pitcher.projected_k);
-    function stat(cls, label, value, ctx, invert) {
+    var ps = num(pitcher.pitch_score);
+    var tier = pitchTier(ps);
+    var hasRates = num(pitcher.k_pct) != null || num(pitcher.bb_pct) != null;
+
+    function stat(cls, label, value, ctx, invert, decimals) {
       var color = value == null ? 'var(--text-4)' : metricColor(value, ctx, invert);
-      var disp = value == null ? '—' : Number(value).toFixed(1);
+      var disp = value == null ? '—' : Number(value).toFixed(decimals != null ? decimals : 1);
       return '<div class="mc-sp-stat mc-sp-stat--' + cls + '">' +
         '<em>' + label + '</em>' +
         '<strong style="--stat-color:' + color + ';color:' + color + '">' + disp + '</strong>' +
         '</div>';
     }
+
+    var badges = handPill(pitcher.hand);
+    if (ps != null) {
+      badges += ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span>';
+    }
+
+    var statsHtml;
+    if (hasRates) {
+      statsHtml =
+        stat('k', 'K%', num(pitcher.k_pct), 'kpct', false, 1) +
+        stat('bb', 'BB%', num(pitcher.bb_pct), 'bbpct', true, 1) +
+        stat('hr9', 'HR/9', num(pitcher.hr9), 'hr9', true, 2);
+    } else {
+      statsHtml =
+        stat('k', 'IP', num(pitcher.projected_ip), 'ipstart', false, 1) +
+        stat('bb', 'ER', num(pitcher.projected_er), 'era', true, 1) +
+        stat('era', 'K', num(pitcher.projected_k), 'k9', false, 1);
+    }
+
+    var psLine = ps != null
+      ? '<div class="mc-ps-badge mc-ps-badge--defined ce-ps-badge">' +
+          '<span class="mc-ps-badge__label">Pitch Score</span>' +
+          '<span class="mc-ps-badge__val" style="color:' + metricColor(ps, 'pitching', false) + '">' +
+            fmt(ps, 1) +
+          '</span></div>'
+      : '';
+
     return '' +
       '<div class="mc-sp-block ' + sideCls + ' ce-sp">' +
         '<div class="mc-sp-info">' +
           '<div class="mc-sp-top">' +
             '<span class="mc-sp-side">' + sideLabel + '</span>' +
-            '<span class="mc-sp-badges">' + handPill(pitcher.hand) + '</span>' +
+            '<span class="mc-sp-badges">' + badges + '</span>' +
           '</div>' +
           '<div class="mc-sp-name-row"><span class="mc-sp-name-text">' + esc(pitcher.name || 'TBD') + '</span></div>' +
-          '<div class="mc-sp-stats--grid">' +
-            stat('k', 'IP', ip, 'ipstart', false) +
-            stat('bb', 'ER', er, 'era', true) +
-            stat('era', 'K', k, 'k9', false) +
-          '</div>' +
+          psLine +
+          '<div class="mc-sp-stats--grid">' + statsHtml + '</div>' +
         '</div>' +
       '</div>';
   }
@@ -200,8 +243,6 @@
       '</span></div>';
   }
 
-  // RUN PROJECTION comparison — reuses .hmc-osi-bar chrome, but is run-based, NOT
-  // win probability (contract §2.6 / §5.5: no win-prob, no probability split).
   function runBar(game) {
     var a = num(game.projection && game.projection.away_runs);
     var h = num(game.projection && game.projection.home_runs);
@@ -242,7 +283,9 @@
     var tag = String(op.tag || 'NO OPINION').toUpperCase();
     var cls = OPINION_TAGS[tag] || 'none';
     var note = op.text ? '<span class="ce-opinion-note">' + esc(op.text) + '</span>' : '';
-    var state = game.lineup_status ? (String(game.lineup_status).charAt(0).toUpperCase() + String(game.lineup_status).slice(1) + ' lineups') : '';
+    var state = game.lineup_status
+      ? (String(game.lineup_status).charAt(0).toUpperCase() + String(game.lineup_status).slice(1) + ' lineups')
+      : '';
     return '' +
       '<div class="ce-card-foot">' +
         '<span class="ce-lineup-state">' + esc(state) + '</span>' +
@@ -252,12 +295,30 @@
       '</div>';
   }
 
+  function weatherStrip(game) {
+    var w = game.weather;
+    if (!w) return '';
+    if (S && S.weatherBadge) {
+      try {
+        var html = S.weatherBadge(w, game.home);
+        if (html) return '<div class="hmc-weather-group ce-weather">' + html + '</div>';
+      } catch (e) { /* fall through */ }
+    }
+    var bits = [];
+    if (w.temp != null) bits.push('<span class="hmc-weather-chip hmc-weather-chip--temp">' + esc(w.temp) + '°</span>');
+    if (w.wind) bits.push('<span class="hmc-weather-chip hmc-weather-chip--wind">' + esc(w.wind) + '</span>');
+    if (w.cond) bits.push('<span class="hmc-weather-chip hmc-weather-chip--cond">' + esc(w.cond) + '</span>');
+    if (!bits.length) return '';
+    return '<div class="hmc-weather-group ce-weather">' + bits.join('') + '</div>';
+  }
+
   function morningCard(game, rank) {
     var sepInfo = separation(
       game.projection && game.projection.home_runs,
       game.projection && game.projection.away_runs
     );
     var time = game.time ? '<span class="hmc-time">' + esc(game.time) + '</span>' : '';
+    var stadium = game.stadium ? '<span class="hmc-stadium">' + esc(game.stadium) + '</span>' : '';
     return '' +
       '<article class="hero-matchup-card ce-card">' +
         '<span class="ce-rank">' + rank + '</span>' +
@@ -267,7 +328,7 @@
           teamSide(game.away, 'away') +
           '<span class="hmc-at">@</span>' +
           teamSide(game.home, 'home') +
-          '<div class="hmc-meta ce-meta-row">' + time + '</div>' +
+          '<div class="hmc-meta ce-meta-row">' + time + stadium + weatherStrip(game) + '</div>' +
         '</div>' +
         '<div class="hmc-row hmc-pitchers">' +
           spBlock('away', game.away_pitcher) +
@@ -281,7 +342,6 @@
   function renderMorningSlate(bundle, mount) {
     var meta = bundle.meta || {};
     var games = (bundle.games || []).slice();
-    // §5.2 sort: model run separation desc (never win probability).
     games.sort(function (x, y) {
       var xs = Math.abs((num(x.projection && x.projection.home_runs) || 0) - (num(x.projection && x.projection.away_runs) || 0));
       var ys = Math.abs((num(y.projection && y.projection.home_runs) || 0) - (num(y.projection && y.projection.away_runs) || 0));
@@ -297,6 +357,203 @@
         '<div class="ce-slate-grid' + compact + '">' +
           page.map(function (g, i) { return morningCard(g, i + 1); }).join('') +
         '</div>' +
+      '</div>' +
+      footerHtml(meta);
+    mount.innerHTML = body;
+  }
+
+  // ── Matchup Analysis (single-game deep frame — live .mc-* chrome) ───────────
+  function pickFeaturedGame(bundle) {
+    var games = bundle.games || [];
+    if (!games.length) return null;
+    var key = getParam('game');
+    if (key) {
+      var hit = games.find(function (g) {
+        return String(g.key || '').toUpperCase() === String(key).toUpperCase();
+      });
+      if (hit) return hit;
+    }
+    return games.slice().sort(function (x, y) {
+      var xs = Math.abs((num(x.projection && x.projection.home_runs) || 0) - (num(x.projection && x.projection.away_runs) || 0));
+      var ys = Math.abs((num(y.projection && y.projection.home_runs) || 0) - (num(y.projection && y.projection.away_runs) || 0));
+      return ys - xs;
+    })[0];
+  }
+
+  function analysisTeamSide(team, align, record) {
+    var role = align === 'home' ? 'Home' : 'Away';
+    var rec = record
+      ? '<span class="mc-record-row"><span class="team-record-pill">' + esc(record) + '</span></span>'
+      : '';
+    return '' +
+      '<div class="mc-header-side mc-header-side--' + align + '">' +
+        '<div class="mc-header-logo">' + teamLogo(team, 52) + '</div>' +
+        '<div class="mc-header-side-text">' +
+          '<div class="mc-header-role">' + role + '</div>' +
+          '<div class="mc-header-name-row">' +
+            '<span class="mc-team-abbr">' + esc(team) + '</span>' + rec +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function analysisHeader(game) {
+    var wx = weatherStrip(game);
+    var stadium = game.stadium || 'Stadium TBD';
+    return '' +
+      '<header class="mc-header mc-section ce-mc-header">' +
+        '<div class="mc-header-kicker">Matchup Analysis</div>' +
+        '<div class="mc-header-grid">' +
+          analysisTeamSide(game.away, 'away', game.away_record) +
+          '<div class="mc-header-center">' +
+            '<div class="mc-header-matchup"><span class="mc-at">@</span></div>' +
+            '<div class="mc-header-meta">' + esc(game.time || 'TBD') + ' · ' + esc(stadium) + '</div>' +
+            (wx ? '<div class="mc-header-weather">' + wx + '</div>' : '') +
+          '</div>' +
+          analysisTeamSide(game.home, 'home', game.home_record) +
+        '</div>' +
+      '</header>';
+  }
+
+  function analysisSpCard(side, team, pitcher) {
+    pitcher = pitcher || {};
+    var ps = num(pitcher.pitch_score);
+    var tier = pitchTier(ps);
+    var name = pitcher.name || 'TBD';
+    var k = num(pitcher.k_pct);
+    var bb = num(pitcher.bb_pct);
+    var hr9 = num(pitcher.hr9);
+    var fip = num(pitcher.fip);
+    var xfip = num(pitcher.xfip);
+    var osiAllow = num(pitcher.osi_allowed);
+    var xfipStr = xfip != null ? xfip.toFixed(2) : (fip != null ? fip.toFixed(2) : '—');
+
+    function strong(v, ctx, invert, decimals) {
+      if (v == null) return '<strong>—</strong>';
+      var color = metricColor(v, ctx, invert);
+      return '<strong style="color:' + color + '">' + Number(v).toFixed(decimals != null ? decimals : 1) + '</strong>';
+    }
+
+    var stats;
+    if (k != null || bb != null || hr9 != null) {
+      stats =
+        '<span>K% ' + strong(k, 'kpct', false, 1) + '</span>' +
+        '<span>BB% ' + strong(bb, 'bbpct', true, 1) + '</span>' +
+        '<span>FIP/xFIP <strong>' + xfipStr + '</strong></span>' +
+        '<span>HR/9 ' + strong(hr9, 'hr9', true, 2) + '</span>' +
+        (osiAllow != null ? '<span>OSI Allowed ' + valChip(osiAllow, 'osi', true, 1) + '</span>' : '');
+    } else {
+      stats =
+        '<span>IP ' + strong(num(pitcher.projected_ip), 'ipstart', false, 1) + '</span>' +
+        '<span>ER ' + strong(num(pitcher.projected_er), 'era', true, 1) + '</span>' +
+        '<span>K ' + strong(num(pitcher.projected_k), 'k9', false, 1) + '</span>';
+    }
+
+    return '' +
+      '<div class="mc-sp-card ce-mc-sp-card">' +
+        '<div class="mc-sp-top">' +
+          '<div>' +
+            '<div class="ca-metric-label">' + esc(side) + ' SP · ' + esc(team) + '</div>' +
+            '<div class="mc-sp-name">' + esc(name) + ' ' + handPill(pitcher.hand) +
+              (ps != null ? ' <span class="tier-badge ' + tier.cls + '">' + esc(tier.label) + '</span>' : '') +
+            '</div>' +
+            (ps != null
+              ? '<div class="ca-helper">Pitching Score ' + valChip(ps, 'pitching', false, 1) + '</div>'
+              : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="mc-sp-stats">' + stats + '</div>' +
+      '</div>';
+  }
+
+  function analysisEdgePanel(label, offense, pitcherAllowed) {
+    offense = offense || {};
+    var osi = num(offense.osi);
+    var pals = num(offense.pals);
+    var edgeCls = 'edge-even';
+    var edgeLabel = 'Even matchup';
+    if (osi != null && pitcherAllowed != null) {
+      var gap = osi - pitcherAllowed;
+      if (gap >= 5) { edgeCls = 'edge-lineup'; edgeLabel = 'Lineup edge'; }
+      else if (gap <= -5) { edgeCls = 'edge-pitcher'; edgeLabel = 'Pitcher edge'; }
+    }
+    return '' +
+      '<div class="mc-card mc-edge-panel ce-mc-edge">' +
+        '<div class="mc-edge-label">' + esc(label) + '</div>' +
+        '<div class="mc-edge-osi">' + valChip(osi, 'osi', false, 1) + '</div>' +
+        '<div class="mc-edge-tier">' + esc(osiTierLabel(osi)) + '</div>' +
+        (pals != null
+          ? '<div class="pals-line pals-neutral">PALS: ' + fmt(pals, 1) + '</div>'
+          : '') +
+        '<div class="mc-edge-metrics">' +
+          '<span>ABQ <strong>' + fmt(offense.abq, 1) + '</strong></span>' +
+          '<span>RCV <strong>' + fmt(offense.rcv, 1) + '</strong></span>' +
+          '<span>OBR <strong>' + fmt(offense.obr, 1) + '</strong></span>' +
+        '</div>' +
+        '<div class="' + edgeCls + '">' + esc(edgeLabel) + '</div>' +
+      '</div>';
+  }
+
+  function analysisRunProjection(game) {
+    var a = num(game.projection && game.projection.away_runs);
+    var h = num(game.projection && game.projection.home_runs);
+    var sep = separation(h, a);
+    var total = (a || 0) + (h || 0);
+    var awayPct = total > 0 ? Math.round((a / total) * 100) : 50;
+    var homePct = 100 - awayPct;
+    return '' +
+      '<div class="mc-lineup-bar-wrap ce-mc-runs">' +
+        '<div class="mc-lineup-bar-labels">' +
+          '<span>' + esc(game.away) + ' <strong style="color:' + metricColor(a, 'rpg', false) + '">' +
+            (a == null ? '—' : a.toFixed(1)) + '</strong></span>' +
+          '<span class="ce-run-center-label">RUN PROJECTION · ' + esc(sep.label) + '</span>' +
+          '<span><strong style="color:' + metricColor(h, 'rpg', false) + '">' +
+            (h == null ? '—' : h.toFixed(1)) + '</strong> ' + esc(game.home) + '</span>' +
+        '</div>' +
+        '<div class="mc-lineup-bar-track">' +
+          '<div class="mc-lineup-bar-away" style="width:' + awayPct + '%"></div>' +
+          '<div class="mc-lineup-bar-home" style="width:' + homePct + '%"></div>' +
+        '</div>' +
+        '<div class="mc-lineup-edge-read">' +
+          (sep.sep != null ? ('Δ ' + sep.sep.toFixed(1) + ' runs · ranked by model run separation') : 'Projection pending') +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderMatchupAnalysis(bundle, mount) {
+    var meta = bundle.meta || {};
+    var game = pickFeaturedGame(bundle);
+    if (!game) {
+      mount.innerHTML = '<div class="ce-error">No game in bundle for Matchup Analysis.</div>';
+      return;
+    }
+    var awayP = game.away_pitcher || {};
+    var homeP = game.home_pitcher || {};
+    var h2h = game.h2h || {};
+    var h2hHtml = (h2h.edge_label || h2h.why)
+      ? '<div class="mc-h2h"><strong>Pitching edge: ' + esc(h2h.edge_label || '—') + '</strong>' +
+          (h2h.why ? ' — ' + esc(h2h.why) : '') + '</div>'
+      : '';
+
+    var body = '' +
+      headerHtml(meta, 'Matchup Analysis', game.key || (game.away + '@' + game.home)) +
+      '<div class="ce-body ce-body--analysis">' +
+        analysisHeader(game) +
+        '<section class="mc-section ce-mc-section">' +
+          '<h2 class="mc-section-title">Starting Pitcher Comparison</h2>' +
+          '<div class="mc-card mc-sp-compare">' +
+            analysisSpCard('Away', game.away, awayP) +
+            '<div class="mc-sp-vs">VS</div>' +
+            analysisSpCard('Home', game.home, homeP) +
+          '</div>' +
+          h2hHtml +
+        '</section>' +
+        analysisRunProjection(game) +
+        '<div class="mc-grid-2 ce-mc-edges">' +
+          analysisEdgePanel(game.away + ' lineup OSI', game.away_offense, num(awayP.osi_allowed)) +
+          analysisEdgePanel(game.home + ' lineup OSI', game.home_offense, num(homeP.osi_allowed)) +
+        '</div>' +
+        opinionRail(game) +
       '</div>' +
       footerHtml(meta);
     mount.innerHTML = body;
@@ -334,7 +591,7 @@
       '</div>';
   }
 
-  function offensePanel(title, rows, kind) {
+  function offensePanel(title, rows) {
     return '' +
       '<section class="ca-board ce-off-panel">' +
         '<h2 class="ce-panel-title">' + esc(title) + '</h2>' +
@@ -364,10 +621,10 @@
     mount.innerHTML = body;
   }
 
-  // ── boot ──────────────────────────────────────────────────────────────────────
   var RENDERERS = {
     'morning_slate': renderMorningSlate,
-    'offensive_report': renderOffensiveReport
+    'offensive_report': renderOffensiveReport,
+    'matchup_analysis': renderMatchupAnalysis
   };
 
   function boot() {

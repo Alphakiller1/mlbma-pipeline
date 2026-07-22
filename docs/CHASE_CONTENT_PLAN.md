@@ -52,6 +52,26 @@ into a second brand in PIL.
 
 ---
 
+## 0. Website artifacts are the visual SSOT
+
+Daily graphics should look like the product — especially **Matchup Analysis**.
+
+| Report | Website surface (reuse, don't redraw) |
+|--------|----------------------------------------|
+| **Matchup Analysis** (featured game) | `matchup_compare.css` — `.mc-header`, `.mc-sp-card`, `.mc-edge-panel`, `.mc-lineup-bar-*`, `.mc-h2h` |
+| Morning Slate | Opening `.hero-matchup-card` + Analysis badges (`.hand-pill`, `.tier-badge`, Pitch Score) |
+| Offensive Report | `.ca-board` + `valChipHtml` / `metricColor` |
+
+**Preferred production path**
+
+```text
+migrate bundle → open dashboard/content_export/*_frame.html → Playwright screenshot @1080×1350 → human approve
+```
+
+Frames live in [`dashboard/content_export/`](../dashboard/content_export/). Pillow/`render.py` is a transitional fallback only.
+
+---
+
 ## 1. Read these first (content engine)
 
 | File | Role |

@@ -445,3 +445,120 @@ body.content-export h1.ce-title {
   font-size: 12px;
   color: var(--text-2, #A4A8B6);
 }
+
+/* ── Matchup Analysis export frame (live .mc-* from matchup_compare.css) ───── */
+.ce-body--analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.ce-frame--matchup-analysis .ce-mc-header {
+  margin: 0;
+  padding: 10px 14px 14px;
+  background: linear-gradient(165deg, var(--card, #12141D), var(--bg-3, #0E1018));
+  border: 1.5px solid rgba(154, 107, 255, 0.41);
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+}
+
+.ce-frame--matchup-analysis .mc-header-kicker {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-l, #C4B0FF);
+  margin-bottom: 8px;
+}
+
+.ce-frame--matchup-analysis .mc-header-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.ce-frame--matchup-analysis .mc-section-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: var(--ca-metal-text, linear-gradient(180deg, #FFFFFF, #9DA0AE));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ce-frame--matchup-analysis .ce-mc-section {
+  margin: 0;
+}
+
+.ce-frame--matchup-analysis .mc-sp-compare {
+  gap: 10px;
+}
+
+.ce-frame--matchup-analysis .ce-mc-sp-card {
+  background: linear-gradient(165deg, var(--card, #12141D), var(--bg-4, #181B26));
+  border: 1.5px solid rgba(154, 107, 255, 0.35);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Portraits off — keep SP top as text block */
+.ce-frame--matchup-analysis .ce-mc-sp-card .mc-sp-top {
+  margin-bottom: 8px;
+}
+
+.ce-frame--matchup-analysis .ce-mc-runs {
+  background: linear-gradient(165deg, var(--card, #12141D), var(--bg-4, #181B26));
+  border: 1.5px solid rgba(154, 107, 255, 0.35);
+}
+
+.ce-run-center-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3, #6E7383);
+}
+
+.ce-mc-edges {
+  gap: 12px;
+}
+
+.ce-frame--matchup-analysis .ce-mc-edge {
+  background: linear-gradient(165deg, var(--card, #12141D), var(--bg-4, #181B26));
+  border: 1.5px solid rgba(154, 107, 255, 0.35);
+  border-radius: 14px;
+}
+
+.ce-frame--matchup-analysis .ce-card-foot {
+  margin-top: 2px;
+}
+
+/* Morning Slate: Pitch Score badge from Matchup Analysis / landing chrome */
+.ce-ps-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 6px;
+}
+
+.ce-weather {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+/* Hide interactive analysis chrome that doesn't belong on a static social canvas */
+.ce-frame .compare-breadcrumb,
+.ce-frame .back-link,
+.ce-frame .mc-compare-nav,
+.ce-frame a.mc-header-side {
+  pointer-events: none;
+  text-decoration: none;
+}
+

@@ -17,7 +17,7 @@ alwaysApply: false
 
 | Concern | Where |
 |---------|--------|
-| **Visual chrome for daily graphics** | `dashboard/content_export/*_frame.html` reusing `mlbma_design_system.css`, `theme.css`, `landing_dashboard.css`, `mlbma_assets.js` |
+| **Visual chrome for daily graphics** | `dashboard/content_export/*_frame.html` — prefer **Matchup Analysis** (`matchup_compare.css` `.mc-*`), then Opening `.hero-matchup-card`, plus `mlbma_design_system.css` / `mlbma_assets.js` / `matchup_shared.js` |
 | Report *rules* (canvas, header, no win-prob, opinions, fail-closed) | `chase-content-engine/design/CONTENT_DESIGN_CONTRACT.md` |
 | Daily schedule, report contracts, opinion overlays, PIL fallback renderer | `chase-content-engine` (`render.py` = transitional) |
 | AI concept mockups only | `chase-content-engine/design/CHATGPT_IMAGE_MOCKUP_PROMPT.md` |
