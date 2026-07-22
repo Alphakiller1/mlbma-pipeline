@@ -1,0 +1,447 @@
+/*
+ * content_export.css — export-frame chrome ONLY (1080×1350 lock, safe margins,
+ * header/footer, panel layout). It consumes design-system tokens (--bg, --ca-brand,
+ * --ca-metal-text, --metric-*, --font-display…) and MUST NOT redefine them.
+ *
+ * All matchup/board visual chrome comes from the live product CSS
+ * (mlbma_design_system.css, theme.css, landing_dashboard.css). This file only adds the
+ * fixed social canvas + the small adaptations the content contract requires (compact
+ * header, RUN PROJECTION relabel, opinion rail, 2×2 offense grid).
+ */
+
+/* Locked social canvas — no page scroll chrome, no nav. */
+html.content-export,
+body.content-export {
+  margin: 0;
+  padding: 0;
+  background: #05060B;
+  overflow: hidden;
+}
+
+body.content-export {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Hide anything that isn't the export frame (defensive — frames ship no nav). */
+body.content-export .chase-nav,
+body.content-export nav.chase-nav,
+body.content-export .freshness-bar,
+body.content-export .ca-page-identity {
+  display: none !important;
+}
+
+.ce-frame {
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 82% 0%, rgba(124, 77, 255, 0.13), transparent 60%),
+    radial-gradient(ellipse 70% 45% at 10% 100%, rgba(91, 43, 224, 0.10), transparent 60%),
+    var(--bg, #08090F);
+  /* §3.1 safe margins: 60 L/R, 45 top, 56 bottom */
+  padding: 45px 60px 56px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
+}
+
+/* ── Compact utility header (§3.4, 150–190px) ─────────────────────────────── */
+.ce-header {
+  flex: 0 0 auto;
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid var(--border-2, #363B4D);
+}
+
+.ce-header-row {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.ce-brand {
+  flex: 0 0 auto;
+}
+
+.ce-brand .ca-brand-badge-light {
+  display: inline-flex;
+}
+
+.ce-brand img {
+  height: 44px !important;
+  width: auto;
+}
+
+.ce-brand-fallback {
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--text, #F5F6FA);
+}
+
+/* §1.5 mandatory metallic-silver heading fill (token). The extra specificity + the
+   !important on the fill beat theme.css's `h1:not(...)` purple-heading override. */
+body.content-export h1.ce-title {
+  margin: 0;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-variation-settings: 'wdth' 100;
+  font-weight: 800;
+  font-size: 46px;             /* §3.3 report title 40–48px */
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  background: var(--ca-metal-text, linear-gradient(180deg, #FFFFFF, #9DA0AE)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5));
+}
+
+.ce-meta {
+  margin-top: 14px;
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-3, #6E7383);
+  letter-spacing: 0.01em;
+}
+
+/* ── Body + footer ─────────────────────────────────────────────────────────── */
+.ce-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ce-footer {
+  flex: 0 0 auto;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border, #262A38);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
+  font-size: 14px;
+}
+
+.ce-footer-left {
+  color: var(--text-3, #6E7383);
+}
+
+.ce-footer-right {
+  color: var(--ca-purple-light, #C4B0FF);
+  font-weight: 600;
+}
+
+.ce-error,
+.ce-off-empty {
+  color: var(--ca-red, #F2545B);
+  font-family: var(--font-body, 'DM Sans', sans-serif);
+  font-size: 18px;
+  padding: 40px;
+  text-align: center;
+}
+
+/* ── Morning Slate — stacked matchup cards ─────────────────────────────────── */
+.ce-slate-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;                    /* §3.2 card gap = 14 */
+  align-content: start;
+  flex: 1 1 auto;
+}
+
+.ce-slate-grid--compact {
+  gap: 10px;
+}
+
+/* Card: inherits .hero-matchup-card chrome (bg gradient, violet border-color, shadow);
+   we only pin the border geometry + density + rank/sep badges. border-color is left to
+   landing_dashboard.css so the live violet hairline is preserved. */
+.ce-card.hero-matchup-card {
+  cursor: default;
+  border-style: solid;
+  border-width: 1.5px;
+  border-radius: 20px;         /* §4.1 card radius 18–22 */
+  padding: 14px 22px;          /* §3.2 matchup inner padding 22 */
+  transform: none !important;
+}
+
+.ce-slate-grid--compact .ce-card.hero-matchup-card {
+  padding: 11px 20px;
+}
+
+.ce-card .hmc-pitchers {
+  margin: 8px 0;
+}
+
+.ce-card .ce-rank {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--raised, #20232F);
+  border: 1px solid var(--ca-panel-border, rgba(154, 107, 255, 0.41));
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ca-purple-light, #C4B0FF);
+  font-variant-numeric: tabular-nums;
+}
+
+.ce-card .ce-sep {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ce-sep--lopsided { color: var(--ca-red, #F2545B); }
+.ce-sep--edge { color: var(--accent-risk, #FBBF24); }
+.ce-sep--lean { color: var(--ca-purple-light, #C4B0FF); }
+.ce-sep--tossup { color: var(--text-3, #6E7383); }
+
+.ce-card .ce-teams {
+  margin-top: 2px;
+  /* symmetric gutters keep the @ divider centered while clearing the absolute
+     rank badge (left) and separation label (right). */
+  padding: 2px 150px 0;
+}
+
+.ce-card .hmc-abbr {
+  font-size: 24px;
+}
+
+.ce-card .ce-meta-row {
+  justify-content: center;
+}
+
+/* Portrait-off SP block: drop the 42px photo column the live card reserves. */
+.ce-sp.mc-sp-block,
+.ce-sp.mc-sp-block--home,
+.ce-sp.mc-sp-block--away {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 10px 14px;
+}
+
+/* The live .mc-sp-info reserves a 38px Pitching-Score row we don't render; collapse
+   the grid to the three rows we actually use (top / name / stats). */
+.ce-sp .mc-sp-info {
+  grid-template-rows: 20px 24px auto;
+  gap: 4px;
+}
+
+.ce-slate-grid--compact .ce-sp .mc-sp-info {
+  grid-template-rows: 18px 22px auto;
+  gap: 3px;
+}
+
+/* RUN PROJECTION relabel of the (run-based, non-win-prob) comparison bar. */
+.ce-run-label {
+  margin-top: 8px;
+  color: var(--text-3, #6E7383);
+  letter-spacing: 0.14em;
+}
+
+.ce-run-bar .hmc-osi-num {
+  font-size: 22px;             /* §3.3 primary metric value */
+}
+
+.ce-run-bar .hmc-bar-track {
+  display: flex;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ce-run-seg {
+  height: 100%;
+}
+
+/* Opinion + lineup-state rail (§4.4) — separated from model projection. */
+.ce-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ce-lineup-state {
+  font-family: var(--font-body, 'DM Sans', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-3, #6E7383);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ce-opinion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ce-opinion-tag {
+  flex: 0 0 auto;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 7px;
+  text-transform: uppercase;
+}
+
+.ce-opinion-note {
+  font-family: var(--font-body, 'DM Sans', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2, #A4A8B6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+/* Tag chip identity colors (§4.4) — never a bet recommendation. */
+.ce-opinion--mybet .ce-opinion-tag { background: rgba(60, 203, 127, 0.16); color: var(--ca-green, #3CCB7F); }
+.ce-opinion--lean .ce-opinion-tag { background: var(--ca-brand-dim, rgba(124, 77, 255, 0.14)); color: var(--ca-purple-light, #C4B0FF); }
+.ce-opinion--watch .ce-opinion-tag { background: rgba(232, 194, 74, 0.16); color: var(--ca-amber, #E8C24A); }
+.ce-opinion--pass .ce-opinion-tag,
+.ce-opinion--none .ce-opinion-tag { background: rgba(110, 115, 131, 0.18); color: var(--text-3, #6E7383); }
+
+/* ── Offensive Report — 2×2 boards ─────────────────────────────────────────── */
+.ce-off-grid {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 14px;
+  min-height: 0;
+}
+
+.ce-off-panel.ca-board {
+  display: flex;
+  flex-direction: column;
+  padding: 26px;               /* §3.2 rank/market panel padding = 26 */
+  overflow: hidden;
+}
+
+.ce-panel-title {
+  margin: 0 0 16px;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 27px;             /* §3.3 major section heading 26–30 */
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  background: var(--ca-metal-text, linear-gradient(180deg, #FFFFFF, #9DA0AE));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ce-off-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+.ce-off-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border, #262A38);
+}
+
+.ce-off-rank {
+  flex: 0 0 auto;
+  width: 22px;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text-3, #6E7383);
+  font-variant-numeric: tabular-nums;
+}
+
+.ce-off-panel .ce-team-logo {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.ce-off-team {
+  flex: 0 0 auto;
+  min-width: 52px;
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 700;
+  font-size: 22px;             /* §3.3 team abbr 22–28, subordinate */
+  color: var(--text, #F5F6FA);
+}
+
+.ce-off-window {
+  flex: 1 1 auto;
+  text-align: right;
+  font-family: var(--mono, 'Roboto Condensed', monospace);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-2, #A4A8B6);
+  font-variant-numeric: tabular-nums;
+}
+
+.ce-off-arrow {
+  color: var(--text-3, #6E7383);
+  padding: 0 2px;
+}
+
+.ce-off-val {
+  flex: 0 0 auto;
+  margin-left: auto;
+  min-width: 64px;
+  text-align: right;
+}
+
+.ce-off-row--delta .ce-off-val {
+  margin-left: 14px;
+}
+
+.ce-off-val .chip {
+  font-size: 20px;
+}
+
+.ce-team-logo--fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--raised, #20232F);
+  font-family: var(--font-display, 'Roboto Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--text-2, #A4A8B6);
+}
