@@ -11,6 +11,47 @@
 
 ---
 
+## 0. Website artifacts are the visual SSOT (read first)
+
+The polished ChaseAnalytics.com dashboard is **more refined than the Pillow renderer**, and
+it already encodes the locked brand (tokens, metallic headings, dimensional cards, league-
+anchored metric colors, real logos). So the **visual source of truth for daily graphics is the
+live product CSS/components — not a parallel PIL drawing layer.**
+
+Concretely, this repo now ships **social export frames** that reuse the live CSS to render the
+report canvases:
+
+| File (`dashboard/content_export/`) | Renders | Reuses |
+|------------------------------------|---------|--------|
+| `morning_slate_frame.html` | Morning Slate 1080×1350 | `.hero-matchup-card` / `.hmc-*` / `.mc-sp-*` (`landing_dashboard.css`), `platform_dashboard.js` card patterns |
+| `offensive_report_frame.html` | Offensive Report 1080×1350 | `.ca-board` + `valChipHtml`/`metricColor` grading (`mlbma_design_system.css`, `mlbma_assets.js`) |
+| `content_export.css` | export-frame chrome only (canvas lock, safe margins, compact header) | design-system tokens (never redefined) |
+| `content_export.js` | bundle parse + render | `MLBMAAssets` (`metricColor`, `heatColor`, `valChipHtml`, `teamLogoImg`, brand helpers) |
+
+See [`dashboard/content_export/README.md`](../dashboard/content_export/README.md).
+
+### Report → website surface map
+
+| Report | Website surface / classes reused |
+|--------|----------------------------------|
+| **Morning Slate** | `.hero-matchup-card`, `.hmc-teams`, `.hmc-osi-bar` (relabeled **RUN PROJECTION**, run-based — no win-prob), `.mc-sp-block` pitcher lines, opinion rail |
+| **Offensive Report** | `.ca-board` panels, `--ca-metal-text` headings, `valChipHtml`/`metricColor` OSI + signed-delta chips (green=elite → red=poor) |
+| **Shared** | `mlbma_design_system.css` tokens, `theme.css` chips (`c-elite…c-poor`), `mlbma_assets.js` brand + logos + grading, `chase-logo-horizontal-light.png` |
+
+### Preferred pipeline (website-artifact path)
+
+```
+migrate → validate → open export frame with ?bundle=<bundle.json> → Playwright screenshot (1080×1350 @2x) → human approve → publish
+```
+
+The content-engine **Pillow renderer (`render.py`) is transitional / a fallback** (offline,
+no browser). The design *contract* still governs the rules (canvas, compact header, **no
+win-prob on Morning Slate**, opinion tags, fail-closed data); the export frames simply fulfill
+them with the real website chrome. New visual polish goes into the frames + shared CSS, never
+into a second brand in PIL.
+
+---
+
 ## 1. Read these first (content engine)
 
 | File | Role |
@@ -133,7 +174,11 @@ use the locked Chase system instead of the old Arial/win-prob layout.
 
 ## 8. One-line policy
 
-**Data is produced here; branded daily graphics are manufactured in `chase-content-engine` from locked contracts and `render.py`. AI drafts mockups and copy — it does not invent Chase’s published face.**
+**Data is produced here; branded daily graphics are manufactured by screenshotting the
+website export frames (`dashboard/content_export/*_frame.html`) that reuse the live product
+CSS — with the content-engine `render.py` as a transitional PIL fallback and the design
+contract as the rulebook. AI drafts mockups and copy — it does not invent Chase’s published
+face.**
 
 ---
 

@@ -25,8 +25,12 @@ When updating the contract, edit `MLBMA_CURSOR_DESIGN_CONTRACT.md` first, then a
 
 ## Content / social graphics
 
-Product UI follows this folder’s design contract. **Published daily graphics** are owned by
-[`Alphakiller1/chase-content-engine`](https://github.com/Alphakiller1/chase-content-engine)
-(`design/CONTENT_DESIGN_CONTRACT.md` + `chase_content/render.py`). This repo supplies upstream
-data; see `docs/CHASE_CONTENT_PLAN.md`. Do not ship freehand AI posters. Agent rule:
-`.cursor/rules/chase-content-graphics.mdc`.
+Product UI follows this folder’s design contract. **Published daily graphics** now reuse the
+**live product CSS** via the social export frames in
+[`dashboard/content_export/`](../dashboard/content_export/README.md) — these are the *visual
+source of truth* (screenshot at 1080×1350 @2x). The
+[`chase-content-engine`](https://github.com/Alphakiller1/chase-content-engine) still owns the
+report *rules* (`design/CONTENT_DESIGN_CONTRACT.md`) and a transitional PIL fallback renderer
+(`chase_content/render.py`). This repo supplies upstream data; see
+`docs/CHASE_CONTENT_PLAN.md`. Do not ship freehand AI posters, and do not build a parallel
+brand in PIL. Agent rule: `.cursor/rules/chase-content-graphics.mdc`.
