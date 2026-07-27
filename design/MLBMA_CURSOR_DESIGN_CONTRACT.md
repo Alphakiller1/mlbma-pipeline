@@ -1,9 +1,12 @@
 # MLBMA Dashboard And Website Design Contract For Cursor
 
 **Embedded in repo:** `design/MLBMA_CURSOR_DESIGN_CONTRACT.md`  
-**Cursor rule:** `.cursor/rules/mlbma-design-contract.mdc` (always applied alongside brand rules)
+**Cursor rule:** `.cursor/rules/mlbma-design-contract.mdc` (always applied alongside brand rules)  
+**Content / social graphics:** [`Alphakiller1/chase-content-engine`](https://github.com/Alphakiller1/chase-content-engine) (`design/CONTENT_DESIGN_CONTRACT.md` + `render.py`); bridge notes in `docs/CHASE_CONTENT_PLAN.md`
 
 Use this contract as the working source of truth for finishing the MLBMA dashboard project and public website. It combines the locked dashboard structure rules with the preferred premium infographic visual direction.
+
+**Important split:** The May 2026 ChatGPT infographics are an *aesthetic reference for the product UI* (translate look → tokens/components). They are **not** a license to ship freehand AI-generated social posters. Daily published graphics are manufactured in `chase-content-engine` under its design contract — AI mockups are concept-only; finals come from the renderer + approved assets.
 
 This document is written for Cursor. Before editing, Cursor must read the existing project files and adapt this contract to the actual codebase instead of inventing a parallel architecture.
 

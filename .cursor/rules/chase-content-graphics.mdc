@@ -1,0 +1,51 @@
+---
+description: Chase social graphics — website export frames are the visual SSOT; content-engine render.py is the transitional fallback; no freehand AI finals
+globs: docs/CHASE_CONTENT_PLAN.md,outputs/push_instagram.py,design/**,dashboard/content_export/**
+alwaysApply: false
+---
+
+# Chase Content Graphics
+
+**Visual SSOT:** the live product CSS/components, exposed as **social export frames** in
+[`dashboard/content_export/`](../../dashboard/content_export/README.md).
+
+**Rulebook + transitional PIL fallback:** [`Alphakiller1/chase-content-engine`](https://github.com/Alphakiller1/chase-content-engine)
+
+**Bridge doc in this repo:** [`docs/CHASE_CONTENT_PLAN.md`](../../docs/CHASE_CONTENT_PLAN.md)
+
+## Authority
+
+| Concern | Where |
+|---------|--------|
+| **Visual chrome for daily graphics** | `dashboard/content_export/*_frame.html` — prefer **Matchup Analysis** (`matchup_compare.css` `.mc-*`), then Opening `.hero-matchup-card`, plus `mlbma_design_system.css` / `mlbma_assets.js` / `matchup_shared.js` |
+| Report *rules* (canvas, header, no win-prob, opinions, fail-closed) | `chase-content-engine/design/CONTENT_DESIGN_CONTRACT.md` |
+| Daily schedule, report contracts, opinion overlays, PIL fallback renderer | `chase-content-engine` (`render.py` = transitional) |
+| AI concept mockups only | `chase-content-engine/design/CHATGPT_IMAGE_MOCKUP_PROMPT.md` |
+| Slate / offense / trajectory CSVs | this repo (`mlbma-pipeline/data`) |
+| Dashboard UI tokens | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` (this repo) |
+
+## Rules
+
+1. Do **not** invent a parallel template catalog (T1–T5, etc.) or a second brand system. Reuse
+   the existing tokens/classes — the export frames must consume design-system tokens, never
+   redefine `--bg` / `--ca-brand` / metric colors.
+2. **Preferred finals = screenshot the website export frames** (`migrate → validate → open
+   frame with `?bundle=` → Playwright 1080×1350 @2x → human approve). The content-engine
+   `render.py` PIL output is a transitional/offline fallback, not the polish target.
+3. Image models may produce **concept mockups** with logo placeholders only — never drawn
+   Chase/MLB marks, never publish those as posts.
+4. Do not weaken the content-engine design contract; the frames *fulfill* it (compact header,
+   metallic headings, dimensional cards, **no win-prob on Morning Slate**, run-separation
+   ranking, league-anchored metric colors, real logos, fail-closed data).
+5. `outputs/push_instagram.py` may publish captions/URLs; it must not invent layout. Image URLs
+   should point at approved frame screenshots (or the fallback engine PNGs).
+6. Opinions are human editorial overlays (`MY BET` / `LEAN` / `WATCH` / `PASS` / `NO OPINION`) —
+   never auto-inherited from model projections.
+7. `dashboard/content_export/` frames are **new files** — do not reorder or re-nest the live
+   dashboard product sections to build them (structure lock).
+
+## When asked to “make a graphic” here
+
+Point at the export frames first (open with `?bundle=`, screenshot at 1080×1350 @2x), keep the
+content-engine contract as the rulebook, and only change data-contract code (CSV fields /
+freshness) if the upstream data itself needs work.

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" class="content-export">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1080, initial-scale=1">
+  <!-- Resolve relative paths against dashboard/ (see morning_slate_frame.html). -->
+  <base href="../">
+  <title>Chase Analytics — Offensive Report (social export 1080×1350)</title>
+  <link rel="stylesheet" href="mlbma_design_system.css">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="landing_dashboard.css">
+  <link rel="stylesheet" href="content_export/content_export.css">
+</head>
+<body class="content-export">
+  <div id="ce-root" class="ce-frame ce-frame--offensive-report" data-report="offensive_report"></div>
+
+  <!-- Fallback bundle (shape = chase-content-engine/examples/sample_bundle.json).
+       Override at runtime with ?bundle=<url-to-bundle.json>. -->
+  <script type="application/json" id="bundle-data">
+{
+  "meta": {
+    "slate_date": "2026-07-03",
+    "generated_at": "2026-07-03T15:30:00+00:00",
+    "run_id": "2026-07-03::sample"
+  },
+  "offense": {
+    "vs_rhp": [
+      { "team": "LAD", "osi": 83.3 },
+      { "team": "PIT", "osi": 70.4 },
+      { "team": "CHC", "osi": 64.6 },
+      { "team": "NYY", "osi": 63.2 },
+      { "team": "ATL", "osi": 61.9 }
+    ],
+    "vs_lhp": [
+      { "team": "LAD", "osi": 74.9 },
+      { "team": "CHC", "osi": 66.3 },
+      { "team": "CHW", "osi": 62.6 },
+      { "team": "BOS", "osi": 61.2 },
+      { "team": "SEA", "osi": 60.4 }
+    ],
+    "risers": [
+      { "team": "BOS", "osi_ytd": 52.0, "osi_l7": 68.5, "delta": 16.5 },
+      { "team": "SEA", "osi_ytd": 48.2, "osi_l7": 61.4, "delta": 13.2 },
+      { "team": "CLE", "osi_ytd": 45.0, "osi_l7": 56.8, "delta": 11.8 }
+    ],
+    "fallers": [
+      { "team": "ATH", "osi_ytd": 47.3, "osi_l7": 33.1, "delta": -14.2 },
+      { "team": "ARI", "osi_ytd": 31.3, "osi_l7": 25.4, "delta": -5.9 },
+      { "team": "MIA", "osi_ytd": 44.1, "osi_l7": 39.0, "delta": -5.1 }
+    ]
+  }
+}
+  </script>
+
+  <script src="mlbma_icons.js"></script>
+  <script src="mlbma_assets.js"></script>
+  <script src="content_export/content_export.js"></script>
+</body>
+</html>

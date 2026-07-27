@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" class="content-export">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1080, initial-scale=1">
+  <!-- Resolve every relative path (CSS, JS, assets/, league_baselines.json) against the
+       dashboard/ dir, exactly like the other dashboard HTML — so this frame reuses the
+       LIVE product CSS instead of a parallel brand. -->
+  <base href="../">
+  <title>Chase Analytics — Morning Slate (social export 1080×1350)</title>
+  <link rel="stylesheet" href="mlbma_design_system.css">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="landing_dashboard.css">
+  <!-- Matchup Analysis chrome (.mc-sp-card, .hand-pill, .tier-badge, .mc-h2h) -->
+  <link rel="stylesheet" href="matchup_compare.css">
+  <link rel="stylesheet" href="content_export/content_export.css">
+</head>
+<body class="content-export">
+  <div id="ce-root" class="ce-frame ce-frame--morning-slate" data-report="morning_slate"></div>
+
+  <!-- Fallback bundle (shape = chase-content-engine/examples/sample_bundle.json).
+       Override at runtime with ?bundle=<url-to-bundle.json>. -->
+  <script type="application/json" id="bundle-data">
+{
+  "meta": {
+    "slate_date": "2026-07-03",
+    "generated_at": "2026-07-03T15:15:00+00:00",
+    "run_id": "2026-07-03::sample"
+  },
+  "games": [
+    {
+      "key": "NYY@BOS", "game_pk": 1001, "time": "7:10 PM ET",
+      "away": "NYY", "home": "BOS",
+      "away_pitcher": { "name": "Gerrit Cole", "hand": "R", "projected_ip": 5.8, "projected_er": 2.7, "projected_k": 7.1 },
+      "home_pitcher": { "name": "Garrett Crochet", "hand": "L", "projected_ip": 6.2, "projected_er": 2.1, "projected_k": 8.0 },
+      "projection": { "away_runs": 3.8, "home_runs": 5.2, "confidence": "medium" },
+      "opinion": { "tag": "MY BET", "text": "BOS ML -120 · 0.5u", "source": "personal" },
+      "lineup_status": "projected"
+    },
+    {
+      "key": "SDP@LAD", "game_pk": 1003, "time": "10:10 PM ET",
+      "away": "SDP", "home": "LAD",
+      "away_pitcher": { "name": "Dylan Cease", "hand": "R", "projected_ip": 5.5, "projected_er": 3.2, "projected_k": 6.8 },
+      "home_pitcher": { "name": "Yoshinobu Yamamoto", "hand": "R", "projected_ip": 6.0, "projected_er": 2.2, "projected_k": 7.4 },
+      "projection": { "away_runs": 3.4, "home_runs": 4.8, "confidence": "high" },
+      "opinion": { "tag": "PASS", "text": "Price is too expensive", "source": "personal" },
+      "lineup_status": "confirmed"
+    },
+    {
+      "key": "STL@CHC", "game_pk": 1002, "time": "4:05 PM ET",
+      "away": "STL", "home": "CHC",
+      "away_pitcher": { "name": "Andre Pallante", "hand": "R", "projected_ip": 5.3, "projected_er": 3.0, "projected_k": 4.2 },
+      "home_pitcher": { "name": "David Peterson", "hand": "L", "projected_ip": 5.7, "projected_er": 2.8, "projected_k": 5.6 },
+      "projection": { "away_runs": 4.3, "home_runs": 4.6, "confidence": "medium" },
+      "opinion": { "tag": "WATCH", "text": "Waiting for confirmed lineups", "source": "personal" },
+      "lineup_status": "projected"
+    }
+  ]
+}
+  </script>
+
+  <script src="mlbma_icons.js"></script>
+  <script src="mlbma_assets.js"></script>
+  <script src="matchup_shared.js"></script>
+  <script src="content_export/content_export.js"></script>
+</body>
+</html>

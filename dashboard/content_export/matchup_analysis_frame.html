@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="content-export">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1080, initial-scale=1">
+  <!-- Resolve relative paths against dashboard/ so this frame reuses LIVE product CSS. -->
+  <base href="../">
+  <title>Chase Analytics — Matchup Analysis (social export 1080×1350)</title>
+  <link rel="stylesheet" href="mlbma_design_system.css">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="landing_dashboard.css">
+  <link rel="stylesheet" href="matchup_compare.css">
+  <link rel="stylesheet" href="content_export/content_export.css">
+</head>
+<body class="content-export">
+  <div id="ce-root" class="ce-frame ce-frame--matchup-analysis" data-report="matchup_analysis"></div>
+
+  <!-- Featured single-game bundle. Override with ?bundle=<url> or ?game=<KEY>.
+       Shape matches content-engine sample_bundle + optional analysis metrics. -->
+  <script type="application/json" id="bundle-data">
+{
+  "meta": {
+    "slate_date": "2026-07-03",
+    "generated_at": "2026-07-03T15:15:00+00:00",
+    "run_id": "2026-07-03::sample"
+  },
+  "games": [
+    {
+      "key": "NYY@BOS",
+      "game_pk": 1001,
+      "time": "7:10 PM ET",
+      "stadium": "Fenway Park",
+      "away": "NYY",
+      "home": "BOS",
+      "away_record": "52-35",
+      "home_record": "48-39",
+      "away_pitcher": {
+        "name": "Gerrit Cole",
+        "hand": "R",
+        "projected_ip": 5.8,
+        "projected_er": 2.7,
+        "projected_k": 7.1,
+        "pitch_score": 68.4,
+        "k_pct": 27.2,
+        "bb_pct": 6.1,
+        "hr9": 0.92,
+        "fip": 3.12,
+        "xfip": 3.28,
+        "osi_allowed": 44.2
+      },
+      "home_pitcher": {
+        "name": "Garrett Crochet",
+        "hand": "L",
+        "projected_ip": 6.2,
+        "projected_er": 2.1,
+        "projected_k": 8.0,
+        "pitch_score": 74.1,
+        "k_pct": 31.4,
+        "bb_pct": 5.4,
+        "hr9": 0.78,
+        "fip": 2.74,
+        "xfip": 2.91,
+        "osi_allowed": 41.8
+      },
+      "away_offense": { "osi": 58.2, "abq": 54.1, "rcv": 61.0, "obr": 57.4, "pals": 56.8 },
+      "home_offense": { "osi": 63.5, "abq": 59.2, "rcv": 66.1, "obr": 62.0, "pals": 64.2 },
+      "projection": {
+        "away_runs": 3.8,
+        "home_runs": 5.2,
+        "confidence": "medium"
+      },
+      "h2h": {
+        "edge_label": "Home SP advantage",
+        "why": "Crochet's K% and OSI Allowed both grade elite vs Cole's mid-tier contact profile."
+      },
+      "opinion": { "tag": "MY BET", "text": "BOS ML -120 · 0.5u", "source": "personal" },
+      "lineup_status": "projected",
+      "weather": { "temp": 74, "wind": "Out 8 mph", "cond": "Clear" }
+    }
+  ]
+}
+  </script>
+
+  <script src="mlbma_icons.js"></script>
+  <script src="mlbma_assets.js"></script>
+  <script src="matchup_shared.js"></script>
+  <script src="content_export/content_export.js"></script>
+</body>
+</html>

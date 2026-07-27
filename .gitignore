@@ -24,3 +24,7 @@ pipeline_smoke_log.txt
 pipeline_*.log
 outputs/instagram_post_manifest.json
 cursor
+chase-content-engine/
+
+# Runtime temp written by the content-engine html backend (served bundle)
+dashboard/content_export/_bundle_render.json
