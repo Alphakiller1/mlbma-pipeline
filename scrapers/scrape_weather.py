@@ -4,7 +4,6 @@ Fetch weather for today's MLB games via MLB Stats API (schedule/venue) and wttr.
 
 import os
 import time
-from datetime import datetime
 
 import gspread
 import pandas as pd
@@ -12,6 +11,7 @@ import requests
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 from core.http_retry import get_with_retry
+from core.slate_date import eastern_slate_date_iso
 
 HEADERS = {
     "User-Agent": "curl/8.0 (compatible; MLBMA-Pipeline/1.0)",
@@ -51,7 +51,7 @@ def is_dome_venue(venue: dict) -> bool:
 
 
 def get_today_games():
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = eastern_slate_date_iso()
     url = (
         f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}"
         f"&hydrate=team,venue"

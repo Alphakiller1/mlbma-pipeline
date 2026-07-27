@@ -2,12 +2,26 @@ import requests
 import pandas as pd
 from io import StringIO
 import os
+import time
 
 from core.config import CURRENT_SEASON, DATA_DIR, TEAM_MAP_BY_ID
+from core.http_retry import get_with_retry
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
 }
+STATCAST_ROW_CAP = 25000
+SAVANT_TEAM_FIX = {
+    "AZ": "ARI",
+    "CWS": "CHW",
+    "KC": "KCR",
+    "SD": "SDP",
+    "SF": "SFG",
+    "TB": "TBR",
+    "WSH": "WSN",
+    "OAK": "ATH",
+}
+SAVANT_TEAM_BY_STANDARD = {standard: native for native, standard in SAVANT_TEAM_FIX.items()}
 
 def fetch_player_team_map():
     print("Fetching player-team map...")
@@ -70,12 +84,14 @@ def fetch_savant_leaderboard(player_team_map):
     print(f"  Saved: {fname}")
     return team_df
 
-def fetch_savant_splits(pitcher_hand=None):
+def _fetch_savant_team_split(pitcher_hand, team):
     url = "https://baseballsavant.mlb.com/statcast_search/csv"
+    savant_team = SAVANT_TEAM_BY_STANDARD.get(team, team)
     params = {
         "all": "true",
         "hfSea": f"{CURRENT_SEASON}|",
         "hfGT": "R|",
+        "hfTeam": f"{savant_team}|",
         "player_type": "batter",
         "group_by": "name",
         "sort_col": "pitches",
@@ -87,33 +103,62 @@ def fetch_savant_splits(pitcher_hand=None):
     }
     if pitcher_hand:
         params["pitcher_throws"] = pitcher_hand
+    print(f"  Fetching {team}...")
+    r = get_with_retry(url, params=params, headers=HEADERS, timeout=180, retries=4)
+    df = pd.read_csv(
+        StringIO(r.text),
+        usecols=lambda c: c in {
+            "home_team",
+            "away_team",
+            "inning_topbot",
+            "estimated_woba_using_speedangle",
+            "launch_speed",
+            "launch_angle",
+        },
+        low_memory=False,
+    )
+    print(f"    Rows: {len(df)}")
+    if len(df) >= STATCAST_ROW_CAP:
+        raise RuntimeError(f"{team} split hit the {STATCAST_ROW_CAP}-row cap")
+    required = {"home_team", "away_team", "inning_topbot"}
+    if not required.issubset(df.columns):
+        raise RuntimeError(f"{team} split lacks inning/team fields")
+    batting_team = df["home_team"].where(
+        df["inning_topbot"].astype(str).str.lower() != "top",
+        df["away_team"],
+    )
+    batting_team = batting_team.astype(str).str.upper().replace(SAVANT_TEAM_FIX)
+    unexpected = sorted(set(batting_team.dropna()) - {team})
+    if unexpected:
+        raise RuntimeError(f"{team} filter returned other batting teams: {unexpected}")
+    metrics = {
+        "Tm": team,
+        "xwOBA": pd.to_numeric(
+            df.get("estimated_woba_using_speedangle"), errors="coerce"
+        ).mean(),
+        "exit_velo": pd.to_numeric(df.get("launch_speed"), errors="coerce").mean(),
+        "launch_angle": pd.to_numeric(df.get("launch_angle"), errors="coerce").mean(),
+    }
+    if pd.isna(metrics["xwOBA"]):
+        raise RuntimeError(f"{team} split returned no xwOBA events")
+    return metrics
+
+
+def fetch_savant_splits(pitcher_hand=None):
     label = f"vs_{'RHP' if pitcher_hand == 'R' else 'LHP' if pitcher_hand == 'L' else 'ALL'}"
     print(f"Fetching splits {label}...")
-    r = requests.get(url, params=params, headers=HEADERS, timeout=60)
-    print(f"  Status: {r.status_code} | Rows: ", end="")
-    if r.status_code != 200:
-        print("Error")
-        return None
-    df = pd.read_csv(StringIO(r.text))
-    print(len(df))
-    team_col = next((c for c in ["batting_team", "home_team", "team"] if c in df.columns), None)
-    if not team_col:
-        print("  No team column found")
-        return None
-    agg_cols = {c: "mean" for c in ["estimated_woba_using_speedangle", "launch_speed", "launch_angle"] if c in df.columns}
-    team_df = df.groupby(team_col).agg(agg_cols).reset_index()
-    team_df.rename(columns={
-        team_col: "Tm",
-        "estimated_woba_using_speedangle": "xwOBA",
-        "launch_speed": "exit_velo",
-        "launch_angle": "launch_angle",
-    }, inplace=True)
-    # Savant's batting_team uses native abbreviations (AZ/CWS/KC/SD/SF/TB/WSH) that
-    # DON'T match the pipeline standard (ARI/CHW/KCR/SDP/SFG/TBR/WSN). Normalize so
-    # these split files can be joined on "Tm" without silently dropping ~7 teams.
-    SAVANT_TEAM_FIX = {"AZ": "ARI", "CWS": "CHW", "KC": "KCR", "SD": "SDP",
-                       "SF": "SFG", "TB": "TBR", "WSH": "WSN", "OAK": "ATH"}
-    team_df["Tm"] = team_df["Tm"].astype(str).str.upper().replace(SAVANT_TEAM_FIX)
+    teams = sorted(set(TEAM_MAP_BY_ID.values()))
+    if len(teams) != 30:
+        raise RuntimeError(f"team map coverage incomplete: expected 30, got {len(teams)}")
+    rows = []
+    for team in teams:
+        rows.append(_fetch_savant_team_split(pitcher_hand, team))
+        time.sleep(0.5)
+    team_df = pd.DataFrame(rows)
+    if len(team_df) != 30:
+        raise RuntimeError(
+            f"{label} coverage incomplete: expected 30 teams, got {len(team_df)}"
+        )
     print(f"  Teams: {len(team_df)} | Cols: {list(team_df.columns)}")
     fname = os.path.join(DATA_DIR, f"savant_{label}.csv")
     team_df.to_csv(fname, index=False)

@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from io import StringIO
 import pandas as pd
+import requests
 
 from core.http_retry import get_with_retry
 
@@ -134,9 +135,24 @@ def _fetch_window(start_date: str, end_date: str) -> pd.DataFrame:
 
 
 def _fetch_range_recursive(start_date: str, end_date: str) -> list[pd.DataFrame]:
-    df = _fetch_window(start_date, end_date)
     start = datetime.strptime(start_date, "%Y-%m-%d").date()
     end = datetime.strptime(end_date, "%Y-%m-%d").date()
+    try:
+        df = _fetch_window(start_date, end_date)
+    except requests.RequestException as exc:
+        if start >= end:
+            raise
+        mid = start + (end - start) // 2
+        left_end = mid.strftime("%Y-%m-%d")
+        right_start = (mid + timedelta(days=1)).strftime("%Y-%m-%d")
+        print(
+            f"  Request failed after retries ({exc}); "
+            f"splitting {start_date} to {end_date}..."
+        )
+        return _fetch_range_recursive(
+            start_date, left_end
+        ) + _fetch_range_recursive(right_start, end_date)
+
     if len(df) < STATCAST_ROW_CAP or start >= end:
         if len(df) >= STATCAST_ROW_CAP and start >= end:
             print(f"  WARNING: {start_date} hit the {STATCAST_ROW_CAP} row cap on a single day.")
