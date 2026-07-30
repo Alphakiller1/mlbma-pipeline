@@ -25,7 +25,7 @@ from outputs.content_engine import (  # noqa: E402
     ASPECTS,
     LEGIBILITY_FLOOR,
     SIZES,
-    SLACK_CEILING,
+    SLACK_FRACTION,
     TEXT_BUDGETS,
 )
 
@@ -183,7 +183,7 @@ either too squeezed or too empty:
 
 - **Squeezed** below {floor:.0%} of captured size → re-renders at `1080x1920`, and warns if
   it's still tight. Use fewer components.
-- **More than {slack}px of dead space** → drops to `1080x1080`.
+- **Dead space over {slack:.0%} of the canvas height** → steps down a canvas (1920 → 1350 → 1080).
 
 Both decisions are printed, so you always know why a file came out at a given size.
 
@@ -273,7 +273,7 @@ def build() -> str:
     out.append("> The engine renders whatever claim you type — it does not check your "
                "notes against the data. A wrong note ships as confidently as a right one.\n")
 
-    out.append(FOOTER_TEMPLATE.format(floor=LEGIBILITY_FLOOR, slack=SLACK_CEILING))
+    out.append(FOOTER_TEMPLATE.format(floor=LEGIBILITY_FLOOR, slack=SLACK_FRACTION))
     return "\n".join(out)
 
 

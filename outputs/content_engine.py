@@ -73,9 +73,10 @@ CAPTURE_DPR = 3
 # Below this shared scale, stat tables stop being readable on a phone. Crossing it
 # triggers a re-render on the tall canvas (and a warning if that still isn't enough).
 LEGIBILITY_FLOOR = 0.62
-# More than this much unused vertical room and the post reads as half-empty; the runner
-# drops to a shorter canvas instead.
-SLACK_CEILING = 240
+# Unused vertical room that reads as half-empty, as a FRACTION of canvas height. A flat
+# pixel budget disagreed with scripts/check_render.py (which flags a band over 10% of
+# height), so posts the checker rejected were being left alone. Same yardstick now.
+SLACK_FRACTION = 0.09
 # Shorter canvases to try, in order, when a post leaves a dead band.
 CANVAS_LADDER = {
     "1080x1920": ["1080x1350", "1080x1080"],
@@ -1306,6 +1307,7 @@ def main() -> None:
                 # more vertical room, unless the caller pinned a size. Row layouts are
                 # width-constrained, so a taller canvas buys them nothing — warn only.
                 stacked = (payload.get("layout") or "stack") == "stack"
+                slack_ceiling = int(int(size.split("x")[1]) * SLACK_FRACTION)
                 if scale < LEGIBILITY_FLOOR and stacked and not ctx["size_explicit"] \
                         and size != "1080x1920":
                     print(f"[content-engine] artifacts squeezed to {scale:.0%} - "
@@ -1317,7 +1319,7 @@ def main() -> None:
                 # Opposite problem: artifacts sized fine but a dead band left over.
                 # Step down the ladder until the post fills the frame. Applies to every
                 # layout - a width-bound grid is the worst offender.
-                elif slack > SLACK_CEILING and not ctx["size_explicit"]:
+                elif slack > slack_ceiling and not ctx["size_explicit"]:
                     for shorter in CANVAS_LADDER.get(size, []):
                         print(f"[content-engine] {slack:.0f}px of dead space - "
                               f"re-rendering {stem} at {shorter}")
@@ -1326,7 +1328,8 @@ def main() -> None:
                         size = shorter
                         scale, slack = compose(
                             browser, port, out_path, shorter, payload)
-                        if slack <= SLACK_CEILING or scale < LEGIBILITY_FLOOR:
+                        if (slack <= int(int(shorter.split('x')[1]) * SLACK_FRACTION)
+                                or scale < LEGIBILITY_FLOOR):
                             break
                 if scale < LEGIBILITY_FLOOR:
                     advice = ("fewer games per post" if not stacked

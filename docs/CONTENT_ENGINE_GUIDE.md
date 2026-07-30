@@ -200,7 +200,7 @@ either too squeezed or too empty:
 
 - **Squeezed** below 62% of captured size → re-renders at `1080x1920`, and warns if
   it's still tight. Use fewer components.
-- **More than 240px of dead space** → drops to `1080x1080`.
+- **Dead space over 9% of the canvas height** → steps down a canvas (1920 → 1350 → 1080).
 
 Both decisions are printed, so you always know why a file came out at a given size.
 
