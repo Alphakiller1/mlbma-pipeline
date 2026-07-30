@@ -592,6 +592,41 @@ def check_text_budgets(payload: dict) -> None:
                   f"(budget {TEXT_BUDGETS['note']})")
 
 
+def apply_captions(artifacts: list[dict], spec: list[str] | None) -> None:
+    """Fold --captions into the per-slot captions, positionally.
+
+    A label is appended to the caption the engine already derived, because the slot's
+    own identity (which game, which side) is what makes a multi-artifact post readable
+    -- losing it to a label would be a downgrade. A leading '=' replaces instead.
+    """
+    if not spec:
+        return
+    # Resolution order, so the behaviour is predictable rather than clever:
+    #   several --captions -> one label each, verbatim (commas allowed in a label)
+    #   one --captions, one slot -> verbatim; splitting could not be intended
+    #   one --captions, many slots -> split on commas (the convenient common case)
+    if len(spec) > 1:
+        labels = [part.strip() for part in spec]
+    elif len(artifacts) == 1:
+        labels = [spec[0].strip()]
+    else:
+        labels = [part.strip() for part in spec[0].split(",")]
+    if len(labels) > len(artifacts):
+        print(f"[content-engine] NOTE {len(labels)} captions given for "
+              f"{len(artifacts)} slot(s); the extras are ignored")
+    for slot, label in zip(artifacts, labels):
+        if not label:
+            continue
+        if label.startswith("="):
+            slot["caption"] = label[1:].strip()
+        else:
+            base = str(slot.get("caption") or "").strip()
+            slot["caption"] = f"{base} · {label}" if base else label
+        if len(artifacts) >= 3 and len(str(slot["caption"])) > 34:
+            print(f"[content-engine] NOTE caption {slot['caption']!r} is long for a "
+                  f"{len(artifacts)}-up layout; it will wrap")
+
+
 def artifact_caption(name: str, game: dict | None) -> str:
     """Label for an artifact slot; directional variants name the two sides."""
     spec = ARTIFACTS[name]
@@ -908,6 +943,7 @@ def cmd_preview(a, slate, games, cap, ctx):
             "caption": f"{g['Away']} @ {g['Home']}",
             "framed": False,
         })
+    apply_captions(artifacts, a.captions)
     payload = {
         "meta": ctx["date_label"],
         "eyebrow": a.eyebrow or "Today's Slate",
@@ -962,6 +998,7 @@ def cmd_deep(a, slate, games, cap, ctx):
             "caption": artifact_caption(name, g),
             "framed": ARTIFACTS[name].get("framed", True),
         } for name in chosen]
+        apply_captions(artifacts, a.captions)
         payload = {
             "meta": ctx["date_label"],
             "eyebrow": a.eyebrow or "Matchup Preview",
@@ -1002,6 +1039,7 @@ def cmd_breakdown(a, slate, games, cap, ctx):
             "caption": artifact_caption(name, g),
             "framed": ARTIFACTS[name].get("framed", True),
         } for name in spec["artifacts"]]
+        apply_captions(artifacts, a.captions)
         payload = {
             "meta": ctx["date_label"],
             "eyebrow": a.eyebrow or spec["eyebrow"],
@@ -1029,6 +1067,7 @@ def cmd_full_card(a, slate, games, cap, ctx):
             "framed": True,
         } for g in chunk]
         part = f" ({idx}/{len(chunks)})" if len(chunks) > 1 else ""
+        apply_captions(artifacts, a.captions)
         payload = {
             "meta": ctx["date_label"],
             "eyebrow": a.eyebrow or "Full Card",
@@ -1052,6 +1091,7 @@ def cmd_rankings(a, slate, games, cap, ctx):
         artifacts = [{"src": cap.grab("starters_rankings", rows=a.rows),
                       "caption": "Projected starters · ranked by Pitching Score",
                       "framed": True}]
+        apply_captions(artifacts, a.captions)
         payload = {
             "meta": ctx["date_label"],
             "eyebrow": a.eyebrow or "Unit Rankings",
@@ -1077,14 +1117,16 @@ def cmd_rankings(a, slate, games, cap, ctx):
     src = cap.grab("team_rankings", extra={"family": key, "window": window},
                    rows=a.rows)
     label = TEAM_FAMILIES[family]
+    team_slots = [{"src": src, "caption": f"{label} · {WINDOWS[window]}",
+                   "framed": True}]
+    apply_captions(team_slots, a.captions)
     payload = {
         "meta": ctx["date_label"],
         "eyebrow": a.eyebrow or "Team Rankings",
         "title": a.headline or f"{label} Rankings",
         "sub": a.sub or f"All 30 lineups · {WINDOWS[window]}",
         "layout": "stack",
-        "artifacts": [{"src": src, "caption": f"{label} · {WINDOWS[window]}",
-                       "framed": True}],
+        "artifacts": team_slots,
         "take": a.take or "",
             "cta": a.cta or "",
             "notes": a.note or [],
@@ -1113,6 +1155,7 @@ def cmd_compose(a, slate, games, cap, ctx):
         "caption": artifact_caption(n, game),
         "framed": ARTIFACTS[n].get("framed", True),
     } for n in names]
+    apply_captions(artifacts, a.captions)
     payload = {
         "meta": ctx["date_label"],
         "eyebrow": a.eyebrow or "Chase Analytics",
@@ -1168,6 +1211,12 @@ def main() -> None:
     ap.add_argument("--sub", help="post subtitle, your words")
     ap.add_argument("--eyebrow", help="small gold label above the title")
     ap.add_argument("--note", action="append", help="bullet note (repeatable)")
+    ap.add_argument("--captions", action="append",
+                    help="per-slot labels in slot order, appended to each slot's own "
+                         "caption. One flag with commas: 'AL,NL Central,NL East'. "
+                         "Repeat the flag instead when a label itself contains a comma "
+                         "- each occurrence is then one slot, verbatim. Empty entry "
+                         "keeps the default; prefix with = to replace it outright.")
     ap.add_argument("--size", default=None, choices=SIZES,
                     help="default 1080x1350; multi-card previews auto-pick 1080x1080")
     ap.add_argument("--date", default=date.today().isoformat())

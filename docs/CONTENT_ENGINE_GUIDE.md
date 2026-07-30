@@ -98,7 +98,28 @@ site with no code change at all.
 
 `--capture` fields: `label` `url` **or** `page` `selector` (required), plus optional
 `contains` `hash` `eval` `force_show` `hide` `unclip` `unstick` `wait` `framed` `name`.
-Repeat the flag for more than one. Add `--layout row` to place them side by side.
+Repeat the flag for more than one. `--layout row` puts them side by side; `--layout grid`
+wraps them and picks its own column count.
+
+---
+
+## Labelling individual slots
+
+`--captions` adds a label to each slot, in the order the slots appear. It is appended to
+the caption the engine already derived, so the slot keeps its identity:
+
+```powershell
+.\content.bat preview --games TEX@TBR,NYY@CHW,CHC@STL,WSN@ATL,SEA@LAD `
+  --captions ",AL,NL Central,NL East,"
+```
+
+gives `TEX @ TBR`, `NYY @ CHW · AL`, `CHC @ STL · NL CENTRAL`, `WSN @ ATL · NL EAST`,
+`SEA @ LAD` — an empty entry keeps just the default.
+
+- Prefix a label with `=` to **replace** the caption instead of appending.
+- One flag with commas is a list. **Repeat the flag** when a label itself contains a
+  comma; each occurrence is then one slot, verbatim.
+- Extra labels beyond the slot count are reported, never silently dropped.
 
 ---
 

@@ -297,6 +297,25 @@
       });
     }
 
+    // Captions are measured before the artifacts are sized, so a long label that wraps
+    // to a second line only afterwards can push the column past the canvas. Re-measure
+    // and shave the zoom until it fits -- cheap insurance for any text reflow, not just
+    // captions.
+    for (var pass = 0; pass < 3; pass++) {
+      void body.offsetHeight;
+      if (body.scrollHeight <= body.clientHeight) break;
+      var shrink = Math.max(0.80, body.clientHeight / body.scrollHeight - 0.005);
+      zoom *= shrink;
+      if (layout === 'grid') {
+        gridWidth = Math.floor(gridWidth * shrink);
+        natural.forEach(function (a) { a.img.style.width = gridWidth + 'px'; });
+      } else {
+        natural.forEach(function (a) {
+          a.img.style.width = (a.w * zoom).toFixed(1) + 'px';
+        });
+      }
+    }
+
     // Reported so the runner can rescue an unreadable squeeze (taller canvas) or a
     // half-empty post (shorter canvas), and flag mixed width classes.
     var widths = natural.map(function (a) { return a.w; });
