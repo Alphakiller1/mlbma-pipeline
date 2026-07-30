@@ -54,16 +54,18 @@ import time
 from datetime import date, datetime
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageFilter
 from playwright.sync_api import sync_playwright
 
 PIPELINE = Path(__file__).resolve().parents[1]
 DATA = PIPELINE / "data"
 OUT_ROOT = PIPELINE / "outputs" / "social_cards"
 
-# Output sizes. The high-resolution variants keep the 1080-based CSS layout and are
-# rasterised at a higher device pixel ratio, so small table type lands on more pixels and
-# survives the platform's JPEG re-encode. Instagram serves up to 1440 wide; X far more.
+# Output sizes. DEFAULT TO WHAT THE PLATFORM SERVES, not to the biggest it accepts.
+# Instagram re-serves feed images at 1080 wide and downsizes anything larger with its own
+# resampler, which is softer than rendering natively at 1080 - verified by pushing both
+# through scripts/simulate_post.py and comparing the type. The 1440 sizes remain for
+# stories and off-platform use, but a feed post should be 1080 wide.
 SIZES = [
     "1440x1800",   # Instagram 4:5 at max resolution  (default for portrait)
     "1440x1440",   # Instagram square at max resolution
@@ -91,6 +93,12 @@ def layout_size(target: str) -> tuple[str, float]:
 # Instagram and X re-encode the upload. 3x is the practical ceiling - beyond it the
 # capture cost climbs with no visible gain at these output sizes.
 CAPTURE_DPR = 3
+
+# Instagram and X re-encode every upload as JPEG with 4:2:0 chroma subsampling, which
+# softens edges - worst on the small coloured type these posts are full of. A light
+# unsharp mask on the finished PNG pre-compensates for it. Kept deliberately gentle:
+# enough to survive the round trip, not enough to ring on the artifacts' own hairlines.
+PRESHARPEN = {"radius": 0.7, "percent": 70, "threshold": 2}
 
 # Below this shared scale, stat tables stop being readable on a phone. Crossing it
 # triggers a re-render on the tall canvas (and a warning if that still isn't enough).
@@ -951,10 +959,9 @@ def compose(browser, port: int, out_path: Path, size: str,
     finally:
         page.close()
     shot = Image.open(raw)
-    if shot.size == (w, h):
-        shot.save(out_path)          # rasterised at the target: no resample at all
-    else:
-        shot.resize((w, h), Image.LANCZOS).save(out_path)
+    if shot.size != (w, h):
+        shot = shot.resize((w, h), Image.LANCZOS)
+    shot.convert("RGB").filter(ImageFilter.UnsharpMask(**PRESHARPEN)).save(out_path)
     shot.close()
     raw.unlink()
     print(f"[content-engine] wrote {out_path.name}")
@@ -1040,7 +1047,7 @@ def _preview_post(a, games, cap, ctx, part, parts, labels):
     # Instagram's tallest feed crop is 4:5, so portrait is the safe default and a wide
     # canvas is only ever used when explicitly asked for.
     if not ctx["size_explicit"]:
-        ctx["size"] = "1440x1800"
+        ctx["size"] = "1080x1350"
     return [(stem, payload)]
 
 
@@ -1318,7 +1325,7 @@ def main() -> None:
     out_dir = OUT_ROOT / day
     out_dir.mkdir(parents=True, exist_ok=True)
     ctx = {"date_label": date_label, "day": day,
-           "size": a.size or "1440x1800", "size_explicit": a.size is not None}
+           "size": a.size or "1080x1350", "size_explicit": a.size is not None}
 
     port = free_port()
     server = subprocess.Popen(
