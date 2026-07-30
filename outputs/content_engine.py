@@ -983,7 +983,7 @@ def cmd_breakdown(a, slate, games, cap, ctx):
     aspect_alias = {"pitching": "pitching", "pitchers": "pitching",
                     "starters": "pitching", "arms": "pitching",
                     "offense": "offense", "offence": "offense", "bats": "offense",
-                    "hitting": "offense", "lineups": "offense",
+                    "hitting": "offense",
                     "bullpen": "bullpen", "relief": "bullpen", "pen": "bullpen"}
     wanted = [aspect_alias.get(_norm_phrase(a_), a_) for a_ in wanted]
     for asp in wanted:
