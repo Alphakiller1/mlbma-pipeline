@@ -263,8 +263,28 @@ def resolve_slate_games(rotowire, api_games):
 
     # Keep Rotowire data for games that are genuinely on today's schedule, in
     # schedule order; append any real games Rotowire missed (from the API).
+    #
+    # FIRST PITCH COMES FROM THE API, ALWAYS. Rotowire's daily-lineups page rewrites a
+    # matchup's time once that game finishes, so an afternoon slate scraped in the
+    # evening came back with night-game times (2026-07-29: 6 of 15 games wrong -
+    # PHI@MIA's 12:10 PM start was published as 6:40 PM). The API row is the schedule;
+    # Rotowire only enriches SP names.
+    overridden = []
+    for k in sorted(rw_keys & api_keys):
+        row = rw_keyed[k].copy()
+        api_time = str(api_keyed[k].get("Game_Time", "") or "").strip()
+        rw_time = str(row.get("Game_Time", "") or "").strip()
+        if api_time and api_time != "TBD" and api_time != rw_time:
+            if rw_time and rw_time != "TBD":
+                overridden.append(f"{k} {rw_time}->{api_time}")
+            row["Game_Time"] = api_time
+        kept_row = row
+        rw_keyed[k] = kept_row
     kept = [rw_keyed[k] for k in sorted(rw_keys & api_keys)] + [api_keyed[k] for k in missing]
 
+    if overridden:
+        print(f"  Corrected {len(overridden)} first-pitch time(s) to the MLB schedule: "
+              f"{', '.join(overridden[:8])}")
     if stale:
         print(f"  Dropped {len(stale)} stale Rotowire game(s) NOT on today's MLB "
               f"schedule: {', '.join(stale[:8])}")

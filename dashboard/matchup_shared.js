@@ -637,7 +637,16 @@
     var rows = primary.length ? primary : (lineups || []).filter(function(r) {
       return normalizeLineupGameKeyShared(r.game) === gk && normalizeTeamAbbrShared(r.team) === tm;
     });
-    return rows.slice().sort(function(a, b) { return a.batOrder - b.batOrder; }).slice(0, 9);
+    // One batter per slot. If the lineup source ever carries two cards for the same
+    // team (a stale card alongside today's), sorting by slot gives 1,1,2,2,3,3... and
+    // slice(0,9) would render slots 1-5 twice each — visibly wrong. Keep the LAST row
+    // for each slot (later rows are the more recently posted card), then take nine.
+    var bySlot = Object.create(null);
+    rows.forEach(function(r) { bySlot[r.batOrder] = r; });
+    return Object.keys(bySlot)
+      .map(function(k) { return bySlot[k]; })
+      .sort(function(a, b) { return a.batOrder - b.batOrder; })
+      .slice(0, 9);
   }
 
   function normalizeBatsHand(bats) {

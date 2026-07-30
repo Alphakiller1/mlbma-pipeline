@@ -235,9 +235,63 @@ def reconcile_slate_with_api(lineup_df, games_df):
         print(f"  Adding {len(add_rows)} API game(s) missing from Rotowire: {added}")
         games_df = pd.concat([games_df, pd.DataFrame(add_rows)], ignore_index=True)
 
+    # First pitch comes from the API. Rotowire rewrites a matchup's time once that
+    # game finishes, so an afternoon slate scraped in the evening carries night-game
+    # times (2026-07-29: PHI@MIA's 12:10 PM start was exported as 6:40 PM).
+    # A pairing can legitimately have two times (doubleheader), so map to a LIST and
+    # only rewrite when the scraped time matches none of them.
+    api_times: dict[str, list[str]] = {}
+    for r in api_df.itertuples():
+        t = str(getattr(r, "Game_Time", "") or "").strip()
+        if t and t != "TBD":
+            api_times.setdefault(f"{r.Away_Team}@{r.Home_Team}", []).append(t)
+
+    if not games_df.empty:
+        retimed = []
+        for idx, row in games_df.iterrows():
+            times = api_times.get(f"{row['Away']}@{row['Home']}", [])
+            was = str(row.get("Time", "") or "").strip()
+            if not times or was in times:
+                continue
+            games_df.at[idx, "Time"] = times[0]
+            retimed.append(f"{row['Away']}@{row['Home']} {was or '?'}->{times[0]}")
+        if retimed:
+            print(f"  Corrected {len(retimed)} first-pitch time(s) to the MLB "
+                  f"schedule: {', '.join(retimed[:8])}")
+
+    # Time the slate now agrees on, used to pick the matching lineup card below.
+    slate_time = {
+        f"{row['Away']}@{row['Home']}": str(row.get("Time", "") or "").strip()
+        for _, row in games_df.iterrows()
+    } if not games_df.empty else {}
+
     # Filter lineups to the authoritative slate (drop stale-game lineup rows)
     if not lineup_df.empty:
         lineup_df = lineup_df[lineup_df["Game"].isin(api_keys)].copy()
+
+        # Rotowire can carry TWO cards for one matchup (a leftover from an earlier
+        # scrape alongside today's), which merges into an 18-man batting order
+        # downstream and publishes duplicate slots. Keep one card per (Game, Team):
+        # the one whose time matches the schedule, else the last posted.
+        if "Time" in lineup_df.columns:
+            times_col = lineup_df["Time"].astype(str).str.strip()
+            keep_mask = pd.Series(True, index=lineup_df.index)
+            for (game, team), idx in lineup_df.groupby(["Game", "Team"]).groups.items():
+                found = list(dict.fromkeys(times_col.loc[idx]))
+                if len(found) < 2:
+                    continue
+                want = slate_time.get(str(game), "")
+                keep = want if want in found else found[-1]
+                print(f"  {game} {team}: {len(found)} lineup cards "
+                      f"({', '.join(found)}) - keeping {keep}")
+                keep_mask.loc[idx] = times_col.loc[idx] == keep
+            lineup_df = lineup_df[keep_mask].copy()
+        # Belt and braces: one player per batting slot regardless of source.
+        before = len(lineup_df)
+        lineup_df = lineup_df.drop_duplicates(
+            subset=["Game", "Team", "Bat_Order"], keep="last").reset_index(drop=True)
+        if len(lineup_df) != before:
+            print(f"  Dropped {before - len(lineup_df)} duplicate batting-order row(s)")
 
     print(f"  Reconciled slate: {len(api_keys)} authoritative game(s)")
     return lineup_df, games_df
