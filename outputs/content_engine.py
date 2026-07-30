@@ -73,6 +73,11 @@ LEGIBILITY_FLOOR = 0.62
 # More than this much unused vertical room and the post reads as half-empty; the runner
 # drops to a shorter canvas instead.
 SLACK_CEILING = 240
+# Shorter canvases to try, in order, when a post leaves a dead band.
+CANVAS_LADDER = {
+    "1080x1920": ["1080x1350", "1080x1080"],
+    "1080x1350": ["1080x1080"],
+}
 
 # Text budgets. Past these lengths a slot wraps far enough to push artifacts down or
 # reads as a paragraph rather than a headline; the engine warns instead of silently
@@ -1271,15 +1276,20 @@ def main() -> None:
                     out_path = out_dir / f"{stem}_1080x1920.png"
                     scale, slack = compose(
                         browser, port, out_path, "1080x1920", payload)
-                # Opposite problem: artifacts at full size leaving a dead band. Drop to
-                # the square canvas so the post reads as composed, not half-empty.
-                elif slack > SLACK_CEILING and stacked and not ctx["size_explicit"]                         and size == "1080x1350":
-                    print(f"[content-engine] {slack:.0f}px of dead space - "
-                          f"re-rendering {stem} at 1080x1080")
-                    out_path.unlink(missing_ok=True)
-                    out_path = out_dir / f"{stem}_1080x1080.png"
-                    scale, slack = compose(
-                        browser, port, out_path, "1080x1080", payload)
+                # Opposite problem: artifacts sized fine but a dead band left over.
+                # Step down the ladder until the post fills the frame. Applies to every
+                # layout - a width-bound grid is the worst offender.
+                elif slack > SLACK_CEILING and not ctx["size_explicit"]:
+                    for shorter in CANVAS_LADDER.get(size, []):
+                        print(f"[content-engine] {slack:.0f}px of dead space - "
+                              f"re-rendering {stem} at {shorter}")
+                        out_path.unlink(missing_ok=True)
+                        out_path = out_dir / f"{stem}_{shorter}.png"
+                        size = shorter
+                        scale, slack = compose(
+                            browser, port, out_path, shorter, payload)
+                        if slack <= SLACK_CEILING or scale < LEGIBILITY_FLOOR:
+                            break
                 if scale < LEGIBILITY_FLOOR:
                     advice = ("fewer games per post" if not stacked
                               else "fewer artifacts, or one per graphic")

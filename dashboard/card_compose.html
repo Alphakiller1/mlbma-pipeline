@@ -67,6 +67,10 @@
      artifacts stay centred on one axis instead of being scaled apart. */
   .cc-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 18px;
     margin-top: 22px; min-height: 0; justify-content: center; align-items: center; }
+  /* Artifacts wider than the column may reach past the type's safe margin (never
+     closer than 24px to the edge). Stamped by the solver only when the zoom is
+     width-bound, which is what turns leftover height into a dead band. */
+  .cc-body.is-wide { margin-left: -24px; margin-right: -24px; }
   .cc-body.layout-row { flex-direction: row; align-items: center; justify-content: center; }
   /* Grid wraps a set of same-shape artifacts (matchup cards) into rows. The solver
      picks the column count that maximises the shared zoom, so five cards become
@@ -97,7 +101,9 @@
     border-top: 1px solid var(--border-2);
     display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .cc-footer-l { display: flex; flex-direction: column; gap: 3px; }
-  .cc-site { color: var(--v-light); font-weight: 700; font-size: 18px; letter-spacing: 0.02em; }
+  /* The offer line is the point of the post: every render ends on it. */
+  .cc-site { color: var(--v-light); font-weight: 700; font-size: 18.5px;
+    letter-spacing: 0.01em; }
   .cc-cta { color: var(--text-2); font-size: 14.5px; font-weight: 600; }
   .cc-disclaimer { color: var(--text-4); font-size: 12.5px; font-weight: 500; text-align: right; }
 
@@ -117,6 +123,7 @@
   body.size-1600x900 { width: 1600px; height: 900px; padding: 36px 52px 32px; }
   body.size-1600x900 .cc-mark { height: 40px; }
   body.size-1600x900 .cc-title { font-size: 44px; }
+  body.size-1600x900 .cc-site { font-size: 17px; }
   body.size-1600x900 .cc-lede { margin-top: 12px; }
   body.size-1600x900 .cc-body { margin-top: 16px; }
 </style>
@@ -139,7 +146,7 @@
 
   <div class="cc-footer">
     <span class="cc-footer-l">
-      <span class="cc-site">chase-analytics.com</span>
+      <span class="cc-site">Access Premium MLB Research At Chase-Analytics.com</span>
       <span class="cc-cta" id="ccCta"></span>
     </span>
     <span class="cc-disclaimer">Model-generated research. Not betting advice. 21+.</span>
@@ -234,6 +241,21 @@
     // the images to zero forces the container to its true flex height.
     natural.forEach(function (a) { a.img.style.width = '0px'; });
     void body.offsetHeight;
+    var gapPeek = parseFloat(getComputedStyle(body).columnGap ||
+                             getComputedStyle(body).gap) || 0;
+
+    // Widen the artifact area first if anything is wider than the column, so the
+    // measurement below already reflects the room the artifacts will really get.
+    // Width-bound means "the artifacts want more horizontal room than the column has":
+    // one wide board, or a row/grid whose artifacts plus gaps overflow it.
+    var widest = Math.max.apply(null, natural.map(function (a) { return a.w; }));
+    var rowNeed = natural.reduce(function (n, a) { return n + a.w; }, 0) +
+                  gapPeek * (natural.length - 1);
+    if (widest > body.clientWidth ||
+        (layout !== 'stack' && rowNeed > body.clientWidth)) {
+      body.classList.add('is-wide');
+      void body.offsetHeight;
+    }
 
     var styles = getComputedStyle(body);
     var gap = parseFloat(styles.rowGap || styles.gap) || 0;
@@ -320,9 +342,10 @@
     // half-empty post (shorter canvas), and flag mixed width classes.
     var widths = natural.map(function (a) { return a.w; });
     window.__composeScale = zoom;
-    window.__composeSlack = layout !== 'stack' ? 0 : Math.max(
-      0, (availH - chrome - gap * (natural.length - 1)) -
-         natural.reduce(function (n, a) { return n + a.h * zoom; }, 0));
+    // Slack = unused vertical room after sizing, for ANY layout. A grid limited by
+    // width (3 columns of cards in 984px) can leave hundreds of dead pixels, and the
+    // runner steps down to a shorter canvas when it does.
+    window.__composeSlack = Math.max(0, body.clientHeight - body.scrollHeight);
     window.__composeWidthSpread = Math.max.apply(null, widths) / Math.min.apply(null, widths);
   }
 
