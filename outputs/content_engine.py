@@ -1,5 +1,5 @@
 """
-Chase Analytics content engine — command-driven social graphics.
+Chase Analytics content engine - command-driven social graphics.
 
 Captures real dashboard components (the "artifacts") straight off the live pages,
 then composes the ones you asked for into Instagram-dimension posts with your own
@@ -7,9 +7,13 @@ headline and notes. The artifacts are screenshots of the site itself, so a post 
 never drift from the site's design.
 
 COMMANDS
-  preview     Concise multi-matchup preview — matchup cards placed side by side.
+  compose     Any registered or ad-hoc artifacts - the adaptive path (other areas of
+              the site, or the mlb-model deck when the post is about projections).
+                --artifacts model_kpis,model_slate,model_leans
+                --capture 'label=X;url=https://...;selector=.terminal-panel'
+  preview     Concise multi-matchup preview - matchup cards placed side by side.
                 --games CLE@CIN,TEX@TBR,CHC@STL
-  deep        Detailed 1-3 game preview — pick which artifacts to assemble.
+  deep        Detailed 1-3 game preview - pick which artifacts to assemble.
                 --games PHI@MIA --artifacts banner,radar,offense
                 (omit --artifacts in a terminal and it prompts you to choose)
   breakdown   One matchup, up to 3 graphics, split by aspect.
@@ -19,12 +23,18 @@ COMMANDS
                 --type starters
                 --type team --family scoring --window L30
 
-COMMON FLAGS
-  --headline / --sub / --note (repeatable)   your language, verbatim
-  --size 1080x1350 (default) | 1080x1080 | 1080x1920 | 1600x900
-  --date YYYY-MM-DD    slate date (default today)
+TEXT LAYER (every command; see docs/CONTENT_ENGINE_SPEC.md section 6)
+  --eyebrow   category label      --headline  the claim
+  --sub       neutral setup       --take      YOUR angle, styled as opinion
+  --note      evidence bullet (repeatable)    --cta   where to go next
 
-Output: outputs/social_cards/YYYY-MM-DD/<command>_*.png (+ captions.txt)
+OTHER FLAGS
+  --size 1080x1350 (default) | 1080x1080 | 1080x1920 | 1600x900   (auto-picked if unset)
+  --date YYYY-MM-DD    slate date (default today)
+  --layout stack|row   compose only
+
+Geometry, brand and text rules live in docs/CONTENT_ENGINE_SPEC.md. In short: every
+artifact in a post shares ONE zoom so type size is identical and artifacts stay centred.
 
 Fails closed: a missing artifact or stale slate exits non-zero and writes nothing.
 A wrong graphic is worse than no graphic.
@@ -62,6 +72,18 @@ LEGIBILITY_FLOOR = 0.62
 # drops to a shorter canvas instead.
 SLACK_CEILING = 240
 
+# Text budgets. Past these lengths a slot wraps far enough to push artifacts down or
+# reads as a paragraph rather than a headline; the engine warns instead of silently
+# reflowing. See docs/CONTENT_ENGINE_SPEC.md for the reasoning behind each slot.
+TEXT_BUDGETS = {
+    "eyebrow": 28, "headline": 42, "sub": 130, "take": 190, "cta": 60, "note": 95,
+}
+
+# Native artifact widths cluster into classes (matchup card ~434px, compare-page
+# boards ~1140px). Mixing classes in one stack is legal - the solver centres them at a
+# shared zoom - but the narrower artifact will sit inset, so say so.
+WIDTH_SPREAD_WARN = 1.5
+
 # Site chrome that overlays content. The sticky header sits above whatever is at the
 # top of the page, so an element screenshot of a table would otherwise show the nav
 # painted over its column headers. Hidden on every capture.
@@ -93,7 +115,7 @@ ARTIFACTS = {
         "scope": "game",
         "page": "matchup_compare.html",
         "selector": ".mc-header",
-        "wait_ms": 11000,
+        "wait_ms": 15000,
         # Spec: use the banner without its "Matchup Analysis" kicker.
         "hide": [".mc-header-kicker"],
         "framed": True,
@@ -191,6 +213,59 @@ ARTIFACTS = {
                    ".rl-table-wrap"],
         "unstick": [".pl-rank-table thead th"],
         "default_rows": 14,
+    },
+    # ---- beyond the matchup brief: other site areas -------------------------
+    "trends_heatmap": {
+        "label": "Trends Heat Map",
+        "scope": "slate",
+        "page": "index.html",
+        "hash": "section-research-lab",
+        "eval": "if (window.showResearchSubtab) window.showResearchSubtab('trends');",
+        "selector": ".thm-table",
+        "wait_ms": 16000,
+        "framed": True,
+        "unclip": [".thm-table-wrap", ".rl-table-wrap", ".rl-sticky-table"],
+        "unstick": [".thm-table thead th"],
+    },
+    # ---- the mlb-model dashboard (separate repo, hosted) --------------------
+    # Registered by absolute URL so projections can be posted without cloning or
+    # rebuilding that repo. Its views are tabbed (.view / .view.on), so each entry
+    # forces its own view visible before capturing.
+    "model_slate": {
+        "label": "Model Slate Projections",
+        "scope": "slate",
+        "url": "https://alphakiller1.github.io/mlb-model/",
+        "selector": "#v-today .terminal-panel",
+        "contains": "PROJ TOT",
+        "wait_ms": 20000,
+        "framed": True,
+    },
+    "model_leans": {
+        "label": "Biggest Model Leans",
+        "scope": "slate",
+        "url": "https://alphakiller1.github.io/mlb-model/",
+        "selector": "#v-today .terminal-panel",
+        "contains": "BIGGEST MODEL LEANS",
+        "wait_ms": 20000,
+        "framed": True,
+    },
+    "model_kpis": {
+        "label": "Model Slate Summary",
+        "scope": "slate",
+        "url": "https://alphakiller1.github.io/mlb-model/",
+        "selector": ".terminal-kpi-row",
+        "wait_ms": 20000,
+        "framed": True,
+    },
+    "model_props": {
+        "label": "Model Pitcher Props",
+        "scope": "slate",
+        "url": "https://alphakiller1.github.io/mlb-model/",
+        "selector": "#v-props .terminal-panel",
+        "force_show": ["#v-props"],
+        "open_details": True,
+        "wait_ms": 20000,
+        "framed": True,
     },
     "team_rankings": {
         "label": "Team Rankings",
@@ -319,6 +394,63 @@ def check_lineup_integrity(games: list[dict]) -> None:
                       f"renders the last card's nine - check it matches the real lineup.")
 
 
+def register_ad_hoc(specs: list[str] | None) -> list[str]:
+    """Turn --capture strings into registry entries so any component anywhere can be
+    composed without editing this file. This is what keeps the engine adaptive: new
+    boards on the site, the mlb-model dashboard, a staging build - all reachable."""
+    names = []
+    for i, raw in enumerate(specs or [], start=1):
+        fields = {}
+        for part in raw.split(";"):
+            if not part.strip():
+                continue
+            key, _, value = part.partition("=")
+            fields[key.strip().lower()] = value.strip()
+        if "selector" not in fields:
+            fail(f"--capture #{i} needs a selector= (got {raw!r})")
+        if "url" not in fields and "page" not in fields:
+            fail(f"--capture #{i} needs url= or page= (got {raw!r})")
+        name = fields.get("name") or f"custom{i}"
+        entry = {
+            "label": fields.get("label") or name.replace("_", " ").title(),
+            "scope": "slate",
+            "selector": fields["selector"],
+            "wait_ms": int(fields.get("wait") or 16000),
+            "framed": str(fields.get("framed", "true")).lower() != "false",
+        }
+        if fields.get("url"):
+            entry["url"] = fields["url"]
+        else:
+            entry["page"] = fields["page"]
+        for key in ("contains", "hash", "eval"):
+            if fields.get(key):
+                entry[key] = fields[key]
+        for key in ("force_show", "hide", "unclip", "unstick"):
+            if fields.get(key):
+                entry[key] = [v.strip() for v in fields[key].split(",") if v.strip()]
+        ARTIFACTS[name] = entry
+        names.append(name)
+    return names
+
+
+def check_text_budgets(payload: dict) -> None:
+    """Warn on overlong copy rather than silently reflowing the layout."""
+    for slot, key in (("eyebrow", "eyebrow"), ("headline", "title"),
+                      ("sub", "sub"), ("take", "take"), ("cta", "cta")):
+        text = str(payload.get(key) or "")
+        limit = TEXT_BUDGETS[slot]
+        if len(text) > limit:
+            print(f"[content-engine] NOTE {slot} is {len(text)} chars (budget {limit}) "
+                  f"- it will wrap and squeeze the artifacts")
+    notes = payload.get("notes") or []
+    if len(notes) > 3:
+        print(f"[content-engine] NOTE {len(notes)} bullet notes (3 read cleanly)")
+    for note in notes:
+        if len(str(note)) > TEXT_BUDGETS["note"]:
+            print(f"[content-engine] NOTE a bullet is {len(str(note))} chars "
+                  f"(budget {TEXT_BUDGETS['note']})")
+
+
 def artifact_caption(name: str, game: dict | None) -> str:
     """Label for an artifact slot; directional variants name the two sides."""
     spec = ARTIFACTS[name]
@@ -356,16 +488,21 @@ class Capturer:
         self.port = port
         self.verbose = verbose
         self.cache: dict[str, str] = {}
+        self.image_counts: dict[str, int] = {}
 
     def url(self, spec: dict, game: dict | None, extra: dict | None) -> str:
         params = dict(spec.get("params") or {})
-        if game is not None and spec["page"] == "matchup_compare.html":
+        if game is not None and spec.get("page") == "matchup_compare.html":
             params.update({"away": game["Away"], "home": game["Home"]})
         params.update(extra or {})
         query = "&".join(f"{k}={v}" for k, v in params.items())
         frag = f"#{spec['hash']}" if spec.get("hash") else ""
-        base = f"http://127.0.0.1:{self.port}/dashboard/{spec['page']}"
-        return base + (f"?{query}" if query else "") + frag
+        # `url` is an absolute address (the hosted mlb-model dashboard, a staging build,
+        # any page at all); `page` is a file served from this repo's dashboard/.
+        base = spec.get("url") or (
+            f"http://127.0.0.1:{self.port}/dashboard/{spec['page']}")
+        joiner = "&" if ("?" in base and query) else ("?" if query else "")
+        return base + joiner + query + frag
 
     def grab(self, name: str, game: dict | None = None,
              extra: dict | None = None, rows: int | None = None) -> str:
@@ -382,28 +519,24 @@ class Capturer:
         try:
             page.goto(self.url(spec, game, extra), wait_until="domcontentloaded",
                       timeout=45000)
-            # Views lazy-init off the hash; a stamped hash after load re-triggers it.
-            if spec.get("hash"):
-                page.evaluate(
-                    "h => { if (location.hash !== '#'+h) { location.hash = h; } "
-                    "if (window.syncDashboardView) window.syncDashboardView(); }",
-                    spec["hash"])
-            page.wait_for_timeout(2500)
-            if spec.get("eval"):
-                page.evaluate(f"() => {{ {spec['eval']} }}")
-                page.wait_for_timeout(3000)
-            for sel in spec.get("click") or []:
-                try:
-                    page.click(sel, timeout=8000)
-                except Exception:
-                    pass  # the pane may already be mounted
+            self._activate(page, spec)
             selector = spec["selector"]
+            wait_ms = spec.get("wait_ms", 12000)
             try:
-                page.wait_for_selector(selector, timeout=spec.get("wait_ms", 12000),
-                                       state="attached")
+                page.wait_for_selector(selector, timeout=wait_ms, state="attached")
             except Exception:
-                fail(f"artifact {name!r} never rendered ({selector} not found on "
-                     f"{self.url(spec, game, extra)})")
+                # Batch runs load the same page many times; a slow render is transient.
+                # Reload once with a longer budget before giving up on the whole post.
+                print(f"[content-engine]   {name}: {selector} not up in "
+                      f"{wait_ms}ms - reloading once")
+                try:
+                    page.reload(wait_until="domcontentloaded", timeout=45000)
+                    self._activate(page, spec)
+                    page.wait_for_selector(selector, timeout=wait_ms + 10000,
+                                           state="attached")
+                except Exception:
+                    fail(f"artifact {name!r} never rendered ({selector} not found on "
+                         f"{self.url(spec, game, extra)})")
             # These views re-render as sheet data lands, which detaches elements
             # mid-capture. Wait until the component stops changing before shooting.
             self._wait_stable(page, selector)
@@ -423,6 +556,18 @@ class Capturer:
                 page.add_style_tag(content=", ".join(spec["unclip"]) + """{
                     max-height:none!important; height:auto!important;
                     overflow:visible!important}""")
+            if spec.get("open_details"):
+                page.evaluate(
+                    "() => document.querySelectorAll('details')"
+                    ".forEach(d => { d.open = true; })")
+                page.wait_for_timeout(1000)
+            if spec.get("force_show"):
+                # Tabbed dashboards keep inactive views at display:none, so an element
+                # inside one has no box to screenshot until it is forced visible.
+                page.add_style_tag(
+                    content=", ".join(spec["force_show"]) +
+                            "{display:block!important;visibility:visible!important}")
+                page.wait_for_timeout(1200)
             if spec.get("unstick"):
                 page.add_style_tag(
                     content=", ".join(spec["unstick"]) + "{position:static!important}")
@@ -433,6 +578,24 @@ class Capturer:
                             "{display:none!important}")
             if spec.get("unclip") or row_cap:
                 page.wait_for_timeout(700)
+
+            # Pitcher headshots and team logos are remote images; a post that ships a
+            # broken image is worse than one that waits. Count them inside the target.
+            broken = page.evaluate(
+                """([sel, i]) => {
+                    const el = document.querySelectorAll(sel)[i];
+                    if (!el) return {total: 0, broken: 0};
+                    const imgs = [...el.querySelectorAll('img')];
+                    return {
+                      total: imgs.length,
+                      broken: imgs.filter(g => g.complete && g.naturalWidth === 0).length,
+                    };
+                }""", [selector, target_index])
+            if broken.get("broken"):
+                print(f"[content-engine]   WARNING {name}: {broken['broken']} of "
+                      f"{broken['total']} image(s) failed to load (headshots/logos)")
+            elif broken.get("total"):
+                self.image_counts[name] = broken["total"]
 
             raw = None
             last_error = "no visible element matched"
@@ -458,6 +621,25 @@ class Capturer:
             tag = f" {game['Away']}@{game['Home']}" if game else ""
             print(f"[content-engine]   captured {name}{tag} ({len(raw)//1024} KB)")
         return data
+
+    @staticmethod
+    def _activate(page, spec: dict) -> None:
+        """Post-load steps that reveal the target: stamp the view hash, call the app's
+        own tab switcher, click any pane. Re-run verbatim after a reload."""
+        if spec.get("hash"):
+            page.evaluate(
+                "h => { if (location.hash !== '#'+h) { location.hash = h; } "
+                "if (window.syncDashboardView) window.syncDashboardView(); }",
+                spec["hash"])
+        page.wait_for_timeout(2500)
+        if spec.get("eval"):
+            page.evaluate(f"() => {{ {spec['eval']} }}")
+            page.wait_for_timeout(3000)
+        for sel in spec.get("click") or []:
+            try:
+                page.click(sel, timeout=8000)
+            except Exception:
+                pass  # the pane may already be mounted
 
     @staticmethod
     def _wait_stable(page, selector: str, tries: int = 14) -> None:
@@ -492,8 +674,13 @@ class Capturer:
             index = page.evaluate(
                 """([sel, needle]) => {
                     const els = [...document.querySelectorAll(sel)];
-                    return els.findIndex(el =>
-                      (el.innerText || '').toUpperCase().includes(needle));
+                    return els.findIndex(el => {
+                      if (!(el.innerText || '').toUpperCase().includes(needle)) return false;
+                      // Must actually be rendered: a match inside a collapsed <details>
+                      // or an inactive tab has no box and cannot be screenshotted.
+                      const r = el.getBoundingClientRect();
+                      return r.width > 40 && r.height > 40;
+                    });
                 }""", [selector, spec["contains"].upper()])
             return None if index is None or index < 0 else index
         count = page.locator(selector).count()
@@ -526,6 +713,11 @@ def compose(browser, port: int, out_path: Path, size: str,
         page.wait_for_timeout(500)
         scale = page.evaluate("window.__composeScale") or 1.0
         slack = page.evaluate("window.__composeSlack") or 0.0
+        spread = page.evaluate("window.__composeWidthSpread") or 1.0
+        if spread > WIDTH_SPREAD_WARN:
+            print(f"[content-engine] NOTE {out_path.name}: artifact native widths "
+                  f"differ {spread:.1f}x - the narrower one is centred inset rather "
+                  f"than stretched, so type size stays equal across artifacts")
         raw = out_path.with_name("_raw_" + out_path.name)
         page.screenshot(path=str(raw))
     finally:
@@ -582,7 +774,9 @@ def cmd_preview(a, slate, games, cap, ctx):
         "sub": a.sub or " · ".join(sp_label(g) for g in games),
         "layout": "row" if len(games) > 1 else "stack",
         "artifacts": artifacts,
-        "notes": a.note or [],
+        "take": a.take or "",
+            "cta": a.cta or "",
+            "notes": a.note or [],
         "tight": len(games) >= 3,
     }
     stem = "preview_" + "_".join(f"{g['Away']}{g['Home']}" for g in games)
@@ -627,6 +821,8 @@ def cmd_deep(a, slate, games, cap, ctx):
             "sub": a.sub or sp_label(g),
             "layout": "stack",
             "artifacts": artifacts,
+            "take": a.take or "",
+            "cta": a.cta or "",
             "notes": a.note or [],
             "tight": len(artifacts) >= 4,
         }
@@ -659,6 +855,8 @@ def cmd_breakdown(a, slate, games, cap, ctx):
             "sub": a.sub or spec["caption"],
             "layout": "stack",
             "artifacts": artifacts,
+            "take": a.take or "",
+            "cta": a.cta or "",
             "notes": a.note or [],
         }
         out.append((f"breakdown_{g['Away']}{g['Home']}_{asp}", payload))
@@ -684,6 +882,8 @@ def cmd_full_card(a, slate, games, cap, ctx):
             "sub": a.sub or f"All {len(games)} games",
             "layout": "stack",
             "artifacts": artifacts,
+            "take": a.take or "",
+            "cta": a.cta or "",
             "notes": a.note or [],
             "tight": True,
         }
@@ -705,6 +905,8 @@ def cmd_rankings(a, slate, games, cap, ctx):
             "sub": a.sub or "Pitching Score blends K%, BB%, ERA, FIP and what each arm allows.",
             "layout": "stack",
             "artifacts": artifacts,
+            "take": a.take or "",
+            "cta": a.cta or "",
             "notes": a.note or [],
         }
         return [("rankings_starters", payload)]
@@ -729,12 +931,54 @@ def cmd_rankings(a, slate, games, cap, ctx):
         "layout": "stack",
         "artifacts": [{"src": src, "caption": f"{label} · {WINDOWS[window]}",
                        "framed": True}],
-        "notes": a.note or [],
+        "take": a.take or "",
+            "cta": a.cta or "",
+            "notes": a.note or [],
     }
     return [(f"rankings_team_{key}_{window}", payload)]
 
 
+def cmd_compose(a, slate, games, cap, ctx):
+    """Assemble any registered or ad-hoc artifacts - the adaptive path.
+
+    Used for anything outside the matchup brief: other areas of the site, or the
+    mlb-model dashboard's own boards when the post is about projections.
+        --artifacts model_edge,model_props
+        --capture 'label=Edge Board;url=https://...;selector=#v-today .ca-board'
+    """
+    names = register_ad_hoc(a.capture)
+    if a.artifacts:
+        names = [t.strip() for t in a.artifacts.split(",") if t.strip()] + names
+    if not names:
+        fail("compose needs --artifacts and/or --capture. Registered slate artifacts: "
+             + ", ".join(n for n, sp in ARTIFACTS.items() if sp["scope"] == "slate"))
+    for n in names:
+        if n not in ARTIFACTS:
+            fail(f"unknown artifact {n!r}. Registered: {', '.join(sorted(ARTIFACTS))}")
+    game = games[0] if (games and any(
+        ARTIFACTS[n]["scope"] == "game" for n in names)) else None
+    artifacts = [{
+        "src": cap.grab(n, game if ARTIFACTS[n]["scope"] == "game" else None),
+        "caption": artifact_caption(n, game),
+        "framed": ARTIFACTS[n].get("framed", True),
+    } for n in names]
+    payload = {
+        "meta": ctx["date_label"],
+        "eyebrow": a.eyebrow or "Chase Analytics",
+        "title": a.headline or "Today's Read",
+        "sub": a.sub or "",
+        "layout": "row" if a.layout == "row" else "stack",
+        "artifacts": artifacts,
+        "take": a.take or "",
+        "cta": a.cta or "",
+        "notes": a.note or [],
+        "tight": len(artifacts) >= 3,
+    }
+    return [("compose_" + "_".join(names)[:40], payload)]
+
+
 COMMANDS = {
+    "compose": cmd_compose,
     "preview": cmd_preview,
     "deep": cmd_deep,
     "breakdown": cmd_breakdown,
@@ -758,6 +1002,16 @@ def main() -> None:
     ap.add_argument("--per-post", type=int, default=6,
                     help="full-card: banners per image (default 6)")
     ap.add_argument("--headline", help="post title, your words")
+    ap.add_argument("--take", help="your angle/perspective - rendered as a styled "
+                                   "callout, visually separated from neutral captions")
+    ap.add_argument("--cta", help="call to action under the site URL")
+    ap.add_argument("--layout", choices=["stack", "row"], default="stack",
+                    help="compose: stack artifacts vertically (default) or in a row")
+    ap.add_argument("--capture", action="append", metavar="SPEC",
+                    help="ad-hoc artifact, repeatable: "
+                         "'label=Model Board;url=https://...;selector=.ca-board' "
+                         "(or page=team_profile.html for a local dashboard page). "
+                         "Optional: contains=..., force_show=..., hide=..., wait=ms")
     ap.add_argument("--sub", help="post subtitle, your words")
     ap.add_argument("--eyebrow", help="small gold label above the title")
     ap.add_argument("--note", action="append", help="bullet note (repeatable)")
@@ -795,6 +1049,7 @@ def main() -> None:
             posts = COMMANDS[a.command](a, slate, games, cap, ctx)
             size = ctx["size"]  # a command may have chosen a better canvas
             for stem, payload in posts:
+                check_text_budgets(payload)
                 out_path = out_dir / f"{stem}_{size}.png"
                 scale, slack = compose(browser, port, out_path, size, payload)
                 # Several stacked artifacts can squeeze small enough that the numbers
