@@ -28,13 +28,30 @@ concurrency:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # A healthy run is minutes once the Statcast cache is warm; a cold-cache backfill
+    # of the whole season is ~45. Anything past this is stuck, and a stall used to
+    # burn a full hour of the shared Actions quota before failing anyway.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      # Runners are ephemeral, so the on-disk Statcast cache only helps here if it is
+      # restored between runs. Finished windows never change, so an older cache is
+      # always safe to reuse: the key rolls monthly and restore-keys pick up the
+      # newest available snapshot.
+      - name: Restore Statcast window cache
+        uses: actions/cache@v4
+        with:
+          path: data/cache/statcast
+          key: statcast-${{ github.ref_name }}-${{ hashFiles('scrapers/scrape_pitch_mix.py') }}-${{ github.run_id }}
+          restore-keys: |
+            statcast-${{ github.ref_name }}-${{ hashFiles('scrapers/scrape_pitch_mix.py') }}-
+            statcast-${{ github.ref_name }}-
+            statcast-
 
       - name: Install dependencies
         run: |

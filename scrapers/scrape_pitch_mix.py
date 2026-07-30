@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from io import StringIO
 import pandas as pd
+from pathlib import Path
 import requests
 
 from core.http_retry import get_with_retry
@@ -15,6 +16,13 @@ from scrapers.scrape_player_registry import build_registry
 STATCAST_CSV_URL = "https://baseballsavant.mlb.com/statcast_search/csv"
 WINDOW_RECENT_DAYS = 14
 STATCAST_ROW_CAP = 25000
+# Finished games do not change, so a window that ended before this many days ago is
+# cached to disk and never re-downloaded. Without it every run re-pulled the whole
+# season in monthly windows (recursively split at the row cap): 70 HTTP exports and
+# ~42 minutes per run, which was ~1,270 GitHub Actions minutes a month.
+# Recent windows stay live because Statcast revises the last few days.
+STATCAST_CACHE_MIN_AGE_DAYS = 3
+STATCAST_CACHE_DIR = DATA_DIR / "cache" / "statcast"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
 }
@@ -109,7 +117,45 @@ def _read_registry() -> pd.DataFrame:
     return df[["player_id", "full_name", "team_abbr", "bats", "throws"]].copy()
 
 
+def _cache_path(start_date: str, end_date: str) -> Path:
+    return STATCAST_CACHE_DIR / f"{CURRENT_SEASON}_{start_date}_{end_date}.csv"
+
+
+def _cacheable(end_date: str) -> bool:
+    """Only windows that closed a few days ago; the tail is still being revised."""
+    try:
+        end = datetime.strptime(end_date, "%Y-%m-%d").date()
+    except ValueError:
+        return False
+    return (date.today() - end).days >= STATCAST_CACHE_MIN_AGE_DAYS
+
+
 def _fetch_window(start_date: str, end_date: str) -> pd.DataFrame:
+    """Cached wrapper around the Savant export for one date window."""
+    cached = _cache_path(start_date, end_date)
+    if _cacheable(end_date) and cached.exists():
+        try:
+            df = pd.read_csv(cached, usecols=lambda c: c in RAW_COLUMNS,
+                             low_memory=False)
+            print(f"Statcast {start_date} to {end_date}: {len(df)} rows from cache")
+            return df
+        except Exception as exc:  # a truncated cache file must not fail the run
+            print(f"  WARNING: unreadable cache {cached.name} ({exc}); refetching")
+    df = _fetch_window_uncached(start_date, end_date)
+    # Never cache a row-capped window: the caller is about to split it, and the
+    # truncated response is not the window's real contents.
+    if _cacheable(end_date) and len(df) < STATCAST_ROW_CAP:
+        try:
+            STATCAST_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            tmp = cached.with_suffix(".csv.part")
+            df.to_csv(tmp, index=False)
+            tmp.replace(cached)
+        except Exception as exc:
+            print(f"  WARNING: could not cache {cached.name} ({exc})")
+    return df
+
+
+def _fetch_window_uncached(start_date: str, end_date: str) -> pd.DataFrame:
     start_param = (datetime.strptime(start_date, "%Y-%m-%d").date() - timedelta(days=1)).strftime("%Y-%m-%d")
     end_param = (datetime.strptime(end_date, "%Y-%m-%d").date() + timedelta(days=1)).strftime("%Y-%m-%d")
     params = {
