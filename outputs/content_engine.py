@@ -7,6 +7,8 @@ headline and notes. The artifacts are screenshots of the site itself, so a post 
 never drift from the site's design.
 
 COMMANDS
+  keys        Print the artifact key: every component, what it shows, and the
+              phrases that summon it (--artifacts accepts those phrases).
   compose     Any registered or ad-hoc artifacts - the adaptive path (other areas of
               the site, or the mlb-model deck when the post is about projections).
                 --artifacts model_kpis,model_slate,model_leans
@@ -365,6 +367,145 @@ def resolve_games(slate: list[dict], spec: str | None) -> list[dict]:
         else:
             picked.append(candidates[0])
     return picked
+
+
+# -- the key: what each artifact is, and the language that summons it ---------
+# One place to look up "what do I say to get X". Every phrase below resolves to a
+# canonical artifact name, so --artifacts accepts natural language as well as keys:
+#   --artifacts "projected lineups,bullpen,leans"  ==  --artifacts card,bullpen,model_leans
+# Run `keys` to print this as a table.
+ARTIFACT_DESC = {
+    "card": "Full game card: both starters with pitch scores and K/BB/ERA, the lineup "
+            "edge bar, and both projected lineups with handedness.",
+    "banner": "Wide identity strip: records, last-10 form pips, first pitch, venue and "
+              "weather. The compact way to show a matchup.",
+    "radar": "Two five-axis radars comparing the lineups on process composite "
+             "(RCV/ABQ/OSI/OBR/projOSI) and offense vs schedule.",
+    "offense": "Both lineups' wRC+/OPS/wOBA/SLG ranks over L7, L14, L30 and YTD, split "
+               "overall, by opposing hand, and home/road.",
+    "pitcher": "Away lineup batter-by-batter vs the home starter, that starter's allowed "
+               "splits by batter hand, and career hitter-vs-pitcher history.",
+    "pitcher_rev": "The same board with the sides swapped: home lineup vs away starter.",
+    "bullpen": "Away lineup batter-by-batter vs the home bullpen only (starters excluded).",
+    "bullpen_rev": "The same board swapped: home lineup vs the away bullpen.",
+    "starters_rankings": "Every projected starter on the slate ranked by Pitch Score, "
+                         "with K%/BB%/ERA/FIP, what they allow, and stuff flags.",
+    "team_rankings": "All 30 clubs ranked in one category (scoring, winning, difficulty "
+                     "or projection) over a chosen window.",
+    "trends_heatmap": "League-wide trend heat map from the Research Lab.",
+    "model_kpis": "Model slate summary strip: game count, slate date, how many carry a "
+                  "sharp signal, priced markets, and the decision gate.",
+    "model_slate": "Model projections per game: win probability, projected total, margin, "
+                   "lean and sharp flag.",
+    "model_leans": "The model's biggest priced gaps, ranked by edge, with the model "
+                   "number and state.",
+    "model_props": "Model pitcher-prop board.",
+}
+
+ARTIFACT_ALIASES = {
+    "card": ["matchup card", "game card", "the card", "lineup card",
+             "projected lineups", "lineups"],
+    "banner": ["matchup banner", "analysis banner", "matchup analysis", "strip",
+               "identity strip", "form"],
+    "radar": ["team radar", "profile radar", "team profile", "process radar",
+              "spider", "spider chart"],
+    "offense": ["offense splits", "offensive split comparison", "offensive splits",
+                "bats", "lineup form", "splits", "hitting"],
+    "pitcher": ["pitcher splits", "starter splits", "starter", "lineup vs starter",
+                "hitter vs pitcher", "matchup history", "pitcher history"],
+    "pitcher_rev": ["reverse pitcher splits", "other starter",
+                    "home lineup vs starter", "pitcher splits reversed"],
+    "bullpen": ["relief", "bullpen splits", "lineup vs relief", "pen", "relievers"],
+    "bullpen_rev": ["reverse bullpen", "other bullpen", "bullpen reversed",
+                    "home lineup vs relief"],
+    "starters_rankings": ["starters rankings", "todays starters", "pitcher rankings",
+                          "ranked starters", "best to worst", "pitch score",
+                          "pitching score"],
+    "team_rankings": ["team rankings", "league rankings", "all 30", "club rankings",
+                      "team board"],
+    "trends_heatmap": ["trends", "heat map", "heatmap", "trends heat map"],
+    "model_kpis": ["model summary", "slate summary", "model kpis", "model header"],
+    "model_slate": ["model slate", "projections", "model projections",
+                    "win probability", "projected totals", "model board"],
+    "model_leans": ["leans", "biggest leans", "model leans", "edges", "biggest edges"],
+    "model_props": ["model props", "pitcher props", "props"],
+}
+
+
+def _norm_phrase(text: str) -> str:
+    return " ".join(str(text).lower().replace("_", " ").replace("-", " ").split())
+
+
+def _wrap(text: str, width: int) -> list[str]:
+    words, lines, cur = str(text).split(), [], ""
+    for word in words:
+        if len(cur) + len(word) + 1 > width:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = (cur + " " + word).strip()
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+# phrase -> canonical name (canonical names and labels included)
+ALIAS_INDEX: dict[str, str] = {}
+for _name, _spec in ARTIFACTS.items():
+    ALIAS_INDEX[_norm_phrase(_name)] = _name
+    ALIAS_INDEX.setdefault(_norm_phrase(_spec["label"]), _name)
+for _name, _phrases in ARTIFACT_ALIASES.items():
+    for _phrase in _phrases:
+        ALIAS_INDEX.setdefault(_norm_phrase(_phrase), _name)
+
+
+def resolve_artifact(token: str) -> str:
+    """Accept a key or any phrase from the key; fail with the closest suggestions."""
+    want = _norm_phrase(token)
+    if want in ALIAS_INDEX:
+        return ALIAS_INDEX[want]
+    near = sorted({n for phrase, n in ALIAS_INDEX.items()
+                   if want and (want in phrase or phrase in want)})
+    if len(near) == 1:
+        return near[0]
+    hint = (" Closest: " + ", ".join(near) if near
+            else " Run `keys` to see every artifact and the phrases that reach it.")
+    fail("{!r} does not name an artifact.{}".format(token, hint))
+
+
+def print_key() -> None:
+    """Print the key: artifact, what it shows, and the language that summons it."""
+    for heading, names in (
+        ("MATCHUP ARTIFACTS  (need --games)",
+         [n for n, sp in ARTIFACTS.items() if sp["scope"] == "game"]),
+        ("SLATE ARTIFACTS  (no --games needed)",
+         [n for n, sp in ARTIFACTS.items() if sp["scope"] == "slate"]),
+    ):
+        print("\n" + heading)
+        print("=" * len(heading))
+        for name in names:
+            print("\n  {}   [{}]".format(name, ARTIFACTS[name]["label"]))
+            for line in _wrap(ARTIFACT_DESC.get(name, ""), 72):
+                print("      " + line)
+            phrases = ARTIFACT_ALIASES.get(name) or []
+            if phrases:
+                for line in _wrap("say: " + " / ".join(phrases), 72):
+                    print("      " + line)
+    print("\n\nASPECT SETS  (breakdown --aspects)")
+    print("=" * 33)
+    for aspect, spec in ASPECTS.items():
+        print("  {:9} -> {}".format(aspect, ", ".join(spec["artifacts"])))
+    print("\nTEXT SLOTS  (any command)")
+    print("=" * 25)
+    roles = {"eyebrow": "small label above the title",
+             "headline": "the claim",
+             "sub": "neutral one-sentence setup",
+             "take": "YOUR angle - rendered as opinion",
+             "cta": "where to go next",
+             "note": "evidence bullet, repeatable"}
+    for slot, limit in TEXT_BUDGETS.items():
+        print("  --{:9} <= {:3} chars   {}".format(slot, limit, roles[slot]))
+    print("\nFull rules: docs/CONTENT_ENGINE_SPEC.md\n")
 
 
 def check_lineup_integrity(games: list[dict]) -> None:
@@ -794,10 +935,12 @@ def cmd_deep(a, slate, games, cap, ctx):
     offered = [n for n, s in ARTIFACTS.items() if s["scope"] == "game"]
     names = a.artifacts
     if names:
-        chosen = [t.strip().lower() for t in names.split(",") if t.strip()]
+        # Accept the key or any phrase from it: "projected lineups" -> card.
+        chosen = [resolve_artifact(t) for t in names.split(",") if t.strip()]
         for c in chosen:
-            if c not in offered:
-                fail(f"{c!r} is not a game artifact. Choose from: {', '.join(offered)}")
+            if ARTIFACTS[c]["scope"] != "game":
+                fail(f"{c!r} is a slate artifact, not a matchup one - use `compose` "
+                     f"for it. Matchup artifacts: {', '.join(offered)}")
     elif sys.stdin.isatty():
         chosen = choose_artifacts(offered, games[0])
     else:
@@ -837,6 +980,12 @@ def cmd_breakdown(a, slate, games, cap, ctx):
     g = games[0]
     wanted = [t.strip().lower() for t in (a.aspects or "pitching,offense,bullpen").split(",")
               if t.strip()]
+    aspect_alias = {"pitching": "pitching", "pitchers": "pitching",
+                    "starters": "pitching", "arms": "pitching",
+                    "offense": "offense", "offence": "offense", "bats": "offense",
+                    "hitting": "offense", "lineups": "offense",
+                    "bullpen": "bullpen", "relief": "bullpen", "pen": "bullpen"}
+    wanted = [aspect_alias.get(_norm_phrase(a_), a_) for a_ in wanted]
     for asp in wanted:
         if asp not in ASPECTS:
             fail(f"{asp!r} is not an aspect. Choose from: {', '.join(ASPECTS)}")
@@ -948,13 +1097,10 @@ def cmd_compose(a, slate, games, cap, ctx):
     """
     names = register_ad_hoc(a.capture)
     if a.artifacts:
-        names = [t.strip() for t in a.artifacts.split(",") if t.strip()] + names
+        names = [resolve_artifact(t) for t in a.artifacts.split(",") if t.strip()] + names
     if not names:
         fail("compose needs --artifacts and/or --capture. Registered slate artifacts: "
              + ", ".join(n for n, sp in ARTIFACTS.items() if sp["scope"] == "slate"))
-    for n in names:
-        if n not in ARTIFACTS:
-            fail(f"unknown artifact {n!r}. Registered: {', '.join(sorted(ARTIFACTS))}")
     game = games[0] if (games and any(
         ARTIFACTS[n]["scope"] == "game" for n in names)) else None
     artifacts = [{
@@ -978,6 +1124,7 @@ def cmd_compose(a, slate, games, cap, ctx):
 
 
 COMMANDS = {
+    "keys": None,          # handled before any browser/slate work in main()
     "compose": cmd_compose,
     "preview": cmd_preview,
     "deep": cmd_deep,
@@ -1019,6 +1166,10 @@ def main() -> None:
                     help="default 1080x1350; multi-card previews auto-pick 1080x1080")
     ap.add_argument("--date", default=date.today().isoformat())
     a = ap.parse_args()
+
+    if a.command == "keys":
+        print_key()
+        return
 
     day = a.date
     try:

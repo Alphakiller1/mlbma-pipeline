@@ -40,11 +40,14 @@
   .cc-eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.16em;
     text-transform: uppercase; color: var(--gold);
     text-shadow: 0 0 14px rgba(240, 194, 74, 0.17); }
+  /* The silver comes from the site's own heading component: the element carries
+     .ca-page-title, whose rule in mlbma_design_system.css applies the metallic
+     gradient with !important. Do not re-declare the gradient here -- theme.css has
+     `h1:not(.ca-page-title) { -webkit-text-fill-color: var(--v-heading) !important }`,
+     which is what was forcing these titles to flat violet. Only geometry below. */
   .cc-title {
     font-family: var(--display); font-weight: 800; font-size: 58px; line-height: 1.04;
     text-transform: uppercase; letter-spacing: 0.01em; margin: 8px 0 0;
-    background: var(--metal-silver);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .cc-sub { color: var(--text-2); font-size: 19px; font-weight: 600; line-height: 1.4;
     margin-top: 10px; max-width: 92%; }
@@ -121,7 +124,7 @@
 
   <div class="cc-lede" id="ccLede">
     <div class="cc-eyebrow" id="ccEyebrow"></div>
-    <h1 class="cc-title" id="ccTitle"></h1>
+    <h1 class="cc-title ca-page-title" id="ccTitle"></h1>
     <p class="cc-sub" id="ccSub"></p>
     <p class="cc-take" id="ccTake"></p>
   </div>

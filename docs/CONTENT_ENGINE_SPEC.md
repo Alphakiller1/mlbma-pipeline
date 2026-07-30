@@ -137,9 +137,19 @@ the footer's `chase-analytics.com` carries the name.
 - Footer is fixed and non-negotiable: site URL, optional CTA, and
   `Model-generated research. Not betting advice. 21+.` on the right.
 
+**The title must carry the site's own `ca-page-title` class.** `theme.css` contains
+`h1:not(.ca-page-title):not(.ca-profile-hero__title) { -webkit-text-fill-color:
+var(--v-heading) !important }`, so any other `h1` is forced to flat violet no matter what
+the compose route declares — which is exactly what happened before 2026-07-30. Adding the
+house class hands the element the real metallic silver
+(`linear-gradient(180deg,#FFFFFF,#E9EAF0 38%,#9DA0AE 56%,#D7D9E2 72%,#FFFFFF)`) with
+`!important`, so the compose route declares only geometry (size, tracking, case) and never
+re-states the gradient. Same principle as the artifacts: use the site's component, don't
+copy it.
+
 Tokens: deep navy `--bg` #08090F, violet `--v-*` #5B2BE0→#9A6BFF, gold `--gold` #E8C24A
-(eyebrow only), `--metal-silver` title gradient, DM Sans body / Roboto Condensed display.
-All are read from the site's stylesheets — never hard-code a hex in the compose route.
+(eyebrow only), DM Sans body / Roboto Condensed display. All are read from the site's
+stylesheets — never hard-code a hex in the compose route.
 
 ---
 
@@ -182,6 +192,31 @@ the lineup they run out today" — and leave the deck factual.
   is the source of truth for anything visible in it.
 - Anything a viewer could read as a betting instruction stays out. The disclaimer is
   not a licence to editorialise past research.
+
+---
+
+## 6.3 The key — assembling by language
+
+`--artifacts` accepts any phrase from the key, not just the canonical name, so a post can
+be described the way you'd say it out loud:
+
+```
+--artifacts "projected lineups,bullpen,leans"   ==   --artifacts card,bullpen,model_leans
+--artifacts "matchup analysis,team profile"     ==   --artifacts banner,radar
+--aspects   "relief"                            ==   --aspects bullpen
+```
+
+Resolution is case-, space-, hyphen- and underscore-insensitive, matches on substrings
+when unambiguous, and fails with the closest candidates when it isn't. Run:
+
+```
+content.bat keys
+```
+
+to print every artifact with what it shows and the phrases that reach it, plus the aspect
+sets and the text slots with their budgets. `ARTIFACT_DESC` and `ARTIFACT_ALIASES` in
+`outputs/content_engine.py` are the single source for that key — add a phrase there and it
+works everywhere immediately.
 
 ---
 
