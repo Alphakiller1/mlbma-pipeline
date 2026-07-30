@@ -24,3 +24,6 @@ pipeline_smoke_log.txt
 pipeline_*.log
 outputs/instagram_post_manifest.json
 cursor
+
+# Local Cloudflare deploy build (scripts/deploy_cloudflare.py)
+_site/
