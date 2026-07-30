@@ -61,7 +61,29 @@ PIPELINE = Path(__file__).resolve().parents[1]
 DATA = PIPELINE / "data"
 OUT_ROOT = PIPELINE / "outputs" / "social_cards"
 
-SIZES = ["1080x1350", "1080x1080", "1080x1920", "1600x900"]
+# Output sizes. The high-resolution variants keep the 1080-based CSS layout and are
+# rasterised at a higher device pixel ratio, so small table type lands on more pixels and
+# survives the platform's JPEG re-encode. Instagram serves up to 1440 wide; X far more.
+SIZES = [
+    "1440x1800",   # Instagram 4:5 at max resolution  (default for portrait)
+    "1440x1440",   # Instagram square at max resolution
+    "1440x2560",   # Instagram story at max resolution
+    "2048x1152",   # X / OG 16:9 at high resolution
+    "1080x1350", "1080x1080", "1080x1920", "1600x900",   # 1x equivalents
+]
+
+# target size -> (CSS layout size the compose route should use, raster scale)
+HI_RES = {
+    "1440x1800": ("1080x1350", 4 / 3),
+    "1440x1440": ("1080x1080", 4 / 3),
+    "1440x2560": ("1080x1920", 4 / 3),
+    "2048x1152": ("1600x900", 1.28),
+}
+
+
+def layout_size(target: str) -> tuple[str, float]:
+    """CSS layout size and raster scale for an output size."""
+    return HI_RES.get(target, (target, 1.0))
 
 # Artifacts are captured at 3x native. The composed page is itself rendered at 2x and
 # then LANCZOS-downsampled, so an artifact goes through TWO resamples before it lands in
@@ -79,6 +101,8 @@ LEGIBILITY_FLOOR = 0.62
 SLACK_FRACTION = 0.09
 # Shorter canvases to try, in order, when a post leaves a dead band.
 CANVAS_LADDER = {
+    "1440x2560": ["1440x1800", "1440x1440"],
+    "1440x1800": ["1440x1440"],
     "1080x1920": ["1080x1350", "1080x1080"],
     "1080x1350": ["1080x1080"],
 }
@@ -894,12 +918,19 @@ def compose(browser, port: int, out_path: Path, size: str,
     """Render one post. Returns (artifact scale, leftover vertical slack in px) so the
     caller can pick a better canvas: scale < 1 means squeezed, slack > 0 means airy."""
     w, h = (int(v) for v in size.split("x"))
-    page = browser.new_page(viewport={"width": w, "height": h}, device_scale_factor=2)
+    css_size, raster = layout_size(size)
+    cw, ch = (int(v) for v in css_size.split("x"))
+    # Supersample the 1x sizes (they have no headroom); render the hi-res sizes at their
+    # own scale so glyphs are rasterised at final resolution instead of being softened by
+    # a downsample.
+    dpr = 2.0 if raster == 1.0 else raster
+    page = browser.new_page(viewport={"width": cw, "height": ch},
+                            device_scale_factor=dpr)
     try:
         payload = {**payload, "captureDpr": CAPTURE_DPR}
         page.add_init_script(
             f"window.CARD_DATA = {json.dumps(payload)};"
-            f"window.CARD_SIZE = {json.dumps(size)};")
+            f"window.CARD_SIZE = {json.dumps(css_size)};")
         page.goto(f"http://127.0.0.1:{port}/dashboard/card_compose.html",
                   wait_until="domcontentloaded", timeout=45000)
         try:
@@ -919,8 +950,12 @@ def compose(browser, port: int, out_path: Path, size: str,
         page.screenshot(path=str(raw))
     finally:
         page.close()
-    # Rendered at DPR2 then downsampled to the exact target — crisper than DPR1.
-    Image.open(raw).resize((w, h), Image.LANCZOS).save(out_path)
+    shot = Image.open(raw)
+    if shot.size == (w, h):
+        shot.save(out_path)          # rasterised at the target: no resample at all
+    else:
+        shot.resize((w, h), Image.LANCZOS).save(out_path)
+    shot.close()
     raw.unlink()
     print(f"[content-engine] wrote {out_path.name}")
     return float(scale), float(slack)
@@ -1005,7 +1040,7 @@ def _preview_post(a, games, cap, ctx, part, parts, labels):
     # Instagram's tallest feed crop is 4:5, so portrait is the safe default and a wide
     # canvas is only ever used when explicitly asked for.
     if not ctx["size_explicit"]:
-        ctx["size"] = "1080x1350"
+        ctx["size"] = "1440x1800"
     return [(stem, payload)]
 
 
@@ -1283,7 +1318,7 @@ def main() -> None:
     out_dir = OUT_ROOT / day
     out_dir.mkdir(parents=True, exist_ok=True)
     ctx = {"date_label": date_label, "day": day,
-           "size": a.size or "1080x1350", "size_explicit": a.size is not None}
+           "size": a.size or "1440x1800", "size_explicit": a.size is not None}
 
     port = free_port()
     server = subprocess.Popen(
