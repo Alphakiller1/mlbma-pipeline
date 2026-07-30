@@ -342,10 +342,18 @@
     // half-empty post (shorter canvas), and flag mixed width classes.
     var widths = natural.map(function (a) { return a.w; });
     window.__composeScale = zoom;
-    // Slack = unused vertical room after sizing, for ANY layout. A grid limited by
-    // width (3 columns of cards in 984px) can leave hundreds of dead pixels, and the
-    // runner steps down to a shorter canvas when it does.
-    window.__composeSlack = Math.max(0, body.clientHeight - body.scrollHeight);
+    // Slack = unused vertical room after sizing, for ANY layout. Measure the real
+    // occupied box: scrollHeight never falls BELOW clientHeight, so using it reported
+    // zero slack for every non-overflowing post and silently disabled the rescue.
+    var occTop = Infinity, occBottom = -Infinity;
+    slots.forEach(function (sl) {
+      var r = sl.getBoundingClientRect();
+      if (r.height <= 0) return;
+      occTop = Math.min(occTop, r.top);
+      occBottom = Math.max(occBottom, r.bottom);
+    });
+    var occupied = (occBottom > occTop) ? (occBottom - occTop) : 0;
+    window.__composeSlack = Math.max(0, body.clientHeight - occupied);
     window.__composeWidthSpread = Math.max.apply(null, widths) / Math.min.apply(null, widths);
   }
 

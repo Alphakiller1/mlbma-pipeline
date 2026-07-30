@@ -63,9 +63,12 @@ OUT_ROOT = PIPELINE / "outputs" / "social_cards"
 
 SIZES = ["1080x1350", "1080x1080", "1080x1920", "1600x900"]
 
-# Artifacts are captured at 2x so they downsample crisply into the final post. The
-# compose page needs it to convert a bitmap width back to the artifact's CSS width.
-CAPTURE_DPR = 2
+# Artifacts are captured at 3x native. The composed page is itself rendered at 2x and
+# then LANCZOS-downsampled, so an artifact goes through TWO resamples before it lands in
+# the file; starting with more source detail is what keeps small table type crisp once
+# Instagram and X re-encode the upload. 3x is the practical ceiling - beyond it the
+# capture cost climbs with no visible gain at these output sizes.
+CAPTURE_DPR = 3
 
 # Below this shared scale, stat tables stop being readable on a phone. Crossing it
 # triggers a re-render on the tall canvas (and a warning if that still isn't enough).
@@ -597,25 +600,37 @@ def check_text_budgets(payload: dict) -> None:
                   f"(budget {TEXT_BUDGETS['note']})")
 
 
-def apply_captions(artifacts: list[dict], spec: list[str] | None) -> None:
+def apply_captions(artifacts: list[dict], spec: list[str] | None = None,
+                   labels: list[str] | None = None) -> None:
     """Fold --captions into the per-slot captions, positionally.
 
     A label is appended to the caption the engine already derived, because the slot's
     own identity (which game, which side) is what makes a multi-artifact post readable
     -- losing it to a label would be a downgrade. A leading '=' replaces instead.
     """
-    if not spec:
+    if labels is None:
+        labels = resolve_labels(spec, len(artifacts))
+    if not labels:
         return
+    _stamp_captions(artifacts, labels)
+
+
+def resolve_labels(spec: list[str] | None, n_slots: int) -> list[str]:
+    """Turn the raw --captions flag into a flat label list."""
+    if not spec:
+        return []
     # Resolution order, so the behaviour is predictable rather than clever:
     #   several --captions -> one label each, verbatim (commas allowed in a label)
     #   one --captions, one slot -> verbatim; splitting could not be intended
     #   one --captions, many slots -> split on commas (the convenient common case)
     if len(spec) > 1:
-        labels = [part.strip() for part in spec]
-    elif len(artifacts) == 1:
-        labels = [spec[0].strip()]
-    else:
-        labels = [part.strip() for part in spec[0].split(",")]
+        return [part.strip() for part in spec]
+    if n_slots == 1:
+        return [spec[0].strip()]
+    return [part.strip() for part in spec[0].split(",")]
+
+
+def _stamp_captions(artifacts: list[dict], labels: list[str]) -> None:
     if len(labels) > len(artifacts):
         print(f"[content-engine] NOTE {len(labels)} captions given for "
               f"{len(artifacts)} slot(s); the extras are ignored")
@@ -940,6 +955,27 @@ def cmd_preview(a, slate, games, cap, ctx):
     if len(games) > 6:
         fail(f"preview takes up to 6 games ({len(games)} given) - "
              f"use full-card for the whole slate")
+    # A portrait post can only hold so many cards before the type stops surviving
+    # social re-encoding: 3 across is the legible limit on 1080 wide. Beyond that,
+    # split across images rather than shrinking the cards.
+    per_post = a.per_post if a.per_post_explicit else (3 if len(games) > 3 else len(games))
+    chunks = [games[i:i + per_post] for i in range(0, len(games), per_post)]
+    if len(chunks) > 1:
+        print(f"[content-engine] {len(games)} games at {per_post} per post -> "
+              f"{len(chunks)} images (keeps the cards readable)")
+    # Labels are indexed across the whole selection, not restarted per image, so
+    # --captions ",AL,NL Central,NL East," still lines up after a split.
+    all_labels = resolve_labels(a.captions, len(games))
+    posts, offset = [], 0
+    for idx, chunk in enumerate(chunks, start=1):
+        posts.extend(_preview_post(
+            a, chunk, cap, ctx, idx, len(chunks),
+            all_labels[offset:offset + len(chunk)]))
+        offset += len(chunk)
+    return posts
+
+
+def _preview_post(a, games, cap, ctx, part, parts, labels):
     check_lineup_integrity(games)
     artifacts = []
     for g in games:
@@ -948,11 +984,12 @@ def cmd_preview(a, slate, games, cap, ctx):
             "caption": f"{g['Away']} @ {g['Home']}",
             "framed": False,
         })
-    apply_captions(artifacts, a.captions)
+    apply_captions(artifacts, labels=labels)
+    part_tag = f" ({part}/{parts})" if parts > 1 else ""
     payload = {
         "meta": ctx["date_label"],
         "eyebrow": a.eyebrow or "Today's Slate",
-        "title": a.headline or f"{len(games)} Games To Watch",
+        "title": (a.headline or f"{len(games)} Games To Watch") + part_tag,
         "sub": a.sub or " · ".join(sp_label(g) for g in games),
         # Grid wraps into rows and picks its own column count, so 5 cards become
         # 3 + 2 instead of five slivers. One card is just a stack of one.
@@ -964,13 +1001,10 @@ def cmd_preview(a, slate, games, cap, ctx):
         "tight": len(games) >= 3,
     }
     stem = "preview_" + "_".join(f"{g['Away']}{g['Home']}" for g in games)
-    # Matchup cards are fixed-height portraits: 3+ across only fills a square canvas,
-    # 1-2 fill the 4:5 feed post. Respect an explicit --size, otherwise fit the shape.
+    # Instagram's tallest feed crop is 4:5, so portrait is the safe default and a wide
+    # canvas is only ever used when explicitly asked for.
     if not ctx["size_explicit"]:
-        # 1-2 cards fill the feed post; 3 fill a square; 4+ wrap to two rows and need
-        # the tall canvas to stay readable.
-        ctx["size"] = ("1080x1350" if len(games) <= 2
-                       else "1080x1080" if len(games) == 3 else "1080x1920")
+        ctx["size"] = "1080x1350"
     return [(stem, payload)]
 
 
@@ -1200,7 +1234,9 @@ def main() -> None:
     ap.add_argument("--rows", type=int,
                     help="rankings: cap table rows (starters default 14, team all 30)")
     ap.add_argument("--per-post", type=int, default=6,
-                    help="full-card: banners per image (default 6)")
+                    help="artifacts per image - full-card banners (default 6), or "
+                         "preview matchup cards (default 3, which is the legible limit "
+                         "on a portrait post)")
     ap.add_argument("--headline", help="post title, your words")
     ap.add_argument("--take", help="your angle/perspective - rendered as a styled "
                                    "callout, visually separated from neutral captions")
@@ -1226,6 +1262,8 @@ def main() -> None:
                     help="default 1080x1350; multi-card previews auto-pick 1080x1080")
     ap.add_argument("--date", default=date.today().isoformat())
     a = ap.parse_args()
+    # Distinguish "left at the default" from "asked for 6", so preview can pick its own.
+    a.per_post_explicit = any(arg.startswith("--per-post") for arg in sys.argv[1:])
 
     if a.command == "keys":
         print_key()
