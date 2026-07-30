@@ -1091,9 +1091,17 @@ def main() -> None:
             f.write(f"\n[{name}]\n{payload.get('title', '')}\n")
             if payload.get("sub"):
                 f.write(payload["sub"] + "\n")
-            for note in payload.get("notes") or []:
+            # The take is the whole reason the post has a point of view; it belongs in
+            # the caption box, not just burned into the image.
+            if payload.get("take"):
+                f.write("\n" + payload["take"] + "\n")
+            notes = payload.get("notes") or []
+            if notes:
+                f.write("\n")
+            for note in notes:
                 f.write(f"• {note}\n")
-            f.write("chase-analytics.com\n")
+            f.write("\nchase-analytics.com")
+            f.write(f" · {payload['cta']}\n" if payload.get("cta") else "\n")
     print(f"[content-engine] {len(written)} image(s) + captions -> {out_dir} "
           f"({time.time() - t0:.0f}s)")
 
