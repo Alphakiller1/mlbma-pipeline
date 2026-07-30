@@ -897,8 +897,8 @@ def choose_artifacts(available: list[str], game: dict | None = None) -> list[str
 # ── commands ─────────────────────────────────────────────────────────────────
 def cmd_preview(a, slate, games, cap, ctx):
     """Concise multi-matchup preview: cards placed adjacent, dimensions for IG."""
-    if len(games) > 4:
-        fail(f"preview takes up to 4 games ({len(games)} given) - "
+    if len(games) > 6:
+        fail(f"preview takes up to 6 games ({len(games)} given) - "
              f"use full-card for the whole slate")
     check_lineup_integrity(games)
     artifacts = []
@@ -913,7 +913,9 @@ def cmd_preview(a, slate, games, cap, ctx):
         "eyebrow": a.eyebrow or "Today's Slate",
         "title": a.headline or f"{len(games)} Games To Watch",
         "sub": a.sub or " · ".join(sp_label(g) for g in games),
-        "layout": "row" if len(games) > 1 else "stack",
+        # Grid wraps into rows and picks its own column count, so 5 cards become
+        # 3 + 2 instead of five slivers. One card is just a stack of one.
+        "layout": "grid" if len(games) > 1 else "stack",
         "artifacts": artifacts,
         "take": a.take or "",
             "cta": a.cta or "",
@@ -924,7 +926,10 @@ def cmd_preview(a, slate, games, cap, ctx):
     # Matchup cards are fixed-height portraits: 3+ across only fills a square canvas,
     # 1-2 fill the 4:5 feed post. Respect an explicit --size, otherwise fit the shape.
     if not ctx["size_explicit"]:
-        ctx["size"] = "1080x1080" if len(games) >= 3 else "1080x1350"
+        # 1-2 cards fill the feed post; 3 fill a square; 4+ wrap to two rows and need
+        # the tall canvas to stay readable.
+        ctx["size"] = ("1080x1350" if len(games) <= 2
+                       else "1080x1080" if len(games) == 3 else "1080x1920")
     return [(stem, payload)]
 
 
@@ -1113,7 +1118,7 @@ def cmd_compose(a, slate, games, cap, ctx):
         "eyebrow": a.eyebrow or "Chase Analytics",
         "title": a.headline or "Today's Read",
         "sub": a.sub or "",
-        "layout": "row" if a.layout == "row" else "stack",
+        "layout": a.layout,
         "artifacts": artifacts,
         "take": a.take or "",
         "cta": a.cta or "",
@@ -1152,8 +1157,9 @@ def main() -> None:
     ap.add_argument("--take", help="your angle/perspective - rendered as a styled "
                                    "callout, visually separated from neutral captions")
     ap.add_argument("--cta", help="call to action under the site URL")
-    ap.add_argument("--layout", choices=["stack", "row"], default="stack",
-                    help="compose: stack artifacts vertically (default) or in a row")
+    ap.add_argument("--layout", choices=["stack", "row", "grid"], default="stack",
+                    help="compose: stack vertically (default), one row, or a wrapping "
+                         "grid that picks its own column count")
     ap.add_argument("--capture", action="append", metavar="SPEC",
                     help="ad-hoc artifact, repeatable: "
                          "'label=Model Board;url=https://...;selector=.ca-board' "

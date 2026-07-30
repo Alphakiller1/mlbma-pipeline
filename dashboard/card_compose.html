@@ -68,6 +68,11 @@
   .cc-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 18px;
     margin-top: 22px; min-height: 0; justify-content: center; align-items: center; }
   .cc-body.layout-row { flex-direction: row; align-items: center; justify-content: center; }
+  /* Grid wraps a set of same-shape artifacts (matchup cards) into rows. The solver
+     picks the column count that maximises the shared zoom, so five cards become
+     3 + 2 rather than five illegible slivers. */
+  .cc-body.layout-grid { flex-direction: row; flex-wrap: wrap;
+    align-items: center; align-content: center; justify-content: center; }
   .cc-slot { display: flex; flex-direction: column; min-height: 0; min-width: 0;
     justify-content: center; align-items: center; }
   .cc-slot img { display: block; height: auto; object-fit: contain;
@@ -222,6 +227,14 @@
     }).filter(Boolean);
     if (!natural.length) return;
 
+    // MEASURE FIRST, THEN SIZE. Until a zoom is applied the images sit at their full
+    // capture width (2x native), which stretches this flex container and makes
+    // body.clientHeight report far more room than actually exists -- the grid then
+    // picked too few columns and overflowed onto the deck and the footer. Collapsing
+    // the images to zero forces the container to its true flex height.
+    natural.forEach(function (a) { a.img.style.width = '0px'; });
+    void body.offsetHeight;
+
     var styles = getComputedStyle(body);
     var gap = parseFloat(styles.rowGap || styles.gap) || 0;
     // Caption/note height is a fixed cost that does not scale with the image.
@@ -234,8 +247,35 @@
 
     var availW = body.clientWidth;
     var availH = body.clientHeight;
-    var zoom;
-    if (layout === 'row') {
+    var zoom, gridWidth = 0;
+    if (layout === 'grid') {
+      // Try every column count and keep the one that lets the artifacts render
+      // largest; caption height is a per-ROW cost, not per artifact.
+      var gmaxW = Math.max.apply(null, natural.map(function (a) { return a.w; }));
+      var gmaxH = Math.max.apply(null, natural.map(function (a) { return a.h; }));
+      var capH = slots.reduce(function (m, sl) {
+        var h = [].slice.call(sl.children).reduce(function (n, c) {
+          return n + (c.tagName === 'IMG' ? 0 : c.offsetHeight +
+            parseFloat(getComputedStyle(c).marginTop || 0));
+        }, 0);
+        return Math.max(m, h);
+      }, 0);
+      // Derive the column width by FLOORING to whole pixels, then read the zoom back
+      // off it. Computing an exact zoom and rounding the width afterwards overflowed
+      // the row by a pixel (3 x 311 + 2 x 26 = 985 in a 984 container), which wrapped
+      // the last card and silently cost a whole row.
+      var best = 0, bestCols = natural.length, bestW = 0;
+      for (var cols = 1; cols <= natural.length; cols++) {
+        var rows = Math.ceil(natural.length / cols);
+        var colW = Math.floor((availW - gap * (cols - 1)) / cols);
+        var zh = (availH - capH * rows - gap * (rows - 1)) / (rows * gmaxH);
+        var z = Math.min(MAX_ZOOM, colW / gmaxW, zh);
+        if (z > best) { best = z; bestCols = cols; bestW = Math.floor(gmaxW * z); }
+      }
+      zoom = best;
+      gridWidth = bestW;
+      window.__composeGridCols = bestCols;
+    } else if (layout === 'row') {
       var sumW = natural.reduce(function (n, a) { return n + a.w; }, 0);
       var maxH = Math.max.apply(null, natural.map(function (a) { return a.h; }));
       zoom = Math.min(MAX_ZOOM,
@@ -249,15 +289,19 @@
                       (availH - gap * (natural.length - 1) - chrome) / sumH);
     }
     zoom = Math.max(0.05, zoom);
-    natural.forEach(function (a) {
-      a.img.style.width = (a.w * zoom).toFixed(1) + 'px';
-    });
+    if (layout === 'grid') {
+      natural.forEach(function (a) { a.img.style.width = gridWidth + 'px'; });
+    } else {
+      natural.forEach(function (a) {
+        a.img.style.width = (a.w * zoom).toFixed(1) + 'px';
+      });
+    }
 
     // Reported so the runner can rescue an unreadable squeeze (taller canvas) or a
     // half-empty post (shorter canvas), and flag mixed width classes.
     var widths = natural.map(function (a) { return a.w; });
     window.__composeScale = zoom;
-    window.__composeSlack = layout === 'row' ? 0 : Math.max(
+    window.__composeSlack = layout !== 'stack' ? 0 : Math.max(
       0, (availH - chrome - gap * (natural.length - 1)) -
          natural.reduce(function (n, a) { return n + a.h * zoom; }, 0));
     window.__composeWidthSpread = Math.max.apply(null, widths) / Math.min.apply(null, widths);
