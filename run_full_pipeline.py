@@ -8,7 +8,6 @@ dashboards never drift out of sync again:
                                                            + Supabase + dashboard
                                                            (powers chase-analytics.com)
   2. Bet Evaluator       export_web_data.py             -> docs/data/site.json
-                                                           (powers the bet-evaluator site)
   3. Sharp Money Tracker export_dashboard.py            -> docs/data.json
                                                            (powers the sharp-tracker site)
 
@@ -40,10 +39,9 @@ from pathlib import Path
 
 # ── Locations ────────────────────────────────────────────────────────────────
 MLBMA = Path(__file__).resolve().parent
-# The bet-evaluator and sharp repos live beside the user's Documents, not next to
+# The sharp repo lives beside the user's home dir, not next to
 # this repo. Override with env vars if you move them.
-BET_EVAL = Path(os.getenv("BET_EVALUATOR_DIR", r"C:\Users\chase\Documents\bet-evaluator"))
-SHARP = Path(os.getenv("SHARP_TRACKER_DIR", r"C:\Users\chase\Documents\sharp-money-tracker"))
+SHARP = Path(os.getenv("SHARP_TRACKER_DIR", r"C:\Users\chase\sharp-money-tracker"))
 
 
 def _python() -> str:
@@ -144,15 +142,13 @@ def git_publish(repo: Path, add_paths: list[str], message: str,
 # ── Orchestration ────────────────────────────────────────────────────────────
 def publish_ecosystem(*, commit: bool = True, push: bool = True,
                       fetch_odds: bool = False, dry: bool = False) -> dict[str, str]:
-    """Stages 2-3: export + git publish bet-evaluator and sharp-money-tracker."""
+    """Stage 2: export + git publish sharp-money-tracker.
+
+    The bet-evaluator stage was removed on 2026-08-26 when that repo was
+    retired; see chase-analytics-brain 00-Index/Repo-Consolidation-2026-08.
+    """
     today = _dt.date.today().isoformat()
     results: dict[str, str] = {}
-
-    banner("Bet Evaluator  (docs/data/site.json)")
-    ok = run_cmd([PYTHON, "export_web_data.py"], BET_EVAL, "export site.json", dry)
-    results["bet-eval export"] = "ok" if ok else "FAILED"
-    results["bet-eval publish"] = git_publish(
-        BET_EVAL, ["docs"], f"Daily refresh {today}: bet-evaluator site data", commit, push, dry)
 
     banner("Sharp Money Tracker  (docs/data.json)")
     if fetch_odds:
@@ -188,7 +184,6 @@ def main() -> None:
     banner(f"Chase Analytics full pipeline - {today}")
     print(f"  interpreter : {PYTHON}")
     print(f"  mlbma       : {MLBMA}")
-    print(f"  bet-eval    : {BET_EVAL}   {'(missing!)' if not BET_EVAL.exists() else ''}")
     print(f"  sharp       : {SHARP}   {'(missing!)' if not SHARP.exists() else ''}")
     print(f"  scrape={'no' if a.skip_scrape else 'yes'}  paid-fetch={'YES' if a.fetch_odds else 'no'}"
           f"  commit={commit}  push={push}  dry-run={dry}")
@@ -204,10 +199,18 @@ def main() -> None:
             extra_env={"MLBMA_SKIP_ECOSYSTEM": "1"},
         )
         results["mlbma scrape"] = "ok" if ok else "FAILED"
+
+    # 1b ── Social cards: deterministic renders of the dashboard card routes.
+    # Fails closed on stale/malformed slate; a failure never blocks the publish.
+    banner("1b  Social cards  (outputs/social_cards/<date>/)")
+    ok = run_cmd([PYTHON, "-m", "outputs.render_social_cards"], MLBMA,
+                 "render social cards", dry)
+    results["social cards"] = "ok" if ok else "FAILED"
+
     results["mlbma publish"] = git_publish(
         MLBMA, ["dashboard"], f"Daily refresh {today}: dashboard data", commit, push, dry)
 
-    banner("2-3/3  Ecosystem publish (bet-evaluator + sharp-money-tracker)")
+    banner("2/2  Ecosystem publish (sharp-money-tracker)")
     results.update(publish_ecosystem(
         commit=commit, push=push, fetch_odds=a.fetch_odds, dry=dry))
 

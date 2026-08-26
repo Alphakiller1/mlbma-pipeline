@@ -1,5 +1,5 @@
 @echo off
-rem Chase Analytics — refresh + publish the whole stack (mlbma + bet-evaluator + sharp).
+rem Chase Analytics — refresh + publish the whole stack (mlbma + sharp).
 rem Double-click for a full daily run, or pass flags, e.g.:
 rem     run_full_pipeline.bat --skip-scrape
 rem     run_full_pipeline.bat --fetch-odds      (spends Odds-API credits)
