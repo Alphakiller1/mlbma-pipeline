@@ -232,8 +232,8 @@
       : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
     var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team, opts.mlbId);
-    if (ps == null && pname === 'TBD') ps = spPitchScore(team);
-    var pt = pitchTier(ps);
+    if (pname === 'TBD') ps = null;
+    var pt = pname === 'TBD' ? { label: 'Unposted', cls: 'tier-avg' } : pitchTier(ps);
     var psColor = ps != null ? pitcherStatColor('pitchScore', ps) : 'var(--text-3, #9CA3AF)';
     var psVal = ps != null ? Number(ps).toFixed(0) : '—';
     var nameHtml = pname === 'TBD'

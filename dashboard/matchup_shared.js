@@ -2321,6 +2321,8 @@
           var homeHand = normalizePitcherHandShared(
             homeProb.pitchHand && homeProb.pitchHand.code
           );
+          if (awaySP === 'TBD') awayHand = '?';
+          if (homeSP === 'TBD') homeHand = '?';
           var gameNumber = game.gameNumber || 1;
           var isDoubleHeader = game.doubleHeader === 'Y' || game.doubleHeader === 'S';
           games.push({
