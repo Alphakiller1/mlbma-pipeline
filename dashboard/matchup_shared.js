@@ -742,7 +742,7 @@
     var A = global.MLBMAAssets;
     var headHtml = '';
     if (teamLabel || opts.title) {
-      var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : '?HP';
+      var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : 'TBD';
       var title = opts.title || ('Projected lineup · ' + teamLabel);
       var purpose = opts.purpose != null ? opts.purpose : ('vs ' + handLbl);
       if (compact) {
@@ -809,7 +809,7 @@
   function buildLineupColCompact(teamLabel, lineupRows, oppHand, side) {
     var sideKey = side === 'home' ? 'home' : 'away';
     var sideCls = ' matchup-lineup-col--' + sideKey;
-    var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : '?HP';
+    var handLbl = oppHand === 'L' || oppHand === 'R' ? oppHand + 'HP' : 'TBD';
     var head = lineupColHeadHtml(teamLabel, handLbl);
     if (!lineupRows || !lineupRows.length) {
       return '<div class="matchup-lineup-col matchup-lineup-col--compact' + sideCls + '">' + head
