@@ -2747,17 +2747,17 @@ body.view-research .ca-lab { display: block; }
 <script src="mlbma_ui.js?v=20260610b" data-page="chase_analytics_mlb_oem_v7.html"></script>
 <script src="mlbma_assets.js?v=20260618b"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
-<script src="matchup_shared.js?v=20260729a"></script>
+<script src="matchup_shared.js?v=20260829a"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260717d"></script>
+<script src="platform_dashboard.js?v=20260829a"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260608b"></script>
 <script src="lineup_view.js?v=20260618b"></script>
 <script src="trends_heatmap.js?v=20260624b"></script>
 <script src="bullpen_usage.js?v=20260610b"></script>
-<script src="pitcher_lab.js?v=20260624c"></script>
+<script src="pitcher_lab.js?v=20260829a"></script>
 <script src="mobile_cardify.js?v=20260610b"></script>
 
 </head>
@@ -4527,14 +4527,12 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
   var homeSP = slatePitcherName(g.homeSP);
   var exAway = ex && pitcherNamesMatch(ex.awaySP, awaySP);
   var exHome = ex && pitcherNamesMatch(ex.homeSP, homeSP);
-  var awayHand = (ex && ex.awayHand && ex.awayHand !== '?')
+  var awayHand = (exAway && ex.awayHand && ex.awayHand !== '?')
     ? normalizePitcherHand(ex.awayHand)
     : (pitcherHandFromProfiles(awaySP, away) || '?');
-  var homeHand = (ex && ex.homeHand && ex.homeHand !== '?')
+  var homeHand = (exHome && ex.homeHand && ex.homeHand !== '?')
     ? normalizePitcherHand(ex.homeHand)
     : (pitcherHandFromProfiles(homeSP, home) || '?');
-  if (awayHand === '?') awayHand = 'R';
-  if (homeHand === '?') homeHand = 'R';
   var awayProf = spStatsFromProfile(awaySP, away, g.awaySPId);
   var homeProf = spStatsFromProfile(homeSP, home, g.homeSPId);
   var awayOsi = (scR.length && scL.length)
@@ -4553,28 +4551,29 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
     homeSPId: g.homeSPId != null ? g.homeSPId : null,
     awayHand: awayHand,
     homeHand: homeHand,
-    awayK: pickSpMetric(awayProf ? awayProf.k : null, ex ? ex.awayK : null),
-    awayBB: pickSpMetric(awayProf ? awayProf.bb : null, ex ? ex.awayBB : null),
-    awayHR9: pickSpMetric(awayProf ? awayProf.hr9 : null, ex ? ex.awayHR9 : null),
-    awayWHIP: pickSpMetric(awayProf ? awayProf.whip : null, ex ? ex.awayWHIP : null),
-    awayFIP: pickSpMetric(awayProf ? awayProf.fip : null, ex ? ex.awayFIP : null),
-    awayERA: pickSpMetric(awayProf ? awayProf.era : null, ex ? ex.awayERA : null),
-    awayPitchScore: pickSpMetric(awayProf ? awayProf.pitchScore : null, ex ? ex.awayPitchScore : null),
-    awayXFIP: pickSpMetric(awayProf ? awayProf.xfip : null, ex ? ex.awayXFIP : null),
-    awayOsiAllowed: pickSpMetric(awayProf ? awayProf.osiAllowed : null, ex ? ex.awayOsiAllowed : null),
-    homeK: pickSpMetric(homeProf ? homeProf.k : null, ex ? ex.homeK : null),
-    homeBB: pickSpMetric(homeProf ? homeProf.bb : null, ex ? ex.homeBB : null),
-    homeHR9: pickSpMetric(homeProf ? homeProf.hr9 : null, ex ? ex.homeHR9 : null),
-    homeWHIP: pickSpMetric(homeProf ? homeProf.whip : null, ex ? ex.homeWHIP : null),
-    homeFIP: pickSpMetric(homeProf ? homeProf.fip : null, ex ? ex.homeFIP : null),
-    homeERA: pickSpMetric(homeProf ? homeProf.era : null, ex ? ex.homeERA : null),
-    homePitchScore: pickSpMetric(homeProf ? homeProf.pitchScore : null, ex ? ex.homePitchScore : null),
-    homeXFIP: pickSpMetric(homeProf ? homeProf.xfip : null, ex ? ex.homeXFIP : null),
-    homeOsiAllowed: pickSpMetric(homeProf ? homeProf.osiAllowed : null, ex ? ex.homeOsiAllowed : null),
+    awayK: pickSpMetric(awayProf ? awayProf.k : null, exAway ? ex.awayK : null),
+    awayBB: pickSpMetric(awayProf ? awayProf.bb : null, exAway ? ex.awayBB : null),
+    awayHR9: pickSpMetric(awayProf ? awayProf.hr9 : null, exAway ? ex.awayHR9 : null),
+    awayWHIP: pickSpMetric(awayProf ? awayProf.whip : null, exAway ? ex.awayWHIP : null),
+    awayFIP: pickSpMetric(awayProf ? awayProf.fip : null, exAway ? ex.awayFIP : null),
+    awayERA: pickSpMetric(awayProf ? awayProf.era : null, exAway ? ex.awayERA : null),
+    awayPitchScore: pickSpMetric(awayProf ? awayProf.pitchScore : null, exAway ? ex.awayPitchScore : null),
+    awayXFIP: pickSpMetric(awayProf ? awayProf.xfip : null, exAway ? ex.awayXFIP : null),
+    awayOsiAllowed: pickSpMetric(awayProf ? awayProf.osiAllowed : null, exAway ? ex.awayOsiAllowed : null),
+    homeK: pickSpMetric(homeProf ? homeProf.k : null, exHome ? ex.homeK : null),
+    homeBB: pickSpMetric(homeProf ? homeProf.bb : null, exHome ? ex.homeBB : null),
+    homeHR9: pickSpMetric(homeProf ? homeProf.hr9 : null, exHome ? ex.homeHR9 : null),
+    homeWHIP: pickSpMetric(homeProf ? homeProf.whip : null, exHome ? ex.homeWHIP : null),
+    homeFIP: pickSpMetric(homeProf ? homeProf.fip : null, exHome ? ex.homeFIP : null),
+    homeERA: pickSpMetric(homeProf ? homeProf.era : null, exHome ? ex.homeERA : null),
+    homePitchScore: pickSpMetric(homeProf ? homeProf.pitchScore : null, exHome ? ex.homePitchScore : null),
+    homeXFIP: pickSpMetric(homeProf ? homeProf.xfip : null, exHome ? ex.homeXFIP : null),
+    homeOsiAllowed: pickSpMetric(homeProf ? homeProf.osiAllowed : null, exHome ? ex.homeOsiAllowed : null),
     awayOSI: awayOsi,
     homeOSI: homeOsi,
     lineupEdge: ex && ex.lineupEdge ? ex.lineupEdge : '',
     stadium: g.stadium || (ex && ex.stadium) || '',
+    gamePk: g.gamePk || null,
     gameNumber: g.gameNumber || 1,
     doubleHeader: !!g.doubleHeader
   };
@@ -4613,20 +4612,17 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
       // sheet's Time column can be stale (and cannot represent both DH games).
       time: g.time || existing.time || '',
       // MLB's posted probables are authoritative for starter NAMES too — the
-      // sheet's single row goes stale (and cannot represent both DH games'
-      // starters: it showed Seymour/Sandoval while MLB listed Jax/Bennett for
-      // Gm 1). Sheet remains the fallback when MLB still says TBD. This also
-      // keeps the name coherent with awaySPId/homeSPId, which already prefer
-      // the live id — stats were hydrating for the live pitcher while the card
-      // displayed the sheet's name.
-      awaySP: (g.awaySP && g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP || 'TBD'),
-      homeSP: (g.homeSP && g.homeSP !== 'TBD') ? g.homeSP : (existing.homeSP || 'TBD'),
-      awaySPId: g.awaySPId || existing.awaySPId || null,
-      homeSPId: g.homeSPId || existing.homeSPId || null,
-      awayHand: g.awayHand || existing.awayHand || '?',
-      homeHand: g.homeHand || existing.homeHand || '?',
+      // If MLB still says TBD, display TBD. A model projection must never be
+      // presented as an officially posted probable starter.
+      awaySP: g.awaySP || 'TBD',
+      homeSP: g.homeSP || 'TBD',
+      awaySPId: g.awaySPId || null,
+      homeSPId: g.homeSPId || null,
+      awayHand: g.awayHand || '?',
+      homeHand: g.homeHand || '?',
       stadium: g.stadium || existing.stadium || '',
       gameKey: key,
+      gamePk: g.gamePk || null,
       gameNumber: gameNumber,
       doubleHeader: !!g.doubleHeader
     };

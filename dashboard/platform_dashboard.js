@@ -13,10 +13,11 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function compareUrl(away, home, gameNumber) {
+  function compareUrl(away, home, gameNumber, gamePk) {
     var url = 'matchup_compare.html?away=' + encodeURIComponent(away || '') + '&home=' + encodeURIComponent(home || '');
     // Doubleheaders: the analysis page needs to know WHICH game.
     if (gameNumber && Number(gameNumber) > 1) url += '&gn=' + encodeURIComponent(gameNumber);
+    if (gamePk) url += '&gamePk=' + encodeURIComponent(gamePk);
     return url;
   }
 
@@ -24,8 +25,10 @@
     return 'team_profile.html?team=' + encodeURIComponent(team || '');
   }
 
-  function pitcherProfileUrl(name) {
-    return 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
+  function pitcherProfileUrl(name, pitcherId) {
+    var url = 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
+    if (pitcherId) url += '&pitcherId=' + encodeURIComponent(pitcherId);
+    return url;
   }
 
   function gameCardId(m) {
@@ -227,15 +230,15 @@
       : (A && A.resolveMlbId ? A.resolveMlbId(name) : (A ? A.lookupMlbId(name) : null));
     var hs = A ? A.pitcherAvatar(pid || name, { crop: 'matchup', className: 'mc-headshot', eager: !!opts.eager })
       : '<span class="ca-pitcher-avatar ca-pitcher-avatar--matchup"><span class="ca-pitcher-avatar-fallback pitcher-silhouette" style="display:flex"></span></span>';
+    var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var ps = opts.pitchScore != null ? opts.pitchScore : spPitchScoreFromProfile(name, team, opts.mlbId);
     if (ps == null && pname === 'TBD') ps = spPitchScore(team);
     var pt = pitchTier(ps);
     var psColor = ps != null ? pitcherStatColor('pitchScore', ps) : 'var(--text-3, #9CA3AF)';
     var psVal = ps != null ? Number(ps).toFixed(0) : '—';
-    var pname = name && String(name).trim() && String(name).toUpperCase() !== 'TBD' ? name : 'TBD';
     var nameHtml = pname === 'TBD'
       ? '<span class="mc-sp-name-text">TBD</span>'
-      : '<a href="' + pitcherProfileUrl(pname) + '" class="pitcher-link mc-sp-name-text" onclick="event.stopPropagation()">' + esc(pname) + '</a>';
+      : '<a href="' + pitcherProfileUrl(pname, pid) + '" class="pitcher-link mc-sp-name-text" onclick="event.stopPropagation()">' + esc(pname) + '</a>';
     stats = stats || {};
     var handLbl = normalizePitchHand(hand) === 'L' ? 'LHP' : normalizePitchHand(hand) === 'R' ? 'RHP' : '?';
     var kVal = fmtRatePct(stats.k);
@@ -351,7 +354,7 @@
       if (!card) return;
       var away = card.getAttribute('data-away');
       var home = card.getAttribute('data-home');
-      if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'));
+      if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'), card.getAttribute('data-game-pk'));
     });
     grid.addEventListener('click', function(e) {
       var btn = e.target.closest('.hmc-lineup-toggle');
@@ -541,7 +544,7 @@
     var lineupHtml = opts.lineupHtml != null ? opts.lineupHtml
       : (buildLineup ? buildLineup(m, { expanded: true, hideToggle: true }) : '');
     var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
-    return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" data-gn="' + (m.gameNumber || 1) + '" role="link" tabindex="0">'
+    return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" data-gn="' + (m.gameNumber || 1) + '" data-game-pk="' + esc(m.gamePk || '') + '" role="link" tabindex="0">'
       + '<div class="hmc-row hmc-teams">'
       + '<div class="hmc-team">' + teamLinkHtml(m.away, logo, '', 'away') + '</div>'
       + '<span class="hmc-at">@</span>'
@@ -563,7 +566,7 @@
       + '<span class="hmc-spark">' + teamOsiSparkline(m.home, m.awayHand) + '</span>'
       + '</div>'
       + lineupHtml
-      + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home, m.gameNumber) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
+      + '<a class="hmc-view-full" href="' + compareUrl(m.away, m.home, m.gameNumber, m.gamePk) + '" onclick="event.stopPropagation()">View Full Analysis →</a>'
       + '</article>';
   }
 
@@ -574,14 +577,14 @@
       if (e.target.closest('a, button, .hmc-lineup-toggle')) return;
       var away = card.getAttribute('data-away');
       var home = card.getAttribute('data-home');
-      if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'));
+      if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'), card.getAttribute('data-game-pk'));
     });
     card.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         var away = card.getAttribute('data-away');
         var home = card.getAttribute('data-home');
-        if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'));
+        if (away && home) global.location.href = compareUrl(away, home, card.getAttribute('data-gn'), card.getAttribute('data-game-pk'));
       }
     });
   }

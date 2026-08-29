@@ -303,6 +303,22 @@
     return !!HUB_BACKED_SLATE_TABS[String(tabName || '')];
   }
 
+  function requireCurrentSlateRows(tabName, rows, slateDay) {
+    if (!isSlateTab(tabName) || !rows || !rows.length || !slateDay) return rows || [];
+    var dated = rows.filter(function(row) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(slateDateFromRow(row));
+    });
+    // Older publishers did not include a slate date. Keep those compatible,
+    // but never accept a dated snapshot for the wrong day merely because its
+    // upload timestamp is recent.
+    if (!dated.length) return rows;
+    var current = dated.filter(function(row) { return slateDateFromRow(row) === slateDay; });
+    if (!current.length) {
+      throw new Error('stale ' + tabName + ' slate (wanted ' + slateDay + ')');
+    }
+    return current;
+  }
+
   function isTeamRankingsPage() {
     var path = (global.location && global.location.pathname) || '';
     return /team_rankings/i.test(path);
@@ -355,6 +371,7 @@
         if (!r.ok) throw new Error('fetch ' + tabName);
         return r.text();
       }).then(parseCsvText).then(function(rows) {
+        rows = requireCurrentSlateRows(tabName, rows, slateDay);
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
@@ -390,6 +407,7 @@
         if (isSupabaseDatasetStale(entry.updated_at)) {
           throw new Error('supabase stale ' + tabName);
         }
+        rows = requireCurrentSlateRows(tabName, rows, slateDay);
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
@@ -417,6 +435,7 @@
         var updatedAt = val && val.updated_at;
         if (!rows || !rows.length) throw new Error('empty prefetch');
         if (updatedAt && isSupabaseDatasetStale(updatedAt)) throw new Error('prefetch stale ' + tabName);
+        rows = requireCurrentSlateRows(tabName, rows, slateDay);
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
@@ -2305,6 +2324,7 @@
           var gameNumber = game.gameNumber || 1;
           var isDoubleHeader = game.doubleHeader === 'Y' || game.doubleHeader === 'S';
           games.push({
+            gamePk: game.gamePk || null,
             away: away,
             home: home,
             time: formatGameTimeEt(game.gameDate),
@@ -2367,6 +2387,9 @@
       var home = normalizeTeamAbbrShared(pickCol(row, 'Home', 'Home_Team', 'home_team'));
       if (!away && !home) return null;
       return {
+        slateDate: slateDateFromRow(row),
+        gamePk: numOrNull(pickCol(row, 'gamePk', 'GamePk', 'game_pk')),
+        gameNumber: numOrNull(pickCol(row, 'Game_Number', 'Game Number', 'gameNumber', 'game_number')) || 1,
         time: String(pickCol(row, 'Time', 'Game_Time')).trim(),
         away: away,
         home: home,

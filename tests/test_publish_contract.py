@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+from pathlib import Path
 import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
@@ -10,6 +11,9 @@ import pandas as pd
 from outputs import notify_mlb_model, push_supabase
 from outputs.push_sheets import push_df
 from scrapers.scrape_matchups import push_to_hub
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class FakeWorksheet:
@@ -135,6 +139,27 @@ class ModelDispatchContractTests(unittest.TestCase):
             with redirect_stdout(io.StringIO()):
                 result = notify_mlb_model.run()
         self.assertFalse(result)
+
+
+class DashboardSlateTruthContractTests(unittest.TestCase):
+    def test_runtime_rejects_dated_slate_for_wrong_day(self) -> None:
+        source = (ROOT / "dashboard" / "matchup_shared.js").read_text(encoding="utf-8")
+        self.assertIn("function requireCurrentSlateRows", source)
+        self.assertIn("stale ' + tabName + ' slate", source)
+
+    def test_live_schedule_carries_stable_game_identity(self) -> None:
+        source = (ROOT / "dashboard" / "matchup_shared.js").read_text(encoding="utf-8")
+        compare = (ROOT / "dashboard" / "matchup_compare.js").read_text(encoding="utf-8")
+        self.assertIn("gamePk: game.gamePk || null", source)
+        self.assertIn("var gamePkWant = qp('gamePk')", compare)
+
+    def test_mlb_tbd_does_not_fall_back_to_projected_name(self) -> None:
+        source = (ROOT / "dashboard" / "chase_analytics_mlb_oem_v7.html").read_text(encoding="utf-8")
+        self.assertIn("awaySP: g.awaySP || 'TBD'", source)
+        self.assertNotIn("g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP", source)
+
+    def test_reliever_profile_route_exists(self) -> None:
+        self.assertTrue((ROOT / "dashboard" / "reliever_profile.html").is_file())
 
 
 if __name__ == "__main__":

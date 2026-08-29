@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reliever Profile | Chase Analytics</title>
+  <meta http-equiv="refresh" content="0;url=bullpen_report.html">
+</head>
+<body>
+  <p>Opening <a id="fallback" href="bullpen_report.html">Bullpen Report</a>…</p>
+  <script>
+    (function() {
+      var target = 'bullpen_report.html' + window.location.search + window.location.hash;
+      document.getElementById('fallback').href = target;
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>

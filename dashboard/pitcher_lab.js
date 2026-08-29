@@ -288,6 +288,20 @@
     return names;
   }
 
+  function todayStarterInfo(name) {
+    var matchups = (global.LIVE_DATA && LIVE_DATA.matchups) || [];
+    for (var i = 0; i < matchups.length; i++) {
+      var m = matchups[i];
+      if (pitcherNamesMatch(m.awaySP, name)) {
+        return { team: m.away, hand: m.awayHand || '?', id: m.awaySPId || null };
+      }
+      if (pitcherNamesMatch(m.homeSP, name)) {
+        return { team: m.home, hand: m.homeHand || '?', id: m.homeSPId || null };
+      }
+    }
+    return null;
+  }
+
   function todayStarterSet() {
     var set = new Set();
     todayRankingsProfiles().forEach(function(row) {
@@ -1401,15 +1415,16 @@
     var colCount = 5 + COLS.length + 1;
     var body = rows.map(function(row, i) {
       var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-      var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
-      var handP = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || '?').charAt(0);
+      var starterInfo = todayStarterInfo(n);
+      var t = (starterInfo && starterInfo.team) || pickCol(row, ['pitcher_team', 'Team', 'Tm']);
+      var handP = String((starterInfo && starterInfo.hand) || pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || '?').charAt(0);
       var m = profileMetrics(row);
       var st = extendedStats(row, m);
       if (segment === 'f5') st = applyF5Context(st, row, null);
       var flags = spFlags(m);
       var sel = CACHE.selected === n ? ' pl-rank-row--selected' : '';
       var exp = CACHE.expandedPitcher === n ? ' pl-rank-row--expanded' : '';
-      var pid = pickCol(row, ['pitcher_id', 'playerId', 'mlb_id']);
+      var pid = (starterInfo && starterInfo.id) || pickCol(row, ['pitcher_id', 'playerId', 'mlb_id']);
       var vals = COLS.map(function(c) {
         var v = tableMetric(row, hand, c.k, m, st);
         var inv = c.k === 'osiAllowed' || c.k === 'abqAllowed' || c.k === 'bbPct' || c.k === 'era' || c.k === 'fip';

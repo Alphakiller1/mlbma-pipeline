@@ -22,7 +22,7 @@
 <script src="mlbma_config.js?v=20260606c"></script>
 <script src="mlbma_icons.js?v=20260606c"></script>
 <script src="mlbma_assets.js?v=20260609c"></script>
-<script src="matchup_shared.js?v=20260729a"></script>
+<script src="matchup_shared.js?v=20260829a"></script>
 <script src="profile_shell.js?v=20260603a"></script>
 <script src="mlbma_charts.js?v=20260604m"></script>
 <script src="profile_controls.js?v=20260603a"></script>
@@ -283,7 +283,9 @@ function fmtPct(v) {
 }
 
 function normalizeName(n) {
-  return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  var s = String(n || '').toLowerCase();
+  if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return s.replace(/[^a-z0-9 ]/g, '').trim();
 }
 
 function normalizeNameKey(n) {
@@ -1767,8 +1769,14 @@ function loadAll() {
       banner.classList.add('show');
     }
 
-    var urlPitcher = new URLSearchParams(window.location.search).get('pitcher');
+    var urlParams = new URLSearchParams(window.location.search);
+    var urlPitcherId = normalizePitcherId(urlParams.get('pitcherId'));
+    var urlPitcher = urlParams.get('pitcher');
     var startKey = null;
+    if (urlPitcherId) {
+      startKey = 'id:' + urlPitcherId;
+      if (!getProfile(startKey)) startKey = null;
+    }
     if (urlPitcher) {
       startKey = resolveSearchToKey(urlPitcher);
     }

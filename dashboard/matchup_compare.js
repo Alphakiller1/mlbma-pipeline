@@ -26,16 +26,21 @@
     return 'team_profile.html?team=' + encodeURIComponent(team || '');
   }
 
-  function pitcherProfileUrl(name) {
-    return 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
+  function pitcherProfileUrl(name, pitcherId) {
+    var url = 'pitcher_profile.html?pitcher=' + encodeURIComponent(name || '');
+    if (pitcherId) url += '&pitcherId=' + encodeURIComponent(pitcherId);
+    return url;
   }
 
   function bullpenReportUrl(team) {
     return 'bullpen_report.html?team=' + encodeURIComponent(team || '');
   }
 
-  function compareUrl(away, home) {
-    return 'matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home);
+  function compareUrl(away, home, gameNumber, gamePk) {
+    var url = 'matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home);
+    if (gameNumber && Number(gameNumber) > 1) url += '&gn=' + encodeURIComponent(gameNumber);
+    if (gamePk) url += '&gamePk=' + encodeURIComponent(gamePk);
+    return url;
   }
 
   var COMPARE_MODES = [
@@ -173,14 +178,20 @@
     return S && S.parseWeatherMap ? S.parseWeatherMap(rows) : {};
   }
 
-  function findMatchup(rows, away, home) {
+  function findMatchup(rows, away, home, gameNumber, gamePk) {
     var norm = S && S.normalizeTeamAbbr ? S.normalizeTeamAbbr.bind(S) : function(t) { return String(t || '').trim().toUpperCase(); };
     var list = S.parseMatchupRows(rows);
     var a = norm(away);
     var h = norm(home);
-    return list.find(function(m) {
+    var candidates = list.filter(function(m) {
       return norm(m.away) === a && norm(m.home) === h;
-    }) || null;
+    });
+    if (gamePk) {
+      var byPk = candidates.find(function(m) { return String(m.gamePk || '') === String(gamePk); });
+      if (byPk) return byPk;
+    }
+    return candidates.find(function(m) { return Number(m.gameNumber || 1) === Number(gameNumber || 1); })
+      || candidates[0] || null;
   }
 
   function filterSlateMatchupRows(rows) {
@@ -192,7 +203,7 @@
     var list = filterSlateMatchupRows(rows || []);
     var games = S ? S.parseMatchupRows(list) : [];
     var picks = games.map(function(m) {
-      return '<a class="hub-pill mc-slate-pick" href="' + compareUrl(m.away, m.home) + '">'
+      return '<a class="hub-pill mc-slate-pick" href="' + compareUrl(m.away, m.home, m.gameNumber, m.gamePk) + '">'
         + esc(m.away) + ' @ ' + esc(m.home) + '</a>';
     }).join('');
     var hint = away && home
@@ -957,9 +968,10 @@
   function spCardLvp(side, name, hand, team, m, met, pitchScore, spL14, splits) {
     var tier = S.pitchTier(pitchScore);
     var pname = name && name !== 'TBD' ? name : 'TBD';
+    var pitcherId = team === m.away ? m.awaySPId : m.homeSPId;
     var nameHtml = pname === 'TBD'
       ? esc(pname)
-      : '<a href="' + pitcherProfileUrl(pname) + '">' + esc(pname) + '</a>';
+      : '<a href="' + pitcherProfileUrl(pname, pitcherId) + '">' + esc(pname) + '</a>';
     var stats = team === m.away
       ? { k: m.awayK, bb: m.awayBB, fip: m.awayFIP, xfip: m.awayXFIP, hr9: m.awayHR9 }
       : { k: m.homeK, bb: m.homeBB, fip: m.homeFIP, xfip: m.homeXFIP, hr9: m.homeHR9 };
@@ -996,9 +1008,10 @@
   function spCard(side, name, hand, team, m, met, pitchScore, spL14) {
     var tier = S.pitchTier(pitchScore);
     var pname = name && name !== 'TBD' ? name : 'TBD';
+    var pitcherId = team === m.away ? m.awaySPId : m.homeSPId;
     var nameHtml = pname === 'TBD'
       ? esc(pname)
-      : '<a href="' + pitcherProfileUrl(pname) + '">' + esc(pname) + '</a>';
+      : '<a href="' + pitcherProfileUrl(pname, pitcherId) + '">' + esc(pname) + '</a>';
     var stats = team === m.away
       ? { k: m.awayK, bb: m.awayBB, fip: m.awayFIP, xfip: m.awayXFIP, hr9: m.awayHR9 }
       : { k: m.homeK, bb: m.homeBB, fip: m.homeFIP, xfip: m.homeXFIP, hr9: m.homeHR9 };
@@ -1132,7 +1145,7 @@
     }
 
     function fetchMatchups(force) {
-      return S.fetchSheetTab(T.today_matchups, force ? { forceRefresh: true } : {})
+      return S.fetchSheetTab(T.today_matchups, { forceRefresh: !!force, preferSheets: true, slateDay: S.easternDateIso() })
         .catch(function(err) {
           console.warn('[matchup_compare] Today_Matchups fetch failed', err);
           return [];
@@ -1190,36 +1203,45 @@
     Promise.all(fetches).then(function(res) {
       if (A && A.parseRegistryRows) A.parseRegistryRows(res[9]);
       var slateRows = filterSlateMatchupRows(res[0]);
-      var m = findMatchup(slateRows, away, home) || findMatchup(res[0], away, home);
+      var gnWant = parseInt(qp('gn') || '1', 10) || 1;
+      var gamePkWant = qp('gamePk');
+      var m = findMatchup(slateRows, away, home, gnWant, gamePkWant)
+        || findMatchup(res[0], away, home, gnWant, gamePkWant);
 
       // The sheet snapshot goes stale (it showed Seymour/Sandoval while MLB's
       // posted Gm 1 probables were Jax/Bennett) and one sheet row cannot
       // represent both games of a doubleheader. MLB's live schedule is the
       // source of truth for starters, time, and game selection — same
       // precedence the matchup cards use. ?gn=2 selects a DH game 2.
-      if (m) {
+      {
         var liveGames = (res[31] && res[31].games) ? res[31].games : [];
-        var gnWant = parseInt(qp('gn') || '1', 10) || 1;
         var tk = S.teamKey || function(t) { return String(t || '').trim().toUpperCase(); };
         var liveGame = null;
         for (var li = 0; li < liveGames.length; li++) {
           var lg = liveGames[li];
-          if (tk(lg.away) !== tk(m.away) || tk(lg.home) !== tk(m.home)) continue;
+          if (gamePkWant && String(lg.gamePk || '') === String(gamePkWant)) { liveGame = lg; break; }
+          if (tk(lg.away) !== tk(away) || tk(lg.home) !== tk(home)) continue;
           if ((lg.gameNumber || 1) === gnWant) { liveGame = lg; break; }
           if (!liveGame) liveGame = lg;
         }
         if (liveGame) {
-          if (liveGame.awaySP && liveGame.awaySP !== 'TBD') {
-            m.awaySP = liveGame.awaySP;
-            if (liveGame.awaySPId) m.awaySPId = liveGame.awaySPId;
+          if (!m) m = Object.assign({}, liveGame);
+          var oldAway = m.awaySP;
+          var oldHome = m.homeSP;
+          m.awaySP = liveGame.awaySP || 'TBD';
+          m.homeSP = liveGame.homeSP || 'TBD';
+          m.awaySPId = liveGame.awaySPId || null;
+          m.homeSPId = liveGame.homeSPId || null;
+          m.awayHand = liveGame.awayHand || '?';
+          m.homeHand = liveGame.homeHand || '?';
+          if (S.normName(oldAway) !== S.normName(m.awaySP)) {
+            ['awayK', 'awayBB', 'awayHR9', 'awayWHIP', 'awayERA', 'awayFIP', 'awayXFIP'].forEach(function(k) { m[k] = null; });
           }
-          if (liveGame.homeSP && liveGame.homeSP !== 'TBD') {
-            m.homeSP = liveGame.homeSP;
-            if (liveGame.homeSPId) m.homeSPId = liveGame.homeSPId;
+          if (S.normName(oldHome) !== S.normName(m.homeSP)) {
+            ['homeK', 'homeBB', 'homeHR9', 'homeWHIP', 'homeERA', 'homeFIP', 'homeXFIP'].forEach(function(k) { m[k] = null; });
           }
-          if (liveGame.awayHand === 'L' || liveGame.awayHand === 'R') m.awayHand = liveGame.awayHand;
-          if (liveGame.homeHand === 'L' || liveGame.homeHand === 'R') m.homeHand = liveGame.homeHand;
           if (liveGame.time) m.time = liveGame.time;
+          m.gamePk = liveGame.gamePk || null;
           m.gameNumber = liveGame.gameNumber || 1;
           m.doubleHeader = !!liveGame.doubleHeader;
         }
