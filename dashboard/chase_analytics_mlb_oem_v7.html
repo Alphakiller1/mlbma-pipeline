@@ -4300,10 +4300,8 @@ function enrichMatchupCards() {
     m.home = normalizeTeamAbbr(m.home);
     m.awayHand = normalizePitcherHand(m.awayHand);
     m.homeHand = normalizePitcherHand(m.homeHand);
-    if (m.awayHand === '?' && m.awaySP) m.awayHand = pitcherHandFromProfiles(m.awaySP, m.away) || '?';
-    if (m.homeHand === '?' && m.homeSP) m.homeHand = pitcherHandFromProfiles(m.homeSP, m.home) || '?';
-    if (m.awayHand === '?') m.awayHand = 'R';
-    if (m.homeHand === '?') m.homeHand = 'R';
+    if (m.awayHand === '?' && m.awaySP && m.awaySP !== 'TBD') m.awayHand = pitcherHandFromProfiles(m.awaySP, m.away) || '?';
+    if (m.homeHand === '?' && m.homeSP && m.homeSP !== 'TBD') m.homeHand = pitcherHandFromProfiles(m.homeSP, m.home) || '?';
     var awayProf = spStatsFromProfile(m.awaySP, m.away, m.awaySPId);
     var homeProf = spStatsFromProfile(m.homeSP, m.home, m.homeSPId);
     if (awayProf) {
@@ -4497,7 +4495,15 @@ function lineupGameKeySet(lineups) {
 function teamOsiVsPitcherHand(team, pitcherHand, scR, scL) {
   var t = normalizeTeamAbbr(team);
   var h = normalizePitcherHand(pitcherHand);
-  var row = h === 'L' ? (toMap(scL || [])[t]) : (toMap(scR || [])[t]);
+  var rRow = toMap(scR || [])[t];
+  var lRow = toMap(scL || [])[t];
+  var row = h === 'L' ? lRow : h === 'R' ? rRow : null;
+  if (!row) {
+    var rOsi = rRow && rRow.osi != null ? Number(rRow.osi) : null;
+    var lOsi = lRow && lRow.osi != null ? Number(lRow.osi) : null;
+    if (rOsi != null && lOsi != null) return (rOsi + lOsi) / 2;
+    row = rRow || lRow;
+  }
   return row && row.osi != null ? row.osi : null;
 }
 
