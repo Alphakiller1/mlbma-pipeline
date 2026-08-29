@@ -4533,6 +4533,8 @@ function buildMatchupFromSlateGame(g, luKeys, byMatchup, scR, scL) {
   var homeHand = (exHome && ex.homeHand && ex.homeHand !== '?')
     ? normalizePitcherHand(ex.homeHand)
     : (pitcherHandFromProfiles(homeSP, home) || '?');
+  if (awaySP === 'TBD') awayHand = '?';
+  if (homeSP === 'TBD') homeHand = '?';
   var awayProf = spStatsFromProfile(awaySP, away, g.awaySPId);
   var homeProf = spStatsFromProfile(homeSP, home, g.homeSPId);
   var awayOsi = (scR.length && scL.length)

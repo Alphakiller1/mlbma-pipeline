@@ -157,6 +157,7 @@ class DashboardSlateTruthContractTests(unittest.TestCase):
         source = (ROOT / "dashboard" / "chase_analytics_mlb_oem_v7.html").read_text(encoding="utf-8")
         cards = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
         self.assertIn("awaySP: g.awaySP || 'TBD'", source)
+        self.assertIn("if (awaySP === 'TBD') awayHand = '?'", source)
         self.assertNotIn("g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP", source)
         self.assertIn("if (pname === 'TBD') ps = null", cards)
 
