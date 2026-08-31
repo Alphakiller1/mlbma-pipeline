@@ -33,6 +33,10 @@ SCRIPTS_REQUIRED = [
 # Optional: failures log WARNING and execution continues (FanGraphs-free / partial runs).
 SCRIPTS_OPTIONAL = [
     "scrapers.scrape_fangraphs",
+    # Must follow scrape_fangraphs and precede core.compute: it refreshes the season
+    # lines calc_pitching_score reads while inheriting the FanGraphs-only columns
+    # (xFIP, batted ball) from whatever that scrape left behind.
+    "scrapers.scrape_sp_season_standard",
     "scrapers.scrape_pitch_mix",
     "core.compute",
     "outputs.push_sheets",
@@ -178,9 +182,10 @@ def run():
       8 scrape_pals (optional)
       9 compute_signals (optional)
      10 scrape_sp_gamelog (optional)
-     11 compute_sp_splits + push (optional)
+     11 compute_sp_l14 + scrape_sp_hand_splits + compute_sp_splits + push (optional)
      12 scrape_reliever_gamelog (optional)
      13 bullpen compute + push (optional)
+     13b bullpen social chart refresh for live slate (optional)
      14 scrape_player_registry (optional)
      15 scrape_batter_splits (optional)
      16 scrape_batter_gamelog (optional)
@@ -213,10 +218,13 @@ def run():
     run_sp_splits()
     run_reliever_gamelog()
     run_bullpen_profiles()
+    run_bullpen_social_charts()
 
     run_player_registry()
     run_batter_splits()
     run_batter_gamelog()
+    run_batter_splits_mlb()
+    run_batter_splits_fallback()
     run_batter_profiles()
     run_batter_prop_hitrates()
     run_team_profiles()
@@ -240,9 +248,22 @@ def run_sp_gamelog():
 
 
 def run_sp_splits():
-    """Step 11: SP split profiles + Sheets push; non-fatal on failure."""
+    """Step 11: SP split profiles + Sheets push; non-fatal on failure.
+
+    The L14 window and the vs-LHH/RHH platoon lines are rebuilt first. Both used to come
+    from FanGraphs, whose scrape has been dead since 2026-07-29; the files simply froze
+    and kept being published, so the staleness flags ran off a mid-July window and the
+    platoon panel was a month behind. They are derived from the game log and the MLB
+    Stats API now, and must be refreshed before the splits that consume them.
+    """
 
     def _fn():
+        from core.compute_sp_l14 import run as run_compute_sp_l14
+
+        run_compute_sp_l14()
+        from scrapers.scrape_sp_hand_splits import run as run_sp_hand_splits
+
+        run_sp_hand_splits()
         from core.compute_sp_splits import run as run_compute_sp_splits
 
         run_compute_sp_splits()
@@ -286,6 +307,34 @@ def run_bullpen_profiles():
     )
 
 
+def run_bullpen_social_charts():
+    """Step 13b: regenerate focused bullpen social crops for the live slate.
+
+    Non-fatal. Keeps posted bullpen charts aligned with Today_Matchups instead of
+    a hardcoded legacy game list.
+    """
+
+    def _fn():
+        script = ROOT / "scripts" / "capture_matchup_artifacts.py"
+        if not script.exists():
+            print("  WARNING: capture_matchup_artifacts.py missing — skip")
+            return
+        # Bullpen-only keeps the daily run short; full packs remain a manual flag.
+        result = subprocess.run(
+            [str(PYTHON), str(script), "--shots", "bullpen"],
+            cwd=str(ROOT),
+            env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"capture_matchup_artifacts exited {result.returncode}")
+
+    _run_step(
+        "Step 13b: refresh bullpen social charts (live slate)",
+        "core.compute_bullpen_profile",
+        _fn,
+    )
+
+
 def run_player_registry():
     """Step 14: MLB player registry + Sheets push; non-fatal on failure."""
 
@@ -317,6 +366,46 @@ def run_batter_gamelog():
         run_batter_gamelog_module()
 
     _run_step("Step 16: scrapers.scrape_batter_gamelog", "scrapers.scrape_batter_gamelog", _fn)
+
+
+def run_batter_splits_mlb():
+    """Step 16a: batter situational splits from the MLB Stats API.
+
+    The real source for vs-starter / vs-reliever and for true plate-appearance platoon
+    splits. Runs after the game log so it can use it as the batter roster, and before
+    the game-log fallback, which then only has to cover the date windows.
+    """
+
+    def _fn():
+        from scrapers.scrape_batter_splits_mlb import run as run_mlb_splits
+
+        run_mlb_splits()
+
+    _run_step(
+        "Step 16a: scrapers.scrape_batter_splits_mlb",
+        "scrapers.scrape_batter_splits_mlb",
+        _fn,
+    )
+
+
+def run_batter_splits_fallback():
+    """Step 16b: rebuild any split table Step 15 could not fill, from the game log.
+
+    Runs after the game log refresh so it derives from current data, and before the
+    batter profiles that consume the splits. Only touches files that are still empty,
+    so a working FanGraphs export always wins.
+    """
+
+    def _fn():
+        from core.compute_batter_splits import run as run_derive_splits
+
+        run_derive_splits()
+
+    _run_step(
+        "Step 16b: core.compute_batter_splits (fallback for empty splits)",
+        "core.compute_batter_splits",
+        _fn,
+    )
 
 
 def run_batter_profiles():
