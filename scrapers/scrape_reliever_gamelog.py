@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import csv
 import re
 import time
+from functools import lru_cache
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
@@ -88,10 +90,37 @@ def fetch_team_ids(season: int) -> Dict[int, str]:
     return mapping
 
 
+@lru_cache(maxsize=1)
+def _registry_throws() -> Dict[int, str]:
+    """MLB player id -> 'L'/'R' from the player registry, as a backstop."""
+    path = DATA_DIR / "player_registry.csv"
+    if not path.exists():
+        return {}
+    mapping: Dict[int, str] = {}
+    try:
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            for row in csv.DictReader(handle):
+                hand = str(row.get("throws") or "").strip().upper()[:1]
+                if hand not in ("L", "R"):
+                    continue
+                try:
+                    mapping[int(float(row["player_id"]))] = hand
+                except (TypeError, ValueError, KeyError):
+                    continue
+    except OSError:
+        return {}
+    return mapping
+
+
 def fetch_team_pitchers(team_id: int, season: int) -> List[dict]:
     r = get_with_retry(
         MLB_ROSTER_URL.format(team_id=team_id),
-        params={"rosterType": "active", "season": str(season)},
+        # `hydrate=person` is not optional. Without it the roster's person objects carry
+        # no pitchHand at all, the `or "R"` below caught every single arm, and the whole
+        # bullpen chain went out 100% right-handed - 8,981 reliever_gamelog rows and all
+        # 283 bullpen_individual profiles, so every left-handed reliever in the league
+        # read as a righty on the site.
+        params={"rosterType": "active", "season": str(season), "hydrate": "person"},
         headers=HEADERS,
         timeout=30,
     )
@@ -107,8 +136,11 @@ def fetch_team_pitchers(team_id: int, season: int) -> List[dict]:
         if not pid:
             continue
         hand = (
-            person.get("pitchHand", {}).get("code")
-            or entry.get("pitchHand", {}).get("code")
+            (person.get("pitchHand") or {}).get("code")
+            or (entry.get("pitchHand") or {}).get("code")
+            # player_registry.csv is built from the same rosters and carries `throws`, so
+            # it answers anyone the hydrate missed before we fall back to a bare guess.
+            or _registry_throws().get(int(pid))
             or "R"
         )
         pitchers.append(
