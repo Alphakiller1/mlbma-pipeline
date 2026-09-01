@@ -10,20 +10,31 @@ ranks too high, Detroit 7, San Diego 7 too low.
 Every input `core.compute_pitching.calc_pitching_score` needs (Tm, K%, BB%, HR/9, WHIP,
 IP) is available from the MLB Stats API, so those are rebuilt outright.
 
-WHAT IS INHERITED, NOT REFRESHED: xFIP and the batted-ball block (GB/FB, LD%, GB%, FB%,
-IFFB%, HR/FB, Pull%/Cent%/Oppo%, Soft%/Med%/Hard%, LOB%, wOBA) have no MLB Stats API
-equivalent - xFIP needs a fly-ball rate this API does not expose. Those columns are
-carried forward from the previous file by name, so `core.compute_pals`, the only consumer
-of xFIP, keeps working. They stay as stale as the last successful FanGraphs run and are
-counted in the console output so the staleness is never silent. xFIP is a rate and moves
-far more slowly than the innings-weighted counting stats this run repairs, but it is
-still stale, and PALS inherits that.
+xFIP IS REBUILT TOO, from a second source. It is the one column here that anything
+downstream actually reads - `core.compute_pals` turns opposing-starter xFIP into the PTF+
+half of PALS - and it needs a fly-ball rate the MLB Stats API does not expose. Baseball
+Savant's custom pitcher leaderboard does, so fly-ball share comes from there and is
+combined with the MLB counting stats using the standard formula:
+
+    xFIP = (13*(FB * lgHR/FB) + 3*(BB+HBP) - 2*K) / IP + cFIP
+
+`scripts/validate_xfip_source.py` checks this rebuild against the last good FanGraphs
+column: correlation 0.899 with a mean offset of -0.04, and the BB+HBP walk term (the
+standard definition) matches distinctly better than walks alone. The residual offset is
+expected, since the FanGraphs values are a 2026-07-29 snapshot and these are
+season-to-date. FB%, GB%, LD% and HR/FB are filled from the same Savant pull.
+
+WHAT IS STILL INHERITED: the columns with no source on either API - IFFB%, GB/FB,
+Pull%/Cent%/Oppo%, Soft%/Med%/Hard%, LOB%, wOBA. Nothing in the pipeline reads them
+today; they are carried forward by name so the file keeps its shape, and the console
+reports how many rows they came through on so the staleness is never silent.
 
 Run before `core.compute` (or before calling calc_pitching_score directly).
 """
 from __future__ import annotations
 
 import csv
+import io
 import json
 import os
 import sys
@@ -58,14 +69,21 @@ TEAM_ABBR = {
 # Rebuilt from the API every run.
 REFRESHED_COLUMNS = [
     "Season", "Name", "Tm", "IP", "TBF", "K/9", "BB/9", "K/BB", "HR/9", "K%", "BB%",
-    "K-BB%", "AVG", "WHIP", "BABIP", "FIP", "G", "ERA", "H", "2B", "3B", "R", "ER",
-    "HR", "BB", "IBB", "HBP", "SO", "OBP", "SLG",
+    "K-BB%", "AVG", "WHIP", "BABIP", "FIP", "xFIP", "GB%", "FB%", "LD%", "HR/FB",
+    "G", "GS", "ERA", "H", "2B", "3B", "R", "ER", "HR", "BB", "IBB", "HBP", "SO", "OBP", "SLG",
 ]
-# Carried over from the previous file by normalized name; no API equivalent.
+# Carried over from the previous file by normalized name; no source on either API.
 INHERITED_COLUMNS = [
-    "LOB%", "xFIP", "playerId", "GB/FB", "LD%", "GB%", "FB%", "IFFB%", "HR/FB",
+    "LOB%", "playerId", "GB/FB", "IFFB%",
     "IFH%", "BUH%", "Pull%", "Cent%", "Oppo%", "Soft%", "Med%", "Hard%", "wOBA",
 ]
+
+SAVANT_URL = (
+    "https://baseballsavant.mlb.com/leaderboard/custom?year={season}&type=pitcher"
+    "&filter=&min=1&selections=p_formatted_ip,flyballs_percent,groundballs_percent,"
+    "linedrives_percent&chart=false&x=p_formatted_ip&y=p_formatted_ip&r=no"
+    "&chartType=beeswarm&sort=1&sortDir=asc&csv=true"
+)
 
 
 def _get(url: str, attempts: int = 3, timeout: int = 90) -> Optional[dict]:
@@ -100,6 +118,40 @@ def _ratio(numerator: float, denominator: float, digits: int = 4) -> str:
     return str(round(numerator / denominator, digits)) if denominator else ""
 
 
+def savant_batted_ball() -> Dict[int, Dict[str, float]]:
+    """Fly-ball / ground-ball / line-drive share of balls in play, by MLB player id.
+
+    Joined on the MLB id rather than the name: this file already carries two different
+    pitchers called Yunior Marte, and a name join would silently merge them.
+    """
+    url = SAVANT_URL.format(season=CURRENT_SEASON)
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        text = urllib.request.urlopen(request, timeout=120).read().decode("utf-8-sig")
+    except Exception as exc:
+        print(f"  WARNING: Savant batted-ball pull failed ({str(exc)[:70]}) -- xFIP will be inherited")
+        return {}
+
+    out: Dict[int, Dict[str, float]] = {}
+    for row in csv.DictReader(io.StringIO(text)):
+        try:
+            pid = int(row["player_id"])
+        except (TypeError, ValueError, KeyError):
+            continue
+        def pct(key):
+            try:
+                return float(row.get(key) or 0) / 100.0
+            except (TypeError, ValueError):
+                return 0.0
+        out[pid] = {
+            "fb": pct("flyballs_percent"),
+            "gb": pct("groundballs_percent"),
+            "ld": pct("linedrives_percent"),
+        }
+    print(f"  Savant batted-ball rates for {len(out)} pitchers")
+    return out
+
+
 def load_inherited() -> Dict[str, Dict[str, str]]:
     """Previous file's FanGraphs-only columns, keyed by normalized player name."""
     path = Path(DATA_DIR) / TARGET
@@ -110,7 +162,10 @@ def load_inherited() -> Dict[str, Dict[str, str]]:
         for row in csv.DictReader(handle):
             key = normalize_player_name(str(row.get("Name", "")))
             if key and key not in out:
-                out[key] = {c: row.get(c, "") for c in INHERITED_COLUMNS}
+                # xFIP is read too, though it is rebuilt rather than inherited: it is the
+                # only column PALS consumes, so the previous value is kept available as a
+                # fallback for a Savant outage.
+                out[key] = {c: row.get(c, "") for c in INHERITED_COLUMNS + ["xFIP"]}
     return out
 
 
@@ -168,7 +223,7 @@ def run() -> None:
         entry = by_player.setdefault(int(pid), {
             "name": player.get("fullName", ""), "teams": [], "outs": 0, "tbf": 0,
             "so": 0, "bb": 0, "hr": 0, "h": 0, "ab": 0, "sf": 0, "g": 0,
-            "doubles": 0, "triples": 0, "r": 0, "er": 0, "ibb": 0, "hbp": 0,
+            "doubles": 0, "triples": 0, "r": 0, "er": 0, "ibb": 0, "hbp": 0, "gs": 0,
         })
         entry["teams"].append(team)
         entry["outs"] += round(_true_innings(stat.get("inningsPitched")) * 3)
@@ -180,6 +235,7 @@ def run() -> None:
         entry["ab"] += _int(stat, "atBats")
         entry["sf"] += _int(stat, "sacFlies")
         entry["g"] += _int(stat, "gamesPlayed")
+        entry["gs"] += _int(stat, "gamesStarted")
         entry["doubles"] += _int(stat, "doubles")
         entry["triples"] += _int(stat, "triples")
         entry["r"] += _int(stat, "runs")
@@ -187,10 +243,32 @@ def run() -> None:
         entry["ibb"] += _int(stat, "intentionalWalks")
         entry["hbp"] += _int(stat, "hitByPitch")
 
+    # xFIP needs the league's home runs per fly ball, so the fly-ball counts have to be
+    # totalled across everyone before any single pitcher's value can be worked out.
+    batted_ball = savant_batted_ball()
+    fly_balls: Dict[int, float] = {}
+    league_fb = league_hr = 0.0
+    for pid, entry in by_player.items():
+        rates = batted_ball.get(pid)
+        if not rates:
+            continue
+        # Balls in play, the denominator Savant's percentages are a share of.
+        bip = entry["ab"] - entry["so"] - entry["hr"] + entry["sf"]
+        if bip <= 0:
+            continue
+        count = bip * rates["fb"]
+        fly_balls[pid] = count
+        league_fb += count
+        league_hr += entry["hr"]
+    league_hr_per_fb = league_hr / league_fb if league_fb else 0.0
+    if league_hr_per_fb:
+        print(f"  league HR/FB = {league_hr_per_fb:.4f} over {league_fb:.0f} fly balls")
+
     rows: List[dict] = []
     matched = 0
     multi_team = 0
-    for entry in by_player.values():
+    rebuilt_xfip = 0
+    for pid, entry in by_player.items():
         innings = entry["outs"] / 3.0
         batters = entry["tbf"]
         if innings <= 0 or batters <= 0:
@@ -235,7 +313,17 @@ def run() -> None:
             "WHIP": round((hits + walks) / innings, 3),
             "BABIP": _ratio(hits - homers, balls_in_play, 3),
             "FIP": round(fip, 3),
+            # Standard xFIP, walk term including HBP. validate_xfip_source.py shows that
+            # convention tracking the retired FanGraphs column at corr 0.899 / -0.04 mean.
+            "xFIP": "",
+            "GB%": "",
+            "FB%": "",
+            "LD%": "",
+            "HR/FB": "",
             "G": entry["g"],
+            # Carried so load_sp_pitchers can select actual starters instead of falling
+            # back to "anyone who threw a pitch"; the FanGraphs export never had it.
+            "GS": entry["gs"],
             "ERA": round(9 * entry["er"] / innings, 3),
             "H": hits,
             "2B": entry["doubles"],
@@ -251,11 +339,29 @@ def run() -> None:
             "SLG": _ratio(total_bases, at_bats, 3),
         }
 
+        rates = batted_ball.get(pid)
+        count = fly_balls.get(pid)
+        if rates and count is not None and league_hr_per_fb:
+            row["GB%"] = round(rates["gb"], 4)
+            row["FB%"] = round(rates["fb"], 4)
+            row["LD%"] = round(rates["ld"], 4)
+            row["HR/FB"] = round(homers / count, 4) if count else ""
+            row["xFIP"] = round(
+                (13 * (count * league_hr_per_fb) + 3 * (walks + entry["hbp"]) - 2 * strikeouts)
+                / innings + FIP_CONSTANT,
+                3,
+            )
+            rebuilt_xfip += 1
+
         prior = inherited.get(normalize_player_name(name))
         if prior:
             matched += 1
         for column in INHERITED_COLUMNS:
             row[column] = (prior or {}).get(column, "")
+        # A Savant outage must not blank the only column PALS reads; fall back to the
+        # previous file's value rather than publishing an empty one.
+        if row["xFIP"] == "" and prior and str(prior.get("xFIP") or "").strip():
+            row["xFIP"] = prior["xFIP"]
         rows.append(row)
 
     if not rows:
@@ -263,14 +369,17 @@ def run() -> None:
         return
 
     with_xfip = sum(1 for r in rows if str(r.get("xFIP") or "").strip())
+    carried_xfip = with_xfip - rebuilt_xfip
     path = os.path.join(DATA_DIR, TARGET)
     with open(path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=REFRESHED_COLUMNS + INHERITED_COLUMNS)
         writer.writeheader()
         writer.writerows(rows)
     print(f"  Saved {len(rows)} rows -> {path} ({multi_team} multi-team, tagged \"N Tms\")")
-    print(f"  inherited columns matched for {matched}/{len(rows)} rows; "
-          f"{with_xfip} carry an xFIP (PALS input, still as stale as the last FanGraphs run)")
+    print(f"  inherited columns matched for {matched}/{len(rows)} rows")
+    print(f"  xFIP: {rebuilt_xfip} rebuilt from Savant fly-ball rates, "
+          f"{carried_xfip} carried from the previous file, "
+          f"{len(rows) - with_xfip} empty")
 
 
 if __name__ == "__main__":

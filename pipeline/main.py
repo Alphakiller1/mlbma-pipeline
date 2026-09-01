@@ -182,6 +182,7 @@ def run():
       8 scrape_pals (optional)
       9 compute_signals (optional)
      10 scrape_sp_gamelog (optional)
+     10b scrape_reliever_gamelog + pitcher-handedness backfill (optional)
      11 compute_sp_l14 + scrape_sp_hand_splits + compute_sp_splits + push (optional)
      12 scrape_reliever_gamelog (optional)
      13 bullpen compute + push (optional)
@@ -215,14 +216,18 @@ def run():
     run_signals()
 
     run_sp_gamelog()
-    run_sp_splits()
+    # Reliever log moved ahead of the SP split compute so one handedness repair can cover
+    # both game logs before anything aggregates them.
     run_reliever_gamelog()
+    run_pitcher_hand_backfill("pitcher game logs")
+    run_sp_splits()
     run_bullpen_profiles()
     run_bullpen_social_charts()
 
     run_player_registry()
     run_batter_splits()
     run_batter_gamelog()
+    run_pitcher_hand_backfill("batter game log")
     run_batter_splits_mlb()
     run_batter_splits_fallback()
     run_batter_profiles()
@@ -245,6 +250,43 @@ def run_sp_gamelog():
         run_sp_gamelog_module()
 
     _run_step("Step 10: scrapers.scrape_sp_gamelog", "scrapers.scrape_sp_gamelog", _fn)
+
+
+def run_pitcher_hand_backfill(stage: str):
+    """Resolve pitcher handedness in the freshly written logs; non-fatal on failure.
+
+    Every scraper that stamps handedness gets some of it wrong, and each one is wrong in
+    its own way: the reliever roster call returns no pitchHand unless hydrated, and the SP
+    side resolves by name against player_registry.csv, which only covers active and IL
+    rosters - about a quarter of the season's starters are absent, so anyone released,
+    traded out or sent down keeps whatever the fallback guessed. On 2026-08-31 that shipped
+    a league with no left-handers at all: 8,981 reliever_gamelog rows and all 283 bullpen
+    profiles read "R".
+
+    Patching the files by hand fixed a day and nothing more - the next nightly run wrote
+    the same wrong values straight back. This makes the repair part of the run instead. The
+    script is idempotent and asks the MLB people endpoint for anyone the registry cannot
+    answer, so it is the one place that closes the gap for every file at once.
+    """
+
+    def _fn():
+        script = ROOT / "scripts" / "backfill_pitcher_hand.py"
+        if not script.exists():
+            print("  WARNING: backfill_pitcher_hand.py missing -- skip")
+            return
+        result = subprocess.run(
+            [str(PYTHON), str(script), "--apply"],
+            cwd=str(ROOT),
+            env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"backfill_pitcher_hand exited {result.returncode}")
+
+    _run_step(
+        f"Pitcher handedness backfill ({stage})",
+        "scrapers.scrape_sp_gamelog",
+        _fn,
+    )
 
 
 def run_sp_splits():

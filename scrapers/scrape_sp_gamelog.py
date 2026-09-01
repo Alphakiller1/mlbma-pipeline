@@ -17,6 +17,7 @@ from core.config import (
     TEAM_MAP,
 )
 from core.metrics_utils import parse_ip
+from core.name_utils import normalize_player_name
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 MLB_PLAYERS_URL = "https://statsapi.mlb.com/api/v1/sports/1/players"
@@ -132,22 +133,116 @@ def resolve_player_id(name: str, index: Dict[str, int]) -> Optional[int]:
     return None
 
 
+def load_slate_starters() -> pd.DataFrame:
+    """Today's probable starters, as Name / Tm / pitcher_hand.
+
+    sp_standard.csv is a FanGraphs file, so it is frozen for as long as FanGraphs is
+    unreachable, and it only ever listed arms that had already started. A pitcher who
+    joins a rotation - off the IL, up from Triple-A, traded in - is therefore absent,
+    gets no game log, and the compare page prints "No starts in SP_Game_Log" for the
+    man starting tonight. Eury Perez and Eric Lauer both hit that today.
+
+    Today's slate is the authoritative list of who is actually starting, so it is
+    unioned in. Handedness prefers the registry's `throws` over the slate CSV, whose
+    hand column is unreliable (it lists Shota Imanaga as a righty).
+    """
+    slate = DATA_DIR / "today_matchups.csv"
+    if not slate.exists():
+        return pd.DataFrame(columns=["Name", "Tm", "pitcher_hand"])
+    throws = {}
+    reg = DATA_DIR / "player_registry.csv"
+    if reg.exists():
+        try:
+            rdf = pd.read_csv(reg)
+            throws = {str(r.full_name).strip(): str(r.throws or "R").upper()[:1]
+                      for r in rdf.itertuples() if getattr(r, "full_name", None)}
+        except Exception:
+            throws = {}
+    out = []
+    try:
+        sdf = pd.read_csv(slate)
+    except Exception:
+        return pd.DataFrame(columns=["Name", "Tm", "pitcher_hand"])
+    for row in sdf.itertuples():
+        for side in ("Away", "Home"):
+            name = str(getattr(row, f"{side}_SP", "") or "").strip()
+            if not name or name.upper() == "TBD":
+                continue
+            team = str(getattr(row, side, "") or "").strip().upper()
+            hand = throws.get(name) or str(
+                getattr(row, f"{side}_Hand", "R") or "R").upper()[:1]
+            out.append({"Name": name, "Tm": team,
+                        "pitcher_hand": "L" if hand == "L" else "R"})
+    return pd.DataFrame(out).drop_duplicates(subset=["Name"])
+
+
+def _registry_throws() -> Dict[str, str]:
+    """Normalized player name -> 'L'/'R' from the player registry."""
+    path = DATA_DIR / "player_registry.csv"
+    if not path.exists():
+        return {}
+    try:
+        registry = pd.read_csv(path, usecols=["full_name", "throws"])
+    except (ValueError, OSError):
+        return {}
+    mapping: Dict[str, str] = {}
+    for row in registry.itertuples():
+        hand = str(getattr(row, "throws", "") or "").strip().upper()[:1]
+        if hand in ("L", "R"):
+            mapping[normalize_player_name(str(row.full_name))] = hand
+    return mapping
+
+
 def load_sp_pitchers() -> pd.DataFrame:
     path = DATA_DIR / "sp_standard.csv"
     if not path.exists():
         raise FileNotFoundError("sp_standard.csv not found -- run FanGraphs scrape first")
     df = pd.read_csv(path)
-    df = df[~df["Tm"].astype(str).str.contains("Tms", na=False)]
+    # A traded pitcher appears as "N Tms". Dropping those rows outright is only right when
+    # the file also carries his per-team rows, which is what the FanGraphs export did - the
+    # combined row was a duplicate. scrape_sp_season_standard writes one row per player
+    # instead, so the blanket filter silently deleted every traded starter from the SP
+    # population: Kevin Gausman, Clay Holmes, Casey Mize and Dean Kremer among 20 others
+    # vanished from sp_gamelog and sp_profiles on 2026-09-01.
+    #
+    # Prefer a specific team when one exists for that name, and keep the combined row only
+    # when it is all there is. Team is not load-bearing here anyway - the game log fetched
+    # below carries the real team per start.
+    tms = df["Tm"].astype(str).str.contains("Tms", na=False)
+    if "Name" in df.columns:
+        specific = set(df.loc[~tms, "Name"].astype(str))
+        df = df[~(tms & df["Name"].astype(str).isin(specific))]
+    else:
+        df = df[~tms]
     hand_col = next((c for c in ("Hand", "Throws", "hand") if c in df.columns), None)
     if hand_col:
         df["pitcher_hand"] = (
             df[hand_col].astype(str).str.upper().str[:1].replace({"S": "R", "L": "L"})
         )
     else:
-        df["pitcher_hand"] = "R"
+        # sp_standard.csv is a FanGraphs export and carries NO handedness column, so this
+        # branch used to stamp "R" on every arm -- which is why sp_profiles.pitcher_hand and
+        # sp_game_log.pitcher_hand were 100% right-handed for the whole season even after the
+        # registry itself was fixed. The registry is the source of truth; fall back to "R"
+        # only for a pitcher it does not know.
+        throws = _registry_throws()
+        df["pitcher_hand"] = (
+            df["Name"].map(lambda n: throws.get(normalize_player_name(str(n)), "R"))
+            if "Name" in df.columns
+            else "R"
+        )
     gs_col = next((c for c in ("GS", "G") if c in df.columns), None)
     if gs_col:
         df = df[pd.to_numeric(df[gs_col], errors="coerce").fillna(0) > 0]
+
+    extra = load_slate_starters()
+    if not extra.empty:
+        known = set(df["Name"].astype(str).str.strip()) if "Name" in df.columns else set()
+        add = extra[~extra["Name"].isin(known)]
+        if not add.empty:
+            print(f"  + {len(add)} of today's starters missing from sp_standard.csv: "
+                  f"{', '.join(add['Name'].tolist())}")
+            df = pd.concat([df, add], ignore_index=True)
     return df
 
 
