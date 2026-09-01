@@ -232,6 +232,24 @@ def _apply_season_pitching_rates(block: dict, pname: str, adv: dict) -> dict:
     return block
 
 
+def _pitcher_groups(gamelog: pd.DataFrame):
+    """Yield (pitcher_id, name, team, hand), starts - one group per PITCHER.
+
+    Grouping on pitcher_team as well used to be harmless because every start carried the
+    same season-long team. It is not any more: scrape_sp_gamelog now records the club a
+    man actually threw for that day, so a traded pitcher would be split into one partial
+    profile per team - Casey Mize and Tarik Skubal came out with 5 starts each instead of
+    21, and the page rendered whichever row landed first. Identity is the id, and the team
+    shown is the one he pitched for most recently.
+    """
+    for (pid, pname), pdf in gamelog.groupby(["pitcher_id", "pitcher_name"], dropna=False):
+        if "date" in pdf.columns:
+            pdf = pdf.sort_values("date")
+        teams = [t for t in pdf.get("pitcher_team", pd.Series(dtype=str)).tolist() if str(t).strip()]
+        hands = [h for h in pdf.get("pitcher_hand", pd.Series(dtype=str)).tolist() if str(h).strip()]
+        yield (pid, pname, teams[-1] if teams else "", hands[-1] if hands else ""), pdf
+
+
 def build_metric_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
     rows: List[dict] = []
     adv = season_advanced_lookup()
@@ -244,9 +262,7 @@ def build_metric_splits(gamelog: pd.DataFrame) -> pd.DataFrame:
     if "opponent_OBR" in gamelog.columns:
         gamelog["opponent_OBR_tier"] = gamelog["opponent_OBR"].map(_opp_tier)
 
-    for (pid, pname, pteam, phand), pdf in gamelog.groupby(
-        ["pitcher_id", "pitcher_name", "pitcher_team", "pitcher_hand"], dropna=False
-    ):
+    for (pid, pname, pteam, phand), pdf in _pitcher_groups(gamelog):
         for dim_name, col in SPLIT_DIMENSIONS:
             for split_val, sdf in pdf.groupby(col, dropna=False):
                 if not split_val or (isinstance(split_val, float) and pd.isna(split_val)):
@@ -456,9 +472,7 @@ def build_profiles(gamelog: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
         else {}
     )
 
-    for (pid, pname, pteam, phand), pdf in gamelog.groupby(
-        ["pitcher_id", "pitcher_name", "pitcher_team", "pitcher_hand"], dropna=False
-    ):
+    for (pid, pname, pteam, phand), pdf in _pitcher_groups(gamelog):
         block = _agg_block(pdf)
         if not block:
             continue
