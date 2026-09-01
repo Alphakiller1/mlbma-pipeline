@@ -316,6 +316,17 @@ def parse_start(
     is_home = bool(split.get("isHome"))
     home_away = "home" if is_home else "away"
 
+    # Take the pitcher's team from the start itself. The value passed in comes from
+    # sp_standard.csv, which carries one row per player and therefore says "2 Tms" for
+    # anyone traded - a literal that reached 472 rows of sp_gamelog, broke the home-park
+    # adjustment for every one of those starts (park_factor_for_team fell through to 1.0)
+    # and put a nonsense team on their profiles. The game log knows who he actually threw
+    # for that day, which is the only correct answer for a pitcher who changed clubs.
+    own_name = (split.get("team") or {}).get("name", "")
+    own_team = TEAM_MAP.get(own_name, "") if own_name else ""
+    if own_team:
+        pitcher_team = own_team
+
     game_pk = split.get("game", {}).get("gamePk")
     stadium = ""
     f5_er = None

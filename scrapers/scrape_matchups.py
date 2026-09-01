@@ -6,15 +6,48 @@ import gspread
 
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 from core.slate_date import eastern_slate_date_iso
+from core.name_utils import normalize_player_name
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 
+
+def load_throws_by_id() -> dict:
+    """MLB player id -> 'L'/'R', from the player registry."""
+    path = DATA_DIR / "player_registry.csv"
+    if not path.exists():
+        return {}
+    try:
+        registry = pd.read_csv(path, usecols=["player_id", "throws"])
+    except (ValueError, OSError):
+        return {}
+    mapping = {}
+    for row in registry.itertuples():
+        hand = str(getattr(row, "throws", "") or "").strip().upper()[:1]
+        if hand in ("L", "R"):
+            mapping[int(row.player_id)] = hand
+    return mapping
+
+
+def _hand_for(probable: dict, throws_by_id: dict) -> str:
+    """Starter handedness for a schedule probablePitcher entry.
+
+    Returns "" rather than guessing "R" when the pitcher is unknown, so a missing value
+    stays visibly missing instead of silently becoming a league of right-handers.
+    """
+    try:
+        pitcher_id = int((probable or {}).get("id") or 0)
+    except (TypeError, ValueError):
+        return ""
+    return throws_by_id.get(pitcher_id, "")
+
+
 def get_today_schedule():
     today = eastern_slate_date_iso()
     url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=probablePitcher,lineups,team"
     print(f"Fetching schedule for {today}...")
+    throws_by_id = load_throws_by_id()
     r = requests.get(url, headers=HEADERS, timeout=30)
     r.raise_for_status()
     data = r.json()
@@ -40,8 +73,18 @@ def get_today_schedule():
                 away_sp = game["teams"]["away"].get("probablePitcher", {}).get("fullName", "TBD")
                 home_sp = game["teams"]["home"].get("probablePitcher", {}).get("fullName", "TBD")
 
-                away_sp_hand = game["teams"]["away"].get("probablePitcher", {}).get("pitchHand", {}).get("code", "R")
-                home_sp_hand = game["teams"]["home"].get("probablePitcher", {}).get("pitchHand", {}).get("code", "R")
+                # The schedule endpoint returns a probablePitcher of only id/fullName/link.
+                # It does NOT carry pitchHand under any hydration (probablePitcher(person),
+                # (all) and (stats) were all checked), so reading .pitchHand.code here always
+                # fell through to "R" and made Away_SP_Hand/Home_SP_Hand a constant. Resolve
+                # it from the player registry by MLB id instead, which is stable across the
+                # name spellings and accents that break a name join.
+                away_sp_hand = _hand_for(
+                    game["teams"]["away"].get("probablePitcher", {}), throws_by_id
+                )
+                home_sp_hand = _hand_for(
+                    game["teams"]["home"].get("probablePitcher", {}), throws_by_id
+                )
 
                 games.append({
                     "Game_Time": game_time_str,
@@ -83,12 +126,29 @@ def load_osi():
         return pd.DataFrame(), pd.DataFrame()
     return pd.read_csv(rhp_path), pd.read_csv(lhp_path)
 
+EMPTY_SP_STATS = {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
+
+
 def get_sp_stats(sp_name, sp_df):
-    if sp_df.empty or sp_name == "TBD":
-        return {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
-    match = sp_df[sp_df["Name"].str.contains(sp_name.split()[-1], case=False, na=False)]
+    """Today's starter's season rates, matched on the full name.
+
+    This used to do a SUBSTRING match on the surname and take the first hit, so the
+    matchup card could show another pitcher's line entirely: "Michael King" matched John
+    King and Bryan King as readily as himself, and every "X Jr." matched every other,
+    because "Jr." parses as the surname. 118 of 604 qualified pitchers share a surname
+    and their rates differ by more than a run of xFIP. Exact first; surname only when it
+    picks out exactly one pitcher, and no longer as a substring.
+    """
+    if sp_df.empty or sp_name == "TBD" or not sp_name:
+        return dict(EMPTY_SP_STATS)
+    names = sp_df["Name"].astype(str)
+    target = normalize_player_name(str(sp_name))
+    match = sp_df[names.map(lambda n: normalize_player_name(n) == target)]
     if match.empty:
-        return {"K%": "--", "BB%": "--", "HR/9": "--", "FIP": "--", "IP": "--"}
+        last = str(sp_name).split()[-1].lower()
+        match = sp_df[names.map(lambda n: str(n).split()[-1].lower() == last)]
+        if len(match) != 1:
+            return dict(EMPTY_SP_STATS)
     row = match.iloc[0]
     return {
         "K%": row.get("K%", "--"),
