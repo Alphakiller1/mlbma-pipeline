@@ -313,10 +313,22 @@
     // upload timestamp is recent.
     if (!dated.length) return rows;
     var current = dated.filter(function(row) { return slateDateFromRow(row) === slateDay; });
-    if (!current.length) {
-      throw new Error('stale ' + tabName + ' slate (wanted ' + slateDay + ')');
+    if (current.length) return current;
+
+    // The wanted day can legitimately run ahead of what is published: the clock-rule
+    // fallback above looks to tomorrow before the pipeline has built tomorrow's card.
+    // Refusing outright blanked whole pages every evening. Take the earliest published
+    // day that has not already passed instead - tonight's card while tonight's games are
+    // still being played, tomorrow's the moment it lands. A genuinely old snapshot (the
+    // 2026-08-06 slate that sat in hub_dataset for 25 days) is still refused, which is
+    // the case this guard exists for.
+    var floor = easternCalendarDateIso();
+    var upcoming = dated.filter(function(row) { return slateDateFromRow(row) >= floor; });
+    if (upcoming.length) {
+      var pick = upcoming.map(slateDateFromRow).sort()[0];
+      return upcoming.filter(function(row) { return slateDateFromRow(row) === pick; });
     }
-    return current;
+    throw new Error('stale ' + tabName + ' slate (wanted ' + slateDay + ')');
   }
 
   function isTeamRankingsPage() {
@@ -2244,7 +2256,51 @@
   }
 
   /** MLB slate day is Eastern Time; after 5 PM ET the board rolls to tomorrow. */
+  // The pipeline decides which day's card it is publishing and writes that decision into
+  // Last_Updated as Slate_Date_ET. Its rule is data-driven: the day advances only once
+  // every game on the card has started. The client used a flat "past 17:00 ET" instead,
+  // which fires hours earlier - at 20:19 ET on 2026-08-31 the pipeline was still on 08-31
+  // with three games yet to throw a pitch while the client had already moved to 09-01.
+  // Every slate tab was then rejected as the wrong day, the matchup hero fell back to the
+  // bare MLB schedule, and pitcher_profile and bullpen_report failed outright.
+  //
+  // So prefer what the pipeline published. The clock rule stays only as the cold-start
+  // fallback for a page that has not read Last_Updated yet, and requireCurrentSlateRows
+  // below covers that window.
+  var SLATE_DAY_STORE_KEY = 'mlbma_slate_day';
+  var _publishedSlateDay = null;
+
+  function notePublishedSlateDay(iso) {
+    var day = String(iso || '').trim().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
+    if (day === _publishedSlateDay) return;
+    _publishedSlateDay = day;
+    try { sessionStorage.setItem(SLATE_DAY_STORE_KEY, day); } catch (e) { /* ignore */ }
+  }
+
+  (function primePublishedSlateDay() {
+    try {
+      var stored = sessionStorage.getItem(SLATE_DAY_STORE_KEY);
+      if (stored && /^\d{4}-\d{2}-\d{2}$/.test(stored)) _publishedSlateDay = stored;
+    } catch (e) { /* ignore */ }
+  })();
+
+  /** Eastern calendar date, with no look-ahead. The floor a slate may never fall below. */
+  function easternCalendarDateIso(d) {
+    d = d || new Date();
+    try {
+      var iso = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    } catch (e) { /* ignore */ }
+    return localDateIso(d);
+  }
+
   function easternDateIso(d) {
+    // An explicit date is a caller asking about that moment, never about the live slate.
+    if (!d && _publishedSlateDay) {
+      // Guard against a stale session value left over from a previous day.
+      if (_publishedSlateDay >= easternCalendarDateIso()) return _publishedSlateDay;
+    }
     d = d || new Date();
     try {
       var iso = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
@@ -3373,6 +3429,8 @@
     fetchMlbTodaySchedule: fetchMlbTodaySchedule,
     localDateIso: localDateIso,
     easternDateIso: easternDateIso,
+    easternCalendarDateIso: easternCalendarDateIso,
+    notePublishedSlateDay: notePublishedSlateDay,
     formatGameTimeEt: formatGameTimeEt
   };
   global.LineupModel = LineupModel;
