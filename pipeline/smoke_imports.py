@@ -27,6 +27,8 @@ MODULES = [
     "scrapers.scrape_weather",
     "outputs.push_sheets",
     "scrapers.scrape_sp_gamelog",
+    "scrapers.scrape_sp_hand_splits",
+    "scrapers.scrape_sp_season_standard",
     "core.compute_sp_splits",
     "outputs.push_sp_splits",
     "scrapers.scrape_reliever_gamelog",

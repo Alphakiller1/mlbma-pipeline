@@ -12,6 +12,7 @@ import pandas as pd
 
 from core.config import DATA_DIR, PALS_WEIGHTS
 from core.metrics_utils import load
+from core.name_utils import normalize_player_name
 
 
 def normalize_optional(series, invert=False):
@@ -24,11 +25,23 @@ def normalize_optional(series, invert=False):
 
 
 def match_sp(sp_name, sp_df):
+    """Opposing starter's xFIP, matched on the full name.
+
+    This used to key on the surname alone and take the first hit, which is wrong for 118
+    of the 604 qualified pitchers: there are three Kings, three Rodriguezes, four Smiths
+    and five Andersons, whose xFIPs span more than a run. Worse, "Jr." parses as the
+    surname, so Mark Leiter Jr., Lance McCullers Jr. and Samy Natera Jr. all collapsed
+    onto whichever came first. A full-name match is exact; the surname is kept only as a
+    fallback, and only when it identifies exactly one pitcher.
+    """
     if sp_name == "TBD" or not sp_name:
         return None
+    exact = sp_df[sp_df["norm_name"] == normalize_player_name(str(sp_name))]
+    if len(exact):
+        return exact.iloc[0]["xFIP"]
     last = sp_name.split()[-1].lower()
     match = sp_df[sp_df["last_name"] == last]
-    if match.empty:
+    if len(match) != 1:
         return None
     return match.iloc[0]["xFIP"]
 
@@ -41,6 +54,7 @@ def load_sp_xfip():
     df["xFIP"] = pd.to_numeric(df["xFIP"], errors="coerce")
     df = df.dropna(subset=["xFIP"])
     df["last_name"] = df["Name"].str.split().str[-1].str.lower()
+    df["norm_name"] = df["Name"].map(lambda n: normalize_player_name(str(n)))
     print(f"  Loaded {len(df)} qualified SPs with xFIP")
     return df
 

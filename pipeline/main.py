@@ -38,6 +38,9 @@ SCRIPTS_REQUIRED = [
 # Optional: failures log WARNING and execution continues (FanGraphs-free / partial runs).
 SCRIPTS_OPTIONAL = [
     "scrapers.scrape_fangraphs",
+    # Must follow scrape_fangraphs and precede core.compute: it refreshes the season lines
+    # calc_pitching_score reads, while inheriting the columns only FanGraphs ever had.
+    "scrapers.scrape_sp_season_standard",
     "scrapers.scrape_pitch_mix",
     "core.compute",
     "outputs.push_sheets",
@@ -274,13 +277,17 @@ def run(skip_fangraphs: bool = False):
     run_signals()
 
     run_sp_gamelog()
-    run_sp_splits()
+    # Reliever log moved ahead of the SP split compute so one handedness repair covers
+    # both game logs before anything aggregates them.
     run_reliever_gamelog()
+    run_pitcher_hand_backfill("pitcher game logs")
+    run_sp_splits()
     run_bullpen_profiles()
 
     run_player_registry()
     run_batter_splits(skip_fangraphs=skip_fangraphs)
     run_batter_gamelog()
+    run_pitcher_hand_backfill("batter game log")
     run_batter_profiles()
     run_batter_prop_hitrates()
     if run_team_profiles():
@@ -311,10 +318,56 @@ def run_sp_gamelog():
     _run_step("Step 10: scrapers.scrape_sp_gamelog", "scrapers.scrape_sp_gamelog", _fn)
 
 
-def run_sp_splits():
-    """Step 11: SP split profiles + Sheets push; non-fatal on failure."""
+def run_pitcher_hand_backfill(stage: str):
+    """Resolve pitcher handedness in the freshly written logs; non-fatal on failure.
+
+    Every scraper that stamps handedness gets some of it wrong, each in its own way: the
+    reliever roster call returns no pitchHand unless hydrated, and the SP side resolves by
+    name against player_registry.csv, which only covers active and IL rosters - about a
+    quarter of the season's starters are absent. On 2026-09-01 that shipped a league with
+    no left-handed relievers at all. Patching the files by hand fixed a day and nothing
+    more; the next run wrote the same values back. The script is idempotent and asks the
+    MLB people endpoint for whoever the registry cannot answer, so running it here closes
+    the gap for every file at once.
+    """
 
     def _fn():
+        script = ROOT / "scripts" / "backfill_pitcher_hand.py"
+        if not script.exists():
+            print("  WARNING: backfill_pitcher_hand.py missing -- skip")
+            return
+        result = subprocess.run(
+            [str(PYTHON), str(script), "--apply"],
+            cwd=str(ROOT),
+            env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"backfill_pitcher_hand exited {result.returncode}")
+
+    _run_step(
+        f"Pitcher handedness backfill ({stage})",
+        "scrapers.scrape_sp_gamelog",
+        _fn,
+    )
+
+
+def run_sp_splits():
+    """Step 11: SP split profiles + Sheets push; non-fatal on failure.
+
+    The L14 window and the vs-LHH/RHH platoon lines are rebuilt first. Both used to come
+    from FanGraphs, whose scrape has been dead since 2026-07-29; the files froze and kept
+    being published, so the staleness flags ran off a mid-July window and the platoon
+    panel was a month behind. They are derived from the game log and the MLB Stats API
+    now, and must be refreshed before the splits that consume them.
+    """
+
+    def _fn():
+        from core.compute_sp_l14 import run as run_compute_sp_l14
+
+        run_compute_sp_l14()
+        from scrapers.scrape_sp_hand_splits import run as run_sp_hand_splits
+
+        run_sp_hand_splits()
         from core.compute_sp_splits import run as run_compute_sp_splits
 
         run_compute_sp_splits()

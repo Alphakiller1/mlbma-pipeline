@@ -174,6 +174,21 @@ def build_pitcher_staleness_df(
         for _, row in sp_l14.iterrows():
             l14_by_name[str(row["Name"])] = row
 
+    # Two different pitchers can carry the same name - the 2026 season has two Yunior
+    # Martes, MLB ids 805074 and 628708. Everything downstream keys staleness on the name
+    # alone (build_profiles does set_index("pitcher_name").to_dict("index"), which raises
+    # outright on a duplicate), so collapse to one row per name here, keeping whichever
+    # namesake threw more innings. The other's drift signal is unattributable by name and
+    # is dropped rather than crashing the whole profile build.
+    if "Name" in sp_std.columns and sp_std["Name"].duplicated().any():
+        sp_std = sp_std.copy()
+        sp_std["_ip_sort"] = pd.to_numeric(sp_std.get("IP"), errors="coerce").fillna(0)
+        sp_std = (
+            sp_std.sort_values("_ip_sort", ascending=False)
+            .drop_duplicates(subset=["Name"], keep="first")
+            .drop(columns=["_ip_sort"])
+        )
+
     rows = []
     for _, srow in sp_std.iterrows():
         name = str(srow.get("Name", "")).strip()
