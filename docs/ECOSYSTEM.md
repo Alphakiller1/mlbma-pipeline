@@ -197,11 +197,11 @@ Window splits use **lower min PA** (L7=8, L14=15, L30=25), explicit `splitArr=`,
 
 ### 5.1 Team Rankings (dedicated page)
 
-Public `/dashboard/team_rankings.html` **301s** to Opening Matchups (`/dashboard/index.html#section-matchups-hero`). The noindex capture copy is `dashboard/render/team_rankings.html`.
+Public `/dashboard/team_rankings.html` **301s** to Matchup Compare (`/dashboard/matchup_compare`). The noindex capture copy is `dashboard/render/team_rankings.html`.
 
 | Item | Value |
 |------|--------|
-| **Public URL** | 301 → `dashboard/index.html#section-matchups-hero` |
+| **Public URL** | 301 → `dashboard/matchup_compare` |
 | **Capture / render URL** | `dashboard/render/team_rankings.html` |
 | **JS SSOT** | `dashboard/lineup_view.js` (`LineupView` + URL filter state) |
 | **Fetches** | `vs_RHP`, `vs_LHP`, `Team_Profiles` only |
@@ -293,7 +293,7 @@ Read mostly from **`Team_Profiles`**, **`Batter_Profiles`**, **`SP_Profiles`**, 
 
 **Intentional no-op:** `outputs/push_matchups.py` (matchups pushed from scraper).
 
-**Legacy redirect:** `matchup_sheet.html` → `team_rankings.html`.
+**Legacy redirect:** `matchup_sheet.html` → `matchup_compare`.
 
 ---
 
@@ -347,7 +347,7 @@ Compare against:
 | `dashboard/mlbma_assets.js` | Colors, logos, z-scores |
 | `dashboard/lineup_view.js` | Team Rankings |
 | `dashboard/index.html` | Platform home + inline boot |
-| `dashboard/chase_analytics_mlb_oem_v7.html` | Legacy stub → `index.html` |
+| `dashboard/chase_analytics_mlb_oem_v7.html` | Legacy stub → `/dashboard/` |
 | `dashboard/research_lab.js` | Research Lab compare / trends / splits |
 | `dashboard/pitcher_lab.js` | Pitcher Intelligence |
 | `dashboard/platform_dashboard.js` | Matchups hero |

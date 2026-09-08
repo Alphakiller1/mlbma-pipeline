@@ -59,6 +59,12 @@ def stamp_hrefs(text: str) -> str:
     # deciding whether an insert is needed.
     text = re.sub(r"(/design/chase-tokens-v1\.css\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(design_layer_version\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(chase_sport_select\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(chase_nav\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(chase_datastatus\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(mlbma_assets\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(mlbma_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(matchup_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     if "chase-tokens-v1.css" not in text and "mlbma_design_system.css" in text:
         text = text.replace(
             f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">',

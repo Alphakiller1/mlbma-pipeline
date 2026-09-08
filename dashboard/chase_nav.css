@@ -191,17 +191,22 @@
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 14px;
-  color: #F9FAFB;
+  color: var(--text);
   text-decoration: none;
   transition: background 150ms ease;
 }
 
 .chase-dropdown-item:hover {
-  background: rgba(124, 77, 255, 0.08);
+  background: color-mix(in srgb, var(--ca-brand) 8%, transparent);
+}
+
+.chase-dropdown-item.active {
+  background: color-mix(in srgb, var(--ca-brand) 15%, transparent);
+  color: var(--ca-brand);
 }
 
 .chase-dropdown-item.disabled {
-  color: #6B7280;
+  color: var(--text-4);
   pointer-events: none;
 }
 

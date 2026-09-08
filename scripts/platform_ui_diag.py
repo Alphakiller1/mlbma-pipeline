@@ -25,7 +25,7 @@ class Check:
 
 
 PAGES = [
-    "dashboard/chase_analytics_mlb_oem_v7.html",
+    "dashboard/index.html",
     "dashboard/render/team_rankings.html?hubdebug=1",
     "dashboard/matchup_compare.html",
     "dashboard/render/team_profile.html",
@@ -130,7 +130,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> List[Check]:
             add(page_name, "no black heading text", dark_heading == "", dark_heading)
 
             # Trends-specific logo shape check
-            if "chase_analytics_mlb_oem_v7.html" in page_name:
+            if "dashboard/index.html" in page_name:
                 try:
                     page.wait_for_selector("#subtab-trends, [data-subtab='trends']", timeout=4000)
                     page.click("#subtab-trends, [data-subtab='trends']")

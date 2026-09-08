@@ -15,15 +15,14 @@ ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 
 PAGES = [
-    ("chase_analytics_mlb_oem_v7.html", "#opening-dashboard, .opening-layer"),
-    ("team_rankings.html", ".container, .lv-body, .hub-table, .lv-note"),
+    ("index.html", ".ca-tools__grid, .index-wrap, #section-matchups-hero"),
+    ("render/team_rankings.html", ".container, .lv-body, .hub-table, .lv-note"),
     ("matchup_compare.html", ".compare-page, .mc-header"),
     ("team_profile.html", "#profileHeroMount, .profile-shell"),
     ("pitcher_profile.html", "#profileContent"),
     ("batter_profile.html", "#profileContent"),
     ("bullpen_report.html", "#profilePageHeader, .profile-shell"),
     ("glossary.html", ".glossary-page, .container"),
-    ("index.html", ".index-wrap"),
 ]
 
 TIMEOUT_MS = 90000

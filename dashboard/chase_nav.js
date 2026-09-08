@@ -119,22 +119,25 @@
       if (!hash) return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
-    if (page === 'matchup_compare.html') return 'matchups';
-    if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'team-rankings';
+    if (page === 'matchup_compare.html' || page === 'matchup_compare') return 'compare';
+    if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'compare';
+    if (page === 'matchups.html' && href.indexOf('/nfl/') >= 0) return 'nfl';
     return page;
   }
 
   function currentNavKey() {
+    var path = window.location.pathname || '';
     var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
+    if (/\/nfl(\/|$)/.test(path)) return 'nfl';
     if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
-    if (page === 'matchup_compare.html') return 'matchups';
-    if (page === 'team_rankings.html') return 'team-rankings';
+    if (page === 'matchup_compare.html' || page === 'matchup_compare') return 'compare';
+    if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'compare';
     return page;
   }
 
@@ -158,11 +161,9 @@
     document.querySelectorAll('.chase-dropdown-item').forEach(function (link) {
       if (link.tagName !== 'A') return;
       var href = link.getAttribute('href');
-      link.style.background = '';
-      link.style.color = '';
+      link.classList.remove('active');
       if (href && href.split('/').pop().split('?')[0] === profilePage) {
-        link.style.background = 'rgba(124, 58, 237, 0.15)';
-        link.style.color = '#9A6BFF';
+        link.classList.add('active');
         var dropdown = link.closest('.chase-dropdown');
         if (dropdown) {
           var trig = dropdown.querySelector('.chase-nav-link');

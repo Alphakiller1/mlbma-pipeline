@@ -852,10 +852,10 @@
   function researchLabLegendHtml() {
     return '<div class="rl-metric-legend rl-metric-legend--global" role="note">'
       + '<span class="rl-legend-title">Metric colors</span>'
-      + '<span class="rl-legend-item"><i style="background:#4ADE80"></i> Higher = better (OSI, ABQ, RCV…)</span>'
-      + '<span class="rl-legend-item"><i style="background:#F87171"></i> Allowed metrics inverted (lower = better)</span>'
-      + '<span class="rl-legend-item"><i style="background:#60A5FA"></i> OOR = competition difficulty (contextual)</span>'
-      + '<span class="rl-legend-item"><i style="background:#FBBF24"></i> PP-Gap negative = regression risk</span>'
+      + '<span class="rl-legend-item"><i style="background:var(--mark-positive)"></i> Higher = better (OSI, ABQ, RCV…)</span>'
+      + '<span class="rl-legend-item"><i style="background:var(--mark-negative)"></i> Allowed metrics inverted (lower = better)</span>'
+      + '<span class="rl-legend-item"><i style="background:var(--ca-blue-500)"></i> OOR = competition difficulty (contextual)</span>'
+      + '<span class="rl-legend-item"><i style="background:var(--mark-caution)"></i> PP-Gap negative = regression risk</span>'
       + '</div>';
   }
 

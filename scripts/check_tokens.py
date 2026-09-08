@@ -28,7 +28,15 @@ STAMPED = (
     "chase-tokens-v1.css",
     "mlbma_design_system.css",
     "theme.css",
+    "chase_nav.css",
+    "responsive.css",
     "design_layer_version.js",
+    "chase_nav.js",
+    "chase_datastatus.js",
+    "chase_sport_select.js",
+    "mlbma_assets.js",
+    "mlbma_ui.js",
+    "matchup_shared.js",
 )
 # Design mockups are unlinked scratch surfaces, not product. They are excluded
 # from both the HTML :root scan and the CSS scan below.

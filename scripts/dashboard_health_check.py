@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 
 PRODUCTION_PAGES = [
-    "chase_analytics_mlb_oem_v7.html",
+    "index.html",
     "team_rankings.html",
     "matchup_compare.html",
     "team_profile.html",
