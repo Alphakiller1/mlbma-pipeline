@@ -35,7 +35,8 @@
     var spec = SPORTS.filter(function (s) { return s.id === sport; })[0];
     var base = spec ? spec.href : '/mlb/';
     var ctx = loadCtx(sport);
-    if (sport === 'nfl' && ctx.surface === 'matchups') return '/nfl/matchups.html';
+    if (ctx.surface === 'matchups') return '/' + sport + '/matchups.html';
+    if (ctx.surface === 'results') return '/' + sport + '/results.html';
     return base;
   }
 

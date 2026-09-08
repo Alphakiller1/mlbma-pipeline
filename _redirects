@@ -14,8 +14,9 @@
 /dashboard/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
 
 # Demoted public research surfaces (WP4A) — files remain under /dashboard/render/ for capture.
-/dashboard/team_rankings.html  /dashboard/index.html#section-matchups-hero  301
-/dashboard/team_rankings       /dashboard/index.html#section-matchups-hero  301
+/dashboard/team_rankings.html  /dashboard/matchup_compare.html  301
+/dashboard/team_rankings       /dashboard/matchup_compare.html  301
+/team_rankings.html            /dashboard/matchup_compare.html  301
 /dashboard/team_profile.html   /dashboard/index.html  301
 /dashboard/team_profile        /dashboard/index.html  301
 /dashboard/pitcher_profile.html /dashboard/index.html  301

@@ -318,6 +318,14 @@ ARTIFACTS = {
         "unclip": [".lv-table-wrap", ".lv-body"],
         "unstick": [".lv-table thead th"],
     },
+    "glossary_term": {
+        "label": "Glossary term card",
+        "scope": "slate",
+        "page": "glossary.html",
+        "selector": ".gloss-metric-card",
+        "wait_ms": 8000,
+        "framed": True,
+    },
 }
 
 # Team Rankings families as the site names them (spec calls these the categories).

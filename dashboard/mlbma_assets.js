@@ -856,15 +856,15 @@
     },
     {
       key: 'rankings',
-      label: 'Team Rankings',
-      desc: 'Scoring, difficulty, and status-projection tables.',
-      href: 'team_rankings.html',
+      label: 'Matchup Analysis',
+      desc: 'League rank inside the matchup. Window and segment stay free.',
+      href: 'matchup_compare.html',
       icon: 'trophy'
     },
     {
       key: 'research',
-      label: 'Research Lab',
-      desc: 'Trends, compare, and pitcher intelligence.',
+      label: 'Trends',
+      desc: 'Form heatmap vs YTD — still a public research surface.',
       href: 'index.html#section-research-lab',
       icon: 'flask-conical'
     }

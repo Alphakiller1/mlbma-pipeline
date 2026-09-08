@@ -2978,19 +2978,21 @@ body.view-research .ca-lab { display: block; }
         </ul>
         <div class="ca-tool-card__cta">Open Matchups <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
-      <div class="ca-tool-card ca-tool-card--teal" onclick="window.location.href='team_rankings.html';">
+      <div class="ca-tool-card ca-tool-card--teal" role="link" tabindex="0"
+        onclick="window.location.href='matchup_compare.html';"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='matchup_compare.html';}">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
           <span class="ca-icon-circle"><i data-lucide="trophy"></i></span>
         </div>
-        <h3 class="ca-tool-card__title">Team Rankings</h3>
-        <p class="ca-tool-card__lede">Unified 30-team table across scoring, difficulty, and status-projection families — filter by handedness, location, window, and segment.</p>
+        <h3 class="ca-tool-card__title">Matchup Analysis</h3>
+        <p class="ca-tool-card__lede">League rank lives inside the matchup. Window and segment stay in the ScopeBar; starter hand and park are stated as context, not a six-toggle grid.</p>
         <ul class="ca-tool-card__list">
-          <li>Platoon and home/away splits with F5 context</li>
-          <li>One-team scope for focused prop research</li>
-          <li>Sortable OSI, RCV, ABQ, wRC+, and rate columns</li>
+          <li>OSI with league ordinal on each side</li>
+          <li>Compare to league expander reuses the 30-team board</li>
+          <li>Surface results stay team-level (hand/bat side locked)</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Team Rankings <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
+        <div class="ca-tool-card__cta">Open Matchup Analysis <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
       <div class="ca-tool-card ca-tool-card--green" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('trends');},300);">
         <div class="ca-tool-card__accent"></div>
@@ -3020,19 +3022,21 @@ body.view-research .ca-lab { display: block; }
         </ul>
         <div class="ca-tool-card__cta">Open Compare <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
-      <div class="ca-tool-card ca-tool-card--amber" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('pitcher');},300);">
+      <div class="ca-tool-card ca-tool-card--amber" role="link" tabindex="0"
+        onclick="window.location.href='matchup_compare.html?compare=lvP';"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='matchup_compare.html?compare=lvP';}">
         <div class="ca-tool-card__accent"></div>
         <div class="ca-tool-card__icon">
           <span class="ca-icon-circle"><i data-lucide="target"></i></span>
         </div>
-        <h3 class="ca-tool-card__title">Pitcher Intelligence</h3>
-        <p class="ca-tool-card__lede">Starting-pitcher lab with Pitch Score, K%/BB%/FIP validation, and vulnerability flags against today's offensive units.</p>
+        <h3 class="ca-tool-card__title">Lineup vs pitcher</h3>
+        <p class="ca-tool-card__lede">Starter matchup research lives on Compare. The Pitcher Intelligence table remains a capture-only render route, not a public section.</p>
         <ul class="ca-tool-card__list">
-          <li>ERA vs competition-quality cross-check</li>
-          <li>Today's starters ranked with intel badges</li>
-          <li>SP props and F5 vs full-game decisions</li>
+          <li>Lineup vs the actual starter</li>
+          <li>Pitch Score against the unit he faces</li>
+          <li>F5 vs full-game still a ScopeBar choice</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Pitcher Lab <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
+        <div class="ca-tool-card__cta">Open Compare <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
     </div>
   </div>
@@ -8020,7 +8024,7 @@ function renderHomeResearchCards() {
   };
   var cards = [
     { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends' },
-    { tab: 'team-rankings', title: 'Team Rankings', uses: ['Sortable 30-team table by metric family', 'Platoon and location context for ranking', 'One-team scope for focused reads'], cta: 'Open Team Rankings' },
+    { tab: 'team-rankings', title: 'Matchup Analysis', uses: ['League rank beside every matchup value', 'Window and segment in the ScopeBar', 'Hand, park, and starter as stated context'], cta: 'Open Matchup Analysis' },
     { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare' },
     { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Intelligence' }
   ];
@@ -8037,7 +8041,11 @@ function renderHomeResearchCards() {
     btn.addEventListener('click', function() {
       var tab = btn.getAttribute('data-rl-tab');
       if (tab === 'team-rankings') {
-        window.location.href = 'team_rankings.html';
+        window.location.href = 'matchup_compare.html';
+        return;
+      }
+      if (tab === 'pitching') {
+        window.location.href = 'matchup_compare.html?compare=lvP';
         return;
       }
       try { sessionStorage.setItem('rlTab', tab); } catch (e) { /* ignore */ }

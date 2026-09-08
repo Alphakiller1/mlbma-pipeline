@@ -942,15 +942,40 @@
     function scope(kind, value, label) {
       return matchupPill(kind, value, label, state[kind] === value, false);
     }
-    return '<div class="lv-matchup-controls">'
-      + '<div class="lv-matchup-control"><span class="lv-label">View</span><div class="lv-pills">'
+    var rowView = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">View</span><div class="ca-scopebar-pills">'
       + family('surface', 'Results') + family('scoring', 'Scoring') + family('difficulty', 'Difficulty') + family('status', 'Projection')
-      + '</div></div>'
-      + '<div class="lv-matchup-control"><span class="lv-label">Window</span><div class="lv-pills">'
+      + '</div></div></div>';
+    var rowScope = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">Window</span><div class="ca-scopebar-pills">'
       + scope('window', 'YTD', 'YTD') + scope('window', 'L30', 'L30') + scope('window', 'L14', 'L14') + scope('window', 'L7', 'L7')
-      + '</div></div>'
-      + '<div class="lv-matchup-control"><span class="lv-label">Segment</span><div class="lv-pills">'
+      + '</div></div><div class="ca-scopebar-group"><span class="ca-scopebar-label">Segment</span><div class="ca-scopebar-pills">'
       + scope('segment', 'full', 'Full') + scope('segment', 'f5', 'F5') + '</div></div></div>';
+    return { rowView: rowView, rowScope: rowScope };
+  }
+
+  function matchupStatedContext(state) {
+    return 'Stated context (not toggles): <strong>' + esc(state.contexts.away.team) + '</strong> '
+      + esc(matchupContextText(state, 'away')) + ' · <strong>' + esc(state.contexts.home.team) + '</strong> '
+      + esc(matchupContextText(state, 'home'));
+  }
+
+  function renderMatchupScope(host, state) {
+    var rows = matchupControlsHtml(state);
+    var count = 0;
+    if (state.family !== 'scoring') count++;
+    if (state.window !== 'YTD') count++;
+    if (state.segment !== 'full') count++;
+    if (global.ChaseScopeBar && ChaseScopeBar.render) {
+      ChaseScopeBar.render(host, {
+        controls: [rows.rowView, rows.rowScope],
+        context: matchupStatedContext(state),
+        confidence: confidenceHtml({ filter: { window: state.window } }),
+        count: count,
+        dataStatusHtml: ''
+      });
+    } else {
+      host.innerHTML = rows.rowView + rows.rowScope
+        + '<p class="ca-scopebar-context">' + matchupStatedContext(state) + '</p>';
+    }
   }
 
   function matchupOverridesHtml(state) {
@@ -989,8 +1014,8 @@
 
     function paint() {
       normalizeSortState(state);
-      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div>'
-        + matchupControlsHtml(state) + '</div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
+      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div><div class="lv-scope-host"></div></div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
+      renderMatchupScope(el.querySelector('.lv-scope-host'), state);
       return Promise.all([
         LM.rankAll(matchupFilter(state, 'away'), state.family, { includeMeta: true }),
         LM.rankAll(matchupFilter(state, 'home'), state.family, { includeMeta: true })
@@ -999,10 +1024,10 @@
         var homeRows = resolvedRows(values[1]);
         var leagueRows = state.leagueSide === 'home' ? homeRows : awayRows;
         applyLeaguePoolsFromRows(awayRows.concat(homeRows));
-        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div>'
-          + matchupControlsHtml(state) + '</div>'
+        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div><div class="lv-scope-host"></div></div>'
           + '<div class="lv-matchup-teams">' + matchupTeamCard(state, 'away', awayRows) + matchupTeamCard(state, 'home', homeRows) + '</div>'
           + '<div class="lv-matchup-league"><div class="lv-body"></div></div>';
+        renderMatchupScope(el.querySelector('.lv-scope-host'), state);
         renderBody(el.querySelector('.lv-matchup-league'), state, leagueRows);
         var details = el.querySelector('.lv-league-expander');
         if (details) {
