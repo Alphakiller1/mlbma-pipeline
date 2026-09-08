@@ -189,7 +189,8 @@ h1 {
 .toggle-group { display: flex; gap: 2px; background: var(--surface-2); padding: 3px; border-radius: var(--r-sm); }
 .toggle-btn {
   background: transparent; border: none; color: var(--text-2);
-  padding: 7px 14px; font-size: 12px; font-weight: 500;
+  padding: 10px 14px; font-size: 12px; font-weight: 500;
+  min-height: 44px; box-sizing: border-box;
   cursor: pointer; border-radius: var(--r-sm);
   transition: all 0.15s ease; font-family: var(--font);
 }
@@ -1385,8 +1386,8 @@ tr.compare-selected td:first-child::before { content: '?'; color: var(--purple);
 .story-stat .ss-copy { color:var(--text-2); font-size:11px; margin-top:4px; line-height:1.45; }
 .glossary-tools { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
 .glossary-search {
-  flex:1; min-width:220px; background:var(--bg-3); border:1px solid var(--border-2);
-  color:var(--text); border-radius:8px; padding:8px 12px; font-size:12px;
+  flex:1; min-width:220px; min-height:44px; box-sizing:border-box; background:var(--bg-3); border:1px solid var(--border-2);
+  color:var(--text); border-radius:8px; padding:10px 12px; font-size:12px;
 }
 .glossary-term { min-height:120px; }
 .glossary-term .term {
@@ -2236,7 +2237,9 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 8px 18px;
+  padding: 10px 18px;
+  min-height: 44px;
+  box-sizing: border-box;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;

@@ -461,8 +461,8 @@ body.team-profile-page .hub-pill,
 body.team-profile-page .tp-unit-nav .hub-pill,
 body.team-profile-page .tp-unit-nav .tp-unit-tab {
   font-size: 12px !important;
-  min-height: 32px !important;
-  padding: 6px 14px !important;
+  min-height: 44px !important;
+  padding: 10px 14px !important;
 }
 
 body.pitcher-profile-page .pp-hero-stats .tp-hero-stat__value,
@@ -505,8 +505,8 @@ body.player-profile-page .bp-hero-banner-shell .ps-stat {
 body.player-profile-page .hub-pill,
 body.player-profile-page .window-pill {
   font-size: 12px !important;
-  min-height: 32px !important;
-  padding: 6px 14px !important;
+  min-height: 44px !important;
+  padding: 10px 14px !important;
 }
 
 body.player-profile-page .bp-usage-table th,
