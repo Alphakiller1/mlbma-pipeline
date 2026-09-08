@@ -1843,8 +1843,8 @@ h1.ca-page-title {
   background: var(--text-3);
   box-shadow: 0 0 8px var(--ca-brand);
 }
-.ca-datastatus[data-state="ok"] .ca-datastatus-dot { background: var(--c-elite); }
-.ca-datastatus[data-state="stale"] .ca-datastatus-dot { background: var(--c-poor); }
+.ca-datastatus[data-state="ok"] .ca-datastatus-dot { background: var(--green); }
+.ca-datastatus[data-state="stale"] .ca-datastatus-dot { background: var(--red); }
 .ca-datastatus[data-state="unknown"] .ca-datastatus-dot { background: var(--text-3); }
 .ca-datastatus-age { color: var(--text); font-weight: 600; }
 .ca-datastatus-source {

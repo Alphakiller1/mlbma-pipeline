@@ -20,6 +20,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | WP4 Pilot B (NFL matchups) | `/nfl/matchups.html` from `scripts/build_sport_routes.py`: chase_nav hamburger, expandable evidence, model/market/published columns, `edge_withheld_reason`, priced markets labelled **not Picks**, authority as **text** via `ChaseModelStatus`. |
 | WP4A capture guards | `captureSlateRelax()` in `matchup_shared.js` (localhost, `/render/`, `hubdebug`/`capture`/`snapshot`). `render/pitcher_intelligence.html` sets `_captureBoot` and still mounts PitcherLab; `.pl-rank-table` can render from SP_Profiles when slate starters are empty. Capture script follows `.mc-slate-pick` and appends `hubdebug=1`. |
 | WP4A `/render/` copies + 301s + glossary | PR #27; root `_redirects` |
+| Artifact **NOW** pixel captures | `docs/artifact-parity/` — team_rankings, starters (render + index), card, banner, radar, offense, pitcher, bullpen all OK on 8766 |
 | WP5 sport routes | `scripts/build_sport_routes.py` writes real `mlb/` `nfl/` `wnba/` `cfb/` `index.html`. Root `404.html` unchanged. `/mlb` 302 to dashboard **removed**. Sport selector (`chase_sport_select.js`) stores **per-sport** `localStorage` context and each page loads **only** that sport’s adapter. |
 | WP0 OEM leftovers | Remaining dashboard nav/CTA/`matchup_compare` crumbs point at `index.html`. Stub `chase_analytics_mlb_oem_v7.html` still exists as a hop. `integrate_chase_nav.py` drawer tail no longer reintroduces the OEM filename. |
 | D-08 hunt | `docs/UNRECOVERED_WIP.md` — 62-file set still not on this disk |
@@ -39,7 +40,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | WP6-2…5 chase-content-engine fonts / `render.py` 571 & 613–615 / `validate_bundle` / metallic headings | chase-content-engine | **Not this repo** — D-23 |
 | Feature PitchScore CDF / Rotowire view picker | mlbma | **Not ported** — would rewrite master PitchScore compute / lineup scrape. Code is not in this tree. |
 | Live Pages 404 vs `_redirects` | pages | Cannot prove without production deploy |
-| Artifact PNGs for banner/radar/offense/pitcher/bullpen | mlbma | Code path is in; **pixels depend on a reachable slate**. Recapture on port **8766**. |
+| Artifact PNGs for banner/radar/offense/pitcher/bullpen | mlbma | **Captured** on 8766 (CHC@MIA). Still data-dependent. |
 
 ## What “done” does not mean
 
@@ -50,10 +51,9 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 ## Verification
 
-Run on this agent after the close-gaps commit (update this table with actual results):
-
 | Gate | Result |
 |------|--------|
-| `python3 scripts/check_tokens.py` | pending |
-| `python3 -m unittest discover -s tests -p 'test_*.py'` | pending |
-| `dashboard_runtime_diag.py` team_rankings **8766** | pending |
+| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908a`; 1348 rule-body hex informational) |
+| `python3 -m unittest discover -s tests -p 'test_*.py'` | **37 OK** |
+| `dashboard_runtime_diag.py` team_rankings **8766** | **13/14** — table/model PASS; leftover console CORS on Supabase from `127.0.0.1:8766` (snapshot still paints `.lv-table`). Same class of leftover as the prior 8766 render report. |
+| `scripts/capture_artifact_parity.py` **8766** | **9/9 required selectors OK** including render `.pl-rank-table` and compare banner/radar/offense/pitcher/bullpen |

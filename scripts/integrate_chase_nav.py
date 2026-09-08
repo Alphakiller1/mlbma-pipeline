@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
+STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+NAV_JS_STAMP = "20260908d"
 
 PAGES = [
     "index.html",
@@ -21,11 +23,12 @@ PAGES = [
     "glossary.html",
 ]
 
-CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css?v=20260701c">'
-DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">'
+CHASE_CSS = f'<link rel="stylesheet" href="chase_nav.css?v={STAMP}">'
+DESIGN_CSS = f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">'
 RESEARCH_CSS = '<link rel="stylesheet" href="research_lab.css">'
 FAVICON = '<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">'
-CHASE_JS = '<script src="chase_nav.js?v=20260701a"></script>'
+CHASE_JS = f'<script src="chase_nav.js?v={NAV_JS_STAMP}"></script>'
+DATASTATUS_JS = f'<script src="chase_datastatus.js?v={NAV_JS_STAMP}"></script>'
 ASSETS_JS = '<script src="mlbma_assets.js"></script>'
 
 NAV_BLOCK_RE = re.compile(
@@ -118,10 +121,22 @@ def ensure_head_links(html: str) -> str:
 
 
 def ensure_body_script(html: str) -> str:
+    html = re.sub(
+        r'src="chase_nav\.js\?v=[^"]*"',
+        f'src="chase_nav.js?v={NAV_JS_STAMP}"',
+        html,
+    )
+    if "chase_datastatus.js" not in html and "chase_nav.js" in html:
+        html = re.sub(
+            r'(<script[^>]*src="chase_nav\.js[^"]*"[^>]*></script>)',
+            DATASTATUS_JS + r"\n\1",
+            html,
+            count=1,
+        )
     if "chase_nav.js" in html:
         return html
     if "</body>" in html:
-        return html.replace("</body>", f"  {CHASE_JS}\n</body>", 1)
+        return html.replace("</body>", f"  {DATASTATUS_JS}\n  {CHASE_JS}\n</body>", 1)
     return html
 
 
