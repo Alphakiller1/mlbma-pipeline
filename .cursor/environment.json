@@ -1,0 +1,19 @@
+{
+  "name": "MLBMA / Chase Analytics",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "static-site",
+      "command": "./crawl_env/bin/python -m http.server 8765",
+      "description": "Serves the vanilla dashboard/site from the repo root at http://127.0.0.1:8765 (e.g. /dashboard/team_rankings.html)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "static-site",
+      "port": 8765
+    }
+  ],
+  "chromeExecutablePath": "/usr/bin/google-chrome"
+}
