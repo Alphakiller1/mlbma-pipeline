@@ -114,6 +114,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/theme.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/responsive.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="{mode}" data-sport="{sport}">

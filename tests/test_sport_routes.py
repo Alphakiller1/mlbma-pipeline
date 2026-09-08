@@ -232,6 +232,21 @@ class AdapterHoleTests(unittest.TestCase):
         diag = (ROOT / "scripts" / "run_full_diagnostic.py").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", diag)
         self.assertNotIn("chase_analytics_mlb_oem_v7.html", diag)
+        nav_src = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
+        tools = nav_src.split("chase-dropdown-menu", 1)[1].split("</div>", 1)[0]
+        self.assertNotIn("/nfl/matchups.html", tools)
+        self.assertIn('data-nav="nfl"', nav_src)
+        self.assertNotIn("fonts.googleapis.com/css2", opening)
+        self.assertNotIn("@import url('responsive.css", (ROOT / "dashboard" / "mlbma_design_system.css").read_text(encoding="utf-8"))
+        self.assertIn("var(--mark-positive)", (ROOT / "dashboard" / "mlbma_assets.js").read_text(encoding="utf-8"))
+        cfg = (ROOT / "core" / "config.py").read_text(encoding="utf-8")
+        self.assertIn('"file": "index.html"', cfg)
+        self.assertNotIn("chase_analytics_mlb_oem_v7.html", cfg)
+        ui_diag = (ROOT / "scripts" / "platform_ui_diag.py").read_text(encoding="utf-8")
+        self.assertIn("dashboard/index.html", ui_diag)
+        self.assertNotIn("chase_analytics_mlb_oem_v7.html", ui_diag)
+        audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
+        self.assertNotIn("chase_analytics_mlb_oem_v7.html", audit)
 
     def test_starters_rankings_registry_uses_render_route(self):
         engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")

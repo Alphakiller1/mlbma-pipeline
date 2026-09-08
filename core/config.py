@@ -620,15 +620,15 @@ SIGNAL_9_OOR_DELTA_MIN = 5.0
 # Dashboard pages -- canonical nav labels and URL patterns
 DASHBOARD_PAGES = {
     "main": {
-        "file": "chase_analytics_mlb_oem_v7.html",
+        "file": "index.html",
         "label": "Main Dashboard",
-        "url": "chase_analytics_mlb_oem_v7.html",
+        "url": "index.html",
         "params": None,
     },
     "matchup_sheet": {
-        "file": "matchup_sheet.html",
-        "label": "Matchup Sheet",
-        "url": "matchup_sheet.html",
+        "file": "matchup_compare.html",
+        "label": "Matchup Analysis",
+        "url": "matchup_compare.html",
         "params": None,
     },
     "batter_profile": {
