@@ -82,7 +82,7 @@
       ov.id = 'mlbmaLoading';
       var iconSrc = (window.MLBMAAssets && MLBMAAssets.BRAND && MLBMAAssets.BRAND.iconFilled)
         ? MLBMAAssets.BRAND.iconFilled
-        : 'assets/chase-icon-filled.png';
+        : '/dashboard/assets/chase-icon-filled.png';
       ov.innerHTML =
         '<img class="chase-loading-icon ca-icon-loading mlbma-load-icon" src="' + iconSrc + '" alt="" width="80" height="80" '
         + 'onerror="this.style.display=\'none\'">' +

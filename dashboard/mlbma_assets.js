@@ -19,16 +19,29 @@
     return (ESPN_ABBR_MAP[upper] || upper).toLowerCase();
   }
 
+  /** Dashboard-root URLs so /dashboard/render/ capture pages do not 404 brand PNGs. */
+  var DASHBOARD_ASSET_ROOT = (function () {
+    var path = (typeof location !== 'undefined' && location.pathname) ? location.pathname : '/dashboard/';
+    var marker = '/dashboard/';
+    var i = path.indexOf(marker);
+    if (i >= 0) return path.slice(0, i + marker.length);
+    return '/dashboard/';
+  })();
+
+  function brandAsset(file) {
+    return DASHBOARD_ASSET_ROOT + 'assets/' + file;
+  }
+
   /** @see dashboard/assets/.gitkeep — four brand styles */
   var BRAND = {
-    icon: 'assets/chase-icon-filled.png',
-    logoNavDark: 'assets/chase-logo-horizontal.png',
-    logoHorizontalLight: 'assets/chase-logo-horizontal-light.png',
-    logoStackedLight: 'assets/chase-logo-stacked-light.png',
-    iconOutline: 'assets/chase-icon-outline.png',
-    iconFilled: 'assets/chase-icon-filled.png',
-    logoNav: 'assets/chase-logo-horizontal.png',
-    logoHero: 'assets/chase-logo-horizontal.png'
+    icon: brandAsset('chase-icon-filled.png'),
+    logoNavDark: brandAsset('chase-logo-horizontal.png'),
+    logoHorizontalLight: brandAsset('chase-logo-horizontal-light.png'),
+    logoStackedLight: brandAsset('chase-logo-stacked-light.png'),
+    iconOutline: brandAsset('chase-icon-outline.png'),
+    iconFilled: brandAsset('chase-icon-filled.png'),
+    logoNav: brandAsset('chase-logo-horizontal.png'),
+    logoHero: brandAsset('chase-logo-horizontal.png')
   };
 
   var AVATAR_SIZES = {

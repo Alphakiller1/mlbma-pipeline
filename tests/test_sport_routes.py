@@ -187,6 +187,14 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("render/team_rankings.html", audit)
         self.assertNotIn("scope=team&team=NYY", audit)
 
+    def test_brand_assets_resolve_from_dashboard_root(self):
+        assets = (ROOT / "dashboard" / "mlbma_assets.js").read_text(encoding="utf-8")
+        self.assertIn("DASHBOARD_ASSET_ROOT", assets)
+        self.assertIn("brandAsset(", assets)
+        self.assertNotIn("iconFilled: 'assets/chase-icon-filled.png'", assets)
+        ui = (ROOT / "dashboard" / "mlbma_ui.js").read_text(encoding="utf-8")
+        self.assertIn("/dashboard/assets/chase-icon-filled.png", ui)
+
     def test_starters_rankings_registry_uses_render_route(self):
         engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")
         self.assertIn('"page": "render/pitcher_intelligence.html"', engine)
