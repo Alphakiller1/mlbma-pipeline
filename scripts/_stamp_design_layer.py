@@ -125,6 +125,40 @@ def main() -> None:
     js = js.replace("var(--r-pill,999px)", "var(--r-pill)")
     js = js.replace(",#5B2BE0)", ", var(--ca-violet-700))")
     lv.write_text(js, encoding="utf-8")
+
+    dlv = DASH / "design_layer_version.js"
+    dlv.write_text(
+        f"/* DESIGN_LAYER_VERSION {STAMP} — keep in sync with design/DESIGN_LAYER_VERSION */\n"
+        "(function (global) {\n"
+        f'  global.DESIGN_LAYER_VERSION = "{STAMP}";\n'
+        "})(typeof window !== \"undefined\" ? window : this);\n",
+        encoding="utf-8",
+    )
+
+    for css in (
+        ROOT / "design" / "tokens" / "chase-tokens.css",
+        ROOT / "design" / "chase-tokens-v1.css",
+    ):
+        text = css.read_text(encoding="utf-8")
+        css.write_text(
+            re.sub(
+                r"DESIGN_LAYER_VERSION: \S+",
+                f"DESIGN_LAYER_VERSION: {STAMP}",
+                text,
+                count=1,
+            ),
+            encoding="utf-8",
+        )
+
+    extra_html = [ROOT / "index.html", ROOT / "404.html", *sorted((DASH / "render").glob("*.html"))]
+    for html in extra_html:
+        if not html.is_file():
+            continue
+        t = html.read_text(encoding="utf-8")
+        nt = stamp_hrefs(t)
+        if nt != t:
+            html.write_text(nt, encoding="utf-8")
+
     print("stamped", STAMP)
 
 

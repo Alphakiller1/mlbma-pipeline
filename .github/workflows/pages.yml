@@ -77,8 +77,11 @@ jobs:
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --width 390 --height 844 --strict
 
+  # Live hosting is Cloudflare Pages (cloudflare-deploy.yml → mlbma-pipeline-b).
+  # This repository has no GitHub Pages site; configure-pages returns 404 and
+  # failed the master cutover after token-guard/tests/smoke had already passed.
   deploy:
-    if: github.event_name != 'pull_request'
+    if: false
     needs: [token-guard, foundation-tests, runtime-smoke]
     runs-on: ubuntu-latest
     environment:

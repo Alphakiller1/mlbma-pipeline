@@ -183,6 +183,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("dashboard/index.html", workflow)
         self.assertNotIn("scope=team&team=NYY", workflow)
         self.assertNotIn("branches: [master]", workflow.split("pull_request:", 1)[1][:80])
+        deploy_job = workflow.split("\n  deploy:", 1)[1][:400]
+        self.assertIn("if: false", deploy_job)
         audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", audit)
         self.assertNotIn("scope=team&team=NYY", audit)

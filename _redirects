@@ -14,17 +14,17 @@
 /dashboard/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
 
 # Demoted public research surfaces (WP4A) — files remain under /dashboard/render/ for capture.
-/dashboard/team_rankings.html  /dashboard/matchup_compare.html  301
-/dashboard/team_rankings       /dashboard/matchup_compare.html  301
-/team_rankings.html            /dashboard/matchup_compare.html  301
-/dashboard/team_profile.html   /dashboard/index.html  301
-/dashboard/team_profile        /dashboard/index.html  301
-/dashboard/pitcher_profile.html /dashboard/index.html  301
-/dashboard/pitcher_profile     /dashboard/index.html  301
-/dashboard/bullpen_report.html /dashboard/index.html  301
-/dashboard/bullpen_report      /dashboard/index.html  301
-/dashboard/reliever_profile.html /dashboard/index.html  301
-/dashboard/reliever_profile    /dashboard/index.html  301
+/dashboard/team_rankings.html  /dashboard/matchup_compare  301
+/dashboard/team_rankings       /dashboard/matchup_compare  301
+/team_rankings.html            /dashboard/matchup_compare  301
+/dashboard/team_profile.html   /dashboard/  301
+/dashboard/team_profile        /dashboard/  301
+/dashboard/pitcher_profile.html /dashboard/  301
+/dashboard/pitcher_profile     /dashboard/  301
+/dashboard/bullpen_report.html /dashboard/  301
+/dashboard/bullpen_report      /dashboard/  301
+/dashboard/reliever_profile.html /dashboard/  301
+/dashboard/reliever_profile    /dashboard/  301
 
 # Sport roots — real per-route index.html (scripts/build_sport_routes.py).
 # Do not 302 /mlb onto the dashboard; that hid the sport hub.

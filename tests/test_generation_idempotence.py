@@ -95,15 +95,27 @@ class GenerationIdempotenceTests(unittest.TestCase):
     def test_every_design_layer_stamp_matches_the_version_file(self):
         """A bump must reach every reference, or caches serve a split design layer."""
         stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+        pages: list[tuple[str, Path]] = []
         for sub in ("dashboard", "mlb", "nfl", "wnba", "cfb"):
-            for f in sorted((ROOT / sub).glob("*.html")):
-                text = f.read_text(encoding="utf-8", errors="replace")
-                for asset in ("chase-tokens-v1.css", "design_layer_version.js"):
-                    for m in re.finditer(re.escape(asset) + r"\?v=([0-9a-z]+)", text):
-                        self.assertEqual(
-                            m.group(1), stamp,
-                            f"{sub}/{f.name} stamps {asset} at {m.group(1)}, expected {stamp}",
-                        )
+            pages.extend((sub, f) for f in sorted((ROOT / sub).glob("*.html")))
+        pages.extend(
+            ("dashboard/render", f)
+            for f in sorted((ROOT / "dashboard" / "render").glob("*.html"))
+        )
+        pages.append((".", ROOT / "index.html"))
+        pages.append((".", ROOT / "404.html"))
+        for sub, f in pages:
+            if not f.is_file():
+                continue
+            text = f.read_text(encoding="utf-8", errors="replace")
+            for asset in ("chase-tokens-v1.css", "design_layer_version.js"):
+                for m in re.finditer(re.escape(asset) + r"\?v=([0-9a-z]+)", text):
+                    self.assertEqual(
+                        m.group(1), stamp,
+                        f"{sub}/{f.name} stamps {asset} at {m.group(1)}, expected {stamp}",
+                    )
+        dlv = (ROOT / "dashboard" / "design_layer_version.js").read_text(encoding="utf-8")
+        self.assertIn(f'DESIGN_LAYER_VERSION = "{stamp}"', dlv)
 
 
 if __name__ == "__main__":

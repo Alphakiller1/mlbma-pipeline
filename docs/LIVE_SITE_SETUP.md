@@ -67,12 +67,13 @@ After ANY env change → **Retry deployment** (env only applies to a fresh build
   unaffected by your cache.
 
 ## Smoke test URLs (expect HTTP 200, page renders, no console errors)
-- [ ] https://chase-analytics.com/ → `/dashboard/index.html`
-- [ ] https://chase-analytics.com/dashboard/index.html
-- [ ] https://chase-analytics.com/dashboard/chase_analytics_mlb_oem_v7.html → 301/stub to index
-- [ ] https://chase-analytics.com/dashboard/team_rankings.html → **301** to `/dashboard/index.html#section-matchups-hero` (public URL demoted; capture copy is `/dashboard/render/team_rankings.html`)
+- [ ] https://chase-analytics.com/ → real root home (`data-mode=entry`)
+- [ ] https://chase-analytics.com/dashboard/index.html → research opening (`/dashboard/`)
+- [ ] https://chase-analytics.com/dashboard/chase_analytics_mlb_oem_v7.html → 301/stub to `/dashboard/`
+- [ ] https://chase-analytics.com/dashboard/team_rankings.html → **301** to `/dashboard/matchup_compare` (capture copy is `/dashboard/render/team_rankings.html`)
 - [ ] https://chase-analytics.com/dashboard/batter_profile.html
-- [ ] https://chase-analytics.com/dashboard/pitcher_profile.html → **301** to `/dashboard/index.html` (capture copy: `/dashboard/render/pitcher_profile.html`)
+- [ ] https://chase-analytics.com/dashboard/pitcher_profile.html → **301** to `/dashboard/` (capture copy: `/dashboard/render/pitcher_profile.html`)
+- [ ] https://chase-analytics.com/design/chase-tokens-v1.css → `text/css` + `Access-Control-Allow-Origin: *`
 - [ ] https://chase-analytics.com/api/me  → JSON `401 missing_token` (functions alive)
 - [ ] Sign in (Google) on the live domain → panel shows your email, stays on apex.
 - [ ] "Connect Discord" → Discord authorize (only if you keep that feature).

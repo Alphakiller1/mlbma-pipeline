@@ -120,7 +120,12 @@ def main() -> int:
                 continue
             hex_bodies += len(HEX_RE.findall(body))
 
-    for html in sorted(DASHBOARD.glob("*.html")):
+    html_scan: list[Path] = (
+        list(DASHBOARD.glob("*.html"))
+        + list((DASHBOARD / "render").glob("*.html"))
+        + [ROOT / "index.html", ROOT / "404.html"]
+    )
+    for html in sorted({p.resolve() for p in html_scan if p.is_file()}):
         raw = html.read_text(encoding="utf-8")
         allow = any(tok in html.name.lower() for tok in HTML_ROOT_ALLOW)
         for block in STYLE_RE.findall(raw):
@@ -130,14 +135,20 @@ def main() -> int:
                     continue
                 if is_color_literal(val):
                     violations.append(
-                        f"{html.name} <style> :root {name} uses a color literal"
+                        f"{html.relative_to(ROOT)} <style> :root {name} uses a color literal"
                     )
         for href, _qv, ver in V_RE.findall(raw):
             base = href.split("/")[-1]
             if base in STAMPED and ver != stamp:
                 violations.append(
-                    f"{html.name} stamps {href} at {ver}, expected {stamp}"
+                    f"{html.relative_to(ROOT)} stamps {href} at {ver}, expected {stamp}"
                 )
+
+    dlv = DASHBOARD / "design_layer_version.js"
+    if dlv.is_file() and f'DESIGN_LAYER_VERSION = "{stamp}"' not in dlv.read_text(
+        encoding="utf-8"
+    ):
+        violations.append("dashboard/design_layer_version.js does not export DESIGN_LAYER_VERSION")
 
     print(f"Design-layer stamp: {stamp}")
     print(f"Rule-body hex count (informational, not blocking): {hex_bodies}")
