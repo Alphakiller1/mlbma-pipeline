@@ -7,7 +7,10 @@ import time
 
 from playwright.sync_api import sync_playwright
 
-from scripts.diag_console import is_ignorable_console
+try:
+    from scripts.diag_console import is_ignorable_console
+except ModuleNotFoundError:
+    from diag_console import is_ignorable_console
 
 URL = "http://127.0.0.1:8766/team_rankings.html"
 OVERLAY_BUDGET_S = 8.0
