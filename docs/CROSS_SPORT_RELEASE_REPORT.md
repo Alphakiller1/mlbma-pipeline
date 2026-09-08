@@ -23,7 +23,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | Artifact **NOW** pixel captures | `docs/artifact-parity/` — team_rankings, starters (render + index), card, banner, radar, offense, pitcher, bullpen all OK on 8766 |
 | WP5 sport routes | `scripts/build_sport_routes.py` writes real `mlb/` `nfl/` `wnba/` `cfb/` `index.html`. Root `404.html` unchanged. `/mlb` 302 to dashboard **removed**. Sport selector (`chase_sport_select.js`) stores **per-sport** `localStorage` context and each page loads **only** that sport’s adapter. |
 | WP0 OEM leftovers | Remaining dashboard nav/CTA/`matchup_compare` crumbs point at `index.html`. Stub `chase_analytics_mlb_oem_v7.html` still exists as a hop. `integrate_chase_nav.py` drawer tail no longer reintroduces the OEM filename. |
-| D-08 hunt | `docs/UNRECOVERED_WIP.md` — 62-file set still not on this disk |
+| D-08 hunt | **Resolved** — recovered at `82a5012a`, pushed to `origin/batter-profile-prop-rework`; see `docs/UNRECOVERED_WIP.md` |
 | Root 404 | `404.html` (unvalidated vs a live Pages 404) |
 
 ## Remaining / blocked / impossible here
@@ -32,7 +32,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 |------|-------|--------|
 | Merge WP0/WP1 as a release | mlbma | **Must not** — draft PRs only |
 | Production deploy chase-analytics.com | pages | **Not done** |
-| 62 uncommitted files from the other machine | human | **Unrecovered** — `docs/UNRECOVERED_WIP.md` |
+| 62 uncommitted files from the other machine | — | **Recovered** — commit `82a5012a` (170 files) is on origin; `docs/UNRECOVERED_WIP.md` |
 | WP1.C model-repo token/board.css / smokes | four model repos | **blocked** `cursor[bot]` 403 |
 | WP2 `board.json` producers on origin | mlb/wnba/cfb | **blocked** 403; kits only in this repo. Adapters tolerate missing JSON. |
 | WP4A-5 PP-Gap glossary collision | mlbma | Copy started in WP1 PR; keep watching |
