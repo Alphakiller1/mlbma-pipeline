@@ -4,10 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WNBA Matchups — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908h">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908h">
-  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908h">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908h">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908i">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908i">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="wnba">
@@ -88,27 +92,31 @@
     </div>
   </div>
 </div>
-  <main class="container ca-page-shell" style="max-width:1100px;margin:88px auto 48px;padding:0 16px;">
-    <h1 class="ca-page-title">WNBA matchups</h1>
-    <p class="ca-helper">WNBA board. Producer JSON is fetched only for this sport. Missing CORS or a 404 is shown as error, not an empty fake slate.</p>
-    <div id="sportSelect"></div>
+  <main class="container ca-page-shell ca-shell-main">
+    <header class="ca-surface-header">
+      <h1 class="ca-page-title">WNBA matchups</h1>
+      <p class="ca-helper">WNBA board. Producer JSON is fetched only for this sport. Missing CORS or a 404 is shown as error, not an empty fake slate.</p>
+    </header>
+    <div id="caContextBar" class="ca-context-bar"></div>
+    <div id="sportSelect" class="ca-sport-switcher"></div>
     <p class="ca-helper"><a class="hub-pill" href="/wnba/results.html">Results ledger</a> <a class="hub-pill" href="/wnba/">Board overview</a></p>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
-    <div id="slate" class="ca-async">Loading WNBA board…</div>
+    <div id="slate" class="ca-async" data-state="loading">Loading WNBA board…</div>
   </main>
-  <script src="/dashboard/design_layer_version.js?v=20260908h"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908h"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908h"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908h"></script>
-  <script src="/dashboard/sports/wnba.js?v=20260908h"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908h"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908h"></script>
-  <script src="/dashboard/chase_shell.js?v=20260908h"></script>
-  <script src="/dashboard/chase_entity.js?v=20260908h"></script>
-  <script src="/dashboard/chase_metric.js?v=20260908h"></script>
-  <script src="/dashboard/chase_modelstatus.js?v=20260908h"></script>
-  <script src="/dashboard/chase_scope.js?v=20260908h"></script>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
+  <script src="/dashboard/design_layer_version.js?v=20260908i"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908i"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908i"></script>
+  <script src="/dashboard/sports/chase_board.js?v=20260908i"></script>
+  <script src="/dashboard/sports/wnba.js?v=20260908i"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908i"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908i"></script>
+  <script src="/dashboard/chase_shell.js?v=20260908i"></script>
+  <script src="/dashboard/chase_entity.js?v=20260908i"></script>
+  <script src="/dashboard/chase_metric.js?v=20260908i"></script>
+  <script src="/dashboard/chase_modelstatus.js?v=20260908i"></script>
+  <script src="/dashboard/chase_scope.js?v=20260908i"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportWNBA;
   window.CHASE_SPORT_ID = "wnba";

@@ -53,6 +53,19 @@
     document.body.setAttribute('data-mode', mode);
     document.body.setAttribute('data-sport', sport);
 
+    var header = document.getElementById('chaseHeader');
+    if (header) header.classList.add('ca-app-shell');
+
+    var ctx = document.getElementById('caContextBar');
+    if (ctx) {
+      ctx.hidden = false;
+      ctx.classList.add('ca-context-bar');
+      var bits = [String(sport).toUpperCase(), String(opts.surface || mode || '')];
+      ctx.textContent = bits.filter(Boolean).join(' · ');
+      var main = document.querySelector('main');
+      if (main) main.classList.add('ca-page-shell', 'ca-shell-main');
+    }
+
     var slot = slotInHeader();
     var sportEl = document.getElementById('sportSelect');
     if (global.ChaseSportSelect && sportEl) {

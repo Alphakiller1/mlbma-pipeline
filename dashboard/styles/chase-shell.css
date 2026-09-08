@@ -2,7 +2,7 @@
  * L6 — AppShell, SportSwitcher, TaskNav, ContextBar, grid, breakpoints, footer.
  * Content column is 1232px; at a 1280px viewport that leaves 24px on each side.
  * Fonts: DM Sans (UI/body/controls/meta) via --font-ui; Roboto Condensed
- * (H1–H3, scores, compact section titles) via --font-display. No Oswald.
+ * (H1–H3, scores, compact section titles) via --font-display. Display face is locked.
  */
 
 .ca-app-shell,
@@ -315,8 +315,7 @@
   gap: var(--space-2);
   margin: var(--space-4) 0;
 }
-.ca-sport-select-pill,
-.hub-pill {
+.ca-sport-select-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -332,8 +331,7 @@
   text-decoration: none;
 }
 .ca-sport-select-pill.active,
-.ca-sport-select-pill[aria-current="page"],
-.hub-pill.active {
+.ca-sport-select-pill[aria-current="page"] {
   background: var(--control-bg-active);
   border-color: var(--border-accent);
   color: var(--text-accent);
@@ -357,8 +355,7 @@
   .ca-context-bar { padding-inline: var(--shell-gutter); }
 }
 
-/* Page grid */
-.ca-page-shell,
+/* Page grid — sport AppShell main only. Legacy .ca-page-shell is unmigrated. */
 .ca-shell-main {
   max-width: var(--shell-max);
   width: 100%;
@@ -367,17 +364,16 @@
   min-width: 0;
 }
 @media (min-width: 768px) {
-  .ca-page-shell,
   .ca-shell-main { padding-inline: var(--shell-gutter); }
 }
 
-.ca-page-title {
+.ca-shell-main .ca-page-title {
   font-family: var(--font-display);
   font-size: var(--type-h1);
   font-weight: 700;
   margin: 0 0 var(--space-2);
 }
-.ca-helper {
+.ca-shell-main .ca-helper {
   color: var(--text-secondary);
   font-size: var(--type-ui);
   margin: 0 0 var(--space-4);
@@ -436,11 +432,7 @@
   .chase-header .ca-datastatus-dot { display: none; }
 }
 
-@media (min-width: 1280px) {
-  html { overflow-x: hidden; }
-}
-
 @media (min-resolution: 2x) {
-  .ca-page-shell,
+  .ca-shell-main,
   .chase-nav { max-width: var(--shell-max); }
 }

@@ -29,6 +29,12 @@ DS_FILES = (
     "bullpen_report.css",
     "bullpen_usage.css",
     "matchup_compare.css",
+    "chase-semantic.css",
+    "chase-primitives.css",
+    "chase-components.css",
+    "chase-patterns.css",
+    "chase-shell.css",
+    "legacy.css",
 )
 
 ROOT_RE = re.compile(r":root\s*\{(?:[^{}]|\{[^{}]*\})*\}", re.DOTALL)
@@ -45,6 +51,41 @@ def strip_index_tokens(text: str) -> str:
     text = ROOT_RE.sub("", text, count=1)
     text = LIGHT_RE.sub("", text, count=1)
     return text
+
+
+NAV_LINK_RE = re.compile(
+    r'(<link rel="stylesheet" href=")([^"]*?)(chase_nav\.css\?v=)([^"]+)(">)',
+    re.I,
+)
+
+
+def ensure_shell_layers(text: str) -> str:
+    """Load L2 + L6 ahead of chase_nav.css. Idempotent.
+
+    Unmigrated and /render pages do not take L3 (global reset). Sport routes
+    get the full stack from build_sport_routes.py.
+    """
+    if "chase-semantic.css" in text:
+        return text
+    m = NAV_LINK_RE.search(text)
+    if not m:
+        return text
+    prefix = m.group(2)
+    if prefix == "../":
+        style_prefix = "../styles/"
+    elif prefix == "/dashboard/":
+        style_prefix = "/dashboard/styles/"
+    elif prefix == "":
+        style_prefix = "styles/"
+    elif prefix.endswith("/"):
+        style_prefix = prefix + "styles/"
+    else:
+        style_prefix = "styles/"
+    insert = (
+        f'<link rel="stylesheet" href="{style_prefix}chase-semantic.css?v={STAMP}">\n'
+        f'<link rel="stylesheet" href="{style_prefix}chase-shell.css?v={STAMP}">\n'
+    )
+    return text[: m.start()] + insert + text[m.start() :]
 
 
 def stamp_hrefs(text: str) -> str:
@@ -72,7 +113,7 @@ def stamp_hrefs(text: str) -> str:
             text,
             count=1,
         )
-    return text
+    return ensure_shell_layers(text)
 
 
 def main() -> None:

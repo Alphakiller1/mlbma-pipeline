@@ -111,22 +111,30 @@ def page(sport: str, *, kind: str = "index") -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/theme.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="{mode}" data-sport="{sport}">
 {sport_nav()}
-  <main class="container ca-page-shell" style="max-width:1100px;margin:88px auto 48px;padding:0 16px;">
-    <h1 class="ca-page-title">{h1}</h1>
-    <p class="ca-helper">{lede}</p>
-    <div id="sportSelect"></div>
+  <main class="container ca-page-shell ca-shell-main">
+    <header class="ca-surface-header">
+      <h1 class="ca-page-title">{h1}</h1>
+      <p class="ca-helper">{lede}</p>
+    </header>
+    <div id="caContextBar" class="ca-context-bar"></div>
+    <div id="sportSelect" class="ca-sport-switcher"></div>
     {more_html}
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
-    <div id="slate" class="ca-async">Loading {sport.upper()} board…</div>
+    <div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} board…</div>
   </main>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_sport_select.js?v={STAMP}"></script>

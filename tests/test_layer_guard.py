@@ -63,6 +63,19 @@ class LayerGuardTests(unittest.TestCase):
             hits = self.mod.layer_violations_for(css, css.read_text(encoding="utf-8"))
             self.assertEqual(hits, [], f"{css.name}: {hits}")
 
+    def test_shared_shell_has_no_oswald(self):
+        for rel in (
+            "dashboard/chase_nav.css",
+            "dashboard/styles/chase-shell.css",
+            "dashboard/styles/chase-primitives.css",
+        ):
+            text = (ROOT / rel).read_text(encoding="utf-8")
+            self.assertNotIn("Oswald", text, rel)
+
+    def test_chase_nav_is_a_noop_after_migration(self):
+        text = (ROOT / "dashboard" / "chase_nav.css").read_text(encoding="utf-8")
+        self.assertNotRegex(text, r"\{[^}]+\}")
+
 
 if __name__ == "__main__":
     unittest.main()
