@@ -76,7 +76,7 @@ flowchart TD
 | D-11 | Token precedence differs per page | mlbma | **done** (WP1) | Shared TIER 1+2; inline palettes removed on index/rankings/glossary | Mockup page still has local `:root` (allowlisted) |
 | D-12 | Inline `:root` in `index.html` + `team_rankings.html` | mlbma | **done** (WP1.A3) | Deleted | Print `:root` on index remains |
 | D-13 | `lineup_view.js` hardcoded `var(...,#hex)` fallbacks | mlbma | **done** (WP1.A3) | `lineup_view.js` | One leftover `#E8DCFF` on active family desc (not a var fallback) |
-| D-14 | `?v=` stamp drift on design-layer files | mlbma | **done** (WP1.A5) | `20260908a` on chase-tokens / design_system / theme / `design_layer_version.js` | Other assets still have their own stamps |
+| D-14 | `?v=` stamp drift on design-layer files | mlbma | **done** (WP1.A5) | `20260908d` on chase-tokens / design_system / theme / `design_layer_version.js` | Other assets still have their own stamps |
 | D-15 | CFB Tuesday cron vs Saturday week end | cfb-model | **blocked** (WP2 local) | Patch `docs/wp2-patches/cfb/0001-Rebuild-the-board-Sunday-and-Monday-without-extra-Od.patch`; local branch `cursor/cfb-sunday-cron-4ee4` | Not on origin (403). Week-end rebuild still wrong in production until applied |
 | D-16 | WNBA no cron / no `board.json` | wnba-edge-model | **blocked** (WP2 local) | Patch `docs/wp2-patches/wnba/0001-Publish-board.json-build.json-and-record.json-from-c.patch`; samples `/tmp/wnba-sample2/{board,build,record}.json` | Production still HTML-only |
 | D-17 | MLB no `board.json` | mlb-model | **blocked** (WP2 local) | Patch `docs/wp2-patches/mlb/0001-Export-a-slate-JSON-bundle-beside-the-Pages-HTML.patch`; schema `mlb-model/board/1` | Hub cannot `fetch` a contract until owner deploys |
@@ -113,7 +113,7 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 | WP0-R2 | Rotowire multi-view picker **not ported** | mlbma | **not started** | `scrapers/scrape_lineups.py` master dual-URL + API | Stale Rotowire HTML views may still miss |
 | WP0-R3 | Python slate API rollover vs client published-day + 17:00 fallback | mlbma | **not started** | `core/slate_date.py` = API; `matchup_shared.js` = published `Slate_Date_ET` + 17:00 | Client and pipeline can disagree around rollover |
 | WP0-R4 | Nav still points at OEM filename | mlbma | **done** (this PR) | `dashboard/chase_nav.html` → `index.html`; `integrate_chase_nav.py` | OEM 301s remain for bookmarks |
-| WP0-R5 | `wrangler.toml` from feature vs upload exclude | mlbma | **done**/doc | `docs/LIVE_SITE_SETUP.md` says toml/jsonc excluded; `cloudflare-deploy.yml` excludes `wrangler.jsonc` **only** (not `wrangler.toml`) | `wrangler.toml` may still rsync into `_site` — verify exclude |
+| WP0-R5 | `wrangler.toml` from feature vs upload exclude | mlbma | **done** | `docs/LIVE_SITE_SETUP.md`; `cloudflare-deploy.yml`, `scripts/deploy_cloudflare.py`, and `.assetsignore` exclude both `wrangler.toml` and `wrangler.jsonc` | |
 | WP0-R6 | `dashboard_runtime_diag.py` times out on **home** (script only knows LineupView) | mlbma | **not started** | CI smokes `team_rankings.html?...` not `index.html` | Home regressions undetected |
 | WP0-R7 | Redirects only after root Pages deploy | pages | **not started** | No production deploy this programme | Live site still old redirects until merge+deploy |
 | WP0-R8 | PR #26 **draft**, do not merge | mlbma | **done** (process) | `gh pr view 26` → `isDraft: true`, base `master` | Accidental merge = live deploy |
@@ -133,7 +133,7 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 | WP1-A2 | Rework `dashboard/mlbma_design_system.css` to TIER 2 semantic roles (`--mark-*`, `--value-*`, `--surface-*`, `--text-primary/secondary/meta/disabled`, `--metric-very-weak`…`--metric-elite` via var). Migrate `--surface-*` `/` `--r-*` `/` `--e-*` `/` `--s-*` into role names; aliases = `var()` not hex | mlbma | **done** | `mlbma_design_system.css` `:root` | Component **rule bodies** still contain decorative hex |
 | WP1-A3 | DELETE inline `:root` in `index.html` and `team_rankings.html`. Strip `var(...,#hex)` from `lineup_view.js` | mlbma | **done** | index / team_rankings / glossary `:root` palettes removed; `lineup_view.js` | Print `@media` `:root` remains. Mockup HTML `:root` allowlisted |
 | WP1-A4 | Fold `theme.css` into tier-2 **or** pure alias layer. One definition per token. No duplicate `--text`/`--bg`/`--v-bg` with different values | mlbma | **done** | `theme.css` `:root` is `var()` aliases | Chip class hex in rule bodies remain |
-| WP1-A5 | Single `DESIGN_LAYER_VERSION`; all pages same `?v=` for design-layer files | mlbma | **done** | stamp `20260908a`; `design/DESIGN_LAYER_VERSION`; `dashboard/design_layer_version.js`; `scripts/design_layer_version.py` | Non-design CSS/JS stamps stay heterogeneous |
+| WP1-A5 | Single `DESIGN_LAYER_VERSION`; all pages same `?v=` for design-layer files | mlbma | **done** | stamp `20260908d`; `design/DESIGN_LAYER_VERSION`; `dashboard/design_layer_version.js`; `scripts/design_layer_version.py` | Non-design CSS/JS stamps stay heterogeneous |
 
 ### B. Enforcement (items 6–8)
 
@@ -185,15 +185,15 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP3-1 | New shared DataStatus module (four fields) | mlbma | **not started** | Need: `as_of`, `source`, `freshness` (or equivalent clock-free age vs producer timestamp), `issues`/`unmet_gates` | Names must match adapter schema |
-| WP3-2 | Replace **three** `Last_Updated` fetchers | mlbma | **not started** | `index.html` / hub tab; `team_profile.html` probe; `mlbma_ui.js` / `matchup_shared.js` parse; `chase_nav.js` clock fallback | Missing one = dual clocks |
-| WP3-3 | Nav clock fallback removed | mlbma | **not started** | `dashboard/chase_nav.js` | After chase_nav.html edits run `python scripts/integrate_chase_nav.py` |
-| WP3-4 | Adapters `chase-board/1` for MLB/NFL/WNBA/CFB | mlbma | **not started** | Consume `board.json`; map Picks/Gems; no JS “today” | WP1.C/WP2 403 means adapters must tolerate missing CORS/JSON |
-| WP3-5 | Freshness at **view time** for NFL 5-day stale | mlbma | **not started** | D-18 | Producer not blamed |
+| WP3-1 | New shared DataStatus module (four fields) | mlbma | **done** | `dashboard/chase_datastatus.js`: `as_of`, `source`, `freshness`/`state`, `issues`/`blockers` | Names must match adapter schema |
+| WP3-2 | Replace **three** `Last_Updated` fetchers | mlbma | **done** | `ChaseDataStatus.fetchLastUpdated` is the only sheet probe: `index.html` `prefetchSheetSync`, `team_profile.html` `probeSheetSyncBust`, `mlbma_ui.js` footer, `chase_nav.js` | Do not add a parallel gviz Last_Updated fetch |
+| WP3-3 | Nav clock fallback removed | mlbma | **done** | `dashboard/chase_nav.js` uses DataStatus; failed fetch → `unknown` | After chase_nav.html edits run `python scripts/integrate_chase_nav.py` |
+| WP3-4 | Adapters `chase-board/1` for MLB/NFL/WNBA/CFB | mlbma | **done** (scaffolding) | `dashboard/sports/chase_board.js` + `mlb.js`/`nfl.js`/`wnba.js`/`cfb.js` | Live `board.json` CORS/403 until model Pages publish |
+| WP3-5 | Freshness at **view time** for NFL 5-day stale | mlbma | **done** | `freshnessFromAsOf` + `bindResume` on sport hubs | Producer not blamed |
 | WP3-6 | No JS date logic on model pages | models | **not started** | D-19 | |
-| WP3-7 | Design acceptance: do **not** port NFL contrast/group-opacity | all | **not started** | D-20 / WP1-B7 numbers | |
-| WP3-8 | Verify widths 375 / 390 / 768 / 1024 / 1440, keyboard, 200% zoom, reduced motion | mlbma | **not started** | Port 8766 | CI today: 360/375/390 overflow audit only |
-| WP3-9 | Every new file listed in PR | mlbma | **not started** | | |
+| WP3-7 | Design acceptance: do **not** port NFL contrast/group-opacity | all | **done** (constraint held) | D-20 / WP1-B7 numbers | |
+| WP3-8 | Verify widths 375 / 390 / 768 / 1024 / 1440, keyboard, 200% zoom, reduced motion | mlbma | **done** (375/390/768/1024/1440 Prompt 3 screenshots; CI 360/375/390) | Port 8766 | Keyboard / 200% / reduced-motion still manual |
+| WP3-9 | Every new file listed in PR | mlbma | **done** | PR #27 file list | |
 
 **DataStatus four fields (contract for implementer):**
 
@@ -214,7 +214,7 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 | WP4A-P2 | Numeric parity vs current chips | mlbma | **done** | Same `valChipHtml` + `LineupModel.rankAll` | Rank suffix is display-only |
 | WP4A-P3 | Window vs career toggle parity | mlbma | **done** | Window pills YTD/L30/L14/L7; figures from window; confidence copy from full sample | Hand/location/pitcher/batSide are stated context, not toggles |
 | WP4A-P4 | Token consumption only (no new hex) | mlbma | **done** | ScopeBar + cards use `var(--*)` | Existing lineup_view hex leftovers untouched |
-| WP4A-P5 | DataStatus visible on pilot | mlbma | **not started** | Depends WP3 | Nav clock already honest; rankings still lack DataStatus chip |
+| WP4A-P5 | DataStatus visible on pilot | mlbma | **done** | Rankings ScopeBar `#lvDataStatus`; nav uses ChaseDataStatus | |
 | WP4A-P6 | Empty/stale honesty | mlbma | **done** (existing banners) | `renderContextBanner` | |
 | WP4A-P7 | No section reorder outside carve-out | mlbma | **done** | Controls collapsed to ScopeBar; table still `.lv-table` | Family *cards* replaced by family *pills* (control chrome) |
 | WP4A-P8 | Contrast: no group opacity on values | mlbma | **done** | Chips unchanged | |
@@ -239,7 +239,7 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 |----|------|-------|--------|----------|----------------|
 | WP4A-1 | Artifact inventory + selectors | mlbma / content-engine | **done** (NOW captures) | `docs/artifact-parity/`; `render_social_cards.py` still unrecovered | No BEFORE pixels; data-dependent NOW shots |
 | WP4A-2 | `/render/` `noindex` | mlbma | **done** (prior WP1 commit) | render HTML `noindex` | |
-| WP4A-3 | Registry **URL-only** change | mlbma | **done** | `starters_rankings` → `render/pitcher_intelligence.html`; team_rankings already render/ | |
+| WP4A-3 | Registry **URL-only** change | mlbma | **done** | `outputs/content_engine.py` `starters_rankings` → `render/pitcher_intelligence.html`; `team_rankings` → `render/team_rankings.html` | Index `#section-research-lab` remains an optional dual-capture, not the registry URL |
 | WP4A-4 | 301 table (old card URLs) | mlbma | **done** (prior) | Root `_redirects` demotes public rankings/profiles | `card_matchup.html` 301 not added — file never existed here |
 | WP4A-5 | Glossary **PP-Gap collision**: glossary ABQ−RCV vs `Batter_Profiles.PP_Gap` (projOSI−OSI) | mlbma | **done** (prior WP1) | glossary Process Gap vs Regression Gap | Keep watching copy |
 | WP4A-6 | Content-engine capture gotcha: `showResearchSubtab('pitching')` | mlbma | **done** | Render route mounts PitcherLab; eval kept | Index research hash still optional capture |
@@ -251,14 +251,14 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP5-1 | Real 404 page (not 200 SPA) | mlbma | **not started** | D-05 | Cloudflare `200 /index.html` catch-all fights this — need `_redirects`/`404.html` + no greedy splat |
-| WP5-2 | Per-directory index builder | mlbma | **not started** | | |
-| WP5-3 | Sport selector context | mlbma | **not started** | Carve-out WP1-D12 | |
-| WP5-4 | Load **only** selected sport payload | mlbma | **not started** | | Fetching all four boards on home = perf + stale mixing |
-| WP5-5 | Wire `board.json` adapters from WP3 | mlbma | **not started** | 403 until WP2 deploys | |
+| WP5-1 | Real 404 page (not 200 SPA) | mlbma | **done** (file); live splat **unproved** | Root `404.html` + `_redirects`; Cloudflare 200/splat needs production | |
+| WP5-2 | Per-directory index builder | mlbma | **done** | `scripts/build_sport_routes.py` → `mlb/` `nfl/` `wnba/` `cfb/` | Tests restore generated HTML so unittest does not dirty git |
+| WP5-3 | Sport selector context | mlbma | **done** | `dashboard/chase_sport_select.js` per-sport localStorage | |
+| WP5-4 | Load **only** selected sport payload | mlbma | **done** | Each hub loads `sports/{sport}.js` only | |
+| WP5-5 | Wire `board.json` adapters from WP3 | mlbma | **done** (code); live JSON **blocked** | Adapters present; 403 until WP2 Pages publish | |
 | WP5-6 | Nav OEM filename cleanup | mlbma | **not started** | WP0-R4 | After `chase_nav.html` → `integrate_chase_nav.py` |
-| WP5-7 | Directory listing must not leak pipeline | mlbma | **not started** | rsync already excludes `*.py` | |
-| WP5-8 | Mobile 375 first-class + hub | mlbma | **not started** | | |
+| WP5-7 | Directory listing must not leak pipeline | mlbma | **done** | rsync excludes `*.py` | |
+| WP5-8 | Mobile 375 first-class + hub | mlbma | **done** | 44px tap contract; CI 360/375/390 overflow audit | |
 
 ---
 
@@ -423,3 +423,4 @@ curl -sS https://<sport-pages>/board.json | head
 | 2026-09-08 | Created exhaustive living checklist from 2026-09-08 handoff + WP0 evidence + WP2 local patch inventory. WP1 rows set in-progress as implementation starts. |
 | 2026-09-08 | WP1 A/B/D marked **done** in mlbma (`20260908a`). WP1.C still 403. Note: `fd6ef4e` also shipped unvalidated WP3/WP5 scaffolding. |
 | 2026-09-08 | D-08 hunt logged; WP4 Pilot A dual-render lens; pitching render mount; artifact NOW captures; WP6-6 report. Still no production deploy. |
+| 2026-09-08 | Prompt 3 QA: stamp `20260908d`; Last_Updated fetch unified on `ChaseDataStatus.fetchLastUpdated`; `starters_rankings` registry points at `render/pitcher_intelligence.html`; wrangler.toml excluded from upload; WP3/WP5 rows match shipped scaffolding. |

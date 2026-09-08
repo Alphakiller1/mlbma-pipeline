@@ -197,9 +197,12 @@ Window splits use **lower min PA** (L7=8, L14=15, L30=25), explicit `splitArr=`,
 
 ### 5.1 Team Rankings (dedicated page)
 
+Public `/dashboard/team_rankings.html` **301s** to Opening Matchups (`/dashboard/index.html#section-matchups-hero`). The noindex capture copy is `dashboard/render/team_rankings.html`.
+
 | Item | Value |
 |------|--------|
-| **URL** | `dashboard/team_rankings.html` |
+| **Public URL** | 301 → `dashboard/index.html#section-matchups-hero` |
+| **Capture / render URL** | `dashboard/render/team_rankings.html` |
 | **JS SSOT** | `dashboard/lineup_view.js` (`LineupView` + URL filter state) |
 | **Fetches** | `vs_RHP`, `vs_LHP`, `Team_Profiles` only |
 | **Toggles** | Hand: Both / vs RHP / vs LHP / F5 · Window: YTD / L30 / L14 / L7 · Loc: All / Home / Away |

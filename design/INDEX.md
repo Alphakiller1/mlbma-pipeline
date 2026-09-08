@@ -10,7 +10,7 @@ Do **not** treat mlb-model’s three on-repo contracts as reconciled. That is WP
 | [tokens/chase-tokens.css](./tokens/chase-tokens.css) | **Current** | TIER 1 primitives (only raw color literals). |
 | [chase-tokens-v1.css](./chase-tokens-v1.css) | **Current** | Published copy of TIER 1 at `/design/chase-tokens-v1.css`. Must stay byte-identical to `tokens/chase-tokens.css`. |
 | [tokens/chase_tokens.vendor.css](./tokens/chase_tokens.vendor.css) | **Product-specific** (vendor snapshot) | Four-model vendored file, sha256 `13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911`. Seed for values, not the live TIER 1 filename set. |
-| [DESIGN_LAYER_VERSION](./DESIGN_LAYER_VERSION) | **Current** | Cache stamp `20260908a`. |
+| [DESIGN_LAYER_VERSION](./DESIGN_LAYER_VERSION) | **Current** | Cache stamp `20260908d`. |
 | [README.md](./README.md) | **Current** | Folder orientation. |
 | `.cursor/rules/mlbma-design-contract.mdc` | **Current** | Agent summary of the contract. |
 | `.cursor/rules/chase-brand-and-avatars.mdc` | **Current** | Brand assets / avatars (not colour tokens). |

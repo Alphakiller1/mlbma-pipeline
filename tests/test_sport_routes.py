@@ -8,9 +8,29 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SportRouteBuilderTests(unittest.TestCase):
+    _GENERATED = (
+        ROOT / "mlb" / "index.html",
+        ROOT / "nfl" / "index.html",
+        ROOT / "wnba" / "index.html",
+        ROOT / "cfb" / "index.html",
+        ROOT / "nfl" / "matchups.html",
+    )
+
     @classmethod
     def setUpClass(cls):
+        cls._snapshots = {
+            path: path.read_bytes() if path.is_file() else None for path in cls._GENERATED
+        }
         subprocess.check_call(["python3", str(ROOT / "scripts" / "build_sport_routes.py")], cwd=ROOT)
+
+    @classmethod
+    def tearDownClass(cls):
+        for path, original in cls._snapshots.items():
+            if original is None:
+                if path.exists():
+                    path.unlink()
+            else:
+                path.write_bytes(original)
 
     def test_four_indexes_and_nfl_matchups(self):
         for sport in ("mlb", "nfl", "wnba", "cfb"):
@@ -69,6 +89,21 @@ class AdapterHoleTests(unittest.TestCase):
         ui = (ROOT / "dashboard" / "mlbma_ui.js").read_text(encoding="utf-8")
         self.assertIn("ChaseDataStatus.fetchLastUpdated", ui)
         self.assertNotIn("Last Updated", ui)
+
+    def test_opening_and_team_profile_use_shared_last_updated_fetch(self):
+        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        profile = (ROOT / "dashboard" / "team_profile.html").read_text(encoding="utf-8")
+        self.assertIn("ChaseDataStatus.fetchLastUpdated", opening)
+        self.assertIn("function prefetchSheetSync", opening)
+        self.assertNotIn("encodeURIComponent(TABS.last_updated)", opening)
+        self.assertIn("ChaseDataStatus.fetchLastUpdated", profile)
+        self.assertNotIn("gvizUrl('Last_Updated')", profile)
+
+    def test_starters_rankings_registry_uses_render_route(self):
+        engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")
+        self.assertIn('"page": "render/pitcher_intelligence.html"', engine)
+        starters = engine.split('"starters_rankings":', 1)[1].split('"trends_heatmap":', 1)[0]
+        self.assertNotIn('"page": "index.html"', starters)
 
     def test_slate_age_is_separate_from_publication_age(self):
         status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")

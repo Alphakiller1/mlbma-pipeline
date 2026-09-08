@@ -20,4 +20,5 @@ requirements.txt
 .gitignore
 .assetsignore
 wrangler.jsonc
+wrangler.toml
 *.md
