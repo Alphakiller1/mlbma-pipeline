@@ -1633,7 +1633,7 @@
 
 .mc-lvp-table--summary { margin-bottom: 12px; }
 .mc-lvp-table-wrap--summary { margin-top: 0; margin-bottom: 12px; }
-.mc-lvp-table-wrap--games { margin-top: 0; flex: 1; min-height: 0; }
+.mc-lvp-table-wrap--games { margin-top: 0; flex: 0 0 auto; }
 .mc-lvp-table--summary th,
 .mc-lvp-table--summary td.mc-lvp-summary-stat {
   text-align: center;
@@ -2283,6 +2283,8 @@
     white-space: nowrap;
     font-size: 11px;
     padding: 8px 12px;
+    min-height: 44px;
+    box-sizing: border-box;
   }
 
   .mc-radar-panel {

@@ -3,7 +3,7 @@
  * Global identity aligns with design_comp_v2 / visual spec.
  */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
-@import url('responsive.css?v=20260630a');
+@import url('responsive.css?v=20260610f');
 
 html {
   -webkit-font-smoothing: antialiased;
@@ -733,10 +733,14 @@ table.ca-table,
 .rl-table-premium,
 .rankings-table,
 .hub-table,
-.lv-table,
 .thm-table {
   width: 100%;
   border-collapse: collapse;
+}
+.lv-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 table.ca-table thead th,
 .rl-table-premium thead th,
@@ -776,10 +780,13 @@ table.ca-table tbody td,
 .hub-rank-num,
 .rl-table-premium td.num,
 table.ca-table td.num,
-.lv-table td.num,
 .thm-table td.numcol {
   text-align: center;
   width: 1%;
+  white-space: nowrap;
+}
+.lv-table td.num {
+  text-align: center;
   white-space: nowrap;
 }
 .hub-table thead th.sorted,
@@ -1628,6 +1635,8 @@ h1.ca-page-title {
   justify-content: center;
   gap: 8px;
   padding: 10px 18px;
+  min-height: 44px;
+  box-sizing: border-box;
   border-radius: 14px;
   font-family: inherit;
   font-size: 13px;

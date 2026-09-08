@@ -19,9 +19,12 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
 <link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="team_rankings_snapshot.json?v=20260608a" as="fetch" crossorigin>
+<link rel="preload" href="team_rankings_snapshot.json?v=20260616a" as="fetch" crossorigin>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Phase 2: decides hub_dataset auth headers (anon key, or the signed-in user's JWT).
+     Loaded before the prefetch below so those requests can be authenticated too. -->
+<script src="mlbma_supabase_headers.js?v=20260612a"></script>
 <script>
 (function() {
   // NOTE: previously this redirected to append a `_trbuild` cache-buster, which forced
@@ -44,7 +47,7 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
   // here in the head; on slow connections they could compete with CSS/scripts even
   // though the snapshot is enough to render the default Team Rankings view.
   try {
-    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260608a', { cache: 'force-cache' })
+    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260616a')
       .then(function(r) { if (!r.ok) throw new Error('snapshot ' + r.status); return r.json(); });
 
     var prefetchLiveData = function() {
@@ -52,29 +55,24 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
       var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
       var criticalTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
       var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
-      var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows,updated_at',
-        { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+      var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows',
+        { headers: window.MLBMA_supabaseHeaders(SB_KEY) })
         .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
-        .then(function (arr) {
-          var m = {};
-          arr.forEach(function (d) { m[d.name] = { rows: d.rows, updated_at: d.updated_at }; });
-          return m;
-        });
+        .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
       criticalTabs.forEach(function (t) {
         store[t] = batch.then(function (m) {
-          if (!m[t] || !m[t].rows || !m[t].rows.length) throw new Error('prefetch miss ' + t);
+          if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
           return m[t];
         });
         store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
       });
-      store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows,updated_at',
-        { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+      store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
+        { headers: window.MLBMA_supabaseHeaders(SB_KEY) })
         .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })
         .then(function (arr) {
-          var entry = arr && arr[0];
-          var rows = entry && entry.rows;
+          var rows = arr && arr[0] && arr[0].rows;
           if (!rows || !rows.length) throw new Error('prefetch miss Team_Results');
-          return { rows: rows, updated_at: entry.updated_at };
+          return rows;
         });
       store['Team_Results'].catch(function () { /* fall back handled in fetchSheetTab */ });
       fetch('league_baselines.json?_=' + Date.now()).then(function(r) {
@@ -90,11 +88,11 @@ console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
 </script>
 <title>Chase Analytics - Team Rankings v20260604</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
-<link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260701c">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
-<link rel="stylesheet" href="responsive.css?v=20260701d">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260908d">
+<link rel="stylesheet" href="theme.css?v=20260606b">
+<link rel="stylesheet" href="chase_nav.css?v=20260908d">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260605c">
+<link rel="stylesheet" href="responsive.css?v=20260908d">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <style>
 :root {
@@ -203,7 +201,14 @@ body{
 .col-adv.show{display:table-cell}
 .th-info{margin-left:4px;opacity:.55;font-size:9px;cursor:help}
 .hub-takeaway{font-size:11px;color:var(--text-2);max-width:220px;line-height:1.35}
-.rankings-initial{margin-top:14px;padding:18px;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);color:var(--text-2);font-size:13px}
+.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+.loading.hide{display:none}
+#hubLoading.hide {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 @media(max-width:767px){
   .container{padding:16px 14px 56px}
   .hub-control-bar{padding:12px}
@@ -214,15 +219,33 @@ body{
   .hub-kpi-val{font-size:32px}
 }
 </style>
-
 </head>
-<body class="ca-bg-outfield team-rankings-page">
-<!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
+<body class="ca-bg-outfield">
+<div class="loading" id="hubLoading">
+  <span class="subtitle">Loading lineup offense data...</span>
+</div>
+<script>
+/* Dismiss loading overlay if lineup view never finishes (network/sheet failure) */
+setTimeout(function() {
+  if (window.__lineupViewReady || window.__lineupViewMounted) return;
+  var l = document.getElementById('hubLoading');
+  if (l) l.classList.add('hide');
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
+  var body = document.querySelector('.lv-body');
+  if (body && !body.querySelector('.lv-table') && !body.querySelector('.lv-note')) {
+    body.innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Load timed out — check network and Google Sheet access, then refresh.</div>';
+  }
+  console.warn('[LINEUP VIEW] still loading after 20s — hard refresh and verify shared scripts');
+}, 20000);
+</script>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
-      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
-      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
+    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics \u2014 Opening Dashboard">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
     </a>
     <div class="chase-nav-links">
       <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
@@ -230,11 +253,8 @@ body{
       <a href="team_rankings.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
       <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
       <div class="chase-dropdown">
-        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-          Profiles
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-          </svg>
+        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">Profiles
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
         </button>
         <div class="chase-dropdown-menu">
           <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
@@ -247,26 +267,20 @@ body{
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
     <div class="chase-status">
-      <div class="chase-timestamp">
-        <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
-        <span id="lastUpdated">Syncing</span>
-      </div>
-      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open Menu"
-        aria-controls="mobileMenu" aria-expanded="false" aria-haspopup="dialog">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="chase-timestamp"><span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span><span id="lastUpdated">syncing\u2026</span></div>
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
 </header>
-<div class="chase-mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
-<div class="chase-mobile-menu" id="mobileMenu" role="dialog" aria-modal="true"
-  aria-label="Main Menu" aria-hidden="true">
+<div class="chase-mobile-overlay" id="mobileOverlay"></div>
+<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
   <div class="chase-mobile-header">
     <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
-      <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
-      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
+      <img class="chase-nav-logo chase-nav-logo--dark" src="assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
     </a>
-    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close Menu">
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -286,23 +300,21 @@ body{
     <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
     <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Profile</a>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
     <div class="chase-timestamp">
       <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
-      <span id="mobileLastUpdated">Syncing</span>
+      <span id="mobileLastUpdated">syncing…</span>
     </div>
   </div>
 </div>
+
 <main class="container ca-page-shell">
   <div id="teamRankingsPageHeader"></div>
-  <section id="lineupViewMount">
-    <div class="rankings-initial" role="status">Loading Team Rankings...</div>
-  </section>
+  <section id="lineupViewMount"></section>
 </main>
-<script src="team_rankings_boot.js?v=20260701c"></script>
+<script src="team_rankings_boot.js?v=20260608b"></script>
 
 <script>
 (function() {
@@ -313,11 +325,11 @@ body{
   window.MLBMA_PAGE_LOAD_BUST = Date.now();
 })();
 </script>
-<script src="mlbma_config.js?v=20260831a"></script>
-<script src="mlbma_assets.js?v=20260618b"></script>
-<script id="mlbma-icons-script" src="mlbma_icons.js?v=20260606c"></script>
-<script src="mlbma_ui.js?v=20260901a" data-page="team_rankings.html"></script>
-<script src="matchup_shared.js?v=20260901a"></script>
+<script src="mlbma_config.js?v=20260606b"></script>
+<script src="mlbma_assets.js?v=20260615b"></script>
+<script id="mlbma-icons-script" src="mlbma_icons.js?v=20260612b"></script>
+<script src="mlbma_ui.js?v=20260612a" data-page="team_rankings.html"></script>
+<script src="matchup_shared.js?v=20260717e"></script>
 <script>
 (function() {
   var _globalErrorHandling = false;
@@ -351,8 +363,8 @@ body{
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260701a"></script>
-<script src="mobile_cardify.js?v=20260610a"></script>
+<script src="lineup_view.js?v=20260615c"></script>
+<script src="mobile_cardify.js?v=20260610c"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
@@ -362,20 +374,7 @@ body{
       showPlatformNav: false
     });
   }
-  function mountTeamRankings() {
-    if (window.__MLBMA_TEAM_RANKINGS_MOUNTED) return;
-    window.__MLBMA_TEAM_RANKINGS_MOUNTED = true;
-    if (window.LineupView && LineupView.mount) LineupView.mount({ mountId: 'lineupViewMount' });
-  }
-  var snap = window.__MLBMA_SNAPSHOT_PROMISE;
-  if (snap && typeof snap.then === 'function') {
-    Promise.race([
-      snap.catch(function() { return null; }),
-      new Promise(function(resolve) { setTimeout(resolve, 1200); })
-    ]).then(mountTeamRankings);
-  } else {
-    mountTeamRankings();
-  }
+  if (window.LineupView && LineupView.mount) LineupView.mount({ mountId: 'lineupViewMount' });
 })();
 </script>
 <script>
@@ -399,6 +398,6 @@ body{
   setTimeout(hardenTeamRankingsUi, 1200);
 })();
 </script>
-<script src="chase_nav.js?v=20260701a" defer></script>
+<script src="chase_nav.js?v=20260618a" defer></script>
 </body>
 </html>
