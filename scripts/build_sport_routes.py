@@ -6,6 +6,7 @@ for these files — edit this script, then re-run.
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -71,11 +72,12 @@ def sport_nav() -> str:
 def page(sport: str, *, matchups: bool = False) -> str:
     spec = SPORTS[sport]
     title = "NFL Matchups — Chase Analytics" if matchups else spec["title"]
-    extra_scripts = ""
-    if matchups:
-        extra_scripts = f"""
+    extra_scripts = f"""
+  <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_entity.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_metric.js?v={STAMP}"></script>
   <script src="/dashboard/chase_modelstatus.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>"""
+  <script src="/dashboard/chase_scope.js?v={STAMP}"></script>"""
     body_js = MATCHUPS_JS if matchups else HUB_JS
     more = spec["matchups_href"]
     more_html = (
@@ -113,17 +115,17 @@ def page(sport: str, *, matchups: bool = False) -> str:
     <div id="slate" class="ca-async">Loading {sport.upper()} board…</div>
   </main>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908f"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908e"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908e"></script>
-  <script src="/dashboard/sports/{spec["adapter"]}.js?v=20260908e"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908e"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908e"></script>{extra_scripts}
+  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_sport_select.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/chase_board.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/{spec["adapter"]}.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_nav.js?v={STAMP}"></script>{extra_scripts}
   <script>
   window.CHASE_SPORT_PAGE = {spec["global"]};
-  window.CHASE_SPORT_ID = {sport!r};
-  window.CHASE_SPORT_PICKS_LABEL = {spec["picks_label"]!r};
-  window.CHASE_SPORT_GEMS_LABEL = {spec["gems_label"]!r};
+  window.CHASE_SPORT_ID = {json.dumps(sport)};
+  window.CHASE_SPORT_PICKS_LABEL = {json.dumps(spec["picks_label"])};
+  window.CHASE_SPORT_GEMS_LABEL = {json.dumps(spec["gems_label"])};
   window.CHASE_SPORT_IS_MATCHUPS = {str(matchups).lower()};
   {body_js}
   </script>
@@ -136,7 +138,8 @@ HUB_JS = r"""
 (function () {
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseSportSelect) {
+  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'index', search: false });
+  else if (window.ChaseSportSelect) {
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'index' });
   }
@@ -145,6 +148,7 @@ HUB_JS = r"""
     if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'adapter missing');
     return;
   }
+  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
   Promise.all([
     fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
@@ -155,6 +159,14 @@ HUB_JS = r"""
       return;
     }
     var nb = adapter.normalize(board);
+    if (window.ChaseModelStatus) {
+      ChaseModelStatus.render(document.getElementById('modelStatus'), {
+        authority: nb.authority.level,
+        may_bet: nb.authority.may_bet,
+        unmet_gates: nb.authority.unmet_gates,
+        evidence: nb.authority.evidence
+      });
+    }
     if (window.ChaseDataStatus) {
       ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
         return {
@@ -190,10 +202,12 @@ MATCHUPS_JS = r"""
 (function () {
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseSportSelect) {
+  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'matchups', search: true });
+  else if (window.ChaseSportSelect) {
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'matchups' });
   }
+  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
   function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
   function dash(v, reason) {
     if (v == null || v === '') return '<span title="' + esc(reason || 'unavailable') + '">—</span>';
@@ -236,8 +250,12 @@ MATCHUPS_JS = r"""
     var html = '<p class="ca-helper">Priced markets: ' + priced + ' of ' + nb.games.length + ' — not Picks.</p>';
     html += '<div class="ca-board-list">';
     nb.games.forEach(function (g, idx) {
-      html += '<article class="ca-card" style="margin-bottom:12px" data-game="' + esc(g.id) + '">';
-      html += '<h2>' + esc(g.away) + ' @ ' + esc(g.home) + '</h2>';
+      html += '<article class="ca-card" data-game="' + esc(g.id) + '">';
+      html += '<h2>';
+      html += window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away);
+      html += ' @ ';
+      html += window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home);
+      html += '</h2>';
       html += '<p class="ca-helper">' + esc(g.kickoff_display || g.kickoff_utc || 'kickoff unknown') + '</p>';
       html += '<div class="ca-nfl-channels">';
       html += '<div class="ca-nfl-channel"><h3>Model</h3><p>' + dash(g.model_margin) + '</p></div>';

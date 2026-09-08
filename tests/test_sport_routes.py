@@ -53,9 +53,39 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("edge_withheld_reason", text)
         self.assertIn("hamburgerBtn", text)
         self.assertIn("ChaseModelStatus", text)
+        self.assertIn("ChaseShell", text)
+        self.assertIn("ChaseEntity", text)
         self.assertIn("marginAxisHtml", text)
         self.assertNotIn("RECORD_URL", text)
         self.assertNotIn("sports/mlb.js", text)
+        self.assertNotIn("= None;", text)
+        self.assertIn("CHASE_SPORT_GEMS_LABEL = null", text)
+
+    def test_generated_pages_do_not_emit_python_none(self):
+        for path in self._GENERATED:
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("= None;", text, path)
+            self.assertIn("chase_shell.js", text)
+
+    def test_scope_bar_omits_defaults(self):
+        js = (ROOT / "dashboard" / "chase_scope.js").read_text(encoding="utf-8")
+        self.assertIn("function omitDefaults", js)
+        self.assertIn("function searchFrom", js)
+        view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
+        self.assertIn("ChaseScopeBar.omitDefaults", view)
+        self.assertIn("scope-reset", view)
+
+    def test_entity_escapes_name(self):
+        js = (ROOT / "dashboard" / "chase_entity.js").read_text(encoding="utf-8")
+        self.assertIn("replace(/</g, '&lt;')", js)
+        self.assertIn("ca-entity-fallback", js)
+
+    def test_matchup_compare_declares_evidence_mode(self):
+        html = (ROOT / "dashboard" / "matchup_compare.html").read_text(encoding="utf-8")
+        self.assertIn('data-mode="evidence"', html)
+        self.assertIn("chase_scope.js", html)
+        self.assertIn("sports/chase_board.js", html)
+        self.assertNotIn("var(--text, #F4F4F7)", html)
 
 
 class AdapterHoleTests(unittest.TestCase):

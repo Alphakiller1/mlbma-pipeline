@@ -8,9 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Matchup Comparison</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260908b">
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908d">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260908d">
-<link rel="stylesheet" href="theme.css?v=20260908d">
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908g">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260908g">
+<link rel="stylesheet" href="theme.css?v=20260908g">
 <link rel="stylesheet" href="chase_nav.css?v=20260908d">
 <link rel="stylesheet" href="matchup_compare.css?v=20260908d">
 <link rel="stylesheet" href="bullpen_usage.css?v=20260908b">
@@ -20,9 +20,12 @@
 <script src="mlbma_assets.js?v=20260908c"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
 <script src="mlbma_standings.js?v=20260703b"></script>
-<script src="chase_datastatus.js?v=20260908f"></script>
+<script src="chase_datastatus.js?v=20260908d"></script>
+<script src="chase_scope.js?v=20260908d"></script>
+<script src="chase_shell.js?v=20260908d"></script>
 <script src="matchup_shared.js?v=20260908e"></script>
 <script src="lineup_view.js?v=20260908e"></script>
+<script src="sports/chase_board.js?v=20260908d"></script>
 <script src="sports/mlb.js?v=20260908e"></script>
 <script src="matchup_offense_splits.js?v=20260629g"></script>
 <script src="mlbma_charts.js?v=20260612a"></script>
@@ -34,12 +37,12 @@
 <script src="matchup_lvb.js?v=20260608a"></script>
 <script src="matchup_lvp.js?v=20260616c"></script>
 <style>
-body { min-height: 100vh; color: var(--text, #F4F4F7); }
+body { min-height: 100vh; color: var(--text); }
 </style>
   <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260908b">
   <link rel="stylesheet" href="responsive.css?v=20260908d">
 </head>
-<body class="ca-bg-compare">
+<body class="ca-bg-compare" data-mode="evidence" data-sport="mlb">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -124,5 +127,8 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 <script src="mobile_cardify.js?v=20260908b"></script>
 <script src="matchup_compare.js?v=20260908e"></script>
 <script src="chase_nav.js?v=20260908d"></script>
+<script>
+if (window.ChaseShell) ChaseShell.mount({ sport: 'mlb', mode: 'evidence', surface: 'compare', search: false });
+</script>
 </body>
 </html>
