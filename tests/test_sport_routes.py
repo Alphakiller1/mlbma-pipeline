@@ -132,6 +132,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("chase-board/1", js)
         self.assertIn("kickoff_utc", js)
         self.assertIn("edge_withheld_reason", js)
+        self.assertIn("away_score", js)
+        self.assertIn("function pickScore", js)
         self.assertIn("market_gap", js)
         self.assertIn("sport === 'mlb' ? 2.5 : 6", js)
 

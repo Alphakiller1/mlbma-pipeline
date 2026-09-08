@@ -63,6 +63,13 @@ class LayerGuardTests(unittest.TestCase):
             hits = self.mod.layer_violations_for(css, css.read_text(encoding="utf-8"))
             self.assertEqual(hits, [], f"{css.name}: {hits}")
 
+    def test_phone_media_query_does_not_force_mobile_drawer_open(self):
+        css = (ROOT / "dashboard" / "styles" / "chase-shell.css").read_text(encoding="utf-8")
+        phone = css.split("@media (max-width: 768px)", 1)[1].split("@media", 1)[0]
+        self.assertNotIn(".chase-mobile-overlay", phone)
+        self.assertNotIn(".chase-mobile-menu", phone)
+        self.assertIn(".chase-mobile-menu.open { display: block; }", css)
+
     def test_shared_shell_has_no_oswald(self):
         for rel in (
             "dashboard/chase_nav.css",

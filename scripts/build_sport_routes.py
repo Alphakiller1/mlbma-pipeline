@@ -251,7 +251,7 @@ MATCHUPS_JS = r"""
       (window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home));
     var mlbHref = mlbDeskHref(g);
     var viewGame = mlbHref
-      ? '<p class="ca-helper"><a class="ca-btn ca-btn-sm ca-btn-primary" href="' + mlbHref + '">Open scouting desk</a></p>'
+      ? '<p class="ca-helper"><a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open scouting desk</a></p>'
       : '';
     return '<article class="ca-card" data-game="' + esc(g.id) + '">' +
       '<h2>' + names + '</h2>' +
@@ -373,6 +373,46 @@ RESULTS_JS = r"""
 """
 
 
+def models_page() -> str:
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Center — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
+</head>
+<body data-mode="evidence">
+{sport_nav()}
+  <main class="container ca-page-shell ca-shell-main">
+    <header class="ca-surface-header">
+      <h1 class="ca-page-title">Model Center</h1>
+      <p class="ca-helper">Projections, model-versus-market gaps, and priced markets stay behind a signed-in desk. This page does not preview those numbers.</p>
+    </header>
+    <section class="ca-card ca-card-pad">
+      <h2>Access</h2>
+      <p>Public Chase Analytics is the sports data and research desk: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks.</p>
+      <p>Model Center is a separate product. Sign-in and entitlement are not wired on this stub. When they ship, this route will load the authenticated board instead of a teaser.</p>
+      <p class="ca-helper">No projected scores, model lines, or confidence values are shown here.</p>
+    </section>
+  </main>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
+  <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
+</body>
+</html>
+"""
+
+
 def main() -> int:
     for sport in SPORTS:
         dest = ROOT / sport
@@ -381,6 +421,9 @@ def main() -> int:
         (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
         (dest / "results.html").write_text(page(sport, kind="results"), encoding="utf-8")
         print("wrote", sport, "index/matchups/results")
+    (ROOT / "models").mkdir(parents=True, exist_ok=True)
+    (ROOT / "models" / "index.html").write_text(models_page(), encoding="utf-8")
+    print("wrote models/index.html")
     return 0
 
 

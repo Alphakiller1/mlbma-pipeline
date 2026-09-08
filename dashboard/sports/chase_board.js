@@ -31,6 +31,17 @@
     return side.abbreviation || side.abbr || side.school || side.name || side.team || '';
   }
 
+  function pickScore() {
+    var i, v, n;
+    for (i = 0; i < arguments.length; i++) {
+      v = arguments[i];
+      if (v == null || v === '') continue;
+      n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
+    return null;
+  }
+
   function kickoffUtc(g) {
     return g.kickoff_utc || g.commence_time_utc || g.start_utc || g.game_time_utc || null;
   }
@@ -61,7 +72,9 @@
       edge_withheld_reason: g.edge_withheld_reason || (g.edge_points == null ? (g.withheld_reason || 'not published') : null),
       priced: priced,
       book: g.book || null,
-      evidence: g.evidence || g.notes || ''
+      evidence: g.evidence || g.notes || '',
+      away_score: pickScore(g.away_score, g.away_runs, g.score_away, g.awayScore, g.score && g.score.away),
+      home_score: pickScore(g.home_score, g.home_runs, g.score_home, g.homeScore, g.score && g.score.home)
     };
   }
 

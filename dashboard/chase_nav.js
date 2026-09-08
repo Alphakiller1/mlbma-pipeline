@@ -49,10 +49,9 @@
     if (!hamburger || !mobileOverlay || !mobileMenu) return;
     hamburger.classList.add('open');
     hamburger.setAttribute('aria-expanded', 'true');
-    mobileOverlay.style.display = 'block';
-    mobileMenu.style.display = 'block';
+    mobileOverlay.style.display = '';
+    mobileMenu.style.display = '';
     mobileMenu.setAttribute('aria-hidden', 'false');
-    void mobileOverlay.offsetHeight;
     mobileOverlay.classList.add('open');
     mobileMenu.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -65,11 +64,10 @@
     mobileOverlay.classList.remove('open');
     mobileMenu.classList.remove('open');
     mobileMenu.setAttribute('aria-hidden', 'true');
+    mobileOverlay.style.display = '';
+    mobileMenu.style.display = '';
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
-    setTimeout(function () {
-      mobileOverlay.style.display = 'none';
-    }, 200);
   }
 
   if (hamburger) {

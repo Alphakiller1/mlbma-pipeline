@@ -416,13 +416,16 @@
   .chase-hamburger { display: none !important; }
 }
 
+.chase-mobile-overlay.open {
+  display: block;
+  pointer-events: auto;
+}
+.chase-mobile-menu.open { display: block; }
+
 @media (max-width: 768px) {
   .chase-nav-links,
   .chase-status .chase-timestamp { display: none; }
-  .chase-hamburger,
-  .chase-mobile-overlay,
-  .chase-mobile-menu { display: flex; }
-  .chase-mobile-menu { display: block; }
+  .chase-hamburger { display: flex; }
   .chase-status { max-width: none; }
 }
 
