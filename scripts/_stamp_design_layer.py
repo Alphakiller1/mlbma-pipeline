@@ -52,7 +52,14 @@ def stamp_hrefs(text: str) -> str:
         return f"{m.group(1)}{m.group(2)}{m.group(3)}{m.group(4)}{STAMP}{m.group(5)}"
 
     text = HREF_V.sub(repl, text)
-    if TOKEN_LINK not in text and "mlbma_design_system.css" in text:
+    # The design-layer assets are not in DS_FILES, so HREF_V never rewrote their
+    # ?v=. TOKEN_LINK then failed its "already present?" test on every bump and
+    # inserted another link: three chase-tokens-v1.css tags had accumulated in
+    # every dashboard page. Rewrite these two in place, on href or src, before
+    # deciding whether an insert is needed.
+    text = re.sub(r"(/design/chase-tokens-v1\.css\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(design_layer_version\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    if "chase-tokens-v1.css" not in text and "mlbma_design_system.css" in text:
         text = text.replace(
             f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">',
             TOKEN_LINK + "\n" + f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">',
@@ -73,7 +80,12 @@ def main() -> None:
     t = idx.read_text(encoding="utf-8")
     t = strip_index_tokens(t)
     t = stamp_hrefs(t)
-    t = t.replace("<body", '<body data-mode="slate"', 1) if "data-mode" not in t[:4000] else t
+    # Guard on the whole document, not t[:4000]: index.html's <body> is at line
+    # 2756, well past that window, so the old guard never saw the attribute it
+    # had already written and appended another data-mode on every run. Seven had
+    # accumulated - duplicate attributes, and unbounded growth of a 403 KB file.
+    if "data-mode=" not in t:
+        t = t.replace("<body", '<body data-mode="slate"', 1)
     # body tag is late in this file — search properly
     if "data-mode=" not in t:
         t = t.replace("<body>", '<body data-mode="slate">', 1)
