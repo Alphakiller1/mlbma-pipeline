@@ -257,7 +257,7 @@
   function loadViewportHelper() {
     if (global.MLBMAViewport) return;
     var s = document.createElement('script');
-    s.src = 'platform_viewport.js?v=20260610b';
+    s.src = '/dashboard/platform_viewport.js?v=20260610b';
     s.async = true;
     document.head.appendChild(s);
   }

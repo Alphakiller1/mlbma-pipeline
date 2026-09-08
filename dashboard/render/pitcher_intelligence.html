@@ -5,18 +5,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Render — Pitcher Intelligence</title>
+<base href="/dashboard/">
 <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
-<link rel="stylesheet" href="../mlbma_design_system.css?v=20260908a">
-<link rel="stylesheet" href="../theme.css?v=20260908a">
-<link rel="stylesheet" href="../mlbma_ui.css?v=20260908a">
-<link rel="stylesheet" href="../research_lab.css?v=20260908a">
-<link rel="stylesheet" href="../responsive.css?v=20260908a">
-<script src="../mlbma_supabase_headers.js?v=20260612a"></script>
-<script src="../mlbma_config.js?v=20260606b"></script>
-<script src="../mlbma_assets.js?v=20260615b"></script>
-<script src="../mlbma_icons.js?v=20260612b"></script>
-<script src="../matchup_shared.js?v=20260717e"></script>
-<script src="../pitcher_lab.js?v=20260619d"></script>
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260908a">
+<link rel="stylesheet" href="theme.css?v=20260908a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260908a">
+<link rel="stylesheet" href="research_lab.css?v=20260908a">
+<link rel="stylesheet" href="responsive.css?v=20260908a">
+<script src="mlbma_supabase_headers.js?v=20260612a"></script>
+<script src="mlbma_config.js?v=20260606b"></script>
+<script src="mlbma_assets.js?v=20260908c"></script>
+<script src="mlbma_icons.js?v=20260612b"></script>
+<script src="matchup_shared.js?v=20260717e"></script>
+<script src="platform_dashboard.js?v=20260717e"></script>
+<script src="pitcher_lab.js?v=20260619d"></script>
 </head>
 <body data-mode="rank" class="ca-bg-outfield">
 <main class="container ca-page-shell" style="max-width:1400px;margin:0 auto;padding:20px 24px;">
@@ -32,6 +34,21 @@ window.LIVE_DATA = window.LIVE_DATA || {
   matchups: [], lineups: [], todayGames: [], bullpenUnits: {},
   teamProfilesByTeam: {}, rhp: null, lhp: null
 };
+function bootPitchingCapture() {
+  var S = window.MLBMASharedMatchup;
+  var T = window.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
+  var load = (S && T && T.today_matchups)
+    ? S.fetchSheetTab(T.today_matchups)
+    : Promise.resolve([]);
+  load.then(function(rows) {
+    var parsed = (S && S.parseMatchupRows) ? S.parseMatchupRows(rows || []) : (rows || []);
+    window.LIVE_DATA.matchups = parsed;
+    window.LIVE_DATA.loaded = true;
+    window.showResearchSubtab('pitching');
+  }).catch(function() {
+    window.showResearchSubtab('pitching');
+  });
+}
 window.showResearchSubtab = function(name) {
   if (name === 'pitcher') name = 'pitching';
   if (name !== 'pitching') return;
@@ -43,9 +60,9 @@ window.showResearchSubtab = function(name) {
   if (window.PitcherLab && PitcherLab.mount) PitcherLab.mount('rlPitcherLabRoot');
 };
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() { window.showResearchSubtab('pitching'); });
+  document.addEventListener('DOMContentLoaded', bootPitchingCapture);
 } else {
-  window.showResearchSubtab('pitching');
+  bootPitchingCapture();
 }
 </script>
 </body>

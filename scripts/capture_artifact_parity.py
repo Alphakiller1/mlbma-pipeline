@@ -19,7 +19,7 @@ TARGETS = [
      "selector": ".lv-table", "eval": None, "wait_ms": 25000},
     {"key": "starters_rankings", "url": f"{BASE}/dashboard/render/pitcher_intelligence.html",
      "selector": ".pl-rank-table", "eval": "if (window.showResearchSubtab) window.showResearchSubtab('pitching');",
-     "wait_ms": 25000},
+     "wait_ms": 40000},
     {"key": "starters_rankings_index", "url": f"{BASE}/dashboard/index.html#section-research-lab",
      "selector": ".pl-rank-table",
      "eval": "if (window.syncDashboardView) window.syncDashboardView(); if (window.showResearchSubtab) window.showResearchSubtab('pitching');",
@@ -27,13 +27,13 @@ TARGETS = [
     {"key": "card", "url": f"{BASE}/dashboard/index.html#section-matchups-hero",
      "selector": ".hero-matchup-card", "eval": "if (window.syncDashboardView) window.syncDashboardView();",
      "wait_ms": 25000},
-    {"key": "banner", "url": None, "selector": ".mc-header", "eval": None, "wait_ms": 25000},
-    {"key": "radar", "url": None, "selector": ".mc-radar-duo", "eval": None, "wait_ms": 25000},
-    {"key": "offense", "url": None, "selector": ".mc-os-duo", "eval": None, "wait_ms": 25000},
+    {"key": "banner", "url": None, "selector": ".mc-header", "eval": None, "wait_ms": 40000},
+    {"key": "radar", "url": None, "selector": ".mc-radar-duo", "eval": None, "wait_ms": 40000},
+    {"key": "offense", "url": None, "selector": ".mc-os-duo", "eval": None, "wait_ms": 40000},
     {"key": "pitcher", "url": None, "selector": ".mc-lvp-section",
-     "params": "compare=lvP&lvpLineup=away&lvpPitcher=home", "wait_ms": 25000},
+     "params": "compare=lvP&lvpLineup=away&lvpPitcher=home", "wait_ms": 40000},
     {"key": "bullpen", "url": None, "selector": ".mc-lvb-section",
-     "params": "compare=lvB&lvbLineup=away&lvbBp=home", "wait_ms": 25000},
+     "params": "compare=lvB&lvbLineup=away&lvbBp=home", "wait_ms": 40000},
 ]
 
 
@@ -49,17 +49,36 @@ def shot(page, selector: str, dest: Path) -> dict:
 
 
 def first_game(page) -> tuple[str, str] | None:
-    return page.evaluate(
+    pair = page.evaluate(
         """() => {
-          const el = document.querySelector('.hero-matchup-card');
-          if (!el) return null;
-          const t = (el.innerText || '').toUpperCase();
-          const m = t.match(/\\b([A-Z]{2,3})\\s*@\\s*([A-Z]{2,3})\\b/);
-          if (m) return [m[1], m[2]];
-          const logos = [...el.querySelectorAll('[data-team], .hmc-team, .team-abbr')];
+          const el = document.querySelector('.hero-matchup-card[data-away][data-home]');
+          if (el) return [el.getAttribute('data-away'), el.getAttribute('data-home')];
           return null;
         }"""
     )
+    return (pair[0], pair[1]) if pair else None
+
+
+def compare_url(page, away: str, home: str) -> str:
+    url = f"{BASE}/dashboard/matchup_compare.html?away={away}&home={home}"
+    page.goto(url, wait_until="domcontentloaded", timeout=45000)
+    page.add_style_tag(content=ANIM)
+    try:
+        page.wait_for_selector(".mc-header, .mc-slate-pick", timeout=20000)
+    except Exception:
+        pass
+    if page.locator(".mc-header").count():
+        return url
+    pick = page.locator(".mc-slate-pick").first
+    if pick.count():
+        href = pick.get_attribute("href") or ""
+        if href:
+            if href.startswith("http"):
+                return href
+            if href.startswith("/"):
+                return BASE + href
+            return f"{BASE}/dashboard/{href}"
+    return url
 
 
 def main() -> int:
@@ -75,16 +94,17 @@ def main() -> int:
             notes.append(f"index matchup cards: {exc}")
         game = first_game(page)
         away, home = (game[0], game[1]) if game else ("NYY", "BOS")
-        notes.append(f"compare pair used: {away}@{home}" + (" (fallback NYY@BOS)" if not game else ""))
+        notes.append(f"hero card pair: {away}@{home}" + ("" if game else " (fallback)"))
+        resolved = compare_url(page, away, home)
+        notes.append(f"compare url: {resolved}")
 
         results = []
         for spec in TARGETS:
             url = spec["url"]
             if url is None:
                 q = spec.get("params", "")
-                url = f"{BASE}/dashboard/matchup_compare.html?away={away}&home={home}"
-                if q:
-                    url += "&" + q
+                joiner = "&" if "?" in resolved else "?"
+                url = resolved + (joiner + q if q else "")
             rec = {"key": spec["key"], "url": url, "selector": spec["selector"], "ok": False, "error": ""}
             try:
                 page.goto(url, wait_until="domcontentloaded", timeout=45000)

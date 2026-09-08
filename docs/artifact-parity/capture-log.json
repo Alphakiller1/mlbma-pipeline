@@ -1,0 +1,101 @@
+{
+  "notes": [
+    "hero card pair: CLE@BAL",
+    "compare url: http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CLE&home=BAL"
+  ],
+  "results": [
+    {
+      "key": "team_rankings",
+      "url": "http://127.0.0.1:8766/dashboard/render/team_rankings.html?family=scoring&window=L30",
+      "selector": ".lv-table",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1324,
+        "h": 1429.25,
+        "bytes": 446393
+      },
+      "pass2": {
+        "w": 1324,
+        "h": 1429.25,
+        "bytes": 446393
+      }
+    },
+    {
+      "key": "starters_rankings",
+      "url": "http://127.0.0.1:8766/dashboard/render/pitcher_intelligence.html",
+      "selector": ".pl-rank-table",
+      "ok": false,
+      "error": "Page.wait_for_selector: Timeout 40000ms exceeded."
+    },
+    {
+      "key": "starters_rankings_index",
+      "url": "http://127.0.0.1:8766/dashboard/index.html#section-research-lab",
+      "selector": ".pl-rank-table",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1242,
+        "h": 1012.25,
+        "bytes": 336651
+      },
+      "pass2": {
+        "w": 1242,
+        "h": 1012.25,
+        "bytes": 336651
+      }
+    },
+    {
+      "key": "card",
+      "url": "http://127.0.0.1:8766/dashboard/index.html#section-matchups-hero",
+      "selector": ".hero-matchup-card",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 431.328125,
+        "h": 573.15625,
+        "bytes": 251978
+      },
+      "pass2": {
+        "w": 431.328125,
+        "h": 573.15625,
+        "bytes": 251978
+      }
+    },
+    {
+      "key": "banner",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CLE&home=BAL",
+      "selector": ".mc-header",
+      "ok": false,
+      "error": "Page.wait_for_selector: Timeout 40000ms exceeded."
+    },
+    {
+      "key": "radar",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CLE&home=BAL",
+      "selector": ".mc-radar-duo",
+      "ok": false,
+      "error": "Page.wait_for_selector: Timeout 40000ms exceeded."
+    },
+    {
+      "key": "offense",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CLE&home=BAL",
+      "selector": ".mc-os-duo",
+      "ok": false,
+      "error": "Page.wait_for_selector: Timeout 40000ms exceeded."
+    },
+    {
+      "key": "pitcher",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CLE&home=BAL&compare=lvP&lvpLineup=away&lvpPitcher=home",
+      "selector": ".mc-lvp-section",
+      "ok": false,
+      "error": "Page.wait_for_selector: Timeout 40000ms exceeded."
+    },
+    {
+      "key": "bullpen",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CLE&home=BAL&compare=lvB&lvbLineup=away&lvbBp=home",
+      "selector": ".mc-lvb-section",
+      "ok": false,
+      "error": "Page.wait_for_selector: Timeout 40000ms exceeded."
+    }
+  ]
+}

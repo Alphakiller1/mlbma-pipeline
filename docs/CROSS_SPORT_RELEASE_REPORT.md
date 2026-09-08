@@ -48,4 +48,9 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 ## Verification this agent ran
 
-Recorded in the PR / checklist after the test pass: `check_tokens.py`, `unittest discover`, `dashboard_runtime_diag` on team_rankings (and render copy if the server is up).
+| Gate | Result |
+|------|--------|
+| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908a`; 1348 rule-body hex informational) |
+| `python3 -m unittest discover -s tests -p 'test_*.py'` | **31 OK** |
+| `dashboard_runtime_diag.py` team_rankings **8765** | **14/14 PASS** |
+| same on `render/team_rankings.html` **8766** | **13/14** — table/model PASS; leftover console 404/CORS on nested `/dashboard/render/` + Supabase (snapshot still paints `.lv-table`) |

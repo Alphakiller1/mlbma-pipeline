@@ -242,8 +242,12 @@ ARTIFACTS = {
     "starters_rankings": {
         "label": "Today's Starters Rankings",
         "scope": "slate",
-        "page": "render/pitcher_intelligence.html",
-        # Pitcher Intelligence lazy-mounts only when its subtab is activated.
+        "page": "index.html",
+        "hash": "section-research-lab",
+        # Pitcher Intelligence lazy-mounts only when its subtab is activated. Call the
+        # app's own switcher rather than clicking: this build renders no .subtab bar.
+        # render/pitcher_intelligence.html also mounts PitcherLab + showResearchSubtab
+        # (same selector) once Today_Matchups passes the current-slate guard.
         "eval": "if (window.showResearchSubtab) window.showResearchSubtab('pitching');",
         "selector": ".pl-rank-table",
         "wait_ms": 16000,

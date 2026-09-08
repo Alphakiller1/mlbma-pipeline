@@ -997,7 +997,7 @@
 
   function loadLeagueBaselines() {
     if (typeof fetch !== 'function') return Promise.resolve(null);
-    return fetch('league_baselines.json?_=' + Date.now())
+    return fetch('/dashboard/league_baselines.json?_=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) { if (d) applyLeagueBaselines(d); return d; })
       .catch(function() { return null; });
