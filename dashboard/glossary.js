@@ -52,7 +52,7 @@
       invert: false,
       terms: ['osi', 'offensive strength', 'composite offense'],
       def: 'Headline offense score blending damage, process, and on-base floor.',
-      components: '43% RCV · 37% ABQ · 20% OBR',
+      components: 'OSI = 0.43·RCV + 0.37·ABQ + 0.20·OBR',
       read: '85+ elite · 75–84 high · 65–74 dangerous · 50–64 inconsistent · <50 weak.',
       research: 'Primary offense ranking; compare with opposing Pitching Score.',
       limits: 'Pool-normalized within active leaderboard sample.'
@@ -117,7 +117,7 @@
       invert: false,
       terms: ['pitching score', 'pitch score', 'k bb hr9'],
       def: 'Pitching quality from strikeouts, walk suppression, and homer prevention.',
-      components: '40% K% · 35% inv(BB%) · 25% inv(HR/9)',
+      components: 'PitchScore = 0.40·K% + 0.35·inv(BB%) + 0.25·inv(HR/9)',
       read: '85+ ace tier · 70–84 solid · 55–69 average · <55 volatile.',
       research: 'Use against OSI for matchup gap; profile pages split starter and bullpen context.',
       limits: 'Combined staff uses 70% SP / 30% bullpen when both present.'
@@ -533,6 +533,16 @@
       .replace(/"/g, '&quot;');
   }
 
+  function gradeRampHtml(m) {
+    var A = global.MLBMAAssets;
+    if (!A || !A.valChipHtml || m.sample == null) return '';
+    var steps = m.invert ? [88, 78, 70, 62, 55, 48, 35] : [35, 48, 55, 62, 70, 78, 88];
+    var ctx = m.invert ? 'bb_pct' : 'osi';
+    return '<div class="gloss-metric-card__ramp" aria-label="Grade ramp for ' + esc(m.name) + '">'
+      + steps.map(function (v) { return A.valChipHtml(v, ctx, m.invert, 0); }).join('')
+      + '</div>';
+  }
+
   function renderMetricCard(m) {
     var A = global.MLBMAAssets;
     var chip = '';
@@ -543,13 +553,14 @@
     } else {
       chip = '<span class="val-chip c-na">—</span>';
     }
-    return '<article class="gloss-metric-card glossary-term" id="' + esc(m.id) + '" data-term="' + esc(m.terms.join(' ')) + '">'
+    return '<article class="gloss-metric-card glossary-term" id="' + esc(m.id) + '" data-term="' + esc(m.terms.join(' ')) + '" data-artifact="glossary-term">'
       + '<div class="gloss-metric-card__head">'
       + '<div class="gloss-metric-card__name">' + esc(m.name) + '</div>'
       + chip
       + '</div>'
       + '<div class="gloss-metric-card__full">' + esc(m.full) + '</div>'
       + '<p class="gloss-metric-card__def">' + esc(m.def) + '</p>'
+      + gradeRampHtml(m)
       + '<div class="gloss-metric-card__grid">'
       + '<div class="gloss-metric-card__cell"><strong>Formula / source</strong><span>' + esc(m.components) + '</span></div>'
       + '<div class="gloss-metric-card__cell"><strong>How to read</strong><span>' + esc(m.read) + '</span></div>'

@@ -213,7 +213,7 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 |----|------|-------|--------|----------|----------------|
 | WP4A-P1 | Dual render path behind flag | mlbma | **done** (rankings lens; no feature flag) | `lineup_view.js`: table ≥768px, `.lv-dual-cards` below | Flag omitted — carve-out control change on draft branch |
 | WP4A-P2 | Numeric parity vs current chips | mlbma | **done** | Same `valChipHtml` + `LineupModel.rankAll` | Rank suffix is display-only |
-| WP4A-P3 | Window vs career toggle parity | mlbma | **done** | Window pills YTD/L30/L14/L7; figures from window; confidence copy from full sample | Hand/location/pitcher/batSide are stated context, not toggles |
+| WP4A-P3 | Window vs career + stated context on Compare | mlbma | **done** | `renderMatchupScope` + `matchupStatedContext`; expander still overrides hand/bat | |
 | WP4A-P4 | Token consumption only (no new hex) | mlbma | **done** | ScopeBar + cards use `var(--*)` | Existing lineup_view hex leftovers untouched |
 | WP4A-P5 | DataStatus visible on pilot | mlbma | **done** | Rankings ScopeBar `#lvDataStatus`; nav uses ChaseDataStatus | |
 | WP4A-P6 | Empty/stale honesty | mlbma | **done** (existing banners) | `renderContextBanner` | |
@@ -225,12 +225,12 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP4B-1 | Second surface (profile or compare) | mlbma | **not started** | | |
-| WP4B-2 | Numeric parity | mlbma | **not started** | | |
-| WP4B-3 | Dual render | mlbma | **not started** | | |
-| WP4B-4 | Window vs career | mlbma | **not started** | | |
-| WP4B-5 | Token + DataStatus | mlbma | **not started** | | |
-| WP4B-6 | Do not deploy | mlbma | **N/A** | | |
+| WP4B-1 | NFL/WNBA/CFB/MLB matchup routes | mlbma | **done** | Builder emits `/{sport}/matchups.html` | |
+| WP4B-2 | Results ledger routes | mlbma | **done** | `/{sport}/results.html` fetches `record.json` without adapter `RECORD_URL` | |
+| WP4B-3 | Dual render | mlbma | **done** (NFL cards, not table) | Compact slate cards + evidence `<details>` | Football has no 30-team OSI table |
+| WP4B-4 | Window vs career | mlbma | **N/A** | NFL/CFB boards are weekly slates | |
+| WP4B-5 | Token + DataStatus | mlbma | **done** | ChaseDataStatus at view time; sport is not hardcoded to nfl | |
+| WP4B-6 | Do not deploy | mlbma | **N/A** | Draft stacked PR | |
 
 ---
 
@@ -253,11 +253,12 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
 | WP5-1 | Real 404 page (not 200 SPA) | mlbma | **done** (file); live splat **unproved** | Root `404.html` + `_redirects`; Cloudflare 200/splat needs production | |
-| WP5-2 | Per-directory index builder | mlbma | **done** | `scripts/build_sport_routes.py` → `mlb/` `nfl/` `wnba/` `cfb/` | Tests restore generated HTML so unittest does not dirty git |
+| WP5-2 | Per-directory index builder | mlbma | **done** | `scripts/build_sport_routes.py` → index + matchups + results per sport | Tests restore generated HTML so unittest does not dirty git |
+| WP5-6 | Nav OEM filename cleanup | mlbma | **done** | `chase_nav.html` already points at `index.html`; integrator no longer restores Team Rankings / Research Lab | |
+| WP5-9 | Real root home | mlbma | **done** | Root `index.html` is `data-mode=entry` with absolute `/dashboard/index.html` CTA | Live catch-all 200 still needs production proof |
 | WP5-3 | Sport selector context | mlbma | **done** | `dashboard/chase_sport_select.js` per-sport localStorage | |
 | WP5-4 | Load **only** selected sport payload | mlbma | **done** | Each hub loads `sports/{sport}.js` only | |
 | WP5-5 | Wire `board.json` adapters from WP3 | mlbma | **done** (code); live JSON **blocked** | Adapters present; 403 until WP2 Pages publish | |
-| WP5-6 | Nav OEM filename cleanup | mlbma | **not started** | WP0-R4 | After `chase_nav.html` → `integrate_chase_nav.py` |
 | WP5-7 | Directory listing must not leak pipeline | mlbma | **done** | rsync excludes `*.py` | |
 | WP5-8 | Mobile 375 first-class + hub | mlbma | **done** | 44px tap contract; CI 360/375/390 overflow audit | |
 
@@ -425,4 +426,4 @@ curl -sS https://<sport-pages>/board.json | head
 | 2026-09-08 | WP1 A/B/D marked **done** in mlbma (`20260908a`). WP1.C still 403. Note: `fd6ef4e` also shipped unvalidated WP3/WP5 scaffolding. |
 | 2026-09-08 | D-08 hunt logged; WP4 Pilot A dual-render lens; pitching render mount; artifact NOW captures; WP6-6 report. Still no production deploy. |
 | 2026-09-08 | Prompt 3 QA: stamp `20260908d`; Last_Updated fetch unified on `ChaseDataStatus.fetchLastUpdated`; `starters_rankings` registry points at `render/pitcher_intelligence.html`; wrangler.toml excluded from upload; WP3/WP5 rows match shipped scaffolding. |
-| 2026-09-08 | WP3 shared foundation: ChaseShell/Entity/Metric/AsyncState/ModelStatus; ScopeBar omitDefaults; sport builder emits JSON `null`; Matchup Compare `data-mode=evidence`. |
+| 2026-09-08 | WP4A/WP5: root home is a real entry page; Team Rankings public CTAs go to Matchup Compare; every sport gets matchups+results; glossary term cards are capture artifacts. |

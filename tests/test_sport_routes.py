@@ -8,12 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SportRouteBuilderTests(unittest.TestCase):
-    _GENERATED = (
-        ROOT / "mlb" / "index.html",
-        ROOT / "nfl" / "index.html",
-        ROOT / "wnba" / "index.html",
-        ROOT / "cfb" / "index.html",
-        ROOT / "nfl" / "matchups.html",
+    _GENERATED = tuple(
+        ROOT / sport / name
+        for sport in ("mlb", "nfl", "wnba", "cfb")
+        for name in ("index.html", "matchups.html", "results.html")
     )
 
     @classmethod
@@ -26,10 +24,7 @@ class SportRouteBuilderTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         for path, original in cls._snapshots.items():
-            if original is None:
-                if path.exists():
-                    path.unlink()
-            else:
+            if original is not None:
                 path.write_bytes(original)
 
     def test_four_indexes_and_nfl_matchups(self):
@@ -46,7 +41,49 @@ class SportRouteBuilderTests(unittest.TestCase):
                 self.assertNotIn(f"sports/{o}.js", text)
             self.assertIn("sports/chase_board.js", text)
 
-    def test_nfl_matchups_pilot_b_copy(self):
+    def test_every_sport_has_matchups_and_results(self):
+        for sport in ("mlb", "nfl", "wnba", "cfb"):
+            matchups = (ROOT / sport / "matchups.html").read_text(encoding="utf-8")
+            results = (ROOT / sport / "results.html").read_text(encoding="utf-8")
+            self.assertIn("ChaseShell", matchups)
+            self.assertIn("sport: sport", matchups)
+            self.assertNotIn("sport: 'nfl'", matchups)
+            self.assertIn("record.json", results)
+            self.assertNotIn("RECORD_URL", results)
+            self.assertIn('data-mode="evidence"', results)
+
+    def test_root_home_is_not_a_relative_redirect_stub(self):
+        home = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-mode="entry"', home)
+        self.assertIn("/dashboard/index.html", home)
+        self.assertNotIn("location.replace('dashboard/", home)
+        self.assertNotIn("http-equiv=\"refresh\"", home)
+
+    def test_opening_no_longer_links_public_team_rankings(self):
+        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("href='team_rankings.html'", opening)
+        self.assertNotIn('href="team_rankings.html"', opening)
+        self.assertIn("matchup_compare.html", opening)
+
+    def test_matchup_scopebar_is_two_control(self):
+        view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
+        self.assertIn("renderMatchupScope", view)
+        self.assertIn("matchupStatedContext", view)
+        self.assertIn("ChaseScopeBar.render", view)
+
+    def test_glossary_formulas_and_ramp(self):
+        js = (ROOT / "dashboard" / "glossary.js").read_text(encoding="utf-8")
+        self.assertIn("OSI = 0.43·RCV + 0.37·ABQ + 0.20·OBR", js)
+        self.assertIn("PitchScore = 0.40·K% + 0.35·inv(BB%) + 0.25·inv(HR/9)", js)
+        self.assertIn("gradeRampHtml", js)
+        engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")
+        self.assertIn('"glossary_term"', engine)
+        self.assertIn('"page": "glossary.html"', engine)
+
+    def test_nav_integrator_does_not_restore_demoted_surfaces(self):
+        src = (ROOT / "scripts" / "integrate_chase_nav.py").read_text(encoding="utf-8")
+        self.assertNotIn("data-nav=\\\"team-rankings\\\"", src)
+        self.assertNotIn("section-research-lab", src)
         text = (ROOT / "nfl" / "matchups.html").read_text(encoding="utf-8")
         self.assertIn("not Picks", text)
         self.assertIn("ca-nfl-channels", text)

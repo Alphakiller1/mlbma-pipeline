@@ -92,7 +92,7 @@
     <h1 class="ca-page-title">NFL matchups</h1>
     <p class="ca-helper">NFL slate. Model, market, and published are separate channels. A gap is not an edge. Priced markets are not Picks.</p>
     <div id="sportSelect"></div>
-    
+    <p class="ca-helper"><a class="hub-pill" href="/nfl/results.html">Results ledger</a> <a class="hub-pill" href="/nfl/">Board overview</a></p>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async">Loading NFL board…</div>
@@ -115,6 +115,7 @@
   window.CHASE_SPORT_PICKS_LABEL = "Priced markets";
   window.CHASE_SPORT_GEMS_LABEL = null;
   window.CHASE_SPORT_IS_MATCHUPS = true;
+  window.CHASE_SPORT_IS_RESULTS = false;
   
 (function () {
   var adapter = window.CHASE_SPORT_PAGE;
@@ -154,7 +155,7 @@
     }
     ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
       return {
-        sport: 'nfl',
+        sport: sport,
         state: build.state || undefined,
         dataCutoff: build.generated_at || build.generated_at_utc,
         quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
@@ -179,7 +180,7 @@
       html += '<div class="ca-nfl-channel"><h3>Market</h3><p>' + dash(g.market_margin) + '</p></div>';
       html += '<div class="ca-nfl-channel"><h3>Published</h3><p>' + dash(g.published_margin) + '</p></div>';
       html += '</div>';
-      if (window.ChaseBoard && ChaseBoard.marginAxisHtml) html += ChaseBoard.marginAxisHtml(g, 'nfl');
+      if (window.ChaseBoard && ChaseBoard.marginAxisHtml) html += ChaseBoard.marginAxisHtml(g, sport);
       html += '<p>Edge points ' + dash(g.edge_points, g.edge_withheld_reason);
       if (g.edge_withheld_reason) html += ' — ' + esc(g.edge_withheld_reason);
       html += '</p>';

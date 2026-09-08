@@ -40,7 +40,7 @@ SPORTS = {
         "picks_label": "Priced markets",
         "gems_label": None,
         "lede": "WNBA board. Producer JSON is fetched only for this sport. Missing CORS or a 404 is shown as error, not an empty fake slate.",
-        "matchups_href": None,
+        "matchups_href": "/wnba/matchups.html",
     },
     "cfb": {
         "title": "CFB — Chase Analytics",
@@ -49,7 +49,7 @@ SPORTS = {
         "picks_label": "Priced markets",
         "gems_label": None,
         "lede": "CFB board. Age is computed at view time from producer timestamps. Games sort by kickoff_utc.",
-        "matchups_href": None,
+        "matchups_href": "/cfb/matchups.html",
     },
 }
 
@@ -69,25 +69,38 @@ def sport_nav() -> str:
     return html
 
 
-def page(sport: str, *, matchups: bool = False) -> str:
+def page(sport: str, *, kind: str = "index") -> str:
     spec = SPORTS[sport]
-    title = "NFL Matchups — Chase Analytics" if matchups else spec["title"]
+    matchups = kind == "matchups"
+    results = kind == "results"
+    if matchups:
+        title = sport.upper() + " Matchups — Chase Analytics"
+    elif results:
+        title = sport.upper() + " Results — Chase Analytics"
+    else:
+        title = spec["title"]
     extra_scripts = f"""
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
   <script src="/dashboard/chase_entity.js?v={STAMP}"></script>
   <script src="/dashboard/chase_metric.js?v={STAMP}"></script>
   <script src="/dashboard/chase_modelstatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_scope.js?v={STAMP}"></script>"""
-    body_js = MATCHUPS_JS if matchups else HUB_JS
-    more = spec["matchups_href"]
-    more_html = (
-        f'<p class="ca-helper"><a class="hub-pill" href="{more}">Open matchup surface</a></p>'
-        if more and not matchups
-        else ""
-    )
+    body_js = RESULTS_JS if results else (MATCHUPS_JS if matchups else HUB_JS)
+    mode = "evidence" if results else "slate"
+    more_bits = []
+    if not matchups and not results and spec.get("matchups_href"):
+        more_bits.append(f'<a class="hub-pill" href="{spec["matchups_href"]}">Open matchups</a>')
+    if not results:
+        more_bits.append(f'<a class="hub-pill" href="/{sport}/results.html">Results ledger</a>')
+    if matchups or results:
+        more_bits.append(f'<a class="hub-pill" href="/{sport}/">Board overview</a>')
+    more_html = ('<p class="ca-helper">' + " ".join(more_bits) + "</p>") if more_bits else ""
     if matchups:
         lede = spec["lede"]
-        h1 = "NFL matchups"
+        h1 = sport.upper() + " matchups"
+    elif results:
+        lede = "Settled W/L/P from record.json. This is a results ledger, not a skill badge and not an edge."
+        h1 = sport.upper() + " results"
     else:
         lede = spec["lede"]
         h1 = spec["title"].split("—")[0].strip() + " board"
@@ -103,7 +116,7 @@ def page(sport: str, *, matchups: bool = False) -> str:
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="slate" data-sport="{sport}">
+<body data-mode="{mode}" data-sport="{sport}">
 {sport_nav()}
   <main class="container ca-page-shell" style="max-width:1100px;margin:88px auto 48px;padding:0 16px;">
     <h1 class="ca-page-title">{h1}</h1>
@@ -127,6 +140,7 @@ def page(sport: str, *, matchups: bool = False) -> str:
   window.CHASE_SPORT_PICKS_LABEL = {json.dumps(spec["picks_label"])};
   window.CHASE_SPORT_GEMS_LABEL = {json.dumps(spec["gems_label"])};
   window.CHASE_SPORT_IS_MATCHUPS = {str(matchups).lower()};
+  window.CHASE_SPORT_IS_RESULTS = {str(results).lower()};
   {body_js}
   </script>
 </body>
@@ -237,7 +251,7 @@ MATCHUPS_JS = r"""
     }
     ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
       return {
-        sport: 'nfl',
+        sport: sport,
         state: build.state || undefined,
         dataCutoff: build.generated_at || build.generated_at_utc,
         quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
@@ -262,7 +276,7 @@ MATCHUPS_JS = r"""
       html += '<div class="ca-nfl-channel"><h3>Market</h3><p>' + dash(g.market_margin) + '</p></div>';
       html += '<div class="ca-nfl-channel"><h3>Published</h3><p>' + dash(g.published_margin) + '</p></div>';
       html += '</div>';
-      if (window.ChaseBoard && ChaseBoard.marginAxisHtml) html += ChaseBoard.marginAxisHtml(g, 'nfl');
+      if (window.ChaseBoard && ChaseBoard.marginAxisHtml) html += ChaseBoard.marginAxisHtml(g, sport);
       html += '<p>Edge points ' + dash(g.edge_points, g.edge_withheld_reason);
       if (g.edge_withheld_reason) html += ' — ' + esc(g.edge_withheld_reason);
       html += '</p>';
@@ -280,15 +294,66 @@ MATCHUPS_JS = r"""
 """
 
 
+RESULTS_JS = r"""
+(function () {
+  var adapter = window.CHASE_SPORT_PAGE;
+  var sport = window.CHASE_SPORT_ID;
+  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'evidence', surface: 'results', search: false });
+  else if (window.ChaseSportSelect) {
+    ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
+    ChaseSportSelect.saveCtx(sport, { surface: 'results' });
+  }
+  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
+  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
+  var recordUrl = adapter.BOARD_URL.replace(/board\.json$/i, 'record.json');
+  fetch(recordUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    .then(function (rec) {
+      if (!rec) {
+        ChaseAsyncState.render(document.getElementById('slate'), 'error', 'record.json was not reachable.');
+        return;
+      }
+      if (window.ChaseModelStatus) {
+        ChaseModelStatus.render(document.getElementById('modelStatus'), {
+          authority: rec.authority,
+          may_bet: rec.may_bet === true,
+          unmet_gates: rec.unmet_gates || (rec.authority && rec.authority.unmet_gates) || [],
+          evidence: rec.evidence || (rec.authority && rec.authority.evidence) || ''
+        });
+      }
+      if (window.ChaseDataStatus) {
+        ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
+          return {
+            sport: sport,
+            publishedAt: rec.generated_at || rec.generated_at_utc,
+            dataCutoff: rec.generated_at || rec.generated_at_utc,
+            source: 'record.json',
+            issues: rec.issues || []
+          };
+        });
+      }
+      var ats = rec.ats || {};
+      var totals = rec.totals || {};
+      var html = '<p class="ca-helper">Settled outcomes are discrete W/L/P marks. They do not imply future skill.</p>';
+      html += '<p>Games graded: ' + esc(rec.games_graded) + ' · pending snapshots: ' + esc(rec.pending_snapshots) + '</p>';
+      html += '<p>ATS ' + esc(ats.win) + '-' + esc(ats.loss) + '-' + esc(ats.push);
+      html += ' · Totals ' + esc(totals.win) + '-' + esc(totals.loss) + '-' + esc(totals.push) + '</p>';
+      html += '<p class="ca-helper">may_bet remains ' + esc(rec.may_bet === true) + ' as published. Presentation cannot upgrade it.</p>';
+      document.getElementById('slate').innerHTML = html;
+    }).catch(function (err) {
+      ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
+    });
+})();
+"""
+
+
 def main() -> int:
     for sport in SPORTS:
-        dest = ROOT / sport / "index.html"
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(page(sport, matchups=False), encoding="utf-8")
-        print("wrote", dest.relative_to(ROOT))
-    matchups = ROOT / "nfl" / "matchups.html"
-    matchups.write_text(page("nfl", matchups=True), encoding="utf-8")
-    print("wrote", matchups.relative_to(ROOT))
+        dest = ROOT / sport
+        dest.mkdir(parents=True, exist_ok=True)
+        (dest / "index.html").write_text(page(sport, kind="index"), encoding="utf-8")
+        (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
+        (dest / "results.html").write_text(page(sport, kind="results"), encoding="utf-8")
+        print("wrote", sport, "index/matchups/results")
     return 0
 
 

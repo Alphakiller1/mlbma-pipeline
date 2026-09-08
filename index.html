@@ -3,17 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chase Analytics · MLB</title>
-  <!-- Absolute path: a relative location.replace() loops under Cloudflare Pages' 200 catch-all. -->
-  <meta http-equiv="refresh" content="0; url=/dashboard/index.html">
-  <script>location.replace('/dashboard/index.html' + location.search + location.hash);</script>
-  <style>
-    body { font-family: system-ui, sans-serif; background: #0A0A0A; color: #E5E5E5;
-      display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-    a { color: #C084FC; }
-  </style>
+  <title>Chase Analytics — matchup intelligence</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908g">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body>
-  <p>Redirecting to <a href="/dashboard/index.html">Chase Analytics dashboard</a>…</p>
+<body data-mode="entry">
+  <main class="ca-page-shell" style="max-width:720px;margin:64px auto 48px;padding:0 16px;">
+    <p class="ca-helper">Chase Analytics</p>
+    <h1 class="ca-page-title">Matchup intelligence across MLB, NFL, CFB, and WNBA.</h1>
+    <p>Model numbers, market numbers, and settled results stay in separate channels. A gap is not an edge. Rankings live inside the matchup, not as a parallel destination.</p>
+    <p style="margin:24px 0;">
+      <a class="hub-pill active" href="/dashboard/index.html">Open research</a>
+      <a class="hub-pill" href="/dashboard/matchup_compare.html">Matchup analysis</a>
+    </p>
+    <div id="sportSelect"></div>
+    <p class="ca-helper">Nested URLs use absolute paths. Unknown paths 404 instead of looping through a relative redirect stub.</p>
+  </main>
+  <script src="/dashboard/design_layer_version.js?v=20260908g"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908g"></script>
+  <script>
+    if (window.ChaseSportSelect) ChaseSportSelect.render(document.getElementById('sportSelect'), 'mlb');
+  </script>
 </body>
 </html>

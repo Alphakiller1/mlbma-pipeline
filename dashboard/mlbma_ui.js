@@ -7,14 +7,9 @@
   var NAV = [
     [{ file: 'index.html', label: 'Main' }],
     [
-      { file: 'team_rankings.html', label: 'Matchups' },
+      { file: 'matchup_compare.html', label: 'Matchups' },
       { file: 'glossary.html', label: 'Glossary' },
-    ],
-    [
       { file: 'batter_profile.html', label: 'Batter' },
-      { file: 'pitcher_profile.html', label: 'Pitcher' },
-      { file: 'bullpen_report.html', label: 'Bullpen' },
-      { file: 'team_profile.html', label: 'Team' },
     ],
   ];
 
