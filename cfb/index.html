@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CFB — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908a">
+</head>
+<body data-mode="slate">
+  <main class="container" style="margin:48px auto;max-width:720px;padding:0 16px">
+    <h1>CFB board</h1>
+    <p>Live artifact: <a href="https://alphakiller1.github.io/cfb-model/board.json">board.json</a>. Age is computed in the NFL-style slate once the adapter page is wired; until then use the published board and build.json <code>state</code>.</p>
+    <div id="dataStatus"></div>
+    <div id="slate">Loading…</div>
+  </main>
+  <script src="/dashboard/chase_datastatus.js?v=20260908a"></script>
+  <script src="/dashboard/sports/cfb.js?v=20260908a"></script>
+  <script>
+  Promise.all([
+    fetch(ChaseSportCFB.BOARD_URL).then(function(r){return r.json();}),
+    fetch(ChaseSportCFB.BUILD_URL).then(function(r){return r.json();})
+  ]).then(function(p){
+    var nb = ChaseSportCFB.normalize(p[0]);
+    var build = p[1] || {};
+    ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function(){
+      return { state: build.state, publishedAt: nb.generated_at, dataCutoff: build.generated_at, issues: build.issues||[] };
+    });
+    document.getElementById('slate').innerHTML = '<p>' + nb.games.length + ' games. Authority ' + (nb.authority.level) + '. may_bet=' + nb.authority.may_bet + '</p>';
+  }).catch(function(){ document.getElementById('slate').textContent = 'Board unavailable.'; });
+  </script>
+</body>
+</html>

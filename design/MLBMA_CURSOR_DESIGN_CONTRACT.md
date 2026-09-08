@@ -125,9 +125,32 @@ Cursor must not change:
 
 Do not add, remove, merge, split, or reorder dashboard sections to mimic an infographic. Apply the aesthetic to the current structure exactly as it exists.
 
+### 3.2.1 Programme carve-out (dated 2026-09-08, owner decision)
+
+**Within `dashboard/` only**, the 2026-09-08 Chase Analytics cross-sport programme **may** change:
+
+- navigation
+- routing
+- user controls
+- section count
+
+This carve-out exists so WP5 (sport selector, real 404, hub) and related IA work are not blocked by §3.2. It is **not** a license to restyle or to relocate metrics inside a locked scouting board.
+
+Still locked under this carve-out:
+
+- metric definitions and chip polarity (green = elite → red = poor)
+- Lineup / SP / Bullpen **tab semantics** on Team Rankings
+- data contracts / sheet column names
+- pipeline `push_*.py` behaviour
+- files outside `dashboard/` except design-token docs and tests named by the programme
+
+WP1 itself must not use this carve-out to change nav or routes beyond design-layer `<link>` order.
+
 ### 3.3 Structural Stop Rule
 
 If an intended visual change requires moving data, changing component hierarchy, adding a new dashboard section, removing a section, or altering tab behavior, stop. That is structural, not visual.
+
+**Exception:** work explicitly tagged as the 2026-09-08 programme and listed in `docs/CROSS_SPORT_PROGRAMME_CHECKLIST.md` (WP5 nav/routing/controls/section count inside `dashboard/`). If the task is visual polish only, the stop rule still applies.
 
 ---
 
@@ -870,3 +893,67 @@ Before final:
 ## 17. One-Sentence North Star
 
 Make MLBMA feel like a premium baseball matchup command center: dense, sharp, trustworthy, and finished, while preserving the dashboard structure and data truth exactly.
+
+---
+
+## 18. PART 2 — Cross-sport design law (2026-09-08)
+
+Binding acceptance for the programme. The living checkbox form is `docs/CROSS_SPORT_PROGRAMME_CHECKLIST.md` (P2-* rows). Index: `design/INDEX.md`.
+
+### 18.1 Modes
+
+| Mode | Surfaces | Forbidden |
+|------|----------|-----------|
+| Broadcast / scouting board | MLBMA dashboards | Betting-spam chrome, SCL theme |
+| Betting board | model `board.json` UIs | Fake priced rows; hiding `unmet_gates` |
+| Research table | Research Lab, rankings | Rainbow per-stat palettes |
+| Marketing / site | public framing | Duplicate Opening Dashboard wordmark |
+| Social / export | `/render/`, content-engine | Using `push_*.py` as a card renderer |
+
+Pages may set `data-mode` (`slate`, `rank`, `entry`, …) for future adapters. WP1 must not restyle by mode.
+
+### 18.2 Colour roles (mark vs value)
+
+| Family | Role | Contrast on `--surface-panel` (`#12141D`) |
+|--------|------|-------------------------------------------|
+| `--mark-positive/negative/caution` | Non-text chrome | May sit below 4.5:1 if not the only cue |
+| `--value-positive/negative/caution` | Readable values | **≥4.5:1** |
+| `--text-primary` (`--text`) | Body / titles | ≥4.5:1 (`#F5F6FA` ≈ 17:1) |
+| `--text-secondary` (`--text-2`) | Supporting / metadata floor | `#A4A8B6` ≈ **7.74:1** |
+| `--text-meta` | Captions that still read as type | Prefer `--text-2`. `--text-3` `#6E7383` ≈ **3.89:1** — not body |
+| `--text-disabled` (`--text-4`) | Inert chrome | `#4C5161` ≈ **2.32:1** — never informative |
+
+50% group opacity of `#A4A8B6` / `#6E7383` composites to ≈ **2.85** / **1.89**. Informative regions must not use group opacity. Do not port NFL tile opacity.
+
+Hex values are settled. Do not lighten `--text-3` to “fix” contrast; change usage, not the palette.
+
+### 18.3 Five concepts
+
+1. **Surface** — opaque boards (`--surface-*`), not glass-only depth.
+2. **Type** — Roboto Condensed display; DM Sans UI; `tabular-nums`.
+3. **Grade** — `--metric-very-weak` … `--metric-elite`; `valChipHtml` / `metricColor`.
+4. **Mark vs value** — chrome ≠ data (§18.2).
+5. **Identity** — three token tiers, one `DESIGN_LAYER_VERSION`.
+
+### 18.4 Data honesty
+
+No fake production stats. TBD stays TBD. Stale boards show DataStatus (WP3), not silent last-good. `may_bet` / `unmet_gates` are never rewritten true. Glossary labels must not collide two formulas (PP-Gap: ABQ−RCV vs projOSI−OSI).
+
+### 18.5 Density
+
+Rankings-level rhythm (~12–16px section gaps). No triple-wrapped empty cards. 375px is first-class.
+
+### 18.6 Enforcement
+
+| Gate | Tool |
+|------|------|
+| Token ownership, no `:root` hex outside TIER 1, design-layer `?v=` | `scripts/check_tokens.py` (`pages.yml` `token-guard`) |
+| Contrast + group-opacity lock | `tests/test_contrast.py` |
+| Stamp constant | `design/DESIGN_LAYER_VERSION`, `scripts/design_layer_version.py`, `dashboard/design_layer_version.js` |
+
+TIER 1 (`design/tokens/chase-tokens.css` = `design/chase-tokens-v1.css`) is the only owner of color literals. TIER 2 (`mlbma_design_system.css` `:root` + `theme.css` `:root`) may only assign `var(...)`. Component rule-body hex is tolerated until a restyle pass.
+
+### 18.7 Consolidation (§2.9)
+
+See `docs/CROSS_SPORT_PROGRAMME_CHECKLIST.md` §2.9 table and `design/INDEX.md`.
+

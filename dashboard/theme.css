@@ -1,38 +1,20 @@
 :root {
-  /* Single token source is mlbma_design_system.css. It is loaded BEFORE this file on
-     every page, so surface/text/border/brand/font tokens (--bg, --card, --border,
-     --text*, --v-light, --v-grad, --v-bg, --border-violet, --display, --mono, …) are
-     consumed from there — do NOT redefine them here.
-     This block holds only the tokens that are still UNIQUE to theme.css:
-     the violet ramp, the d-* grade scale, the metal gradients, and the --sans alias.
-     Migrate these into the design system as it absorbs them; never add new globals here. */
-  --v: #9A6BFF;
-  --v-mid: #7C4DFF;
-  --v-deep: #5B2BE0;
-  --v-heading: #6D28D9;
-  --v-grad-soft: linear-gradient(135deg, rgba(124, 77, 255, 0.13), rgba(91, 43, 224, 0.07));
-  --v-glow: rgba(124, 77, 255, 0.32);
-  --edge-grad: linear-gradient(90deg, #3B82F6 0%, #7C4DFF 50%, #EC4899 100%);
-  --d-elite: #3CCB7F;
-  --d-good: #86D76F;
-  --d-mid: #E8C24A;
-  --d-weak: #F0935B;
-  --d-poor: #F2545B;
-  /* Semantic status colors — single source of truth, mirroring the --d-* palette.
-     The profile/compare pages previously left these undefined, so bare `var(--green)`
-     (no fallback) rendered colorless and CSS fallbacks disagreed (3 different greens
-     on one page). theme.css is linked after the per-page inline <style> blocks, so
-     these become the effective values everywhere — unifying the previously divergent
-     greens/reds (#4ADE80 vs #3CCB7F vs #22C55E) onto one consistent palette. */
-  --green: #3CCB7F;
-  --red: #F2545B;
-  --red-l: #FCA5A5;
-  --gold: #E8C24A;
-  --amber: #FBBF24;
-  --blue: #60A5FA;
-  --metal-silver: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%);
-  --metal-violet: linear-gradient(180deg, #C4B0FF 0%, #7C4DFF 55%, #5B2BE0 100%);
-  --sans: "DM Sans", -apple-system, system-ui, sans-serif;
+  /* TIER 2 alias layer — no raw colors. Unique names that lived only here. */
+  --v: var(--ca-violet-500);
+  --v-mid: var(--ca-violet-600);
+  --v-deep: var(--ca-violet-700);
+  --v-heading: var(--ca-violet-800);
+  --v-grad-soft: var(--ca-grad-brand-soft);
+  --v-glow: var(--ca-violet-a-32);
+  --edge-grad: var(--ca-grad-edge);
+  --d-elite: var(--ca-green-500);
+  --d-good: var(--ca-green-400);
+  --d-mid: var(--ca-amber-500);
+  --d-weak: var(--ca-red-400);
+  --d-poor: var(--ca-red-500);
+  --metal-silver: var(--ca-grad-metal-silver);
+  --metal-violet: var(--ca-grad-metal-violet);
+  --sans: var(--ca-font-ui);
 }
 
 html, body {

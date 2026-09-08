@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFL Matchups — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908a">
+  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908a">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908a">
+</head>
+<body data-mode="slate">
+  <main class="container" style="max-width:1100px;margin:88px auto 48px;padding:0 16px;">
+    <h1 class="ca-page-title">NFL matchups</h1>
+    <p class="ca-helper">Model and market are labelled separately. A gap is not an edge. Priced markets are not picks.</p>
+    <div id="modelStatus"></div>
+    <div id="dataStatus"></div>
+    <div id="slate" class="ca-async">Loading NFL board…</div>
+  </main>
+  <script src="/dashboard/design_layer_version.js?v=20260908a"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908a"></script>
+  <script src="/dashboard/chase_modelstatus.js?v=20260908a"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908a"></script>
+  <script src="/dashboard/sports/nfl.js?v=20260908a"></script>
+  <script>
+  (function () {
+    function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
+    function dash(v, reason) {
+      if (v == null || v === '') return '<span title="' + esc(reason || 'unavailable') + '">—</span>';
+      return esc(v);
+    }
+    Promise.all([
+      fetch(ChaseSportNFL.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }),
+      fetch(ChaseSportNFL.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }),
+      fetch(ChaseSportNFL.RECORD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; })
+    ]).then(function (pack) {
+      var board = pack[0], build = pack[1] || {}, rec = pack[2] || {};
+      if (!board) {
+        ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
+        return;
+      }
+      var nb = ChaseSportNFL.normalize(board);
+      ChaseModelStatus.render(document.getElementById('modelStatus'), Object.assign({}, rec, nb.authority, {
+        may_bet: nb.authority.may_bet,
+        unmet_gates: nb.authority.unmet_gates,
+        authority: nb.authority.level,
+        evidence: nb.authority.evidence
+      }));
+      ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
+        return {
+          state: build.state || 'unknown',
+          dataCutoff: build.generated_at || build.generated_at_utc,
+          quoteTimestamp: build.odds && build.odds.fetched_at,
+          publishedAt: nb.generated_at,
+          issues: build.issues || []
+        };
+      });
+      var priced = nb.games.filter(function (g) { return g.priced; }).length;
+      var html = '<p class="ca-helper">Priced markets: ' + priced + ' of ' + nb.games.length + '</p>';
+      html += '<div class="ca-board-list">';
+      nb.games.forEach(function (g) {
+        html += '<article class="ca-card" style="margin-bottom:12px">';
+        html += '<h2>' + esc(g.away) + ' @ ' + esc(g.home) + '</h2>';
+        html += '<p class="ca-helper">' + esc(g.kickoff_display || g.kickoff_utc || 'kickoff unknown') + '</p>';
+        html += '<p>Model margin ' + dash(g.model_margin) +
+          ' · Market margin ' + dash(g.market_margin) +
+          ' · Published margin ' + dash(g.published_margin) + '</p>';
+        html += '<p>Edge points ' + dash(g.edge_points, g.edge_withheld_reason) +
+          (g.edge_withheld_reason ? ' — ' + esc(g.edge_withheld_reason) : '') + '</p>';
+        html += '</article>';
+      });
+      html += '</div>';
+      document.getElementById('slate').innerHTML = html || '';
+      if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
+    }).catch(function (err) {
+      ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -18,8 +18,8 @@ concurrency:
 
 jobs:
   token-guard:
-    # Fast, no-browser guard: mlbma_design_system.css must stay the single source
-    # of every global design token (design contract §5 / UI checklist §1).
+    # Fast, no-browser guard: TIER 1 (chase-tokens) owns color literals;
+    # TIER 2 is var()-only; design-layer ?v= must match DESIGN_LAYER_VERSION.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

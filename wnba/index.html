@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WNBA — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908a">
+</head>
+<body data-mode="slate">
+  <main class="container" style="margin:48px auto;max-width:720px;padding:0 16px">
+    <h1>WNBA board</h1>
+    <p>Producer export is in the wnba-edge-model branch (not yet on Pages until that repo is pushed). This page fetches the intended URL and shows empty/error honestly.</p>
+    <div id="slate">Loading…</div>
+  </main>
+  <script src="/dashboard/sports/wnba.js?v=20260908a"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908a"></script>
+  <script>
+  fetch(ChaseSportWNBA.BOARD_URL).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(b){
+      var n = ChaseSportWNBA.normalize(b);
+      document.getElementById('slate').textContent = (n.games.length ? n.games.length + ' games' : 'No games in board.json') + '. may_bet=' + n.authority.may_bet;
+    }).catch(function(){
+      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json not published yet.');
+    });
+  </script>
+</body>
+</html>

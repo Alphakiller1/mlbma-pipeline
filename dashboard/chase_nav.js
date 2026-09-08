@@ -266,7 +266,8 @@
     var tab =
       cfg && cfg.SHEET_TABS && (cfg.SHEET_TABS.last_updated || cfg.SHEET_TABS.Last_Updated);
     if (!sid || !tab) {
-      setTimestampText(formatClock());
+      setTimestampText('unknown');
+      window.ChaseNav.setPipelineStatus('stale');
       return;
     }
     try {
@@ -289,9 +290,12 @@
         window.ChaseNav.setLastUpdated(raw);
       }
     } catch (e) {
-      /* fallback */
+      setTimestampText('unknown');
+      window.ChaseNav.setPipelineStatus('stale');
+      return;
     }
-    setTimestampText(formatClock());
+    setTimestampText('unknown');
+    window.ChaseNav.setPipelineStatus('stale');
   }
 
   window.ChaseNav = {

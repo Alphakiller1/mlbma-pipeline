@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<!-- BUILD: 20260605a - location from Team_Profiles -->
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+window.__MLBMA_EXPECT_HUB_BUILD = '20260611a';
+console.log('[VERSION] team_rankings build 20260608b — snapshot boot');
+</script>
+<meta charset="UTF-8">
+
+<!-- Warm the TLS connection to Google early so the first sheet fetch doesn't pay
+     DNS+TCP+TLS setup on a cold visit. -->
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="dns-prefetch" href="https://docs.google.com">
+<link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://mvxjcfriirguhjujurhf.supabase.co">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="../team_rankings_snapshot.json?v=20260616a" as="fetch" crossorigin>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Phase 2: decides hub_dataset auth headers (anon key, or the signed-in user's JWT).
+     Loaded before the prefetch below so those requests can be authenticated too. -->
+<script src="../mlbma_supabase_headers.js?v=20260612a"></script>
+<script>
+(function() {
+  // NOTE: previously this redirected to append a `_trbuild` cache-buster, which forced
+  // a full second document load on every cold visit before any data was fetched. The
+  // page is already served `Cache-Control: no-cache` (see <head>) and all scripts/styles
+  // carry their own ?v= versions, so that redirect only added latency. Removed.
+  var p = new URLSearchParams(location.search);
+  var away = p.get('away');
+  var home = p.get('home');
+  if (away && home) {
+    location.replace('matchup_compare.html?away=' + encodeURIComponent(away) + '&home=' + encodeURIComponent(home));
+    return;
+  }
+  if (p.get('view') === 'matchups' || p.get('section') === 'matchups') {
+    location.replace('chase_analytics_mlb_oem_v7.html#section-matchups-hero');
+  }
+
+  // Fetch the tiny static snapshot immediately for first paint, then warm live data
+  // after the page has had a chance to render. The live Supabase requests used to start
+  // here in the head; on slow connections they could compete with CSS/scripts even
+  // though the snapshot is enough to render the default Team Rankings view.
+  try {
+    window.__MLBMA_SNAPSHOT_PROMISE = fetch('team_rankings_snapshot.json?v=20260616a')
+      .then(function(r) { if (!r.ok) throw new Error('snapshot ' + r.status); return r.json(); });
+
+    var prefetchLiveData = function() {
+      var SB_URL = 'https://mvxjcfriirguhjujurhf.supabase.co';
+      var SB_KEY = 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2';
+      var criticalTabs = ['vs_RHP', 'vs_LHP', 'Team_Profiles'];
+      var store = (window.__MLBMA_TAB_PREFETCH = window.__MLBMA_TAB_PREFETCH || {});
+      var batch = fetch(SB_URL + '/rest/v1/hub_dataset?name=in.(' + criticalTabs.join(',') + ')&select=name,rows',
+        { headers: window.MLBMA_supabaseHeaders(SB_KEY) })
+        .then(function (r) { if (!r.ok) throw new Error('supabase ' + r.status); return r.json(); })
+        .then(function (arr) { var m = {}; arr.forEach(function (d) { m[d.name] = d.rows; }); return m; });
+      criticalTabs.forEach(function (t) {
+        store[t] = batch.then(function (m) {
+          if (!m[t] || !m[t].length) throw new Error('prefetch miss ' + t);
+          return m[t];
+        });
+        store[t].catch(function () { /* fall back handled in fetchSheetTab */ });
+      });
+      store['Team_Results'] = fetch(SB_URL + '/rest/v1/hub_dataset?name=eq.Team_Results&select=rows',
+        { headers: window.MLBMA_supabaseHeaders(SB_KEY) })
+        .then(function (r) { if (!r.ok) throw new Error('supabase Team_Results ' + r.status); return r.json(); })
+        .then(function (arr) {
+          var rows = arr && arr[0] && arr[0].rows;
+          if (!rows || !rows.length) throw new Error('prefetch miss Team_Results');
+          return rows;
+        });
+      store['Team_Results'].catch(function () { /* fall back handled in fetchSheetTab */ });
+      fetch('league_baselines.json?_=' + Date.now()).then(function(r) {
+        return r.ok ? r.json() : null;
+      }).then(function(d) {
+        if (d) window.__MLBMA_BASELINES = d;
+      }).catch(function() { /* optional */ });
+    };
+    if (window.requestIdleCallback) requestIdleCallback(prefetchLiveData, { timeout: 2500 });
+    else setTimeout(prefetchLiveData, 900);
+  } catch (e) { /* prefetch is best-effort */ }
+})();
+</script>
+<title>Chase Analytics - Team Rankings v20260604</title>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
+<link rel="stylesheet" href="../mlbma_design_system.css?v=20260908a">
+<link rel="stylesheet" href="../theme.css?v=20260908a">
+<script src="../design_layer_version.js?v=20260908a"></script>
+<link rel="stylesheet" href="../mlbma_ui.css?v=20260908a">
+<link rel="stylesheet" href="../chase_nav.css?v=20260908a">
+<link rel="stylesheet" href="../mlbma_backgrounds.css?v=20260908a">
+<link rel="stylesheet" href="../responsive.css?v=20260908a">
+<link rel="icon" type="image/png" href="../assets/chase-icon-filled.png">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:
+    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124,77,255,.20), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91,43,224,.12), transparent 60%),
+    var(--bg);
+  color:var(--text);font-family:var(--font-body,var(--font,system-ui));font-size:14px;line-height:1.5;
+}
+.container{max-width:1400px;margin:0 auto;padding:20px 24px 72px}
+.hub-sticky-wrap{position:sticky;top:68px;z-index:40;background:var(--bg);padding:12px 0 8px;margin:0 -4px}
+.hub-control-bar{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.hub-control-row{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-start;margin-bottom:10px}
+.hub-control-row:last-child{margin-bottom:0}
+.hub-ctrl-group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hub-ctrl-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3)}
+.hub-pill-row{display:flex;flex-wrap:wrap;gap:10px}
+.hub-team-select-wrap{display:none}
+.hub-team-select-wrap.show{display:flex}
+.hub-team-select{
+  border:1px solid var(--border);background:var(--bg-3);color:var(--text);
+  font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;min-width:150px
+}
+.hub-team-select.is-invalid{border-color:var(--red);box-shadow:0 0 0 1px rgba(248,113,113,.25)}
+.hub-team-input-row{display:flex;align-items:center;gap:6px}
+.hub-team-help{font-size:10px;color:var(--text-3);line-height:1.2}
+.hub-team-help.is-error{color:var(--red)}
+/* .hub-pill — styled in mlbma_design_system.css (hero CTA context pattern) */
+.hub-confirm{font-size:12px;color:var(--text-2);padding-top:4px;border-top:1px solid var(--border);margin-top:10px}
+.hub-confirm strong{color:var(--text)}
+.hub-adv-toggle{margin-left:auto;display:flex;align-items:center;gap:8px}
+.hub-adv-toggle label{font-size:11px;color:var(--text-2);cursor:pointer;user-select:none}
+.hub-banner{margin:10px 0 0;padding:10px 14px;border-radius:8px;font-size:12px;display:none}
+.hub-banner.show{display:block}
+.hub-banner--window{border:1px solid var(--gold);background:rgba(251,191,36,.08);color:var(--gold)}
+.hub-banner--location{border:1px solid var(--purple);background:rgba(124,77,255,.08);color:var(--purple)}
+.hub-team-cards{display:none;margin-top:16px}
+.hub-team-cards.show{display:block}
+.hub-team-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.hub-team-title h2{font-size:28px;line-height:1;color:var(--text);font-weight:700}
+.hub-team-sub{font-size:14px;color:var(--text-2);margin-bottom:14px}
+.hub-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.hub-kpi-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;min-height:170px}
+.hub-kpi-lab{font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em}
+.hub-kpi-val{font-size:40px;line-height:1.02;font-weight:800;margin:8px 0 10px;color:var(--text)}
+.hub-kpi-val--tag{font-size:18px;line-height:1.2;margin:10px 0 12px}
+.hub-kpi-meta{display:flex;justify-content:space-between;gap:8px;color:var(--text-2);font-size:12px;margin-top:auto}
+.hub-kpi-meter{height:6px;border-radius:999px;background:rgba(113,113,122,.22);overflow:hidden;margin-top:8px}
+.hub-kpi-meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#A78BFA)}
+.table-wrap,.rl-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--bg-2);margin-top:16px;position:relative}
+.table-wrap::before,.rl-table-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple,#7C4DFF),transparent 70%);z-index:1}
+.hub-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.hub-table thead th{position:sticky;top:0;z-index:2;background:var(--bg-3);font-family:var(--display);font-weight:700;font-stretch:110%;
+  font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-2);padding:11px 12px;
+  border-bottom:1px solid var(--border-2,#3A3A47);text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+.hub-table thead th.sorted,.hub-table thead th.col-primary{background:rgba(124,77,255,.14);color:var(--purple-2,var(--purple))}
+.hub-table tbody td{padding:7px 12px;height:46px;border-bottom:1px solid rgba(40,40,47,.7);vertical-align:middle}
+.hub-table td.num{text-align:right;width:1%;white-space:nowrap}
+.hub-table tbody tr.hub-row{cursor:pointer;transition:background .12s}
+.hub-table tbody tr.hub-row:nth-child(even){background:rgba(255,255,255,.015)}
+.hub-table tbody tr.hub-row:hover{background:rgba(124,77,255,.09);box-shadow:inset 2px 0 0 var(--purple)}
+.hub-table tbody tr.hub-row.expanded{background:rgba(124,77,255,.04)}
+.hub-table tbody tr.hub-expand-row td{background:var(--bg-3);padding:0;border-bottom:1px solid var(--border)}
+.hub-rank-num{font-family:var(--display);font-weight:800;font-size:14px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.hub-team-cell strong{font-family:var(--display);font-weight:800;font-stretch:110%;font-size:14px;color:var(--text);letter-spacing:.01em}
+.hub-expand-panel{max-height:0;overflow:hidden;transition:max-height 250ms ease}
+.hub-expand-panel.is-open{max-height:720px}
+.hub-rank{white-space:nowrap;width:52px}
+.hub-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:6px;border:1px solid var(--border);border-radius:4px;background:var(--bg-3);color:var(--purple);font-size:14px;font-weight:700;cursor:pointer;line-height:1;padding:0}
+.hub-expand-inner{display:grid;grid-template-columns:minmax(240px,1fr) minmax(320px,1.2fr);gap:20px;padding:18px 16px}
+@media(max-width:900px){.hub-expand-inner{grid-template-columns:1fr}}
+.hub-expand-left{display:flex;flex-direction:column;gap:12px}
+.hub-expand-abbr{font-size:32px;font-weight:800;color:var(--purple);letter-spacing:.04em;line-height:1}
+.hub-expand-meta{font-size:12px;color:var(--text-2)}
+.hub-window-pills{display:flex;flex-wrap:wrap;gap:6px}
+.hub-win-pill{font-size:10px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-2)}
+.hub-win-pill .hub-win-val{font-size:13px;font-weight:700;display:block;margin-top:2px}
+.hub-win-pill .hub-win-pa{font-size:9px;color:var(--text-3);font-weight:400}
+.hub-spark-stack{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.hub-spark-line{display:flex;align-items:center;gap:10px;font-size:11px}
+.hub-spark-line .hub-spark-label{min-width:36px;color:var(--text-3);font-weight:600;text-transform:uppercase;font-size:10px}
+.hub-spark-line .hub-spark-val{min-width:36px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.hub-expand-right{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;align-content:start}
+.hub-expand-metric{background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.hub-expand-metric .lab{font-size:9px;text-transform:uppercase;color:var(--text-3);letter-spacing:.06em}
+.hub-expand-metric .val{font-size:15px;font-weight:700;margin-top:2px}
+.hub-team-cell{display:flex;align-items:center;gap:8px}
+.hub-team-pa{font-size:10px;color:var(--text-3);display:block;margin-top:1px}
+.hub-profile-link{font-size:11px;color:var(--purple);text-decoration:none;margin-left:6px}
+.hub-profile-link:hover{text-decoration:underline}
+.tier-badge,.trend-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.tier-elite{background:rgba(74,222,128,.18);color:#4ADE80}
+.tier-high{background:rgba(134,239,172,.15);color:#86EFAC}
+.tier-danger{background:rgba(251,191,36,.15);color:#FBBF24}
+.tier-incon{background:rgba(113,113,122,.2);color:#A1A1AA}
+.tier-weak{background:rgba(248,113,113,.15);color:#F87171}
+.sus-badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;margin-left:6px}
+.col-adv{display:none}
+.col-adv.show{display:table-cell}
+.th-info{margin-left:4px;opacity:.55;font-size:9px;cursor:help}
+.hub-takeaway{font-size:11px;color:var(--text-2);max-width:220px;line-height:1.35}
+.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+.loading.hide{display:none}
+#hubLoading.hide {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+@media(max-width:767px){
+  .container{padding:16px 14px 56px}
+  .hub-control-bar{padding:12px}
+  .hub-control-row{gap:10px 12px}
+  .hub-team-input-row{width:100%}
+  .hub-team-select{min-width:0;flex:1}
+  .hub-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hub-kpi-val{font-size:32px}
+}
+</style>
+</head>
+<body data-mode="rank" class="ca-bg-outfield">
+<div class="loading" id="hubLoading">
+  <span class="subtitle">Loading lineup offense data...</span>
+</div>
+<script>
+/* Dismiss loading overlay if lineup view never finishes (network/sheet failure) */
+setTimeout(function() {
+  if (window.__lineupViewReady || window.__lineupViewMounted) return;
+  var l = document.getElementById('hubLoading');
+  if (l) l.classList.add('hide');
+  if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+  else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
+  var body = document.querySelector('.lv-body');
+  if (body && !body.querySelector('.lv-table') && !body.querySelector('.lv-note')) {
+    body.innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Load timed out — check network and Google Sheet access, then refresh.</div>';
+  }
+  console.warn('[LINEUP VIEW] still loading after 20s — hard refresh and verify shared scripts');
+}, 20000);
+</script>
+<!-- Chase Analytics navigation — synced via scripts/integrate_chase_nav.py -->
+<header class="chase-header" id="chaseHeader">
+  <nav class="chase-nav">
+    <a href="../chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics \u2014 Opening Dashboard">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="../assets/chase-logo-horizontal.png" alt="Chase Analytics" height="32" style="height:32px;max-height:36px;width:auto;object-fit:contain"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;font-weight:700;color:#fff;">Chase Analytics</span>
+    </a>
+    <div class="chase-nav-links">
+      <a href="../chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="../chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="../team_rankings.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
+      <a href="../chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
+      <div class="chase-dropdown">
+        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">Profiles
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="chase-dropdown-menu">
+          <a href="../team_profile.html" class="chase-dropdown-item">Team Profile</a>
+          <a href="../pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
+          <a href="../bullpen_report.html" class="chase-dropdown-item">Bullpen Profile</a>
+          <div class="chase-dropdown-divider"></div>
+          <a href="../batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
+        </div>
+      </div>
+      <a href="../glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+    </div>
+    <div class="chase-status">
+      <div class="chase-timestamp"><span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span><span id="lastUpdated">syncing\u2026</span></div>
+      <button type="button" class="chase-hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+<div class="chase-mobile-overlay" id="mobileOverlay"></div>
+<div class="chase-mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="chase-mobile-header">
+    <a href="../chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
+      <img class="chase-nav-logo chase-nav-logo--dark" src="../assets/chase-logo-horizontal.png" alt="Chase Analytics" height="48"
+        onerror="this.style.display='none';var f=this.nextElementSibling;if(f)f.style.display='inline';">
+      <span class="chase-nav-logo-fallback" style="display:none;">Chase Analytics</span>
+    </a>
+    <button type="button" class="chase-mobile-close" id="mobileClose" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div class="chase-mobile-brand" aria-hidden="true">
+    <img class="chase-mobile-brand-icon" src="../assets/chase-icon-filled.png" alt="" width="24" height="24">
+  </div>
+  <div class="chase-mobile-nav">
+    <a href="../chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="../chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="../team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
+    <a href="../chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
+    <div class="chase-mobile-section">Profiles</div>
+    <a href="../team_profile.html" class="chase-mobile-link">Team Profile</a>
+    <a href="../pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
+    <a href="../bullpen_report.html" class="chase-mobile-link">Bullpen Profile</a>
+    <a href="../batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="../glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
+  </div>
+  <div class="chase-mobile-status">
+    <div class="chase-timestamp">
+      <span class="chase-pipeline-dot" title="Pipeline: Fresh"></span>
+      <span id="mobileLastUpdated">syncing…</span>
+    </div>
+  </div>
+</div>
+
+<main class="container ca-page-shell">
+  <div id="teamRankingsPageHeader"></div>
+  <section id="lineupViewMount"></section>
+</main>
+<script src="../team_rankings_boot.js?v=20260608b"></script>
+
+<script>
+(function() {
+  try {
+    var ts = sessionStorage.getItem('mlbma_sheet_sync_ts');
+    if (ts) window.MLBMA_SHEET_BUST = ts;
+  } catch (e) { /* ignore */ }
+  window.MLBMA_PAGE_LOAD_BUST = Date.now();
+})();
+</script>
+<script src="../mlbma_config.js?v=20260606b"></script>
+<script src="../mlbma_assets.js?v=20260615b"></script>
+<script id="mlbma-icons-script" src="../mlbma_icons.js?v=20260612b"></script>
+<script src="../mlbma_ui.js?v=20260612a" data-page="team_rankings.html"></script>
+<script src="../matchup_shared.js?v=20260717e"></script>
+<script>
+(function() {
+  var _globalErrorHandling = false;
+  var _globalErrorShown = false;
+  window.onerror = function(msg, src, line, col) {
+    if (_globalErrorHandling) return false;
+    _globalErrorHandling = true;
+    try {
+      var hubL = document.getElementById('hubLoading');
+      if (hubL) hubL.classList.add('hide');
+      if (window.MLBMA_UI && MLBMA_UI.hideLoadingOverlay) MLBMA_UI.hideLoadingOverlay();
+      else if (window.MLBMA_UI && MLBMA_UI.finishLoading) MLBMA_UI.finishLoading();
+      if (!_globalErrorShown && document.body) {
+        _globalErrorShown = true;
+        var safeMsg = String(msg || 'Unknown error')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        var safeSrc = String(src || '')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        document.body.insertAdjacentHTML('afterbegin',
+          '<div style="color:red;padding:20px;font-size:14px;position:fixed;top:60px;left:20px;z-index:9999;background:#1a0000;border:1px solid red;border-radius:8px;max-width:600px">' +
+          '<strong>JS Error:</strong> ' + safeMsg + '<br>at ' + safeSrc + ' ' + line + ':' + col +
+          '</div>');
+      }
+      if (window.console && typeof window.console.warn === 'function') {
+        window.console.warn('[GLOBAL ERROR]', msg, 'at', src, line + ':' + col);
+      }
+    } finally {
+      _globalErrorHandling = false;
+    }
+    return false;
+  };
+})();
+</script>
+<script src="../lineup_view.js?v=20260615c"></script>
+<script src="../mobile_cardify.js?v=20260610c"></script>
+<script>
+(function() {
+  if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
+    MLBMAAssets.mountPlatformHeader('teamRankingsPageHeader', {
+      title: 'Team Rankings',
+      subtitle: 'Unified lineup model view across scoring, difficulty, and status-projection families.',
+      showPlatformNav: false
+    });
+  }
+  if (window.LineupView && LineupView.mount) LineupView.mount({ mountId: 'lineupViewMount' });
+})();
+</script>
+<script>
+(function() {
+  function removeDensityCard() {
+    var heads = document.querySelectorAll('.lv-cat-h');
+    heads.forEach(function(h) {
+      var txt = String(h.textContent || '').toLowerCase();
+      if (txt.indexOf('table density') >= 0) {
+        var card = h.closest('.lv-cat');
+        if (card && card.parentNode) card.parentNode.removeChild(card);
+      }
+    });
+  }
+  function hardenTeamRankingsUi() {
+    removeDensityCard();
+  }
+  var mo = new MutationObserver(function() { hardenTeamRankingsUi(); });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(hardenTeamRankingsUi, 200);
+  setTimeout(hardenTeamRankingsUi, 1200);
+})();
+</script>
+<script src="../chase_nav.js?v=20260618a" defer></script>
+</body>
+</html>

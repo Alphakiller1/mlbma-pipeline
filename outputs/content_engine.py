@@ -313,7 +313,7 @@ ARTIFACTS = {
     "team_rankings": {
         "label": "Team Rankings",
         "scope": "slate",
-        "page": "team_rankings.html",
+        "page": "render/team_rankings.html",
         "selector": ".lv-table",
         "wait_ms": 15000,
         "framed": True,

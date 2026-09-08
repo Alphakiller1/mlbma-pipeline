@@ -72,16 +72,29 @@
     },
     {
       id: 'pp-gap',
-      name: 'PP-Gap',
-      full: 'Process vs Production Gap',
+      name: 'Process Gap',
+      full: 'Process vs Production Gap (ABQ − RCV)',
       sample: 4,
       invert: false,
-      terms: ['pp gap', 'pp-gap', 'process production'],
-      def: 'ABQ minus RCV. Positive means process is ahead of results.',
-      components: 'ABQ − RCV (same pool scale)',
-      read: '+4 or more = buy-low. −4 or less = regression risk.',
-      research: 'Use as a process-vs-production check; counts double in convergence.',
-      limits: 'Not a standalone play flag; use with signal stack.'
+      terms: ['pp gap', 'pp-gap', 'process production', 'process gap'],
+      def: 'ABQ minus RCV. Positive means process is ahead of results. This is the glossary / research meaning of “PP-Gap”.',
+      components: 'ABQ − RCV',
+      read: 'Positive = buy-low process. Negative = results running hot vs process.',
+      research: 'Use as a process-vs-damage lens, not as a projection residual.',
+      limits: 'Not the same as Batter_Profiles.PP_Gap (that column is Regression Gap).'
+    },
+    {
+      id: 'regression-gap',
+      name: 'Regression Gap',
+      full: 'projOSI residual (Batter_Profiles.PP_Gap)',
+      sample: 4,
+      invert: false,
+      terms: ['regression gap', 'pp_gap', 'batter pp_gap'],
+      def: 'projOSI minus OSI — the regression residual stored as Batter_Profiles.PP_Gap and Team_Profiles.pp_gap. Do not call this PP-Gap in UI copy.',
+      components: 'projOSI − OSI  (= clip((xwOBA − wOBA) × 450, −8, +8))',
+      read: 'Positive = buy-low vs current OSI. Negative = results ahead of expected.',
+      research: 'Sheet column name PP_Gap is historical; display name is Regression Gap.',
+      limits: 'Same clip as projOSI. A short window is not a small sample by itself.'
     },
     {
       id: 'pals',
