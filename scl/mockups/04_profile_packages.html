@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL M3 — Profile packages</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+  <style>
+    .scl-profile-hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .scl-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #0f766e, #134e4a);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 750;
+      font-size: 1.2rem;
+    }
+    .scl-record {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-variant-numeric: tabular-nums;
+    }
+    .scl-record span {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--scl-text-muted);
+    }
+    .scl-record strong {
+      font-size: 1.15rem;
+      color: var(--scl-ink);
+    }
+    .scl-demo-toggle {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body class="scl-body">
+  <nav class="scl-mock-nav">
+    <a href="index.html">Index</a>
+    <a href="01_foundation.html">1 Foundation</a>
+    <a href="02_admin_commerce.html">2 Admin</a>
+    <a href="03_monetization_center.html">3 Monetization</a>
+    <a class="is-active" href="04_profile_packages.html">4 Profile</a>
+  </nav>
+
+  <main class="scl-page">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Layer 4 · Public profile</p>
+        <h1 class="scl-title">Package block on capper profile</h1>
+        <p class="scl-subtitle">
+          Conversion sits under the record summary. Non-live stores omit buy CTAs entirely.
+        </p>
+      </div>
+    </header>
+
+    <div class="scl-demo-toggle" role="group" aria-label="Demo store state">
+      <button type="button" class="scl-btn scl-btn--secondary scl-btn--sm is-mode" data-mode="live">Live store</button>
+      <button type="button" class="scl-btn scl-btn--ghost scl-btn--sm is-mode" data-mode="pending">Pending store</button>
+      <button type="button" class="scl-btn scl-btn--ghost scl-btn--sm is-mode" data-mode="none">No store</button>
+    </div>
+
+    <section class="scl-panel">
+      <div class="scl-profile-hero">
+        <div class="scl-avatar" aria-hidden="true">EL</div>
+        <div>
+          <h2 class="scl-title" style="font-size: 1.45rem; margin-bottom: 4px;">EdgeLock Analytics</h2>
+          <p class="scl-hint" style="margin: 0;">MLB · NBA · verified record</p>
+        </div>
+      </div>
+      <ul class="scl-record">
+        <li><span>Record</span><strong>142-118</strong></li>
+        <li><span>Units</span><strong>+38.4</strong></li>
+        <li><span>ROI</span><strong>8.2%</strong></li>
+        <li><span>Streak</span><strong>W4</strong></li>
+      </ul>
+    </section>
+
+    <section class="scl-panel" style="margin-top: 16px;" id="packages-section">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Packages</h2>
+        <span class="scl-hint" id="packages-note">CTAs use SCL tracking URLs</span>
+      </div>
+      <div id="packages-host"></div>
+    </section>
+
+    <section class="scl-panel" style="margin-top: 16px;">
+      <h2 class="scl-panel__title" style="margin-bottom: 8px;">Recent plays</h2>
+      <p class="scl-hint" style="margin: 0;">Placeholder — profile content below packages stays unchanged for M3 structure.</p>
+    </section>
+  </main>
+
+  <script src="../js/scl_ui.js"></script>
+  <script>
+    const U = window.SCLUI;
+
+    const livePackages = [
+      {
+        id: "p1",
+        name: "All Sports Premium",
+        description: "Daily cards across major sports with full archive access.",
+        priceLabel: "$99 / month",
+        provider: "whop",
+        status: "live",
+        sclTrackingUrl: "/go/edgelock-all",
+      },
+      {
+        id: "p2",
+        name: "MLB Season Pass",
+        description: "Baseball-only product linked via Whop product-specific affiliate URL.",
+        priceLabel: "$79 / month",
+        provider: "whop",
+        status: "live",
+        sclTrackingUrl: "/go/edgelock-mlb",
+      },
+    ];
+
+    let mode = "live";
+
+    function render() {
+      document.querySelectorAll(".is-mode").forEach((btn) => {
+        const active = btn.dataset.mode === mode;
+        btn.classList.toggle("scl-btn--secondary", active);
+        btn.classList.toggle("scl-btn--ghost", !active);
+      });
+
+      const host = document.getElementById("packages-host");
+      const section = document.getElementById("packages-section");
+      const note = document.getElementById("packages-note");
+
+      if (mode === "live") {
+        section.style.display = "";
+        note.textContent = "CTAs use SCL tracking URLs";
+        host.innerHTML =
+          `<div class="scl-package-list scl-package-list--cols">${livePackages
+            .map((p) => U.packageCardHtml(p, { mode: "public" }))
+            .join("")}</div>`;
+        return;
+      }
+
+      if (mode === "pending") {
+        // Default product rule: omit package CTAs while store is pending.
+        section.style.display = "none";
+        return;
+      }
+
+      // no store
+      section.style.display = "";
+      note.textContent = "No storefront";
+      host.innerHTML = U.emptyStateHtml({
+        title: "No packages available",
+        body: "This capper has not connected a live SCL storefront yet.",
+      });
+    }
+
+    document.querySelectorAll(".is-mode").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        mode = btn.dataset.mode;
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

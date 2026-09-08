@@ -1,0 +1,120 @@
+/* SCL Marketplace — design tokens (Milestone 3)
+   Light editorial trust surface for public/capper; dense ops surface for admin.
+   Not tied to MLBMA violet boards. */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap");
+
+:root {
+  /* Surfaces */
+  --scl-bg: #f4f6f8;
+  --scl-bg-elevated: #ffffff;
+  --scl-bg-muted: #eef1f4;
+  --scl-bg-inset: #e8ecf0;
+  --scl-bg-admin: #12161c;
+  --scl-bg-admin-panel: #1a2028;
+  --scl-bg-admin-row: #222a34;
+
+  /* Text */
+  --scl-text: #12161c;
+  --scl-text-secondary: #4b5563;
+  --scl-text-muted: #6b7280;
+  --scl-text-inverse: #f8fafc;
+  --scl-text-admin: #e5e7eb;
+  --scl-text-admin-muted: #9ca3af;
+
+  /* Borders */
+  --scl-border: #d5dbe3;
+  --scl-border-strong: #b8c0cc;
+  --scl-border-admin: #2d3744;
+
+  /* Brand / accent — ink + signal green (not purple) */
+  --scl-ink: #0f172a;
+  --scl-accent: #0f766e;
+  --scl-accent-hover: #0d9488;
+  --scl-accent-soft: #ccfbf1;
+  --scl-accent-text: #115e59;
+
+  /* Status */
+  --scl-status-neutral-bg: #eef1f4;
+  --scl-status-neutral-text: #374151;
+  --scl-status-neutral-border: #d1d5db;
+
+  --scl-status-pending-bg: #fff7ed;
+  --scl-status-pending-text: #9a3412;
+  --scl-status-pending-border: #fdba74;
+
+  --scl-status-info-bg: #eff6ff;
+  --scl-status-info-text: #1e40af;
+  --scl-status-info-border: #93c5fd;
+
+  --scl-status-live-bg: #ecfdf5;
+  --scl-status-live-text: #065f46;
+  --scl-status-live-border: #6ee7b7;
+
+  --scl-status-danger-bg: #fef2f2;
+  --scl-status-danger-text: #991b1b;
+  --scl-status-danger-border: #fca5a5;
+
+  --scl-status-disabled-bg: #f3f4f6;
+  --scl-status-disabled-text: #6b7280;
+  --scl-status-disabled-border: #e5e7eb;
+
+  /* Provider badges */
+  --scl-provider-winible-bg: #f0f9ff;
+  --scl-provider-winible-text: #075985;
+  --scl-provider-whop-bg: #faf5ff;
+  --scl-provider-whop-text: #6b21a8;
+
+  /* Type */
+  --scl-font-ui: "DM Sans", system-ui, sans-serif;
+  --scl-font-display: "Source Serif 4", Georgia, serif;
+
+  /* Radius / shadow / space */
+  --scl-radius-sm: 6px;
+  --scl-radius: 10px;
+  --scl-radius-lg: 14px;
+  --scl-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --scl-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --scl-space-1: 4px;
+  --scl-space-2: 8px;
+  --scl-space-3: 12px;
+  --scl-space-4: 16px;
+  --scl-space-5: 24px;
+  --scl-space-6: 32px;
+
+  /* Controls */
+  --scl-control-h: 40px;
+  --scl-focus: 0 0 0 3px rgba(15, 118, 110, 0.28);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body.scl-body {
+  margin: 0;
+  font-family: var(--scl-font-ui);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--scl-text);
+  background: var(--scl-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.scl-body-admin {
+  background: var(--scl-bg-admin);
+  color: var(--scl-text-admin);
+}
+
+.scl-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

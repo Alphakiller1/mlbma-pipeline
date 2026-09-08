@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL Marketplace — Home</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body">
+  <div id="scl-app-nav"></div>
+  <main class="scl-page">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Sports Cappers Leaderboard · Milestone 3</p>
+        <h1 class="scl-title">Wired marketplace shell</h1>
+        <p class="scl-subtitle">
+          Capper onboarding, admin import, profile packages, and SCL tracking redirects share one local store.
+        </p>
+      </div>
+    </header>
+
+    <div id="scl-role-bar"></div>
+
+    <section class="scl-panel">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Demo path</h2>
+      </div>
+      <ol class="scl-timeline">
+        <li class="is-current"><span class="scl-timeline__dot"></span><span>Open <a href="monetization.html">Monetization</a> as EdgeLock → submit Winible or Whop</span></li>
+        <li><span class="scl-timeline__dot"></span><span>Open <a href="admin.html">Admin</a> → mark links received → save packages Live</span></li>
+        <li><span class="scl-timeline__dot"></span><span>Open the capper <a href="profile.html?capper=edgelock">Profile</a> → click View package</span></li>
+        <li><span class="scl-timeline__dot"></span><span>Confirm <code>/go</code> logs the click and redirects to the provider URL</span></li>
+      </ol>
+    </section>
+
+    <section class="scl-panel" style="margin-top: 16px;">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Cappers</h2>
+      </div>
+      <div id="capper-list" class="scl-package-list"></div>
+    </section>
+
+    <section class="scl-panel" style="margin-top: 16px;">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Click stats</h2>
+      </div>
+      <div id="click-stats"></div>
+    </section>
+  </main>
+
+  <script src="../js/scl_store.js"></script>
+  <script src="../js/scl_ui.js"></script>
+  <script src="../js/scl_app.js"></script>
+  <script>
+    SCLApp.mountNav("home");
+    SCLApp.mountRoleSwitcher();
+
+    const U = SCLUI;
+    const list = document.getElementById("capper-list");
+    list.innerHTML = SCLStore.listCappers()
+      .map((c) => {
+        const conns = SCLStore.connectionsForCapper(c.id);
+        const livePkgs = SCLStore.packagesForCapper(c.id, { liveOnly: true });
+        const statusHtml = conns.length
+          ? conns.map((x) => U.statusChipHtml(x.status) + " " + U.providerBadgeHtml(x.provider)).join(" ")
+          : U.statusChipHtml("not_started");
+        return `
+          <article class="scl-package-card">
+            <div class="scl-package-card__meta">${statusHtml}</div>
+            <h3 class="scl-package-card__name">${U.esc(c.name)}</h3>
+            <p class="scl-package-card__desc">${U.esc(c.sports)} · ${livePkgs.length} live package${livePkgs.length === 1 ? "" : "s"}</p>
+            <div class="scl-package-card__footer">
+              <span class="scl-clicks">${U.esc(c.record)} · ROI ${U.esc(c.roi)}</span>
+              <a class="scl-btn scl-btn--primary scl-btn--sm" href="profile.html?capper=${U.esc(c.slug)}">Open profile</a>
+            </div>
+          </article>`;
+      })
+      .join("");
+
+    const stats = SCLStore.clickStats();
+    document.getElementById("click-stats").innerHTML = `
+      <p class="scl-hint" style="margin:0 0 12px;">Total tracked clicks: <strong>${stats.total}</strong></p>
+      <div class="scl-package-list">
+        ${stats.byPackage
+          .map(
+            (p) =>
+              `<div class="scl-package-card"><h3 class="scl-package-card__name">${U.esc(p.name)}</h3><p class="scl-clicks">${p.clicks} clicks · code ${U.esc(p.code)}</p></div>`
+          )
+          .join("") || U.emptyStateHtml({ title: "No packages yet", body: "Import packages in Admin to start tracking." })}
+      </div>`;
+  </script>
+</body>
+</html>

@@ -20,4 +20,10 @@ rem Use -m so the repo root is on sys.path; `python pipeline\main.py` puts only 
 rem pipeline\ folder on the path and crashes with "No module named 'pipeline'".
 rem pipeline.main also publishes bet-evaluator + sharp-money-tracker at the end.
 rem For the alternate entry that skips MLBMA scrape: run_full_pipeline.bat --skip-scrape
+echo MLBMA scrape running - this window shows nothing by design.
+echo Progress is appended to pipeline_log.txt (typical run: ~45-60 min).
+echo NOTE: this is the scrape-only entry. For the full daily run including
+echo social cards, use run_full_pipeline.bat instead.
 "%PYEXE%" -u -m pipeline.main >> "%~dp0pipeline_log.txt" 2>&1
+echo Done - exit code %ERRORLEVEL%. See pipeline_log.txt for details.
+pause

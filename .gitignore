@@ -33,3 +33,6 @@ node_modules/
 tmp_*
 pipeline_run_*.log
 outputs/reading_list/
+
+# generated daily social cards (rendered from dashboard card routes)
+outputs/social_cards/

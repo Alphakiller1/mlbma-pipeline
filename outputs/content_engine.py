@@ -10,8 +10,10 @@ COMMANDS
   keys        Print the artifact key: every component, what it shows, and the
               phrases that summon it (--artifacts accepts those phrases).
   compose     Any registered or ad-hoc artifacts - the adaptive path (other areas of
-              the site, or the mlb-model deck when the post is about projections).
+              the site, the mlb-model deck, or the whole nfl-model board).
                 --artifacts model_kpis,model_slate,model_leans
+                --artifacts nfl_edges --rows 10
+                --artifacts nfl_game_lines --games NE@SEA
                 --capture 'label=X;url=https://...;selector=.terminal-panel'
   preview     Concise multi-matchup preview - matchup cards placed side by side.
                 --games CLE@CIN,TEX@TBR,CHC@STL
@@ -30,10 +32,27 @@ TEXT LAYER (every command; see docs/CONTENT_ENGINE_SPEC.md section 6)
   --sub       neutral setup       --take      YOUR angle, styled as opinion
   --note      evidence bullet (repeatable)    --cta   where to go next
 
+NFL (compose only; captures the HOSTED nfl-model board, needs no MLB slate)
+  Boards      nfl_power_top/_bottom, nfl_edges, nfl_offense, nfl_defense,
+              nfl_seeds_afc/_nfc, nfl_divisions_afc/_nfc, nfl_scheme_matrix
+  Players     nfl_qb_props, nfl_rb_props, nfl_wr_props, nfl_te_props, nfl_k_props
+  Per game    nfl_game, nfl_game_lines   (--games NE@SEA, from nfl-model's board)
+  Receipts    nfl_gate_tiles, nfl_authority - what the numbers are worth. This model
+              is RESEARCH_ONLY and does not beat the closing line; a gap it shows is
+              a disagreement, not an edge, and copy must not call it one.
+
+VIDEO
+  --video     Also emit the motion version: save this post's captures and write the
+              Remotion props that animate them, then print the render command. The
+              video reuses the SAME capture as the still, so the two cannot drift.
+  --video-platform reels|reels-ads|tiktok|shorts|youtube   whose safe areas to keep
+              clear of (default reels)
+
 OTHER FLAGS
   --size 1080x1350 (default) | 1080x1080 | 1080x1920 | 1600x900   (auto-picked if unset)
   --date YYYY-MM-DD    slate date (default today)
   --layout stack|row   compose only
+  --rows N / --rows-from N   row window; two slides from one board
 
 Geometry, brand and text rules live in docs/CONTENT_ENGINE_SPEC.md. In short: every
 artifact in a post shares ONE zoom so type size is identical and artifacts stay centred.
@@ -60,6 +79,15 @@ from playwright.sync_api import sync_playwright
 PIPELINE = Path(__file__).resolve().parents[1]
 DATA = PIPELINE / "data"
 OUT_ROOT = PIPELINE / "outputs" / "social_cards"
+VIDEO = PIPELINE / "video"
+# The vertical master the video engine renders (video/src/Root.tsx VERTICAL), and the
+# margin BoardMotion leaves beside a board. Used only to report the scale a directive
+# will get; the platform safe areas that set the height term are not duplicated here.
+VIDEO_FRAME_W = 1080
+VIDEO_BOARD_PAD = 24
+# nfl-model's published board, as a sibling checkout. Used to list and validate NFL
+# fixtures for --games; the artifacts themselves are captured off the hosted page.
+NFL_BOARD_JSON = PIPELINE.parent / "nfl-model" / "docs" / "board.json"
 
 # Output sizes. DEFAULT TO WHAT THE PLATFORM SERVES, not to the biggest it accepts.
 # Instagram re-serves feed images at 1080 wide and downsizes anything larger with its own
@@ -102,6 +130,9 @@ PRESHARPEN = {"radius": 0.7, "percent": 70, "threshold": 2}
 
 # Below this shared scale, stat tables stop being readable on a phone. Crossing it
 # triggers a re-render on the tall canvas (and a warning if that still isn't enough).
+# Default capture viewport. Wide enough to stay clear of the responsive contract's
+# desktop cutoff (1100px); artifacts that read better narrow set their own viewport_w.
+CAPTURE_VIEWPORT_W = 1600
 LEGIBILITY_FLOOR = 0.62
 # Unused vertical room that reads as half-empty, as a FRACTION of canvas height. A flat
 # pixel budget disagreed with scripts/check_render.py (which flags a band over 10% of
@@ -135,6 +166,30 @@ GLOBAL_HIDE = [
     ".mlbma-loading", ".dash-signup",
 ]
 
+# An element screenshot paints whatever sits behind the element, so the page's
+# decorative background photo shows through any gap inside the artifact - most
+# visibly the channel between the two cards of a `-duo`, which read as a stray
+# purple band down the middle of the post. Flatten the page to the site's own --bg
+# token (the same near-black the post canvas uses) so those gaps disappear. Only
+# the backdrop is touched; every component keeps its own surface.
+#
+# `html body[class]` (0,1,2) is deliberate: mlbma_backgrounds.css sets the photo
+# with `body.ca-bg-compare { ... !important }` (0,1,1), so a plain `body` rule loses
+# the specificity tie even with !important and the band stayed in the capture.
+GLOBAL_STYLE = """
+    html body[class], html body {
+        background-image: none !important;
+        background-color: var(--bg, #08090F) !important;
+    }
+"""
+
+# The nfl-model dashboard, as deployed. Pages publishes it from that repo's build
+# workflow rather than from its committed docs/index.html, so the two are ALLOWED to
+# differ and the hosted page is the one a reader following the post actually lands on.
+# It is also further ahead: the live board carries #players and #scheme sections the
+# committed snapshot has never had. Capture what you link to.
+NFL_BOARD_URL = "https://alphakiller1.github.io/nfl-model/"
+
 # Artifact registry. Each entry says where the component lives, how to reach it,
 # and what must be true before it can be captured. `selector` is resolved on the
 # page; `contains` disambiguates when a page has several matching sections.
@@ -149,6 +204,10 @@ ARTIFACTS = {
         "selector": ".hero-matchup-card",
         "match_game": True,
         "wait_ms": 12000,
+        # The card mounts as soon as the slate lands, but Pitch Score / K% / BB% / ERA
+        # come from the starter profile sheet, which arrives seconds later. Without
+        # this gate the card is captured with four em dashes in each pitcher panel.
+        "ready": "window.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length",
         "framed": False,
         # In-card navigation affordance is meaningless in a static post.
         "hide": [".hmc-view-full"],
@@ -178,6 +237,9 @@ ARTIFACTS = {
         "selector": ".mc-os-duo",
         "wait_ms": 14000,
         "framed": True,
+        # The home/road strip has no data to show while Batter_Splits_Home/Away
+        # publish header-only; drop it rather than ship 16 em dashes a side.
+        "drop_if_empty": [".mc-os-strip"],
     },
     # The two split views are DIRECTIONAL: one lineup against the other side's
     # pitching. Each has a reverse variant so a matchup post can show both halves.
@@ -189,10 +251,69 @@ ARTIFACTS = {
         "params": {"compare": "lvP", "lvpLineup": "away", "lvpPitcher": "home"},
         "selector": ".mc-lvp-section",
         "contains": "LINEUP & PITCHER SPLITS",
-        "wait_ms": 15000,
+        "wait_ms": 30000,
+        # These boards mount only after every batter-split tab has landed;
+        # 15s caught the page before the section existed at all.
+        "ready": "document.querySelectorAll('.mc-lvp-section td').length > 20",
+        "fitwidth": [".mc-lcc-table"],
         "framed": True,
         # Post chrome already names the matchup; the artifact's own section header and
         # methodology fine print would just repeat twice in one image.
+        "hide": [".mc-lvb-controls", ".hub-control-bar", ".mc-subsel",
+                 ".mc-lvp-section-head", ".mc-lvb-section-head", ".ca-helper"],
+    },
+    # The full lvP board is a 2-column grid of two 535px cards, so it can never be
+    # captured under ~1140px wide - which the composer then SHRINKS to 0.93 to fit 1080.
+    # Registering each half separately lets a post carry one of them at 1.26x instead:
+    # the same pixels, 35% larger type. Use the halves for social, the full board when
+    # the reader has a screen.
+    "lineup_vs_hand": {
+        "label": "Lineup vs the Starter's Hand",
+        "label_fmt": "{away} lineup, splits vs this starter's hand",
+        "scope": "game",
+        "page": "matchup_compare.html",
+        "params": {"compare": "lvP", "lvpLineup": "away", "lvpPitcher": "home"},
+        "selector": ".mc-card.mc-lineup-col",
+        # As a grid item this card is STRETCHED to its taller sibling's height, so a
+        # third of the capture is empty - and the composer, sizing the whole box, spends
+        # a third of the post's height on that void. align-self:start makes it wrap its
+        # own content, which is worth ~30% of rendered type size. (Do NOT narrow the
+        # viewport instead: this grid does not stack, it squeezes and clips the SLG
+        # column.)
+        # min-height:100% is what stretches it: 100% of a grid row sized by the TALLER
+        # sibling card. Its own content is ~556px, so ~120px of every capture was empty
+        # and the composer spent post height on the void. Measured, not guessed.
+        "style": (".mc-card.mc-lineup-col{min-height:0!important;height:auto!important;"
+                  "flex:0 0 auto!important;align-self:start!important}"),
+        "wait_ms": 30000,
+        "ready": "document.querySelectorAll('.mc-lvp-section td').length > 20",
+        "fitwidth": [".mc-lcc-table"],
+        "framed": True,
+        "hide": [".mc-lvb-controls", ".hub-control-bar", ".mc-subsel",
+                 ".mc-lvp-section-head", ".mc-lvb-section-head", ".ca-helper"],
+    },
+    "lineup_vs_hand_rev": {
+        "label": "Lineup vs the Starter's Hand",
+        "label_fmt": "{home} lineup, splits vs this starter's hand",
+        "scope": "game",
+        "page": "matchup_compare.html",
+        "params": {"compare": "lvP", "lvpLineup": "home", "lvpPitcher": "away"},
+        "selector": ".mc-card.mc-lineup-col",
+        # As a grid item this card is STRETCHED to its taller sibling's height, so a
+        # third of the capture is empty - and the composer, sizing the whole box, spends
+        # a third of the post's height on that void. align-self:start makes it wrap its
+        # own content, which is worth ~30% of rendered type size. (Do NOT narrow the
+        # viewport instead: this grid does not stack, it squeezes and clips the SLG
+        # column.)
+        # min-height:100% is what stretches it: 100% of a grid row sized by the TALLER
+        # sibling card. Its own content is ~556px, so ~120px of every capture was empty
+        # and the composer spent post height on the void. Measured, not guessed.
+        "style": (".mc-card.mc-lineup-col{min-height:0!important;height:auto!important;"
+                  "flex:0 0 auto!important;align-self:start!important}"),
+        "wait_ms": 30000,
+        "ready": "document.querySelectorAll('.mc-lvp-section td').length > 20",
+        "fitwidth": [".mc-lcc-table"],
+        "framed": True,
         "hide": [".mc-lvb-controls", ".hub-control-bar", ".mc-subsel",
                  ".mc-lvp-section-head", ".mc-lvb-section-head", ".ca-helper"],
     },
@@ -204,7 +325,11 @@ ARTIFACTS = {
         "params": {"compare": "lvP", "lvpLineup": "home", "lvpPitcher": "away"},
         "selector": ".mc-lvp-section",
         "contains": "LINEUP & PITCHER SPLITS",
-        "wait_ms": 15000,
+        "wait_ms": 30000,
+        # These boards mount only after every batter-split tab has landed;
+        # 15s caught the page before the section existed at all.
+        "ready": "document.querySelectorAll('.mc-lvp-section td').length > 20",
+        "fitwidth": [".mc-lcc-table"],
         "framed": True,
         # Post chrome already names the matchup; the artifact's own section header and
         # methodology fine print would just repeat twice in one image.
@@ -219,7 +344,11 @@ ARTIFACTS = {
         "params": {"compare": "lvB", "lvbLineup": "away", "lvbBp": "home"},
         "selector": ".mc-lvb-section",
         "contains": "LINEUP VS RELIEF",
-        "wait_ms": 15000,
+        "wait_ms": 30000,
+        # These boards mount only after every batter-split tab has landed;
+        # 15s caught the page before the section existed at all.
+        "ready": "document.querySelectorAll('.mc-lvb-section td').length > 20",
+        "fitwidth": [".mc-lcc-table"],
         "framed": True,
         # Interactive window pills mean nothing in a static post, and the section
         # description tells the reader to use them — drop both.
@@ -234,7 +363,11 @@ ARTIFACTS = {
         "params": {"compare": "lvB", "lvbLineup": "home", "lvbBp": "away"},
         "selector": ".mc-lvb-section",
         "contains": "LINEUP VS RELIEF",
-        "wait_ms": 15000,
+        "wait_ms": 30000,
+        # These boards mount only after every batter-split tab has landed;
+        # 15s caught the page before the section existed at all.
+        "ready": "document.querySelectorAll('.mc-lvb-section td').length > 20",
+        "fitwidth": [".mc-lcc-table"],
         "framed": True,
         "hide": [".mc-lvb-controls", ".hub-control-bar", ".mc-subsel",
                  ".mc-lvp-section-head", ".mc-lvb-section-head", ".ca-helper"],
@@ -250,11 +383,26 @@ ARTIFACTS = {
         "selector": ".pl-rank-table",
         "wait_ms": 16000,
         "framed": True,
+        # Hand is broken upstream: sp_profiles.csv carries pitcher_hand 'R' for all 309
+        # rows, so the column renders "R" for every arm including known lefties. A
+        # column that is wrong for half the board is worse than no column - drop it
+        # here until the scraper is fixed, rather than publish a visible error.
+        # Row-expand chevrons are an interactive affordance with no meaning in a
+        # static post; drop the cells and the empty header that carries them.
+        "hide": [".pl-sort-th--hand", ".pl-rank-hand",
+                 ".pl-rank-chevron", ".pl-rank-table thead th:last-child"],
         # The table lives in a fixed-height sticky scroller; without releasing it the
         # capture clips after ~8 rows and the page behind bleeds into the empty band.
         "unclip": [".pl-rank-wrap", ".pl-rank-table-wrap", ".rl-sticky-table",
                    ".rl-table-wrap"],
         "unstick": [".pl-rank-table thead th"],
+        # Same fluid-width story as the team board, with a floor: this table has a
+        # min-width and 12 visible columns, so it cannot lay out under ~1030px. Shot
+        # any narrower it overflows its wrapper and the page behind bleeds into the
+        # right edge of the capture. fitwidth releases the min-width so 1150 gets the
+        # board close to its min-content width without that bleed.
+        "fitwidth": [".pl-rank-table"],
+        "viewport_w": 1150,
         "default_rows": 14,
     },
     # ---- beyond the matchup brief: other site areas -------------------------
@@ -319,6 +467,410 @@ ARTIFACTS = {
         "framed": True,
         "unclip": [".lv-table-wrap", ".lv-body"],
         "unstick": [".lv-table thead th"],
+        # Fluid table: 1350px wide at the default 1600px viewport, 730px at 780. The
+        # composer fits it to ~1040px either way, so the wide capture was rendering the
+        # site's own 15px type at ~11px. Captured narrow, it renders ABOVE native size.
+        # 780 is the floor - below 768 the responsive contract card-ifies the table.
+        "viewport_w": 780,
+    },
+    # ---- the nfl-model dashboard (separate repo, hosted) -------------------
+    # Same pattern as the mlb-model deck above: an absolute URL, so an NFL post needs
+    # neither that repo cloned nor a second local server. The hosted page is the
+    # capture source deliberately - it is what a reader following the post lands on,
+    # and nfl-model deploys Pages from its build workflow rather than from its docs/
+    # snapshot, so the two are allowed to drift.
+    #
+    # The power-ratings board is 32 rows deep. On a 1080px post that is either
+    # unreadable or a scroll, so it ships as two slides split at the median: the same
+    # table, 1-16 and 17-32, with the site's own rank column carried through.
+    #
+    # Both slides drop the same two columns, and both are redundant rather than merely
+    # surplus. `Eff` is exactly Off + Def - the page says so - which is a column of
+    # arithmetic on a slide that already shows both terms; the `vs average` bar is a
+    # picture of the Rating column sitting right next to it, and its min-width:120px
+    # made it the widest thing on the board. What that buys is horizontal room for the
+    # seven columns that are left, not type size: see `viewport_w` below for why type
+    # size on this artifact is set by height and not by anything to do with width.
+    "nfl_power_top": {
+        "sport": "NFL",
+        "label": "NFL Power Ratings 1-16",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        # Two `.pr` tables on this page (power ratings and the model-vs-market board),
+        # so the section id disambiguates rather than a `contains` text match.
+        "selector": "#ratings table.pr",
+        "wait_ms": 20000,
+        "framed": True,
+        "default_rows": 16,
+        "drop_cols": ["Eff", "vs average"],
+        # `th` is position:sticky, and .tablewrap clips horizontally on overflow.
+        "unstick": ["#ratings table.pr thead th"],
+        "unclip": ["#ratings .tablewrap"],
+        # The wrapper's 16px radius clips the table's own corners. The table has no
+        # background of its own - it reads the wrapper's - so an element screenshot
+        # would show the page behind it as four dark notches. Square the corners
+        # rather than repaint anything; the composer supplies the frame.
+        "style": "#ratings .tablewrap{border-radius:0!important}",
+        # NOT the usual "capture narrow for bigger type" case, and it is worth being
+        # explicit about why, because doing the usual thing here made the post worse.
+        # That rule holds when the composer's zoom is set by WIDTH. Sixteen rows is
+        # ~700px tall, which is all the vertical room a 1080x1350 post has, so the zoom
+        # here is set by HEIGHT - and height does not change with the capture width.
+        # Captured at 700px the board therefore rendered at exactly the same type size
+        # as this, just floating in the middle of the canvas at 60% of its width.
+        # 1032 puts the board's own width at 984px, which is exactly the artifact
+        # column, so the height-bound zoom of ~1.0 lands it edge to edge: same type
+        # size as any other capture width, no dead margin either side.
+        "viewport_w": 1032,
+    },
+    "nfl_power_bottom": {
+        "sport": "NFL",
+        "label": "NFL Power Ratings 17-32",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#ratings table.pr",
+        "wait_ms": 20000,
+        "framed": True,
+        "rows_from": 17,
+        "drop_cols": ["Eff", "vs average"],
+        "unstick": ["#ratings table.pr thead th"],
+        "unclip": ["#ratings .tablewrap"],
+        "style": "#ratings .tablewrap{border-radius:0!important}",
+        "viewport_w": 1032,
+    },
+    # -- the rest of the NFL board ------------------------------------------
+    # Every board below was measured on the hosted page at 820/1032/1280/1600 before
+    # being registered, because `viewport_w` is a two-purpose lever: capturing narrow
+    # only buys bigger type while the WIDTH term binds. These are all ~16 rows and
+    # ~700px tall, which is the entire vertical budget of a 1080x1350 post, so HEIGHT
+    # binds on all of them and the only job left for width is to land the artifact on
+    # the ~984px column. That is what 1032 does. Capturing them narrower does not
+    # enlarge the type - it floats the board inset with dead margins either side.
+    "nfl_edges": {
+        "sport": "NFL",
+        "label": "Model vs Market",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        # Only one `.pr` table in this section, so the section id is the whole selector.
+        "selector": "#disagreements table.pr",
+        "wait_ms": 20000,
+        "framed": True,
+        "unstick": ["#disagreements table.pr thead th"],
+        "unclip": ["#disagreements .tablewrap"],
+        "style": "#disagreements .tablewrap{border-radius:0!important}",
+        "viewport_w": 1032,
+    },
+    # `#units` lays out as ONE column at 1032 and TWO at 1280+, so the same block is
+    # 984px wide here and 588px there. 1032 is deliberate: the 588px version is
+    # height-bound too, so it renders at the same type size and simply sits inset.
+    # 32 rows is 1301px - twice the budget - hence the 16-row cut. `--rows-from 17`
+    # ships the other half as slide two, carrying the site's own rank numbers through.
+    "nfl_offense": {
+        "sport": "NFL",
+        "label": "Offense Power Ranking",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        # The `.unit` wrapper, not the table: it carries the "Offense power ranking"
+        # heading, which is both what disambiguates the two blocks and what the slide
+        # needs in order to say what it is.
+        "selector": "#units .unit",
+        "contains": "Offense power ranking",
+        "wait_ms": 20000,
+        "framed": True,
+        "default_rows": 16,
+        "unstick": ["#units table.pr thead th"],
+        "unclip": ["#units .tablewrap"],
+        "style": "#units .tablewrap{border-radius:0!important}",
+        "viewport_w": 1032,
+    },
+    "nfl_defense": {
+        "sport": "NFL",
+        "label": "Defense Power Ranking",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#units .unit",
+        "contains": "Defense power ranking",
+        "wait_ms": 20000,
+        "framed": True,
+        "default_rows": 16,
+        "unstick": ["#units table.pr thead th"],
+        "unclip": ["#units .tablewrap"],
+        "style": "#units .tablewrap{border-radius:0!important}",
+        "viewport_w": 1032,
+    },
+    "nfl_seeds_afc": {
+        "sport": "NFL",
+        "label": "AFC Playoff Field",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#seeds .unit",
+        "contains": "AFC playoff field",
+        "wait_ms": 20000,
+        "framed": True,
+        "unstick": ["#seeds table.pr thead th"],
+        "unclip": ["#seeds .tablewrap"],
+        "style": "#seeds .tablewrap{border-radius:0!important}",
+        "viewport_w": 1032,
+    },
+    "nfl_seeds_nfc": {
+        "sport": "NFL",
+        "label": "NFC Playoff Field",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#seeds .unit",
+        "contains": "NFC playoff field",
+        "wait_ms": 20000,
+        "framed": True,
+        "unstick": ["#seeds table.pr thead th"],
+        "unclip": ["#seeds .tablewrap"],
+        "style": "#seeds .tablewrap{border-radius:0!important}",
+        "viewport_w": 1032,
+    },
+    # All eight division cards on one slide is 1048px of 251px cards - legible only as
+    # a thumbnail. Split by conference instead, which is also how anyone talks about
+    # them. The `.dv` cards are in fixed order (AFC East/North/South/West, then the
+    # NFC), so nth-child is a stable cut needing no text match.
+    #
+    # 820, not 1032: `.dvs` is a 2-column grid at 820 and a 3-column one at 1032, and
+    # four cards across three columns is a ragged 3+1. Two clean rows of two, 772px
+    # wide, is what the width-bound zoom of ~1.27 then enlarges to fill the column.
+    "nfl_divisions_afc": {
+        "sport": "NFL",
+        "label": "AFC Division Odds",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#divisions .dvs",
+        "wait_ms": 20000,
+        "framed": True,
+        "style": "#divisions .dv:nth-child(n+5){display:none!important}",
+        "unclip": ["#divisions .dv-wrap"],
+        "unstick": ["#divisions .dv-tbl thead th"],
+        "viewport_w": 820,
+    },
+    "nfl_divisions_nfc": {
+        "sport": "NFL",
+        "label": "NFC Division Odds",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#divisions .dvs",
+        "wait_ms": 20000,
+        "framed": True,
+        "style": "#divisions .dv:nth-child(-n+4){display:none!important}",
+        "unclip": ["#divisions .dv-wrap"],
+        "unstick": ["#divisions .dv-tbl thead th"],
+        "viewport_w": 820,
+    },
+    # The accountability strip: measured MAE against the market, ATS on the model's own
+    # disagreements, and the sample both were measured on. 130px tall, so it stacks
+    # under any other NFL artifact as a footer saying what the numbers are worth.
+    # Posting this model's boards without it is the exact failure the board warns about.
+    "nfl_gate_tiles": {
+        "sport": "NFL",
+        "label": "Measured Against The Market",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#authority .tiles",
+        "wait_ms": 20000,
+        "framed": True,
+        "viewport_w": 1032,
+    },
+    "nfl_authority": {
+        "sport": "NFL",
+        "label": "What These Numbers May Be Used For",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#authority",
+        "wait_ms": 20000,
+        "framed": True,
+        "unclip": ["#authority .tablewrap"],
+        "unstick": ["#authority .gates thead th"],
+        # Prose-heavy and 955px tall, so it sits near the legibility floor on a 4:5
+        # canvas. It is a one-artifact post; give it --size 1080x1920 if it warns.
+        "viewport_w": 1032,
+    },
+    # Player projections. These tables live inside collapsed <details>, hence
+    # open_details; the selector is the <details> because its <summary> carries the
+    # position label that both disambiguates the five blocks and titles the slide.
+    #
+    # `Role evidence` and `Scheme` are dropped by default: both are two-line
+    # explanatory cells that read as noise at post size, while the projection columns
+    # are what a reader came for. --drop-cols overrides this per run.
+    "nfl_qb_props": {
+        "sport": "NFL",
+        "label": "QB Projections",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#players details.prop-group",
+        "contains": "QB projections",
+        "wait_ms": 20000,
+        "framed": True,
+        "open_details": True,
+        "default_rows": 16,
+        "drop_cols": ["Role evidence", "Scheme"],
+        "unclip": ["#players .tablewrap"],
+        "unstick": ["#players table.pr thead th"],
+        "style": ("#players .tablewrap{border-radius:0!important}"
+                  "#players details.prop-group > summary::before"
+                  "{content:none!important}"
+                  "#players details.prop-group > summary > span"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
+    },
+    "nfl_rb_props": {
+        "sport": "NFL",
+        "label": "RB Projections",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#players details.prop-group",
+        "contains": "RB projections",
+        "wait_ms": 20000,
+        "framed": True,
+        "open_details": True,
+        "default_rows": 16,
+        "drop_cols": ["Role evidence", "Scheme"],
+        "unclip": ["#players .tablewrap"],
+        "unstick": ["#players table.pr thead th"],
+        "style": ("#players .tablewrap{border-radius:0!important}"
+                  "#players details.prop-group > summary::before"
+                  "{content:none!important}"
+                  "#players details.prop-group > summary > span"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
+    },
+    "nfl_wr_props": {
+        "sport": "NFL",
+        "label": "WR Projections",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#players details.prop-group",
+        "contains": "WR projections",
+        "wait_ms": 20000,
+        "framed": True,
+        "open_details": True,
+        "default_rows": 16,
+        "drop_cols": ["Role evidence", "Scheme"],
+        "unclip": ["#players .tablewrap"],
+        "unstick": ["#players table.pr thead th"],
+        "style": ("#players .tablewrap{border-radius:0!important}"
+                  "#players details.prop-group > summary::before"
+                  "{content:none!important}"
+                  "#players details.prop-group > summary > span"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
+    },
+    "nfl_te_props": {
+        "sport": "NFL",
+        "label": "TE Projections",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#players details.prop-group",
+        "contains": "TE projections",
+        "wait_ms": 20000,
+        "framed": True,
+        "open_details": True,
+        "default_rows": 16,
+        "drop_cols": ["Role evidence", "Scheme"],
+        "unclip": ["#players .tablewrap"],
+        "unstick": ["#players table.pr thead th"],
+        "style": ("#players .tablewrap{border-radius:0!important}"
+                  "#players details.prop-group > summary::before"
+                  "{content:none!important}"
+                  "#players details.prop-group > summary > span"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
+    },
+    "nfl_k_props": {
+        "sport": "NFL",
+        "label": "Kicker Projections",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#players details.prop-group",
+        "contains": "K projections",
+        "wait_ms": 20000,
+        "framed": True,
+        "open_details": True,
+        "default_rows": 16,
+        "drop_cols": ["Role evidence", "Scheme"],
+        "unclip": ["#players .tablewrap"],
+        "unstick": ["#players table.pr thead th"],
+        "style": ("#players .tablewrap{border-radius:0!important}"
+                  "#players details.prop-group > summary::before"
+                  "{content:none!important}"
+                  "#players details.prop-group > summary > span"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
+    },
+    # The scheme matrix is the widest thing on the board: fifteen columns with a
+    # min-content width of ~1149px, which no capture width brings under the artifact
+    # column. Columns are therefore dropped rather than shrunk - the target-share and
+    # tempo columns go, leaving the coverage and pressure story the slide is about.
+    # Fails closed if the board renames a header.
+    "nfl_scheme_matrix": {
+        "sport": "NFL",
+        "label": "Coverage & Pressure Matrix",
+        "scope": "slate",
+        "url": NFL_BOARD_URL,
+        "selector": "#scheme details.prop-group",
+        "contains": "response matrix",
+        "wait_ms": 20000,
+        "framed": True,
+        "open_details": True,
+        "default_rows": 16,
+        "drop_cols": ["Motion", "Play act", "RB tgt", "WR tgt", "TE tgt",
+                      "Pass att", "Pass eff"],
+        "unclip": ["#scheme .tablewrap"],
+        "unstick": ["#scheme table.pr thead th"],
+        "style": ("#scheme .tablewrap{border-radius:0!important}"
+                  "#scheme details.prop-group > summary::before"
+                  "{content:none!important}"
+                  "#scheme details.prop-group > summary > span"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
+    },
+    # -- per-game, from the same board --------------------------------------
+    # `sport` is what tells the engine that --games names NFL fixtures, to be resolved
+    # against nfl-model's board rather than this repo's baseball slate. The schedule is
+    # never inferred from the abbreviations themselves: MLB and NFL share sixteen of
+    # them, so SEA@SF is a real fixture in both sports and a guess would silently
+    # resolve it against whichever pipeline had run most recently.
+    #
+    # Matched on the card's own data-key (`2026_01_NE_SEA`), not on its text: an
+    # innerText match for "NE" hits every card that says MONITOR or MONEYLINE.
+    "nfl_game": {
+        "sport": "NFL",
+        "label": "NFL Game Card",
+        "label_fmt": "{away} at {home}",
+        "scope": "game",
+        "url": NFL_BOARD_URL,
+        "selector": "#board .bd-card",
+        "match_data": "key",
+        "wait_ms": 20000,
+        "framed": True,
+        # The headline and footer are <button>s whose arrow affordances read as dead
+        # UI in a still. Their text is worth keeping; the arrows are not.
+        "hide": [".bd-headline__cta"],
+        # 890px tall at 483 wide, so this artifact is height-bound and lands narrow on
+        # a 4:5 canvas. Post it at --size 1080x1920, or two across with --layout row.
+        "viewport_w": 1032,
+    },
+    "nfl_game_lines": {
+        "sport": "NFL",
+        "label": "Market vs Model",
+        "label_fmt": "{away} at {home}",
+        "scope": "game",
+        "url": NFL_BOARD_URL,
+        "selector": "#board .bd-card",
+        "match_data": "key",
+        "wait_ms": 20000,
+        "framed": True,
+        "hide": [".bd-headline__cta"],
+        # The same card cut to its two price blocks - DraftKings' line and the model's
+        # own number. At ~465px that is proportioned for a 4:5 post, where the full
+        # card is not. The head-coach strip and the two derivation blocks are what go.
+        "style": ("#board .bd-card .bd-principals{display:none!important}"
+                  "#board .bd-card .bd-card__groups .bd-group:nth-child(n+3)"
+                  "{display:none!important}"),
+        "viewport_w": 1032,
     },
 }
 
@@ -353,24 +905,132 @@ ASPECTS = {
 }
 
 
+def post_sport(names: list[str]) -> str:
+    """The sport a post built from these artifacts is about.
+
+    Artifacts carry their sport in the registry; anything without one is this repo's
+    own baseball dashboard, which is what every post was for its whole life. A post
+    that mixes sports is legal and names neither.
+    """
+    sports = {ARTIFACTS[n].get("sport", "MLB") for n in names}
+    if not sports:
+        # No artifacts named at all: this repo's own baseball dashboard, which is the
+        # same default card_compose.html falls back to when a post sends no site line.
+        return "MLB"
+    return sports.pop() if len(sports) == 1 else "Sports"
+
+
+def site_line(names: list[str]) -> str:
+    """The footer line for a post built from these artifacts.
+
+    It names a sport, so an NFL post must not advertise MLB research.
+    """
+    return f"Access Premium {post_sport(names)} Research At Chase-Analytics.com"
+
+
 def fail(msg: str) -> None:
     print(f"[content-engine] FAILED: {msg}", file=sys.stderr)
     sys.exit(1)
 
 
 # ── slate ────────────────────────────────────────────────────────────────────
-def read_slate(day: str) -> list[dict]:
+def read_slate(day: str, required: bool = True) -> list[dict]:
+    """Today's MLB slate, or [] when it is not required and not usable.
+
+    The fail-closed check is the whole point of this function and stays exactly as
+    strict for every post that shows an MLB game. But a `compose` post can be built
+    entirely from another sport's board - the nfl-model and mlb-model decks are
+    slate-scope artifacts on their own hosted repos - and refusing one of those
+    because this repo's baseball pipeline has not run yet is a gate doing the
+    opposite of its job. Needing the slate is signalled by asking for --games.
+    """
     path = DATA / "today_matchups.csv"
+    rows: list[dict] = []
+    problem = None
     if not path.exists():
-        fail(f"{path} missing - run the pipeline first")
-    with open(path, newline="", encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-    if not rows:
-        fail("slate is empty")
-    dates = {r.get("Slate_Date", "").strip() for r in rows}
-    if dates != {day}:
-        fail(f"slate date(s) {sorted(dates)} != requested {day} (stale data?)")
+        problem = f"{path} missing - run the pipeline first"
+    else:
+        with open(path, newline="", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        if not rows:
+            problem = "slate is empty"
+        else:
+            dates = {r.get("Slate_Date", "").strip() for r in rows}
+            if dates != {day}:
+                problem = (f"slate date(s) {sorted(dates)} != requested {day} "
+                           f"(stale data?)")
+    if problem:
+        if required:
+            fail(problem)
+        print(f"[content-engine] NOTE MLB slate unusable ({problem}) - this post "
+              f"does not read it, continuing")
+        return []
     return rows
+
+
+def artifact_league(name: str) -> str:
+    """The schedule an artifact's --games names. Declared, never inferred."""
+    return ARTIFACTS[name].get("sport", "MLB").lower()
+
+
+def games_league(artifacts: str | None) -> str:
+    """Which sport's fixture list this post's --games refers to.
+
+    Decided by the matchup artifacts asked for, so that one flag can name a baseball
+    game or a football one without a second flag to say which. Slate-scope artifacts
+    do not vote: they need no game at all, and an NFL board stacked under an MLB
+    matchup card is a legal (if odd) post.
+    """
+    names = [ALIAS_INDEX.get(_norm_phrase(t.strip()))
+             for t in (artifacts or "").split(",") if t.strip()]
+    leagues = {artifact_league(n) for n in names
+               if n and ARTIFACTS[n]["scope"] == "game"}
+    if len(leagues) > 1:
+        fail("one post cannot mix " + " and ".join(sorted(leagues)).upper() +
+             " matchup artifacts - --games can only name one sport's fixtures")
+    return leagues.pop() if leagues else "mlb"
+
+
+def resolve_nfl_games(spec: str | None) -> list[dict]:
+    """`--games NE@SEA` against nfl-model's published board.
+
+    The board is read only to VALIDATE and to list what is available; the capture
+    itself matches on the card's data-key and fails closed if the fixture is not on
+    the page. So a missing or unclonable nfl-model is a warning, not a wall - the
+    hosted board is the source of truth, and this file is a local convenience that is
+    allowed to lag it, exactly like docs/index.html does.
+    """
+    tokens = [t.strip().upper() for t in (spec or "").split(",") if t.strip()]
+    for token in tokens:
+        if "@" not in token:
+            fail(f"--games entry {token!r} must look like AWAY@HOME")
+    fixtures: dict[str, dict] = {}
+    if NFL_BOARD_JSON.exists():
+        try:
+            board = json.loads(NFL_BOARD_JSON.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            print(f"[content-engine] NOTE {NFL_BOARD_JSON.name} unreadable ({exc}) - "
+                  f"not validating --games against it")
+            board = {}
+        for g in board.get("games") or []:
+            away, home = str(g.get("away", "")).upper(), str(g.get("home", "")).upper()
+            if away and home:
+                fixtures[f"{away}@{home}"] = {
+                    "Away": away, "Home": home,
+                    "Kickoff": g.get("kickoff", ""),
+                    "Week": board.get("week"), "Season": board.get("season"),
+                }
+    else:
+        print(f"[content-engine] NOTE {NFL_BOARD_JSON} not found - --games will be "
+              f"taken as given and checked against the live board at capture time")
+    picked = []
+    for token in tokens:
+        if fixtures and token not in fixtures:
+            fail(f"{token} is not on the published NFL board. "
+                 f"Available: {', '.join(sorted(fixtures))}")
+        away, _, home = token.partition("@")
+        picked.append(fixtures.get(token, {"Away": away, "Home": home}))
+    return picked
 
 
 def resolve_games(slate: list[dict], spec: str | None) -> list[dict]:
@@ -431,6 +1091,10 @@ ARTIFACT_DESC = {
     "bullpen_rev": "The same board swapped: home lineup vs the away bullpen.",
     "starters_rankings": "Every projected starter on the slate ranked by Pitch Score, "
                          "with K%/BB%/ERA/FIP, what they allow, and stuff flags.",
+    "lineup_vs_hand": "One lineup batter-by-batter against the hand the opposing "
+                      "starter throws - the left half of the pitcher board, captured "
+                      "on its own so it renders large enough for a phone.",
+    "lineup_vs_hand_rev": "The same for the other lineup.",
     "team_rankings": "All 30 clubs ranked in one category (scoring, winning, difficulty "
                      "or projection) over a chosen window.",
     "trends_heatmap": "League-wide trend heat map from the Research Lab.",
@@ -441,6 +1105,49 @@ ARTIFACT_DESC = {
     "model_leans": "The model's biggest priced gaps, ranked by edge, with the model "
                    "number and state.",
     "model_props": "Model pitcher-prop board.",
+    "nfl_power_top": "NFL power ratings, teams 1-16: opponent-adjusted Rating, the "
+                     "matchup model's Off and Def, and projected wins.",
+    "nfl_power_bottom": "The same board, teams 17-32 - slide two of the pair.",
+    "nfl_edges": "Every priced game ranked by how far the model sits from the "
+                 "DraftKings number, with both totals beside it. A map of where the "
+                 "model has an opinion - the board's own words - not a card.",
+    "nfl_offense": "Offensive units ranked by points per game above average, with "
+                   "EPA per play, first-down rate, explosive rate, sack rate and "
+                   "giveaway rate. Top 16; --rows-from 17 gives the other half.",
+    "nfl_defense": "The same for defensive units, where the rates record what "
+                   "OPPONENTS did: low EPA allowed and high sack rate are both good.",
+    "nfl_seeds_afc": "The AFC playoff field over 20,000 simulated seasons - playoff "
+                     "odds, division odds and top-seed odds, cut line drawn in.",
+    "nfl_seeds_nfc": "The same for the NFC.",
+    "nfl_divisions_afc": "All four AFC divisions: mean simulated record, division "
+                         "odds and playoff odds, with the division favourite named.",
+    "nfl_divisions_nfc": "The same four cards for the NFC.",
+    "nfl_gate_tiles": "The accountability strip: the model's margin error against the "
+                      "market's on the same games, how its own disagreements actually "
+                      "covered, and the sample size. Stacks under any NFL board.",
+    "nfl_authority": "The full authority section - what the numbers may be used for, "
+                     "the production gates met and unmet, and why this model is "
+                     "research only. Prose-heavy; give it a canvas of its own.",
+    "nfl_qb_props": "Next-game QB centres: attempts, completions, passing yards, "
+                    "touchdowns, interceptions and rushing yards, with a confidence "
+                    "grade. Ordered BY GAME, not ranked - the default 16 rows are the "
+                    "slate's first eight fixtures; --rows-from 17 walks the rest.",
+    "nfl_rb_props": "Next-game RB centres: carries, rushing yards, targets, "
+                    "receptions, receiving yards and touchdown rate.",
+    "nfl_wr_props": "Next-game WR centres: targets, receptions, receiving yards and "
+                    "touchdown rate.",
+    "nfl_te_props": "Next-game TE centres, same columns as the receivers.",
+    "nfl_k_props": "Next-game kicker centres: attempts, makes, extra points and "
+                   "projected kicking points.",
+    "nfl_scheme_matrix": "This week's coverage and pressure matrix - each offence "
+                         "against the man/zone mix, blitz rate and pressure rate it "
+                         "is about to face.",
+    "nfl_game": "One game's full board card: status, kickoff, both power ratings and "
+                "projected scores, head coaches, DraftKings' live spread/total/"
+                "moneyline, the model's own numbers beside them, and the derivation. "
+                "Tall - post it at 1080x1920, or two across with --layout row.",
+    "nfl_game_lines": "The same card cut to the two price blocks: what DraftKings is "
+                      "posting and what the model makes it. Proportioned for 4:5.",
 }
 
 ARTIFACT_ALIASES = {
@@ -456,6 +1163,10 @@ ARTIFACT_ALIASES = {
                 "hitter vs pitcher", "matchup history", "pitcher history"],
     "pitcher_rev": ["reverse pitcher splits", "other starter",
                     "home lineup vs starter", "pitcher splits reversed"],
+    "lineup_vs_hand": ["lineup vs hand", "away lineup card", "bats vs hand",
+                       "lineup splits card"],
+    "lineup_vs_hand_rev": ["reverse lineup vs hand", "home lineup card",
+                           "other lineup vs hand"],
     "bullpen": ["relief", "bullpen splits", "lineup vs relief", "pen", "relievers"],
     "bullpen_rev": ["reverse bullpen", "other bullpen", "bullpen reversed",
                     "home lineup vs relief"],
@@ -470,6 +1181,38 @@ ARTIFACT_ALIASES = {
                     "win probability", "projected totals", "model board"],
     "model_leans": ["leans", "biggest leans", "model leans", "edges", "biggest edges"],
     "model_props": ["model props", "pitcher props", "props"],
+    "nfl_power_top": ["nfl power ratings", "nfl top 16", "nfl rankings",
+                      "nfl power rankings", "power ratings top"],
+    "nfl_power_bottom": ["nfl bottom 16", "nfl power ratings bottom",
+                         "nfl rankings bottom", "power ratings bottom"],
+    "nfl_edges": ["nfl edges", "model vs market", "disagreements", "biggest gaps",
+                  "where the model differs", "nfl leans", "market gaps"],
+    "nfl_offense": ["nfl offense", "offense power ranking", "offensive rankings",
+                    "best offenses", "offense units"],
+    "nfl_defense": ["nfl defense", "defense power ranking", "defensive rankings",
+                    "best defenses", "defense units"],
+    "nfl_seeds_afc": ["afc playoff field", "afc seeds", "afc playoff odds", "afc"],
+    "nfl_seeds_nfc": ["nfc playoff field", "nfc seeds", "nfc playoff odds", "nfc"],
+    "nfl_divisions_afc": ["afc divisions", "afc division odds", "afc division winners"],
+    "nfl_divisions_nfc": ["nfc divisions", "nfc division odds", "nfc division winners"],
+    "nfl_gate_tiles": ["accountability", "track record", "measured against the market",
+                       "model accuracy", "nfl tiles", "receipts"],
+    "nfl_authority": ["authority", "research only", "gates", "what these numbers mean",
+                      "why not a bet"],
+    "nfl_qb_props": ["qb props", "quarterback projections", "qb projections",
+                     "passing props"],
+    "nfl_rb_props": ["rb props", "running back projections", "rb projections",
+                     "rushing props"],
+    "nfl_wr_props": ["wr props", "receiver projections", "wr projections",
+                     "receiving props", "wideouts"],
+    "nfl_te_props": ["te props", "tight end projections", "te projections"],
+    "nfl_k_props": ["kicker props", "kicker projections", "k props", "kickers"],
+    "nfl_scheme_matrix": ["scheme", "coverage matrix", "response matrix",
+                          "scheme intelligence", "coverage and pressure",
+                          "matchup matrix"],
+    "nfl_game": ["nfl game card", "nfl matchup", "game card nfl", "nfl card"],
+    "nfl_game_lines": ["nfl lines", "market vs model", "nfl price card",
+                       "line card", "nfl spread card"],
 }
 
 
@@ -615,6 +1358,90 @@ def register_ad_hoc(specs: list[str] | None) -> list[str]:
     return names
 
 
+def write_video_directive(day: str, stem: str, payload: dict,
+                          platform: str) -> Path | None:
+    """Save this post's captures as files and emit the Remotion props that animate them.
+
+    This is the bridge between the two engines, and it exists because a board that has
+    already been captured for a still post is the SAME board the motion version needs.
+    Rebuilding these tables in React would create a second source of truth that drifts
+    from the site - the exact failure the still engine was designed to make impossible
+    (see docs/CONTENT_ENGINE_SPEC.md section 1). So the video engine consumes the
+    capture rather than reimplementing it, and every artifact registered here becomes
+    animatable for free, including ones registered ad-hoc with --capture.
+
+    The captures are written at their full 3x pixel size and the props carry their
+    NATIVE (CSS) dimensions alongside, because that ratio is what lets the composition
+    lay them out in the same units the still composer uses while still having the
+    source pixels to scale up on a 1080-wide vertical frame.
+    """
+    artifacts = payload.get("artifacts") or []
+    if not artifacts:
+        return None
+    sport = str(payload.get("sport") or "MLB")
+    league = "nfl" if sport.upper() == "NFL" else "mlb"
+    shots = VIDEO / "public" / "captures" / day
+    shots.mkdir(parents=True, exist_ok=True)
+    captures = []
+    for i, art in enumerate(artifacts, start=1):
+        src = str(art.get("src") or "")
+        if not src.startswith("data:image/png;base64,"):
+            continue
+        raw = base64.b64decode(src.split(",", 1)[1])
+        name = f"{stem}-{i}.png"
+        (shots / name).write_bytes(raw)
+        with Image.open(shots / name) as im:
+            px_w, px_h = im.size
+        captures.append({
+            # staticFile() resolves against video/public, so the prop is the path
+            # from there - not from the repo root and not an absolute path.
+            "src": f"captures/{day}/{name}",
+            "width": round(px_w / CAPTURE_DPR),
+            "height": round(px_h / CAPTURE_DPR),
+            "caption": art.get("caption") or "",
+        })
+    if not captures:
+        return None
+    props = {
+        "platform": platform,
+        "league": league,
+        "eyebrow": payload.get("eyebrow") or "",
+        "title": payload.get("title") or "",
+        "sub": payload.get("sub") or "",
+        "take": payload.get("take") or "",
+        "notes": payload.get("notes") or [],
+        # Only `compose` sets `site`; for every other command card_compose.html falls
+        # back to the MLB line, so the motion cut has to say the same thing rather
+        # than shipping with no watermark at all.
+        "footer": payload.get("site") or site_line([]),
+        "captures": captures,
+    }
+    out = VIDEO / "props" / league / f"{stem}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(props, indent=2), encoding="utf-8")
+    rel = out.relative_to(VIDEO).as_posix()
+    print(f"[content-engine] video directive -> {out}")
+    # What the composition can do with this, on the width term alone. The height term
+    # needs the platform safe areas, and those live in exactly one place - SAFE in
+    # video/src/graphics/ShowTemplate.tsx - so they are deliberately NOT restated here:
+    # a second copy would be a table to forget to update, which is the drift this whole
+    # design exists to prevent. The real zoom is therefore this or lower, never higher.
+    widest = max(c["width"] for c in captures)
+    zoom = round((VIDEO_FRAME_W - 2 * VIDEO_BOARD_PAD) / widest, 2)
+    if zoom < 1.0:
+        print(f"[content-engine] NOTE this board is {widest}px wide, so a "
+              f"{VIDEO_FRAME_W}px vertical frame renders it at {zoom:.0%} or less - "
+              f"smaller than the site's own type, on a graphic that is WATCHED rather "
+              f"than studied. Re-run with fewer columns (--drop-cols) or a narrower "
+              f"capture (--capture-width) before cutting this into a video.")
+    else:
+        print(f"[content-engine]   board {widest}x{max(c['height'] for c in captures)} "
+              f"native - up to {zoom:.2f}x on width; height may reduce it further.")
+    print(f"[content-engine]   cd video && npx remotion render BoardMotion "
+          f"out/{stem}-{platform}.mov --props={rel}")
+    return out
+
+
 def check_text_budgets(payload: dict) -> None:
     """Warn on overlong copy rather than silently reflowing the layout."""
     for slot, key in (("eyebrow", "eyebrow"), ("headline", "title"),
@@ -712,12 +1539,20 @@ def free_port() -> int:
 class Capturer:
     """Screenshots dashboard components as base64 PNGs, memoized per run."""
 
-    def __init__(self, browser, port: int, verbose: bool = True):
+    def __init__(self, browser, port: int, verbose: bool = True,
+                 viewport_w: int | None = None, drop_cols: list[str] | None = None):
         self.browser = browser
         self.port = port
         self.verbose = verbose
         self.cache: dict[str, str] = {}
         self.image_counts: dict[str, int] = {}
+        # The site's tables are FLUID: the team board lays out 1350px wide at a 1600px
+        # viewport and 730px at 780px, at the same font size. Since the composer can
+        # only fit ~1040 CSS px across, a wide capture is scaled DOWN and the numbers
+        # end up smaller than the source - the single biggest driver of an unreadable
+        # post. Capturing narrow is therefore how type gets bigger, not a canvas change.
+        self.viewport_w = viewport_w
+        self.drop_cols = drop_cols or []
 
     def url(self, spec: dict, game: dict | None, extra: dict | None) -> str:
         params = dict(spec.get("params") or {})
@@ -734,16 +1569,19 @@ class Capturer:
         return base + joiner + query + frag
 
     def grab(self, name: str, game: dict | None = None,
-             extra: dict | None = None, rows: int | None = None) -> str:
+             extra: dict | None = None, rows: int | None = None,
+             rows_from: int | None = None) -> str:
         spec = ARTIFACTS[name]
         # Time is part of the identity: two halves of a doubleheader share Away/Home and
         # would otherwise reuse each other's captured pixels.
+        vw = int(self.viewport_w or spec.get("viewport_w") or CAPTURE_VIEWPORT_W)
         key = json.dumps([name, game and game["Away"], game and game["Home"],
-                          game and game.get("Time"), extra, rows], sort_keys=True)
+                          game and game.get("Time"), extra, rows, rows_from, vw,
+                          self.drop_cols], sort_keys=True)
         if key in self.cache:
             return self.cache[key]
 
-        page = self.browser.new_page(viewport={"width": 1600, "height": 1400},
+        page = self.browser.new_page(viewport={"width": vw, "height": 1400},
                                      device_scale_factor=CAPTURE_DPR)
         try:
             page.goto(self.url(spec, game, extra), wait_until="domcontentloaded",
@@ -767,7 +1605,9 @@ class Capturer:
                     fail(f"artifact {name!r} never rendered ({selector} not found on "
                          f"{self.url(spec, game, extra)})")
             # These views re-render as sheet data lands, which detaches elements
-            # mid-capture. Wait until the component stops changing before shooting.
+            # mid-capture. Wait for the artifact's own data, then until the component
+            # stops changing, before shooting.
+            self._wait_ready(page, spec)
             self._wait_stable(page, selector)
             # Resolve WHICH element to shoot before anything is hidden: the disambiguating
             # text ("LINEUP & PITCHER SPLITS") often lives in the very header we strip.
@@ -777,14 +1617,25 @@ class Capturer:
                      f"{spec.get('contains') or 'this game'} on "
                      f"{self.url(spec, game, extra)}")
             page.add_style_tag(content="*{animation:none!important;transition:none!important}")
+            page.add_style_tag(content=GLOBAL_STYLE)
             # Hiding via a stylesheet, not inline styles: a late re-render replaces the
             # nodes (and would resurrect an inline-hidden element), but the rule persists.
             hides = GLOBAL_HIDE + (spec.get("hide") or [])
             page.add_style_tag(content=", ".join(hides) + "{display:none!important}")
+            self._drop_empty(page, spec, selector, target_index)
             if spec.get("unclip"):
                 page.add_style_tag(content=", ".join(spec["unclip"]) + """{
                     max-height:none!important; height:auto!important;
                     overflow:visible!important}""")
+            if spec.get("fitwidth"):
+                # Horizontal twin of `unclip`. A table with a min-width wider than its
+                # scroll wrapper is merely scrollable on the site, but a screenshot cuts
+                # the last column clean off - the lineup tables sit at min-width 520px
+                # inside a 505px wrap and lost their SLG values. Releasing the floor and
+                # letting the table fill its wrapper compresses the columns by ~3%.
+                page.add_style_tag(
+                    content=", ".join(spec["fitwidth"]) +
+                            "{min-width:0!important; width:100%!important}")
             if spec.get("open_details"):
                 page.evaluate(
                     "() => document.querySelectorAll('details')"
@@ -797,16 +1648,129 @@ class Capturer:
                     content=", ".join(spec["force_show"]) +
                             "{display:block!important;visibility:visible!important}")
                 page.wait_for_timeout(1200)
+            if spec.get("style"):
+                # Free-form CSS for an artifact that needs one specific fix (e.g. a grid
+                # item that must not stretch). Injected as a stylesheet like every other
+                # rule here, so a late re-render cannot drop it.
+                page.add_style_tag(content=spec["style"])
             if spec.get("unstick"):
                 page.add_style_tag(
                     content=", ".join(spec["unstick"]) + "{position:static!important}")
+            drops = self.drop_cols or spec.get("drop_cols") or []
+            if drops:
+                # Trim columns by their header text. Narrowing the board is what buys
+                # bigger type: the composer's zoom is capped by the artifact's own
+                # width, so every column removed is type size gained.
+                found = page.evaluate(
+                    r"""([sel, i, labels]) => {
+                        const t = document.querySelectorAll(sel)[i];
+                        if (!t) return {};
+                        // Last header row: grouped tables carry their real labels there.
+                        const ths = [...t.querySelectorAll('thead tr:last-child th')];
+                        const hit = {};
+                        labels.forEach(raw => {
+                          const want = raw.trim().toUpperCase();
+                          ths.forEach((th, n) => {
+                            const txt = th.textContent.replace(/\s+/g, ' ')
+                                          .trim().toUpperCase();
+                            // Headers carry a sort arrow, so match on the prefix.
+                            if (txt === want || txt.startsWith(want)) {
+                              (hit[raw] = hit[raw] || []).push(n + 1);
+                            }
+                          });
+                        });
+                        return hit;
+                    }""", [selector, target_index, drops])
+                missing = [d for d in drops if not found.get(d)]
+                if missing:
+                    fail(f"--drop-cols: no column headed {missing!r} in {name!r} "
+                         f"(a typo would otherwise ship the untrimmed board)")
+                idx = sorted({n for hits in found.values() for n in hits})
+                page.add_style_tag(content=", ".join(
+                    f"{selector} tr > *:nth-child({n})" for n in idx) +
+                    "{display:none!important}")
+                page.wait_for_timeout(400)
+
             row_cap = rows if rows is not None else spec.get("default_rows")
             if row_cap:
                 page.add_style_tag(
                     content=f"{selector} tbody tr:nth-child(n+{int(row_cap) + 1})"
                             "{display:none!important}")
-            if spec.get("unclip") or row_cap:
+            # The twin of the cap, and the reason a 32-row board can ship as two
+            # slides: `rows_from` hides everything ABOVE the cut. The site's own rank
+            # column is left untouched, so slide two starts at 17 and reads as a
+            # continuation rather than a second, separate ranking.
+            row_from = rows_from if rows_from is not None else spec.get("rows_from")
+            if row_from:
+                page.add_style_tag(
+                    content=f"{selector} tbody tr:nth-child(-n+{int(row_from) - 1})"
+                            "{display:none!important}")
+            if spec.get("unclip") or row_cap or row_from:
                 page.wait_for_timeout(700)
+
+            # Horizontal bleed guard - the twin of `unclip`'s vertical one. `fitwidth`
+            # (width:100%) CANNOT take a table below its min-content width, so a narrow
+            # capture can leave the board wider than the wrapper that PAINTS its
+            # background: the element screenshot then shows the page behind it as a seam
+            # down the right edge (the starters board bled 77px this way, dragging a
+            # lighter band through the OOR column). Widen the viewport until the painted
+            # wrapper covers the artifact. The wrapper is fluid, so this settles in one
+            # pass and still leaves the board near min-content - far narrower, and so
+            # far larger in the post, than the default 1600px capture.
+            for _ in range(3):
+                over = page.evaluate(
+                    r"""([sel, i]) => {
+                        const el = document.querySelectorAll(sel)[i];
+                        if (!el) return 0;
+                        const w = el.getBoundingClientRect().width;
+                        // The first ancestor that actually paints is the one whose
+                        // absence shows up as a bleed.
+                        let p = el.parentElement;
+                        while (p && p.tagName !== 'BODY') {
+                            const bg = getComputedStyle(p).backgroundColor;
+                            if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+                                return Math.ceil(w - p.getBoundingClientRect().width);
+                            }
+                            p = p.parentElement;
+                        }
+                        return 0;
+                    }""", [selector, target_index])
+                if over <= 2:
+                    break
+                vw += over + 24
+                page.set_viewport_size({"width": vw, "height": 1400})
+                page.wait_for_timeout(700)
+                if self.verbose:
+                    print(f"[content-engine]   {name}: bleeding {over}px past its own "
+                          f"card - widened capture to {vw}px")
+
+            # Headshots and team logos are marked loading="lazy", so they do not even
+            # START fetching until the element is scrolled into view - and the shot
+            # follows ~500ms later. A slow headshot therefore shipped as an empty circle
+            # where the starter's face belongs. Force them eager here, then wait for
+            # every one to settle before shooting.
+            page.evaluate(
+                r"""([sel, i]) => {
+                    const el = document.querySelectorAll(sel)[i];
+                    if (!el) return;
+                    el.querySelectorAll('img').forEach(g => {
+                        g.loading = 'eager';
+                        g.decoding = 'sync';
+                        // Re-assigning the src kicks a lazy image that has not been
+                        // asked to load yet; harmless for one already in flight.
+                        if (!g.complete && g.src) { const s = g.src; g.src = s; }
+                    });
+                }""", [selector, target_index])
+            try:
+                page.wait_for_function(
+                    r"""([sel, i]) => {
+                        const el = document.querySelectorAll(sel)[i];
+                        if (!el) return false;
+                        return [...el.querySelectorAll('img')].every(g => g.complete);
+                    }""", arg=[selector, target_index], timeout=15000)
+            except Exception:
+                print(f"[content-engine]   NOTE {name}: image(s) still loading after "
+                      f"15s - shooting anyway")
 
             # Pitcher headshots and team logos are remote images; a post that ships a
             # broken image is worse than one that waits. Count them inside the target.
@@ -871,16 +1835,87 @@ class Capturer:
                 pass  # the pane may already be mounted
 
     @staticmethod
+    def _drop_empty(page, spec: dict, selector: str, index: int) -> None:
+        """Remove sub-blocks of the artifact that carry no data at all.
+
+        A panel rendered as nothing but em dashes tells a reader nothing and looks
+        like a rendering fault in a finished post. This is not editorial trimming:
+        a block only qualifies when it has data cells and every one of them is
+        missing. Self-correcting - the moment the upstream data lands, the block has
+        numbers and is kept.
+
+        Only `td` cells are examined. Judging the whole block by its text was wrong:
+        the window labels down the side of a strip (L7, L14, L30) carry digits of
+        their own, so a fully em-dashed panel still looked populated.
+
+        Live example: `Batter_Splits_Home` / `Batter_Splits_Away` publish header-only,
+        so the offensive board's third strip (TEAM ON ROAD / TEAM AT HOME) renders 16
+        em dashes per side.
+        """
+        sels = spec.get("drop_if_empty") or []
+        if not sels:
+            return
+        dropped = page.evaluate(
+            """([sel, i, subs]) => {
+                const root = document.querySelectorAll(sel)[i];
+                if (!root) return 0;
+                let n = 0;
+                subs.forEach(s => root.querySelectorAll(s).forEach(el => {
+                    const cells = [...el.querySelectorAll('td')];
+                    if (!cells.length) return;
+                    if (cells.some(c => /[0-9]/.test(c.textContent || ''))) return;
+                    el.style.display = 'none';
+                    n++;
+                }));
+                return n;
+            }""", [selector, index, sels])
+        if dropped:
+            print(f"[content-engine]   dropped {dropped} empty block(s) from "
+                  f"{spec.get('label', 'artifact')} (no data upstream)")
+
+    @staticmethod
+    def _wait_ready(page, spec: dict, tries: int = 30) -> None:
+        """Poll an artifact's own data-readiness predicate before measuring stability.
+
+        Stability alone is not enough. These components mount a skeleton the moment
+        the slate lands - the matchup card paints its pitcher panels with em-dash
+        placeholders for Pitch Score / K% / BB% / ERA and then sits perfectly still
+        for several seconds while the profile sheet is still in flight. A capture
+        taken in that window looks finished and ships four empty stat slots, which
+        is exactly the "wrong graphic" the engine is supposed to refuse. `ready` is a
+        JS expression that goes true only once the data the artifact displays has
+        actually arrived.
+        """
+        expr = spec.get("ready")
+        if not expr:
+            return
+        for _ in range(tries):
+            try:
+                if page.evaluate(f"() => !!({expr})"):
+                    return
+            except Exception:
+                pass  # app globals not installed yet
+            page.wait_for_timeout(700)
+        print(f"[content-engine]   WARNING: readiness check never passed "
+              f"({expr[:60]}...) - the artifact may be missing values")
+
+    @staticmethod
     def _wait_stable(page, selector: str, tries: int = 14) -> None:
-        """Poll until element count + rendered text stop changing between samples."""
+        """Poll until element count + rendered text stop changing between samples.
+
+        Two consecutive identical samples are required, not one: a single match can
+        land inside a lull between two render passes (data arrives in stages), and
+        that produced captures of half-populated components.
+        """
         probe = """sel => {
             const els = [...document.querySelectorAll(sel)];
             return els.length + ':' + els.reduce((n, e) => n + (e.innerText || '').length, 0);
         }"""
-        last = None
+        last, matches = None, 0
         for _ in range(tries):
             now = page.evaluate(probe, selector)
-            if now == last:
+            matches = matches + 1 if now == last else 0
+            if matches >= 2:
                 return
             last = now
             page.wait_for_timeout(700)
@@ -898,6 +1933,18 @@ class Capturer:
                       return t.includes(a) && t.includes(h);
                     });
                 }""", [selector, game["Away"].upper(), game["Home"].upper()])
+            return None if index is None or index < 0 else index
+        if spec.get("match_data") and game is not None:
+            # Match the element's own data attribute, not its text. The NFL board's
+            # game cards are keyed `2026_01_NE_SEA`, and an innerText search for "NE"
+            # would hit every card carrying the words MONITOR or MONEYLINE.
+            want = f"_{game['Away'].upper()}_{game['Home'].upper()}"
+            index = page.evaluate(
+                """([sel, attr, suffix]) => {
+                    const els = [...document.querySelectorAll(sel)];
+                    return els.findIndex(el =>
+                      (el.dataset[attr] || '').toUpperCase().endsWith(suffix));
+                }""", [selector, spec["match_data"], want])
             return None if index is None or index < 0 else index
         if spec.get("contains"):
             index = page.evaluate(
@@ -1093,7 +2140,11 @@ def cmd_deep(a, slate, games, cap, ctx):
             "notes": a.note or [],
             "tight": len(artifacts) >= 4,
         }
-        out.append((f"deep_{g['Away']}{g['Home']}", payload))
+        # The chosen artifacts belong in the name. Two `deep` runs on the same game -
+        # the card, then the offensive board - otherwise share one stem, and because a
+        # canvas step-down deletes the file it is replacing, the second run silently
+        # destroyed the first run's post. Same convention `compose` already uses.
+        out.append((f"deep_{g['Away']}{g['Home']}_" + "_".join(chosen)[:40], payload))
     return out
 
 
@@ -1177,8 +2228,14 @@ def cmd_rankings(a, slate, games, cap, ctx):
         payload = {
             "meta": ctx["date_label"],
             "eyebrow": a.eyebrow or "Unit Rankings",
-            "title": a.headline or "Today's Starters, Best To Worst",
-            "sub": a.sub or "Pitching Score blends K%, BB%, ERA, FIP and what each arm allows.",
+            "title": a.headline or (f"Today's Top {a.rows} Starters" if a.rows
+                                else "Today's Starters, Best To Worst"),
+            # docs/ECOSYSTEM.md: PitchScore = 0.40*K% + 0.35*inv(BB%) + 0.25*inv(HR/9).
+            # The old deck claimed ERA, FIP "and what each arm allows" were in the
+            # blend. They are columns on the board, not inputs to the score - the post
+            # was describing the metric wrongly in the site's own voice.
+            "sub": a.sub or ("Pitch Score: 40% strikeout rate, 35% walk avoidance, "
+                             "25% home run suppression."),
             "layout": "stack",
             "artifacts": artifacts,
             "take": a.take or "",
@@ -1199,6 +2256,7 @@ def cmd_rankings(a, slate, games, cap, ctx):
     src = cap.grab("team_rankings", extra={"family": key, "window": window},
                    rows=a.rows)
     label = TEAM_FAMILIES[family]
+    scope = (f"Top {a.rows} lineups" if a.rows and a.rows < 30 else "All 30 lineups")
     team_slots = [{"src": src, "caption": f"{label} · {WINDOWS[window]}",
                    "framed": True}]
     apply_captions(team_slots, a.captions)
@@ -1206,7 +2264,9 @@ def cmd_rankings(a, slate, games, cap, ctx):
         "meta": ctx["date_label"],
         "eyebrow": a.eyebrow or "Team Rankings",
         "title": a.headline or f"{label} Rankings",
-        "sub": a.sub or f"All 30 lineups · {WINDOWS[window]}",
+        # The deck must never contradict the artifact: a --rows cut shows fewer than
+        # the full board, so it cannot be described as all 30 (same rule as first pitch).
+        "sub": a.sub or f"{scope} · {WINDOWS[window]}",
         "layout": "stack",
         "artifacts": team_slots,
         "take": a.take or "",
@@ -1230,10 +2290,20 @@ def cmd_compose(a, slate, games, cap, ctx):
     if not names:
         fail("compose needs --artifacts and/or --capture. Registered slate artifacts: "
              + ", ".join(n for n, sp in ARTIFACTS.items() if sp["scope"] == "slate"))
-    game = games[0] if (games and any(
-        ARTIFACTS[n]["scope"] == "game" for n in names)) else None
+    # Silently defaulting to the first game on the slate was a trap: `compose
+    # --artifacts card` looked like it worked and shipped whichever matchup happened
+    # to be listed first. Name the game or do not ask for a matchup artifact.
+    wants_game = [n for n in names if ARTIFACTS[n]["scope"] == "game"]
+    if wants_game and not games:
+        fail(f"{', '.join(wants_game)} is a matchup artifact - "
+             f"pass --games AWAY@HOME to say which game")
+    game = games[0] if wants_game else None
+    # --rows / --rows-from override the artifact's own window, which is what lets one
+    # registry entry ship a 32-row board as two slides: `--rows 16` then
+    # `--rows-from 17`, with the site's own rank column carried through both.
     artifacts = [{
-        "src": cap.grab(n, game if ARTIFACTS[n]["scope"] == "game" else None),
+        "src": cap.grab(n, game if ARTIFACTS[n]["scope"] == "game" else None,
+                        rows=a.rows, rows_from=a.rows_from),
         "caption": artifact_caption(n, game),
         "framed": ARTIFACTS[n].get("framed", True),
     } for n in names]
@@ -1248,6 +2318,10 @@ def cmd_compose(a, slate, games, cap, ctx):
         "take": a.take or "",
         "cta": a.cta or "",
         "notes": a.note or [],
+        "site": site_line(names),
+        # Carried so the video directive can name the league without re-deriving it
+        # from the artifact list, and so the still and the motion cut agree.
+        "sport": post_sport(names),
         "tight": len(artifacts) >= 3,
     }
     return [("compose_" + "_".join(names)[:40], payload)]
@@ -1275,7 +2349,12 @@ def main() -> None:
     ap.add_argument("--family", help="rankings/team: scoring|winning|difficulty|projection")
     ap.add_argument("--window", help="rankings/team: YTD|L30|L14|L7")
     ap.add_argument("--rows", type=int,
-                    help="rankings: cap table rows (starters default 14, team all 30)")
+                    help="cap table rows - rankings (starters default 14, team all 30) "
+                         "and compose (overrides the artifact's own row cap)")
+    ap.add_argument("--rows-from", type=int, metavar="N", dest="rows_from",
+                    help="compose: hide rows ABOVE N, so a long board ships as two "
+                         "slides. '--rows 16' then '--rows-from 17' splits a 32-row "
+                         "ranking in half with the site's own rank numbers intact.")
     ap.add_argument("--per-post", type=int, default=6,
                     help="artifacts per image - full-card banners (default 6), or "
                          "preview matchup cards (default 3, which is the legible limit "
@@ -1301,12 +2380,41 @@ def main() -> None:
                          "Repeat the flag instead when a label itself contains a comma "
                          "- each occurrence is then one slot, verbatim. Empty entry "
                          "keeps the default; prefix with = to replace it outright.")
+    ap.add_argument("--capture-width", type=int, default=None, metavar="PX",
+                    help="viewport width the artifact is captured at (default 1600, or "
+                         "the artifact's own). The site's tables are fluid, so a "
+                         "NARROWER capture makes the numbers BIGGER in the post - the "
+                         "composer scales one artifact to ~1040px either way. Do not go "
+                         "below the table's own min-content width or the page behind it "
+                         "bleeds into the shot.")
+    ap.add_argument("--drop-cols", metavar="LABELS",
+                    help="comma-separated table column headers to remove before "
+                         "capture, e.g. 'OSI Allowed,ABQ Allowed,OOR'. Fewer columns "
+                         "means a narrower board and bigger type.")
+    ap.add_argument("--heading-scale", type=float, default=1.0, metavar="X",
+                    help="multiply the chrome heading type (eyebrow, headline, deck) "
+                         "- 1.0 is the house size, 1.15 reads a little bigger. Larger "
+                         "headings take room from the artifacts, so a big lede can "
+                         "trip the legibility rescue onto a taller canvas.")
+    ap.add_argument("--video", action="store_true",
+                    help="also emit the motion version of this post: save its captures "
+                         "into video/public/captures/ and write the Remotion props that "
+                         "animate them, then print the render command. The video reuses "
+                         "the SAME capture as the still, so the two cannot drift.")
+    ap.add_argument("--video-platform", default="reels", dest="video_platform",
+                    choices=["reels", "reels-ads", "tiktok", "shorts", "youtube"],
+                    help="which platform's UI safe areas the motion version keeps clear "
+                         "of (default reels). Not cosmetic: the caption and like/share "
+                         "rails cover real pixels. See video/src/graphics/ShowTemplate.")
     ap.add_argument("--size", default=None, choices=SIZES,
                     help="default 1080x1350; multi-card previews auto-pick 1080x1080")
     ap.add_argument("--date", default=date.today().isoformat())
     a = ap.parse_args()
     # Distinguish "left at the default" from "asked for 6", so preview can pick its own.
     a.per_post_explicit = any(arg.startswith("--per-post") for arg in sys.argv[1:])
+
+    if not 0.7 <= a.heading_scale <= 1.6:
+        fail(f"--heading-scale must be between 0.7 and 1.6 (got {a.heading_scale})")
 
     if a.command == "keys":
         print_key()
@@ -1317,10 +2425,23 @@ def main() -> None:
         date_label = datetime.strptime(day, "%Y-%m-%d").strftime("%B %-d, %Y")
     except ValueError:
         date_label = datetime.strptime(day, "%Y-%m-%d").strftime("%B %d, %Y").replace(" 0", " ")
-    slate = read_slate(day)
-    games = resolve_games(slate, a.games)
-    if not games:
-        fail("no games selected")
+    # Which sport's fixtures does --games name? Only `compose` can reach another
+    # sport's board, so every other command is baseball by definition.
+    league = games_league(a.artifacts) if a.command == "compose" else "mlb"
+    if league != "mlb":
+        # An NFL post reads nothing from this repo's baseball pipeline, so a stale or
+        # missing MLB slate must not block it.
+        slate = []
+        games = resolve_nfl_games(a.games)
+    else:
+        # Only a post that shows an MLB game needs the MLB slate; --games is how the
+        # caller says so. Everything except `compose` is a matchup command by
+        # definition.
+        needs_slate = a.command != "compose" or bool(a.games)
+        slate = read_slate(day, required=needs_slate)
+        games = resolve_games(slate, a.games) if slate else []
+        if needs_slate and not games:
+            fail("no games selected")
 
     out_dir = OUT_ROOT / day
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1337,10 +2458,14 @@ def main() -> None:
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            cap = Capturer(browser, port)
+            cap = Capturer(browser, port, viewport_w=a.capture_width,
+                           drop_cols=[c.strip() for c in (a.drop_cols or "").split(",")
+                                      if c.strip()])
             posts = COMMANDS[a.command](a, slate, games, cap, ctx)
             size = ctx["size"]  # a command may have chosen a better canvas
             for stem, payload in posts:
+                if a.heading_scale != 1.0:
+                    payload = {**payload, "headingScale": a.heading_scale}
                 check_text_budgets(payload)
                 out_path = out_dir / f"{stem}_{size}.png"
                 scale, slack = compose(browser, port, out_path, size, payload)
@@ -1379,6 +2504,11 @@ def main() -> None:
                     print(f"[content-engine] NOTE {out_path.name}: artifacts at "
                           f"{scale:.0%} of captured size - consider {advice}.")
                 written.append((out_path.name, payload))
+                # After the still is on disk, not before: a post that failed its
+                # legibility or slack rescue should not leave a video directive
+                # pointing at captures the still engine rejected.
+                if a.video:
+                    write_video_directive(day, stem, payload, a.video_platform)
             browser.close()
     finally:
         server.terminate()

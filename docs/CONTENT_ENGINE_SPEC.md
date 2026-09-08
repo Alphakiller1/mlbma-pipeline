@@ -49,7 +49,7 @@ This is the part that governs whether a post looks composed or assembled.
 
 ### 3.1 Native size
 
-Artifacts are captured at `CAPTURE_DPR = 2`. An artifact's **native size** is its CSS
+Artifacts are captured at `CAPTURE_DPR = 3`. An artifact's **native size** is its CSS
 size on the source page: `bitmap ÷ CAPTURE_DPR`. All geometry below is in native units,
 never bitmap units. (Measuring against the bitmap was a real defect: it reported half
 the true scale and warned about perfectly legible posts.)
@@ -64,7 +64,7 @@ stack:  Z = min( MAX_ZOOM,  availW / max(nativeW),
 row:    Z = min( MAX_ZOOM,  (availW − gaps) / Σ nativeW,
                  (availH − captionChrome) / max(nativeH) )
 
-MAX_ZOOM = CAPTURE_DPR  (2.0 — the point where a source pixel per output pixel runs out)
+MAX_ZOOM = CAPTURE_DPR  (3 — the point where a source pixel per output pixel runs out)
 ```
 
 **Why shared, and not "fit each artifact to the column".** Fitting each artifact to the
@@ -72,6 +72,16 @@ column width means a 434px matchup card is scaled 2.27× while an 1140px stats t
 scaled 0.86× — a **2.6× difference in rendered type size inside one image**. Shared zoom
 makes 11px type on the source render at the same size everywhere. Widths then differ;
 that is the correct trade, and centring keeps it symmetric.
+
+**Which term binds decides what `viewport_w` is for.** The site's tables are fluid, so
+the usual advice is "capture narrower, get bigger type" — true only while the `availW`
+term is the smaller one. A tall artifact (a 16-row board is ~758px, essentially the whole
+vertical budget of a 1080×1350 post) is bound by the `availH` term instead, and native
+height does not move with capture width. Capture such a board narrow and the type comes
+out **exactly the same size**, just floating inset in the canvas. There, `viewport_w`
+should be set so the board's own width lands on the artifact column (984px at 1080 wide):
+same type, no dead margin. Check which term binds before tuning a width — `viewport_w`
+is a two-purpose lever and picking the wrong purpose wastes the post.
 
 ### 3.3 Width classes
 
@@ -170,6 +180,14 @@ Six slots, in reading order:
 Over budget is a warning, not an error — the engine tells you a slot will wrap and
 squeeze the artifacts, and lets you decide.
 
+**Heading size.** `--heading-scale X` (0.7–1.6, default 1.0) multiplies the chrome
+heading block — eyebrow, headline, deck — together. The sizes are declared as
+`calc(px * var(--cc-head))` in the compose route, so one property moves them at every
+canvas size instead of a size variant overriding a scaled title. The take, notes and
+footer stay at reading size: this dial is for the heading, not the copy. Scaling up
+takes room from the artifacts, so a large lede on a stacked post can trip the
+legibility rescue onto a taller canvas.
+
 ### 6.1 The take — where perspective goes
 
 `--take` is the only slot styled as opinion: italic, set off by a violet rule, visually
@@ -239,6 +257,30 @@ works everywhere immediately.
 | `model_slate` | mlb-model slate projections panel | 862×624 | slate |
 | `model_leans` | mlb-model biggest-leans panel | 496×464 | slate |
 | `model_props` | mlb-model props view | var | slate |
+| `nfl_power_top` | nfl-model `#ratings table.pr`, rows 1–16 | 984×758 | slate |
+| `nfl_power_bottom` | the same board, rows 17–32 | 984×757 | slate |
+| `nfl_edges` | nfl-model `#disagreements`, all priced games | 982×726 | slate |
+| `nfl_offense` | nfl-model `#units` offence block, rows 1–16 | 984×686 | slate |
+| `nfl_defense` | the same section's defence block | 984×686 | slate |
+| `nfl_seeds_afc` / `nfl_seeds_nfc` | nfl-model `#seeds` conference field | 984×686 | slate |
+| `nfl_divisions_afc` / `nfl_divisions_nfc` | `#divisions`, four cards | 772×518 | slate |
+| `nfl_gate_tiles` | nfl-model `#authority .tiles` | 984×131 | slate |
+| `nfl_authority` | the whole `#authority` section | 984×956 | slate |
+| `nfl_qb_props` … `nfl_k_props` | nfl-model `#players`, rows 1–16 | 984×738 | slate |
+| `nfl_scheme_matrix` | nfl-model `#scheme` response matrix, rows 1–16 | 984×769 | slate |
+| `nfl_game` | nfl-model `#board .bd-card` | 485×890 | game |
+| `nfl_game_lines` | the same card, price blocks only | 485×463 | game |
+
+Every native size above was measured on the hosted board, not estimated. The NFL
+artifacts capture **the deployed page**, not nfl-model's committed `docs/index.html`:
+Pages publishes that repo from its build workflow, so the two are allowed to differ,
+and the live board is already further ahead — `#players` and `#scheme` exist only
+there. Capture what the post's CTA points at.
+
+`--games` for `nfl_game` / `nfl_game_lines` resolves against nfl-model's published
+`board.json`, never the baseball slate, and the sport is read from the artifact's own
+`sport` key rather than inferred: MLB and NFL share sixteen abbreviations, so `SEA@SF`
+is a real fixture in both and a guess would silently pick the wrong one.
 
 Pitcher headshots and team logos are remote images inside `card`, `pitcher*` and the
 compare banner. The engine counts broken images inside every captured element and warns
@@ -266,12 +308,47 @@ hard-coded into the layout.** Two ways to reach new content:
     "open_details": True,           # expand collapsed <details>
     "selector": ".terminal-panel",  # what to shoot
     "contains": "PROJ TOT",         # disambiguate; must match a VISIBLE element
+    "match_data": "key",            # ...or disambiguate on a data- attribute
     "hide": [".hub-control-bar"],   # strip interactive affordances
     "unclip": [".table-wrap"],      # release fixed-height scrollers
     "unstick": ["thead th"],        # un-stick sticky headers
-    "default_rows": 14,             # cap table rows
+    "default_rows": 14,             # cap table rows (cut from the bottom)
+    "rows_from": 17,                # drop the rows ABOVE this one (slide two)
+    "drop_cols": ["Eff"],           # remove columns by header text
+    "style": ".wrap{border-radius:0!important}",   # one-off CSS for this capture
+    "viewport_w": 1032,             # capture width; see §3.2 before choosing one
+    "sport": "NFL",                 # names the footer line; default is MLB
 }
 ```
+
+**Splitting a long board across slides.** `default_rows` cuts from the bottom and
+`rows_from` cuts from the top, so a board too deep for one post ships as a pair of
+artifacts over the same source. The site's own rank column is never rewritten — slide
+two starts at 17, so it reads as a continuation rather than a second ranking. Give both
+entries the *same* `viewport_w`, `drop_cols` and canvas: two slides of one carousel are
+compared by the eye on the swipe, and a few percent of size difference between them is
+visible where the same difference on a single post is not.
+
+`default_rows` and `rows_from` are the entry's defaults; `--rows` and `--rows-from`
+override them per run, so one registry entry ships both slides of a pair.
+
+**Match on text, or on a data attribute.** `contains` searches `innerText` and is right
+for a block with a heading ("Offense power ranking"). It is wrong for anything whose
+identity is a short code: the NFL board's game cards would match `NE` on every card
+carrying the words MONITOR or MONEYLINE. Those cards key themselves
+(`data-key="2026_01_NE_SEA"`), so `match_data` compares the attribute instead and
+matches the fixture exactly.
+
+**The footer names a sport.** It is derived from the artifacts in the post via their
+`sport` key (default `MLB`), so an NFL board can never ship under "Access Premium MLB
+Research". A post mixing sports says "Sports". The same key decides which league's
+fixture list `--games` names.
+
+**A capped table must not carry the uncapped table's count.** Several boards label
+themselves ("QB projections · 32 players", "32 team matchups"). Cut to 16 rows, that
+label is a claim the image itself disproves, so those entries hide the count in `style`
+along with the `<details>` disclosure marker. Check for a self-describing count
+whenever you add `default_rows` to a new source.
 
 ### 8.2 Ad-hoc, no code change
 
@@ -295,6 +372,41 @@ Repeatable, and composable with registered artifacts via
    collapsed `<details>` or an inactive tab has no box and cannot be screenshotted.
 5. Always hide site chrome (`GLOBAL_HIDE`): the sticky header paints over the top of an
    element screenshot and ate a table's column headers.
+6. **Capture width sets type size.** The site's tables are fluid: the team board lays
+   out 1350px wide at a 1600px viewport and 730px at 780px — same font size, same rows.
+   The composer fits ONE artifact to ~1040 CSS px either way, so a wide capture is
+   scaled *down* and the site's own 15px type lands at ~11px in the post. Capturing
+   narrow is therefore the lever for readable numbers, not a bigger canvas: `viewport_w`
+   in the registry, `--capture-width` to override. Floor: 768px, below which the
+   responsive contract card-ifies tables.
+7. **Bleed guard (horizontal twin of `unclip`).** `fitwidth`/`width:100%` cannot take a
+   table below its **min-content** width, so a too-narrow capture leaves the board wider
+   than the wrapper that *paints* its background, and the element screenshot picks up
+   the page behind it as a seam down the right edge (the starters board bled 77px
+   through its OOR column). The capturer measures the artifact against its first painted
+   ancestor and widens the viewport until it is covered.
+8. **Lazy images must be forced eager.** Headshots and team logos carry
+   `loading="lazy"`, so they do not start loading until the element is scrolled into
+   view - about 500ms before the shot. A slow headshot shipped as an empty circle on a
+   matchup card. The capturer sets `loading=eager` and waits for every `img.complete`
+   inside the target.
+9. **A stretched card wastes post height.** A grid/flex item with `min-height:100%` is
+   captured at its taller sibling's height, and the composer then spends a third of the
+   canvas on the void. Measure the children against the card before blaming the
+   composer, then fix it with the artifact's `style` hook (free-form CSS in the
+   registry entry). `lineup_vs_hand` needs
+   `{min-height:0;height:auto;flex:0 0 auto;align-self:start}` and renders ~1.5x rather
+   than 0.93x as a result.
+10. **Half-boards for social.** The lvP board is two 535px cards side by side; it cannot
+   capture under ~1140px, and narrowing it clips the allowed-vs-hand tables rather than
+   reflowing them. `lineup_vs_hand` / `lineup_vs_hand_rev` register each half on its own
+   so a post can carry one at legible size. Use the full board only where the reader has
+   a screen.
+11. **Trim columns to buy type size.** `--drop-cols 'OSI Allowed,ABQ Allowed,OOR'`
+   removes columns by header text before capture (last `thead` row, prefix match so the
+   sort arrow does not break it). Every column removed narrows the board, and the zoom
+   rises to fill the frame. Fails closed on a label that matches nothing — a typo would
+   otherwise silently ship the untrimmed board.
 6. Strip interactive affordances — "View Full Analysis →", window pills, and any copy
    telling the reader to click something.
 
@@ -332,6 +444,42 @@ lineup card per team in the source data.
 
 ---
 
+## 10.1 The video bridge
+
+`--video` emits the motion version of whatever post was just built:
+
+```
+compose --artifacts nfl_edges --rows 10 --video --video-platform reels
+  -> video/public/captures/<date>/<stem>-N.png      the same captures the still used
+  -> video/props/<league>/<stem>.json               BoardMotion props
+  -> the npx remotion render line, printed
+```
+
+**It reuses the still's capture rather than rebuilding the board in React.** That is
+the same decision as §1 and for the same reason: a React reimplementation of these
+tables would be a second copy of the site's design, free to fall out of date — the
+drift that killed chase-content-engine. Consuming the capture also means every artifact
+the still engine can reach is animatable for free, including ad-hoc `--capture` ones
+that were never written into any registry.
+
+The directive is written **after** the still lands, so a post that failed its
+legibility or slack rescue never leaves a directive pointing at rejected captures.
+
+Props carry each artifact's **native** (CSS) size alongside the file, which is
+`CAPTURE_DPR` times larger in pixels. `BoardMotion` lays boards out in those native
+units at ONE shared zoom — §3.2's rule, unchanged — and has the source pixels to scale
+up to 2× without softening.
+
+**A board sized for a still is not automatically sized for a Reel.** A still is
+studied; a Reel is watched, and a 9:16 frame gives a board roughly 1032px of width once
+the platform's safe areas are taken out. The engine reports the scale each directive
+will get and warns when a board is too wide to render at native size — cut columns
+(`--drop-cols`) or rows (`--rows`) rather than shipping type smaller than the site's
+own. Platform safe areas live in exactly one place, `SAFE` in
+`video/src/graphics/ShowTemplate.tsx`, and are deliberately not restated in Python.
+
+---
+
 ## 11. Command reference
 
 ```
@@ -341,6 +489,12 @@ deep        1-3 games, chosen artifacts, 1 image   --games PHI@MIA --artifacts b
 breakdown   1 game, up to 3 graphics               --games PHI@MIA --aspects pitching,offense,bullpen
 full-card   whole slate as banners + starters      --per-post 6
 rankings    unit rankings                          --type starters | --type team --family winning --window L30
+```
+
+```
+--rows N / --rows-from N     row window; splits a long board across two slides
+--video                      also write the BoardMotion props + captures (§10.1)
+--video-platform NAME        reels | reels-ads | tiktok | shorts | youtube
 ```
 
 Text flags apply to every command: `--eyebrow --headline --sub --take --cta --note`

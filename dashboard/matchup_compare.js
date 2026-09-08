@@ -828,7 +828,7 @@
       if (wl) rec = '<span class="team-record-pill">' + esc(wl) + '</span>';
     }
     var form = global.MLBMAStandings && MLBMAStandings.formStripHtml
-      ? MLBMAStandings.formStripHtml(team, { mirror: isHome }) : '';
+      ? MLBMAStandings.formStripHtml(team, { mirror: isHome, recentFirst: !isHome }) : '';
     var role = isHome ? 'Home' : 'Away';
     return '<a href="' + teamProfileUrl(team) + '" class="mc-header-side mc-header-side--' + align + '">'
       + '<div class="mc-header-logo">' + logo + '</div>'
@@ -856,7 +856,11 @@
       + teamSideBlock(m.away, 'away')
       + '<div class="mc-header-center">'
       + '<div class="mc-header-matchup">' + esc(m.away) + ' <span class="mc-at">@</span> ' + esc(m.home) + '</div>'
-      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + '</div>'
+      // Venue is optional in the slate feed; when it is missing `stadium` is the
+      // em-dash placeholder, which rendered as a dangling "7:40 PM ET · —".
+      // Drop the separator with it rather than print a lead-in to nothing.
+      + '<div class="mc-header-meta">' + esc(m.time || 'TBD')
+      + (stadium && stadium !== '—' ? ' · ' + esc(stadium) : '') + '</div>'
       + (wx ? '<div class="mc-header-weather">' + wx + '</div>' : '')
       + '</div>'
       + teamSideBlock(m.home, 'home')

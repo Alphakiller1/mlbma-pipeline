@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 from io import StringIO
+import time
+
 import pandas as pd
 import requests
 
@@ -13,6 +15,8 @@ from scrapers.scrape_player_registry import build_registry
 STATCAST_CSV_URL = "https://baseballsavant.mlb.com/statcast_search/csv"
 WINDOW_RECENT_DAYS = 14
 STATCAST_ROW_CAP = 25000
+STATCAST_FETCH_RETRIES = 5
+STATCAST_RETRY_STATUSES = {429, 500, 502, 503, 504}
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
 }
@@ -126,11 +130,32 @@ def _fetch_window(start_date: str, end_date: str) -> pd.DataFrame:
         "type": "details",
     }
     print(f"Fetching Statcast pitch data {start_date} to {end_date}...")
-    r = requests.get(STATCAST_CSV_URL, params=params, headers=HEADERS, timeout=180)
-    r.raise_for_status()
-    df = pd.read_csv(StringIO(r.text), usecols=lambda c: c in RAW_COLUMNS, low_memory=False)
-    print(f"  Rows: {len(df)}")
-    return df
+    last_exc: Exception | None = None
+    for attempt in range(1, STATCAST_FETCH_RETRIES + 1):
+        try:
+            r = requests.get(STATCAST_CSV_URL, params=params, headers=HEADERS, timeout=180)
+            if r.status_code in STATCAST_RETRY_STATUSES:
+                raise requests.HTTPError(
+                    f"{r.status_code} Server Error for url: {r.url}",
+                    response=r,
+                )
+            r.raise_for_status()
+            df = pd.read_csv(StringIO(r.text), usecols=lambda c: c in RAW_COLUMNS, low_memory=False)
+            print(f"  Rows: {len(df)}")
+            return df
+        except (requests.HTTPError, requests.ConnectionError, requests.Timeout) as exc:
+            last_exc = exc
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+            retryable = isinstance(exc, (requests.ConnectionError, requests.Timeout)) or (
+                status in STATCAST_RETRY_STATUSES
+            )
+            if not retryable or attempt >= STATCAST_FETCH_RETRIES:
+                break
+            wait = min(60, 3 * (2 ** (attempt - 1)))
+            print(f"  Savant {status or type(exc).__name__}; retry {attempt}/{STATCAST_FETCH_RETRIES} in {wait}s...")
+            time.sleep(wait)
+    assert last_exc is not None
+    raise last_exc
 
 
 def _fetch_range_recursive(start_date: str, end_date: str) -> list[pd.DataFrame]:

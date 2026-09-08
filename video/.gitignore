@@ -1,0 +1,16 @@
+node_modules
+dist
+.DS_Store
+.env
+
+# Ignore the output video from Git but not videos you import into src/.
+out
+
+# Rendered video + generated props (regenerate from the slate)
+out/
+props/
+
+# Board captures written by content_engine --video. Generated output: the same
+# screenshots the still post is built from, saved where staticFile() can reach them.
+# public/ itself stays tracked - the team logos live there.
+public/captures/

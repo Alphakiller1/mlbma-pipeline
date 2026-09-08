@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL M3 — Monetization Center</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body">
+  <nav class="scl-mock-nav">
+    <a href="index.html">Index</a>
+    <a href="01_foundation.html">1 Foundation</a>
+    <a href="02_admin_commerce.html">2 Admin</a>
+    <a class="is-active" href="03_monetization_center.html">3 Monetization</a>
+    <a href="04_profile_packages.html">4 Profile</a>
+  </nav>
+
+  <main class="scl-page">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Capper dashboard · Monetization Center</p>
+        <h1 class="scl-title">Set Up Your SCL Storefront</h1>
+        <p class="scl-subtitle">
+          Connect a third-party store so packages can appear on your SCL profile. You submit the affiliate relationship — SCL imports links and publishes.
+        </p>
+      </div>
+      <div class="scl-btn-row">
+        <button type="button" class="scl-btn scl-btn--ghost scl-btn--sm" id="reset-flow">Reset demo</button>
+      </div>
+    </header>
+
+    <div id="stepper-host"></div>
+    <div id="stage"></div>
+  </main>
+
+  <script src="../js/scl_ui.js"></script>
+  <script>
+    const U = window.SCLUI;
+    const STEPS = ["Choose platform", "Why affiliate", "Setup steps", "Confirm", "Status"];
+
+    const state = {
+      step: 0,
+      provider: null, // winible | whop | none
+      ack: false,
+      submitted: false,
+    };
+
+    function render() {
+      document.getElementById("stepper-host").innerHTML = U.stepperHtml(STEPS, state.step);
+      const stage = document.getElementById("stage");
+      if (state.submitted) {
+        stage.innerHTML = renderPending();
+        return;
+      }
+      if (state.step === 0) stage.innerHTML = renderChooser();
+      else if (state.step === 1) stage.innerHTML = renderExplain();
+      else if (state.step === 2) stage.innerHTML = renderInstructions();
+      else if (state.step === 3) stage.innerHTML = renderConfirm();
+      bindStage();
+    }
+
+    function renderChooser() {
+      return `
+        <section class="scl-panel">
+          <h2 class="scl-panel__title" style="margin-bottom: 8px;">Do you have a current operating platform?</h2>
+          <p class="scl-hint" style="margin-bottom: 20px;">Pick the storefront you already use. SCL supports Winible and Whop in this release.</p>
+          <div class="scl-choice-grid" role="group" aria-label="Platform">
+            <button type="button" class="scl-choice ${state.provider === "winible" ? "is-selected" : ""}" data-pick="winible" aria-pressed="${state.provider === "winible"}">
+              <span class="scl-choice__label">Winible</span>
+              <p class="scl-choice__desc">Invite SCL as an affiliate. SCL accepts via email, then imports package links.</p>
+            </button>
+            <button type="button" class="scl-choice ${state.provider === "whop" ? "is-selected" : ""}" data-pick="whop" aria-pressed="${state.provider === "whop"}">
+              <span class="scl-choice__label">Whop</span>
+              <p class="scl-choice__desc">Add SCL as an affiliate. Links appear in SCL’s Whop dashboard — no acceptance email.</p>
+            </button>
+            <button type="button" class="scl-choice ${state.provider === "none" ? "is-selected" : ""}" data-pick="none" aria-pressed="${state.provider === "none"}">
+              <span class="scl-choice__label">None</span>
+              <p class="scl-choice__desc">Start selling through Winible with SCL’s referral path.</p>
+            </button>
+          </div>
+          <div id="none-cta" style="margin-top: 16px; display: none;">
+            <div class="scl-callout">
+              <p><strong>Start Selling Through Winible</strong></p>
+              <p>Create a Winible storefront, then return here and choose Winible to connect SCL as an affiliate.</p>
+            </div>
+            <div class="scl-btn-row" style="margin-top: 12px;">
+              <a class="scl-btn scl-btn--primary" href="#" onclick="return false;">Open Winible referral</a>
+            </div>
+          </div>
+          <div class="scl-wizard-footer">
+            <p class="scl-hint">You will not paste affiliate links. SCL controls package URLs after acceptance/import.</p>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn" ${state.provider && state.provider !== "none" ? "" : "disabled"}>Continue</button>
+          </div>
+        </section>`;
+    }
+
+    function renderExplain() {
+      const copy = U.COPY.affiliateModel;
+      return `
+        <section class="scl-panel">
+          <h2 class="scl-panel__title" style="margin-bottom: 12px;">${U.esc(copy.title)}</h2>
+          <div class="scl-callout">
+            ${copy.body.map((p) => `<p>${U.esc(p)}</p>`).join("")}
+          </div>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn">Continue to setup steps</button>
+          </div>
+        </section>`;
+    }
+
+    function renderInstructions() {
+      if (state.provider === "whop") return renderWhopSteps();
+      return renderWinibleSteps();
+    }
+
+    function renderWinibleSteps() {
+      return `
+        <section class="scl-panel">
+          <div class="scl-panel__head">
+            <h2 class="scl-panel__title">Winible setup</h2>
+            ${U.providerBadgeHtml("winible")}
+          </div>
+          <ol class="scl-step-list">
+            <li class="scl-step-item scl-step-item--media">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">1</span>Open Affiliates</h3>
+                <p class="scl-step-item__body">In Winible, open <strong>Affiliates</strong> in the left-hand menu.</p>
+              </div>
+              <div class="scl-shot">Screenshot slot · Winible → Affiliates</div>
+            </li>
+            <li class="scl-step-item scl-step-item--media">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">2</span>Invite Affiliate</h3>
+                <p class="scl-step-item__body">Under the Affiliate tab, click <strong>Invite Affiliate</strong>.</p>
+              </div>
+              <div class="scl-shot">Screenshot slot · Invite Affiliate</div>
+            </li>
+            <li class="scl-step-item">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">3</span>Fill the invite form with SCL’s values</h3>
+                <p class="scl-step-item__body">Use these exact values so SCL can accept and import package links.</p>
+                <table class="scl-value-table">
+                  <tr><th>Email</th><td>scleaderboard@gmail.com</td></tr>
+                  <tr><th>Reward Type</th><td>Recurring payments</td></tr>
+                  <tr><th>Reward Amount</th><td>35.00% / Percentage</td></tr>
+                  <tr><th>Plans</th><td>Include All Current and Future Plans</td></tr>
+                </table>
+              </div>
+            </li>
+          </ol>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn">I’ve finished the Winible steps</button>
+          </div>
+        </section>`;
+    }
+
+    function renderWhopSteps() {
+      return `
+        <section class="scl-panel">
+          <div class="scl-panel__head">
+            <h2 class="scl-panel__title">Whop setup</h2>
+            ${U.providerBadgeHtml("whop")}
+          </div>
+          <div class="scl-callout" style="margin-bottom: 16px;">
+            <p>Unlike Winible, Whop does not send SCL an acceptance email. After you add SCL, product affiliate links appear in our Whop affiliate dashboard automatically.</p>
+          </div>
+          <ol class="scl-step-list">
+            <li class="scl-step-item scl-step-item--media">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">1</span>Add SCL as an affiliate</h3>
+                <p class="scl-step-item__body">In Whop, add <strong>Sports Cappers Leaderboard</strong> using <strong>scleaderboard@gmail.com</strong>.</p>
+              </div>
+              <div class="scl-shot">Screenshot slot · Whop add affiliate</div>
+            </li>
+            <li class="scl-step-item">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">2</span>Prefer product-specific links</h3>
+                <p class="scl-step-item__body">SCL will copy <strong>product-specific</strong> affiliate links (not just the company/storefront link) so each package on your profile points to the correct Whop product.</p>
+              </div>
+            </li>
+            <li class="scl-step-item">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">3</span>Confirm recurring commissions if shown</h3>
+                <p class="scl-step-item__body">When available, configure the affiliate relationship for recurring commissions rather than first payment only.</p>
+              </div>
+            </li>
+          </ol>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn">I’ve finished the Whop steps</button>
+          </div>
+        </section>`;
+    }
+
+    function renderConfirm() {
+      const isWhop = state.provider === "whop";
+      const ack = isWhop ? U.COPY.whopAck : U.COPY.winibleAck;
+      const cta = isWhop ? "I’ve Added SCL as an Affiliate" : "I’ve Submitted My Affiliate Request";
+      return `
+        <section class="scl-panel">
+          <h2 class="scl-panel__title" style="margin-bottom: 12px;">Confirm submission</h2>
+          <p class="scl-hint" style="margin-bottom: 16px;">
+            Do not mark this complete until you have finished the ${isWhop ? "Whop" : "Winible"} steps.
+            Packages will not go live until SCL imports links.
+          </p>
+          <label class="scl-check">
+            <input type="checkbox" id="ack" ${state.ack ? "checked" : ""} />
+            <span>${U.esc(ack)}</span>
+          </label>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="submit-btn" ${state.ack ? "" : "disabled"}>${U.esc(cta)}</button>
+          </div>
+        </section>`;
+    }
+
+    function renderPending() {
+      const status =
+        state.provider === "whop" ? "pending_scl_link_import" : "pending_scl_acceptance";
+      return `
+        <div class="scl-stack">
+          ${U.statusPanelHtml({ provider: state.provider, status })}
+          <section class="scl-panel">
+            <h2 class="scl-panel__title" style="margin-bottom: 8px;">What you should not do</h2>
+            <p class="scl-hint" style="margin: 0;">
+              Do not paste affiliate links into SCL. Do not expect a “Completed” state until packages are Live.
+              SCL will handle acceptance (Winible) or dashboard import (Whop).
+            </p>
+          </section>
+        </div>`;
+    }
+
+    function bindStage() {
+      document.querySelectorAll("[data-pick]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.provider = btn.dataset.pick;
+          state.ack = false;
+          render();
+          const noneCta = document.getElementById("none-cta");
+          if (noneCta) noneCta.style.display = state.provider === "none" ? "block" : "none";
+        });
+      });
+
+      const noneCta = document.getElementById("none-cta");
+      if (noneCta) noneCta.style.display = state.provider === "none" ? "block" : "none";
+
+      const next = document.getElementById("next-btn");
+      if (next) {
+        next.addEventListener("click", () => {
+          if (state.step === 0 && (!state.provider || state.provider === "none")) return;
+          state.step = Math.min(3, state.step + 1);
+          render();
+        });
+      }
+
+      const back = document.getElementById("back-btn");
+      if (back) {
+        back.addEventListener("click", () => {
+          state.step = Math.max(0, state.step - 1);
+          render();
+        });
+      }
+
+      const ack = document.getElementById("ack");
+      if (ack) {
+        ack.addEventListener("change", () => {
+          state.ack = ack.checked;
+          const submit = document.getElementById("submit-btn");
+          if (submit) submit.disabled = !state.ack;
+        });
+      }
+
+      const submit = document.getElementById("submit-btn");
+      if (submit) {
+        submit.addEventListener("click", () => {
+          if (!state.ack) return;
+          state.submitted = true;
+          state.step = 4;
+          render();
+        });
+      }
+    }
+
+    document.getElementById("reset-flow").addEventListener("click", () => {
+      state.step = 0;
+      state.provider = null;
+      state.ack = false;
+      state.submitted = false;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

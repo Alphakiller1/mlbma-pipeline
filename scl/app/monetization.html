@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL — Monetization Center</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body">
+  <div id="scl-app-nav"></div>
+  <main class="scl-page">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Capper dashboard · Monetization Center</p>
+        <h1 class="scl-title">Set Up Your SCL Storefront</h1>
+        <p class="scl-subtitle" id="capper-line">Connect a storefront so packages can appear on your profile.</p>
+      </div>
+    </header>
+    <div id="scl-role-bar"></div>
+    <div id="stepper-host"></div>
+    <div id="stage"></div>
+  </main>
+
+  <script src="../js/scl_store.js"></script>
+  <script src="../js/scl_ui.js"></script>
+  <script src="../js/scl_app.js"></script>
+  <script>
+    SCLApp.mountNav("monetization");
+    SCLApp.mountRoleSwitcher();
+
+    const U = SCLUI;
+    const STEPS = ["Choose platform", "Why affiliate", "Setup steps", "Confirm", "Status"];
+    const session = SCLStore.getSession();
+    const capper = SCLStore.getCapper(session.capperId) || SCLStore.listCappers()[0];
+    document.getElementById("capper-line").textContent =
+      `${capper.name} — you submit the affiliate relationship; SCL imports links and publishes.`;
+
+    const existing = SCLStore.connectionsForCapper(capper.id);
+    const pendingOrLive = existing.find((c) => c.status !== "disabled" && c.status !== "not_started");
+
+    const state = {
+      step: 0,
+      provider: pendingOrLive ? pendingOrLive.provider : null,
+      ack: false,
+      connection: pendingOrLive || null,
+    };
+
+    if (state.connection && String(state.connection.status).startsWith("pending_")) {
+      state.step = 4;
+    } else if (state.connection && state.connection.status === "live") {
+      state.step = 4;
+    }
+
+    function render() {
+      document.getElementById("stepper-host").innerHTML = U.stepperHtml(STEPS, Math.min(state.step, 4));
+      const stage = document.getElementById("stage");
+
+      if (state.connection && (state.step >= 4 || String(state.connection.status).startsWith("pending_") || state.connection.status === "live" || state.connection.status === "needs_action" || state.connection.status === "packages_imported" || state.connection.status === "links_received")) {
+        stage.innerHTML = renderStatus();
+        bindStatus();
+        return;
+      }
+
+      if (state.step === 0) stage.innerHTML = renderChooser();
+      else if (state.step === 1) stage.innerHTML = renderExplain();
+      else if (state.step === 2) stage.innerHTML = renderInstructions();
+      else if (state.step === 3) stage.innerHTML = renderConfirm();
+      bindStage();
+    }
+
+    function renderStatus() {
+      const conn = SCLStore.getConnection(state.connection.id) || state.connection;
+      state.connection = conn;
+      const pkgs = SCLStore.packagesForCapper(capper.id).filter(
+        (p) => p.provider === conn.provider
+      );
+      const liveList =
+        conn.status === "live" && pkgs.some((p) => p.status === "live")
+          ? `<div class="scl-panel" style="margin-top:16px;">
+              <div class="scl-panel__head"><h2 class="scl-panel__title">Your packages (read-only)</h2>
+              <a class="scl-btn scl-btn--secondary scl-btn--sm" href="profile.html?capper=${U.esc(capper.slug)}">View public profile</a></div>
+              <div class="scl-package-list">${pkgs.map((p) => U.packageCardHtml(p, { mode: "capper" })).join("")}</div>
+            </div>`
+          : "";
+
+      return `
+        <div class="scl-stack">
+          ${U.statusPanelHtml({ provider: conn.provider, status: conn.status })}
+          ${liveList}
+          <section class="scl-panel">
+            <p class="scl-hint" style="margin:0;">
+              Capper cannot edit destination URLs. Admin queue:
+              <a href="admin.html">open Admin commerce</a>.
+            </p>
+          </section>
+        </div>`;
+    }
+
+    function renderChooser() {
+      return `
+        <section class="scl-panel">
+          <h2 class="scl-panel__title" style="margin-bottom:8px;">Do you have a current operating platform?</h2>
+          <p class="scl-hint" style="margin-bottom:20px;">Winible and Whop share one framework — only instructions and pending status differ.</p>
+          <div class="scl-choice-grid">
+            ${choice("winible", "Winible", "Invite SCL as an affiliate. SCL accepts via email, then imports package links.")}
+            ${choice("whop", "Whop", "Add SCL as an affiliate. Links appear in SCL’s Whop dashboard — no acceptance email.")}
+            ${choice("none", "None", "Start selling through Winible with SCL’s referral path.")}
+          </div>
+          <div id="none-cta" style="margin-top:16px;display:none;">
+            <div class="scl-callout">
+              <p><strong>Start Selling Through Winible</strong></p>
+              <p>Create a Winible storefront, then return here and choose Winible to connect SCL.</p>
+            </div>
+          </div>
+          <div class="scl-wizard-footer">
+            <p class="scl-hint">You will not paste affiliate links into SCL.</p>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn" ${state.provider && state.provider !== "none" ? "" : "disabled"}>Continue</button>
+          </div>
+        </section>`;
+    }
+
+    function choice(id, label, desc) {
+      const selected = state.provider === id;
+      return `<button type="button" class="scl-choice ${selected ? "is-selected" : ""}" data-pick="${id}" aria-pressed="${selected}">
+        <span class="scl-choice__label">${label}</span>
+        <p class="scl-choice__desc">${desc}</p>
+      </button>`;
+    }
+
+    function renderExplain() {
+      const copy = U.COPY.affiliateModel;
+      return `
+        <section class="scl-panel">
+          <h2 class="scl-panel__title" style="margin-bottom:12px;">${U.esc(copy.title)}</h2>
+          <div class="scl-callout">${copy.body.map((p) => `<p>${U.esc(p)}</p>`).join("")}</div>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn">Continue to setup steps</button>
+          </div>
+        </section>`;
+    }
+
+    function renderInstructions() {
+      if (state.provider === "whop") {
+        return `
+          <section class="scl-panel">
+            <div class="scl-panel__head"><h2 class="scl-panel__title">Whop setup</h2>${U.providerBadgeHtml("whop")}</div>
+            <div class="scl-callout" style="margin-bottom:16px;">
+              <p>Whop does not send SCL an acceptance email. After you add SCL, product affiliate links appear in our Whop affiliate dashboard.</p>
+            </div>
+            <ol class="scl-step-list">
+              <li class="scl-step-item scl-step-item--media">
+                <div>
+                  <h3 class="scl-step-item__title"><span class="scl-step-item__num">1</span>Add SCL as an affiliate</h3>
+                  <p class="scl-step-item__body">Add <strong>Sports Cappers Leaderboard</strong> using <strong>scleaderboard@gmail.com</strong>.</p>
+                </div>
+                <div class="scl-shot">Screenshot slot · Whop add affiliate</div>
+              </li>
+              <li class="scl-step-item">
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">2</span>Product-specific links</h3>
+                <p class="scl-step-item__body">SCL will copy product-specific affiliate links so each package maps to the correct Whop product.</p>
+              </li>
+              <li class="scl-step-item">
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">3</span>Recurring commissions</h3>
+                <p class="scl-step-item__body">When available, use recurring commissions rather than first payment only.</p>
+              </li>
+            </ol>
+            <div class="scl-wizard-footer">
+              <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+              <button type="button" class="scl-btn scl-btn--primary" id="next-btn">I’ve finished the Whop steps</button>
+            </div>
+          </section>`;
+      }
+
+      return `
+        <section class="scl-panel">
+          <div class="scl-panel__head"><h2 class="scl-panel__title">Winible setup</h2>${U.providerBadgeHtml("winible")}</div>
+          <ol class="scl-step-list">
+            <li class="scl-step-item scl-step-item--media">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">1</span>Open Affiliates</h3>
+                <p class="scl-step-item__body">In Winible, open <strong>Affiliates</strong> in the left-hand menu.</p>
+              </div>
+              <div class="scl-shot">Screenshot slot · Winible → Affiliates</div>
+            </li>
+            <li class="scl-step-item scl-step-item--media">
+              <div>
+                <h3 class="scl-step-item__title"><span class="scl-step-item__num">2</span>Invite Affiliate</h3>
+                <p class="scl-step-item__body">Click <strong>Invite Affiliate</strong>.</p>
+              </div>
+              <div class="scl-shot">Screenshot slot · Invite Affiliate</div>
+            </li>
+            <li class="scl-step-item">
+              <h3 class="scl-step-item__title"><span class="scl-step-item__num">3</span>Use SCL form values</h3>
+              <table class="scl-value-table">
+                <tr><th>Email</th><td>scleaderboard@gmail.com</td></tr>
+                <tr><th>Reward Type</th><td>Recurring payments</td></tr>
+                <tr><th>Reward Amount</th><td>35.00% / Percentage</td></tr>
+                <tr><th>Plans</th><td>Include All Current and Future Plans</td></tr>
+              </table>
+            </li>
+          </ol>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="next-btn">I’ve finished the Winible steps</button>
+          </div>
+        </section>`;
+    }
+
+    function renderConfirm() {
+      const isWhop = state.provider === "whop";
+      const ack = isWhop ? U.COPY.whopAck : U.COPY.winibleAck;
+      const cta = isWhop ? "I’ve Added SCL as an Affiliate" : "I’ve Submitted My Affiliate Request";
+      return `
+        <section class="scl-panel">
+          <h2 class="scl-panel__title" style="margin-bottom:12px;">Confirm submission</h2>
+          <p class="scl-hint" style="margin-bottom:16px;">Packages will not go live until SCL imports links.</p>
+          <label class="scl-check">
+            <input type="checkbox" id="ack" ${state.ack ? "checked" : ""} />
+            <span>${U.esc(ack)}</span>
+          </label>
+          <div class="scl-wizard-footer">
+            <button type="button" class="scl-btn scl-btn--ghost" id="back-btn">Back</button>
+            <button type="button" class="scl-btn scl-btn--primary" id="submit-btn" ${state.ack ? "" : "disabled"}>${U.esc(cta)}</button>
+          </div>
+        </section>`;
+    }
+
+    function bindStage() {
+      document.querySelectorAll("[data-pick]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.provider = btn.dataset.pick;
+          state.ack = false;
+          render();
+        });
+      });
+      const noneCta = document.getElementById("none-cta");
+      if (noneCta) noneCta.style.display = state.provider === "none" ? "block" : "none";
+
+      const next = document.getElementById("next-btn");
+      if (next) {
+        next.addEventListener("click", () => {
+          if (state.step === 0 && (!state.provider || state.provider === "none")) return;
+          if (state.step === 0) {
+            SCLStore.upsertConnection({
+              capperId: capper.id,
+              provider: state.provider,
+              status: "instructions_viewed",
+            });
+          }
+          state.step = Math.min(3, state.step + 1);
+          render();
+        });
+      }
+      const back = document.getElementById("back-btn");
+      if (back) {
+        back.addEventListener("click", () => {
+          state.step = Math.max(0, state.step - 1);
+          render();
+        });
+      }
+      const ack = document.getElementById("ack");
+      if (ack) {
+        ack.addEventListener("change", () => {
+          state.ack = ack.checked;
+          const submit = document.getElementById("submit-btn");
+          if (submit) submit.disabled = !state.ack;
+        });
+      }
+      const submit = document.getElementById("submit-btn");
+      if (submit) {
+        submit.addEventListener("click", () => {
+          if (!state.ack) return;
+          state.connection = SCLStore.submitCapperStore({
+            capperId: capper.id,
+            provider: state.provider,
+            acknowledgment: true,
+          });
+          state.step = 4;
+          render();
+        });
+      }
+    }
+
+    function bindStatus() {
+      /* status view is read-only */
+    }
+
+    render();
+  </script>
+</body>
+</html>

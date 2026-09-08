@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL — Capper profile</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+  <style>
+    .scl-profile-hero { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-bottom:20px; }
+    .scl-avatar { width:64px; height:64px; border-radius:14px; background:linear-gradient(145deg,#0f766e,#134e4a); color:#fff; display:grid; place-items:center; font-weight:750; font-size:1.2rem; }
+    .scl-record { display:flex; flex-wrap:wrap; gap:16px; margin:0; padding:0; list-style:none; font-variant-numeric:tabular-nums; }
+    .scl-record span { display:block; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--scl-text-muted); }
+    .scl-record strong { font-size:1.15rem; color:var(--scl-ink); }
+  </style>
+</head>
+<body class="scl-body">
+  <div id="scl-app-nav"></div>
+  <main class="scl-page">
+    <div id="scl-role-bar"></div>
+    <div id="profile-root"></div>
+  </main>
+
+  <script src="../js/scl_store.js"></script>
+  <script src="../js/scl_ui.js"></script>
+  <script src="../js/scl_app.js"></script>
+  <script>
+    SCLApp.mountNav("profile");
+    SCLApp.mountRoleSwitcher();
+
+    const U = SCLUI;
+    const slug = SCLApp.qs("capper") || SCLStore.getCapper(SCLStore.getSession().capperId)?.slug || "edgelock";
+    const capper = SCLStore.getCapper(slug);
+
+    const root = document.getElementById("profile-root");
+    if (!capper) {
+      root.innerHTML = U.emptyStateHtml({ title: "Capper not found", body: "Pick a capper from Home." });
+    } else {
+      document.title = `SCL — ${capper.name}`;
+      const livePkgs = SCLStore.packagesForCapper(capper.id, { liveOnly: true });
+      const conns = SCLStore.connectionsForCapper(capper.id);
+      const hasPending = conns.some((c) => String(c.status).startsWith("pending_"));
+      const anyLiveStore = conns.some((c) => c.status === "live") || livePkgs.length > 0;
+
+      let packagesBlock = "";
+      if (livePkgs.length) {
+        packagesBlock = `
+          <section class="scl-panel" style="margin-top:16px;">
+            <div class="scl-panel__head">
+              <h2 class="scl-panel__title">Packages</h2>
+              <span class="scl-hint">CTAs use SCL tracking URLs</span>
+            </div>
+            <div class="scl-package-list scl-package-list--cols">
+              ${livePkgs.map((p) => U.packageCardHtml(p, { mode: "public" })).join("")}
+            </div>
+          </section>`;
+      } else if (hasPending && !anyLiveStore) {
+        // Product rule: omit package CTAs while pending
+        packagesBlock = "";
+      } else {
+        packagesBlock = `
+          <section class="scl-panel" style="margin-top:16px;">
+            <div class="scl-panel__head"><h2 class="scl-panel__title">Packages</h2></div>
+            ${U.emptyStateHtml({
+              title: "No packages available",
+              body: "This capper has not connected a live SCL storefront yet.",
+            })}
+          </section>`;
+      }
+
+      root.innerHTML = `
+        <section class="scl-panel">
+          <div class="scl-profile-hero">
+            <div class="scl-avatar">${U.esc(capper.initials)}</div>
+            <div>
+              <h1 class="scl-title" style="font-size:1.45rem;margin-bottom:4px;">${U.esc(capper.name)}</h1>
+              <p class="scl-hint" style="margin:0;">${U.esc(capper.sports)} · verified record</p>
+            </div>
+          </div>
+          <ul class="scl-record">
+            <li><span>Record</span><strong>${U.esc(capper.record)}</strong></li>
+            <li><span>Units</span><strong>${U.esc(capper.units)}</strong></li>
+            <li><span>ROI</span><strong>${U.esc(capper.roi)}</strong></li>
+            <li><span>Streak</span><strong>${U.esc(capper.streak)}</strong></li>
+          </ul>
+        </section>
+        ${packagesBlock}
+        <section class="scl-panel" style="margin-top:16px;">
+          <h2 class="scl-panel__title" style="margin-bottom:8px;">Recent plays</h2>
+          <p class="scl-hint" style="margin:0;">Placeholder content below packages — structure unchanged for M3.</p>
+        </section>`;
+    }
+  </script>
+</body>
+</html>

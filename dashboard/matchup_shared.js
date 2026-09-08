@@ -2559,7 +2559,8 @@
   function findSpProfile(profiles, pitcherName, team) {
     var key = normName(pitcherName);
     if (!key || key === 'tbd') return null;
-    return (profiles || []).find(function(p) {
+    var rows = profiles || [];
+    var exact = rows.find(function(p) {
       var n = normName(pickCol(p, 'pitcher_name', 'Pitcher', 'Name'));
       var tm = teamKey(pickCol(p, 'pitcher_team', 'Team', 'Tm'));
       if (n === key) {
@@ -2567,7 +2568,17 @@
         return tm === teamKey(team);
       }
       return false;
-    }) || null;
+    });
+    if (exact) return exact;
+    // SP_Profiles carries the pitcher's team OF RECORD, which goes stale the moment he
+    // is traded: Skubal profiles under DET while starting for LAD, so the team gate
+    // above matched nothing and his card lost its Pitch Score to an em-dash. Fall back
+    // to name alone, but only when exactly one pitcher answers to it - an ambiguous
+    // name is what the team gate was protecting against in the first place.
+    var byName = rows.filter(function(p) {
+      return normName(pickCol(p, 'pitcher_name', 'Pitcher', 'Name')) === key;
+    });
+    return byName.length === 1 ? byName[0] : null;
   }
 
   function spProfileMetrics(profile) {

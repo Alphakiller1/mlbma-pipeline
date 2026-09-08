@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL redirect</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body">
+  <main class="scl-page">
+    <section class="scl-panel" id="msg">
+      <h1 class="scl-title" style="font-size:1.25rem;">Redirecting…</h1>
+      <p class="scl-hint">Logging click and sending you to the provider checkout.</p>
+    </section>
+  </main>
+  <script src="../js/scl_store.js"></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const code = params.get("c") || params.get("code");
+      const msg = document.getElementById("msg");
+
+      if (!code) {
+        msg.innerHTML = '<h1 class="scl-title" style="font-size:1.25rem;">Missing tracking code</h1><p class="scl-hint"><a href="index.html">Back home</a></p>';
+        return;
+      }
+
+      const result = SCLStore.recordClick(code, {
+        referrer: document.referrer || "",
+        userAgent: navigator.userAgent || "",
+      });
+
+      if (!result.ok) {
+        const reason =
+          result.reason === "not_live"
+            ? "This package is not live."
+            : "Tracking code not found.";
+        msg.innerHTML = `<h1 class="scl-title" style="font-size:1.25rem;">${reason}</h1><p class="scl-hint"><a href="index.html">Back home</a></p>`;
+        return;
+      }
+
+      const dest = result.destinationUrl;
+      if (!dest) {
+        msg.innerHTML =
+          '<h1 class="scl-title" style="font-size:1.25rem;">No destination URL configured</h1><p class="scl-hint">Ask an admin to paste the provider affiliate link.</p>';
+        return;
+      }
+
+      msg.innerHTML = `<h1 class="scl-title" style="font-size:1.25rem;">Click recorded</h1><p class="scl-hint">Opening provider checkout…</p><p class="scl-package-card__url">${dest.replace(/</g, "")}</p>`;
+      // Demo destinations use example.com — still navigate so flow is real.
+      setTimeout(() => {
+        location.href = dest;
+      }, 400);
+    })();
+  </script>
+</body>
+</html>

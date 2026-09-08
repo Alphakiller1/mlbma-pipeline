@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL M3 — Foundation components</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body">
+  <nav class="scl-mock-nav">
+    <a href="index.html">Index</a>
+    <a class="is-active" href="01_foundation.html">1 Foundation</a>
+    <a href="02_admin_commerce.html">2 Admin</a>
+    <a href="03_monetization_center.html">3 Monetization</a>
+    <a href="04_profile_packages.html">4 Profile</a>
+  </nav>
+
+  <main class="scl-page scl-page--wide">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Layer 1 · Design system</p>
+        <h1 class="scl-title">Status, packages, empty states</h1>
+        <p class="scl-subtitle">
+          Pending never uses success/green. Public CTAs use SCL tracking URLs only.
+        </p>
+      </div>
+    </header>
+
+    <section class="scl-panel">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Store connection statuses</h2>
+      </div>
+      <div id="status-chips" class="scl-btn-row" style="gap: 10px;"></div>
+    </section>
+
+    <section class="scl-panel" style="margin-top: 16px;">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Package cards — public</h2>
+      </div>
+      <div id="public-packages" class="scl-package-list scl-package-list--cols"></div>
+    </section>
+
+    <section class="scl-panel" style="margin-top: 16px;">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Package cards — admin</h2>
+      </div>
+      <div id="admin-packages" class="scl-package-list"></div>
+    </section>
+
+    <div class="scl-grid-2" style="margin-top: 16px;">
+      <section class="scl-panel">
+        <div class="scl-panel__head">
+          <h2 class="scl-panel__title">Pending panel (Winible)</h2>
+        </div>
+        <div id="panel-winible"></div>
+      </section>
+      <section class="scl-panel">
+        <div class="scl-panel__head">
+          <h2 class="scl-panel__title">Pending panel (Whop)</h2>
+        </div>
+        <div id="panel-whop"></div>
+      </section>
+    </div>
+
+    <section class="scl-panel" style="margin-top: 16px;">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Empty / honesty states</h2>
+      </div>
+      <div class="scl-grid-2">
+        <div id="empty-store"></div>
+        <div id="empty-profile"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/scl_ui.js"></script>
+  <script>
+    const U = window.SCLUI;
+    const statuses = [
+      "not_started",
+      "instructions_viewed",
+      "pending_scl_acceptance",
+      "pending_scl_link_import",
+      "links_received",
+      "packages_imported",
+      "live",
+      "needs_action",
+      "disabled",
+    ];
+
+    document.getElementById("status-chips").innerHTML = statuses
+      .map((s) => U.statusChipHtml(s))
+      .join("");
+
+    const samplePkgs = [
+      {
+        id: "p1",
+        name: "All Sports Premium",
+        description: "Full access to daily cards across NFL, NBA, MLB, and props.",
+        priceLabel: "$99 / month",
+        provider: "winible",
+        status: "live",
+        sclTrackingUrl: "https://sportscappersleaderboard.com/go/abc123",
+        clicks: 184,
+      },
+      {
+        id: "p2",
+        name: "MLB Season Pass",
+        description: "Product-specific Whop package for baseball-only subscribers.",
+        priceLabel: "$79 / month",
+        provider: "whop",
+        status: "live",
+        sclTrackingUrl: "https://sportscappersleaderboard.com/go/whl456",
+        clicks: 62,
+      },
+      {
+        id: "p3",
+        name: "NBA Playoffs Card",
+        description: "Draft package awaiting SCL publish.",
+        priceLabel: "$49 / month",
+        provider: "whop",
+        status: "draft",
+        sclTrackingUrl: "https://sportscappersleaderboard.com/go/draft789",
+        clicks: 0,
+      },
+    ];
+
+    document.getElementById("public-packages").innerHTML = samplePkgs
+      .filter((p) => p.status === "live")
+      .map((p) => U.packageCardHtml(p, { mode: "public" }))
+      .join("");
+
+    document.getElementById("admin-packages").innerHTML = samplePkgs
+      .map((p) => U.packageCardHtml(p, { mode: "admin" }))
+      .join("");
+
+    document.getElementById("panel-winible").innerHTML = U.statusPanelHtml({
+      provider: "winible",
+      status: "pending_scl_acceptance",
+    });
+
+    document.getElementById("panel-whop").innerHTML = U.statusPanelHtml({
+      provider: "whop",
+      status: "pending_scl_link_import",
+    });
+
+    document.getElementById("empty-store").innerHTML = U.emptyStateHtml({
+      title: "No storefront connected",
+      body: "Choose Winible or Whop to start the SCL store setup flow.",
+      actionHtml: '<button type="button" class="scl-btn scl-btn--primary">Set up storefront</button>',
+    });
+
+    document.getElementById("empty-profile").innerHTML = U.emptyStateHtml({
+      title: "Packages not shown",
+      body: "Store is not Live. Public profiles omit package CTAs until SCL publishes packages.",
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+/* Bridge to the live site's design system — single source of truth.
+   Do NOT copy token values in here; that is the drift problem that
+   killed chase-content-engine. Import the real files.
+
+   theme.css comes first and is imported separately because the design system
+   does NOT import it, and it is where the metal gradients live
+   (--metal-silver, --metal-violet) — the chrome wording used across the site. */
+@import "../../dashboard/theme.css";
+@import "../../dashboard/mlbma_design_system.css";
+
+/* The design system paints an opaque body background (page-bg + two violet
+   gradients). In Remotion that would flatten every alpha export to solid black,
+   so the page stays transparent and any composition that wants a background
+   paints its own AbsoluteFill. Overlays get real transparency for Resolve.
+   This must stay AFTER both imports to win. */
+html,
+body {
+  background: transparent !important;
+}
+
+/* Chrome wording, lifted from the site's own treatment
+   (.team-profile-page .ca-page-title, --tp-chrome-title === --metal-silver).
+   background-clip:text needs the fill transparent, so this has to be a class
+   rather than an inline style object. */
+.chrome {
+  background: var(--metal-silver);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.chrome-violet {
+  background: var(--metal-violet);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Video-only type scale. The dashboard is read at ~60cm on a desktop;
+   a Reel is read at arm's length on a phone, so everything steps up. */
+:root {
+  --vid-hook: 104px;
+  --vid-headline: 132px;
+  --vid-label: 34px;
+  --vid-stat: 88px;
+  --vid-body: 40px;
+  --vid-take: 46px;
+}

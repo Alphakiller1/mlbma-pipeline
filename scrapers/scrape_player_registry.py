@@ -127,7 +127,13 @@ def parse_roster_entries(team_name: str, team_abbr: str, roster: list, status: s
 def fetch_team_roster(team_id: int, season: int, roster_type: str) -> list:
     r = requests.get(
         MLB_ROSTER_URL.format(team_id=team_id),
-        params={"rosterType": roster_type, "season": str(season)},
+        # hydrate=person is REQUIRED for handedness. Without it this endpoint returns a
+        # person object holding only id/fullName/link, so batSide and pitchHand are both
+        # missing and every player silently fell through to the "R" default below --
+        # all 780 players, bats and throws alike. That constant then propagated into
+        # sp_profiles.pitcher_hand, today_matchups.*_Hand, game_results.opp_starter_hand
+        # and the published slate, which made every platoon split in the model a no-op.
+        params={"rosterType": roster_type, "season": str(season), "hydrate": "person"},
         headers=HEADERS,
         timeout=30,
     )

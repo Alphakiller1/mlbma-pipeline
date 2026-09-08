@@ -1361,6 +1361,39 @@
     return brightenForRadar(base);
   }
 
+  /** Hue of a hex colour in degrees, 0-360. */
+  function hueOf(hex) {
+    var c = hexToRgb(hex);
+    var r = c.r / 255, g = c.g / 255, b = c.b / 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+    if (!d) return 0;
+    var h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    h *= 60;
+    return h < 0 ? h + 360 : h;
+  }
+
+  function hueGap(a, b) {
+    var d = Math.abs(hueOf(a) - hueOf(b));
+    return d > 180 ? 360 - d : d;
+  }
+
+  // Two clubs whose brand colours sit next to each other on the wheel (Baltimore
+  // orange against St. Louis red) drew two polygons the eye reads as one shape.
+  // Keep the away colour, and move the home side to whichever house accent sits
+  // furthest from it, so the pair is always separable.
+  var MIN_RADAR_HUE_GAP = 40;
+  var RADAR_FALLBACKS = ['#60A5FA', '#9A6BFF', '#3CCB7F', '#E8C24A'];
+
+  function separateRadarColors(a, b) {
+    if (hueGap(a, b) >= MIN_RADAR_HUE_GAP) return [a, b];
+    var best = RADAR_FALLBACKS[0], bestGap = -1;
+    RADAR_FALLBACKS.forEach(function(c) {
+      var g = hueGap(a, c);
+      if (g > bestGap) { bestGap = g; best = c; }
+    });
+    return [a, best];
+  }
+
   function renderTeamCompareRadars(processId, contextId, awayRow, homeRow, awayPals, homePals, labelA, labelB, opts) {
     opts = opts || {};
     var size = opts.size || 300;
@@ -1373,7 +1406,7 @@
     var processKeys = ['rcv', 'abq', 'osi', 'obr', 'projosi'];
     var contextMetrics = ['PALS', 'SOS', 'wRC+', 'xwOBA', 'ISO'];
     var contextKeys = ['pals', 'sos', 'wrc', 'xwoba', 'iso'];
-    var colors = [radarColorForTeam(labelA), radarColorForTeam(labelB)];
+    var colors = separateRadarColors(radarColorForTeam(labelA), radarColorForTeam(labelB));
     var radarOpts = {
       size: size,
       interactive: true,

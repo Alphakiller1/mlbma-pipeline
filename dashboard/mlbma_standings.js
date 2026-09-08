@@ -236,24 +236,48 @@
     return formLoadPromise;
   }
 
+  /**
+   * Last-N form pips.
+   *
+   * `recentFirst` puts the most recent game at the LEFT edge of the strip. Each side of
+   * the matchup banner reads outward from its own crest: the away block sits under a
+   * left-hand logo so it wants recentFirst, the home block sits under a right-hand logo
+   * so it does not. Both then show "most recent" nearest that team's badge.
+   *
+   * Order is applied here rather than with flex-direction so DOM order IS visual order.
+   * When CSS reversed the strip too, the home side ended up with a label reading
+   * "10 ago -> Recent" above pips that ran recent-to-oldest.
+   */
   function formStripHtml(team, opts) {
     opts = opts || {};
     var form = getRecentForm(team);
     if (!form || !form.length) return '';
     var prefix = (opts && opts.classPrefix) || 'mc-form';
     var mirror = !!opts.mirror;
-    var letters = form.map(function(r, i) {
+    var recentFirst = !!opts.recentFirst;
+    var cells = form.map(function(r, i) {
       var cls = r === 'W' ? prefix + '-w' : prefix + '-l';
       var recent = i === form.length - 1;
       return '<span class="' + prefix + '-letter ' + cls + (recent ? ' ' + prefix + '-letter--recent' : '') + '" title="' + (recent ? 'Most recent game' : 'Game ' + (i + 1) + ' of ' + form.length) + '">' + r + '</span>';
-    }).join('');
-    var orderHint = mirror
-      ? '<span class="' + prefix + '-order"><span class="' + prefix + '-order-edge">Recent</span><span class="' + prefix + '-order-arrow" aria-hidden="true">←</span><span class="' + prefix + '-order-mid">Last ' + form.length + '</span><span class="' + prefix + '-order-arrow" aria-hidden="true">←</span><span class="' + prefix + '-order-edge">10 ago</span></span>'
-      : '<span class="' + prefix + '-order"><span class="' + prefix + '-order-edge">10 ago</span><span class="' + prefix + '-order-arrow" aria-hidden="true">→</span><span class="' + prefix + '-order-mid">Last ' + form.length + '</span><span class="' + prefix + '-order-arrow" aria-hidden="true">→</span><span class="' + prefix + '-order-edge">Recent</span></span>';
+    });
+    if (recentFirst) cells.reverse();
+    var letters = cells.join('');
+    function seg(text, cls) {
+      return '<span class="' + prefix + '-order-' + cls + '">' + text + '</span>';
+    }
+    function arrow(glyph) {
+      return '<span class="' + prefix + '-order-arrow" aria-hidden="true">' + glyph + '</span>';
+    }
+    var orderHint = recentFirst
+      ? '<span class="' + prefix + '-order">' + seg('Recent', 'edge') + arrow('←')
+          + seg('Last ' + form.length, 'mid') + arrow('←') + seg('10 ago', 'edge') + '</span>'
+      : '<span class="' + prefix + '-order">' + seg('10 ago', 'edge') + arrow('→')
+          + seg('Last ' + form.length, 'mid') + arrow('→') + seg('Recent', 'edge') + '</span>';
     return '<div class="' + prefix + '-block' + (mirror ? ' ' + prefix + '-block--mirror' : '') + '">'
       + '<div class="' + prefix + '-heading">Last 10 Games</div>'
       + orderHint
-      + '<div class="' + prefix + '-strip' + (mirror ? ' ' + prefix + '-strip--mirror' : '') + '" aria-label="Last ' + form.length + ' games, oldest to most recent' + (mirror ? ', mirrored toward center' : '') + '">'
+      + '<div class="' + prefix + '-strip" aria-label="Last ' + form.length + ' games, '
+      + (recentFirst ? 'most recent to oldest' : 'oldest to most recent') + '">'
       + letters
       + '</div></div>';
   }

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL — Admin commerce</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body scl-body-admin">
+  <div id="scl-app-nav"></div>
+  <main class="scl-page scl-page--wide">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Admin · Commerce</p>
+        <h1 class="scl-title">Store setup & packages</h1>
+        <p class="scl-subtitle">Accept/import provider links, create package objects, publish via SCL tracking URLs.</p>
+      </div>
+    </header>
+    <div id="scl-role-bar"></div>
+
+    <section class="scl-panel">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Store Setup Requests</h2>
+      </div>
+      <div class="scl-filters" id="provider-filters">
+        <button type="button" class="scl-pill is-active" data-provider="all">All</button>
+        <button type="button" class="scl-pill" data-provider="winible">Winible</button>
+        <button type="button" class="scl-pill" data-provider="whop">Whop</button>
+        <button type="button" class="scl-pill" data-status="pending">Pending only</button>
+      </div>
+      <div class="scl-table-wrap">
+        <table class="scl-table">
+          <thead>
+            <tr>
+              <th>Capper</th>
+              <th>Platform</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Import</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="queue-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="scl-grid-2" style="margin-top:16px;">
+      <section class="scl-panel">
+        <div class="scl-panel__head">
+          <h2 class="scl-panel__title">Request detail</h2>
+          <div id="detail-meta"></div>
+        </div>
+        <p class="scl-hint" id="detail-hint" style="margin-bottom:16px;"></p>
+        <div id="detail-checklist"></div>
+        <div class="scl-btn-row" style="margin-top:20px;">
+          <button type="button" class="scl-btn scl-btn--primary scl-btn--sm" id="btn-links">Mark links received</button>
+          <button type="button" class="scl-btn scl-btn--secondary scl-btn--sm" id="btn-needs">Needs action</button>
+          <a class="scl-btn scl-btn--ghost scl-btn--sm" id="btn-profile" href="#">View profile</a>
+        </div>
+        <div id="detail-packages" style="margin-top:20px;"></div>
+      </section>
+
+      <section class="scl-panel">
+        <div class="scl-panel__head">
+          <h2 class="scl-panel__title">Package object</h2>
+          <span class="scl-status scl-status--info" id="form-mode">New package</span>
+        </div>
+        <form class="scl-stack" id="package-form">
+          <input type="hidden" id="pkg-id" value="" />
+          <input type="hidden" id="conn-id" value="" />
+          <div class="scl-form-grid scl-form-grid--2">
+            <div class="scl-field">
+              <label class="scl-label" for="capper">Capper</label>
+              <input class="scl-input" id="capper" readonly />
+            </div>
+            <div class="scl-field">
+              <label class="scl-label" for="provider">Provider</label>
+              <input class="scl-input" id="provider" readonly />
+            </div>
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="pkg-name">Package name</label>
+            <input class="scl-input" id="pkg-name" required />
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="pkg-desc">Description</label>
+            <textarea class="scl-textarea" id="pkg-desc"></textarea>
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="dest-url">Provider destination URL</label>
+            <input class="scl-input" id="dest-url" type="url" required placeholder="Paste affiliate / product link" />
+            <p class="scl-hint" id="dest-hint"></p>
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="tracking-url">SCL tracking URL</label>
+            <div class="scl-input-row">
+              <input class="scl-input" id="tracking-url" readonly placeholder="Generated on save" />
+              <button type="button" class="scl-btn scl-btn--secondary" id="copy-tracking">Copy</button>
+            </div>
+          </div>
+          <div class="scl-form-grid scl-form-grid--2">
+            <div class="scl-field">
+              <label class="scl-label" for="pkg-status">Status</label>
+              <select class="scl-select" id="pkg-status">
+                <option value="draft">Draft</option>
+                <option value="live">Live</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="scl-field">
+              <label class="scl-label" for="price">Display price</label>
+              <input class="scl-input" id="price" placeholder="$99 / month" />
+            </div>
+          </div>
+          <div class="scl-btn-row">
+            <button type="submit" class="scl-btn scl-btn--primary" id="btn-save">Save package</button>
+            <button type="button" class="scl-btn scl-btn--secondary" id="btn-publish">Save & publish</button>
+            <button type="button" class="scl-btn scl-btn--ghost" id="btn-new">New</button>
+          </div>
+          <p class="scl-hint" id="form-msg" style="margin:0;"></p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="../js/scl_store.js"></script>
+  <script src="../js/scl_ui.js"></script>
+  <script src="../js/scl_app.js"></script>
+  <script>
+    SCLApp.mountNav("admin");
+    SCLApp.mountRoleSwitcher();
+    SCLStore.setSession({ role: "admin" });
+
+    const U = SCLUI;
+    let filterProvider = "all";
+    let pendingOnly = false;
+    let selected = null;
+
+    function rows() {
+      return SCLStore.listStoreRequests({
+        provider: filterProvider,
+        pendingOnly,
+      });
+    }
+
+    function renderQueue() {
+      const data = rows();
+      document.getElementById("queue-body").innerHTML = data.length
+        ? data.map(U.queueRowHtml).join("")
+        : `<tr><td colspan="7">${U.emptyStateHtml({ title: "Queue empty", body: "When a capper submits store setup, it appears here." })}</td></tr>`;
+
+      document.querySelectorAll("#queue-body [data-action='open-request']").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const id = e.target.closest("tr").dataset.requestId;
+          const row = SCLStore.listStoreRequests({}).find((r) => r.id === id);
+          if (row) selectRequest(row);
+        });
+      });
+      document.querySelectorAll("#queue-body [data-action='open-packages']").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const id = e.target.closest("tr").dataset.requestId;
+          const row = SCLStore.listStoreRequests({}).find((r) => r.id === id);
+          if (row) {
+            selectRequest(row);
+            document.getElementById("pkg-name").focus();
+          }
+        });
+      });
+    }
+
+    function selectRequest(row) {
+      selected = row;
+      document.getElementById("detail-meta").innerHTML =
+        U.providerBadgeHtml(row.provider) + " " + U.statusChipHtml(row.status);
+      document.getElementById("detail-hint").textContent =
+        row.provider === "whop"
+          ? "No acceptance email. Copy product-specific links from the Whop affiliate dashboard, then save packages."
+          : "Wait for Winible email → accept → copy package links → save packages.";
+      document.getElementById("detail-checklist").innerHTML = U.checklistHtml(row.provider);
+      document.getElementById("btn-profile").href = `profile.html?capper=${encodeURIComponent(row.capperSlug)}`;
+
+      document.getElementById("capper").value = row.capperName;
+      document.getElementById("provider").value = row.provider;
+      document.getElementById("conn-id").value = row.id;
+      document.getElementById("dest-hint").textContent =
+        row.provider === "whop"
+          ? "Prefer Whop product-specific affiliate links."
+          : "Paste Winible package-level affiliate URL after acceptance.";
+
+      resetForm(false);
+      renderDetailPackages();
+    }
+
+    function renderDetailPackages() {
+      if (!selected) {
+        document.getElementById("detail-packages").innerHTML = "";
+        return;
+      }
+      const pkgs = SCLStore.packagesForCapper(selected.capperId).filter(
+        (p) => p.provider === selected.provider
+      );
+      document.getElementById("detail-packages").innerHTML = pkgs.length
+        ? `<h3 class="scl-panel__title" style="margin-bottom:10px;">Packages</h3>
+           <div class="scl-package-list">${pkgs
+             .map((p) => U.packageCardHtml(p, { mode: "admin" }))
+             .join("")}</div>`
+        : `<p class="scl-hint">No packages imported yet for this connection.</p>`;
+
+      document.querySelectorAll("#detail-packages [data-action='edit-package']").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const pkg = SCLStore.getPackage(btn.dataset.id);
+          if (pkg) fillForm(pkg);
+        });
+      });
+      document.querySelectorAll("#detail-packages [data-action='copy-tracking']").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.url);
+            btn.textContent = "Copied";
+            setTimeout(() => (btn.textContent = "Copy tracking"), 1000);
+          } catch (_) {}
+        });
+      });
+    }
+
+    function resetForm(clearConn) {
+      document.getElementById("pkg-id").value = "";
+      document.getElementById("pkg-name").value = "";
+      document.getElementById("pkg-desc").value = "";
+      document.getElementById("dest-url").value = "";
+      document.getElementById("tracking-url").value = "";
+      document.getElementById("pkg-status").value = "draft";
+      document.getElementById("price").value = "";
+      document.getElementById("form-mode").textContent = "New package";
+      document.getElementById("form-msg").textContent = "";
+      if (clearConn) document.getElementById("conn-id").value = "";
+    }
+
+    function fillForm(pkg) {
+      document.getElementById("pkg-id").value = pkg.id;
+      document.getElementById("pkg-name").value = pkg.name;
+      document.getElementById("pkg-desc").value = pkg.description || "";
+      document.getElementById("dest-url").value = pkg.providerDestinationUrl || "";
+      document.getElementById("tracking-url").value = pkg.sclTrackingUrl || "";
+      document.getElementById("pkg-status").value = pkg.status;
+      document.getElementById("price").value = pkg.priceLabel || "";
+      document.getElementById("form-mode").textContent = "Editing package";
+      document.getElementById("form-msg").textContent = "";
+    }
+
+    function savePackage(publish) {
+      if (!selected) {
+        document.getElementById("form-msg").textContent = "Select a store request first.";
+        return;
+      }
+      const name = document.getElementById("pkg-name").value.trim();
+      const dest = document.getElementById("dest-url").value.trim();
+      if (!name || !dest) {
+        document.getElementById("form-msg").textContent = "Name and destination URL are required.";
+        return;
+      }
+      const status = publish ? "live" : document.getElementById("pkg-status").value;
+      const saved = SCLStore.savePackage({
+        id: document.getElementById("pkg-id").value || null,
+        capperId: selected.capperId,
+        storeConnectionId: selected.id,
+        provider: selected.provider,
+        name,
+        description: document.getElementById("pkg-desc").value.trim(),
+        providerDestinationUrl: dest,
+        priceLabel: document.getElementById("price").value.trim(),
+        status,
+      });
+      fillForm(saved);
+      document.getElementById("form-msg").textContent = publish
+        ? "Saved and published. Profile CTAs are live."
+        : "Package saved.";
+      // refresh selected from store
+      selected = SCLStore.listStoreRequests({}).find((r) => r.id === selected.id);
+      renderQueue();
+      selectRequest(selected);
+      fillForm(saved);
+    }
+
+    document.getElementById("provider-filters").addEventListener("click", (e) => {
+      const btn = e.target.closest(".scl-pill");
+      if (!btn) return;
+      document.querySelectorAll("#provider-filters .scl-pill").forEach((p) => p.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      if (btn.dataset.status === "pending") {
+        pendingOnly = true;
+        filterProvider = "all";
+      } else {
+        pendingOnly = false;
+        filterProvider = btn.dataset.provider || "all";
+      }
+      renderQueue();
+    });
+
+    document.getElementById("btn-links").addEventListener("click", () => {
+      if (!selected) return;
+      SCLStore.markLinksReceived(selected.id);
+      selected = SCLStore.listStoreRequests({}).find((r) => r.id === selected.id);
+      renderQueue();
+      selectRequest(selected);
+    });
+
+    document.getElementById("btn-needs").addEventListener("click", () => {
+      if (!selected) return;
+      const notes = prompt("Admin notes for Needs Action:", selected.adminNotes || "");
+      if (notes == null) return;
+      SCLStore.markNeedsAction(selected.id, notes);
+      selected = SCLStore.listStoreRequests({}).find((r) => r.id === selected.id);
+      renderQueue();
+      selectRequest(selected);
+    });
+
+    document.getElementById("package-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      savePackage(false);
+    });
+    document.getElementById("btn-publish").addEventListener("click", () => savePackage(true));
+    document.getElementById("btn-new").addEventListener("click", () => resetForm(false));
+    document.getElementById("copy-tracking").addEventListener("click", async () => {
+      const val = document.getElementById("tracking-url").value;
+      if (!val) return;
+      try {
+        await navigator.clipboard.writeText(val);
+        document.getElementById("copy-tracking").textContent = "Copied";
+        setTimeout(() => (document.getElementById("copy-tracking").textContent = "Copy"), 1000);
+      } catch (_) {}
+    });
+
+    renderQueue();
+    const initial = rows().find((r) => String(r.status).startsWith("pending_")) || rows()[0];
+    if (initial) selectRequest(initial);
+  </script>
+</body>
+</html>

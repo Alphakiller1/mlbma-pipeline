@@ -387,6 +387,25 @@ def save_split(
 ) -> int:
     path = os.path.join(DATA_DIR, filename)
     if df is None or df.empty:
+        # Never overwrite a good file with an empty one. FanGraphs put the splits
+        # leaderboards behind a Cloudflare interstitial, every scrape came back with
+        # nothing, and this function faithfully truncated eight split CSVs to headers.
+        # Those empties were then published and blanked the live site. An upstream
+        # outage must degrade to stale data, not to no data.
+        held = 0
+        if os.path.exists(path):
+            try:
+                held = len(pd.read_csv(path))
+            except Exception:
+                held = 0
+        if held > 0:
+            print(
+                f"  KEPT {filename}: scrape returned nothing, leaving {held} existing "
+                f"rows in place"
+                + (f" (FanGraphs had {raw_count} rows but the registry/PA filter "
+                   f"removed all)" if raw_count > 0 else "")
+            )
+            return 0
         pd.DataFrame(columns=["Name"] + OUTPUT_STATS).to_csv(path, index=False)
         if raw_count > 0:
             print(
@@ -400,6 +419,14 @@ def save_split(
         "Name", "Tm", "Team", "player_id", "full_name", "bats", "throws", "split_type",
     )]
     df[keep].to_csv(path, index=False)
+    # A real export outranks the game-log derivation, so hand ownership of this file
+    # back to FanGraphs; core.compute_batter_splits will stop refreshing it.
+    try:
+        from core.compute_batter_splits import clear_marker_for
+
+        clear_marker_for(filename)
+    except Exception:
+        pass
     print(f"  Saved {len(df)} rows -> {path}")
     return len(df)
 

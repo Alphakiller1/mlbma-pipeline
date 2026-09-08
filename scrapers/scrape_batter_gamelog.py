@@ -71,19 +71,31 @@ def _team_abbr_from_id(team_id: Optional[int]) -> str:
 
 
 def load_qualified_batters() -> pd.DataFrame:
-    """Rostered position players with ≥1 PA in overall splits."""
+    """Rostered position players with >=1 PA in overall splits, unioned with the registry.
+
+    The FanGraphs overall-splits export used to be the ONLY source of this roster, which
+    made the entire batter chain hostage to it: on 2026-08-31 that Selenium scrape returned
+    just its first 13 rows (the top 13 by PA), so the game log covered 13 hitters,
+    batter_splits_* collapsed to 13 rows and batter_profiles to 91 -- and every downstream
+    consumer (lineup strength, injury value, batter split value) silently degraded while
+    every file still looked freshly written.
+
+    `player_registry.csv` is an independent, complete roster built from the MLB rosters
+    endpoint, so it is unioned in here. A truncated or missing FanGraphs export can then
+    cost accuracy on PA-based filtering, but it can no longer decide who exists.
+    """
     splits_path = DATA_DIR / "batter_splits_overall.csv"
-    if not splits_path.exists():
-        raise FileNotFoundError("batter_splits_overall.csv not found -- run scrape_batter_splits first")
-
-    splits = pd.read_csv(splits_path)
-    splits = splits[~splits["Tm"].astype(str).str.contains("Tms", na=False)]
-    pa = pd.to_numeric(splits.get("PA"), errors="coerce").fillna(0)
-    splits = splits[pa >= 1].copy()
-
-    name_col = "Name" if "Name" in splits.columns else splits.columns[0]
-    splits["player_name"] = splits[name_col].astype(str).str.strip()
-    splits["team"] = splits.get("Tm", "").astype(str).str.strip().str.upper()
+    if splits_path.exists():
+        splits = pd.read_csv(splits_path)
+        splits = splits[~splits["Tm"].astype(str).str.contains("Tms", na=False)]
+        pa = pd.to_numeric(splits.get("PA"), errors="coerce").fillna(0)
+        splits = splits[pa >= 1].copy()
+        name_col = "Name" if "Name" in splits.columns else splits.columns[0]
+        splits["player_name"] = splits[name_col].astype(str).str.strip()
+        splits["team"] = splits.get("Tm", "").astype(str).str.strip().str.upper()
+    else:
+        print("  WARNING: batter_splits_overall.csv missing -- using the registry alone")
+        splits = pd.DataFrame(columns=["player_name", "team", "PA"])
 
     registry_path = DATA_DIR / "player_registry.csv"
     if registry_path.exists():
@@ -98,6 +110,26 @@ def load_qualified_batters() -> pd.DataFrame:
             row.norm_name: str(row.bats or "R").upper()[:1]
             for row in reg.itertuples(index=False)
         }
+        # Union in every rostered position player the splits export did not carry.
+        splits["norm_name"] = splits["player_name"].map(normalize_player_name)
+        known = set(splits["norm_name"])
+        extra = reg[~reg["norm_name"].isin(known)].copy()
+        if not extra.empty:
+            print(f"  + {len(extra)} rostered batters absent from the splits export")
+            splits = pd.concat(
+                [
+                    splits,
+                    pd.DataFrame(
+                        {
+                            "player_name": extra["full_name"].astype(str).str.strip(),
+                            "team": extra["team_abbr"].astype(str).str.strip().str.upper(),
+                            "norm_name": extra["norm_name"],
+                            "PA": 0,
+                        }
+                    ),
+                ],
+                ignore_index=True,
+            )
     else:
         name_to_id = {}
         name_to_bats = {}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCL M3 — Admin commerce</title>
+  <link rel="stylesheet" href="../css/scl_tokens.css" />
+  <link rel="stylesheet" href="../css/scl_components.css" />
+</head>
+<body class="scl-body scl-body-admin">
+  <nav class="scl-mock-nav">
+    <a href="index.html">Index</a>
+    <a href="01_foundation.html">1 Foundation</a>
+    <a class="is-active" href="02_admin_commerce.html">2 Admin</a>
+    <a href="03_monetization_center.html">3 Monetization</a>
+    <a href="04_profile_packages.html">4 Profile</a>
+  </nav>
+
+  <main class="scl-page scl-page--wide">
+    <header class="scl-page-header">
+      <div>
+        <p class="scl-eyebrow">Layer 2 · Admin commerce</p>
+        <h1 class="scl-title">Store setup queue & package management</h1>
+        <p class="scl-subtitle">
+          Admins own destination affiliate URLs. Cappers never paste links. Whop skips email acceptance.
+        </p>
+      </div>
+    </header>
+
+    <section class="scl-panel">
+      <div class="scl-panel__head">
+        <h2 class="scl-panel__title">Store Setup Requests</h2>
+        <div class="scl-btn-row">
+          <button type="button" class="scl-btn scl-btn--secondary scl-btn--sm" id="filter-all">All</button>
+        </div>
+      </div>
+
+      <div class="scl-filters" id="provider-filters" role="tablist" aria-label="Provider filter">
+        <button type="button" class="scl-pill is-active" data-provider="all">All</button>
+        <button type="button" class="scl-pill" data-provider="winible">Winible</button>
+        <button type="button" class="scl-pill" data-provider="whop">Whop</button>
+        <button type="button" class="scl-pill" data-status="pending">Pending only</button>
+      </div>
+
+      <div class="scl-table-wrap">
+        <table class="scl-table">
+          <thead>
+            <tr>
+              <th>Capper</th>
+              <th>Platform</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Import</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="queue-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="scl-grid-2" style="margin-top: 16px;">
+      <section class="scl-panel">
+        <div class="scl-panel__head">
+          <h2 class="scl-panel__title">Request detail · checklist</h2>
+          <div id="detail-meta"></div>
+        </div>
+        <p class="scl-hint" id="detail-hint" style="margin-bottom: 16px;"></p>
+        <div id="detail-checklist"></div>
+        <div class="scl-btn-row" style="margin-top: 20px;">
+          <button type="button" class="scl-btn scl-btn--primary scl-btn--sm">Mark links received</button>
+          <button type="button" class="scl-btn scl-btn--secondary scl-btn--sm">Open packages</button>
+          <button type="button" class="scl-btn scl-btn--ghost scl-btn--sm">Needs action</button>
+        </div>
+      </section>
+
+      <section class="scl-panel">
+        <div class="scl-panel__head">
+          <h2 class="scl-panel__title">Package object form</h2>
+          <span class="scl-status scl-status--info">Admin-only destination URL</span>
+        </div>
+        <form class="scl-stack" id="package-form" onsubmit="return false;">
+          <div class="scl-form-grid scl-form-grid--2">
+            <div class="scl-field">
+              <label class="scl-label" for="capper">Capper</label>
+              <input class="scl-input" id="capper" value="EdgeLock Analytics" readonly />
+            </div>
+            <div class="scl-field">
+              <label class="scl-label" for="provider">Provider</label>
+              <select class="scl-select" id="provider">
+                <option value="whop" selected>Whop</option>
+                <option value="winible">Winible</option>
+              </select>
+            </div>
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="pkg-name">Package name</label>
+            <input class="scl-input" id="pkg-name" value="MLB Season Pass" />
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="pkg-desc">Description</label>
+            <textarea class="scl-textarea" id="pkg-desc">Full MLB card access for the season.</textarea>
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="dest-url">Provider destination URL (affiliate / product link)</label>
+            <input
+              class="scl-input"
+              id="dest-url"
+              type="url"
+              placeholder="Paste Whop product-specific affiliate link"
+              value="https://whop.com/checkout/plan_xxx?a=scl"
+            />
+            <p class="scl-hint" id="dest-hint">
+              Prefer Whop product-specific links so each SCL package maps to the correct product.
+            </p>
+          </div>
+          <div class="scl-field">
+            <label class="scl-label" for="tracking-url">SCL tracking URL</label>
+            <div class="scl-input-row">
+              <input
+                class="scl-input"
+                id="tracking-url"
+                readonly
+                value="https://sportscappersleaderboard.com/go/whl456"
+              />
+              <button type="button" class="scl-btn scl-btn--secondary" id="copy-tracking">Copy</button>
+            </div>
+            <p class="scl-hint">Auto-generated on save. Public CTAs use this URL only.</p>
+          </div>
+          <div class="scl-form-grid scl-form-grid--2">
+            <div class="scl-field">
+              <label class="scl-label" for="pkg-status">Package status</label>
+              <select class="scl-select" id="pkg-status">
+                <option value="draft">Draft</option>
+                <option value="live" selected>Live</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="scl-field">
+              <label class="scl-label" for="price">Display price (optional)</label>
+              <input class="scl-input" id="price" value="$79 / month" />
+            </div>
+          </div>
+          <div class="scl-btn-row">
+            <button type="submit" class="scl-btn scl-btn--primary">Save package</button>
+            <button type="button" class="scl-btn scl-btn--secondary">Save & publish</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="../js/scl_ui.js"></script>
+  <script>
+    const U = window.SCLUI;
+
+    const rows = [
+      {
+        id: "r1",
+        capperName: "EdgeLock Analytics",
+        provider: "whop",
+        status: "pending_scl_link_import",
+        submittedAt: "2026-07-17 11:42",
+        packageImportStatus: "not_started",
+        adminNotes: "First Whop capper",
+      },
+      {
+        id: "r2",
+        capperName: "Northside Plays",
+        provider: "winible",
+        status: "pending_scl_acceptance",
+        submittedAt: "2026-07-16 16:05",
+        packageImportStatus: "not_started",
+        adminNotes: "",
+      },
+      {
+        id: "r3",
+        capperName: "Unit Lab",
+        provider: "winible",
+        status: "live",
+        submittedAt: "2026-07-10 09:18",
+        packageImportStatus: "live",
+        adminNotes: "3 packages live",
+      },
+    ];
+
+    let activeProvider = "all";
+    let pendingOnly = false;
+    let selected = rows[0];
+
+    function renderQueue() {
+      const filtered = rows.filter((r) => {
+        if (activeProvider !== "all" && r.provider !== activeProvider) return false;
+        if (pendingOnly && !String(r.status).startsWith("pending_")) return false;
+        return true;
+      });
+      document.getElementById("queue-body").innerHTML = filtered.map(U.queueRowHtml).join("");
+      bindRowClicks();
+    }
+
+    function renderDetail(row) {
+      selected = row;
+      document.getElementById("detail-meta").innerHTML =
+        U.providerBadgeHtml(row.provider) + " " + U.statusChipHtml(row.status);
+      document.getElementById("detail-hint").textContent =
+        row.provider === "whop"
+          ? "No affiliate acceptance email. Log into Whop affiliate dashboard, copy product-specific links, then import."
+          : "Wait for Winible email → accept affiliate → copy package links → import.";
+      document.getElementById("detail-checklist").innerHTML = U.checklistHtml(row.provider);
+
+      const providerSelect = document.getElementById("provider");
+      providerSelect.value = row.provider;
+      updateDestHint();
+      document.getElementById("capper").value = row.capperName;
+    }
+
+    function updateDestHint() {
+      const provider = document.getElementById("provider").value;
+      document.getElementById("dest-hint").textContent =
+        provider === "whop"
+          ? "Prefer Whop product-specific links so each SCL package maps to the correct product."
+          : "Paste the Winible package-level affiliate URL SCL received after acceptance.";
+    }
+
+    function bindRowClicks() {
+      document.querySelectorAll("#queue-body [data-action='open-request']").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const tr = e.target.closest("tr");
+          const row = rows.find((r) => r.id === tr.dataset.requestId);
+          if (row) renderDetail(row);
+        });
+      });
+    }
+
+    document.getElementById("provider-filters").addEventListener("click", (e) => {
+      const btn = e.target.closest(".scl-pill");
+      if (!btn) return;
+      document.querySelectorAll("#provider-filters .scl-pill").forEach((p) => p.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      if (btn.dataset.status === "pending") {
+        pendingOnly = true;
+        activeProvider = "all";
+      } else {
+        pendingOnly = false;
+        activeProvider = btn.dataset.provider || "all";
+      }
+      renderQueue();
+    });
+
+    document.getElementById("provider").addEventListener("change", updateDestHint);
+
+    document.getElementById("copy-tracking").addEventListener("click", async () => {
+      const val = document.getElementById("tracking-url").value;
+      try {
+        await navigator.clipboard.writeText(val);
+        document.getElementById("copy-tracking").textContent = "Copied";
+        setTimeout(() => (document.getElementById("copy-tracking").textContent = "Copy"), 1200);
+      } catch (_) {
+        /* ignore */
+      }
+    });
+
+    renderQueue();
+    renderDetail(selected);
+  </script>
+</body>
+</html>

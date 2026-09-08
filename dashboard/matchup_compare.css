@@ -30,7 +30,7 @@
   .mc-header-side-text { align-items: center !important; text-align: center !important; }
   .mc-header-side--home .mc-header-name-row,
   .mc-header-side--home .mc-form-block { align-items: center !important; text-align: center !important; }
-  .mc-form-block--mirror .mc-form-order { flex-direction: row; justify-content: center; }
+  .mc-form-block--mirror .mc-form-order { justify-content: center; }
 }
 .mc-header-side {
   display: flex;
@@ -132,7 +132,9 @@
   color: var(--text-3, #71717A);
   font-family: var(--mono, monospace);
 }
-.mc-form-block--mirror .mc-form-order { flex-direction: row-reverse; }
+/* Pip and label order are decided in JS (see formStripHtml's recentFirst) so that DOM
+   order is visual order. Reversing here as well double-flipped the home side: its label
+   rendered "10 AGO -> RECENT" while its pips ran the other way. */
 .mc-form-order-edge { color: var(--text-2, #A1A1AA); }
 .mc-form-order-mid { color: var(--text-3, #71717A); }
 .mc-form-order-arrow { color: var(--accent, #9A6BFF); font-size: 10px; line-height: 1; }
@@ -146,7 +148,6 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border, #28282f);
 }
-.mc-form-strip--mirror { flex-direction: row-reverse; }
 .mc-form-letter {
   display: inline-flex;
   align-items: center;

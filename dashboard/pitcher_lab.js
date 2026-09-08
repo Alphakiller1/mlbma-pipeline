@@ -297,6 +297,9 @@
     return teamKey(a) === teamKey(b);
   }
 
+  /** Profile row -> the club the slate has that pitcher starting for today. */
+  var SLATE_TEAM = new WeakMap();
+
   /** Today's projected starters from the live matchup slate (team + optional MLB id). */
   function todaySlateStarters() {
     var out = [];
@@ -478,6 +481,11 @@
       var key = normName(pickCol(row, ['pitcher_name', 'Name', 'Pitcher']));
       if (!key || seen[key]) return;
       seen[key] = true;
+      // SP_Profiles carries the pitcher's team of record, which goes stale after a
+      // trade: a pitcher starting for his new club still profiles under the old one.
+      // Remember the club the slate has him starting for TODAY so the rankings row
+      // badges the right team. Keyed by the row object, which survives the sort.
+      SLATE_TEAM.set(row, slot.team);
       rows.push(row);
     });
     return rows;
@@ -534,6 +542,18 @@
       return Promise.resolve(CACHE.profiles);
     }
     if (global.LIVE_DATA && LIVE_DATA.spProfiles && LIVE_DATA.spProfiles.length) {
+      // Pitch Score is POOL-RELATIVE (enrichSpProfiles ranks each arm against the
+      // rest of the pool). Taking these rows unenriched made the score depend on
+      // which loader won the race: whoever populated LIVE_DATA first decided
+      // whether the column was pool-ranked or a bare rate formula, so the same
+      // slate rendered different numbers run to run. Enrich here too, in the same
+      // order as the fetch path below, so both paths agree.
+      if (S && S.buildOorByTeam && LIVE_DATA.oor) {
+        CACHE.oorByTeam = S.buildOorByTeam(LIVE_DATA.oor);
+      }
+      if (S && S.enrichSpProfiles) {
+        S.enrichSpProfiles(LIVE_DATA.spProfiles, CACHE.oorByTeam || {});
+      }
       CACHE.profiles = LIVE_DATA.spProfiles.filter(isRotationSp);
       return Promise.resolve(CACHE.profiles);
     }
@@ -1548,7 +1568,8 @@
     var colCount = 5 + COLS.length + 1;
     var body = rows.map(function(row, i) {
       var n = pickCol(row, ['pitcher_name', 'Name', 'Pitcher']);
-      var t = pickCol(row, ['pitcher_team', 'Team', 'Tm']);
+      // Today's club first (see SLATE_TEAM), team of record only as a fallback.
+      var t = SLATE_TEAM.get(row) || pickCol(row, ['pitcher_team', 'Team', 'Tm']);
       var handP = String(pickCol(row, ['hand', 'Hand', 'pitcher_hand']) || '?').charAt(0);
       var bundle = rankMetricBundle(row, hand, segment);
       var m = bundle.met;

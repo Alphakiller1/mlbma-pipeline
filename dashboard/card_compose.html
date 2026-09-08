@@ -14,6 +14,10 @@
      artifact in one image shares ONE zoom -> identical type size, centred alignment. */
   html, body { margin: 0; overflow: hidden; }
   body.card-page {
+    /* Chrome heading scale. Every lede size below is declared against it, so the
+       runner's --heading-scale moves eyebrow, title and deck together at ANY canvas
+       size instead of the size variants below silently overriding a scaled title. */
+    --cc-head: 1;
     width: 1080px; height: 1350px;
     background:
       radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
@@ -37,7 +41,7 @@
 
   /* ── text layer ──────────────────────────────────────────────────────────── */
   .cc-lede { flex: 0 0 auto; margin-top: 20px; }
-  .cc-eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.16em;
+  .cc-eyebrow { font-size: calc(15px * var(--cc-head)); font-weight: 700; letter-spacing: 0.16em;
     text-transform: uppercase; color: var(--gold);
     text-shadow: 0 0 14px rgba(240, 194, 74, 0.17); }
   /* The silver comes from the site's own heading component: the element carries
@@ -46,10 +50,11 @@
      `h1:not(.ca-page-title) { -webkit-text-fill-color: var(--v-heading) !important }`,
      which is what was forcing these titles to flat violet. Only geometry below. */
   .cc-title {
-    font-family: var(--display); font-weight: 800; font-size: 58px; line-height: 1.04;
+    font-family: var(--display); font-weight: 800;
+    font-size: calc(58px * var(--cc-head)); line-height: 1.04;
     text-transform: uppercase; letter-spacing: 0.01em; margin: 8px 0 0;
   }
-  .cc-sub { color: var(--text-2); font-size: 19px; font-weight: 600; line-height: 1.4;
+  .cc-sub { color: var(--text-2); font-size: calc(19px * var(--cc-head)); font-weight: 600; line-height: 1.4;
     margin-top: 10px; max-width: 92%; }
   /* The take: the author's stance, deliberately styled apart from neutral captions so
      a reader can tell opinion from measurement. */
@@ -58,8 +63,8 @@
     font-style: italic; max-width: 94%; }
   .cc-take::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px;
     width: 3px; border-radius: 2px; background: var(--v-grad, var(--v-light)); }
-  .cc-lede.is-tight .cc-title { font-size: 44px; }
-  .cc-lede.is-tight .cc-sub { font-size: 17px; }
+  .cc-lede.is-tight .cc-title { font-size: calc(44px * var(--cc-head)); }
+  .cc-lede.is-tight .cc-sub { font-size: calc(17px * var(--cc-head)); }
   .cc-lede.is-tight .cc-take { font-size: 17.5px; margin-top: 10px; }
 
   /* ── artifact area ───────────────────────────────────────────────────────
@@ -110,19 +115,19 @@
   /* ===== Size variants (runner injects CARD_SIZE; JS stamps the class) ===== */
   body.size-1080x1080 { height: 1080px; padding: 38px 44px 32px; }
   body.size-1080x1080 .cc-mark { height: 40px; }
-  body.size-1080x1080 .cc-title { font-size: 46px; }
+  body.size-1080x1080 .cc-title { font-size: calc(46px * var(--cc-head)); }
   body.size-1080x1080 .cc-lede { margin-top: 14px; }
   body.size-1080x1080 .cc-body { margin-top: 16px; gap: 14px; }
-  body.size-1080x1080 .cc-sub { font-size: 17px; }
+  body.size-1080x1080 .cc-sub { font-size: calc(17px * var(--cc-head)); }
 
   body.size-1080x1920 { height: 1920px; padding: 84px 48px 72px; }
   body.size-1080x1920 .cc-mark { height: 54px; }
-  body.size-1080x1920 .cc-title { font-size: 66px; }
+  body.size-1080x1920 .cc-title { font-size: calc(66px * var(--cc-head)); }
   body.size-1080x1920 .cc-body { gap: 26px; }
 
   body.size-1600x900 { width: 1600px; height: 900px; padding: 36px 52px 32px; }
   body.size-1600x900 .cc-mark { height: 40px; }
-  body.size-1600x900 .cc-title { font-size: 44px; }
+  body.size-1600x900 .cc-title { font-size: calc(44px * var(--cc-head)); }
   body.size-1600x900 .cc-site { font-size: 17px; }
   body.size-1600x900 .cc-lede { margin-top: 12px; }
   body.size-1600x900 .cc-body { margin-top: 16px; }
@@ -146,7 +151,7 @@
 
   <div class="cc-footer">
     <span class="cc-footer-l">
-      <span class="cc-site">Access Premium MLB Research At Chase-Analytics.com</span>
+      <span class="cc-site" id="ccSite">Access Premium MLB Research At Chase-Analytics.com</span>
       <span class="cc-cta" id="ccCta"></span>
     </span>
     <span class="cc-disclaimer">Model-generated research. Not betting advice. 21+.</span>
@@ -160,6 +165,13 @@
     return;
   }
   if (window.CARD_SIZE) document.body.classList.add('size-' + window.CARD_SIZE);
+  // Heading scale rides on one custom property. Clamped: past ~1.6x the lede eats the
+  // room the artifacts need and the runner's legibility rescue fights it.
+  var headScale = Number(D.headingScale);
+  if (headScale > 0) {
+    document.body.style.setProperty(
+      '--cc-head', String(Math.min(1.6, Math.max(0.7, headScale))));
+  }
   var DPR = D.captureDpr || 1;
   // The capture is taken at DPR, so zooming a bitmap up to DPR:1 still leaves a source
   // pixel per output pixel. That is the honest ceiling for enlarging an artifact.
@@ -176,6 +188,11 @@
   set('ccSub', D.sub || '');
   set('ccTake', D.take || '');
   set('ccCta', D.cta || '');
+  // The footer names the sport. It was hardcoded to MLB, which put "Access Premium
+  // MLB Research" under a board of NFL power ratings - the one line in the post that
+  // contradicted everything above it. Payload-driven now, with the historical text as
+  // the default so every MLB command renders exactly as before.
+  if (D.site) set('ccSite', D.site);
   if (!D.title && !D.sub && !D.eyebrow && !D.take) {
     document.getElementById('ccLede').style.display = 'none';
   }
@@ -365,6 +382,20 @@
       i.addEventListener('load', res); i.addEventListener('error', res);
     });
   })).then(function () {
+    // Solve once, so a build where the webfonts never arrive still lays out.
+    solveLayout();
+    return (document.fonts && document.fonts.ready) || Promise.resolve();
+  }).then(function () {
+    return new Promise(function (res) { requestAnimationFrame(res); });
+  }).then(function () {
+    // Then solve AGAIN, now that the real faces have swapped in. Text metrics move
+    // when they do, and the solver reads the lede's height to decide how much room
+    // the artifacts get: a deck line that wraps to three fallback lines and two real
+    // ones made the lede 28px taller at solve time than at paint time, so the
+    // artifact was shrunk into room that then went unused. Two slides of one
+    // carousel, same board, same copy length, came out 3% apart in size and visibly
+    // jumped on the swipe. solveLayout re-measures from zero (it collapses every
+    // image to 0px first), so running it twice is safe and idempotent.
     solveLayout();
     requestAnimationFrame(function () { window.__composeReady = true; });
   });

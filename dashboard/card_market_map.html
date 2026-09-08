@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Chase Analytics — Market Map Card</title>
+<link rel="stylesheet" href="mlbma_design_system.css">
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* Card-route layout only — colors/fonts are site tokens; the chart itself is
+     rendered by the site's own MLBMACharts.renderMarketQuadrant. */
+  html, body { margin: 0; overflow: hidden; }
+  body.card-page {
+    width: 1080px; height: 1350px;
+    background:
+      radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
+      radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.08), transparent 60%),
+      var(--bg);
+    font-family: var(--sans);
+    color: var(--text);
+    display: flex; flex-direction: column;
+    padding: 56px 64px 48px;
+    box-sizing: border-box;
+  }
+  .cc-header { display: flex; align-items: center; justify-content: space-between; }
+  .cc-brand { display: flex; align-items: center; gap: 14px; }
+  .cc-brand svg { height: 44px; width: auto; display: block; }
+  .cc-brand-word { font-family: var(--display); font-style: italic; font-weight: 800;
+    font-size: 30px; letter-spacing: 0.01em; text-transform: uppercase; line-height: 1; }
+  .cc-brand-word .w1 { color: var(--text); }
+  .cc-brand-word .w2 { color: var(--ca-gray-brand); }
+  .cc-meta { text-align: right; color: var(--text-3); font-size: 15px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; }
+  .cc-main { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .cc-eyebrow {
+    margin-top: 28px; font-size: 17px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold);
+    text-shadow: 0 0 14px rgba(240, 194, 74, 0.17);
+  }
+  .cc-title {
+    font-family: var(--display); font-weight: 800; font-size: 84px; line-height: 1.02;
+    text-transform: uppercase; letter-spacing: 0.01em; margin: 10px 0 6px;
+    background: var(--metal-silver);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .cc-sub { color: var(--text-2); font-size: 20px; font-weight: 600; max-width: 900px; line-height: 1.45; }
+  .cc-chart-wrap { margin-top: 8px; }
+  .cc-chart-wrap .ca-card { padding: 26px 22px 16px; }
+  /* Scale up the chart's internal legend/labels for social distances */
+  .mlbma-quad-legend { display: flex; gap: 18px; justify-content: center; margin-top: 12px;
+    font-size: 15px; font-weight: 700; color: var(--text-2); }
+  .mlbma-quad-leg-item { display: inline-flex; align-items: center; gap: 7px; }
+  .mlbma-quad-leg-item i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  /* Static image: interaction hint doesn't apply */
+  .mlbma-quad-hint { display: none; }
+  .cc-footer { margin-top: auto; padding-top: 22px; border-top: 1px solid var(--border-2);
+    display: flex; justify-content: space-between; align-items: baseline; }
+  .cc-site { color: var(--v-light); font-weight: 700; font-size: 19px; letter-spacing: 0.02em; }
+  .cc-disclaimer { color: var(--text-4); font-size: 13px; font-weight: 500; }
+
+  /* ===== Size variants ===== */
+  body.size-1600x900 { width: 1600px; height: 900px; padding: 40px 64px 36px; }
+  body.size-1600x900 .cc-main { flex-direction: row; align-items: center; gap: 40px;
+    justify-content: space-between; }
+  body.size-1600x900 .cc-main > div:first-child { flex: 0 0 400px; }
+  body.size-1600x900 .cc-eyebrow { margin-top: 0; }
+  body.size-1600x900 .cc-title { font-size: 64px; }
+  body.size-1600x900 .cc-sub { font-size: 18px; }
+  body.size-1600x900 .cc-chart-wrap { margin-top: 0; flex: 1; }
+  body.size-1600x900 .cc-chart-wrap .ca-card { padding: 18px 18px 10px; }
+  body.size-1600x900 .mlbma-quad-legend { font-size: 13px; gap: 14px; margin-top: 8px; }
+</style>
+</head>
+<body class="card-page">
+  <div class="cc-header">
+    <div class="cc-brand">
+      <svg viewBox="0 0 120 60" aria-hidden="true">
+        <path d="M4,56 C30,56 34,6 60,6 C86,6 90,56 116,56 L4,56 Z" fill="var(--v-mid)"/>
+        <line x1="60" y1="6" x2="60" y2="56" stroke="var(--bg)" stroke-width="2.5"/>
+      </svg>
+      <span class="cc-brand-word"><span class="w1">Chase</span> <span class="w2">Analytics</span></span>
+    </div>
+    <div class="cc-meta" id="ccDate"></div>
+  </div>
+
+  <div class="cc-main">
+    <div>
+      <div class="cc-eyebrow">Visual Matrix</div>
+      <div class="cc-title">Market Map</div>
+      <div class="cc-sub" id="ccSub"></div>
+    </div>
+
+    <div class="cc-chart-wrap">
+      <div class="ca-card">
+        <div id="cardMarketQuadrant"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cc-footer">
+    <span class="cc-site">chase-analytics.com</span>
+    <span class="cc-disclaimer">Model-generated research. Not betting advice. 21+.</span>
+  </div>
+
+<script src="mlbma_charts.js"></script>
+<script>
+(function () {
+  var D = window.CARD_DATA;
+  if (!D) { document.body.innerHTML = '<p style="color:#F5F6FA;padding:40px">No CARD_DATA injected.</p>'; return; }
+  var size = window.CARD_SIZE || '1080x1350';
+  document.body.classList.add('size-' + size);
+
+  document.getElementById('ccDate').textContent = D.dateLabel;
+  document.getElementById('ccSub').textContent =
+    'All 30 offenses ' + (D.handLabel || 'vs RHP') + ' — OSI against PP-Gap. ' +
+    'Top half is process-supported; right half is producing now.';
+
+  var dims = size === '1600x900'
+    ? { width: 1000, height: 690, bubbleRadius: 20 }
+    : { width: 920, height: 880, bubbleRadius: 26 };
+
+  MLBMACharts.renderMarketQuadrant('cardMarketQuadrant', D.rows, {
+    variant: 'landing',
+    width: dims.width,
+    height: dims.height,
+    bubbleRadius: dims.bubbleRadius,
+    showPosLabels: false
+  });
+})();
+</script>
+</body>
+</html>

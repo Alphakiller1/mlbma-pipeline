@@ -231,11 +231,12 @@
     return 40;
   }
 
-  function enrichRows(rows, dayCols, rosterMeta) {
+  function enrichRows(rows, dayCols, rosterMeta, roleLog) {
     return rows.map(function(r) {
       var meta = rosterMeta && rosterMeta[r.id];
       var il = meta ? rosterStatusLabel(meta.status) : null;
-      var role = il || roleFromLog(r.log, r.id, r.name);
+      // Roles use season/YTD log when provided; windowed r.log is only for L7 pitch cells.
+      var role = il || roleFromLog(roleLog || r.log, r.id, r.name);
       var avail = computeAvailability(Object.assign({}, r, { ilLabel: il }), dayCols);
       var total = (r.pitchesByDay || []).reduce(function(s, v) { return s + (v || 0); }, 0);
       return Object.assign({}, r, { role: role, avail: avail, totalPitches: total });
@@ -332,7 +333,7 @@
     });
   }
 
-  function mergeLiveWithBase(base, live, windowedLog, dayCols, rosterMeta, team) {
+  function mergeLiveWithBase(base, live, windowedLog, dayCols, rosterMeta, team, roleLog) {
     if (!live || !live.rows.length) {
       return Object.assign({}, base, { liveAttempted: true, liveOk: false });
     }
@@ -366,7 +367,7 @@
     return {
       team: teamKey(team),
       dayCols: dayCols,
-      rows: enrichRows(mergedRows, dayCols, live.rosterMeta || rosterMeta || {}),
+      rows: enrichRows(mergedRows, dayCols, live.rosterMeta || rosterMeta || {}, roleLog),
       source: 'mlb-live',
       liveAttempted: true,
       liveOk: true
@@ -379,7 +380,7 @@
     var dayCols = opts.dayCols || buildDayColumns(opts.days || 7);
     var rows = buildFromLog(opts.log || [], team, dayCols);
     if (opts.individuals) rows = mergeIndividuals(rows, opts.individuals, team, dayCols);
-    rows = enrichRows(rows, dayCols, opts.rosterMeta || {});
+    rows = enrichRows(rows, dayCols, opts.rosterMeta || {}, opts.roleLog);
     return { team: teamKey(team), dayCols: dayCols, rows: rows, source: opts.source || 'log' };
   }
 
@@ -443,9 +444,9 @@
     var dayCols = buildDayColumns(opts.days || 7);
     var startIso = dayCols[0].iso;
     var endIso = dayCols[dayCols.length - 1].iso;
-    // Role labels (CLOSE/SETUP/MID/LONG) are derived from saves/holds/blown within the *window*.
-    // If we pass full-season logs, old saves/holds can mislabel bullpen roles on the chart.
-    var windowedLog = (opts.log || []).filter(function(g) {
+    // Pitch matrix stays L7; CLOSE/SETUP/MID/LONG roles use season-to-date saves/holds/IP.
+    var seasonLog = opts.log || [];
+    var windowedLog = seasonLog.filter(function(g) {
       var dt = normalizeDate(pickCol(g, ['date', 'Date']));
       return dt && dt >= startIso && dt <= endIso;
     });
@@ -453,6 +454,7 @@
       team: team,
       dayCols: dayCols,
       log: windowedLog,
+      roleLog: seasonLog,
       individuals: opts.individuals || [],
       source: 'log'
     });
@@ -464,7 +466,7 @@
     if (opts.live === false) return Promise.resolve(base);
 
     return fetchLiveTeamUsage(team, dayCols).then(function(live) {
-      return mergeLiveWithBase(base, live, windowedLog, dayCols, live && live.rosterMeta, team);
+      return mergeLiveWithBase(base, live, windowedLog, dayCols, live && live.rosterMeta, team, seasonLog);
     }).catch(function() {
       return Object.assign({}, base, { liveAttempted: true, liveOk: false });
     });
@@ -500,6 +502,7 @@
       var fallback = buildUsageModel({
         team: team,
         log: opts.log || [],
+        roleLog: opts.log || [],
         individuals: opts.individuals || [],
         days: opts.days
       });

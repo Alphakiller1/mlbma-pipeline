@@ -141,6 +141,28 @@ def _pp_gap(row: pd.Series) -> Optional[float]:
     return round(proj - osi, 1)
 
 
+# Share of league plate appearances taken against right-handed pitching. Used to derive a
+# team's OVERALL offence index from its two handedness splits, because no overall metrics
+# file exists — only metrics_vs_RHP.csv and metrics_vs_LHP.csv.
+RHP_PA_SHARE = 0.72
+
+
+def _blend_hands(vs_rhp, vs_lhp):
+    """PA-weighted overall value from the two handedness splits.
+
+    Previously `osi` (and abq/rcv/obr/proj_osi) were simply ALIASED to the vs-RHP split.
+    That made the overall baseline and the vs-RHP split byte-identical for all 30 teams,
+    so every platoon adjustment computed `split - baseline == 0` and returned exactly 1.0
+    whenever the opposing starter was right-handed — roughly 72% of all starts. The
+    platoon layer looked present in the factor stack while contributing nothing.
+    """
+    if vs_rhp is None:
+        return vs_lhp
+    if vs_lhp is None:
+        return vs_rhp
+    return round(vs_rhp * RHP_PA_SHARE + vs_lhp * (1 - RHP_PA_SHARE), 2)
+
+
 def offense_from_splits(
     vs_rhp: Optional[pd.DataFrame],
     vs_lhp: Optional[pd.DataFrame],
@@ -161,11 +183,8 @@ def offense_from_splits(
             rec[f"abq_{split}"] = _row_metric(row, "ABQ")
             rec[f"rcv_{split}"] = _row_metric(row, "RCV")
             rec[f"obr_{split}"] = _row_metric(row, "OBR")
+            rec[f"proj_osi_{split}"] = _row_metric(row, "projOSI")
             if split == "rhp":
-                rec["abq"] = _row_metric(row, "ABQ")
-                rec["rcv"] = _row_metric(row, "RCV")
-                rec["obr"] = _row_metric(row, "OBR")
-                rec["proj_osi"] = _row_metric(row, "projOSI")
                 rec["pp_gap"] = _pp_gap(row)
 
     ingest(vs_rhp, "rhp")
@@ -193,11 +212,13 @@ def offense_from_splits(
         rows.append(
             {
                 "team": tm,
-                "osi": osi_r or rec.get("osi_lhp"),
-                "abq": rec.get("abq"),
-                "rcv": rec.get("rcv"),
-                "obr": rec.get("obr"),
-                "proj_osi": rec.get("proj_osi"),
+                "osi": _blend_hands(osi_r, osi_l),
+                "abq": _blend_hands(rec.get("abq_rhp"), rec.get("abq_lhp")),
+                "rcv": _blend_hands(rec.get("rcv_rhp"), rec.get("rcv_lhp")),
+                "obr": _blend_hands(rec.get("obr_rhp"), rec.get("obr_lhp")),
+                "proj_osi": _blend_hands(
+                    rec.get("proj_osi_rhp"), rec.get("proj_osi_lhp")
+                ),
                 "pals": rec.get("pals"),
                 "oor": rec.get("oor"),
                 "pp_gap": rec.get("pp_gap"),
