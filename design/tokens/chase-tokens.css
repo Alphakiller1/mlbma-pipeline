@@ -1,6 +1,6 @@
 /*
  * Chase Analytics — TIER 1 primitives.
- * DESIGN_LAYER_VERSION: 20260908a
+ * DESIGN_LAYER_VERSION: 20260908b
  * Published at /design/chase-tokens-v1.css (this file, deploy-root copy).
  *
  * This is the ONLY file in mlbma-pipeline allowed to contain raw color literals
@@ -18,24 +18,12 @@
   color-scheme: dark;
 
   /* Ink / surfaces */
+  --ca-ink-1000: #050509;
   --ca-ink-950: #08090F;
   --ca-ink-900: #0E1018;
   --ca-ink-850: #12141D;
   --ca-ink-800: #181B26;
   --ca-ink-750: #20232F;
-  --ca-ink-700: #050509;
-  --ca-ink-680: #05060B;
-  --ca-ink-670: #090A12;
-  --ca-ink-660: #0A0B0F;
-  --ca-ink-650: #10131F;
-  --ca-ink-640: #070912;
-  --ca-ink-630: #05060C;
-  --ca-ink-620: #181A2A;
-  --ca-ink-610: #1A1D2D;
-  --ca-ink-600: #0D101B;
-  --ca-ink-590: #06070D;
-  --ca-ink-hero-mid: #13121f;
-  --ca-ink-hero-end: #0a0a14;
 
   --ca-line-600: #262A38;
   --ca-line-500: #363B4D;
@@ -57,7 +45,7 @@
   --ca-violet-100: #D9CCFF;
   --ca-violet-050: #D5C4FF;
 
-  /* Status / metric ramp (marks — not necessarily AA as text) */
+  /* Status / metric ramp — all seven semantic steps clear 4.5:1 on dark surfaces. */
   --ca-green-500: #3CCB7F;
   --ca-green-400: #86D76F;
   --ca-green-300: #4ADE80;
@@ -74,7 +62,6 @@
   --ca-red-700: #dc2626;
   --ca-gold-200: #fcd34d;
   --ca-gold-700: #b45309;
-  --ca-blue-400: #60A5FA;
   --ca-blue-300: #93c5fd;
   --ca-blue-500: #3B82F6;
   --ca-blue-700: #2563eb;
@@ -145,8 +132,8 @@
   --ca-grad-brand: linear-gradient(135deg, #9A6BFF 0%, #5B2BE0 100%);
   --ca-grad-brand-soft: linear-gradient(135deg, rgba(124, 77, 255, 0.13), rgba(91, 43, 224, 0.07));
   --ca-grad-edge: linear-gradient(90deg, #3B82F6 0%, #7C4DFF 50%, #EC4899 100%);
-  --ca-grad-hero: linear-gradient(135deg, #0A0B0F 0%, #13121f 45%, #0a0a14 100%);
-  --ca-grad-panel: linear-gradient(180deg, #1A1D2D 0%, #0D101B 54%, #06070D 100%);
+  --ca-grad-hero: linear-gradient(135deg, var(--ca-ink-950) 0%, var(--ca-ink-850) 45%, var(--ca-ink-950) 100%);
+  --ca-grad-panel: linear-gradient(180deg, var(--ca-ink-800) 0%, var(--ca-ink-900) 54%, var(--ca-ink-1000) 100%);
   --ca-grad-metal: linear-gradient(180deg, #FFFFFF 0%, #F4F5F8 34%, #B7BBC8 54%, #EEF0F6 78%, #FFFFFF 100%);
   --ca-grad-metal-silver: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%);
   --ca-grad-violet-text: linear-gradient(180deg, #D9CCFF 0%, #A274FF 38%, #6F31F2 72%, #C7B4FF 100%);

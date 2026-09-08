@@ -10,10 +10,26 @@
     // MLB Picks = priced_markets; Gems = flagged_tiles. Never relabel as Picks in NFL.
     return nb;
   }
+
+  function mountMatchupRankings(element, ctx) {
+    var m = ctx && ctx.m;
+    if (!element || !m || !global.LineupView || !LineupView.mountMatchup || !global.LineupModel) return null;
+    var view = LineupView.mountMatchup({
+      element: element,
+      away: m.away,
+      home: m.home,
+      awayStarter: m.awaySP,
+      homeStarter: m.homeSP,
+      awayHand: m.awayHand,
+      homeHand: m.homeHand
+    });
+    element.__lineupView = view;
+    return view;
+  }
   global.ChaseSportMLB = {
     BOARD_URL: 'https://alphakiller1.github.io/mlb-model/board.json',
     BUILD_URL: 'https://alphakiller1.github.io/mlb-model/build.json',
-    RECORD_URL: 'https://alphakiller1.github.io/mlb-model/record.json',
-    normalize: normalize
+    normalize: normalize,
+    mountMatchupRankings: mountMatchupRankings
   };
 })(window);

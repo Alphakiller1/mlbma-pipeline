@@ -12,7 +12,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | Work | Evidence |
 |------|----------|
 | WP0 site trunk reconcile | Draft PR [#26](https://github.com/Alphakiller1/mlbma-pipeline/pull/26); `docs/RECONCILE_WP0.md` |
-| WP1 A/B/D token spine | Draft PR [#27](https://github.com/Alphakiller1/mlbma-pipeline/pull/27); `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; stamp `20260908a` |
+| WP1 A/B/D token spine | Draft PR [#27](https://github.com/Alphakiller1/mlbma-pipeline/pull/27); `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; stamp `20260908b` |
 | Design-doc INDEX | `design/INDEX.md` (WP6-7) |
 | WP2 kits vendored (not applied to model remotes) | `docs/wp2-patches/` |
 | WP3 DataStatus + Last_Updated collapse | `dashboard/chase_datastatus.js` is the parser (`parseLastUpdatedCsv`, `fetchLastUpdated`). `mlbma_ui.js` footer, `chase_nav.js`, `index.html` `syncFreshnessIndicator` / `parseLastUpdatedFromText` consume it. **`formatClock()` removed.** Failed fetches render `unknown`, never a wall clock. Rankings ScopeBar hosts `#lvDataStatus`. NFL/CFB age uses 5-day stale window at view time. |
@@ -53,7 +53,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 | Gate | Result |
 |------|--------|
-| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908a`; 1348 rule-body hex informational) |
+| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908b`; 1348 rule-body hex informational) |
 | `python3 -m unittest discover -s tests -p 'test_*.py'` | **37 OK** |
 | `dashboard_runtime_diag.py` team_rankings **8766** | **13/14** — table/model PASS; leftover console CORS on Supabase from `127.0.0.1:8766` (snapshot still paints `.lv-table`). Same class of leftover as the prior 8766 render report. |
 | `scripts/capture_artifact_parity.py` **8766** | **9/9 required selectors OK** including render `.pl-rank-table` and compare banner/radar/offense/pitcher/bullpen |

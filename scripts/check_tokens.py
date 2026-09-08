@@ -81,7 +81,10 @@ def main() -> int:
             )
 
     if VENDOR.is_file():
-        digest = hashlib.sha256(VENDOR.read_bytes()).hexdigest()
+        # The pinned digest is explicitly LF-normalised; Git may materialise CRLF
+        # in Windows worktrees without changing the tracked blob.
+        vendor_bytes = VENDOR.read_bytes().replace(b"\r\n", b"\n")
+        digest = hashlib.sha256(vendor_bytes).hexdigest()
         if digest != VENDOR_SHA256:
             violations.append(
                 f"vendor chase_tokens.css sha256 {digest}, expected {VENDOR_SHA256}"

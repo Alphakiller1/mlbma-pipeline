@@ -145,6 +145,36 @@
   var SHEET_TAB_PERSIST_PREFIX = 'mlbma_tab_v1:';
   var SHEET_TAB_PERSIST_TTL_MS = 45 * 60 * 1000;
   var LINEUP_MODEL_CORE_CACHE_PREFIX = 'mlbma_lm_core_v1:';
+  var SUPABASE_BREAKER_KEY = 'mlbma_supabase_breaker_v1';
+  var SUPABASE_FAILURE_LIMIT = 2;
+  var SUPABASE_TIMEOUT_MS = 3000;
+
+  function readSupabaseBreaker() {
+    try {
+      var value = JSON.parse(global.sessionStorage.getItem(SUPABASE_BREAKER_KEY) || 'null');
+      return value && typeof value === 'object'
+        ? { failures: Number(value.failures) || 0, open: value.open === true }
+        : { failures: 0, open: false };
+    } catch (e) {
+      return { failures: 0, open: false };
+    }
+  }
+
+  function writeSupabaseBreaker(value) {
+    try { global.sessionStorage.setItem(SUPABASE_BREAKER_KEY, JSON.stringify(value)); } catch (e) { /* ignore */ }
+  }
+
+  function noteSupabaseSuccess() {
+    writeSupabaseBreaker({ failures: 0, open: false });
+  }
+
+  function noteSupabaseFailure() {
+    var value = readSupabaseBreaker();
+    value.failures += 1;
+    value.open = value.failures >= SUPABASE_FAILURE_LIMIT;
+    writeSupabaseBreaker(value);
+    return value;
+  }
 
   // Persist sheet tabs in localStorage so they survive across tabs and full navigations.
   // (This used to be sessionStorage, which is wiped on every fresh tab/visit — forcing a
@@ -415,13 +445,14 @@
     var sb = global.MLBMA_CONFIG && MLBMA_CONFIG.SUPABASE;
     var useSupabase = !!(sb && sb.enabled && sb.url && sb.publishable_key
       && (!isSlateTab(tabName) || slateTabAllowsSupabase(tabName))
-      && sb.tabs && sb.tabs.indexOf(String(tabName)) >= 0);
+      && sb.tabs && sb.tabs.indexOf(String(tabName)) >= 0
+      && !readSupabaseBreaker().open);
 
     function doSupabaseFetch() {
       var base = String(sb.url).replace(/\/$/, '') + '/rest/v1/' + (sb.table || 'hub_dataset')
         + '?name=eq.' + encodeURIComponent(tabName) + '&select=rows,updated_at';
       var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, 12000) : null;
+      var timer = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) { /* ignore */ } }, SUPABASE_TIMEOUT_MS) : null;
       return fetch(base, {
         headers: { apikey: sb.publishable_key, Authorization: 'Bearer ' + sb.publishable_key },
         signal: ctrl ? ctrl.signal : undefined
@@ -436,6 +467,7 @@
           throw new Error('supabase stale ' + tabName);
         }
         rows = requireCurrentSlateRows(tabName, rows, slateDay);
+        noteSupabaseSuccess();
         _sheetTabCache[key] = rows;
         writePersistedSheetTab(key, rows);
         return rows;
@@ -446,7 +478,10 @@
       if (options.preferSheets || options.revalidate) {
         return doNetworkFetch();
       }
-      return useSupabase ? doSupabaseFetch().catch(doNetworkFetch) : doNetworkFetch();
+      return useSupabase ? doSupabaseFetch().catch(function() {
+        noteSupabaseFailure();
+        return doNetworkFetch();
+      }) : doNetworkFetch();
     }
 
     // Consume an early-page prefetch (fired in the HTML <head>, keyed by tab name) so the

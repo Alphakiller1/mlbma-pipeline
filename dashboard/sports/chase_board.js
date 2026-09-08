@@ -53,6 +53,9 @@
       home: home,
       model_margin: g.model_margin != null ? g.model_margin : g.model,
       market_margin: g.market_margin != null ? g.market_margin : g.market,
+      market_gap: g.market_gap != null ? g.market_gap : (
+        g.model_margin != null && g.market_margin != null ? Number(g.model_margin) - Number(g.market_margin) : null
+      ),
       published_margin: g.published_margin != null ? g.published_margin : g.published,
       edge_points: g.edge_points,
       edge_withheld_reason: g.edge_withheld_reason || (g.edge_points == null ? (g.withheld_reason || 'not published') : null),
@@ -89,10 +92,39 @@
     };
   }
 
+  function signed(value) {
+    if (value == null || value === '' || isNaN(value)) return '—';
+    var n = Number(value);
+    return (n > 0 ? '+' : '') + n.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  }
+
+  /** Gap-centred model-vs-market axis: both ticks encode margin, never projected score. */
+  function marginAxisHtml(game, sport) {
+    game = game || {};
+    sport = String(sport || '').toLowerCase();
+    var domain = sport === 'mlb' ? 2.5 : 6;
+    var unit = sport === 'mlb' ? 'run margin' : 'point margin';
+    var gap = game.market_gap;
+    if (gap == null && game.model_margin != null && game.market_margin != null) {
+      gap = Number(game.model_margin) - Number(game.market_margin);
+    }
+    if (gap == null || isNaN(gap) || game.model_margin == null || game.market_margin == null) return '';
+    var clipped = Math.max(-domain, Math.min(domain, Number(gap)));
+    var modelLeft = 50 + (clipped / domain) * 50;
+    return '<figure class="ca-gap-axis" data-domain="' + domain + '" data-unit="' + unit + '">'
+      + '<figcaption>Model–market gap · ' + unit + '</figcaption>'
+      + '<div class="ca-gap-axis__track"><span class="ca-gap-axis__zero"></span>'
+      + '<span class="ca-gap-axis__line" style="--ca-gap-model:' + modelLeft.toFixed(2) + '%"></span>'
+      + '<span class="ca-gap-axis__tick ca-gap-axis__tick--market" style="left:50%"><i></i><b>Market ' + signed(game.market_margin) + '</b></span>'
+      + '<span class="ca-gap-axis__tick ca-gap-axis__tick--model" style="left:' + modelLeft.toFixed(2) + '%"><i></i><b>Model ' + signed(game.model_margin) + '</b></span>'
+      + '</div><p>A gap is a disagreement with the market, not a betting edge.</p></figure>';
+  }
+
   global.ChaseBoard = {
     auth: auth,
     mapGame: mapGame,
     sortGames: sortGames,
-    normalize: normalize
+    normalize: normalize,
+    marginAxisHtml: marginAxisHtml
   };
 })(typeof window !== 'undefined' ? window : this);

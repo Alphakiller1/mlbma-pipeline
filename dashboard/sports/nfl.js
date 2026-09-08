@@ -9,7 +9,6 @@
   global.ChaseSportNFL = {
     BOARD_URL: 'https://alphakiller1.github.io/nfl-model/board.json',
     BUILD_URL: 'https://alphakiller1.github.io/nfl-model/build.json',
-    RECORD_URL: 'https://alphakiller1.github.io/nfl-model/record.json',
     normalize: normalize
   };
 })(window);

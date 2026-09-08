@@ -17,7 +17,6 @@
   global.ChaseSportWNBA = {
     BOARD_URL: 'https://alphakiller1.github.io/wnba-edge-model/board.json',
     BUILD_URL: 'https://alphakiller1.github.io/wnba-edge-model/build.json',
-    RECORD_URL: 'https://alphakiller1.github.io/wnba-edge-model/record.json',
     normalize: normalize
   };
 })(window);

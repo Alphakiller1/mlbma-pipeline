@@ -80,10 +80,22 @@ class ContrastContractTests(unittest.TestCase):
 
     def test_value_tokens_clear_text_floor_on_panel(self):
         panel = hex_to_rgb("12141D")
-        # Value-text siblings used on panels (not mark fills).
-        for name in ("--ca-green-400", "--ca-red-200", "--ca-amber-400", "--ca-paper-400"):
+        # The seven-step metric ramp itself is safe as informative text; no -text
+        # sibling palette is needed.
+        for name in (
+            "--ca-red-500", "--ca-red-400", "--ca-amber-500", "--ca-paper-neutral",
+            "--ca-green-400", "--ca-green-300", "--ca-green-200",
+        ):
             ratio = contrast(hex_to_rgb(self.hexes[name]), panel)
             self.assertGreaterEqual(ratio, 4.5, msg=f"{name} {ratio:.2f}")
+
+    def test_ink_palette_is_six_measured_primitives(self):
+        names = {name for name in self.hexes if name.startswith("--ca-ink-")}
+        self.assertEqual(names, {
+            "--ca-ink-1000", "--ca-ink-950", "--ca-ink-900",
+            "--ca-ink-850", "--ca-ink-800", "--ca-ink-750",
+        })
+        self.assertNotIn("--ca-blue-400", self.hexes)
 
 
 if __name__ == "__main__":

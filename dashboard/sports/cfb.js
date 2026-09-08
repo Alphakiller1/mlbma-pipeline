@@ -8,7 +8,6 @@
   global.ChaseSportCFB = {
     BOARD_URL: 'https://alphakiller1.github.io/cfb-model/board.json',
     BUILD_URL: 'https://alphakiller1.github.io/cfb-model/build.json',
-    RECORD_URL: 'https://alphakiller1.github.io/cfb-model/record.json',
     normalize: normalize
   };
 })(window);

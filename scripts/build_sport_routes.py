@@ -113,12 +113,12 @@ def page(sport: str, *, matchups: bool = False) -> str:
     <div id="slate" class="ca-async">Loading {sport.upper()} board…</div>
   </main>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908d"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908d"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908d"></script>
-  <script src="/dashboard/sports/{spec["adapter"]}.js?v=20260908d"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908d"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908d"></script>{extra_scripts}
+  <script src="/dashboard/chase_datastatus.js?v=20260908e"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908e"></script>
+  <script src="/dashboard/sports/chase_board.js?v=20260908e"></script>
+  <script src="/dashboard/sports/{spec["adapter"]}.js?v=20260908e"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908e"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908e"></script>{extra_scripts}
   <script>
   window.CHASE_SPORT_PAGE = {spec["global"]};
   window.CHASE_SPORT_ID = {sport!r};
@@ -201,10 +201,9 @@ MATCHUPS_JS = r"""
   }
   Promise.all([
     fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; }),
-    fetch(adapter.RECORD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
+    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
   ]).then(function (pack) {
-    var board = pack[0], build = pack[1] || {}, rec = pack[2] || {};
+    var board = pack[0], build = pack[1] || {};
     if (!board) {
       ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
       return;
@@ -215,7 +214,7 @@ MATCHUPS_JS = r"""
       return String(a.kickoff_utc || a.sort_key || '').localeCompare(String(b.kickoff_utc || b.sort_key || ''));
     });
     if (window.ChaseModelStatus) {
-      ChaseModelStatus.render(document.getElementById('modelStatus'), Object.assign({}, rec, nb.authority, {
+      ChaseModelStatus.render(document.getElementById('modelStatus'), Object.assign({}, nb.authority, {
         may_bet: nb.authority.may_bet,
         unmet_gates: nb.authority.unmet_gates,
         authority: nb.authority.level,
@@ -245,6 +244,7 @@ MATCHUPS_JS = r"""
       html += '<div class="ca-nfl-channel"><h3>Market</h3><p>' + dash(g.market_margin) + '</p></div>';
       html += '<div class="ca-nfl-channel"><h3>Published</h3><p>' + dash(g.published_margin) + '</p></div>';
       html += '</div>';
+      if (window.ChaseBoard && ChaseBoard.marginAxisHtml) html += ChaseBoard.marginAxisHtml(g, 'nfl');
       html += '<p>Edge points ' + dash(g.edge_points, g.edge_withheld_reason);
       if (g.edge_withheld_reason) html += ' — ' + esc(g.edge_withheld_reason);
       html += '</p>';

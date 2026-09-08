@@ -81,6 +81,11 @@
     return { as_of: asOf, slateDateEt: slateDateEt };
   }
 
+  function parseNewestSlateDateCsv(text) {
+    var dates = String(text || '').match(/\b\d{4}-\d{2}-\d{2}\b/g) || [];
+    return dates.sort().pop() || null;
+  }
+
   function freshnessFromAsOf(asOfMs, sport) {
     if (asOfMs == null) return 'unknown';
     var now = Date.now();
@@ -89,12 +94,49 @@
     return (now - asOfMs) > limit ? 'stale' : 'ok';
   }
 
+  function easternDateIso(now) {
+    now = now || new Date();
+    try {
+      var parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(now);
+      var values = {};
+      parts.forEach(function (part) { values[part.type] = part.value; });
+      return values.year + '-' + values.month + '-' + values.day;
+    } catch (e) {
+      return now.toISOString().slice(0, 10);
+    }
+  }
+
+  function slateAgeDays(slateDateEt, now) {
+    var s = String(slateDateEt || '').trim().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+    var today = easternDateIso(now);
+    var slateMs = Date.parse(s + 'T00:00:00Z');
+    var todayMs = Date.parse(today + 'T00:00:00Z');
+    if (!isFinite(slateMs) || !isFinite(todayMs)) return null;
+    return Math.floor((todayMs - slateMs) / 86400000);
+  }
+
+  function fmtSlateDate(slateDateEt) {
+    var s = String(slateDateEt || '').trim().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return 'unknown';
+    try {
+      return new Date(s + 'T12:00:00Z').toLocaleDateString('en-US', {
+        timeZone: 'America/New_York', month: 'short', day: 'numeric'
+      });
+    } catch (e) { return s; }
+  }
+
   function fieldsFromParsed(parsed, extra) {
     extra = extra || {};
     var asOf = parsed && parsed.as_of;
     var ms = parseTs(asOf);
     var sport = extra.sport || 'mlb';
+    var slateDateEt = (parsed && parsed.slateDateEt) || extra.slateDateEt || null;
+    var slateAge = slateAgeDays(slateDateEt);
     var state = extra.state || freshnessFromAsOf(ms, sport);
+    if (slateAge != null && slateAge > 0) state = 'stale';
     return {
       as_of: asOf || null,
       source: extra.source || 'sheet',
@@ -105,6 +147,8 @@
       dataCutoff: extra.dataCutoff || asOf,
       quoteTimestamp: extra.quoteTimestamp || null,
       publishedAt: extra.publishedAt || asOf,
+      slateDateEt: slateDateEt,
+      recoveryLabel: extra.recoveryLabel || 'Retry slate',
       sport: sport
     };
   }
@@ -120,7 +164,9 @@
       issues: extra.issues || extra.blockers || ['timestamp unavailable'],
       dataCutoff: null,
       quoteTimestamp: extra.quoteTimestamp || null,
-      publishedAt: null
+      publishedAt: null,
+      slateDateEt: extra.slateDateEt || null,
+      recoveryLabel: extra.recoveryLabel || 'Retry slate'
     };
   }
 
@@ -143,7 +189,20 @@
     }).then(function (text) {
       var parsed = parseLastUpdatedCsv(text);
       if (!parsed.as_of) return unknownFields({ source: opts.source || 'sheet' });
-      return fieldsFromParsed(parsed, opts);
+      if (parsed.slateDateEt || opts.sport && opts.sport !== 'mlb') return fieldsFromParsed(parsed, opts);
+      var cfg = global.MLBMA_CONFIG;
+      var slateTab = opts.slateTab || (cfg && cfg.SHEET_TABS && cfg.SHEET_TABS.today_matchups) || 'Today_Matchups';
+      var slateUrl = sheetCsvUrl(slateTab);
+      if (!slateUrl) return fieldsFromParsed(parsed, opts);
+      return fetch(slateUrl, { cache: 'no-store' }).then(function (r) {
+        if (!r.ok) throw new Error('slate');
+        return r.text();
+      }).then(function (slateText) {
+        parsed.slateDateEt = parseNewestSlateDateCsv(slateText);
+        return fieldsFromParsed(parsed, opts);
+      }).catch(function () {
+        return fieldsFromParsed(parsed, opts);
+      });
     }).catch(function () {
       return unknownFields({ source: opts.source || 'sheet' });
     });
@@ -162,6 +221,8 @@
       state = freshnessFromAsOf(displaySrc, fields.sport);
     }
     var issues = fields.issues || fields.blockers || [];
+    var slateAge = slateAgeDays(fields.slateDateEt, new Date(now));
+    if (slateAge != null && slateAge > 0) state = 'stale';
     el.className = (el.className || '').replace(/\bca-datastatus\b/g, '').replace(/\s+/g, ' ').trim() + ' ca-datastatus';
     el.setAttribute('data-state', state);
     var age = fmtAge(displaySrc, now);
@@ -171,14 +232,32 @@
         }).join('') + '</ul>'
       : '';
     var src = fields.source ? '<span class="ca-datastatus-source">' + String(fields.source).replace(/[<>]/g, '') + '</span>' : '';
+    var slateHtml = '';
+    if (fields.slateDateEt) {
+      var slateAgeText = slateAge == null ? 'age unknown'
+        : slateAge <= 0 ? 'current'
+          : slateAge + ' day' + (slateAge === 1 ? '' : 's') + ' old';
+      slateHtml = '<span class="ca-datastatus-slate">Slate shown: ' + fmtSlateDate(fields.slateDateEt)
+        + ' — ' + slateAgeText + '</span>';
+      if (slateAge != null && slateAge > 0) {
+        slateHtml += '<button type="button" class="ca-datastatus-retry">'
+          + String(fields.recoveryLabel || 'Retry slate').replace(/[<>]/g, '') + '</button>';
+      }
+    }
     el.innerHTML =
       '<span class="ca-datastatus-dot" aria-hidden="true"></span>' +
-      '<span class="ca-datastatus-age">Display age: ' + age + '</span>' +
+      '<span class="ca-datastatus-age">Published: ' + age + '</span>' +
       src +
+      slateHtml +
       '<span class="ca-datastatus-meta">Cutoff: ' + fmtAge(cutoff, now) +
       ' · Quote: ' + fmtAge(quote, now) +
       ' · Published: ' + fmtAge(published, now) + '</span>' +
       issueHtml;
+    var retry = el.querySelector('.ca-datastatus-retry');
+    if (retry) retry.addEventListener('click', function () {
+      if (typeof fields.onRecover === 'function') fields.onRecover();
+      else global.location.reload();
+    });
     return { age: age, state: state, as_of: fields.as_of || null };
   }
 
@@ -196,9 +275,13 @@
     parseTs: parseTs,
     fmtAge: fmtAge,
     parseLastUpdatedCsv: parseLastUpdatedCsv,
+    parseNewestSlateDateCsv: parseNewestSlateDateCsv,
     fieldsFromParsed: fieldsFromParsed,
     unknownFields: unknownFields,
     freshnessFromAsOf: freshnessFromAsOf,
+    easternDateIso: easternDateIso,
+    slateAgeDays: slateAgeDays,
+    fmtSlateDate: fmtSlateDate,
     fetchLastUpdated: fetchLastUpdated,
     render: render,
     bindResume: bindResume

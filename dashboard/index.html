@@ -25,8 +25,8 @@
 <meta name="twitter:description" content="Matchups, team rankings, and research tools built on proprietary MLB offensive metrics.">
 <meta name="twitter:image" content="https://chase-analytics.com/assets/chase-logo-horizontal.png">
 <title>Chase Analytics — MLB Matchup &amp; Offensive Intelligence</title>
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
-<script src="design_layer_version.js?v=20260908a"></script>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908b">
+<script src="design_layer_version.js?v=20260908b"></script>
 <style>
 
 
@@ -2606,20 +2606,20 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260908a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260908a">
-<link rel="stylesheet" href="theme.css?v=20260908a">
-<link rel="stylesheet" href="chase_nav.css?v=20260908a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260908a">
-<link rel="stylesheet" href="research_lab.css?v=20260908a">
-<link rel="stylesheet" href="bullpen_usage.css?v=20260908a">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260908a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260908b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260908b">
+<link rel="stylesheet" href="theme.css?v=20260908b">
+<link rel="stylesheet" href="chase_nav.css?v=20260908b">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260908b">
+<link rel="stylesheet" href="research_lab.css?v=20260908b">
+<link rel="stylesheet" href="bullpen_usage.css?v=20260908b">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260908b">
 <!-- Shared mobile/tablet responsive layer. Loaded LAST so its @media (max-width)
      overrides win the cascade. All rules are gated behind max-width / hover:none,
      so desktop layout is untouched. Drives the mobile table->card transform
      (mobile_cardify.js stamps the classes this styles) and the matchup-card
      mobile redesign. -->
-<link rel="stylesheet" href="responsive.css?v=20260908a">
+<link rel="stylesheet" href="responsive.css?v=20260908b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
@@ -2736,18 +2736,18 @@ body.view-research .ca-lab { display: block; }
 })();
 </script>
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="chase_datastatus.js?v=20260908d"></script>
+<script src="chase_datastatus.js?v=20260908e"></script>
 <script src="mlbma_ui.js?v=20260908d" data-page="index.html"></script>
 <script src="mlbma_assets.js?v=20260908c"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
-<script src="matchup_shared.js?v=20260908d"></script>
+<script src="matchup_shared.js?v=20260908e"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260622d"></script>
 <script src="profile_controls.js?v=20260527s"></script>
 <script src="platform_dashboard.js?v=20260717e"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260615b"></script>
-<script src="lineup_view.js?v=20260908d"></script>
+<script src="lineup_view.js?v=20260908e"></script>
 <script src="trends_heatmap.js?v=20260622e"></script>
 <script src="bullpen_usage.js?v=20260610b"></script>
 <script src="pitcher_lab.js?v=20260908d"></script>
@@ -3478,7 +3478,18 @@ function showSlateFreshnessBanner() {
   var sync = LIVE_DATA.lastUpdated || 'unknown';
   var liveN = (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.games) ? LIVE_DATA._liveSchedule.games.length : 0;
   var liveDate = (LIVE_DATA._liveSchedule && LIVE_DATA._liveSchedule.date) ? LIVE_DATA._liveSchedule.date : '';
-  if (liveN && n !== liveN) {
+  var slateDate = LIVE_DATA._slateSheetDate || LIVE_DATA.slateDateEt || '';
+  var slateAge = window.ChaseDataStatus ? ChaseDataStatus.slateAgeDays(slateDate) : null;
+  if (slateDate && slateAge != null && slateAge > 0) {
+    var shown = window.ChaseDataStatus ? ChaseDataStatus.fmtSlateDate(slateDate) : slateDate;
+    el.innerHTML = '<strong>Slate shown: ' + shown + ' — ' + slateAge + ' day' + (slateAge === 1 ? '' : 's')
+      + ' old.</strong> No stale games are displayed. '
+      + '<button type="button" class="hub-pill" data-retry-slate>Retry slate</button>';
+    var retry = el.querySelector('[data-retry-slate]');
+    if (retry) retry.addEventListener('click', function() { window.location.reload(); });
+    el.style.borderColor = 'rgba(245,158,11,0.45)';
+    el.style.color = '#F59E0B';
+  } else if (liveN && n !== liveN) {
     el.textContent = 'Showing ' + n + ' games (MLB live schedule has ' + liveN + ' for ' + liveDate + '). Sheet sync: ' + sync + '.';
     el.style.borderColor = 'rgba(245,158,11,0.45)';
     el.style.color = '#F59E0B';
@@ -3497,13 +3508,18 @@ function showSlateFreshnessBanner() {
     el.style.color = '';
   }
   var src = LIVE_DATA._slateSource || '';
-  if (src.indexOf('scrape_lineups') >= 0 || src.indexOf('MLB API') >= 0) {
+  if (!(slateDate && slateAge != null && slateAge > 0)
+      && (src.indexOf('scrape_lineups') >= 0 || src.indexOf('MLB API') >= 0)) {
     el.textContent = 'Showing ' + n + ' games from live MLB schedule (ET). Sheet slate missing today\u2019s date — run: python -m scrapers.scrape_lineups';
     el.style.borderColor = 'rgba(245,158,11,0.45)';
     el.style.color = '#F59E0B';
   }
   el.style.display = 'block';
 }
+
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') showSlateFreshnessBanner();
+});
 
 function parseCSV(text) {
   var lines = text.trim().split('\n');
@@ -4939,12 +4955,16 @@ function enrichSpProfilesFromLive() {
   S.enrichSpProfiles(LIVE_DATA.spProfiles, oorMap);
 }
 
-function parseLastUpdatedFromText(text) {
+function parseLastUpdatedFieldsFromText(text) {
   if (window.ChaseDataStatus && ChaseDataStatus.parseLastUpdatedCsv) {
-    var parsed = ChaseDataStatus.parseLastUpdatedCsv(text);
-    return parsed.as_of || parsed.slateDateEt || null;
+    return ChaseDataStatus.parseLastUpdatedCsv(text);
   }
-  return null;
+  return { as_of: null, slateDateEt: null };
+}
+
+function parseLastUpdatedFromText(text) {
+  var parsed = parseLastUpdatedFieldsFromText(text);
+  return parsed.as_of || parsed.slateDateEt || null;
 }
 
 
@@ -5103,10 +5123,14 @@ function loadLandingData() {
     LIVE_DATA.signalsToday = LIVE_DATA.signalsToday || [];
     LIVE_DATA.weather = LIVE_DATA.weather || {};
     LIVE_DATA.playerRegistry = LIVE_DATA.playerRegistry || [];
-    LIVE_DATA.lastUpdated = parseLastUpdatedFromText(tsText) || sheetSyncProbeTs || null;
+    var lastUpdatedFields = parseLastUpdatedFieldsFromText(tsText);
+    LIVE_DATA.lastUpdated = lastUpdatedFields.as_of || lastUpdatedFields.slateDateEt || sheetSyncProbeTs || null;
+    LIVE_DATA.slateDateEt = lastUpdatedFields.slateDateEt || null;
     if (LIVE_DATA.lastUpdated) {
       applySheetSyncBust(LIVE_DATA.lastUpdated);
-      syncFreshnessIndicator(LIVE_DATA.lastUpdated);
+      syncFreshnessIndicator(window.ChaseDataStatus
+        ? ChaseDataStatus.fieldsFromParsed(lastUpdatedFields, { source: 'sheet', sport: 'mlb' })
+        : LIVE_DATA.lastUpdated);
     }
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });

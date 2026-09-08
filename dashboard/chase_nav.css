@@ -244,6 +244,26 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
+/* DataStatus is deliberately richer on content surfaces; the nav keeps the two
+   facts compact so freshness cannot widen the fixed header. */
+.chase-header .ca-datastatus {
+  flex-wrap: nowrap;
+  gap: 6px;
+  max-width: 520px;
+  white-space: nowrap;
+}
+.chase-header .ca-datastatus-meta,
+.chase-header .ca-datastatus-source { display: none; }
+@media (max-width: 1200px) {
+  .chase-header .ca-datastatus-age,
+  .chase-header .ca-datastatus-retry { display: none; }
+}
+@media (min-width: 769px) and (max-width: 1100px) {
+  .chase-header .ca-datastatus-slate,
+  .chase-header .ca-datastatus-dot { display: none; }
+  .chase-header .ca-datastatus { gap: 0; }
+}
+
 .chase-pipeline-dot {
   width: 8px;
   height: 8px;

@@ -33,6 +33,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("edge_withheld_reason", text)
         self.assertIn("hamburgerBtn", text)
         self.assertIn("ChaseModelStatus", text)
+        self.assertIn("marginAxisHtml", text)
+        self.assertNotIn("RECORD_URL", text)
         self.assertNotIn("sports/mlb.js", text)
 
 
@@ -42,6 +44,21 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("chase-board/1", js)
         self.assertIn("kickoff_utc", js)
         self.assertIn("edge_withheld_reason", js)
+        self.assertIn("market_gap", js)
+        self.assertIn("sport === 'mlb' ? 2.5 : 6", js)
+
+    def test_public_adapters_do_not_fetch_performance_ledgers(self):
+        for sport in ("mlb", "nfl", "wnba", "cfb"):
+            js = (ROOT / "dashboard" / "sports" / f"{sport}.js").read_text(encoding="utf-8")
+            self.assertNotIn("RECORD_URL", js)
+
+    def test_mlb_matchup_uses_lineup_model_ranker(self):
+        adapter = (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8")
+        view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
+        compare = (ROOT / "dashboard" / "matchup_compare.js").read_text(encoding="utf-8")
+        self.assertIn("mountMatchupRankings", adapter)
+        self.assertIn("LM.rankAll(matchupFilter", view)
+        self.assertIn("mcTeamRankings", compare)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
@@ -52,6 +69,13 @@ class AdapterHoleTests(unittest.TestCase):
         ui = (ROOT / "dashboard" / "mlbma_ui.js").read_text(encoding="utf-8")
         self.assertIn("ChaseDataStatus.fetchLastUpdated", ui)
         self.assertNotIn("Last Updated", ui)
+
+    def test_slate_age_is_separate_from_publication_age(self):
+        status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")
+        self.assertIn("parseNewestSlateDateCsv", status)
+        self.assertIn("Slate shown:", status)
+        self.assertIn("slateAgeDays", status)
+        self.assertIn("Retry slate", status)
 
 
 class CaptureGuardTests(unittest.TestCase):

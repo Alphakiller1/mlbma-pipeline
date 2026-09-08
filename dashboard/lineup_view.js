@@ -133,6 +133,20 @@
       + '.lv-team-card-metric .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);min-width:7.5em}'
       + '.lv-league-expander{margin-top:4px;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px 12px;background:var(--bg-2)}'
       + '.lv-league-expander>summary{cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);min-height:44px;display:flex;align-items:center}'
+      + '.lv-matchup{margin:18px 0}.lv-matchup .lv-bar{margin-bottom:10px}'
+      + '.lv-matchup-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}'
+      + '.lv-matchup-control{display:flex;flex-direction:column;gap:6px}'
+      + '.lv-matchup-control .lv-pills{gap:6px}'
+      + '.lv-matchup-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}'
+      + '.lv-matchup-team{background:var(--bg-3);border:1px solid var(--border);border-radius:14px;padding:14px}'
+      + '.lv-matchup-team-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}'
+      + '.lv-matchup-team-context{font-size:12px;color:var(--text-2);margin-bottom:10px}'
+      + '.lv-matchup-team-metrics{display:flex;flex-direction:column;gap:8px}'
+      + '.lv-matchup-team-metric{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}'
+      + '.lv-matchup-team-metric .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}'
+      + '.lv-matchup-overrides{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0 12px}'
+      + '.lv-matchup-note{font-size:12px;color:var(--text-2);margin:0 0 8px}'
+      + '@media(max-width:700px){.lv-matchup-teams{grid-template-columns:1fr}}'
       + '.ca-scopebar .hub-pill,.ca-scopebar .lv-pill{min-height:44px}'
       + '@media(max-width:767px){'
       + '.lv-sort-pills{display:flex}'
@@ -844,5 +858,162 @@
     };
   }
 
-  global.LineupView = { mount: mount };
+  function matchupHand(hand) {
+    var h = String(hand || '').trim().toLowerCase().charAt(0);
+    return h === 'l' || h === 'r' ? h : 'both';
+  }
+
+  function resolvedRows(value) {
+    return value && !Array.isArray(value) && Array.isArray(value.rows) ? value.rows : (value || []);
+  }
+
+  function matchupPill(kind, value, label, active, disabled) {
+    return '<button type="button" class="hub-pill lv-pill' + (active ? ' active' : '') + '" data-mr-kind="'
+      + kind + '" data-mr-value="' + value + '"' + (disabled ? ' disabled' : '') + '>' + esc(label) + '</button>';
+  }
+
+  function matchupFilter(state, side) {
+    var ctx = state.contexts[side];
+    var locked = state.family === 'surface';
+    return normalizeFilter({
+      hand: locked ? 'both' : ctx.hand,
+      location: ctx.location,
+      pitcher: 'both',
+      batSide: locked ? 'both' : ctx.batSide,
+      segment: state.segment,
+      window: state.window
+    });
+  }
+
+  function matchupContextText(state, side) {
+    var ctx = state.contexts[side];
+    if (state.family === 'surface') {
+      return (side === 'away' ? 'Away split' : 'Home split') + ' · team results (starter hand and bat side do not apply)';
+    }
+    var hand = ctx.hand === 'l' ? 'LHP' : ctx.hand === 'r' ? 'RHP' : 'all pitchers';
+    var pitcher = ctx.opposingStarter && ctx.opposingStarter !== 'TBD' ? ' ' + ctx.opposingStarter : '';
+    var bats = ctx.batSide === 'both' ? '' : ' · ' + ctx.batSide.toUpperCase() + '-side bats';
+    return (side === 'away' ? 'Away split' : 'Home split') + ' · vs ' + hand + pitcher + bats;
+  }
+
+  function matchupTeamCard(state, side, rows) {
+    var ctx = state.contexts[side];
+    var defs = visibleDefsForDensity(familyDefs(state.family));
+    var maps = leagueRankMaps(rows, defs);
+    var ranges = rangeMapForDefs(rows, defs);
+    var row = (rows || []).find(function(r) { return teamKey(r.t) === teamKey(ctx.team); });
+    var metrics = defs.map(function(def) {
+      return '<div class="lv-matchup-team-metric"><span class="lab">' + esc(def.label) + '</span><span>'
+        + (row ? valueWithRankHtml(def, row, ranges, maps) : '—') + '</span></div>';
+    }).join('');
+    return '<article class="lv-matchup-team" data-team="' + esc(ctx.team) + '">'
+      + '<div class="lv-matchup-team-head">' + teamLogoHtml(ctx.team, 30) + '<strong>' + esc(ctx.team) + '</strong></div>'
+      + '<div class="lv-matchup-team-context">' + esc(matchupContextText(state, side)) + '</div>'
+      + '<div class="lv-matchup-team-metrics">' + metrics + '</div></article>';
+  }
+
+  function matchupControlsHtml(state) {
+    function family(value, label) {
+      return matchupPill('family', value, label, state.family === value, false);
+    }
+    function scope(kind, value, label) {
+      return matchupPill(kind, value, label, state[kind] === value, false);
+    }
+    return '<div class="lv-matchup-controls">'
+      + '<div class="lv-matchup-control"><span class="lv-label">View</span><div class="lv-pills">'
+      + family('surface', 'Results') + family('scoring', 'Scoring') + family('difficulty', 'Difficulty') + family('status', 'Projection')
+      + '</div></div>'
+      + '<div class="lv-matchup-control"><span class="lv-label">Window</span><div class="lv-pills">'
+      + scope('window', 'YTD', 'YTD') + scope('window', 'L30', 'L30') + scope('window', 'L14', 'L14') + scope('window', 'L7', 'L7')
+      + '</div></div>'
+      + '<div class="lv-matchup-control"><span class="lv-label">Segment</span><div class="lv-pills">'
+      + scope('segment', 'full', 'Full') + scope('segment', 'f5', 'F5') + '</div></div></div>';
+  }
+
+  function matchupOverridesHtml(state) {
+    var side = state.leagueSide;
+    var ctx = state.contexts[side];
+    var locked = state.family === 'surface';
+    return '<div class="lv-matchup-overrides" aria-label="League comparison context">'
+      + '<div class="lv-matchup-control"><span class="lv-label">League lens</span><div class="lv-pills">'
+      + matchupPill('leagueSide', 'away', state.contexts.away.team, side === 'away', false)
+      + matchupPill('leagueSide', 'home', state.contexts.home.team, side === 'home', false) + '</div></div>'
+      + '<div class="lv-matchup-control"><span class="lv-label">Pitcher hand</span><div class="lv-pills">'
+      + matchupPill('hand', 'both', 'Both', ctx.hand === 'both', locked)
+      + matchupPill('hand', 'r', 'RHP', ctx.hand === 'r', locked)
+      + matchupPill('hand', 'l', 'LHP', ctx.hand === 'l', locked) + '</div></div>'
+      + '<div class="lv-matchup-control"><span class="lv-label">Bat side</span><div class="lv-pills">'
+      + matchupPill('batSide', 'both', 'Both', ctx.batSide === 'both', locked)
+      + matchupPill('batSide', 'r', 'R', ctx.batSide === 'r', locked)
+      + matchupPill('batSide', 'l', 'L', ctx.batSide === 'l', locked) + '</div></div></div>'
+      + (locked ? '<p class="lv-matchup-note">Team results are team-level; pitcher hand and bat side are locked to Both.</p>' : '')
+      + '<p class="lv-matchup-note">League board context: ' + esc(matchupContextText(state, side)) + '.</p>';
+  }
+
+  function mountMatchup(opts) {
+    opts = opts || {};
+    ensureStyles();
+    var el = typeof opts.mountId === 'string' ? document.getElementById(opts.mountId) : opts.element;
+    if (!el || !LM || !LM.rankAll || !opts.away || !opts.home) return null;
+    var state = {
+      family: 'scoring', window: 'YTD', segment: 'full', leagueSide: 'away', sortDir: 'desc', sortKey: 'osi',
+      contexts: {
+        away: { team: teamKey(opts.away), location: 'away', hand: matchupHand(opts.homeHand), batSide: 'both', opposingStarter: opts.homeStarter || 'TBD' },
+        home: { team: teamKey(opts.home), location: 'home', hand: matchupHand(opts.awayHand), batSide: 'both', opposingStarter: opts.awayStarter || 'TBD' }
+      }
+    };
+    el.classList.add('lv-matchup');
+
+    function paint() {
+      normalizeSortState(state);
+      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div>'
+        + matchupControlsHtml(state) + '</div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
+      return Promise.all([
+        LM.rankAll(matchupFilter(state, 'away'), state.family, { includeMeta: true }),
+        LM.rankAll(matchupFilter(state, 'home'), state.family, { includeMeta: true })
+      ]).then(function(values) {
+        var awayRows = resolvedRows(values[0]);
+        var homeRows = resolvedRows(values[1]);
+        var leagueRows = state.leagueSide === 'home' ? homeRows : awayRows;
+        applyLeaguePoolsFromRows(awayRows.concat(homeRows));
+        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div>'
+          + matchupControlsHtml(state) + '</div>'
+          + '<div class="lv-matchup-teams">' + matchupTeamCard(state, 'away', awayRows) + matchupTeamCard(state, 'home', homeRows) + '</div>'
+          + '<div class="lv-matchup-league"><div class="lv-body"></div></div>';
+        renderBody(el.querySelector('.lv-matchup-league'), state, leagueRows);
+        var details = el.querySelector('.lv-league-expander');
+        if (details) {
+          details.removeAttribute('open');
+          var holder = document.createElement('div');
+          holder.innerHTML = matchupOverridesHtml(state);
+          while (holder.lastChild) details.insertBefore(holder.lastChild, details.children[1] || null);
+        }
+      }).catch(function(err) {
+        el.innerHTML = '<div class="lv-note" style="color:var(--neg)">Team rankings unavailable: ' + esc(err && err.message ? err.message : err) + '</div>';
+      });
+    }
+
+    el.addEventListener('click', function(e) {
+      var sort = e.target.closest('[data-a="sort"]');
+      if (sort) {
+        var key = sort.getAttribute('data-k');
+        if (state.sortKey === key) state.sortDir = state.sortDir === 'desc' ? 'asc' : 'desc';
+        else { state.sortKey = key; state.sortDir = 'desc'; }
+        paint();
+        return;
+      }
+      var btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      var kind = btn.getAttribute('data-mr-kind');
+      var value = btn.getAttribute('data-mr-value');
+      if (!kind || !value) return;
+      if (kind === 'family' || kind === 'window' || kind === 'segment' || kind === 'leagueSide') state[kind] = value;
+      else if (kind === 'hand' || kind === 'batSide') state.contexts[state.leagueSide][kind] = value;
+      paint();
+    });
+    paint();
+    return { rerender: paint, getState: function() { return JSON.parse(JSON.stringify(state)); } };
+  }
+
+  global.LineupView = { mount: mount, mountMatchup: mountMatchup };
 })(typeof window !== 'undefined' ? window : this);

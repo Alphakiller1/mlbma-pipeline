@@ -565,6 +565,7 @@
 
   function renderPaneLvL(ctx, state) {
     return '<p class="mc-pane-desc mc-pane-desc--lead">Compare both projected lineups and split-adjusted offensive edges.</p>'
+      + '<div id="mcTeamRankings" aria-live="polite"></div>'
       + renderTeamCompareRadar(ctx.m)
       + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
       + (global.MatchupLineupCompare
@@ -815,6 +816,9 @@
 
     _compareState = state;
     bindCompareUI(root, ctx, state);
+    if (global.ChaseSportMLB && ChaseSportMLB.mountMatchupRankings) {
+      ChaseSportMLB.mountMatchupRankings(root.querySelector('#mcTeamRankings'), ctx);
+    }
     bindRadarResize();
     mountChartsForMode(state.mode, ctx);
     if (state.mode === 'lvP') hydrateLvP(root, ctx, state);
