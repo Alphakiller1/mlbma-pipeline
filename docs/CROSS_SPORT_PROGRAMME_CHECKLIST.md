@@ -160,7 +160,7 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 | WP1-D12 | Amend contract §3.2/§3.3 with **dated 2026-09-08** scoped carve-out: within `dashboard/`, this programme may change navigation, routing, user controls, section count. Structure lock remains **outside** carve-out | mlbma | **done** | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` §3.2.1 | Over-read as rewrite lineup DOM |
 | WP1-D13 | Add PART 2 (modes, colour roles, five concepts, data honesty, density, enforcement) into that contract. Create design-doc **INDEX** marking Current / Product-specific / Medium-specific / Superseded. Do **not** rewrite mlb-model’s three contracts | mlbma | **done** | contract §18; `design/INDEX.md` | mlb-model contracts still contradictory until WP6 |
 
-**WP1 screenshots:** 375 + 1440 × index, team_rankings, team_profile. Port **8766** for preview; do not kill **8765**. Status filled after capture.
+**WP1 screenshots:** captured 2026-09-08 on port **8766** — `docs/wp1-screenshots/` (375 + 1440 × index, team_rankings, team_profile). **0 pageerrors**. Do not kill **8765**. Runtime diag on 8765: team_rankings **14/14 PASS**.
 
 > Note: commit `fd6ef4e` also added early WP3/WP5 files (`chase_datastatus.js`, `dashboard/sports/*`, `404.html`, `nfl/`/`cfb/`/`wnba/` stubs, `/render/` copies). That is **ahead of the WP1-only brief** (nav/routing was supposed to wait). Treat those as unvalidated scaffolding, not a WP3/WP5 done gate.
 
