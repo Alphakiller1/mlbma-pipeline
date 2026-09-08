@@ -1352,8 +1352,8 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'matchup_compare.html', title: "Tonight's Matchups", desc: 'Per-game offense vs pitching leans across the slate.' },
-      { href: 'team_rankings.html', title: 'Team Rankings', desc: 'Full-league OSI and metric leaderboard.' },
+      { href: 'index.html#section-matchups-hero', title: "Tonight's Matchups", desc: 'Per-game offense vs pitching leans across the slate.' },
+      { href: 'matchup_compare.html', title: 'Matchup Analysis', desc: 'League rank lives inside the matchup. Window and segment stay in the ScopeBar.' },
       { href: 'glossary.html', title: 'Metric Glossary', desc: 'How every metric and signal is defined.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {

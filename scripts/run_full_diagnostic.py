@@ -48,7 +48,7 @@ def main() -> int:
             "dashboard_runtime_diag.py",
             [
                 "--base-url",
-                f"{base}/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home",
+                f"{base}/dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home",
                 "--timeout-ms",
                 str(args.timeout_ms),
             ],
@@ -59,11 +59,11 @@ def main() -> int:
         ),
         (
             "trends_runtime_diag.py",
-            ["--base-url", f"{base}/dashboard/chase_analytics_mlb_oem_v7.html", "--timeout-ms", str(args.timeout_ms)],
+            ["--base-url", f"{base}/dashboard/index.html", "--timeout-ms", str(args.timeout_ms)],
         ),
         (
             "compare_runtime_diag.py",
-            ["--base-url", f"{base}/dashboard/chase_analytics_mlb_oem_v7.html", "--timeout-ms", str(args.timeout_ms)],
+            ["--base-url", f"{base}/dashboard/index.html", "--timeout-ms", str(args.timeout_ms)],
         ),
     ]
     if not args.skip_data:

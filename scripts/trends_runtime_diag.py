@@ -122,8 +122,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run Trends Heat Map runtime diagnostics.")
     parser.add_argument(
         "--base-url",
-        default="http://127.0.0.1:8765/dashboard/chase_analytics_mlb_oem_v7.html",
-        help="Full URL to OEM dashboard page.",
+        default="http://127.0.0.1:8765/dashboard/index.html",
+        help="Full URL to the opening dashboard (Research Lab host).",
     )
     parser.add_argument("--timeout-ms", type=int, default=45000)
     args = parser.parse_args()
