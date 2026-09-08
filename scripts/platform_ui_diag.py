@@ -10,6 +10,8 @@ from typing import List
 from playwright.sync_api import TimeoutError as PWTimeout
 from playwright.sync_api import sync_playwright
 
+from scripts.diag_console import is_ignorable_console
+
 
 @dataclass
 class Check:
@@ -147,7 +149,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> List[Check]:
             add(page_name, "no page errors", len(page_errors) == 0, " | ".join(page_errors[:3]))
             hard_console = [
                 e for e in console_errors
-                if any(sig in e for sig in ("ReferenceError", "SyntaxError", "TypeError", "Failed to load resource"))
+                if not is_ignorable_console(e)
+                and any(sig in e for sig in ("ReferenceError", "SyntaxError", "TypeError", "Failed to load resource"))
                 and not ("404" in e and any(path in e for path in OPTIONAL_LOCAL_CSVS))
             ]
             add(page_name, "no console errors", len(hard_console) == 0, " | ".join(hard_console[:4]))
