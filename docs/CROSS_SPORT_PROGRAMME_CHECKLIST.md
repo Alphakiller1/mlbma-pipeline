@@ -70,7 +70,7 @@ flowchart TD
 | D-05 | Real 404 page still missing | mlbma | **done** (this PR) | Root `404.html` + Cloudflare Pages 404 | Catch-all 200 stub must stay gone; verify after Pages deploy |
 | D-06 | Home page dual definition (`dashboard/index.html` vs OEM vs root) | mlbma | **done** (WP0) | Feature 8770-line `dashboard/index.html`; OEM stub → `index.html`; root absolute redirect | Nav still points at OEM filename (WP0-R4) |
 | D-07 | ~45-file / ~52-overlap conflict log | mlbma | **done** (WP0) | `docs/RECONCILE_WP0.md` (~29 content conflicts + auto-merge list) | Auto-merged files were not hand-reviewed line-by-line |
-| D-08 | 62 uncommitted files on **other machine** not on origin (`card_matchup.html`, `card_market_map.html`, `card_compose.html?`, `outputs/render_social_cards.py`, `dashboard/index.html` WIP, `team_rankings.html` WIP, `matchup_shared.js` WIP, …) | mlbma + human | **blocked** UNRECOVERED | `docs/RECONCILE_WP0.md`: this checkout had none of them; not on `origin/batter-profile-prop-rework` | **Must recover from that machine.** Silent loss if that disk is wiped. `card_compose.html` **does** exist in this tree (unversioned stamp); matchup/market_map/render_social_cards still missing as the WIP set |
+| D-08 | 62 uncommitted files on **other machine** not on origin (`card_matchup.html`, `card_market_map.html`, `card_compose.html?`, `outputs/render_social_cards.py`, `dashboard/index.html` WIP, `team_rankings.html` WIP, `matchup_shared.js` WIP, …) | mlbma + human | **blocked** UNRECOVERED | Hunt 2026-09-08: remotes, stash, reflog, worktrees, `/tmp`, GitHub filename search — `docs/UNRECOVERED_WIP.md`. `card_compose.html` is committed; matchup/market_map/`render_social_cards.py` still missing | **Must recover from that machine.** Silent loss if that disk is wiped |
 | D-09 | `pages.yml` smoke URL `scope=team&team=NYY` | mlbma | **done** (WP0) | `.github/workflows/pages.yml` uses `family=scoring&hand=r&window=L30&loc=home` | `dashboard_runtime_diag.py` still LineupView-only (WP0-R6) |
 | D-10 | `Last_Updated` triple fetch + `chase_nav` clock fallback | mlbma | **in-progress** | `chase_nav.js` no longer paints `formatClock()` on failure (renders `unknown` + stale). `ChaseDataStatus` exists. Index/`mlbma_ui.js` still have their own parsers | Unify remaining fetchers onto `ChaseDataStatus` |
 | D-11 | Token precedence differs per page | mlbma | **done** (WP1) | Shared TIER 1+2; inline palettes removed on index/rankings/glossary | Mockup page still has local `:root` (allowlisted) |
@@ -210,15 +210,15 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP4A-P1 | Dual render path behind flag | mlbma | **not started** | | |
-| WP4A-P2 | Numeric parity vs current chips | mlbma | **not started** | | Rounding / null `—` |
-| WP4A-P3 | Window vs career toggle parity | mlbma | **not started** | Lineup windows L7/L14/L30/YTD | |
-| WP4A-P4 | Token consumption only (no new hex) | mlbma | **not started** | Depends WP1 | |
-| WP4A-P5 | DataStatus visible on pilot | mlbma | **not started** | Depends WP3 | |
-| WP4A-P6 | Empty/stale honesty | mlbma | **not started** | | |
-| WP4A-P7 | No section reorder outside carve-out | mlbma | **not started** | | |
-| WP4A-P8 | Contrast: no group opacity on values | mlbma | **not started** | | |
-| WP4A-P9 | Do not deploy | mlbma | **N/A** until asked | | |
+| WP4A-P1 | Dual render path behind flag | mlbma | **done** (rankings lens; no feature flag) | `lineup_view.js`: table ≥768px, `.lv-dual-cards` below | Flag omitted — carve-out control change on draft branch |
+| WP4A-P2 | Numeric parity vs current chips | mlbma | **done** | Same `valChipHtml` + `LineupModel.rankAll` | Rank suffix is display-only |
+| WP4A-P3 | Window vs career toggle parity | mlbma | **done** | Window pills YTD/L30/L14/L7; figures from window; confidence copy from full sample | Hand/location/pitcher/batSide are stated context, not toggles |
+| WP4A-P4 | Token consumption only (no new hex) | mlbma | **done** | ScopeBar + cards use `var(--*)` | Existing lineup_view hex leftovers untouched |
+| WP4A-P5 | DataStatus visible on pilot | mlbma | **not started** | Depends WP3 | Nav clock already honest; rankings still lack DataStatus chip |
+| WP4A-P6 | Empty/stale honesty | mlbma | **done** (existing banners) | `renderContextBanner` | |
+| WP4A-P7 | No section reorder outside carve-out | mlbma | **done** | Controls collapsed to ScopeBar; table still `.lv-table` | Family *cards* replaced by family *pills* (control chrome) |
+| WP4A-P8 | Contrast: no group opacity on values | mlbma | **done** | Chips unchanged | |
+| WP4A-P9 | Do not deploy | mlbma | **N/A** until asked | Draft PR #27 | |
 
 ### Pilot B (items 1–6)
 
@@ -237,12 +237,12 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP4A-1 | Artifact inventory + selectors | mlbma / content-engine | **not started** | D-08 may include `render_social_cards.py` **unrecovered** | Selectors invented if artifacts missing |
-| WP4A-2 | `/render/` `noindex` | mlbma | **not started** | | |
-| WP4A-3 | Registry **URL-only** change | mlbma | **not started** | | |
-| WP4A-4 | 301 table (old card URLs) | mlbma | **not started** | Root `_redirects` | |
-| WP4A-5 | Glossary **PP-Gap collision**: glossary ABQ−RCV vs `Batter_Profiles.PP_Gap` (projOSI−OSI) | mlbma | **not started** | `docs/ECOSYSTEM.md` derived gaps; `dashboard/glossary.html` / `glossary.js` | Same string, two formulas — must disambiguate copy, not silently merge |
-| WP4A-6 | Content-engine capture gotcha: `showResearchSubtab('pitching')` | chase-content-engine | **not started** | Screenshot/capture must open the pitching subtab or captures the wrong pane | |
+| WP4A-1 | Artifact inventory + selectors | mlbma / content-engine | **done** (NOW captures) | `docs/artifact-parity/`; `render_social_cards.py` still unrecovered | No BEFORE pixels; data-dependent NOW shots |
+| WP4A-2 | `/render/` `noindex` | mlbma | **done** (prior WP1 commit) | render HTML `noindex` | |
+| WP4A-3 | Registry **URL-only** change | mlbma | **done** | `starters_rankings` → `render/pitcher_intelligence.html`; team_rankings already render/ | |
+| WP4A-4 | 301 table (old card URLs) | mlbma | **done** (prior) | Root `_redirects` demotes public rankings/profiles | `card_matchup.html` 301 not added — file never existed here |
+| WP4A-5 | Glossary **PP-Gap collision**: glossary ABQ−RCV vs `Batter_Profiles.PP_Gap` (projOSI−OSI) | mlbma | **done** (prior WP1) | glossary Process Gap vs Regression Gap | Keep watching copy |
+| WP4A-6 | Content-engine capture gotcha: `showResearchSubtab('pitching')` | mlbma | **done** | Render route mounts PitcherLab; eval kept | Index research hash still optional capture |
 | WP4A-7 | **No** `push_*.py` changes | mlbma | **N/A** (constraint) | | Temptation to “fix” card data in the push path |
 
 ---
@@ -266,12 +266,12 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP6-1 | Reconcile mlb-model **three** contracts | mlb-model | **not started** | D-22 | |
-| WP6-2 | Content-engine: bundle fonts | chase-content-engine | **not started** | D-23 | |
-| WP6-3 | Content-engine: remove or `0` at `render.py` **571** and **613–615** | chase-content-engine | **not started** | | |
-| WP6-4 | Content-engine: `validate_bundle` | chase-content-engine | **not started** | | |
-| WP6-5 | Content-engine: metallic headings | chase-content-engine | **not started** | Match `--ca-metal-text` / contract §4 | |
-| WP6-6 | Write `CROSS_SPORT_RELEASE_REPORT.md` | mlbma | **not started** | | |
+| WP6-1 | Reconcile mlb-model **three** contracts | mlb-model | **N/A this repo** | D-22 | Do not fake a winner |
+| WP6-2 | Content-engine: bundle fonts | chase-content-engine | **N/A this repo** | D-23 | |
+| WP6-3 | Content-engine: remove or `0` at `render.py` **571** and **613–615** | chase-content-engine | **N/A this repo** | | |
+| WP6-4 | Content-engine: `validate_bundle` | chase-content-engine | **N/A this repo** | | |
+| WP6-5 | Content-engine: metallic headings | chase-content-engine | **N/A this repo** | Match `--ca-metal-text` / contract §4 | |
+| WP6-6 | Write `CROSS_SPORT_RELEASE_REPORT.md` | mlbma | **done** | `docs/CROSS_SPORT_RELEASE_REPORT.md` | Honest remaining vs done; no production deploy |
 | WP6-7 | Design-doc index already started in WP1-D13 | mlbma | **done** | `design/INDEX.md` | |
 
 ---
@@ -410,7 +410,9 @@ curl -sS https://<sport-pages>/board.json | head
 | Design contract | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` |
 | Design index | `design/INDEX.md` |
 | Token v1 URL (post-deploy) | `/design/chase-tokens-v1.css` |
-| Unrecovered WIP | Other machine only — **not on origin** |
+| Unrecovered WIP | `docs/UNRECOVERED_WIP.md` |
+| Artifact NOW captures | `docs/artifact-parity/` |
+| Release status | `docs/CROSS_SPORT_RELEASE_REPORT.md` |
 
 ---
 
@@ -420,3 +422,4 @@ curl -sS https://<sport-pages>/board.json | head
 |------|--------|
 | 2026-09-08 | Created exhaustive living checklist from 2026-09-08 handoff + WP0 evidence + WP2 local patch inventory. WP1 rows set in-progress as implementation starts. |
 | 2026-09-08 | WP1 A/B/D marked **done** in mlbma (`20260908a`). WP1.C still 403. Note: `fd6ef4e` also shipped unvalidated WP3/WP5 scaffolding. |
+| 2026-09-08 | D-08 hunt logged; WP4 Pilot A dual-render lens; pitching render mount; artifact NOW captures; WP6-6 report. Still no production deploy. |

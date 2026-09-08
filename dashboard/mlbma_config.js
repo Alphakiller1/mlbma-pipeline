@@ -155,6 +155,15 @@ window.MLBMA_CONFIG = {
 }
 };
 
+MLBMA_CONFIG.FILTER_DEFAULTS = MLBMA_CONFIG.FILTER_DEFAULTS || {
+  hand: 'both',
+  location: 'all',
+  pitcher: 'both',
+  batSide: 'both',
+  segment: 'full',
+  window: 'YTD'
+};
+
 /* Legacy aliases */
 window.MLBMA_SHEET_ID = MLBMA_CONFIG.SHEET_ID;
 window.MLBMA_FIP_CONSTANT = MLBMA_CONFIG.FIP_CONSTANT;

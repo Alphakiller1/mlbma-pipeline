@@ -121,7 +121,24 @@
       + '.lv-phase{font-size:10px;color:var(--warn);margin-left:6px}'
       + '.lv-note{font-size:12px;color:var(--text-2);padding:14px}'
       + '.lv-banner{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.45;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2)}'
-      + '.lv-banner.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--gold)}';
+      + '.lv-banner.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--gold)}'
+      + '.lv-lg-rank{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums;margin-left:6px;white-space:nowrap}'
+      + '.lv-sort-pills{display:none;flex-wrap:wrap;gap:8px;margin:0 0 10px}'
+      + '.lv-dual-cards{display:none;flex-direction:column;gap:10px}'
+      + '.lv-team-card{background:var(--bg-3);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px}'
+      + '.lv-team-card-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}'
+      + '.lv-team-card-rank{font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:18px;color:var(--text-2);min-width:1.6em}'
+      + '.lv-team-card-metrics{display:flex;flex-direction:column;gap:8px}'
+      + '.lv-team-card-metric{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;font-size:13px}'
+      + '.lv-team-card-metric .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);min-width:7.5em}'
+      + '.lv-league-expander{margin-top:4px;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px 12px;background:var(--bg-2)}'
+      + '.lv-league-expander>summary{cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);min-height:44px;display:flex;align-items:center}'
+      + '.ca-scopebar .hub-pill,.ca-scopebar .lv-pill{min-height:44px}'
+      + '@media(max-width:767px){'
+      + '.lv-sort-pills{display:flex}'
+      + '.lv-dual-cards{display:flex}'
+      + '.lv-league-expander .lv-table-wrap{display:none!important}'
+      + '}';
     document.head.appendChild(style);
   }
 
@@ -355,71 +372,138 @@
   }
   var SURFACE_LOCK_TIP = 'Not available for Surface Level Wins — win results are team-level, not split by platoon.';
 
-  function renderControls(root, state, teams, meta) {
+  function filterCount(state) {
+    var n = 0;
+    var f = state.filter || {};
+    var d = DEFAULTS.filter;
+    if (state.family !== DEFAULTS.family) n += 1;
+    if (f.window !== d.window) n += 1;
+    if (f.segment !== d.segment) n += 1;
+    if (f.hand !== d.hand) n += 1;
+    if (f.location !== d.location) n += 1;
+    if (f.pitcher !== d.pitcher) n += 1;
+    if (f.batSide !== d.batSide) n += 1;
+    return n;
+  }
+  function statedContextHtml(state) {
+    var f = state.filter;
     var surfaceLock = state.family === 'surface';
-    var rows = ''
-      + lvSec('Metric family', 'bar-chart-3')
-      + '<div class="lv-family-grid">'
-      + familyCard('surface', 'Surface Level Wins', 'Win-facing outcomes for full game, F5, and pitching context.', ['Win%', 'F5 Win%', 'Pitcher Win%'], state)
-      + familyCard('scoring', 'Scoring', 'How much damage the lineup does at the plate.', ['OSI', 'wRC+', 'wOBA', 'RCV'], state)
-      + familyCard('difficulty', 'Difficulty', 'How hard the lineup is to pitch against.', ['ABQ', 'OBR', 'QS% Allowed', 'Pitch/Inn', 'Pitch Score Against'], state)
-      + familyCard('status', 'Status-Projection', 'How current output compares with projection/process.', ['projOSI', 'PP-Gap', 'PALS', 'xwOBA', 'xFIP Faced'], state)
-      + '</div>'
-      + lvSec('Lens context', 'target')
-      + '<div class="lv-lens">'
-      + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills">'
-      // Win results are team-level — platoon and batter-side splits don't exist for the
-      // Surface family, so disable those pills (with a tooltip) instead of no-op clicks.
-      + pill('hand', 'both', 'Both', state, surfaceLock, SURFACE_LOCK_TIP) + pill('hand', 'r', 'vs RHP', state, surfaceLock, SURFACE_LOCK_TIP) + pill('hand', 'l', 'vs LHP', state, surfaceLock, SURFACE_LOCK_TIP) + '</div></div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills">'
-      + pill('pitcher', 'both', 'Both', state, false) + pill('pitcher', 'sp', 'SP', state, false) + pill('pitcher', 'rp', 'RP', state, false) + '</div></div>'
-      + '</div>'
-      + '<div class="lv-cat"><div class="lv-cat-h">Situation</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Location</span><div class="lv-pills">'
-      + pill('location', 'all', 'All', state, false) + pill('location', 'home', 'Home', state, false) + pill('location', 'away', 'Away', state, false) + '</div></div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Segment</span><div class="lv-pills">'
-      + pill('segment', 'full', 'Full', state, false) + pill('segment', 'f5', 'F5', state, false) + '</div></div>'
-      + '</div>'
-      + '<div class="lv-cat"><div class="lv-cat-h">Lineup side</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Bats</span><div class="lv-pills">'
-      + pill('batSide', 'both', 'Both', state, surfaceLock, SURFACE_LOCK_TIP) + pill('batSide', 'rhb', 'RHB', state, surfaceLock, SURFACE_LOCK_TIP) + pill('batSide', 'lhb', 'LHB', state, surfaceLock, SURFACE_LOCK_TIP) + '</div></div>'
-      + '</div>'
-      + '<div class="lv-cat"><div class="lv-cat-h">Time window</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Range</span><div class="lv-pills">'
-      + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false) + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false) + '</div></div>'
-      + '</div>'
-      + '</div>'
-      + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>'
-      + renderContextBanner(meta, state);
-    root.querySelector('.lv-controls').innerHTML = rows;
+    var hand = f.hand === 'r' ? 'vs RHP' : (f.hand === 'l' ? 'vs LHP' : 'Both hands');
+    var loc = f.location === 'home' ? 'Home' : (f.location === 'away' ? 'Away' : 'All parks');
+    var pitch = f.pitcher === 'sp' ? 'vs SP' : (f.pitcher === 'rp' ? 'vs RP' : 'SP+RP');
+    var bats = f.batSide === 'rhb' ? 'RHB' : (f.batSide === 'lhb' ? 'LHB' : 'Both bats');
+    var lock = surfaceLock ? ' <span title="' + esc(SURFACE_LOCK_TIP) + '">(surface lock: platoon/bats league-level)</span>' : '';
+    return 'Stated context (not toggles): <strong>' + esc(hand) + '</strong> · <strong>' + esc(loc) + '</strong> · <strong>' + esc(pitch) + '</strong> · <strong>' + esc(bats) + '</strong>' + lock;
+  }
+  function confidenceHtml(state) {
+    var w = (state.filter && state.filter.window) || 'YTD';
+    if (w === 'YTD') {
+      return 'Figures and confidence both use the full-season sample.';
+    }
+    return 'Figures use the ' + esc(w) + ' window. Confidence language uses the full available sample (YTD), not the window slice.';
+  }
+  function familyPill(val, label, state) {
+    var on = state.family === val;
+    return '<button type="button" class="hub-pill lv-pill' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">' + esc(label) + '</button>';
+  }
+  function renderControls(root, state, teams, meta) {
+    var host = root.querySelector('.lv-controls');
+    var intro = lvSec('Matchup analysis lens', 'bar-chart-3', 'Window and segment govern the table; family switches Scoring / Difficulty / Projection. Hand, park, pitcher, and bat side stay stated context.');
+    var rowView = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">View</span><div class="ca-scopebar-pills">'
+      + familyPill('surface', 'Surface', state)
+      + familyPill('scoring', 'Scoring', state)
+      + familyPill('difficulty', 'Difficulty', state)
+      + familyPill('status', 'Projection', state)
+      + '</div></div></div>';
+    var rowScope = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">Window</span><div class="ca-scopebar-pills">'
+      + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false)
+      + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false)
+      + '</div></div><div class="ca-scopebar-group"><span class="ca-scopebar-label">Segment</span><div class="ca-scopebar-pills">'
+      + pill('segment', 'full', 'Full', state, false) + pill('segment', 'f5', 'F5', state, false)
+      + '</div></div></div>';
+    host.innerHTML = intro + '<div class="lv-scope-host"></div>' + renderContextBanner(meta, state);
+    var bar = host.querySelector('.lv-scope-host');
+    if (global.ChaseScopeBar && ChaseScopeBar.render) {
+      ChaseScopeBar.render(bar, {
+        controls: [rowView, rowScope],
+        context: statedContextHtml(state),
+        summary: 'Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong>',
+        confidence: confidenceHtml(state),
+        count: filterCount(state)
+      });
+    } else {
+      bar.innerHTML = rowView + rowScope
+        + '<p class="ca-scopebar-context">' + statedContextHtml(state) + '</p>'
+        + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>';
+    }
   }
   function pill(key, val, label, state, disabled, tip) {
     var on = state.filter[key] === val;
-    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"'
+    return '<button type="button" class="hub-pill lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"'
       + (disabled ? ' disabled' : '') + (disabled && tip ? ' title="' + esc(tip) + '"' : '')
       + '>' + esc(label) + '</button>';
   }
-  function titleCaseDesc(s) {
-    var A = global.MLBMAAssets;
-    return A && A.titleCaseLabel ? A.titleCaseLabel(s) : s;
+  function metricInverts(key) {
+    return key === 'qs' || key === 'pitchScore' || key === 'xfip';
   }
-  function familyCard(val, name, desc, chips, state) {
-    var on = state.family === val;
-    return '<button class="lv-family' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">'
-      + '<div class="lv-family-top"><span class="lv-family-name">' + esc(name) + '</span><span class="lv-family-n">' + chips.length + ' metrics</span></div>'
-      + '<div class="lv-family-desc">' + esc(titleCaseDesc(desc)) + '</div>'
-      + '<div class="lv-family-chips">' + chips.map(function(ch) {
-        var phase = (ch === 'PP-Gap');
-        return '<span class="lv-family-chip' + (phase ? ' phase' : '') + '">' + esc(ch) + '</span>';
-      }).join('') + '</div></button>';
+  function ordinal(n) {
+    var v = n % 100;
+    if (v >= 11 && v <= 13) return n + 'th';
+    switch (n % 10) {
+      case 1: return n + 'st';
+      case 2: return n + 'nd';
+      case 3: return n + 'rd';
+      default: return n + 'th';
+    }
   }
-
+  function leagueRankMaps(rows, defs) {
+    var n = (rows || []).length;
+    var maps = {};
+    (defs || []).forEach(function(def) {
+      if (!def || def.placeholder || def.trend) return;
+      var invert = metricInverts(def.key);
+      var items = (rows || []).map(function(r) {
+        return { t: teamKey(r.t), v: num(r[def.key]) };
+      });
+      items.sort(function(a, b) {
+        if (a.v == null && b.v == null) return 0;
+        if (a.v == null) return 1;
+        if (b.v == null) return -1;
+        if (a.v === b.v) return a.t.localeCompare(b.t);
+        return invert ? (a.v - b.v) : (b.v - a.v);
+      });
+      var ranks = {};
+      var lastVal = null;
+      var lastRank = 0;
+      items.forEach(function(item, idx) {
+        if (item.v == null) { ranks[item.t] = null; return; }
+        if (lastVal == null || item.v !== lastVal) lastRank = idx + 1;
+        lastVal = item.v;
+        ranks[item.t] = lastRank;
+      });
+      maps[def.key] = { ranks: ranks, n: n };
+    });
+    return maps;
+  }
+  function rankSuffix(def, team, maps) {
+    var pack = maps[def.key];
+    if (!pack) return '';
+    var rk = pack.ranks[teamKey(team)];
+    if (rk == null) return '';
+    return '<span class="lv-lg-rank">· ' + ordinal(rk) + ' of ' + pack.n + '</span>';
+  }
+  function valueWithRankHtml(def, row, ranges, maps) {
+    var raw = row[def.key];
+    var safe = sanityOk(def, raw) ? raw : null;
+    if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, row.t, raw);
+    return valueChipHtml(safe, def, ranges[def.key]) + rankSuffix(def, row.t, maps);
+  }
   function renderBody(root, state, rows) {
     var mount = root.querySelector('.lv-body');
     var defs = visibleDefsForDensity(familyDefs(state.family));
     applyLeaguePoolsFromRows(rows);
     var ranges = rangeMapForDefs(rows, defs);
+    var maps = leagueRankMaps(rows, defs);
 
     var sortedRows = (rows || []).slice();
     var sortKey = state.sortKey;
@@ -434,6 +518,13 @@
       return sortDir === 'asc' ? (av - bv) : (bv - av);
     });
 
+    var sortPills = '<div class="lv-sort-pills" role="toolbar" aria-label="Sort">' + defs.map(function(def) {
+      if (def.placeholder) return '';
+      var sorted = state.sortKey === def.key;
+      var arrow = sorted ? (state.sortDir === 'desc' ? ' ↓' : ' ↑') : '';
+      return '<button type="button" class="hub-pill lv-pill' + (sorted ? ' active' : '') + '" data-a="sort" data-k="' + def.key + '">' + esc(def.label) + arrow + '</button>';
+    }).join('') + '</div>';
+
     var head = '<tr><th>#</th><th>Team</th>' + defs.map(function(def) {
       if (def.placeholder) return '<th>' + esc(def.label) + ' <span class="lv-phase">Phase 1</span></th>';
       var sorted = state.sortKey === def.key;
@@ -443,20 +534,35 @@
     var body = sortedRows.map(function(r, idx) {
       var cols = defs.map(function(def) {
         if (def.placeholder) return '<td>— <span class="lv-phase">Phase 1</span></td>';
-        var raw = r[def.key];
-        var safe = sanityOk(def, raw) ? raw : null;
-        if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, r.t, raw);
-        return '<td class="num' + (state.sortKey === def.key ? ' sort-col' : '') + '">' + valueChipHtml(safe, def, ranges[def.key]) + '</td>';
+        return '<td class="num' + (state.sortKey === def.key ? ' sort-col' : '') + '">' + valueWithRankHtml(def, r, ranges, maps) + '</td>';
       }).join('');
       return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td class="lv-rank-num">' + (idx + 1) + '</td><td><span class="lv-team-cell team-cell-bold">'
         + teamLogoHtml(r.t, 28) + '<strong class="ab">' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
     }).join('');
-    mount.innerHTML = '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+
+    var cards = '<div class="lv-dual-cards">' + sortedRows.map(function(r, idx) {
+      var metrics = defs.map(function(def) {
+        if (def.placeholder) return '';
+        return '<div class="lv-team-card-metric"><span class="lab">' + esc(def.label) + '</span>'
+          + valueWithRankHtml(def, r, ranges, maps) + '</div>';
+      }).join('');
+      return '<article class="lv-team-card" data-team="' + esc(r.t) + '"><div class="lv-team-card-head">'
+        + '<span class="lv-team-card-rank">' + (idx + 1) + '</span>'
+        + teamLogoHtml(r.t, 28) + '<strong>' + esc(r.t) + '</strong></div>'
+        + '<div class="lv-team-card-metrics">' + metrics + '</div></article>';
+    }).join('') + '</div>';
+
+    mount.innerHTML = sortPills
+      + '<details class="lv-league-expander" open>'
+      + '<summary>Compare to league</summary>'
+      + '<div class="lv-table-wrap"><table class="lv-table lv-no-cardify"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>'
+      + cards
+      + '</details>';
   }
 
   function bind(root, ctx) {
     root.addEventListener('click', function(e) {
-      var sortTh = e.target.closest('th[data-a="sort"]');
+      var sortTh = e.target.closest('[data-a="sort"]');
       if (sortTh) {
         var sk = sortTh.getAttribute('data-k');
         if (sk) {

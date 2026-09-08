@@ -331,6 +331,7 @@ setTimeout(function() {
 <script id="mlbma-icons-script" src="mlbma_icons.js?v=20260612b"></script>
 <script src="mlbma_ui.js?v=20260612a" data-page="team_rankings.html"></script>
 <script src="matchup_shared.js?v=20260717e"></script>
+<script src="chase_scope.js?v=20260908b"></script>
 <script>
 (function() {
   var _globalErrorHandling = false;
@@ -364,14 +365,14 @@ setTimeout(function() {
   };
 })();
 </script>
-<script src="lineup_view.js?v=20260615c"></script>
-<script src="mobile_cardify.js?v=20260610c"></script>
+<script src="lineup_view.js?v=20260908b"></script>
+<script src="mobile_cardify.js?v=20260908b"></script>
 <script>
 (function() {
   if (window.MLBMAAssets && MLBMAAssets.mountPlatformHeader) {
     MLBMAAssets.mountPlatformHeader('teamRankingsPageHeader', {
       title: 'Team Rankings',
-      subtitle: 'Unified lineup model view across scoring, difficulty, and status-projection families.',
+      subtitle: 'Matchup analysis lens — window and segment in the ScopeBar; hand, park, pitcher, and bat side as stated context.',
       showPlatformNav: false
     });
   }

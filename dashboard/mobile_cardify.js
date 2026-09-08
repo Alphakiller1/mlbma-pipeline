@@ -56,6 +56,7 @@
 
   function cardify(table) {
     if (!table || table.tagName !== 'TABLE') return;
+    if (table.classList.contains('lv-no-cardify') || table.closest('.lv-dual')) return;
     // Use the LAST header row for column labels (handles multi-row grouped headers).
     var headRow = table.querySelector('thead tr:last-child');
     if (!headRow || !headRow.children.length) return;
