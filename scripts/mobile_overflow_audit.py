@@ -83,6 +83,8 @@ _TAP_JS = """
     if (el.closest('[aria-hidden="true"]')) continue;
     if (el.disabled || el.getAttribute('aria-disabled') === 'true') continue;
     if (el.matches('input[type="hidden"]')) continue;
+    // Chart glyphs (<g role="button">) are not chrome tap targets.
+    if (el.closest('svg')) continue;
 
     // WCAG's inline-target exception applies to links within flowing prose. Navigation,
     // buttons, form controls, and role=button elements still require the full target.

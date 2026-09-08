@@ -1728,6 +1728,8 @@ h1.ca-page-title {
   justify-content: center;
   gap: 8px;
   padding: 10px 18px;
+  min-height: 44px;
+  box-sizing: border-box;
   border-radius: 14px;
   font-family: inherit;
   font-size: 13px;
@@ -1850,8 +1852,8 @@ h1.ca-page-title {
 .ca-datastatus-slate { color: var(--text); font-weight: 700; }
 .ca-datastatus[data-state="stale"] .ca-datastatus-slate { color: var(--gold); }
 .ca-datastatus-retry {
-  min-height: 32px;
-  padding: 4px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   border: 1px solid var(--border-2);
   border-radius: 999px;
   background: var(--bg-4);

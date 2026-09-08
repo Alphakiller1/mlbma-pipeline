@@ -1694,11 +1694,13 @@ body.batter-profile-page #pitchMixMount .bp-pm-empty {
 .bp-pt__line-input {
   width: 100%;
   max-width: 72px;
+  min-height: 44px;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   color: var(--text, #F5F6FA);
-  padding: 5px 8px;
+  padding: 8px 8px;
   font-size: var(--bp-base, 14px);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
