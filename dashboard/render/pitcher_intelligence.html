@@ -16,9 +16,9 @@
 <script src="mlbma_config.js?v=20260606b"></script>
 <script src="mlbma_assets.js?v=20260908c"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
-<script src="matchup_shared.js?v=20260717e"></script>
+<script src="matchup_shared.js?v=20260908d"></script>
 <script src="platform_dashboard.js?v=20260717e"></script>
-<script src="pitcher_lab.js?v=20260619d"></script>
+<script src="pitcher_lab.js?v=20260908d"></script>
 </head>
 <body data-mode="rank" class="ca-bg-outfield">
 <main class="container ca-page-shell" style="max-width:1400px;margin:0 auto;padding:20px 24px;">
@@ -32,16 +32,23 @@
 window.LIVE_DATA = window.LIVE_DATA || {
   loaded: false, error: null, oor: [], pitching: [], pals: [],
   matchups: [], lineups: [], todayGames: [], bullpenUnits: {},
-  teamProfilesByTeam: {}, rhp: null, lhp: null
+  teamProfilesByTeam: {}, rhp: null, lhp: null, _captureBoot: true
 };
+window.LIVE_DATA._captureBoot = true;
 function bootPitchingCapture() {
   var S = window.MLBMASharedMatchup;
   var T = window.MLBMA_CONFIG && MLBMA_CONFIG.SHEET_TABS;
-  var load = (S && T && T.today_matchups)
-    ? S.fetchSheetTab(T.today_matchups)
+  var matchupsP = (S && T && T.today_matchups)
+    ? S.fetchSheetTab(T.today_matchups).catch(function() { return []; })
     : Promise.resolve([]);
-  load.then(function(rows) {
-    var parsed = (S && S.parseMatchupRows) ? S.parseMatchupRows(rows || []) : (rows || []);
+  var snapP = fetch('team_rankings_snapshot.json?v=20260616a')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .catch(function() { return null; });
+  Promise.all([matchupsP, snapP]).then(function(pack) {
+    var rows = pack[0] || [];
+    var snap = pack[1];
+    if (snap) window.__MLBMA_RANKINGS_SNAPSHOT = snap;
+    var parsed = (S && S.parseMatchupRows) ? S.parseMatchupRows(rows) : rows;
     window.LIVE_DATA.matchups = parsed;
     window.LIVE_DATA.loaded = true;
     window.showResearchSubtab('pitching');

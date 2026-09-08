@@ -9,7 +9,7 @@
 <title>Chase Analytics — Matchup Comparison</title>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260908a">
 <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260908a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
 <link rel="stylesheet" href="theme.css?v=20260908a">
 <link rel="stylesheet" href="chase_nav.css?v=20260701c">
 <link rel="stylesheet" href="matchup_compare.css?v=20260908a">
@@ -20,7 +20,8 @@
 <script src="mlbma_assets.js?v=20260908c"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
 <script src="mlbma_standings.js?v=20260703b"></script>
-<script src="matchup_shared.js?v=20260717e"></script>
+<script src="chase_datastatus.js?v=20260908d"></script>
+<script src="matchup_shared.js?v=20260908d"></script>
 <script src="matchup_offense_splits.js?v=20260629g"></script>
 <script src="mlbma_charts.js?v=20260612a"></script>
 <script src="matchup_lineup_compare.js?v=20260630b"></script>
@@ -58,9 +59,10 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
         </button>
         <div class="chase-dropdown-menu">
           <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
+          <a href="/mlb/" class="chase-dropdown-item">MLB</a>
           <a href="/nfl/matchups.html" class="chase-dropdown-item">NFL Matchups</a>
-          <a href="/cfb/index.html" class="chase-dropdown-item">CFB Board</a>
-          <a href="/wnba/index.html" class="chase-dropdown-item">WNBA Board</a>
+          <a href="/cfb/" class="chase-dropdown-item">CFB Board</a>
+          <a href="/wnba/" class="chase-dropdown-item">WNBA Board</a>
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
@@ -100,9 +102,10 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
     <a href="index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="matchup_compare.html" class="chase-mobile-link" data-nav="compare">Compare</a>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
+    <a href="/mlb/" class="chase-mobile-link">MLB</a>
     <a href="/nfl/matchups.html" class="chase-mobile-link" data-nav="nfl">NFL Matchups</a>
-    <a href="/cfb/index.html" class="chase-mobile-link">CFB Board</a>
-    <a href="/wnba/index.html" class="chase-mobile-link">WNBA Board</a>
+    <a href="/cfb/" class="chase-mobile-link">CFB Board</a>
+    <a href="/wnba/" class="chase-mobile-link">WNBA Board</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
@@ -117,7 +120,7 @@ body { min-height: 100vh; color: var(--text, #F4F4F7); }
 </div>
 <script src="mlbma_ui.js?v=20260908c" data-page="matchup_compare.html"></script>
 <script src="mobile_cardify.js?v=20260908b"></script>
-<script src="matchup_compare.js?v=20260908a"></script>
+<script src="matchup_compare.js?v=20260908d"></script>
 <script src="chase_nav.js?v=20260701a"></script>
 </body>
 </html>

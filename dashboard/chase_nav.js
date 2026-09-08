@@ -226,76 +226,46 @@
     }
   }
 
-  function formatClock() {
-    var now = new Date();
-    var timeStr = now.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+  function rewriteSportRootNavHrefs() {
+    var path = window.location.pathname || '';
+    if (!/^\/(nfl|cfb|wnba|mlb)(\/|$)/i.test(path)) return;
+    var dash = '/dashboard/';
+    document.querySelectorAll('.chase-header a[href], .chase-mobile-menu a[href]').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (!href || href.charAt(0) === '/' || href.indexOf('http') === 0) return;
+      a.setAttribute('href', dash + href);
     });
-    var dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    return dateStr + ' ' + timeStr;
+    document.querySelectorAll('.chase-header img[src], .chase-mobile-menu img[src]').forEach(function (img) {
+      var src = img.getAttribute('src') || '';
+      if (!src || src.charAt(0) === '/' || src.indexOf('http') === 0) return;
+      img.setAttribute('src', dash + src);
+    });
+  }
+  rewriteSportRootNavHrefs();
+
+  function applyDataStatusFields(fields) {
+    fields = fields || (window.ChaseDataStatus && ChaseDataStatus.unknownFields()) || { state: 'unknown' };
+    var host = document.getElementById('navDataStatus') || document.getElementById('lastUpdated');
+    var painted = window.ChaseDataStatus
+      ? ChaseDataStatus.render(host, fields)
+      : { age: 'unknown', state: 'unknown' };
+    window.ChaseNav.setPipelineStatus(painted.state === 'ok' ? 'fresh' : 'stale');
+    var mobile = document.getElementById('mobileLastUpdated');
+    if (mobile && painted.age) mobile.textContent = painted.age;
+    if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
+      PlatformDashboard.setOpeningHeroSync(painted.age || 'unknown');
+    }
   }
 
-  function parseSheetTimestamp(raw) {
-    if (!raw) return null;
-    var s = String(raw).trim();
-    var d = new Date(s);
-    if (!isNaN(d.getTime())) return d;
-    return null;
-  }
-
-  function hoursSince(d) {
-    return (Date.now() - d.getTime()) / (1000 * 60 * 60);
-  }
-
-  function applyPipelineFromDate(d) {
-    if (!d) return;
-    var stale = hoursSince(d) > 24;
-    window.ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
-    setTimestampText(
-      d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-        ' ' +
-        d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-    );
-  }
-
-  async function loadLastUpdatedFromSheet() {
-    var cfg = window.MLBMA_CONFIG;
-    var sid = cfg && cfg.SHEET_ID;
-    var tab =
-      cfg && cfg.SHEET_TABS && (cfg.SHEET_TABS.last_updated || cfg.SHEET_TABS.Last_Updated);
-    if (!sid || !tab) {
+  function loadLastUpdatedFromSheet() {
+    if (!window.ChaseDataStatus || !ChaseDataStatus.fetchLastUpdated) {
       setTimestampText('unknown');
       window.ChaseNav.setPipelineStatus('stale');
-      return;
+      return Promise.resolve();
     }
-    try {
-      var url =
-        'https://docs.google.com/spreadsheets/d/' +
-        sid +
-        '/gviz/tq?tqx=out:csv&sheet=' +
-        encodeURIComponent(tab);
-      var res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) throw new Error('sheet');
-      var text = await res.text();
-      var line = (text || '').trim().split('\n')[1] || '';
-      var raw = line.split(',')[0].replace(/^"|"$/g, '').trim();
-      var d = parseSheetTimestamp(raw);
-      if (d) {
-        applyPipelineFromDate(d);
-        return;
-      }
-      if (raw) {
-        window.ChaseNav.setLastUpdated(raw);
-      }
-    } catch (e) {
-      setTimestampText('unknown');
-      window.ChaseNav.setPipelineStatus('stale');
-      return;
-    }
-    setTimestampText('unknown');
-    window.ChaseNav.setPipelineStatus('stale');
+    return ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function (fields) {
+      applyDataStatusFields(fields);
+    });
   }
 
   window.ChaseNav = {
@@ -313,8 +283,18 @@
       });
     },
     setLastUpdated: function (timestamp) {
-      setTimestampText(timestamp);
+      // Display-only leftover. Prefer ChaseDataStatus fields; never a wall clock.
+      if (timestamp && typeof timestamp === 'object') {
+        applyDataStatusFields(timestamp);
+        return;
+      }
+      if (!timestamp || timestamp === '?' || timestamp === '--') {
+        setTimestampText('unknown');
+        return;
+      }
+      setTimestampText(String(timestamp));
     },
+    applyDataStatus: applyDataStatusFields,
     refresh: loadLastUpdatedFromSheet
   };
 

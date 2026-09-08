@@ -17,6 +17,7 @@
       + '.ca-scopebar-summary,.ca-scopebar-context{font-size:12px;color:var(--text-2);margin:10px 0 0;line-height:1.5}'
       + '.ca-scopebar-context strong{color:var(--text);font-variant-numeric:tabular-nums}'
       + '.ca-scopebar-confidence{font-size:11px;color:var(--text-3);margin:6px 0 0;line-height:1.45}'
+      + '.ca-scopebar-status{margin:8px 0 0}'
       + '@media(max-width:767px){'
       + '.ca-scopebar-mobile{display:block;margin:0 0 8px}'
       + '.ca-scopebar-mobile summary{cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);list-style:none;min-height:44px;display:flex;align-items:center}'
@@ -33,12 +34,14 @@
     var context = opts.context || '';
     var confidence = opts.confidence || '';
     var count = opts.count || 0;
+    var dataStatus = opts.dataStatusHtml || '<div id="lvDataStatus" class="ca-datastatus" data-state="unknown"></div>';
     el.className = 'ca-scopebar';
     el.innerHTML =
       '<details class="ca-scopebar-mobile"' + (count ? ' open' : '') + '>' +
       '<summary>Filters' + (count ? ' (' + count + ')' : '') + '</summary></details>' +
       '<div class="ca-scopebar-form">' +
       controls.join('') +
+      '<div class="ca-scopebar-status">' + dataStatus + '</div>' +
       (context ? '<p class="ca-scopebar-context">' + context + '</p>' : '') +
       (summary ? '<p class="ca-scopebar-summary">' + summary + '</p>' : '') +
       (confidence ? '<p class="ca-scopebar-confidence">' + confidence + '</p>' : '') +

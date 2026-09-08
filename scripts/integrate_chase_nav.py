@@ -9,7 +9,7 @@ NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
 
 PAGES = [
     "index.html",
-    "chase_analytics_mlb_oem_v7.html",
+    "index.html",
     "signal_board.html",
     "matchup_compare.html",
     "matchup_sheet.html",
@@ -51,10 +51,10 @@ NAV_BLOCK_TRUNCATED_RE = re.compile(
 
 MOBILE_DRAWER_TAIL = (
     "  <div class=\"chase-mobile-nav\">\n"
-    "    <a href=\"chase_analytics_mlb_oem_v7.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
-    "    <a href=\"chase_analytics_mlb_oem_v7.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
+    "    <a href=\"index.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
+    "    <a href=\"index.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
     "    <a href=\"team_rankings.html\" class=\"chase-mobile-link\" data-nav=\"team-rankings\">Team Rankings</a>\n"
-    "    <a href=\"chase_analytics_mlb_oem_v7.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
+    "    <a href=\"index.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
     "    <div class=\"chase-mobile-section\">Profiles</div>\n"
     "    <a href=\"team_profile.html\" class=\"chase-mobile-link\">Team Profile</a>\n"
     "    <a href=\"pitcher_profile.html\" class=\"chase-mobile-link\">Pitcher Profile</a>\n"

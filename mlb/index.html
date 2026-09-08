@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WNBA — Chase Analytics</title>
+  <title>MLB — Chase Analytics</title>
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908a">
   <link rel="stylesheet" href="/dashboard/theme.css?v=20260908a">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908a">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="slate" data-sport="wnba">
+<body data-mode="slate" data-sport="mlb">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -89,26 +89,26 @@
   </div>
 </div>
   <main class="container ca-page-shell" style="max-width:1100px;margin:88px auto 48px;padding:0 16px;">
-    <h1 class="ca-page-title">WNBA board</h1>
-    <p class="ca-helper">WNBA board. Producer JSON is fetched only for this sport. Missing CORS or a 404 is shown as error, not an empty fake slate.</p>
+    <h1 class="ca-page-title">MLB board</h1>
+    <p class="ca-helper">MLB research board. Picks are priced markets, not a wall of recommendations. Gems are flagged tiles from the producer.</p>
     <div id="sportSelect"></div>
-    
+    <p class="ca-helper"><a class="hub-pill" href="/dashboard/index.html#section-matchups-hero">Open matchup surface</a></p>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
-    <div id="slate" class="ca-async">Loading WNBA board…</div>
+    <div id="slate" class="ca-async">Loading MLB board…</div>
   </main>
   <script src="/dashboard/design_layer_version.js?v=20260908a"></script>
   <script src="/dashboard/chase_datastatus.js?v=20260908d"></script>
   <script src="/dashboard/chase_sport_select.js?v=20260908d"></script>
   <script src="/dashboard/sports/chase_board.js?v=20260908d"></script>
-  <script src="/dashboard/sports/wnba.js?v=20260908d"></script>
+  <script src="/dashboard/sports/mlb.js?v=20260908d"></script>
   <script src="/dashboard/chase_asyncstate.js?v=20260908d"></script>
   <script src="/dashboard/chase_nav.js?v=20260908d"></script>
   <script>
-  window.CHASE_SPORT_PAGE = ChaseSportWNBA;
-  window.CHASE_SPORT_ID = 'wnba';
-  window.CHASE_SPORT_PICKS_LABEL = 'Priced markets';
-  window.CHASE_SPORT_GEMS_LABEL = None;
+  window.CHASE_SPORT_PAGE = ChaseSportMLB;
+  window.CHASE_SPORT_ID = 'mlb';
+  window.CHASE_SPORT_PICKS_LABEL = 'Priced markets (Picks)';
+  window.CHASE_SPORT_GEMS_LABEL = 'Flagged tiles (Gems)';
   window.CHASE_SPORT_IS_MATCHUPS = false;
   
 (function () {

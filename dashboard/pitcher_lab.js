@@ -468,8 +468,13 @@
 
   function todayRankingsProfiles() {
     var slots = todaySlateStarters();
-    if (!slots.length) return [];
     var profiles = spProfilePool();
+    if (!slots.length) {
+      var relax = (global.LIVE_DATA && LIVE_DATA._captureBoot) ||
+        (S && S.captureSlateRelax && S.captureSlateRelax());
+      if (relax && profiles.length) return profiles.slice(0, 32);
+      return [];
+    }
     var seen = {};
     var rows = [];
     slots.forEach(function(slot) {
@@ -1510,6 +1515,16 @@
     }
     renderIntelToolbar();
     var tonight = todayStarterRawNames();
+    var captureFallback = false;
+    if (!tonight.length) {
+      var pool = spProfilePool();
+      var relax = (global.LIVE_DATA && LIVE_DATA._captureBoot) ||
+        (S && S.captureSlateRelax && S.captureSlateRelax());
+      if (relax && pool.length) {
+        tonight = pool.map(function(row) { return pickCol(row, ['pitcher_name', 'Name', 'Pitcher']); }).filter(Boolean);
+        captureFallback = true;
+      }
+    }
     if (!tonight.length) {
       mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Today\'s Starters Rankings</h4>'
         + '<p class="pl-section-sub">Projected starters for today\'s slate</p></div>'
@@ -1601,9 +1616,9 @@
       return main + expand;
     }).join('');
 
-    mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">Today\'s Starters Rankings</h4>'
-      + '<p class="pl-section-sub">' + rows.length + ' projected starter' + (rows.length === 1 ? '' : 's')
-      + ' on today\'s slate · sort any column · click pitcher name for full profile · click row for allowed-metrics depth</p></div>'
+    mount.innerHTML = '<div class="pl-section-head"><h4 class="pl-section-title">' + (captureFallback ? 'SP Rankings (capture / snapshot)' : 'Today\'s Starters Rankings') + '</h4>'
+      + '<p class="pl-section-sub">' + rows.length + (captureFallback ? ' rotation SPs' : ' projected starter' + (rows.length === 1 ? '' : 's')
+      + ' on today\'s slate') + ' · sort any column · click pitcher name for full profile · click row for allowed-metrics depth</p></div>'
       + '<div class="rl-table-wrap pl-rank-wrap rl-sticky-table pl-rank-table-wrap"><table class="rl-table-premium pl-rank-table rl-sp-rank-table hub-table"><thead><tr>'
       + '<th class="pl-rank-idx">#</th>'
       + sortThHtml('name', 'Pitcher', { numeric: false })

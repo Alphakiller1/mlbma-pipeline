@@ -162,31 +162,13 @@
   function loadFooterTimestamp() {
     var el = document.getElementById('mlbmaFooterUpdated');
     if (!el) return;
-    var tab =
-      global.MLBMA_CONFIG &&
-      global.MLBMA_CONFIG.SHEET_TABS &&
-      global.MLBMA_CONFIG.SHEET_TABS.last_updated;
-    var url = tab ? sheetCsvUrl(tab) : null;
-    if (!url) {
-      el.textContent = '—';
+    if (global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
+      ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function (fields) {
+        ChaseDataStatus.render(el, fields);
+      });
       return;
     }
-    fetch(url, { cache: 'no-store' })
-      .then(function (r) { return r.text(); })
-      .then(function (t) {
-        // Last_Updated is key/value rows, e.g. "Last Updated","2026-06-09 17:49:32"
-        var lines = (t || '').trim().split('\n');
-        var target = '';
-        for (var i = 0; i < lines.length; i++) {
-          if (/last\s*updated/i.test(lines[i])) { target = lines[i]; break; }
-        }
-        if (!target) target = lines[0] || '';
-        var cells = target.split(',').map(function (c) {
-          return c.replace(/^"|"$/g, '').trim();
-        });
-        el.textContent = cells[1] || cells[0] || '—';
-      })
-      .catch(function () { el.textContent = '—'; });
+    el.textContent = 'unknown';
   }
 
   function injectFooter() {

@@ -30,6 +30,7 @@
 })();
 </script>
 <script src="../mlbma_config.js?v=20260606c"></script>
+<script src="../chase_datastatus.js?v=20260908d"></script>
 <script src="../mlbma_assets.js?v=20260908c"></script>
 <script src="../mlbma_icons.js?v=20260612b"></script>
 <script src="../matchup_shared.js?v=20260717e"></script>
@@ -2109,8 +2110,10 @@ function probeSheetSyncBust() {
   return fetch(probeUrl, { cache: 'no-store' }).then(function(r) {
     return r.ok ? r.text() : '';
   }).then(function(text) {
-    var m = text && text.match(/"Last Updated","([^"]+)"/i);
-    if (m && m[1]) applySheetSyncBust(m[1]);
+    var parsed = (window.ChaseDataStatus && ChaseDataStatus.parseLastUpdatedCsv)
+      ? ChaseDataStatus.parseLastUpdatedCsv(text)
+      : { as_of: null };
+    if (parsed.as_of) applySheetSyncBust(parsed.as_of);
     else applySheetSyncBust(String(Date.now()));
   }).catch(function() {
     applySheetSyncBust(String(Date.now()));

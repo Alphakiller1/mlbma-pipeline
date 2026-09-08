@@ -25,7 +25,6 @@
 /dashboard/reliever_profile.html /dashboard/index.html  301
 /dashboard/reliever_profile    /dashboard/index.html  301
 
-# Sport roots
-/mlb    /dashboard/index.html  302
-/mlb/   /dashboard/index.html  302
+# Sport roots — real per-route index.html (scripts/build_sport_routes.py).
+# Do not 302 /mlb onto the dashboard; that hid the sport hub.
 

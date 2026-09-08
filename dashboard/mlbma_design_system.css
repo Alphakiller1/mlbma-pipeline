@@ -1826,3 +1826,77 @@ h1.ca-page-title {
   border: none;
   background: transparent;
 }
+
+.ca-datastatus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 12px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.ca-datastatus-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-3);
+  box-shadow: 0 0 8px var(--ca-brand);
+}
+.ca-datastatus[data-state="ok"] .ca-datastatus-dot { background: var(--c-elite); }
+.ca-datastatus[data-state="stale"] .ca-datastatus-dot { background: var(--c-poor); }
+.ca-datastatus[data-state="unknown"] .ca-datastatus-dot { background: var(--text-3); }
+.ca-datastatus-age { color: var(--text); font-weight: 600; }
+.ca-datastatus-source {
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: 10px;
+}
+.ca-datastatus-issues { margin: 0; padding-left: 18px; color: var(--text-3); }
+.ca-modelstatus-badge {
+  font-size: 13px;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--bg-3);
+}
+.ca-sport-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+.ca-nfl-channels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+.ca-nfl-channel {
+  background: var(--bg-3);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.ca-nfl-channel h3 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+@media (max-width: 767px) {
+  .ca-nfl-channels { grid-template-columns: 1fr; }
+}
+
+.ca-pill-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}

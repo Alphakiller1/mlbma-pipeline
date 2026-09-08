@@ -851,7 +851,7 @@
       key: 'matchups',
       label: 'Matchups',
       desc: "Today's slate, starters, and lineup edges.",
-      href: 'chase_analytics_mlb_oem_v7.html#section-matchups-hero',
+      href: 'index.html#section-matchups-hero',
       icon: 'swords'
     },
     {
@@ -865,7 +865,7 @@
       key: 'research',
       label: 'Research Lab',
       desc: 'Trends, compare, and pitcher intelligence.',
-      href: 'chase_analytics_mlb_oem_v7.html#section-research-lab',
+      href: 'index.html#section-research-lab',
       icon: 'flask-conical'
     }
   ];

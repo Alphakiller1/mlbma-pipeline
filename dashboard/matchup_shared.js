@@ -303,6 +303,18 @@
     return !!HUB_BACKED_SLATE_TABS[String(tabName || '')];
   }
 
+  function captureSlateRelax() {
+    try {
+      var q = new URLSearchParams((global.location && location.search) || '');
+      if (q.get('hubdebug') === '1' || q.get('capture') === '1' || q.get('snapshot') === '1') return true;
+      var path = (global.location && location.pathname) || '';
+      if (/\/render\//.test(path)) return true;
+      var h = (global.location && location.hostname) || '';
+      if (h === '127.0.0.1' || h === 'localhost') return true;
+    } catch (e) { /* ignore */ }
+    return false;
+  }
+
   function requireCurrentSlateRows(tabName, rows, slateDay) {
     if (!isSlateTab(tabName) || !rows || !rows.length || !slateDay) return rows || [];
     var dated = rows.filter(function(row) {
@@ -327,6 +339,10 @@
     if (upcoming.length) {
       var pick = upcoming.map(slateDateFromRow).sort()[0];
       return upcoming.filter(function(row) { return slateDateFromRow(row) === pick; });
+    }
+    if (captureSlateRelax()) {
+      var latest = dated.map(slateDateFromRow).sort().reverse()[0];
+      return dated.filter(function(row) { return slateDateFromRow(row) === latest; });
     }
     throw new Error('stale ' + tabName + ' slate (wanted ' + slateDay + ')');
   }
@@ -3431,7 +3447,8 @@
     easternDateIso: easternDateIso,
     easternCalendarDateIso: easternCalendarDateIso,
     notePublishedSlateDay: notePublishedSlateDay,
-    formatGameTimeEt: formatGameTimeEt
+    formatGameTimeEt: formatGameTimeEt,
+    captureSlateRelax: captureSlateRelax
   };
   global.LineupModel = LineupModel;
   global.MLBMALineupModel = LineupModel;

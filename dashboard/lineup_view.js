@@ -402,6 +402,26 @@
     }
     return 'Figures use the ' + esc(w) + ' window. Confidence language uses the full available sample (YTD), not the window slice.';
   }
+  function bindRankingsDataStatus(bar) {
+    var el = bar && bar.querySelector('#lvDataStatus');
+    if (!el || !global.ChaseDataStatus) return;
+    var snap = global.__MLBMA_RANKINGS_SNAPSHOT || {};
+    ChaseDataStatus.bindResume(el, function () {
+      var sheet = global.MLBMA_SHEET_BUST || '';
+      var parsed = sheet && /\d{4}-\d{2}-\d{2}/.test(String(sheet))
+        ? { as_of: String(sheet) }
+        : { as_of: snap.generatedAt || null };
+      var extra = {
+        source: sheet ? 'sheet' : (snap.generatedAt ? 'snapshot' : 'unknown'),
+        sport: 'mlb',
+        publishedAt: snap.generatedAt || sheet || null,
+        dataCutoff: parsed.as_of
+      };
+      if (!parsed.as_of && !snap.generatedAt) return ChaseDataStatus.unknownFields(extra);
+      return ChaseDataStatus.fieldsFromParsed(parsed, extra);
+    });
+  }
+
   function familyPill(val, label, state) {
     var on = state.family === val;
     return '<button type="button" class="hub-pill lv-pill' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">' + esc(label) + '</button>';
@@ -431,6 +451,7 @@
         confidence: confidenceHtml(state),
         count: filterCount(state)
       });
+      bindRankingsDataStatus(bar);
     } else {
       bar.innerHTML = rowView + rowScope
         + '<p class="ca-scopebar-context">' + statedContextHtml(state) + '</p>'

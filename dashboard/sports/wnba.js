@@ -1,19 +1,18 @@
 (function (global) {
   'use strict';
+  var B = global.ChaseBoard;
   function normalize(board) {
     board = board || {};
-    return {
-      schema: 'chase-board/1',
-      sport: 'wnba',
-      generated_at: board.generated_at || board.generated_at_utc,
-      authority: {
+    var nb = B && B.normalize ? B.normalize('wnba', board) : { schema: 'chase-board/1', sport: 'wnba', games: [] };
+    if (!nb.authority || nb.authority.level === 'unknown') {
+      nb.authority = {
         level: board.authority || 'RESEARCH_ONLY',
         may_bet: board.may_bet === true,
         unmet_gates: board.unmet_gates || [],
         evidence: board.evidence || ''
-      },
-      games: board.games || []
-    };
+      };
+    }
+    return nb;
   }
   global.ChaseSportWNBA = {
     BOARD_URL: 'https://alphakiller1.github.io/wnba-edge-model/board.json',

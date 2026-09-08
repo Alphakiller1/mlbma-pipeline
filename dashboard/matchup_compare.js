@@ -206,11 +206,11 @@
       : '<p class="ca-helper">Choose a game from today\'s slate:</p>';
     root.innerHTML = '<div class="compare-page">'
       + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
-      + '<a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>'
-      + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">Today\'s Matchups</a></nav>'
+      + '<a href="index.html">Opening</a><span class="bc-sep">›</span>'
+      + '<a href="index.html#section-matchups-hero">Today\'s Matchups</a></nav>'
       + hint
       + (picks ? '<div class="hub-pill-row mc-slate-picks">' + picks + '</div>' : '')
-      + '<p class="ca-helper" style="margin-top:14px"><a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">Back to matchups</a></p>'
+      + '<p class="ca-helper" style="margin-top:14px"><a href="index.html#section-matchups-hero">Back to matchups</a></p>'
       + '</div>';
   }
 
@@ -218,7 +218,7 @@
     root.innerHTML = '<div class="compare-page"><p class="ca-helper">Could not load matchup data'
       + (err && err.message ? ' (' + esc(err.message) + ')' : '')
       + '. <a href="javascript:location.reload()">Retry</a> or '
-      + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">back to matchups</a>.</p></div>';
+      + '<a href="index.html#section-matchups-hero">back to matchups</a>.</p></div>';
   }
 
   function spL14Stale(rows, pitcherName, team) {
@@ -852,10 +852,10 @@
     var wx = S.weatherBadge(weather, m.home);
     return '<div class="compare-page">'
       + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
-      + '<a href="chase_analytics_mlb_oem_v7.html">Opening</a><span class="bc-sep">›</span>'
-      + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero">Today\'s Matchups</a><span class="bc-sep">›</span>'
+      + '<a href="index.html">Opening</a><span class="bc-sep">›</span>'
+      + '<a href="index.html#section-matchups-hero">Today\'s Matchups</a><span class="bc-sep">›</span>'
       + '<span>' + esc(m.away) + ' @ ' + esc(m.home) + '</span></nav>'
-      + '<a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
+      + '<a href="index.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
       + '<header class="mc-header mc-section">'
       + '<div class="mc-header-kicker">Matchup Analysis</div>'
       + '<div class="mc-header-grid">'

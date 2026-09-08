@@ -17,7 +17,7 @@ HIDE = ".chase-header,.chase-mobile-menu,.chase-mobile-overlay,.mlbma-loading,.d
 TARGETS = [
     {"key": "team_rankings", "url": f"{BASE}/dashboard/render/team_rankings.html?family=scoring&window=L30",
      "selector": ".lv-table", "eval": None, "wait_ms": 25000},
-    {"key": "starters_rankings", "url": f"{BASE}/dashboard/render/pitcher_intelligence.html",
+        {"key": "starters_rankings", "url": f"{BASE}/dashboard/render/pitcher_intelligence.html?capture=1&hubdebug=1",
      "selector": ".pl-rank-table", "eval": "if (window.showResearchSubtab) window.showResearchSubtab('pitching');",
      "wait_ms": 40000},
     {"key": "starters_rankings_index", "url": f"{BASE}/dashboard/index.html#section-research-lab",
@@ -96,6 +96,9 @@ def main() -> int:
         away, home = (game[0], game[1]) if game else ("NYY", "BOS")
         notes.append(f"hero card pair: {away}@{home}" + ("" if game else " (fallback)"))
         resolved = compare_url(page, away, home)
+        if "hubdebug=" not in resolved:
+            joiner = "&" if "?" in resolved else "?"
+            resolved = resolved + joiner + "hubdebug=1&snapshot=1"
         notes.append(f"compare url: {resolved}")
 
         results = []
@@ -112,7 +115,24 @@ def main() -> int:
                 if spec.get("eval"):
                     page.evaluate(f"() => {{ {spec['eval']} }}")
                     page.wait_for_timeout(2500)
-                page.wait_for_selector(spec["selector"], timeout=spec["wait_ms"], state="attached")
+                try:
+                    page.wait_for_selector(spec["selector"], timeout=min(spec["wait_ms"], 12000), state="attached")
+                except Exception:
+                    pick = page.locator(".mc-slate-pick").first
+                    if pick.count():
+                        href = pick.get_attribute("href") or ""
+                        if href:
+                            if href.startswith("/"):
+                                href = BASE + href
+                            elif not href.startswith("http"):
+                                href = f"{BASE}/dashboard/{href}"
+                            if "hubdebug=" not in href:
+                                href += ("&" if "?" in href else "?") + "hubdebug=1"
+                            page.goto(href, wait_until="domcontentloaded", timeout=45000)
+                            page.add_style_tag(content=ANIM)
+                            rec["url"] = href
+                            notes.append(f"{spec['key']} followed slate pick {href}")
+                    page.wait_for_selector(spec["selector"], timeout=spec["wait_ms"], state="attached")
                 page.wait_for_timeout(800)
                 a1 = OUT / f"{spec['key']}-a.png"
                 a2 = OUT / f"{spec['key']}-b.png"
