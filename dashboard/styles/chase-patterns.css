@@ -1,0 +1,79 @@
+/*
+ * L5 — patterns. Shared research-desk compositions.
+ * Phase 2 ships the CSS contracts; Phase 3 wires Research Desk onto them.
+ */
+
+.ca-game-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-min);
+}
+.ca-game-identity__score {
+  font-family: var(--font-display);
+  font-size: var(--type-score);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: var(--leading-tight);
+}
+
+.ca-availability-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--type-12);
+  color: var(--text-meta);
+}
+
+.ca-change-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--type-ui);
+}
+.ca-change-feed__item {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ca-difference-list {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--type-ui);
+}
+
+.ca-evidence-tabs { }
+
+.ca-data-health {
+  padding: var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
+  font-size: var(--type-12);
+  color: var(--text-meta);
+}
+
+.ca-source-drawer { }
+
+.ca-team-comparison,
+.ca-player-comparison {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .ca-team-comparison,
+  .ca-player-comparison {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ca-open-model-center {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  font-size: var(--type-ui);
+  font-weight: 600;
+  color: var(--text-accent);
+}

@@ -1,0 +1,446 @@
+/*
+ * L6 — AppShell, SportSwitcher, TaskNav, ContextBar, grid, breakpoints, footer.
+ * Content column is 1232px; at a 1280px viewport that leaves 24px on each side.
+ * Fonts: DM Sans (UI/body/controls/meta) via --font-ui; Roboto Condensed
+ * (H1–H3, scores, compact section titles) via --font-display. No Oswald.
+ */
+
+.ca-app-shell,
+.chase-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--surface-header);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.chase-nav,
+.ca-shell-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: var(--shell-max);
+  min-width: 0;
+  margin: 0 auto;
+  padding: 0 var(--shell-gutter-sm);
+  height: var(--shell-header-h);
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .chase-nav,
+  .ca-shell-inner {
+    padding: 0 var(--shell-gutter);
+  }
+}
+
+.chase-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  min-height: var(--touch-min);
+  text-decoration: none;
+  color: var(--text-primary);
+}
+.chase-logo:hover { color: var(--text-primary); }
+
+.chase-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-20);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.chase-wordmark__accent { color: var(--text-secondary); }
+
+.chase-nav-logo--icon {
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+  display: block;
+}
+.chase-nav-logo--compact { display: none; }
+.chase-nav-logo-fallback {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-16);
+  color: var(--text-primary);
+}
+
+.chase-nav-links,
+.ca-task-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.chase-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--type-14);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chase-nav-link:hover,
+.chase-nav-link.active {
+  color: var(--text-accent);
+  background: var(--accent-soft);
+}
+
+.chase-dropdown { position: relative; }
+.chase-dropdown > button.chase-nav-link {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.chase-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  padding: var(--space-2);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--elevation-2);
+  z-index: var(--z-header);
+}
+.chase-dropdown.open .chase-dropdown-menu,
+.chase-dropdown:hover .chase-dropdown-menu { display: block; }
+.chase-dropdown-item {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-size: var(--type-14);
+  text-decoration: none;
+}
+.chase-dropdown-item:hover { background: var(--accent-soft); }
+.chase-dropdown-item.disabled {
+  color: var(--text-disabled);
+  pointer-events: none;
+}
+.chase-dropdown-badge {
+  font-size: var(--type-12);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--text-meta);
+}
+.chase-dropdown-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-2) 0;
+}
+
+/* Status capsule — must shrink, never push the document past --shell-max. */
+.chase-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 40%;
+}
+.chase-timestamp,
+.ca-status-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-ui);
+  font-size: var(--type-12);
+  font-weight: 500;
+  color: var(--text-meta);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chase-header .ca-datastatus {
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.chase-header .ca-datastatus-meta,
+.chase-header .ca-datastatus-source { display: none; }
+
+.chase-pipeline-dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--status-ok);
+  flex-shrink: 0;
+}
+
+.chase-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: var(--space-2);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.chase-hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 1px;
+}
+
+.chase-mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--surface-overlay);
+  z-index: calc(var(--z-header) - 2);
+  pointer-events: none;
+}
+.chase-mobile-overlay.open { pointer-events: auto; }
+
+.chase-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(300px, 100%);
+  height: 100%;
+  background: var(--surface-page);
+  border-left: 1px solid var(--border-subtle);
+  z-index: calc(var(--z-header) - 1);
+  overflow-y: auto;
+}
+.chase-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.chase-mobile-close {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-meta);
+  cursor: pointer;
+}
+.chase-mobile-brand { display: none; }
+.chase-mobile-nav {
+  padding: var(--space-3) var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.chase-mobile-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--type-16);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.chase-mobile-link:hover,
+.chase-mobile-link.active {
+  background: var(--accent-soft);
+  color: var(--text-accent);
+}
+.chase-mobile-section {
+  padding: var(--space-3) var(--space-3) var(--space-1);
+  font-size: var(--type-12);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-meta);
+}
+.chase-mobile-status {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* SportSwitcher */
+.ca-sport-switcher,
+.ca-sport-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+.ca-sport-select-pill,
+.hub-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-min);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-default);
+  background: var(--control-bg);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--type-14);
+  font-weight: 600;
+  text-decoration: none;
+}
+.ca-sport-select-pill.active,
+.ca-sport-select-pill[aria-current="page"],
+.hub-pill.active {
+  background: var(--control-bg-active);
+  border-color: var(--border-accent);
+  color: var(--text-accent);
+}
+
+/* ContextBar */
+.ca-context-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-height: var(--touch-min);
+  margin: 0 auto var(--space-4);
+  max-width: var(--shell-max);
+  padding: var(--space-2) var(--shell-gutter-sm);
+  font-size: var(--type-12);
+  color: var(--text-meta);
+  border-bottom: 1px solid var(--border-subtle);
+}
+@media (min-width: 768px) {
+  .ca-context-bar { padding-inline: var(--shell-gutter); }
+}
+
+/* Page grid */
+.ca-page-shell,
+.ca-shell-main {
+  max-width: var(--shell-max);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-9) var(--shell-gutter-sm) var(--space-9);
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .ca-page-shell,
+  .ca-shell-main { padding-inline: var(--shell-gutter); }
+}
+
+.ca-page-title {
+  font-family: var(--font-display);
+  font-size: var(--type-h1);
+  font-weight: 700;
+  margin: 0 0 var(--space-2);
+}
+.ca-helper {
+  color: var(--text-secondary);
+  font-size: var(--type-ui);
+  margin: 0 0 var(--space-4);
+}
+
+.ca-entity-search-host label {
+  display: block;
+  font-size: var(--type-12);
+  color: var(--text-meta);
+  margin-bottom: var(--space-1);
+}
+.ca-entity-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.ca-shell-footer {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--shell-gutter-sm) var(--space-9);
+  font-size: var(--type-12);
+  color: var(--text-meta);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Breakpoints: 390 / 768 / 1024 / 1280 / 1440. At 1280 the column is 1232. */
+@media (min-width: 769px) {
+  .chase-mobile-overlay,
+  .chase-mobile-menu {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .chase-hamburger { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  .chase-nav-links,
+  .chase-status .chase-timestamp { display: none; }
+  .chase-hamburger,
+  .chase-mobile-overlay,
+  .chase-mobile-menu { display: flex; }
+  .chase-mobile-menu { display: block; }
+  .chase-status { max-width: none; }
+}
+
+@media (max-width: 1279px) {
+  .chase-header .ca-datastatus-age,
+  .chase-header .ca-datastatus-retry { display: none; }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .chase-header .ca-datastatus-slate,
+  .chase-header .ca-datastatus-dot { display: none; }
+}
+
+@media (min-width: 1280px) {
+  html { overflow-x: hidden; }
+}
+
+@media (min-resolution: 2x) {
+  .ca-page-shell,
+  .chase-nav { max-width: var(--shell-max); }
+}

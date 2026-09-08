@@ -9,6 +9,11 @@ Fails when:
   - vendor seed sha256 drifts
 
 Rule-body hex in mature CSS is counted (informational) until a restyle pass.
+Under dashboard/styles/ that count is blocking, plus L2–L4 layer rules:
+  - no --ca-* primitive outside chase-semantic.css
+  - no route ID selector in chase-components.css
+  - no font-size below 12px
+dashboard/mockups/ stays excluded.
 """
 from __future__ import annotations
 
@@ -29,6 +34,12 @@ STAMPED = (
     "mlbma_design_system.css",
     "theme.css",
     "design_layer_version.js",
+    "chase-semantic.css",
+    "chase-primitives.css",
+    "chase-components.css",
+    "chase-patterns.css",
+    "chase-shell.css",
+    "legacy.css",
 )
 # Design mockups are unlinked scratch surfaces, not product. They are excluded
 # from both the HTML :root scan and the CSS scan below.
@@ -39,6 +50,12 @@ STYLE_RE = re.compile(r"<style[^>]*>(.*?)</style>", re.DOTALL | re.I)
 ROOT_BLOCK_RE = re.compile(r":root\s*\{([^{}]*)\}", re.DOTALL)
 TOKEN_DEF_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);")
 HEX_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+CA_PRIMITIVE_RE = re.compile(r"--ca-[A-Za-z0-9-]+")
+FONT_SIZE_RE = re.compile(r"font-size\s*:\s*([^;]+)", re.I)
+ID_SELECTOR_RE = re.compile(r"(?:^|[\s,])#[A-Za-z][\w-]*")
+STYLES_DIR = DASHBOARD / "styles"
+LAYER_SEMANTIC = "chase-semantic.css"
+LAYER_COMPONENTS = "chase-components.css"
 V_RE = re.compile(
     r"""(?:href|src)=["']([^"']+\.(?:css|js))(\?v=)([^"'&]+)""",
     re.I,
@@ -55,6 +72,55 @@ def root_defs(css: str) -> list[tuple[str, str]]:
     for body in ROOT_BLOCK_RE.findall(css):
         for name, val in TOKEN_DEF_RE.findall(body):
             out.append((name, " ".join(val.split())))
+    return out
+
+
+def is_under_styles(path: Path) -> bool:
+    try:
+        path.relative_to(STYLES_DIR)
+        return True
+    except ValueError:
+        return False
+
+
+def font_size_px(value: str) -> float | None:
+    raw = value.strip().split()[0]
+    if raw.startswith("var(") or "clamp(" in raw:
+        return None
+    m = re.fullmatch(r"([0-9.]+)(px|rem|em)", raw)
+    if not m:
+        return None
+    n = float(m.group(1))
+    unit = m.group(2)
+    if unit == "px":
+        return n
+    if unit in {"rem", "em"}:
+        return n * 16.0
+    return None
+
+
+def layer_violations_for(path: Path, text: str) -> list[str]:
+    rel = path.relative_to(ROOT)
+    stripped = strip_comments(text)
+    out: list[str] = []
+    if path.name != LAYER_SEMANTIC:
+        for token in sorted(set(CA_PRIMITIVE_RE.findall(stripped))):
+            out.append(f"{rel} references primitive {token} (L2 only)")
+    if path.name == LAYER_COMPONENTS:
+        for sel, _body in re.findall(r"([^{}]+)\{([^{}]*)\}", stripped):
+            if ID_SELECTOR_RE.search(sel):
+                out.append(f"{rel} uses a route/id selector: {sel.strip()[:80]}")
+                break
+    for raw in FONT_SIZE_RE.findall(stripped):
+        px = font_size_px(raw)
+        if px is not None and px < 12:
+            out.append(f"{rel} font-size {raw.strip()} is below 12px")
+    for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", stripped):
+        if ":root" in sel:
+            continue
+        hits = HEX_RE.findall(body)
+        if hits:
+            out.append(f"{rel} rule-body hex {hits[0]} (blocking under dashboard/styles/)")
     return out
 
 
@@ -119,6 +185,8 @@ def main() -> int:
             if ":root" in sel:
                 continue
             hex_bodies += len(HEX_RE.findall(body))
+        if is_under_styles(css_path):
+            violations.extend(layer_violations_for(css_path, text))
 
     html_scan: list[Path] = (
         list(DASHBOARD.glob("*.html"))
@@ -159,7 +227,7 @@ def main() -> int:
         if len(violations) > 80:
             print(f"  ... {len(violations) - 80} more")
         return 1
-    print("OK: tier-1 owns color literals; design-layer stamps match.")
+    print("OK: tier-1 owns color literals; layer files are clean; design-layer stamps match.")
     return 0
 
 

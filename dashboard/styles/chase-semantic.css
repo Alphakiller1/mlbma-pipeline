@@ -1,0 +1,162 @@
+/*
+ * L2 — semantic role tokens.
+ * DESIGN_LAYER_VERSION is stamped on the HTML <link>, not here.
+ *
+ * This is the only file under dashboard/styles/ that may reference TIER 1
+ * primitives (--ca-*). Components, patterns, and the shell consume these
+ * roles — never --ca-ink-* / --ca-violet-* / --ca-paper-* directly.
+ *
+ * Role families (architecture v2 §4 L2, aligned with contract §5.2 / WP1-A2):
+ *   surface, text, border, accent, mark, value, metric, status,
+ *   control, focus, font, type, space, radius, elevation, motion, shell.
+ */
+:root {
+  /* —— Surface —— */
+  --surface-canvas: var(--ca-ink-950);
+  --surface-page: var(--ca-ink-950);
+  --surface-inset: var(--ca-ink-900);
+  --surface-panel: var(--ca-ink-850);
+  --surface-elevated: var(--ca-ink-800);
+  --surface-raised: var(--ca-ink-750);
+  --surface-overlay: var(--ca-black-a-60);
+  --surface-header: var(--ca-ink-1000);
+  --surface-inverse: var(--ca-paper-50);
+  --surface-1: var(--ca-ink-850);
+  --surface-2: var(--ca-ink-800);
+  --surface-3: var(--ca-ink-750);
+
+  /* —— Text —— */
+  --text-primary: var(--ca-paper-50);
+  --text-secondary: var(--ca-paper-400);
+  --text-meta: var(--ca-paper-400);
+  --text-muted: var(--ca-paper-500);
+  --text-disabled: var(--ca-paper-600);
+  --text-accent: var(--ca-violet-300);
+  --text-on-accent: var(--ca-paper-50);
+  --text-inverse: var(--ca-ink-950);
+
+  /* —— Border —— */
+  --border-default: var(--ca-line-600);
+  --border-strong: var(--ca-line-500);
+  --border-subtle: var(--ca-white-a-06);
+  --border-accent: var(--ca-violet-a-32);
+  --border-focus: var(--ca-violet-500);
+  --border-inverse: var(--ca-light-line);
+
+  /* —— Accent (violet brand; never a metric) —— */
+  --accent: var(--ca-violet-500);
+  --accent-soft: var(--ca-violet-a-11);
+  --accent-strong: var(--ca-violet-700);
+  --accent-text: var(--ca-violet-300);
+  --accent-glow: var(--ca-violet-a-32);
+
+  /* —— Mark (chrome) vs value (readable data) —— */
+  --mark-positive: var(--ca-green-500);
+  --mark-negative: var(--ca-red-500);
+  --mark-caution: var(--ca-amber-500);
+  --value-positive: var(--ca-green-400);
+  --value-negative: var(--ca-red-200);
+  --value-caution: var(--ca-amber-400);
+
+  /* —— Metric ramp (green = elite → red = poor) —— */
+  --metric-very-weak: var(--ca-red-500);
+  --metric-weak: var(--ca-red-400);
+  --metric-below: var(--ca-amber-500);
+  --metric-neutral: var(--ca-paper-neutral);
+  --metric-above: var(--ca-green-400);
+  --metric-strong: var(--ca-green-300);
+  --metric-elite: var(--ca-green-200);
+  --metric-good: var(--ca-green-400);
+  --metric-watch: var(--ca-amber-500);
+  --metric-poor: var(--ca-red-500);
+
+  /* —— Status —— */
+  --status-ok: var(--ca-green-200);
+  --status-live: var(--ca-green-200);
+  --status-stale: var(--ca-amber-400);
+  --status-error: var(--ca-red-500);
+  --status-loading: var(--ca-violet-300);
+
+  /* —— Control —— */
+  --control-bg: var(--ca-ink-800);
+  --control-bg-hover: var(--ca-ink-750);
+  --control-bg-active: var(--ca-violet-a-16);
+  --control-border: var(--ca-line-500);
+  --control-text: var(--ca-paper-50);
+
+  /* —— Focus —— */
+  --focus-ring: var(--ca-violet-500);
+  --focus-ring-offset: var(--ca-ink-950);
+
+  /* —— Shadow / elevation raw values (roles) —— */
+  --shadow-board: var(--ca-black-a-50);
+  --shadow-inset: var(--ca-white-a-08);
+  --shadow-deep: var(--ca-black-a-60);
+
+  /* —— Font families —— */
+  --font-ui: var(--ca-font-ui);
+  --font-display: var(--ca-font-display);
+  --font-body: var(--ca-font-ui);
+
+  /* —— Type scale (px; floor is 12 — no user-facing text below) —— */
+  --type-12: 12px;
+  --type-14: 14px;
+  --type-16: 16px;
+  --type-18: 18px;
+  --type-20: 20px;
+  --type-24: 24px;
+  --type-28: 28px;
+  --type-32: 32px;
+  --type-meta: var(--type-12);
+  --type-ui: var(--type-14);
+  --type-body: var(--type-14);
+  --type-h3: var(--type-18);
+  --type-h2: var(--type-24);
+  --type-h1: var(--type-28);
+  --type-score: var(--type-32);
+  --leading-tight: 1.15;
+  --leading-body: 1.45;
+  --tracking-caps: 0.08em;
+
+  /* —— Spacing: 4px scale only —— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+
+  /* —— Radius —— */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* —— Elevation —— */
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px var(--shadow-board);
+  --elevation-2: 0 4px 16px var(--shadow-board);
+  --elevation-3: 0 16px 48px var(--shadow-deep);
+  --elevation-glow: var(--ca-glow-violet);
+
+  /* —— Motion —— */
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 240ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* —— Shell / layout (architecture v2 §5–§6) —— */
+  --shell-max: 1232px;
+  --shell-gutter: 24px;
+  --shell-gutter-sm: 16px;
+  --shell-header-h: 68px;
+  --touch-min: 44px;
+  --z-header: 1000;
+  --z-overlay: 1100;
+  --z-dialog: 1200;
+}

@@ -1,0 +1,10 @@
+/*
+ * Holding pen for unmigrated dashboard CSS.
+ *
+ * Loaded only by pages that have not yet moved onto L2–L6. Those pages keep
+ * linking dashboard/*.css (mlbma_design_system.css, theme.css, page sheets).
+ * Do not park new work here; do not put hex in this file (layer guard).
+ *
+ * Phase 2 migrated onto the layers: AppShell, ContextBar, Button, Tabs, Card,
+ * Panel, Badge, AsyncBoundary, SurfaceHeader.
+ */

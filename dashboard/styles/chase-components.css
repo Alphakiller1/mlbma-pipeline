@@ -1,0 +1,288 @@
+/*
+ * L4 — components. No route-ID selectors. L2 roles only. Type floor 12px.
+ */
+
+/* Button */
+.ca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+  font-family: var(--font-ui);
+  font-size: var(--type-ui);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease);
+}
+.ca-btn:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-primary);
+}
+.ca-btn[aria-pressed="true"],
+.ca-btn.is-active {
+  background: var(--control-bg-active);
+  border-color: var(--border-accent);
+  color: var(--text-accent);
+}
+.ca-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+.ca-btn--primary:hover { background: var(--accent-strong); }
+.ca-btn:disabled,
+.ca-btn[aria-disabled="true"] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* ButtonGroup */
+.ca-btn-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Tabs */
+.ca-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--border-default);
+}
+.ca-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--type-ui);
+  font-weight: 600;
+  cursor: pointer;
+}
+.ca-tab[aria-selected="true"],
+.ca-tab.is-active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+
+/* SegmentedControl */
+.ca-seg {
+  display: inline-flex;
+  padding: var(--space-1);
+  gap: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-default);
+}
+.ca-seg-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-min);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--type-ui);
+  font-weight: 600;
+  cursor: pointer;
+}
+.ca-seg-item[aria-pressed="true"],
+.ca-seg-item.is-active {
+  background: var(--control-bg-active);
+  color: var(--text-accent);
+}
+
+/* Card / Panel */
+.ca-card,
+.ca-panel {
+  background: var(--surface-panel);
+  border: 1.5px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-2);
+  color: var(--text-primary);
+}
+.ca-card { padding: var(--space-4); }
+.ca-panel { padding: var(--space-6); }
+.ca-card__header,
+.ca-panel__header,
+.ca-surface-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.ca-surface-header h1,
+.ca-surface-header .ca-surface-title {
+  font-family: var(--font-display);
+  font-size: var(--type-h1);
+  font-weight: 700;
+  margin: 0;
+}
+.ca-surface-header p,
+.ca-surface-lede {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-ui);
+}
+
+/* Badge / StatusPill */
+.ca-badge,
+.ca-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--space-6);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: var(--type-12);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+.ca-status-pill[data-state="ok"],
+.ca-badge--ok { color: var(--value-positive); border-color: var(--mark-positive); }
+.ca-status-pill[data-state="stale"] { color: var(--value-caution); border-color: var(--mark-caution); }
+.ca-status-pill[data-state="error"] { color: var(--value-negative); border-color: var(--mark-negative); }
+
+/* MetricRow */
+.ca-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--touch-min);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--type-ui);
+}
+.ca-metric-row__label { color: var(--text-secondary); }
+.ca-metric-row__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* TeamMark */
+.ca-team-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.ca-team-mark img {
+  width: var(--space-6);
+  height: var(--space-6);
+  object-fit: contain;
+}
+.ca-team-mark__abbr {
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 700;
+}
+
+/* ResponsiveTable */
+.ca-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+/* Disclosure */
+.ca-disclosure > summary {
+  cursor: pointer;
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  font-size: var(--type-ui);
+  font-weight: 600;
+}
+
+/* Empty / Error / Skeleton / AsyncBoundary */
+.ca-empty,
+.ca-error,
+.ca-async {
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-inset);
+  color: var(--text-secondary);
+  font-size: var(--type-ui);
+}
+.ca-error,
+.ca-async--error { border-color: var(--mark-negative); color: var(--value-negative); }
+.ca-async--loading { color: var(--status-loading); }
+.ca-async--ready {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.ca-skeleton {
+  display: block;
+  min-height: var(--space-5);
+  border-radius: var(--radius-xs);
+  background: var(--surface-raised);
+}
+
+/* Tooltip */
+.ca-tooltip {
+  position: relative;
+}
+
+/* Drawer / Dialog */
+.ca-drawer,
+.ca-dialog {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-accent);
+  box-shadow: var(--elevation-3);
+}
+.ca-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(360px, 100%);
+  height: 100%;
+  z-index: var(--z-overlay);
+  padding: var(--space-4);
+}
+.ca-dialog {
+  position: fixed;
+  inset: auto;
+  z-index: var(--z-dialog);
+  max-width: 480px;
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+}
+.ca-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-overlay);
+  z-index: var(--z-overlay);
+}
