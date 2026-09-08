@@ -194,6 +194,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("iconFilled: 'assets/chase-icon-filled.png'", assets)
         ui = (ROOT / "dashboard" / "mlbma_ui.js").read_text(encoding="utf-8")
         self.assertIn("/dashboard/assets/chase-icon-filled.png", ui)
+        self.assertIn('querySelector(\'script[src*="mlbma_icons.js"]\')', ui)
+        self.assertNotIn("s.src = 'mlbma_icons.js", ui)
 
     def test_starters_rankings_registry_uses_render_route(self):
         engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")

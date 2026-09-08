@@ -53,11 +53,19 @@
     });
   }
 
+  function dashboardRoot() {
+    var path = (global.location && global.location.pathname) || '/dashboard/';
+    var marker = '/dashboard/';
+    var i = path.indexOf(marker);
+    return i >= 0 ? path.slice(0, i + marker.length) : '/dashboard/';
+  }
+
   function ensureIconScripts() {
     if (document.getElementById('mlbma-icons-script')) return;
+    if (document.querySelector('script[src*="mlbma_icons.js"]')) return;
     var s = document.createElement('script');
     s.id = 'mlbma-icons-script';
-    s.src = 'mlbma_icons.js?v=20260606c';
+    s.src = dashboardRoot() + 'mlbma_icons.js?v=20260612b';
     s.async = true;
     document.head.appendChild(s);
   }
