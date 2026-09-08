@@ -3,9 +3,9 @@
  * Must load last in <head>.
  */
 :root {
-  --ca-bg-photo-outfield: url('assets/backgrounds/stadium-outfield-night.png');
-  --ca-bg-photo-catcher: url('assets/backgrounds/stadium-catcher-view.png');
-  --ca-bg-photo-plate: url('assets/backgrounds/stadium-plate-pov.png');
+  --ca-bg-photo-outfield: url('assets/backgrounds/stadium-outfield-night.jpg');
+  --ca-bg-photo-catcher: url('assets/backgrounds/stadium-catcher-view.jpg');
+  --ca-bg-photo-plate: url('assets/backgrounds/stadium-plate-pov.jpg');
   --ca-bg-base: #08090f;
   --ca-bg-scrim: linear-gradient(
     180deg,

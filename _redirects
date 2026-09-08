@@ -1,0 +1,14 @@
+# Cloudflare Pages reads _redirects from the deploy ROOT only.
+# dashboard/_redirects is inert (never evaluated). This file is the redirect contract.
+#
+# Live 308s you may see on chase-analytics.com are Pages' automatic trailing-slash /
+# extension normalization — they are not defined here. Explicit product redirects
+# going forward belong in THIS file as 301s.
+
+# Legacy OEM filename at the domain root (old bookmarks / nav).
+/chase_analytics_mlb_oem_v7.html  /dashboard/index.html  301
+/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
+
+# Same legacy filename under /dashboard/ (current nav still links here; HTML stub also redirects).
+/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/index.html  301
+/dashboard/chase_analytics_mlb_oem_v7       /dashboard/index.html  301

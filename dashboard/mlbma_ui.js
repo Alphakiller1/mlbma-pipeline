@@ -5,7 +5,7 @@
   'use strict';
 
   var NAV = [
-    [{ file: 'chase_analytics_mlb_oem_v7.html', label: 'Main' }],
+    [{ file: 'index.html', label: 'Main' }],
     [
       { file: 'team_rankings.html', label: 'Matchups' },
       { file: 'glossary.html', label: 'Glossary' },
@@ -25,7 +25,7 @@
     }
     var path = global.location.pathname || '';
     var parts = path.split('/');
-    return parts[parts.length - 1] || 'chase_analytics_mlb_oem_v7.html';
+    return parts[parts.length - 1] || 'index.html';
   }
 
   function renderNav(container, page) {
@@ -168,7 +168,7 @@
       global.MLBMA_CONFIG.SHEET_TABS.last_updated;
     var url = tab ? sheetCsvUrl(tab) : null;
     if (!url) {
-      el.textContent = '?';
+      el.textContent = '—';
       return;
     }
     fetch(url, { cache: 'no-store' })
@@ -184,26 +184,9 @@
         var cells = target.split(',').map(function (c) {
           return c.replace(/^"|"$/g, '').trim();
         });
-        el.textContent = cells[1] || cells[0] || '?';
-        // Last_Updated also carries Slate_Date_ET - the day the pipeline actually built.
-        // This runs on every page (it injects the footer), so it is the one place that
-        // can tell matchup_shared which slate is published instead of letting it guess
-        // from the clock. See notePublishedSlateDay in matchup_shared.js.
-        for (var j = 0; j < lines.length; j++) {
-          if (!/slate[_\s]*date/i.test(lines[j])) continue;
-          var pair = lines[j].split(',').map(function (c) {
-            return c.replace(/^"|"$/g, '').trim();
-          });
-          var day = String(pair[1] || '').slice(0, 10);
-          if (/^\d{4}-\d{2}-\d{2}$/.test(day)
-              && global.MLBMASharedMatchup
-              && global.MLBMASharedMatchup.notePublishedSlateDay) {
-            global.MLBMASharedMatchup.notePublishedSlateDay(day);
-          }
-          break;
-        }
+        el.textContent = cells[1] || cells[0] || '—';
       })
-      .catch(function () { el.textContent = '?'; });
+      .catch(function () { el.textContent = '—'; });
   }
 
   function injectFooter() {

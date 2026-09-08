@@ -50,7 +50,7 @@ window.MLBMA_CONFIG = {
   "team_l10_sp_hand_games": "Team_L10_SP_Games"
 },
   DASHBOARD_PAGES: [
-    { id: "main", label: "Main Dashboard", file: "chase_analytics_mlb_oem_v7.html", url: "chase_analytics_mlb_oem_v7.html", params: null },
+    { id: "main", label: "Main Dashboard", file: "index.html", url: "index.html", params: null },
     { id: "matchup_sheet", label: "Matchup Sheet", file: "matchup_sheet.html", url: "matchup_sheet.html", params: null },
     { id: "batter_profile", label: "Batter Profile", file: "batter_profile.html", url: "batter_profile.html", params: ["player"] },
     { id: "pitcher_profile", label: "Pitcher Profile", file: "pitcher_profile.html", url: "pitcher_profile.html", params: ["pitcher"] },

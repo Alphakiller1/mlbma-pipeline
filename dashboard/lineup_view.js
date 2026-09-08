@@ -92,20 +92,21 @@
       + '.lv-input-row{display:flex;gap:6px;align-items:center}'
       + '.lv-help{font-size:10px;color:var(--text-3,#6b6b76)}.lv-help.error{color:var(--neg,#f87171)}'
       + '.lv-table-wrap{overflow:auto}'
-      + '.lv-table{width:100%;border-collapse:collapse}'
+      + '.lv-table{width:100%;border-collapse:collapse;table-layout:fixed}'
       + '.lv-table thead th{background:#0C0E18;color:#AEB4C6;font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:13.5px;letter-spacing:.05em;text-transform:uppercase;padding:14px;border-bottom:1.5px solid #37405A;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:2}'
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){text-align:left}'
       + '.lv-table thead th.sorted{background:rgba(124,77,255,.16);color:#9A6BFF}'
       + '.lv-table td.sort-col{background:rgba(124,77,255,.05)}'
       + '.lv-table th.lv-sortable{cursor:pointer;user-select:none}'
-      + '.lv-table th:first-child,.lv-table td:first-child{position:sticky;left:0;background:#10131F;z-index:1;width:44px}'
-      + '.lv-table th:nth-child(2),.lv-table td:nth-child(2){position:sticky;left:44px;background:#10131F;z-index:1;min-width:150px}'
+      + '.lv-table th:first-child,.lv-table td:first-child{position:sticky;left:0;background:#10131F;z-index:1;width:44px;max-width:44px}'
+      + '.lv-table th:nth-child(2),.lv-table td:nth-child(2){position:sticky;left:44px;background:#10131F;z-index:1;width:148px;max-width:148px}'
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){background:#0C0E18;z-index:3}'
       + '.lv-table td{padding:0 14px;height:46px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle;text-align:center;color:var(--text,#F5F5F7)}'
       + '.lv-table td:first-child,.lv-table td:nth-child(2){text-align:left}'
-      + '.lv-table td.num{width:1%;white-space:nowrap}'
+      + '.lv-table th.lv-sortable,.lv-table td.num{white-space:nowrap}'
+      + '.lv-team-cell{display:flex;align-items:center;gap:11px;min-width:0;overflow:hidden}'
+      + '.lv-team-cell .ab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
       + '.lv-rank-num{font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:15px;color:#717892;font-variant-numeric:tabular-nums;text-align:center}'
-      + '.lv-team-cell{display:flex;align-items:center;gap:11px}'
       + '.lv-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.018)}'
       + '.lv-table tbody tr.lv-row-team:hover td{background:rgba(124,77,255,.10);box-shadow:inset 3px 0 0 var(--purple,#7C4DFF)}'
       + '.lv-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:12px}'
@@ -212,13 +213,13 @@
     if (!A || !A.metricColor) return 'var(--text,#f4f4f7)';
     if (key === 'wrc') return A.metricColor(value, 'wrc', false);
     if (key === 'woba' || key === 'xwoba') return A.metricColor(value, 'woba', false);
-    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, 'osi', false);
+    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, key, false);
     // Pitch Score Against: high = pitchers did WELL = lineup was EASY = bad for the
     // lineup, so invert (high -> red), same as QS% Allowed.
     if (key === 'pitchScore') return A.metricColor(value, 'pitching', true);
     if (key === 'pitchInn') return A.metricColor(value, 'pitchinn', false);
     if (key === 'qs') return A.metricColor(value, 'pitching', true);
-    if (key === 'xfip') return A.metricColor(value, 'xfip', true);
+    if (key === 'xfip') return A.metricColor(value, 'xfipFaced', true);
     if (key === 'ppGap') return A.metricColor(value, 'ppGap', false);
     return A.metricColor(value, key, false);
   }
@@ -243,7 +244,7 @@
     if (ctx === 'pitchScore') { ctx = 'pitching'; invert = true; }  // high = easy lineup = red
     if (ctx === 'pitchInn') ctx = 'pitchinn';
     if (ctx === 'qs') { ctx = 'pitching'; invert = true; }
-    if (ctx === 'xfip') { ctx = 'xfip'; invert = true; }
+    if (ctx === 'xfip') { ctx = 'xfipFaced'; invert = true; }
     if (ctx === 'xwoba') ctx = 'woba';
     if (ctx === 'ppGap') ctx = 'ppGap';
     if (A && A.valChipHtml) return A.valChipHtml(safe, ctx, invert, def.digits);
@@ -352,7 +353,10 @@
     if (!msgs.length) return '';
     return '<div class="lv-banner warn">' + esc(msgs.join(' ')) + '</div>';
   }
+  var SURFACE_LOCK_TIP = 'Not available for Surface Level Wins — win results are team-level, not split by platoon.';
+
   function renderControls(root, state, teams, meta) {
+    var surfaceLock = state.family === 'surface';
     var rows = ''
       + lvSec('Metric family', 'bar-chart-3')
       + '<div class="lv-family-grid">'
@@ -365,7 +369,9 @@
       + '<div class="lv-lens">'
       + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills">'
-      + pill('hand', 'both', 'Both', state, false) + pill('hand', 'r', 'vs RHP', state, false) + pill('hand', 'l', 'vs LHP', state, false) + '</div></div>'
+      // Win results are team-level — platoon and batter-side splits don't exist for the
+      // Surface family, so disable those pills (with a tooltip) instead of no-op clicks.
+      + pill('hand', 'both', 'Both', state, surfaceLock, SURFACE_LOCK_TIP) + pill('hand', 'r', 'vs RHP', state, surfaceLock, SURFACE_LOCK_TIP) + pill('hand', 'l', 'vs LHP', state, surfaceLock, SURFACE_LOCK_TIP) + '</div></div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills">'
       + pill('pitcher', 'both', 'Both', state, false) + pill('pitcher', 'sp', 'SP', state, false) + pill('pitcher', 'rp', 'RP', state, false) + '</div></div>'
       + '</div>'
@@ -377,7 +383,7 @@
       + '</div>'
       + '<div class="lv-cat"><div class="lv-cat-h">Lineup side</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Bats</span><div class="lv-pills">'
-      + pill('batSide', 'both', 'Both', state, false) + pill('batSide', 'rhb', 'RHB', state, false) + pill('batSide', 'lhb', 'LHB', state, false) + '</div></div>'
+      + pill('batSide', 'both', 'Both', state, surfaceLock, SURFACE_LOCK_TIP) + pill('batSide', 'rhb', 'RHB', state, surfaceLock, SURFACE_LOCK_TIP) + pill('batSide', 'lhb', 'LHB', state, surfaceLock, SURFACE_LOCK_TIP) + '</div></div>'
       + '</div>'
       + '<div class="lv-cat"><div class="lv-cat-h">Time window</div>'
       + '<div class="lv-cat-row"><span class="lv-cat-k">Range</span><div class="lv-pills">'
@@ -388,9 +394,11 @@
       + renderContextBanner(meta, state);
     root.querySelector('.lv-controls').innerHTML = rows;
   }
-  function pill(key, val, label, state, disabled) {
+  function pill(key, val, label, state, disabled, tip) {
     var on = state.filter[key] === val;
-    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"' + (disabled ? ' disabled' : '') + '>' + esc(label) + '</button>';
+    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"'
+      + (disabled ? ' disabled' : '') + (disabled && tip ? ' title="' + esc(tip) + '"' : '')
+      + '>' + esc(label) + '</button>';
   }
   function titleCaseDesc(s) {
     var A = global.MLBMAAssets;
@@ -410,6 +418,7 @@
   function renderBody(root, state, rows) {
     var mount = root.querySelector('.lv-body');
     var defs = visibleDefsForDensity(familyDefs(state.family));
+    applyLeaguePoolsFromRows(rows);
     var ranges = rangeMapForDefs(rows, defs);
 
     var sortedRows = (rows || []).slice();
@@ -469,6 +478,12 @@
         } else if (a === 'family') {
           ctx._userInteracted = true;
           ctx.state.family = btn.dataset.v;
+          if (ctx.state.family === 'surface') {
+            // Surface win results carry no platoon/batter-side splits — reset those
+            // lenses so the disabled pills never show a stale active selection.
+            ctx.state.filter.hand = 'both';
+            ctx.state.filter.batSide = 'both';
+          }
           normalizeSortState(ctx.state);
           rerender(root, ctx);
         }
@@ -478,7 +493,11 @@
 
   function registerLeaguePoolsFromRows(dataRows) {
     if (!A || !A.registerLeaguePool || !dataRows || !dataRows.length) return false;
-    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'];
+    var metrics = [
+      'winPct', 'f5WinPct', 'pitcherWinPct',
+      'osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip',
+      'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'
+    ];
     var registered = false;
     metrics.forEach(function(k) {
       var vals = dataRows.map(function(r) { return num(r[k]); }).filter(function(v) { return v != null && !isNaN(v); });
@@ -487,6 +506,11 @@
         registered = true;
       }
     });
+    var xfipFaced = dataRows.map(function(r) { return num(r.xfip); }).filter(function(v) { return v != null && !isNaN(v); });
+    if (xfipFaced.length >= 2) {
+      A.registerLeaguePool('xfipFaced', xfipFaced);
+      registered = true;
+    }
     return registered;
   }
 
@@ -673,7 +697,11 @@
       });
     }
     if (LM && LM.fetchAll) {
-      LM.fetchAll({ needL10SpHand: true, needPals: true, allowPartialTeamResults: true });
+      LM.fetchAll({
+        allowPartialTeamResults: true,
+        prefetchTeamResults: true,
+        prefetchL10SpHand: true
+      });
     }
     var fromBoot = !!global.__MLBMA_RANKINGS_BOOT_DONE && isDefaultSnapshotFilter(state.filter);
     rerender(shell, ctx, { fromBoot: fromBoot, silent: fromBoot });
