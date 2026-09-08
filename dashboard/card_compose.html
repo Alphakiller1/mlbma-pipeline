@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Chase Analytics — Composed Post</title>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908a">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260908a">
+<link rel="stylesheet" href="theme.css?v=20260908a">
+<style>
+  /* Composition route: brand chrome + a grid of captured dashboard artifacts.
+     Every colour/font here is a site token from theme.css / mlbma_design_system.css.
+     The artifacts are pixels captured from the real dashboard, so a post cannot drift
+     from the site by construction. Geometry is solved in JS (solveLayout) so every
+     artifact in one image shares ONE zoom -> identical type size, centred alignment. */
+  html, body { margin: 0; overflow: hidden; }
+  body.card-page {
+    width: 1080px; height: 1350px;
+    background:
+      radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
+      radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.08), transparent 60%),
+      var(--bg);
+    font-family: var(--sans);
+    color: var(--text);
+    display: flex; flex-direction: column;
+    padding: 44px 48px 36px;
+    box-sizing: border-box;
+  }
+
+  /* ── brand: mark only ─────────────────────────────────────────────────────
+     The wordmark is dropped from the header to buy vertical room; the footer URL
+     carries the name. Clear space around the mark is >= 25% of its height. */
+  .cc-header { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; }
+  .cc-mark { height: 46px; width: auto; display: block;
+    filter: drop-shadow(0 0 12px rgba(124, 77, 255, 0.45)); }
+  .cc-meta { text-align: right; color: var(--text-3); font-size: 14px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; }
+
+  /* ── text layer ──────────────────────────────────────────────────────────── */
+  .cc-lede { flex: 0 0 auto; margin-top: 20px; }
+  .cc-eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold);
+    text-shadow: 0 0 14px rgba(240, 194, 74, 0.17); }
+  /* The silver comes from the site's own heading component: the element carries
+     .ca-page-title, whose rule in mlbma_design_system.css applies the metallic
+     gradient with !important. Do not re-declare the gradient here -- theme.css has
+     `h1:not(.ca-page-title) { -webkit-text-fill-color: var(--v-heading) !important }`,
+     which is what was forcing these titles to flat violet. Only geometry below. */
+  .cc-title {
+    font-family: var(--display); font-weight: 800; font-size: 58px; line-height: 1.04;
+    text-transform: uppercase; letter-spacing: 0.01em; margin: 8px 0 0;
+  }
+  .cc-sub { color: var(--text-2); font-size: 19px; font-weight: 600; line-height: 1.4;
+    margin-top: 10px; max-width: 92%; }
+  /* The take: the author's stance, deliberately styled apart from neutral captions so
+     a reader can tell opinion from measurement. */
+  .cc-take { margin-top: 14px; padding: 12px 0 12px 18px; position: relative;
+    font-size: 20px; line-height: 1.38; font-weight: 600; color: var(--text);
+    font-style: italic; max-width: 94%; }
+  .cc-take::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 3px; border-radius: 2px; background: var(--v-grad, var(--v-light)); }
+  .cc-lede.is-tight .cc-title { font-size: 44px; }
+  .cc-lede.is-tight .cc-sub { font-size: 17px; }
+  .cc-lede.is-tight .cc-take { font-size: 17.5px; margin-top: 10px; }
+
+  /* ── artifact area ───────────────────────────────────────────────────────
+     Widths are set in px by the solver; slots never stretch, so mixed-width
+     artifacts stay centred on one axis instead of being scaled apart. */
+  .cc-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 18px;
+    margin-top: 22px; min-height: 0; justify-content: center; align-items: center; }
+  /* Artifacts wider than the column may reach past the type's safe margin (never
+     closer than 24px to the edge). Stamped by the solver only when the zoom is
+     width-bound, which is what turns leftover height into a dead band. */
+  .cc-body.is-wide { margin-left: -24px; margin-right: -24px; }
+  .cc-body.layout-row { flex-direction: row; align-items: center; justify-content: center; }
+  /* Grid wraps a set of same-shape artifacts (matchup cards) into rows. The solver
+     picks the column count that maximises the shared zoom, so five cards become
+     3 + 2 rather than five illegible slivers. */
+  .cc-body.layout-grid { flex-direction: row; flex-wrap: wrap;
+    align-items: center; align-content: center; justify-content: center; }
+  .cc-slot { display: flex; flex-direction: column; min-height: 0; min-width: 0;
+    justify-content: center; align-items: center; }
+  .cc-slot img { display: block; height: auto; object-fit: contain;
+    border-radius: var(--r-lg, 14px); }
+  /* Artifacts already carry the site's own card chrome; the frame only separates
+     them from the post background when they sit edge to edge. */
+  .cc-slot.is-framed img { border: 1px solid var(--border-2); background: var(--card); }
+  .cc-slot-cap { margin-top: 9px; font-size: 13.5px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-3); text-align: center; }
+  /* Per-artifact label (e.g. the starters under a full-card banner). Post-level prose
+     lives in .cc-notes and stays left-aligned. */
+  .cc-slot-note { margin-top: 7px; font-size: 15.5px; font-weight: 600; color: var(--text-2);
+    line-height: 1.42; text-align: center; }
+
+  .cc-notes { flex: 0 0 auto; margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+  .cc-note { font-size: 16.5px; font-weight: 500; color: var(--text-2); line-height: 1.45;
+    padding-left: 15px; position: relative; }
+  .cc-note::before { content: ""; position: absolute; left: 0; top: 8px;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--v-light); }
+
+  .cc-footer { flex: 0 0 auto; margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--border-2);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .cc-footer-l { display: flex; flex-direction: column; gap: 3px; }
+  /* The offer line is the point of the post: every render ends on it. */
+  .cc-site { color: var(--v-light); font-weight: 700; font-size: 18.5px;
+    letter-spacing: 0.01em; }
+  .cc-cta { color: var(--text-2); font-size: 14.5px; font-weight: 600; }
+  .cc-disclaimer { color: var(--text-4); font-size: 12.5px; font-weight: 500; text-align: right; }
+
+  /* ===== Size variants (runner injects CARD_SIZE; JS stamps the class) ===== */
+  body.size-1080x1080 { height: 1080px; padding: 38px 44px 32px; }
+  body.size-1080x1080 .cc-mark { height: 40px; }
+  body.size-1080x1080 .cc-title { font-size: 46px; }
+  body.size-1080x1080 .cc-lede { margin-top: 14px; }
+  body.size-1080x1080 .cc-body { margin-top: 16px; gap: 14px; }
+  body.size-1080x1080 .cc-sub { font-size: 17px; }
+
+  body.size-1080x1920 { height: 1920px; padding: 84px 48px 72px; }
+  body.size-1080x1920 .cc-mark { height: 54px; }
+  body.size-1080x1920 .cc-title { font-size: 66px; }
+  body.size-1080x1920 .cc-body { gap: 26px; }
+
+  body.size-1600x900 { width: 1600px; height: 900px; padding: 36px 52px 32px; }
+  body.size-1600x900 .cc-mark { height: 40px; }
+  body.size-1600x900 .cc-title { font-size: 44px; }
+  body.size-1600x900 .cc-site { font-size: 17px; }
+  body.size-1600x900 .cc-lede { margin-top: 12px; }
+  body.size-1600x900 .cc-body { margin-top: 16px; }
+</style>
+</head>
+<body class="card-page">
+  <div class="cc-header">
+    <img class="cc-mark" id="ccMark" src="assets/chase-icon-outline.png" alt="Chase Analytics">
+    <div class="cc-meta" id="ccMeta"></div>
+  </div>
+
+  <div class="cc-lede" id="ccLede">
+    <div class="cc-eyebrow" id="ccEyebrow"></div>
+    <h1 class="cc-title ca-page-title" id="ccTitle"></h1>
+    <p class="cc-sub" id="ccSub"></p>
+    <p class="cc-take" id="ccTake"></p>
+  </div>
+
+  <div class="cc-body" id="ccBody"></div>
+  <div class="cc-notes" id="ccNotes"></div>
+
+  <div class="cc-footer">
+    <span class="cc-footer-l">
+      <span class="cc-site">Access Premium MLB Research At Chase-Analytics.com</span>
+      <span class="cc-cta" id="ccCta"></span>
+    </span>
+    <span class="cc-disclaimer">Model-generated research. Not betting advice. 21+.</span>
+  </div>
+
+<script>
+(function () {
+  var D = window.CARD_DATA;
+  if (!D) {
+    document.body.innerHTML = '<p style="color:#F5F6FA;padding:40px">No CARD_DATA injected.</p>';
+    return;
+  }
+  if (window.CARD_SIZE) document.body.classList.add('size-' + window.CARD_SIZE);
+  var DPR = D.captureDpr || 1;
+  // The capture is taken at DPR, so zooming a bitmap up to DPR:1 still leaves a source
+  // pixel per output pixel. That is the honest ceiling for enlarging an artifact.
+  var MAX_ZOOM = DPR;
+
+  function set(id, txt) {
+    var el = document.getElementById(id);
+    if (!txt) { el.style.display = 'none'; return; }
+    el.textContent = txt;
+  }
+  set('ccMeta', D.meta || '');
+  set('ccEyebrow', D.eyebrow || '');
+  set('ccTitle', D.title || '');
+  set('ccSub', D.sub || '');
+  set('ccTake', D.take || '');
+  set('ccCta', D.cta || '');
+  if (!D.title && !D.sub && !D.eyebrow && !D.take) {
+    document.getElementById('ccLede').style.display = 'none';
+  }
+  if (D.tight) document.getElementById('ccLede').classList.add('is-tight');
+
+  // Artifacts: [{src, caption, note, framed}] — src is a data URI captured from the
+  // live dashboard, so the artifact pixels ARE the site.
+  var body = document.getElementById('ccBody');
+  var layout = D.layout || 'stack';
+  body.classList.add('layout-' + layout);
+  (D.artifacts || []).forEach(function (a) {
+    var slot = document.createElement('div');
+    slot.className = 'cc-slot' + (a.framed ? ' is-framed' : '');
+    var img = document.createElement('img');
+    img.src = a.src;
+    slot.appendChild(img);
+    if (a.caption) {
+      var cap = document.createElement('div');
+      cap.className = 'cc-slot-cap';
+      cap.textContent = a.caption;
+      slot.appendChild(cap);
+    }
+    if (a.note) {
+      var note = document.createElement('div');
+      note.className = 'cc-slot-note';
+      note.textContent = a.note;
+      slot.appendChild(note);
+    }
+    body.appendChild(slot);
+  });
+
+  var notes = document.getElementById('ccNotes');
+  (D.notes || []).forEach(function (text) {
+    var n = document.createElement('div');
+    n.className = 'cc-note';
+    n.textContent = text;
+    notes.appendChild(n);
+  });
+
+  /**
+   * Solve ONE zoom for every artifact in the post.
+   *
+   * Sizing each artifact to the column width (the old model) meant a 434px matchup
+   * card and a 1140px stats table were scaled 2.27x and 0.86x in the same image — a
+   * 2.6x difference in rendered type size. Sharing a zoom keeps type identical
+   * everywhere and centres each artifact, so edges align on one axis instead of
+   * being stretched to a common width.
+   */
+  function solveLayout() {
+    var slots = [].slice.call(body.children);
+    if (!slots.length) { window.__composeReady = true; return; }
+    var natural = slots.map(function (s) {
+      var img = s.querySelector('img');
+      if (!img || !img.naturalWidth) return null;
+      return { img: img, w: img.naturalWidth / DPR, h: img.naturalHeight / DPR };
+    }).filter(Boolean);
+    if (!natural.length) return;
+
+    // MEASURE FIRST, THEN SIZE. Until a zoom is applied the images sit at their full
+    // capture width (2x native), which stretches this flex container and makes
+    // body.clientHeight report far more room than actually exists -- the grid then
+    // picked too few columns and overflowed onto the deck and the footer. Collapsing
+    // the images to zero forces the container to its true flex height.
+    natural.forEach(function (a) { a.img.style.width = '0px'; });
+    void body.offsetHeight;
+    var gapPeek = parseFloat(getComputedStyle(body).columnGap ||
+                             getComputedStyle(body).gap) || 0;
+
+    // Widen the artifact area first if anything is wider than the column, so the
+    // measurement below already reflects the room the artifacts will really get.
+    // Width-bound means "the artifacts want more horizontal room than the column has":
+    // one wide board, or a row/grid whose artifacts plus gaps overflow it.
+    var widest = Math.max.apply(null, natural.map(function (a) { return a.w; }));
+    var rowNeed = natural.reduce(function (n, a) { return n + a.w; }, 0) +
+                  gapPeek * (natural.length - 1);
+    if (widest > body.clientWidth ||
+        (layout !== 'stack' && rowNeed > body.clientWidth)) {
+      body.classList.add('is-wide');
+      void body.offsetHeight;
+    }
+
+    var styles = getComputedStyle(body);
+    var gap = parseFloat(styles.rowGap || styles.gap) || 0;
+    // Caption/note height is a fixed cost that does not scale with the image.
+    var chrome = slots.reduce(function (sum, s) {
+      return sum + [].slice.call(s.children).reduce(function (n, c) {
+        return n + (c.tagName === 'IMG' ? 0 : c.offsetHeight +
+          parseFloat(getComputedStyle(c).marginTop || 0));
+      }, 0);
+    }, 0);
+
+    var availW = body.clientWidth;
+    var availH = body.clientHeight;
+    var zoom, gridWidth = 0;
+    if (layout === 'grid') {
+      // Try every column count and keep the one that lets the artifacts render
+      // largest; caption height is a per-ROW cost, not per artifact.
+      var gmaxW = Math.max.apply(null, natural.map(function (a) { return a.w; }));
+      var gmaxH = Math.max.apply(null, natural.map(function (a) { return a.h; }));
+      var capH = slots.reduce(function (m, sl) {
+        var h = [].slice.call(sl.children).reduce(function (n, c) {
+          return n + (c.tagName === 'IMG' ? 0 : c.offsetHeight +
+            parseFloat(getComputedStyle(c).marginTop || 0));
+        }, 0);
+        return Math.max(m, h);
+      }, 0);
+      // Derive the column width by FLOORING to whole pixels, then read the zoom back
+      // off it. Computing an exact zoom and rounding the width afterwards overflowed
+      // the row by a pixel (3 x 311 + 2 x 26 = 985 in a 984 container), which wrapped
+      // the last card and silently cost a whole row.
+      var best = 0, bestCols = natural.length, bestW = 0;
+      for (var cols = 1; cols <= natural.length; cols++) {
+        var rows = Math.ceil(natural.length / cols);
+        var colW = Math.floor((availW - gap * (cols - 1)) / cols);
+        var zh = (availH - capH * rows - gap * (rows - 1)) / (rows * gmaxH);
+        var z = Math.min(MAX_ZOOM, colW / gmaxW, zh);
+        if (z > best) { best = z; bestCols = cols; bestW = Math.floor(gmaxW * z); }
+      }
+      zoom = best;
+      gridWidth = bestW;
+      window.__composeGridCols = bestCols;
+    } else if (layout === 'row') {
+      var sumW = natural.reduce(function (n, a) { return n + a.w; }, 0);
+      var maxH = Math.max.apply(null, natural.map(function (a) { return a.h; }));
+      zoom = Math.min(MAX_ZOOM,
+                      (availW - gap * (natural.length - 1)) / sumW,
+                      (availH - chrome) / maxH);
+    } else {
+      var maxW = Math.max.apply(null, natural.map(function (a) { return a.w; }));
+      var sumH = natural.reduce(function (n, a) { return n + a.h; }, 0);
+      zoom = Math.min(MAX_ZOOM,
+                      availW / maxW,
+                      (availH - gap * (natural.length - 1) - chrome) / sumH);
+    }
+    zoom = Math.max(0.05, zoom);
+    if (layout === 'grid') {
+      natural.forEach(function (a) { a.img.style.width = gridWidth + 'px'; });
+    } else {
+      natural.forEach(function (a) {
+        a.img.style.width = (a.w * zoom).toFixed(1) + 'px';
+      });
+    }
+
+    // Captions are measured before the artifacts are sized, so a long label that wraps
+    // to a second line only afterwards can push the column past the canvas. Re-measure
+    // and shave the zoom until it fits -- cheap insurance for any text reflow, not just
+    // captions.
+    for (var pass = 0; pass < 3; pass++) {
+      void body.offsetHeight;
+      if (body.scrollHeight <= body.clientHeight) break;
+      var shrink = Math.max(0.80, body.clientHeight / body.scrollHeight - 0.005);
+      zoom *= shrink;
+      if (layout === 'grid') {
+        gridWidth = Math.floor(gridWidth * shrink);
+        natural.forEach(function (a) { a.img.style.width = gridWidth + 'px'; });
+      } else {
+        natural.forEach(function (a) {
+          a.img.style.width = (a.w * zoom).toFixed(1) + 'px';
+        });
+      }
+    }
+
+    // Reported so the runner can rescue an unreadable squeeze (taller canvas) or a
+    // half-empty post (shorter canvas), and flag mixed width classes.
+    var widths = natural.map(function (a) { return a.w; });
+    window.__composeScale = zoom;
+    // Slack = unused vertical room after sizing, for ANY layout. Measure the real
+    // occupied box: scrollHeight never falls BELOW clientHeight, so using it reported
+    // zero slack for every non-overflowing post and silently disabled the rescue.
+    var occTop = Infinity, occBottom = -Infinity;
+    slots.forEach(function (sl) {
+      var r = sl.getBoundingClientRect();
+      if (r.height <= 0) return;
+      occTop = Math.min(occTop, r.top);
+      occBottom = Math.max(occBottom, r.bottom);
+    });
+    var occupied = (occBottom > occTop) ? (occBottom - occTop) : 0;
+    window.__composeSlack = Math.max(0, body.clientHeight - occupied);
+    window.__composeWidthSpread = Math.max.apply(null, widths) / Math.min.apply(null, widths);
+  }
+
+  // Signal readiness only once every artifact bitmap has decoded and geometry is
+  // solved, so the runner never screenshots a half-painted or unsolved post.
+  var imgs = [].slice.call(document.images);
+  Promise.all(imgs.map(function (i) {
+    return i.complete ? Promise.resolve() : new Promise(function (res) {
+      i.addEventListener('load', res); i.addEventListener('error', res);
+    });
+  })).then(function () {
+    solveLayout();
+    requestAnimationFrame(function () { window.__composeReady = true; });
+  });
+})();
+</script>
+</body>
+</html>

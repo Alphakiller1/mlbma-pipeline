@@ -18,8 +18,8 @@ concurrency:
 
 jobs:
   token-guard:
-    # Fast, no-browser guard: mlbma_design_system.css must stay the single source
-    # of every global design token (design contract §5 / UI checklist §1).
+    # Fast, no-browser guard: TIER 1 (chase-tokens) owns color literals;
+    # TIER 2 is var()-only; design-layer ?v= must match DESIGN_LAYER_VERSION.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
         run: |
           python -m http.server 8765 >/tmp/mlbma-http.log 2>&1 &
           sleep 2
-          python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
+          python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
           python scripts/platform_ui_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
       - name: Enforce 360px, 375px, and 390px mobile contract
         run: |

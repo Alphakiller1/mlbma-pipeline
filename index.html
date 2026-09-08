@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chase Analytics · MLB</title>
-  <meta http-equiv="refresh" content="0; url=dashboard/chase_analytics_mlb_oem_v7.html">
-  <script>location.replace('dashboard/chase_analytics_mlb_oem_v7.html');</script>
+  <!-- Absolute path: a relative location.replace() loops under Cloudflare Pages' 200 catch-all. -->
+  <meta http-equiv="refresh" content="0; url=/dashboard/index.html">
+  <script>location.replace('/dashboard/index.html' + location.search + location.hash);</script>
   <style>
     body { font-family: system-ui, sans-serif; background: #0A0A0A; color: #E5E5E5;
       display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
@@ -13,6 +14,6 @@
   </style>
 </head>
 <body>
-  <p>Redirecting to <a href="dashboard/chase_analytics_mlb_oem_v7.html">MLB Offensive Extrapolation Model</a>…</p>
+  <p>Redirecting to <a href="/dashboard/index.html">Chase Analytics dashboard</a>…</p>
 </body>
 </html>

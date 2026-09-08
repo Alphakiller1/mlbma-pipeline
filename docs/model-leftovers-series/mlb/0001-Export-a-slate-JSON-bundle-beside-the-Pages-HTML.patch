@@ -1,0 +1,483 @@
+From b5ecaee447f0b581e97179ccace03b0423dfb747 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 8 Sep 2026 07:52:53 +0000
+Subject: [PATCH 1/3] Export a slate JSON bundle beside the Pages HTML.
+
+board.json is serialized from the Board kernel so priced_markets (Picks)
+and flagged_tiles (Gems) keep the existing Tile.priced / GEM_EDGE_PTS /
+GEM_STATES rules. build.json and record.json carry the producer promotion
+verdict, may_bet, and unmet_gates unchanged. The deploy smoke now checks
+the three artifacts.
+---
+ .github/workflows/deploy-pages.yml |  14 ++
+ mlbmodel/report/app.py             |  31 +++-
+ mlbmodel/report/export.py          | 251 +++++++++++++++++++++++++++++
+ tests/test_export.py               |  96 +++++++++++
+ 4 files changed, 390 insertions(+), 2 deletions(-)
+ create mode 100644 mlbmodel/report/export.py
+ create mode 100644 tests/test_export.py
+
+diff --git a/.github/workflows/deploy-pages.yml b/.github/workflows/deploy-pages.yml
+index 56d316c..2d88b93 100644
+--- a/.github/workflows/deploy-pages.yml
++++ b/.github/workflows/deploy-pages.yml
+@@ -274,6 +274,20 @@ jobs:
+           assert 'results-prop-audit' in html, 'complete prop grading report missing'
+           audit = Path('_site/assets/prediction-audit.json')
+           assert audit.exists() and audit.stat().st_size > 100, 'complete grading data missing'
++          board = Path('_site/board.json')
++          build = Path('_site/build.json')
++          record = Path('_site/record.json')
++          assert board.exists() and build.exists() and record.exists(), 'slate JSON bundle missing'
++          import json
++          payload = json.loads(board.read_text(encoding='utf-8'))
++          assert payload.get('schema') == 'mlb-model/board/1'
++          assert payload.get('may_bet') is False
++          assert 'priced_markets' in payload and 'flagged_tiles' in payload
++          manifest = json.loads(build.read_text(encoding='utf-8'))
++          assert 'generated_at' in manifest and 'odds' in manifest and 'issues' in manifest
++          ledger = json.loads(record.read_text(encoding='utf-8'))
++          assert ledger.get('may_bet') is False
++          assert 'games_graded' in ledger and 'unmet_gates' in ledger
+           # Shared brand contract with wnba-edge-model and nfl-model. The graphite fork
+           # below is what these three products silently drifted into once before.
+           for key in ('#08090F', '#9A6BFF', 'DM Sans', 'Roboto Condensed'):
+diff --git a/mlbmodel/report/app.py b/mlbmodel/report/app.py
+index b8baaa2..660ef76 100644
+--- a/mlbmodel/report/app.py
++++ b/mlbmodel/report/app.py
+@@ -13,6 +13,7 @@ from __future__ import annotations
+ 
+ import argparse
+ import html
++import json
+ import logging
+ import os
+ from pathlib import Path
+@@ -75,7 +76,8 @@ log = logging.getLogger(__name__)
+ __all__ = ["_NAV", "_props", "build_app", "main"]
+ 
+ 
+-def build_app(featured_game, *, fetch=True, data_dir=None, audit_asset_dir=None):
++def build_app(featured_game, *, fetch=True, data_dir=None, audit_asset_dir=None,
++              bundle_dir=None):
+     repo = DataRepository(data_dir)
+     reader = SupabaseReader()
+     cache_dir = Path(data_dir) if data_dir else settings.CACHE_DIR
+@@ -285,6 +287,7 @@ def build_app(featured_game, *, fetch=True, data_dir=None, audit_asset_dir=None)
+ 
+     # Always retain local, gradeable projections even when Supabase credentials
+     # are unavailable.  This is intentionally independent of lean thresholds.
++    local_grade = {"graded": 0, "pending": 0, "voided": 0}
+     if sd:
+         local_grade = grade_local_predictions(cache_dir)
+         local_written = record_local_predictions(cache_dir, str(sd)[:10], model_by_pk, pkmap, flat_props)
+@@ -406,7 +409,7 @@ def build_app(featured_game, *, fetch=True, data_dir=None, audit_asset_dir=None)
+         '</div>'
+         '</footer>'
+     )
+-    return (
++    html = (
+         f'<!DOCTYPE html><html lang=en><head><meta charset=utf-8>'
+         f'<meta name=viewport content="width=device-width,initial-scale=1">'
+         f'<title>MLB Model — Chase Analytics</title>'
+@@ -420,6 +423,29 @@ def build_app(featured_game, *, fetch=True, data_dir=None, audit_asset_dir=None)
+         f'</div></div>'
+         f'<script>{shell_js()}</script></body></html>'
+     )
++    if bundle_dir:
++        from mlbmodel.report.board_mlb import build_board as _build_board
++        from mlbmodel.report.export import write_bundle
++
++        board_obj = _build_board(slate, sd, reports_by_key or {}, sharp_by_pk, sync)
++        lean_rows: list[dict] = []
++        snapshot = cache_dir / "model_leans_latest.json"
++        if snapshot.exists():
++            try:
++                lean_rows = json.loads(snapshot.read_text(encoding="utf-8")).get("rows") or []
++            except (OSError, json.JSONDecodeError, AttributeError):
++                lean_rows = []
++        write_bundle(
++            Path(bundle_dir),
++            board=board_obj,
++            gate=gate,
++            sync=sync,
++            data_dir=cache_dir,
++            slate_date=str(sd or "")[:10] or None,
++            ledger=local_grade,
++            leans=lean_rows,
++        )
++    return html
+ 
+ 
+ def main():  # pragma: no cover
+@@ -437,6 +463,7 @@ def main():  # pragma: no cover
+             fetch=not args.no_fetch,
+             data_dir=args.data_dir,
+             audit_asset_dir=out.parent / "assets",
++            bundle_dir=out.parent,
+         ),
+         encoding="utf-8",
+     )
+diff --git a/mlbmodel/report/export.py b/mlbmodel/report/export.py
+new file mode 100644
+index 0000000..52dc8d5
+--- /dev/null
++++ b/mlbmodel/report/export.py
+@@ -0,0 +1,251 @@
++"""Machine-readable slate export for downstream systems.
++
++The dashboard HTML is a rendered page. This module is the contract the content
++engine reads: `board.json` (slate), `build.json` (data freshness), `record.json`
++(graded ledger). Field names follow the NFL/CFB publication bundle.
++
++`schema` is versioned; add fields freely, rename or remove them only with a
++version bump.
++
++Picks / Gems semantics are the Board kernel's, not a second definition:
++
++* **priced_markets** — tiles with a matched book price (`Tile.priced` /
++  `Group.priced`). A model probability with no book price is not a pick.
++* **flagged_tiles** — priced tiles with edge >= 3.0 and state in {BET, MONITOR}
++  (`board.py` GEM_EDGE_PTS / GEM_STATES). UI labels stay "Picks" / "Gems".
++"""
++
++from __future__ import annotations
++
++import json
++from datetime import UTC, datetime
++from pathlib import Path
++
++from mlbmodel.leans.calibration import record_from_rows, summarize_record
++from mlbmodel.report.board import GEM_EDGE_PTS, GEM_STATES, Board
++
++
++SCHEMA = "mlb-model/board/1"
++
++
++def _stamp() -> datetime:
++    return datetime.now(UTC).replace(microsecond=0)
++
++
++def _iso(moment: datetime) -> str:
++    return moment.isoformat().replace("+00:00", "Z")
++
++
++def _tile_row(card, group, tile) -> dict:
++    return {
++        "game": card.key,
++        "away": card.away.abbr,
++        "home": card.home.abbr,
++        "group": group.label,
++        "group_tag": group.tag,
++        "label": tile.label,
++        "value": tile.value,
++        "state": tile.state,
++        "priced": bool(tile.priced),
++        "gem": bool(tile.gem),
++        "note": tile.note,
++    }
++
++
++def _iter_tiles(board: Board):
++    for card in board.cards:
++        for group in card.groups:
++            for tile in group.tiles:
++                yield card, group, tile
++
++
++def payload(
++    board: Board,
++    *,
++    gate: dict | None = None,
++    slate_date: str | None = None,
++    generated_at: datetime | None = None,
++) -> dict:
++    """Serialize the live Board kernel — the same object the HTML counts Picks/Gems from."""
++    gate = gate or {}
++    verdict = str(gate.get("verdict") or "HOLD/ABSTAIN")
++    reasons = list(gate.get("reasons") or [])
++    stamp = generated_at or _stamp()
++    tiles = [_tile_row(card, group, tile) for card, group, tile in _iter_tiles(board)]
++    priced = [row for row in tiles if row["priced"]]
++    flagged = [row for row in priced if row["gem"]]
++    return {
++        "schema": SCHEMA,
++        "sport": "mlb",
++        "generated_at_utc": _iso(stamp),
++        "slate_date": slate_date,
++        "authority": verdict,
++        "may_bet": verdict == "PROMOTE",
++        "unmet_gates": reasons,
++        "evidence": "mlbmodel.quant.promotion_gate.promotion_verdict",
++        "gem_edge_pts": GEM_EDGE_PTS,
++        "gem_states": sorted(GEM_STATES),
++        "picks": board.picks,
++        "gems": board.gems,
++        "priced_markets": priced,
++        "flagged_tiles": flagged,
++        "games": [
++            {
++                "key": card.key,
++                "away": card.away.abbr,
++                "home": card.home.abbr,
++                "projected_away": card.away.score,
++                "projected_home": card.home.score,
++                "start": card.start_text,
++                "headline": card.headline,
++                "picks": card.picks,
++                "gems": card.gems,
++            }
++            for card in board.cards
++        ],
++    }
++
++
++def health(
++    *,
++    data_dir: Path | None = None,
++    sync: dict | None = None,
++    odds_status: dict | None = None,
++    issues: list[str] | None = None,
++    slate_date: str | None = None,
++    generated_at: datetime | None = None,
++) -> dict:
++    """DataStatus-shaped manifest (NFL/CFB `build.json` field contract)."""
++    stamp = generated_at or _stamp()
++    sources: list[dict] = []
++    if data_dir is not None:
++        data_dir = Path(data_dir)
++        for name in (
++            "today_matchups.csv",
++            "game_results.csv",
++            "odds_latest.json",
++            "model_leans_latest.json",
++            "mlbma_sync.json",
++        ):
++            path = data_dir / name
++            rows = None
++            if path.exists() and path.suffix == ".csv":
++                try:
++                    rows = sum(1 for _ in path.open(encoding="utf-8")) - 1
++                except OSError:
++                    rows = None
++            elif path.exists() and path.name == "model_leans_latest.json":
++                try:
++                    payload = json.loads(path.read_text(encoding="utf-8"))
++                    rows = int(payload.get("count") or len(payload.get("rows") or []))
++                except (OSError, json.JSONDecodeError, TypeError, ValueError):
++                    rows = None
++            sources.append({
++                "name": name,
++                "exists": path.exists(),
++                "rows": rows,
++                "state": "fresh" if path.exists() else "missing",
++            })
++    problem_list = list(issues or [])
++    sync = sync or {}
++    if sync.get("status") not in {None, "exact", "ok", "fresh"} and sync:
++        if sync.get("status") == "fallback":
++            problem_list.append("MLBMA sync used a live fallback slate")
++        elif sync.get("message"):
++            problem_list.append(str(sync["message"]))
++    odds = dict(odds_status or {})
++    if not odds:
++        odds = {"state": "unknown", "requested_book": "draftkings"}
++    return {
++        "state": "fresh" if not problem_list else "degraded",
++        "generated_at": stamp.strftime("%Y-%m-%d %H:%M UTC"),
++        "slate_date": slate_date,
++        "sources": sources,
++        "odds": odds,
++        "sync": {
++            "status": sync.get("status"),
++            "message": sync.get("message"),
++            "game_count": sync.get("game_count"),
++        },
++        "issues": list(dict.fromkeys(problem_list)),
++    }
++
++
++def record_payload(
++    *,
++    gate: dict | None = None,
++    ledger: dict | None = None,
++    leans: list[dict] | None = None,
++) -> dict:
++    """ModelStatus / results ledger (NFL/CFB `record.json` field contract)."""
++    gate = gate or {}
++    ledger = ledger or {}
++    verdict = str(gate.get("verdict") or "HOLD/ABSTAIN")
++    reasons = list(gate.get("reasons") or [])
++    rows = leans or []
++    rec = record_from_rows(rows) if rows else {
++        "total": 0, "wins": 0, "losses": 0, "pushes": 0, "hit_rate": None,
++    }
++    summary = summarize_record(rows) if rows else {}
++    return {
++        "scope": "local prediction ledger + settled model_leans when present",
++        "authority": "shadow_only" if verdict != "PROMOTE" else verdict,
++        "may_bet": verdict == "PROMOTE",
++        "unmet_gates": reasons,
++        "promotion": verdict,
++        "games_graded": int(ledger.get("graded") or rec.get("total") or 0),
++        "pending_snapshots": int(ledger.get("pending") or 0),
++        "model_mae": None,
++        "consensus_mae": None,
++        "book_mae": None,
++        "ats": {
++            "win": int(rec.get("wins") or 0),
++            "loss": int(rec.get("losses") or 0),
++            "push": int(rec.get("pushes") or 0),
++        },
++        "totals": {"win": 0, "loss": 0, "push": 0},
++        "hit_rate": rec.get("hit_rate"),
++        "brier": summary.get("brier") if summary else None,
++    }
++
++
++def write(payload_dict: dict, out: Path) -> Path:
++    out.parent.mkdir(parents=True, exist_ok=True)
++    out.write_text(json.dumps(payload_dict, indent=2) + "\n", encoding="utf-8")
++    return out
++
++
++def write_bundle(
++    site_dir: Path,
++    *,
++    board: Board,
++    gate: dict | None = None,
++    sync: dict | None = None,
++    data_dir: Path | None = None,
++    slate_date: str | None = None,
++    ledger: dict | None = None,
++    leans: list[dict] | None = None,
++    odds_status: dict | None = None,
++    issues: list[str] | None = None,
++) -> dict[str, Path]:
++    site_dir = Path(site_dir)
++    site_dir.mkdir(parents=True, exist_ok=True)
++    board_path = write(
++        payload(board, gate=gate, slate_date=slate_date),
++        site_dir / "board.json",
++    )
++    build_path = write(
++        health(
++            data_dir=data_dir,
++            sync=sync,
++            odds_status=odds_status,
++            issues=issues,
++            slate_date=slate_date,
++        ),
++        site_dir / "build.json",
++    )
++    record_path = write(
++        record_payload(gate=gate, ledger=ledger, leans=leans),
++        site_dir / "record.json",
++    )
++    return {"board": board_path, "build": build_path, "record": record_path}
+diff --git a/tests/test_export.py b/tests/test_export.py
+new file mode 100644
+index 0000000..f16dcf3
+--- /dev/null
++++ b/tests/test_export.py
+@@ -0,0 +1,96 @@
++import json
++from pathlib import Path
++
++from mlbmodel.report.board import GEM_EDGE_PTS, GEM_STATES, Board, Card, Group, Side, Tile
++from mlbmodel.report.board_mlb import _is_gem, _tile
++from mlbmodel.report.export import payload, write_bundle
++
++
++def _board():
++    priced_bet = Tile(
++        label="Total", value="+4.2", state="OVER 8.5 · MONITOR",
++        tone="warnc", gem=True, priced=True,
++    )
++    priced_watch = Tile(
++        label="Moneyline", value="+1.0", state="HOU · AVOID",
++        tone="mut", gem=False, priced=True,
++    )
++    model_only = Tile(
++        label="Run line", value="55%", state="HOU · model only",
++        tone="mut", gem=False, priced=False,
++    )
++    drivers = Tile(label="HOU lineup", value="+0.0%", state="unavailable · no adjustment")
++    card = Card(
++        key="HOU@DET",
++        away=Side(abbr="HOU", score="4.1"),
++        home=Side(abbr="DET", score="4.4"),
++        groups=(
++            Group(label="Full game", tiles=(priced_bet, priced_watch, model_only), tag="fullgame"),
++            Group(label="Why this projection", tiles=(drivers,), market=False),
++        ),
++    )
++    return Board(sport="MLB", cards=[card], date_label="2026-09-08")
++
++
++def test_picks_are_priced_tiles_not_recommendations():
++    board = _board()
++    assert board.picks == 2
++    gate = {"verdict": "HOLD/ABSTAIN", "reasons": ["OOS n 12 < min 50 (under-powered)"]}
++    data = payload(board, gate=gate, slate_date="2026-09-08")
++    assert data["schema"] == "mlb-model/board/1"
++    assert data["authority"] == "HOLD/ABSTAIN"
++    assert data["may_bet"] is False
++    assert data["unmet_gates"] == ["OOS n 12 < min 50 (under-powered)"]
++    assert len(data["priced_markets"]) == 2
++    assert all(row["priced"] for row in data["priced_markets"])
++    assert data["picks"] == 2
++    # Unpriced model-only tiles are not picks.
++    assert all(row["label"] != "Run line" for row in data["priced_markets"])
++
++
++def test_flagged_tiles_are_gems_from_kernel_rule():
++    row = {"edge": GEM_EDGE_PTS, "state": "MONITOR"}
++    assert _is_gem(row)
++    tile = _tile("Total", {"edge": 4.2, "state": "MONITOR", "side": "over", "line": 8.5, "tone": "warnc"})
++    assert tile.priced is True
++    assert tile.gem is True
++    weak = {"edge": GEM_EDGE_PTS - 0.1, "state": "MONITOR"}
++    assert not _is_gem(weak)
++    rec = {"edge": 5.0, "state": "AVOID"}
++    assert not _is_gem(rec)
++    board = _board()
++    data = payload(board, gate={"verdict": "HOLD/ABSTAIN", "reasons": ["gate"]})
++    assert data["gems"] == 1
++    assert len(data["flagged_tiles"]) == 1
++    assert data["flagged_tiles"][0]["gem"] is True
++    assert set(data["gem_states"]) == set(GEM_STATES)
++
++
++def test_write_bundle_and_bet_is_not_emitted_while_unpromoted(tmp_path):
++    board = _board()
++    paths = write_bundle(
++        tmp_path,
++        board=board,
++        gate={"verdict": "HOLD/ABSTAIN", "reasons": ["OOS ROI 95% LB -0.1 <= hurdle 0.0"]},
++        sync={"status": "exact", "game_count": 1},
++        slate_date="2026-09-08",
++        ledger={"graded": 4, "pending": 2},
++        leans=[],
++    )
++    board_json = json.loads(Path(paths["board"]).read_text(encoding="utf-8"))
++    build = json.loads(Path(paths["build"]).read_text(encoding="utf-8"))
++    record = json.loads(Path(paths["record"]).read_text(encoding="utf-8"))
++    assert board_json["may_bet"] is False
++    assert "BET" not in board_json["authority"]
++    assert build["generated_at"]
++    assert "sources" in build
++    assert "odds" in build
++    assert "issues" in build
++    for key in (
++        "games_graded", "pending_snapshots", "model_mae", "consensus_mae",
++        "book_mae", "ats", "totals", "authority", "may_bet", "unmet_gates",
++    ):
++        assert key in record
++    assert record["may_bet"] is False
++    assert record["games_graded"] == 4
++    assert record["pending_snapshots"] == 2
+-- 
+2.43.0
+

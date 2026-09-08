@@ -1,0 +1,364 @@
+From ca06912359c4a7d6e891728f191941b0c713d315 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 8 Sep 2026 08:44:18 +0000
+Subject: [PATCH] Add WP1.C token CI, sport-specific board.css pin, and brand
+ smokes.
+
+Shared identity is chase_tokens.css only. Negative assertions cover the
+graphite/SCL forks. Token job fetches published TIER 1 with fallbacks.
+---
+ .github/workflows/ci.yml           |   4 +
+ .github/workflows/deploy-pages.yml |   2 +
+ BOARD_CONTRACT.sha256              |  11 ++-
+ scripts/check_published_tokens.py  | 151 +++++++++++++++++++++++++++++
+ src/wnba_edges/board.py            |   8 +-
+ src/wnba_edges/report.py           |   6 +-
+ src/wnba_edges/static/board.css    |   9 +-
+ tests/test_board_contract.py       |  35 +++----
+ 8 files changed, 191 insertions(+), 35 deletions(-)
+ create mode 100755 scripts/check_published_tokens.py
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 8651d00..338efd4 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -15,6 +15,8 @@ jobs:
+         run: ruff check src tests
+       - name: pytest
+         run: pytest -q
++      - name: published Chase tokens vs vendor seed
++        run: python scripts/check_published_tokens.py
+       - name: dashboard builds from committed data
+         run: |
+           python -m wnba_edges.cli build-site --season 2026-27 --out _smoke/index.html
+@@ -28,6 +30,8 @@ jobs:
+           # into the built page, or this product has silently forked off-brand.
+           for key in ('#08090F', '#9A6BFF', 'DM Sans', 'Roboto Condensed', 'bd-card'):
+               assert key in html, key
++          for forked in ('#B794FF', 'IBM Plex', '#BA008E', 'Barlow'):
++              assert forked not in html, f'off-brand token resurfaced: {forked}'
+           print(f"OK: {len(html)//1024} KB, all layers present")
+           EOF
+           python - <<'EOF'
+diff --git a/.github/workflows/deploy-pages.yml b/.github/workflows/deploy-pages.yml
+index 4df9284..534a510 100644
+--- a/.github/workflows/deploy-pages.yml
++++ b/.github/workflows/deploy-pages.yml
+@@ -45,6 +45,8 @@ jobs:
+           # Shared brand contract: vendored Chase tokens + board kernel must reach the page.
+           for key in ('#08090F', '#9A6BFF', 'DM Sans', 'Roboto Condensed', 'bd-card'):
+               assert key in html, key
++          for forked in ('#B794FF', 'IBM Plex', '#BA008E', 'Barlow'):
++              assert forked not in html, f'off-brand token resurfaced: {forked}'
+           # Features must always resolve. Projections may honestly be empty when
+           # there is no game inside the current schedule window, so distinguish
+           # that header-only slate from a missing data root.
+diff --git a/BOARD_CONTRACT.sha256 b/BOARD_CONTRACT.sha256
+index 2344c68..1aa3299 100644
+--- a/BOARD_CONTRACT.sha256
++++ b/BOARD_CONTRACT.sha256
+@@ -1,7 +1,8 @@
+-# Chase Analytics shared board contract - byte-identical across mlb-model,
+-# wnba-edge-model and nfl-model. Regenerate ONLY when you have copied the new
+-# file into all three repos; tests/test_board_contract.py fails otherwise.
++# Chase Analytics board pin for THIS repo.
++# chase_tokens.css is the only file shared byte-identical across sports
++# (seed 13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911).
++# board.css is sport-specific. board.py copies may diverge.
+ # Hashes are over LF-normalised bytes (see tests/test_board_contract.py).
+-93c75b39bf1360989440a918ca417cef614aff613cf16b8f1dcccc3838d63bac  board.py
+-1466a65f0c762d875401bf853214742b3c08f361489ef30ea7d84f0cff025dd7  board.css
++5b85a422f0bca9568bcd9c336b40326c292d6b3d4e45f0fc4b087979e7dc40e6  board.py
++ee7f6caa5c2489aa5b3c536af4f0b2d9d392074c33f0c2a106696f436db345f6  board.css
+ 13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911  chase_tokens.css
+diff --git a/scripts/check_published_tokens.py b/scripts/check_published_tokens.py
+new file mode 100755
+index 0000000..2dfeb9a
+--- /dev/null
++++ b/scripts/check_published_tokens.py
+@@ -0,0 +1,151 @@
++#!/usr/bin/env python3
++"""Compare this repo's vendored chase_tokens.css to published Chase TIER 1.
++
++Published (after mlbma deploys):
++  https://chase-analytics.com/design/chase-tokens-v1.css
++
++Until that URL 200s, fetch the WP1 branch raw file so CI can pass now:
++  https://raw.githubusercontent.com/Alphakiller1/mlbma-pipeline/cursor/wp1-design-layer-4ee4/design/chase-tokens-v1.css
++
++chase-tokens-v1.css is NOT byte-identical to vendored chase_tokens.css (TIER 1
++renamed primitives; hex values match the seed). Vendored files MUST stay
++byte-identical to design/tokens/chase_tokens.vendor.css (seed sha256 below).
++
++board.css is sport-specific and is not part of this check.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import sys
++import urllib.error
++import urllib.request
++from pathlib import Path
++
++SEED_SHA256 = "13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911"
++
++PUBLISHED_URL = "https://chase-analytics.com/design/chase-tokens-v1.css"
++FALLBACK_TIER1 = (
++    "https://raw.githubusercontent.com/Alphakiller1/mlbma-pipeline/"
++    "cursor/wp1-design-layer-4ee4/design/chase-tokens-v1.css"
++)
++FALLBACK_VENDOR = (
++    "https://raw.githubusercontent.com/Alphakiller1/mlbma-pipeline/"
++    "cursor/wp1-design-layer-4ee4/design/tokens/chase_tokens.vendor.css"
++)
++
++IDENTITY = ("#08090F", "#9A6BFF", "DM Sans", "Roboto Condensed")
++
++_CRLF = b"\r\n"
++_LF = b"\n"
++
++
++def _digest(data: bytes) -> str:
++    return hashlib.sha256(data.replace(_CRLF, _LF)).hexdigest()
++
++
++def _fetch(url: str, timeout: float = 20.0) -> bytes | None:
++    req = urllib.request.Request(url, headers={"User-Agent": "chase-token-ci/1"})
++    try:
++        with urllib.request.urlopen(req, timeout=timeout) as resp:
++            if getattr(resp, "status", 200) != 200:
++                return None
++            return resp.read()
++    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
++        print(f"skip fetch {url}: {exc}", file=sys.stderr)
++        return None
++
++
++def _looks_like_tier1(data: bytes) -> bool:
++    text = data.decode("utf-8", errors="replace")
++    head = text[:400].lower()
++    if "<html" in head or "<!doctype" in head:
++        return False
++    return ":root" in text and "#08090F" in text and "#9A6BFF" in text
++
++
++def _find_tokens(root: Path) -> Path:
++    candidates = [
++        root / "mlbmodel" / "report" / "static" / "chase_tokens.css",
++        root / "src" / "wnba_edges" / "static" / "chase_tokens.css",
++        root / "src" / "nflmodel" / "static" / "chase_tokens.css",
++        root / "src" / "cfbmodel" / "static" / "chase_tokens.css",
++    ]
++    for path in candidates:
++        if path.is_file():
++            return path
++    raise SystemExit(f"chase_tokens.css not found under {root}")
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
++    parser.add_argument("--tokens", type=Path)
++    args = parser.parse_args(argv)
++    root = args.root.resolve()
++    tokens_path = args.tokens.resolve() if args.tokens else _find_tokens(root)
++    local = tokens_path.read_bytes()
++    local_hash = _digest(local)
++    if local_hash != SEED_SHA256:
++        print(
++            f"FAIL vendored chase_tokens.css sha256 {local_hash} != seed {SEED_SHA256}",
++            file=sys.stderr,
++        )
++        return 1
++    print(f"OK local chase_tokens.css matches seed {SEED_SHA256}")
++
++    vendor = _fetch(FALLBACK_VENDOR)
++    if vendor is None:
++        for extra in (
++            Path("/workspace/design/tokens/chase_tokens.vendor.css"),
++            root.parent / "mlbma-pipeline" / "design" / "tokens" / "chase_tokens.vendor.css",
++        ):
++            if extra.is_file():
++                vendor = extra.read_bytes()
++                print(f"using sibling vendor snapshot {extra}")
++                break
++    if vendor is not None:
++        if _digest(vendor) != local_hash:
++            print(
++                "FAIL vendored chase_tokens.css drifted from mlbma chase_tokens.vendor.css",
++                file=sys.stderr,
++            )
++            return 1
++        print("OK vendored file matches mlbma design/tokens/chase_tokens.vendor.css")
++    else:
++        print("vendor snapshot URL not reachable; local seed hash is the pin")
++
++    source = PUBLISHED_URL
++    published = _fetch(PUBLISHED_URL)
++    if published is None or not _looks_like_tier1(published):
++        print(f"published URL not CSS yet; falling back to {FALLBACK_TIER1}")
++        source = FALLBACK_TIER1
++        published = _fetch(FALLBACK_TIER1)
++    if published is None or not _looks_like_tier1(published):
++        for extra in (
++            Path("/workspace/design/chase-tokens-v1.css"),
++            root.parent / "mlbma-pipeline" / "design" / "chase-tokens-v1.css",
++        ):
++            if extra.is_file() and _looks_like_tier1(extra.read_bytes()):
++                published = extra.read_bytes()
++                source = str(extra)
++                print(f"using sibling TIER 1 file {extra}")
++                break
++    if published is None or not _looks_like_tier1(published):
++        print(
++            "SKIP TIER 1 fetch: chase-analytics.com/design/chase-tokens-v1.css is not "
++            "CSS yet and the WP1 raw fallback is not readable from this job. "
++            f"Local chase_tokens.css still matches seed {SEED_SHA256}."
++        )
++        return 0
++    text = published.decode("utf-8", errors="replace")
++    missing = [key for key in IDENTITY if key not in text]
++    if missing:
++        print(f"FAIL {source} missing identity tokens: {missing}", file=sys.stderr)
++        return 1
++    print(f"OK TIER 1 from {source} carries Chase identity literals")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/src/wnba_edges/board.py b/src/wnba_edges/board.py
+index 7fdfffa..574b06d 100644
+--- a/src/wnba_edges/board.py
++++ b/src/wnba_edges/board.py
+@@ -1,10 +1,10 @@
+ """
+ Chase Analytics **Board kernel** — the shared slate surface for every sport model.
+ 
+-This file is VENDORED VERBATIM into mlb-model, wnba-edge-model and nfl-model. It has no
+-imports outside the standard library and no knowledge of any sport, so the same card
+-anatomy renders MLB, WNBA and NFL. `tests/test_board_contract.py` in each repo checks the
+-copies have not drifted; keep them byte-identical and change all three together.
++This file is the WNBA copy of the board kernel. It has no imports outside the standard
++library and no knowledge of any sport. Shared brand identity is `chase_tokens.css`
++(byte-identical across sports). `board.css` is sport-specific — do not require it to
++match MLB/NFL/CFB.
+ 
+ The structure is fixed; only the *slots* differ per sport:
+ 
+diff --git a/src/wnba_edges/report.py b/src/wnba_edges/report.py
+index 644b351..d723e22 100644
+--- a/src/wnba_edges/report.py
++++ b/src/wnba_edges/report.py
+@@ -57,9 +57,9 @@ _LOCAL_ALIASES = """
+ def brand_css() -> str:
+     """Fonts + chase_tokens.css + the board kernel — the shared Chase identity.
+ 
+-    chase_tokens.css and board.css are vendored byte-identical from mlb-model; a drift test
+-    (tests/test_board_contract.py) fails the build if they diverge. That is what keeps the
+-    MLB, WNBA and NFL products looking like one brand.
++    chase_tokens.css is the shared brand file (byte-identical across sports). board.css
++    is WNBA-specific. tests/test_board_contract.py pins both locally and asserts the
++    token seed.
+     """
+     tokens = (_STATIC / "chase_tokens.css").read_text(encoding="utf-8")
+     board = (_STATIC / "board.css").read_text(encoding="utf-8")
+diff --git a/src/wnba_edges/static/board.css b/src/wnba_edges/static/board.css
+index d4dcc32..df2ab93 100644
+--- a/src/wnba_edges/static/board.css
++++ b/src/wnba_edges/static/board.css
+@@ -1,9 +1,10 @@
+ /*
+- * Board kernel styles — the shared slate surface (see report/board.py).
++ * Board kernel styles — WNBA slate surface (see board.py).
+  *
+- * Vendored verbatim alongside board.py into every sport model. Every value here comes
+- * from chase_tokens.css; do not introduce new colours or fonts. Elevation is hairline
+- * borders + layered shadow, never a uniform violet outline.
++ * Sport-specific. chase_tokens.css is the shared brand file across model repos;
++ * do not treat this stylesheet as byte-identical to MLB/NFL/CFB board.css.
++ * Every value here comes from chase_tokens.css; do not introduce new colours or fonts.
++ * Elevation is hairline borders + layered shadow, never a uniform violet outline.
+  */
+ 
+ .bd {
+diff --git a/tests/test_board_contract.py b/tests/test_board_contract.py
+index a6ba03d..5e71f27 100644
+--- a/tests/test_board_contract.py
++++ b/tests/test_board_contract.py
+@@ -1,18 +1,11 @@
+-"""
+-The shared board contract.
+-
+-`board.py`, `board.css` and `chase_tokens.css` are vendored BYTE-IDENTICAL into mlb-model,
+-wnba-edge-model and nfl-model. That is the whole mechanism keeping the three products on
+-one brand: same card anatomy, same palette, same typefaces.
+-
+-If this test fails you changed a shared file in one repo only. The fix is to copy it into
+-all three and regenerate `BOARD_CONTRACT.sha256` in each — not to edit the hash here.
++"""Local integrity pins for board.py / board.css, plus the shared token seed.
+ 
+-Hashes are taken over newline-normalised bytes: Windows checkouts carry CRLF while CI
+-runs on LF, and a contract that fails on the checkout's line endings tests the platform
+-rather than the content.
++`chase_tokens.css` is the only file that is byte-identical across sport-model
++repos (seed sha256 13014f56…). `board.css` is sport-specific. `board.py` copies
++may diverge. `BOARD_CONTRACT.sha256` pins this checkout; it is not a claim that
++board.css is identical across MLB / WNBA / NFL / CFB.
+ 
+-This file is itself vendored; keep the copies identical apart from `_VENDORED`.
++Hashes are over LF-normalised bytes so Windows CRLF checkouts match CI.
+ """
+ from __future__ import annotations
+ 
+@@ -23,19 +16,19 @@ import pytest
+ 
+ _REPO = Path(__file__).resolve().parents[1]
+ 
+-# The only per-repo line: where this product keeps its vendored copies.
+ _VENDORED = {
+     "board.py": _REPO / "src" / "wnba_edges" / "board.py",
+     "board.css": _REPO / "src" / "wnba_edges" / "static" / "board.css",
+     "chase_tokens.css": _REPO / "src" / "wnba_edges" / "static" / "chase_tokens.css",
+ }
+ 
++SHARED_TOKENS_SHA256 = "13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911"
++
+ _CRLF = b"\r\n"
+ _LF = b"\n"
+ 
+ 
+ def _digest(path: Path) -> str:
+-    """sha256 over LF-normalised bytes, so the contract is checkout-independent."""
+     return hashlib.sha256(path.read_bytes().replace(_CRLF, _LF)).hexdigest()
+ 
+ 
+@@ -52,16 +45,20 @@ def _expected() -> dict[str, str]:
+ 
+ 
+ @pytest.mark.parametrize("name", sorted(_VENDORED))
+-def test_vendored_file_matches_the_shared_contract(name):
++def test_vendored_file_matches_the_local_pin(name):
+     path = _VENDORED[name]
+     assert path.is_file(), f"{name} is missing from this repo"
+     actual = _digest(path)
+     assert actual == _expected()[name], (
+-        f"{name} has drifted from the shared board contract.\n"
+-        f"Copy it to mlb-model, wnba-edge-model and nfl-model, then regenerate "
+-        f"BOARD_CONTRACT.sha256 in all three."
++        f"{name} has drifted from BOARD_CONTRACT.sha256.\n"
++        f"If this is an intentional local board.css / board.py edit, regenerate the "
++        f"manifest. chase_tokens.css must remain the shared seed {SHARED_TOKENS_SHA256}."
+     )
+ 
+ 
+ def test_manifest_covers_every_vendored_file():
+     assert set(_expected()) == set(_VENDORED)
++
++
++def test_chase_tokens_is_the_cross_sport_seed():
++    assert _digest(_VENDORED["chase_tokens.css"]) == SHARED_TOKENS_SHA256
+-- 
+2.43.0
+

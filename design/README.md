@@ -2,11 +2,14 @@
 
 This folder holds the **Cursor design contract** for the dashboard and public website.
 
-## Primary document
+## Primary documents
 
 | File | Purpose |
 |------|---------|
-| [MLBMA_CURSOR_DESIGN_CONTRACT.md](./MLBMA_CURSOR_DESIGN_CONTRACT.md) | Full design + implementation contract (tokens, typography, structure lock, acceptance criteria) |
+| [INDEX.md](./INDEX.md) | Current / product-specific / medium-specific / superseded map |
+| [MLBMA_CURSOR_DESIGN_CONTRACT.md](./MLBMA_CURSOR_DESIGN_CONTRACT.md) | Full design + implementation contract (incl. 2026-09-08 PART 2) |
+| [tokens/chase-tokens.css](./tokens/chase-tokens.css) | TIER 1 primitives |
+| [chase-tokens-v1.css](./chase-tokens-v1.css) | Published TIER 1 (`/design/chase-tokens-v1.css`) |
 
 ## Cursor integration
 

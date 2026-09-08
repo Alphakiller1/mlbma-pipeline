@@ -1,0 +1,139 @@
+From 98f32b48b9a25e7d9c3ea3ccb77f07285c7236df Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 8 Sep 2026 08:44:18 +0000
+Subject: [PATCH 3/3] Mark one MLB Model design contract Current and the others
+ Superseded.
+
+V2-DESK is Current with a Chase amendment (Roboto Condensed, DM Sans,
+#08090F, #9A6BFF). v1 and the graphite-fork redesign contract stay on disk.
+---
+ docs/DESIGN_INDEX.md                  | 15 ++++++++++++++
+ docs/redesign/DESIGN-CONTRACT.md      | 17 ++++++++++++---
+ governance/DESIGN-CONTRACT-V2-DESK.md | 30 ++++++++++++++++++++++++---
+ governance/DESIGN-CONTRACT.md         | 16 ++++++++++----
+ 4 files changed, 68 insertions(+), 10 deletions(-)
+ create mode 100644 docs/DESIGN_INDEX.md
+
+diff --git a/docs/DESIGN_INDEX.md b/docs/DESIGN_INDEX.md
+new file mode 100644
+index 0000000..dc9fae2
+--- /dev/null
++++ b/docs/DESIGN_INDEX.md
+@@ -0,0 +1,15 @@
++# MLB Model design-document index
++
++Status vocabulary: **Current** · **Product-specific** · **Medium-specific** · **Superseded**.
++
++WP6 (2026-09-08) picked one Current contract. The other two files are kept for history
++and must not be deleted.
++
++| Document | Status | Scope |
++|----------|--------|--------|
++| [governance/DESIGN-CONTRACT-V2-DESK.md](../governance/DESIGN-CONTRACT-V2-DESK.md) | **Current** | MLB Model desk / Pages HTML. Chase alignment: Roboto Condensed, DM Sans, `#08090F`, `#9A6BFF`. Historical v2.1 IBM Plex/Barlow block is provenance only. |
++| [governance/DESIGN-CONTRACT.md](../governance/DESIGN-CONTRACT.md) | **Superseded** | v1.0.0 Inter / teal / `#070b12`. |
++| [docs/redesign/DESIGN-CONTRACT.md](./redesign/DESIGN-CONTRACT.md) | **Superseded** | v2.2.0 graphite fork (`#B794FF`, IBM Plex, Barlow). |
++| `mlbmodel/report/static/chase_tokens.css` | **Current** (tokens) | Shared four-model seed `13014f56…`. |
++| `mlbmodel/report/static/board.css` | **Product-specific** | MLB board layout; not byte-identical across sports. |
++| mlbma-pipeline `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` | **Product-specific** (MLBMA) | Research dashboards / public site — not this repo's Pages board. |
+diff --git a/docs/redesign/DESIGN-CONTRACT.md b/docs/redesign/DESIGN-CONTRACT.md
+index bf7090d..3411422 100644
+--- a/docs/redesign/DESIGN-CONTRACT.md
++++ b/docs/redesign/DESIGN-CONTRACT.md
+@@ -1,11 +1,22 @@
+ # Design Contract — MLB Model (Purple · Black Desk)
+ 
+ Version 2.2.0 · 2026-07-23  
+-**Supersedes** v2.1.0 muddy purple-black tokens.
++**Status: Superseded** (2026-09-08 WP6)
+ 
+-MLBMA research boards keep their own contract. This file governs `mlb_model_app.html` and redesign mockups.
++This graphite-fork contract (`#B794FF`, IBM Plex, Barlow, `#0A0A0B`) is retained for
++history. It is **not** the visual law for shipped MLB Model surfaces.
+ 
+-## Tokens
++**Current:** [`../../governance/DESIGN-CONTRACT-V2-DESK.md`](../../governance/DESIGN-CONTRACT-V2-DESK.md)
++(Chase-aligned: Roboto Condensed / DM Sans / `#08090F` / `#9A6BFF`).
++
++**Superseded** v2.1.0 muddy purple-black tokens as a redesign experiment. Do not implement
++new UI from this file.
++
++---
++
++MLBMA research boards keep their own contract. This file historically governed `mlb_model_app.html` and redesign mockups.
++
++## Tokens (historical v2.2.0 graphite fork — do not ship)
+ 
+ ```css
+ :root {
+diff --git a/governance/DESIGN-CONTRACT-V2-DESK.md b/governance/DESIGN-CONTRACT-V2-DESK.md
+index e3028c6..87138c6 100644
+--- a/governance/DESIGN-CONTRACT-V2-DESK.md
++++ b/governance/DESIGN-CONTRACT-V2-DESK.md
+@@ -1,11 +1,35 @@
+-# Design Contract — MLB Model (Purple · Black Desk)
++# Design Contract — MLB Model (Chase desk)
+ 
+ Version 2.1.0 · 2026-07-23  
+-**Supersedes** v2.0.0 steel-accent desk tokens.
++**Status: Current** (WP6, 2026-09-08)
++
++**Supersedes** v1.0.0 (`governance/DESIGN-CONTRACT.md`) and the graphite-fork
++`docs/redesign/DESIGN-CONTRACT.md`. MLBMA research boards keep their own contract in
++`mlbma-pipeline`. This file governs `mlb_model_app.html` and the model desk.
++
++## Chase alignment (binding — 2026-09-08)
++
++Shipped surfaces MUST use the Chase identity, not the historical IBM Plex / Barlow
++block below:
++
++| Role | Value |
++|------|--------|
++| Canvas | `#08090F` |
++| Brand violet | `#9A6BFF` |
++| Display | Roboto Condensed |
++| UI / body | DM Sans |
++| Tokens file | `mlbmodel/report/static/chase_tokens.css` (shared four-model seed) |
++
++IBM Plex Sans/Mono, Barlow Condensed, `#07060C`, and `#B794FF` are **historical** and
++forbidden on rendered HTML (see deploy-pages smoke).
++
++The token CSS that follows is the 2026-07-23 v2.1 snapshot, kept for provenance.
++
++---
+ 
+ MLBMA research boards keep their own contract. This file governs `mlb_model_app.html` and redesign mockups.
+ 
+-## Tokens
++## Tokens (historical v2.1.0 — do not ship)
+ 
+ ```css
+ :root {
+diff --git a/governance/DESIGN-CONTRACT.md b/governance/DESIGN-CONTRACT.md
+index 5b43e6f..5a77916 100644
+--- a/governance/DESIGN-CONTRACT.md
++++ b/governance/DESIGN-CONTRACT.md
+@@ -1,9 +1,17 @@
+ # Design Contract — Chase Analytics / MLB MODEL
+ 
+-Version 1.0.0 · 2026-06-26. The **required** visual spec for every MLB MODEL surface. Tokens are
+-extracted verbatim from the approved Chase Analytics ecosystem site (`chase-analytics-ecosystem/
+-index.html :root`) — **not invented**. The unified product must feel like a more capable evolution
+-of the Sharp Money Tracker + Chase Analytics, not a new redesign.
++**Status: Superseded** (2026-09-08 WP6)
++
++This v1.0.0 Inter / teal / `#070b12` contract is retained for history. It is **not**
++the visual law for shipped MLB Model surfaces.
++
++**Current:** [`DESIGN-CONTRACT-V2-DESK.md`](./DESIGN-CONTRACT-V2-DESK.md) (Chase-aligned amendment:
++Roboto Condensed / DM Sans / `#08090F` / `#9A6BFF`).
++
++---
++
++Version 1.0.0 · 2026-06-26. Historical required spec from the approved Chase Analytics ecosystem site (`chase-analytics-ecosystem/
++index.html :root`) — **not invented**. Kept as provenance; do not implement new UI from this file.
+ 
+ ## Design tokens (canonical — copy, don't fork per page)
+ 
+-- 
+2.43.0
+

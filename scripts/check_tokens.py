@@ -1,101 +1,146 @@
-#!/usr/bin/env python3
-"""Token-source guard — "tokens are the law" (design contract §5, UI checklist §1).
+"""Design-layer token guard (WP1).
 
-This is the Python, no-bundler equivalent of SCL's stylelint gate. The rule it
-enforces is the one the design contract cares about most and the one we just spent
-a consolidation pass establishing:
+Fails when:
+  - published TIER 1 copies diverge
+  - a raw color literal appears in a dashboard :root (or HTML <style> :root)
+    outside TIER 1 (mockups allowlisted)
+  - a custom property is defined with two different values across dashboard CSS
+  - design-layer ?v= stamps disagree with design/DESIGN_LAYER_VERSION
+  - vendor seed sha256 drifts
 
-    mlbma_design_system.css is the SINGLE source of every global design token.
-    No other dashboard CSS file may redefine a token it already owns.
-
-A duplicate `:root` definition in a second file is how the token layer rots — two
-files drift to different values and the UI quietly diverges. This guard fails CI
-the moment that happens again.
-
-It also prints (non-fatally) a count of hard-coded hex colors living in CSS rule
-bodies outside the token files, so the trend toward "consume tokens, don't hard-code"
-stays visible without blocking the mature codebase on its existing hexes.
-
-Usage:
-    python scripts/check_tokens.py            # from repo root
-Exit code 1 on any hard violation, 0 otherwise.
+Rule-body hex in mature CSS is counted (informational) until a restyle pass.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import sys
 from pathlib import Path
 
-DASHBOARD = Path(__file__).resolve().parent.parent / "dashboard"
-CANONICAL = "mlbma_design_system.css"
-
+ROOT = Path(__file__).resolve().parent.parent
+DASHBOARD = ROOT / "dashboard"
+TIER1_CANON = ROOT / "design" / "tokens" / "chase-tokens.css"
+TIER1_PUB = ROOT / "design" / "chase-tokens-v1.css"
+VENDOR = ROOT / "design" / "tokens" / "chase_tokens.vendor.css"
+VENDOR_SHA256 = "13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911"
+STAMP_FILE = ROOT / "design" / "DESIGN_LAYER_VERSION"
+STAMPED = (
+    "chase-tokens-v1.css",
+    "mlbma_design_system.css",
+    "theme.css",
+    "design_layer_version.js",
+)
+HTML_ROOT_ALLOW = ("mockup",)
 COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
-# Flat `selector { declarations }` blocks. Token blocks never nest braces, so a
-# non-greedy body match is correct and avoids pulling in unrelated rules.
-BLOCK_RE = re.compile(r"([^{}]*)\{([^{}]*)\}", re.DOTALL)
-TOKEN_DEF_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:")
+STYLE_RE = re.compile(r"<style[^>]*>(.*?)</style>", re.DOTALL | re.I)
+ROOT_BLOCK_RE = re.compile(r":root\s*\{([^{}]*)\}", re.DOTALL)
+TOKEN_DEF_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);")
 HEX_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+V_RE = re.compile(
+    r"""(?:href|src)=["']([^"']+\.(?:css|js))(\?v=)([^"'&]+)""",
+    re.I,
+)
 
 
-def root_tokens(css: str) -> set[str]:
-    """Custom properties defined in a global `:root` block (single token source)."""
-    css = COMMENT_RE.sub("", css)
-    names: set[str] = set()
-    for selector, body in BLOCK_RE.findall(css):
-        if ":root" in selector:
-            names.update(TOKEN_DEF_RE.findall(body))
-    return names
+def strip_comments(css: str) -> str:
+    return COMMENT_RE.sub("", css)
 
 
-def hex_in_rule_bodies(css: str) -> int:
-    css = COMMENT_RE.sub("", css)
-    count = 0
-    for selector, body in BLOCK_RE.findall(css):
-        if ":root" in selector:
-            continue  # token definitions are *allowed* to hold raw hex
-        count += len(HEX_RE.findall(body))
-    return count
+def root_defs(css: str) -> list[tuple[str, str]]:
+    css = strip_comments(css)
+    out: list[tuple[str, str]] = []
+    for body in ROOT_BLOCK_RE.findall(css):
+        for name, val in TOKEN_DEF_RE.findall(body):
+            out.append((name, " ".join(val.split())))
+    return out
+
+
+def is_color_literal(val: str) -> bool:
+    v = val.strip()
+    if v.startswith("var("):
+        return False
+    if HEX_RE.search(v):
+        return True
+    if re.search(r"\brgba?\(", v) or re.search(r"\bhsla?\(", v):
+        return True
+    return False
 
 
 def main() -> int:
-    if not DASHBOARD.is_dir():
-        print(f"ERROR: {DASHBOARD} not found", file=sys.stderr)
-        return 1
-
-    canonical_path = DASHBOARD / CANONICAL
-    if not canonical_path.is_file():
-        print(f"ERROR: canonical token file {CANONICAL} not found", file=sys.stderr)
-        return 1
-
-    canonical = root_tokens(canonical_path.read_text(encoding="utf-8"))
-    print(f"Canonical token source {CANONICAL}: {len(canonical)} :root tokens")
-
+    stamp = STAMP_FILE.read_text(encoding="utf-8").strip()
     violations: list[str] = []
-    hex_total = 0
-    for css_path in sorted(DASHBOARD.glob("*.css")):
-        css = css_path.read_text(encoding="utf-8")
-        hex_total += hex_in_rule_bodies(css)
-        if css_path.name == CANONICAL:
-            continue
-        redefined = sorted(root_tokens(css) & canonical)
-        if redefined:
+
+    for path in (TIER1_CANON, TIER1_PUB, VENDOR):
+        if not path.is_file():
+            violations.append(f"missing {path.relative_to(ROOT)}")
+
+    if TIER1_CANON.is_file() and TIER1_PUB.is_file():
+        if TIER1_CANON.read_bytes() != TIER1_PUB.read_bytes():
             violations.append(
-                f"  {css_path.name} redefines {len(redefined)} canonical token(s): "
-                + ", ".join(redefined)
+                "design/chase-tokens-v1.css is not byte-identical to design/tokens/chase-tokens.css"
             )
 
-    print(f"Hard-coded hex colors in CSS rule bodies (informational): {hex_total}")
+    if VENDOR.is_file():
+        digest = hashlib.sha256(VENDOR.read_bytes()).hexdigest()
+        if digest != VENDOR_SHA256:
+            violations.append(
+                f"vendor chase_tokens.css sha256 {digest}, expected {VENDOR_SHA256}"
+            )
+
+    seen: dict[str, tuple[str, str]] = {}
+    hex_bodies = 0
+
+    css_files = list(DASHBOARD.glob("*.css")) + list(DASHBOARD.glob("**/*.css"))
+    for css_path in sorted(set(css_files)):
+        text = css_path.read_text(encoding="utf-8")
+        defs = root_defs(text)
+        for name, val in defs:
+            if is_color_literal(val):
+                violations.append(
+                    f"{css_path.relative_to(ROOT)} :root {name} uses a color literal"
+                )
+            prev = seen.get(name)
+            if prev and prev[1] != val:
+                violations.append(
+                    f"token {name} defined as {prev[1]!r} in {prev[0]} and {val!r} in {css_path.name}"
+                )
+            else:
+                seen[name] = (css_path.name, val)
+        stripped = strip_comments(text)
+        for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", stripped):
+            if ":root" in sel:
+                continue
+            hex_bodies += len(HEX_RE.findall(body))
+
+    for html in sorted(DASHBOARD.glob("*.html")):
+        raw = html.read_text(encoding="utf-8")
+        allow = any(tok in html.name.lower() for tok in HTML_ROOT_ALLOW)
+        for block in STYLE_RE.findall(raw):
+            printable = re.sub(r"@media print\s*\{.*?\n\}", "", block, flags=re.DOTALL)
+            for name, val in root_defs(printable):
+                if allow:
+                    continue
+                if is_color_literal(val):
+                    violations.append(
+                        f"{html.name} <style> :root {name} uses a color literal"
+                    )
+        for href, _qv, ver in V_RE.findall(raw):
+            base = href.split("/")[-1]
+            if base in STAMPED and ver != stamp:
+                violations.append(
+                    f"{html.name} stamps {href} at {ver}, expected {stamp}"
+                )
+
+    print(f"Design-layer stamp: {stamp}")
+    print(f"Rule-body hex count (informational, not blocking): {hex_bodies}")
 
     if violations:
-        print("\nTOKEN-SOURCE VIOLATIONS (a token must live in only ONE file):")
-        print("\n".join(violations))
-        print(
-            f"\nFAIL: move these definitions into {CANONICAL} and consume them via var(). "
-            "See design/MLBMA_CURSOR_DESIGN_CONTRACT.md §5 and docs/MLBMA_UI_QUALITY_CHECKLIST.md §1."
-        )
+        print("\nFAIL:")
+        print("\n".join(f"  - {v}" for v in violations[:80]))
+        if len(violations) > 80:
+            print(f"  ... {len(violations) - 80} more")
         return 1
-
-    print("\nOK: every global token has a single source. ✅")
+    print("OK: tier-1 owns color literals; design-layer stamps match.")
     return 0
 
 

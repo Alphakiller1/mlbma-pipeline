@@ -11,7 +11,7 @@
   --shell-pad-mobile: 12px;
   --shell-pad-tablet: 18px;
   --section-gap-mobile: 10px;
-  --touch-target-min: 44px;
+  --touch-target-min: 40px;
 }
 
 /* Prevent horizontal page scroll on small viewports */
@@ -353,130 +353,28 @@
 
 /* ──────────────────────────────────────────────────────────────────────────
    Card-ified data tables (mobile).
-   Dense desktop tables (Team Rankings .lv-table, Trends Heat Map .thm-table, or
-   any table opted-in with .ca-cardify) are tagged by mobile_cardify.js with
-   .ca-cardified + per-cell data-label + a .ca-card-team header cell. Below 768px
-   each <tr> becomes a stacked stat card so NO column hides behind a horizontal
-   scroll. Desktop DOM is untouched — these rules only apply at mobile width.
+   Dense "entity rows × metric columns" tables are tagged by mobile_cardify.js
+   with .ca-cardified and each cell gets .ca-card-team (header), .ca-card-rank, or
+   .ca-card-stat (+ data-label). Below 768px each <tr> becomes a stacked stat card
+   so NO column hides behind a horizontal scroll. Class-driven so it works for both
+   <td> and <th scope=row> cells. Desktop DOM/layout is untouched.
+   Applies to: Team Rankings, Trends Heat Map, tp-trend-table, pp-tier-split-table,
+   bp-reliever-rank-table, and any table opted-in with .ca-cardify.
    ────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  body.team-rankings-page .container {
-    padding: 18px 12px 56px;
-  }
-
-  body.team-rankings-page #teamRankingsPageHeader .ca-page-header {
-    margin-bottom: 18px;
-    padding-top: 4px;
-  }
-
-  body.team-rankings-page #teamRankingsPageHeader .ca-page-title {
-    font-size: 30px;
-    line-height: 1.05;
-  }
-
-  body.team-rankings-page .lv-bar {
-    padding: 12px;
-    border-radius: 10px;
-  }
-
-  body.team-rankings-page .lv-family-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  body.team-rankings-page .lv-family {
-    min-height: 76px;
-    padding: 12px;
-    border-radius: 10px;
-  }
-
-  body.team-rankings-page .lv-family-top {
-    display: block;
-    min-height: 0;
-  }
-
-  body.team-rankings-page .lv-family-name {
-    display: block;
-    font-size: 15px;
-    line-height: 1.2;
-  }
-
-  body.team-rankings-page .lv-family-n,
-  body.team-rankings-page .lv-family-desc,
-  body.team-rankings-page .lv-family-chips {
-    display: none;
-  }
-
-  body.team-rankings-page .lv-lens {
-    display: grid;
-    grid-template-columns: none !important;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(286px, 88%);
-    gap: 8px;
-    padding: 8px;
-    border-radius: 10px;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-  }
-
-  body.team-rankings-page .lv-lens::-webkit-scrollbar {
-    display: none;
-  }
-
-  body.team-rankings-page .lv-cat {
-    padding: 12px;
-    border-radius: 8px;
-    scroll-snap-align: start;
-  }
-
-  body.team-rankings-page .lv-cat-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  body.team-rankings-page .lv-cat-k {
-    min-width: 0;
-  }
-
-  body.team-rankings-page .lv-pills {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-    width: 100%;
-    gap: 7px;
-  }
-
-  body.team-rankings-page .lv-pill {
-    width: 100%;
-    min-width: 0;
-  }
-
-  body.team-rankings-page .lv-query {
-    margin-top: 14px;
-    font-size: 12px;
-  }
-
-  body.team-rankings-page .lv-table-wrap {
-    overflow: visible;
-  }
-
-  .lv-table.ca-cardified,
-  .thm-table.ca-cardified,
-  table.ca-cardify.ca-cardified {
-    display: block;
-    width: 100%;
+  .ca-cardified {
+    /* !important so card layout wins over per-table desktop rules that some
+       profile CSS re-asserts at <900px (e.g. .tp-trend-table{min-width:720px}). */
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
     border-collapse: separate;
     border-spacing: 0;
   }
 
   /* keep headers in the a11y tree but out of the visual flow */
-  .lv-table.ca-cardified thead,
-  .thm-table.ca-cardified thead,
-  table.ca-cardify.ca-cardified thead {
+  .ca-cardified thead {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -485,39 +383,29 @@
     white-space: nowrap;
   }
 
-  .lv-table.ca-cardified tbody,
-  .thm-table.ca-cardified tbody,
-  table.ca-cardify.ca-cardified tbody {
-    display: block;
-  }
+  .ca-cardified tbody { display: block; }
 
-  .lv-table.ca-cardified tbody tr,
-  .thm-table.ca-cardified tbody tr,
-  table.ca-cardify.ca-cardified tbody tr {
+  .ca-cardified tbody tr {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 9px 12px;
     padding: 12px 13px 13px;
     margin: 0 0 10px;
     border: 1px solid var(--border, #262A38);
-    border-radius: 10px;
-    background: var(--bg-2, #10131F);
+    border-radius: 13px;
+    background: #10131F;
   }
+  .ca-cardified tbody tr:nth-child(even) { background: #10131F; }
+  .ca-cardified tbody tr:hover { box-shadow: none; }
 
-  /* strip desktop zebra / hover / sticky treatments inside a card */
-  .lv-table.ca-cardified tbody tr:nth-child(even),
-  .thm-table.ca-cardified tbody tr:nth-child(even) { background: var(--bg-2, #10131F); }
-  .lv-table.ca-cardified tbody tr:hover,
-  .thm-table.ca-cardified tbody tr:hover { box-shadow: none; }
-
-  .lv-table.ca-cardified td,
-  .thm-table.ca-cardified td,
-  table.ca-cardify.ca-cardified td {
+  /* reset every cell out of its desktop table treatment (sticky/zebra/width/etc) */
+  .ca-cardified tbody tr > * {
     position: static !important;
     left: auto !important;
     width: auto !important;
     min-width: 0 !important;
     height: auto !important;
+    min-height: 0 !important;
     border: 0 !important;
     padding: 0 !important;
     text-align: left !important;
@@ -525,10 +413,8 @@
     background: transparent !important;
   }
 
-  /* team cell = full-width card header, with a rank badge when present */
-  .lv-table.ca-cardified td.ca-card-team,
-  .thm-table.ca-cardified td.ca-card-team,
-  table.ca-cardify.ca-cardified td.ca-card-team {
+  /* header cell = full-width card title, with a rank badge when present */
+  .ca-cardified .ca-card-team {
     grid-column: 1 / -1;
     display: flex;
     align-items: center;
@@ -539,8 +425,7 @@
     margin-bottom: 1px;
     border-bottom: 1px solid var(--border, #262A38) !important;
   }
-  .lv-table.ca-cardified td.ca-card-team[data-cardrank]::before,
-  .thm-table.ca-cardified td.ca-card-team[data-cardrank]::before {
+  .ca-cardified .ca-card-team[data-cardrank]::before {
     content: attr(data-cardrank);
     flex: 0 0 auto;
     min-width: 22px;
@@ -553,22 +438,16 @@
     text-align: center;
   }
 
-  /* the standalone rank cell is now redundant */
-  .lv-table.ca-cardified td.ca-card-rank,
-  .thm-table.ca-cardified td.ca-card-rank { display: none; }
+  .ca-cardified .ca-card-rank { display: none !important; }
 
-  /* every other cell = label above value */
-  .lv-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank),
-  .thm-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank),
-  table.ca-cardify.ca-cardified td:not(.ca-card-team):not(.ca-card-rank) {
+  /* stat cell = label above value */
+  .ca-cardified .ca-card-stat {
     display: flex;
     flex-direction: column;
     gap: 3px;
     min-width: 0;
   }
-  .lv-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before,
-  .thm-table.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before,
-  table.ca-cardify.ca-cardified td:not(.ca-card-team):not(.ca-card-rank)::before {
+  .ca-cardified .ca-card-stat::before {
     content: attr(data-label);
     font-size: 9.5px;
     font-weight: 700;
@@ -580,38 +459,127 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .lv-table.ca-cardified td .chip,
-  .thm-table.ca-cardified td .chip,
-  .thm-table.ca-cardified td .thm-rel {
+  .ca-cardified .ca-card-stat .chip,
+  .ca-cardified .ca-card-stat .thm-rel {
     align-self: flex-start;
     font-size: 14px;
   }
+
+  /* Sortable card-ified tables (Rankings, Trends): reveal the header row as a
+     tappable "sort pills" strip instead of hiding it. Taps hit the original
+     <th> sort handlers, so re-sorting still works on a phone. */
+  .ca-cardified.ca-cardify-sortable thead {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .ca-cardified.ca-cardify-sortable thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .ca-cardified.ca-cardify-sortable thead tr::before {
+    content: "Sort";
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3, #6E7383);
+    margin-right: 2px;
+  }
+  /* only the sortable columns become pills */
+  .ca-cardified.ca-cardify-sortable thead th:not([data-a="sort"]):not(.lv-sortable):not(.sortable) {
+    display: none;
+  }
+  .ca-cardified.ca-cardify-sortable thead th {
+    position: static !important;
+    flex: 0 0 auto;
+    font-size: 10.5px !important;
+    font-weight: 700;
+    padding: 6px 10px !important;
+    border: 1px solid var(--border, #262A38) !important;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: var(--text-3, #6E7383) !important;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .ca-cardified.ca-cardify-sortable thead th.sorted,
+  .ca-cardified.ca-cardify-sortable thead th[aria-sort]:not([aria-sort="none"]) {
+    background: rgba(124, 77, 255, 0.16) !important;
+    color: #B79CFF !important;
+    border-color: rgba(124, 77, 255, 0.4) !important;
+  }
 }
 
-@media (max-width: 390px) {
-  body.team-rankings-page .lv-family-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  body.team-rankings-page .lv-family {
-    min-height: 72px;
-    padding: 10px;
-  }
-}
-
+/* ──────────────────────────────────────────────────────────────────────────
+   Pitch-mix table (mobile): freeze the pitch-name column.
+   .bp-pm-table is a grouped 14-column spreadsheet (Pitcher vs Batter metric
+   groups, repeated column names) that doesn't card-ify cleanly, so instead the
+   wrap scrolls (set above) and the first column stays pinned so you never lose
+   which pitch a row is. The right-edge shadow sells the frozen column.
+   ────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .hub-pill,
-  .lv-pill,
-  .ca-pill-btn,
-  .bp-pt__line-input {
-    min-height: var(--touch-target-min, 44px);
+  .bp-pm-table th:first-child,
+  .bp-pm-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #0E1018;
+    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.6);
+  }
+  .bp-pm-table tbody tr:nth-child(even) td:first-child { background: #0E1018; }
+  .bp-pm-table tbody tr:hover td:first-child { background: #14121E; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Matchups view (mobile): collapse each card's projected lineups.
+   The Matchups page stacks 15 cards, each with two 9-man lineups that balloon
+   to ~1100px on a phone (~18000px total). Below 768px the lineups collapse
+   behind a tap on the "Projected lineups" label (toggled by mobile_cardify.js,
+   which adds .is-mobile-open). The decision summary — teams, both pitchers,
+   the lineup-edge bar — stays inline. Desktop is unaffected.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* !important + higher specificity beats landing_dashboard.css's
+     `.hmc-lineups--always .matchup-lineup-panel { display:block !important }` */
+  .hero-matchup-card .hmc-lineups--always .matchup-lineup-panel.is-open {
+    display: none !important;
+  }
+  .hero-matchup-card .hmc-lineups--always.is-mobile-open .matchup-lineup-panel.is-open {
+    display: block !important;
+  }
+  .hero-matchup-card .hmc-lineups--always .hmc-lineups-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 4px 0 0;
+    border: 1px solid var(--border, #262A38);
+    border-radius: 10px;
+    background: rgba(124, 77, 255, 0.07);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hero-matchup-card .hmc-lineups--always .hmc-lineups-label::after {
+    content: "\25BE"; /* ▾ */
+    font-size: 11px;
+    color: #B79CFF;
+  }
+  .hero-matchup-card .hmc-lineups--always.is-mobile-open .hmc-lineups-label::after {
+    content: "\25B4"; /* ▴ */
   }
 }
 
 /* Touch — larger radar / chart hit targets */
 @media (hover: none) and (pointer: coarse) {
   .hub-pill,
-  .lv-pill,
   .chase-nav-link,
   .chase-dropdown-item {
     min-height: var(--touch-target-min);
@@ -629,4 +597,371 @@
   input.bp-prop-card__line-input {
     font-size: 16px;
   }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Matchup hero card — mobile-first refinements (2026-06 pass).
+   Builds on landing_dashboard.css's @media(max-width:520px) base (which already
+   stacks the two pitchers and single-columns the meta). responsive.css loads
+   AFTER it, so these win ties. Everything is gated <=767px / <=520px, so the
+   desktop and side-by-side tablet card are untouched. Goal: make the two-pitcher
+   comparison + projected lineups genuinely scannable on a phone.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Pitcher stat tiles (K% / BB% / ERA): bump the value, clarify the label, so
+     each arm reads like a mini box score instead of fine print. */
+  .hero-matchup-card .mc-sp-stat em {
+    font-size: 9.5px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-3, #6E7383);
+  }
+  .hero-matchup-card .mc-sp-stat strong {
+    font-size: 14.5px;
+    font-weight: 800;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Lineup-edge (OSI) bar — legible team labels + values. */
+  .hero-matchup-card .hmc-osi-num { font-size: 16px; font-weight: 800; }
+  .hero-matchup-card .hmc-osi-team { font-size: 10.5px; letter-spacing: 0.04em; }
+  .hero-matchup-card .hmc-edge-label { font-size: 10.5px; letter-spacing: 0.05em; }
+
+  /* Projected-lineup rows: taller (tap-friendly) + more legible names, with
+     the batting-order / position / bats markers kept compact and aligned. */
+  .hero-matchup-card .lineup-row {
+    min-height: 30px;
+    padding: 4px 0;
+    gap: 4px 9px;
+  }
+  .hero-matchup-card .lineup-bo,
+  .hero-matchup-card .lineup-pos { font-size: 11.5px; }
+  .hero-matchup-card .lineup-name { font-size: 13.5px; }
+  .hero-matchup-card .lineup-name-link { display: inline-block; padding: 2px 0; }
+  .hero-matchup-card .bats-pill {
+    font-size: 10px;
+    padding: 2px 6px;
+    min-width: 20px;
+  }
+
+  /* Home lineup fix: it ships in mirrored DOM order (bats, name, pos, bo) for the
+     desktop "facing" layout. landing_dashboard.css's <=520 un-mirror swapped the
+     column template to the AWAY order (16px 24px 1fr auto) without changing the
+     DOM, so the NAME landed in the 24px slot and every home batter was clipped
+     ("Byr…", "Bro…"). Fix: size the columns to the home row's NATURAL DOM order
+     so the name column is the wide one — bats | name | pos | order. Names never
+     clip and rows stay on one line. Higher specificity beats the base rule. */
+  .hero-matchup-card .matchup-lineup-col--home .lineup-row {
+    grid-template-columns: auto minmax(0, 1fr) 24px 18px;
+  }
+  .hero-matchup-card .matchup-lineup-col--home .lineup-bo { text-align: right; }
+
+  /* The lineups column heads (team + projected/confirmed status) stand out. */
+  .hero-matchup-card .matchup-lineup-col-head__meta { font-size: 10.5px; }
+
+  /* "View Full Analysis" is the deep-dive CTA — make it a clear, tappable target
+     instead of a thin inline link lost at the card's bottom edge. */
+  .hero-matchup-card .hmc-view-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    margin-top: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--accent-ring, rgba(124, 77, 255, 0.45));
+    border-radius: 10px;
+    background: rgba(124, 77, 255, 0.08);
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Stacked pitcher block (full card width): even, centered 3-up stat row with a
+     hairline divider under the pitch score — a clean mini box score. The desktop
+     away/home mirrored alignment (left/center/right) would spread oddly at full
+     width, so center all three here. */
+  .hero-matchup-card .mc-sp-stats--grid {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding-top: 8px;
+    margin-top: 4px;
+    gap: 8px;
+  }
+  .hero-matchup-card .mc-sp-block--away .mc-sp-stat,
+  .hero-matchup-card .mc-sp-block--home .mc-sp-stat {
+    align-items: center;
+    text-align: center;
+  }
+  .hero-matchup-card .mc-sp-stat strong { font-size: 16px; }
+  .hero-matchup-card .hmc-pitchers { gap: 9px; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Opening / landing home — keep the product reachable on a phone: trim the hero,
+   single-column the workflow CTAs, and right-size the section copy so the actual
+   matchups/rankings aren't pushed below two screens of marketing.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ca-opening-hero,
+  .hero-cta-band {
+    padding: 22px 16px !important;
+    margin-bottom: 18px !important;
+  }
+
+  /* Workflow / CTA cards: full-width, comfortable tap height, tighter padding. */
+  .ca-platform-cta,
+  .platform-workflow-grid,
+  #section-opening-workflows .ca-card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Primary CTA buttons reachable, not dominating. */
+  .hero-cta-actions,
+  .ca-opening-hero .ca-btn-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ca-opening-hero .ca-btn,
+  .hero-cta-actions .ca-btn {
+    flex: 1 1 auto;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE SCOREBOARD MATCHUP CARD  (RotoWire-inspired layout, Chase brand)
+
+   mobile_matchup_card.js injects three mobile-only blocks (.mcm-actions,
+   .mcm-status-row, .mcm-footer) and tags the card .mcm-enhanced. These rules
+   reflow the EXISTING card rows + style the injected blocks into a compact
+   game-preview card. Everything is double-gated: the JS only injects <=768px,
+   and these styles only apply to .mcm-enhanced inside @media (max-width:768px),
+   so the desktop card is visually and functionally untouched.
+
+   Vertical order on mobile:
+     [time + action chips] → [2-col team scoreboard] → [2-col SP] →
+     [lineup-edge bar] → [status badges] → [side-by-side lineups] → [footer strip]
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Injected blocks are hidden by default; only shown for enhanced cards on mobile
+   (belt-and-suspenders: if a phone viewport is widened, they vanish). */
+.mcm-actions,
+.mcm-status-row,
+.mcm-footer { display: none; }
+
+@media (max-width: 768px) {
+  .hero-matchup-card.mcm-enhanced {
+    padding: 13px 12px 14px;
+  }
+
+  /* ── 1. Action row: prominent time + tappable chips ─────────────────── */
+  .mcm-enhanced .mcm-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0 0 12px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid var(--border, #262A38);
+  }
+  .mcm-enhanced .mcm-time {
+    font-family: var(--mono, "Roboto Condensed"), sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--text, #F5F6FA);
+    white-space: nowrap;
+  }
+  .mcm-enhanced .mcm-chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .mcm-enhanced .mcm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 30px;
+    padding: 5px 11px;
+    border: 1px solid var(--border-2, #363B4D);
+    border-radius: 999px;
+    background: rgba(124, 77, 255, 0.08);
+    color: var(--accent-l, #C4B0FF);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mcm-enhanced .mcm-chip:active { background: rgba(124, 77, 255, 0.18); }
+  .mcm-enhanced .mcm-chip__dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent, #9A6BFF);
+    box-shadow: 0 0 6px rgba(154, 107, 255, 0.7);
+  }
+
+  /* ── 2. Team scoreboard header (2-col, big abbr + record strip) ──────── */
+  .mcm-enhanced .hmc-teams {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: start;
+    margin: 0 0 11px;
+    min-width: 0;
+  }
+  .mcm-enhanced .hmc-at,
+  .mcm-enhanced .hmc-meta { display: none !important; } /* time→chips, weather/venue→footer */
+  .mcm-enhanced .hmc-team { min-width: 0; }
+  .mcm-enhanced .hmc-team .team-link {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    padding: 4px 2px;
+  }
+  .mcm-enhanced .hmc-team .team-logo,
+  .mcm-enhanced .hmc-team .team-logo-fallback {
+    width: 42px !important; height: 42px !important;
+  }
+  .mcm-enhanced .hmc-abbr {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono, "Roboto Condensed"), sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: var(--text, #F5F6FA);
+  }
+  .mcm-enhanced .team-record-pill {
+    display: inline-block;
+    font-family: var(--sans, "DM Sans"), sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--accent-l, #C4B0FF);
+    background: rgba(124, 77, 255, 0.12);
+    border: 1px solid rgba(124, 77, 255, 0.22);
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin: 0;
+  }
+
+  /* ── 3. Starting pitchers: 2-col under each team, no photo, compact ──── */
+  .mcm-enhanced .hmc-pitchers {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px;
+    margin: 0 0 11px;
+  }
+  .mcm-enhanced .mc-sp-photo { display: none !important; }
+  .mcm-enhanced .mc-sp-block,
+  .mcm-enhanced .mc-sp-block--home {
+    grid-template-columns: 1fr !important;
+    padding: 9px 10px !important;
+    border-radius: 10px;
+  }
+  .mcm-enhanced .mc-sp-block--home .mc-sp-info { padding-right: 0; }
+  .mcm-enhanced .mc-sp-info { gap: 5px; }
+  /* keep both columns reading left→right (drop the desktop home mirror) */
+  .mcm-enhanced .mc-sp-block--home .mc-sp-top { flex-direction: row; }
+  .mcm-enhanced .mc-sp-block--home .mc-sp-name-row { justify-content: flex-start; text-align: left; }
+  .mcm-enhanced .mc-sp-name-text { font-size: 13px; }
+  .mcm-enhanced .mc-sp-block .mc-sp-stat strong { font-size: 13px; }
+  .mcm-enhanced .mc-sp-block--away .mc-sp-stat,
+  .mcm-enhanced .mc-sp-block--home .mc-sp-stat { align-items: flex-start; text-align: left; }
+  .mcm-enhanced .mc-sp-stats--grid { border-top: 0; padding-top: 2px; margin-top: 0; }
+
+  /* ── 4. Lineup status badges (away | home) ──────────────────────────── */
+  .mcm-enhanced .mcm-status-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0 4px;
+  }
+  .mcm-enhanced .mcm-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border, #262A38);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-2, #A4A8B6);
+  }
+  .mcm-enhanced .mcm-status__dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--warn, #FBBF24); flex: none;
+    box-shadow: 0 0 7px rgba(251, 191, 36, 0.55);
+  }
+  .mcm-enhanced .mcm-status[data-mcm-status="confirmed"] .mcm-status__dot {
+    background: var(--pos, #4ADE80); box-shadow: 0 0 7px rgba(74, 222, 128, 0.55);
+  }
+  .mcm-enhanced .mcm-status__team {
+    margin-left: auto;
+    font-family: var(--mono, "Roboto Condensed"), sans-serif;
+    font-weight: 800;
+    color: var(--text, #F5F6FA);
+  }
+
+  /* ── 5. Lineups: side-by-side, shown by default (no tap-to-expand) ───── */
+  .mcm-enhanced .hmc-lineups--always .matchup-lineup-panel.is-open { display: block !important; }
+  .mcm-enhanced .hmc-lineups--always.is-mobile-open .matchup-lineup-panel.is-open { display: block !important; }
+  .mcm-enhanced .hmc-lineups--always .hmc-lineups-label { display: none !important; }
+  .mcm-enhanced .matchup-lineup-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px;
+  }
+  .mcm-enhanced .matchup-lineup-col--home .matchup-lineup-col-head { text-align: left; }
+
+  /* Two 9-man lineups side-by-side on a phone leaves each name very little room.
+     The batting-order number is redundant (row position already conveys order, as
+     in the reference), so drop it and give that space to the name. Columns become
+     POS | NAME | BATS — names stay legible to 320px. */
+  .mcm-enhanced .lineup-bo { display: none !important; }
+  .mcm-enhanced .lineup-row {
+    grid-template-columns: 21px minmax(0, 1fr) auto !important;
+    gap: 3px 6px;
+    min-height: 28px;
+  }
+  .mcm-enhanced .matchup-lineup-col--home .lineup-row {
+    grid-template-columns: auto minmax(0, 1fr) 21px !important;
+  }
+  .mcm-enhanced .lineup-name { font-size: 12.5px; }
+  .mcm-enhanced .lineup-pos { font-size: 10px; }
+  .mcm-enhanced .bats-pill { font-size: 9px; padding: 1px 5px; min-width: 17px; }
+
+  /* ── 6. Footer game-context strip (real fields only) ────────────────── */
+  .mcm-enhanced .mcm-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px 12px;
+    margin: 12px 0 2px;
+    padding: 11px 13px;
+    border: 1px solid var(--border, #262A38);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .mcm-enhanced .mcm-foot-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .mcm-enhanced .mcm-foot-k {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-3, #6E7383);
+  }
+  .mcm-enhanced .mcm-foot-v {
+    font-size: 12.5px; font-weight: 700; color: var(--text, #F5F6FA);
+    overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* The bottom "View Full Analysis" link is replaced by the top Full Analysis
+     chip; hide it on enhanced cards to avoid a duplicate CTA. */
+  .mcm-enhanced .hmc-view-full { display: none !important; }
 }
