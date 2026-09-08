@@ -7,6 +7,11 @@ import time
 
 from playwright.sync_api import sync_playwright
 
+try:
+    from scripts.diag_console import is_ignorable_console
+except ModuleNotFoundError:
+    from diag_console import is_ignorable_console
+
 URL = "http://127.0.0.1:8766/team_rankings.html"
 OVERLAY_BUDGET_S = 8.0
 TABLE_BUDGET_S = 12.0
@@ -24,9 +29,7 @@ def main() -> int:
         def on_console(msg):
             if msg.type == "error":
                 text = msg.text
-                if "429" in text or text.startswith("[LINEUPS]") or text.startswith("[MATCHUPS]"):
-                    return
-                if "fonts.gstatic.com" in text or "CORS policy" in text:
+                if is_ignorable_console(text):
                     return
                 console_errors.append(text)
 
