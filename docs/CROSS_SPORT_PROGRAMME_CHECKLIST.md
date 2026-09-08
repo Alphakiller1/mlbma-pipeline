@@ -114,7 +114,7 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 | WP0-R3 | Python slate API rollover vs client published-day + 17:00 fallback | mlbma | **not started** | `core/slate_date.py` = API; `matchup_shared.js` = published `Slate_Date_ET` + 17:00 | Client and pipeline can disagree around rollover |
 | WP0-R4 | Nav still points at OEM filename | mlbma | **done** (this PR) | `dashboard/chase_nav.html` → `index.html`; `integrate_chase_nav.py` | OEM 301s remain for bookmarks |
 | WP0-R5 | `wrangler.toml` from feature vs upload exclude | mlbma | **done** | `docs/LIVE_SITE_SETUP.md`; `cloudflare-deploy.yml`, `scripts/deploy_cloudflare.py`, and `.assetsignore` exclude both `wrangler.toml` and `wrangler.jsonc` | |
-| WP0-R6 | `dashboard_runtime_diag.py` times out on **home** (script only knows LineupView) | mlbma | **not started** | CI smokes `team_rankings.html?...` not `index.html` | Home regressions undetected |
+| WP0-R6 | `dashboard_runtime_diag.py` times out on **home** (script only knows LineupView) | mlbma | **done** | CI also smokes `dashboard/index.html` (nav, tools grid, no public rankings href). Rankings smoke stays on `/render/` | Console CORS from `127.0.0.1` still ignorable |
 | WP0-R7 | Redirects only after root Pages deploy | pages | **not started** | No production deploy this programme | Live site still old redirects until merge+deploy |
 | WP0-R8 | PR #26 **draft**, do not merge | mlbma | **done** (process) | `gh pr view 26` → `isDraft: true`, base `master` | Accidental merge = live deploy |
 | WP0-R9 | Tests at WP0 close | mlbma | **done** (WP0 report) | 26 unittest OK after contract patches; team_rankings 14/14; home Playwright 0 pageerrors (WP0 agent) | Re-run after WP1; home diag still not in CI |

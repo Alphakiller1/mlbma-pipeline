@@ -180,6 +180,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("Disallow: /dashboard/team_rankings", robots)
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", workflow)
+        self.assertIn("dashboard/index.html", workflow)
         self.assertNotIn("scope=team&team=NYY", workflow)
         self.assertNotIn("branches: [master]", workflow.split("pull_request:", 1)[1][:80])
         audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
