@@ -10,7 +10,7 @@ through this before/after each significant change.
 - **Connected repo:** `Alphakiller1/mlbma-pipeline`.
 - **Production branch:** `master`. This is the live trunk for chase-analytics.com.
 - **No compile/bundler.** `.github/workflows/cloudflare-deploy.yml` rsyncs the repo into `_site` (Python/pipeline/tests excluded) and `wrangler pages deploy`s that directory. Pages `destination_dir` is `/` (repo root), **not** `dashboard`.
-- **`wrangler.toml` / `wrangler.jsonc` are excluded** from the upload.
+- **`wrangler.toml` / `wrangler.jsonc` are excluded** from the upload (`cloudflare-deploy.yml` rsync `--exclude`, `scripts/deploy_cloudflare.py` `EXCLUDE_NAMES`, `.assetsignore`).
 - **Redirects:** Cloudflare Pages only reads `_redirects` from the **deploy root**. The contract is the repo-root `_redirects` file. `dashboard/_redirects` is inert. Live **308**s are Pages automatic slash/extension normalization; explicit product 301s belong in root `_redirects`.
 - **Functions:** `functions/` → `/api/*` (copied with the rsync).
 - Auto-deploys on every push to `master` via `cloudflare-deploy.yml`.
@@ -70,9 +70,9 @@ After ANY env change → **Retry deployment** (env only applies to a fresh build
 - [ ] https://chase-analytics.com/ → `/dashboard/index.html`
 - [ ] https://chase-analytics.com/dashboard/index.html
 - [ ] https://chase-analytics.com/dashboard/chase_analytics_mlb_oem_v7.html → 301/stub to index
-- [ ] https://chase-analytics.com/dashboard/team_rankings.html
+- [ ] https://chase-analytics.com/dashboard/team_rankings.html → **301** to `/dashboard/index.html#section-matchups-hero` (public URL demoted; capture copy is `/dashboard/render/team_rankings.html`)
 - [ ] https://chase-analytics.com/dashboard/batter_profile.html
-- [ ] https://chase-analytics.com/dashboard/pitcher_profile.html
+- [ ] https://chase-analytics.com/dashboard/pitcher_profile.html → **301** to `/dashboard/index.html` (capture copy: `/dashboard/render/pitcher_profile.html`)
 - [ ] https://chase-analytics.com/api/me  → JSON `401 missing_token` (functions alive)
 - [ ] Sign in (Google) on the live domain → panel shows your email, stays on apex.
 - [ ] "Connect Discord" → Discord authorize (only if you keep that feature).

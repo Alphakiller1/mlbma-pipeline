@@ -183,6 +183,7 @@
     opts = opts || {};
     var url = opts.url || sheetCsvUrl(opts.tab);
     if (!url) return Promise.resolve(unknownFields({ source: 'sheet', issues: ['no sheet id'] }));
+    url += (url.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now();
     return fetch(url, { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error('sheet');
       return r.text();

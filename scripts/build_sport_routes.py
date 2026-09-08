@@ -113,7 +113,7 @@ def page(sport: str, *, matchups: bool = False) -> str:
     <div id="slate" class="ca-async">Loading {sport.upper()} board…</div>
   </main>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908e"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908f"></script>
   <script src="/dashboard/chase_sport_select.js?v=20260908e"></script>
   <script src="/dashboard/sports/chase_board.js?v=20260908e"></script>
   <script src="/dashboard/sports/{spec["adapter"]}.js?v=20260908e"></script>

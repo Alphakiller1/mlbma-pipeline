@@ -2739,7 +2739,7 @@ body.view-research .ca-lab { display: block; }
 })();
 </script>
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="chase_datastatus.js?v=20260908e"></script>
+<script src="chase_datastatus.js?v=20260908f"></script>
 <script src="mlbma_ui.js?v=20260908d" data-page="index.html"></script>
 <script src="mlbma_assets.js?v=20260908c"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
@@ -3391,18 +3391,17 @@ function fetchSlateSheetTab(tabName, options) {
 }
 
 function prefetchSheetSync() {
-  var probeUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-    '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(TABS.last_updated) + '&_probe=' + Date.now();
-  return fetchTextWithTimeout(probeUrl, 8000).then(function(text) {
-    var sheetSlate = parseSlateDateEtFromSyncText(text);
+  if (!window.ChaseDataStatus || !ChaseDataStatus.fetchLastUpdated) {
+    return Promise.resolve(null);
+  }
+  return ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function(fields) {
+    var sheetSlate = fields && fields.slateDateEt ? fields.slateDateEt : null;
     invalidateSlateIfDayMismatch(sheetSlate);
-    var ts = parseLastUpdatedFromText(text);
+    var ts = fields && fields.as_of ? fields.as_of : null;
     if (ts) invalidateSheetCaches(ts);
-    else applySheetSyncBust(String(Date.now()));
-    return ts;
+    return fields;
   }).catch(function(err) {
     console.warn('[MLBMA] sheet sync probe failed', err);
-    applySheetSyncBust(String(Date.now()));
     return null;
   });
 }
@@ -5013,10 +5012,15 @@ var _researchLabInitialized = false;
 
 function fetchTabSafe(tabName, fallback) {
   if (tabName === TABS.last_updated || tabName === 'Last_Updated') {
-    return fetchSheetText(tabName).catch(function(e) {
-      console.error('[FETCH ERROR]', tabName + ':', e && e.message ? e.message : e);
-      return '';
-    });
+    if (window.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
+      return ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function(fields) {
+        return fields || null;
+      }).catch(function(e) {
+        console.error('[FETCH ERROR]', tabName + ':', e && e.message ? e.message : e);
+        return null;
+      });
+    }
+    return Promise.resolve(null);
   }
   if (isSlateSheetTab(tabName)) {
     return fetchSlateSheetTab(tabName).catch(function(e) {
@@ -5073,7 +5077,7 @@ function loadLandingData() {
   console.log('[MLBMA] loadLandingData start');
   var loadingText = document.getElementById('loadingText');
   if (loadingText) loadingText.textContent = 'Loading today\'s matchups\u2026';
-  var sheetSyncProbeTs = null;
+  var sheetSyncFields = null;
   var scheduleP = (window.MLBMASharedMatchup && MLBMASharedMatchup.fetchMlbTodaySchedule)
     ? MLBMASharedMatchup.fetchMlbTodaySchedule()
     : Promise.resolve({ games: [] });
@@ -5086,16 +5090,15 @@ function loadLandingData() {
     fetchTabSafe(TABS.today_lineups),
     fetchTabSafe(TABS.vs_rhp),
     fetchTabSafe(TABS.vs_lhp),
-    fetchTabSafe(TABS.last_updated, ''),
     fetchTabSafe(TABS.sp_profiles, []),
     fetchTabSafe(TABS.today_games, []),
     scheduleP
   ]);
   return Promise.all([syncP, fetchP]).then(function(bundle) {
-    sheetSyncProbeTs = bundle[0] || null;
+    sheetSyncFields = bundle[0] || null;
     var results = bundle[1];
     var matchupsRows = results[0], lineupsRows = results[1], vsRhpRows = results[2], vsLhpRows = results[3],
-        tsText = results[4], spProfileRows = results[5], gamesRows = results[6], liveSchedule = results[7];
+        spProfileRows = results[4], gamesRows = results[5], liveSchedule = results[6];
     var scR = [];
     var scL = [];
     try {
@@ -5126,14 +5129,14 @@ function loadLandingData() {
     LIVE_DATA.signalsToday = LIVE_DATA.signalsToday || [];
     LIVE_DATA.weather = LIVE_DATA.weather || {};
     LIVE_DATA.playerRegistry = LIVE_DATA.playerRegistry || [];
-    var lastUpdatedFields = parseLastUpdatedFieldsFromText(tsText);
-    LIVE_DATA.lastUpdated = lastUpdatedFields.as_of || lastUpdatedFields.slateDateEt || sheetSyncProbeTs || null;
-    LIVE_DATA.slateDateEt = lastUpdatedFields.slateDateEt || null;
-    if (LIVE_DATA.lastUpdated) {
+    if (sheetSyncFields && sheetSyncFields.as_of) {
+      LIVE_DATA.lastUpdated = sheetSyncFields.as_of;
+      LIVE_DATA.slateDateEt = sheetSyncFields.slateDateEt || null;
       applySheetSyncBust(LIVE_DATA.lastUpdated);
-      syncFreshnessIndicator(window.ChaseDataStatus
-        ? ChaseDataStatus.fieldsFromParsed(lastUpdatedFields, { source: 'sheet', sport: 'mlb' })
-        : LIVE_DATA.lastUpdated);
+      syncFreshnessIndicator(sheetSyncFields);
+    } else {
+      LIVE_DATA.lastUpdated = null;
+      LIVE_DATA.slateDateEt = (sheetSyncFields && sheetSyncFields.slateDateEt) || null;
     }
     LIVE_DATA.scYtdR = scR.map(function(d) { return JSON.parse(JSON.stringify(d)); });
     LIVE_DATA.scYtdL = scL.map(function(d) { return JSON.parse(JSON.stringify(d)); });
