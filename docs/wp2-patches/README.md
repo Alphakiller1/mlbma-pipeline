@@ -2,7 +2,9 @@
 
 These git patches were produced locally against `/home/ubuntu/src/{mlb-model,wnba-edge-model,cfb-model}` on 2026-09-08. They are **vendor application kits**: apply them in those repositories. They are **not** Chase Analytics product UI and must not be imported as dashboard code.
 
-Push to those repos is **BLOCKED** (`cursor[bot]` 403 on origin). Owner must apply:
+Push to those repos is **BLOCKED** (`cursor[bot]` 403 on origin). Owner must apply.
+
+Complete leftover series (WP2 + WP1.C + WP6) lives in `docs/model-leftovers-series/`. Isolated kits: `docs/wp2-patches/`, `docs/wp1-c-patches/`, `docs/wp6-patches/`.
 
 ```bash
 # mlb-model

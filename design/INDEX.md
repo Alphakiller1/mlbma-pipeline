@@ -2,9 +2,10 @@
 
 Status vocabulary: **Current** · **Product-specific** · **Medium-specific** · **Superseded**.
 
-Do **not** treat mlb-model’s three on-repo contracts as reconciled. That is WP6.
+Do **not** import mlb-model’s historical contracts. WP6 marked one Current in that repo.
 
 | Document | Status | Scope |
+|----------|--------|--------|
 |----------|--------|--------|
 | [MLBMA_CURSOR_DESIGN_CONTRACT.md](./MLBMA_CURSOR_DESIGN_CONTRACT.md) | **Current** | MLBMA dashboard + public site. Includes 2026-09-08 structure-lock carve-out and PART 2 (modes, colour roles, five concepts, honesty, density, enforcement). |
 | [tokens/chase-tokens.css](./tokens/chase-tokens.css) | **Current** | TIER 1 primitives (only raw color literals). |
@@ -21,6 +22,8 @@ Do **not** treat mlb-model’s three on-repo contracts as reconciled. That is WP
 | `docs/TEAM_PROFILE_CONTENT_SPEC.md` | **Product-specific** | Team Profile content, not visual law. |
 | `docs/MARKETING_COPY_GUIDE.md` | **Medium-specific** | Marketing copy. |
 | `docs/CONTENT_ENGINE_SPEC.md` / `CONTENT_ENGINE_GUIDE.md` | **Medium-specific** | Social/export renderer. |
-| mlb-model report/board contracts (three files, contradictory) | **Superseded as a set** until WP6 | Do not import; do not pick a winner here. |
-| Model-repo `board.css` + `BOARD_CONTRACT.sha256` | **Product-specific** / false SoT | Four-way fork; WP1.C blocked. |
+| mlb-model `governance/DESIGN-CONTRACT-V2-DESK.md` | **Current** (in mlb-model) | Chase-aligned desk: Roboto Condensed / DM Sans / `#08090F` / `#9A6BFF`. |
+| mlb-model `governance/DESIGN-CONTRACT.md` | **Superseded** | v1 Inter/teal. |
+| mlb-model `docs/redesign/DESIGN-CONTRACT.md` | **Superseded** | Graphite fork `#B794FF`. |
+| Model-repo `board.css` | **Product-specific** | Sport-specific; tokens shared (`13014f56…`). |
 | SCL theme / tokens | **Superseded** for this product | Do not import. |

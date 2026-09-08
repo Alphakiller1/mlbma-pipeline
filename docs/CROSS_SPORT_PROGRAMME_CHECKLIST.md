@@ -3,7 +3,7 @@
 **Handoff date:** 2026-09-08  
 **This repo:** `Alphakiller1/mlbma-pipeline`  
 **Do not merge to `master` as a release.** WP0 PR #26 is draft. WP1 stacks on #26 (`cursor/reconcile-branch-to-master-4ee4`).  
-**Palette:** settled. Do **not** change hex values. Do **not** restyle pages. Do **not** resolve mlb-model’s three contracts (WP6). Do **not** deploy production.
+**Palette:** settled. Do **not** change hex values. Do **not** restyle pages. Do **not** deploy production. MLB-model contracts reconciled locally (WP6; origin 403).
 
 **Status vocabulary:** `done` · `in-progress` · `blocked` · `not started` · `N/A`  
 **Evidence:** PR, commit, file, test, URL, or explicit gap.
@@ -53,8 +53,8 @@ flowchart TD
 | OOS-6 | Import SCL theme / SCL CSS | N/A | Chase palette only |
 | OOS-7 | Restyle pass / pixel redesign | N/A | Tokens/tests/docs; pixel-identical where already compliant |
 | OOS-8 | Change hex palette values | N/A | Seed sha256 `13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911` |
-| OOS-9 | Push mlb-model / nfl-model / wnba-edge-model / cfb-model | blocked | `cursor[bot]` 403 |
-| OOS-10 | Resolve mlb-model three contradictory contracts | not started | WP6 only |
+| OOS-9 | Push mlb-model / nfl-model / wnba-edge-model / cfb-model / chase-content-engine | blocked | `cursor[bot]` 403 (retried 2026-09-08) |
+| OOS-10 | Resolve mlb-model three contradictory contracts | **done** (local; origin 403) | WP6 kits in `docs/wp6-patches/mlb/` |
 | OOS-11 | `push_*.py` changes in WP4A | N/A | Explicitly forbidden |
 
 ---
@@ -83,9 +83,9 @@ flowchart TD
 | D-18 | NFL board 5-day stale | nfl-model + mlbma WP3 | **not started** (view-time) | Producer already emits board; **freshness at view time = WP3 DataStatus**, not a producer patch | Do not “fix” by refetching odds |
 | D-19 | No JS date logic on model pages | models | **not started** | WP3 adapters; model pages stay data-driven | Clock-in-JS would lie across TZ |
 | D-20 | Contrast / group opacity NFL tiles | nfl-model + tests | **in-progress** (WP1.B7 measures; **do not port** in WP3/4) | Seed: on `#12141D`, `#6E7383`=3.89 (fail body text), `#4C5161`=2.32 fail, `#A4A8B6`=7.74 metadata floor; 50% opacity composites ~2.85 and ~1.89 | WP3/4 must not copy NFL group-opacity for informative regions |
-| D-21 | `board.css` four-way fork + self-blessing `BOARD_CONTRACT.sha256` | four models | **blocked** WP1.C | Vendored `chase_tokens.css` sha256 **is** byte-identical across four repos (`13014f56…`); `BOARD_CONTRACT` header still self-blesses | False “byte-identical” header must be fixed in each model repo |
-| D-22 | mlb-model three contradictory contracts | mlb-model | **not started** | WP6 | Do not pick a winner in WP1 |
-| D-23 | `chase-content-engine` uncommitted tree + remaining renderer defects | chase-content-engine | **not started** | WP6: bundle fonts; `render.py` 571 and 613–615 remove or `0`; `validate_bundle`; metallic headings | Uncommitted tree not in this workspace |
+| D-21 | `board.css` four-way fork + self-blessing `BOARD_CONTRACT.sha256` | four models | **done** (local; origin 403) | Header/tests now say tokens shared, board.css sport-specific; kits `docs/wp1-c-patches/` | Not on origin until owner `git am` |
+| D-22 | mlb-model three contradictory contracts | mlb-model | **done** (local; origin 403) | V2-DESK Current; v1 + redesign Superseded; `docs/DESIGN_INDEX.md` | Not on origin |
+| D-23 | `chase-content-engine` uncommitted tree + remaining renderer defects | chase-content-engine | **done** (local; origin 403) | Origin was clean; renderer fixes on `cursor/content-engine-renderer-4ee4`; kit `docs/wp6-patches/chase-content-engine/` | Not on origin |
 | D-24 | `wnba-edge-model/site` Next.js ignore | wnba-edge-model | **not started** | WP5/WP6 IA | Next app must not be treated as the public board |
 | D-25 | Structure lock §3.2/§3.3 carve-out not written | mlbma | **done** (WP1.D12) | contract §3.2.1 dated 2026-09-08 | Do not over-read as lineup DOM rewrite |
 
@@ -147,18 +147,18 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP1-C9 | Fetch **published** release vs vendored `chase_tokens.css` | four models | **blocked** | Local copies identical to each other (`13014f56…`). Published `https://chase-analytics.com/design/chase-tokens-v1.css` **does not exist until WP1 deploys** | After mlbma deploy, models must fetch and diff; until then they vendor a copy of MLBMA-era tokens that claim mlbma_design_system is SoT |
-| WP1-C10 | Fix `BOARD_CONTRACT` false byte-identical header | four models | **blocked** | Local `board.css` still forked; sha256 files self-bless | WP3 adapters must not assume CSS identity |
-| WP1-C11 | Negative brand assertions in four deploy smokes | four models | **blocked** | No push | SCL/other-brand colors could ship on model pages |
+| WP1-C9 | Fetch **published** release vs vendored `chase_tokens.css` | four models | **done** (local; origin 403) | `scripts/check_published_tokens.py` in each model; published URL, WP1 raw fallback, sibling mlbma copy; SKIP (exit 0) if neither is CSS; local seed `13014f56…` always required | Live `chase-analytics.com/design/chase-tokens-v1.css` still HTML until WP1 deploys |
+| WP1-C10 | Fix `BOARD_CONTRACT` false byte-identical header | four models | **done** (local; origin 403) | Tokens shared; board.css sport-specific | Owner `git am` |
+| WP1-C11 | Negative brand assertions in four deploy smokes | four models | **done** (local; origin 403) | `#B794FF` / IBM Plex / Barlow / `#BA008E` | Owner `git am` |
 
-**Local patch paths (WP1.C):** none generated in this WP (token file is published from **mlbma**). WP2 producer patches: `docs/wp2-patches/{mlb,wnba,cfb}/`. NFL: no producer patch. Model token re-vendoring: copy `design/chase-tokens-v1.css` after this PR exists.
+**Local patch paths (WP1.C):** `docs/wp1-c-patches/{mlb,wnba,nfl,cfb}/`. Complete series: `docs/model-leftovers-series/`.
 
 ### D. Governance (items 12–13)
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
 | WP1-D12 | Amend contract §3.2/§3.3 with **dated 2026-09-08** scoped carve-out: within `dashboard/`, this programme may change navigation, routing, user controls, section count. Structure lock remains **outside** carve-out | mlbma | **done** | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` §3.2.1 | Over-read as rewrite lineup DOM |
-| WP1-D13 | Add PART 2 (modes, colour roles, five concepts, data honesty, density, enforcement) into that contract. Create design-doc **INDEX** marking Current / Product-specific / Medium-specific / Superseded. Do **not** rewrite mlb-model’s three contracts | mlbma | **done** | contract §18; `design/INDEX.md` | mlb-model contracts still contradictory until WP6 |
+| WP1-D13 | Add PART 2 (modes, colour roles, five concepts, data honesty, density, enforcement) into that contract. Create design-doc **INDEX** marking Current / Product-specific / Medium-specific / Superseded. Do **not** rewrite mlb-model’s three contracts | mlbma | **done** | contract §18; `design/INDEX.md` | mlb-model contracts reconciled locally in WP6 |
 
 **WP1 screenshots:** captured 2026-09-08 on port **8766** — `docs/wp1-screenshots/` (375 + 1440 × index, team_rankings, team_profile). **0 pageerrors**. Do not kill **8765**. Runtime diag on 8765: team_rankings **14/14 PASS**.
 
@@ -266,11 +266,11 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP6-1 | Reconcile mlb-model **three** contracts | mlb-model | **N/A this repo** | D-22 | Do not fake a winner |
-| WP6-2 | Content-engine: bundle fonts | chase-content-engine | **N/A this repo** | D-23 | |
-| WP6-3 | Content-engine: remove or `0` at `render.py` **571** and **613–615** | chase-content-engine | **N/A this repo** | | |
-| WP6-4 | Content-engine: `validate_bundle` | chase-content-engine | **N/A this repo** | | |
-| WP6-5 | Content-engine: metallic headings | chase-content-engine | **N/A this repo** | Match `--ca-metal-text` / contract §4 | |
+| WP6-1 | Reconcile mlb-model **three** contracts | mlb-model | **done** (local; origin 403) | V2-DESK Current; others Superseded; kit `docs/wp6-patches/mlb/` | Owner `git am` |
+| WP6-2 | Content-engine: bundle fonts | chase-content-engine | **done** (local; origin 403) | `chase_content/fonts/*.ttf` | |
+| WP6-3 | Content-engine: remove or `0` | chase-content-engine | **done** (local; origin 403) | `format_osi_window` / `format_market_move` | |
+| WP6-4 | Content-engine: `validate_bundle` | chase-content-engine | **done** (local; origin 403) | `render_reports` calls `validate_bundle` | |
+| WP6-5 | Content-engine: metallic headings | chase-content-engine | **done** (local; origin 403) | `_metallic_text` | |
 | WP6-6 | Write `CROSS_SPORT_RELEASE_REPORT.md` | mlbma | **done** | `docs/CROSS_SPORT_RELEASE_REPORT.md` | Honest remaining vs done; no production deploy |
 | WP6-7 | Design-doc index already started in WP1-D13 | mlbma | **done** | `design/INDEX.md` | |
 
