@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
-NAV_JS_STAMP = "20260908d"
+NAV_JS_STAMP = "20260908j"
 
 PAGES = [
     "index.html",

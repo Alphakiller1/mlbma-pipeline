@@ -146,6 +146,25 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("mountMatchupRankings", adapter)
         self.assertIn("LM.rankAll(matchupFilter", view)
         self.assertIn("mcTeamRankings", compare)
+        self.assertIn("Team context", view)
+        self.assertNotIn("family('status', 'Projection')", view)
+
+    def test_public_team_rankings_is_not_a_standalone_section(self):
+        html = (ROOT / "dashboard" / "team_rankings.html").read_text(encoding="utf-8")
+        nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
+        lab = (ROOT / "dashboard" / "research_lab.js").read_text(encoding="utf-8")
+        view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
+        render = (ROOT / "dashboard" / "render" / "team_rankings.html").read_text(encoding="utf-8")
+        self.assertIn("index.html#section-matchups-hero", html)
+        self.assertIn("__MLBMA_PUBLIC_RANKINGS_REDIRECT", html)
+        self.assertNotIn('data-nav="team-rankings"', nav)
+        self.assertNotIn("Team Rankings", nav)
+        self.assertNotIn("href: 'team_rankings.html'", lab)
+        self.assertNotIn('href: "team_rankings.html"', lab)
+        self.assertIn("caSectionHeadHtml(icon || 'bar-chart-3', 'Team Rankings'", view)
+        self.assertIn("title>Chase Analytics - Team Rankings v20260604", render)
+        self.assertNotIn("__MLBMA_PUBLIC_RANKINGS_REDIRECT", render)
+        self.assertNotIn("location.replace('index.html#section-matchups-hero')", render)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")

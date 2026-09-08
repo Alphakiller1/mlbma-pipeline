@@ -943,7 +943,7 @@
       return matchupPill(kind, value, label, state[kind] === value, false);
     }
     var rowView = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">View</span><div class="ca-scopebar-pills">'
-      + family('surface', 'Results') + family('scoring', 'Scoring') + family('difficulty', 'Difficulty') + family('status', 'Projection')
+      + family('surface', 'Results') + family('scoring', 'Scoring') + family('difficulty', 'Difficulty')
       + '</div></div></div>';
     var rowScope = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">Window</span><div class="ca-scopebar-pills">'
       + scope('window', 'YTD', 'YTD') + scope('window', 'L30', 'L30') + scope('window', 'L14', 'L14') + scope('window', 'L7', 'L7')
@@ -1011,10 +1011,11 @@
       }
     };
     el.classList.add('lv-matchup');
+    if (state.family === 'status') state.family = 'scoring';
 
     function paint() {
       normalizeSortState(state);
-      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div><div class="lv-scope-host"></div></div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
+      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team context</div><div class="lv-scope-host"></div></div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
       renderMatchupScope(el.querySelector('.lv-scope-host'), state);
       return Promise.all([
         LM.rankAll(matchupFilter(state, 'away'), state.family, { includeMeta: true }),
@@ -1024,7 +1025,7 @@
         var homeRows = resolvedRows(values[1]);
         var leagueRows = state.leagueSide === 'home' ? homeRows : awayRows;
         applyLeaguePoolsFromRows(awayRows.concat(homeRows));
-        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div><div class="lv-scope-host"></div></div>'
+        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team context</div><div class="lv-scope-host"></div></div>'
           + '<div class="lv-matchup-teams">' + matchupTeamCard(state, 'away', awayRows) + matchupTeamCard(state, 'home', homeRows) + '</div>'
           + '<div class="lv-matchup-league"><div class="lv-body"></div></div>';
         renderMatchupScope(el.querySelector('.lv-scope-host'), state);
@@ -1055,6 +1056,7 @@
       var kind = btn.getAttribute('data-mr-kind');
       var value = btn.getAttribute('data-mr-value');
       if (!kind || !value) return;
+      if (kind === 'family' && value === 'status') return;
       if (kind === 'family' || kind === 'window' || kind === 'segment' || kind === 'leagueSide') state[kind] = value;
       else if (kind === 'hand' || kind === 'batSide') state.contexts[state.leagueSide][kind] = value;
       paint();

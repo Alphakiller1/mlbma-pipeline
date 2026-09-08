@@ -869,9 +869,9 @@
     },
     {
       key: 'rankings',
-      label: 'Matchup Analysis',
-      desc: 'League rank inside the matchup. Window and segment stay free.',
-      href: 'matchup_compare.html',
+      label: 'Team context',
+      desc: 'Two-club league rank inside a matchup — open a card first.',
+      href: 'index.html#section-matchups-hero',
       icon: 'trophy'
     },
     {

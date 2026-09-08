@@ -1352,8 +1352,8 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'matchup_compare.html', title: "Tonight's Matchups", desc: 'Per-game offense vs pitching leans across the slate.' },
-      { href: 'team_rankings.html', title: 'Team Rankings', desc: 'Full-league OSI and metric leaderboard.' },
+      { href: 'index.html#section-matchups-hero', title: "Tonight's Matchups", desc: 'Open a matchup card for two-team analysis, including team context.' },
+      { href: 'matchup_compare.html', title: 'Team context', desc: 'Descriptive two-club rank, lineups, and splits — not a league table.' },
       { href: 'glossary.html', title: 'Metric Glossary', desc: 'How every metric and signal is defined.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {
