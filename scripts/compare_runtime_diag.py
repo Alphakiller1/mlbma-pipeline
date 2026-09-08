@@ -10,6 +10,11 @@ from typing import List
 from playwright.sync_api import TimeoutError as PWTimeout
 from playwright.sync_api import sync_playwright
 
+try:
+    from scripts.diag_console import is_ignorable_console
+except ModuleNotFoundError:
+    from diag_console import is_ignorable_console
+
 
 @dataclass
 class CheckResult:
@@ -88,15 +93,7 @@ def run_diagnostic(base_url: str, timeout_ms: int) -> List[CheckResult]:
         else:
             check("no uncaught page errors", True)
         if console_errors:
-            noisy = [
-                e for e in console_errors
-                if not (
-                    e.startswith("[LINEUPS]")
-                    or e.startswith("[MATCHUPS]")
-                    or "429" in e
-                    or ("Failed to load resource" in e and "429" in e)
-                )
-            ]
+            noisy = [e for e in console_errors if not is_ignorable_console(e)]
             if noisy:
                 check("no console errors", False, " | ".join(noisy[:4]))
             else:
