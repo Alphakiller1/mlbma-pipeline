@@ -344,12 +344,16 @@
   align-items: center;
   gap: var(--space-2) var(--space-4);
   min-height: var(--touch-min);
-  margin: 0 auto var(--space-4);
+  margin: 0 auto;
   max-width: var(--shell-max);
   padding: var(--space-2) var(--shell-gutter-sm);
   font-size: var(--type-12);
   color: var(--text-meta);
   border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: var(--shell-header-h);
+  z-index: calc(var(--z-header) - 1);
+  background: var(--surface-header);
 }
 @media (min-width: 768px) {
   .ca-context-bar { padding-inline: var(--shell-gutter); }

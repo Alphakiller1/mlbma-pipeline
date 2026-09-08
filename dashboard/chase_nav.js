@@ -148,8 +148,10 @@
       var key = dataNav || navTargetKey(href);
       if (key && key === currentKey) {
         link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
       } else {
         link.classList.remove('active');
+        link.removeAttribute('aria-current');
       }
     });
 
@@ -177,8 +179,10 @@
       var key = dataNav || navTargetKey(href);
       if (key && key === currentKey) {
         link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
       } else {
         link.classList.remove('active');
+        link.removeAttribute('aria-current');
       }
     });
   }
@@ -263,7 +267,11 @@
       window.ChaseNav.setPipelineStatus('stale');
       return Promise.resolve();
     }
-    return ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function (fields) {
+    var sport = String((document.body && document.body.getAttribute('data-sport')) || 'mlb').toLowerCase();
+    return ChaseDataStatus.fetchLastUpdated({
+      source: sport === 'mlb' ? 'sheet' : 'board',
+      sport: sport
+    }).then(function (fields) {
       applyDataStatusFields(fields);
     });
   }

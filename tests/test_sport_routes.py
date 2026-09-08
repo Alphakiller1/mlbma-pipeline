@@ -83,6 +83,7 @@ class SportRouteBuilderTests(unittest.TestCase):
     def test_nav_integrator_does_not_restore_demoted_surfaces(self):
         src = (ROOT / "scripts" / "integrate_chase_nav.py").read_text(encoding="utf-8")
         self.assertNotIn("data-nav=\\\"team-rankings\\\"", src)
+        self.assertIn("caContextBar", src)
         self.assertNotIn("section-research-lab", src)
         text = (ROOT / "nfl" / "matchups.html").read_text(encoding="utf-8")
         self.assertIn("not Picks", text)
@@ -171,6 +172,26 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("title>Chase Analytics - Team Rankings v20260604", render)
         self.assertNotIn("__MLBMA_PUBLIC_RANKINGS_REDIRECT", render)
         self.assertNotIn("location.replace('index.html#section-matchups-hero')", render)
+
+    def test_opening_is_one_h1_and_does_not_claim_today_on_stale_slate(self):
+        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        dash = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
+        status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")
+        nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
+        shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
+        self.assertEqual(opening.count("<h1 "), 1)
+        self.assertIn("Today's research desk", opening)
+        self.assertNotIn("Need to Win", opening)
+        self.assertNotIn("before the market adjusts", opening)
+        self.assertNotIn("before you bet", opening)
+        self.assertLess(opening.find('id="section-opening-hero"'), opening.find('id="account"'))
+        self.assertLess(opening.find('id="section-opening-workflows"'), opening.find('id="account"'))
+        self.assertIn("games on ' + shown + ' slate", dash)
+        self.assertIn("sport !== 'mlb'", status)
+        self.assertIn("function contextLabel", status)
+        self.assertIn("aria-current", nav)
+        self.assertIn("shellMain", shell)
+        self.assertIn("id=\"caContextBar\"", opening)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")

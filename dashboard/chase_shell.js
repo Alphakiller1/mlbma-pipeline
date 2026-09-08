@@ -46,6 +46,36 @@
     return host;
   }
 
+  function ensureContextBar() {
+    var ctx = document.getElementById('caContextBar');
+    if (ctx) return ctx;
+    ctx = document.createElement('div');
+    ctx.id = 'caContextBar';
+    ctx.className = 'ca-context-bar';
+    ctx.setAttribute('role', 'status');
+    var after = document.getElementById('mobileMenu') || document.getElementById('chaseHeader');
+    if (after && after.parentNode) {
+      if (after.nextSibling) after.parentNode.insertBefore(ctx, after.nextSibling);
+      else after.parentNode.appendChild(ctx);
+    } else {
+      document.body.insertBefore(ctx, document.body.firstChild);
+    }
+    return ctx;
+  }
+
+  function paintContext(ctx, opts, fields) {
+    if (!ctx) return;
+    ctx.hidden = false;
+    ctx.classList.add('ca-context-bar');
+    if (fields && global.ChaseDataStatus && ChaseDataStatus.contextLabel) {
+      ctx.textContent = ChaseDataStatus.contextLabel(fields);
+      ctx.setAttribute('data-state', fields.state || '');
+      return;
+    }
+    var sport = String(opts.sport || 'mlb').toUpperCase();
+    ctx.textContent = sport + ' · …';
+  }
+
   function mount(opts) {
     opts = opts || {};
     var sport = opts.sport || (global.ChaseSportSelect && ChaseSportSelect.currentSport()) || 'mlb';
@@ -56,14 +86,20 @@
     var header = document.getElementById('chaseHeader');
     if (header) header.classList.add('ca-app-shell');
 
-    var ctx = document.getElementById('caContextBar');
-    if (ctx) {
-      ctx.hidden = false;
-      ctx.classList.add('ca-context-bar');
-      var bits = [String(sport).toUpperCase(), String(opts.surface || mode || '')];
-      ctx.textContent = bits.filter(Boolean).join(' · ');
-      var main = document.querySelector('main');
-      if (main) main.classList.add('ca-page-shell', 'ca-shell-main');
+    var ctx = ensureContextBar();
+    paintContext(ctx, opts, null);
+    if (global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
+      ChaseDataStatus.fetchLastUpdated({
+        source: sport === 'mlb' ? 'sheet' : 'board',
+        sport: sport
+      }).then(function (fields) {
+        paintContext(ctx, opts, fields);
+      });
+    }
+
+    var main = document.querySelector('main');
+    if (main && opts.shellMain !== false) {
+      main.classList.add('ca-page-shell', 'ca-shell-main');
     }
 
     var slot = slotInHeader();
@@ -92,5 +128,7 @@
     return { dataStatusSlot: slot, sport: sport, mode: mode, searchHost: searchHost };
   }
 
-  global.ChaseShell = { mount: mount };
+  global.ChaseShell = { mount: mount, setContext: function (fields) {
+    paintContext(ensureContextBar(), { sport: document.body.getAttribute('data-sport') || 'mlb' }, fields);
+  } };
 })(typeof window !== 'undefined' ? window : this);

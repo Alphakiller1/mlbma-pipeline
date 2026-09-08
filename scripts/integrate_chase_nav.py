@@ -37,7 +37,7 @@ NAV_BLOCK_RE = re.compile(
     r'</header>\s*\n'
     r'<div class="chase-mobile-overlay"[\s\S]*?'
     r'<span id="mobileLastUpdated">[^<]*</span>[\s\S]*?'
-    r'(?=\s*<script|\s*<select|\s*<datalist|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+    r'(?=\s*<script|\s*<select|\s*<datalist|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot"|\s*<div id="caContextBar")',
     re.MULTILINE,
 )
 
@@ -48,7 +48,7 @@ NAV_BLOCK_TRUNCATED_RE = re.compile(
     r'</header>\s*\n'
     r'<div class="chase-mobile-overlay"[\s\S]*?'
     r'<div class="chase-mobile-brand"[\s\S]*?</div>\s*\n'
-    r'(?=\s*<script|\s*<select|\s*<datalist|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+    r'(?=\s*<script|\s*<select|\s*<datalist|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot"|\s*<div id="caContextBar")',
     re.MULTILINE,
 )
 
@@ -74,7 +74,7 @@ MOBILE_DRAWER_TAIL = (
 )
 
 TRAILING_NAV_DIV_RE = re.compile(
-    r'(?:</div>\s*){1,12}(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+    r'(?:</div>\s*){1,12}(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot"|\s*<div id="caContextBar")',
     re.MULTILINE,
 )
 
@@ -207,7 +207,7 @@ def ensure_mobile_nav_complete(html: str) -> str:
         return html
     broken = re.compile(
         r'(<div class="chase-mobile-brand"[\s\S]*?</div>\s*)\n'
-        r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot")',
+        r'(?=\s*<script|\s*<div class="container"|\s*<div class="mr-page"|\s*<main[\s>]|\s*<div id="compareRoot"|\s*<div id="caContextBar")',
         re.MULTILINE,
     )
     if broken.search(html):

@@ -160,13 +160,14 @@
       source: extra.source || 'unknown',
       freshness: 'unknown',
       state: 'unknown',
-      blockers: extra.blockers || extra.issues || ['timestamp unavailable'],
-      issues: extra.issues || extra.blockers || ['timestamp unavailable'],
+      blockers: extra.blockers || extra.issues || [],
+      issues: extra.issues || extra.blockers || [],
       dataCutoff: null,
       quoteTimestamp: extra.quoteTimestamp || null,
       publishedAt: null,
       slateDateEt: extra.slateDateEt || null,
-      recoveryLabel: extra.recoveryLabel || 'Retry slate'
+      recoveryLabel: extra.recoveryLabel || 'Retry slate',
+      sport: extra.sport || 'mlb'
     };
   }
 
@@ -181,8 +182,16 @@
 
   function fetchLastUpdated(opts) {
     opts = opts || {};
+    var sport = String(opts.sport || 'mlb').toLowerCase();
+    if (sport && sport !== 'mlb') {
+      return Promise.resolve(unknownFields({
+        source: opts.source || 'board',
+        sport: sport,
+        issues: []
+      }));
+    }
     var url = opts.url || sheetCsvUrl(opts.tab);
-    if (!url) return Promise.resolve(unknownFields({ source: 'sheet', issues: ['no sheet id'] }));
+    if (!url) return Promise.resolve(unknownFields({ source: 'sheet', sport: 'mlb', issues: ['no sheet id'] }));
     url += (url.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now();
     return fetch(url, { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error('sheet');
@@ -262,6 +271,20 @@
     return { age: age, state: state, as_of: fields.as_of || null };
   }
 
+  function contextLabel(fields) {
+    fields = fields || {};
+    var sport = String(fields.sport || 'mlb').toUpperCase();
+    var age = slateAgeDays(fields.slateDateEt);
+    var slate = fields.slateDateEt ? fmtSlateDate(fields.slateDateEt) : '';
+    var state = fields.state || fields.freshness || 'unknown';
+    if (age != null && age > 0) state = 'stale ' + age + 'd';
+    else if (age != null && age <= 0 && (state === 'ok' || state === 'current')) state = 'current';
+    var parts = [sport];
+    if (slate) parts.push(slate);
+    parts.push(state);
+    return parts.join(' · ');
+  }
+
   function bindResume(el, fieldsFn) {
     function tick() { return render(el, fieldsFn()); }
     document.addEventListener('visibilitychange', function () {
@@ -285,6 +308,7 @@
     fmtSlateDate: fmtSlateDate,
     fetchLastUpdated: fetchLastUpdated,
     render: render,
-    bindResume: bindResume
+    bindResume: bindResume,
+    contextLabel: contextLabel
   };
 })(typeof window !== 'undefined' ? window : this);

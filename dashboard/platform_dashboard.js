@@ -382,7 +382,15 @@
     return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   }
 
-  function slateCountLabel(n) {
+  function slateCountLabel(n, slateDateEt) {
+    var age = global.ChaseDataStatus && ChaseDataStatus.slateAgeDays
+      ? ChaseDataStatus.slateAgeDays(slateDateEt) : null;
+    var shown = (age != null && age > 0 && global.ChaseDataStatus && ChaseDataStatus.fmtSlateDate)
+      ? ChaseDataStatus.fmtSlateDate(slateDateEt) : null;
+    if (shown) {
+      if (n === 1) return '1 game on ' + shown + ' slate';
+      return n + ' games on ' + shown + ' slate';
+    }
     if (n === 1) return '1 game today';
     return n + ' games today';
   }
@@ -427,7 +435,10 @@
       if (!loaded && !games.length) {
         slateEl.textContent = 'Loading slate…';
       } else {
-        slateEl.textContent = slateCountLabel(games.length);
+        slateEl.textContent = slateCountLabel(
+          games.length,
+          (global.LIVE_DATA && (LIVE_DATA._slateSheetDate || LIVE_DATA.slateDateEt)) || ''
+        );
       }
     }
     var synced = false;
@@ -834,6 +845,7 @@
     compareUrl: compareUrl,
     renderSignalChips: renderSignalChips,
     setOpeningHeroSync: setOpeningHeroSync,
+    slateCountLabel: slateCountLabel,
     initRegistry: initRegistry,
     bindHeroControls: bindHeroControls,
     prefetchTomorrow: prefetchTomorrow,
