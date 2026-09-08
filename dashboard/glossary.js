@@ -616,7 +616,7 @@
       + '<p class="gloss-convention__lead">Every metric chip and heat-map cell follows the same rule: <strong>green = strong, red = weak</strong>. Values are graded against the current-season league pool, so a value keeps the same meaning across tables, profiles, and heat maps.</p>'
       + legend
       + '<ul class="gloss-convention__list">'
-      + '<li><strong>Uniform:</strong> A green OSI chip means the same thing on Team Rankings, Team Profile, and Compare.</li>'
+      + '<li><strong>Uniform:</strong> A green OSI chip means the same thing on matchup Team context, Team Profile, and Compare.</li>'
       + '<li><strong>Purple (#7C4DFF):</strong> brand chrome, section headers, and nav — never a data value color.</li>'
       + '<li><strong>Teal / orange split accents:</strong> framing for home/away or handedness — not metric grades.</li>'
       + '<li><strong>Inverted metrics:</strong> ERA, BB%, HR/9, and Allowed composites flip the scale (lower = greener). See Allowed note below.</li>'
@@ -637,7 +637,7 @@
       + '<p class="gloss-convention__lead">Team Profile is organized by three units: <strong>Lineup</strong>, <strong>Starting Pitchers</strong>, and <strong>Bullpen</strong>. Each unit keeps its own split controls, color rules, and snapshot strip.</p>'
       + '<ul class="gloss-convention__list">'
       + '<li><strong>OOR</strong> appears only as <em>Pitcher OOR</em> or <em>Bullpen Unit OOR</em>; it is not a team headline metric.</li>'
-      + '<li><strong>Surface wins</strong> (Win%, F5 Win%, SP Win%, QS%) live on Team Rankings and Team Profile lineup/rotation strips from <code>Team_Results</code>.</li>'
+      + '<li><strong>Surface wins</strong> (Win%, F5 Win%, SP Win%, QS%) live in matchup Team context and Team Profile lineup/rotation strips from <code>Team_Results</code>.</li>'
       + '<li><strong>Pitcher Intelligence</strong> = SP prop research (recent starts). <strong>Bullpen View</strong> + Bullpen Profile = relievers.</li>'
       + '</ul></div>';
   }
@@ -669,7 +669,7 @@
     mountConventions();
     mountSectionHead('glossaryCoreHead', 'clipboard-list', 'Reference', 'Core Metric Definitions', 'Created composites — formulas verified against core/config.py.');
     mountMetricGrid('glossaryMetricCards', CORE_METRICS);
-    mountSectionHead('glossarySurfaceHead', 'trophy', 'Team Results', 'Surface Wins', 'Win-facing outcomes from Team_Results / game_results.csv — live on Team Rankings.');
+    mountSectionHead('glossarySurfaceHead', 'trophy', 'Team Results', 'Surface Wins', 'Win-facing outcomes from Team_Results / game_results.csv — live in matchup Team context.');
     mountMetricGrid('glossarySurfaceCards', SURFACE_WIN_METRICS);
     mountSectionHead('glossarySpHead', 'target', 'Starting Pitchers', 'SP Rate Metrics', 'FanGraphs rates feeding Pitching Score and Pitcher Intelligence.');
     mountMetricGrid('glossarySpCards', SP_RATE_METRICS);

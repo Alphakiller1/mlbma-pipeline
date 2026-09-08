@@ -208,6 +208,7 @@
       + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
       + '<a href="index.html">Opening</a><span class="bc-sep">›</span>'
       + '<a href="index.html#section-matchups-hero">Today\'s Matchups</a></nav>'
+      + '<h1 class="mc-pane-title">Choose a matchup</h1>'
       + hint
       + (picks ? '<div class="hub-pill-row mc-slate-picks">' + picks + '</div>' : '')
       + '<p class="ca-helper" style="margin-top:14px"><a href="index.html#section-matchups-hero">Back to matchups</a></p>'
@@ -564,13 +565,14 @@
   }
 
   function renderPaneLvL(ctx, state) {
-    return '<p class="mc-pane-desc mc-pane-desc--lead">Compare both projected lineups and split-adjusted offensive edges.</p>'
+    return '<h2 class="mc-pane-title">Lineup vs Lineup</h2>'
+      + '<p class="mc-pane-desc mc-pane-desc--lead">Two-club context, then projected lineups and split-adjusted offense.</p>'
       + '<div id="mcTeamRankings" aria-live="polite"></div>'
-      + renderTeamCompareRadar(ctx.m)
-      + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
       + (global.MatchupLineupCompare
         ? MatchupLineupCompare.renderSection(ctx, state)
-        : sectionProjectedLineups(ctx.m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true }));
+        : sectionProjectedLineups(ctx.m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true }))
+      + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
+      + renderTeamCompareRadar(ctx.m);
   }
 
   function renderPaneLvP(ctx, state) {
@@ -861,11 +863,11 @@
       + '<span>' + esc(m.away) + ' @ ' + esc(m.home) + '</span></nav>'
       + '<a href="index.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
       + '<header class="mc-header mc-section">'
-      + '<div class="mc-header-kicker">Matchup Analysis</div>'
+      + '<p class="mc-header-kicker">Matchup analysis</p>'
       + '<div class="mc-header-grid">'
       + teamSideBlock(m.away, 'away')
       + '<div class="mc-header-center">'
-      + '<div class="mc-header-matchup">' + esc(m.away) + ' <span class="mc-at">@</span> ' + esc(m.home) + '</div>'
+      + '<h1 class="mc-header-matchup">' + esc(m.away) + ' <span class="mc-at">@</span> ' + esc(m.home) + '</h1>'
       + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + '</div>'
       + (wx ? '<div class="mc-header-weather">' + wx + '</div>' : '')
       + '</div>'

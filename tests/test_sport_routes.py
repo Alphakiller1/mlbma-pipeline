@@ -148,6 +148,12 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("mcTeamRankings", compare)
         self.assertIn("Team context", view)
         self.assertNotIn("family('status', 'Projection')", view)
+        self.assertIn("lv-matchup-heading", view)
+        self.assertIn('<h2 class="mc-pane-title">Lineup vs Lineup</h2>', compare)
+        self.assertIn('<h1 class="mc-header-matchup">', compare)
+        pane = compare.split("function renderPaneLvL", 1)[1].split("function renderPaneLvP", 1)[0]
+        self.assertLess(pane.index("mcTeamRankings"), pane.index("MatchupLineupCompare"))
+        self.assertLess(pane.index("MatchupLineupCompare"), pane.index("renderTeamCompareRadar"))
 
     def test_public_team_rankings_is_not_a_standalone_section(self):
         html = (ROOT / "dashboard" / "team_rankings.html").read_text(encoding="utf-8")

@@ -863,16 +863,9 @@
     {
       key: 'matchups',
       label: 'Matchups',
-      desc: "Today's slate, starters, and lineup edges.",
+      desc: "Today's slate — open a card for two-team analysis.",
       href: 'index.html#section-matchups-hero',
       icon: 'swords'
-    },
-    {
-      key: 'rankings',
-      label: 'Team context',
-      desc: 'Two-club league rank inside a matchup — open a card first.',
-      href: 'index.html#section-matchups-hero',
-      icon: 'trophy'
     },
     {
       key: 'research',

@@ -147,6 +147,10 @@
       + '.lv-matchup-overrides{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0 12px}'
       + '.lv-matchup-note{font-size:12px;color:var(--text-2);margin:0 0 8px}'
       + '@media(max-width:700px){.lv-matchup-teams{grid-template-columns:1fr}}'
+      + '.lv-matchup-context{margin:0 0 20px}'
+      + '.lv-matchup-context > .mc-pane-title,.lv-matchup-context > .lv-matchup-heading{margin:0 0 8px;font-size:20px;line-height:1.2}'
+      + '.lv-matchup-lede{font-size:13px;color:var(--text-2);margin:0 0 12px;max-width:720px;line-height:1.4}'
+      + '.lv-matchup-context .lv-scope-host{margin:0 0 12px}'
       + '.ca-scopebar .hub-pill,.ca-scopebar .lv-pill{min-height:44px}'
       + '@media(max-width:767px){'
       + '.lv-sort-pills{display:flex}'
@@ -1015,8 +1019,10 @@
 
     function paint() {
       normalizeSortState(state);
-      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team context</div><div class="lv-scope-host"></div></div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
-      renderMatchupScope(el.querySelector('.lv-scope-host'), state);
+      el.innerHTML = '<section class="lv-matchup-context" aria-labelledby="lvTeamContextHeading">'
+        + '<h2 id="lvTeamContextHeading" class="lv-matchup-heading">Team context</h2>'
+        + '<p class="lv-matchup-lede">Descriptive league rank for these two clubs. Projection is not part of this view.</p>'
+        + '<div class="lv-matchup-loading lv-note">Loading league context…</div></section>';
       return Promise.all([
         LM.rankAll(matchupFilter(state, 'away'), state.family, { includeMeta: true }),
         LM.rankAll(matchupFilter(state, 'home'), state.family, { includeMeta: true })
@@ -1025,9 +1031,12 @@
         var homeRows = resolvedRows(values[1]);
         var leagueRows = state.leagueSide === 'home' ? homeRows : awayRows;
         applyLeaguePoolsFromRows(awayRows.concat(homeRows));
-        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team context</div><div class="lv-scope-host"></div></div>'
+        el.innerHTML = '<section class="lv-matchup-context" aria-labelledby="lvTeamContextHeading">'
+          + '<h2 id="lvTeamContextHeading" class="lv-matchup-heading">Team context</h2>'
+          + '<p class="lv-matchup-lede">Descriptive league rank for these two clubs. Open Compare to league for the full board.</p>'
+          + '<div class="lv-scope-host"></div>'
           + '<div class="lv-matchup-teams">' + matchupTeamCard(state, 'away', awayRows) + matchupTeamCard(state, 'home', homeRows) + '</div>'
-          + '<div class="lv-matchup-league"><div class="lv-body"></div></div>';
+          + '<div class="lv-matchup-league"><div class="lv-body"></div></div></section>';
         renderMatchupScope(el.querySelector('.lv-scope-host'), state);
         renderBody(el.querySelector('.lv-matchup-league'), state, leagueRows);
         var details = el.querySelector('.lv-league-expander');
@@ -1038,7 +1047,7 @@
           while (holder.lastChild) details.insertBefore(holder.lastChild, details.children[1] || null);
         }
       }).catch(function(err) {
-        el.innerHTML = '<div class="lv-note" style="color:var(--neg)">Team rankings unavailable: ' + esc(err && err.message ? err.message : err) + '</div>';
+        el.innerHTML = '<div class="lv-note" style="color:var(--neg)">Team context unavailable: ' + esc(err && err.message ? err.message : err) + '</div>';
       });
     }
 

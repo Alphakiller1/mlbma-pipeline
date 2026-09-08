@@ -1352,8 +1352,7 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'index.html#section-matchups-hero', title: "Tonight's Matchups", desc: 'Open a matchup card for two-team analysis, including team context.' },
-      { href: 'matchup_compare.html', title: 'Team context', desc: 'Descriptive two-club rank, lineups, and splits — not a league table.' },
+      { href: 'index.html#section-matchups-hero', title: "Tonight's Matchups", desc: 'Open a card. Two-club rank lives in that matchup, not on its own page.' },
       { href: 'glossary.html', title: 'Metric Glossary', desc: 'How every metric and signal is defined.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {

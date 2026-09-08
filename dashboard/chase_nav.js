@@ -119,7 +119,7 @@
       if (!hash) return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
-    if (page === 'matchup_compare.html') return 'matchups';
+    if (page === 'matchup_compare.html') return 'compare';
     if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'matchups';
     return page;
   }
@@ -133,7 +133,7 @@
       return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
-    if (page === 'matchup_compare.html') return 'matchups';
+    if (page === 'matchup_compare.html') return 'compare';
     if (page === 'team_rankings.html') return 'matchups';
     return page;
   }
