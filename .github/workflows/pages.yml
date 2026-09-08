@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Enforce single token source
-        run: python scripts/check_tokens.py
+        run: python scripts/check_tokens.py && python scripts/validate_public_fields.py
 
   foundation-tests:
     runs-on: ubuntu-latest

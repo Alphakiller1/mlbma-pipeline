@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
-NAV_JS_STAMP = "20260908k"
+NAV_JS_STAMP = STAMP
 
 PAGES = [
     "index.html",
@@ -58,10 +58,11 @@ MOBILE_DRAWER_TAIL = (
     "    <a href=\"index.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
     "    <a href=\"matchup_compare.html\" class=\"chase-mobile-link\" data-nav=\"compare\">Compare</a>\n"
     "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
-    "    <a href=\"/mlb/\" class=\"chase-mobile-link\">MLB</a>\n"
-    "    <a href=\"/nfl/matchups.html\" class=\"chase-mobile-link\" data-nav=\"nfl\">NFL Matchups</a>\n"
-    "    <a href=\"/cfb/\" class=\"chase-mobile-link\">CFB Board</a>\n"
-    "    <a href=\"/wnba/\" class=\"chase-mobile-link\">WNBA Board</a>\n"
+    "    <a href=\"/mlb/\" class=\"chase-mobile-link\" data-nav=\"mlb\">MLB</a>\n"
+    "    <a href=\"/nfl/\" class=\"chase-mobile-link\" data-nav=\"nfl\">NFL</a>\n"
+    "    <a href=\"/wnba/\" class=\"chase-mobile-link\" data-nav=\"wnba\">WNBA</a>\n"
+    "    <a href=\"/cfb/\" class=\"chase-mobile-link\" data-nav=\"cfb\">CFB</a>\n"
+    "    <a href=\"/models/\" class=\"chase-mobile-link\" data-nav=\"models\">Model Center</a>\n"
     "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
     "  </div>\n"
     "  <div class=\"chase-mobile-status\">\n"

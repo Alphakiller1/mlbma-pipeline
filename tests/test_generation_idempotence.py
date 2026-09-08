@@ -22,12 +22,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATORS = ("scripts/build_sport_routes.py", "scripts/_stamp_design_layer.py")
-COPIED = ("scripts", "design", "dashboard", "mlb", "nfl", "wnba", "cfb")
+COPIED = ("scripts", "design", "dashboard", "mlb", "nfl", "wnba", "cfb", "models")
 
 
 def _snapshot(root: Path) -> dict[str, bytes]:
     out: dict[str, bytes] = {}
-    for sub in ("mlb", "nfl", "wnba", "cfb"):
+    for sub in ("mlb", "nfl", "wnba", "cfb", "models"):
         for f in sorted((root / sub).glob("*.html")):
             out[f"{sub}/{f.name}"] = f.read_bytes()
     for f in sorted((root / "dashboard").glob("*.html")):
@@ -65,8 +65,7 @@ class GenerationIdempotenceTests(unittest.TestCase):
                              f"generation is not a fixed point; churned: {changed}")
 
     def test_body_carries_exactly_one_data_mode(self):
-        """The duplicate-attribute symptom, pinned directly."""
-        for sub in ("dashboard", "mlb", "nfl", "wnba", "cfb"):
+        for sub in ("dashboard", "mlb", "nfl", "wnba", "cfb", "models"):
             for f in sorted((ROOT / sub).glob("*.html")):
                 text = f.read_text(encoding="utf-8", errors="replace")
                 for body in re.findall(r"<body[^>]*>", text):
@@ -96,7 +95,7 @@ class GenerationIdempotenceTests(unittest.TestCase):
         """A bump must reach every reference, or caches serve a split design layer."""
         stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
         pages: list[tuple[str, Path]] = []
-        for sub in ("dashboard", "mlb", "nfl", "wnba", "cfb"):
+        for sub in ("dashboard", "mlb", "nfl", "wnba", "cfb", "models"):
             pages.extend((sub, f) for f in sorted((ROOT / sub).glob("*.html")))
         pages.extend(
             ("dashboard/render", f)

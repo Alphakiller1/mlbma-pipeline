@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "descriptive_public": {
+    "examples": [
+      "OSI",
+      "RCV",
+      "ABQ",
+      "OBR",
+      "Pitch Score",
+      "xwOBA",
+      "wRC+",
+      "Barrel%",
+      "HardHit%",
+      "K%",
+      "BB%",
+      "ISO",
+      "percentile ranks"
+    ],
+    "note": "Observed or descriptive metrics and ranks. Public surfaces may show these without implying a forecast."
+  },
+  "model_private": {
+    "examples": [
+      "projOSI",
+      "projected_runs",
+      "projected_score",
+      "win_probability",
+      "model_spread",
+      "model_total",
+      "model_margin",
+      "market_gap",
+      "edge_points",
+      "confidence",
+      "may_bet",
+      "priced_markets"
+    ],
+    "note": "Forecasts, model prices, and decision outputs. Model Center only. Public pages must not render these values or compare them to the market."
+  }
+}

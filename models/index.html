@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Center — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908k">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908k">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
+</head>
+<body data-mode="evidence" data-sport="mlb">
+<!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
+<header class="chase-header" id="chaseHeader">
+  <nav class="chase-nav">
+    <a href="/dashboard/index.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
+      <img class="chase-nav-logo--icon" src="/dashboard/assets/chase-icon-filled.png" alt="" width="36" height="36">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
+    </a>
+    <div class="chase-nav-links">
+      <a href="/dashboard/index.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
+      <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
+      <a href="/wnba/" class="chase-nav-link" data-nav="wnba">WNBA</a>
+      <a href="/cfb/" class="chase-nav-link" data-nav="cfb">CFB</a>
+      <a href="/models/" class="chase-nav-link" data-nav="models">Model Center</a>
+      <a href="/dashboard/glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+    </div>
+  </nav>
+</header>
+  <main class="container ca-page-shell ca-shell-main">
+    <header class="ca-surface-header">
+      <h1 class="ca-page-title">Model Center</h1>
+      <p class="ca-helper">Projections, win probabilities, model-versus-market gaps, and priced markets stay behind a signed-in desk. This page does not preview those numbers.</p>
+    </header>
+    <section class="ca-card ca-card-pad">
+      <h2 class="ca-h3">Access</h2>
+      <p>Public Chase Analytics is the sports data and research desk: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks.</p>
+      <p>Model Center is a separate product. Sign-in and entitlement are not wired on this stub. When they ship, this route will load the authenticated board instead of a teaser.</p>
+      <p class="ca-helper">No projected scores, model lines, or confidence values are shown here.</p>
+    </section>
+  </main>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
+  <script src="/dashboard/design_layer_version.js?v=20260908k"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908k"></script>
+</body>
+</html>

@@ -191,7 +191,8 @@ def main() -> int:
     html_scan: list[Path] = (
         list(DASHBOARD.glob("*.html"))
         + list((DASHBOARD / "render").glob("*.html"))
-        + [ROOT / "index.html", ROOT / "404.html"]
+        + [ROOT / "index.html", ROOT / "404.html", ROOT / "models" / "index.html"]
+        + [p for sport in ("mlb", "nfl", "wnba", "cfb") for p in (ROOT / sport).glob("*.html")]
     )
     for html in sorted({p.resolve() for p in html_scan if p.is_file()}):
         raw = html.read_text(encoding="utf-8")

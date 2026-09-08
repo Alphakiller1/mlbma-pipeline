@@ -124,7 +124,17 @@
     return page;
   }
 
+  function sportNavKey() {
+    var path = window.location.pathname || '';
+    var m = path.match(/^\/(mlb|nfl|wnba|cfb)(\/|$)/i);
+    if (m) return m[1].toLowerCase();
+    if (/^\/models(\/|$)/i.test(path)) return 'models';
+    return '';
+  }
+
   function currentNavKey() {
+    var sportKey = sportNavKey();
+    if (sportKey) return sportKey;
     var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
     if (isOpeningPage(page)) {

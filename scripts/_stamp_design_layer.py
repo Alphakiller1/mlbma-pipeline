@@ -191,7 +191,12 @@ def main() -> None:
             encoding="utf-8",
         )
 
-    extra_html = [ROOT / "index.html", ROOT / "404.html", *sorted((DASH / "render").glob("*.html"))]
+    extra_html = [
+        ROOT / "index.html",
+        ROOT / "404.html",
+        ROOT / "models" / "index.html",
+        *sorted((DASH / "render").glob("*.html")),
+    ]
     for html in extra_html:
         if not html.is_file():
             continue

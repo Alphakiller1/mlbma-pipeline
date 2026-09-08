@@ -26,7 +26,11 @@
       <a href="/dashboard/index.html" class="chase-nav-link" data-nav="opening">Opening</a>
       <a href="/dashboard/index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="/dashboard/matchup_compare.html" class="chase-nav-link" data-nav="compare">Compare</a>
-      <a href="/nfl/matchups.html" class="chase-nav-link" data-nav="nfl">NFL</a>
+      <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
+      <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
+      <a href="/wnba/" class="chase-nav-link" data-nav="wnba">WNBA</a>
+      <a href="/cfb/" class="chase-nav-link" data-nav="cfb">CFB</a>
+      <a href="/models/" class="chase-nav-link" data-nav="models">Model Center</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
           Tools
@@ -79,10 +83,11 @@
     <a href="/dashboard/index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="/dashboard/matchup_compare.html" class="chase-mobile-link" data-nav="compare">Compare</a>
     <a href="/dashboard/batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="/mlb/" class="chase-mobile-link">MLB</a>
-    <a href="/nfl/matchups.html" class="chase-mobile-link" data-nav="nfl">NFL Matchups</a>
-    <a href="/cfb/" class="chase-mobile-link">CFB Board</a>
-    <a href="/wnba/" class="chase-mobile-link">WNBA Board</a>
+    <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
+    <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
+    <a href="/wnba/" class="chase-mobile-link" data-nav="wnba">WNBA</a>
+    <a href="/cfb/" class="chase-mobile-link" data-nav="cfb">CFB</a>
+    <a href="/models/" class="chase-mobile-link" data-nav="models">Model Center</a>
     <a href="/dashboard/glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
@@ -95,11 +100,11 @@
   <main class="container ca-page-shell ca-shell-main">
     <header class="ca-surface-header">
       <h1 class="ca-page-title">WNBA board</h1>
-      <p class="ca-helper">WNBA board. Producer JSON is fetched only for this sport. Missing CORS or a 404 is shown as error, not an empty fake slate.</p>
+      <p class="ca-helper">WNBA research slate. Kickoffs and attributed book prices. Forecasts live in Model Center.</p>
     </header>
     <div id="caContextBar" class="ca-context-bar"></div>
     <div id="sportSelect" class="ca-sport-switcher"></div>
-    <p class="ca-helper"><a class="hub-pill" href="/wnba/matchups.html">Open matchups</a> <a class="hub-pill" href="/wnba/results.html">Results ledger</a></p>
+    <p class="ca-helper"><a class="hub-pill" href="/wnba/matchups.html">Open matchups</a> <a class="hub-pill" href="/wnba/results.html">Results</a></p>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async" data-state="loading">Loading WNBA board…</div>
@@ -115,7 +120,6 @@
   <script src="/dashboard/chase_shell.js?v=20260908k"></script>
   <script src="/dashboard/chase_entity.js?v=20260908k"></script>
   <script src="/dashboard/chase_metric.js?v=20260908k"></script>
-  <script src="/dashboard/chase_modelstatus.js?v=20260908k"></script>
   <script src="/dashboard/chase_scope.js?v=20260908k"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportWNBA;
@@ -133,7 +137,6 @@
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'index' });
   }
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
   if (!adapter) {
     if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'adapter missing');
     return;
@@ -149,14 +152,6 @@
       return;
     }
     var nb = adapter.normalize(board);
-    if (window.ChaseModelStatus) {
-      ChaseModelStatus.render(document.getElementById('modelStatus'), {
-        authority: nb.authority.level,
-        may_bet: nb.authority.may_bet,
-        unmet_gates: nb.authority.unmet_gates,
-        evidence: nb.authority.evidence
-      });
-    }
     if (window.ChaseDataStatus) {
       ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
         return {
@@ -166,21 +161,15 @@
           quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
           publishedAt: nb.generated_at,
           source: 'board.json',
-          issues: build.issues || nb.authority.unmet_gates || []
+          issues: build.issues || []
         };
       });
     }
-    var priced = (nb.priced_markets && nb.priced_markets.length) || nb.games.filter(function (g) { return g.priced; }).length;
-    var html = '<p class="ca-helper">' + esc(window.CHASE_SPORT_PICKS_LABEL) + ': ' + priced;
-    if (window.CHASE_SPORT_GEMS_LABEL && nb.flagged_tiles) {
-      html += ' · ' + esc(window.CHASE_SPORT_GEMS_LABEL) + ': ' + nb.flagged_tiles.length;
-    }
-    html += ' · may_bet=' + (nb.authority.may_bet === true) + '</p>';
-    html += '<p class="ca-helper">Authority (text): ' + esc(nb.authority.level) + '</p>';
-    html += '<p class="ca-helper">' + nb.games.length + ' games, sorted by kickoff_utc at view time.</p>';
+    var html = '<p class="ca-helper">' + nb.games.length + ' games on this research slate, sorted by kickoff at view time.</p>';
+    html += '<p class="ca-helper"><a class="ca-text-link" href="/models/">Open Model Center ★</a> for projections and priced markets.</p>';
     document.getElementById('slate').innerHTML = html;
     if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length && !(nb.priced_markets && nb.priced_markets.length)) {
+    if (!nb.games.length) {
       ChaseAsyncState.render(document.getElementById('slate'), 'empty');
     }
   }).catch(function (err) {

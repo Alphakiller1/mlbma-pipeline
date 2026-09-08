@@ -21,8 +21,8 @@ SPORTS = {
         "global": "ChaseSportMLB",
         "picks_label": "Priced markets (Picks)",
         "gems_label": "Flagged tiles (Gems)",
-        "lede": "MLB research board. Picks are priced markets, not a wall of recommendations. Gems are flagged tiles from the producer.",
-        "matchups_href": "/dashboard/index.html#section-matchups-hero",
+        "lede": "MLB research board. Schedules, lineups, and descriptive stats. Forecasts live in Model Center.",
+        "matchups_href": "/mlb/matchups.html",
     },
     "nfl": {
         "title": "NFL — Chase Analytics",
@@ -30,7 +30,7 @@ SPORTS = {
         "global": "ChaseSportNFL",
         "picks_label": "Priced markets",
         "gems_label": None,
-        "lede": "NFL slate. Model, market, and published are separate channels. A gap is not an edge. Priced markets are not Picks.",
+        "lede": "NFL research slate. Kickoffs and attributed book prices. Model versus market comparison is Model Center only.",
         "matchups_href": "/nfl/matchups.html",
     },
     "wnba": {
@@ -39,7 +39,7 @@ SPORTS = {
         "global": "ChaseSportWNBA",
         "picks_label": "Priced markets",
         "gems_label": None,
-        "lede": "WNBA board. Producer JSON is fetched only for this sport. Missing CORS or a 404 is shown as error, not an empty fake slate.",
+        "lede": "WNBA research slate. Kickoffs and attributed book prices. Forecasts live in Model Center.",
         "matchups_href": "/wnba/matchups.html",
     },
     "cfb": {
@@ -48,7 +48,7 @@ SPORTS = {
         "global": "ChaseSportCFB",
         "picks_label": "Priced markets",
         "gems_label": None,
-        "lede": "CFB board. Age is computed at view time from producer timestamps. Games sort by kickoff_utc.",
+        "lede": "CFB research slate. Games sort by kickoff. Age is computed at view time from producer timestamps.",
         "matchups_href": "/cfb/matchups.html",
     },
 }
@@ -83,7 +83,6 @@ def page(sport: str, *, kind: str = "index") -> str:
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
   <script src="/dashboard/chase_entity.js?v={STAMP}"></script>
   <script src="/dashboard/chase_metric.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_modelstatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_scope.js?v={STAMP}"></script>"""
     body_js = RESULTS_JS if results else (MATCHUPS_JS if matchups else HUB_JS)
     mode = "evidence" if results else "slate"
@@ -91,7 +90,7 @@ def page(sport: str, *, kind: str = "index") -> str:
     if not matchups and not results and spec.get("matchups_href"):
         more_bits.append(f'<a class="hub-pill" href="{spec["matchups_href"]}">Open matchups</a>')
     if not results:
-        more_bits.append(f'<a class="hub-pill" href="/{sport}/results.html">Results ledger</a>')
+        more_bits.append(f'<a class="hub-pill" href="/{sport}/results.html">Results</a>')
     if matchups or results:
         more_bits.append(f'<a class="hub-pill" href="/{sport}/">Board overview</a>')
     more_html = ('<p class="ca-helper">' + " ".join(more_bits) + "</p>") if more_bits else ""
@@ -99,7 +98,7 @@ def page(sport: str, *, kind: str = "index") -> str:
         lede = spec["lede"]
         h1 = sport.upper() + " matchups"
     elif results:
-        lede = "Settled W/L/P from record.json. This is a results ledger, not a skill badge and not an edge."
+        lede = "Finals publish after games complete. This page lists the slate, not model performance."
         h1 = sport.upper() + " results"
     else:
         lede = spec["lede"]
@@ -165,7 +164,6 @@ HUB_JS = r"""
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'index' });
   }
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
   if (!adapter) {
     if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'adapter missing');
     return;
@@ -181,14 +179,6 @@ HUB_JS = r"""
       return;
     }
     var nb = adapter.normalize(board);
-    if (window.ChaseModelStatus) {
-      ChaseModelStatus.render(document.getElementById('modelStatus'), {
-        authority: nb.authority.level,
-        may_bet: nb.authority.may_bet,
-        unmet_gates: nb.authority.unmet_gates,
-        evidence: nb.authority.evidence
-      });
-    }
     if (window.ChaseDataStatus) {
       ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
         return {
@@ -198,21 +188,15 @@ HUB_JS = r"""
           quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
           publishedAt: nb.generated_at,
           source: 'board.json',
-          issues: build.issues || nb.authority.unmet_gates || []
+          issues: build.issues || []
         };
       });
     }
-    var priced = (nb.priced_markets && nb.priced_markets.length) || nb.games.filter(function (g) { return g.priced; }).length;
-    var html = '<p class="ca-helper">' + esc(window.CHASE_SPORT_PICKS_LABEL) + ': ' + priced;
-    if (window.CHASE_SPORT_GEMS_LABEL && nb.flagged_tiles) {
-      html += ' · ' + esc(window.CHASE_SPORT_GEMS_LABEL) + ': ' + nb.flagged_tiles.length;
-    }
-    html += ' · may_bet=' + (nb.authority.may_bet === true) + '</p>';
-    html += '<p class="ca-helper">Authority (text): ' + esc(nb.authority.level) + '</p>';
-    html += '<p class="ca-helper">' + nb.games.length + ' games, sorted by kickoff_utc at view time.</p>';
+    var html = '<p class="ca-helper">' + nb.games.length + ' games on this research slate, sorted by kickoff at view time.</p>';
+    html += '<p class="ca-helper"><a class="ca-text-link" href="/models/">Open Model Center ★</a> for projections and priced markets.</p>';
     document.getElementById('slate').innerHTML = html;
     if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length && !(nb.priced_markets && nb.priced_markets.length)) {
+    if (!nb.games.length) {
       ChaseAsyncState.render(document.getElementById('slate'), 'empty');
     }
   }).catch(function (err) {
@@ -232,9 +216,50 @@ MATCHUPS_JS = r"""
   }
   if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
   function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  function dash(v, reason) {
-    if (v == null || v === '') return '<span title="' + esc(reason || 'unavailable') + '">—</span>';
-    return esc(v);
+  function kickoffGroup(iso) {
+    var d = new Date(iso || '');
+    if (!iso || isNaN(d.getTime())) return 'Time TBD';
+    return d.toLocaleDateString('en-US', {
+      weekday: 'long', month: 'short', day: 'numeric', timeZone: 'America/New_York'
+    });
+  }
+  function kickoffTime(g) {
+    if (g.kickoff_display) return g.kickoff_display;
+    var iso = g.kickoff_utc;
+    var d = new Date(iso || '');
+    if (!iso || isNaN(d.getTime())) return 'kickoff unknown';
+    return d.toLocaleTimeString('en-US', {
+      hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
+    }) + ' ET';
+  }
+  function bookLineHtml(g) {
+    var n = Number(g.market_margin);
+    if (!Number.isFinite(n)) return '';
+    return '<p class="ca-helper">Published book line: ' + esc(n) +
+      ' <span>(book price, not a Chase projection)</span></p>';
+  }
+  function mlbDeskHref(g) {
+    if (sport !== 'mlb') return '';
+    var away = encodeURIComponent(g.away || '');
+    var home = encodeURIComponent(g.home || '');
+    if (!away || !home) return '';
+    return '/dashboard/matchup_compare.html?away=' + away + '&home=' + home;
+  }
+  function cardHtml(g) {
+    var names = (window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away)) +
+      ' @ ' +
+      (window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home));
+    var mlbHref = mlbDeskHref(g);
+    var viewGame = mlbHref
+      ? '<p class="ca-helper"><a class="ca-btn ca-btn-sm ca-btn-primary" href="' + mlbHref + '">Open scouting desk</a></p>'
+      : '';
+    return '<article class="ca-card" data-game="' + esc(g.id) + '">' +
+      '<h2>' + names + '</h2>' +
+      '<p class="ca-helper">' + esc(kickoffTime(g)) + '</p>' +
+      bookLineHtml(g) +
+      viewGame +
+      '<p class="ca-helper"><a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a></p>' +
+      '</article>';
   }
   Promise.all([
     fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
@@ -250,14 +275,6 @@ MATCHUPS_JS = r"""
     else nb.games = nb.games.slice().sort(function (a, b) {
       return String(a.kickoff_utc || a.sort_key || '').localeCompare(String(b.kickoff_utc || b.sort_key || ''));
     });
-    if (window.ChaseModelStatus) {
-      ChaseModelStatus.render(document.getElementById('modelStatus'), Object.assign({}, nb.authority, {
-        may_bet: nb.authority.may_bet,
-        unmet_gates: nb.authority.unmet_gates,
-        authority: nb.authority.level,
-        evidence: nb.authority.evidence
-      }));
-    }
     ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
       return {
         sport: sport,
@@ -269,29 +286,22 @@ MATCHUPS_JS = r"""
         issues: build.issues || []
       };
     });
-    var priced = nb.games.filter(function (g) { return g.priced; }).length;
-    var html = '<p class="ca-helper">Priced markets: ' + priced + ' of ' + nb.games.length + ' — not Picks.</p>';
+    var order = [];
+    var grouped = {};
+    nb.games.forEach(function (g) {
+      var key = kickoffGroup(g.kickoff_utc);
+      if (!grouped[key]) {
+        grouped[key] = [];
+        order.push(key);
+      }
+      grouped[key].push(g);
+    });
+    var html = '<p class="ca-helper">' + nb.games.length + ' games grouped by kickoff (Eastern). Book lines are attributed prices, not Chase projections.</p>';
     html += '<div class="ca-board-list">';
-    nb.games.forEach(function (g, idx) {
-      html += '<article class="ca-card" data-game="' + esc(g.id) + '">';
-      html += '<h2>';
-      html += window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away);
-      html += ' @ ';
-      html += window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home);
-      html += '</h2>';
-      html += '<p class="ca-helper">' + esc(g.kickoff_display || g.kickoff_utc || 'kickoff unknown') + '</p>';
-      html += '<div class="ca-nfl-channels">';
-      html += '<div class="ca-nfl-channel"><h3>Model</h3><p>' + dash(g.model_margin) + '</p></div>';
-      html += '<div class="ca-nfl-channel"><h3>Market</h3><p>' + dash(g.market_margin) + '</p></div>';
-      html += '<div class="ca-nfl-channel"><h3>Published</h3><p>' + dash(g.published_margin) + '</p></div>';
-      html += '</div>';
-      if (window.ChaseBoard && ChaseBoard.marginAxisHtml) html += ChaseBoard.marginAxisHtml(g, sport);
-      html += '<p>Edge points ' + dash(g.edge_points, g.edge_withheld_reason);
-      if (g.edge_withheld_reason) html += ' — ' + esc(g.edge_withheld_reason);
-      html += '</p>';
-      html += '<details class="ca-evidence"><summary>Evidence</summary><p class="ca-helper">' +
-        esc(g.evidence || nb.authority.evidence || 'Producer evidence is empty.') + '</p></details>';
-      html += '</article>';
+    order.forEach(function (key) {
+      html += '<section><h2>' + esc(key) + '</h2>';
+      grouped[key].forEach(function (g) { html += cardHtml(g); });
+      html += '</section>';
     });
     html += '</div>';
     document.getElementById('slate').innerHTML = html;
@@ -315,44 +325,50 @@ RESULTS_JS = r"""
   }
   if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
   function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  var recordUrl = adapter.BOARD_URL.replace(/board\.json$/i, 'record.json');
-  fetch(recordUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
-    .then(function (rec) {
-      if (!rec) {
-        ChaseAsyncState.render(document.getElementById('slate'), 'error', 'record.json was not reachable.');
-        return;
-      }
-      if (window.ChaseModelStatus) {
-        ChaseModelStatus.render(document.getElementById('modelStatus'), {
-          authority: rec.authority,
-          may_bet: rec.may_bet === true,
-          unmet_gates: rec.unmet_gates || (rec.authority && rec.authority.unmet_gates) || [],
-          evidence: rec.evidence || (rec.authority && rec.authority.evidence) || ''
-        });
-      }
-      if (window.ChaseDataStatus) {
-        ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-          return {
-            sport: sport,
-            publishedAt: rec.generated_at || rec.generated_at_utc,
-            dataCutoff: rec.generated_at || rec.generated_at_utc,
-            source: 'record.json',
-            issues: rec.issues || []
-          };
-        });
-      }
-      var ats = rec.ats || {};
-      var totals = rec.totals || {};
-      var html = '<p class="ca-helper">Settled outcomes are discrete W/L/P marks. They do not imply future skill.</p>';
-      html += '<p>Games graded: ' + esc(rec.games_graded) + ' · pending snapshots: ' + esc(rec.pending_snapshots) + '</p>';
-      html += '<p>ATS ' + esc(ats.win) + '-' + esc(ats.loss) + '-' + esc(ats.push);
-      html += ' · Totals ' + esc(totals.win) + '-' + esc(totals.loss) + '-' + esc(totals.push) + '</p>';
-      html += '<p class="ca-helper">may_bet remains ' + esc(rec.may_bet === true) + ' as published. Presentation cannot upgrade it.</p>';
-      document.getElementById('slate').innerHTML = html;
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    }).catch(function (err) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
+  function scoreHtml(g) {
+    if (g.away_score == null || g.home_score == null) return 'Final pending';
+    return esc(g.away_score) + '–' + esc(g.home_score);
+  }
+  Promise.all([
+    fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
+  ]).then(function (pack) {
+    var board = pack[0], build = pack[1] || {};
+    if (!board) {
+      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
+      return;
+    }
+    var nb = adapter.normalize(board);
+    if (window.ChaseBoard && ChaseBoard.sortGames) nb.games = ChaseBoard.sortGames(nb.games);
+    if (window.ChaseDataStatus) {
+      ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
+        return {
+          sport: sport,
+          state: build.state || undefined,
+          dataCutoff: build.generated_at || build.generated_at_utc,
+          quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
+          publishedAt: nb.generated_at,
+          source: 'board.json',
+          issues: build.issues || []
+        };
+      });
+    }
+    var html = '<p class="ca-helper">Scores when the producer has them. Model ATS / totals records live in Model Center.</p>';
+    html += '<div class="ca-board-list">';
+    nb.games.forEach(function (g) {
+      html += '<article class="ca-card"><h2>';
+      html += window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away);
+      html += ' @ ';
+      html += window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home);
+      html += '</h2><p class="ca-helper">' + scoreHtml(g) + '</p></article>';
     });
+    html += '</div>';
+    document.getElementById('slate').innerHTML = html;
+    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
+    if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
+  }).catch(function (err) {
+    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
+  });
 })();
 """
 

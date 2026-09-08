@@ -98,7 +98,7 @@
     return (n > 0 ? '+' : '') + n.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
   }
 
-  /** Gap-centred model-vs-market axis: both ticks encode margin, never projected score. */
+  /** Model Center only. Public sport routes must not call this helper. */
   function marginAxisHtml(game, sport) {
     game = game || {};
     sport = String(sport || '').toLowerCase();
