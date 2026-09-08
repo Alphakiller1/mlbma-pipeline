@@ -173,14 +173,20 @@
     return S && S.parseWeatherMap ? S.parseWeatherMap(rows) : {};
   }
 
-  function findMatchup(rows, away, home) {
+  function findMatchup(rows, away, home, gameNumber, gamePk) {
     var norm = S && S.normalizeTeamAbbr ? S.normalizeTeamAbbr.bind(S) : function(t) { return String(t || '').trim().toUpperCase(); };
     var list = S.parseMatchupRows(rows);
     var a = norm(away);
     var h = norm(home);
-    return list.find(function(m) {
+    var candidates = list.filter(function(m) {
       return norm(m.away) === a && norm(m.home) === h;
-    }) || null;
+    });
+    if (gamePk) {
+      var byPk = candidates.find(function(m) { return String(m.gamePk || '') === String(gamePk); });
+      if (byPk) return byPk;
+    }
+    return candidates.find(function(m) { return Number(m.gameNumber || 1) === Number(gameNumber || 1); })
+      || candidates[0] || null;
   }
 
   function filterSlateMatchupRows(rows) {
@@ -1190,7 +1196,10 @@
     Promise.all(fetches).then(function(res) {
       if (A && A.parseRegistryRows) A.parseRegistryRows(res[9]);
       var slateRows = filterSlateMatchupRows(res[0]);
-      var m = findMatchup(slateRows, away, home) || findMatchup(res[0], away, home);
+      var gnWant = parseInt(qp('gn') || '1', 10) || 1;
+      var gamePkWant = qp('gamePk');
+      var m = findMatchup(slateRows, away, home, gnWant, gamePkWant)
+        || findMatchup(res[0], away, home, gnWant, gamePkWant);
 
       // The sheet snapshot goes stale (it showed Seymour/Sandoval while MLB's
       // posted Gm 1 probables were Jax/Bennett) and one sheet row cannot
@@ -1199,11 +1208,11 @@
       // precedence the matchup cards use. ?gn=2 selects a DH game 2.
       if (m) {
         var liveGames = (res[31] && res[31].games) ? res[31].games : [];
-        var gnWant = parseInt(qp('gn') || '1', 10) || 1;
         var tk = S.teamKey || function(t) { return String(t || '').trim().toUpperCase(); };
         var liveGame = null;
         for (var li = 0; li < liveGames.length; li++) {
           var lg = liveGames[li];
+          if (gamePkWant && String(lg.gamePk || '') === String(gamePkWant)) { liveGame = lg; break; }
           if (tk(lg.away) !== tk(m.away) || tk(lg.home) !== tk(m.home)) continue;
           if ((lg.gameNumber || 1) === gnWant) { liveGame = lg; break; }
           if (!liveGame) liveGame = lg;

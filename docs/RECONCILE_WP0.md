@@ -79,7 +79,11 @@ Git combined both sides; these were not hand-resolved. `lineup_view.js` still de
 - Master **5 PM ET** `core/slate_date.py` clock (replaced by API rollover). Client `matchup_shared.js` still uses published slate day + 17:00 fallback.
 - Restyling / WP1 cross-sport IA (out of scope).
 
-## Docs / CI (this WP)
+## Post-merge contract patches (still WP0)
+
+- `dashboard/index.html`: do not keep a projected SP when MLB says TBD; do not coerce unknown hands to R.
+- `dashboard/matchup_compare.js`: restore master `gamePk` selection (`gamePkWant`).
+- `tests/test_publish_contract.py`: TBD contract reads `index.html` + `matchup_shared.js` because the OEM file is now a stub.
 
 - `docs/LIVE_SITE_SETUP.md` — production is `master`; whole-repo rsync; no bundler; redirects at deploy root.
 - `docs/ECOSYSTEM.md` §5/§6/§9/§11 — removed nonexistent `matchup_hub.js`, `rl_tab_uix.js`, `mlbma_signals.js`.

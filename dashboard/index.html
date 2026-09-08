@@ -4448,10 +4448,8 @@ function enrichMatchupCards() {
     m.home = normalizeTeamAbbr(m.home);
     m.awayHand = normalizePitcherHand(m.awayHand);
     m.homeHand = normalizePitcherHand(m.homeHand);
-    if (m.awayHand === '?' && m.awaySP) m.awayHand = pitcherHandFromProfiles(m.awaySP, m.away) || '?';
-    if (m.homeHand === '?' && m.homeSP) m.homeHand = pitcherHandFromProfiles(m.homeSP, m.home) || '?';
-    if (m.awayHand === '?') m.awayHand = 'R';
-    if (m.homeHand === '?') m.homeHand = 'R';
+    if (m.awayHand === '?' && m.awaySP && m.awaySP !== 'TBD') m.awayHand = pitcherHandFromProfiles(m.awaySP, m.away) || '?';
+    if (m.homeHand === '?' && m.homeSP && m.homeSP !== 'TBD') m.homeHand = pitcherHandFromProfiles(m.homeSP, m.home) || '?';
     var awayProf = spStatsFromProfile(m.awaySP, m.away);
     var homeProf = spStatsFromProfile(m.homeSP, m.home);
     if (awayProf) {
@@ -4740,8 +4738,8 @@ function buildTodayMatchupsFromSlate(lineups, gamesRows, matchupsRows, scR, scL,
       // The MLB Stats API is the source of truth for first-pitch times; the
       // sheet's Time column can be stale (and cannot represent both DH games).
       time: g.time || existing.time || '',
-      awaySP: (g.awaySP && g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP || 'TBD'),
-      homeSP: (g.homeSP && g.homeSP !== 'TBD') ? g.homeSP : (existing.homeSP || 'TBD'),
+      awaySP: g.awaySP || 'TBD',
+      homeSP: g.homeSP || 'TBD',
       awaySPId: g.awaySPId || existing.awaySPId || null,
       homeSPId: g.homeSPId || existing.homeSPId || null,
       awayHand: g.awayHand || existing.awayHand || '?',
