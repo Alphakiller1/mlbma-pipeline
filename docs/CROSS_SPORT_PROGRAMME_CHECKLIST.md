@@ -73,10 +73,10 @@ flowchart TD
 | D-08 | 62 uncommitted files on **other machine** not on origin (`card_matchup.html`, `card_market_map.html`, `card_compose.html?`, `outputs/render_social_cards.py`, `dashboard/index.html` WIP, `team_rankings.html` WIP, `matchup_shared.js` WIP, …) | mlbma + human | **blocked** UNRECOVERED | `docs/RECONCILE_WP0.md`: this checkout had none of them; not on `origin/batter-profile-prop-rework` | **Must recover from that machine.** Silent loss if that disk is wiped. `card_compose.html` **does** exist in this tree (unversioned stamp); matchup/market_map/render_social_cards still missing as the WIP set |
 | D-09 | `pages.yml` smoke URL `scope=team&team=NYY` | mlbma | **done** (WP0) | `.github/workflows/pages.yml` uses `family=scoring&hand=r&window=L30&loc=home` | `dashboard_runtime_diag.py` still LineupView-only (WP0-R6) |
 | D-10 | `Last_Updated` triple fetch + `chase_nav` clock fallback | mlbma | **in-progress** | `chase_nav.js` no longer paints `formatClock()` on failure (renders `unknown` + stale). `ChaseDataStatus` exists. Index/`mlbma_ui.js` still have their own parsers | Unify remaining fetchers onto `ChaseDataStatus` |
-| D-11 | Token precedence differs per page | mlbma | **in-progress** (WP1) | Inline `:root` in `index.html`, `team_rankings.html`, `glossary.html`; `theme.css` vs `mlbma_design_system.css` | Until WP1 lands, chips/surfaces disagree across pages |
-| D-12 | Inline `:root` in `index.html` + `team_rankings.html` | mlbma | **in-progress** (WP1.A3) | `dashboard/index.html` L29–108; `team_rankings.html` L98–103 | Index aliases `--bg-2`→surface-1 and `--green`→`#4ade80` vs settled `#3CCB7F` — removing inline **unifies** (not a restyle pass, but some pixels will match design system instead of page override) |
-| D-13 | `lineup_view.js` hardcoded `var(...,#hex)` fallbacks | mlbma | **in-progress** (WP1.A3) | `dashboard/lineup_view.js` injected CSS | Fallback hex can disagree with tokens if CSS fails to load |
-| D-14 | `?v=` stamp drift on design-layer files | mlbma | **in-progress** (WP1.A5) | e.g. `theme.css?v=20260619d` vs `20260606b` vs `20260618i` vs `20260630a`; `mlbma_design_system.css?v=20260610b` vs `20260606b` | Stale CSS on returning visitors |
+| D-11 | Token precedence differs per page | mlbma | **done** (WP1) | Shared TIER 1+2; inline palettes removed on index/rankings/glossary | Mockup page still has local `:root` (allowlisted) |
+| D-12 | Inline `:root` in `index.html` + `team_rankings.html` | mlbma | **done** (WP1.A3) | Deleted | Print `:root` on index remains |
+| D-13 | `lineup_view.js` hardcoded `var(...,#hex)` fallbacks | mlbma | **done** (WP1.A3) | `lineup_view.js` | One leftover `#E8DCFF` on active family desc (not a var fallback) |
+| D-14 | `?v=` stamp drift on design-layer files | mlbma | **done** (WP1.A5) | `20260908a` on chase-tokens / design_system / theme / `design_layer_version.js` | Other assets still have their own stamps |
 | D-15 | CFB Tuesday cron vs Saturday week end | cfb-model | **blocked** (WP2 local) | Patch `docs/wp2-patches/cfb/0001-Rebuild-the-board-Sunday-and-Monday-without-extra-Od.patch`; local branch `cursor/cfb-sunday-cron-4ee4` | Not on origin (403). Week-end rebuild still wrong in production until applied |
 | D-16 | WNBA no cron / no `board.json` | wnba-edge-model | **blocked** (WP2 local) | Patch `docs/wp2-patches/wnba/0001-Publish-board.json-build.json-and-record.json-from-c.patch`; samples `/tmp/wnba-sample2/{board,build,record}.json` | Production still HTML-only |
 | D-17 | MLB no `board.json` | mlb-model | **blocked** (WP2 local) | Patch `docs/wp2-patches/mlb/0001-Export-a-slate-JSON-bundle-beside-the-Pages-HTML.patch`; schema `mlb-model/board/1` | Hub cannot `fetch` a contract until owner deploys |
@@ -87,7 +87,7 @@ flowchart TD
 | D-22 | mlb-model three contradictory contracts | mlb-model | **not started** | WP6 | Do not pick a winner in WP1 |
 | D-23 | `chase-content-engine` uncommitted tree + remaining renderer defects | chase-content-engine | **not started** | WP6: bundle fonts; `render.py` 571 and 613–615 remove or `0`; `validate_bundle`; metallic headings | Uncommitted tree not in this workspace |
 | D-24 | `wnba-edge-model/site` Next.js ignore | wnba-edge-model | **not started** | WP5/WP6 IA | Next app must not be treated as the public board |
-| D-25 | Structure lock §3.2/§3.3 carve-out not written | mlbma | **in-progress** (WP1.D12) | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` | Without dated carve-out, WP5 nav/routing is forbidden |
+| D-25 | Structure lock §3.2/§3.3 carve-out not written | mlbma | **done** (WP1.D12) | contract §3.2.1 dated 2026-09-08 | Do not over-read as lineup DOM rewrite |
 
 ---
 
@@ -129,19 +129,19 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP1-A1 | `design/tokens/chase-tokens.css` TIER 1 — **only** file with raw hex; seed vendored `chase_tokens.css`; version header; values unchanged; publish `design/chase-tokens-v1.css` for `/design/chase-tokens-v1.css` | mlbma | **in-progress** | Seed sha256 `13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911` (cfb/nfl/wnba/mlb copies identical). MLBMA extras that already exist as hex in this repo are **appended** as the same values (not new palette). | Extra appendix means file hash ≠ vendor hash; vendor hash is documented in header |
-| WP1-A2 | Rework `dashboard/mlbma_design_system.css` to TIER 2 semantic roles (`--mark-*`, `--value-*`, `--surface-*`, `--text-primary/secondary/meta/disabled`, `--metric-very-weak`…`--metric-elite` via var). Migrate `--surface-*` `/` `--r-*` `/` `--e-*` `/` `--s-*` into role names; aliases = `var()` not hex | mlbma | **in-progress** | | Component **rule bodies** in this file still contain decorative hex (not token defs) — restyle later |
-| WP1-A3 | DELETE inline `:root` in `index.html` and `team_rankings.html`. Strip `var(...,#hex)` from `lineup_view.js` | mlbma | **in-progress** | | Print `@media` `:root` in index may remain as print overrides. `glossary.html` inline `:root` is a leftover (same defect class) — fold in WP1 if check_tokens requires |
-| WP1-A4 | Fold `theme.css` into tier-2 **or** pure alias layer. One definition per token. No duplicate `--text`/`--bg`/`--v-bg` with different values | mlbma | **in-progress** | `theme.css` already claimed not to redefine `--bg/--text`; still has hex in `:root` (`--v`, `--green`, `--d-*`) | Chip class hex in rule bodies remain (visual lock) |
-| WP1-A5 | Single `DESIGN_LAYER_VERSION`; all pages same `?v=` for design-layer files | mlbma | **in-progress** | `dashboard/design_layer_version.js` + `scripts/design_layer_version.py` + CSS comment; stamp `20260908a` | Non-design CSS/JS stamps stay heterogeneous (intentional) |
+| WP1-A1 | `design/tokens/chase-tokens.css` TIER 1 — **only** file with raw hex; seed vendored `chase_tokens.css`; version header; values unchanged; publish `design/chase-tokens-v1.css` for `/design/chase-tokens-v1.css` | mlbma | **done** | Seed sha256 locked in `design/tokens/chase_tokens.vendor.css`. Live TIER 1 + published copy. `scripts/check_tokens.py` | File hash ≠ vendor hash (renamed primitives); values unchanged |
+| WP1-A2 | Rework `dashboard/mlbma_design_system.css` to TIER 2 semantic roles (`--mark-*`, `--value-*`, `--surface-*`, `--text-primary/secondary/meta/disabled`, `--metric-very-weak`…`--metric-elite` via var). Migrate `--surface-*` `/` `--r-*` `/` `--e-*` `/` `--s-*` into role names; aliases = `var()` not hex | mlbma | **done** | `mlbma_design_system.css` `:root` | Component **rule bodies** still contain decorative hex |
+| WP1-A3 | DELETE inline `:root` in `index.html` and `team_rankings.html`. Strip `var(...,#hex)` from `lineup_view.js` | mlbma | **done** | index / team_rankings / glossary `:root` palettes removed; `lineup_view.js` | Print `@media` `:root` remains. Mockup HTML `:root` allowlisted |
+| WP1-A4 | Fold `theme.css` into tier-2 **or** pure alias layer. One definition per token. No duplicate `--text`/`--bg`/`--v-bg` with different values | mlbma | **done** | `theme.css` `:root` is `var()` aliases | Chip class hex in rule bodies remain |
+| WP1-A5 | Single `DESIGN_LAYER_VERSION`; all pages same `?v=` for design-layer files | mlbma | **done** | stamp `20260908a`; `design/DESIGN_LAYER_VERSION`; `dashboard/design_layer_version.js`; `scripts/design_layer_version.py` | Non-design CSS/JS stamps stay heterogeneous |
 
 ### B. Enforcement (items 6–8)
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP1-B6 | `scripts/check_tokens.py`: fail raw hex in dashboard `*.css` **token definitions** / HTML style `:root` except tier 1; token defined outside owning tier / twice with conflicting values; design-layer `?v=` out of sync | mlbma | **in-progress** | CI `pages.yml` `token-guard` already calls this script | **Rule-body** hex stays informational (mature CSS); strict “any hex in any CSS” would fail the whole dashboard without a restyle |
-| WP1-B7 | Contrast unit test: `--text-*` and `--value-*` ≥4.5:1 on declared surfaces; no informative region under group opacity; seed measured numbers; wire unittest discover | mlbma | **in-progress** | `tests/test_contrast.py` | `--text-3` `#6E7383` **fails** 4.5:1 as body text — test **locks the measurement** and forbids promoting it to `--text-primary` or 50% group opacity. Palette not lightened (OOS-8) |
-| WP1-B8 | Publish path `design/chase-tokens-v1.css`. CORS via Pages `_headers` `Access-Control-Allow-Origin: *` for that path. No bundler | mlbma | **in-progress** | Root `_headers` (Cloudflare Pages) | CORS cannot be set “in the CSS package”; misconfigured `_headers` = cross-origin token fetch fails on model sites |
+| WP1-B6 | `scripts/check_tokens.py`: fail raw hex in dashboard `*.css` **token definitions** / HTML style `:root` except tier 1; token defined outside owning tier / twice with conflicting values; design-layer `?v=` out of sync | mlbma | **done** | `python3 scripts/check_tokens.py` OK; `pages.yml` `token-guard` | Rule-body hex informational (1348) |
+| WP1-B7 | Contrast unit test: `--text-*` and `--value-*` ≥4.5:1 on declared surfaces; no informative region under group opacity; seed measured numbers; wire unittest discover | mlbma | **done** | `tests/test_contrast.py`; 31 unittest OK | `--text-3` remains 3.89:1; usage not palette change |
+| WP1-B8 | Publish path `design/chase-tokens-v1.css`. CORS via Pages `_headers` `Access-Control-Allow-Origin: *` for that path. No bundler | mlbma | **done** | `_headers`; file at `design/chase-tokens-v1.css` | Live CORS only after a root Pages deploy |
 
 ### C. Other repos (items 9–11) — SKIP execute; 403
 
@@ -157,10 +157,12 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 
 | ID | Item | Owner | Status | Evidence | Leftover risk |
 |----|------|-------|--------|----------|----------------|
-| WP1-D12 | Amend contract §3.2/§3.3 with **dated 2026-09-08** scoped carve-out: within `dashboard/`, this programme may change navigation, routing, user controls, section count. Structure lock remains **outside** carve-out | mlbma | **in-progress** | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` | Agents may over-read carve-out as “rewrite the lineup DOM” — text must stay scoped |
-| WP1-D13 | Add PART 2 (modes, colour roles, five concepts, data honesty, density, enforcement) into that contract. Create design-doc **INDEX** marking Current / Product-specific / Medium-specific / Superseded. Do **not** rewrite mlb-model’s three contracts | mlbma | **in-progress** | `design/INDEX.md` | mlb-model contracts stay contradictory until WP6 |
+| WP1-D12 | Amend contract §3.2/§3.3 with **dated 2026-09-08** scoped carve-out: within `dashboard/`, this programme may change navigation, routing, user controls, section count. Structure lock remains **outside** carve-out | mlbma | **done** | `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` §3.2.1 | Over-read as rewrite lineup DOM |
+| WP1-D13 | Add PART 2 (modes, colour roles, five concepts, data honesty, density, enforcement) into that contract. Create design-doc **INDEX** marking Current / Product-specific / Medium-specific / Superseded. Do **not** rewrite mlb-model’s three contracts | mlbma | **done** | contract §18; `design/INDEX.md` | mlb-model contracts still contradictory until WP6 |
 
 **WP1 screenshots:** 375 + 1440 × index, team_rankings, team_profile. Port **8766** for preview; do not kill **8765**. Status filled after capture.
+
+> Note: commit `fd6ef4e` also added early WP3/WP5 files (`chase_datastatus.js`, `dashboard/sports/*`, `404.html`, `nfl/`/`cfb/`/`wnba/` stubs, `/render/` copies). That is **ahead of the WP1-only brief** (nav/routing was supposed to wait). Treat those as unvalidated scaffolding, not a WP3/WP5 done gate.
 
 ---
 
@@ -270,7 +272,7 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 | WP6-4 | Content-engine: `validate_bundle` | chase-content-engine | **not started** | | |
 | WP6-5 | Content-engine: metallic headings | chase-content-engine | **not started** | Match `--ca-metal-text` / contract §4 | |
 | WP6-6 | Write `CROSS_SPORT_RELEASE_REPORT.md` | mlbma | **not started** | | |
-| WP6-7 | Design-doc index already started in WP1-D13 | mlbma | **in-progress** | `design/INDEX.md` | |
+| WP6-7 | Design-doc index already started in WP1-D13 | mlbma | **done** | `design/INDEX.md` | |
 
 ---
 
@@ -417,3 +419,4 @@ curl -sS https://<sport-pages>/board.json | head
 | Date | Change |
 |------|--------|
 | 2026-09-08 | Created exhaustive living checklist from 2026-09-08 handoff + WP0 evidence + WP2 local patch inventory. WP1 rows set in-progress as implementation starts. |
+| 2026-09-08 | WP1 A/B/D marked **done** in mlbma (`20260908a`). WP1.C still 403. Note: `fd6ef4e` also shipped unvalidated WP3/WP5 scaffolding. |
