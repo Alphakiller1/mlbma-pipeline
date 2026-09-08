@@ -1,3 +1,13 @@
 User-agent: *
 Disallow: /dashboard/render/
 Disallow: /render/
+Disallow: /dashboard/team_rankings
+Disallow: /dashboard/team_rankings.html
+Disallow: /dashboard/team_profile
+Disallow: /dashboard/team_profile.html
+Disallow: /dashboard/pitcher_profile
+Disallow: /dashboard/pitcher_profile.html
+Disallow: /dashboard/bullpen_report
+Disallow: /dashboard/bullpen_report.html
+Disallow: /dashboard/reliever_profile
+Disallow: /dashboard/reliever_profile.html

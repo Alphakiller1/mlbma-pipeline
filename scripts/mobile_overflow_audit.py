@@ -34,12 +34,12 @@ from playwright.sync_api import sync_playwright
 # and redirect stubs (matchup_sheet.html) are intentionally excluded.
 DEFAULT_PAGES = [
     "dashboard/chase_analytics_mlb_oem_v7.html",
-    "dashboard/team_rankings.html?scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home",
+    "dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home",
     "dashboard/matchup_compare.html",
     "dashboard/batter_profile.html",
-    "dashboard/pitcher_profile.html",
-    "dashboard/bullpen_report.html",
-    "dashboard/team_profile.html",
+    "dashboard/render/pitcher_profile.html",
+    "dashboard/render/bullpen_report.html",
+    "dashboard/render/team_profile.html",
     "dashboard/glossary.html",
     "dashboard/index.html",
 ]

@@ -194,7 +194,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run runtime diagnostics on team_rankings lineup view.")
     parser.add_argument(
         "--base-url",
-        default="http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1",
+        default="http://127.0.0.1:8765/dashboard/render/team_rankings.html?hubdebug=1",
         help="Full URL to the team_rankings page.",
     )
     parser.add_argument("--timeout-ms", type=int, default=45000)

@@ -166,6 +166,26 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("ChaseDataStatus.fetchLastUpdated", profile)
         self.assertNotIn("gvizUrl('Last_Updated')", profile)
 
+    def test_demoted_public_pages_are_noindex_and_smoke_uses_render(self):
+        for name in (
+            "team_rankings.html",
+            "team_profile.html",
+            "pitcher_profile.html",
+            "bullpen_report.html",
+            "reliever_profile.html",
+        ):
+            html = (ROOT / "dashboard" / name).read_text(encoding="utf-8")
+            self.assertIn("noindex", html, name)
+        robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
+        self.assertIn("Disallow: /dashboard/team_rankings", robots)
+        workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+        self.assertIn("render/team_rankings.html", workflow)
+        self.assertNotIn("scope=team&team=NYY", workflow)
+        self.assertNotIn("branches: [master]", workflow.split("pull_request:", 1)[1][:80])
+        audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
+        self.assertIn("render/team_rankings.html", audit)
+        self.assertNotIn("scope=team&team=NYY", audit)
+
     def test_starters_rankings_registry_uses_render_route(self):
         engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")
         self.assertIn('"page": "render/pitcher_intelligence.html"', engine)
