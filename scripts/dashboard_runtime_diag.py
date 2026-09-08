@@ -30,7 +30,57 @@ def _parse_num(text: str) -> Optional[float]:
     return float(m.group(0)) if m else None
 
 
-def run_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> List[CheckResult]:
+def _is_home_url(base_url: str) -> bool:
+    path = (base_url or "").split("?", 1)[0].lower()
+    return path.rstrip("/").endswith("index.html") or path.rstrip("/").endswith("/dashboard")
+
+
+def run_home_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> List[CheckResult]:
+    """Opening dashboard boot — not LineupView. Home used to time out the rankings script."""
+    results: List[CheckResult] = []
+
+    def check(name: str, ok: bool, note: str = "") -> None:
+        results.append(CheckResult(name=name, ok=bool(ok), note=note))
+
+    with sync_playwright() as p:
+        launch_kwargs = {"headless": True}
+        if channel:
+            launch_kwargs["channel"] = channel
+        browser = p.chromium.launch(**launch_kwargs)
+        page = browser.new_page()
+        console_errors: List[str] = []
+        page_errors: List[str] = []
+        page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+        page.on("pageerror", lambda err: page_errors.append(str(err)))
+        page.goto(base_url, wait_until="domcontentloaded", timeout=timeout_ms)
+
+        try:
+            page.wait_for_selector(".chase-header, #chaseHeader", state="attached", timeout=timeout_ms)
+            check("chase nav mounted", True)
+        except PWTimeout:
+            check("chase nav mounted", False, "header never attached")
+
+        check("opening tools grid", page.locator(".ca-tools__grid").count() >= 1)
+        check("matchup compare CTA", page.locator("a[href='matchup_compare.html'], [onclick*='matchup_compare.html']").count() >= 1)
+        rankings_links = page.locator("a[href*='team_rankings.html']").count()
+        check("no public team_rankings href", rankings_links == 0, f"count={rankings_links}")
+        check("freshness slot", page.locator("#lastUpdated").count() >= 1)
+
+        if page_errors:
+            check("no uncaught page errors", False, " | ".join(page_errors[:3]))
+        else:
+            check("no uncaught page errors", True)
+        noisy = [e for e in console_errors if not is_ignorable_console(e)]
+        if noisy:
+            check("no console errors", False, " | ".join(noisy[:5]))
+        else:
+            check("no console errors", True)
+
+        browser.close()
+    return results
+
+
+def run_lineup_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> List[CheckResult]:
     results: List[CheckResult] = []
 
     def check(name: str, ok: bool, note: str = "") -> None:
@@ -190,12 +240,18 @@ def run_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> List[Ch
     return results
 
 
+def run_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> List[CheckResult]:
+    if _is_home_url(base_url):
+        return run_home_diagnostic(base_url, timeout_ms, channel)
+    return run_lineup_diagnostic(base_url, timeout_ms, channel)
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run runtime diagnostics on team_rankings lineup view.")
+    parser = argparse.ArgumentParser(description="Run runtime diagnostics on lineup view or opening home.")
     parser.add_argument(
         "--base-url",
-        default="http://127.0.0.1:8765/dashboard/team_rankings.html?hubdebug=1",
-        help="Full URL to the team_rankings page.",
+        default="http://127.0.0.1:8765/dashboard/render/team_rankings.html?hubdebug=1",
+        help="Full URL to team_rankings (default) or dashboard/index.html.",
     )
     parser.add_argument("--timeout-ms", type=int, default=45000)
     parser.add_argument(

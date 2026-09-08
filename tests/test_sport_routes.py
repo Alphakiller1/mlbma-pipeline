@@ -166,6 +166,37 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("ChaseDataStatus.fetchLastUpdated", profile)
         self.assertNotIn("gvizUrl('Last_Updated')", profile)
 
+    def test_demoted_public_pages_are_noindex_and_smoke_uses_render(self):
+        for name in (
+            "team_rankings.html",
+            "team_profile.html",
+            "pitcher_profile.html",
+            "bullpen_report.html",
+            "reliever_profile.html",
+        ):
+            html = (ROOT / "dashboard" / name).read_text(encoding="utf-8")
+            self.assertIn("noindex", html, name)
+        robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
+        self.assertIn("Disallow: /dashboard/team_rankings", robots)
+        workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+        self.assertIn("render/team_rankings.html", workflow)
+        self.assertIn("dashboard/index.html", workflow)
+        self.assertNotIn("scope=team&team=NYY", workflow)
+        self.assertNotIn("branches: [master]", workflow.split("pull_request:", 1)[1][:80])
+        audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
+        self.assertIn("render/team_rankings.html", audit)
+        self.assertNotIn("scope=team&team=NYY", audit)
+
+    def test_brand_assets_resolve_from_dashboard_root(self):
+        assets = (ROOT / "dashboard" / "mlbma_assets.js").read_text(encoding="utf-8")
+        self.assertIn("DASHBOARD_ASSET_ROOT", assets)
+        self.assertIn("brandAsset(", assets)
+        self.assertNotIn("iconFilled: 'assets/chase-icon-filled.png'", assets)
+        ui = (ROOT / "dashboard" / "mlbma_ui.js").read_text(encoding="utf-8")
+        self.assertIn("/dashboard/assets/chase-icon-filled.png", ui)
+        self.assertIn('querySelector(\'script[src*="mlbma_icons.js"]\')', ui)
+        self.assertNotIn("s.src = 'mlbma_icons.js", ui)
+
     def test_starters_rankings_registry_uses_render_route(self):
         engine = (ROOT / "outputs" / "content_engine.py").read_text(encoding="utf-8")
         self.assertIn('"page": "render/pitcher_intelligence.html"', engine)

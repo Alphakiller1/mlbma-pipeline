@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-08  
 **Repo:** `Alphakiller1/mlbma-pipeline`  
-**Branch:** `cursor/wp1-design-layer-4ee4` (draft PR #27)  
+**Branch:** `cursor/wp1-design-layer-4ee4` (draft PR #27; stacked #36–#38 merged into the trunk)  
 **Not a production release.** No merge to `master`, no Pages/Cloudflare production deploy, no live `chase-analytics.com` cutover.
 
 This report is the WP6-6 artefact **for this repo**. Items that live in other repositories are listed as blocked or out of scope, not as shipped.
@@ -15,8 +15,14 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | WP1 A/B/D token spine | Draft PR [#27](https://github.com/Alphakiller1/mlbma-pipeline/pull/27); `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; stamp `20260908b` |
 | Design-doc INDEX | `design/INDEX.md` (WP6-7) |
 | WP2 kits vendored (not applied to model remotes) | `docs/wp2-patches/` |
-| WP3 DataStatus + Last_Updated collapse | `dashboard/chase_datastatus.js` is the parser (`parseLastUpdatedCsv`, `fetchLastUpdated`). `mlbma_ui.js` footer, `chase_nav.js`, `index.html` `syncFreshnessIndicator` / `parseLastUpdatedFromText` consume it. **`formatClock()` removed.** Failed fetches render `unknown`, never a wall clock. Rankings ScopeBar hosts `#lvDataStatus`. NFL/CFB age uses 5-day stale window at view time. |
-| WP3 adapters `chase-board/1` | `dashboard/sports/chase_board.js` + thin `mlb.js`/`nfl.js`/`wnba.js`/`cfb.js`. Games map `kickoff_utc`, three margin channels, `edge_withheld_reason`, `priced`. MLB passes through `priced_markets` / `flagged_tiles` (Picks/Gems). Missing `board.json` is an error state. |
+| WP3 DataStatus + Last_Updated collapse | `ChaseDataStatus.fetchLastUpdated` is the only Last_Updated probe. Failed fetches render `unknown`. |
+| WP3 adapters + shell | `chase_board.js` + sport adapters; `ChaseShell` / Entity / ModelStatus. Sport builder no longer emits Python `None`. |
+| WP4 Pilot A | Matchup Compare ScopeBar: window/segment/family; stated starter/park context. |
+| WP4 Pilot B | `/{sport}/matchups.html` for MLB/NFL/WNBA/CFB; priced markets not labelled Picks. |
+| WP4A | Public Team Rankings 301 → Matchup Compare; `/render/` capture targets; public demoted pages `noindex`; runtime smoke hits `render/team_rankings.html`. |
+| WP5 | Real root `index.html` (`data-mode=entry`); `/{sport}/results.html` from `record.json`; `404.html`. |
+| WP6-1 mlb-model contracts | Done on mlb-model `main` (`docs/DESIGN_INDEX.md`). |
+| WP6 content-engine | Done on chase-content-engine `main` (bundled fonts, `validate_bundle`, no `or 0` fabricated OSI). |
 | WP4 Pilot B (NFL matchups) | `/nfl/matchups.html` from `scripts/build_sport_routes.py`: chase_nav hamburger, expandable evidence, model/market/published columns, `edge_withheld_reason`, priced markets labelled **not Picks**, authority as **text** via `ChaseModelStatus`. |
 | WP4A capture guards | `captureSlateRelax()` in `matchup_shared.js` (localhost, `/render/`, `hubdebug`/`capture`/`snapshot`). `render/pitcher_intelligence.html` sets `_captureBoot` and still mounts PitcherLab; `.pl-rank-table` can render from SP_Profiles when slate starters are empty. Capture script follows `.mc-slate-pick` and appends `hubdebug=1`. |
 | WP4A `/render/` copies + 301s + glossary | PR #27; root `_redirects` |
@@ -33,8 +39,8 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | Merge WP0/WP1 as a release | mlbma | **Must not** — draft PRs only |
 | Production deploy chase-analytics.com | pages | **Not done** |
 | 62 uncommitted files from the other machine | — | **Recovered** — commit `82a5012a` (170 files) is on origin; `docs/UNRECOVERED_WIP.md` |
-| WP1.C model-repo token/board.css / smokes | four model repos | **blocked** `cursor[bot]` 403 |
-| WP2 `board.json` producers on origin | mlb/wnba/cfb | **blocked** 403; kits only in this repo. Adapters tolerate missing JSON. |
+| WP1.C model-repo token/board.css / smokes | four model repos | **done on each `main`** (mlb-model #31, wnba #12, nfl-model #1, cfb #1) |
+| WP2 `board.json` producers | mlb/wnba | **code on `main`**; live Pages `board.json` still needs those deploys |
 | WP4A-5 PP-Gap glossary collision | mlbma | Copy started in WP1 PR; keep watching |
 | WP6-1 mlb-model three contracts | mlb-model | **Not this repo** — D-22 |
 | WP6-2…5 chase-content-engine fonts / `render.py` 571 & 613–615 / `validate_bundle` / metallic headings | chase-content-engine | **Not this repo** — D-23 |
@@ -53,7 +59,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 | Gate | Result |
 |------|--------|
-| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908b`; 1348 rule-body hex informational) |
+| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908g`) |
 | `python3 -m unittest discover -s tests -p 'test_*.py'` | **37 OK** |
 | `dashboard_runtime_diag.py` team_rankings **8766** | **13/14** — table/model PASS; leftover console CORS on Supabase from `127.0.0.1:8766` (snapshot still paints `.lv-table`). Same class of leftover as the prior 8766 render report. |
 | `scripts/capture_artifact_parity.py` **8766** | **9/9 required selectors OK** including render `.pl-rank-table` and compare banner/radar/offense/pitcher/bullpen |
