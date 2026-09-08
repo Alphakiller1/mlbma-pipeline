@@ -30,7 +30,10 @@ STAMPED = (
     "theme.css",
     "design_layer_version.js",
 )
-HTML_ROOT_ALLOW = ("mockup",)
+# Design mockups are unlinked scratch surfaces, not product. They are excluded
+# from both the HTML :root scan and the CSS scan below.
+MOCKUP_ALLOW = ("mockup",)
+HTML_ROOT_ALLOW = MOCKUP_ALLOW
 COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 STYLE_RE = re.compile(r"<style[^>]*>(.*?)</style>", re.DOTALL | re.I)
 ROOT_BLOCK_RE = re.compile(r":root\s*\{([^{}]*)\}", re.DOTALL)
@@ -95,6 +98,8 @@ def main() -> int:
 
     css_files = list(DASHBOARD.glob("*.css")) + list(DASHBOARD.glob("**/*.css"))
     for css_path in sorted(set(css_files)):
+        if any(tok in css_path.as_posix().lower() for tok in MOCKUP_ALLOW):
+            continue
         text = css_path.read_text(encoding="utf-8")
         defs = root_defs(text)
         for name, val in defs:
