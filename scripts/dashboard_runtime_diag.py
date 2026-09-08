@@ -12,7 +12,10 @@ from typing import List, Optional
 from playwright.sync_api import TimeoutError as PWTimeout
 from playwright.sync_api import sync_playwright
 
-from scripts.diag_console import is_ignorable_console
+try:
+    from scripts.diag_console import is_ignorable_console
+except ModuleNotFoundError:
+    from diag_console import is_ignorable_console
 
 
 @dataclass
