@@ -200,16 +200,32 @@
   }
 
   function writeUrl(state) {
-    var p = new URLSearchParams(location.search);
     var f = state.filter;
-    p.set('hand', f.hand); p.set('loc', f.location); p.set('pitch', f.pitcher); p.set('side', f.batSide);
-    p.set('seg', f.segment); p.set('window', f.window);
-    p.set('family', state.family);
-    p.set('sort', state.sortKey); p.set('dir', state.sortDir);
-    p.delete('scope');
-    p.delete('team');
-    p.delete('trend');
-    history.pushState(null, '', location.pathname + '?' + p.toString() + location.hash);
+    var current = new URLSearchParams(location.search);
+    var defaults = {
+      hand: DEFAULTS.filter.hand,
+      loc: DEFAULTS.filter.location,
+      pitch: DEFAULTS.filter.pitcher,
+      side: DEFAULTS.filter.batSide,
+      seg: DEFAULTS.filter.segment,
+      window: DEFAULTS.filter.window,
+      family: DEFAULTS.family,
+      sort: defaultSortKeyForFamily(state.family),
+      dir: DEFAULTS.sortDir
+    };
+    var params = {
+      hand: f.hand, loc: f.location, pitch: f.pitcher, side: f.batSide,
+      seg: f.segment, window: f.window, family: state.family,
+      sort: state.sortKey, dir: state.sortDir
+    };
+    var omitted = (global.ChaseScopeBar && ChaseScopeBar.omitDefaults)
+      ? ChaseScopeBar.omitDefaults(params, defaults)
+      : params;
+    var p = new URLSearchParams();
+    if (current.has('hubdebug')) p.set('hubdebug', current.get('hubdebug'));
+    Object.keys(omitted).forEach(function (k) { p.set(k, omitted[k]); });
+    var q = p.toString();
+    history.pushState(null, '', location.pathname + (q ? '?' + q : '') + location.hash);
   }
 
   function nonDefaultTokens(state) {
@@ -463,6 +479,7 @@
         context: statedContextHtml(state),
         summary: 'Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong>',
         confidence: confidenceHtml(state),
+        resetLabel: 'Reset scope',
         count: filterCount(state)
       });
       bindRankingsDataStatus(bar);
@@ -625,6 +642,12 @@
             ctx.state.filter.hand = 'both';
             ctx.state.filter.batSide = 'both';
           }
+          normalizeSortState(ctx.state);
+          rerender(root, ctx);
+        } else if (a === 'scope-reset') {
+          ctx._userInteracted = true;
+          ctx.state.filter = Object.assign({}, DEFAULTS.filter);
+          ctx.state.family = DEFAULTS.family;
           normalizeSortState(ctx.state);
           rerender(root, ctx);
         }

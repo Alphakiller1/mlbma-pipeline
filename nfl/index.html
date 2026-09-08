@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFL — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908d">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908d">
-  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908d">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908d">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908g">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="nfl">
@@ -97,24 +97,30 @@
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async">Loading NFL board…</div>
   </main>
-  <script src="/dashboard/design_layer_version.js?v=20260908d"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908f"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908e"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908e"></script>
-  <script src="/dashboard/sports/nfl.js?v=20260908e"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908e"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908e"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260908g"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908g"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908g"></script>
+  <script src="/dashboard/sports/chase_board.js?v=20260908g"></script>
+  <script src="/dashboard/sports/nfl.js?v=20260908g"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908g"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908g"></script>
+  <script src="/dashboard/chase_shell.js?v=20260908g"></script>
+  <script src="/dashboard/chase_entity.js?v=20260908g"></script>
+  <script src="/dashboard/chase_metric.js?v=20260908g"></script>
+  <script src="/dashboard/chase_modelstatus.js?v=20260908g"></script>
+  <script src="/dashboard/chase_scope.js?v=20260908g"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportNFL;
-  window.CHASE_SPORT_ID = 'nfl';
-  window.CHASE_SPORT_PICKS_LABEL = 'Priced markets';
-  window.CHASE_SPORT_GEMS_LABEL = None;
+  window.CHASE_SPORT_ID = "nfl";
+  window.CHASE_SPORT_PICKS_LABEL = "Priced markets";
+  window.CHASE_SPORT_GEMS_LABEL = null;
   window.CHASE_SPORT_IS_MATCHUPS = false;
   
 (function () {
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseSportSelect) {
+  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'index', search: false });
+  else if (window.ChaseSportSelect) {
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'index' });
   }
@@ -123,6 +129,7 @@
     if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'adapter missing');
     return;
   }
+  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
   Promise.all([
     fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
@@ -133,6 +140,14 @@
       return;
     }
     var nb = adapter.normalize(board);
+    if (window.ChaseModelStatus) {
+      ChaseModelStatus.render(document.getElementById('modelStatus'), {
+        authority: nb.authority.level,
+        may_bet: nb.authority.may_bet,
+        unmet_gates: nb.authority.unmet_gates,
+        evidence: nb.authority.evidence
+      });
+    }
     if (window.ChaseDataStatus) {
       ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
         return {

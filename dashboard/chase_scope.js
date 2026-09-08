@@ -1,5 +1,30 @@
+/**
+ * ScopeBar — compact active-scope summary, mobile <details>, GET-form default omission.
+ * Structure borrowed from SCL; palette and fonts are Chase tokens only.
+ */
 (function (global) {
   'use strict';
+
+  function omitDefaults(params, defaults) {
+    params = params || {};
+    defaults = defaults || {};
+    var out = {};
+    Object.keys(params).forEach(function (k) {
+      var v = params[k];
+      if (v == null || v === '') return;
+      if (Object.prototype.hasOwnProperty.call(defaults, k) && String(defaults[k]) === String(v)) return;
+      out[k] = v;
+    });
+    return out;
+  }
+
+  function searchFrom(params, defaults) {
+    var kept = omitDefaults(params, defaults);
+    var p = new URLSearchParams();
+    Object.keys(kept).forEach(function (k) { p.set(k, kept[k]); });
+    var s = p.toString();
+    return s ? '?' + s : '';
+  }
 
   function ensureStyles() {
     if (document.getElementById('chaseScopeBarStyles')) return;
@@ -18,6 +43,7 @@
       + '.ca-scopebar-context strong{color:var(--text);font-variant-numeric:tabular-nums}'
       + '.ca-scopebar-confidence{font-size:11px;color:var(--text-3);margin:6px 0 0;line-height:1.45}'
       + '.ca-scopebar-status{margin:8px 0 0}'
+      + '.ca-scopebar-reset{min-height:44px;margin-top:8px}'
       + '@media(max-width:767px){'
       + '.ca-scopebar-mobile{display:block;margin:0 0 8px}'
       + '.ca-scopebar-mobile summary{cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);list-style:none;min-height:44px;display:flex;align-items:center}'
@@ -35,18 +61,26 @@
     var confidence = opts.confidence || '';
     var count = opts.count || 0;
     var dataStatus = opts.dataStatusHtml || '<div id="lvDataStatus" class="ca-datastatus" data-state="unknown"></div>';
+    var reset = opts.resetLabel
+      ? '<button type="button" class="hub-pill ca-scopebar-reset" data-a="scope-reset">' + opts.resetLabel + '</button>'
+      : '';
     el.className = 'ca-scopebar';
     el.innerHTML =
       '<details class="ca-scopebar-mobile"' + (count ? ' open' : '') + '>' +
-      '<summary>Filters' + (count ? ' (' + count + ')' : '') + '</summary></details>' +
-      '<div class="ca-scopebar-form">' +
+      '<summary>Filters' + (count ? ' (' + count + ')' : '') + (summary ? ' · ' + summary.replace(/<[^>]+>/g, '') : '') + '</summary></details>' +
+      '<form class="ca-scopebar-form" method="get" action="">' +
       controls.join('') +
+      reset +
       '<div class="ca-scopebar-status">' + dataStatus + '</div>' +
       (context ? '<p class="ca-scopebar-context">' + context + '</p>' : '') +
       (summary ? '<p class="ca-scopebar-summary">' + summary + '</p>' : '') +
       (confidence ? '<p class="ca-scopebar-confidence">' + confidence + '</p>' : '') +
-      '</div>';
+      '</form>';
+    var form = el.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function (e) { e.preventDefault(); });
+    }
   }
 
-  global.ChaseScopeBar = { render: render };
+  global.ChaseScopeBar = { render: render, omitDefaults: omitDefaults, searchFrom: searchFrom };
 })(typeof window !== 'undefined' ? window : this);

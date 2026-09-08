@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFL Matchups — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908d">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908d">
-  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908d">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908d">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908g">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908g">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="nfl">
@@ -97,29 +97,34 @@
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async">Loading NFL board…</div>
   </main>
-  <script src="/dashboard/design_layer_version.js?v=20260908d"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908f"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908e"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908e"></script>
-  <script src="/dashboard/sports/nfl.js?v=20260908e"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908e"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908e"></script>
-  <script src="/dashboard/chase_modelstatus.js?v=20260908b"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908b"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260908g"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908g"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908g"></script>
+  <script src="/dashboard/sports/chase_board.js?v=20260908g"></script>
+  <script src="/dashboard/sports/nfl.js?v=20260908g"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908g"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908g"></script>
+  <script src="/dashboard/chase_shell.js?v=20260908g"></script>
+  <script src="/dashboard/chase_entity.js?v=20260908g"></script>
+  <script src="/dashboard/chase_metric.js?v=20260908g"></script>
+  <script src="/dashboard/chase_modelstatus.js?v=20260908g"></script>
+  <script src="/dashboard/chase_scope.js?v=20260908g"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportNFL;
-  window.CHASE_SPORT_ID = 'nfl';
-  window.CHASE_SPORT_PICKS_LABEL = 'Priced markets';
-  window.CHASE_SPORT_GEMS_LABEL = None;
+  window.CHASE_SPORT_ID = "nfl";
+  window.CHASE_SPORT_PICKS_LABEL = "Priced markets";
+  window.CHASE_SPORT_GEMS_LABEL = null;
   window.CHASE_SPORT_IS_MATCHUPS = true;
   
 (function () {
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseSportSelect) {
+  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'matchups', search: true });
+  else if (window.ChaseSportSelect) {
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'matchups' });
   }
+  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
   function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
   function dash(v, reason) {
     if (v == null || v === '') return '<span title="' + esc(reason || 'unavailable') + '">—</span>';
@@ -162,8 +167,12 @@
     var html = '<p class="ca-helper">Priced markets: ' + priced + ' of ' + nb.games.length + ' — not Picks.</p>';
     html += '<div class="ca-board-list">';
     nb.games.forEach(function (g, idx) {
-      html += '<article class="ca-card" style="margin-bottom:12px" data-game="' + esc(g.id) + '">';
-      html += '<h2>' + esc(g.away) + ' @ ' + esc(g.home) + '</h2>';
+      html += '<article class="ca-card" data-game="' + esc(g.id) + '">';
+      html += '<h2>';
+      html += window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away);
+      html += ' @ ';
+      html += window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home);
+      html += '</h2>';
       html += '<p class="ca-helper">' + esc(g.kickoff_display || g.kickoff_utc || 'kickoff unknown') + '</p>';
       html += '<div class="ca-nfl-channels">';
       html += '<div class="ca-nfl-channel"><h3>Model</h3><p>' + dash(g.model_margin) + '</p></div>';

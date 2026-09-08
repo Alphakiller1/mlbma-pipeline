@@ -192,8 +192,9 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 | WP3-5 | Freshness at **view time** for NFL 5-day stale | mlbma | **done** | `freshnessFromAsOf` + `bindResume` on sport hubs | Producer not blamed |
 | WP3-6 | No JS date logic on model pages | models | **not started** | D-19 | |
 | WP3-7 | Design acceptance: do **not** port NFL contrast/group-opacity | all | **done** (constraint held) | D-20 / WP1-B7 numbers | |
-| WP3-8 | Verify widths 375 / 390 / 768 / 1024 / 1440, keyboard, 200% zoom, reduced motion | mlbma | **done** (375/390/768/1024/1440 Prompt 3 screenshots; CI 360/375/390) | Port 8766 | Keyboard / 200% / reduced-motion still manual |
-| WP3-9 | Every new file listed in PR | mlbma | **done** | PR #27 file list | |
+| WP3-8 | Verify widths 375 / 390 / 768 / 1024 / 1440, keyboard, 200% zoom, reduced motion | mlbma | **in-progress** | Sport hubs + NFL matchups now mount `ChaseShell`; width/a11y still manual | Keyboard / 200% / reduced-motion still manual |
+| WP3-9 | Shared shell modules (not stubs) | mlbma | **done** | `chase_shell.js`, `chase_entity.js`, `chase_metric.js`, `chase_asyncstate.js`, `chase_modelstatus.js`, `chase_scope.js` omitDefaults | Sport builder emits `null` not Python `None` |
+| WP3-10 | ScopeBar default-omission + popstate | mlbma | **done** | `lineup_view.js` `writeUrl` omits defaults, keeps `hubdebug`, `pushState` + existing `popstate` | |
 
 **DataStatus four fields (contract for implementer):**
 
@@ -424,3 +425,4 @@ curl -sS https://<sport-pages>/board.json | head
 | 2026-09-08 | WP1 A/B/D marked **done** in mlbma (`20260908a`). WP1.C still 403. Note: `fd6ef4e` also shipped unvalidated WP3/WP5 scaffolding. |
 | 2026-09-08 | D-08 hunt logged; WP4 Pilot A dual-render lens; pitching render mount; artifact NOW captures; WP6-6 report. Still no production deploy. |
 | 2026-09-08 | Prompt 3 QA: stamp `20260908d`; Last_Updated fetch unified on `ChaseDataStatus.fetchLastUpdated`; `starters_rankings` registry points at `render/pitcher_intelligence.html`; wrangler.toml excluded from upload; WP3/WP5 rows match shipped scaffolding. |
+| 2026-09-08 | WP3 shared foundation: ChaseShell/Entity/Metric/AsyncState/ModelStatus; ScopeBar omitDefaults; sport builder emits JSON `null`; Matchup Compare `data-mode=evidence`. |
