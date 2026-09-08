@@ -1,0 +1,161 @@
+{
+  "notes": [
+    "hero card pair: CLE@BAL",
+    "compare url: http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CHC&home=MIA&hubdebug=1&snapshot=1"
+  ],
+  "results": [
+    {
+      "key": "team_rankings",
+      "url": "http://127.0.0.1:8766/dashboard/render/team_rankings.html?family=scoring&window=L30",
+      "selector": ".lv-table",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1324,
+        "h": 1429.25,
+        "bytes": 443672
+      },
+      "pass2": {
+        "w": 1324,
+        "h": 1429.25,
+        "bytes": 443672
+      }
+    },
+    {
+      "key": "starters_rankings",
+      "url": "http://127.0.0.1:8766/dashboard/render/pitcher_intelligence.html?capture=1&hubdebug=1",
+      "selector": ".pl-rank-table",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1374,
+        "h": 1362,
+        "bytes": 660401
+      },
+      "pass2": {
+        "w": 1374,
+        "h": 1362,
+        "bytes": 660401
+      }
+    },
+    {
+      "key": "starters_rankings_index",
+      "url": "http://127.0.0.1:8766/dashboard/index.html#section-research-lab",
+      "selector": ".pl-rank-table",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1242,
+        "h": 1012.25,
+        "bytes": 336651
+      },
+      "pass2": {
+        "w": 1242,
+        "h": 1012.25,
+        "bytes": 336651
+      }
+    },
+    {
+      "key": "card",
+      "url": "http://127.0.0.1:8766/dashboard/index.html#section-matchups-hero",
+      "selector": ".hero-matchup-card",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 431.328125,
+        "h": 589.09375,
+        "bytes": 259212
+      },
+      "pass2": {
+        "w": 431.328125,
+        "h": 589.09375,
+        "bytes": 259212
+      }
+    },
+    {
+      "key": "banner",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CHC&home=MIA&hubdebug=1&snapshot=1",
+      "selector": ".mc-header",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1140,
+        "h": 182,
+        "bytes": 57521
+      },
+      "pass2": {
+        "w": 1140,
+        "h": 182,
+        "bytes": 57521
+      }
+    },
+    {
+      "key": "radar",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CHC&home=MIA&hubdebug=1&snapshot=1",
+      "selector": ".mc-radar-duo",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1140,
+        "h": 391,
+        "bytes": 121127
+      },
+      "pass2": {
+        "w": 1140,
+        "h": 391,
+        "bytes": 121127
+      }
+    },
+    {
+      "key": "offense",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CHC&home=MIA&hubdebug=1&snapshot=1",
+      "selector": ".mc-os-duo",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1140,
+        "h": 775.5625,
+        "bytes": 176569
+      },
+      "pass2": {
+        "w": 1140,
+        "h": 775.5625,
+        "bytes": 176569
+      }
+    },
+    {
+      "key": "pitcher",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CHC&home=MIA&hubdebug=1&snapshot=1&compare=lvP&lvpLineup=away&lvpPitcher=home",
+      "selector": ".mc-lvp-section",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1140,
+        "h": 868.484375,
+        "bytes": 293739
+      },
+      "pass2": {
+        "w": 1140,
+        "h": 868.484375,
+        "bytes": 293739
+      }
+    },
+    {
+      "key": "bullpen",
+      "url": "http://127.0.0.1:8766/dashboard/matchup_compare.html?away=CHC&home=MIA&hubdebug=1&snapshot=1&compare=lvB&lvbLineup=away&lvbBp=home",
+      "selector": ".mc-lvb-section",
+      "ok": true,
+      "error": "",
+      "pass1": {
+        "w": 1140,
+        "h": 727.015625,
+        "bytes": 177513
+      },
+      "pass2": {
+        "w": 1140,
+        "h": 727.015625,
+        "bytes": 177513
+      }
+    }
+  ]
+}

@@ -3,26 +3,14 @@
  * Must load last in <head>.
  */
 :root {
-  --ca-bg-photo-outfield: url('assets/backgrounds/stadium-outfield-night.png');
-  --ca-bg-photo-catcher: url('assets/backgrounds/stadium-catcher-view.png');
-  --ca-bg-photo-plate: url('assets/backgrounds/stadium-plate-pov.png');
-  --ca-bg-base: #08090f;
-  --ca-bg-scrim: linear-gradient(
-    180deg,
-    rgba(5, 6, 14, 0.78) 0%,
-    rgba(8, 9, 15, 0.52) 42%,
-    rgba(8, 9, 15, 0.62) 72%,
-    rgba(5, 5, 12, 0.82) 100%
-  );
-  --ca-bg-scrim-opening: linear-gradient(
-    180deg,
-    rgba(5, 6, 14, 0.58) 0%,
-    rgba(8, 9, 15, 0.34) 38%,
-    rgba(8, 9, 15, 0.44) 68%,
-    rgba(5, 5, 12, 0.68) 100%
-  );
-  --ca-bg-violet-top: radial-gradient(ellipse 80% 52% at 76% 0%, rgba(124, 77, 255, 0.12), transparent 62%);
-  --ca-bg-violet-bottom: radial-gradient(ellipse 85% 55% at 8% 106%, rgba(91, 43, 224, 0.08), transparent 60%);
+  --ca-bg-photo-outfield: url('assets/backgrounds/stadium-outfield-night.jpg');
+  --ca-bg-photo-catcher: url('assets/backgrounds/stadium-catcher-view.jpg');
+  --ca-bg-photo-plate: url('assets/backgrounds/stadium-plate-pov.jpg');
+  --ca-bg-base: var(--ca-ink-950);
+  --ca-bg-scrim: var(--ca-grad-bg-scrim);
+  --ca-bg-scrim-opening: var(--ca-grad-bg-scrim-opening);
+  --ca-bg-violet-top: var(--ca-grad-violet-top);
+  --ca-bg-violet-bottom: var(--ca-grad-violet-bottom);
 }
 
 html:has(body.opening-dashboard),

@@ -19,16 +19,29 @@
     return (ESPN_ABBR_MAP[upper] || upper).toLowerCase();
   }
 
+  /** Dashboard-root URLs so /dashboard/render/ capture pages do not 404 brand PNGs. */
+  var DASHBOARD_ASSET_ROOT = (function () {
+    var path = (typeof location !== 'undefined' && location.pathname) ? location.pathname : '/dashboard/';
+    var marker = '/dashboard/';
+    var i = path.indexOf(marker);
+    if (i >= 0) return path.slice(0, i + marker.length);
+    return '/dashboard/';
+  })();
+
+  function brandAsset(file) {
+    return DASHBOARD_ASSET_ROOT + 'assets/' + file;
+  }
+
   /** @see dashboard/assets/.gitkeep — four brand styles */
   var BRAND = {
-    icon: 'assets/chase-icon-filled.png',
-    logoNavDark: 'assets/chase-logo-horizontal.png',
-    logoHorizontalLight: 'assets/chase-logo-horizontal-light.png',
-    logoStackedLight: 'assets/chase-logo-stacked-light.png',
-    iconOutline: 'assets/chase-icon-outline.png',
-    iconFilled: 'assets/chase-icon-filled.png',
-    logoNav: 'assets/chase-logo-horizontal.png',
-    logoHero: 'assets/chase-logo-horizontal.png'
+    icon: brandAsset('chase-icon-filled.png'),
+    logoNavDark: brandAsset('chase-logo-horizontal.png'),
+    logoHorizontalLight: brandAsset('chase-logo-horizontal-light.png'),
+    logoStackedLight: brandAsset('chase-logo-stacked-light.png'),
+    iconOutline: brandAsset('chase-icon-outline.png'),
+    iconFilled: brandAsset('chase-icon-filled.png'),
+    logoNav: brandAsset('chase-logo-horizontal.png'),
+    logoHero: brandAsset('chase-logo-horizontal.png')
   };
 
   var AVATAR_SIZES = {
@@ -851,21 +864,21 @@
       key: 'matchups',
       label: 'Matchups',
       desc: "Today's slate, starters, and lineup edges.",
-      href: 'chase_analytics_mlb_oem_v7.html#section-matchups-hero',
+      href: 'index.html#section-matchups-hero',
       icon: 'swords'
     },
     {
       key: 'rankings',
-      label: 'Team Rankings',
-      desc: 'Scoring, difficulty, and status-projection tables.',
-      href: 'team_rankings.html',
+      label: 'Matchup Analysis',
+      desc: 'League rank inside the matchup. Window and segment stay free.',
+      href: 'matchup_compare.html',
       icon: 'trophy'
     },
     {
       key: 'research',
-      label: 'Research Lab',
-      desc: 'Trends, compare, and pitcher intelligence.',
-      href: 'chase_analytics_mlb_oem_v7.html#section-research-lab',
+      label: 'Trends',
+      desc: 'Form heatmap vs YTD — still a public research surface.',
+      href: 'index.html#section-research-lab',
       icon: 'flask-conical'
     }
   ];
@@ -997,7 +1010,7 @@
 
   function loadLeagueBaselines() {
     if (typeof fetch !== 'function') return Promise.resolve(null);
-    return fetch('league_baselines.json?_=' + Date.now())
+    return fetch('/dashboard/league_baselines.json?_=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) { if (d) applyLeagueBaselines(d); return d; })
       .catch(function() { return null; });

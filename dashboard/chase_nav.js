@@ -1,6 +1,6 @@
-// Three-view navigation: opening, matchups, and research.
+// v20260523d � three-view nav: opening / matchups / research
 /**
- * Chase Analytics navigation: dropdowns, mobile menu, active page, pipeline timestamp.
+ * Chase Analytics navigation � dropdowns, mobile menu, active page, pipeline timestamp.
  */
 (function () {
   'use strict';
@@ -44,106 +44,63 @@
   var mobileOverlay = document.getElementById('mobileOverlay');
   var mobileMenu = document.getElementById('mobileMenu');
   var mobileClose = document.getElementById('mobileClose');
-  var lastFocusedElement = null;
-
-  function mobileMenuFocusables() {
-    if (!mobileMenu) return [];
-    return Array.prototype.slice.call(
-      mobileMenu.querySelectorAll('a[href], button:not([disabled])')
-    ).filter(function (el) {
-      return el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null;
-    });
-  }
-
-  function mobileMenuIsOpen() {
-    return !!(mobileMenu && mobileMenu.classList.contains('open'));
-  }
 
   function openMobileMenu() {
     if (!hamburger || !mobileOverlay || !mobileMenu) return;
-    lastFocusedElement = document.activeElement;
     hamburger.classList.add('open');
     hamburger.setAttribute('aria-expanded', 'true');
     mobileOverlay.style.display = 'block';
-    mobileOverlay.setAttribute('aria-hidden', 'false');
     mobileMenu.style.display = 'block';
     mobileMenu.setAttribute('aria-hidden', 'false');
     void mobileOverlay.offsetHeight;
     mobileOverlay.classList.add('open');
     mobileMenu.classList.add('open');
     document.body.style.overflow = 'hidden';
-    if (mobileClose) mobileClose.focus();
   }
 
-  function closeMobileMenu(restoreFocus) {
+  function closeMobileMenu() {
     if (!hamburger || !mobileOverlay || !mobileMenu) return;
     hamburger.classList.remove('open');
     hamburger.setAttribute('aria-expanded', 'false');
     mobileOverlay.classList.remove('open');
-    mobileOverlay.setAttribute('aria-hidden', 'true');
     mobileMenu.classList.remove('open');
     mobileMenu.setAttribute('aria-hidden', 'true');
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
     setTimeout(function () {
       mobileOverlay.style.display = 'none';
-      mobileMenu.style.display = '';
     }, 200);
-    if (restoreFocus !== false && lastFocusedElement && lastFocusedElement.focus) {
-      lastFocusedElement.focus();
-    }
   }
 
   if (hamburger) {
     hamburger.setAttribute('aria-expanded', 'false');
     hamburger.addEventListener('click', openMobileMenu);
   }
-  if (mobileClose) mobileClose.addEventListener('click', function () { closeMobileMenu(); });
-  if (mobileOverlay) mobileOverlay.addEventListener('click', function () { closeMobileMenu(); });
-  if (mobileMenu) {
-    mobileMenu.querySelectorAll('a[href]').forEach(function (link) {
-      link.addEventListener('click', function () { closeMobileMenu(false); });
-    });
-  }
+  if (mobileClose) mobileClose.addEventListener('click', closeMobileMenu);
+  if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Tab' && mobileMenuIsOpen()) {
-      var focusables = mobileMenuFocusables();
-      if (!focusables.length) {
-        e.preventDefault();
-        return;
-      }
-      var first = focusables[0];
-      var last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
     if (e.key === 'Escape') {
       dropdowns.forEach(function (dropdown) {
         dropdown.classList.remove('open');
         var t = dropdown.querySelector('.chase-nav-link');
         if (t) t.setAttribute('aria-expanded', 'false');
       });
-      if (mobileMenuIsOpen()) {
-        e.preventDefault();
-        closeMobileMenu();
-      }
+      closeMobileMenu();
     }
-  });
-
-  window.addEventListener('resize', function () {
-    if (window.innerWidth >= 768 && mobileMenuIsOpen()) closeMobileMenu(false);
   });
 
   function currentPageName() {
     var path = window.location.pathname || '';
     var parts = path.split('/').filter(Boolean);
     return parts.length ? parts[parts.length - 1] : 'index.html';
+  }
+
+  // The opening dashboard is the site home. Recognise it whether served at the
+  // clean root (index.html / "") or via the legacy filename URL.
+  function isOpeningPage(page) {
+    return page === 'index.html' || page === '' ||
+           page === 'chase_analytics_mlb_oem_v7.html' || page === 'chase_analytics_mlb_oem_v7';
   }
 
   function navTargetKey(href) {
@@ -156,7 +113,7 @@
       pathPart = href.slice(0, hi);
     }
     var page = pathPart.split('/').pop() || '';
-  if (page === 'chase_analytics_mlb_oem_v7.html' || page === '') {
+    if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       if (!hash) return 'opening';
@@ -170,7 +127,7 @@
   function currentNavKey() {
     var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
-    if (page === 'chase_analytics_mlb_oem_v7.html') {
+    if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
       return 'opening';
@@ -191,10 +148,8 @@
       var key = dataNav || navTargetKey(href);
       if (key && key === currentKey) {
         link.classList.add('active');
-        link.setAttribute('aria-current', 'page');
       } else {
         link.classList.remove('active');
-        link.removeAttribute('aria-current');
       }
     });
 
@@ -205,11 +160,9 @@
       var href = link.getAttribute('href');
       link.style.background = '';
       link.style.color = '';
-      link.removeAttribute('aria-current');
       if (href && href.split('/').pop().split('?')[0] === profilePage) {
         link.style.background = 'rgba(124, 58, 237, 0.15)';
         link.style.color = '#9A6BFF';
-        link.setAttribute('aria-current', 'page');
         var dropdown = link.closest('.chase-dropdown');
         if (dropdown) {
           var trig = dropdown.querySelector('.chase-nav-link');
@@ -224,10 +177,8 @@
       var key = dataNav || navTargetKey(href);
       if (key && key === currentKey) {
         link.classList.add('active');
-        link.setAttribute('aria-current', 'page');
       } else {
         link.classList.remove('active');
-        link.removeAttribute('aria-current');
       }
     });
   }
@@ -236,7 +187,7 @@
   window.addEventListener('hashchange', setActivePage);
 
   function syncDashboardViewFromNav(hash) {
-    if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
+    if (!isOpeningPage(currentPageName())) return;
     if (hash) window.location.hash = hash;
     var sync = window.syncDashboardView;
     if (typeof sync === 'function') sync();
@@ -253,12 +204,12 @@
       var pathPart = href.slice(0, hashIdx);
       var targetPage = pathPart.split('/').pop() || 'chase_analytics_mlb_oem_v7.html';
       if (targetPage !== 'chase_analytics_mlb_oem_v7.html') return;
-      if (currentPageName() !== 'chase_analytics_mlb_oem_v7.html') return;
+      if (!isOpeningPage(currentPageName())) return;
       e.preventDefault();
       window.location.hash = hash;
       syncDashboardViewFromNav(hash);
       setActivePage();
-      closeMobileMenu(false);
+      closeMobileMenu();
     });
   }
 
@@ -267,7 +218,7 @@
   function setTimestampText(text) {
     var el = document.getElementById('lastUpdated');
     var mobile = document.getElementById('mobileLastUpdated');
-    var display = (!text || text === '--') ? 'Syncing' : text;
+    var display = (!text || text === '--' || text === '�') ? 'syncing�' : text;
     if (el) el.textContent = display;
     if (mobile) mobile.textContent = display;
     if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
@@ -275,72 +226,46 @@
     }
   }
 
-  function formatClock() {
-    var now = new Date();
-    var timeStr = now.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+  function rewriteSportRootNavHrefs() {
+    var path = window.location.pathname || '';
+    if (!/^\/(nfl|cfb|wnba|mlb)(\/|$)/i.test(path)) return;
+    var dash = '/dashboard/';
+    document.querySelectorAll('.chase-header a[href], .chase-mobile-menu a[href]').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (!href || href.charAt(0) === '/' || href.indexOf('http') === 0) return;
+      a.setAttribute('href', dash + href);
     });
-    var dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    return dateStr + ' ' + timeStr;
+    document.querySelectorAll('.chase-header img[src], .chase-mobile-menu img[src]').forEach(function (img) {
+      var src = img.getAttribute('src') || '';
+      if (!src || src.charAt(0) === '/' || src.indexOf('http') === 0) return;
+      img.setAttribute('src', dash + src);
+    });
   }
+  rewriteSportRootNavHrefs();
 
-  function parseSheetTimestamp(raw) {
-    if (!raw) return null;
-    var s = String(raw).trim();
-    var d = new Date(s);
-    if (!isNaN(d.getTime())) return d;
-    return null;
-  }
-
-  function hoursSince(d) {
-    return (Date.now() - d.getTime()) / (1000 * 60 * 60);
-  }
-
-  function applyPipelineFromDate(d) {
-    if (!d) return;
-    var stale = hoursSince(d) > 24;
-    window.ChaseNav.setPipelineStatus(stale ? 'stale' : 'fresh');
-    setTimestampText(
-      d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-        ' ' +
-        d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-    );
-  }
-
-  async function loadLastUpdatedFromSheet() {
-    var cfg = window.MLBMA_CONFIG;
-    var sid = cfg && cfg.SHEET_ID;
-    var tab =
-      cfg && cfg.SHEET_TABS && (cfg.SHEET_TABS.last_updated || cfg.SHEET_TABS.Last_Updated);
-    if (!sid || !tab) {
-      setTimestampText(formatClock());
-      return;
+  function applyDataStatusFields(fields) {
+    fields = fields || (window.ChaseDataStatus && ChaseDataStatus.unknownFields()) || { state: 'unknown' };
+    var host = document.getElementById('navDataStatus') || document.getElementById('lastUpdated');
+    var painted = window.ChaseDataStatus
+      ? ChaseDataStatus.render(host, fields)
+      : { age: 'unknown', state: 'unknown' };
+    window.ChaseNav.setPipelineStatus(painted.state === 'ok' ? 'fresh' : 'stale');
+    var mobile = document.getElementById('mobileLastUpdated');
+    if (mobile && painted.age) mobile.textContent = painted.age;
+    if (window.PlatformDashboard && PlatformDashboard.setOpeningHeroSync) {
+      PlatformDashboard.setOpeningHeroSync(painted.age || 'unknown');
     }
-    try {
-      var url =
-        'https://docs.google.com/spreadsheets/d/' +
-        sid +
-        '/gviz/tq?tqx=out:csv&sheet=' +
-        encodeURIComponent(tab);
-      var res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) throw new Error('sheet');
-      var text = await res.text();
-      var line = (text || '').trim().split('\n')[1] || '';
-      var raw = line.split(',')[0].replace(/^"|"$/g, '').trim();
-      var d = parseSheetTimestamp(raw);
-      if (d) {
-        applyPipelineFromDate(d);
-        return;
-      }
-      if (raw) {
-        window.ChaseNav.setLastUpdated(raw);
-      }
-    } catch (e) {
-      /* fallback */
+  }
+
+  function loadLastUpdatedFromSheet() {
+    if (!window.ChaseDataStatus || !ChaseDataStatus.fetchLastUpdated) {
+      setTimestampText('unknown');
+      window.ChaseNav.setPipelineStatus('stale');
+      return Promise.resolve();
     }
-    setTimestampText(formatClock());
+    return ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function (fields) {
+      applyDataStatusFields(fields);
+    });
   }
 
   window.ChaseNav = {
@@ -358,8 +283,18 @@
       });
     },
     setLastUpdated: function (timestamp) {
-      setTimestampText(timestamp);
+      // Display-only leftover. Prefer ChaseDataStatus fields; never a wall clock.
+      if (timestamp && typeof timestamp === 'object') {
+        applyDataStatusFields(timestamp);
+        return;
+      }
+      if (!timestamp || timestamp === '?' || timestamp === '--') {
+        setTimestampText('unknown');
+        return;
+      }
+      setTimestampText(String(timestamp));
     },
+    applyDataStatus: applyDataStatusFields,
     refresh: loadLastUpdatedFromSheet
   };
 

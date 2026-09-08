@@ -5,16 +5,11 @@
   'use strict';
 
   var NAV = [
-    [{ file: 'chase_analytics_mlb_oem_v7.html', label: 'Main' }],
+    [{ file: 'index.html', label: 'Main' }],
     [
-      { file: 'team_rankings.html', label: 'Matchups' },
+      { file: 'matchup_compare.html', label: 'Matchups' },
       { file: 'glossary.html', label: 'Glossary' },
-    ],
-    [
       { file: 'batter_profile.html', label: 'Batter' },
-      { file: 'pitcher_profile.html', label: 'Pitcher' },
-      { file: 'bullpen_report.html', label: 'Bullpen' },
-      { file: 'team_profile.html', label: 'Team' },
     ],
   ];
 
@@ -25,7 +20,7 @@
     }
     var path = global.location.pathname || '';
     var parts = path.split('/');
-    return parts[parts.length - 1] || 'chase_analytics_mlb_oem_v7.html';
+    return parts[parts.length - 1] || 'index.html';
   }
 
   function renderNav(container, page) {
@@ -58,11 +53,19 @@
     });
   }
 
+  function dashboardRoot() {
+    var path = (global.location && global.location.pathname) || '/dashboard/';
+    var marker = '/dashboard/';
+    var i = path.indexOf(marker);
+    return i >= 0 ? path.slice(0, i + marker.length) : '/dashboard/';
+  }
+
   function ensureIconScripts() {
     if (document.getElementById('mlbma-icons-script')) return;
+    if (document.querySelector('script[src*="mlbma_icons.js"]')) return;
     var s = document.createElement('script');
     s.id = 'mlbma-icons-script';
-    s.src = 'mlbma_icons.js?v=20260606c';
+    s.src = dashboardRoot() + 'mlbma_icons.js?v=20260612b';
     s.async = true;
     document.head.appendChild(s);
   }
@@ -87,7 +90,7 @@
       ov.id = 'mlbmaLoading';
       var iconSrc = (window.MLBMAAssets && MLBMAAssets.BRAND && MLBMAAssets.BRAND.iconFilled)
         ? MLBMAAssets.BRAND.iconFilled
-        : 'assets/chase-icon-filled.png';
+        : '/dashboard/assets/chase-icon-filled.png';
       ov.innerHTML =
         '<img class="chase-loading-icon ca-icon-loading mlbma-load-icon" src="' + iconSrc + '" alt="" width="80" height="80" '
         + 'onerror="this.style.display=\'none\'">' +
@@ -162,48 +165,13 @@
   function loadFooterTimestamp() {
     var el = document.getElementById('mlbmaFooterUpdated');
     if (!el) return;
-    var tab =
-      global.MLBMA_CONFIG &&
-      global.MLBMA_CONFIG.SHEET_TABS &&
-      global.MLBMA_CONFIG.SHEET_TABS.last_updated;
-    var url = tab ? sheetCsvUrl(tab) : null;
-    if (!url) {
-      el.textContent = '?';
+    if (global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
+      ChaseDataStatus.fetchLastUpdated({ source: 'sheet', sport: 'mlb' }).then(function (fields) {
+        ChaseDataStatus.render(el, fields);
+      });
       return;
     }
-    fetch(url, { cache: 'no-store' })
-      .then(function (r) { return r.text(); })
-      .then(function (t) {
-        // Last_Updated is key/value rows, e.g. "Last Updated","2026-06-09 17:49:32"
-        var lines = (t || '').trim().split('\n');
-        var target = '';
-        for (var i = 0; i < lines.length; i++) {
-          if (/last\s*updated/i.test(lines[i])) { target = lines[i]; break; }
-        }
-        if (!target) target = lines[0] || '';
-        var cells = target.split(',').map(function (c) {
-          return c.replace(/^"|"$/g, '').trim();
-        });
-        el.textContent = cells[1] || cells[0] || '?';
-        // Last_Updated also carries Slate_Date_ET - the day the pipeline actually built.
-        // This runs on every page (it injects the footer), so it is the one place that
-        // can tell matchup_shared which slate is published instead of letting it guess
-        // from the clock. See notePublishedSlateDay in matchup_shared.js.
-        for (var j = 0; j < lines.length; j++) {
-          if (!/slate[_\s]*date/i.test(lines[j])) continue;
-          var pair = lines[j].split(',').map(function (c) {
-            return c.replace(/^"|"$/g, '').trim();
-          });
-          var day = String(pair[1] || '').slice(0, 10);
-          if (/^\d{4}-\d{2}-\d{2}$/.test(day)
-              && global.MLBMASharedMatchup
-              && global.MLBMASharedMatchup.notePublishedSlateDay) {
-            global.MLBMASharedMatchup.notePublishedSlateDay(day);
-          }
-          break;
-        }
-      })
-      .catch(function () { el.textContent = '?'; });
+    el.textContent = 'unknown';
   }
 
   function injectFooter() {
@@ -274,7 +242,7 @@
   function loadViewportHelper() {
     if (global.MLBMAViewport) return;
     var s = document.createElement('script');
-    s.src = 'platform_viewport.js?v=20260610b';
+    s.src = '/dashboard/platform_viewport.js?v=20260610b';
     s.async = true;
     document.head.appendChild(s);
   }

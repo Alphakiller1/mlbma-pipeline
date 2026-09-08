@@ -35,6 +35,7 @@ jobs:
             --exclude='scripts' --exclude='tests' --exclude='__pycache__' \
             --exclude='*.py' --exclude='*.pyc' --exclude='requirements.txt' \
             --exclude='*.md' --exclude='.env*' --exclude='wrangler.jsonc' \
+            --exclude='wrangler.toml' \
             --exclude='.assetsignore' --exclude='_site' \
             ./ _site/
           echo "files to publish: $(find _site -type f | wc -l)"

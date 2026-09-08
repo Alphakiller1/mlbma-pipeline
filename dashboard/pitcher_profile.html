@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -11,28 +12,30 @@
 /* Minimal boot — full styles in linked CSS */
 .loading-text { color: var(--text-3, #71717A); font-size: 13px; padding: 12px 24px; }
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260616c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">
-<link rel="stylesheet" href="theme.css?v=20260630a">
-<link rel="stylesheet" href="chase_nav.css?v=20260701c">
-<link rel="stylesheet" href="team_profile.css?v=20260630a">
-<link rel="stylesheet" href="player_profile_pages.css?v=20260624a">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260624a">
-<link rel="stylesheet" href="profile_shell.css?v=20260630c">
-<script src="mlbma_config.js?v=20260831a"></script>
-<script src="mlbma_icons.js?v=20260606c"></script>
-<script src="mlbma_assets.js?v=20260609c"></script>
-<script src="matchup_shared.js?v=20260901a"></script>
+<link rel="stylesheet" href="mlbma_ui.css?v=20260908h">
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908h">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260908h">
+<link rel="stylesheet" href="theme.css?v=20260908h">
+<link rel="stylesheet" href="chase_nav.css?v=20260908h">
+<link rel="stylesheet" href="team_profile.css?v=20260908h">
+<link rel="stylesheet" href="player_profile_pages.css?v=20260908h">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260908h">
+<link rel="stylesheet" href="profile_shell.css?v=20260908h">
+<script src="mlbma_config.js?v=20260606c"></script>
+<script src="mlbma_icons.js?v=20260612b"></script>
+<script src="mlbma_assets.js?v=20260908h"></script>
+<script src="matchup_shared.js?v=20260717e"></script>
 <script src="profile_shell.js?v=20260603a"></script>
-<script src="mlbma_charts.js?v=20260604m"></script>
+<script src="mlbma_charts.js?v=20260612a"></script>
 <script src="profile_controls.js?v=20260603a"></script>
 <script src="pitcher_profile_dashboard.js?v=20260618k"></script>
-<script src="mlbma_ui.js?v=20260901a" data-page="pitcher_profile.html"></script>
-<link rel="stylesheet" href="research_lab.css?v=20260605d">
-<link rel="stylesheet" href="pitcher_profile.css?v=20260618j">
+<script src="mlbma_ui.js?v=20260908f" data-page="pitcher_profile.html"></script>
+<script src="mobile_cardify.js?v=20260908b"></script>
+<link rel="stylesheet" href="research_lab.css?v=20260908h">
+<link rel="stylesheet" href="pitcher_profile.css?v=20260908h">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260701c">
-
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260908h">
+  <link rel="stylesheet" href="responsive.css?v=20260908h">
 </head>
 <body class="player-profile-page pitcher-profile-page team-profile-page">
 
@@ -40,28 +43,28 @@
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
+    <a href="index.html" class="chase-logo" title="Chase Analytics - Opening Dashboard">
       <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
-      <a href="chase_analytics_mlb_oem_v7.html" class="chase-nav-link" data-nav="opening">Opening</a>
-      <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
-      <a href="team_rankings.html" class="chase-nav-link" data-nav="team-rankings">Team Rankings</a>
-      <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-nav-link" data-nav="research">Research Lab</a>
+      <a href="index.html" class="chase-nav-link" data-nav="opening">Opening</a>
+      <a href="index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="matchup_compare.html" class="chase-nav-link" data-nav="compare">Compare</a>
+      <a href="/nfl/matchups.html" class="chase-nav-link" data-nav="nfl">NFL</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-          Profiles
+          Tools
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
           </svg>
         </button>
         <div class="chase-dropdown-menu">
-          <a href="team_profile.html" class="chase-dropdown-item">Team Profile</a>
-          <a href="pitcher_profile.html" class="chase-dropdown-item">Pitcher Profile</a>
-          <a href="bullpen_report.html" class="chase-dropdown-item">Bullpen Profile</a>
-          <div class="chase-dropdown-divider"></div>
           <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
+          <a href="/mlb/" class="chase-dropdown-item">MLB</a>
+          <a href="/nfl/matchups.html" class="chase-dropdown-item">NFL Matchups</a>
+          <a href="/cfb/" class="chase-dropdown-item">CFB Board</a>
+          <a href="/wnba/" class="chase-dropdown-item">WNBA Board</a>
         </div>
       </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
@@ -82,7 +85,7 @@
 <div class="chase-mobile-menu" id="mobileMenu" role="dialog" aria-modal="true"
   aria-label="Main Menu" aria-hidden="true">
   <div class="chase-mobile-header">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-logo" title="Chase Analytics">
+    <a href="index.html" class="chase-logo" title="Chase Analytics">
       <img class="chase-nav-logo--icon" src="assets/chase-icon-filled.png" alt="" width="36" height="36">
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
@@ -97,16 +100,14 @@
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
   </div>
   <div class="chase-mobile-nav">
-    <a href="chase_analytics_mlb_oem_v7.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="team_rankings.html" class="chase-mobile-link" data-nav="team-rankings">Team Rankings</a>
-    <a href="chase_analytics_mlb_oem_v7.html#section-research-lab" class="chase-mobile-link" data-nav="research">Research Lab</a>
-    <div class="chase-mobile-section">Profiles</div>
-    <a href="team_profile.html" class="chase-mobile-link">Team Profile</a>
-    <a href="pitcher_profile.html" class="chase-mobile-link">Pitcher Profile</a>
-    <a href="bullpen_report.html" class="chase-mobile-link">Bullpen Profile</a>
+    <a href="index.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="matchup_compare.html" class="chase-mobile-link" data-nav="compare">Compare</a>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
-    <a href="reliever_profile.html" class="chase-mobile-link">Reliever Profile</a>
+    <a href="/mlb/" class="chase-mobile-link">MLB</a>
+    <a href="/nfl/matchups.html" class="chase-mobile-link" data-nav="nfl">NFL Matchups</a>
+    <a href="/cfb/" class="chase-mobile-link">CFB Board</a>
+    <a href="/wnba/" class="chase-mobile-link">WNBA Board</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
@@ -283,9 +284,7 @@ function fmtPct(v) {
 }
 
 function normalizeName(n) {
-  var s = String(n || '').toLowerCase();
-  if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return s.replace(/[^a-z0-9 ]/g, '').trim();
+  return String(n || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
 }
 
 function normalizeNameKey(n) {
@@ -1769,14 +1768,8 @@ function loadAll() {
       banner.classList.add('show');
     }
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var urlPitcherId = normalizePitcherId(urlParams.get('pitcherId'));
-    var urlPitcher = urlParams.get('pitcher');
+    var urlPitcher = new URLSearchParams(window.location.search).get('pitcher');
     var startKey = null;
-    if (urlPitcherId) {
-      startKey = 'id:' + urlPitcherId;
-      if (!getProfile(startKey)) startKey = null;
-    }
     if (urlPitcher) {
       startKey = resolveSearchToKey(urlPitcher);
     }
@@ -1821,6 +1814,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- pitcher-profile build: 20260604a -->
-  <script src="chase_nav.js?v=20260701a"></script>
+  <script src="chase_datastatus.js?v=20260908f"></script>
+<script src="chase_nav.js?v=20260908d"></script>
 </body>
 </html>

@@ -36,8 +36,8 @@ flowchart TB
     TABS[30+ tabs]
   end
   subgraph ui [Dashboard]
-    OEM[chase_analytics_mlb_oem_v7.html]
-    TR[team_rankings.html + matchup_hub.js]
+    OEM[dashboard/index.html]
+    TR[team_rankings.html + lineup_view.js]
     PROF[Profile pages]
   end
   FG --> C
@@ -197,10 +197,13 @@ Window splits use **lower min PA** (L7=8, L14=15, L30=25), explicit `splitArr=`,
 
 ### 5.1 Team Rankings (dedicated page)
 
+Public `/dashboard/team_rankings.html` **301s** to Opening Matchups (`/dashboard/index.html#section-matchups-hero`). The noindex capture copy is `dashboard/render/team_rankings.html`.
+
 | Item | Value |
 |------|--------|
-| **URL** | `dashboard/team_rankings.html` |
-| **JS SSOT** | `dashboard/matchup_hub.js` (`HUB` state) |
+| **Public URL** | 301 → `dashboard/index.html#section-matchups-hero` |
+| **Capture / render URL** | `dashboard/render/team_rankings.html` |
+| **JS SSOT** | `dashboard/lineup_view.js` (`LineupView` + URL filter state) |
 | **Fetches** | `vs_RHP`, `vs_LHP`, `Team_Profiles` only |
 | **Toggles** | Hand: Both / vs RHP / vs LHP / F5 · Window: YTD / L30 / L14 / L7 · Loc: All / Home / Away |
 | **Filter order** | Hand base → window overlay (profiles) → location overlay (`home_osi` / `away_osi`) |
@@ -210,9 +213,9 @@ Window splits use **lower min PA** (L7=8, L14=15, L30=25), explicit `splitArr=`,
 
 | Item | Value |
 |------|--------|
-| **URL** | `chase_analytics_mlb_oem_v7.html#section-research-lab` |
+| **URL** | `dashboard/index.html#section-research-lab` (legacy OEM filename stubs/301s here) |
 | **Tabs** | Compare · Trends · Splits · Pitcher Intelligence · (legacy hidden panes) |
-| **JS ownership** | Trends/Splits UI: **`rl_tab_uix.js`** · Compare/PVL: **`research_lab.js`** · Pitchers: **`pitcher_lab.js`** |
+| **JS ownership** | Trends/Splits/Compare: **`research_lab.js`** · Pitchers: **`pitcher_lab.js`** |
 | **Global bar** | `STATE.split` / `STATE.time` (YTD/L30/L14/L7) synced partially to `SPLITS_STATE`; **not** to `TRENDS_STATE` |
 | **Boot** | `loadLandingData()` then `loadResearchData()` → `LIVE_DATA` + globals `SCO_YTD_*`, `SCO_L30_B`, … |
 
@@ -221,7 +224,7 @@ Window splits use **lower min PA** (L7=8, L14=15, L30=25), explicit `splitArr=`,
 | Surface | Module | Data |
 |---------|--------|------|
 | Hero matchups | `platform_dashboard.js` | `Today_Matchups`, lineups, weather |
-| Signals strip | `mlbma_signals.js` | `Signals_Today` |
+| Signals strip | `platform_dashboard.js` (`parseSignalsToday`) + OEM/`index.html` boot | `Signals_Today` |
 | Standings / map | `mlbma_standings.js`, market map | Various |
 
 ### 5.4 Profile pages
@@ -234,10 +237,9 @@ Read mostly from **`Team_Profiles`**, **`Batter_Profiles`**, **`SP_Profiles`**, 
 
 | Object | Location | Keys | Used by |
 |--------|----------|------|---------|
-| `HUB` | `matchup_hub.js` | `hand`, `window`, `location`, `sortKey`, … | Team Rankings only |
-| `STATE` | OEM inline | `split`, `time`, `sortKey`, `compareTeams`, … | Research global bar, legacy leaderboard |
-| `SPLITS_STATE` | `rl_tab_uix.js` | `lineupSplit`, `window`, `pitchEntity`, … | Splits tab |
-| `TRENDS_STATE` | `rl_tab_uix.js` | `metric`, `location` | Trends tab (L30/L14/L7 columns fixed) |
+| `LineupView` URL state | `lineup_view.js` | `hand`, `window`, `loc`, `family`, `sort`, `dir` (`scope`/`team` are deleted) | Team Rankings only |
+| `STATE` | OEM/`index.html` inline | `split`, `time`, `sortKey`, `compareTeams`, … | Research global bar, legacy leaderboard |
+| Splits/Trends UI | `research_lab.js` | window, location, metric (no separate `rl_tab_uix.js`) | Splits + Trends tabs |
 | `ResearchLab` / `RL` | `research_lab.js` | compare sides, PVL team, … | Compare tab |
 
 **No shared filter bus today** — Team Rankings and Research Lab do not read the same state object.
@@ -282,11 +284,11 @@ Read mostly from **`Team_Profiles`**, **`Batter_Profiles`**, **`SP_Profiles`**, 
 
 | Logic | Copies |
 |-------|--------|
-| ABQ/RCV/OBR/OSI scoring | `core/compute_*.py`, `compute_batter_profile`, OEM `scoreRows()`, `matchup_hub` enrich |
-| `mergeBoth` / YTD blend | `matchup_hub.js`, `rl_tab_uix.js`, OEM inline |
-| `parseTeamProfileRows` | OEM inline, `matchup_hub.js`, `research_lab.js` |
+| ABQ/RCV/OBR/OSI scoring | `core/compute_*.py`, `compute_batter_profile`, OEM `scoreRows()`, `lineup_view.js` enrich |
+| `mergeBoth` / YTD blend | `lineup_view.js`, `research_lab.js`, OEM/`index.html` inline |
+| `parseTeamProfileRows` | OEM/`index.html` inline, `research_lab.js` |
 | PitchScore | `compute_pitching.py`, `matchup_shared.computePitchScoreFromRates`, profile HTML |
-| Window rows L30/L14/L7 | `syncWindowScoresFromProfiles` (OEM), `matchup_hub` profile overlay, `rl_tab_uix` trends |
+| Window rows L30/L14/L7 | `syncWindowScoresFromProfiles` (OEM/`index.html`), `lineup_view.js` overlay, `research_lab.js` trends |
 | Rankings table UI | Hidden OEM `renderMasterTable`, `team_rankings.html` hub table |
 
 **Intentional no-op:** `outputs/push_matchups.py` (matchups pushed from scraper).
@@ -343,10 +345,10 @@ Compare against:
 | `dashboard/mlbma_config.js` | Sheet tabs (generated) |
 | `dashboard/matchup_shared.js` | Fetch, parse, `scoreRowFromSheet` |
 | `dashboard/mlbma_assets.js` | Colors, logos, z-scores |
-| `dashboard/matchup_hub.js` | Team Rankings |
-| `dashboard/chase_analytics_mlb_oem_v7.html` | Platform shell + inline boot |
-| `dashboard/research_lab.js` | RL compare / data bridge |
-| `dashboard/rl_tab_uix.js` | Trends + Splits SSOT |
+| `dashboard/lineup_view.js` | Team Rankings |
+| `dashboard/index.html` | Platform home + inline boot |
+| `dashboard/chase_analytics_mlb_oem_v7.html` | Legacy stub → `index.html` |
+| `dashboard/research_lab.js` | Research Lab compare / trends / splits |
 | `dashboard/pitcher_lab.js` | Pitcher Intelligence |
 | `dashboard/platform_dashboard.js` | Matchups hero |
 | `docs/AUDIT_BACKLOG.md` | Prioritized fix list |

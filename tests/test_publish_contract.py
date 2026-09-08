@@ -154,10 +154,11 @@ class DashboardSlateTruthContractTests(unittest.TestCase):
         self.assertIn("var gamePkWant = qp('gamePk')", compare)
 
     def test_mlb_tbd_does_not_fall_back_to_projected_name(self) -> None:
-        source = (ROOT / "dashboard" / "chase_analytics_mlb_oem_v7.html").read_text(encoding="utf-8")
+        source = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        shared = (ROOT / "dashboard" / "matchup_shared.js").read_text(encoding="utf-8")
         cards = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
         self.assertIn("awaySP: g.awaySP || 'TBD'", source)
-        self.assertIn("if (awaySP === 'TBD') awayHand = '?'", source)
+        self.assertIn("if (awaySP === 'TBD') awayHand = '?'", shared)
         self.assertNotIn("if (m.awayHand === '?') m.awayHand = 'R'", source)
         self.assertNotIn("g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP", source)
         self.assertIn("if (pname === 'TBD') ps = null", cards)

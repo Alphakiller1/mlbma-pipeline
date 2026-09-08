@@ -49,7 +49,7 @@ EXCLUDE_DIRS = {
     "tests", "__pycache__", "_site", "data", "docs", ".pytest_cache", ".ruff_cache",
 }
 EXCLUDE_SUFFIXES = {".py", ".pyc", ".md", ".bat", ".log"}
-EXCLUDE_NAMES = {"requirements.txt", "wrangler.jsonc", ".assetsignore", ".gitignore"}
+EXCLUDE_NAMES = {"requirements.txt", "wrangler.jsonc", "wrangler.toml", ".assetsignore", ".gitignore"}
 
 # A deploy that drops the dashboard's shared runtime is worse than no deploy.
 GUARD_FILE = "dashboard/matchup_shared.js"

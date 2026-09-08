@@ -504,23 +504,89 @@
     var map = { ARI: 'ari', AZ: 'ari', ATH: 'ath', OAK: 'ath', SF: 'sf', SFG: 'sf', TB: 'tb', TBR: 'tb', WSH: 'wsh', WAS: 'wsh', WSN: 'wsh', CHW: 'chw', CWS: 'chw', KCR: 'kc', KC: 'kc', SDP: 'sd', SD: 'sd' };
     var key = String(t || '').trim().toUpperCase();
     var slug = map[key] || key.toLowerCase();
-    return 'https://a.espncdn.com/i/teamlogos/mlb/500/' + slug + '.png';
+    // Resized via ESPN combiner: bubbles render at 22px, the raw 500px asset is ~37KB each.
+    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + slug + '.png&w=64&h=64';
   }
 
-  function quadrantBubbleMarkup(d, cx, cy, meta) {
+  function spreadBubbleLayout(items, bounds, opts) {
+    opts = opts || {};
+    var minSep = opts.minSep || 52;
+    var maxNudge = opts.maxNudge || 64;
+    var plot = bounds || {};
+    items.forEach(function(it) {
+      it.dcx = it.ax;
+      it.dcy = it.ay;
+    });
+    for (var iter = 0; iter < 140; iter++) {
+      var moved = false;
+      for (var i = 0; i < items.length; i++) {
+        for (var j = i + 1; j < items.length; j++) {
+          var a = items[i];
+          var b = items[j];
+          var dx = b.dcx - a.dcx;
+          var dy = b.dcy - a.dcy;
+          var dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+          if (dist < minSep) {
+            var push = (minSep - dist) * 0.52;
+            var nx = dx / dist;
+            var ny = dy / dist;
+            a.dcx -= nx * push;
+            a.dcy -= ny * push;
+            b.dcx += nx * push;
+            b.dcy += ny * push;
+            moved = true;
+          }
+        }
+      }
+      items.forEach(function(it) {
+        var ndx = it.dcx - it.ax;
+        var ndy = it.dcy - it.ay;
+        var nd = Math.sqrt(ndx * ndx + ndy * ndy);
+        if (nd > maxNudge) {
+          it.dcx = it.ax + (ndx / nd) * maxNudge;
+          it.dcy = it.ay + (ndy / nd) * maxNudge;
+        }
+        it.dcx = Math.max(plot.left + it.r, Math.min(plot.right - it.r, it.dcx));
+        it.dcy = Math.max(plot.top + it.r, Math.min(plot.bottom - it.r, it.dcy));
+      });
+      if (!moved) break;
+    }
+    return items;
+  }
+
+  function quadrantBubbleMarkup(d, cx, cy, meta, bubbleOpts) {
+    bubbleOpts = bubbleOpts || {};
+    var mode = String(bubbleOpts.mode || 'ppGap').toLowerCase();
+    var r = bubbleOpts.bubbleRadius != null ? bubbleOpts.bubbleRadius : 28;
+    var logoR = Math.max(10, Math.round(r * 0.78));
+    var logoSize = logoR * 2;
+    var showLabels = bubbleOpts.showBubbleLabels !== false;
+    var showPosLabels = bubbleOpts.showPosLabels !== false;
+    var labelSize = bubbleOpts.labelFontSize != null ? bubbleOpts.labelFontSize : 10;
     var logoUrl = teamEspnLogoUrl(d.t);
     var gid = 'qb_' + String(d.t).replace(/[^a-z0-9]/gi, '');
-    var teamY = cy + 38;
-    var posY = cy + 50;
-    return '<g class="mlbma-quad-dot" data-team="' + esc(d.t) + '" data-map-pos="' + esc(meta.short || meta.label) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + ' · ' + esc(meta.label) + '">'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" fill-opacity=".18"/>'
-      + '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
-      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="22"/></clipPath>'
-      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - 11) + '" y="' + (cy - 11) + '" width="22" height="22" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
+    var teamY = cy + r + 12;
+    var posY = cy + r + 24;
+    var labelHtml = showLabels
+      ? '<text class="mlbma-quad-team" x="' + cx + '" y="' + teamY + '" text-anchor="middle" fill="#E4E4E7" font-size="' + labelSize + '" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
+        + (showPosLabels
+          ? '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
+          : '')
+      : '';
+    var todayRing = d && d.today
+      ? '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 3) + '" fill="none" stroke="rgba(154,107,255,.9)" stroke-width="2" opacity="0.9"/>'
+      : '';
+    var yLab = mode === 'reg' || mode === 'regression' ? 'Reg Gap' : 'PP Gap';
+    var yVal = quadYValue(d, mode);
+    return '<g class="mlbma-quad-dot' + (showLabels ? '' : ' mlbma-quad-dot--compact') + '" data-team="' + esc(d.t) + '" data-map-pos="' + esc(meta.short || meta.label) + '" tabindex="0" role="button" aria-label="' + esc(d.t) + ' · ' + esc(meta.label) + '">'
+      + todayRing
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + meta.color + '" fill-opacity=".18"/>'
+      + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + meta.color + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'
+      + '<clipPath id="' + gid + '"><circle cx="' + cx + '" cy="' + cy + '" r="' + logoR + '"/></clipPath>'
+      + '<image class="mlbma-quad-logo" href="' + esc(logoUrl) + '" x="' + (cx - logoR) + '" y="' + (cy - logoR) + '" width="' + logoSize + '" height="' + logoSize + '" clip-path="url(#' + gid + ')" preserveAspectRatio="xMidYMid slice" data-team="' + esc(d.t) + '"/>'
       + '<text class="mlbma-quad-abbr" x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none" style="display:none">' + esc(d.t) + '</text>'
-      + '<text class="mlbma-quad-team" x="' + cx + '" y="' + teamY + '" text-anchor="middle" fill="#D4D4D8" font-size="9" font-weight="700" font-family="var(--mono)" pointer-events="none">' + esc(d.t) + '</text>'
-      + '<text class="mlbma-quad-pos" x="' + cx + '" y="' + posY + '" text-anchor="middle" fill="' + meta.color + '" font-size="8" font-weight="700" font-family="var(--font-body)" pointer-events="none" letter-spacing="0.05em">' + esc(meta.short || meta.label) + '</text>'
-      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · PP Gap ' + quadYValue(d, "ppGap").toFixed(1) + '</title>'
+      + labelHtml
+      + '<title>' + esc(d.t) + ' · ' + esc(meta.label) + ' · OSI ' + (d.osi != null ? d.osi.toFixed(1) : '—') + ' · ' + esc(yLab) + ' ' + (yVal != null && !isNaN(yVal) ? (Math.round(yVal * 2) / 2).toFixed(1).replace(/\\.0$/, '') : '—') + '</title>'
       + '</g>';
   }
 
@@ -565,7 +631,8 @@
     return '<div class="tt-row"><span class="lab">' + esc(label) + '</span><span class="val">' + valHtml + '</span></div>';
   }
 
-  function buildMarketQuadrantTipHtml(d) {
+  function buildMarketQuadrantTipHtml(d, mode) {
+    mode = String(mode || 'ppGap').toLowerCase();
     d = resolveQuadrantTipRow(d);
     if (!d) return '';
 
@@ -602,14 +669,23 @@
 
     var regHtml = '<span style="color:' + reg[1] + '">' + esc(reg[0]) + '</span>';
 
-    var gapVal = quadYValue(d, 'ppGap');
+    var gapVal = quadYValue(d, mode);
     var mapMeta = (d.osi != null && gapVal != null) ? marketQuadrantMeta(d.osi, gapVal) : null;
     var mapPosHtml = mapMeta
       ? '<div class="tt-map-pos" style="color:' + mapMeta.color + '">' + esc(mapMeta.label) + '</div>'
       : '';
 
+    var todayHtml = (d.today && d.todayOpp)
+      ? '<div class="tt-map-pos" style="color:rgba(154,107,255,.92)">Today: vs ' + esc(d.todayOpp) + (d.todayVsHand ? (' · vs ' + esc(String(d.todayVsHand).toUpperCase())) : '') + '</div>'
+      : '';
+
+    var yRow = (mode === 'reg' || mode === 'regression')
+      ? ttRow('Reg Gap (xwOBA–wOBA)', '<span style="color:' + metricColor(quadYValue(d, "reg"), 'reg', false) + '">' + fmtSigned(quadYValue(d, "reg")) + '</span>')
+      : ttRow('PP Gap (ABQ–RCV)', '<span style="color:' + metricColor(pp, 'ppGap') + '">' + fmtSigned(pp) + '</span>');
+
     return '<div class="tt-team">' + esc(d.t) + '</div>'
       + mapPosHtml
+      + todayHtml
       + '<div class="tt-sep"></div>'
       + ttRow('OSI', '<span style="color:' + metricColor(osi, 'osi') + '">' + fmtMetric(osi) + '</span>')
       + ttRow('Projected OSI', projHtml)
@@ -619,7 +695,7 @@
       + ttRow('ABQ', '<span style="color:' + metricColor(d.abq, 'abq') + '">' + fmtMetric(d.abq) + '</span>')
       + ttRow('OBR', '<span style="color:' + metricColor(d.obr, 'obr') + '">' + fmtMetric(d.obr) + '</span>')
       + '<div class="tt-sep"></div>'
-      + ttRow('PP Gap (ABQ–RCV)', '<span style="color:' + metricColor(pp, 'ppGap') + '">' + fmtSigned(pp) + '</span>')
+      + yRow
       + ttRow('DF Gap (RCV–OBR)', '<span style="color:' + metricColor(df, 'dfGap') + '">' + fmtSigned(df) + '</span>')
       + '<div class="tt-sep"></div>'
       + ttRow('Sustainability', susHtml)
@@ -634,6 +710,11 @@
     var el = opts.el || document.getElementById(containerId);
     if (!el) return null;
     var yMode = (opts.mode || 'ppGap');
+    var isLanding = opts.variant === 'landing';
+    var showBubbleLabels = opts.showBubbleLabels != null ? !!opts.showBubbleLabels : true;
+    var showPosLabels = opts.showPosLabels != null ? !!opts.showPosLabels : !isLanding;
+    var spreadCollisions = opts.spreadCollisions != null ? !!opts.spreadCollisions : true;
+    var bubbleRadius = opts.bubbleRadius != null ? opts.bubbleRadius : (isLanding ? 24 : 28);
     var data = (rows || []).filter(function(d) {
       return d && d.osi != null && !isNaN(d.osi) && quadYValue(d, yMode) != null;
     });
@@ -641,11 +722,25 @@
       el.innerHTML = '<div class="mlbma-quad-placeholder"><p class="ca-helper">Market map loads when team offense data is available (vs_RHP scores).</p></div>';
       return el;
     }
-    var W = opts.width || Math.min(1200, el.clientWidth || 900);
-    var H = opts.height || Math.max(520, W < 700 ? 520 : 560);
-    var ml = 80, mr = 60, mt = 60, mb = 88;
+    var containerW = el.clientWidth || 900;
+    var maxW = isLanding ? 1400 : 1200;
+    var W = opts.width || Math.min(maxW, Math.max(containerW, isLanding ? 920 : 900));
+    var H = opts.height || (isLanding
+      ? Math.max(560, Math.round(W * 0.60))
+      : Math.max(520, W < 700 ? 520 : 560));
+    var ml = isLanding ? 68 : 80;
+    var mr = isLanding ? 44 : 60;
+    var mt = isLanding ? 44 : 60;
+    var mb = showBubbleLabels ? (isLanding ? 50 : 88) : 48;
     var cw = W - ml - mr;
     var ch = H - mt - mb;
+    var tickFont = isLanding ? 11 : 10;
+    var bubbleOpts = {
+      bubbleRadius: bubbleRadius,
+      showBubbleLabels: showBubbleLabels,
+      showPosLabels: showPosLabels,
+      labelFontSize: isLanding ? 10 : 9
+    };
 
     // Fit the domain so every bubble (radius ~28px, with a team/pos label below)
     // sits fully inside the plot. We expand the data range by the pixel inset each
@@ -669,10 +764,13 @@
     var xMax = Math.max.apply(null, xVals);
     var yMin = Math.min.apply(null, yVals);
     var yMax = Math.max.apply(null, yVals);
-    // Insets: bubble radius ~28 on every side; bottom needs extra ~28 for the
-    // team + position labels that render below each bubble.
-    var xd = fitDomain(xMin, xMax, cw, 34, 34, 20);
-    var yd = fitDomain(yMin, yMax, ch, 58, 34, 8);
+    var nudgePad = spreadCollisions ? (isLanding ? 76 : 52) : 0;
+    var edgeInset = bubbleRadius + 8 + nudgePad;
+    var bottomInset = showBubbleLabels
+      ? bubbleRadius + (showPosLabels ? 34 : 22) + nudgePad
+      : edgeInset;
+    var xd = fitDomain(xMin, xMax, cw, edgeInset, edgeInset, 20);
+    var yd = fitDomain(yMin, yMax, ch, bottomInset, edgeInset, 8);
     var xMn = xd[0], xMx = xd[1];
     var yMn = yd[0], yMx = yd[1];
     var xRng = xMx - xMn;
@@ -703,7 +801,7 @@
     xTicks.forEach(function(v) {
       var gx = xs(v);
       svg += '<line x1="' + gx + '" y1="' + mt + '" x2="' + gx + '" y2="' + (H - mb) + '" stroke="rgba(255,255,255,.05)"/>';
-      svg += '<text x="' + gx + '" y="' + (H - mb + 16) + '" text-anchor="middle" fill="#71717A" font-size="10" font-family="var(--mono)">' + Math.round(v) + '</text>';
+      svg += '<text x="' + gx + '" y="' + (H - mb + 18) + '" text-anchor="middle" fill="#A1A1AA" font-size="' + tickFont + '" font-family="var(--mono)">' + Math.round(v) + '</text>';
     });
     // Y ticks (5 ticks, signed)
     var yTicks = [];
@@ -712,7 +810,7 @@
       var gy = ys(v);
       svg += '<line x1="' + ml + '" y1="' + gy + '" x2="' + (W - mr) + '" y2="' + gy + '" stroke="rgba(255,255,255,.05)"/>';
       var lab = (v > 0 ? '+' : '') + (Math.round(v * 2) / 2).toFixed(1).replace(/\.0$/, '');
-      svg += '<text x="' + (ml - 6) + '" y="' + (gy + 4) + '" text-anchor="end" fill="#71717A" font-size="10" font-family="var(--mono)">' + lab + '</text>';
+      svg += '<text x="' + (ml - 8) + '" y="' + (gy + 4) + '" text-anchor="end" fill="#A1A1AA" font-size="' + tickFont + '" font-family="var(--mono)">' + lab + '</text>';
     });
 
     svg += '<line x1="' + mx + '" y1="' + mt + '" x2="' + mx + '" y2="' + (H - mb) + '" stroke="rgba(192,132,252,.35)" stroke-dasharray="5,4"/>';
@@ -723,20 +821,61 @@
     svg += '<text x="' + (W - mr - 6) + '" y="' + (H - mb - 6) + '" text-anchor="end" fill="rgba(245,158,11,.95)" font-size="9" font-weight="700">COOLING / FADE RISK</text>';
     svg += '<text x="' + (ml + 6) + '" y="' + (H - mb - 6) + '" text-anchor="start" fill="rgba(251,113,133,.95)" font-size="9" font-weight="700">WEAK / UNDER LEAN</text>';
 
-    data.forEach(function(d) {
+    var labelPad = showBubbleLabels ? (showPosLabels ? 34 : 20) : 0;
+    var bubbleItems = data.map(function(d) {
       var xVal = d.osi;
       var yVal = quadYValue(d, yMode);
-      var meta = marketQuadrantMeta(xVal, yVal);
-      svg += quadrantBubbleMarkup(d, xs(xVal), ys(yVal), meta);
+      return {
+        d: d,
+        ax: xs(xVal),
+        ay: ys(yVal),
+        r: bubbleRadius,
+        meta: marketQuadrantMeta(xVal, yVal)
+      };
+    });
+    if (spreadCollisions && bubbleItems.length > 1) {
+      spreadBubbleLayout(bubbleItems, {
+        left: ml + bubbleRadius,
+        right: W - mr - bubbleRadius,
+        top: mt + bubbleRadius,
+        bottom: H - mb - bubbleRadius - labelPad
+      }, {
+        minSep: bubbleRadius * 2 + (showBubbleLabels ? 22 : 8),
+        maxNudge: isLanding ? 84 : 56
+      });
+    } else {
+      bubbleItems.forEach(function(it) {
+        it.dcx = it.ax;
+        it.dcy = it.ay;
+      });
+    }
+    bubbleItems.forEach(function(it) {
+      var dx = it.dcx - it.ax;
+      var dy = it.dcy - it.ay;
+      if (Math.sqrt(dx * dx + dy * dy) > 5) {
+        svg += '<line class="mlbma-quad-anchor" x1="' + it.ax + '" y1="' + it.ay + '" x2="' + it.dcx + '" y2="' + it.dcy + '" stroke="rgba(255,255,255,.14)" stroke-width="1" stroke-dasharray="3,4"/>';
+        svg += '<circle class="mlbma-quad-anchor-dot" cx="' + it.ax + '" cy="' + it.ay + '" r="2.5" fill="rgba(255,255,255,.22)"/>';
+      }
+    });
+    bubbleItems.forEach(function(it) {
+      svg += quadrantBubbleMarkup(it.d, it.dcx, it.dcy, it.meta, bubbleOpts);
     });
 
     svg += '<text x="' + (W / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#A1A1AA" font-size="11">OSI</text>';
-    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">PP Gap (ABQ − RCV)</text>';
+    svg += '<text transform="rotate(-90 ' + ml + ' ' + (H / 2) + ')" x="' + ml + '" y="' + (H / 2) + '" text-anchor="middle" fill="#A1A1AA" font-size="10">'
+      + (String(yMode).toLowerCase() === 'reg' || String(yMode).toLowerCase() === 'regression'
+        ? 'Reg Gap (xwOBA − wOBA) × 450'
+        : 'PP Gap (ABQ − RCV)')
+      + '</text>';
     svg += '</svg>';
 
-    el.innerHTML = '<div class="mlbma-quad-wrap">' + legend
+    var hintHtml = isLanding
+      ? '<p class="mlbma-quad-hint ca-helper">Each bubble is nudged apart when teams cluster — dashed line shows true OSI / PP-Gap position. Hover or tap for full metrics.</p>'
+      : '';
+    el.innerHTML = '<div class="mlbma-quad-wrap' + (isLanding ? ' mlbma-quad-wrap--landing' : '') + '">' + legend
       + '<div class="mlbma-quad-chart-wrap chart-wrap">' + svg
-      + '<div id="' + esc(tipId) + '" class="tooltip chart-tip mlbma-quad-tip" role="tooltip"></div></div></div>';
+      + '<div id="' + esc(tipId) + '" class="tooltip chart-tip mlbma-quad-tip" role="tooltip"></div></div>'
+      + hintHtml + '</div>';
 
     var tip = document.getElementById(tipId);
     var wrap = el.querySelector('.mlbma-quad-chart-wrap');
@@ -757,7 +896,7 @@
         var t = g.getAttribute('data-team');
         var d = data.find(function(r) { return r.t === t; });
         if (!d || !tip) return;
-        tip.innerHTML = buildMarketQuadrantTipHtml(d);
+        tip.innerHTML = buildMarketQuadrantTipHtml(d, yMode);
         tip.classList.add('show');
       });
       g.addEventListener('mousemove', function(e) {
@@ -781,7 +920,7 @@
         var t = g.getAttribute('data-team');
         var d = data.find(function(r) { return r.t === t; });
         if (!d || !tip) return;
-        tip.innerHTML = buildMarketQuadrantTipHtml(d);
+        tip.innerHTML = buildMarketQuadrantTipHtml(d, yMode);
         tip.classList.add('show');
         var circle = g.querySelector('circle');
         if (circle && wrap) {
@@ -799,6 +938,20 @@
         if (tip) tip.classList.remove('show');
       });
     });
+
+    el._quadRows = rows;
+    el._quadOpts = opts;
+    if (!el._quadResizeBound && typeof ResizeObserver !== 'undefined') {
+      el._quadResizeBound = true;
+      var ro = new ResizeObserver(function() {
+        if (el._quadResizeTimer) clearTimeout(el._quadResizeTimer);
+        el._quadResizeTimer = setTimeout(function() {
+          if (!el._quadRows || !el.isConnected) return;
+          renderMarketQuadrant(containerId, el._quadRows, el._quadOpts);
+        }, 120);
+      });
+      ro.observe(el);
+    }
     return el;
   }
 

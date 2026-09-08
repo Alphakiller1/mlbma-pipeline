@@ -34,12 +34,12 @@ from playwright.sync_api import sync_playwright
 # and redirect stubs (matchup_sheet.html) are intentionally excluded.
 DEFAULT_PAGES = [
     "dashboard/chase_analytics_mlb_oem_v7.html",
-    "dashboard/team_rankings.html?scope=team&team=NYY&family=scoring&hand=r&window=L30&loc=home",
+    "dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home",
     "dashboard/matchup_compare.html",
     "dashboard/batter_profile.html",
-    "dashboard/pitcher_profile.html",
-    "dashboard/bullpen_report.html",
-    "dashboard/team_profile.html",
+    "dashboard/render/pitcher_profile.html",
+    "dashboard/render/bullpen_report.html",
+    "dashboard/render/team_profile.html",
     "dashboard/glossary.html",
     "dashboard/index.html",
 ]
@@ -83,6 +83,8 @@ _TAP_JS = """
     if (el.closest('[aria-hidden="true"]')) continue;
     if (el.disabled || el.getAttribute('aria-disabled') === 'true') continue;
     if (el.matches('input[type="hidden"]')) continue;
+    // Chart glyphs (<g role="button">) are not chrome tap targets.
+    if (el.closest('svg')) continue;
 
     // WCAG's inline-target exception applies to links within flowing prose. Navigation,
     // buttons, form controls, and role=button elements still require the full target.

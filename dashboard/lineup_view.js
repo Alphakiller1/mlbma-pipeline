@@ -54,73 +54,105 @@
     style.id = 'lineupViewStyles';
     style.textContent = ''
       + '.lv-wrap{margin-top:14px}'
-      + '.lv-bar{background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:var(--e-1,none)}'
+      + '.lv-bar{background:var(--bg-3);border:1px solid var(--border);border-radius:16px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:var(--e-1)}'
       + '.lv-sec.ca-section-head{margin:4px 0 12px}'
       + '.lv-sec.ca-section-head--rule{margin:4px 0 12px}'
-      + '.lv-sec{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
+      + '.lv-sec{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin:4px 0 12px;font-family:var(--display,var(--font,system-ui))}'
       + '.lv-row{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}'
       + '.lv-group{display:flex;flex-direction:column;gap:6px}'
-      + '.lv-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3,#6b6b76);font-weight:700;font-family:var(--font,system-ui)}'
+      + '.lv-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:700;font-family:var(--font,system-ui)}'
       + '.lv-pills{display:flex;flex-wrap:wrap;gap:10px}'
       + '.lv-pill[disabled],.lv-disabled .lv-pill{opacity:.45;cursor:not-allowed}'
-      + '.lv-query{font-size:13.5px;font-weight:600;color:var(--text-2,#a1a1aa);margin:18px 0 0;line-height:1.6;display:flex;align-items:center;flex-wrap:wrap;gap:8px}'
-      + '.lv-query strong{font-family:var(--mono,monospace);font-variant-numeric:tabular-nums;color:var(--text,#f4f4f7)}'
+      + '.lv-query{font-size:13.5px;font-weight:600;color:var(--text-2);margin:18px 0 0;line-height:1.6;display:flex;align-items:center;flex-wrap:wrap;gap:8px}'
+      + '.lv-query strong{font-family:var(--mono,monospace);font-variant-numeric:tabular-nums;color:var(--text)}'
       + '.lv-family-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:8px 0 14px;align-items:stretch}'
       + '@media(max-width:1040px){.lv-family-grid{grid-template-columns:repeat(2,minmax(220px,1fr))}}'
-      + '.lv-family{display:flex;flex-direction:column;position:relative;background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:20px 20px 16px;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;color:var(--text,#F5F5F7);appearance:none;-webkit-appearance:none;height:100%}'
-      + '.lv-family::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(135deg,var(--accent,#9A6BFF),#5B2BE0);opacity:0;transition:opacity .15s ease}'
-      + '.lv-family:hover{border-color:var(--border-2,#34343d);transform:translateY(-1px)}'
-      + '.lv-family.active{background:var(--bg-4,#1C1C25);border-color:color-mix(in srgb,var(--accent,#8b5cf6) 45%, var(--border,#26262f));box-shadow:0 18px 50px -16px color-mix(in srgb,var(--accent,#8b5cf6) 45%, transparent)}'
+      + '.lv-family{display:flex;flex-direction:column;position:relative;background:var(--bg-3);border:1px solid var(--border);border-radius:16px;padding:20px 20px 16px;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;color:var(--text);appearance:none;-webkit-appearance:none;height:100%}'
+      + '.lv-family::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(135deg,var(--accent), var(--ca-violet-700));opacity:0;transition:opacity .15s ease}'
+      + '.lv-family:hover{border-color:var(--border-2);transform:translateY(-1px)}'
+      + '.lv-family.active{background:var(--bg-4);border-color:color-mix(in srgb,var(--accent) 45%, var(--border));box-shadow:0 18px 50px -16px color-mix(in srgb,var(--accent) 45%, transparent)}'
       + '.lv-family.active::before{opacity:1}'
       + '.lv-family-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;min-height:56px;flex-shrink:0}'
-      + '.lv-family-name{font-family:var(--font-display,var(--font,system-ui));font-size:23px;font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--text,#F5F5F7)}'
-      + '.lv-family-n{font-family:var(--mono,monospace);font-size:11px;color:var(--text-3,#6b6b76);line-height:1.2;padding-top:4px;flex-shrink:0}'
-      + '.lv-family-desc{font-size:14px;font-weight:500;color:var(--v-light,#c4b0ff);margin:10px 0 16px;line-height:1.55;letter-spacing:.01em;min-height:calc(14px * 1.55 * 2);flex-shrink:0}'
+      + '.lv-family-name{font-family:var(--font-display,var(--font,system-ui));font-size:23px;font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--text)}'
+      + '.lv-family-n{font-family:var(--mono,monospace);font-size:11px;color:var(--text-3);line-height:1.2;padding-top:4px;flex-shrink:0}'
+      + '.lv-family-desc{font-size:14px;font-weight:500;color:var(--v-light);margin:10px 0 16px;line-height:1.55;letter-spacing:.01em;min-height:calc(14px * 1.55 * 2);flex-shrink:0}'
       + '.lv-family.active .lv-family-desc{color:#E8DCFF;font-weight:500}'
       + '.lv-family-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}'
-      + '.lv-family-chip{font-family:var(--mono,monospace);font-size:11px;padding:5px 10px;border-radius:7px;background:var(--raised,#22222C);border:1px solid var(--border,#26262f);color:var(--text-2,#a1a1aa)}'
-      + '.lv-family.active .lv-family-chip{background:var(--accent-bg,rgba(139,92,246,.14));border-color:transparent;color:var(--accent-l,#c4b5fd)}'
-      + '.lv-family-chip.phase{border-style:dashed;color:var(--text-3,#6b6b76);background:transparent}'
-      + '.lv-lens{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:8px;background:var(--bg-3,#16161D);border:1px solid var(--border,#2A2A35);border-radius:16px;padding:8px}'
+      + '.lv-family-chip{font-family:var(--mono,monospace);font-size:11px;padding:5px 10px;border-radius:7px;background:var(--raised);border:1px solid var(--border);color:var(--text-2)}'
+      + '.lv-family.active .lv-family-chip{background:var(--accent-bg);border-color:transparent;color:var(--accent-l)}'
+      + '.lv-family-chip.phase{border-style:dashed;color:var(--text-3);background:transparent}'
+      + '.lv-lens{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:8px;background:var(--bg-3);border:1px solid var(--border);border-radius:16px;padding:8px}'
       + '@media(max-width:960px){.lv-lens{grid-template-columns:1fr}}'
-      + '.lv-cat{background:var(--bg-2,#101015);border:1px solid var(--border,#2A2A35);border-radius:12px;padding:14px 14px 12px}'
-      + '.lv-cat-h{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#6b6b76);margin-bottom:10px;font-family:var(--font,system-ui)}'
+      + '.lv-cat{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:14px 14px 12px}'
+      + '.lv-cat-h{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;font-family:var(--font,system-ui)}'
       + '.lv-cat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}.lv-cat-row:last-child{margin-bottom:0}'
-      + '.lv-cat-k{font-size:12px;color:var(--text-3,#6b6b76);min-width:74px}'
+      + '.lv-cat-k{font-size:12px;color:var(--text-3);min-width:74px}'
       + '.lv-team-wrap{display:none}.lv-team-wrap.show{display:flex}'
-      + '.lv-input{border:0.5px solid var(--border,#26262f);background:var(--surface-2,#14141e);color:var(--text,#f4f4f7);padding:7px 10px;border-radius:var(--r-sm,8px);min-width:160px;font-size:12px;font-weight:600}'
+      + '.lv-input{border:0.5px solid var(--border);background:var(--surface-2);color:var(--text);padding:7px 10px;border-radius:var(--r-sm);min-width:160px;font-size:12px;font-weight:600}'
       + '.lv-input-row{display:flex;gap:6px;align-items:center}'
-      + '.lv-help{font-size:10px;color:var(--text-3,#6b6b76)}.lv-help.error{color:var(--neg,#f87171)}'
+      + '.lv-help{font-size:10px;color:var(--text-3)}.lv-help.error{color:var(--neg)}'
       + '.lv-table-wrap{overflow:auto}'
-      + '.lv-table{width:100%;border-collapse:collapse}'
+      + '.lv-table{width:100%;border-collapse:collapse;table-layout:fixed}'
       + '.lv-table thead th{background:#0C0E18;color:#AEB4C6;font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:13.5px;letter-spacing:.05em;text-transform:uppercase;padding:14px;border-bottom:1.5px solid #37405A;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:2}'
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){text-align:left}'
       + '.lv-table thead th.sorted{background:rgba(124,77,255,.16);color:#9A6BFF}'
       + '.lv-table td.sort-col{background:rgba(124,77,255,.05)}'
       + '.lv-table th.lv-sortable{cursor:pointer;user-select:none}'
-      + '.lv-table th:first-child,.lv-table td:first-child{position:sticky;left:0;background:#10131F;z-index:1;width:44px}'
-      + '.lv-table th:nth-child(2),.lv-table td:nth-child(2){position:sticky;left:44px;background:#10131F;z-index:1;min-width:150px}'
+      + '.lv-table th:first-child,.lv-table td:first-child{position:sticky;left:0;background:#10131F;z-index:1;width:44px;max-width:44px}'
+      + '.lv-table th:nth-child(2),.lv-table td:nth-child(2){position:sticky;left:44px;background:#10131F;z-index:1;width:148px;max-width:148px}'
       + '.lv-table thead th:first-child,.lv-table thead th:nth-child(2){background:#0C0E18;z-index:3}'
-      + '.lv-table td{padding:0 14px;height:46px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle;text-align:center;color:var(--text,#F5F5F7)}'
+      + '.lv-table td{padding:0 14px;height:46px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle;text-align:center;color:var(--text)}'
       + '.lv-table td:first-child,.lv-table td:nth-child(2){text-align:left}'
-      + '.lv-table td.num{width:1%;white-space:nowrap}'
+      + '.lv-table th.lv-sortable,.lv-table td.num{white-space:nowrap}'
+      + '.lv-team-cell{display:flex;align-items:center;gap:11px;min-width:0;overflow:hidden}'
+      + '.lv-team-cell .ab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
       + '.lv-rank-num{font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:15px;color:#717892;font-variant-numeric:tabular-nums;text-align:center}'
-      + '.lv-team-cell{display:flex;align-items:center;gap:11px}'
       + '.lv-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.018)}'
-      + '.lv-table tbody tr.lv-row-team:hover td{background:rgba(124,77,255,.10);box-shadow:inset 3px 0 0 var(--purple,#7C4DFF)}'
+      + '.lv-table tbody tr.lv-row-team:hover td{background:rgba(124,77,255,.10);box-shadow:inset 3px 0 0 var(--purple)}'
       + '.lv-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:12px}'
       + '.lv-infographic{display:grid;grid-template-columns:minmax(220px,1fr) minmax(300px,1.2fr);gap:12px;margin-top:12px}'
       + '@media(max-width:980px){.lv-infographic{grid-template-columns:1fr}}'
-      + '.lv-card{background:var(--surface-1,#0c0c14);border:0.5px solid var(--border,#26262f);border-radius:var(--r-sm,8px);padding:12px 14px;display:flex;flex-direction:column;min-height:140px;box-shadow:var(--e-1,none)}'
-      + '.lv-card-lab{font-size:11px;color:var(--text-2,#a1a1aa);letter-spacing:.06em;text-transform:uppercase}'
-      + '.lv-card-val{font-size:36px;line-height:1.05;font-weight:800;color:var(--text,#f4f4f7);margin:8px 0;font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
-      + '.lv-card-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2,#a1a1aa);margin-top:auto}'
-      + '.lv-meter{height:6px;border-radius:var(--r-pill,999px);background:color-mix(in srgb, var(--text-3,#6b6b76) 22%, transparent);overflow:hidden;margin-top:8px}'
+      + '.lv-card{background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;display:flex;flex-direction:column;min-height:140px;box-shadow:var(--e-1)}'
+      + '.lv-card-lab{font-size:11px;color:var(--text-2);letter-spacing:.06em;text-transform:uppercase}'
+      + '.lv-card-val{font-size:36px;line-height:1.05;font-weight:800;color:var(--text);margin:8px 0;font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}'
+      + '.lv-card-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-top:auto}'
+      + '.lv-meter{height:6px;border-radius:var(--r-pill);background:color-mix(in srgb, var(--text-3) 22%, transparent);overflow:hidden;margin-top:8px}'
       + '.lv-meter>span{display:block;height:100%;background:var(--accent)}'
-      + '.lv-phase{font-size:10px;color:var(--warn,#fbbf24);margin-left:6px}'
-      + '.lv-note{font-size:12px;color:var(--text-2,#a1a1aa);padding:14px}'
-      + '.lv-banner{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.45;border:1px solid var(--border,#2A2A35);background:var(--bg-2,#101015);color:var(--text-2,#a1a1aa)}'
-      + '.lv-banner.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--gold,#fbbf24)}';
+      + '.lv-phase{font-size:10px;color:var(--warn);margin-left:6px}'
+      + '.lv-note{font-size:12px;color:var(--text-2);padding:14px}'
+      + '.lv-banner{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.45;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2)}'
+      + '.lv-banner.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--gold)}'
+      + '.lv-lg-rank{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums;margin-left:6px;white-space:nowrap}'
+      + '.lv-sort-pills{display:none;flex-wrap:wrap;gap:8px;margin:0 0 10px}'
+      + '.lv-dual-cards{display:none;flex-direction:column;gap:10px}'
+      + '.lv-team-card{background:var(--bg-3);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px}'
+      + '.lv-team-card-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}'
+      + '.lv-team-card-rank{font-family:var(--display,var(--font,system-ui));font-weight:800;font-size:18px;color:var(--text-2);min-width:1.6em}'
+      + '.lv-team-card-metrics{display:flex;flex-direction:column;gap:8px}'
+      + '.lv-team-card-metric{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;font-size:13px}'
+      + '.lv-team-card-metric .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);min-width:7.5em}'
+      + '.lv-league-expander{margin-top:4px;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px 12px;background:var(--bg-2)}'
+      + '.lv-league-expander>summary{cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);min-height:44px;display:flex;align-items:center}'
+      + '.lv-matchup{margin:18px 0}.lv-matchup .lv-bar{margin-bottom:10px}'
+      + '.lv-matchup-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}'
+      + '.lv-matchup-control{display:flex;flex-direction:column;gap:6px}'
+      + '.lv-matchup-control .lv-pills{gap:6px}'
+      + '.lv-matchup-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}'
+      + '.lv-matchup-team{background:var(--bg-3);border:1px solid var(--border);border-radius:14px;padding:14px}'
+      + '.lv-matchup-team-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}'
+      + '.lv-matchup-team-context{font-size:12px;color:var(--text-2);margin-bottom:10px}'
+      + '.lv-matchup-team-metrics{display:flex;flex-direction:column;gap:8px}'
+      + '.lv-matchup-team-metric{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}'
+      + '.lv-matchup-team-metric .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}'
+      + '.lv-matchup-overrides{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0 12px}'
+      + '.lv-matchup-note{font-size:12px;color:var(--text-2);margin:0 0 8px}'
+      + '@media(max-width:700px){.lv-matchup-teams{grid-template-columns:1fr}}'
+      + '.ca-scopebar .hub-pill,.ca-scopebar .lv-pill{min-height:44px}'
+      + '@media(max-width:767px){'
+      + '.lv-sort-pills{display:flex}'
+      + '.lv-dual-cards{display:flex}'
+      + '.lv-league-expander .lv-table-wrap{display:none!important}'
+      + '}';
     document.head.appendChild(style);
   }
 
@@ -168,16 +200,32 @@
   }
 
   function writeUrl(state) {
-    var p = new URLSearchParams(location.search);
     var f = state.filter;
-    p.set('hand', f.hand); p.set('loc', f.location); p.set('pitch', f.pitcher); p.set('side', f.batSide);
-    p.set('seg', f.segment); p.set('window', f.window);
-    p.set('family', state.family);
-    p.set('sort', state.sortKey); p.set('dir', state.sortDir);
-    p.delete('scope');
-    p.delete('team');
-    p.delete('trend');
-    history.replaceState(null, '', location.pathname + '?' + p.toString() + location.hash);
+    var current = new URLSearchParams(location.search);
+    var defaults = {
+      hand: DEFAULTS.filter.hand,
+      loc: DEFAULTS.filter.location,
+      pitch: DEFAULTS.filter.pitcher,
+      side: DEFAULTS.filter.batSide,
+      seg: DEFAULTS.filter.segment,
+      window: DEFAULTS.filter.window,
+      family: DEFAULTS.family,
+      sort: defaultSortKeyForFamily(state.family),
+      dir: DEFAULTS.sortDir
+    };
+    var params = {
+      hand: f.hand, loc: f.location, pitch: f.pitcher, side: f.batSide,
+      seg: f.segment, window: f.window, family: state.family,
+      sort: state.sortKey, dir: state.sortDir
+    };
+    var omitted = (global.ChaseScopeBar && ChaseScopeBar.omitDefaults)
+      ? ChaseScopeBar.omitDefaults(params, defaults)
+      : params;
+    var p = new URLSearchParams();
+    if (current.has('hubdebug')) p.set('hubdebug', current.get('hubdebug'));
+    Object.keys(omitted).forEach(function (k) { p.set(k, omitted[k]); });
+    var q = p.toString();
+    history.pushState(null, '', location.pathname + (q ? '?' + q : '') + location.hash);
   }
 
   function nonDefaultTokens(state) {
@@ -209,16 +257,16 @@
   }
 
   function colorMetric(key, value) {
-    if (!A || !A.metricColor) return 'var(--text,#f4f4f7)';
+    if (!A || !A.metricColor) return 'var(--text)';
     if (key === 'wrc') return A.metricColor(value, 'wrc', false);
     if (key === 'woba' || key === 'xwoba') return A.metricColor(value, 'woba', false);
-    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, 'osi', false);
+    if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, key, false);
     // Pitch Score Against: high = pitchers did WELL = lineup was EASY = bad for the
     // lineup, so invert (high -> red), same as QS% Allowed.
     if (key === 'pitchScore') return A.metricColor(value, 'pitching', true);
     if (key === 'pitchInn') return A.metricColor(value, 'pitchinn', false);
     if (key === 'qs') return A.metricColor(value, 'pitching', true);
-    if (key === 'xfip') return A.metricColor(value, 'xfip', true);
+    if (key === 'xfip') return A.metricColor(value, 'xfipFaced', true);
     if (key === 'ppGap') return A.metricColor(value, 'ppGap', false);
     return A.metricColor(value, key, false);
   }
@@ -232,7 +280,7 @@
   }
   function rangeColor(value, range, key) {
     var n = num(value);
-    if (n == null) return 'var(--text-2,#a1a1aa)';
+    if (n == null) return 'var(--text-2)';
     return colorMetric(key || 'osi', n);
   }
   function valueChipHtml(value, def, range) {
@@ -243,7 +291,7 @@
     if (ctx === 'pitchScore') { ctx = 'pitching'; invert = true; }  // high = easy lineup = red
     if (ctx === 'pitchInn') ctx = 'pitchinn';
     if (ctx === 'qs') { ctx = 'pitching'; invert = true; }
-    if (ctx === 'xfip') { ctx = 'xfip'; invert = true; }
+    if (ctx === 'xfip') { ctx = 'xfipFaced'; invert = true; }
     if (ctx === 'xwoba') ctx = 'woba';
     if (ctx === 'ppGap') ctx = 'ppGap';
     if (A && A.valChipHtml) return A.valChipHtml(safe, ctx, invert, def.digits);
@@ -352,65 +400,162 @@
     if (!msgs.length) return '';
     return '<div class="lv-banner warn">' + esc(msgs.join(' ')) + '</div>';
   }
-  function renderControls(root, state, teams, meta) {
-    var rows = ''
-      + lvSec('Metric family', 'bar-chart-3')
-      + '<div class="lv-family-grid">'
-      + familyCard('surface', 'Surface Level Wins', 'Win-facing outcomes for full game, F5, and pitching context.', ['Win%', 'F5 Win%', 'Pitcher Win%'], state)
-      + familyCard('scoring', 'Scoring', 'How much damage the lineup does at the plate.', ['OSI', 'wRC+', 'wOBA', 'RCV'], state)
-      + familyCard('difficulty', 'Difficulty', 'How hard the lineup is to pitch against.', ['ABQ', 'OBR', 'QS% Allowed', 'Pitch/Inn', 'Pitch Score Against'], state)
-      + familyCard('status', 'Status-Projection', 'How current output compares with projection/process.', ['projOSI', 'PP-Gap', 'PALS', 'xwOBA', 'xFIP Faced'], state)
-      + '</div>'
-      + lvSec('Lens context', 'target')
-      + '<div class="lv-lens">'
-      + '<div class="lv-cat"><div class="lv-cat-h">Matchup</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Hand</span><div class="lv-pills">'
-      + pill('hand', 'both', 'Both', state, false) + pill('hand', 'r', 'vs RHP', state, false) + pill('hand', 'l', 'vs LHP', state, false) + '</div></div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Pitcher</span><div class="lv-pills">'
-      + pill('pitcher', 'both', 'Both', state, false) + pill('pitcher', 'sp', 'SP', state, false) + pill('pitcher', 'rp', 'RP', state, false) + '</div></div>'
-      + '</div>'
-      + '<div class="lv-cat"><div class="lv-cat-h">Situation</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Location</span><div class="lv-pills">'
-      + pill('location', 'all', 'All', state, false) + pill('location', 'home', 'Home', state, false) + pill('location', 'away', 'Away', state, false) + '</div></div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Segment</span><div class="lv-pills">'
-      + pill('segment', 'full', 'Full', state, false) + pill('segment', 'f5', 'F5', state, false) + '</div></div>'
-      + '</div>'
-      + '<div class="lv-cat"><div class="lv-cat-h">Lineup side</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Bats</span><div class="lv-pills">'
-      + pill('batSide', 'both', 'Both', state, false) + pill('batSide', 'rhb', 'RHB', state, false) + pill('batSide', 'lhb', 'LHB', state, false) + '</div></div>'
-      + '</div>'
-      + '<div class="lv-cat"><div class="lv-cat-h">Time window</div>'
-      + '<div class="lv-cat-row"><span class="lv-cat-k">Range</span><div class="lv-pills">'
-      + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false) + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false) + '</div></div>'
-      + '</div>'
-      + '</div>'
-      + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>'
-      + renderContextBanner(meta, state);
-    root.querySelector('.lv-controls').innerHTML = rows;
+  var SURFACE_LOCK_TIP = 'Not available for Surface Level Wins — win results are team-level, not split by platoon.';
+
+  function filterCount(state) {
+    var n = 0;
+    var f = state.filter || {};
+    var d = DEFAULTS.filter;
+    if (state.family !== DEFAULTS.family) n += 1;
+    if (f.window !== d.window) n += 1;
+    if (f.segment !== d.segment) n += 1;
+    if (f.hand !== d.hand) n += 1;
+    if (f.location !== d.location) n += 1;
+    if (f.pitcher !== d.pitcher) n += 1;
+    if (f.batSide !== d.batSide) n += 1;
+    return n;
   }
-  function pill(key, val, label, state, disabled) {
-    var on = state.filter[key] === val;
-    return '<button class="lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"' + (disabled ? ' disabled' : '') + '>' + esc(label) + '</button>';
+  function statedContextHtml(state) {
+    var f = state.filter;
+    var surfaceLock = state.family === 'surface';
+    var hand = f.hand === 'r' ? 'vs RHP' : (f.hand === 'l' ? 'vs LHP' : 'Both hands');
+    var loc = f.location === 'home' ? 'Home' : (f.location === 'away' ? 'Away' : 'All parks');
+    var pitch = f.pitcher === 'sp' ? 'vs SP' : (f.pitcher === 'rp' ? 'vs RP' : 'SP+RP');
+    var bats = f.batSide === 'rhb' ? 'RHB' : (f.batSide === 'lhb' ? 'LHB' : 'Both bats');
+    var lock = surfaceLock ? ' <span title="' + esc(SURFACE_LOCK_TIP) + '">(surface lock: platoon/bats league-level)</span>' : '';
+    return 'Stated context (not toggles): <strong>' + esc(hand) + '</strong> · <strong>' + esc(loc) + '</strong> · <strong>' + esc(pitch) + '</strong> · <strong>' + esc(bats) + '</strong>' + lock;
   }
-  function titleCaseDesc(s) {
-    var A = global.MLBMAAssets;
-    return A && A.titleCaseLabel ? A.titleCaseLabel(s) : s;
+  function confidenceHtml(state) {
+    var w = (state.filter && state.filter.window) || 'YTD';
+    if (w === 'YTD') {
+      return 'Figures and confidence both use the full-season sample.';
+    }
+    return 'Figures use the ' + esc(w) + ' window. Confidence language uses the full available sample (YTD), not the window slice.';
   }
-  function familyCard(val, name, desc, chips, state) {
-    var on = state.family === val;
-    return '<button class="lv-family' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">'
-      + '<div class="lv-family-top"><span class="lv-family-name">' + esc(name) + '</span><span class="lv-family-n">' + chips.length + ' metrics</span></div>'
-      + '<div class="lv-family-desc">' + esc(titleCaseDesc(desc)) + '</div>'
-      + '<div class="lv-family-chips">' + chips.map(function(ch) {
-        var phase = (ch === 'PP-Gap');
-        return '<span class="lv-family-chip' + (phase ? ' phase' : '') + '">' + esc(ch) + '</span>';
-      }).join('') + '</div></button>';
+  function bindRankingsDataStatus(bar) {
+    var el = bar && bar.querySelector('#lvDataStatus');
+    if (!el || !global.ChaseDataStatus) return;
+    var snap = global.__MLBMA_RANKINGS_SNAPSHOT || {};
+    ChaseDataStatus.bindResume(el, function () {
+      var sheet = global.MLBMA_SHEET_BUST || '';
+      var parsed = sheet && /\d{4}-\d{2}-\d{2}/.test(String(sheet))
+        ? { as_of: String(sheet) }
+        : { as_of: snap.generatedAt || null };
+      var extra = {
+        source: sheet ? 'sheet' : (snap.generatedAt ? 'snapshot' : 'unknown'),
+        sport: 'mlb',
+        publishedAt: snap.generatedAt || sheet || null,
+        dataCutoff: parsed.as_of
+      };
+      if (!parsed.as_of && !snap.generatedAt) return ChaseDataStatus.unknownFields(extra);
+      return ChaseDataStatus.fieldsFromParsed(parsed, extra);
+    });
   }
 
+  function familyPill(val, label, state) {
+    var on = state.family === val;
+    return '<button type="button" class="hub-pill lv-pill' + (on ? ' active' : '') + '" data-a="family" data-v="' + val + '">' + esc(label) + '</button>';
+  }
+  function renderControls(root, state, teams, meta) {
+    var host = root.querySelector('.lv-controls');
+    var intro = lvSec('Matchup analysis lens', 'bar-chart-3', 'Window and segment govern the table; family switches Scoring / Difficulty / Projection. Hand, park, pitcher, and bat side stay stated context.');
+    var rowView = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">View</span><div class="ca-scopebar-pills">'
+      + familyPill('surface', 'Surface', state)
+      + familyPill('scoring', 'Scoring', state)
+      + familyPill('difficulty', 'Difficulty', state)
+      + familyPill('status', 'Projection', state)
+      + '</div></div></div>';
+    var rowScope = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">Window</span><div class="ca-scopebar-pills">'
+      + pill('window', 'YTD', 'YTD', state, false) + pill('window', 'L30', 'L30', state, false)
+      + pill('window', 'L14', 'L14', state, false) + pill('window', 'L7', 'L7', state, false)
+      + '</div></div><div class="ca-scopebar-group"><span class="ca-scopebar-label">Segment</span><div class="ca-scopebar-pills">'
+      + pill('segment', 'full', 'Full', state, false) + pill('segment', 'f5', 'F5', state, false)
+      + '</div></div></div>';
+    host.innerHTML = intro + '<div class="lv-scope-host"></div>' + renderContextBanner(meta, state);
+    var bar = host.querySelector('.lv-scope-host');
+    if (global.ChaseScopeBar && ChaseScopeBar.render) {
+      ChaseScopeBar.render(bar, {
+        controls: [rowView, rowScope],
+        context: statedContextHtml(state),
+        summary: 'Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong>',
+        confidence: confidenceHtml(state),
+        resetLabel: 'Reset scope',
+        count: filterCount(state)
+      });
+      bindRankingsDataStatus(bar);
+    } else {
+      bar.innerHTML = rowView + rowScope
+        + '<p class="ca-scopebar-context">' + statedContextHtml(state) + '</p>'
+        + '<div class="lv-query ca-query-line">Showing <strong>' + esc(nonDefaultTokens(state).join(' · ')) + '</strong></div>';
+    }
+  }
+  function pill(key, val, label, state, disabled, tip) {
+    var on = state.filter[key] === val;
+    return '<button type="button" class="hub-pill lv-pill' + (on ? ' active' : '') + '" data-a="f" data-k="' + key + '" data-v="' + val + '"'
+      + (disabled ? ' disabled' : '') + (disabled && tip ? ' title="' + esc(tip) + '"' : '')
+      + '>' + esc(label) + '</button>';
+  }
+  function metricInverts(key) {
+    return key === 'qs' || key === 'pitchScore' || key === 'xfip';
+  }
+  function ordinal(n) {
+    var v = n % 100;
+    if (v >= 11 && v <= 13) return n + 'th';
+    switch (n % 10) {
+      case 1: return n + 'st';
+      case 2: return n + 'nd';
+      case 3: return n + 'rd';
+      default: return n + 'th';
+    }
+  }
+  function leagueRankMaps(rows, defs) {
+    var n = (rows || []).length;
+    var maps = {};
+    (defs || []).forEach(function(def) {
+      if (!def || def.placeholder || def.trend) return;
+      var invert = metricInverts(def.key);
+      var items = (rows || []).map(function(r) {
+        return { t: teamKey(r.t), v: num(r[def.key]) };
+      });
+      items.sort(function(a, b) {
+        if (a.v == null && b.v == null) return 0;
+        if (a.v == null) return 1;
+        if (b.v == null) return -1;
+        if (a.v === b.v) return a.t.localeCompare(b.t);
+        return invert ? (a.v - b.v) : (b.v - a.v);
+      });
+      var ranks = {};
+      var lastVal = null;
+      var lastRank = 0;
+      items.forEach(function(item, idx) {
+        if (item.v == null) { ranks[item.t] = null; return; }
+        if (lastVal == null || item.v !== lastVal) lastRank = idx + 1;
+        lastVal = item.v;
+        ranks[item.t] = lastRank;
+      });
+      maps[def.key] = { ranks: ranks, n: n };
+    });
+    return maps;
+  }
+  function rankSuffix(def, team, maps) {
+    var pack = maps[def.key];
+    if (!pack) return '';
+    var rk = pack.ranks[teamKey(team)];
+    if (rk == null) return '';
+    return '<span class="lv-lg-rank">· ' + ordinal(rk) + ' of ' + pack.n + '</span>';
+  }
+  function valueWithRankHtml(def, row, ranges, maps) {
+    var raw = row[def.key];
+    var safe = sanityOk(def, raw) ? raw : null;
+    if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, row.t, raw);
+    return valueChipHtml(safe, def, ranges[def.key]) + rankSuffix(def, row.t, maps);
+  }
   function renderBody(root, state, rows) {
     var mount = root.querySelector('.lv-body');
     var defs = visibleDefsForDensity(familyDefs(state.family));
+    applyLeaguePoolsFromRows(rows);
     var ranges = rangeMapForDefs(rows, defs);
+    var maps = leagueRankMaps(rows, defs);
 
     var sortedRows = (rows || []).slice();
     var sortKey = state.sortKey;
@@ -425,6 +570,13 @@
       return sortDir === 'asc' ? (av - bv) : (bv - av);
     });
 
+    var sortPills = '<div class="lv-sort-pills" role="toolbar" aria-label="Sort">' + defs.map(function(def) {
+      if (def.placeholder) return '';
+      var sorted = state.sortKey === def.key;
+      var arrow = sorted ? (state.sortDir === 'desc' ? ' ↓' : ' ↑') : '';
+      return '<button type="button" class="hub-pill lv-pill' + (sorted ? ' active' : '') + '" data-a="sort" data-k="' + def.key + '">' + esc(def.label) + arrow + '</button>';
+    }).join('') + '</div>';
+
     var head = '<tr><th>#</th><th>Team</th>' + defs.map(function(def) {
       if (def.placeholder) return '<th>' + esc(def.label) + ' <span class="lv-phase">Phase 1</span></th>';
       var sorted = state.sortKey === def.key;
@@ -434,20 +586,35 @@
     var body = sortedRows.map(function(r, idx) {
       var cols = defs.map(function(def) {
         if (def.placeholder) return '<td>— <span class="lv-phase">Phase 1</span></td>';
-        var raw = r[def.key];
-        var safe = sanityOk(def, raw) ? raw : null;
-        if (safe == null && raw != null) console.warn('[LineupView] sanity fail', def.key, r.t, raw);
-        return '<td class="num' + (state.sortKey === def.key ? ' sort-col' : '') + '">' + valueChipHtml(safe, def, ranges[def.key]) + '</td>';
+        return '<td class="num' + (state.sortKey === def.key ? ' sort-col' : '') + '">' + valueWithRankHtml(def, r, ranges, maps) + '</td>';
       }).join('');
       return '<tr class="lv-row-team" data-team="' + esc(r.t) + '"><td class="lv-rank-num">' + (idx + 1) + '</td><td><span class="lv-team-cell team-cell-bold">'
         + teamLogoHtml(r.t, 28) + '<strong class="ab">' + esc(r.t) + '</strong></span></td>' + cols + '</tr>';
     }).join('');
-    mount.innerHTML = '<div class="lv-table-wrap"><table class="lv-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+
+    var cards = '<div class="lv-dual-cards">' + sortedRows.map(function(r, idx) {
+      var metrics = defs.map(function(def) {
+        if (def.placeholder) return '';
+        return '<div class="lv-team-card-metric"><span class="lab">' + esc(def.label) + '</span>'
+          + valueWithRankHtml(def, r, ranges, maps) + '</div>';
+      }).join('');
+      return '<article class="lv-team-card" data-team="' + esc(r.t) + '"><div class="lv-team-card-head">'
+        + '<span class="lv-team-card-rank">' + (idx + 1) + '</span>'
+        + teamLogoHtml(r.t, 28) + '<strong>' + esc(r.t) + '</strong></div>'
+        + '<div class="lv-team-card-metrics">' + metrics + '</div></article>';
+    }).join('') + '</div>';
+
+    mount.innerHTML = sortPills
+      + '<details class="lv-league-expander" open>'
+      + '<summary>Compare to league</summary>'
+      + '<div class="lv-table-wrap"><table class="lv-table lv-no-cardify"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>'
+      + cards
+      + '</details>';
   }
 
   function bind(root, ctx) {
     root.addEventListener('click', function(e) {
-      var sortTh = e.target.closest('th[data-a="sort"]');
+      var sortTh = e.target.closest('[data-a="sort"]');
       if (sortTh) {
         var sk = sortTh.getAttribute('data-k');
         if (sk) {
@@ -469,6 +636,18 @@
         } else if (a === 'family') {
           ctx._userInteracted = true;
           ctx.state.family = btn.dataset.v;
+          if (ctx.state.family === 'surface') {
+            // Surface win results carry no platoon/batter-side splits — reset those
+            // lenses so the disabled pills never show a stale active selection.
+            ctx.state.filter.hand = 'both';
+            ctx.state.filter.batSide = 'both';
+          }
+          normalizeSortState(ctx.state);
+          rerender(root, ctx);
+        } else if (a === 'scope-reset') {
+          ctx._userInteracted = true;
+          ctx.state.filter = Object.assign({}, DEFAULTS.filter);
+          ctx.state.family = DEFAULTS.family;
           normalizeSortState(ctx.state);
           rerender(root, ctx);
         }
@@ -478,7 +657,11 @@
 
   function registerLeaguePoolsFromRows(dataRows) {
     if (!A || !A.registerLeaguePool || !dataRows || !dataRows.length) return false;
-    var metrics = ['osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip', 'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'];
+    var metrics = [
+      'winPct', 'f5WinPct', 'pitcherWinPct',
+      'osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip',
+      'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'
+    ];
     var registered = false;
     metrics.forEach(function(k) {
       var vals = dataRows.map(function(r) { return num(r[k]); }).filter(function(v) { return v != null && !isNaN(v); });
@@ -487,6 +670,11 @@
         registered = true;
       }
     });
+    var xfipFaced = dataRows.map(function(r) { return num(r.xfip); }).filter(function(v) { return v != null && !isNaN(v); });
+    if (xfipFaced.length >= 2) {
+      A.registerLeaguePool('xfipFaced', xfipFaced);
+      registered = true;
+    }
     return registered;
   }
 
@@ -631,7 +819,7 @@
     }).catch(function(err) {
       console.error('[LineupView] render failed', err);
       dismissPageLoading();
-      root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:var(--neg,#f87171)">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
+      root.querySelector('.lv-body').innerHTML = '<div class="lv-note" style="color:var(--neg)">Render error: ' + esc(err && err.message ? err.message : String(err)) + '</div>';
     });
   }
 
@@ -673,15 +861,207 @@
       });
     }
     if (LM && LM.fetchAll) {
-      LM.fetchAll({ needL10SpHand: true, needPals: true, allowPartialTeamResults: true });
+      LM.fetchAll({
+        allowPartialTeamResults: true,
+        prefetchTeamResults: true,
+        prefetchL10SpHand: true
+      });
     }
     var fromBoot = !!global.__MLBMA_RANKINGS_BOOT_DONE && isDefaultSnapshotFilter(state.filter);
     rerender(shell, ctx, { fromBoot: fromBoot, silent: fromBoot });
+    window.addEventListener('popstate', function () {
+      ctx.state = stateFromUrl();
+      ctx.state.filter = normalizeFilter(ctx.state.filter);
+      normalizeSortState(ctx.state);
+      rerender(shell, ctx, { silent: true });
+    });
     return {
       rerender: function() { rerender(shell, ctx); },
       getState: function() { return JSON.parse(JSON.stringify(ctx.state)); }
     };
   }
 
-  global.LineupView = { mount: mount };
+  function matchupHand(hand) {
+    var h = String(hand || '').trim().toLowerCase().charAt(0);
+    return h === 'l' || h === 'r' ? h : 'both';
+  }
+
+  function resolvedRows(value) {
+    return value && !Array.isArray(value) && Array.isArray(value.rows) ? value.rows : (value || []);
+  }
+
+  function matchupPill(kind, value, label, active, disabled) {
+    return '<button type="button" class="hub-pill lv-pill' + (active ? ' active' : '') + '" data-mr-kind="'
+      + kind + '" data-mr-value="' + value + '"' + (disabled ? ' disabled' : '') + '>' + esc(label) + '</button>';
+  }
+
+  function matchupFilter(state, side) {
+    var ctx = state.contexts[side];
+    var locked = state.family === 'surface';
+    return normalizeFilter({
+      hand: locked ? 'both' : ctx.hand,
+      location: ctx.location,
+      pitcher: 'both',
+      batSide: locked ? 'both' : ctx.batSide,
+      segment: state.segment,
+      window: state.window
+    });
+  }
+
+  function matchupContextText(state, side) {
+    var ctx = state.contexts[side];
+    if (state.family === 'surface') {
+      return (side === 'away' ? 'Away split' : 'Home split') + ' · team results (starter hand and bat side do not apply)';
+    }
+    var hand = ctx.hand === 'l' ? 'LHP' : ctx.hand === 'r' ? 'RHP' : 'all pitchers';
+    var pitcher = ctx.opposingStarter && ctx.opposingStarter !== 'TBD' ? ' ' + ctx.opposingStarter : '';
+    var bats = ctx.batSide === 'both' ? '' : ' · ' + ctx.batSide.toUpperCase() + '-side bats';
+    return (side === 'away' ? 'Away split' : 'Home split') + ' · vs ' + hand + pitcher + bats;
+  }
+
+  function matchupTeamCard(state, side, rows) {
+    var ctx = state.contexts[side];
+    var defs = visibleDefsForDensity(familyDefs(state.family));
+    var maps = leagueRankMaps(rows, defs);
+    var ranges = rangeMapForDefs(rows, defs);
+    var row = (rows || []).find(function(r) { return teamKey(r.t) === teamKey(ctx.team); });
+    var metrics = defs.map(function(def) {
+      return '<div class="lv-matchup-team-metric"><span class="lab">' + esc(def.label) + '</span><span>'
+        + (row ? valueWithRankHtml(def, row, ranges, maps) : '—') + '</span></div>';
+    }).join('');
+    return '<article class="lv-matchup-team" data-team="' + esc(ctx.team) + '">'
+      + '<div class="lv-matchup-team-head">' + teamLogoHtml(ctx.team, 30) + '<strong>' + esc(ctx.team) + '</strong></div>'
+      + '<div class="lv-matchup-team-context">' + esc(matchupContextText(state, side)) + '</div>'
+      + '<div class="lv-matchup-team-metrics">' + metrics + '</div></article>';
+  }
+
+  function matchupControlsHtml(state) {
+    function family(value, label) {
+      return matchupPill('family', value, label, state.family === value, false);
+    }
+    function scope(kind, value, label) {
+      return matchupPill(kind, value, label, state[kind] === value, false);
+    }
+    var rowView = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">View</span><div class="ca-scopebar-pills">'
+      + family('surface', 'Results') + family('scoring', 'Scoring') + family('difficulty', 'Difficulty') + family('status', 'Projection')
+      + '</div></div></div>';
+    var rowScope = '<div class="ca-scopebar-row"><div class="ca-scopebar-group"><span class="ca-scopebar-label">Window</span><div class="ca-scopebar-pills">'
+      + scope('window', 'YTD', 'YTD') + scope('window', 'L30', 'L30') + scope('window', 'L14', 'L14') + scope('window', 'L7', 'L7')
+      + '</div></div><div class="ca-scopebar-group"><span class="ca-scopebar-label">Segment</span><div class="ca-scopebar-pills">'
+      + scope('segment', 'full', 'Full') + scope('segment', 'f5', 'F5') + '</div></div></div>';
+    return { rowView: rowView, rowScope: rowScope };
+  }
+
+  function matchupStatedContext(state) {
+    return 'Stated context (not toggles): <strong>' + esc(state.contexts.away.team) + '</strong> '
+      + esc(matchupContextText(state, 'away')) + ' · <strong>' + esc(state.contexts.home.team) + '</strong> '
+      + esc(matchupContextText(state, 'home'));
+  }
+
+  function renderMatchupScope(host, state) {
+    var rows = matchupControlsHtml(state);
+    var count = 0;
+    if (state.family !== 'scoring') count++;
+    if (state.window !== 'YTD') count++;
+    if (state.segment !== 'full') count++;
+    if (global.ChaseScopeBar && ChaseScopeBar.render) {
+      ChaseScopeBar.render(host, {
+        controls: [rows.rowView, rows.rowScope],
+        context: matchupStatedContext(state),
+        confidence: confidenceHtml({ filter: { window: state.window } }),
+        count: count,
+        dataStatusHtml: ''
+      });
+    } else {
+      host.innerHTML = rows.rowView + rows.rowScope
+        + '<p class="ca-scopebar-context">' + matchupStatedContext(state) + '</p>';
+    }
+  }
+
+  function matchupOverridesHtml(state) {
+    var side = state.leagueSide;
+    var ctx = state.contexts[side];
+    var locked = state.family === 'surface';
+    return '<div class="lv-matchup-overrides" aria-label="League comparison context">'
+      + '<div class="lv-matchup-control"><span class="lv-label">League lens</span><div class="lv-pills">'
+      + matchupPill('leagueSide', 'away', state.contexts.away.team, side === 'away', false)
+      + matchupPill('leagueSide', 'home', state.contexts.home.team, side === 'home', false) + '</div></div>'
+      + '<div class="lv-matchup-control"><span class="lv-label">Pitcher hand</span><div class="lv-pills">'
+      + matchupPill('hand', 'both', 'Both', ctx.hand === 'both', locked)
+      + matchupPill('hand', 'r', 'RHP', ctx.hand === 'r', locked)
+      + matchupPill('hand', 'l', 'LHP', ctx.hand === 'l', locked) + '</div></div>'
+      + '<div class="lv-matchup-control"><span class="lv-label">Bat side</span><div class="lv-pills">'
+      + matchupPill('batSide', 'both', 'Both', ctx.batSide === 'both', locked)
+      + matchupPill('batSide', 'r', 'R', ctx.batSide === 'r', locked)
+      + matchupPill('batSide', 'l', 'L', ctx.batSide === 'l', locked) + '</div></div></div>'
+      + (locked ? '<p class="lv-matchup-note">Team results are team-level; pitcher hand and bat side are locked to Both.</p>' : '')
+      + '<p class="lv-matchup-note">League board context: ' + esc(matchupContextText(state, side)) + '.</p>';
+  }
+
+  function mountMatchup(opts) {
+    opts = opts || {};
+    ensureStyles();
+    var el = typeof opts.mountId === 'string' ? document.getElementById(opts.mountId) : opts.element;
+    if (!el || !LM || !LM.rankAll || !opts.away || !opts.home) return null;
+    var state = {
+      family: 'scoring', window: 'YTD', segment: 'full', leagueSide: 'away', sortDir: 'desc', sortKey: 'osi',
+      contexts: {
+        away: { team: teamKey(opts.away), location: 'away', hand: matchupHand(opts.homeHand), batSide: 'both', opposingStarter: opts.homeStarter || 'TBD' },
+        home: { team: teamKey(opts.home), location: 'home', hand: matchupHand(opts.awayHand), batSide: 'both', opposingStarter: opts.awayStarter || 'TBD' }
+      }
+    };
+    el.classList.add('lv-matchup');
+
+    function paint() {
+      normalizeSortState(state);
+      el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div><div class="lv-scope-host"></div></div><div class="lv-matchup-loading lv-note">Loading league context…</div>';
+      renderMatchupScope(el.querySelector('.lv-scope-host'), state);
+      return Promise.all([
+        LM.rankAll(matchupFilter(state, 'away'), state.family, { includeMeta: true }),
+        LM.rankAll(matchupFilter(state, 'home'), state.family, { includeMeta: true })
+      ]).then(function(values) {
+        var awayRows = resolvedRows(values[0]);
+        var homeRows = resolvedRows(values[1]);
+        var leagueRows = state.leagueSide === 'home' ? homeRows : awayRows;
+        applyLeaguePoolsFromRows(awayRows.concat(homeRows));
+        el.innerHTML = '<div class="lv-bar"><div class="lv-sec">Team rankings in this matchup</div><div class="lv-scope-host"></div></div>'
+          + '<div class="lv-matchup-teams">' + matchupTeamCard(state, 'away', awayRows) + matchupTeamCard(state, 'home', homeRows) + '</div>'
+          + '<div class="lv-matchup-league"><div class="lv-body"></div></div>';
+        renderMatchupScope(el.querySelector('.lv-scope-host'), state);
+        renderBody(el.querySelector('.lv-matchup-league'), state, leagueRows);
+        var details = el.querySelector('.lv-league-expander');
+        if (details) {
+          details.removeAttribute('open');
+          var holder = document.createElement('div');
+          holder.innerHTML = matchupOverridesHtml(state);
+          while (holder.lastChild) details.insertBefore(holder.lastChild, details.children[1] || null);
+        }
+      }).catch(function(err) {
+        el.innerHTML = '<div class="lv-note" style="color:var(--neg)">Team rankings unavailable: ' + esc(err && err.message ? err.message : err) + '</div>';
+      });
+    }
+
+    el.addEventListener('click', function(e) {
+      var sort = e.target.closest('[data-a="sort"]');
+      if (sort) {
+        var key = sort.getAttribute('data-k');
+        if (state.sortKey === key) state.sortDir = state.sortDir === 'desc' ? 'asc' : 'desc';
+        else { state.sortKey = key; state.sortDir = 'desc'; }
+        paint();
+        return;
+      }
+      var btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      var kind = btn.getAttribute('data-mr-kind');
+      var value = btn.getAttribute('data-mr-value');
+      if (!kind || !value) return;
+      if (kind === 'family' || kind === 'window' || kind === 'segment' || kind === 'leagueSide') state[kind] = value;
+      else if (kind === 'hand' || kind === 'batSide') state.contexts[state.leagueSide][kind] = value;
+      paint();
+    });
+    paint();
+    return { rerender: paint, getState: function() { return JSON.parse(JSON.stringify(state)); } };
+  }
+
+  global.LineupView = { mount: mount, mountMatchup: mountMatchup };
 })(typeof window !== 'undefined' ? window : this);

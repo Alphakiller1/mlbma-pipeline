@@ -1,0 +1,31 @@
+# Cloudflare Pages reads _redirects from the deploy ROOT only.
+# dashboard/_redirects is inert (never evaluated). This file is the redirect contract.
+#
+# Live 308s you may see on chase-analytics.com are Pages' automatic trailing-slash /
+# extension normalization — they are not defined here. Explicit product redirects
+# going forward belong in THIS file as 301s.
+
+# Legacy OEM filename at the domain root (old bookmarks / nav).
+/chase_analytics_mlb_oem_v7.html  /dashboard/index.html  301
+/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
+
+# Same legacy filename under /dashboard/ (current nav still links here; HTML stub also redirects).
+/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/index.html  301
+/dashboard/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
+
+# Demoted public research surfaces (WP4A) — files remain under /dashboard/render/ for capture.
+/dashboard/team_rankings.html  /dashboard/matchup_compare.html  301
+/dashboard/team_rankings       /dashboard/matchup_compare.html  301
+/team_rankings.html            /dashboard/matchup_compare.html  301
+/dashboard/team_profile.html   /dashboard/index.html  301
+/dashboard/team_profile        /dashboard/index.html  301
+/dashboard/pitcher_profile.html /dashboard/index.html  301
+/dashboard/pitcher_profile     /dashboard/index.html  301
+/dashboard/bullpen_report.html /dashboard/index.html  301
+/dashboard/bullpen_report      /dashboard/index.html  301
+/dashboard/reliever_profile.html /dashboard/index.html  301
+/dashboard/reliever_profile    /dashboard/index.html  301
+
+# Sport roots — real per-route index.html (scripts/build_sport_routes.py).
+# Do not 302 /mlb onto the dashboard; that hid the sport hub.
+

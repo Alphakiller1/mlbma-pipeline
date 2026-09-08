@@ -6,10 +6,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 NAV_HTML = (DASH / "chase_nav.html").read_text(encoding="utf-8").strip()
+STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+NAV_JS_STAMP = "20260908d"
 
 PAGES = [
     "index.html",
-    "chase_analytics_mlb_oem_v7.html",
+    "index.html",
     "signal_board.html",
     "matchup_compare.html",
     "matchup_sheet.html",
@@ -21,11 +23,12 @@ PAGES = [
     "glossary.html",
 ]
 
-CHASE_CSS = '<link rel="stylesheet" href="chase_nav.css?v=20260701c">'
-DESIGN_CSS = '<link rel="stylesheet" href="mlbma_design_system.css?v=20260630b">'
+CHASE_CSS = f'<link rel="stylesheet" href="chase_nav.css?v={STAMP}">'
+DESIGN_CSS = f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">'
 RESEARCH_CSS = '<link rel="stylesheet" href="research_lab.css">'
 FAVICON = '<link rel="icon" type="image/png" href="assets/chase-icon-filled.png">'
-CHASE_JS = '<script src="chase_nav.js?v=20260701a"></script>'
+CHASE_JS = f'<script src="chase_nav.js?v={NAV_JS_STAMP}"></script>'
+DATASTATUS_JS = f'<script src="chase_datastatus.js?v={NAV_JS_STAMP}"></script>'
 ASSETS_JS = '<script src="mlbma_assets.js"></script>'
 
 NAV_BLOCK_RE = re.compile(
@@ -51,16 +54,14 @@ NAV_BLOCK_TRUNCATED_RE = re.compile(
 
 MOBILE_DRAWER_TAIL = (
     "  <div class=\"chase-mobile-nav\">\n"
-    "    <a href=\"chase_analytics_mlb_oem_v7.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
-    "    <a href=\"chase_analytics_mlb_oem_v7.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
-    "    <a href=\"team_rankings.html\" class=\"chase-mobile-link\" data-nav=\"team-rankings\">Team Rankings</a>\n"
-    "    <a href=\"chase_analytics_mlb_oem_v7.html#section-research-lab\" class=\"chase-mobile-link\" data-nav=\"research\">Research Lab</a>\n"
-    "    <div class=\"chase-mobile-section\">Profiles</div>\n"
-    "    <a href=\"team_profile.html\" class=\"chase-mobile-link\">Team Profile</a>\n"
-    "    <a href=\"pitcher_profile.html\" class=\"chase-mobile-link\">Pitcher Profile</a>\n"
-    "    <a href=\"bullpen_report.html\" class=\"chase-mobile-link\">Bullpen Profile</a>\n"
+    "    <a href=\"index.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
+    "    <a href=\"index.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
+    "    <a href=\"matchup_compare.html\" class=\"chase-mobile-link\" data-nav=\"compare\">Compare</a>\n"
     "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
-    "    <a href=\"reliever_profile.html\" class=\"chase-mobile-link\">Reliever Profile</a>\n"
+    "    <a href=\"/mlb/\" class=\"chase-mobile-link\">MLB</a>\n"
+    "    <a href=\"/nfl/matchups.html\" class=\"chase-mobile-link\" data-nav=\"nfl\">NFL Matchups</a>\n"
+    "    <a href=\"/cfb/\" class=\"chase-mobile-link\">CFB Board</a>\n"
+    "    <a href=\"/wnba/\" class=\"chase-mobile-link\">WNBA Board</a>\n"
     "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
     "  </div>\n"
     "  <div class=\"chase-mobile-status\">\n"
@@ -118,10 +119,22 @@ def ensure_head_links(html: str) -> str:
 
 
 def ensure_body_script(html: str) -> str:
+    html = re.sub(
+        r'src="chase_nav\.js\?v=[^"]*"',
+        f'src="chase_nav.js?v={NAV_JS_STAMP}"',
+        html,
+    )
+    if "chase_datastatus.js" not in html and "chase_nav.js" in html:
+        html = re.sub(
+            r'(<script[^>]*src="chase_nav\.js[^"]*"[^>]*></script>)',
+            DATASTATUS_JS + r"\n\1",
+            html,
+            count=1,
+        )
     if "chase_nav.js" in html:
         return html
     if "</body>" in html:
-        return html.replace("</body>", f"  {CHASE_JS}\n</body>", 1)
+        return html.replace("</body>", f"  {DATASTATUS_JS}\n  {CHASE_JS}\n</body>", 1)
     return html
 
 
