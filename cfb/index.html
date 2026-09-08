@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CFB — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908g">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908g">
-  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908g">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908g">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908h">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908h">
+  <link rel="stylesheet" href="/dashboard/theme.css?v=20260908h">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908h">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="cfb">
@@ -97,18 +97,18 @@
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async">Loading CFB board…</div>
   </main>
-  <script src="/dashboard/design_layer_version.js?v=20260908g"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908g"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908g"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908g"></script>
-  <script src="/dashboard/sports/cfb.js?v=20260908g"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908g"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908g"></script>
-  <script src="/dashboard/chase_shell.js?v=20260908g"></script>
-  <script src="/dashboard/chase_entity.js?v=20260908g"></script>
-  <script src="/dashboard/chase_metric.js?v=20260908g"></script>
-  <script src="/dashboard/chase_modelstatus.js?v=20260908g"></script>
-  <script src="/dashboard/chase_scope.js?v=20260908g"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260908h"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908h"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908h"></script>
+  <script src="/dashboard/sports/chase_board.js?v=20260908h"></script>
+  <script src="/dashboard/sports/cfb.js?v=20260908h"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908h"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908h"></script>
+  <script src="/dashboard/chase_shell.js?v=20260908h"></script>
+  <script src="/dashboard/chase_entity.js?v=20260908h"></script>
+  <script src="/dashboard/chase_metric.js?v=20260908h"></script>
+  <script src="/dashboard/chase_modelstatus.js?v=20260908h"></script>
+  <script src="/dashboard/chase_scope.js?v=20260908h"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportCFB;
   window.CHASE_SPORT_ID = "cfb";
@@ -171,6 +171,7 @@
     html += '<p class="ca-helper">Authority (text): ' + esc(nb.authority.level) + '</p>';
     html += '<p class="ca-helper">' + nb.games.length + ' games, sorted by kickoff_utc at view time.</p>';
     document.getElementById('slate').innerHTML = html;
+    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
     if (!nb.games.length && !(nb.priced_markets && nb.priced_markets.length)) {
       ChaseAsyncState.render(document.getElementById('slate'), 'empty');
     }

@@ -203,6 +203,7 @@ HUB_JS = r"""
     html += '<p class="ca-helper">Authority (text): ' + esc(nb.authority.level) + '</p>';
     html += '<p class="ca-helper">' + nb.games.length + ' games, sorted by kickoff_utc at view time.</p>';
     document.getElementById('slate').innerHTML = html;
+    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
     if (!nb.games.length && !(nb.priced_markets && nb.priced_markets.length)) {
       ChaseAsyncState.render(document.getElementById('slate'), 'empty');
     }
@@ -286,6 +287,7 @@ MATCHUPS_JS = r"""
     });
     html += '</div>';
     document.getElementById('slate').innerHTML = html;
+    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
     if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
   }).catch(function (err) {
     ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
@@ -339,6 +341,7 @@ RESULTS_JS = r"""
       html += ' · Totals ' + esc(totals.win) + '-' + esc(totals.loss) + '-' + esc(totals.push) + '</p>';
       html += '<p class="ca-helper">may_bet remains ' + esc(rec.may_bet === true) + ' as published. Presentation cannot upgrade it.</p>';
       document.getElementById('slate').innerHTML = html;
+    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
     }).catch(function (err) {
       ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
     });

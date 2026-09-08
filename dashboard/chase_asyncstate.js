@@ -29,5 +29,24 @@
     el.innerHTML = '<p>' + COPY[kind] + extra + '</p>';
   }
 
-  global.ChaseAsyncState = { render: render, kinds: Object.keys(COPY) };
+  /**
+   * Hand the region back to real content.
+   *
+   * render() owns innerHTML, so a route that writes its own markup into the
+   * same element leaves data-state pinned at whatever was set last - in
+   * practice 'loading', over a fully rendered board. Two costs: the container
+   * keeps role="status" aria-live, so assistive tech treats an entire slate as
+   * a status announcement; and a genuine hang becomes indistinguishable from
+   * success for CSS, tests and monitoring. Call this immediately after writing
+   * content.
+   */
+  function ready(el) {
+    if (!el) return;
+    el.className = 'ca-async ca-async--ready';
+    el.removeAttribute('role');
+    el.removeAttribute('aria-live');
+    el.setAttribute('data-state', 'ready');
+  }
+
+  global.ChaseAsyncState = { render: render, ready: ready, kinds: Object.keys(COPY) };
 })(typeof window !== 'undefined' ? window : this);
