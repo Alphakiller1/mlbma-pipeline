@@ -41,6 +41,8 @@ jobs:
           echo "files to publish: $(find _site -type f | wc -l)"
           test -f _site/dashboard/matchup_shared.js
           grep -q hydrateMatchupPitcherStatsFromMlb _site/dashboard/matchup_shared.js
+          test -f _site/data/public/mlb/slate.json
+          test -f _site/data/public/nfl/slate.json
 
       - name: Configure Pages for static master production deploys
         run: |

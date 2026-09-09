@@ -66,6 +66,15 @@ export async function setDiscordIdentity(env, userId, discord) {
   return (rows && rows[0]) || null;
 }
 
+/** Model Center is Premium (active Stripe/Patreon status) or staff. Never a signed-out user. */
+export function hasModelCenterAccess(profile) {
+  if (!profile) return false;
+  const role = String(profile.role || '').toLowerCase();
+  if (role === 'admin' || role === 'owner' || role === 'staff') return true;
+  const sub = String(profile.subscription_status || '').toLowerCase();
+  return sub === 'active';
+}
+
 /** Whitelist a profile object down to the safe, returnable fields. */
 export function safeProfile(profile) {
   if (!profile) return null;

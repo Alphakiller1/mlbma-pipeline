@@ -46,7 +46,7 @@ WRANGLER = "wrangler@4.40.0"
 # Mirrors the workflow's rsync --exclude list: ship the web surface only.
 EXCLUDE_DIRS = {
     ".git", ".github", "node_modules", "core", "outputs", "pipeline", "scripts",
-    "tests", "__pycache__", "_site", "data", "docs", ".pytest_cache", ".ruff_cache",
+    "tests", "__pycache__", "_site", "docs", ".pytest_cache", ".ruff_cache",
 }
 EXCLUDE_SUFFIXES = {".py", ".pyc", ".md", ".bat", ".log"}
 EXCLUDE_NAMES = {"requirements.txt", "wrangler.jsonc", "wrangler.toml", ".assetsignore", ".gitignore"}
@@ -84,6 +84,8 @@ def build_site() -> int:
         rel = src.relative_to(REPO)
         if any(part in EXCLUDE_DIRS for part in rel.parts):
             continue
+        if rel.parts and rel.parts[0] == "data" and (len(rel.parts) < 2 or rel.parts[1] != "public"):
+            continue
         if src.is_dir():
             continue
         if src.suffix in EXCLUDE_SUFFIXES or src.name in EXCLUDE_NAMES:
@@ -108,6 +110,10 @@ def verify_site() -> None:
             fail(f"{leaked} leaked into the build")
     if any(p.suffix == ".py" for p in SITE.rglob("*")):
         fail("a .py file leaked into the build")
+    for sport in ("mlb", "nfl"):
+        slate = SITE / "data" / "public" / sport / "slate.json"
+        if not slate.exists():
+            fail(f"data/public/{sport}/slate.json missing from the build")
 
 
 def api(method: str, path: str, body: dict | None = None) -> dict:

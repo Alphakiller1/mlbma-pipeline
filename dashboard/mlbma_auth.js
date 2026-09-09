@@ -25,7 +25,7 @@
   // of a third-party CDN makes the auth panel initialize fast and immune to browser
   // tracking-prevention blocking cross-site requests. To upgrade, replace
   // dashboard/vendor/supabase.min.js with a newer pinned UMD build.
-  var SUPABASE_CDN = 'vendor/supabase.min.js';
+  var SUPABASE_CDN = '/dashboard/vendor/supabase.min.js';
   var STORAGE_KEY = 'mlbma-auth'; // isolated from the dashboard's raw hub_dataset fetches
 
   var _client = null;
@@ -176,6 +176,13 @@
     };
   }
 
+  function hasModelCenterAccess(profile) {
+    if (!profile) return false;
+    var role = String(profile.role || '').toLowerCase();
+    if (role === 'admin' || role === 'owner' || role === 'staff') return true;
+    return String(profile.subscription_status || '').toLowerCase() === 'active';
+  }
+
   global.MLBMA_AUTH = {
     init: init,
     isConfigured: isConfigured,
@@ -188,6 +195,7 @@
     verifyEmailOtp: verifyEmailOtp,
     signOut: signOut,
     onAuthStateChange: onAuthStateChange,
+    hasModelCenterAccess: hasModelCenterAccess,
     // escape hatch for advanced callers (e.g. profile reads); may be null before init()
     _rawClient: function () { return _client; }
   };

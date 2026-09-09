@@ -42,6 +42,7 @@ STAMPED = (
     "mlbma_assets.js",
     "mlbma_ui.js",
     "matchup_shared.js",
+    "model_center.js",
     "chase-semantic.css",
     "chase-primitives.css",
     "chase-components.css",
@@ -156,6 +157,13 @@ def main() -> int:
             violations.append(
                 "design/chase-tokens-v1.css is not byte-identical to design/tokens/chase-tokens.css"
             )
+    pkg_tokens = ROOT / "packages" / "chase-design-system" / "css" / "chase-tokens-v1.css"
+    if not pkg_tokens.is_file():
+        violations.append("missing packages/chase-design-system/css/chase-tokens-v1.css")
+    elif TIER1_PUB.is_file() and pkg_tokens.read_bytes() != TIER1_PUB.read_bytes():
+        violations.append(
+            "packages/chase-design-system/css/chase-tokens-v1.css diverges from design/chase-tokens-v1.css"
+        )
 
     if VENDOR.is_file():
         # The pinned digest is explicitly LF-normalised; Git may materialise CRLF
@@ -199,7 +207,7 @@ def main() -> int:
     html_scan: list[Path] = (
         list(DASHBOARD.glob("*.html"))
         + list((DASHBOARD / "render").glob("*.html"))
-        + [ROOT / "index.html", ROOT / "404.html", ROOT / "models" / "index.html"]
+        + [ROOT / "index.html", ROOT / "404.html", ROOT / "models" / "index.html", ROOT / "model-center" / "index.html"]
         + [p for sport in ("mlb", "nfl", "wnba", "cfb") for p in (ROOT / sport).glob("*.html")]
     )
     for html in sorted({p.resolve() for p in html_scan if p.is_file()}):

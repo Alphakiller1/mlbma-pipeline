@@ -313,27 +313,22 @@ def models_page() -> str:
     <section class="ca-card ca-card-pad">
       <h2>Access</h2>
       <p>Public Chase Analytics is Opening and Matchups: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks inside each game.</p>
-      <p>Model Center is a separate product. Sign-in and entitlement are not wired on this stub. When they ship, this route will load the authenticated board instead of a teaser.</p>
-      <p class="ca-helper" id="mcContext">No projected scores, model lines, or confidence values are shown here.</p>
+      <p>Model Center loads projections only after a signed-in Premium session is verified by <code>/api/me</code> and <code>/api/model-center/board</code>. This page never embeds a public board URL.</p>
+      <div data-mlbma-auth-panel></div>
+      <p class="ca-helper" id="mcContext">No projected scores, model lines, or confidence values are shown until entitlement succeeds.</p>
     </section>
+    <div id="mcBoard"></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
+  <script src="/dashboard/mlbma_config.js?v={STAMP}"></script>
+  <script src="/dashboard/mlbma_supabase_headers.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
-  <script>
-  (function () {{
-    var q = new URLSearchParams(location.search);
-    var sport = q.get('sport');
-    var game = q.get('game');
-    var el = document.getElementById('mcContext');
-    if (!el) return;
-    if (sport && game) {{
-      el.textContent = 'Requested ' + sport.toUpperCase() + ' game ' + game +
-        '. Predictive payload is withheld until entitlement is verified server-side.';
-    }}
-  }})();
-  </script>
+  <script src="/dashboard/mlbma_auth.js?v={STAMP}"></script>
+  <script src="/dashboard/mlbma_auth_ui.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/chase_board.js?v={STAMP}"></script>
+  <script src="/dashboard/model_center.js?v={STAMP}"></script>
 </body>
 </html>
 """

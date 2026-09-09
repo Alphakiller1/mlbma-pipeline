@@ -37,6 +37,13 @@
     return g.kickoff_utc || g.commence_time_utc || g.start_utc || g.game_time_utc || null;
   }
 
+  function freshnessState(raw) {
+    if (raw == null || raw === '') return null;
+    if (typeof raw === 'string') return raw;
+    if (raw && typeof raw === 'object') return raw.state || raw.label || null;
+    return null;
+  }
+
   function attributedBook(g) {
     var book = g.book || g.book_name || null;
     var market = g.book_market || g.market_type || null;
@@ -84,7 +91,7 @@
       away_lineup_state: g.away_lineup_state || null,
       home_lineup_state: g.home_lineup_state || null,
       availability_summary: g.availability_summary || null,
-      freshness: g.freshness || null
+      freshness: freshnessState(g.freshness)
     };
     if (book) {
       row.book = book.book;

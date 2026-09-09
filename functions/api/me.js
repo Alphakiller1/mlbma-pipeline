@@ -5,7 +5,7 @@
  * profile with the service role, and returns a whitelisted view. Never returns secrets or
  * raw provider tokens.
  */
-import { getUserFromRequest, getProfile, safeProfile } from '../_shared/supabase.js';
+import { getUserFromRequest, getProfile, safeProfile, hasModelCenterAccess } from '../_shared/supabase.js';
 import { json, errorResponse, requireEnv } from '../_shared/http.js';
 
 export async function onRequestGet({ request, env }) {
@@ -13,8 +13,7 @@ export async function onRequestGet({ request, env }) {
     requireEnv(env, ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
     const user = await getUserFromRequest(request, env);
     const profile = await getProfile(env, user.id);
-    return json({
-      profile: safeProfile(profile) || {
+    const safe = safeProfile(profile) || {
         // Fall back to auth fields if the trigger-created row hasn't materialized yet.
         id: user.id,
         email: user.email || null,
@@ -25,7 +24,10 @@ export async function onRequestGet({ request, env }) {
         discord_user_id: null,
         discord_username: null,
         discord_avatar: null
-      }
+      };
+    return json({
+      profile: safe,
+      model_center: { entitled: hasModelCenterAccess(safe) }
     });
   } catch (err) {
     return errorResponse(err);

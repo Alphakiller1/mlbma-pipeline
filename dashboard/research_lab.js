@@ -218,7 +218,7 @@ function profileWindowFieldsFromRow(row) {
     tick();
   }
 
-  var SUBTABS = ['trends', 'compare', 'pitching'];
+  var SUBTABS = ['trends', 'pitching'];
 
   function titleCaseDesc(s) {
     return A && A.titleCaseLabel ? A.titleCaseLabel(s) : s;
@@ -331,14 +331,9 @@ function profileWindowFieldsFromRow(row) {
   }
 
   function mountWorkspaceHeader() {
-    if (document.querySelector('.ca-lab__header')) return;
     var el = document.getElementById('researchLabHeader');
     if (!el || el.dataset.mounted) return;
     el.dataset.mounted = '1';
-    el.innerHTML = '<div class="rl-workspace-header">'
-      + '<h2 class="rl-workspace-title"><img src="assets/chase-icon-filled.png" alt="" width="24" height="24" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display=\'none\'">Research Lab</h2>'
-      + '<p class="rl-workspace-subtitle">' + esc(titleCaseDesc('Three focused tools � Trends, Compare, and Pitcher Intelligence.')) + '</p>'
-      + '</div>';
   }
 
 
@@ -445,8 +440,6 @@ function profileWindowFieldsFromRow(row) {
       if (panes.length !== 4 || !tabBar.querySelector('[data-pane="trends"]')) {
         tabBar.innerHTML = ''
           + '<button type="button" class="subtab active" data-pane="trends">Trends</button>'
-          + '<button type="button" class="subtab" data-pane="splits">Splits</button>'
-          + '<button type="button" class="subtab" data-pane="compare">Compare</button>'
           + '<button type="button" class="subtab" data-pane="pitching">Pitcher Intelligence</button>';
       }
     }
@@ -494,12 +487,8 @@ function profileWindowFieldsFromRow(row) {
   function renderComparePane() {
     var root = document.getElementById('rlCompareRoot');
     if (!root) return;
-    syncResearchGlobalsFromLiveData();
-    fetchSpProfiles().then(function() {
-      return fetchTeamProfiles();
-    }).finally(function() {
-      renderComparePaneInner(root);
-    });
+    root.innerHTML = '<p class="ca-helper">Head-to-head lineup research lives in Matchup Analysis, not a separate Compare lab.</p>'
+      + '<p><a class="ca-text-link" href="matchup_compare.html">Open Matchup Analysis</a></p>';
   }
 
   function defaultCompareSide() {
@@ -1370,7 +1359,7 @@ function profileWindowFieldsFromRow(row) {
     if (name === 'trends') {
       if (global.TrendsHeatmap && TrendsHeatmap.rerender) TrendsHeatmap.rerender();
     } else if (name === 'compare') {
-      fetchSpProfiles().then(function() { renderComparePane(); });
+      renderComparePane();
     } else if (name === 'pitching') {
       var mountPl = function() {
         if (global.PitcherLab && PitcherLab.mount) {
@@ -1397,7 +1386,7 @@ function profileWindowFieldsFromRow(row) {
     global.showResearchSubtab = function(name) {
       if (name === 'research-home' || name === 'lineup' || name === 'splits' || name === 'splits-trends') name = 'trends';
       if (name === 'pitcher') name = 'pitching';
-      if (name === 'pitching-vs-lineup') name = 'compare';
+      if (name === 'compare' || name === 'pitching-vs-lineup') name = 'trends';
       if (SUBTABS.indexOf(name) < 0) name = 'trends';
       if (typeof orig === 'function') orig(name);
       else {
@@ -1442,7 +1431,7 @@ function profileWindowFieldsFromRow(row) {
     };
     var origInitCompare = global.initCompare;
     global.initCompare = function() {
-      fetchSpProfiles().then(function() { renderComparePane(); });
+      renderComparePane();
     };
   }
 

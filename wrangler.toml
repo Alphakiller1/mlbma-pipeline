@@ -7,6 +7,12 @@
 # Secrets are NOT stored here (this file is committed). Set them in the Cloudflare
 # dashboard (Pages → Settings → Environment variables / Secrets) or via
 # `wrangler pages secret put <NAME>`. See docs/CLOUDFLARE_DISCORD_SETUP.md.
+#
+# Model Center (server-side only; never put these URLs in dashboard JS):
+#   MLB_MODEL_BOARD_URL
+#   NFL_MODEL_BOARD_URL
+# Production static deploy uses repo-root `_site` rsync (cloudflare-deploy.yml),
+# not pages_build_output_dir below.
 name = "mlbma-pipeline"
 pages_build_output_dir = "dashboard"
 compatibility_date = "2024-09-23"

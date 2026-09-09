@@ -3,7 +3,7 @@
 Use this file as the gate. Re-run the commands after every edit. Walk the list top to bottom, then walk it again after generators run.
 
 ## 0. Ownership and honesty
-- [ ] This change is `mlbma-pipeline` only (Cursor). Do not restyle mlb-model / nfl-model / wnba-edge-model / cfb-model / chase-content-engine.
+- [ ] Public Research work lives in `mlbma-pipeline`. Model desks may vendor `chase-tokens-v1.css` without changing formulas.
 - [ ] Default branch is `master`. Feature branch matches `cursor/<slug>-1d6d`.
 - [ ] Product language: Opening, Matchups, Matchup Analysis, MLB, NFL, Model Center, Glossary.
 - [ ] Compare is not a first-class public nav item. Team Rankings is not a first-class public section. “Research Desk” is not public copy.
@@ -87,14 +87,7 @@ assert Path('data/public/mlb/slate.json').is_file()
 - [ ] Opening copy still says models stay in Model Center
 - [ ] `_redirects` has `/models` → `/model-center`
 
-## Out of scope this PR (honest leftovers)
-- Authenticated Model Center API and entitlement (DS-11)
-- Stop publishing live model `board.json` on GitHub Pages (producer-side)
-- `chase-design-system` 1.0.0 package extraction (DS-03)
-- MLB/NFL/WNBA/CFB model shell migrations (Codex)
-- Full `PublicMlbMatchup` workspace modules MLB-C01–MLB-M01 (preview tabs beyond Overview are honest-empty)
-- Live factual pipeline writing `data/public/*/slate.json` (committed fixtures only)
-- Playwright visual matrix at all listed viewports (CI artifact store, not git)
-- Legacy `#60A5FA` / blue token closure across mature CSS
-- Internal Research Lab Compare pane / projOSI on Opening’s lab (not public nav)
-- `chase_board.js` remains on disk for parked WNBA/CFB adapters; it must not load on public MLB/NFL or Matchup Analysis
+## Remaining producer / ops work
+- Cloudflare env must set `MLB_MODEL_BOARD_URL` / `NFL_MODEL_BOARD_URL` (never in client JS)
+- Model repos should stop publishing unauthenticated `board.json` on GitHub Pages once those env URLs point at a private origin
+- `scripts/deploy_cloudflare.py` must ship `data/public/{mlb,nfl}/slate.json` (private `data/` stays excluded)

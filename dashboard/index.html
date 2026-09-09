@@ -3090,7 +3090,7 @@ body.view-research .ca-lab { display: block; }
       <li>Probable starters with Pitch Score and platoon context</li>
       <li>Stadium and weather</li>
       <li>Projected batting orders with platoon coloring</li>
-      <li>One-click compare</li>
+      <li>Open Matchup Analysis for the selected game</li>
     </ul>
   </header>
   <div class="matchup-day-tabs">
@@ -3106,17 +3106,15 @@ body.view-research .ca-lab { display: block; }
 <header class="ca-page-header" id="researchLabHeader">
   <p class="ca-eyebrow">Research Lab</p>
   <h2 class="ca-page-title">Offensive &amp; Pitching Intelligence</h2>
-  <p class="ca-helper ca-page-header__sub">Three focused tools for checking form, splits, and pitcher context.</p>
+  <p class="ca-helper ca-page-header__sub">Two focused tools for checking form, splits, and pitcher context.</p>
   <ul class="ca-page-feature-list" aria-label="Research Lab tools">
     <li>Trends heatmap across YTD, L30, L14, and L7 with RHP/LHP and location filters</li>
-    <li>Compare workspace for lineup vs lineup, vs starter, and bullpen unit matchups</li>
     <li>Pitcher Intelligence with today's starter rankings, bullpen table, and prop intel</li>
   </ul>
 </header>
 <div class="ca-lab__tabs-wrap">
   <div class="ca-lab__tabs" role="tablist" aria-label="Research Lab tabs">
     <button type="button" class="ca-lab__tab ca-lab__tab--active" data-pane="trends" role="tab" aria-selected="true">Trends</button>
-    <button type="button" class="ca-lab__tab" data-pane="compare" role="tab" aria-selected="false">Compare</button>
     <button type="button" class="ca-lab__tab" data-pane="pitcher" role="tab" aria-selected="false">Pitcher Intelligence</button>
   </div>
 </div>
@@ -3134,9 +3132,8 @@ body.view-research .ca-lab { display: block; }
     <div id="rlTrendsHeatmapMount"></div>
   </div>
 
-  <!-- Compare pane -->
-  <div id="pane-compare" style="display:none;">
-    <p class="rl-tab-purpose">Direct head-to-head comparison for lineup, pitcher, and bullpen research. Use for: run line value, over/under edges, fantasy lineup decisions, SP prop research.</p>
+  <!-- Compare pane retired — Matchup Analysis is the two-club workspace. -->
+  <div id="pane-compare" hidden style="display:none!important;">
     <div id="rlCompareRoot"></div>
   </div>
 
@@ -8676,7 +8673,7 @@ if (document.readyState === 'loading') {
   <!-- Account/signup integrated on the dashboard home (mounts into [data-mlbma-auth-panel]). -->
   <script src="chase_links.js?v=20260611c"></script>
   <script src="mlbma_access.js?v=20260611b"></script>
-  <script src="mlbma_auth.js?v=20260611b"></script>
+  <script src="mlbma_auth.js?v=20260909a"></script>
   <script src="mlbma_auth_ui.js?v=20260908d"></script>
   <script src="chase_nav.js?v=20260909a"></script>
   <script src="chase_shell.js?v=20260908k"></script>

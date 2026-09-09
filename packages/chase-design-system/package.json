@@ -1,0 +1,11 @@
+{
+  "name": "@chase-analytics/design-system",
+  "version": "1.0.0",
+  "description": "Chase Analytics TIER-1 color primitives. Semantic aliases live in consuming apps.",
+  "license": "UNLICENSED",
+  "files": ["css"],
+  "exports": {
+    ".": "./css/chase-tokens-v1.css",
+    "./chase-tokens-v1.css": "./css/chase-tokens-v1.css"
+  }
+}

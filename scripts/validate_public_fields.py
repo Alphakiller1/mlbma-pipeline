@@ -91,6 +91,10 @@ def main() -> int:
         if path.name in {"mlb.js", "nfl.js"} and "github.io" in text:
             violations.append(f"{path.relative_to(ROOT)} still points at GitHub Pages")
 
+    mc_js = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
+    if "alphakiller1.github.io" in mc_js or "board.json" in mc_js:
+        violations.append("dashboard/model_center.js must not embed a public board URL")
+
     for sport in ("mlb", "nfl"):
         for name in ("index.html", "matchups.html", "results.html"):
             path = ROOT / sport / name

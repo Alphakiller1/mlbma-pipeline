@@ -25,6 +25,17 @@ def team_name(side) -> str:
     return ""
 
 
+def freshness_state(raw) -> str | None:
+    if raw is None or raw == "":
+        return None
+    if isinstance(raw, str):
+        return raw
+    if isinstance(raw, dict):
+        state = raw.get("state") or raw.get("label")
+        return str(state) if state else None
+    return None
+
+
 def attributed_book(game: dict) -> dict:
     book = game.get("book") or game.get("book_name")
     market = game.get("book_market") or game.get("market_type")
@@ -70,7 +81,7 @@ def project_game(sport: str, game: dict) -> dict:
         "away_lineup_state": game.get("away_lineup_state"),
         "home_lineup_state": game.get("home_lineup_state"),
         "availability_summary": game.get("availability_summary"),
-        "freshness": game.get("freshness"),
+        "freshness": freshness_state(game.get("freshness")),
     }
     row.update(attributed_book(game))
     return {k: v for k, v in row.items() if k in ALLOWED and v is not None and v != ""}

@@ -117,11 +117,26 @@
   }
 
   function previewBody(tabId, g) {
+    var sport = g.sport;
     if (tabId === 'overview') {
       return '<div class="ca-preview-panel">' +
         '<p class="ca-helper">Resolved public context for this game. Deeper modules load on View full matchup.</p>' +
-        participantRow(g.sport, g) + contextRow(g.sport, g) + bookHtml(g) +
+        participantRow(sport, g) + contextRow(sport, g) + bookHtml(g) +
         '</div>';
+    }
+    if (tabId === 'lineups') {
+      return '<div class="ca-preview-panel"><p>Away lineup: ' + esc(g.away_lineup_state || 'Unavailable') +
+        '</p><p>Home lineup: ' + esc(g.home_lineup_state || 'Unavailable') + '</p></div>';
+    }
+    if (tabId === 'starters' || tabId === 'quarterbacks') {
+      return '<div class="ca-preview-panel">' + participantRow(sport, g) + '</div>';
+    }
+    if (tabId === 'conditions') {
+      var bits = [g.venue, g.conditions, g.broadcast].filter(Boolean);
+      return '<div class="ca-preview-panel"><p>' + esc(bits.join(' · ') || 'Venue and conditions unavailable') + '</p></div>';
+    }
+    if (tabId === 'availability') {
+      return '<div class="ca-preview-panel"><p>' + esc(g.availability_summary || 'Availability designations are not published for this game') + '</p></div>';
     }
     return '<div class="ca-async" data-state="empty"><p>' + esc(tabId) +
       ' preview is unavailable until the public preview contract is published for this game.</p></div>';
@@ -151,7 +166,7 @@
     }
     return '<article class="ca-matchup-card' + (open ? ' is-expanded' : '') + '" data-game="' + esc(g.id) + '" data-sport="' + esc(sport) + '">' +
       '<div class="ca-matchup-card__status"><span>' + esc(stateLabel(g)) + '</span>' +
-      '<span>' + esc((g.freshness && g.freshness.state) || 'Current') + '</span></div>' +
+      '<span>' + esc(g.freshness || 'Current') + '</span></div>' +
       '<div class="ca-matchup-card__teams">' +
       '<div class="ca-matchup-card__team">' + entity(sport, g.away) +
       (g.away_record ? '<span class="ca-matchup-card__record">' + esc(g.away_record) + '</span>' : '') + '</div>' +
@@ -169,6 +184,8 @@
       '</div></article>' + preview;
   }
 
+  var expandedAll = false;
+
   function groupGames(sport, games) {
     var order = [];
     var grouped = {};
@@ -181,16 +198,23 @@
     return { order: order, grouped: grouped };
   }
 
+  function asyncPaint(host, kind, detail) {
+    if (global.ChaseAsyncState) ChaseAsyncState.render(host, kind, detail);
+  }
+
   function render(host, sport, games) {
     if (!host) return;
     var openId = params().get('game');
     var tabId = params().get('preview') || 'overview';
     var pack = groupGames(sport, games);
-    var html = '<div class="ca-slate-toolbar"><label><input type="checkbox" id="caExpandedCardsPref"> Expanded cards</label></div>';
+    var html = '<div class="ca-slate-toolbar"><label><input type="checkbox" id="caExpandedCardsPref"' +
+      (expandedAll ? ' checked' : '') + '> Expanded cards</label></div>';
     pack.order.forEach(function (key) {
       html += '<section class="ca-slate-group"><h2 class="ca-slate-group__title">' + esc(key) + '</h2>';
       html += '<div class="ca-slate-grid">';
-      pack.grouped[key].forEach(function (g) { html += cardHtml(sport, g, openId, tabId); });
+      pack.grouped[key].forEach(function (g) {
+        html += cardHtml(sport, g, expandedAll ? g.id : openId, tabId);
+      });
       html += '</div></section>';
     });
     host.innerHTML = html;
@@ -198,7 +222,18 @@
   }
 
   function bind(host, sport, games) {
+    host.__slate = { sport: sport, games: games };
+    if (host.getAttribute('data-card-bound') === '1') return;
+    host.setAttribute('data-card-bound', '1');
+    host.addEventListener('change', function (e) {
+      var t = e.target;
+      if (!t || t.id !== 'caExpandedCardsPref') return;
+      expandedAll = !!t.checked;
+      var pack = host.__slate || {};
+      render(host, pack.sport, pack.games);
+    });
     host.addEventListener('click', function (e) {
+      var pack = host.__slate || {};
       var tab = e.target.closest('[data-tab]');
       if (tab) {
         var card = tab.closest('.ca-expanded-preview');
@@ -206,7 +241,7 @@
         var id = article && article.getAttribute('data-game');
         if (id) {
           writeParams({ game: id, preview: tab.getAttribute('data-tab') });
-          render(host, sport, games);
+          render(host, pack.sport, pack.games);
         }
         return;
       }
@@ -216,7 +251,7 @@
       var gid = art && art.getAttribute('data-game');
       var open = art && art.classList.contains('is-expanded');
       writeParams({ game: open ? '' : gid, preview: open ? '' : 'overview' });
-      render(host, sport, games);
+      render(host, pack.sport, pack.games);
     });
   }
 
@@ -227,16 +262,20 @@
     var adapter = opts.adapter;
     var url = adapter && adapter.SLATE_URL;
     if (!url) {
-      if (global.ChaseAsyncState) ChaseAsyncState.render(host, 'error', 'Public slate URL missing.');
+      asyncPaint(host, 'error', 'Public slate URL missing.');
       return;
     }
-    if (global.ChaseAsyncState) ChaseAsyncState.render(host, 'loading');
+    asyncPaint(host, 'loading');
     fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (slate) {
       if (!slate) {
-        ChaseAsyncState.render(host, 'error', 'Public slate was not reachable.');
+        asyncPaint(host, 'error', 'Public slate was not reachable.');
         return;
       }
-      var nb = global.ChasePublicSlate.normalize(sport, slate);
+      if (!global.ChasePublicSlate) {
+        asyncPaint(host, 'error', 'Public slate adapter missing.');
+        return;
+      }
+      var nb = ChasePublicSlate.normalize(sport, slate);
       if (global.ChaseDataStatus) {
         ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
           return {
@@ -250,13 +289,13 @@
         });
       }
       if (!nb.games.length) {
-        ChaseAsyncState.render(host, 'empty', 'No public games on this slate.');
+        asyncPaint(host, 'empty', 'No public games on this slate.');
         return;
       }
       render(host, sport, nb.games);
       if (global.ChaseAsyncState) ChaseAsyncState.ready(host);
     }).catch(function (err) {
-      ChaseAsyncState.render(host, 'error', err.message);
+      asyncPaint(host, 'error', err.message);
     });
   }
 

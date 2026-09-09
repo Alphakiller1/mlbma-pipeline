@@ -297,6 +297,7 @@ def run(skip_fangraphs: bool = False):
         run_model_deployment_sync()
     else:
         print("WARNING: MLB Model deployment not dispatched because hub mirror failed")
+    run_public_slate_publish()
     run_instagram_autopost()
 
     slate_ok = assert_slate_fresh(expected_date=run_slate_date)
@@ -611,6 +612,22 @@ def run_model_deployment_sync():
         "Step 21: dispatch synchronized MLB Model deployment",
         "outputs.notify_mlb_model",
         _notify,
+    )
+
+
+def run_public_slate_publish():
+    """Project factual CSVs onto data/public slates. Never writes model fields. Non-fatal."""
+
+    def _fn():
+        from outputs.publish_public_slate import run as publish_slate
+
+        if publish_slate() != 0:
+            raise RuntimeError("public slate publish did not leave a MLB file")
+
+    _run_step(
+        "Step 20b: outputs.publish_public_slate",
+        "scrapers.scrape_matchups",
+        _fn,
     )
 
 

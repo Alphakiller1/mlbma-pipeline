@@ -54,3 +54,63 @@ class PublicSlateProjectionTests(unittest.TestCase):
         self.assertIn("source: sport === 'mlb' ? 'sheet' : 'public-slate'", shell)
         self.assertNotIn("source: sport === 'mlb' ? 'sheet' : 'board'", nav)
         self.assertNotIn("source: sport === 'mlb' ? 'sheet' : 'board'", shell)
+
+    def test_nested_freshness_cannot_smuggle_model_fields(self):
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from project_public_slate import assert_clean, project_slate
+
+        producer = {
+            "generated_at_utc": "2026-09-09T00:00:00Z",
+            "games": [{
+                "id": "x",
+                "away": "AAA",
+                "home": "BBB",
+                "freshness": {"state": "ok", "model_margin": -1.2},
+            }],
+        }
+        out = project_slate("mlb", producer)
+        assert_clean(out)
+        self.assertEqual(out["games"][0]["freshness"], "ok")
+        self.assertNotIn("model_margin", json.dumps(out))
+
+    def test_mlb_matchup_csv_projects_without_private_metrics(self):
+        import sys
+        import tempfile
+        sys.path.insert(0, str(ROOT))
+        from outputs.publish_public_slate import mlb_producer
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from project_public_slate import assert_clean, project_slate
+
+        tmp = Path(tempfile.mkdtemp())
+        (tmp / "today_matchups.csv").write_text(
+            "Slate_Date,Time,Away,Home,Away_SP,Away_Hand,Home_SP,Home_Hand,Away_OSI,Lineup_Edge\n"
+            "2026-09-09,7:05 PM ET,NYY,BOS,Cole,R,Bello,R,110,NYY +4.0\n",
+            encoding="utf-8",
+        )
+        (tmp / "today_weather.csv").write_text(
+            "away_team,home_team,stadium_name,temperature_f,conditions\n"
+            "NYY,BOS,Fenway Park,72,clear\n",
+            encoding="utf-8",
+        )
+        producer = mlb_producer(tmp)
+        out = project_slate("mlb", producer)
+        assert_clean(out)
+        blob = json.dumps(out)
+        self.assertNotIn("110", blob)
+        self.assertNotIn("Lineup_Edge", blob)
+        self.assertNotIn("Away_OSI", blob)
+        self.assertEqual(out["games"][0]["away"], "NYY")
+        self.assertEqual(out["games"][0]["venue"], "Fenway Park")
+
+    def test_empty_producer_does_not_overwrite_known_good(self):
+        import sys
+        import tempfile
+        sys.path.insert(0, str(ROOT))
+        from outputs.publish_public_slate import write_if_better
+
+        tmp = Path(tempfile.mkdtemp()) / "slate.json"
+        tmp.write_text('{"schema":"chase-public-slate/1","games":[{"id":"keep"}]}', encoding="utf-8")
+        before = tmp.read_text(encoding="utf-8")
+        self.assertFalse(write_if_better("mlb", {"games": []}, tmp))
+        self.assertEqual(tmp.read_text(encoding="utf-8"), before)
