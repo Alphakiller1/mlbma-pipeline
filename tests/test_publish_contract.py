@@ -151,7 +151,9 @@ class DashboardSlateTruthContractTests(unittest.TestCase):
         source = (ROOT / "dashboard" / "matchup_shared.js").read_text(encoding="utf-8")
         compare = (ROOT / "dashboard" / "matchup_compare.js").read_text(encoding="utf-8")
         self.assertIn("gamePk: game.gamePk || null", source)
-        self.assertIn("var gamePkWant = qp('gamePk')", compare)
+        self.assertIn("function requestedGamePk()", compare)
+        self.assertIn("qp('gamePk') || qp('game')", compare)
+        self.assertIn("var gamePkWant = requestedGamePk()", compare)
 
     def test_mlb_tbd_does_not_fall_back_to_projected_name(self) -> None:
         source = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
