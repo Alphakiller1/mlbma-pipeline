@@ -11,7 +11,7 @@ Production is **not** the PR-41 desk. Treat this file as: what ships today vs wh
 
 ```
 Chase Analytics visual bible — obey exactly:
-- Product: Chase Analytics, premium MLB/NFL/CFB/WNBA matchup intelligence. Broadcast scouting desk, not a betting app, not crypto, not generic SaaS.
+- Product: Chase Analytics, premium MLB and NFL matchup intelligence (WNBA/CFB not on the public desk yet). Broadcast scouting desk, not a betting app, not crypto, not generic SaaS.
 - Canvas: near-black #08090F with faint violet radial glow (not a purple wash). No grid texture, no stadium photo, no bokeh, no fake crowd.
 - Surfaces: opaque lacquered panels #12141D / #181B26, 1.5–2px borders #262A38, thin top-edge glint, deep shadow, inset highlight. Filled mass, not glassmorphism.
 - Brand accent: #9A6BFF used as edge light, active pills, icon rings, one primary CTA. Never flood the page purple.
@@ -21,7 +21,7 @@ Chase Analytics visual bible — obey exactly:
 - Logo: small filled upward triangle/mark + wordmark “Chase” + accent “Analytics”.
 - Density: Athletic/FanGraphs scouting board — dense, aligned, credible. Not empty luxury. Not a spreadsheet skin.
 - Public vs model: PUBLIC screens show schedules, lineups labeled confirmed/projected, weather, descriptive stats, splits, OSI/RCV/ABQ ranks. NEVER show projected scores, win probabilities, model lines, model-vs-market axes, may_bet, ATS records, “Need to Win”, or “before you bet”.
-- UI chrome: sticky dark header, sport switcher MLB/NFL/WNBA/CFB, Matchups, Compare, Glossary, Model Center (star or lock). Context bar under header with honest freshness (“Slate shown: Sep 8” not “N games today” if stale).
+- UI chrome: sticky dark header, sport switcher MLB/NFL only, Matchups, Compare, Glossary, Model Center (star or lock). Context bar under header with honest freshness (“Slate shown: Sep 8” not “N games today” if stale).
 - Photoreal UI mockup, 16:9 desktop 1440×900 unless specified 390×844 phone. Sharp UI, no watermark, no extra caption outside the browser frame. A thin browser chrome (dark URL bar showing chase-analytics.com) is OK.
 ```
 
@@ -68,7 +68,7 @@ UI character sheet / style frame for Chase Analytics, not a full page. Dark #080
 Show a labeled kit in a 3×2 grid of lacquered panels:
 1. Header fragment: logo mark + Chase Analytics wordmark, nav links Opening / Matchups / Compare / MLB / NFL / Model Center, freshness pill “Slate shown: Sep 8 · 6h”.
 2. Display type samples: H1 “Today’s research desk” in Roboto Condensed metallic silver; eyebrow “CHASE ANALYTICS · MLB INTELLIGENCE” all-caps tracked; body in DM Sans #A4A8B6.
-3. Buttons: solid primary #9A6BFF “Open scouting desk”; ghost “Compare”; small sport pills MLB (filled) NFL WNBA CFB.
+3. Buttons: solid primary #9A6BFF “Open scouting desk”; ghost “Compare”; small sport pills MLB (filled) NFL.
 4. Metric chips in a row: Elite OSI 71 green, Good RCV 58, Watch ABQ 51 amber, Poor BB% 4.2 red. Solid chips, not outlines.
 5. A tiny matchup card: NYY @ BOS, 7:10 ET, “Lineups: projected”, book line “Spread −1.5 (book price, not a Chase projection)”, link “Open in Model Center”. No model column.
 6. Icon badges: circular violet-glow poster icons for slate, matchup, bullpen, research.
@@ -203,13 +203,13 @@ NOT a blank essay. First viewport must sell the product:
 
 Left: Chase Analytics wordmark.
 H1: Chase Analytics
-Sub: Matchup intelligence for MLB, NFL, CFB, and WNBA — a scouting desk, not a tip sheet.
+Sub: Matchup intelligence for MLB and NFL — a scouting desk, not a tip sheet.
 Primary: Enter research desk
 Secondary: Open Model Center (visually quieter, with a lock)
 
 Right or below: a real product preview — a miniature lacquered matchup card (NYY @ BOS, OSI chips, lineup row), so the site looks connected to the dashboard (contract §8.3).
 
-Sport pills MLB NFL WNBA CFB.
+Sport pills MLB NFL.
 
 Zero engineering copy. Zero “Nested URLs”. Zero empty black void. Feels like a serious analytics product homepage that is the same family as the desk.
 ```

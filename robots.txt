@@ -9,5 +9,5 @@ Disallow: /dashboard/pitcher_profile
 Disallow: /dashboard/pitcher_profile.html
 Disallow: /dashboard/bullpen_report
 Disallow: /dashboard/bullpen_report.html
-Disallow: /dashboard/reliever_profile
-Disallow: /dashboard/reliever_profile.html
+Disallow: /wnba
+Disallow: /cfb

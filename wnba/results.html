@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WNBA Results — Chase Analytics</title>
+  <meta name="robots" content="noindex,nofollow">
+  <title>WNBA — Chase Analytics</title>
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908n">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260908n">
   <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260908n">
@@ -14,7 +15,7 @@
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908n">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="evidence" data-sport="wnba">
+<body data-mode="entry" data-sport="wnba">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -28,8 +29,6 @@
       <a href="/dashboard/matchup_compare.html" class="chase-nav-link" data-nav="compare">Compare</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
-      <a href="/wnba/" class="chase-nav-link" data-nav="wnba">WNBA</a>
-      <a href="/cfb/" class="chase-nav-link" data-nav="cfb">CFB</a>
       <a href="/models/" class="chase-nav-link" data-nav="models">Model Center</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
@@ -42,8 +41,6 @@
           <a href="/dashboard/batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
           <a href="/mlb/" class="chase-dropdown-item">MLB</a>
           <a href="/nfl/matchups.html" class="chase-dropdown-item">NFL Matchups</a>
-          <a href="/cfb/" class="chase-dropdown-item">CFB Board</a>
-          <a href="/wnba/" class="chase-dropdown-item">WNBA Board</a>
         </div>
       </div>
       <a href="/dashboard/glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
@@ -85,8 +82,6 @@
     <a href="/dashboard/batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
-    <a href="/wnba/" class="chase-mobile-link" data-nav="wnba">WNBA</a>
-    <a href="/cfb/" class="chase-mobile-link" data-nav="cfb">CFB</a>
     <a href="/models/" class="chase-mobile-link" data-nav="models">Model Center</a>
     <a href="/dashboard/glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
@@ -99,92 +94,18 @@
 </div>
   <main class="container ca-page-shell ca-shell-main">
     <header class="ca-surface-header">
-      <h1 class="ca-page-title">WNBA results</h1>
-      <p class="ca-helper">Finals publish after games complete. This page lists the slate, not model performance.</p>
+      <h1 class="ca-page-title">WNBA is not on the public desk</h1>
+      <p class="ca-helper">Chase Analytics is posting MLB and NFL only for now. WNBA stays in the pipeline until that desk is public.</p>
     </header>
-    <div id="caContextBar" class="ca-context-bar"></div>
-    <div id="sportSelect" class="ca-sport-switcher"></div>
-    <p class="ca-helper"><a class="hub-pill" href="/wnba/">Board overview</a></p>
-    <div id="modelStatus"></div>
-    <div id="dataStatus"></div>
-    <div id="slate" class="ca-async" data-state="loading">Loading WNBA board…</div>
+    <p class="ca-helper">
+      <a class="hub-pill" href="/mlb/">MLB</a>
+      <a class="hub-pill" href="/nfl/">NFL</a>
+      <a class="hub-pill" href="/dashboard/index.html">Opening</a>
+    </p>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v=20260908n"></script>
   <script src="/dashboard/chase_datastatus.js?v=20260908n"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908n"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908n"></script>
-  <script src="/dashboard/sports/wnba.js?v=20260908n"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908n"></script>
   <script src="/dashboard/chase_nav.js?v=20260908n"></script>
-  <script src="/dashboard/chase_shell.js?v=20260908n"></script>
-  <script src="/dashboard/chase_entity.js?v=20260908n"></script>
-  <script src="/dashboard/chase_metric.js?v=20260908n"></script>
-  <script src="/dashboard/chase_scope.js?v=20260908n"></script>
-  <script>
-  window.CHASE_SPORT_PAGE = ChaseSportWNBA;
-  window.CHASE_SPORT_ID = "wnba";
-  window.CHASE_SPORT_PICKS_LABEL = "Priced markets";
-  window.CHASE_SPORT_GEMS_LABEL = null;
-  window.CHASE_SPORT_IS_MATCHUPS = false;
-  window.CHASE_SPORT_IS_RESULTS = true;
-  
-(function () {
-  var adapter = window.CHASE_SPORT_PAGE;
-  var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'evidence', surface: 'results', search: false });
-  else if (window.ChaseSportSelect) {
-    ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
-    ChaseSportSelect.saveCtx(sport, { surface: 'results' });
-  }
-  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  function scoreHtml(g) {
-    if (g.away_score == null || g.home_score == null) return 'Final pending';
-    return esc(g.away_score) + '–' + esc(g.home_score);
-  }
-  Promise.all([
-    fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
-  ]).then(function (pack) {
-    var board = pack[0], build = pack[1] || {};
-    if (!board) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
-      return;
-    }
-    var nb = adapter.normalize(board);
-    if (window.ChaseBoard && ChaseBoard.sortGames) nb.games = ChaseBoard.sortGames(nb.games);
-    if (window.ChaseDataStatus) {
-      ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-        return {
-          sport: sport,
-          state: build.state || undefined,
-          dataCutoff: build.generated_at || build.generated_at_utc,
-          quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
-          publishedAt: nb.generated_at,
-          source: 'board.json',
-          issues: build.issues || []
-        };
-      });
-    }
-    var html = '<p class="ca-helper">Scores when the producer has them. Model ATS / totals records live in Model Center.</p>';
-    html += '<div class="ca-board-list">';
-    nb.games.forEach(function (g) {
-      html += '<article class="ca-card"><h2>';
-      html += window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away);
-      html += ' @ ';
-      html += window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home);
-      html += '</h2><p class="ca-helper">' + scoreHtml(g) + '</p></article>';
-    });
-    html += '</div>';
-    document.getElementById('slate').innerHTML = html;
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
-  }).catch(function (err) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
-  });
-})();
-
-  </script>
 </body>
 </html>

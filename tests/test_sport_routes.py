@@ -28,7 +28,7 @@ class SportRouteBuilderTests(unittest.TestCase):
                 path.write_bytes(original)
 
     def test_four_indexes_and_nfl_matchups(self):
-        for sport in ("mlb", "nfl", "wnba", "cfb"):
+        for sport in ("mlb", "nfl"):
             path = ROOT / sport / "index.html"
             self.assertTrue(path.is_file(), path)
             text = path.read_text(encoding="utf-8")
@@ -41,8 +41,27 @@ class SportRouteBuilderTests(unittest.TestCase):
                 self.assertNotIn(f"sports/{o}.js", text)
             self.assertIn("sports/chase_board.js", text)
 
+    def test_cfb_and_wnba_are_parked_off_the_public_desk(self):
+        nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
+        home = (ROOT / "index.html").read_text(encoding="utf-8")
+        select = (ROOT / "dashboard" / "chase_sport_select.js").read_text(encoding="utf-8")
+        self.assertNotIn('data-nav="wnba"', nav)
+        self.assertNotIn('data-nav="cfb"', nav)
+        self.assertNotIn("/wnba/", nav)
+        self.assertNotIn("/cfb/", nav)
+        self.assertNotIn("CFB", home)
+        self.assertNotIn("WNBA", home)
+        self.assertNotIn("id: 'wnba'", select)
+        self.assertNotIn("id: 'cfb'", select)
+        for sport in ("wnba", "cfb"):
+            text = (ROOT / sport / "index.html").read_text(encoding="utf-8")
+            self.assertIn("noindex", text)
+            self.assertIn("not on the public desk", text)
+            self.assertNotIn(f"sports/{sport}.js", text)
+            self.assertNotIn("ChaseSportSelect", text)
+
     def test_every_sport_has_matchups_and_results(self):
-        for sport in ("mlb", "nfl", "wnba", "cfb"):
+        for sport in ("mlb", "nfl"):
             matchups = (ROOT / sport / "matchups.html").read_text(encoding="utf-8")
             results = (ROOT / sport / "results.html").read_text(encoding="utf-8")
             self.assertIn("ChaseShell", matchups)
@@ -103,7 +122,10 @@ class SportRouteBuilderTests(unittest.TestCase):
         for path in self._GENERATED:
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("= None;", text, path)
-            self.assertIn("chase_shell.js", text)
+            if path.parent.name in ("mlb", "nfl"):
+                self.assertIn("chase_shell.js", text, path)
+            else:
+                self.assertIn("noindex", text, path)
 
     def test_scope_bar_omits_defaults(self):
         js = (ROOT / "dashboard" / "chase_scope.js").read_text(encoding="utf-8")
@@ -226,6 +248,8 @@ class AdapterHoleTests(unittest.TestCase):
             self.assertIn("noindex", html, name)
         robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
         self.assertIn("Disallow: /dashboard/team_rankings", robots)
+        self.assertIn("Disallow: /wnba", robots)
+        self.assertIn("Disallow: /cfb", robots)
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", workflow)
         self.assertIn("dashboard/index.html", workflow)

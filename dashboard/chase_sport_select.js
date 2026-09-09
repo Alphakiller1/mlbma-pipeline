@@ -6,14 +6,12 @@
 
   var SPORTS = [
     { id: 'mlb', href: '/mlb/', label: 'MLB' },
-    { id: 'nfl', href: '/nfl/', label: 'NFL' },
-    { id: 'wnba', href: '/wnba/', label: 'WNBA' },
-    { id: 'cfb', href: '/cfb/', label: 'CFB' }
+    { id: 'nfl', href: '/nfl/', label: 'NFL' }
   ];
   var PREFIX = 'chase-sport-ctx-';
 
   function currentSport() {
-    var m = (location.pathname || '').match(/\/(mlb|nfl|wnba|cfb)(?:\/|$)/i);
+    var m = (location.pathname || '').match(/\/(mlb|nfl)(?:\/|$)/i);
     if (m) return m[1].toLowerCase();
     return 'mlb';
   }

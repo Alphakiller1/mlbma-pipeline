@@ -13,7 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
-
+PUBLIC_SPORTS = ("mlb", "nfl")
+PARKED_SPORTS = ("wnba", "cfb")
 SPORTS = {
     "mlb": {
         "title": "MLB — Chase Analytics",
@@ -67,6 +68,47 @@ def sport_nav() -> str:
         html,
     )
     return html
+
+
+def parked_page(sport: str) -> str:
+    label = sport.upper()
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>{label} — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
+</head>
+<body data-mode="entry" data-sport="{sport}">
+{sport_nav()}
+  <main class="container ca-page-shell ca-shell-main">
+    <header class="ca-surface-header">
+      <h1 class="ca-page-title">{label} is not on the public desk</h1>
+      <p class="ca-helper">Chase Analytics is posting MLB and NFL only for now. {label} stays in the pipeline until that desk is public.</p>
+    </header>
+    <p class="ca-helper">
+      <a class="hub-pill" href="/mlb/">MLB</a>
+      <a class="hub-pill" href="/nfl/">NFL</a>
+      <a class="hub-pill" href="/dashboard/index.html">Opening</a>
+    </p>
+  </main>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
+  <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
+</body>
+</html>
+"""
 
 
 def page(sport: str, *, kind: str = "index") -> str:
@@ -417,6 +459,13 @@ def main() -> int:
     for sport in SPORTS:
         dest = ROOT / sport
         dest.mkdir(parents=True, exist_ok=True)
+        if sport not in PUBLIC_SPORTS:
+            parked = parked_page(sport)
+            (dest / "index.html").write_text(parked, encoding="utf-8")
+            (dest / "matchups.html").write_text(parked, encoding="utf-8")
+            (dest / "results.html").write_text(parked, encoding="utf-8")
+            print("wrote", sport, "parked (not on public desk)")
+            continue
         (dest / "index.html").write_text(page(sport, kind="index"), encoding="utf-8")
         (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
         (dest / "results.html").write_text(page(sport, kind="results"), encoding="utf-8")

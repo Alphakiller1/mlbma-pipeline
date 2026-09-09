@@ -60,8 +60,6 @@ MOBILE_DRAWER_TAIL = (
     "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
     "    <a href=\"/mlb/\" class=\"chase-mobile-link\" data-nav=\"mlb\">MLB</a>\n"
     "    <a href=\"/nfl/\" class=\"chase-mobile-link\" data-nav=\"nfl\">NFL</a>\n"
-    "    <a href=\"/wnba/\" class=\"chase-mobile-link\" data-nav=\"wnba\">WNBA</a>\n"
-    "    <a href=\"/cfb/\" class=\"chase-mobile-link\" data-nav=\"cfb\">CFB</a>\n"
     "    <a href=\"/models/\" class=\"chase-mobile-link\" data-nav=\"models\">Model Center</a>\n"
     "    <a href=\"glossary.html\" class=\"chase-mobile-link\" data-nav=\"glossary\">Glossary</a>\n"
     "  </div>\n"
