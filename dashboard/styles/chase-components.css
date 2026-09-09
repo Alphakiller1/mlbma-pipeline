@@ -45,6 +45,16 @@
   cursor: not-allowed;
 }
 
+.ca-text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  color: var(--text-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.ca-text-link:hover { color: var(--text-primary); }
+
 /* ButtonGroup */
 .ca-btn-group {
   display: inline-flex;

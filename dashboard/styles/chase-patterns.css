@@ -327,4 +327,4 @@
   min-height: 52px;
   align-items: center;
 }
-.ca-text-link--quiet { color: var(--text-meta); }
+.ca-text-link--quiet { color: var(--text-meta); min-height: var(--touch-min); }
