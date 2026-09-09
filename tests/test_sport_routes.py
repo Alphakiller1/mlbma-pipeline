@@ -143,7 +143,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("chase_public_slate.js", mlb_home)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
-        self.assertIn("View full matchup", card)
+        self.assertIn("View matchup", card)
         self.assertIn("Expand matchup", card)
         self.assertNotIn("Board overview", mlb_home)
         patterns = (ROOT / "dashboard" / "styles" / "chase-patterns.css").read_text(
@@ -215,6 +215,9 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("family('status', 'Projection')", view)
         self.assertIn("lv-matchup-heading", view)
         self.assertIn('<h2 class="mc-pane-title">Lineup vs Lineup</h2>', compare)
+        self.assertIn("label: 'Overview'", compare)
+        self.assertIn("label: 'Starting Pitchers'", compare)
+        self.assertIn("mc-model-cta", compare)
         self.assertIn('<h1 class="mc-header-matchup">', compare)
         pane = compare.split("function renderPaneLvL", 1)[1].split("function renderPaneLvP", 1)[0]
         self.assertLess(pane.index("mcTeamRankings"), pane.index("MatchupLineupCompare"))

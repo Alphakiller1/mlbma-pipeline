@@ -39,8 +39,42 @@
   }
 
   function entity(sport, name) {
-    if (global.ChaseEntity) return ChaseEntity.html({ name: name, id: name, sport: sport });
-    return esc(name || '');
+    var logo = '';
+    if (global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
+      logo = MLBMAAssets.teamLogoImg(name, 40, 'ca-matchup-logo', sport);
+    } else if (global.ChaseEntity) {
+      return ChaseEntity.html({ name: name, id: name, sport: sport });
+    }
+    return '<span class="ca-entity ca-entity--mark" data-sport="' + esc(sport) + '" data-id="' + esc(name || '') + '">' +
+      logo + '<span class="ca-entity-name">' + esc(name || '') + '</span></span>';
+  }
+
+  function statusChip(kind, raw) {
+    var v = String(raw || '').trim();
+    var cls = 'ca-status-chip';
+    var low = v.toLowerCase();
+    if (!v) {
+      cls += ' is-muted';
+      v = 'Unavailable';
+    } else if (low.indexOf('confirm') >= 0 || low.indexOf('available') >= 0 || low === 'ok') {
+      cls += ' is-ok';
+    } else if (low.indexOf('project') >= 0 || low.indexOf('limited') >= 0 || low.indexOf('question') >= 0) {
+      cls += ' is-watch';
+    } else {
+      cls += ' is-muted';
+    }
+    return '<span class="' + cls + '">' + esc(kind) + ': ' + esc(v) + '</span>';
+  }
+
+  function statusRow(sport, g) {
+    var chips = [];
+    if (sport === 'mlb') {
+      chips.push(statusChip('Lineup', g.away_lineup_state || g.home_lineup_state || 'Projected'));
+      chips.push(statusChip('Bullpen', g.availability_summary || 'Available'));
+    } else {
+      chips.push(statusChip('Availability', g.availability_summary || 'Updated'));
+    }
+    return '<div class="ca-matchup-card__chips">' + chips.join('') + '</div>';
   }
 
   function kickoffLabel(g) {
@@ -78,25 +112,17 @@
   }
 
   function participantRow(sport, g) {
-    var a = g.away_starter || 'Starter TBD';
-    var h = g.home_starter || 'Starter TBD';
-    if (sport === 'nfl') {
-      a = g.away_starter || 'QB TBD';
-      h = g.home_starter || 'QB TBD';
-    }
-    return '<div class="ca-matchup-card__participants"><span>' + esc(a) + '</span><span>' + esc(h) + '</span></div>';
+    var aLab = sport === 'nfl' ? 'QB' : 'SP';
+    var a = g.away_starter || (sport === 'nfl' ? 'QB TBD' : 'Starter TBD');
+    var h = g.home_starter || (sport === 'nfl' ? 'QB TBD' : 'Starter TBD');
+    return '<div class="ca-matchup-card__participants">' +
+      '<span><em>' + aLab + '</em> ' + esc(a) + '</span>' +
+      '<span><em>' + aLab + '</em> ' + esc(h) + '</span></div>';
   }
 
   function contextRow(sport, g) {
     var bits = [];
-    if (sport === 'mlb') {
-      if (g.away_lineup_state) bits.push('Away lineup ' + g.away_lineup_state);
-      if (g.home_lineup_state) bits.push('Home lineup ' + g.home_lineup_state);
-    } else if (g.availability_summary) {
-      bits.push(g.availability_summary);
-    }
     if (g.venue) bits.push(g.venue);
-    if (g.broadcast) bits.push(g.broadcast);
     if (g.conditions) bits.push(g.conditions);
     if (!bits.length) return '<div class="ca-matchup-card__context">Venue and conditions unavailable</div>';
     return '<div class="ca-matchup-card__context">' + esc(bits.join(' · ')) + '</div>';
@@ -160,27 +186,29 @@
         '<div class="ca-preview-tabs" role="tablist">' + tabHtml + '</div>' +
         previewBody(active, Object.assign({ sport: sport }, g)) +
         '<div class="ca-expanded-preview__foot">' +
-        '<a class="ca-text-link" href="' + esc(href) + '">View full matchup</a>' +
+        '<a class="ca-text-link" href="' + esc(href) + '">View matchup →</a>' +
         '<a class="ca-text-link ca-text-link--quiet" href="' + esc(model) + '">Open in Model Center ↗</a>' +
         '</div></div>';
     }
     return '<article class="ca-matchup-card' + (open ? ' is-expanded' : '') + '" data-game="' + esc(g.id) + '" data-sport="' + esc(sport) + '">' +
-      '<div class="ca-matchup-card__status"><span>' + esc(stateLabel(g)) + '</span>' +
-      '<span>' + esc(g.freshness || 'Current') + '</span></div>' +
+      '<div class="ca-matchup-card__head">' +
+      '<span class="ca-matchup-card__kick">' + centerValue(g) + '</span>' +
+      '<span class="ca-matchup-card__broadcast">' + esc(g.broadcast || 'TV TBD') + '</span></div>' +
       '<div class="ca-matchup-card__teams">' +
       '<div class="ca-matchup-card__team">' + entity(sport, g.away) +
       (g.away_record ? '<span class="ca-matchup-card__record">' + esc(g.away_record) + '</span>' : '') + '</div>' +
-      '<div class="ca-matchup-card__center">' + centerValue(g) + '</div>' +
+      '<div class="ca-matchup-card__center" aria-hidden="true">@</div>' +
       '<div class="ca-matchup-card__team ca-matchup-card__team--home">' + entity(sport, g.home) +
       (g.home_record ? '<span class="ca-matchup-card__record">' + esc(g.home_record) + '</span>' : '') + '</div>' +
       '</div>' +
       participantRow(sport, g) +
+      statusRow(sport, g) +
       contextRow(sport, g) +
       bookHtml(g) +
       '<div class="ca-matchup-card__actions">' +
-      '<button type="button" class="ca-btn ca-btn--secondary" data-expand="1" aria-expanded="' + (open ? 'true' : 'false') +
+      '<button type="button" class="ca-text-link" data-expand="1" aria-expanded="' + (open ? 'true' : 'false') +
       '" aria-controls="preview-' + esc(g.id) + '">' + (open ? 'Collapse matchup' : 'Expand matchup') + '</button>' +
-      '<a class="ca-btn ca-btn--primary" href="' + esc(href) + '">View full matchup</a>' +
+      '<a class="ca-text-link ca-text-link--accent" href="' + esc(href) + '">View matchup →</a>' +
       '</div></article>' + preview;
   }
 

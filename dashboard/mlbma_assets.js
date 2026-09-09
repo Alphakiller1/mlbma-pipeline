@@ -166,26 +166,41 @@
       .replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
   }
 
-  function teamLogoUrl(team, size) {
+  function teamLogoLeague(sport) {
+    var s = String(sport || 'mlb').toLowerCase();
+    if (s === 'nfl') return 'nfl';
+    return 'mlb';
+  }
+
+  function teamLogoSlug(team, sport) {
+    if (teamLogoLeague(sport) === 'nfl') return String(team || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return getEspnAbbr(team);
+  }
+
+  function teamLogoUrl(team, size, sport) {
     size = size || 500;
-    return 'https://a.espncdn.com/i/teamlogos/mlb/' + size + '/' + getEspnAbbr(team) + '.png';
+    var league = teamLogoLeague(sport);
+    return 'https://a.espncdn.com/i/teamlogos/' + league + '/' + size + '/' + teamLogoSlug(team, sport) + '.png';
   }
 
   /** Resized logo via ESPN's combiner (~3KB at 64px vs ~37KB for the raw 500px asset). */
-  function teamLogoUrlSized(team, px) {
+  function teamLogoUrlSized(team, px, sport) {
     var w = Math.min(256, Math.max(32, 2 * (px || 24)));
-    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/' + getEspnAbbr(team) + '.png&w=' + w + '&h=' + w;
+    var league = teamLogoLeague(sport);
+    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/' + league + '/500/' + teamLogoSlug(team, sport) + '.png&w=' + w + '&h=' + w;
   }
 
-  function teamLogoImg(team, px, cls) {
+  function teamLogoImg(team, px, cls, sport) {
     px = px || 24;
     cls = cls || 'team-logo';
     var ab = String(team || '').toUpperCase();
     var initials = ab.slice(0, 2);
+    var sized = teamLogoUrlSized(team, px, sport).replace(/'/g, '');
+    var raw = teamLogoUrl(team, 500, sport).replace(/'/g, '');
     // onerror chain: resized combiner -> raw 500px asset -> hide + initials fallback.
-    return '<img class="' + cls + '" src="' + teamLogoUrlSized(team, px) + '" '
+    return '<img class="' + cls + '" src="' + sized + '" '
       + 'width="' + px + '" height="' + px + '" alt="' + ab + '" loading="lazy" decoding="async" '
-      + 'onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + teamLogoUrl(team, 500) + '\';}'
+      + 'onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + raw + '\';}'
       + 'else{this.onerror=null;this.src=\'\';this.style.display=\'none\';'
       + 'this.nextElementSibling&&(this.nextElementSibling.style.display=\'inline-flex\');}">'
       + '<span class="team-logo-fallback" style="display:none;width:' + px + 'px;height:' + px + 'px;">'

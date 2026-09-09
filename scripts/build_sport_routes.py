@@ -160,6 +160,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   <div id="caContextBar" class="ca-context-bar" role="status"></div>
   <main class="container ca-page-shell ca-shell-main">
     <header class="ca-surface-header">
+      <p class="ca-eyebrow">Chase Analytics · {sport.upper()} · Factual data only</p>
       <h1 class="ca-page-title">{h1}</h1>
       <p class="ca-helper">{lede}</p>
     </header>
@@ -171,6 +172,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
+  <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_sport_select.js?v={STAMP}"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>

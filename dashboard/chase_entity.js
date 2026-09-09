@@ -24,6 +24,9 @@
     var id = ent.id || '';
     var sport = ent.sport || '';
     var src = ent.image ? String(ent.image) : '';
+    if (!src && global.MLBMAAssets && MLBMAAssets.teamLogoUrlSized) {
+      src = MLBMAAssets.teamLogoUrlSized(name, 32, sport);
+    }
     var mark = initials(name);
     var img = src
       ? '<img src="' + esc(src) + '" alt="" width="32" height="32" onerror="this.hidden=true;if(this.nextElementSibling)this.nextElementSibling.hidden=false">'

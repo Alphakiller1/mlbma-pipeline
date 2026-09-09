@@ -7,8 +7,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Metric Glossary</title>
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909c">
-<script src="design_layer_version.js?v=20260909c"></script>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909d">
+<script src="design_layer_version.js?v=20260909d"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65;min-height:100vh}
@@ -50,19 +50,19 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .gloss-section-block{margin-bottom:20px}
 .gloss-metric-card__ramp{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260909c">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260909c">
-<link rel="stylesheet" href="theme.css?v=20260909c">
-<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909c">
-<link rel="stylesheet" href="styles/chase-shell.css?v=20260909c">
-<link rel="stylesheet" href="chase_nav.css?v=20260909c">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260909d">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260909d">
+<link rel="stylesheet" href="theme.css?v=20260909d">
+<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909d">
+<link rel="stylesheet" href="styles/chase-shell.css?v=20260909d">
+<link rel="stylesheet" href="chase_nav.css?v=20260909d">
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="mlbma_assets.js?v=20260909c"></script>
+<script src="mlbma_assets.js?v=20260909d"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
-<script src="mlbma_ui.js?v=20260909c" data-page="glossary.html"></script>
+<script src="mlbma_ui.js?v=20260909d" data-page="glossary.html"></script>
 <script src="glossary.js?v=20260908k"></script>  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909c">
-  <link rel="stylesheet" href="responsive.css?v=20260909c">
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909d">
+  <link rel="stylesheet" href="responsive.css?v=20260909d">
 </head>
 <body data-mode="entry" class="ca-bg-outfield glossary-page">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
@@ -77,9 +77,13 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <a href="index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
-      <a href="/model-center/" class="chase-nav-link" data-nav="models">Model Center</a>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
+    <form class="chase-nav-search" role="search" action="/mlb/" method="get">
+      <label class="sr-only" for="chaseNavQ">Search teams, players, or topics</label>
+      <input id="chaseNavQ" name="q" type="search" placeholder="Search teams, players, or topics…" autocomplete="off" spellcheck="false">
+    </form>
+      <a href="/model-center/" class="ca-btn ca-btn--primary chase-nav-model chase-nav-link" data-nav="models">Model Center</a>
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
@@ -115,7 +119,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
     <a href="index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
-    <a href="/model-center/" class="chase-mobile-link" data-nav="models">Model Center</a>
+    <a href="/model-center/" class="chase-mobile-link chase-mobile-link--model" data-nav="models">Model Center</a>
     <a href="glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
@@ -273,6 +277,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-  <script src="chase_datastatus.js?v=20260909c"></script>
-<script src="chase_nav.js?v=20260909c"></script></body>
+  <script src="chase_datastatus.js?v=20260909d"></script>
+<script src="chase_nav.js?v=20260909d"></script></body>
 </html>

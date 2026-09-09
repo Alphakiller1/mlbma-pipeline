@@ -39,9 +39,10 @@
   }
 
   var COMPARE_MODES = [
-    { id: 'lvL', label: 'Lineup vs Lineup' },
-    { id: 'lvP', label: 'Lineup vs Pitcher' },
-    { id: 'lvB', label: 'Lineup vs Bullpen' }
+    { id: 'overview', label: 'Overview' },
+    { id: 'lvL', label: 'Lineups' },
+    { id: 'lvP', label: 'Starting Pitchers' },
+    { id: 'lvB', label: 'Bullpen' }
   ];
   var COMPARE_IDS = COMPARE_MODES.map(function(x) { return x.id; });
   var _compareCtx = null;
@@ -50,7 +51,7 @@
   var _resizeBound = false;
 
   function getCompareState() {
-    var mode = qp('compare') || 'lvL';
+    var mode = qp('compare') || 'overview';
     if (COMPARE_IDS.indexOf(mode) < 0) mode = 'lvL';
     var lvpLineup = qp('lvpLineup') === 'home' ? 'home' : 'away';
     var lvpPitcher = qp('lvpPitcher') === 'away' ? 'away' : 'home';
@@ -564,6 +565,70 @@
     });
   }
 
+  function lineupChip(rows, side) {
+    var ok = rows && rows.length >= 5;
+    return '<span class="ca-status-chip ' + (ok ? 'is-ok' : 'is-watch') + '">'
+      + esc(side) + ' lineup: ' + (ok ? 'Confirmed' : 'Projected') + '</span>';
+  }
+
+  function wxBits(weather) {
+    weather = weather || {};
+    var cond = weather.cond || weather.conditions || weather.raw || '';
+    var temp = weather.temp || weather.temperature || weather.temp_f || '';
+    var wind = weather.wind || weather.wind_dir || '';
+    if (weather.wind_speed) wind = (wind ? wind + ' ' : '') + weather.wind_speed;
+    return { cond: cond, temp: temp, wind: wind };
+  }
+
+  function modelCenterCta(m) {
+    var href = '/model-center/?sport=mlb'
+      + (m && m.away ? '&away=' + encodeURIComponent(m.away) : '')
+      + (m && m.home ? '&home=' + encodeURIComponent(m.home) : '');
+    return '<aside class="mc-model-cta">'
+      + '<p>Continue your research in Model Center. Authenticated forecasts are available separately.</p>'
+      + '<a class="ca-btn ca-btn--primary" href="' + href + '">Open Model Center →</a></aside>';
+  }
+
+  function renderPaneOverview(ctx) {
+    var m = ctx.m;
+    var w = wxBits(ctx.weather);
+    var stadium = m.stadium || '—';
+    var tv = m.tv || m.broadcast || 'Unavailable';
+    var awayForm = global.MLBMAStandings && MLBMAStandings.formStripHtml
+      ? MLBMAStandings.formStripHtml(m.away, { mirror: false }) : '';
+    var homeForm = global.MLBMAStandings && MLBMAStandings.formStripHtml
+      ? MLBMAStandings.formStripHtml(m.home, { mirror: false }) : '';
+    var lede = esc(m.away) + ' at ' + esc(m.home)
+      + (m.time ? ' · ' + esc(m.time) : '')
+      + ' at ' + esc(stadium) + '. '
+      + 'Starters: ' + esc(m.awaySP || 'TBD') + ' vs ' + esc(m.homeSP || 'TBD') + '. '
+      + 'Public Matchup Analysis is descriptive — forecasts stay in Model Center.';
+    function kv(k, v) {
+      return '<div class="mc-kv"><dt>' + esc(k) + '</dt><dd>' + (v || '—') + '</dd></div>';
+    }
+    return '<div class="mc-overview-grid">'
+      + '<section class="mc-card mc-overview-story"><h2>Game context</h2><p>' + lede + '</p></section>'
+      + '<section class="mc-card"><h2>Key information</h2><dl class="mc-kv-list">'
+      + kv('Venue', esc(stadium))
+      + kv('First pitch', esc(m.time || 'TBD'))
+      + kv('Weather', esc((w.temp ? w.temp + '° ' : '') + (w.cond || 'Unavailable')))
+      + kv('Wind', esc(w.wind || 'Unavailable'))
+      + kv('Broadcast', esc(tv))
+      + kv('Away lineup', ctx.awayLineup && ctx.awayLineup.length >= 5 ? 'Confirmed' : 'Projected')
+      + kv('Home lineup', ctx.homeLineup && ctx.homeLineup.length >= 5 ? 'Confirmed' : 'Projected')
+      + '</dl></section>'
+      + '<section class="mc-card"><h2>Recent form</h2>'
+      + '<div class="mc-form-pair"><div><strong>' + esc(m.away) + '</strong>' + (awayForm || '<p class="ca-helper">Last-5 unavailable</p>') + '</div>'
+      + '<div><strong>' + esc(m.home) + '</strong>' + (homeForm || '<p class="ca-helper">Last-5 unavailable</p>') + '</div></div></section>'
+      + '<section class="mc-card"><h2>Park &amp; weather</h2><p class="ca-helper">'
+      + (w.cond || w.temp || w.wind
+        ? esc([w.temp ? w.temp + '°' : '', w.cond, w.wind].filter(Boolean).join(' · '))
+        : 'Park and weather notes publish when the weather feed has a reading for this game.')
+      + '</p></section>'
+      + '<section class="mc-card"><h2>Data sources</h2><p class="mc-source-row">MLB · Baseball Savant · FanGraphs · RotoWire</p></section>'
+      + '</div>';
+  }
+
   function renderPaneLvL(ctx, state) {
     return '<h2 class="mc-pane-title">Lineup vs Lineup</h2>'
       + '<p class="mc-pane-desc mc-pane-desc--lead">Two-club context, then projected lineups and split-adjusted offense.</p>'
@@ -808,13 +873,16 @@
     _compareCtx = ctx;
 
     root.innerHTML = ''
-      + sectionHeader(m, weather, stadium)
+      + sectionHeader(ctx)
       + compareNavHtml(state.mode)
       + '<div class="mc-compare-panes">'
+      + paneWrap('overview', state.mode === 'overview', renderPaneOverview(ctx))
       + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx, state))
       + paneWrap('lvP', state.mode === 'lvP', renderPaneLvP(ctx, state))
       + paneWrap('lvB', state.mode === 'lvB', renderPaneLvB(ctx, state))
-      + '</div></div>';
+      + '</div>'
+      + modelCenterCta(m)
+      + '</div>';
 
     _compareState = state;
     bindCompareUI(root, ctx, state);
@@ -833,7 +901,7 @@
 
   function teamSideBlock(team, align) {
     var isHome = align === 'home';
-    var logo = S.teamLogo(team, 52);
+    var logo = S.teamLogo(team, 72);
     var rec = S.recordHtml(team);
     if (!rec && global.MLBMAStandings) {
       var wl = MLBMAStandings.formatRecord(team);
@@ -855,22 +923,30 @@
       + '</div></a>';
   }
 
-  function sectionHeader(m, weather, stadium) {
+  function sectionHeader(ctx) {
+    var m = ctx.m;
+    var weather = ctx.weather;
+    var stadium = m.stadium || '—';
     var wx = S.weatherBadge(weather, m.home);
+    var tv = m.tv || m.broadcast || '';
     return '<div class="compare-page">'
       + '<nav class="compare-breadcrumb" aria-label="Breadcrumb">'
       + '<a href="index.html">Opening</a><span class="bc-sep">›</span>'
-      + '<a href="index.html#section-matchups-hero">Today\'s Matchups</a><span class="bc-sep">›</span>'
+      + '<a href="/mlb/">MLB Matchups</a><span class="bc-sep">›</span>'
       + '<span>' + esc(m.away) + ' @ ' + esc(m.home) + '</span></nav>'
-      + '<a href="index.html#section-matchups-hero" class="back-link">← Back to Today\'s Matchups</a>'
       + '<header class="mc-header mc-section">'
-      + '<p class="mc-header-kicker">Matchup analysis</p>'
+      + '<p class="mc-header-kicker">Matchup analysis · Public research</p>'
       + '<div class="mc-header-grid">'
       + teamSideBlock(m.away, 'away')
       + '<div class="mc-header-center">'
       + '<h1 class="mc-header-matchup">' + esc(m.away) + ' <span class="mc-at">@</span> ' + esc(m.home) + '</h1>'
-      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium) + '</div>'
+      + '<div class="mc-header-meta">' + esc(m.time || 'TBD') + ' · ' + esc(stadium)
+      + (tv ? ' · ' + esc(tv) : '') + '</div>'
       + (wx ? '<div class="mc-header-weather">' + wx + '</div>' : '')
+      + '<div class="mc-header-status">'
+      + lineupChip(ctx.awayLineup, 'Away')
+      + lineupChip(ctx.homeLineup, 'Home')
+      + '</div>'
       + '</div>'
       + teamSideBlock(m.home, 'home')
       + '</div>'
