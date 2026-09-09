@@ -642,6 +642,9 @@
 
     var live = global.LIVE_DATA || {};
     var games = live.matchups || [];
+    if (!games.length && live._liveSchedule && live._liveSchedule.games && live._liveSchedule.games.length) {
+      games = live._liveSchedule.games;
+    }
     if (!games.length) {
       var stillLoading = !live.loaded && !live.error;
       var msg = stillLoading
@@ -663,12 +666,11 @@
         if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
       });
     };
+    paint();
     var S = global.MLBMASharedMatchup;
     if (S && S.hydrateMatchupPitcherStatsFromMlb) {
       S.hydrateMatchupPitcherStatsFromMlb(games).then(paint).catch(paint);
-      return;
     }
-    paint();
   }
 
   function signalConfClass(conf) {
