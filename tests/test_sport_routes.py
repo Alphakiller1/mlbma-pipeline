@@ -264,6 +264,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("min-height: var(--touch-min)", block)
         opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
         self.assertIn('class="ca-text-link">NFL matchups</a>', opening)
+        self.assertIn(".ca-hero__cta .ca-text-link", opening)
+        self.assertIn("min-height: var(--touch-min, 44px)", opening)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
