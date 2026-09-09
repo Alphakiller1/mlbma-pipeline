@@ -303,6 +303,9 @@ class AdapterHoleTests(unittest.TestCase):
             html = (ROOT / sport / "matchup.html").read_text(encoding="utf-8")
             self.assertIn("public_game_detail.js?v=" + stamp, html)
             self.assertNotIn("matchup_compare.js", html)
+            self.assertIn("context: false", html)
+        shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
+        self.assertIn("opts.context !== false", shell)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
