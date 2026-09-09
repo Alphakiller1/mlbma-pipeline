@@ -6,12 +6,14 @@
 # going forward belong in THIS file as 301s.
 
 # Legacy OEM filename at the domain root (old bookmarks / nav).
-/chase_analytics_mlb_oem_v7.html  /dashboard/index.html  301
-/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
+/chase_analytics_mlb_oem_v7.html  /dashboard/  301
+/chase_analytics_mlb_oem_v7       /dashboard/  301
 
 # Same legacy filename under /dashboard/ (current nav still links here; HTML stub also redirects).
-/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/index.html  301
-/dashboard/chase_analytics_mlb_oem_v7       /dashboard/index.html  301
+/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/  301
+/dashboard/chase_analytics_mlb_oem_v7       /dashboard/  301
+/dashboard/matchup_sheet.html     /dashboard/matchup_compare  301
+/dashboard/matchup_sheet          /dashboard/matchup_compare  301
 
 # Demoted public research surfaces (WP4A) — files remain under /dashboard/render/ for capture.
 /dashboard/team_rankings.html  /dashboard/matchup_compare  301

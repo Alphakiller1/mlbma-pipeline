@@ -1357,8 +1357,7 @@ function profileWindowFieldsFromRow(row) {
     var root = document.getElementById('rlModelLinksRoot');
     if (!root) return;
     var cards = [
-      { href: 'index.html#section-matchups-hero', title: "Tonight's Matchups", desc: 'Open a card. Two-club rank lives in that matchup, not on its own page.' },
-      { href: 'glossary.html', title: 'Metric Glossary', desc: 'How every metric and signal is defined.' }
+      { href: 'index.html#section-matchups-hero', title: "Tonight's Matchups", desc: 'Open a card. Two-club rank lives in that matchup, not on its own page.' },      { href: 'glossary.html', title: 'Metric Glossary', desc: 'How every metric and signal is defined.' }
     ];
     root.innerHTML = '<div class="rl-model-links">' + cards.map(function(c) {
       return '<a class="rl-model-link-card" href="' + c.href + '"><h4>' + esc(c.title) + '</h4><p>' + esc(c.desc) + '</p></a>';

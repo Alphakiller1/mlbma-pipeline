@@ -51,7 +51,7 @@ window.MLBMA_CONFIG = {
 },
   DASHBOARD_PAGES: [
     { id: "main", label: "Main Dashboard", file: "index.html", url: "index.html", params: null },
-    { id: "matchup_sheet", label: "Matchup Sheet", file: "matchup_sheet.html", url: "matchup_sheet.html", params: null },
+    { id: "matchup_sheet", label: "Matchup Analysis", file: "matchup_compare.html", url: "matchup_compare.html", params: null },
     { id: "batter_profile", label: "Batter Profile", file: "batter_profile.html", url: "batter_profile.html", params: ["player"] },
     { id: "pitcher_profile", label: "Pitcher Profile", file: "pitcher_profile.html", url: "pitcher_profile.html", params: ["pitcher"] },
     { id: "bullpen_report", label: "Bullpen Profile", file: "bullpen_report.html", url: "bullpen_report.html", params: null },

@@ -118,8 +118,7 @@
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'matchup_compare.html') return 'matchups';
-    if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'matchups';
-    return page;
+    if (page === 'team_rankings.html' || page === 'matchup_sheet.html') return 'matchups';    return page;
   }
 
   function sportNavKey() {
@@ -132,9 +131,9 @@
 
   function currentNavKey() {
     var sportKey = sportNavKey();
-    if (sportKey) return sportKey;
-    var page = currentPageName();
+    if (sportKey) return sportKey;    var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
+    if (/\/nfl(\/|$)/.test(path)) return 'nfl';
     if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero') return 'matchups';
@@ -142,8 +141,7 @@
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'matchup_compare.html') return 'matchups';
-    if (page === 'team_rankings.html') return 'matchups';
-    return page;
+    if (page === 'team_rankings.html') return 'matchups';    return page;
   }
 
   function setActivePage() {
@@ -168,11 +166,9 @@
     document.querySelectorAll('.chase-dropdown-item').forEach(function (link) {
       if (link.tagName !== 'A') return;
       var href = link.getAttribute('href');
-      link.style.background = '';
-      link.style.color = '';
+      link.classList.remove('active');
       if (href && href.split('/').pop().split('?')[0] === profilePage) {
-        link.style.background = 'rgba(124, 58, 237, 0.15)';
-        link.style.color = '#9A6BFF';
+        link.classList.add('active');
         var dropdown = link.closest('.chase-dropdown');
         if (dropdown) {
           var trig = dropdown.querySelector('.chase-nav-link');

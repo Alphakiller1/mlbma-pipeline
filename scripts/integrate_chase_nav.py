@@ -11,10 +11,7 @@ NAV_JS_STAMP = STAMP
 
 PAGES = [
     "index.html",
-    "index.html",
-    "signal_board.html",
     "matchup_compare.html",
-    "matchup_sheet.html",
     "pitcher_profile.html",
     "batter_profile.html",
     "bullpen_report.html",
@@ -213,14 +210,14 @@ def ensure_mobile_nav_complete(html: str) -> str:
     return html
 
 
-def sync_nav_block(html: str) -> str:
+def sync_nav_block(html: str, nav_html: str = NAV_HTML) -> str:
     if 'id="chaseHeader"' not in html:
         return html
     html = dedupe_nav_comments(html)
     if NAV_BLOCK_RE.search(html):
-        html = NAV_BLOCK_RE.sub(NAV_HTML + "\n", html, count=1)
+        html = NAV_BLOCK_RE.sub(nav_html + "\n", html, count=1)
     elif NAV_BLOCK_TRUNCATED_RE.search(html):
-        html = NAV_BLOCK_TRUNCATED_RE.sub(NAV_HTML + "\n", html, count=1)
+        html = NAV_BLOCK_TRUNCATED_RE.sub(nav_html + "\n", html, count=1)
     html = ensure_mobile_nav_complete(html)
     return dedupe_nav_comments(html)
 
@@ -244,6 +241,13 @@ def insert_nav_at_body(html: str) -> str:
     return html[:pos] + NAV_HTML + "\n\n" + html[pos:]
 
 
+def prefixed_nav(prefix: str) -> str:
+    def repl(match):
+        return f'{match.group(1)}="{prefix}{match.group(2)}"'
+
+    return re.sub(r'\b(href|src)="(?!/|#|https?:)([^"]+)"', repl, NAV_HTML)
+
+
 def main() -> None:
     for name in PAGES:
         path = DASH / name
@@ -265,6 +269,18 @@ def main() -> None:
             print(f"OK {name}")
         else:
             print(f"UNCHANGED {name}")
+
+    render_nav = prefixed_nav("../")
+    for path in sorted((DASH / "render").glob("*.html")):
+        text = path.read_text(encoding="utf-8")
+        orig = text
+        text = sync_nav_block(text, render_nav)
+        if text != orig:
+            with path.open("w", encoding="utf-8", newline="\n") as handle:
+                handle.write(text)
+            print(f"OK render/{path.name}")
+        else:
+            print(f"UNCHANGED render/{path.name}")
 
 
 if __name__ == "__main__":

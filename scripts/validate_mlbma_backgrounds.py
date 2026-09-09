@@ -9,14 +9,13 @@ BG_DIR = DASH / "assets" / "backgrounds"
 BG_CSS = DASH / "mlbma_backgrounds.css"
 
 PRODUCTION_PAGES = {
-    "chase_analytics_mlb_oem_v7.html": {"opening-dashboard", "platform-dashboard"},
+    "index.html": {"opening-dashboard", "platform-dashboard", "ca-bg-outfield"},
     "batter_profile.html": {"batter-profile-page"},
     "pitcher_profile.html": {"pitcher-profile-page"},
     "team_profile.html": {"team-profile-page"},
     "bullpen_report.html": {"bullpen-profile-page"},
     "team_rankings.html": {"ca-bg-outfield"},
     "matchup_compare.html": {"ca-bg-compare"},
-    "index.html": {"ca-bg-outfield"},
     "glossary.html": {"ca-bg-outfield"},
     "team_card.html": {"ca-bg-catcher"},
 }

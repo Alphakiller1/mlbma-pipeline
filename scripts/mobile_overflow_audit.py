@@ -33,7 +33,7 @@ from playwright.sync_api import sync_playwright
 # The real, standalone pages a phone user actually lands on. Fragments (chase_nav.html)
 # and redirect stubs (matchup_sheet.html) are intentionally excluded.
 DEFAULT_PAGES = [
-    "dashboard/chase_analytics_mlb_oem_v7.html",
+    "dashboard/index.html",
     "dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home",
     "dashboard/matchup_compare.html",
     "dashboard/batter_profile.html",
