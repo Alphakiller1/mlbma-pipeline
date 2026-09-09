@@ -49,8 +49,11 @@
 
   function fullMatchupUrl(sport, g) {
     if (sport === 'mlb') {
-      return '/dashboard/matchup_compare.html?away=' + encodeURIComponent(g.away || '') +
-        '&home=' + encodeURIComponent(g.home || '') + '&game=' + encodeURIComponent(g.id || '');
+      var pk = g.gamePk || (String(g.id || '').match(/^\d+$/) ? g.id : '');
+      var href = '/dashboard/matchup_compare.html?away=' + encodeURIComponent(g.away || '') +
+        '&home=' + encodeURIComponent(g.home || '');
+      if (pk) href += '&gamePk=' + encodeURIComponent(pk);
+      return href;
     }
     return '/' + sport + '/matchups.html?game=' + encodeURIComponent(g.id || '');
   }
@@ -200,37 +203,24 @@
       if (filter === 'lineups') {
         return String(g.away_lineup_state || g.home_lineup_state || '').toLowerCase().indexOf('confirm') >= 0;
       }
-      if (filter === 'night') {
-        var d = new Date(g.kickoff_utc || '');
-        if (isNaN(d.getTime())) return true;
-        var h = Number(d.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/New_York' }));
-        return h >= 17;
-      }
       return true;
     });
   }
 
   function deskChrome(host, sport, games) {
     var desk = host.__desk || {};
-    var dateIso = desk.dateIso || easternDateIso();
     var view = desk.view || 'grid';
     var filter = desk.filter || 'all';
     var live = sport === 'mlb' && desk.live;
     var html = '<div class="ca-desk-toolbar">';
     if (live) {
       html += '<div class="ca-desk-dates">' +
-        '<button type="button" class="ca-desk-dates__btn" data-date-shift="-1">Previous day</button>' +
-        '<span class="ca-desk-dates__now">' + esc(formatLongDate(dateIso)) + '</span>' +
+        '<span class="ca-desk-dates__now">' + esc(formatLongDate(host.__desk.dateIso || easternDateIso())) + '</span>' +
         '<button type="button" class="ca-desk-dates__btn" data-date-shift="1">Next day</button></div>';
     }
     html += '<div class="ca-desk-filters">' +
       '<button type="button" class="ca-desk-chip' + (filter === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>' +
       '<button type="button" class="ca-desk-chip' + (filter === 'lineups' ? ' is-on' : '') + '" data-filter="lineups">Lineups confirmed</button>' +
-      '<button type="button" class="ca-desk-chip' + (filter === 'night' ? ' is-on' : '') + '" data-filter="night">Night games</button>' +
-      '</div>' +
-      '<div class="ca-desk-view" role="group" aria-label="Layout">' +
-      '<button type="button" class="ca-desk-chip' + (view === 'grid' ? ' is-on' : '') + '" data-view="grid">Grid</button>' +
-      '<button type="button" class="ca-desk-chip' + (view === 'list' ? ' is-on' : '') + '" data-view="list">List</button>' +
       '</div></div>';
     html += '<p class="ca-desk-count">' + games.length + ' games available</p>';
     return html;
@@ -242,9 +232,8 @@
     host.__desk.sport = sport;
     host.__desk.games = games;
     var shown = applyFilters(host, games);
-    var view = host.__desk.view || 'grid';
     var html = deskChrome(host, sport, shown);
-    html += '<div class="ca-slate-grid' + (view === 'list' ? ' ca-slate-grid--list' : '') + '">';
+    html += '<div class="ca-slate-grid">';
     shown.forEach(function (g) { html += cardHtml(sport, g); });
     html += '</div>';
     if (!shown.length) {
@@ -268,12 +257,6 @@
       var filt = e.target.closest('[data-filter]');
       if (filt) {
         host.__desk.filter = filt.getAttribute('data-filter');
-        render(host, host.__desk.sport, host.__desk.games);
-        return;
-      }
-      var view = e.target.closest('[data-view]');
-      if (view) {
-        host.__desk.view = view.getAttribute('data-view');
         render(host, host.__desk.sport, host.__desk.games);
         return;
       }
@@ -339,6 +322,7 @@
     var homeHand = homeProb.pitchHand && homeProb.pitchHand.code;
     return {
       id: id,
+      gamePk: game.gamePk || null,
       sport: 'mlb',
       game_state: mlbState(game),
       kickoff_utc: game.gameDate || null,

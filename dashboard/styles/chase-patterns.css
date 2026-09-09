@@ -94,14 +94,17 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-4);
+  width: 100%;
 }
-@media (min-width: 760px) {
+@media (min-width: 720px) {
   .ca-slate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (min-width: 1100px) {
+@media (min-width: 1080px) {
   .ca-slate-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-.ca-slate-grid--list { grid-template-columns: 1fr; }
+@media (min-width: 1480px) {
+  .ca-slate-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 .ca-desk-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -123,18 +126,19 @@
   align-items: center;
   padding: 0 var(--space-3);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
+  border-radius: 0;
   font-size: var(--type-12);
   font-weight: 700;
   color: var(--text-primary);
+  background: var(--surface-inset);
 }
 .ca-desk-dates__btn,
 .ca-desk-chip {
   min-height: var(--touch-min);
   padding: 0 var(--space-3);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
+  border-radius: 0;
+  background: var(--surface-inset);
   color: var(--text-secondary);
   font: inherit;
   font-size: var(--type-12);
@@ -215,7 +219,7 @@
   align-items: center;
   min-height: 22px;
   padding: 0 8px;
-  border-radius: var(--radius-pill);
+  border-radius: 0;
   font-size: var(--type-12);
   font-weight: 700;
   background: var(--surface-raised);
@@ -449,19 +453,16 @@
 
 .ca-opening-desk {
   width: 100%;
-  max-width: var(--shell-max);
-  margin: 0 auto;
-  padding: var(--space-6) var(--shell-gutter-sm) var(--space-4);
+  max-width: none;
+  margin: 0;
+  padding: var(--space-5) clamp(16px, 3vw, 40px) var(--space-6);
   box-sizing: border-box;
-}
-@media (min-width: 768px) {
-  .ca-opening-desk { padding-left: var(--shell-gutter); padding-right: var(--shell-gutter); }
 }
 .ca-opening-desk__head {
   display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-  max-width: 52rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  max-width: none;
 }
 .ca-opening-desk__slates {
   display: grid;

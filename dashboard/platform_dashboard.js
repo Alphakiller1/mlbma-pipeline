@@ -609,22 +609,25 @@
 
   function renderHeroMatchups() {
     bindDayTabs();
-    var grid = document.getElementById('matchupsHeroGrid');
-    if (!grid) {
-      console.warn('[PD] matchupsHeroGrid not found');
-      return;
+    var hero = document.getElementById('matchupsHeroGrid');
+    var opening = document.getElementById('openingMlbSlate');
+    var viewMatchups = document.documentElement.classList.contains('view-matchups');
+    var viewOpening = document.documentElement.classList.contains('view-opening');
+    var grids = [];
+    if (hero && viewMatchups) {
+      var matchupsSection = document.getElementById('section-matchups-hero');
+      if (!matchupsSection || !matchupsSection.closest('#opening-dashboard')) grids.push(hero);
     }
-    if (!document.documentElement.classList.contains('view-matchups')) return;
-    var matchupsSection = document.getElementById('section-matchups-hero');
-    if (!matchupsSection || matchupsSection.closest('#opening-dashboard')) return;
+    if (opening && (viewOpening || !hero)) grids.push(opening);
+    if (!grids.length) return;
     renderOpeningHero();
 
-    if (MATCH_DAY === 'tomorrow') {
+    if (MATCH_DAY === 'tomorrow' && hero && grids.indexOf(hero) >= 0) {
       var renderTomorrow = function(games) {
         var htmlStr = !games.length
           ? '<div class="empty-msg">No games scheduled for tomorrow.</div>'
           : sortGames(games).map(function(m, i) { return renderTomorrowCard(m, i); }).join('');
-        applyGridHtml(grid, htmlStr);
+        applyGridHtml(hero, htmlStr);
       };
       var loadTomorrow = function() {
         return fetchTomorrowMatchups(true).then(renderTomorrow);
@@ -641,23 +644,24 @@
     var games = live.matchups || [];
     if (!games.length) {
       var stillLoading = !live.loaded && !live.error;
-      applyGridHtml(grid, stillLoading
+      var msg = stillLoading
         ? '<div class="empty-msg">Loading today\u2019s matchups\u2026</div>'
-        : '<div class="empty-msg">No matchups loaded for today.</div>');
+        : '<div class="empty-msg">No matchups loaded for today.</div>';
+      grids.forEach(function(grid) { applyGridHtml(grid, msg); });
       return;
     }
     var paint = function() {
-      // Enrich inside paint, AFTER pitcher hydration: enrich recomputes OSI
-      // splits from the (possibly MLB-corrected) throwing hands, and sorting
-      // re-runs because hydration can land between call and paint.
       if (typeof global.enrichMatchupCards === 'function') global.enrichMatchupCards();
-      var changed = applyGridHtml(grid, sortGames(games).map(function(m, cardIdx) {
+      var htmlStr = sortGames(games).map(function(m, cardIdx) {
         return renderHeroMatchupCard(m, cardIdx);
-      }).join('').replace(/<\/?motion>/g, ''));
-      if (!changed) return;
-      bindCardNavigation();
-      grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
-      if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
+      }).join('').replace(/<\/?motion>/g, '');
+      grids.forEach(function(grid) {
+        var changed = applyGridHtml(grid, htmlStr);
+        if (!changed) return;
+        if (grid.id === 'matchupsHeroGrid') bindCardNavigation();
+        grid.querySelectorAll('.hero-matchup-card').forEach(bindHeroMatchupCard);
+        if (global.MLBMAIcons && MLBMAIcons.refreshIcons) MLBMAIcons.refreshIcons(grid);
+      });
     };
     var S = global.MLBMASharedMatchup;
     if (S && S.hydrateMatchupPitcherStatsFromMlb) {

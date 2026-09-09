@@ -221,13 +221,19 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("label: 'Offensive Splits'", compare)
         self.assertIn("label: 'Pitch Mix'", compare)
         self.assertIn("mc-model-cta", compare)
-        self.assertIn("mc-desk", compare)
+        self.assertIn("matchupFromLive", compare)
+        self.assertIn("requestedGamePk", compare)
+        self.assertIn("mc-overview-packet", compare)
         self.assertIn("usageBarsHtml", compare)
         self.assertIn("mcDeskBpAway", compare)
         self.assertIn('<h1 class="mc-header-matchup">', compare)
-        pane = compare.split("function renderPaneLvL", 1)[1].split("function renderPaneLvP", 1)[0]
-        self.assertLess(pane.index("mcTeamRankings"), pane.index("MatchupLineupCompare"))
-        self.assertLess(pane.index("MatchupLineupCompare"), pane.index("renderTeamCompareRadar"))
+        overview = compare.split("function renderPaneOverview", 1)[1].split("function renderPaneSplits", 1)[0]
+        packet = overview.split("mc-overview-packet", 1)[1]
+        self.assertLess(packet.index("mcTeamRankings"), packet.index("lineups"))
+        self.assertLess(packet.index("lineups"), packet.index("renderTeamCompareRadar"))
+        lineups = compare.split("function renderPaneLvL", 1)[1].split("function renderPaneLvP", 1)[0]
+        self.assertIn("MatchupLineupCompare.renderSection", lineups)
+        self.assertNotIn('id="mcTeamRankings"', lineups)
 
     def test_public_team_rankings_is_not_a_standalone_section(self):
         html = (ROOT / "dashboard" / "team_rankings.html").read_text(encoding="utf-8")
@@ -273,8 +279,16 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("styles/chase-primitives.css", opening)
         self.assertIn("styles/chase-components.css", opening)
         self.assertIn("matchup_card.js", opening)
-        self.assertIn("ChaseMatchupCard.mountLiveMlb", opening)
+        self.assertIn("PlatformDashboard.renderHeroMatchups", opening)
         self.assertIn("ChaseMatchupCard.mountSlate", opening)
+        self.assertIn("hero-matchup-card", dash)
+        self.assertIn("View Full Analysis", dash)
+        self.assertNotIn("chase-nav-search", opening)
+        self.assertNotIn("Search teams, players, or topics", opening)
+        self.assertNotIn(
+            "chase-nav-search",
+            (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8"),
+        )
         self.assertNotIn('ca-tool-card__title">Trends<', opening)
         self.assertIn("html.view-opening #section-opening-market-map", opening)
         diag = (ROOT / "scripts" / "dashboard_runtime_diag.py").read_text(encoding="utf-8")

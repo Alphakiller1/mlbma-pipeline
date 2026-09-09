@@ -178,6 +178,12 @@
     return S && S.parseWeatherMap ? S.parseWeatherMap(rows) : {};
   }
 
+  function requestedGamePk() {
+    var raw = qp('gamePk') || qp('game') || '';
+    if (/^\d+$/.test(String(raw))) return String(raw);
+    return '';
+  }
+
   function findMatchup(rows, away, home, gameNumber, gamePk) {
     var norm = S && S.normalizeTeamAbbr ? S.normalizeTeamAbbr.bind(S) : function(t) { return String(t || '').trim().toUpperCase(); };
     var list = S.parseMatchupRows(rows);
@@ -187,11 +193,50 @@
       return norm(m.away) === a && norm(m.home) === h;
     });
     if (gamePk) {
-      var byPk = candidates.find(function(m) { return String(m.gamePk || '') === String(gamePk); });
+      var byPk = list.find(function(m) { return String(m.gamePk || '') === String(gamePk); })
+        || candidates.find(function(m) { return String(m.gamePk || '') === String(gamePk); });
       if (byPk) return byPk;
     }
     return candidates.find(function(m) { return Number(m.gameNumber || 1) === Number(gameNumber || 1); })
       || candidates[0] || null;
+  }
+
+  function matchupFromLive(liveGames, away, home, gameNumber, gamePk) {
+    var games = liveGames || [];
+    if (!games.length) return null;
+    var norm = S && S.normalizeTeamAbbr ? S.normalizeTeamAbbr.bind(S) : function(t) { return String(t || '').trim().toUpperCase(); };
+    var a = norm(away);
+    var h = norm(home);
+    var hit = null;
+    for (var i = 0; i < games.length; i++) {
+      var g = games[i];
+      if (gamePk && String(g.gamePk || '') === String(gamePk)) { hit = g; break; }
+    }
+    if (!hit) {
+      for (var j = 0; j < games.length; j++) {
+        var lg = games[j];
+        if (norm(lg.away) !== a || norm(lg.home) !== h) continue;
+        if ((lg.gameNumber || 1) === Number(gameNumber || 1)) { hit = lg; break; }
+        if (!hit) hit = lg;
+      }
+    }
+    if (!hit) return null;
+    return {
+      away: hit.away,
+      home: hit.home,
+      awaySP: hit.awaySP || 'TBD',
+      homeSP: hit.homeSP || 'TBD',
+      awaySPId: hit.awaySPId || null,
+      homeSPId: hit.homeSPId || null,
+      awayHand: hit.awayHand || '?',
+      homeHand: hit.homeHand || '?',
+      stadium: hit.stadium || '',
+      time: hit.time || '',
+      gamePk: hit.gamePk || null,
+      gameNumber: hit.gameNumber || 1,
+      doubleHeader: !!hit.doubleHeader,
+      source: 'mlb-api'
+    };
   }
 
   function filterSlateMatchupRows(rows) {
@@ -638,60 +683,31 @@
 
   function renderPaneOverview(ctx, state) {
     var m = ctx.m;
-    var w = wxBits(ctx.weather);
-    var stadium = m.stadium || '—';
-    var tv = m.tv || m.broadcast || 'Unavailable';
     var awayForm = global.MLBMAStandings && MLBMAStandings.formStripHtml
       ? MLBMAStandings.formStripHtml(m.away, { mirror: false }) : '';
     var homeForm = global.MLBMAStandings && MLBMAStandings.formStripHtml
       ? MLBMAStandings.formStripHtml(m.home, { mirror: false }) : '';
-    var lede = esc(m.away) + ' at ' + esc(m.home)
-      + (m.time ? ' · ' + esc(m.time) + ' ET' : '')
-      + ' at ' + esc(stadium) + '. Starters ' + esc(m.awaySP || 'TBD')
-      + ' and ' + esc(m.homeSP || 'TBD') + '. Lineups '
-      + ((ctx.awayLineup && ctx.awayLineup.length >= 5) ? 'confirmed' : 'projected') + ' / '
-      + ((ctx.homeLineup && ctx.homeLineup.length >= 5) ? 'confirmed' : 'projected')
-      + '. Descriptive research only.';
-    function kv(k, v) {
-      return '<div class="mc-kv"><dt>' + esc(k) + '</dt><dd>' + (v || '—') + '</dd></div>';
-    }
-    var lineups = '';
-    if (global.MatchupLineupCompare && MatchupLineupCompare.teamCardHtml) {
-      lineups = '<div class="mc-desk-lineups">'
-        + MatchupLineupCompare.teamCardHtml(m.away, 'away', ctx.awayLineup, ctx, state || getCompareState())
-        + MatchupLineupCompare.teamCardHtml(m.home, 'home', ctx.homeLineup, ctx, state || getCompareState())
-        + '</div>';
-    }
-    return '<div class="mc-desk">'
-      + '<div class="mc-desk__main">'
-      + '<section class="mc-card mc-overview-story"><h2>Game context</h2><p>' + lede + '</p></section>'
-      + '<section class="mc-card"><h2>Key information</h2><dl class="mc-kv-list">'
-      + kv('Venue', esc(stadium))
-      + kv('First pitch', esc(m.time || 'TBD'))
-      + kv('Weather', esc((w.temp ? w.temp + '° ' : '') + (w.cond || 'Unavailable')))
-      + kv('Wind', esc(w.wind || 'Unavailable'))
-      + kv('Broadcast', esc(tv))
-      + kv('Away lineup', ctx.awayLineup && ctx.awayLineup.length >= 5 ? 'Confirmed' : 'Projected')
-      + kv('Home lineup', ctx.homeLineup && ctx.homeLineup.length >= 5 ? 'Confirmed' : 'Projected')
-      + '</dl></section>'
-      + '<div class="mc-desk-starters">' + overviewStarterCard(ctx, 'away') + overviewStarterCard(ctx, 'home') + '</div>'
-      + lineups
-      + '<section class="mc-card"><h2>Bullpen availability</h2>'
-      + '<div class="mc-desk-bp"><div id="mcDeskBpAway"></div><div id="mcDeskBpHome"></div></div></section>'
+    var awayFaces = m.homeHand === 'L' ? 'LHP' : m.homeHand === 'R' ? 'RHP' : 'SP';
+    var homeFaces = m.awayHand === 'L' ? 'LHP' : m.awayHand === 'R' ? 'RHP' : 'SP';
+    var lineups = global.MatchupLineupCompare
+      ? MatchupLineupCompare.renderSection(ctx, state || getCompareState())
+      : sectionProjectedLineups(m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, {});
+    return '<div class="mc-desk mc-overview-packet">'
+      + '<div id="mcTeamRankings" aria-live="polite"></div>'
+      + '<div class="mc-overview-grid mc-overview-edges">'
+      + edgePanel(m.away + ' vs ' + awayFaces, ctx.awayRow, m.homeHand, m.awayOSI, ctx.homeMet && ctx.homeMet.osiAllowed, (ctx.pals || {})[m.away], m.away)
+      + edgePanel(m.home + ' vs ' + homeFaces, ctx.homeRow, m.awayHand, m.homeOSI, ctx.awayMet && ctx.awayMet.osiAllowed, (ctx.pals || {})[m.home], m.home)
       + '</div>'
-      + '<aside class="mc-desk__rail">'
-      + '<section class="mc-card"><h2>Recent form</h2>'
-      + '<div id="mcDeskForm">'
+      + sectionSP(m, ctx.awayMet, ctx.homeMet, ctx.awayProf, ctx.homeProf, ctx.awayPs, ctx.homePs, ctx.h2h, (ctx.data && ctx.data.spL14) || [], {})
+      + lineups
+      + sectionBullpen(m, ctx.awayBp, ctx.homeBp, {})
+      + '<section class="mc-card"><h2 class="mc-section-title">Last 10</h2>'
+      + '<div id="mcDeskForm" class="mc-form-pair">'
       + '<div><strong>' + esc(m.away) + '</strong>' + (awayForm || '<p class="ca-helper">Last 10 loads from MLB standings.</p>') + '</div>'
-      + '<div><strong>' + esc(m.home) + '</strong>' + (homeForm || '<p class="ca-helper">Last 10 loads from MLB standings.</p>') + '</div></div></section>'
-      + '<section class="mc-card"><h2>Rest &amp; travel</h2><p class="ca-helper">Rest days and travel miles are not on the public matchup contract yet. They appear here when the slate feed publishes them.</p></section>'
-      + '<section class="mc-card"><h2>Park &amp; weather</h2><p class="ca-helper">'
-      + (w.cond || w.temp || w.wind
-        ? esc([w.temp ? w.temp + '°' : '', w.cond, w.wind].filter(Boolean).join(' · '))
-        : 'Park and weather notes publish when the weather feed has a reading for this game.')
-      + '</p></section>'
-      + '<section class="mc-card"><h2>Data sources</h2><p class="mc-source-row">MLB · Baseball Savant · FanGraphs · RotoWire</p></section>'
-      + '</aside></div>';
+      + '<div><strong>' + esc(m.home) + '</strong>' + (homeForm || '<p class="ca-helper">Last 10 loads from MLB standings.</p>') + '</div></div>'
+      + '<div class="mc-desk-bp"><div id="mcDeskBpAway"></div><div id="mcDeskBpHome"></div></div></section>'
+      + renderTeamCompareRadar(m)
+      + '</div>';
   }
 
   function renderPaneSplits(ctx) {
@@ -740,13 +756,11 @@
 
   function renderPaneLvL(ctx, state) {
     return '<h2 class="mc-pane-title">Lineup vs Lineup</h2>'
-      + '<p class="mc-pane-desc mc-pane-desc--lead">Two-club context, then projected lineups and split-adjusted offense.</p>'
-      + '<div id="mcTeamRankings" aria-live="polite"></div>'
+      + '<p class="mc-pane-desc mc-pane-desc--lead">Projected batting orders and split-adjusted offense. Team context and radars sit on Overview.</p>'
       + (global.MatchupLineupCompare
         ? MatchupLineupCompare.renderSection(ctx, state)
         : sectionProjectedLineups(ctx.m, ctx.awayLineup, ctx.homeLineup, ctx.lineupOk, { bare: true }))
-      + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '')
-      + renderTeamCompareRadar(ctx.m);
+      + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '');
   }
 
   function renderPaneLvP(ctx, state) {
@@ -767,7 +781,12 @@
   function mountChartsForMode(mode, ctx) {
     _lastRadarSize = radarChartSize();
     requestAnimationFrame(function() {
-      if (mode === 'lvL') mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL, ctx.pals);
+      if (mode === 'lvL' || mode === 'overview') {
+        mountTeamRadar(ctx.m, ctx.awayRow, ctx.homeRow, ctx.scR, ctx.scL, ctx.pals);
+      }
+      if (mode === 'overview') {
+        mountPitcherRadar(ctx.m, ctx.awayMet, ctx.homeMet, ctx.awayPs, ctx.homePs);
+      }
     });
   }
 
@@ -1335,8 +1354,8 @@
       return;
     }
 
-    var away = qp('away');
-    var home = qp('home');
+    var away = S.normalizeTeamAbbr ? S.normalizeTeamAbbr(qp('away')) : qp('away');
+    var home = S.normalizeTeamAbbr ? S.normalizeTeamAbbr(qp('home')) : qp('home');
 
     function finish(data) {
       try {
@@ -1408,9 +1427,11 @@
       if (A && A.parseRegistryRows) A.parseRegistryRows(res[9]);
       var slateRows = filterSlateMatchupRows(res[0]);
       var gnWant = parseInt(qp('gn') || '1', 10) || 1;
-      var gamePkWant = qp('gamePk');
+      var gamePkWant = requestedGamePk();
+      var liveGames = (res[31] && res[31].games) ? res[31].games : [];
       var m = findMatchup(slateRows, away, home, gnWant, gamePkWant)
-        || findMatchup(res[0], away, home, gnWant, gamePkWant);
+        || findMatchup(res[0], away, home, gnWant, gamePkWant)
+        || matchupFromLive(liveGames, away, home, gnWant, gamePkWant);
 
       // The sheet snapshot goes stale (it showed Seymour/Sandoval while MLB's
       // posted Gm 1 probables were Jax/Bennett) and one sheet row cannot
@@ -1418,7 +1439,6 @@
       // source of truth for starters, time, and game selection — same
       // precedence the matchup cards use. ?gn=2 selects a DH game 2.
       if (m) {
-        var liveGames = (res[31] && res[31].games) ? res[31].games : [];
         var tk = S.teamKey || function(t) { return String(t || '').trim().toUpperCase(); };
         var liveGame = null;
         for (var li = 0; li < liveGames.length; li++) {

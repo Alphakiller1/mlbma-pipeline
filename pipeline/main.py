@@ -35,16 +35,25 @@ SCRIPTS_REQUIRED = [
     "scrapers.scrape_savant",
 ]
 
+# Daily desk first. GitHub Actions has been cancelling at 50 minutes inside
+# scrape_pitch_mix, so Today_Matchups / lineups / weather never pushed.
+SCRIPTS_SLATE = [
+    "scrapers.scrape_weather",
+]
+
 # Optional: failures log WARNING and execution continues (FanGraphs-free / partial runs).
 SCRIPTS_OPTIONAL = [
     "scrapers.scrape_fangraphs",
     # Must follow scrape_fangraphs and precede core.compute: it refreshes the season lines
     # calc_pitching_score reads, while inheriting the columns only FanGraphs ever had.
     "scrapers.scrape_sp_season_standard",
-    "scrapers.scrape_pitch_mix",
     "core.compute",
     "outputs.push_sheets",
-    "scrapers.scrape_weather",
+]
+
+# Statcast window export — 30–45 min on a cold cache. After the slate is live.
+SCRIPTS_HEAVY = [
+    "scrapers.scrape_pitch_mix",
 ]
 
 
@@ -259,14 +268,19 @@ def run(skip_fangraphs: bool = False):
         if not run_script(script, required=True):
             sys.exit(1)
 
+    for script in SCRIPTS_SLATE:
+        run_script(script, required=False)
+
+    run_lineups()
+    run_matchups()
+    run_public_slate_publish()
+
     for script in SCRIPTS_OPTIONAL:
         if script == "scrapers.scrape_fangraphs" and skip_fangraphs:
             print("\n  [SKIP] scrapers.scrape_fangraphs (--skip-fangraphs)")
             continue
         run_script(script, required=False)
 
-    run_lineups()
-    run_matchups()
     run_game_results()
 
     if check_step_deps("scrapers.scrape_pals"):
@@ -297,6 +311,20 @@ def run(skip_fangraphs: bool = False):
         run_model_deployment_sync()
     else:
         print("WARNING: MLB Model deployment not dispatched because hub mirror failed")
+    for script in SCRIPTS_HEAVY:
+        run_script(script, required=False)
+
+    def _push_mix_after_statcast():
+        from outputs.push_pitch_mix import run as run_push_pitch_mix
+
+        run_push_pitch_mix()
+
+    _run_step(
+        "outputs.push_pitch_mix (after Statcast)",
+        "outputs.push_pitch_mix",
+        _push_mix_after_statcast,
+    )
+
     run_public_slate_publish()
     run_instagram_autopost()
 
@@ -421,6 +449,9 @@ def run_bullpen_social_charts():
     Non-fatal. Keeps posted bullpen charts aligned with Today_Matchups instead of
     a hardcoded legacy game list.
     """
+    if os.getenv("GITHUB_ACTIONS", "").strip():
+        print("\n  [SKIP] bullpen social charts (no browser pack on CI)")
+        return
 
     def _fn():
         script = ROOT / "scripts" / "capture_matchup_artifacts.py"

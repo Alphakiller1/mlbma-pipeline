@@ -29,9 +29,9 @@ jobs:
   run-pipeline:
     runs-on: ubuntu-latest
     # A healthy run is minutes once the Statcast cache is warm; a cold-cache backfill
-    # of the whole season is ~45. Anything past this is stuck, and a stall used to
-    # burn a full hour of the shared Actions quota before failing anyway.
-    timeout-minutes: 50
+    # of the whole season is ~45. Slate (lineups/matchups/weather) now publishes first
+    # so a timeout cannot strand the desk on yesterday's data.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: data/cache/statcast
-          key: statcast-${{ github.ref_name }}-${{ hashFiles('scrapers/scrape_pitch_mix.py') }}-${{ github.run_id }}
+          key: statcast-${{ github.ref_name }}-${{ hashFiles('scrapers/scrape_pitch_mix.py') }}
           restore-keys: |
             statcast-${{ github.ref_name }}-${{ hashFiles('scrapers/scrape_pitch_mix.py') }}-
             statcast-${{ github.ref_name }}-
