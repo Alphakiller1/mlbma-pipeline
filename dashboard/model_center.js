@@ -118,18 +118,30 @@
     var clamp = function (v) { return Math.max(-half, Math.min(half, v)); };
     var pct = function (v) { return ((clamp(v) + half) / (2 * half)) * 100; };
     // Labels sit directly above their own mark, so the number and the position
-    // on the axis read as one object. Each is nudged inside the track at the
-    // extremes so a label never overflows the card.
-    var label = function (cls, name, v) {
-      var x = pct(v);
-      var align = x < 12 ? 'left:0;transform:none' : (x > 88 ? 'right:0;transform:none' : 'left:' + x.toFixed(2) + '%;transform:translateX(-50%)');
+    // on the axis read as one object. A label is roughly a fifth of the track
+    // wide, so when the two marks are closer than that the labels would print
+    // over each other ("MODMARKET"); below the threshold they fall back to
+    // opposite ends of the track, which still reads correctly.
+    var LABEL_CLEARANCE = 30;
+    var apart = (m != null && k != null) ? Math.abs(pct(m) - pct(k)) : 100;
+    var label = function (cls, name, v, side) {
+      var align;
+      if (side) {
+        align = side === 'left' ? 'left:0;transform:none' : 'right:0;transform:none';
+      } else {
+        var x = pct(v);
+        align = x < 15 ? 'left:0;transform:none'
+          : (x > 85 ? 'right:0;transform:none'
+            : 'left:' + x.toFixed(2) + '%;transform:translateX(-50%)');
+      }
       return '<div class="mc-gauge__leg ' + cls + '" style="' + align + '">' +
         '<span>' + name + '</span><strong>' + esc(signed(v)) + '</strong></div>';
     };
+    var crowded = apart < LABEL_CLEARANCE;
     var parts = '<div class="mc-gauge">';
     parts += '<div class="mc-gauge__legend">' +
-      (m != null ? label('is-model', 'Model', m) : '') +
-      (k != null ? label('is-market', 'Market', k) : '') + '</div>';
+      (m != null ? label('is-model', 'Model', m, crowded ? 'left' : null) : '') +
+      (k != null ? label('is-market', 'Market', k, crowded ? 'right' : null) : '') + '</div>';
     parts += '<div class="mc-gauge__track">' +
       '<div class="mc-gauge__zero" style="left:' + pct(0).toFixed(2) + '%"></div>';
     if (m != null && k != null) {
