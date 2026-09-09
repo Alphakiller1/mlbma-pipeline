@@ -124,10 +124,17 @@
 .ca-card,
 .ca-panel {
   background: var(--surface-panel);
-  border: 1.5px solid var(--border-accent);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--elevation-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
   color: var(--text-primary);
+}
+.ca-desk {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-6);
+  box-shadow: none;
 }
 .ca-card { padding: var(--space-4); }
 .ca-panel { padding: var(--space-6); }

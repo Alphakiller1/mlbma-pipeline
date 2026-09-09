@@ -2444,6 +2444,7 @@
             awayHand: awayHand,
             homeHand: homeHand,
             stadium: (game.venue && game.venue.name) || '',
+            kickoff_utc: game.gameDate || null,
             // Doubleheader game 2 gets its own key so it can't overwrite game 1.
             gameKey: away + '@' + home + (gameNumber > 1 ? '#' + gameNumber : ''),
             gameNumber: gameNumber,

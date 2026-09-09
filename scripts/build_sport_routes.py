@@ -22,7 +22,7 @@ SPORTS = {
         "global": "ChaseSportMLB",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "Tonight’s games, probable starters, weather, descriptive context. Forecasts in Model Center.",
+        "lede": "Probable starters, lineup status, bullpen availability, conditions, and recent context.",
         "matchups_href": "/mlb/matchups.html",
     },
     "nfl": {
@@ -99,7 +99,7 @@ def parked_page(sport: str) -> str:
     <p class="ca-helper">
       <a class="hub-pill" href="/mlb/">MLB</a>
       <a class="hub-pill" href="/nfl/">NFL</a>
-      <a class="hub-pill" href="/dashboard/index.html">Opening</a>
+      <a class="hub-pill" href="/dashboard/index.html">Home</a>
     </p>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
@@ -137,7 +137,7 @@ def page(sport: str, *, kind: str = "index") -> str:
         h1 = sport.upper() + " results"
     else:
         lede = spec["lede"]
-        h1 = sport.upper() + " matchups"
+        h1 = sport.upper() + " Matchups"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,13 +200,16 @@ HUB_JS = r"""
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
   if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'index', search: false });
-  if (window.ChaseMatchupCard) {
-    ChaseMatchupCard.mountSlate({
-      sport: sport,
-      adapter: adapter,
-      host: document.getElementById('slate')
-    });
+  if (!window.ChaseMatchupCard) return;
+  if (sport === 'mlb' && ChaseMatchupCard.mountLiveMlb) {
+    ChaseMatchupCard.mountLiveMlb({ host: document.getElementById('slate') });
+    return;
   }
+  ChaseMatchupCard.mountSlate({
+    sport: sport,
+    adapter: adapter,
+    host: document.getElementById('slate')
+  });
 })();
 """
 
@@ -218,6 +221,10 @@ MATCHUPS_JS = r"""
   else if (window.ChaseSportSelect) {
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'matchups' });
+  }
+  if (window.ChaseMatchupCard && sport === 'mlb' && ChaseMatchupCard.mountLiveMlb) {
+    ChaseMatchupCard.mountLiveMlb({ host: document.getElementById('slate') });
+    return;
   }
   if (!adapter || !adapter.SLATE_URL) {
     if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
@@ -312,9 +319,9 @@ def models_page() -> str:
       <h1 class="ca-page-title">Model Center</h1>
       <p class="ca-helper">Projections, model-versus-market gaps, and priced markets stay behind a signed-in desk. This page does not preview those numbers.</p>
     </header>
-    <section class="ca-card ca-card-pad">
+    <section class="ca-desk">
       <h2>Access</h2>
-      <p>Public Chase Analytics is Opening and Matchups: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks inside each game.</p>
+      <p>Public Chase Analytics is Home and Matchups: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks inside each game.</p>
       <p>Model Center loads projections only after a signed-in Premium session is verified by <code>/api/me</code> and <code>/api/model-center/board</code>. This page never embeds a public board URL.</p>
       <div data-mlbma-auth-panel></div>
       <p class="ca-helper" id="mcContext">No projected scores, model lines, or confidence values are shown until entitlement succeeds.</p>

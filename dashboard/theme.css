@@ -30,10 +30,8 @@ body:not(.opening-dashboard):not(.platform-dashboard):not(.ca-bg-outfield):not(.
 }
 
 body:not(.opening-dashboard):not(.platform-dashboard):not(.ca-bg-outfield):not(.ca-bg-catcher):not(.ca-bg-plate):not(.ca-bg-compare):not(.team-profile-page):not(.bullpen-profile-page):not(.batter-profile-page):not(.pitcher-profile-page) {
-  background-image:
-    radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.08), transparent 60%);
-  background-color: var(--bg);
+  background: var(--bg);
+  background-image: none;
 }
 
 body::before,
@@ -48,8 +46,9 @@ body::after,
 .ca-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 22px;
+  box-shadow: none;
 }
 
 .ca-card.is-active {

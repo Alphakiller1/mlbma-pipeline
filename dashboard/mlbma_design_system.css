@@ -105,9 +105,9 @@ th.num,
   --ca-red: var(--ca-red-500);
 
   --ca-card-bg: var(--bg-3);
-  --ca-card-radius: 16px;
-  --ca-card-shadow: 0 4px 24px var(--ca-black-a-35);
-  --ca-card-hover-shadow: 0 8px 32px var(--ca-violet-chip-a);
+  --ca-card-radius: 8px;
+  --ca-card-shadow: none;
+  --ca-card-hover-shadow: none;
   --ca-hero-bg: var(--ca-grad-hero);
   --ca-grid-texture: none;
   --ca-ink: var(--ca-ink-1000);
@@ -246,30 +246,25 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   color: var(--ca-purple-light);
 }
 
-/* Premium card shell */
+/* Desk surface — hairline, no float, no violet glow */
 .ca-card {
   border-radius: var(--ca-card-radius);
-  border: 1.5px solid var(--ca-panel-border);
-  background: var(--ca-panel-glass);
+  border: 1px solid var(--border);
+  background: var(--bg-3);
   padding: 24px;
-  box-shadow: var(--ca-glow-violet);
-  transition: all 200ms ease;
+  box-shadow: none;
+  transition: border-color 150ms ease;
   position: relative;
   overflow: hidden;
 }
 .ca-card::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.055), transparent 28%);
-  box-shadow: inset 0 1px 0 var(--ca-inner-stroke), inset 0 -32px 56px rgba(0, 0, 0, 0.34);
+  content: none;
+  display: none;
 }
 .ca-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--ca-panel-border-hot);
-  box-shadow: var(--ca-glow-violet-strong);
+  transform: none;
+  border-color: var(--border);
+  box-shadow: none;
 }
 /* Solid card surfaces only — backdrop-filter blurs text inside cards */
 
@@ -425,27 +420,18 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 /* ── Contained dark boards (Prompt 4) ── */
 .ca-board {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.075), transparent 26%),
-    linear-gradient(180deg, var(--ca-board-top), var(--ca-board-bottom));
-  border: 2px solid var(--ca-panel-border);
-  border-radius: 18px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--ca-glow-violet), inset 0 1px 0 rgba(255, 255, 255, 0.13), inset 0 -42px 74px rgba(0, 0, 0, 0.34);
+  box-shadow: none;
 }
 
 .ca-board::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, #7C4DFF 18%, #C4B0FF 50%, #7C4DFF 82%, transparent 100%);
-  box-shadow: 0 0 18px rgba(124, 77, 255, 0.76);
-  pointer-events: none;
+  content: none;
+  display: none;
 }
 
 .ca-board > .ca-section-head:first-child,
@@ -455,9 +441,7 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
 
 .ca-card.ca-board,
 .tp-section.ca-board {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.075), transparent 26%),
-    linear-gradient(180deg, var(--ca-board-top), var(--ca-board-bottom));
+  background: var(--bg-3);
 }
 
 /* ── Lineup board scorecard (Prompt 2) ── */

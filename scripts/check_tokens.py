@@ -44,6 +44,7 @@ STAMPED = (
     "matchup_shared.js",
     "matchup_compare.js",
     "matchup_card.js",
+    "mlbma_auth_ui.js",
     "model_center.js",
 
     "chase-semantic.css",

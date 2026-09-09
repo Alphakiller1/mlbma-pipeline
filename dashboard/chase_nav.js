@@ -114,7 +114,7 @@
     if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero' || hash === 'openingSlate' || hash === 'section-opening-workflows') return 'matchups';
-      if (!hash) return 'opening';
+      if (!hash) return 'home';
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'matchup_compare.html') return 'matchups';
@@ -140,7 +140,7 @@
     if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
       if (hash === 'section-matchups-hero' || hash === 'openingSlate' || hash === 'section-opening-workflows') return 'matchups';
-      return 'opening';
+      return 'home';
     }
     if (page === 'glossary.html') return 'glossary';
     if (page === 'matchup_compare.html') return 'matchups';

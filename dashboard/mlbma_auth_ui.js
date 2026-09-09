@@ -28,9 +28,8 @@
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
     var css =
-      '.mlbma-auth-card{background:var(--card,#12141D);border:1px solid var(--border,#28282f);' +
-      'border-radius:16px;padding:22px;width:100%;max-width:420px;' +
-      'box-shadow:0 24px 60px -30px rgba(0,0,0,.6);}' +
+      '.mlbma-auth-card{background:transparent;border:0;border-radius:0;padding:8px 0 0;' +
+      'width:100%;max-width:none;box-shadow:none;}' +
       '.mlbma-auth-card,.mlbma-auth-card *{box-sizing:border-box;}' +
       '.mlbma-auth-card__title{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text,#F5F6FA);}' +
       '.mlbma-auth-card__sub{font-size:12.5px;line-height:1.45;color:var(--text-2,#A4A8B6);margin:0 0 16px;}' +

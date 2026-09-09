@@ -135,16 +135,14 @@ body.player-profile-page .section-subtitle {
 body.player-profile-page .pitcher-snapshot,
 body.player-profile-page .player-header-panel,
 body.player-profile-page .player-header {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.082), transparent 28%),
-    linear-gradient(135deg, #181A2A 0%, #0B0E18 58%, #05060C 100%);
-  border: 2px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
-  border-radius: 16px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 20px;
   margin-bottom: 16px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--ca-glow-violet-strong, 0 34px 96px rgba(0,0,0,0.9));
+  box-shadow: none;
 }
 
 body.player-profile-page .pitcher-snapshot::before,
@@ -370,14 +368,12 @@ body.player-profile-page {
 body.player-profile-page .pp-intel-panel {
   margin-bottom: 0;
   padding: 14px 16px 16px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.072), transparent 28%),
-    linear-gradient(180deg, var(--ca-panel-solid, #10131F) 0%, var(--ca-panel-solid-2, #070912) 100%);
-  border: 1.5px solid var(--ca-panel-border, rgba(154, 107, 255, 0.58));
-  border-radius: 16px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--ca-glow-violet, 0 28px 78px rgba(0,0,0,0.78));
+  box-shadow: none;
 }
 
 body.player-profile-page .pp-intel-panel::before {

@@ -110,6 +110,7 @@ def stamp_hrefs(text: str) -> str:
     text = re.sub(r"(matchup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(matchup_lineup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(matchup_card\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(mlbma_auth_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(mlbma_standings\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(platform_dashboard\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(chase_asyncstate\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
