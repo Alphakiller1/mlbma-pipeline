@@ -41,7 +41,7 @@
   function entity(sport, name) {
     var logo = '';
     if (global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
-      logo = MLBMAAssets.teamLogoImg(name, 40, 'ca-matchup-logo', sport);
+      logo = MLBMAAssets.teamLogoImg(name, 56, 'ca-matchup-logo', sport);
     } else if (global.ChaseEntity) {
       return ChaseEntity.html({ name: name, id: name, sport: sport });
     }
@@ -186,7 +186,7 @@
         '<div class="ca-preview-tabs" role="tablist">' + tabHtml + '</div>' +
         previewBody(active, Object.assign({ sport: sport }, g)) +
         '<div class="ca-expanded-preview__foot">' +
-        '<a class="ca-text-link" href="' + esc(href) + '">View matchup →</a>' +
+        '<a class="ca-text-link" href="' + esc(href) + '">Open Matchup Analysis →</a>' +
         '<a class="ca-text-link ca-text-link--quiet" href="' + esc(model) + '">Open in Model Center ↗</a>' +
         '</div></div>';
     }
@@ -208,7 +208,7 @@
       '<div class="ca-matchup-card__actions">' +
       '<button type="button" class="ca-text-link" data-expand="1" aria-expanded="' + (open ? 'true' : 'false') +
       '" aria-controls="preview-' + esc(g.id) + '">' + (open ? 'Collapse matchup' : 'Expand matchup') + '</button>' +
-      '<a class="ca-text-link ca-text-link--accent" href="' + esc(href) + '">View matchup →</a>' +
+      '<a class="ca-text-link ca-text-link--accent" href="' + esc(href) + '">Open Matchup Analysis →</a>' +
       '</div></article>' + preview;
   }
 

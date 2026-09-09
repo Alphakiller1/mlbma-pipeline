@@ -61,7 +61,7 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertNotIn("Sunday Night", blob)
         self.assertIn("matchup_compare.html?away=", card)
         self.assertIn("Open in Model Center", card)
-        self.assertIn("View matchup", card)
+        self.assertIn("Open Matchup Analysis", card)
         self.assertNotIn("Open Compare", blob)
         self.assertNotIn("Open scouting desk", blob)
         self.assertIn("ca-matchup-card", card)

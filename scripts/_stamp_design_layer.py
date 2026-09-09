@@ -107,6 +107,16 @@ def stamp_hrefs(text: str) -> str:
     text = re.sub(r"(mlbma_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(matchup_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(pitch_mix_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(matchup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(matchup_lineup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(matchup_card\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(mlbma_standings\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(platform_dashboard\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(chase_asyncstate\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(chase_public_slate\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(sports/mlb\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(sports/nfl\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+
     if "chase-tokens-v1.css" not in text and "mlbma_design_system.css" in text:
         text = text.replace(
             f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">',

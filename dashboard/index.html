@@ -22,8 +22,8 @@
 <meta name="twitter:description" content="Factual MLB and NFL matchups. Forecasts stay in Model Center.">
 <meta name="twitter:image" content="https://chase-analytics.com/dashboard/assets/chase-logo-horizontal.png">
 <title>Chase Analytics — Opening Dashboard</title>
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909e">
-<script src="design_layer_version.js?v=20260909e"></script>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909f">
+<script src="design_layer_version.js?v=20260909f"></script>
 <style>
 
 
@@ -1531,6 +1531,8 @@ body.platform-dashboard.view-opening #section-research-lab,
 html.view-opening #section-research-lab { display: none !important; }
 body.platform-dashboard.view-opening #section-matchups-hero,
 html.view-opening #section-matchups-hero { display: none !important; }
+body.platform-dashboard.view-opening #section-opening-market-map,
+html.view-opening #section-opening-market-map { display: none !important; }
 body.platform-dashboard.view-opening #section-research-lab.active,
 body.platform-dashboard:not(.view-research) #section-research-lab,
 body.platform-dashboard:not(.view-research) #section-research-lab.active,
@@ -2613,22 +2615,25 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260909e">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260909e">
-<link rel="stylesheet" href="theme.css?v=20260909e">
-<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909e">
-<link rel="stylesheet" href="styles/chase-shell.css?v=20260909e">
-<link rel="stylesheet" href="chase_nav.css?v=20260909e">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260909e">
-<link rel="stylesheet" href="research_lab.css?v=20260909e">
-<link rel="stylesheet" href="bullpen_usage.css?v=20260909e">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909e">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260909f">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260909f">
+<link rel="stylesheet" href="theme.css?v=20260909f">
+<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909f">
+<link rel="stylesheet" href="styles/chase-primitives.css?v=20260909f">
+<link rel="stylesheet" href="styles/chase-components.css?v=20260909f">
+<link rel="stylesheet" href="styles/chase-patterns.css?v=20260909f">
+<link rel="stylesheet" href="styles/chase-shell.css?v=20260909f">
+<link rel="stylesheet" href="chase_nav.css?v=20260909f">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260909f">
+<link rel="stylesheet" href="research_lab.css?v=20260909f">
+<link rel="stylesheet" href="bullpen_usage.css?v=20260909f">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909f">
 <!-- Shared mobile/tablet responsive layer. Loaded LAST so its @media (max-width)
      overrides win the cascade. All rules are gated behind max-width / hover:none,
      so desktop layout is untouched. Drives the mobile table->card transform
      (mobile_cardify.js stamps the classes this styles) and the matchup-card
      mobile redesign. -->
-<link rel="stylesheet" href="responsive.css?v=20260909e">
+<link rel="stylesheet" href="responsive.css?v=20260909f">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
@@ -2689,7 +2694,8 @@ body.view-research .ca-lab { display: block; }
   .oem-mode-tabs,#pane-oem-methodology,#pane-oem-daily{display:none!important}
   #dashboard-data-templates,#oorSection{display:none!important}
   html.view-opening #section-research-lab,
-  html.view-opening #section-matchups-hero{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+  html.view-opening #section-matchups-hero,
+  html.view-opening #section-opening-market-map{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
   html.view-matchups #opening-dashboard{display:none!important}
   html.view-matchups #section-research-lab{display:none!important}
   html.view-matchups #section-matchups-hero{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
@@ -2712,26 +2718,13 @@ body.view-research .ca-lab { display: block; }
     height:auto!important;
     min-height:0!important;
     margin-top:0!important;
-    padding:16px clamp(20px,5vw,64px) 40px!important;
+    padding:24px clamp(20px,5vw,64px) 8px!important;
   }
-  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__glow{
-    display:none!important;
-  }
-  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__inner{
-    align-items:start!important;
-    height:auto!important;
-    min-height:0!important;
-    margin-top:0!important;
-    transform:none!important;
-  }
-  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__content,
-  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__mark{
-    opacity:1!important;
-    visibility:visible!important;
-    transform:none!important;
-    margin-top:0!important;
-  }
-  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__grid{
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__glow,
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__mark,
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__grid,
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__stats,
+  html.view-opening body.opening-dashboard #section-opening-hero .ca-hero__cta{
     display:none!important;
   }
 </style>
@@ -2745,14 +2738,14 @@ body.view-research .ca-lab { display: block; }
 })();
 </script>
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="chase_datastatus.js?v=20260909e"></script>
-<script src="mlbma_ui.js?v=20260909e" data-page="index.html"></script>
-<script src="mlbma_assets.js?v=20260909e"></script><script src="mlbma_icons.js?v=20260612b"></script>
-<script src="matchup_shared.js?v=20260909e"></script>
+<script src="chase_datastatus.js?v=20260909f"></script>
+<script src="mlbma_ui.js?v=20260909f" data-page="index.html"></script>
+<script src="mlbma_assets.js?v=20260909f"></script><script src="mlbma_icons.js?v=20260612b"></script>
+<script src="matchup_shared.js?v=20260909f"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260622d"></script>
 <script src="profile_controls.js?v=20260527s"></script>
-<script src="platform_dashboard.js?v=20260908o"></script>
+<script src="platform_dashboard.js?v=20260909f"></script>
 <script src="compare_metrics.js?v=20260608d"></script>
 <script src="research_lab.js?v=20260908k"></script>
 <script src="lineup_view.js?v=20260908o"></script>
@@ -2760,7 +2753,7 @@ body.view-research .ca-lab { display: block; }
 <script src="bullpen_usage.js?v=20260610b"></script>
 <script src="pitcher_lab.js?v=20260908d"></script>
 <script src="mobile_cardify.js?v=20260908b"></script>
-<script src="mobile_matchup_card.js?v=20260613a"></script>
+<script src="mobile_matchup_card.js?v=20260909f"></script>
 </head>
 <body data-mode="slate" class="view-pending view-opening platform-dashboard opening-dashboard ca-bg-outfield">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
@@ -2772,7 +2765,7 @@ body.view-research .ca-lab { display: block; }
     </a>
     <div class="chase-nav-links">
       <a href="index.html" class="chase-nav-link" data-nav="opening">Opening</a>
-      <a href="index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="index.html#openingSlate" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
@@ -2814,7 +2807,7 @@ body.view-research .ca-lab { display: block; }
   </div>
   <div class="chase-mobile-nav">
     <a href="index.html" class="chase-mobile-link" data-nav="opening">Opening</a>
-    <a href="index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="index.html#openingSlate" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
     <a href="/model-center/" class="chase-mobile-link chase-mobile-link--model" data-nav="models">Model Center</a>
@@ -2840,139 +2833,32 @@ body.view-research .ca-lab { display: block; }
 <main id="opening-dashboard" class="layer-main opening-layer">
 <div class="data-error-banner" id="dataErrorBanner" style="display:none"></div>
 
-<section id="section-opening-hero" class="ca-hero" aria-label="Chase Analytics Opening Dashboard">
-  <!-- Ambient layers -->
-  <div class="ca-hero__grid" aria-hidden="true"></div>
-  <div class="ca-hero__glow ca-hero__glow--a" aria-hidden="true"></div>
-  <div class="ca-hero__glow ca-hero__glow--b" aria-hidden="true"></div>
-  <div class="ca-hero__noise" aria-hidden="true"></div>
-
-  <div class="ca-hero__inner">
-    <div class="ca-hero__content">
-      <div class="ca-hero__eyebrow">
-        <span class="ca-hero__pulse"></span>
-        CHASE ANALYTICS · MLB INTELLIGENCE
-      </div>
-
-      <h1 class="ca-hero__title">
-        Opening Dashboard
-      </h1>
-
-      <p class="ca-hero__lede">
-        Factual MLB matchups — lineups, starters, splits, team context. NFL slate is one click in the header. Models stay in Model Center.
-      </p>
-
-      <div class="ca-hero__cta">
-        <a href="/mlb/" id="hero-cta-matchups" class="ca-btn ca-btn--primary">
-          <span>View MLB slate</span>
-        </a>
-        <a href="/nfl/" class="ca-btn ca-btn--ghost">NFL matchups</a>
-      </div>
-
-      <div class="ca-hero__stats">
-        <div class="ca-stat">
-          <div class="ca-stat__value" id="games-today">?</div>
-          <div class="ca-stat__label" id="games-today-label">Games on slate</div>
-        </div>
-        <div class="ca-stat">
-          <div class="ca-stat__value" id="teams-tracked">30</div>
-          <div class="ca-stat__label">Teams Tracked</div>
-        </div>
-        <div class="ca-stat">
-          <div class="ca-stat__value" id="metrics-count">9</div>
-          <div class="ca-stat__label">Metrics</div>
-        </div>
-        <div class="ca-stat ca-stat--wide">
-          <div class="ca-stat__value ca-stat__value--small" id="last-synced">?</div>
-          <div class="ca-stat__label">Last Synced</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="ca-hero__mark" aria-hidden="true">
-      <div class="ca-hero__mark-ring"></div>
-      <div class="ca-hero__mark-ring ca-hero__mark-ring--2"></div>
-      <div class="ca-hero__mark-card">
-        <img src="assets/chase-icon-filled.png" alt="Chase Analytics" class="ca-hero__mark-logo"
-          onerror="this.style.display='none'">
-        <div class="ca-hero__mark-title">CHASE</div>
-        <div class="ca-hero__mark-sub">ANALYTICS</div>
-      </div>
-    </div>
+<section id="section-opening-hero" class="ca-hero ca-opening-desk" aria-label="Chase Analytics Opening Dashboard">
+  <div class="ca-opening-desk__head">
+    <p class="ca-eyebrow">Chase Analytics · MLB · NFL</p>
+    <h1 class="ca-page-title">Opening Dashboard</h1>
+    <p class="ca-helper">Tonight’s matchups open Matchup Analysis — lineups, starters, splits, bullpen. Forecasts stay in Model Center.</p>
+    <p class="ca-helper"><span id="games-today">?</span> <span id="games-today-label">games on slate</span> · last synced <span id="last-synced">?</span></p>
+    <span id="teams-tracked" hidden>30</span>
+    <span id="metrics-count" hidden>9</span>
   </div>
 </section>
 
-<section class="ca-tools" id="section-opening-workflows">
-  <div class="ca-tools__inner">
+<section class="ca-page-shell ca-opening-desk" id="section-opening-workflows">
+  <div class="ca-opening-desk__slates" id="openingSlate">
     <header class="ca-page-header">
-      <p class="ca-eyebrow">Opening desk</p>
+      <p class="ca-eyebrow">Matchup Analysis</p>
       <h2 class="ca-page-title">Tonight’s matchups</h2>
-      <p class="ca-page-header__sub ca-helper">Open a card for Matchup Analysis. Trends and pitcher intelligence stay below the slate.</p>
+      <p class="ca-page-header__sub ca-helper">Each card is a door into Matchup Analysis. MLB and NFL only.</p>
     </header>
-    <div class="ca-tools__grid">
-      <div class="ca-tool-card ca-tool-card--violet" role="link" tabindex="0"
-        onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView();"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.hash='#section-matchups-hero';if(typeof syncDashboardView==='function')syncDashboardView();}">
-        <div class="ca-tool-card__accent"></div>
-        <div class="ca-tool-card__icon">
-          <span class="ca-icon-circle"><i data-lucide="calendar-days"></i></span>
-        </div>
-        <h3 class="ca-tool-card__title">Today's Matchups</h3>
-        <p class="ca-tool-card__lede">Full-slate game cards with probable starters, weather, projected lineups, and split-specific offense context — sorted by first pitch.</p>
-        <ul class="ca-tool-card__list">
-          <li>Probable SP stats, Pitch Score, and handedness context</li>
-          <li>Projected batting orders with platoon coloring</li>
-          <li>Jump to Matchup Analysis from any game card</li>
-        </ul>
-        <div class="ca-tool-card__cta">Open Matchups <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
-      </div>
-      <div class="ca-tool-card ca-tool-card--teal" role="link" tabindex="0"
-        onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView();"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.hash='#section-matchups-hero';if(typeof syncDashboardView==='function')syncDashboardView();}">
-        <div class="ca-tool-card__accent"></div>
-        <div class="ca-tool-card__icon">
-          <span class="ca-icon-circle"><i data-lucide="trophy"></i></span>
-        </div>
-        <h3 class="ca-tool-card__title">Matchup Analysis</h3>
-        <p class="ca-tool-card__lede">League rank lives inside the matchup. Window and segment stay in the ScopeBar; starter hand and park are stated as context, not a six-toggle grid.</p>
-        <ul class="ca-tool-card__list">
-          <li>OSI with league ordinal on each side</li>
-          <li>Compare to league expander reuses the 30-team board</li>
-          <li>Surface results stay team-level (hand/bat side locked)</li>
-        </ul>
-        <div class="ca-tool-card__cta">Open a matchup card <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
-      </div>
-      <div class="ca-tool-card ca-tool-card--green" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('trends');},300);">
-        <div class="ca-tool-card__accent"></div>
-        <div class="ca-tool-card__icon">
-          <span class="ca-icon-circle"><i data-lucide="trending-up"></i></span>
-        </div>
-        <h3 class="ca-tool-card__title">Trends</h3>
-        <p class="ca-tool-card__lede">Color-coded team trajectory heatmap — validate whether short-term heat is real or noise against YTD baseline grades.</p>
-        <ul class="ca-tool-card__list">
-          <li>L7 / L14 / L30 vs YTD for OSI and components</li>
-          <li>RHP and LHP toggle with location filters</li>
-          <li>Windowed OSI versus the season baseline</li>
-        </ul>
-        <div class="ca-tool-card__cta">Open Trends <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
-      </div>
-      <div class="ca-tool-card ca-tool-card--amber" role="link" tabindex="0"
-        onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView();"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.hash='#section-matchups-hero';if(typeof syncDashboardView==='function')syncDashboardView();}">
-        <div class="ca-tool-card__accent"></div>
-        <div class="ca-tool-card__icon">
-          <span class="ca-icon-circle"><i data-lucide="target"></i></span>
-        </div>
-        <h3 class="ca-tool-card__title">Lineup vs pitcher</h3>
-        <p class="ca-tool-card__lede">Starter matchup research lives inside the two-club analysis. Open a card from today's slate first.</p>
-        <ul class="ca-tool-card__list">
-          <li>Lineup vs the actual starter</li>
-          <li>Pitch Score against the unit he faces</li>
-          <li>F5 vs full-game still a ScopeBar choice</li>
-        </ul>
-        <div class="ca-tool-card__cta">Open a matchup card <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
-      </div>
-    </div>
+    <section class="ca-slate-group" aria-label="MLB matchups">
+      <h2 class="ca-slate-group__title">MLB</h2>
+      <div id="openingMlbSlate" class="ca-async" data-state="loading">Loading MLB slate…</div>
+    </section>
+    <section class="ca-slate-group" aria-label="NFL matchups">
+      <h2 class="ca-slate-group__title">NFL</h2>
+      <div id="openingNflSlate" class="ca-async" data-state="loading">Loading NFL slate…</div>
+    </section>
   </div>
 </section>
 
@@ -8662,15 +8548,36 @@ if (document.readyState === 'loading') {
   Chase Analytics — MLB Offensive Intelligence
 </footer>
   <script src="oem_overhaul.js?v=20260717e"></script>
-  <script src="mlbma_standings.js?v=20260703b"></script>
+  <script src="mlbma_standings.js?v=20260909f"></script>
   <!-- Account/signup integrated on the dashboard home (mounts into [data-mlbma-auth-panel]). -->
   <script src="chase_links.js?v=20260611c"></script>
   <script src="mlbma_access.js?v=20260611b"></script>
   <script src="mlbma_auth.js?v=20260909a"></script>
   <script src="mlbma_auth_ui.js?v=20260908d"></script>
-  <script src="chase_nav.js?v=20260909e"></script>
+  <script src="sports/chase_public_slate.js?v=20260909f"></script>
+  <script src="sports/mlb.js?v=20260909f"></script>
+  <script src="sports/nfl.js?v=20260909f"></script>
+  <script src="chase_asyncstate.js?v=20260909f"></script>
+  <script src="matchup_card.js?v=20260909f"></script>
+  <script src="chase_nav.js?v=20260909f"></script>
   <script src="chase_shell.js?v=20260908k"></script>
   <script>
   if (window.ChaseShell) ChaseShell.mount({ sport: 'mlb', mode: 'slate', surface: 'opening', search: false, shellMain: false });
+  if (window.ChaseMatchupCard) {
+    if (window.ChaseSportMLB) {
+      ChaseMatchupCard.mountSlate({
+        sport: 'mlb',
+        adapter: window.ChaseSportMLB,
+        host: document.getElementById('openingMlbSlate')
+      });
+    }
+    if (window.ChaseSportNFL) {
+      ChaseMatchupCard.mountSlate({
+        sport: 'nfl',
+        adapter: window.ChaseSportNFL,
+        host: document.getElementById('openingNflSlate')
+      });
+    }
+  }
   </script></body>
 </html>

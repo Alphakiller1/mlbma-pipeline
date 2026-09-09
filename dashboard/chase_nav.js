@@ -113,7 +113,7 @@
     var page = pathPart.split('/').pop() || '';
     if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
-      if (hash === 'section-matchups-hero') return 'matchups';
+      if (hash === 'section-matchups-hero' || hash === 'openingSlate' || hash === 'section-opening-workflows') return 'matchups';
       if (!hash) return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';
@@ -139,7 +139,7 @@
     if (/\/nfl(\/|$)/.test(path)) return 'nfl';
     if (isOpeningPage(page)) {
       if (hash === 'section-research-lab') return 'research';
-      if (hash === 'section-matchups-hero') return 'matchups';
+      if (hash === 'section-matchups-hero' || hash === 'openingSlate' || hash === 'section-opening-workflows') return 'matchups';
       return 'opening';
     }
     if (page === 'glossary.html') return 'glossary';

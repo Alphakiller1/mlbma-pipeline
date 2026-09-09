@@ -143,7 +143,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("chase_public_slate.js", mlb_home)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
-        self.assertIn("View matchup", card)
+        self.assertIn("Open Matchup Analysis", card)
         self.assertIn("Expand matchup", card)
         self.assertNotIn("Board overview", mlb_home)
         patterns = (ROOT / "dashboard" / "styles" / "chase-patterns.css").read_text(
@@ -265,6 +265,20 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("aria-current", nav)
         self.assertIn("shellMain", shell)
         self.assertIn("id=\"caContextBar\"", opening)
+        self.assertIn("openingMlbSlate", opening)
+        self.assertIn("openingNflSlate", opening)
+        self.assertIn("styles/chase-patterns.css", opening)
+        self.assertIn("styles/chase-primitives.css", opening)
+        self.assertIn("styles/chase-components.css", opening)
+        self.assertIn("matchup_card.js", opening)
+        self.assertIn("ChaseMatchupCard.mountSlate", opening)
+        self.assertNotIn('ca-tool-card__title">Trends<', opening)
+        self.assertIn("html.view-opening #section-opening-market-map", opening)
+
+    def test_matchup_compare_script_is_design_stamped(self):
+        stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+        html = (ROOT / "dashboard" / "matchup_compare.html").read_text(encoding="utf-8")
+        self.assertIn("matchup_compare.js?v=" + stamp, html)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")

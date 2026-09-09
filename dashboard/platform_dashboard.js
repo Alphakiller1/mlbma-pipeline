@@ -379,6 +379,7 @@
     var badgeStyle = accent ? ' style="background:' + accent + '"' : '';
     var rec = global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '';
     return '<a href="' + teamProfileUrl(team) + '" class="team-link' + sideCls + (extraCls || '') + '" onclick="event.stopPropagation()">'
+      + (typeof logoFn === 'function' ? logoFn(team, 48, 'hmc-logo', 'mlb') : '')
       + '<span class="hmc-abbr hmc-abbr-badge"' + badgeStyle + '>' + esc(team) + '</span>'
       + (rec ? '<span class="hmc-record">' + rec + '</span>' : '')
       + '</a>';

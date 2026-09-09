@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chase Analytics — MLB and NFL matchup intelligence</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260909e">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909e">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260909f">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909f">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="entry">
@@ -23,7 +23,7 @@
       </a>
       <div class="chase-nav-links">
         <a href="/dashboard/index.html" class="chase-nav-link" data-nav="opening">Opening</a>
-        <a href="/dashboard/index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
+        <a href="/dashboard/index.html#openingSlate" class="chase-nav-link" data-nav="matchups">Matchups</a>
         <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
         <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
         <a href="/dashboard/glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
@@ -31,48 +31,44 @@
       <a href="/model-center/" class="ca-btn ca-btn--primary chase-nav-model chase-nav-link" data-nav="models">Model Center</a>
     </nav>
   </header>
-  <main class="ca-page-shell ca-entry">
-    <div class="ca-entry__grid">
-      <div>
-        <p class="ca-eyebrow">Chase Analytics · MLB · NFL</p>
-        <h1 class="ca-page-title">Matchup intelligence for MLB and NFL.</h1>
-        <p class="ca-helper ca-entry__lede">Opening Dashboard — lineups, splits, and team context. Forecasts stay in Model Center.</p>
-        <p class="ca-entry__cta">
-          <a class="ca-btn ca-btn--primary" href="/mlb/">Enter MLB desk</a>
-          <a class="ca-btn" href="/nfl/">Enter NFL slate</a>
-          <a class="ca-text-link ca-text-link--quiet" href="/model-center/">Model Center</a>
-        </p>
-        <div id="sportSelect" class="ca-sport-switcher"></div>
-      </div>
-      <div class="ca-entry__previews">
-        <article class="ca-matchup-card">
-          <div class="ca-matchup-card__status"><span>MLB</span><span>Projected lineup</span></div>
-          <div class="ca-matchup-card__teams">
-            <div class="ca-matchup-card__team">NYY</div>
-            <div class="ca-matchup-card__center">7:10 ET</div>
-            <div class="ca-matchup-card__team ca-matchup-card__team--home">BOS</div>
-          </div>
-          <p class="ca-matchup-card__context">Descriptive OSI / RCV chips live on Matchup Analysis. No projected score.</p>
-          <a class="ca-btn ca-btn--primary" href="/dashboard/matchup_compare.html?away=NYY&amp;home=BOS">Open Matchup Analysis</a>
-        </article>
-        <article class="ca-matchup-card">
-          <div class="ca-matchup-card__status"><span>NFL</span><span>Book price, not a Chase projection</span></div>
-          <div class="ca-matchup-card__teams">
-            <div class="ca-matchup-card__team">NE</div>
-            <div class="ca-matchup-card__center">8:20 ET</div>
-            <div class="ca-matchup-card__team ca-matchup-card__team--home">SEA</div>
-          </div>
-          <p class="ca-matchup-card__book">Published book line shown only with book, market, side, and quote time on the live slate.</p>
-          <a class="ca-text-link" href="/model-center/?sport=nfl">Open in Model Center</a>
-        </article>
-      </div>
+  <main class="ca-page-shell ca-opening-desk">
+    <div class="ca-opening-desk__head">
+      <p class="ca-eyebrow">Chase Analytics · MLB · NFL</p>
+      <h1 class="ca-page-title">Opening Dashboard</h1>
+      <p class="ca-helper ca-entry__lede">Tonight’s matchups. Every card opens Matchup Analysis. Forecasts stay in Model Center.</p>
+      <p class="ca-entry__cta">
+        <a class="ca-btn ca-btn--primary" href="/dashboard/index.html#openingSlate">Open the matchup desk</a>
+        <a class="ca-text-link ca-text-link--quiet" href="/model-center/">Model Center</a>
+      </p>
+      <div id="sportSelect" class="ca-sport-switcher"></div>
+    </div>
+    <div class="ca-opening-desk__slates" id="openingSlate">
+      <section class="ca-slate-group" aria-label="MLB matchups">
+        <h2 class="ca-slate-group__title">MLB</h2>
+        <div id="openingMlbSlate" class="ca-async" data-state="loading">Loading MLB slate…</div>
+      </section>
+      <section class="ca-slate-group" aria-label="NFL matchups">
+        <h2 class="ca-slate-group__title">NFL</h2>
+        <div id="openingNflSlate" class="ca-async" data-state="loading">Loading NFL slate…</div>
+      </section>
     </div>
   </main>
   <footer class="ca-shell-footer">Public desk · MLB and NFL only</footer>
-  <script src="/dashboard/design_layer_version.js?v=20260909e"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260909e"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260909f"></script>
+  <script src="/dashboard/mlbma_assets.js?v=20260909f"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260909f"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v=20260909f"></script>
+  <script src="/dashboard/sports/mlb.js?v=20260909f"></script>
+  <script src="/dashboard/sports/nfl.js?v=20260909f"></script>
+  <script src="/dashboard/matchup_card.js?v=20260909f"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260909f"></script>
+  <script src="/dashboard/chase_nav.js?v=20260909f"></script>
   <script>
     if (window.ChaseSportSelect) ChaseSportSelect.render(document.getElementById('sportSelect'), 'mlb');
+    if (window.ChaseMatchupCard) {
+      ChaseMatchupCard.mountSlate({ sport: 'mlb', adapter: window.ChaseSportMLB, host: document.getElementById('openingMlbSlate') });
+      ChaseMatchupCard.mountSlate({ sport: 'nfl', adapter: window.ChaseSportNFL, host: document.getElementById('openingNflSlate') });
+    }
   </script>
 </body>
 </html>
