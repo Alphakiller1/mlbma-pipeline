@@ -784,7 +784,8 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    min-height: 30px;
+    min-height: 44px;
+    min-width: 44px;
     padding: 5px 11px;
     border: 1px solid var(--border-2, #363B4D);
     border-radius: 999px;

@@ -1268,6 +1268,11 @@ body.view-research .ca-page-identity { display: none; }
 .hero-matchup-card .pitcher-link {
   color: var(--text);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  box-sizing: border-box;
 }
 .hero-matchup-card .pitcher-link:hover {
   color: var(--ca-brand, #9A6BFF);
@@ -1305,15 +1310,29 @@ body.view-research .ca-page-identity { display: none; }
   gap: 10px;
 }
 
+.hero-matchup-card .mc-sp-name-row {
+  height: auto;
+  min-height: 44px;
+  overflow: visible;
+}
 .hero-matchup-card .lineup-row {
   display: grid;
   grid-template-columns: 16px 24px minmax(0, 1fr) auto;
   gap: 4px 7px;
   align-items: center;
-  min-height: 22px;
+  min-height: 44px;
   padding: 2px 0;
   font-size: 12px;
   line-height: 1.25;
+}
+.hero-matchup-card a.lineup-name-link,
+.hero-matchup-card a.team-link,
+.hero-matchup-card a.hmc-view-full {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  box-sizing: border-box;
 }
 
 .hero-matchup-card .lineup-bo {
