@@ -83,6 +83,15 @@ class LayerGuardTests(unittest.TestCase):
         text = (ROOT / "dashboard" / "chase_nav.css").read_text(encoding="utf-8")
         self.assertNotRegex(text, r"\{[^}]+\}")
 
+    def test_slate_toolbar_checkbox_uses_touch_min(self):
+        css = (ROOT / "dashboard" / "styles" / "chase-patterns.css").read_text(encoding="utf-8")
+        self.assertIn(".ca-slate-toolbar input[type=\"checkbox\"]", css)
+        block = css.split(".ca-slate-toolbar input[type=\"checkbox\"]", 1)[1].split("}", 1)[0]
+        self.assertIn("width: var(--touch-min)", block)
+        self.assertIn("height: var(--touch-min)", block)
+        self.assertIn("min-width: var(--touch-min)", block)
+        self.assertIn("min-height: var(--touch-min)", block)
+
 
 if __name__ == "__main__":
     unittest.main()
