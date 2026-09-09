@@ -254,7 +254,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/public_game_detail.js?v={STAMP}"></script>
   <script>
     window.CHASE_SPORT_PAGE = {spec['global']};
-    if (window.ChaseShell) ChaseShell.mount({{ sport: {json.dumps(sport)}, mode: 'evidence', surface: 'matchup', search: false }});
+    if (window.ChaseShell) ChaseShell.mount({{ sport: {json.dumps(sport)}, mode: 'evidence', surface: 'matchup', search: false, context: false }});
     if (window.ChasePublicGameDetail) ChasePublicGameDetail.mount({{
       sport: {json.dumps(sport)}, adapter: window.CHASE_SPORT_PAGE, host: document.getElementById('matchupDetail')
     }});

@@ -105,7 +105,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("MLB detail public copy boundary", match is None, match.group(0) if match else "")
         legacy_url = base_url.rstrip("/") + "/dashboard/matchup_compare.html?away=MIN&home=DET&date=2026-09-09"
         page.goto(legacy_url, wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_url(re.compile(r"/mlb/matchup\.html"), timeout=timeout_ms)
+        page.wait_for_url(re.compile(r"/mlb/matchup(?:\.html)?(?:\?|$)"), timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("Legacy matchup URL preserves a working game", "Minnesota Twins" in page.locator("main").inner_text())
         page.goto(base_url.rstrip("/") + "/mlb/results.html?date=2026-09-09",

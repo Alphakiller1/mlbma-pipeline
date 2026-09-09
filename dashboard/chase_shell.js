@@ -90,9 +90,12 @@
     var header = document.getElementById('chaseHeader');
     if (header) header.classList.add('ca-app-shell');
 
-    var ctx = ensureContextBar();
-    paintContext(ctx, opts, null);
-    if (global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
+    var ctx = null;
+    if (opts.context !== false) {
+      ctx = ensureContextBar();
+      paintContext(ctx, opts, null);
+    }
+    if (opts.context !== false && global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
       ChaseDataStatus.fetchLastUpdated({
         source: document.body.getAttribute('data-ca-product') === 'research' || sport !== 'mlb' ? 'public-slate' : 'sheet',
         sport: sport
