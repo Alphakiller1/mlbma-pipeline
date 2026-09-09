@@ -258,6 +258,13 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("shellMain", shell)
         self.assertIn("id=\"caContextBar\"", opening)
 
+    def test_text_links_meet_touch_min(self):
+        css = (ROOT / "dashboard" / "styles" / "chase-components.css").read_text(encoding="utf-8")
+        block = css.split(".ca-text-link {", 1)[1].split("}", 1)[0]
+        self.assertIn("min-height: var(--touch-min)", block)
+        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('class="ca-text-link">NFL matchups</a>', opening)
+
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         self.assertNotIn("function formatClock", nav)
