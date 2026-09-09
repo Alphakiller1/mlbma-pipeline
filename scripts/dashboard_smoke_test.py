@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "dashboard"
 
 PAGES = [
-    ("index.html", ".ca-tools__grid, .index-wrap, #section-matchups-hero"),
+    ("index.html", "#openingMlbSlate, #openingSlate, .ca-opening-desk"),
     ("render/team_rankings.html", ".container, .lv-body, .hub-table, .lv-note"),
     ("matchup_compare.html", ".compare-page, .mc-header"),
     ("team_profile.html", "#profileHeroMount, .profile-shell"),

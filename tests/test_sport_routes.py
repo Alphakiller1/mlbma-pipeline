@@ -274,6 +274,9 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("ChaseMatchupCard.mountSlate", opening)
         self.assertNotIn('ca-tool-card__title">Trends<', opening)
         self.assertIn("html.view-opening #section-opening-market-map", opening)
+        diag = (ROOT / "scripts" / "dashboard_runtime_diag.py").read_text(encoding="utf-8")
+        self.assertIn("openingMlbSlate", diag)
+        self.assertNotIn("opening tools grid", diag)
 
     def test_matchup_compare_script_is_design_stamped(self):
         stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
