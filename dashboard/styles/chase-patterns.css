@@ -209,6 +209,20 @@
   align-items: center;
   font-size: var(--type-13);
 }
+.ca-entry { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-gutter); }
+.ca-entry__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+.ca-entry__lede { max-width: 40rem; margin: var(--space-3) 0 var(--space-5); }
+.ca-entry__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-5); }
+.ca-entry__previews { display: grid; gap: var(--space-4); }
+@media (max-width: 900px) {
+  .ca-entry__grid { grid-template-columns: 1fr; }
+}
+
 .ca-matchup-card {
   display: flex;
   flex-direction: column;
@@ -216,8 +230,9 @@
   min-height: 264px;
   padding: var(--space-4);
   background: var(--surface-panel);
-  border: 1px solid var(--border-default);
+  border: 1.5px solid var(--border-default);
   border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2), inset 0 1px 0 var(--shadow-inset);
 }
 .ca-matchup-card.is-expanded {
   border-color: var(--border-accent);

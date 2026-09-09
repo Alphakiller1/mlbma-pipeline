@@ -347,9 +347,10 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("render/team_rankings.html", diag)
         self.assertNotIn("chase_analytics_mlb_oem_v7.html", diag)
         nav_src = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
-        tools = nav_src.split("chase-dropdown-menu", 1)[1].split("</div>", 1)[0]
-        self.assertNotIn("/nfl/matchups.html", tools)
+        self.assertNotIn("chase-dropdown-menu", nav_src)
+        self.assertNotIn(">Tools<", nav_src)
         self.assertIn('data-nav="nfl"', nav_src)
+        self.assertIn('data-nav="models"', nav_src)
         self.assertNotIn("fonts.googleapis.com/css2", opening)
         self.assertNotIn("@import url('responsive.css", (ROOT / "dashboard" / "mlbma_design_system.css").read_text(encoding="utf-8"))
         self.assertIn("var(--mark-positive)", (ROOT / "dashboard" / "mlbma_assets.js").read_text(encoding="utf-8"))

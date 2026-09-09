@@ -9,21 +9,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<meta name="description" content="Matchups and research tools built on proprietary MLB offensive metrics. Plus a private Discord community.">
+<meta name="description" content="MLB and NFL matchup intelligence: lineups, splits, and team context. Forecasts stay in Model Center.">
 <link rel="canonical" href="https://chase-analytics.com/dashboard/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Chase Analytics">
-<meta property="og:title" content="Chase Analytics — MLB Offensive Intelligence">
-<meta property="og:description" content="Matchups and research tools built on proprietary MLB offensive metrics. Plus a private Discord community.">
+<meta property="og:title" content="Chase Analytics — Opening Dashboard">
+<meta property="og:description" content="Factual MLB matchups — lineups, starters, splits, team context. NFL slate in the header. Models stay in Model Center.">
 <meta property="og:url" content="https://chase-analytics.com/dashboard/">
 <meta property="og:image" content="https://chase-analytics.com/dashboard/assets/chase-logo-horizontal.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Chase Analytics — MLB Offensive Intelligence">
-<meta name="twitter:description" content="Matchups and research tools built on proprietary MLB offensive metrics.">
+<meta name="twitter:title" content="Chase Analytics — Opening Dashboard">
+<meta name="twitter:description" content="Factual MLB and NFL matchups. Forecasts stay in Model Center.">
 <meta name="twitter:image" content="https://chase-analytics.com/dashboard/assets/chase-logo-horizontal.png">
-<title>Chase Analytics — MLB Matchup &amp; Offensive Intelligence</title>
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909a">
-<script src="design_layer_version.js?v=20260909a"></script>
+<title>Chase Analytics — Opening Dashboard</title>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909b">
+<script src="design_layer_version.js?v=20260909b"></script>
 <style>
 
 
@@ -1863,13 +1863,13 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   isolation: isolate;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(124,77,255,0.35), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(196,176,255,0.18), transparent 60%),
-    linear-gradient(180deg, #0a0612 0%, #050509 70%);
-  color: #f5f3ff;
+    var(--ca-grad-violet-top),
+    var(--ca-grad-bg-scrim-opening),
+    var(--bg);
+  color: var(--text);
   font-family: var(--font-body);
-  padding: clamp(80px, 10vw, 140px) clamp(20px, 5vw, 64px) clamp(60px, 8vw, 100px);
-  border-bottom: 1px solid rgba(124,77,255,0.18);
+  padding: clamp(48px, 6vw, 88px) clamp(20px, 5vw, 64px) clamp(40px, 6vw, 72px);
+  border-bottom: 1px solid var(--border);
 }
 
 /* Background layers */
@@ -1880,8 +1880,8 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
   position: absolute; z-index: -1; border-radius: 50%;
   filter: blur(120px); opacity: 0.55; pointer-events: none;
 }
-.ca-hero__glow--a { width: 520px; height: 520px; background: #7C4DFF; top: -120px; left: -80px; }
-.ca-hero__glow--b { width: 420px; height: 420px; background: #4c1d95; bottom: -180px; right: 10%; opacity: 0.5; }
+.ca-hero__glow--a { width: 420px; height: 420px; background: var(--ca-violet-600); top: -160px; left: -80px; opacity: 0.18; }
+.ca-hero__glow--b { width: 320px; height: 320px; background: var(--ca-violet-700); bottom: -180px; right: 8%; opacity: 0.12; }
 .ca-hero__noise {
   display: none;
 }
@@ -1933,11 +1933,12 @@ body.platform-dashboard .show-advanced-metrics .advanced-cols { display: table-c
 
 /* Title */
 .ca-hero__title {
-  font-size: clamp(48px, 7.2vw, 104px);
-  font-weight: 800; line-height: 0.96; letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.4vw, 72px);
+  font-weight: 800; line-height: 1.02; letter-spacing: 0.04em;
   margin: 28px 0 24px;
-  color: #FFFFFF !important;
-  -webkit-text-fill-color: #FFFFFF !important;
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
   background: none !important;
   text-transform: uppercase;
 }
@@ -2610,22 +2611,22 @@ body.view-research .ca-lab { display: block; }
 @media (max-width: 640px) { .ca-tools__grid { grid-template-columns: 1fr; } }
 
 </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260909a">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260909a">
-<link rel="stylesheet" href="theme.css?v=20260909a">
-<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909a">
-<link rel="stylesheet" href="styles/chase-shell.css?v=20260909a">
-<link rel="stylesheet" href="chase_nav.css?v=20260909a">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260909a">
-<link rel="stylesheet" href="research_lab.css?v=20260909a">
-<link rel="stylesheet" href="bullpen_usage.css?v=20260909a">
-<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909a">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260909b">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260909b">
+<link rel="stylesheet" href="theme.css?v=20260909b">
+<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909b">
+<link rel="stylesheet" href="styles/chase-shell.css?v=20260909b">
+<link rel="stylesheet" href="chase_nav.css?v=20260909b">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260909b">
+<link rel="stylesheet" href="research_lab.css?v=20260909b">
+<link rel="stylesheet" href="bullpen_usage.css?v=20260909b">
+<link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909b">
 <!-- Shared mobile/tablet responsive layer. Loaded LAST so its @media (max-width)
      overrides win the cascade. All rules are gated behind max-width / hover:none,
      so desktop layout is untouched. Drives the mobile table->card transform
      (mobile_cardify.js stamps the classes this styles) and the matchup-card
      mobile redesign. -->
-<link rel="stylesheet" href="responsive.css?v=20260909a">
+<link rel="stylesheet" href="responsive.css?v=20260909b">
 <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://mvxjcfriirguhjujurhf.supabase.co" crossorigin>
@@ -2742,10 +2743,10 @@ body.view-research .ca-lab { display: block; }
 })();
 </script>
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="chase_datastatus.js?v=20260909a"></script>
-<script src="mlbma_ui.js?v=20260909a" data-page="index.html"></script>
-<script src="mlbma_assets.js?v=20260909a"></script><script src="mlbma_icons.js?v=20260612b"></script>
-<script src="matchup_shared.js?v=20260909a"></script>
+<script src="chase_datastatus.js?v=20260909b"></script>
+<script src="mlbma_ui.js?v=20260909b" data-page="index.html"></script>
+<script src="mlbma_assets.js?v=20260909b"></script><script src="mlbma_icons.js?v=20260612b"></script>
+<script src="matchup_shared.js?v=20260909b"></script>
 <script src="mlbma_controls.js?v=20260527s"></script>
 <script src="mlbma_charts.js?v=20260622d"></script>
 <script src="profile_controls.js?v=20260527s"></script>
@@ -2773,17 +2774,6 @@ body.view-research .ca-lab { display: block; }
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
       <a href="/model-center/" class="chase-nav-link" data-nav="models">Model Center</a>
-      <div class="chase-dropdown">
-        <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
-          Tools
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <div class="chase-dropdown-menu">
-          <a href="batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
-        </div>
-      </div>
       <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
     <div class="chase-status">
@@ -2817,9 +2807,8 @@ body.view-research .ca-lab { display: block; }
     <img class="chase-mobile-brand-icon" src="assets/chase-icon-filled.png" alt="" width="24" height="24">
   </div>
   <div class="chase-mobile-nav">
-    <a href="index.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
+    <a href="index.html" class="chase-mobile-link" data-nav="opening">Opening</a>
     <a href="index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
     <a href="/model-center/" class="chase-mobile-link" data-nav="models">Model Center</a>
@@ -2864,22 +2853,20 @@ body.view-research .ca-lab { display: block; }
       </h1>
 
       <p class="ca-hero__lede">
-        Factual MLB matchup intelligence: lineups, starters, splits, and
-        descriptive team context. Models stay in Model Center.
+        Factual MLB matchups — lineups, starters, splits, team context. NFL slate is one click in the header. Models stay in Model Center.
       </p>
 
       <div class="ca-hero__cta">
-        <a href="#" id="hero-cta-matchups" class="ca-btn ca-btn--primary"
-          onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView(); return false;">
-          <span>View Today's Matchups</span>
-          <i data-lucide="arrow-right" style="width:18px;height:18px" aria-hidden="true"></i>
+        <a href="/mlb/" id="hero-cta-matchups" class="ca-btn ca-btn--primary">
+          <span>View MLB slate</span>
         </a>
+        <a href="/nfl/" class="ca-text-link">NFL matchups</a>
       </div>
 
       <div class="ca-hero__stats">
         <div class="ca-stat">
           <div class="ca-stat__value" id="games-today">?</div>
-          <div class="ca-stat__label" id="games-today-label">Games Today</div>
+          <div class="ca-stat__label" id="games-today-label">Games on slate</div>
         </div>
         <div class="ca-stat">
           <div class="ca-stat__value" id="teams-tracked">30</div>
@@ -2887,7 +2874,7 @@ body.view-research .ca-lab { display: block; }
         </div>
         <div class="ca-stat">
           <div class="ca-stat__value" id="metrics-count">9</div>
-          <div class="ca-stat__label">Proprietary Metrics</div>
+          <div class="ca-stat__label">Metrics</div>
         </div>
         <div class="ca-stat ca-stat--wide">
           <div class="ca-stat__value ca-stat__value--small" id="last-synced">?</div>
@@ -2912,9 +2899,9 @@ body.view-research .ca-lab { display: block; }
 <section class="ca-tools" id="section-opening-workflows">
   <div class="ca-tools__inner">
     <header class="ca-page-header">
-      <p class="ca-eyebrow">Platform Workflows</p>
-      <h2 class="ca-page-title">Matchups &amp; Research Tools</h2>
-      <p class="ca-page-header__sub ca-helper">Tonight's slate first — open a card for Matchup Analysis. Trends and pitcher intelligence stay in Research Lab.</p>
+      <p class="ca-eyebrow">Opening desk</p>
+      <h2 class="ca-page-title">Tonight’s matchups</h2>
+      <p class="ca-page-header__sub ca-helper">Open a card for Matchup Analysis. Trends and pitcher intelligence stay below the slate.</p>
     </header>
     <div class="ca-tools__grid">
       <div class="ca-tool-card ca-tool-card--violet" role="link" tabindex="0"
@@ -3575,7 +3562,7 @@ function syncHeroStats() {
   var slateDate = LIVE_DATA._slateSheetDate || LIVE_DATA.slateDateEt || '';
   var age = window.ChaseDataStatus ? ChaseDataStatus.slateAgeDays(slateDate) : null;
   if (gc) gc.textContent = n ? String(n) : '?';
-  if (gl) gl.textContent = (age != null && age > 0) ? 'Games on slate' : 'Games Today';
+  if (gl) gl.textContent = 'Games on slate';
   if (st) {
     st.textContent = LIVE_DATA.lastUpdated || '—';
   }
@@ -8675,7 +8662,7 @@ if (document.readyState === 'loading') {
   <script src="mlbma_access.js?v=20260611b"></script>
   <script src="mlbma_auth.js?v=20260909a"></script>
   <script src="mlbma_auth_ui.js?v=20260908d"></script>
-  <script src="chase_nav.js?v=20260909a"></script>
+  <script src="chase_nav.js?v=20260909b"></script>
   <script src="chase_shell.js?v=20260908k"></script>
   <script>
   if (window.ChaseShell) ChaseShell.mount({ sport: 'mlb', mode: 'slate', surface: 'opening', search: false, shellMain: false });
