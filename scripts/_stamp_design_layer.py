@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rewrite dashboard HTML/JS for the 20260908a design-layer stamp."""
+"""Rewrite dashboard HTML/JS for the current design-layer stamp."""
 from __future__ import annotations
 
 import re
@@ -35,6 +35,7 @@ DS_FILES = (
     "chase-patterns.css",
     "chase-shell.css",
     "legacy.css",
+    "chase-public.css",
 )
 
 ROOT_RE = re.compile(r":root\s*\{(?:[^{}]|\{[^{}]*\})*\}", re.DOTALL)
@@ -110,6 +111,8 @@ def stamp_hrefs(text: str) -> str:
     text = re.sub(r"(matchup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(matchup_lineup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(matchup_card\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(public_game_detail\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(public_sport_registry\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(mlbma_auth_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(mlbma_standings\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(platform_dashboard\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
@@ -197,6 +200,7 @@ def main() -> None:
     for css in (
         ROOT / "design" / "tokens" / "chase-tokens.css",
         ROOT / "design" / "chase-tokens-v1.css",
+        ROOT / "packages" / "chase-design-system" / "css" / "chase-tokens-v1.css",
     ):
         text = css.read_text(encoding="utf-8")
         css.write_text(

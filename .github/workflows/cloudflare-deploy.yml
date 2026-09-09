@@ -15,7 +15,36 @@ on:
   workflow_dispatch:
 
 jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt playwright
+          python -m playwright install --with-deps chromium
+      - name: Enforce design and public-data contracts
+        run: |
+          python scripts/check_tokens.py
+          python scripts/validate_public_fields.py
+          node --check dashboard/matchup_card.js
+          node --check dashboard/public_game_detail.js
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Run public browser and responsive contracts
+        run: |
+          python -m http.server 8765 >/tmp/chase-http.log 2>&1 &
+          sleep 2
+          python scripts/public_site_runtime_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
+          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 360 --height 800 --strict
+          python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 390 --height 844 --strict
+
   deploy:
+    needs: quality-gate
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -39,10 +68,14 @@ jobs:
             --exclude='.assetsignore' --exclude='_site' \
             ./ _site/
           echo "files to publish: $(find _site -type f | wc -l)"
-          test -f _site/dashboard/matchup_shared.js
-          grep -q hydrateMatchupPitcherStatsFromMlb _site/dashboard/matchup_shared.js
+          test -f _site/dashboard/matchup_card.js
+          grep -q 'Expand matchup' _site/dashboard/matchup_card.js
+          test -f _site/dashboard/public_game_detail.js
+          grep -q 'ChasePublicGameDetail' _site/dashboard/public_game_detail.js
           test -f _site/data/public/mlb/slate.json
           test -f _site/data/public/nfl/slate.json
+          test -f _site/mlb/matchup.html
+          test -f _site/nfl/matchup.html
 
       - name: Configure Pages for static master production deploys
         run: |
@@ -122,19 +155,20 @@ jobs:
           sys.exit(1)
           PY
 
-      - name: Verify chase-analytics.com serves fresh assets
+      - name: Verify chase-analytics.com serves the matchup-first release
         run: |
-          URL="https://${LIVE_DOMAIN}/dashboard/matchup_shared.js"
+          URL="https://${LIVE_DOMAIN}/"
           for i in 1 2 3 4 5 6 8 10; do
             sleep "$i"
             BODY=$(curl -fsSL "$URL" || true)
             BYTES=$(printf '%s' "$BODY" | wc -c | tr -d ' ')
-            HAS=$(printf '%s' "$BODY" | grep -c hydrateMatchupPitcherStatsFromMlb || true)
-            echo "attempt $i: bytes=$BYTES hydrate=$HAS"
-            if [ "$BYTES" -gt 130000 ] && [ "$HAS" -ge 1 ]; then
+            HAS=$(printf '%s' "$BODY" | grep -c 'id="matchupDesk"' || true)
+            PUBLIC=$(printf '%s' "$BODY" | grep -c 'chase-public.css' || true)
+            echo "attempt $i: bytes=$BYTES matchupDesk=$HAS publicLayer=$PUBLIC"
+            if [ "$BYTES" -gt 4000 ] && [ "$HAS" -ge 1 ] && [ "$PUBLIC" -ge 1 ]; then
               echo "Live site updated."
               exit 0
             fi
           done
-          echo "ERROR: chase-analytics.com still serving stale matchup_shared.js"
+          echo "ERROR: chase-analytics.com still serving the previous public shell"
           exit 1

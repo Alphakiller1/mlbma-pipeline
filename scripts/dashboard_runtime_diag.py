@@ -61,7 +61,7 @@ def run_home_diagnostic(base_url: str, timeout_ms: int, channel: str = "") -> Li
             check("chase nav mounted", False, "header never attached")
 
         check("opening matchup slates", page.locator("#openingMlbSlate, #openingNflSlate, #openingSlate").count() >= 1)
-        check("matchup analysis path", page.locator("#openingSlate, a[href*='matchup_compare.html'], #section-matchups-hero").count() >= 1)
+        check("matchup analysis path", page.locator("#matchupDesk, #openingSlate, a[href*='/matchup.html']").count() >= 1)
         rankings_links = page.locator("a[href*='team_rankings.html']").count()
         check("no public team_rankings href", rankings_links == 0, f"count={rankings_links}")
         check("freshness slot", page.locator("#lastUpdated").count() >= 1)

@@ -1,457 +1,547 @@
-/**
- * Public MatchupCard — MLB/NFL desk cards (L5).
- * Live MLB comes from Stats API. NFL uses the public slate. No model fields.
- */
+/** Public matchup desk — factual MLB/NFL cards, expansion, and slate loading. */
 (function (global) {
   'use strict';
 
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function params() {
-    try { return new URLSearchParams(window.location.search || ''); }
-    catch (e) { return new URLSearchParams(); }
+  function query() {
+    try { return new URLSearchParams(global.location.search || ''); }
+    catch (err) { return new URLSearchParams(); }
   }
 
-  function easternDateIso(d) {
-    var src = d || new Date();
-    return src.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  function easternDateIso(date) {
+    return (date || new Date()).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
   }
 
-  function shiftIso(iso, days) {
-    var p = String(iso || '').split('-').map(Number);
-    var dt = new Date(Date.UTC(p[0], (p[1] || 1) - 1, p[2] || 1));
-    dt.setUTCDate(dt.getUTCDate() + days);
-    return dt.toISOString().slice(0, 10);
+  function shiftIso(iso, amount) {
+    var parts = String(iso || easternDateIso()).split('-').map(Number);
+    var date = new Date(Date.UTC(parts[0], (parts[1] || 1) - 1, parts[2] || 1));
+    date.setUTCDate(date.getUTCDate() + amount);
+    return date.toISOString().slice(0, 10);
   }
 
-  function formatLongDate(iso) {
-    var p = String(iso || '').split('-').map(Number);
-    if (p.length < 3) return iso || '';
-    var dt = new Date(Date.UTC(p[0], p[1] - 1, p[2], 16));
-    return dt.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' });
+  function longDate(iso) {
+    var parts = String(iso || '').split('-').map(Number);
+    if (parts.length < 3) return 'Date unavailable';
+    return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], 16)).toLocaleDateString('en-US', {
+      weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC'
+    });
   }
 
-  function formatEtClock(iso) {
-    var d = new Date(iso || '');
-    if (!iso || isNaN(d.getTime())) return '';
-    return d.toLocaleTimeString('en-US', {
+  function clock(iso) {
+    var date = new Date(iso || '');
+    if (!iso || isNaN(date.getTime())) return '';
+    return date.toLocaleTimeString('en-US', {
       hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
     }) + ' ET';
   }
 
-  function kickoffLabel(g) {
-    if (g.kickoff_display) return g.kickoff_display;
-    return formatEtClock(g.kickoff_utc) || 'Time TBD';
+  function teamName(sport, abbr, supplied) {
+    var registry = global.ChasePublicSportRegistry;
+    if (registry && registry.teamName) return registry.teamName(sport, abbr, supplied);
+    return supplied || abbr || 'Team unavailable';
   }
 
-  function fullMatchupUrl(sport, g) {
-    if (sport === 'mlb') {
-      var pk = g.gamePk || (String(g.id || '').match(/^\d+$/) ? g.id : '');
-      var href = '/dashboard/matchup_compare.html?away=' + encodeURIComponent(g.away || '') +
-        '&home=' + encodeURIComponent(g.home || '');
-      if (pk) href += '&gamePk=' + encodeURIComponent(pk);
-      return href;
-    }
-    return '/' + sport + '/matchups.html?game=' + encodeURIComponent(g.id || '');
+  function logoKey(sport, abbr) {
+    var registry = global.ChasePublicSportRegistry;
+    return registry && registry.logoKey ? registry.logoKey(sport, abbr) : abbr;
   }
 
-  function modelCenterUrl(sport, g) {
-    return '/model-center/?sport=' + encodeURIComponent(sport) + '&game=' + encodeURIComponent(g.id || '');
-  }
-
-  function logoHtml(sport, abbr) {
+  function logoHtml(sport, abbr, supplied, size, className) {
+    var name = teamName(sport, abbr, supplied);
+    var key = logoKey(sport, abbr);
     if (global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
-      return MLBMAAssets.teamLogoImg(abbr, 56, 'ca-matchup-logo', sport);
+      return MLBMAAssets.teamLogoImg(key, size || 48, className || 'ca-matchup-logo', sport)
+        .replace('alt="' + esc(String(key || '').toUpperCase()) + '"', 'alt="' + esc(name) + ' logo"');
     }
-    return '<span class="ca-entity-fallback">' + esc(String(abbr || '').slice(0, 3)) + '</span>';
+    return '<span class="ca-team-logo-placeholder" aria-hidden="true"></span>';
   }
 
-  function headshot(id) {
-    if (global.MLBMAAssets && MLBMAAssets.headshotUrl) {
-      var src = MLBMAAssets.headshotUrl(id, 40, 'matchup');
-      return '<img class="ca-matchup-card__shot" src="' + src + '" width="40" height="40" alt="" loading="lazy">';
+  function headshot(id, name) {
+    if (id && global.MLBMAAssets && MLBMAAssets.headshotUrl) {
+      return '<img class="ca-matchup-card__shot" src="' + esc(MLBMAAssets.headshotUrl(id, 40, 'matchup')) +
+        '" width="40" height="40" alt="' + esc(name || 'Probable starter') + '" loading="lazy" decoding="async">';
     }
     return '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>';
   }
 
-  function lineupTone(g) {
-    var raw = String(g.away_lineup_state || g.home_lineup_state || '').toLowerCase();
-    if (raw.indexOf('confirm') >= 0) return { cls: 'is-ok', label: 'Lineups confirmed' };
-    if (raw.indexOf('project') >= 0) return { cls: 'is-muted', label: 'Lineups projected' };
-    return { cls: 'is-muted', label: 'Lineups unpublished' };
+  function gameStateLabel(state) {
+    var value = String(state || 'scheduled').toLowerCase();
+    if (value === 'live') return { label: 'Live', tone: 'is-live' };
+    if (value === 'final') return { label: 'Final', tone: 'is-final' };
+    if (value === 'postponed') return { label: 'Postponed', tone: 'is-watch' };
+    if (value === 'delayed') return { label: 'Delayed', tone: 'is-watch' };
+    return { label: 'Scheduled', tone: 'is-muted' };
   }
 
-  function bullpenTone(g) {
-    var raw = String(g.availability_summary || '').trim();
-    if (!raw) return { cls: 'is-muted', label: 'Bullpen unpublished' };
-    var low = raw.toLowerCase();
-    if (low.indexOf('rest') >= 0 || low.indexOf('available') >= 0) return { cls: 'is-ok', label: raw };
-    if (low.indexOf('limit') >= 0 || low.indexOf('mix') >= 0) return { cls: 'is-watch', label: raw };
-    return { cls: 'is-muted', label: raw };
+  function lineupLabel(value) {
+    var state = String(value || '').toLowerCase();
+    if (state.indexOf('confirm') >= 0) return { label: 'Confirmed', tone: 'is-ok' };
+    if (state.indexOf('project') >= 0 || state.indexOf('expected') >= 0) return { label: 'Expected', tone: 'is-muted' };
+    if (state.indexOf('partial') >= 0) return { label: 'Partial', tone: 'is-watch' };
+    return { label: 'Not published', tone: 'is-muted' };
   }
 
-  function handLabel(hand) {
-    var h = String(hand || '').toUpperCase();
-    if (h === 'R' || h === 'RHP') return 'RHP';
-    if (h === 'L' || h === 'LHP') return 'LHP';
-    if (h === 'S' || h === 'SHP') return 'SHP';
-    return '';
+  function safeNumber(value, digits) {
+    if (value == null || value === '') return '';
+    var number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(digits == null ? 2 : digits) : '';
   }
 
-  function starterMeta(g, side) {
-    var hand = handLabel(side === 'away' ? g.away_hand : g.home_hand);
-    var era = side === 'away' ? g.away_era : g.home_era;
+  function sideValue(game, side, suffix, fallback) {
+    var value = game[side + '_' + suffix];
+    return value == null || value === '' ? fallback : value;
+  }
+
+  function starterName(game, side, sport) {
+    return sideValue(game, side, 'starter', sport === 'nfl' ? 'Quarterback not published' : 'Probable starter not published');
+  }
+
+  function starterMeta(game, side, sport) {
+    if (sport === 'nfl') return 'Expected quarterback';
     var bits = [];
-    if (hand) bits.push(hand);
-    if (era != null && era !== '') bits.push(Number(era).toFixed(2) + ' ERA');
-    return bits.join(' · ');
+    var hand = String(sideValue(game, side, 'hand', '')).toUpperCase();
+    if (hand === 'R' || hand === 'RHP') bits.push('RHP');
+    if (hand === 'L' || hand === 'LHP') bits.push('LHP');
+    var era = safeNumber(sideValue(game, side, 'era', ''), 2);
+    if (era) bits.push(era + ' ERA');
+    return bits.join(' · ') || 'Season line not published';
   }
 
-  function weatherLine(g) {
-    if (g.conditions) return g.conditions;
-    var bits = [];
-    if (g.weather_temp) bits.push(g.weather_temp + '°');
-    if (g.weather_cond) bits.push(g.weather_cond);
-    if (g.weather_wind) bits.push(g.weather_wind);
-    return bits.join(', ');
+  function conditions(game) {
+    if (game.conditions) return game.conditions;
+    return [game.weather_temp ? game.weather_temp + '°' : '', game.weather_cond, game.weather_wind]
+      .filter(Boolean).join(' · ') || 'Conditions not published';
   }
 
-  function venueLine(g) {
-    if (g.venue && g.venue_city) return g.venue + ', ' + g.venue_city;
-    return g.venue || 'Venue unpublished';
+  function venue(game) {
+    return [game.venue, game.venue_city].filter(Boolean).join(' · ') || 'Venue not published';
   }
 
-  function teamBlock(sport, g, side) {
-    var abbr = side === 'away' ? g.away : g.home;
-    var name = side === 'away' ? (g.away_name || g.away) : (g.home_name || g.home);
-    var rec = side === 'away' ? g.away_record : g.home_record;
-    var home = side === 'home';
-    return '<div class="ca-matchup-card__club' + (home ? ' ca-matchup-card__club--home' : '') + '">' +
-      logoHtml(sport, abbr) +
+  function kickoff(game) {
+    var state = String(game.game_state || '').toLowerCase();
+    if ((state === 'live' || state === 'final') && game.away_score != null && game.home_score != null) {
+      return esc(game.away_score) + '–' + esc(game.home_score) + ' · ' + (state === 'final' ? 'Final' : 'Live');
+    }
+    return esc(game.kickoff_display || clock(game.kickoff_utc) || 'Time not published');
+  }
+
+  function fullMatchupUrl(sport, game) {
+    var href = '/' + sport + '/matchup.html?game=' + encodeURIComponent(game.id || '');
+    if (game.game_pk) href += '&gamePk=' + encodeURIComponent(game.game_pk);
+    if (game.kickoff_utc) href += '&date=' + encodeURIComponent(easternDateIso(new Date(game.kickoff_utc)));
+    return href;
+  }
+
+  function teamBlock(sport, game, side) {
+    var abbr = game[side];
+    var supplied = game[side + '_name'];
+    var name = teamName(sport, abbr, supplied);
+    var record = game[side + '_record'];
+    return '<div class="ca-matchup-card__club ca-matchup-card__club--' + side + '">' +
+      logoHtml(sport, abbr, supplied, 52, 'ca-matchup-logo') +
       '<div class="ca-matchup-card__club-copy">' +
-      '<span class="ca-matchup-card__abbr">' + esc(abbr) + '</span>' +
       '<span class="ca-matchup-card__name">' + esc(name) + '</span>' +
-      (rec ? '<span class="ca-matchup-card__record">' + esc(rec) + '</span>' : '') +
+      (record ? '<span class="ca-matchup-card__record">' + esc(record) + '</span>' : '') +
       '</div></div>';
   }
 
-  function starterBlock(g, side) {
-    var name = side === 'away' ? (g.away_starter || 'Starter TBD') : (g.home_starter || 'Starter TBD');
-    var id = side === 'away' ? g.away_starter_id : g.home_starter_id;
-    var meta = starterMeta(g, side);
-    return '<div class="ca-matchup-card__sp">' +
-      headshot(id) +
-      '<div><span class="ca-matchup-card__sp-name">' + esc(name) + '</span>' +
-      (meta ? '<span class="ca-matchup-card__sp-meta">' + esc(meta) + '</span>' : '') +
-      '</div></div>';
+  function starterBlock(sport, game, side) {
+    var name = starterName(game, side, sport);
+    var id = sideValue(game, side, 'starter_id', '');
+    return '<div class="ca-matchup-card__starter">' +
+      headshot(id, name) + '<div><span class="ca-matchup-card__starter-label">' +
+      (sport === 'nfl' ? 'Quarterback' : 'Probable starter') + '</span>' +
+      '<strong>' + esc(name) + '</strong><span>' + esc(starterMeta(game, side, sport)) + '</span></div></div>';
   }
 
-  function fact(kind, text, tone) {
-    return '<div class="ca-matchup-card__fact">' +
-      '<span class="ca-matchup-card__fact-k">' + esc(kind) + '</span>' +
-      '<span class="ca-matchup-card__fact-v ' + (tone || '') + '">' + esc(text || 'Unpublished') + '</span>' +
-      '</div>';
+  function miniFact(label, value, tone) {
+    return '<div class="ca-matchup-card__fact"><span>' + esc(label) + '</span><strong class="' +
+      esc(tone || '') + '">' + esc(value || 'Not published') + '</strong></div>';
   }
 
-  function cardHtml(sport, g) {
-    var href = fullMatchupUrl(sport, g);
-    var line = lineupTone(g);
-    var bull = bullpenTone(g);
-    var wx = weatherLine(g);
-    var kick = kickoffLabel(g);
-    var live = g.game_state === 'live' || g.game_state === 'final';
-    var timeBit = live && g.away_score != null && g.home_score != null
-      ? (esc(g.away_score) + '–' + esc(g.home_score) + ' · ' + esc(g.game_state === 'final' ? 'Final' : 'Live'))
-      : esc(kick);
-    var updated = g.updated_display || formatEtClock(g.kickoff_utc) || '';
-    var spLab = sport === 'nfl' ? 'QB' : 'SP';
-    return '<article class="ca-matchup-card" data-game="' + esc(g.id) + '" data-sport="' + esc(sport) + '" data-href="' + esc(href) + '">' +
-      '<div class="ca-matchup-card__head">' +
-      '<span class="ca-matchup-card__kick">' + timeBit +
-      (g.broadcast ? ' <span class="ca-matchup-card__pipe">|</span> ' + esc(g.broadcast) : '') + '</span>' +
-      '<span class="ca-status-chip ' + line.cls + '">' + esc(line.label) + '</span></div>' +
-      '<div class="ca-matchup-card__teams">' +
-      teamBlock(sport, g, 'away') +
-      '<div class="ca-matchup-card__center" aria-hidden="true">at</div>' +
-      teamBlock(sport, g, 'home') +
-      '</div>' +
-      '<div class="ca-matchup-card__starters" aria-label="' + spLab + 's">' +
-      starterBlock(g, 'away') + starterBlock(g, 'home') +
-      '</div>' +
-      '<div class="ca-matchup-card__facts">' +
-      fact('Venue', venueLine(g)) +
-      fact('Weather', wx || 'Conditions unpublished', wx && /watch|delay|rain/i.test(wx) ? 'is-watch' : '') +
-      fact('Bullpen', bull.label, bull.cls) +
-      fact('Lineups', line.label, line.cls) +
-      '</div>' +
-      '<div class="ca-matchup-card__foot">' +
-      '<span class="ca-matchup-card__updated">' + (updated ? 'Updated ' + esc(updated) : '') + '</span>' +
-      '<a class="ca-text-link ca-text-link--accent" href="' + esc(href) + '">View matchup →</a>' +
-      '</div></article>';
-  }
-
-  function asyncPaint(host, kind, detail) {
-    if (global.ChaseAsyncState) ChaseAsyncState.render(host, kind, detail);
-  }
-
-  function applyFilters(host, games) {
-    var filter = (host.__desk && host.__desk.filter) || 'all';
-    return games.filter(function (g) {
-      if (filter === 'lineups') {
-        return String(g.away_lineup_state || g.home_lineup_state || '').toLowerCase().indexOf('confirm') >= 0;
-      }
-      return true;
-    });
-  }
-
-  function deskChrome(host, sport, games) {
-    var desk = host.__desk || {};
-    var view = desk.view || 'grid';
-    var filter = desk.filter || 'all';
-    var live = sport === 'mlb' && desk.live;
-    var html = '<div class="ca-desk-toolbar">';
-    if (live) {
-      html += '<div class="ca-desk-dates">' +
-        '<span class="ca-desk-dates__now">' + esc(formatLongDate(host.__desk.dateIso || easternDateIso())) + '</span>' +
-        '<button type="button" class="ca-desk-dates__btn" data-date-shift="1">Next day</button></div>';
+  function expandedHtml(sport, game, panelId) {
+    var awayName = teamName(sport, game.away, game.away_name);
+    var homeName = teamName(sport, game.home, game.home_name);
+    var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>' +
+      '<div class="ca-matchup-card__starters">' + starterBlock(sport, game, 'away') + starterBlock(sport, game, 'home') + '</div>';
+    if (sport === 'mlb') {
+      var awayLineup = lineupLabel(game.away_lineup_state);
+      var homeLineup = lineupLabel(game.home_lineup_state);
+      html += '<div class="ca-matchup-card__detail-grid">' +
+        miniFact(awayName + ' lineup', awayLineup.label, awayLineup.tone) +
+        miniFact(homeName + ' lineup', homeLineup.label, homeLineup.tone) +
+        miniFact(awayName + ' bullpen', game.away_bullpen || 'Availability not published') +
+        miniFact(homeName + ' bullpen', game.home_bullpen || 'Availability not published') +
+        '</div>';
+    } else {
+      html += '<div class="ca-matchup-card__detail-grid">' +
+        miniFact(awayName + ' availability', game.away_availability || game.availability_summary || 'Report not published') +
+        miniFact(homeName + ' availability', game.home_availability || game.availability_summary || 'Report not published') +
+        miniFact(awayName + ' rest', game.away_rest_days ? game.away_rest_days + ' days' : 'Not published') +
+        miniFact(homeName + ' rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not published') +
+        '</div>';
     }
-    html += '<div class="ca-desk-filters">' +
-      '<button type="button" class="ca-desk-chip' + (filter === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>' +
-      '<button type="button" class="ca-desk-chip' + (filter === 'lineups' ? ' is-on' : '') + '" data-filter="lineups">Lineups confirmed</button>' +
-      '</div></div>';
-    html += '<p class="ca-desk-count ca-meta">' + games.length + ' games on slate</p>';
-    return html;
+    return html + '<div class="ca-matchup-card__environment">' +
+      miniFact('Venue', venue(game)) + miniFact(sport === 'nfl' ? 'Weather and surface' : 'Conditions',
+        [conditions(game), game.surface].filter(Boolean).join(' · ')) + '</div></div>';
   }
 
-  function render(host, sport, games) {
-    if (!host) return;
-    host.__desk = host.__desk || {};
-    host.__desk.sport = sport;
-    host.__desk.games = games;
-    var shown = applyFilters(host, games);
-    var html = deskChrome(host, sport, shown);
-    html += '<div class="ca-slate-grid">';
-    shown.forEach(function (g) { html += cardHtml(sport, g); });
-    html += '</div>';
-    if (!shown.length) {
-      html += '<p class="ca-helper">No games match this filter.</p>';
+  function cardHtml(sport, game) {
+    var id = 'matchup-' + String(game.id || '').replace(/[^a-z0-9_-]/gi, '-');
+    var panelId = id + '-details';
+    var state = gameStateLabel(game.game_state);
+    var statusLine;
+    if (sport === 'mlb') {
+      var awayLineup = lineupLabel(game.away_lineup_state);
+      var homeLineup = lineupLabel(game.home_lineup_state);
+      statusLine = awayLineup.label === homeLineup.label ? awayLineup.label :
+        awayLineup.label + ' / ' + homeLineup.label;
+    } else {
+      statusLine = game.availability_summary || 'Availability report pending';
     }
-    host.innerHTML = html;
-    bind(host);
+    return '<article class="ca-matchup-card" id="' + esc(id) + '" data-game="' + esc(game.id) +
+      '" data-sport="' + esc(sport) + '">' +
+      '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' + kickoff(game) +
+      (game.broadcast ? '<span class="ca-matchup-card__broadcast">' + esc(game.broadcast) + '</span>' : '') +
+      '</span><span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></header>' +
+      '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
+      '<span class="ca-matchup-card__versus" aria-hidden="true">at</span>' + teamBlock(sport, game, 'home') + '</div>' +
+      '<div class="ca-matchup-card__summary">' + miniFact(sport === 'mlb' ? 'Probable starters' : 'Quarterbacks',
+        starterName(game, 'away', sport) + ' · ' + starterName(game, 'home', sport)) +
+      miniFact(sport === 'mlb' ? 'Lineup status' : 'Player availability', statusLine) +
+      miniFact('Venue', venue(game)) + '</div>' +
+      expandedHtml(sport, game, panelId) +
+      '<footer class="ca-matchup-card__actions">' +
+      '<button type="button" class="ca-matchup-card__expand-btn" data-expand-matchup aria-expanded="false" aria-controls="' +
+      esc(panelId) + '"><span>Expand matchup</span><span aria-hidden="true">+</span></button>' +
+      '<a class="ca-matchup-card__detail-link" href="' + esc(fullMatchupUrl(sport, game)) + '">Full matchup analysis <span aria-hidden="true">→</span></a>' +
+      '</footer></article>';
   }
 
-  function bind(host) {
-    if (host.getAttribute('data-card-bound') === '1') return;
-    host.setAttribute('data-card-bound', '1');
-    host.addEventListener('click', function (e) {
-      var shift = e.target.closest('[data-date-shift]');
-      if (shift) {
-        var n = Number(shift.getAttribute('data-date-shift') || 0);
-        var iso = host.__desk.dateIso || easternDateIso();
-        mountLiveMlb({ host: host, dateIso: shiftIso(iso, n) });
-        return;
-      }
-      var filt = e.target.closest('[data-filter]');
-      if (filt) {
-        host.__desk.filter = filt.getAttribute('data-filter');
-        render(host, host.__desk.sport, host.__desk.games);
-        return;
-      }
-      if (e.target.closest('a')) return;
-      var card = e.target.closest('.ca-matchup-card[data-href]');
-      if (card && card.getAttribute('data-href')) {
-        window.location.href = card.getAttribute('data-href');
-      }
+  function loadJson(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (response) {
+      if (!response.ok) throw new Error('Request failed: ' + response.status);
+      return response.json();
     });
   }
 
   function mlbState(game) {
-    var abs = String((game.status && game.status.abstractGameState) || '').toLowerCase();
-    if (abs === 'final') return 'final';
-    if (abs === 'live') return 'live';
-    var det = String((game.status && game.status.detailedState) || '').toLowerCase();
-    if (det.indexOf('postpon') >= 0) return 'postponed';
-    if (det.indexOf('delay') >= 0) return 'delayed';
+    var abstractState = String(game && game.status && game.status.abstractGameState || '').toLowerCase();
+    var detailed = String(game && game.status && game.status.detailedState || '').toLowerCase();
+    if (abstractState === 'final') return 'final';
+    if (abstractState === 'live') return 'live';
+    if (detailed.indexOf('postpon') >= 0) return 'postponed';
+    if (detailed.indexOf('delay') >= 0) return 'delayed';
     return 'scheduled';
   }
 
   function broadcasts(game) {
     var names = [];
-    (game.broadcasts || []).forEach(function (b) {
-      var n = b && (b.name || b.callSign);
-      var t = String((b && b.type) || '').toUpperCase();
-      if (!n) return;
-      if (t && t !== 'TV') return;
-      if (names.indexOf(n) < 0) names.push(n);
+    (game.broadcasts || []).forEach(function (item) {
+      var name = item && (item.name || item.callSign);
+      var type = String(item && item.type || '').toUpperCase();
+      if (name && (!type || type === 'TV') && names.indexOf(name) < 0) names.push(name);
     });
-    return names.slice(0, 3).join(', ');
+    return names.slice(0, 2).join(', ');
   }
 
-  function mapLiveMlbGame(game) {
-    var awayNode = game.teams && game.teams.away;
-    var homeNode = game.teams && game.teams.home;
+  function mapOfficialMlbGame(game) {
+    var awayNode = game && game.teams && game.teams.away;
+    var homeNode = game && game.teams && game.teams.home;
     var awayTeam = awayNode && awayNode.team;
     var homeTeam = homeNode && homeNode.team;
     if (!awayTeam || !homeTeam) return null;
-    var away = String(awayTeam.abbreviation || awayTeam.teamName || awayTeam.name || '').trim();
-    var home = String(homeTeam.abbreviation || homeTeam.teamName || homeTeam.name || '').trim();
+    var away = String(awayTeam.abbreviation || '').trim();
+    var home = String(homeTeam.abbreviation || '').trim();
     if (!away || !home) return null;
-    var awayProb = (awayNode && awayNode.probablePitcher) || {};
-    var homeProb = (homeNode && homeNode.probablePitcher) || {};
-    var gn = game.gameNumber || 1;
-    var id = String(game.gamePk || (away + '@' + home + (gn > 1 ? '#' + gn : '')));
-    var rec = function (node) {
-      if (!node || node.leagueRecord == null) return '';
-      var lr = node.leagueRecord;
-      if (lr.wins == null || lr.losses == null) return '';
-      return lr.wins + '-' + lr.losses;
-    };
-    var loc = (game.venue && game.venue.location) || {};
-    var city = [loc.city, loc.stateAbbrev].filter(Boolean).join(', ');
-    var wx = game.weather || {};
-    var wxBits = [];
-    if (wx.temp) wxBits.push(wx.temp + '°');
-    if (wx.condition) wxBits.push(wx.condition);
-    if (wx.wind) wxBits.push('Wind ' + wx.wind);
-    var hasLineups = !!(game.lineups && ((game.lineups.awayPlayers && game.lineups.awayPlayers.length) ||
-      (game.lineups.homePlayers && game.lineups.homePlayers.length)));
-    var awayHand = awayProb.pitchHand && awayProb.pitchHand.code;
-    var homeHand = homeProb.pitchHand && homeProb.pitchHand.code;
+    var awayStarter = awayNode.probablePitcher || {};
+    var homeStarter = homeNode.probablePitcher || {};
+    var location = game.venue && game.venue.location || {};
+    var weather = game.weather || {};
+    var lineup = game.lineups || {};
+    function record(node) {
+      var leagueRecord = node && node.leagueRecord;
+      return leagueRecord && leagueRecord.wins != null && leagueRecord.losses != null
+        ? leagueRecord.wins + '-' + leagueRecord.losses : '';
+    }
+    function lineupState(players) { return players && players.length ? 'Confirmed' : 'Expected'; }
     return {
-      id: id,
-      gamePk: game.gamePk || null,
-      sport: 'mlb',
-      game_state: mlbState(game),
-      kickoff_utc: game.gameDate || null,
-      away: away,
-      home: home,
-      away_name: awayTeam.name || awayTeam.teamName || away,
-      home_name: homeTeam.name || homeTeam.teamName || home,
-      away_record: rec(awayNode),
-      home_record: rec(homeNode),
-      away_score: awayNode && awayNode.score != null ? awayNode.score : null,
-      home_score: homeNode && homeNode.score != null ? homeNode.score : null,
-      venue: (game.venue && game.venue.name) || '',
-      venue_city: city,
+      id: String(game.gamePk), game_pk: game.gamePk, sport: 'mlb', game_state: mlbState(game),
+      kickoff_utc: game.gameDate || null, away: away, home: home,
+      away_name: awayTeam.name || '', home_name: homeTeam.name || '',
+      away_record: record(awayNode), home_record: record(homeNode),
+      away_score: awayNode.score, home_score: homeNode.score,
+      venue: game.venue && game.venue.name || '',
+      venue_city: [location.city, location.stateAbbrev].filter(Boolean).join(', '),
       broadcast: broadcasts(game),
-      conditions: wxBits.join(', '),
-      weather_temp: wx.temp || '',
-      weather_cond: wx.condition || '',
-      weather_wind: wx.wind || '',
-      away_starter: awayProb.fullName || 'Starter TBD',
-      home_starter: homeProb.fullName || 'Starter TBD',
-      away_starter_id: awayProb.id || null,
-      home_starter_id: homeProb.id || null,
-      away_hand: awayHand || '',
-      home_hand: homeHand || '',
-      away_era: awayProb.era || '',
-      home_era: homeProb.era || '',
-      away_lineup_state: hasLineups ? 'Confirmed' : 'Projected',
-      home_lineup_state: hasLineups ? 'Confirmed' : 'Projected',
-      availability_summary: '',
-      updated_display: formatEtClock(new Date().toISOString())
+      conditions: [weather.temp ? weather.temp + '°' : '', weather.condition, weather.wind].filter(Boolean).join(' · '),
+      weather_temp: weather.temp || '', weather_cond: weather.condition || '', weather_wind: weather.wind || '',
+      away_starter: awayStarter.fullName || '', home_starter: homeStarter.fullName || '',
+      away_starter_id: awayStarter.id || null, home_starter_id: homeStarter.id || null,
+      away_hand: awayStarter.pitchHand && awayStarter.pitchHand.code || '',
+      home_hand: homeStarter.pitchHand && homeStarter.pitchHand.code || '',
+      away_era: awayStarter.era || '', home_era: homeStarter.era || '',
+      away_lineup_state: lineupState(lineup.awayPlayers), home_lineup_state: lineupState(lineup.homePlayers),
+      freshness: 'Official schedule'
     };
   }
 
-  function mountLiveMlb(opts) {
-    opts = opts || {};
-    var host = opts.host;
-    if (!host) return;
-    var dateStr = opts.dateIso || easternDateIso();
-    host.__desk = host.__desk || {};
-    host.__desk.live = true;
-    host.__desk.dateIso = dateStr;
-    var url = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(dateStr)
-      + '&hydrate=probablePitcher,team,venue,weather,broadcasts,lineups';
-    asyncPaint(host, 'loading');
-    fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
-      if (!data) {
-        asyncPaint(host, 'error', 'MLB schedule was not reachable.');
-        return;
-      }
+  function sameGame(left, right) {
+    if (!left || !right) return false;
+    if (left.game_pk && right.game_pk && String(left.game_pk) === String(right.game_pk)) return true;
+    return String(left.away || '').toUpperCase() === String(right.away || '').toUpperCase() &&
+      String(left.home || '').toUpperCase() === String(right.home || '').toUpperCase();
+  }
+
+  function mergeGames(official, curated) {
+    if (!official.length) return curated;
+    return official.map(function (game) {
+      var extra = curated.find(function (candidate) { return sameGame(game, candidate); });
+      if (!extra) return game;
+      var merged = Object.assign({}, game);
+      Object.keys(extra).forEach(function (key) {
+        if (extra[key] != null && extra[key] !== '') merged[key] = extra[key];
+      });
+      merged.id = String(game.id);
+      merged.game_pk = game.game_pk;
+      return merged;
+    });
+  }
+
+  function loadGames(sport, adapter, dateIso) {
+    if (!adapter || !adapter.SLATE_URL) return Promise.reject(new Error('Public slate URL missing.'));
+    var publicRequest = loadJson(adapter.SLATE_URL).then(function (slate) {
+      var normalized = global.ChasePublicSlate.normalize(sport, slate);
+      return { normalized: normalized, error: null };
+    }).catch(function (error) { return { normalized: { games: [] }, error: error }; });
+    if (sport !== 'mlb') {
+      return publicRequest.then(function (result) {
+        if (result.error && !result.normalized.games.length) throw result.error;
+        return {
+          games: result.normalized.games, generatedAt: result.normalized.generated_at,
+          dataThrough: result.normalized.data_through, source: 'Published NFL slate'
+        };
+      });
+    }
+    var date = dateIso || query().get('date') || easternDateIso();
+    var officialUrl = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(date) +
+      '&hydrate=probablePitcher,team,venue,weather,broadcasts,lineups';
+    var officialRequest = loadJson(officialUrl).then(function (payload) {
       var games = [];
-      (data.dates || []).forEach(function (block) {
+      (payload.dates || []).forEach(function (block) {
         (block.games || []).forEach(function (game) {
-          var row = mapLiveMlbGame(game);
-          if (row) games.push(row);
+          var mapped = mapOfficialMlbGame(game);
+          if (mapped) games.push(mapped);
         });
       });
-      if (global.ChaseDataStatus) {
-        ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-          return {
-            sport: 'mlb',
-            state: games.length ? 'ok' : 'empty',
-            publishedAt: dateStr,
-            dataCutoff: dateStr,
-            source: 'mlb-stats-api',
-            issues: []
-          };
-        });
-      }
-      if (!games.length) {
-        asyncPaint(host, 'empty', 'No MLB games on this date.');
-        return;
-      }
-      render(host, 'mlb', games);
-      if (global.ChaseAsyncState) ChaseAsyncState.ready(host);
-    }).catch(function (err) {
-      asyncPaint(host, 'error', err.message);
+      return games;
+    }).catch(function () { return []; });
+    return Promise.all([publicRequest, officialRequest]).then(function (parts) {
+      var published = parts[0].normalized;
+      var official = parts[1];
+      var games = mergeGames(official, published.games || []);
+      if (!games.length && parts[0].error) throw parts[0].error;
+      return {
+        games: games, generatedAt: published.generated_at || null,
+        dataThrough: published.data_through || date, dateIso: date,
+        source: official.length ? (published.games && published.games.length ? 'Official schedule + published context' : 'Official MLB schedule') : 'Published MLB slate'
+      };
     });
   }
 
-  function mountSlate(opts) {
-    opts = opts || {};
-    var sport = opts.sport;
-    var host = opts.host;
-    var adapter = opts.adapter;
-    var url = adapter && adapter.SLATE_URL;
-    if (!url) {
-      asyncPaint(host, 'error', 'Public slate URL missing.');
-      return;
+  function updateStatus(sport, result) {
+    var fields = {
+      sport: sport, state: result.games.length ? 'ok' : 'empty', publishedAt: result.generatedAt,
+      dataCutoff: result.dataThrough, source: result.source, issues: []
+    };
+    if (global.ChaseShell && ChaseShell.setContext) ChaseShell.setContext(fields);
+    var context = document.getElementById('caContextBar');
+    if (context && !result.generatedAt) {
+      context.textContent = sport.toUpperCase() + ' · ' + result.source +
+        (result.dateIso ? ' · ' + longDate(result.dateIso) : '');
+      context.setAttribute('data-state', fields.state);
     }
-    asyncPaint(host, 'loading');
-    fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (slate) {
-      if (!slate) {
-        asyncPaint(host, 'error', 'Public slate was not reachable.');
-        return;
-      }
-      if (!global.ChasePublicSlate) {
-        asyncPaint(host, 'error', 'Public slate adapter missing.');
-        return;
-      }
-      var nb = ChasePublicSlate.normalize(sport, slate);
-      if (global.ChaseDataStatus) {
-        ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-          return {
-            sport: sport,
-            state: 'ok',
-            publishedAt: nb.generated_at,
-            dataCutoff: nb.data_through,
-            source: 'public-slate',
-            issues: []
-          };
-        });
-      }
-      if (!nb.games.length) {
-        asyncPaint(host, 'empty', 'No public games on this slate.');
-        return;
-      }
-      host.__desk = host.__desk || {};
-      host.__desk.live = false;
-      render(host, sport, nb.games);
-      if (global.ChaseAsyncState) ChaseAsyncState.ready(host);
-    }).catch(function (err) {
-      asyncPaint(host, 'error', err.message);
+    if (global.ChaseNav && ChaseNav.applyDataStatus && result.generatedAt) ChaseNav.applyDataStatus(fields);
+  }
+
+  function filterGames(host, games) {
+    var desk = host.__desk || {};
+    var term = String(desk.query || '').trim().toLowerCase();
+    var filter = desk.filter || 'all';
+    return games.filter(function (game) {
+      if (desk.results && String(game.game_state || '').toLowerCase() !== 'final') return false;
+      if (filter === 'confirmed' && sportLineupState(game).indexOf('Confirmed') < 0) return false;
+      if (!term) return true;
+      var text = [game.away, game.home, teamName(desk.sport, game.away, game.away_name),
+        teamName(desk.sport, game.home, game.home_name), game.venue, game.broadcast,
+        game.away_starter, game.home_starter].join(' ').toLowerCase();
+      return text.indexOf(term) >= 0;
     });
   }
+
+  function sportLineupState(game) {
+    return lineupLabel(game.away_lineup_state).label + ' ' + lineupLabel(game.home_lineup_state).label;
+  }
+
+  function toolbarHtml(host, sport, count) {
+    var desk = host.__desk || {};
+    if (desk.embedded) {
+      return '<div class="ca-embedded-slate-head"><span>' + count + ' games</span>' +
+        '<a href="/' + sport + '/">View full ' + sport.toUpperCase() + ' slate <span aria-hidden="true">→</span></a></div>';
+    }
+    var html = '<div class="ca-desk-toolbar"><div class="ca-desk-toolbar__primary">';
+    if (sport === 'mlb') {
+      html += '<div class="ca-desk-dates" aria-label="Choose MLB date">' +
+        '<button type="button" data-date-shift="-1" aria-label="Previous day">←</button>' +
+        '<button type="button" class="ca-desk-dates__today" data-date-today>' + longDate(desk.dateIso || easternDateIso()) + '</button>' +
+        '<button type="button" data-date-shift="1" aria-label="Next day">→</button></div>';
+    } else {
+      html += '<strong class="ca-desk-window-label">' + (desk.results ? 'Completed games' : 'Kickoff windows') + '</strong>';
+    }
+    html += '<label class="ca-desk-search"><span class="sr-only">Search teams, venues, or players</span>' +
+      '<input type="search" data-desk-search value="' + esc(desk.query || '') + '" placeholder="Search teams, venues, or players"></label></div>' +
+      '<div class="ca-desk-toolbar__secondary"><button type="button" class="ca-desk-chip' +
+      ((desk.filter || 'all') === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>';
+    if (sport === 'mlb' && !desk.results) {
+      html += '<button type="button" class="ca-desk-chip' + (desk.filter === 'confirmed' ? ' is-on' : '') +
+        '" data-filter="confirmed">Confirmed lineups</button>';
+    }
+    html += '<span class="ca-desk-count" aria-live="polite">' + count + ' games</span></div></div>';
+    return html;
+  }
+
+  function renderGroups(sport, games) {
+    if (sport !== 'nfl') return '<div class="ca-slate-grid">' + games.map(function (game) { return cardHtml(sport, game); }).join('') + '</div>';
+    var groups = {};
+    games.forEach(function (game) {
+      var label = global.ChasePublicSlate.kickoffWindow(game.kickoff_utc);
+      (groups[label] = groups[label] || []).push(game);
+    });
+    return Object.keys(groups).map(function (label) {
+      return '<section class="ca-kickoff-window"><header><h2>' + esc(label) + '</h2><span>' + groups[label].length +
+        (groups[label].length === 1 ? ' game' : ' games') + '</span></header><div class="ca-slate-grid">' +
+        groups[label].map(function (game) { return cardHtml(sport, game); }).join('') + '</div></section>';
+    }).join('');
+  }
+
+  function render(host) {
+    var desk = host.__desk || {};
+    var shown = filterGames(host, desk.games || []);
+    host.innerHTML = toolbarHtml(host, desk.sport, shown.length) + renderGroups(desk.sport, shown) +
+      (!shown.length ? '<div class="ca-empty-state"><h2>' + (desk.results ? 'No completed games' : 'No matching games') +
+        '</h2><p>' + (desk.results ? 'Final scores will appear here when games finish.' : 'Adjust the date, filters, or search.') + '</p></div>' : '');
+    host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
+  }
+
+  function mount(opts) {
+    opts = opts || {};
+    var host = opts.host;
+    if (!host) return Promise.reject(new Error('Slate host missing.'));
+    host.__desk = host.__desk || {};
+    host.__desk.sport = opts.sport;
+    host.__desk.adapter = opts.adapter;
+    host.__desk.embedded = !!opts.embedded;
+    host.__desk.results = !!opts.results;
+    host.__desk.dateIso = opts.dateIso || query().get('date') || easternDateIso();
+    host.setAttribute('data-state', 'loading');
+    host.innerHTML = '<div class="ca-loading-state" role="status">Loading ' + esc(opts.sport.toUpperCase()) + ' matchups…</div>';
+    return loadGames(opts.sport, opts.adapter, host.__desk.dateIso).then(function (result) {
+      host.__desk.games = result.games;
+      host.__desk.dateIso = result.dateIso || host.__desk.dateIso;
+      if (!host.__desk.embedded) updateStatus(opts.sport, result);
+      render(host);
+      return result;
+    }).catch(function (error) {
+      host.setAttribute('data-state', 'error');
+      host.innerHTML = '<div class="ca-error-state" role="alert"><h2>Matchups unavailable</h2><p>' +
+        esc(error.message || 'The published slate could not be loaded.') + '</p><button type="button" data-retry-slate>Retry</button></div>';
+      throw error;
+    });
+  }
+
+  function bind() {
+    document.addEventListener('click', function (event) {
+      var expand = event.target.closest('[data-expand-matchup]');
+      if (expand) {
+        var card = expand.closest('.ca-matchup-card');
+        var panel = document.getElementById(expand.getAttribute('aria-controls'));
+        var opening = expand.getAttribute('aria-expanded') !== 'true';
+        var host = card && card.closest('.ca-async');
+        if (host) {
+          host.querySelectorAll('[data-expand-matchup][aria-expanded="true"]').forEach(function (button) {
+            if (button === expand) return;
+            button.setAttribute('aria-expanded', 'false');
+            button.querySelector('span').textContent = 'Expand matchup';
+            var oldPanel = document.getElementById(button.getAttribute('aria-controls'));
+            if (oldPanel) oldPanel.hidden = true;
+            var oldCard = button.closest('.ca-matchup-card');
+            if (oldCard) oldCard.classList.remove('is-expanded');
+          });
+        }
+        expand.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        expand.querySelector('span').textContent = opening ? 'Collapse matchup' : 'Expand matchup';
+        if (panel) panel.hidden = !opening;
+        if (card) card.classList.toggle('is-expanded', opening);
+        return;
+      }
+      var filter = event.target.closest('[data-filter]');
+      if (filter) {
+        var filterHost = filter.closest('.ca-async');
+        if (filterHost && filterHost.__desk) {
+          filterHost.__desk.filter = filter.getAttribute('data-filter');
+          render(filterHost);
+        }
+        return;
+      }
+      var shift = event.target.closest('[data-date-shift]');
+      var today = event.target.closest('[data-date-today]');
+      if (shift || today) {
+        var dateHost = (shift || today).closest('.ca-async');
+        if (!dateHost || !dateHost.__desk) return;
+        var nextDate = today ? easternDateIso() : shiftIso(dateHost.__desk.dateIso, Number(shift.getAttribute('data-date-shift')));
+        mount({ sport: dateHost.__desk.sport, adapter: dateHost.__desk.adapter, host: dateHost,
+          dateIso: nextDate, results: dateHost.__desk.results });
+        return;
+      }
+      var retry = event.target.closest('[data-retry-slate]');
+      if (retry) {
+        var retryHost = retry.closest('.ca-async');
+        if (retryHost && retryHost.__desk) mount({ sport: retryHost.__desk.sport, adapter: retryHost.__desk.adapter,
+          host: retryHost, dateIso: retryHost.__desk.dateIso, results: retryHost.__desk.results });
+      }
+    });
+    document.addEventListener('input', function (event) {
+      if (!event.target.matches('[data-desk-search]')) return;
+      var host = event.target.closest('.ca-async');
+      if (!host || !host.__desk) return;
+      host.__desk.query = event.target.value;
+      var start = event.target.selectionStart;
+      render(host);
+      var next = host.querySelector('[data-desk-search]');
+      if (next) { next.focus(); next.setSelectionRange(start, start); }
+    });
+  }
+
+  bind();
 
   global.ChaseMatchupCard = {
-    mountSlate: mountSlate,
-    mountLiveMlb: mountLiveMlb,
+    mount: mount,
+    mountSlate: function (opts) { return mount(opts); },
+    mountMlb: function (opts) {
+      opts = opts || {};
+      opts.sport = 'mlb';
+      opts.adapter = opts.adapter || global.ChaseSportMLB;
+      return mount(opts);
+    },
+    loadGames: loadGames,
     fullMatchupUrl: fullMatchupUrl,
-    modelCenterUrl: modelCenterUrl
+    teamName: teamName,
+    logoHtml: logoHtml,
+    cardHtml: cardHtml
   };
 })(typeof window !== 'undefined' ? window : this);

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-sport /mlb /nfl /wnba /cfb index.html (and NFL matchups Pilot B).
+"""Generate public MLB/NFL matchup slate, result, and factual game-detail routes.
 
 Each route loads only that sport's adapter. Regenerating is the source of truth
 for these files — edit this script, then re-run.
@@ -22,7 +22,7 @@ SPORTS = {
         "global": "ChaseSportMLB",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "Tonight’s games, probable starters, weather, and descriptive context. Forecasts stay in Model Center.",
+        "lede": "Today’s games, probable starters, lineup availability, ballparks, weather, and recent context.",
         "matchups_href": "/mlb/matchups.html",
     },
     "nfl": {
@@ -31,7 +31,7 @@ SPORTS = {
         "global": "ChaseSportNFL",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "Kickoffs and published book prices. Model versus market lives in Model Center.",
+        "lede": "This week’s games, quarterbacks, player availability, venues, weather, rest, and travel context.",
         "matchups_href": "/nfl/matchups.html",
     },
     "wnba": {
@@ -40,7 +40,7 @@ SPORTS = {
         "global": "ChaseSportWNBA",
         "picks_label": "Priced markets",
         "gems_label": None,
-        "lede": "WNBA research slate. Kickoffs and attributed book prices. Forecasts live in Model Center.",
+        "lede": "WNBA research slate.",
         "matchups_href": "/wnba/matchups.html",
     },
     "cfb": {
@@ -85,22 +85,21 @@ def parked_page(sport: str) -> str:
   <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="entry" data-sport="{sport}">
 {sport_nav()}
-  <main class="container ca-page-shell ca-shell-main">
-    <header class="ca-surface-header">
-      <h1 class="ca-page-title">{label} is not on the public desk</h1>
-      <p class="ca-helper">Chase Analytics is posting MLB and NFL only for now. {label} stays in the pipeline until that desk is public.</p>
+  <main class="ca-public-page ca-shell-main">
+    <header class="ca-public-page__head">
+      <div class="ca-public-page__copy">
+        <p class="ca-public-page__eyebrow">Chase Analytics</p>
+        <h1 class="ca-public-page__title">{label} is not on the public desk</h1>
+        <p class="ca-public-page__lede">Chase Analytics is posting MLB and NFL only for now. {label} remains documented for a future release.</p>
+      </div>
     </header>
-    <p class="ca-helper">
-      <a class="hub-pill" href="/mlb/">MLB</a>
-      <a class="hub-pill" href="/nfl/">NFL</a>
-      <a class="hub-pill" href="/dashboard/index.html">Home</a>
-    </p>
+    <div class="ca-public-page__links"><a href="/mlb/">MLB</a><a href="/nfl/">NFL</a><a href="/">Home</a></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
@@ -122,18 +121,15 @@ def page(sport: str, *, kind: str = "index") -> str:
     else:
         title = spec["title"]
     extra_scripts = f"""
-  <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_entity.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_metric.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_scope.js?v={STAMP}"></script>"""
+  <script src="/dashboard/chase_shell.js?v={STAMP}"></script>"""
     body_js = RESULTS_JS if results else MATCHUPS_JS
     mode = "evidence" if results else "slate"
     more_bits = []
     if not results:
-        more_bits.append(f'<a class="hub-pill" href="/{sport}/results.html">Results</a>')
-    more_html = ('<p class="ca-helper">' + " ".join(more_bits) + "</p>") if more_bits else ""
+        more_bits.append(f'<a href="/{sport}/results.html">Results</a>')
+    more_html = ('      <div class="ca-public-page__links">' + " ".join(more_bits) + "</div>") if more_bits else ""
     if results:
-        lede = "Finals publish after games complete. This page lists the slate, not model performance."
+        lede = "Final scores and game status from the published slate."
         h1 = sport.upper() + " Results"
     else:
         lede = spec["lede"]
@@ -150,31 +146,28 @@ def page(sport: str, *, kind: str = "index") -> str:
   <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/responsive.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="{mode}" data-sport="{sport}" data-ca-product="research">
 {sport_nav()}
   <div id="caContextBar" class="ca-context-bar" role="status"></div>
-  <main class="container ca-page-shell ca-shell-main">
-    <header class="ca-desk-head ca-surface-header">
-      <p class="ca-eyebrow">Chase Analytics · {sport.upper()}</p>
-      <h1 class="ca-page-title">{h1}</h1>
-      <p class="ca-lede">{lede}</p>
+  <main class="ca-public-page ca-shell-main">
+    <header class="ca-public-page__head">
+      <div class="ca-public-page__copy">
+        <p class="ca-public-page__eyebrow">Chase Analytics · {sport.upper()}</p>
+        <h1 class="ca-public-page__title">{h1}</h1>
+        <p class="ca-public-page__lede">{lede}</p>
+      </div>
+{more_html}
     </header>
-    <div id="sportSelect" class="ca-sport-switcher"></div>
-    {more_html}
-    <div id="modelStatus"></div>
-    <div id="dataStatus"></div>
-    <div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} slate…</div>
+    <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} slate…</div></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_sport_select.js?v={STAMP}"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
@@ -200,16 +193,7 @@ HUB_JS = r"""
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
   if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'index', search: false });
-  if (!window.ChaseMatchupCard) return;
-  if (sport === 'mlb' && ChaseMatchupCard.mountLiveMlb) {
-    ChaseMatchupCard.mountLiveMlb({ host: document.getElementById('slate') });
-    return;
-  }
-  ChaseMatchupCard.mountSlate({
-    sport: sport,
-    adapter: adapter,
-    host: document.getElementById('slate')
-  });
+  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate') });
 })();
 """
 
@@ -217,26 +201,8 @@ MATCHUPS_JS = r"""
 (function () {
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'matchups', search: true });
-  else if (window.ChaseSportSelect) {
-    ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
-    ChaseSportSelect.saveCtx(sport, { surface: 'matchups' });
-  }
-  if (window.ChaseMatchupCard && sport === 'mlb' && ChaseMatchupCard.mountLiveMlb) {
-    ChaseMatchupCard.mountLiveMlb({ host: document.getElementById('slate') });
-    return;
-  }
-  if (!adapter || !adapter.SLATE_URL) {
-    if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
-    return;
-  }
-  if (window.ChaseMatchupCard) {
-    ChaseMatchupCard.mountSlate({
-      sport: sport,
-      adapter: adapter,
-      host: document.getElementById('slate')
-    });
-  }
+  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'matchups', search: false });
+  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate') });
 })();
 """
 
@@ -246,52 +212,55 @@ RESULTS_JS = r"""
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
   if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'evidence', surface: 'results', search: false });
-  else if (window.ChaseSportSelect) {
-    ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
-    ChaseSportSelect.saveCtx(sport, { surface: 'results' });
-  }
-  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  function scoreHtml(g) {
-    if (g.away_score == null || g.home_score == null) return 'Final pending';
-    return esc(g.away_score) + '–' + esc(g.home_score);
-  }
-  var url = adapter && adapter.SLATE_URL;
-  if (!url) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
-    return;
-  }
-  fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (slate) {
-    if (!slate) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate was not reachable.');
-      return;
-    }
-    var nb = adapter.normalize(slate);
-    if (window.ChaseDataStatus) {
-      ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-        return {
-          sport: sport,
-          publishedAt: nb.generated_at,
-          dataCutoff: nb.data_through,
-          source: 'public-slate',
-          issues: []
-        };
-      });
-    }
-    var html = '<p class="ca-helper">Official scores when published. Model ATS / totals records live in Model Center.</p>';
-    html += '<div class="ca-board-list">';
-    nb.games.forEach(function (g) {
-      html += '<article class="ca-card"><h2>' + esc(g.away) + ' @ ' + esc(g.home) +
-        '</h2><p class="ca-helper">' + scoreHtml(g) + '</p></article>';
-    });
-    html += '</div>';
-    document.getElementById('slate').innerHTML = html;
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
-  }).catch(function (err) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
-  });
+  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate'), results: true });
 })();
+"""
+
+
+def matchup_page(sport: str) -> str:
+    spec = SPORTS[sport]
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{sport.upper()} Matchup Analysis — Chase Analytics</title>
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={STAMP}">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
+</head>
+<body data-mode="evidence" data-sport="{sport}" data-ca-product="research">
+{sport_nav()}
+  <div id="caContextBar" class="ca-context-bar" role="status"></div>
+  <main id="matchupDetail" class="ca-detail-page ca-shell-main" data-state="loading">
+    <div class="ca-loading-state" role="status">Loading matchup analysis…</div>
+  </main>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
+  <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
+  <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/{spec['adapter']}.js?v={STAMP}"></script>
+  <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
+  <script src="/dashboard/public_game_detail.js?v={STAMP}"></script>
+  <script>
+    window.CHASE_SPORT_PAGE = {spec['global']};
+    if (window.ChaseShell) ChaseShell.mount({{ sport: {json.dumps(sport)}, mode: 'evidence', surface: 'matchup', search: false }});
+    if (window.ChasePublicGameDetail) ChasePublicGameDetail.mount({{
+      sport: {json.dumps(sport)}, adapter: window.CHASE_SPORT_PAGE, host: document.getElementById('matchupDetail')
+    }});
+  </script>
+</body>
+</html>
 """
 
 
@@ -357,7 +326,8 @@ def main() -> int:
         (dest / "index.html").write_text(page(sport, kind="index"), encoding="utf-8")
         (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
         (dest / "results.html").write_text(page(sport, kind="results"), encoding="utf-8")
-        print("wrote", sport, "index/matchups/results")
+        (dest / "matchup.html").write_text(matchup_page(sport), encoding="utf-8")
+        print("wrote", sport, "index/matchups/results/matchup")
     (ROOT / "models").mkdir(parents=True, exist_ok=True)
     models = models_page()
     (ROOT / "models" / "index.html").write_text(models, encoding="utf-8")

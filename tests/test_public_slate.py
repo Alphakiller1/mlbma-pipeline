@@ -47,11 +47,11 @@ class PublicSlateProjectionTests(unittest.TestCase):
         ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
         self.assertIn("!data/public/", ignore)
 
-    def test_nav_and_shell_age_non_mlb_from_public_slate(self):
+    def test_nav_and_shell_age_public_research_from_public_slate(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
-        self.assertIn("source: sport === 'mlb' ? 'sheet' : 'public-slate'", nav)
-        self.assertIn("source: sport === 'mlb' ? 'sheet' : 'public-slate'", shell)
+        self.assertIn("publicResearch || sport !== 'mlb' ? 'public-slate' : 'sheet'", nav)
+        self.assertIn("data-ca-product') === 'research' || sport !== 'mlb' ? 'public-slate' : 'sheet'", shell)
         self.assertNotIn("source: sport === 'mlb' ? 'sheet' : 'board'", nav)
         self.assertNotIn("source: sport === 'mlb' ? 'sheet' : 'board'", shell)
 

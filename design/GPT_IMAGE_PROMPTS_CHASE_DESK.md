@@ -1,283 +1,126 @@
-# Chase Analytics — GPT image prompts (MLB + NFL public desk)
+# Chase Analytics image-generation prompts — implemented public architecture
 
-**Use this pack, not older four-sport prompts.** Public Chase Analytics **posts MLB and NFL only.** WNBA and CFB are not in nav, not in sport pills, not on the homepage. Do not draw them.
+These prompts visualize the same system implemented in the repository. Public
+Chase Analytics supports MLB and NFL only. WNBA and CFB remain future design
+references and must not appear in generated public screens.
 
-**Goal look:** premium broadcast scouting desk (The Athletic / FanGraphs / glossy infographic). Dark `#08090F`, brand `#9A6BFF`. Public pages are research. Model numbers live in Model Center.
+## Shared style lock
 
-**Live site is not the target.** Production still shows four-sport copy, model/market columns on NFL, and a marketing hero. These prompts render the **intended** desk.
+Paste this block before one screen prompt:
 
----
+```text
+Create a precise high-fidelity product UI for Chase Analytics, a premium sports matchup research site. This is an implementation reference, not concept art.
 
-## How to generate
+CANVAS AND GRID
+- Desktop frame 1440×900 unless stated otherwise; centered content max-width 1360px; 24px outer gutters.
+- Sticky 64px header and 36px factual context bar.
+- 12-column layout; 12px card gaps; 3 matchup cards per row at 1440px, 2 at tablet, 1 on phone.
+- Dark opaque canvas #08090F. Opaque panels #12141D and inset fields #181B26. Fine low-contrast borders. No glass, no stadium photography, no gradients dominating the page.
 
-1. Paste **Style lock**, then **one numbered prompt**. One image per prompt.
-2. ChatGPT image / GPT Image. If it draws WNBA, CFB, win%, or a sportsbook ticket, regenerate and add the **Anti-line**.
-3. Chip values are **illustrative** (OSI 62), not tonight’s board.
-4. Order: 01 kit → 02 root → 03 opening desktop → 04 opening phone → 05 MLB matchup → 06 MLB slate → 07 NFL slate → 08 Model Center → 09 empty/stale.
+BRAND AND TYPE
+- Chase Analytics violet brand mark and wordmark at left. Violet #9A6BFF is reserved for active navigation, the 3px card edge, links, and focus—not data grading.
+- Condensed strong display type for headings; calm sans serif for UI; highly legible tabular numbers.
+- Compact editorial density inspired by an elite broadcast research desk and modern baseball analysis tools.
 
----
+PUBLIC NAVIGATION
+- Desktop links: Home, Matchups, MLB, NFL, Glossary. One separate Model Center button at the far right.
+- Mobile: logo and 44px hamburger. No visible WNBA or CFB.
 
-## Style lock (paste above every prompt)
+PUBLIC CONTENT HARD RULES
+- Use official team logos and full team names everywhere. Never show team abbreviations as the visible identity.
+- Public cards and detail sections show factual schedules, official scores when games are live/final, records, probable starters or quarterbacks, lineup or player availability, bullpens for MLB, rest/travel for NFL, venues, weather, surface, broadcasts, sources, and freshness.
+- Every collapsed card has exactly two actions: “Expand matchup” and “Full matchup analysis”.
+- Do not show predicted or projected scores, projected runs/points, win probability, picks, recommendations, confidence, an advantage/edge score, betting lines, odds, model-versus-market axes, or model-performance tiles.
+- Do not place another Model Center link inside a card or public content module.
+- Missing facts say “Not published” or “Report pending”; do not invent data.
 
-```
-Chase Analytics visual bible — obey exactly:
-
-PRODUCT
-- Chase Analytics. Public product posts TWO sports only: MLB and NFL.
-- Never show WNBA, CFB, college football, basketball, or a four-sport switcher.
-- Sport chrome is exactly two pills: MLB and NFL. One is filled #9A6BFF when active.
-- Nav: Opening · Matchups · MLB · NFL · Model Center · Glossary. No Team Rankings. No Compare. No Tools junk-drawer of extra sports.
-- Broadcast scouting desk, not a betting app, not crypto, not generic SaaS, not a developer terminal.
-
-COLOR / SURFACE
-- Canvas #08090F, faint violet radial glow, not a purple wash. No grid, no stadium photo, no bokeh, no crowd.
-- Lacquered opaque panels #12141D / #181B26, 1.5–2px borders #262A38, top-edge glint, deep shadow, inset highlight. Filled mass, not glassmorphism.
-- Accent #9A6BFF on edge light, active pill, icon rings, one primary CTA only.
-
-TYPE / ICONS
-- Roboto Condensed for H1 and section titles: metallic silver #F5F6FA, heavy, tracked, no negative tracking.
-- DM Sans for UI, labels, numbers; tabular nums. Eyebrows all-caps #A4A8B6.
-- Metric chips solid: elite #3CCB7F, watch #E8C24A, poor #F2545B. Violet is never a metric grade.
-- Poster-mark icons in circular violet-glow badges. Thin line icons only for search/close/arrows.
-- Logo: filled upward triangle + “Chase” + accent “Analytics”.
-
-PUBLIC vs MODEL (hard split)
-- PUBLIC screens: schedules, kickoffs in ET, lineups labeled confirmed or projected, weather, descriptive stats, splits, OSI / RCV / ABQ / OBR / Pitch Score ranks.
-- PUBLIC never shows: projected scores, win probability, model spread/total/margin, Model/Market/Published columns, gap axis, may_bet, ATS record, “Need to Win”, “before you bet”, unmet gates, genesis reports, priced-markets counts.
-- Book prices on public NFL cards only if labeled “book price, not a Chase projection”.
-- Model Center is a separate product (lock/star in nav). Forecasts only there.
-
-CHROME
-- Sticky dark header. Context bar under it with honest freshness: “Slate shown: Sep 8 · 6h” — never “N games today” on a stale slate, never “no sheet id”.
-- Photoreal UI, 1440×900 desktop unless the prompt says 390×844 phone. Optional dark browser bar with chase-analytics.com. No watermark.
+SURFACE ANATOMY
+- Collapsed matchup card: 272–350px tall desktop; top row time/broadcast plus status pill; center identity band with two official logos and full names; three compact factual cells; bottom action row.
+- Expanded card spans the row and reveals two balanced team columns plus sport-specific factual context.
+- All controls are at least 44px tall; clear focus rings; no horizontal overflow.
 ```
 
----
+## Prompt 1 — matchup-centered homepage
 
-## Anti-line (append if the model drifts)
+```text
+[PASTE SHARED STYLE LOCK]
 
-```
-Avoid: WNBA, CFB, four sport pills, Team Rankings as a top nav item, sportsbook tickets, parlays, predicted final scores, 64% win, model vs market axis on a public URL, may_bet, debug logs, “The Edge You Need to Win”, Nested URLs footnote, light mode, glassmorphism, neon purple wash, stadium photography, crypto charts.
-```
+Render chase-analytics.com at 1440×900.
 
----
+The page begins directly under the context bar with eyebrow “MLB · NFL · MATCHUP RESEARCH”, H1 “Every game. The context that matters.”, and a one-line factual description. No marketing splash, pricing block, or empty hero illustration.
 
-## Prompt 01 — Character sheet
+Below, show “MLB matchups” and the first two rows of a 3-column card grid. Use plausible teams with official logos and full names, such as Minnesota Twins at Detroit Tigers, Toronto Blue Jays at Athletics, and St. Louis Cardinals at San Francisco Giants. Each card follows the exact collapsed anatomy from the style lock.
 
-```
-[PASTE STYLE LOCK]
+Below that, begin “NFL matchups”, grouped by kickoff window derived from date/time. Show New England Patriots at Seattle Seahawks with quarterbacks and availability rather than baseball labels.
 
-UI kit / style frame for Chase Analytics, not a full website. Dark #08090F, 1440×900.
-
-3×2 lacquered panels, labeled:
-1. Header: logo + Chase Analytics. Links Opening, Matchups, MLB, NFL, Model Center, Glossary. Exactly two sport names in the header. Freshness pill “Slate shown: Sep 8 · 6h”.
-2. Type: H1 “Opening Dashboard” in Roboto Condensed metallic silver. Eyebrow “CHASE ANALYTICS · MLB · NFL”. Body in DM Sans #A4A8B6.
-3. Controls: primary #9A6BFF “View Today's Matchups”; ghost none. Sport pills MLB (filled) and NFL (outline). No third or fourth pill.
-4. MLB chips: Elite OSI 71, Good RCV 58, Watch ABQ 51, Poor OBR 42. Solid chips.
-5. Mini MLB card: NYY @ BOS, 7:10 ET, “Lineups: projected”, no spread, link “Open Matchup Analysis”.
-6. Mini NFL card: NE @ SEA, 8:20 PM ET, “Published book line: SEA −3 (book price, not a Chase projection)”, link “Open in Model Center”. No Model column.
-
-Footer caption: “Public desk · MLB and NFL only”.
+Make the result feel like a finished, deployable research product: disciplined spacing, no decorative emptiness, no visible abbreviations, no predictive content.
 ```
 
----
+## Prompt 2 — one expanded MLB card
 
-## Prompt 02 — Root homepage (replace the stub)
+```text
+[PASTE SHARED STYLE LOCK]
 
-```
-[PASTE STYLE LOCK]
+Render the MLB matchup page at 1440×900. Header has MLB active. Toolbar contains Previous day, a centered date, Next day, search, and factual status filters.
 
-Full-page UI of chase-analytics.com/ at 1440×900.
+Show a 3-column grid. The first Minnesota Twins at Detroit Tigers card is expanded and spans all three columns. Its persistent collapsed header shows official logos, full names, records, first pitch, broadcast, probable starters, lineup status, and Comerica Park. The disclosure button now reads “Collapse matchup” with an upward chevron; “Full matchup analysis” remains beside it.
 
-This is the public front door for a TWO-SPORT research product.
+Inside the expanded area show two equal starter panels with headshots, names, throwing hand, and season ERA; separate Minnesota and Detroit lineup states; separate bullpen-availability cells; ballpark and weather. Missing data is explicitly labeled. Other cards remain collapsed beneath it.
 
-Left:
-- Wordmark Chase Analytics
-- H1: Matchup intelligence for MLB and NFL.
-- Lede: Opening Dashboard — lineups, splits, and team context. Forecasts stay in Model Center.
-- Primary: Enter MLB desk
-- Secondary: Enter NFL slate
-- Quiet tertiary: Model Center (lock)
-- Sport pills: MLB | NFL only. Empty black void is forbidden. No engineering footnote. No “Nested URLs”. No CFB. No WNBA.
-
-Right: two stacked product previews so the homepage looks like the desk (not a marketing poster):
-- MLB preview card: Yankees at Red Sox, OSI chips, “projected lineup”
-- NFL preview card: Patriots at Seahawks, kickoff 8:20 ET, attributed book line with the disclaimer
-
-Same dark lacquered family as the dashboards. Dense, premium, finished.
+No betting data, no predicted score, no probability, no private-workspace call to action.
 ```
 
----
+## Prompt 3 — MLB full matchup analysis
 
-## Prompt 03 — Opening Dashboard (desktop)
+```text
+[PASTE SHARED STYLE LOCK]
 
-```
-[PASTE STYLE LOCK]
+Render chase-analytics.com/mlb/matchup.html at 1440×900.
 
-Full-page UI of chase-analytics.com/dashboard at 1440×900.
+Top hero: small “MLB · MATCHUP ANALYSIS” eyebrow, status and broadcast, Minnesota Twins official logo + full name + record on the left, first pitch and Scheduled in the center, Detroit Tigers official logo + full name + record on the right. Under it, four factual cells: Venue, Conditions, Broadcast, Status.
 
-Sticky header with MLB and NFL only. Context bar: “MLB · Slate shown: Sep 8 · data cutoff 6h”.
+Add a sticky local section nav: Overview, Starters, Lineups, Bullpens, Conditions, Sources.
 
-Hero is Opening, not a splash ad:
-- Eyebrow: CHASE ANALYTICS · MLB INTELLIGENCE
-- One H1: Opening Dashboard
-- Lede: Factual MLB matchups — lineups, starters, splits, team context. NFL slate is one click in the header. Models stay in Model Center.
-- Primary CTA: View MLB slate
-- Secondary text link: NFL matchups
-- Stats: “15 games on Sep 8 slate” (not Games Today), 30 teams, 9 metrics, Last synced 6h
-- Right: lacquered brand mark (triangle + CHASE / ANALYTICS), no photo
+Page sections are opaque lacquered panels with a 3px violet left edge:
+1. Probable starters — two balanced team panels, headshot, full name, hand, ERA, lineup status.
+2. Lineup availability — independent team states and opposing-starter context.
+3. Bullpen availability — recent workload status per team.
+4. Ballpark and conditions — venue, city, weather, surface, start time.
+5. Sources and freshness — readable publication/source sentence.
 
-Below, 2×2 lacquered tool cards with poster-mark icon rings:
-1. Tonight’s matchups
-2. Matchup analysis (team context inside the game)
-3. Trends
-4. Trends
-
-Signup, Discord, and Patreon are NOT in the first viewport. No “Need to Win”. No four-league hero. Looks like The Athletic data desk × FanGraphs.
+No chart exists merely to fill space. No predictive, betting, probability, confidence, or recommendation content.
 ```
 
----
+## Prompt 4 — NFL slate and expanded card
 
-## Prompt 04 — Opening desk (iPhone)
+```text
+[PASTE SHARED STYLE LOCK]
 
-```
-[PASTE STYLE LOCK]
+Render chase-analytics.com/nfl/ at 1440×900 with NFL active.
 
-Same opening desk, 390×844. iPhone frame optional.
+Heading “NFL Matchups”. Group cards by real kickoff windows such as “Wednesday, Sep 9 · night” and “Sunday, Sep 13 · 1:00 PM ET”; never assume the opener is Thursday.
 
-Header: logo + 44px hamburger. Desktop links hidden. Drawer closed.
+Use official logos and full names. Show New England Patriots at Seattle Seahawks expanded across the row. Persistent facts: kickoff, broadcast, records, expected quarterbacks, player-availability status, Lumen Field. Expanded team columns contain quarterback, official player-availability summary, rest days, road/home travel. Environment row contains venue, city, weather, and surface.
 
-Stacked:
-- H1 Opening Dashboard
-- Lede: MLB research now. NFL in the menu. No other leagues.
-- Full-width primary “View MLB slate”
-- Full-width ghost “NFL matchups”
-- 2×2 stats including “15 games on Sep 8 slate”
-- Vertical tool cards, tap targets ≥44px, no horizontal scroll
-
-Sport switcher if shown is only MLB | NFL.
+Do not show lineup, probable-pitcher, ERA, bullpen, or other baseball language. Do not show a spread, total, odds, predicted score, probability, advantage score, pick, or recommendation.
 ```
 
----
+## Prompt 5 — mobile public flow
 
-## Prompt 05 — MLB two-club matchup (public)
+```text
+[PASTE SHARED STYLE LOCK]
 
-```
-[PASTE STYLE LOCK]
+Render a 390×844 iPhone viewport of the Chase Analytics homepage.
 
-Full-page UI of chase-analytics.com/dashboard/matchup_compare.html?away=NYY&home=BOS at 1440×900.
+Header is 56px with the violet mark/wordmark and one 44px hamburger. A 40px context bar follows. Show the H1 and one MLB matchup card in a single column. Within the card, retain official logos and full team names in a balanced two-team identity band; use compact two-column factual cells with venue spanning the width; keep “Expand matchup” and “Full matchup analysis” side by side as 44px controls when possible.
 
-Header still only MLB + NFL. MLB is current.
-
-H1: Yankees at Red Sox — not “Team Rankings”.
-Scope bar: two controls only (window L14, segment season).
-Starter hand / park as stated context text.
-
-Column order:
-1. Team context — two club cards, descriptive ranks OSI RCV ABQ OBR Pitch Score, green-to-red chips. No projOSI. No projected runs.
-2. Lineup vs Lineup, confirmed vs projected labeled.
-3. Splits strip.
-4. Small descriptive radar.
-
-“Compare to league” disclosure collapsed.
-Insight rail: Analyst take, violet circle icon, no betting copy.
-No NFL model widgets on this MLB page. No win%. Broadcast scouting packet.
+Show the top of the next card to communicate scrolling. No horizontal overflow, clipped copy, tiny controls, visible abbreviations, dense desktop table, or private analysis values.
 ```
 
----
+## Anti-drift line
 
-## Prompt 06 — MLB public slate
+Append if the generator ignores the boundary:
 
+```text
+Regenerate: remove every visible team abbreviation, WNBA/CFB item, predicted/projected score, probability, pick, recommendation, confidence, betting line, odds, advantage/edge metric, model-versus-market chart, performance tile, and in-card Model Center link. Keep official logos, full names, factual matchup context, Expand matchup, and Full matchup analysis.
 ```
-[PASTE STYLE LOCK]
-
-Full-page UI of chase-analytics.com/mlb/matchups.html at 1440×900.
-
-Public MLB research slate. Sport pills: MLB filled, NFL outline. No other sports.
-
-H1: MLB matchups
-Lede: Tonight’s games, probable starters, weather, descriptive context. Forecasts in Model Center.
-
-Kickoff groups in Eastern time, e.g. “Monday, Sep 8”.
-Each card: away at home, time ET, probable SPs, weather one-liner, “Open Matchup Analysis” primary button, “Open this matchup in Model Center” as text link.
-No model columns. No gems/picks jargon. No “priced markets”.
-
-Search field “Find a team or game”. Honest context bar freshness. Dense editorial board.
-```
-
----
-
-## Prompt 07 — NFL public slate (replace the live terminal)
-
-```
-[PASTE STYLE LOCK]
-
-Full-page UI of chase-analytics.com/nfl/matchups.html at 1440×900.
-
-This is the opposite of the live site’s model terminal.
-
-Header + pills: NFL filled, MLB outline. Context bar: “NFL · Week 2 · kickoffs ET · book lines attributed”.
-
-H1: NFL matchups
-Lede: Kickoffs and published book prices. Model versus market lives in Model Center.
-
-FORBIDDEN on this page: Model / Market / Published columns, 6.54 vs 3, gap axis, may_bet, unmet gates, genesis reports, “Priced markets: 0 of 16”, CFB, WNBA.
-
-Instead, cards grouped by kickoff:
-Wednesday, Sep 9 — New England at Seattle, 8:20 PM ET, “Published book line: SEA −3 (book price, not a Chase projection)”, text link Open this matchup in Model Center.
-Sunday, Sep 13 — two more factual cards, same pattern.
-
-Quiet search. No debug dump. Lacquered cards, metallic H1, premium desk.
-```
-
----
-
-## Prompt 08 — Model Center (MLB or NFL game, gated)
-
-```
-[PASTE STYLE LOCK]
-
-Full-page UI of chase-analytics.com/models/ signed-in, 1440×900.
-
-Same chrome as the public desk (MLB | NFL only) but Model Center is active with a lock/star.
-Eyebrow: AUTHENTICATED · NOT THE PUBLIC DESK
-
-A segmented control: MLB | NFL (only two). NFL selected.
-Game: NE at SEA.
-
-Here — and only here — show three separate boards: Model margin · Market / book · Published.
-Gap axis caption: “A gap is disagreement with the market, not a betting edge.”
-Status as words: “Authority: research only”. No may_bet boolean. No sportsbook ticket. No parlays.
-
-Public-desk pages must never look like this. This frame is the locked product.
-```
-
----
-
-## Prompt 09 — Loading, empty, stale
-
-```
-[PASTE STYLE LOCK]
-
-1440×900 sheet, three Chase Analytics boards, same two-sport header (MLB | NFL):
-
-Left: Loading slate — skeleton bars on a lacquered panel, not a spinner void.
-Center: Empty — “Waiting for game selection”. Calm. MLB compare with no teams picked.
-Right: Stale — context bar “Slate shown: Sep 5 · 4 days old” + Retry. Does not say “15 games today”.
-
-No fake stats, no lorem, no stack traces, no extra leagues.
-```
-
----
-
-## Visual matrix (why these frames exist)
-
-| Surface | Live today | These prompts draw |
-|---|---|---|
-| Root | Four-sport essay + engineering footnote | MLB + NFL product door with two preview cards |
-| Opening | “Need to Win”, signup first | Opening Dashboard, MLB primary, NFL in chrome |
-| NFL matchups | Model 6.54 / Market 3 / gap axis | Kickoff groups + attributed book line |
-| MLB hub | Picks/Gems jargon | Public slate + scouting-desk CTA |
-| Nav / pills | WNBA + CFB | MLB + NFL only |
-| `/models/` | 404 | Gated forecast desk, two sports |
-| Team Rankings | Not a nav item (keep it that way) | Team context inside the MLB matchup |

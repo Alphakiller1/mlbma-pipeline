@@ -36,27 +36,6 @@ def freshness_state(raw) -> str | None:
     return None
 
 
-def attributed_book(game: dict) -> dict:
-    book = game.get("book") or game.get("book_name")
-    market = game.get("book_market") or game.get("market_type")
-    side = game.get("book_side") or game.get("side")
-    number = game.get("book_number", game.get("public_line"))
-    quote = game.get("quote_as_of_utc") or game.get("quote_time")
-    if not (book and market and side and number is not None and quote):
-        return {}
-    try:
-        num = float(number)
-    except (TypeError, ValueError):
-        return {}
-    return {
-        "book": str(book),
-        "book_market": str(market),
-        "book_side": str(side),
-        "book_number": num,
-        "quote_as_of_utc": str(quote),
-    }
-
-
 def project_game(sport: str, game: dict) -> dict:
     nested = game.get("teams") if isinstance(game.get("teams"), dict) else {}
     away = team_name(game.get("away")) or team_name(nested.get("away"))
@@ -67,23 +46,44 @@ def project_game(sport: str, game: dict) -> dict:
         "game_state": str(game.get("game_state") or game.get("status") or "scheduled").lower(),
         "kickoff_utc": game.get("kickoff_utc") or game.get("start_utc") or game.get("commence_time_utc"),
         "kickoff_display": game.get("kickoff_display"),
+        "game_pk": game.get("game_pk") or game.get("gamePk"),
         "away": away,
         "home": home,
+        "away_name": game.get("away_name"),
+        "home_name": game.get("home_name"),
         "away_record": game.get("away_record"),
         "home_record": game.get("home_record"),
         "away_score": game.get("away_score", game.get("away_runs")),
         "home_score": game.get("home_score", game.get("home_runs")),
         "venue": game.get("venue") or game.get("stadium"),
+        "venue_city": game.get("venue_city"),
         "broadcast": game.get("broadcast") or game.get("tv"),
         "conditions": game.get("conditions") or game.get("weather_summary"),
+        "surface": game.get("surface"),
+        "weather_temp": game.get("weather_temp"),
+        "weather_cond": game.get("weather_cond"),
+        "weather_wind": game.get("weather_wind"),
         "away_starter": game.get("away_starter") or game.get("away_qb"),
         "home_starter": game.get("home_starter") or game.get("home_qb"),
+        "away_starter_id": game.get("away_starter_id"),
+        "home_starter_id": game.get("home_starter_id"),
+        "away_hand": game.get("away_hand"),
+        "home_hand": game.get("home_hand"),
+        "away_era": game.get("away_era"),
+        "home_era": game.get("home_era"),
         "away_lineup_state": game.get("away_lineup_state"),
         "home_lineup_state": game.get("home_lineup_state"),
+        "away_availability": game.get("away_availability"),
+        "home_availability": game.get("home_availability"),
         "availability_summary": game.get("availability_summary"),
+        "away_bullpen": game.get("away_bullpen"),
+        "home_bullpen": game.get("home_bullpen"),
+        "away_rest_days": game.get("away_rest_days"),
+        "home_rest_days": game.get("home_rest_days"),
+        "away_travel": game.get("away_travel"),
+        "home_travel": game.get("home_travel"),
         "freshness": freshness_state(game.get("freshness")),
     }
-    row.update(attributed_book(game))
     return {k: v for k, v in row.items() if k in ALLOWED and v is not None and v != ""}
 
 

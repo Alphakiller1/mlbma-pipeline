@@ -33,15 +33,13 @@ from playwright.sync_api import sync_playwright
 # The real, standalone pages a phone user actually lands on. Fragments (chase_nav.html)
 # and redirect stubs (matchup_sheet.html) are intentionally excluded.
 DEFAULT_PAGES = [
-    "dashboard/index.html",
-    "dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home",
-    "dashboard/matchup_compare.html",
-    "dashboard/batter_profile.html",
-    "dashboard/render/pitcher_profile.html",
-    "dashboard/render/bullpen_report.html",
-    "dashboard/render/team_profile.html",
+    "index.html",
+    "mlb/index.html",
+    "nfl/index.html",
+    "mlb/matchup.html?game=824226&date=2026-09-09",
+    "nfl/matchup.html?game=2026-W01-ne-sea",
     "dashboard/glossary.html",
-    "dashboard/index.html",
+    "model-center/index.html",
 ]
 
 DEFAULT_VIEWPORT = {"width": 375, "height": 812}

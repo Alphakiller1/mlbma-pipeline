@@ -6,27 +6,28 @@
 # going forward belong in THIS file as 301s.
 
 # Legacy OEM filename at the domain root (old bookmarks / nav).
-/chase_analytics_mlb_oem_v7.html  /dashboard/  301
-/chase_analytics_mlb_oem_v7       /dashboard/  301
+/chase_analytics_mlb_oem_v7.html  /  301
+/chase_analytics_mlb_oem_v7       /  301
 
 # Same legacy filename under /dashboard/ (current nav still links here; HTML stub also redirects).
-/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/  301
-/dashboard/chase_analytics_mlb_oem_v7       /dashboard/  301
-/dashboard/matchup_sheet.html     /dashboard/matchup_compare  301
-/dashboard/matchup_sheet          /dashboard/matchup_compare  301
+/dashboard/chase_analytics_mlb_oem_v7.html  /  301
+/dashboard/chase_analytics_mlb_oem_v7       /  301
+/dashboard/matchup_sheet.html     /mlb/matchup.html  301
+/dashboard/matchup_sheet          /mlb/matchup.html  301
+/dashboard/matchup_compare        /mlb/matchup.html  301
 
 # Demoted public research surfaces (WP4A) — files remain under /dashboard/render/ for capture.
-/dashboard/team_rankings.html  /dashboard/matchup_compare  301
-/dashboard/team_rankings       /dashboard/matchup_compare  301
-/team_rankings.html            /dashboard/matchup_compare  301
-/dashboard/team_profile.html   /dashboard/  301
-/dashboard/team_profile        /dashboard/  301
-/dashboard/pitcher_profile.html /dashboard/  301
-/dashboard/pitcher_profile     /dashboard/  301
-/dashboard/bullpen_report.html /dashboard/  301
-/dashboard/bullpen_report      /dashboard/  301
-/dashboard/reliever_profile.html /dashboard/  301
-/dashboard/reliever_profile    /dashboard/  301
+/dashboard/team_rankings.html  /  301
+/dashboard/team_rankings       /  301
+/team_rankings.html            /  301
+/dashboard/team_profile.html   /  301
+/dashboard/team_profile        /  301
+/dashboard/pitcher_profile.html /  301
+/dashboard/pitcher_profile     /  301
+/dashboard/bullpen_report.html /  301
+/dashboard/bullpen_report      /  301
+/dashboard/reliever_profile.html /  301
+/dashboard/reliever_profile    /  301
 
 # Sport roots — real per-route index.html (scripts/build_sport_routes.py).
 # Do not 302 /mlb onto the dashboard; that hid the sport hub.

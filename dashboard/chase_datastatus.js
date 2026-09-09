@@ -183,7 +183,7 @@
   function fetchLastUpdated(opts) {
     opts = opts || {};
     var sport = String(opts.sport || 'mlb').toLowerCase();
-    if (sport && sport !== 'mlb') {
+    if (opts.source === 'public-slate' || (sport && sport !== 'mlb')) {
       var slateUrl = opts.url;
       if (!slateUrl && global.ChaseSportNFL && sport === 'nfl') slateUrl = ChaseSportNFL.SLATE_URL;
       if (!slateUrl && global.ChaseSportMLB && sport === 'mlb') slateUrl = ChaseSportMLB.SLATE_URL;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLB Matchups — Chase Analytics</title>
+  <title>MLB Matchup Analysis — Chase Analytics</title>
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909p">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909p">
   <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909p">
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v=20260909p">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="slate" data-sport="mlb" data-ca-product="research">
+<body data-mode="evidence" data-sport="mlb" data-ca-product="research">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -76,16 +76,8 @@
   </div>
 </div>
   <div id="caContextBar" class="ca-context-bar" role="status"></div>
-  <main class="ca-public-page ca-shell-main">
-    <header class="ca-public-page__head">
-      <div class="ca-public-page__copy">
-        <p class="ca-public-page__eyebrow">Chase Analytics · MLB</p>
-        <h1 class="ca-public-page__title">MLB Matchups</h1>
-        <p class="ca-public-page__lede">Today’s games, probable starters, lineup availability, ballparks, weather, and recent context.</p>
-      </div>
-      <div class="ca-public-page__links"><a href="/mlb/results.html">Results</a></div>
-    </header>
-    <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading MLB slate…</div></div>
+  <main id="matchupDetail" class="ca-detail-page ca-shell-main" data-state="loading">
+    <div class="ca-loading-state" role="status">Loading matchup analysis…</div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v=20260909p"></script>
@@ -93,26 +85,17 @@
   <script src="/dashboard/chase_datastatus.js?v=20260909p"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v=20260909p"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v=20260909p"></script>
-  <script src="/dashboard/matchup_card.js?v=20260909p"></script>
   <script src="/dashboard/sports/mlb.js?v=20260909p"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260909p"></script>
+  <script src="/dashboard/matchup_card.js?v=20260909p"></script>
   <script src="/dashboard/chase_nav.js?v=20260909p"></script>
   <script src="/dashboard/chase_shell.js?v=20260909p"></script>
+  <script src="/dashboard/public_game_detail.js?v=20260909p"></script>
   <script>
-  window.CHASE_SPORT_PAGE = ChaseSportMLB;
-  window.CHASE_SPORT_ID = "mlb";
-  window.CHASE_SPORT_PICKS_LABEL = "Public slate";
-  window.CHASE_SPORT_GEMS_LABEL = null;
-  window.CHASE_SPORT_IS_MATCHUPS = true;
-  window.CHASE_SPORT_IS_RESULTS = false;
-  
-(function () {
-  var adapter = window.CHASE_SPORT_PAGE;
-  var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'matchups', search: false });
-  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate') });
-})();
-
+    window.CHASE_SPORT_PAGE = ChaseSportMLB;
+    if (window.ChaseShell) ChaseShell.mount({ sport: "mlb", mode: 'evidence', surface: 'matchup', search: false });
+    if (window.ChasePublicGameDetail) ChasePublicGameDetail.mount({
+      sport: "mlb", adapter: window.CHASE_SPORT_PAGE, host: document.getElementById('matchupDetail')
+    });
   </script>
 </body>
 </html>

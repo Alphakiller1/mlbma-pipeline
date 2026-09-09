@@ -43,9 +43,10 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("hasModelCenterAccess", (ROOT / "functions" / "_shared" / "supabase.js").read_text(encoding="utf-8"))
 
     def test_research_lab_has_no_public_compare_tab(self):
-        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
-        tabs = opening.split('aria-label="Research Lab tabs"', 1)[1].split("</div>", 1)[0]
-        self.assertNotIn("Compare", tabs)
+        opening = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("Research Lab", opening)
+        self.assertNotIn(">Compare<", opening)
+        self.assertIn('id="matchupDesk"', opening)
         lab = (ROOT / "dashboard" / "research_lab.js").read_text(encoding="utf-8")
         self.assertIn("var SUBTABS = ['trends', 'pitching']", lab)
         self.assertIn("Open Matchup Analysis", lab)
@@ -59,10 +60,12 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("kickoffWindow", slate)
         self.assertNotIn("Thursday", blob)
         self.assertNotIn("Sunday Night", blob)
-        self.assertIn("matchup_compare.html?away=", card)
-        self.assertIn("View matchup", card)
+        self.assertIn("/matchup.html?game=", card)
+        self.assertIn("Expand matchup", card)
+        self.assertIn("Full matchup analysis", card)
         self.assertIn("ca-matchup-card", card)
-        self.assertIn("ca-text-link--accent", card)
+        self.assertIn("aria-expanded", card)
+        self.assertNotIn("ca-matchup-card__abbr", card)
         self.assertNotIn("BOARD_URL", blob)
 
     def test_local_cloudflare_deploy_keeps_public_slates(self):
