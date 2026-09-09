@@ -49,7 +49,8 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .gloss-convention .ca-metric-legend{margin:14px 0}
 .gloss-section-block{margin-bottom:20px}
 .gloss-metric-card__ramp{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
-</style>
+
+  </style>
 <link rel="stylesheet" href="mlbma_ui.css?v=20260909r">
 <link rel="stylesheet" href="mlbma_design_system.css?v=20260909r">
 <link rel="stylesheet" href="theme.css?v=20260909r">
@@ -63,6 +64,37 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 <script src="glossary.js?v=20260908k"></script>  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
   <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909r">
   <link rel="stylesheet" href="responsive.css?v=20260909r">
+  <style>
+    /* 2026-09-09 accessibility pass (visual audit B4/B5). This block sits after
+       the stylesheet links on purpose: the <style> higher in this head loads
+       before them and loses every cascade tie.
+       - h2 used #6D28D9 on the near-black ground: 2.67:1, under AA for large text.
+       - Several runs sat at 10-11.5px, below the 12px reading floor.
+       Inline term links stay inline: they are links inside a definition
+       sentence, which is the documented exception to the tap-target floor. */
+    .section h2,
+    .gloss-section h2 { color: var(--ca-violet-300, #C4B0FF); }
+    .glossary-page .kicker,
+    .glossary-page .chip,
+    .glossary-page .ca-metric-legend-title,
+    .glossary-page .ca-metric-legend-step,
+    .glossary-page .ca-datastatus-source,
+    .glossary-page .mlbma-footer-left,
+    .glossary-page .mlbma-footer-center,
+    .glossary-page .mlbma-footer-right,
+    .glossary-page .tier-table th { font-size: 12px; }
+    .glossary-page .val-chip.c-na { color: var(--text-2, #A4A8B6); }
+    /* --text-3 (#6E7383) is a settled palette value (tests/test_contrast.py)
+       and reads 3.89:1 on the card ground. It is fine as dim chrome, but these
+       are body copy on a reference page, so they take the meta role instead. */
+    .glossary-page .gloss-convention__note,
+    .glossary-page .gloss-metric-card__full,
+    .glossary-page .gloss-metric-card__def,
+    .glossary-page .mlbma-footer-left,
+    .glossary-page .mlbma-footer-center,
+    .glossary-page .mlbma-footer-right,
+    .glossary-page .ca-datastatus-source { color: var(--text-2, #A4A8B6); }
+  </style>
 </head>
 <body data-mode="entry" class="ca-bg-outfield glossary-page">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
@@ -207,7 +239,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <tr class="tier-elite"><td>Ace</td><td>85+</td></tr><tr><td>Solid</td><td>70—84</td></tr>
       <tr class="tier-mid"><td>Average</td><td>55—69</td></tr><tr class="tier-weak"><td>Volatile</td><td>&lt;55</td></tr>
     </tbody></table>
-    <p style="margin-top:12px;font-size:12px;color:var(--text-3)">Sample-size rule: use YTD for baseline, L30/L14 for confirmation, and L7 as momentum only.</p>
+    <p style="margin-top:12px;font-size:12px;color:var(--text-2)">Sample-size rule: use YTD for baseline, L30/L14 for confirmation, and L7 as momentum only.</p>
   </div>
 
   <div class="layer-label">All Formulas</div>

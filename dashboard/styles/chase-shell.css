@@ -491,10 +491,18 @@
   font-weight: 700;
 }
 
-/* AUDIT B2 — /model-center/ overflowed the viewport by 41px at 390px because
- * a status node injected outside .chase-timestamp escaped the mobile hide rule
- * and pushed the hamburger past the gutter. Constrain by role, not by the one
- * class that happened to be there. */
+/* AUDIT B2 — /model-center/ overflowed the viewport by ~41px at 390px.
+ *
+ * The cause is stylesheet order, not markup: that page is the only one that
+ * loads mlbma_design_system.css AFTER chase-shell.css, and that file redefines
+ * .ca-btn { display: inline-flex }. The mobile rule below is
+ * `.chase-nav-model { display: none }` at specificity (0,1,0) — a media query
+ * adds none — so the later .ca-btn declaration won and the Model Center button
+ * stayed visible at 390px, pushing the 44px hamburger past the gutter.
+ *
+ * The hide is raised to (0,2,0) at the foot of this block. The .chase-status
+ * rules here are a second belt: they keep any injected status node from
+ * pushing the hamburger out, which is a real hazard independent of this bug. */
 .chase-status {
   display: flex;
   align-items: center;
@@ -613,4 +621,10 @@
 }
 @media (max-width: 768px) {
   .chase-sport-tabs { display: none; }
+}
+
+/* Beats mlbma_design_system.css's later `.ca-btn { display: inline-flex }` on
+ * the one page that loads it after the shell. Specificity (0,2,0). */
+@media (max-width: 768px) {
+  .chase-nav .chase-nav-model { display: none; }
 }

@@ -1,0 +1,457 @@
+/*
+ * L7 - Model Center route. Signed-in surface: this is the only public-facing
+ * stylesheet allowed to lay out projections, model-versus-market gaps, and
+ * model performance. Nothing here renders unless /api/model-center/board has
+ * already returned 200, so the boundary is enforced upstream in
+ * dashboard/model_center.js, not by hiding rules here.
+ *
+ * Consumes L2 roles only.
+ */
+
+/* —— Access page ————————————————————————————————————————————— */
+.mc-access {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.mc-access__copy p { max-width: 60ch; }
+
+.mc-panel {
+  position: relative;
+  padding: var(--space-5) var(--space-5) var(--space-5) calc(var(--space-5) + 3px);
+  background: var(--surface-board);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+  overflow: hidden;
+}
+
+.mc-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--edge-brand);
+}
+
+.mc-panel__title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  font-weight: 800;
+}
+
+.mc-eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+/* What entitlement unlocks. Structure only — every value slot is explicitly
+   withheld, so the page never shows a number it has not been served. */
+.mc-locked-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mc-locked-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.mc-locked-row > span { color: var(--text-secondary); font-size: var(--type-14); }
+
+.mc-locked-chip {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: var(--space-1) var(--space-3);
+  background: var(--surface-inset);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+/* —— Board list ——————————————————————————————————————————————— */
+.mc-board {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.mc-board__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.mc-board__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.mc-board__meta {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+/* —— Game card ————————————————————————————————————————————————— */
+.mc-game {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+}
+
+.mc-game__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.mc-teams { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+
+/* Team chip: official crest plus abbreviation. */
+.mc-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 52px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xs);
+  background: var(--mc-chip-bg, var(--surface-inset));
+  border: 1px solid var(--border-default);
+  color: var(--mc-chip-fg, var(--text-primary));
+  font-family: var(--font-display);
+  font-size: var(--type-16);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+}
+
+.mc-game__time {
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* —— Model vs market gauge ————————————————————————————————————— */
+.mc-gauge { display: grid; gap: var(--space-2); }
+
+/* The legend is positioned, not columned: each label is placed over its own
+   mark on the axis below it. */
+.mc-gauge__legend {
+  position: relative;
+  height: 40px;
+}
+
+.mc-gauge__leg {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+.mc-gauge__leg.is-market span,
+.mc-gauge__leg.is-market strong { color: var(--text-secondary); }
+
+.mc-gauge__leg span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mc-gauge__leg strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--type-20);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-gauge__track {
+  position: relative;
+  height: 26px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+
+/* The violet span between the two marks is the gap, drawn to the same scale as
+   the axis. It is deliberately not labelled an edge. */
+.mc-gauge__span {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  background: var(--edge-brand);
+  border-radius: var(--radius-pill);
+}
+
+.mc-gauge__pin {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--text-primary);
+  border-radius: 1px;
+}
+.mc-gauge__pin--market { background: var(--text-secondary); }
+
+.mc-gauge__zero {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-strong);
+}
+
+.mc-gauge__axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--type-12);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-game__read {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.mc-game__lean {
+  font-size: var(--type-14);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mc-game__values {
+  display: grid;
+  gap: 2px;
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.mc-withheld {
+  font-size: var(--type-12);
+  color: var(--value-caution);
+}
+
+/* —— Key projection tiles ————————————————————————————————————— */
+.mc-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: var(--space-2);
+}
+
+.mc-tile {
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.mc-tile span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+.mc-tile strong {
+  display: block;
+  margin-top: var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--type-28);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* —— Detail hero ——————————————————————————————————————————————— */
+.mc-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.mc-hero__side { display: grid; gap: var(--space-2); justify-items: center; text-align: center; }
+.mc-hero__side .mc-chip { min-width: 84px; font-size: var(--type-24); padding: var(--space-3) var(--space-4); }
+.mc-hero__name { font-family: var(--font-display); font-size: var(--type-18); font-weight: 700; color: var(--text-primary); }
+.mc-hero__sub { font-size: var(--type-12); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+.mc-hero__center { text-align: center; }
+.mc-hero__score {
+  font-family: var(--font-display);
+  font-size: var(--type-score);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.mc-hero__label {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* —— Comparison bars ————————————————————————————————————————— */
+.mc-form { display: grid; gap: var(--space-2); }
+
+.mc-form__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1.1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.mc-form__label { font-size: var(--type-14); color: var(--text-secondary); }
+.mc-form__value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.mc-bar {
+  height: 8px;
+  background: var(--surface-inset);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.mc-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--metric-neutral);
+}
+.mc-bar > i[data-grade="good"] { background: var(--metric-above); }
+.mc-bar > i[data-grade="watch"] { background: var(--metric-watch); }
+.mc-bar > i[data-grade="poor"] { background: var(--metric-poor); }
+
+/* —— Trust footer ——————————————————————————————————————————— */
+.mc-trust__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.mc-badge {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  border: 1px solid var(--border-accent);
+  color: var(--text-accent);
+}
+
+.mc-disclaimer {
+  margin: 0;
+  font-size: var(--type-12);
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .mc-access { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 620px) {
+  .mc-hero { grid-template-columns: minmax(0, 1fr); }
+  .mc-form__row { grid-template-columns: minmax(0, 1fr) 56px; }
+  .mc-form__row .mc-bar { grid-column: 1 / -1; }
+}
+
+.mc-chip__crest {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.mc-hero__side .mc-chip__crest { width: 40px; height: 40px; }
+.mc-chip__code { line-height: 1.1; }
+
+/* Secondary note under the lean (e.g. an explicit edge-withheld reason). */
+.mc-game__note { display: block; margin-top: 2px; }
+
+/* The model mark is the emphasised one; market sits behind it. */
+.mc-gauge__pin { box-shadow: 0 0 0 1px var(--surface-inset); }
