@@ -1,0 +1,19 @@
+{
+  "schema": "producer-leak/1",
+  "generated_at_utc": "2026-09-08T12:00:00Z",
+  "player_projections": [{"player": "x", "proj": 1.2}],
+  "games": [
+    {
+      "id": "leak-game",
+      "away": "AAA",
+      "home": "BBB",
+      "kickoff_utc": "2026-09-09T23:10:00Z",
+      "model_margin": -1.4,
+      "market_margin": -1.1,
+      "market_gap": -0.3,
+      "win_probability": 0.61,
+      "projected_away_score": 4.2,
+      "venue": "Test Park"
+    }
+  ]
+}

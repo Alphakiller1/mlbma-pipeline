@@ -22,7 +22,7 @@ SPORTS = {
         "global": "ChaseSportMLB",
         "picks_label": "Priced markets (Picks)",
         "gems_label": "Flagged tiles (Gems)",
-        "lede": "MLB research board. Schedules, lineups, and descriptive stats. Forecasts live in Model Center.",
+        "lede": "MLB research slate. Schedules, lineups, and descriptive stats. Forecasts live in Model Center.",
         "matchups_href": "/mlb/matchups.html",
     },
     "nfl": {
@@ -31,7 +31,7 @@ SPORTS = {
         "global": "ChaseSportNFL",
         "picks_label": "Priced markets",
         "gems_label": None,
-        "lede": "NFL research slate. Kickoffs and attributed book prices. Model versus market comparison is Model Center only.",
+        "lede": "NFL research slate. Kickoffs grouped from actual timestamps. Book prices appear only with book, market, side, and quote time.",
         "matchups_href": "/nfl/matchups.html",
     },
     "wnba": {
@@ -155,25 +155,27 @@ def page(sport: str, *, kind: str = "index") -> str:
   <link rel="stylesheet" href="/dashboard/responsive.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="{mode}" data-sport="{sport}">
+<body data-mode="{mode}" data-sport="{sport}" data-ca-product="research">
 {sport_nav()}
+  <div id="caContextBar" class="ca-context-bar" role="status"></div>
   <main class="container ca-page-shell ca-shell-main">
     <header class="ca-surface-header">
       <h1 class="ca-page-title">{h1}</h1>
       <p class="ca-helper">{lede}</p>
     </header>
-    <div id="caContextBar" class="ca-context-bar"></div>
     <div id="sportSelect" class="ca-sport-switcher"></div>
     {more_html}
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
-    <div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} board…</div>
+    <div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} slate…</div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_sport_select.js?v={STAMP}"></script>
-  <script src="/dashboard/sports/chase_board.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
+  <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
   <script src="/dashboard/sports/{spec["adapter"]}.js?v={STAMP}"></script>
   <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>{extra_scripts}
@@ -196,48 +198,13 @@ HUB_JS = r"""
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
   if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'index', search: false });
-  else if (window.ChaseSportSelect) {
-    ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
-    ChaseSportSelect.saveCtx(sport, { surface: 'index' });
+  if (window.ChaseMatchupCard) {
+    ChaseMatchupCard.mountSlate({
+      sport: sport,
+      adapter: adapter,
+      host: document.getElementById('slate')
+    });
   }
-  if (!adapter) {
-    if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'adapter missing');
-    return;
-  }
-  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
-  Promise.all([
-    fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
-  ]).then(function (pack) {
-    var board = pack[0], build = pack[1] || {};
-    if (!board) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable for ' + sport + '.');
-      return;
-    }
-    var nb = adapter.normalize(board);
-    if (window.ChaseDataStatus) {
-      ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-        return {
-          sport: sport,
-          state: build.state || undefined,
-          dataCutoff: build.generated_at || build.generated_at_utc,
-          quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
-          publishedAt: nb.generated_at,
-          source: 'board.json',
-          issues: build.issues || []
-        };
-      });
-    }
-    var html = '<p class="ca-helper">' + nb.games.length + ' games on this research slate, sorted by kickoff at view time.</p>';
-    html += '<p class="ca-helper"><a class="ca-text-link" href="/models/">Open Model Center ★</a> for projections and priced markets.</p>';
-    document.getElementById('slate').innerHTML = html;
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'empty');
-    }
-  }).catch(function (err) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
-  });
 })();
 """
 
@@ -250,122 +217,17 @@ MATCHUPS_JS = r"""
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'matchups' });
   }
-  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  function kickoffGroup(iso) {
-    var d = new Date(iso || '');
-    if (!iso || isNaN(d.getTime())) return 'Time TBD';
-    return d.toLocaleDateString('en-US', {
-      weekday: 'long', month: 'short', day: 'numeric', timeZone: 'America/New_York'
+  if (!adapter || !adapter.SLATE_URL) {
+    if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
+    return;
+  }
+  if (window.ChaseMatchupCard) {
+    ChaseMatchupCard.mountSlate({
+      sport: sport,
+      adapter: adapter,
+      host: document.getElementById('slate')
     });
   }
-  function kickoffTime(g) {
-    if (g.kickoff_display) return g.kickoff_display;
-    var iso = g.kickoff_utc;
-    var d = new Date(iso || '');
-    if (!iso || isNaN(d.getTime())) return 'kickoff unknown';
-    return d.toLocaleTimeString('en-US', {
-      hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
-    }) + ' ET';
-  }
-  function bookLineHtml(g) {
-    var n = Number(g.market_margin);
-    if (!Number.isFinite(n)) return '';
-    return '<p class="ca-helper">Published book line: ' + esc(n) +
-      ' <span>(book price, not a Chase projection)</span></p>';
-  }
-  function mlbDeskHref(g) {
-    if (sport !== 'mlb') return '';
-    var away = encodeURIComponent(g.away || '');
-    var home = encodeURIComponent(g.home || '');
-    if (!away || !home) return '';
-    return '/dashboard/matchup_compare.html?away=' + away + '&home=' + home;
-  }
-  function abbrBox(name) {
-    var inner = window.ChaseEntity
-      ? ChaseEntity.html({ name: name, id: name, sport: sport })
-      : esc(name || '');
-    return '<span class="ca-team-abbr">' + inner + '</span>';
-  }
-  function cardHtml(g) {
-    var mlbHref = mlbDeskHref(g);
-    var primary = mlbHref
-      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Matchup Analysis</a>'
-      : '';
-    var hrefAttr = mlbHref ? ' data-href="' + mlbHref + '" role="link" tabindex="0"' : '';
-    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '"' + hrefAttr + '>' +
-      '<div class="ca-slate-card__head">' +
-      abbrBox(g.away) +
-      '<span class="ca-slate-card__at">@</span>' +
-      abbrBox(g.home) +
-      '<time class="ca-slate-card__time">' + esc(kickoffTime(g)) + '</time>' +
-      '</div>' +
-      bookLineHtml(g) +
-      '<div class="ca-slate-card__actions">' +
-      primary +
-      '<a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a>' +
-      '</div>' +
-      '</article>';
-  }
-  Promise.all([
-    fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
-  ]).then(function (pack) {
-    var board = pack[0], build = pack[1] || {};
-    if (!board) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
-      return;
-    }
-    var nb = adapter.normalize(board);
-    if (window.ChaseBoard && ChaseBoard.sortGames) nb.games = ChaseBoard.sortGames(nb.games);
-    else nb.games = nb.games.slice().sort(function (a, b) {
-      return String(a.kickoff_utc || a.sort_key || '').localeCompare(String(b.kickoff_utc || b.sort_key || ''));
-    });
-    ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-      return {
-        sport: sport,
-        state: build.state || undefined,
-        dataCutoff: build.generated_at || build.generated_at_utc,
-        quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
-        publishedAt: nb.generated_at,
-        source: 'board.json',
-        issues: build.issues || []
-      };
-    });
-    var order = [];
-    var grouped = {};
-    nb.games.forEach(function (g) {
-      var key = kickoffGroup(g.kickoff_utc);
-      if (!grouped[key]) {
-        grouped[key] = [];
-        order.push(key);
-      }
-      grouped[key].push(g);
-    });
-    var html = '<p class="ca-helper">' + nb.games.length + ' games grouped by kickoff (Eastern). Book lines are attributed prices, not Chase projections.</p>';
-    html += '<div class="ca-board-list">';
-    order.forEach(function (key) {
-      html += '<section class="ca-slate-group"><h2 class="ca-slate-group__title">' + esc(key) + '</h2>';
-      html += '<div class="ca-slate-grid">';
-      grouped[key].forEach(function (g) { html += cardHtml(g); });
-      html += '</div></section>';
-    });
-    html += '</div>';
-    var slateEl = document.getElementById('slate');
-    slateEl.innerHTML = html;
-    if (!slateEl.dataset.cardNav) {
-      slateEl.dataset.cardNav = '1';
-      slateEl.addEventListener('click', function (e) {
-        if (e.target.closest('a')) return;
-        var card = e.target.closest('.ca-slate-card[data-href]');
-        if (card) window.location.href = card.getAttribute('data-href');
-      });
-    }
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
-  }).catch(function (err) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
-  });
 })();
 """
 
@@ -385,38 +247,33 @@ RESULTS_JS = r"""
     if (g.away_score == null || g.home_score == null) return 'Final pending';
     return esc(g.away_score) + '–' + esc(g.home_score);
   }
-  Promise.all([
-    fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
-  ]).then(function (pack) {
-    var board = pack[0], build = pack[1] || {};
-    if (!board) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
+  var url = adapter && adapter.SLATE_URL;
+  if (!url) {
+    ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
+    return;
+  }
+  fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (slate) {
+    if (!slate) {
+      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate was not reachable.');
       return;
     }
-    var nb = adapter.normalize(board);
-    if (window.ChaseBoard && ChaseBoard.sortGames) nb.games = ChaseBoard.sortGames(nb.games);
+    var nb = adapter.normalize(slate);
     if (window.ChaseDataStatus) {
       ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
         return {
           sport: sport,
-          state: build.state || undefined,
-          dataCutoff: build.generated_at || build.generated_at_utc,
-          quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
           publishedAt: nb.generated_at,
-          source: 'board.json',
-          issues: build.issues || []
+          dataCutoff: nb.data_through,
+          source: 'public-slate',
+          issues: []
         };
       });
     }
-    var html = '<p class="ca-helper">Scores when the producer has them. Model ATS / totals records live in Model Center.</p>';
+    var html = '<p class="ca-helper">Official scores when published. Model ATS / totals records live in Model Center.</p>';
     html += '<div class="ca-board-list">';
     nb.games.forEach(function (g) {
-      html += '<article class="ca-card"><h2>';
-      html += window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away);
-      html += ' @ ';
-      html += window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home);
-      html += '</h2><p class="ca-helper">' + scoreHtml(g) + '</p></article>';
+      html += '<article class="ca-card"><h2>' + esc(g.away) + ' @ ' + esc(g.home) +
+        '</h2><p class="ca-helper">' + scoreHtml(g) + '</p></article>';
     });
     html += '</div>';
     document.getElementById('slate').innerHTML = html;
@@ -457,13 +314,26 @@ def models_page() -> str:
       <h2>Access</h2>
       <p>Public Chase Analytics is Opening and Matchups: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks inside each game.</p>
       <p>Model Center is a separate product. Sign-in and entitlement are not wired on this stub. When they ship, this route will load the authenticated board instead of a teaser.</p>
-      <p class="ca-helper">No projected scores, model lines, or confidence values are shown here.</p>
+      <p class="ca-helper" id="mcContext">No projected scores, model lines, or confidence values are shown here.</p>
     </section>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
+  <script>
+  (function () {{
+    var q = new URLSearchParams(location.search);
+    var sport = q.get('sport');
+    var game = q.get('game');
+    var el = document.getElementById('mcContext');
+    if (!el) return;
+    if (sport && game) {{
+      el.textContent = 'Requested ' + sport.toUpperCase() + ' game ' + game +
+        '. Predictive payload is withheld until entitlement is verified server-side.';
+    }}
+  }})();
+  </script>
 </body>
 </html>
 """
@@ -485,8 +355,17 @@ def main() -> int:
         (dest / "results.html").write_text(page(sport, kind="results"), encoding="utf-8")
         print("wrote", sport, "index/matchups/results")
     (ROOT / "models").mkdir(parents=True, exist_ok=True)
-    (ROOT / "models" / "index.html").write_text(models_page(), encoding="utf-8")
+    models = models_page()
+    (ROOT / "models" / "index.html").write_text(models, encoding="utf-8")
+    mc = ROOT / "model-center"
+    mc.mkdir(parents=True, exist_ok=True)
+    (mc / "index.html").write_text(models.replace(
+        "<title>Model Center — Chase Analytics</title>",
+        "<title>Model Center — Chase Analytics</title>",
+        1,
+    ), encoding="utf-8")
     print("wrote models/index.html")
+    print("wrote model-center/index.html")
     return 0
 
 

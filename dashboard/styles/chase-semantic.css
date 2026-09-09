@@ -151,10 +151,14 @@
   --motion-ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* —— Shell / layout (architecture v2 §5–§6) —— */
-  --shell-max: 1232px;
+  --shell-max: 1360px;
   --shell-gutter: 24px;
+  --shell-gutter-md: 20px;
   --shell-gutter-sm: 16px;
-  --shell-header-h: 68px;
+  --shell-header-h: 64px;
+  --shell-header-h-phone: 56px;
+  --shell-context-h: 36px;
+  --shell-context-h-phone: 40px;
   --touch-min: 44px;
   --z-header: 1000;
   --z-overlay: 1100;

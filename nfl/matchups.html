@@ -4,16 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFL Matchups — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908p">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908p">  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909a">
+  <link rel="stylesheet" href="/dashboard/responsive.css?v=20260909a">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="slate" data-sport="nfl">
+<body data-mode="slate" data-sport="nfl" data-ca-product="research">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
@@ -26,7 +28,7 @@
       <a href="/dashboard/index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
-      <a href="/models/" class="chase-nav-link" data-nav="models">Model Center</a>
+      <a href="/model-center/" class="chase-nav-link" data-nav="models">Model Center</a>
       <div class="chase-dropdown">
         <button type="button" class="chase-nav-link" aria-expanded="false" aria-haspopup="true">
           Tools
@@ -36,8 +38,7 @@
         </button>
         <div class="chase-dropdown-menu">
           <a href="/dashboard/batter_profile.html" class="chase-dropdown-item">Batter Profile</a>
-          <a href="/mlb/" class="chase-dropdown-item">MLB</a>
-          <a href="/nfl/matchups.html" class="chase-dropdown-item">NFL Matchups</a>        </div>
+        </div>
       </div>
       <a href="/dashboard/glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
@@ -77,7 +78,7 @@
     <a href="/dashboard/batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
-    <a href="/models/" class="chase-mobile-link" data-nav="models">Model Center</a>
+    <a href="/model-center/" class="chase-mobile-link" data-nav="models">Model Center</a>
     <a href="/dashboard/glossary.html" class="chase-mobile-link" data-nav="glossary">Glossary</a>
   </div>
   <div class="chase-mobile-status">
@@ -87,30 +88,32 @@
     </div>
   </div>
 </div>
+  <div id="caContextBar" class="ca-context-bar" role="status"></div>
   <main class="container ca-page-shell ca-shell-main">
     <header class="ca-surface-header">
       <h1 class="ca-page-title">NFL matchups</h1>
-      <p class="ca-helper">NFL research slate. Kickoffs and attributed book prices. Model versus market comparison is Model Center only.</p>
+      <p class="ca-helper">NFL research slate. Kickoffs grouped from actual timestamps. Book prices appear only with book, market, side, and quote time.</p>
     </header>
-    <div id="caContextBar" class="ca-context-bar"></div>
     <div id="sportSelect" class="ca-sport-switcher"></div>
     <p class="ca-helper"><a class="hub-pill" href="/nfl/results.html">Results</a></p>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
-    <div id="slate" class="ca-async" data-state="loading">Loading NFL board…</div>
+    <div id="slate" class="ca-async" data-state="loading">Loading NFL slate…</div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
-  <script src="/dashboard/design_layer_version.js?v=20260908p"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908p"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908p"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908p"></script>
-  <script src="/dashboard/sports/nfl.js?v=20260908p"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908p"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908p"></script>
-  <script src="/dashboard/chase_shell.js?v=20260908p"></script>
-  <script src="/dashboard/chase_entity.js?v=20260908p"></script>
-  <script src="/dashboard/chase_metric.js?v=20260908p"></script>
-  <script src="/dashboard/chase_scope.js?v=20260908p"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260909a"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260909a"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260909a"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v=20260909a"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v=20260909a"></script>
+  <script src="/dashboard/matchup_card.js?v=20260909a"></script>
+  <script src="/dashboard/sports/nfl.js?v=20260909a"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260909a"></script>
+  <script src="/dashboard/chase_nav.js?v=20260909a"></script>
+  <script src="/dashboard/chase_shell.js?v=20260909a"></script>
+  <script src="/dashboard/chase_entity.js?v=20260909a"></script>
+  <script src="/dashboard/chase_metric.js?v=20260909a"></script>
+  <script src="/dashboard/chase_scope.js?v=20260909a"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportNFL;
   window.CHASE_SPORT_ID = "nfl";
@@ -127,122 +130,17 @@
     ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
     ChaseSportSelect.saveCtx(sport, { surface: 'matchups' });
   }
-  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  function kickoffGroup(iso) {
-    var d = new Date(iso || '');
-    if (!iso || isNaN(d.getTime())) return 'Time TBD';
-    return d.toLocaleDateString('en-US', {
-      weekday: 'long', month: 'short', day: 'numeric', timeZone: 'America/New_York'
+  if (!adapter || !adapter.SLATE_URL) {
+    if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
+    return;
+  }
+  if (window.ChaseMatchupCard) {
+    ChaseMatchupCard.mountSlate({
+      sport: sport,
+      adapter: adapter,
+      host: document.getElementById('slate')
     });
   }
-  function kickoffTime(g) {
-    if (g.kickoff_display) return g.kickoff_display;
-    var iso = g.kickoff_utc;
-    var d = new Date(iso || '');
-    if (!iso || isNaN(d.getTime())) return 'kickoff unknown';
-    return d.toLocaleTimeString('en-US', {
-      hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
-    }) + ' ET';
-  }
-  function bookLineHtml(g) {
-    var n = Number(g.market_margin);
-    if (!Number.isFinite(n)) return '';
-    return '<p class="ca-helper">Published book line: ' + esc(n) +
-      ' <span>(book price, not a Chase projection)</span></p>';
-  }
-  function mlbDeskHref(g) {
-    if (sport !== 'mlb') return '';
-    var away = encodeURIComponent(g.away || '');
-    var home = encodeURIComponent(g.home || '');
-    if (!away || !home) return '';
-    return '/dashboard/matchup_compare.html?away=' + away + '&home=' + home;
-  }
-  function abbrBox(name) {
-    var inner = window.ChaseEntity
-      ? ChaseEntity.html({ name: name, id: name, sport: sport })
-      : esc(name || '');
-    return '<span class="ca-team-abbr">' + inner + '</span>';
-  }
-  function cardHtml(g) {
-    var mlbHref = mlbDeskHref(g);
-    var primary = mlbHref
-      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Matchup Analysis</a>'
-      : '';
-    var hrefAttr = mlbHref ? ' data-href="' + mlbHref + '" role="link" tabindex="0"' : '';
-    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '"' + hrefAttr + '>' +
-      '<div class="ca-slate-card__head">' +
-      abbrBox(g.away) +
-      '<span class="ca-slate-card__at">@</span>' +
-      abbrBox(g.home) +
-      '<time class="ca-slate-card__time">' + esc(kickoffTime(g)) + '</time>' +
-      '</div>' +
-      bookLineHtml(g) +
-      '<div class="ca-slate-card__actions">' +
-      primary +
-      '<a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a>' +
-      '</div>' +
-      '</article>';
-  }
-  Promise.all([
-    fetch(adapter.BOARD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch(adapter.BUILD_URL, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return {}; })
-  ]).then(function (pack) {
-    var board = pack[0], build = pack[1] || {};
-    if (!board) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'board.json was not reachable.');
-      return;
-    }
-    var nb = adapter.normalize(board);
-    if (window.ChaseBoard && ChaseBoard.sortGames) nb.games = ChaseBoard.sortGames(nb.games);
-    else nb.games = nb.games.slice().sort(function (a, b) {
-      return String(a.kickoff_utc || a.sort_key || '').localeCompare(String(b.kickoff_utc || b.sort_key || ''));
-    });
-    ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-      return {
-        sport: sport,
-        state: build.state || undefined,
-        dataCutoff: build.generated_at || build.generated_at_utc,
-        quoteTimestamp: build.odds && (build.odds.fetched_at || build.odds.quote_timestamp),
-        publishedAt: nb.generated_at,
-        source: 'board.json',
-        issues: build.issues || []
-      };
-    });
-    var order = [];
-    var grouped = {};
-    nb.games.forEach(function (g) {
-      var key = kickoffGroup(g.kickoff_utc);
-      if (!grouped[key]) {
-        grouped[key] = [];
-        order.push(key);
-      }
-      grouped[key].push(g);
-    });
-    var html = '<p class="ca-helper">' + nb.games.length + ' games grouped by kickoff (Eastern). Book lines are attributed prices, not Chase projections.</p>';
-    html += '<div class="ca-board-list">';
-    order.forEach(function (key) {
-      html += '<section class="ca-slate-group"><h2 class="ca-slate-group__title">' + esc(key) + '</h2>';
-      html += '<div class="ca-slate-grid">';
-      grouped[key].forEach(function (g) { html += cardHtml(g); });
-      html += '</div></section>';
-    });
-    html += '</div>';
-    var slateEl = document.getElementById('slate');
-    slateEl.innerHTML = html;
-    if (!slateEl.dataset.cardNav) {
-      slateEl.dataset.cardNav = '1';
-      slateEl.addEventListener('click', function (e) {
-        if (e.target.closest('a')) return;
-        var card = e.target.closest('.ca-slate-card[data-href]');
-        if (card) window.location.href = card.getAttribute('data-href');
-      });
-    }
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
-  }).catch(function (err) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
-  });
 })();
 
   </script>

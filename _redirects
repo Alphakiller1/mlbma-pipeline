@@ -31,3 +31,6 @@
 # Sport roots — real per-route index.html (scripts/build_sport_routes.py).
 # Do not 302 /mlb onto the dashboard; that hid the sport hub.
 
+/models /model-center 301
+/models/ /model-center/ 301
+

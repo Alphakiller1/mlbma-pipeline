@@ -184,11 +184,33 @@
     opts = opts || {};
     var sport = String(opts.sport || 'mlb').toLowerCase();
     if (sport && sport !== 'mlb') {
-      return Promise.resolve(unknownFields({
-        source: opts.source || 'board',
-        sport: sport,
-        issues: []
-      }));
+      var slateUrl = opts.url;
+      if (!slateUrl && global.ChaseSportNFL && sport === 'nfl') slateUrl = ChaseSportNFL.SLATE_URL;
+      if (!slateUrl && global.ChaseSportMLB && sport === 'mlb') slateUrl = ChaseSportMLB.SLATE_URL;
+      if (!slateUrl) {
+        var page = global.CHASE_SPORT_PAGE;
+        slateUrl = page && page.SLATE_URL;
+      }
+      if (!slateUrl) {
+        return Promise.resolve(unknownFields({
+          source: opts.source || 'public-slate',
+          sport: sport,
+          issues: ['no public slate url']
+        }));
+      }
+      return fetch(slateUrl + (slateUrl.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now(), { cache: 'no-store' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('slate');
+          return r.json();
+        })
+        .then(function (slate) {
+          var asOf = slate && (slate.generated_at_utc || slate.generated_at || slate.published_at);
+          if (!asOf) return unknownFields({ source: 'public-slate', sport: sport });
+          return fieldsFromParsed({ as_of: asOf, slateDateEt: null }, { source: 'public-slate', sport: sport });
+        })
+        .catch(function () {
+          return unknownFields({ source: 'public-slate', sport: sport, issues: ['slate unreachable'] });
+        });
     }
     var url = opts.url || sheetCsvUrl(opts.tab);
     if (!url) return Promise.resolve(unknownFields({ source: 'sheet', sport: 'mlb', issues: ['no sheet id'] }));

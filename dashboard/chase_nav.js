@@ -126,12 +126,15 @@
     var m = path.match(/^\/(mlb|nfl|wnba|cfb)(\/|$)/i);
     if (m) return m[1].toLowerCase();
     if (/^\/models(\/|$)/i.test(path)) return 'models';
+    if (/^\/model-center(\/|$)/i.test(path)) return 'models';
     return '';
   }
 
   function currentNavKey() {
+    var path = window.location.pathname || '';
     var sportKey = sportNavKey();
-    if (sportKey) return sportKey;    var page = currentPageName();
+    if (sportKey) return sportKey;
+    var page = currentPageName();
     var hash = (window.location.hash || '').replace(/^#/, '');
     if (/\/nfl(\/|$)/.test(path)) return 'nfl';
     if (isOpeningPage(page)) {
@@ -273,7 +276,7 @@
     }
     var sport = String((document.body && document.body.getAttribute('data-sport')) || 'mlb').toLowerCase();
     return ChaseDataStatus.fetchLastUpdated({
-      source: sport === 'mlb' ? 'sheet' : 'board',
+      source: sport === 'mlb' ? 'sheet' : 'public-slate',
       sport: sport
     }).then(function (fields) {
       applyDataStatusFields(fields);

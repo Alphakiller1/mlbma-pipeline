@@ -1,16 +1,9 @@
 (function (global) {
   'use strict';
-  var B = global.ChaseBoard;
-  function normalize(board) {
-    board = board || {};
-    var nb = B && B.normalize ? B.normalize('mlb', board, {
-      priced_markets: board.priced_markets || [],
-      flagged_tiles: board.flagged_tiles || []
-    }) : { schema: 'chase-board/1', sport: 'mlb', games: [], priced_markets: [], flagged_tiles: [] };
-    // MLB Picks = priced_markets; Gems = flagged_tiles. Never relabel as Picks in NFL.
-    return nb;
+  function normalize(slate) {
+    if (global.ChasePublicSlate) return ChasePublicSlate.normalize('mlb', slate);
+    return { schema: 'chase-public-slate/1', sport: 'mlb', games: [] };
   }
-
   function mountMatchupRankings(element, ctx) {
     var m = ctx && ctx.m;
     if (!element || !m || !global.LineupView || !LineupView.mountMatchup || !global.LineupModel) return null;
@@ -27,8 +20,7 @@
     return view;
   }
   global.ChaseSportMLB = {
-    BOARD_URL: 'https://alphakiller1.github.io/mlb-model/board.json',
-    BUILD_URL: 'https://alphakiller1.github.io/mlb-model/build.json',
+    SLATE_URL: '/data/public/mlb/slate.json',
     normalize: normalize,
     mountMatchupRankings: mountMatchupRankings
   };

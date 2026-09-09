@@ -39,7 +39,9 @@ class SportRouteBuilderTests(unittest.TestCase):
             others = {"mlb", "nfl", "wnba", "cfb"} - {sport}
             for o in others:
                 self.assertNotIn(f"sports/{o}.js", text)
-            self.assertIn("sports/chase_board.js", text)
+            self.assertIn("sports/chase_public_slate.js", text)
+            self.assertIn("matchup_card.js", text)
+            self.assertNotIn("sports/chase_board.js", text)
 
     def test_cfb_and_wnba_are_parked_off_the_public_desk(self):
         nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
@@ -106,14 +108,17 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("caContextBar", src)
         self.assertNotIn("section-research-lab", src)
         text = (ROOT / "nfl" / "matchups.html").read_text(encoding="utf-8")
+        slate = (ROOT / "dashboard" / "sports" / "chase_public_slate.js").read_text(encoding="utf-8")
         self.assertNotIn("ca-nfl-channels", text)
         self.assertNotIn("edge_withheld_reason", text)
         self.assertNotIn("marginAxisHtml", text)
         self.assertNotIn("ChaseModelStatus", text)
-        self.assertIn("kickoffGroup", text)
+        self.assertIn("kickoffWindow", slate)
+        self.assertIn("matchup_card.js", text)
+        self.assertIn("chase_public_slate.js", text)
         self.assertIn("hamburgerBtn", text)
         self.assertIn("ChaseShell", text)
-        self.assertIn("ChaseEntity", text)
+        self.assertIn("chase_entity.js", text)
         self.assertNotIn("RECORD_URL", text)
         self.assertNotIn("sports/mlb.js", text)
         self.assertNotIn("= None;", text)
@@ -131,15 +136,20 @@ class SportRouteBuilderTests(unittest.TestCase):
 
     def test_sport_home_is_the_matchup_card_slate(self):
         src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
+        card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
         self.assertIn("body_js = RESULTS_JS if results else MATCHUPS_JS", src)
         mlb_home = (ROOT / "mlb" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("ca-slate-card", mlb_home)
-        self.assertIn("Open Matchup Analysis", mlb_home)
+        self.assertIn("matchup_card.js", mlb_home)
+        self.assertIn("chase_public_slate.js", mlb_home)
+        self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
+        self.assertIn("ca-matchup-card", card)
+        self.assertIn("View full matchup", card)
+        self.assertIn("Expand matchup", card)
         self.assertNotIn("Board overview", mlb_home)
         patterns = (ROOT / "dashboard" / "styles" / "chase-patterns.css").read_text(
             encoding="utf-8"
         )
-        self.assertIn(".ca-slate-card {", patterns)
+        self.assertIn(".ca-matchup-card {", patterns)
         self.assertIn("background: var(--surface-panel);", patterns)
         self.assertIn(".ca-slate-card[data-href] {", patterns)
         self.assertIn(".ca-team-abbr {", patterns)
@@ -170,7 +180,9 @@ class SportRouteBuilderTests(unittest.TestCase):
         html = (ROOT / "dashboard" / "matchup_compare.html").read_text(encoding="utf-8")
         self.assertIn('data-mode="evidence"', html)
         self.assertIn("chase_scope.js", html)
-        self.assertIn("sports/chase_board.js", html)
+        self.assertNotIn("sports/chase_board.js", html)
+        self.assertNotIn("board.json", html)
+        self.assertIn("sports/chase_public_slate.js", html)
         self.assertNotIn("var(--text, #F4F4F7)", html)
 
 
@@ -250,7 +262,7 @@ class AdapterHoleTests(unittest.TestCase):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         self.assertNotIn("function formatClock", nav)
         self.assertIn("ChaseDataStatus", nav)
-        self.assertIn("return 'compare'", nav)
+        self.assertIn("return 'matchups'", nav)
         self.assertNotIn("return 'team-rankings'", nav)
         self.assertIn(r"/\/nfl(\/|$)/.test(path)", nav)
 
@@ -329,7 +341,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/  301", robots)
         self.assertIn("/dashboard/matchup_sheet.html     /dashboard/matchup_compare  301", robots)
         root = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn("chase_sport_select.js?v=20260908h", root)
+        stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+        self.assertIn(f"chase_sport_select.js?v={stamp}", root)
         diag = (ROOT / "scripts" / "run_full_diagnostic.py").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", diag)
         self.assertNotIn("chase_analytics_mlb_oem_v7.html", diag)

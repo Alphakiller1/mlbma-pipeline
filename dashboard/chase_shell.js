@@ -48,16 +48,20 @@
 
   function ensureContextBar() {
     var ctx = document.getElementById('caContextBar');
-    if (ctx) return ctx;
-    ctx = document.createElement('div');
-    ctx.id = 'caContextBar';
-    ctx.className = 'ca-context-bar';
-    ctx.setAttribute('role', 'status');
     var after = document.getElementById('mobileMenu') || document.getElementById('chaseHeader');
+    if (!ctx) {
+      ctx = document.createElement('div');
+      ctx.id = 'caContextBar';
+      ctx.className = 'ca-context-bar';
+      ctx.setAttribute('role', 'status');
+    }
     if (after && after.parentNode) {
-      if (after.nextSibling) after.parentNode.insertBefore(ctx, after.nextSibling);
-      else after.parentNode.appendChild(ctx);
-    } else {
+      var insideMain = ctx.closest && ctx.closest('main');
+      if (insideMain || ctx.parentNode !== after.parentNode || after.nextSibling !== ctx) {
+        if (after.nextSibling) after.parentNode.insertBefore(ctx, after.nextSibling);
+        else after.parentNode.appendChild(ctx);
+      }
+    } else if (!ctx.parentNode) {
       document.body.insertBefore(ctx, document.body.firstChild);
     }
     return ctx;
@@ -90,7 +94,7 @@
     paintContext(ctx, opts, null);
     if (global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
       ChaseDataStatus.fetchLastUpdated({
-        source: sport === 'mlb' ? 'sheet' : 'board',
+        source: sport === 'mlb' ? 'sheet' : 'public-slate',
         sport: sport
       }).then(function (fields) {
         paintContext(ctx, opts, fields);
