@@ -95,6 +95,16 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--space-3);
 }
+.ca-slate-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+}
 .ca-slate-card[data-href] {
   cursor: pointer;
 }
@@ -104,6 +114,23 @@
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
+}
+.ca-team-abbr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  min-height: var(--touch-min);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: var(--type-16);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-primary);
 }
 .ca-team-abbr img {
   display: none;

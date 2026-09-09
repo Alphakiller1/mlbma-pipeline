@@ -136,6 +136,13 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("ca-slate-card", mlb_home)
         self.assertIn("Open Matchup Analysis", mlb_home)
         self.assertNotIn("Board overview", mlb_home)
+        patterns = (ROOT / "dashboard" / "styles" / "chase-patterns.css").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(".ca-slate-card {", patterns)
+        self.assertIn("background: var(--surface-panel);", patterns)
+        self.assertIn(".ca-slate-card[data-href] {", patterns)
+        self.assertIn(".ca-team-abbr {", patterns)
 
     def test_generated_pages_do_not_emit_python_none(self):
         for path in self._GENERATED:
