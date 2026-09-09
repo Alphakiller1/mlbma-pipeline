@@ -275,8 +275,9 @@
       return Promise.resolve();
     }
     var sport = String((document.body && document.body.getAttribute('data-sport')) || 'mlb').toLowerCase();
+    var publicResearch = document.body && document.body.getAttribute('data-ca-product') === 'research';
     return ChaseDataStatus.fetchLastUpdated({
-      source: sport === 'mlb' ? 'sheet' : 'public-slate',
+      source: publicResearch || sport !== 'mlb' ? 'public-slate' : 'sheet',
       sport: sport
     }).then(function (fields) {
       applyDataStatusFields(fields);

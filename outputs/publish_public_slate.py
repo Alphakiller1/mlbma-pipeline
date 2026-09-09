@@ -106,16 +106,27 @@ def mlb_producer(data_dir: Path) -> dict:
         home_sp = _cell(row, "Home_SP")
         games.append({
             "id": f"{slate_date or 'mlb'}-{away}-{home}".lower(),
+            "game_pk": _cell(row, "gamePk", "GamePk", "game_pk") or None,
             "away": away,
             "home": home,
+            "away_name": _cell(row, "Away_Name", "Away Team Name") or None,
+            "home_name": _cell(row, "Home_Name", "Home Team Name") or None,
+            "away_record": _cell(row, "Away_Record", "Away Record") or None,
+            "home_record": _cell(row, "Home_Record", "Home Record") or None,
             "kickoff_utc": _parse_kickoff(slate_date, time_label),
             "kickoff_display": time_label or None,
             "venue": _cell(w, "stadium_name") or None,
+            "venue_city": _cell(w, "venue_city", "city") or None,
             "conditions": conditions or None,
+            "weather_temp": temp or None,
+            "weather_cond": cond or None,
+            "weather_wind": _cell(w, "wind", "wind_summary", "wind_direction") or None,
             "away_starter": " · ".join(x for x in (away_sp, f"{away_hand}HP" if away_hand else "") if x) or None,
             "home_starter": " · ".join(x for x in (home_sp, f"{home_hand}HP" if home_hand else "") if x) or None,
             "away_lineup_state": away_lu or None,
             "home_lineup_state": home_lu or None,
+            "away_bullpen": _cell(row, "Away_Bullpen_Availability", "Away Bullpen") or None,
+            "home_bullpen": _cell(row, "Home_Bullpen_Availability", "Home Bullpen") or None,
             "game_state": "scheduled",
             "freshness": "Current",
         })
@@ -147,6 +158,7 @@ def nfl_producer_from_espn(payload: dict) -> dict:
         )
         kickoff = event.get("date") or comp.get("date")
         venue = ((comp.get("venue") or {}).get("fullName")) or None
+        venue_data = comp.get("venue") or {}
         broadcast = None
         broadcasts = comp.get("broadcasts") or event.get("competitions", [{}])[0].get("geoBroadcasts") or []
         if broadcasts:
@@ -160,15 +172,37 @@ def nfl_producer_from_espn(payload: dict) -> dict:
                     leaders = athlete.get("leaders") or []
                     if leaders:
                         qbs[side] = (leaders[0].get("athlete") or {}).get("shortName")
+        def record(block: dict) -> str | None:
+            rows = block.get("records") or []
+            return str(rows[0].get("summary")) if rows and rows[0].get("summary") else None
+
+        weather = comp.get("weather") or {}
+        condition = weather.get("displayValue") or weather.get("conditionId")
+        temperature = weather.get("temperature")
         games.append({
             "id": str(event.get("id") or f"{away_abbr}@{home_abbr}"),
             "away": away_abbr,
             "home": home_abbr,
+            "away_name": (away.get("team") or {}).get("displayName"),
+            "home_name": (home.get("team") or {}).get("displayName"),
+            "away_record": record(away),
+            "home_record": record(home),
             "kickoff_utc": kickoff,
             "venue": venue,
+            "venue_city": ", ".join(x for x in (
+                (venue_data.get("address") or {}).get("city"),
+                (venue_data.get("address") or {}).get("state"),
+            ) if x) or None,
             "broadcast": broadcast,
+            "conditions": " · ".join(x for x in (
+                f"{temperature}°" if temperature is not None else "",
+                str(condition) if condition else "",
+            ) if x) or None,
+            "surface": "Grass" if venue_data.get("grass") is True else None,
             "away_starter": qbs.get("away"),
             "home_starter": qbs.get("home"),
+            "away_availability": "Injury report pending",
+            "home_availability": "Injury report pending",
             "away_score": away.get("score"),
             "home_score": home.get("score"),
             "game_state": state,

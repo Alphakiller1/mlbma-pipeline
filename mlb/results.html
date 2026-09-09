@@ -4,28 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MLB Results — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909l">
-  <link rel="stylesheet" href="/dashboard/responsive.css?v=20260909l">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909p">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v=20260909p">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="evidence" data-sport="mlb" data-ca-product="research">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
 <header class="chase-header" id="chaseHeader">
   <nav class="chase-nav">
-    <a href="/dashboard/index.html" class="chase-logo" title="Chase Analytics — Home">
+    <a href="/" class="chase-logo" title="Chase Analytics — Home">
       <img class="chase-nav-logo--icon" src="/dashboard/assets/chase-icon-filled.png" alt="" width="36" height="36">
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
-      <a href="/dashboard/index.html" class="chase-nav-link" data-nav="home">Home</a>
-      <a href="/dashboard/index.html#openingSlate" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="/" class="chase-nav-link" data-nav="home">Home</a>
+      <a href="/#matchupDesk" class="chase-nav-link" data-nav="matchups">Matchups</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
       <a href="/dashboard/glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
@@ -47,7 +46,7 @@
 <div class="chase-mobile-menu" id="mobileMenu" role="dialog" aria-modal="true"
   aria-label="Main Menu" aria-hidden="true">
   <div class="chase-mobile-header">
-    <a href="/dashboard/index.html" class="chase-logo" title="Chase Analytics">
+    <a href="/" class="chase-logo" title="Chase Analytics">
       <img class="chase-nav-logo--icon" src="/dashboard/assets/chase-icon-filled.png" alt="" width="36" height="36">
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
@@ -62,8 +61,8 @@
     <img class="chase-mobile-brand-icon" src="/dashboard/assets/chase-icon-filled.png" alt="" width="24" height="24">
   </div>
   <div class="chase-mobile-nav">
-    <a href="/dashboard/index.html" class="chase-mobile-link" data-nav="home">Home</a>
-    <a href="/dashboard/index.html#openingSlate" class="chase-mobile-link" data-nav="matchups">Matchups</a>
+    <a href="/" class="chase-mobile-link" data-nav="home">Home</a>
+    <a href="/#matchupDesk" class="chase-mobile-link" data-nav="matchups">Matchups</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
     <a href="/model-center/" class="chase-mobile-link chase-mobile-link--model" data-nav="models">Model Center</a>
@@ -77,33 +76,28 @@
   </div>
 </div>
   <div id="caContextBar" class="ca-context-bar" role="status"></div>
-  <main class="container ca-page-shell ca-shell-main">
-    <header class="ca-desk-head ca-surface-header">
-      <p class="ca-eyebrow">Chase Analytics · MLB</p>
-      <h1 class="ca-page-title">MLB Results</h1>
-      <p class="ca-lede">Finals publish after games complete. This page lists the slate, not model performance.</p>
+  <main class="ca-public-page ca-shell-main">
+    <header class="ca-public-page__head">
+      <div class="ca-public-page__copy">
+        <p class="ca-public-page__eyebrow">Chase Analytics · MLB</p>
+        <h1 class="ca-public-page__title">MLB Results</h1>
+        <p class="ca-public-page__lede">Final scores and game status from the published slate.</p>
+      </div>
+
     </header>
-    <div id="sportSelect" class="ca-sport-switcher"></div>
-    
-    <div id="modelStatus"></div>
-    <div id="dataStatus"></div>
-    <div id="slate" class="ca-async" data-state="loading">Loading MLB slate…</div>
+    <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading MLB slate…</div></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
-  <script src="/dashboard/design_layer_version.js?v=20260909l"></script>
-  <script src="/dashboard/mlbma_assets.js?v=20260909l"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260909l"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260909l"></script>
-  <script src="/dashboard/sports/public_sport_registry.js?v=20260909l"></script>
-  <script src="/dashboard/sports/chase_public_slate.js?v=20260909l"></script>
-  <script src="/dashboard/matchup_card.js?v=20260909l"></script>
-  <script src="/dashboard/sports/mlb.js?v=20260909l"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260909l"></script>
-  <script src="/dashboard/chase_nav.js?v=20260909l"></script>
-  <script src="/dashboard/chase_shell.js?v=20260909l"></script>
-  <script src="/dashboard/chase_entity.js?v=20260909l"></script>
-  <script src="/dashboard/chase_metric.js?v=20260909l"></script>
-  <script src="/dashboard/chase_scope.js?v=20260909l"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260909p"></script>
+  <script src="/dashboard/mlbma_assets.js?v=20260909p"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260909p"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v=20260909p"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v=20260909p"></script>
+  <script src="/dashboard/matchup_card.js?v=20260909p"></script>
+  <script src="/dashboard/sports/mlb.js?v=20260909p"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260909p"></script>
+  <script src="/dashboard/chase_nav.js?v=20260909p"></script>
+  <script src="/dashboard/chase_shell.js?v=20260909p"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportMLB;
   window.CHASE_SPORT_ID = "mlb";
@@ -116,51 +110,7 @@
   var adapter = window.CHASE_SPORT_PAGE;
   var sport = window.CHASE_SPORT_ID;
   if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'evidence', surface: 'results', search: false });
-  else if (window.ChaseSportSelect) {
-    ChaseSportSelect.render(document.getElementById('sportSelect'), sport);
-    ChaseSportSelect.saveCtx(sport, { surface: 'results' });
-  }
-  if (window.ChaseAsyncState) ChaseAsyncState.render(document.getElementById('slate'), 'loading');
-  function esc(s) { return String(s == null ? '—' : s).replace(/[<>]/g, ''); }
-  function scoreHtml(g) {
-    if (g.away_score == null || g.home_score == null) return 'Final pending';
-    return esc(g.away_score) + '–' + esc(g.home_score);
-  }
-  var url = adapter && adapter.SLATE_URL;
-  if (!url) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate URL missing.');
-    return;
-  }
-  fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (slate) {
-    if (!slate) {
-      ChaseAsyncState.render(document.getElementById('slate'), 'error', 'Public slate was not reachable.');
-      return;
-    }
-    var nb = adapter.normalize(slate);
-    if (window.ChaseDataStatus) {
-      ChaseDataStatus.bindResume(document.getElementById('dataStatus'), function () {
-        return {
-          sport: sport,
-          publishedAt: nb.generated_at,
-          dataCutoff: nb.data_through,
-          source: 'public-slate',
-          issues: []
-        };
-      });
-    }
-    var html = '<p class="ca-helper">Official scores when published. Model ATS / totals records live in Model Center.</p>';
-    html += '<div class="ca-board-list">';
-    nb.games.forEach(function (g) {
-      html += '<article class="ca-card"><h2>' + esc(g.away) + ' @ ' + esc(g.home) +
-        '</h2><p class="ca-helper">' + scoreHtml(g) + '</p></article>';
-    });
-    html += '</div>';
-    document.getElementById('slate').innerHTML = html;
-    if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
-    if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
-  }).catch(function (err) {
-    ChaseAsyncState.render(document.getElementById('slate'), 'error', err.message);
-  });
+  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate'), results: true });
 })();
 
   </script>

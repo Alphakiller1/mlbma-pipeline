@@ -5,21 +5,28 @@
   "data_through_utc": "2026-09-09T01:40:00Z",
   "games": [
     {
-      "id": "2026-09-09-nyy-bos",
+      "id": "824226",
+      "game_pk": 824226,
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-09T23:05:00Z",
-      "away": "NYY",
-      "home": "BOS",
-      "away_record": "67-52",
-      "home_record": "64-55",
-      "venue": "Fenway Park",
-      "broadcast": "MLB Network",
-      "conditions": "78F clear",
-      "away_starter": "Cole · RHP",
-      "home_starter": "Bello · RHP",
-      "away_lineup_state": "Projected",
-      "home_lineup_state": "Confirmed"
+      "kickoff_utc": "2026-09-09T17:10:00Z",
+      "away": "MIN",
+      "home": "DET",
+      "away_name": "Minnesota Twins",
+      "home_name": "Detroit Tigers",
+      "away_record": "69-76",
+      "home_record": "66-79",
+      "venue": "Comerica Park",
+      "venue_city": "Detroit, MI",
+      "broadcast": "Detroit SportsNet, Twins.TV Presented by Progressive",
+      "away_starter": "Zebby Matthews",
+      "home_starter": "Keider Montero",
+      "away_hand": "R",
+      "home_hand": "R",
+      "away_lineup_state": "Expected",
+      "home_lineup_state": "Expected",
+      "away_bullpen": "Workload report pending",
+      "home_bullpen": "Workload report pending"
     }
   ]
 }

@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATORS = ("scripts/build_sport_routes.py", "scripts/_stamp_design_layer.py")
-COPIED = ("scripts", "design", "dashboard", "mlb", "nfl", "wnba", "cfb", "models")
+COPIED = ("scripts", "design", "dashboard", "mlb", "nfl", "wnba", "cfb", "models", "packages")
 
 
 def _snapshot(root: Path) -> dict[str, bytes]:

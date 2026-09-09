@@ -11,7 +11,7 @@ class SportRouteBuilderTests(unittest.TestCase):
     _GENERATED = tuple(
         ROOT / sport / name
         for sport in ("mlb", "nfl", "wnba", "cfb")
-        for name in ("index.html", "matchups.html", "results.html")
+        for name in (("index.html", "matchups.html", "results.html", "matchup.html") if sport in ("mlb", "nfl") else ("index.html", "matchups.html", "results.html"))
     )
 
     @classmethod
@@ -33,18 +33,19 @@ class SportRouteBuilderTests(unittest.TestCase):
             self.assertTrue(path.is_file(), path)
             text = path.read_text(encoding="utf-8")
             self.assertIn("hamburgerBtn", text)
-            self.assertIn("ChaseSportSelect", text)
             self.assertIn(f"sports/{sport}.js", text)
             self.assertNotIn("http-equiv=\"refresh\"", text)
             others = {"mlb", "nfl", "wnba", "cfb"} - {sport}
             for o in others:
                 self.assertNotIn(f"sports/{o}.js", text)
-            self.assertIn('class="ca-lede"', text)
+            self.assertIn('class="ca-public-page__lede"', text)
             self.assertIn(f">Chase Analytics · {sport.upper()}</p>", text)
-            self.assertNotIn("Factual data only", text)
             self.assertIn(f">{sport.upper()} Matchups</h1>", text)
             self.assertIn("sports/chase_public_slate.js", text)
             self.assertIn("matchup_card.js", text)
+            self.assertIn("styles/chase-public.css", text)
+            self.assertNotIn("mlbma_design_system.css", text)
+            self.assertNotIn("responsive.css", text)
             self.assertNotIn("sports/chase_board.js", text)
 
     def test_cfb_and_wnba_are_parked_off_the_public_desk(self):
@@ -76,11 +77,14 @@ class SportRouteBuilderTests(unittest.TestCase):
             self.assertNotIn("record.json", results)
             self.assertNotIn("RECORD_URL", results)
             self.assertIn('data-mode="evidence"', results)
+            self.assertIn("results: true", results)
 
     def test_root_home_is_not_a_relative_redirect_stub(self):
         home = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('data-mode="entry"', home)
-        self.assertIn("/dashboard/index.html", home)
+        self.assertIn('id="matchupDesk"', home)
+        self.assertIn('id="openingMlbSlate"', home)
+        self.assertIn('id="openingNflSlate"', home)
         self.assertNotIn("location.replace('dashboard/", home)
         self.assertNotIn("http-equiv=\"refresh\"", home)
 
@@ -89,6 +93,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         cards = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
         self.assertNotIn("href='team_rankings.html'", opening)
         self.assertNotIn('href="team_rankings.html"', opening)
+        self.assertIn("window.location.replace('/'", opening)
         self.assertIn("matchup_compare.html", cards)
 
     def test_matchup_scopebar_is_two_control(self):
@@ -122,11 +127,10 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("chase_public_slate.js", text)
         self.assertIn("hamburgerBtn", text)
         self.assertIn("ChaseShell", text)
-        self.assertIn("chase_entity.js", text)
         self.assertNotIn("RECORD_URL", text)
         self.assertNotIn("sports/mlb.js", text)
         self.assertNotIn("= None;", text)
-        self.assertIn("CHASE_SPORT_GEMS_LABEL = null", text)
+        self.assertIn("ChaseMatchupCard.mount", text)
 
     def test_public_nav_has_no_compare_item(self):
         nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
@@ -143,21 +147,27 @@ class SportRouteBuilderTests(unittest.TestCase):
         card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
         self.assertIn("body_js = RESULTS_JS if results else MATCHUPS_JS", src)
         mlb_home = (ROOT / "mlb" / "index.html").read_text(encoding="utf-8")
+        mlb_results = (ROOT / "mlb" / "results.html").read_text(encoding="utf-8")
+        nfl_results = (ROOT / "nfl" / "results.html").read_text(encoding="utf-8")
         self.assertIn("matchup_card.js", mlb_home)
         self.assertIn("chase_public_slate.js", mlb_home)
+        self.assertNotIn("results: true", mlb_home)
+        self.assertIn("results: true", mlb_results)
+        self.assertIn("results: true", nfl_results)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
-        self.assertIn("View matchup", card)
+        self.assertIn("Expand matchup", card)
+        self.assertIn("Full matchup analysis", card)
         self.assertIn("ca-desk-toolbar", card)
-        self.assertIn("mountLiveMlb", card)
+        self.assertIn("var officialRequest", card)
         self.assertNotIn("Board overview", mlb_home)
-        patterns = (ROOT / "dashboard" / "styles" / "chase-patterns.css").read_text(
+        patterns = (ROOT / "dashboard" / "styles" / "chase-public.css").read_text(
             encoding="utf-8"
         )
         self.assertIn(".ca-matchup-card {", patterns)
         self.assertIn("background: var(--surface-panel);", patterns)
-        self.assertIn(".ca-slate-card[data-href] {", patterns)
-        self.assertIn(".ca-team-abbr {", patterns)
+        self.assertIn(".ca-matchup-card__expand", patterns)
+        self.assertIn(".ca-detail-page", patterns)
 
     def test_generated_pages_do_not_emit_python_none(self):
         for path in self._GENERATED:
@@ -181,14 +191,13 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("replace(/</g, '&lt;')", js)
         self.assertIn("ca-entity-fallback", js)
 
-    def test_matchup_compare_declares_evidence_mode(self):
+    def test_legacy_matchup_compare_redirects_to_public_detail(self):
         html = (ROOT / "dashboard" / "matchup_compare.html").read_text(encoding="utf-8")
-        self.assertIn('data-mode="evidence"', html)
-        self.assertIn("chase_scope.js", html)
-        self.assertNotIn("sports/chase_board.js", html)
-        self.assertNotIn("board.json", html)
-        self.assertIn("sports/chase_public_slate.js", html)
-        self.assertNotIn("var(--text, #F4F4F7)", html)
+        self.assertIn("location.replace('/mlb/matchup.html'", html)
+        self.assertIn("'gamePk'", html)
+        self.assertIn("'away'", html)
+        self.assertNotIn("matchup_compare.js", html)
+        self.assertNotIn("mlbma_design_system.css", html)
 
 
 class AdapterHoleTests(unittest.TestCase):
@@ -256,61 +265,44 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("__MLBMA_PUBLIC_RANKINGS_REDIRECT", render)
         self.assertNotIn("location.replace('index.html#section-matchups-hero')", render)
 
-    def test_opening_is_one_h1_and_does_not_claim_today_on_stale_slate(self):
-        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
-        dash = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
+    def test_opening_is_matchup_centered_and_legacy_dashboard_redirects(self):
+        opening = (ROOT / "index.html").read_text(encoding="utf-8")
+        legacy = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
         status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
-        self.assertEqual(opening.count("<h1 "), 1)
-        self.assertIn(">Opening Dashboard</h1>", opening)
-        self.assertIn('<h2 class="ca-desk-title">MLB Matchups</h2>', opening)
-        self.assertIn('<h2 class="ca-desk-title">NFL Matchups</h2>', opening)
-        self.assertIn("class=\"ca-lede\"", opening)
-        self.assertEqual(opening.count('class="ca-desk-head"'), 2)
-        self.assertNotIn("ca-slate-group__title", opening)
-        self.assertNotIn("research desk", opening.lower())
-        self.assertNotIn("Need to Win", opening)
-        self.assertNotIn("before the market adjusts", opening)
-        self.assertNotIn("before you bet", opening)
-        self.assertLess(opening.find('id="section-opening-hero"'), opening.find('id="account"'))
-        self.assertLess(opening.find('id="section-opening-workflows"'), opening.find('id="account"'))
-        self.assertIn("games on ' + shown + ' slate", dash)
-        self.assertIn("sport !== 'mlb'", status)
+        self.assertEqual(opening.count("<h1"), 1)
+        self.assertIn("Every game. The context that matters.", opening)
+        self.assertIn('id="openingMlbSlate"', opening)
+        self.assertIn('id="openingNflSlate"', opening)
+        self.assertIn('id="matchupDesk"', opening)
+        self.assertIn("styles/chase-public.css", opening)
+        self.assertNotIn("mlbma_design_system.css", opening)
+        self.assertNotIn("projected score", opening.lower())
+        self.assertNotIn("win probability", opening.lower())
+        self.assertIn("window.location.replace('/'", legacy)
+        self.assertIn("#matchupDesk", legacy)
+        self.assertIn("source === 'public-slate'", status)
         self.assertIn("function contextLabel", status)
         self.assertIn("aria-current", nav)
         self.assertIn("shellMain", shell)
         self.assertIn("id=\"caContextBar\"", opening)
-        self.assertIn("openingMlbSlate", opening)
-        self.assertIn("openingNflSlate", opening)
-        self.assertIn("styles/chase-patterns.css", opening)
-        self.assertIn("styles/chase-primitives.css", opening)
-        self.assertIn("styles/chase-components.css", opening)
         self.assertIn("matchup_card.js", opening)
-        self.assertIn("function shouldPaintMlbHeroCards", opening)
-        self.assertIn("if (!shouldPaintMlbHeroCards()) return", opening)
-        self.assertIn("whenMatchupsReady(function() { PlatformDashboard.renderHeroMatchups(); })", opening)
-        self.assertIn("ChaseMatchupCard.mountSlate", opening)
-        self.assertIn("hero-matchup-card", dash)
-        self.assertIn("View Full Analysis", dash)
-        self.assertIn("paint();", dash)
-        self.assertIn("hydrateMatchupPitcherStatsFromMlb(games).then(paint)", dash)
         self.assertNotIn("chase-nav-search", opening)
         self.assertNotIn("Search teams, players, or topics", opening)
         self.assertNotIn(
             "chase-nav-search",
             (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8"),
         )
-        self.assertNotIn('ca-tool-card__title">Trends<', opening)
-        self.assertIn("html.view-opening #section-opening-market-map", opening)
         diag = (ROOT / "scripts" / "dashboard_runtime_diag.py").read_text(encoding="utf-8")
         self.assertIn("openingMlbSlate", diag)
-        self.assertNotIn("opening tools grid", diag)
 
-    def test_matchup_compare_script_is_design_stamped(self):
+    def test_public_game_detail_script_is_design_stamped(self):
         stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
-        html = (ROOT / "dashboard" / "matchup_compare.html").read_text(encoding="utf-8")
-        self.assertIn("matchup_compare.js?v=" + stamp, html)
+        for sport in ("mlb", "nfl"):
+            html = (ROOT / sport / "matchup.html").read_text(encoding="utf-8")
+            self.assertIn("public_game_detail.js?v=" + stamp, html)
+            self.assertNotIn("matchup_compare.js", html)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
@@ -325,12 +317,11 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("ChaseDataStatus.fetchLastUpdated", ui)
         self.assertNotIn("Last Updated", ui)
 
-    def test_opening_and_team_profile_use_shared_last_updated_fetch(self):
-        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+    def test_public_home_and_team_profile_use_shared_last_updated_fetch(self):
+        opening = (ROOT / "index.html").read_text(encoding="utf-8")
         profile = (ROOT / "dashboard" / "team_profile.html").read_text(encoding="utf-8")
-        self.assertIn("ChaseDataStatus.fetchLastUpdated", opening)
-        self.assertIn("function prefetchSheetSync", opening)
-        self.assertNotIn("encodeURIComponent(TABS.last_updated)", opening)
+        self.assertIn("chase_datastatus.js", opening)
+        self.assertIn("chase_nav.js", opening)
         self.assertIn("ChaseDataStatus.fetchLastUpdated", profile)
         self.assertNotIn("gvizUrl('Last_Updated')", profile)
 
@@ -350,13 +341,16 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("Disallow: /cfb", robots)
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", workflow)
-        self.assertIn("dashboard/index.html", workflow)
+        self.assertIn("public_site_runtime_diag.py", workflow)
+        self.assertIn('base-url "http://127.0.0.1:8765/index.html"', workflow)
         self.assertNotIn("scope=team&team=NYY", workflow)
         self.assertNotIn("branches: [master]", workflow.split("pull_request:", 1)[1][:80])
         deploy_job = workflow.split("\n  deploy:", 1)[1][:400]
         self.assertIn("if: false", deploy_job)
         audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
-        self.assertIn("render/team_rankings.html", audit)
+        self.assertIn('"mlb/index.html"', audit)
+        self.assertIn('"nfl/index.html"', audit)
+        self.assertIn('"mlb/matchup.html?', audit)
         self.assertNotIn("scope=team&team=NYY", audit)
 
     def test_brand_assets_resolve_from_dashboard_root(self):
@@ -370,33 +364,20 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("s.src = 'mlbma_icons.js", ui)
 
     def test_public_surface_overlap_is_collapsed(self):
-        lab = (ROOT / "dashboard" / "research_lab.js").read_text(encoding="utf-8")
-        self.assertNotIn("href: 'team_rankings.html'", lab)
-        self.assertIn("href: 'matchup_compare.html'", lab)
         opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("https://chase-analytics.com/dashboard/", opening)
-        self.assertIn("/dashboard/assets/chase-logo-horizontal.png", opening)
-        self.assertNotIn("https://chase-analytics.com/assets/", opening)
-        oem = (ROOT / "dashboard" / "chase_analytics_mlb_oem_v7.html").read_text(encoding="utf-8")
-        self.assertIn('location.replace(target)', oem)
-        self.assertIn('"/dashboard/"', oem)
-        self.assertNotIn("chase_nav.js", oem)
-        sheet = (ROOT / "dashboard" / "matchup_sheet.html").read_text(encoding="utf-8")
-        self.assertIn("/dashboard/matchup_compare", sheet)
-        self.assertNotIn("chaseHeader", sheet)
-        integrator = (ROOT / "scripts" / "integrate_chase_nav.py").read_text(encoding="utf-8")
-        self.assertIn("prefixed_nav", integrator)
-        self.assertNotIn('"matchup_sheet.html"', integrator)
-        self.assertIn("NAV_JS_STAMP = STAMP", integrator)
-        render = (ROOT / "dashboard" / "render" / "team_rankings.html").read_text(encoding="utf-8")
-        self.assertNotIn("chase_analytics_mlb_oem_v7.html", render)
-        self.assertNotIn('data-nav="team-rankings"', render)
-        robots = (ROOT / "_redirects").read_text(encoding="utf-8")
-        self.assertIn("/dashboard/chase_analytics_mlb_oem_v7.html  /dashboard/  301", robots)
-        self.assertIn("/dashboard/matchup_sheet.html     /dashboard/matchup_compare  301", robots)
+        compare = (ROOT / "dashboard" / "matchup_compare.html").read_text(encoding="utf-8")
+        self.assertIn("window.location.replace('/'", opening)
+        self.assertIn("location.replace('/mlb/matchup.html'", compare)
+        self.assertNotIn("mlbma_design_system.css", opening + compare)
+        self.assertNotIn("matchup_compare.js", compare)
+        redirects = (ROOT / "_redirects").read_text(encoding="utf-8")
+        self.assertIn("/dashboard/chase_analytics_mlb_oem_v7.html  /  301", redirects)
+        self.assertIn("/dashboard/matchup_sheet.html     /mlb/matchup.html  301", redirects)
+        self.assertIn("/dashboard/matchup_compare        /mlb/matchup.html  301", redirects)
         root = (ROOT / "index.html").read_text(encoding="utf-8")
-        stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
-        self.assertIn(f"chase_sport_select.js?v={stamp}", root)
+        self.assertIn('id="matchupDesk"', root)
+        self.assertIn("styles/chase-public.css", root)
+        self.assertNotIn("chase_sport_select.js", root)
         diag = (ROOT / "scripts" / "run_full_diagnostic.py").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", diag)
         self.assertNotIn("chase_analytics_mlb_oem_v7.html", diag)
@@ -405,15 +386,12 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn(">Tools<", nav_src)
         self.assertIn('data-nav="nfl"', nav_src)
         self.assertIn('data-nav="models"', nav_src)
-        self.assertNotIn("fonts.googleapis.com/css2", opening)
+        self.assertNotIn("fonts.googleapis.com/css2", root)
         self.assertNotIn("@import url('responsive.css", (ROOT / "dashboard" / "mlbma_design_system.css").read_text(encoding="utf-8"))
         self.assertIn("var(--mark-positive)", (ROOT / "dashboard" / "mlbma_assets.js").read_text(encoding="utf-8"))
         cfg = (ROOT / "core" / "config.py").read_text(encoding="utf-8")
         self.assertIn('"file": "index.html"', cfg)
         self.assertNotIn("chase_analytics_mlb_oem_v7.html", cfg)
-        ui_diag = (ROOT / "scripts" / "platform_ui_diag.py").read_text(encoding="utf-8")
-        self.assertIn("dashboard/index.html", ui_diag)
-        self.assertNotIn("chase_analytics_mlb_oem_v7.html", ui_diag)
         audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
         self.assertNotIn("chase_analytics_mlb_oem_v7.html", audit)
 

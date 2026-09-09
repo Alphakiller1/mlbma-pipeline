@@ -1,25 +1,41 @@
 #!/usr/bin/env python3
-"""Fail if public Research surfaces load or emit Model Center fields."""
+"""Enforce the public Research / private analysis boundary.
+
+The check follows every local stylesheet and script referenced by the canonical
+MLB/NFL pages. It rejects legacy visual layers, private transports, restricted
+payload keys, and prohibited public-facing phrases. The separate Model Center is
+allowed only as a navigation destination.
+"""
 from __future__ import annotations
 
 import json
 import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 CLASSIFICATION = ROOT / "design" / "public_metric_classification.json"
 RESTRICTED = ROOT / "design" / "public_restricted_fields.json"
-BUILDER = ROOT / "scripts" / "build_sport_routes.py"
 LEAK = ROOT / "tests" / "fixtures" / "restricted_board_leak.json"
 
-PUBLIC_JS = (
-    ROOT / "dashboard" / "sports" / "mlb.js",
-    ROOT / "dashboard" / "sports" / "nfl.js",
-    ROOT / "dashboard" / "sports" / "chase_public_slate.js",
-    ROOT / "dashboard" / "matchup_card.js",
-    ROOT / "scripts" / "build_sport_routes.py",
+PUBLIC_ENTRIES = (
+    ROOT / "index.html",
+    *(ROOT / sport / name for sport in ("mlb", "nfl") for name in ("index.html", "matchups.html", "results.html", "matchup.html")),
 )
+
+PUBLIC_SLATES = tuple(ROOT / "data" / "public" / sport / "slate.json" for sport in ("mlb", "nfl"))
+
+BANNED_ASSETS = {
+    "mlbma_design_system.css",
+    "responsive.css",
+    "matchup_compare.css",
+    "matchup_compare.js",
+    "matchup_shared.js",
+    "matchup_lineup_compare.js",
+    "mlbma_charts.js",
+    "chase_board.js",
+}
 
 BANNED_NETWORK = (
     "alphakiller1.github.io/mlb-model/board.json",
@@ -28,33 +44,76 @@ BANNED_NETWORK = (
     "alphakiller1.github.io/cfb-model/board.json",
 )
 
-BLOB_RE = {
-    name: re.compile(rf"{name} = r\"\"\"(?P<body>.*?)\"\"\"", re.DOTALL)
-    for name in ("HUB_JS", "MATCHUPS_JS", "RESULTS_JS")
-}
+# Exact user-facing concepts prohibited from the public matchup experience.
+# "Model Center" is intentionally not here: the separate product may be linked
+# once in each desktop/mobile navigation, but never promoted inside <main>.
+BANNED_PUBLIC_PHRASES = (
+    "model vs. market",
+    "model projection",
+    "model projected",
+    "projected score",
+    "projected runs",
+    "projected points",
+    "win probability",
+    "betting edge",
+    "model edge",
+    "confidence score",
+    "recommended pick",
+)
+
+ASSET_RE = re.compile(r'<(?:script|link)\b[^>]+(?:src|href)=["\']([^"\']+)["\']', re.I)
+SCRIPT_RE = re.compile(r"<script\b[^>]*>.*?</script>", re.I | re.S)
+MAIN_RE = re.compile(r"<main\b[^>]*>(.*?)</main>", re.I | re.S)
 
 
-def extract_blobs(src: str) -> dict[str, str]:
-    out = {}
-    for name, rx in BLOB_RE.items():
-        m = rx.search(src)
-        if not m:
-            raise SystemExit(f"missing {name} in {BUILDER}")
-        out[name] = m.group("body")
+def local_asset(entry: Path, raw: str) -> Path | None:
+    parsed = urlsplit(raw)
+    if parsed.scheme or parsed.netloc or raw.startswith("//"):
+        return None
+    clean = parsed.path
+    if not clean:
+        return None
+    if clean.startswith("/"):
+        return ROOT / clean.lstrip("/")
+    return entry.parent / clean
+
+
+def public_dependencies(entry: Path) -> list[Path]:
+    text = entry.read_text(encoding="utf-8")
+    out: list[Path] = []
+    for raw in ASSET_RE.findall(text):
+        path = local_asset(entry, raw)
+        if path and path.suffix.lower() in {".js", ".css"}:
+            out.append(path.resolve())
     return out
 
 
+def visible_main(html: str) -> str:
+    match = MAIN_RE.search(html)
+    if not match:
+        return ""
+    return SCRIPT_RE.sub("", match.group(1))
+
+
 def main() -> int:
+    violations: list[str] = []
     spec = json.loads(CLASSIFICATION.read_text(encoding="utf-8"))
     restricted = json.loads(RESTRICTED.read_text(encoding="utf-8"))
     if "descriptive_public" not in spec or "model_private" not in spec:
-        print("FAIL: public_metric_classification.json missing required keys")
-        return 1
-    private = {str(x).lower() for x in spec["model_private"]["examples"]}
+        violations.append("public_metric_classification.json missing required keys")
+    private = {str(x).lower() for x in spec.get("model_private", {}).get("examples", [])}
     for required in ("projOSI", "win_probability", "model_margin", "may_bet"):
         if required.lower() not in private:
-            print(f"FAIL: model_private.examples must include {required}")
-            return 1
+            violations.append(f"model_private.examples must include {required}")
+
+    forbidden = {str(x) for x in restricted.get("forbidden_keys", [])}
+    allowed = {str(x) for x in restricted.get("allowed_game_keys", [])}
+    for key in ("model_margin", "win_probability", "player_projections", "pick"):
+        if key not in forbidden:
+            violations.append(f"public_restricted_fields.json missing {key}")
+    leaked_market_keys = {"book", "book_market", "book_side", "book_number", "quote_as_of_utc"} & allowed
+    if leaked_market_keys:
+        violations.append("public allowlist contains line-provider fields: " + ", ".join(sorted(leaked_market_keys)))
 
     sys.path.insert(0, str(ROOT / "scripts"))
     from project_public_slate import assert_clean, project_slate
@@ -62,74 +121,81 @@ def main() -> int:
     leak = json.loads(LEAK.read_text(encoding="utf-8"))
     try:
         assert_clean(leak)
-        print("FAIL: leak fixture was accepted as public")
-        return 1
+        violations.append("restricted fixture was accepted without projection")
     except SystemExit:
         pass
     cleaned = project_slate("mlb", leak)
-    assert_clean(cleaned)
-    if any(k in json.dumps(cleaned) for k in ("model_margin", "win_probability", "player_projections")):
-        print("FAIL: projected slate still contains restricted fields")
-        return 1
+    try:
+        assert_clean(cleaned)
+    except SystemExit as exc:
+        violations.append(f"projected fixture is not clean: {exc}")
 
-    violations = []
-    src = BUILDER.read_text(encoding="utf-8")
-    for name, body in extract_blobs(src).items():
-        if "BOARD_URL" in body or "chase_board.js" in body:
-            violations.append(f"{name} still loads the model board adapter")
-        if "market_margin" in body:
-            violations.append(f"{name} still reads market_margin")
-        for token in BANNED_NETWORK:
-            if token in body:
-                violations.append(f"{name}: {token}")
+    seen_assets: set[Path] = set()
+    for entry in PUBLIC_ENTRIES:
+        if not entry.is_file():
+            violations.append(f"missing public route {entry.relative_to(ROOT)}")
+            continue
+        html = entry.read_text(encoding="utf-8")
+        rel = entry.relative_to(ROOT)
+        assets = public_dependencies(entry)
+        names = [p.name for p in assets]
+        for banned in sorted(BANNED_ASSETS & set(names)):
+            violations.append(f"{rel} loads legacy/private asset {banned}")
+        for path in assets:
+            if not path.is_file():
+                violations.append(f"{rel} references missing asset {path}")
+            else:
+                seen_assets.add(path)
+        if "chase-public.css" not in names:
+            violations.append(f"{rel} does not load chase-public.css")
+        if "chase_nav.css" in names and "chase-public.css" in names and names.index("chase-public.css") < names.index("chase_nav.css"):
+            violations.append(f"{rel} loads route composition before navigation styles")
+        main_copy = visible_main(html).lower()
+        for phrase in BANNED_PUBLIC_PHRASES:
+            if phrase in main_copy:
+                violations.append(f"{rel} public content contains {phrase!r}")
+        if "model center" in main_copy:
+            violations.append(f"{rel} promotes Model Center inside public content")
+        for parked in ("/wnba/", "/cfb/"):
+            if parked in html.lower():
+                violations.append(f"{rel} exposes parked sport {parked}")
 
-    for path in PUBLIC_JS:
+    for path in seen_assets:
         text = path.read_text(encoding="utf-8")
+        rel = path.relative_to(ROOT)
         for token in BANNED_NETWORK:
             if token in text:
-                violations.append(f"{path.relative_to(ROOT)}: {token}")
+                violations.append(f"{rel} references {token}")
         if path.name in {"mlb.js", "nfl.js"} and "github.io" in text:
-            violations.append(f"{path.relative_to(ROOT)} still points at GitHub Pages")
+            violations.append(f"{rel} points at GitHub Pages")
 
-    mc_js = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
-    if "alphakiller1.github.io" in mc_js or "board.json" in mc_js:
-        violations.append("dashboard/model_center.js must not embed a public board URL")
-
-    for sport in ("mlb", "nfl"):
-        for name in ("index.html", "matchups.html", "results.html"):
-            path = ROOT / sport / name
-            text = path.read_text(encoding="utf-8")
-            if "chase_board.js" in text:
-                violations.append(f"{path.relative_to(ROOT)} loads chase_board.js")
-            if "board.json" in text:
-                violations.append(f"{path.relative_to(ROOT)} references board.json")
-            for token in BANNED_NETWORK:
-                if token in text:
-                    violations.append(f"{path.relative_to(ROOT)}: {token}")
-        slate = json.loads((ROOT / "data" / "public" / sport / "slate.json").read_text(encoding="utf-8"))
+    for slate_path in PUBLIC_SLATES:
         try:
+            slate = json.loads(slate_path.read_text(encoding="utf-8"))
             assert_clean(slate)
-        except SystemExit as exc:
-            violations.append(f"data/public/{sport}/slate.json {exc}")
+            for game in slate.get("games", []):
+                extra = set(game) - allowed
+                if extra:
+                    violations.append(f"{slate_path.relative_to(ROOT)} has non-allowlisted keys: {', '.join(sorted(extra))}")
+        except (OSError, json.JSONDecodeError, SystemExit) as exc:
+            violations.append(f"{slate_path.relative_to(ROOT)}: {exc}")
 
-    compare = ROOT / "dashboard" / "matchup_compare.html"
-    compare_text = compare.read_text(encoding="utf-8")
-    if "chase_board.js" in compare_text:
-        violations.append("dashboard/matchup_compare.html loads chase_board.js")
-    if "board.json" in compare_text:
-        violations.append("dashboard/matchup_compare.html references board.json")
-    for token in BANNED_NETWORK:
-        if token in compare_text:
-            violations.append(f"dashboard/matchup_compare.html: {token}")
+    for legacy in (ROOT / "dashboard" / "index.html", ROOT / "dashboard" / "matchup_compare.html"):
+        text = legacy.read_text(encoding="utf-8")
+        if "location.replace" not in text:
+            violations.append(f"{legacy.relative_to(ROOT)} must be a compatibility redirect")
+        if any(asset in text for asset in BANNED_ASSETS):
+            violations.append(f"{legacy.relative_to(ROOT)} still loads a legacy/private asset")
 
-    if "forbidden_keys" not in restricted or "model_margin" not in restricted["forbidden_keys"]:
-        violations.append("public_restricted_fields.json missing model_margin")
+    model_api = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
+    if "alphakiller1.github.io" in model_api or "board.json" in model_api:
+        violations.append("dashboard/model_center.js embeds a public board URL")
 
     if violations:
-        print("FAIL: public/model boundary")
-        print("\n".join(f"  - {v}" for v in violations))
+        print("FAIL: public/private boundary")
+        print("\n".join(f"  - {item}" for item in violations))
         return 1
-    print("OK: public sport routes omit model board transport and restricted fields")
+    print(f"OK: {len(PUBLIC_ENTRIES)} public routes use the factual matchup dependency graph")
     return 0
 
 

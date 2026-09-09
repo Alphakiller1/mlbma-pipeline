@@ -94,7 +94,7 @@
     paintContext(ctx, opts, null);
     if (global.ChaseDataStatus && ChaseDataStatus.fetchLastUpdated) {
       ChaseDataStatus.fetchLastUpdated({
-        source: sport === 'mlb' ? 'sheet' : 'public-slate',
+        source: document.body.getAttribute('data-ca-product') === 'research' || sport !== 'mlb' ? 'public-slate' : 'sheet',
         sport: sport
       }).then(function (fields) {
         paintContext(ctx, opts, fields);

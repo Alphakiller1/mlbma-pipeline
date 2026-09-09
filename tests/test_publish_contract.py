@@ -155,14 +155,14 @@ class DashboardSlateTruthContractTests(unittest.TestCase):
         self.assertIn("qp('gamePk') || qp('game')", compare)
         self.assertIn("var gamePkWant = requestedGamePk()", compare)
 
-    def test_mlb_tbd_does_not_fall_back_to_projected_name(self) -> None:
-        source = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+    def test_mlb_missing_starter_remains_explicitly_unpublished(self) -> None:
+        source = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
         shared = (ROOT / "dashboard" / "matchup_shared.js").read_text(encoding="utf-8")
         cards = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
-        self.assertIn("awaySP: g.awaySP || 'TBD'", source)
+        self.assertIn("Probable starter not published", source)
+        self.assertIn("Season line not published", source)
+        self.assertNotIn("Projected starter", source)
         self.assertIn("if (awaySP === 'TBD') awayHand = '?'", shared)
-        self.assertNotIn("if (m.awayHand === '?') m.awayHand = 'R'", source)
-        self.assertNotIn("g.awaySP !== 'TBD') ? g.awaySP : (existing.awaySP", source)
         self.assertIn("if (pname === 'TBD') ps = null", cards)
 
     def test_reliever_profile_route_exists(self) -> None:

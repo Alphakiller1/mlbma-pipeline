@@ -1,93 +1,76 @@
-# Cursor website execution checklist
+# Chase Analytics public website release contract
 
-Use this file as the gate. Re-run the commands after every edit. Walk the list top to bottom, then walk it again after generators run.
+This is the implementation gate for `chase-analytics.com`. The canonical public
+experience is the root homepage plus `/mlb/`, `/nfl/`, and each sport's
+`matchup.html`. The old `/dashboard/` and `/dashboard/matchup_compare.html`
+documents are compatibility redirects, not alternate products.
 
-## 0. Ownership and honesty
-- [ ] Public Research work lives in `mlbma-pipeline`. Model desks may vendor `chase-tokens-v1.css` without changing formulas.
-- [ ] Default branch is `master`. Feature branch matches `cursor/<slug>-1d6d`.
-- [ ] Product language: Opening, Matchups, Matchup Analysis, MLB, NFL, Model Center, Glossary.
-- [ ] Compare is not a first-class public nav item. Team Rankings is not a first-class public section. “Research Desk” is not public copy.
-- [ ] Honest leftovers stay listed at the bottom. Do not mark DS-03 / DS-11 done.
+## 1. Product boundary
 
-## 1. Public / Model boundary (P0)
-- [ ] Public Research pages do not fetch `board.json` / `build.json` / `record.json` from model GitHub Pages
-- [ ] `dashboard/sports/mlb.js` and `nfl.js` expose `SLATE_URL` only (no `BOARD_URL`, no `github.io`)
-- [ ] `chase_board.js` is not on `/mlb/` or `/nfl/` generated pages
-- [ ] `dashboard/matchup_compare.html` does not load `chase_board.js` or `board.json`
-- [ ] Public mapper is allowlist-only (`chase_public_slate.js` `pickAllowed`, `project_public_slate.py` `ALLOWED`)
-- [ ] Negative fixture `tests/fixtures/restricted_board_leak.json` fails `assert_clean` and succeeds after `project_slate`
-- [ ] Committed `data/public/{mlb,nfl}/slate.json` contain no forbidden keys
-- [ ] `.gitignore` un-ignores `data/public/` so fixtures deploy with Cloudflare `_site` rsync
-- [ ] Public cards have no props/slots for projections, gaps, WP, EV, picks, MAE/ATS
-- [ ] Book numbers render only with book + market + side + quote time (`attributedBook` / `bookHtml`)
-- [ ] Opening hero has no “OSI edges” / “daily model signals”
-- [ ] Model Center deep link carries `sport` + `game` and shows no teaser values
-- [ ] `/models` and `/models/` 301 to `/model-center`
-- [ ] Nav SoT `dashboard/chase_nav.html` Model Center href is `/model-center/`
-- [ ] `chase_nav.js` `sportNavKey` treats `/model-center` as `models`
-- [ ] `chase_nav.js` maps `matchup_compare.html` to `matchups`, never `compare`
-- [ ] NFL freshness reads public slate timestamps (`source: 'public-slate'`), not `unknownFields` / `'board'` stub
-- [ ] `research_lab.js` model-link cards include Matchup Analysis (`matchup_compare.html`) and do not include `team_rankings.html`
+- [ ] Public navigation exposes Home, Matchups, MLB, NFL, Glossary, and one Model Center destination.
+- [ ] WNBA and CFB remain registered for future work but are disabled, `noindex`, and absent from public navigation and homepage content.
+- [ ] Public `<main>` content never shows predicted scores/runs/points, win probability, picks, recommendations, confidence, performance records, or model-versus-market comparisons.
+- [ ] Public JSON is allowlist-only and contains no sportsbook, price, line, or private-analysis fields.
+- [ ] Model Center remains a separate authenticated destination. Public cards never repeat a Model Center call to action.
+- [ ] Missing or stale facts are labeled honestly; browser time never masquerades as publication freshness.
 
-## 2. Sport registry
-- [ ] Enabled public sports: MLB, NFL only (`public_sport_registry.js` `enabled: true`)
-- [ ] `chase_sport_select.js` lists only MLB and NFL
-- [ ] WNBA/CFB parked `noindex`, copy “not on the public desk”, not in nav or sport select
-- [ ] Preview tab ids live in `public_sport_registry.js`, not inside L2 tokens
-- [ ] Parked adapters may still mention `BOARD_URL`; parked HTML must not load those adapters
+## 2. Matchup-first information architecture
 
-## 3. Matchup cards
-- [ ] Shared `ChaseMatchupCard` anatomy for MLB and NFL
-- [ ] Compact card: status, teams, time/official score, participants, context, Expand + View full matchup
-- [ ] Expand/Collapse, addressable `?game=&preview=`
-- [ ] Preview tabs from registry; missing modules honest-empty
-- [ ] Kickoff grouping uses `ChasePublicSlate.kickoffWindow` on `kickoff_utc`, not hardcoded Thursday/Sunday labels
-- [ ] MLB View full matchup → `/dashboard/matchup_compare.html?away=&home=&game=`
-- [ ] NFL View full matchup stays on `/nfl/matchups.html?game=`
-- [ ] Model Center link is `/model-center/?sport=&game=`
-- [ ] `.ca-matchup-card` chrome uses panel tokens (not overwritten by `[data-href]` cursor-only rules)
-- [ ] Expand / primary actions `min-height: var(--touch-min)` (44px)
+- [ ] `/` opens with one H1 and immediately presents MLB and NFL matchup slates.
+- [ ] The same `ChaseMatchupCard` anatomy renders both sports.
+- [ ] Every collapsed card includes status/time, official team logos, full team names, records when available, sport-specific participants, availability, venue, and two actions.
+- [ ] Visible team abbreviations are forbidden; abbreviations remain internal identity keys only.
+- [ ] Primary disclosure label is exactly `Expand matchup`; destination label is exactly `Full matchup analysis`.
+- [ ] Only one card per slate may be expanded. Disclosure state uses `aria-expanded`, `aria-controls`, and a real hidden panel.
+- [ ] MLB expansion contains probable starters, lineup status, bullpen availability, venue, and conditions.
+- [ ] NFL expansion contains quarterbacks, player availability, rest/travel, venue, weather, and surface. It never contains MLB labels.
+- [ ] NFL groups are derived from `kickoff_utc`; weekday names are never hardcoded.
+- [ ] Full details resolve by stable `game` / `gamePk`, with away/home fallback for legacy links.
 
-## 4. Shell
-- [ ] `--shell-max: 1360px`
-- [ ] `--shell-header-h: 64px` / `--shell-header-h-phone: 56px`
-- [ ] `--shell-context-h: 36px` / `--shell-context-h-phone: 40px`
-- [ ] Context bar `#caContextBar` is a sibling under the header (after `#mobileMenu`), not under the H1
-- [ ] `ChaseShell.ensureContextBar` relocates a bar that landed inside `<main>`
-- [ ] Sport pages `data-ca-product="research"`
-- [ ] Stamp in `design/DESIGN_LAYER_VERSION` matches `?v=` on generated HTML
+## 3. Design-layer ownership
 
-## 5. Generators (SoT)
-- [ ] `scripts/build_sport_routes.py` writes `/mlb/` `/nfl/` parked WNBA/CFB, `models/`, `model-center/`
-- [ ] Index and matchups both mount `ChaseMatchupCard` (home is the slate)
-- [ ] HUB/MATCHUPS/RESULTS blobs never contain `BOARD_URL` or `chase_board.js`
-- [ ] `scripts/integrate_chase_nav.py` uses `dashboard/chase_nav.html` and does not restore Compare / Team Rankings
-- [ ] `scripts/_stamp_design_layer.py` after HTML/JS edits
+- [ ] `design/chase-tokens-v1.css` is the only raw-color source and matches the vendored package copy byte-for-byte.
+- [ ] Semantic, primitive, component, pattern, shell, navigation, then `chase-public.css` load in that order.
+- [ ] Public routes never load `mlbma_design_system.css`, `responsive.css`, `matchup_compare.css`, or the private comparison scripts.
+- [ ] `chase-public.css` owns public route geometry and uses semantic variables only.
+- [ ] Collapsed cards use 3 columns at 1440px, 2 at 1024px, and 1 at 680px and below.
+- [ ] Desktop collapsed card height stays between 240px and 360px across real slates.
+- [ ] 360px and 390px have no horizontal overflow and every visible control is at least 44×44px.
+- [ ] The design version in `design/DESIGN_LAYER_VERSION` matches every stamped public dependency.
 
-## 6. Verification commands (run twice)
+## 4. Data and generators
+
+- [ ] `scripts/build_sport_routes.py` deterministically emits MLB/NFL index, matchups, results, and matchup-detail routes plus parked future routes.
+- [ ] `dashboard/sports/chase_public_slate.js` and `scripts/project_public_slate.py` share the factual allowlist.
+- [ ] MLB combines the official schedule with matching published context without overwriting a valid official `gamePk`.
+- [ ] NFL uses its published public slate and never imports MLB labels.
+- [ ] Generated output is a fixed point: a second generator/stamp pass changes zero bytes.
+- [ ] The negative restricted-field fixture is rejected before projection and clean after projection.
+
+## 5. Release gate
+
+Run from the repository root:
+
 ```bash
-python3 scripts/build_sport_routes.py
-python3 scripts/_stamp_design_layer.py
-python3 scripts/integrate_chase_nav.py
-python3 scripts/check_tokens.py
-python3 scripts/validate_public_fields.py
-python3 -m unittest discover -s tests -q
-python3 -c "from pathlib import Path
-for p in ['mlb/index.html','mlb/matchups.html','nfl/index.html','nfl/matchups.html','dashboard/matchup_compare.html']:
-    t=Path(p).read_text(); assert 'chase_board.js' not in t, p
-assert 'chase_public_slate.js' in Path('mlb/index.html').read_text()
-assert Path('data/public/mlb/slate.json').is_file()
-"
+python scripts/_stamp_design_layer.py
+python scripts/build_sport_routes.py
+python scripts/check_tokens.py
+python scripts/validate_public_fields.py
+python -m unittest discover -s tests -p "test_*.py"
+node --check dashboard/matchup_card.js
+node --check dashboard/public_game_detail.js
+python -m http.server 8765
+python scripts/public_site_runtime_diag.py --base-url http://127.0.0.1:8765
+python scripts/mobile_overflow_audit.py --base-url http://127.0.0.1:8765 --width 360 --height 800 --strict
+python scripts/mobile_overflow_audit.py --base-url http://127.0.0.1:8765 --width 390 --height 844 --strict
 ```
 
-## 7. Pass/fail evidence
-- [ ] `validate_public_fields.py` prints OK
-- [ ] unittest discover is all green
-- [ ] `git check-ignore -q data/public/mlb/slate.json` is non-zero (not ignored)
-- [ ] Opening copy still says models stay in Model Center
-- [ ] `_redirects` has `/models` → `/model-center`
+Cloudflare production deployment must depend on every check above. A failed
+boundary, unit, browser, or responsive check blocks deployment.
 
-## Remaining producer / ops work
-- Cloudflare env must set `MLB_MODEL_BOARD_URL` / `NFL_MODEL_BOARD_URL` (never in client JS)
-- Model repos should stop publishing unauthenticated `board.json` on GitHub Pages once those env URLs point at a private origin
-- `scripts/deploy_cloudflare.py` must ship `data/public/{mlb,nfl}/slate.json` (private `data/` stays excluded)
+## 6. Future-sport extension rule
+
+WNBA or CFB activation requires its own factual card modules and detail sections,
+fixture coverage, logo/name registry coverage, responsive browser checks, and a
+deliberate registry `enabled` change. Never expose a future sport by merely adding
+it to navigation or pointing its adapter at a private producer payload.

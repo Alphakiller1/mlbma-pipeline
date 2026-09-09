@@ -6,15 +6,18 @@ Do **not** treat mlb-model’s three on-repo contracts as reconciled. That is WP
 
 | Document | Status | Scope |
 |----------|--------|--------|
+| [CURSOR_WEBSITE_CHECKLIST.md](./CURSOR_WEBSITE_CHECKLIST.md) | **Current / authoritative public contract** | Matchup-first MLB/NFL routes, public/private boundary, responsive acceptance, release gate, and future-sport activation. |
+| [GPT_IMAGE_PROMPTS_CHASE_DESK.md](./GPT_IMAGE_PROMPTS_CHASE_DESK.md) | **Current visual reference** | Image prompts aligned to the implemented cards and full matchup pages. |
 | [MLBMA_CURSOR_DESIGN_CONTRACT.md](./MLBMA_CURSOR_DESIGN_CONTRACT.md) | **Current** | MLBMA dashboard + public site. Includes 2026-09-08 structure-lock carve-out and PART 2 (modes, colour roles, five concepts, honesty, density, enforcement). |
 | [tokens/chase-tokens.css](./tokens/chase-tokens.css) | **Current** | TIER 1 primitives (only raw color literals). |
 | [chase-tokens-v1.css](./chase-tokens-v1.css) | **Current** | Published copy of TIER 1 at `/design/chase-tokens-v1.css`. Must stay byte-identical to `tokens/chase-tokens.css`. |
 | [tokens/chase_tokens.vendor.css](./tokens/chase_tokens.vendor.css) | **Product-specific** (vendor snapshot) | Four-model vendored file, sha256 `13014f566ee570d283b12859a6578d12d179a4cc39aecf8845518700fb85e911`. Seed for values, not the live TIER 1 filename set. |
-| [DESIGN_LAYER_VERSION](./DESIGN_LAYER_VERSION) | **Current** | Cache stamp `20260908g`. |
+| [DESIGN_LAYER_VERSION](./DESIGN_LAYER_VERSION) | **Current** | Cache stamp `20260909m`. |
 | [README.md](./README.md) | **Current** | Folder orientation. |
 | `.cursor/rules/mlbma-design-contract.mdc` | **Current** | Agent summary of the contract. |
 | `.cursor/rules/chase-brand-and-avatars.mdc` | **Current** | Brand assets / avatars (not colour tokens). |
-| `dashboard/mlbma_design_system.css` | **Current** | TIER 2 semantic roles + component CSS. |
+| `dashboard/styles/chase-public.css` | **Current** | L7 public MLB/NFL route geometry; loads after the shared shell and navigation layers. |
+| `dashboard/mlbma_design_system.css` | **Legacy/private surfaces** | Retained for older internal pages; forbidden on canonical public matchup routes. |
 | `dashboard/theme.css` | **Current** | TIER 2 alias layer + remaining component rules. |
 | `docs/MLBMA_UI_QUALITY_CHECKLIST.md` | **Current** | Implementation QA gate. |
 | `docs/CROSS_SPORT_PROGRAMME_CHECKLIST.md` | **Current** | Cross-sport programme living checklist (WP0–WP6). |

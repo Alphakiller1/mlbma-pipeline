@@ -11,13 +11,23 @@
       "kickoff_utc": "2026-09-10T00:20:00Z",
       "away": "NE",
       "home": "SEA",
+      "away_name": "New England Patriots",
+      "home_name": "Seattle Seahawks",
       "away_record": "0-0",
       "home_record": "0-0",
       "venue": "Lumen Field",
+      "venue_city": "Seattle, WA",
       "broadcast": "NBC",
-      "away_starter": "Maye",
-      "home_starter": "Smith",
-      "availability_summary": "Key designations pending"
+      "away_starter": "Drake Maye",
+      "home_starter": "Quarterback not published",
+      "away_availability": "Official report pending",
+      "home_availability": "Official report pending",
+      "availability_summary": "Official availability report pending",
+      "away_rest_days": 7,
+      "home_rest_days": 7,
+      "away_travel": "Road game",
+      "home_travel": "Home game",
+      "surface": "Artificial turf"
     },
     {
       "id": "2026-W01-kc-lac",
@@ -26,9 +36,23 @@
       "kickoff_utc": "2026-09-13T17:00:00Z",
       "away": "KC",
       "home": "LAC",
+      "away_name": "Kansas City Chiefs",
+      "home_name": "Los Angeles Chargers",
+      "away_record": "0-0",
+      "home_record": "0-0",
       "venue": "SoFi Stadium",
-      "away_starter": "Mahomes",
-      "home_starter": "Herbert"
+      "venue_city": "Inglewood, CA",
+      "broadcast": "Broadcast not published",
+      "away_starter": "Patrick Mahomes",
+      "home_starter": "Justin Herbert",
+      "away_availability": "Official report pending",
+      "home_availability": "Official report pending",
+      "availability_summary": "Official availability report pending",
+      "away_rest_days": 7,
+      "home_rest_days": 7,
+      "away_travel": "Road game",
+      "home_travel": "Home game",
+      "surface": "Artificial turf"
     }
   ]
 }
