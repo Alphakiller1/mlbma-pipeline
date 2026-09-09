@@ -141,9 +141,12 @@
       + '.lv-matchup-team{background:var(--bg-3);border:1px solid var(--border);border-radius:14px;padding:14px}'
       + '.lv-matchup-team-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}'
       + '.lv-matchup-team-context{font-size:12px;color:var(--text-2);margin-bottom:10px}'
-      + '.lv-matchup-team-metrics{display:flex;flex-direction:column;gap:8px}'
-      + '.lv-matchup-team-metric{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}'
-      + '.lv-matchup-team-metric .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}'
+      + '.lv-matchup-team-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}'
+      + '.lv-matchup-team-metric{display:flex;flex-direction:column;gap:2px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg-2)}'
+      + '.lv-matchup-team-metric .lab{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}'
+      + '.lv-rank-chip,.ca-rank-chip{display:flex;flex-direction:column;gap:2px;min-width:64px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-2)}'
+      + '.lv-rank-chip__lab,.ca-rank-chip__lab{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}'
+      + '.lv-rank-chip__val,.ca-rank-chip__val{font-family:var(--display,var(--font,system-ui));font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}'
       + '.lv-matchup-overrides{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0 12px}'
       + '.lv-matchup-note{font-size:12px;color:var(--text-2);margin:0 0 8px}'
       + '@media(max-width:700px){.lv-matchup-teams{grid-template-columns:1fr}}'
@@ -608,8 +611,9 @@
         + '<div class="lv-team-card-metrics">' + metrics + '</div></article>';
     }).join('') + '</div>';
 
+    var expanderOpen = !(root && root.closest && root.closest('.lv-matchup'));
     mount.innerHTML = sortPills
-      + '<details class="lv-league-expander" open>'
+      + '<details class="lv-league-expander"' + (expanderOpen ? ' open' : '') + '>'
       + '<summary>Compare to league</summary>'
       + '<div class="lv-table-wrap"><table class="lv-table lv-no-cardify"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>'
       + cards
@@ -923,12 +927,28 @@
     return (side === 'away' ? 'Away split' : 'Home split') + ' · vs ' + hand + pitcher + bats;
   }
 
+  function rankChipHtml(def, row, maps) {
+    var pack = maps && maps[def.key];
+    var rk = pack && row ? pack.ranks[teamKey(row.t)] : null;
+    return '<div class="ca-rank-chip"><span class="ca-rank-chip__lab">' + esc(def.label) + ' rank</span>'
+      + '<span class="ca-rank-chip__val">' + (rk != null ? rk : '—') + '</span></div>';
+  }
+
+  function paintHeaderRanks(side, row, maps, defs) {
+    var host = document.querySelector('.mc-header-ranks[data-side="' + side + '"]');
+    if (!host) return;
+    host.innerHTML = (defs || []).slice(0, 3).map(function(def) {
+      return rankChipHtml(def, row, maps);
+    }).join('');
+  }
+
   function matchupTeamCard(state, side, rows) {
     var ctx = state.contexts[side];
     var defs = visibleDefsForDensity(familyDefs(state.family));
     var maps = leagueRankMaps(rows, defs);
     var ranges = rangeMapForDefs(rows, defs);
     var row = (rows || []).find(function(r) { return teamKey(r.t) === teamKey(ctx.team); });
+    paintHeaderRanks(side, row, maps, defs);
     var metrics = defs.map(function(def) {
       return '<div class="lv-matchup-team-metric"><span class="lab">' + esc(def.label) + '</span><span>'
         + (row ? valueWithRankHtml(def, row, ranges, maps) : '—') + '</span></div>';
@@ -936,6 +956,7 @@
     return '<article class="lv-matchup-team" data-team="' + esc(ctx.team) + '">'
       + '<div class="lv-matchup-team-head">' + teamLogoHtml(ctx.team, 30) + '<strong>' + esc(ctx.team) + '</strong></div>'
       + '<div class="lv-matchup-team-context">' + esc(matchupContextText(state, side)) + '</div>'
+      + '<div class="lv-rank-chips ca-rank-chips">' + defs.slice(0, 3).map(function(def) { return rankChipHtml(def, row, maps); }).join('') + '</div>'
       + '<div class="lv-matchup-team-metrics">' + metrics + '</div></article>';
   }
 

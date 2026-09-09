@@ -71,10 +71,10 @@ UI kit / style frame for Chase Analytics, not a full website. Dark #08090F, 1440
 
 3×2 lacquered panels, labeled:
 1. Header: logo + Chase Analytics. Links Opening, Matchups, Compare, MLB, NFL, Model Center, Glossary. Exactly two sport names in the header. Freshness pill “Slate shown: Sep 8 · 6h”.
-2. Type: H1 “Today’s research desk” in Roboto Condensed metallic silver. Eyebrow “CHASE ANALYTICS · MLB · NFL”. Body in DM Sans #A4A8B6.
-3. Controls: primary #9A6BFF “Open scouting desk”; ghost “Compare”; sport pills MLB (filled) and NFL (outline). No third or fourth pill.
+2. Type: H1 “Opening Dashboard” in Roboto Condensed metallic silver. Eyebrow “CHASE ANALYTICS · MLB · NFL”. Body in DM Sans #A4A8B6.
+3. Controls: primary #9A6BFF “View Today's Matchups”; ghost “Compare”; sport pills MLB (filled) and NFL (outline). No third or fourth pill.
 4. MLB chips: Elite OSI 71, Good RCV 58, Watch ABQ 51, Poor OBR 42. Solid chips.
-5. Mini MLB card: NYY @ BOS, 7:10 ET, “Lineups: projected”, no spread, link “Open scouting desk”.
+5. Mini MLB card: NYY @ BOS, 7:10 ET, “Lineups: projected”, no spread, link “Open Compare”.
 6. Mini NFL card: NE @ SEA, 8:20 PM ET, “Published book line: SEA −3 (book price, not a Chase projection)”, link “Open in Model Center”. No Model column.
 
 Footer caption: “Public desk · MLB and NFL only”.
@@ -94,7 +94,7 @@ This is the public front door for a TWO-SPORT research product.
 Left:
 - Wordmark Chase Analytics
 - H1: Matchup intelligence for MLB and NFL.
-- Lede: A scouting desk — lineups, splits, and team context. Forecasts stay in Model Center.
+- Lede: Opening Dashboard — lineups, splits, and team context. Forecasts stay in Model Center.
 - Primary: Enter MLB desk
 - Secondary: Enter NFL slate
 - Quiet tertiary: Model Center (lock)
@@ -109,7 +109,7 @@ Same dark lacquered family as the dashboards. Dense, premium, finished.
 
 ---
 
-## Prompt 03 — Opening research desk (desktop)
+## Prompt 03 — Opening Dashboard (desktop)
 
 ```
 [PASTE STYLE LOCK]
@@ -118,9 +118,9 @@ Full-page UI of chase-analytics.com/dashboard at 1440×900.
 
 Sticky header with MLB and NFL only. Context bar: “MLB · Slate shown: Sep 8 · data cutoff 6h”.
 
-Hero is a scouting desk, not a splash ad:
+Hero is Opening, not a splash ad:
 - Eyebrow: CHASE ANALYTICS · MLB INTELLIGENCE
-- One H1: Today’s research desk
+- One H1: Opening Dashboard
 - Lede: Factual MLB matchups — lineups, starters, splits, team context. NFL slate is one click in the header. Models stay in Model Center.
 - Primary CTA: View MLB slate
 - Secondary text link: NFL matchups
@@ -148,7 +148,7 @@ Same opening desk, 390×844. iPhone frame optional.
 Header: logo + 44px hamburger. Desktop links hidden. Drawer closed.
 
 Stacked:
-- H1 Today’s research desk
+- H1 Opening Dashboard
 - Lede: MLB research now. NFL in the menu. No other leagues.
 - Full-width primary “View MLB slate”
 - Full-width ghost “NFL matchups”
@@ -199,7 +199,7 @@ H1: MLB matchups
 Lede: Tonight’s games, probable starters, weather, descriptive context. Forecasts in Model Center.
 
 Kickoff groups in Eastern time, e.g. “Monday, Sep 8”.
-Each card: away at home, time ET, probable SPs, weather one-liner, “Open scouting desk” primary button, “Open this matchup in Model Center” as text link.
+Each card: away at home, time ET, probable SPs, weather one-liner, “Open Compare” primary button, “Open this matchup in Model Center” as text link.
 No model columns. No gems/picks jargon. No “priced markets”.
 
 Search field “Find a team or game”. Honest context bar freshness. Dense editorial board.
@@ -275,7 +275,7 @@ No fake stats, no lorem, no stack traces, no extra leagues.
 | Surface | Live today | These prompts draw |
 |---|---|---|
 | Root | Four-sport essay + engineering footnote | MLB + NFL product door with two preview cards |
-| Opening | “Need to Win”, signup first | Research desk, MLB primary, NFL in chrome |
+| Opening | “Need to Win”, signup first | Opening Dashboard, MLB primary, NFL in chrome |
 | NFL matchups | Model 6.54 / Market 3 / gap axis | Kickoff groups + attributed book line |
 | MLB hub | Picks/Gems jargon | Public slate + scouting-desk CTA |
 | Nav / pills | WNBA + CFB | MLB + NFL only |

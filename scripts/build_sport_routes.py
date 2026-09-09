@@ -287,20 +287,29 @@ MATCHUPS_JS = r"""
     if (!away || !home) return '';
     return '/dashboard/matchup_compare.html?away=' + away + '&home=' + home;
   }
+  function abbrBox(name) {
+    var inner = window.ChaseEntity
+      ? ChaseEntity.html({ name: name, id: name, sport: sport })
+      : esc(name || '');
+    return '<span class="ca-team-abbr">' + inner + '</span>';
+  }
   function cardHtml(g) {
-    var names = (window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away)) +
-      ' @ ' +
-      (window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home));
     var mlbHref = mlbDeskHref(g);
-    var viewGame = mlbHref
-      ? '<p class="ca-helper"><a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open scouting desk</a></p>'
+    var primary = mlbHref
+      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Compare</a>'
       : '';
-    return '<article class="ca-card" data-game="' + esc(g.id) + '">' +
-      '<h2>' + names + '</h2>' +
-      '<p class="ca-helper">' + esc(kickoffTime(g)) + '</p>' +
+    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '">' +
+      '<div class="ca-slate-card__head">' +
+      abbrBox(g.away) +
+      '<span class="ca-slate-card__at">@</span>' +
+      abbrBox(g.home) +
+      '<time class="ca-slate-card__time">' + esc(kickoffTime(g)) + '</time>' +
+      '</div>' +
       bookLineHtml(g) +
-      viewGame +
-      '<p class="ca-helper"><a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a></p>' +
+      '<div class="ca-slate-card__actions">' +
+      primary +
+      '<a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a>' +
+      '</div>' +
       '</article>';
   }
   Promise.all([
@@ -341,9 +350,10 @@ MATCHUPS_JS = r"""
     var html = '<p class="ca-helper">' + nb.games.length + ' games grouped by kickoff (Eastern). Book lines are attributed prices, not Chase projections.</p>';
     html += '<div class="ca-board-list">';
     order.forEach(function (key) {
-      html += '<section><h2>' + esc(key) + '</h2>';
+      html += '<section class="ca-slate-group"><h2 class="ca-slate-group__title">' + esc(key) + '</h2>';
+      html += '<div class="ca-slate-grid">';
       grouped[key].forEach(function (g) { html += cardHtml(g); });
-      html += '</section>';
+      html += '</div></section>';
     });
     html += '</div>';
     document.getElementById('slate').innerHTML = html;
@@ -441,7 +451,7 @@ def models_page() -> str:
     </header>
     <section class="ca-card ca-card-pad">
       <h2>Access</h2>
-      <p>Public Chase Analytics is the sports data and research desk: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks.</p>
+      <p>Public Chase Analytics is Opening, Matchups, and Compare: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks.</p>
       <p>Model Center is a separate product. Sign-in and entitlement are not wired on this stub. When they ship, this route will load the authenticated board instead of a teaser.</p>
       <p class="ca-helper">No projected scores, model lines, or confidence values are shown here.</p>
     </section>

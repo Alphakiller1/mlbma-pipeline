@@ -1152,6 +1152,17 @@ body.view-research .ca-page-identity { display: none; }
   font-size: 20px;
   font-weight: 800;
 }
+.hero-matchup-card .hmc-abbr-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--bg-4);
+}
 .hero-matchup-card .team-link--home .hmc-abbr {
   text-align: left;
 }

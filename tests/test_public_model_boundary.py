@@ -40,6 +40,9 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertNotIn("Sunday Night", blob)
         self.assertIn("matchup_compare.html?away=", blob)
         self.assertIn("Open this matchup in Model Center", blob)
+        self.assertIn("Open Compare", blob)
+        self.assertNotIn("Open scouting desk", blob)
+        self.assertIn("ca-slate-card", blob)
         self.assertIn("ca-btn--primary", blob)
         self.assertNotIn("ca-btn-primary", blob)
 
@@ -48,12 +51,3 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("function pickScore", js)
         self.assertIn("away_score: pickScore", js)
         self.assertIn("home_score: pickScore", js)
-
-    def test_public_matchups_group_by_kickoff_not_weekday_labels(self):
-        src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
-        blob = src.split("MATCHUPS_JS = r\"\"\"", 1)[1].split("\"\"\"", 1)[0]
-        self.assertIn("kickoffGroup", blob)
-        self.assertNotIn("Thursday", blob)
-        self.assertNotIn("Sunday Night", blob)
-        self.assertIn("matchup_compare.html?away=", blob)
-        self.assertIn("Open this matchup in Model Center", blob)

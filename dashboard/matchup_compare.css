@@ -69,6 +69,12 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+.mc-header-ranks {
+  margin-top: 8px;
+}
+.mc-header-side--home .mc-header-ranks {
+  justify-content: flex-end;
+}
 .mc-header-side--home .mc-header-name-row {
   flex-direction: row-reverse;
   justify-content: flex-start;

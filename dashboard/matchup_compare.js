@@ -850,6 +850,7 @@
       + '<span class="mc-team-abbr">' + esc(team) + '</span>'
       + (rec ? '<span class="mc-record-row">' + rec + '</span>' : '')
       + '</div>'
+      + '<div class="mc-header-ranks ca-rank-chips" data-side="' + align + '"></div>'
       + (form ? '<div class="mc-form-row">' + form + '</div>' : '')
       + '</div></a>';
   }

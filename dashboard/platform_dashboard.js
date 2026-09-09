@@ -368,13 +368,19 @@
     });
   }
 
+  function teamAccent(team) {
+    if (global.MLBMACharts && MLBMACharts.radarColorForTeam) return MLBMACharts.radarColorForTeam(team);
+    return '';
+  }
+
   function teamLinkHtml(team, logoFn, extraCls, side) {
     var sideCls = side === 'home' ? ' team-link--home' : ' team-link--away';
+    var accent = teamAccent(team);
+    var badgeStyle = accent ? ' style="background:' + accent + '"' : '';
+    var rec = global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '';
     return '<a href="' + teamProfileUrl(team) + '" class="team-link' + sideCls + (extraCls || '') + '" onclick="event.stopPropagation()">'
-      + logoFn(team, 48)
-      + '<span class="hmc-abbr">' + esc(team)
-      + (global.MLBMAStandings ? MLBMAStandings.recordHtml(team) : '')
-      + '</span>'
+      + '<span class="hmc-abbr hmc-abbr-badge"' + badgeStyle + '>' + esc(team) + '</span>'
+      + (rec ? '<span class="hmc-record">' + rec + '</span>' : '')
       + '</a>';
   }
 
@@ -553,7 +559,7 @@
     var logo = A ? A.teamLogoImg.bind(A) : function() { return ''; };
     var buildLineup = resolveLineupBlockBuilder();
     var lineupHtml = opts.lineupHtml != null ? opts.lineupHtml
-      : (buildLineup ? buildLineup(m, { expanded: true, hideToggle: true }) : '');
+      : (buildLineup ? buildLineup(m, { expanded: false, hideToggle: false }) : '');
     var extraCls = opts.extraClass ? ' ' + opts.extraClass : '';
     return '<article class="hero-matchup-card' + extraCls + '" data-away="' + esc(m.away) + '" data-home="' + esc(m.home) + '" data-gn="' + (m.gameNumber || 1) + '" data-game-pk="' + esc(m.gamePk || '') + '" role="link" tabindex="0">'
       + '<div class="hmc-row hmc-teams">'
@@ -562,15 +568,15 @@
       + '<div class="hmc-team">' + teamLinkHtml(m.home, logo, '', 'home') + '</div>'
       + gameMetaHtml(m)
       + '</div>'
-      + '<div class="hmc-row hmc-pitchers">'
-      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, hr9: m.awayHR9, whip: m.awayWHIP }, { eager: cardIdx < 3, pitchScore: m.awayPitchScore, mlbId: m.awaySPId })
-      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, hr9: m.homeHR9, whip: m.homeWHIP }, { eager: cardIdx < 3, pitchScore: m.homePitchScore, mlbId: m.homeSPId })
-      + '</div>'
-      + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
       + '<div class="hmc-osi-bar">'
       + '<span class="hmc-osi-val hmc-osi-val--away' + awayEdgeCls + '"><span class="hmc-osi-team">' + esc(m.away) + '</span>' + osiEdgeNumHtml(m.awayOSI) + '</span>'
       + '<div class="hmc-bar-track"><div class="hmc-bar-away" style="width:' + awayPct + '%"></div><div class="hmc-bar-home" style="width:' + (100 - awayPct) + '%"></div></div>'
       + '<span class="hmc-osi-val hmc-osi-val--home' + homeEdgeCls + '"><span class="hmc-osi-team">' + esc(m.home) + '</span>' + osiEdgeNumHtml(m.homeOSI) + '</span>'
+      + '</div>'
+      + '<div class="hmc-row hmc-edge-label">Lineup edge vs ' + handLabel + ' / ' + awayHandLabel + '</div>'
+      + '<div class="hmc-row hmc-pitchers">'
+      + spRow('Away SP', m.awaySP, m.awayHand, m.away, { k: m.awayK, bb: m.awayBB, hr9: m.awayHR9, whip: m.awayWHIP }, { eager: cardIdx < 3, pitchScore: m.awayPitchScore, mlbId: m.awaySPId })
+      + spRow('Home SP', m.homeSP, m.homeHand, m.home, { k: m.homeK, bb: m.homeBB, hr9: m.homeHR9, whip: m.homeWHIP }, { eager: cardIdx < 3, pitchScore: m.homePitchScore, mlbId: m.homeSPId })
       + '</div>'
       + '<div class="hmc-osi-sparklines" aria-hidden="true">'
       + '<span class="hmc-spark">' + teamOsiSparkline(m.away, m.homeHand) + '</span>'

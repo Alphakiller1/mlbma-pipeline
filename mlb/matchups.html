@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MLB Matchups — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908n">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908n">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908o">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908o">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="mlb">
@@ -104,17 +104,17 @@
     <div id="slate" class="ca-async" data-state="loading">Loading MLB board…</div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
-  <script src="/dashboard/design_layer_version.js?v=20260908n"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260908n"></script>
-  <script src="/dashboard/chase_sport_select.js?v=20260908n"></script>
-  <script src="/dashboard/sports/chase_board.js?v=20260908n"></script>
-  <script src="/dashboard/sports/mlb.js?v=20260908n"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260908n"></script>
-  <script src="/dashboard/chase_nav.js?v=20260908n"></script>
-  <script src="/dashboard/chase_shell.js?v=20260908n"></script>
-  <script src="/dashboard/chase_entity.js?v=20260908n"></script>
-  <script src="/dashboard/chase_metric.js?v=20260908n"></script>
-  <script src="/dashboard/chase_scope.js?v=20260908n"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260908o"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260908o"></script>
+  <script src="/dashboard/chase_sport_select.js?v=20260908o"></script>
+  <script src="/dashboard/sports/chase_board.js?v=20260908o"></script>
+  <script src="/dashboard/sports/mlb.js?v=20260908o"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260908o"></script>
+  <script src="/dashboard/chase_nav.js?v=20260908o"></script>
+  <script src="/dashboard/chase_shell.js?v=20260908o"></script>
+  <script src="/dashboard/chase_entity.js?v=20260908o"></script>
+  <script src="/dashboard/chase_metric.js?v=20260908o"></script>
+  <script src="/dashboard/chase_scope.js?v=20260908o"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportMLB;
   window.CHASE_SPORT_ID = "mlb";
@@ -162,20 +162,26 @@
     if (!away || !home) return '';
     return '/dashboard/matchup_compare.html?away=' + away + '&home=' + home;
   }
+  function abbrBox(name) {
+    return '<span class="ca-team-abbr">' + esc(name || '') + '</span>';
+  }
   function cardHtml(g) {
-    var names = (window.ChaseEntity ? ChaseEntity.html({ name: g.away, id: g.away, sport: sport }) : esc(g.away)) +
-      ' @ ' +
-      (window.ChaseEntity ? ChaseEntity.html({ name: g.home, id: g.home, sport: sport }) : esc(g.home));
     var mlbHref = mlbDeskHref(g);
-    var viewGame = mlbHref
-      ? '<p class="ca-helper"><a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open scouting desk</a></p>'
+    var primary = mlbHref
+      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Compare</a>'
       : '';
-    return '<article class="ca-card" data-game="' + esc(g.id) + '">' +
-      '<h2>' + names + '</h2>' +
-      '<p class="ca-helper">' + esc(kickoffTime(g)) + '</p>' +
+    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '">' +
+      '<div class="ca-slate-card__head">' +
+      abbrBox(g.away) +
+      '<span class="ca-slate-card__at">@</span>' +
+      abbrBox(g.home) +
+      '<time class="ca-slate-card__time">' + esc(kickoffTime(g)) + '</time>' +
+      '</div>' +
       bookLineHtml(g) +
-      viewGame +
-      '<p class="ca-helper"><a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a></p>' +
+      '<div class="ca-slate-card__actions">' +
+      primary +
+      '<a class="ca-text-link" href="/models/">Open this matchup in Model Center ★</a>' +
+      '</div>' +
       '</article>';
   }
   Promise.all([
@@ -216,9 +222,10 @@
     var html = '<p class="ca-helper">' + nb.games.length + ' games grouped by kickoff (Eastern). Book lines are attributed prices, not Chase projections.</p>';
     html += '<div class="ca-board-list">';
     order.forEach(function (key) {
-      html += '<section><h2>' + esc(key) + '</h2>';
+      html += '<section class="ca-slate-group"><h2 class="ca-slate-group__title">' + esc(key) + '</h2>';
+      html += '<div class="ca-slate-grid">';
       grouped[key].forEach(function (g) { html += cardHtml(g); });
-      html += '</section>';
+      html += '</div></section>';
     });
     html += '</div>';
     document.getElementById('slate').innerHTML = html;

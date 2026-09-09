@@ -1,6 +1,6 @@
 /*
- * L5 — patterns. Shared research-desk compositions.
- * Phase 2 ships the CSS contracts; Phase 3 wires Research Desk onto them.
+ * L5 — patterns. Shared Opening / Matchups / Compare compositions.
+ * Phase 2 ships the CSS contracts; later work wires Matchups onto them.
  */
 
 .ca-game-identity {
@@ -76,4 +76,107 @@
   font-size: var(--type-ui);
   font-weight: 600;
   color: var(--text-accent);
+}
+
+.ca-slate-group {
+  margin: 0 0 var(--space-6);
+}
+.ca-slate-group__title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--type-h3);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ca-slate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-3);
+}
+.ca-slate-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+}
+.ca-slate-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.ca-team-abbr img {
+  display: none;
+}
+.ca-team-abbr .ca-entity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ca-team-abbr .ca-entity-fallback {
+  display: inline;
+  font: inherit;
+  color: inherit;
+}
+.ca-team-abbr .ca-entity-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.ca-slate-card__at {
+  color: var(--text-muted);
+  font-size: var(--type-12);
+  font-weight: 800;
+}
+.ca-slate-card__time {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: var(--type-12);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ca-slate-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.ca-rank-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.ca-rank-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 64px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+}
+.ca-rank-chip__lab {
+  font-size: var(--type-12);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-meta);
+}
+.ca-rank-chip__val {
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
 }
