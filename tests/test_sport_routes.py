@@ -143,6 +143,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("chase_public_slate.js", mlb_home)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
+        self.assertIn("ca-expanded-cards-pref", card)
         self.assertIn("Open Matchup Analysis", card)
         self.assertIn("Expand matchup", card)
         self.assertNotIn("Board overview", mlb_home)

@@ -341,6 +341,22 @@
   align-items: center;
   font-size: var(--type-13);
 }
+.ca-slate-toolbar__pref {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+.ca-slate-toolbar__pref input,
+.ca-expanded-cards-pref {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  margin: 0;
+  flex-shrink: 0;
+}
 .ca-entry { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-gutter); }
 .ca-entry__grid {
   display: grid;

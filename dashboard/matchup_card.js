@@ -235,8 +235,9 @@
     var openId = params().get('game');
     var tabId = params().get('preview') || 'overview';
     var pack = groupGames(sport, games);
-    var html = '<div class="ca-slate-toolbar"><label><input type="checkbox" id="caExpandedCardsPref"' +
-      (expandedAll ? ' checked' : '') + '> Expanded cards</label></div>';
+    var html = '<div class="ca-slate-toolbar"><label class="ca-slate-toolbar__pref">'
+      + '<input type="checkbox" class="ca-expanded-cards-pref"'
+      + (expandedAll ? ' checked' : '') + '> <span>Expanded cards</span></label></div>';
     pack.order.forEach(function (key) {
       html += '<section class="ca-slate-group"><h2 class="ca-slate-group__title">' + esc(key) + '</h2>';
       html += '<div class="ca-slate-grid">';
@@ -255,7 +256,7 @@
     host.setAttribute('data-card-bound', '1');
     host.addEventListener('change', function (e) {
       var t = e.target;
-      if (!t || t.id !== 'caExpandedCardsPref') return;
+      if (!t || !t.classList || !t.classList.contains('ca-expanded-cards-pref')) return;
       expandedAll = !!t.checked;
       var pack = host.__slate || {};
       render(host, pack.sport, pack.games);
