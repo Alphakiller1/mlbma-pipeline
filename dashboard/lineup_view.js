@@ -1054,7 +1054,7 @@
         applyLeaguePoolsFromRows(awayRows.concat(homeRows));
         el.innerHTML = '<section class="lv-matchup-context" aria-labelledby="lvTeamContextHeading">'
           + '<h2 id="lvTeamContextHeading" class="lv-matchup-heading">Team context</h2>'
-          + '<p class="lv-matchup-lede">Descriptive league rank for these two clubs. Open Compare to league for the full board.</p>'
+          + '<p class="lv-matchup-lede">Descriptive league rank for these two clubs. Expand Compare to league for the full board.</p>'
           + '<div class="lv-scope-host"></div>'
           + '<div class="lv-matchup-teams">' + matchupTeamCard(state, 'away', awayRows) + matchupTeamCard(state, 'home', homeRows) + '</div>'
           + '<div class="lv-matchup-league"><div class="lv-body"></div></div></section>';

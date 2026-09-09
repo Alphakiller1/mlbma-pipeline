@@ -80,9 +80,10 @@ class SportRouteBuilderTests(unittest.TestCase):
 
     def test_opening_no_longer_links_public_team_rankings(self):
         opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        cards = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
         self.assertNotIn("href='team_rankings.html'", opening)
         self.assertNotIn('href="team_rankings.html"', opening)
-        self.assertIn("matchup_compare.html", opening)
+        self.assertIn("matchup_compare.html", cards)
 
     def test_matchup_scopebar_is_two_control(self):
         view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
@@ -117,6 +118,24 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertNotIn("sports/mlb.js", text)
         self.assertNotIn("= None;", text)
         self.assertIn("CHASE_SPORT_GEMS_LABEL = null", text)
+
+    def test_public_nav_has_no_compare_item(self):
+        nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
+        opening = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
+        js = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
+        self.assertNotIn('data-nav="compare"', nav)
+        self.assertNotIn(">Compare</a>", nav)
+        self.assertNotIn('data-nav="compare"', opening)
+        self.assertNotIn('ca-tool-card__title">Compare<', opening)
+        self.assertIn("matchup_compare.html') return 'matchups'", js)
+
+    def test_sport_home_is_the_matchup_card_slate(self):
+        src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
+        self.assertIn("body_js = RESULTS_JS if results else MATCHUPS_JS", src)
+        mlb_home = (ROOT / "mlb" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("ca-slate-card", mlb_home)
+        self.assertIn("Open Matchup Analysis", mlb_home)
+        self.assertNotIn("Board overview", mlb_home)
 
     def test_generated_pages_do_not_emit_python_none(self):
         for path in self._GENERATED:

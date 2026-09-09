@@ -1,5 +1,5 @@
 /*
- * L5 — patterns. Shared Opening / Matchups / Compare compositions.
+ * L5 — patterns. Shared Opening / Matchups compositions.
  * Phase 2 ships the CSS contracts; later work wires Matchups onto them.
  */
 
@@ -95,15 +95,8 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--space-3);
 }
-.ca-slate-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--surface-panel);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--elevation-2);
+.ca-slate-card[data-href] {
+  cursor: pointer;
 }
 .ca-slate-card__head {
   display: flex;

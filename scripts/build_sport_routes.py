@@ -126,25 +126,18 @@ def page(sport: str, *, kind: str = "index") -> str:
   <script src="/dashboard/chase_entity.js?v={STAMP}"></script>
   <script src="/dashboard/chase_metric.js?v={STAMP}"></script>
   <script src="/dashboard/chase_scope.js?v={STAMP}"></script>"""
-    body_js = RESULTS_JS if results else (MATCHUPS_JS if matchups else HUB_JS)
+    body_js = RESULTS_JS if results else MATCHUPS_JS
     mode = "evidence" if results else "slate"
     more_bits = []
-    if not matchups and not results and spec.get("matchups_href"):
-        more_bits.append(f'<a class="hub-pill" href="{spec["matchups_href"]}">Open matchups</a>')
     if not results:
         more_bits.append(f'<a class="hub-pill" href="/{sport}/results.html">Results</a>')
-    if matchups or results:
-        more_bits.append(f'<a class="hub-pill" href="/{sport}/">Board overview</a>')
     more_html = ('<p class="ca-helper">' + " ".join(more_bits) + "</p>") if more_bits else ""
-    if matchups:
-        lede = spec["lede"]
-        h1 = sport.upper() + " matchups"
-    elif results:
+    if results:
         lede = "Finals publish after games complete. This page lists the slate, not model performance."
         h1 = sport.upper() + " results"
     else:
         lede = spec["lede"]
-        h1 = spec["title"].split("—")[0].strip() + " board"
+        h1 = sport.upper() + " matchups"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -188,7 +181,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   window.CHASE_SPORT_ID = {json.dumps(sport)};
   window.CHASE_SPORT_PICKS_LABEL = {json.dumps(spec["picks_label"])};
   window.CHASE_SPORT_GEMS_LABEL = {json.dumps(spec["gems_label"])};
-  window.CHASE_SPORT_IS_MATCHUPS = {str(matchups).lower()};
+  window.CHASE_SPORT_IS_MATCHUPS = {str(not results).lower()};
   window.CHASE_SPORT_IS_RESULTS = {str(results).lower()};
   {body_js}
   </script>
@@ -296,9 +289,10 @@ MATCHUPS_JS = r"""
   function cardHtml(g) {
     var mlbHref = mlbDeskHref(g);
     var primary = mlbHref
-      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Compare</a>'
+      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Matchup Analysis</a>'
       : '';
-    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '">' +
+    var hrefAttr = mlbHref ? ' data-href="' + mlbHref + '" role="link" tabindex="0"' : '';
+    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '"' + hrefAttr + '>' +
       '<div class="ca-slate-card__head">' +
       abbrBox(g.away) +
       '<span class="ca-slate-card__at">@</span>' +
@@ -356,7 +350,16 @@ MATCHUPS_JS = r"""
       html += '</div></section>';
     });
     html += '</div>';
-    document.getElementById('slate').innerHTML = html;
+    var slateEl = document.getElementById('slate');
+    slateEl.innerHTML = html;
+    if (!slateEl.dataset.cardNav) {
+      slateEl.dataset.cardNav = '1';
+      slateEl.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        var card = e.target.closest('.ca-slate-card[data-href]');
+        if (card) window.location.href = card.getAttribute('data-href');
+      });
+    }
     if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
     if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
   }).catch(function (err) {
@@ -451,7 +454,7 @@ def models_page() -> str:
     </header>
     <section class="ca-card ca-card-pad">
       <h2>Access</h2>
-      <p>Public Chase Analytics is Opening, Matchups, and Compare: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks.</p>
+      <p>Public Chase Analytics is Opening and Matchups: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks inside each game.</p>
       <p>Model Center is a separate product. Sign-in and entitlement are not wired on this stub. When they ship, this route will load the authenticated board instead of a teaser.</p>
       <p class="ca-helper">No projected scores, model lines, or confidence values are shown here.</p>
     </section>

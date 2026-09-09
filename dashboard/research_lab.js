@@ -1246,8 +1246,8 @@ function profileWindowFieldsFromRow(row) {
     var cards = [
       { pane: 'splits-trends', title: 'Team Offense Research', use: 'OSI, ProjOSI, ABQ, RCV, OBR, PP-Gap, PALS, splits, trends', cta: 'Open Splits & Trends', icon: 'trending-up' },
       { pane: 'pitching', title: 'Pitcher Research', use: 'Pitching Score, OSI/ABQ/RCV/OBR Allowed, Pitcher OOR, L14 form, staleness', cta: 'Open Pitcher Lab', icon: 'target' },
-      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open Lineup vs Pitcher', icon: 'swords' },
-      { pane: 'compare', title: 'Compare', use: 'Lineup vs Lineup, Lineup vs SP, Lineup vs Bullpen, Pitcher vs Pitcher', cta: 'Open Compare', icon: 'swords' },
+      { pane: 'pitching-vs-lineup', title: 'Lineup vs Pitcher', use: 'Split lineup edge, starter vulnerability, F5/full-game context', cta: 'Open a matchup card', icon: 'swords' },
+      { pane: 'matchups', title: 'Matchup Analysis', use: 'Two clubs facing off: lineups, starter, bullpen, league rank', cta: 'Open a matchup card', icon: 'swords' },
       { pane: 'leaderboards', title: 'Leaderboards', use: 'Sortable rankings, split boards, metrics allowed', cta: 'Open Leaderboards', icon: 'trophy' }
     ];
     root.innerHTML = '<div class="rl-home-header"><h2 class="rl-workspace-title">Research Home</h2>'
@@ -1265,6 +1265,11 @@ function profileWindowFieldsFromRow(row) {
     root.querySelectorAll('[data-rl-pane]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var pane = btn.getAttribute('data-rl-pane');
+        if (pane === 'matchups' || pane === 'pitching-vs-lineup') {
+          window.location.hash = '#section-matchups-hero';
+          if (typeof global.syncDashboardView === 'function') global.syncDashboardView();
+          return;
+        }
         if (typeof global.showResearchSubtab === 'function') global.showResearchSubtab(pane);
       });
     });

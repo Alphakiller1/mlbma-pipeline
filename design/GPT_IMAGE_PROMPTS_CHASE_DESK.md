@@ -26,7 +26,7 @@ PRODUCT
 - Chase Analytics. Public product posts TWO sports only: MLB and NFL.
 - Never show WNBA, CFB, college football, basketball, or a four-sport switcher.
 - Sport chrome is exactly two pills: MLB and NFL. One is filled #9A6BFF when active.
-- Nav: Opening · Matchups · Compare · MLB · NFL · Model Center · Glossary. No Team Rankings. No Tools junk-drawer of extra sports.
+- Nav: Opening · Matchups · MLB · NFL · Model Center · Glossary. No Team Rankings. No Compare. No Tools junk-drawer of extra sports.
 - Broadcast scouting desk, not a betting app, not crypto, not generic SaaS, not a developer terminal.
 
 COLOR / SURFACE
@@ -70,11 +70,11 @@ Avoid: WNBA, CFB, four sport pills, Team Rankings as a top nav item, sportsbook 
 UI kit / style frame for Chase Analytics, not a full website. Dark #08090F, 1440×900.
 
 3×2 lacquered panels, labeled:
-1. Header: logo + Chase Analytics. Links Opening, Matchups, Compare, MLB, NFL, Model Center, Glossary. Exactly two sport names in the header. Freshness pill “Slate shown: Sep 8 · 6h”.
+1. Header: logo + Chase Analytics. Links Opening, Matchups, MLB, NFL, Model Center, Glossary. Exactly two sport names in the header. Freshness pill “Slate shown: Sep 8 · 6h”.
 2. Type: H1 “Opening Dashboard” in Roboto Condensed metallic silver. Eyebrow “CHASE ANALYTICS · MLB · NFL”. Body in DM Sans #A4A8B6.
-3. Controls: primary #9A6BFF “View Today's Matchups”; ghost “Compare”; sport pills MLB (filled) and NFL (outline). No third or fourth pill.
+3. Controls: primary #9A6BFF “View Today's Matchups”; ghost none. Sport pills MLB (filled) and NFL (outline). No third or fourth pill.
 4. MLB chips: Elite OSI 71, Good RCV 58, Watch ABQ 51, Poor OBR 42. Solid chips.
-5. Mini MLB card: NYY @ BOS, 7:10 ET, “Lineups: projected”, no spread, link “Open Compare”.
+5. Mini MLB card: NYY @ BOS, 7:10 ET, “Lineups: projected”, no spread, link “Open Matchup Analysis”.
 6. Mini NFL card: NE @ SEA, 8:20 PM ET, “Published book line: SEA −3 (book price, not a Chase projection)”, link “Open in Model Center”. No Model column.
 
 Footer caption: “Public desk · MLB and NFL only”.
@@ -131,7 +131,7 @@ Below, 2×2 lacquered tool cards with poster-mark icon rings:
 1. Tonight’s matchups
 2. Matchup analysis (team context inside the game)
 3. Trends
-4. Compare (lineup vs lineup / vs pitcher)
+4. Trends
 
 Signup, Discord, and Patreon are NOT in the first viewport. No “Need to Win”. No four-league hero. Looks like The Athletic data desk × FanGraphs.
 ```
@@ -199,7 +199,7 @@ H1: MLB matchups
 Lede: Tonight’s games, probable starters, weather, descriptive context. Forecasts in Model Center.
 
 Kickoff groups in Eastern time, e.g. “Monday, Sep 8”.
-Each card: away at home, time ET, probable SPs, weather one-liner, “Open Compare” primary button, “Open this matchup in Model Center” as text link.
+Each card: away at home, time ET, probable SPs, weather one-liner, “Open Matchup Analysis” primary button, “Open this matchup in Model Center” as text link.
 No model columns. No gems/picks jargon. No “priced markets”.
 
 Search field “Find a team or game”. Honest context bar freshness. Dense editorial board.

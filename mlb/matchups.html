@@ -25,7 +25,6 @@
     <div class="chase-nav-links">
       <a href="/dashboard/index.html" class="chase-nav-link" data-nav="opening">Opening</a>
       <a href="/dashboard/index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
-      <a href="/dashboard/matchup_compare.html" class="chase-nav-link" data-nav="compare">Compare</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
       <a href="/models/" class="chase-nav-link" data-nav="models">Model Center</a>
@@ -77,7 +76,6 @@
   <div class="chase-mobile-nav">
     <a href="/dashboard/index.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
     <a href="/dashboard/index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="/dashboard/matchup_compare.html" class="chase-mobile-link" data-nav="compare">Compare</a>
     <a href="/dashboard/batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
@@ -98,7 +96,7 @@
     </header>
     <div id="caContextBar" class="ca-context-bar"></div>
     <div id="sportSelect" class="ca-sport-switcher"></div>
-    <p class="ca-helper"><a class="hub-pill" href="/mlb/results.html">Results</a> <a class="hub-pill" href="/mlb/">Board overview</a></p>
+    <p class="ca-helper"><a class="hub-pill" href="/mlb/results.html">Results</a></p>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async" data-state="loading">Loading MLB board…</div>
@@ -163,14 +161,18 @@
     return '/dashboard/matchup_compare.html?away=' + away + '&home=' + home;
   }
   function abbrBox(name) {
-    return '<span class="ca-team-abbr">' + esc(name || '') + '</span>';
+    var inner = window.ChaseEntity
+      ? ChaseEntity.html({ name: name, id: name, sport: sport })
+      : esc(name || '');
+    return '<span class="ca-team-abbr">' + inner + '</span>';
   }
   function cardHtml(g) {
     var mlbHref = mlbDeskHref(g);
     var primary = mlbHref
-      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Compare</a>'
+      ? '<a class="ca-btn ca-btn--primary" href="' + mlbHref + '">Open Matchup Analysis</a>'
       : '';
-    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '">' +
+    var hrefAttr = mlbHref ? ' data-href="' + mlbHref + '" role="link" tabindex="0"' : '';
+    return '<article class="ca-card ca-slate-card" data-game="' + esc(g.id) + '"' + hrefAttr + '>' +
       '<div class="ca-slate-card__head">' +
       abbrBox(g.away) +
       '<span class="ca-slate-card__at">@</span>' +
@@ -228,7 +230,16 @@
       html += '</div></section>';
     });
     html += '</div>';
-    document.getElementById('slate').innerHTML = html;
+    var slateEl = document.getElementById('slate');
+    slateEl.innerHTML = html;
+    if (!slateEl.dataset.cardNav) {
+      slateEl.dataset.cardNav = '1';
+      slateEl.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        var card = e.target.closest('.ca-slate-card[data-href]');
+        if (card) window.location.href = card.getAttribute('data-href');
+      });
+    }
     if (window.ChaseAsyncState) ChaseAsyncState.ready(document.getElementById('slate'));
     if (!nb.games.length) ChaseAsyncState.render(document.getElementById('slate'), 'empty');
   }).catch(function (err) {

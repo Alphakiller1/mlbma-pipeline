@@ -616,7 +616,7 @@
       + '<p class="gloss-convention__lead">Every metric chip and heat-map cell follows the same rule: <strong>green = strong, red = weak</strong>. Values are graded against the current-season league pool, so a value keeps the same meaning across tables, profiles, and heat maps.</p>'
       + legend
       + '<ul class="gloss-convention__list">'
-      + '<li><strong>Uniform:</strong> A green OSI chip means the same thing on matchup Team context, Team Profile, and Compare.</li>'
+      + '<li><strong>Uniform:</strong> A green OSI chip means the same thing on Matchup Analysis, Team Profile, and Trends.</li>'
       + '<li><strong>Purple (#7C4DFF):</strong> brand chrome, section headers, and nav — never a data value color.</li>'
       + '<li><strong>Teal / orange split accents:</strong> framing for home/away or handedness — not metric grades.</li>'
       + '<li><strong>Inverted metrics:</strong> ERA, BB%, HR/9, and Allowed composites flip the scale (lower = greener). See Allowed note below.</li>'

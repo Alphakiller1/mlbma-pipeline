@@ -2774,7 +2774,6 @@ body.view-research .ca-lab { display: block; }
     <div class="chase-nav-links">
       <a href="index.html" class="chase-nav-link" data-nav="opening">Opening</a>
       <a href="index.html#section-matchups-hero" class="chase-nav-link" data-nav="matchups">Matchups</a>
-      <a href="matchup_compare.html" class="chase-nav-link" data-nav="compare">Compare</a>
       <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
       <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
       <a href="/models/" class="chase-nav-link" data-nav="models">Model Center</a>
@@ -2826,7 +2825,6 @@ body.view-research .ca-lab { display: block; }
   <div class="chase-mobile-nav">
     <a href="index.html" class="chase-mobile-link" data-nav="opening">Opening Dashboard</a>
     <a href="index.html#section-matchups-hero" class="chase-mobile-link" data-nav="matchups">Matchups</a>
-    <a href="matchup_compare.html" class="chase-mobile-link" data-nav="compare">Compare</a>
     <a href="batter_profile.html" class="chase-mobile-link">Batter Profile</a>
     <a href="/mlb/" class="chase-mobile-link" data-nav="mlb">MLB</a>
     <a href="/nfl/" class="chase-mobile-link" data-nav="nfl">NFL</a>
@@ -2922,7 +2920,7 @@ body.view-research .ca-lab { display: block; }
     <header class="ca-page-header">
       <p class="ca-eyebrow">Platform Workflows</p>
       <h2 class="ca-page-title">Matchups &amp; Research Tools</h2>
-      <p class="ca-page-header__sub ca-helper">Tonight's slate first — then form trends, head-to-head compare, and pitcher intelligence. Each tool uses the same OSI / RCV / ABQ layer.</p>
+      <p class="ca-page-header__sub ca-helper">Tonight's slate first — open a card for Matchup Analysis. Trends and pitcher intelligence stay in Research Lab.</p>
     </header>
     <div class="ca-tools__grid">
       <div class="ca-tool-card ca-tool-card--violet" role="link" tabindex="0"
@@ -2937,7 +2935,7 @@ body.view-research .ca-lab { display: block; }
         <ul class="ca-tool-card__list">
           <li>Probable SP stats, Pitch Score, and handedness context</li>
           <li>Projected batting orders with platoon coloring</li>
-          <li>Jump to full matchup compare for any game</li>
+          <li>Jump to Matchup Analysis from any game card</li>
         </ul>
         <div class="ca-tool-card__cta">Open Matchups <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
@@ -2971,20 +2969,6 @@ body.view-research .ca-lab { display: block; }
         </ul>
         <div class="ca-tool-card__cta">Open Trends <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
-      <div class="ca-tool-card ca-tool-card--purple" onclick="window.location.hash='#section-research-lab'; if(typeof syncDashboardView==='function') syncDashboardView(); if(typeof showResearchSubtab==='function') setTimeout(function(){showResearchSubtab('compare');},300);">
-        <div class="ca-tool-card__accent"></div>
-        <div class="ca-tool-card__icon">
-          <span class="ca-icon-circle"><i data-lucide="swords"></i></span>
-        </div>
-        <h3 class="ca-tool-card__title">Compare</h3>
-        <p class="ca-tool-card__lede">Head-to-head research for tonight's games — lineup vs lineup, lineup vs pitcher, and bullpen unit matchups in one workspace.</p>
-        <ul class="ca-tool-card__list">
-          <li>Lineup vs Lineup and vs probable SP grades</li>
-          <li>Bullpen OSI allowed and platoon fit</li>
-          <li>Lineup, starter, and bullpen unit context</li>
-        </ul>
-        <div class="ca-tool-card__cta">Open Compare <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
-      </div>
       <div class="ca-tool-card ca-tool-card--amber" role="link" tabindex="0"
         onclick="window.location.hash='#section-matchups-hero'; if(typeof syncDashboardView==='function') syncDashboardView();"
         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.hash='#section-matchups-hero';if(typeof syncDashboardView==='function')syncDashboardView();}">
@@ -2999,7 +2983,7 @@ body.view-research .ca-lab { display: block; }
           <li>Pitch Score against the unit he faces</li>
           <li>F5 vs full-game still a ScopeBar choice</li>
         </ul>
-        <div class="ca-tool-card__cta">Open Compare <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
+        <div class="ca-tool-card__cta">Open a matchup card <i data-lucide="arrow-right" style="width:14px;height:14px" aria-hidden="true"></i></div>
       </div>
     </div>
   </div>
@@ -8027,9 +8011,8 @@ function renderHomeResearchCards() {
   };
   var cards = [
     { tab: 'trends', title: 'Trends', uses: ['Hot and cold offense movement', 'L7/L14 form vs YTD validation', 'Total market and over/under timing'], cta: 'Open Trends' },
-    { tab: 'team-rankings', title: 'Matchup Analysis', uses: ['League rank beside every matchup value', 'Window and segment in the ScopeBar', 'Hand, park, and starter as stated context'], cta: 'Open Matchup Analysis' },
-    { tab: 'compare', title: 'Compare', uses: ['Lineup vs Lineup and Lineup vs Pitcher', 'Pitcher vs Pitcher and Bullpen matchups', 'Run line value and fantasy edge research'], cta: 'Open Compare' },
-    { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open Pitcher Intelligence' }
+    { tab: 'team-rankings', title: 'Matchup Analysis', uses: ['League rank beside every matchup value', 'Window and segment in the ScopeBar', 'Hand, park, and starter as stated context'], cta: 'Open a matchup card' },
+    { tab: 'pitching', title: 'Pitcher Intelligence', uses: ['ERA validation vs competition quality', 'Vulnerable starter flags for over bets', 'SP prop and F5 vs full-game decisions'], cta: 'Open a matchup card' }
   ];
   root.innerHTML = cards.map(function(c) {
     var icon = tabIcons[c.tab] || 'circle-dot';
@@ -8043,12 +8026,9 @@ function renderHomeResearchCards() {
   root.querySelectorAll('[data-rl-tab]').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var tab = btn.getAttribute('data-rl-tab');
-      if (tab === 'team-rankings') {
-        window.location.href = 'matchup_compare.html';
-        return;
-      }
-      if (tab === 'pitching') {
-        window.location.href = 'matchup_compare.html?compare=lvP';
+      if (tab === 'team-rankings' || tab === 'pitching') {
+        window.location.hash = '#section-matchups-hero';
+        if (typeof syncDashboardView === 'function') syncDashboardView();
         return;
       }
       try { sessionStorage.setItem('rlTab', tab); } catch (e) { /* ignore */ }

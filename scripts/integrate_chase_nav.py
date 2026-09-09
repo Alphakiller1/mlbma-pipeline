@@ -56,7 +56,6 @@ MOBILE_DRAWER_TAIL = (
     "  <div class=\"chase-mobile-nav\">\n"
     "    <a href=\"index.html\" class=\"chase-mobile-link\" data-nav=\"opening\">Opening Dashboard</a>\n"
     "    <a href=\"index.html#section-matchups-hero\" class=\"chase-mobile-link\" data-nav=\"matchups\">Matchups</a>\n"
-    "    <a href=\"matchup_compare.html\" class=\"chase-mobile-link\" data-nav=\"compare\">Compare</a>\n"
     "    <a href=\"batter_profile.html\" class=\"chase-mobile-link\">Batter Profile</a>\n"
     "    <a href=\"/mlb/\" class=\"chase-mobile-link\" data-nav=\"mlb\">MLB</a>\n"
     "    <a href=\"/nfl/\" class=\"chase-mobile-link\" data-nav=\"nfl\">NFL</a>\n"

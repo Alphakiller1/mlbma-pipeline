@@ -789,8 +789,8 @@
       + (meta.length ? '<span class="tp-tonight-compare__meta">' + meta.join(' · ') + '</span>' : '')
       + '</p>'
       + spLine
-      + '<p class="tp-tonight-compare__prompt">Full matchup analysis — starters, lineups, and side-by-side metrics — lives in <strong>Compare</strong>. Open the workspace for these two teams.</p>'
-      + '<a class="ca-btn ca-btn--primary ca-btn--sm tp-tonight-compare__cta" href="' + compareUrl + '">Open Compare →</a>'
+      + '<p class="tp-tonight-compare__prompt">Full Matchup Analysis for these two clubs — starters, lineups, and side-by-side metrics.</p>'
+      + '<a class="ca-btn ca-btn--primary ca-btn--sm tp-tonight-compare__cta" href="' + compareUrl + '">Open Matchup Analysis →</a>'
       + '</div></div>';
   }
 
