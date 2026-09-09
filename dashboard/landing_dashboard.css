@@ -1934,9 +1934,9 @@ body.opening-dashboard .opening-layer .ca-hero__title-accent {
 .opening-layer .ca-hero__eyebrow,
 .opening-layer .ca-tools__eyebrow,
 .opening-layer .ca-eyebrow {
-  color: var(--ca-gold, #F0C24A);
-  letter-spacing: 0.16em;
-  text-shadow: 0 0 14px rgba(240, 194, 74, 0.17);
+  color: var(--text-2, #A4A8B6);
+  letter-spacing: 0.14em;
+  text-shadow: none;
 }
 
 .opening-layer .ca-market__card,

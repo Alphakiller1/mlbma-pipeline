@@ -237,13 +237,37 @@ h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   background-image: none;
 }
 
-/* Eyebrow label */
+/* Eyebrow label — all-caps tracked meta, never a display title */
 .ca-eyebrow {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ca-purple-light);
+  color: var(--text-2, #A4A8B6);
+}
+
+.ca-lede {
+  margin: 0;
+  max-width: 54ch;
+  font-family: var(--font, inherit);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-2, #A4A8B6);
+}
+
+.ca-meta {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-3, #6E7383);
+}
+
+.ca-desk-head {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  max-width: none;
 }
 
 /* Desk surface — hairline, no float, no violet glow */
@@ -910,17 +934,27 @@ table.ca-table td.sort-active,
 }
 
 /* Typography scale */
-.ca-page-title {
+.ca-page-title,
+.ca-desk-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.375rem);
   font-weight: 800;
-  letter-spacing: -0.015em;
+  letter-spacing: 0.02em;
   line-height: 1.15;
+  text-transform: none;
   background: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+}
+
+.ca-page-title {
+  font-size: clamp(2rem, 4vw, 3.375rem);
+}
+
+.ca-desk-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
 }
 
 .ca-section-title {
@@ -1376,8 +1410,11 @@ select option {
   margin-top: 16px;
 }
 
-h1.ca-page-title {
-  margin: 10px 0 0;
+h1.ca-page-title,
+h2.ca-desk-title {
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-transform: none;
   background: linear-gradient(180deg, #FFFFFF 0%, #E9EAF0 38%, #9DA0AE 56%, #D7D9E2 72%, #FFFFFF 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;

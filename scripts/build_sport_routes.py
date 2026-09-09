@@ -22,7 +22,7 @@ SPORTS = {
         "global": "ChaseSportMLB",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "Probable starters, lineup status, bullpen availability, conditions, and recent context.",
+        "lede": "Tonight’s games, probable starters, weather, and descriptive context. Forecasts stay in Model Center.",
         "matchups_href": "/mlb/matchups.html",
     },
     "nfl": {
@@ -134,7 +134,7 @@ def page(sport: str, *, kind: str = "index") -> str:
     more_html = ('<p class="ca-helper">' + " ".join(more_bits) + "</p>") if more_bits else ""
     if results:
         lede = "Finals publish after games complete. This page lists the slate, not model performance."
-        h1 = sport.upper() + " results"
+        h1 = sport.upper() + " Results"
     else:
         lede = spec["lede"]
         h1 = sport.upper() + " Matchups"
@@ -159,10 +159,10 @@ def page(sport: str, *, kind: str = "index") -> str:
 {sport_nav()}
   <div id="caContextBar" class="ca-context-bar" role="status"></div>
   <main class="container ca-page-shell ca-shell-main">
-    <header class="ca-surface-header">
-      <p class="ca-eyebrow">Chase Analytics · {sport.upper()} · Factual data only</p>
+    <header class="ca-desk-head ca-surface-header">
+      <p class="ca-eyebrow">Chase Analytics · {sport.upper()}</p>
       <h1 class="ca-page-title">{h1}</h1>
-      <p class="ca-helper">{lede}</p>
+      <p class="ca-lede">{lede}</p>
     </header>
     <div id="sportSelect" class="ca-sport-switcher"></div>
     {more_html}

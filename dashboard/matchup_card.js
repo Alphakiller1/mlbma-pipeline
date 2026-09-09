@@ -222,7 +222,7 @@
       '<button type="button" class="ca-desk-chip' + (filter === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>' +
       '<button type="button" class="ca-desk-chip' + (filter === 'lineups' ? ' is-on' : '') + '" data-filter="lineups">Lineups confirmed</button>' +
       '</div></div>';
-    html += '<p class="ca-desk-count">' + games.length + ' games available</p>';
+    html += '<p class="ca-desk-count ca-meta">' + games.length + ' games on slate</p>';
     return html;
   }
 
