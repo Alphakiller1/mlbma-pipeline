@@ -142,9 +142,14 @@
     var supplied = game[side + '_name'];
     var name = teamName(sport, abbr, supplied);
     var record = game[side + '_record'];
+    // The abbreviation is a scan aid shown alongside the full name, never in
+    // place of it — public content rules require the official full name to stay
+    // visible. aria-hidden keeps screen readers on the full name only.
+    var code = String(abbr || '').toUpperCase();
     return '<div class="ca-matchup-card__club ca-matchup-card__club--' + side + '">' +
       logoHtml(sport, abbr, supplied, 52, 'ca-matchup-logo') +
       '<div class="ca-matchup-card__club-copy">' +
+      (code ? '<span class="ca-matchup-card__abbr" aria-hidden="true">' + esc(code) + '</span>' : '') +
       '<span class="ca-matchup-card__name">' + esc(name) + '</span>' +
       (record ? '<span class="ca-matchup-card__record">' + esc(record) + '</span>' : '') +
       '</div></div>';
@@ -362,7 +367,12 @@
     if (global.ChaseShell && ChaseShell.setContext) ChaseShell.setContext(fields);
     var context = document.getElementById('caContextBar');
     if (context && !result.generatedAt) {
-      context.textContent = sport.toUpperCase() + ' · ' + result.source +
+      // AUDIT B3: this printed result.source verbatim, so the bar read
+      // "MLB · ok" — a machine status value rendered as visible copy.
+      var reading = result.games.length
+        ? result.games.length + (result.games.length === 1 ? ' game' : ' games') + ' on the published slate'
+        : 'No games on the published slate';
+      context.textContent = sport.toUpperCase() + ' · ' + reading +
         (result.dateIso ? ' · ' + longDate(result.dateIso) : '');
       context.setAttribute('data-state', fields.state);
     }

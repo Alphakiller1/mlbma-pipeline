@@ -299,11 +299,27 @@
     var age = slateAgeDays(fields.slateDateEt);
     var slate = fields.slateDateEt ? fmtSlateDate(fields.slateDateEt) : '';
     var state = fields.state || fields.freshness || 'unknown';
-    if (age != null && age > 0) state = 'stale ' + age + 'd';
-    else if (age != null && age <= 0 && (state === 'ok' || state === 'current')) state = 'current';
+    // AUDIT B3: this pushed the raw state token, so the production context bar
+    // read "MLB · ok" and "NFL · ok". Map machine states to reader-facing copy;
+    // anything unrecognised falls back to the neutral sentence rather than
+    // printing an internal token.
+    var reading;
+    if (age != null && age > 0) {
+      reading = 'Slate is ' + age + (age === 1 ? ' day old' : ' days old');
+    } else if (state === 'ok' || state === 'current') {
+      reading = 'Published matchup data';
+    } else if (state === 'empty') {
+      reading = 'No games published';
+    } else if (state === 'error') {
+      reading = 'Data unavailable';
+    } else if (state === 'loading') {
+      reading = 'Loading published data';
+    } else {
+      reading = 'Freshness not published';
+    }
     var parts = [sport];
     if (slate) parts.push(slate);
-    parts.push(state);
+    parts.push(reading);
     return parts.join(' · ');
   }
 

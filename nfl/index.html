@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFL — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909q">
-  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v=20260909q">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260909r">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v=20260909r">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="nfl" data-ca-product="research">
@@ -23,11 +23,14 @@
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
-      <a href="/" class="chase-nav-link" data-nav="home">Home</a>
+      <span class="chase-nav-product">Matchup research</span>
+      <span class="chase-nav-rule" aria-hidden="true"></span>
+      <nav class="chase-sport-tabs" aria-label="Sport">
+        <a href="/mlb/" class="chase-sport-tab" data-nav="mlb" data-state="live">MLB</a>
+        <a href="/nfl/" class="chase-sport-tab" data-nav="nfl" data-state="live">NFL</a>
+      </nav>
       <a href="/#matchupDesk" class="chase-nav-link" data-nav="matchups">Matchups</a>
-      <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
-      <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
-      <a href="/dashboard/glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+      <a href="/dashboard/glossary" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
       <a href="/model-center/" class="ca-btn ca-btn--primary chase-nav-model chase-nav-link" data-nav="models">Model Center</a>
     <div class="chase-status">
@@ -88,16 +91,16 @@
     <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading NFL slate…</div></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
-  <script src="/dashboard/design_layer_version.js?v=20260909q"></script>
-  <script src="/dashboard/mlbma_assets.js?v=20260909q"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260909q"></script>
-  <script src="/dashboard/sports/public_sport_registry.js?v=20260909q"></script>
-  <script src="/dashboard/sports/chase_public_slate.js?v=20260909q"></script>
-  <script src="/dashboard/matchup_card.js?v=20260909q"></script>
-  <script src="/dashboard/sports/nfl.js?v=20260909q"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260909q"></script>
-  <script src="/dashboard/chase_nav.js?v=20260909q"></script>
-  <script src="/dashboard/chase_shell.js?v=20260909q"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260909r"></script>
+  <script src="/dashboard/mlbma_assets.js?v=20260909r"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260909r"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v=20260909r"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v=20260909r"></script>
+  <script src="/dashboard/matchup_card.js?v=20260909r"></script>
+  <script src="/dashboard/sports/nfl.js?v=20260909r"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260909r"></script>
+  <script src="/dashboard/chase_nav.js?v=20260909r"></script>
+  <script src="/dashboard/chase_shell.js?v=20260909r"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportNFL;
   window.CHASE_SPORT_ID = "nfl";

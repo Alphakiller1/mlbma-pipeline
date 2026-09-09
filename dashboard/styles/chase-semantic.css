@@ -25,11 +25,22 @@
   --surface-2: var(--ca-ink-800);
   --surface-3: var(--ca-ink-750);
 
+  /* Lacquered board fills (contract §4.0: opaque dark gradient first, gloss on
+     top). These are gradients, so they are only ever valid in `background`,
+     never `background-color`. Solid roles above stay solid for that reason. */
+  --surface-board: var(--ca-grad-panel);
+  --surface-board-raised: linear-gradient(180deg, var(--ca-ink-750) 0%, var(--ca-ink-850) 60%, var(--ca-ink-900) 100%);
+  --surface-field: linear-gradient(180deg, var(--ca-ink-800) 0%, var(--ca-ink-850) 100%);
+  --canvas-ambient: var(--ca-grad-violet-top), var(--ca-grad-violet-bottom);
+
   /* —— Text —— */
   --text-primary: var(--ca-paper-50);
   --text-secondary: var(--ca-paper-400);
   --text-meta: var(--ca-paper-400);
-  --text-muted: var(--ca-paper-500);
+  /* Was --ca-paper-500 (#6E7383), which measured 3.89–4.02:1 on the card and
+     canvas grounds — under AA everywhere it appeared. --ca-paper-400 clears
+     4.5:1 on both --ca-ink-850 and --ca-ink-1000. */
+  --text-muted: var(--ca-paper-400);
   --text-disabled: var(--ca-paper-600);
   --text-accent: var(--ca-violet-300);
   --text-on-accent: var(--ca-paper-50);
@@ -49,6 +60,15 @@
   --accent-strong: var(--ca-violet-700);
   --accent-text: var(--ca-violet-300);
   --accent-glow: var(--ca-violet-a-32);
+  /* Board chrome: the 3px brand edge and the top-edge glint that reads as the
+     light source. Roles, so L5–L7 never reach for a --ca-* primitive. */
+  --edge-brand: var(--ca-grad-brand);
+  --edge-glint: linear-gradient(90deg, var(--ca-violet-a-32), transparent 70%);
+
+  /* —— Status tints (chip grounds) —— */
+  --tint-positive: var(--ca-green-a-13);
+  --tint-caution: var(--ca-amber-a-13);
+  --tint-negative: var(--ca-red-a-13);
 
   /* —— Mark (chrome) vs value (readable data) —— */
   --mark-positive: var(--ca-green-500);
@@ -107,13 +127,20 @@
   --type-24: 24px;
   --type-28: 28px;
   --type-32: 32px;
+  --type-40: 40px;
+  --type-48: 48px;
+  --type-64: 64px;
   --type-meta: var(--type-12);
   --type-ui: var(--type-14);
   --type-body: var(--type-14);
   --type-h3: var(--type-18);
   --type-h2: var(--type-24);
-  --type-h1: var(--type-28);
-  --type-score: var(--type-32);
+  /* Display sizes scale with the viewport. The flat 28/32px h1 made the 1440px
+     layout render at mobile type size — see audit D3. */
+  --type-h1: clamp(28px, 1.4rem + 1.5vw, 44px);
+  --type-display: clamp(32px, 1.5rem + 2.4vw, 56px);
+  --type-score: clamp(32px, 1.6rem + 2.2vw, 52px);
+  --type-section: clamp(20px, 1rem + 0.7vw, 26px);
   --leading-tight: 1.15;
   --leading-body: 1.45;
   --tracking-caps: 0.08em;
@@ -138,11 +165,16 @@
   --radius-pill: 999px;
 
   /* —— Elevation —— */
+  /* Elevation carries the inset top-edge highlight the contract calls for, so
+     a board reads as a lit solid rather than an outline. Audit D1: the ramp
+     used to be plain drop shadows and --elevation-glow was defined but never
+     consumed by any rule. */
   --elevation-0: none;
-  --elevation-1: 0 1px 2px var(--shadow-board);
-  --elevation-2: 0 4px 16px var(--shadow-board);
-  --elevation-3: 0 16px 48px var(--shadow-deep);
+  --elevation-1: 0 1px 2px var(--shadow-board), inset 0 1px 0 var(--ca-white-a-06);
+  --elevation-2: 0 4px 16px var(--shadow-board), inset 0 1px 0 var(--ca-white-a-08);
+  --elevation-3: 0 16px 48px var(--shadow-deep), inset 0 1px 0 var(--ca-white-a-08);
   --elevation-glow: var(--ca-glow-violet);
+  --elevation-glow-strong: var(--ca-glow-violet-strong);
 
   /* —— Motion —— */
   --motion-fast: 120ms;

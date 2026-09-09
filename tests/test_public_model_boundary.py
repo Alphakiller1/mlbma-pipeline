@@ -65,7 +65,15 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("Full matchup analysis", card)
         self.assertIn("ca-matchup-card", card)
         self.assertIn("aria-expanded", card)
-        self.assertNotIn("ca-matchup-card__abbr", card)
+        # The rule is that an abbreviation must never REPLACE the official full
+        # name as the visible identity (style lock, GPT_IMAGE_PROMPTS_CHASE_DESK
+        # .md). The 2026-09-09 desk restore shows both, per the reference
+        # renderings, so assert the intent rather than banning the class: the
+        # abbreviation is decorative (aria-hidden) and the full name is still
+        # rendered in the same block.
+        self.assertIn("ca-matchup-card__abbr", card)
+        self.assertIn('class="ca-matchup-card__abbr" aria-hidden="true"', card)
+        self.assertIn("ca-matchup-card__name", card)
         self.assertNotIn("BOARD_URL", blob)
 
     def test_local_cloudflare_deploy_keeps_public_slates(self):
