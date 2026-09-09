@@ -106,6 +106,7 @@ def stamp_hrefs(text: str) -> str:
     text = re.sub(r"(mlbma_assets\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(mlbma_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     text = re.sub(r"(matchup_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    text = re.sub(r"(pitch_mix_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
     if "chase-tokens-v1.css" not in text and "mlbma_design_system.css" in text:
         text = text.replace(
             f'<link rel="stylesheet" href="mlbma_design_system.css?v={STAMP}">',

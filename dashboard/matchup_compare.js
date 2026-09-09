@@ -42,7 +42,11 @@
     { id: 'overview', label: 'Overview' },
     { id: 'lvL', label: 'Lineups' },
     { id: 'lvP', label: 'Starting Pitchers' },
-    { id: 'lvB', label: 'Bullpen' }
+    { id: 'lvB', label: 'Bullpen' },
+    { id: 'splits', label: 'Offensive Splits' },
+    { id: 'mix', label: 'Pitch Mix' },
+    { id: 'form', label: 'Recent Form' },
+    { id: 'sources', label: 'Sources' }
   ];
   var COMPARE_IDS = COMPARE_MODES.map(function(x) { return x.id; });
   var _compareCtx = null;
@@ -589,7 +593,50 @@
       + '<a class="ca-btn ca-btn--primary" href="' + href + '">Open Model Center →</a></aside>';
   }
 
-  function renderPaneOverview(ctx) {
+  function usageBarsHtml(ctx, pitcherName) {
+    var PM = global.MLBMAPitchMix;
+    if (!PM || !ctx.pitchMix) {
+      return '<p class="ca-helper">Pitch-mix bars load from Pitch_Mix_Pitcher after scrape_pitch_mix.</p>';
+    }
+    var rows = PM.lookupRows(ctx.pitchMix.byPitcherName, pitcherName).map(function(row) {
+      return PM.pitchMixRowStats(row, 'sp');
+    }).filter(function(s) { return s && s.usage != null && s.usage > 0; });
+    rows.sort(function(a, b) { return (b.usage || 0) - (a.usage || 0); });
+    rows = rows.slice(0, 6);
+    if (!rows.length) {
+      return '<p class="ca-helper">No pitch-usage rows matched ' + esc(pitcherName || 'this starter') + '.</p>';
+    }
+    var max = rows[0].usage || 1;
+    return '<div class="mc-usage-list">' + rows.map(function(s) {
+      var pct = Math.max(4, Math.round((s.usage / max) * 100));
+      var shown = s.usage > 1 ? s.usage.toFixed(1) : (s.usage * 100).toFixed(1);
+      return '<div class="mc-usage-row"><span class="mc-usage-lab">' + esc(s.label) + '</span>'
+        + '<span class="mc-usage-track"><span class="mc-usage-fill" style="width:' + pct + '%"></span></span>'
+        + '<span class="mc-usage-pct">' + shown + '%</span></div>';
+    }).join('') + '</div>';
+  }
+
+  function overviewStarterCard(ctx, side) {
+    var m = ctx.m;
+    var name = side === 'away' ? (m.awaySP || 'TBD') : (m.homeSP || 'TBD');
+    var hand = side === 'away' ? m.awayHand : m.homeHand;
+    var team = side === 'away' ? m.away : m.home;
+    var met = side === 'away' ? ctx.awayMet : ctx.homeMet;
+    var era = met && met.era != null ? Number(met.era).toFixed(2) : (side === 'away' ? m.awayERA : m.homeERA);
+    var k = met && met.kPct != null ? Number(met.kPct).toFixed(1) + '%' : '';
+    var shot = S.headshot ? S.headshot(name, null, { crop: 'compare', eager: true }) : '';
+    var splits = spAllowedSplitTableHtml(ctx.data && ctx.data.spMetricSplits, name, team);
+    return '<article class="mc-card mc-sp-desk">'
+      + '<div class="mc-sp-desk__head">' + shot
+      + '<div><strong>' + (name === 'TBD' ? 'TBD' : '<a href="' + pitcherProfileUrl(name) + '">' + esc(name) + '</a>') + '</strong>'
+      + '<p class="ca-helper">' + esc(team) + ' · ' + esc((hand || '?') + 'HP')
+      + (era ? ' · ERA ' + esc(era) : '') + (k ? ' · K% ' + esc(k) : '') + '</p></div></div>'
+      + '<h3>Pitch usage</h3>' + usageBarsHtml(ctx, name)
+      + '<h3>Handedness splits</h3>' + splits
+      + '</article>';
+  }
+
+  function renderPaneOverview(ctx, state) {
     var m = ctx.m;
     var w = wxBits(ctx.weather);
     var stadium = m.stadium || '—';
@@ -599,14 +646,24 @@
     var homeForm = global.MLBMAStandings && MLBMAStandings.formStripHtml
       ? MLBMAStandings.formStripHtml(m.home, { mirror: false }) : '';
     var lede = esc(m.away) + ' at ' + esc(m.home)
-      + (m.time ? ' · ' + esc(m.time) : '')
-      + ' at ' + esc(stadium) + '. '
-      + 'Starters: ' + esc(m.awaySP || 'TBD') + ' vs ' + esc(m.homeSP || 'TBD') + '. '
-      + 'Public Matchup Analysis is descriptive — forecasts stay in Model Center.';
+      + (m.time ? ' · ' + esc(m.time) + ' ET' : '')
+      + ' at ' + esc(stadium) + '. Starters ' + esc(m.awaySP || 'TBD')
+      + ' and ' + esc(m.homeSP || 'TBD') + '. Lineups '
+      + ((ctx.awayLineup && ctx.awayLineup.length >= 5) ? 'confirmed' : 'projected') + ' / '
+      + ((ctx.homeLineup && ctx.homeLineup.length >= 5) ? 'confirmed' : 'projected')
+      + '. Descriptive research only.';
     function kv(k, v) {
       return '<div class="mc-kv"><dt>' + esc(k) + '</dt><dd>' + (v || '—') + '</dd></div>';
     }
-    return '<div class="mc-overview-grid">'
+    var lineups = '';
+    if (global.MatchupLineupCompare && MatchupLineupCompare.teamCardHtml) {
+      lineups = '<div class="mc-desk-lineups">'
+        + MatchupLineupCompare.teamCardHtml(m.away, 'away', ctx.awayLineup, ctx, state || getCompareState())
+        + MatchupLineupCompare.teamCardHtml(m.home, 'home', ctx.homeLineup, ctx, state || getCompareState())
+        + '</div>';
+    }
+    return '<div class="mc-desk">'
+      + '<div class="mc-desk__main">'
       + '<section class="mc-card mc-overview-story"><h2>Game context</h2><p>' + lede + '</p></section>'
       + '<section class="mc-card"><h2>Key information</h2><dl class="mc-kv-list">'
       + kv('Venue', esc(stadium))
@@ -617,16 +674,68 @@
       + kv('Away lineup', ctx.awayLineup && ctx.awayLineup.length >= 5 ? 'Confirmed' : 'Projected')
       + kv('Home lineup', ctx.homeLineup && ctx.homeLineup.length >= 5 ? 'Confirmed' : 'Projected')
       + '</dl></section>'
+      + '<div class="mc-desk-starters">' + overviewStarterCard(ctx, 'away') + overviewStarterCard(ctx, 'home') + '</div>'
+      + lineups
+      + '<section class="mc-card"><h2>Bullpen availability</h2>'
+      + '<div class="mc-desk-bp"><div id="mcDeskBpAway"></div><div id="mcDeskBpHome"></div></div></section>'
+      + '</div>'
+      + '<aside class="mc-desk__rail">'
       + '<section class="mc-card"><h2>Recent form</h2>'
-      + '<div class="mc-form-pair"><div><strong>' + esc(m.away) + '</strong>' + (awayForm || '<p class="ca-helper">Last-5 unavailable</p>') + '</div>'
-      + '<div><strong>' + esc(m.home) + '</strong>' + (homeForm || '<p class="ca-helper">Last-5 unavailable</p>') + '</div></div></section>'
+      + '<div id="mcDeskForm">'
+      + '<div><strong>' + esc(m.away) + '</strong>' + (awayForm || '<p class="ca-helper">Last 10 loads from MLB standings.</p>') + '</div>'
+      + '<div><strong>' + esc(m.home) + '</strong>' + (homeForm || '<p class="ca-helper">Last 10 loads from MLB standings.</p>') + '</div></div></section>'
+      + '<section class="mc-card"><h2>Rest &amp; travel</h2><p class="ca-helper">Rest days and travel miles are not on the public matchup contract yet. They appear here when the slate feed publishes them.</p></section>'
       + '<section class="mc-card"><h2>Park &amp; weather</h2><p class="ca-helper">'
       + (w.cond || w.temp || w.wind
         ? esc([w.temp ? w.temp + '°' : '', w.cond, w.wind].filter(Boolean).join(' · '))
         : 'Park and weather notes publish when the weather feed has a reading for this game.')
       + '</p></section>'
       + '<section class="mc-card"><h2>Data sources</h2><p class="mc-source-row">MLB · Baseball Savant · FanGraphs · RotoWire</p></section>'
-      + '</div>';
+      + '</aside></div>';
+  }
+
+  function renderPaneSplits(ctx) {
+    return '<h2 class="mc-pane-title">Offensive Splits</h2>'
+      + (global.MatchupOffenseSplits ? MatchupOffenseSplits.renderSection(ctx) : '<p class="ca-helper">Splits module not loaded.</p>');
+  }
+
+  function renderPaneMix(ctx) {
+    return '<h2 class="mc-pane-title">Pitch Mix</h2>'
+      + '<p class="mc-pane-desc">Starter arsenal usage. Full pitcher-vs-lineup table lives on Starting Pitchers.</p>'
+      + '<div class="mc-desk-starters">' + overviewStarterCard(ctx, 'away') + overviewStarterCard(ctx, 'home') + '</div>';
+  }
+
+  function renderPaneForm(ctx) {
+    var m = ctx.m;
+    var a = global.MLBMAStandings && MLBMAStandings.formStripHtml ? MLBMAStandings.formStripHtml(m.away) : '';
+    var h = global.MLBMAStandings && MLBMAStandings.formStripHtml ? MLBMAStandings.formStripHtml(m.home) : '';
+    return '<h2 class="mc-pane-title">Recent Form</h2><div class="mc-form-pair">'
+      + '<section class="mc-card"><strong>' + esc(m.away) + '</strong>' + (a || '<p class="ca-helper">Unavailable</p>') + '</section>'
+      + '<section class="mc-card"><strong>' + esc(m.home) + '</strong>' + (h || '<p class="ca-helper">Unavailable</p>') + '</section></div>';
+  }
+
+  function renderPaneSources() {
+    return '<h2 class="mc-pane-title">Sources</h2><section class="mc-card"><p class="mc-source-row">MLB Stats API · Baseball Savant · FanGraphs · RotoWire · pipeline weather.</p>'
+      + '<p class="ca-helper">Public Matchup Analysis is factual context. Model numbers stay in Model Center.</p></section>';
+  }
+
+  function hydrateOverview(root, ctx) {
+    if (!root) return;
+    if (global.MLBMAStandings && MLBMAStandings.loadRecentForm) {
+      MLBMAStandings.loadRecentForm().then(function() {
+        var host = root.querySelector('#mcDeskForm');
+        if (!host) return;
+        var m = ctx.m;
+        host.innerHTML = '<div><strong>' + esc(m.away) + '</strong>'
+          + (MLBMAStandings.formStripHtml(m.away) || '<p class="ca-helper">Last 10 unavailable</p>') + '</div>'
+          + '<div><strong>' + esc(m.home) + '</strong>'
+          + (MLBMAStandings.formStripHtml(m.home) || '<p class="ca-helper">Last 10 unavailable</p>') + '</div>';
+      }).catch(function() { /* standings optional */ });
+    }
+    if (global.BullpenUsage && BullpenUsage.paintForTeam) {
+      BullpenUsage.paintForTeam('mcDeskBpAway', ctx.m.away, { days: 3, compact: true });
+      BullpenUsage.paintForTeam('mcDeskBpHome', ctx.m.home, { days: 3, compact: true });
+    }
   }
 
   function renderPaneLvL(ctx, state) {
@@ -778,6 +887,7 @@
         mountChartsForMode(mode, ctx);
         if (mode === 'lvP') hydrateLvP(root, ctx, state);
         if (mode === 'lvB') hydrateLvB(root, ctx, state);
+        if (mode === 'overview') hydrateOverview(root, ctx);
       });
     });
     bindSubSelectors(root, ctx, state);
@@ -868,24 +978,40 @@
       teamProfiles: data.teamProfiles || {},
       offenseRankIndex: data.offenseRankIndex || null,
       batterIndex: data.batterIndex || null,
-      h2h: h2h
+      h2h: h2h,
+      data: data
     };
+    if (global.MLBMAPitchMix && MLBMAPitchMix.buildIndex) {
+      ctx.pitchMix = MLBMAPitchMix.buildIndex({
+        pitcherL14: data.pitchMixPitcherL14,
+        pitcherYtd: data.pitchMixPitcher,
+        teamBattingL14: data.pitchMixTeamBattingL14,
+        teamBattingYtd: data.pitchMixTeamBatting,
+        batterL14: data.pitchMixBatterL14,
+        batterYtd: []
+      });
+    }
     _compareCtx = ctx;
 
     root.innerHTML = ''
       + sectionHeader(ctx)
       + compareNavHtml(state.mode)
       + '<div class="mc-compare-panes">'
-      + paneWrap('overview', state.mode === 'overview', renderPaneOverview(ctx))
+      + paneWrap('overview', state.mode === 'overview', renderPaneOverview(ctx, state))
       + paneWrap('lvL', state.mode === 'lvL', renderPaneLvL(ctx, state))
       + paneWrap('lvP', state.mode === 'lvP', renderPaneLvP(ctx, state))
       + paneWrap('lvB', state.mode === 'lvB', renderPaneLvB(ctx, state))
+      + paneWrap('splits', state.mode === 'splits', renderPaneSplits(ctx))
+      + paneWrap('mix', state.mode === 'mix', renderPaneMix(ctx))
+      + paneWrap('form', state.mode === 'form', renderPaneForm(ctx))
+      + paneWrap('sources', state.mode === 'sources', renderPaneSources())
       + '</div>'
       + modelCenterCta(m)
       + '</div>';
 
     _compareState = state;
     bindCompareUI(root, ctx, state);
+    hydrateOverview(root, ctx);
     if (global.ChaseSportMLB && ChaseSportMLB.mountMatchupRankings) {
       ChaseSportMLB.mountMatchupRankings(root.querySelector('#mcTeamRankings'), ctx);
     }
@@ -917,6 +1043,8 @@
       + '<div class="mc-header-name-row">'
       + '<span class="mc-team-abbr">' + esc(team) + '</span>'
       + (rec ? '<span class="mc-record-row">' + rec + '</span>' : '')
+      + (global.MLBMAStandings && MLBMAStandings.formatDivision && MLBMAStandings.formatDivision(team)
+        ? '<span class="mc-div-row">' + esc(MLBMAStandings.formatDivision(team)) + '</span>' : '')
       + '</div>'
       + '<div class="mc-header-ranks ca-rank-chips" data-side="' + align + '"></div>'
       + (form ? '<div class="mc-form-row">' + form + '</div>' : '')

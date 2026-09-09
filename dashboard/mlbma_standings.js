@@ -93,7 +93,12 @@
         var w = tr.wins != null ? tr.wins : lr.wins;
         var l = tr.losses != null ? tr.losses : lr.losses;
         if (w == null || l == null) return;
-        out[t] = { wins: parseInt(w, 10), losses: parseInt(l, 10) };
+        out[t] = {
+          wins: parseInt(w, 10),
+          losses: parseInt(l, 10),
+          divisionRank: tr.divisionRank || '',
+          division: (div.division && (div.division.nameShort || div.division.name)) || ''
+        };
       });
     });
     return out;
@@ -292,6 +297,12 @@
     return r;
   }
 
+  function formatDivision(team) {
+    var r = getRecord(team);
+    if (!r || !r.division) return '';
+    return r.division + (r.divisionRank ? ' · ' + r.divisionRank : '');
+  }
+
   function formatRecord(team) {
     var r = getRecord(team);
     if (!r) return '';
@@ -307,6 +318,7 @@
   global.MLBMAStandings = {
     load: load,
     getRecord: getRecord,
+    formatDivision: formatDivision,
     formatRecord: formatRecord,
     recordHtml: recordHtml,
     teamKey: teamKey,

@@ -217,7 +217,12 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn('<h2 class="mc-pane-title">Lineup vs Lineup</h2>', compare)
         self.assertIn("label: 'Overview'", compare)
         self.assertIn("label: 'Starting Pitchers'", compare)
+        self.assertIn("label: 'Offensive Splits'", compare)
+        self.assertIn("label: 'Pitch Mix'", compare)
         self.assertIn("mc-model-cta", compare)
+        self.assertIn("mc-desk", compare)
+        self.assertIn("usageBarsHtml", compare)
+        self.assertIn("mcDeskBpAway", compare)
         self.assertIn('<h1 class="mc-header-matchup">', compare)
         pane = compare.split("function renderPaneLvL", 1)[1].split("function renderPaneLvP", 1)[0]
         self.assertLess(pane.index("mcTeamRankings"), pane.index("MatchupLineupCompare"))
