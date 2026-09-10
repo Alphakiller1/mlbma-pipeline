@@ -17,7 +17,9 @@
     away_lineup_state: 1, home_lineup_state: 1,
     away_availability: 1, home_availability: 1, availability_summary: 1,
     away_bullpen: 1, home_bullpen: 1, away_rest_days: 1, home_rest_days: 1,
-    away_travel: 1, home_travel: 1, freshness: 1
+    away_travel: 1, home_travel: 1, freshness: 1,
+    away_form: 1, home_form: 1, away_scheme: 1, home_scheme: 1, scheme_source: 1,
+    away_players: 1, home_players: 1
   };
 
   function asList(x) { return Array.isArray(x) ? x : []; }
@@ -108,6 +110,16 @@
       home_rest_days: g.home_rest_days || null,
       away_travel: g.away_travel || null,
       home_travel: g.home_travel || null,
+      // Observed team form and charted scheme profiles. Both arrive already
+      // projected field by field by the producer, so they are carried across
+      // whole rather than re-picked key by key here.
+      away_form: g.away_form || null,
+      home_form: g.home_form || null,
+      away_scheme: g.away_scheme || null,
+      home_scheme: g.home_scheme || null,
+      scheme_source: g.scheme_source || null,
+      away_players: g.away_players || null,
+      home_players: g.home_players || null,
       freshness: freshnessState(g.freshness)
     };
     return pickAllowed(row);

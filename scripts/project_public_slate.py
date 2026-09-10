@@ -75,7 +75,21 @@ def project_game(sport: str, game: dict) -> dict:
         "home_lineup_state": game.get("home_lineup_state"),
         "away_availability": game.get("away_availability"),
         "home_availability": game.get("home_availability"),
+        "away_availability_list": game.get("away_availability_list"),
+        "home_availability_list": game.get("home_availability_list"),
         "availability_summary": game.get("availability_summary"),
+        "roof": game.get("roof"),
+        # Observed team form and charted scheme profiles. Both arrive already
+        # projected field by field (outputs/nfl_public_context.py); assert_clean
+        # then walks them for restricted key names, so a leak has to survive
+        # both an allowlist and a denylist.
+        "away_form": game.get("away_form"),
+        "home_form": game.get("home_form"),
+        "away_scheme": game.get("away_scheme"),
+        "home_scheme": game.get("home_scheme"),
+        "scheme_source": game.get("scheme_source"),
+        "away_players": game.get("away_players"),
+        "home_players": game.get("home_players"),
         "away_bullpen": game.get("away_bullpen"),
         "home_bullpen": game.get("home_bullpen"),
         "away_rest_days": game.get("away_rest_days"),

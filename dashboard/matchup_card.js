@@ -424,6 +424,8 @@
       away_record: record(awayNode), home_record: record(homeNode),
       away_score: awayNode.score, home_score: homeNode.score,
       venue: game.venue && game.venue.name || '',
+      venue_id: game.venue && game.venue.id || null,
+      away_team_id: awayTeam.id || null, home_team_id: homeTeam.id || null,
       venue_city: [location.city, location.stateAbbrev].filter(Boolean).join(', '),
       broadcast: broadcasts(game),
       conditions: [weather.temp ? weather.temp + '°' : '', weather.condition, weather.wind].filter(Boolean).join(' · '),
@@ -434,6 +436,10 @@
       home_hand: homeStarter.pitchHand && homeStarter.pitchHand.code || '',
       away_era: awayStarter.era || '', home_era: homeStarter.era || '',
       away_lineup_state: lineupState(lineup.awayPlayers), home_lineup_state: lineupState(lineup.homePlayers),
+      // The batting orders arrive on this same payload. They were being
+      // discarded, which is why the analysis page had to re-request the
+      // schedule to show a lineup at all.
+      away_lineup: lineup.awayPlayers || [], home_lineup: lineup.homePlayers || [],
       freshness: 'Official schedule'
     };
   }
@@ -552,6 +558,20 @@
     pitchScore: { label: 'Pitch Score', hi: true, digits: 0 }
   };
 
+  // The rankings snapshot keeps Baseball-Reference style codes; the schedule
+  // endpoint keeps the club's own. Seven of thirty disagree, so an unaliased
+  // join silently dropped ARI, CHW, KCR, SDP, SFG, TBR and WSN - nearly half
+  // the sides on a normal slate.
+  var TEAM_ALIAS = {
+    ARI: 'AZ', ARZ: 'AZ', CHW: 'CWS', CWS: 'CWS', KCR: 'KC', SDP: 'SD',
+    SFG: 'SF', TBR: 'TB', TBD: 'TB', WSN: 'WSH', WAS: 'WSH'
+  };
+
+  function canonTeam(code) {
+    var key = String(code || '').toUpperCase().trim();
+    return TEAM_ALIAS[key] || key;
+  }
+
   var teamContextPromise = null;
 
   function loadTeamContext() {
@@ -568,7 +588,7 @@
           // Rank is recomputed here from the descriptive value itself, so it
           // never inherits an ordering from anything modelled.
           scored.forEach(function (row, index) {
-            var team = String(row.t || '').toUpperCase();
+            var team = canonTeam(row.t);
             if (!team) return;
             byTeam[team] = byTeam[team] || {};
             byTeam[team][key] = {
@@ -634,7 +654,7 @@
           }
           if (line.whip !== '' && line.whip != null) game[side + '_whip'] = line.whip;
         }
-        var team = String(game[side] || '').toUpperCase();
+        var team = canonTeam(game[side]);
         if (context.teams[team]) game[side + '_context'] = context.teams[team];
       });
       game.context_generated_at = context.generatedAt;
@@ -882,7 +902,7 @@
       opts.adapter = opts.adapter || global.ChaseSportMLB;
       return mount(opts);
     },
-    loadGames: loadGames,
+    loadGames: loadGames, canonTeam: canonTeam,
     fullMatchupUrl: fullMatchupUrl,
     teamName: teamName,
     logoHtml: logoHtml,

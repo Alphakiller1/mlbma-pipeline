@@ -2020,3 +2020,484 @@ body[data-ca-product="research"] {
     text-overflow: clip;
   }
 }
+
+/* --- Matchup breakdown evidence -------------------------------------------
+ * Starter panels, the lineup-versus-starter tables and the league-relative
+ * form grid. Flat surfaces, tabular numbers, every value beside its rank or
+ * its sample. */
+.ca-detail-stack-inner { display: grid; gap: var(--space-4); }
+
+.ca-starter-panel,
+.ca-lineup-panel,
+.ca-form-panel {
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.ca-starter-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ca-starter-shot {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  flex: 0 0 auto;
+}
+
+.ca-starter-team {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-starter-name {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-lineup-panel > h3,
+.ca-form-panel > h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* The resolved context is stated, so the reader never has to rebuild it from
+   filters: which lineup, home or away, against which hand. */
+.ca-lineup-context {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+.ca-lineup-scroll { overflow-x: auto; }
+
+.ca-lineup-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: var(--type-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-lineup-table th {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+.ca-lineup-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.ca-lineup-table tbody tr:last-child td { border-bottom: 0; }
+
+.ca-lineup-table .num { text-align: right; }
+.ca-lineup-slot { color: var(--text-muted); font-family: var(--font-display); font-weight: 700; }
+.ca-lineup-name { color: var(--text-primary); font-weight: 600; white-space: nowrap; }
+
+.ca-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.ca-form-cell {
+  display: grid;
+  gap: 1px;
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+
+.ca-form-label {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-muted);
+}
+
+.ca-form-value {
+  font-family: var(--font-display);
+  font-size: var(--type-24);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+
+.ca-form-rank {
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A percentile bar carries one meaning only: where this rate sits in its own
+   league pool. It is drawn from the value beside it, never from a rating. */
+.ca-pct-bar {
+  display: block;
+  height: 4px;
+  margin: var(--space-1) 0 3px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.ca-pct-bar__fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+}
+
+.ca-form-grid--tight {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 92px), 1fr));
+  margin: 0 0 var(--space-3);
+}
+.ca-form-grid--tight .ca-form-value { font-size: var(--type-18); }
+
+/* --- Pitch mix -------------------------------------------------------------
+ * Each row is one offering: name, its share of this pitcher's own pitches,
+ * the share as a number, then velocity and sample. The bars sum to 100%. */
+.ca-arsenal-panel {
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.ca-arsenal-panel > h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-arsenal-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.ca-arsenal-row {
+  display: grid;
+  grid-template-columns: minmax(88px, 1fr) minmax(60px, 2fr) auto;
+  grid-template-areas: "name bar pct" "meta meta meta";
+  align-items: center;
+  gap: 2px var(--space-3);
+}
+
+.ca-arsenal-name {
+  grid-area: name;
+  font-size: var(--type-14);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.ca-arsenal-bar {
+  grid-area: bar;
+  display: block;
+  height: 8px;
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.ca-arsenal-bar__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.ca-arsenal-pct {
+  grid-area: pct;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--type-14);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-arsenal-meta {
+  grid-area: meta;
+  font-size: var(--type-12);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Bullpen workload ---------------------------------------------------- */
+.ca-bullpen-panel {
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.ca-bullpen-panel > h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* An arm that worked yesterday and the day before is the one fact a workload
+   table exists to surface, so it is marked rather than left to be counted. */
+.ca-flag {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 1px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+/* --- Scheme confrontation --------------------------------------------------
+ * One panel per direction: this offence against that defence. Every block
+ * inside states a charted rate, and the stacked bars are shares of the charted
+ * sample, so they can only ever sum to 100%. */
+.ca-scheme-panel,
+.ca-avail-panel {
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.ca-scheme-panel > h3,
+.ca-avail-panel > h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Two columns, split the way the confrontation is: that defence on one side,
+   this offence on the other. */
+.ca-scheme-duo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  align-items: start;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.ca-scheme-col { display: grid; align-content: start; gap: var(--space-3); min-width: 0; }
+
+.ca-scheme-col__head {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+.ca-rate-block {
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  min-width: 0;
+}
+
+.ca-rate-block h4 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-rate-block .ca-detail-source-note { margin-bottom: 0; }
+
+.ca-rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--type-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-rate-table td {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.ca-rate-table tr:last-child td { border-bottom: 0; }
+.ca-rate-table td.num {
+  text-align: right;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+/* The segments are categories, not a scale, so they take the series palette
+   rather than anything that reads as good-to-bad. */
+.ca-stack {
+  display: flex;
+  height: 14px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.ca-stack__seg { display: block; height: 100%; }
+
+.ca-stack__key {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px var(--space-3);
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-stack__key li { display: flex; align-items: center; gap: 5px; }
+.ca-stack__key strong { color: var(--text-primary); }
+
+.ca-stack__swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.ca-stack__seg--1, .ca-stack__swatch--1 { background: var(--series-1); }
+.ca-stack__seg--2, .ca-stack__swatch--2 { background: var(--series-2); }
+.ca-stack__seg--3, .ca-stack__swatch--3 { background: var(--series-3); }
+.ca-stack__seg--4, .ca-stack__swatch--4 { background: var(--series-4); }
+.ca-stack__seg--5, .ca-stack__swatch--5 { background: var(--series-5); }
+.ca-stack__seg--6, .ca-stack__swatch--6 { background: var(--series-6); }
+.ca-stack__seg--7, .ca-stack__swatch--7 { background: var(--series-7); }
+
+/* A designation is state, so it reads as a chip rather than as another word in
+   the row. Out and doubtful carry the weight; questionable stays quieter. */
+.ca-status-pill {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-default);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.ca-status-pill[data-status="out"],
+.ca-status-pill[data-status="injured-reserve"],
+.ca-status-pill[data-status="suspension"],
+.ca-status-pill[data-status="suspended"] {
+  color: var(--status-error);
+  border-color: var(--status-error);
+}
+
+.ca-status-pill[data-status="doubtful"],
+.ca-status-pill[data-status="pup"] {
+  color: var(--status-stale);
+  border-color: var(--status-stale);
+}
+
+/* --- The named offence ---------------------------------------------------- */
+.ca-person-row {
+  list-style: none;
+  margin: var(--space-3) 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+  gap: var(--space-2);
+}
+
+.ca-person {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: var(--space-2);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  text-align: center;
+  min-width: 0;
+}
+
+.ca-person__shot {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+}
+
+.ca-person__slot {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-accent);
+}
+
+.ca-person__name {
+  font-size: var(--type-14);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}

@@ -22,7 +22,7 @@ class SportRouteBuilderTests(unittest.TestCase):
     _GENERATED = tuple(
         ROOT / sport / name
         for sport in ("mlb", "nfl", "wnba", "cfb")
-        for name in (("index.html", "matchups.html", "results.html", "matchup.html") if sport in ("mlb", "nfl") else ("index.html", "matchups.html", "results.html"))
+        for name in (("index.html", "matchups.html", "matchup.html") if sport in ("mlb", "nfl") else ("index.html", "matchups.html"))
     )
 
     @classmethod
@@ -86,17 +86,29 @@ class SportRouteBuilderTests(unittest.TestCase):
             self.assertNotIn(f"sports/{sport}.js", text)
             self.assertNotIn("ChaseSportSelect", text)
 
-    def test_every_sport_has_matchups_and_results(self):
+    def test_every_sport_has_matchups(self):
         for sport in ("mlb", "nfl"):
             matchups = (ROOT / sport / "matchups.html").read_text(encoding="utf-8")
-            results = (ROOT / sport / "results.html").read_text(encoding="utf-8")
             self.assertIn("ChaseShell", matchups)
             self.assertIn("sport: sport", matchups)
             self.assertNotIn("sport: 'nfl'", matchups)
-            self.assertNotIn("record.json", results)
-            self.assertNotIn("RECORD_URL", results)
-            self.assertIn('data-mode="evidence"', results)
-            self.assertIn("results: true", results)
+
+    def test_past_results_are_not_a_public_destination(self):
+        """Completed games belong inside a matchup breakdown, nowhere else.
+
+        The route, its generator branch and any link to it are all gone, so
+        this asserts the absence three ways rather than trusting one.
+        """
+        for sport in ("mlb", "nfl", "wnba", "cfb"):
+            self.assertFalse((ROOT / sport / "results.html").exists(),
+                             f"{sport}/results.html is a public results destination")
+        src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
+        self.assertNotIn("results.html", src)
+        self.assertNotIn("RESULTS_JS", src)
+        for sport in ("mlb", "nfl"):
+            for name in ("index.html", "matchups.html", "matchup.html"):
+                page = (ROOT / sport / name).read_text(encoding="utf-8")
+                self.assertNotIn("results.html", page, f"{sport}/{name} links a results route")
 
     def test_root_home_is_not_a_relative_redirect_stub(self):
         home = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -164,15 +176,9 @@ class SportRouteBuilderTests(unittest.TestCase):
     def test_sport_home_is_the_matchup_card_slate(self):
         src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
         card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
-        self.assertIn("body_js = RESULTS_JS if results else MATCHUPS_JS", src)
         mlb_home = (ROOT / "mlb" / "index.html").read_text(encoding="utf-8")
-        mlb_results = (ROOT / "mlb" / "results.html").read_text(encoding="utf-8")
-        nfl_results = (ROOT / "nfl" / "results.html").read_text(encoding="utf-8")
         self.assertIn("matchup_card.js", mlb_home)
         self.assertIn("chase_public_slate.js", mlb_home)
-        self.assertNotIn("results: true", mlb_home)
-        self.assertIn("results: true", mlb_results)
-        self.assertIn("results: true", nfl_results)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
         self.assertIn("Expand matchup", card)

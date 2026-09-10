@@ -113,10 +113,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
         initial_count = page.locator(".ca-matchup-card").count()
         search = page.locator("#chaseNavSearch")
-        search.fill("Minnesota Twins")
+        # Search for a club that is actually on the slate being tested. Hard-coding
+        # a team made this check report a filter failure on any date that club did
+        # not play, which is a property of the schedule, not of the filter.
+        target = (page.locator(".ca-matchup-card__name").first.inner_text() or "").strip()
+        search.fill(target)
         filtered_count = page.locator(".ca-matchup-card").count()
-        check("MLB team search filters the slate", initial_count > 1 and filtered_count == 1,
-              f"before={initial_count} after={filtered_count}")
+        check("MLB team search filters the slate",
+              initial_count > 1 and 1 <= filtered_count < initial_count,
+              f"query={target!r} before={initial_count} after={filtered_count}")
         search.fill("")
         mlb_detail = page.locator(".ca-matchup-card__detail-link").first.get_attribute("href") or ""
         page.goto(base_url.rstrip("/") + mlb_detail, wait_until="domcontentloaded", timeout=timeout_ms)
@@ -132,12 +137,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_url(re.compile(r"/mlb/matchup(?:\.html)?(?:\?|$)"), timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("Legacy matchup URL preserves a working game", "Minnesota Twins" in page.locator("main").inner_text())
-        page.goto(base_url.rstrip("/") + "/mlb/results.html?date=2026-09-09",
-                  wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_function("document.querySelector('#slate')?.dataset.state !== 'loading'", timeout=timeout_ms)
-        result_states = page.locator("#slate .ca-status-chip").all_text_contents()
-        check("Results route contains only final games", all(text.strip() == "Final" for text in result_states),
-              ", ".join(result_states[:4]))
+        # Past results are not a public destination; the only place a completed
+        # game is reachable is inside a matchup breakdown.
+        for sport in ("mlb", "nfl"):
+            response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
+            check(f"{sport.upper()} has no public results route", response.status == 404,
+                  f"status={response.status}")
         context.close()
 
         context = browser.new_context(viewport={"width": 1280, "height": 900})
@@ -154,7 +159,21 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL detail has factual sections", page.locator("#quarterbacks, #team-context, #conditions, #sources").count() == 4)
+        check("NFL detail has factual sections",
+              page.locator("#availability, #scheme, #form, #team-context, #conditions, #sources").count() == 6)
+        # inner_text() returns rendered text, and the provenance line is
+        # uppercased by the stylesheet, so the comparison is case-insensitive.
+        scheme_text = page.locator("#scheme").inner_text().lower()
+        check("NFL scheme states its source season", "charted from the" in scheme_text)
+        check("NFL scheme speaks in the past tense", "played zone on" in scheme_text)
+        stacks = page.eval_on_selector_all(
+            ".ca-stack",
+            "els => els.map(e => [...e.children].reduce((sum, c) => sum + parseFloat(c.style.width), 0))")
+        check("NFL distribution bars sum to 100%",
+              bool(stacks) and all(abs(total - 100) < 0.5 for total in stacks),
+              f"{len(stacks)} bars, worst {max((abs(t-100) for t in stacks), default=0):.2f}pp off")
+        form_bars = page.locator("#form .ca-pct-bar").count()
+        check("NFL form annotates every rate with a rank", form_bars == 20, f"bars={form_bars}")
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
