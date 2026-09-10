@@ -2375,6 +2375,25 @@ body[data-ca-product="research"] {
   color: var(--text-secondary);
 }
 .ca-rate-table tr:last-child td { border-bottom: 0; }
+
+/* The bar sits under the label at its own scale, so a column of shares can be
+   read by shape before any of the numbers are read at all. */
+.ca-rate-bar {
+  display: block;
+  height: 3px;
+  margin-top: 3px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.ca-rate-bar > span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+}
 .ca-rate-table td.num {
   text-align: right;
   color: var(--text-primary);

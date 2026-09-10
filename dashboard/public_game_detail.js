@@ -784,11 +784,22 @@
     return pctText(value);
   }
 
+  /* A share gets a bar behind it. These rates run 0-100% of the charted snaps,
+     so the bar is the rate itself at its own scale and the column becomes
+     scannable instead of being twelve numbers to read one at a time.
+     EPA is a signed per-play margin on a different scale entirely, so it keeps
+     the number alone rather than being given a bar that would imply one. */
   function rateTable(caption, rows, source) {
     var body = rows.map(function (row) {
       var raw = source[row[0]];
       if (raw == null) return '';
-      return '<tr><td>' + esc(row[1]) + '</td><td class="num">' +
+      var bar = '';
+      if (row[2] === 'pct') {
+        var pct = Math.max(0, Math.min(100, Number(raw) * 100));
+        bar = '<span class="ca-rate-bar" aria-hidden="true"><span style="width:' +
+          pct.toFixed(1) + '%"></span></span>';
+      }
+      return '<tr><td>' + esc(row[1]) + bar + '</td><td class="num">' +
         esc(schemeValue(raw, row[2])) + '</td></tr>';
     }).filter(Boolean).join('');
     if (!body) return '';
