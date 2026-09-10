@@ -186,8 +186,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL distribution bars sum to 100%",
               bool(stacks) and all(abs(total - 100) < 0.5 for total in stacks),
               f"{len(stacks)} bars, worst {max((abs(t-100) for t in stacks), default=0):.2f}pp off")
-        form_bars = page.locator("#form .ca-pct-bar").count()
-        check("NFL form annotates every rate with a rank", form_bars == 20, f"bars={form_bars}")
+        # Team form is a mirrored comparison now: one row per rate, both clubs
+        # on one axis, a rank under every value.
+        rows = page.locator("#form .ca-mirror__row").count()
+        ranks = page.locator("#form .ca-mirror__value i").count()
+        check("NFL form compares both clubs on one axis", rows == 10, f"rows={rows}")
+        check("NFL form annotates every rate with a rank", ranks == rows * 2,
+              f"{ranks} ranks across {rows} rows")
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")

@@ -334,6 +334,81 @@
       '</div>';
   }
 
+  /* ---------------------------------------------------------------------
+   * The mirrored comparison row.
+   *
+   * Two clubs in two separate panels is not a comparison - the eye has to
+   * carry a number across a gutter and hold it while it finds the other one.
+   * The legacy Chase card put both on one axis and let the bars meet in the
+   * middle, and that is the piece of the old product most worth restoring.
+   *
+   * Each row is one metric: away value, away bar growing leftward from the
+   * centre, the metric's name, home bar growing rightward, home value. The
+   * bars are league percentiles of that rate, so the longer bar is the better
+   * season and the reader never has to know the scale. Rank sits under each
+   * value, because a bar without its rank is a picture and a rank without its
+   * bar is a number.
+   * ------------------------------------------------------------------ */
+  function percentOf(entry) {
+    if (!entry || !(entry.of > 1) || !(entry.rank >= 1)) return null;
+    return ((entry.of - entry.rank) / (entry.of - 1)) * 100;
+  }
+
+  function mirrorRow(label, away, home, format) {
+    if (!away && !home) return '';
+    var awayPct = percentOf(away), homePct = percentOf(home);
+    // The side with the better season carries the emphasis, so a scan down the
+    // column shows who wins each row without reading a single number.
+    var lead = '';
+    if (awayPct != null && homePct != null && Math.abs(awayPct - homePct) >= 4) {
+      lead = awayPct > homePct ? ' is-away' : ' is-home';
+    }
+    function side(entry, pct, which) {
+      // The side is carried in a class rather than inferred from position:
+      // every child of the row is a span, so a :first-of-type rule matches the
+      // value and silently leaves the bar unmirrored.
+      var track = 'ca-mirror__track ca-mirror__track--' + which;
+      var val = 'ca-mirror__value ca-mirror__value--' + which;
+      if (!entry) {
+        var blank = '<span class="' + val + ' is-absent">&mdash;</span>';
+        return which === 'away'
+          ? blank + '<span class="' + track + '"></span>'
+          : '<span class="' + track + '"></span>' + blank;
+      }
+      var bar = '<span class="' + track + '"><span class="ca-mirror__fill" style="width:' +
+        (pct == null ? 0 : pct.toFixed(1)) + '%"></span></span>';
+      var value = '<span class="' + val + '">' + esc(format(entry.value)) +
+        '<i>' + entry.rank + ordinal(entry.rank) + '</i></span>';
+      return which === 'away' ? value + bar : bar + value;
+    }
+    return '<div class="ca-mirror__row' + lead + '">' +
+      side(away, awayPct, 'away') +
+      '<span class="ca-mirror__label">' + esc(label) + '</span>' +
+      side(home, homePct, 'home') + '</div>';
+  }
+
+  function mirrorTable(sport, game, keys, specs, source) {
+    var awayCtx = source(game, 'away') || {};
+    var homeCtx = source(game, 'home') || {};
+    var rows = keys.map(function (key) {
+      var spec = specs[key];
+      if (!spec) return '';
+      return mirrorRow(spec.label, awayCtx[key], homeCtx[key], function (v) {
+        return formatStat(v, spec.digits) || '\u2014';
+      });
+    }).filter(Boolean).join('');
+    if (!rows) return '';
+    return '<div class="ca-mirror">' +
+      '<div class="ca-mirror__head">' +
+      '<span class="ca-mirror__team">' + logo(sport, game, 'away', 28, 'ca-mirror__crest') +
+      esc(fullName(sport, game, 'away')) + '</span>' +
+      '<span class="ca-mirror__axis">Percentile Of The League Pool</span>' +
+      '<span class="ca-mirror__team ca-mirror__team--home">' +
+      esc(fullName(sport, game, 'home')) +
+      logo(sport, game, 'home', 28, 'ca-mirror__crest') + '</span>' +
+      '</div>' + rows + '</div>';
+  }
+
   function formPanel(sport, game, side) {
     var ctx = game[side + '_context'];
     var label = fullName(sport, game, side);
@@ -366,6 +441,17 @@
     return out;
   }
 
+  /* A number that carries its own grade, off the published league baseline, so
+     the reader does not have to know what a good ERA is this season. */
+  function gradeFor(value, context) {
+    var n = Number(value);
+    if (!isFinite(n)) return '';
+    if (global.MLBMAAssets && MLBMAAssets.solidChipClass) {
+      return MLBMAAssets.solidChipClass(n, context) || '';
+    }
+    return '';
+  }
+
   function starterPanel(sport, game, side, people) {
     var label = fullName(sport, game, side);
     var id = game[side + '_starter_id'];
@@ -374,11 +460,21 @@
     var stat = (person && person.stat) || {};
     var hand = (person && person.throws) || String(game[side + '_hand'] || '').toUpperCase();
     var handLabel = hand === 'L' ? 'LHP' : (hand === 'R' ? 'RHP' : '');
+    // The line a scout reads first, at the size that says so, with the counting
+    // stats behind it underneath. A flat eight-row list gave "Batters Faced"
+    // exactly as much weight as ERA.
+    var headline = [
+      ['ERA', stat.era, 'era'],
+      ['WHIP', stat.whip, 'whip'],
+      ['Record', stat.wins != null && stat.losses != null ? stat.wins + '-' + stat.losses : null, null],
+      ['IP', stat.inningsPitched, null]
+    ].map(function (row) {
+      if (row[1] == null) return '';
+      return '<div class="ca-stat"><span class="ca-stat__label">' + esc(row[0]) +
+        '</span><strong class="ca-stat__value ' + (row[2] ? gradeFor(row[1], row[2]) : '') +
+        '">' + esc(row[1]) + '</strong></div>';
+    }).join('');
     var rows = [
-      ['Record', stat.wins != null && stat.losses != null ? stat.wins + '-' + stat.losses : 'Not Published'],
-      ['ERA', stat.era != null ? stat.era : 'Not Published'],
-      ['WHIP', stat.whip != null ? stat.whip : 'Not Published'],
-      ['Innings', stat.inningsPitched != null ? stat.inningsPitched : 'Not Published'],
       ['Strikeouts', stat.strikeOuts != null ? stat.strikeOuts : 'Not Published'],
       ['Walks', stat.baseOnBalls != null ? stat.baseOnBalls : 'Not Published'],
       ['Home Runs Allowed', stat.homeRuns != null ? stat.homeRuns : 'Not Published'],
@@ -397,6 +493,7 @@
       '<header class="ca-starter-head">' + shot +
       '<div><p class="ca-starter-team">' + esc(label) + (handLabel ? ' \u00b7 ' + handLabel : '') + '</p>' +
       '<h3 class="ca-starter-name">' + esc(name) + '</h3></div></header>' +
+      (headline ? '<div class="ca-stat-row">' + headline + '</div>' : '') +
       (rates ? '<div class="ca-form-grid ca-form-grid--tight">' + rates + '</div>' : '') +
       list(rows) + '</section>';
   }
@@ -565,9 +662,12 @@
     var formNote = game.context_generated_at
       ? 'Team form as published ' + publishedTime(game.context_generated_at) + '. '
       : '';
-    return '<div class="ca-detail-duo">' +
+    var mirror = mirrorTable(sport, game, FORM_KEYS, STAT_SPECS, function (g, side) {
+      return g[side + '_context'];
+    });
+    return (mirror || '<div class="ca-detail-duo">' +
       formPanel(sport, game, 'away') +
-      formPanel(sport, game, 'home') + '</div>' +
+      formPanel(sport, game, 'home') + '</div>') +
       '<p class="ca-detail-source-note">' + esc(formNote) +
       'OSI = 0.43\u00b7RCV + 0.37\u00b7ABQ + 0.20\u00b7OBR; Pitch Score = 0.40\u00b7K% + ' +
       '0.35\u00b7inv(BB%) + 0.25\u00b7inv(HR/9). Both are constructed indices, stated with their ' +
@@ -882,6 +982,37 @@
       '<tbody>' + rows + '</tbody></table></div></section>';
   }
 
+  var NFL_FORM_ORDER = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack',
+    'off_turnover', 'def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
+
+  function nflMirror(sport, game) {
+    var away = ((game.away_form || {}).rates) || {};
+    var home = ((game.home_form || {}).rates) || {};
+    var rows = NFL_FORM_ORDER.map(function (key) {
+      var entry = away[key] || home[key];
+      if (!entry) return '';
+      return mirrorRow(entry.label, away[key], home[key], function (v) {
+        var n = Number(v);
+        if (!isFinite(n)) return '\u2014';
+        // A rate under one is a share; an EPA is a per-play margin. Both are
+        // published as decimals, so the label decides how to read them.
+        return String(entry.label).indexOf('EPA') >= 0
+          ? (n > 0 ? '+' : '') + n.toFixed(3)
+          : (n * 100).toFixed(1) + '%';
+      });
+    }).filter(Boolean).join('');
+    if (!rows) return '';
+    return '<div class="ca-mirror">' +
+      '<div class="ca-mirror__head">' +
+      '<span class="ca-mirror__team">' + logo(sport, game, 'away', 28, 'ca-mirror__crest') +
+      esc(fullName(sport, game, 'away')) + '</span>' +
+      '<span class="ca-mirror__axis">Percentile Of The League Pool</span>' +
+      '<span class="ca-mirror__team ca-mirror__team--home">' +
+      esc(fullName(sport, game, 'home')) +
+      logo(sport, game, 'home', 28, 'ca-mirror__crest') + '</span>' +
+      '</div>' + rows + '</div>';
+  }
+
   function nflSections(sport, game) {
     var source = game.scheme_source || {};
     return [
@@ -908,9 +1039,9 @@
 
       section('form', 'Team Form',
         'Ten Observed Rates, Graded Against The 32-Team League Pool',
-        '<div class="ca-detail-duo">' +
-        nflFormPanel(sport, game, 'away') +
-        nflFormPanel(sport, game, 'home') + '</div>' +
+        (nflMirror(sport, game) || '<div class="ca-detail-duo">' +
+          nflFormPanel(sport, game, 'away') +
+          nflFormPanel(sport, game, 'home') + '</div>') +
         '<p class="ca-detail-source-note">Each bar is the league percentile of the rate ' +
         'directly above it, computed from that rate against the same 32-team pool. Sacks and ' +
         'giveaways rank best when low; takeaways and sacks generated rank best when high. ' +

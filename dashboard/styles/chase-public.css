@@ -2585,18 +2585,6 @@ body[data-ca-product="research"] {
 /* The five-step grade chips, shared lineage with the rest of the desk. They
    colour the number itself and tint its frame; the value is never carried by
    colour alone, because the rank or the label always sits beside it. */
-.c-elite { color: var(--metric-elite); border-color: var(--metric-elite); }
-.c-good  { color: var(--metric-good);  border-color: var(--metric-good); }
-.c-mid   { color: var(--metric-neutral); border-color: var(--metric-neutral); }
-.c-weak  { color: var(--metric-weak);  border-color: var(--metric-weak); }
-.c-poor  { color: var(--metric-poor);  border-color: var(--metric-poor); }
-.c-na    { color: var(--text-muted); }
-
-.ca-ctx-value.c-elite,
-.ca-ctx-value.c-good,
-.ca-ctx-value.c-mid,
-.ca-ctx-value.c-weak,
-.ca-ctx-value.c-poor { border-color: transparent; }
 
 /* --- Chrome on every title and sub-title ---------------------------------
  * The metallic fill was reserved for page h1s while every section heading
@@ -2647,3 +2635,255 @@ body[data-ca-product="research"] {
 /* Two cells, one row, every card. A three-cell grid left the third alone on a
    row of its own and added sixty pixels of nothing to every card on the page. */
 .ca-matchup-card__summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ===========================================================================
+ * THE MIRRORED COMPARISON
+ *
+ * One metric per row, both clubs on one axis, bars growing out from a centre
+ * column that names the metric. The reader compares by looking at one line
+ * instead of carrying a number across a gutter.
+ * ======================================================================== */
+.ca-mirror {
+  display: grid;
+  gap: 0;
+  margin: var(--space-3) 0 var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--surface-board-raised);
+  overflow: hidden;
+}
+
+.ca-mirror__head,
+.ca-mirror__row {
+  display: grid;
+  grid-template-columns:
+    minmax(64px, 88px) minmax(0, 1fr) minmax(120px, 190px) minmax(0, 1fr) minmax(64px, 88px);
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.ca-mirror__head {
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 190px) minmax(0, 1fr);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-field);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.ca-mirror__team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-mirror__team--home { justify-content: flex-end; text-align: right; }
+
+.ca-mirror__crest { width: 28px; height: 28px; object-fit: contain; flex: 0 0 auto; }
+
+.ca-mirror__axis {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-mirror__row {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ca-mirror__row:last-child { border-bottom: 0; }
+
+.ca-mirror__label {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  line-height: 1.25;
+}
+
+.ca-mirror__value {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.ca-mirror__value i {
+  font-style: normal;
+  font-size: var(--type-12);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ca-mirror__value.is-absent { color: var(--text-muted); font-weight: 600; }
+
+/* The away bar fills from the centre outward, so both bars grow away from the
+   label and their tips are what the eye compares. */
+.ca-mirror__track {
+  display: flex;
+  height: 10px;
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* The away bar grows leftward from the centre so both bars run outward from
+   the label and their tips are what the eye compares. */
+.ca-mirror__track--away { justify-content: flex-end; }
+
+.ca-mirror__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  min-width: 2px;
+}
+
+/* The better season carries the emphasis, so a scan down the column shows who
+   wins each row before a single number is read. Never colour alone: the rank
+   sits under every value and the bar length says the same thing. */
+.ca-mirror__row.is-away .ca-mirror__track--away .ca-mirror__fill,
+.ca-mirror__row.is-home .ca-mirror__track--home .ca-mirror__fill {
+  background: var(--metric-elite);
+}
+
+.ca-mirror__row.is-away .ca-mirror__value--home,
+.ca-mirror__row.is-home .ca-mirror__value--away { color: var(--text-secondary); }
+
+@media (max-width: 720px) {
+  /* Stacked, the mirror stops being a mirror, so each row becomes a plain
+     three-part line: away, metric, home - still one row per metric. */
+  .ca-mirror__head { grid-template-columns: 1fr auto 1fr; gap: var(--space-2); }
+  .ca-mirror__axis { display: none; }
+  .ca-mirror__row {
+    grid-template-columns: minmax(56px, auto) minmax(0, 1fr) minmax(56px, auto);
+    padding: var(--space-2) var(--space-3);
+  }
+  .ca-mirror__row > .ca-mirror__track { display: none; }
+  .ca-mirror__value { font-size: var(--type-14); }
+}
+
+/* The home value mirrors the away one, so its rank hangs off the same edge as
+   its number rather than drifting back toward the centre. */
+.ca-mirror__value--home { align-items: flex-end; text-align: right; }
+
+/* --- Headline stats ------------------------------------------------------
+ * The four numbers a scout reads first, at the size that says so. Everything
+ * behind them stays in the list underneath, where "Batters Faced" belongs. */
+.ca-stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 76px), 1fr));
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+}
+
+.ca-stat {
+  display: grid;
+  gap: 1px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  text-align: center;
+}
+
+.ca-stat__label {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-stat__value {
+  font-family: var(--font-display);
+  font-size: var(--type-24);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+
+/* --- Tables that can be scanned -----------------------------------------
+ * A batting order is read down one column at a time, so the rows alternate
+ * and the name column carries the weight. Headers hold at the top of a long
+ * scroll instead of leaving the reader guessing which column is which. */
+.ca-lineup-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface-board-raised);
+}
+
+.ca-lineup-table tbody tr:nth-child(even) { background: var(--surface-field); }
+.ca-lineup-table tbody tr:hover { background: var(--surface-raised); }
+
+.ca-lineup-table .ca-lineup-slot {
+  font-size: var(--type-14);
+  color: var(--text-accent);
+  text-align: center;
+}
+
+/* --- Pitch mix, with weight ---------------------------------------------- */
+.ca-arsenal-bar { height: 12px; }
+
+.ca-arsenal-row:first-child .ca-arsenal-name,
+.ca-arsenal-row:first-child .ca-arsenal-pct { color: var(--text-primary); }
+
+/* --- The hero, at the scale a hero needs -------------------------------- */
+.ca-detail-center strong {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 2rem + 1.4vw, 50px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-detail-team h1 {
+  font-size: clamp(22px, 1rem + 1.3vw, 34px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+/* ===========================================================================
+ * THE GRADE RAMP - LAST, ON PURPOSE
+ *
+ * A graded number is applied on top of a component that already sets its own
+ * colour (.ca-stat__value, .ca-ctx-value), and at equal specificity the later
+ * rule wins. Stated once here at the end of the route layer, the grade always
+ * beats the component it decorates instead of silently losing to whichever
+ * block happened to be written second.
+ *
+ * Colour is never the only channel: every graded number has its rank, its
+ * label or its bar beside it.
+ * ======================================================================== */
+.c-elite { color: var(--metric-elite); border-color: var(--metric-elite); }
+.c-good  { color: var(--metric-good);  border-color: var(--metric-good); }
+.c-mid   { color: var(--metric-neutral); border-color: var(--metric-neutral); }
+.c-weak  { color: var(--metric-weak);  border-color: var(--metric-weak); }
+.c-poor  { color: var(--metric-poor);  border-color: var(--metric-poor); }
+.c-na    { color: var(--text-muted); }
+
+/* Inside a bordered frame the grade tints the frame too; inline in a table it
+   must not draw a box round a single figure. */
+.ca-ctx-value.c-elite, .ca-ctx-value.c-good, .ca-ctx-value.c-mid,
+.ca-ctx-value.c-weak, .ca-ctx-value.c-poor,
+.ca-stat__value.c-elite, .ca-stat__value.c-good, .ca-stat__value.c-mid,
+.ca-stat__value.c-weak, .ca-stat__value.c-poor { border-color: transparent; }
