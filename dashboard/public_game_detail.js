@@ -15,7 +15,7 @@
 
   function clock(iso) {
     var date = new Date(iso || '');
-    if (!iso || isNaN(date.getTime())) return 'Time not published';
+    if (!iso || isNaN(date.getTime())) return 'Time Not Published';
     return date.toLocaleDateString('en-US', {
       weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York'
     }) + ' · ' + date.toLocaleTimeString('en-US', {
@@ -25,7 +25,7 @@
 
   function publishedTime(iso) {
     var date = new Date(iso || '');
-    if (!iso || isNaN(date.getTime())) return 'Not published';
+    if (!iso || isNaN(date.getTime())) return 'Not Published';
     return date.toLocaleDateString('en-US', {
       month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York'
     }) + ' · ' + date.toLocaleTimeString('en-US', {
@@ -42,7 +42,7 @@
   }
 
   function value(input, fallback) {
-    return input == null || input === '' ? (fallback || 'Not published') : input;
+    return input == null || input === '' ? (fallback || 'Not Published') : input;
   }
 
   function gameStatus(game) {
@@ -58,7 +58,7 @@
     return '<div class="ca-detail-team ca-detail-team--' + side + '">' +
       logo(sport, game, side, 76, 'ca-detail-team__logo') +
       '<div><h1>' + esc(fullName(sport, game, side)) + '</h1>' +
-      '<p>' + esc(value(game[side + '_record'], 'Record not published')) + '</p></div></div>';
+      '<p>' + esc(value(game[side + '_record'], 'Record Not Published')) + '</p></div></div>';
   }
 
   function fact(label, content) {
@@ -100,17 +100,17 @@
     if (state.indexOf('confirm') >= 0) return 'Confirmed';
     if (state.indexOf('partial') >= 0) return 'Partial';
     if (state.indexOf('project') >= 0 || state.indexOf('expect') >= 0) return 'Expected';
-    return 'Not published';
+    return 'Not Published';
   }
 
   function conditions(game) {
     if (game.conditions) return game.conditions;
     return [game.weather_temp ? game.weather_temp + '°' : '', game.weather_cond, game.weather_wind]
-      .filter(Boolean).join(' · ') || 'Not published';
+      .filter(Boolean).join(' · ') || 'Not Published';
   }
 
   function venue(game) {
-    return [game.venue, game.venue_city].filter(Boolean).join(' · ') || 'Not published';
+    return [game.venue, game.venue_city].filter(Boolean).join(' · ') || 'Not Published';
   }
 
   function scoreOrTime(game) {
@@ -370,19 +370,19 @@
     var label = fullName(sport, game, side);
     var id = game[side + '_starter_id'];
     var person = people[id];
-    var name = person ? person.name : (game[side + '_starter'] || 'Probable starter not published');
+    var name = person ? person.name : (game[side + '_starter'] || 'Probable Starter Not Published');
     var stat = (person && person.stat) || {};
     var hand = (person && person.throws) || String(game[side + '_hand'] || '').toUpperCase();
     var handLabel = hand === 'L' ? 'LHP' : (hand === 'R' ? 'RHP' : '');
     var rows = [
-      ['Record', stat.wins != null && stat.losses != null ? stat.wins + '-' + stat.losses : 'Not published'],
-      ['ERA', stat.era != null ? stat.era : 'Not published'],
-      ['WHIP', stat.whip != null ? stat.whip : 'Not published'],
-      ['Innings', stat.inningsPitched != null ? stat.inningsPitched : 'Not published'],
-      ['Strikeouts', stat.strikeOuts != null ? stat.strikeOuts : 'Not published'],
-      ['Walks', stat.baseOnBalls != null ? stat.baseOnBalls : 'Not published'],
-      ['Home runs allowed', stat.homeRuns != null ? stat.homeRuns : 'Not published'],
-      ['Batters faced', stat.battersFaced != null ? stat.battersFaced : 'Not published']
+      ['Record', stat.wins != null && stat.losses != null ? stat.wins + '-' + stat.losses : 'Not Published'],
+      ['ERA', stat.era != null ? stat.era : 'Not Published'],
+      ['WHIP', stat.whip != null ? stat.whip : 'Not Published'],
+      ['Innings', stat.inningsPitched != null ? stat.inningsPitched : 'Not Published'],
+      ['Strikeouts', stat.strikeOuts != null ? stat.strikeOuts : 'Not Published'],
+      ['Walks', stat.baseOnBalls != null ? stat.baseOnBalls : 'Not Published'],
+      ['Home Runs Allowed', stat.homeRuns != null ? stat.homeRuns : 'Not Published'],
+      ['Batters Faced', stat.battersFaced != null ? stat.battersFaced : 'Not Published']
     ];
     var rates = derivedRates(stat).map(function (pair) {
       return '<div class="ca-form-cell"><span class="ca-form-label">' + esc(pair[0]) +
@@ -487,10 +487,10 @@
       fact('Venue', venue(game)) +
       fact('Weather', conditions(game)) +
       fact('Surface', info.turfType || value(game.surface)) +
-      fact('Roof', info.roofType || 'Not published') +
-      fact('Capacity', info.capacity != null ? Number(info.capacity).toLocaleString('en-US') : 'Not published') +
-      fact('Elevation', loc.elevation != null ? loc.elevation + ' ft' : 'Not published') +
-      fact('Outfield', dims.length === 5 ? dims.join(' \u00b7 ') + ' ft' : 'Not published') +
+      fact('Roof', info.roofType || 'Not Published') +
+      fact('Capacity', info.capacity != null ? Number(info.capacity).toLocaleString('en-US') : 'Not Published') +
+      fact('Elevation', loc.elevation != null ? loc.elevation + ' ft' : 'Not Published') +
+      fact('Outfield', dims.length === 5 ? dims.join(' \u00b7 ') + ' ft' : 'Not Published') +
       fact('Start', clock(game.kickoff_utc)) + '</div>' +
       '<p class="ca-detail-source-note">Dimensions run left line, left-centre, centre, right-centre, ' +
       'right line. Ballpark facts come from the official venue record; no park factor is published ' +
@@ -588,15 +588,15 @@
   function mlbSections(sport, game, extra) {
     extra = extra || {};
     return [
-      section('starters', 'Probable starters', 'Season totals from the official MLB record',
+      section('starters', 'Probable Starters', 'Season Totals From The Official MLB Record',
         startersBody(sport, game, extra)),
-      section('lineups', 'Lineup versus starter', 'Each order against the opposing arm',
+      section('lineups', 'Lineup Versus Starter', 'Each Order Against The Opposing Arm',
         lineupsBody(sport, game, extra)),
-      section('arsenal', 'Pitch mix', 'What each starter throws, and how often',
+      section('arsenal', 'Pitch Mix', 'What Each Starter Throws, And How Often',
         arsenalBody(sport, game, extra)),
-      section('form', 'Offensive form and league context', 'Graded against the 30-team league pool',
+      section('form', 'Offensive Form And League Context', 'Graded Against The 30-Team League Pool',
         formBody(sport, game)),
-      section('bullpens', 'Bullpen workload', 'Relief appearances in the three days before this game',
+      section('bullpens', 'Bullpen Workload', 'Relief Appearances In The Three Days Before This Game',
         bullpenBody(sport, game, extra))
     ].join('');
   }
@@ -632,39 +632,39 @@
   ];
 
   var PRESSURE_ROWS = [
-    ['blitz_rate', 'Blitz rate', 'pct'],
-    ['pressure_rate', 'Pressure rate', 'pct'],
-    ['stacked_box_rate', 'Stacked box rate', 'pct'],
-    ['avg_box', 'Average box count', 'num']
+    ['blitz_rate', 'Blitz Rate', 'pct'],
+    ['pressure_rate', 'Pressure Rate', 'pct'],
+    ['stacked_box_rate', 'Stacked Box Rate', 'pct'],
+    ['avg_box', 'Average Box Count', 'num']
   ];
 
   var PERSONNEL_ROWS = [
-    ['personnel_11_rate', '11 personnel', 'pct'],
-    ['personnel_12_rate', '12 personnel', 'pct'],
+    ['personnel_11_rate', '11 Personnel', 'pct'],
+    ['personnel_12_rate', '12 Personnel', 'pct'],
     ['formation_shotgun_rate', 'Shotgun', 'pct'],
-    ['formation_under_center_rate', 'Under centre', 'pct'],
-    ['motion_rate', 'Pre-snap motion', 'pct'],
-    ['play_action_rate', 'Play action', 'pct'],
+    ['formation_under_center_rate', 'Under Centre', 'pct'],
+    ['motion_rate', 'Pre-Snap Motion', 'pct'],
+    ['play_action_rate', 'Play Action', 'pct'],
     ['rpo_rate', 'RPO', 'pct'],
     ['screen_rate', 'Screen', 'pct'],
-    ['no_huddle_rate', 'No huddle', 'pct'],
-    ['neutral_pass_rate', 'Neutral pass rate', 'pct']
+    ['no_huddle_rate', 'No Huddle', 'pct'],
+    ['neutral_pass_rate', 'Neutral Pass Rate', 'pct']
   ];
 
   var RESPONSE_ROWS = [
-    ['pass_epa_man', 'Pass EPA vs man', 'epa'],
-    ['pass_epa_zone', 'Pass EPA vs zone', 'epa'],
-    ['pass_epa_blitz', 'Pass EPA when blitzed', 'epa'],
-    ['pass_epa_pressure', 'Pass EPA under pressure', 'epa'],
-    ['pass_epa_play_action', 'Pass EPA on play action', 'epa'],
-    ['pass_success_rate', 'Pass success rate', 'pct'],
-    ['rush_success_rate', 'Rush success rate', 'pct']
+    ['pass_epa_man', 'Pass EPA Vs Man', 'epa'],
+    ['pass_epa_zone', 'Pass EPA Vs Zone', 'epa'],
+    ['pass_epa_blitz', 'Pass EPA When Blitzed', 'epa'],
+    ['pass_epa_pressure', 'Pass EPA Under Pressure', 'epa'],
+    ['pass_epa_play_action', 'Pass EPA On Play Action', 'epa'],
+    ['pass_success_rate', 'Pass Success Rate', 'pct'],
+    ['rush_success_rate', 'Rush Success Rate', 'pct']
   ];
 
   var TARGET_ROWS = [
-    ['target_share_rb_all', 'Running backs'],
+    ['target_share_rb_all', 'Running Backs'],
     ['target_share_wr_all', 'Receivers'],
-    ['target_share_te_all', 'Tight ends']
+    ['target_share_te_all', 'Tight Ends']
   ];
 
   function pctText(value) {
@@ -782,8 +782,8 @@
       rateTable('Pressure', PRESSURE_ROWS, defPressure) + '</div>' +
       '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(offName) +
       ' offence</h4>' +
-      rateTable('Personnel and formation', PERSONNEL_ROWS, offPersonnel) +
-      rateTable('Response by look', RESPONSE_ROWS, offResponse) +
+      rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel) +
+      rateTable('Response By Look', RESPONSE_ROWS, offResponse) +
       targetBlock + '</div>' +
       '</div></section>';
   }
@@ -885,8 +885,8 @@
   function nflSections(sport, game) {
     var source = game.scheme_source || {};
     return [
-      section('availability', 'Quarterbacks and availability',
-        'Official designations for this week',
+      section('availability', 'Quarterbacks And Availability',
+        'Official Designations For This Week',
         '<div class="ca-detail-duo">' +
         availabilityPanel(sport, game, 'away') +
         availabilityPanel(sport, game, 'home') + '</div>' +
@@ -896,8 +896,8 @@
         'depth order only. A designation shown beside a name is that player\u2019s own ' +
         'entry on the injury report.</p>'),
 
-      section('scheme', 'Scheme confrontation',
-        'Charted tendencies, each offence against the other defence',
+      section('scheme', 'Scheme Confrontation',
+        'Charted Tendencies, Each Offence Against The Other Defence',
         '<div class="ca-detail-stack-inner">' +
         schemePanel(sport, game, 'away', 'home') +
         schemePanel(sport, game, 'home', 'away') + '</div>' +
@@ -906,8 +906,8 @@
         'statement about this game. Distribution bars are shares of the charted sample and ' +
         'sum to 100%.</p>'),
 
-      section('form', 'Team form',
-        'Ten observed rates, graded against the 32-team league pool',
+      section('form', 'Team Form',
+        'Ten Observed Rates, Graded Against The 32-Team League Pool',
         '<div class="ca-detail-duo">' +
         nflFormPanel(sport, game, 'away') +
         nflFormPanel(sport, game, 'home') + '</div>' +
@@ -918,14 +918,14 @@
           (source.week ? ', week ' + esc(source.week) : '') + '. ' : '') +
         'Ranks are recomputed from these rates alone, so none of them can inherit an ordering from anywhere else.</p>'),
 
-      section('team-context', 'Rest, travel and venue', 'Factual scheduling context',
+      section('team-context', 'Rest, Travel And Venue', 'Factual Scheduling Context',
         '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
           ['Record', value(game.away_record)],
-          ['Rest', game.away_rest_days ? game.away_rest_days + ' days' : 'Not published'],
+          ['Rest', game.away_rest_days ? game.away_rest_days + ' days' : 'Not Published'],
           ['Travel', value(game.away_travel)]
         ]) + teamPanel(sport, game, 'home', [
           ['Record', value(game.home_record)],
-          ['Rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not published'],
+          ['Rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not Published'],
           ['Travel', value(game.home_travel)]
         ]) + '</div>')
     ].join('');
@@ -936,12 +936,12 @@
     var homeName = fullName(sport, game, 'home');
     document.title = awayName + ' at ' + homeName + ' — Chase Analytics';
     var nav = sport === 'mlb'
-      ? [['overview', 'Overview'], ['starters', 'Starters'], ['lineups', 'Lineup vs starter'], ['arsenal', 'Pitch mix'], ['form', 'Offensive form'], ['bullpens', 'Bullpens'], ['conditions', 'Ballpark'], ['sources', 'Sources']]
-      : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'], ['form', 'Team form'], ['team-context', 'Rest & travel'], ['conditions', 'Venue'], ['sources', 'Sources']];
+      ? [['overview', 'Overview'], ['starters', 'Starters'], ['lineups', 'Lineup Vs Starter'], ['arsenal', 'Pitch Mix'], ['form', 'Offensive form'], ['bullpens', 'Bullpens'], ['conditions', 'Ballpark'], ['sources', 'Sources']]
+      : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'], ['form', 'Team Form'], ['team-context', 'Rest & travel'], ['conditions', 'Venue'], ['sources', 'Sources']];
     var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back to ' + sport.toUpperCase() + ' matchups</a>' +
       '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta"><div><p class="ca-detail-eyebrow">' +
       sport.toUpperCase() + ' · Matchup analysis</p><span>' + esc(gameStatus(game)) + '</span></div><span>' +
-      esc(value(game.broadcast, 'Broadcast not published')) + '</span></header>' +
+      esc(value(game.broadcast, 'Broadcast Not Published')) + '</span></header>' +
       '<div class="ca-detail-hero__teams">' + teamHero(sport, game, 'away') + '<div class="ca-detail-center">' +
       scoreOrTime(game) + '</div>' + teamHero(sport, game, 'home') + '</div>' +
       '<div class="ca-detail-facts">' + fact('Venue', venue(game)) + fact('Conditions', conditions(game)) +
@@ -950,12 +950,12 @@
         return '<a href="#' + item[0] + '">' + item[1] + '</a>';
       }).join('') + '</nav><div class="ca-detail-stack">' +
       (sport === 'mlb' ? mlbSections(sport, game, extra) : nflSections(sport, game)) +
-      section('conditions', sport === 'mlb' ? 'Ballpark and conditions' : 'Venue, weather, and surface', 'Game environment',
+      section('conditions', sport === 'mlb' ? 'Ballpark And Conditions' : 'Venue, Weather, And Surface', 'Game Environment',
         sport === 'mlb' ? ballparkBody(game, (extra || {}).venue)
           : '<div class="ca-detail-facts">' + fact('Venue', venue(game)) + fact('Weather', conditions(game)) +
             fact('Surface', value(game.surface)) + fact('Roof', value(game.roof)) +
             fact('Start', clock(game.kickoff_utc)) + '</div>') +
-      section('sources', 'Sources and freshness', 'Know what is published and when',
+      section('sources', 'Sources And Freshness', 'Know What Is Published And When',
         '<p class="ca-detail-source-note">Schedule and identity information: ' + esc(result.source) + '. ' +
         'Published context: ' + esc(publishedTime(result.generatedAt)) + '. Data through: ' +
         esc(publishedTime(result.dataThrough)) + '. Missing fields remain explicitly unavailable and are never inferred from the browser clock.</p>') +

@@ -159,8 +159,10 @@ class DashboardSlateTruthContractTests(unittest.TestCase):
         source = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
         shared = (ROOT / "dashboard" / "matchup_shared.js").read_text(encoding="utf-8")
         cards = (ROOT / "dashboard" / "platform_dashboard.js").read_text(encoding="utf-8")
-        self.assertIn("Probable starter not published", source)
-        self.assertIn("Season line not published", source)
+        # Title Case across the display layer (owner decision 2026-09-10); the
+        # assertion is about the absence being stated, not about its casing.
+        self.assertIn("Probable Starter Not Published", source)
+        self.assertIn("Season Line Not Published", source)
         self.assertNotIn("Projected starter", source)
         self.assertIn("if (awaySP === 'TBD') awayHand = '?'", shared)
         self.assertIn("if (pname === 'TBD') ps = null", cards)

@@ -92,7 +92,8 @@
     "player_id",
     "away_lineup",
     "home_lineup",
-    "slot"
+    "slot",
+    "venue_country"
   ],
   "factual_status": [
     "game_state",
@@ -236,7 +237,13 @@
     "home_travel",
     "short_week",
     "travel_km",
-    "tz_shift"
+    "tz_shift",
+    "away_short_week",
+    "home_short_week",
+    "away_travel_km",
+    "home_travel_km",
+    "away_tz_shift",
+    "home_tz_shift"
   ],
   "model_private": [
     "projOSI",

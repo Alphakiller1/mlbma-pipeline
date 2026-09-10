@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from outputs import nfl_public_context
+from outputs import nfl_public_context, nfl_venues
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -467,13 +467,12 @@ ESPN_NFL_SCHEDULE = (
 
 
 def fetch_nfl_rest(teams: set[str]) -> dict[str, list[dict]]:
-    """Each club's completed games this season, newest first.
+    """Each club's played games this season, newest first, with where they were.
 
-    Rest and travel are the two scheduling facts the IA asks for and the model
-    board does not carry. Both fall out of the club's own schedule: the gap to
-    the previous kickoff, and where that previous game was played. In week one
-    there is no previous game, so both stay explicitly unavailable rather than
-    being filled in with a default.
+    Rest and travel are the two scheduling facts the information architecture
+    asks for and no upstream artifact carries. Both fall out of the club's own
+    schedule: the gap to the previous kickoff, and the distance from where that
+    game was played to where this one is.
     """
     out: dict[str, list[dict]] = {}
     for team in sorted(teams):
@@ -486,15 +485,15 @@ def fetch_nfl_rest(teams: set[str]) -> dict[str, list[dict]]:
         played = []
         for event in payload.get("events") or []:
             comp = (event.get("competitions") or [{}])[0]
-            status = ((comp.get("status") or {}).get("type") or {}).get("completed")
-            if not status:
+            if not ((comp.get("status") or {}).get("type") or {}).get("completed"):
                 continue
             venue = comp.get("venue") or {}
+            address = venue.get("address") or {}
             played.append({
                 "kickoff_utc": event.get("date"),
+                "venue": venue.get("fullName"),
                 "venue_city": ", ".join(x for x in (
-                    (venue.get("address") or {}).get("city"),
-                    (venue.get("address") or {}).get("state"),
+                    address.get("city"), address.get("state") or address.get("country"),
                 ) if x) or None,
             })
         played.sort(key=lambda row: str(row["kickoff_utc"]), reverse=True)
@@ -502,25 +501,60 @@ def fetch_nfl_rest(teams: set[str]) -> dict[str, list[dict]]:
     return out
 
 
-def rest_context(history: list[dict] | None, kickoff: str | None) -> tuple[int | None, str | None]:
-    """Days since the club last played, and where it played."""
-    if not history or not kickoff:
-        return None, None
+def rest_context(history: list[dict] | None, kickoff: str | None, team: str,
+                 venue: str | None) -> dict:
+    """Days of rest, and the journey to this fixture.
+
+    Where there is no previous game - a season opener - rest is genuinely
+    undefined and says so, but the journey is still measurable: it is stated
+    from the club's own stadium, and labelled as such, rather than left blank.
+    """
+    out: dict = {"rest_days": None, "travel": None, "short_week": None,
+                 "travel_km": None, "tz_shift": None}
     try:
-        now = datetime.fromisoformat(str(kickoff).replace("Z", "+00:00"))
+        now = datetime.fromisoformat(str(kickoff or "").replace("Z", "+00:00"))
     except ValueError:
-        return None, None
-    for row in history:
+        return out
+
+    previous = None
+    for row in history or []:
         try:
             then = datetime.fromisoformat(str(row["kickoff_utc"]).replace("Z", "+00:00"))
         except (ValueError, KeyError, TypeError):
             continue
-        if then >= now:
-            continue
-        days = (now - then).days
-        where = row.get("venue_city")
-        return days, (f"Last played at {where}" if where else None)
-    return None, None
+        if then < now:
+            previous = (then, row)
+            break
+
+    if previous:
+        then, row = previous
+        out["rest_days"] = (now - then).days
+        # Six days is the ordinary week between Sunday fixtures; anything
+        # shorter is the short week the schedule makes a story of.
+        out["short_week"] = out["rest_days"] <= 5
+        origin, origin_label = row.get("venue"), row.get("venue_city")
+    else:
+        origin = nfl_venues.HOME_VENUE.get(team)
+        origin_label = "home"
+
+    if venue and origin:
+        out["travel_km"] = nfl_venues.great_circle_km(origin, venue)
+        out["tz_shift"] = nfl_venues.tz_shift_hours(origin, venue, now)
+
+    if out["travel_km"] == 0:
+        out["travel"] = "No travel, at home" if not previous else "No travel since the last game"
+    elif out["travel_km"] is not None:
+        miles = round(out["travel_km"] * 0.621371)
+        where = "home" if origin_label == "home" else f"from {origin_label}"
+        shift = out["tz_shift"]
+        clock = ""
+        if shift:
+            clock = f", {abs(shift):.0f}h {'ahead' if shift > 0 else 'back'}"
+        out["travel"] = f"{miles:,} miles {where}{clock}"
+    elif origin_label and origin_label != "home":
+        out["travel"] = f"From {origin_label}"
+
+    return out
 
 
 def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
@@ -570,8 +604,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             rows = block.get("records") or []
             return str(rows[0].get("summary")) if rows and rows[0].get("summary") else None
 
-        away_rest, away_travel = rest_context(rest.get(away_abbr), kickoff)
-        home_rest, home_travel = rest_context(rest.get(home_abbr), kickoff)
+        away_ctx = rest_context(rest.get(away_abbr), kickoff, away_abbr, venue)
+        home_ctx = rest_context(rest.get(home_abbr), kickoff, home_abbr, venue)
         weather = comp.get("weather") or {}
         condition = weather.get("displayValue") or weather.get("conditionId")
         temperature = weather.get("temperature")
@@ -598,6 +632,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
                 "Grass" if venue_data.get("grass") is True
                 else ("Turf" if venue_data.get("grass") is False else None)
             ),
+            "venue_country": (venue_data.get("address") or {}).get("country") or None,
             "roof": (
                 "Indoor" if venue_data.get("indoor") is True
                 else ("Outdoor" if venue_data.get("indoor") is False else None)
@@ -621,10 +656,16 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "scheme_source": context.get("source"),
             "away_players": players.get(away_abbr),
             "home_players": players.get(home_abbr),
-            "away_rest_days": away_rest,
-            "home_rest_days": home_rest,
-            "away_travel": away_travel,
-            "home_travel": home_travel,
+            "away_rest_days": away_ctx["rest_days"],
+            "home_rest_days": home_ctx["rest_days"],
+            "away_travel": away_ctx["travel"],
+            "home_travel": home_ctx["travel"],
+            "away_short_week": away_ctx["short_week"],
+            "home_short_week": home_ctx["short_week"],
+            "away_travel_km": away_ctx["travel_km"],
+            "home_travel_km": home_ctx["travel_km"],
+            "away_tz_shift": away_ctx["tz_shift"],
+            "home_tz_shift": home_ctx["tz_shift"],
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # Publication time and data age are different facts (IA section 6.7): the

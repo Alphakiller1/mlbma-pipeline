@@ -20,7 +20,9 @@
     away_travel: 1, home_travel: 1, freshness: 1,
     away_form: 1, home_form: 1, away_scheme: 1, home_scheme: 1, scheme_source: 1,
     away_players: 1, home_players: 1,
-    away_lineup: 1, home_lineup: 1, away_team_id: 1, home_team_id: 1, venue_id: 1
+    away_lineup: 1, home_lineup: 1, away_team_id: 1, home_team_id: 1, venue_id: 1,
+    away_short_week: 1, home_short_week: 1, away_travel_km: 1, home_travel_km: 1,
+    away_tz_shift: 1, home_tz_shift: 1, venue_country: 1
   };
 
   function asList(x) { return Array.isArray(x) ? x : []; }
@@ -126,6 +128,13 @@
       away_team_id: g.away_team_id || null,
       home_team_id: g.home_team_id || null,
       venue_id: g.venue_id || null,
+      away_short_week: g.away_short_week != null ? g.away_short_week : null,
+      home_short_week: g.home_short_week != null ? g.home_short_week : null,
+      away_travel_km: g.away_travel_km != null ? g.away_travel_km : null,
+      home_travel_km: g.home_travel_km != null ? g.home_travel_km : null,
+      away_tz_shift: g.away_tz_shift != null ? g.away_tz_shift : null,
+      home_tz_shift: g.home_tz_shift != null ? g.home_tz_shift : null,
+      venue_country: g.venue_country || null,
       freshness: freshnessState(g.freshness)
     };
     return pickAllowed(row);

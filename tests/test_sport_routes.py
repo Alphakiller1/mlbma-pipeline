@@ -145,8 +145,16 @@ class SportRouteBuilderTests(unittest.TestCase):
     def test_nav_integrator_does_not_restore_demoted_surfaces(self):
         src = (ROOT / "scripts" / "integrate_chase_nav.py").read_text(encoding="utf-8")
         self.assertNotIn("data-nav=\\\"team-rankings\\\"", src)
-        self.assertIn("caContextBar", src)
         self.assertNotIn("section-research-lab", src)
+        # The context strip is gone from every generated route: it repeated, in
+        # eight-point grey, the two facts the toolbar and the card already
+        # carry (owner decision 2026-09-10). The nav integrator still names it
+        # in a lookahead, which only stops the nav block before a strip that a
+        # page declares for itself - it never writes one.
+        routes = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
+        self.assertNotIn("caContextBar", routes)
+        shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
+        self.assertIn("if (!ctx) return null;", shell)
         text = (ROOT / "nfl" / "matchups.html").read_text(encoding="utf-8")
         slate = (ROOT / "dashboard" / "sports" / "chase_public_slate.js").read_text(encoding="utf-8")
         self.assertNotIn("ca-nfl-channels", text)
@@ -181,8 +189,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("chase_public_slate.js", mlb_home)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
-        self.assertIn("Expand matchup", card)
-        self.assertIn("Full matchup analysis", card)
+        self.assertIn("Expand Matchup", card)
+        self.assertIn("Full Matchup Analysis", card)
         self.assertIn("ca-desk-toolbar", card)
         self.assertIn("var officialRequest", card)
         self.assertNotIn("Board overview", mlb_home)
@@ -297,7 +305,7 @@ class AdapterHoleTests(unittest.TestCase):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
         self.assertEqual(opening.count("<h1"), 1)
-        self.assertIn("Every game. The context that matters.", opening)
+        self.assertIn("Every Game. The Context That Decides It.", opening)
         self.assertIn('id="openingMlbSlate"', opening)
         self.assertIn('id="openingNflSlate"', opening)
         self.assertIn('id="matchupDesk"', opening)
@@ -311,7 +319,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("function contextLabel", status)
         self.assertIn("aria-current", nav)
         self.assertIn("shellMain", shell)
-        self.assertIn("id=\"caContextBar\"", opening)
+        self.assertNotIn("caContextBar", opening)
         self.assertIn("matchup_card.js", opening)
         # 2026-09-10 owner decision: the reference top chrome carries a header
         # search, and it drives the same slate filter as the old toolbar field
