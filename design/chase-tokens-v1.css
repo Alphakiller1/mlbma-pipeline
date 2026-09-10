@@ -1,6 +1,6 @@
 /*
  * Chase Analytics — TIER 1 primitives.
- * DESIGN_LAYER_VERSION: 20260910k
+ * DESIGN_LAYER_VERSION: 20260910m
  * Published at /design/chase-tokens-v1.css (this file, deploy-root copy).
  *
  * This is the ONLY file in mlbma-pipeline allowed to contain raw color literals
@@ -44,6 +44,20 @@
   --ca-violet-200: #B794FF;
   --ca-violet-100: #D9CCFF;
   --ca-violet-050: #D5C4FF;
+
+  /* Model Center's own ground - deliberately outside the --ca-ink- ramp, which
+     is the desk's six measured steps and is contract-tested as exactly six.
+     The public desk is near-black by design: it states facts and holds violet
+     back for navigation. Model Center is the entitled product and carries the
+     brand into the surface itself, which is how its design layer was drawn - a
+     blue-shifted ink with deep violet fields rather than the desk's flat
+     black. */
+  --ca-mc-900: #141824;
+  --ca-mc-850: #191E2C;
+  --ca-mc-800: #1F2437;
+  --ca-violet-deep-900: #241C4A;
+  --ca-violet-deep-800: #2E2459;
+  --ca-violet-deep-700: #382D6F;
 
   /* Status / metric ramp — all seven semantic steps clear 4.5:1 on dark surfaces. */
   --ca-green-500: #3CCB7F;

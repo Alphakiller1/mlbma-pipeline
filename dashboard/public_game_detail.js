@@ -56,7 +56,7 @@
 
   function teamHero(sport, game, side) {
     return '<div class="ca-detail-team ca-detail-team--' + side + '">' +
-      logo(sport, game, side, 76, 'ca-detail-team__logo') +
+      logo(sport, game, side, 96, 'ca-detail-team__logo') +
       '<div><h1>' + esc(fullName(sport, game, side)) + '</h1>' +
       '<p>' + esc(value(game[side + '_record'], 'Record Not Published')) + '</p></div></div>';
   }

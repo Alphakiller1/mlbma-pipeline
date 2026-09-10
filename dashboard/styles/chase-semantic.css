@@ -63,6 +63,16 @@
   --accent-text: var(--ca-violet-300);
   --accent-glow: var(--ca-violet-a-32);
 
+  /* Model Center's surfaces. Two products, two design layers: the public desk
+     is near-black with violet held back for navigation, and Model Center is
+     the entitled product, carrying the brand into the surface itself. Named
+     here so the route layer never reaches for a primitive. */
+  --surface-mc-page: var(--ca-mc-900);
+  --surface-mc-panel: var(--ca-mc-850);
+  --surface-mc-raised: var(--ca-mc-800);
+  --surface-mc-field: var(--ca-violet-deep-900);
+  --surface-mc-hover: var(--ca-violet-deep-800);
+
   /* Distribution segments. A stacked bar needs a set of hues that stay
      distinguishable in both themes and never read as good-to-bad, because the
      segments are categories - coverage shells, target shares - not a scale. */

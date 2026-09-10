@@ -501,19 +501,19 @@
       '<span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></div>' +
       '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' + kickoff(game) + '</span>' +
       (hasWx ? '<span class="ca-matchup-card__wx">' + weatherIcon(game) + esc(wxText) + '</span>' : '') +
-      (game.broadcast ? '<span class="ca-matchup-card__broadcast">' + esc(game.broadcast) + '</span>' : '') +
       '</header>' +
       '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
       '<span class="ca-matchup-card__versus" aria-hidden="true">At</span>' + teamBlock(sport, game, 'home') + '</div>' +
       '<div class="ca-matchup-card__arms" role="group" aria-label="' +
       (sport === 'mlb' ? 'Probable Starters' : 'Quarterbacks') + '">' +
       starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>' +
-      // Two cells, one row. The building moved to the top strip, so what is
-      // left is the pair of facts that change between one reading and the next.
+      // Three compact factual cells, one row - the collapsed anatomy the style
+      // lock specifies (design/GPT_IMAGE_PROMPTS_CHASE_DESK.md).
       '<div class="ca-matchup-card__summary">' +
       miniFact(sport === 'mlb' ? 'Bullpen' : 'Travel',
         sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game))) +
       miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine) +
+      miniFact('Broadcast', game.broadcast || 'Not Published') +
       '</div>' +
       expandedHtml(sport, game, panelId) +
       '<footer class="ca-matchup-card__actions">' +
