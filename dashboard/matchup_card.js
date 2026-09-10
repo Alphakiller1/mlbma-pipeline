@@ -220,7 +220,7 @@
         // the muted treatment rather than the tracked caps used for real data.
         return meta
           ? '<span class="ca-matchup-card__arm-meta">' + esc(meta) + '</span>'
-          : '<span class="ca-matchup-card__arm-meta is-absent">Line not published</span>';
+          : '<span class="ca-matchup-card__arm-meta is-absent">Season line not published</span>';
       })() +
       '</div></div>';
   }
