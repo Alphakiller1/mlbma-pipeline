@@ -514,10 +514,24 @@
         });
     }).then(function (bundle) {
       var games = bundle.games, published = bundle.published, official = bundle.official;
+      // Freshness has to describe what the cards are actually showing. It used
+      // to report the published file's timestamp while the cards were drawn
+      // from the live schedule - two provenances presented as one, and the
+      // strip could say "data through yesterday" above today's fixtures. When
+      // the official schedule supplies the games, the observation time is this
+      // fetch; the file's own timestamp only applies when the file supplied
+      // them.
+      var fromOfficial = official.length > 0;
       return {
-        games: games, generatedAt: published.generated_at || null,
-        dataThrough: published.data_through || date, dateIso: date,
-        source: official.length ? (published.games && published.games.length ? 'Official schedule + published context' : 'Official MLB schedule') : 'Published MLB slate'
+        games: games,
+        generatedAt: fromOfficial ? new Date().toISOString() : (published.generated_at || null),
+        dataThrough: fromOfficial ? new Date().toISOString() : (published.data_through || date),
+        dateIso: date,
+        source: fromOfficial
+          ? (published.games && published.games.length
+              ? 'Official MLB schedule, read live · published context merged in'
+              : 'Official MLB schedule, read live')
+          : 'Published MLB slate'
       };
     });
   }

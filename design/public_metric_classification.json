@@ -89,7 +89,10 @@
     "kickoff_utc",
     "kickoff_display",
     "person_id",
-    "player_id"
+    "player_id",
+    "away_lineup",
+    "home_lineup",
+    "slot"
   ],
   "factual_status": [
     "game_state",
