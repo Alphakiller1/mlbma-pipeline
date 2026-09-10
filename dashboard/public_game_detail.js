@@ -292,6 +292,19 @@
     return false;
   }
 
+  var TEAM_CONTEXT_URL = '/data/public/team_context.json';
+  var leagueBoardPromise = null;
+
+  /* The whole 30-team board, so the two clubs on this page can be read against
+     the league they were ranked in. It is the same artifact the cards already
+     use, so the ranks here and the ranks in the section above cannot disagree -
+     one ranking service, which is what the architecture asks for. */
+  function loadLeagueBoard() {
+    if (leagueBoardPromise) return leagueBoardPromise;
+    leagueBoardPromise = fetchJson(TEAM_CONTEXT_URL).catch(function () { return null; });
+    return leagueBoardPromise;
+  }
+
   function seasonOf(dateIso) {
     var y = parseInt(String(dateIso || '').slice(0, 4), 10);
     return isFinite(y) ? y : new Date().getFullYear();
@@ -658,6 +671,68 @@
       arsenalPanel(sport, game, 'home', people, extra.homeArsenal) + '</div>';
   }
 
+  /* The legacy Team Rankings board, restored where the architecture puts it:
+     inside the matchup, behind a disclosure, rather than as a public
+     destination of its own. Sorted by the metric the section leads with, and
+     the two clubs in this game are marked so the reader can find them without
+     hunting. */
+  function leagueBoard(sport, game, board) {
+    var teams = (board && board.teams) || {};
+    var codes = Object.keys(teams);
+    if (codes.length < 2) return '';
+    var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+      function (c) { return String(c || '').toUpperCase(); };
+    var here = {};
+    here[canon(game.away)] = 'away';
+    here[canon(game.home)] = 'home';
+
+    var keys = FORM_KEYS.filter(function (key) {
+      return codes.some(function (code) { return teams[code][key]; });
+    });
+    if (!keys.length) return '';
+
+    var sortKey = keys[0];
+    codes.sort(function (a, b) {
+      var ra = (teams[a][sortKey] || {}).rank || 99;
+      var rb = (teams[b][sortKey] || {}).rank || 99;
+      return ra - rb;
+    });
+
+    var head = '<tr><th>#</th><th>Club</th>' + keys.map(function (key) {
+      return '<th class="num">' + esc(STAT_SPECS[key].label) + '</th>';
+    }).join('') + '</tr>';
+
+    var rows = codes.map(function (code) {
+      var side = here[code];
+      var cells = keys.map(function (key) {
+        var entry = teams[code][key];
+        if (!entry) return '<td class="num">&mdash;</td>';
+        // The rank is parenthesised rather than merely spaced: across seven
+        // metrics a bare trailing digit reads as part of the value, so wRC+ 110
+        // ranked 3rd looked like 1103.
+        return '<td class="num">' + esc(formatStat(entry.value, STAT_SPECS[key].digits)) +
+          '<i>(' + entry.rank + ')</i></td>';
+      }).join('');
+      var rank = (teams[code][sortKey] || {}).rank;
+      return '<tr' + (side ? ' class="is-here"' : '') + '>' +
+        '<td class="ca-lineup-slot">' + (rank || '') + '</td>' +
+        '<td class="ca-lineup-name">' + esc(code) +
+        (side ? ' <span class="ca-flag">' + (side === 'away' ? 'Away' : 'Home') + '</span>' : '') +
+        '</td>' + cells + '</tr>';
+    }).join('');
+
+    return '<details class="ca-disclosure"><summary>Compare With The League</summary>' +
+      '<div class="ca-disclosure__body">' +
+      '<p class="ca-lineup-context">All ' + codes.length + ' Clubs \u00b7 Sorted By ' +
+      esc(STAT_SPECS[sortKey].label) + '</p>' +
+      '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-league-table">' +
+      '<thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="ca-detail-source-note">The small figure beside each value is that ' +
+      'club\u2019s rank on that metric. Every rank is computed from the value it sits ' +
+      'beside against this same pool, so the board and the comparison above cannot ' +
+      'disagree on a boundary club.</p></div></details>';
+  }
+
   function formBody(sport, game) {
     var formNote = game.context_generated_at
       ? 'Team form as published ' + publishedTime(game.context_generated_at) + '. '
@@ -672,7 +747,8 @@
       'OSI = 0.43\u00b7RCV + 0.37\u00b7ABQ + 0.20\u00b7OBR; Pitch Score = 0.40\u00b7K% + ' +
       '0.35\u00b7inv(BB%) + 0.25\u00b7inv(HR/9). Both are constructed indices, stated with their ' +
       'weights. Every rank and every bar is computed from the value beside it against the same ' +
-      'league pool, so a bar always shows that rate\u2019s own percentile and never a rating.</p>';
+      'league pool, so a bar always shows that rate\u2019s own percentile and never a rating.</p>' +
+      leagueBoard(sport, game, (window.__caLeagueBoard || null));
   }
 
   function bullpenBody(sport, game, extra) {
@@ -1163,6 +1239,14 @@
           });
           repaintStarters();
         }).catch(function () { /* identity is already on screen */ });
+
+        // The league board backs the "Compare with the league" disclosure. It is
+        // cheap, cached, and the same artifact the cards already read.
+        loadLeagueBoard().then(function (board) {
+          if (!board) return;
+          window.__caLeagueBoard = board;
+          paintSection(host, 'form', formBody(sport, game));
+        });
 
         // Stage 2 - pitch mix and the ballpark record.
         Promise.all([
