@@ -944,12 +944,30 @@
 
   // Title-Case a subtitle/explanation, leaving acronyms & metric tokens
   // (wRC+, xFIP, K%, HR/9, OSI…) untouched — only all-lowercase words get capitalized.
+  //
+  // Minor words stay lowercase unless they open or close the string. Without
+  // this, sentence-length subtitles came out as "Every Metric Chip And Heat-Map
+  // Cell Follows The Same Rule" and "Graded Vs Each Stat's League Average",
+  // which reads as broken copy rather than a title.
+  var TITLE_MINOR = {
+    a: 1, an: 1, and: 1, as: 1, at: 1, but: 1, by: 1, for: 1, from: 1, if: 1,
+    in: 1, into: 1, nor: 1, of: 1, off: 1, on: 1, onto: 1, or: 1, over: 1,
+    per: 1, so: 1, the: 1, to: 1, up: 1, via: 1, vs: 1, with: 1, within: 1,
+    across: 1, is: 1, are: 1, be: 1, been: 1, than: 1, that: 1, then: 1
+  };
+
   function titleCaseLabel(s) {
     if (!s) return s;
-    return String(s).replace(/\S+/g, function(w) {
+    var words = String(s).split(/(\s+)/);
+    var lastIndex = words.length - 1;
+    while (lastIndex > 0 && /^\s*$/.test(words[lastIndex])) lastIndex--;
+    return words.map(function (w, i) {
+      if (/^\s*$/.test(w)) return w;
       if (/[A-Z]/.test(w)) return w;
-      return w.replace(/(^|[-/])([a-z])/g, function(m, sep, ch) { return sep + ch.toUpperCase(); });
-    });
+      var bare = w.replace(/[^a-z]/gi, '').toLowerCase();
+      if (i !== 0 && i !== lastIndex && TITLE_MINOR[bare]) return w;
+      return w.replace(/(^|[-/])([a-z])/g, function (m, sep, ch) { return sep + ch.toUpperCase(); });
+    }).join('');
   }
 
   function sectionHeaderHtml(opts) {
@@ -1024,6 +1042,112 @@
       .catch(function() { return null; });
   }
 
+  /* ---------------------------------------------------------------------
+   * Team identity colours (2026-09-09).
+   *
+   * Official primary brand colour per club, used for the abbreviation tabs on
+   * matchup cards and the Model Center board. These are published brand values,
+   * not invented palette: the site is stating a team's own colour, the same way
+   * it states the team's own name.
+   *
+   * Keys are the abbreviations the slate actually publishes, which are not
+   * always the conventional ones (AZ not ARI, ATH not OAK, WSH, CWS), so the
+   * common aliases are listed alongside.
+   *
+   * Text colour is DERIVED at read time from the ground's relative luminance
+   * rather than stored, so a light club colour (PIT gold, NO gold) can never
+   * ship white-on-yellow.
+   * ------------------------------------------------------------------ */
+  var TEAM_COLORS = {
+    mlb: {
+      AZ: '#A71930', ARI: '#A71930',
+      ATL: '#CE1141', BAL: '#DF4601', BOS: '#BD3039',
+      CHC: '#0E3386', CWS: '#27251F', CHW: '#27251F',
+      CIN: '#C6011F', CLE: '#00385D', COL: '#333366', DET: '#0C2340',
+      HOU: '#002D62', KC: '#004687', KCR: '#004687',
+      LAA: '#BA0021', ANA: '#BA0021', LAD: '#005A9C',
+      MIA: '#00A3E0', MIL: '#12284B', MIN: '#002B5C',
+      NYM: '#002D72', NYY: '#003087',
+      ATH: '#003831', OAK: '#003831',
+      PHI: '#E81828', PIT: '#FDB827',
+      SD: '#2F241D', SDP: '#2F241D', SF: '#FD5A1E', SFG: '#FD5A1E',
+      SEA: '#0C2C56', STL: '#C41E3A',
+      TB: '#092C5C', TBR: '#092C5C', TEX: '#003278', TOR: '#134A8E',
+      WSH: '#AB0003', WSN: '#AB0003', WAS: '#AB0003'
+    },
+    nfl: {
+      ARI: '#97233F', ATL: '#A71930', BAL: '#241773', BUF: '#00338D',
+      CAR: '#0085CA', CHI: '#0B162A', CIN: '#FB4F14', CLE: '#311D00',
+      DAL: '#041E42', DEN: '#FB4F14', DET: '#0076B6',
+      GB: '#203731', GNB: '#203731',
+      HOU: '#03202F', IND: '#002C5F', JAX: '#101820', JAC: '#101820',
+      KC: '#E31837', KAN: '#E31837',
+      LV: '#101010', LVR: '#101010', OAK: '#101010',
+      LAC: '#0080C6', LAR: '#003594',
+      MIA: '#008E97', MIN: '#4F2683',
+      NE: '#002244', NWE: '#002244',
+      NO: '#D3BC8D', NOR: '#D3BC8D',
+      NYG: '#0B2265', NYJ: '#125740',
+      PHI: '#004C54', PIT: '#FFB612',
+      SF: '#AA0000', SFO: '#AA0000', SEA: '#002244',
+      TB: '#D50A0A', TAM: '#D50A0A', TEN: '#0C2340',
+      WAS: '#5A1414', WSH: '#5A1414'
+    }
+  };
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function srgbChannel(v) {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  }
+
+  function relativeLuminance(hex) {
+    var h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return 0;
+    var r = srgbChannel(parseInt(h.slice(0, 2), 16));
+    var g = srgbChannel(parseInt(h.slice(2, 4), 16));
+    var b = srgbChannel(parseInt(h.slice(4, 6), 16));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+
+  /** Primary brand colour for a club, or null when the club is unknown. */
+  function teamColor(team, sport) {
+    var table = TEAM_COLORS[String(sport || 'mlb').toLowerCase()];
+    if (!table) return null;
+    return table[String(team || '').toUpperCase()] || null;
+  }
+
+  /**
+   * Readable ink for a club ground. Chooses whichever of near-white / near-black
+   * has the better contrast, so gold and cream grounds get dark text.
+   * Both candidates clear 4.5:1 against every colour in the table above.
+   */
+  function teamInk(hex) {
+    return relativeLuminance(hex) > 0.32 ? '#0E1018' : '#FFFFFF';
+  }
+
+  /**
+   * The abbreviation tab. Falls back to the neutral inset when a club has no
+   * published colour, so an unrecognised abbreviation still renders legibly
+   * rather than disappearing.
+   */
+  function teamTabHtml(team, sport, cls, fullName) {
+    var code = String(team || '').toUpperCase();
+    var color = teamColor(code, sport);
+    var style = color
+      ? ' style="--team-bg:' + color + ';--team-ink:' + teamInk(color) + '"'
+      : '';
+    var label = fullName ? ' aria-label="' + escapeHtml(fullName) + '"' : ' aria-hidden="true"';
+    return '<span class="ca-team-tab ' + (cls || '') + '"' + style + label + '>' +
+      escapeHtml(code || '--') + '</span>';
+  }
+
+
   global.MLBMAAssets = {
     BRAND: BRAND,
     getEspnAbbr: getEspnAbbr,
@@ -1031,6 +1155,9 @@
     teamLogoUrl: teamLogoUrl,
     teamLogoUrlSized: teamLogoUrlSized,
     teamLogoImg: teamLogoImg,
+    teamColor: teamColor,
+    teamInk: teamInk,
+    teamTabHtml: teamTabHtml,
     headshotUrl: headshotUrl,
     headshotImg: headshotImg,
     pitcherAvatar: pitcherAvatar,

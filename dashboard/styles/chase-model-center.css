@@ -155,24 +155,9 @@
 
 .mc-teams { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 
-/* Team chip: official crest plus abbreviation. */
-.mc-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-width: 52px;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-xs);
-  background: var(--mc-chip-bg, var(--surface-inset));
-  border: 1px solid var(--border-default);
-  color: var(--mc-chip-fg, var(--text-primary));
-  font-family: var(--font-display);
-  font-size: var(--type-16);
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  line-height: 1.1;
-}
+/* Team chip is the shared club tab (.ca-team-tab owns ground, ink and type);
+   this only sets the Model Center sizing. */
+.mc-chip { min-width: 58px; }
 
 .mc-game__time {
   font-family: var(--font-display);
@@ -341,7 +326,7 @@
 }
 
 .mc-hero__side { display: grid; gap: var(--space-2); justify-items: center; text-align: center; }
-.mc-hero__side .mc-chip { min-width: 84px; font-size: var(--type-24); padding: var(--space-3) var(--space-4); }
+.mc-hero__side .mc-chip { min-width: 96px; font-size: var(--type-28); padding: var(--space-3) var(--space-5); }
 .mc-hero__name { font-family: var(--font-display); font-size: var(--type-18); font-weight: 700; color: var(--text-primary); }
 .mc-hero__sub { font-size: var(--type-12); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
@@ -441,14 +426,6 @@
   .mc-form__row .mc-bar { grid-column: 1 / -1; }
 }
 
-.mc-chip__crest {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  flex: 0 0 auto;
-}
-.mc-hero__side .mc-chip__crest { width: 40px; height: 40px; }
-.mc-chip__code { line-height: 1.1; }
 
 /* Secondary note under the lean (e.g. an explicit edge-withheld reason). */
 .mc-game__note { display: block; margin-top: 2px; }

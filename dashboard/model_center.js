@@ -90,18 +90,15 @@
     return n == null ? null : n.toFixed(digits == null ? 1 : digits);
   }
 
-  /* The reference renderings use a club-coloured abbreviation tile. There is no
-     team-colour registry in the asset layer, and inventing one would mean
-     hand-picking 62 brand colours, so the chip pairs the official crest with
-     the abbreviation instead: same scan speed, real assets, nothing invented. */
-  function chip(sport, abbr) {
+  /* Club-coloured abbreviation tab, per the reference renderings. Ground and
+     ink come from MLBMAAssets.teamColor / teamInk, which derives the text
+     colour from the ground's luminance so a gold club never ships white text. */
+  function chip(sport, abbr, fullName) {
     var code = String(abbr || '').toUpperCase();
-    var logo = '';
-    if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
-      logo = MLBMAAssets.teamLogoImg(code, 28, 'mc-chip__crest', sport);
+    if (global.MLBMAAssets && MLBMAAssets.teamTabHtml) {
+      return MLBMAAssets.teamTabHtml(code, sport, 'mc-chip', fullName);
     }
-    return '<span class="mc-chip">' + logo +
-      '<span class="mc-chip__code">' + esc(code || 'n/a') + '</span></span>';
+    return '<span class="ca-team-tab mc-chip" aria-hidden="true">' + esc(code || '--') + '</span>';
   }
 
   /* One axis places both marks and both tick labels, and the domain is fixed
@@ -213,7 +210,7 @@
   function detailView(sport, rawBoard, g) {
     var html = '<section class="mc-panel"><p class="mc-eyebrow">' +
       esc(sport.toUpperCase()) + ' · Game detail</p><div class="mc-hero">' +
-      '<div class="mc-hero__side">' + chip(sport, g.away) +
+      '<div class="mc-hero__side">' + chip(sport, g.away, g.away_name) +
       '<span class="mc-hero__name">' + esc(g.away_name || g.away || '') + '</span>' +
       (g.away_record ? '<span class="mc-hero__sub">' + esc(g.away_record) + '</span>' : '') + '</div>';
 
@@ -222,7 +219,7 @@
       (aScore != null && hScore != null ? esc(aScore) + ' - ' + esc(hScore) : 'Not published') +
       '</div><div class="mc-hero__label">Projected score</div></div>';
 
-    html += '<div class="mc-hero__side">' + chip(sport, g.home) +
+    html += '<div class="mc-hero__side">' + chip(sport, g.home, g.home_name) +
       '<span class="mc-hero__name">' + esc(g.home_name || g.home || '') + '</span>' +
       (g.home_record ? '<span class="mc-hero__sub">' + esc(g.home_record) + '</span>' : '') +
       '</div></div></section>';

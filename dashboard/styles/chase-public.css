@@ -964,13 +964,32 @@ body[data-ca-product="research"] {
   color: var(--text-accent);
 }
 
-/* The grid. AUDIT D5: this was repeat(3, 1fr), so a one-game kickoff window
-   rendered a narrow card beside two empty tracks. auto-fit collapses the empty
-   tracks, so the column count follows the item count, and 400px keeps three
-   per row at the 1360px shell width. */
-.ca-slate-grid {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
-  gap: var(--space-3);
+/* The grid. AUDIT D5: this was a flat repeat(3, 1fr), so a one-game kickoff
+   window rendered a narrow card beside two empty tracks.
+
+   A single auto-fit minmax() cannot express the documented breakpoints - the
+   style lock and scripts/public_site_runtime_diag.py both want 3 columns at
+   1440, 2 from 720 to 1099, and 1 below that, and no single track minimum
+   yields 3-at-1440 and 2-at-720. So the counts stay explicit, and :has()
+   handles the real D5 case: a window holding fewer cards than the track count
+   drops to that many columns instead of leaving dead tracks. */
+.ca-slate-grid { gap: var(--space-3); }
+
+@media (min-width: 1100px) {
+  .ca-slate-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ca-slate-grid:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+  .ca-slate-grid:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 620px) and (max-width: 1099px) {
+  .ca-slate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ca-slate-grid:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 619px) {
+  .ca-slate-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Matchup card */
@@ -1340,3 +1359,60 @@ body[data-ca-product="research"] {
     -webkit-line-clamp: 2;
   }
 }
+
+/* --- Club-coloured abbreviation tab ---------------------------------------
+ * Replaced the crest in the card identity band on 2026-09-09 (owner decision,
+ * following the Model Center reference renderings). Ground and ink arrive as
+ * --team-bg / --team-ink from MLBMAAssets.teamTabHtml, which derives the
+ * ink from the ground's luminance, so a gold club gets dark text. An unknown
+ * club sets neither and falls back to the neutral inset below.
+ *
+ * Player headshots are unaffected: they stay on the starter panels and the
+ * profile pages, where a face is the subject rather than a club identity. */
+.ca-team-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 58px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xs);
+  background: var(--team-bg, var(--surface-inset));
+  color: var(--team-ink, var(--text-primary));
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-matchup-card__club {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.ca-matchup-card__tab { min-width: 58px; }
+
+@media (max-width: 400px) {
+  .ca-team-tab { min-width: 50px; font-size: var(--type-16); }
+}
+
+/* --- Collapsed card height contract ---------------------------------------
+ * scripts/public_site_runtime_diag.py holds the collapsed card to 240-360px on
+ * desktop, and the style lock says 272-350px. The identity tab and the fact
+ * cells added rhythm that pushed it to 362-380px, so the internal spacing is
+ * tightened rather than the content cut - every published fact stays. */
+.ca-matchup-card {
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+.ca-matchup-card__club { padding: var(--space-2) var(--space-3); }
+
+.ca-matchup-card__head { padding-bottom: var(--space-2); }
+
+.ca-matchup-card__actions { padding-top: var(--space-2); }
+
+.ca-matchup-card__fact { padding: var(--space-2) var(--space-3); }
