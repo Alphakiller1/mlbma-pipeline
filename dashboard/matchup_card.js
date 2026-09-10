@@ -109,7 +109,7 @@
     if (hand === 'L' || hand === 'LHP') bits.push('LHP');
     var era = safeNumber(sideValue(game, side, 'era', ''), 2);
     if (era) bits.push(era + ' ERA');
-    return bits.join(' · ') || 'Season line not published';
+    return bits.join(' · ') || '';
   }
 
   function conditions(game) {
@@ -201,6 +201,44 @@
         [conditions(game), game.surface].filter(Boolean).join(' · ')) + '</div></div>';
   }
 
+
+  /* The collapsed card carries the starter faces, the way the earlier Chase
+     matchup cards did: a probable pitcher or a quarterback is the single most
+     identifying fact about a game, and a name alone does not read at a glance.
+     Both sides are built from the same template so the row is symmetric even
+     when one side has no published starter. */
+  function starterFace(sport, game, side) {
+    var name = starterName(game, side, sport);
+    var id = sideValue(game, side, 'starter_id', '');
+    return '<div class="ca-matchup-card__arm">' +
+      headshot(id, name) +
+      '<div class="ca-matchup-card__arm-copy">' +
+      '<span class="ca-matchup-card__arm-name">' + esc(name) + '</span>' +
+      (function () {
+        var meta = starterMeta(game, side, sport);
+        // An unpublished season line is an absence, not a headline - it gets
+        // the muted treatment rather than the tracked caps used for real data.
+        return meta
+          ? '<span class="ca-matchup-card__arm-meta">' + esc(meta) + '</span>'
+          : '<span class="ca-matchup-card__arm-meta is-absent">Line not published</span>';
+      })() +
+      '</div></div>';
+  }
+
+  function restSummary(game) {
+    var away = game.away_rest_days, home = game.home_rest_days;
+    if (away == null && home == null) return 'Rest not published';
+    var fmt = function (v) { return v == null ? '--' : v + 'd'; };
+    return fmt(away) + ' / ' + fmt(home);
+  }
+
+  function bullpenSummary(game) {
+    var away = game.away_bullpen, home = game.home_bullpen;
+    if (!away && !home) return 'Workload not published';
+    if (away && home && away === home) return away;
+    return [away, home].filter(Boolean).join(' / ');
+  }
+
   function cardHtml(sport, game) {
     var id = 'matchup-' + String(game.id || '').replace(/[^a-z0-9_-]/gi, '-');
     var panelId = id + '-details';
@@ -221,10 +259,19 @@
       '</span><span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></header>' +
       '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
       '<span class="ca-matchup-card__versus" aria-hidden="true">at</span>' + teamBlock(sport, game, 'home') + '</div>' +
-      '<div class="ca-matchup-card__summary">' + miniFact(sport === 'mlb' ? 'Probable starters' : 'Quarterbacks',
-        starterName(game, 'away', sport) + ' · ' + starterName(game, 'home', sport)) +
-      miniFact(sport === 'mlb' ? 'Lineup status' : 'Player availability', statusLine) +
-      miniFact('Venue', venue(game)) + '</div>' +
+      '<div class="ca-matchup-card__arms" role="group" aria-label="' +
+      (sport === 'mlb' ? 'Probable starters' : 'Quarterbacks') + '">' +
+      starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>' +
+      // Four equal cells, matching the reference card: where, conditions, relief
+      // or rest, and how settled the lineup is.
+      '<div class="ca-matchup-card__summary">' +
+      miniFact('Venue', venue(game)) +
+      miniFact(sport === 'nfl' ? 'Weather' : 'Conditions',
+        [conditions(game), game.surface].filter(Boolean).join(' · ')) +
+      miniFact(sport === 'mlb' ? 'Bullpen' : 'Rest',
+        sport === 'mlb' ? bullpenSummary(game) : restSummary(game)) +
+      miniFact(sport === 'mlb' ? 'Lineup status' : 'Availability', statusLine) +
+      '</div>' +
       expandedHtml(sport, game, panelId) +
       '<footer class="ca-matchup-card__actions">' +
       '<button type="button" class="ca-matchup-card__expand-btn" data-expand-matchup aria-expanded="false" aria-controls="' +
@@ -450,9 +497,20 @@
     var desk = host.__desk || {};
     var shown = filterGames(host, desk.games || []);
     host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
-    host.innerHTML = toolbarHtml(host, desk.sport, shown.length) + renderGroups(desk.sport, shown) +
+    var toolbar = toolbarHtml(host, desk.sport, shown.length);
+    // The date and filter controls belong on the title row, not in a band of
+    // their own - a page that carries the mount point gets them there, and the
+    // slate holds only the games.
+    var controlHost = document.querySelector('[data-desk-toolbar-host]');
+    var body = renderGroups(desk.sport, shown) +
       (!shown.length ? '<div class="ca-empty-state"><h2>' + (desk.results ? 'No completed games' : 'No matching games') +
         '</h2><p>' + (desk.results ? 'Final scores will appear here when games finish.' : 'Adjust the date, filters, or search.') + '</p></div>' : '');
+    if (controlHost) {
+      controlHost.innerHTML = toolbar;
+      host.innerHTML = body;
+    } else {
+      host.innerHTML = toolbar + body;
+    }
     host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
   }
 

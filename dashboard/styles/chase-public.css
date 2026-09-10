@@ -1696,3 +1696,133 @@ body[data-ca-product="research"] {
 }
 
 .ca-desk-toolbar { margin-bottom: var(--space-4); }
+
+/* ===========================================================================
+ * SYMMETRIC CARD BODY + COLLAPSED TOP CHROME - 2026-09-10
+ * ======================================================================== */
+
+/* --- Controls join the title row -----------------------------------------
+ * The date/filter band was a row of its own holding three controls in a
+ * 1561px track, most of it empty. It now sits opposite the title, which is
+ * where the reference chrome puts it and removes a whole band. */
+.ca-public-page__head,
+.ca-opening-desk__head {
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: end;
+  column-gap: var(--space-6);
+}
+
+.ca-public-page__controls { min-width: 0; justify-self: end; }
+
+.ca-public-page__controls .ca-desk-toolbar {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ca-public-page__controls .ca-desk-toolbar__primary { flex: 0 0 auto; }
+.ca-public-page__controls .ca-desk-toolbar__secondary { flex: 0 0 auto; }
+
+/* The context strip already reports the slate size. */
+.ca-public-page__controls .ca-desk-count { display: none; }
+
+@media (max-width: 1100px) {
+  .ca-public-page__head,
+  .ca-opening-desk__head { grid-template-columns: minmax(0, 1fr); }
+  .ca-public-page__controls { justify-self: start; }
+  .ca-public-page__controls .ca-desk-toolbar { justify-content: flex-start; }
+}
+
+/* --- Starter faces --------------------------------------------------------
+ * Two equal columns so the row stays symmetric whichever side has data. */
+.ca-matchup-card__arms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.ca-matchup-card__arm {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+
+.ca-matchup-card__arm .ca-matchup-card__shot {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+}
+
+.ca-matchup-card__arm-copy { display: grid; gap: 1px; min-width: 0; }
+
+.ca-matchup-card__arm-name {
+  font-size: var(--type-14);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.ca-matchup-card__arm-meta {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Meta strip: four equal cells ---------------------------------------- */
+.ca-matchup-card__summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1441px) {
+  .ca-matchup-card__summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .ca-matchup-card__arms { grid-template-columns: minmax(0, 1fr); }
+  .ca-matchup-card__summary > .ca-matchup-card__fact:first-child { grid-column: auto; }
+}
+
+/* An absent season line is muted prose, not tracked caps - it was shouting
+   "SEASON LINE NOT PUBLISHED" once per starter, twice per card. */
+.ca-matchup-card__arm-meta.is-absent {
+  font-family: var(--font-ui);
+  font-size: var(--type-12);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+/* Secondary page links (Results) join the control row instead of stranding
+   themselves on a line of their own under the title. */
+.ca-public-page__head { row-gap: var(--space-2); }
+
+.ca-public-page__links {
+  grid-column: 2;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
+  .ca-public-page__links { grid-column: 1; justify-self: start; }
+}

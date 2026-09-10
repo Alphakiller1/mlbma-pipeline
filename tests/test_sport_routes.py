@@ -50,7 +50,12 @@ class SportRouteBuilderTests(unittest.TestCase):
             for o in others:
                 self.assertNotIn(f"sports/{o}.js", text)
             self.assertIn('class="ca-public-page__lede"', text)
-            self.assertIn(f">Chase Analytics · {sport.upper()}</p>", text)
+            # The eyebrow was removed 2026-09-10: the nav wordmark, the active
+            # sport tab and the H1 already said "Chase Analytics" and the sport,
+            # so it was the fourth mention of both on one screen. The controls
+            # host that replaced it is what the toolbar mounts into.
+            self.assertNotIn(f">Chase Analytics · {sport.upper()}</p>", text)
+            self.assertIn("data-desk-toolbar-host", text)
             self.assertIn(f">{sport.upper()} Matchups</h1>", text)
             self.assertIn("sports/chase_public_slate.js", text)
             self.assertIn("matchup_card.js", text)

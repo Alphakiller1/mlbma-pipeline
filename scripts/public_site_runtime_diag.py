@@ -71,7 +71,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             check(f"{width}px full team names present", metrics["namedTeams"] >= 2, str(metrics))
             check(f"{width}px no bare abbreviation identity", metrics["bareAbbr"] == 0, str(metrics))
             if width >= 1024:
-                check(f"{width}px collapsed card height", 240 <= metrics["maxHeight"] <= 360, str(metrics))
+                # The collapsed card gained the starter faces and a four-cell meta strip
+                # (2026-09-10 owner request: pitcher/QB images, plus the weather and
+                # bullpen the earlier Chase cards carried). The band is re-based on
+                # that anatomy - still a real ceiling, so the card cannot sprawl.
+                check(f"{width}px collapsed card height", 380 <= metrics["maxHeight"] <= 500, str(metrics))
 
             main_text = page.locator("main").inner_text()
             match = PROHIBITED.search(main_text)
