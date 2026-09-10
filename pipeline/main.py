@@ -654,6 +654,16 @@ def run_public_slate_publish():
 
         if publish_slate() != 0:
             raise RuntimeError("public slate publish did not leave a MLB file")
+        # The shared team-context and baseline artifacts get the same treatment.
+        # The public pages used to read the private snapshot directly, which put
+        # projOSI and ppGap for all thirty clubs on every visitor's machine even
+        # though nothing rendered them.
+        import subprocess
+
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "publish_public_context.py")],
+            check=True,
+        )
 
     _run_step(
         "Step 20b: outputs.publish_public_slate",

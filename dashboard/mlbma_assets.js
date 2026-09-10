@@ -1070,7 +1070,10 @@
 
   function loadLeagueBaselines() {
     if (typeof fetch !== 'function') return Promise.resolve(null);
-    return fetch('/dashboard/league_baselines.json?_=' + Date.now())
+    // The public projection. dashboard/league_baselines.json carries projosi,
+    // xwoba and xfip, and this loader runs on every page that imports the asset
+    // registry - which is every public route.
+    return fetch('/data/public/league_baselines.json?_=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) { if (d) applyLeagueBaselines(d); return d; })
       .catch(function() { return null; });

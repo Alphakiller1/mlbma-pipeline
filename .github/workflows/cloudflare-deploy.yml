@@ -40,6 +40,7 @@ jobs:
           python -m http.server 8765 >/tmp/chase-http.log 2>&1 &
           sleep 2
           python scripts/public_site_runtime_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
+          python scripts/public_boundary_crawl.py "http://127.0.0.1:8765"
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 360 --height 800 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 390 --height 844 --strict
 

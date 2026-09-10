@@ -543,11 +543,14 @@
    * exactly as it did before, with the value explicitly unpublished.
    * ------------------------------------------------------------------ */
 
-  var TEAM_CONTEXT_URL = '/dashboard/team_rankings_snapshot.json';
+  // The public projection, not the snapshot. The snapshot's `status` family
+  // carries projOSI and ppGap for all thirty clubs, and serving the whole file
+  // published them to every visitor even though nothing rendered them.
+  var TEAM_CONTEXT_URL = '/data/public/team_context.json';
 
-  // projOSI and ppGap are model_private. The `status` family carries both, so
-  // it is never read - the exclusion is by construction, not by filtering.
-  var PUBLIC_RANK_FAMILIES = ['scoring', 'difficulty'];
+  // Which metrics the card is allowed to show, and how to print them. The
+  // exclusion of projOSI and ppGap now happens in the producer, so they are not
+  // in the artifact this file reads at all.
   var PUBLIC_RANK_METRICS = {
     osi: { label: 'OSI', hi: true, digits: 1 },
     wrc: { label: 'wRC+', hi: true, digits: 0 },
@@ -576,31 +579,17 @@
 
   function loadTeamContext() {
     if (teamContextPromise) return teamContextPromise;
-    teamContextPromise = loadJson(TEAM_CONTEXT_URL).then(function (snap) {
-      var byTeam = {};
-      var families = (snap && snap.families) || {};
-      PUBLIC_RANK_FAMILIES.forEach(function (name) {
-        var rows = (families[name] && families[name].rows) || [];
-        Object.keys(PUBLIC_RANK_METRICS).forEach(function (key) {
-          var scored = rows
-            .filter(function (r) { return r && r[key] != null && isFinite(r[key]); })
-            .sort(function (a, b) { return b[key] - a[key]; });
-          // Rank is recomputed here from the descriptive value itself, so it
-          // never inherits an ordering from anything modelled.
-          scored.forEach(function (row, index) {
-            var team = canonTeam(row.t);
-            if (!team) return;
-            byTeam[team] = byTeam[team] || {};
-            byTeam[team][key] = {
-              value: row[key],
-              rank: index + 1,
-              of: scored.length
-            };
-          });
-        });
-      });
-      return { teams: byTeam, generatedAt: snap && snap.generatedAt || null };
-    }).catch(function () { return { teams: {}, generatedAt: null }; });
+    teamContextPromise = loadJson(TEAM_CONTEXT_URL).then(function (payload) {
+      // Ranks arrive already recomputed from each descriptive value against the
+      // same league pool (scripts/publish_public_context.py), so there is one
+      // ranking service and the matchup page and the league board cannot
+      // disagree on a boundary team.
+      return {
+        teams: (payload && payload.teams) || {},
+        generatedAt: (payload && payload.data_through_utc) || null,
+        formulas: (payload && payload.formulas) || {}
+      };
+    }).catch(function () { return { teams: {}, generatedAt: null, formulas: {} }; });
     return teamContextPromise;
   }
 
