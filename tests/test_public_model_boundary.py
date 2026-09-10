@@ -104,22 +104,54 @@ class PublicModelBoundaryTests(unittest.TestCase):
             self.assertNotIn("/dashboard/league_baselines.json", code,
                              f"{name} fetches the private baselines")
 
-    def test_the_public_projections_carry_no_private_metric(self):
-        for name in ("team_context.json", "league_baselines.json"):
+    def test_the_public_projections_carry_no_forecast(self):
+        """The two the `status` family carries that are genuinely private.
+
+        This test used to name five. xwOBA was classified descriptive_public in
+        the first version of the classification, xFIP is the same class of
+        number, and PALS describes the run of pitching a club has already
+        faced - none of the three is a forecast, and withholding them was an
+        error of mine that suppressed them site-wide. What must never appear is
+        projOSI, which forecasts a game that has not happened, and PP-Gap.
+        """
+        for name in ("team_context.json", "league_baselines.json",
+                     "batter_context.json", "pitch_type_board.json"):
             path = ROOT / "data" / "public" / name
             if not path.is_file():
-                self.skipTest(f"{name} not published")
+                continue
             blob = path.read_text(encoding="utf-8")
-            for key in ("projOSI", "projosi", "ppGap", "pals", "xwoba", "xfip"):
+            for key in ("projOSI", "projosi", "proj_osi", "ppGap", "PP_Gap",
+                        "pp_gap", "win_probability", "projected_"):
                 self.assertNotIn(key, blob, f"{name} publishes {key}")
 
     def test_ranks_are_recomputed_in_the_producer(self):
         """One ranking service, so the matchup page and the league board cannot
         disagree on a boundary team."""
         src = (ROOT / "scripts" / "publish_public_context.py").read_text(encoding="utf-8")
-        self.assertIn('PUBLIC_FAMILIES = ("scoring", "difficulty")', src)
-        self.assertNotIn('"status"', src.split("PUBLIC_FAMILIES")[1].split(")")[0])
+        # The `status` family IS read now - for its three descriptive rates. The
+        # two forecasts inside it are excluded by name, which is the stronger
+        # guarantee: a new key added to that family arrives and is classified,
+        # rather than being silently dropped along with everything else.
+        self.assertIn('FORECAST_KEYS = ("projOSI", "ppGap")', src)
+        self.assertIn('if key in FORECAST_KEYS:', src)
         self.assertIn('"rank": index + 1', src)
+
+    def test_batter_context_carries_the_split_the_lineup_is_read_against(self):
+        """Section 3.3 is a lineup against the hand it faces, not a slash line."""
+        path = ROOT / "data" / "public" / "batter_context.json"
+        if not path.is_file():
+            self.skipTest("batter context not published")
+        data = json.loads(path.read_text(encoding="utf-8"))
+        self.assertIn("vs_rhp", data["batters"])
+        self.assertIn("vs_lhp", data["batters"])
+        sample = next(iter(data["batters"]["vs_rhp"].values()))
+        for metric in ("osi", "abq", "rcv", "obr"):
+            self.assertIn(metric, sample)
+        self.assertIn("bullpen", data)
+        pen = next(iter(data["bullpen"].values()))
+        # The leverage and inherited-runner rates the architecture asks for.
+        for key in ("fip", "k_pct", "ir_scored_pct", "high_lev_era"):
+            self.assertIn(key, pen)
 
     def test_starter_line_is_sourced_not_hydrated_on_schedule(self):
         """probablePitcher cannot be hydrated with stats on /schedule; the

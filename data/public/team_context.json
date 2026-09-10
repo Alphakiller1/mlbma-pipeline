@@ -1,1120 +1,2171 @@
 {
   "schema": "chase-public-team-context/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-09-10T05:49:34Z",
+  "generated_at_utc": "2026-09-10T22:21:12Z",
   "data_through_utc": "2026-09-10T05:49:25.323102+00:00",
   "formulas": {
     "osi": "0.43*RCV + 0.37*ABQ + 0.20*OBR",
-    "pitchScore": "0.40*K% + 0.35*inv(BB%) + 0.25*inv(HR/9)"
+    "pitchScore": "0.40*K% + 0.35*inv(BB%) + 0.25*inv(HR/9)",
+    "pals": "Strength of schedule from PTF+; higher means a harder run of pitching already faced"
   },
   "teams": {
     "LAD": {
       "osi": {
+        "label": "OSI",
         "value": 76.6,
+        "better": "high",
         "rank": 1,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 110.0,
+        "better": "high",
         "rank": 3,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.333,
+        "better": "high",
         "rank": 3,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 70.4,
+        "better": "high",
         "rank": 4,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 61.0,
+        "better": "high",
         "rank": 4,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 91.8,
+        "better": "high",
         "rank": 1,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 51.0,
+        "better": "high",
         "rank": 27,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 58.8,
+        "better": "high",
+        "rank": 7,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.322,
+        "better": "high",
+        "rank": 1,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.19,
+        "better": "low",
+        "rank": 24,
         "of": 30
       }
     },
     "CHC": {
       "osi": {
+        "label": "OSI",
         "value": 74.7,
+        "better": "high",
         "rank": 2,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 114.0,
+        "better": "high",
         "rank": 2,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.338,
+        "better": "high",
         "rank": 2,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 69.9,
+        "better": "high",
         "rank": 7,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 58.0,
+        "better": "high",
         "rank": 6,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 89.4,
+        "better": "high",
         "rank": 2,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 13,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 65.6,
+        "better": "high",
+        "rank": 3,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.316,
+        "better": "high",
+        "rank": 2,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.13,
+        "better": "low",
+        "rank": 10,
         "of": 30
       }
     },
     "WSH": {
       "osi": {
+        "label": "OSI",
         "value": 71.7,
+        "better": "high",
         "rank": 3,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 115.0,
+        "better": "high",
         "rank": 1,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.341,
+        "better": "high",
         "rank": 1,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 91.1,
+        "better": "high",
         "rank": 1,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 47.0,
+        "better": "high",
         "rank": 12,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 70.1,
+        "better": "high",
         "rank": 5,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 56.0,
+        "better": "high",
         "rank": 3,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 62.3,
+        "better": "high",
+        "rank": 4,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.313,
+        "better": "high",
+        "rank": 5,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.12,
+        "better": "low",
+        "rank": 7,
         "of": 30
       }
     },
     "MIL": {
       "osi": {
+        "label": "OSI",
         "value": 66.8,
+        "better": "high",
         "rank": 4,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 100.0,
+        "better": "high",
         "rank": 11,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.319,
+        "better": "high",
         "rank": 9,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 47.8,
+        "better": "high",
         "rank": 23,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 70.8,
+        "better": "high",
         "rank": 2,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 80.9,
+        "better": "high",
         "rank": 3,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 50.0,
+        "better": "high",
         "rank": 30,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 59.4,
+        "better": "high",
+        "rank": 6,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.312,
+        "better": "high",
+        "rank": 6,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.14,
+        "better": "low",
+        "rank": 12,
         "of": 30
       }
     },
     "NYY": {
       "osi": {
+        "label": "OSI",
         "value": 66.3,
+        "better": "high",
         "rank": 5,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 104.0,
+        "better": "high",
         "rank": 5,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.318,
+        "better": "high",
         "rank": 12,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 75.7,
+        "better": "high",
         "rank": 3,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 38.6,
+        "better": "high",
         "rank": 19,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 75.5,
+        "better": "high",
         "rank": 4,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 55.0,
+        "better": "high",
         "rank": 5,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 86.9,
+        "better": "high",
+        "rank": 1,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.313,
+        "better": "high",
+        "rank": 3,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.02,
+        "better": "low",
+        "rank": 2,
         "of": 30
       }
     },
     "DET": {
       "osi": {
+        "label": "OSI",
         "value": 59.2,
+        "better": "high",
         "rank": 6,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 98.0,
+        "better": "high",
         "rank": 18,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.311,
+        "better": "high",
         "rank": 21,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 58.6,
+        "better": "high",
         "rank": 12,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 49.6,
+        "better": "high",
         "rank": 10,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 65.7,
+        "better": "high",
         "rank": 6,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 9,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 56.7,
+        "better": "high",
+        "rank": 9,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.307,
+        "better": "high",
+        "rank": 8,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.1,
+        "better": "low",
+        "rank": 4,
         "of": 30
       }
     },
     "CWS": {
       "osi": {
+        "label": "OSI",
         "value": 58.5,
+        "better": "high",
         "rank": 7,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 102.0,
+        "better": "high",
         "rank": 8,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.318,
+        "better": "high",
         "rank": 14,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 81.3,
+        "better": "high",
         "rank": 2,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 34.5,
+        "better": "high",
         "rank": 25,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 53.5,
+        "better": "high",
         "rank": 12,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 12,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 59.8,
+        "better": "high",
+        "rank": 5,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.305,
+        "better": "high",
+        "rank": 11,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.1,
+        "better": "low",
+        "rank": 5,
         "of": 30
       }
     },
     "BAL": {
       "osi": {
+        "label": "OSI",
         "value": 56.2,
+        "better": "high",
         "rank": 8,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 103.0,
+        "better": "high",
         "rank": 7,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.315,
+        "better": "high",
         "rank": 17,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 69.4,
+        "better": "high",
         "rank": 8,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 32.9,
+        "better": "high",
         "rank": 26,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 59.2,
+        "better": "high",
         "rank": 9,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 56.0,
+        "better": "high",
         "rank": 2,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 52.8,
+        "better": "high",
+        "rank": 10,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.302,
+        "better": "high",
+        "rank": 15,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.12,
+        "better": "low",
+        "rank": 8,
         "of": 30
       }
     },
     "AZ": {
       "osi": {
+        "label": "OSI",
         "value": 54.5,
+        "better": "high",
         "rank": 9,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 99.0,
+        "better": "high",
         "rank": 15,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.319,
+        "better": "high",
         "rank": 8,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 54.6,
+        "better": "high",
         "rank": 18,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 62.8,
+        "better": "high",
         "rank": 3,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 49.3,
+        "better": "high",
         "rank": 15,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
         "rank": 23,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 20.1,
+        "better": "high",
+        "rank": 27,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.303,
+        "better": "high",
+        "rank": 14,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.23,
+        "better": "low",
+        "rank": 30,
         "of": 30
       }
     },
     "STL": {
       "osi": {
+        "label": "OSI",
         "value": 53.6,
+        "better": "high",
         "rank": 10,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 94.0,
+        "better": "high",
         "rank": 25,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.307,
+        "better": "high",
         "rank": 24,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 52.5,
+        "better": "high",
         "rank": 21,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 46.0,
+        "better": "high",
         "rank": 13,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 59.3,
+        "better": "high",
         "rank": 8,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 53.0,
+        "better": "high",
         "rank": 16,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 42.6,
+        "better": "high",
+        "rank": 12,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.308,
+        "better": "high",
+        "rank": 7,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.13,
+        "better": "low",
+        "rank": 11,
         "of": 30
       }
     },
     "MIN": {
       "osi": {
+        "label": "OSI",
         "value": 52.8,
+        "better": "high",
         "rank": 11,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 100.0,
+        "better": "high",
         "rank": 13,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.315,
+        "better": "high",
         "rank": 18,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 55.7,
+        "better": "high",
         "rank": 15,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 43.2,
+        "better": "high",
         "rank": 14,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 56.2,
+        "better": "high",
         "rank": 10,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 53.0,
+        "better": "high",
         "rank": 15,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 40.8,
+        "better": "high",
+        "rank": 14,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.305,
+        "better": "high",
+        "rank": 9,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.16,
+        "better": "low",
+        "rank": 16,
         "of": 30
       }
     },
     "BOS": {
       "osi": {
+        "label": "OSI",
         "value": 52.0,
+        "better": "high",
         "rank": 12,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 100.0,
+        "better": "high",
         "rank": 12,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.321,
+        "better": "high",
         "rank": 6,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 39.4,
+        "better": "high",
         "rank": 26,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 49.7,
+        "better": "high",
         "rank": 9,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 64.3,
+        "better": "high",
         "rank": 7,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 55.0,
+        "better": "high",
         "rank": 4,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 31.3,
+        "better": "high",
+        "rank": 20,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.313,
+        "better": "high",
+        "rank": 4,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.15,
+        "better": "low",
+        "rank": 13,
         "of": 30
       }
     },
     "KC": {
       "osi": {
+        "label": "OSI",
         "value": 51.8,
+        "better": "high",
         "rank": 13,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 95.0,
+        "better": "high",
         "rank": 23,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.311,
+        "better": "high",
         "rank": 22,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 53.7,
+        "better": "high",
         "rank": 20,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 57.0,
+        "better": "high",
         "rank": 7,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 46.9,
+        "better": "high",
         "rank": 18,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 10,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 51.4,
+        "better": "high",
+        "rank": 11,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.304,
+        "better": "high",
+        "rank": 13,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.11,
+        "better": "low",
+        "rank": 6,
         "of": 30
       }
     },
     "ATH": {
       "osi": {
+        "label": "OSI",
         "value": 51.7,
+        "better": "high",
         "rank": 14,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 100.0,
+        "better": "high",
         "rank": 14,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.318,
+        "better": "high",
         "rank": 13,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 70.1,
+        "better": "high",
         "rank": 6,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 36.2,
+        "better": "high",
         "rank": 22,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 45.3,
+        "better": "high",
         "rank": 20,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 11,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 37.3,
+        "better": "high",
+        "rank": 17,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.3,
+        "better": "high",
+        "rank": 19,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.18,
+        "better": "low",
+        "rank": 23,
         "of": 30
       }
     },
     "PIT": {
       "osi": {
+        "label": "OSI",
         "value": 51.0,
+        "better": "high",
         "rank": 15,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 103.0,
+        "better": "high",
         "rank": 6,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.327,
+        "better": "high",
         "rank": 4,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 70.3,
+        "better": "high",
         "rank": 5,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 28.4,
+        "better": "high",
         "rank": 29,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 48.3,
+        "better": "high",
         "rank": 16,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
         "rank": 20,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 41.7,
+        "better": "high",
+        "rank": 13,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.301,
+        "better": "high",
+        "rank": 17,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.18,
+        "better": "low",
+        "rank": 22,
         "of": 30
       }
     },
     "ATL": {
       "osi": {
+        "label": "OSI",
         "value": 51.0,
+        "better": "high",
         "rank": 16,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 98.0,
+        "better": "high",
         "rank": 17,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.317,
+        "better": "high",
         "rank": 16,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 57.0,
+        "better": "high",
         "rank": 13,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 48.8,
+        "better": "high",
         "rank": 11,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 47.1,
+        "better": "high",
         "rank": 17,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 53.0,
+        "better": "high",
         "rank": 17,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 66.3,
+        "better": "high",
+        "rank": 2,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.305,
+        "better": "high",
+        "rank": 10,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.05,
+        "better": "low",
+        "rank": 3,
         "of": 30
       }
     },
     "SD": {
       "osi": {
+        "label": "OSI",
         "value": 50.6,
+        "better": "high",
         "rank": 17,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 92.0,
+        "better": "high",
         "rank": 26,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.302,
+        "better": "high",
         "rank": 27,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 52.5,
+        "better": "high",
         "rank": 22,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 42.0,
+        "better": "high",
         "rank": 15,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 54.3,
+        "better": "high",
         "rank": 11,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 53.0,
+        "better": "high",
         "rank": 19,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 38.4,
+        "better": "high",
+        "rank": 16,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.305,
+        "better": "high",
+        "rank": 12,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.17,
+        "better": "low",
+        "rank": 18,
         "of": 30
       }
     },
     "TB": {
       "osi": {
+        "label": "OSI",
         "value": 49.0,
+        "better": "high",
         "rank": 18,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 102.0,
+        "better": "high",
         "rank": 9,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.318,
+        "better": "high",
         "rank": 11,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 40.3,
+        "better": "high",
         "rank": 25,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 74.3,
+        "better": "high",
         "rank": 1,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 40.9,
+        "better": "high",
         "rank": 23,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 55.0,
+        "better": "high",
         "rank": 6,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 28.5,
+        "better": "high",
+        "rank": 22,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.297,
+        "better": "high",
+        "rank": 25,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.22,
+        "better": "low",
+        "rank": 29,
         "of": 30
       }
     },
     "MIA": {
       "osi": {
+        "label": "OSI",
         "value": 48.5,
+        "better": "high",
         "rank": 19,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 97.0,
+        "better": "high",
         "rank": 19,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.318,
+        "better": "high",
         "rank": 15,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 61.9,
+        "better": "high",
         "rank": 10,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 40.4,
+        "better": "high",
         "rank": 16,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 41.7,
+        "better": "high",
         "rank": 22,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
         "rank": 21,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 39.3,
+        "better": "high",
+        "rank": 15,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.297,
+        "better": "high",
+        "rank": 24,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.15,
+        "better": "low",
+        "rank": 15,
         "of": 30
       }
     },
     "CLE": {
       "osi": {
+        "label": "OSI",
         "value": 48.1,
+        "better": "high",
         "rank": 20,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 90.0,
+        "better": "high",
         "rank": 28,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.298,
+        "better": "high",
         "rank": 29,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 37.8,
+        "better": "high",
         "rank": 27,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 55.4,
+        "better": "high",
         "rank": 8,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 52.6,
+        "better": "high",
         "rank": 14,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
         "rank": 26,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 36.0,
+        "better": "high",
+        "rank": 18,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.299,
+        "better": "high",
+        "rank": 21,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.15,
+        "better": "low",
+        "rank": 14,
         "of": 30
       }
     },
     "SEA": {
       "osi": {
+        "label": "OSI",
         "value": 47.1,
+        "better": "high",
         "rank": 21,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 98.0,
+        "better": "high",
         "rank": 16,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.302,
+        "better": "high",
         "rank": 28,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 54.8,
+        "better": "high",
         "rank": 16,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 39.3,
+        "better": "high",
         "rank": 17,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 45.3,
+        "better": "high",
         "rank": 19,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
         "rank": 22,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 34.2,
+        "better": "high",
+        "rank": 19,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.3,
+        "better": "high",
+        "rank": 20,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.17,
+        "better": "low",
+        "rank": 19,
         "of": 30
       }
     },
     "CIN": {
       "osi": {
+        "label": "OSI",
         "value": 46.6,
+        "better": "high",
         "rank": 22,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 95.0,
+        "better": "high",
         "rank": 24,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.319,
+        "better": "high",
         "rank": 10,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 45.5,
+        "better": "high",
         "rank": 24,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 38.1,
+        "better": "high",
         "rank": 20,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 52.9,
+        "better": "high",
         "rank": 13,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 7,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 24.4,
+        "better": "high",
+        "rank": 26,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.299,
+        "better": "high",
+        "rank": 23,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.16,
+        "better": "low",
+        "rank": 17,
         "of": 30
       }
     },
     "NYM": {
       "osi": {
+        "label": "OSI",
         "value": 45.8,
+        "better": "high",
         "rank": 23,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 95.0,
+        "better": "high",
         "rank": 22,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.307,
+        "better": "high",
         "rank": 25,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 56.0,
+        "better": "high",
         "rank": 14,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 37.4,
+        "better": "high",
         "rank": 21,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 42.2,
+        "better": "high",
         "rank": 21,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 53.0,
+        "better": "high",
         "rank": 18,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 28.3,
+        "better": "high",
+        "rank": 23,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.299,
+        "better": "high",
+        "rank": 22,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.17,
+        "better": "low",
+        "rank": 20,
         "of": 30
       }
     },
     "HOU": {
       "osi": {
+        "label": "OSI",
         "value": 44.9,
+        "better": "high",
         "rank": 24,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 101.0,
+        "better": "high",
         "rank": 10,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.315,
+        "better": "high",
         "rank": 19,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 60.9,
+        "better": "high",
         "rank": 11,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 35.5,
+        "better": "high",
         "rank": 24,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 36.9,
+        "better": "high",
         "rank": 25,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
         "rank": 24,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 25.2,
+        "better": "high",
+        "rank": 24,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.296,
+        "better": "high",
+        "rank": 27,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.2,
+        "better": "low",
+        "rank": 26,
         "of": 30
       }
     },
     "SF": {
       "osi": {
+        "label": "OSI",
         "value": 42.3,
+        "better": "high",
         "rank": 25,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 96.0,
+        "better": "high",
         "rank": 21,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.31,
+        "better": "high",
         "rank": 23,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 62.5,
+        "better": "high",
         "rank": 9,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 32.2,
+        "better": "high",
         "rank": 27,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 30.8,
+        "better": "high",
         "rank": 28,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 52.0,
+        "better": "high",
+        "rank": 25,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 24.8,
+        "better": "high",
+        "rank": 25,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.301,
+        "better": "high",
+        "rank": 16,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.2,
+        "better": "low",
         "rank": 25,
         "of": 30
       }
     },
     "TEX": {
       "osi": {
+        "label": "OSI",
         "value": 41.7,
+        "better": "high",
         "rank": 26,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 108.0,
+        "better": "high",
         "rank": 4,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.324,
+        "better": "high",
         "rank": 5,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 54.7,
+        "better": "high",
         "rank": 17,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 38.6,
+        "better": "high",
         "rank": 18,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 32.3,
+        "better": "high",
         "rank": 27,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 51.0,
+        "better": "high",
+        "rank": 28,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 15.8,
+        "better": "high",
+        "rank": 28,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.294,
+        "better": "high",
+        "rank": 29,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.21,
+        "better": "low",
         "rank": 28,
         "of": 30
       }
     },
     "TOR": {
       "osi": {
+        "label": "OSI",
         "value": 36.0,
+        "better": "high",
         "rank": 27,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 88.0,
+        "better": "high",
         "rank": 29,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.295,
+        "better": "high",
         "rank": 30,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 29.3,
+        "better": "high",
         "rank": 29,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 58.8,
+        "better": "high",
         "rank": 5,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 27.7,
+        "better": "high",
         "rank": 29,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 57.0,
+        "better": "high",
+        "rank": 1,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 56.9,
+        "better": "high",
+        "rank": 8,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.295,
+        "better": "high",
+        "rank": 28,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.01,
+        "better": "low",
         "rank": 1,
         "of": 30
       }
     },
     "PHI": {
       "osi": {
+        "label": "OSI",
         "value": 33.7,
+        "better": "high",
         "rank": 28,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 90.0,
+        "better": "high",
         "rank": 27,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.307,
+        "better": "high",
         "rank": 26,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 33.7,
+        "better": "high",
         "rank": 28,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 35.8,
+        "better": "high",
         "rank": 23,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 32.5,
+        "better": "high",
         "rank": 26,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 51.0,
+        "better": "high",
         "rank": 29,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 29.6,
+        "better": "high",
+        "rank": 21,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.296,
+        "better": "high",
+        "rank": 26,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.12,
+        "better": "low",
+        "rank": 9,
         "of": 30
       }
     },
     "LAA": {
       "osi": {
+        "label": "OSI",
         "value": 31.3,
+        "better": "high",
         "rank": 29,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 97.0,
+        "better": "high",
         "rank": 20,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.312,
+        "better": "high",
         "rank": 20,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 54.5,
+        "better": "high",
         "rank": 19,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 21.8,
+        "better": "high",
         "rank": 30,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 17.0,
+        "better": "high",
         "rank": 30,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 14,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 13.8,
+        "better": "high",
+        "rank": 29,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.283,
+        "better": "high",
+        "rank": 30,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.17,
+        "better": "low",
+        "rank": 21,
         "of": 30
       }
     },
     "COL": {
       "osi": {
+        "label": "OSI",
         "value": 26.5,
+        "better": "high",
         "rank": 30,
         "of": 30
       },
       "wrc": {
+        "label": "wRC+",
         "value": 87.0,
+        "better": "high",
         "rank": 30,
         "of": 30
       },
       "woba": {
+        "label": "wOBA",
         "value": 0.32,
+        "better": "high",
         "rank": 7,
         "of": 30
       },
       "rcv": {
+        "label": "RCV",
         "value": 6.9,
+        "better": "high",
         "rank": 30,
         "of": 30
       },
       "abq": {
+        "label": "ABQ",
         "value": 32.0,
+        "better": "high",
         "rank": 28,
         "of": 30
       },
       "obr": {
+        "label": "OBR",
         "value": 40.1,
+        "better": "high",
         "rank": 24,
         "of": 30
       },
       "pitchScore": {
+        "label": "Pitch Score",
         "value": 54.0,
+        "better": "high",
         "rank": 8,
+        "of": 30
+      },
+      "pals": {
+        "label": "SOS",
+        "value": 10.4,
+        "better": "high",
+        "rank": 30,
+        "of": 30
+      },
+      "xwoba": {
+        "label": "xwOBA",
+        "value": 0.3,
+        "better": "high",
+        "rank": 18,
+        "of": 30
+      },
+      "xfip": {
+        "label": "xFIP",
+        "value": 4.2,
+        "better": "low",
+        "rank": 27,
         "of": 30
       }
     }

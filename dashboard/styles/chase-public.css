@@ -3170,3 +3170,272 @@ body[data-ca-product="research"] {
 
 .ca-arsenal-row { grid-template-areas: "name bar pct" "meta meta after"; }
 .ca-arsenal-row { grid-template-columns: minmax(88px, 1fr) minmax(60px, 2fr) auto; }
+
+/* ===========================================================================
+ * THE OPPONENT'S HISTORY AGAINST THE PITCH
+ *
+ * A usage share only means something beside what the other lineup has done
+ * with that pitch. The rank is a chip so it can be scanned down the column;
+ * the number is always printed, so the colour is a second reading of a fact
+ * that is already legible without it.
+ * ======================================================================== */
+.ca-arsenal-opp {
+  grid-area: opp;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px var(--space-2);
+  padding-top: 3px;
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-arsenal-opp__label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-arsenal-opp strong {
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-arsenal-opp__whiff,
+.ca-arsenal-opp__n { color: var(--text-muted); }
+
+.ca-arsenal-row {
+  grid-template-areas: "name bar pct" "meta meta after" "opp opp opp";
+  row-gap: 2px;
+}
+
+/* One rank chip, one meaning, everywhere it appears. */
+.ca-rank {
+  display: inline-block;
+  margin-left: 3px;
+  padding: 0 5px;
+  border-radius: var(--radius-xs);
+  border: 1px solid currentColor;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ===========================================================================
+ * LAST TEN GAMES
+ *
+ * The quickest read of form there is: ten squares, oldest to newest, each one
+ * a game with its own score. Won and lost are carried by the letter as well as
+ * the colour, so the strip survives being printed in grey.
+ * ======================================================================== */
+.ca-recent-stack { display: grid; gap: var(--space-3); }
+
+.ca-recent {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+
+.ca-recent__team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-recent__crest { width: 24px; height: 24px; object-fit: contain; flex: 0 0 auto; }
+
+.ca-recent__record {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+.ca-recent__record i {
+  font-style: normal;
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-recent__games { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
+
+.ca-recent__game {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0;
+  min-width: 40px;
+  padding: 3px 4px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-recent__game abbr {
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  text-decoration: none;
+  border: 0;
+}
+
+.ca-recent__game i { font-style: normal; font-size: var(--type-12); color: var(--text-muted); }
+
+.ca-recent__game.is-win { color: var(--metric-elite); border-color: var(--metric-elite); }
+.ca-recent__game.is-loss { color: var(--metric-poor); border-color: var(--metric-poor); }
+
+.ca-recent__pending { font-size: var(--type-14); color: var(--text-muted); }
+
+/* ===========================================================================
+ * CONDITIONS AS A READING, NOT A SENTENCE
+ * ======================================================================== */
+.ca-wx-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.ca-wx-tile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+
+.ca-wx-tile__mark { display: flex; color: var(--text-accent); }
+.ca-wx-glyph { display: block; }
+
+.ca-wx-tile__read { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px var(--space-3); }
+
+.ca-wx-tile__read strong {
+  font-family: var(--font-display);
+  font-size: var(--type-24);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.ca-wx-tile__cond { font-size: var(--type-14); color: var(--text-secondary); }
+
+.ca-wx-tile__wind {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--type-12);
+  color: var(--text-muted);
+}
+
+.ca-wx-arrow { flex: 0 0 auto; color: var(--text-accent); }
+
+.ca-wx-note { margin: 0; font-size: var(--type-12); color: var(--text-muted); max-width: 42ch; }
+
+/* ===========================================================================
+ * PITCH MIX AS A TABLE
+ *
+ * Five parallel readings of the same shape, read down a column rather than
+ * across a stack of rows. Usage carries a bar and a grade for how heavily the
+ * pitch is leaned on; the percentage is printed beside it, so the colour is a
+ * second reading of something already legible.
+ * ======================================================================== */
+.ca-usage {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  min-width: 118px;
+}
+
+.ca-usage__bar {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 44px;
+  height: 8px;
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.ca-usage__bar > span { display: block; height: 100%; background: currentColor; }
+
+.ca-usage b {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  min-width: 46px;
+  text-align: right;
+}
+
+/* How heavily the pitch is leaned on - not how good it is. */
+.u-primary   { color: var(--series-1); }
+.u-secondary { color: var(--series-2); }
+.u-tertiary  { color: var(--series-3); }
+.u-rare      { color: var(--text-muted); }
+
+.ca-arsenal-table td.num { white-space: nowrap; }
+.ca-arsenal-table tbody tr:nth-child(even) { background: var(--surface-field); }
+
+/* The most recent outing, and what the arm does to each side of the plate -
+   both named in the architecture as starter content and neither previously
+   fetched. */
+.ca-last-start {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-last-start > span {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-split-block { margin: 0 0 var(--space-3); }
+
+.ca-split-block h4 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-split-table { min-width: 0; }
