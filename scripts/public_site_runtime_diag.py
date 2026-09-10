@@ -163,6 +163,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               "not published" if age is None else f"{age:.1f} days old")
         check("MLB form panels state when the form was published",
               "Team form as published" in page.locator("#form").inner_text())
+        # The legacy Team Rankings board, restored where the architecture puts
+        # it: inside the matchup behind a disclosure, never as a destination.
+        page.eval_on_selector_all("#form .ca-disclosure", "els => els.forEach(d => d.open = true)")
+        board_rows = page.locator("#form .ca-league-table tbody tr").count()
+        marked = page.locator("#form .ca-league-table tbody tr.is-here").count()
+        check("MLB compare-with-league opens the full board", board_rows == 30,
+              f"rows={board_rows}")
+        check("MLB league board marks the two clubs in this game", marked == 2,
+              f"marked={marked}")
         mlb_detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(mlb_detail_text)
         check("MLB detail public copy boundary", match is None, match.group(0) if match else "")
