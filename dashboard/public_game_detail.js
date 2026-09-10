@@ -149,9 +149,17 @@
     rcv: { label: 'RCV', digits: 1 },
     abq: { label: 'ABQ', digits: 1 },
     obr: { label: 'OBR', digits: 1 },
-    pitchScore: { label: 'Pitch Score', digits: 0 }
+    pitchScore: { label: 'Pitch Score', digits: 0 },
+    // Three the producer publishes and the page was not reading. xwOBA was
+    // named descriptive_public in the first classification and should never
+    // have been withheld; xFIP is the same class of number; SOS describes the
+    // run of pitching a club has already faced.
+    xwoba: { label: 'xwOBA', digits: 3 },
+    xfip: { label: 'xFIP', digits: 2 },
+    pals: { label: 'SOS', digits: 1 }
   };
-  var FORM_KEYS = ['osi', 'wrc', 'woba', 'rcv', 'abq', 'obr', 'pitchScore'];
+  var FORM_KEYS = ['osi', 'wrc', 'woba', 'xwoba', 'rcv', 'abq', 'obr',
+    'pitchScore', 'xfip', 'pals'];
 
   function fetchJson(url) {
     return fetch(url, { cache: 'no-store' }).then(function (r) {
@@ -160,12 +168,20 @@
     });
   }
 
-  /** One bulk request for every person on the card - both arms and both orders. */
-  function loadPeople(ids, group, season) {
+  /* One bulk request for every person on the card.
+   *
+   * `split` is the whole point for hitters. The section is headed "versus RHP"
+   * and was showing each batter's OVERALL season line underneath it, which
+   * claims a split the numbers do not deliver - the heading and the table
+   * disagreed and the heading was the one telling the truth about intent.
+   * sitCodes vr / vl return the real thing.
+   */
+  function loadPeople(ids, group, season, split) {
     var unique = ids.filter(function (id, i) { return id && ids.indexOf(id) === i; });
     if (!unique.length) return Promise.resolve({});
+    var type = split ? 'statSplits],sitCodes=[' + split : 'season';
     var url = 'https://statsapi.mlb.com/api/v1/people?personIds=' + unique.join(',') +
-      '&hydrate=stats(group=[' + group + '],type=[season],season=' + season + ')';
+      '&hydrate=stats(group=[' + group + '],type=[' + type + '],season=' + season + ')';
     return fetchJson(url).then(function (payload) {
       var byId = {};
       (payload.people || []).forEach(function (person) {
@@ -305,6 +321,94 @@
     return leagueBoardPromise;
   }
 
+  var PITCH_BOARD_URL = '/data/public/pitch_type_board.json';
+  var pitchBoardPromise = null;
+
+  function loadPitchBoard() {
+    if (pitchBoardPromise) return pitchBoardPromise;
+    pitchBoardPromise = fetchJson(PITCH_BOARD_URL).catch(function () { return null; });
+    return pitchBoardPromise;
+  }
+
+  /* The last ten completed games for one club: opponent, score, result.
+     The banner on the earlier Chase analysis pages carried this and it is the
+     quickest read of form there is - not a rate to interpret, just what has
+     been happening. Every value is a final score off the official record. */
+  function loadRecentForm(teamId, dateIso) {
+    if (!teamId) return Promise.resolve(null);
+    var end = isoDaysBefore(dateIso, 1);
+    var start = isoDaysBefore(dateIso, 32);
+    return fetchJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=' + teamId +
+      '&startDate=' + start + '&endDate=' + end + '&hydrate=team').then(function (payload) {
+      var out = [];
+      (payload.dates || []).forEach(function (block) {
+        (block.games || []).forEach(function (g) {
+          if (((g.status || {}).abstractGameState || '') !== 'Final') return;
+          var teams = g.teams || {};
+          var home = ((teams.home || {}).team || {}).id === teamId;
+          var mine = home ? teams.home : teams.away;
+          var opp = home ? teams.away : teams.home;
+          if (!mine || !opp) return;
+          out.push({
+            date: g.officialDate || block.date,
+            home: home,
+            opponent: (opp.team || {}).abbreviation || '',
+            scored: mine.score,
+            allowed: opp.score,
+            won: !!mine.isWinner
+          });
+        });
+      });
+      out.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+      return out.slice(-10);
+    }).catch(function () { return null; });
+  }
+
+  /* An arm's platoon splits and his most recent outing. Both are one request
+     each for the two starters on the card, and both were named in the
+     architecture as section 3.2 content. */
+  function loadArmSplits(ids, season) {
+    var unique = ids.filter(Boolean);
+    if (!unique.length) return Promise.resolve({});
+    return Promise.all(['vl', 'vr'].map(function (sit) {
+      return loadPeople(unique, 'pitching', season, sit).then(function (batch) {
+        return { sit: sit, batch: batch };
+      });
+    })).then(function (parts) {
+      var out = {};
+      parts.forEach(function (part) {
+        Object.keys(part.batch).forEach(function (id) {
+          out[id] = out[id] || {};
+          out[id][part.sit] = part.batch[id].stat;
+        });
+      });
+      return out;
+    }).catch(function () { return {}; });
+  }
+
+  function loadLastStart(id, season) {
+    if (!id) return Promise.resolve(null);
+    return fetchJson('https://statsapi.mlb.com/api/v1/people/' + id +
+      '?hydrate=stats(group=[pitching],type=[gameLog],season=' + season + ')').then(function (payload) {
+      var splits = [];
+      ((payload.people || [])[0] || {}).stats && payload.people[0].stats.forEach(function (blk) {
+        (blk.splits || []).forEach(function (sp) { splits.push(sp); });
+      });
+      if (!splits.length) return null;
+      splits.sort(function (a, b) { return String(a.date) < String(b.date) ? -1 : 1; });
+      var last = splits[splits.length - 1];
+      var st = last.stat || {};
+      return {
+        date: last.date || '',
+        innings: st.inningsPitched != null ? st.inningsPitched : '\u2014',
+        pitches: st.numberOfPitches != null ? st.numberOfPitches : '\u2014',
+        strikeOuts: st.strikeOuts != null ? st.strikeOuts : '\u2014',
+        baseOnBalls: st.baseOnBalls != null ? st.baseOnBalls : '\u2014',
+        earnedRuns: st.earnedRuns != null ? st.earnedRuns : '\u2014'
+      };
+    }).catch(function () { return null; });
+  }
+
   function seasonOf(dateIso) {
     var y = parseInt(String(dateIso || '').slice(0, 4), 10);
     return isFinite(y) ? y : new Date().getFullYear();
@@ -321,6 +425,25 @@
   /* The bar is the league percentile of the value beside it and nothing else.
      Rank 1 of 30 fills it, rank 30 of 30 empties it. It never encodes a
      rating, a projection, or an ordering borrowed from anywhere else. */
+  /* One place that decides what a rank's colour means, so a 4th of 30 looks the
+     same wherever it appears. The number is always printed, so the colour is a
+     second reading of a fact that is already legible without it. */
+  function rankTone(rank, of) {
+    if (!(of > 1) || !(rank >= 1)) return '';
+    var pct = (of - rank) / (of - 1);
+    if (pct >= 0.87) return 'c-elite';
+    if (pct >= 0.63) return 'c-good';
+    if (pct >= 0.37) return 'c-mid';
+    if (pct >= 0.13) return 'c-weak';
+    return 'c-poor';
+  }
+
+  function rankBadge(entry) {
+    if (!entry || !(entry.of > 1)) return '';
+    return '<span class="ca-rank ' + rankTone(entry.rank, entry.of) + '">' +
+      entry.rank + ordinal(entry.rank) + '</span>';
+  }
+
   function percentBar(rank, of) {
     if (!(of > 1) || !(rank >= 1)) return '';
     var pct = Math.round(((of - rank) / (of - 1)) * 100);
@@ -337,13 +460,17 @@
 
   function statCell(entry, spec) {
     if (!entry || !spec) return '';
+    // The producer ships a label with each entry; it is the one that knows
+    // which metric it computed, so it wins over the local table.
+    if (entry.label) spec = { label: entry.label, digits: spec.digits };
     var shown = formatStat(entry.value, spec.digits);
     if (!shown) return '';
     return '<div class="ca-form-cell">' +
       '<span class="ca-form-label">' + esc(spec.label) + '</span>' +
       '<strong class="ca-form-value">' + esc(shown) + '</strong>' +
       percentBar(entry.rank, entry.of) +
-      '<span class="ca-form-rank">' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
+      '<span class="ca-form-rank ' + rankTone(entry.rank, entry.of) + '">' +
+      entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
       '</div>';
   }
 
@@ -410,7 +537,8 @@
         (styles[which] ? ' data-club="1"' : '') + ' style="width:' +
         (pct == null ? 0 : pct.toFixed(1)) + '%"></span></span>';
       var value = '<span class="' + val + '">' + esc(format(entry.value)) +
-        '<i>' + entry.rank + ordinal(entry.rank) + '</i></span>';
+        '<i class="' + rankTone(entry.rank, entry.of) + '">' +
+        entry.rank + ordinal(entry.rank) + '</i></span>';
       return which === 'away' ? value + bar : bar + value;
     }
     return '<div class="ca-mirror__row' + lead + '"' +
@@ -471,6 +599,36 @@
   /* Rates the season line implies but does not carry. Each is a plain quotient
      of two published counting stats, so it is exactly as factual as its
      inputs; where an input is missing the rate is simply absent. */
+  /* Innings pitched arrive as "119.1", which is 119 innings and one out - not
+     119.1 innings. Treating it as a decimal quietly mis-states every rate built
+     on it. */
+  function inningsToOuts(ip) {
+    var parts = String(ip == null ? '' : ip).split('.');
+    var whole = parseInt(parts[0], 10);
+    if (!isFinite(whole)) return null;
+    return whole * 3 + (parts[1] ? parseInt(parts[1], 10) : 0);
+  }
+
+  function inningsValue(ip) {
+    var outs = inningsToOuts(ip);
+    return outs == null ? null : outs / 3;
+  }
+
+  /* Fielding Independent Pitching over the three outcomes a pitcher controls
+     alone. It is a plain arithmetic combination of published counting stats -
+     the same class of number as K% - and it is stated with its constant so the
+     reader can see the whole of it. */
+  var FIP_CONSTANT = 3.15;
+
+  function fip(stat) {
+    var ip = inningsValue(stat.inningsPitched);
+    if (!ip) return null;
+    var hr = Number(stat.homeRuns), bb = Number(stat.baseOnBalls);
+    var hbp = Number(stat.hitBatsmen || 0), k = Number(stat.strikeOuts);
+    if (![hr, bb, k].every(isFinite)) return null;
+    return ((13 * hr) + (3 * (bb + (isFinite(hbp) ? hbp : 0))) - (2 * k)) / ip + FIP_CONSTANT;
+  }
+
   function derivedRates(stat) {
     var out = [];
     var bf = Number(stat.battersFaced);
@@ -508,10 +666,11 @@
     // The line a scout reads first, at the size that says so, with the counting
     // stats behind it underneath. A flat eight-row list gave "Batters Faced"
     // exactly as much weight as ERA.
+    var f = fip(stat);
     var headline = [
       ['ERA', stat.era, 'era'],
+      ['FIP', f == null ? null : f.toFixed(2), 'era'],
       ['WHIP', stat.whip, 'whip'],
-      ['Record', stat.wins != null && stat.losses != null ? stat.wins + '-' + stat.losses : null, null],
       ['IP', stat.inningsPitched, null]
     ].map(function (row) {
       if (row[1] == null) return '';
@@ -525,6 +684,37 @@
       ['Home Runs Allowed', stat.homeRuns != null ? stat.homeRuns : 'Not Published'],
       ['Batters Faced', stat.battersFaced != null ? stat.battersFaced : 'Not Published']
     ];
+    // What this arm has done against each side of the plate, and what his most
+    // recent outing actually looked like. Both were in the architecture and
+    // neither was being fetched.
+    var splits = person && person.splits;
+    var splitHtml = '';
+    if (splits && (splits.vl || splits.vr)) {
+      function splitRow(label, st) {
+        if (!st) return '';
+        return '<tr><td>' + esc(label) + '</td>' +
+          '<td class="num ' + gradeFor(st.avg, 'avg') + '">' + esc(st.avg != null ? st.avg : '\u2014') + '</td>' +
+          '<td class="num ' + gradeFor(st.ops, 'ops') + '">' + esc(st.ops != null ? st.ops : '\u2014') + '</td>' +
+          '<td class="num">' + esc(st.strikeOuts != null ? st.strikeOuts : '\u2014') + '</td>' +
+          '<td class="num">' + esc(st.baseOnBalls != null ? st.baseOnBalls : '\u2014') + '</td>' +
+          '<td class="num">' + esc(st.battersFaced != null ? st.battersFaced : '\u2014') + '</td></tr>';
+      }
+      splitHtml = '<div class="ca-split-block"><h4>Opponents By Side Of The Plate</h4>' +
+        '<table class="ca-lineup-table ca-split-table"><thead><tr><th>Faces</th>' +
+        '<th class="num">AVG</th><th class="num">OPS</th><th class="num">K</th>' +
+        '<th class="num">BB</th><th class="num">BF</th></tr></thead><tbody>' +
+        splitRow('Left-handed hitters', splits.vl) +
+        splitRow('Right-handed hitters', splits.vr) +
+        '</tbody></table></div>';
+    }
+    var lastHtml = '';
+    if (person && person.lastStart) {
+      var ls = person.lastStart;
+      lastHtml = '<p class="ca-last-start"><span>Last Start</span>' +
+        esc(ls.date) + ' \u00b7 ' + esc(ls.innings) + ' IP \u00b7 ' +
+        esc(ls.pitches) + ' pitches \u00b7 ' + esc(ls.strikeOuts) + ' K \u00b7 ' +
+        esc(ls.baseOnBalls) + ' BB \u00b7 ' + esc(ls.earnedRuns) + ' ER</p>';
+    }
     var rates = derivedRates(stat).map(function (pair) {
       return '<div class="ca-form-cell"><span class="ca-form-label">' + esc(pair[0]) +
         '</span><strong class="ca-form-value">' + esc(pair[1]) + '</strong></div>';
@@ -540,7 +730,7 @@
       '<h3 class="ca-starter-name">' + esc(name) + '</h3></div></header>' +
       (headline ? '<div class="ca-stat-row">' + headline + '</div>' : '') +
       (rates ? '<div class="ca-form-grid ca-form-grid--tight">' + rates + '</div>' : '') +
-      list(rows) + '</section>';
+      lastHtml + splitHtml + list(rows) + '</section>';
   }
 
   /* The centrepiece: one lineup against the other side's arm, with the context
@@ -548,12 +738,18 @@
   function lineupPanel(sport, game, side, people, oppLabel, oppHand) {
     var players = game[side + '_lineup'] || [];
     var teamLabel = fullName(sport, game, side);
-    var context = teamLabel + ' \u00b7 ' + (side === 'away' ? 'away' : 'home') +
-      (oppHand ? ' \u00b7 versus ' + (oppHand === 'L' ? 'LHP' : 'RHP') : '') +
-      ' \u00b7 season to date';
+    // The heading names the split the numbers actually are. It used to name the
+    // opposing starter, which reads as "this lineup against this man" while the
+    // figures underneath were season totals against everyone.
+    var handLabel = oppHand === 'L' ? 'Left-Handed Pitching'
+      : (oppHand === 'R' ? 'Right-Handed Pitching' : 'All Pitching');
+    var context = teamLabel + ' \u00b7 ' + (side === 'away' ? 'Away' : 'Home') +
+      ' \u00b7 ' + handLabel + ' \u00b7 ' + seasonOf(game.kickoff_utc) + ' Season' +
+      (oppLabel ? ' \u00b7 ' + oppLabel + ' Starts' : '');
 
     if (!players.length) {
-      return '<section class="ca-lineup-panel"><h3>' + esc(teamLabel) + ' lineup</h3>' +
+      return '<section class="ca-lineup-panel"><h3>' + esc(teamLabel) + ' Versus ' +
+        esc(handLabel) + '</h3>' +
         '<p class="ca-lineup-context">' + esc(context) + '</p>' +
         '<p class="ca-detail-source-note">Batting order not published yet \u2014 status: ' +
         esc(lineupState(game[side + '_lineup_state'])) +
@@ -563,32 +759,30 @@
     var rows = players.map(function (pl, i) {
       var person = people[pl.id] || {};
       var stat = person.stat || {};
+      function cell(key, context) {
+        var v = stat[key];
+        if (v == null) return '<td class="num">&mdash;</td>';
+        return '<td class="num ' + gradeFor(v, context) + '">' + esc(v) + '</td>';
+      }
       return '<tr>' +
         '<td class="ca-lineup-slot">' + (i + 1) + '</td>' +
         '<td class="ca-lineup-name">' + esc(person.name || pl.fullName || '') + '</td>' +
-        '<td>' + esc(((pl.primaryPosition || {}).abbreviation) || person.pos || '') + '</td>' +
         '<td>' + esc(person.bats || '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.avg != null ? stat.avg : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.obp != null ? stat.obp : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.slg != null ? stat.slg : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.ops != null ? stat.ops : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.homeRuns != null ? stat.homeRuns : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.rbi != null ? stat.rbi : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.plateAppearances != null ? stat.plateAppearances : '\u2014') + '</td>' +
+        cell('avg', 'avg') + cell('obp', 'obp') + cell('slg', 'slg') + cell('ops', 'ops') +
         '</tr>';
     }).join('');
 
     return '<section class="ca-lineup-panel">' +
-      '<h3>' + esc(teamLabel) + ' lineup versus ' + esc(oppLabel) + '</h3>' +
+      '<h3>' + esc(teamLabel) + ' Versus ' + esc(handLabel) + '</h3>' +
       '<p class="ca-lineup-context">' + esc(context) + '</p>' +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table">' +
-      '<thead><tr><th>#</th><th>Batter</th><th>Pos</th><th>Bats</th>' +
-      '<th class="num">AVG</th><th class="num">OBP</th><th class="num">SLG</th>' +
-      '<th class="num">OPS</th><th class="num">HR</th><th class="num">RBI</th>' +
-      '<th class="num">PA</th></tr></thead>' +
+      '<thead><tr><th>#</th><th>Batter</th><th>Bats</th>' +
+      '<th class="num">AVG</th><th class="num">OBP</th>' +
+      '<th class="num">SLG</th><th class="num">OPS</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>' +
-      '<p class="ca-detail-source-note">Season totals, official MLB stats. ' +
-      'PA is shown so a small sample is never mistaken for a trend.</p></section>';
+      '<p class="ca-detail-source-note">Every figure is that batter against ' +
+      esc(handLabel) + ' this season, not his overall line. Colour grades each ' +
+      'rate against the league average for it.</p></section>';
   }
 
   /* A usage bar is the pitcher's own share of his own pitches. The sample is
@@ -603,11 +797,27 @@
     KN: 'other'
   };
 
+  /* How heavily an offering is leaned on. These are the conventional reading
+     lines for a starter's mix: a third of everything is the pitch he lives on,
+     under a tenth is a look he shows. */
+  function usageTone(pct) {
+    if (pct >= 30) return 'u-primary';
+    if (pct >= 18) return 'u-secondary';
+    if (pct >= 9) return 'u-tertiary';
+    return 'u-rare';
+  }
+
   function pitchFamily(code) {
     return PITCH_FAMILY[String(code || '').toUpperCase()] || 'other';
   }
 
-  function arsenalPanel(sport, game, side, people, rows) {
+  function arsenalPanel(sport, game, side, people, rows, boards) {
+    // The away starter faces the home lineup, and the other way round.
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+      function (c) { return String(c || '').toUpperCase(); };
+    var board = ((boards && boards.teams) || {})[canon(game[oppSide])] || null;
+    var oppLabel = fullName(sport, game, oppSide);
     var id = game[side + '_starter_id'];
     var name = (people[id] && people[id].name) || game[side + '_starter'] || 'Probable starter';
     var head = '<section class="ca-arsenal-panel"><h3>' + esc(name) + '</h3>' +
@@ -619,19 +829,112 @@
       return head + pending('No tracked pitches published for this arm this season.') + '</section>';
     }
     var total = rows[0].total;
-    var bars = rows.map(function (row) {
+    /* A table, because these are five parallel readings of the same shape and a
+       column of them is read down, not across. Usage is graded by how heavily
+       the pitch is leaned on - a 36% offering is the pitch, a 5% one is a look
+       - and the number is printed beside the bar, so the colour is a second
+       reading of something already legible. */
+    var body = rows.map(function (row) {
       var pct = row.pct * 100;
-      return '<div class="ca-arsenal-row" data-pitch="' + esc(pitchFamily(row.code)) + '">' +
-        '<span class="ca-arsenal-name">' + esc(row.name) + '</span>' +
-        '<span class="ca-arsenal-bar"><span class="ca-arsenal-bar__fill" style="width:' +
-        Math.max(1, Math.round(pct)) + '%"></span></span>' +
-        '<span class="ca-arsenal-pct">' + pct.toFixed(1) + '%</span>' +
-        '<span class="ca-arsenal-meta">' + (isFinite(row.speed) ? row.speed.toFixed(1) + ' mph' : '\u2014') +
-        ' \u00b7 n ' + row.count + '</span></div>';
+      var opp = (board || {})[row.code];
+      return '<tr data-pitch="' + esc(pitchFamily(row.code)) + '">' +
+        '<td class="ca-lineup-name">' + esc(row.name) + '</td>' +
+        '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
+        '<span class="ca-usage__bar"><span style="width:' + Math.max(2, Math.round(pct)) +
+        '%"></span></span><b>' + pct.toFixed(1) + '%</b></span></td>' +
+        '<td class="num">' + (isFinite(row.speed) ? row.speed.toFixed(1) : '\u2014') + '</td>' +
+        '<td class="num">' + (opp && opp.xwoba
+          ? esc(formatStat(opp.xwoba.value, 3)) + rankBadge(opp.xwoba) : '\u2014') + '</td>' +
+        '<td class="num">' + (opp && opp.whiff_rate
+          ? opp.whiff_rate.value.toFixed(1) + '%' + rankBadge(opp.whiff_rate) : '\u2014') + '</td>' +
+        '<td class="num">' + row.count.toLocaleString('en-US') + '</td>' +
+        '</tr>';
     }).join('');
-    return head + '<div class="ca-arsenal-list">' + bars + '</div>' +
-      '<p class="ca-detail-source-note">' + (isFinite(total) ? total + ' tracked pitches' : 'Sample not published') +
-      '. Share is of this pitcher\u2019s own pitches, so the column sums to 100%.</p></section>';
+
+    return head +
+      '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
+      '<thead><tr><th>Pitch</th><th class="num">Usage</th><th class="num">MPH</th>' +
+      '<th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
+      '<th class="num">Whiff</th><th class="num">Seen</th></tr></thead>' +
+      '<tbody>' + body + '</tbody></table></div>' +
+      '<p class="ca-detail-source-note">' +
+      (isFinite(total) ? total.toLocaleString('en-US') + ' tracked pitches' : 'Sample not published') +
+      '. Usage is this pitcher\u2019s share of his own pitches, so the column sums to 100%. ' +
+      'The last three columns are how ' + esc(oppLabel) + ' has hit that pitch this ' +
+      'season, ranked among clubs with a comparable sample.</p></section>';
+  }
+
+  /* Conditions as separate facts with a symbol, not one run-on string.
+     "79\u00b0 \u00b7 Cloudy \u00b7 10 mph, R To L" is four facts crushed into one line of
+     small grey type, which is the same weight as everything around it and so
+     gets read by nobody. */
+  var WX_GLYPH = {
+    clear: '<circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<path d="M12 1v2M12 21v2M23 12h-2M3 12H1M19.8 4.2l-1.4 1.4M5.6 18.4l-1.4 1.4M19.8 19.8l-1.4-1.4M5.6 5.6L4.2 4.2"/></g>',
+    partly: '<circle cx="8" cy="8" r="3.6"/><path d="M10 20.4a4.4 4.4 0 0 1-.4-8.8 6 6 0 0 1 11.3 1.6 3.7 3.7 0 0 1-.8 7.2z"/>',
+    cloudy: '<path d="M6.8 19.8a4.9 4.9 0 0 1-.5-9.8 6.7 6.7 0 0 1 12.8 1.8 4.2 4.2 0 0 1-.9 8z"/>',
+    rain: '<path d="M6.8 15.4a4.9 4.9 0 0 1-.5-9.8 6.7 6.7 0 0 1 12.8 1.8 4.2 4.2 0 0 1-.9 8z"/>' +
+      '<g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 18l-1 3.4M12 18l-1 3.4M16 18l-1 3.4"/></g>',
+    snow: '<path d="M6.8 15.4a4.9 4.9 0 0 1-.5-9.8 6.7 6.7 0 0 1 12.8 1.8 4.2 4.2 0 0 1-.9 8z"/>' +
+      '<g stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 19.4h1.6M14.4 19.4H16M9.8 18.4V21M15.2 18.4V21"/></g>',
+    storm: '<path d="M6.8 14a4.9 4.9 0 0 1-.5-9.8 6.7 6.7 0 0 1 12.8 1.8 4.2 4.2 0 0 1-.9 8z"/>' +
+      '<path d="M13.2 14.2L9 19.6h3.3l-1.5 3.9 5.1-6.3h-3.4z"/>',
+    wind: '<g stroke="currentColor" stroke-width="2.1" stroke-linecap="round" fill="none">' +
+      '<path d="M3 9.2h11a3 3 0 1 0-3-3M3 14.6h13.8a3 3 0 1 1-3 3M3 19.5h7.5"/></g>',
+    roof: '<path d="M12 3L2.4 9.6h2.2V21h14.8V9.6h2.2z" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linejoin="round"/>'
+  };
+
+  function wxKey(game) {
+    var roof = String(game.roof || '').toLowerCase();
+    if (roof.indexOf('closed') >= 0 || roof.indexOf('dome') >= 0 || roof.indexOf('indoor') >= 0) return 'roof';
+    var text = (String(game.conditions || '') + ' ' + String(game.weather_cond || '')).toLowerCase();
+    if (!text.trim()) return null;
+    if (text.indexOf('dome') >= 0 || text.indexOf('roof closed') >= 0) return 'roof';
+    if (text.indexOf('thunder') >= 0 || text.indexOf('storm') >= 0) return 'storm';
+    if (text.indexOf('snow') >= 0 || text.indexOf('sleet') >= 0) return 'snow';
+    if (text.indexOf('rain') >= 0 || text.indexOf('drizzle') >= 0 || text.indexOf('shower') >= 0) return 'rain';
+    if (text.indexOf('partly') >= 0 || text.indexOf('mostly sunny') >= 0) return 'partly';
+    if (text.indexOf('cloud') >= 0 || text.indexOf('overcast') >= 0) return 'cloudy';
+    if (text.indexOf('clear') >= 0 || text.indexOf('sunny') >= 0 || text.indexOf('fair') >= 0) return 'clear';
+    if (text.indexOf('wind') >= 0 || text.indexOf('breez') >= 0) return 'wind';
+    return null;
+  }
+
+  function wxGlyph(key, cls) {
+    if (!key) return '';
+    return '<svg class="' + (cls || 'ca-wx-glyph') + '" viewBox="0 0 24 24" width="28" height="28" ' +
+      'aria-hidden="true" focusable="false" fill="currentColor">' + WX_GLYPH[key] + '</svg>';
+  }
+
+  /* The wind reading carries a direction - "10 mph, R To L" - which is a fact
+     about the ballpark, so the arrow points the way the ball is pushed. */
+  function windArrow(text) {
+    var t = String(text || '').toLowerCase();
+    var deg = null;
+    if (t.indexOf('l to r') >= 0) deg = 90;
+    else if (t.indexOf('r to l') >= 0) deg = 270;
+    else if (t.indexOf('in from') >= 0 || t.indexOf('in ') === 0) deg = 180;
+    else if (t.indexOf('out to') >= 0) deg = 0;
+    if (deg === null) return '';
+    return '<svg class="ca-wx-arrow" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" ' +
+      'style="transform:rotate(' + deg + 'deg)" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+      'stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6 11l6-6 6 6"/></svg>';
+  }
+
+  function wxTile(game) {
+    var key = wxKey(game);
+    var temp = game.weather_temp;
+    var cond = game.weather_cond;
+    var wind = game.weather_wind;
+    if (!key && !temp && !cond && !wind) return '';
+    return '<div class="ca-wx-tile">' +
+      '<span class="ca-wx-tile__mark">' + wxGlyph(key) + '</span>' +
+      '<span class="ca-wx-tile__read">' +
+      (temp ? '<strong>' + esc(temp) + '\u00b0</strong>' : '') +
+      (cond ? '<span class="ca-wx-tile__cond">' + esc(cond) + '</span>' : '') +
+      (wind ? '<span class="ca-wx-tile__wind">' + windArrow(wind) + esc(wind) + '</span>' : '') +
+      '</span></div>';
   }
 
   function ballparkBody(game, venueRecord) {
@@ -639,9 +942,12 @@
     var loc = (venueRecord && venueRecord.location) || {};
     var dims = ['leftLine', 'leftCenter', 'center', 'rightCenter', 'rightLine']
       .map(function (key) { return info[key]; }).filter(function (v) { return v != null; });
-    return '<div class="ca-detail-facts">' +
+    var tile = wxTile(game);
+    return (tile ? '<div class="ca-wx-row">' + tile +
+      '<p class="ca-wx-note">Conditions at first pitch, from the official game record.</p></div>' : '') +
+      '<div class="ca-detail-facts">' +
       fact('Venue', venue(game)) +
-      fact('Weather', conditions(game)) +
+      (tile ? '' : fact('Weather', conditions(game))) +
       fact('Surface', info.turfType || value(game.surface)) +
       fact('Roof', info.roofType || 'Not Published') +
       fact('Capacity', info.capacity != null ? Number(info.capacity).toLocaleString('en-US') : 'Not Published') +
@@ -666,15 +972,31 @@
     var rows = report.used.map(function (rec) {
       var line = (quality || {})[rec.id];
       var stat = (line && line.stat) || {};
+      // Quality beside workload: an arm that threw 35 pitches yesterday reads
+      // differently depending on whether he is the best in the pen or the last
+      // man in it. FIP, K% and BB% are arithmetic over counting stats already
+      // on the row - the architecture asked for all three and none were here.
+      var f = fip(stat);
+      var bf = Number(stat.battersFaced);
+      function rate(count) {
+        if (!isFinite(bf) || bf <= 0 || count == null) return null;
+        return Number(count) / bf * 100;
+      }
+      var k = rate(stat.strikeOuts), bb = rate(stat.baseOnBalls);
       return '<tr>' +
         '<td class="ca-lineup-name">' + esc(rec.name) + (rec.backToBack ?
           ' <span class="ca-flag">back to back</span>' : '') + '</td>' +
         '<td class="num">' + rec.outings.length + '</td>' +
         '<td class="num">' + rec.pitches + '</td>' +
         '<td>' + esc(rec.dates.join(', ')) + '</td>' +
-        '<td class="num">' + esc(stat.era != null ? stat.era : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.whip != null ? stat.whip : '\u2014') + '</td>' +
-        '<td class="num">' + esc(stat.inningsPitched != null ? stat.inningsPitched : '\u2014') + '</td>' +
+        '<td class="num ' + gradeFor(stat.era, 'era') + '">' +
+        esc(stat.era != null ? stat.era : '\u2014') + '</td>' +
+        '<td class="num ' + (f == null ? '' : gradeFor(f, 'era')) + '">' +
+        (f == null ? '\u2014' : f.toFixed(2)) + '</td>' +
+        '<td class="num">' + (k == null ? '\u2014' : k.toFixed(1) + '%') + '</td>' +
+        '<td class="num">' + (bb == null ? '\u2014' : bb.toFixed(1) + '%') + '</td>' +
+        '<td class="num ' + gradeFor(stat.whip, 'whip') + '">' +
+        esc(stat.whip != null ? stat.whip : '\u2014') + '</td>' +
         '</tr>';
     }).join('');
     return head +
@@ -682,7 +1004,8 @@
       esc(report.window) + '</p>' +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table">' +
       '<thead><tr><th>Reliever</th><th class="num">App</th><th class="num">Pitches</th>' +
-      '<th>Dates</th><th class="num">ERA</th><th class="num">WHIP</th><th class="num">IP</th></tr></thead>' +
+      '<th>Dates</th><th class="num">ERA</th><th class="num">FIP</th>' +
+      '<th class="num">K%</th><th class="num">BB%</th><th class="num">WHIP</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div></section>';
   }
 
@@ -713,8 +1036,13 @@
   function arsenalBody(sport, game, extra) {
     var people = extra.people || {};
     return '<div class="ca-detail-duo">' +
-      arsenalPanel(sport, game, 'away', people, extra.awayArsenal) +
-      arsenalPanel(sport, game, 'home', people, extra.homeArsenal) + '</div>';
+      arsenalPanel(sport, game, 'away', people, extra.awayArsenal, extra.pitchBoard) +
+      arsenalPanel(sport, game, 'home', people, extra.homeArsenal, extra.pitchBoard) + '</div>' +
+      '<p class="ca-detail-source-note">The opponent figure is how the lineup ' +
+      'that arm faces has hit that pitch this season, ranked among clubs with a ' +
+      'comparable sample. It describes the season already played: pitch-type ' +
+      'specific team hitting has been measured on this data and does not carry ' +
+      'from one window to the next, so it is history, not a read on tonight.</p>';
   }
 
   /* The legacy Team Rankings board, restored where the architecture puts it:
@@ -757,7 +1085,7 @@
         // metrics a bare trailing digit reads as part of the value, so wRC+ 110
         // ranked 3rd looked like 1103.
         return '<td class="num">' + esc(formatStat(entry.value, STAT_SPECS[key].digits)) +
-          '<i>(' + entry.rank + ')</i></td>';
+          '<i class="' + rankTone(entry.rank, entry.of) + '">(' + entry.rank + ')</i></td>';
       }).join('');
       var rank = (teams[code][sortKey] || {}).rank;
       return '<tr' + (side ? ' class="is-here"' : '') + '>' +
@@ -777,6 +1105,45 @@
       'club\u2019s rank on that metric. Every rank is computed from the value it sits ' +
       'beside against this same pool, so the board and the comparison above cannot ' +
       'disagree on a boundary club.</p></div></details>';
+  }
+
+  /* Ten squares, oldest to newest, each one a game. Won or lost is carried by
+     the letter as well as the colour, and every square states its own score,
+     opponent and date to a screen reader and on hover. */
+  function recentStrip(sport, game, side, results) {
+    var label = fullName(sport, game, side);
+    if (!results) {
+      return '<div class="ca-recent"><span class="ca-recent__team">' + esc(label) +
+        '</span><span class="ca-recent__pending">Recent results loading</span></div>';
+    }
+    if (!results.length) {
+      return '<div class="ca-recent"><span class="ca-recent__team">' + esc(label) +
+        '</span><span class="ca-recent__pending">No completed games in the last month</span></div>';
+    }
+    var wins = results.filter(function (r) { return r.won; }).length;
+    var squares = results.map(function (r) {
+      var title = r.date + ' ' + (r.home ? 'vs ' : 'at ') + r.opponent + ' ' +
+        r.scored + '-' + r.allowed + ' ' + (r.won ? 'won' : 'lost');
+      return '<span class="ca-recent__game' + (r.won ? ' is-win' : ' is-loss') +
+        '" title="' + esc(title) + '"><abbr title="' + esc(title) + '">' +
+        (r.won ? 'W' : 'L') + '</abbr>' +
+        '<i>' + esc(r.scored) + '\u2013' + esc(r.allowed) + '</i></span>';
+    }).join('');
+    return '<div class="ca-recent">' +
+      '<span class="ca-recent__team">' + logo(sport, game, side, 24, 'ca-recent__crest') +
+      esc(label) + '</span>' +
+      '<span class="ca-recent__record">' + wins + '\u2013' + (results.length - wins) +
+      '<i>Last ' + results.length + '</i></span>' +
+      '<span class="ca-recent__games">' + squares + '</span></div>';
+  }
+
+  function recentBody(sport, game, extra) {
+    return '<div class="ca-recent-stack">' +
+      recentStrip(sport, game, 'away', extra.awayRecent) +
+      recentStrip(sport, game, 'home', extra.homeRecent) + '</div>' +
+      '<p class="ca-detail-source-note">Oldest on the left. Each square is one ' +
+      'completed game with its final score; hover or focus for the opponent and ' +
+      'date. Won and lost are carried by the letter as well as the colour.</p>';
   }
 
   function formBody(sport, game) {
@@ -803,8 +1170,9 @@
       bullpenPanel(sport, game, 'home', extra.homeBullpen, extra.bullpenQuality) + '</div>' +
       '<p class="ca-detail-source-note">Read from the official box score of each completed game. ' +
       'Relief appearances only \u2014 a pitcher who started that game is excluded by his own line. ' +
-      'Season ERA, WHIP and IP are that reliever\u2019s full-season totals, shown so a heavy recent ' +
-      'workload is read beside the arm that carried it.</p>';
+      'ERA, FIP, K%, BB% and WHIP are that reliever\u2019s full-season rates, shown so a heavy ' +
+      'recent workload is read beside the arm that carried it. ' +
+      'FIP = (13\u00b7HR + 3\u00b7(BB+HBP) \u2212 2\u00b7K) / IP + 3.15.</p>';
   }
 
   function mlbSections(sport, game, extra) {
@@ -816,6 +1184,8 @@
         lineupsBody(sport, game, extra)),
       section('arsenal', 'Pitch Mix', 'What Each Starter Throws, And How Often',
         arsenalBody(sport, game, extra)),
+      section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
+        recentBody(sport, game, extra)),
       section('form', 'Offensive Form And League Context', 'Graded Against The 30-Team League Pool',
         formBody(sport, game)),
       section('bullpens', 'Bullpen Workload', 'Relief Appearances In The Three Days Before This Game',
@@ -1031,7 +1401,8 @@
       '<span class="ca-form-label">' + esc(entry.label) + '</span>' +
       '<strong class="ca-form-value">' + esc(text) + '</strong>' +
       percentBar(entry.rank, entry.of) +
-      '<span class="ca-form-rank">' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
+      '<span class="ca-form-rank ' + rankTone(entry.rank, entry.of) + '">' +
+      entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
       '</div>';
   }
 
@@ -1275,15 +1646,38 @@
           (game[key] || []).forEach(function (pl) { if (pl && pl.id) hitterIds.push(pl.id); });
         });
         var armIds = [game.away_starter_id, game.home_starter_id].filter(Boolean);
-        Promise.all([
-          loadPeople(armIds, 'pitching', season),
-          loadPeople(hitterIds, 'hitting', season)
-        ]).then(function (batches) {
-          extra.people = {};
+        // Each lineup is fetched against the hand it will actually face, so the
+        // two orders can be on different splits within the same game.
+        var awayIds = (game.away_lineup || []).map(function (pl) { return pl.id; });
+        var homeIds = (game.home_lineup || []).map(function (pl) { return pl.id; });
+        function sit(hand) { return hand === 'L' ? 'vl' : (hand === 'R' ? 'vr' : null); }
+        loadPeople(armIds, 'pitching', season).then(function (arms) {
+          extra.people = arms;
+          repaintStarters();
+          var awayHand = sit((arms[game.home_starter_id] || {}).throws || game.home_hand);
+          var homeHand = sit((arms[game.away_starter_id] || {}).throws || game.away_hand);
+          return Promise.all([
+            loadPeople(awayIds, 'hitting', season, awayHand),
+            loadPeople(homeIds, 'hitting', season, homeHand)
+          ]);
+        }).then(function (batches) {
           batches.forEach(function (batch) {
             Object.keys(batch).forEach(function (id) { extra.people[id] = batch[id]; });
           });
           repaintStarters();
+          return Promise.all([
+            loadArmSplits(armIds, season),
+            loadLastStart(game.away_starter_id, season),
+            loadLastStart(game.home_starter_id, season)
+          ]);
+        }).then(function (extras) {
+          if (!extras) return;
+          Object.keys(extras[0] || {}).forEach(function (id) {
+            if (extra.people[id]) extra.people[id].splits = extras[0][id];
+          });
+          if (extra.people[game.away_starter_id]) extra.people[game.away_starter_id].lastStart = extras[1];
+          if (extra.people[game.home_starter_id]) extra.people[game.home_starter_id].lastStart = extras[2];
+          paintSection(host, 'starters', startersBody(sport, game, extra));
         }).catch(function () { /* identity is already on screen */ });
 
         // The league board backs the "Compare with the league" disclosure. It is
@@ -1298,14 +1692,26 @@
         Promise.all([
           loadArsenal(game.away_starter_id, season),
           loadArsenal(game.home_starter_id, season),
-          loadVenue(game.venue_id)
+          loadVenue(game.venue_id),
+          loadPitchBoard()
         ]).then(function (parts) {
           extra.awayArsenal = parts[0] || [];
           extra.homeArsenal = parts[1] || [];
           extra.venue = parts[2];
+          extra.pitchBoard = parts[3];
           paintSection(host, 'arsenal', arsenalBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
         }).catch(function () { /* the section keeps its pending note */ });
+
+        // The last ten games for each club - the quickest read of form there is.
+        Promise.all([
+          loadRecentForm(game.away_team_id, dateIso),
+          loadRecentForm(game.home_team_id, dateIso)
+        ]).then(function (recent) {
+          extra.awayRecent = recent[0] || [];
+          extra.homeRecent = recent[1] || [];
+          paintSection(host, 'recent', recentBody(sport, game, extra));
+        }).catch(function () { /* the strip keeps its pending note */ });
 
         // Stage 3 - bullpen workload, then one bulk call for those arms.
         Promise.all([
