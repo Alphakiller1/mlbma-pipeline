@@ -367,7 +367,8 @@
   function updateStatus(sport, result) {
     var fields = {
       sport: sport, state: result.games.length ? 'ok' : 'empty', publishedAt: result.generatedAt,
-      dataCutoff: result.dataThrough, source: result.source, issues: []
+      dataCutoff: result.dataThrough, source: result.source, issues: [],
+      slateDateEt: result.dateIso, gameCount: result.games.length
     };
     if (global.ChaseShell && ChaseShell.setContext) ChaseShell.setContext(fields);
     var context = document.getElementById('caContextBar');
@@ -418,8 +419,9 @@
     } else {
       html += '<strong class="ca-desk-window-label">' + (desk.results ? 'Completed games' : 'Kickoff windows') + '</strong>';
     }
-    html += '<label class="ca-desk-search"><span class="sr-only">Search teams, venues, or players</span>' +
-      '<input type="search" data-desk-search value="' + esc(desk.query || '') + '" placeholder="Search teams, venues, or players"></label></div>' +
+    // Search moved to the header (#chaseNavSearch drives the same filter), so
+    // the toolbar no longer carries a duplicate field.
+    html += '</div>' +
       '<div class="ca-desk-toolbar__secondary"><button type="button" class="ca-desk-chip' +
       ((desk.filter || 'all') === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>';
     if (sport === 'mlb' && !desk.results) {
@@ -531,6 +533,20 @@
           host: retryHost, dateIso: retryHost.__desk.dateIso, results: retryHost.__desk.results });
       }
     });
+    // The header search drives the same slate filter as the toolbar field, so
+    // the reference chrome's search box is a real control rather than an
+    // ornament. It fans out to every mounted desk on the page, which is what
+    // the home route needs - it carries both an MLB and an NFL slate.
+    document.addEventListener('input', function (event) {
+      if (event.target.id !== 'chaseNavSearch') return;
+      var value = event.target.value;
+      document.querySelectorAll('.ca-async').forEach(function (host) {
+        if (!host.__desk) return;
+        host.__desk.query = value;
+        render(host);
+      });
+    });
+
     document.addEventListener('input', function (event) {
       if (!event.target.matches('[data-desk-search]')) return;
       var host = event.target.closest('.ca-async');

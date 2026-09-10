@@ -72,7 +72,9 @@
     ctx.hidden = false;
     ctx.classList.add('ca-context-bar');
     if (fields && global.ChaseDataStatus && ChaseDataStatus.contextLabel) {
-      ctx.textContent = ChaseDataStatus.contextLabel(fields);
+      // Three zones when the helper is available, plain text otherwise.
+      if (ChaseDataStatus.paintContextBar) ChaseDataStatus.paintContextBar(ctx, fields);
+      else ctx.textContent = ChaseDataStatus.contextLabel(fields);
       ctx.setAttribute('data-state', fields.state || '');
       return;
     }

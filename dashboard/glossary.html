@@ -7,8 +7,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Metric Glossary</title>
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260910b">
-<script src="design_layer_version.js?v=20260910b"></script>
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v=20260910c">
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260910c">
+<script src="design_layer_version.js?v=20260910c"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65;min-height:100vh}
@@ -51,19 +52,19 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .gloss-metric-card__ramp{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
 
   </style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260910b">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260910b">
-<link rel="stylesheet" href="theme.css?v=20260910b">
-<link rel="stylesheet" href="styles/chase-semantic.css?v=20260910b">
-<link rel="stylesheet" href="styles/chase-shell.css?v=20260910b">
-<link rel="stylesheet" href="chase_nav.css?v=20260910b">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260910c">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260910c">
+<link rel="stylesheet" href="theme.css?v=20260910c">
+<link rel="stylesheet" href="styles/chase-semantic.css?v=20260910c">
+<link rel="stylesheet" href="styles/chase-shell.css?v=20260910c">
+<link rel="stylesheet" href="chase_nav.css?v=20260910c">
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="mlbma_assets.js?v=20260910b"></script>
+<script src="mlbma_assets.js?v=20260910c"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
-<script src="mlbma_ui.js?v=20260910b" data-page="glossary.html"></script>
+<script src="mlbma_ui.js?v=20260910c" data-page="glossary.html"></script>
 <script src="glossary.js?v=20260908k"></script>  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260910b">
-  <link rel="stylesheet" href="responsive.css?v=20260910b">
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260910c">
+  <link rel="stylesheet" href="responsive.css?v=20260910c">
   <style>
     /* 2026-09-09 accessibility pass (visual audit B4/B5). This block sits after
        the stylesheet links on purpose: the <style> higher in this head loads
@@ -155,16 +156,27 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
-      <span class="chase-nav-product">Matchup research</span>
       <span class="chase-nav-rule" aria-hidden="true"></span>
+      <span class="chase-nav-product">MLB research</span>
       <nav class="chase-sport-tabs" aria-label="Sport">
         <a href="/mlb/" class="chase-sport-tab" data-nav="mlb" data-state="live">MLB</a>
         <a href="/nfl/" class="chase-sport-tab" data-nav="nfl" data-state="live">NFL</a>
+        <a href="/wnba/" class="chase-sport-tab" data-nav="wnba" data-state="upcoming">WNBA</a>
+        <a href="/cfb/" class="chase-sport-tab" data-nav="cfb" data-state="upcoming">CFB</a>
       </nav>
-      <a href="/#matchupDesk" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <label class="chase-nav-search">
+        <span class="sr-only">Search teams, players or ballparks</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input type="search" id="chaseNavSearch" autocomplete="off"
+          placeholder="Search teams, players, ballparks...">
+      </label>
       <a href="/dashboard/glossary" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
       <a href="/model-center/" class="ca-btn ca-btn--primary chase-nav-model chase-nav-link" data-nav="models">Model Center</a>
+      <button type="button" class="chase-account" id="chaseAccount" aria-haspopup="menu" aria-expanded="false">
+        <span class="chase-account__badge" id="chaseAccountBadge">--</span>
+        <svg class="chase-account__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
@@ -362,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-  <script src="chase_datastatus.js?v=20260910b"></script>
-<script src="chase_nav.js?v=20260910b"></script>
+  <script src="chase_datastatus.js?v=20260910c"></script>
+<script src="chase_nav.js?v=20260910c"></script>
 <script>
 /* Glossary navigability (visual audit B5). Progressive enhancement: without
    this the page is still the complete reference, just long.

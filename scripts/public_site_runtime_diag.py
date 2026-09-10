@@ -95,7 +95,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + "/mlb/", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
         initial_count = page.locator(".ca-matchup-card").count()
-        search = page.locator(".ca-desk-search input")
+        search = page.locator("#chaseNavSearch")
         search.fill("Minnesota Twins")
         filtered_count = page.locator(".ca-matchup-card").count()
         check("MLB team search filters the slate", initial_count > 1 and filtered_count == 1,
