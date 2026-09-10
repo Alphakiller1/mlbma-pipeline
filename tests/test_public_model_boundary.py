@@ -72,8 +72,8 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertNotIn("Thursday", blob)
         self.assertNotIn("Sunday Night", blob)
         self.assertIn("/matchup.html?game=", card)
-        self.assertIn("Expand matchup", card)
-        self.assertIn("Full matchup analysis", card)
+        self.assertIn("Expand Matchup", card)
+        self.assertIn("Full Matchup Analysis", card)
         self.assertIn("ca-matchup-card", card)
         self.assertIn("aria-expanded", card)
         # 2026-09-10 owner decision, and what the matchup IA asks for: club

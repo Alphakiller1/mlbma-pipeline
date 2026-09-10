@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
 
 from playwright.sync_api import sync_playwright
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 @dataclass
@@ -128,7 +133,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("MLB detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
         check("MLB detail has sport-specific sections",
-              page.locator("#starters, #lineups, #bullpens, #conditions, #sources").count() == 5)
+              page.locator("#starters, #lineups, #arsenal, #bullpens, #conditions, #sources").count() == 6)
+        # Team form is only meaningful if it describes roughly now. The site
+        # once served numbers seven weeks old, correctly labelled and entirely
+        # unnoticed, because the snapshot lives in whichever checkout ran the
+        # pipeline and nothing checked how old it was.
+        age = form_age_days()
+        check("MLB team form is current", age is not None and age <= 14,
+              "not published" if age is None else f"{age:.1f} days old")
+        check("MLB form panels state when the form was published",
+              "Team form as published" in page.locator("#form").inner_text())
         mlb_detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(mlb_detail_text)
         check("MLB detail public copy boundary", match is None, match.group(0) if match else "")
@@ -181,6 +195,19 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         context.close()
         browser.close()
     return results
+
+
+def form_age_days() -> float | None:
+    """How old the observations behind the published team context are."""
+    path = ROOT / "data" / "public" / "team_context.json"
+    if not path.is_file():
+        return None
+    try:
+        stamp = json.loads(path.read_text(encoding="utf-8")).get("data_through_utc")
+        observed = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return None
+    return (datetime.now(timezone.utc) - observed).total_seconds() / 86400
 
 
 def main() -> int:

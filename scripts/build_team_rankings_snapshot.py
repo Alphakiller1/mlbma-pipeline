@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 """Build a static Team Rankings snapshot for instant first paint.
 
-Reads local pipeline CSVs (same fields the dashboard uses for default YTD / both-hands
-filter) and writes dashboard/team_rankings_snapshot.json. Regenerate after each pipeline
-run or via push_supabase.
+Reads local pipeline CSVs (same fields the dashboard uses for the default YTD /
+both-hands filter) and writes dashboard/team_rankings_snapshot.json. Regenerate
+after each pipeline run or via push_supabase.
+
+The paths are arguments rather than constants because the pipeline CSVs and the
+site are not always the same checkout. Each git worktree has its own `data/`,
+so a snapshot built where the pipeline ran never reached the worktree that
+deploys - which is how the site came to serve team form seven weeks old while
+the CSVs behind it were refreshed that morning.
+
+    python scripts/build_team_rankings_snapshot.py
+    python scripts/build_team_rankings_snapshot.py --data-dir ../mlbma_pipeline/data
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import math
@@ -16,6 +26,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 OUT = ROOT / "dashboard" / "team_rankings_snapshot.json"
+
+REQUIRED_CSVS = (
+    "metrics_vs_RHP.csv", "metrics_vs_LHP.csv",
+    "team_profiles.csv", "metrics_pals.csv", "team_results.csv",
+)
 
 DEFAULT_FILTER = {
     "hand": "both",
@@ -259,14 +274,15 @@ def sort_rows(rows: list[dict], sort_key: str) -> list[dict]:
     return sorted(rows, key=sort_val)
 
 
-def build_snapshot() -> dict:
-    rhp_rows = {r["t"]: r for r in (score_row(x) for x in read_csv(DATA / "metrics_vs_RHP.csv")) if r}
-    lhp_rows = {r["t"]: r for r in (score_row(x) for x in read_csv(DATA / "metrics_vs_LHP.csv")) if r}
+def build_snapshot(data_dir: Path | None = None) -> dict:
+    data_dir = Path(data_dir or DATA)
+    rhp_rows = {r["t"]: r for r in (score_row(x) for x in read_csv(data_dir / "metrics_vs_RHP.csv")) if r}
+    lhp_rows = {r["t"]: r for r in (score_row(x) for x in read_csv(data_dir / "metrics_vs_LHP.csv")) if r}
     blended = blend_rows(rhp_rows, lhp_rows)
 
-    prof = profiles_map(read_csv(DATA / "team_profiles.csv"))
-    pals = pals_map(read_csv(DATA / "metrics_pals.csv"))
-    results = results_map(read_csv(DATA / "team_results.csv"))
+    prof = profiles_map(read_csv(data_dir / "team_profiles.csv"))
+    pals = pals_map(read_csv(data_dir / "metrics_pals.csv"))
+    results = results_map(read_csv(data_dir / "team_results.csv"))
 
     full_rows = [enrich_row(r, prof, pals, results) for r in blended]
     families = {}
@@ -289,11 +305,37 @@ def build_snapshot() -> dict:
     }
 
 
-def main() -> int:
-    snap = build_snapshot()
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(snap, separators=(",", ":")), encoding="utf-8")
-    print(f"Wrote {OUT} ({snap['teamCount']} teams, {len(snap['families'])} families)")
+def newest_input(data_dir: Path) -> float:
+    return max((data_dir / name).stat().st_mtime
+               for name in REQUIRED_CSVS if (data_dir / name).is_file())
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data-dir", type=Path, default=DATA,
+                        help="directory holding the pipeline CSVs (default: ./data)")
+    parser.add_argument("--out", type=Path, default=OUT,
+                        help="where to write the snapshot")
+    args = parser.parse_args(argv)
+
+    missing = [name for name in REQUIRED_CSVS if not (args.data_dir / name).is_file()]
+    if missing:
+        # Failing loudly beats writing a snapshot with 0 teams over a good one.
+        print(f"ERROR: {args.data_dir} is missing {', '.join(missing)}")
+        return 1
+
+    snap = build_snapshot(args.data_dir)
+    if snap["teamCount"] < 30:
+        print(f"ERROR: only {snap['teamCount']} teams scored; refusing to overwrite")
+        return 1
+
+    stale_days = (datetime.now(timezone.utc).timestamp() - newest_input(args.data_dir)) / 86400
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(snap, separators=(",", ":")), encoding="utf-8")
+    print(f"Wrote {args.out} ({snap['teamCount']} teams, {len(snap['families'])} families)")
+    print(f"  inputs from {args.data_dir}, newest is {stale_days:.1f} days old")
+    if stale_days > 3:
+        print("  WARNING: the CSVs behind this snapshot are stale; run the pipeline")
     return 0
 
 

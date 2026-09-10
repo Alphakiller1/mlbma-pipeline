@@ -210,7 +210,11 @@ def sized_headshot(url: str | None) -> str | None:
 
 # One skill group each, in the order a reader scans them. A deeper list is
 # roster trivia; this is the offence a viewer is looking for.
-DEPTH_LIMITS = {"QB": 1, "RB": 2, "WR": 3, "TE": 1}
+#
+# Quarterback runs three deep on purpose. The card names whoever is actually
+# taking the snap, which means walking down the chart past anyone ruled out -
+# and it can only do that if the men below the starter were published.
+DEPTH_LIMITS = {"QB": 3, "RB": 2, "WR": 3, "TE": 1}
 
 
 def key_players(board: dict) -> dict[str, list[dict]]:
@@ -237,7 +241,86 @@ def key_players(board: dict) -> dict[str, list[dict]]:
     return by_team
 
 
-def build(board: dict | None = None) -> dict:
+ESPN_ROSTER = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/roster"
+
+# ESPN serves the full-size headshot at a quarter of a megabyte. Its combiner
+# returns the same image at display size for a tenth of that.
+ESPN_HEADSHOT = ("https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/"
+                 "full/{pid}.png&w=160&h=160")
+
+ROSTER_TEAMS = (
+    "ari", "atl", "bal", "buf", "car", "chi", "cin", "cle", "dal", "den",
+    "det", "gb", "hou", "ind", "jax", "kc", "lac", "lar", "lv", "mia",
+    "min", "ne", "no", "nyg", "nyj", "phi", "pit", "sea", "sf", "tb",
+    "ten", "wsh",
+)
+
+
+def fetch_quarterback_rooms() -> dict[str, list[dict]]:
+    """Every quarterback on every roster, with a headshot.
+
+    The model board publishes one quarterback per club, which is fine until
+    that one is ruled out - then a card that promotes the next man up has
+    nowhere to look, and says "not published" about a position every team
+    fills. The roster is the whole room.
+    """
+    import urllib.request
+
+    rooms: dict[str, list[dict]] = {}
+    for team in ROSTER_TEAMS:
+        try:
+            with urllib.request.urlopen(ESPN_ROSTER.format(team=team), timeout=25) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except Exception:
+            continue
+        abbr = canon(((payload.get("team") or {}).get("abbreviation")) or team)
+        arms = []
+        for group in payload.get("athletes") or []:
+            for athlete in group.get("items") or []:
+                if ((athlete.get("position") or {}).get("abbreviation")) != "QB":
+                    continue
+                name = athlete.get("displayName") or athlete.get("fullName")
+                if not name:
+                    continue
+                arms.append({
+                    "name": name,
+                    "position": "QB",
+                    "headshot_url": (ESPN_HEADSHOT.format(pid=athlete["id"])
+                                     if athlete.get("id") else None),
+                })
+        if arms:
+            rooms[abbr] = arms
+    return rooms
+
+
+def merge_quarterbacks(players: dict[str, list[dict]],
+                       rooms: dict[str, list[dict]]) -> dict[str, list[dict]]:
+    """Put the whole quarterback room behind the board's named starter.
+
+    The board's ordering wins where it has an opinion, because it reflects a
+    depth chart. Everyone else keeps roster order behind them, which is the
+    only ordering the roster itself asserts.
+    """
+    for team, room in rooms.items():
+        existing = [pl for pl in players.get(team, []) if pl["position"] == "QB"]
+        known = {pl["name"].lower() for pl in existing}
+        rank = max((pl["depth_rank"] for pl in existing), default=0)
+        for arm in room:
+            if arm["name"].lower() in known:
+                continue
+            rank += 1
+            players.setdefault(team, []).append({
+                "name": arm["name"], "position": "QB",
+                "depth_rank": rank, "headshot_url": arm["headshot_url"],
+            })
+        order = list(DEPTH_LIMITS)
+        players.get(team, []).sort(
+            key=lambda pl: (order.index(pl["position"]) if pl["position"] in order else 99,
+                            pl["depth_rank"]))
+    return players
+
+
+def build(board: dict | None = None, rooms: dict | None = None) -> dict:
     """Public NFL context, or empty dicts when the board is unreachable.
 
     Failing soft is deliberate: a missing board must leave the affected
@@ -250,7 +333,9 @@ def build(board: dict | None = None) -> dict:
     return {
         "form": team_form(board),
         "scheme": team_scheme(board),
-        "players": key_players(board),
+        "players": merge_quarterbacks(
+            key_players(board),
+            rooms if rooms is not None else fetch_quarterback_rooms()),
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),

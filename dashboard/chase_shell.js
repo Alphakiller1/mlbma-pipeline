@@ -46,15 +46,15 @@
     return host;
   }
 
+  /* The context strip was removed from the routes: it repeated, in eight-point
+     grey, the two facts the toolbar and the card already carry, and cost a
+     whole band of chrome to do it. This no longer creates one - it only keeps
+     a strip already in the markup positioned correctly, so a page that still
+     wants one can have it by declaring it. */
   function ensureContextBar() {
     var ctx = document.getElementById('caContextBar');
+    if (!ctx) return null;
     var after = document.getElementById('mobileMenu') || document.getElementById('chaseHeader');
-    if (!ctx) {
-      ctx = document.createElement('div');
-      ctx.id = 'caContextBar';
-      ctx.className = 'ca-context-bar';
-      ctx.setAttribute('role', 'status');
-    }
     if (after && after.parentNode) {
       var insideMain = ctx.closest && ctx.closest('main');
       if (insideMain || ctx.parentNode !== after.parentNode || after.nextSibling !== ctx) {

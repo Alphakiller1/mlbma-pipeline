@@ -32,12 +32,19 @@
     });
   }
 
+  /* Day and time, nothing else. The date was redundant on a slate that is
+     already scoped to one day, and the published kickoff_display carried
+     whatever the source felt like ("Sun, Sep 9 · night"). */
   function clock(iso) {
     var date = new Date(iso || '');
     if (!iso || isNaN(date.getTime())) return '';
-    return date.toLocaleTimeString('en-US', {
+    var day = date.toLocaleDateString('en-US', {
+      weekday: 'long', timeZone: 'America/New_York'
+    });
+    var time = date.toLocaleTimeString('en-US', {
       hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
-    }) + ' ET';
+    });
+    return day + ' · ' + time + ' ET';
   }
 
   function teamName(sport, abbr, supplied) {
@@ -61,9 +68,17 @@
     return '<span class="ca-team-logo-placeholder" aria-hidden="true"></span>';
   }
 
-  function headshot(id, name) {
-    if (id && global.MLBMAAssets && MLBMAAssets.headshotUrl) {
-      return '<img class="ca-matchup-card__shot" src="' + esc(MLBMAAssets.headshotUrl(id, 40, 'matchup')) +
+  /* Baseball headshots resolve from a person id; football ones arrive as a
+     published URL, because the league hosts them under an opaque asset hash
+     rather than anything derivable from the player. Both land in the same
+     frame. */
+  function headshot(id, name, url) {
+    var src = url || null;
+    if (!src && id && global.MLBMAAssets && MLBMAAssets.headshotUrl) {
+      src = MLBMAAssets.headshotUrl(id, 40, 'matchup');
+    }
+    if (src) {
+      return '<img class="ca-matchup-card__shot" src="' + esc(src) +
         '" width="40" height="40" alt="' + esc(name || 'Probable starter') + '" loading="lazy" decoding="async">';
     }
     return '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>';
@@ -97,31 +112,148 @@
     return value == null || value === '' ? fallback : value;
   }
 
+  /* Designations that take a quarterback off the field. Questionable does not:
+     a questionable QB1 still starts far more often than not, so the card names
+     him and shows the designation rather than promoting his backup. */
+  var UNAVAILABLE = { out: 1, doubtful: 1, 'injured reserve': 1, ir: 1, pup: 1,
+    suspension: 1, suspended: 1, 'non football injury': 1 };
+
+  /* The card always names a quarterback. Every club has a depth chart, so
+     "not published" was never the truth - it meant nobody had looked past the
+     first field. The published depth order is walked in order and the first
+     quarterback not ruled out is the one who takes the snap, with his own
+     designation shown beside him if he carries one. */
+  function quarterback(game, side) {
+    var players = game[side + '_players'] || [];
+    var designations = {};
+    (game[side + '_availability_list'] || []).forEach(function (entry) {
+      designations[String(entry.name || '').toLowerCase()] = entry.status;
+    });
+    var arms = players.filter(function (pl) { return pl.position === 'QB'; })
+      .sort(function (a, b) { return (a.depth_rank || 99) - (b.depth_rank || 99); });
+    for (var i = 0; i < arms.length; i++) {
+      var status = designations[String(arms[i].name || '').toLowerCase()];
+      if (status && UNAVAILABLE[String(status).toLowerCase()]) continue;
+      return {
+        name: arms[i].name,
+        depth: arms[i].depth_rank,
+        headshot: arms[i].headshot_url,
+        status: status || '',
+        // Say so when the man taking the snap is not the man at the top of the
+        // chart; that is the fact a reader wants, not the depth number.
+        promoted: arms[i].depth_rank > 1
+      };
+    }
+    var named = game[side + '_starter'];
+    return named ? { name: named, depth: null, headshot: null, status: '', promoted: false } : null;
+  }
+
   function starterName(game, side, sport) {
-    return sideValue(game, side, 'starter', sport === 'nfl' ? 'Quarterback not published' : 'Probable starter not published');
+    if (sport === 'nfl') {
+      var qb = quarterback(game, side);
+      return qb ? qb.name : 'Quarterback Not Published';
+    }
+    return sideValue(game, side, 'starter', 'Probable Starter Not Published');
   }
 
   function starterMeta(game, side, sport) {
-    if (sport === 'nfl') return 'Expected quarterback';
+    if (sport === 'nfl') {
+      var qb = quarterback(game, side);
+      if (!qb) return '';
+      if (qb.status) return 'QB' + (qb.depth || 1) + ' · ' + qb.status;
+      if (qb.promoted) return 'QB' + qb.depth + ' · Starting';
+      return 'QB1';
+    }
     var bits = [];
     var hand = String(sideValue(game, side, 'hand', '')).toUpperCase();
     if (hand === 'R' || hand === 'RHP') bits.push('RHP');
     if (hand === 'L' || hand === 'LHP') bits.push('LHP');
     var wl = sideValue(game, side, 'starter_record', '');
     if (wl) bits.push(String(wl));
-    var era = safeNumber(sideValue(game, side, 'era', ''), 2);
-    if (era) bits.push(era + ' ERA');
-    return bits.join(' · ') || '';
+    return bits.join(' · ');
   }
 
   function conditions(game) {
     if (game.conditions) return game.conditions;
     return [game.weather_temp ? game.weather_temp + '°' : '', game.weather_cond, game.weather_wind]
-      .filter(Boolean).join(' · ') || 'Conditions not published';
+      .filter(Boolean).join(' · ') || 'Conditions Not Published';
   }
 
   function venue(game) {
-    return [game.venue, game.venue_city].filter(Boolean).join(' · ') || 'Venue not published';
+    return [game.venue, game.venue_city].filter(Boolean).join(' · ') || 'Venue Not Published';
+  }
+
+  /* ---------------------------------------------------------------------
+   * Weather as a symbol, and numbers that carry their own grade.
+   *
+   * A card is scanned, not read. A condition spelled out in eight-point grey
+   * ("Partly Cloudy, 12 mph, L To R") is the same weight as everything around
+   * it, so nobody sees it; a symbol reads before the eye has finished landing.
+   * The words stay beside it - the symbol is a second channel, never the only
+   * one, and every icon carries its text in the label a screen reader gets.
+   * ------------------------------------------------------------------ */
+
+  var WEATHER_PATHS = {
+    // Each entry draws at 16x16 on currentColor.
+    clear: '<circle cx="8" cy="8" r="3.4"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">' +
+      '<path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></g>',
+    partly: '<circle cx="5.6" cy="5.6" r="2.6"/><path d="M6.6 13.6a3 3 0 0 1-.3-6 4.1 4.1 0 0 1 7.7 1.1 2.5 2.5 0 0 1-.5 4.9z"/>',
+    cloudy: '<path d="M4.6 13.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>',
+    rain: '<path d="M4.6 10.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>' +
+      '<g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.4 12.4l-.8 2.2M8.4 12.4l-.8 2.2M11.4 12.4l-.8 2.2"/></g>',
+    snow: '<path d="M4.6 10.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>' +
+      '<g stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5 13h1.2M9.8 13H11M6.6 12.2v1.6M10.2 12.2v1.6"/></g>',
+    storm: '<path d="M4.6 9.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>' +
+      '<path d="M8.8 9.6L6 13.2h2.2l-1 2.6 3.4-4.2H8.4z"/>',
+    wind: '<g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none">' +
+      '<path d="M2 6.2h7.4a2 2 0 1 0-2-2M2 9.8h9.2a2 2 0 1 1-2 2M2 13h5"/></g>',
+    roof: '<path d="M8 2L1.6 6.4h1.5V14h9.8V6.4h1.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>'
+  };
+
+  function weatherKey(game) {
+    var roof = String(game.roof || '').toLowerCase();
+    if (roof.indexOf('closed') >= 0 || roof.indexOf('dome') >= 0 || roof.indexOf('indoor') >= 0) return 'roof';
+    var text = (String(game.conditions || '') + ' ' + String(game.weather_cond || '')).toLowerCase();
+    if (!text.trim()) return null;
+    if (text.indexOf('dome') >= 0 || text.indexOf('roof closed') >= 0) return 'roof';
+    if (text.indexOf('thunder') >= 0 || text.indexOf('storm') >= 0) return 'storm';
+    if (text.indexOf('snow') >= 0 || text.indexOf('sleet') >= 0 || text.indexOf('flurr') >= 0) return 'snow';
+    if (text.indexOf('rain') >= 0 || text.indexOf('drizzle') >= 0 || text.indexOf('shower') >= 0) return 'rain';
+    if (text.indexOf('partly') >= 0 || text.indexOf('mostly sunny') >= 0 || text.indexOf('partial') >= 0) return 'partly';
+    if (text.indexOf('cloud') >= 0 || text.indexOf('overcast') >= 0) return 'cloudy';
+    if (text.indexOf('clear') >= 0 || text.indexOf('sunny') >= 0 || text.indexOf('fair') >= 0) return 'clear';
+    if (text.indexOf('wind') >= 0 || text.indexOf('breez') >= 0) return 'wind';
+    return null;
+  }
+
+  function weatherIcon(game) {
+    var key = weatherKey(game);
+    if (!key) return '';
+    return '<svg class="ca-wx" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" ' +
+      'focusable="false" fill="currentColor">' + WEATHER_PATHS[key] + '</svg>';
+  }
+
+  /* A number on a card should say how good it is without the reader having to
+     know the league. The chip class comes from the published league baseline,
+     so the colour is a statement about this season's distribution and not a
+     threshold someone once typed in. */
+  function gradeClass(value, context) {
+    var n = Number(value);
+    if (!isFinite(n)) return '';
+    if (global.MLBMAAssets && MLBMAAssets.solidChipClass) {
+      return MLBMAAssets.solidChipClass(n, context) || '';
+    }
+    return '';
+  }
+
+  function rankClass(rank, of) {
+    if (!(of > 1) || !(rank >= 1)) return '';
+    var pct = (of - rank) / (of - 1);
+    if (pct >= 0.88) return 'c-elite';
+    if (pct >= 0.65) return 'c-good';
+    if (pct >= 0.35) return 'c-mid';
+    if (pct >= 0.15) return 'c-weak';
+    return 'c-poor';
   }
 
   function kickoff(game) {
@@ -129,7 +261,7 @@
     if ((state === 'live' || state === 'final') && game.away_score != null && game.home_score != null) {
       return esc(game.away_score) + '–' + esc(game.home_score) + ' · ' + (state === 'final' ? 'Final' : 'Live');
     }
-    return esc(game.kickoff_display || clock(game.kickoff_utc) || 'Time not published');
+    return esc(clock(game.kickoff_utc) || game.kickoff_display || 'Time Not Published');
   }
 
   function fullMatchupUrl(sport, game) {
@@ -206,9 +338,10 @@
         : value.toFixed(spec.digits);
       return '<div class="ca-ctx-cell">' +
         '<span class="ca-ctx-label">' + esc(spec.label) + '</span>' +
-        '<strong class="ca-ctx-value">' + esc(shown) + '</strong>' +
+        '<strong class="ca-ctx-value ' + rankClass(entry.rank, entry.of) + '">' +
+        esc(shown) + '</strong>' +
         '<span class="ca-ctx-rank">' + entry.rank + ordinal(entry.rank) +
-        ' of ' + entry.of + '</span>' +
+        ' Of ' + entry.of + '</span>' +
         '</div>';
     }).filter(Boolean).join('');
     return cells ? '<div class="ca-ctx-strip">' + cells + '</div>' : '';
@@ -262,8 +395,8 @@
       var awayCtx = contextStrip(game, 'away'), homeCtx = contextStrip(game, 'home');
       if (awayCtx || homeCtx) {
         html += '<div class="ca-ctx-duo">' +
-          '<section><h4 class="ca-ctx-head">' + esc(awayName) + ' offense</h4>' + awayCtx + '</section>' +
-          '<section><h4 class="ca-ctx-head">' + esc(homeName) + ' offense</h4>' + homeCtx + '</section>' +
+          '<section><h4 class="ca-ctx-head">' + esc(awayName) + ' Offense</h4>' + awayCtx + '</section>' +
+          '<section><h4 class="ca-ctx-head">' + esc(homeName) + ' Offense</h4>' + homeCtx + '</section>' +
           '</div>' +
           '<p class="ca-ctx-note">Season to date, graded against the 30-team league pool. ' +
           'OSI = 0.43&#183;RCV + 0.37&#183;ABQ + 0.20&#183;OBR.</p>';
@@ -275,13 +408,13 @@
       html += '<div class="ca-matchup-card__detail-grid">' +
         miniFact(awayName + ' lineup', awayLineup.label, awayLineup.tone) +
         miniFact(homeName + ' lineup', homeLineup.label, homeLineup.tone) +
-        miniFact(awayName + ' bullpen', game.away_bullpen || 'Availability not published') +
-        miniFact(homeName + ' bullpen', game.home_bullpen || 'Availability not published') +
+        miniFact(awayName + ' bullpen', game.away_bullpen || 'Availability Not Published') +
+        miniFact(homeName + ' bullpen', game.home_bullpen || 'Availability Not Published') +
         '</div>';
     } else {
       html += '<div class="ca-matchup-card__detail-grid">' +
-        miniFact(awayName + ' availability', game.away_availability || game.availability_summary || 'Report not published') +
-        miniFact(homeName + ' availability', game.home_availability || game.availability_summary || 'Report not published') +
+        miniFact(awayName + ' availability', game.away_availability || game.availability_summary || 'Report Not Published') +
+        miniFact(homeName + ' availability', game.home_availability || game.availability_summary || 'Report Not Published') +
         miniFact(awayName + ' rest', game.away_rest_days ? game.away_rest_days + ' days' : 'Not published') +
         miniFact(homeName + ' rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not published') +
         '</div>';
@@ -300,31 +433,39 @@
   function starterFace(sport, game, side) {
     var name = starterName(game, side, sport);
     var id = sideValue(game, side, 'starter_id', '');
+    var shotUrl = null;
+    if (sport === 'nfl') {
+      var qb = quarterback(game, side);
+      shotUrl = qb && qb.headshot;
+    }
+    var meta = starterMeta(game, side, sport);
+    var era = sport === 'mlb' ? safeNumber(sideValue(game, side, 'era', ''), 2) : '';
+    var eraChip = era
+      ? '<span class="ca-matchup-card__arm-era ' + gradeClass(era, 'era') + '">' +
+        esc(era) + '<i>ERA</i></span>'
+      : '';
+    var metaHtml = meta
+      ? '<span class="ca-matchup-card__arm-meta">' + esc(meta) + '</span>'
+      // An unpublished line is an absence, not a headline, so it takes the
+      // muted treatment rather than the tracked caps real data gets.
+      : '<span class="ca-matchup-card__arm-meta is-absent">Season Line Not Published</span>';
     return '<div class="ca-matchup-card__arm">' +
-      headshot(id, name) +
+      headshot(id, name, shotUrl) +
       '<div class="ca-matchup-card__arm-copy">' +
       '<span class="ca-matchup-card__arm-name">' + esc(name) + '</span>' +
-      (function () {
-        var meta = starterMeta(game, side, sport);
-        // An unpublished season line is an absence, not a headline - it gets
-        // the muted treatment rather than the tracked caps used for real data.
-        return meta
-          ? '<span class="ca-matchup-card__arm-meta">' + esc(meta) + '</span>'
-          : '<span class="ca-matchup-card__arm-meta is-absent">Season line not published</span>';
-      })() +
-      '</div></div>';
+      metaHtml + '</div>' + eraChip + '</div>';
   }
 
   function restSummary(game) {
     var away = game.away_rest_days, home = game.home_rest_days;
-    if (away == null && home == null) return 'Rest not published';
+    if (away == null && home == null) return 'Rest Not Published';
     var fmt = function (v) { return v == null ? '--' : v + 'd'; };
     return fmt(away) + ' / ' + fmt(home);
   }
 
   function bullpenSummary(game) {
     var away = game.away_bullpen, home = game.home_bullpen;
-    if (!away && !home) return 'Workload not published';
+    if (!away && !home) return 'Workload Not Published';
     if (away && home && away === home) return away;
     return [away, home].filter(Boolean).join(' / ');
   }
@@ -340,33 +481,45 @@
       statusLine = awayLineup.label === homeLineup.label ? awayLineup.label :
         awayLineup.label + ' / ' + homeLineup.label;
     } else {
-      statusLine = game.availability_summary || 'Availability report pending';
+      statusLine = game.availability_summary || 'Availability Report Pending';
     }
+    // Conditions are hydrated close to first pitch, so most of the day there is
+    // nothing to say. An empty weather slot says nothing loudly; no slot says
+    // nothing quietly, which is the right volume for a fact that is coming.
+    var wxText = conditions(game);
+    var hasWx = wxText && wxText.indexOf('not published') < 0;
+    var roof = game.roof || (sport === 'mlb' ? null : game.surface);
     return '<article class="ca-matchup-card" id="' + esc(id) + '" data-game="' + esc(game.id) +
       '" data-sport="' + esc(sport) + '">' +
-      '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' + kickoff(game) +
+      // Where the game is played is the first thing a reader orients on, so it
+      // sits above everything else rather than fourth in a row of small facts.
+      // The building's own facts - roof, surface - travel with its name.
+      '<div class="ca-matchup-card__venue"><span class="ca-matchup-card__venue-name">' +
+      esc(game.venue || 'Venue Not Published') + '</span>' +
+      (game.venue_city ? '<span class="ca-matchup-card__venue-city">' + esc(game.venue_city) + '</span>' : '') +
+      (roof ? '<span class="ca-matchup-card__venue-tag">' + esc(roof) + '</span>' : '') +
+      '<span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></div>' +
+      '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' + kickoff(game) + '</span>' +
+      (hasWx ? '<span class="ca-matchup-card__wx">' + weatherIcon(game) + esc(wxText) + '</span>' : '') +
       (game.broadcast ? '<span class="ca-matchup-card__broadcast">' + esc(game.broadcast) + '</span>' : '') +
-      '</span><span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></header>' +
+      '</header>' +
       '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
-      '<span class="ca-matchup-card__versus" aria-hidden="true">at</span>' + teamBlock(sport, game, 'home') + '</div>' +
+      '<span class="ca-matchup-card__versus" aria-hidden="true">At</span>' + teamBlock(sport, game, 'home') + '</div>' +
       '<div class="ca-matchup-card__arms" role="group" aria-label="' +
-      (sport === 'mlb' ? 'Probable starters' : 'Quarterbacks') + '">' +
+      (sport === 'mlb' ? 'Probable Starters' : 'Quarterbacks') + '">' +
       starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>' +
-      // Four equal cells, matching the reference card: where, conditions, relief
-      // or rest, and how settled the lineup is.
+      // Two cells, one row. The building moved to the top strip, so what is
+      // left is the pair of facts that change between one reading and the next.
       '<div class="ca-matchup-card__summary">' +
-      miniFact('Venue', venue(game)) +
-      miniFact(sport === 'nfl' ? 'Weather' : 'Conditions',
-        [conditions(game), game.surface].filter(Boolean).join(' · ')) +
-      miniFact(sport === 'mlb' ? 'Bullpen' : 'Rest',
-        sport === 'mlb' ? bullpenSummary(game) : restSummary(game)) +
-      miniFact(sport === 'mlb' ? 'Lineup status' : 'Availability', statusLine) +
+      miniFact(sport === 'mlb' ? 'Bullpen' : 'Travel',
+        sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game))) +
+      miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine) +
       '</div>' +
       expandedHtml(sport, game, panelId) +
       '<footer class="ca-matchup-card__actions">' +
       '<button type="button" class="ca-matchup-card__expand-btn" data-expand-matchup aria-expanded="false" aria-controls="' +
-      esc(panelId) + '"><span>Expand matchup</span><span aria-hidden="true">+</span></button>' +
-      '<a class="ca-matchup-card__detail-link" href="' + esc(fullMatchupUrl(sport, game)) + '">Full matchup analysis <span aria-hidden="true">→</span></a>' +
+      esc(panelId) + '"><span>Expand Matchup</span><span aria-hidden="true">+</span></button>' +
+      '<a class="ca-matchup-card__detail-link" href="' + esc(fullMatchupUrl(sport, game)) + '">Full Matchup Analysis <span aria-hidden="true">→</span></a>' +
       '</footer></article>';
   }
 

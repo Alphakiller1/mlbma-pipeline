@@ -22,7 +22,7 @@ SPORTS = {
         "global": "ChaseSportMLB",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "Today’s games, probable starters, lineup availability, ballparks, weather, and recent context.",
+        "lede": "Every Game On Today’s Board, With The Arms, The Orders And The Ballpark That Decide It.",
         "matchups_href": "/mlb/matchups.html",
     },
     "nfl": {
@@ -31,7 +31,7 @@ SPORTS = {
         "global": "ChaseSportNFL",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "This week’s games, quarterbacks, player availability, venues, weather, rest, and travel context.",
+        "lede": "Every Game On This Week’s Board, With The Quarterbacks, The Schemes And The Travel Behind It.",
         "matchups_href": "/nfl/matchups.html",
     },
     "wnba": {
@@ -142,7 +142,6 @@ def page(sport: str, *, kind: str = "index") -> str:
 </head>
 <body data-mode="{mode}" data-sport="{sport}" data-ca-product="research">
 {sport_nav()}
-  <div id="caContextBar" class="ca-context-bar" role="status"></div>
   <main class="ca-public-page ca-shell-main">
     <header class="ca-public-page__head">
       <div class="ca-public-page__copy">
@@ -217,7 +216,6 @@ def matchup_page(sport: str) -> str:
 </head>
 <body data-mode="evidence" data-sport="{sport}" data-ca-product="research">
 {sport_nav()}
-  <div id="caContextBar" class="ca-context-bar" role="status"></div>
   <main id="matchupDetail" class="ca-detail-page ca-shell-main" data-state="loading">
     <div class="ca-loading-state" role="status">Loading matchup analysis…</div>
   </main>

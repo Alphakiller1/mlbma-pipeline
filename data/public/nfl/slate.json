@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-10T05:41:36Z",
+  "generated_at_utc": "2026-09-10T05:58:59Z",
   "data_through_utc": "2026-09-10T00:20Z",
   "games": [
     {
@@ -474,6 +474,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xs2fyj1sqdgwvt9ihbri"
         },
         {
+          "name": "Mac Jones",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241464.png&w=160&h=160"
+        },
+        {
+          "name": "Kurtis Rourke",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4430431.png&w=160&h=160"
+        },
+        {
           "name": "Christian McCaffrey",
           "position": "RB",
           "depth_rank": 1,
@@ -518,6 +530,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/jwpkjfrkzufdyh8u1mg7"
         },
         {
+          "name": "Stetson Bennett IV",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259553.png&w=160&h=160"
+        },
+        {
+          "name": "Ty Simpson",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685522.png&w=160&h=160"
+        },
+        {
+          "name": "Matthew Caldwell",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4877717.png&w=160&h=160"
+        },
+        {
           "name": "Kyren Williams",
           "position": "RB",
           "depth_rank": 1,
@@ -553,7 +583,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qsyrgtfjj06wryahnxc9"
         }
-      ]
+      ],
+      "away_travel": "7,873 miles home, 17h ahead",
+      "home_travel": "7,929 miles home, 17h ahead",
+      "away_travel_km": 12670,
+      "home_travel_km": 12760,
+      "away_tz_shift": 17.0,
+      "home_tz_shift": 17.0,
+      "venue_country": "Australia"
     },
     {
       "id": "401872656",
@@ -1085,6 +1122,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/s1nmoon2xnrc3bnyulv4"
         },
         {
+          "name": "Tommy DeVito",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240391.png&w=160&h=160"
+        },
+        {
+          "name": "Behren Morton",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431465.png&w=160&h=160"
+        },
+        {
           "name": "Rhamondre Stevenson",
           "position": "RB",
           "depth_rank": 1,
@@ -1129,6 +1178,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fyay8vruj0cqmhopufzk"
         },
         {
+          "name": "Drew Lock",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3924327.png&w=160&h=160"
+        },
+        {
+          "name": "Jalen Milroe",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432734.png&w=160&h=160"
+        },
+        {
           "name": "Jadarian Price",
           "position": "RB",
           "depth_rank": 1,
@@ -1164,7 +1225,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/i0esiguve9if4ts5mm1q"
         }
-      ]
+      ],
+      "away_travel": "2,485 miles home, 3h back",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 3999,
+      "home_travel_km": 0,
+      "away_tz_shift": -3.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872925",
@@ -1630,6 +1698,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gjb8e69jtt1ffqf1afue"
         },
         {
+          "name": "Jalon Daniels",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4596472.png&w=160&h=160"
+        },
+        {
+          "name": "Easton Stick",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3120590.png&w=160&h=160"
+        },
+        {
           "name": "Bucky Irving",
           "position": "RB",
           "depth_rank": 1,
@@ -1674,6 +1754,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gnnvcgui1cijybukk2w7"
         },
         {
+          "name": "Joe Flacco",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/11252.png&w=160&h=160"
+        },
+        {
+          "name": "Sean Clifford",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259592.png&w=160&h=160"
+        },
+        {
+          "name": "Josh Johnson",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/11394.png&w=160&h=160"
+        },
+        {
           "name": "Chase Brown",
           "position": "RB",
           "depth_rank": 1,
@@ -1709,7 +1807,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dykckg6we3cnw9yhpggi"
         }
-      ]
+      ],
+      "away_travel": "777 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 1250,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872923",
@@ -2223,6 +2328,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/toiafc7qighw86geo7jf"
         },
         {
+          "name": "Spencer Rattler",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426339.png&w=160&h=160"
+        },
+        {
+          "name": "Zach Wilson",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361259.png&w=160&h=160"
+        },
+        {
           "name": "Travis Etienne",
           "position": "RB",
           "depth_rank": 1,
@@ -2267,6 +2384,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kaicbot8qhzrvddilbtp"
         },
         {
+          "name": "Joshua Dobbs",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3044720.png&w=160&h=160"
+        },
+        {
+          "name": "Luke Altmyer",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4597679.png&w=160&h=160"
+        },
+        {
           "name": "Jahmyr Gibbs",
           "position": "RB",
           "depth_rank": 1,
@@ -2302,7 +2431,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
         }
-      ]
+      ],
+      "away_travel": "941 miles home, 1h ahead",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 1514,
+      "home_travel_km": 0,
+      "away_tz_shift": 1.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872924",
@@ -2810,6 +2946,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zppfqqcyjfma14jjif3a"
         },
         {
+          "name": "Cade Klubnik",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685413.png&w=160&h=160"
+        },
+        {
+          "name": "Bailey Zappe",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4250360.png&w=160&h=160"
+        },
+        {
           "name": "Breece Hall",
           "position": "RB",
           "depth_rank": 1,
@@ -2854,6 +3002,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/l7switu6stlwd2irm8yo"
         },
         {
+          "name": "Mitchell Trubisky",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3039707.png&w=160&h=160"
+        },
+        {
+          "name": "Hendon Hooker",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240858.png&w=160&h=160"
+        },
+        {
           "name": "Tony Pollard",
           "position": "RB",
           "depth_rank": 1,
@@ -2889,7 +3049,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hewm6ztgka7xkbl6ybvb"
         }
-      ]
+      ],
+      "away_travel": "757 miles home, 1h back",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 1218,
+      "home_travel_km": 0,
+      "away_tz_shift": -1.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872659",
@@ -3397,6 +3564,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/eno6s5qzl9grbfbfwhoa"
         },
         {
+          "name": "Joe Fagnano",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429582.png&w=160&h=160"
+        },
+        {
+          "name": "Tyler Huntley",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4035671.png&w=160&h=160"
+        },
+        {
+          "name": "Skylar Thompson",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4036419.png&w=160&h=160"
+        },
+        {
           "name": "Derrick Henry",
           "position": "RB",
           "depth_rank": 1,
@@ -3441,6 +3626,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ohvvctuykzwrpqer7xgl"
         },
         {
+          "name": "Riley Leonard",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4683423.png&w=160&h=160"
+        },
+        {
+          "name": "Anthony Richardson Sr.",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429084.png&w=160&h=160"
+        },
+        {
           "name": "Jonathan Taylor",
           "position": "RB",
           "depth_rank": 1,
@@ -3476,7 +3673,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/f1mfwwrr3qvnxuiackgq"
         }
-      ]
+      ],
+      "away_travel": "510 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 820,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872658",
@@ -3978,6 +4182,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tmm4ohds7qci0vqoobhm"
         },
         {
+          "name": "Michael Penix Jr.",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4360423.png&w=160&h=160"
+        },
+        {
+          "name": "Cooper Rush",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2972515.png&w=160&h=160"
+        },
+        {
+          "name": "Jack Strand",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5344782.png&w=160&h=160"
+        },
+        {
           "name": "Bijan Robinson",
           "position": "RB",
           "depth_rank": 1,
@@ -4022,6 +4244,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dypvakakxhccxs67tb0y"
         },
         {
+          "name": "Drew Allar",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4714771.png&w=160&h=160"
+        },
+        {
+          "name": "Will Howard",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429955.png&w=160&h=160"
+        },
+        {
+          "name": "Mason Rudolph",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3116407.png&w=160&h=160"
+        },
+        {
           "name": "Jaylen Warren",
           "position": "RB",
           "depth_rank": 1,
@@ -4057,7 +4297,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pyrdsypgggjshiaygkr7"
         }
-      ]
+      ],
+      "away_travel": "521 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 839,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872661",
@@ -4577,6 +4824,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/h4qs11kutwiw7whekmyt"
         },
         {
+          "name": "Tyson Bagent",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4434153.png&w=160&h=160"
+        },
+        {
+          "name": "Case Keenum",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/15168.png&w=160&h=160"
+        },
+        {
           "name": "D'Andre Swift",
           "position": "RB",
           "depth_rank": 1,
@@ -4621,6 +4880,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/vcvhmxvxw2a3armle0af"
         },
         {
+          "name": "Haynes King",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428993.png&w=160&h=160"
+        },
+        {
+          "name": "Kenny Pickett",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240703.png&w=160&h=160"
+        },
+        {
           "name": "Chuba Hubbard",
           "position": "RB",
           "depth_rank": 1,
@@ -4656,7 +4927,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/t7wjikfv09d3o1q7wjdx"
         }
-      ]
+      ],
+      "away_travel": "586 miles home, 1h ahead",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 943,
+      "home_travel_km": 0,
+      "away_tz_shift": 1.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872922",
@@ -5170,6 +5448,24 @@
           "headshot_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/otfs2docj6eahaebo5xn"
         },
         {
+          "name": "Taylen Green",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431325.png&w=160&h=160"
+        },
+        {
+          "name": "Shedeur Sanders",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432762.png&w=160&h=160"
+        },
+        {
+          "name": "Dillon Gabriel",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4427238.png&w=160&h=160"
+        },
+        {
           "name": "Quinshon Judkins",
           "position": "RB",
           "depth_rank": 1,
@@ -5214,6 +5510,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/k9uzdernqkx7oquy7dkg"
         },
         {
+          "name": "Quinn Ewers",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4889929.png&w=160&h=160"
+        },
+        {
+          "name": "Joey Aguilar",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5151948.png&w=160&h=160"
+        },
+        {
+          "name": "Nick Mullens",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3059989.png&w=160&h=160"
+        },
+        {
           "name": "Bhayshul Tuten",
           "position": "RB",
           "depth_rank": 1,
@@ -5249,7 +5563,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/devxzxwf1sfficgncggm"
         }
-      ]
+      ],
+      "away_travel": "772 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 1243,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872660",
@@ -5763,6 +6084,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mjwbioajzldkq1vzoz2d"
         },
         {
+          "name": "Kyle Allen",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3115293.png&w=160&h=160"
+        },
+        {
+          "name": "Shane Buechele",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4039034.png&w=160&h=160"
+        },
+        {
           "name": "James Cook",
           "position": "RB",
           "depth_rank": 1,
@@ -5807,6 +6140,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tt4zrtxlhifaljhj0rn7"
         },
         {
+          "name": "Davis Mills",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4242546.png&w=160&h=160"
+        },
+        {
+          "name": "Graham Mertz",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426335.png&w=160&h=160"
+        },
+        {
+          "name": "Mark Gronowski",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4695400.png&w=160&h=160"
+        },
+        {
           "name": "David Montgomery",
           "position": "RB",
           "depth_rank": 1,
@@ -5842,7 +6193,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ym8sbkev8l4scnrc0vd8"
         }
-      ]
+      ],
+      "away_travel": "1,290 miles home, 1h back",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 2076,
+      "home_travel_km": 0,
+      "away_tz_shift": -1.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872928",
@@ -6338,6 +6696,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/txvgdbwbryzyyqq6gfet"
         },
         {
+          "name": "Brady Cook",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429435.png&w=160&h=160"
+        },
+        {
+          "name": "Kyle McCord",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4433971.png&w=160&h=160"
+        },
+        {
           "name": "De'Von Achane",
           "position": "RB",
           "depth_rank": 1,
@@ -6382,6 +6752,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/za7cynvpwlsro1tsaijk"
         },
         {
+          "name": "Fernando Mendoza",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4837248.png&w=160&h=160"
+        },
+        {
+          "name": "Aidan O'Connell",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4260394.png&w=160&h=160"
+        },
+        {
           "name": "Ashton Jeanty",
           "position": "RB",
           "depth_rank": 1,
@@ -6417,7 +6799,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/waorceny0ggpaeckaol8"
         }
-      ]
+      ],
+      "away_travel": "2,170 miles home, 3h back",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 3493,
+      "home_travel_km": 0,
+      "away_tz_shift": -3.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872927",
@@ -6955,6 +7344,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/thz8stjkbjwddxqnozi5"
         },
         {
+          "name": "Tyrod Taylor",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/14163.png&w=160&h=160"
+        },
+        {
+          "name": "Kedon Slovis",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428512.png&w=160&h=160"
+        },
+        {
           "name": "MarShawn Lloyd",
           "position": "RB",
           "depth_rank": 1,
@@ -6999,6 +7400,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/btfruyf33adgnjzpcuen"
         },
         {
+          "name": "J.J. McCarthy",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4433970.png&w=160&h=160"
+        },
+        {
+          "name": "Carson Wentz",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2573079.png&w=160&h=160"
+        },
+        {
+          "name": "Max Brosmer",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4573398.png&w=160&h=160"
+        },
+        {
           "name": "Aaron Jones",
           "position": "RB",
           "depth_rank": 1,
@@ -7034,7 +7453,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/rs8o65x0u0n9xzde0fd6"
         }
-      ]
+      ],
+      "away_travel": "257 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 414,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872929",
@@ -7518,6 +7944,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gfz8k5onuqjrche9ogqc"
         },
         {
+          "name": "Athan Kaliakmanis",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432722.png&w=160&h=160"
+        },
+        {
+          "name": "Marcus Mariota",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2576980.png&w=160&h=160"
+        },
+        {
+          "name": "Sam Hartman",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361994.png&w=160&h=160"
+        },
+        {
           "name": "Jacory Croskey-Merritt",
           "position": "RB",
           "depth_rank": 1,
@@ -7562,6 +8006,24 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xow5yvxjeqa6witmofmp"
         },
         {
+          "name": "Andy Dalton",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/14012.png&w=160&h=160"
+        },
+        {
+          "name": "Tanner McKee",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685201.png&w=160&h=160"
+        },
+        {
+          "name": "Cole Payton",
+          "position": "QB",
+          "depth_rank": 4,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4879250.png&w=160&h=160"
+        },
+        {
           "name": "Saquon Barkley",
           "position": "RB",
           "depth_rank": 1,
@@ -7597,7 +8059,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/bafepstxu7vvxb9v5vua"
         }
-      ]
+      ],
+      "away_travel": "114 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 183,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872926",
@@ -8111,6 +8580,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qjswiunczrn5xmdiqhlz"
         },
         {
+          "name": "Carson Beck",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4430841.png&w=160&h=160"
+        },
+        {
+          "name": "Gardner Minshew II",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4038524.png&w=160&h=160"
+        },
+        {
           "name": "Jeremiyah Love",
           "position": "RB",
           "depth_rank": 1,
@@ -8155,6 +8636,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/jnkspnntgebegzp4ghve"
         },
         {
+          "name": "Trey Lance",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4383351.png&w=160&h=160"
+        },
+        {
+          "name": "DJ Uiagalelei",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429020.png&w=160&h=160"
+        },
+        {
           "name": "Omarion Hampton",
           "position": "RB",
           "depth_rank": 1,
@@ -8190,7 +8683,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/g75ws8vkqz9cqwifhcy7"
         }
-      ]
+      ],
+      "away_travel": "350 miles home",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 564,
+      "home_travel_km": 0,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872930",
@@ -8668,6 +9168,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yvscmqq1qki8zfsemmcd"
         },
         {
+          "name": "Sam Howell",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426875.png&w=160&h=160"
+        },
+        {
+          "name": "Joe Milton III",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4360698.png&w=160&h=160"
+        },
+        {
           "name": "Javonte Williams",
           "position": "RB",
           "depth_rank": 1,
@@ -8712,6 +9224,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/n6uymxssgiicjmxkzxoc"
         },
         {
+          "name": "Jameis Winston",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2969939.png&w=160&h=160"
+        },
+        {
+          "name": "Jake Haener",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4243322.png&w=160&h=160"
+        },
+        {
           "name": "Cam Skattebo",
           "position": "RB",
           "depth_rank": 1,
@@ -8747,7 +9271,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/b1pahldt9ixp9lssxi2d"
         }
-      ]
+      ],
+      "away_travel": "1,385 miles home, 1h ahead",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 2229,
+      "home_travel_km": 0,
+      "away_tz_shift": 1.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     },
     {
       "id": "401872931",
@@ -9273,6 +9804,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zvo9xatffmqn9lnukpgk"
         },
         {
+          "name": "Sam Ehlinger",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241820.png&w=160&h=160"
+        },
+        {
+          "name": "Jarrett Stidham",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3892775.png&w=160&h=160"
+        },
+        {
           "name": "J.K. Dobbins",
           "position": "RB",
           "depth_rank": 1,
@@ -9317,6 +9860,18 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wdckwtob1lybvkmxnf7p"
         },
         {
+          "name": "Justin Fields",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362887.png&w=160&h=160"
+        },
+        {
+          "name": "Garrett Nussmeier",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4567747.png&w=160&h=160"
+        },
+        {
           "name": "Kenneth Walker III",
           "position": "RB",
           "depth_rank": 1,
@@ -9352,7 +9907,14 @@
           "depth_rank": 1,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dpxovcfku6ud2aohgf6a"
         }
-      ]
+      ],
+      "away_travel": "564 miles home, 1h ahead",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 908,
+      "home_travel_km": 0,
+      "away_tz_shift": 1.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
     }
   ]
 }

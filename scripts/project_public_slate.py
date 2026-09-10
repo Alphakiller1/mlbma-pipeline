@@ -101,6 +101,13 @@ def project_game(sport: str, game: dict) -> dict:
         "home_rest_days": game.get("home_rest_days"),
         "away_travel": game.get("away_travel"),
         "home_travel": game.get("home_travel"),
+        "away_short_week": game.get("away_short_week"),
+        "home_short_week": game.get("home_short_week"),
+        "away_travel_km": game.get("away_travel_km"),
+        "home_travel_km": game.get("home_travel_km"),
+        "away_tz_shift": game.get("away_tz_shift"),
+        "home_tz_shift": game.get("home_tz_shift"),
+        "venue_country": game.get("venue_country"),
         "freshness": freshness_state(game.get("freshness")),
     }
     return {k: v for k, v in row.items() if k in ALLOWED and v is not None and v != ""}
