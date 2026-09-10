@@ -156,10 +156,10 @@ def page(sport: str, *, kind: str = "index") -> str:
   <main class="ca-public-page ca-shell-main">
     <header class="ca-public-page__head">
       <div class="ca-public-page__copy">
-        <p class="ca-public-page__eyebrow">Chase Analytics · {sport.upper()}</p>
         <h1 class="ca-public-page__title">{h1}</h1>
         <p class="ca-public-page__lede">{lede}</p>
       </div>
+      <div class="ca-public-page__controls" data-desk-toolbar-host></div>
 {more_html}
     </header>
     <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} slate…</div></div>

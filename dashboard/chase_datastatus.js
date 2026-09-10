@@ -304,7 +304,9 @@
     var slate = fields.slateDateEt ? fmtSlateDate(fields.slateDateEt) : '';
     var state = fields.state || fields.freshness || 'unknown';
 
-    var left = sport + (slate ? ' · ' + slate : '');
+    // The toolbar carries the slate date as a control, so repeating it here
+    // just said "Sep 9" a third time on the same screen.
+    var left = sport;
 
     var mid;
     if (age != null && age > 0) {
