@@ -176,12 +176,56 @@
       esc(tone || '') + '">' + esc(value || 'Not published') + '</strong></div>';
   }
 
+  /* Offensive context, straight from the published team-rankings snapshot.
+     Rendered as value plus league rank so it reads as a description of the
+     season, never as a forecast. projOSI and ppGap are absent from
+     PUBLIC_RANK_METRICS and the snapshot's `status` family is never read, so
+     the model-private fields are excluded by construction. */
+  function ordinal(n) {
+    var v = n % 100;
+    if (v >= 11 && v <= 13) return 'th';
+    return ['th', 'st', 'nd', 'rd'][n % 10] || 'th';
+  }
+
+  function contextStrip(game, side) {
+    var ctx = game[side + '_context'];
+    if (!ctx) return '';
+    var cells = ['osi', 'wrc', 'woba', 'abq'].map(function (key) {
+      var entry = ctx[key];
+      var spec = PUBLIC_RANK_METRICS[key];
+      if (!entry || !spec) return '';
+      var value = Number(entry.value);
+      if (!isFinite(value)) return '';
+      var shown = spec.digits === 3
+        ? value.toFixed(3).replace(/^0/, '')
+        : value.toFixed(spec.digits);
+      return '<div class="ca-ctx-cell">' +
+        '<span class="ca-ctx-label">' + esc(spec.label) + '</span>' +
+        '<strong class="ca-ctx-value">' + esc(shown) + '</strong>' +
+        '<span class="ca-ctx-rank">' + entry.rank + ordinal(entry.rank) +
+        ' of ' + entry.of + '</span>' +
+        '</div>';
+    }).filter(Boolean).join('');
+    return cells ? '<div class="ca-ctx-strip">' + cells + '</div>' : '';
+  }
+
   function expandedHtml(sport, game, panelId) {
     var awayName = teamName(sport, game.away, game.away_name);
     var homeName = teamName(sport, game.home, game.home_name);
     // No starter blocks here: the collapsed card already shows both faces, and
     // repeating them made the same two headshots appear twice on expand.
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
+    if (sport === 'mlb') {
+      var awayCtx = contextStrip(game, 'away'), homeCtx = contextStrip(game, 'home');
+      if (awayCtx || homeCtx) {
+        html += '<div class="ca-ctx-duo">' +
+          '<section><h4 class="ca-ctx-head">' + esc(awayName) + ' offense</h4>' + awayCtx + '</section>' +
+          '<section><h4 class="ca-ctx-head">' + esc(homeName) + ' offense</h4>' + homeCtx + '</section>' +
+          '</div>' +
+          '<p class="ca-ctx-note">Season to date, graded against the 30-team league pool. ' +
+          'OSI = 0.43&#183;RCV + 0.37&#183;ABQ + 0.20&#183;OBR.</p>';
+      }
+    }
     if (sport === 'mlb') {
       var awayLineup = lineupLabel(game.away_lineup_state);
       var homeLineup = lineupLabel(game.home_lineup_state);
