@@ -121,28 +121,6 @@
     return '<strong>' + esc(clock(game.kickoff_utc)) + '</strong><p>' + esc(gameStatus(game)) + '</p>';
   }
 
-  function starterRows(sport, game, side) {
-    if (sport === 'nfl') {
-      return [
-        ['Expected quarterback', value(game[side + '_starter'], 'Not published')],
-        ['Player availability', value(game[side + '_availability'] || game.availability_summary, 'Report pending')],
-        ['Rest', game[side + '_rest_days'] ? game[side + '_rest_days'] + ' days' : 'Not published'],
-        ['Travel', value(game[side + '_travel'])]
-      ];
-    }
-    var hand = String(game[side + '_hand'] || '').toUpperCase();
-    if (hand === 'R') hand = 'RHP';
-    if (hand === 'L') hand = 'LHP';
-    var era = game[side + '_era'];
-    if (era != null && era !== '' && Number.isFinite(Number(era))) era = Number(era).toFixed(2);
-    return [
-      ['Probable starter', value(game[side + '_starter'])],
-      ['Throws', value(hand)],
-      ['ERA', value(era)],
-      ['Lineup status', lineupState(game[side + '_lineup_state'])]
-    ];
-  }
-
   /* ---------------------------------------------------------------------
    * MLB evidence stack (2026-09-10).
    *
@@ -623,16 +601,332 @@
     ].join('');
   }
 
+  /* ---------------------------------------------------------------------
+   * NFL evidence stack.
+   *
+   * Two sources, both observed, both projected field by field before they ever
+   * reach the browser (outputs/nfl_public_context.py):
+   *
+   *   form    ten descriptive rates per club, each with a rank recomputed from
+   *           that rate against the 32-team pool. The board's own teams[].rank
+   *           ranks a model power rating and is never carried across.
+   *   scheme  charted coverage, pressure, personnel, response and target-share
+   *           rates, with the source season and the sample counts. The board's
+   *           confidence, staff_continuity and carryover_weight are forecasts
+   *           about the evidence and are never carried across.
+   *
+   * Everything here describes what a team has already done. Every scheme
+   * sentence is past tense and names the season it was charted in, because a
+   * prior-season rate stated in the present tense is a forecast wearing a
+   * fact's clothes.
+   * ------------------------------------------------------------------ */
+
+  var COVERAGE_SHELLS = [
+    ['cover_0_rate', 'Cover 0'],
+    ['cover_1_rate', 'Cover 1'],
+    ['cover_2_rate', 'Cover 2'],
+    ['cover_2_man_rate', 'Cover 2 man'],
+    ['cover_3_rate', 'Cover 3'],
+    ['cover_4_rate', 'Cover 4'],
+    ['cover_6_rate', 'Cover 6']
+  ];
+
+  var PRESSURE_ROWS = [
+    ['blitz_rate', 'Blitz rate', 'pct'],
+    ['pressure_rate', 'Pressure rate', 'pct'],
+    ['stacked_box_rate', 'Stacked box rate', 'pct'],
+    ['avg_box', 'Average box count', 'num']
+  ];
+
+  var PERSONNEL_ROWS = [
+    ['personnel_11_rate', '11 personnel', 'pct'],
+    ['personnel_12_rate', '12 personnel', 'pct'],
+    ['formation_shotgun_rate', 'Shotgun', 'pct'],
+    ['formation_under_center_rate', 'Under centre', 'pct'],
+    ['motion_rate', 'Pre-snap motion', 'pct'],
+    ['play_action_rate', 'Play action', 'pct'],
+    ['rpo_rate', 'RPO', 'pct'],
+    ['screen_rate', 'Screen', 'pct'],
+    ['no_huddle_rate', 'No huddle', 'pct'],
+    ['neutral_pass_rate', 'Neutral pass rate', 'pct']
+  ];
+
+  var RESPONSE_ROWS = [
+    ['pass_epa_man', 'Pass EPA vs man', 'epa'],
+    ['pass_epa_zone', 'Pass EPA vs zone', 'epa'],
+    ['pass_epa_blitz', 'Pass EPA when blitzed', 'epa'],
+    ['pass_epa_pressure', 'Pass EPA under pressure', 'epa'],
+    ['pass_epa_play_action', 'Pass EPA on play action', 'epa'],
+    ['pass_success_rate', 'Pass success rate', 'pct'],
+    ['rush_success_rate', 'Rush success rate', 'pct']
+  ];
+
+  var TARGET_ROWS = [
+    ['target_share_rb_all', 'Running backs'],
+    ['target_share_wr_all', 'Receivers'],
+    ['target_share_te_all', 'Tight ends']
+  ];
+
+  function pctText(value) {
+    var v = Number(value);
+    return isFinite(v) ? (v * 100).toFixed(1) + '%' : '\u2014';
+  }
+
+  function epaText(value) {
+    var v = Number(value);
+    if (!isFinite(v)) return '\u2014';
+    return (v > 0 ? '+' : '') + v.toFixed(3);
+  }
+
+  function schemeValue(value, kind) {
+    if (kind === 'epa') return epaText(value);
+    if (kind === 'num') return isFinite(Number(value)) ? Number(value).toFixed(2) : '\u2014';
+    return pctText(value);
+  }
+
+  function rateTable(caption, rows, source) {
+    var body = rows.map(function (row) {
+      var raw = source[row[0]];
+      if (raw == null) return '';
+      return '<tr><td>' + esc(row[1]) + '</td><td class="num">' +
+        esc(schemeValue(raw, row[2])) + '</td></tr>';
+    }).filter(Boolean).join('');
+    if (!body) return '';
+    return '<div class="ca-rate-block"><h4>' + esc(caption) + '</h4>' +
+      '<table class="ca-rate-table"><tbody>' + body + '</tbody></table></div>';
+  }
+
+  /* A 100% stacked bar. The segments are the shells themselves, so the bar can
+     only ever say how the charted snaps divided up. */
+  function stackedBar(segments) {
+    var total = segments.reduce(function (sum, seg) { return sum + seg.value; }, 0);
+    if (!(total > 0)) return '';
+    var bar = segments.map(function (seg, i) {
+      var share = (seg.value / total) * 100;
+      return '<span class="ca-stack__seg ca-stack__seg--' + ((i % 7) + 1) + '" style="width:' +
+        share.toFixed(2) + '%" title="' + esc(seg.label) + ' ' + share.toFixed(1) + '%"></span>';
+    }).join('');
+    var key = segments.map(function (seg, i) {
+      var share = (seg.value / total) * 100;
+      return '<li><span class="ca-stack__swatch ca-stack__swatch--' + ((i % 7) + 1) +
+        '"></span>' + esc(seg.label) + ' <strong>' + share.toFixed(1) + '%</strong></li>';
+    }).join('');
+    return '<div class="ca-stack">' + bar + '</div><ul class="ca-stack__key">' + key + '</ul>';
+  }
+
+  function provenanceLine(scheme) {
+    var seasons = (scheme.source_seasons || []).join(', ');
+    var bits = [];
+    if (seasons) bits.push('Charted from the ' + seasons + ' season');
+    if (scheme.charting_samples != null) bits.push(Number(scheme.charting_samples).toLocaleString('en-US') + ' charted plays');
+    if (scheme.coverage_samples != null) bits.push(Number(scheme.coverage_samples).toLocaleString('en-US') + ' coverage snaps');
+    return bits.join(' \u00b7 ');
+  }
+
+  /* One direction of the confrontation: this offence against that defence. */
+  function schemePanel(sport, game, offSide, defSide) {
+    var offScheme = game[offSide + '_scheme'];
+    var defScheme = game[defSide + '_scheme'];
+    var offName = fullName(sport, game, offSide);
+    var defName = fullName(sport, game, defSide);
+    var head = '<section class="ca-scheme-panel"><h3>' + esc(offName) +
+      ' offence versus ' + esc(defName) + ' defence</h3>';
+    if (!offScheme || !defScheme) {
+      return head + pending('Charted scheme profiles are not published for this pairing.') +
+        '</section>';
+    }
+    var defCov = (defScheme.defense || {}).coverage || {};
+    var defPressure = (defScheme.defense || {}).pressure || {};
+    var offPersonnel = (offScheme.offense || {}).personnel || {};
+    var offResponse = (offScheme.offense || {}).response || {};
+    var offTargets = (offScheme.offense || {}).target_share || {};
+    var seasons = (defScheme.source_seasons || []).join(', ');
+
+    var manZone = '';
+    if (defCov.man_rate != null && defCov.zone_rate != null) {
+      manZone = '<div class="ca-rate-block"><h4>Coverage split</h4>' +
+        stackedBar([
+          { label: 'Man', value: Number(defCov.man_rate) },
+          { label: 'Zone', value: Number(defCov.zone_rate) }
+        ]) +
+        '<p class="ca-detail-source-note">' + esc(defName) + ' played zone on ' +
+        pctText(defCov.zone_rate) + ' of the charted sample' +
+        (seasons ? ' in ' + esc(seasons) : '') + '.</p></div>';
+    }
+
+    var shells = COVERAGE_SHELLS
+      .filter(function (row) { return defCov[row[0]] != null; })
+      .map(function (row) { return { label: row[1], value: Number(defCov[row[0]]) }; });
+    var shellBlock = shells.length
+      ? '<div class="ca-rate-block"><h4>Coverage shells</h4>' + stackedBar(shells) + '</div>'
+      : '';
+
+    var targets = TARGET_ROWS
+      .filter(function (row) { return offTargets[row[0]] != null; })
+      .map(function (row) { return { label: row[1], value: Number(offTargets[row[0]]) }; });
+    var targetBlock = targets.length
+      ? '<div class="ca-rate-block"><h4>Target share</h4>' +
+        stackedBar(targets) +
+        '<p class="ca-detail-source-note">Observed shares of charted targets. It describes ' +
+        'the sample named above and says nothing about this game.</p></div>'
+      : '';
+
+    /* Two columns, split the way the confrontation is: what that defence did,
+       and what this offence did. A masonry of six unequal blocks read as a
+       pile; naming the two halves makes the pairing the point. */
+    return head +
+      '<p class="ca-lineup-context">' + esc(provenanceLine(defScheme)) + '</p>' +
+      '<div class="ca-scheme-duo">' +
+      '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(defName) +
+      ' defence</h4>' + manZone + shellBlock +
+      rateTable('Pressure', PRESSURE_ROWS, defPressure) + '</div>' +
+      '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(offName) +
+      ' offence</h4>' +
+      rateTable('Personnel and formation', PERSONNEL_ROWS, offPersonnel) +
+      rateTable('Response by look', RESPONSE_ROWS, offResponse) +
+      targetBlock + '</div>' +
+      '</div></section>';
+  }
+
+  function formRow(entry) {
+    if (!entry) return '';
+    var value = Number(entry.value);
+    var text = Math.abs(value) < 1 && String(entry.label).indexOf('EPA') < 0
+      ? (value * 100).toFixed(1) + '%'
+      : (Math.abs(value) < 1 ? epaText(value) : value.toFixed(2));
+    return '<div class="ca-form-cell">' +
+      '<span class="ca-form-label">' + esc(entry.label) + '</span>' +
+      '<strong class="ca-form-value">' + esc(text) + '</strong>' +
+      percentBar(entry.rank, entry.of) +
+      '<span class="ca-form-rank">' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
+      '</div>';
+  }
+
+  function nflFormPanel(sport, game, side) {
+    var form = game[side + '_form'];
+    var label = fullName(sport, game, side);
+    if (!form || !form.rates) {
+      return '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>' +
+        pending('Team form is not published for this club.') + '</section>';
+    }
+    var order = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack', 'off_turnover',
+      'def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
+    var cells = order.map(function (key) { return formRow(form.rates[key]); })
+      .filter(Boolean).join('');
+    var plays = form.plays != null
+      ? '<p class="ca-lineup-context">' + Number(form.plays).toFixed(1) + ' plays per game</p>'
+      : '';
+    return '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>' + plays +
+      '<div class="ca-form-grid">' + cells + '</div></section>';
+  }
+
+  /* The named offence, with faces. Identity, position and depth only - the
+     rest of the row those names came from is the model's output and never
+     leaves the producer. */
+  function playerRow(players, designations) {
+    if (!players || !players.length) return '';
+    var byName = {};
+    (designations || []).forEach(function (entry) {
+      byName[String(entry.name || '').toLowerCase()] = entry.status;
+    });
+    var cards = players.map(function (pl) {
+      var status = byName[String(pl.name || '').toLowerCase()];
+      var shot = pl.headshot_url
+        ? '<img class="ca-person__shot" src="' + esc(pl.headshot_url) + '" alt="' +
+          esc(pl.name) + '" width="56" height="56" loading="lazy" decoding="async">'
+        : '<span class="ca-person__shot" aria-hidden="true"></span>';
+      return '<li class="ca-person">' + shot +
+        '<span class="ca-person__slot">' + esc(pl.position) +
+        (pl.depth_rank > 1 ? String(pl.depth_rank) : '') + '</span>' +
+        '<span class="ca-person__name">' + esc(pl.name) + '</span>' +
+        (status ? '<span class="ca-status-pill" data-status="' +
+          esc(String(status).toLowerCase().replace(/\s+/g, '-')) + '">' + esc(status) +
+          '</span>' : '') + '</li>';
+    }).join('');
+    return '<ul class="ca-person-row">' + cards + '</ul>';
+  }
+
+  function namedQuarterback(game, side) {
+    var players = game[side + '_players'] || [];
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].position === 'QB' && players[i].depth_rank === 1) return players[i].name;
+    }
+    return game[side + '_starter'] || '';
+  }
+
+  function availabilityPanel(sport, game, side) {
+    var entries = game[side + '_availability_list'];
+    var label = fullName(sport, game, side);
+    var qb = namedQuarterback(game, side);
+    var head = '<section class="ca-avail-panel"><h3>' + esc(label) + '</h3>' +
+      '<p class="ca-lineup-context">' +
+      (qb ? 'Quarterback: ' + esc(qb) : 'Quarterback not published') + '</p>' +
+      playerRow(game[side + '_players'], entries);
+    if (!entries) {
+      return head + pending('Injury report not published for this club.') + '</section>';
+    }
+    if (!entries.length) {
+      return head + pending('No designations reported.') + '</section>';
+    }
+    var rows = entries.map(function (entry) {
+      return '<tr>' +
+        '<td class="ca-lineup-name">' + esc(entry.name) + '</td>' +
+        '<td>' + esc(entry.position || '\u2014') + '</td>' +
+        '<td><span class="ca-status-pill" data-status="' +
+        esc(String(entry.status || '').toLowerCase().replace(/\s+/g, '-')) + '">' +
+        esc(entry.status) + '</span></td>' +
+        '<td>' + esc(entry.detail || '\u2014') + '</td></tr>';
+    }).join('');
+    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table">' +
+      '<thead><tr><th>Player</th><th>Pos</th><th>Designation</th><th>Detail</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div></section>';
+  }
+
   function nflSections(sport, game) {
+    var source = game.scheme_source || {};
     return [
-      section('quarterbacks', 'Quarterbacks and availability', 'Expected status from the published slate',
-        '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', starterRows(sport, game, 'away')) +
-        teamPanel(sport, game, 'home', starterRows(sport, game, 'home')) + '</div>'),
-      section('team-context', 'Rest and travel', 'Factual scheduling context',
+      section('availability', 'Quarterbacks and availability',
+        'Official designations for this week',
+        '<div class="ca-detail-duo">' +
+        availabilityPanel(sport, game, 'away') +
+        availabilityPanel(sport, game, 'home') + '</div>' +
+        '<p class="ca-detail-source-note">Designations come from the official injury report. ' +
+        'Players listed active are not repeated here, because active is the default state. ' +
+        'The named offence is the club\u2019s current depth chart: identity, position and ' +
+        'depth order only. A designation shown beside a name is that player\u2019s own ' +
+        'entry on the injury report.</p>'),
+
+      section('scheme', 'Scheme confrontation',
+        'Charted tendencies, each offence against the other defence',
+        '<div class="ca-detail-stack-inner">' +
+        schemePanel(sport, game, 'away', 'home') +
+        schemePanel(sport, game, 'home', 'away') + '</div>' +
+        '<p class="ca-detail-source-note">Every rate on this page describes snaps that have ' +
+        'already been charted, in the season named beside it. A prior-season rate is not a ' +
+        'statement about this game. Distribution bars are shares of the charted sample and ' +
+        'sum to 100%.</p>'),
+
+      section('form', 'Team form',
+        'Ten observed rates, graded against the 32-team league pool',
+        '<div class="ca-detail-duo">' +
+        nflFormPanel(sport, game, 'away') +
+        nflFormPanel(sport, game, 'home') + '</div>' +
+        '<p class="ca-detail-source-note">Each bar is the league percentile of the rate ' +
+        'directly above it, computed from that rate against the same 32-team pool. Sacks and ' +
+        'giveaways rank best when low; takeaways and sacks generated rank best when high. ' +
+        (source.season ? 'Season ' + esc(source.season) +
+          (source.week ? ', week ' + esc(source.week) : '') + '. ' : '') +
+        'Ranks are recomputed from these rates alone, so none of them can inherit an ordering from anywhere else.</p>'),
+
+      section('team-context', 'Rest, travel and venue', 'Factual scheduling context',
         '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
-          ['Rest', game.away_rest_days ? game.away_rest_days + ' days' : 'Not published'], ['Travel', value(game.away_travel)]
+          ['Record', value(game.away_record)],
+          ['Rest', game.away_rest_days ? game.away_rest_days + ' days' : 'Not published'],
+          ['Travel', value(game.away_travel)]
         ]) + teamPanel(sport, game, 'home', [
-          ['Rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not published'], ['Travel', value(game.home_travel)]
+          ['Record', value(game.home_record)],
+          ['Rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not published'],
+          ['Travel', value(game.home_travel)]
         ]) + '</div>')
     ].join('');
   }
@@ -643,7 +937,7 @@
     document.title = awayName + ' at ' + homeName + ' — Chase Analytics';
     var nav = sport === 'mlb'
       ? [['overview', 'Overview'], ['starters', 'Starters'], ['lineups', 'Lineup vs starter'], ['arsenal', 'Pitch mix'], ['form', 'Offensive form'], ['bullpens', 'Bullpens'], ['conditions', 'Ballpark'], ['sources', 'Sources']]
-      : [['overview', 'Overview'], ['quarterbacks', 'Quarterbacks'], ['team-context', 'Rest & travel'], ['conditions', 'Conditions'], ['sources', 'Sources']];
+      : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'], ['form', 'Team form'], ['team-context', 'Rest & travel'], ['conditions', 'Venue'], ['sources', 'Sources']];
     var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back to ' + sport.toUpperCase() + ' matchups</a>' +
       '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta"><div><p class="ca-detail-eyebrow">' +
       sport.toUpperCase() + ' · Matchup analysis</p><span>' + esc(gameStatus(game)) + '</span></div><span>' +

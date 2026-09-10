@@ -62,6 +62,17 @@
   --accent-strong: var(--ca-violet-700);
   --accent-text: var(--ca-violet-300);
   --accent-glow: var(--ca-violet-a-32);
+
+  /* Distribution segments. A stacked bar needs a set of hues that stay
+     distinguishable in both themes and never read as good-to-bad, because the
+     segments are categories - coverage shells, target shares - not a scale. */
+  --series-1: var(--ca-violet-500);
+  --series-2: var(--ca-violet-300);
+  --series-3: var(--ca-teal-400);
+  --series-4: var(--ca-amber-400);
+  --series-5: var(--ca-violet-700);
+  --series-6: var(--ca-blue-300);
+  --series-7: var(--ca-red-400);
   /* Board chrome: the 3px brand edge and the top-edge glint that reads as the
      light source. Roles, so L5–L7 never reach for a --ca-* primitive. */
   --edge-brand: var(--ca-grad-brand);

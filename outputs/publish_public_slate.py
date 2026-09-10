@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from outputs import nfl_public_context
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from project_public_slate import assert_clean, project_slate  # noqa: E402
@@ -148,7 +150,6 @@ def mlb_producer(data_dir: Path) -> dict:
             "away_bullpen": _cell(row, "Away_Bullpen_Availability", "Away Bullpen") or None,
             "home_bullpen": _cell(row, "Home_Bullpen_Availability", "Home Bullpen") or None,
             "game_state": "scheduled",
-            "freshness": "Current",
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # See the note in nfl_producer_from_espn: these are two different facts.
@@ -232,7 +233,78 @@ def availability_summary(entries: list[dict] | None) -> str:
     return " · ".join(parts) or f"{len(entries)} designated"
 
 
-def nfl_producer_from_espn(payload: dict, injuries: dict | None = None) -> dict:
+ESPN_NFL_SCHEDULE = (
+    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/schedule"
+)
+
+
+def fetch_nfl_rest(teams: set[str]) -> dict[str, list[dict]]:
+    """Each club's completed games this season, newest first.
+
+    Rest and travel are the two scheduling facts the IA asks for and the model
+    board does not carry. Both fall out of the club's own schedule: the gap to
+    the previous kickoff, and where that previous game was played. In week one
+    there is no previous game, so both stay explicitly unavailable rather than
+    being filled in with a default.
+    """
+    out: dict[str, list[dict]] = {}
+    for team in sorted(teams):
+        url = ESPN_NFL_SCHEDULE.format(team=team.lower())
+        try:
+            with urllib.request.urlopen(url, timeout=20) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except Exception:
+            continue
+        played = []
+        for event in payload.get("events") or []:
+            comp = (event.get("competitions") or [{}])[0]
+            status = ((comp.get("status") or {}).get("type") or {}).get("completed")
+            if not status:
+                continue
+            venue = comp.get("venue") or {}
+            played.append({
+                "kickoff_utc": event.get("date"),
+                "venue_city": ", ".join(x for x in (
+                    (venue.get("address") or {}).get("city"),
+                    (venue.get("address") or {}).get("state"),
+                ) if x) or None,
+            })
+        played.sort(key=lambda row: str(row["kickoff_utc"]), reverse=True)
+        out[team] = played
+    return out
+
+
+def rest_context(history: list[dict] | None, kickoff: str | None) -> tuple[int | None, str | None]:
+    """Days since the club last played, and where it played."""
+    if not history or not kickoff:
+        return None, None
+    try:
+        now = datetime.fromisoformat(str(kickoff).replace("Z", "+00:00"))
+    except ValueError:
+        return None, None
+    for row in history:
+        try:
+            then = datetime.fromisoformat(str(row["kickoff_utc"]).replace("Z", "+00:00"))
+        except (ValueError, KeyError, TypeError):
+            continue
+        if then >= now:
+            continue
+        days = (now - then).days
+        where = row.get("venue_city")
+        return days, (f"Last played at {where}" if where else None)
+    return None, None
+
+
+def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
+                          context: dict | None = None,
+                          rest_history: dict | None = None) -> dict:
+    # Observed team form and charted scheme profiles, projected field by
+    # field out of the model board rather than passed through it.
+    context = context if context is not None else nfl_public_context.build()
+    form = context.get("form") or {}
+    scheme = context.get("scheme") or {}
+    players = context.get("players") or {}
+    rest = rest_history if rest_history is not None else {}
     games = []
     for event in payload.get("events") or []:
         comps = event.get("competitions") or []
@@ -270,6 +342,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None) -> dict:
             rows = block.get("records") or []
             return str(rows[0].get("summary")) if rows and rows[0].get("summary") else None
 
+        away_rest, away_travel = rest_context(rest.get(away_abbr), kickoff)
+        home_rest, home_travel = rest_context(rest.get(home_abbr), kickoff)
         weather = comp.get("weather") or {}
         condition = weather.get("displayValue") or weather.get("conditionId")
         temperature = weather.get("temperature")
@@ -309,7 +383,20 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None) -> dict:
             "away_score": away.get("score"),
             "home_score": home.get("score"),
             "game_state": state,
-            "freshness": "Current",
+            "away_form": form.get(away_abbr),
+            "home_form": form.get(home_abbr),
+            # The confrontation is directional: one side's offence against the
+            # other side's defence, published as two separate pairings so the
+            # page never has to work out which half faces which.
+            "away_scheme": scheme.get(away_abbr),
+            "home_scheme": scheme.get(home_abbr),
+            "scheme_source": context.get("source"),
+            "away_players": players.get(away_abbr),
+            "home_players": players.get(home_abbr),
+            "away_rest_days": away_rest,
+            "home_rest_days": home_rest,
+            "away_travel": away_travel,
+            "home_travel": home_travel,
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # Publication time and data age are different facts (IA section 6.7): the
@@ -358,7 +445,15 @@ def run(data_dir: Path | None = None) -> int:
     ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
     espn = fetch_nfl_scoreboard()
     if espn:
-        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries())
+        codes = {
+            (c.get("team") or {}).get("abbreviation")
+            for event in (espn.get("events") or [])
+            for comp in (event.get("competitions") or [])
+            for c in (comp.get("competitors") or [])
+        }
+        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(),
+                                     nfl_public_context.build(),
+                                     fetch_nfl_rest({c for c in codes if c}))
         ok = write_if_better("nfl", nfl, PUBLIC_DIR / "nfl" / "slate.json") or ok
     else:
         print("  skip nfl: scoreboard unreachable; keeping existing public slate")

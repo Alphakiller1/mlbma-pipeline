@@ -159,7 +159,21 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL detail has factual sections", page.locator("#quarterbacks, #team-context, #conditions, #sources").count() == 4)
+        check("NFL detail has factual sections",
+              page.locator("#availability, #scheme, #form, #team-context, #conditions, #sources").count() == 6)
+        # inner_text() returns rendered text, and the provenance line is
+        # uppercased by the stylesheet, so the comparison is case-insensitive.
+        scheme_text = page.locator("#scheme").inner_text().lower()
+        check("NFL scheme states its source season", "charted from the" in scheme_text)
+        check("NFL scheme speaks in the past tense", "played zone on" in scheme_text)
+        stacks = page.eval_on_selector_all(
+            ".ca-stack",
+            "els => els.map(e => [...e.children].reduce((sum, c) => sum + parseFloat(c.style.width), 0))")
+        check("NFL distribution bars sum to 100%",
+              bool(stacks) and all(abs(total - 100) < 0.5 for total in stacks),
+              f"{len(stacks)} bars, worst {max((abs(t-100) for t in stacks), default=0):.2f}pp off")
+        form_bars = page.locator("#form .ca-pct-bar").count()
+        check("NFL form annotates every rate with a rank", form_bars == 20, f"bars={form_bars}")
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
