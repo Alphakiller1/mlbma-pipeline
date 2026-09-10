@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate public MLB/NFL matchup slate, result, and factual game-detail routes.
+"""Generate the public MLB/NFL slate and factual game-detail routes.
 
 Each route loads only that sport's adapter. Regenerating is the source of truth
 for these files — edit this script, then re-run.
@@ -111,31 +111,19 @@ def parked_page(sport: str) -> str:
 
 
 def page(sport: str, *, kind: str = "index") -> str:
+    """The slate route. Completed games are reachable only through a matchup
+    breakdown, so there is no separate past-results destination to generate
+    (owner decision 2026-09-10)."""
     spec = SPORTS[sport]
     matchups = kind == "matchups"
-    results = kind == "results"
-    if matchups:
-        title = sport.upper() + " Matchups — Chase Analytics"
-    elif results:
-        title = sport.upper() + " Results — Chase Analytics"
-    else:
-        title = spec["title"]
+    title = sport.upper() + " Matchups — Chase Analytics" if matchups else spec["title"]
     extra_scripts = f"""
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>"""
-    body_js = RESULTS_JS if results else MATCHUPS_JS
-    mode = "evidence" if results else "slate"
-    more_bits = []
-    if not results:
-        # Past results live inside a matchup breakdown, not as a public
-        # destination of their own (owner decision 2026-09-10).
-        pass
-    more_html = ('      <div class="ca-public-page__links">' + " ".join(more_bits) + "</div>") if more_bits else ""
-    if results:
-        lede = "Final scores and game status from the published slate."
-        h1 = sport.upper() + " Results"
-    else:
-        lede = spec["lede"]
-        h1 = sport.upper() + " Matchups"
+    body_js = MATCHUPS_JS
+    mode = "slate"
+    more_html = ""
+    lede = spec["lede"]
+    h1 = sport.upper() + " Matchups"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -181,8 +169,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   window.CHASE_SPORT_ID = {json.dumps(sport)};
   window.CHASE_SPORT_PICKS_LABEL = {json.dumps(spec["picks_label"])};
   window.CHASE_SPORT_GEMS_LABEL = {json.dumps(spec["gems_label"])};
-  window.CHASE_SPORT_IS_MATCHUPS = {str(not results).lower()};
-  window.CHASE_SPORT_IS_RESULTS = {str(results).lower()};
+  window.CHASE_SPORT_IS_MATCHUPS = true;
   {body_js}
   </script>
 </body>
@@ -208,15 +195,6 @@ MATCHUPS_JS = r"""
 })();
 """
 
-
-RESULTS_JS = r"""
-(function () {
-  var adapter = window.CHASE_SPORT_PAGE;
-  var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'evidence', surface: 'results', search: false });
-  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate'), results: true });
-})();
-"""
 
 
 def matchup_page(sport: str) -> str:
@@ -334,14 +312,12 @@ def main() -> int:
             parked = parked_page(sport)
             (dest / "index.html").write_text(parked, encoding="utf-8")
             (dest / "matchups.html").write_text(parked, encoding="utf-8")
-            (dest / "results.html").write_text(parked, encoding="utf-8")
             print("wrote", sport, "parked (not on public desk)")
             continue
         (dest / "index.html").write_text(page(sport, kind="index"), encoding="utf-8")
         (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
-        (dest / "results.html").write_text(page(sport, kind="results"), encoding="utf-8")
         (dest / "matchup.html").write_text(matchup_page(sport), encoding="utf-8")
-        print("wrote", sport, "index/matchups/results/matchup")
+        print("wrote", sport, "index/matchups/matchup")
     (ROOT / "models").mkdir(parents=True, exist_ok=True)
     models = models_page()
     (ROOT / "models" / "index.html").write_text(models, encoding="utf-8")
