@@ -114,3 +114,85 @@ class PublicSlateProjectionTests(unittest.TestCase):
         before = tmp.read_text(encoding="utf-8")
         self.assertFalse(write_if_better("mlb", {"games": []}, tmp))
         self.assertEqual(tmp.read_text(encoding="utf-8"), before)
+
+
+class MlbScheduleParityTests(unittest.TestCase):
+    """Handoff phase 1: the published slate must describe the same games the
+    schedule does, and must not claim to know more than it observed."""
+
+    def test_producer_builds_every_scheduled_game(self):
+        from outputs.publish_public_slate import mlb_producer_from_statsapi
+
+        schedule = {"dates": [{"games": [
+            {"gamePk": 1, "gameDate": "2026-09-10T17:10:00Z",
+             "status": {"abstractGameState": "Final", "detailedState": "Final"},
+             "teams": {
+                 "away": {"team": {"abbreviation": "MIN", "name": "Minnesota Twins", "id": 142},
+                          "leagueRecord": {"wins": 69, "losses": 76}, "score": 3,
+                          "probablePitcher": {"id": 11, "fullName": "A Arm"}},
+                 "home": {"team": {"abbreviation": "DET", "name": "Detroit Tigers", "id": 116},
+                          "leagueRecord": {"wins": 66, "losses": 79}, "score": 5,
+                          "probablePitcher": {"id": 12, "fullName": "B Arm"}}},
+             "venue": {"id": 2394, "name": "Comerica Park",
+                       "location": {"city": "Detroit", "stateAbbrev": "MI"}},
+             "lineups": {"awayPlayers": [
+                 {"id": 21, "fullName": "One Hitter",
+                  "primaryPosition": {"abbreviation": "RF"}}]}},
+            {"gamePk": 2, "gameDate": "2026-09-10T23:05:00Z",
+             "status": {"abstractGameState": "Preview", "detailedState": "Scheduled"},
+             "teams": {
+                 "away": {"team": {"abbreviation": "SD", "name": "San Diego Padres"}},
+                 "home": {"team": {"abbreviation": "SF", "name": "San Francisco Giants"}}}},
+        ]}]}
+        arms = {11: {"hand": "R", "era": "4.98", "whip": "1.27"},
+                12: {"hand": "L", "era": "3.55", "whip": "1.03"}}
+        out = mlb_producer_from_statsapi(schedule, arms)
+
+        self.assertEqual(len(out["games"]), 2, "every scheduled game must be published")
+        first, second = out["games"]
+
+        # The real state, not a hardcoded "scheduled" for everything.
+        self.assertEqual(first["game_state"], "final")
+        self.assertEqual(second["game_state"], "scheduled")
+        # A score only where there is a game to describe.
+        self.assertEqual((first["away_score"], first["home_score"]), (3, 5))
+        self.assertIsNone(second["away_score"])
+        # Name and hand are separate fields, not one concatenated string.
+        self.assertEqual(first["away_starter"], "A Arm")
+        self.assertEqual(first["away_hand"], "R")
+        self.assertNotIn("·", first["away_starter"])
+        self.assertEqual(first["away_starter_id"], 11)
+        # A game with no probable starter says so explicitly.
+        self.assertIsNone(second["away_starter"])
+        self.assertIsNone(second["away_starter_id"])
+        # The batting order survives instead of collapsing to one word.
+        self.assertEqual(first["away_lineup"],
+                         [{"slot": 1, "person_id": 21, "name": "One Hitter", "position": "RF"}])
+        self.assertEqual(first["away_lineup_state"], "Confirmed")
+        self.assertEqual(first["home_lineup_state"], "Expected")
+        self.assertEqual(first["venue_city"], "Detroit, MI")
+
+    def test_publication_time_and_observation_time_can_differ(self):
+        from outputs.publish_public_slate import mlb_producer_from_statsapi
+
+        schedule = {"dates": [{"games": [
+            {"gamePk": 3, "gameDate": "2050-01-01T00:00:00Z",
+             "status": {"abstractGameState": "Preview", "detailedState": "Scheduled"},
+             "teams": {"away": {"team": {"abbreviation": "AAA"}},
+                       "home": {"team": {"abbreviation": "BBB"}}}}]}]}
+        out = mlb_producer_from_statsapi(schedule)
+        # A schedule carries future kickoffs; the newest OBSERVATION is still
+        # the fetch, so data_through must never run ahead of publication.
+        self.assertLessEqual(out["data_through_utc"], out["generated_at_utc"])
+
+    def test_merge_lets_the_schedule_decide_which_games_exist(self):
+        from outputs.publish_public_slate import merge_producers
+
+        official = {"generated_at_utc": "2026-09-10T00:00:00Z", "games": [
+            {"away": "MIN", "home": "DET", "game_state": "scheduled"}]}
+        curated = {"games": [
+            {"away": "MIN", "home": "DET", "away_bullpen": "Two arms unavailable"},
+            {"away": "GHOST", "home": "TEAM", "away_bullpen": "should not appear"}]}
+        merged = merge_producers(official, curated)
+        self.assertEqual(len(merged["games"]), 1)
+        self.assertEqual(merged["games"][0]["away_bullpen"], "Two arms unavailable")

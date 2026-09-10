@@ -161,6 +161,234 @@ def mlb_producer(data_dir: Path) -> dict:
 
 
 
+MLB_SCHEDULE = (
+    "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}"
+    "&hydrate=probablePitcher,team,venue(location),weather,broadcasts,lineups"
+)
+
+
+def _mlb_state(game: dict) -> str:
+    """The real game state, from the schedule's own status.
+
+    The CSV producer wrote "scheduled" for every game unconditionally, so a
+    final score could never be told from a first pitch.
+    """
+    status = game.get("status") or {}
+    abstract = str(status.get("abstractGameState") or "").lower()
+    detailed = str(status.get("detailedState") or "").lower()
+    if "postpone" in detailed:
+        return "postponed"
+    if "delay" in detailed:
+        return "delayed"
+    if abstract == "final":
+        return "final"
+    if abstract == "live":
+        return "live"
+    return "scheduled"
+
+
+def _broadcasts(game: dict) -> str | None:
+    """Television only, national first, at most two.
+
+    The schedule lists every radio affiliate alongside the TV feeds, so taking
+    them all produced a broadcast line like "680 AM/93.7 FM The Fan, Rays.TV,
+    BravesVision, WDAE 95.7 FM, La Mejor 1600/1460/1130 AM, WQBN/1300AM" - six
+    entries where a card has room for the answer to "where can I watch this".
+    """
+    entries = [e for e in (game.get("broadcasts") or [])
+               if str(e.get("type") or "").upper() == "TV"]
+    entries.sort(key=lambda e: not e.get("isNational"))
+    names = []
+    for entry in entries:
+        name = entry.get("name") or entry.get("callSign")
+        if name and name not in names:
+            names.append(str(name))
+    return ", ".join(names[:2]) or None
+
+
+def _batting_order(players) -> list[dict] | None:
+    """Identity and slot only. The season line is fetched per person by the
+    page; carrying it here would duplicate a source that already exists."""
+    if not players:
+        return None
+    order = []
+    for slot, player in enumerate(players, start=1):
+        if not player.get("id"):
+            continue
+        order.append({
+            "slot": slot,
+            "person_id": player["id"],
+            "name": player.get("fullName") or "",
+            "position": ((player.get("primaryPosition") or {}).get("abbreviation")) or "",
+        })
+    return order or None
+
+
+def fetch_mlb_schedule(date_iso: str) -> dict | None:
+    try:
+        with urllib.request.urlopen(MLB_SCHEDULE.format(date=date_iso), timeout=30) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"  WARNING: MLB schedule fetch failed ({exc})")
+        return None
+
+
+MLB_PEOPLE = (
+    "https://statsapi.mlb.com/api/v1/people?personIds={ids}"
+    "&hydrate=stats(group=[pitching],type=[season],season={season})"
+)
+
+
+def fetch_mlb_arms(ids: list[int], season: int) -> dict:
+    """Throwing hand and season line for every probable starter on the slate.
+
+    probablePitcher hydrates to identity only on the schedule endpoint - it
+    carries id, fullName and link, and nothing else - so the hand the page
+    needs to say "versus RHP" has to come from somewhere. /api/v1/people takes
+    a personIds list, so the whole slate costs one request rather than thirty.
+    """
+    unique = [i for i in dict.fromkeys(ids) if i]
+    if not unique:
+        return {}
+    url = MLB_PEOPLE.format(ids=",".join(str(i) for i in unique), season=season)
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"  WARNING: MLB starter lines fetch failed ({exc})")
+        return {}
+    out: dict[int, dict] = {}
+    for person in payload.get("people") or []:
+        stat: dict = {}
+        for block in person.get("stats") or []:
+            splits = block.get("splits") or []
+            if splits and splits[0].get("stat"):
+                stat = splits[0]["stat"]
+        out[person["id"]] = {
+            "hand": ((person.get("pitchHand") or {}).get("code")) or None,
+            "era": stat.get("era"),
+            "whip": stat.get("whip"),
+        }
+    return out
+
+
+def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
+    """The published slate, built from the official schedule.
+
+    The site used to fetch this endpoint itself and prefer it over the
+    published file, which meant two provenances presented as one: the freshness
+    strip described the file while the cards described the API, and on a normal
+    day the file held one game and the API returned fifteen. Building the file
+    from the same source removes the second reader.
+    """
+    arms = arms or {}
+    games = []
+    for block in payload.get("dates") or []:
+        for game in block.get("games") or []:
+            teams = game.get("teams") or {}
+            away_node, home_node = teams.get("away") or {}, teams.get("home") or {}
+            away_team, home_team = away_node.get("team") or {}, home_node.get("team") or {}
+            away = str(away_team.get("abbreviation") or "").strip()
+            home = str(home_team.get("abbreviation") or "").strip()
+            if not away or not home:
+                continue
+            away_sp = away_node.get("probablePitcher") or {}
+            home_sp = home_node.get("probablePitcher") or {}
+            venue = game.get("venue") or {}
+            location = venue.get("location") or {}
+            weather = game.get("weather") or {}
+            lineups = game.get("lineups") or {}
+            state = _mlb_state(game)
+
+            def record(node):
+                league = node.get("leagueRecord") or {}
+                if league.get("wins") is None or league.get("losses") is None:
+                    return None
+                return f"{league['wins']}-{league['losses']}"
+
+            away_order = _batting_order(lineups.get("awayPlayers"))
+            home_order = _batting_order(lineups.get("homePlayers"))
+            temp = weather.get("temp")
+            games.append({
+                "id": str(game.get("gamePk")),
+                "game_pk": game.get("gamePk"),
+                "away": away, "home": home,
+                "away_name": away_team.get("name") or None,
+                "home_name": home_team.get("name") or None,
+                "away_team_id": away_team.get("id") or None,
+                "home_team_id": home_team.get("id") or None,
+                "away_record": record(away_node), "home_record": record(home_node),
+                # Scores only once there is a game to describe.
+                "away_score": away_node.get("score") if state in {"live", "final"} else None,
+                "home_score": home_node.get("score") if state in {"live", "final"} else None,
+                "game_state": state,
+                "kickoff_utc": game.get("gameDate") or None,
+                "venue": venue.get("name") or None,
+                "venue_id": venue.get("id") or None,
+                "venue_city": ", ".join(x for x in (location.get("city"),
+                                                    location.get("stateAbbrev")) if x) or None,
+                "broadcast": _broadcasts(game),
+                "conditions": " · ".join(x for x in (
+                    f"{temp}°" if temp else "", weather.get("condition") or "",
+                    weather.get("wind") or "") if x) or None,
+                "weather_temp": temp or None,
+                "weather_cond": weather.get("condition") or None,
+                "weather_wind": weather.get("wind") or None,
+                # Name and hand are separate fields. The CSV producer
+                # concatenated them into "Zebby Matthews · RHP", which no
+                # consumer could split back apart reliably.
+                "away_starter": away_sp.get("fullName") or None,
+                "home_starter": home_sp.get("fullName") or None,
+                "away_starter_id": away_sp.get("id") or None,
+                "home_starter_id": home_sp.get("id") or None,
+                "away_hand": (arms.get(away_sp.get("id")) or {}).get("hand"),
+                "home_hand": (arms.get(home_sp.get("id")) or {}).get("hand"),
+                "away_era": (arms.get(away_sp.get("id")) or {}).get("era"),
+                "home_era": (arms.get(home_sp.get("id")) or {}).get("era"),
+                # The real batting order, not the single word the CSV producer
+                # collapsed it to.
+                "away_lineup": away_order,
+                "home_lineup": home_order,
+                "away_lineup_state": "Confirmed" if away_order else "Expected",
+                "home_lineup_state": "Confirmed" if home_order else "Expected",
+            })
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return {
+        "generated_at_utc": now,
+        "data_through_utc": _observed_through(games, now),
+        "games": games,
+    }
+
+
+def merge_producers(official: dict, curated: dict) -> dict:
+    """Official schedule first, curated pipeline context layered over it.
+
+    The pipeline knows things the schedule does not - bullpen availability
+    above all - so its rows are matched by matchup and merged in. A curated
+    game with no official counterpart is dropped: the schedule decides which
+    games exist.
+    """
+    by_matchup = {}
+    for game in curated.get("games") or []:
+        by_matchup[(str(game.get("away") or "").upper(),
+                    str(game.get("home") or "").upper())] = game
+    merged = []
+    for game in official.get("games") or []:
+        extra = by_matchup.get((game["away"].upper(), game["home"].upper()))
+        row = dict(game)
+        if extra:
+            for key in ("away_bullpen", "home_bullpen", "kickoff_display"):
+                if extra.get(key) not in (None, ""):
+                    row[key] = extra[key]
+        merged.append(row)
+    now = official.get("generated_at_utc") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return {
+        "generated_at_utc": now,
+        "data_through_utc": _observed_through(merged, now),
+        "games": merged,
+    }
+
+
 ESPN_NFL_INJURIES = (
     "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
 )
@@ -441,7 +669,26 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
 def run(data_dir: Path | None = None) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
-    mlb = mlb_producer(data_dir)
+    slate_date = datetime.now(ET).strftime("%Y-%m-%d")
+    curated = mlb_producer(data_dir)
+    schedule = fetch_mlb_schedule(slate_date)
+    if schedule:
+        starter_ids = [
+            ((node.get("probablePitcher") or {}).get("id"))
+            for block in (schedule.get("dates") or [])
+            for game in (block.get("games") or [])
+            for node in ((game.get("teams") or {}).get("away"),
+                         (game.get("teams") or {}).get("home"))
+            if node
+        ]
+        official = mlb_producer_from_statsapi(
+            schedule, fetch_mlb_arms(starter_ids, int(slate_date[:4])))
+        mlb = merge_producers(official, curated)
+        print(f"  mlb: {len(official['games'])} on the official schedule for {slate_date}, "
+              f"{len(curated['games'])} curated rows merged in")
+    else:
+        mlb = curated
+        print("  mlb: schedule unreachable; falling back to the curated rows only")
     ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
     espn = fetch_nfl_scoreboard()
     if espn:

@@ -95,16 +95,86 @@ def visible_main(html: str) -> str:
     return SCRIPT_RE.sub("", match.group(1))
 
 
+def path_class(suffixes: dict, path: str) -> str | None:
+    """Resolve a path against the suffix rules. `*` matches one path segment."""
+    for pattern, name in suffixes.items():
+        regex = "".join(
+            r"[^.\[\]]+" if part == "*" else re.escape(part)
+            for part in re.split(r"(\*)", pattern)
+        )
+        if re.search(regex + "$", path):
+            return name
+    return None
+
+
+def class_of(spec: dict, key: str) -> str | None:
+    """Which class a leaf key resolves to, or None if it is unclassified."""
+    for name, meta in (spec.get("classes") or {}).items():
+        if key in spec.get(name, []):
+            return name
+    return None
+
+
+def leaf_keys(obj, path: str = "$") -> list[tuple[str, str]]:
+    """Every key in a published artifact, with the path it was found at."""
+    found: list[tuple[str, str]] = []
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            found.append((key, f"{path}.{key}"))
+            found.extend(leaf_keys(value, f"{path}.{key}"))
+    elif isinstance(obj, list):
+        for value in obj:
+            found.extend(leaf_keys(value, f"{path}[]"))
+    return found
+
+
+def classify_artifact(spec: dict, artifact, label: str) -> list[str]:
+    """Every key must resolve to a class, and no key may resolve to a private one.
+
+    This is the guard the whole boundary rests on: a new field added upstream
+    arrives unclassified and fails the build, rather than arriving classified as
+    nothing and shipping.
+    """
+    problems: list[str] = []
+    suffixes = (spec.get("path_overrides") or {}).get("suffixes") or {}
+    private = {name for name, meta in (spec.get("classes") or {}).items()
+               if not meta.get("public")}
+    unclassified: dict[str, str] = {}
+    for key, path in leaf_keys(artifact):
+        resolved = path_class(suffixes, path) or class_of(spec, key)
+        if resolved is None:
+            unclassified.setdefault(key, path)
+        elif resolved in private:
+            problems.append(f"{label}: {key!r} at {path} classifies as {resolved}")
+    for key, path in sorted(unclassified.items()):
+        problems.append(f"{label}: {key!r} at {path} is not classified")
+    return problems
+
+
 def main() -> int:
     violations: list[str] = []
     spec = json.loads(CLASSIFICATION.read_text(encoding="utf-8"))
     restricted = json.loads(RESTRICTED.read_text(encoding="utf-8"))
-    if "descriptive_public" not in spec or "model_private" not in spec:
-        violations.append("public_metric_classification.json missing required keys")
-    private = {str(x).lower() for x in spec.get("model_private", {}).get("examples", [])}
+    classes = spec.get("classes") or {}
+    if not classes:
+        violations.append("public_metric_classification.json declares no classes")
+    for required in ("provenance", "identity", "factual_status", "descriptive",
+                     "derived_descriptive", "contextual_environment",
+                     "model_private", "model_derived_label"):
+        if required not in classes:
+            violations.append(f"classification is missing the {required} class")
+    private_classes = {name for name, meta in classes.items() if not meta.get("public")}
     for required in ("projOSI", "win_probability", "model_margin", "may_bet"):
-        if required.lower() not in private:
-            violations.append(f"model_private.examples must include {required}")
+        if class_of(spec, required) not in private_classes:
+            violations.append(f"{required} must classify as private")
+    # A field cannot be two things at once; a key in two lists is a spec bug
+    # that would let the stricter class be bypassed by list order.
+    seen: dict[str, str] = {}
+    for name in classes:
+        for key in spec.get(name, []):
+            if key in seen:
+                violations.append(f"{key!r} is classified as both {seen[key]} and {name}")
+            seen[key] = name
 
     forbidden = {str(x) for x in restricted.get("forbidden_keys", [])}
     allowed = {str(x) for x in restricted.get("allowed_game_keys", [])}
@@ -129,6 +199,34 @@ def main() -> int:
         assert_clean(cleaned)
     except SystemExit as exc:
         violations.append(f"projected fixture is not clean: {exc}")
+
+    # The classification guard has to reject the four shapes the handoff names:
+    # a power rating, a rank of that rating, a model composite sitting inside an
+    # otherwise-observed object, and an expected rate. If any of them passes,
+    # the guard is not doing its job and the build should fail here rather than
+    # in production.
+    tripwire = {
+        "schema": "chase-public-slate/1",
+        "games": [{
+            "id": "x", "away": "AAA", "home": "BBB",
+            "away_form": {"rating": 9.9, "rank": 1,
+                          "rates": {"off_epa": {"value": 0.1, "rank": 3, "of": 32}},
+                          "offense_index": 4.1},
+            "away_scheme": {"defense": {"coverage": {"expected_zone_rate": 0.8}}},
+        }],
+    }
+    tripped = classify_artifact(spec, tripwire, "tripwire")
+    for expected in ("rating", "offense_index", "expected_zone_rate", "rank"):
+        if not any(f"'{expected}'" in item for item in tripped):
+            violations.append(f"classification guard accepted a fixture containing {expected}")
+    # The same rank, sitting beside the value it was computed from, is a fact.
+    honest = {"games": [{"away_form": {"rates": {"off_epa":
+              {"label": "Offensive EPA per play", "value": 0.1, "better": "high",
+               "rank": 3, "of": 32}}}}]}
+    rejected = classify_artifact(spec, honest, "honest")
+    if rejected:
+        violations.append("classification guard rejected a recomputed rank: " +
+                          "; ".join(rejected))
 
     seen_assets: set[Path] = set()
     for entry in PUBLIC_ENTRIES:
@@ -180,6 +278,7 @@ def main() -> int:
                 extra = set(game) - allowed
                 if extra:
                     violations.append(f"{slate_path.relative_to(ROOT)} has non-allowlisted keys: {', '.join(sorted(extra))}")
+            violations.extend(classify_artifact(spec, slate, str(slate_path.relative_to(ROOT))))
         except (OSError, json.JSONDecodeError, SystemExit) as exc:
             violations.append(f"{slate_path.relative_to(ROOT)}: {exc}")
 
@@ -199,6 +298,7 @@ def main() -> int:
         print("\n".join(f"  - {item}" for item in violations))
         return 1
     print(f"OK: {len(PUBLIC_ENTRIES)} public routes use the factual matchup dependency graph")
+    print(f"OK: every key in {len(PUBLIC_SLATES)} published artifacts resolves to a public class")
     return 0
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import unittest
@@ -18,10 +19,20 @@ class PublicModelBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
-    def test_classification_lists_projos_i_as_private(self):
-        text = (ROOT / "design" / "public_metric_classification.json").read_text(encoding="utf-8")
-        self.assertIn('"projOSI"', text)
-        self.assertIn('"OSI"', text)
+    def test_osi_and_proj_osi_land_on_opposite_sides(self):
+        """The pair that makes the boundary concrete.
+
+        OSI is a constructed index over observed inputs, published with its
+        weights. projOSI is the same shape of number applied to a game that has
+        not happened. One word apart, opposite classes.
+        """
+        spec = json.loads((ROOT / "design" / "public_metric_classification.json")
+                          .read_text(encoding="utf-8"))
+        self.assertIn("osi", spec["derived_descriptive"])
+        self.assertTrue(spec["classes"]["derived_descriptive"]["public"])
+        self.assertIn("projOSI", spec["model_private"])
+        self.assertFalse(spec["classes"]["model_private"]["public"])
+        self.assertIn("ppGap", spec["model_private"])
 
     def test_model_center_stub_has_no_preview_values(self):
         html = (ROOT / "models" / "index.html").read_text(encoding="utf-8")
@@ -74,22 +85,41 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertNotIn("teamTabHtml", card)
         self.assertNotIn("BOARD_URL", blob)
 
-    def test_team_context_reads_only_descriptive_families(self):
-        """The team-rankings snapshot has a `status` family carrying projOSI and
-        ppGap, both model_private. The card enrichment must never read it."""
-        js = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
-        self.assertIn("PUBLIC_RANK_FAMILIES", js)
-        families = js.split("PUBLIC_RANK_FAMILIES = ", 1)[1].split("]", 1)[0]
-        self.assertIn("scoring", families)
-        self.assertIn("difficulty", families)
-        self.assertNotIn("status", families)
-        # The private metric keys must not be read anywhere in the enrichment.
-        self.assertNotIn("PUBLIC_RANK_METRICS.projOSI", js)
-        self.assertNotIn("projOSI:", js)
-        self.assertNotIn("ppGap:", js)
-        # Ranks must be recomputed from the descriptive value, never taken from
-        # a field that ranks something modelled.
-        self.assertIn("rank: index + 1", js)
+    def test_public_pages_never_fetch_the_private_context_artifacts(self):
+        """A field that arrives unrendered has still been published.
+
+        dashboard/team_rankings_snapshot.json carries a `status` family with
+        projOSI and ppGap for all thirty clubs, and dashboard/league_baselines
+        .json carries projosi, xwoba and xfip. Reading them carefully was not
+        enough: serving them at all put those numbers on every visitor's
+        machine. The public pages read projections instead.
+        """
+        for name in ("matchup_card.js", "mlbma_assets.js", "public_game_detail.js"):
+            js = (ROOT / "dashboard" / name).read_text(encoding="utf-8")
+            code = "\n".join(
+                line for line in js.splitlines()
+                if not line.lstrip().startswith(("//", "*", "/*")))
+            self.assertNotIn("/dashboard/team_rankings_snapshot.json", code,
+                             f"{name} fetches the private snapshot")
+            self.assertNotIn("/dashboard/league_baselines.json", code,
+                             f"{name} fetches the private baselines")
+
+    def test_the_public_projections_carry_no_private_metric(self):
+        for name in ("team_context.json", "league_baselines.json"):
+            path = ROOT / "data" / "public" / name
+            if not path.is_file():
+                self.skipTest(f"{name} not published")
+            blob = path.read_text(encoding="utf-8")
+            for key in ("projOSI", "projosi", "ppGap", "pals", "xwoba", "xfip"):
+                self.assertNotIn(key, blob, f"{name} publishes {key}")
+
+    def test_ranks_are_recomputed_in_the_producer(self):
+        """One ranking service, so the matchup page and the league board cannot
+        disagree on a boundary team."""
+        src = (ROOT / "scripts" / "publish_public_context.py").read_text(encoding="utf-8")
+        self.assertIn('PUBLIC_FAMILIES = ("scoring", "difficulty")', src)
+        self.assertNotIn('"status"', src.split("PUBLIC_FAMILIES")[1].split(")")[0])
+        self.assertIn('"rank": index + 1', src)
 
     def test_starter_line_is_sourced_not_hydrated_on_schedule(self):
         """probablePitcher cannot be hydrated with stats on /schedule; the
