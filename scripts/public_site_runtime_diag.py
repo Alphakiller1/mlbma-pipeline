@@ -49,6 +49,19 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded", timeout=timeout_ms)
             page.wait_for_selector("#openingMlbSlate .ca-matchup-card", timeout=timeout_ms)
             page.wait_for_selector("#openingNflSlate .ca-matchup-card", timeout=timeout_ms)
+            # The crest checks read naturalWidth, which is 0 until the image has
+            # decoded. A fixed 300ms pause was winning that race most of the
+            # time and losing it perhaps one run in five - reporting a crest
+            # density of 0 and failing a deploy over a slow CDN response rather
+            # than over anything in the build. Wait for the images themselves.
+            try:
+                page.wait_for_function(
+                    """() => [...document.querySelectorAll(
+                         '#openingMlbSlate .ca-matchup-card__club img')]
+                       .every(i => i.complete)""",
+                    timeout=timeout_ms)
+            except Exception:
+                pass
             page.wait_for_timeout(300)
 
             metrics = page.evaluate("""() => {
@@ -85,7 +98,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             # stay sharp on a high-DPR screen.
             check(f"{width}px official crests", metrics["crests"] >= 2, str(metrics))
             check(f"{width}px crests load", metrics["brokenCrests"] == 0, str(metrics))
-            check(f"{width}px crest density >= 2x", metrics["crestDensity"] >= 2, str(metrics))
+            # Density 0 means no crest had decoded yet - that is a statement
+            # about the network, not about the build, and failing on it took a
+            # deploy down for a slow CDN response. The assertion is about a
+            # crest that IS decoded being served at enough density; whether one
+            # decoded in time is what "crests load" already covers.
+            check(f"{width}px crest density >= 2x",
+                  metrics["crestDensity"] == 0 or metrics["crestDensity"] >= 2,
+                  str(metrics))
+            check(f"{width}px a crest decoded in time to measure",
+                  metrics["crestDensity"] > 0, str(metrics))
             check(f"{width}px full team names present", metrics["namedTeams"] >= 2, str(metrics))
             check(f"{width}px no bare abbreviation identity", metrics["bareAbbr"] == 0, str(metrics))
             if width >= 1024:
@@ -165,6 +187,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               "Team form as published" in page.locator("#form").inner_text())
         # The legacy Team Rankings board, restored where the architecture puts
         # it: inside the matchup behind a disclosure, never as a destination.
+        # The board and the club-colour bars arrive with the league artifact,
+        # which is a separate fetch from the one that paints the section. Wait
+        # for the thing being asserted rather than for a fixed delay - a gate
+        # that fails when a request is slow will fail a deploy for no reason.
+        try:
+            page.wait_for_selector("#form .ca-league-table tbody tr", timeout=timeout_ms)
+        except Exception:
+            pass
         page.eval_on_selector_all("#form .ca-disclosure", "els => els.forEach(d => d.open = true)")
         board_rows = page.locator("#form .ca-league-table tbody tr").count()
         marked = page.locator("#form .ca-league-table tbody tr.is-here").count()
@@ -172,6 +202,25 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               f"rows={board_rows}")
         check("MLB league board marks the two clubs in this game", marked == 2,
               f"marked={marked}")
+        # Club colour is identity, not grading - but half the league is navy,
+        # and a navy bar on a near-black panel is an invisible bar. Every mark
+        # must clear a measured floor against the panel it sits on.
+        try:
+            page.wait_for_selector("#form .ca-mirror__fill[data-club]", timeout=timeout_ms)
+        except Exception:
+            pass
+        bars = page.eval_on_selector_all(
+            "#form .ca-mirror__fill[data-club]",
+            "els => els.map(e => getComputedStyle(e).backgroundColor)")
+        def _lum(css):
+            nums = [int(n) / 255 for n in re.findall(r"\d+", css)[:3]]
+            chan = [(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4) for c in nums]
+            return 0.2126 * chan[0] + 0.7152 * chan[1] + 0.0722 * chan[2]
+        panel = _lum("rgb(18, 20, 29)")
+        worst = min(((max(_lum(b), panel) + 0.05) / (min(_lum(b), panel) + 0.05))
+                    for b in bars) if bars else 0
+        check("club-colour bars clear the legibility floor",
+              bool(bars) and worst >= 2.5, f"{len(bars)} bars, worst {worst:.2f}:1")
         mlb_detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(mlb_detail_text)
         check("MLB detail public copy boundary", match is None, match.group(0) if match else "")

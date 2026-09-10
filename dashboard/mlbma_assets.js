@@ -1173,6 +1173,56 @@
    * published colour, so an unrecognised abbreviation still renders legibly
    * rather than disappearing.
    */
+  /* A club colour used as a MARK on the dark desk, not as a ground.
+   *
+   * Half the league is navy or near-black. Measured against the board panel
+   * (--ca-ink-850, #12141D), six of ten sampled clubs come in under 1.6:1 -
+   * Detroit and the Yankees at 1.16:1, which on screen is an invisible bar.
+   * Team identity is worth having, but not at the cost of the reader being
+   * unable to see the chart.
+   *
+   * So the hue is kept and the lightness is lifted until the mark clears a
+   * measured floor against the ground it sits on. A navy club still reads as
+   * that club's navy; it just reads.
+   */
+  var BAR_GROUND = '#12141D';
+  var BAR_MIN_RATIO = 2.6;
+
+  function parseHex(hex) {
+    var h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return null;
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  function mixToward(hex, target, amount) {
+    var a = parseHex(hex), b = parseHex(target);
+    if (!a || !b) return hex;
+    function ch(x, y) { return Math.round(x + (y - x) * amount); }
+    return '#' + [ch(a[0], b[0]), ch(a[1], b[1]), ch(a[2], b[2])]
+      .map(function (v) { return ('0' + Math.max(0, Math.min(255, v)).toString(16)).slice(-2); })
+      .join('').toUpperCase();
+  }
+
+  function contrastRatio(one, two) {
+    var a = relativeLuminance(one), b = relativeLuminance(two);
+    var hi = Math.max(a, b), lo = Math.min(a, b);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
+  function teamBarColor(team, sport, ground) {
+    var base = teamColor(team, sport);
+    if (!base) return null;
+    var floor = ground || BAR_GROUND;
+    if (contrastRatio(base, floor) >= BAR_MIN_RATIO) return base;
+    // Walk toward white in small steps and stop at the first shade that clears
+    // the floor, so a club is lifted exactly as far as it has to be.
+    for (var amount = 0.1; amount <= 0.9; amount += 0.1) {
+      var lifted = mixToward(base, '#FFFFFF', amount);
+      if (contrastRatio(lifted, floor) >= BAR_MIN_RATIO) return lifted;
+    }
+    return mixToward(base, '#FFFFFF', 0.9);
+  }
+
   function teamTabHtml(team, sport, cls, fullName) {
     var code = String(team || '').toUpperCase();
     var color = teamColor(code, sport);
@@ -1193,6 +1243,7 @@
     teamLogoUrlSized: teamLogoUrlSized,
     teamLogoImg: teamLogoImg,
     teamColor: teamColor,
+    teamBarColor: teamBarColor,
     teamInk: teamInk,
     teamTabHtml: teamTabHtml,
     headshotUrl: headshotUrl,
