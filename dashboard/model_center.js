@@ -90,15 +90,18 @@
     return n == null ? null : n.toFixed(digits == null ? 1 : digits);
   }
 
-  /* Club-coloured abbreviation tab, per the reference renderings. Ground and
-     ink come from MLBMAAssets.teamColor / teamInk, which derives the text
-     colour from the ground's luminance so a gold club never ships white text. */
+  /* Official crest plus abbreviation, matching the public matchup cards.
+     mlbma_assets.js measures each crest against the dark ground and serves the
+     full-colour asset or ESPN's dark variant accordingly, so a club that would
+     otherwise vanish on this background still reads. */
   function chip(sport, abbr, fullName) {
     var code = String(abbr || '').toUpperCase();
-    if (global.MLBMAAssets && MLBMAAssets.teamTabHtml) {
-      return MLBMAAssets.teamTabHtml(code, sport, 'mc-chip', fullName);
+    var crest = '';
+    if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
+      crest = MLBMAAssets.teamLogoImg(code, 28, 'mc-chip__crest', sport);
     }
-    return '<span class="ca-team-tab mc-chip" aria-hidden="true">' + esc(code || '--') + '</span>';
+    return '<span class="mc-chip"' + (fullName ? ' title="' + esc(fullName) + '"' : '') + '>' +
+      crest + '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
   }
 
   /* One axis places both marks and both tick labels, and the domain is fixed
@@ -243,8 +246,7 @@
   function renderBoard(sport, payload) {
     var host = $('mcBoard');
     if (!host) return;
-    // Entitlement succeeded, so the access panel has done its job. paintGate()
-    // leaves it visible on every failure path.
+    // Entitlement succeeded, so the sign-in disclosure is redundant.
     var access = $('mcAccess');
     if (access) access.hidden = true;
     var board = payload && payload.board;
@@ -313,6 +315,82 @@
     });
   }
 
+  /* ---------------------------------------------------------------------
+   * Design preview (2026-09-10, owner request).
+   *
+   * Model Center previously showed a sign-in wall and nothing else, so the
+   * board's design could not be reviewed without an entitled session. It now
+   * renders the full board layout from a SAMPLE payload whenever entitlement
+   * is absent, behind an unmissable banner.
+   *
+   * The numbers below are invented. They are not a Chase Analytics projection,
+   * they are not derived from any model, and the real board still requires
+   * /api/model-center/board to return 200 - loadBoard() is untouched. This is
+   * a design surface, not a data leak: nothing here reaches a public matchup
+   * page, and the banner says so on the page itself.
+   * ------------------------------------------------------------------ */
+  var SAMPLE_BOARD = {
+    mlb: { board: { games: [
+      { id: 's1', away: 'NYY', home: 'BOS', away_name: 'New York Yankees', home_name: 'Boston Red Sox',
+        away_record: '82-61', home_record: '74-68', kickoff_display: '1:05 PM ET',
+        model_margin: -1.5, market_margin: -0.5, lean: 'Model favors New York',
+        away_projected: 4.1, home_projected: 3.3, total_projected: 7.4, win_probability: 0.56 },
+      { id: 's2', away: 'LAD', home: 'SF', away_name: 'Los Angeles Dodgers', home_name: 'San Francisco Giants',
+        away_record: '84-57', home_record: '72-70', kickoff_display: '3:45 PM ET',
+        model_margin: -1.0, market_margin: -0.5, lean: 'Model leans Los Angeles',
+        away_projected: 4.6, home_projected: 3.6, total_projected: 8.2, win_probability: 0.58 },
+      { id: 's3', away: 'CHC', home: 'STL', away_name: 'Chicago Cubs', home_name: 'St. Louis Cardinals',
+        away_record: '78-66', home_record: '72-75', kickoff_display: '7:15 PM ET',
+        model_margin: 0.5, market_margin: 1.0, lean: 'Model prefers Chicago' },
+      { id: 's4', away: 'ATL', home: 'PHI', away_name: 'Atlanta Braves', home_name: 'Philadelphia Phillies',
+        away_record: '77-64', home_record: '81-64', kickoff_display: '6:40 PM ET',
+        model_margin: -1.0, market_margin: -0.5,
+        edge_withheld_reason: 'Edge withheld: lineup not confirmed' },
+      { id: 's5', away: 'HOU', home: 'TEX', away_name: 'Houston Astros', home_name: 'Texas Rangers',
+        away_record: '78-66', home_record: '71-72', kickoff_display: '7:05 PM ET',
+        model_margin: 1.5, market_margin: 1.0, lean: 'Model prefers Texas' },
+      { id: 's6', away: 'SD', home: 'ARI', away_name: 'San Diego Padres', home_name: 'Arizona Diamondbacks',
+        away_record: '76-68', home_record: '70-74', kickoff_display: '8:40 PM ET',
+        model_margin: -0.5, market_margin: -1.0, lean: 'Model leans San Diego' }
+    ], performance: {
+      'MLB run prediction MAE': '0.62', 'Total runs MAE': '0.71', 'Directional accuracy': '58%'
+    } } },
+    nfl: { board: { games: [
+      { id: 'n1', away: 'NE', home: 'SEA', away_name: 'New England Patriots', home_name: 'Seattle Seahawks',
+        away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 1:00 PM ET',
+        model_margin: -3.5, market_margin: -1.5, lean: 'Model favors Seattle',
+        away_projected: 24.1, home_projected: 20.0, total_projected: 44.1, win_probability: 0.62 },
+      { id: 'n2', away: 'KC', home: 'LAC', away_name: 'Kansas City Chiefs', home_name: 'Los Angeles Chargers',
+        away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:25 PM ET',
+        model_margin: 2.5, market_margin: 1.0, lean: 'Model prefers Los Angeles' },
+      { id: 'n3', away: 'DAL', home: 'PHI', away_name: 'Dallas Cowboys', home_name: 'Philadelphia Eagles',
+        away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:05 PM ET',
+        model_margin: 1.0, market_margin: -1.0, lean: 'Model leans Philadelphia' }
+    ], performance: {
+      'NFL spread prediction MAE': '2.9', 'Total points MAE': '3.6', 'Directional accuracy': '61%'
+    } } }
+  };
+
+  function paintSampleBanner() {
+    var host = $('mcBoard');
+    if (!host || document.getElementById('mcSampleBanner')) return;
+    var banner = document.createElement('p');
+    banner.id = 'mcSampleBanner';
+    banner.className = 'mc-sample-banner';
+    banner.setAttribute('role', 'status');
+    banner.textContent =
+      'Design preview. Every number below is sample data, not a Chase Analytics ' +
+      'projection. Sign in with Premium to load the real board.';
+    host.parentNode.insertBefore(banner, host);
+  }
+
+  function previewBoard(sport) {
+    // The access panel is a collapsed disclosure now, not a wall - leave it in
+    // place so signing in stays one click away beneath the board.
+    paintSampleBanner();
+    renderBoard(sport, SAMPLE_BOARD[sport] || SAMPLE_BOARD.mlb);
+  }
+
   function boot() {
     var sport = (qs().get('sport') || 'mlb').toLowerCase();
     if (sport !== 'nfl') sport = 'mlb';
@@ -332,16 +410,11 @@
       }
       return fetchMe();
     }).then(function (me) {
-      if (me.offline) {
-        paintGate('Sign in on chase-analytics.com', 'Model Center entitlement is verified by /api/me. Local static hosts do not expose that API, so no model numbers are shown.');
-        return;
-      }
-      if (!me.signedIn) {
-        paintGate('Sign in', 'Model Center stays empty until a Chase Analytics session is present.');
-        return;
-      }
-      if (!me.entitled) {
-        paintGate('Premium required', 'This account is signed in but not entitled. Join Premium, then reload.');
+      // No entitled session: show the board's design with sample data rather
+      // than a wall. loadBoard() is untouched, so real numbers still require
+      // /api/model-center/board to return 200.
+      if (me.offline || !me.signedIn || !me.entitled) {
+        previewBoard(sport);
         return;
       }
       return loadBoard(sport);

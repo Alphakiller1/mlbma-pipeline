@@ -126,7 +126,9 @@ def page(sport: str, *, kind: str = "index") -> str:
     mode = "evidence" if results else "slate"
     more_bits = []
     if not results:
-        more_bits.append(f'<a href="/{sport}/results.html">Results</a>')
+        # Past results live inside a matchup breakdown, not as a public
+        # destination of their own (owner decision 2026-09-10).
+        pass
     more_html = ('      <div class="ca-public-page__links">' + " ".join(more_bits) + "</div>") if more_bits else ""
     if results:
         lede = "Final scores and game status from the published slate."
@@ -279,28 +281,40 @@ def models_page() -> str:
   <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-model-center.css?v={STAMP}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
-<body data-mode="evidence">
+<body data-mode="evidence" data-ca-product="research">
 {sport_nav()}
-  <main class="container ca-page-shell ca-shell-main">
-    <header class="ca-surface-header">
-      <h1 class="ca-page-title">Model Center</h1>
-      <p class="ca-helper">Projections, model-versus-market gaps, and priced markets stay behind a signed-in desk. This page does not preview those numbers.</p>
+  <main class="ca-public-page ca-shell-main">
+    <header class="ca-public-page__head">
+      <div class="ca-public-page__copy">
+        <h1 class="ca-public-page__title">Model Center</h1>
+        <p class="ca-public-page__lede">Projections, model-versus-market gaps and priced markets for every game on the slate.</p>
+      </div>
     </header>
-    <section class="ca-desk">
-      <h2>Access</h2>
-      <p>Public Chase Analytics is Home and Matchups: schedules, lineups, injuries, weather, descriptive stats, splits, and ranks inside each game.</p>
-      <p>Model Center loads projections only after a signed-in Premium session is verified by <code>/api/me</code> and <code>/api/model-center/board</code>. This page never embeds a public board URL.</p>
-      <div data-mlbma-auth-panel></div>
-      <p class="ca-helper" id="mcContext">No projected scores, model lines, or confidence values are shown until entitlement succeeds.</p>
-    </section>
+    <!-- The sign-in panel is collapsed behind a disclosure so the board is the
+         first thing on the page (owner decision 2026-09-10). model_center.js
+         renders the board's design with clearly-labelled sample data whenever
+         entitlement is absent; real numbers still require
+         /api/model-center/board to return 200. -->
     <div id="mcBoard"></div>
+    <details class="mc-access-disclosure" id="mcAccess">
+      <summary>Sign in for the live board</summary>
+      <div class="mc-access-body">
+        <p class="ca-helper">Model Center loads real projections only after a signed-in Premium session is verified by <code>/api/me</code> and <code>/api/model-center/board</code>.</p>
+        <div data-mlbma-auth-panel></div>
+        <p class="ca-helper" id="mcContext">Numbers load only after server-side entitlement.</p>
+      </div>
+    </details>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/mlbma_config.js?v={STAMP}"></script>
   <script src="/dashboard/mlbma_supabase_headers.js?v={STAMP}"></script>
+  <!-- The board's team chips need the asset registry for crests; without it
+       MLBMAAssets is undefined and every chip fell back to bare text. -->
+  <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/mlbma_auth.js?v={STAMP}"></script>

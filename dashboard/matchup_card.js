@@ -688,7 +688,7 @@
       return '<div class="ca-embedded-slate-head"><span>' + count + ' games</span>' +
         '<a href="/' + sport + '/">View full ' + sport.toUpperCase() + ' slate <span aria-hidden="true">→</span></a></div>';
     }
-    var html = '<div class="ca-desk-toolbar"><div class="ca-desk-toolbar__primary">';
+    var html = '<div class="ca-desk-toolbar" data-desk-sport="' + esc(sport) + '"><div class="ca-desk-toolbar__primary">';
     if (sport === 'mlb') {
       html += '<div class="ca-desk-dates" aria-label="Choose MLB date">' +
         '<button type="button" data-date-shift="-1" aria-label="Previous day">←</button>' +
@@ -722,6 +722,29 @@
         (groups[label].length === 1 ? ' game' : ' games') + '</span></header><div class="ca-slate-grid">' +
         groups[label].map(function (game) { return cardHtml(sport, game); }).join('') + '</div></section>';
     }).join('');
+  }
+
+  /* The toolbar was moved onto the page head, so its controls are no longer
+     inside the .ca-async slate host they drive. closest('.ca-async') therefore
+     returned null and every date and filter control silently did nothing -
+     next day did not advance, filters did not filter. Resolve the desk by
+     walking up first, then falling back to the mounted slate on the page. */
+  function deskHostFor(el) {
+    var host = el && el.closest ? el.closest('.ca-async') : null;
+    if (host && host.__desk) return host;
+    var mounted = [].slice.call(document.querySelectorAll('.ca-async'))
+      .filter(function (node) { return node.__desk; });
+    if (!mounted.length) return null;
+    // A page can carry more than one desk (the home route has MLB and NFL);
+    // prefer the one this toolbar was rendered for.
+    var scope = el && el.closest ? el.closest('[data-desk-sport]') : null;
+    var want = scope && scope.getAttribute('data-desk-sport');
+    if (want) {
+      for (var i = 0; i < mounted.length; i++) {
+        if (mounted[i].__desk.sport === want) return mounted[i];
+      }
+    }
+    return mounted[0];
   }
 
   function render(host) {
@@ -798,7 +821,7 @@
       }
       var filter = event.target.closest('[data-filter]');
       if (filter) {
-        var filterHost = filter.closest('.ca-async');
+        var filterHost = deskHostFor(filter);
         if (filterHost && filterHost.__desk) {
           filterHost.__desk.filter = filter.getAttribute('data-filter');
           render(filterHost);
@@ -808,7 +831,7 @@
       var shift = event.target.closest('[data-date-shift]');
       var today = event.target.closest('[data-date-today]');
       if (shift || today) {
-        var dateHost = (shift || today).closest('.ca-async');
+        var dateHost = deskHostFor(shift || today);
         if (!dateHost || !dateHost.__desk) return;
         var nextDate = today ? easternDateIso() : shiftIso(dateHost.__desk.dateIso, Number(shift.getAttribute('data-date-shift')));
         mount({ sport: dateHost.__desk.sport, adapter: dateHost.__desk.adapter, host: dateHost,
@@ -817,7 +840,7 @@
       }
       var retry = event.target.closest('[data-retry-slate]');
       if (retry) {
-        var retryHost = retry.closest('.ca-async');
+        var retryHost = deskHostFor(retry);
         if (retryHost && retryHost.__desk) mount({ sport: retryHost.__desk.sport, adapter: retryHost.__desk.adapter,
           host: retryHost, dateIso: retryHost.__desk.dateIso, results: retryHost.__desk.results });
       }
