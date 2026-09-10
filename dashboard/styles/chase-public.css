@@ -1416,3 +1416,28 @@ body[data-ca-product="research"] {
 .ca-matchup-card__actions { padding-top: var(--space-2); }
 
 .ca-matchup-card__fact { padding: var(--space-2) var(--space-3); }
+
+/* --- Card text fitting at 3-column width ----------------------------------
+ * Two defects visible on the live 1440px slate after the club tabs narrowed
+ * the cells:
+ *
+ * 1. The fact label was nowrap + ellipsis, so a ~230px cell cut
+ *    "Probable starters" to "PROBABLE START..." - the same mid-word clip this
+ *    pass already fixed on the broadcast line. Labels wrap to two lines now.
+ * 2. .ca-matchup-card__name used overflow-wrap:anywhere, which breaks INSIDE a
+ *    word rather than at a space: "Washingto / n Nationals". break-word only
+ *    breaks a word that cannot fit a line on its own, so multi-word club names
+ *    wrap where they should. */
+.ca-matchup-card__fact > span {
+  white-space: normal;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ca-matchup-card__name {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
