@@ -2921,13 +2921,17 @@ body[data-ca-product="research"] {
 .ca-matchup-card {
   /* No max-height. A clamp would squeeze the flex children rather than fail
      loudly, so a longer team name would quietly compress the card instead of
-     showing that the rhythm no longer fits. The gap does the work instead, and
-     public_site_runtime_diag holds the 272-350px band. */
-  gap: 6px;
+     showing that the rhythm no longer fits. The rhythm does the work, and
+     public_site_runtime_diag holds the 272-350px band.
+
+     The target is the middle of that band, not its ceiling. Sitting exactly on
+     350 meant CI's font stack rounded one pixel higher than this machine's and
+     failed the gate on a rendering difference rather than a design one. */
+  gap: 5px;
 }
 
 .ca-matchup-card__venue {
-  padding: 5px var(--space-3);
+  padding: 4px var(--space-3);
   margin: calc(-1 * var(--space-3)) calc(-1 * var(--space-3)) 0;
   flex-wrap: nowrap;
   overflow: hidden;
@@ -2949,7 +2953,7 @@ body[data-ca-product="research"] {
   overflow: hidden;
 }
 
-.ca-matchup-card__teams { min-height: 0; padding: 5px var(--space-1); }
+.ca-matchup-card__teams { min-height: 0; padding: 4px var(--space-1); }
 .ca-matchup-card__club { padding: var(--space-1) var(--space-2); }
 
 .ca-matchup-card__arm { padding: 3px var(--space-2); }
@@ -2958,7 +2962,7 @@ body[data-ca-product="research"] {
 .ca-matchup-card__summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .ca-matchup-card__fact {
-  padding: var(--space-2);
+  padding: 6px var(--space-2);
   min-width: 0;
 }
 .ca-matchup-card__fact strong {
