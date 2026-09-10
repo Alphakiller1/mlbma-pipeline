@@ -89,11 +89,21 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             check(f"{width}px full team names present", metrics["namedTeams"] >= 2, str(metrics))
             check(f"{width}px no bare abbreviation identity", metrics["bareAbbr"] == 0, str(metrics))
             if width >= 1024:
-                # The collapsed card gained the starter faces and a four-cell meta strip
-                # (2026-09-10 owner request: pitcher/QB images, plus the weather and
-                # bullpen the earlier Chase cards carried). The band is re-based on
-                # that anatomy - still a real ceiling, so the card cannot sprawl.
-                check(f"{width}px collapsed card height", 380 <= metrics["maxHeight"] <= 500, str(metrics))
+                # design/GPT_IMAGE_PROMPTS_CHASE_DESK.md fixes the collapsed card at
+                # 272-350px with three compact factual cells. This is the style
+                # lock's own number, not a band re-based on whatever the card had
+                # grown to - it had drifted to 449px, and the extra height was
+                # bought by dropping a cell, so it was failing twice over.
+                check(f"{width}px collapsed card height",
+                      272 <= metrics["maxHeight"] <= 350, str(metrics))
+                cells = page.eval_on_selector_all(
+                    ".ca-matchup-card__summary .ca-matchup-card__fact", "els => els.length")
+                cards = page.locator(".ca-matchup-card").count()
+                check(f"{width}px three factual cells per card",
+                      cards > 0 and cells == cards * 3, f"{cells} cells across {cards} cards")
+                clipped = page.eval_on_selector_all(
+                    ".ca-matchup-card", "els => els.filter(c => c.scrollHeight > c.clientHeight).length")
+                check(f"{width}px no card clips its own content", clipped == 0, f"clipped={clipped}")
 
             main_text = page.locator("main").inner_text()
             match = PROHIBITED.search(main_text)
@@ -139,6 +149,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # unnoticed, because the snapshot lives in whichever checkout ran the
         # pipeline and nothing checked how old it was.
         age = form_age_days()
+        # The style lock reserves #9A6BFF for active navigation, the 3px card
+        # edge, links and focus - explicitly "not data grading". Every bar that
+        # describes a number must take the metric ramp instead.
+        violet = "rgb(154, 107, 255)"
+        data_bars = page.eval_on_selector_all(
+            ".ca-pct-bar__fill, .ca-arsenal-bar__fill, .ca-mirror__fill, .ca-rate-bar > span",
+            "els => els.map(e => getComputedStyle(e).backgroundColor)")
+        offenders = [c for c in data_bars if c == violet]
+        check("violet is not used for data grading", not offenders,
+              f"{len(offenders)} of {len(data_bars)} data bars are brand violet")
         check("MLB team form is current", age is not None and age <= 14,
               "not published" if age is None else f"{age:.1f} days old")
         check("MLB form panels state when the form was published",

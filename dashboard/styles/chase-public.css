@@ -2574,12 +2574,14 @@ body[data-ca-product="research"] {
 
 /* The starter's ERA, graded against the published league baseline, so the
    number says how good it is without the reader having to know the league. */
+/* The chip reads on one line. Stacking the value over its label made the
+   starter row the tallest block on the card and pushed it out of the 272-350px
+   band the style lock sets. */
 .ca-matchup-card__arm-era {
   display: inline-flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
-  gap: 0;
+  gap: 4px;
   margin-left: auto;
   padding: 3px 7px;
   min-width: 46px;
@@ -2906,3 +2908,97 @@ body[data-ca-product="research"] {
 .ca-ctx-value.c-weak, .ca-ctx-value.c-poor,
 .ca-stat__value.c-elite, .ca-stat__value.c-good, .ca-stat__value.c-mid,
 .ca-stat__value.c-weak, .ca-stat__value.c-poor { border-color: transparent; }
+
+/* ===========================================================================
+ * THE STYLE LOCK'S OWN NUMBERS
+ *
+ * design/GPT_IMAGE_PROMPTS_CHASE_DESK.md fixes the collapsed card at 272-350px
+ * with three compact factual cells. The card had drifted to 449px, and the
+ * extra height had been bought by dropping a cell — so it was failing the
+ * measurement twice over. The rhythm below holds the whole anatomy the owner
+ * has asked for (venue strip, starter faces, three cells) inside the band.
+ * ======================================================================== */
+.ca-matchup-card {
+  /* No max-height. A clamp would squeeze the flex children rather than fail
+     loudly, so a longer team name would quietly compress the card instead of
+     showing that the rhythm no longer fits. The gap does the work instead, and
+     public_site_runtime_diag holds the 272-350px band. */
+  gap: 6px;
+}
+
+.ca-matchup-card__venue {
+  padding: 5px var(--space-3);
+  margin: calc(-1 * var(--space-3)) calc(-1 * var(--space-3)) 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.ca-matchup-card__venue-name,
+.ca-matchup-card__venue-city { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ca-matchup-card__venue-city { flex: 0 1 auto; }
+
+/* One line, always. The broadcast has its own cell now, so nothing here wraps. */
+.ca-matchup-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 0;
+  padding-left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.ca-matchup-card__teams { min-height: 0; padding: 5px var(--space-1); }
+.ca-matchup-card__club { padding: var(--space-1) var(--space-2); }
+
+.ca-matchup-card__arm { padding: 3px var(--space-2); }
+.ca-matchup-card__arm-era { padding: 1px 6px; min-width: 42px; }
+
+.ca-matchup-card__summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.ca-matchup-card__fact {
+  padding: var(--space-2);
+  min-width: 0;
+}
+.ca-matchup-card__fact strong {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ca-matchup-card__actions { padding-top: var(--space-1); }
+
+@media (max-width: 720px) {
+  /* Stacked, a fixed ceiling would clip; the anatomy is the same, the height
+     is whatever one column of it needs. */
+  .ca-matchup-card { max-height: none; }
+  .ca-matchup-card__summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------------------------------------------------------------------------
+ * Violet is reserved.
+ *
+ * The style lock is explicit: #9A6BFF is for active navigation, the 3px card
+ * edge, links and focus - "not data grading". Every bar that describes a
+ * number now takes the metric ramp instead, which is also the honest signal:
+ * a bar that says how good a rate is should not be the same colour as a link.
+ * ------------------------------------------------------------------------ */
+.ca-pct-bar__fill,
+.ca-arsenal-bar__fill,
+.ca-mirror__fill,
+.ca-rate-bar > span { background: var(--metric-neutral); }
+
+.ca-mirror__row.is-away .ca-mirror__track--away .ca-mirror__fill,
+.ca-mirror__row.is-home .ca-mirror__track--home .ca-mirror__fill {
+  background: var(--metric-elite);
+}
+
+/* The analysis hero carries the crests at the size the rendering draws them -
+   roughly 100px at the outer edges, so identity lands before anything else. */
+.ca-detail-team__logo { width: 96px; height: 96px; object-fit: contain; }
+
+@media (max-width: 720px) {
+  .ca-detail-team__logo { width: 56px; height: 56px; }
+}

@@ -495,3 +495,40 @@
 .mc-chip__code { line-height: 1.1; }
 .mc-hero__side .mc-chip { font-size: var(--type-24); padding: var(--space-3) var(--space-4); }
 .mc-hero__side .mc-chip__crest { width: 40px; height: 40px; }
+
+/* ===========================================================================
+ * MODEL CENTER'S OWN DESIGN LAYER
+ *
+ * The public desk and Model Center are two products, and the design layer for
+ * each was drawn separately: the desk is flat near-black (#08090F) with violet
+ * held back for navigation, and Model Center sits on a blue-shifted ink
+ * (#141824) with deep violet fields carrying the brand into the surface.
+ *
+ * They had been sharing the desk's palette, so the entitled product looked
+ * like the free one. These overrides re-point the semantic surface tokens for
+ * this route only — every component below keeps consuming the same token names
+ * and inherits the layer without knowing about it.
+ * ======================================================================== */
+body[data-ca-product="research"]:has(#mcBoard),
+body:has(.mc-access-disclosure) {
+  --surface-page: var(--surface-mc-page);
+  --surface-panel: var(--surface-mc-panel);
+  --surface-board: var(--surface-mc-panel);
+  --surface-board-raised: var(--surface-mc-raised);
+  --surface-inset: var(--surface-mc-field);
+  --surface-field: var(--surface-mc-field);
+  --surface-raised: var(--surface-mc-hover);
+  background: var(--surface-mc-page);
+}
+
+/* The board itself is the brand object on the page, so it takes the deepest
+   violet rather than another sheet of ink. */
+body:has(.mc-access-disclosure) .mc-board,
+body:has(.mc-access-disclosure) #mcBoard > section {
+  background: var(--surface-mc-field);
+  border-color: var(--border-violet);
+}
+
+body:has(.mc-access-disclosure) .mc-row:hover {
+  background: var(--surface-mc-hover);
+}
