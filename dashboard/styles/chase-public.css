@@ -3118,3 +3118,55 @@ body[data-ca-product="research"] {
    down thirty rows - by weight and a label, not by colour alone. */
 .ca-league-table tbody tr.is-here { background: var(--surface-raised); }
 .ca-league-table tbody tr.is-here .ca-lineup-name { color: var(--text-primary); font-weight: 800; }
+
+/* ===========================================================================
+ * CLUB COLOUR, WHERE IT ANSWERS "WHOSE SIDE IS THIS"
+ *
+ * The style lock reserves brand violet from data grading, and that rule holds:
+ * nothing below encodes how good a number is. What these hues encode is
+ * identity - a club's own published colour, on that club's own side of a
+ * two-sided chart - so the reader stops counting columns to work out which bar
+ * belongs to whom. Length still carries the value and the rank still sits
+ * beside it, so the chart survives with the colour removed.
+ * ======================================================================== */
+.ca-mirror__track--away .ca-mirror__fill[data-club] { background: var(--club-away, var(--metric-neutral)); }
+.ca-mirror__track--home .ca-mirror__fill[data-club] { background: var(--club-home, var(--metric-neutral)); }
+
+/* The winning side still takes the emphasis colour: that IS a statement about
+   the number, so it overrides identity where the two would compete. */
+.ca-mirror__row.is-away .ca-mirror__track--away .ca-mirror__fill,
+.ca-mirror__row.is-home .ca-mirror__track--home .ca-mirror__fill {
+  background: var(--metric-elite);
+}
+
+/* The crest plates in the mirror head carry a hairline of the club's colour,
+   so the header states the same identity the bars below it use. */
+.ca-mirror__head { border-bottom-width: 1px; }
+
+/* --- Pitch families ------------------------------------------------------
+ * An arsenal reads by shape before it reads by number. These are categories -
+ * a slider is not "better" than a fastball - so they take the series palette,
+ * never the metric ramp. */
+.ca-arsenal-row[data-pitch="heat"] .ca-arsenal-bar__fill { background: var(--series-7); }
+.ca-arsenal-row[data-pitch="break"] .ca-arsenal-bar__fill { background: var(--series-3); }
+.ca-arsenal-row[data-pitch="offspeed"] .ca-arsenal-bar__fill { background: var(--series-4); }
+.ca-arsenal-row[data-pitch="other"] .ca-arsenal-bar__fill { background: var(--series-6); }
+
+/* The family is named as well as coloured, so the grouping is never carried by
+   hue alone. */
+.ca-arsenal-row[data-pitch]::after {
+  grid-area: meta;
+  justify-self: end;
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.ca-arsenal-row[data-pitch="heat"]::after { content: "Fastball"; }
+.ca-arsenal-row[data-pitch="break"]::after { content: "Breaking"; }
+.ca-arsenal-row[data-pitch="offspeed"]::after { content: "Offspeed"; }
+.ca-arsenal-row[data-pitch="other"]::after { content: "Other"; }
+
+.ca-arsenal-row { grid-template-areas: "name bar pct" "meta meta after"; }
+.ca-arsenal-row { grid-template-columns: minmax(88px, 1fr) minmax(60px, 2fr) auto; }

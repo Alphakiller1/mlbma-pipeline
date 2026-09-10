@@ -362,12 +362,30 @@
    * value, because a bar without its rank is a picture and a rank without its
    * bar is a number.
    * ------------------------------------------------------------------ */
+  /* A club's own published brand colour. Using it for identity is not the same
+     as using colour to grade a number: the bar's LENGTH still carries the
+     value and the rank still sits beside it, so the hue only answers "whose
+     side is this" - which is the question a two-sided chart otherwise makes
+     the reader answer by counting columns. */
+  function clubColour(sport, game, side) {
+    if (!(global.MLBMAAssets && MLBMAAssets.teamBarColor)) return null;
+    // The bar variant, not the raw brand hex: half the league is navy, and a
+    // navy bar on a near-black panel is an invisible bar.
+    return MLBMAAssets.teamBarColor(game[side], sport) || null;
+  }
+
+  function clubStyle(sport, game, side) {
+    var colour = clubColour(sport, game, side);
+    return colour ? ' style="--club:' + esc(colour) + '"' : '';
+  }
+
   function percentOf(entry) {
     if (!entry || !(entry.of > 1) || !(entry.rank >= 1)) return null;
     return ((entry.of - entry.rank) / (entry.of - 1)) * 100;
   }
 
-  function mirrorRow(label, away, home, format) {
+  function mirrorRow(label, away, home, format, styles) {
+    styles = styles || { away: '', home: '' };
     if (!away && !home) return '';
     var awayPct = percentOf(away), homePct = percentOf(home);
     // The side with the better season carries the emphasis, so a scan down the
@@ -388,16 +406,30 @@
           ? blank + '<span class="' + track + '"></span>'
           : '<span class="' + track + '"></span>' + blank;
       }
-      var bar = '<span class="' + track + '"><span class="ca-mirror__fill" style="width:' +
+      var bar = '<span class="' + track + '"><span class="ca-mirror__fill"' +
+        (styles[which] ? ' data-club="1"' : '') + ' style="width:' +
         (pct == null ? 0 : pct.toFixed(1)) + '%"></span></span>';
       var value = '<span class="' + val + '">' + esc(format(entry.value)) +
         '<i>' + entry.rank + ordinal(entry.rank) + '</i></span>';
       return which === 'away' ? value + bar : bar + value;
     }
-    return '<div class="ca-mirror__row' + lead + '">' +
+    return '<div class="ca-mirror__row' + lead + '"' +
+      (styles.rowStyle || '') + '>' +
       side(away, awayPct, 'away') +
       '<span class="ca-mirror__label">' + esc(label) + '</span>' +
       side(home, homePct, 'home') + '</div>';
+  }
+
+  function clubPair(sport, game) {
+    var a = clubColour(sport, game, 'away');
+    var h = clubColour(sport, game, 'home');
+    return {
+      away: a || '', home: h || '',
+      rowStyle: (a || h)
+        ? ' style="' + (a ? '--club-away:' + esc(a) + ';' : '') +
+          (h ? '--club-home:' + esc(h) + ';' : '') + '"'
+        : ''
+    };
   }
 
   function mirrorTable(sport, game, keys, specs, source) {
@@ -408,7 +440,7 @@
       if (!spec) return '';
       return mirrorRow(spec.label, awayCtx[key], homeCtx[key], function (v) {
         return formatStat(v, spec.digits) || '\u2014';
-      });
+      }, clubPair(sport, game));
     }).filter(Boolean).join('');
     if (!rows) return '';
     return '<div class="ca-mirror">' +
@@ -561,6 +593,20 @@
 
   /* A usage bar is the pitcher's own share of his own pitches. The sample is
      printed beside it so a 6% offering is never read as a pattern. */
+  /* Pitch families, so an arsenal reads by shape before it is read by number.
+     These are categories, not a scale - a slider is not "better" than a
+     fastball - so they take the series palette rather than the metric ramp. */
+  var PITCH_FAMILY = {
+    FF: 'heat', FA: 'heat', FT: 'heat', SI: 'heat', FC: 'heat',
+    SL: 'break', ST: 'break', CU: 'break', KC: 'break', SV: 'break', SC: 'break',
+    CH: 'offspeed', FS: 'offspeed', FO: 'offspeed', EP: 'offspeed',
+    KN: 'other'
+  };
+
+  function pitchFamily(code) {
+    return PITCH_FAMILY[String(code || '').toUpperCase()] || 'other';
+  }
+
   function arsenalPanel(sport, game, side, people, rows) {
     var id = game[side + '_starter_id'];
     var name = (people[id] && people[id].name) || game[side + '_starter'] || 'Probable starter';
@@ -575,7 +621,7 @@
     var total = rows[0].total;
     var bars = rows.map(function (row) {
       var pct = row.pct * 100;
-      return '<div class="ca-arsenal-row">' +
+      return '<div class="ca-arsenal-row" data-pitch="' + esc(pitchFamily(row.code)) + '">' +
         '<span class="ca-arsenal-name">' + esc(row.name) + '</span>' +
         '<span class="ca-arsenal-bar"><span class="ca-arsenal-bar__fill" style="width:' +
         Math.max(1, Math.round(pct)) + '%"></span></span>' +
@@ -1086,7 +1132,7 @@
         return String(entry.label).indexOf('EPA') >= 0
           ? (n > 0 ? '+' : '') + n.toFixed(3)
           : (n * 100).toFixed(1) + '%';
-      });
+      }, clubPair(sport, game));
     }).filter(Boolean).join('');
     if (!rows) return '';
     return '<div class="ca-mirror">' +
