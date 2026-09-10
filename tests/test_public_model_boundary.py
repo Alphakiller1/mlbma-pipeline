@@ -76,6 +76,35 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("esc(name)", card)
         self.assertNotIn("BOARD_URL", blob)
 
+    def test_team_context_reads_only_descriptive_families(self):
+        """The team-rankings snapshot has a `status` family carrying projOSI and
+        ppGap, both model_private. The card enrichment must never read it."""
+        js = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        self.assertIn("PUBLIC_RANK_FAMILIES", js)
+        families = js.split("PUBLIC_RANK_FAMILIES = ", 1)[1].split("]", 1)[0]
+        self.assertIn("scoring", families)
+        self.assertIn("difficulty", families)
+        self.assertNotIn("status", families)
+        # The private metric keys must not be read anywhere in the enrichment.
+        self.assertNotIn("PUBLIC_RANK_METRICS.projOSI", js)
+        self.assertNotIn("projOSI:", js)
+        self.assertNotIn("ppGap:", js)
+        # Ranks must be recomputed from the descriptive value, never taken from
+        # a field that ranks something modelled.
+        self.assertIn("rank: index + 1", js)
+
+    def test_starter_line_is_sourced_not_hydrated_on_schedule(self):
+        """probablePitcher cannot be hydrated with stats on /schedule; the
+        season line comes from a single bulk /people request instead."""
+        js = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        self.assertIn("/api/v1/people?personIds=", js)
+        # The hydrate string itself must not attempt the nested form; the
+        # explanatory comment naming it is fine.
+        hydrates = [line for line in js.splitlines() if "&hydrate=" in line]
+        self.assertTrue(hydrates)
+        for line in hydrates:
+            self.assertNotIn("probablePitcher(stats", line)
+
     def test_local_cloudflare_deploy_keeps_public_slates(self):
         src = (ROOT / "scripts" / "deploy_cloudflare.py").read_text(encoding="utf-8")
         yml = (ROOT / ".github" / "workflows" / "cloudflare-deploy.yml").read_text(encoding="utf-8")
