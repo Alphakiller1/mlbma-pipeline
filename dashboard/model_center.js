@@ -62,32 +62,225 @@
     });
   }
 
+  /* ---------------------------------------------------------------------
+   * Board rendering (2026-09-09). Implements the Model Center reference
+   * renderings: a model-versus-market slate board, and a game detail view
+   * when ?game= names one.
+   *
+   * Every value here comes from the entitled /api/model-center/board payload.
+   * Nothing is defaulted, derived, or filled in: a field the board did not
+   * publish renders as "Not published", never as 0 or a guess. Edge is read
+   * from the payload and never recomputed client-side (chase-board/1).
+   * ------------------------------------------------------------------ */
+
+  function num(v) {
+    if (v == null || v === '') return null;
+    var n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function signed(v, digits) {
+    var n = num(v);
+    if (n == null) return null;
+    return (n > 0 ? '+' : '') + n.toFixed(digits == null ? 1 : digits);
+  }
+
+  function fixed(v, digits) {
+    var n = num(v);
+    return n == null ? null : n.toFixed(digits == null ? 1 : digits);
+  }
+
+  /* Club-coloured abbreviation tab, per the reference renderings. Ground and
+     ink come from MLBMAAssets.teamColor / teamInk, which derives the text
+     colour from the ground's luminance so a gold club never ships white text. */
+  function chip(sport, abbr, fullName) {
+    var code = String(abbr || '').toUpperCase();
+    if (global.MLBMAAssets && MLBMAAssets.teamTabHtml) {
+      return MLBMAAssets.teamTabHtml(code, sport, 'mc-chip', fullName);
+    }
+    return '<span class="ca-team-tab mc-chip" aria-hidden="true">' + esc(code || '--') + '</span>';
+  }
+
+  /* One axis places both marks and both tick labels, and the domain is fixed
+     per sport so every card on the board shares a scale and can be compared.
+     MLB is run margin, NFL is point margin. */
+  function domainFor(sport) { return String(sport).toLowerCase() === 'nfl' ? 10 : 3; }
+
+  function gauge(sport, modelVal, marketVal) {
+    var m = num(modelVal), k = num(marketVal);
+    if (m == null && k == null) {
+      return '<p class="mc-withheld">Model and market lines are not published for this game.</p>';
+    }
+    var half = domainFor(sport);
+    var clamp = function (v) { return Math.max(-half, Math.min(half, v)); };
+    var pct = function (v) { return ((clamp(v) + half) / (2 * half)) * 100; };
+    // Labels sit directly above their own mark, so the number and the position
+    // on the axis read as one object. A label is roughly a fifth of the track
+    // wide, so when the two marks are closer than that the labels would print
+    // over each other ("MODMARKET"); below the threshold they fall back to
+    // opposite ends of the track, which still reads correctly.
+    var LABEL_CLEARANCE = 30;
+    var apart = (m != null && k != null) ? Math.abs(pct(m) - pct(k)) : 100;
+    var label = function (cls, name, v, side) {
+      var align;
+      if (side) {
+        align = side === 'left' ? 'left:0;transform:none' : 'right:0;transform:none';
+      } else {
+        var x = pct(v);
+        align = x < 15 ? 'left:0;transform:none'
+          : (x > 85 ? 'right:0;transform:none'
+            : 'left:' + x.toFixed(2) + '%;transform:translateX(-50%)');
+      }
+      return '<div class="mc-gauge__leg ' + cls + '" style="' + align + '">' +
+        '<span>' + name + '</span><strong>' + esc(signed(v)) + '</strong></div>';
+    };
+    var crowded = apart < LABEL_CLEARANCE;
+    var parts = '<div class="mc-gauge">';
+    parts += '<div class="mc-gauge__legend">' +
+      (m != null ? label('is-model', 'Model', m, crowded ? 'left' : null) : '') +
+      (k != null ? label('is-market', 'Market', k, crowded ? 'right' : null) : '') + '</div>';
+    parts += '<div class="mc-gauge__track">' +
+      '<div class="mc-gauge__zero" style="left:' + pct(0).toFixed(2) + '%"></div>';
+    if (m != null && k != null) {
+      var lo = Math.min(pct(m), pct(k)), hi = Math.max(pct(m), pct(k));
+      parts += '<div class="mc-gauge__span" style="left:' + lo.toFixed(2) +
+        '%;width:' + (hi - lo).toFixed(2) + '%"></div>';
+    }
+    if (k != null) parts += '<div class="mc-gauge__pin mc-gauge__pin--market" style="left:' + pct(k).toFixed(2) + '%"></div>';
+    if (m != null) parts += '<div class="mc-gauge__pin" style="left:' + pct(m).toFixed(2) + '%"></div>';
+    parts += '</div>';
+    parts += '<div class="mc-gauge__axis"><span>' + (-half) + '</span><span>0</span><span>+' + half + '</span></div>';
+    return parts + '</div>';
+  }
+
+  function readRow(g) {
+    var lean = g.lean || g.model_lean || '';
+    var withheld = g.edge_withheld_reason;
+    // ChaseBoard.mapGame fills edge_withheld_reason with the literal string
+    // "not published" whenever a board carries no edge_points. That is the
+    // normal case, not a notice worth its own line, so only a real reason
+    // is surfaced.
+    if (withheld && String(withheld).toLowerCase() === 'not published') withheld = '';
+    var vals = '';
+    var mm = signed(g.model_margin), km = signed(g.market_margin);
+    if (mm) vals += '<span>Model ' + esc(mm) + '</span>';
+    if (km) vals += '<span>Market ' + esc(km) + '</span>';
+    return '<div class="mc-game__read">' +
+      '<div><span class="mc-game__lean">' + esc(lean || 'No lean published') + '</span>' +
+      (withheld ? '<span class="mc-withheld mc-game__note">' + esc(withheld) + '</span>' : '') +
+      '</div>' +
+      (vals ? '<div class="mc-game__values">' + vals + '</div>' : '') + '</div>';
+  }
+
+  function gameCard(sport, g) {
+    var kick = g.kickoff_display || g.time || '';
+    return '<article class="mc-game">' +
+      '<header class="mc-game__head"><div class="mc-teams">' +
+      chip(sport, g.away) + chip(sport, g.home) + '</div>' +
+      (kick ? '<span class="mc-game__time">' + esc(kick) + '</span>' : '') +
+      '</header>' +
+      gauge(sport, g.model_margin, g.market_margin) +
+      readRow(g) +
+      '</article>';
+  }
+
+  function tile(label, value) {
+    return '<div class="mc-tile"><span>' + esc(label) + '</span><strong>' +
+      esc(value == null ? 'Not published' : value) + '</strong></div>';
+  }
+
+  function trustPanel(board) {
+    var perf = board && board.performance;
+    var rows = '';
+    if (perf && typeof perf === 'object') {
+      Object.keys(perf).forEach(function (k) {
+        rows += tile(String(k).replace(/_/g, ' '), perf[k]);
+      });
+    }
+    return '<section class="mc-panel mc-trust">' +
+      '<div class="mc-trust__head"><h2 class="mc-panel__title">Model trust and performance</h2>' +
+      '<span class="mc-badge">Research only</span></div>' +
+      (rows ? '<div class="mc-tiles">' + rows + '</div>'
+            : '<p class="mc-withheld">Model performance is not published on this board.</p>') +
+      '<p class="mc-disclaimer">Not financial, investment, or wagering advice. ' +
+      'Models are experimental and for research purposes. The distance between ' +
+      'model and market is a gap, not a betting edge.</p></section>';
+  }
+
+  function detailView(sport, rawBoard, g) {
+    var html = '<section class="mc-panel"><p class="mc-eyebrow">' +
+      esc(sport.toUpperCase()) + ' · Game detail</p><div class="mc-hero">' +
+      '<div class="mc-hero__side">' + chip(sport, g.away, g.away_name) +
+      '<span class="mc-hero__name">' + esc(g.away_name || g.away || '') + '</span>' +
+      (g.away_record ? '<span class="mc-hero__sub">' + esc(g.away_record) + '</span>' : '') + '</div>';
+
+    var aScore = fixed(g.away_projected, 1), hScore = fixed(g.home_projected, 1);
+    html += '<div class="mc-hero__center"><div class="mc-hero__score">' +
+      (aScore != null && hScore != null ? esc(aScore) + ' - ' + esc(hScore) : 'Not published') +
+      '</div><div class="mc-hero__label">Projected score</div></div>';
+
+    html += '<div class="mc-hero__side">' + chip(sport, g.home, g.home_name) +
+      '<span class="mc-hero__name">' + esc(g.home_name || g.home || '') + '</span>' +
+      (g.home_record ? '<span class="mc-hero__sub">' + esc(g.home_record) + '</span>' : '') +
+      '</div></div></section>';
+
+    html += '<section class="mc-panel"><h2 class="mc-panel__title">Model versus market</h2>' +
+      gauge(sport, g.model_margin, g.market_margin) + readRow(g) + '</section>';
+
+    var totalLabel = sport === 'nfl' ? 'Total points' : 'Total runs';
+    html += '<section class="mc-panel"><h2 class="mc-panel__title">Key projections</h2>' +
+      '<div class="mc-tiles">' +
+      tile((g.away || 'Away') + ' projected', aScore) +
+      tile((g.home || 'Home') + ' projected', hScore) +
+      tile(totalLabel, fixed(g.total_projected, 1)) +
+      tile('Win probability', g.win_probability == null ? null :
+        Math.round(Number(g.win_probability) * (Number(g.win_probability) <= 1 ? 100 : 1)) + '%') +
+      '</div></section>';
+
+    return html + trustPanel(rawBoard);
+  }
+
   function renderBoard(sport, payload) {
     var host = $('mcBoard');
     if (!host) return;
+    // Entitlement succeeded, so the access panel has done its job. paintGate()
+    // leaves it visible on every failure path.
+    var access = $('mcAccess');
+    if (access) access.hidden = true;
     var board = payload && payload.board;
-    var mapped = global.ChaseBoard && ChaseBoard.normalize ? ChaseBoard.normalize(board) : board;
+    // normalize(sport, board, extra) takes the sport FIRST. This used to call
+    // normalize(board), which put the payload in the sport slot and left the
+    // board undefined, so games came back [] and every entitled session saw
+    // "No priced games" no matter what the API returned.
+    var mapped = global.ChaseBoard && ChaseBoard.normalize
+      ? ChaseBoard.normalize(sport, board)
+      : board;
     var games = (mapped && mapped.games) || (board && board.games) || [];
     var want = qs().get('game');
     if (want) {
-      games = games.filter(function (g) {
+      var one = games.filter(function (g) {
         return String(g.id || g.game_id || '') === want;
-      });
+      })[0];
+      if (!one) {
+        paintGate('Game not on this board',
+          'Entitlement is verified, but the requested game is not in the published Model Center rows.');
+        return;
+      }
+      host.innerHTML = '<div class="mc-board">' + detailView(sport, board, one) + '</div>';
+      return;
     }
     if (!games.length) {
       paintGate('No priced games', 'Entitlement is verified. This sport has no published Model Center rows yet.');
       return;
     }
-    var html = '<div class="ca-board-list">';
-    games.forEach(function (g) {
-      html += '<article class="ca-card ca-card-pad"><h2>' + esc(g.away) + ' at ' + esc(g.home) + '</h2>';
-      if (g.model_margin != null) html += '<p>Model margin ' + esc(g.model_margin) + '</p>';
-      if (g.market_margin != null) html += '<p>Market margin ' + esc(g.market_margin) + '</p>';
-      if (g.edge_points != null) html += '<p>Edge ' + esc(g.edge_points) + '</p>';
-      if (g.edge_withheld_reason) html += '<p class="ca-helper">' + esc(g.edge_withheld_reason) + '</p>';
-      html += '</article>';
-    });
-    html += '</div>';
+    var title = sport === 'nfl' ? 'The week' : "Today's slate";
+    var html = '<div class="mc-board"><header class="mc-board__head">' +
+      '<h2 class="mc-board__title">' + esc(title) + '</h2>' +
+      '<span class="mc-board__meta">' + games.length +
+      (games.length === 1 ? ' game' : ' games') + ' · ' + esc(sport.toUpperCase()) + '</span></header>' +
+      '<div class="mc-grid">' +
+      games.map(function (g) { return gameCard(sport, g); }).join('') +
+      '</div>' + trustPanel(board) + '</div>';
     host.innerHTML = html;
   }
 
@@ -155,6 +348,12 @@
     });
   }
 
+  global.ChaseModelCenter = { renderBoard: renderBoard };
+
+  // The fixture harness under dashboard/mockups/ sets this so it can drive
+  // renderBoard directly. Production pages never set it, so the entitlement
+  // path below is the only way real numbers reach the DOM.
+  if (global.CHASE_MC_NO_BOOT) return;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })(window);

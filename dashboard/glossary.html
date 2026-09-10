@@ -7,8 +7,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Metric Glossary</title>
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909q">
-<script src="design_layer_version.js?v=20260909q"></script>
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260909r">
+<script src="design_layer_version.js?v=20260909r"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65;min-height:100vh}
@@ -49,20 +49,102 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
 .gloss-convention .ca-metric-legend{margin:14px 0}
 .gloss-section-block{margin-bottom:20px}
 .gloss-metric-card__ramp{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
-</style>
-<link rel="stylesheet" href="mlbma_ui.css?v=20260909q">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260909q">
-<link rel="stylesheet" href="theme.css?v=20260909q">
-<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909q">
-<link rel="stylesheet" href="styles/chase-shell.css?v=20260909q">
-<link rel="stylesheet" href="chase_nav.css?v=20260909q">
+
+  </style>
+<link rel="stylesheet" href="mlbma_ui.css?v=20260909r">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260909r">
+<link rel="stylesheet" href="theme.css?v=20260909r">
+<link rel="stylesheet" href="styles/chase-semantic.css?v=20260909r">
+<link rel="stylesheet" href="styles/chase-shell.css?v=20260909r">
+<link rel="stylesheet" href="chase_nav.css?v=20260909r">
 <script src="mlbma_config.js?v=20260606c"></script>
-<script src="mlbma_assets.js?v=20260909q"></script>
+<script src="mlbma_assets.js?v=20260909r"></script>
 <script src="mlbma_icons.js?v=20260612b"></script>
-<script src="mlbma_ui.js?v=20260909q" data-page="glossary.html"></script>
+<script src="mlbma_ui.js?v=20260909r" data-page="glossary.html"></script>
 <script src="glossary.js?v=20260908k"></script>  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909q">
-  <link rel="stylesheet" href="responsive.css?v=20260909q">
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260909r">
+  <link rel="stylesheet" href="responsive.css?v=20260909r">
+  <style>
+    /* 2026-09-09 accessibility pass (visual audit B4/B5). This block sits after
+       the stylesheet links on purpose: the <style> higher in this head loads
+       before them and loses every cascade tie.
+       - h2 used #6D28D9 on the near-black ground: 2.67:1, under AA for large text.
+       - Several runs sat at 10-11.5px, below the 12px reading floor.
+       Inline term links stay inline: they are links inside a definition
+       sentence, which is the documented exception to the tap-target floor. */
+    .section h2,
+    .gloss-section h2 { color: var(--ca-violet-300, #C4B0FF); }
+    .glossary-page .kicker,
+    .glossary-page .chip,
+    .glossary-page .ca-metric-legend-title,
+    .glossary-page .ca-metric-legend-step,
+    .glossary-page .ca-datastatus-source,
+    .glossary-page .mlbma-footer-left,
+    .glossary-page .mlbma-footer-center,
+    .glossary-page .mlbma-footer-right,
+    .glossary-page .tier-table th { font-size: 12px; }
+    .glossary-page .val-chip.c-na { color: var(--text-2, #A4A8B6); }
+    /* --text-3 (#6E7383) is a settled palette value (tests/test_contrast.py)
+       and reads 3.89:1 on the card ground. It is fine as dim chrome, but these
+       are body copy on a reference page, so they take the meta role instead. */
+    .glossary-page .gloss-convention__note,
+    .glossary-page .gloss-metric-card__full,
+    .glossary-page .gloss-metric-card__def,
+    .glossary-page .mlbma-footer-left,
+    .glossary-page .mlbma-footer-center,
+    .glossary-page .mlbma-footer-right,
+    .glossary-page .ca-datastatus-source { color: var(--text-2, #A4A8B6); }
+
+    /* --- Glossary navigability (visual audit B5) ------------------------
+       At 390px this page is ~26,600px of continuous reference: 100 terms, 36
+       metric cards, 6 sections, and a search field that scrolls out of reach
+       after the first screen. The search is now sticky, and each section is a
+       disclosure on phones, so the page opens as a six-line index instead of a
+       wall. A live query force-opens every section so a match is never hidden
+       inside a collapsed one. */
+    .glossary-search {
+      position: sticky;
+      top: var(--shell-header-h, 64px);
+      z-index: 5;
+      width: 100%;
+      background: var(--surface-inset, #12141D);
+      border: 1px solid var(--border-default, #363B4D);
+      border-radius: var(--radius-pill, 999px);
+      padding: 10px 16px;
+      color: var(--text, #F5F6FA);
+      font-size: 14px;
+      min-height: 44px;
+    }
+    .glossary-result-count {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--text-2, #A4A8B6);
+    }
+    .glossary-result-count[hidden] { display: none; }
+
+    @media (max-width: 767px) {
+      .glossary-page .gloss-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        min-height: 44px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .glossary-page .gloss-toggle::after {
+        content: "+";
+        flex: 0 0 auto;
+        font-size: 20px;
+        line-height: 1;
+        color: var(--text-2, #A4A8B6);
+      }
+      .glossary-page .gloss-toggle[aria-expanded="true"]::after { content: "2"; }
+      .glossary-page .gloss-collapsible { display: none; }
+      .glossary-page .gloss-collapsible.is-open { display: block; }
+    }
+  </style>
 </head>
 <body data-mode="entry" class="ca-bg-outfield glossary-page">
 <!-- Chase Analytics navigation - synced via scripts/integrate_chase_nav.py -->
@@ -73,11 +155,14 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
-      <a href="index.html" class="chase-nav-link" data-nav="home">Home</a>
-      <a href="index.html#openingSlate" class="chase-nav-link" data-nav="matchups">Matchups</a>
-      <a href="/mlb/" class="chase-nav-link" data-nav="mlb">MLB</a>
-      <a href="/nfl/" class="chase-nav-link" data-nav="nfl">NFL</a>
-      <a href="glossary.html" class="chase-nav-link" data-nav="glossary">Glossary</a>
+      <span class="chase-nav-product">Matchup research</span>
+      <span class="chase-nav-rule" aria-hidden="true"></span>
+      <nav class="chase-sport-tabs" aria-label="Sport">
+        <a href="/mlb/" class="chase-sport-tab" data-nav="mlb" data-state="live">MLB</a>
+        <a href="/nfl/" class="chase-sport-tab" data-nav="nfl" data-state="live">NFL</a>
+      </nav>
+      <a href="/#matchupDesk" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <a href="/dashboard/glossary" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
       <a href="/model-center/" class="ca-btn ca-btn--primary chase-nav-model chase-nav-link" data-nav="models">Model Center</a>
     <div class="chase-status">
@@ -126,10 +211,14 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
   </div>
 </div>
   <div class="container">
-  <div class="ca-brand-badge-light" style="margin:0 auto 16px;">
-    <img src="assets/chase-logo-stacked-light.png" alt="Chase Analytics" style="height:100px;width:auto;object-fit:contain"
-      onerror="this.parentElement.innerHTML=''">
-  </div>
+  <!-- Removed 2026-09-09: this rendered a 134x122 light-grey plaque on the dark
+       page, 100px below a sticky header that already carries the full Chase
+       Analytics wordmark. The plaque exists only because
+       chase-logo-stacked-light.png is dark art (measured mean RGB 73,68,87)
+       and needs a light ground to be legible - so the workaround, not the
+       brand, was what showed. chase-icon-filled.png / chase-icon-outline.png
+       are the transparent violet marks that work on dark if a mark is ever
+       wanted here. -->
   <div id="glossaryPageHeader" class="glossary-page-header"></div>
   <input type="search" class="glossary-search" id="glossarySearch" placeholder="Search terms, formulas, signals..." oninput="filterGlossary()">
 
@@ -204,7 +293,7 @@ body{color:var(--text);font-family:var(--font);font-size:16.5px;line-height:1.65
       <tr class="tier-elite"><td>Ace</td><td>85+</td></tr><tr><td>Solid</td><td>70—84</td></tr>
       <tr class="tier-mid"><td>Average</td><td>55—69</td></tr><tr class="tier-weak"><td>Volatile</td><td>&lt;55</td></tr>
     </tbody></table>
-    <p style="margin-top:12px;font-size:12px;color:var(--text-3)">Sample-size rule: use YTD for baseline, L30/L14 for confirmation, and L7 as momentum only.</p>
+    <p style="margin-top:12px;font-size:12px;color:var(--text-2)">Sample-size rule: use YTD for baseline, L30/L14 for confirmation, and L7 as momentum only.</p>
   </div>
 
   <div class="layer-label">All Formulas</div>
@@ -273,6 +362,96 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-  <script src="chase_datastatus.js?v=20260909q"></script>
-<script src="chase_nav.js?v=20260909q"></script></body>
+  <script src="chase_datastatus.js?v=20260909r"></script>
+<script src="chase_nav.js?v=20260909r"></script>
+<script>
+/* Glossary navigability (visual audit B5). Progressive enhancement: without
+   this the page is still the complete reference, just long.
+
+   The page has two section shapes, and both need collapsing to matter:
+     1. .gloss-section-block  ->  [head mount div][div.gloss-section]
+     2. .layer-label          ->  followed by .section / .metric-grid /
+                                  .archetype-grid / .alpha-list
+   Targeting only shape 2 left 21,504px on screen, so both are handled. */
+(function () {
+  var MOBILE = '(max-width: 767px)';
+  var pairs = [];
+
+  function isPhone() { return window.matchMedia(MOBILE).matches; }
+
+  function register(head, body, label) {
+    if (!head || !body) return;
+    head.classList.add('gloss-toggle');
+    head.setAttribute('role', 'button');
+    head.setAttribute('tabindex', '0');
+    head.setAttribute('aria-expanded', 'false');
+    body.classList.add('gloss-collapsible');
+    if (label) head.setAttribute('aria-label', label);
+    pairs.push({ head: head, body: body });
+
+    function toggle() {
+      if (!isPhone()) return;
+      var open = head.getAttribute('aria-expanded') === 'true';
+      head.setAttribute('aria-expanded', open ? 'false' : 'true');
+      body.classList.toggle('is-open', !open);
+    }
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  }
+
+  document.querySelectorAll('.gloss-section-block').forEach(function (block) {
+    var head = block.firstElementChild;
+    var body = block.querySelector('.gloss-section');
+    if (head && body && head !== body) register(head, body, (head.textContent || '').trim().slice(0, 60));
+  });
+
+  document.querySelectorAll('.layer-label').forEach(function (label) {
+    var body = label.nextElementSibling;
+    if (!body || body.classList.contains('layer-label')) return;
+    register(label, body, (label.textContent || '').trim().slice(0, 60));
+  });
+
+  var conventions = document.getElementById('glossaryConventions');
+  if (conventions) conventions.classList.add('gloss-conventions-block');
+
+  function setAll(open) {
+    pairs.forEach(function (pair) {
+      pair.head.setAttribute('aria-expanded', open ? 'true' : 'false');
+      pair.body.classList.toggle('is-open', open);
+    });
+  }
+
+  // The collapse only exists under 767px; above it every section is open and
+  // aria-expanded must say so.
+  function syncToViewport() { setAll(!isPhone()); }
+  syncToViewport();
+  window.matchMedia(MOBILE).addEventListener('change', syncToViewport);
+
+  // A query must never hide inside a collapsed section, and the reader should
+  // be told how many terms survived the filter.
+  var input = document.getElementById('glossarySearch');
+  var count = document.createElement('p');
+  count.className = 'glossary-result-count';
+  count.setAttribute('role', 'status');
+  count.hidden = true;
+  if (input && input.parentNode) input.parentNode.insertBefore(count, input.nextSibling);
+
+  if (input) {
+    input.addEventListener('input', function () {
+      var q = (input.value || '').trim();
+      if (q) setAll(true);
+      else syncToViewport();
+      var shown = 0;
+      document.querySelectorAll('.glossary-term').forEach(function (el) {
+        if (!el.classList.contains('hidden')) shown++;
+      });
+      count.hidden = !q;
+      count.textContent = shown + (shown === 1 ? ' term matches ' : ' terms match ') + '"' + q + '"';
+    });
+  }
+})();
+</script>
+</body>
 </html>

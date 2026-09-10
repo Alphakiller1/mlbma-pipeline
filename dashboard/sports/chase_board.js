@@ -74,7 +74,21 @@
       book: g.book || null,
       evidence: g.evidence || g.notes || '',
       away_score: pickScore(g.away_score, g.away_runs, g.score_away, g.awayScore, g.score && g.score.away),
-      home_score: pickScore(g.home_score, g.home_runs, g.score_home, g.homeScore, g.score && g.score.home)
+      home_score: pickScore(g.home_score, g.home_runs, g.score_home, g.homeScore, g.score && g.score.home),
+
+      /* Entitled-board passthrough. These are carried, never derived: the
+         Model Center detail view needs them and normalize() previously dropped
+         them, so a board that published a projected score rendered without one.
+         A field the board did not send stays null and renders "Not published". */
+      away_name: g.away_name || teamName(g.away) || null,
+      home_name: g.home_name || teamName(g.home) || null,
+      away_record: g.away_record || null,
+      home_record: g.home_record || null,
+      away_projected: g.away_projected != null ? g.away_projected : g.away_proj,
+      home_projected: g.home_projected != null ? g.home_projected : g.home_proj,
+      total_projected: g.total_projected != null ? g.total_projected : g.total_proj,
+      win_probability: g.win_probability != null ? g.win_probability : g.win_prob,
+      lean: g.lean || g.model_lean || null
     };
   }
 

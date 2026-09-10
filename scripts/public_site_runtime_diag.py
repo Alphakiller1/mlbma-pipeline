@@ -55,14 +55,21 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 columns,
                 minHeight: cards.length ? Math.min(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 maxHeight: cards.length ? Math.max(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
-                abbreviations: document.querySelectorAll('.ca-matchup-card__abbr,.ca-team-abbr').length,
-                logos: document.querySelectorAll('#openingMlbSlate .ca-matchup-card img.ca-matchup-logo').length,
+                tabs: document.querySelectorAll('#openingMlbSlate .ca-matchup-card .ca-team-tab').length,
+                namedTeams: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__name').length,
+                bareAbbr: [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club')]
+                  .filter(c => !c.querySelector('.ca-matchup-card__name')).length,
               };
             }""")
             check(f"{width}px no horizontal overflow", metrics["overflow"] <= 1, str(metrics))
             check(f"{width}px grid columns", metrics["columns"] == expected_columns, str(metrics))
-            check(f"{width}px official team logos", metrics["logos"] >= 2, str(metrics))
-            check(f"{width}px no abbreviation components", metrics["abbreviations"] == 0, str(metrics))
+            # 2026-09-09 (owner decision): club identity is a colour-coded
+            # abbreviation tab, not a crest. The rule that still holds is that
+            # an abbreviation must never be the ONLY identity - every club
+            # block must also carry the official full team name.
+            check(f"{width}px club identity tabs", metrics["tabs"] >= 2, str(metrics))
+            check(f"{width}px full team names present", metrics["namedTeams"] >= 2, str(metrics))
+            check(f"{width}px no bare abbreviation identity", metrics["bareAbbr"] == 0, str(metrics))
             if width >= 1024:
                 check(f"{width}px collapsed card height", 240 <= metrics["maxHeight"] <= 360, str(metrics))
 

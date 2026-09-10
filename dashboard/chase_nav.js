@@ -150,6 +150,23 @@
   function setActivePage() {
     var currentKey = currentNavKey();
 
+    // Sport routes are all named index.html, so the filename cannot identify
+    // them. The first path segment can: /mlb/... is the MLB desk. The homepage
+    // carries data-sport="mlb" for its adapters but shows both slates, so it
+    // must not light a tab — hence pathname rather than the body attribute.
+    var seg = String(location.pathname || '').split('/').filter(Boolean)[0] || '';
+    var routeSport = /^(mlb|nfl|wnba|cfb)$/.test(seg) ? seg : '';
+    document.querySelectorAll('.chase-sport-tab').forEach(function (tab) {
+      var key = tab.getAttribute('data-nav');
+      if (routeSport && key === routeSport) {
+        tab.classList.add('active');
+        tab.setAttribute('aria-current', 'page');
+      } else {
+        tab.classList.remove('active');
+        tab.removeAttribute('aria-current');
+      }
+    });
+
     document.querySelectorAll('.chase-nav-link').forEach(function (link) {
       if (link.tagName !== 'A') return;
       var href = link.getAttribute('href');

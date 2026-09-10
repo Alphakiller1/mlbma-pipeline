@@ -840,3 +840,579 @@ body[data-ca-product="research"] {
   .ca-matchup-card__head { align-items: flex-start; }
   .ca-matchup-card__broadcast { display: block; max-width: 24ch; margin: var(--space-1) 0 0; padding: 0; border: 0; }
 }
+
+/* ===========================================================================
+ * DESK RESTORE - 2026-09-09
+ * Implements design/GPT_IMAGE_PROMPTS_CHASE_DESK.md prompt 1/2/4 against the
+ * existing public markup. Appended last so equal-specificity flat rules above
+ * are superseded by source order. Public content stays factual: no projected
+ * score, probability, market line, or edge metric appears in this file.
+ * ======================================================================== */
+
+body[data-ca-product="research"] {
+  background-image: var(--canvas-ambient);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Desk masthead */
+.ca-public-page__title,
+.ca-opening-desk__title {
+  font-size: var(--type-display);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.ca-public-page__lede,
+.ca-opening-desk__lede {
+  max-width: 68ch;
+  font-size: var(--type-16);
+}
+
+/* Slate boards. Each sport section and kickoff window is a lacquered board
+   with the 3px violet edge, so the slate reads as one surface instead of
+   loose cards on bare canvas. */
+.ca-opening-sport,
+.ca-kickoff-window,
+.ca-slate-board {
+  position: relative;
+  padding: var(--space-5) var(--space-5) var(--space-5) calc(var(--space-5) + 3px);
+  background: var(--surface-board);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+  overflow: hidden;
+}
+
+.ca-opening-sport::before,
+.ca-kickoff-window::before,
+.ca-slate-board::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--edge-brand);
+}
+
+.ca-opening-sport::after,
+.ca-kickoff-window::after,
+.ca-slate-board::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 3px;
+  height: 1px;
+  background: var(--edge-glint);
+}
+
+.ca-kickoff-window + .ca-kickoff-window { margin-top: var(--space-4); }
+
+.ca-opening-sport__head h2,
+.ca-kickoff-window > header h2 {
+  font-size: var(--type-section);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.ca-kickoff-window > header {
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: var(--space-3);
+}
+
+.ca-kickoff-window > header span,
+.ca-desk-count,
+.ca-desk-window-label {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Toolbar */
+.ca-desk-toolbar {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-board-raised);
+  border-color: var(--border-default);
+  box-shadow: var(--elevation-2);
+  flex-wrap: wrap;
+}
+
+.ca-desk-dates button,
+.ca-desk-chip,
+.ca-desk-view-toggle button {
+  background: var(--surface-inset);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.ca-desk-dates button:hover,
+.ca-desk-chip:hover { background: var(--control-bg-hover); color: var(--text-primary); }
+
+.ca-desk-dates__today {
+  font-family: var(--font-display);
+  font-size: var(--type-16);
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+.ca-desk-chip.is-on {
+  background: var(--accent-soft);
+  border-color: var(--border-accent);
+  color: var(--text-accent);
+}
+
+/* The grid. AUDIT D5: this was a flat repeat(3, 1fr), so a one-game kickoff
+   window rendered a narrow card beside two empty tracks.
+
+   A single auto-fit minmax() cannot express the documented breakpoints - the
+   style lock and scripts/public_site_runtime_diag.py both want 3 columns at
+   1440, 2 from 720 to 1099, and 1 below that, and no single track minimum
+   yields 3-at-1440 and 2-at-720. So the counts stay explicit, and :has()
+   handles the real D5 case: a window holding fewer cards than the track count
+   drops to that many columns instead of leaving dead tracks. */
+.ca-slate-grid { gap: var(--space-3); }
+
+@media (min-width: 1100px) {
+  .ca-slate-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ca-slate-grid:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+  .ca-slate-grid:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 620px) and (max-width: 1099px) {
+  .ca-slate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ca-slate-grid:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 619px) {
+  .ca-slate-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Matchup card */
+.ca-matchup-card {
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--elevation-2);
+  transition: box-shadow var(--motion-base) var(--motion-ease),
+              border-color var(--motion-base) var(--motion-ease);
+}
+
+.ca-matchup-card::before { background: var(--edge-brand); }
+
+.ca-matchup-card:hover,
+.ca-matchup-card:focus-within {
+  border-color: var(--border-accent);
+  box-shadow: var(--elevation-glow);
+}
+
+.ca-matchup-card__head {
+  align-items: center;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ca-matchup-card__kick {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--type-16);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.ca-matchup-card__broadcast {
+  font-family: var(--font-ui);
+  font-size: var(--type-12);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  text-transform: none;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Identity band: two inset fields, logo left, abbreviation as display type,
+   full team name and record beneath. Full names stay visible per the public
+   content rules; the abbreviation is a scan aid, not the identity. */
+.ca-matchup-card__teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.ca-matchup-card__club {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.ca-matchup-card__club--home { flex-direction: row; text-align: left; }
+
+.ca-matchup-card__club .ca-matchup-logo,
+.ca-matchup-card__club img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.ca-matchup-card__club-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.ca-matchup-card__abbr {
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+.ca-matchup-card__name {
+  font-family: var(--font-ui);
+  font-size: var(--type-12);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--text-secondary);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.ca-matchup-card__record {
+  font-size: var(--type-12);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.ca-matchup-card__versus {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Factual cells */
+.ca-matchup-card__summary,
+.ca-matchup-card__detail-grid,
+.ca-matchup-card__environment {
+  gap: var(--space-2);
+}
+
+.ca-matchup-card__fact {
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.ca-matchup-card__fact > span {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-matchup-card__fact > strong {
+  font-size: var(--type-14);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Starter fields */
+.ca-matchup-card__starter {
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.ca-matchup-card__starter strong {
+  font-size: var(--type-14);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ca-matchup-card__starter-label {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Actions */
+.ca-matchup-card__actions {
+  align-items: center;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ca-matchup-card__expand-btn {
+  background: var(--surface-inset);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.ca-matchup-card__expand-btn:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-accent);
+}
+
+.ca-matchup-card__detail-link {
+  color: var(--text-accent);
+  font-weight: 600;
+}
+.ca-matchup-card__detail-link:hover { color: var(--text-primary); }
+
+.ca-matchup-card__updated {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Status chips read as lit controls rather than grey outlines. */
+.ca-status-chip {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.ca-status-chip.is-live {
+  background: var(--tint-positive);
+  border: 1px solid var(--mark-positive);
+  color: var(--metric-elite);
+}
+.ca-status-chip.is-final {
+  background: var(--surface-inset);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+}
+.ca-status-chip.is-ok {
+  background: var(--accent-soft);
+  border: 1px solid var(--border-accent);
+  color: var(--metric-elite);
+}
+.ca-status-chip.is-watch {
+  background: var(--tint-caution);
+  border: 1px solid var(--mark-caution);
+  color: var(--value-caution);
+}
+.ca-status-chip.is-muted {
+  background: var(--surface-inset);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+}
+
+/* Expanded panel sits on the darker inset so it reads as beneath the card. */
+.ca-matchup-card__expand {
+  padding: var(--space-3);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 620px) {
+  .ca-matchup-card__teams { grid-template-columns: minmax(0, 1fr); }
+  .ca-matchup-card__versus { justify-self: start; }
+}
+
+/* --- Desk restore, pass 2: card rhythm ----------------------------------
+ * Pass 1 restored the surfaces; these rules fix the geometry the first local
+ * capture exposed - ragged card heights inside a row, a 3-line broadcast
+ * string, and fact labels wrapping onto two lines inside a 130px cell. */
+
+/* Cards in a row share a height, and the action row is pinned to the bottom so
+ * the "Expand matchup" controls line up across the row. */
+.ca-slate-grid { align-items: stretch; }
+.ca-slate-grid > .ca-matchup-card { height: 100%; }
+.ca-matchup-card__actions { margin-top: auto; }
+
+/* The card header stays one line tall: time and status on the baseline, the
+ * broadcast list clamped to a single line that ends at a word. */
+.ca-matchup-card__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.ca-matchup-card__kick {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ca-matchup-card__broadcast {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Identity band: a fixed logo track means the logo and the copy always sit
+ * side by side, whatever intrinsic width the crest image reports. */
+.ca-matchup-card__club {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-3);
+}
+.ca-matchup-card__club > img,
+.ca-matchup-card__club > .ca-matchup-logo,
+.ca-matchup-card__club > .ca-team-logo-placeholder {
+  grid-column: 1;
+  width: 40px;
+  height: 40px;
+  justify-self: center;
+}
+.ca-matchup-card__club-copy { grid-column: 2; }
+
+/* Fact cells: give the wide label the room it needs so "Probable starters"
+ * stays on one line, and let the value wrap under it. */
+.ca-matchup-card__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: stretch;
+}
+
+.ca-matchup-card__fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ca-matchup-card__fact > span {
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ca-matchup-card__fact > strong {
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 620px) {
+  .ca-matchup-card__summary { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ca-matchup-card__summary > .ca-matchup-card__fact:first-child { grid-column: 1 / -1; }
+}
+
+/* The base rule caps this at 20ch with white-space:nowrap, which is what cut
+   "Broadcast not published" to "Broadcast not..." mid-word (AUDIT B6). The
+   clamp above already ends the line at a word, so the character cap goes. */
+.ca-matchup-card__broadcast {
+  max-width: none;
+  margin-left: 0;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--border-default);
+  vertical-align: baseline;
+}
+
+/* On a phone the status chip takes the header's auto track and the broadcast
+   list is squeezed to two characters ("D.."). Give it its own line there. */
+@media (max-width: 620px) {
+  .ca-matchup-card__kick {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-1);
+  }
+  .ca-matchup-card__broadcast {
+    padding-left: 0;
+    border-left: 0;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* --- Club-coloured abbreviation tab ---------------------------------------
+ * Replaced the crest in the card identity band on 2026-09-09 (owner decision,
+ * following the Model Center reference renderings). Ground and ink arrive as
+ * --team-bg / --team-ink from MLBMAAssets.teamTabHtml, which derives the
+ * ink from the ground's luminance, so a gold club gets dark text. An unknown
+ * club sets neither and falls back to the neutral inset below.
+ *
+ * Player headshots are unaffected: they stay on the starter panels and the
+ * profile pages, where a face is the subject rather than a club identity. */
+.ca-team-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 58px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xs);
+  background: var(--team-bg, var(--surface-inset));
+  color: var(--team-ink, var(--text-primary));
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-matchup-card__club {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.ca-matchup-card__tab { min-width: 58px; }
+
+@media (max-width: 400px) {
+  .ca-team-tab { min-width: 50px; font-size: var(--type-16); }
+}
+
+/* --- Collapsed card height contract ---------------------------------------
+ * scripts/public_site_runtime_diag.py holds the collapsed card to 240-360px on
+ * desktop, and the style lock says 272-350px. The identity tab and the fact
+ * cells added rhythm that pushed it to 362-380px, so the internal spacing is
+ * tightened rather than the content cut - every published fact stays. */
+.ca-matchup-card {
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+.ca-matchup-card__club { padding: var(--space-2) var(--space-3); }
+
+.ca-matchup-card__head { padding-bottom: var(--space-2); }
+
+.ca-matchup-card__actions { padding-top: var(--space-2); }
+
+.ca-matchup-card__fact { padding: var(--space-2) var(--space-3); }

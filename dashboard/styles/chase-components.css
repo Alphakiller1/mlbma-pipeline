@@ -34,11 +34,14 @@
   color: var(--text-accent);
 }
 .ca-btn--primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  /* --accent (#9A6BFF) carries white text at only 3.28:1 at UI size, so the
+     filled button uses the deeper brand violet. --accent stays the colour for
+     borders, links, and the 3px board edge, where it is not a text ground. */
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
   color: var(--text-on-accent);
 }
-.ca-btn--primary:hover { background: var(--accent-strong); }
+.ca-btn--primary:hover { background: var(--accent); }
 .ca-btn:disabled,
 .ca-btn[aria-disabled="true"] {
   color: var(--text-disabled);
