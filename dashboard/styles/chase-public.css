@@ -3439,3 +3439,32 @@ body[data-ca-product="research"] {
 }
 
 .ca-split-table { min-width: 0; }
+
+/* Ten squares, one per ten per cent. A grid is read at a glance the way a bar
+   is not - four filled is "about forty per cent" before the eye reaches the
+   number, and the number is printed beside it regardless. */
+.ca-usage__grid {
+  display: inline-grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.ca-usage__grid > i {
+  display: block;
+  width: 7px;
+  height: 12px;
+  border-radius: 1px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+}
+
+.ca-usage__grid > i.is-on { background: currentColor; border-color: currentColor; }
+
+.ca-usage { min-width: 150px; }
+.ca-usage__bar { display: none; }
+
+@media (max-width: 720px) {
+  .ca-usage__grid > i { width: 5px; height: 10px; }
+  .ca-usage { min-width: 120px; }
+}

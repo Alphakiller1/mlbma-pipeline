@@ -800,6 +800,19 @@
   /* How heavily an offering is leaned on. These are the conventional reading
      lines for a starter's mix: a third of everything is the pitch he lives on,
      under a tenth is a look he shows. */
+  /* Ten squares, one per ten per cent of the mix, filled to the share this
+     pitch takes. A square grid is read at a glance the way a bar is not: four
+     filled is "about forty per cent" without the eye going to the number, and
+     the number is printed beside it anyway. */
+  function usageSquares(pct) {
+    var filled = Math.round(Math.max(0, Math.min(100, pct)) / 10);
+    var cells = '';
+    for (var i = 0; i < 10; i++) {
+      cells += '<i' + (i < filled ? ' class="is-on"' : '') + '></i>';
+    }
+    return '<span class="ca-usage__grid" aria-hidden="true">' + cells + '</span>';
+  }
+
   function usageTone(pct) {
     if (pct >= 30) return 'u-primary';
     if (pct >= 18) return 'u-secondary';
@@ -840,22 +853,21 @@
       return '<tr data-pitch="' + esc(pitchFamily(row.code)) + '">' +
         '<td class="ca-lineup-name">' + esc(row.name) + '</td>' +
         '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
-        '<span class="ca-usage__bar"><span style="width:' + Math.max(2, Math.round(pct)) +
-        '%"></span></span><b>' + pct.toFixed(1) + '%</b></span></td>' +
+        usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span></td>' +
+        '<td class="num">' + row.count.toLocaleString('en-US') + '</td>' +
         '<td class="num">' + (isFinite(row.speed) ? row.speed.toFixed(1) : '\u2014') + '</td>' +
         '<td class="num">' + (opp && opp.xwoba
           ? esc(formatStat(opp.xwoba.value, 3)) + rankBadge(opp.xwoba) : '\u2014') + '</td>' +
         '<td class="num">' + (opp && opp.whiff_rate
           ? opp.whiff_rate.value.toFixed(1) + '%' + rankBadge(opp.whiff_rate) : '\u2014') + '</td>' +
-        '<td class="num">' + row.count.toLocaleString('en-US') + '</td>' +
         '</tr>';
     }).join('');
 
     return head +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
-      '<thead><tr><th>Pitch</th><th class="num">Usage</th><th class="num">MPH</th>' +
-      '<th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
-      '<th class="num">Whiff</th><th class="num">Seen</th></tr></thead>' +
+      '<thead><tr><th>Pitch</th><th class="num">Usage</th><th class="num">Count</th>' +
+      '<th class="num">MPH</th><th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
+      '<th class="num">Whiff</th></tr></thead>' +
       '<tbody>' + body + '</tbody></table></div>' +
       '<p class="ca-detail-source-note">' +
       (isFinite(total) ? total.toLocaleString('en-US') + ' tracked pitches' : 'Sample not published') +
