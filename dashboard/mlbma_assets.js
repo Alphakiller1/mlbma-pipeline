@@ -183,11 +183,45 @@
     return 'https://a.espncdn.com/i/teamlogos/' + league + '/' + size + '/' + teamLogoSlug(team, sport) + '.png';
   }
 
+  /* ---------------------------------------------------------------------
+   * Crest legibility on the matte desk (measured 2026-09-10).
+   *
+   * Every one of the 62 club crests was composited over --ca-ink-850 and the
+   * contrast ratio of its brightest 60% measured against that ground - a crest
+   * reads by its lightest strokes, not its average. Below 2.2:1 it is not a
+   * logo any more, it is a smudge.
+   *
+   * Full colour is the default because vibrancy is the point: 56 of 62 clubs
+   * clear the bar comfortably and get no treatment at all. Six do not, and for
+   * every one of them ESPN's 500-dark variant fixes it outright:
+   *
+   *   NYY 1.13 -> 18.36    SD  1.18 -> 11.58    KC  1.38 -> 18.36
+   *   NYG 1.20 -> 18.36    LAR 1.69 -> 18.36    NYJ 2.10 -> 18.36
+   *
+   * No club needs a light plate. An earlier pass used a cruder measure - the
+   * share of pixels near the background luminance - which wrongly flagged ATL,
+   * CHW, DET, MIN and WSH (all of which read fine) while missing KC and SD
+   * entirely.
+   * ------------------------------------------------------------------ */
+  var LOGO_DARK = {
+    mlb: { KC: 1, NYY: 1, SD: 1 },
+    nfl: { LAR: 1, NYG: 1, NYJ: 1 }
+  };
+
+  function logoTreatment(team, sport) {
+    var league = teamLogoLeague(sport);
+    var key = String(teamLogoSlug(team, sport) || '').toUpperCase();
+    return { dark: !!((LOGO_DARK[league] || {})[key]) };
+  }
+
   /** Resized logo via ESPN's combiner (~3KB at 64px vs ~37KB for the raw 500px asset). */
   function teamLogoUrlSized(team, px, sport) {
-    var w = Math.min(256, Math.max(32, 2 * (px || 24)));
+    // 3x the display box: 2x was correct for retina but soft on a DPR-3 phone,
+    // and these are small transparent PNGs so the extra bytes are cheap.
+    var w = Math.min(320, Math.max(48, 3 * (px || 24)));
     var league = teamLogoLeague(sport);
-    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/' + league + '/500/' + teamLogoSlug(team, sport) + '.png&w=' + w + '&h=' + w;
+    var folder = logoTreatment(team, sport).dark ? '500-dark' : '500';
+    return 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/' + league + '/' + folder + '/' + teamLogoSlug(team, sport) + '.png&w=' + w + '&h=' + w;
   }
 
   function teamLogoImg(team, px, cls, sport) {

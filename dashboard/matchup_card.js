@@ -144,18 +144,23 @@
     var supplied = game[side + '_name'];
     var name = teamName(sport, abbr, supplied);
     var record = game[side + '_record'];
-    // Identity is a club-coloured abbreviation tab plus the official full name.
-    // The tab replaced the crest on 2026-09-09 (owner decision, per the Model
-    // Center reference renderings): the colour carries the club at a glance and
-    // reads with more life than a small monochrome-on-dark crest. The full name
-    // and record stay beside it, so the abbreviation never becomes the only
-    // identity. The tab is aria-hidden; screen readers get the full name.
+    // Identity is the official crest plus the full team name (owner decision
+    // 2026-09-10, and what the matchup IA asks for). The club colour survives
+    // as a restrained left rule on the block rather than a filled tab, so the
+    // crest is the thing that carries the club.
+    //
+    // Crest legibility is measured, not assumed: mlbma_assets.js composites
+    // every logo over the card ground and picks the full-colour asset, ESPN's
+    // dark variant, or a light plate accordingly.
     var code = String(abbr || '').toUpperCase();
-    var tab = (global.MLBMAAssets && MLBMAAssets.teamTabHtml)
-      ? MLBMAAssets.teamTabHtml(code, sport, 'ca-matchup-card__tab')
-      : '<span class="ca-team-tab ca-matchup-card__tab" aria-hidden="true">' + esc(code) + '</span>';
-    return '<div class="ca-matchup-card__club ca-matchup-card__club--' + side + '">' +
-      tab +
+    var accent = '';
+    if (global.MLBMAAssets && MLBMAAssets.teamColor) {
+      var clubColor = MLBMAAssets.teamColor(code, sport);
+      if (clubColor) accent = ' style="--team-accent:' + esc(clubColor) + '"';
+    }
+    var crest = logoHtml(sport, abbr, supplied, 44, 'ca-matchup-logo');
+    return '<div class="ca-matchup-card__club ca-matchup-card__club--' + side + '"' + accent + '>' +
+      crest +
       '<div class="ca-matchup-card__club-copy">' +
       '<span class="ca-matchup-card__name">' + esc(name) + '</span>' +
       (record ? '<span class="ca-matchup-card__record">' + esc(record) + '</span>' : '') +

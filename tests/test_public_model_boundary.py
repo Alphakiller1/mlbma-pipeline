@@ -65,15 +65,13 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("Full matchup analysis", card)
         self.assertIn("ca-matchup-card", card)
         self.assertIn("aria-expanded", card)
-        # 2026-09-09 owner decision: club identity on the slate is a
-        # colour-coded abbreviation tab rather than a crest. The rule that
-        # survives is that the abbreviation must never REPLACE the official full
-        # name (style lock, design/GPT_IMAGE_PROMPTS_CHASE_DESK.md), so the tab
-        # and the full name are rendered in the same block and the tab is
-        # aria-hidden - assistive tech reads the full name only.
-        self.assertIn("teamTabHtml", card)
+        # 2026-09-10 owner decision, and what the matchup IA asks for: club
+        # identity is the official crest plus the full team name. The club
+        # colour survives only as a restrained rule on the block.
+        self.assertIn("logoHtml(sport, abbr, supplied", card)
         self.assertIn("ca-matchup-card__name", card)
         self.assertIn("esc(name)", card)
+        self.assertNotIn("teamTabHtml", card)
         self.assertNotIn("BOARD_URL", blob)
 
     def test_team_context_reads_only_descriptive_families(self):

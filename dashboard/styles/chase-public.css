@@ -1972,3 +1972,51 @@ body[data-ca-product="research"] {
   .ca-avail-row { grid-template-columns: 34px minmax(0, 1fr) auto; }
   .ca-avail-detail { display: none; }
 }
+
+/* --- Club identity: crest first ------------------------------------------
+ * Back to official crests (2026-09-10). The club colour stays as a 3px left
+ * rule on the identity block - present enough to separate the two sides at a
+ * glance, restrained enough that the crest is what carries the club, which is
+ * what the matchup IA asks for.
+ *
+ * Crest sizing and variant selection are measured in mlbma_assets.js. */
+.ca-matchup-card__club {
+  grid-template-columns: 44px minmax(0, 1fr);
+  border-left: 3px solid var(--team-accent, var(--border-default));
+  padding-left: var(--space-3);
+}
+
+.ca-matchup-card__club .ca-matchup-logo,
+.ca-matchup-card__club > img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  /* The crests are transparent PNGs served at 3x; let the browser scale them
+     smoothly rather than pixel-doubling. */
+  image-rendering: auto;
+}
+
+.ca-matchup-card__tab { display: none; }
+
+@media (max-width: 400px) {
+  .ca-matchup-card__club { grid-template-columns: 38px minmax(0, 1fr); }
+  .ca-matchup-card__club .ca-matchup-logo,
+  .ca-matchup-card__club > img { width: 38px; height: 38px; }
+}
+
+/* The four-cell strip clamped labels to one nowrap line, so at three columns
+   "Lineup status" became "LINEUP STA...". Two lines, ending at a word. */
+.ca-matchup-card__fact > span {
+  white-space: normal;
+  text-overflow: clip;
+  -webkit-line-clamp: 2;
+  line-height: 1.2;
+}
+
+@media (min-width: 1441px) {
+  .ca-matchup-card__fact > span {
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    text-overflow: clip;
+  }
+}

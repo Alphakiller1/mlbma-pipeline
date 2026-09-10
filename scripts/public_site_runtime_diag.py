@@ -55,7 +55,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 columns,
                 minHeight: cards.length ? Math.min(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 maxHeight: cards.length ? Math.max(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
-                tabs: document.querySelectorAll('#openingMlbSlate .ca-matchup-card .ca-team-tab').length,
+                crests: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img').length,
+                brokenCrests: [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img')]
+                  .filter(i => i.complete && i.naturalWidth === 0).length,
+                crestDensity: (() => {
+                  // Crests below the fold are lazy-loaded, so measure the first
+                  // one that has actually decoded rather than the first in DOM
+                  // order - at 390px the top card can still be pending.
+                  const loaded = [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img')]
+                    .find(i => i.naturalWidth > 0);
+                  if (!loaded) return 0;
+                  return loaded.naturalWidth / Math.max(1, Math.round(loaded.getBoundingClientRect().width));
+                })(),
                 namedTeams: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__name').length,
                 bareAbbr: [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club')]
                   .filter(c => !c.querySelector('.ca-matchup-card__name')).length,
@@ -63,11 +74,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             }""")
             check(f"{width}px no horizontal overflow", metrics["overflow"] <= 1, str(metrics))
             check(f"{width}px grid columns", metrics["columns"] == expected_columns, str(metrics))
-            # 2026-09-09 (owner decision): club identity is a colour-coded
-            # abbreviation tab, not a crest. The rule that still holds is that
-            # an abbreviation must never be the ONLY identity - every club
-            # block must also carry the official full team name.
-            check(f"{width}px club identity tabs", metrics["tabs"] >= 2, str(metrics))
+            # 2026-09-10 (owner decision, and what the matchup IA asks for):
+            # club identity is the official crest plus the full team name. The
+            # crest must actually load, and must be served at enough density to
+            # stay sharp on a high-DPR screen.
+            check(f"{width}px official crests", metrics["crests"] >= 2, str(metrics))
+            check(f"{width}px crests load", metrics["brokenCrests"] == 0, str(metrics))
+            check(f"{width}px crest density >= 2x", metrics["crestDensity"] >= 2, str(metrics))
             check(f"{width}px full team names present", metrics["namedTeams"] >= 2, str(metrics))
             check(f"{width}px no bare abbreviation identity", metrics["bareAbbr"] == 0, str(metrics))
             if width >= 1024:
