@@ -25,13 +25,15 @@
   --surface-2: var(--ca-ink-800);
   --surface-3: var(--ca-ink-750);
 
-  /* Lacquered board fills (contract §4.0: opaque dark gradient first, gloss on
-     top). These are gradients, so they are only ever valid in `background`,
-     never `background-color`. Solid roles above stay solid for that reason. */
-  --surface-board: var(--ca-grad-panel);
-  --surface-board-raised: linear-gradient(180deg, var(--ca-ink-750) 0%, var(--ca-ink-850) 60%, var(--ca-ink-900) 100%);
-  --surface-field: linear-gradient(180deg, var(--ca-ink-800) 0%, var(--ca-ink-850) 100%);
-  --canvas-ambient: var(--ca-grad-violet-top), var(--ca-grad-violet-bottom);
+  /* Board fills are FLAT (2026-09-10). The reference renderings are a matte
+     near-black desk: colour comes from team identity, status and data, never
+     from ambient washes or lacquer on the chrome. These were gradients; the
+     result read as generic and fought the crisp panel edges the renderings
+     rely on. Kept as roles (not raw inks) so a future skin can swap them. */
+  --surface-board: var(--ca-ink-900);
+  --surface-board-raised: var(--ca-ink-850);
+  --surface-field: var(--ca-ink-800);
+  --canvas-ambient: none;
 
   /* —— Text —— */
   --text-primary: var(--ca-paper-50);
@@ -165,14 +167,13 @@
   --radius-pill: 999px;
 
   /* —— Elevation —— */
-  /* Elevation carries the inset top-edge highlight the contract calls for, so
-     a board reads as a lit solid rather than an outline. Audit D1: the ramp
-     used to be plain drop shadows and --elevation-glow was defined but never
-     consumed by any rule. */
+  /* Depth on a matte desk comes from the border and the fill step, not from
+     shadow. The glow ramp is retained for surfaces that genuinely lift (menus,
+     dialogs) but no longer paints the resting slate. */
   --elevation-0: none;
-  --elevation-1: 0 1px 2px var(--shadow-board), inset 0 1px 0 var(--ca-white-a-06);
-  --elevation-2: 0 4px 16px var(--shadow-board), inset 0 1px 0 var(--ca-white-a-08);
-  --elevation-3: 0 16px 48px var(--shadow-deep), inset 0 1px 0 var(--ca-white-a-08);
+  --elevation-1: none;
+  --elevation-2: none;
+  --elevation-3: 0 16px 48px var(--shadow-deep);
   --elevation-glow: var(--ca-glow-violet);
   --elevation-glow-strong: var(--ca-glow-violet-strong);
 
@@ -183,8 +184,12 @@
   --motion-ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* —— Shell / layout (architecture v2 §5–§6) —— */
-  --shell-max: 1360px;
-  --shell-gutter: 24px;
+  /* 1360px left 280px of dead gutter each side at 1920 and 600px at 2560 -
+     53% of a wide screen unused. The desk is a dense board; it should fill the
+     display it is given, and the column contract below adds tracks instead of
+     stretching cards. */
+  --shell-max: 2100px;
+  --shell-gutter: 28px;
   --shell-gutter-md: 20px;
   --shell-gutter-sm: 16px;
   --shell-header-h: 64px;

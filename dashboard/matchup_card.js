@@ -447,6 +447,7 @@
   function render(host) {
     var desk = host.__desk || {};
     var shown = filterGames(host, desk.games || []);
+    host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
     host.innerHTML = toolbarHtml(host, desk.sport, shown.length) + renderGroups(desk.sport, shown) +
       (!shown.length ? '<div class="ca-empty-state"><h2>' + (desk.results ? 'No completed games' : 'No matching games') +
         '</h2><p>' + (desk.results ? 'Final scores will appear here when games finish.' : 'Adjust the date, filters, or search.') + '</p></div>' : '');

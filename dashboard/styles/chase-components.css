@@ -246,9 +246,28 @@
 /* Empty / Error / Skeleton / AsyncBoundary */
 .ca-empty,
 .ca-error,
+/* The box is a STATE affordance - it frames a status message while data is
+   loading or has failed. It is not a container for the loaded content.
+   .ca-async--ready existed to undo it, but nothing set that class: the slate
+   mounts with innerHTML, so every loaded board kept a 12px-radius panel around
+   it and the desk grew a layer of nested bubbles. Default is now unboxed, and
+   the two message states opt in. */
 .ca-async {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+}
+
+.ca-async[data-state="loading"],
+.ca-async[data-state="error"],
+.ca-async[data-state="empty"],
+.ca-async--loading,
+.ca-async--error {
   padding: var(--space-6);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-default);
   background: var(--surface-inset);
   color: var(--text-secondary);

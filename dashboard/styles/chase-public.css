@@ -1441,3 +1441,144 @@ body[data-ca-product="research"] {
   overflow-wrap: break-word;
   word-break: normal;
 }
+
+/* ===========================================================================
+ * FLAT WIDE DESK - 2026-09-10
+ *
+ * Three corrections against the reference renderings:
+ *
+ * 1. DE-NEST. The slate had four levels of rounded container - section board >
+ *    grid wrapper > card > inner field - so every card sat inside two boxes
+ *    that carry no information. The renderings put cards DIRECTLY on the desk:
+ *    a section is an eyebrow and a heading in open space, nothing more.
+ * 2. FLATTEN. Ambient violet washes and lacquered gradients are gone (see
+ *    chase-semantic.css). The desk is matte near-black; colour is reserved for
+ *    team identity, status and data.
+ * 3. WIDEN. The shell fills the display, and extra width buys more columns
+ *    rather than wider cards.
+ * ======================================================================== */
+
+/* --- 1. De-nest: sections are headings in open space, not boards ---------- */
+.ca-opening-sport,
+.ca-kickoff-window,
+.ca-slate-board {
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+/* The violet rail and the top glint belonged to the wrapper boards. With the
+   wrappers gone the accent lives on the card itself, where it marks a game. */
+.ca-opening-sport::before,
+.ca-opening-sport::after,
+.ca-kickoff-window::before,
+.ca-kickoff-window::after,
+.ca-slate-board::before,
+.ca-slate-board::after {
+  content: none;
+}
+
+.ca-opening-desk__slates {
+  display: grid;
+  gap: var(--space-9);
+}
+
+.ca-kickoff-window + .ca-kickoff-window { margin-top: var(--space-8); }
+
+/* Section head: eyebrow over heading, count/action pushed right, one hairline
+   under it. This is the whole chrome a section gets. */
+.ca-opening-sport__head,
+.ca-kickoff-window > header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+  padding: 0 0 var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.ca-opening-sport__head h2,
+.ca-kickoff-window > header h2 {
+  margin: 0;
+  font-size: var(--type-section);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+/* The embedded slate header ("15 games" + "View full MLB slate") was a boxed
+   strip inside the wrapper. It joins the section head line instead. */
+.ca-embedded-slate-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+/* --- 2. Flat surfaces ----------------------------------------------------- */
+.ca-desk-toolbar {
+  padding: 0 0 var(--space-4);
+  margin-bottom: var(--space-5);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--border-default);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ca-matchup-card {
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+
+/* Hover reads as the edge lighting up, not the card floating. */
+.ca-matchup-card:hover,
+.ca-matchup-card:focus-within {
+  border-color: var(--border-accent);
+  box-shadow: none;
+}
+
+.ca-matchup-card__club,
+.ca-matchup-card__fact,
+.ca-matchup-card__starter,
+.ca-matchup-card__expand {
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+
+/* --- 3. Width and columns -------------------------------------------------
+ * More display buys more tracks. The counts at and below 1440 are held by
+ * scripts/public_site_runtime_diag.py; the wider steps are additive. */
+@media (min-width: 1680px) {
+  .ca-slate-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ca-slate-grid:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+  .ca-slate-grid:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ca-slate-grid:has(> :nth-child(3)):not(:has(> :nth-child(4))) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 2080px) {
+  .ca-slate-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+/* Page shell gutters follow the wider frame. */
+.ca-public-page,
+.ca-opening-desk {
+  padding-left: var(--shell-gutter);
+  padding-right: var(--shell-gutter);
+}
