@@ -72,16 +72,13 @@ class SportRouteBuilderTests(unittest.TestCase):
         # and CFB carry data-state="upcoming" so they read as not-yet-live, and
         # validate_public_fields.py still blocks promoting them inside page
         # CONTENT - appearing in the switcher is not a claim of published data.
-        self.assertIn('data-state="upcoming"', nav)
-        self.assertIn('data-nav="wnba"', nav)
-        self.assertIn('data-nav="cfb"', nav)
-        # The switcher is chrome. What still must not happen is a parked sport
-        # appearing inside page CONTENT as though a slate exists, or the sport
-        # selector offering it as a destination with data.
+        # Handoff section 10: WNBA and CFB stay in design documentation only.
+        self.assertNotIn("/wnba/", nav)
+        self.assertNotIn("/cfb/", nav)
+        self.assertNotIn("CFB", home)
+        self.assertNotIn("WNBA", home)
         self.assertNotIn("id: 'wnba'", select)
         self.assertNotIn("id: 'cfb'", select)
-        for parked in ("wnba", "cfb"):
-            self.assertNotIn(f'href="/{parked}/"', visible_main(home))
         for sport in ("wnba", "cfb"):
             text = (ROOT / sport / "index.html").read_text(encoding="utf-8")
             self.assertIn("noindex", text)
