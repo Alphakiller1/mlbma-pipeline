@@ -65,6 +65,11 @@
   /* Board chrome: the 3px brand edge and the top-edge glint that reads as the
      light source. Roles, so L5–L7 never reach for a --ca-* primitive. */
   --edge-brand: var(--ca-grad-brand);
+  /* Metallic display fill for major page titles. Model Center, the 404 and the
+     glossary already painted their h1 this way via .ca-page-title, while the
+     matchup routes rendered flat white - the site read as two products. This
+     is the role so L7 can use it without touching a TIER 1 primitive. */
+  --text-display-metal: var(--ca-grad-metal-silver);
   --edge-glint: linear-gradient(90deg, var(--ca-violet-a-32), transparent 70%);
 
   /* —— Status tints (chip grounds) —— */

@@ -1582,3 +1582,117 @@ body[data-ca-product="research"] {
   padding-left: var(--shell-gutter);
   padding-right: var(--shell-gutter);
 }
+
+/* ===========================================================================
+ * WIDER CARDS, CHROME TITLES, TIGHTER MASTHEAD - 2026-09-10
+ * ======================================================================== */
+
+/* --- 1. Chrome display titles --------------------------------------------
+ * .ca-page-title (Model Center, 404, glossary) already painted its h1 with the
+ * metallic silver fill while the matchup routes rendered flat white, so the
+ * site read as two different products. Same treatment everywhere now.
+ * Guarded: without background-clip:text a transparent color would erase the
+ * heading, so the fill only applies where the browser supports it. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .ca-public-page__title,
+  .ca-opening-desk__title {
+    background: var(--text-display-metal);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* --- 2. Wider cards -------------------------------------------------------
+ * The previous pass bought extra COLUMNS with the extra width, which made each
+ * card narrower - 457px at 1920 and 399px at 2560, against 453px at 1440. So
+ * a bigger display produced a more cramped card: team names wrapped to two
+ * lines and the fact labels wrapped at 2560.
+ *
+ * Extra width now goes into the cards. Three columns hold until the shell is
+ * wide enough that a fourth still leaves each card above ~600px, which is
+ * where the internals stop wrapping. Counts at and below 1440 are unchanged -
+ * scripts/public_site_runtime_diag.py holds them. */
+@media (min-width: 1441px) {
+  .ca-slate-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ca-slate-grid:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+  .ca-slate-grid:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* No fourth column. The shell caps at 2100px, so four tracks can never exceed
+   ~516px per card - narrower than the 613px three tracks give at 1920. Three
+   columns hold all the way up, which puts ~690px into each card at 2560. */
+
+/* --- 3. Let the card breathe ---------------------------------------------
+ * With ~610px to work in, the internals get room back: the identity band and
+ * the fact cells stop fighting for the same 130px.
+ *
+ * Scoped to 1441px and up. At 1440 the card is 453px and still holds three
+ * columns, where the same padding pushed the collapsed card to 363px against
+ * the 240-360px contract in scripts/public_site_runtime_diag.py. */
+@media (min-width: 1441px) {
+  .ca-matchup-card {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .ca-matchup-card__club { padding: var(--space-3); }
+
+  .ca-matchup-card__fact { padding: var(--space-3); }
+
+  /* The club name sits at reading size and on one line wherever it fits. */
+  .ca-matchup-card__name {
+    font-size: var(--type-14);
+    line-height: 1.3;
+  }
+}
+
+/* At a comfortable card width the label no longer needs the two-line clamp. */
+@media (min-width: 1441px) {
+  .ca-matchup-card__fact > span {
+    -webkit-line-clamp: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+/* --- 4. Tighten the masthead ---------------------------------------------
+ * The block above the first card ran ~270px of mostly empty space. */
+.ca-public-page,
+.ca-opening-desk {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-8);
+}
+
+.ca-public-page__head,
+.ca-opening-desk__head {
+  padding-bottom: var(--space-4);
+}
+
+.ca-public-page__lede,
+.ca-opening-desk__lede {
+  margin-top: var(--space-1);
+}
+
+.ca-opening-desk__slates { gap: var(--space-7); }
+
+.ca-opening-sport__head,
+.ca-kickoff-window > header { margin-bottom: var(--space-3); }
+
+.ca-embedded-slate-head { margin-bottom: var(--space-3); }
+
+/* --- Masthead density -----------------------------------------------------
+ * At 1920 the band above the first card ran 364px, and most of it was the
+ * standfirst wrapping to two lines inside a 68ch cap while ~900px of the row
+ * sat empty. The reading cap is right for a paragraph; this line is a one-line
+ * deck, so it gets the room it needs and the block loses a line. */
+@media (min-width: 1200px) {
+  .ca-public-page__lede,
+  .ca-opening-desk__lede {
+    max-width: 108ch;
+  }
+}
+
+.ca-desk-toolbar { margin-bottom: var(--space-4); }
