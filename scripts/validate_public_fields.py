@@ -157,13 +157,11 @@ def main() -> int:
                 violations.append(f"{rel} public content contains {phrase!r}")
         if "model center" in main_copy:
             violations.append(f"{rel} promotes Model Center inside public content")
-        # Parked sports may appear in the shell's sport switcher, where they
-        # are marked not-yet-live, but must never be promoted inside page
-        # content as though a slate exists. The rule is about the claim, not
-        # the string: check the main region only.
+        # Handoff section 10: WNBA and CFB stay in design documentation only
+        # and must not appear in navigation or content.
         for parked in ("/wnba/", "/cfb/"):
-            if parked in main_copy_html.lower():
-                violations.append(f"{rel} exposes parked sport {parked} in page content")
+            if parked in html.lower():
+                violations.append(f"{rel} exposes parked sport {parked}")
 
     for path in seen_assets:
         text = path.read_text(encoding="utf-8")

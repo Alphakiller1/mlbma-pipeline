@@ -29,8 +29,6 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPORTS = [
     ("mlb", "MLB", "/mlb/", "live"),
     ("nfl", "NFL", "/nfl/", "live"),
-    ("wnba", "WNBA", "/wnba/", "upcoming"),
-    ("cfb", "CFB", "/cfb/", "upcoming"),
 ]
 
 SEARCH_ICON = (
@@ -45,8 +43,6 @@ NAV_LINKS_RE = re.compile(r'[ \t]*<div class="chase-nav-links">.*?</div>\n', re.
 def nav_block(indent: str) -> str:
     pad = indent + "  "
     lines = [indent + '<div class="chase-nav-links">']
-    lines.append(pad + '<span class="chase-nav-rule" aria-hidden="true"></span>')
-    lines.append(pad + '<span class="chase-nav-product">MLB research</span>')
     lines.append(pad + '<nav class="chase-sport-tabs" aria-label="Sport">')
     for key, label, href, state in SPORTS:
         lines.append(

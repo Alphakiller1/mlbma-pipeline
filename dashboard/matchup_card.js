@@ -107,6 +107,8 @@
     var hand = String(sideValue(game, side, 'hand', '')).toUpperCase();
     if (hand === 'R' || hand === 'RHP') bits.push('RHP');
     if (hand === 'L' || hand === 'LHP') bits.push('LHP');
+    var wl = sideValue(game, side, 'starter_record', '');
+    if (wl) bits.push(String(wl));
     var era = safeNumber(sideValue(game, side, 'era', ''), 2);
     if (era) bits.push(era + ' ERA');
     return bits.join(' · ') || '';
@@ -177,8 +179,9 @@
   function expandedHtml(sport, game, panelId) {
     var awayName = teamName(sport, game.away, game.away_name);
     var homeName = teamName(sport, game.home, game.home_name);
-    var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>' +
-      '<div class="ca-matchup-card__starters">' + starterBlock(sport, game, 'away') + starterBlock(sport, game, 'home') + '</div>';
+    // No starter blocks here: the collapsed card already shows both faces, and
+    // repeating them made the same two headshots appear twice on expand.
+    var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
     if (sport === 'mlb') {
       var awayLineup = lineupLabel(game.away_lineup_state);
       var homeLineup = lineupLabel(game.home_lineup_state);
@@ -387,6 +390,13 @@
     }
     var date = dateIso || query().get('date') || easternDateIso();
     var officialUrl = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(date) +
+      // NOTE: probablePitcher cannot be hydrated with stats on this endpoint -
+      // probablePitcher(stats(...)) returns identity only (verified 2026-09-10),
+      // so away_era/home_era stay empty and the card says so. Sourcing a season
+      // line needs either a second call per pitcher
+      // (/api/v1/people/{id}/stats?stats=season&group=pitching) or the slate
+      // producer publishing away_era/home_era, which the public schema in
+      // chase_public_slate.js already allows.
       '&hydrate=probablePitcher,team,venue,weather,broadcasts,lineups';
     var officialRequest = loadJson(officialUrl).then(function (payload) {
       var games = [];
