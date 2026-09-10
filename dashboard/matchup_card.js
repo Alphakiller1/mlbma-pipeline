@@ -413,12 +413,146 @@
       var official = parts[1];
       var games = mergeGames(official, published.games || []);
       if (!games.length && parts[0].error) throw parts[0].error;
+      // Season lines and team context are additive; both resolve to empty on
+      // failure so the slate still renders.
+      return Promise.all([loadStarterLines(games, date), loadTeamContext()])
+        .then(function (extra) {
+          return { games: applyEvidence(games, extra[0], extra[1]), published: published, official: official };
+        });
+    }).then(function (bundle) {
+      var games = bundle.games, published = bundle.published, official = bundle.official;
       return {
         games: games, generatedAt: published.generated_at || null,
         dataThrough: published.data_through || date, dateIso: date,
         source: official.length ? (published.games && published.games.length ? 'Official schedule + published context' : 'Official MLB schedule') : 'Published MLB slate'
       };
     });
+  }
+
+  /* ---------------------------------------------------------------------
+   * Evidence enrichment (2026-09-10).
+   *
+   * Two facts the collapsed card needs were reachable all along; neither was
+   * being fetched.
+   *
+   * 1. The starter's season line. probablePitcher cannot be hydrated with
+   *    stats on the /schedule endpoint (verified: it returns identity only),
+   *    but /api/v1/people accepts a personIds list and DOES hydrate them - so
+   *    the whole slate's starters cost one request, not thirty.
+   *
+   * 2. Team offensive context. OSI / RCV / ABQ / OBR / wRC+ / wOBA / Pitch
+   *    Score already ship in dashboard/team_rankings_snapshot.json, which is
+   *    already served publicly. Only the `status` family is withheld: it
+   *    carries projOSI and ppGap, which design/public_metric_classification
+   *    .json lists as model_private.
+   *
+   * Both are additive and fail soft: if either request fails the card renders
+   * exactly as it did before, with the value explicitly unpublished.
+   * ------------------------------------------------------------------ */
+
+  var TEAM_CONTEXT_URL = '/dashboard/team_rankings_snapshot.json';
+
+  // projOSI and ppGap are model_private. The `status` family carries both, so
+  // it is never read - the exclusion is by construction, not by filtering.
+  var PUBLIC_RANK_FAMILIES = ['scoring', 'difficulty'];
+  var PUBLIC_RANK_METRICS = {
+    osi: { label: 'OSI', hi: true, digits: 1 },
+    wrc: { label: 'wRC+', hi: true, digits: 0 },
+    woba: { label: 'wOBA', hi: true, digits: 3 },
+    rcv: { label: 'RCV', hi: true, digits: 1 },
+    abq: { label: 'ABQ', hi: true, digits: 1 },
+    obr: { label: 'OBR', hi: true, digits: 1 },
+    pitchScore: { label: 'Pitch Score', hi: true, digits: 0 }
+  };
+
+  var teamContextPromise = null;
+
+  function loadTeamContext() {
+    if (teamContextPromise) return teamContextPromise;
+    teamContextPromise = loadJson(TEAM_CONTEXT_URL).then(function (snap) {
+      var byTeam = {};
+      var families = (snap && snap.families) || {};
+      PUBLIC_RANK_FAMILIES.forEach(function (name) {
+        var rows = (families[name] && families[name].rows) || [];
+        Object.keys(PUBLIC_RANK_METRICS).forEach(function (key) {
+          var scored = rows
+            .filter(function (r) { return r && r[key] != null && isFinite(r[key]); })
+            .sort(function (a, b) { return b[key] - a[key]; });
+          // Rank is recomputed here from the descriptive value itself, so it
+          // never inherits an ordering from anything modelled.
+          scored.forEach(function (row, index) {
+            var team = String(row.t || '').toUpperCase();
+            if (!team) return;
+            byTeam[team] = byTeam[team] || {};
+            byTeam[team][key] = {
+              value: row[key],
+              rank: index + 1,
+              of: scored.length
+            };
+          });
+        });
+      });
+      return { teams: byTeam, generatedAt: snap && snap.generatedAt || null };
+    }).catch(function () { return { teams: {}, generatedAt: null }; });
+    return teamContextPromise;
+  }
+
+  function seasonYear(dateIso) {
+    var year = parseInt(String(dateIso || '').slice(0, 4), 10);
+    return Number.isFinite(year) ? year : new Date().getFullYear();
+  }
+
+  /** One request for every probable starter on the slate. */
+  function loadStarterLines(games, dateIso) {
+    var ids = [];
+    games.forEach(function (game) {
+      ['away', 'home'].forEach(function (side) {
+        var id = game[side + '_starter_id'];
+        if (id && ids.indexOf(id) < 0) ids.push(id);
+      });
+    });
+    if (!ids.length) return Promise.resolve({});
+    var url = 'https://statsapi.mlb.com/api/v1/people?personIds=' + ids.join(',') +
+      '&hydrate=stats(group=[pitching],type=[season],season=' + seasonYear(dateIso) + ')';
+    return loadJson(url).then(function (payload) {
+      var byId = {};
+      (payload.people || []).forEach(function (person) {
+        var stat = {};
+        (person.stats || []).forEach(function (block) {
+          var split = (block.splits || [])[0];
+          if (split && split.stat) stat = split.stat;
+        });
+        byId[person.id] = {
+          hand: person.pitchHand && person.pitchHand.code || '',
+          era: stat.era != null ? stat.era : '',
+          wins: stat.wins, losses: stat.losses,
+          whip: stat.whip != null ? stat.whip : '',
+          strikeouts: stat.strikeOuts, walks: stat.baseOnBalls,
+          innings: stat.inningsPitched
+        };
+      });
+      return byId;
+    }).catch(function () { return {}; });
+  }
+
+  function applyEvidence(games, lines, context) {
+    games.forEach(function (game) {
+      ['away', 'home'].forEach(function (side) {
+        var line = lines[game[side + '_starter_id']];
+        if (line) {
+          if (!game[side + '_hand'] && line.hand) game[side + '_hand'] = line.hand;
+          if (line.era !== '' && line.era != null) game[side + '_era'] = line.era;
+          if (line.wins != null && line.losses != null) {
+            game[side + '_starter_record'] = line.wins + '-' + line.losses;
+          }
+          if (line.whip !== '' && line.whip != null) game[side + '_whip'] = line.whip;
+        }
+        var team = String(game[side] || '').toUpperCase();
+        if (context.teams[team]) game[side + '_context'] = context.teams[team];
+      });
+      game.context_generated_at = context.generatedAt;
+    });
+    return games;
   }
 
   function updateStatus(sport, result) {
