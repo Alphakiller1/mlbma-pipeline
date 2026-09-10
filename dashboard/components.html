@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Design components — Chase Analytics</title>
+  <link rel="stylesheet" href="assets/fonts/chase-fonts.css?v=20260910f">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260910f">
+  <link rel="stylesheet" href="styles/chase-semantic.css?v=20260910f">
+  <link rel="stylesheet" href="styles/chase-primitives.css?v=20260910f">
+  <link rel="stylesheet" href="styles/chase-components.css?v=20260910f">
+  <link rel="stylesheet" href="styles/chase-patterns.css?v=20260910f">
+  <link rel="stylesheet" href="styles/chase-shell.css?v=20260910f">
+  <link rel="stylesheet" href="chase_nav.css?v=20260910f">
+  <link rel="stylesheet" href="styles/chase-public.css?v=20260910f">
+  <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
+  <style>
+    /*
+      This page links the SAME stylesheets the site does and adds no component
+      styling of its own - only the gallery chrome below. That is the whole
+      point: a component can never look right here and wrong in production,
+      because there is only one definition of each. If a swatch below breaks,
+      the site is broken too.
+    */
+    .cmp-page { width: min(100%, var(--shell-max)); margin: 0 auto; padding: var(--space-6) var(--shell-gutter) var(--space-9); }
+    .cmp-head { padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-default); margin-bottom: var(--space-6); }
+    .cmp-title { font-family: var(--font-display); font-size: var(--type-display); font-weight: 800; margin: 0; line-height: 1.02; }
+    .cmp-lede { max-width: 72ch; color: var(--text-secondary); margin: var(--space-2) 0 0; }
+    .cmp-section { margin-top: var(--space-8); }
+    .cmp-section > h2 { font-family: var(--font-display); font-size: var(--type-section); font-weight: 800; margin: 0 0 var(--space-1); }
+    .cmp-note { color: var(--text-muted); font-size: var(--type-12); margin: 0 0 var(--space-4); max-width: 72ch; }
+    .cmp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--space-4); }
+    .cmp-item { padding: var(--space-4); background: var(--surface-board-raised); border: 1px solid var(--border-default); border-radius: var(--radius-sm); }
+    .cmp-item > h3 { font-family: var(--font-display); font-size: var(--type-14); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--text-muted); margin: 0 0 var(--space-3); }
+    .cmp-row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+    .cmp-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--type-12); color: var(--text-accent); margin-top: var(--space-3); display: block; word-break: break-all; }
+    .cmp-swatch { display: grid; gap: var(--space-1); }
+    .cmp-chip { height: 44px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); }
+    .cmp-scale li { list-style: none; margin-bottom: var(--space-2); }
+  </style>
+</head>
+<body data-mode="entry" data-sport="mlb" data-ca-product="research">
+  <main class="cmp-page">
+    <header class="cmp-head">
+      <p class="ca-public-page__eyebrow">Chase Analytics · Design</p>
+      <h1 class="cmp-title">Design components</h1>
+      <p class="cmp-lede">Every primitive and component the public desk is built from, rendered by the same
+        stylesheets the site loads. Nothing here has styling of its own, so a component cannot look correct
+        on this page and wrong in production.</p>
+    </header>
+
+    <section class="cmp-section">
+      <h2>Surfaces</h2>
+      <p class="cmp-note">Six flat inks. Depth comes from the border and the fill step, never from gradient or shadow.</p>
+      <div class="cmp-grid">
+        <div class="cmp-item"><h3>Page</h3><div class="cmp-chip" style="background:var(--surface-canvas)"></div><code class="cmp-code">--surface-canvas</code></div>
+        <div class="cmp-item"><h3>Inset</h3><div class="cmp-chip" style="background:var(--surface-inset)"></div><code class="cmp-code">--surface-inset</code></div>
+        <div class="cmp-item"><h3>Panel</h3><div class="cmp-chip" style="background:var(--surface-board)"></div><code class="cmp-code">--surface-board</code></div>
+        <div class="cmp-item"><h3>Raised</h3><div class="cmp-chip" style="background:var(--surface-board-raised)"></div><code class="cmp-code">--surface-board-raised</code></div>
+        <div class="cmp-item"><h3>Field</h3><div class="cmp-chip" style="background:var(--surface-field)"></div><code class="cmp-code">--surface-field</code></div>
+        <div class="cmp-item"><h3>Brand edge</h3><div class="cmp-chip" style="background:var(--edge-brand)"></div><code class="cmp-code">--edge-brand</code></div>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Type scale</h2>
+      <p class="cmp-note">Roboto Condensed for display, numbers and short caps labels. DM Sans for reading text.
+        Both are self-hosted; if this section renders in one family, the faces have failed to load.</p>
+      <div class="cmp-item">
+        <ul class="cmp-scale" style="padding:0;margin:0">
+          <li style="font-family:var(--font-display);font-size:var(--type-display);font-weight:800;line-height:1.02">Display · page title</li>
+          <li style="font-family:var(--font-display);font-size:var(--type-section);font-weight:800">Section title</li>
+          <li style="font-family:var(--font-display);font-size:var(--type-18);font-weight:800">Team abbreviation · 18</li>
+          <li style="font-size:var(--type-14)">Body copy at 14 — the reading size for names, values and prose.</li>
+          <li style="font-family:var(--font-display);font-size:var(--type-12);font-weight:700;letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--text-muted)">Caps label · 12</li>
+          <li style="font-size:var(--type-12);color:var(--text-muted);font-variant-numeric:tabular-nums">Metadata 12 · tabular 0123456789</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Status chips</h2>
+      <p class="cmp-note">Factual game state. Colour marks severity or liveness, never quality.</p>
+      <div class="cmp-item"><div class="cmp-row">
+        <span class="ca-status-chip is-muted">Scheduled</span>
+        <span class="ca-status-chip is-live">Live</span>
+        <span class="ca-status-chip is-final">Final</span>
+        <span class="ca-status-chip is-ok">Confirmed</span>
+        <span class="ca-status-chip is-watch">Weather watch</span>
+      </div><code class="cmp-code">.ca-status-chip.is-live | .is-final | .is-ok | .is-watch | .is-muted</code></div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Team identity</h2>
+      <p class="cmp-note">Club-coloured abbreviation tab beside the official full name and record. The tab is
+        aria-hidden; assistive tech reads the full name. Ink is derived from the ground's luminance, so a gold
+        club never gets white text.</p>
+      <div class="cmp-item">
+        <div class="ca-matchup-card__teams" style="max-width:520px">
+          <div class="ca-matchup-card__club">
+            <span class="ca-team-tab" style="--team-bg:#003087;--team-ink:#FFFFFF" aria-hidden="true">NYY</span>
+            <div class="ca-matchup-card__club-copy">
+              <span class="ca-matchup-card__name">New York Yankees</span>
+              <span class="ca-matchup-card__record">82-61</span>
+            </div>
+          </div>
+          <span class="ca-matchup-card__versus" aria-hidden="true">at</span>
+          <div class="ca-matchup-card__club">
+            <span class="ca-team-tab" style="--team-bg:#FDB827;--team-ink:#0E1018" aria-hidden="true">PIT</span>
+            <div class="ca-matchup-card__club-copy">
+              <span class="ca-matchup-card__name">Pittsburgh Pirates</span>
+              <span class="ca-matchup-card__record">72-73</span>
+            </div>
+          </div>
+        </div>
+        <code class="cmp-code">MLBMAAssets.teamTabHtml(abbr, sport) → .ca-team-tab[--team-bg][--team-ink]</code>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Person row</h2>
+      <p class="cmp-note">Probable starter or quarterback. Headshot, name, and the season line when published.</p>
+      <div class="cmp-item">
+        <div class="ca-matchup-card__arms" style="max-width:560px">
+          <div class="ca-matchup-card__arm">
+            <span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>
+            <div class="ca-matchup-card__arm-copy">
+              <span class="ca-matchup-card__arm-name">Tarik Skubal</span>
+              <span class="ca-matchup-card__arm-meta">LHP · 9-7 · 2.84 ERA</span>
+            </div>
+          </div>
+          <div class="ca-matchup-card__arm">
+            <span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>
+            <div class="ca-matchup-card__arm-copy">
+              <span class="ca-matchup-card__arm-name">Probable starter not published</span>
+              <span class="ca-matchup-card__arm-meta is-absent">Season line not published</span>
+            </div>
+          </div>
+        </div>
+        <code class="cmp-code">.ca-matchup-card__arm — the absent state is muted prose, never tracked caps</code>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Metric cell with rank</h2>
+      <p class="cmp-note">A descriptive value never appears without its league rank. Ranks are recomputed from
+        the value itself, so they can never inherit an ordering from something modelled.</p>
+      <div class="cmp-item">
+        <div class="ca-ctx-strip" style="max-width:560px">
+          <div class="ca-ctx-cell"><span class="ca-ctx-label">OSI</span><strong class="ca-ctx-value">46.9</strong><span class="ca-ctx-rank">15th of 30</span></div>
+          <div class="ca-ctx-cell"><span class="ca-ctx-label">wRC+</span><strong class="ca-ctx-value">102</strong><span class="ca-ctx-rank">8th of 30</span></div>
+          <div class="ca-ctx-cell"><span class="ca-ctx-label">wOBA</span><strong class="ca-ctx-value">.319</strong><span class="ca-ctx-rank">14th of 30</span></div>
+          <div class="ca-ctx-cell"><span class="ca-ctx-label">ABQ</span><strong class="ca-ctx-value">41.9</strong><span class="ca-ctx-rank">17th of 30</span></div>
+        </div>
+        <code class="cmp-code">.ca-ctx-cell — label casing comes from the renderer (wRC+, not WRC+)</code>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Availability list</h2>
+      <p class="cmp-note">Official injury designations. Status carries colour because it is factual severity.
+        No projection, snap share or confidence appears here.</p>
+      <div class="cmp-item">
+        <ul class="ca-avail-list" style="max-width:520px">
+          <li class="ca-avail-row"><span class="ca-avail-pos">QB</span><span class="ca-avail-name">Sam Darnold</span><span class="ca-avail-detail">hip</span><span class="ca-avail-status is-out">Out</span></li>
+          <li class="ca-avail-row"><span class="ca-avail-pos">OT</span><span class="ca-avail-name">Josh Simmons</span><span class="ca-avail-detail">back</span><span class="ca-avail-status is-doubtful">Doubtful</span></li>
+          <li class="ca-avail-row"><span class="ca-avail-pos">WR</span><span class="ca-avail-name">Rashee Rice</span><span class="ca-avail-detail">ankle</span><span class="ca-avail-status is-questionable">Questionable</span></li>
+        </ul>
+        <code class="cmp-code">.ca-avail-row + .ca-avail-status.is-out | .is-doubtful | .is-questionable</code>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Factual cell</h2>
+      <p class="cmp-note">Label above value. A missing value states that it is missing rather than rendering blank.</p>
+      <div class="cmp-item">
+        <div class="ca-matchup-card__summary" style="max-width:640px">
+          <div class="ca-matchup-card__fact"><span>Venue</span><strong>Comerica Park · Detroit, MI</strong></div>
+          <div class="ca-matchup-card__fact"><span>Conditions</span><strong>79° · Cloudy · 10 mph</strong></div>
+          <div class="ca-matchup-card__fact"><span>Bullpen</span><strong>Workload not published</strong></div>
+          <div class="ca-matchup-card__fact"><span>Lineup status</span><strong class="is-ok">Confirmed</strong></div>
+        </div>
+        <code class="cmp-code">.ca-matchup-card__fact</code>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Controls</h2>
+      <div class="cmp-item">
+        <div class="cmp-row">
+          <button type="button" class="ca-btn ca-btn--primary">Primary action</button>
+          <button type="button" class="ca-desk-chip is-on">Selected filter</button>
+          <button type="button" class="ca-desk-chip">Filter</button>
+          <button type="button" class="ca-matchup-card__expand-btn"><span>Expand matchup</span><span aria-hidden="true">+</span></button>
+          <a class="ca-matchup-card__detail-link" href="#">Full matchup analysis <span aria-hidden="true">→</span></a>
+        </div>
+        <code class="cmp-code">Every control clears the 44px tap floor. Primary uses --accent-strong for AA contrast.</code>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Empty and unavailable states</h2>
+      <p class="cmp-note">A missing module names itself and says why. The boxed treatment is a state affordance,
+        so it disappears once real content mounts.</p>
+      <div class="cmp-grid">
+        <div class="ca-async" data-state="loading">Loading MLB matchups…</div>
+        <div class="ca-async" data-state="empty">No games on the published slate</div>
+        <div class="ca-async" data-state="error">Matchups unavailable — the published slate could not be read.</div>
+      </div>
+    </section>
+
+    <section class="cmp-section">
+      <h2>Provenance</h2>
+      <p class="cmp-note">Publication time and data age are separate facts and are never collapsed into one value.</p>
+      <div class="cmp-item">
+        <div class="ca-context-bar" style="padding:0">
+          <span class="ca-context-bar__start">MLB</span>
+          <span class="ca-context-bar__mid">Data through Sep 9 · Published 10:00 PM ET</span>
+          <span class="ca-context-bar__end">15 games available</span>
+        </div>
+        <code class="cmp-code">.ca-context-bar — start / mid / end</code>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -209,12 +209,50 @@
     return cells ? '<div class="ca-ctx-strip">' + cells + '</div>' : '';
   }
 
+
+  /* NFL availability. The list is factual roster status - designation and
+     injury type as reported - with no projection, snap share or confidence.
+     Capped at five per side on the card; the rest are counted. */
+  function availabilityPanel(game, side, teamLabel) {
+    var list = game[side + '_availability_list'];
+    if (!list) return '';
+    if (!list.length) {
+      return '<section class="ca-avail"><h4 class="ca-ctx-head">' + esc(teamLabel) +
+        '</h4><p class="ca-avail-empty">No designations reported</p></section>';
+    }
+    var shown = list.slice(0, 5);
+    var rows = shown.map(function (p) {
+      var tone = p.status === 'Out' ? 'is-out'
+        : (p.status === 'Doubtful' ? 'is-doubtful' : 'is-questionable');
+      return '<li class="ca-avail-row">' +
+        '<span class="ca-avail-pos">' + esc(p.position || '--') + '</span>' +
+        '<span class="ca-avail-name">' + esc(p.name) + '</span>' +
+        (p.detail ? '<span class="ca-avail-detail">' + esc(p.detail) + '</span>' : '<span></span>') +
+        '<span class="ca-avail-status ' + tone + '">' + esc(p.status) + '</span>' +
+        '</li>';
+    }).join('');
+    var more = list.length - shown.length;
+    return '<section class="ca-avail"><h4 class="ca-ctx-head">' + esc(teamLabel) +
+      '</h4><ul class="ca-avail-list">' + rows + '</ul>' +
+      (more > 0 ? '<p class="ca-avail-more">+' + more + ' more designated</p>' : '') +
+      '</section>';
+  }
+
   function expandedHtml(sport, game, panelId) {
     var awayName = teamName(sport, game.away, game.away_name);
     var homeName = teamName(sport, game.home, game.home_name);
     // No starter blocks here: the collapsed card already shows both faces, and
     // repeating them made the same two headshots appear twice on expand.
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
+    if (sport === 'nfl') {
+      var awayAv = availabilityPanel(game, 'away', awayName);
+      var homeAv = availabilityPanel(game, 'home', homeName);
+      if (awayAv || homeAv) {
+        html += '<div class="ca-ctx-duo">' + awayAv + homeAv + '</div>' +
+          '<p class="ca-ctx-note">Official injury report designations. ' +
+          'Roster status only; no projection or snap share.</p>';
+      }
+    }
     if (sport === 'mlb') {
       var awayCtx = contextStrip(game, 'away'), homeCtx = contextStrip(game, 'home');
       if (awayCtx || homeCtx) {
@@ -428,7 +466,7 @@
         if (result.error && !result.normalized.games.length) throw result.error;
         return {
           games: result.normalized.games, generatedAt: result.normalized.generated_at,
-          dataThrough: result.normalized.data_through, source: 'Published NFL slate'
+          dataThrough: result.normalized.data_through, source: 'Published slate'
         };
       });
     }

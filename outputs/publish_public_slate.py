@@ -7,7 +7,9 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import sys
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -131,14 +133,89 @@ def mlb_producer(data_dir: Path) -> dict:
             "freshness": "Current",
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    # See the note in nfl_producer_from_espn: these are two different facts.
+    observed = [g.get("kickoff_utc") for g in games if g.get("kickoff_utc")]
     return {
         "generated_at_utc": now,
-        "data_through_utc": now,
+        "data_through_utc": max(observed) if observed else now,
         "games": games,
     }
 
 
-def nfl_producer_from_espn(payload: dict) -> dict:
+
+ESPN_NFL_INJURIES = (
+    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
+)
+
+# Designations that change how a reader should treat availability. "Active" is
+# the default state and is not worth reporting.
+NFL_NOTABLE_STATUS = {
+    "out", "doubtful", "questionable",
+    "injured reserve", "ir", "pup", "suspension", "suspended",
+}
+
+
+def fetch_nfl_injuries() -> dict:
+    """Official injury designations, keyed by team abbreviation.
+
+    nfl-model/board.json reports injury_status as null on every player row, so
+    the designations come from the official feed instead. The block node
+    carries only id and displayName - the abbreviation is on each athlete's
+    team - and the body part is reported inside the comment text rather than a
+    field of its own.
+    """
+    try:
+        with urllib.request.urlopen(ESPN_NFL_INJURIES, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        return {}
+
+    by_team: dict[str, list[dict]] = {}
+    for block in payload.get("injuries") or []:
+        team = ""
+        notable: list[dict] = []
+        for item in block.get("injuries") or []:
+            athlete = item.get("athlete") or {}
+            if not team:
+                team = str(((athlete.get("team") or {}).get("abbreviation")) or "").upper()
+            status = str(item.get("status") or "").strip()
+            if status.lower() not in NFL_NOTABLE_STATUS:
+                continue
+            detail = ""
+            match = re.search(r"\(([^)]{2,24})\)", str(item.get("shortComment") or ""))
+            if match:
+                detail = match.group(1)
+            notable.append({
+                "name": athlete.get("displayName") or "",
+                "position": ((athlete.get("position") or {}).get("abbreviation")) or "",
+                "status": status,
+                "detail": detail,
+            })
+        if not team:
+            continue
+        rank = {"Out": 0, "Doubtful": 1, "Questionable": 2}
+        notable.sort(key=lambda p: rank.get(p["status"], 3))
+        by_team[team] = notable
+    return by_team
+
+
+def availability_summary(entries: list[dict] | None) -> str:
+    if entries is None:
+        return "Injury report pending"
+    if not entries:
+        return "No designations reported"
+    counts: dict[str, int] = {}
+    for entry in entries:
+        counts[entry["status"]] = counts.get(entry["status"], 0) + 1
+    parts = [
+        f"{counts[s]} {s.lower()}"
+        for s in ("Out", "Doubtful", "Questionable")
+        if counts.get(s)
+    ]
+    return " · ".join(parts) or f"{len(entries)} designated"
+
+
+def nfl_producer_from_espn(payload: dict, injuries: dict | None = None) -> dict:
     games = []
     for event in payload.get("events") or []:
         comps = event.get("competitions") or []
@@ -198,18 +275,35 @@ def nfl_producer_from_espn(payload: dict) -> dict:
                 f"{temperature}°" if temperature is not None else "",
                 str(condition) if condition else "",
             ) if x) or None,
-            "surface": "Grass" if venue_data.get("grass") is True else None,
+            "surface": (
+                "Grass" if venue_data.get("grass") is True
+                else ("Turf" if venue_data.get("grass") is False else None)
+            ),
+            "roof": (
+                "Indoor" if venue_data.get("indoor") is True
+                else ("Outdoor" if venue_data.get("indoor") is False else None)
+            ),
             "away_starter": qbs.get("away"),
             "home_starter": qbs.get("home"),
-            "away_availability": "Injury report pending",
-            "home_availability": "Injury report pending",
+            "away_availability": availability_summary((injuries or {}).get(away_abbr)),
+            "home_availability": availability_summary((injuries or {}).get(home_abbr)),
+            "away_availability_list": (injuries or {}).get(away_abbr),
+            "home_availability_list": (injuries or {}).get(home_abbr),
             "away_score": away.get("score"),
             "home_score": home.get("score"),
             "game_state": state,
             "freshness": "Current",
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    return {"generated_at_utc": now, "data_through_utc": now, "games": games}
+    # Publication time and data age are different facts (IA section 6.7): the
+    # first is when this file was written, the second is the newest observation
+    # inside it. Setting both to now() made them impossible to tell apart.
+    observed = [g.get("kickoff_utc") for g in games if g.get("kickoff_utc")]
+    return {
+        "generated_at_utc": now,
+        "data_through_utc": max(observed) if observed else now,
+        "games": games,
+    }
 
 
 def fetch_nfl_scoreboard() -> dict | None:
@@ -243,7 +337,7 @@ def run(data_dir: Path | None = None) -> int:
     ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
     espn = fetch_nfl_scoreboard()
     if espn:
-        nfl = nfl_producer_from_espn(espn)
+        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries())
         ok = write_if_better("nfl", nfl, PUBLIC_DIR / "nfl" / "slate.json") or ok
     else:
         print("  skip nfl: scoreboard unreachable; keeping existing public slate")
