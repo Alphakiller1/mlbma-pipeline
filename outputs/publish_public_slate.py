@@ -81,6 +81,24 @@ def _lineup_state(rows: list[dict], away: str, home: str) -> tuple[str, str]:
     return away_state, home_state
 
 
+
+def _observed_through(games: list[dict], now: str) -> str:
+    """Newest observation in the file, never a future time.
+
+    A slate lists games that have not happened yet, so the latest kickoff is not
+    evidence of anything. Only games already under way or finished have been
+    observed; with none started, the freshest fact is the fetch itself.
+    """
+    started = [
+        g.get("kickoff_utc")
+        for g in games
+        if g.get("kickoff_utc")
+        and str(g.get("game_state") or "").lower() in {"live", "final"}
+    ]
+    newest = max(started) if started else now
+    return min(newest, now)
+
+
 def mlb_producer(data_dir: Path) -> dict:
     matchups = _read_csv(data_dir / "today_matchups.csv")
     weather = _read_csv(data_dir / "today_weather.csv")
@@ -134,10 +152,9 @@ def mlb_producer(data_dir: Path) -> dict:
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # See the note in nfl_producer_from_espn: these are two different facts.
-    observed = [g.get("kickoff_utc") for g in games if g.get("kickoff_utc")]
     return {
         "generated_at_utc": now,
-        "data_through_utc": max(observed) if observed else now,
+        "data_through_utc": _observed_through(games, now),
         "games": games,
     }
 
@@ -296,12 +313,16 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None) -> dict:
         })
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # Publication time and data age are different facts (IA section 6.7): the
-    # first is when this file was written, the second is the newest observation
-    # inside it. Setting both to now() made them impossible to tell apart.
-    observed = [g.get("kickoff_utc") for g in games if g.get("kickoff_utc")]
+    # first is when this file was written, the second is the newest OBSERVATION
+    # inside it. Both were now(), which made them impossible to tell apart.
+    #
+    # A schedule carries future kickoffs, so max(kickoff) would put data_through
+    # days ahead of publication - a worse claim than the duplicate. Only games
+    # already under way or complete are observations; if none have started, the
+    # newest thing known is the fetch itself.
     return {
         "generated_at_utc": now,
-        "data_through_utc": max(observed) if observed else now,
+        "data_through_utc": _observed_through(games, now),
         "games": games,
     }
 

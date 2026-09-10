@@ -1,58 +1,2202 @@
 {
-  "schema": "chase-public-slate/1",
-  "sport": "nfl",
-  "generated_at_utc": "2026-09-09T02:00:00Z",
-  "data_through_utc": "2026-09-09T01:40:00Z",
-  "games": [
+ "schema": "chase-public-slate/1",
+ "sport": "nfl",
+ "generated_at_utc": "2026-09-10T03:08:07Z",
+ "data_through_utc": "2026-09-10T00:20Z",
+ "games": [
+  {
+   "id": "401872656",
+   "away": "NE",
+   "home": "SEA",
+   "away_name": "New England Patriots",
+   "home_name": "Seattle Seahawks",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-10T00:20Z",
+   "venue": "Lumen Field",
+   "venue_city": "Seattle, WA",
+   "broadcast": "NBC",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "10 out",
+   "home_availability": "10 out",
+   "away_availability_list": [
     {
-      "id": "2026-W01-ne-sea",
-      "sport": "nfl",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-10T00:20:00Z",
-      "away": "NE",
-      "home": "SEA",
-      "away_name": "New England Patriots",
-      "home_name": "Seattle Seahawks",
-      "away_record": "0-0",
-      "home_record": "0-0",
-      "venue": "Lumen Field",
-      "venue_city": "Seattle, WA",
-      "broadcast": "NBC",
-      "away_starter": "Drake Maye",
-      "home_starter": "Quarterback not published",
-      "away_availability": "Official report pending",
-      "home_availability": "Official report pending",
-      "availability_summary": "Official availability report pending",
-      "away_rest_days": 7,
-      "home_rest_days": 7,
-      "away_travel": "Road game",
-      "home_travel": "Home game",
-      "surface": "Artificial turf"
+     "name": "A.J. Brown",
+     "position": "WR",
+     "status": "Out",
+     "detail": "ankle"
     },
     {
-      "id": "2026-W01-kc-lac",
-      "sport": "nfl",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-13T17:00:00Z",
-      "away": "KC",
-      "home": "LAC",
-      "away_name": "Kansas City Chiefs",
-      "home_name": "Los Angeles Chargers",
-      "away_record": "0-0",
-      "home_record": "0-0",
-      "venue": "SoFi Stadium",
-      "venue_city": "Inglewood, CA",
-      "broadcast": "Broadcast not published",
-      "away_starter": "Patrick Mahomes",
-      "home_starter": "Justin Herbert",
-      "away_availability": "Official report pending",
-      "home_availability": "Official report pending",
-      "availability_summary": "Official availability report pending",
-      "away_rest_days": 7,
-      "home_rest_days": 7,
-      "away_travel": "Road game",
-      "home_travel": "Home game",
-      "surface": "Artificial turf"
+     "name": "Behren Morton",
+     "position": "QB",
+     "status": "Out",
+     "detail": "coach's decision"
+    },
+    {
+     "name": "Efton Chism III",
+     "position": "WR",
+     "status": "Out",
+     "detail": "coach's decision"
+    },
+    {
+     "name": "Karon Prunty",
+     "position": "CB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Walter Rouse",
+     "position": "OL",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "TreVeyon Henderson",
+     "position": "RB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Erick Hunter",
+     "position": "LB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Ben Brown",
+     "position": "C",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Brenden Schooler",
+     "position": "S",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Harold Landry III",
+     "position": "LB",
+     "status": "Out",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Bryce Baringer",
+     "position": "P",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Khalil Jacobs",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Marcus Bryant",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "ankle"
     }
-  ]
+   ],
+   "home_availability_list": [
+    {
+     "name": "Sam Darnold",
+     "position": "QB",
+     "status": "Out",
+     "detail": "hip"
+    },
+    {
+     "name": "Nick Emmanwori",
+     "position": "S",
+     "status": "Out",
+     "detail": "ankle"
+    },
+    {
+     "name": "Jalen Milroe",
+     "position": "QB",
+     "status": "Out",
+     "detail": "coach's decision"
+    },
+    {
+     "name": "Tory Horton",
+     "position": "WR",
+     "status": "Out",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Beau Stephens",
+     "position": "G",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Mike Morris",
+     "position": "DE",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Ty Okada",
+     "position": "S",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Nick Kallerup",
+     "position": "TE",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Zach Charbonnet",
+     "position": "RB",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Terrion Arnold",
+     "position": "CB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Irv Charles",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "away_score": "10",
+   "home_score": "13",
+   "game_state": "live",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872657",
+   "away": "SF",
+   "home": "LAR",
+   "away_name": "San Francisco 49ers",
+   "home_name": "Los Angeles Rams",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-11T00:35Z",
+   "venue": "Melbourne Cricket Ground",
+   "venue_city": "Melbourne, VIC",
+   "broadcast": "Netflix",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 8 questionable",
+   "home_availability": "1 out \u00b7 1 questionable",
+   "away_availability_list": [
+    {
+     "name": "Alfred Collins",
+     "position": "DT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Mykel Williams",
+     "position": "DE",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "George Kittle",
+     "position": "TE",
+     "status": "Questionable",
+     "detail": "Achilles"
+    },
+    {
+     "name": "Dre Greenlaw",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "Achilles"
+    },
+    {
+     "name": "Renardo Green",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Romello Height",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Kyle Juszczyk",
+     "position": "FB",
+     "status": "Questionable",
+     "detail": "finger"
+    },
+    {
+     "name": "Nick Bosa",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "James Thompson Jr.",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Gracen Halton",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Nate Hobbs",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Sam Okuayinonu",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Nick Martin",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "hamstring"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Aaron Donald",
+     "position": "DT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Jaylen Watson",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": "toe"
+    },
+    {
+     "name": "Keir Thomas II",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Justin Dedich",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Keagen Trost",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Matthew Caldwell",
+     "position": "QB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Daniel Rickert",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872925",
+   "away": "TB",
+   "home": "CIN",
+   "away_name": "Tampa Bay Buccaneers",
+   "home_name": "Cincinnati Bengals",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Paycor Stadium",
+   "venue_city": "Cincinnati, OH",
+   "broadcast": "FOX",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "5 questionable",
+   "home_availability": "2 designated",
+   "away_availability_list": [
+    {
+     "name": "Rueben Bain Jr.",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "shoulder"
+    },
+    {
+     "name": "Christian Rozeboom",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "foot"
+    },
+    {
+     "name": "Justin Skule",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Sean Tucker",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Jalen McMillan",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Josh Hayes",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Mohamed Kamara",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "David Sills V",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Deshawn McKnight",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": "hamstring"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Brian Parker II",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Ja'Sir Taylor",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872923",
+   "away": "NO",
+   "home": "DET",
+   "away_name": "New Orleans Saints",
+   "home_name": "Detroit Lions",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Ford Field",
+   "venue_city": "Detroit, MI",
+   "broadcast": "FOX",
+   "conditions": null,
+   "surface": null,
+   "roof": "Indoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 3 questionable",
+   "home_availability": "3 out \u00b7 2 questionable",
+   "away_availability_list": [
+    {
+     "name": "Cameron Jordan",
+     "position": "DE",
+     "status": "Out",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Mason Tipton",
+     "position": "WR",
+     "status": "Out",
+     "detail": "leg"
+    },
+    {
+     "name": "Oscar Delp",
+     "position": "TE",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Audric Estime",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "thigh"
+    },
+    {
+     "name": "Alvin Kamara",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Lorenzo Styles Jr.",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Dillon Radunz",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Jaylan Ford",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "David Long Jr.",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Jordyn Tyson",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "hamstring"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Giovanni Manu",
+     "position": "OT",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Kerby Joseph",
+     "position": "S",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Brian Branch",
+     "position": "S",
+     "status": "Out",
+     "detail": "Achilles"
+    },
+    {
+     "name": "Christian Izien",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Derrick Moore",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Cade Mays",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": "wrist"
+    },
+    {
+     "name": "Payton Turner",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Isiah Pacheco",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "back"
+    },
+    {
+     "name": "Damone Clark",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872924",
+   "away": "NYJ",
+   "home": "TEN",
+   "away_name": "New York Jets",
+   "home_name": "Tennessee Titans",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Nissan Stadium",
+   "venue_city": "Nashville, TN",
+   "broadcast": "CBS",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "1 out \u00b7 3 questionable",
+   "home_availability": "2 questionable",
+   "away_availability_list": [
+    {
+     "name": "Tyler Baron",
+     "position": "DE",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Tim Patrick",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "groin"
+    },
+    {
+     "name": "Joseph Ossai",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "D'Angelo Ponds",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": "calf"
+    },
+    {
+     "name": "VJ Payne",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Kingsley Jonathan",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Tre Brown",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Chip Trayanum",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "neck"
+    },
+    {
+     "name": "Anez Cooper",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "shoulder"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Cedric Gray",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Andre James",
+     "position": "C",
+     "status": "Questionable",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Milo Eifler",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Kendell Brooks",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Tanoh Kpassagnon",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Dorian Mausi",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Joshua Williams",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "pectoral"
+    },
+    {
+     "name": "Jaylen Harrell",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Jaren Kanak",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872659",
+   "away": "BAL",
+   "home": "IND",
+   "away_name": "Baltimore Ravens",
+   "home_name": "Indianapolis Colts",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Lucas Oil Stadium",
+   "venue_city": "Indianapolis, IN",
+   "broadcast": "CBS",
+   "conditions": null,
+   "surface": null,
+   "roof": "Indoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "4 questionable",
+   "home_availability": "5 questionable",
+   "away_availability_list": [
+    {
+     "name": "Teddye Buchanan",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Devontez Walker",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "groin"
+    },
+    {
+     "name": "Zay Flowers",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Nnamdi Madubuike",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Bilhal Kone",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Adam Randall",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Danny Pinter",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Jahquez Robinson",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Drew Ogletree",
+     "position": "TE",
+     "status": "Questionable",
+     "detail": "neck"
+    },
+    {
+     "name": "Alec Pierce",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Sedrick Van Pran-Granger",
+     "position": "C",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Sean McKeon",
+     "position": "TE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "A.J. Haulcy",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Carson Towt",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "D.J. Montgomery",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "abdomen"
+    },
+    {
+     "name": "Will Mallory",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "thumb"
+    },
+    {
+     "name": "Cam Taylor-Britt",
+     "position": "CB",
+     "status": "Suspension",
+     "detail": ""
+    },
+    {
+     "name": "Cameron Mitchell",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872658",
+   "away": "ATL",
+   "home": "PIT",
+   "away_name": "Atlanta Falcons",
+   "home_name": "Pittsburgh Steelers",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Acrisure Stadium",
+   "venue_city": "Pittsburgh, PA",
+   "broadcast": "FOX",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "3 out \u00b7 5 questionable",
+   "home_availability": "1 out \u00b7 1 questionable",
+   "away_availability_list": [
+    {
+     "name": "Storm Norton",
+     "position": "OT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Michael Penix Jr.",
+     "position": "QB",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Anterio Thompson",
+     "position": "DT",
+     "status": "Out",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Billy Bowman Jr.",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": "Achilles"
+    },
+    {
+     "name": "Za'Darius Smith",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Kyle Hinton",
+     "position": "G",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Brandon Dorlus",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Zachariah Branch",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Trey Sermon",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "JD Bertrand",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Beaux Collins",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Malik Verdon",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "James Pearce Jr.",
+     "position": "LB",
+     "status": "Suspension",
+     "detail": ""
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Donte Kent",
+     "position": "CB",
+     "status": "Out",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Joey Porter Jr.",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": "back"
+    },
+    {
+     "name": "DeShon Elliott",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Jack Driscoll",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872661",
+   "away": "CHI",
+   "home": "CAR",
+   "away_name": "Chicago Bears",
+   "home_name": "Carolina Panthers",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Bank of America Stadium",
+   "venue_city": "Charlotte, NC",
+   "broadcast": "FOX",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 3 questionable",
+   "home_availability": "3 out \u00b7 3 questionable",
+   "away_availability_list": [
+    {
+     "name": "Kyler Gordon",
+     "position": "CB",
+     "status": "Out",
+     "detail": "calf"
+    },
+    {
+     "name": "Shemar Turner",
+     "position": "DT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Rome Odunze",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "calf"
+    },
+    {
+     "name": "Ozzy Trapilo",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Dallis Flowers",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Jonathan Garvin",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Hayden Large",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Coby Bryant",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Ruben Hyppolite II",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "shoulder"
+    },
+    {
+     "name": "Tony Fields II",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Taylor Moton",
+     "position": "OT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Ikem Ekwonu",
+     "position": "OT",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Tershawn Wharton",
+     "position": "DT",
+     "status": "Out",
+     "detail": "neck"
+    },
+    {
+     "name": "Bobby Brown III",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Patrick Jones II",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jonathon Brooks",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "groin"
+    },
+    {
+     "name": "Trevor Etienne",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Brady Christensen",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Bam Martin-Scott",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "hamstring"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872922",
+   "away": "CLE",
+   "home": "JAX",
+   "away_name": "Cleveland Browns",
+   "home_name": "Jacksonville Jaguars",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "EverBank Stadium",
+   "venue_city": "Jacksonville, FL",
+   "broadcast": "CBS",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 2 questionable",
+   "home_availability": "3 questionable",
+   "away_availability_list": [
+    {
+     "name": "Jeremiah Owusu-Koramoah",
+     "position": "LB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Joe Royer",
+     "position": "TE",
+     "status": "Out",
+     "detail": "personal"
+    },
+    {
+     "name": "Teven Jenkins",
+     "position": "G",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Maliek Collins",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Dillon Gabriel",
+     "position": "QB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Kendrick Green",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Kalia Davis",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Edefuan Ulofoshio",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "biceps"
+    },
+    {
+     "name": "Elijah Chatman",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": "quadriceps"
+    },
+    {
+     "name": "Travis Bell",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": "eye"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Cole Van Lanen",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "LeQuint Allen Jr.",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jakobi Meyers",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "hand"
+    },
+    {
+     "name": "Sam Mustipher",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Patrick Mekari",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "back"
+    },
+    {
+     "name": "Zach Durfee",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": "upper body"
+    },
+    {
+     "name": "Parker Hughes",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Jared Bartlett",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Garrett DiGiorgio",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872660",
+   "away": "BUF",
+   "home": "HOU",
+   "away_name": "Buffalo Bills",
+   "home_name": "Houston Texans",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T17:00Z",
+   "venue": "Reliant Stadium",
+   "venue_city": "Houston, TX",
+   "broadcast": "CBS",
+   "conditions": null,
+   "surface": null,
+   "roof": "Indoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 5 questionable",
+   "home_availability": "2 out \u00b7 1 questionable",
+   "away_availability_list": [
+    {
+     "name": "Tyrell Shavers",
+     "position": "WR",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Dorian Strong",
+     "position": "CB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "T.J. Sanders",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jordan Hancock",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Ty Johnson",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "lower leg"
+    },
+    {
+     "name": "Jedrick Wills Jr.",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jude Bowry",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": "foot"
+    },
+    {
+     "name": "Zane Durant",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Phidarian Mathis",
+     "position": "DT",
+     "status": "Suspension",
+     "detail": ""
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "M.J. Stewart",
+     "position": "S",
+     "status": "Out",
+     "detail": "quadriceps"
+    },
+    {
+     "name": "E.J. Speed",
+     "position": "LB",
+     "status": "Out",
+     "detail": "quadriceps"
+    },
+    {
+     "name": "Kayden McDonald",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jayden Higgins",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Tank Dell",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Sam Hagen",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Braden Smith",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "foot"
+    },
+    {
+     "name": "Solomon Byrd",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": "ankle"
+    },
+    {
+     "name": "Ali Gaye",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Ja'Marcus Ingram",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "shoulder"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872928",
+   "away": "MIA",
+   "home": "LV",
+   "away_name": "Miami Dolphins",
+   "home_name": "Las Vegas Raiders",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T20:25Z",
+   "venue": "Allegiant Stadium",
+   "venue_city": "Las Vegas, NV",
+   "broadcast": "FOX",
+   "conditions": null,
+   "surface": null,
+   "roof": "Indoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 2 questionable",
+   "home_availability": "1 doubtful",
+   "away_availability_list": [
+    {
+     "name": "Storm Duck",
+     "position": "CB",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Darrell Baker Jr.",
+     "position": "CB",
+     "status": "Out",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Will Kacmarek",
+     "position": "TE",
+     "status": "Questionable",
+     "detail": "calf"
+    },
+    {
+     "name": "Ronnie Harrison Jr.",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Trey Moore",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Kenneth Grant",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Ben Sims",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Cole Turner",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Brock Bowers",
+     "position": "TE",
+     "status": "Doubtful",
+     "detail": ""
+    },
+    {
+     "name": "Dont'e Thornton Jr.",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Carter Runyon",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Keyron Crawford",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": "ankle"
+    },
+    {
+     "name": "Chigozie Anusiem",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Justin Pickett",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Brennan Jackson",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Chris Collier",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872927",
+   "away": "GB",
+   "home": "MIN",
+   "away_name": "Green Bay Packers",
+   "home_name": "Minnesota Vikings",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T20:25Z",
+   "venue": "U.S. Bank Stadium",
+   "venue_city": "Minneapolis, MN",
+   "broadcast": "CBS",
+   "conditions": null,
+   "surface": null,
+   "roof": "Indoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "4 out \u00b7 7 questionable",
+   "home_availability": "3 questionable",
+   "away_availability_list": [
+    {
+     "name": "Jordon Riley",
+     "position": "DT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Josh Jacobs",
+     "position": "RB",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Luke Musgrave",
+     "position": "TE",
+     "status": "Out",
+     "detail": "neck"
+    },
+    {
+     "name": "Micah Parsons",
+     "position": "DE",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Devonte Wyatt",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Barryn Sorrell",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Javon Hargrave",
+     "position": "DT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Ty'Ron Hopper",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jordan Morgan",
+     "position": "G",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Aaron Banks",
+     "position": "G",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Zach Bako-Bewele",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Savion Williams",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Collin Oliver",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Trey Dean III",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Jakobe Thomas",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jacob Thomas",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Caleb Tiernan",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Ben Yurosek",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Jermar Jefferson",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Michael Jurgens",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Tyler Batty",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Jeshaun Jones",
+     "position": "WR",
+     "status": "Suspension",
+     "detail": ""
+    },
+    {
+     "name": "Jamal Adams",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872929",
+   "away": "WSH",
+   "home": "PHI",
+   "away_name": "Washington Commanders",
+   "home_name": "Philadelphia Eagles",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T20:25Z",
+   "venue": "Lincoln Financial Field",
+   "venue_city": "Philadelphia, PA",
+   "broadcast": "FOX",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "1 out \u00b7 3 questionable",
+   "home_availability": "2 questionable",
+   "away_availability_list": [
+    {
+     "name": "Deatrich Wise Jr.",
+     "position": "DE",
+     "status": "Out",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "K'Lavon Chaisson",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jacory Croskey-Merritt",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Odafe Oweh",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "calf"
+    },
+    {
+     "name": "Jer'Zhan Newton",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": "pectoral"
+    },
+    {
+     "name": "Laremy Tunsil",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "triceps"
+    },
+    {
+     "name": "Trey Amos",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "ankle"
+    },
+    {
+     "name": "Jeremy McNichols",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "quadriceps"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Jonathan Greenard",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "pectoral"
+    },
+    {
+     "name": "Eli Stowers",
+     "position": "TE",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Andre' Sam",
+     "position": "S",
+     "status": "Injured Reserve",
+     "detail": "foot"
+    },
+    {
+     "name": "Jakorian Bennett",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Grant Calcaterra",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "back"
+    },
+    {
+     "name": "Johnny Wilson",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872926",
+   "away": "ARI",
+   "home": "LAC",
+   "away_name": "Arizona Cardinals",
+   "home_name": "Los Angeles Chargers",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-13T20:25Z",
+   "venue": "SoFi Stadium",
+   "venue_city": "Inglewood, CA",
+   "broadcast": "CBS",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "1 out \u00b7 4 questionable",
+   "home_availability": "1 out \u00b7 5 questionable",
+   "away_availability_list": [
+    {
+     "name": "Tip Reiman",
+     "position": "TE",
+     "status": "Out",
+     "detail": "ankle"
+    },
+    {
+     "name": "Garrett Williams",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Isaiah Adams",
+     "position": "G",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jeremiyah Love",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "ankle"
+    },
+    {
+     "name": "Dadrion Taylor-Demerson",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Kaleb Proctor",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Zachary Carter",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "James Conner",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "foot"
+    },
+    {
+     "name": "Trey Benson",
+     "position": "RB",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Isaiah World",
+     "position": "OT",
+     "status": "Out",
+     "detail": ""
+    },
+    {
+     "name": "Tuli Tuipulotu",
+     "position": "LB",
+     "status": "Questionable",
+     "detail": "hip"
+    },
+    {
+     "name": "Brenen Thompson",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Deane Leonard",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "RJ Mickens",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Keaton Mitchell",
+     "position": "RB",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Denzel Perryman",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Scott Matlock",
+     "position": "FB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Branson Taylor",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Tyler Biadasz",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872930",
+   "away": "DAL",
+   "home": "NYG",
+   "away_name": "Dallas Cowboys",
+   "home_name": "New York Giants",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-14T00:20Z",
+   "venue": "MetLife Stadium",
+   "venue_city": "East Rutherford, NJ",
+   "broadcast": "NBC",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "1 questionable",
+   "home_availability": "1 questionable",
+   "away_availability_list": [
+    {
+     "name": "Ajani Cornelius",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Tyler Smith",
+     "position": "G",
+     "status": "Injured Reserve",
+     "detail": "thumb"
+    },
+    {
+     "name": "Devin Moore",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Matt Hennessy",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "DJ Rogers",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Marist Liufau",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "forearm"
+    },
+    {
+     "name": "Kelvin Gilliam Jr.",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": "triceps"
+    },
+    {
+     "name": "Princeton Fant",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Malik Nabers",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Roy Robertson-Harris",
+     "position": "DT",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Korie Black",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Calvin Austin III",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Jarrick Bernard-Converse",
+     "position": "CB",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  },
+  {
+   "id": "401872931",
+   "away": "DEN",
+   "home": "KC",
+   "away_name": "Denver Broncos",
+   "home_name": "Kansas City Chiefs",
+   "away_record": "0-0",
+   "home_record": "0-0",
+   "kickoff_utc": "2026-09-15T00:15Z",
+   "venue": "Arrowhead Stadium",
+   "venue_city": "Kansas City, MO",
+   "broadcast": "ESPN",
+   "conditions": null,
+   "surface": null,
+   "roof": "Outdoor",
+   "away_starter": null,
+   "home_starter": null,
+   "away_availability": "2 out \u00b7 3 questionable",
+   "home_availability": "1 out \u00b7 7 questionable",
+   "away_availability_list": [
+    {
+     "name": "Jonathon Cooper",
+     "position": "LB",
+     "status": "Out",
+     "detail": "Colo."
+    },
+    {
+     "name": "Nick Gargiulo",
+     "position": "G",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Riley Moss",
+     "position": "CB",
+     "status": "Questionable",
+     "detail": "ribs"
+    },
+    {
+     "name": "Marvin Mims Jr.",
+     "position": "WR",
+     "status": "Questionable",
+     "detail": "foot"
+    },
+    {
+     "name": "Luke Wattenberg",
+     "position": "C",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Frank Crum",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Caleb Lohner",
+     "position": "TE",
+     "status": "Injured Reserve",
+     "detail": "lower body"
+    },
+    {
+     "name": "Levelle Bailey",
+     "position": "LB",
+     "status": "Injured Reserve",
+     "detail": "leg"
+    },
+    {
+     "name": "Matt Henningsen",
+     "position": "DE",
+     "status": "Injured Reserve",
+     "detail": ""
+    },
+    {
+     "name": "Michael Deiter",
+     "position": "C",
+     "status": "Injured Reserve",
+     "detail": ""
+    }
+   ],
+   "home_availability_list": [
+    {
+     "name": "Omarr Norman-Lott",
+     "position": "DT",
+     "status": "Out",
+     "detail": "knee"
+    },
+    {
+     "name": "Josh Simmons",
+     "position": "OT",
+     "status": "Questionable",
+     "detail": "back"
+    },
+    {
+     "name": "Chamarri Conner",
+     "position": "S",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "Trey Smith",
+     "position": "G",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Patrick Mahomes",
+     "position": "QB",
+     "status": "Questionable",
+     "detail": "knee"
+    },
+    {
+     "name": "R Mason Thomas",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": "hamstring"
+    },
+    {
+     "name": "Alohi Gilman",
+     "position": "S",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Ashton Gillotte",
+     "position": "DE",
+     "status": "Questionable",
+     "detail": ""
+    },
+    {
+     "name": "Jimmy Holiday",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    },
+    {
+     "name": "Jeff Caldwell",
+     "position": "WR",
+     "status": "Injured Reserve",
+     "detail": "knee"
+    },
+    {
+     "name": "Matt Waletzko",
+     "position": "OT",
+     "status": "Injured Reserve",
+     "detail": "undisclosed"
+    }
+   ],
+   "away_score": "0",
+   "home_score": "0",
+   "game_state": "scheduled",
+   "freshness": "Current"
+  }
+ ]
 }
