@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MLB Matchups — Chase Analytics</title>
-  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260910b">
-  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v=20260910b">
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v=20260910c">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260910c">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v=20260910c">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="mlb" data-ca-product="research">
@@ -23,16 +24,27 @@
       <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
     </a>
     <div class="chase-nav-links">
-      <span class="chase-nav-product">Matchup research</span>
       <span class="chase-nav-rule" aria-hidden="true"></span>
+      <span class="chase-nav-product">MLB research</span>
       <nav class="chase-sport-tabs" aria-label="Sport">
         <a href="/mlb/" class="chase-sport-tab" data-nav="mlb" data-state="live">MLB</a>
         <a href="/nfl/" class="chase-sport-tab" data-nav="nfl" data-state="live">NFL</a>
+        <a href="/wnba/" class="chase-sport-tab" data-nav="wnba" data-state="upcoming">WNBA</a>
+        <a href="/cfb/" class="chase-sport-tab" data-nav="cfb" data-state="upcoming">CFB</a>
       </nav>
-      <a href="/#matchupDesk" class="chase-nav-link" data-nav="matchups">Matchups</a>
+      <label class="chase-nav-search">
+        <span class="sr-only">Search teams, players or ballparks</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input type="search" id="chaseNavSearch" autocomplete="off"
+          placeholder="Search teams, players, ballparks...">
+      </label>
       <a href="/dashboard/glossary" class="chase-nav-link" data-nav="glossary">Glossary</a>
     </div>
       <a href="/model-center/" class="ca-btn ca-btn--primary chase-nav-model chase-nav-link" data-nav="models">Model Center</a>
+      <button type="button" class="chase-account" id="chaseAccount" aria-haspopup="menu" aria-expanded="false">
+        <span class="chase-account__badge" id="chaseAccountBadge">--</span>
+        <svg class="chase-account__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
     <div class="chase-status">
       <div class="chase-timestamp">
         <span class="chase-pipeline-dot" id="pipelineStatus" title="Pipeline: Fresh"></span>
@@ -91,16 +103,16 @@
     <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading MLB slate…</div></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
-  <script src="/dashboard/design_layer_version.js?v=20260910b"></script>
-  <script src="/dashboard/mlbma_assets.js?v=20260910b"></script>
-  <script src="/dashboard/chase_datastatus.js?v=20260910b"></script>
-  <script src="/dashboard/sports/public_sport_registry.js?v=20260910b"></script>
-  <script src="/dashboard/sports/chase_public_slate.js?v=20260910b"></script>
-  <script src="/dashboard/matchup_card.js?v=20260910b"></script>
-  <script src="/dashboard/sports/mlb.js?v=20260910b"></script>
-  <script src="/dashboard/chase_asyncstate.js?v=20260910b"></script>
-  <script src="/dashboard/chase_nav.js?v=20260910b"></script>
-  <script src="/dashboard/chase_shell.js?v=20260910b"></script>
+  <script src="/dashboard/design_layer_version.js?v=20260910c"></script>
+  <script src="/dashboard/mlbma_assets.js?v=20260910c"></script>
+  <script src="/dashboard/chase_datastatus.js?v=20260910c"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v=20260910c"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v=20260910c"></script>
+  <script src="/dashboard/matchup_card.js?v=20260910c"></script>
+  <script src="/dashboard/sports/mlb.js?v=20260910c"></script>
+  <script src="/dashboard/chase_asyncstate.js?v=20260910c"></script>
+  <script src="/dashboard/chase_nav.js?v=20260910c"></script>
+  <script src="/dashboard/chase_shell.js?v=20260910c"></script>
   <script>
   window.CHASE_SPORT_PAGE = ChaseSportMLB;
   window.CHASE_SPORT_ID = "mlb";

@@ -150,15 +150,20 @@ def main() -> int:
             violations.append(f"{rel} does not load chase-public.css")
         if "chase_nav.css" in names and "chase-public.css" in names and names.index("chase-public.css") < names.index("chase_nav.css"):
             violations.append(f"{rel} loads route composition before navigation styles")
-        main_copy = visible_main(html).lower()
+        main_copy_html = visible_main(html)
+        main_copy = main_copy_html.lower()
         for phrase in BANNED_PUBLIC_PHRASES:
             if phrase in main_copy:
                 violations.append(f"{rel} public content contains {phrase!r}")
         if "model center" in main_copy:
             violations.append(f"{rel} promotes Model Center inside public content")
+        # Parked sports may appear in the shell's sport switcher, where they
+        # are marked not-yet-live, but must never be promoted inside page
+        # content as though a slate exists. The rule is about the claim, not
+        # the string: check the main region only.
         for parked in ("/wnba/", "/cfb/"):
-            if parked in html.lower():
-                violations.append(f"{rel} exposes parked sport {parked}")
+            if parked in main_copy_html.lower():
+                violations.append(f"{rel} exposes parked sport {parked} in page content")
 
     for path in seen_assets:
         text = path.read_text(encoding="utf-8")

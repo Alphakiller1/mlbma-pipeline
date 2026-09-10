@@ -293,34 +293,69 @@
     return { age: age, state: state, as_of: fields.as_of || null };
   }
 
-  function contextLabel(fields) {
+  /* Three-zone context strip, per the reference chrome: what you are looking
+     at on the left, how fresh it is in the middle, how much of it on the right.
+     Returns HTML because the zones need their own elements; callers that only
+     want a string use contextLabel(). */
+  function contextParts(fields) {
     fields = fields || {};
     var sport = String(fields.sport || 'mlb').toUpperCase();
     var age = slateAgeDays(fields.slateDateEt);
     var slate = fields.slateDateEt ? fmtSlateDate(fields.slateDateEt) : '';
     var state = fields.state || fields.freshness || 'unknown';
-    // AUDIT B3: this pushed the raw state token, so the production context bar
-    // read "MLB · ok" and "NFL · ok". Map machine states to reader-facing copy;
-    // anything unrecognised falls back to the neutral sentence rather than
-    // printing an internal token.
-    var reading;
+
+    var left = sport + (slate ? ' · ' + slate : '');
+
+    var mid;
     if (age != null && age > 0) {
-      reading = 'Slate is ' + age + (age === 1 ? ' day old' : ' days old');
-    } else if (state === 'ok' || state === 'current') {
-      reading = 'Published matchup data';
-    } else if (state === 'empty') {
-      reading = 'No games published';
+      mid = 'Slate is ' + age + (age === 1 ? ' day old' : ' days old');
     } else if (state === 'error') {
-      reading = 'Data unavailable';
+      mid = 'Data unavailable';
     } else if (state === 'loading') {
-      reading = 'Loading published data';
+      mid = 'Loading published data';
     } else {
-      reading = 'Freshness not published';
+      var through = fields.dataCutoff ? fmtSlateDate(fields.dataCutoff) : slate;
+      var pub = '';
+      if (fields.publishedAt) {
+        var when = new Date(fields.publishedAt);
+        pub = isNaN(when.getTime())
+          ? ''
+          : when.toLocaleTimeString('en-US', {
+              hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
+            }) + ' ET';
+      }
+      mid = (through ? 'Data through ' + through : 'Published matchup data') +
+        (pub ? ' · Published ' + pub : '');
     }
-    var parts = [sport];
-    if (slate) parts.push(slate);
-    parts.push(reading);
-    return parts.join(' · ');
+
+    var right = '';
+    if (fields.gameCount != null) {
+      right = fields.gameCount + (Number(fields.gameCount) === 1 ? ' game available' : ' games available');
+    } else if (state === 'empty') {
+      right = 'No games published';
+    }
+
+    return { left: left, mid: mid, right: right };
+  }
+
+  function contextLabel(fields) {
+    var p = contextParts(fields);
+    return [p.left, p.mid, p.right].filter(Boolean).join(' · ');
+  }
+
+  function paintContextBar(el, fields) {
+    if (!el) return;
+    var p = contextParts(fields);
+    el.innerHTML =
+      '<span class="ca-context-bar__start">' + escapeText(p.left) + '</span>' +
+      '<span class="ca-context-bar__mid">' + escapeText(p.mid) + '</span>' +
+      '<span class="ca-context-bar__end">' + escapeText(p.right) + '</span>';
+    if (fields && fields.state) el.setAttribute('data-state', fields.state);
+  }
+
+  function escapeText(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function bindResume(el, fieldsFn) {
@@ -347,6 +382,8 @@
     fetchLastUpdated: fetchLastUpdated,
     render: render,
     bindResume: bindResume,
-    contextLabel: contextLabel
+    contextLabel: contextLabel,
+    contextParts: contextParts,
+    paintContextBar: paintContextBar
   };
 })(typeof window !== 'undefined' ? window : this);

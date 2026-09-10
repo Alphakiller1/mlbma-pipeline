@@ -211,6 +211,56 @@
     });
   }
 
+  /* Account chip. Shows the signed-in initials when a session is present and
+     "Sign in" otherwise, so the control always states what it does rather than
+     sitting on a placeholder. Auth is optional on most routes, so this reads
+     whatever MLBMA_AUTH exposes and degrades quietly. */
+  function paintAccount() {
+    var btn = document.getElementById('chaseAccount');
+    var badge = document.getElementById('chaseAccountBadge');
+    if (!btn || !badge) return;
+
+    function signedOut() {
+      badge.textContent = '';
+      badge.hidden = true;
+      btn.classList.add('is-signed-out');
+      btn.setAttribute('aria-label', 'Sign in to Chase Analytics');
+      if (!btn.querySelector('.chase-account__label')) {
+        var span = document.createElement('span');
+        span.className = 'chase-account__label';
+        span.textContent = 'Sign in';
+        btn.insertBefore(span, btn.firstChild);
+      }
+    }
+
+    function signedIn(email, name) {
+      var source = String(name || email || '').trim();
+      var initials = source.indexOf('@') > 0
+        ? source.slice(0, 2).toUpperCase()
+        : source.split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
+      badge.textContent = initials || 'ME';
+      badge.hidden = false;
+      btn.classList.remove('is-signed-out');
+      btn.setAttribute('aria-label', 'Account: ' + (source || 'signed in'));
+      var label = btn.querySelector('.chase-account__label');
+      if (label) label.remove();
+    }
+
+    signedOut();
+    btn.addEventListener('click', function () { location.href = '/model-center/'; });
+
+    if (!window.MLBMA_AUTH || !window.MLBMA_AUTH.getUser) return;
+    try {
+      window.MLBMA_AUTH.getUser().then(function (user) {
+        if (user && (user.email || user.user_metadata)) {
+          signedIn(user.email, user.user_metadata && user.user_metadata.full_name);
+        }
+      }).catch(function () {});
+    } catch (err) { /* auth not configured on this route */ }
+  }
+
+  paintAccount();
+
   setActivePage();
   window.addEventListener('hashchange', setActivePage);
 

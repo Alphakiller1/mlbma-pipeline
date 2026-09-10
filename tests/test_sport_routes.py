@@ -1,10 +1,21 @@
 from __future__ import annotations
 
 import subprocess
+import re
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+MAIN_RE = re.compile(r"<main[^>]*>(.*?)</main>", re.S | re.I)
+SCRIPT_RE = re.compile(r"<script.*?</script>", re.S | re.I)
+
+
+def visible_main(html: str) -> str:
+    """The page's <main> region with scripts stripped - what a reader sees."""
+    m = MAIN_RE.search(html)
+    return SCRIPT_RE.sub("", m.group(1)) if m else ""
 
 
 class SportRouteBuilderTests(unittest.TestCase):
@@ -52,14 +63,20 @@ class SportRouteBuilderTests(unittest.TestCase):
         nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
         home = (ROOT / "index.html").read_text(encoding="utf-8")
         select = (ROOT / "dashboard" / "chase_sport_select.js").read_text(encoding="utf-8")
-        self.assertNotIn('data-nav="wnba"', nav)
-        self.assertNotIn('data-nav="cfb"', nav)
-        self.assertNotIn("/wnba/", nav)
-        self.assertNotIn("/cfb/", nav)
-        self.assertNotIn("CFB", home)
-        self.assertNotIn("WNBA", home)
+        # The switcher shows all four sports, per the reference chrome. WNBA
+        # and CFB carry data-state="upcoming" so they read as not-yet-live, and
+        # validate_public_fields.py still blocks promoting them inside page
+        # CONTENT - appearing in the switcher is not a claim of published data.
+        self.assertIn('data-state="upcoming"', nav)
+        self.assertIn('data-nav="wnba"', nav)
+        self.assertIn('data-nav="cfb"', nav)
+        # The switcher is chrome. What still must not happen is a parked sport
+        # appearing inside page CONTENT as though a slate exists, or the sport
+        # selector offering it as a destination with data.
         self.assertNotIn("id: 'wnba'", select)
         self.assertNotIn("id: 'cfb'", select)
+        for parked in ("wnba", "cfb"):
+            self.assertNotIn(f'href="/{parked}/"', visible_main(home))
         for sport in ("wnba", "cfb"):
             text = (ROOT / sport / "index.html").read_text(encoding="utf-8")
             self.assertIn("noindex", text)
@@ -288,9 +305,16 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("shellMain", shell)
         self.assertIn("id=\"caContextBar\"", opening)
         self.assertIn("matchup_card.js", opening)
-        self.assertNotIn("chase-nav-search", opening)
+        # 2026-09-10 owner decision: the reference top chrome carries a header
+        # search, and it drives the same slate filter as the old toolbar field
+        # (matchup_card.js binds #chaseNavSearch), so it is a real control
+        # rather than the dead ornament the original rule guarded against.
+        self.assertIn("chase-nav-search", opening)
+        self.assertIn("chaseNavSearch", opening)
         self.assertNotIn("Search teams, players, or topics", opening)
-        self.assertNotIn(
+        # chase_nav.html is the synced template, so it carries the search too -
+        # scripts/apply_desk_shell.py writes the same block into every page.
+        self.assertIn(
             "chase-nav-search",
             (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8"),
         )
