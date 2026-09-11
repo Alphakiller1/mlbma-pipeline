@@ -2911,7 +2911,7 @@ body[data-ca-product="research"] {
    not subject to the cascade conflict that caused this. */
 .c-elite { --grade: var(--metric-elite); }
 .c-good  { --grade: var(--metric-good); }
-.c-mid   { --grade: var(--metric-neutral); }
+.c-mid   { --grade: var(--metric-mid); }
 .c-weak  { --grade: var(--metric-weak); }
 .c-poor  { --grade: var(--metric-poor); }
 .c-na    { --grade: var(--text-muted); }
@@ -4152,3 +4152,22 @@ body[data-ca-product="research"] {
 
 .ca-sit-table th.num, .ca-sit-table td.num { width: 8rem; }
 .ca-sit-table td:first-child { width: auto; }
+
+/* The handedness column had no width of its own, so it split the leftover
+   space with the batter's name - and because the two lineup panels hold names
+   of different lengths, the same column landed at a different x in each. Two
+   tables side by side that do not line up read as a rendering fault. A fixed,
+   centred track fixes both: the letter sits under its own heading, and the
+   column is in the same place in both panels. */
+.ca-lineup-table th.ca-lineup-bats,
+.ca-lineup-table td.ca-lineup-bats {
+  width: 3.5rem;
+  text-align: center;
+}
+
+/* The lineup heading is the crest and the split, nothing else. */
+.ca-lineup-head { display: flex; align-items: center; gap: 8px; }
+.ca-lineup-head__crest { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto; }
+
+/* Run value needs room for a signed figure and its percentile chip. */
+.ca-arsenal-table th.num, .ca-arsenal-table td.num { width: 6.5rem; }

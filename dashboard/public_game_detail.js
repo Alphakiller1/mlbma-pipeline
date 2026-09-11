@@ -459,6 +459,15 @@
     return leagueBoardPromise;
   }
 
+  var RUN_VALUE_URL = '/data/public/pitch_run_value.json';
+  var runValuePromise = null;
+
+  function loadRunValue() {
+    if (runValuePromise) return runValuePromise;
+    runValuePromise = fetchJson(RUN_VALUE_URL).catch(function () { return null; });
+    return runValuePromise;
+  }
+
   var PITCH_BOARD_URL = '/data/public/pitch_type_board.json';
   var pitchBoardPromise = null;
 
@@ -1005,22 +1014,27 @@
       return '<tr>' +
         '<td class="ca-lineup-slot">' + (i + 1) + '</td>' +
         '<td class="ca-lineup-name">' + esc(person.name || pl.fullName || '') + '</td>' +
-        '<td>' + esc(person.bats || '\u2014') + '</td>' +
+        '<td class="ca-lineup-bats">' + esc(person.bats || '\u2014') + '</td>' +
         cell('avg', 'avg') + cell('obp', 'obp') + cell('slg', 'slg') + cell('ops', 'ops') +
         '</tr>';
     }).join('');
 
+    // The heading was the club's full name, then a line under it repeating the
+    // club, the side, the handedness, the season and the opposing starter. The
+    // crest says which club without spending a line on it, and the handedness
+    // is the one thing the heading has to carry - it is what the numbers
+    // underneath are split by. The rest moves to the note at the foot.
     return '<section class="ca-lineup-panel">' +
-      '<h3>' + esc(teamLabel) + ' Versus ' + esc(handLabel) + '</h3>' +
-      '<p class="ca-lineup-context">' + esc(context) + '</p>' +
+      '<h3 class="ca-lineup-head">' + logo(sport, game, side, 26, 'ca-lineup-head__crest') +
+      '<span>Versus ' + esc(handLabel) + '</span></h3>' +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table">' +
-      '<thead><tr><th>#</th><th>Batter</th><th>Bats</th>' +
+      '<thead><tr><th>#</th><th>Batter</th><th class="ca-lineup-bats">Bats</th>' +
       '<th class="num">AVG</th><th class="num">OBP</th>' +
       '<th class="num">SLG</th><th class="num">OPS</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>' +
-      '<p class="ca-detail-source-note">Every figure is that batter against ' +
-      esc(handLabel) + ' this season, not his overall line. Colour grades each ' +
-      'rate against the league average for it.</p></section>';
+      '<p class="ca-detail-source-note">' + esc(context) + '. Every figure is that ' +
+      'batter against ' + esc(handLabel) + ' this season, not his overall line. Colour ' +
+      'grades each rate against the league average for it.</p></section>';
   }
 
   /* A usage bar is the pitcher's own share of his own pitches. The sample is
@@ -1062,12 +1076,28 @@
     return PITCH_FAMILY[String(code || '').toUpperCase()] || 'other';
   }
 
-  function arsenalPanel(sport, game, side, people, rows, boards) {
+  /* Run value per 100 pitches, from the pitcher's side: positive is runs the
+     pitch saved. Graded on its percentile against every pitcher throwing that
+     same pitch type, because a +1.0 slider and a +1.0 four-seamer are not the
+     same achievement - the distributions differ and one pool would say they
+     were the same. */
+  function rvCell(entry) {
+    if (!entry || entry.run_value_per_100 == null) return '<td class="num">&mdash;</td>';
+    var v = entry.run_value_per_100;
+    var tone = entry.percentile == null ? '' : scoreTone(entry.percentile);
+    var badge = entry.percentile == null ? ''
+      : '<span class="ca-rank ' + tone + '">' + Math.round(entry.percentile) + 'th</span>';
+    return '<td class="num ' + tone + '">' + esc((v > 0 ? '+' : '') + v.toFixed(1)) +
+      badge + '</td>';
+  }
+
+  function arsenalPanel(sport, game, side, people, rows, boards, runValue) {
     // The away starter faces the home lineup, and the other way round.
     var oppSide = side === 'away' ? 'home' : 'away';
     var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
       function (c) { return String(c || '').toUpperCase(); };
     var board = ((boards && boards.teams) || {})[canon(game[oppSide])] || null;
+    var arm = ((runValue && runValue.pitchers) || {})[String(game[side + '_starter_id'])] || null;
     var oppLabel = fullName(sport, game, oppSide);
     var id = game[side + '_starter_id'];
     var name = (people[id] && people[id].name) || game[side + '_starter'] || 'Probable starter';
@@ -1088,12 +1118,14 @@
     var body = rows.map(function (row) {
       var pct = row.pct * 100;
       var opp = (board || {})[row.code];
+      var rv = ((arm && arm.pitches) || {})[row.code];
       return '<tr data-pitch="' + esc(pitchFamily(row.code)) + '">' +
         '<td class="ca-lineup-name">' + esc(row.name) + '</td>' +
         '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
         usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span></td>' +
         '<td class="num">' + row.count.toLocaleString('en-US') + '</td>' +
         '<td class="num">' + (isFinite(row.speed) ? row.speed.toFixed(1) : '\u2014') + '</td>' +
+        rvCell(rv) +
         '<td class="num">' + (opp && opp.xwoba
           ? esc(formatStat(opp.xwoba.value, 3)) + rankBadge(opp.xwoba) : '\u2014') + '</td>' +
         '<td class="num">' + (opp && opp.contact_rate
@@ -1104,7 +1136,8 @@
     return head +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
       '<thead><tr><th>Pitch</th><th class="num">Usage</th><th class="num">Count</th>' +
-      '<th class="num">MPH</th><th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
+      '<th class="num">MPH</th><th class="num">RV/100</th>' +
+      '<th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
       '<th class="num">Contact</th></tr></thead>' +
       '<tbody>' + body + '</tbody></table></div>' +
       '<p class="ca-detail-source-note">' +
@@ -1339,11 +1372,17 @@
    * it, from the same endpoint the starter splits come from.
    * ------------------------------------------------------------------ */
   var TEAM_SPLIT_URL = 'https://statsapi.mlb.com/api/v1/teams/{id}/stats?stats=statSplits' +
-    '&sitCodes=h,a,vl,vr&group=hitting&season={season}&gameType=R';
+    '&sitCodes=h,a,vl,vr,sp,rp&group=hitting&season={season}&gameType=R';
 
+  /* `sp` and `rp` are the same split endpoint's own codes for the two halves of
+     a pitching staff. A club's line against relievers is a different number
+     from its line against starters - different stuff, different leverage, and
+     often a different half of the lineup - and it is the one that says what
+     happens after the starter this page is about comes out. */
   var TEAM_SPLIT_ROWS = [
     ['h', 'At Home'], ['a', 'On The Road'],
-    ['vl', 'Vs LHP'], ['vr', 'Vs RHP']
+    ['vl', 'Vs LHP'], ['vr', 'Vs RHP'],
+    ['sp', 'Vs Starters'], ['rp', 'Vs Bullpens']
   ];
 
   function loadTeamSplits(teamId, season) {
@@ -1401,7 +1440,8 @@
       teamSplitPanel(sport, game, 'home', extra.homeTeamSplits) + '</div>' +
       '<p class="ca-detail-source-note">The whole club, not the nine men posted tonight: ' +
       'what this roster has hit at home, on the road, and against each hand of pitching this ' +
-      'season, read from the official split record. K% and BB% are shares of plate ' +
+      'season, plus what it has done against starters and against bullpens, read from ' +
+      'the official split record. K% and BB% are shares of plate ' +
       'appearances. Colour grades each rate against this season’s published league ' +
       'baseline. Home runs are a count, so they are not graded — a club with more plate ' +
       'appearances in a split will have more of them.</p>';
@@ -1422,8 +1462,8 @@
   function arsenalBody(sport, game, extra) {
     var people = extra.people || {};
     return '<div class="ca-detail-duo">' +
-      arsenalPanel(sport, game, 'away', people, extra.awayArsenal, extra.pitchBoard) +
-      arsenalPanel(sport, game, 'home', people, extra.homeArsenal, extra.pitchBoard) + '</div>' +
+      arsenalPanel(sport, game, 'away', people, extra.awayArsenal, extra.pitchBoard, extra.runValue) +
+      arsenalPanel(sport, game, 'home', people, extra.homeArsenal, extra.pitchBoard, extra.runValue) + '</div>' +
       '<p class="ca-detail-source-note">The opponent figure is how the lineup ' +
       'that arm faces has hit that pitch this season, ranked among clubs with a ' +
       'comparable sample. It describes the season already played: pitch-type ' +
@@ -2625,12 +2665,14 @@
           loadArsenal(game.away_starter_id, season),
           loadArsenal(game.home_starter_id, season),
           loadVenue(game.venue_id),
-          loadPitchBoard()
+          loadPitchBoard(),
+          loadRunValue()
         ]).then(function (parts) {
           extra.awayArsenal = parts[0] || [];
           extra.homeArsenal = parts[1] || [];
           extra.venue = parts[2];
           extra.pitchBoard = parts[3];
+          extra.runValue = parts[4];
           paintSection(host, 'arsenal', arsenalBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
         }).catch(function () { /* the section keeps its pending note */ });
