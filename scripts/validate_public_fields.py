@@ -26,6 +26,20 @@ PUBLIC_ENTRIES = (
 
 PUBLIC_SLATES = tuple(ROOT / "data" / "public" / sport / "slate.json" for sport in ("mlb", "nfl"))
 
+
+def published_artifacts() -> list:
+    """Every JSON file under data/public, not a hand-kept list of two.
+
+    The classifier was pointed at the two slates by name. Four more artifacts
+    were published beside them - starter splits, batter context, team context,
+    the pitch-type board - and none of them were being read by this gate at
+    all. A boundary that only checks the files someone remembered to name is
+    not a boundary; anything served from data/public is published, so
+    everything served from data/public is checked.
+    """
+    root = ROOT / "data" / "public"
+    return sorted(root.rglob("*.json")) if root.is_dir() else []
+
 BANNED_ASSETS = {
     "mlbma_design_system.css",
     "responsive.css",
@@ -115,17 +129,63 @@ def class_of(spec: dict, key: str) -> str | None:
     return None
 
 
-def leaf_keys(obj, path: str = "$") -> list[tuple[str, str]]:
-    """Every key in a published artifact, with the path it was found at."""
-    found: list[tuple[str, str]] = []
+def is_id_map(id_maps: list, path: str) -> bool:
+    """Is this path a map whose keys are identifiers rather than field names?
+
+    `$.starters` is keyed by MLB person id, `$.teams` by club code,
+    `$.batters.overall` by player name. Their keys are data, not schema, so
+    asking the classifier to have an opinion on "aaronjudge" would mean
+    re-editing the spec on every call-up. Their VALUES are still descended
+    into and still classified.
+    """
+    for pattern in id_maps:
+        regex = "".join(
+            r"[^.\[\]]+" if part == "*" else re.escape(part)
+            for part in re.split(r"(\*)", pattern)
+        )
+        if re.fullmatch(regex, path):
+            return True
+    return False
+
+
+def leaf_keys(obj, path: str = "$", id_maps: list | None = None) -> list[tuple[str, str, dict]]:
+    """Every key in a published artifact, with its path and the object holding it.
+
+    The holder comes back because two classes are decided by a key's company
+    rather than by its name - see `sibling_class`.
+    """
+    id_maps = id_maps or []
+    found: list[tuple[str, str, dict]] = []
     if isinstance(obj, dict):
+        identifiers = is_id_map(id_maps, path)
         for key, value in obj.items():
-            found.append((key, f"{path}.{key}"))
-            found.extend(leaf_keys(value, f"{path}.{key}"))
+            if not identifiers:
+                found.append((key, f"{path}.{key}", obj))
+            found.extend(leaf_keys(value, f"{path}.{key}", id_maps))
     elif isinstance(obj, list):
         for value in obj:
-            found.extend(leaf_keys(value, f"{path}[]"))
+            found.extend(leaf_keys(value, f"{path}[]", id_maps))
     return found
+
+
+# A rank is public exactly when it sits beside the value it was computed from:
+# "7th of 30 in runs per game" is a restatement of a published number, while a
+# bare rank with nothing beside it is an ordering the reader cannot check and
+# has to take from the model. Expressed as company rather than as a path, this
+# cannot drift the way a list of path patterns does every time an artifact
+# gains a level of nesting.
+SIBLING_RULES = {
+    "rank": ({"value"}, "derived_descriptive"),
+    "of": ({"value", "rank"}, "provenance"),
+}
+
+
+def sibling_class(key: str, holder: dict) -> str | None:
+    rule = SIBLING_RULES.get(key)
+    if not rule or not isinstance(holder, dict):
+        return None
+    required, name = rule
+    return name if required & set(holder) else None
 
 
 def classify_artifact(spec: dict, artifact, label: str) -> list[str]:
@@ -137,11 +197,14 @@ def classify_artifact(spec: dict, artifact, label: str) -> list[str]:
     """
     problems: list[str] = []
     suffixes = (spec.get("path_overrides") or {}).get("suffixes") or {}
+    id_maps = (spec.get("path_overrides") or {}).get("id_maps") or []
+    exact = (spec.get("path_overrides") or {}).get("exact") or {}
     private = {name for name, meta in (spec.get("classes") or {}).items()
                if not meta.get("public")}
     unclassified: dict[str, str] = {}
-    for key, path in leaf_keys(artifact):
-        resolved = path_class(suffixes, path) or class_of(spec, key)
+    for key, path, holder in leaf_keys(artifact, id_maps=id_maps):
+        resolved = (exact.get(path) or sibling_class(key, holder)
+                    or path_class(suffixes, path) or class_of(spec, key))
         if resolved is None:
             unclassified.setdefault(key, path)
         elif resolved in private:
@@ -270,17 +333,27 @@ def main() -> int:
         if path.name in {"mlb.js", "nfl.js"} and "github.io" in text:
             violations.append(f"{rel} points at GitHub Pages")
 
-    for slate_path in PUBLIC_SLATES:
+    artifacts = published_artifacts()
+    for path in artifacts:
+        rel = path.relative_to(ROOT)
         try:
-            slate = json.loads(slate_path.read_text(encoding="utf-8"))
-            assert_clean(slate)
-            for game in slate.get("games", []):
-                extra = set(game) - allowed
-                if extra:
-                    violations.append(f"{slate_path.relative_to(ROOT)} has non-allowlisted keys: {', '.join(sorted(extra))}")
-            violations.extend(classify_artifact(spec, slate, str(slate_path.relative_to(ROOT))))
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            assert_clean(payload)
+            # The per-game allow-list applies to the slates specifically: they
+            # are the artifact the matchup cards read field by field.
+            if path in PUBLIC_SLATES:
+                for game in payload.get("games", []):
+                    extra = set(game) - allowed
+                    if extra:
+                        violations.append(
+                            f"{rel} has non-allowlisted keys: {', '.join(sorted(extra))}")
+            violations.extend(classify_artifact(spec, payload, str(rel)))
         except (OSError, json.JSONDecodeError, SystemExit) as exc:
-            violations.append(f"{slate_path.relative_to(ROOT)}: {exc}")
+            violations.append(f"{rel}: {exc}")
+
+    for slate_path in PUBLIC_SLATES:
+        if not slate_path.is_file():
+            violations.append(f"{slate_path.relative_to(ROOT)} is not published")
 
     for legacy in (ROOT / "dashboard" / "index.html", ROOT / "dashboard" / "matchup_compare.html"):
         text = legacy.read_text(encoding="utf-8")
@@ -298,7 +371,7 @@ def main() -> int:
         print("\n".join(f"  - {item}" for item in violations))
         return 1
     print(f"OK: {len(PUBLIC_ENTRIES)} public routes use the factual matchup dependency graph")
-    print(f"OK: every key in {len(PUBLIC_SLATES)} published artifacts resolves to a public class")
+    print(f"OK: every key in {len(artifacts)} published artifacts resolves to a public class")
     return 0
 
 

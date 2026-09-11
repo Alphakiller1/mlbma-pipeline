@@ -155,15 +155,26 @@ def bullpen_context(data_dir: Path) -> dict:
             entry[name] = num(row.get(source))
         out[key] = entry
 
+    # Each rate becomes {value, rank, of, better} - the same shape every other
+    # public artifact uses. It was a bare rate plus a separate `<name>_rank`
+    # object holding nothing but an ordering, which reads as a number the
+    # reader is asked to take on trust rather than one they can check against
+    # the value it came from. The boundary gate now enforces exactly that:
+    # a rank is publishable when it sits beside its own value.
     for name in ("fip", "k_pct", "ir_scored_pct", "high_lev_era"):
         better = "high" if name == "k_pct" else "low"
         pool = [(k, v[name]) for k, v in out.items()
                 if v.get(name) is not None and v["appearances"] >= 10]
         ranks = rank_pool(pool, better)
         for key, value in out.items():
+            raw = value.get(name)
+            if raw is None:
+                value.pop(name, None)
+                continue
             got = ranks.get(key)
+            value[name] = {"value": raw, "better": better}
             if got:
-                value[name + "_rank"] = {"rank": got[0], "of": got[1], "better": better}
+                value[name]["rank"], value[name]["of"] = got[0], got[1]
     return out
 
 

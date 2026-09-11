@@ -51,17 +51,19 @@ FORM_METRICS = (
     ("def_turnover", "high"),
 )
 
+# Title Case, because the desk is Title Case everywhere and a label written
+# in sentence case here reaches the page as the one line that is not.
 FORM_LABELS = {
-    "off_epa": "Offensive EPA per play",
-    "off_first_down": "Offensive first-down rate",
-    "off_explosive": "Offensive explosive-play rate",
-    "off_sack": "Sack rate taken",
-    "off_turnover": "Giveaway rate",
-    "def_epa": "EPA allowed per play",
-    "def_first_down": "First-down rate allowed",
-    "def_explosive": "Explosive rate allowed",
-    "def_sack": "Sack rate generated",
-    "def_turnover": "Takeaway rate",
+    "off_epa": "Offensive EPA Per Play",
+    "off_first_down": "Offensive First-Down Rate",
+    "off_explosive": "Offensive Explosive-Play Rate",
+    "off_sack": "Sack Rate Taken",
+    "off_turnover": "Giveaway Rate",
+    "def_epa": "EPA Allowed Per Play",
+    "def_first_down": "First-Down Rate Allowed",
+    "def_explosive": "Explosive Rate Allowed",
+    "def_sack": "Sack Rate Generated",
+    "def_turnover": "Takeaway Rate",
 }
 
 # Charted rates carried into the public artifact. Grouped the way the page

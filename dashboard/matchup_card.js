@@ -463,11 +463,14 @@
     return fmt(away) + ' / ' + fmt(home);
   }
 
+  /* Arms used over pitches thrown, in the three days before this game, away
+     club first. It read "Workload Not Published" on every card of every slate
+     because nothing published the field; it is published now, and the label
+     beside it says what the two numbers are. */
   function bullpenSummary(game) {
     var away = game.away_bullpen, home = game.home_bullpen;
     if (!away && !home) return 'Workload Not Published';
-    if (away && home && away === home) return away;
-    return [away, home].filter(Boolean).join(' / ');
+    return [away || '—', home || '—'].join(' · ');
   }
 
   function cardHtml(sport, game) {
@@ -510,7 +513,7 @@
       // Three compact factual cells, one row - the collapsed anatomy the style
       // lock specifies (design/GPT_IMAGE_PROMPTS_CHASE_DESK.md).
       '<div class="ca-matchup-card__summary">' +
-      miniFact(sport === 'mlb' ? 'Bullpen' : 'Travel',
+      miniFact(sport === 'mlb' ? 'Bullpen Arms/P, L3' : 'Travel',
         sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game))) +
       miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine) +
       miniFact('Broadcast', game.broadcast || 'Not Published') +

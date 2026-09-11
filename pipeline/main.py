@@ -660,10 +660,23 @@ def run_public_slate_publish():
         # though nothing rendered them.
         import subprocess
 
-        subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "publish_public_context.py")],
-            check=True,
-        )
+        # Every public artifact is published here, from the same pipeline run
+        # that refreshed the CSVs behind it. A publisher left out of this list
+        # ships a file that is correct on the day it was written by hand and
+        # silently stale from then on - which is how the public pages ended up
+        # reading a team snapshot from seven weeks earlier.
+        # Each resolves its own source CSVs the same way publish_public_context
+        # already did - relative to the checkout it is running from - so none
+        # of them needs a path passed in here.
+        for script in (
+            "publish_public_context.py",
+            "publish_public_starters.py",
+            "publish_public_batters.py",
+        ):
+            subprocess.run(
+                [sys.executable, str(ROOT / "scripts" / script)],
+                check=True,
+            )
 
     _run_step(
         "Step 20b: outputs.publish_public_slate",

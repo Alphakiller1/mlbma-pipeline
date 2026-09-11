@@ -19,6 +19,70 @@ class PublicModelBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
+    def test_validator_reads_every_published_artifact(self):
+        """The gate must find the files, not a list someone maintains by hand.
+
+        It was pointed at the two slates by name while four more artifacts -
+        starter splits, batter context, team context, the pitch-type board -
+        were published beside them and read by nobody. Anything served out of
+        data/public is published, so this asserts the discovery covers all of
+        it rather than whichever files were remembered.
+        """
+        sys.path.insert(0, str(ROOT / "scripts"))
+        try:
+            import validate_public_fields as gate
+        finally:
+            sys.path.pop(0)
+        found = {p.relative_to(ROOT).as_posix() for p in gate.published_artifacts()}
+        on_disk = {p.relative_to(ROOT).as_posix()
+                   for p in (ROOT / "data" / "public").rglob("*.json")}
+        self.assertEqual(found, on_disk)
+        self.assertGreaterEqual(len(found), 6, sorted(found))
+
+    def test_a_bare_rank_is_not_publishable(self):
+        """A rank is public only beside the value it was computed from.
+
+        "7th of 30 in runs per game" restates a number the reader can see. A
+        rank on its own is an ordering they have to take on trust, which is the
+        shape a model rating arrives in.
+        """
+        sys.path.insert(0, str(ROOT / "scripts"))
+        try:
+            import validate_public_fields as gate
+        finally:
+            sys.path.pop(0)
+        spec = json.loads((ROOT / "design" / "public_metric_classification.json")
+                          .read_text(encoding="utf-8"))
+        beside_value = {"value": 4.6, "rank": 7, "of": 30}
+        self.assertEqual(gate.sibling_class("rank", beside_value), "derived_descriptive")
+        self.assertIsNone(gate.sibling_class("rank", {"rank": 7, "of": 30}))
+        # And with nothing beside it, the name alone must fall to a private class.
+        self.assertIn("rank", spec["model_derived_label"])
+
+    def test_identifier_maps_do_not_need_a_class(self):
+        """Player and club keys are data, not schema.
+
+        Demanding a class for "aaronjudge" would mean editing the spec on every
+        call-up, and the first person to hit that would widen the spec rather
+        than narrow the artifact.
+        """
+        sys.path.insert(0, str(ROOT / "scripts"))
+        try:
+            import validate_public_fields as gate
+        finally:
+            sys.path.pop(0)
+        spec = json.loads((ROOT / "design" / "public_metric_classification.json")
+                          .read_text(encoding="utf-8"))
+        id_maps = spec["path_overrides"]["id_maps"]
+        self.assertTrue(gate.is_id_map(id_maps, "$.starters"))
+        self.assertTrue(gate.is_id_map(id_maps, "$.batters.overall"))
+        self.assertFalse(gate.is_id_map(id_maps, "$.starters.434378.splits"))
+        # The values under an identifier are still walked and still classified.
+        keys = dict((k, path) for k, path, _ in gate.leaf_keys(
+            {"starters": {"434378": {"team": "DET"}}}, id_maps=id_maps))
+        self.assertIn("team", keys)
+        self.assertNotIn("434378", keys)
+
     def test_osi_and_proj_osi_land_on_opposite_sides(self):
         """The pair that makes the boundary concrete.
 

@@ -1,60 +1,720 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-10T05:58:59Z",
-  "data_through_utc": "2026-09-10T00:20Z",
+  "generated_at_utc": "2026-09-11T07:22:51Z",
+  "data_through_utc": "2026-09-11T00:35Z",
   "games": [
     {
-      "id": "401872657",
+      "id": "401872656",
       "sport": "nfl",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T00:35Z",
-      "away": "SF",
-      "home": "LAR",
-      "away_name": "San Francisco 49ers",
-      "home_name": "Los Angeles Rams",
-      "away_record": "0-0",
-      "home_record": "0-0",
-      "away_score": "0",
-      "home_score": "0",
-      "venue": "Melbourne Cricket Ground",
-      "venue_city": "Melbourne, VIC",
-      "broadcast": "Netflix",
-      "away_availability": "2 out \u00b7 1 questionable",
-      "home_availability": "1 out \u00b7 1 questionable",
+      "game_state": "final",
+      "kickoff_utc": "2026-09-10T00:20Z",
+      "away": "NE",
+      "home": "SEA",
+      "away_name": "New England Patriots",
+      "home_name": "Seattle Seahawks",
+      "away_record": "0-1",
+      "home_record": "1-0",
+      "away_score": "10",
+      "home_score": "13",
+      "venue": "Lumen Field",
+      "venue_city": "Seattle, WA",
+      "broadcast": "NBC",
+      "away_availability": "8 out \u00b7 1 questionable",
+      "home_availability": "6 out \u00b7 1 doubtful",
       "away_availability_list": [
         {
-          "name": "Alfred Collins",
-          "position": "DT",
+          "name": "Behren Morton",
+          "position": "QB",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Efton Chism III",
+          "position": "WR",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Karon Prunty",
+          "position": "CB",
           "status": "Out",
           "detail": ""
         },
         {
-          "name": "Mykel Williams",
+          "name": "Walter Rouse",
+          "position": "OL",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "TreVeyon Henderson",
+          "position": "RB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Erick Hunter",
+          "position": "LB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Ben Brown",
+          "position": "C",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Brenden Schooler",
+          "position": "S",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "A.J. Brown",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Bryce Baringer",
+          "position": "P",
+          "status": "Injured Reserve",
+          "detail": "undisclosed"
+        }
+      ],
+      "home_availability_list": [
+        {
+          "name": "Nick Emmanwori",
+          "position": "S",
+          "status": "Out",
+          "detail": "ankle"
+        },
+        {
+          "name": "Jalen Milroe",
+          "position": "QB",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Tory Horton",
+          "position": "WR",
+          "status": "Out",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Beau Stephens",
+          "position": "G",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Mike Morris",
           "position": "DE",
           "status": "Out",
           "detail": ""
         },
         {
-          "name": "James Thompson Jr.",
-          "position": "DT",
+          "name": "Ty Okada",
+          "position": "S",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Sam Darnold",
+          "position": "QB",
+          "status": "Doubtful",
+          "detail": "hip"
+        }
+      ],
+      "roof": "Outdoor",
+      "away_form": {
+        "rates": {
+          "off_epa": {
+            "label": "Offensive EPA Per Play",
+            "value": 0.0429,
+            "better": "high",
+            "rank": 9,
+            "of": 32
+          },
+          "off_first_down": {
+            "label": "Offensive First-Down Rate",
+            "value": 0.2939,
+            "better": "high",
+            "rank": 11,
+            "of": 32
+          },
+          "off_explosive": {
+            "label": "Offensive Explosive-Play Rate",
+            "value": 0.067,
+            "better": "high",
+            "rank": 6,
+            "of": 32
+          },
+          "off_sack": {
+            "label": "Sack Rate Taken",
+            "value": 0.0882,
+            "better": "low",
+            "rank": 26,
+            "of": 32
+          },
+          "off_turnover": {
+            "label": "Giveaway Rate",
+            "value": 0.0187,
+            "better": "low",
+            "rank": 15,
+            "of": 32
+          },
+          "def_epa": {
+            "label": "EPA Allowed Per Play",
+            "value": 0.0091,
+            "better": "low",
+            "rank": 19,
+            "of": 32
+          },
+          "def_first_down": {
+            "label": "First-Down Rate Allowed",
+            "value": 0.2902,
+            "better": "low",
+            "rank": 20,
+            "of": 32
+          },
+          "def_explosive": {
+            "label": "Explosive Rate Allowed",
+            "value": 0.0549,
+            "better": "low",
+            "rank": 11,
+            "of": 32
+          },
+          "def_sack": {
+            "label": "Sack Rate Generated",
+            "value": 0.0505,
+            "better": "high",
+            "rank": 30,
+            "of": 32
+          },
+          "def_turnover": {
+            "label": "Takeaway Rate",
+            "value": 0.0164,
+            "better": "high",
+            "rank": 25,
+            "of": 32
+          }
+        },
+        "plays": 61.07,
+        "pool": 32
+      },
+      "home_form": {
+        "rates": {
+          "off_epa": {
+            "label": "Offensive EPA Per Play",
+            "value": 0.0303,
+            "better": "high",
+            "rank": 12,
+            "of": 32
+          },
+          "off_first_down": {
+            "label": "Offensive First-Down Rate",
+            "value": 0.2953,
+            "better": "high",
+            "rank": 10,
+            "of": 32
+          },
+          "off_explosive": {
+            "label": "Offensive Explosive-Play Rate",
+            "value": 0.0738,
+            "better": "high",
+            "rank": 3,
+            "of": 32
+          },
+          "off_sack": {
+            "label": "Sack Rate Taken",
+            "value": 0.0608,
+            "better": "low",
+            "rank": 12,
+            "of": 32
+          },
+          "off_turnover": {
+            "label": "Giveaway Rate",
+            "value": 0.0234,
+            "better": "low",
+            "rank": 27,
+            "of": 32
+          },
+          "def_epa": {
+            "label": "EPA Allowed Per Play",
+            "value": -0.1067,
+            "better": "low",
+            "rank": 3,
+            "of": 32
+          },
+          "def_first_down": {
+            "label": "First-Down Rate Allowed",
+            "value": 0.2468,
+            "better": "low",
+            "rank": 2,
+            "of": 32
+          },
+          "def_explosive": {
+            "label": "Explosive Rate Allowed",
+            "value": 0.0493,
+            "better": "low",
+            "rank": 5,
+            "of": 32
+          },
+          "def_sack": {
+            "label": "Sack Rate Generated",
+            "value": 0.0766,
+            "better": "high",
+            "rank": 8,
+            "of": 32
+          },
+          "def_turnover": {
+            "label": "Takeaway Rate",
+            "value": 0.0241,
+            "better": "high",
+            "rank": 6,
+            "of": 32
+          }
+        },
+        "plays": 59.76,
+        "pool": 32
+      },
+      "away_scheme": {
+        "source_seasons": [
+          2025
+        ],
+        "charting_samples": 1011,
+        "coverage_samples": 622,
+        "offense_plays": 1063,
+        "defense_plays": 1011,
+        "offense": {
+          "coverage": {
+            "man_rate": 0.3367,
+            "zone_rate": 0.6633,
+            "cover_0_rate": 0.0438,
+            "cover_1_rate": 0.2526,
+            "cover_2_rate": 0.2549,
+            "cover_3_rate": 0.2799,
+            "cover_4_rate": 0.0781,
+            "cover_6_rate": 0.0471,
+            "cover_2_man_rate": 0.0437
+          },
+          "pressure": {
+            "blitz_rate": 0.3137,
+            "pressure_rate": 0.3224,
+            "stacked_box_rate": 0.1123,
+            "avg_box": 6.4169
+          },
+          "personnel": {
+            "personnel_11_rate": 0.5359,
+            "personnel_12_rate": 0.2007,
+            "personnel_21_rate": 0.1877,
+            "formation_shotgun_rate": 0.5662,
+            "formation_under_center_rate": 0.428,
+            "motion_rate": 0.5281,
+            "play_action_rate": 0.232,
+            "rpo_rate": 0.02,
+            "screen_rate": 0.0462,
+            "no_huddle_rate": 0.0273,
+            "neutral_pass_rate": 0.5723
+          },
+          "response": {
+            "pass_epa": 0.2983,
+            "rush_epa": 0.0137,
+            "pass_success_rate": 0.5422,
+            "rush_success_rate": 0.4274,
+            "pass_epa_man": 0.3348,
+            "pass_epa_zone": 0.2577,
+            "pass_epa_blitz": 0.2988,
+            "pass_epa_pressure": -0.2086,
+            "pass_epa_play_action": 0.2991
+          },
+          "target_share": {
+            "target_share_rb_all": 0.1711,
+            "target_share_wr_all": 0.5889,
+            "target_share_te_all": 0.24
+          }
+        },
+        "defense": {
+          "coverage": {
+            "man_rate": 0.3141,
+            "zone_rate": 0.6859,
+            "cover_0_rate": 0.0378,
+            "cover_1_rate": 0.2622,
+            "cover_2_rate": 0.2621,
+            "cover_3_rate": 0.3052,
+            "cover_4_rate": 0.086,
+            "cover_6_rate": 0.0275,
+            "cover_2_man_rate": 0.0192
+          },
+          "pressure": {
+            "blitz_rate": 0.2922,
+            "pressure_rate": 0.283,
+            "stacked_box_rate": 0.0641,
+            "avg_box": 6.2197
+          },
+          "personnel": {
+            "personnel_11_rate": 0.5499,
+            "personnel_12_rate": 0.2345,
+            "personnel_21_rate": 0.1174,
+            "formation_shotgun_rate": 0.6333,
+            "formation_under_center_rate": 0.3108,
+            "motion_rate": 0.5814,
+            "play_action_rate": 0.2521,
+            "rpo_rate": 0.0747,
+            "screen_rate": 0.0792,
+            "no_huddle_rate": 0.086,
+            "neutral_pass_rate": 0.5007
+          },
+          "response": {
+            "pass_epa": -0.029,
+            "rush_epa": -0.0365,
+            "pass_success_rate": 0.4535,
+            "rush_success_rate": 0.4434,
+            "pass_epa_man": 0.0679,
+            "pass_epa_zone": -0.0745,
+            "pass_epa_blitz": -0.0105,
+            "pass_epa_pressure": -0.4235,
+            "pass_epa_play_action": -0.0577
+          },
+          "target_share": {
+            "target_share_rb_all": 0.198,
+            "target_share_wr_all": 0.5358,
+            "target_share_te_all": 0.2663
+          }
+        }
+      },
+      "home_scheme": {
+        "source_seasons": [
+          2025
+        ],
+        "charting_samples": 1042,
+        "coverage_samples": 549,
+        "offense_plays": 1042,
+        "defense_plays": 1111,
+        "offense": {
+          "coverage": {
+            "man_rate": 0.2784,
+            "zone_rate": 0.7216,
+            "cover_0_rate": 0.0388,
+            "cover_1_rate": 0.1853,
+            "cover_2_rate": 0.2104,
+            "cover_3_rate": 0.3216,
+            "cover_4_rate": 0.1106,
+            "cover_6_rate": 0.0678,
+            "cover_2_man_rate": 0.0656
+          },
+          "pressure": {
+            "blitz_rate": 0.3183,
+            "pressure_rate": 0.2763,
+            "stacked_box_rate": 0.0678,
+            "avg_box": 6.3546
+          },
+          "personnel": {
+            "personnel_11_rate": 0.4429,
+            "personnel_12_rate": 0.2717,
+            "personnel_21_rate": 0.1381,
+            "formation_shotgun_rate": 0.4531,
+            "formation_under_center_rate": 0.5184,
+            "motion_rate": 0.5692,
+            "play_action_rate": 0.2502,
+            "rpo_rate": 0.0284,
+            "screen_rate": 0.0626,
+            "no_huddle_rate": 0.0768,
+            "neutral_pass_rate": 0.5186
+          },
+          "response": {
+            "pass_epa": 0.114,
+            "rush_epa": -0.0402,
+            "pass_success_rate": 0.518,
+            "rush_success_rate": 0.4149,
+            "pass_epa_man": 0.2345,
+            "pass_epa_zone": 0.0515,
+            "pass_epa_blitz": 0.0456,
+            "pass_epa_pressure": -0.4328,
+            "pass_epa_play_action": 0.3008
+          },
+          "target_share": {
+            "target_share_rb_all": 0.15,
+            "target_share_wr_all": 0.6227,
+            "target_share_te_all": 0.2273
+          }
+        },
+        "defense": {
+          "coverage": {
+            "man_rate": 0.2922,
+            "zone_rate": 0.7078,
+            "cover_0_rate": 0.0353,
+            "cover_1_rate": 0.194,
+            "cover_2_rate": 0.3139,
+            "cover_3_rate": 0.2493,
+            "cover_4_rate": 0.0712,
+            "cover_6_rate": 0.0655,
+            "cover_2_man_rate": 0.0709
+          },
+          "pressure": {
+            "blitz_rate": 0.2579,
+            "pressure_rate": 0.3367,
+            "stacked_box_rate": 0.0404,
+            "avg_box": 6.0729
+          },
+          "personnel": {
+            "personnel_11_rate": 0.6045,
+            "personnel_12_rate": 0.2047,
+            "personnel_21_rate": 0.0651,
+            "formation_shotgun_rate": 0.6554,
+            "formation_under_center_rate": 0.2916,
+            "motion_rate": 0.5409,
+            "play_action_rate": 0.2172,
+            "rpo_rate": 0.0563,
+            "screen_rate": 0.0787,
+            "no_huddle_rate": 0.1384,
+            "neutral_pass_rate": 0.5195
+          },
+          "response": {
+            "pass_epa": -0.0742,
+            "rush_epa": -0.1376,
+            "pass_success_rate": 0.4232,
+            "rush_success_rate": 0.3791,
+            "pass_epa_man": -0.0803,
+            "pass_epa_zone": -0.0543,
+            "pass_epa_blitz": -0.1045,
+            "pass_epa_pressure": -0.4791,
+            "pass_epa_play_action": -0.0774
+          },
+          "target_share": {
+            "target_share_rb_all": 0.2219,
+            "target_share_wr_all": 0.525,
+            "target_share_te_all": 0.2531
+          }
+        }
+      },
+      "scheme_source": {
+        "season": 2026,
+        "week": 1,
+        "observed_at_utc": "2026-09-09T04:18:42+00:00"
+      },
+      "away_players": [
+        {
+          "name": "Drake Maye",
+          "position": "QB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/s1nmoon2xnrc3bnyulv4"
+        },
+        {
+          "name": "Tommy DeVito",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240391.png&w=160&h=160"
+        },
+        {
+          "name": "Behren Morton",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431465.png&w=160&h=160"
+        },
+        {
+          "name": "Rhamondre Stevenson",
+          "position": "RB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zmpuirvuw4r04inxth5i"
+        },
+        {
+          "name": "TreVeyon Henderson",
+          "position": "RB",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ebcjvwytgu2y4kqm8ihv"
+        },
+        {
+          "name": "A.J. Brown",
+          "position": "WR",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qfhvjyssf0lwsh0kienp"
+        },
+        {
+          "name": "Romeo Doubs",
+          "position": "WR",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yxvzijmgwyyigljxfmyb"
+        },
+        {
+          "name": "DeMario Douglas",
+          "position": "WR",
+          "depth_rank": 3,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm9vnzqu5phlmsocjwgc"
+        },
+        {
+          "name": "Hunter Henry",
+          "position": "TE",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cvlunbqgztudbhjrug7l"
+        }
+      ],
+      "home_players": [
+        {
+          "name": "Sam Darnold",
+          "position": "QB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fyay8vruj0cqmhopufzk"
+        },
+        {
+          "name": "Drew Lock",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3924327.png&w=160&h=160"
+        },
+        {
+          "name": "Jalen Milroe",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432734.png&w=160&h=160"
+        },
+        {
+          "name": "Jadarian Price",
+          "position": "RB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/toy90i08oumgbdlvctja"
+        },
+        {
+          "name": "George Holani",
+          "position": "RB",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pgwvv5qhcmnwf3tomy1a"
+        },
+        {
+          "name": "Jaxon Smith-Njigba",
+          "position": "WR",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yx1xjrupbqdknnjaq4a6"
+        },
+        {
+          "name": "Rashid Shaheed",
+          "position": "WR",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ku2naisfbxmzgagxojnm"
+        },
+        {
+          "name": "Cooper Kupp",
+          "position": "WR",
+          "depth_rank": 3,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kjixprihktsfog6wx9sq"
+        },
+        {
+          "name": "AJ Barner",
+          "position": "TE",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/i0esiguve9if4ts5mm1q"
+        }
+      ],
+      "away_travel": "2,485 miles home, 3h back",
+      "home_travel": "No travel, at home",
+      "away_travel_km": 3999,
+      "home_travel_km": 0,
+      "away_tz_shift": -3.0,
+      "home_tz_shift": 0.0,
+      "venue_country": "USA"
+    },
+    {
+      "id": "401872657",
+      "sport": "nfl",
+      "game_state": "final",
+      "kickoff_utc": "2026-09-11T00:35Z",
+      "away": "SF",
+      "home": "LAR",
+      "away_name": "San Francisco 49ers",
+      "home_name": "Los Angeles Rams",
+      "away_record": "1-0",
+      "home_record": "0-1",
+      "away_score": "27",
+      "home_score": "7",
+      "venue": "Melbourne Cricket Ground",
+      "venue_city": "Melbourne, VIC",
+      "broadcast": "Netflix",
+      "away_availability": "6 out \u00b7 2 questionable",
+      "home_availability": "6 out \u00b7 2 questionable",
+      "away_availability_list": [
+        {
+          "name": "Ephesians Prysock",
+          "position": "CB",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Tatum Bethune",
+          "position": "LB",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Jordan Watkins",
+          "position": "WR",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Jordan James",
+          "position": "RB",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Kurtis Rourke",
+          "position": "QB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Enrique Cruz Jr.",
+          "position": "OT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Jake Tonges",
+          "position": "TE",
           "status": "Questionable",
           "detail": ""
         },
         {
-          "name": "Nate Hobbs",
-          "position": "CB",
-          "status": "Injured Reserve",
-          "detail": ""
+          "name": "De'Zhaun Stribling",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "ankle"
         },
         {
-          "name": "Sam Okuayinonu",
+          "name": "Alfred Collins",
           "position": "DT",
           "status": "Injured Reserve",
-          "detail": ""
+          "detail": "knee"
         }
       ],
       "home_availability_list": [
+        {
+          "name": "Max Klare",
+          "position": "TE",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "CJ Daniels",
+          "position": "WR",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Tutu Atwell",
+          "position": "WR",
+          "status": "Out",
+          "detail": "coach's decision"
+        },
+        {
+          "name": "Ty Simpson",
+          "position": "QB",
+          "status": "Out",
+          "detail": ""
+        },
         {
           "name": "Aaron Donald",
           "position": "DT",
@@ -62,10 +722,22 @@
           "detail": ""
         },
         {
-          "name": "Jaylen Watson",
-          "position": "CB",
+          "name": "Bill Murray",
+          "position": "G",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Davis Allen",
+          "position": "TE",
           "status": "Questionable",
-          "detail": "toe"
+          "detail": ""
+        },
+        {
+          "name": "Kam Curl",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "ankle"
         },
         {
           "name": "Keir Thomas II",
@@ -78,94 +750,76 @@
           "position": "G",
           "status": "Injured Reserve",
           "detail": "undisclosed"
-        },
-        {
-          "name": "Keagen Trost",
-          "position": "OT",
-          "status": "Injured Reserve",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Matthew Caldwell",
-          "position": "QB",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
-        },
-        {
-          "name": "Daniel Rickert",
-          "position": "DE",
-          "status": "Injured Reserve",
-          "detail": "knee"
         }
       ],
       "roof": "Outdoor",
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0956,
             "better": "high",
             "rank": 3,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.3304,
             "better": "high",
             "rank": 1,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0593,
             "better": "high",
             "rank": 13,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0486,
             "better": "low",
             "rank": 4,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0189,
             "better": "low",
             "rank": 17,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0351,
             "better": "low",
             "rank": 23,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2959,
             "better": "low",
             "rank": 22,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0506,
             "better": "low",
             "rank": 8,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0501,
             "better": "high",
             "rank": 32,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.019,
             "better": "high",
             "rank": 17,
@@ -178,70 +832,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.1081,
             "better": "high",
             "rank": 2,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.3249,
             "better": "high",
             "rank": 2,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0728,
             "better": "high",
             "rank": 4,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.044,
             "better": "low",
             "rank": 1,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.013,
             "better": "low",
             "rank": 2,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0292,
             "better": "low",
             "rank": 11,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2755,
             "better": "low",
             "rank": 10,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0582,
             "better": "low",
             "rank": 19,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0741,
             "better": "high",
             "rank": 11,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0234,
             "better": "high",
             "rank": 8,
@@ -593,648 +1247,6 @@
       "venue_country": "Australia"
     },
     {
-      "id": "401872656",
-      "sport": "nfl",
-      "game_state": "final",
-      "kickoff_utc": "2026-09-10T00:20Z",
-      "away": "NE",
-      "home": "SEA",
-      "away_name": "New England Patriots",
-      "home_name": "Seattle Seahawks",
-      "away_record": "0-1",
-      "home_record": "1-0",
-      "away_score": "10",
-      "home_score": "13",
-      "venue": "Lumen Field",
-      "venue_city": "Seattle, WA",
-      "broadcast": "NBC",
-      "away_availability": "9 out \u00b7 1 questionable",
-      "home_availability": "8 out \u00b7 1 questionable",
-      "away_availability_list": [
-        {
-          "name": "Behren Morton",
-          "position": "QB",
-          "status": "Out",
-          "detail": "coach's decision"
-        },
-        {
-          "name": "Efton Chism III",
-          "position": "WR",
-          "status": "Out",
-          "detail": "coach's decision"
-        },
-        {
-          "name": "Karon Prunty",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Walter Rouse",
-          "position": "OL",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "TreVeyon Henderson",
-          "position": "RB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Erick Hunter",
-          "position": "LB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Ben Brown",
-          "position": "C",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Brenden Schooler",
-          "position": "S",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Harold Landry III",
-          "position": "LB",
-          "status": "Out",
-          "detail": "undisclosed"
-        },
-        {
-          "name": "A.J. Brown",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
-          "name": "Bryce Baringer",
-          "position": "P",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
-        },
-        {
-          "name": "Khalil Jacobs",
-          "position": "LB",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
-        },
-        {
-          "name": "Marcus Bryant",
-          "position": "OT",
-          "status": "Injured Reserve",
-          "detail": "ankle"
-        }
-      ],
-      "home_availability_list": [
-        {
-          "name": "Nick Emmanwori",
-          "position": "S",
-          "status": "Out",
-          "detail": "ankle"
-        },
-        {
-          "name": "Jalen Milroe",
-          "position": "QB",
-          "status": "Out",
-          "detail": "coach's decision"
-        },
-        {
-          "name": "Tory Horton",
-          "position": "WR",
-          "status": "Out",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Beau Stephens",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Mike Morris",
-          "position": "DE",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Ty Okada",
-          "position": "S",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Nick Kallerup",
-          "position": "TE",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Zach Charbonnet",
-          "position": "RB",
-          "status": "Out",
-          "detail": "knee"
-        },
-        {
-          "name": "Sam Darnold",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": ""
-        }
-      ],
-      "roof": "Outdoor",
-      "away_form": {
-        "rates": {
-          "off_epa": {
-            "label": "Offensive EPA per play",
-            "value": 0.0429,
-            "better": "high",
-            "rank": 9,
-            "of": 32
-          },
-          "off_first_down": {
-            "label": "Offensive first-down rate",
-            "value": 0.2939,
-            "better": "high",
-            "rank": 11,
-            "of": 32
-          },
-          "off_explosive": {
-            "label": "Offensive explosive-play rate",
-            "value": 0.067,
-            "better": "high",
-            "rank": 6,
-            "of": 32
-          },
-          "off_sack": {
-            "label": "Sack rate taken",
-            "value": 0.0882,
-            "better": "low",
-            "rank": 26,
-            "of": 32
-          },
-          "off_turnover": {
-            "label": "Giveaway rate",
-            "value": 0.0187,
-            "better": "low",
-            "rank": 15,
-            "of": 32
-          },
-          "def_epa": {
-            "label": "EPA allowed per play",
-            "value": 0.0091,
-            "better": "low",
-            "rank": 19,
-            "of": 32
-          },
-          "def_first_down": {
-            "label": "First-down rate allowed",
-            "value": 0.2902,
-            "better": "low",
-            "rank": 20,
-            "of": 32
-          },
-          "def_explosive": {
-            "label": "Explosive rate allowed",
-            "value": 0.0549,
-            "better": "low",
-            "rank": 11,
-            "of": 32
-          },
-          "def_sack": {
-            "label": "Sack rate generated",
-            "value": 0.0505,
-            "better": "high",
-            "rank": 30,
-            "of": 32
-          },
-          "def_turnover": {
-            "label": "Takeaway rate",
-            "value": 0.0164,
-            "better": "high",
-            "rank": 25,
-            "of": 32
-          }
-        },
-        "plays": 61.07,
-        "pool": 32
-      },
-      "home_form": {
-        "rates": {
-          "off_epa": {
-            "label": "Offensive EPA per play",
-            "value": 0.0303,
-            "better": "high",
-            "rank": 12,
-            "of": 32
-          },
-          "off_first_down": {
-            "label": "Offensive first-down rate",
-            "value": 0.2953,
-            "better": "high",
-            "rank": 10,
-            "of": 32
-          },
-          "off_explosive": {
-            "label": "Offensive explosive-play rate",
-            "value": 0.0738,
-            "better": "high",
-            "rank": 3,
-            "of": 32
-          },
-          "off_sack": {
-            "label": "Sack rate taken",
-            "value": 0.0608,
-            "better": "low",
-            "rank": 12,
-            "of": 32
-          },
-          "off_turnover": {
-            "label": "Giveaway rate",
-            "value": 0.0234,
-            "better": "low",
-            "rank": 27,
-            "of": 32
-          },
-          "def_epa": {
-            "label": "EPA allowed per play",
-            "value": -0.1067,
-            "better": "low",
-            "rank": 3,
-            "of": 32
-          },
-          "def_first_down": {
-            "label": "First-down rate allowed",
-            "value": 0.2468,
-            "better": "low",
-            "rank": 2,
-            "of": 32
-          },
-          "def_explosive": {
-            "label": "Explosive rate allowed",
-            "value": 0.0493,
-            "better": "low",
-            "rank": 5,
-            "of": 32
-          },
-          "def_sack": {
-            "label": "Sack rate generated",
-            "value": 0.0766,
-            "better": "high",
-            "rank": 8,
-            "of": 32
-          },
-          "def_turnover": {
-            "label": "Takeaway rate",
-            "value": 0.0241,
-            "better": "high",
-            "rank": 6,
-            "of": 32
-          }
-        },
-        "plays": 59.76,
-        "pool": 32
-      },
-      "away_scheme": {
-        "source_seasons": [
-          2025
-        ],
-        "charting_samples": 1011,
-        "coverage_samples": 622,
-        "offense_plays": 1063,
-        "defense_plays": 1011,
-        "offense": {
-          "coverage": {
-            "man_rate": 0.3367,
-            "zone_rate": 0.6633,
-            "cover_0_rate": 0.0438,
-            "cover_1_rate": 0.2526,
-            "cover_2_rate": 0.2549,
-            "cover_3_rate": 0.2799,
-            "cover_4_rate": 0.0781,
-            "cover_6_rate": 0.0471,
-            "cover_2_man_rate": 0.0437
-          },
-          "pressure": {
-            "blitz_rate": 0.3137,
-            "pressure_rate": 0.3224,
-            "stacked_box_rate": 0.1123,
-            "avg_box": 6.4169
-          },
-          "personnel": {
-            "personnel_11_rate": 0.5359,
-            "personnel_12_rate": 0.2007,
-            "personnel_21_rate": 0.1877,
-            "formation_shotgun_rate": 0.5662,
-            "formation_under_center_rate": 0.428,
-            "motion_rate": 0.5281,
-            "play_action_rate": 0.232,
-            "rpo_rate": 0.02,
-            "screen_rate": 0.0462,
-            "no_huddle_rate": 0.0273,
-            "neutral_pass_rate": 0.5723
-          },
-          "response": {
-            "pass_epa": 0.2983,
-            "rush_epa": 0.0137,
-            "pass_success_rate": 0.5422,
-            "rush_success_rate": 0.4274,
-            "pass_epa_man": 0.3348,
-            "pass_epa_zone": 0.2577,
-            "pass_epa_blitz": 0.2988,
-            "pass_epa_pressure": -0.2086,
-            "pass_epa_play_action": 0.2991
-          },
-          "target_share": {
-            "target_share_rb_all": 0.1711,
-            "target_share_wr_all": 0.5889,
-            "target_share_te_all": 0.24
-          }
-        },
-        "defense": {
-          "coverage": {
-            "man_rate": 0.3141,
-            "zone_rate": 0.6859,
-            "cover_0_rate": 0.0378,
-            "cover_1_rate": 0.2622,
-            "cover_2_rate": 0.2621,
-            "cover_3_rate": 0.3052,
-            "cover_4_rate": 0.086,
-            "cover_6_rate": 0.0275,
-            "cover_2_man_rate": 0.0192
-          },
-          "pressure": {
-            "blitz_rate": 0.2922,
-            "pressure_rate": 0.283,
-            "stacked_box_rate": 0.0641,
-            "avg_box": 6.2197
-          },
-          "personnel": {
-            "personnel_11_rate": 0.5499,
-            "personnel_12_rate": 0.2345,
-            "personnel_21_rate": 0.1174,
-            "formation_shotgun_rate": 0.6333,
-            "formation_under_center_rate": 0.3108,
-            "motion_rate": 0.5814,
-            "play_action_rate": 0.2521,
-            "rpo_rate": 0.0747,
-            "screen_rate": 0.0792,
-            "no_huddle_rate": 0.086,
-            "neutral_pass_rate": 0.5007
-          },
-          "response": {
-            "pass_epa": -0.029,
-            "rush_epa": -0.0365,
-            "pass_success_rate": 0.4535,
-            "rush_success_rate": 0.4434,
-            "pass_epa_man": 0.0679,
-            "pass_epa_zone": -0.0745,
-            "pass_epa_blitz": -0.0105,
-            "pass_epa_pressure": -0.4235,
-            "pass_epa_play_action": -0.0577
-          },
-          "target_share": {
-            "target_share_rb_all": 0.198,
-            "target_share_wr_all": 0.5358,
-            "target_share_te_all": 0.2663
-          }
-        }
-      },
-      "home_scheme": {
-        "source_seasons": [
-          2025
-        ],
-        "charting_samples": 1042,
-        "coverage_samples": 549,
-        "offense_plays": 1042,
-        "defense_plays": 1111,
-        "offense": {
-          "coverage": {
-            "man_rate": 0.2784,
-            "zone_rate": 0.7216,
-            "cover_0_rate": 0.0388,
-            "cover_1_rate": 0.1853,
-            "cover_2_rate": 0.2104,
-            "cover_3_rate": 0.3216,
-            "cover_4_rate": 0.1106,
-            "cover_6_rate": 0.0678,
-            "cover_2_man_rate": 0.0656
-          },
-          "pressure": {
-            "blitz_rate": 0.3183,
-            "pressure_rate": 0.2763,
-            "stacked_box_rate": 0.0678,
-            "avg_box": 6.3546
-          },
-          "personnel": {
-            "personnel_11_rate": 0.4429,
-            "personnel_12_rate": 0.2717,
-            "personnel_21_rate": 0.1381,
-            "formation_shotgun_rate": 0.4531,
-            "formation_under_center_rate": 0.5184,
-            "motion_rate": 0.5692,
-            "play_action_rate": 0.2502,
-            "rpo_rate": 0.0284,
-            "screen_rate": 0.0626,
-            "no_huddle_rate": 0.0768,
-            "neutral_pass_rate": 0.5186
-          },
-          "response": {
-            "pass_epa": 0.114,
-            "rush_epa": -0.0402,
-            "pass_success_rate": 0.518,
-            "rush_success_rate": 0.4149,
-            "pass_epa_man": 0.2345,
-            "pass_epa_zone": 0.0515,
-            "pass_epa_blitz": 0.0456,
-            "pass_epa_pressure": -0.4328,
-            "pass_epa_play_action": 0.3008
-          },
-          "target_share": {
-            "target_share_rb_all": 0.15,
-            "target_share_wr_all": 0.6227,
-            "target_share_te_all": 0.2273
-          }
-        },
-        "defense": {
-          "coverage": {
-            "man_rate": 0.2922,
-            "zone_rate": 0.7078,
-            "cover_0_rate": 0.0353,
-            "cover_1_rate": 0.194,
-            "cover_2_rate": 0.3139,
-            "cover_3_rate": 0.2493,
-            "cover_4_rate": 0.0712,
-            "cover_6_rate": 0.0655,
-            "cover_2_man_rate": 0.0709
-          },
-          "pressure": {
-            "blitz_rate": 0.2579,
-            "pressure_rate": 0.3367,
-            "stacked_box_rate": 0.0404,
-            "avg_box": 6.0729
-          },
-          "personnel": {
-            "personnel_11_rate": 0.6045,
-            "personnel_12_rate": 0.2047,
-            "personnel_21_rate": 0.0651,
-            "formation_shotgun_rate": 0.6554,
-            "formation_under_center_rate": 0.2916,
-            "motion_rate": 0.5409,
-            "play_action_rate": 0.2172,
-            "rpo_rate": 0.0563,
-            "screen_rate": 0.0787,
-            "no_huddle_rate": 0.1384,
-            "neutral_pass_rate": 0.5195
-          },
-          "response": {
-            "pass_epa": -0.0742,
-            "rush_epa": -0.1376,
-            "pass_success_rate": 0.4232,
-            "rush_success_rate": 0.3791,
-            "pass_epa_man": -0.0803,
-            "pass_epa_zone": -0.0543,
-            "pass_epa_blitz": -0.1045,
-            "pass_epa_pressure": -0.4791,
-            "pass_epa_play_action": -0.0774
-          },
-          "target_share": {
-            "target_share_rb_all": 0.2219,
-            "target_share_wr_all": 0.525,
-            "target_share_te_all": 0.2531
-          }
-        }
-      },
-      "scheme_source": {
-        "season": 2026,
-        "week": 1,
-        "observed_at_utc": "2026-09-09T04:18:42+00:00"
-      },
-      "away_players": [
-        {
-          "name": "Drake Maye",
-          "position": "QB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/s1nmoon2xnrc3bnyulv4"
-        },
-        {
-          "name": "Tommy DeVito",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240391.png&w=160&h=160"
-        },
-        {
-          "name": "Behren Morton",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431465.png&w=160&h=160"
-        },
-        {
-          "name": "Rhamondre Stevenson",
-          "position": "RB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zmpuirvuw4r04inxth5i"
-        },
-        {
-          "name": "TreVeyon Henderson",
-          "position": "RB",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ebcjvwytgu2y4kqm8ihv"
-        },
-        {
-          "name": "A.J. Brown",
-          "position": "WR",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qfhvjyssf0lwsh0kienp"
-        },
-        {
-          "name": "Romeo Doubs",
-          "position": "WR",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yxvzijmgwyyigljxfmyb"
-        },
-        {
-          "name": "DeMario Douglas",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm9vnzqu5phlmsocjwgc"
-        },
-        {
-          "name": "Hunter Henry",
-          "position": "TE",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cvlunbqgztudbhjrug7l"
-        }
-      ],
-      "home_players": [
-        {
-          "name": "Sam Darnold",
-          "position": "QB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fyay8vruj0cqmhopufzk"
-        },
-        {
-          "name": "Drew Lock",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3924327.png&w=160&h=160"
-        },
-        {
-          "name": "Jalen Milroe",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432734.png&w=160&h=160"
-        },
-        {
-          "name": "Jadarian Price",
-          "position": "RB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/toy90i08oumgbdlvctja"
-        },
-        {
-          "name": "George Holani",
-          "position": "RB",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pgwvv5qhcmnwf3tomy1a"
-        },
-        {
-          "name": "Jaxon Smith-Njigba",
-          "position": "WR",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yx1xjrupbqdknnjaq4a6"
-        },
-        {
-          "name": "Rashid Shaheed",
-          "position": "WR",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ku2naisfbxmzgagxojnm"
-        },
-        {
-          "name": "Cooper Kupp",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kjixprihktsfog6wx9sq"
-        },
-        {
-          "name": "AJ Barner",
-          "position": "TE",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/i0esiguve9if4ts5mm1q"
-        }
-      ],
-      "away_travel": "2,485 miles home, 3h back",
-      "home_travel": "No travel, at home",
-      "away_travel_km": 3999,
-      "home_travel_km": 0,
-      "away_tz_shift": -3.0,
-      "home_tz_shift": 0.0,
-      "venue_country": "USA"
-    },
-    {
       "id": "401872925",
       "sport": "nfl",
       "game_state": "scheduled",
@@ -1250,26 +1262,14 @@
       "venue": "Paycor Stadium",
       "venue_city": "Cincinnati, OH",
       "broadcast": "FOX",
-      "away_availability": "5 questionable",
-      "home_availability": "2 designated",
+      "away_availability": "4 questionable",
+      "home_availability": "2 questionable",
       "away_availability_list": [
-        {
-          "name": "Rueben Bain Jr.",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "shoulder"
-        },
         {
           "name": "Christian Rozeboom",
           "position": "LB",
           "status": "Questionable",
           "detail": "foot"
-        },
-        {
-          "name": "Justin Skule",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Sean Tucker",
@@ -1282,6 +1282,12 @@
           "position": "WR",
           "status": "Questionable",
           "detail": "knee"
+        },
+        {
+          "name": "Justin Skule",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": ""
         },
         {
           "name": "Josh Hayes",
@@ -1310,6 +1316,18 @@
       ],
       "home_availability_list": [
         {
+          "name": "Shemar Stewart",
+          "position": "DE",
+          "status": "Questionable",
+          "detail": "knee"
+        },
+        {
+          "name": "DJ Turner II",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
           "name": "Brian Parker II",
           "position": "OT",
           "status": "Injured Reserve",
@@ -1326,70 +1344,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.024,
             "better": "high",
             "rank": 14,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2838,
             "better": "high",
             "rank": 18,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0626,
             "better": "high",
             "rank": 8,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0636,
             "better": "low",
             "rank": 15,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0162,
             "better": "low",
             "rank": 7,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0193,
             "better": "low",
             "rank": 22,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.289,
             "better": "low",
             "rank": 19,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.067,
             "better": "low",
             "rank": 28,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0682,
             "better": "high",
             "rank": 17,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0219,
             "better": "high",
             "rank": 9,
@@ -1402,70 +1420,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0303,
             "better": "high",
             "rank": 11,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2997,
             "better": "high",
             "rank": 7,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0508,
             "better": "high",
             "rank": 27,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0601,
             "better": "low",
             "rank": 10,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0222,
             "better": "low",
             "rank": 24,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.1065,
             "better": "low",
             "rank": 31,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.3175,
             "better": "low",
             "rank": 31,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0727,
             "better": "low",
             "rank": 32,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0637,
             "better": "high",
             "rank": 22,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0211,
             "better": "high",
             "rank": 12,
@@ -1944,82 +1962,76 @@
           "position": "RB",
           "status": "Injured Reserve",
           "detail": "back"
-        },
-        {
-          "name": "Damone Clark",
-          "position": "LB",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
         }
       ],
       "roof": "Indoor",
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0783,
             "better": "high",
             "rank": 26,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2607,
             "better": "high",
             "rank": 28,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0402,
             "better": "high",
             "rank": 31,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0733,
             "better": "low",
             "rank": 21,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0218,
             "better": "low",
             "rank": 22,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.051,
             "better": "low",
             "rank": 8,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2703,
             "better": "low",
             "rank": 9,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0544,
             "better": "low",
             "rank": 10,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0752,
             "better": "high",
             "rank": 10,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0198,
             "better": "high",
             "rank": 15,
@@ -2032,70 +2044,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0869,
             "better": "high",
             "rank": 5,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.3135,
             "better": "high",
             "rank": 4,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0743,
             "better": "high",
             "rank": 2,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0593,
             "better": "low",
             "rank": 9,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0135,
             "better": "low",
             "rank": 3,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0208,
             "better": "low",
             "rank": 12,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2764,
             "better": "low",
             "rank": 11,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0642,
             "better": "low",
             "rank": 27,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0784,
             "better": "high",
             "rank": 7,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0189,
             "better": "high",
             "rank": 18,
@@ -2574,70 +2586,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.1356,
             "better": "high",
             "rank": 30,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2467,
             "better": "high",
             "rank": 31,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0411,
             "better": "high",
             "rank": 30,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.1031,
             "better": "low",
             "rank": 31,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0227,
             "better": "low",
             "rank": 25,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0809,
             "better": "low",
             "rank": 29,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2976,
             "better": "low",
             "rank": 24,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0609,
             "better": "low",
             "rank": 23,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0551,
             "better": "high",
             "rank": 29,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.007,
             "better": "high",
             "rank": 32,
@@ -2650,70 +2662,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.106,
             "better": "high",
             "rank": 29,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2553,
             "better": "high",
             "rank": 29,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.055,
             "better": "high",
             "rank": 21,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.092,
             "better": "low",
             "rank": 28,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0195,
             "better": "low",
             "rank": 19,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0624,
             "better": "low",
             "rank": 28,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2884,
             "better": "low",
             "rank": 18,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0635,
             "better": "low",
             "rank": 25,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0764,
             "better": "high",
             "rank": 9,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0152,
             "better": "high",
             "rank": 29,
@@ -3074,14 +3086,14 @@
       "venue": "Lucas Oil Stadium",
       "venue_city": "Indianapolis, IN",
       "broadcast": "CBS",
-      "away_availability": "4 questionable",
-      "home_availability": "5 questionable",
+      "away_availability": "3 questionable",
+      "home_availability": "2 questionable",
       "away_availability_list": [
         {
-          "name": "Teddye Buchanan",
-          "position": "LB",
+          "name": "Nnamdi Madubuike",
+          "position": "DT",
           "status": "Questionable",
-          "detail": "knee"
+          "detail": "neck"
         },
         {
           "name": "Devontez Walker",
@@ -3090,16 +3102,10 @@
           "detail": "groin"
         },
         {
-          "name": "Zay Flowers",
-          "position": "WR",
+          "name": "Teddye Buchanan",
+          "position": "LB",
           "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Nnamdi Madubuike",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
+          "detail": "knee"
         },
         {
           "name": "Bilhal Kone",
@@ -3128,32 +3134,14 @@
       ],
       "home_availability_list": [
         {
-          "name": "Drew Ogletree",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "neck"
-        },
-        {
           "name": "Alec Pierce",
           "position": "WR",
           "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Sedrick Van Pran-Granger",
-          "position": "C",
-          "status": "Questionable",
-          "detail": ""
+          "detail": "heel"
         },
         {
           "name": "Sean McKeon",
           "position": "TE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "A.J. Haulcy",
-          "position": "S",
           "status": "Questionable",
           "detail": ""
         },
@@ -3192,70 +3180,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0861,
             "better": "high",
             "rank": 6,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.3071,
             "better": "high",
             "rank": 6,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0743,
             "better": "high",
             "rank": 1,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0835,
             "better": "low",
             "rank": 24,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0207,
             "better": "low",
             "rank": 21,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0102,
             "better": "low",
             "rank": 14,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2783,
             "better": "low",
             "rank": 12,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0684,
             "better": "low",
             "rank": 30,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0581,
             "better": "high",
             "rank": 27,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0199,
             "better": "high",
             "rank": 14,
@@ -3268,70 +3256,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0665,
             "better": "high",
             "rank": 7,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.312,
             "better": "high",
             "rank": 5,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0571,
             "better": "high",
             "rank": 15,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0502,
             "better": "low",
             "rank": 5,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0204,
             "better": "low",
             "rank": 20,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.013,
             "better": "low",
             "rank": 21,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.3001,
             "better": "low",
             "rank": 26,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0563,
             "better": "low",
             "rank": 16,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0604,
             "better": "high",
             "rank": 24,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0218,
             "better": "high",
             "rank": 10,
@@ -3698,7 +3686,7 @@
       "venue": "Acrisure Stadium",
       "venue_city": "Pittsburgh, PA",
       "broadcast": "FOX",
-      "away_availability": "3 out \u00b7 5 questionable",
+      "away_availability": "3 out \u00b7 8 questionable",
       "home_availability": "1 out \u00b7 1 questionable",
       "away_availability_list": [
         {
@@ -3720,6 +3708,36 @@
           "detail": "undisclosed"
         },
         {
+          "name": "Tua Tagovailoa",
+          "position": "QB",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Zachariah Branch",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Da'Shawn Hand",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Jawaan Taylor",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Kendal Daniels",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
           "name": "Billy Bowman Jr.",
           "position": "CB",
           "status": "Questionable",
@@ -3732,22 +3750,10 @@
           "detail": ""
         },
         {
-          "name": "Kyle Hinton",
-          "position": "G",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
           "name": "Brandon Dorlus",
           "position": "DT",
           "status": "Questionable",
           "detail": ""
-        },
-        {
-          "name": "Zachariah Branch",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "hamstring"
         },
         {
           "name": "Trey Sermon",
@@ -3766,18 +3772,6 @@
           "position": "WR",
           "status": "Injured Reserve",
           "detail": "undisclosed"
-        },
-        {
-          "name": "Malik Verdon",
-          "position": "LB",
-          "status": "Injured Reserve",
-          "detail": ""
-        },
-        {
-          "name": "James Pearce Jr.",
-          "position": "LB",
-          "status": "Suspension",
-          "detail": ""
         }
       ],
       "home_availability_list": [
@@ -3810,70 +3804,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0276,
             "better": "high",
             "rank": 24,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2824,
             "better": "high",
             "rank": 19,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0546,
             "better": "high",
             "rank": 22,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0527,
             "better": "low",
             "rank": 6,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.019,
             "better": "low",
             "rank": 18,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0064,
             "better": "low",
             "rank": 17,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2854,
             "better": "low",
             "rank": 16,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0601,
             "better": "low",
             "rank": 22,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0823,
             "better": "high",
             "rank": 4,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0196,
             "better": "high",
             "rank": 16,
@@ -3886,70 +3880,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0023,
             "better": "high",
             "rank": 20,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2663,
             "better": "high",
             "rank": 24,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0511,
             "better": "high",
             "rank": 25,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0602,
             "better": "low",
             "rank": 11,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0162,
             "better": "low",
             "rank": 8,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.005,
             "better": "low",
             "rank": 16,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2868,
             "better": "low",
             "rank": 17,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0567,
             "better": "low",
             "rank": 17,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.066,
             "better": "high",
             "rank": 18,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0243,
             "better": "high",
             "rank": 5,
@@ -4322,8 +4316,8 @@
       "venue": "Bank of America Stadium",
       "venue_city": "Charlotte, NC",
       "broadcast": "FOX",
-      "away_availability": "2 out \u00b7 3 questionable",
-      "home_availability": "3 out \u00b7 3 questionable",
+      "away_availability": "2 out \u00b7 4 questionable",
+      "home_availability": "3 out \u00b7 2 questionable",
       "away_availability_list": [
         {
           "name": "Kyler Gordon",
@@ -4338,6 +4332,18 @@
           "detail": ""
         },
         {
+          "name": "Xavier Woods",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "groin"
+        },
+        {
+          "name": "Tyson Bagent",
+          "position": "QB",
+          "status": "Questionable",
+          "detail": "back"
+        },
+        {
           "name": "Rome Odunze",
           "position": "WR",
           "status": "Questionable",
@@ -4346,12 +4352,6 @@
         {
           "name": "Ozzy Trapilo",
           "position": "OT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Tyson Bagent",
-          "position": "QB",
           "status": "Questionable",
           "detail": ""
         },
@@ -4412,16 +4412,10 @@
           "detail": "neck"
         },
         {
-          "name": "Bobby Brown III",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
           "name": "Patrick Jones II",
           "position": "LB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "back"
         },
         {
           "name": "Jonathon Brooks",
@@ -4452,70 +4446,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0259,
             "better": "high",
             "rank": 13,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2865,
             "better": "high",
             "rank": 17,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0615,
             "better": "high",
             "rank": 10,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0571,
             "better": "low",
             "rank": 8,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0136,
             "better": "low",
             "rank": 4,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0125,
             "better": "low",
             "rank": 20,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.3004,
             "better": "low",
             "rank": 27,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0695,
             "better": "low",
             "rank": 31,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0587,
             "better": "high",
             "rank": 26,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0295,
             "better": "high",
             "rank": 1,
@@ -4528,70 +4522,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0801,
             "better": "high",
             "rank": 27,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2659,
             "better": "high",
             "rank": 25,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.048,
             "better": "high",
             "rank": 28,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0703,
             "better": "low",
             "rank": 19,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0236,
             "better": "low",
             "rank": 28,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0611,
             "better": "low",
             "rank": 27,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2976,
             "better": "low",
             "rank": 25,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0552,
             "better": "low",
             "rank": 13,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.059,
             "better": "high",
             "rank": 25,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0187,
             "better": "high",
             "rank": 19,
@@ -4971,7 +4965,7 @@
           "name": "Teven Jenkins",
           "position": "G",
           "status": "Questionable",
-          "detail": ""
+          "detail": "back"
         },
         {
           "name": "Maliek Collins",
@@ -5010,30 +5004,30 @@
           "detail": "quadriceps"
         },
         {
-          "name": "Travis Bell",
-          "position": "DT",
+          "name": "Alex Wright",
+          "position": "DE",
           "status": "Injured Reserve",
-          "detail": "eye"
+          "detail": ""
         }
       ],
       "home_availability_list": [
         {
-          "name": "Cole Van Lanen",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
           "name": "LeQuint Allen Jr.",
           "position": "RB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "hip"
         },
         {
           "name": "Jakobi Meyers",
           "position": "WR",
           "status": "Questionable",
-          "detail": "hand"
+          "detail": "thumb"
+        },
+        {
+          "name": "Cole Van Lanen",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": "knee"
         },
         {
           "name": "Sam Mustipher",
@@ -5076,70 +5070,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.2039,
             "better": "high",
             "rank": 32,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2233,
             "better": "high",
             "rank": 32,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0389,
             "better": "high",
             "rank": 32,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0897,
             "better": "low",
             "rank": 27,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0272,
             "better": "low",
             "rank": 31,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0902,
             "better": "low",
             "rank": 5,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2549,
             "better": "low",
             "rank": 4,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0596,
             "better": "low",
             "rank": 20,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0904,
             "better": "high",
             "rank": 3,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0172,
             "better": "high",
             "rank": 23,
@@ -5152,70 +5146,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0205,
             "better": "high",
             "rank": 16,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.293,
             "better": "high",
             "rank": 13,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0619,
             "better": "high",
             "rank": 9,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0615,
             "better": "low",
             "rank": 13,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0188,
             "better": "low",
             "rank": 16,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0429,
             "better": "low",
             "rank": 9,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.279,
             "better": "low",
             "rank": 14,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0563,
             "better": "low",
             "rank": 15,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0502,
             "better": "high",
             "rank": 31,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0257,
             "better": "high",
             "rank": 3,
@@ -5588,7 +5582,7 @@
       "venue": "Reliant Stadium",
       "venue_city": "Houston, TX",
       "broadcast": "CBS",
-      "away_availability": "2 out \u00b7 5 questionable",
+      "away_availability": "2 out \u00b7 4 questionable",
       "home_availability": "2 out \u00b7 1 questionable",
       "away_availability_list": [
         {
@@ -5607,7 +5601,13 @@
           "name": "T.J. Sanders",
           "position": "DT",
           "status": "Questionable",
-          "detail": ""
+          "detail": "knee"
+        },
+        {
+          "name": "Ty Johnson",
+          "position": "RB",
+          "status": "Questionable",
+          "detail": "hamstring"
         },
         {
           "name": "Jordan Hancock",
@@ -5616,22 +5616,10 @@
           "detail": ""
         },
         {
-          "name": "Ty Johnson",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "lower leg"
-        },
-        {
           "name": "Jedrick Wills Jr.",
           "position": "OT",
           "status": "Questionable",
           "detail": ""
-        },
-        {
-          "name": "Jude Bowry",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": "foot"
         },
         {
           "name": "Zane Durant",
@@ -5663,7 +5651,7 @@
           "name": "Kayden McDonald",
           "position": "DT",
           "status": "Questionable",
-          "detail": ""
+          "detail": "ankle"
         },
         {
           "name": "Jayden Higgins",
@@ -5712,70 +5700,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.1265,
             "better": "high",
             "rank": 1,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.3158,
             "better": "high",
             "rank": 3,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0672,
             "better": "high",
             "rank": 5,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0643,
             "better": "low",
             "rank": 16,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0184,
             "better": "low",
             "rank": 14,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0033,
             "better": "low",
             "rank": 15,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2971,
             "better": "low",
             "rank": 23,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0559,
             "better": "low",
             "rank": 14,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0658,
             "better": "high",
             "rank": 19,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0235,
             "better": "high",
             "rank": 7,
@@ -5788,70 +5776,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0175,
             "better": "high",
             "rank": 21,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2647,
             "better": "high",
             "rank": 26,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0552,
             "better": "high",
             "rank": 20,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0626,
             "better": "low",
             "rank": 14,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0114,
             "better": "low",
             "rank": 1,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.1121,
             "better": "low",
             "rank": 1,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2467,
             "better": "low",
             "rank": 1,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0552,
             "better": "low",
             "rank": 12,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0809,
             "better": "high",
             "rank": 6,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0293,
             "better": "high",
             "rank": 2,
@@ -6219,7 +6207,7 @@
       "venue_city": "Las Vegas, NV",
       "broadcast": "FOX",
       "away_availability": "2 out \u00b7 2 questionable",
-      "home_availability": "1 doubtful",
+      "home_availability": "1 out",
       "away_availability_list": [
         {
           "name": "Storm Duck",
@@ -6258,12 +6246,6 @@
           "detail": ""
         },
         {
-          "name": "Ben Sims",
-          "position": "TE",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
-        },
-        {
           "name": "Cole Turner",
           "position": "TE",
           "status": "Injured Reserve",
@@ -6274,8 +6256,8 @@
         {
           "name": "Brock Bowers",
           "position": "TE",
-          "status": "Doubtful",
-          "detail": ""
+          "status": "Out",
+          "detail": "knee"
         },
         {
           "name": "Dont'e Thornton Jr.",
@@ -6324,70 +6306,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0247,
             "better": "high",
             "rank": 23,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2884,
             "better": "high",
             "rank": 16,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.058,
             "better": "high",
             "rank": 14,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.073,
             "better": "low",
             "rank": 20,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0257,
             "better": "low",
             "rank": 29,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.06,
             "better": "low",
             "rank": 26,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2957,
             "better": "low",
             "rank": 21,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0641,
             "better": "low",
             "rank": 26,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.062,
             "better": "high",
             "rank": 23,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0176,
             "better": "high",
             "rank": 21,
@@ -6400,70 +6382,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.1854,
             "better": "high",
             "rank": 31,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2481,
             "better": "high",
             "rank": 30,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0449,
             "better": "high",
             "rank": 29,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0927,
             "better": "low",
             "rank": 30,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.026,
             "better": "low",
             "rank": 30,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0142,
             "better": "low",
             "rank": 13,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2786,
             "better": "low",
             "rank": 13,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0478,
             "better": "low",
             "rank": 3,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0684,
             "better": "high",
             "rank": 16,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0169,
             "better": "high",
             "rank": 24,
@@ -6824,18 +6806,18 @@
       "venue": "U.S. Bank Stadium",
       "venue_city": "Minneapolis, MN",
       "broadcast": "CBS",
-      "away_availability": "4 out \u00b7 7 questionable",
+      "away_availability": "4 out \u00b7 6 questionable",
       "home_availability": "3 questionable",
       "away_availability_list": [
         {
-          "name": "Jordon Riley",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
           "name": "Josh Jacobs",
           "position": "RB",
+          "status": "Out",
+          "detail": "personal"
+        },
+        {
+          "name": "Jordon Riley",
+          "position": "DT",
           "status": "Out",
           "detail": ""
         },
@@ -6855,7 +6837,13 @@
           "name": "Devonte Wyatt",
           "position": "DT",
           "status": "Questionable",
-          "detail": ""
+          "detail": "ankle"
+        },
+        {
+          "name": "Javon Hargrave",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "knee"
         },
         {
           "name": "Barryn Sorrell",
@@ -6864,20 +6852,8 @@
           "detail": ""
         },
         {
-          "name": "Javon Hargrave",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
           "name": "Ty'Ron Hopper",
           "position": "LB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Jordan Morgan",
-          "position": "G",
           "status": "Questionable",
           "detail": ""
         },
@@ -6972,70 +6948,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0913,
             "better": "high",
             "rank": 4,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2991,
             "better": "high",
             "rank": 8,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0654,
             "better": "high",
             "rank": 7,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0546,
             "better": "low",
             "rank": 7,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0141,
             "better": "low",
             "rank": 5,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0076,
             "better": "low",
             "rank": 18,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2839,
             "better": "low",
             "rank": 15,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0496,
             "better": "low",
             "rank": 6,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0641,
             "better": "high",
             "rank": 21,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0173,
             "better": "high",
             "rank": 22,
@@ -7048,70 +7024,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.1051,
             "better": "high",
             "rank": 28,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2707,
             "better": "high",
             "rank": 23,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0509,
             "better": "high",
             "rank": 26,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.1072,
             "better": "low",
             "rank": 32,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0302,
             "better": "low",
             "rank": 32,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.1103,
             "better": "low",
             "rank": 2,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2657,
             "better": "low",
             "rank": 6,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0371,
             "better": "low",
             "rank": 1,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.1029,
             "better": "high",
             "rank": 1,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0243,
             "better": "high",
             "rank": 4,
@@ -7478,7 +7454,7 @@
       "venue": "Lincoln Financial Field",
       "venue_city": "Philadelphia, PA",
       "broadcast": "FOX",
-      "away_availability": "1 out \u00b7 3 questionable",
+      "away_availability": "1 out \u00b7 4 questionable",
       "home_availability": "2 questionable",
       "away_availability_list": [
         {
@@ -7488,22 +7464,28 @@
           "detail": "undisclosed"
         },
         {
+          "name": "Odafe Oweh",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "calf"
+        },
+        {
           "name": "K'Lavon Chaisson",
           "position": "LB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "knee"
+        },
+        {
+          "name": "Daron Payne",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "knee"
         },
         {
           "name": "Jacory Croskey-Merritt",
           "position": "RB",
           "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Odafe Oweh",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "calf"
+          "detail": "groin"
         },
         {
           "name": "Jer'Zhan Newton",
@@ -7572,70 +7554,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0167,
             "better": "high",
             "rank": 18,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2893,
             "better": "high",
             "rank": 15,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0556,
             "better": "high",
             "rank": 17,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0743,
             "better": "low",
             "rank": 22,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0231,
             "better": "low",
             "rank": 26,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.1063,
             "better": "low",
             "rank": 30,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.314,
             "better": "low",
             "rank": 30,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0598,
             "better": "low",
             "rank": 21,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0738,
             "better": "high",
             "rank": 12,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0112,
             "better": "high",
             "rank": 31,
@@ -7648,70 +7630,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.019,
             "better": "high",
             "rank": 17,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2769,
             "better": "high",
             "rank": 20,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0541,
             "better": "high",
             "rank": 23,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0688,
             "better": "low",
             "rank": 18,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0171,
             "better": "low",
             "rank": 9,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0905,
             "better": "low",
             "rank": 4,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2655,
             "better": "low",
             "rank": 5,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0468,
             "better": "low",
             "rank": 2,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0731,
             "better": "high",
             "rank": 13,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0205,
             "better": "high",
             "rank": 13,
@@ -8085,7 +8067,7 @@
       "venue_city": "Inglewood, CA",
       "broadcast": "CBS",
       "away_availability": "1 out \u00b7 4 questionable",
-      "home_availability": "1 out \u00b7 5 questionable",
+      "home_availability": "1 out \u00b7 4 questionable",
       "away_availability_list": [
         {
           "name": "Tip Reiman",
@@ -8097,13 +8079,13 @@
           "name": "Garrett Williams",
           "position": "CB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "Achilles"
         },
         {
-          "name": "Isaiah Adams",
-          "position": "G",
+          "name": "Dadrion Taylor-Demerson",
+          "position": "S",
           "status": "Questionable",
-          "detail": ""
+          "detail": "ribs"
         },
         {
           "name": "Jeremiyah Love",
@@ -8112,8 +8094,8 @@
           "detail": "ankle"
         },
         {
-          "name": "Dadrion Taylor-Demerson",
-          "position": "S",
+          "name": "Isaiah Adams",
+          "position": "G",
           "status": "Questionable",
           "detail": ""
         },
@@ -8150,34 +8132,28 @@
           "detail": ""
         },
         {
-          "name": "Tuli Tuipulotu",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "hip"
-        },
-        {
           "name": "Brenen Thompson",
           "position": "WR",
           "status": "Questionable",
-          "detail": "undisclosed"
-        },
-        {
-          "name": "Deane Leonard",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "RJ Mickens",
-          "position": "S",
-          "status": "Questionable",
-          "detail": ""
+          "detail": "hip"
         },
         {
           "name": "Keaton Mitchell",
           "position": "RB",
           "status": "Questionable",
           "detail": "hamstring"
+        },
+        {
+          "name": "Tuli Tuipulotu",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "hip"
+        },
+        {
+          "name": "Deane Leonard",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": ""
         },
         {
           "name": "Denzel Perryman",
@@ -8208,70 +8184,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0047,
             "better": "high",
             "rank": 19,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2931,
             "better": "high",
             "rank": 12,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0554,
             "better": "high",
             "rank": 18,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0793,
             "better": "low",
             "rank": 23,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0175,
             "better": "low",
             "rank": 10,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0437,
             "better": "low",
             "rank": 24,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.3067,
             "better": "low",
             "rank": 29,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0574,
             "better": "low",
             "rank": 18,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0651,
             "better": "high",
             "rank": 20,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0185,
             "better": "high",
             "rank": 20,
@@ -8284,70 +8260,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0191,
             "better": "high",
             "rank": 22,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2769,
             "better": "high",
             "rank": 21,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0599,
             "better": "high",
             "rank": 12,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0872,
             "better": "low",
             "rank": 25,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0184,
             "better": "low",
             "rank": 13,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0623,
             "better": "low",
             "rank": 7,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2696,
             "better": "low",
             "rank": 8,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0537,
             "better": "low",
             "rank": 9,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0822,
             "better": "high",
             "rank": 5,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0213,
             "better": "high",
             "rank": 11,
@@ -8796,70 +8772,70 @@
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0492,
             "better": "high",
             "rank": 8,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2984,
             "better": "high",
             "rank": 9,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0608,
             "better": "high",
             "rank": 11,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0442,
             "better": "low",
             "rank": 2,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.022,
             "better": "low",
             "rank": 23,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.132,
             "better": "low",
             "rank": 32,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.3229,
             "better": "low",
             "rank": 32,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0677,
             "better": "low",
             "rank": 29,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.058,
             "better": "high",
             "rank": 28,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0148,
             "better": "high",
             "rank": 30,
@@ -8872,70 +8848,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": -0.0372,
             "better": "high",
             "rank": 25,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2635,
             "better": "high",
             "rank": 27,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0553,
             "better": "high",
             "rank": 19,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0922,
             "better": "low",
             "rank": 29,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0183,
             "better": "low",
             "rank": 11,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": 0.0527,
             "better": "low",
             "rank": 25,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.3011,
             "better": "low",
             "rank": 28,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0634,
             "better": "low",
             "rank": 24,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0723,
             "better": "high",
             "rank": 14,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0158,
             "better": "high",
             "rank": 27,
@@ -9296,8 +9272,8 @@
       "venue": "Arrowhead Stadium",
       "venue_city": "Kansas City, MO",
       "broadcast": "ESPN",
-      "away_availability": "2 out \u00b7 3 questionable",
-      "home_availability": "1 out \u00b7 7 questionable",
+      "away_availability": "2 out",
+      "home_availability": "1 out \u00b7 2 questionable",
       "away_availability_list": [
         {
           "name": "Jonathon Cooper",
@@ -9310,24 +9286,6 @@
           "position": "G",
           "status": "Out",
           "detail": "knee"
-        },
-        {
-          "name": "Riley Moss",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "ribs"
-        },
-        {
-          "name": "Marvin Mims Jr.",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "foot"
-        },
-        {
-          "name": "Luke Wattenberg",
-          "position": "C",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Frank Crum",
@@ -9380,36 +9338,6 @@
           "detail": "knee"
         },
         {
-          "name": "Trey Smith",
-          "position": "G",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Patrick Mahomes",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
-          "name": "R Mason Thomas",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Alohi Gilman",
-          "position": "S",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Ashton Gillotte",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
           "name": "Jimmy Holiday",
           "position": "WR",
           "status": "Injured Reserve",
@@ -9420,82 +9348,76 @@
           "position": "WR",
           "status": "Injured Reserve",
           "detail": "knee"
-        },
-        {
-          "name": "Matt Waletzko",
-          "position": "OT",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
         }
       ],
       "roof": "Outdoor",
       "away_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0224,
             "better": "high",
             "rank": 15,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2762,
             "better": "high",
             "rank": 22,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0557,
             "better": "high",
             "rank": 16,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0449,
             "better": "low",
             "rank": 3,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0184,
             "better": "low",
             "rank": 12,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0762,
             "better": "low",
             "rank": 6,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2501,
             "better": "low",
             "rank": 3,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0491,
             "better": "low",
             "rank": 4,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.0993,
             "better": "high",
             "rank": 2,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0154,
             "better": "high",
             "rank": 28,
@@ -9508,70 +9430,70 @@
       "home_form": {
         "rates": {
           "off_epa": {
-            "label": "Offensive EPA per play",
+            "label": "Offensive EPA Per Play",
             "value": 0.0332,
             "better": "high",
             "rank": 10,
             "of": 32
           },
           "off_first_down": {
-            "label": "Offensive first-down rate",
+            "label": "Offensive First-Down Rate",
             "value": 0.2929,
             "better": "high",
             "rank": 14,
             "of": 32
           },
           "off_explosive": {
-            "label": "Offensive explosive-play rate",
+            "label": "Offensive Explosive-Play Rate",
             "value": 0.0523,
             "better": "high",
             "rank": 24,
             "of": 32
           },
           "off_sack": {
-            "label": "Sack rate taken",
+            "label": "Sack Rate Taken",
             "value": 0.0667,
             "better": "low",
             "rank": 17,
             "of": 32
           },
           "off_turnover": {
-            "label": "Giveaway rate",
+            "label": "Giveaway Rate",
             "value": 0.0154,
             "better": "low",
             "rank": 6,
             "of": 32
           },
           "def_epa": {
-            "label": "EPA allowed per play",
+            "label": "EPA Allowed Per Play",
             "value": -0.0381,
             "better": "low",
             "rank": 10,
             "of": 32
           },
           "def_first_down": {
-            "label": "First-down rate allowed",
+            "label": "First-Down Rate Allowed",
             "value": 0.2671,
             "better": "low",
             "rank": 7,
             "of": 32
           },
           "def_explosive": {
-            "label": "Explosive rate allowed",
+            "label": "Explosive Rate Allowed",
             "value": 0.0498,
             "better": "low",
             "rank": 7,
             "of": 32
           },
           "def_sack": {
-            "label": "Sack rate generated",
+            "label": "Sack Rate Generated",
             "value": 0.069,
             "better": "high",
             "rank": 15,
             "of": 32
           },
           "def_turnover": {
-            "label": "Takeaway rate",
+            "label": "Takeaway Rate",
             "value": 0.0159,
             "better": "high",
             "rank": 26,

@@ -1,0 +1,2461 @@
+{
+  "schema": "chase-public-nfl-context/1",
+  "sport": "nfl",
+  "generated_at_utc": "2026-09-11T07:22:51Z",
+  "data_through_utc": "2026-09-09T04:18:42+00:00",
+  "season": 2026,
+  "week": 1,
+  "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
+  "teams": {
+    "SEA": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0303,
+          "better": "high",
+          "rank": 12,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2953,
+          "better": "high",
+          "rank": 10,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0738,
+          "better": "high",
+          "rank": 3,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0608,
+          "better": "low",
+          "rank": 12,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0234,
+          "better": "low",
+          "rank": 27,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.1067,
+          "better": "low",
+          "rank": 3,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2468,
+          "better": "low",
+          "rank": 2,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0493,
+          "better": "low",
+          "rank": 5,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0766,
+          "better": "high",
+          "rank": 8,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0241,
+          "better": "high",
+          "rank": 6,
+          "of": 32
+        }
+      },
+      "plays": 59.76,
+      "pool": 32
+    },
+    "LAR": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.1081,
+          "better": "high",
+          "rank": 2,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.3249,
+          "better": "high",
+          "rank": 2,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0728,
+          "better": "high",
+          "rank": 4,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.044,
+          "better": "low",
+          "rank": 1,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.013,
+          "better": "low",
+          "rank": 2,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0292,
+          "better": "low",
+          "rank": 11,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2755,
+          "better": "low",
+          "rank": 10,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0582,
+          "better": "low",
+          "rank": 19,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0741,
+          "better": "high",
+          "rank": 11,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0234,
+          "better": "high",
+          "rank": 8,
+          "of": 32
+        }
+      },
+      "plays": 63.39,
+      "pool": 32
+    },
+    "HOU": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0175,
+          "better": "high",
+          "rank": 21,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2647,
+          "better": "high",
+          "rank": 26,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0552,
+          "better": "high",
+          "rank": 20,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0626,
+          "better": "low",
+          "rank": 14,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0114,
+          "better": "low",
+          "rank": 1,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.1121,
+          "better": "low",
+          "rank": 1,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2467,
+          "better": "low",
+          "rank": 1,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0552,
+          "better": "low",
+          "rank": 12,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0809,
+          "better": "high",
+          "rank": 6,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0293,
+          "better": "high",
+          "rank": 2,
+          "of": 32
+        }
+      },
+      "plays": 63.62,
+      "pool": 32
+    },
+    "JAX": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0205,
+          "better": "high",
+          "rank": 16,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.293,
+          "better": "high",
+          "rank": 13,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0619,
+          "better": "high",
+          "rank": 9,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0615,
+          "better": "low",
+          "rank": 13,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0188,
+          "better": "low",
+          "rank": 16,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0429,
+          "better": "low",
+          "rank": 9,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.279,
+          "better": "low",
+          "rank": 14,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0563,
+          "better": "low",
+          "rank": 15,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0502,
+          "better": "high",
+          "rank": 31,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0257,
+          "better": "high",
+          "rank": 3,
+          "of": 32
+        }
+      },
+      "plays": 63.23,
+      "pool": 32
+    },
+    "DET": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0869,
+          "better": "high",
+          "rank": 5,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.3135,
+          "better": "high",
+          "rank": 4,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0743,
+          "better": "high",
+          "rank": 2,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0593,
+          "better": "low",
+          "rank": 9,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0135,
+          "better": "low",
+          "rank": 3,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0208,
+          "better": "low",
+          "rank": 12,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2764,
+          "better": "low",
+          "rank": 11,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0642,
+          "better": "low",
+          "rank": 27,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0784,
+          "better": "high",
+          "rank": 7,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0189,
+          "better": "high",
+          "rank": 18,
+          "of": 32
+        }
+      },
+      "plays": 63.61,
+      "pool": 32
+    },
+    "BUF": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.1265,
+          "better": "high",
+          "rank": 1,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.3158,
+          "better": "high",
+          "rank": 3,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0672,
+          "better": "high",
+          "rank": 5,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0643,
+          "better": "low",
+          "rank": 16,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0184,
+          "better": "low",
+          "rank": 14,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0033,
+          "better": "low",
+          "rank": 15,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2971,
+          "better": "low",
+          "rank": 23,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0559,
+          "better": "low",
+          "rank": 14,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0658,
+          "better": "high",
+          "rank": 19,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0235,
+          "better": "high",
+          "rank": 7,
+          "of": 32
+        }
+      },
+      "plays": 63.17,
+      "pool": 32
+    },
+    "NE": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0429,
+          "better": "high",
+          "rank": 9,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2939,
+          "better": "high",
+          "rank": 11,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.067,
+          "better": "high",
+          "rank": 6,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0882,
+          "better": "low",
+          "rank": 26,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0187,
+          "better": "low",
+          "rank": 15,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0091,
+          "better": "low",
+          "rank": 19,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2902,
+          "better": "low",
+          "rank": 20,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0549,
+          "better": "low",
+          "rank": 11,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0505,
+          "better": "high",
+          "rank": 30,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0164,
+          "better": "high",
+          "rank": 25,
+          "of": 32
+        }
+      },
+      "plays": 61.07,
+      "pool": 32
+    },
+    "SF": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0956,
+          "better": "high",
+          "rank": 3,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.3304,
+          "better": "high",
+          "rank": 1,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0593,
+          "better": "high",
+          "rank": 13,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0486,
+          "better": "low",
+          "rank": 4,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0189,
+          "better": "low",
+          "rank": 17,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0351,
+          "better": "low",
+          "rank": 23,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2959,
+          "better": "low",
+          "rank": 22,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0506,
+          "better": "low",
+          "rank": 8,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0501,
+          "better": "high",
+          "rank": 32,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.019,
+          "better": "high",
+          "rank": 17,
+          "of": 32
+        }
+      },
+      "plays": 62.65,
+      "pool": 32
+    },
+    "DEN": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0224,
+          "better": "high",
+          "rank": 15,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2762,
+          "better": "high",
+          "rank": 22,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0557,
+          "better": "high",
+          "rank": 16,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0449,
+          "better": "low",
+          "rank": 3,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0184,
+          "better": "low",
+          "rank": 12,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0762,
+          "better": "low",
+          "rank": 6,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2501,
+          "better": "low",
+          "rank": 3,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0491,
+          "better": "low",
+          "rank": 4,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0993,
+          "better": "high",
+          "rank": 2,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0154,
+          "better": "high",
+          "rank": 28,
+          "of": 32
+        }
+      },
+      "plays": 63.35,
+      "pool": 32
+    },
+    "PHI": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.019,
+          "better": "high",
+          "rank": 17,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2769,
+          "better": "high",
+          "rank": 20,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0541,
+          "better": "high",
+          "rank": 23,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0688,
+          "better": "low",
+          "rank": 18,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0171,
+          "better": "low",
+          "rank": 9,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0905,
+          "better": "low",
+          "rank": 4,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2655,
+          "better": "low",
+          "rank": 5,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0468,
+          "better": "low",
+          "rank": 2,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0731,
+          "better": "high",
+          "rank": 13,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0205,
+          "better": "high",
+          "rank": 13,
+          "of": 32
+        }
+      },
+      "plays": 61.24,
+      "pool": 32
+    },
+    "IND": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0665,
+          "better": "high",
+          "rank": 7,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.312,
+          "better": "high",
+          "rank": 5,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0571,
+          "better": "high",
+          "rank": 15,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0502,
+          "better": "low",
+          "rank": 5,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0204,
+          "better": "low",
+          "rank": 20,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.013,
+          "better": "low",
+          "rank": 21,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.3001,
+          "better": "low",
+          "rank": 26,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0563,
+          "better": "low",
+          "rank": 16,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0604,
+          "better": "high",
+          "rank": 24,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0218,
+          "better": "high",
+          "rank": 10,
+          "of": 32
+        }
+      },
+      "plays": 60.6,
+      "pool": 32
+    },
+    "GB": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0913,
+          "better": "high",
+          "rank": 4,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2991,
+          "better": "high",
+          "rank": 8,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0654,
+          "better": "high",
+          "rank": 7,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0546,
+          "better": "low",
+          "rank": 7,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0141,
+          "better": "low",
+          "rank": 5,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0076,
+          "better": "low",
+          "rank": 18,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2839,
+          "better": "low",
+          "rank": 15,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0496,
+          "better": "low",
+          "rank": 6,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0641,
+          "better": "high",
+          "rank": 21,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0173,
+          "better": "high",
+          "rank": 22,
+          "of": 32
+        }
+      },
+      "plays": 59.86,
+      "pool": 32
+    },
+    "BAL": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0861,
+          "better": "high",
+          "rank": 6,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.3071,
+          "better": "high",
+          "rank": 6,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0743,
+          "better": "high",
+          "rank": 1,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0835,
+          "better": "low",
+          "rank": 24,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0207,
+          "better": "low",
+          "rank": 21,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0102,
+          "better": "low",
+          "rank": 14,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2783,
+          "better": "low",
+          "rank": 12,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0684,
+          "better": "low",
+          "rank": 30,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0581,
+          "better": "high",
+          "rank": 27,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0199,
+          "better": "high",
+          "rank": 14,
+          "of": 32
+        }
+      },
+      "plays": 58.85,
+      "pool": 32
+    },
+    "KC": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0332,
+          "better": "high",
+          "rank": 10,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2929,
+          "better": "high",
+          "rank": 14,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0523,
+          "better": "high",
+          "rank": 24,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0667,
+          "better": "low",
+          "rank": 17,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0154,
+          "better": "low",
+          "rank": 6,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0381,
+          "better": "low",
+          "rank": 10,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2671,
+          "better": "low",
+          "rank": 7,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0498,
+          "better": "low",
+          "rank": 7,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.069,
+          "better": "high",
+          "rank": 15,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0159,
+          "better": "high",
+          "rank": 26,
+          "of": 32
+        }
+      },
+      "plays": 62.88,
+      "pool": 32
+    },
+    "MIN": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.1051,
+          "better": "high",
+          "rank": 28,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2707,
+          "better": "high",
+          "rank": 23,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0509,
+          "better": "high",
+          "rank": 26,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.1072,
+          "better": "low",
+          "rank": 32,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0302,
+          "better": "low",
+          "rank": 32,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.1103,
+          "better": "low",
+          "rank": 2,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2657,
+          "better": "low",
+          "rank": 6,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0371,
+          "better": "low",
+          "rank": 1,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.1029,
+          "better": "high",
+          "rank": 1,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0243,
+          "better": "high",
+          "rank": 4,
+          "of": 32
+        }
+      },
+      "plays": 57.98,
+      "pool": 32
+    },
+    "LAC": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0191,
+          "better": "high",
+          "rank": 22,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2769,
+          "better": "high",
+          "rank": 21,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0599,
+          "better": "high",
+          "rank": 12,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0872,
+          "better": "low",
+          "rank": 25,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0184,
+          "better": "low",
+          "rank": 13,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0623,
+          "better": "low",
+          "rank": 7,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2696,
+          "better": "low",
+          "rank": 8,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0537,
+          "better": "low",
+          "rank": 9,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0822,
+          "better": "high",
+          "rank": 5,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0213,
+          "better": "high",
+          "rank": 11,
+          "of": 32
+        }
+      },
+      "plays": 63.56,
+      "pool": 32
+    },
+    "CHI": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0259,
+          "better": "high",
+          "rank": 13,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2865,
+          "better": "high",
+          "rank": 17,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0615,
+          "better": "high",
+          "rank": 10,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0571,
+          "better": "low",
+          "rank": 8,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0136,
+          "better": "low",
+          "rank": 4,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0125,
+          "better": "low",
+          "rank": 20,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.3004,
+          "better": "low",
+          "rank": 27,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0695,
+          "better": "low",
+          "rank": 31,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0587,
+          "better": "high",
+          "rank": 26,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0295,
+          "better": "high",
+          "rank": 1,
+          "of": 32
+        }
+      },
+      "plays": 64.4,
+      "pool": 32
+    },
+    "PIT": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0023,
+          "better": "high",
+          "rank": 20,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2663,
+          "better": "high",
+          "rank": 24,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0511,
+          "better": "high",
+          "rank": 25,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0602,
+          "better": "low",
+          "rank": 11,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0162,
+          "better": "low",
+          "rank": 8,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.005,
+          "better": "low",
+          "rank": 16,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2868,
+          "better": "low",
+          "rank": 17,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0567,
+          "better": "low",
+          "rank": 17,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.066,
+          "better": "high",
+          "rank": 18,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0243,
+          "better": "high",
+          "rank": 5,
+          "of": 32
+        }
+      },
+      "plays": 59.45,
+      "pool": 32
+    },
+    "TB": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.024,
+          "better": "high",
+          "rank": 14,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2838,
+          "better": "high",
+          "rank": 18,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0626,
+          "better": "high",
+          "rank": 8,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0636,
+          "better": "low",
+          "rank": 15,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0162,
+          "better": "low",
+          "rank": 7,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0193,
+          "better": "low",
+          "rank": 22,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.289,
+          "better": "low",
+          "rank": 19,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.067,
+          "better": "low",
+          "rank": 28,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0682,
+          "better": "high",
+          "rank": 17,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0219,
+          "better": "high",
+          "rank": 9,
+          "of": 32
+        }
+      },
+      "plays": 63.01,
+      "pool": 32
+    },
+    "ATL": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0276,
+          "better": "high",
+          "rank": 24,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2824,
+          "better": "high",
+          "rank": 19,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0546,
+          "better": "high",
+          "rank": 22,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0527,
+          "better": "low",
+          "rank": 6,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.019,
+          "better": "low",
+          "rank": 18,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0064,
+          "better": "low",
+          "rank": 17,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2854,
+          "better": "low",
+          "rank": 16,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0601,
+          "better": "low",
+          "rank": 22,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0823,
+          "better": "high",
+          "rank": 4,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0196,
+          "better": "high",
+          "rank": 16,
+          "of": 32
+        }
+      },
+      "plays": 62.35,
+      "pool": 32
+    },
+    "CIN": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0303,
+          "better": "high",
+          "rank": 11,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2997,
+          "better": "high",
+          "rank": 7,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0508,
+          "better": "high",
+          "rank": 27,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0601,
+          "better": "low",
+          "rank": 10,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0222,
+          "better": "low",
+          "rank": 24,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.1065,
+          "better": "low",
+          "rank": 31,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.3175,
+          "better": "low",
+          "rank": 31,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0727,
+          "better": "low",
+          "rank": 32,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0637,
+          "better": "high",
+          "rank": 22,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0211,
+          "better": "high",
+          "rank": 12,
+          "of": 32
+        }
+      },
+      "plays": 62.39,
+      "pool": 32
+    },
+    "WSH": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0167,
+          "better": "high",
+          "rank": 18,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2893,
+          "better": "high",
+          "rank": 15,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0556,
+          "better": "high",
+          "rank": 17,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0743,
+          "better": "low",
+          "rank": 22,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0231,
+          "better": "low",
+          "rank": 26,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.1063,
+          "better": "low",
+          "rank": 30,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.314,
+          "better": "low",
+          "rank": 30,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0598,
+          "better": "low",
+          "rank": 21,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0738,
+          "better": "high",
+          "rank": 12,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0112,
+          "better": "high",
+          "rank": 31,
+          "of": 32
+        }
+      },
+      "plays": 59.95,
+      "pool": 32
+    },
+    "DAL": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0492,
+          "better": "high",
+          "rank": 8,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2984,
+          "better": "high",
+          "rank": 9,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0608,
+          "better": "high",
+          "rank": 11,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0442,
+          "better": "low",
+          "rank": 2,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.022,
+          "better": "low",
+          "rank": 23,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.132,
+          "better": "low",
+          "rank": 32,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.3229,
+          "better": "low",
+          "rank": 32,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0677,
+          "better": "low",
+          "rank": 29,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.058,
+          "better": "high",
+          "rank": 28,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0148,
+          "better": "high",
+          "rank": 30,
+          "of": 32
+        }
+      },
+      "plays": 65.71,
+      "pool": 32
+    },
+    "ARI": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": 0.0047,
+          "better": "high",
+          "rank": 19,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2931,
+          "better": "high",
+          "rank": 12,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0554,
+          "better": "high",
+          "rank": 18,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0793,
+          "better": "low",
+          "rank": 23,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0175,
+          "better": "low",
+          "rank": 10,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0437,
+          "better": "low",
+          "rank": 24,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.3067,
+          "better": "low",
+          "rank": 29,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0574,
+          "better": "low",
+          "rank": 18,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0651,
+          "better": "high",
+          "rank": 20,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0185,
+          "better": "high",
+          "rank": 20,
+          "of": 32
+        }
+      },
+      "plays": 62.69,
+      "pool": 32
+    },
+    "NYG": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0372,
+          "better": "high",
+          "rank": 25,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2635,
+          "better": "high",
+          "rank": 27,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0553,
+          "better": "high",
+          "rank": 19,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0922,
+          "better": "low",
+          "rank": 29,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0183,
+          "better": "low",
+          "rank": 11,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0527,
+          "better": "low",
+          "rank": 25,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.3011,
+          "better": "low",
+          "rank": 28,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0634,
+          "better": "low",
+          "rank": 24,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0723,
+          "better": "high",
+          "rank": 14,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0158,
+          "better": "high",
+          "rank": 27,
+          "of": 32
+        }
+      },
+      "plays": 63.4,
+      "pool": 32
+    },
+    "MIA": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0247,
+          "better": "high",
+          "rank": 23,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2884,
+          "better": "high",
+          "rank": 16,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.058,
+          "better": "high",
+          "rank": 14,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.073,
+          "better": "low",
+          "rank": 20,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0257,
+          "better": "low",
+          "rank": 29,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.06,
+          "better": "low",
+          "rank": 26,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2957,
+          "better": "low",
+          "rank": 21,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0641,
+          "better": "low",
+          "rank": 26,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.062,
+          "better": "high",
+          "rank": 23,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0176,
+          "better": "high",
+          "rank": 21,
+          "of": 32
+        }
+      },
+      "plays": 58.0,
+      "pool": 32
+    },
+    "CAR": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0801,
+          "better": "high",
+          "rank": 27,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2659,
+          "better": "high",
+          "rank": 25,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.048,
+          "better": "high",
+          "rank": 28,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0703,
+          "better": "low",
+          "rank": 19,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0236,
+          "better": "low",
+          "rank": 28,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0611,
+          "better": "low",
+          "rank": 27,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2976,
+          "better": "low",
+          "rank": 25,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0552,
+          "better": "low",
+          "rank": 13,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.059,
+          "better": "high",
+          "rank": 25,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0187,
+          "better": "high",
+          "rank": 19,
+          "of": 32
+        }
+      },
+      "plays": 59.76,
+      "pool": 32
+    },
+    "NO": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.0783,
+          "better": "high",
+          "rank": 26,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2607,
+          "better": "high",
+          "rank": 28,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0402,
+          "better": "high",
+          "rank": 31,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0733,
+          "better": "low",
+          "rank": 21,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0218,
+          "better": "low",
+          "rank": 22,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.051,
+          "better": "low",
+          "rank": 8,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2703,
+          "better": "low",
+          "rank": 9,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0544,
+          "better": "low",
+          "rank": 10,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0752,
+          "better": "high",
+          "rank": 10,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0198,
+          "better": "high",
+          "rank": 15,
+          "of": 32
+        }
+      },
+      "plays": 63.0,
+      "pool": 32
+    },
+    "CLE": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.2039,
+          "better": "high",
+          "rank": 32,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2233,
+          "better": "high",
+          "rank": 32,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0389,
+          "better": "high",
+          "rank": 32,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0897,
+          "better": "low",
+          "rank": 27,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0272,
+          "better": "low",
+          "rank": 31,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0902,
+          "better": "low",
+          "rank": 5,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2549,
+          "better": "low",
+          "rank": 4,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0596,
+          "better": "low",
+          "rank": 20,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0904,
+          "better": "high",
+          "rank": 3,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0172,
+          "better": "high",
+          "rank": 23,
+          "of": 32
+        }
+      },
+      "plays": 62.55,
+      "pool": 32
+    },
+    "TEN": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.106,
+          "better": "high",
+          "rank": 29,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2553,
+          "better": "high",
+          "rank": 29,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.055,
+          "better": "high",
+          "rank": 21,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.092,
+          "better": "low",
+          "rank": 28,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0195,
+          "better": "low",
+          "rank": 19,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0624,
+          "better": "low",
+          "rank": 28,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2884,
+          "better": "low",
+          "rank": 18,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0635,
+          "better": "low",
+          "rank": 25,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0764,
+          "better": "high",
+          "rank": 9,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0152,
+          "better": "high",
+          "rank": 29,
+          "of": 32
+        }
+      },
+      "plays": 59.38,
+      "pool": 32
+    },
+    "LV": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.1854,
+          "better": "high",
+          "rank": 31,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2481,
+          "better": "high",
+          "rank": 30,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0449,
+          "better": "high",
+          "rank": 29,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.0927,
+          "better": "low",
+          "rank": 30,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.026,
+          "better": "low",
+          "rank": 30,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": -0.0142,
+          "better": "low",
+          "rank": 13,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2786,
+          "better": "low",
+          "rank": 13,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0478,
+          "better": "low",
+          "rank": 3,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0684,
+          "better": "high",
+          "rank": 16,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.0169,
+          "better": "high",
+          "rank": 24,
+          "of": 32
+        }
+      },
+      "plays": 57.51,
+      "pool": 32
+    },
+    "NYJ": {
+      "rates": {
+        "off_epa": {
+          "label": "Offensive EPA Per Play",
+          "value": -0.1356,
+          "better": "high",
+          "rank": 30,
+          "of": 32
+        },
+        "off_first_down": {
+          "label": "Offensive First-Down Rate",
+          "value": 0.2467,
+          "better": "high",
+          "rank": 31,
+          "of": 32
+        },
+        "off_explosive": {
+          "label": "Offensive Explosive-Play Rate",
+          "value": 0.0411,
+          "better": "high",
+          "rank": 30,
+          "of": 32
+        },
+        "off_sack": {
+          "label": "Sack Rate Taken",
+          "value": 0.1031,
+          "better": "low",
+          "rank": 31,
+          "of": 32
+        },
+        "off_turnover": {
+          "label": "Giveaway Rate",
+          "value": 0.0227,
+          "better": "low",
+          "rank": 25,
+          "of": 32
+        },
+        "def_epa": {
+          "label": "EPA Allowed Per Play",
+          "value": 0.0809,
+          "better": "low",
+          "rank": 29,
+          "of": 32
+        },
+        "def_first_down": {
+          "label": "First-Down Rate Allowed",
+          "value": 0.2976,
+          "better": "low",
+          "rank": 24,
+          "of": 32
+        },
+        "def_explosive": {
+          "label": "Explosive Rate Allowed",
+          "value": 0.0609,
+          "better": "low",
+          "rank": 23,
+          "of": 32
+        },
+        "def_sack": {
+          "label": "Sack Rate Generated",
+          "value": 0.0551,
+          "better": "high",
+          "rank": 29,
+          "of": 32
+        },
+        "def_turnover": {
+          "label": "Takeaway Rate",
+          "value": 0.007,
+          "better": "high",
+          "rank": 32,
+          "of": 32
+        }
+      },
+      "plays": 59.66,
+      "pool": 32
+    }
+  },
+  "recent": {
+    "LAR": {
+      "games": 1,
+      "through": "2026-09-11"
+    },
+    "NE": {
+      "games": 1,
+      "through": "2026-09-10"
+    },
+    "SEA": {
+      "games": 1,
+      "through": "2026-09-10"
+    },
+    "SF": {
+      "games": 1,
+      "through": "2026-09-11"
+    }
+  }
+}
