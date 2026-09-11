@@ -804,6 +804,30 @@
 
   /* An index centred on 100 grades against 100 - there is no pool to take a
      percentile from. */
+  /* A 0-100 percentile index grades against the middle of its own scale, not
+     against 100 the way an index centred on 100 does. */
+  function scoreTone(value) {
+    var v = Number(value);
+    if (!isFinite(v)) return '';
+    if (v >= 75) return 'c-elite';
+    if (v >= 60) return 'c-good';
+    if (v >= 40) return 'c-mid';
+    if (v >= 25) return 'c-weak';
+    return 'c-poor';
+  }
+
+  /* Roughly two starts in five is a league-average quality-start rate, so the
+     bands sit around that rather than around fifty. */
+  function qsTone(value) {
+    var v = Number(value);
+    if (!isFinite(v)) return '';
+    if (v >= 60) return 'c-elite';
+    if (v >= 48) return 'c-good';
+    if (v >= 33) return 'c-mid';
+    if (v >= 22) return 'c-weak';
+    return 'c-poor';
+  }
+
   function indexTone(value) {
     var v = Number(value);
     if (!isFinite(v)) return '';
@@ -837,25 +861,24 @@
     // The season line, kept as the one anchor the splits below are read
     // against - a .620 OPS allowed to left-handers means nothing without the
     // number the same arm posts overall.
-    var f = fip(stat);
-    var seasonXfip = ((bank && bank.splits) || {});
-    var xfipSeason = null;
-    ['home', 'away'].forEach(function (key) {
-      var sp = seasonXfip[key];
-      if (sp && sp.xfip != null) {
-        xfipSeason = xfipSeason == null ? sp.xfip : (xfipSeason + sp.xfip) / 2;
-      }
-    });
+    /* The four the header carries are the season's summary, and they are
+       deliberately NOT the four the splits table repeats underneath. xFIP and
+       WHIP live in the table, split four ways, where they say more; the header
+       carries the two that only exist at season level - how often he gives his
+       club a start worth having, and how his stuff rates against the rest of
+       the league's starters. */
+    var seasonBank = ((bank && bank.splits) || {});
+    var anySplit = seasonBank.home || seasonBank.away || seasonBank.vs_rhh || seasonBank.vs_lhh || {};
     var headline = [
-      ['ERA', stat.era, 'era'],
-      ['xFIP', xfipSeason == null ? (f == null ? null : f.toFixed(2)) : xfipSeason.toFixed(2), 'xfip'],
-      ['WHIP', stat.whip, 'whip'],
-      ['IP', stat.inningsPitched, null]
+      ['ERA', stat.era, gradeFor(stat.era, 'era')],
+      ['Pitch Score', anySplit.pitch_score, scoreTone(anySplit.pitch_score)],
+      ['QS%', anySplit.qs_pct == null ? null : anySplit.qs_pct + '%', qsTone(anySplit.qs_pct)],
+      ['IP', stat.inningsPitched, '']
     ].map(function (row) {
       if (row[1] == null) return '';
       return '<div class="ca-stat"><span class="ca-stat__label">' + esc(row[0]) +
-        '</span><strong class="ca-stat__value ' + (row[2] ? gradeFor(row[1], row[2]) : '') +
-        '">' + esc(row[1]) + '</strong></div>';
+        '</span><strong class="ca-stat__value ' + row[2] + '">' + esc(row[1]) +
+        '</strong></div>';
     }).join('');
     /* The whole panel is splits now, as rates. It used to print 55 strikeouts
        and 243 batters faced and leave the reader to divide - which is how a
