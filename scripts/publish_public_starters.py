@@ -55,12 +55,17 @@ SPLIT_FILES = {
 # source column -> (published key, digits)
 RATES = {
     "ERA": ("era", 2),
+    "WHIP": ("whip", 2),
     "FIP": ("fip", 2),
     "xFIP": ("xfip", 2),
     "HR/9": ("hr9", 2),
     "OBP": ("obp", 3),
     "SLG": ("slg", 3),
     "OPS": ("ops", 3),
+    # Pitches per inning of this split: how hard it is to get through, which is
+    # the number that says when an arm comes out. It replaced innings per
+    # start, which described the whole outing and not the split.
+    "P/IP": ("pitches_per_inning", 1),
 }
 
 # K% and BB% arrive as fractions, in the FanGraphs encoding the rest of the

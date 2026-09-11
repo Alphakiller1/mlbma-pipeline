@@ -63,7 +63,7 @@ SPLITS = (
 SIT_CODES = ",".join(code for code, _ in SPLITS)
 OUTPUT_COLUMNS = [
     "Name", "Team", "MLBAMID", "G", "GS", "IP", "ERA", "K%", "BB%", "HR/9",
-    "OBP", "SLG", "OPS", "FIP", "xFIP", "TBF",
+    "OBP", "SLG", "OPS", "FIP", "xFIP", "TBF", "P/IP", "WHIP",
 ]
 # Below this the rate columns are noise, and publishing them would put a three-batter ERA
 # on a profile page next to a full season's.
@@ -170,6 +170,8 @@ def _accumulate(splits: Iterable[dict]) -> Dict[str, Dict[str, int]]:
             "go": 0, "ao": 0, "sac": 0,
             # Earned runs. Meaningless on a batter-hand cut, real on home and road.
             "er": 0,
+            # Pitches thrown, for the per-inning workload each split represents.
+            "np": 0,
         }
         for entry in chosen:
             stat = entry.get("stat") or {}
@@ -188,6 +190,7 @@ def _accumulate(splits: Iterable[dict]) -> Dict[str, Dict[str, int]]:
             bucket["ao"] += _int(stat, "airOuts")
             bucket["sac"] += _int(stat, "sacBunts")
             bucket["er"] += _int(stat, "earnedRuns")
+            bucket["np"] += _int(stat, "numberOfPitches")
         totals[code] = bucket
     return totals
 
@@ -294,6 +297,15 @@ def _row(pitcher: dict, bucket: Dict[str, int], hr_per_air: Optional[float]) -> 
         "FIP": round(fip, 2),
         "xFIP": xfip,
         "TBF": tbf,
+        # Walks and hits per inning. Unlike ERA this IS attributable to a
+        # batter-hand cut - a hit and a walk belong to the plate appearance
+        # that produced them, where an earned run belongs to an inning - so it
+        # is the run-prevention column that exists on all four splits.
+        "WHIP": round((bucket["h"] + bucket["bb"]) / innings, 2) if innings else "",
+        # How hard this split is to get through, per inning of it. A starter
+        # who needs seventeen pitches an inning against left-handers and
+        # thirteen against right-handers is telling you when he comes out.
+        "P/IP": round(bucket["np"] / innings, 1) if bucket["np"] else "",
     }
 
 

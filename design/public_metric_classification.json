@@ -221,6 +221,7 @@
     "pitch_type",
     "pitcherWinPct",
     "pitches",
+    "pitches_per_inning",
     "plateAppearances",
     "play_action_rate",
     "plays",

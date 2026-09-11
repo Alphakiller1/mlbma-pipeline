@@ -87,6 +87,7 @@
      its destination are obviously the same thing. */
   var SECTION_ICON = {
     starters: 'baseball', arsenal: 'target', lineups: 'lineup',
+    'club-splits': 'users',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
     availability: 'whistle', scheme: 'football', 'team-context': 'plane'
   };
@@ -837,9 +838,17 @@
     // against - a .620 OPS allowed to left-handers means nothing without the
     // number the same arm posts overall.
     var f = fip(stat);
+    var seasonXfip = ((bank && bank.splits) || {});
+    var xfipSeason = null;
+    ['home', 'away'].forEach(function (key) {
+      var sp = seasonXfip[key];
+      if (sp && sp.xfip != null) {
+        xfipSeason = xfipSeason == null ? sp.xfip : (xfipSeason + sp.xfip) / 2;
+      }
+    });
     var headline = [
       ['ERA', stat.era, 'era'],
-      ['FIP', f == null ? null : f.toFixed(2), 'era'],
+      ['xFIP', xfipSeason == null ? (f == null ? null : f.toFixed(2)) : xfipSeason.toFixed(2), 'xfip'],
       ['WHIP', stat.whip, 'whip'],
       ['IP', stat.inningsPitched, null]
     ].map(function (row) {
@@ -871,16 +880,24 @@
     // key, header, baseline to grade against, whether it is an allowed rate
     // that must read the other way round, suffix.
     var SPLIT_COLS = [
-      ['era', 'ERA', 'era', false, ''],
-      ['fip', 'FIP', 'era', false, ''],
+      // WHIP rather than ERA. ERA cannot exist on a batter-hand cut - an
+      // earned run belongs to an inning, not to the handedness of one plate
+      // appearance - so an ERA column left two of the four rows empty for a
+      // reason no reader could be expected to infer. WHIP is attributable to
+      // every split, carries the same kind of information, and the table has
+      // no holes in it.
+      ['whip', 'WHIP', 'whip', false, ''],
+      // xFIP, not FIP. FIP still carries the home runs this arm actually gave
+      // up, which on a two-month split is mostly the park and the luck; xFIP
+      // is the same formula with that term normalised, and it is the one of
+      // the two worth a column when there is only room for one.
       ['xfip', 'xFIP', 'xfip', false, ''],
       ['k_pct', 'K%', 'kpct', false, '%'],
       ['bb_pct', 'BB%', 'bbpct', false, '%'],
       ['hr9', 'HR/9', null, false, ''],
       ['ops', 'OPS', 'ops', true, ''],
       ['ops_plus', 'OPS+', null, false, ''],
-      ['ip_per_start', 'IP/GS', null, false, ''],
-      ['starts', 'GS', null, false, '']
+      ['pitches_per_inning', 'P/IP', null, false, '']
     ];
 
     var banks = SPLIT_ROWS.map(function (row) {
@@ -1287,6 +1304,84 @@
       'it is actually measured for. Colour grades every figure against this season’s ' +
       'published league baseline, with allowed rates read the way a pitcher earns them: a low ' +
       'OPS against is green.</p>';
+  }
+
+  /* ---------------------------------------------------------------------
+   * The club's own splits, under the order that produces them.
+   *
+   * The lineup panel says what nine men have done against this hand of
+   * pitching. It does not say what the CLUB has done - at home, on the road,
+   * against each hand - which is the same question asked of the whole roster
+   * and is the context those nine lines sit in. One request per club answers
+   * it, from the same endpoint the starter splits come from.
+   * ------------------------------------------------------------------ */
+  var TEAM_SPLIT_URL = 'https://statsapi.mlb.com/api/v1/teams/{id}/stats?stats=statSplits' +
+    '&sitCodes=h,a,vl,vr&group=hitting&season={season}&gameType=R';
+
+  var TEAM_SPLIT_ROWS = [
+    ['h', 'At Home'], ['a', 'On The Road'],
+    ['vl', 'Vs LHP'], ['vr', 'Vs RHP']
+  ];
+
+  function loadTeamSplits(teamId, season) {
+    if (!teamId) return Promise.resolve(null);
+    return fetchJson(TEAM_SPLIT_URL.replace('{id}', teamId).replace('{season}', season))
+      .then(function (payload) {
+        var out = {};
+        (((payload.stats || [])[0] || {}).splits || []).forEach(function (row) {
+          var code = (row.split || {}).code;
+          if (code && row.stat) out[code] = row.stat;
+        });
+        return out;
+      }).catch(function () { return null; });
+  }
+
+  function rate(stat, key) {
+    var v = stat && stat[key];
+    return v == null || v === '' ? null : Number(v);
+  }
+
+  function teamSplitPanel(sport, game, side, splits) {
+    var label = fullName(sport, game, side);
+    var head = '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>';
+    if (!splits) return head + pending('Club splits are loading.') + '</section>';
+    var rows = TEAM_SPLIT_ROWS.map(function (spec) {
+      var st = splits[spec[0]];
+      if (!st) return '';
+      var pa = Number(st.plateAppearances) || 0;
+      function cell(value, context, suffix) {
+        if (value == null) return '<td class="num">&mdash;</td>';
+        return '<td class="num ' + (context ? gradeFor(value, context) : '') + '">' +
+          esc(value) + (suffix || '') + '</td>';
+      }
+      var kPct = pa ? Math.round((Number(st.strikeOuts) / pa) * 1000) / 10 : null;
+      var bbPct = pa ? Math.round((Number(st.baseOnBalls) / pa) * 1000) / 10 : null;
+      return '<tr><td>' + esc(spec[1]) + '</td>' +
+        cell(st.avg, 'avg') + cell(st.obp, 'obp') + cell(st.slg, 'slg') +
+        cell(st.ops, 'ops') +
+        '<td class="num">' + esc(st.homeRuns == null ? '—' : st.homeRuns) + '</td>' +
+        cell(kPct, null, '%') + cell(bbPct, null, '%') +
+        '<td class="num">' + esc(pa || '—') + '</td></tr>';
+    }).filter(Boolean).join('');
+    if (!rows) return head + pending('Club splits are not published for this season.') + '</section>';
+    return head + '<div class="ca-lineup-scroll">' +
+      '<table class="ca-lineup-table ca-split-table"><thead><tr><th>Split</th>' +
+      '<th class="num">AVG</th><th class="num">OBP</th><th class="num">SLG</th>' +
+      '<th class="num">OPS</th><th class="num">HR</th><th class="num">K%</th>' +
+      '<th class="num">BB%</th><th class="num">PA</th></tr></thead><tbody>' +
+      rows + '</tbody></table></div></section>';
+  }
+
+  function teamSplitsBody(sport, game, extra) {
+    return '<div class="ca-detail-duo">' +
+      teamSplitPanel(sport, game, 'away', extra.awayTeamSplits) +
+      teamSplitPanel(sport, game, 'home', extra.homeTeamSplits) + '</div>' +
+      '<p class="ca-detail-source-note">The whole club, not the nine men posted tonight: ' +
+      'what this roster has hit at home, on the road, and against each hand of pitching this ' +
+      'season, read from the official split record. K% and BB% are shares of plate ' +
+      'appearances. Colour grades each rate against this season’s published league ' +
+      'baseline. Home runs are a count, so they are not graded — a club with more plate ' +
+      'appearances in a split will have more of them.</p>';
   }
 
   function lineupsBody(sport, game, extra) {
@@ -1773,6 +1868,8 @@
         arsenalBody(sport, game, extra)),
       section('lineups', 'Lineup Versus Starter', 'Each Order Against The Opposing Arm',
         lineupsBody(sport, game, extra)),
+      section('club-splits', 'Club Batting Splits', 'The Whole Roster, By Park And By Hand',
+        teamSplitsBody(sport, game, extra)),
       section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
         recentBody(sport, game, extra)),
       section('form', 'Offensive Form And League Context', 'Graded Against The 30-Team League Pool',
@@ -2371,7 +2468,7 @@
     document.title = awayName + ' at ' + homeName + ' — Chase Analytics';
     var nav = sport === 'mlb'
       ? [['overview', 'Overview'], ['starters', 'Starters'], ['arsenal', 'Pitch Mix'],
-         ['lineups', 'Lineup Vs Starter'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
+         ['lineups', 'Lineup Vs Starter'], ['club-splits', 'Club Splits'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
          ['radar', 'Radar'], ['bullpens', 'Bullpens']]
       : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'],
          ['form', 'Team Form'], ['radar', 'Radar'], ['team-context', 'Rest And Travel']];
@@ -2514,6 +2611,16 @@
           paintSection(host, 'arsenal', arsenalBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
         }).catch(function () { /* the section keeps its pending note */ });
+
+        // The club's own splits, beside the order that produces them.
+        Promise.all([
+          loadTeamSplits(game.away_team_id, season),
+          loadTeamSplits(game.home_team_id, season)
+        ]).then(function (found) {
+          extra.awayTeamSplits = found[0];
+          extra.homeTeamSplits = found[1];
+          paintSection(host, 'club-splits', teamSplitsBody(sport, game, extra));
+        }).catch(function () { /* the panels keep their pending note */ });
 
         // The last ten games for each club - the quickest read of form there is.
         Promise.all([
