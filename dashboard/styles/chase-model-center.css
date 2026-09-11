@@ -521,14 +521,210 @@ body:has(.mc-access-disclosure) {
   background: var(--surface-mc-page);
 }
 
-/* The board itself is the brand object on the page, so it takes the deepest
-   violet rather than another sheet of ink. */
-body:has(.mc-access-disclosure) .mc-board,
+/* The board used to take the deepest violet as "the brand object on the page".
+   At twelve cards that reads as a violet sheet with twelve grey rectangles
+   floating on it, and the club tiles - the one place colour carries meaning -
+   have to fight it. The reference puts the board on the page ground and spends
+   the violet on the accent rule and the model-to-market segment instead.
+   The panels inside it keep their own ink. */
 body:has(.mc-access-disclosure) #mcBoard > section {
-  background: var(--surface-mc-field);
+  background: var(--surface-mc-panel);
   border-color: var(--border-violet);
 }
 
 body:has(.mc-access-disclosure) .mc-row:hover {
   background: var(--surface-mc-hover);
+}
+
+/* ===========================================================================
+ * MODEL CENTER — TO THE REFERENCE RENDERING (2026-09-11)
+ * ---------------------------------------------------------------------------
+ * The board had drifted into a violet-washed panel with the slate title set in
+ * display type across a filled band. The reference is quieter and reads far
+ * better at twelve cards: a near-black ground, one thin accent rule marking the
+ * section, and all of the colour spent on the club tiles and the one purple
+ * segment that carries the model-to-market gap.
+ * ======================================================================== */
+
+/* The board sits on the page, not in a tinted container of its own. */
+.mc-board { background: none; padding: 0; }
+
+/* A rule, not a band. The title is the only thing that needs weight here. */
+.mc-board__head {
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 0 var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent);
+}
+
+.mc-board__title { font-size: var(--type-28); letter-spacing: 0.01em; }
+
+/* Three across is the reference count: it is the widest a card can be and
+   still put the whole axis in one eyeful. */
+.mc-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); }
+
+.mc-game {
+  gap: var(--space-2);
+  box-shadow: none;
+  background: var(--surface-board-raised);
+}
+
+/* --- Club tiles ----------------------------------------------------------
+ * The club's own colour, with the abbreviation on it. `--club` is set inline
+ * per chip; the fallback keeps a chip legible for a club with no published
+ * colour rather than printing white on white. */
+.mc-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  background: var(--club, var(--surface-elevated));
+  border: 1px solid var(--club, var(--border-default));
+}
+
+.mc-chip__code {
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  /* The bar colours are lifted to clear a measured contrast floor against the
+     panel, so they are light enough that near-black ink reads on them. */
+  color: var(--surface-canvas);
+}
+
+/* --- The scale ----------------------------------------------------------- */
+.mc-gauge__axis {
+  position: relative;
+  display: block;
+  height: 22px;
+  margin-top: 2px;
+}
+
+.mc-gauge__tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.mc-gauge__tick i {
+  display: block;
+  width: 1px;
+  height: 4px;
+  background: var(--border-default);
+}
+
+.mc-gauge__tick b {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Zero is the reference every other number is read against, so it is the one
+   tick that is not grey. It takes its weight from colour rather than from
+   length: a taller rule pushed its own label down a row and left the axis
+   reading as two staggered lines of numbers. */
+.mc-gauge__tick.is-zero i { background: var(--text-secondary); width: 2px; }
+.mc-gauge__tick.is-zero b { color: var(--text-secondary); font-weight: 700; }
+
+/* Every label hangs from the same line whatever its tick does. */
+.mc-gauge__tick i { flex: 0 0 4px; }
+
+.mc-gauge__track { height: 22px; }
+
+/* The two legends sit over their own marks and are read as a pair, so they are
+   sized to fit side by side near the middle of a 300px track rather than to
+   fill the card's width. */
+.mc-gauge__leg { gap: 4px; }
+.mc-gauge__leg span { font-size: var(--type-12); letter-spacing: var(--tracking-caps); }
+.mc-gauge__leg strong { font-size: var(--type-16); }
+
+/* --- The week, in windows ------------------------------------------------ */
+.mc-slot { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); }
+
+.mc-slot__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* One game in a window is a standalone kickoff, and reads as one. */
+.mc-grid--single { grid-template-columns: minmax(0, 1fr); }
+
+/* ===========================================================================
+ * BRAND: THE PAGE HEADER IS THE SAME OBJECT EVERYWHERE
+ * ---------------------------------------------------------------------------
+ * Model Center does not load chase-public.css - it is a different route layer -
+ * so it never picked up the metallic fill every other page title carries, and
+ * "Model Center" rendered flat white beside an "MLB Matchups" in chrome. Two
+ * title treatments across one product reads as two products.
+ *
+ * The declaration is repeated here rather than reached for across layers,
+ * which is what the layer rule requires; the token it fills from is the same
+ * one, so the two cannot drift apart in colour.
+ *
+ * Guarded: without background-clip:text a transparent colour erases the text.
+ * ======================================================================== */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .ca-public-page__title,
+  .mc-board__title,
+  .mc-panel__title {
+    background: var(--text-display-metal);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* --- Sport switch --------------------------------------------------------
+ * The top nav's MLB and NFL tabs leave Model Center for the public slates, so
+ * an entitled reader had no way to reach the NFL board at all: it was only
+ * addressable by typing ?sport=nfl. The board carries both, so the page offers
+ * both. */
+.mc-sports {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: var(--space-3);
+  background: var(--surface-mc-field);
+  border: 1px solid var(--border-violet);
+  border-radius: var(--radius-pill);
+}
+
+.mc-sports a {
+  /* 44px tall including padding: this is a primary control on a phone, and the
+     mobile audit holds every tap target to that floor. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.mc-sports a:hover { color: var(--text-primary); }
+
+.mc-sports a[aria-current="page"] {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--accent-strong);
 }

@@ -17,14 +17,18 @@ number. For an arm whose season is mostly relief with a spot start or two the li
 describes his whole season rather than that one start - a larger and more useful sample
 for a panel labelled "vs LHB", but not a starts-only split.
 
-TWO COLUMNS THIS ENDPOINT CANNOT ANSWER, both left empty rather than guessed:
-  * ERA - `statSplits` reports no runs at all for a batter-hand cut, because an earned
-    run is not attributable to the handedness of one plate appearance. FIP is computed
-    from the HR/BB/K it does report and carries the run-prevention signal instead. The
-    pitcher-profile "Pitching Value" panel renders K% / BB% / HR9 / xFIP / OPS, so no
-    displayed column is lost.
-  * xFIP - needs a fly-ball rate this endpoint does not carry. The location, hand and
-    tier split dimensions already ship xFIP empty, so this matches existing behaviour.
+ONE COLUMN THIS ENDPOINT CANNOT ANSWER, left empty rather than guessed:
+  * ERA on a batter-hand cut - `statSplits` reports no runs at all there, because an
+    earned run is not attributable to the handedness of one plate appearance. FIP is
+    computed from the HR/BB/K it does report and carries the run-prevention signal
+    instead. Home and road DO carry ERA, and it is published.
+
+xFIP used to be in that list. It is computed now: see `air_balls` for why the thing it
+needs is not the fly-ball rate this endpoint lacks.
+
+Home and road were not fetched here at all until 2026-09-11, which is why the splits
+table downstream showed the same OPS for both - it was falling back to the pitcher's
+season line and printing it twice under two labels.
 """
 from __future__ import annotations
 
@@ -43,10 +47,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from core.config import CURRENT_SEASON, DATA_DIR, FIP_CONSTANT  # noqa: E402
 
 STATS_API = "https://statsapi.mlb.com/api/v1"
-# (sitCode, output filename). `vl` is "vs Left", i.e. versus left-handed batters.
-SPLITS = (("vl", "sp_vs_LHH.csv"), ("vr", "sp_vs_RHH.csv"))
+# (sitCode, output filename). `vl` is "vs Left", i.e. versus left-handed batters;
+# `h` and `a` are the pitcher's own home and road work.
+#
+# Home and road were not fetched at all, and the downstream splits table filled its
+# location rows with the pitcher's SEASON line instead - verified across all 359
+# starters, not one had a home OPS that differed from his away OPS, because it was the
+# same number printed twice. The endpoint answers the cut directly, so it is asked.
+SPLITS = (
+    ("vl", "sp_vs_LHH.csv"),
+    ("vr", "sp_vs_RHH.csv"),
+    ("h", "sp_home.csv"),
+    ("a", "sp_away.csv"),
+)
+SIT_CODES = ",".join(code for code, _ in SPLITS)
 OUTPUT_COLUMNS = [
-    "Name", "Team", "G", "GS", "IP", "ERA", "K%", "BB%", "HR/9",
+    "Name", "Team", "MLBAMID", "G", "GS", "IP", "ERA", "K%", "BB%", "HR/9",
     "OBP", "SLG", "OPS", "FIP", "xFIP", "TBF",
 ]
 # Below this the rate columns are noise, and publishing them would put a three-batter ERA
@@ -150,6 +166,10 @@ def _accumulate(splits: Iterable[dict]) -> Dict[str, Dict[str, int]]:
         bucket = {
             "outs": 0, "so": 0, "bb": 0, "hr": 0, "tbf": 0,
             "h": 0, "hbp": 0, "sf": 0, "ab": 0, "tb": 0, "g": 0,
+            # Batted-ball outs, for the fly-ball share xFIP needs.
+            "go": 0, "ao": 0, "sac": 0,
+            # Earned runs. Meaningless on a batter-hand cut, real on home and road.
+            "er": 0,
         }
         for entry in chosen:
             stat = entry.get("stat") or {}
@@ -164,11 +184,61 @@ def _accumulate(splits: Iterable[dict]) -> Dict[str, Dict[str, int]]:
             bucket["ab"] += _int(stat, "atBats")
             bucket["tb"] += _int(stat, "totalBases")
             bucket["g"] += _int(stat, "gamesPlayed")
+            bucket["go"] += _int(stat, "groundOuts")
+            bucket["ao"] += _int(stat, "airOuts")
+            bucket["sac"] += _int(stat, "sacBunts")
+            bucket["er"] += _int(stat, "earnedRuns")
         totals[code] = bucket
     return totals
 
 
-def _row(pitcher: dict, bucket: Dict[str, int]) -> Optional[dict]:
+def air_balls(bucket: Dict[str, int]) -> Optional[float]:
+    """How many balls this split put in the air.
+
+    The docstring above used to say xFIP "needs a fly-ball rate this endpoint does not
+    carry", and that was true of a fly-ball rate as FanGraphs defines it - FB over
+    GB+FB+LD, which needs every batted ball typed. It is not true of the quantity xFIP
+    actually needs, which is a denominator to normalise home runs against.
+
+    The endpoint reports groundOuts and airOuts for every split, so the split states its
+    own ground-to-air tendency. Applying that share to the split's batted balls gives
+    the air-ball count. The league rate below is computed on the same definition from
+    the same population, so expected home runs come out on a consistent scale - which is
+    all xFIP requires. It is not FanGraphs' fly-ball denominator and does not need to be.
+
+    Returns None when the split has no batted-ball outs to take a share from.
+    """
+    fielded = bucket["go"] + bucket["ao"]
+    if fielded <= 0:
+        return None
+    # Balls put in play, home runs included: they are air balls by definition and xFIP
+    # is about how many of these left the yard, not how many stayed in it.
+    batted = bucket["ab"] - bucket["so"] + bucket["sf"] + bucket["sac"]
+    if batted <= 0:
+        return None
+    return batted * (bucket["ao"] / fielded)
+
+
+def league_hr_per_air(buckets: Iterable[Dict[str, int]]) -> Optional[float]:
+    """League home runs per air ball, from this run's own population.
+
+    Taken from the data being published rather than assumed, so the constant moves with
+    the season it describes and cannot go stale the way a hard-coded 0.13 would.
+    """
+    hr = 0
+    air = 0.0
+    for bucket in buckets:
+        balls = air_balls(bucket)
+        if balls is None:
+            continue
+        hr += bucket["hr"]
+        air += balls
+    if air <= 0:
+        return None
+    return hr / air
+
+
+def _row(pitcher: dict, bucket: Dict[str, int], hr_per_air: Optional[float]) -> Optional[dict]:
     tbf = bucket["tbf"]
     if tbf < MIN_BATTERS_FACED:
         return None
@@ -185,9 +255,25 @@ def _row(pitcher: dict, bucket: Dict[str, int]) -> Optional[dict]:
     # core.config.FIP_FORMULA - walks only, no HBP term, matching the rest of the repo.
     fip = (13 * bucket["hr"] + 3 * bucket["bb"] - 2 * bucket["so"]) / innings + FIP_CONSTANT
 
+    # xFIP is FIP with the home runs he actually gave up replaced by the home runs a
+    # league-average arm would give up on his air balls. Same formula, same constant,
+    # one term swapped - which is the whole idea.
+    xfip = ""
+    balls = air_balls(bucket)
+    if hr_per_air and balls is not None:
+        expected_hr = balls * hr_per_air
+        xfip = round(
+            (13 * expected_hr + 3 * bucket["bb"] - 2 * bucket["so"]) / innings
+            + FIP_CONSTANT,
+            2,
+        )
+
     return {
         "Name": pitcher["name"],
         "Team": pitcher["team"],
+        # The MLB person id, so a consumer can join on it instead of on a name that
+        # two players in the league share.
+        "MLBAMID": pitcher["id"],
         # Appearances in which he faced this hand. GS is left empty because the endpoint
         # does not break games started out by batter hand; build_hand_splits reads
         # `GS or G`, so G is what becomes the split's appearance count.
@@ -195,7 +281,9 @@ def _row(pitcher: dict, bucket: Dict[str, int]) -> Optional[dict]:
         "GS": "",
         # Written back in MLB's own innings notation so parse_ip reads it unchanged.
         "IP": f"{bucket['outs'] // 3}.{bucket['outs'] % 3}",
-        "ERA": "",
+        # Home and road attribute earned runs; a batter-hand cut does not, and comes
+        # back with none, so the column stays empty there rather than reading 0.00.
+        "ERA": round(9 * bucket["er"] / innings, 2) if bucket["er"] else "",
         # Fractions, matching the FanGraphs encoding the consumer's _pct_pts expects.
         "K%": round(bucket["so"] / tbf, 4),
         "BB%": round(bucket["bb"] / tbf, 4),
@@ -204,24 +292,27 @@ def _row(pitcher: dict, bucket: Dict[str, int]) -> Optional[dict]:
         "SLG": round(slg, 3) if slg is not None else "",
         "OPS": round(obp + slg, 3) if obp is not None and slg is not None else "",
         "FIP": round(fip, 2),
-        "xFIP": "",
+        "xFIP": xfip,
         "TBF": tbf,
     }
 
 
 def run() -> None:
-    print("Scraping pitcher vs-LHH / vs-RHH splits from the MLB Stats API...")
+    print("Scraping pitcher vs-LHH / vs-RHH / home / road splits from the MLB Stats API...")
     pitchers = target_pitchers()
     if not pitchers:
         print("  ERROR: no pitcher set to scrape -- leaving existing files untouched")
         return
     print(f"  {len(pitchers)} pitchers to look up")
 
-    rows: Dict[str, List[dict]] = {code: [] for code, _ in SPLITS}
+    # Two passes over one fetch. Every line is collected first because the xFIP
+    # denominator is a league rate taken from this population, and a rate cannot be
+    # computed from a row while that row is still being written.
+    collected: List[tuple] = []
     failed: List[str] = []
     for index, pitcher in enumerate(pitchers, 1):
         payload = _get(
-            f"{STATS_API}/people/{pitcher['id']}/stats?stats=statSplits&sitCodes=vl,vr"
+            f"{STATS_API}/people/{pitcher['id']}/stats?stats=statSplits&sitCodes={SIT_CODES}"
             f"&group=pitching&season={CURRENT_SEASON}&gameType=R"
         )
         if not payload or not payload.get("stats"):
@@ -230,17 +321,28 @@ def run() -> None:
         totals = _accumulate(payload["stats"][0].get("splits", []))
         for code, _ in SPLITS:
             bucket = totals.get(code)
-            if not bucket:
-                continue
-            row = _row(pitcher, bucket)
-            if row:
-                rows[code].append(row)
+            if bucket:
+                collected.append((code, pitcher, bucket))
         if index % 50 == 0:
             print(f"    {index}/{len(pitchers)}")
         time.sleep(REQUEST_PAUSE_S)
 
     if failed:
         print(f"  WARNING: no split data for {len(failed)} pitchers (first 5: {failed[:5]})")
+
+    # One rate for every split, so a home xFIP and a vs-LHH xFIP sit on the same scale
+    # and can be read down the same column.
+    hr_per_air = league_hr_per_air(
+        bucket for code, _, bucket in collected if code in {"h", "a"}
+    )
+    print(f"  league home runs per air ball: "
+          f"{round(hr_per_air, 4) if hr_per_air else 'not computable'}")
+
+    rows: Dict[str, List[dict]] = {code: [] for code, _ in SPLITS}
+    for code, pitcher, bucket in collected:
+        row = _row(pitcher, bucket, hr_per_air)
+        if row:
+            rows[code].append(row)
 
     for code, filename in SPLITS:
         path = os.path.join(DATA_DIR, filename)
