@@ -2121,7 +2121,8 @@ body[data-ca-product="research"] {
 .ca-lineup-table td {
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+  /* Defers to the cell's own grade when it carries one. */
+  color: var(--grade, var(--text-secondary));
 }
 .ca-lineup-table tbody tr:last-child td { border-bottom: 0; }
 
@@ -2372,7 +2373,7 @@ body[data-ca-product="research"] {
 .ca-rate-table td {
   padding: 5px 0;
   border-bottom: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+  color: var(--grade, var(--text-secondary));
 }
 .ca-rate-table tr:last-child td { border-bottom: 0; }
 
@@ -2783,8 +2784,14 @@ body[data-ca-product="research"] {
   background: var(--metric-elite);
 }
 
+/* Superseded further down: the losing side used to be dimmed to secondary
+   text regardless of how good its season was, which outranked the grade on
+   specificity and left a club ranked third in the league drawn in the same
+   grey as one ranked thirtieth. The row's winner is carried by the bars. */
 .ca-mirror__row.is-away .ca-mirror__value--home,
-.ca-mirror__row.is-home .ca-mirror__value--away { color: var(--text-secondary); }
+.ca-mirror__row.is-home .ca-mirror__value--away {
+  color: var(--grade, var(--text-secondary));
+}
 
 @media (max-width: 720px) {
   /* Stacked, the mirror stops being a mirror, so each row becomes a plain
@@ -2895,12 +2902,24 @@ body[data-ca-product="research"] {
  * Colour is never the only channel: every graded number has its rank, its
  * label or its bar beside it.
  * ======================================================================== */
-.c-elite { color: var(--metric-elite); border-color: var(--metric-elite); }
-.c-good  { color: var(--metric-good);  border-color: var(--metric-good); }
-.c-mid   { color: var(--metric-neutral); border-color: var(--metric-neutral); }
-.c-weak  { color: var(--metric-weak);  border-color: var(--metric-weak); }
-.c-poor  { color: var(--metric-poor);  border-color: var(--metric-poor); }
-.c-na    { color: var(--text-muted); }
+/* Each grade publishes its colour as --grade as well as painting itself.
+   `.ca-lineup-table td` is one class plus one element, which outranks a bare
+   `.c-elite`, so every graded figure inside a table rendered in the default
+   text colour and the colour coding silently did nothing. Rather than escalate
+   specificity rule by rule, a context that wants to defer to a grade reads the
+   custom property with its own colour as the fallback - custom properties are
+   not subject to the cascade conflict that caused this. */
+.c-elite { --grade: var(--metric-elite); }
+.c-good  { --grade: var(--metric-good); }
+.c-mid   { --grade: var(--metric-neutral); }
+.c-weak  { --grade: var(--metric-weak); }
+.c-poor  { --grade: var(--metric-poor); }
+.c-na    { --grade: var(--text-muted); }
+
+.c-elite, .c-good, .c-mid, .c-weak, .c-poor, .c-na {
+  color: var(--grade);
+  border-color: var(--grade);
+}
 
 /* Inside a bordered frame the grade tints the frame too; inline in a table it
    must not draw a box round a single figure. */
@@ -3541,3 +3560,226 @@ body[data-ca-product="research"] {
 @media (max-width: 720px) {
   .ca-spark__chart { width: 120px; }
 }
+
+/* ===========================================================================
+ * THE MIRROR IS RED AND GREEN
+ *
+ * Club colour answered "whose bar is this" and left the reader working out
+ * which side was better. Two colours with one meaning instead: green leads the
+ * row, red trails it. The rank under every value says the same thing, so the
+ * chart survives with the colour removed.
+ * ======================================================================== */
+.ca-mirror__fill,
+.ca-mirror__fill[data-club] { background: var(--metric-poor); }
+
+.ca-mirror__row.is-away .ca-mirror__track--away .ca-mirror__fill,
+.ca-mirror__row.is-home .ca-mirror__track--home .ca-mirror__fill {
+  background: var(--metric-elite);
+}
+
+/* The figure and its rank grade themselves against the thirty-club pool, the
+   same ramp every other number on this page uses.
+ *
+ * They used to take the row's winner: the losing side went red whatever it had
+ * done, so a club ranked 16th of 30 was painted the colour of failure because
+ * the other club was 15th - while three sections up red meant "poor". Two
+ * different meanings for the same colour on the same page is worse than no
+ * colour at all.
+ *
+ * Which side leads is still shown, and shown better: the winning bar fills
+ * green and the losing bar red, so the comparison is read off the bars - where
+ * length already carries it - and the grade is read off the numbers. */
+.ca-mirror__row .ca-mirror__value { color: var(--grade, var(--text-primary)); }
+.ca-mirror__value i { color: inherit; opacity: 0.78; }
+
+/* ===========================================================================
+ * TEAM PROFILE RADAR
+ *
+ * Two webs, both clubs on each. Every axis is a percentile, which is the only
+ * honest way to put OSI, wRC+ and xwOBA on one shape. Away and home take the
+ * same two colours as the mirror, so a reader who has learned one has learned
+ * the other.
+ * ======================================================================== */
+/* Two webs, side by side and close enough to be read as a pair. An auto-fit
+   grid across the full panel width left a third of the section empty between
+   them, which made two shapes look like two unrelated charts. */
+.ca-radar-duo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-3);
+}
+
+.ca-radar-duo > .ca-radar { flex: 0 1 360px; max-width: 100%; }
+.ca-radar svg { width: 100%; height: auto; max-width: 360px; }
+
+.ca-radar { margin: 0; display: grid; justify-items: center; gap: var(--space-2); }
+
+.ca-radar figcaption {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-radar svg { overflow: visible; }
+
+.ca-radar__ring { fill: none; stroke: var(--border-subtle); stroke-width: 1; }
+.ca-radar__spoke { stroke: var(--border-subtle); stroke-width: 1; }
+
+.ca-radar__area { stroke-width: 2; fill-opacity: 0.18; vector-effect: non-scaling-stroke; }
+.ca-radar__area.is-away { stroke: var(--series-1); fill: var(--series-1); }
+.ca-radar__area.is-home { stroke: var(--series-4); fill: var(--series-4); }
+
+.ca-radar__label {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  fill: var(--text-secondary);
+}
+
+.ca-radar-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+}
+
+.ca-radar-key__swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+.ca-radar-key__swatch.is-away { background: var(--series-1); }
+.ca-radar-key__swatch.is-home { background: var(--series-4); }
+
+/* --- pitch count by day ------------------------------------------------- */
+.ca-pc-table td.num, .ca-pc-table th.num { min-width: 44px; text-align: center; }
+.ca-pc { font-family: var(--font-display); font-weight: 800;
+         font-variant-numeric: tabular-nums; color: var(--text-muted); }
+/* A workload ramp, dim to hot - deliberately NOT the green-to-red grade scale
+   the stat columns use. Fifteen pitches is a light day, not a good one, and
+   painting it the green that means "elite" elsewhere on the page would assert
+   something nobody measured. Only the top two steps take a hue, because only
+   the top two steps are what a reader is scanning the grid for. */
+.ca-pc, .ca-pc-total { transition: none; }
+.ca-pc.p-zero  { color: var(--text-disabled); font-weight: 600; }
+.ca-pc.p-touch { background: var(--surface-raised); color: var(--text-secondary); }
+.ca-pc.p-light { background: var(--surface-elevated); color: var(--text-primary); }
+.ca-pc.p-full  { background: var(--tint-caution); color: var(--metric-watch); }
+.ca-pc.p-heavy { background: var(--tint-negative); color: var(--metric-poor); }
+
+/* The two summary columns take the same ramp on thresholds scaled to the days
+   they cover, and keep their heavier frame so the eye still reads them as
+   totals rather than as two more days. */
+.ca-pc-total.p-zero  { color: var(--text-disabled); }
+.ca-pc-total.p-full  { color: var(--metric-watch); }
+.ca-pc-total.p-heavy { color: var(--metric-poor); }
+.ca-pc-total { font-family: var(--font-display); font-weight: 800;
+               color: var(--text-primary); background: var(--surface-field);
+               font-variant-numeric: tabular-nums; }
+.ca-bullpen__crest { width: 22px; height: 22px; object-fit: contain; margin-right: 6px; }
+.ca-bullpen-panel > h3 { display: flex; align-items: center; }
+
+/* --- conditions in the banner ------------------------------------------- */
+.ca-wx-fact { display: inline-flex; align-items: center; gap: 6px; }
+.ca-wx-glyph--sm { width: 18px; height: 18px; color: var(--text-accent); }
+
+/* ---------------------------------------------------------------------------
+ * CARD HEIGHT: ONE LONG NAME MUST NOT RAISE THE WHOLE ROW
+ *
+ * Grid rows stretch to their tallest member, so "Los Angeles Dodgers" wrapping
+ * to a second line, or a two-line pitcher name, pushed every card in the row
+ * past the 350px ceiling the style lock fixes - and the extra height was blank
+ * space on the other eleven cards. Both names clamp to two lines and then
+ * ellipsis, which holds the card inside its band without hiding a club: the
+ * crest is beside the name and the full text stays in the title attribute.
+ * ------------------------------------------------------------------------ */
+.ca-matchup-card__name,
+.ca-matchup-card__arm-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* A pitcher's name is short enough to sit on one line at this size; when one
+   does not, ellipsis costs a surname and saves seventeen points of height on
+   every card in the row. The club name keeps its two lines - truncating
+   "Los Angeles Do..." is not a trade worth making. */
+.ca-matchup-card__arm-name {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+/* ---------------------------------------------------------------------------
+ * CARD HEIGHT BUDGET
+ *
+ * The style lock caps the collapsed card at 350px and the card had reached
+ * 348 - inside the band, but with no room for the font-metric difference
+ * between this machine and CI, which is the exact one-pixel gap that failed a
+ * deploy once already. The two points below are whitespace, not content: the
+ * stack gap comes down a point, and the collapsed detail drawer stops
+ * reserving a gap while it is empty. That is about fourteen points of
+ * headroom, and the card reads no tighter for it.
+ * ------------------------------------------------------------------------ */
+.ca-matchup-card { gap: 4px; }
+
+/* The drawer carries the `hidden` attribute when collapsed, but a display rule
+   on the class overrode the UA's `display:none`, so a hidden element was still
+   a flex item claiming a gap. It is now actually hidden when it says it is. */
+.ca-matchup-card__expand[hidden] { display: none; }
+
+/* The venue strip runs one line of 14px display type but inherited the page's
+   body line-height, so it reserved 36 points for an 18-point line. Setting the
+   leading it actually needs returns the last of the headroom. */
+.ca-matchup-card__venue { line-height: 1.3; }
+.ca-matchup-card__venue .ca-status-chip { line-height: 1.2; }
+
+/* ---------------------------------------------------------------------------
+ * TABLE COLUMN WIDTHS
+ *
+ * `width: 100%` on a table with one long text column and several short numeric
+ * ones gives every spare pixel to the text column, so a nine-row batting order
+ * sat with its name column 700px wide and its four rate columns crowded into
+ * the right margin - four numbers a reader is asked to compare down the page,
+ * placed as far from each other as the panel allows.
+ *
+ * The numeric columns take a fixed share and the name column absorbs what is
+ * left, which is the arrangement the eye needs: the figures line up in narrow
+ * tracks close enough to scan across as well as down.
+ * ------------------------------------------------------------------------ */
+.ca-lineup-table th.num,
+.ca-lineup-table td.num { width: 4.5rem; }
+
+.ca-lineup-table thead th:first-child,
+.ca-lineup-table tbody td:first-child { width: 2.5rem; }
+
+/* The batter's name is the one column that should take the slack. */
+.ca-lineup-table .ca-lineup-name { width: auto; }
+
+/* The pitch-count matrix is the exception: it is all numbers, so its day
+   columns stay on the narrower track they set for themselves. */
+.ca-pc-table th.num,
+.ca-pc-table td.num { width: 3.25rem; }
+
+/* Splits carry ten columns in a panel half the page wide; each needs less. */
+.ca-split-table th.num,
+.ca-split-table td.num { width: 3.5rem; }
+
+/* The split label is shorthand and must stay on its line; if a longer label
+   ever lands here the table scrolls rather than growing three rows tall. */
+.ca-split-table tbody td:first-child,
+.ca-split-table thead th:first-child { white-space: nowrap; width: 5rem; }

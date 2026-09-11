@@ -116,9 +116,10 @@
   function scoreOrTime(game) {
     var state = String(game.game_state || '').toLowerCase();
     if ((state === 'live' || state === 'final') && game.away_score != null && game.home_score != null) {
-      return '<strong>' + esc(game.away_score) + '–' + esc(game.home_score) + '</strong><p>' + esc(gameStatus(game)) + '</p>';
+      return '<strong>' + esc(game.away_score) + '–' + esc(game.home_score) + '</strong>' +
+        '<p>' + esc(clock(game.kickoff_utc)) + '</p>';
     }
-    return '<strong>' + esc(clock(game.kickoff_utc)) + '</strong><p>' + esc(gameStatus(game)) + '</p>';
+    return '<strong>' + esc(clock(game.kickoff_utc)) + '</strong>';
   }
 
   /* ---------------------------------------------------------------------
@@ -252,8 +253,10 @@
      started that game is excluded by his own gamesStarted line. */
   function loadBullpen(teamId, teamCode, dateIso) {
     if (!teamId) return Promise.resolve(null);
+    // The seven days before this game, exclusive of game day itself - one
+    // column each, so Last 3 and Last 5 both sit inside the window shown.
     var end = isoDaysBefore(dateIso, 1);
-    var start = isoDaysBefore(dateIso, 3);
+    var start = isoDaysBefore(dateIso, 7);
     return fetchJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=' + teamId +
       '&startDate=' + start + '&endDate=' + end).then(function (payload) {
       var finals = [];
@@ -264,7 +267,10 @@
           }
         });
       });
-      if (!finals.length) return { used: [], games: 0, window: start + ' to ' + end };
+      if (!finals.length) {
+        return { used: [], games: 0, window: start + ' to ' + end,
+                 days: dayColumns(start, end) };
+      }
       return Promise.all(finals.map(function (game) {
         return fetchJson('https://statsapi.mlb.com/api/v1/game/' + game.pk + '/boxscore')
           .then(function (box) { return { box: box, date: game.date }; })
@@ -299,9 +305,58 @@
           rec.backToBack = consecutiveDays(rec.dates);
           return rec;
         }).sort(function (a, b) { return b.pitches - a.pitches; });
-        return { used: used, games: finals.length, window: start + ' to ' + end };
+        return { used: used, games: finals.length, window: start + ' to ' + end,
+                 days: dayColumns(start, end) };
       });
     }).catch(function () { return null; });
+  }
+
+  /* The days the matrix has a column for, oldest first. Built from the window
+     rather than from the outings, so a day nobody pitched still shows as a day
+     nobody pitched - which is itself what a workload report is for. */
+  function dayColumns(start, end) {
+    var out = [];
+    var cursor = new Date(start + 'T12:00:00Z');
+    var last = new Date(end + 'T12:00:00Z');
+    while (cursor <= last && out.length < 10) {
+      out.push(cursor.toISOString().slice(0, 10));
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+    return out;
+  }
+
+  function dayLabel(iso) {
+    var d = new Date(iso + 'T12:00:00Z');
+    return isNaN(d.getTime()) ? iso
+      : d.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+  }
+
+  /* How heavy a day was, on the reading lines a pitching coach uses.
+
+     This is a workload ramp, not a grade: it runs dim to hot, never green to
+     red. Fifteen pitches is a light day, not a good one, and colouring it the
+     same green that means "elite" three sections up would say something about
+     an arm that nobody measured. Only the top of the ramp is coloured, because
+     only the top of the ramp is the thing a reader is scanning for. The count
+     is printed in the cell, so the shade is always a second reading of it. */
+  function pitchLoad(count) {
+    if (!count) return 'p-zero';
+    if (count >= 35) return 'p-heavy';
+    if (count >= 25) return 'p-full';
+    if (count >= 15) return 'p-light';
+    return 'p-touch';
+  }
+
+  /* The same ramp over a multi-day sum, so Last 3 and Last 5 - the columns a
+     reader actually checks before asking who is available - carry the reading
+     too, on thresholds scaled to the days they cover. */
+  function loadTotal(count, days) {
+    if (!count) return 'p-zero';
+    var perDay = count / Math.max(days, 1);
+    if (perDay >= 20) return 'p-heavy';
+    if (perDay >= 13) return 'p-full';
+    if (perDay >= 7) return 'p-light';
+    return 'p-touch';
   }
 
   function consecutiveDays(dates) {
@@ -415,6 +470,15 @@
     }).catch(function () { return null; });
   }
 
+  var STARTER_SPLITS_URL = '/data/public/starter_splits.json';
+  var starterSplitsPromise = null;
+
+  function loadStarterSplits() {
+    if (starterSplitsPromise) return starterSplitsPromise;
+    starterSplitsPromise = fetchJson(STARTER_SPLITS_URL).catch(function () { return null; });
+    return starterSplitsPromise;
+  }
+
   function seasonOf(dateIso) {
     var y = parseInt(String(dateIso || '').slice(0, 4), 10);
     return isFinite(y) ? y : new Date().getFullYear();
@@ -476,7 +540,7 @@
       '<strong class="ca-form-value">' + esc(shown) + '</strong>' +
       percentBar(entry.rank, entry.of) +
       '<span class="ca-form-rank ' + rankTone(entry.rank, entry.of) + '">' +
-      entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
+      entry.rank + ordinal(entry.rank) + ' Of ' + entry.of + '</span>' +
       '</div>';
   }
 
@@ -512,6 +576,15 @@
     return colour ? ' style="--club:' + esc(colour) + '"' : '';
   }
 
+  function titleCase(text) {
+    if (global.MLBMAAssets && MLBMAAssets.titleCaseLabel) {
+      return MLBMAAssets.titleCaseLabel(text);
+    }
+    return String(text || '').replace(/([a-z])/g, function (m, ch) {
+      return ch.toUpperCase();
+    });
+  }
+
   function percentOf(entry) {
     if (!entry || !(entry.of > 1) || !(entry.rank >= 1)) return null;
     return ((entry.of - entry.rank) / (entry.of - 1)) * 100;
@@ -523,8 +596,10 @@
     var awayPct = percentOf(away), homePct = percentOf(home);
     // The side with the better season carries the emphasis, so a scan down the
     // column shows who wins each row without reading a single number.
+    // Every row takes a side. A four-point dead band left rows uncoloured and
+    // the reader unsure whether that meant "level" or "not computed".
     var lead = '';
-    if (awayPct != null && homePct != null && Math.abs(awayPct - homePct) >= 4) {
+    if (awayPct != null && homePct != null && awayPct !== homePct) {
       lead = awayPct > homePct ? ' is-away' : ' is-home';
     }
     function side(entry, pct, which) {
@@ -542,9 +617,11 @@
       var bar = '<span class="' + track + '"><span class="ca-mirror__fill"' +
         (styles[which] ? ' data-club="1"' : '') + ' style="width:' +
         (pct == null ? 0 : pct.toFixed(1)) + '%"></span></span>';
-      var value = '<span class="' + val + '">' + esc(format(entry.value)) +
-        '<i class="' + rankTone(entry.rank, entry.of) + '">' +
-        entry.rank + ordinal(entry.rank) + '</i></span>';
+      // The grade class goes on the value, so the figure and the rank beneath
+      // it carry the same reading - and the row's winner is left to the bars.
+      var value = '<span class="' + val + ' ' + rankTone(entry.rank, entry.of) + '">' +
+        esc(format(entry.value)) +
+        '<i>' + entry.rank + ordinal(entry.rank) + '</i></span>';
       return which === 'away' ? value + bar : bar + value;
     }
     return '<div class="ca-mirror__row' + lead + '"' +
@@ -635,19 +712,29 @@
     return ((13 * hr) + (3 * (bb + (isFinite(hbp) ? hbp : 0))) - (2 * k)) / ip + FIP_CONSTANT;
   }
 
-  function derivedRates(stat) {
-    var out = [];
-    var bf = Number(stat.battersFaced);
-    var ip = parseFloat(stat.inningsPitched);
-    if (isFinite(bf) && bf > 0) {
-      if (stat.strikeOuts != null) out.push(['K%', (Number(stat.strikeOuts) / bf * 100).toFixed(1) + '%']);
-      if (stat.baseOnBalls != null) out.push(['BB%', (Number(stat.baseOnBalls) / bf * 100).toFixed(1) + '%']);
-    }
-    if (isFinite(ip) && ip > 0 && stat.homeRuns != null) {
-      out.push(['HR/9', (Number(stat.homeRuns) * 9 / ip).toFixed(2)]);
-    }
-    if (stat.avg != null) out.push(['Opp AVG', stat.avg]);
-    return out;
+  /* Allowed rates read the other way round: a .200 opponent average is elite,
+     not poor. This flips the ramp for baselines measured on HITTERS (avg, ops)
+     being read against a pitcher. Baselines already declared low-is-good -
+     bbpct, era, whip, xfip - grade correctly on their own and must not pass
+     through here, or they invert twice. */
+  var GRADE_FLIP = { 'c-elite': 'c-poor', 'c-good': 'c-weak', 'c-mid': 'c-mid',
+    'c-weak': 'c-good', 'c-poor': 'c-elite' };
+
+  function gradeAllowed(value, context) {
+    var cls = gradeFor(value, context);
+    return GRADE_FLIP[cls] || cls;
+  }
+
+  /* An index centred on 100 grades against 100 - there is no pool to take a
+     percentile from. */
+  function indexTone(value) {
+    var v = Number(value);
+    if (!isFinite(v)) return '';
+    if (v >= 115) return 'c-elite';
+    if (v >= 105) return 'c-good';
+    if (v >= 95) return 'c-mid';
+    if (v >= 85) return 'c-weak';
+    return 'c-poor';
   }
 
   /* A number that carries its own grade, off the published league baseline, so
@@ -661,17 +748,18 @@
     return '';
   }
 
-  function starterPanel(sport, game, side, people) {
+  function starterPanel(sport, game, side, people, splitBank) {
     var label = fullName(sport, game, side);
     var id = game[side + '_starter_id'];
     var person = people[id];
+    var bank = ((splitBank && splitBank.starters) || {})[String(id)];
     var name = person ? person.name : (game[side + '_starter'] || 'Probable Starter Not Published');
     var stat = (person && person.stat) || {};
     var hand = (person && person.throws) || String(game[side + '_hand'] || '').toUpperCase();
     var handLabel = hand === 'L' ? 'LHP' : (hand === 'R' ? 'RHP' : '');
-    // The line a scout reads first, at the size that says so, with the counting
-    // stats behind it underneath. A flat eight-row list gave "Batters Faced"
-    // exactly as much weight as ERA.
+    // The season line, kept as the one anchor the splits below are read
+    // against - a .620 OPS allowed to left-handers means nothing without the
+    // number the same arm posts overall.
     var f = fip(stat);
     var headline = [
       ['ERA', stat.era, 'era'],
@@ -684,35 +772,68 @@
         '</span><strong class="ca-stat__value ' + (row[2] ? gradeFor(row[1], row[2]) : '') +
         '">' + esc(row[1]) + '</strong></div>';
     }).join('');
-    var rows = [
-      ['Strikeouts', stat.strikeOuts != null ? stat.strikeOuts : 'Not Published'],
-      ['Walks', stat.baseOnBalls != null ? stat.baseOnBalls : 'Not Published'],
-      ['Home Runs Allowed', stat.homeRuns != null ? stat.homeRuns : 'Not Published'],
-      ['Batters Faced', stat.battersFaced != null ? stat.battersFaced : 'Not Published']
+    /* The whole panel is splits now, as rates. It used to print 55 strikeouts
+       and 243 batters faced and leave the reader to divide - which is how a
+       counting stat ends up reading like a rate it is not.
+
+       Columns are chosen from the data rather than fixed, because the source
+       splits different things by different dimensions: ERA is attributable to
+       a park but not to the hand of the man at the plate, OPS allowed is the
+       reverse, and xFIP is currently empty for every starter in the league.
+       A column nobody in this table has a value for is not rendered, so the
+       table shows gaps only where a gap is real - and xFIP appears on its own
+       the day the pipeline starts producing it. */
+    // Shorthand, because ten columns in a half-width panel leave the label
+    // column about seven characters before "Vs Right-Handed" breaks over three
+    // lines and the table stops being scannable. The note spells them out.
+    var SPLIT_ROWS = [
+      ['Vs LHH', 'vs_lhh'],
+      ['Vs RHH', 'vs_rhh'],
+      ['Home', 'home'],
+      ['Road', 'away']
     ];
-    // What this arm has done against each side of the plate, and what his most
-    // recent outing actually looked like. Both were in the architecture and
-    // neither was being fetched.
-    var splits = person && person.splits;
-    var splitHtml = '';
-    if (splits && (splits.vl || splits.vr)) {
-      function splitRow(label, st) {
-        if (!st) return '';
-        return '<tr><td>' + esc(label) + '</td>' +
-          '<td class="num ' + gradeFor(st.avg, 'avg') + '">' + esc(st.avg != null ? st.avg : '\u2014') + '</td>' +
-          '<td class="num ' + gradeFor(st.ops, 'ops') + '">' + esc(st.ops != null ? st.ops : '\u2014') + '</td>' +
-          '<td class="num">' + esc(st.strikeOuts != null ? st.strikeOuts : '\u2014') + '</td>' +
-          '<td class="num">' + esc(st.baseOnBalls != null ? st.baseOnBalls : '\u2014') + '</td>' +
-          '<td class="num">' + esc(st.battersFaced != null ? st.battersFaced : '\u2014') + '</td></tr>';
-      }
-      splitHtml = '<div class="ca-split-block"><h4>Opponents By Side Of The Plate</h4>' +
-        '<table class="ca-lineup-table ca-split-table"><thead><tr><th>Faces</th>' +
-        '<th class="num">AVG</th><th class="num">OPS</th><th class="num">K</th>' +
-        '<th class="num">BB</th><th class="num">BF</th></tr></thead><tbody>' +
-        splitRow('Left-handed hitters', splits.vl) +
-        splitRow('Right-handed hitters', splits.vr) +
-        '</tbody></table></div>';
-    }
+    // key, header, baseline to grade against, whether it is an allowed rate
+    // that must read the other way round, suffix.
+    var SPLIT_COLS = [
+      ['era', 'ERA', 'era', false, ''],
+      ['fip', 'FIP', 'era', false, ''],
+      ['xfip', 'xFIP', 'xfip', false, ''],
+      ['k_pct', 'K%', 'kpct', false, '%'],
+      ['bb_pct', 'BB%', 'bbpct', false, '%'],
+      ['hr9', 'HR/9', null, false, ''],
+      ['ops', 'OPS', 'ops', true, ''],
+      ['ops_plus', 'OPS+', null, false, ''],
+      ['ip_per_start', 'IP/GS', null, false, ''],
+      ['starts', 'GS', null, false, '']
+    ];
+
+    var banks = SPLIT_ROWS.map(function (row) {
+      return [row[0], ((bank && bank.splits) || {})[row[1]]];
+    }).filter(function (pair) { return !!pair[1]; });
+
+    var cols = SPLIT_COLS.filter(function (col) {
+      return banks.some(function (pair) { return pair[1][col[0]] != null; });
+    });
+
+    var splitBody = !banks.length ? '' : banks.map(function (pair) {
+      var st = pair[1];
+      var cells = cols.map(function (col) {
+        var v = st[col[0]];
+        if (v == null) return '<td class="num">&mdash;</td>';
+        var cls = col[0] === 'ops_plus' ? indexTone(v)
+          : (col[2] ? (col[3] ? gradeAllowed(v, col[2]) : gradeFor(v, col[2])) : '');
+        return '<td class="num ' + cls + '">' + esc(v) + col[4] + '</td>';
+      }).join('');
+      return '<tr><td>' + esc(pair[0]) + '</td>' + cells + '</tr>';
+    }).join('');
+
+    var splitHtml = splitBody
+      ? '<div class="ca-split-block"><h4>Splits</h4><div class="ca-lineup-scroll">' +
+        '<table class="ca-lineup-table ca-split-table"><thead><tr><th>Split</th>' +
+        cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
+        '</tr></thead><tbody>' + splitBody + '</tbody></table></div>' +
+        '</div>'
+      : '';
     var lastHtml = '';
     if (person && person.lastStart) {
       var ls = person.lastStart;
@@ -721,10 +842,6 @@
         esc(ls.pitches) + ' pitches \u00b7 ' + esc(ls.strikeOuts) + ' K \u00b7 ' +
         esc(ls.baseOnBalls) + ' BB \u00b7 ' + esc(ls.earnedRuns) + ' ER</p>';
     }
-    var rates = derivedRates(stat).map(function (pair) {
-      return '<div class="ca-form-cell"><span class="ca-form-label">' + esc(pair[0]) +
-        '</span><strong class="ca-form-value">' + esc(pair[1]) + '</strong></div>';
-    }).join('');
     var shot = '';
     if (id && global.MLBMAAssets && MLBMAAssets.headshotUrl) {
       shot = '<img class="ca-starter-shot" src="' + esc(MLBMAAssets.headshotUrl(id, 72, 'profile')) +
@@ -735,8 +852,7 @@
       '<div><p class="ca-starter-team">' + esc(label) + (handLabel ? ' \u00b7 ' + handLabel : '') + '</p>' +
       '<h3 class="ca-starter-name">' + esc(name) + '</h3></div></header>' +
       (headline ? '<div class="ca-stat-row">' + headline + '</div>' : '') +
-      (rates ? '<div class="ca-form-grid ca-form-grid--tight">' + rates + '</div>' : '') +
-      lastHtml + splitHtml + list(rows) + '</section>';
+      lastHtml + splitHtml + '</section>';
   }
 
   /* The centrepiece: one lineup against the other side's arm, with the context
@@ -969,6 +1085,28 @@
       ' games</i></strong></div>';
   }
 
+  /* Weather and wind, in the banner, as one fact with its symbol. The rest of
+     the ballpark record - capacity, elevation, dimensions - answered a question
+     nobody asked on a matchup page. */
+  function wxFact(game) {
+    var key = wxKey(game);
+    var bits = [game.weather_temp ? game.weather_temp + '\u00b0' : '',
+                game.weather_cond || '', game.weather_wind || ''].filter(Boolean);
+    if (!bits.length) {
+      var roof = String(game.roof || '');
+      if (/indoor|dome|closed|retractable/i.test(roof)) {
+        return '<div class="ca-detail-fact"><span>Conditions</span>' +
+          '<strong class="ca-wx-fact">' + wxGlyph('roof', 'ca-wx-glyph ca-wx-glyph--sm') +
+          '<span>Indoors · Weather Not A Factor</span></strong></div>';
+      }
+      return fact('Conditions', roof ? titleCase(roof) + ' · Forecast Not Published'
+                                     : 'Not Published');
+    }
+    return '<div class="ca-detail-fact"><span>Conditions</span><strong class="ca-wx-fact">' +
+      (key ? wxGlyph(key, 'ca-wx-glyph ca-wx-glyph--sm') : '') +
+      '<span>' + esc(bits.join(' \u00b7 ')) + '</span></strong></div>';
+  }
+
   function ballparkBody(game, venueRecord) {
     var info = (venueRecord && venueRecord.fieldInfo) || {};
     var loc = (venueRecord && venueRecord.location) || {};
@@ -994,7 +1132,7 @@
       'its sample beside it, and is not a coefficient from a model.</p>';
   }
 
-  function bullpenPanel(sport, game, side, report, quality) {
+  function bullpenPanel(sport, game, side, report) {
     var label = fullName(sport, game, side);
     var head = '<section class="ca-bullpen-panel"><h3>' + esc(label) + '</h3>';
     if (report === null || report === undefined) {
@@ -1004,43 +1142,48 @@
       return head + '<p class="ca-lineup-context">Last ' + report.games +
         ' completed games</p>' + pending('No relief appearances recorded in this window.') + '</section>';
     }
+    var days = report.days || [];
+    if (!days.length) {
+      return head + pending('No relief appearances recorded in this window.') + '</section>';
+    }
+
+    /* Pitch count by day: one row per arm, one column per day, totals on the
+       right. A table of season rates answered a different question - what a
+       reader needs here is who threw, when, and how much. */
     var rows = report.used.map(function (rec) {
-      var line = (quality || {})[rec.id];
-      var stat = (line && line.stat) || {};
-      // Quality beside workload: an arm that threw 35 pitches yesterday reads
-      // differently depending on whether he is the best in the pen or the last
-      // man in it. FIP, K% and BB% are arithmetic over counting stats already
-      // on the row - the architecture asked for all three and none were here.
-      var f = fip(stat);
-      var bf = Number(stat.battersFaced);
-      function rate(count) {
-        if (!isFinite(bf) || bf <= 0 || count == null) return null;
-        return Number(count) / bf * 100;
+      var byDay = {};
+      rec.outings.forEach(function (o) { byDay[o.date] = (byDay[o.date] || 0) + o.pitches; });
+      var cells = days.map(function (day) {
+        var n = byDay[day] || 0;
+        // A day off is drawn as a dash: it is still a cell and still a fact,
+        // but a grid of bold zeros drowns the counts they exist to set off.
+        return '<td class="num ca-pc ' + pitchLoad(n) + '">' +
+          (n ? n : '–') + '</td>';
+      }).join('');
+      // A zero total reads as a dash for the same reason a zero day does, so
+      // the summary columns and the grid speak the same language.
+      function totalCell(n, days) {
+        return '<td class="num ca-pc-total ' + loadTotal(n, days) + '">' +
+          (n ? n : '–') + '</td>';
       }
-      var k = rate(stat.strikeOuts), bb = rate(stat.baseOnBalls);
-      return '<tr>' +
-        '<td class="ca-lineup-name">' + esc(rec.name) + (rec.backToBack ?
-          ' <span class="ca-flag">back to back</span>' : '') + '</td>' +
-        '<td class="num">' + rec.outings.length + '</td>' +
-        '<td class="num">' + rec.pitches + '</td>' +
-        '<td>' + esc(rec.dates.join(', ')) + '</td>' +
-        '<td class="num ' + gradeFor(stat.era, 'era') + '">' +
-        esc(stat.era != null ? stat.era : '\u2014') + '</td>' +
-        '<td class="num ' + (f == null ? '' : gradeFor(f, 'era')) + '">' +
-        (f == null ? '\u2014' : f.toFixed(2)) + '</td>' +
-        '<td class="num">' + (k == null ? '\u2014' : k.toFixed(1) + '%') + '</td>' +
-        '<td class="num">' + (bb == null ? '\u2014' : bb.toFixed(1) + '%') + '</td>' +
-        '<td class="num ' + gradeFor(stat.whip, 'whip') + '">' +
-        esc(stat.whip != null ? stat.whip : '\u2014') + '</td>' +
-        '</tr>';
+
+      // Named `tail`, not `window` - a local of that name would shadow the
+      // global inside this closure.
+      function tail(n) {
+        return days.slice(-n).reduce(function (sum, d) { return sum + (byDay[d] || 0); }, 0);
+      }
+      return '<tr><td class="ca-lineup-name">' + esc(rec.name) +
+        (rec.backToBack ? ' <span class="ca-flag">Back To Back</span>' : '') + '</td>' +
+        cells + totalCell(tail(3), 3) + totalCell(tail(5), 5) + '</tr>';
     }).join('');
-    return head +
-      '<p class="ca-lineup-context">' + esc(label) + ' \u00b7 relief appearances \u00b7 ' +
-      esc(report.window) + '</p>' +
-      '<div class="ca-lineup-scroll"><table class="ca-lineup-table">' +
-      '<thead><tr><th>Reliever</th><th class="num">App</th><th class="num">Pitches</th>' +
-      '<th>Dates</th><th class="num">ERA</th><th class="num">FIP</th>' +
-      '<th class="num">K%</th><th class="num">BB%</th><th class="num">WHIP</th></tr></thead>' +
+
+    var header = days.map(function (d) {
+      return '<th class="num">' + esc(dayLabel(d)) + '</th>';
+    }).join('');
+
+    return head + '<div class="ca-lineup-scroll">' +
+      '<table class="ca-lineup-table ca-pc-table"><thead><tr><th>Pitcher</th>' + header +
+      '<th class="num">Last 3</th><th class="num">Last 5</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div></section>';
   }
 
@@ -1049,11 +1192,19 @@
   function startersBody(sport, game, extra) {
     var people = extra.people || {};
     return '<div class="ca-detail-duo">' +
-      starterPanel(sport, game, 'away', people) +
-      starterPanel(sport, game, 'home', people) + '</div>' +
-      '<p class="ca-detail-source-note">K% and BB% are strikeouts and walks over batters faced; ' +
-      'HR/9 is home runs allowed over innings pitched. Each is a quotient of two counting stats ' +
-      'listed beneath it.</p>';
+      starterPanel(sport, game, 'away', people, extra.starterSplits) +
+      starterPanel(sport, game, 'home', people, extra.starterSplits) + '</div>' +
+      '<p class="ca-detail-source-note">The four figures above each table are the arm’s ' +
+      'whole season, kept as the anchor the splits are read against. Vs LHH and Vs RHH are ' +
+      'left- and right-handed hitters; Home and Road are this arm’s own starts in each. ' +
+      'K% and BB% are strikeouts ' +
+      'and walks as a share of batters faced; HR/9 is home runs allowed per nine innings; OPS+ ' +
+      'is 100 × league OPS allowed over this line’s OPS allowed, so 100 is average ' +
+      'and higher is the better arm. The source measures earned runs by park and opponent ' +
+      'production by batter hand, not the other way round, so a column appears only on the rows ' +
+      'it is actually measured for. Colour grades every figure against this season’s ' +
+      'published league baseline, with allowed rates read the way a pitcher earns them: a low ' +
+      'OPS against is green.</p>';
   }
 
   function lineupsBody(sport, game, extra) {
@@ -1243,6 +1394,195 @@
       'date. Won and lost are carried by the letter as well as the colour.</p>';
   }
 
+  /* ---------------------------------------------------------------------
+   * The team profile radar.
+   *
+   * Two webs, both clubs overlaid on each. Every axis is the club's PERCENTILE
+   * on that metric, which is the only honest way to put OSI, wRC+ and xwOBA on
+   * one shape - they have nothing in common as raw units, and a radar drawn on
+   * raw values would be a picture of the scales rather than of the clubs.
+   *
+   * The legacy radar carried a ProjOSI axis. That is a forecast and is named
+   * model_private, so the axis here is Pitch Score - a descriptive index over
+   * the same kind of inputs - and the swap is stated in the note rather than
+   * quietly made.
+   * ------------------------------------------------------------------ */
+  var RADARS = [
+    { title: 'Process Composite', keys: ['rcv', 'abq', 'osi', 'obr', 'pitchScore'] },
+    { title: 'Offense And Schedule', keys: ['pals', 'wrc', 'xwoba', 'woba', 'xfip'] }
+  ];
+
+  var NFL_RADARS = [
+    { title: 'Offense', keys: ['off_epa', 'off_first_down', 'off_explosive',
+                               'off_sack', 'off_turnover'] },
+    { title: 'Defense', keys: ['def_epa', 'def_first_down', 'def_explosive',
+                               'def_sack', 'def_turnover'] }
+  ];
+
+  /* An axis label has room for about eight characters before it leaves the
+     viewBox or collides with its neighbour, so the webs name their own axes
+     instead of reusing the sentence-length labels the mirror carries. */
+  var NFL_AXIS = {
+    off_epa: 'EPA', off_first_down: '1st Down', off_explosive: 'Explosive',
+    off_sack: 'Sacks Taken', off_turnover: 'Ball Security',
+    def_epa: 'EPA', def_first_down: '1st Down', def_explosive: 'Explosive',
+    def_sack: 'Sacks', def_turnover: 'Takeaways'
+  };
+
+  function radarPoints(ctx, keys, radius, cx, cy) {
+    return keys.map(function (key, i) {
+      var entry = ctx && ctx[key];
+      var pct = entry ? percentOf(entry) : null;
+      // An axis with no value collapses to the centre rather than being skipped,
+      // so the shape keeps its geometry and the gap is visible as a gap.
+      var r = pct == null ? 0 : (pct / 100) * radius;
+      var angle = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+      return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+    });
+  }
+
+  function radarWeb(sport, game, spec, plan) {
+    // Sized for the labels, not for the pentagon: the widest axis name is
+    // about 85px at 12px display type, and it hangs outward from an anchor at
+    // radius + 18. A box drawn to the shape alone let neighbouring webs write
+    // their labels over each other.
+    var w = 360, h = 250, cx = w / 2, cy = 140, radius = 80, labelGap = 18;
+    var away = plan.away, home = plan.home;
+    var keys = spec.keys.filter(function (key) {
+      return plan.label(key) && ((away && away[key]) || (home && home[key]));
+    });
+    // Three axes is the fewest that makes a shape rather than a line.
+    if (keys.length < 3) return '';
+    if (!away && !home) return '';
+
+    var rings = [0.25, 0.5, 0.75, 1].map(function (step) {
+      var pts = keys.map(function (_, i) {
+        var a = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+        return (cx + radius * step * Math.cos(a)).toFixed(1) + ',' +
+               (cy + radius * step * Math.sin(a)).toFixed(1);
+      }).join(' ');
+      return '<polygon class="ca-radar__ring" points="' + pts + '"/>';
+    }).join('');
+
+    var spokes = keys.map(function (_, i) {
+      var a = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+      return '<line class="ca-radar__spoke" x1="' + cx + '" y1="' + cy + '" x2="' +
+        (cx + radius * Math.cos(a)).toFixed(1) + '" y2="' +
+        (cy + radius * Math.sin(a)).toFixed(1) + '"/>';
+    }).join('');
+
+    var labels = keys.map(function (key, i) {
+      var a = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+      var lx = cx + (radius + labelGap) * Math.cos(a);
+      var ly = cy + (radius + labelGap) * Math.sin(a);
+      var anchor = Math.abs(Math.cos(a)) < 0.3 ? 'middle' : (Math.cos(a) > 0 ? 'start' : 'end');
+      return '<text class="ca-radar__label" x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) +
+        '" text-anchor="' + anchor + '">' + esc(plan.label(key)) + '</text>';
+    }).join('');
+
+    function shape(ctx, cls, colour) {
+      if (!ctx) return '';
+      var pts = radarPoints(ctx, keys, radius, cx, cy)
+        .map(function (pt) { return pt[0].toFixed(1) + ',' + pt[1].toFixed(1); }).join(' ');
+      return '<polygon class="ca-radar__area ' + cls + '" points="' + pts + '"' +
+        (colour ? ' style="stroke:' + esc(colour) + ';fill:' + esc(colour) + '"' : '') + '/>';
+    }
+
+    return '<figure class="ca-radar">' +
+      '<figcaption>' + esc(spec.title) + '</figcaption>' +
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h +
+      '" role="img" aria-label="' + esc(spec.title) + ' percentile comparison">' +
+      rings + spokes + shape(away, 'is-away', plan.colour.away) +
+      shape(home, 'is-home', plan.colour.home) + labels +
+      '</svg></figure>';
+  }
+
+  /* Where each sport keeps its context, and what it calls each axis. The MLB
+     board is a flat map of metric entries; the NFL board nests the same shape
+     one level down under `rates` and carries its own labels. */
+  function radarPlan(sport, game) {
+    var colour = radarPair(sport, game);
+    if (sport === 'nfl') {
+      return {
+        colour: colour,
+        away: ((game.away_form || {}).rates) || null,
+        home: ((game.home_form || {}).rates) || null,
+        label: function (key) {
+          if (NFL_AXIS[key]) return NFL_AXIS[key];
+          var entry = (((game.away_form || {}).rates) || {})[key] ||
+                      (((game.home_form || {}).rates) || {})[key];
+          return entry ? titleCase(entry.label) : '';
+        }
+      };
+    }
+    return {
+      colour: colour,
+      away: game.away_context || null,
+      home: game.home_context || null,
+      label: function (key) { return STAT_SPECS[key] ? STAT_SPECS[key].label : ''; }
+    };
+  }
+
+  function hexRgb(hex) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+    if (!m) return null;
+    var n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  /* Are these two colours far enough apart to carry two overlaid shapes?
+     Plain Euclidean distance in RGB is crude, but it is the right kind of
+     crude here: the question is only "can a reader tell these apart", and a
+     club pair that fails it is rare enough that the fallback costs nothing. */
+  function tooClose(a, b) {
+    var x = hexRgb(a), y = hexRgb(b);
+    if (!x || !y) return false;
+    var d = Math.sqrt(Math.pow(x[0] - y[0], 2) + Math.pow(x[1] - y[1], 2) +
+                      Math.pow(x[2] - y[2], 2));
+    return d < 110;
+  }
+
+  function radarPair(sport, game) {
+    var pair = clubPair(sport, game);
+    if (pair.away && pair.home && tooClose(pair.away, pair.home)) {
+      return { away: '', home: '', fellBack: true };
+    }
+    return { away: pair.away, home: pair.home, fellBack: false };
+  }
+
+  function radarBody(sport, game) {
+    var plan = radarPlan(sport, game);
+    var pair = plan.colour;
+    function swatch(colour) {
+      return colour ? ' style="background:' + esc(colour) + '"' : '';
+    }
+    var specs = sport === 'nfl' ? NFL_RADARS : RADARS;
+    var webs = specs.map(function (spec) { return radarWeb(sport, game, spec, plan); })
+      .filter(Boolean).join('');
+    if (!webs) return pending('Team profile is not published for this pairing.');
+    return '<div class="ca-radar-duo">' + webs + '</div>' +
+      '<p class="ca-radar-key">' +
+      '<span class="ca-radar-key__swatch is-away"' + swatch(pair.away) + '></span>' +
+      esc(fullName(sport, game, 'away')) +
+      '<span class="ca-radar-key__swatch is-home"' + swatch(pair.home) + '></span>' +
+      esc(fullName(sport, game, 'home')) +
+      '</p>' +
+      '<p class="ca-detail-source-note">Every axis is that club’s percentile on the ' +
+      'metric named, against the same league pool the section above uses — the only ' +
+      'honest way to put rates with no units in common on one shape. Further from the ' +
+      'centre is better on every axis, including the ones ranked low-is-good. ' +
+      (sport === 'nfl'
+        ? 'Both webs read the ten charted rates from the form section above, split into ' +
+          'the two phases of the game. '
+        : 'The legacy web carried a projOSI axis; that is a forecast, so this one carries ' +
+          'Pitch Score, a descriptive index over the same kind of inputs. ') +
+      (plan.colour.fellBack
+        ? 'These two clubs wear colours too close to tell apart when the shapes overlap, ' +
+          'so the web uses the chart pair instead of the club pair; the key names which is ' +
+          'which.'
+        : 'Each shape is drawn in its own club’s colour.') + '</p>';
+  }
+
   function formBody(sport, game) {
     var formNote = game.context_generated_at
       ? 'Team form as published ' + publishedTime(game.context_generated_at) + '. '
@@ -1257,35 +1597,36 @@
       'OSI = 0.43\u00b7RCV + 0.37\u00b7ABQ + 0.20\u00b7OBR; Pitch Score = 0.40\u00b7K% + ' +
       '0.35\u00b7inv(BB%) + 0.25\u00b7inv(HR/9). Both are constructed indices, stated with their ' +
       'weights. Every rank and every bar is computed from the value beside it against the same ' +
-      'league pool, so a bar always shows that rate\u2019s own percentile and never a rating.</p>' +
-      leagueBoard(sport, game, (window.__caLeagueBoard || null));
+      'league pool, so a bar always shows that rate\u2019s own percentile and never a rating. ' +
+      'Two readings share each row and they answer different questions: the figure and its rank ' +
+      'take the colour of where that club sits in the thirty, the same ramp as every other number ' +
+      'on this page, while the bars take green and red for which club leads the row.</p>' +
+      '';
   }
 
   function bullpenBody(sport, game, extra) {
     return '<div class="ca-detail-stack-inner">' +
-      bullpenPanel(sport, game, 'away', extra.awayBullpen, extra.bullpenQuality) +
-      bullpenPanel(sport, game, 'home', extra.homeBullpen, extra.bullpenQuality) + '</div>' +
-      '<p class="ca-detail-source-note">Read from the official box score of each completed game. ' +
-      'Relief appearances only \u2014 a pitcher who started that game is excluded by his own line. ' +
-      'ERA, FIP, K%, BB% and WHIP are that reliever\u2019s full-season rates, shown so a heavy ' +
-      'recent workload is read beside the arm that carried it. ' +
-      'FIP = (13\u00b7HR + 3\u00b7(BB+HBP) \u2212 2\u00b7K) / IP + 3.15.</p>';
+      bullpenPanel(sport, game, 'away', extra.awayBullpen) +
+      bullpenPanel(sport, game, 'home', extra.homeBullpen) + '</div>' +
+      '<p class="ca-detail-source-note">Pitch counts read from the official box score of each completed game. Relief appearances only — a pitcher who started that game is excluded by his own line. A dash is a day that arm did not pitch. The shading runs dim to hot with the size of the day, not good to bad: thirty-five pitches is a heavy outing, which is a fact about availability tonight rather than a judgement about the pitcher.</p>';
   }
 
   function mlbSections(sport, game, extra) {
     extra = extra || {};
     return [
-      section('starters', 'Probable Starters', 'Season Totals From The Official MLB Record',
+      section('starters', 'Probable Starters', 'Splits By Handedness And By Park',
         startersBody(sport, game, extra)),
-      section('lineups', 'Lineup Versus Starter', 'Each Order Against The Opposing Arm',
-        lineupsBody(sport, game, extra)),
       section('arsenal', 'Pitch Mix', 'What Each Starter Throws, And How Often',
         arsenalBody(sport, game, extra)),
+      section('lineups', 'Lineup Versus Starter', 'Each Order Against The Opposing Arm',
+        lineupsBody(sport, game, extra)),
       section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
         recentBody(sport, game, extra)),
       section('form', 'Offensive Form And League Context', 'Graded Against The 30-Team League Pool',
         formBody(sport, game)),
-      section('bullpens', 'Bullpen Workload', 'Relief Appearances In The Three Days Before This Game',
+      section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
+        radarBody(sport, game)),
+      section('bullpens', 'Bullpen Workload', 'Pitch Count By Day, The Week Before This Game',
         bullpenBody(sport, game, extra))
     ].join('');
   }
@@ -1495,11 +1836,11 @@
       ? (value * 100).toFixed(1) + '%'
       : (Math.abs(value) < 1 ? epaText(value) : value.toFixed(2));
     return '<div class="ca-form-cell">' +
-      '<span class="ca-form-label">' + esc(entry.label) + '</span>' +
+      '<span class="ca-form-label">' + esc(titleCase(entry.label)) + '</span>' +
       '<strong class="ca-form-value">' + esc(text) + '</strong>' +
       percentBar(entry.rank, entry.of) +
       '<span class="ca-form-rank ' + rankTone(entry.rank, entry.of) + '">' +
-      entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span>' +
+      entry.rank + ordinal(entry.rank) + ' Of ' + entry.of + '</span>' +
       '</div>';
   }
 
@@ -1592,7 +1933,7 @@
     var rows = NFL_FORM_ORDER.map(function (key) {
       var entry = away[key] || home[key];
       if (!entry) return '';
-      return mirrorRow(entry.label, away[key], home[key], function (v) {
+      return mirrorRow(titleCase(entry.label), away[key], home[key], function (v) {
         var n = Number(v);
         if (!isFinite(n)) return '\u2014';
         // A rate under one is a share; an EPA is a per-play margin. Both are
@@ -1650,6 +1991,9 @@
           (source.week ? ', week ' + esc(source.week) : '') + '. ' : '') +
         'Ranks are recomputed from these rates alone, so none of them can inherit an ordering from anywhere else.</p>'),
 
+      section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
+        radarBody(sport, game)),
+
       section('team-context', 'Rest, Travel And Venue', 'Factual Scheduling Context',
         '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
           ['Record', value(game.away_record)],
@@ -1668,29 +2012,27 @@
     var homeName = fullName(sport, game, 'home');
     document.title = awayName + ' at ' + homeName + ' — Chase Analytics';
     var nav = sport === 'mlb'
-      ? [['overview', 'Overview'], ['starters', 'Starters'], ['lineups', 'Lineup Vs Starter'], ['arsenal', 'Pitch Mix'], ['form', 'Offensive form'], ['bullpens', 'Bullpens'], ['conditions', 'Ballpark'], ['sources', 'Sources']]
-      : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'], ['form', 'Team Form'], ['team-context', 'Rest & travel'], ['conditions', 'Venue'], ['sources', 'Sources']];
-    var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back to ' + sport.toUpperCase() + ' matchups</a>' +
-      '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta"><div><p class="ca-detail-eyebrow">' +
-      sport.toUpperCase() + ' · Matchup analysis</p><span>' + esc(gameStatus(game)) + '</span></div><span>' +
-      esc(value(game.broadcast, 'Broadcast Not Published')) + '</span></header>' +
+      ? [['overview', 'Overview'], ['starters', 'Starters'], ['arsenal', 'Pitch Mix'],
+         ['lineups', 'Lineup Vs Starter'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
+         ['radar', 'Radar'], ['bullpens', 'Bullpens']]
+      : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'],
+         ['form', 'Team Form'], ['radar', 'Radar'], ['team-context', 'Rest And Travel']];
+    var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back To ' + sport.toUpperCase() + ' Matchups</a>' +
+      '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta">' +
+      '<p class="ca-detail-eyebrow">' + sport.toUpperCase() + ' · Matchup Analysis</p>' +
+      '</header>' +
       '<div class="ca-detail-hero__teams">' + teamHero(sport, game, 'away') + '<div class="ca-detail-center">' +
       scoreOrTime(game) + '</div>' + teamHero(sport, game, 'home') + '</div>' +
-      '<div class="ca-detail-facts">' + fact('Venue', venue(game)) + fact('Conditions', conditions(game)) +
-      fact('Broadcast', value(game.broadcast)) + fact('Status', gameStatus(game)) + '</div></article>' +
+      // Conditions live in the banner now: they are read once, at the top,
+      // beside where and when - not as their own section of dimensions and
+      // capacities nobody came for.
+      '<div class="ca-detail-facts">' + fact('Venue', venue(game)) +
+      wxFact(game) + fact('Broadcast', value(game.broadcast)) +
+      fact('Status', gameStatus(game)) + '</div></article>' +
       '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
         return '<a href="#' + item[0] + '">' + item[1] + '</a>';
       }).join('') + '</nav><div class="ca-detail-stack">' +
       (sport === 'mlb' ? mlbSections(sport, game, extra) : nflSections(sport, game)) +
-      section('conditions', sport === 'mlb' ? 'Ballpark And Conditions' : 'Venue, Weather, And Surface', 'Game Environment',
-        sport === 'mlb' ? ballparkBody(game, (extra || {}).venue)
-          : '<div class="ca-detail-facts">' + fact('Venue', venue(game)) + fact('Weather', conditions(game)) +
-            fact('Surface', value(game.surface)) + fact('Roof', value(game.roof)) +
-            fact('Start', clock(game.kickoff_utc)) + '</div>') +
-      section('sources', 'Sources And Freshness', 'Know What Is Published And When',
-        '<p class="ca-detail-source-note">Schedule and identity information: ' + esc(result.source) + '. ' +
-        'Published context: ' + esc(publishedTime(result.generatedAt)) + '. Data through: ' +
-        esc(publishedTime(result.dataThrough)) + '. Missing fields remain explicitly unavailable and are never inferred from the browser clock.</p>') +
       '</div>';
     host.innerHTML = html;
     host.setAttribute('data-state', 'ready');
@@ -1783,8 +2125,14 @@
           if (!board) return;
           window.__caLeagueBoard = board;
           paintSection(host, 'form', formBody(sport, game));
+          paintSection(host, 'radar', radarBody(sport, game));
           paintSection(host, 'recent', recentBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
+        });
+
+        loadStarterSplits().then(function (found) {
+          extra.starterSplits = found;
+          paintSection(host, 'starters', startersBody(sport, game, extra));
         });
 
         // Stage 2 - pitch mix and the ballpark record.
@@ -1812,21 +2160,16 @@
           paintSection(host, 'recent', recentBody(sport, game, extra));
         }).catch(function () { /* the strip keeps its pending note */ });
 
-        // Stage 3 - bullpen workload, then one bulk call for those arms.
+        // Stage 3 - bullpen workload. The section used to follow this with a
+        // bulk /people call for every arm's season rates; the panel is a pitch
+        // count by day now and never reads them, so the round trip has gone
+        // rather than being fetched and dropped.
         Promise.all([
           loadBullpen(game.away_team_id, game.away, dateIso),
           loadBullpen(game.home_team_id, game.home, dateIso)
         ]).then(function (reports) {
           extra.awayBullpen = reports[0] || { used: [], games: 0, window: 'window not published' };
           extra.homeBullpen = reports[1] || { used: [], games: 0, window: 'window not published' };
-          paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
-          var ids = [];
-          [extra.awayBullpen, extra.homeBullpen].forEach(function (report) {
-            report.used.forEach(function (rec) { ids.push(rec.id); });
-          });
-          return loadPeople(ids, 'pitching', season);
-        }).then(function (quality) {
-          extra.bullpenQuality = quality || {};
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
         }).catch(function () { /* the section keeps its pending note */ });
       }

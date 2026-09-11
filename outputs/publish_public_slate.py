@@ -10,7 +10,7 @@ import json
 import re
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -272,6 +272,90 @@ def fetch_mlb_arms(ids: list[int], season: int) -> dict:
     return out
 
 
+MLB_TEAM_SCHEDULE = (
+    "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={team}"
+    "&startDate={start}&endDate={end}"
+)
+MLB_BOXSCORE = "https://statsapi.mlb.com/api/v1/game/{pk}/boxscore"
+
+
+def _json(url: str, timeout: int = 30):
+    with urllib.request.urlopen(url, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def _game_day(game: dict) -> str:
+    """The calendar day the game is played on, as the schedule states it."""
+    raw = str(game.get("officialDate") or game.get("gameDate") or "")[:10]
+    return raw or datetime.now(timezone.utc).date().isoformat()
+
+
+def bullpen_load(team_id: int, date_iso: str, cache: dict) -> str | None:
+    """How hard this pen has been worked in the three days before the game.
+
+    The card carried a `Bullpen` cell that read "Workload Not Published" on
+    every card of every slate, because nothing ever published `away_bullpen`.
+    A cell that is always empty is worse than no cell: it teaches a reader that
+    the card has nothing to say. This fills it from the same official box
+    scores the matchup page reads - relief appearances only, a pitcher who
+    started that game excluded by his own line - and states arms used and
+    pitches thrown, which is what "how available is this pen tonight" means.
+
+    Cached per team, because a club appears on the slate once but the cache is
+    shared across a doubleheader and across the two sports' publish passes.
+    """
+    if not team_id:
+        return None
+    key = (team_id, date_iso)
+    if key in cache:
+        return cache[key]
+    start = (datetime.fromisoformat(date_iso) - timedelta(days=3)).date().isoformat()
+    end = (datetime.fromisoformat(date_iso) - timedelta(days=1)).date().isoformat()
+    try:
+        schedule = _json(MLB_TEAM_SCHEDULE.format(team=team_id, start=start, end=end))
+    except Exception:
+        cache[key] = None
+        return None
+
+    arms: set[int] = set()
+    pitches = 0
+    games = 0
+    for block in schedule.get("dates") or []:
+        for game in block.get("games") or []:
+            if ((game.get("status") or {}).get("abstractGameState") or "") != "Final":
+                continue
+            pk = game.get("gamePk")
+            if not pk:
+                continue
+            try:
+                box = _json(MLB_BOXSCORE.format(pk=pk))
+            except Exception:
+                continue
+            games += 1
+            for side in ("away", "home"):
+                team = ((box.get("teams") or {}).get(side)) or {}
+                if ((team.get("team") or {}).get("id")) != team_id:
+                    continue
+                for pid in team.get("pitchers") or []:
+                    player = (team.get("players") or {}).get(f"ID{pid}") or {}
+                    stat = ((player.get("stats") or {}).get("pitching")) or {}
+                    if not stat or int(stat.get("gamesStarted") or 0) > 0:
+                        continue
+                    arms.add(pid)
+                    pitches += int(stat.get("numberOfPitches") or 0)
+
+    if not games:
+        cache[key] = None
+        return None
+    # Compact, because the card cell it lands in truncates at about sixteen
+    # characters and a sentence there reads as "Workload Not P...". Arms over
+    # pitches, which the card labels, and the matchup page carries the same
+    # three days as a full pitch-count-by-day matrix for anyone who wants it.
+    summary = f"{len(arms)}/{pitches}"
+    cache[key] = summary
+    return summary
+
+
 def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
     """The published slate, built from the official schedule.
 
@@ -283,6 +367,9 @@ def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
     """
     arms = arms or {}
     games = []
+    # One cache across the whole slate: a club appears once, but a doubleheader
+    # would otherwise crawl the same three days of box scores twice.
+    pen_cache: dict = {}
     for block in payload.get("dates") or []:
         for game in block.get("games") or []:
             teams = game.get("teams") or {}
@@ -317,6 +404,8 @@ def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
                 "home_name": home_team.get("name") or None,
                 "away_team_id": away_team.get("id") or None,
                 "home_team_id": home_team.get("id") or None,
+                "away_bullpen": bullpen_load(away_team.get("id"), _game_day(game), pen_cache),
+                "home_bullpen": bullpen_load(home_team.get("id"), _game_day(game), pen_cache),
                 "away_record": record(away_node), "home_record": record(home_node),
                 # Scores only once there is a game to describe.
                 "away_score": away_node.get("score") if state in {"live", "final"} else None,
@@ -695,6 +784,47 @@ def fetch_nfl_scoreboard() -> dict | None:
         return None
 
 
+def write_nfl_league_context(context: dict, rest: dict) -> None:
+    """All 32 clubs' observed rates and recent results, as one public artifact.
+
+    The slate carries each fixture's own two clubs. This is the league they are
+    ranked inside, so the page can show the board without asking for it a team
+    at a time - the same shape the MLB side publishes.
+    """
+    form = context.get("form") or {}
+    if not form:
+        print("  skip nfl league context: no form on the board")
+        return
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    recent: dict[str, dict] = {}
+    for team, games in (rest or {}).items():
+        played = [g for g in games if g.get("kickoff_utc")]
+        if not played:
+            continue
+        played.sort(key=lambda g: str(g["kickoff_utc"]))
+        recent[team] = {"games": len(played), "through": played[-1]["kickoff_utc"][:10]}
+
+    out = {
+        "schema": "chase-public-nfl-context/1",
+        "sport": "nfl",
+        "generated_at_utc": now,
+        "data_through_utc": (context.get("source") or {}).get("observed_at_utc") or now,
+        "season": (context.get("source") or {}).get("season"),
+        "week": (context.get("source") or {}).get("week"),
+        "note": "Ten observed rates per club with ranks recomputed from each rate "
+                "against the 32-team pool. No power rating, projected win total "
+                "or playoff probability is present.",
+        "teams": form,
+        "recent": recent,
+    }
+    dest = PUBLIC_DIR / "nfl" / "team_context.json"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    assert_clean(out)
+    dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    print(f"  wrote {dest} ({len(form)} clubs)")
+
+
 def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     if not producer.get("games"):
         print(f"  skip {sport}: empty producer; keeping {dest}")
@@ -739,9 +869,13 @@ def run(data_dir: Path | None = None) -> int:
             for comp in (event.get("competitions") or [])
             for c in (comp.get("competitors") or [])
         }
-        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(),
-                                     nfl_public_context.build(),
-                                     fetch_nfl_rest({c for c in codes if c}))
+        context = nfl_public_context.build()
+        rest = fetch_nfl_rest({c for c in codes if c})
+        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(), context, rest)
+        # The whole league, once, so the matchup page can show every club
+        # against the two in front of the reader. Each game already carries its
+        # own two clubs; this is the board behind them.
+        write_nfl_league_context(context, rest)
         ok = write_if_better("nfl", nfl, PUBLIC_DIR / "nfl" / "slate.json") or ok
     else:
         print("  skip nfl: scoreboard unreachable; keeping existing public slate")

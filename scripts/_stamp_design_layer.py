@@ -99,27 +99,20 @@ def stamp_hrefs(text: str) -> str:
     # inserted another link: three chase-tokens-v1.css tags had accumulated in
     # every dashboard page. Rewrite these two in place, on href or src, before
     # deciding whether an insert is needed.
-    text = re.sub(r"(/design/chase-tokens-v1\.css\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(design_layer_version\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(chase_sport_select\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(chase_nav\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(chase_datastatus\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(mlbma_assets\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(mlbma_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(matchup_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(pitch_mix_shared\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(matchup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(matchup_lineup_compare\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(matchup_card\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(public_game_detail\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(public_sport_registry\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(mlbma_auth_ui\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(mlbma_standings\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(platform_dashboard\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(chase_asyncstate\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(chase_public_slate\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(sports/mlb\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
-    text = re.sub(r"(sports/nfl\.js\?v=)[^\"']+", r"\g<1>" + STAMP, text)
+    # Every locally served .js and .css gets the current stamp, found by shape
+    # rather than by name.
+    #
+    # This was twenty-one hand-written regexes, one per asset, and a file
+    # missing from the list kept its old ?v= for ever - model_center.js had
+    # been stale since the list was written. The consequence is the worst kind:
+    # the deploy succeeds, the file on the server is right, and the browser
+    # serves the cached old one, so the change looks like it never shipped.
+    #
+    # Anchored on a leading slash or a relative path with no scheme, so a
+    # third-party URL that happens to carry ?v= is left alone.
+    text = re.sub(
+        r'((?:src|href)="(?!https?:|//)[^"]*?\.(?:js|css)\?v=)[^"]*(")',
+        lambda m: m.group(1) + STAMP + m.group(2), text)
 
     if "chase-tokens-v1.css" not in text and "mlbma_design_system.css" in text:
         text = text.replace(
@@ -213,12 +206,21 @@ def main() -> None:
             encoding="utf-8",
         )
 
-    extra_html = [
-        ROOT / "index.html",
-        ROOT / "404.html",
-        ROOT / "models" / "index.html",
-        *sorted((DASH / "render").glob("*.html")),
-    ]
+    # Every public HTML file, found rather than listed.
+    #
+    # This was a hand-kept list of three paths plus the render directory, so
+    # the eight sport-route pages - mlb/, nfl/, cfb/, model-center/ - were
+    # never restamped. A page that keeps yesterday's ?v= serves yesterday's
+    # JavaScript out of the browser cache, which is how a correct deploy has
+    # gone out looking like nothing changed. The check that catches it runs
+    # after this script, so the list being short failed the build rather than
+    # the site - but only because someone added the check.
+    skip = {"node_modules", ".git", "dist", "vendor", "packages"}
+    extra_html = sorted(
+        path for path in ROOT.rglob("*.html")
+        if not any(part in skip for part in path.relative_to(ROOT).parts)
+        and DASH not in path.parents
+    ) + sorted((DASH / "render").glob("*.html"))
     for html in extra_html:
         if not html.is_file():
             continue

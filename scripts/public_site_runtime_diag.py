@@ -164,8 +164,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + mlb_detail, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("MLB detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
+        # Sources and freshness moved into each section's own note, and the
+        # ballpark section was cut to its weather, which now sits in the
+        # banner. Pitch mix leads the lineup it explains.
         check("MLB detail has sport-specific sections",
-              page.locator("#starters, #lineups, #arsenal, #bullpens, #conditions, #sources").count() == 6)
+              page.locator("#starters, #arsenal, #lineups, #recent, #form, #radar, #bullpens")
+              .count() == 7)
+        check("MLB detail no longer carries a ballpark or sources section",
+              page.locator("#conditions, #sources").count() == 0)
+        mlb_ids = page.eval_on_selector_all(
+            ".ca-detail-section", "els => els.map(e => e.id)")
+        check("MLB pitch mix is read before the lineup it explains",
+              mlb_ids.index("arsenal") < mlb_ids.index("lineups"), str(mlb_ids))
         # Team form is only meaningful if it describes roughly now. The site
         # once served numbers seven weeks old, correctly labelled and entirely
         # unnoticed, because the snapshot lives in whichever checkout ran the
@@ -185,23 +195,32 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               "not published" if age is None else f"{age:.1f} days old")
         check("MLB form panels state when the form was published",
               "Team form as published" in page.locator("#form").inner_text())
-        # The legacy Team Rankings board, restored where the architecture puts
-        # it: inside the matchup behind a disclosure, never as a destination.
-        # The board and the club-colour bars arrive with the league artifact,
-        # which is a separate fetch from the one that paints the section. Wait
-        # for the thing being asserted rather than for a fixed delay - a gate
-        # that fails when a request is slow will fail a deploy for no reason.
+        # The mirror and the radar both arrive with the league artifact, which
+        # is a separate fetch from the one that paints the section. Wait for the
+        # thing being asserted rather than for a fixed delay - a gate that fails
+        # when a request is slow will fail a deploy for no reason.
         try:
-            page.wait_for_selector("#form .ca-league-table tbody tr", timeout=timeout_ms)
+            page.wait_for_selector("#form .ca-mirror__row", timeout=timeout_ms)
+            page.wait_for_selector("#radar .ca-radar__area", timeout=timeout_ms)
         except Exception:
             pass
-        page.eval_on_selector_all("#form .ca-disclosure", "els => els.forEach(d => d.open = true)")
-        board_rows = page.locator("#form .ca-league-table tbody tr").count()
-        marked = page.locator("#form .ca-league-table tbody tr.is-here").count()
-        check("MLB compare-with-league opens the full board", board_rows == 30,
-              f"rows={board_rows}")
-        check("MLB league board marks the two clubs in this game", marked == 2,
-              f"marked={marked}")
+        # The thirty-club board is gone: the mirror above it already grades
+        # both clubs against the same pool, and the radar states the whole
+        # profile at a glance. What replaced the board is checked instead.
+        check("MLB form section no longer carries the full league board",
+              page.locator("#form .ca-league-table").count() == 0)
+        mirror_rows = page.locator("#form .ca-mirror__row").count()
+        check("MLB mirror grades both clubs row by row", mirror_rows >= 8,
+              f"rows={mirror_rows}")
+        undecided = page.locator(
+            "#form .ca-mirror__row:not(.is-away):not(.is-home)").count()
+        check("MLB mirror gives every row a side", undecided == 0,
+              f"undecided={undecided}")
+        webs = page.locator("#radar .ca-radar svg").count()
+        shapes = page.locator("#radar .ca-radar__area").count()
+        check("MLB radar draws both webs", webs == 2, f"webs={webs}")
+        check("MLB radar overlays both clubs on each web", shapes == 4,
+              f"shapes={shapes}")
         # Club colour is identity, not grading - but half the league is navy,
         # and a navy bar on a near-black panel is an invisible bar. Every mark
         # must clear a measured floor against the panel it sits on.
@@ -252,7 +271,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
         check("NFL detail has factual sections",
-              page.locator("#availability, #scheme, #form, #team-context, #conditions, #sources").count() == 6)
+              page.locator("#availability, #scheme, #form, #radar, #team-context").count() == 5)
+        check("NFL detail no longer carries a venue or sources section",
+              page.locator("#conditions, #sources").count() == 0)
+        nfl_webs = page.locator("#radar .ca-radar svg").count()
+        check("NFL radar draws both phases", nfl_webs == 2, f"webs={nfl_webs}")
         # inner_text() returns rendered text, and the provenance line is
         # uppercased by the stylesheet, so the comparison is case-insensitive.
         scheme_text = page.locator("#scheme").inner_text().lower()
