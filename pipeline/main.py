@@ -400,6 +400,12 @@ def run_sp_splits():
         from scrapers.scrape_sp_hand_splits import run as run_sp_hand_splits
 
         run_sp_hand_splits()
+        # Run value per pitch type, from Savant's arsenal leaderboard. Sits with
+        # the splits because it is the other half of what the arsenal panel
+        # shows: what he throws, and whether it is any good.
+        from scrapers.scrape_pitch_run_value import run as run_pitch_run_value
+
+        run_pitch_run_value()
         from core.compute_sp_splits import run as run_compute_sp_splits
 
         run_compute_sp_splits()
@@ -672,6 +678,7 @@ def run_public_slate_publish():
             "publish_public_context.py",
             "publish_public_starters.py",
             "publish_public_batters.py",
+            "publish_public_run_value.py",
         ):
             subprocess.run(
                 [sys.executable, str(ROOT / "scripts" / script)],

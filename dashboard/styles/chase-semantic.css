@@ -116,6 +116,17 @@
   --metric-elite: var(--ca-green-200);
   --metric-good: var(--ca-green-400);
   --metric-watch: var(--ca-amber-500);
+  /* The middle of the grade ramp.
+   *
+   * It used to be --metric-neutral, a grey, which broke the ramp in half: the
+   * two good steps were green, the two poor steps were orange and red, and
+   * average was the absence of colour. A reader scanning a column could not
+   * tell "average" from "not graded", and the five steps did not read as one
+   * scale. Amber closes it into a single green-to-red spectrum. It stays
+   * separate from --metric-neutral, which is still a genuine grey for the
+   * things that are not on a grade ramp at all - a bar with no club colour, an
+   * unranked track. */
+  --metric-mid: var(--ca-amber-300);
   --metric-poor: var(--ca-red-500);
 
   /* —— Status —— */
