@@ -228,6 +228,7 @@
     "pressure",
     "pressure_rate",
     "qs",
+    "qs_pct",
     "rates",
     "rbi",
     "rcv",
@@ -284,6 +285,7 @@
     "pals",
     "percentile",
     "pitchScore",
+    "pitch_score",
     "sos"
   ],
   "contextual_environment": [

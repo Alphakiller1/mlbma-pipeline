@@ -39,6 +39,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
@@ -54,6 +55,12 @@ STATS_API = "https://statsapi.mlb.com/api/v1"
 # location rows with the pitcher's SEASON line instead - verified across all 359
 # starters, not one had a home OPS that differed from his away OPS, because it was the
 # same number printed twice. The endpoint answers the cut directly, so it is asked.
+# A quality start: six innings or more, three earned runs or fewer. Not in the
+# stats API as a field, so it is counted off the game log - which arrives in the
+# same request as the splits, at no extra cost.
+QS_MIN_OUTS = 18
+QS_MAX_ER = 3
+
 SPLITS = (
     ("vl", "sp_vs_LHH.csv"),
     ("vr", "sp_vs_RHH.csv"),
@@ -63,7 +70,7 @@ SPLITS = (
 SIT_CODES = ",".join(code for code, _ in SPLITS)
 OUTPUT_COLUMNS = [
     "Name", "Team", "MLBAMID", "G", "GS", "IP", "ERA", "K%", "BB%", "HR/9",
-    "OBP", "SLG", "OPS", "FIP", "xFIP", "TBF", "P/IP", "WHIP",
+    "OBP", "SLG", "OPS", "FIP", "xFIP", "TBF", "P/IP", "WHIP", "QS%", "PitchScore",
 ]
 # Below this the rate columns are noise, and publishing them would put a three-batter ERA
 # on a profile page next to a full season's.
@@ -101,31 +108,8 @@ def _int(stat: dict, key: str) -> int:
         return 0
 
 
-def target_pitchers() -> List[dict]:
-    """Every pitcher the SP profile set covers, with his id and team.
-
-    Read from sp_profiles.csv so this file always describes the same population the
-    pitcher pages render. Falls back to the season leaderboard when that file is absent
-    (a first run, or a rebuild from empty).
-    """
-    path = Path(DATA_DIR) / "sp_profiles.csv"
-    if path.exists():
-        out = []
-        with path.open(encoding="utf-8") as handle:
-            for row in csv.DictReader(handle):
-                try:
-                    pid = int(float(row["pitcher_id"]))
-                except (TypeError, ValueError, KeyError):
-                    continue
-                out.append({
-                    "id": pid,
-                    "name": row.get("pitcher_name", ""),
-                    "team": row.get("pitcher_team", ""),
-                })
-        if out:
-            return out
-
-    print("  sp_profiles.csv absent -- falling back to the season leaderboard")
+def _leaderboard_starters() -> List[dict]:
+    """Everyone who has started a game this season, from the season leaderboard."""
     payload = _get(
         f"{STATS_API}/stats?stats=season&group=pitching&season={CURRENT_SEASON}"
         f"&sportId=1&gameType=R&limit=1500&playerPool=All"
@@ -142,6 +126,86 @@ def target_pitchers() -> List[dict]:
             "team": (split.get("team") or {}).get("abbreviation", ""),
         })
     return out
+
+
+def _probable_starters() -> List[dict]:
+    """Every probable starter on the schedule, today and tomorrow.
+
+    The population cannot be defined by past role. Wilber Dotel came up in
+    September, had made 0 starts, and was the probable starter for Pittsburgh -
+    so a "has started a game" filter excluded the one pitcher whose page was
+    about to be looked at, and his matchup showed his name, his season line and
+    then an empty space. A pitcher making his first career start has zero games
+    started right up until the moment he needs the page.
+
+    The schedule says who is starting. That is the authoritative answer and it
+    is right on the day, not a scrape behind.
+    """
+    out = []
+    today = datetime.now(timezone.utc).date()
+    for offset in (0, 1):
+        day = (today + timedelta(days=offset)).isoformat()
+        payload = _get(f"{STATS_API}/schedule?sportId=1&date={day}"
+                       f"&hydrate=probablePitcher,team")
+        if not payload:
+            continue
+        for block in payload.get("dates") or []:
+            for game in block.get("games") or []:
+                for side in ("away", "home"):
+                    node = ((game.get("teams") or {}).get(side)) or {}
+                    arm = node.get("probablePitcher") or {}
+                    if not arm.get("id"):
+                        continue
+                    out.append({
+                        "id": arm["id"],
+                        "name": arm.get("fullName", ""),
+                        "team": ((node.get("team") or {}).get("abbreviation")) or "",
+                    })
+    return out
+
+
+def target_pitchers() -> List[dict]:
+    """Every probable starter, everyone who has started, plus the profile set.
+
+    This used to be the profile set ALONE, with the leaderboard as a fallback for
+    when that file was missing. The profile set is a qualified population, so a
+    pitcher called up in September and handed a start was not in it - and the
+    matchup page for the game he was starting showed his name, his season line, and
+    then an empty space where his splits belong. Wilber Dotel, 32.2 innings, starting
+    for Pittsburgh, was the case that surfaced it.
+
+    A union fixes it at the root and keeps fixing it: anyone who has started a game
+    is in the population by definition, so the next call-up is covered on the run
+    after his first start without anybody adding him to a list. The profile set stays
+    in the union so the file never describes fewer pitchers than the profile pages do,
+    and the leaderboard is no longer a fallback that only fires when a file is absent.
+    """
+    seen: Dict[int, dict] = {}
+    # Probables first: they are the most current and the most needed.
+    for row in _probable_starters():
+        seen[row["id"]] = row
+    for row in _leaderboard_starters():
+        seen.setdefault(row["id"], row)
+
+    path = Path(DATA_DIR) / "sp_profiles.csv"
+    if path.exists():
+        with path.open(encoding="utf-8") as handle:
+            for row in csv.DictReader(handle):
+                try:
+                    pid = int(float(row["pitcher_id"]))
+                except (TypeError, ValueError, KeyError):
+                    continue
+                # The leaderboard carries the club he is on now; the profile set can
+                # be a scrape or two behind on a trade, so it does not overwrite.
+                seen.setdefault(pid, {
+                    "id": pid,
+                    "name": row.get("pitcher_name", ""),
+                    "team": row.get("pitcher_team", ""),
+                })
+
+    if not seen:
+        print("  ERROR: no pitcher population from either source")
+    return list(seen.values())
 
 
 def _accumulate(splits: Iterable[dict]) -> Dict[str, Dict[str, int]]:
@@ -241,7 +305,53 @@ def league_hr_per_air(buckets: Iterable[Dict[str, int]]) -> Optional[float]:
     return hr / air
 
 
-def _row(pitcher: dict, bucket: Dict[str, int], hr_per_air: Optional[float]) -> Optional[dict]:
+def quality_starts(game_log: Iterable[dict]) -> Optional[float]:
+    """Share of this arm's STARTS that went six innings on three earned runs or fewer.
+
+    Counted off the game log because the stats API carries no such field. Relief
+    appearances are excluded by their own gamesStarted line, so a starter who
+    also relieves is not punished for a one-inning outing he was asked for.
+    """
+    starts = 0
+    quality = 0
+    for entry in game_log:
+        stat = entry.get("stat") or {}
+        if _int(stat, "gamesStarted") < 1:
+            continue
+        starts += 1
+        if _outs(stat.get("inningsPitched")) >= QS_MIN_OUTS and _int(stat, "earnedRuns") <= QS_MAX_ER:
+            quality += 1
+    if not starts:
+        return None
+    return round(100.0 * quality / starts, 1)
+
+
+# League distribution for the three inputs Pitch Score is built from. Filled on
+# the first pass over the population and read on the second, so the index is
+# relative to this season's starters rather than to a threshold typed in once.
+def pitch_score(k_pct: float, bb_pct: float, hr9: float, pool: dict) -> Optional[float]:
+    """The staff-suppression index, on one arm.
+
+    Same construction as the team Pitch Score the rest of the desk publishes -
+    0.40 strikeouts, 0.35 walks the other way round, 0.25 home runs the other way
+    round - scored against the population of starters rather than of clubs, and
+    stated on a 0-100 scale so it reads like the other indices beside it.
+    """
+    parts = [("k", k_pct, True), ("bb", bb_pct, False), ("hr", hr9, False)]
+    weights = {"k": 0.40, "bb": 0.35, "hr": 0.25}
+    total = 0.0
+    for key, value, high_is_good in parts:
+        series = pool.get(key) or []
+        if value is None or len(series) < 20:
+            return None
+        below = sum(1 for other in series if other < value)
+        pct = 100.0 * below / len(series)
+        total += weights[key] * (pct if high_is_good else 100.0 - pct)
+    return round(total, 1)
+
+
+def _row(pitcher: dict, bucket: Dict[str, int], hr_per_air: Optional[float],
+         qs: Optional[float] = None, score: Optional[float] = None) -> Optional[dict]:
     tbf = bucket["tbf"]
     if tbf < MIN_BATTERS_FACED:
         return None
@@ -306,6 +416,11 @@ def _row(pitcher: dict, bucket: Dict[str, int], hr_per_air: Optional[float]) -> 
         # who needs seventeen pitches an inning against left-handers and
         # thirteen against right-handers is telling you when he comes out.
         "P/IP": round(bucket["np"] / innings, 1) if bucket["np"] else "",
+        # Both describe the whole season, not this split - they are carried on
+        # every row so a consumer reading one split does not need a second join
+        # to find them.
+        "QS%": "" if qs is None else qs,
+        "PitchScore": "" if score is None else score,
     }
 
 
@@ -322,15 +437,22 @@ def run() -> None:
     # computed from a row while that row is still being written.
     collected: List[tuple] = []
     failed: List[str] = []
+    qs: Dict[int, Optional[float]] = {}
     for index, pitcher in enumerate(pitchers, 1):
+        # One request carries both: the four splits and the game log the quality
+        # start count is taken from.
         payload = _get(
-            f"{STATS_API}/people/{pitcher['id']}/stats?stats=statSplits&sitCodes={SIT_CODES}"
-            f"&group=pitching&season={CURRENT_SEASON}&gameType=R"
+            f"{STATS_API}/people/{pitcher['id']}/stats?stats=statSplits,gameLog"
+            f"&sitCodes={SIT_CODES}&group=pitching&season={CURRENT_SEASON}&gameType=R"
         )
         if not payload or not payload.get("stats"):
             failed.append(pitcher["name"])
             continue
-        totals = _accumulate(payload["stats"][0].get("splits", []))
+        blocks = {}
+        for block in payload["stats"]:
+            blocks[((block.get("type") or {}).get("displayName")) or ""] = block.get("splits") or []
+        totals = _accumulate(blocks.get("statSplits") or [])
+        qs[pitcher["id"]] = quality_starts(blocks.get("gameLog") or [])
         for code, _ in SPLITS:
             bucket = totals.get(code)
             if bucket:
@@ -350,9 +472,34 @@ def run() -> None:
     print(f"  league home runs per air ball: "
           f"{round(hr_per_air, 4) if hr_per_air else 'not computable'}")
 
+    # Pitch Score is a percentile against this season's starters, so the pool
+    # is built from the season lines first and every arm is then scored on it.
+    pool: Dict[str, List[float]] = {"k": [], "bb": [], "hr": []}
+    season: Dict[int, dict] = {}
+    for code, pitcher, bucket in collected:
+        if code not in {"h", "a"}:
+            continue
+        entry = season.setdefault(pitcher["id"], {"tbf": 0, "so": 0, "bb": 0, "hr": 0, "outs": 0})
+        for key in ("tbf", "so", "bb", "hr", "outs"):
+            entry[key] += bucket[key]
+    rates: Dict[int, tuple] = {}
+    for pid, entry in season.items():
+        innings = entry["outs"] / 3.0
+        if entry["tbf"] < 100 or innings <= 0:
+            continue
+        k = 100.0 * entry["so"] / entry["tbf"]
+        bb = 100.0 * entry["bb"] / entry["tbf"]
+        hr = 9.0 * entry["hr"] / innings
+        rates[pid] = (k, bb, hr)
+        pool["k"].append(k)
+        pool["bb"].append(bb)
+        pool["hr"].append(hr)
+
     rows: Dict[str, List[dict]] = {code: [] for code, _ in SPLITS}
     for code, pitcher, bucket in collected:
-        row = _row(pitcher, bucket, hr_per_air)
+        rate = rates.get(pitcher["id"])
+        score = pitch_score(rate[0], rate[1], rate[2], pool) if rate else None
+        row = _row(pitcher, bucket, hr_per_air, qs.get(pitcher["id"]), score)
         if row:
             rows[code].append(row)
 

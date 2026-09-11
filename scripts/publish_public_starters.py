@@ -66,6 +66,10 @@ RATES = {
     # the number that says when an arm comes out. It replaced innings per
     # start, which described the whole outing and not the split.
     "P/IP": ("pitches_per_inning", 1),
+    # Both describe the arm's whole season rather than this split, and are
+    # carried on every row so the panel header can read them without a join.
+    "QS%": ("qs_pct", 1),
+    "PitchScore": ("pitch_score", 1),
 }
 
 # K% and BB% arrive as fractions, in the FanGraphs encoding the rest of the
