@@ -3468,3 +3468,76 @@ body[data-ca-product="research"] {
   .ca-usage__grid > i { width: 5px; height: 10px; }
   .ca-usage { min-width: 120px; }
 }
+
+/* ===========================================================================
+ * THE TREND LINE
+ *
+ * The graphic the earlier card carried, rebuilt on what the data holds. Every
+ * point's value and its league rank are printed underneath: a chart nobody can
+ * read the numbers off is decoration.
+ * ======================================================================== */
+.ca-spark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.ca-spark__chart {
+  display: block;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.ca-spark__chart polyline {
+  fill: none;
+  stroke: var(--club, var(--metric-neutral));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ca-spark__chart circle {
+  fill: var(--club, var(--metric-neutral));
+}
+
+/* The most recent window is the one being read, so it carries the weight. */
+.ca-spark__chart circle.is-now {
+  fill: var(--text-primary);
+  stroke: var(--club, var(--metric-neutral));
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.ca-spark__read { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+.ca-spark__step {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-spark__step i {
+  font-style: normal;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-muted);
+}
+
+.ca-spark__step b {
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-spark__step .ca-rank { margin-left: 0; }
+
+@media (max-width: 720px) {
+  .ca-spark__chart { width: 120px; }
+}
